@@ -492,21 +492,21 @@ namespace std {
   // wrapper
 
   template <class T>
-  class type_wrapper {
+  class generic_holder {
     T data;
     typedef typename add_reference<typename add_const<T>::type>::type par_t;
   public:
     operator T() { return data; }
     T unwrap() { return data; }
 
-    explicit type_wrapper(par_t t) : data(t) {}
+    explicit generic_holder(par_t t) : data(t) {}
   };
 
-  template <class T> inline type_wrapper<T&> ref(T& t) { 
-    return type_wrapper<T&>(t); 
+  template <class T> inline generic_holder<T&> ref(T& t) { 
+    return generic_holder<T&>(t); 
   }
-  template <class T> inline type_wrapper<const T&> cref(const T& t) { 
-    return type_wrapper<const T&>(t); 
+  template <class T> inline generic_holder<const T&> cref(const T& t) { 
+    return generic_holder<const T&>(t); 
   }
   // make_tuple ---------------------------------------------------------
 
@@ -560,7 +560,7 @@ namespace std {
     };
     
     template<class T> 
-    struct arg_traits<type_wrapper<T> >{
+    struct arg_traits<generic_holder<T> >{
       typedef T type;
     };
     

@@ -11,6 +11,7 @@
 \newcommand{\requires}{\noindent \textbf{Requires:}}
 \newcommand{\notes}{\noindent \textbf{Notes:}}
 \newcommand{\values}{\noindent \textbf{Value:}}
+\newcommand{\example}{\noindent \textbf{Example:}}
 \newcommand{\code}[1]{\texttt{#1}}
 
 \newcommand{\concept}[1]{\textsf{#1}}
@@ -37,37 +38,88 @@ Osat:
 TODO:
 
 - laita comparison-operaattoreihin conversion to bool before ! operator
+-  change static cast to reintepret cast in or something in manipulators
 
 \section{Motivation}
 
-This proposal describes tuple types for C++.
-Everything proposed here can be implemented as a library, but the proposal
-intentionally leaves room for tuples as a built in type.
-We do not propose a fixed implementation, as there are several alternatives
-for implementing tuples. Also, new language features, such as variable
-length template argument lists may make currently unimplementable approaches
-possible.
+Tuple types exist in several programming languages, such as Haskell, 
+ML, Python, Eiffel, to name a few. Tuple types are fixed size heterogeneous 
+containers. They are a general purpose utility, 
+adding to the expressiveness of the language. Some examples of 
+common uses for tuple types are:
+\begin{itemize}
+\item Return types of functions that need to have more than one return type.
+\item Grouping related types or objects (such as parameter lists) into a single entity.
+\item Simultaneous assignment of multiple values.
+\end{itemize}
 
-Tuple template is basically a generalization of the \code{pair} template 
-from two to arbitrary (up to a predefined limit) number of elements.
-Compared to pairs, the proposed tuple template supports a wider range 
-of element types (e.g. references) and streaming operations, customizable
+This proposal describes tuple types for C++. 
+The standard library provides the \code{pair}
+template which is being used throughout the standard library, demonstrating 
+the usefulness of tuple-like constructs.
+The proposed tuple type is basically a generalization of the \code{pair} 
+template from two to arbitrary (up to a predefined limit) number of elements.
+Compared to pairs, the proposed tuples:
+\begin{itemize}
+\item Support a wider range 
+of element types (e.g. references).
+\item Support input from and output to a stream, customizable
 with specific manipulators.
-Further, the library provides \code{tie} functions for creating tuples 
-with reference elements. 
-These make tuples convenient as return types of functions.
-
-
-Tuple types are a general utility for the end user, to be used similarly 
-to pairs. 
-Also, tuples are an important tool for library implementers for representing
-a set of template arguments, a set of function arguments, etc. as a single
-entity.
-\textbf{JAAKKO: esimerkkiejä}.
+\item A mechanism for 'unpacking' tuple elements into stand alone variables 
+(\code{tie} functions).
+\end{itemize}
 
 \section{Impact on the standard}
 
-The proposed library does not require any core language changes.
+All features described in this document can be implemented as a library,
+without requiring any core language changes.
+However, the implementation would benefit from a set of core language changes:
+\begin{itemize}
+\item Variable length template argument lists.
+\item Making reference to a reference to some type \code{T} equal to 
+reference to \code{T} (Issue XXX)
+\item Allowing default arguments (both template and function) for function
+templates (Issue XXX).
+\item Ignoring qualifiers that are added to function types. (Issue YYY)
+\end{itemize}
+%
+Furthermore, even within the current language
+there are at least a few different approaches for implementing
+tuples underneath a common interface.
+
+For these reasons we do not suggest a fixed implementation be standardized, 
+but rather the proposed text for the standard states the requirements for
+a tuple implementation 
+in the form of valid expressions and the semantics of these expressions.
+
+Another reason for this approach is that it leaves
+room for a built-in tuple type, or for a tuple template with some special
+support from the compiler, which we see worth considering.
+A library solution still falls short in some aspects, 
+compared to built-in tuple types in other languages.
+For instance, in Python and Haskell ???, the function argument list is 
+implicitly a tuple.
+This is a feature that cannot be built into C++ as a library.
+Tuples as built-in types are discussed more in section~\ref{Built-in tuples}.
+
+In sum, this proposal defines the requirements for a tuple type 
+to be implemented as a library.
+The requirements are stated as to allow a future transition to 
+a more feature-rich built-in tuple type.
+
+The concrete additions and changes to the standard are:
+\begin{itemize}
+\item A new section describing the requirements for the tuple template
+\item Backward compatible changes to \code{pair} to allow pairs act
+as tuples.
+\item An utility class and two utility functions for aiding in passing 
+reference arguments through pass-by-copy interface are suggested,
+but should really be described elsewhere, e.g together with the 
+type\_traits library~\ref{...}.
+TYPETRAITSEJA KÄYTETÄÄN PALJON
+\end{itemize}
+
+
 We propose tuple definitions to be included by including the \code{<utility>} 
 header, which is where \code{pair} resides in.
 However, operators for reading tuples from a stream and writing tuples into
@@ -75,14 +127,6 @@ a stream do introduce a dependency to \code{<istream>} and \code{<ostream>}.
 \textbf{JAAKKO: should istream and ostream include utility, should there
 be tupleio header ??=}.
 
-Note that tuples would benefit from a set of core language changes:
-\begin{itemize}
-\item Variable length template argument lists.
-\item Making reference to a reference to some type \code{T} equal to 
-reference to \code{T}.
-\item Allowing default arguments (both template and function) for function
-templates.
-\end{itemize}
 
 \section{Tuples in a nutshell}
 
@@ -211,6 +255,24 @@ read from an istream with \code{operator>>}.
 
 We describe an implementation that conforms to the requirements
 of this proposal.
+
+
+\code{About tuples as built-in types}
+
+Particularly, many languages consider the argument list to a function to
+be implicitly a tuple object (lanXXX, langYYY).
+This would be a remarkable improvement for generic programming in C++, 
+making truly generic wrapping, delegating, or forwarding functions possible.
+For example, the problem of not being able to inherit constructors would
+cease to exist, as one could define a constructor taking any tuple, and
+forward the tuple to the base class.
+
+Another important point EIFFEL, 
+Also, it is should be noted, that the programming language Eiffel does not
+allow varying number of generic parameters, except for tuple tuple types.
+The author is personally convinced that a built-in tuple type, with argument
+list of a function being implicitely a tuple object, and a mechanism to 
+(More on appendix)
 
 \section{Text in the standard}
 
@@ -380,29 +442,131 @@ second with \code{t.second}.
 
 \item Input and output
 
-\verb|o << t|, where \code{o} is an instance of \code|basic\_ostream| (JAAKKO, say somewhere, that is instance of means that is instance of or inherits
+\verb|os << t|, where \code{os} is an instance of \code{basic\_ostream} (JAAKKO, say somewhere, that is instance of means that is instance of or inherits
 publicly from an instance of).\\
-\requires\ For all $i$, \code{o << t$_i$} is a valid expression.\\
-\effects\ Invokes \code{o << t$_i$} for each $i$.\\
+\requires\ For all $i$, \verb|os << t|\code{$_i$} is a valid expression.\\
+\effects\ Inserts \code{t} into \code{os} as \code{$L$t$_1$$d$t$_2$$d$...$d$t$_n$R}, where $L$ is the opening, $d$ the delimiter and $R$ the closing
+character set by tuple manipulators.
+Each element \code{t$_i$} is output by invoking \verb|os << t|\code{$_i$}.\\
 \returntype\ \code{basic\_ostream}. (JAAKKO, say this differently)\\
-\returns \code{o}.
+\returns\ \code{os}.
 
-\verb|i >> t|, where \code{i} is an instance of \code|basic\_istream| (JAAKKO, say somewhere, that is instance of means that is instance of or inherits
+\verb|is >> t|, where \code{is} is an instance of \code|basic\_istream| (JAAKKO, say somewhere, that is instance of means that is instance of or inherits
 publicly from an instance of).\\
-\requires\ For all $i$, \code{o >> t$_i$} is a valid expression,
-and does not mess up parsing (JAAKKO, do something here).\\
-\effects\ Invokes \code{o >> t$_i$} for each $i$.\\
+\requires\ For all $i$, \verb|is >> t|\code{$_i$} is a valid expression.\\
+\effects\ Extracts a tuple of the form \code{$L$t$_1$$d$t$_2$$d$...$d$t$_n$R},
+where $L$ is the opening, $d$ the delimiter and $R$ the closing
+character set by tuple manipulators.
+Each element \code{t$_i$} is extracted by invoking \verb|is >> t|\code{$_i$}.
+If bad input is encountered, calls \code{is.set\_state(ios::failbit)} (which
+may throw \code{ios::failure} (27.4.4.3).\\
 \returntype\ \code{basic\_istream}. (JAAKKO, say this differently)\\
-\returns \code{i}.
+\returns \code{is}.
 
 \item Manipulators
 
+The type designated \emph{tuple\_manip} in the following function descriptions
+is implementation-specified and may be
+different for each function.
 
+\emph{tuple\_manip} \code{tuple\_open(char\_type c)}\\
+\emph{tuple\_manip} \code{tuple\_close(char\_type c)}\\
+\emph{tuple\_manip} \code{tuple\_delimiter(char\_type c)}\\
+\returns\ Each of these functions returns an object \code{s} of unspecified 
+type such that if \code{out} is an 
+instance of \code{basic\_ostream<charT,traits>}, \code{in} is an instance of
+\code{basic\_istream<charT,traits>} and \code{c} has type \code{charT},
+then expression \verb|out << s| (respectively \verb|in >> s|) 
+sets \code{c} to be
+the opening, closing, or delimiter character (depending on the manipulator
+function called) to be used when writing tuples into \code{out} (respectively
+reading extracting tuples from \code{in}).\\
+\notes\ Implementation is not required to support these manipulators for 
+streams with \code{sizeof(charT) > sizeof(long)}; if not supported,
+\verb|out << s| and \verb|in >> s| are required to fail at compile time if
+\code{out} are \code{in} are such streams.
+
+\item Functions for helping in tuple construction
+
+The library provides class template \code{any\_holder} that can hold
+objects or references of any type. 
+Reference types wrapped in \code{any\_holder} can be passed by copy, and
+as const reference, whithout affecting the constness of the wrapped object.
+Two template functions, \code{ref} and \code{cref} are provided to create
+\code{any\_holder} objects.
+The observable behaviour of \code{any\_holder}, \code{ref} and \code{cref}
+must be as if implemented:
+\begin{verbatim}
+template <class T>
+class any_holder {
+  T data;
+//  typedef typename add_reference<typename add_const<T>::type>::type par_t;
+  typedef const T& par_t;
+public:
+  operator T() { return data; }
+  T unwrap() { return data; }
+
+  explicit any_holder(par_t t) : data(t) {}
+};
+
+template <class T> inline any_holder<T&> ref(T& t) { 
+  return any_holder<T&>(t); 
+}
+
+template <class T> inline any_holder<const T&> cref(const T& t) { 
+  return any_holder<const T&>(t); 
+}
+\end{verbatim}
+
+\code{make\_tuple(t1, t2, ..., tn)}\\
+\returntype\ \code{tuple<T1, T2, ..., TN>}, where 
+if \code{Vi} is the non-reference type of \code{ti}
+\begin{itemize}
+\item \code{Vi} is an array type, then \code{Ti} is a reference \code{const Vi}.(JAAKKO. can one add const to an array type)
+\item if the cv-unqualified type of \code{Vi} is \code{any\_holder<X>},
+then \code{Ti} is \code{X}.
+\item otherwise \code{Ti} is \code{remove\_const<Vi>::type}.
 \end{itemize}
+\example\ \verb|int i; float j; make_tuple(1, "C++", ref(i), cref(j))| creates
+a tuple of type \verb|tuple<int, const char (&) [4], int&, const float&>|.
+\notes\ To construct a tuple which contains a reference to a function, the 
+function reference must be wrapped inside \code{ref}.
+
+\code{tie(t1, t2, ..., tn)}\\
+\effects\ As if implemented:
+\begin{verbatim}
+template<class T1, class T2, ..., class TN>
+tuple<T1&, T2&, ..., TN&> tie(T1& t1, T2& t2, ..., TN& tn) {
+  return tuple<T1&, T2&, ..., TN&>(t1, t2, ..., tn); 
+}
+\end{verbatim}
+%
+for each \code{N} from 0 to the maximum number of allowed tuple elements.
+
+The library provides an object
+\code{ignore} of some implementation-specified type \emph{swallow\_assignment}.
+
+\code{ignore = k}, where \code{k} referes to an object of arbitrary type.\\
+\effects\ No effect.\\
+\returntype\ \emph{swallow\_assignment}\code{\&}\\
+\notes\ \code{k} may not be a reference to a function, unless rule XXX 
+is changed.
+
+\example\ \code{tie} functions let one create tuples that unpacks another 
+tuple object into variables. \code{ignore} can be used for elements that
+are not needed:
+\begin{verbatim}
+int i; std::string s;
+tie(i, ignore, s) = make_tuple(42, , 3.14, "C++");
+// i == 42, s == "C++";
+\end{verbatim}
+\end{itemize}
+
+
 
 \end{document}
 
-- Onko non-storeable trikki tarpeellinen
+- Onko non-storeable trikki tarpeellinen: ON
 
 - Miksi assignment riittää paireista tupliin
 - Mikä on tuple_size:n return type
