@@ -58,5 +58,13 @@ int main(int, char**) {
   std::cout << tpair << std::endl;
   // std::cout << tuple_call<int>(&f, fcall(1,2)) << std::endl;
   std::cout << tuple_call<int>(&f, std_tuple::make_tuple(1, 2)) << std::endl;
+  std_tuple::tuple<int, float, std::string> y2;
+  std::cout << "Read test: enter tuple in form (int float string )" << std::endl;
+  std::cout << "  -- note extra space before right parenthesis" << std::endl;
+  std::cin >> y2;
+  std::cout << std_tuple::tuple_delimiter(", ") << y2 << std::endl;
+  std::cout << "Read test 2: use spaces and word \"and\" to separate tokens" << std::endl;
+  std::cin >> std_tuple::tuple_delimiter(" and ") >> y2;
+  std::cout << std_tuple::tuple_delimiter(", ") << y2 << std::endl;
   return 0;
 }
