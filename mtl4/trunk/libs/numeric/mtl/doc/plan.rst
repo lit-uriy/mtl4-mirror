@@ -125,6 +125,8 @@ and :concept:`R-Module`.
 Dealing with the Imprecision of Floating-Point
 ----------------------------------------------
 
+(2005-1-27)
+
 Traditional mathematical concepts are defined in terms of
 calculations on pure numbers that exhibit no rounding error, but
 the number types we use every day in numerical linear
