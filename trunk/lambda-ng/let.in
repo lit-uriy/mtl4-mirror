@@ -1,4 +1,4 @@
-#!/usr/local/bin/tclsh
+#!/home/jewillco/bin/tclsh
 # vim: syn=cpp:
 source codegen.tcl
 
@@ -8,8 +8,9 @@ puts [subst {
 
 #include "nodes.hpp"
 
-[treenode let {Var Value Body} {
-  [eval_is {typeof(value.run(env)) value_stored = value.run(env);} \
+[treenode let {-Var Value Body} {
+  [eval_is {Body().run(Env().extend(Var(),(Value().run(Env()))))} \
+           {typeof(value.run(env)) value_stored = value.run(env);} \
 	   {body.run(env.extend(var,value_stored))}]
 }]
 

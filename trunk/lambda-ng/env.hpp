@@ -6,11 +6,11 @@ struct extended_env;
 
 struct empty_env_type {
   struct unbound_var_type;
-  void get(const unbound_var_type&);
+  double get(const unbound_var_type&);
 
   template <class Value, class Var>
   extended_env<empty_env_type, Var, Value>
-  extend(const Var&, const Value& value = Value()) {
+  extend(const Var&, Value& value) {
     return extended_env<empty_env_type, Var, Value>(*this, value);
   }
 };
