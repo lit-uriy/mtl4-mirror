@@ -571,37 +571,13 @@ A diagnostic must be produced for a value of \code{N} that is out of bounds.
 
 \subsection{Tuple-like requirements}
 
-A type \code{P} is tuple-like if
+A type \code{P} is tuple-like iff
 \begin{itemize}
 \item \code{is\_tuple\_like<P>::value == true}, and
 \item \code{tuple\_size<P>::value} is a valid integral constant expression with a nonnegative value, and
 \item \code{tuple\_element<N, P>::type} is a valid expression that designates a type whenever \code{N} is in bounds, and
 \item \code{get<N>(p)}, where \code{p} is either of type \code{P} or \code{const P}, has the semantics defined in the \emph{Element access} subclause.
 \end{itemize}
-
-\subsection{Notation}
-
-% How about volatile
-\begin{tabular}{lp{9cm}}
-\code{T}, \code{U} & are tuple types\\
-\code{t}, \code{u} & objects of types \code{T} and \code{U}\\
-\code{tc}, \code{uc} & objects of types \code{const T} and \code{const U}\\
-\code{P} & a tuple-like type\\
-\code{p}, \code{pc} & objects of types \code{P} and \code{const P}\\
-\code{X$_i$} & the type of the $i$th element in \code{X}, where \code{X} is a tuple-like type\\
-\code{x$_i$} & the $i$th element of \code{x}, where \code{x} is of a tuple-like type\\
-For all $i$ in \code{X} & For all indices $i$ from 0 to \code{tuple\_size<X>::value - 1} for a tuple-like type \code{X}.
-\end{tabular}
-
-\smallskip 
-
-\noindent The notation \code{T0, T1, ..., TN} 
-stands for a comma separated list of
-types which may contain any number of elements from 0 to $\code{N}+1$,
-where $\code{N}+1 \le$ maximum number of allowed tuple elements. 
-The notation \code{t0, t1, ..., tn} is an analogous list of objects.
-
-
 
 \subsubsection*{Element access}
 
@@ -653,6 +629,33 @@ We decided not to propose that syntax, because \code{operator[]} cannot
 be defined as a free function, and would thus prevent adding tuple-likeness
 into a type non-intrusively. ]
 \end{sf}
+
+
+\subsection{Requirements for tuple types}
+
+\subsubsection*{Notation}
+
+% How about volatile
+\begin{tabular}{lp{9cm}}
+\code{T}, \code{U} & are tuple types\\
+\code{t}, \code{u} & objects of types \code{T} and \code{U}\\
+\code{tc}, \code{uc} & objects of types \code{const T} and \code{const U}\\
+\code{P} & a tuple-like type\\
+\code{p}, \code{pc} & objects of types \code{P} and \code{const P}\\
+\code{X$_i$} & the type of the $i$th element in \code{X}, where \code{X} is a tuple-like type\\
+\code{x$_i$} & the $i$th element of \code{x}, where \code{x} is of a tuple-like type\\
+For all $i$ in \code{X} & For all indices $i$ from 0 to \code{tuple\_size<X>::value - 1} for a tuple-like type \code{X}.
+\end{tabular}
+
+\smallskip 
+
+\noindent The notation \code{T0, T1, ..., TN} 
+stands for a comma separated list of
+types which may contain any number of elements from 0 to $\code{N}+1$,
+where $\code{N}+1 \le$ maximum number of allowed tuple elements. 
+The notation \code{t0, t1, ..., tn} is an analogous list of objects.
+
+
 
 
 
