@@ -10,8 +10,7 @@ for src in $(.bases)
     html $(src) : $(src).rst ;
 }
 
-mtl4-uploaded upload : $(.bases) ;
-alias html : $(.bases) ;
+alias htmls : $(.bases) ;
+stage html : $(.bases) ;
 
-# stage html : [ MATCH $(.target-pat) : $(.sources) ] ;
 
