@@ -1,0 +1,17 @@
+#!/usr/local/bin/tclsh
+# vim: syn=cpp:
+source codegen.tcl
+
+puts [subst {
+#ifndef LAMBDA_LET_HPP
+#define LAMBDA_LET_HPP
+
+#include "nodes.hpp"
+
+[treenode let {Var Value Body} {
+  [eval_is {typeof(value.run(env)) value_stored = value.run(env);} \
+	   {body.run(env.extend(var,value_stored))}]
+}]
+
+#endif // LAMBDA_LET_HPP
+}]
