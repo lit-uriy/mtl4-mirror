@@ -23,13 +23,23 @@
 
 \newcommand{\concept}[1]{\textsf{#1}}
 
-%\author{Jaakko Järvi}
+\author{Jaakko Järvi\\
+Indiana University\\
+Pervasive Technology Laboratories\\
+Bloomington, IN\\
+{\em jajarvi@cs.indiana.edu}}
 
-\title{Proposal for adding tuple types into the standard library\\ \large{Document no: N1382=02-0040}}
+
+\title{Proposal for adding tuple types into the standard library\\ \large{Programming Language C++}\\ \large{Document no: N1382=02-0040}}
 
 
 \begin{document}
-\maketitle{}
+\maketitle
+
+\markboth{Doc. no: N1382=02-0040}{Doc. no: N1382=02-0040}
+
+\pagestyle{myheadings}
+
 
 \section{Motivation}
 
@@ -52,13 +62,14 @@ template which is being used throughout the standard library, demonstrating
 the usefulness of tuple-like constructs.
 The proposed tuple type is basically a generalization of the \code{pair} 
 template from two to an arbitrary number of elements.
-Compared to pairs, the proposed tuples:
+In addition to the features and functionality of pairs, 
+the proposed tuple types:
 \begin{itemize}
 \item Support a wider range 
-of element types (e.g. references).
+of element types (e.g. reference types).
 \item Support input from and output to streams, customizable
 with specific manipulators.
-\item A mechanism for `unpacking' tuple elements into separate variables.
+\item Provide a mechanism for `unpacking' tuple elements into separate variables.
 \end{itemize}
 
 \section{Impact on the standard}
@@ -67,13 +78,13 @@ All features described in this document can be implemented in a library,
 without requiring any core language changes.
 However, the implementation would benefit from a set of core language changes:
 \begin{itemize}
-\item Variable-length template argument lists.
+\item Adding support for variable-length template argument lists.
 \item Making a reference to a reference to some type \code{T} equal to 
 a reference to \code{T} (core language issue 106).
-\item Allowing default arguments (both template and function) for function
+\item Allowing default template arguments for function
 templates (core language issue 226).
 \item Ignoring cv-qualifiers that are added to function types (core language issue 295).
-\item Templated typedefs.
+\item Adding support for templated typedefs.
 \end{itemize}
 %
 There are at least a few different approaches for implementing
@@ -84,14 +95,16 @@ be standardized,
 but rather that the proposed text for the standard state the requirements for
 a tuple implementation 
 in the form of valid expressions and the semantics of those expressions.
-This approach also leaves
-room for a built-in tuple type, or for a tuple template with some special
+Alos, this approach leaves
+room for a built-in tuple type, or for a tuple template with special
 support from the compiler, which we see as being worth considering.
-A library solution still falls short in some aspects, 
-compared to built-in tuple types in other languages.
+Compared to built-in tuple types in other languages,
+a library solution still falls short in some aspects.
 For instance, in the programming language Python, 
 the function argument list is implicitly a tuple.
-This is a feature that cannot be added to C++ as a library.
+This is a feature that cannot be added to C++ as a library, but
+would be a most useful, allowing, e.g., truly generic forwarding functions
+that could accept any number of parameters. 
 %Tuples as built-in types are discussed more in section~\ref{built-in_tuples}.
 
 In sum, this proposal defines the requirements for a standard tuple type.
@@ -121,7 +134,6 @@ Operators for reading tuples from a stream and writing tuples to
 a stream introduce a dependency to \code{<istream>} and \code{<ostream>},
 and so tuple input and output operators will be defined in a separate header
 \code{<tupleio>}.
-(JAAKKO: is tuplefwd needed?)
 
 \section{Tuples in a nutshell}
 
@@ -143,8 +155,7 @@ typedef tuple<void, int()(int)> t3;
 \end{verbatim}
 Note that even types of which no objects can be created (cf. \code{void}, \code{int()(int)}), are valid tuple elements.
 Naturally, an object of a tuple type with such an element type cannot 
-be created 
-either (see section~\ref{about_valid_element_types}).
+be constructed (see section~\ref{about_valid_element_types}).
 
 \subsection{Constructing tuples}
 
@@ -182,16 +193,21 @@ tuple<int, std::string>(1, 2); // \cccomment{error}
 constructor, each element type of the constructed tuple type must
 be convertible from the corresponding element type
 of the argument. 
+\begin{alltt}
+tuple<char, int, const char(&)[3]> t1('a', 1, "Hi");
+tuple<int, float, std::string> t2 = t1; // \cccomment{ok}
+\end{alltt}
 The argument to this constructor does not actually have to be of 
 the standard tuple type, but can be any \emph{tuple-like} type that acts
 like the standard tuple type, in the sense of providing the same element
 access interface. For example, \code{std::pair} is such a tuple-like
 type.
+For example:
 %
 \begin{alltt}
-tuple<char, int, const char(&)[3]> t1('a', 1, "Hi");
-tuple<int, float, std::string> t2 = t1; // \cccomment{ok}
+tuple<int, int> t3 = make_pair('a', 1); // \cccomment{ok}
 \end{alltt}
+
 \end{itemize}
 
 \subsection{\code{make\_tuple}}
@@ -218,7 +234,7 @@ void foo(const A& a, B& b) {
 }
 \end{verbatim}
 %
-This default can be changed with to utility functions \code{ref} 
+This default behavior can be changed with to utility functions \code{ref} 
 and \code{cref}.
 An argument wrapped with \code{ref} will cause the element type to be 
 a reference to the argument type, and \code{cref} will similarly cause the element type to be a reference to the const argument type. 
@@ -234,11 +250,11 @@ make_tuple(ref(ca));         // \cccomment{constructs tuple<const A&>(ca)}
 \end{alltt}
 
 %
-Array arguments to \code{make\_tuple} result in the corresponding typle element
+Array arguments to \code{make\_tuple} result in the corresponding tuple element
 being a reference to a const array. 
 This is to avoid the need to wrap arrays with \code{cref}, as arrays cannot
 be copied as such anyway.
-
+%
 Note that \code{make\_tuple} cannot be made to accept references to function 
 types without the \code{ref} wrapper, unless core language issue 295 
 is resolved.
@@ -247,20 +263,22 @@ is resolved.
 
 The assignment operation is defined as elementwise assignment.
 Consequently, two tuples are assignable as long as they are
-elementwise assignable.
-Analogously to the converting copy constructor, it suffices that the
-right-hand side of the assignment operator is a tuple-like object.
-For example:
+elementwise assignable. For example:
+%
 \begin{alltt}
 tuple<char, int, const char(&)[3]> t1('a', 1, "Hi");
 tuple<int, float, std::string> t2;
 t2 = t1; // \cccomment{ok}
 \end{alltt}
+%
+Analogously to the converting copy constructor, it suffices that the
+right-hand side of the assignment operator is a tuple-like object.
+
 
 \subsection{The \code{tie} function templates}
 
 The \code{tie} functions are a short-hand notation for creating tuples where
-the element types are references. 
+all element types are references. 
 A \code{tie} call corresponds to an invocation of \code{make\_tuple} where 
 all arguments have been wrapped with \code{ref}. 
 For example, the \code{tie} and \code{make\_tuple} invocations below 
@@ -312,7 +330,7 @@ tuple_size<tuple<int, int, int, int> >::value; // \cccomment{equals 4}
 \subsection{Element type}
 
 The type of the \code{N}th
-element of a tuple type can be accessed using 
+element of a tuple type is accessed using 
 the \code{tuple\_element} template:
 \begin{alltt}
 tuple_element<2, tuple<int, char, float, double> >::type // \cccomment{float}
@@ -334,7 +352,7 @@ element of \code{t}, where \code{N} is an integral constant expression.
 tuple<int, float, char>(1, 3.14, 'a') t;
 get<2>(t); // \cccomment{equals 'a'}
 \end{alltt}
-
+%
 Indexing is zero-based. 
 Using an index that is out of bounds results in a compilation error.
 Section~\ref{element_access} discusses alternatives for the
@@ -350,7 +368,7 @@ two tuples, the same operator is defined between the tuples as well.
 The \code{operator==} is defined as the logical AND of the elementwise 
 equality comparisons.
 The \code{operator!=} is defined as the logical OR of the
-elementwise comparisons.
+elementwise inequality comparisons.
 The operators \code{<}, \code{>}, \code{<=} and \code{>=} each define a 
 lexicographical ordering (see section~\ref{lexicographical_ordering}).
 An attempt to compare two tuples of different lengths results in 
@@ -358,14 +376,15 @@ a compile-time error.
 The comparison operators are ``short-circuited'': elementary comparisons 
 start from the first elements and are performed only until the result is known.
 Elements after that are not accessed.
+For example: 
 %But the operators must nevertheless be defined.
 
-Each comparison operator \emph{op} is defined solely using the same
-operator \emph{op} for the elementwise comparisons and makes no assumptions
-about the behavior of the other relational operators, or even
-whether they are defined or not.
+%Each comparison operator \emph{op} is defined solely using the same
+%operator \emph{op} for the elementwise comparisons and makes no assumptions
+%about the behavior of the other relational operators, or even
+%whether they are defined or not.
 
-Examples: 
+
 \begin{alltt}
 tuple<int, float, char> t(1, 2, 'a'); 
 tuple<int, char, int> u(1, 1, 1000);
@@ -402,12 +421,13 @@ cout << make_tuple(1, 'a', "C++");
 \end{verbatim}
 outputs \code{(1 a C++)}.
 
-The library defines three manipulators, \code{tuple\_\-open}, 
-\code{tuple\_\-close} and \code{tuple\_\-delimiter} to change, respectively, 
+The library defines three formatting manipulators for tuples, \code{tuple\_\-open}, 
+\code{tuple\_close} and \code{tuple\_\-delimiter} to change, respectively, 
 the opening, closing and delimiter characters for a particular stream.
 For example:
 \begin{verbatim}
-cout << tuple_open('[') << tuple_close(']') << tuple_delimiter(',') 
+cout << tuple_open('[') << tuple_close(']') 
+     << tuple_delimiter(',') 
      << make_tuple(1, 'a', "C++");
 \end{verbatim}
 outputs the same tuple as: \code{[1,a,C++]}.
@@ -527,16 +547,18 @@ the requirements for a tuple-like type causes undefined behavior.
 
 \req{Type:} \code{static const int} (integral constant expression).\\
 \req{Value:} Number of elements in \code{T}. 
-The number of elements of a non-tuple-like type is 1.
+The number of elements in any non-tuple-like type is 1.
 The number of elements in a tuple-like type must be nonnegative.
 
 \bigskip
 
 \code{tuple\_element<N, T>::type}
 
+\nobreak
+
 \smallskip 
 
-\req{Requires:} 0 $\le$ \code{N} $<$ \code{tuple\_size<T>::value}.\\ 
+\req{Requires:} 0 $\le$ \code{N} $<$ \code{tuple\_size<T>::value}\\ 
 \req{Value:} The type of the \code{N}th element of \code{T}, where
 indexing is zero-based.
 If \code{T} is a non-tuple-like type and \code{N == 0}, the value is \code{T}.
@@ -547,9 +569,9 @@ A diagnostic must be produced for a value of \code{N} that is out of bounds.
 A type \code{P} is tuple-like if
 \begin{itemize}
 \item \code{is\_tuple\_like<P>::value == true}, and
-\item \code{tuple\_size<P>::value} is a valid integral constant expression, and must be nonnegative, and
+\item \code{tuple\_size<P>::value} is a valid integral constant expression with a nonnegative value, and
 \item \code{tuple\_element<N, P>::type} is a valid expression that designates a type whenever \code{N} is in bounds, and
-\item \code{get<N>(p)}, where \code{p} is either of type \code{P} or \code{const P}, is as defined in the \emph{Element access} subclause.
+\item \code{get<N>(p)}, where \code{p} is either of type \code{P} or \code{const P}, has the semantics defined in the \emph{Element access} subclause.
 \end{itemize}
 
 \subsection{Notation}
@@ -561,7 +583,7 @@ A type \code{P} is tuple-like if
 \code{tc}, \code{uc} & objects of types \code{const T} and \code{const U}\\
 \code{P} & a tuple-like type\\
 \code{p}, \code{pc} & objects of types \code{P} and \code{const P}\\
-\code{X$_i$} & the type of the $i$th element in \code{X}, where X is a tuple-like type\\
+\code{X$_i$} & the type of the $i$th element in \code{X}, where \code{X} is a tuple-like type\\
 \code{x$_i$} & the $i$th element of \code{x}, where \code{x} is of a tuple-like type\\
 For all $i$ in \code{X} & For all indices $i$ from 0 to \code{tuple\_size<X>::value - 1} for a tuple-like type \code{X}.
 \end{tabular}
@@ -582,8 +604,8 @@ The notation \code{t0, t1, ..., tn} is an analogous list of objects.
 
 \smallskip 
 
-\req{Requires:} 0 $\le$ \code{N} $<$ \code{tuple\_size<P>::value}.\\
-\req{Return type:} \code{tuple\_element<N, P>::type\&}.\\
+\req{Requires:} 0 $\le$ \code{N} $<$ \code{tuple\_size<P>::value}\\
+\req{Return type:} \code{tuple\_element<N, P>::type\&}\\
 \textsf{[Assuming core issue 106 is resolved to make a reference to a 
 reference be just a reference instead of an error.
 Otherwise, the return type must be defined as: \code{add\_reference<tuple\_element<N, P>::type>::type}.]}\\
@@ -594,10 +616,12 @@ indexing is zero-based.
 
 \code{get<N>(pc)}
 
+\nobreak 
+
 \smallskip 
 
-\req{Requires:} 0 $\le$ \code{N} < \code{tuple\_size<P>::value}.\\
-\req{Return type:} \code{const tuple\_element<N, P>::type\&}.\\
+\req{Requires:} 0 $\le$ \code{N} < \code{tuple\_size<P>::value}\\
+\req{Return type:} \code{const tuple\_element<N, P>::type\&}\\
 \textsf{[Assuming core issue 106 is resolved to make a reference to a 
 reference be just a reference instead of an error.
 Otherwise, the return type must be defined as: \code{add\_reference<const tuple\_element<N, P>::type>::type} (see~\cite{cit:type_traits_proposal:02}).]}\\
@@ -624,8 +648,8 @@ for member variables of reference type.]}
 \req{Requires:} \code{tuple\_size<T>::value == tuple\_size<P>::value}. For all $i$ in \code{T}, 
 \code{t$_i$ = pc$_i$} is a valid expression.\\
 \req{Effects:} Performs \code{t$_i$ = pc$_i$} for all $i$ in \code{T}.\\
-\req{Return type:} \code{T\&}.\\
-\req{Returns:} \code{t}.
+\req{Return type:} \code{T\&}\\
+\req{Returns:} \code{t}
 
 
 \subsubsection*{Equality and inequality comparisons}
@@ -634,12 +658,12 @@ for member variables of reference type.]}
 
 \smallskip 
 
-\req{Requires:} \code{tuple\_length<T>::value == tuple\_length<U>::value}. 
+\req{Requires:} \code{tuple\_size<T>::value == tuple\_size<U>::value}. 
 For all $i$ in \code{T},
 \code{tc$_i$ == uc$_i$} is a valid expression returning a type that is
 convertible to \code{bool}.\\
-\req{Return type:} \code{bool}.\\
-\req{Returns:} \code{true} iff {tc$_i$ == uc$_i$} for all $i$ in \code{T}.
+\req{Return type:} \code{bool}\\
+\req{Returns:} \code{true} iff \code{tc$_i$ == uc$_i$} for all $i$ in \code{T}.
 For any two zero-length tuples \code{e} and \code{f}, \verb|e == f| returns \code{true}.\\
 \req{Effects:} The elementary comparisons are performed in order from the zeroth index upwards. 
 No comparisons or element accesses are performed after the first equality comparison that evaluates to \code{false}.
@@ -650,11 +674,11 @@ No comparisons or element accesses are performed after the first equality compar
 
 \smallskip 
 
-\req{Requires:} \code{T::size == U::size}.
+\req{Requires:} \code{T::size == U::size}. 
 For all $i$ in \code{T}, 
 \code{t$_i$ != u$_i$} is a valid expression returning a type that is 
 convertible to \code{bool}.\\
-\req{Return type:} \code{bool}.\\
+\req{Return type:} \code{bool}\\
 \req{Returns:} \code{true} iff \code{t$_i$ != u$_i$} for some $i$.
 For any two zero-length tuples \code{e} and \code{f}, \verb|e != f| returns \code{false}.\\
 \req{Effects:} The elementary comparisons are performed in order from the zeroth index upwards. 
@@ -669,14 +693,14 @@ No comparisons or element accesses are performed after the first inequality comp
 \req{Requires:} \code{T::size == U::size}. For all $i$ in \code{T}, 
 \code{t$_i$ $\odot$ u$_i$} and \code{u$_i$ $\odot$ t$_i$} are valid 
 expressions whose result types are convertible to \code{bool}.\\
-\req{Return type:} \code{bool}.\\
+\req{Return type:} \code{bool}\\
 \req{Returns:} The result of a lexicographical comparison with \code{$\odot$} between \code{t} and \code{u}, defined equivalently to:
 
 \code{(bool)(t$_0$ $\odot$ u$_0$) || !((bool)(u$_0$ $\odot$ t$_0$)) \&\&
                        t$_{\mathrm{tail}}$ $\odot$ u$_{\mathrm{tail}}$}, \\
 where \code{r$_{\mathrm{tail}}$}
-	is a tuple containing all but the first element of \code{r}. 
-For any two zero-length tuples \code{e} and \code{f}, \code{e $\odot$ f} returns \code{false}.\\
+	for some tuple \code{r} is a tuple containing all but the first element of \code{r}. 
+For any two zero-length tuples \code{e} and \code{f}, \code{e $\odot$ f} returns \code{false}.
 
 \bigskip 
 
@@ -687,15 +711,20 @@ For any two zero-length tuples \code{e} and \code{f}, \code{e $\odot$ f} returns
 \req{Requires:} \code{T::size == U::size}. For all $i$ in \code{T}, 
 \code{t$_i$ $\odot$ u$_i$} and \code{u$_i$ $\odot$ t$_i$} are valid 
 expressions whose result types are convertible to \code{bool}.\\
-\req{Return type:} \code{bool}.\\
+\req{Return type:} \code{bool}\\
 \req{Returns:} The result of a lexicographical comparison with \code{$\odot$} between \code{t} and \code{u}, defined equivalently to:
 
 \code{(bool)(t$_0$ $\odot$ u$_0$) \&\& (!((bool)(u$_0$ $\odot$ t$_0$)) ||
                        t$_{\mathrm{tail}}$ $\odot$ u$_{\mathrm{tail}}$)}, \\
 where \code{r$_{\mathrm{tail}}$}
-	is a tuple containing all but the first element of \code{r}. 
-For any two zero-length tuples \code{e} and \code{f}, \code{e $\odot$ f} returns \code{true}.\\
-\req{Notes:} The above definitions do not impose the requirement that 
+	for some tuple \code{r} is a tuple containing all but the first element of \code{r}. 
+For any two zero-length tuples \code{e} and \code{f}, \code{e $\odot$ f} returns \code{true}.
+
+\smallskip
+
+\noindent
+\req{Notes:} The above definitions for comparison operators 
+do not impose the requirement that 
 \code{t$_{\mathrm{tail}}$} (or \code{u$_{\mathrm{tail}}$}) must be 
 constructed. It may be even impossible, as \code{t} (or \code{u}) is 
 not required to be copy constructible.
@@ -745,7 +774,7 @@ convertible to \code{Ti}.\\
 
 \noindent
 \begin{sf}
-[ There seem to exist conditions where the converting copy constructor
+[ There seem to exist (rare) conditions where the converting copy constructor
 and elementwise construction conflict.
 One example of this is if one is constructing a one-element tuple where 
 the element type is another tuple type \code{T}.
@@ -776,18 +805,19 @@ the returned stream object, or from which this type derives.
 \bigskip 
 
 \verb|os << t|, where \code{os} is an instance of \code{basic\_ostream}.
+%should be defined for consts as well?
 
 \smallskip 
 
 \req{Requires:} For all $i$ in \code{T}, \verb|os << t|\code{$_i$} 
 is a valid expression.\\
 \req{Effects:} Inserts \code{t} into \code{os} as \code{$L$t$_0$$d$t$_1$$d$...$d$t$_nR$}, where $L$ is the opening, $d$ the delimiter and $R$ the closing
-character set by tuple formatting manipulators.
+character, set by tuple formatting manipulators.
 Each element \code{t$_i$} is output by invoking \verb|os << t|\code{$_i$}.
 A zero-element tuple is output as $LR$ and a one-element tuple is output as \code{$L$t$_0R$}.
 \\
 \req{Return type:} \code{ostream\&}\\
-\req{Returns:} \code{os}.
+\req{Returns:} \code{os}
 
 \bigskip 
 
@@ -806,7 +836,7 @@ one-element tuple expects to extract \code{$L$t$_0R$}.
 If bad input is encountered, calls \code{is.set\_state(ios::failbit)} (which
 may throw \code{ios::failure} (27.4.4.3).\\
 \req{Return type:} \code{istream\&}\\
-\req{Returns:} \code{is}.\\
+\req{Returns:} \code{is}\\
 \req{Notes:} It is not guaranteed that a tuple written to 
 a stream can be extracted back to a tuple of the same type.
 
@@ -855,7 +885,7 @@ This might be worthwhile, such as to allow delimiters like \code{", "}.
 ]}
 
 
-\subsubsection*{Functions for helping in tuple construction}
+\subsubsection*{Utility functions for tuple construction}
 
 The library provides the class template \code{any\_holder} that can hold
 objects or references of any type. 
@@ -927,15 +957,13 @@ template<class V0, class V1, ..., class VN>
 
 \req{Return type:} \code{tuple<T0, T1, ..., TN>}, where 
 \begin{itemize}
-\item if the non-reference type \code{Vi} of \code{vi} is an array type, 
+\item if \code{Vi} is an array type, 
 then \code{Ti} is a reference to \code{const Vi}.
-\item if the non-reference cv-unqualified type \code{Vi} of \code{vi} is 
+\item if the cv-unqualified type \code{Vi} is 
 \code{any\_holder<X>}, then \code{Ti} is \code{X}.
-\item otherwise \code{Ti} is the non-reference type of \code{vi}, with 
+\item otherwise \code{Ti} is \code{Vi}, with 
 any const qualifications removed.
 \end{itemize}
-\req{Notes:} The \code{make\_tuple} function template must be implemented
-for each different number of arguments from 0 to the maximum number of allowed tuple elements.\\
 \req{Example:} 
 
 \smallskip 
@@ -949,11 +977,17 @@ make_tuple(1, "C++", ref(i), cref(j))
 
 \smallskip 
 
-\noindent creates
-a tuple of type 
+\noindent creates a tuple of type 
 
-\verb|tuple<int, const char (&) [4], int&, const float&>|.\\
-\req{Notes:} To construct a tuple which contains a reference to a function,
+\smallskip 
+
+\verb|tuple<int, const char (&) [4], int&, const float&>|
+
+\smallskip 
+
+\req{Notes:} The \code{make\_tuple} function template must be implemented
+for each different number of arguments from 0 to the maximum number of allowed tuple elements.
+To construct a tuple which contains a reference to a function,
  the 
 function reference must be wrapped inside \code{ref}.
 
