@@ -1,0 +1,83 @@
+\documentclass{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+
+%\usepackage[finnish]{babel}
+
+\author{Jaakko Järvi}
+
+\title{Proposal for adding tuple tuples into the standard library}
+
+\begin{document}
+\maketitle{}
+
+\section{Text in the standard}
+
+\subsection{Tuples}
+
+The library provides a template for a heterogeneous list of objects, 
+and an interface for easier handling of these lists as tuple types.
+
+The type of the heterogeneous list type is:
+
+template <class H, class T>
+class {
+
+  typedef typename 
+    tuples::wrap_non_storeable_type<head_type>::type stored_head_type;
+
+public:
+  typedef H head_type;
+  typedef T tail_type;
+
+  stored_head_type head; 
+  tail_type tail;
+  
+  typename tuples::access_traits_non_const<stored_head_type>::type 
+  get_head();
+
+  typename tuples::access_traits_non_const<tail_type>::type 
+  get_tail();
+
+  typename tuples::access_traits_const<stored_head_type>::type 
+  get_head() const;
+  
+  typename tuples::access_traits_const<tail_type>::type 
+  get_tail();
+
+  cons();
+
+  cons(typename tuples::access_traits_parameter<stored_head_type>::type& h,
+       const tail_type& t);
+
+  template <class H2, class T2>
+  cons( const cons<H2, T2>& u ) : head(u.head), tail(u.tail) {}
+
+  template <class HT2, class TT2>
+  cons& operator=( const cons<HT2, TT2>& u ) { 
+    head=u.head; tail=u.tail; return *this; 
+  }
+
+  // must define assignment operator explicitly, implicit version is 
+  // illformed if HT is a reference (12.8. (12))
+  cons& operator=(const cons& u) { 
+    head = u.head; tail = u.tail;  return *this; 
+  }
+
+  template <class T1, class T2>
+  cons& operator=( const std::pair<T1, T2>& u ) { 
+    BOOST_STATIC_ASSERT(length<cons>::value == 2); // check length = 2
+    head = u.first; tail.head = u.second; return *this;
+  }
+
+
+and an impleme
+
+template <class T1, class T2, ... class T10>
+class tuple {
+public:
+
+
+\end{document}
+
