@@ -7,7 +7,8 @@
 +++++++++++++++++++
 
 Welcome to the Boost project to rewrite the `Matrix Template
-Library`_.  
+Library`_.  This site is dynamically updated to reflect the state
+of the project.
 
 Resources
   - The official `Statement Of Work`_.
