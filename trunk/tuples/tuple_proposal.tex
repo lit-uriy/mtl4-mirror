@@ -474,7 +474,7 @@ a comment, not proposed standard text \textsf{[This is a comment]}.
 \textsf{[Add to the list of implementation quantities (which specifies the
 recommended minima for implementation quantities).]}
 
-\smallskip 
+\medskip 
 
 --- Number of elements in one tuple type [10].
 
@@ -519,10 +519,10 @@ Consequently, tuples are heterogeneous, fixed-size collections of values.
 \subsubsection*{Header \code{<tuple>} synopsis}
 
 \noindent\hspace{\parindent}  \begin{minipage}{10.5cm} \begin{alltt}
-template <class T1 = implemantation-defined, 
-          class T2 = implementation-defined, 
+template <class T1 = \textrm{\emph{implementation-defined}}, 
+          class T2 = \textrm{\emph{implementation-defined}}, 
           ..., 
-          class TM = implementation-defined> class tuple;
+          class TM = \textrm{\emph{implementation-defined}}> class tuple;
 
 template<class T1, class T2, ..., class TM, class U1, class U2, ..., class UM>
 bool operator==(const tuple<T1, T2, ..., TM>&, const tuple<U1, U2, ..., UM>&);
@@ -547,18 +547,17 @@ template <class T> class tuple_size;
 template <int I, class T> class tuple_element;
 
 template <int I, class T1, class T2, ..., class TN> 
-RI get(tuple<T1, T2, ..., TN>&);
+\textrm{\emph{RI}} get(tuple<T1, T2, ..., TN>&);
 
 template <int I, class T1, class T2, ..., class TN> 
-PI get(const tuple<T1, T2, ..., TN>&);
-
-template<class V1, class V2, ..., class VN>
-tuple<T1, T2, ..., TN> 
-make_tuple(const V1&, const V2& , ..., const VN&); 
+\textrm{\emph{PI}} get(const tuple<T1, T2, ..., TN>&);
 
 template<class T1, class T2, ..., class TN>
-tuple<T1&, T2&, ..., TN> 
-tie(T1&, T2& , ..., TN&); 
+tuple<\textrm{\emph{V1}}, \textrm{\emph{V2}}, ..., \textrm{\emph{VN}}> 
+make_tuple(const T1&, const T2& , ..., const TN&); 
+
+template<class T1, class T2, ..., class TN>
+tuple<T1&, T2&, ..., TN> tie(T1&, T2& , ..., TN&); 
 
 template<class CharType, class CharTrait, class T1, class T2, ..., class TN>
 basic_ostream<CharType, CharTrait>& 
@@ -568,11 +567,13 @@ template<class CharType, class CharTrait, class T1, class T2, ..., class TN>
 basic_istream<CharType, CharTrait>& 
 operator>>(basic_istream<CharType, CharTrait>&, tuple<T1, T2, ..., TN>&);
 
-\textrm{\emph{tuple_manip1}} tuple_open(char_type c);
-\textrm{\emph{tuple_manip2}} tuple_close(char_type c);
-\textrm{\emph{tuple_manip3}} tuple_delimiter(char_type c);
+\textrm{\emph{tuple_manip1}} tuple_open(\textrm{\emph{char\_type}} c);
+\textrm{\emph{tuple_manip2}} tuple_close(\textrm{\emph{char\_type}} c);
+\textrm{\emph{tuple_manip3}} tuple_delimiter(\textrm{\emph{char\_type}} c);
 \end{alltt}
 \end{minipage}
+
+\medskip
 
 %If \code{Ti} is a reference type then \code{Pi} is \code{Ti}, otherwise
 %\code{Pi} is \code{const Ti\&}.
@@ -583,7 +584,7 @@ operator>>(basic_istream<CharType, CharTrait>&, tuple<T1, T2, ..., TN>&);
 \code{M} is used to denote the implementation-defined number of template type parameters to the tuple class template, and 
 \code{N} is used to denote the number of template arguments specified in an instantiation.
 
-\smallskip 
+\medskip 
 
 \noindent 
 [\emph{Example:} Given the instantiation \verb|tuple<int, float, char>|, \code{N} is 3.
@@ -594,12 +595,14 @@ operator>>(basic_istream<CharType, CharTrait>&, tuple<T1, T2, ..., TN>&);
 %]
 %\end{sf}
 
+\bigskip 
+
 \noindent\hspace{\parindent}  
 \begin{minipage}{10.5cm}
-\begin{verbatim}
-template <class T1 = implementation-defined, 
-          class T2 = implementation-defined, 
-          class TM = implementation-defined> class tuple {
+\begin{alltt}
+template <class T1 = \textrm{\emph{implementation-defined}}, 
+          class T2 = \textrm{\emph{implementation-defined}}, 
+          class TM = \textrm{\emph{implementation-defined}}> class tuple \{
 public:
   tuple();
   explicit tuple(P1, P2, ..., PN); // iff N > 0
@@ -619,22 +622,19 @@ public:
 
   template <class U1, class U2>
   tuple& operator=(const pair<U1, U2>&);
-};
-\end{verbatim}
+\};
+\end{alltt}
 \end{minipage}
 
-\smallskip
+\medskip
 
-\noindent If \code{Ti} is a reference type then \code{Pi} is \code{Ti}, otherwise
-\code{Pi} is \code{const Ti\&}.
 
 
 \subsubsection*{Construction}
 
 \noindent \hspace{\parindent} \verb|tuple();|
 
-\smallskip 
-
+\medskip 
 \req{Requires:} Each tuple element type \code{Ti} can be default constructed.\\
 \req{Effects:} Default initializes each element.
 
@@ -642,8 +642,10 @@ public:
 
 \noindent \hspace{\parindent} \verb|tuple(P1, P2, ..., PN);|
 
-\smallskip 
+\medskip 
 
+\noindent Where, if \code{Ti} is a reference type then \code{Pi} is \code{Ti}, otherwise
+\code{Pi} is \code{const Ti\&}.\\
 \req{Requires:} Each tuple element type \code{Ti} is
 copy constructible.\\ 
 %JAAKKO: Are all requirements of CopyConstructible required, probably not. 
@@ -658,7 +660,7 @@ corresponding parameter.
 
 \noindent \hspace{\parindent} \verb|tuple(const tuple& u);|
 
-\smallskip
+\medskip
 
 \req{Requires:} all types \code{Ti} shall be copy constructible.\\
 \req{Effects:} Copy constructs each element of \code{*this} with the 
@@ -674,7 +676,7 @@ tuple(const tuple<U1, U2, ..., UN>& u);
 \end{verbatim}
 \end{minipage}
 
-\smallskip 
+\medskip 
 
 \req{Requires:} Each type \code{Ti} shall be constructible from the corresponding type \code{Ui}.\\
 \req{Effects:} Constructs each element of \code{*this} with the 
@@ -697,7 +699,7 @@ the source is \code{N}.]
 \noindent\hspace{\parindent}
 \verb|template <class U1, class U2> tuple(const pair<U1, U2>& u);|
 
-\smallskip 
+\medskip 
 
 \req{Requires:} \code{T1} shall be constructible from \code{U1},
 \code{T2} shall be constructible from \code{U2}.
@@ -710,7 +712,7 @@ second element with \code{u.second}.
 \noindent\hspace{\parindent}
 \verb|tuple& operator=(const tuple& u);|
 
-\smallskip
+\medskip
 
 \req{Requires:} All types \code{Ti} are assignable.\\
 \req{Effects:} Assigns each element of \code{u} to the corresponding 
@@ -727,7 +729,7 @@ tuple& operator=(const tuple<U1, U2, ..., UN>& u);
 \end{verbatim}
 \end{minipage}
 
-\smallskip 
+\medskip 
 
 \req{Requires:} Each type \code{Ti} shall be assignable from the 
 corresponding type \code{Ui}.\\
@@ -741,7 +743,7 @@ corresponding type \code{Ui}.\\
 \noindent\hspace{\parindent}
 \verb|template <class U1, class U2> tuple& operator=(const pair<U1, U2>& u);|
 
-\smallskip 
+\medskip 
 
 \req{Requires:} \code{T1} shall be assignable from \code{U1},
 \code{T2} shall be assignable from \code{U2}.
@@ -750,7 +752,7 @@ corresponding type \code{Ui}.\\
 and \code{u.second} to the second element of \code{*this}.\\
 \req{Returns:} \code{*this}
 
-\smallskip
+\medskip
 
 
 
@@ -790,31 +792,31 @@ constrained templates.
 \noindent\hspace{\parindent} 
 \begin{minipage}{10.5cm}
 \begin{verbatim}
-template<class V1, class V2, ..., class VN>
-tuple<T1, T2, ..., TN> 
-make_tuple(const V1& v1, const V2& v2, ..., const VN& vn); 
+template<class T1, class T2, ..., class TN>
+tuple<V1, V2, ..., VN> 
+make_tuple(const T1& t1, const T2& t2, ..., const TN& tn); 
 \end{verbatim}
 \end{minipage}
 
-\smallskip
+\medskip
 
-\noindent where \code{Ti} is \code{X\&}, if the cv-unqualified type \code{Vi} is \code{reference\_wrapper<X>}, otherwise \code{Ti} is \code{Vi}.
+\noindent where \code{Vi} is \code{X\&}, if the cv-unqualified type \code{Ti} is \code{reference\_wrapper<X>}, otherwise \code{Vi} is \code{Ti}.
 
-\smallskip 
+\medskip 
 
-\req{Returns:} \code{tuple<T1, T2, ..., TN>(v1, v2, ..., vn)}.\\
+\req{Returns:} \code{tuple<V1, V2, ..., VN>(t1, t2, ..., tn)}.\\
 \req{Notes:} The \code{make\_tuple} function template must be implemented
 for each different number of arguments from 0 to the maximum number of allowed tuple elements.
 %To construct a tuple which contains a reference to a function,
 % the 
 %function reference must be wrapped inside \code{ref}.
 
-\smallskip 
+\medskip 
 
 \noindent 
 [\emph{Example:}
 
-\smallskip 
+\medskip 
 
 \noindent\hspace{\parindent}
 \begin{minipage}{10.5cm}
@@ -824,16 +826,16 @@ make_tuple(1, ref(i), cref(j))
 \end{verbatim}
 \end{minipage}
 
-\smallskip 
+\medskip 
 
 \noindent creates a tuple of type 
 
-\smallskip 
+\medskip 
 
 \noindent\hspace{\parindent}  
 \verb|tuple<int, int&, const float&>|
 
-\smallskip 
+\medskip 
 
 \noindent --\emph{end example}]
 
@@ -847,25 +849,25 @@ tuple<T1&, T2&, ..., TN> tie(T1& t1, T2& t2, ..., TN& tn);
 \end{verbatim}
 \end{minipage}
 
-\smallskip  
+\medskip  
 
 \req{Returns:} \verb|tuple<T1&, T2&, ..., TN&>(t1, t2, ..., tn)|\\
 \req{Notes:} The \code{tie} function template must be implemented
 for each different number of arguments from 0 to the maximum number of allowed tuple elements.
 
-\smallskip
+\medskip
 
 \noindent 
 [\emph{Example:}
 
-\smallskip 
+\medskip 
 
 \noindent \code{tie} functions allow one to create tuples that unpack 
 tuples into variables. \code{ignore} can be used for elements that
 are not needed:
 %add reference to ignore
 
-\smallskip
+\medskip
 
 \noindent\hspace{\parindent} 
 \begin{minipage}{10.5cm}
@@ -876,7 +878,7 @@ tie(i, ignore, s) = make_tuple(42, 3.14, "C++");
 \end{alltt}
 \end{minipage}
 
-\smallskip 
+\medskip 
 
 \noindent --\emph{end example}]
 
@@ -889,10 +891,10 @@ tuple_size<T>::value
 \end{verbatim}
 \end{minipage}
 
-\smallskip
+\medskip
 
 \req{Requires:} \code{T} is an instantiation of class template tuple. \\
-\req{Type:} \code{static const int} (integral constant expression).\\
+\req{Type:} integral constant expression.\\
 \req{Value:} Number of elements in \code{T}. 
 
 
@@ -901,12 +903,13 @@ tuple_size<T>::value
 \noindent\hspace{\parindent}  
 \code{tuple\_element<I, T>::type}
 
-\smallskip 
+\medskip 
 
-\req{Requires:} 0 $\le$ \code{I} $<$ \code{tuple\_size<T>::value}. \\ 
+\req{Requires:} 0 $\le$ \code{I} $<$ \code{tuple\_size<T>::value}.
+The program is ill-formed if \code{I} is out of bounds. \\ 
 \req{Value:} The type of the \code{I}th element of \code{T}, where
 indexing is zero-based.
-A diagnostic must be produced for a value of \code{I} that is out of bounds.
+
 
 \subsubsection*{Element access}
 
@@ -918,9 +921,10 @@ RI get(tuple<T1, T2, ..., TN>& t);
 \end{verbatim}
 \end{minipage}
 
-\smallskip 
+\medskip 
 
-\req{Requires:} 0 $\le$ \code{I} $<$ \code{N}\\
+\req{Requires:} 0 $\le$ \code{I} $<$ \code{N}.
+The program is ill-formed if \code{I} is out of bounds.\\
 \req{Return type:} \code{RI}. If \code{TI} is a reference type, then \code{RI}
 is \code{TI}, otherwise \code{RI} is \code{TI\&}.\\
 \req{Returns:} A reference to the \code{I}th element of \code{t}, where
@@ -936,15 +940,16 @@ PI get(const tuple<T1, T2, ..., TN>& t);
 \end{verbatim}
 \end{minipage}
 
-\smallskip 
+\medskip 
 
-\req{Requires:} 0 $\le$ \code{I} $<$ \code{N}\\
+\req{Requires:} 0 $\le$ \code{I} $<$ \code{N}.
+The program is ill-formed if \code{I} is out of bounds.\\
 \req{Return type:} \code{PI}. If \code{TI} is a reference type, then \code{PI}
 is \code{TI}, otherwise \code{PI} is \code{const TI\&}.\\
 \req{Returns:} A const reference to the \code{I}th element of \code{t}, where
 indexing is zero-based.
 
-\smallskip  
+\medskip  
 
 \noindent \textsf{[ Constness is shallow. If \code{TI} is some
 reference type \code{X\&}, the return type is \code{X\&}, not \code{const X\&}.
@@ -953,7 +958,7 @@ type is \code{const T\&}.
 This is consistent with how constness is defined to work 
 for member variables of reference type.]}
 
-\smallskip  
+\medskip  
 
 \begin{sf}
 \noindent 
@@ -990,7 +995,7 @@ is dependent on a template parameter. For example: \verb|t.template get<1>();|
 %For all $i$ in \code{X} & For all indices $i$ from 0 to \code{tuple\_size<X>::value - 1} for a tuple-like type \code{X}.
 %\end{tabular}
 
-%\smallskip 
+%\medskip 
 %
 %\noindent The notation \code{T0, T1, ..., TN} 
 %stands for a comma separated list of
@@ -1011,10 +1016,10 @@ bool operator==(const tuple<T1, T2, ..., TM>& t,
 \end{minipage}
 
 
-\smallskip 
+\medskip 
 
 \req{Requires:} \code{tuple\_size<tuple<T1, T2, ..., TM> >::value == tuple\_size<tuple<U1, U2, ..., UM> >::value == N}. 
-For all \code{i}, where \code{0 <= I < N},
+For all \code{i}, where \code{0 <= i < N},
 \code{get<i>(t) == get<i>(u)} is a valid expression returning a type that is
 convertible to \code{bool}.\\
 \req{Return type:} \code{bool}\\
@@ -1035,10 +1040,10 @@ bool operator!=(const tuple<T1, T2, ..., TM>& t,
 \end{minipage}
 
 
-\smallskip 
+\medskip 
 
 \req{Requires:} \code{tuple\_size<tuple<T1, T2, ..., TM> >::value == tuple\_size<tuple<U1, U2, ..., UM> >::value == N}. 
-For all \code{i}, where \code{0 <= I < N},
+For all \code{i}, where \code{0 <= i < N},
 \code{get<i>(t) != get<i>(u)} is a valid expression returning a type that is
 convertible to \code{bool}.\\
 \req{Return type:} \code{bool}\\
@@ -1062,11 +1067,11 @@ bool operator>(const tuple<T1, T2, ..., TN>&, const tuple<U1, U2, ..., UN>&);
 \end{verbatim}
 \end{minipage}
 
-\smallskip
+\medskip
 
 
 \req{Requires:} \code{tuple\_size<tuple<T1, T2, ..., TM> >::value == tuple\_size<tuple<U1, U2, ..., UM> >::value == N}. 
-For all \code{i}, where \code{0 <= I < N},
+For all \code{i}, where \code{0 <= i < N},
 \code{get<i>(t) \code{$\odot$} get<i>(u)} is a valid expression returning a type that is
 convertible to \code{bool}, where \code{$\odot$} is either \code{<} or \code{>}.\\
 \req{Return type:} \code{bool}\\
@@ -1094,11 +1099,11 @@ bool operator>=(const tuple<T1, T2, ..., TN>&, const tuple<U1, U2, ..., UN>&);
 \end{verbatim}
 \end{minipage}
 
-\smallskip
+\medskip
 
 
 \req{Requires:} \code{tuple\_size<tuple<T1, T2, ..., TM> >::value == tuple\_size<tuple<U1, U2, ..., UM> >::value == N}. 
-For all \code{i}, where \code{0 <= I < N},
+For all \code{i}, where \code{0 <= i < N},
 \code{get<i>(t) \code{$\odot$} get<i>(u)} is a valid expression returning a type that is
 convertible to \code{bool}, where \code{$\odot$} is either \code{<=} or \code{>=}.\\
 \req{Returns:} The result of a lexicographical comparison with \code{$\odot$} between \code{t} and \code{u}, defined equivalently to:
@@ -1109,7 +1114,7 @@ where \code{r$_{\mathrm{tail}}$}
 	for some tuple \code{r} is a tuple containing all but the first element of \code{r}. 
 For any two zero-length tuples \code{e} and \code{f}, \code{e $\odot$ f} returns \code{true}.
 
-\smallskip
+\medskip
 
 \noindent
 \req{Notes:} The above definitions for comparison operators 
@@ -1123,10 +1128,6 @@ accesses beyond what is required to determine the result of the comparison.
 
 \subsubsection*{Input and output}
 
-In this section, a return type specified as \code{istream} 
-or \code{ostream} is understood to mean an instance of 
-\code{basic\_istream} or \code{basic\_ostream}, which is the type of
-the returned stream object, or from which this type derives.
 
 \bigskip 
 
@@ -1140,7 +1141,7 @@ operator<<(basic_ostream<CharType, CharTrait>& os,
 \end{verbatim}
 \end{minipage}
 
-\smallskip 
+\medskip 
 
 \req{Requires:} For all $i$ = 0, 1, ..., N-1 in \verb|os << get<i>(t)|
 is a valid expression.\\
@@ -1163,7 +1164,7 @@ operator>>(basic_istream<CharType, CharTrait>& is,
 \end{verbatim}
 \end{minipage}
 
-\smallskip 
+\medskip 
 
 \req{Requires:} For all $i$ = 0, 1, ..., N-1 in \verb|is >> get<i>(t)|
 is a valid expression.\\
@@ -1174,7 +1175,7 @@ Each element \code{t$_i$} is extracted by invoking \verb|is >> get<i>(t)|.
 A zero-element tuple expects to extract $LR$ from the stream and 
 one-element tuple expects to extract \code{$L$t$_0R$}.
 If bad input is encountered, calls \code{is.set\_state(ios::failbit)} (which
-may throw \code{ios::failure} (27.4.4.3).\\
+may throw \code{ios::failure} (27.4.4.3)).\\
 \req{Returns:} \code{is}\\
 \req{Notes:} It is not guaranteed that a tuple written to 
 a stream can be extracted back to a tuple of the same type.
@@ -1208,10 +1209,10 @@ function called) to be used when writing tuples into \code{out} (respectively
 extracting tuples from \code{in}).\\
 \req{Notes:} Implementations are not required to support these manipulators for 
 streams with \code{sizeof(charT) > sizeof(long)}; \verb|out << s| and \verb|in >> s| are required to fail at compile time if 
-\code{out} are \code{in} are such streams and the implementation does not
+\code{out} and \code{in} are such streams and the implementation does not
 support tuple formatting manipulators for them.
 
-\smallskip 
+\medskip 
 
 \noindent \textsf{[The constraint stated in the above \textbf{Notes} section allows an 
 implementation where the delimiter characters are stored in
@@ -1233,7 +1234,7 @@ stores a reference to an object in a CopyConstructible wrapper, and two
 \code{reference\_wrapper} construction functions that allow the user to 
 express the intent in storing a reference instead of a copy.
 
-\smallskip 
+\medskip 
 
 \noindent\hspace{\parindent}  
 \begin{minipage}{10.5cm}
@@ -1251,12 +1252,12 @@ public:
 \end{alltt}
 \end{minipage}
 
-\smallskip 
+\medskip 
 
 \noindent\hspace{\parindent}  
 \verb|explicit reference_wrapper(T& t));|
 
-\smallskip 
+\medskip 
 
 \req{Postconditions:} \verb|this->get()| is equivalent to \code{t}.\\
 \req{Throws:} will not throw.
@@ -1266,7 +1267,7 @@ public:
 \noindent\hspace{\parindent}  
 \verb|operator T& () const;|
 
-\smallskip 
+\medskip 
 
 \req{Returns:} \verb|this->get()|\\
 \req{Throws:} will not throw.
@@ -1276,7 +1277,7 @@ public:
 \noindent\hspace{\parindent}  
 \verb|T& get() const;|
 
-\smallskip
+\medskip
 
 \req{Returns:} the stored reference.\\
 \req{Throws:} will not throw.
@@ -1286,7 +1287,7 @@ public:
 \noindent\hspace{\parindent}  
 \verb|template<typename T> reference_wrapper<T> ref(T& t);|
 
-\smallskip 
+\medskip 
 
 \req{Returns:} \verb|reference_wrapper<T>(t)|\\
 \req{Throws:} will not throw.
@@ -1296,7 +1297,7 @@ public:
 \noindent\hspace{\parindent}  
 \verb|template<typename T> reference_wrapper<T const> cref(const T& t);|
 
-\smallskip 
+\medskip 
 
 %\req{Requires:} \code{T} cannot be a function type.\\
 %\textsf{[This requirement may be unnecessary depending on the resolution of
@@ -1309,7 +1310,7 @@ public:
 \noindent The library provides the class \code{swallow\_assign}:
 %
 
-\smallskip 
+\medskip 
 
 \noindent\hspace{\parindent}  
 \begin{minipage}{10.5cm}
@@ -1338,7 +1339,7 @@ extern swallow_assign ignore;
 
 \textsf{[Additions to pair to work with tuples]}
 
-\smallskip 
+\medskip 
 
 %Pairs are tuple-like types (see \textsf{[number of the section where tuple-like
 %is defined]}). The following subclauses define the semantics of the 
@@ -1393,7 +1394,7 @@ const P& get(const pair<T1, T2>&);
 \end{verbatim}
 \end{minipage}
 
-\smallskip 
+\medskip 
 
 \req{Return type:} 
 If \code{I} is \code{0} then \code{P} is \code{T1}, 
