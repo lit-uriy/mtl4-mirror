@@ -28,6 +28,8 @@ struct empty_env_type {
 
 empty_env_type empty_env;
 
+template <class T> struct value_holder {typedef T type;};
+
 template <class Env, class Var, class Value>
 struct extended_env: public Env {
   Value& v;
