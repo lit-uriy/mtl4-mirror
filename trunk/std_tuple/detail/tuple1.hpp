@@ -7,6 +7,7 @@
 
 #include "traits.hpp"
 #include "utility.hpp"
+#include <iostream> // FIXME for debugging only
 
 // Tuple traits for non-tuple objects
 
@@ -38,10 +39,27 @@ namespace STD_TUPLE_NS {
     struct tuple1_elt<0, T> {
       typedef typename T::value_type type;
       typedef typename boost::add_reference<type>::type ref;
-      typedef typename boost::add_reference<const type>::type cref;
+      typedef typename boost::add_reference<typename boost::add_const<type>::type>::type cref;
 
       static ref get(T& x) {return x.value;}
       static cref cget(const T& x) {return x.value;}
+    };
+
+    template <bool Wrapit, class T>
+    struct one_arg_constructor_wrapper {
+      static const T& run(const T& value) {
+	std::cout << "Converting from member" << std::endl;
+	return value;
+      }
+    };
+
+    template <class T>
+    struct one_arg_constructor_wrapper<true, T> {
+      static typename boost::add_reference<typename boost::add_const<typename tuple_element<0,T>::type>::type>::type
+      run(const T& value) {
+	std::cout << "Converting from 1-tuple" << std::endl;
+	return get<0>(value);
+      }
     };
 
     template <class T>
@@ -55,20 +73,26 @@ namespace STD_TUPLE_NS {
       tuple1(): value() {}
       tuple1(const tuple1& o): value(o.value) {}
 
-      // Construct from member
+      // Construct from member or 1-tuple
       template <class U>
-      tuple1(const U& v, typename enable_if<
-	  (tuple1_nesting_depth<U>::value <= tuple1_nesting_depth<T>::value),
-	  bool>::type = false): value(v) {}
+      explicit tuple1(const U& v): value(
+	one_arg_constructor_wrapper<
+	  (tuple1_nesting_depth<U>::value > tuple1_nesting_depth<T>::value),
+	  U>::run(v)) {}
+      explicit tuple1(typename boost::add_reference<typename boost::add_const<T>::type>::type v): value(v) {}
 
       template <class U>
-      tuple1(const U& v, int): value(v) {}
-      
-      // Construct from other 1-tuple
+      tuple1(U& v, int): value(v) {}
       template <class U>
-      tuple1(const U& v, typename enable_if<
-	  (tuple1_nesting_depth<U>::value > tuple1_nesting_depth<T>::value),
-	  bool>::type = false): value(get<0>(v)) {}
+      tuple1& operator=(const U& v) {
+	value = STD_TUPLE_NS::get<0>(v);
+	return *this;
+      }
+
+      tuple1& operator=(const tuple1& v) {
+	value = STD_TUPLE_NS::get<0>(v);
+	return *this;
+      }
     };
 
     template <class T>

@@ -2,6 +2,10 @@
 
 set max_tuple_args 10
 
+proc add_cr {t} {
+  return "typename boost::add_reference<typename boost::add_const<$t >::type>::type "
+}
+
 proc make_specialization {tpnames} {
   global max_tuple_args
   while {[llength $tpnames] < $max_tuple_args} {
@@ -32,7 +36,7 @@ proc make_tuple_type {nargs} {
     set tparam "class $Arg"
     lappend tparams $tparam
     lappend targs $Arg
-    lappend constargs "const $Arg& $arg"
+    lappend constargs "[add_cr $Arg] $arg"
     lappend constargnames $arg
   }
   set constargname0 [lindex $constargnames 0]
@@ -49,10 +53,12 @@ proc make_tuple_type {nargs} {
   }
   if {$nargs >= 2} {
     set nam1 [expr {$nargs - 1}]
+    set part0 "tuple1<[lindex $targs 0]>"
+    set part1 "tuple$nam1<[join [lrange $targs 1 end] ,\ ]>"
     puts "  namespace detail {"
     puts "    template <$tparams>"
-    puts "    struct tuple$nargs: public append_tuple<tuple1<[lindex $targs 0]>, tuple$nam1<[join [lrange $targs 1 end] ,\ ]> > {"
-    puts "      typedef append_tuple<tuple1<[lindex $targs 0]>, tuple$nam1<[join [lrange $targs 1 end] ,\ ]> > base;"
+    puts "    struct tuple$nargs: public append_tuple<$part0, $part1 > {"
+    puts "      typedef append_tuple<$part0, $part1 > base;"
     puts ""
     puts "      tuple${nargs}() {}"
     puts "      tuple${nargs}(const tuple$nargs& o): base(o) {}"
@@ -62,7 +68,7 @@ proc make_tuple_type {nargs} {
     puts "      template <class U>"
     puts "      tuple${nargs}& operator=(const U& o) {base::operator=(o); return *this;}"
     puts ""
-    puts "      tuple${nargs}($constargs): base(typename base::part0_type($constargname0, 0), typename base::part1_type($constargnamerest)) {}"
+    puts "      tuple${nargs}($constargs): base(${part0}($constargname0, 0), ${part1}($constargnamerest)) {}"
     puts "    };"
     puts "  }"
     puts ""
@@ -114,13 +120,14 @@ proc make_tuple_type_1 {} {
   puts "    tuple() {}"
   puts "    tuple(const tuple& o): base(o) {}"
   puts ""
+  puts "    explicit tuple([add_cr Arg0] a0): base(a0) {}"
   puts "    template <class U>"
-  puts "    tuple(const U& o): base(o) {}"
+  puts "    explicit tuple(const U& o): base(o) {}"
   puts "    template <class U>"
   puts "    tuple& operator=(const U& o) {base::operator=(o); return *this;}"
   puts ""
   puts "    template <class U>" ; # Disambiguator
-  puts "    tuple(const U& m, int): base(o, 0) {}"
+  puts "    tuple(const U& o, int): base(o, 0) {}"
   puts "  };"
 }
 
@@ -219,7 +226,7 @@ puts "    template <class T>"
 puts "    struct make_tuple_arg {"
 puts "      typedef typename ct_if<"
 puts "                         boost::is_array<T>::value, "
-puts "                         boost::add_reference<const T>, "
+puts "                         [add_cr T], "
 puts "                         make_tuple_arg_2<T> >::type::type type;"
 puts "    };"
 puts "  }"

@@ -6,6 +6,7 @@
 #endif
 
 #include "boost/type_traits.hpp"
+#include "utility.hpp"
 
 namespace STD_TUPLE_NS {
   namespace detail {
@@ -25,10 +26,12 @@ namespace STD_TUPLE_NS {
     struct tuple0_tag: public tuple_tag {};
     struct tuple1_tag: public tuple_tag {};
     struct append_tuple_tag: public tuple_tag {};
+    struct subrange_tag: public tuple_tag {};
 
     enum {
       nontuple = 100, user_tuple, 
-      tuple0_derived, tuple1_derived, append_tuple_derived
+      tuple0_derived, tuple1_derived, append_tuple_derived,
+      subrange_derived
     };
 
     template <int Tc, class T> struct tuple_traits_impl {};
@@ -38,12 +41,14 @@ namespace STD_TUPLE_NS {
       BOOST_STATIC_CONSTANT(bool, value = (is_tuple_like<T>::value && !is_tuple<T>::value));
     };
 
+    void categorize_tuple(); // All real versions will have one arg
+
     template <class T>
     struct tuple_category {
       BOOST_STATIC_CONSTANT(int, value =
 	(is_user_tuple<T>::value
 	  ? user_tuple
-	  : sizeof(*STD_TUPLE_NS::detail::categorize_tuple((T*)(0)))));
+	  : sizeof(*STD_TUPLE_NS::detail::categorize_tuple((typename boost::remove_const<typename boost::remove_reference<T>::type>::type *)(0)))));
     };
 
     template <class T>
@@ -58,8 +63,6 @@ namespace STD_TUPLE_NS {
     struct encode_type {
       typedef char (*type)[N];
     };
-
-    void categorize_tuple(); // All real versions will have one arg
   }
 
   template <class T>
@@ -73,15 +76,19 @@ namespace STD_TUPLE_NS {
   };
 
   template <int N, class T>
-  typename detail::tuple_traits<T>::template element<N>::ref
+  typename detail::enable_if<!boost::is_const<T>::value,
+    typename detail::tuple_traits<T>::template element<N>::ref
+  >::type
   get(T& x) {
-    return typename detail::tuple_traits<T>::template element<N>::get(x);
+    typedef typename detail::tuple_traits<T>::template element<N> tt;
+    return tt::get(x);
   }
 
   template <int N, class T>
   typename detail::tuple_traits<T>::template element<N>::cref
   get(const T& x) {
-    return typename detail::tuple_traits<T>::template element<N>::cget(x);
+    typedef typename detail::tuple_traits<T>::template element<N> tt;
+    return tt::cget(x);
   }
 }
 

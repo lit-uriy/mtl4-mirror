@@ -6,6 +6,7 @@
 #endif
 
 #include "traits.hpp"
+#include "boost/type_traits.hpp"
 
 // Any_holder and swallow_assign from tuple standard, plus related functions
 
@@ -20,7 +21,9 @@ namespace STD_TUPLE_NS {
     operator T() {return data;}
     T unwrap() {return data;}
 
-    any_holder(const T& t): data(t) {}
+    any_holder(typename boost::add_reference<
+		 typename boost::add_const<T>::type
+	       >::type t): data(t) {}
   };
 
   template <class T>
