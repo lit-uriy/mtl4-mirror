@@ -592,12 +592,12 @@ template <class T1 = implementation-defined,
           class TM = implementation-defined> class tuple {
 public:
   tuple();
-  tuple(P1, P2, ..., PN); // iff N > 0
+  explicit tuple(P1, P2, ..., PN); // iff N > 0
 
   tuple(const tuple&);
 
   template <class U1, class U2, ..., class UN> 
-  explicit tuple(const tuple<U1, U2, ..., UN>&);
+  tuple(const tuple<U1, U2, ..., UN>&);
 
   template <class U1, class U2>
   tuple(const pair<U1, U2>&);
@@ -670,6 +670,16 @@ tuple(const tuple<U1, U2, ..., UN>& u);
 \req{Effects:} Constructs each element of \code{*this} with the 
 corresponding element of \code{u}.
 
+\medskip 
+
+\noindent \textsf[ In an implementation where one template definition serves for
+many different values for \code{N}, enable\_if can be used to 
+make the converting constructor and assignment operator exist only in the cases where
+the source and target have the same number of elements.
+Another way of achieving this is adding an extra integral template parameter
+which defaults to \code{N} (more precisely, a metafunction that computes \code{N}), and then defining the
+converting copy constructor and assignment only for tuples where the extra parameter in 
+the source is \code{N}.]
 
 \bigskip 
 
@@ -860,7 +870,7 @@ tie(i, ignore, s) = make_tuple(42, 3.14, "C++");
 
 \noindent --\emph{end example}]
 
-\subsubsection{Valid expressions for tuple types}
+\subsubsection*{Valid expressions for tuple types}
 
 \noindent\hspace{\parindent}  
 \begin{minipage}{10.5cm}
@@ -1029,7 +1039,7 @@ No comparisons or element accesses are performed after the first inequality comp
 
 \bigskip 
 
-\subsubsection*{\code{<}, \code{>}, \code{<=} and \code{>=} comparisons}
+\subsubsection*{\code{<}, \code{>} comparisons}
 
 \noindent\hspace{\parindent}  
 \begin{minipage}{10.5cm}
@@ -1060,6 +1070,8 @@ For any two zero-length tuples \code{e} and \code{f}, \code{e $\odot$ f} returns
 
 
 \bigskip 
+
+\subsubsection*{\code{<=} and \code{>=} comparisons}
 
 \noindent\hspace{\parindent}  
 \begin{minipage}{10.5cm}
@@ -1362,6 +1374,8 @@ struct tuple_size<pair<T1, T2> > {
 \end{verbatim}
 \end{minipage}
 
+\bigskip
+
 \noindent\hspace{\parindent}  
 \begin{minipage}{10.5cm}
 \begin{verbatim}
@@ -1376,6 +1390,8 @@ struct tuple_element<1, pair<T1, T2> > {
 };
 \end{verbatim}
 \end{minipage}
+
+\bigskip
 
 \noindent\hspace{\parindent}  
 \begin{minipage}{10.5cm}
