@@ -128,7 +128,7 @@ Dealing with the Imprecision of Floating-Point
 Traditional mathematical concepts are defined in terms of
 calculations on pure numbers that exhibit no rounding error, but
 the number types we use every day in numerical linear
-algebra (e.g., ``float`` and ``double) don't behave quite that
+algebra (e.g., ``float`` and ``double``) don't behave quite that
 well. In Section 7.1, subsection **Equality** of Jeremy Siek's
 `preliminary documentation`_ for his early prototype of this
 project, the notation

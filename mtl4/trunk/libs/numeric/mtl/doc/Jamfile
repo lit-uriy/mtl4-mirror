@@ -7,7 +7,9 @@ import mtl4 ;
 
 for src in $(.bases)
 {
-    html $(src) : $(src).rst ;
+    html $(src) : $(src).rst : 
+      <docutils-html>"-gdt --traceback --trim-footnote-reference-space  --embed-stylesheet --stylesheet-path=default.css" 
+      ;
 }
 
 alias htmls : $(.bases) ;
