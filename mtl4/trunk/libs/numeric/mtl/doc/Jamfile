@@ -1,13 +1,17 @@
 import boostbook ;
 import docutils ;
+import mtl4 ;
 
 .sources = [ glob *.rst ] ;
-.target-pat = (.*)\.rst$ ;
+.bases = [ MATCH (.*)\.rst$ : $(.sources) ] ;
 
-for src in $(.sources)
+for src in $(.bases)
 {
-    html [ MATCH $(.target-pat) : $(src) ] : $(src) ;
+    html $(src) : $(src).rst ;
 }
 
-stage html : [ MATCH $(.target-pat) : $(.sources) ] ;
+mtl4-uploaded upload : $(.bases) ;
+alias html : $(.bases) ;
+
+# stage html : [ MATCH $(.target-pat) : $(.sources) ] ;
 
