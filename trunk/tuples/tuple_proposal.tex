@@ -41,7 +41,7 @@ Bloomington, IN\\
 \begin{document}
 \maketitle
 
-\markboth{Doc. no: N1382=02-0040}{Doc. no: N1382=02-0040}
+\markboth{Doc. no: N1403=02-0040}{Doc. no: N1403=02-0040}
 
 \pagestyle{myheadings}
 
@@ -207,11 +207,11 @@ of the argument.
 tuple<char, int, const char(&)[3]> t1('a', 1, "Hi");
 tuple<int, float, std::string> t2 = t1; // \cccomment{ok}
 \end{alltt}
-The argument to this constructor does not actually have to be of 
-the standard tuple type, but can be any \emph{tuple-like} type that acts
-like the standard tuple type, in the sense of providing the same element
-access interface. For example, \code{std::pair} is such a tuple-like
-type.
+%The argument to this constructor does not actually have to be of 
+%the standard tuple type, but can be any \emph{tuple-like} type that acts
+%like the standard tuple type, in the sense of providing the same element
+%access interface. For example, 
+Construction works from \code{std::pair} as well.
 For example:
 %
 \begin{alltt}
@@ -281,8 +281,8 @@ tuple<int, float, std::string> t2;
 t2 = t1; // \cccomment{ok}
 \end{alltt}
 %
-Analogously to the converting copy constructor, it suffices that the
-right-hand side of the assignment operator is a tuple-like object.
+Analogously to the converting copy constructor, assignment 
+is defined from pairs as well.
 
 
 \subsection{The \code{tie} function templates}
@@ -841,7 +841,7 @@ for each different number of arguments from 0 to the maximum number of allowed t
 \smallskip 
 
 \noindent \code{tie} functions allow one to create tuples that unpack 
-tuple-like objects into variables. \code{ignore} can be used for elements that
+tuples into variables. \code{ignore} can be used for elements that
 are not needed:
 %add reference to ignore
 
