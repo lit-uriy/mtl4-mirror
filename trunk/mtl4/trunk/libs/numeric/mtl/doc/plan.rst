@@ -6,8 +6,8 @@
 
 .. admonition:: Current Status
 
-  Currently working on modifying Boost.Jam to record timing
-  information, so we can measure compile and run times.
+  The basic infrastructure (testing, documentation) systems now in
+  place, I have moved on to working on the FAST_ component.
 
 .. contents:: Index
 
@@ -92,7 +92,14 @@ decisions.
 Develop Fixed Algorithm Size Template Library (FAST)
 ====================================================
 
-.. 
+.. _FAST:
+
+As part of this work I anticipate having to create an inheritance
+hierarchy in MPL_ so that, e.g. ``int_<N>`` is derived from
+``integral_c<int, N>``, and add operators that can do simple
+arithmetic on these types.
+
+.. _MPL: http://www.boost.org/libs/mpl
 
 Develop Basic Linear Algebra Instruction Set (BLAIS) 
 ====================================================
