@@ -529,8 +529,8 @@ types is 1.
 
 \smallskip 
 
-\requires\ 0 $\le$ \code{N} $<$ \code{tuple\_size<T>::value}.\\ 
-\values\ The type of the \code{N}th element of \code{T}, where
+\req{Requires:} 0 $\le$ \code{N} $<$ \code{tuple\_size<T>::value}.\\ 
+\req{values:}The type of the \code{N}th element of \code{T}, where
 indexing is zero-based.
 If \code{T} is a non-tuple type and \code{N == 0}, value is \code{T}.
 
@@ -557,7 +557,7 @@ indexing is zero-based.
 \smallskip 
 
 \req{Requires:} 0 <= \code{N} < \code{tuple\_size<T>::value}.\\
-\req{Returntype:} \code{const tuple\_element<N, T>::type\&}.\\
+\req{Return type:} \code{const tuple\_element<N, T>::type\&}.\\
 \req{Rreturns:} A reference to the \code{N}th element of \code{tc}, where indexing is
 zero based.\\
 \req{Notes:} Constness is shallow. If \code{element\_type<N, T>::type} is some
@@ -574,8 +574,8 @@ reference member variables}].
 \code{t = u}, \code{t = uc} (JAAKKO: t = pair)\\
 \req{Requires:} \code{T::size == U::size}. For all $i$ in \code{T}, 
 \code{t$_i$ = u$_i$} is a valid expression.\\
-\req{effects:} Performs \code{t$_i$ = u$_i$} for all $i$.\\
-\req{Returntype} \code{T\&}.\\
+\req{Effects:} Performs \code{t$_i$ = u$_i$} for all $i$.\\
+\req{Return type} \code{T\&}.\\
 \req{Returns} \code{t}.
 
 \code{t = p}\\
@@ -586,59 +586,78 @@ return t;}.\\
 \req{Return type:} \code{T\&}.\\
 \req{Retrurns:} \code{t}.
 
-\subsubsection*{Equality comparison}
+\subsubsection*{Equality and inequality comparisons}
 
-\code{t == u}, \code{t = uc}\\
-\req{Requires:} \code{T::size == U::size}. For all $i$, \\
+\hspace{\parindent} \code{t == u}, \code{t = uc}
+
+\smallskip 
+
+\req{Requires:} \code{T::size == U::size}. For all $i$ in \code{T},
 \code{t$_i$ == u$_i$} is a valid expression returning a type that is
 convertible to \code{bool}.\\
-\req{returntype:} \code{bool}.\\
+\req{Return type:} \code{bool}.\\
 \req{Returns:} \code{true} iff {t$_i$ == u$_i$} for all $i$ in \code{T}.
-For any two empty tuples \code{e} and \code{f}, \code{e == f} returns \code{true}.
+For any two empty tuples \code{e} and \code{f}, \code{e == f} returns \code{true}.\\
 \req{Effects:} The elementary comparisons are performed in order from the zeroth index upwards. 
 No comparisons are performed after the first equality comparison that evaluates to \code{false}.
 
-\subsubsection*{Inequality comparison}
+\medskip 
 
-\code{t != u}\\
+\code{t != u}
+
+\smallskip 
+
 \req{Requires:} \code{T::size == U::size}.
-For all $i$, 
+For all $i$ in \code{T}, 
 \code{t$_i$ != u$_i$} is a valid expression returning a type that is 
 convertible to \code{bool}.\\
-\req{Returntype:} \code{bool}.\\
+\req{Return type:} \code{bool}.\\
 \req{Returns:} \code{true} iff {t$_i$ != u$_i$} for some $i$.
-For any two empty tuples \code{e} and \code{f}, \code{e != f} returns \code{false}.
+For any two empty tuples \code{e} and \code{f}, \code{e != f} returns \code{false}.\\
 \req{Effects:} The elementary comparisons are performed in order from the zeroth index upwards. 
 No comparisons are performed after the first inequality comparison that evaluates to \code{true}.
 
-\subsubsection*{\code{<} and \code{>} comparisons}
+\subsubsection*{\code{<}, \code{>}, \code{<=} and \code{>=} comparisons}
 
-\code{t $\bullet$ u}, where \code{$\odot$} is one of \code{<}, \code{<=}, \code{>} or
-\code{>=}\\
-\req{Requires:} \code{T::size == U::size}. For all $i$, 
+\hspace{\parindent} \code{t $\odot$ u}, where \code{$\odot$} is either \code{<} or \code{>}
+
+\smallskip
+
+\req{Requires:} \code{T::size == U::size}. For all $i$ in \code{T}, 
 \code{t$_i$ $\odot$ u$_i$} and \code{u$_i$ $\odot$ t$_i$} are valid 
-expressions returning a type that is 
-convertible to \code{bool}.\\
-\req{Returntype:} \code{bool}.\\
-\req{Returns:} The result of a lexicographical comparison with \code{$\odot$} between \code{t} and \code{u}, as if implemented:
+expressions whose result types are convertible to \code{bool}.\\
+\req{Return type:} \code{bool}.\\
+\req{Returns:} The result of a lexicographical comparison with \code{$\odot$} between \code{t} and \code{u}, defined as:
 
-\code{t$_i$ $\odot$ u$_i$ || !((bool)(u$_i$ $\odot$ t$_i$)) \&\&
-                       t$_{\mathrm{tail}}$ $\odot$ u$_{\mathrm{tail}}$}, where \code{r$_{\mathrm{tail}}$}
-	is a tuple containing all but the first element of \code{r}.
+\code{(bool)(t$_0$ $\odot$ u$_0$) || !((bool)(u$_0$ $\odot$ t$_0$)) \&\&
+                       t$_{\mathrm{tail}}$ $\odot$ u$_{\mathrm{tail}}$}, \\
+where \code{r$_{\mathrm{tail}}$}
+	is a tuple containing all but the first element of \code{r}. \\
+\req{Note:} The above definition does not impose the requirement that 
+\code{t$_{\mathrm{tail}}$} (or \code{u$_{\mathrm{tail}}$}) must be 
+constructed. It may be even impossible, as \code{t} (or \code{u}) is 
+not required to be copy constructible.
 
-\subsubsection*{\code{<=} and \code{=>} comparisons}
+\medskip 
 
-\code{t $\bullet$ u}, where \code{$\odot$} is either code{<=} or \code{>=}.\\
-\req{Requires:} \code{T::size == U::size}. For all $i$, 
+\code{t $\odot$ u}, where \code{$\odot$} is either \code{<=} or \code{=>}
+
+\smallskip 
+
+\req{Requires:} \code{T::size == U::size}. For all $i$ in \code{T}, 
 \code{t$_i$ $\odot$ u$_i$} and \code{u$_i$ $\odot$ t$_i$} are valid 
-expressions returning a type that is 
-convertible to \code{bool}.\\
-\req{Returntype:} \code{bool}.\\
-\req{Returns:} The result of a lexicographical comparison with \code{$\odot$} between \code{t} and \code{u}, as if implemented:
+expressions whose result types are convertible to \code{bool}.\\
+\req{Return type:} \code{bool}.\\
+\req{Returns:} The result of a lexicographical comparison with \code{$\odot$} between \code{t} and \code{u}, defined as:
 
-\code{t$_i$ $\odot$ u$_i$ \&\& !((bool)(u$_i$ $\odot$ t$_i$)) ||
-                       t$_{\mathrm{tail}}$ $\odot$ u$_{\mathrm{tail}}$}, where \code{r$_{\mathrm{tail}}$}
-	is a tuple containing all but the first element of \code{r}.
+\code{(bool)(t$_0$ $\odot$ u$_0$) \&\& (!((bool)(u$_0$ $\odot$ t$_0$)) ||
+                       t$_{\mathrm{tail}}$ $\odot$ u$_{\mathrm{tail}}$)}, \\
+where \code{r$_{\mathrm{tail}}$}
+	is a tuple containing all but the first element of \code{r}. \\
+\req{Note:} The above definition does not impose the requirement that 
+\code{t$_{\mathrm{tail}}$} (or \code{u$_{\mathrm{tail}}$}) must be 
+constructed. It may be even impossible, as \code{t} (or \code{u}) is 
+not required to be copy constructible.
 
 
 
@@ -675,106 +694,173 @@ second with \code{t.second}.
 
 \subsubsection*{Input and output}
 
-\verb|os << t|, where \code{os} is an instance of \code{basic\_ostream} (JAAKKO, say somewhere, that is instance of means that is instance of or inherits
-publicly from an instance of).\\
-\req{Requires:} For all $i$, \verb|os << t|\code{$_i$} is a valid expression.\\
-\req{Effects:} Inserts \code{t} into \code{os} as \code{$L$t$_1$$d$t$_2$$d$...$d$t$_n$R}, where $L$ is the opening, $d$ the delimiter and $R$ the closing
+In this section, a return type specified as \code{istream} 
+or \code{ostream} is understood to mean an instantiation of 
+\code{basic\_stream} or \code{basic\_ostream}, which is the type of 
+the returned stream object.
+
+\medskip 
+
+\verb|os << t|, where \code{os} is an instance of \code{basic\_ostream}.
+
+\smallskip 
+
+\req{Requires:} For all $i$ in \code{T}, \verb|os << t|\code{$_i$} 
+is a valid expression.\\
+\req{Effects:} Inserts \code{t} into \code{os} as \code{$L$t$_1$$d$t$_2$$d$...$d$t$_nR$}, where $L$ is the opening, $d$ the delimiter and $R$ the closing
 character set by tuple manipulators.
-Each element \code{t$_i$} is output by invoking \verb|os << t|\code{$_i$}.\\
-\req{Returntype:} \code{basic\_ostream}. (JAAKKO, say this differently)\\
+Each element \code{t$_i$} is output by invoking \verb|os << t|\code{$_i$}.
+A zero-elment tuple is output as $LR$, one-element tuple as \code{$L$t$_0R$}
+\\
+\req{Return type:} \code{ostream\&}\\
 \req{Returns:} \code{os}.
 
-\verb|is >> t|, where \code{is} is an instance of \code|basic\_istream| (JAAKKO, say somewhere, that is instance of means that is instance of or inherits
-publicly from an instance of).\\
-\req{Requires:} For all $i$, \verb|is >> t|\code{$_i$} is a valid expression.\\
-\req{Effects:} Extracts a tuple of the form \code{$L$t$_1$$d$t$_2$$d$...$d$t$_n$R},
+\medskip 
+
+\verb|is >> t|, where \code{is} is an instance of \code{basic\_istream}.
+
+\smallskip 
+
+\req{Requires:} For all $i$ in \code{T}, \verb|is >> t|\code{$_i$} is a valid expression.\\
+\req{Effects:} Extracts a tuple of the form \code{$L$t$_1$$d$t$_2$$d$...$d$t$_nR$},
 where $L$ is the opening, $d$ the delimiter and $R$ the closing
 character set by tuple manipulators.
 Each element \code{t$_i$} is extracted by invoking \verb|is >> t|\code{$_i$}.
 If bad input is encountered, calls \code{is.set\_state(ios::failbit)} (which
 may throw \code{ios::failure} (27.4.4.3).\\
-\req{Returntype:} \code{basic\_istream}. (JAAKKO, say this differently)\\
-\req{Returns:} \code{is}.
+\req{Return type:} \code{istream\&}\\
+\req{Returns:} \code{is}.\\
+\req{Notes:} It is not guaranteed that a tuple written to 
+a stream can be extracted back to a tuple of the same type.
 
 \subsubsection*{Manipulators}
 
-The type designated \emph{tuple\_manip} in the following function descriptions
-is implementation-specified and may be
+The library defines the following three stream manipulator functions.
+The type designated \emph{tuple\_manip} is implementation-specified and may be
 different for each function.
 
-\emph{tuple\_manip} \code{tuple\_open(char\_type c)}\\
-\emph{tuple\_manip} \code{tuple\_close(char\_type c)}\\
-\emph{tuple\_manip} \code{tuple\_delimiter(char\_type c)}\\
+\smallskip 
+
+\emph{tuple\_manip} \code{tuple\_open(char\_tupe c)}
+
+\emph{tuple\_manip} \code{tuple\_close(char\_type c)}
+
+\emph{tuple\_manip} \code{tuple\_delimiter(char\_type c)}
+
+\smallskip 
+
 \req{Returns:} Each of these functions returns an object \code{s} of unspecified 
 type such that if \code{out} is an 
 instance of \code{basic\_ostream<charT,traits>}, \code{in} is an instance of
-\code{basic\_istream<charT,traits>} and \code{c} has type \code{charT},
-then expression \verb|out << s| (respectively \verb|in >> s|) 
+\code{basic\_istream<charT,traits>} and \code{char\_type} equals \code{charT},
+then the expression \verb|out << s| (respectively \verb|in >> s|) 
 sets \code{c} to be
 the opening, closing, or delimiter character (depending on the manipulator
 function called) to be used when writing tuples into \code{out} (respectively
-reading extracting tuples from \code{in}).\\
+extracting tuples from \code{in}).\\
 \req{Notes:} Implementation is not required to support these manipulators for 
 streams with \code{sizeof(charT) > sizeof(long)}; if not supported,
-\verb|out << s| and \verb|in >> s| are required to fail at compile time if
+the expressions \verb|out << s| and \verb|in >> s| are required to fail at compile time if
 \code{out} are \code{in} are such streams.
+
+\smallskip 
+
+\noindent \textsf{[The constraint stated in the above \textbf{Notes} section allows an 
+implementation where the delimiter characters are stored in
+space allocated by \code{xalloc}, which allocates an array of \code{long}s.
+A more general alternative is to store pointers to the delimiter 
+characters in the \code{xalloc} allocated array, and register a callback 
+function (with \code{ios\_base::register\_callback}) for the stream to 
+take care of deallocating the memory.
+If this approach is taken, the delimiters could be chosen to be strings 
+instead of single characteres.]}
+
 
 \subsubsection*{Functions for helping in tuple construction}
 
 The library provides class template \code{any\_holder} that can hold
 objects or references of any type. 
+The observable behavior of \code{any\_holder} must be as if implemented:
+
+\smallskip 
 
 \begin{minipage}{10cm}
 \begin{verbatim}
 template <class T>
 class any_holder {
-//  T data;
-
+  T data;
 public:
   typedef T type;
 
-  operator T();// { return data; }
-  T unwrap();// { return data; }
+  operator T() { return data; }
+  T unwrap() { return data; }
 
-  explicit any_holder(const T& t);// : data(t) {}
+  any_holder(const T& t) : data(t) {}
 };
 \end{verbatim}
 \end{minipage}
-\textsf{[typedef typename add_reference<typename add_const<T>::type>::type par_t;
 
+\smallskip 
+
+\noindent \textsf{[If core issue 106 is not resolved to make a reference to a 
+reference be just a reference instead of an error,
+the constructor parameter type must be defined as:
+\code{typename add\_reference<typename add\_const<T>::type>::type}]}
+
+\smallskip 
 
 Reference types wrapped in \code{any\_holder} can be passed by copy, and
 as const reference, without affecting the constness of the wrapped object.
 Two template functions, \code{ref} and \code{cref} are provided to create
 \code{any\_holder} objects.
-The observable behavior of \code{any\_holder}, \code{ref} and \code{cref}
-must be as if implemented:
 
-\begin{verbatim}
-template <class T> inline any_holder<T&> ref(T& t) { 
-  return any_holder<T&>(t); 
-}
 
-template <class T> inline any_holder<const T&> cref(const T& t) { 
-  return any_holder<const T&>(t); 
-}
-\end{verbatim}
+\medskip 
 
-\code{make\_tuple(t1, t2, ..., tn)}\\
-\req{Returntype:} \code{tuple<T1, T2, ..., TN>}, where 
-if \code{Vi} is the non-reference type of \code{ti}
+\verb|template <class T> inline any_holder<T&> ref(T& t);|
+
+\smallskip 
+
+\req{Returns:} \verb|any_holder<T&>(t)|.
+
+\medskip 
+
+\verb|template <class T> inline any_holder<const T&> cref(const T& t);|
+
+\smallskip 
+
+\req{Requires:} \code{T} cannot be a function type.\\
+\textsf{[This requirement may be unnecessary depending on the resolution of
+the core language issue 295]}\\
+\req{Returns:} \verb|any_holder<const T&>(t)|.
+
+\medskip 
+
+\code{make\_tuple(t1, t2, ..., tn)}
+
+\smallskip
+
+\req{Return type:} \code{tuple<T1, T2, ..., TN>}, where 
 \begin{itemize}
-\item \code{Vi} is an array type, then \code{Ti} is a reference \code{const Vi}.(JAAKKO. can one add const to an array type)
-\item if the cv-unqualified type of \code{Vi} is \code{any\_holder<X>},
-then \code{Ti} is \code{X}.
-\item otherwise \code{Ti} is \code{remove\_const<Vi>::type}.
+\item if the non-reference type \code{Vi} of \code{ti} is an array type, 
+then \code{Ti} is a reference \code{const Vi}.
+\item if the non-reference cv-unqualified type \code{Vi} of \code{ti} is 
+\code{any\_holder<X>}, then \code{Ti} is \code{X}.
+\item otherwise \code{Ti} is the non-reference type of \code{ti}, with the
+possible const qualifier removed.
 \end{itemize}
 \req{Example:} \verb|int i; float j; make_tuple(1, "C++", ref(i), cref(j))| creates
-a tuple of type \verb|tuple<int, const char (&) [4], int&, const float&>|.
-\req{Notes:} To construct a tuple which contains a reference to a function, the 
+a tuple of type \verb|tuple<int, const char (&) [4], int&, const float&>|.\\
+\req{Notes:} To construct a tuple which contains a reference to a function,
+ the 
 function reference must be wrapped inside \code{ref}.
 
-\code{tie(t1, t2, ..., tn)}\\
+\medskip 
+
+\code{tie(t1, t2, ..., tn)}
+
+\smallskip  
+
 \req{Effects:} As if implemented:
 \begin{verbatim}
 template<class T1, class T2, ..., class TN>
