@@ -228,6 +228,52 @@ and
 .. _`Nicholas J. Higham`: http://www.ma.man.ac.uk/~higham
 .. _SIAM: http://www.siam.org/
 
+Deep vs. Shallow Copy Semantics
+-------------------------------
+
+Unlike previous incarnations of MTL, we do *not* plan to use a
+handle-body implementation for matrices and vectors.
+
+* except for views and adapters, which explicitly do not own data,
+  copy constructors should copy (no "handles").  Rationale: this
+  models the well-understood behavior of mathematical primitives.
+  Stack-based and heap-based objects have consistent behavior.  As
+  an upshot of both these facts, there is less chance of confusing
+  bugs.
+
+* assignment operators should always copy.  Views and adapters copy
+  over their target elements when assigned.  Rationale: ditto.
+
+* Efficiency issues can be handled using library implementations of
+  move semantics.  "Perfect" move semantics are possible in most
+  modern compilers today, and with recent developments in the core
+  working group that capability will become mandated
+  (http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_active.html#291)
+  and even automatic
+  (http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_active.html#391).
+  None of this was available when Jeremy wrote his paper.
+
+* Issues of views and reference binding (see
+  http://www.osl.iu.edu/research/mtl/reference/html/MTL_Object_Model.html)
+  can be dealt with by returning const views from adapter
+  functions.  For example::
+
+     template <class MatrixType>
+     const transpose_view<MatrixType> transpose(MatrixType& m);
+
+  consider::
+
+     typedef transpose_view<matrix<> > t;
+     typedef transpose_view<matrix<> const> tc;
+
+  The library supplies ``t`` with ``const`` member functions and
+  free functions accepting ``t const&`` that can mutate ``t``\ 's
+  referent matrix.
+
+  The library only supplies ``tc`` with ``const`` member functions
+  and free functions accepting ``tc const&`` that cannot mutate
+  ``tc``\ 's referent matrix.
+
 Algorithm Implementations
 =========================
 
