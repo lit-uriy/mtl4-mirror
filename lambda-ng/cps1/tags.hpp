@@ -50,16 +50,19 @@ assign_node_type<typename node_traits<Lhs>::wrapped,
 		 typename node_traits<Rhs>::wrapped>
 assign_node(const Lhs&, const Rhs&);
 
+template <class T, class U>
+struct pick1st {typedef T type;};
+
 #define LAMBDA_NODE_CONTENTS \
   template <class A1> \
-  apply_type<typename node_traits<self>::wrapped, \
+  apply_type<typename node_traits<typename pick1st<self, A1>::type>::wrapped, \
 	     typename node_traits<A1>::wrapped> \
   operator()(const A1& a1) const { \
     return apply(wrap(*this), wrap(a1)); \
   } \
   \
   template <class A1, class A2> \
-  apply_type<apply_type<typename node_traits<self>::wrapped, \
+  apply_type<apply_type<typename node_traits<typename pick1st<self, A1>::type>::wrapped, \
 			typename node_traits<A1>::wrapped>, \
 	     typename node_traits<A2>::wrapped> \
   operator()(const A1& a1, const A2& a2) const { \
@@ -67,7 +70,7 @@ assign_node(const Lhs&, const Rhs&);
   } \
   \
   template <class T> \
-  assign_node_type<typename node_traits<self>::wrapped, \
+  assign_node_type<typename node_traits<typename pick1st<self, T>::type>::wrapped, \
 		   typename node_traits<T>::wrapped> \
   operator=(const T& x) const { \
     return assign_node(wrap(*this), wrap(x)); \

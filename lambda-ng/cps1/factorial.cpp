@@ -141,7 +141,11 @@ FUNC(decrement, x-1);
 FUNC2(multiply, x*y);
 FUNC(is_zero, (x==0));
 FUNC(not_zero, (x!=0));
-LAMBDA_VAR(a); LAMBDA_VAR(b); LAMBDA_VAR(fac); LAMBDA_VAR(n); LAMBDA_VAR(acc);
+LAMBDA_VAR(a);
+LAMBDA_VAR(b);
+LAMBDA_VAR(fac);
+LAMBDA_VAR(n);
+LAMBDA_VAR(acc);
 
 template <bool B, class T>
 struct enable_if {
