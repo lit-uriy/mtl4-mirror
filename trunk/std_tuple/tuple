@@ -2,7 +2,7 @@
 #ifndef STD_TUPLE_TUPLE
 #define STD_TUPLE_TUPLE
 
-#define STD_TUPLE_NS std_tuple
+#define STD_TUPLE_NS std_tuple // To allow for change to std later
 #define STD_TUPLE_IN_LIB
 
 #include "detail/traits.hpp"
@@ -15,10 +15,7 @@
 #include "detail/generated.hpp"
 #include "detail/pair.hpp"
 
-namespace STD_TUPLE_NS { // To allow for change to std later
-}
-
 #undef STD_TUPLE_IN_LIB
-// Prevent users from including detail/* after this
+// Prevent users from including detail/* after this (except for I/O)
 
 #endif
