@@ -1,38 +1,8 @@
 #include "tuple"
+#include "tupleio"
 #include <string>
 #include <iostream>
 #include <utility>
-
-template <class O, int Start, int Len, class T>
-struct print_tuple_type {
-  static void run(O& o, const T& x) {
-    o << std_tuple::get<Start>(x);
-    if (Start+1 != Len) o << " ";
-    print_tuple_type<O,Start+1, Len, T>::run(o,x);
-  }
-};
-
-template <class O, int Len, class T>
-struct print_tuple_type<O,Len,Len,T> {
-  static void run(O& o, const T&) {
-    o << "]";
-  }
-};
-
-template <class O, class T>
-void print_tuple(O& o, const T& x) {
-  std::cout << "[";
-  print_tuple_type<O, 0, std_tuple::tuple_size<T>::value, T>::run(o,x);
-}
-
-template <class O, class T>
-typename std_tuple::detail::enable_if<
-  std_tuple::is_tuple<T>::value,
-  O&>::type
-operator << (O& o, const T& x) {
-  print_tuple(o,x);
-  return o;
-}
 
 struct dummy_type {
   operator double() const {return 0;}
@@ -62,6 +32,7 @@ int main(int, char**) {
   std::cout << a << std::endl;
   char c = 'c';
   std::cout << std_tuple::make_tuple(1,5,make_tuple(make_tuple(a)),(c)) << std::endl;
+  std::cout << std_tuple::tuple_open('[') << std_tuple::tuple_close("]") << std_tuple::tuple_delimiter(std::string(" and ")) << std_tuple::make_tuple(1,5,make_tuple(make_tuple(a)),(c)) << std::endl;
   char b = 'a';
   std::cout << b << std::endl;
   std_tuple::tie(b, std_tuple::ignore) = std_tuple::make_tuple(c, 100);

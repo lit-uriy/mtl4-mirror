@@ -7,7 +7,6 @@
 
 #include "traits.hpp"
 #include "utility.hpp"
-#include <iostream> // FIXME for debugging only
 
 // Tuple traits for non-tuple objects
 
@@ -56,7 +55,6 @@ namespace STD_TUPLE_NS {
     template <bool Wrapit, class T>
     struct one_arg_constructor_wrapper {
       static const T& run(const T& value) {
-	std::cout << "Converting from member" << std::endl;
 	return value;
       }
     };
@@ -65,7 +63,6 @@ namespace STD_TUPLE_NS {
     struct one_arg_constructor_wrapper<true, T> {
       static typename boost::add_reference<typename boost::add_const<typename tuple_element<0,T>::type>::type>::type
       run(const T& value) {
-	std::cout << "Converting from 1-tuple" << std::endl;
 	return STD_TUPLE_NS::get<(0)>(value);
       }
     };
