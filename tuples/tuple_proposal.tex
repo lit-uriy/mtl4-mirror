@@ -23,6 +23,21 @@
 \begin{document}
 \maketitle{}
 
+Osat:
+
+- introduction to tuples
+
+- text in standard
+
+- reference implementation
+
+- about the reference implementation
+
+
+TODO:
+
+- laita comparison-operaattoreihin conversion to bool before ! operator
+
 \section{Motivation}
 
 This proposal describes tuple types for C++.
@@ -219,28 +234,32 @@ If \code{T} provides all the functionality provided , and overload tuple operati
 constructors, assignments, conversion operators, etc.) for the \code{T}
 templates, instead of \code{tuple} templates.
 
- The notation \code{T1, T2, ..., Tn} 
-stands for a comma separated list of
-types which may contain any number of elements from 0 to \code{n} 
-(where \code{n} <= maximum number of allowed tuple elements), 
-and \code{t1, t2, ..., tn} respectively for a set of objects. 
 
 The following subclauses describe the requirements for the tuple
 type.
 
 
-\paragraph{Notation}
+\subsubsection{Notation}
 
 \begin{tabular}{ll}
 \code{T}, \code{U} & are tuple types\\
 \code{t}, \code{u} & objects of types \code{T} and \code{U}\\
 \code{tc}, \code{uc} & objects of types \code{const T} and \code{const B}\\
-\code{T}$_i$ & LISÄÄTÄHÄN 
+\code{p} & an object whose type is a potentially cv-qualified instance of \code{pair}, or whose type inherits from a potentially cv-qualified instance of \code{pair}. (JAAKKO, make this shorter)\\
+\code{T$_i$} & the type of the $i$th element in \code{T}\\
+\code{t$_i$} & the $i$th element of \code{t}
 \end{tabular}
+
+\noindent The notation \code{T1, T2, ..., Tn} 
+stands for a comma separated list of
+types which may contain any number of elements from 0 to \code{n} 
+(where \code{n} <= maximum number of allowed tuple elements), 
+and \code{t1, t2, ..., tn} respectively for a set of objects. 
 
 \paragraph{Participating types}
 
 \paragraph{Valid Expressions}
+
 \begin{itemize}
 
 \item Number of elements
@@ -248,26 +267,29 @@ type.
 \code{T::size} \\
 \code{tuple\_traits<T>::size}\\
 \returntype\ \code{const int} (integral constant expression).\\
-\values\ Number of elements in \code{T}.\\
+\values\ Number of elements in \code{T}.
 
 \item Element type
 
 \code{T::element<N>::type}\\
 \code{tuple\_traits<T>::element<N>::type}\\
 \requires\ 0 <= \code{N} < \code{T::size}.\\ 
-\values\ The type of the \code{N}th element type of tuple type \code{T}.\\
+\values\ The type of the \code{N}th element type of tuple type \code{T}.
 
 \item Element access
 
 \code{get<N>(t)}\\
 \requires\ 0 <= \code{N} < \code{T::size}.\\
 \returntype\ \code{T::element<N>::type\&}.\\
-\returns\ The \code{N}th element of \code{t}.\\
+\returns\ A reference to the \code{N}th element of \code{t}.
+
 
 \code{get<N>(tc)}\\
 \requires\ 0 <= \code{N} < \code{T::size}.\\
 \returntype\ \code{const T::element<N>::type\&}.\\
-\returns\ The \code{N}th element of \code{t}.\\
+\returns\ A reference to the \code{N}th element of \code{tc}.\\
+\notes\ Constness is shallow. If \code{T::element<N>::type} is 
+X\&, the return type is X\&, not const X\&.
 
 \item Assignment
 
@@ -275,47 +297,108 @@ type.
 \requires\ \code{T::size == U::size}. For all $i$, \\
 \code{t$_i$ = u$_i$} is a valid expression.\\
 \effects\ Performs \code{t$_i$ = u$_i$} for all $i$.\\
-\returntype\ \code{T&}.\\
+\returntype\ \code{T\&}.\\
+\returns\ \code{t}.
+
+\code{t = p}\\
+\requires\ \code{T::size == 2}. \code{t$_i$ = p.first} and 
+\code{t$_i$ = p.second} are valid expressions.\\
+\effects\ as if implemented: \code{t$_i$ = p.first; t$_i$ = p.second;}.\\
+\returntype\ \code{T\&}.\\
 \returns\ \code{t}.
 
 \item Equality comparison
 
 \code{t == u}\\
 \requires\ \code{T::size == U::size}. For all $i$, \\
-\code{t$_i$ == u$_i$} is a valid expression.\\
+\code{t$_i$ == u$_i$} is a valid expression returning a type that is
+convertible to \code{bool}.\\
 \returntype\ \code{bool}.\\
-\returns\ \code{true} iff {t$_i$ == u$_i$} for all  $i$
-
-
-\code{
-\end{itemize}
+\returns\ \code{true} iff {t$_i$ == u$_i$} for all $i$.
+For any two empty tuples \code{e} and \code{f}, \code{e == f} returns \code{true}.
 
 
 
-\subsection{Construction}
+\item Inequality comparison
 
-\begin{verbatim}
-tuple<T0, T1, ..., TN>()
-\end{verbatim}
-\requires\ Each element type must be \concept{DefaultConstructible}.
+\code{t != u}\\
+\requires\ \code{T::size == U::size}.
+For all $i$, 
+\code{t$_i$ != u$_i$} is a valid expression returning a type that is 
+convertible to \code{bool}.\\
+\returntype\ \code{bool}.\\
+\returns\ \code{true} iff {t$_i$ != u$_i$} for some $i$.
+For any two empty tuples \code{e} and \code{f}, \code{e != f} returns \code{false}.
+
+\item \code{<}, \code{<=}, \code{>}, \code{>=} comparisons
+
+\code{t $\bullet$ u}, where \code{$\bullet$} is one of \code{<}, \code{<=}, \code{>}, 
+\code{>=}\\
+\requires\ \code{T::size == U::size}. For all $i$, 
+\code{t$_i$ $\bullet$ u$_i$} and \code{u$_i$ $\bullet$ t$_i$} are valid expressions 
+returning a type that is 
+convertible to \code{bool}.\\
+\returntype\ \code{bool}.\\
+\returns\ The result of a lexicographical comparison with \code{$\bullet$} between \code{t} and \code{u}, as if implemented:
+
+\code{t$_i$ $\bullet$ u$_i$ || !((bool)(u$_i$ $\bullet$ t$_i$)) \&\&
+                       t$_{\mathrm{tail}}$ $\bullet$ u$_{\mathrm{tail}}$}, where \code{r$_{\mathrm{tail}}$}
+	is a tuple containing all but the first element of \code{r}.
+
+
+
+
+\item Construction
+
+\verb|tuple<T0, T1, ..., TN>()|\\
+\requires\ Each element type can be default constructed.\\
 \effects\ Default initializes each element.
 
-\begin{verbatim}
-tuple<T0, T1, ... TN>(t0, t1, ..., tN)
-\end{verbatim}
+\verb|tuple<T0, T1, ... TN>(t0, t1, ..., tN)|\\
 \requires\ Each element type \code{Ti} type is
 \concept{CopyConstructible}. JAAKKO: Are all requirements of CopyConstructible
-required.
-Each \code{ti} is convertible to \code{Ti}.
+required, probably not. Also, maybe even copy constrcution is required only
+for some types that match directly. And what are references to copy constructible?
+The type of each \code{ti} is convertible to \code{Ti}.\\
 \effects\ Copy initializes each element with the value of the corresponding 
 parameter.
 
-\begin{verbatim}
-tuple<T0, T1, ... TN>(u); 
-\end{verbatim}
-\requires\ 
+\verb|tuple<T0, T1, ... TN>(u);|\\
+\requires\ Each element type \code{Ti} is \concept{CopyConstructible},
+(JAAKKO, see above). 
+\code{u} has \code{N} elements. 
+For each element index $i$, the type of \code{u$_i$} is 
+convertible to \code{Ti}.\\
+\effects\ Copy initializes each element $i$ with \code{u$_i$}.
+
+\verb|tuple<T0, T1>(p)|, where \code{p} is an object of
+of type \code{pair<X, Y>} (JAAKKO: or inhertis from one).\\
+\requires\ \code{X} is convertible to \code{T0}, \code{Y} is convertible to 
+\code{T1}.\\
+\effects\ Copy initializes the first element with \code{t.first} and the 
+second with \code{t.second}.
+
+\item Input and output
+
+\verb|o << t|, where \code{o} is an instance of \code|basic\_ostream| (JAAKKO, say somewhere, that is instance of means that is instance of or inherits
+publicly from an instance of).\\
+\requires\ For all $i$, \code{o << t$_i$} is a valid expression.\\
+\effects\ Invokes \code{o << t$_i$} for each $i$.\\
+\returntype\ \code{basic\_ostream}. (JAAKKO, say this differently)\\
+\returns \code{o}.
+
+\verb|i >> t|, where \code{i} is an instance of \code|basic\_istream| (JAAKKO, say somewhere, that is instance of means that is instance of or inherits
+publicly from an instance of).\\
+\requires\ For all $i$, \code{o >> t$_i$} is a valid expression,
+and does not mess up parsing (JAAKKO, do something here).\\
+\effects\ Invokes \code{o >> t$_i$} for each $i$.\\
+\returntype\ \code{basic\_istream}. (JAAKKO, say this differently)\\
+\returns \code{i}.
+
+\item Manipulators
 
 
+\end{itemize}
 
 \end{document}
 
@@ -410,76 +493,6 @@ inline bool operator>=(const cons<H1, T1>& a, const cons<H2, T2>& b);
 
 
 
-\noindent \textbf{Header} \verb|<tuple>| synopsis
-
-\begin{verbatim}
-
-template<class T> int tuple_size(const T&);
-int tuple_size(null_type);
-
-template <int N, class T> class tuple_element;
-template <int N, class H, class T> rt? get(cons<H, T>&);
-template <int N, class H, class T> rt? get(const cons<H, T>&);
-
-template <class H1, class T1, class H2, class T2>
-inline bool operator==(const cons<H1, T1>& a, const cons<H2, T2>& b);
-template <class H1, class T1, class H2, class T2>
-inline bool operator!=(const cons<H1, T1>& a, const cons<H2, T2>& b);
-template <class H1, class T1, class H2, class T2>
-inline bool operator<(const cons<H1, T1>& a, const cons<H2, T2>& b);
-template <class H1, class T1, class H2, class T2>
-inline bool operator>(const cons<H1, T1>& a, const cons<H2, T2>& b);
-template <class H1, class T1, class H2, class T2>
-inline bool operator<=(const cons<H1, T1>& a, const cons<H2, T2>& b);
-template <class H1, class T1, class H2, class T2>
-inline bool operator>=(const cons<H1, T1>& a, const cons<H2, T2>& b);
-
-\end{verbatim}
-
-
-The type of the heterogeneous list type is:
-
-\begin{verbatim}
-class null_type {};
-
-template <class H, class T>
-class cons {
-  H head_;
-  T tail_;
-public:
-  typedef H head_type;
-  typedef T tail_type;
-
-  head_type& head();
-  const head_type& head() const;
-
-  tail_type& tail();
-  const tail_type& tail() const;
-
-  cons();
-  cons(const typename remove_volatile<head_type>::type& h,
-       const tail_type& t);
-
-  template <class H2, class T2>
-  cons( const cons<H2, T2>& u ) : head(u.head), tail(u.tail) {}
-
-  template <class HT2, class TT2>
-  cons& operator=( const cons<HT2, TT2>& u );
-
-  cons& operator=(const cons& u);
-
-  template <class T1, class T2>
-  cons& operator=( const std::pair<T1, T2>& u );
-}
-\end{verbatim}
-
-\requires\ \code{T} is an instance of \code{cons}, or \code{T} is 
-\code{null\_type}.
-
-\begin{verbatim}
-cons();
-\end{verbatim}
-\effects\ Default initializes \code{head\_} and \code{tail\_}.
 
 \begin{verbatim}
 cons(const typename remove_volatile<head_type>::type& h, 
@@ -530,65 +543,11 @@ template <class T1, class T2> cons& operator=(const std::pair<T1, T2>& u);
 \code{*this.head\_ = u.first; *this.tail\_.head\_ = u.second;}\\
 \returns\ \code{*this}
 
-\begin{verbatim}
-head_type& get_head();
-\end{verbatim}
-\returns\ Reference to \code{head\_}. 
 
-\begin{verbatim}
-const head_type& get_head() const;
-\end{verbatim}
 \returns\ Reference to \code{head\_}.\\
 \notes\ Constness is shallow. If \code{head\_type} is a non-const reference 
 type, returns a non-const reference.
 
-\begin{verbatim}
-tail_type& get_tail();
-const tail_type& get_tail() const;
-\end{verbatim}
-\returns\ Reference to tail. %NIL CASE ???
-
-%template <class T1, class T2, ... class T10>
-%class tuple {
-%public:
-
-
-
-\subsection{Tuples}
-
-
-
-\concept{ConsList} requirements:
-
-ConsLists are heterogeneous containers. 
-They allow the access to
-the \emph{head} (first element) and \emph{tail} (a ConsList consisting
-of all but the head), as well as to the $n$th element, where $n$ is 
-known at compile time.
-
-\paragaph{Notation}
-\tabular{ll}
-\code{T} & is a type that is a model of \concept{ConsList}
-\code{t} & object of type \code{T}
-\code{U} & is a type that is a model of \concept{ConsList}
-\code{u} & object of type \code{U}
-
-\paragraph{Participating types}
-
-\paragraph{Valid Expressions}
-\begin{itemize}
-
-\item Number of elements
-
-\code{T::length} 
-
-\returntype\ \code{static const int}.\\
-%\semantics\ Number of elements in \code{T}.\\
-
-& integral constant, number of elements in \code{T} \\
-
-\end{itemize}
-
 
 
 
@@ -601,93 +560,4 @@ value of types \code{const T} and \code{const U} respectively.
 
 
 
-
-
-\concept{NonEmptyConsList} requirements:
-
-The \concept{ConsList} 
-
-\code{T} and \code{U} are types to be supplied by a C++ program 
-intantiating a template, \code{t} is a value of type \code{T}, 
-\code{u} a value of type \code{U}, \code{tc} and \code{uc} are 
-value of types \code{const T} and \code{const U} respectively.
-
-\begin{tabular}{lll}
-
-\textbf{expression} & \textbf{return type} & \textbf{requirement} \\
-
-\code{T::head\_type} & the type of the first element in \code{T} \\
-
-\code{T::tail\_type} & a type \code{TT} that is a model of \concept{ConsList} 
-and ... \\
-
-\code{t.head()} & \code{T::head\_type\&} \\
-
-\code{t.head() const} & \code{const T::head\_type\&} & \\
-
-\code{a.tail()} & \code{T::tail\_type\&} \\
-
-\code{a.tail() const} & \code{const T::tail\_type\&} & \\
-
-\code{T::length} & integral constant, number of elements in \code{T} \\
-
-\code{T(u)} & & \code{u} is equivalent to \code{T(u)}\\
-
-\end{tabular}
-
-
-
-
-\begin{verbatim}
-  template <class T0, class T1, ... class TN>
-
-  class tuple {
-
-    typedef T0 head_type;
-    typedef tail_type;  
-
-    tuple() : base() {}
-  
-    // tuple_traits_parameter<T>::type takes non-reference types as const T& 
-    explicit 
-    tuple(typename tuple_detail::parameter<T0>::type t0,
-	  typename tuple_detail::parameter<T1>::type t1 
-	    = tuple_detail::def_value<T1>::f(),
-	  typename tuple_detail::parameter<T2>::type t2 
-	    = tuple_detail::def_value<T2>::f(),
-	  typename tuple_detail::parameter<T3>::type t3 
-	    = tuple_detail::def_value<T3>::f(),
-	  typename tuple_detail::parameter<T4>::type t4 
-	    = tuple_detail::def_value<T4>::f(),
-	  typename tuple_detail::parameter<T5>::type t5 
-	    = tuple_detail::def_value<T5>::f(),
-	  typename tuple_detail::parameter<T6>::type t6 
-	    = tuple_detail::def_value<T6>::f(),
-	  typename tuple_detail::parameter<T7>::type t7 
-	    = tuple_detail::def_value<T7>::f(),
-	  typename tuple_detail::parameter<T8>::type t8 
-	    = tuple_detail::def_value<T8>::f(),
-	  typename tuple_detail::parameter<T9>::type t9 
-	    = tuple_detail::def_value<T9>::f())
-      : base(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) {}
-    
-    template<class U1, class U2>
-    tuple(const cons<U1, U2>& p) : base(p) {}
-
-    template <class U1, class U2>
-    tuple& operator=(const cons<U1, U2>& k) { 
-      base::operator=(k); 
-      return *this;
-    }
-
-    template <class U1, class U2>
-    tuple& operator=(const std::pair<U1, U2>& k) { 
-      BOOST_STATIC_ASSERT(tuple_size<tuple>::value == 2);// check_size = 2
-      this->head = k.first;
-      this->tail.head = k.second; 
-      return *this;
-    }
-    
-  };
-\end{verbatim}
 
