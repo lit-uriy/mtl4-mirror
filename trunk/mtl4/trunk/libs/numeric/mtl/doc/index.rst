@@ -24,5 +24,5 @@ Resources
 .. _`Matrix Template Library`: http://www.osl.iu.edu/research/mtl
 .. _`Statement Of Work`: sow.html
 .. _`Development Plan`: plan.html
-.. _`Preliminary Documentation`: external/prototype_manual.pdf
+.. _`Preliminary Documentation`: ../external/prototype_manual.pdf
 
