@@ -93,8 +93,17 @@ proc typed_closure {name memtypes stored_types args} {
       lappend st_mt $tp
     }
   }
+  set mt_tp ""; set mt_mt ""
+  foreach tp $memtypes {
+    if {[regsub -all ^% $tp "" tp]} {
+      # Starts with %
+      lappend mt_tp $tp
+    } else {
+      lappend mt_mt $tp
+    }
+  }
   set result [closure typed_$name $st_mt $st_tp [make_content content]]\n
-  append result [cps !$name $memtypes {} $content(get_type)]
+  append result [cps !$name $mt_mt $mt_tp $content(get_type)]
   return $result
 }
 
