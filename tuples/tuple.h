@@ -1,5 +1,40 @@
+// -*- mode: c++; -*-
+
 #include "boost/type_traits.hpp"
 #include <utility> // for pair.hpp
+
+
+//#include <cstring>
+
+
+namespace std {
+
+  template <int N> struct index_holder;
+
+  template <int N> void index(const index_holder<N>&) {}
+
+  template <class T>
+  void boo2(T& t) {
+  }
+  void f2() {
+    boo2(index<1>);
+  }
+  
+}
+
+template <class T>
+void boo(T& t) {
+}
+
+#include <cstring>
+
+void f() {
+  
+  boo(std::index<1>);
+}
+
+
+
 
 
 namespace std {
@@ -10,7 +45,9 @@ namespace std {
   using ::boost::remove_volatile;
 
   // -- null_type --------------------------------------------------------
-  struct null_type {};
+  struct null_type {
+    static const int size = 0;
+  };
 
   // - tuple forward declaration -------------------------------------------
   template <
@@ -53,22 +90,6 @@ namespace std {
     //  E.g: typedef tuple<void> some_type; // ok
     //  but: some_type x; // fails
 
-    template <class T> struct non_storeable_type {
-      typedef typename ct_if<
-        is_function<T>::value, non_storeable_type<T>, T
-      >::type type;
-    };
-
-    template <> struct non_storeable_type<void> {
-      typedef non_storeable_type<void> type; 
-    };
-
-    // used as the tuple constructors parameter types 
-    // (and in cons consturctors)
-    // Rationale: non-reference tuple element types can be cv-qualified.
-    // It should be possible to initialize such types with temporaries,
-    // and when binding temporaries to references, the reference must
-    // be non-volatile and const. 8.5.3. (5)
 
     template <class T> struct parameter {
       typedef typename add_reference<
@@ -114,63 +135,68 @@ namespace std {
   template <class H, class T>
   class cons {
 
-    typedef typename 
-    tuple_detail::non_storeable_type<H>::type stored_head_type;
-   
-    typedef typename 
-    tuple_detail::non_storeable_type<H>::type stored_head_type;
+  public:
 
+    typedef H head_type;
+    typedef T tail_type;
+
+    static const int size = tail_type::size + 1;
+
+  private:
     // These are not needed when core issue 106 gets resolved and
     // when adding const to anything works (like it should already)
-    typedef typename add_reference<stored_head_type>::type ref_head_type;
+    typedef typename add_reference<head_type>::type ref_head_type;
     typedef typename add_reference<
-      typename add_const<stored_head_type>::type
+      typename add_const<head_type>::type
     >::type  cref_head_type;
 
     // The proposed definitions are:
     //    typedef stored_head_type& ref_head_type;
     //    typedef const stored_head_type& c_ref_type;
 
+    
+    head_type head_; 
+    tail_type tail_;
+
   public:
-    typedef H head_type;
-    typedef T tail_type;
-    
-    stored_head_type head; 
-    tail_type tail;
-    
-    ref_head_type get_head() { return head; }
-    cref_head_type get_head() const { return head; }
+    // head_type& 
+    ref_head_type head() { return head_; }
+    // const head_type&
+    cref_head_type head() const { return head_; }
       
-    tail_type& get_tail() { return tail; }
-    const tail_type& get_tail() const { return tail; }
+    tail_type& tail() { return tail_; }
+    const tail_type& tail() const { return tail_; }
       
-    cons() : head(), tail() {}
+    cons() : head_(), tail_() {}
       
     // add_reference can be replaced by & when core issue 106 gets resolved
-    cons(typename tuple_detail::parameter<stored_head_type>::type h,
-         const tail_type& t) : head(h), tail(t) {}
+    cons(typename tuple_detail::parameter<head_type>::type h,
+         const tail_type& t) : head_(h), tail_(t) {}
 
     template <class H2, class T2>
-    cons(const cons<H2, T2>& u ) : head(u.head), tail(u.tail) {}
+    cons(const cons<H2, T2>& u ) : head_(u.head), tail_(u.tail) {}
 
     template <class HT2, class TT2>
     cons& operator=( const cons<HT2, TT2>& u ) { 
-      head = u.head; 
-      tail = u.tail; 
+      head_ = u.head(); 
+      tail_ = u.tail(); 
       return *this; 
     }
+
     
     // must define assignment operator explicitly, implicit version is 
     // illformed if HT is a reference (12.8. (12))
     cons& operator=(const cons& u) { 
-      head = u.head; tail = u.tail;  return *this; 
+      head_ = u.head_; 
+      tail_ = u.tail_;  
+      return *this; 
     }
     
     template <class T1, class T2>
     cons& operator=( const std::pair<T1, T2>& u ) { 
       BOOST_STATIC_ASSERT(tuple_size<cons>::value == 2); // check size = 2
-      head = u.first; 
-      tail.head = u.second; 
+      head_ = u.first; 
+      tail_.head_ = u.second; 
       return *this;
     }
 
@@ -179,21 +205,25 @@ namespace std {
       class T6, class T7, class T8, class T9, class T10>
     cons( T1& t1, T2& t2, T3& t3, T4& t4, T5& t5, 
 	  T6& t6, T7& t7, T8& t8, T9& t9, T10& t10 ) 
-      : head (t1), 
-      tail (t2, t3, t4, t5, t6, t7, t8, t9, t10, tuple_detail::c_null_type())
+      : head_ (t1), 
+      tail_ (t2, t3, t4, t5, t6, t7, t8, t9, t10, tuple_detail::c_null_type())
     {}
   };    
     
   template <class H>
   class cons<H, null_type> {
-    
-    typedef typename tuple_detail::non_storeable_type<H>::type stored_head_type;
 
+  public:
+    static const int size = 1;    
+    typedef H head_type;
+    typedef null_type tail_type;
+
+  private:
     // These are not needed when core issue 106 gets resolved and
     // when adding const to anything works (like it should already)
-    typedef typename add_reference<stored_head_type>::type ref_head_type;
+    typedef typename add_reference<head_type>::type ref_head_type;
     typedef typename add_reference<
-      typename add_const<stored_head_type>::type
+      typename add_const<head_type>::type
     >::type  cref_head_type;
 
     // The proposed definitions are:
@@ -205,41 +235,41 @@ namespace std {
     typedef H head_type;
     typedef null_type tail_type;
 
-    stored_head_type head;
+    head_type head_;
 
-    ref_head_type get_head() { return head; }
-    cref_head_type get_head() const { return head; }
+    // head_type&
+    ref_head_type head() { return head_; }
+    // const head_type&
+    cref_head_type head() const { return head_; }
     
-    const null_type get_tail() { return null_type(); }
-    const null_type get_tail() const { return null_type(); }      
+    const null_type tail() { return null_type(); }
+    const null_type tail() const { return null_type(); }      
    
 
+    cons() : head_() {}
 
-
-    cons() : head() {}
-
-    cons(typename tuple_detail::parameter<stored_head_type>::type h,
+    cons(typename tuple_detail::parameter<head_type>::type h,
 	 const null_type& = null_type())
-      : head (h) {}  
+      : head_ (h) {}  
 
     template <class HT2>
-    cons( const cons<HT2, null_type>& u ) : head(u.head) {}
+    cons( const cons<HT2, null_type>& u ) : head_(u.head()) {}
   
     template <class HT2>
     cons& operator=(const cons<HT2, null_type>& u ) { 
-      head = u.head; 
+      head_ = u.head(); 
       return *this; 
     }
 
     // must define assignment operator explicitely, implicit version 
     // is illformed if HT is a reference
-    cons& operator=(const cons& u) { head = u.head; return *this; }
+    cons& operator=(const cons& u) { head_ = u.head_; return *this; }
 
     template<class T1>
     cons(T1& t1, const null_type&, const null_type&, const null_type&, 
 	 const null_type&, const null_type&, const null_type&, 
 	 const null_type&, const null_type&, const null_type&)
-      : head (t1) {}
+      : head_ (t1) {}
 
   };
 
@@ -345,8 +375,7 @@ namespace std {
     template <class U1, class U2>
     tuple& operator=(const std::pair<U1, U2>& k) { 
       BOOST_STATIC_ASSERT(tuple_size<tuple>::value == 2);// check_size = 2
-      this->head = k.first;
-      this->tail.head = k.second; 
+      base::operator=(k);
       return *this;
     }
     
@@ -394,6 +423,7 @@ namespace std {
     struct get_class {
       template <class HT, class TT>
       inline static 
+      //      const typename tuple_element<N, cons<HT, TT> >::type&
       typename add_reference<
         typename add_const<
           typename tuple_element<N, cons<HT, TT> >::type
@@ -405,11 +435,10 @@ namespace std {
       template <class HT, class TT>
       inline static 
       typename add_reference<
-        typename add_const<
           typename tuple_element<N, cons<HT, TT> >::type
-        >::type
       >::type
-      get(const cons<HT, TT>& t) {
+      //      typename tuple_element<N, cons<HT, TT> >::type&
+      get(cons<HT, TT>& t) {
 	return get_class<N-1>::template get<RET>(t.get_tail());
       }
     };
@@ -417,11 +446,13 @@ namespace std {
     template<>
     struct get_class<0> {
       template <class HT, class TT>
+      //      const typename tuple_element<N, cons<HT, TT> >::type&
       inline static typename add_reference<typename add_const<HT>::type>::type
       get(const cons<HT, TT>& t) {
 	return t.get_head();
       }
       template <class HT, class TT>
+      //      typename tuple_element<N, cons<HT, TT> >::type&
       inline static typename add_reference<HT>::type
       get(cons<HT, TT>& t) {
 	return t.get_head();
@@ -430,26 +461,28 @@ namespace std {
     
   } // tuple_detail
 
- 
-// get function for non-const cons-lists, returns a reference to the element
-  
-  template<int N, class HT, class TT>
-  inline typename add_reference<
-    typename tuple_element<N, cons<HT, TT> >::type
-  >::type
-  get(cons<HT, TT>& c) { 
-   return tuple_detail::get_class<N>::get(c); 
-  } 
 
 // get function for const cons-lists, returns a const reference to
 // the element. If the element is a reference, returns the reference
 // as such (that is, can return a non-const reference)
 
   template<int N, class HT, class TT>
+      //      const typename tuple_element<N, cons<HT, TT> >::type&
   inline typename add_reference<
     typename add_const<typename tuple_element<N, cons<HT, TT> >::type>::type
   >::type
   get(const cons<HT, TT>& c) { 
+   return tuple_detail::get_class<N>::get(c); 
+  } 
+ 
+// get function for non-const cons-lists, returns a reference to the element
+  
+  template<int N, class HT, class TT>
+      //      typename tuple_element<N, cons<HT, TT> >::type&
+  inline typename add_reference<
+    typename tuple_element<N, cons<HT, TT> >::type
+  >::type
+  get(cons<HT, TT>& c) { 
    return tuple_detail::get_class<N>::get(c); 
   } 
 

@@ -43,7 +43,7 @@ public:
 // A non-copyable class 
 class no_copy {
   no_copy(const no_copy&) {}
-public:
+public: 
   no_copy() {};
 };
 
@@ -69,6 +69,8 @@ typedef void(b_function_type)(int, float);
 // An object of this type of tuple cannot be created but the type can
 typedef tuple<a_function_type, b_function_type, void, char[10]> t8;
 
+This gives an error:
+//typedef t8::tail_type::tail::type::head_type h;
 
 // -----------------------------------------------------------------------
 // -tuple construction tests ---------------------------------------------
@@ -77,14 +79,26 @@ void test_constructors() {
 
   no_copy y;
   tuple<no_copy&> x = tuple<no_copy&>(y); // ok
+  (void)x;
 
   char cs[10];
   tuple<char(&)[10]> v2(cs);  // ok
+  (void)v2;
 
-};
+
+}
+
+void test_assignments() {
+  using std::tuple;
+  using std::make_tuple;
+  tuple<float, double>::base t;
+  t = make_tuple('a', 5.5);
+}
+
 
 int main() {
   test_constructors();
+  test_assignments();
 }
 
 
