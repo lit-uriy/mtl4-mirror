@@ -1,0 +1,13 @@
+import boostbook ;
+import docutils ;
+
+.sources = [ glob *.rst ] ;
+.target-pat = (.*)\.rst$ ;
+
+for src in $(.sources)
+{
+    html [ MATCH $(.target-pat) : $(src) ] : $(src) ;
+}
+
+stage html : [ MATCH $(.target-pat) : $(.sources) ] ;
+
