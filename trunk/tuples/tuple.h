@@ -142,6 +142,9 @@ namespace std {
 
     static const int size = tail_type::size + 1;
 
+    template <int N>
+    struct element {
+      typedef 
   private:
     // These are not needed when core issue 106 gets resolved and
     // when adding const to anything works (like it should already)

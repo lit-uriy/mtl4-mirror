@@ -7,8 +7,7 @@
 
 \newcommand{\effects}{\noindent \textbf{Effects:}}
 \newcommand{\returns}{\noindent \textbf{Returns:}}
-\newcommand{\returntype}{\noindent \textbf{Return type:}
-\newcommand{\semantics}{\noindent \textbf{Returns:}}}
+\newcommand{\returntype}{\noindent \textbf{Return type:}}
 \newcommand{\requires}{\noindent \textbf{Requires:}}
 \newcommand{\notes}{\noindent \textbf{Notes:}}
 \newcommand{\values}{\noindent \textbf{Value:}}
@@ -180,7 +179,7 @@ to whether they are defined or not.
 
 \subsection{Input and output}
 
-A tuple type is \concept{OutputStreamable} (JAAKKO: explain these concepts}
+A tuple type is \concept{OutputStreamable} (JAAKKO: explain these concepts)
 if each of its elements are 
 \code{OutputStreamable}.
 A tuple is \concept{InputStreamable} if each of its elements are 
@@ -198,6 +197,134 @@ read from an istream with \code{operator>>}.
 We describe an implementation that conforms to the requirements
 of this proposal.
 
+\section{Text in the standard}
+
+\section{Tuple Library}
+
+The library provides a tuple type as 
+the class template \code{tuple} that can be instantiated with any number
+of arguments.
+The implementation can set an upper limit for the number of arguments.
+Each template argument specifies the type of an element in the \code{tuple}.
+Consequently, tuples are heterogeneous fixed size collections.
+of values. 
+
+Implementation quantites:
+
+- Number of elements in one tuple type [10].
+
+Implementations are allowed to define the tuple template as an interface,
+which inherits from some templated base class \code{T}.
+If \code{T} provides all the functionality provided , and overload tuple operations (converting copy
+constructors, assignments, conversion operators, etc.) for the \code{T}
+templates, instead of \code{tuple} templates.
+
+ The notation \code{T1, T2, ..., Tn} 
+stands for a comma separated list of
+types which may contain any number of elements from 0 to \code{n} 
+(where \code{n} <= maximum number of allowed tuple elements), 
+and \code{t1, t2, ..., tn} respectively for a set of objects. 
+
+The following subclauses describe the requirements for the tuple
+type.
+
+
+\paragraph{Notation}
+
+\begin{tabular}{ll}
+\code{T}, \code{U} & are tuple types\\
+\code{t}, \code{u} & objects of types \code{T} and \code{U}\\
+\code{tc}, \code{uc} & objects of types \code{const T} and \code{const B}\\
+\code{T}$_i$ & LISƒƒTƒHƒN 
+\end{tabular}
+
+\paragraph{Participating types}
+
+\paragraph{Valid Expressions}
+\begin{itemize}
+
+\item Number of elements
+
+\code{T::size} \\
+\code{tuple\_traits<T>::size}\\
+\returntype\ \code{const int} (integral constant expression).\\
+\values\ Number of elements in \code{T}.\\
+
+\item Element type
+
+\code{T::element<N>::type}\\
+\code{tuple\_traits<T>::element<N>::type}\\
+\requires\ 0 <= \code{N} < \code{T::size}.\\ 
+\values\ The type of the \code{N}th element type of tuple type \code{T}.\\
+
+\item Element access
+
+\code{get<N>(t)}\\
+\requires\ 0 <= \code{N} < \code{T::size}.\\
+\returntype\ \code{T::element<N>::type\&}.\\
+\returns\ The \code{N}th element of \code{t}.\\
+
+\code{get<N>(tc)}\\
+\requires\ 0 <= \code{N} < \code{T::size}.\\
+\returntype\ \code{const T::element<N>::type\&}.\\
+\returns\ The \code{N}th element of \code{t}.\\
+
+\item Assignment
+
+\code{t = u}\\
+\requires\ \code{T::size == U::size}. For all $i$, \\
+\code{t$_i$ = u$_i$} is a valid expression.\\
+\effects\ Performs \code{t$_i$ = u$_i$} for all $i$.\\
+\returntype\ \code{T&}.\\
+\returns\ \code{t}.
+
+\item Equality comparison
+
+\code{t == u}\\
+\requires\ \code{T::size == U::size}. For all $i$, \\
+\code{t$_i$ == u$_i$} is a valid expression.\\
+\returntype\ \code{bool}.\\
+\returns\ \code{true} iff {t$_i$ == u$_i$} for all  $i$
+
+
+\code{
+\end{itemize}
+
+
+
+\subsection{Construction}
+
+\begin{verbatim}
+tuple<T0, T1, ..., TN>()
+\end{verbatim}
+\requires\ Each element type must be \concept{DefaultConstructible}.
+\effects\ Default initializes each element.
+
+\begin{verbatim}
+tuple<T0, T1, ... TN>(t0, t1, ..., tN)
+\end{verbatim}
+\requires\ Each element type \code{Ti} type is
+\concept{CopyConstructible}. JAAKKO: Are all requirements of CopyConstructible
+required.
+Each \code{ti} is convertible to \code{Ti}.
+\effects\ Copy initializes each element with the value of the corresponding 
+parameter.
+
+\begin{verbatim}
+tuple<T0, T1, ... TN>(u); 
+\end{verbatim}
+\requires\ 
+
+
+
+\end{document}
+
+- Onko non-storeable trikki tarpeellinen
+
+- Miksi assignment riitt‰‰ paireista tupliin
+- Mik‰ on tuple_size:n return type
+
+
 The tuple type is impelemented as an interface template \code{tuple} that
 can take up to $n$ (10 in the reference implementation) template arguments.
 It is very tedious to overload functions for such a verbose type.
@@ -210,26 +337,82 @@ operate on the cons list representation.
 We propose this representation be standardized as well, to give end programmers
 a convenient way to overload functions for tuple types. 
 
-\section{Text in the standard}
 
-\subsection{Tuples}
 
-The library provides a template for a heterogeneous list of objects, 
-and an interface for easier handling of these lists as tuple types.
-The \code{tuple} interface template has a predefined upper limit for the
-number of parameters, that is, number of elements in the tuple.
+The library provides traits classes for querying 
+properties of tuples and their elements:
+
+\begin{verbatim}
+tuple_size<T>::value
+\end{verbatim}
+\requires\ \code{T} is an instance of \code{cons}, or \code{T} is 
+\code{null\_type}. \\
+\values\ \code{const int} holding the number of elements in the cons list \code{T}.
+
+\begin{verbatim}
+tuple_element<N, T>::type
+\end{verbatim}
+\requires\ \code{T} is an instance of \code{cons}, or \code{T} is 
+\code{null\_type}. \\
+$0 \leq $ \code{N} $ < $ \code{tuple\_size<T>::value}.
+\values\ The type of the \code{N}th element in \code{T}.
+
+\begin{verbatim}
+template <int N, class H, class T> rt? get(cons<H, T>&);
+template <int N, class H, class T> rt? get(const cons<H, T>&);
+\end{verbatim}
+
+\begin{verbatim}
+inline bool operator==(const null_type&, const null_type&);
+inline bool operator>=(const null_type&, const null_type&);
+inline bool operator<=(const null_type&, const null_type&);
+\end{verbatim}
+\returns\ \code{true}.
+
+\begin{verbatim}
+inline bool operator!=(const null_type&, const null_type&);
+inline bool operator<(const null_type&, const null_type&);
+inline bool operator>(const null_type&, const null_type&);
+\end{verbatim}
+\returns\ \code{false}.
+
+\begin{verbatim}
+template <class H1, class T1, class H2, class T2>
+inline bool operator==(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+\returns\ \code{true} if all elementwise comparisons are true.
+\begin{verbatim}
+template <class H1, class T1, class H2, class T2>
+inline bool operator!=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+
+\begin{verbatim}
+template <class H1, class T1, class H2, class T2>
+inline bool operator<(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+
+\begin{verbatim}
+template <class H1, class T1, class H2, class T2>
+inline bool operator>(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+
+\begin{verbatim}
+template <class H1, class T1, class H2, class T2>
+inline bool operator<=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+
+\begin{verbatim}
+template <class H1, class T1, class H2, class T2>
+inline bool operator>=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+
+
+
 
 
 \noindent \textbf{Header} \verb|<tuple>| synopsis
 
 \begin{verbatim}
-class null_type {}
-
-template <class H, class T> class cons; 
-
-template <class T0 = null_type, class T1 = null_type, ..., 
-          class TN = null_type> 
-class tuple;
 
 template<class T> int tuple_size(const T&);
 int tuple_size(null_type);
@@ -237,14 +420,6 @@ int tuple_size(null_type);
 template <int N, class T> class tuple_element;
 template <int N, class H, class T> rt? get(cons<H, T>&);
 template <int N, class H, class T> rt? get(const cons<H, T>&);
-
-inline bool operator==(const null_type&, const null_type&);
-inline bool operator!=(const null_type&, const null_type&);
-inline bool operator<(const null_type&, const null_type&);
-inline bool operator>(const null_type&, const null_type&);
-inline bool operator>=(const null_type&, const null_type&);
-inline bool operator<=(const null_type&, const null_type&);
-
 
 template <class H1, class T1, class H2, class T2>
 inline bool operator==(const cons<H1, T1>& a, const cons<H2, T2>& b);
@@ -373,77 +548,6 @@ const tail_type& get_tail() const;
 \end{verbatim}
 \returns\ Reference to tail. %NIL CASE ???
 
-The library provides traits classes for querying 
-properties of tuples and their elements:
-
-\begin{verbatim}
-tuple_size<T>::value
-\end{verbatim}
-\requires\ \code{T} is an instance of \code{cons}, or \code{T} is 
-\code{null\_type}. \\
-\values\ \code{const int} holding the number of elements in the cons list \code{T}.
-
-\begin{verbatim}
-tuple_element<N, T>::type
-\end{verbatim}
-\requires\ \code{T} is an instance of \code{cons}, or \code{T} is 
-\code{null\_type}. \\
-$0 \leq $ \code{N} $ < $ \code{tuple\_size<T>::value}.
-\values\ The type of the \code{N}th element in \code{T}.
-
-\begin{verbatim}
-template <int N, class H, class T> rt? get(cons<H, T>&);
-template <int N, class H, class T> rt? get(const cons<H, T>&);
-\end{verbatim}
-
-\begin{verbatim}
-inline bool operator==(const null_type&, const null_type&);
-inline bool operator>=(const null_type&, const null_type&);
-inline bool operator<=(const null_type&, const null_type&);
-\end{verbatim}
-\returns\ \code{true}.
-
-\begin{verbatim}
-inline bool operator!=(const null_type&, const null_type&);
-inline bool operator<(const null_type&, const null_type&);
-inline bool operator>(const null_type&, const null_type&);
-\end{verbatim}
-\returns\ \code{false}.
-
-\begin{verbatim}
-template <class H1, class T1, class H2, class T2>
-inline bool operator==(const cons<H1, T1>& a, const cons<H2, T2>& b);
-\end{verbatim}
-\returns\ \code{true} if all elementwise comparisons are true.
-\begin{verbatim}
-template <class H1, class T1, class H2, class T2>
-inline bool operator!=(const cons<H1, T1>& a, const cons<H2, T2>& b);
-\end{verbatim}
-
-\begin{verbatim}
-template <class H1, class T1, class H2, class T2>
-inline bool operator<(const cons<H1, T1>& a, const cons<H2, T2>& b);
-\end{verbatim}
-
-\begin{verbatim}
-template <class H1, class T1, class H2, class T2>
-inline bool operator>(const cons<H1, T1>& a, const cons<H2, T2>& b);
-\end{verbatim}
-
-\begin{verbatim}
-template <class H1, class T1, class H2, class T2>
-inline bool operator<=(const cons<H1, T1>& a, const cons<H2, T2>& b);
-\end{verbatim}
-
-\begin{verbatim}
-template <class H1, class T1, class H2, class T2>
-inline bool operator>=(const cons<H1, T1>& a, const cons<H2, T2>& b);
-\end{verbatim}
-
-
-
-
-
 %template <class T1, class T2, ... class T10>
 %class tuple {
 %public:
@@ -479,7 +583,7 @@ known at compile time.
 \code{T::length} 
 
 \returntype\ \code{static const int}.\\
-\semantics\ Number of elements in \code{T}.\\
+%\semantics\ Number of elements in \code{T}.\\
 
 & integral constant, number of elements in \code{T} \\
 
@@ -533,30 +637,6 @@ and ... \\
 
 
 
-\code{tuple} is a class template that can be instantiated with any number
-of arguments, up to a predefined limit \code{N}.
-Each template argument specifies the type of an element int the \code{tuple}.
-
-\subsubsection{Constructors}
-
-\begin{verbatim}
-tuple<T0, T1, ... TN>(); 
-\end{verbatim}
-\requires\ Each element type must be \concept{DefaulConstructible}.
-\effects\ Default initializes each element.
-
-\begin{verbatim}
-tuple<T0, T1, ... TN>(t0, t1, ..., tN); 
-\end{verbatim}
-\requires\ Each element type must be \concept{CopyConstructible}.
-\effects\ Copy initializes each element with the value of the corresponding 
-parameter.
-
-\begin{verbatim}
-template <class U>
-tuple<T0, T1, ... TN>(const U& u); 
-\end{verbatim}
-\requires\ 
 
 \begin{verbatim}
   template <class T0, class T1, ... class TN>
@@ -611,11 +691,3 @@ tuple<T0, T1, ... TN>(const U& u);
   };
 \end{verbatim}
 
-
-
-\end{document}
-
-- Onko non-storeable trikki tarpeellinen
-
-- Miksi assignment riitt‰‰ paireista tupliin
-- Mik‰ on tuple_size:n return type
