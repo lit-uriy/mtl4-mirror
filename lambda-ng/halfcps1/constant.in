@@ -1,0 +1,12 @@
+// vim: syn=cpp:
+#ifndef LAMBDA_CONSTANT_HPP
+#define LAMBDA_CONSTANT_HPP
+
+#include "tags.hpp"
+
+[typed_closure constant {Value} {Value} \
+  [get_type_is "k(typed_constant(value))"] \
+  [returns Value] \
+  [run_is "return value;"]]
+
+#endif // LAMBDA_CONSTANT_HPP
