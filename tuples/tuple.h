@@ -51,6 +51,26 @@ namespace std {
       typedef non_storeable_type<void> type; 
     };
 
+    template <class T>
+    class wrapper {
+      typedef typename add_reference<
+        typename add_const<T>::type
+      >::type par_t;
+
+      T elem;
+    public:
+  
+      typedef T element_t;
+
+      // take all parameters as const rererences. 
+      // Note that non-const references
+      // stay as they are.
+
+      identity(par_t t) : elem(t) {}
+      T& unwrap() { return elem; }
+    };
+
+
     // This is add_reference
     template <class T> struct access_traits_non_const {
       typedef T& type;
@@ -59,6 +79,9 @@ namespace std {
       typedef T& type;
     };
     
+
+    template <class T>
+    wrapper 
     // This is add_const, add refernce
     template <class T> struct access_traits_const {
       typedef const T& type;
@@ -150,6 +173,23 @@ namespace std {
       head = u.first; tail.head = u.second; return *this;
     }
 
+  protected:
+    template <class T1, class T2, class T3, class T4, class T5, 
+      class T6, class T7, class T8, class T9, class T10>
+    cons( T1& t1, T2& t2, T3& t3, T4& t4, T5& t5, 
+	  T6& t6, T7& t7, T8& t8, T9& t9, T10& t10 ) 
+      : head (t1), 
+      tail (t2, t3, t4, t5, t6, t7, t8, t9, t10, detail::cnull())
+    {}
+
+    template <class T2, class T3, class T4, class T5, 
+      class T6, class T7, class T8, class T9, class T10>
+    cons( const null_type& t1, T2& t2, T3& t3, T4& t4, T5& t5, 
+	  T6& t6, T7& t7, T8& t8, T9& t9, T10& t10 ) 
+      : head (), 
+      tail (t2, t3, t4, t5, t6, t7, t8, t9, t10, detail::cnull())
+    {}
+
   };    
     
 
@@ -201,6 +241,17 @@ namespace std {
     // is illformed if HT is a reference
     cons& operator=(const cons& u) { head = u.head; return *this; }
 
+    template<class T1>
+    cons(T1& t1, const null_type&, const null_type&, const null_type&, 
+	 const null_type&, const null_type&, const null_type&, 
+	 const null_type&, const null_type&, const null_type&)
+      : head (t1) {}
+
+    cons(const null_type& t1, 
+	 const null_type&, const null_type&, const null_type&, 
+	 const null_type&, const null_type&, const null_type&, 
+	 const null_type&, const null_type&, const null_type&)
+      : head () {}
   };
 
 
@@ -213,13 +264,15 @@ namespace std {
     {
       typedef cons<T0, 
 	typename map_tuple_to_cons<T1, T2, T3, T4, T5, 
-	T6, T7, T8, T9, null_type>::type
+	                           T6, T7, T8, T9, null_type>::type
       > type;
     };
 
     // The empty tuple is a null_type
     template <>
-    struct map_tuple_to_cons<null_type, null_type, null_type, null_type, null_type, null_type, null_type, null_type, null_type, null_type>
+    struct map_tuple_to_cons<null_type, null_type, null_type, null_type, 
+                             null_type, null_type, null_type, null_type, 
+                             null_type, null_type>
     {
       typedef null_type type;
     };
@@ -287,17 +340,17 @@ class tuple;
     tuple() {}
   
 
-
-    tuple(typename access_traits_parameter<T0>::type t0 = def<T0>::f(),
-	  typename access_traits_parameter<T1>::type t1 = def<T1>::f(),
-	  typename access_traits_parameter<T2>::type t2 = def<T2>::f(),
-	  typename access_traits_parameter<T3>::type t3 = def<T3>::f(),
-	  typename access_traits_parameter<T4>::type t4 = def<T4>::f(),
-	  typename access_traits_parameter<T5>::type t5 = def<T5>::f(),
-	  typename access_traits_parameter<T6>::type t6 = def<T6>::f(),
-	  typename access_traits_parameter<T7>::type t7 = def<T7>::f(),
-	  typename access_traits_parameter<T8>::type t8 = def<T8>::f(),
-	  typename access_traits_parameter<T9>::type t9 = def<T9>::f())
+    explicit 
+    tuple(wrapper<T0> t0 = def<T0>::f(),
+	  wrapper<T1> t1 = def<T1>::f(),
+	  wrapper<T2> t2 = def<T2>::f(),
+	  wrapper<T3> t3 = def<T3>::f(),
+	  wrapper<T4> t4 = def<T4>::f(),
+	  wrapper<T5> t5 = def<T5>::f(),
+	  wrapper<T6> t6 = def<T6>::f(),
+	  wrapper<T7> t7 = def<T7>::f(),
+	  wrapper<T8> t8 = def<T8>::f(),
+	  wrapper<T9> t9 = def<T9>::f())
       : base(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) {}
 
 
