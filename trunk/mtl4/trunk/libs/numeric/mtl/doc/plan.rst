@@ -131,9 +131,11 @@ Traditional mathematical concepts are defined in terms of
 calculations on pure numbers that exhibit no rounding error, but
 the number types we use every day in numerical linear
 algebra (e.g., ``float`` and ``double``) don't behave quite that
-well. In Section 7.1, subsection **Equality** of Jeremy Siek's
+well [High02]_. In Section 7.1, subsection **Equality** of Jeremy Siek's
 `preliminary documentation`_ for his early prototype of this
 project, the notation
+
+   boost/tools/build/jam_src/
 
   *a* =\ :sub:`ε` *b*
 
@@ -192,11 +194,34 @@ concept (e.g. an infinite-precision rational number type), those
 pivoting steps are not required.  A similar effect occurs in
 simulations where matrices with the same sparse structure are
 factored repeatedly: in calculating the sparse structure of the
-result, a boolean "fill" type that requires no pivoting can be used.
+result, a boolean “fill” type that requires no pivoting can be used.
+
+Andrew Lumsdaine notes that
+
+  “Another simpler example of where things can be sped up in
+  infinite precision case is in just adding up a list of numbers.
+  To do this with high accuracy with floats you want to sort,
+  normalize, etc.  With infinite precision, you can just add them
+  up.”
+
+and
+
+  “We should probably also distinguish infinite precision from
+  infinite length.  I.e., integers can be added without error, but
+  not if they overflow.  So perhaps a Bounded concept as well.  A
+  float therefore models :concept:`FinitePrecision` and
+  :concept:`Bounded`\ ”
 
 .. [#fieldwitherror] Pick a different name if you like.
 
 .. _`preliminary documentation`: ../external/prototype_manual.pdf
+
+.. [High02] `Nicholas J. Higham`_, *Accuracy and Stability of Numerical
+   Algorithms, Second edition*, SIAM_, 2002, xxx+680 pp, ISBN
+   0-89871-521-0.  http://www.ma.man.ac.uk/~higham/asna/
+
+.. _`Nicholas J. Higham`: http://www.ma.man.ac.uk/~higham
+.. _SIAM: http://www.siam.org/
 
 Algorithm Implementations
 =========================
