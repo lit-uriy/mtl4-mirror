@@ -368,12 +368,16 @@ namespace std {
 // Nth element ot T, first element is at index 0
 // -------------------------------------------------------
 
+//    template<int N, class T>
+//    class tuple_element {
+//      typedef typename T::tail_type Next;
+//    public:
+//      typedef typename tuple_element<N-1, Next>::type type;
+//    };
+
+
   template<int N, class T>
-  class tuple_element {
-    typedef typename T::tail_type Next;
-  public:
-    typedef typename tuple_element<N-1, Next>::type type;
-  };
+  class tuple_element : public tuple_element<N-1, typename T::tail_type> {};
 
   template<class T>
   struct tuple_element<0,T> {

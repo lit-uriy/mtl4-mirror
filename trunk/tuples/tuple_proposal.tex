@@ -7,12 +7,18 @@
 
 \newcommand{\effects}{\noindent \textbf{Effects:}}
 \newcommand{\returns}{\noindent \textbf{Returns:}}
+\newcommand{\returntype}{\noindent \textbf{Return type:}
+\newcommand{\semantics}{\noindent \textbf{Returns:}}}
 \newcommand{\requires}{\noindent \textbf{Requires:}}
 \newcommand{\notes}{\noindent \textbf{Notes:}}
+\newcommand{\values}{\noindent \textbf{Value:}}
 \newcommand{\code}[1]{\texttt{#1}}
+
+\newcommand{\concept}[1]{\textsf{#1}}
+
 \author{Jaakko Järvi}
 
-\title{Proposal for adding tuple tuples into the standard library}
+\title{Proposal for adding tuple types into the standard library\\N1382=02-0040}
 
 
 \begin{document}
@@ -25,7 +31,7 @@
 The library provides a template for a heterogeneous list of objects, 
 and an interface for easier handling of these lists as tuple types.
 
-\noindent \textbf{Header} \verv|<tuple>| synopsis
+\noindent \textbf{Header} \verb|<tuple>| synopsis
 
 \begin{verbatim}
 class null_type {}
@@ -106,7 +112,6 @@ public:
 \requires\ \code{T} is an instance of \code{cons}, or \code{T} is 
 \code{null\_type}.
 
-
 \begin{verbatim}
 cons();
 \end{verbatim}
@@ -116,6 +121,7 @@ cons();
 cons(const typename remove_volatile<head_type>::type& h, 
      const tail_type& t);
 \end{verbatim}
+\requires{All elements are \concept{CopyConstructible}}.
 \effects\ Initializes \code{head\_} with \code{h}
 and \code{tail\_} with \code{t}.\\
 \notes\ 
@@ -124,8 +130,6 @@ to call the constructor with a temporary as the first argument.
 When binding temporaries to references, the reference must
 be to a non-volatile and const type (8.5.3 (5)). Thus \code{volatile}
 is removed and \code{const} added. Reference types stay intact.
-
-
 
 
 \begin{verbatim}
@@ -180,45 +184,72 @@ const tail_type& get_tail() const;
 \end{verbatim}
 \returns\ Reference to tail. %NIL CASE ???
 
-The struct template
-\begin{verbatim}
-template<class T> class tuple_size;
-\end{verbatim}
-with an integral constant \code{value}.ksdjfksjflsjlfk
-
-\requires\ \code{T} is convertible to an instance of \code{cons}.\\
-\returns\ \code{tuple\_size(T::tail_type) + 1}.
+The library provides traits classes for querying 
+properties of tuples and their elements:
 
 \begin{verbatim}
-int tuple_size(null_type);
+tuple_size<T>::value
 \end{verbatim}
-\returns\ \code{0}.
+\requires\ \code{T} is an instance of \code{cons}, or \code{T} is 
+\code{null\_type}. \\
+\values\ \code{const int} holding the number of elements in the cons list \code{T}.
 
-template <int N, class T> class tuple_element;
+\begin{verbatim}
+tuple_element<N, T>::type
+\end{verbatim}
+\requires\ \code{T} is an instance of \code{cons}, or \code{T} is 
+\code{null\_type}. \\
+$0 \leq $ \code{N} $ < $ \code{tuple\_size<T>::value}.
+\values\ The type of the \code{N}th element in \code{T}.
+
+\begin{verbatim}
 template <int N, class H, class T> rt? get(cons<H, T>&);
 template <int N, class H, class T> rt? get(const cons<H, T>&);
+\end{verbatim}
 
+\begin{verbatim}
 inline bool operator==(const null_type&, const null_type&);
+inline bool operator>=(const null_type&, const null_type&);
+inline bool operator<=(const null_type&, const null_type&);
+\end{verbatim}
+\returns\ \code{true}.
+
+\begin{verbatim}
 inline bool operator!=(const null_type&, const null_type&);
 inline bool operator<(const null_type&, const null_type&);
 inline bool operator>(const null_type&, const null_type&);
-inline bool operator>=(const null_type&, const null_type&);
-inline bool operator<=(const null_type&, const null_type&);
+\end{verbatim}
+\returns\ \code{false}.
 
-
+\begin{verbatim}
 template <class H1, class T1, class H2, class T2>
 inline bool operator==(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+\returns\ \code{true} if all elementwise comparisons are true.
+\begin{verbatim}
 template <class H1, class T1, class H2, class T2>
 inline bool operator!=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+
+\begin{verbatim}
 template <class H1, class T1, class H2, class T2>
 inline bool operator<(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+
+\begin{verbatim}
 template <class H1, class T1, class H2, class T2>
 inline bool operator>(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+
+\begin{verbatim}
 template <class H1, class T1, class H2, class T2>
 inline bool operator<=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+\end{verbatim}
+
+\begin{verbatim}
 template <class H1, class T1, class H2, class T2>
 inline bool operator>=(const cons<H1, T1>& a, const cons<H2, T2>& b);
-
+\end{verbatim}
 
 
 
@@ -227,6 +258,170 @@ inline bool operator>=(const cons<H1, T1>& a, const cons<H2, T2>& b);
 %template <class T1, class T2, ... class T10>
 %class tuple {
 %public:
+
+
+
+\subsection{Tuples}
+
+
+
+\concept{ConsList} requirements:
+
+ConsLists are heterogeneous containers. 
+They allow the access to
+the \emph{head} (first element) and \emph{tail} (a ConsList consisting
+of all but the head), as well as to the $n$th element, where $n$ is 
+known at compile time.
+
+\paragaph{Notation}
+\tabular{ll}
+\code{T} & is a type that is a model of \concept{ConsList}
+\code{t} & object of type \code{T}
+\code{U} & is a type that is a model of \concept{ConsList}
+\code{u} & object of type \code{U}
+
+\paragraph{Participating types}
+
+\paragraph{Valid Expressions}
+\begin{itemize}
+
+\item Number of elements
+
+\code{T::length} 
+
+\returntype\ \code{static const int}.\\
+\semantics\ Number of elements in \code{T}.\\
+
+& integral constant, number of elements in \code{T} \\
+
+\end{itemize}
+
+
+
+
+\begin{tabular}{lll}
+
+\code{T} and \code{U} are types to be supplied by a C++ program 
+intantiating a template, \code{t} is a value of type \code{T}, 
+\code{u} a value of type \code{U}, \code{tc} and \code{uc} are 
+value of types \code{const T} and \code{const U} respectively.
+
+
+
+
+
+\concept{NonEmptyConsList} requirements:
+
+The \concept{ConsList} 
+
+\code{T} and \code{U} are types to be supplied by a C++ program 
+intantiating a template, \code{t} is a value of type \code{T}, 
+\code{u} a value of type \code{U}, \code{tc} and \code{uc} are 
+value of types \code{const T} and \code{const U} respectively.
+
+\begin{tabular}{lll}
+
+\textbf{expression} & \textbf{return type} & \textbf{requirement} \\
+
+\code{T::head\_type} & the type of the first element in \code{T} \\
+
+\code{T::tail\_type} & a type \code{TT} that is a model of \concept{ConsList} 
+and ... \\
+
+\code{t.head()} & \code{T::head\_type\&} \\
+
+\code{t.head() const} & \code{const T::head\_type\&} & \\
+
+\code{a.tail()} & \code{T::tail\_type\&} \\
+
+\code{a.tail() const} & \code{const T::tail\_type\&} & \\
+
+\code{T::length} & integral constant, number of elements in \code{T} \\
+
+\code{T(u)} & & \code{u} is equivalent to \code{T(u)}\\
+
+\end{tabular}
+
+
+
+\code{tuple} is a class template that can be instantiated with any number
+of arguments, up to a predefined limit \code{N}.
+Each template argument specifies the type of an element int the \code{tuple}.
+
+\subsubsection{Constructors}
+
+\begin{verbatim}
+tuple<T0, T1, ... TN>(); 
+\end{verbatim}
+\requires\ Each element type must be \concept{DefaulConstructible}.
+\effects\ Default initializes each element.
+
+\begin{verbatim}
+tuple<T0, T1, ... TN>(t0, t1, ..., tN); 
+\end{verbatim}
+\requires\ Each element type must be \concept{CopyConstructible}.
+\effects\ Copy initializes each element with the value of the corresponding 
+parameter.
+
+\begin{verbatim}
+template <class U>
+tuple<T0, T1, ... TN>(const U& u); 
+\end{verbatim}
+\requires\ 
+
+\begin{verbatim}
+  template <class T0, class T1, ... class TN>
+
+  class tuple {
+
+    typedef T0 head_type;
+    typedef tail_type;  
+
+    tuple() : base() {}
+  
+    // tuple_traits_parameter<T>::type takes non-reference types as const T& 
+    explicit 
+    tuple(typename tuple_detail::parameter<T0>::type t0,
+	  typename tuple_detail::parameter<T1>::type t1 
+	    = tuple_detail::def_value<T1>::f(),
+	  typename tuple_detail::parameter<T2>::type t2 
+	    = tuple_detail::def_value<T2>::f(),
+	  typename tuple_detail::parameter<T3>::type t3 
+	    = tuple_detail::def_value<T3>::f(),
+	  typename tuple_detail::parameter<T4>::type t4 
+	    = tuple_detail::def_value<T4>::f(),
+	  typename tuple_detail::parameter<T5>::type t5 
+	    = tuple_detail::def_value<T5>::f(),
+	  typename tuple_detail::parameter<T6>::type t6 
+	    = tuple_detail::def_value<T6>::f(),
+	  typename tuple_detail::parameter<T7>::type t7 
+	    = tuple_detail::def_value<T7>::f(),
+	  typename tuple_detail::parameter<T8>::type t8 
+	    = tuple_detail::def_value<T8>::f(),
+	  typename tuple_detail::parameter<T9>::type t9 
+	    = tuple_detail::def_value<T9>::f())
+      : base(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) {}
+    
+    template<class U1, class U2>
+    tuple(const cons<U1, U2>& p) : base(p) {}
+
+    template <class U1, class U2>
+    tuple& operator=(const cons<U1, U2>& k) { 
+      base::operator=(k); 
+      return *this;
+    }
+
+    template <class U1, class U2>
+    tuple& operator=(const std::pair<U1, U2>& k) { 
+      BOOST_STATIC_ASSERT(tuple_size<tuple>::value == 2);// check_size = 2
+      this->head = k.first;
+      this->tail.head = k.second; 
+      return *this;
+    }
+    
+  };
+\end{verbatim}
+
 
 
 \end{document}
