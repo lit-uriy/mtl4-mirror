@@ -1,7 +1,7 @@
 all: lettest
 
 lettest: lettest.cpp constvar.hpp let.hpp env.hpp nodes.hpp
-	g++ -o lettest lettest.cpp
+	mwcc -ansi on -iso_templates on -fl gcc_extensions -o lettest lettest.cpp
 
 constvar.hpp: constvar.in codegen.tcl
 	./constvar.in > constvar.hpp

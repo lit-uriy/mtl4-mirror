@@ -1,4 +1,4 @@
-#!/usr/local/bin/tclsh
+#!/home/jewillco/bin/tclsh
 # vim: syn=cpp:
 source codegen.tcl
 
@@ -7,14 +7,6 @@ puts [subst {
 #define LAMBDA_CONSTVAR_HPP
 
 #include "nodes.hpp"
-
-[treenode constant {Value} {
-  [eval_is {value}]
-}]
-
-[treenode variable {Var} {
-  [eval_is {env.get(var)}]
-}]
 
 #endif // LAMBDA_CONSTVAR_HPP
 }]

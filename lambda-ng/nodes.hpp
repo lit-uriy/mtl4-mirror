@@ -6,25 +6,39 @@ struct var_node {};
 struct constant_node {};
 
 template <class T>
-struct constant_type;
+struct constant_type {
+  T value;
+  constant_type(): value() {}
+  constant_type(const T& x): value(x) {}
+  template <class Env>
+  T run(const Env&) const {
+    return value;
+  }
+};
 
 template <class Var>
-struct variable_type;
-
-#define LAMBDA_AUTO_FUNC(proto, body) typeof(body) proto {return (body);}
-#define LAMBDA_AUTO(name, value) typeof((value)) name = (value)
+struct variable_type {
+  Var v;
+  variable_type(): v() {}
+  variable_type(const Var& v_): v(v_) {}
+  template <class Env>
+  typeof(Env().get(v)) run(const Env& env) const {
+    return env.get(v);
+  }
+};
 
 template <class T>
-T wrap_(const T& x, expr_node) {return x;}
+T wrap_(const T& x, const expr_node* const) {return x;}
 
 template <class T>
-constant_type<T> wrap_(const T& x, constant_node) {return x;}
+constant_type<T> wrap_(const T& x, const void* const) {return x;}
 
 template <class Var>
-var_type<Var> wrap_(const T& x, var_node) {return var_type<Var>();}
+variable_type<Var> wrap_(const Var& x, const var_node* const) {return x;}
 
 template <class T>
-LAMBDA_AUTO_FUNC(wrap(const T& x), wrap_(x,x))
+typeof(wrap_(T(), (T*)(0)))
+wrap(const T& x) {return wrap_(x,&x);}
 
 #define VAR(name) struct name##_: public var_node {}; name##_ name
 
