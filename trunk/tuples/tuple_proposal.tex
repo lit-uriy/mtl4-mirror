@@ -26,33 +26,42 @@
 
 \section{Motivation}
 
-This proposal describes tuple types implemented as a template library.
-The proposal is a generalization of the \code{pair} template from two
-to arbitrary (up to a predefined limit) number of elements.
+This proposal describes tuple types for C++.
+Everything proposed here can be implemented as a library, but the proposal
+intentionally leaves room for tuples as a built in type.
+We do not propose a fixed implementation, as there are several alternatives
+for implementing tuples. Also, new language features, such as variable
+length template argument lists may make currently unimplementable approaches
+possible.
+
+Tuple template is basically a generalization of the \code{pair} template 
+from two to arbitrary (up to a predefined limit) number of elements.
 Compared to pairs, the proposed tuple template supports a wider range 
-of element types (e.g. references), streaming oprerators are provided,
-and \code{tie} functions, that ...
+of element types (e.g. references) and streaming operations, customizable
+with specific manipulators.
+Further, the library provides \code{tie} functions for creating tuples 
+with reference elements. 
+These make tuples convenient as return types of functions.
+
 
 Tuple types are a general utility for the end user, to be used similarly 
 to pairs. 
 Also, tuples are an important tool for library implementers for representing
 a set of template arguments, a set of function arguments, etc. as a single
 entity.
-
-The library provides \code{tie} functions for creating tuples with reference
-elements. These make tuples convenient as return types of functions.
-\textbf{JAAKKO: esimerkki}.
+\textbf{JAAKKO: esimerkkiejä}.
 
 \section{Impact on the standard}
 
-The proposed library does not require any core language changes,
-or modifiation to existing standard library headers, if the definitions
-are included in \code{<utility>}, the location of the \code{pair} template.
+The proposed library does not require any core language changes.
+We propose tuple definitions to be included by including the \code{<utility>} 
+header, which is where \code{pair} resides in.
 However, operators for reading tuples from a stream and writing tuples into
-a stream do introduce a dependency to streams.
-\textbf{JAAKKO: mitäs tästä sitten pitäisi sanoa}.
+a stream do introduce a dependency to \code{<istream>} and \code{<ostream>}.
+\textbf{JAAKKO: should istream and ostream include utility, should there
+be tupleio header ??=}.
 
-Note however, that tuples would benefit from a set of core language changes:
+Note that tuples would benefit from a set of core language changes:
 \begin{itemize}
 \item Variable length template argument lists.
 \item Making reference to a reference to some type \code{T} equal to 
@@ -61,7 +70,133 @@ reference to \code{T}.
 templates.
 \end{itemize}
 
-\section{Design}
+\section{Tuples in a nutshell}
+
+\subsection{Defining tuple types}
+
+The \code{tuple} template can be instantiated with any number of arguments
+between 0 and 10 elements. 
+The argument types can be any valid C++ types.
+Examples:
+\begin{verbatim}
+typedef tuple<A, const B, volatile C, const volatile D> t1;
+typedef tuple<int, int&, const int&, const volatile int&> t2;
+typedef tuple<void, int()(int)> t3;
+\end{verbatim}
+
+\subsection{Constructing tuples}
+
+A $n$ element tuple has a default constructor, 
+converting copy constructor, 
+and a constructor with $n$ parameters.
+The types of the elements restrict which constructors can be used:
+\begin{itemize}
+\item If an $n$-element tuple is constructed with a constructor taking 
+0 elements, all elements must be default constructible.
+
+\item If an $n$-element tuple is constructed with a constructor taking 
+$n$ elements, all elements must be copy constructible and implicitly 
+convertible from the corresponding argument.
+For example
+\begin{verbatim}
+tuple<int, const int, std::string>(1, 'a', "Hi")
+\end{verbatim}
+
+\item If an $n$-element tuple is constructed with the converting copy 
+constructor, the argument type must be a model of the \concept{Tuple} concept
+and the each element must be elementwise copy constructible.
+\end{itemize}
+
+\begin{verbatim}
+tuple<int, float, std::string> t1;
+t1 = tuple<char, int, char[]>('a', 1, "Hi");
+\end{verbatim}
+
+
+\subsection{Assignment}
+
+The assignment operation is defined from any object that models
+the \concept{Tuple} concept and where the element types are elementwise 
+assignable.
+
+\subsection{Number of elements, element types}
+
+Tuples make the number of element accessible as a compile time constant 
+\code{size}.
+\begin{verbatim}
+tuple<int, int, int, int>::size; // equals 4
+\end{verbatim}
+
+The type of the \code{N}th element can be accessed as a typedef within
+a nested template \code{element}:
+\begin{verbatim}
+tuple<int, char, float, double>::element <2>::type // float
+\end{verbatim}
+Indexing is zero based. Index out of bounds results in a compilation error.
+
+\subsection{Element access}
+
+Let \code{t} be a tuple object. 
+The expression t[index<N>] returns the reference to the \code{N}th element
+of \code{t}, where \code{N} is an integral constant expression.
+\begin{verbatim}
+tuple<int, float, char>(1, 3.14, 'a') t;
+t.[index<2>] // equals 'a'
+\end{verbatim}
+Indexing is zero based. Index out of bounds results in a compilation error.
+
+\subsection{Relational operators}
+
+A relational operator \emph{op} is defined between two tuples \code{T} 
+and \code{U}, iff \code{T} and \code{U} have the same number of elements,
+and for all element positions, \emph{op} is defined between the element 
+from \code{T} and the element from \code{U}.
+\begin{verbatim}
+tuple<int, float, char> t; 
+tuple<int, char, int> u;
+t < u; // is defined
+
+tuple<int, int, int, int> x;
+tuple<int, int, int> y; 
+x < y; // not defined, different size
+
+tuple<int, int, complex<double>, int> x;
+tuple<int, int, std::string, int> y; 
+x < y; // not defined, no operator< between complex<double> and std::string
+\end{verbatim}
+
+The operators \code{<}, \code{>}, \code{<=}, \code{>=} each define a 
+lexicographical ordering. (JAAKKO: stick somewhere justification, std::pair,
+Haskell)
+The \code{operator==} is defined as the logical and of the elemenwise 
+equality comparisons.
+The \code{operator!=} is defined as the logical or of the
+elementwise comparisons.
+
+Each comparison operator \emph{op} is defined solely using the same
+operator \emph{op} for the elementwise comparisons and makes no assumptions
+about the behaviour respect to the other relational operators, or even
+to whether they are defined or not.
+
+\subsection{Input and output}
+
+A tuple type is \concept{OutputStreamable} (JAAKKO: explain these concepts}
+if each of its elements are 
+\code{OutputStreamable}.
+A tuple is \concept{InputStreamable} if each of its elements are 
+\concept{InputStreamable}.
+Note however, that in general it is not guaranteed, that a tuple written to 
+an ostream can be read back from an istream to a tuple that can be
+written to an ostream , and if the delimiters that are used between
+the two 
+
+Tuple objects can be written to an ostream with \code{operator<<} if
+each element is 
+read from an istream with \code{operator>>}.
+
+
+We describe an implementation that conforms to the requirements
+of this proposal.
 
 The tuple type is impelemented as an interface template \code{tuple} that
 can take up to $n$ (10 in the reference implementation) template arguments.
@@ -71,12 +206,19 @@ of another type (\code{cons}) which represents the tuple element as a
 \emph{cons list}.
 Comparison operators, streaming operators and element accessor functions all 
 operate on the cons list representation.
+
+We propose this representation be standardized as well, to give end programmers
+a convenient way to overload functions for tuple types. 
+
 \section{Text in the standard}
 
 \subsection{Tuples}
 
 The library provides a template for a heterogeneous list of objects, 
 and an interface for easier handling of these lists as tuple types.
+The \code{tuple} interface template has a predefined upper limit for the
+number of parameters, that is, number of elements in the tuple.
+
 
 \noindent \textbf{Header} \verb|<tuple>| synopsis
 
