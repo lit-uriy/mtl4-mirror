@@ -10,6 +10,7 @@ struct dummy_type {
   // operator std_tuple::tuple<std_tuple::tuple<double> >() const {return 2;}
 };
 
+#if 0
 int f(int a, int b) {
   std::cout << "a=" << a << " b='" << b << "'" << std::endl;
   return a+b;
@@ -26,6 +27,7 @@ template <class Ret, class F, class Tuple>
 Ret tuple_call(F f, const Tuple& tuple) {
   return tuple_call_2((int (*)(...))&f, (void*)&tuple, sizeof(Tuple));
 }
+#endif
 
 int main(int, char**) {
   std_tuple::tuple<int, const int, std::string> a(1, 'a', "Hi");
@@ -56,8 +58,10 @@ int main(int, char**) {
   std::cout << std_tuple::make_tuple(std_tuple::ref(a), c) << std::endl;
   std_tuple::tuple<int, double> tpair = std::make_pair(1,5.);
   std::cout << tpair << std::endl;
+#if 0
   // std::cout << tuple_call<int>(&f, fcall(1,2)) << std::endl;
   std::cout << tuple_call<int>(&f, std_tuple::make_tuple(1, 2)) << std::endl;
+#endif
   std_tuple::tuple<int, float, std::string> y2;
   std::cout << "Read test: enter tuple in form (int float string )" << std::endl;
   std::cout << "  -- note extra space before right parenthesis" << std::endl;
