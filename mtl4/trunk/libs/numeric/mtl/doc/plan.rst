@@ -9,7 +9,7 @@
 .. role:: concept
    :class: interpreted
 
-admonition:: Current Status
+.. admonition:: Current Status
 
   Currently working on modifying Boost.Jam to record timing
   information, so we can measure compile and run times.
