@@ -1,5 +1,5 @@
-test: test.cpp detail/generated.hpp tc2.s
-	g++ -O3 -I/u/jewillco/boost_1_28_0 -o test test.cpp tc2.s
+test: test.cpp detail/generated.hpp
+	g++ -O3 -I/u/jewillco/boost_1_28_0 -o test test.cpp
 
 detail/generated.hpp: detail/generator.tcl
 	./detail/generator.tcl > detail/generated.hpp
