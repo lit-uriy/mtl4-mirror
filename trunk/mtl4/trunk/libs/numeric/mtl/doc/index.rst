@@ -12,7 +12,9 @@ Library`_.
 Resources
   - The official `Statement Of Work`_.
 
-  - The `Development Plan`_.
+  - The `Development Plan`_ and current status report.  This
+    document will be updated with news and details as development
+    proceeds.
 
   - Jeremy Siek's `preliminary documentation`_ for his early prototype
     of this project.  We will be basing much of our work on this.
@@ -22,5 +24,5 @@ Resources
 .. _`Matrix Template Library`: http://www.osl.iu.edu/research/mtl
 .. _`Statement Of Work`: sow.html
 .. _`Development Plan`: plan.html
-.. _`Preliminary Documentation`: ../external/prototype_manual.pdf
+.. _`Preliminary Documentation`: external/prototype_manual.pdf
 
