@@ -7,12 +7,23 @@
 template <class Env, class Var, class Value>
 struct extended_env;
 
+template <class T>
+struct unbound_variable {
+  unbound_variable(const unbound_variable<unbound_variable<T> >&);
+  // So some constructor exists, although it can't be used
+  private:
+  unbound_variable();
+  unbound_variable(const unbound_variable&);
+};
+
 struct empty_env_type {
   template <class T>
   void get(const T&) const;
 
   template <class T>
-  struct get_var_type {};
+  struct get_var_type {
+    typedef unbound_variable<T> type;
+  };
 
   template <class Var, class Value>
   extended_env<empty_env_type, Var, Value>

@@ -6,8 +6,8 @@
 #include "constant.hpp"
 #include "let.hpp"
 #include "print.hpp"
-#if 0
 #include "lambda.hpp"
+#if 0
 #include "apply.hpp"
 #include "begin.hpp"
 #include "if.hpp"
@@ -158,6 +158,7 @@ int main(int, char**) {
   run(print(let(a,5,6)));
   run(let(a,5,print(a)));
   run(print(let(a,5,a)));
+  run(print(apply(lambda<int>(a,5), 6)));
 #if 0
   run<void>(
     let((n = 5, acc = 1),

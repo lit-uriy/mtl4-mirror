@@ -1,0 +1,17 @@
+// vim: syn=cpp:
+#ifndef LAMBDA_LAMBDA_HPP
+#define LAMBDA_LAMBDA_HPP
+
+#include "tags.hpp"
+
+[typed_closure apply {Rator Rand} {RatorT RandT} \
+  [get_type_is "[get_type rator Env @]" \
+	       "RatorT: [get_type rand Env @]" \
+	       "RandT: k(typed_apply(ratort,randt))"] \
+  [returns "typename RatorT::return_type"] \
+  [run_is "rator.run(env)(rand.run(env))"]]
+
+[closure closure {^Argname Body Env} {Rettype} ""]
+[closure !lambda {^Argname Body} {Rettype} ""]
+
+#endif // LAMBDA_LAMBDA_HPP
