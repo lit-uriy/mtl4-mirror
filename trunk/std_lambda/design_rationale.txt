@@ -96,6 +96,13 @@ For example:
   lazy(f)(a, b, c) // this would not work
   lazy(f)(var(a), b, c) // something like this would work but it is not pretty
 
+Existing practice:
+------------------
+
+Both approaches are being used in existing libraries, lazy in Phoenix (part of 
+the Spirit parser library), and bind in Boost.Bind and Boost.Lambda.
+The bind apporach is, however, more widely known and is existing practice. 
+
 Design decision:
 ----------------
 
