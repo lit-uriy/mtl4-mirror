@@ -1,54 +1,91 @@
-#ifndef STD_TUPLE_MANIP_HPP
-#define STD_TUPLE_MANIP_HPP
+#ifndef BOOST_TR1_TUPLE_MANIP_HPP
+#define BOOST_TR1_TUPLE_MANIP_HPP
 
-#ifndef STD_TUPLE_IN_IO
-#error "Must include <tupleio> for this library"
+#ifndef BOOST_TR1_TUPLE_TUPLEIO_HPP
+#error "Must include "tupleio.hpp" for this library"
 #endif
 
 #include <iostream>
 #include <string>
 
 // Tuple I/O manipulators
+int my_index() {
+  static int n = std::ios_base::xalloc();
+  return n;
+}
 
-namespace STD_TUPLE_NS {
-  namespace detail {
-    template <class Tag>
-    struct string_ios_manip_helper {
-      static int index() {
-	static int index_ = std::ios_base::xalloc();
-	return index_;
-      }
-    };
 
-    template <class Tag, class Stream>
-    class string_ios_manip {
-      // Based on article at 
-      // http://www.cuj.com/experts/1902/austern.htm?topic=experts
+namespace boost {
+  namespace tr1 {
+    namespace tuple_detail {
 
-      int index; Stream& stream;
+      template <class Tag>
+      struct string_ios_manip_helper {
+	static int index() {
+	  static int index_ = std::ios_base::xalloc();
+	  return index_;
+	}
+      };
 
-      typedef std::basic_string<typename Stream::char_type,
-				typename Stream::traits_type> stringT;
-
+ 
+      struct any_string {
+	virtual any_string* clone() = 0;
+      };
+      
+      template <class Str> 
+      class string_holder : public any_string {
+	Str s;
       public:
-      string_ios_manip(Stream& str_): stream(str_) {
-	index = string_ios_manip_helper<Tag>::index();
-      }
+	string_holder(const Str& s_) : s(s_) {}
+	Str get() const { return s; }
+	virtual string_holder* clone() { return new string_holder(s); }
+      }     
 
-      void set(const stringT& s) {
-	stringT* p = (stringT*)(stream.pword(index));
-	if (p) delete p;
-	stream.pword(index) = (void*)(new stringT(s));
+      void tuple_manip_callback(std::ios_base::event ev,
+				std::ios_base& b,
+				int n) {
+	any_string* p = (any_string*) b.pword(n);
+	if (ev == std::ios_base::erase_event) {
+	  delete p;
+	  b.pword(n) = 0; 
+	}
+	else if (ev == std::ios_base::compyfmt_event && p != 0)
+	  b.pword(n) = p->clone();
       }
-
-      const stringT& get(const stringT& default_) const {
-	if (stream.pword(index))
-	  return *(stringT*)(stream.pword(index));
-	else
-	  return default_;
-      }
-
-      // FIXME: cleanup on program exit
+	
+      template <class Tag, class Stream>
+      class string_ios_manip {
+	// Based on article at 
+	// http://www.cuj.com/experts/1902/austern.htm?topic=experts
+	
+	int index; Stream& stream;
+	
+	typedef std::basic_string<typename Stream::char_type,
+				  typename Stream::traits_type> stringT;
+	
+      public:
+	string_ios_manip(Stream& str_): stream(str_) {
+	  index = string_ios_manip_helper<Tag>::index();
+	  // FIXME: this might need to be in the setter instead?
+	  int registered = stream.iword(index);
+	  if (!registered) {
+	    stream.iword(index) = 1;
+	    stream.register_callback(tuple_manip_callback, index);
+	  }
+	}
+	
+	void set(const stringT& s) {
+	  any_string* p = (any_string*)(stream.pword(index));
+	  if (p) delete p;
+	  stream.pword(index) = (void*)(new string_holder<stringT>(s));
+	}
+	
+	const stringT& get(const stringT& default_) const {
+	  if (stream.pword(index))
+	    return ((string_holder<stringT>*)(stream.pword(index)))->get();
+	  else
+	    return default_;
+	}
     };
   }
 
@@ -108,6 +145,8 @@ namespace STD_TUPLE_NS {
 
 #undef STD_TUPLE_DEFINE_MANIPULATOR
 
-}
+    } // namespace tuple_detail
+  } // namespace tr1
+} // namespace boost
 
-#endif // STD_TUPLE_TUPLE0_HPP
+#endif // BOOST_TR1_TUPLE_MANIP_HPP
