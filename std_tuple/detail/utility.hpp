@@ -16,6 +16,9 @@ namespace STD_TUPLE_NS {
     struct enable_if {typedef T type;};
     template <class T>
     struct enable_if<false,T> {};
+
+    template <bool B, class T>
+    struct disable_if: public enable_if<!B,T> {};
   }
 }
 

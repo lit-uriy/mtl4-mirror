@@ -32,8 +32,8 @@ namespace STD_TUPLE_NS {
       typedef T data_type;
       BOOST_STATIC_CONSTANT(int, start = Start);
       BOOST_STATIC_CONSTANT(int, length = Len);
-      template <int N, class T> friend class tuple_traits_impl;
-      template <int N, class T> friend class subrange_elt;
+      template <int N, class U> friend class tuple_traits_impl;
+      template <int N, class U> friend class subrange_elt;
 
       public:
       tuple_subrange_type(const T& x): data(x) {}

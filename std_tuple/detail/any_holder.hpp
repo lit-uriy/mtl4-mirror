@@ -18,8 +18,8 @@ namespace STD_TUPLE_NS {
     public:
     typedef T type;
 
-    operator T() {return data;}
-    T unwrap() {return data;}
+    operator T() const {return data;}
+    T unwrap() const {return data;}
 
     any_holder(typename boost::add_reference<
 		 typename boost::add_const<T>::type

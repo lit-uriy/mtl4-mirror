@@ -73,7 +73,7 @@ namespace STD_TUPLE_NS {
 
       // Construct from members
       template <class U, class V>
-      append_tuple(U& u, V& v)
+      append_tuple(const U& u, const V& v)
 	: part0(u), part1(v) {}
     };
 

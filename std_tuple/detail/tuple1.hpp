@@ -58,7 +58,7 @@ namespace STD_TUPLE_NS {
       static typename boost::add_reference<typename boost::add_const<typename tuple_element<0,T>::type>::type>::type
       run(const T& value) {
 	std::cout << "Converting from 1-tuple" << std::endl;
-	return get<0>(value);
+	return STD_TUPLE_NS::get<(0)>(value);
       }
     };
 
