@@ -933,8 +933,8 @@ class any_holder {
 public:
   typedef T type;
 
-  operator T() { return data; }
-  T unwrap() { return data; }
+  operator T() const { return data; }
+  T unwrap() const { return data; }
 
   any_holder(const T& t) : data(t) {}
 };
