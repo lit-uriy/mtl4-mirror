@@ -196,7 +196,7 @@ simulations where matrices with the same sparse structure are
 factored repeatedly: in calculating the sparse structure of the
 result, a boolean “fill” type that requires no pivoting can be used.
 
-Andrew Lumsdaine notes that
+Andrew Lumsdaine notes (2005-1-28) that
 
   “Another simpler example of where things can be sped up in
   infinite precision case is in just adding up a list of numbers.
