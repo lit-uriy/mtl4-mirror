@@ -7,38 +7,57 @@
 
 #include "boost/type_traits.hpp"
 #include "utility.hpp"
+#include <utility>
 
 namespace STD_TUPLE_NS {
   namespace detail {
-    struct tuple_tag {};
+    // Member tester based on those in type_traits
+    template <class T>
+    typename T::I_am_a_std_tuple_normal_tuple_class
+    check_for_tuple(T*);
+
+    boost::type_traits::no_type check_for_tuple(const void*);
+
+    template <class T1, class T2>
+    boost::type_traits::yes_type
+    check_for_pair(std::pair<T1,T2> *);
+
+    boost::type_traits::no_type
+    check_for_pair(...);
   }
 
   //User-visible tuple operations
   template <class T>
   struct is_tuple {
-    BOOST_STATIC_CONSTANT(bool, value = (boost::is_base_and_derived<detail::tuple_tag, T>::value));
+    BOOST_STATIC_CONSTANT(bool, value = (sizeof(detail::check_for_tuple((typename boost::remove_reference<T>::type *)(0))) == sizeof(boost::type_traits::yes_type)));
   };
 
+  namespace detail {
+    template <class T>
+    struct is_std_pair {
+      BOOST_STATIC_CONSTANT(bool, value = (sizeof(detail::check_for_pair((typename boost::remove_reference<T>::type *)(0))) == sizeof(boost::type_traits::yes_type)));
+    };
+  }
+
   template <class T>
-  struct is_tuple_like: public is_tuple<T> {};
+  struct is_tuple_like {
+    BOOST_STATIC_CONSTANT(bool, value = (
+	  is_tuple<T>::value ||
+	  detail::is_std_pair<T>::value));
+  };
 
   namespace detail {
-    struct tuple0_tag: public tuple_tag {};
-    struct tuple1_tag: public tuple_tag {};
-    struct append_tuple_tag: public tuple_tag {};
-    struct subrange_tag: public tuple_tag {};
-
     enum {
       nontuple = 100, user_tuple, 
       tuple0_derived, tuple1_derived, append_tuple_derived,
-      subrange_derived
+      subrange_derived, std_pair_derived
     };
 
     template <int Tc, class T> struct tuple_traits_impl {};
 
     template <class T>
     struct is_user_tuple {
-      BOOST_STATIC_CONSTANT(bool, value = (is_tuple_like<T>::value && !is_tuple<T>::value));
+      BOOST_STATIC_CONSTANT(bool, value = (is_tuple_like<T>::value && !is_tuple<T>::value && !detail::is_std_pair<T>::value));
     };
 
     void categorize_tuple(); // All real versions will have one arg
@@ -53,7 +72,7 @@ namespace STD_TUPLE_NS {
 
     template <class T>
     struct tuple_traits
-      : public tuple_traits_impl<tuple_category<T>::value, T>
+      : public tuple_traits_impl<tuple_category<T>::value, typename boost::remove_const<typename boost::remove_reference<T>::type>::type>
       {};
 
     // Type-integer encoding/decoding based on "A Portable typeof Operator"

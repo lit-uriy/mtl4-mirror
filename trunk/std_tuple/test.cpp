@@ -1,6 +1,7 @@
 #include "tuple"
 #include <string>
 #include <iostream>
+#include <utility>
 
 template <class O, int Start, int Len, class T>
 struct print_tuple_type {
@@ -82,6 +83,8 @@ int main(int, char**) {
   std::cout << std_tuple::make_tuple(std_tuple::ref(c), c) << std::endl;
   std::cout << std_tuple::make_tuple(std_tuple::cref(c), c) << std::endl;
   std::cout << std_tuple::make_tuple(std_tuple::ref(a), c) << std::endl;
+  std_tuple::tuple<int, double> tpair = std::make_pair(1,5.);
+  std::cout << tpair << std::endl;
   // std::cout << tuple_call<int>(&f, fcall(1,2)) << std::endl;
   std::cout << tuple_call<int>(&f, std_tuple::make_tuple(1, 2)) << std::endl;
   return 0;

@@ -13,25 +13,33 @@
 
 namespace STD_TUPLE_NS {
   namespace detail {
-    encode_type<tuple1_derived>::type categorize_tuple(tuple1_tag*);
-
     template <class T> struct tuple1;
     template <class T> struct tuple1_nesting_depth;
 
-    template <int Cat, class T>
+    template <class T>
+    encode_type<tuple1_derived>::type categorize_tuple(tuple1<T>*);
+
+    template <bool IsTuple1, class T>
     struct tuple1_nesting_depth_impl {
       BOOST_STATIC_CONSTANT(int, value = 0);
     };
 
     template <class T>
-    struct tuple1_nesting_depth_impl<tuple1_derived, T> {
+    struct tuple1_nesting_depth_impl<true, T> {
       BOOST_STATIC_CONSTANT(int, value =
 	  (1 + tuple1_nesting_depth<typename tuple_element<0,T>::type>::value));
     };
 
     template <class T>
+    struct is_tuple1 {
+      BOOST_STATIC_CONSTANT(bool, value =
+	  (STD_TUPLE_NS::is_tuple<T>::value &&
+	   STD_TUPLE_NS::tuple_size<T>::value == 1));
+    };
+
+    template <class T>
     struct tuple1_nesting_depth
-      : public tuple1_nesting_depth_impl<tuple_category<T>::value, T> {};
+      : public tuple1_nesting_depth_impl<is_tuple1<T>::value, T> {};
 
     template <int N, class T> struct tuple1_elt {};
 
@@ -63,13 +71,14 @@ namespace STD_TUPLE_NS {
     };
 
     template <class T>
-    class tuple1: public tuple1_tag {
+    class tuple1 {
       T value;
       typedef T value_type;
 
       template <int N, class U> friend class tuple1_elt;
 
       public:
+      typedef boost::type_traits::yes_type I_am_a_std_tuple_normal_tuple_class;
       tuple1(): value() {}
       tuple1(const tuple1& o): value(o.value) {}
 

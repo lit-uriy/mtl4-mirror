@@ -11,9 +11,9 @@
 
 namespace STD_TUPLE_NS {
   namespace detail {
-    encode_type<tuple0_derived>::type categorize_tuple(tuple0_tag*);
+    struct tuple0 {typedef boost::type_traits::yes_type I_am_a_std_tuple_normal_tuple_class;};
 
-    struct tuple0: public tuple0_tag {};
+    encode_type<tuple0_derived>::type categorize_tuple(tuple0*);
 
     template <class T>
     struct tuple_traits_impl<tuple0_derived, T> {

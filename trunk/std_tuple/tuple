@@ -13,6 +13,7 @@
 #include "detail/compare.hpp"
 #include "detail/any_holder.hpp"
 #include "detail/generated.hpp"
+#include "detail/pair.hpp"
 
 namespace STD_TUPLE_NS { // To allow for change to std later
 }
