@@ -1,0 +1,235 @@
+// vim: syn=cpp:
+#ifndef STD_TUPLE_TUPLE_IO
+#define STD_TUPLE_TUPLE_IO
+
+#include "tuple"
+#include <iostream>
+#include <string>
+
+#define STD_TUPLE_IN_IO
+
+namespace STD_TUPLE_NS {
+  namespace detail {
+    template <class Tag>
+    struct string_ios_manip_helper {
+      static int index() {
+	static int index_ = std::ios_base::xalloc();
+	return index_;
+      }
+    };
+
+    template <class Tag, class Stream>
+    class string_ios_manip {
+      // Based on article at 
+      // http://www.cuj.com/experts/1902/austern.htm?topic=experts
+
+      int index; Stream& stream;
+
+      typedef std::basic_string<typename Stream::char_type,
+				typename Stream::traits_type> stringT;
+
+      public:
+      string_ios_manip(Stream& str_): stream(str_) {
+	index = string_ios_manip_helper<Tag>::index();
+      }
+
+      void set(const stringT& s) {
+	stringT* p = (stringT*)(stream.pword(index));
+	if (p) delete p;
+	stream.pword(index) = (void*)(new stringT(s));
+      }
+
+      const stringT& get(const stringT& default_) const {
+	if (stream.pword(index))
+	  return *(stringT*)(stream.pword(index));
+	else
+	  return default_;
+      }
+
+      // FIXME: cleanup on program exit
+    };
+
+    struct tuple_open_tag {};
+    struct tuple_close_tag {};
+    struct tuple_delim_tag {};
+
+    template <class CharT, class Traits = std::char_traits<CharT> >
+    struct tuple_open_type {
+      typedef std::basic_string<CharT,Traits> stringT;
+      stringT data;
+      tuple_open_type(const stringT& d): data(d) {}
+    };
+
+    template <class Stream, class CharT, class Traits>
+    Stream&
+    operator>>
+	(Stream& s,
+	 const tuple_open_type<CharT,Traits>& m) {
+      string_ios_manip<tuple_open_tag, Stream>(s).
+	set(m.data);
+      return s;
+    }
+
+    template <class Stream, class CharT, class Traits>
+    Stream&
+    operator<<
+	(Stream& s,
+	 const tuple_open_type<CharT,Traits>& m) {
+      string_ios_manip<tuple_open_tag, Stream>(s).
+	set(m.data);
+      return s;
+    }
+
+    template <class CharT, class Traits = std::char_traits<CharT> >
+    struct tuple_close_type {
+      typedef std::basic_string<CharT,Traits> stringT;
+      stringT data;
+      tuple_close_type(const stringT& d): data(d) {}
+    };
+
+    template <class Stream, class CharT, class Traits>
+    Stream&
+    operator>>
+	(Stream& s,
+	 const tuple_close_type<CharT,Traits>& m) {
+      string_ios_manip<tuple_close_tag, Stream>(s).
+	set(m.data);
+      return s;
+    }
+
+    template <class Stream, class CharT, class Traits>
+    Stream&
+    operator<<
+	(Stream& s,
+	 const tuple_close_type<CharT,Traits>& m) {
+      string_ios_manip<tuple_close_tag, Stream>(s).
+	set(m.data);
+      return s;
+    }
+
+    template <class CharT, class Traits = std::char_traits<CharT> >
+    struct tuple_delim_type {
+      typedef std::basic_string<CharT,Traits> stringT;
+      stringT data;
+      tuple_delim_type(const stringT& d): data(d) {}
+    };
+
+    template <class Stream, class CharT, class Traits>
+    Stream&
+    operator>>
+	(Stream& s,
+	 const tuple_delim_type<CharT,Traits>& m) {
+      string_ios_manip<tuple_delim_tag, Stream>(s).
+	set(m.data);
+      return s;
+    }
+
+    template <class Stream, class CharT, class Traits>
+    Stream&
+    operator<<
+	(Stream& s,
+	 const tuple_delim_type<CharT,Traits>& m) {
+      string_ios_manip<tuple_delim_tag, Stream>(s).
+	set(m.data);
+      return s;
+    }
+  }
+
+  template <class CharT, class Traits>
+  detail::tuple_open_type<CharT,Traits>
+  tuple_open(const std::basic_string<CharT,Traits>& s) {
+    return detail::tuple_open_type<CharT,Traits>(s);
+  }
+
+  template <class CharT>
+  detail::tuple_open_type<CharT>
+  tuple_open(const CharT c[]) {
+    return detail::tuple_open_type<CharT>(std::basic_string<CharT>(c));
+  }
+
+  template <class CharT>
+  detail::tuple_open_type<CharT>
+  tuple_open(CharT c) {
+    return detail::tuple_open_type<CharT>(std::basic_string<CharT>(1,c));
+  }
+
+  template <class CharT, class Traits>
+  detail::tuple_close_type<CharT,Traits>
+  tuple_close(const std::basic_string<CharT,Traits>& s) {
+    return detail::tuple_close_type<CharT,Traits>(s);
+  }
+
+  template <class CharT>
+  detail::tuple_close_type<CharT>
+  tuple_close(const CharT c[]) {
+    return detail::tuple_close_type<CharT>(std::basic_string<CharT>(c));
+  }
+
+  template <class CharT>
+  detail::tuple_close_type<CharT>
+  tuple_close(CharT c) {
+    return detail::tuple_close_type<CharT>(std::basic_string<CharT>(1,c));
+  }
+
+  template <class CharT, class Traits>
+  detail::tuple_delim_type<CharT,Traits>
+  tuple_delimiter(const std::basic_string<CharT,Traits>& s) {
+    return detail::tuple_delim_type<CharT,Traits>(s);
+  }
+
+  template <class CharT>
+  detail::tuple_delim_type<CharT>
+  tuple_delimiter(const CharT c[]) {
+    return detail::tuple_delim_type<CharT>(std::basic_string<CharT>(c));
+  }
+
+  template <class CharT>
+  detail::tuple_delim_type<CharT>
+  tuple_delimiter(CharT c) {
+    return detail::tuple_delim_type<CharT>(std::basic_string<CharT>(1,c));
+  }
+
+
+
+  // Printing routines
+  namespace detail {
+    template <class O, int Start, int Len, class T>
+    struct print_tuple_type {
+      static void run(O& o, const T& x) {
+	o << STD_TUPLE_NS::get<Start>(x);
+	if (Start+1 != Len)
+	  o << string_ios_manip<tuple_delim_tag,O>(o).get(" ");
+	print_tuple_type<O,Start+1, Len, T>::run(o,x);
+      }
+    };
+
+    template <class O, int Len, class T>
+    struct print_tuple_type<O,Len,Len,T> {
+      static void run(O& o, const T&) {
+	o << string_ios_manip<tuple_close_tag,O>(o).get(")");
+      }
+    };
+  }
+
+  template <class O, class T>
+  O& print_tuple(O& o, const T& x) {
+    o << detail::string_ios_manip<detail::tuple_open_tag,O>(o).get("(");
+    detail::print_tuple_type<O, 0, tuple_size<T>::value, T>::run(o,x);
+    return o;
+  }
+
+  template <class O, class T>
+  typename detail::enable_if<
+    is_tuple<T>::value,
+    O&>::type
+  operator << (O& o, const T& x) {
+    print_tuple(o,x);
+    return o;
+  }
+}
+
+
+#undef STD_TUPLE_IN_IO
+// Prevent users from including detail/* after this (I/O stuff)
+
+#endif
