@@ -89,15 +89,18 @@ templates (core language issue 226).
 \item Adding support for templated typedefs.
 \end{itemize}
 %
-There are at least a few different approaches for implementing
-tuples underneath a common interface.
+%There are at least a few different approaches for implementing
+%tuples underneath a common interface.
 
-For these reasons we do not suggest that a fixed implementation 
-be standardized, 
-but rather that the proposed text for the standard state the requirements for
-a tuple implementation 
-in the form of valid expressions and the semantics of those expressions.
-Also, this approach leaves
+%For these reasons we do not mandate a particular template signature,
+%
+%suggest that a fixed implementation 
+%be standardized, 
+%but rather that the proposed text for the standard state the requirements for
+%a tuple implementation 
+%in the form of valid expressions and the semantics of those expressions.
+
+The proposal is written in such a way that it leaves 
 room for a built-in tuple type, or for a tuple template with special
 support from the compiler, which we see as being worth considering.
 Compared to built-in tuple types in other languages,
@@ -126,9 +129,8 @@ The concrete additions and changes to the standard are:
 as tuples.
 \item A utility class and two utility function templates to be used in passing
 reference arguments through a pass-by-copy interface.
-These templates have uses outside of tuples and should thus be described
-elsewhere in the standard, possibly together with the \emph{type traits} library~\cite{cit:boost_type_traits:02,cit:maddock:00}, which has been proposed for
-standardization~\cite{cit:type_traits_proposal:02}.
+These templates have uses outside of tuples we suggest then to be 
+included in section 20.2 (Utility components).
 \end{itemize}
 
 We propose two new standard headers. 
@@ -255,10 +257,10 @@ make_tuple(ref(ca));         // \cccomment{constructs tuple<const A&>(ca)}
 \end{alltt}
 
 %
-Array arguments to \code{make\_tuple} result in the corresponding tuple element
-being a reference to a const array. 
-This is to avoid the need to wrap arrays with \code{cref}, as arrays cannot
-be copied as such anyway.
+%Array arguments to \code{make\_tuple} result in the corresponding tuple element
+%being a reference to a const array. 
+%This is to avoid the need to wrap arrays with \code{cref}, as arrays cannot
+%be copied as such anyway.
 %
 Note that \code{make\_tuple} cannot be made to accept references to function 
 types without the \code{ref} wrapper, unless core language issue 295 
@@ -878,16 +880,15 @@ a stream can be extracted back to a tuple of the same type.
 \subsubsection*{Tuple formatting manipulators}
 
 The library defines the following three stream manipulator functions.
-The type designated \emph{tuple\_manip} is implementation-specified and may be
-different for each function.
+The types designated \emph{tuple\_manip1}, \emph{tuple\_manip2} and \emph{tuple\_manip3} are implementation-specified.
 
 \smallskip 
 
-\emph{tuple\_manip} \code{tuple\_open(char\_type c)}
+\emph{tuple\_manip1} \code{tuple\_open(char\_type c)}
 
-\emph{tuple\_manip} \code{tuple\_close(char\_type c)}
+\emph{tuple\_manip2} \code{tuple\_close(char\_type c)}
 
-\emph{tuple\_manip} \code{tuple\_delimiter(char\_type c)}
+\emph{tuple\_manip3} \code{tuple\_delimiter(char\_type c)}
 
 \smallskip 
 
@@ -922,139 +923,77 @@ This might be worthwhile, such as to allow delimiters like \code{", "}.
 
 \subsubsection*{Utility functions for tuple construction}
 
-The library provides the class template \code{any\_holder} that can hold
-objects or references of any type. 
-The observable behavior of \code{any\_holder} must be as if implemented:
+The library provides the class template \code{reference\_wrapper} that 
+stores a reference to an object in a CopyConstructible wrapper, and two 
+\code{reference\_wrapper} construction functions that allow the user to 
+express the intent in storing a reference instead of a copy.
 
 \smallskip 
 
 \begin{minipage}{10.5cm}
-\begin{verbatim}
-template <class T>
-class any_holder {
-  T data;
+\begin{alltt}
+template<typename T>
+class reference_wrapper \{
 public:
   typedef T type;
+   
+  explicit reference_wrapper(T &);
 
-  operator T() const { return data; }
-  T unwrap() const { return data; }
-
-  any_holder(const T& t) : data(t) {}
-};
-\end{verbatim}
+  operator T& () const;
+  T& get() const;
+\};
+\end{alltt}
 \end{minipage}
 
 \smallskip 
 
-\noindent \textsf{[If core issue 106 is not resolved to make a reference to a 
-reference be just a reference instead of an error,
-the constructor parameter type must be defined as:
-\code{typename add\_reference<typename add\_const<T>::type>::type}]
-(see~\cite{cit:type_traits_proposal:02})}
+\verb|explicit reference_wrapper(T& t));|
 
 \smallskip 
 
-\noindent Reference types wrapped in \code{any\_holder} can be passed by copy, and
-as const references, without affecting the constness of the wrapped object.
-Two template functions, \code{ref} and \code{cref}, are provided to create
-\code{any\_holder} objects.
-
-
-\bigskip 
-
-\verb|template <class T> inline any_holder<T&> ref(T& t);|
-
-\smallskip 
-
-\req{Returns:} \verb|any_holder<T&>(t)|.
-
-\bigskip 
-
-\verb|template <class T> inline any_holder<const T&> cref(const T& t);|
-
-\smallskip 
-
-\req{Requires:} \code{T} cannot be a function type.\\
-\textsf{[This requirement may be unnecessary depending on the resolution of
-core language issue 295]}\\
-\req{Returns:} \verb|any_holder<const T&>(t)|.
-
-\bigskip 
-
-\begin{minipage}{10.5cm}
-\begin{verbatim}
-template<class V0, class V1, ..., class VN>
-... make_tuple(const V0& v0, const V1& v1, ..., const VN& vn); 
-\end{verbatim}
-\end{minipage}
+\req{Postconditions:} \verb|this->get()| is equivalent to \code{t}.\\
+\req{Throws:} will not throw.
 
 \smallskip
 
-\req{Return type:} \code{tuple<T0, T1, ..., TN>}, where 
-\begin{itemize}
-\item if \code{Vi} is an array type, 
-then \code{Ti} is a reference to \code{const Vi}.
-\item if the cv-unqualified type \code{Vi} is 
-\code{any\_holder<X>}, then \code{Ti} is \code{X}.
-\item otherwise \code{Ti} is \code{Vi}, with 
-any const qualifications removed.
-\end{itemize}
-\req{Example:} 
+\verb|operator T& () const;|
 
 \smallskip 
 
-\begin{minipage}{10.5cm}
-\begin{verbatim}
-int i; float j; 
-make_tuple(1, "C++", ref(i), cref(j))
-\end{verbatim}
-\end{minipage}
+\req{Returns:} \verb|this->get()|\\
+\req{Throws:} will not throw.
 
 \smallskip 
 
-\noindent creates a tuple of type 
+\verb|T& get() const;|
+
+\req{Returns:} the stored reference.\\
+\req{Throws:} will not throw.
 
 \smallskip 
 
-\verb|tuple<int, const char (&) [4], int&, const float&>|
+\verb|template<typename T> reference_wrapper<T> ref(T& t);|
 
 \smallskip 
 
-\req{Notes:} The \code{make\_tuple} function template must be implemented
-for each different number of arguments from 0 to the maximum number of allowed tuple elements.
-To construct a tuple which contains a reference to a function,
- the 
-function reference must be wrapped inside \code{ref}.
+\req{Returns:} \verb|reference_wrapper<T>(t)|\\
+\req{Throws:} will not throw.
+
+\smallskip 
+
+\verb|template<typename T> reference_wrapper<T const> cref(const T& t);|
+
+\smallskip 
+\
+req{Requires:} \code{T} cannot be a function type.\\
+\textsf{[This requirement may be unnecessary depending on the resolution of
+core language issue 295]}\\
+\req{Returns:} \verb|reference_wrapper<T const>(t)|\\
+\req{Throws:} will not throw.
 
 \bigskip 
 
-\code{tie(t0, t1, ..., tn)}
-
-\smallskip  
-
-\req{Effects:} As if implemented:
-
-\smallskip 
-
-\begin{minipage}{10.5cm}
-\begin{verbatim}
-template<class T0, class T1, ..., class TN>
-tuple<T0&, T1&, ..., TN&> tie(T0& t0, T1& t1, ..., TN& tn) {
-  return tuple<T0&, T1&, ..., TN&>(t0, t1, ..., tn); 
-}
-\end{verbatim}
-\end{minipage}
-
-\smallskip 
-
-\noindent 
-for each different number of arguments from 0 to the maximum number of 
-allowed tuple elements.
-% +
-
-\bigskip 
-
-\noindent The library provides the class \code{swallow\_assign}, as if implemented:
+\noindent The library provides the class \code{swallow\_assign}:
 %
 
 \smallskip 
@@ -1072,15 +1011,75 @@ struct swallow_assign {
 
 \noindent The library provides an object
 \code{ignore} of type \code{swallow\_assign}.
-It must be possible to use \code{ignore} in multiple translation units in 
-a program.
+
+\begin{verbatim}
+extern swallow_assign ignore;
+\end{verbatim}
+
+\subsubsection*{Tuple creation functions}
+
+\begin{minipage}{10.5cm}
+\begin{verbatim}
+template<class V0, class V1, ..., class VN>
+tuple<T0, T1, ..., TN> 
+make_tuple(const V0& v0, const V1& v1, ..., const VN& vn); 
+\end{verbatim}
+\end{minipage}
+
+\smallskip
+
+where 
+\begin{itemize}
+\item if the cv-unqualified type \code{Vi} is 
+\code{reference\_wrapper<X>}, then \code{Ti} is \code{X\&}.
+\item otherwise \code{Ti} is \code{Vi}.
+\end{itemize}
+\req{Example:} 
 
 \smallskip 
+
+\begin{minipage}{10.5cm}
+\begin{verbatim}
+int i; float j; 
+make_tuple(1, ref(i), cref(j))
+\end{verbatim}
+\end{minipage}
+
+\smallskip 
+
+\noindent creates a tuple of type 
+
+\smallskip 
+
+\verb|tuple<int, int&, const float&>|
+
+\smallskip 
+
+\req{Notes:} The \code{make\_tuple} function template must be implemented
+for each different number of arguments from 0 to the maximum number of allowed tuple elements.
+%To construct a tuple which contains a reference to a function,
+% the 
+%function reference must be wrapped inside \code{ref}.
+
+\bigskip 
+
+\begin{verbatim}
+template<class T0, class T1, ..., class TN>
+tuple<T0&, T1&, ..., TN&> tie(T0& t0, T1& t1, ..., TN& tn);
+\end{verbatim}
+
+\smallskip  
+
+\req{Returns:} \verb|tuple<T0&, T1&, ..., TN&>(t0, t1, ..., tn)|
+\req{Notes:} The \code{tie} function template must be implemented
+for each different number of arguments from 0 to the maximum number of allowed tuple elements.
+
+\bigskip 
 
 \req{Example:} \code{tie} functions allow one to create tuples that unpack 
 tuple-like objects into variables. \code{ignore} can be used for elements that
 are not needed:
-
+%add reference to ignore
 \smallskip
 
 \begin{minipage}{10.5cm}
