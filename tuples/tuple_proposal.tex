@@ -5,9 +5,15 @@
 
 %\usepackage[finnish]{babel}
 
+\newcommand{\effects}{\noindent \textbf{Effects:}}
+\newcommand{\returns}{\noindent \textbf{Returns:}}
+\newcommand{\requires}{\noindent \textbf{Requires:}}
+\newcommand{\notes}{\noindent \textbf{Notes:}}
+\newcommand{\code}[1]{\texttt{#1}}
 \author{Jaakko J‰rvi}
 
-\title{Proposal for adding tuple type into the standard library}
+\title{Proposal for adding tuple tuples into the standard library}
+
 
 \begin{document}
 \maketitle{}
@@ -19,65 +25,213 @@
 The library provides a template for a heterogeneous list of objects, 
 and an interface for easier handling of these lists as tuple types.
 
+\noindent \textbf{Header} \verv|<tuple>| synopsis
+
+\begin{verbatim}
+class null_type {}
+
+template <class H, class T> class cons; 
+
+template <class T0 = null_type, class T1 = null_type, ..., 
+          class TN = null_type> 
+class tuple;
+
+template<class T> int tuple_size(const T&);
+int tuple_size(null_type);
+
+template <int N, class T> class tuple_element;
+template <int N, class H, class T> rt? get(cons<H, T>&);
+template <int N, class H, class T> rt? get(const cons<H, T>&);
+
+inline bool operator==(const null_type&, const null_type&);
+inline bool operator!=(const null_type&, const null_type&);
+inline bool operator<(const null_type&, const null_type&);
+inline bool operator>(const null_type&, const null_type&);
+inline bool operator>=(const null_type&, const null_type&);
+inline bool operator<=(const null_type&, const null_type&);
+
+
+template <class H1, class T1, class H2, class T2>
+inline bool operator==(const cons<H1, T1>& a, const cons<H2, T2>& b);
+template <class H1, class T1, class H2, class T2>
+inline bool operator!=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+template <class H1, class T1, class H2, class T2>
+inline bool operator<(const cons<H1, T1>& a, const cons<H2, T2>& b);
+template <class H1, class T1, class H2, class T2>
+inline bool operator>(const cons<H1, T1>& a, const cons<H2, T2>& b);
+template <class H1, class T1, class H2, class T2>
+inline bool operator<=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+template <class H1, class T1, class H2, class T2>
+inline bool operator>=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+
+\end{verbatim}
+
+
 The type of the heterogeneous list type is:
 
+\begin{verbatim}
+class null_type {};
+
 template <class H, class T>
-class {
-
-  typedef typename 
-    tuples::wrap_non_storeable_type<head_type>::type stored_head_type;
-
+class cons {
+  H head_;
+  T tail_;
 public:
   typedef H head_type;
   typedef T tail_type;
 
-  stored_head_type head; 
-  tail_type tail;
-  
-  typename tuples::access_traits_non_const<stored_head_type>::type 
-  get_head();
+  head_type& head();
+  const head_type& head() const;
 
-  typename tuples::access_traits_non_const<tail_type>::type 
-  get_tail();
-
-  typename tuples::access_traits_const<stored_head_type>::type 
-  get_head() const;
-  
-  typename tuples::access_traits_const<tail_type>::type 
-  get_tail();
+  tail_type& tail();
+  const tail_type& tail() const;
 
   cons();
-
-  cons(typename tuples::access_traits_parameter<stored_head_type>::type& h,
+  cons(const typename remove_volatile<head_type>::type& h,
        const tail_type& t);
 
   template <class H2, class T2>
   cons( const cons<H2, T2>& u ) : head(u.head), tail(u.tail) {}
 
   template <class HT2, class TT2>
-  cons& operator=( const cons<HT2, TT2>& u ) { 
-    head=u.head; tail=u.tail; return *this; 
-  }
+  cons& operator=( const cons<HT2, TT2>& u );
 
-  // must define assignment operator explicitly, implicit version is 
-  // illformed if HT is a reference (12.8. (12))
-  cons& operator=(const cons& u) { 
-    head = u.head; tail = u.tail;  return *this; 
-  }
+  cons& operator=(const cons& u);
 
   template <class T1, class T2>
-  cons& operator=( const std::pair<T1, T2>& u ) { 
-    BOOST_STATIC_ASSERT(length<cons>::value == 2); // check length = 2
-    head = u.first; tail.head = u.second; return *this;
-  }
+  cons& operator=( const std::pair<T1, T2>& u );
+}
+\end{verbatim}
+
+\requires\ \code{T} is an instance of \code{cons}, or \code{T} is 
+\code{null\_type}.
 
 
-and an impleme
+\begin{verbatim}
+cons();
+\end{verbatim}
+\effects\ Default initializes \code{head\_} and \code{tail\_}.
 
-template <class T1, class T2, ... class T10>
-class tuple {
-public:
+\begin{verbatim}
+cons(const typename remove_volatile<head_type>::type& h, 
+     const tail_type& t);
+\end{verbatim}
+\effects\ Initializes \code{head\_} with \code{h}
+and \code{tail\_} with \code{t}.\\
+\notes\ 
+Unless \code{head\_type} is a non-const reference type, it is allowed 
+to call the constructor with a temporary as the first argument.
+When binding temporaries to references, the reference must
+be to a non-volatile and const type (8.5.3 (5)). Thus \code{volatile}
+is removed and \code{const} added. Reference types stay intact.
+
+
+
+
+\begin{verbatim}
+template <class H2, class T2> cons(const cons<H2, T2>& u);
+\end{verbatim}
+
+\effects\ Initializes members from the corresponding members of the argument,
+performing implicit conversions as needed.
+
+
+\begin{verbatim}
+template <class HT2, class TT2> cons& operator=(const cons<HT2, TT2>& u);
+\end{verbatim}
+\effects\ As if implemented: 
+\code{*this.head\_ = u.head\_; *this.tail\_ = u.tail\_;}\\
+\returns\ \code{*this}
+
+
+\begin{verbatim}
+cons& operator=(const cons& u);
+\end{verbatim}
+\effects\ As if implemented: 
+\code{*this.head\_ = u.head\_; *this.tail\_ = u.tail\_;}\\
+\returns\ \code{*this}\\
+\notes\ Default assignment operator is illformed if a class contains
+member variables of reference types (12.8 (12)). 
+Therefore an explicit definition is needed.
+
+\begin{verbatim}
+template <class T1, class T2> cons& operator=(const std::pair<T1, T2>& u);
+\end{verbatim}
+\requires\ \code{tuple\_size<cons> == 2} (ref????).\\
+\effects\ As if implemented: 
+\code{*this.head\_ = u.first; *this.tail\_.head\_ = u.second;}\\
+\returns\ \code{*this}
+
+\begin{verbatim}
+head_type& get_head();
+\end{verbatim}
+\returns\ Reference to \code{head\_}. 
+
+\begin{verbatim}
+const head_type& get_head() const;
+\end{verbatim}
+\returns\ Reference to \code{head\_}.\\
+\notes\ Constness is shallow. If \code{head\_type} is a non-const reference 
+type, returns a non-const reference.
+
+\begin{verbatim}
+tail_type& get_tail();
+const tail_type& get_tail() const;
+\end{verbatim}
+\returns\ Reference to tail. %NIL CASE ???
+
+The struct template
+\begin{verbatim}
+template<class T> class tuple_size;
+\end{verbatim}
+with an integral constant \code{value}.ksdjfksjflsjlfk
+
+\requires\ \code{T} is convertible to an instance of \code{cons}.\\
+\returns\ \code{tuple\_size(T::tail_type) + 1}.
+
+\begin{verbatim}
+int tuple_size(null_type);
+\end{verbatim}
+\returns\ \code{0}.
+
+template <int N, class T> class tuple_element;
+template <int N, class H, class T> rt? get(cons<H, T>&);
+template <int N, class H, class T> rt? get(const cons<H, T>&);
+
+inline bool operator==(const null_type&, const null_type&);
+inline bool operator!=(const null_type&, const null_type&);
+inline bool operator<(const null_type&, const null_type&);
+inline bool operator>(const null_type&, const null_type&);
+inline bool operator>=(const null_type&, const null_type&);
+inline bool operator<=(const null_type&, const null_type&);
+
+
+template <class H1, class T1, class H2, class T2>
+inline bool operator==(const cons<H1, T1>& a, const cons<H2, T2>& b);
+template <class H1, class T1, class H2, class T2>
+inline bool operator!=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+template <class H1, class T1, class H2, class T2>
+inline bool operator<(const cons<H1, T1>& a, const cons<H2, T2>& b);
+template <class H1, class T1, class H2, class T2>
+inline bool operator>(const cons<H1, T1>& a, const cons<H2, T2>& b);
+template <class H1, class T1, class H2, class T2>
+inline bool operator<=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+template <class H1, class T1, class H2, class T2>
+inline bool operator>=(const cons<H1, T1>& a, const cons<H2, T2>& b);
+
+
+
+
+
+
+%template <class T1, class T2, ... class T10>
+%class tuple {
+%public:
 
 
 \end{document}
 
+- Onko non-storeable trikki tarpeellinen
+
+- Miksi assignment riitt‰‰ paireista tupliin
+- Mik‰ on tuple_size:n return type
