@@ -12,9 +12,11 @@
 
 namespace STD_TUPLE_NS {
   namespace detail {
-    encode_type<append_tuple_derived>::type categorize_tuple(append_tuple_tag*);
-
     template <class T1, class T2> struct append_tuple;
+
+    template <class T1, class T2>
+    encode_type<append_tuple_derived>::type
+    categorize_tuple(append_tuple<T1,T2>*);
 
     template <int Half, int Nlocal, class T> struct append_tuple_elt {};
 
@@ -43,7 +45,8 @@ namespace STD_TUPLE_NS {
     };
 
     template <class T1, class T2>
-    class append_tuple: public append_tuple_tag {
+    class append_tuple {
+      typedef boost::type_traits::yes_type I_am_a_std_tuple_normal_tuple_class;
       T1 part0; T2 part1;
       typedef T1 part0_type; typedef T2 part1_type;
 
@@ -57,6 +60,14 @@ namespace STD_TUPLE_NS {
       append_tuple(): part0(), part1() {}
       append_tuple(const append_tuple& o): part0(o.part0), part1(o.part1) {}
 
+      template <class U>
+      append_tuple(const U& o) :
+	part0(
+	  tuple_subrange<0, STD_TUPLE_NS::tuple_size<part0_type>::value>(o)),
+	part1(
+	  tuple_subrange<STD_TUPLE_NS::tuple_size<part0_type>::value,
+			 STD_TUPLE_NS::tuple_size<part1_type>::value>(o)) {}
+
       append_tuple& operator=(const append_tuple& o) {
 	part0 = o.part0;
 	part1 = o.part1;
@@ -69,7 +80,7 @@ namespace STD_TUPLE_NS {
 	part1 = tuple_subrange<STD_TUPLE_NS::tuple_size<part0_type>::value,
 			       STD_TUPLE_NS::tuple_size<part1_type>::value>(o);
 	return *this;
-      };
+      }
 
       // Construct from members
       template <class U, class V>

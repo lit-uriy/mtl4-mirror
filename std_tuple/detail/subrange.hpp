@@ -11,8 +11,6 @@
 
 namespace STD_TUPLE_NS {
   namespace detail {
-    encode_type<subrange_derived>::type categorize_tuple(subrange_tag*);
-
     template <int Nlocal, class T>
     struct subrange_elt {
       typedef typename tuple_traits<typename T::data_type>
@@ -27,7 +25,8 @@ namespace STD_TUPLE_NS {
     };
 
     template <int Start, int Len, class T>
-    class tuple_subrange_type: public subrange_tag {
+    class tuple_subrange_type {
+      typedef boost::type_traits::yes_type I_am_a_std_tuple_normal_tuple_class;
       const T& data;
       typedef T data_type;
       BOOST_STATIC_CONSTANT(int, start = Start);
@@ -44,6 +43,10 @@ namespace STD_TUPLE_NS {
     tuple_subrange(const T& x) {
       return x;
     }
+
+    template <int Start, int Len, class T>
+    encode_type<subrange_derived>::type
+    categorize_tuple(tuple_subrange_type<Start,Len,T>*);
 
     template <class T>
     struct tuple_traits_impl<subrange_derived, T> {
