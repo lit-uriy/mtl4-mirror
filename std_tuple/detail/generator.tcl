@@ -8,9 +8,9 @@ proc add_cr {t} {
 
 proc make_specialization {tpnames} {
   global max_tuple_args
-  while {[llength $tpnames] < $max_tuple_args} {
-    lappend tpnames "detail::unspecified"
-  }
+#  while {[llength $tpnames] < $max_tuple_args} {
+#    lappend tpnames "detail::unspecified"
+#  }
   return <[join $tpnames ", "]>
 }
 
