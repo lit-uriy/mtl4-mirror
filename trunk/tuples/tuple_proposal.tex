@@ -112,28 +112,28 @@ The concrete additions and changes to the standard are:
 \item A new section describing the requirements for the tuple template
 \item Backward compatible changes to \code{pair} to allow pairs act
 as tuples.
-\item An utility class and two utility functions for aiding in passing 
-reference arguments through pass-by-copy interface are suggested,
-but should really be described elsewhere, e.g together with the 
-type\_traits library~\ref{...}.
-TYPETRAITSEJA KÄYTETÄÄN PALJON
+\item An utility class and two utility function templaets to be used in passing
+reference arguments through a pass-by-copy interface.
+These templates have uses outside of tuples and should thous be described
+elsewhere in the standards, possibly together with the type\_traits library~\cite{type_traits_boost,type_traits_paper}, which has been suggested for
+standardization~\cite{type_traits_proposal}.
 \end{itemize}
-
 
 We propose tuple definitions to be included by including the \code{<utility>} 
 header, which is where \code{pair} resides in.
 However, operators for reading tuples from a stream and writing tuples into
-a stream do introduce a dependency to \code{<istream>} and \code{<ostream>}.
-\textbf{JAAKKO: should istream and ostream include utility, should there
-be tupleio header ??=}.
-
+a stream do introduce a dependency to \code{<istream>} and \code{<ostream>},
+hence a new header \code{<tupleio>} is proposed.
 
 \section{Tuples in a nutshell}
+
+The purpose of this section is to give an informal overview of the 
+features that the tuple types, implemented as a library, provide.
 
 \subsection{Defining tuple types}
 
 The \code{tuple} template can be instantiated with any number of arguments
-between 0 and 10 elements. 
+from 0 to some predefined upper limit. In the Boost Tuple library~\ref{boost_tuples}, this limit is 10.
 The argument types can be any valid C++ types.
 Examples:
 \begin{verbatim}
@@ -141,6 +141,9 @@ typedef tuple<A, const B, volatile C, const volatile D> t1;
 typedef tuple<int, int&, const int&, const volatile int&> t2;
 typedef tuple<void, int()(int)> t3;
 \end{verbatim}
+Note that even types of which no objects can be created (cf. \code{void}, \code{int()(int)}), are valid tuple elements.
+Naturally an object of a tuple with such an element type cannot be created 
+either (see~\ref{about_valid_element_types}).
 
 \subsection{Constructing tuples}
 
@@ -566,7 +569,34 @@ tie(i, ignore, s) = make_tuple(42, , 3.14, "C++");
 
 \end{document}
 
-- Onko non-storeable trikki tarpeellinen: ON
+\section{Discussion about design}
+
+\subsection{About valid element types\label{about_valid_element_types}}
+
+The proposed requirements state, that there are no restrictions on the types
+of tuple elements, if the program contains no construction invocations 
+for the tuple type.
+For example, \code{void} and \code{int()()} are valid C++ types, but 
+objects of these types can never be created. 
+Hence, \code{tuple<void, int()()>} is a valid tuple type but obviously an
+object of this type cannot be constructed.
+
+A straightforward implementation, where the type of a template
+parameter is a type of a member variable, does not fullfil the above
+restriction. The types of the member variables are checked when the template 
+is instantiated, and \code{void} and function types are rejected as member
+types, even though an object is never constructed.
+
+The way to cope with this issue is to transform each member through
+a traits class, wrapping \code{void} and function types to something 
+that can be a member variable, but cannot be constructed.
+
+This means extra clutter in the code implementing tuple types, but
+we find the feature important for uniformness. 
+Otherwise, tuple types would impose a restriction, that does not exist
+for the element types.
+
+
 
 - Miksi assignment riittää paireista tupliin
 - Mikä on tuple_size:n return type
