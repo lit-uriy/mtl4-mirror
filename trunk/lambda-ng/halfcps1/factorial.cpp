@@ -4,13 +4,16 @@
 #include "env.hpp"
 #include "var.hpp"
 #include "constant.hpp"
+#include "let.hpp"
+#include "print.hpp"
+#if 0
 #include "lambda.hpp"
 #include "apply.hpp"
-#include "let.hpp"
 #include "begin.hpp"
 #include "if.hpp"
 #include "while.hpp"
 #include "set.hpp"
+#endif
 
 struct runner {
   template <class Prog>
@@ -21,7 +24,7 @@ struct runner {
 
 template <class Prog>
 void run(const Prog& p) {
-  p.get_type(runner());
+  p.template get_type<empty_env_type>(runner());
 }
 
 #if 0
