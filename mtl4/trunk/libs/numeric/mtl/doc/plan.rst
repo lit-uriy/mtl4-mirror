@@ -6,6 +6,9 @@
 
 .. contents:: Index
 
+.. role:: concept
+   :class: interpreted
+
 Milestone 1
 +++++++++++
 
@@ -112,7 +115,86 @@ CSR Matrix
 Linear Algebra Concept Taxonomy
 ===============================
 
-..
+In which we define concepts such
+as :concept:`Ring`, :concept:`Field`, :concept:`LinearOperator`,
+:concept:`LinearAlgebra`, :concept:`TransposableLinearOperator`, :concept:`AbelianGroup`,
+:concept:`HilbertSpace`, :concept:`BanachSpace`, :concept:`VectorSpace`,
+and :concept:`R-Module`.
+
+
+Dealing with the Imprecision of Floating-Point
+----------------------------------------------
+
+Traditional mathematical concepts are defined in terms of
+calculations on pure numbers that exhibit no rounding error, but
+the number types we use every day in numerical linear
+algebra (e.g., ``float`` and ``double) don't behave quite that
+well. In Section 7.1, subsection **Equality** of Jeremy Siek's
+`preliminary documentation`_ for his early prototype of this
+project, the notation
+
+  *a* =\ :sub:`ε` *b*
+
+was used to mean “|\ *a* - *b*\ | < ε where ε is some appropriate
+small number for the situation (like machine epsilon).”  The
+problem with that is that it's too fuzzy.  In particular, according
+to Andrew Lumsdaine, ordinary floating-point numbers don't actually
+model :concept:`Field` when notation is used to describe the
+concept.
+
+One approach to this issue might be to expel the notion of
+imprecision from the concept taxonomy.  Concepts
+like :concept:`Field` would be require true equality, and we'd deal
+with the imprecision of floating-point by saying, that if an
+algorithm requires one of its arguments to model :concept:`Field`
+and you pass a ``double`` (which isn't quite a model of
+:concept:`Field`), then naturally the algorithm doesn't produce the
+promised result.  Instead, if you pass an approximation of a
+:concept:`Field` to the algorithm it produces some approximation to
+the specified result.
+
+That approach is unsatisfying because the error bounds of any
+algorithm when used with real-life floating datatypes can be
+calculated, and we'd like our algorithm specifications to be able
+to make some promises about the magnitude of those errors.
+Naturally, if you have violated an algorithm's requirements by
+passing a ``float`` where it expects a pure :concept:`Field`, the
+algorithm can't make any promises at all about the result!  Looked
+at from the other side, if the algorithm can make some guarantees
+about the result it produces for some input, then whatever the
+specification says, the input must clearly satisfy some real,
+underlying requirement.
+
+Only by keeping floating types in the concept taxonomy can we
+sensibly make guarantees about the precision of algorithms
+operating on those types.  We assert that ``float`` and ``double``
+model a concept called
+:concept:`FieldWithError` [#fieldwitherror]_, of which
+:concept:`Field` is a refinement that requires perfect precision.
+Similar “-:concept:`WithError`\ ” counterparts exist for all the
+basic algebraic concepts.  Just
+as algorithms like ``std::binary_search`` require
+:concept:`Forward Iterators`` but make stronger efficiency
+guarantees when passed :concept:`Random Access Iterators``,
+numerical algorithms can require their arguments to model the
+imprecise “-:concept:`WithError`\ ” concepts and make stronger
+precision guarantees when operating on models of precise algebraic
+concepts.
+
+This approach has the added benefit of allowing algorithms to be
+specialized based on refinement.  For example, most L/U
+factorization algorithms involve pivoting steps designed to reduce
+the magnitude of errors induced by floating-point operations.
+However, when the element type models a precise algebraic
+concept (e.g. an infinite-precision rational number type), those
+pivoting steps are not required.  A similar effect occurs in
+simulations where matrices with the same sparse structure are
+factored repeatedly: in calculating the sparse structure of the
+result, a boolean "fill" type that requires no pivoting can be used.
+
+.. [#fieldwitherror] Pick a different name if you like.
+
+.. _`preliminary documentation`: ../external/prototype_manual.pdf
 
 Algorithm Implementations
 =========================
