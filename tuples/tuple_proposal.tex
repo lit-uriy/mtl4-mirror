@@ -117,13 +117,13 @@ definition in a derived class could cover a large set of base class
 constructors with different arities and argument types.}
 %Tuples as built-in types are discussed more in section~\ref{built-in_tuples}.
 
-In sum, this proposal defines the requirements for a standard tuple type.
-The requirements are stated so as to allow a library implementation with the
-current language, but also
-a future transition to 
-a more feature-rich built-in tuple type, or to a library implementation
-that can take advantage of new language features, such as variable length
-template argument lists or templated typedefs.
+%In sum, this proposal defines the requirements for a standard tuple type.
+%The requirements are stated so as to allow a library implementation with the
+%current language, but also
+%a future transition to 
+%a more feature-rich built-in tuple type, or to a library implementation
+%that can take advantage of new language features, such as variable length
+%template argument lists or templated typedefs.
 
 The concrete additions and changes to the standard are:
 \begin{itemize}
@@ -136,13 +136,12 @@ These templates have uses outside of tuples we suggest then to be
 included in section 20.2 (Utility components).
 \end{itemize}
 
-We propose two new standard headers. 
-The basic tuple definitions are to be included by including the \code{<tuple>} 
-header.
+We propose a new new standard header \code{<tuple>}.
 Operators for reading tuples from a stream and writing tuples to
 a stream introduce a dependency to \code{<istream>} and \code{<ostream>},
-and so tuple input and output operators will be defined in a separate header
-\code{<tupleio>}.
+so it is a quality-of-implementation issue to not include definitions
+from these headers unnecessarily.
+
 
 \section{Tuples in a nutshell}
 
@@ -472,7 +471,8 @@ a comment, not proposed standard text \textsf{[This is a comment]}.
 
 \section{Annex B: Implementation quantities}
 
-\textsf{[Add to the list of implementation quantities:]}
+\textsf{[Add to the list of implementation quantities (which specifies the
+recommended minima for implementation quantities).]}
 
 \smallskip 
 
@@ -480,8 +480,6 @@ a comment, not proposed standard text \textsf{[This is a comment]}.
 
 \medskip
 
-\textsf{[Annex B is the list of recommended minima for implementation 
-quantities.]}
 
 \section{Tuple library}
 
@@ -520,7 +518,7 @@ Consequently, tuples are heterogeneous, fixed-size collections of values.
 
 \subsubsection*{Header \code{<tuple>} synopsis}
 
-\noindent\hspace{\parindent}  \begin{minipage}{10.5cm} \begin{verbatim}
+\noindent\hspace{\parindent}  \begin{minipage}{10.5cm} \begin{alltt}
 template <class T1 = implemantation-defined, 
           class T2 = implementation-defined, 
           ..., 
@@ -561,7 +559,19 @@ make_tuple(const V1&, const V2& , ..., const VN&);
 template<class T1, class T2, ..., class TN>
 tuple<T1&, T2&, ..., TN> 
 tie(T1&, T2& , ..., TN&); 
-\end{verbatim}
+
+template<class CharType, class CharTrait, class T1, class T2, ..., class TN>
+basic_ostream<CharType, CharTrait>& 
+operator<<(basic_ostream<CharType, CharTrait>&, const tuple<T1, T2, ..., TN>&);
+
+template<class CharType, class CharTrait, class T1, class T2, ..., class TN>
+basic_istream<CharType, CharTrait>& 
+operator>>(basic_istream<CharType, CharTrait>&, tuple<T1, T2, ..., TN>&);
+
+\textrm{\emph{tuple_manip1}} tuple_open(char_type c);
+\textrm{\emph{tuple_manip2}} tuple_close(char_type c);
+\textrm{\emph{tuple_manip3}} tuple_delimiter(char_type c);
+\end{alltt}
 \end{minipage}
 
 %If \code{Ti} is a reference type then \code{Pi} is \code{Ti}, otherwise
@@ -1111,27 +1121,6 @@ Also, all comparison operators are short circuited to not perform element
 accesses beyond what is required to determine the result of the comparison.
 
 
-\subsubsection*{Header \code{<tupleio>} synopsis}
-
-\noindent\hspace{\parindent}  
-\begin{minipage}{10.5cm}
-\begin{alltt}
-template<class CharType, class CharTrait, class T1, class T2, ..., class TN>
-basic_ostream<CharType, CharTrait>& 
-operator<<(basic_ostream<CharType, CharTrait>&, const tuple<T1, T2, ..., TN>&);
-
-template<class CharType, class CharTrait, class T1, class T2, ..., class TN>
-basic_istream<CharType, CharTrait>& 
-operator>>(basic_istream<CharType, CharTrait>&, tuple<T1, T2, ..., TN>&);
-
-\textrm{\emph{tuple_manip1}} tuple_open(char_type c);
-
-\textrm{\emph{tuple_manip2}} tuple_close(char_type c);
-
-\textrm{\emph{tuple_manip3}} tuple_delimiter(char_type c);
-\end{alltt}
-\end{minipage}
-
 \subsubsection*{Input and output}
 
 In this section, a return type specified as \code{istream} 
@@ -1237,7 +1226,7 @@ This might be worthwhile, such as to allow delimiters like \code{", "}.
 ]}
 
 
-\subsubsection*{Utility functions for tuple construction}
+\section{Utility components}
 
 The library provides the class template \code{reference\_wrapper} that 
 stores a reference to an object in a CopyConstructible wrapper, and two 
