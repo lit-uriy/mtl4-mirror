@@ -66,5 +66,7 @@ int main(int, char**) {
   std::cout << "Read test 2: use spaces and word \"and\" to separate tokens" << std::endl;
   std::cin >> std_tuple::tuple_delimiter(" and ") >> y2;
   std::cout << std_tuple::tuple_delimiter(", ") << y2 << std::endl;
+  std_tuple::tuple<int, float, std::string> y3(2, 3.5, "Hello");
+  std::cout << "<" << (y2 < y3) << " >=" << (y2 >= y3) << " >" << (y2 > y3) << " <=" << (y2 <= y3) << " ==" << (y2 == y3) << " !=" << (y2 != y3) << std::endl;
   return 0;
 }
