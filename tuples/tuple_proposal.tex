@@ -8,6 +8,8 @@
 \usepackage{url}
 \usepackage{alltt}
 
+\usepackage{ae}
+
 \newcommand{\cccomment}[1]{\textrm{\textit{#1}}}
 
 \newcommand{\effects}{\noindent \textbf{Effects:}}
@@ -95,7 +97,7 @@ be standardized,
 but rather that the proposed text for the standard state the requirements for
 a tuple implementation 
 in the form of valid expressions and the semantics of those expressions.
-Alos, this approach leaves
+Also, this approach leaves
 room for a built-in tuple type, or for a tuple template with special
 support from the compiler, which we see as being worth considering.
 Compared to built-in tuple types in other languages,
@@ -103,8 +105,10 @@ a library solution still falls short in some aspects.
 For instance, in the programming language Python, 
 the function argument list is implicitly a tuple.
 This is a feature that cannot be added to C++ as a library, but
-would be a most useful, allowing, e.g., truly generic forwarding functions
-that could accept any number of parameters. 
+would be a most useful.\footnote{Truly generic forwarding functions
+that could take any number of parameters would be supported. For example, one constructor 
+definition in a derived class could cover a large set of base class 
+constructors with different arities and argument types.}
 %Tuples as built-in types are discussed more in section~\ref{built-in_tuples}.
 
 In sum, this proposal defines the requirements for a standard tuple type.
@@ -155,7 +159,8 @@ typedef tuple<void, int()(int)> t3;
 \end{verbatim}
 Note that even types of which no objects can be created (cf. \code{void}, \code{int()(int)}), are valid tuple elements.
 Naturally, an object of a tuple type with such an element type cannot 
-be constructed (see section~\ref{about_valid_element_types}).
+be constructed. 
+%(see section~\ref{about_valid_element_types}).
 
 \subsection{Constructing tuples}
 
@@ -261,9 +266,9 @@ is resolved.
 
 \subsection{Assignment}
 
-The assignment operation is defined as elementwise assignment.
+The assignment operation is defined as element-wise assignment.
 Consequently, two tuples are assignable as long as they are
-elementwise assignable. For example:
+element-wise assignable. For example:
 %
 \begin{alltt}
 tuple<char, int, const char(&)[3]> t1('a', 1, "Hi");
@@ -339,9 +344,9 @@ tuple_element<2, tuple<int, char, float, double> >::type // \cccomment{float}
 Indexing is zero-based. 
 The index must be an integral constant expression
 and using an index that is out of bounds results in a compile time error.
-See section~\ref{nested_or_separate} for a discussion about
-why a separate traits class is used, instead of a nested class 
-within the tuple template.
+%See section~\ref{nested_or_separate} for a discussion about
+%why a separate traits class is used, instead of a nested class 
+%within the tuple template.
 
 \subsection{Element access}
 
@@ -355,8 +360,8 @@ get<2>(t); // \cccomment{equals 'a'}
 %
 Indexing is zero-based. 
 Using an index that is out of bounds results in a compilation error.
-Section~\ref{element_access} discusses alternatives for the
-syntax of element access.
+%Section~\ref{element_access} discusses alternatives for the
+%syntax of element access.
 
 \subsection{Relational operators}
 
@@ -365,12 +370,12 @@ Tuples implement the operators \code{==}, \code{!=}, \code{<}, \code{>},
 This means that if any of these operators is defined between all elements of 
 two tuples, the same operator is defined between the tuples as well. 
 
-The \code{operator==} is defined as the logical AND of the elementwise 
+The \code{operator==} is defined as the logical AND of the element-wise 
 equality comparisons.
 The \code{operator!=} is defined as the logical OR of the
-elementwise inequality comparisons.
+element-wise inequality comparisons.
 The operators \code{<}, \code{>}, \code{<=} and \code{>=} each define a 
-lexicographical ordering (see section~\ref{lexicographical_ordering}).
+lexicographical ordering. % (see section~\ref{lexicographical_ordering}).
 An attempt to compare two tuples of different lengths results in 
 a compile-time error.
 The comparison operators are ``short-circuited'': elementary comparisons 
@@ -380,7 +385,7 @@ For example:
 %But the operators must nevertheless be defined.
 
 %Each comparison operator \emph{op} is defined solely using the same
-%operator \emph{op} for the elementwise comparisons and makes no assumptions
+%operator \emph{op} for the element-wise comparisons and makes no assumptions
 %about the behavior of the other relational operators, or even
 %whether they are defined or not.
 
@@ -494,7 +499,7 @@ Consequently, tuples are heterogeneous, fixed-size collections of values.
 
 %Element access, 
 %The requirements for such a \emph{tuple implementation template} 
-%are, that it must have the same observable behaviour than referes to such 
+%are, that it must have the same observable behavior than refers to such 
 %an implementation template, or to the tuple template if no 
 %The implementation template mustIf \code{T} all the elements as provides all the functionality provided, and overload tuple operations (converting copy
 %constructors, assignments, conversion operators, etc.) for the \code{T}
@@ -634,8 +639,21 @@ type is \code{const T\&}.
 
 \smallskip  
 
-\noindent \textsf{[This is consistent with how constness is defined to work 
+\noindent \textsf{[ This is consistent with how constness is defined to work 
 for member variables of reference type.]}
+
+\smallskip  
+
+\begin{sf}
+\noindent 
+[ There are alternative syntaces for element access.
+One particularly appealing syntax is something like: \code{t[index<N>]}, or even
+\verb|t[_1]|, \verb|t[_2]|, etc.
+We decided not to propose that syntax, because \code{operator[]} cannot 
+be defined as a free function, and would thus prevent adding tuple-likeness
+into a type non-intrusively. ]
+\end{sf}
+
 
 
 \subsubsection*{Assignment}
@@ -731,6 +749,18 @@ not required to be copy constructible.
 Also, all comparison operators are short circuited to not perform element
 accesses beyond what is required to determine the result of the comparison.
 
+\medskip
+
+\begin{sf}
+\noindent [ The comparison operators (as well as streaming operators defined below),
+are only defined for tuple types instead of tuple-like types.
+This is because it is somewhat tricky to overload operators 
+to accept any tuple-like type and not to create ambiguities.
+A straightforward solution to provide comparison and streaming functionality
+for tuple-like types would be to define fully generic function templates, 
+with names like  \code{tuple\_print} and \code{tuple\_compare}, that 
+implemented the same functionality as the comparison and streaming operators. ]
+\end{sf}
 
 
 \subsubsection*{Construction}
@@ -745,6 +775,8 @@ accesses beyond what is required to determine the result of the comparison.
 \bigskip 
 
 \verb|tuple<T0, T1, ... TN>(t0, t1, ..., tN)|
+
+\nobreak 
 
 \smallskip 
 
@@ -775,7 +807,7 @@ convertible to \code{Ti}.\\
 \noindent
 \begin{sf}
 [ There seem to exist (rare) conditions where the converting copy constructor
-and elementwise construction conflict.
+and element-wise construction conflict.
 One example of this is if one is constructing a one-element tuple where 
 the element type is another tuple type \code{T}.
 If the parameter passed to the constructor is not of type \code{T}, but
@@ -893,7 +925,7 @@ The observable behavior of \code{any\_holder} must be as if implemented:
 
 \smallskip 
 
-\begin{minipage}{10cm}
+\begin{minipage}{10.5cm}
 \begin{verbatim}
 template <class T>
 class any_holder {
@@ -946,7 +978,7 @@ core language issue 295]}\\
 
 \bigskip 
 
-\begin{minipage}{10cm}
+\begin{minipage}{10.5cm}
 \begin{verbatim}
 template<class V0, class V1, ..., class VN>
 ... make_tuple(const V0& v0, const V1& v1, ..., const VN& vn); 
@@ -968,7 +1000,7 @@ any const qualifications removed.
 
 \smallskip 
 
-\begin{minipage}{10cm}
+\begin{minipage}{10.5cm}
 \begin{verbatim}
 int i; float j; 
 make_tuple(1, "C++", ref(i), cref(j))
@@ -1001,7 +1033,7 @@ function reference must be wrapped inside \code{ref}.
 
 \smallskip 
 
-\begin{minipage}{10cm}
+\begin{minipage}{10.5cm}
 \begin{verbatim}
 template<class T0, class T1, ..., class TN>
 tuple<T0&, T1&, ..., TN&> tie(T0& t0, T1& t1, ..., TN& tn) {
@@ -1024,7 +1056,7 @@ allowed tuple elements.
 
 \smallskip 
 
-\begin{minipage}{10cm}
+\begin{minipage}{10.5cm}
 \begin{verbatim}
 struct swallow_assign {
   template <class T> 
@@ -1048,7 +1080,7 @@ are not needed:
 
 \smallskip
 
-\begin{minipage}{10cm}
+\begin{minipage}{10.5cm}
 \begin{alltt}
 int i; std::string s;
 tie(i, ignore, s) = make_tuple(42, 3.14, "C++");
@@ -1160,8 +1192,10 @@ Ed Brey, Beman Dawes, David Abrahams and Hartmut Kaiser.
 \bibliographystyle{plain}
 
 
+\end{document}
 
-\section{Discussion about design}
+
+\section{Discussion about some design choices}
 
 \subsection{About valid element types\label{about_valid_element_types}}
 
@@ -1184,18 +1218,36 @@ a traits class, wrapping \code{void} and function types to something
 that can be a member variable, but cannot be constructed.
 
 This means extra clutter in the code implementing tuple types, but
-we find the feature important for uniformness. 
-Otherwise, tuple types would impose a restriction, that does not exist
+we find the feature important for uniformity. 
+Otherwise tuple types would impose a restriction that does not exist
 for the element types.
 
-\subsubsection{Defining constructors, assignments, and other operators for just tuples or for any conforming type}
+\subsubsection{Defining functions for the standard tuple type
+vs. types that are tuple-like.}
+
+In the proposal, tuple-like types do not support all the same operations
+than tuple types.
+
 
 \subsubsection{Element type as a nested or separate class template\label{nested_or_separate}}
 
 \subsubsection{About element access\label{element_access}}
 
-\subsubsection{About comparison operators\label{lexicographical_ordering}}
+There are several alternative syntaces for element access. 
+We list some of these choices with explanations:
+%\begin{}
+%\item \code{get<N>(t)} 
 
+
+%t.get<N>();
+
+%t.get(index<N>);
+%t[index<N>];
+
+%\end{itemize}
+\subsection{About comparison operators\label{lexicographical_ordering}}
+
+T
 Mathematically wrong for product types, but practical.
 (JAAKKO: stick somewhere justification, std::pair,
 Haskell)
