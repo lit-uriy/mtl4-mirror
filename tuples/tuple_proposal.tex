@@ -24,6 +24,53 @@
 \begin{document}
 \maketitle{}
 
+\section{Motivation}
+
+This proposal describes tuple types implemented as a template library.
+The proposal is a generalization of the \code{pair} template from two
+to arbitrary (up to a predefined limit) number of elements.
+Compared to pairs, the proposed tuple template supports a wider range 
+of element types (e.g. references), streaming oprerators are provided,
+and \code{tie} functions, that ...
+
+Tuple types are a general utility for the end user, to be used similarly 
+to pairs. 
+Also, tuples are an important tool for library implementers for representing
+a set of template arguments, a set of function arguments, etc. as a single
+entity.
+
+The library provides \code{tie} functions for creating tuples with reference
+elements. These make tuples convenient as return types of functions.
+\textbf{JAAKKO: esimerkki}.
+
+\section{Impact on the standard}
+
+The proposed library does not require any core language changes,
+or modifiation to existing standard library headers, if the definitions
+are included in \code{<utility>}, the location of the \code{pair} template.
+However, operators for reading tuples from a stream and writing tuples into
+a stream do introduce a dependency to streams.
+\textbf{JAAKKO: mitäs tästä sitten pitäisi sanoa}.
+
+Note however, that tuples would benefit from a set of core language changes:
+\begin{itemize}
+\item Variable length template argument lists.
+\item Making reference to a reference to some type \code{T} equal to 
+reference to \code{T}.
+\item Allowing default arguments (both template and function) for function
+templates.
+\end{itemize}
+
+\section{Design}
+
+The tuple type is impelemented as an interface template \code{tuple} that
+can take up to $n$ (10 in the reference implementation) template arguments.
+It is very tedious to overload functions for such a verbose type.
+Consequently, the \code{tuple} interface class inherits from instantiations
+of another type (\code{cons}) which represents the tuple element as a 
+\emph{cons list}.
+Comparison operators, streaming operators and element accessor functions all 
+operate on the cons list representation.
 \section{Text in the standard}
 
 \subsection{Tuples}
