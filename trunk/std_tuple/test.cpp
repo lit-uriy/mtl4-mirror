@@ -60,5 +60,10 @@ int main(int, char**) {
   std::cout << std_tuple::tuple<std_tuple::tuple<std_tuple::tuple<double> > >(y) << std::endl;
   std::cout << std_tuple::tuple<std_tuple::tuple<double> >(std_tuple::make_tuple(y)) << std::endl;
   std::cout << std_tuple::tuple<std_tuple::tuple<double> >(std_tuple::make_tuple(std_tuple::make_tuple(y))) << std::endl;
+
+  std::cout << std_tuple::tuple<char&, char>(c,c) << std::endl;
+  std::cout << std_tuple::make_tuple(std_tuple::ref(c), c) << std::endl;
+  std::cout << std_tuple::make_tuple(std_tuple::cref(c), c) << std::endl;
+  std::cout << std_tuple::make_tuple(std_tuple::ref(a), c) << std::endl;
   return 0;
 }
