@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 #include "boost/type_traits.hpp"
 #include "tags.hpp"
 #include "env.hpp"
@@ -7,13 +8,9 @@
 #include "let.hpp"
 #include "print.hpp"
 #include "lambda.hpp"
-#if 0
-#include "apply.hpp"
 #include "begin.hpp"
-#include "if.hpp"
-#include "while.hpp"
 #include "set.hpp"
-#endif
+#include "ifwhile.hpp"
 
 struct runner {
   template <class Prog>
@@ -135,10 +132,29 @@ operator,(const T& t, const U& u) {
 // locals<int, float>(1, 3.14)(loc1 + loc2)
 #endif
 
+template <class F>
+struct func2 {
+  F f;
+  func2(const F& f_ = F()): f(f_) {}
+
+  typedef typename F::first_argument_type arg1_type;
+  typedef typename F::second_argument_type arg2_type;
+  typedef std::binder1st<F> result_type;
+
+  std::binder1st<F> operator()(const arg1_type& arg1) const {
+    return std::bind1st(f,arg1);
+  }
+};
+
 LAMBDA_VAR(a); LAMBDA_VAR(b); LAMBDA_VAR(fac); LAMBDA_VAR(n); LAMBDA_VAR(acc);
 
 int main(int, char**) {
   using namespace std;
+
+  func2<multiplies<int> > multiply;
+  binder2nd<minus<int> > decrement = bind2nd(minus<int>(), 1);
+  binder2nd<not_equal_to<int> > not_zero = bind2nd(not_equal_to<int>(), 0);
+
 #if 0
   cout << run<int>(
       let(fac = lambda(fac,
@@ -154,18 +170,26 @@ int main(int, char**) {
       // apply(lambda(a,5), lambda(a,apply(a,a)))
       ) << endl;
 #endif
+#if 0
   run(let(a,5,print(6)));
   run(print(let(a,5,6)));
   run(let(a,5,print(a)));
   run(print(let(a,5,a)));
-  run(print(apply(lambda<int>(a,5), 6)));
-#if 0
-  run<void>(
-    let((n = 5, acc = 1),
-	(while_(not_zero(n),
-	  (acc = multiply(n, acc),
-	   n = decrement(n))),
-	 print(acc))));
+  run(print(apply(lambda<int (int)>(a,5), 6)));
+  run(print(apply(std::negate<int>(), 5)));
+  run(print(apply(apply(multiply, 5), 6)));
+  run(print(apply(decrement,3)));
+  run(print(apply(not_zero,0)));
+  run(begin(print(7),print(9)));
+  run(let(a,5,begin(set(a,3),print(a))));
+#endif
+#if 1
+  run(
+    let(n,5,let(acc,1,
+	begin(while_(apply(not_zero, n),
+		begin(set(acc, apply(apply(multiply, n), acc)),
+		  set(n, apply(decrement, n)))),
+	      print(acc)))));
 #endif
   return 0;
 }
