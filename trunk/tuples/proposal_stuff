@@ -1,0 +1,83 @@
+tuple<class T1, class T2, ..., class TN> class tuple {
+public:
+  tuple();
+  tuple(P1, P2, ..., PN);
+
+  tuple(const tuple&);
+
+  template <class U>
+  tuple(const U&);
+
+  tuple& operator=(const tuple&);
+
+  template <class U>
+  tuple& operator=(const U&);
+};
+
+
+// P1,...
+
+template <>
+tuple<>
+
+
+template<class T1, class T2, ..., class TN, class U1, class U2, ..., class UN>
+bool operator==(const tuple<T1, T2, ..., TN>&, const tuple<U1, U2, ..., UN>&);
+
+template<class T1, class T2, ..., class TN, class U1, class U2, ..., class UN>
+bool operator!=(const tuple<T1, T2, ..., TN>&, const tuple<U1, U2, ..., UN>&);
+
+template<class T1, class T2, ..., class TN, class U1, class U2, ..., class UN>
+bool operator<(const tuple<T1, T2, ..., TN>&, const tuple<U1, U2, ..., UN>&);
+
+template<class T1, class T2, ..., class TN, class U1, class U2, ..., class UN>
+bool operator<=(const tuple<T1, T2, ..., TN>&, const tuple<U1, U2, ..., UN>&);
+
+template<class T1, class T2, ..., class TN, class U1, class U2, ..., class UN>
+bool operator>(const tuple<T1, T2, ..., TN>&, const tuple<U1, U2, ..., UN>&);
+
+template<class T1, class T2, ..., class TN, class U1, class U2, ..., class UN>
+bool operator>=(const tuple<T1, T2, ..., TN>&, const tuple<U1, U2, ..., UN>&);
+
+
+template<class CharType, class CharTrait, class T1, class T2, ..., class TN>
+basic_ostream<CharType, CharTrait>& 
+operator<<(basic_ostream<CharType, CharTrait>&, 
+           const tuple<T1, T2, ..., TN>&);
+
+template<class CharType, class CharTrait, class T1, class T2, ..., class TN>
+basic_istream<CharType, CharTrait>& 
+operator>>(basic_istream<CharType, CharTrait>&, 
+           tuple<T1, T2, ..., TN>&);
+
+
+
+
+template<class T1, class T2>
+struct tuple_size<pair<T1, T2> > {
+  static const int value = 2;
+};
+
+template<class T1, class T2>
+struct tuple_element<0, pair<T1, T2> > {
+  typedef T1 type;
+};
+
+template<class T1, class T2>
+struct tuple_element<1, pair<T1, T2> > {
+  typedef T2 type;
+};
+
+template <class T1, class T2>
+struct is_tuple_like<pair<T1, T2> > {
+  static const bool value = true;
+};
+
+template<int N, class T1, class T2>
+P& get(pair<T1, T2>&);
+
+template<int N, class T1, class T2>
+const P& get(const pair<T1, T2>&);
+
+P is T1 iff N == 0, P is T2 iff N == 1, otherwise, diagnostic is required.
+
