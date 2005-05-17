@@ -1,0 +1,6 @@
+project mtl4/sequence/algorithm ;
+
+import testing ;
+import mtl4 ;
+
+run copy.cpp ;

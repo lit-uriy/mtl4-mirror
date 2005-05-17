@@ -5,6 +5,8 @@ import modules ;
 
 import mtl4 ;
 
+project mtl4 : requirements <include>. <include>c:/boost ;
+
 # .my-dir = [ modules.binding $(__name__) ] ;
 
 # modules.poke : BOOST_BUILD_PATH 
