@@ -1,0 +1,4 @@
+"has_value.cpp"   
+  
+-I"..\..\.." 
+-I"c:\boost" 
