@@ -4,7 +4,9 @@
 #ifndef END_CURSOR_DWA200541_HPP
 # define END_CURSOR_DWA200541_HPP
 
+# include <boost/sequence/end_cursor_fwd.hpp>
 # include <boost/sequence/detail/unspecialized.hpp>
+# include <boost/sequence/fixed_size/end_cursor.hpp>
 # include <boost/range/result_iterator.hpp>
 
 namespace boost {
@@ -24,7 +26,7 @@ namespace end_cursor_
   // enable for specific types.  Partial specializations will be
   // detected so you can use enable_if to create overloads of
   // end(S).
-  template <class SinglePassRange, class Enable = void>
+  template <class SinglePassRange, class Enable>
   struct implementation
     : detail::unspecialized
     , range_result_iterator<SinglePassRange>

@@ -10,9 +10,8 @@
 namespace boost {
 namespace sequence { 
 
-// A metafunction that returns the type of cursor when dereferenced by the
-// given Amount
-template <class Cursor, class Amount>
+// A metafunction that returns the type of cursor when dereferenced
+template <class Cursor>
 struct dereferenced;
 
 namespace dereferenced_
@@ -24,14 +23,14 @@ namespace dereferenced_
   // enable for specific types.  Partial specializations will be
   // detected so you can use enable_if to create overloads of
   // next(S).
-  template <class Cursor, class Amount, class Enable = void>
+  template <class Cursor, class Enable = void>
   struct implementation : detail::unspecialized, iterator_value<Cursor>
   {};
 }
 
-template <class Cursor, class Amount>
+template <class Cursor>
 struct dereferenced
-  : dereferenced_::implementation<Cursor, Amount>
+  : dereferenced_::implementation<Cursor>
 {};
 
 }} // namespace boost::sequence

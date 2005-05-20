@@ -6,16 +6,17 @@
 
 # include <boost/mpl/bool.hpp>
 
+#error 
 namespace boost {
 namespace sequence {
 namespace detail {
 
-template <class T, class U = int[1]>
+template <class T, int = 0>
 struct has_value
   : mpl::false_ {};
   
 template <class T>
-struct has_value<T, int[T::value * 0 + 1]>
+struct has_value<T, T::value>
   : mpl::true_ {};
 
 }}} // namespace boost::sequence::detail

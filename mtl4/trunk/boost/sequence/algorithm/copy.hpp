@@ -10,13 +10,15 @@
 # include <boost/typeof/typeof.hpp>
 # include <boost/type_traits/add_const.hpp>
 
+# include BOOST_TYPEOF_INCREMENT_REGISTRATION_GROUP()
+
 namespace boost { namespace sequence { namespace algorithm {
 
 struct copy_
 {
     // The use of add_const below is needed to work around a VC7.1 bug
     template <class Range1, class Range2>
-    typename dispatch<copy_(typename add_const<Range1>::type&,Range2&)>::result
+    typename dispatch<copy_(typename add_const<Range1>::type&,Range2&)>::type
     operator()(Range1 const& src, Range2& dst) const
     {
         return dispatch<copy_(Range1 const&,Range2&)>::implementation
