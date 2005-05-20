@@ -4,7 +4,9 @@
 #ifndef BEGIN_CURSOR_DWA200541_HPP
 # define BEGIN_CURSOR_DWA200541_HPP
 
+# include <boost/sequence/begin_cursor_fwd.hpp>
 # include <boost/sequence/detail/unspecialized.hpp>
+# include <boost/sequence/fixed_size/begin_cursor.hpp>
 # include <boost/range/result_iterator.hpp>
 
 namespace boost {
@@ -23,8 +25,8 @@ namespace begin_cursor_
   // Enable parameter to use with SFINAE.  Partially specialize and
   // enable for specific types.  Partial specializations will be
   // detected so you can use enable_if to create overloads of
-  // begin(S).
-  template <class SinglePassRange, class Enable = void>
+  // end(S).
+  template <class SinglePassRange, class Enable>
   struct implementation
     : detail::unspecialized
     , range_result_iterator<SinglePassRange>

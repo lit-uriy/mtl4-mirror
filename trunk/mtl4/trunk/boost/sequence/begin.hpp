@@ -22,8 +22,10 @@ namespace begin_
   }
 }
 
+# if !BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
 namespace adl
 {
+# endif 
   // These are disabled when begin_cursor_::implementation<S> is
   // specialized (e.g. when S is a std container), because in those
   // cases we will supply a more specific overload.
@@ -47,13 +49,11 @@ namespace adl
   {
       return begin_::dispatch(s);
   }
+# if !BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
 }
-
-# if 1
 using adl::begin;
-# else
-using namespace adl;
 # endif 
+
 
 }} // namespace boost::sequence
 

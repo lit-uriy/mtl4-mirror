@@ -24,7 +24,7 @@ namespace boost { namespace sequence { namespace algorithm {
 //
 //   type - the result type of that ::execute member
 //
-template <class Signature> struct dispatch { typedef int result; };
+template <class Signature> struct dispatch;
 
 # if !(BOOST_MSVC <= 1301) && BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050215))
 namespace aux_

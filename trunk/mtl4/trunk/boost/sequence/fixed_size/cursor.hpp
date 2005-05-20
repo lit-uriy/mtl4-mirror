@@ -5,10 +5,11 @@
 # define CURSOR_DWA2005330_HPP
 
 # include <boost/sequence/detail/is_mpl_integral_constant.hpp>
+# include <boost/sequence/detail/typeof_add.hpp>
+# include <boost/sequence/detail/typeof_subtract.hpp>
 # include <boost/utility/enable_if.hpp>
 # include <boost/type_traits/is_class.hpp>
 # include <boost/mpl/integral_c.hpp>
-# include <boost/mpl/bool_.hpp>
 # include <boost/typeof/typeof.hpp>
 # include <cstddef>
 
@@ -89,7 +90,7 @@ namespace fixed_size {
 
     template <std::size_t N, class T>
     typename lazy_enable_if<
-        is_mpl_integral_constant<T>::type
+        typename detail::is_mpl_integral_constant<T>::type
       , cursor_::add<N,T>
     >::type
     inline operator+(cursor<N>, T)
@@ -99,7 +100,7 @@ namespace fixed_size {
 
     template <std::size_t N, class T>
     typename lazy_enable_if<
-        is_mpl_integral_constant<T>::type
+        typename detail::is_mpl_integral_constant<T>::type
       , cursor_::add<N,T>
     >::type
     inline operator+(T,cursor<N>)
@@ -109,7 +110,7 @@ namespace fixed_size {
 
     template <std::size_t N, class T>
     typename lazy_enable_if<
-        is_mpl_integral_constant<T>::type
+        typename detail::is_mpl_integral_constant<T>::type
       , cursor_::subtract<N,T>
     >::type
     inline operator-(cursor<N>, T)
@@ -122,9 +123,9 @@ namespace fixed_size {
     //
 
     template <std::size_t N, class T>
-    typename enable_if_c<
-        boost::is_integral<T>::type
-      , BOOST_TYPEOF_TPL(sequence::detail::make<T>()+N)
+    typename lazy_enable_if<
+        boost::is_integral<T>
+      , detail::typeof_add<T,std::size_t>
     >::type
     inline operator+(cursor<N>, T x)
     {
@@ -132,9 +133,9 @@ namespace fixed_size {
     }
 
     template <std::size_t N, class T>
-    typename enable_if_c<
-        boost::is_integral<T>::type
-      , BOOST_TYPEOF_TPL(sequence::detail::make<T>()+N)
+    typename lazy_enable_if<
+        boost::is_integral<T>
+      , detail::typeof_add<T,std::size_t>
     >::type
     inline operator+(T x,cursor<N>)
     {
@@ -142,9 +143,9 @@ namespace fixed_size {
     }
 
     template <std::size_t N, class T>
-    typename enable_if_c<
-        boost::is_integral<T>::type
-      , BOOST_TYPEOF_TPL(N - sequence::detail::make<T>())
+    typename lazy_enable_if<
+        boost::is_integral<T>
+      , detail::typeof_subtract<std::size_t,T>
     >::type
     inline operator-(cursor<N>, T x)
     {
@@ -158,6 +159,8 @@ namespace fixed_size {
 
 template <class Cursor> struct successor;
 template <class Cursor> struct predecessor;
+template <class Cursor> struct dereferenced;
+template <class Cursor1, class Cursor2> struct difference;
 
 template <std::size_t N>
 struct successor<fixed_size::cursor<N> >
@@ -174,13 +177,7 @@ struct predecessor<fixed_size::cursor<N> >
 template <std::size_t N>
 struct dereferenced<fixed_size::cursor<N> >
 {
-    typedef cursor<N> type;
-};
-
-template <std::size_t N>
-struct dereferenced<fixed_size::cursor<N> >
-{
-    typedef cursor<N> type;
+    typedef fixed_size::cursor<N> type;
 };
 
 template <std::size_t N1, std::size_t N2>

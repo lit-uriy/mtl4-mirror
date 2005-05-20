@@ -5,6 +5,9 @@
 # define BOOST_SEQUENCE_RANGE_DWA200559_HPP
 
 # include <boost/compressed_pair.hpp>
+# include <boost/sequence/homogeneous.hpp>
+# include <boost/sequence/category_fwd.hpp>
+# include <boost/sequence/fixed_size/category.hpp>
 
 namespace boost { namespace sequence { 
 
@@ -55,6 +58,18 @@ template <class Elements, class Begin, class End>
 struct accessor<range<Elements,Begin,End> >
 {
     typedef Elements type;
+};
+
+template <class Elements, class Cursor>
+struct category<range<Elements,Cursor,Cursor> >
+{
+    typedef homogeneous type;
+};
+
+template <class Elements, class Cursor1, class Cursor2>
+struct category<range<Elements,Cursor1,Cursor2> >
+{
+    typedef algorithm::fixed_size::category type;
 };
 
 }} // namespace boost::sequence
