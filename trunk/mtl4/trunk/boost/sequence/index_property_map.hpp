@@ -18,31 +18,31 @@ struct index_property_map
     
     // Readability
     template <class K>
-    K&
-    inline operator()(K& k) const
+    inline
+    K& operator()(K& k) const
     {
         return index[k];
     }
 
     template <class K>
-    K const&
-    inline operator()(K const& k) const
+    inline
+    K const& operator()(K const& k) const
     {
         return k;
     }
 
     // Writability
     template <class K, class V>
-    void
-    inline operator()(K& k, V const& v) const
+    inline
+    void operator()(K& k, V const& v) const
     {
         return k = v;
     }
 
     // This one is needed to support proxies
     template <class K, class V>
-    void
-    inline operator()(K const& k, V const& v) const
+    inline
+    void operator()(K const& k, V const& v) const
     {
         return k = v;
     }
@@ -55,21 +55,21 @@ struct index_property_map
 namespace boost  {
 
 // lvalues
-template <class K>
-struct result_of<sequence::index_property_map(K&)>
+template <class Indexable, class K>
+struct result_of<sequence::index_property_map<Indexable>(K&)>
 {
     typedef K& type;
 };
 
-template <class K>
-struct result_of<sequence::index_property_map(K const&)>
+template <class Indexable, class K>
+struct result_of<sequence::index_property_map<Indexable>(K const&)>
 {
     typedef K const& type;
 };
 
 // rvalues
-template <class K>
-struct result_of<sequence::index_property_map(K)>
+template <class Indexable, class K>
+struct result_of<sequence::index_property_map<Indexable>(K)>
 {
     typedef K const& type;
 };

@@ -14,8 +14,6 @@ namespace boost { namespace sequence { namespace algorithm { namespace fixed_siz
 template <class AlgorithmID>
 struct unrolled {};
 
-BOOST_TYPEOF_REGISTER_TEMPLATE(unrolled,1)
-
 template <class Algorithm>
 unrolled<Algorithm>
 lookup_implementation(Algorithm,fixed_size::category,fixed_size::category)
@@ -24,5 +22,7 @@ lookup_implementation(Algorithm,fixed_size::category,fixed_size::category)
 }
 
 }}}} // namespace boost::sequence::algorithm::fixed_size
+
+BOOST_TYPEOF_REGISTER_TEMPLATE(boost::sequence::algorithm::fixed_size::unrolled,1)
 
 #endif // BOOST_SEQUENCE_ALGORITHM_FIXED_SIZE_UNROLLED_DWA200559_HPP

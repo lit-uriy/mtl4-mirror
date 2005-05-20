@@ -23,14 +23,6 @@ struct is_fixed_size<T(&)[N]>
   : mpl::true_ {};
 
 template <class T, std::size_t N>
-struct is_fixed_size<T const[N]>
-  : mpl::true_ {};
-
-template <class T, std::size_t N>
-struct is_fixed_size<T const(&)[N]>
-  : mpl::true_ {};
-
-template <class T, std::size_t N>
 struct is_fixed_size<boost::array<T,N> >
   : mpl::true_ {};
 

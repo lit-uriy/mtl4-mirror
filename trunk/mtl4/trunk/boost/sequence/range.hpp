@@ -34,6 +34,8 @@ namespace range_
   };
 }
 
+using range_::range;
+
 template <class Sequence> struct begin_cursor;
 template <class Elements, class Begin, class End>
 struct begin_cursor<range<Elements,Begin,End> >

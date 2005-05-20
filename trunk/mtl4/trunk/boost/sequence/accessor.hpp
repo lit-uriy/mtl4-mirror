@@ -4,8 +4,10 @@
 #ifndef ACCESSOR_DWA200541_HPP
 # define ACCESSOR_DWA200541_HPP
 
+# include <boost/sequence/identity_property_map.hpp>
 # include <boost/sequence/detail/unspecialized.hpp>
-# include <boost/range/value_type.hpp>
+# include <boost/sequence/accessor_fwd.hpp>
+# include <boost/sequence/detail/unspecialized.hpp>
 
 namespace boost {
 namespace sequence { 
@@ -24,12 +26,10 @@ namespace accessor_
   // enable for specific types.  Partial specializations will be
   // detected so you can use enable_if to create overloads of
   // elements(S).
-  template <class SinglePassRange, class Enable = void>
+  template <class SinglePassRange, class Enable>
   struct implementation : detail::unspecialized
   {
-      typedef identity_property_map<
-          typename range_value<SinglePassRange>::type
-      > type;
+      typedef identity_property_map type;
   };
 }
 

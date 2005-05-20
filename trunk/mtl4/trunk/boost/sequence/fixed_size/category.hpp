@@ -8,6 +8,7 @@
 # include <boost/sequence/fixed_size/is_fixed_size.hpp>
 # include <boost/sequence/algorithm/fixed_size/category.hpp>
 # include <boost/utility/enable_if.hpp>
+# include <cstddef>
 
 namespace boost { namespace sequence { 
 

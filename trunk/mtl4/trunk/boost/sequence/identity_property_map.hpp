@@ -13,31 +13,31 @@ struct identity_property_map
 {
     // Readability
     template <class K>
-    K&
-    inline operator()(K& k) const
+    inline
+    K& operator()(K& k) const
     {
         return k;
     }
 
     template <class K>
-    K const&
-    inline operator()(K const& k) const
+    inline
+    K const& operator()(K const& k) const
     {
         return k;
     }
 
     // Writability
     template <class K, class V>
-    void
-    inline operator()(K& k, V const& v) const
+    inline
+    void operator()(K& k, V const& v) const
     {
         return k = v;
     }
 
     // This one is needed to support proxies
     template <class K, class V>
-    void
-    inline operator()(K const& k, V const& v) const
+    inline
+    void operator()(K const& k, V const& v) const
     {
         return k = v;
     }

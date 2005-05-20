@@ -54,4 +54,4 @@ using adl::elements;
 
 }} // namespace boost::sequence
 
-#elementsif // ELEMENTS_DWA200541_HPP
+#endif // ELEMENTS_DWA200541_HPP

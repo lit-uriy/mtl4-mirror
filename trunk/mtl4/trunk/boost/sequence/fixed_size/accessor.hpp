@@ -5,6 +5,7 @@
 # define BOOST_SEQUENCE_FIXED_SIZE_ACCESSOR_DWA200555_HPP
 
 # include <boost/sequence/fixed_size/is_fixed_size.hpp>
+# include <boost/sequence/accessor_fwd.hpp>
 # include <boost/sequence/index_property_map.hpp>
 # include <boost/utility/enable_if.hpp>
 
@@ -15,7 +16,9 @@ namespace accessor_
   template <class Sequence>
   struct implementation<
       Sequence
-    , typename enable_if<is_fixed_size<Sequence>::type>::type
+    , typename enable_if<
+          fixed_size::is_fixed_size<Sequence>
+      >::type
   >
   {
       typedef index_property_map<Sequence> type;

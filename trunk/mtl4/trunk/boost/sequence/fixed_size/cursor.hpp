@@ -124,7 +124,7 @@ namespace fixed_size {
     template <std::size_t N, class T>
     typename enable_if_c<
         boost::is_integral<T>::type
-      , BOOST_TYPEOF(sequence::detail::make<T>()+N)
+      , BOOST_TYPEOF_TPL(sequence::detail::make<T>()+N)
     >::type
     inline operator+(cursor<N>, T x)
     {
@@ -134,7 +134,7 @@ namespace fixed_size {
     template <std::size_t N, class T>
     typename enable_if_c<
         boost::is_integral<T>::type
-      , BOOST_TYPEOF(sequence::detail::make<T>()+N)
+      , BOOST_TYPEOF_TPL(sequence::detail::make<T>()+N)
     >::type
     inline operator+(T x,cursor<N>)
     {
@@ -144,7 +144,7 @@ namespace fixed_size {
     template <std::size_t N, class T>
     typename enable_if_c<
         boost::is_integral<T>::type
-      , BOOST_TYPEOF(N - sequence::detail::make<T>())
+      , BOOST_TYPEOF_TPL(N - sequence::detail::make<T>())
     >::type
     inline operator-(cursor<N>, T x)
     {
