@@ -5,6 +5,7 @@
 # define BOOST_SEQUENCE_ALGORITHM_DISPATCH_DWA200559_HPP
 
 # include <boost/sequence/category.hpp>
+# include <boost/sequence/algorithm/fixed_size/category.hpp>
 # include <boost/typeof/typeof.hpp>
 
 #include BOOST_TYPEOF_INCREMENT_REGISTRATION_GROUP()
@@ -23,13 +24,12 @@ namespace boost { namespace sequence { namespace algorithm {
 //
 //   type - the result type of that ::execute member
 //
-template <class Signature> struct dispatch;
+template <class Signature> struct dispatch { typedef int result; };
 
-# if BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050215))
+# if !(BOOST_MSVC <= 1301) && BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050215))
 namespace aux_
 {
   struct dummy { template <class T1, class T2> struct apply {}; };
-//  BOOST_TYPEOF_REGISTER_TYPE(dummy)
 }
 char lookup_implementation(...);
 
@@ -37,14 +37,14 @@ template <class Signature> struct dispatch0;
 template <class AlgorithmID, class Range1, class Range2>
 struct dispatch0<AlgorithmID(Range1&,Range2&)>
 {
-    typedef typename category<Range1>::type cat1;
-    typedef typename category<Range2>::type cat2;
+    typedef typename sequence::category<Range1>::type cat1;
+    typedef typename sequence::category<Range2>::type cat2;
 
     // lookup_implementation uses ADL on category tags to look up an
     // implementation class for this algorithm id and sequence
     // categories.  lookup_implementation is the *only* symbol that is
     // subject to ADL in this dispatching scheme.
-    typedef typename BOOST_TYPEOF(
+    typedef BOOST_TYPEOF_TPL(
          lookup_implementation(AlgorithmID(), cat1(), cat2())
     ) type;
 };
@@ -54,7 +54,7 @@ struct dispatch0<AlgorithmID(Range1&,Range2&)>
 template <class AlgorithmID, class Range1, class Range2>
 struct dispatch<AlgorithmID(Range1&,Range2&)>
 {
-# if 0
+# if  BOOST_MSVC <= 1301 || !BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050215))
     typedef typename category<Range1>::type cat1;
     typedef typename category<Range2>::type cat2;
 
@@ -62,7 +62,7 @@ struct dispatch<AlgorithmID(Range1&,Range2&)>
     // implementation class for this algorithm id and sequence
     // categories.  lookup_implementation is the *only* symbol that is
     // subject to ADL in this dispatching scheme.
-    typedef typename BOOST_TYPEOF(
+    typedef BOOST_TYPEOF_TPL(
          lookup_implementation(AlgorithmID(), cat1(), cat2())
     ) implementation_;
 # else

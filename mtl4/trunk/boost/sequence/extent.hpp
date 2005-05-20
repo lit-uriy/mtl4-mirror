@@ -4,6 +4,10 @@
 #ifndef BOOST_SEQUENCE_EXTENT_DWA200559_HPP
 # define BOOST_SEQUENCE_EXTENT_DWA200559_HPP
 
+# include <boost/sequence/difference.hpp>
+# include <boost/sequence/begin_cursor.hpp>
+# include <boost/sequence/end_cursor.hpp>
+
 namespace boost { namespace sequence { 
 
 template <class Sequence>

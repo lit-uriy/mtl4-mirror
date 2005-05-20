@@ -7,8 +7,17 @@
 # include <cstddef>
 # include <boost/sequence/advanced.hpp>
 # include <boost/sequence/make_range.hpp>
+# include <boost/sequence/range.hpp>
 # include <boost/sequence/next.hpp>
+# include <boost/sequence/algorithm/fixed_size/unrolled.hpp>
 # include <boost/sequence/detail/make_compressed_pair.hpp>
+# include <boost/sequence/algorithm/copy_fwd.hpp>
+# include <boost/sequence/extent.hpp>
+# include <boost/sequence/elements.hpp>
+# include <boost/sequence/accessor.hpp>
+# include <boost/sequence/begin.hpp>
+# include <boost/sequence/end.hpp>
+# include <boost/mpl/size_t.hpp>
 
 namespace boost { namespace sequence { namespace algorithm { namespace fixed_size { 
 
@@ -22,8 +31,8 @@ template <
   , class ForwardCursorPair
 >
 compressed_pair<
-    typename advanced<InCursor, mpl::size_t<N> >::type
-  , typename advanced<OutCursor, mpl::size_t<N> >::type
+    typename advanced<typename ForwardCursorPair::first_type, mpl::size_t<N> >::type
+  , typename advanced<typename ForwardCursorPair::second_type, mpl::size_t<N> >::type
 >
 copy(
     mpl::size_t<N>
@@ -32,12 +41,12 @@ copy(
   , ForwardCursorPair const& cursors
 )
 {
-    return copy(
+    return fixed_size::copy(
         mpl::size_t<(N-N/2)>()
       , in_elements
       , out_elements
         
-        copy(
+      , fixed_size::copy(
             mpl::size_t<N/2>()
           , in_elements
           , out_elements
@@ -46,12 +55,13 @@ copy(
 }
         
 template <
-    class ReadablePropertyMap, 
-  , class WritablePropertyMap, class ForwardCursorPair
+    class ReadablePropertyMap
+  , class WritablePropertyMap
+  , class ForwardCursorPair
 >
 compressed_pair<
-    typename successor<InCursor>::type
-  , typename successor<OutCursor>::type
+    typename successor<typename ForwardCursorPair::first_type>::type
+  , typename successor<typename ForwardCursorPair::second_type>::type
 >
 copy(
     mpl::size_t<1>
@@ -69,7 +79,7 @@ copy(
 }
 
 template <
-    class ReadablePropertyMap, 
+    class ReadablePropertyMap
   , class WritablePropertyMap
   , class ForwardCursorPair
 >

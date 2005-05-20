@@ -4,7 +4,8 @@
 #ifndef END_DWA200541_HPP
 # define END_DWA200541_HPP
 
-# include <boost/sequence/container/end.hpp>
+# include <boost/sequence/fixed_size/end.hpp>
+# include <boost/sequence/detail/is_specialized.hpp>
 
 namespace boost {
 namespace sequence { 
@@ -29,7 +30,7 @@ namespace adl
   
   template <class S>
   typename lazy_disable_if<
-      is_specialized<end_cursor_::base<S> >
+      detail::is_specialized<end_cursor_::implementation<S> >
     , end_cursor<S const>
   >::type
   inline end(S const& s)
@@ -39,7 +40,7 @@ namespace adl
 
   template <class S>
   typename lazy_disable_if<
-      is_specialized<end_cursor_::base<S> >
+      detail::is_specialized<end_cursor_::implementation<S> >
     , end_cursor<S>
   >::type
   inline end(S& s)
@@ -48,7 +49,11 @@ namespace adl
   }
 }
 
+# if 0
 using adl::end;
+# else
+using namespace adl;
+# endif 
 
 }} // namespace boost::sequence
 
