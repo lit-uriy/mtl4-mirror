@@ -7,6 +7,7 @@
 # include <boost/utility/enable_if.hpp>
 # include <boost/sequence/fixed_size/is_fixed_size.hpp>
 # include <boost/sequence/fixed_size/accessor.hpp>
+# include <boost/sequence/fixed_size/begin_cursor.hpp>
 
 namespace boost { namespace sequence {
 
@@ -17,7 +18,7 @@ typename lazy_enable_if<
 >::type
 inline begin(S& s)
 {
-    return begin_cursor<S>::type(s);
+    return begin_cursor<S>::type();
 }
 
 template <class S>
@@ -27,7 +28,7 @@ typename lazy_enable_if<
 >::type
 inline begin(S const& s)
 {
-    return begin_cursor<S const>::type(s);
+    return begin_cursor<S const>::type();
 }
 
 }} // namespace boost::sequence

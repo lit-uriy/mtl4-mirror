@@ -64,15 +64,15 @@ struct dispatch<AlgorithmID(Range1&,Range2&)>
     // subject to ADL in this dispatching scheme.
     typedef BOOST_TYPEOF_TPL(
          lookup_implementation(AlgorithmID(), cat1(), cat2())
-    ) implementation_;
+    ) implementation;
 # else
     typedef typename dispatch0<
         AlgorithmID(Range1&,Range2&)
-    >::type implementation_;
+    >::type implementation;
 # endif 
 
     typedef typename
-      implementation_::template apply<Range1,Range2>::type
+      implementation::template apply<Range1,Range2>::type
     type;
 };
 

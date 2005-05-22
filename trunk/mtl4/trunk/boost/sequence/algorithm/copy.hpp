@@ -21,7 +21,9 @@ struct copy_
     typename dispatch<copy_(typename add_const<Range1>::type&,Range2&)>::type
     operator()(Range1 const& src, Range2& dst) const
     {
+//        typedef dispatch<copy_(Range1 const&,Range2&)>::implementation impl;
         return dispatch<copy_(Range1 const&,Range2&)>::implementation
+//        impl
             ::execute(src,dst);
     }
 };

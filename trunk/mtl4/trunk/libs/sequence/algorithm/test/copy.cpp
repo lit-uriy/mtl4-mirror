@@ -4,18 +4,19 @@
 
 #include <boost/sequence/algorithm/copy.hpp>
 #include <boost/test/minimal.hpp>
-//#include <boost/array.hpp>
 #include <algorithm>
 
 namespace sequence = boost::sequence;
-
-template <class X> struct unknown;
 
 int test_main( int argc, char* argv[] )
 {
     char const hello[] = "hello";
     char buf[] = "0123456789";
-    char buf2[10];
+    char buf2[11];
+
+    sequence::begin(hello);
+
+    sequence::algorithm::copy(hello, buf);
     
     sequence::algorithm::copy(
         sequence::algorithm::copy(hello, buf)
@@ -28,4 +29,7 @@ int test_main( int argc, char* argv[] )
     BOOST_REQUIRE(
         std::equal(buf2,&buf2[0]+5,"6789")
     );
+
+    return 0;
 }
+

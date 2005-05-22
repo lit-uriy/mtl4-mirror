@@ -32,7 +32,7 @@ namespace adl
   
   template <class S>
   typename lazy_disable_if<
-      detail::is_specialized<begin_cursor_::implementation<S> >
+      detail::is_specialized<begin_cursor<S const> >
     , begin_cursor<S const>
   >::type
   inline begin(S const& s)
@@ -42,7 +42,7 @@ namespace adl
 
   template <class S>
   typename lazy_disable_if<
-      detail::is_specialized<begin_cursor_::implementation<S> >
+      detail::is_specialized<begin_cursor<S> >
     , begin_cursor<S>
   >::type
   inline begin(S& s)

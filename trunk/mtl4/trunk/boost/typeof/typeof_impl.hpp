@@ -6,6 +6,7 @@
 #define BOOST_TYPEOF_TYPEOF_IMPL_HPP_INCLUDED
 
 #include <boost/mpl/size_t.hpp>
+#include <boost/mpl/int.hpp>
 #include <boost/preprocessor/repetition/enum.hpp>
 #include <boost/typeof/encode_decode.hpp>
 
@@ -24,22 +25,44 @@
 
 namespace boost{namespace type_of{
 
-    template<int pos, class T>
-        char(&at(const T&))[
-            mpl::at<typename encode_type<BOOST_TYPEOF_VECTOR(0)<>, T>::type, mpl::int_<pos> >::type::value
-        ];
+template <class N>
+struct sizer
+{
+    typedef char (&type)[N::value];
+};
+
+template<class Pos, class T>
+typename sizer<
+    typename mpl::at<typename encode_type<BOOST_TYPEOF_VECTOR(0)<>, T>::type, Pos>::type
+>::type
+at(Pos, const T&);
+
+template <int N, class Size>
+struct selector
+{
+    enum { value = (N < Size::value) ? N : 0 };
+    typedef mpl::size_t<value> type;
+};
+
+template <int N, class Size>
+typename selector<N,Size>::type
+select(Size);
 
     template<class T>
-        char(&size(const T&))[
-            mpl::size<typename encode_type<BOOST_TYPEOF_VECTOR(0)<>, T>::type>::value
-        ];
+    typename mpl::size<typename encode_type<BOOST_TYPEOF_VECTOR(0)<>, T>::type>::type
+    size(const T&);
 }}
 
-#define BOOST_TYPEOF_AT(n, expr) sizeof(boost::type_of::at<n>(expr))
-#define BOOST_TYPEOF_SIZE(expr) sizeof(boost::type_of::size(expr))
-
-#define BOOST_TYPEOF_TYPEITEM(z, n, expr)\
-    boost::mpl::size_t<BOOST_TYPEOF_AT((n < BOOST_TYPEOF_SIZE(expr)) ? n : 0, expr)>
+#define BOOST_TYPEOF_TYPEITEM(z, n, expr)       \
+    boost::mpl::size_t<                         \
+        sizeof(                                 \
+            boost::type_of::at(                 \
+                boost::type_of::select<n>(      \
+                    boost::type_of::size(expr)  \
+                )                               \
+              , expr                            \
+            ))                                  \
+    >
 
 #define BOOST_TYPEOF(Expr)                                                          \
     boost::type_of::decode_type<                                                    \

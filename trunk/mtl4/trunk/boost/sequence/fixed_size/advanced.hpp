@@ -6,12 +6,18 @@
 
 # include <boost/sequence/fixed_size/cursor.hpp>
 
-namespace boost { namespace sequence
+namespace boost { namespace sequence {
 
 template <class Cursor, class Amount> struct advanced;
 
 template <std::size_t N, class Amount>
 struct advanced<fixed_size::cursor<N>, Amount>
+{
+    typedef fixed_size::cursor<N + Amount::value> type;
+};
+    
+template <std::size_t N, class Amount>
+struct advanced<fixed_size::cursor<N> const, Amount>
 {
     typedef fixed_size::cursor<N + Amount::value> type;
 };
