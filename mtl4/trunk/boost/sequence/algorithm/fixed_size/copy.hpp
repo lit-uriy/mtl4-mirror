@@ -101,6 +101,9 @@ struct unrolled< copy_ >
     template <class Range1, class Range2>
     struct apply
     {
+        typedef Range2 r;
+        typedef typename end_cursor<Range2>::type fini;
+        
         typedef range<
             typename accessor<Range2>::type
           , typename advanced<
@@ -116,11 +119,12 @@ struct unrolled< copy_ >
     static typename apply<Range1,Range2>::type
     execute(Range1 const& in, Range2& out)
     {
+        typedef typename extent<Range1>::type length;
+        
         return make_range(
             sequence::elements(out)
           , fixed_size::copy(
-                typename extent<Range1>::type()
-
+                mpl::size_t<length::value>()
               , sequence::elements(in)
               , sequence::elements(out)
 

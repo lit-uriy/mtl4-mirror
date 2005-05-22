@@ -13,7 +13,7 @@ namespace boost { namespace sequence {
 
 namespace range_
 {
-  template <class Elements, class Begin, class End = Begin>
+  template <class Elements, class Begin, class End>
   struct range
     : private compressed_pair<
           Begin
@@ -34,7 +34,9 @@ namespace range_
       range(Elements const& m, Begin const& b, End const& e)
         : base(b, compressed_pair<End,Elements>(e,m))
       {}
+
   };
+
 }
 
 using range_::range;
@@ -46,9 +48,23 @@ struct begin_cursor<range<Elements,Begin,End> >
     typedef Begin type;
 };
 
+template <class Sequence> struct begin_cursor;
+template <class Elements, class Begin, class End>
+struct begin_cursor<range<Elements,Begin,End> const>
+{
+    typedef Begin type;
+};
+
 template <class Sequence> struct end_cursor;
 template <class Elements, class Begin, class End>
 struct end_cursor<range<Elements,Begin,End> >
+{
+    typedef End type;
+};
+
+template <class Sequence> struct end_cursor;
+template <class Elements, class Begin, class End>
+struct end_cursor<range<Elements,Begin,End> const>
 {
     typedef End type;
 };
@@ -60,14 +76,33 @@ struct accessor<range<Elements,Begin,End> >
     typedef Elements type;
 };
 
+template <class Sequence> struct accessor;
+template <class Elements, class Begin, class End>
+struct accessor<range<Elements,Begin,End> const>
+{
+    typedef Elements const type;
+};
+
 template <class Elements, class Cursor>
-struct category<range<Elements,Cursor,Cursor> >
+struct category<range<Elements,Cursor,Cursor>, void> 
+{
+    typedef homogeneous type;
+};
+
+template <class Elements, class Cursor>
+struct category<range<Elements,Cursor,Cursor>const, void> 
 {
     typedef homogeneous type;
 };
 
 template <class Elements, class Cursor1, class Cursor2>
-struct category<range<Elements,Cursor1,Cursor2> >
+struct category<range<Elements,Cursor1,Cursor2>, void>
+{
+    typedef algorithm::fixed_size::category type;
+};
+
+template <class Elements, class Cursor1, class Cursor2>
+struct category<range<Elements,Cursor1,Cursor2>const, void>
 {
     typedef algorithm::fixed_size::category type;
 };

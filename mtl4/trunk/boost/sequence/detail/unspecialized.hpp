@@ -5,6 +5,7 @@
 # define UNSPECIALIZED_DWA200552_HPP
 
 # include <boost/type_traits/is_convertible.hpp>
+# include <boost/sequence/detail/unspecialized.hpp>
 
 namespace boost { namespace sequence { namespace detail {
 
@@ -15,7 +16,8 @@ struct unspecialized {};
 template <class T>
 struct is_unspecialized
   : is_convertible<T*,unspecialized const volatile*>
-{};
+{
+};
 
 }}} // namespace boost::sequence::detail
 

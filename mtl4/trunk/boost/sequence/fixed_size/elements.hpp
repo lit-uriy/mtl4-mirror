@@ -5,8 +5,8 @@
 # define BOOST_SEQUENCE_FIXED_SIZE_ELEMENTS_DWA200555_HPP
 
 # include <boost/utility/enable_if.hpp>
-# include <boost/fixed_size/is_fixed_size.hpp>
-# include <boost/fixed_size/accessor.hpp>
+# include <boost/sequence/fixed_size/is_fixed_size.hpp>
+# include <boost/sequence/fixed_size/accessor.hpp>
 
 namespace boost { namespace sequence {
 

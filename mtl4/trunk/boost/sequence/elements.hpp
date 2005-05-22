@@ -5,7 +5,9 @@
 # define ELEMENTS_DWA200541_HPP
 
 # include <boost/sequence/container/elements.hpp>
+# include <boost/sequence/fixed_size/elements.hpp>
 # include <boost/sequence/accessor.hpp>
+# include <boost/sequence/detail/is_specialized.hpp>
 # include <boost/utility/enable_if.hpp>
 
 namespace boost {
@@ -23,15 +25,17 @@ namespace elements_
   }
 }
 
+# if !BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
 namespace adl
 {
+# endif 
   // These are disabled when accessor_::implementation<S> is
   // specialized (e.g. when S is a std container), because in those
   // cases we will supply a more specific overload.
   
   template <class S>
   typename lazy_disable_if<
-      detail::is_specialized<accessor_::implementation<S> >
+      detail::is_specialized<accessor_::implementation<S,void> >
     , accessor<S const>
   >::type
   inline elements(S const& s)
@@ -41,16 +45,17 @@ namespace adl
 
   template <class S>
   typename lazy_disable_if<
-      detail::is_specialized<accessor_::implementation<S> >
+      detail::is_specialized<accessor_::implementation<S,void> >
     , accessor<S>
   >::type
   inline elements(S& s)
   {
       return elements_::dispatch(s);
   }
+# if !BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
 }
-
 using adl::elements;
+# endif 
 
 }} // namespace boost::sequence
 

@@ -9,12 +9,16 @@
 
 namespace boost { namespace sequence { namespace detail { 
 
+template <class T, class U, bool workaround = false>
+struct typeof_add;
+
+
 template <class T, class U>
-struct typeof_add
+struct typeof_add<T,U,false>
 {
     typedef BOOST_TYPEOF_TPL(make<T>() + make<U>()) type;
 };
-    
+
 }}} // namespace boost::sequence::detail
 
 #endif // BOOST_SEQUENCE_DETAIL_TYPEOF_ADD_DWA2005520_HPP

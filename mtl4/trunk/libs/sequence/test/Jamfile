@@ -2,5 +2,6 @@ import testing ;
 import mtl4 ;
 
 compile has_value.cpp ;
-compile is_fixed_size.hpp ;
+compile end_cursor.cpp ;
+compile range.cpp ;
 

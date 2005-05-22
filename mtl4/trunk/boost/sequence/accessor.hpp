@@ -4,6 +4,7 @@
 #ifndef ACCESSOR_DWA200541_HPP
 # define ACCESSOR_DWA200541_HPP
 
+# include <boost/sequence/accessor_fwd.hpp>
 # include <boost/sequence/identity_property_map.hpp>
 # include <boost/sequence/fixed_size/accessor.hpp>
 # include <boost/sequence/detail/unspecialized.hpp>

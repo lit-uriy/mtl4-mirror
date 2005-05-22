@@ -21,7 +21,7 @@ namespace accessor_
       >::type
   >
   {
-      typedef index_property_map<Sequence> type;
+      typedef index_property_map<Sequence&> type;
   };
 }
 

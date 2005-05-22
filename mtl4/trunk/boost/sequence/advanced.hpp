@@ -5,6 +5,7 @@
 # define ADVANCED_DWA200541_HPP
 
 # include <boost/sequence/detail/unspecialized.hpp>
+# include <boost/sequence/fixed_size/advanced.hpp>
 
 namespace boost {
 namespace sequence { 
