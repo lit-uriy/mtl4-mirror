@@ -38,6 +38,16 @@ struct begin_cursor
   : begin_cursor_::implementation<Sequence>
 {};
 
+template <class Sequence>
+struct begin_cursor<Sequence const>
+  : begin_cursor<Sequence>
+{};
+
+template <class Sequence>
+struct begin_cursor<Sequence&>
+  : begin_cursor<Sequence>
+{};
+
 }} // namespace boost::sequence
 
 #endif // BEGIN_CURSOR_DWA200541_HPP

@@ -36,7 +36,7 @@ struct index_property_map
     inline
     void operator()(K& k, V const& v) const
     {
-        return k = v;
+        index[k] = v;
     }
 
     // This one is needed to support proxies
@@ -44,7 +44,7 @@ struct index_property_map
     inline
     void operator()(K const& k, V const& v) const
     {
-        return k = v;
+        index[k] = v;
     }
 
     Indexable index;

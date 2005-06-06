@@ -18,7 +18,7 @@ typename lazy_enable_if<
 >::type
 inline begin(S& s)
 {
-    return begin_cursor<S>::type();
+    return typename begin_cursor<S>::type();
 }
 
 template <class S>
@@ -28,7 +28,7 @@ typename lazy_enable_if<
 >::type
 inline begin(S const& s)
 {
-    return begin_cursor<S const>::type();
+    return typename begin_cursor<S const>::type();
 }
 
 }} // namespace boost::sequence

@@ -4,11 +4,13 @@
 #ifndef CURSOR_DWA2005330_HPP
 # define CURSOR_DWA2005330_HPP
 
+# include <boost/sequence/fixed_size/cursor_fwd.hpp>
 # include <boost/sequence/detail/is_mpl_integral_constant.hpp>
 # include <boost/sequence/detail/typeof_add.hpp>
 # include <boost/sequence/detail/typeof_subtract.hpp>
 # include <boost/utility/enable_if.hpp>
 # include <boost/type_traits/is_class.hpp>
+# include <boost/type_traits/is_integral.hpp>
 # include <boost/mpl/integral_c.hpp>
 # include <boost/typeof/typeof.hpp>
 # include <cstddef>
@@ -152,8 +154,6 @@ namespace fixed_size {
         return N - x;
     }
   } // namespace cursor_
-
-  using cursor_::cursor;
 
 } // namespace fixed_size
 

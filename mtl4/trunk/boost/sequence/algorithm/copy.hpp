@@ -21,10 +21,13 @@ struct copy_
     typename dispatch<copy_(typename add_const<Range1>::type&,Range2&)>::type
     operator()(Range1 const& src, Range2& dst) const
     {
-//        typedef dispatch<copy_(Range1 const&,Range2&)>::implementation impl;
-        return dispatch<copy_(Range1 const&,Range2&)>::implementation
-//        impl
-            ::execute(src,dst);
+# if BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
+        return
+            typename dispatch<copy_(Range1 const&,Range2&)>::implementation
+            ().execute(src,dst);
+# else
+        return dispatch<copy_(Range1 const&,Range2&)>::implementation::execute(src,dst);
+# endif 
     }
 };
 

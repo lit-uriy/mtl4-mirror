@@ -25,7 +25,7 @@ namespace elements_
   }
 }
 
-# if !BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
+# if 1 // !BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
 namespace adl
 {
 # endif 
@@ -52,7 +52,7 @@ namespace adl
   {
       return elements_::dispatch(s);
   }
-# if !BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
+# if 1 // !BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
 }
 using adl::elements;
 # endif 

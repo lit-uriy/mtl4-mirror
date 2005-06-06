@@ -17,7 +17,7 @@ typename lazy_enable_if<
 >::type
 inline end(S& s)
 {
-    return end_cursor<S>::type();
+    return typename end_cursor<S>::type();
 }
 
 template <class S>
@@ -27,7 +27,7 @@ typename lazy_enable_if<
 >::type
 inline end(S const& s)
 {
-    return end_cursor<S const>::type();
+    return typename end_cursor<S const>::type();
 }
 
 }} // namespace boost::sequence

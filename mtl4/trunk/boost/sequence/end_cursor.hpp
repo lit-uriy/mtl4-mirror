@@ -38,6 +38,17 @@ struct end_cursor
   : end_cursor_::implementation<Sequence>
 {};
 
+
+template <class Sequence>
+struct end_cursor<Sequence const>
+  : end_cursor<Sequence>
+{};
+
+template <class Sequence>
+struct end_cursor<Sequence&>
+  : end_cursor<Sequence>
+{};
+
 }} // namespace boost::sequence
 
 #endif // END_CURSOR_DWA200541_HPP

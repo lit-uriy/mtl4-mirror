@@ -4,5 +4,22 @@
 
 #include <boost/mpl/assert.hpp>
 #include <boost/sequence/fixed_size/is_fixed_size.hpp>
+#include <boost/sequence/fixed_size/cursor.hpp>
+#include <boost/sequence/index_property_map.hpp>
+#include <boost/sequence/range.hpp>
 
-BOOST_MPL_ASSERT((boost::sequence::fixed_size::is_fixed_size<char const[6]>));
+namespace sequence = boost::sequence;
+
+BOOST_MPL_ASSERT((sequence::fixed_size::is_fixed_size<char const[6]>));
+
+BOOST_MPL_ASSERT(
+    (
+        sequence::fixed_size::is_fixed_size<
+            sequence::range<
+                sequence::index_property_map< char const[6] >
+              , sequence::fixed_size::cursor<0>
+              , sequence::fixed_size::cursor<1>
+            >
+        >
+    )
+    );

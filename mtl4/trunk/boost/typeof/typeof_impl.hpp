@@ -6,7 +6,6 @@
 #define BOOST_TYPEOF_TYPEOF_IMPL_HPP_INCLUDED
 
 #include <boost/mpl/size_t.hpp>
-#include <boost/mpl/int.hpp>
 #include <boost/preprocessor/repetition/enum.hpp>
 #include <boost/typeof/encode_decode.hpp>
 
@@ -23,8 +22,13 @@
 #   define BOOST_TYPEOF_VECTOR(n) BOOST_PP_CAT(boost::type_of::vector, n)
 #endif
 
+#ifdef BOOST_MSVC
+# include <boost/mpl/int.hpp>
+#endif
+
 namespace boost{namespace type_of{
 
+#ifdef BOOST_MSVC
 template <class N>
 struct sizer
 {
@@ -51,7 +55,6 @@ select(Size);
     template<class T>
     typename mpl::size<typename encode_type<BOOST_TYPEOF_VECTOR(0)<>, T>::type>::type
     size(const T&);
-}}
 
 #define BOOST_TYPEOF_TYPEITEM(z, n, expr)       \
     boost::mpl::size_t<                         \
@@ -63,6 +66,30 @@ select(Size);
               , expr                            \
             ))                                  \
     >
+
+#else
+
+
+    template<int pos, class T>
+        char(&at(const T&))[
+            mpl::at<typename encode_type<BOOST_TYPEOF_VECTOR(0)<>, T>::type, mpl::int_<pos> >::type::value
+        ];
+
+    template<class T>
+        char(&size(const T&))[
+            mpl::size<typename encode_type<BOOST_TYPEOF_VECTOR(0)<>, T>::type>::value
+        ];
+
+
+#define BOOST_TYPEOF_AT(n, expr) sizeof(boost::type_of::at<n>(expr))
+#define BOOST_TYPEOF_SIZE(expr) sizeof(boost::type_of::size(expr))
+
+#define BOOST_TYPEOF_TYPEITEM(z, n, expr)\
+    boost::mpl::size_t<BOOST_TYPEOF_AT((n < BOOST_TYPEOF_SIZE(expr)) ? n : 0, expr)>
+
+#endif
+
+}}
 
 #define BOOST_TYPEOF(Expr)                                                          \
     boost::type_of::decode_type<                                                    \
