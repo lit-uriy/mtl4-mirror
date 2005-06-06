@@ -14,8 +14,15 @@ int test_main( int argc, char* argv[] )
     char buf[] = "0123456789";
     char buf2[11];
 
+#if 0  // help in tracking down some bugs
     sequence::begin(hello);
-
+    sequence::begin(buf);
+    char const (&hello_)[6] = hello;
+    char (&buf_)[11] = buf;
+    sequence::begin(hello_);
+    sequence::begin(buf_);
+#endif 
+    
     sequence::algorithm::copy(hello, buf);
     
     sequence::algorithm::copy(

@@ -6,7 +6,17 @@
 
 namespace boost { namespace sequence { 
 
-template <class Sequence, class Enable = void> struct category;
+template <class Sequence> struct category;
+
+// In general, a const T has the same category as T.
+template <class T>
+struct category<T const>
+  : category<T> {};
+
+// In general, a reference to T has the same category as T.
+template <class T>
+struct category<T&>
+  : category<T> {};
 
 }} // namespace boost::sequence
 

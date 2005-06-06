@@ -14,3 +14,5 @@ project mtl4 : requirements <include>. <include>c:/boost ;
 #     [ modules.peek : BOOST_BUILD_PATH ] ;
    
 build-project libs/numeric/mtl/doc ;
+use-project /boost : c:/boost ;
+

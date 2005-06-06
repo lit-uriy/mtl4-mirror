@@ -4,6 +4,7 @@
 #ifndef BOOST_SEQUENCE_RANGE_DWA200559_HPP
 # define BOOST_SEQUENCE_RANGE_DWA200559_HPP
 
+# include <boost/sequence/range_fwd.hpp>
 # include <boost/compressed_pair.hpp>
 # include <boost/sequence/homogeneous.hpp>
 # include <boost/sequence/category_fwd.hpp>
@@ -37,9 +38,30 @@ namespace range_
 
   };
 
-}
+  template <class Elements, class Begin, class End>
+  Begin begin(range<Elements,Begin,End> const& r)
+  {
+      return r.first();
+  }
+  
+  template <class Elements, class Begin, class End>
+  End end(range<Elements,Begin,End> const& r)
+  {
+      return r.second().first();
+  }
 
-using range_::range;
+  template <class Elements, class Begin, class End>
+  Elements const elements(range<Elements,Begin,End> const& r)
+  {
+      return r.second().second();
+  }
+
+  template <class Elements, class Begin, class End>
+  Elements elements(range<Elements,Begin,End>& r)
+  {
+      return r.second().second();
+  }
+}
 
 template <class Sequence> struct begin_cursor;
 template <class Elements, class Begin, class End>
@@ -48,23 +70,9 @@ struct begin_cursor<range<Elements,Begin,End> >
     typedef Begin type;
 };
 
-template <class Sequence> struct begin_cursor;
-template <class Elements, class Begin, class End>
-struct begin_cursor<range<Elements,Begin,End> const>
-{
-    typedef Begin type;
-};
-
 template <class Sequence> struct end_cursor;
 template <class Elements, class Begin, class End>
 struct end_cursor<range<Elements,Begin,End> >
-{
-    typedef End type;
-};
-
-template <class Sequence> struct end_cursor;
-template <class Elements, class Begin, class End>
-struct end_cursor<range<Elements,Begin,End> const>
 {
     typedef End type;
 };
@@ -84,25 +92,13 @@ struct accessor<range<Elements,Begin,End> const>
 };
 
 template <class Elements, class Cursor>
-struct category<range<Elements,Cursor,Cursor>, void> 
-{
-    typedef homogeneous type;
-};
-
-template <class Elements, class Cursor>
-struct category<range<Elements,Cursor,Cursor>const, void> 
+struct category<range<Elements,Cursor,Cursor> > 
 {
     typedef homogeneous type;
 };
 
 template <class Elements, class Cursor1, class Cursor2>
-struct category<range<Elements,Cursor1,Cursor2>, void>
-{
-    typedef algorithm::fixed_size::category type;
-};
-
-template <class Elements, class Cursor1, class Cursor2>
-struct category<range<Elements,Cursor1,Cursor2>const, void>
+struct category<range<Elements,Cursor1,Cursor2> >
 {
     typedef algorithm::fixed_size::category type;
 };

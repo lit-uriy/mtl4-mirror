@@ -6,7 +6,7 @@
 
 # include <boost/sequence/detail/has_value_type.hpp>
 # include <boost/sequence/detail/has_type.hpp>
-// # include <boost/sequence/detail/has_value.hpp>
+# include <boost/sequence/detail/has_value.hpp>
 # include <boost/type_traits/is_same.hpp>
 # include <boost/mpl/and.hpp>
 # include <boost/mpl/bool.hpp>
@@ -24,9 +24,7 @@ struct is_mpl_integral_constant
         detail::has_type<T>
       , detail::is_self_returning_nullary_metafunction<T>
       , detail::has_value_type<T>
-# if 0 // !BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(3))
       , detail::has_value<T>
-# endif 
     >
 {};
 

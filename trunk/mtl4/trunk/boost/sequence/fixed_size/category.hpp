@@ -5,21 +5,29 @@
 # define BOOST_FIXED_SIZE_SEQUENCE_CATEGORY_DWA200559_HPP
 
 # include <boost/sequence/category_fwd.hpp>
-# include <boost/sequence/fixed_size/is_fixed_size.hpp>
 # include <boost/sequence/algorithm/fixed_size/category.hpp>
-# include <boost/utility/enable_if.hpp>
+# include <boost/sequence/range_fwd.hpp>
+# include <boost/sequence/fixed_size/cursor_fwd.hpp>
+# include <boost/array.hpp>
 # include <cstddef>
 
 namespace boost { namespace sequence { 
 
-template <class Sequence>
-struct category<
-    Sequence
-  , typename enable_if<fixed_size::is_fixed_size<Sequence> >::type
->
-{
-    typedef algorithm::fixed_size::category type;
-};
+template <class T, std::size_t N>
+struct category<T[N]>
+  : algorithm::fixed_size::category {};
+
+template <class T, std::size_t N>
+struct category<T const[N]>
+  : algorithm::fixed_size::category {};
+
+template <class T, std::size_t N>
+struct category<boost::array<T,N> >
+  : algorithm::fixed_size::category {};
+
+template <class Elements, std::size_t N1, std::size_t N2>
+struct category<range<Elements, fixed_size::cursor<N1>, fixed_size::cursor<N2> > >
+  : algorithm::fixed_size::category {};
 
 }} // namespace boost::sequence
 

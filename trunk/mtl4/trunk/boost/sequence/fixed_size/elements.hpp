@@ -4,30 +4,32 @@
 #ifndef BOOST_SEQUENCE_FIXED_SIZE_ELEMENTS_DWA200555_HPP
 # define BOOST_SEQUENCE_FIXED_SIZE_ELEMENTS_DWA200555_HPP
 
-# include <boost/utility/enable_if.hpp>
-# include <boost/sequence/fixed_size/is_fixed_size.hpp>
-# include <boost/sequence/fixed_size/accessor.hpp>
+# include <boost/sequence/index_property_map.hpp>
+# include <boost/array.hpp>
+# include <cstddef>
 
 namespace boost { namespace sequence {
 
-template <class S>
-typename lazy_enable_if<
-    fixed_size::is_fixed_size<S>
-  , accessor<S>
->::type
-inline elements(S& s)
+// Don't need two overloads, since there are no array rvalues.
+template <class T, std::size_t N>
+inline index_property_map<T(&)[N]>
+elements(T(&s)[N])
 {
-    return accessor<S>::type(s);
+    return index_property_map<T(&)[N]>(s);
 }
 
-template <class S>
-typename lazy_enable_if<
-    fixed_size::is_fixed_size<S>
-  , accessor<S const>
->::type
-inline elements(S const& s)
+template <class T, std::size_t N>
+inline index_property_map<array<T,N>&>
+elements(array<T,N>& s)
 {
-    return accessor<S const>::type(s);
+    return index_property_map<array<T,N>&>(s);
+}
+
+template <class T, std::size_t N>
+inline index_property_map<array<T,N> const&>
+elements(array<T,N> const& s)
+{
+    return index_property_map<array<T,N> const&>(s);
 }
 
 }} // namespace boost::sequence

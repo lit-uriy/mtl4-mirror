@@ -6,7 +6,10 @@
 
 namespace boost { namespace sequence { namespace algorithm { namespace fixed_size { 
 
-struct category {};
+struct category
+{
+    typedef category type; // self-returning, for convenience
+};
 
 }}}} // namespace boost::sequence::algorithm::fixed_size
 

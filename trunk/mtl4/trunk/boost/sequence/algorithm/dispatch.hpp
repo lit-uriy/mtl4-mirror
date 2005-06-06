@@ -7,6 +7,7 @@
 # include <boost/sequence/category.hpp>
 # include <boost/sequence/algorithm/fixed_size/category.hpp>
 # include <boost/typeof/typeof.hpp>
+# include <boost/mpl/apply_wrap.hpp>
 
 #include BOOST_TYPEOF_INCREMENT_REGISTRATION_GROUP()
 
@@ -71,9 +72,13 @@ struct dispatch<AlgorithmID(Range1&,Range2&)>
     >::type implementation;
 # endif 
 
+# if 0 && BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4)) // not sure we need this workaround
+    typedef typename mpl::apply_wrap2<implementation,Range1,Range2>::type type;
+# else 
     typedef typename
       implementation::template apply<Range1,Range2>::type
     type;
+# endif 
 };
 
 }}} // namespace boost::sequence::algorithm

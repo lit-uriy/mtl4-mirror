@@ -4,31 +4,20 @@
 #ifndef IS_FIXED_SIZE_DWA200555_HPP
 # define IS_FIXED_SIZE_DWA200555_HPP
 
-# include <boost/array.hpp>
-# include <boost/mpl/bool.hpp>
+# include <boost/sequence/algorithm/fixed_size/category.hpp>
+# include <boost/type_traits/is_same.hpp>
 # include <cstddef>
 
 namespace boost { namespace sequence { namespace fixed_size {
 
 template <class T>
 struct is_fixed_size
-  : mpl::false_ {};
+  : is_same<
+        typename category<T>::type
+      , algorithm::fixed_size::category
+    >
+{};
 
-template <class T, std::size_t N>
-struct is_fixed_size<T[N]>
-  : mpl::true_ {};
-
-template <class T, std::size_t N>
-struct is_fixed_size<T(&)[N]>
-  : mpl::true_ {};
-
-template <class T, std::size_t N>
-struct is_fixed_size<boost::array<T,N> >
-  : mpl::true_ {};
-
-template <class T, std::size_t N>
-struct is_fixed_size<boost::array<T,N> const>
-  : mpl::true_ {};
 
 }}} // namespace boost::sequence::fixed_size
 
