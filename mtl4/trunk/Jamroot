@@ -2,10 +2,22 @@
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 import modules ;
+import os ;
+import path ;
 
 import mtl4 ;
 
-project mtl4 : requirements <include>. <include>c:/boost ;
+.bootstrap-file = [ path.make [ modules.peek : .bootstrap-file ] ] ;
+ECHO .bootstrap-file= $(.bootstrap-file) ;
+.boost = $(.bootstrap-file) ;
+for local x in 1 2 3 4 5
+{
+    .boost = [ path.parent $(.boost) ] ;
+}
+.boost = [ path.native $(.boost) ] ;
+ECHO .boost= $(.boost) ;
+
+project mtl4 : requirements <include>. <include>$(.boost) ;
 
 # .my-dir = [ modules.binding $(__name__) ] ;
 
@@ -14,5 +26,5 @@ project mtl4 : requirements <include>. <include>c:/boost ;
 #     [ modules.peek : BOOST_BUILD_PATH ] ;
    
 build-project libs/numeric/mtl/doc ;
-use-project /boost : c:/boost ;
+use-project /boost : $(.boost) ;
 
