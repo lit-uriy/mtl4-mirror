@@ -19,6 +19,11 @@ namespace begin_cursor_
   struct implementation;
 };
 
+// A metafunction that returns the type of the property map associated
+// with a sequence.
+template <class Sequence>
+struct begin_cursor;
+
 }} // namespace boost::sequence
 
 #endif // BOOST_SEQUENCE_BEGIN_CURSOR_FWD_DWA2005520_HPP

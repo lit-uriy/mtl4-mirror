@@ -6,8 +6,12 @@
 
 .. admonition:: Current Status
 
-  The basic infrastructure (testing, documentation) systems now in
-  place, I have moved on to working on the FAST_ component.
+  My work on FAST_ has taken me into the realm of `how to represent
+  sequences`__ with cursors and property maps, and `how to dispatch
+  algorithms.`__
+
+__ ../../../../sequence/doc/html/index.html
+__ algorithm_dispatch.rst
 
 .. contents:: Index
 

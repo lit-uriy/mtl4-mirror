@@ -14,8 +14,10 @@ namespace boost { namespace sequence {
 
 namespace range_
 {
+  class accessor;
+  
   template <class Elements, class Begin, class End>
-  struct range
+  class range
     : private compressed_pair<
           Begin
         , compressed_pair<
@@ -24,6 +26,8 @@ namespace range_
           >
       >
   {
+      friend class accessor;
+      
       typedef compressed_pair<
           Begin
         , compressed_pair<
@@ -31,36 +35,44 @@ namespace range_
             , Elements
           >
       > base;
-      
+
+   public:
       range(Elements const& m, Begin const& b, End const& e)
         : base(b, compressed_pair<End,Elements>(e,m))
       {}
 
   };
 
+  struct accessor
+  {
+      template <class R>
+      static typename R::base data(R const& r)
+      { return r; }
+  };
+  
   template <class Elements, class Begin, class End>
   Begin begin(range<Elements,Begin,End> const& r)
   {
-      return r.first();
+      return range_::accessor::data(r).first();
   }
   
   template <class Elements, class Begin, class End>
   End end(range<Elements,Begin,End> const& r)
   {
-      return r.second().first();
+      return range_::accessor::data(r).second().first();
   }
+}
 
-  template <class Elements, class Begin, class End>
-  Elements const elements(range<Elements,Begin,End> const& r)
-  {
-      return r.second().second();
-  }
+template <class Elements, class Begin, class End>
+Elements const elements(range<Elements,Begin,End> const& r)
+{
+    return range_::accessor::data(r).second().second();
+}
 
-  template <class Elements, class Begin, class End>
-  Elements elements(range<Elements,Begin,End>& r)
-  {
-      return r.second().second();
-  }
+template <class Elements, class Begin, class End>
+Elements elements(range<Elements,Begin,End>& r)
+{
+    return range_::accessor::data(r).second().second();
 }
 
 template <class Sequence> struct begin_cursor;

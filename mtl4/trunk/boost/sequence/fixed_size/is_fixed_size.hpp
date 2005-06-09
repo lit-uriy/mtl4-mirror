@@ -4,6 +4,7 @@
 #ifndef IS_FIXED_SIZE_DWA200555_HPP
 # define IS_FIXED_SIZE_DWA200555_HPP
 
+# include <boost/sequence/category_fwd.hpp>
 # include <boost/sequence/algorithm/fixed_size/category.hpp>
 # include <boost/type_traits/is_same.hpp>
 # include <cstddef>

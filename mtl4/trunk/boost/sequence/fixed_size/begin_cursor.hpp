@@ -25,6 +25,14 @@ namespace begin_cursor_
   };
 }
 
+namespace detail
+{
+  template <class T, std::size_t N>
+  struct is_unspecialized<begin_cursor<T[N]> >
+    : mpl::true_
+  {};
+}
+
 }} // namespace boost::sequence::fixed_size
 
 #endif // BOOST_SEQUENCE_FIXED_SIZE_BEGIN_CURSOR_DWA200555_HPP

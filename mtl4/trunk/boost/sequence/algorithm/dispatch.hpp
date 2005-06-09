@@ -9,8 +9,6 @@
 # include <boost/typeof/typeof.hpp>
 # include <boost/mpl/apply_wrap.hpp>
 
-#include BOOST_TYPEOF_INCREMENT_REGISTRATION_GROUP()
-
 namespace boost { namespace sequence { namespace algorithm { 
 
 // When instantiated as
