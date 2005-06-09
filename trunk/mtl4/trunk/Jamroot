@@ -7,15 +7,15 @@ import path ;
 
 import mtl4 ;
 
+path-constant mtl4-css : default.css ;
+
 .bootstrap-file = [ path.make [ modules.peek : .bootstrap-file ] ] ;
-ECHO .bootstrap-file= $(.bootstrap-file) ;
 .boost = $(.bootstrap-file) ;
 for local x in 1 2 3 4 5
 {
     .boost = [ path.parent $(.boost) ] ;
 }
 .boost = [ path.native $(.boost) ] ;
-ECHO .boost= $(.boost) ;
 
 project mtl4 : requirements <include>. <include>$(.boost) ;
 
@@ -26,5 +26,6 @@ project mtl4 : requirements <include>. <include>$(.boost) ;
 #     [ modules.peek : BOOST_BUILD_PATH ] ;
    
 build-project libs/numeric/mtl/doc ;
+build-project libs/sequence/doc ;
 use-project /boost : $(.boost) ;
 

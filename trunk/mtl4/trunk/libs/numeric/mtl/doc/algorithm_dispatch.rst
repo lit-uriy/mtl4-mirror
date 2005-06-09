@@ -91,6 +91,18 @@ Aspects of the Ideal Solution
 Approaching the Problem in C++ 
 ------------------------------
 
+.. Note:: There's lots left to write here.
+
+-----------------
+What we've Gained
+-----------------
+
+- Argument dependent lookup is restricted to one name
+
+- The namespace of an algorithm implementation is not tied to the
+  namespaces of its arguments
+
+
 .. nothing yet
 
 .. [Austern98] Austern, Matt. *Segmented Iterators and Hierarchical

@@ -2,6 +2,14 @@
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if 0
+
+# include <boost/sequence/begin_cursor.hpp>
+
+boost::sequence::begin_cursor<char[11]> x;
+
+#else
+
 #include <boost/sequence/algorithm/copy.hpp>
 #include <boost/test/minimal.hpp>
 #include <algorithm>
@@ -40,3 +48,4 @@ int test_main( int argc, char* argv[] )
     return 0;
 }
 
+#endif
