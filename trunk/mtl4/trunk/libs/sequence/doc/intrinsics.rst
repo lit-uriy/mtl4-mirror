@@ -105,7 +105,7 @@ The plain specialization interface would look like::
       typedef some_begin_cursor type;  // should this be
                                        // result_type, for result_of?
 
-      type operator()(my_sequence<T> const&);
+      type operator()(my_sequence<T> const&) const;
   };
 
   }}}
@@ -129,7 +129,7 @@ like::
       typedef some_begin_cursor type;  // should this be
                                        // result_type, for result_of?
 
-      type operator()(my_sequence<T> const&);
+      type operator()(my_sequence<T> const&) const;
   };
 
   }}}
@@ -145,7 +145,8 @@ implementation::
   }}}
 
 That would mean you could use the plain specialization interface
-when that is more appropriate.
+when that is more appropriate, because a type's tag would be the
+type itself, by default.
 
 Why Distinguish Homogeneity in Fixed Size Sequences
 ---------------------------------------------------
