@@ -146,7 +146,9 @@ implementation::
 
 That would mean you could use the plain specialization interface
 when that is more appropriate, because a type's tag would be the
-type itself, by default.
+type itself, by default.  However, at this point it seems like a
+needless generalization.  If we find a use case for it, we can
+always change things in a backwards-compatible way.
 
 Why Distinguish Homogeneity in Fixed Size Sequences
 ---------------------------------------------------
