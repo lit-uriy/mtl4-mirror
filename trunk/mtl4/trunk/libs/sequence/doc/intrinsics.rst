@@ -44,17 +44,6 @@ returns whatever key it is passed, in this case, the iterator's
 
 .. _`Single Pass Range`: http://www.boost.org/libs/range/doc/range.html#single_pass_range
 
-Name Duplication between Functions and Metafunctions
-----------------------------------------------------
-
-It's undesirable to have to come up with separate names for the
-function to access the begin cursor and the metafunction to access
-its type.  If we go with  functions-as-objects (the FC++/Phoenix
-approach that allows higher-order polymorphic functions), we can
-use::
-
-  result_of< begin_ ( S const& ) >::type
-
 Dispatching Issues
 ------------------
 
@@ -94,6 +83,9 @@ d. Using specialization users can customize for any type or tag.
 I don't think consideration b is important in this case.  Therefore
 I am left with specialization with the option to use tag
 dispatching.
+
+Customization Interface
+-----------------------
 
 The plain specialization interface would look like::
 
@@ -148,7 +140,96 @@ That would mean you could use the plain specialization interface
 when that is more appropriate, because a type's tag would be the
 type itself, by default.  However, at this point it seems like a
 needless generalization.  If we find a use case for it, we can
-always change things in a backwards-compatible way.
+always change things in a backwards-compatible way; in the meantime
+the plain specialization interface will be fine.
+
+Functions vs. Objects
+---------------------
+
+I find very appealing the FC++/Phoenix approach of providing
+callable objects instead of functions or function templates,
+because it allows compile-time polymorphic functions to be passed
+to other higer-order functions:
+
+.. parsed-literal::
+
+  namespace boost { namespace sequence {
+
+  struct begin_function
+    : provide_result [#provide_result]_\ <begin_function, intrinsic::begin<_> >
+  {
+      template <class Sequence>
+      typename intrinsic::begin<Sequence>::type
+      operator()(Sequence const& s) const
+      {
+          return intrinsic::begin<Sequence>()(s);
+      }
+  };
+
+  namespace 
+  {
+    // begin in every TU will refer to the same object, and you
+    // can't take the address of a reference, so this is safe in a
+    // header file.
+    begin_function const& begin =
+      detail::instance<begin_function>::object;
+  }
+
+  }}
+
+.. [#provide_result] The ``provide_result`` base class template
+   gives us compatibility with ``tr1::result_of`` and will generate
+   something like this::
+
+      // tr1::result_of will check
+      //
+      //   begin_function::result<
+      //       begin_function(Sequence const&)
+      //   >::type 
+      //
+      // This sort of facility can be provided by a base class
+      // template 
+      template <class Signature> 
+      struct result
+        : typename intrinsic::begin<
+              typename remove_const_ref<
+                  first_argument_type<T>::type
+              >::type
+          >
+      {};
+
+User Interface
+--------------
+
+The customization interface described above is convenient for
+sequence authors because it groups compile-time return type
+computation with the runtime result computation.  However, users of
+sequences will not want to name a class template specialization
+such as ``begin<S>`` in order to call begin.  Something like ::
+
+  boost::sequence::begin(s)
+
+would be more appropriate.  But how should users ask for the begin
+iterator type? ::
+
+  boost::sequence::begin<S>::type
+
+is impossible.  According to the customization interface described
+above, we would use ::
+
+  boost::sequence::intrinsic::begin<S>::type
+
+but I am not particularly fond of the name ``intrinsic`` for this
+purpose.  A namespace alias can allow us to pick something else,
+but what would be better?
+
+  boost::sequence::types::begin<S>::type
+  boost::sequence::typeof::begin<S>::type
+  boost::sequence::result_of::begin<S>::type
+
+Another possibility is ::
+
+  result_of< begin_ ( S const& ) >::type
 
 Why Distinguish Homogeneity in Fixed Size Sequences
 ---------------------------------------------------
