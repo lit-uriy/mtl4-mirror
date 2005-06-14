@@ -5,19 +5,58 @@
 :Authors: Dietmar Kühl and David Abrahams
 :Date: April 14, 2005
 
+.. contents:: Index
+
+.. role:: concept
+   :class: interpreted
+
+:Abstract: We propose a new formulation for the sequence traversal
+  and element access capabilities currently captured in the
+  standard iterator concepts.
+
+Problems with C++03 Iterators
+-----------------------------
+
 The C++03 iterator concepts couple access capabilities—such as
 whether or not a dereferenced iterator must produce an lvalue—to
 traversal capabilities such as whether the iterator can move
-backwards.  This concept hierarchy fails to capture the properties
-many of useful iterators, for example, those of vector<bool>.  In
-addition, the syntax for writing into a dereferenced pointer
-complicates the implementation of some iterators by forcing the
-introduction of proxy references.
+backwards.  Two of the problems caused by this coupling have been
+extensively detailed in earlier work [ASW04]_, namely:
+
+- Algorithm requirements are more strict than necessary, because
+  they cannot separate the need for random access or bidirectional
+  traversal from the need for a true reference return type.
+
+- Iterators are often mis-categorized. Iterators that support
+  random access traversal but use “proxy references” are classic
+  examples.
+
+However, the need for proxy references themselves could be seen as
+a design flaw in the iterator concepts: the syntax for writing into
+a dereferenced pointer complicates any writable iterator that
+cannot easily supply an in-memory instance of the type being
+written (consider an iterator over a disk-based container).
+
+Achieving interoperability between a container's ``iterator`` and
+its ``const_iterator`` is a well-known trouble spot for
+implementors, and it was wrong in many early STL implementations.
+The need for separate ``iterator`` and ``const_iterator`` types,
+and redundant boilerplate ``begin``/\ ``end``/\ ``rbegin``/\
+``rend`` overloads in containers is another consequence of the
+coupling described earlier.
+
+
+.. [ASW04] David Abrahams, Jeremy Siek, Thomas Witt, `New Iterator
+   Concepts`,
+   2004. http://www.boost.org/libs/iterator/doc/new-iter-concepts.html
+
+Proposed Solution
+-----------------
 
 We propose to solve these problems by dividing the responsibilities
-of iterators into two objects: cursors that traverse a sequence of
-keys, and property maps that associate those keys with values.  An
-ordinary iterator range is be represented by a property map and
+of iterators into two objects: cursors, which traverse a sequence
+of keys, and property maps, which associate those keys with values.
+An ordinary iterator range is be represented by a property map and
 two cursors.  The following table shows how some iterator
 operations correspond to those on cursors and property maps:
 
@@ -26,14 +65,14 @@ operations correspond to those on cursors and property maps:
   ============= ================  ====================
   read          ``val = *it``     ``val = pm(*c)``
   write         ``*it = val``     ``pm(*c, val)``
-  lvalue        ``X& a = *it``    ``X& a = pm(*c)``
+  lvalue access ``X& a = *it``    ``X& a = pm(*c)``
   preincrement  ``++it``          ``++c``
   random offset ``it + n``        ``c + n``
   *...etc.*     
   ============= ================  ====================
 
 In the table above, ``it`` is an iterator, and ``pm`` and ``c`` are
-a corresponding property map and cursor.  ``X`` is the property
+a corresponding property map and cursor.  ``X`` is the iterator's
 map's value type and ``val`` is an object of type ``X``.
 
 Cursors are essentially read-only (input) iterators, optionally
@@ -42,31 +81,103 @@ concept is never refined to allow writability or lvalue
 access—those features are the sole domain of property maps—so
 access is fully decoupled from traversal in the concept framework.
 
-You might ask, “why not just access the values of a property map as
-``pm(c)`` instead of ``pm(*c)?``\ ” The reason that cursors need to
-be “dereferenced” is that you will want to build traversal adapters
-for them.  If you have a property map that accepts ``foo_cursor``
-arguments, it probably won't accept a
-``reverse_cursor<foo_cursor>`` directly.  Dereferencing a cursor is
-just an operation that gets you to a common key type that can be
-used to index the property map.
+If we are intent on separating access from traversal, it seem
+natural to remove the use of dereference operators from cursors
+completely, so the values of a property map would be read as
+``pm(c)`` instead of ``pm(*c)``.  It turns out that the dereference
+operation is required in order to reasonably support traversal
+adapters.  If you have a property map that accepts ``foo_cursor``
+arguments, it may not be designed to accept a
+``reverse_cursor<foo_cursor>`` directly.  Dereferencing yields a
+*key*: a value of a common type that can be used to access the
+property map no matter what traversal pattern is being used.
 
-Cursors get you out of the whole, nasty iterator/const_iterator
-debacle.  Access privileges are firmly lodged with the property map,
-where they should be.
+Backward Compatibility
+----------------------
 
-Cursors get you out of the whole nasty “iterator unwrapping” debacle.
-If you want to search through a list of pairs for an item whose
-``first`` element matches some predicate and then use that position as
-the beginning of a view onto the ``second`` elements, you can use the
-same exact cursor in both cases.  It is a pure position.  You just
-property maps that access the first/second elements respectively.
+Raw pointers and, indeed, all C++98 iterators have a natural place
+in this scheme.  Combined with an *identity* property map, an
+iterator can act as a cursor:
 
-Property maps don't necessarily need to have a "value_type".  They
-do have ::
+.. _identity_property_map:
 
-   result_of<pm(std::iterator_traits<Cursor>::reference)>::type
+::
 
-in other words, we don't need to proliferate another ugly traits
-metafunction.
+  // A property map whose keys and values are the same
+  struct identity_property_map
+  {
+      // Readability
+      template <class K>
+      inline
+      K& operator()(K& k) const
+      {
+          return k;
+      }
+
+      template <class K>
+      inline
+      K const& operator()(K const& k) const
+      {
+          return k;
+      }
+
+      // Writability
+      template <class K, class V>
+      inline
+      void operator()(K& k, V const& v) const
+      {
+          return k = v;
+      }
+
+      // This one is needed to support proxies
+      template <class K, class V>
+      inline
+      void operator()(K const& k, V const& v) const
+      {
+          return k = v;
+      }
+  };
+
+C++98 algorithms can be extended to accept optional property maps,
+with instances of ``identity_property_map`` as the default.
+
+Associated Types
+----------------
+
+To access the key type of a cursor (the type returned when it is
+dereferenced), we can use the ``key_type`` metafunction::
+
+  typename key_type<Cursor>::type key = *c;
+
+An obvious [#obvious]_ default implementation for ``key_type`` is::
+
+  template <class Cursor>
+  struct key_type
+  {
+      typedef typename 
+        std::iterator_traits<Cursor>::value_type type;
+  };
+
+.. [#obvious] It isn't clear yet whether it would be more useful to
+   know when the key type is an lvalue.  In that case, ::
+
+      template <class Cursor>
+      struct key_type
+      {
+          typedef typename 
+            std::iterator_traits<Cursor>::reference type;
+      };
+
+   might be a more appropriate implementation.
+
+Property maps don't necessarily have a “value type.”  Indeed, the
+``identity_property_map`` shown above can read and write arbitrary
+types.  To discover the type accessed by a given key type ``K``
+through a property map of type ``PropertyMap``, we can write::
+
+   result_of<PropertyMap(Key)>::type
+
+In other words, due to its use of the function call interface, we
+don't need to introduce a new trait metafunction to describe the
+result of accessing a property map.
 
