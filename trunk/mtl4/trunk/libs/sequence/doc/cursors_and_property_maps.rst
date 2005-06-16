@@ -45,6 +45,32 @@ and redundant boilerplate ``begin``/\ ``end``/\ ``rbegin``/\
 ``rend`` overloads in containers is another consequence of the
 coupling described earlier.
 
+Finally, there is the issue of converting constant iterators to
+mutable ones.  Consider::
+
+  template <SomeContainer>
+  class encapsulated
+  {
+   public:
+      typedef typename SomeContainer::const_iterator iterator;
+
+      iterator begin() const { return x.begin(); }
+      iterator end() const { return x.end(); }
+
+      void transmogrify(iterator start, iterator end);
+
+   private:
+      SomeContainer x;
+  };
+
+An ``encapsulated<list<int> >`` passes out only
+``list<int>::const_iterator`` so that users don't make
+invariant-breaking changes.  All mutation should happen within the
+``transmogrify`` member function, where ``encapsulated<>`` can
+manage the changes.  But ``encapsulated`` will have trouble
+implementing any mutations inside its ``transmogrify`` member
+function because the iterators supplied by the user—which ought to
+be nothing more than position indicators—actually regulate access.
 
 Proposed Solution
 -----------------
