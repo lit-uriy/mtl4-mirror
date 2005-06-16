@@ -158,6 +158,17 @@ An obvious [#obvious]_ default implementation for ``key_type`` is::
         std::iterator_traits<Cursor>::value_type type;
   };
 
+Property maps don't necessarily have a “value type.”  Indeed, the
+``identity_property_map`` shown above can read and write arbitrary
+types.  To discover the type accessed by a given key type ``K``
+through a property map of type ``PropertyMap``, we can write::
+
+   result_of<PropertyMap(Key)>::type
+
+In other words, due to its use of the function call interface, we
+don't need to introduce a new trait metafunction to describe the
+result of accessing a property map.
+
 .. [#obvious] It isn't clear yet whether it would be more useful to
    know when the key type is an lvalue.  In that case, ::
 
@@ -169,15 +180,4 @@ An obvious [#obvious]_ default implementation for ``key_type`` is::
       };
 
    might be a more appropriate implementation.
-
-Property maps don't necessarily have a “value type.”  Indeed, the
-``identity_property_map`` shown above can read and write arbitrary
-types.  To discover the type accessed by a given key type ``K``
-through a property map of type ``PropertyMap``, we can write::
-
-   result_of<PropertyMap(Key)>::type
-
-In other words, due to its use of the function call interface, we
-don't need to introduce a new trait metafunction to describe the
-result of accessing a property map.
 
