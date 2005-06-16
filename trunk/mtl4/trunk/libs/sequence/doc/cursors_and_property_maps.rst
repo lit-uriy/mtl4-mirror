@@ -103,16 +103,17 @@ concept is never refined to allow mutability or lvalue
 access—those features are the sole domain of property maps—so
 access is fully decoupled from traversal in the concept framework.
 
-If we are intent on separating access from traversal, it seem
-natural to remove the use of dereference operators from cursors
-completely, so the values of a property map would be read as
+The presence of a dereference operator on cursors might seem
+strange, since since the goal is to separate access from traversal.
+For instance, the values of a property map could be read as
 ``pm(c)`` instead of ``pm(*c)``.  It turns out that the dereference
 operation is required in order to reasonably support traversal
 adapters.  If you have a property map that accepts ``foo_cursor``
 arguments, it may not be designed to accept a
-``reverse_cursor<foo_cursor>`` directly.  Dereferencing yields a
-*key*: a value of a common type that can be used to access the
-property map no matter what traversal pattern is being used.
+``reverse_cursor<foo_cursor>`` directly.  Like so many others, this
+problem is solved by adding a level of indirection: dereferencing a
+cursor yields an intermediate *key*, and the key type of a
+traversal adapter is the same as that of its underlying iterator.
 
 Backward Compatibility
 ----------------------
