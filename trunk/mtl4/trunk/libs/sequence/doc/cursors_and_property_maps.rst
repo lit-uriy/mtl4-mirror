@@ -46,10 +46,6 @@ and redundant boilerplate ``begin``/\ ``end``/\ ``rbegin``/\
 coupling described earlier.
 
 
-.. [ASW04] David Abrahams, Jeremy Siek, Thomas Witt, `New Iterator
-   Concepts`,
-   2004. http://www.boost.org/libs/iterator/doc/new-iter-concepts.html
-
 Proposed Solution
 -----------------
 
@@ -180,4 +176,8 @@ result of accessing a property map.
       };
 
    might be a more appropriate implementation.
+
+.. [ASW04] David Abrahams, Jeremy Siek, Thomas Witt, `New Iterator
+   Concepts`,
+   2004. http://www.boost.org/libs/iterator/doc/new-iter-concepts.html
 
