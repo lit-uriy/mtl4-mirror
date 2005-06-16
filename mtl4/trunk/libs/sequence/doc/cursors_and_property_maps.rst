@@ -97,9 +97,9 @@ In the table above, ``it`` is an iterator, and ``pm`` and ``c`` are
 a corresponding property map and cursor.  ``X`` is the iterator's
 map's value type and ``val`` is an object of type ``X``.
 
-Cursors are essentially read-only (input) iterators, optionally
+Cursors are essentially input iterators, optionally
 refined with bidirectional or random access traversal.  The cursor
-concept is never refined to allow writability or lvalue
+concept is never refined to allow mutability or lvalue
 access—those features are the sole domain of property maps—so
 access is fully decoupled from traversal in the concept framework.
 
