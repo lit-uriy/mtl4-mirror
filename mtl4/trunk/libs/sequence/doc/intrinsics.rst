@@ -143,6 +143,42 @@ needless generalization.  If we find a use case for it, we can
 always change things in a backwards-compatible way; in the meantime
 the plain specialization interface will be fine.
 
+User Interface
+--------------
+
+The customization interface described above is convenient for
+sequence authors because it groups compile-time return type
+computation with the runtime result computation.  However, users of
+sequences will not want to name a class template specialization
+such as ``begin<S>`` in order to call begin.  Something like ::
+
+  boost::sequence::begin(s)
+
+would be more appropriate.  But how should users ask for the begin
+iterator type? ::
+
+  boost::sequence::begin<S>::type
+
+is impossible.  According to the customization interface described
+above, we would use ::
+
+  boost::sequence::intrinsic::begin<S>::type
+
+but I am not particularly fond of the name ``intrinsic`` for this
+purpose.  A namespace alias can allow us to pick something else,
+but what would be better?
+
+  boost::sequence::types::begin<S>::type
+  boost::sequence::typeof::begin<S>::type
+  boost::sequence::result_of::begin<S>::type
+
+Another possibility, given that we choose a `function object`_
+formulation is ::
+
+  result_of< begin_function ( S const& ) >::type
+
+.. _`function object`:
+
 Functions vs. Objects
 ---------------------
 
@@ -197,39 +233,6 @@ to other higer-order functions:
               >::type
           >
       {};
-
-User Interface
---------------
-
-The customization interface described above is convenient for
-sequence authors because it groups compile-time return type
-computation with the runtime result computation.  However, users of
-sequences will not want to name a class template specialization
-such as ``begin<S>`` in order to call begin.  Something like ::
-
-  boost::sequence::begin(s)
-
-would be more appropriate.  But how should users ask for the begin
-iterator type? ::
-
-  boost::sequence::begin<S>::type
-
-is impossible.  According to the customization interface described
-above, we would use ::
-
-  boost::sequence::intrinsic::begin<S>::type
-
-but I am not particularly fond of the name ``intrinsic`` for this
-purpose.  A namespace alias can allow us to pick something else,
-but what would be better?
-
-  boost::sequence::types::begin<S>::type
-  boost::sequence::typeof::begin<S>::type
-  boost::sequence::result_of::begin<S>::type
-
-Another possibility is ::
-
-  result_of< begin_ ( S const& ) >::type
 
 Why Distinguish Homogeneity in Fixed Size Sequences
 ---------------------------------------------------

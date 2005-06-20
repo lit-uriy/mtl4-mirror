@@ -34,6 +34,11 @@ struct successor
   : successor_::implementation<Cursor>
 {};
 
+template <class Cursor>
+struct successor<Cursor const>
+  : successor<Cursor>
+{};
+
 }} // namespace boost::sequence
 
 #endif // SUCCESSOR_DWA200541_HPP

@@ -4,34 +4,64 @@
 #ifndef BOOST_SEQUENCE_FIXED_SIZE_ELEMENTS_DWA200555_HPP
 # define BOOST_SEQUENCE_FIXED_SIZE_ELEMENTS_DWA200555_HPP
 
+# include <boost/sequence/intrinsic/elements_fwd.hpp>
 # include <boost/sequence/index_property_map.hpp>
 # include <boost/array.hpp>
+
 # include <cstddef>
 
-namespace boost { namespace sequence {
-
-// Don't need two overloads, since there are no array rvalues.
-template <class T, std::size_t N>
-inline index_property_map<T(&)[N]>
-elements(T(&s)[N])
-{
-    return index_property_map<T(&)[N]>(s);
-}
+namespace boost { namespace sequence { namespace intrinsic {
 
 template <class T, std::size_t N>
-inline index_property_map<array<T,N>&>
-elements(array<T,N>& s)
+struct elements<T[N]>
 {
-    return index_property_map<array<T,N>&>(s);
-}
-
+    typedef index_property_map<T(&)[N]> type;
+    type operator()(T(&)[N]) const
+    {
+        return type();
+    }
+};
+                                        
 template <class T, std::size_t N>
-inline index_property_map<array<T,N> const&>
-elements(array<T,N> const& s)
+struct elements<array<T,N> >
 {
-    return index_property_map<array<T,N> const&>(s);
-}
-
-}} // namespace boost::sequence
+    typedef index_property_map<array<T,N>&> type;
+    type operator()(array<T,N>&) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct elements<array<T,N> const>
+{
+    typedef index_property_map<array<T,N> const&> type;
+    type operator()(array<T,N> const&) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct elements<array<T,N> volatile>
+{
+    typedef index_property_map<array<T,N> volatile&> type;
+    type operator()(array<T,N> volatile&) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct elements<array<T,N> const volatile>
+{
+    typedef index_property_map<array<T,N> const volatile&> type;
+    type operator()(array<T,N> const volatile&) const
+    {
+        return type();
+    }
+};
+                                       
+}}} // namespace boost::sequence
 
 #endif // BOOST_SEQUENCE_FIXED_SIZE_ELEMENTS_DWA200555_HPP

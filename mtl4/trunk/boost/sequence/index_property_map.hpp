@@ -4,6 +4,7 @@
 #ifndef INDEX_PROPERTY_MAP_DWA200552_HPP
 # define INDEX_PROPERTY_MAP_DWA200552_HPP
 
+# include <boost/sequence/detail/index_result.hpp>
 # include <boost/utility/result_of.hpp>
 
 namespace boost { namespace sequence { 
@@ -19,16 +20,18 @@ struct index_property_map
     // Readability
     template <class K>
     inline
-    K& operator()(K& k) const
+    typename detail::index_result<Indexable,K&>::type
+    operator()(K& k) const
     {
         return index[k];
     }
 
     template <class K>
     inline
-    K const& operator()(K const& k) const
+    typename detail::index_result<Indexable,K const&>::type
+    operator()(K const& k) const
     {
-        return k;
+        return index[k];
     }
 
     // Writability
@@ -57,22 +60,19 @@ namespace boost  {
 // lvalues
 template <class Indexable, class K>
 struct result_of<sequence::index_property_map<Indexable>(K&)>
-{
-    typedef K& type;
-};
+  : sequence::detail::index_result<Indexable,K&>
+{};
 
 template <class Indexable, class K>
 struct result_of<sequence::index_property_map<Indexable>(K const&)>
-{
-    typedef K const& type;
-};
+  : sequence::detail::index_result<Indexable,K const&>
+{};
 
 // rvalues
 template <class Indexable, class K>
 struct result_of<sequence::index_property_map<Indexable>(K)>
-{
-    typedef K const& type;
-};
+  : sequence::detail::index_result<Indexable,K const&>
+{};
 
 }
 

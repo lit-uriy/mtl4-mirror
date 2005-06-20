@@ -9,6 +9,7 @@
 # include <boost/sequence/homogeneous.hpp>
 # include <boost/sequence/category_fwd.hpp>
 # include <boost/sequence/fixed_size/category.hpp>
+# include <boost/sequence/fixed_size/intrinsics.hpp>
 
 namespace boost { namespace sequence { 
 
@@ -37,6 +38,10 @@ namespace range_
       > base;
 
    public:
+      typedef Elements elements;
+      typedef Begin begin;
+      typedef End end;
+      
       range(Elements const& m, Begin const& b, End const& e)
         : base(b, compressed_pair<End,Elements>(e,m))
       {}
@@ -49,70 +54,47 @@ namespace range_
       static typename R::base data(R const& r)
       { return r; }
   };
-  
-  template <class Elements, class Begin, class End>
-  Begin begin(range<Elements,Begin,End> const& r)
-  {
-      return range_::accessor::data(r).first();
-  }
-  
-  template <class Elements, class Begin, class End>
-  End end(range<Elements,Begin,End> const& r)
-  {
-      return range_::accessor::data(r).second().first();
-  }
+
+  struct tag {};
 }
 
-template <class Elements, class Begin, class End>
-Elements const elements(range<Elements,Begin,End> const& r)
-{
-    return range_::accessor::data(r).second().second();
-}
+using range_::range;
 
 template <class Elements, class Begin, class End>
-Elements elements(range<Elements,Begin,End>& r)
+struct tag<range<Elements,Begin,End> >
 {
-    return range_::accessor::data(r).second().second();
-}
-
-template <class Sequence> struct begin_cursor;
-template <class Elements, class Begin, class End>
-struct begin_cursor<range<Elements,Begin,End> >
-{
-    typedef Begin type;
+    typedef range_::tag type;
 };
 
-template <class Sequence> struct end_cursor;
-template <class Elements, class Begin, class End>
-struct end_cursor<range<Elements,Begin,End> >
+template <class Range>
+struct intrinsics<Range, range_::tag>
 {
-    typedef End type;
-};
+    struct begin
+    {
+        typedef typename Range::begin type;
+        type operator()(Range& r)
+        {
+            return range_::accessor::data(r).first();
+        }
+    };
+    
+    struct end
+    {
+        typedef typename Range::end type;
+        type operator()(Range& r)
+        {
+            return range_::accessor::data(r).second().first();
+        }
+    };
 
-template <class Sequence> struct accessor;
-template <class Elements, class Begin, class End>
-struct accessor<range<Elements,Begin,End> >
-{
-    typedef Elements type;
-};
-
-template <class Sequence> struct accessor;
-template <class Elements, class Begin, class End>
-struct accessor<range<Elements,Begin,End> const>
-{
-    typedef Elements const type;
-};
-
-template <class Elements, class Cursor>
-struct category<range<Elements,Cursor,Cursor> > 
-{
-    typedef homogeneous type;
-};
-
-template <class Elements, class Cursor1, class Cursor2>
-struct category<range<Elements,Cursor1,Cursor2> >
-{
-    typedef algorithm::fixed_size::category type;
+    struct elements
+    {
+        typedef typename Range::elements type;
+        type operator()(Range& r)
+        {
+            return range_::accessor::data(r).second().second();
+        }
+    };
 };
 
 }} // namespace boost::sequence
