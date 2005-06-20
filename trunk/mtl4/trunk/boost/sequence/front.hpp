@@ -17,7 +17,7 @@ template <class Sequence>
 typename result_of<
     typename accessor<Sequence>::type(
         typename dereferenced<
-            typename begin_cursor<Sequence>::type
+            typename intrinsic::begin<Sequence>::type
         >::type
     )
 >::type

@@ -4,32 +4,64 @@
 #ifndef BOOST_SEQUENCE_FIXED_SIZE_END_DWA200555_HPP
 # define BOOST_SEQUENCE_FIXED_SIZE_END_DWA200555_HPP
 
-# include <boost/utility/enable_if.hpp>
-# include <boost/sequence/fixed_size/is_fixed_size.hpp>
-# include <boost/sequence/fixed_size/accessor.hpp>
+# include <boost/sequence/intrinsic/end_fwd.hpp>
+# include <boost/sequence/fixed_size/cursor.hpp>
+# include <boost/array.hpp>
 
-namespace boost { namespace sequence {
+# include <cstddef>
 
-template <class S>
-typename lazy_enable_if<
-    fixed_size::is_fixed_size<S>
-  , end_cursor<S>
->::type
-inline end(S& s)
+namespace boost { namespace sequence { namespace intrinsic {
+
+template <class T, std::size_t N>
+struct end<T[N]>
 {
-    return typename end_cursor<S>::type();
-}
-
-template <class S>
-typename lazy_enable_if<
-    fixed_size::is_fixed_size<S>
-  , end_cursor<S const>
->::type
-inline end(S const& s)
+    typedef fixed_size::cursor<0> type;
+    type operator()(T(&)[N]) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct end<array<T,N> >
 {
-    return typename end_cursor<S const>::type();
-}
-
-}} // namespace boost::sequence
+    typedef fixed_size::cursor<0> type;
+    type operator()(array<T,N>&) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct end<array<T,N> const>
+{
+    typedef fixed_size::cursor<0> type;
+    type operator()(array<T,N> const&) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct end<array<T,N> volatile>
+{
+    typedef fixed_size::cursor<0> type;
+    type operator()(array<T,N> volatile&) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct end<array<T,N> const volatile>
+{
+    typedef fixed_size::cursor<0> type;
+    type operator()(array<T,N> const volatile&) const
+    {
+        return type();
+    }
+};
+                                       
+}}} // namespace boost::sequence
 
 #endif // BOOST_SEQUENCE_FIXED_SIZE_END_DWA200555_HPP

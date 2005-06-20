@@ -4,33 +4,65 @@
 #ifndef BOOST_SEQUENCE_FIXED_SIZE_BEGIN_DWA200555_HPP
 # define BOOST_SEQUENCE_FIXED_SIZE_BEGIN_DWA200555_HPP
 
-# include <boost/utility/enable_if.hpp>
-# include <boost/sequence/fixed_size/is_fixed_size.hpp>
-# include <boost/sequence/fixed_size/accessor.hpp>
-# include <boost/sequence/fixed_size/begin_cursor.hpp>
+# include <boost/sequence/intrinsic/begin_fwd.hpp>
+# include <boost/sequence/fixed_size/cursor.hpp>
+# include <boost/array.hpp>
 
-namespace boost { namespace sequence {
+# include <cstddef>
 
-template <class S>
-typename lazy_enable_if<
-    fixed_size::is_fixed_size<S>
-  , begin_cursor<S>
->::type
-inline begin(S& s)
+#error obsolete 
+namespace boost { namespace sequence { namespace intrinsic {
+
+template <class T, std::size_t N>
+struct begin<T[N]>
 {
-    return typename begin_cursor<S>::type();
-}
-
-template <class S>
-typename lazy_enable_if<
-    fixed_size::is_fixed_size<S>
-  , begin_cursor<S const>
->::type
-inline begin(S const& s)
+    typedef fixed_size::cursor<0> type;
+    type operator()(T(&)[N]) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct begin<array<T,N> >
 {
-    return typename begin_cursor<S const>::type();
-}
-
-}} // namespace boost::sequence
+    typedef fixed_size::cursor<0> type;
+    type operator()(array<T,N>&) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct begin<array<T,N> const>
+{
+    typedef fixed_size::cursor<0> type;
+    type operator()(array<T,N> const&) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct begin<array<T,N> volatile>
+{
+    typedef fixed_size::cursor<0> type;
+    type operator()(array<T,N> volatile&) const
+    {
+        return type();
+    }
+};
+                                       
+template <class T, std::size_t N>
+struct begin<array<T,N> const volatile>
+{
+    typedef fixed_size::cursor<0> type;
+    type operator()(array<T,N> const volatile&) const
+    {
+        return type();
+    }
+};
+                                       
+}}} // namespace boost::sequence
 
 #endif // BOOST_SEQUENCE_FIXED_SIZE_BEGIN_DWA200555_HPP
