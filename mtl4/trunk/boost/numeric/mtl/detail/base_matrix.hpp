@@ -3,7 +3,7 @@
 #ifndef MTL_BASE_MATRIX_INCLUDE
 #define MTL_BASE_MATRIX_INCLUDE
 
-#include "dimension.hpp"
+#include "dim_type.hpp"
 
 namespace mtl { namespace detail {
 
@@ -13,15 +13,36 @@ public:
   typedef ELT                     value_type;
   typedef Orientation             orientation;
 
-  base_matrix() : my_data(0), external(false) {}
-  base_matrix(dim_type d) : my_data(0), external(false), dim(d) {}
-  base_matrix(dim_type d, value_type* a) : my_data(a), external(true), dim(d) {}
+  base_matrix() : data(0), ext(false) {}
+  base_matrix(dim_type d) : data(0), ext(false), dim(d) {}
+  base_matrix(dim_type d, value_type* a) : data(a), ext(true), dim(d) {}
+
+  std::size_t rows() const {return dim.rows();}
+  std::size_t columns() const {return dim.columns();}
   
 protected:
-  value_type*                     my_data;   // pointer to matrix
-  const value_type* const&        my_data_const(my_data);  // to not pass mutable
+  std::size_t dim1(row_major) const {return dim.rows();}
+  std::size_t dim1(col_major) const {return dim.cols();}
+  std::size_t dim1(dia_major) const {return dim.rows();}
+
+  std::size_t dim2(row_major) const {return dim.cols();}
+  std::size_t dim2(col_major) const {return dim.rows();}
+  std::size_t dim2(dia_major) const {return dim.cols();} // or  2*cols-1 ???
+  
+  
+public:
+  std::size_t dim1() const {return dim1(orien);}
+  std::size_t dim2() const {return dim2(orien);}
+  // offset of key (pointer) w.r.t. data
+  std::size_t offset(const value_type* p) const { return p-data; }
+
+protected:
+  value_type*                     data;   // pointer to matrix
+  const value_type* const&        data_const(data);  // to not pass mutable
+  bool                            ext;
   dim_type                        dim;       // # of rows and columns
-  int                             nnz;       // # of non-zeros (size)
+  std::size_t                     nnz;       // # of non-zeros (size)
+  orientation                     orien;
 };
 
 }} // namespace mtl::detail

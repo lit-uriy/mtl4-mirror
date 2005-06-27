@@ -3,7 +3,7 @@
 #ifndef MTL_BASE_CURSOR_INCLUDE
 #define MTL_BASE_CURSOR_INCLUDE
 
-#include "dimension.hpp"
+#include "dim_type.hpp"
 
 namespace mtl { namespace detail {
 
@@ -38,13 +38,16 @@ public:
   typedef base_cursor<Key>     super;
 
   base_matrix_cursor () {} 
-  base_matrix_cursor (key_type kk, key_type mb, dim_type d) :
-    super(kk), mbegin(mb), dim(d) {}
+  base_matrix_cursor (key_type me, key_type mb, dim_type d) :
+    super(me), data(mb), dim(d) {}
+
+  // offset of key w.r.t. data
+  std::size_t offset() const { return key-data; }
 protected:
-  key_type      mbegin; // start address of matrix data
+  key_type      data; // start address of matrix data
   dim_type      dim;
 }; // base_matrix_cursor
 
-}} /* namespace mtl::detail */
+}} // namespace mtl::detail 
 
-#endif /* MTL_BASE_CURSOR_INCLUDE */
+#endif // MTL_BASE_CURSOR_INCLUDE 
