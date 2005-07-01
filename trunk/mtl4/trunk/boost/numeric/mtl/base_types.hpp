@@ -5,7 +5,10 @@
 
 namespace mtl {
 
-
+  // Types for orientation
+  struct row_major {};
+  struct col_major {};
+  struct dia_major {};
 
 } // namespace mtl
 
