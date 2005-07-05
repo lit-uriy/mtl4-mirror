@@ -18,6 +18,13 @@ struct tag_base
     typedef iterator_range_tag type;
 };
 
+
+# if BOOST_WORKAROUND(_MSC_FULL_VER, <= 140050215)
+
+// Jason Shirk assures me this bug is fixed for the release version of
+// VC++ 8.0.  I'm not sure the workaround is much help since other
+// array-related confusions break VC++ 7.1 and VC++ 8.0 beta when used
+// on built-in arrays.
 template <class T>
 struct array_tag;
 
@@ -26,6 +33,15 @@ struct tag
 {
     typedef typename mpl::eval_if<is_array<T>,array_tag<T>,tag_base<T> >::type type;
 };
+
+# else
+
+template <class T>
+struct tag
+  : tag_base<T>
+{};
+
+# endif 
 
 // The tag for T const is the same as that for T
 template < class T >

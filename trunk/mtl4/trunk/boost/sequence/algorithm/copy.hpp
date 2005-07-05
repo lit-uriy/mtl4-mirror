@@ -31,7 +31,7 @@ struct copy_
     }
 };
 
-copy_ const& copy = detail::instance<copy_>::object;
+BOOST_SEQUENCE_DECLARE_INSTANCE(copy_, copy)
 
 }}} // namespace boost::sequence::algorithm
 

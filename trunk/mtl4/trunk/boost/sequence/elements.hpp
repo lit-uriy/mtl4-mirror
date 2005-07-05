@@ -10,7 +10,7 @@
 namespace boost {
 namespace sequence {
 
-intrinsic::function<intrinsic::elements> const& elements = detail::instance<intrinsic::function<intrinsic::elements> >::object;
+BOOST_SEQUENCE_DECLARE_INSTANCE(intrinsic::function<intrinsic::elements>, elements)
 
 }} // namespace boost::sequence
 

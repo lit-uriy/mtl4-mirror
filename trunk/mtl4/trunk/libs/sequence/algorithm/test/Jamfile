@@ -4,3 +4,4 @@ import testing ;
 import mtl4 ;
 
 run copy.cpp /boost/test//minimal ;
+run odr.cpp  odr2.cpp /boost/test//minimal ;

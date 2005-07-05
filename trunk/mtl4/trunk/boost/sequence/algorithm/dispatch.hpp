@@ -25,11 +25,18 @@ namespace boost { namespace sequence { namespace algorithm {
 //
 template <class Signature> struct dispatch;
 
-# if !(BOOST_MSVC <= 1301) && BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050215))
+//
+// specialization for two input ranges.
+//
+
+# if BOOST_WORKAROUND(BOOST_MSVC, <= 1310)                          \
+  || BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050215))
+
 namespace aux_
 {
   struct dummy { template <class T1, class T2> struct apply {}; };
 }
+
 char lookup_implementation(...);
 
 template <class Signature> struct dispatch0;
@@ -47,13 +54,22 @@ struct dispatch0<AlgorithmID(Range1&,Range2&)>
          lookup_implementation(AlgorithmID(), cat1(), cat2())
     ) type;
 };
-# endif
 
-// specialization for two input ranges.
 template <class AlgorithmID, class Range1, class Range2>
 struct dispatch<AlgorithmID(Range1&,Range2&)>
 {
-# if  BOOST_MSVC <= 1301 || !BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050215))
+    typedef typename dispatch0<
+        AlgorithmID(Range1&,Range2&)
+    >::type implementation;
+
+    typedef typename implementation::template apply<Range1,Range2>::type type;
+};
+
+# else
+
+template <class AlgorithmID, class Range1, class Range2>
+struct dispatch<AlgorithmID(Range1&,Range2&)>
+{
     typedef typename category<Range1>::type cat1;
     typedef typename category<Range2>::type cat2;
 
@@ -64,20 +80,13 @@ struct dispatch<AlgorithmID(Range1&,Range2&)>
     typedef BOOST_TYPEOF_TPL(
          lookup_implementation(AlgorithmID(), cat1(), cat2())
     ) implementation;
-# else
-    typedef typename dispatch0<
-        AlgorithmID(Range1&,Range2&)
-    >::type implementation;
-# endif 
 
-# if 0 && BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4)) // not sure we need this workaround
+    // GCC3 seems to require the use of apply_wrap; other compilers
+    // could access the nested apply template directly.
     typedef typename mpl::apply_wrap2<implementation,Range1,Range2>::type type;
-# else 
-    typedef typename
-      implementation::template apply<Range1,Range2>::type
-    type;
-# endif 
 };
+
+# endif
 
 }}} // namespace boost::sequence::algorithm
 

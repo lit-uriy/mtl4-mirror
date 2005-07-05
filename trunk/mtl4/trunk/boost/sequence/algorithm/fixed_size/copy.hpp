@@ -24,6 +24,9 @@ namespace boost { namespace sequence { namespace algorithm { namespace fixed_siz
 // copy implementation
 //
 
+// A metafunction that returns a pair whose first and second types
+// equal to advanced versions of the first and second types in the
+// given ForwardCursorPair
 template <class ForwardCursorPair, std::size_t N>
 struct advance_cursor_pair
 {
@@ -41,111 +44,96 @@ struct advance_cursor_pair
     typedef compressed_pair<const c1,const c2> type;
 };
 
-template <std::size_t Length>
-struct copy
+// Recursion terminating case
+template <
+    class ReadablePropertyMap
+  , class WritablePropertyMap
+  , class ForwardCursorPair
+>
+ForwardCursorPair
+copy(
+    mpl::size_t<0>
+  , ReadablePropertyMap const& in_elements
+  , WritablePropertyMap const& out_elements
+  , ForwardCursorPair const& cursors
+)
 {
-    static std::size_t const h1 = Length/2;
-    static std::size_t const h2 = Length - h1;
-    template <
-        class ReadablePropertyMap
-      , class WritablePropertyMap
-      , class ForwardCursorPair
-    >
-    typename advance_cursor_pair<ForwardCursorPair,Length>::type
-# if 0
-    compressed_pair<
-        typename advanced<typename ForwardCursorPair::first_type, mpl::size_t<Length> >::type
-      , typename advanced<typename ForwardCursorPair::second_type, mpl::size_t<Length> >::type
-        >
-# endif 
-    operator()(
-        ReadablePropertyMap const& in_elements
-      , WritablePropertyMap const& out_elements
-      , ForwardCursorPair const& cursors
-    ) const
-    {
+    return cursors;
+}
+
+// Copy a single element
+template <
+    class ReadablePropertyMap
+  , class WritablePropertyMap
+  , class ForwardCursorPair
+>
+typename advance_cursor_pair<ForwardCursorPair,1>::type
+copy(
+    mpl::size_t<1>
+  , ReadablePropertyMap const& in_elements
+  , WritablePropertyMap const& out_elements
+  , ForwardCursorPair const& cursors
+)
+{
+    out_elements(*cursors.second(), in_elements(*cursors.first()));
     
-        return fixed_size::copy<h2>()(
-            in_elements
-          , out_elements
-        
-          , fixed_size::copy<h1>()(
-              in_elements
-            , out_elements
-            , cursors
-          ));
-    }
-};
-
-
-template <>
-struct copy<0>
-{
-    template <
-        class ReadablePropertyMap
-      , class WritablePropertyMap
-      , class ForwardCursorPair
-    >
-    ForwardCursorPair
-    operator()(
-        ReadablePropertyMap const& in_elements
-      , WritablePropertyMap const& out_elements
-      , ForwardCursorPair const& cursors
-    ) const
-    {
-        return cursors;
-    }
-};
-        
-template <>
-struct copy<1>
-{
-    template <
-        class ReadablePropertyMap
-      , class WritablePropertyMap
-      , class ForwardCursorPair
-    >
-    typename advance_cursor_pair<ForwardCursorPair,1>::type
-# if 0
-    compressed_pair<
-        typename successor<typename ForwardCursorPair::first_type>::type
-      , typename successor<typename ForwardCursorPair::second_type>::type
-        >
-# endif 
-    operator()(
-        ReadablePropertyMap const& in_elements
-      , WritablePropertyMap const& out_elements
-      , ForwardCursorPair const& cursors
-    ) const
-    {
-        out_elements(*cursors.second(), in_elements(*cursors.first()));
-    
-        return detail::make_compressed_pair(
-            sequence::next(cursors.first())
-          , sequence::next(cursors.second())
-        );
-    }
-};
-
-# if 0
-int f()
-{
-    sequence::next(sequence::fixed_size::cursor<0>());
-    copy<2>()(
-        identity_property_map()
-      , identity_property_map()
-      , detail::make_compressed_pair(
-          sequence::fixed_size::cursor<0>()
-        , sequence::fixed_size::cursor<0>()
-      )
+    return detail::make_compressed_pair(
+        sequence::next(cursors.first())
+      , sequence::next(cursors.second())
     );
 }
-# endif 
 
+// Copy Length elements where Length > 1
+template <
+    std::size_t Length
+  , class ReadablePropertyMap
+  , class WritablePropertyMap
+  , class ForwardCursorPair
+>
+typename advance_cursor_pair<ForwardCursorPair,Length>::type
+copy(
+    mpl::size_t<Length>
+  , ReadablePropertyMap const& in_elements
+  , WritablePropertyMap const& out_elements
+  , ForwardCursorPair const& cursors
+)
+{
+    static std::size_t const length_of_1st_half = Length/2;
+    static std::size_t const length_of_2nd_half = Length - length_of_1st_half;
+
+    // Recursively copy the second half and then the 1st half.
+    return fixed_size::copy(
+        mpl::size_t<length_of_2nd_half>()
+      , in_elements
+      , out_elements
+        
+      , fixed_size::copy(
+          mpl::size_t<length_of_1st_half>()
+        , in_elements
+        , out_elements
+        , cursors
+      ));
+}
+
+// Here is the unrolled copy implementation.
+//
+// We are not yet specializing for the case where the sequence is
+// homogeneous, i.e. where any position in the sequence _can_ be
+// represented with a single (runtime) cursor type.  In those cases we
+// can save instantiations by calculating the length at compile-time
+// but passing different runtime cursors to indicate the subsequences
+// to be copied.
+//
+// We are also not yet attempting to limit compile-time unrolling for
+// large ranges; there is surely a point where large fixed-size ranges
+// should be copied by unrolled subsequence copies.
+//
+// We are also not trying to dispatch to machine intrinsics, yet.
 template <>
 struct unrolled< copy_ >
 {
-    // Result type computer
+    // Result type computer.  This metafunction is called "apply" so
+    // that unrolled<copy_> will be an MPL metafunction class.
     template <class Range1, class Range2>
     struct apply
     {
@@ -172,8 +160,9 @@ struct unrolled< copy_ >
 
         return make_range(
             sequence::elements(out)
-          , fixed_size::copy<length::value>()(
-                sequence::elements(in)
+          , fixed_size::copy(
+                mpl::size_t<length::value>()
+              , sequence::elements(in)
               , sequence::elements(out)
 
               , detail::make_compressed_pair(
