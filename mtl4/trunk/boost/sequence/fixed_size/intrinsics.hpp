@@ -12,6 +12,8 @@
 
 namespace boost { namespace sequence { 
 
+// Provide the implementation of intrinsics for fixed-size sequence
+// types.
 template <class Sequence, std::size_t N>
 struct intrinsics<Sequence, fixed_size_indexable_tag<N> >
 {
@@ -21,6 +23,7 @@ struct intrinsics<Sequence, fixed_size_indexable_tag<N> >
         type operator()(Sequence& s) const
         { return type(); }
     };
+    
     struct end
     {
         typedef fixed_size::cursor<N> type;

@@ -105,6 +105,14 @@ arithmetic on these types.
 
 .. _MPL: http://www.boost.org/libs/mpl
 
+First Cut at ATLAS-like Tuning Framework
+========================================
+
+We can start by deciding the maximal amount of loop unrolling
+that's appropriate for various fixed-sized data structures.  We can
+also decide loop unrolling for some regular variable-sized
+sequences.
+
 Develop Basic Linear Algebra Instruction Set (BLAIS) 
 ====================================================
 

@@ -6,6 +6,7 @@
 
 # include <boost/sequence/range_fwd.hpp>
 # include <boost/compressed_pair.hpp>
+# include <boost/sequence/tag_fwd.hpp>
 # include <boost/sequence/homogeneous.hpp>
 # include <boost/sequence/category_fwd.hpp>
 # include <boost/sequence/fixed_size/category.hpp>

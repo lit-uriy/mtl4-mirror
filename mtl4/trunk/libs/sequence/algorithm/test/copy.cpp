@@ -22,18 +22,6 @@ int test_main( int argc, char* argv[] )
          >
         ));
 
-#if 1  // help in tracking down some bugs
-    boost::array<int,3> x;
-    sequence::begin(x);
-    
-    sequence::begin(hello);
-    sequence::begin(buf);
-    char const (&hello_)[6] = hello;
-    char (&buf_)[11] = buf;
-    sequence::begin(hello_);
-    sequence::begin(buf_);
-#endif 
-
     BOOST_MPL_ASSERT(
         (boost::is_same<
            sequence::fixed_size_indexable_tag<11>
@@ -65,7 +53,7 @@ int test_main( int argc, char* argv[] )
         boost::array<char,6> const hello = {{'h','e','l','l','o','\0'}};
         boost::array<char,11> buf = {{'0','1','2','3','4','5','6','7','8','9','\0'}};
         boost::array<char,11> buf2;
-        
+
         sequence::algorithm::copy(hello, buf);
     
         sequence::algorithm::copy(
@@ -85,3 +73,4 @@ int test_main( int argc, char* argv[] )
     
     return 0;
 }
+

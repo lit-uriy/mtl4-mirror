@@ -30,13 +30,19 @@ struct tag_base<array<T,N> >
     typedef fixed_size_indexable_tag<N> type;
 };
 
-# if 1
+# if BOOST_WORKAROUND(_MSC_FULL_VER, <= 140050215)
+
+// Jason Shirk assures me this bug is fixed for the release version of
+// VC++ 8.0.  I'm not sure the workaround is much help since other
+// array-related confusions break VC++ 7.1 and VC++ 8.0 beta when used
+// on built-in arrays.
 template <class T>
 struct array_tag
 {
     static T& make();
     typedef fixed_size_indexable_tag<(sizeof(T)/sizeof(make()[0]))> type;
 };
+
 # endif 
 
 

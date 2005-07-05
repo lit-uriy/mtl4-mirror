@@ -10,6 +10,7 @@
 
 # include <cstddef>
 
+#error obsolete 
 namespace boost { namespace sequence { namespace intrinsic {
 
 template <class T, std::size_t N>
