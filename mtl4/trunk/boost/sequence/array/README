@@ -1,3 +1,0 @@
-This directory contains support for C++ arrays and boost::array.  In
-particular, cursors encode their positions in their types, so complete
-loop unrolling can be done.

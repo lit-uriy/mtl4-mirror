@@ -18,6 +18,16 @@
 
 namespace boost { namespace sequence {
 
+// The implementation of the intrinsics specialization that applies to
+// models of SinglePassRange (see the Boost Range library
+// documentation at http://www.boost.org/libs/range/doc/range.html).
+// The first argument is the range type and the second argument is a
+// nullary metafunction that returns the iterator type to use as the
+// Range's cursor.
+//
+// Note: the need for the 2nd argument may disappear when the Range
+// library is changed so that range_iterator<R const>::type is the
+// same as range_const_iterator<R>::type.
 template <class Sequence, class GetIterator>
 struct iterator_range_intrinsics
 {
@@ -43,6 +53,7 @@ struct iterator_range_intrinsics
         
     struct elements
     {
+
         typedef typename GetIterator::type type;
         
         type operator()(Sequence& s) const
@@ -52,6 +63,7 @@ struct iterator_range_intrinsics
     };
 };
 
+// Intrinsics specializations for iterator ranges.
 template <class Sequence>
 struct intrinsics<Sequence, iterator_range_tag>
   : iterator_range_intrinsics<
@@ -68,16 +80,24 @@ struct intrinsics<Sequence const, iterator_range_tag>
 
 namespace intrinsic
 {
-# define BOOST_SEQUENCE_INTRINSIC_OPERATION(name)   \
-  template <class Sequence>                         \
-  struct name                                       \
-    : intrinsics<Sequence>::name                    \
-  {};
+  // The default implementation of each intrinsic function object type
+  // is inherited from the corresponding member of
+  // intrinsics<Sequence>.  You can of course specialize begin<S>,
+  // end<S>, and elements<S>, individually, but specializing
+  // intrinsics<> usually more convenient.
+  template <class Sequence>
+  struct begin : intrinsics<Sequence>::begin {};
+  
+  template <class Sequence>
+  struct end : intrinsics<Sequence>::end {};
+  
+  template <class Sequence>
+  struct elements : intrinsics<Sequence>::elements {};
 
-BOOST_SEQUENCE_INTRINSIC_OPERATION(begin)
-BOOST_SEQUENCE_INTRINSIC_OPERATION(end)
-BOOST_SEQUENCE_INTRINSIC_OPERATION(elements)
-      
+  // Specializations of function<Op> provide the actual type of each
+  // intrinsic function object: Overloaded function call operators
+  // handle rvalue binding without requiring boilerplate in
+  // specializations of begin/end/elements.
   template <template <class> class Operation>
   struct function
   {
@@ -89,7 +109,14 @@ BOOST_SEQUENCE_INTRINSIC_OPERATION(elements)
       }
       
       template <class Sequence>
-      typename lazy_disable_if<is_array<Sequence>, Operation<Sequence const> >::type
+      typename
+      // VC-8.0 beta likes to match this overload even to non-const arrays
+# if !BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050601))
+        Operation<Sequence const>
+# else 
+        lazy_disable_if<is_array<Sequence>, Operation<Sequence const> >
+# endif
+      ::type
       operator()(Sequence const& s) const
       {
           return Operation<Sequence const>()(s);
