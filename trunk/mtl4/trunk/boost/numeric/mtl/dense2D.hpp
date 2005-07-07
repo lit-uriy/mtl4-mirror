@@ -94,6 +94,10 @@ template <class ELT, class Orien>
 ELT value( const dense2D<ELT, Orien>&, const ELT* key ) {
   return *key; }
 
+template <class ELT, class Orien>
+void value( const dense2D<ELT, Orien>&, const ELT* key, const ELT& val ) {
+  * const_cast<ELT*>(key) = val; }
+
 } // namespace mtl
 
 #endif // MTL_DENSE2D_INCLUDE
