@@ -14,9 +14,9 @@ namespace boost { namespace sequence { namespace algorithm { namespace fixed_siz
 template <class AlgorithmID>
 struct unrolled {};
 
-template <class Algorithm>
+template <class Algorithm, class TargetCategory>
 unrolled<Algorithm>
-lookup_implementation(Algorithm,fixed_size::category,fixed_size::category)
+lookup_implementation(Algorithm,fixed_size::category,TargetCategory)
 {
     return unrolled<Algorithm>();
 }

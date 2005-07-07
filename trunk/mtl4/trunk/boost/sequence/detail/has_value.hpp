@@ -10,7 +10,7 @@ namespace boost {
 namespace sequence {
 namespace detail {
 
-# if BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050215)) || BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(3))
+# if BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050601)) || BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(3))
 
 typedef char (&no_tag)[1];
 typedef char (&yes_tag)[2];

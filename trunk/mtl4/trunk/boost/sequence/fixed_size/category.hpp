@@ -15,19 +15,19 @@ namespace boost { namespace sequence {
 
 template <class T, std::size_t N>
 struct category<T[N]>
-  : algorithm::fixed_size::category {};
+  : algorithm::fixed_size::homogeneous {};
 
 template <class T, std::size_t N>
 struct category<T const[N]>
-  : algorithm::fixed_size::category {};
+  : algorithm::fixed_size::homogeneous {};
 
 template <class T, std::size_t N>
 struct category<boost::array<T,N> >
-  : algorithm::fixed_size::category {};
+  : algorithm::fixed_size::homogeneous {};
 
 template <class Elements, std::size_t N1, std::size_t N2>
 struct category<range<Elements, fixed_size::cursor<N1>, fixed_size::cursor<N2> > >
-  : algorithm::fixed_size::category {};
+  : algorithm::fixed_size::homogeneous {};
 
 }} // namespace boost::sequence
 

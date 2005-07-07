@@ -6,7 +6,8 @@
 
 namespace boost { namespace sequence { 
 
-template <class Sequence> struct category;
+template <class Sequence>
+struct category;
 
 // In general, a const T has the same category as T.
 template <class T>

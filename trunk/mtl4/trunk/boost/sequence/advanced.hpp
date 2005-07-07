@@ -17,7 +17,7 @@ struct advanced;
 
 namespace advanced_
 {
-  // Default implementation assumes the cursor homogneous
+  // Default implementation assumes the cursor homogeneous
   
   // To support known types whose namespaces we can't enter, we add an
   // Enable parameter to use with SFINAE.  Partially specialize and

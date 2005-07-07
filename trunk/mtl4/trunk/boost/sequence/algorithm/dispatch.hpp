@@ -30,7 +30,7 @@ template <class Signature> struct dispatch;
 //
 
 # if BOOST_WORKAROUND(BOOST_MSVC, <= 1310)                          \
-  || BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050215))
+  || BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050601))
 
 namespace aux_
 {

@@ -8,6 +8,7 @@
 
 namespace boost { namespace sequence { namespace detail { 
 
+// Provides unique, default-constructed instances of T.
 template <class T, int = 0>
 struct instance
 {
@@ -18,10 +19,26 @@ struct instance
     }
 };
 
-# if BOOST_WORKAROUND(BOOST_GNUC_FULL_VERSION, <= 3003003)
-#  define BOOST_SEQUENCE_DECLARE_INSTANCE(type, name) namespace { type name; }
+// BOOST_SEQUENCE_DECLARE_INSTANCE(type, name) --
+//
+//    Declares a
+
+# if !BOOST_WORKAROUND(BOOST_GNUC_FULL_VERSION, <= 3003003)
+
+// Declares an object "name" of type "type" that can be used in
+// multiple translation units, without requiring a separate definition
+// in a source file.
+#  define BOOST_SEQUENCE_DECLARE_INSTANCE(type, name) \
+    namespace { type const& name = sequence::detail::instance< type >::get(); }
+
 # else
-#  define BOOST_SEQUENCE_DECLARE_INSTANCE(type, name) namespace { type const& name = sequence::detail::instance< type >::get(); }
+
+// This doesn't appear to cause problems, although strictly speaking
+// it leads to ODR violations whenever a template that uses "name" is
+// instantiated in multiple translation units.
+#  define BOOST_SEQUENCE_DECLARE_INSTANCE(type, name) \
+    namespace { type name; }
+
 # endif
 
 }}} // namespace boost::sequence::detail
