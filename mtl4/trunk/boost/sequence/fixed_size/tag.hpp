@@ -19,32 +19,16 @@ struct fixed_size_indexable_tag
 {};
 
 template <class T, std::size_t N>
-struct tag_base<T[N]>
+struct tag_impl<T[N]>
 {
     typedef fixed_size_indexable_tag<N> type;
 };
 
 template <class T, std::size_t N>
-struct tag_base<array<T,N> >
+struct tag_impl<array<T,N> >
 {
     typedef fixed_size_indexable_tag<N> type;
 };
-
-# if BOOST_WORKAROUND(_MSC_FULL_VER, <= 140050215)
-
-// Jason Shirk assures me this bug is fixed for the release version of
-// VC++ 8.0.  I'm not sure the workaround is much help since other
-// array-related confusions break VC++ 7.1 and VC++ 8.0 beta when used
-// on built-in arrays.
-template <class T>
-struct array_tag
-{
-    static T& make();
-    typedef fixed_size_indexable_tag<(sizeof(T)/sizeof(make()[0]))> type;
-};
-
-# endif 
-
 
 }} // namespace boost::sequence::fixed_size
 

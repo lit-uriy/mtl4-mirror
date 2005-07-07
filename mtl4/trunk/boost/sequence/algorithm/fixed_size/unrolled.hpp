@@ -11,9 +11,13 @@
 
 namespace boost { namespace sequence { namespace algorithm { namespace fixed_size { 
 
+// A strategy tag that can be specialized to provide implementations
+// for any given AlgorithmID using that strategy.
 template <class AlgorithmID>
 struct unrolled {};
 
+// Rule: any algorithm whose source sequence is fixed size will be
+// unrolled (unless there is a more specific rule for that case).
 template <class Algorithm, class TargetCategory>
 unrolled<Algorithm>
 lookup_implementation(Algorithm,fixed_size::category,TargetCategory)
@@ -23,6 +27,8 @@ lookup_implementation(Algorithm,fixed_size::category,TargetCategory)
 
 }}}} // namespace boost::sequence::algorithm::fixed_size
 
+// Strategies need to be available to typeof, so we register the
+// unrolled template.
 BOOST_TYPEOF_REGISTER_TEMPLATE(boost::sequence::algorithm::fixed_size::unrolled,1)
 
 #endif // BOOST_SEQUENCE_ALGORITHM_FIXED_SIZE_UNROLLED_DWA200559_HPP
