@@ -7,7 +7,7 @@
 namespace boost { namespace sequence { 
 
 template <class T>
-struct tag_base;
+struct tag_impl;
 
 template <class T>
 struct tag;
