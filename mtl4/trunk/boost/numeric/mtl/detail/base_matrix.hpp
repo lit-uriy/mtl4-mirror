@@ -13,6 +13,7 @@ class base_matrix {
 public:
   typedef ELT                     value_type;
   typedef const value_type*       pointer_type;
+  typedef pointer_type            key_type;
   typedef Orientation             orientation;
 
   base_matrix() : data(0), ext(false), nnz(0) {}

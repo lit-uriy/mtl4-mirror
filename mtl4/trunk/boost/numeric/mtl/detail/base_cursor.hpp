@@ -33,21 +33,23 @@ protected:
 
 
 
-// template <class Key>
-// class base_matrix_cursor : base_cursor<Key> {
+// template <class Matrix>
+// class base_matrix_cursor : base_cursor<typename Matrix::key_type> {
 // public:
-//   typedef Key                  key_type;
-//   typedef base_cursor<Key>     super;
+//   typedef typename Matrix::key_type     key_type;
+//   typedef base_cursor<Key>              super;
 
-//   base_matrix_cursor () {} 
-//   base_matrix_cursor (key_type me, key_type mb, dim_type d) :
-//     super(me), data(mb), dim(d) {}
+//   base_matrix_cursor () : ma(0) {} 
+//   base_matrix_cursor (key_type me_, const Matrix& ma_) :
+//     super(me_), ma(&ma_) {}
 
 //   // offset of key w.r.t. data
-//   std::size_t offset() const { return key-data; }
+//   // std::size_t offset() const { return key-data; }
+//   const Matrix*     ma;
+
 // protected:
-//   key_type      data; // start address of matrix data
-//   dim_type      dim;
+// //   key_type      data; // start address of matrix data
+// //   dim_type      dim;
 // }; // base_matrix_cursor
 
 }} // namespace mtl::detail 
