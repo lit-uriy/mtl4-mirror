@@ -61,7 +61,7 @@ class dense2D_indexer {
 
   
   // M and N as template parameters might be considered later
-template <class ELT, class Orientation, class Indexing>
+template <class ELT, class Orientation= row_major, class Indexing= c_index>
 class dense2D : public detail::base_matrix<ELT, Orientation> {
   typedef detail::base_matrix<ELT, Orientation>      super;
   typedef dense2D                       self;
