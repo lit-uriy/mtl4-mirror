@@ -3,6 +3,8 @@
 #ifndef MTL_DIM_TYPE_INCLUDE
 #define MTL_DIM_TYPE_INCLUDE
 
+#include <iostream>
+
 namespace mtl {
 
 template <std::size_t R, std::size_t C>
@@ -33,6 +35,12 @@ protected:
   std::size_t r, c;
 };
 
+template <std::size_t R, std::size_t C>
+std::ostream& operator<< (std::ostream& stream, fix_dim_type<R, C>) {
+  return stream << R << 'x' << C; }
+
+std::ostream& operator<< (std::ostream& stream, dim_type d) {
+  return stream << d.rows() << 'x' << d.cols(); }
 
 } // namespace mtl
 

@@ -40,6 +40,8 @@ public:
   // offset of key (pointer) w.r.t. data
   std::size_t offset(const value_type* p) const { return p-data; }
   pointer_type data_ref() const {return data; }
+  dim_type dim_ref() const {return dim; }
+  value_type val_n(std::size_t offset) const { return data[offset]; }
 
 protected:
   value_type*                     data;   // pointer to matrix
