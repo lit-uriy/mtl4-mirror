@@ -1,2 +1,4 @@
 
 exe dense2D : dense2D.cpp : <include>../../../../boost/numeric ;
+exe mat_vec_mult_timing : mat_vec_mult_timing.cpp : <optimization>speed <include>$(BOOST_ROOT) <include>../../../../boost/numeric ;
+# exe mat_vec_mult_timing : mat_vec_mult_timing.cpp : <optimization>speed <include>"../../../../boost/numeric" <include>"/Users/pgottsch/projects/boost/boost_1_32_0" ;
