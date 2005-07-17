@@ -19,10 +19,10 @@ public:
   base_matrix() : data(0), ext(false), nnz(0) {}
   base_matrix(dim_type d) : data(0), ext(false), dim(d), nnz(0) {}
   base_matrix(dim_type d, value_type* a) : data(a), ext(true), dim(d), nnz(0) {}
-  ~base_matrix() { delete data; }
+  ~base_matrix() { if (data) delete data; }
 
   std::size_t rows() const {return dim.rows();}
-  std::size_t columns() const {return dim.columns();}
+  std::size_t cols() const {return dim.cols();}
   
 protected:
   std::size_t dim1(row_major) const {return dim.rows();}

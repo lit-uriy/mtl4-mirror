@@ -77,12 +77,17 @@ public:
   
   dense2D() : super() {}
   dense2D(dim_type d) : super(d) {} // , my_indexer(*this) {}
-  dense2D(dim_type d, value_type* a) : super(d, a) {
-    nnz = d.rows() *d.cols(); }
+  dense2D(dim_type d, value_type* a) : super(d, a) { nnz= d.rows() *d.cols();}
+  dense2D(dim_type d, value_type value) : super(d) {
+    nnz= d.rows() *d.cols();
+    data = new value_type[nnz];
+    value_type* p = data;
+    for (std::size_t i = 0; i < nnz; i++) *p++ = value; 
+  }
 
   template <class InputIterator>
   dense2D(dim_type d, InputIterator first, InputIterator last) : super(d) {
-    nnz = d.rows() *d.cols();
+    nnz= d.rows() *d.cols();
     data = new value_type[nnz];
     value_type* p = data;
     for (std::size_t i = 0; i < nnz; i++) *p++ = *first++; 
@@ -98,7 +103,7 @@ public:
   el_cursor_pair erange() const {
     return std::make_pair(ebegin(), eend()); }
 
-  value_type operator() (std::size_t r, std::size_t c) {
+  value_type operator() (std::size_t r, std::size_t c) const {
     return data[indexer(*this, r, c)]; }
 
   std::size_t row(const key_type& key) const {
@@ -114,6 +119,15 @@ protected:
   const indexer_type  indexer;
 }; // dense2D
 
+// declare as fortran indexed if so
+// template <class ELT, class Orientation>
+// struct is_fortran_indexed<dense2D<ELT, Orientation, f_index> > {
+//   static const bool value= true; };
+// should be done automatically
+
+template <class ELT, class Orientation, class Index>
+struct is_mtl_type<dense2D<ELT, Orientation, Index> > {
+  static const bool value= true; };
 
 } // namespace mtl
 
