@@ -11,7 +11,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
   typedef fractalu<double, 3> matrix_type;
-  matrix_type   matrix(dim_type(23, 17), 2.0);
+  matrix_type   matrix(dim_type(10, 10), 2.0);
 
   matrix_type::el_cursor_type cursor= matrix.ebegin(), end= matrix.eend();
   for (; cursor != end; ++cursor)
@@ -30,4 +30,11 @@ int main(int argc, char** argv) {
   cout << "trans_matrix dimensions = " << trans_matrix.dim_ref() << endl;
 
   return 0;
+
+  matrix_type::block_cursor_type bcursor= matrix.bbegin(), bend= matrix.bend();
+  for (; bcursor != bend; ++bcursor)
+    cout << "matrix[" << row(matrix, *bcursor) << ", " << col(matrix, *bcursor)
+	 << "] = " << value(matrix, *bcursor) << endl;
+
+
 } 
