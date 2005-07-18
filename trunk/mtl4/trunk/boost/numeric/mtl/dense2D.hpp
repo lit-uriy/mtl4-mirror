@@ -125,6 +125,12 @@ protected:
 //   static const bool value= true; };
 // should be done automatically
 
+// declare as fortran indexed if so
+template <class ELT, class Orientation, class Index>
+struct indexing<dense2D<ELT, Orientation, Index> > {
+  typedef Index type; };
+// should be done automatically
+
 template <class ELT, class Orientation, class Index>
 struct is_mtl_type<dense2D<ELT, Orientation, Index> > {
   static const bool value= true; };
