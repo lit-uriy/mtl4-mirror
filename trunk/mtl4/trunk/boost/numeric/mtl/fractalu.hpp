@@ -13,14 +13,14 @@ namespace mtl {
 
 // cursor over every element
 template <class ELT> //, class Offset>
-class fractalu_cursor : public detail::base_cursor<const ELT*> {
+class fractalu_el_cursor : public detail::base_cursor<const ELT*> {
 public:
   typedef ELT                           value_type;
   typedef const value_type*             pointer_type; // ?
   typedef detail::base_cursor<const ELT*> super;
 
-  dense_el_cursor () {} 
-  dense_el_cursor (pointer_type me_) : super(me_) {}
+  fractalu_el_cursor () {} 
+  fractalu_el_cursor (pointer_type me_) : super(me_) {}
 };
 
 template <class Matrix>
@@ -43,7 +43,7 @@ class fractalu_indexer {
     return n + r*b + c;
   }
 
-  std::pair<std::size_t, std::size_t> row_col (const matrix& ma, std::size_t n) const {
+  std::pair<std::size_t, std::size_t> row_col (const matrix_type& ma, std::size_t n) const {
     std::size_t a= ma.rows(), b= ma.cols(), r= 0, c= 0, af, as, bf, bs, nf= ma.nf;
     while (a > nf && b > nf) {
       af= a/2; as= a-af; bf= b/2; bs= b-bf;
@@ -52,7 +52,7 @@ class fractalu_indexer {
 	else r+= af, n-= af*bf, a= as, b= bf;
       else {
 	n-= af*b;
-	if (n < as*bf) r+= af, c+= bf, a= as, b= bs;
+	if (n < as*bs) r+= af, c+= bf, a= as, b= bs;
 	else c+= bf, n-= as*bs, a= af, b= bs;
       } }
     return std::make_pair(r + n/b, c + n%b);
@@ -69,9 +69,9 @@ class fractalu_indexer {
     return col(ma, ma.offset(key)); }
 }; // fractalu_cursor
 
-template <class ELT, std::size_t nf= 8>
+template <class ELT, std::size_t NF= 8>
 class fractalu : public detail::base_matrix<ELT, row_major> {
-  typedef detail::base_matrix<ELT, Orientation>      super;
+  typedef detail::base_matrix<ELT, row_major>      super;
   typedef fractalu                      self;
 public:	
   typedef c_index                       ind;
@@ -81,12 +81,13 @@ public:
   typedef fractalu_el_cursor<ELT>       el_cursor_type;  
   typedef std::pair<el_cursor_type, el_cursor_type> el_cursor_pair;
   typedef fractalu_indexer<self>        indexer_type;
+  static const std::size_t              nf= NF;
   
   // does not work yet if row < 2^k && col > 2^k and vice versa 
-  dense2D() : super() {}
-  dense2D(dim_type d) : super(d) {} // , my_indexer(*this) {}
-  dense2D(dim_type d, value_type* a) : super(d, a) { nnz= d.rows() *d.cols();}
-  dense2D(dim_type d, value_type value) : super(d) {
+  fractalu() : super() {}
+  fractalu(dim_type d) : super(d) {} // , my_indexer(*this) {}
+  fractalu(dim_type d, value_type* a) : super(d, a) { nnz= d.rows() *d.cols();}
+  fractalu(dim_type d, value_type value) : super(d) {
     nnz= d.rows() *d.cols();
     data = new value_type[nnz];
     value_type* p = data;
