@@ -15,7 +15,7 @@ int main (int argc, char** argv) {
   if (argc < 2) {
     cout << "syntax: mat_vec_mult_timing size\n"; exit(1); }
 
-  typedef dense2D<double, col_major, c_index> matrix_type; 
+  typedef dense2D<double, col_major, f_index> matrix_type; 
   std::size_t     size(atoi(argv[1]));
   matrix_type     matrix(dim_type(size, size), 1);
   std::vector<double>  vin(size, 1), vout(size, 7);
@@ -30,9 +30,15 @@ int main (int argc, char** argv) {
   boost::timer ti;
   mat_vec_mult(matrix, vin, vout);
   cout << ti.elapsed() << " s\n";
-
   for (size_t i= 0; i < size; i++) 
     if (vout[i] != (int) size) cout << "vout[" << i << "] is " << vout[i] << endl;
+
+  ti.restart();
+  dense_mat_vec_mult(matrix, vin, vout);
+  cout << ti.elapsed() << " s with dense matrix vector product\n";
+  for (size_t i= 0; i < size; i++) 
+    if (vout[i] != (int) size) cout << "vout[" << i << "] is " << vout[i] << endl;
+
   
   return 0;
 }
