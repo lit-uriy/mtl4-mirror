@@ -71,13 +71,13 @@ public:
 
   // returning the row, column and value of a block's first entry (for completeness)
   template <class ELT, class Matrix> 
-  size_t row<Matrix, fractalu_block_cursor<ELT, Matrix> > (const Matrix&, const fractalu_block_cursor<ELT, Matrix>& cu) { 
+  size_t row (const Matrix&, const fractalu_block_cursor<ELT, Matrix>& cu) { 
     return cu.get_r(); }
   template <class ELT, class Matrix> 
-  size_t col<Matrix, fractalu_block_cursor<ELT, Matrix> > (const Matrix&, const fractalu_block_cursor<ELT, Matrix>& cu) { 
+  size_t col (const Matrix&, const fractalu_block_cursor<ELT, Matrix>& cu) { 
     return cu.get_c(); }
   template <class ELT, class Matrix> 
-  ELT value<Matrix, fractalu_block_cursor<ELT, Matrix> > (const Matrix&, const fractalu_block_cursor<ELT, Matrix>& cu) { 
+  ELT value (const Matrix&, const fractalu_block_cursor<ELT, Matrix>& cu) { 
     return cu.value(); }
 
     

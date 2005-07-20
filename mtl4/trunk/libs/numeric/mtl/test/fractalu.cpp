@@ -29,12 +29,9 @@ int main(int argc, char** argv) {
 	 << "] = " << value(trans_matrix, *tcursor) << endl;
   cout << "trans_matrix dimensions = " << trans_matrix.dim_ref() << endl;
 
-  return 0;
-
   matrix_type::block_cursor_type bcursor= matrix.bbegin(), bend= matrix.bend();
   for (; bcursor != bend; ++bcursor)
     cout << "matrix[" << row(matrix, *bcursor) << ", " << col(matrix, *bcursor)
 	 << "] = " << value(matrix, *bcursor) << endl;
-
-
+  return 0;
 } 
