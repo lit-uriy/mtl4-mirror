@@ -98,12 +98,52 @@ Develop Fixed Algorithm Size Template Library (FAST)
 
 .. _FAST:
 
-As part of this work I anticipate having to create an inheritance
-hierarchy in MPL_ so that, e.g. ``int_<N>`` is derived from
-``integral_c<int, N>``, and add operators that can do simple
-arithmetic on these types.
+Cursors have types that represent their positions.  That is to
+say, a cursor has a different type from each of its neighbors.
 
 .. _MPL: http://www.boost.org/libs/mpl
+
+Implement Unrolled ``copy`` Algorithm
+-------------------------------------
+
+1. **Non-Homogeneous Sequences** - this assumes that there is no
+     single type that can be used to represent cursors for all
+     positions in the sequence.  A tuple of different types is a
+     good example of such a sequence.
+
+2. **Homogeneous Sequences** - When a homogeneous representation of
+     a cursor's position exists (e.g. a pointer or integer for a
+     fixed-size array), the algorithm can be implemented much more
+     efficiently at compile-time, once the sequence length is
+     known, by moving a homogenous cursor each time the sequence is
+     subdivided.
+
+It should be possible to generalize the support for homogeneous
+sequences into something that will unroll dynamically-sized
+sequences as well as fixed-size ones.
+
+Design Segmented Cursors and Property Maps
+------------------------------------------
+
+This is the cursor/property map equivalent to the segmented
+iterators described in [Austern98]_.
+
+.. [Austern98] Matthew H. Austern, *Segmented Iterators and
+   Hierarchical Algorithms*, 1998. Lecture Notes In Computer
+   Science; Vol. 1766 Selected Papers from the International
+   Seminar on Generic Programming, Pages: 80 - 90,
+   ISBN:3-540-41090-2 http://lafstern.org/matt/segmented.pdf
+
+
+Implement Segmentation Optimization for ``copy``
+------------------------------------------------
+
+We don't want to unroll the largest homogeneous sequences
+completely.  Instead it would be better to subdivide them into
+unrolled chunks, and iterate the unrolled chunks at runtime.
+Implement this optimization by imposing a segmented view over the
+fixed-size sequence.  This optimization is basically the same as
+matrix blocking, but in-the-small.
 
 First Cut at ATLAS-like Tuning Framework
 ========================================

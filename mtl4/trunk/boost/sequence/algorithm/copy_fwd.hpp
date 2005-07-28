@@ -4,10 +4,10 @@
 #ifndef BOOST_SEQUENCE_ALGORITHM_COPY_FWD_DWA2005520_HPP
 # define BOOST_SEQUENCE_ALGORITHM_COPY_FWD_DWA2005520_HPP
 
-namespace boost { namespace sequence { namespace algorithm { 
+namespace boost { namespace sequence { namespace algorithm { namespace id {
 
-struct copy_;
+struct copy;
 
-}}} // namespace boost::sequence::algorithm
+}}}} // namespace boost::sequence::algorithm
 
 #endif // BOOST_SEQUENCE_ALGORITHM_COPY_FWD_DWA2005520_HPP

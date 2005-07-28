@@ -130,10 +130,10 @@ copy(
 //
 // We are also not trying to dispatch to machine intrinsics, yet.
 template <>
-struct unrolled< copy_ >
+struct unrolled< id::copy >
 {
     // Result type computer.  This metafunction is called "apply" so
-    // that unrolled<copy_> will be an MPL metafunction class.
+    // that unrolled<id::copy> will be an MPL metafunction class.
     template <class Range1, class Range2>
     struct apply
     {
