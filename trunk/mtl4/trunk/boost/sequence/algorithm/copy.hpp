@@ -14,27 +14,32 @@
 
 namespace boost { namespace sequence { namespace algorithm {
 
-struct copy_
+namespace id
 {
-    // The use of add_const below is needed to work around a VC7.1 bug
-    template <class Range1, class Range2>
-    typename dispatch<copy_(typename add_const<Range1>::type&,Range2&)>::type
-    operator()(Range1 const& src, Range2& dst) const
-    {
-# if BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
-        return
-            typename dispatch<copy_(Range1 const&,Range2&)>::implementation
-            ().execute(src,dst);
-# else
-        return dispatch<copy_(Range1 const&,Range2&)>::implementation::execute(src,dst);
-# endif 
-    }
-};
+  
+  struct copy
+  {
+      // The use of add_const below is needed to work around a VC7.1 bug
+      template <class Range1, class Range2>
+      typename dispatch<copy(typename add_const<Range1>::type&,Range2&)>::type
+      operator()(Range1 const& src, Range2& dst) const
+      {
+  # if BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(4))
+          return
+              typename dispatch<copy(Range1 const&,Range2&)>::implementation
+              ().execute(src,dst);
+  # else
+          return dispatch<copy(Range1 const&,Range2&)>::implementation::execute(src,dst);
+  # endif 
+      }
+  };
 
-BOOST_SEQUENCE_DECLARE_INSTANCE(copy_, copy)
+}
+
+BOOST_SEQUENCE_DECLARE_INSTANCE(id::copy, copy)
 
 }}} // namespace boost::sequence::algorithm
 
-BOOST_TYPEOF_REGISTER_TYPE(boost::sequence::algorithm::copy_);
+BOOST_TYPEOF_REGISTER_TYPE(boost::sequence::algorithm::id::copy);
 
 #endif // COPY_DWA200554_HPP

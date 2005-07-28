@@ -19,10 +19,6 @@ struct instance
     }
 };
 
-// BOOST_SEQUENCE_DECLARE_INSTANCE(type, name) --
-//
-//    Declares a
-
 # if !BOOST_WORKAROUND(BOOST_GNUC_FULL_VERSION, <= 3003003)
 
 // Declares an object "name" of type "type" that can be used in
