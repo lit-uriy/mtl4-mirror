@@ -200,8 +200,6 @@ well [High02]_. In Section 7.1, subsection **Equality** of Jeremy Siek's
 `preliminary documentation`_ for his early prototype of this
 project, the notation
 
-   boost/tools/build/jam_src/
-
   *a* =\ :sub:`ε` *b*
 
 was used to mean “|\ *a* - *b*\ | < ε where ε is some appropriate
