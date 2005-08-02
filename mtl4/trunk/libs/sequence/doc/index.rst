@@ -24,11 +24,55 @@ __ http://www.boost.org/libs/range/
 
 .. _`Sequence`:
 
---------------------
-The Sequence Concept
---------------------
+.. role:: concept
+   :class: interpreted
 
-I am bundling two cursors and a property map into a concept called
-“Sequence.”  I realize the standard has already used that term, but
-there are few reasonable terms left and the standard's concept is
-weak and seldom used.
+.. |Sequence| replace:: :concept:`Sequence`
+.. |Property Map| replace:: :concept:`Property Map`
+.. |Writable Property Map| replace:: :concept:`Writable Property Map`
+.. |Cursor| replace:: :concept:`Cursor`
+
+.. _Cursor: cursors_and_property_maps.html
+.. _Property Map: cursors_and_property_maps.html
+
+------------------------
+ The |Sequence| Concept
+------------------------
+
+
+|Sequence| is an abstraction that bundles two |Cursor|_\ s and a
+|Property Map|_. [#naming]_ In the table below, ``S`` is a model of
+|Sequence| and ``x`` is a (possibly *cv*\ -qualified) instance of
+``S``.
+
+.. table:: Sequence Requirements
+
+   +------------------------------+----------------------------------------+---------------------+
+   |Valid Expression              |Type                                    |Semantics            |
+   +==============================+========================================+=====================+
+   |::                            |::                                      |Returns a |Property  |
+   |                              |                                        |Map|_ that accesses  |
+   |  boost::sequence::elements(s)|  boost::result_of<                     |the elements of      |
+   |                              |      boost::sequence::end::id(S const&)|``x``.  If ``x`` is  |
+   |                              |  >::type                               |writable, the result |
+   |                              |                                        |is a model of        |
+   |                              |                                        ||Writable Property   |
+   |                              |                                        |Map|.                |
+   +------------------------------+----------------------------------------+---------------------+
+   |``boost::sequence::begin(x)`` |::                                      |Returns a |Cursor|_  |
+   |                              |                                        |that, when used with |
+   |                              |  boost::result_of<                     |the ``elements``     |
+   |                              |    boost::sequence::begin::id(S const&)|property map,        |
+   |                              |  >::type                               |traverses the        |
+   |                              |                                        |elements of ``x``.   |
+   +------------------------------+----------------------------------------+---------------------+
+   |``boost::sequence::end(x)``   |::                                      |Returns a suitble    |
+   |                              |                                        ||Cursor|_ for        |
+   |                              |  boost::result_of<                     |terminating the      |
+   |                              |    boost::sequence::end::id(S const&)  |traversal of ``x``.  |
+   |                              |  >::type                               |                     |
+   +------------------------------+----------------------------------------+---------------------+
+
+.. [#naming] We realize the standard has already used the term
+   “sequence,” but there are few reasonable terms left and the
+   standard's concept is weak and seldom used.
