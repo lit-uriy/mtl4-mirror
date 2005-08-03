@@ -43,35 +43,37 @@ __ http://www.boost.org/libs/range/
 |Sequence| is an abstraction that bundles two |Cursor|_\ s and a
 |Property Map|_. [#naming]_ In the table below, ``S`` is a model of
 |Sequence| and ``x`` is a (possibly *cv*\ -qualified) instance of
-``S``.
+``S``.  All names are in namespace ``boost`` unless otherwise
+specified.
+
 
 .. table:: Sequence Requirements
 
-   +------------------------------+----------------------------------------+---------------------+
-   |Valid Expression              |Type                                    |Semantics            |
-   +==============================+========================================+=====================+
-   |::                            |::                                      |Returns a |Property  |
-   |                              |                                        |Map|_ that accesses  |
-   |  boost::sequence::elements(s)|  boost::result_of<                     |the elements of      |
-   |                              |      boost::sequence::end::id(S const&)|``x``.  If ``x`` is  |
-   |                              |  >::type                               |writable, the result |
-   |                              |                                        |is a model of        |
-   |                              |                                        ||Writable Property   |
-   |                              |                                        |Map|.                |
-   +------------------------------+----------------------------------------+---------------------+
-   |``boost::sequence::begin(x)`` |::                                      |Returns a |Cursor|_  |
-   |                              |                                        |that, when used with |
-   |                              |  boost::result_of<                     |the ``elements``     |
-   |                              |    boost::sequence::begin::id(S const&)|property map,        |
-   |                              |  >::type                               |traverses the        |
-   |                              |                                        |elements of ``x``.   |
-   +------------------------------+----------------------------------------+---------------------+
-   |``boost::sequence::end(x)``   |::                                      |Returns a suitble    |
-   |                              |                                        ||Cursor|_ for        |
-   |                              |  boost::result_of<                     |terminating the      |
-   |                              |    boost::sequence::end::id(S const&)  |traversal of ``x``.  |
-   |                              |  >::type                               |                     |
-   +------------------------------+----------------------------------------+---------------------+
+   +-----------------------+--------------------------------------+---------------------+
+   |Valid Expression       |Type                                  |Semantics            |
+   +=======================+======================================+=====================+
+   |::                     |::                                    |Returns a |Property  |
+   |                       |                                      |Map|_ that accesses  |
+   |  sequence::elements(s)|  result_of<                          |the elements of      |
+   |                       |      sequence::id::elements(S const&)|``x``.  If ``x`` is  |
+   |                       |  >::type                             |writable, the result |
+   |                       |                                      |is a model of        |
+   |                       |                                      ||Writable Property   |
+   |                       |                                      |Map|.                |
+   +-----------------------+--------------------------------------+---------------------+
+   |``sequence::begin(x)`` |::                                    |Returns a |Cursor|_  |
+   |                       |                                      |that, when used with |
+   |                       |  result_of<                          |the ``elements``     |
+   |                       |      sequence::begin::id(S const&)   |property map,        |
+   |                       |  >::type                             |traverses the        |
+   |                       |                                      |elements of ``x``.   |
+   +-----------------------+--------------------------------------+---------------------+
+   |``sequence::end(x)``   |::                                    |Returns a suitble    |
+   |                       |                                      ||Cursor|_ for        |
+   |                       |  result_of<                          |terminating the      |
+   |                       |      sequence::end::id(S const&)     |traversal of ``x``.  |
+   |                       |  >::type                             |                     |
+   +-----------------------+--------------------------------------+---------------------+
 
 .. [#naming] We realize the standard has already used the term
    “sequence,” but there are few reasonable terms left and the
