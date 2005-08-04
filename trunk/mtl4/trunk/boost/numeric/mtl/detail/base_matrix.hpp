@@ -3,54 +3,123 @@
 #ifndef MTL_BASE_MATRIX_INCLUDE
 #define MTL_BASE_MATRIX_INCLUDE
 
-#include <mtl/dim_type.hpp>
-#include <mtl/base_types.hpp>
+#include <boost/numeric/mtl/dim_type.hpp>
+#include <boost/numeric/mtl/base_types.hpp>
 
 namespace mtl { namespace detail {
-
-template <class ELT, class Orientation>
-class base_matrix {
-public:
-  typedef ELT                     value_type;
-  typedef const value_type*       pointer_type;
-  typedef pointer_type            key_type;
-  typedef Orientation             orientation;
-
-  base_matrix() : data(0), ext(false), nnz(0) {}
-  base_matrix(dim_type d) : data(0), ext(false), dim(d), nnz(0) {}
-  base_matrix(dim_type d, value_type* a) : data(a), ext(true), dim(d), nnz(0) {}
-  ~base_matrix() { if (data) delete data; }
-
-  std::size_t rows() const {return dim.rows();}
-  std::size_t cols() const {return dim.cols();}
+  using std::size_t;
   
-protected:
-  std::size_t dim1(row_major) const {return dim.rows();}
-  std::size_t dim1(col_major) const {return dim.cols();}
-  std::size_t dim1(dia_major) const {return dim.rows();}
+  // base class for other matrices
+  template <class ELT, class Orientation>
+  struct base_matrix 
+  {
+    typedef ELT                     value_type;
+    typedef const value_type*       pointer_type;
+    typedef pointer_type            key_type;
+    typedef Orientation             orientation;
+  protected:
+    value_type*                     data;      // pointer to matrix
+    bool                            ext;       // whether pointer to external data or own
+    dim_type                        dim;       // # of rows and columns
+    size_t                          nnz;       // # of non-zeros, to be set by derived matrix
+    orientation                     orien;     // objects are inherited, types not ;-)
+    
+  public:
+    base_matrix() : data(0), ext(false), nnz(0) {}
 
-  std::size_t dim2(row_major) const {return dim.cols();}
-  std::size_t dim2(col_major) const {return dim.rows();}
-  std::size_t dim2(dia_major) const {return dim.cols();} // or  2*cols-1 ???
-  
-  
-public:
-  std::size_t dim1() const {return dim1(orien);}
-  std::size_t dim2() const {return dim2(orien);}
-  // offset of key (pointer) w.r.t. data
-  std::size_t offset(const value_type* p) const { return p-data; }
-  pointer_type data_ref() const {return data; }
-  dim_type dim_ref() const {return dim; }
-  value_type val_n(std::size_t offset) const { return data[offset]; }
+    // setting dimension, internal data but not yet allocated
+    base_matrix(dim_type d) : data(0), ext(false), dim(d), nnz(0) {}
 
-protected:
-  value_type*                     data;   // pointer to matrix
-  // static const value_type* const& data_const(data);  // to not pass mutable outside
-  bool                            ext;
-  dim_type                        dim;       // # of rows and columns
-  std::size_t                     nnz;       // # of non-zeros, to be set by derived matrix
-  orientation                     orien;     // objects are inherited, types not ;-)
-};
+    // setting dimension and reference to external data
+    // nnz should be set by derived class 
+    base_matrix(dim_type d, value_type* a) : data(a), ext(true), dim(d), nnz(0) {}
+
+    // destruct if my own data (and allocated)
+    ~base_matrix() 
+    { 
+      if (! ext && data) delete data; 
+    }
+    
+    // number of rows
+    size_t rows() const 
+    {
+      return dim.rows();
+    }
+    // numbef of colums
+    size_t cols() const 
+    {
+      return dim.cols();
+    }
+  
+  protected:
+    // dispatched functions for major dimension
+    size_t dim1(row_major) const 
+    {
+      return dim.rows();
+    }
+    size_t dim1(col_major) const 
+    {
+      return dim.cols();
+    }
+    size_t dim1(dia_major) const 
+    {
+      return dim.rows();
+    }
+
+    // dispatched functions for minor dimension
+    size_t dim2(row_major) const 
+    {
+      return dim.cols();
+    }
+    size_t dim2(col_major) const 
+    {
+      return dim.rows();
+    }
+    size_t dim2(dia_major) const 
+    {
+      return dim.cols();
+    } // or  2*cols-1 ???  
+  
+  public:
+    // return major dimension
+    size_t dim1() const 
+    {
+      return dim1(orien);
+    }
+
+    // return major dimension
+    size_t dim2() const 
+    {
+      return dim2(orien);
+    }
+
+    // offset of key (pointer) w.r.t. data 
+    // values must be stored consecutively
+    size_t offset(const value_type* p) const 
+    { 
+      return p - data; 
+    }
+
+    // return const pointer to data
+    pointer_type data_ref() const 
+    {
+      return data; 
+    }
+
+    // returns copy of dim
+    dim_type dim_ref() const 
+    {
+      return dim; 
+    }
+
+    // returns n-th value in consecutive memory
+    // (whatever this means in the corr. matrix format)
+    value_type val_n(size_t offset) const 
+    { 
+      return data[offset]; 
+    }
+    
+  };
 
 }} // namespace mtl::detail
 

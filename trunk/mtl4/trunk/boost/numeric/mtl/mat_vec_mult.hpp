@@ -3,10 +3,10 @@
 #ifndef MTL_MAT_VEC_MULT_INCLUDE
 #define MTL_MAT_VEC_MULT_INCLUDE
 
-#include <mtl/property_map.hpp>
-#include <mtl/intrinsics.hpp>
-#include <mtl/base_types.hpp>
-#include <mtl/fractalu.hpp>
+#include <boost/numeric/mtl/property_map.hpp>
+#include <boost/numeric/mtl/intrinsics.hpp>
+#include <boost/numeric/mtl/base_types.hpp>
+#include <boost/numeric/mtl/fractalu.hpp>
 #include <iostream>
 
 namespace mtl {
