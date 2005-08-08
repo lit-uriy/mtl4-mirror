@@ -3,11 +3,13 @@
 #ifndef MTL_DENSE2D_INCLUDE
 #define MTL_DENSE2D_INCLUDE
 
+#include <algorithm>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_matrix.hpp>
 #include <boost/numeric/mtl/dim_type.hpp>
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/index.hpp>
+#include <boost/numeric/mtl/property_map.hpp>
 
 namespace mtl {
   using std::size_t;
@@ -86,9 +88,10 @@ namespace mtl {
 
   
   // M and N as template parameters might be considered later
-  template <class ELT, class Orientation= row_major, class Index= index::c_index>
-  class dense2D : public detail::base_matrix<ELT, Orientation> {
-    typedef detail::base_matrix<ELT, Orientation>      super;
+  template <class ELT, class Orientation= row_major, class Index= index::c_index,
+	    class Dimension= mtl::dim_type>
+  class dense2D : public detail::base_matrix<ELT, Orientation, Dimension> {
+    typedef detail::base_matrix<ELT, Orientation, Dimension>      super;
     typedef dense2D                       self;
   public:	
     typedef Orientation                   orientation;
@@ -96,39 +99,76 @@ namespace mtl {
     typedef ELT                           value_type;
     typedef const value_type*             pointer_type;
     typedef pointer_type                  key_type;
+    typedef std::size_t                   size_type;
+    typedef Dimension                     dim_type;
     typedef dense_el_cursor<ELT>          el_cursor_type;  
     typedef std::pair<el_cursor_type, el_cursor_type> el_cursor_pair;
     typedef dense2D_indexer               indexer_type;
-  
-    dense2D() : super() {}
 
-    // only sets dimensions
-    dense2D(dim_type d) : super(d) {} // , my_indexer(*this) {}
+  protected:
+    void set_nnz()
+    {
+      nnz = dim.num_rows() * dim.num_cols();
+    }
+
+    void allocate() 
+    {
+      set_nnz();
+      super::allocate();
+    }
+  public:
+    // if compile time matrix size allocate memory
+    dense2D() : super() 
+    {
+      if (dim_type::is_static) allocate();
+    }
+
+    // only sets dimensions, only for run-time dim
+    explicit dense2D(mtl::dim_type d) : super(d) {} 
 
     // sets dimensions and pointer to external data
-    dense2D(dim_type d, value_type* a) : super(d, a) 
+    explicit dense2D(mtl::dim_type d, value_type* a) : super(d, a) 
     { 
-      nnz= d.rows() *d.cols();
+      set_nnz();
     }
 
     // allocates memory and sets all values to 'value'
-    dense2D(dim_type d, value_type value) : super(d) 
+    explicit dense2D(mtl::dim_type d, value_type value) : super(d) 
     {
-      nnz= d.rows() *d.cols();
-      data = new value_type[nnz];
-      value_type* p = data;
-      for (size_t i = 0; i < nnz; i++) *p++ = value; 
+      allocate();
+      std::fill(data, data+nnz, value);
     }
 
     // copies values from iterators
     template <class InputIterator>
-    dense2D(dim_type d, InputIterator first, InputIterator last) : super(d) 
+    explicit dense2D(mtl::dim_type d, InputIterator first, InputIterator last) : super(d) 
     {
-      nnz= d.rows() *d.cols();
-      data = new value_type[nnz];
-      value_type* p = data;
-      for (size_t i = 0; i < nnz; i++) *p++ = *first++; 
-      // check if first == last otherwise throw exception
+      allocate();
+      std::copy(first, last, data);
+   }
+
+    // same constructors for compile time matrix size
+    // sets dimensions and pointer to external data
+    explicit dense2D(value_type* a) : super(a) 
+    { 
+//       BOOST_ASSERT((dim_type::is_static));
+    }
+
+    // allocates memory and sets all values to 'value'
+    explicit dense2D(value_type value) 
+    {
+//       BOOST_ASSERT((dim_type::is_static));
+      allocate();
+      std::fill(data, data+nnz, value);
+    }
+
+    // copies values from iterators
+    template <class InputIterator>
+    explicit dense2D(InputIterator first, InputIterator last) 
+    {
+//       BOOST_ASSERT((dim_type::is_static));
+      allocate();
+      std::copy(first, last, data);
     }
 
     // friend class indexer_type; should work without friend declaration
@@ -151,48 +191,73 @@ namespace mtl {
   }; // dense2D
 
 
-  template <class ELT, class Orientation, class Index>
-  struct is_mtl_type<dense2D<ELT, Orientation, Index> > 
+  template <class ELT, class Orientation, class Index, class Dimension>
+  struct is_mtl_type<dense2D<ELT, Orientation, Index, Dimension> > 
   {
     static bool const value= true; 
   };
 
   // define corresponding type without all template parameters
-  template <class ELT, class Orientation, class Index>
-  struct which_matrix<dense2D<ELT, Orientation, Index> > 
+  template <class ELT, class Orientation, class Index, class Dimension>
+  struct which_matrix<dense2D<ELT, Orientation, Index, Dimension> > 
   {
     typedef dense2D_tag type;
   };
-  
-  template <class ELT, class Orientation, class Index>
-  size_t row(const dense2D<ELT, Orientation, Index>& ma,
-	     typename dense2D<ELT, Orientation, Index>::key_type key)
+
+  namespace traits {
+    template <class ELT, class Orientation, class Index, class Dimension>
+    struct row<dense2D<ELT, Orientation, Index, Dimension> >
+    {
+      typedef mtl::detail::indexer_row_ref<dense2D<ELT, Orientation, Index, Dimension> > type;
+    };
+
+    template <class ELT, class Orientation, class Index, class Dimension>
+    struct col<dense2D<ELT, Orientation, Index, Dimension> >
+    {
+      typedef mtl::detail::indexer_col_ref<dense2D<ELT, Orientation, Index, Dimension> > type;
+    };
+
+    template <class ELT, class Orientation, class Index, class Dimension>
+    struct const_value<dense2D<ELT, Orientation, Index, Dimension> >
+    {
+      typedef mtl::detail::direct_const_value<dense2D<ELT, Orientation, Index, Dimension> > type;
+    };
+
+    template <class ELT, class Orientation, class Index, class Dimension>
+    struct value<dense2D<ELT, Orientation, Index, Dimension> >
+    {
+      typedef mtl::detail::direct_value<dense2D<ELT, Orientation, Index, Dimension> > type;
+    };
+
+  } // namespace traits
+    
+
+  template <class ELT, class Orientation, class Index, class Dimension>
+  inline typename traits::row<dense2D<ELT, Orientation, Index, Dimension> >::type
+  row(const dense2D<ELT, Orientation, Index, Dimension>& ma) 
   {
-    dense2D_indexer indexer;
-    return indexer.row(ma, key);
+    return typename traits::row<dense2D<ELT, Orientation, Index, Dimension> >::type(ma);
   }
 
-  template <class ELT, class Orientation, class Index>
-  size_t col(const dense2D<ELT, Orientation, Index>& ma,
-	     typename dense2D<ELT, Orientation, Index>::key_type key)
+  template <class ELT, class Orientation, class Index, class Dimension>
+  inline typename traits::col<dense2D<ELT, Orientation, Index, Dimension> >::type
+  col(const dense2D<ELT, Orientation, Index, Dimension>& ma)
   {
-    dense2D_indexer indexer;
-    return indexer.col(ma, key);
+    return typename traits::col<dense2D<ELT, Orientation, Index, Dimension> >::type(ma);
   }
 
-  template <class ELT, class Orientation, class Index>
-  ELT value(const dense2D<ELT, Orientation, Index>& ma,
-	    typename dense2D<ELT, Orientation, Index>::key_type key)
+  template <class ELT, class Orientation, class Index, class Dimension>
+  inline typename traits::const_value<dense2D<ELT, Orientation, Index, Dimension> >::type
+  const_value(const dense2D<ELT, Orientation, Index, Dimension>& ma)
   {
-    return *key; 
+    return typename traits::const_value<dense2D<ELT, Orientation, Index, Dimension> >::type(ma);
   }
 
-  template <class ELT, class Orientation, class Index>
-  void value(dense2D<ELT, Orientation, Index>& ma,
-	     typename dense2D<ELT, Orientation, Index>::key_type key,
-	     ELT v)
+  template <class ELT, class Orientation, class Index, class Dimension>
+  inline typename traits::value<dense2D<ELT, Orientation, Index, Dimension> >::type
+  value(const dense2D<ELT, Orientation, Index, Dimension>& ma)
   {
-    * const_cast<ELT *>(key) = v;
+    return typename traits::value<dense2D<ELT, Orientation, Index, Dimension> >::type(ma);
   }
 
 } // namespace mtl
@@ -265,7 +330,54 @@ namespace mtl {
 
 
 // // declare as fortran indexed if so
-// template <class ELT, class Orientation, class Index>
-// struct indexing<dense2D<ELT, Orientation, Index> > {
+// template <class ELT, class Orientation, class Index, class Dimension>
+// struct indexing<dense2D<ELT, Orientation, Index, Dimension> > {
 //   typedef Index type; };
 // // should be done automatically
+
+//   template <class ELT, class Orientation, class Index, class Dimension>
+//   size_t row(const dense2D<ELT, Orientation, Index, Dimension>& ma,
+// 	     typename dense2D<ELT, Orientation, Index, Dimension>::key_type key)
+//   {
+//     dense2D_indexer indexer;
+//     return indexer.row(ma, key);
+//   }
+
+//   template <class ELT, class Orientation, class Index, class Dimension>
+//   size_t col(const dense2D<ELT, Orientation, Index, Dimension>& ma,
+// 	     typename dense2D<ELT, Orientation, Index, Dimension>::key_type key)
+//   {
+//     dense2D_indexer indexer;
+//     return indexer.col(ma, key);
+//   }
+
+//   template <class ELT, class Orientation, class Index, class Dimension>
+//   ELT value(const dense2D<ELT, Orientation, Index, Dimension>& ma,
+// 	    typename dense2D<ELT, Orientation, Index, Dimension>::key_type key)
+//   {
+//     return *key; 
+//   }
+
+//   template <class ELT, class Orientation, class Index, class Dimension>
+//   void value(dense2D<ELT, Orientation, Index, Dimension>& ma,
+// 	     typename dense2D<ELT, Orientation, Index, Dimension>::key_type key,
+// 	     ELT v)
+//   {
+//     * const_cast<ELT *>(key) = v;
+//   }
+
+//   // functor with matrix reference to access rows (could be hidden in detail ???)
+//   template <class ELT, class Orientation, class Index, class Dimension>
+//   struct dense2D_row_ref
+//   {
+//     typedef dense2D<ELT, Orientation, Index, Dimension> matrix_type;
+//     typedef typename matrix_type::key_type              key_type;
+//     dense2D_row_ref(const matrix_type& ma) : ma(ma) {}
+//     operator() (key_type key)
+//     {
+//       return ma.indexer.row(ma, key);
+//     }
+//     const matrix_type& ma;
+//   };
+
+  

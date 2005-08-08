@@ -4,7 +4,7 @@
 #define MTL_MAT_VEC_MULT_INCLUDE
 
 #include <boost/numeric/mtl/property_map.hpp>
-#include <boost/numeric/mtl/intrinsics.hpp>
+#include <boost/numeric/mtl/index.hpp>
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/fractalu.hpp>
 #include <iostream>
@@ -15,10 +15,20 @@ namespace mtl {
   // general matrix vector product for dense matrices (might be slow)
   // for dense2D: row major ~ 4 times faster, column major ~ 3 times slower
   template <class Matrix, class Vector_in, class Vector_out> 
-  void dense_mat_vec_mult(const Matrix& ma, const Vector_in& vin, Vector_out& vout) {
-    // if (ma.rows() != vout.size()) throw something;
-    // if (ma.cols() != vin.size()) throw something else;
-    size_t mi= 0, mrows= ma.rows(), mj_start= 0, mcols= ma.cols(), vi= 0, vj_start= 0;
+  void dense_mat_vec_mult(const Matrix& ma, const Vector_in& vin, Vector_out& vout) 
+  {
+    // if (ma.num_rows() != vout.size()) throw something;
+    // if (ma.num_cols() != vin.size()) throw something else;
+
+    typename index::which_index<Matrix>::type m    atrix_index;
+    typename index::which_index<Vector_in>::type   vin_index;
+    typename index::which_index<Vector_out>::type  vout_index;
+
+
+
+    size_t mi= 0, mrows= ma.num_rows(), mj_start= 0, mcols= ma.num_cols(), vi= 0, vj_start= 0;
+    
+
     if (is_fortran_indexed<Matrix>::value) mi++, mj_start++, mrows++, mcols++;
     if (is_fortran_indexed<Vector_in>::value) vj_start++;
     if (is_fortran_indexed<Vector_out>::value) vi++;
@@ -41,8 +51,8 @@ namespace mtl {
   // general matrix vector product that iterates over matrix elements (might be slow)
   template <class Matrix, class Vector_in, class Vector_out> 
   void mat_vec_mult(const Matrix& ma, const Vector_in& vin, Vector_out& vout) {
-    // if (ma.rows() != vout.size()) throw something;
-    // if (ma.cols() != vin.size()) throw something else;
+    // if (ma.num_rows() != vout.size()) throw something;
+    // if (ma.num_cols() != vin.size()) throw something else;
     typename indexing<Matrix>::type      mind;
     typename indexing<Vector_in>::type   viind;
     typename indexing<Vector_out>::type  voind;
@@ -59,8 +69,8 @@ namespace mtl {
 
   template <class ELT, size_t NF, class Vector_in, class Vector_out> 
   void mat_vec_mult(const fractalu<ELT, NF>& ma, const Vector_in& vin, Vector_out& vout) {
-    // if (ma.rows() != vout.size()) throw something;
-    // if (ma.cols() != vin.size()) throw something else;
+    // if (ma.num_rows() != vout.size()) throw something;
+    // if (ma.num_cols() != vin.size()) throw something else;
     typedef fractalu<ELT, NF>            Matrix;
     typedef typename Vector_out::value_type ovalue_type;
     typedef typename Matrix::el_cursor_type el_cursor_type;

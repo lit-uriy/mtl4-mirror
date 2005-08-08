@@ -18,6 +18,8 @@ namespace mtl {
     typedef typename Matrix::value_type     value_type;
     typedef typename Matrix::pointer_type   pointer_type;
     typedef typename Matrix::key_type       key_type;
+    typedef typename Matrix::size_type      size_type;
+    typedef typename Matrix::dim_type::transpose_type dim_type;
     typedef typename Matrix::el_cursor_type el_cursor_type;
     typedef std::pair<el_cursor_type, el_cursor_type> el_cursor_pair;
 
@@ -70,34 +72,54 @@ namespace mtl {
     typedef typename Matrix::type type;
   };
 
+  namespace traits {
+    template <class Matrix> struct row<transposed_view<Matrix> >
+    {
+      typedef typename col<Matrix>::type type;
+    };
+
+    template <class Matrix> struct col<transposed_view<Matrix> >
+    {
+      typedef typename row<Matrix>::type type;
+    };
+
+    template <class Matrix> struct const_value<transposed_view<Matrix> >
+    {
+      typedef typename const_value<Matrix>::type type;
+    };
+    
+    template <class Matrix> struct value<transposed_view<Matrix> >
+    {
+      typedef typename value<Matrix>::type type;
+    };
+  } // namespace traits
+
   template <class Matrix>
-  size_t row(const transposed_view<Matrix>& ma,
-	     typename transposed_view<Matrix>::key_type key)
+  inline typename traits::row<transposed_view<Matrix> >::type
+  row(const transposed_view<Matrix>& ma)
   {
-    return col(ma.ref, key);
+    return col(ma.ref);
   }
 
   template <class Matrix>
-  size_t col(const transposed_view<Matrix>& ma,
-	     typename transposed_view<Matrix>::key_type key)
+  inline typename traits::col<transposed_view<Matrix> >::type
+  col(const transposed_view<Matrix>& ma)
   {
-    return row(ma.ref, key);
+    return row(ma.ref);
   }
 
   template <class Matrix>
-  typename transposed_view<Matrix>::value_type 
-  value(const transposed_view<Matrix>& ma,
-	typename transposed_view<Matrix>::key_type key)
+  inline typename traits::const_value<transposed_view<Matrix> >::type
+  const_value(const transposed_view<Matrix>& ma)
   {
-    return value(ma.ref, key);
+    return const_value(ma.ref);
   }
 
   template <class Matrix>
-  void value(const transposed_view<Matrix>& ma,
-	     typename transposed_view<Matrix>::key_type key,
-	     typename transposed_view<Matrix>::value_type v)
+  inline typename traits::value<transposed_view<Matrix> >::type
+  value(const transposed_view<Matrix>& ma)
   {
-    value(ma.ref, key, v);
+    return value(ma.ref);
   }
 
 } // namespace mtl
@@ -136,3 +158,33 @@ namespace mtl {
 //       return ref.val_n(offset); 
 //     }
     
+//   template <class Matrix>
+//   size_t row(const transposed_view<Matrix>& ma,
+// 	     typename transposed_view<Matrix>::key_type key)
+//   {
+//     return col(ma.ref, key);
+//   }
+
+//   template <class Matrix>
+//   size_t col(const transposed_view<Matrix>& ma,
+// 	     typename transposed_view<Matrix>::key_type key)
+//   {
+//     return row(ma.ref, key);
+//   }
+
+//   template <class Matrix>
+//   typename transposed_view<Matrix>::value_type 
+//   value(const transposed_view<Matrix>& ma,
+// 	typename transposed_view<Matrix>::key_type key)
+//   {
+//     return value(ma.ref, key);
+//   }
+
+//   template <class Matrix>
+//   void value(const transposed_view<Matrix>& ma,
+// 	     typename transposed_view<Matrix>::key_type key,
+// 	     typename transposed_view<Matrix>::value_type v)
+//   {
+//     value(ma.ref, key, v);
+//   }
+
