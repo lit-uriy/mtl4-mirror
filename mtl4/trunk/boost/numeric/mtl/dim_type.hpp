@@ -8,7 +8,7 @@
 namespace mtl {
 
   // Types for declaring matrix dimensions 
-  // rows() and cols() return the number or rows and columns
+  // num_rows() and num_cols() return the number or rows and columns
   // is_static says whether it is declared at compile time or not
 
   // ... at compile time
@@ -17,11 +17,11 @@ namespace mtl {
   {
     typedef std::size_t size_type;
     
-    std::size_t rows() const 
+    std::size_t num_rows() const 
     {
       return Row;
     }
-    std::size_t cols() const 
+    std::size_t num_cols() const 
     {
       return Col;
     }
@@ -51,14 +51,16 @@ namespace mtl {
     {
       r= x.r; c= x.c; return *this; 
     }
-    std::size_t rows() const 
+    std::size_t num_rows() const 
     {
       return r;
     }
-    std::size_t cols() const {
+    std::size_t num_cols() const {
       return c;
     }
-    dim_type transpose() 
+
+    typedef dim_type transpose_type;
+    transpose_type transpose() 
     { 
       return dim_type(c, r); 
     }
@@ -75,7 +77,7 @@ namespace mtl {
 
   std::ostream& operator<< (std::ostream& stream, dim_type d) 
   {
-    return stream << d.rows() << 'x' << d.cols(); 
+    return stream << d.num_rows() << 'x' << d.num_cols(); 
   }
 
 } // namespace mtl

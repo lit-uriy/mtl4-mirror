@@ -10,12 +10,13 @@ namespace mtl { namespace detail {
   using std::size_t;
   
   // base class for other matrices
-  template <class ELT, class Orientation>
+  template <class ELT, class Orientation = mtl::row_major, class Dimension = mtl::dim_type>
   struct base_matrix 
   {
     typedef ELT                     value_type;
     typedef const value_type*       pointer_type;
     typedef pointer_type            key_type;
+    typedef Dimension               dim_type;
     typedef Orientation             orientation;
   protected:
     value_type*                     data;      // pointer to matrix
@@ -24,15 +25,31 @@ namespace mtl { namespace detail {
     size_t                          nnz;       // # of non-zeros, to be set by derived matrix
     orientation                     orien;     // objects are inherited, types not ;-)
     
+    // allocate memory for contiguous formats
+    // derived class is responsible that nnz is correctly set
+    void allocate() 
+    {
+      if (! ext && data) delete data; 
+      data = new value_type[nnz];
+      ext = false;
+    }
+    
   public:
     base_matrix() : data(0), ext(false), nnz(0) {}
 
     // setting dimension, internal data but not yet allocated
-    base_matrix(dim_type d) : data(0), ext(false), dim(d), nnz(0) {}
+    explicit base_matrix(mtl::dim_type d) : data(0), ext(false), dim(d), nnz(0) {}
 
     // setting dimension and reference to external data
     // nnz should be set by derived class 
-    base_matrix(dim_type d, value_type* a) : data(a), ext(true), dim(d), nnz(0) {}
+    explicit base_matrix(mtl::dim_type d, value_type* a) : data(a), ext(true), dim(d), nnz(0) {}
+
+    // same constructors for compile time matrix size
+    // sets dimensions and pointer to external data
+    explicit base_matrix(value_type* a) : data(a), ext(true), nnz(0) 
+    { 
+//       BOOST_ASSERT((dim_type::is_static));
+    }
 
     // destruct if my own data (and allocated)
     ~base_matrix() 
@@ -41,43 +58,43 @@ namespace mtl { namespace detail {
     }
     
     // number of rows
-    size_t rows() const 
+    size_t num_rows() const 
     {
-      return dim.rows();
+      return dim.num_rows();
     }
     // numbef of colums
-    size_t cols() const 
+    size_t num_cols() const 
     {
-      return dim.cols();
+      return dim.num_cols();
     }
   
   protected:
     // dispatched functions for major dimension
     size_t dim1(row_major) const 
     {
-      return dim.rows();
+      return dim.num_rows();
     }
     size_t dim1(col_major) const 
     {
-      return dim.cols();
+      return dim.num_cols();
     }
     size_t dim1(dia_major) const 
     {
-      return dim.rows();
+      return dim.num_rows();
     }
 
     // dispatched functions for minor dimension
     size_t dim2(row_major) const 
     {
-      return dim.cols();
+      return dim.num_cols();
     }
     size_t dim2(col_major) const 
     {
-      return dim.rows();
+      return dim.num_rows();
     }
     size_t dim2(dia_major) const 
     {
-      return dim.cols();
+      return dim.num_cols();
     } // or  2*cols-1 ???  
   
   public:
