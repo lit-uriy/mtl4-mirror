@@ -5,7 +5,6 @@
 # define BOOST_SEQUENCE_ALGORITHM_FIXED_SIZE_COPY_DWA200559_HPP
 
 # include <cstddef>
-# include <boost/sequence/advanced.hpp>
 # include <boost/sequence/make_range.hpp>
 # include <boost/sequence/range.hpp>
 # include <boost/sequence/next.hpp>
@@ -31,12 +30,12 @@ template <class ForwardCursorPair, std::size_t N>
 struct advance_cursor_pair
 {
     typedef mpl::size_t<N> distance;
-    typedef typename advanced<
+    typedef typename intrinsic::advance<
         typename ForwardCursorPair::first_type
       , distance
     >::type c1;
     
-    typedef typename advanced<
+    typedef typename intrinsic::advance<
         typename ForwardCursorPair::second_type
       , distance
     >::type c2;
@@ -143,7 +142,7 @@ struct unrolled< id::copy >
         
         typedef range<
             typename intrinsic::elements<Range2>::type
-          , typename advanced<
+          , typename intrinsic::advance<
                 start
               , typename extent<Range1>::type
             >::type
