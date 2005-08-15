@@ -20,14 +20,14 @@ struct intrinsics<Sequence, fixed_size_indexable_tag<N> >
     struct begin
     {
         typedef fixed_size::cursor<0> type;
-        type operator()(Sequence& s) const
+        type operator()(Sequence const& s) const
         { return type(); }
     };
     
     struct end
     {
         typedef fixed_size::cursor<N> type;
-        type operator()(Sequence& s) const
+        type operator()(Sequence const& s) const
         { return type(); }
     };
 

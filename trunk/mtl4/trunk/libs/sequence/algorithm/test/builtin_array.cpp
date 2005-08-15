@@ -32,7 +32,7 @@ int test_main( int argc, char* argv[] )
     BOOST_MPL_ASSERT(
         (boost::is_same<
          sequence::fixed_size::cursor<3>
-         , sequence::successor<
+         , sequence::intrinsic::next<
          sequence::fixed_size::cursor<2>
          >::type
          >
@@ -42,7 +42,7 @@ int test_main( int argc, char* argv[] )
     BOOST_MPL_ASSERT(
         (boost::is_same<
          sequence::fixed_size::cursor<3>
-         , sequence::advanced<
+         , sequence::intrinsic::advance<
          sequence::fixed_size::cursor<0>
          , boost::mpl::size_t<3>
          >::type

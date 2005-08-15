@@ -4,16 +4,15 @@
 #ifndef BOOST_SEQUENCE_EXTENT_DWA200559_HPP
 # define BOOST_SEQUENCE_EXTENT_DWA200559_HPP
 
-# include <boost/sequence/difference.hpp>
 # include <boost/sequence/intrinsics.hpp>
 
 namespace boost { namespace sequence { 
 
 template <class Sequence>
 struct extent
-  : difference<
-        typename intrinsics<Sequence>::end::type
-      , typename intrinsics<Sequence>::begin::type
+  : intrinsic::distance<
+        typename intrinsics<Sequence>::begin::type
+      , typename intrinsics<Sequence>::end::type
     >
 {};
 

@@ -6,12 +6,16 @@
 
 # include <boost/sequence/intrinsics_fwd.hpp>
 # include <boost/sequence/fixed_size/intrinsics.hpp>
+# include <boost/sequence/fixed_size/tag.hpp>
 # include <boost/sequence/identity_property_map.hpp>
 # include <boost/sequence/iterator_range_tag.hpp>
+
 # include <boost/range/begin.hpp>
 # include <boost/range/end.hpp>
 # include <boost/range/iterator.hpp>
 # include <boost/range/const_iterator.hpp>
+
+# include <boost/iterator/iterator_traits.hpp>
 
 # include <boost/type_traits/is_array.hpp>
 # include <boost/utility/enable_if.hpp>
@@ -94,37 +98,117 @@ namespace intrinsic
   template <class Sequence>
   struct elements : intrinsics<Sequence>::elements {};
 
-  // Specializations of function<Op> provide the actual type of each
-  // intrinsic function object: Overloaded function call operators
-  // handle rvalue binding without requiring boilerplate in
-  // specializations of begin/end/elements.
-  template <template <class> class Operation>
-  struct function
+  template <class Cursor>
+  struct next
   {
-      template <class Sequence>
-      typename Operation<Sequence>::type
-      operator()(Sequence& s) const
+      typedef Cursor type;
+      Cursor operator()(Cursor x) const
       {
-          return Operation<Sequence>()(s);
+          return ++x;
       }
-      
-      template <class Sequence>
-      typename
-      // VC-8.0 beta likes to match this overload even to non-const arrays
-# if !BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050601))
-        Operation<Sequence const>
-# else 
-        lazy_disable_if<is_array<Sequence>, Operation<Sequence const> >
-# endif
-      ::type
-      operator()(Sequence const& s) const
+  };
+
+  template <class Cursor>
+  struct next<Cursor const>
+    : next<Cursor>
+  {};
+  
+  template <class Cursor>
+  struct prev
+  {
+      typedef Cursor type;
+      Cursor operator()(Cursor x) const
       {
-          return Operation<Sequence const>()(s);
+          return --x;
       }
   };
   
+  template <class Cursor>
+  struct prev<Cursor const>
+    : prev<Cursor>
+  {};
+  
+  template <class Cursor1, class Cursor2>
+  struct equal
+  {
+      typedef bool type;
+      
+      type operator()(Cursor1 const& c1, Cursor2 const& c2) const
+      {
+          return c2 == c1;
+      }
+  };
+
+  template <class Cursor1, class Cursor2>
+  struct equal<Cursor1 const, Cursor2 const>
+    : equal<Cursor1,Cursor2>
+  {};
+  
+  template <class Cursor1, class Cursor2>
+  struct equal<Cursor1 const, Cursor2>
+    : equal<Cursor1,Cursor2>
+  {};
+  
+  template <class Cursor1, class Cursor2>
+  struct equal<Cursor1, Cursor2 const>
+    : equal<Cursor1,Cursor2>
+  {};
+  
+  
+  template <class Cursor1, class Cursor2>
+  struct distance
+  {
+      typedef typename iterator_difference<Cursor1>::type type;
+      
+      type operator()(Cursor1 const& c1, Cursor2 const& c2) const
+      {
+          return c2 - c1;
+      }
+  };
+
+  template <class Cursor1, class Cursor2>
+  struct distance<Cursor1 const, Cursor2 const>
+    : distance<Cursor1,Cursor2>
+  {};
+  
+  template <class Cursor1, class Cursor2>
+  struct distance<Cursor1 const, Cursor2>
+    : distance<Cursor1,Cursor2>
+  {};
+  
+  template <class Cursor1, class Cursor2>
+  struct distance<Cursor1, Cursor2 const>
+    : distance<Cursor1,Cursor2>
+  {};
+  
+  template <class Cursor, class Distance>
+  struct advance
+  {
+      typedef Cursor type;
+      
+      type operator()(Cursor c, Distance const& d) const
+      {
+          return c += d;
+      }
+  };
+  
+  template <class Cursor, class Distance>
+  struct advance<Cursor const, Distance const>
+    : advance<Cursor,Distance>
+  {};
+  
+  template <class Cursor, class Distance>
+  struct advance<Cursor const, Distance>
+    : advance<Cursor,Distance>
+  {};
+  
+  template <class Cursor, class Distance>
+  struct advance<Cursor, Distance const>
+    : advance<Cursor,Distance>
+  {};
 }
-    
+
+
 }} // namespace boost::sequence
 
 #endif // BOOST_SEQUENCE_INTRINSICS_DWA2005616_HPP

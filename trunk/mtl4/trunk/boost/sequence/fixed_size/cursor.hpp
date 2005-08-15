@@ -1,13 +1,14 @@
 // Copyright David Abrahams 2005. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-#ifndef CURSOR_DWA2005330_HPP
-# define CURSOR_DWA2005330_HPP
+#ifndef BOOST_SEQUENCE_FIXED_SIZE_CURSOR_DWA2005330_HPP
+# define BOOST_SEQUENCE_FIXED_SIZE_CURSOR_DWA2005330_HPP
 
 # include <boost/sequence/fixed_size/cursor_fwd.hpp>
 # include <boost/sequence/detail/is_mpl_integral_constant.hpp>
 # include <boost/sequence/detail/typeof_add.hpp>
 # include <boost/sequence/detail/typeof_subtract.hpp>
+# include <boost/sequence/intrinsics.hpp>
 # include <boost/utility/enable_if.hpp>
 # include <boost/type_traits/is_class.hpp>
 # include <boost/type_traits/is_integral.hpp>
@@ -56,19 +57,6 @@ namespace fixed_size {
     BOOST_SEQUENCE_fixed_size_cursor_relational(>)
 
   # undef BOOST_SEQUENCE_fixed_size_cursor_relational
-
-    // Increment and decrement
-    template <std::size_t N>
-    inline cursor<(N+1)> next(cursor<N>)
-    {
-        return cursor<(N+1)>();
-    }
-
-    template <std::size_t N>
-    inline cursor<(N-1)> prev(cursor<N>)
-    {
-        return cursor<(N-1)>();
-    }
 
     //
     // Random access interactions with integral constants -- these
@@ -157,35 +145,51 @@ namespace fixed_size {
 
 } // namespace fixed_size
 
-template <class Cursor> struct successor;
-template <class Cursor> struct predecessor;
-template <class Cursor> struct dereferenced;
-template <class Cursor1, class Cursor2> struct difference;
-
-template <std::size_t N>
-struct successor<fixed_size::cursor<N> >
+namespace intrinsic
 {
-    typedef fixed_size::cursor<N+1> type;
-};
+  // Increment and decrement
+  template <std::size_t N>
+  struct next<fixed_size::cursor<N> >
+  {
+      typedef fixed_size::cursor<(N+1)> type;
+      type operator()(fixed_size::cursor<N> const&) const
+      {
+          return type();
+      }
+  };
 
-template <std::size_t N>
-struct predecessor<fixed_size::cursor<N> >
-{
-    typedef fixed_size::cursor<N-1> type;
-};
+  template <std::size_t N>
+  struct prev<fixed_size::cursor<N> >
+  {
+      typedef fixed_size::cursor<(N-1)> type;
+      type operator()(fixed_size::cursor<N> const&) const
+      {
+          return type();
+      }
+  };
 
-template <std::size_t N>
-struct dereferenced<fixed_size::cursor<N> >
-{
-    typedef fixed_size::cursor<N> type;
-};
+  template <std::size_t N, class D>
+  struct advance<fixed_size::cursor<N>, D>
+  {
+      typedef fixed_size::cursor<(N+D::value)> type;
+      type operator()(fixed_size::cursor<N> const&, D const&) const
+      {
+          return type();
+      }
+  };
 
-template <std::size_t N1, std::size_t N2>
-struct difference<fixed_size::cursor<N1>, fixed_size::cursor<N2> >
-{
-    typedef mpl::integral_c<std::ptrdiff_t,(N1-N2)> type;
-};
+  template <std::size_t N0, std::size_t N1>
+  struct distance<fixed_size::cursor<N0>, fixed_size::cursor<N1> >
+  {
+      typedef mpl::integral_c<std::ptrdiff_t,(N1-N0)> type;
+      
+      type operator()(fixed_size::cursor<N0> const&, fixed_size::cursor<N1> const&) const
+      {
+          return type();
+      }
+  };
+}
 
-}} // namespace boost::sequence::fixed_size
+}} // namespace boost::sequence
 
-#endif // CURSOR_DWA2005330_HPP
+#endif // BOOST_SEQUENCE_FIXED_SIZE_CURSOR_DWA2005330_HPP

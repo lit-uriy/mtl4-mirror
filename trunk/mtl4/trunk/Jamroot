@@ -17,7 +17,17 @@ for local x in 1 2 3 4 5
 }
 .boost = [ path.native $(.boost) ] ;
 
-project mtl4 : requirements <include>. <include>$(.boost) ;
+# If someone sets BUILD_DIR in boost-build.jam, use that.
+.build-dir = [ modules.peek : BUILD_DIR ] ;
+if $(.build-dir)
+{
+    .build-dir = build-dir $(.build-dir) ;
+}
+
+project mtl4
+  : requirements <include>. <include>$(.boost) 
+    : $(.build-dir)
+  ;
 
 # .my-dir = [ modules.binding $(__name__) ] ;
 
