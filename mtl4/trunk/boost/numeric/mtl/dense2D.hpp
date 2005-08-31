@@ -12,15 +12,16 @@
 #include <boost/numeric/mtl/property_map.hpp>
 
 namespace mtl {
-  using std::size_t;
 
-  // cursor over every element
-  template <class ELT> //, class Offset>
-  struct dense_el_cursor : public detail::base_cursor<const ELT*> 
+using std::size_t;
+
+// cursor over every element
+template <class Elt> //, class Offset>
+  struct dense_el_cursor : public detail::base_cursor<const Elt*> 
   {
-    typedef ELT                           value_type;
+    typedef Elt                           value_type;
     typedef const value_type*             pointer_type; // ?
-    typedef detail::base_cursor<const ELT*> super;
+    typedef detail::base_cursor<const Elt*> super;
 
     dense_el_cursor () {} 
     dense_el_cursor (pointer_type me_) : super(me_) {}
@@ -88,20 +89,20 @@ namespace mtl {
 
   
   // M and N as template parameters might be considered later
-  template <class ELT, class Orientation= row_major, class Index= index::c_index,
-	    class Dimension= mtl::dim_type>
-  class dense2D : public detail::base_matrix<ELT, Orientation, Dimension> {
-    typedef detail::base_matrix<ELT, Orientation, Dimension>      super;
+  template <class Elt, class Orientation= row_major, class Index= index::c_index,
+	    class Dimensions= mtl::non_fixed::dimensions>
+  class dense2D : public detail::base_matrix<Elt, Orientation, Dimensions> {
+    typedef detail::base_matrix<Elt, Orientation, Dimensions>      super;
     typedef dense2D                       self;
   public:	
     typedef Orientation                   orientation;
     typedef Index                         index_type;
-    typedef ELT                           value_type;
+    typedef Elt                           value_type;
     typedef const value_type*             pointer_type;
     typedef pointer_type                  key_type;
     typedef std::size_t                   size_type;
-    typedef Dimension                     dim_type;
-    typedef dense_el_cursor<ELT>          el_cursor_type;  
+    typedef Dimensions                     dim_type;
+    typedef dense_el_cursor<Elt>          el_cursor_type;  
     typedef std::pair<el_cursor_type, el_cursor_type> el_cursor_pair;
     typedef dense2D_indexer               indexer_type;
 
@@ -111,64 +112,40 @@ namespace mtl {
       nnz = dim.num_rows() * dim.num_cols();
     }
 
+  public:
+    // Allocate memory
     void allocate() 
     {
       set_nnz();
       super::allocate();
     }
-  public:
+
     // if compile time matrix size allocate memory
-    dense2D() : super() 
+    dense2D() 
+      : super() 
     {
-      if (dim_type::is_static) allocate();
+        if (dim_type::is_static) allocate();
     }
 
-    // only sets dimensions, only for run-time dim
-    explicit dense2D(mtl::dim_type d) : super(d) {} 
+    // only sets dimensions, only for run-time dimensions
+    explicit dense2D(mtl::non_fixed::dimensions d) 
+      : super(d) 
+    {
+        allocate();
+    } 
 
     // sets dimensions and pointer to external data
-    explicit dense2D(mtl::dim_type d, value_type* a) : super(d, a) 
+    explicit dense2D(mtl::non_fixed::dimensions d, value_type* a) 
+      : super(d, a) 
     { 
-      set_nnz();
+        set_nnz();
     }
 
-    // allocates memory and sets all values to 'value'
-    explicit dense2D(mtl::dim_type d, value_type value) : super(d) 
-    {
-      allocate();
-      std::fill(data, data+nnz, value);
-    }
-
-    // copies values from iterators
-    template <class InputIterator>
-    explicit dense2D(mtl::dim_type d, InputIterator first, InputIterator last) : super(d) 
-    {
-      allocate();
-      std::copy(first, last, data);
-   }
-
-    // same constructors for compile time matrix size
+    // same constructor for compile time matrix size
     // sets dimensions and pointer to external data
     explicit dense2D(value_type* a) : super(a) 
     { 
-//       BOOST_ASSERT((dim_type::is_static));
-    }
-
-    // allocates memory and sets all values to 'value'
-    explicit dense2D(value_type value) 
-    {
-//       BOOST_ASSERT((dim_type::is_static));
-      allocate();
-      std::fill(data, data+nnz, value);
-    }
-
-    // copies values from iterators
-    template <class InputIterator>
-    explicit dense2D(InputIterator first, InputIterator last) 
-    {
-//       BOOST_ASSERT((dim_type::is_static));
-      allocate();
-      std::copy(first, last, data);
+        // BOOST_ASSERT((dim_type::is_static));
     }
 
     // friend class indexer_type; should work without friend declaration
@@ -191,73 +168,74 @@ namespace mtl {
   }; // dense2D
 
 
-  template <class ELT, class Orientation, class Index, class Dimension>
-  struct is_mtl_type<dense2D<ELT, Orientation, Index, Dimension> > 
+  template <class Elt, class Orientation, class Index, class Dimensions>
+  struct is_mtl_type<dense2D<Elt, Orientation, Index, Dimensions> > 
   {
     static bool const value= true; 
   };
 
   // define corresponding type without all template parameters
-  template <class ELT, class Orientation, class Index, class Dimension>
-  struct which_matrix<dense2D<ELT, Orientation, Index, Dimension> > 
+  template <class Elt, class Orientation, class Index, class Dimensions>
+  struct matrix_category<dense2D<Elt, Orientation, Index, Dimensions> > 
   {
     typedef dense2D_tag type;
   };
 
-  namespace traits {
-    template <class ELT, class Orientation, class Index, class Dimension>
-    struct row<dense2D<ELT, Orientation, Index, Dimension> >
+  namespace traits 
+  {
+    template <class Elt, class Orientation, class Index, class Dimensions>
+    struct row<dense2D<Elt, Orientation, Index, Dimensions> >
     {
-      typedef mtl::detail::indexer_row_ref<dense2D<ELT, Orientation, Index, Dimension> > type;
+      typedef mtl::detail::indexer_row_ref<dense2D<Elt, Orientation, Index, Dimensions> > type;
     };
 
-    template <class ELT, class Orientation, class Index, class Dimension>
-    struct col<dense2D<ELT, Orientation, Index, Dimension> >
+    template <class Elt, class Orientation, class Index, class Dimensions>
+    struct col<dense2D<Elt, Orientation, Index, Dimensions> >
     {
-      typedef mtl::detail::indexer_col_ref<dense2D<ELT, Orientation, Index, Dimension> > type;
+      typedef mtl::detail::indexer_col_ref<dense2D<Elt, Orientation, Index, Dimensions> > type;
     };
 
-    template <class ELT, class Orientation, class Index, class Dimension>
-    struct const_value<dense2D<ELT, Orientation, Index, Dimension> >
+    template <class Elt, class Orientation, class Index, class Dimensions>
+    struct const_value<dense2D<Elt, Orientation, Index, Dimensions> >
     {
-      typedef mtl::detail::direct_const_value<dense2D<ELT, Orientation, Index, Dimension> > type;
+      typedef mtl::detail::direct_const_value<dense2D<Elt, Orientation, Index, Dimensions> > type;
     };
 
-    template <class ELT, class Orientation, class Index, class Dimension>
-    struct value<dense2D<ELT, Orientation, Index, Dimension> >
+    template <class Elt, class Orientation, class Index, class Dimensions>
+    struct value<dense2D<Elt, Orientation, Index, Dimensions> >
     {
-      typedef mtl::detail::direct_value<dense2D<ELT, Orientation, Index, Dimension> > type;
+      typedef mtl::detail::direct_value<dense2D<Elt, Orientation, Index, Dimensions> > type;
     };
 
   } // namespace traits
     
 
-  template <class ELT, class Orientation, class Index, class Dimension>
-  inline typename traits::row<dense2D<ELT, Orientation, Index, Dimension> >::type
-  row(const dense2D<ELT, Orientation, Index, Dimension>& ma) 
+  template <class Elt, class Orientation, class Index, class Dimensions>
+  inline typename traits::row<dense2D<Elt, Orientation, Index, Dimensions> >::type
+  row(const dense2D<Elt, Orientation, Index, Dimensions>& ma) 
   {
-    return typename traits::row<dense2D<ELT, Orientation, Index, Dimension> >::type(ma);
+    return typename traits::row<dense2D<Elt, Orientation, Index, Dimensions> >::type(ma);
   }
 
-  template <class ELT, class Orientation, class Index, class Dimension>
-  inline typename traits::col<dense2D<ELT, Orientation, Index, Dimension> >::type
-  col(const dense2D<ELT, Orientation, Index, Dimension>& ma)
+  template <class Elt, class Orientation, class Index, class Dimensions>
+  inline typename traits::col<dense2D<Elt, Orientation, Index, Dimensions> >::type
+  col(const dense2D<Elt, Orientation, Index, Dimensions>& ma)
   {
-    return typename traits::col<dense2D<ELT, Orientation, Index, Dimension> >::type(ma);
+    return typename traits::col<dense2D<Elt, Orientation, Index, Dimensions> >::type(ma);
   }
 
-  template <class ELT, class Orientation, class Index, class Dimension>
-  inline typename traits::const_value<dense2D<ELT, Orientation, Index, Dimension> >::type
-  const_value(const dense2D<ELT, Orientation, Index, Dimension>& ma)
+  template <class Elt, class Orientation, class Index, class Dimensions>
+  inline typename traits::const_value<dense2D<Elt, Orientation, Index, Dimensions> >::type
+  const_value(const dense2D<Elt, Orientation, Index, Dimensions>& ma)
   {
-    return typename traits::const_value<dense2D<ELT, Orientation, Index, Dimension> >::type(ma);
+    return typename traits::const_value<dense2D<Elt, Orientation, Index, Dimensions> >::type(ma);
   }
 
-  template <class ELT, class Orientation, class Index, class Dimension>
-  inline typename traits::value<dense2D<ELT, Orientation, Index, Dimension> >::type
-  value(const dense2D<ELT, Orientation, Index, Dimension>& ma)
+  template <class Elt, class Orientation, class Index, class Dimensions>
+  inline typename traits::value<dense2D<Elt, Orientation, Index, Dimensions> >::type
+  value(const dense2D<Elt, Orientation, Index, Dimensions>& ma)
   {
-    return typename traits::value<dense2D<ELT, Orientation, Index, Dimension> >::type(ma);
+    return typename traits::value<dense2D<Elt, Orientation, Index, Dimensions> >::type(ma);
   }
 
 } // namespace mtl
@@ -267,117 +245,3 @@ namespace mtl {
 
 
 
-
-
-
-
-
-
-
-
-
-
-// = old code to throw away if new code works
-
-//   template <class Matrix>
-//   struct dense2D_indexer 
-//   {
-//     typedef Matrix                        matrix_type;
-//     typedef typename Matrix::orientation  orientation;
-//     typedef typename Matrix::index_type   index_type;
-//     typedef typename Matrix::key_type     key_type;
-
-//   private:
-//     std::size_t _offset(const matrix_type& ma, std::size_t r, std::size_t c, row_major) const {
-//       return r * ma.dim2() + c; }
-//     std::size_t _offset(const matrix_type& ma, std::size_t r, std::size_t c, col_major) const {
-//       return c * ma.dim2() + r; }
-    
-//     std::size_t _row(const matrix_type& ma, const key_type& key, row_major) const {
-//       return ma.offset(key) / ma.dim2(); }
-//     std::size_t _row(const matrix_type& ma, const key_type& key, col_major) const {
-//       return ma.offset(key) % ma.dim2(); }
-    
-//     std::size_t _col(const matrix_type& ma, const key_type& key, row_major) const {
-//       return ma.offset(key) % ma.dim2(); }
-//     std::size_t _col(const matrix_type& ma, const key_type& key, col_major) const {
-//       return ma.offset(key) / ma.dim2(); }
-
-//   public:
-//     // dealing with fortran indices here (to do it only once) and orientation above
-//     std::size_t operator() (const matrix_type& ma, std::size_t r, std::size_t c) const {
-//       return _offset(ma, idec(r, ind()), idec(c, ind()), orientation()); }
-    
-//     std::size_t row(const matrix_type& ma, const key_type& key) const {
-//       return iinc( _row(ma, key, orientation()), ind() ); }
-    
-//     std::size_t col(const matrix_type& ma, const key_type& key) const {
-//       return iinc( _col(ma, key, orientation()), ind() ); }
-//   };
-
-//   size_t row(const key_type& key) const {
-//     return indexer.row(*this, key); }
-//   size_t col(const key_type& key) const {
-//     return indexer.col(*this, key); }
-//   value_type value(const key_type& key) const {
-//     return *key; }
-//   void value(const key_type& key, const value_type& value) {
-//     * const_cast<value_type *>(key)= value; }
-
-// template <class ELT, class Orientation= row_major, class Indexing= c_index>
-// struct dense2D : public dense2D_impl<ELT, dense2D_indexer<Orientation, Indexing> > {};
-
-
-
-// // declare as fortran indexed if so
-// template <class ELT, class Orientation, class Index, class Dimension>
-// struct indexing<dense2D<ELT, Orientation, Index, Dimension> > {
-//   typedef Index type; };
-// // should be done automatically
-
-//   template <class ELT, class Orientation, class Index, class Dimension>
-//   size_t row(const dense2D<ELT, Orientation, Index, Dimension>& ma,
-// 	     typename dense2D<ELT, Orientation, Index, Dimension>::key_type key)
-//   {
-//     dense2D_indexer indexer;
-//     return indexer.row(ma, key);
-//   }
-
-//   template <class ELT, class Orientation, class Index, class Dimension>
-//   size_t col(const dense2D<ELT, Orientation, Index, Dimension>& ma,
-// 	     typename dense2D<ELT, Orientation, Index, Dimension>::key_type key)
-//   {
-//     dense2D_indexer indexer;
-//     return indexer.col(ma, key);
-//   }
-
-//   template <class ELT, class Orientation, class Index, class Dimension>
-//   ELT value(const dense2D<ELT, Orientation, Index, Dimension>& ma,
-// 	    typename dense2D<ELT, Orientation, Index, Dimension>::key_type key)
-//   {
-//     return *key; 
-//   }
-
-//   template <class ELT, class Orientation, class Index, class Dimension>
-//   void value(dense2D<ELT, Orientation, Index, Dimension>& ma,
-// 	     typename dense2D<ELT, Orientation, Index, Dimension>::key_type key,
-// 	     ELT v)
-//   {
-//     * const_cast<ELT *>(key) = v;
-//   }
-
-//   // functor with matrix reference to access rows (could be hidden in detail ???)
-//   template <class ELT, class Orientation, class Index, class Dimension>
-//   struct dense2D_row_ref
-//   {
-//     typedef dense2D<ELT, Orientation, Index, Dimension> matrix_type;
-//     typedef typename matrix_type::key_type              key_type;
-//     dense2D_row_ref(const matrix_type& ma) : ma(ma) {}
-//     operator() (key_type key)
-//     {
-//       return ma.indexer.row(ma, key);
-//     }
-//     const matrix_type& ma;
-//   };
-
-  
