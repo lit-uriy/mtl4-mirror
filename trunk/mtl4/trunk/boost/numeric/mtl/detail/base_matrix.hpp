@@ -14,7 +14,8 @@ namespace mtl { namespace detail {
   struct base_matrix 
   {
     typedef ELT                     value_type;
-    typedef const value_type*       pointer_type;
+    typedef value_type*             pointer_type;
+    typedef const value_type*       const_pointer_type;
     typedef pointer_type            key_type;
     typedef Dimension               dim_type;
     typedef Orientation             orientation;
@@ -117,8 +118,14 @@ namespace mtl { namespace detail {
       return p - data; 
     }
 
-    // return const pointer to data
-    pointer_type data_ref() const 
+    // returns pointer to data
+    pointer_type elements()
+    {
+      return data; 
+    }
+
+    // returns const pointer to data
+    const_pointer_type elements() const 
     {
       return data; 
     }
