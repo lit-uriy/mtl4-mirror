@@ -63,12 +63,17 @@ namespace mtl { namespace detail {
     {
       return dim.num_rows();
     }
-    // numbef of colums
+    // number of colums
     size_t num_cols() const 
     {
       return dim.num_cols();
     }
-  
+    // number of elements
+    size_t num_elements() const
+    {
+      return nnz;
+    }
+
   protected:
     // dispatched functions for major dimension
     size_t dim1(row_major) const 
