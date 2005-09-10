@@ -7,10 +7,10 @@
 
 namespace mtl { namespace detail {
 
-  // base class for different cursors, works with pointers and integers
-  template <class Key>
-  class base_cursor {
-  public:
+// base class for different cursors, works with pointers and integers
+template <class Key>
+class base_cursor {
+ public:
     typedef Key          key_type;
     typedef base_cursor  self;
 
@@ -64,7 +64,7 @@ namespace mtl { namespace detail {
   
   protected:
     key_type key;
-  }; // base_cursor
+}; // base_cursor
 
 
 
