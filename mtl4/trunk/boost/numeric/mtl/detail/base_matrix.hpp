@@ -3,7 +3,6 @@
 #ifndef MTL_BASE_MATRIX_INCLUDE
 #define MTL_BASE_MATRIX_INCLUDE
 
-#include <boost/numeric/mtl/dim_type.hpp>
 #include <boost/numeric/mtl/base_types.hpp>
 
 namespace mtl { namespace detail {
@@ -24,7 +23,6 @@ namespace mtl { namespace detail {
     bool                            ext;       // whether pointer to external data or own
     dim_type                        dim;       // # of rows and columns
     size_t                          nnz;       // # of non-zeros, to be set by derived matrix
-    orientation                     orien;     // objects are inherited, types not ;-)
     
     // allocate memory for contiguous formats
     // derived class is responsible that nnz is correctly set
@@ -136,14 +134,14 @@ namespace mtl { namespace detail {
     }
 
     // returns copy of dim
-    dim_type dim_ref() const 
+    dim_type dimensions() const 
     {
       return dim; 
     }
 
     // returns n-th value in consecutive memory
     // (whatever this means in the corr. matrix format)
-    value_type val_n(size_t offset) const 
+    value_type value_n(size_t offset) const 
     { 
       return data[offset]; 
     }

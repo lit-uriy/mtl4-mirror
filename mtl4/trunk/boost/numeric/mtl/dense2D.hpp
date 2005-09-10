@@ -101,7 +101,7 @@ template <class Elt> //, class Offset>
     typedef const value_type*             pointer_type;
     typedef pointer_type                  key_type;
     typedef std::size_t                   size_type;
-    typedef Dimensions                     dim_type;
+    typedef Dimensions                    dim_type;
     typedef dense_el_cursor<Elt>          el_cursor_type;  
     typedef std::pair<el_cursor_type, el_cursor_type> el_cursor_pair;
     typedef dense2D_indexer               indexer_type;
