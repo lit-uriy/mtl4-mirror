@@ -55,8 +55,16 @@ struct plus : boost::mpl::if_< boost::mpl::less<X, Y>, Y, X> {};
 namespace detail
 {
     template <typename X, typename Y> struct times {};
-}
 
+    template<typename Y> struct times<cached, Y> 
+    {
+	typedef Y type; 
+    };
+
+    template<typename Y> struct times<constant, Y> 
+    {
+	typedef Y type; 
+    };   
 
 } // namespace detail
 
