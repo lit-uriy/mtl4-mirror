@@ -3,8 +3,6 @@
 #ifndef MTL_BASE_CURSOR_INCLUDE
 #define MTL_BASE_CURSOR_INCLUDE
 
-#include <boost/numeric/mtl/dim_type.hpp>
-
 namespace mtl { namespace detail {
 
 // base class for different cursors, works with pointers and integers
@@ -73,24 +71,3 @@ class base_cursor {
 #endif // MTL_BASE_CURSOR_INCLUDE 
 
 
-
-// = old code to throw away if new code works
-
-// template <class Matrix>
-// class base_matrix_cursor : base_cursor<typename Matrix::key_type> {
-// public:
-//   typedef typename Matrix::key_type     key_type;
-//   typedef base_cursor<Key>              super;
-
-//   base_matrix_cursor () : ma(0) {} 
-//   base_matrix_cursor (key_type me_, const Matrix& ma_) :
-//     super(me_), ma(&ma_) {}
-
-//   // offset of key w.r.t. data
-//   // std::size_t offset() const { return key-data; }
-//   const Matrix*     ma;
-
-// protected:
-// //   key_type      data; // start address of matrix data
-// //   dim_type      dim;
-// }; // base_matrix_cursor
