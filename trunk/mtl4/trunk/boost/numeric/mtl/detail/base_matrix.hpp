@@ -4,12 +4,14 @@
 #define MTL_BASE_MATRIX_INCLUDE
 
 #include <boost/numeric/mtl/base_types.hpp>
+#include <boost/numeric/mtl/dimensions.hpp>
 
 namespace mtl { namespace detail {
   using std::size_t;
   
   // base class for other matrices
-  template <class ELT, class Orientation = mtl::row_major, class Dimension = mtl::dim_type>
+  template <class ELT, class Orientation = mtl::row_major, 
+	    class Dimension = mtl::non_fixed::dimensions>
   struct base_matrix 
   {
     typedef ELT                     value_type;
@@ -37,11 +39,12 @@ namespace mtl { namespace detail {
     base_matrix() : data(0), ext(false), nnz(0) {}
 
     // setting dimension, internal data but not yet allocated
-    explicit base_matrix(mtl::dim_type d) : data(0), ext(false), dim(d), nnz(0) {}
+    explicit base_matrix(mtl::non_fixed::dimensions d) : data(0), ext(false), dim(d), nnz(0) {}
 
     // setting dimension and reference to external data
     // nnz should be set by derived class 
-    explicit base_matrix(mtl::dim_type d, value_type* a) : data(a), ext(true), dim(d), nnz(0) {}
+    explicit base_matrix(mtl::non_fixed::dimensions d, value_type* a) 
+      : data(a), ext(true), dim(d), nnz(0) {}
 
     // same constructors for compile time matrix size
     // sets dimensions and pointer to external data
@@ -82,10 +85,6 @@ namespace mtl { namespace detail {
     {
       return dim.num_cols();
     }
-    size_t dim1(dia_major) const 
-    {
-      return dim.num_rows();
-    }
 
     // dispatched functions for minor dimension
     size_t dim2(row_major) const 
@@ -96,22 +95,18 @@ namespace mtl { namespace detail {
     {
       return dim.num_rows();
     }
-    size_t dim2(dia_major) const 
-    {
-      return dim.num_cols();
-    } // or  2*cols-1 ???  
   
   public:
     // return major dimension
     size_t dim1() const 
     {
-      return dim1(orien);
+      return dim1(orientation());
     }
 
     // return major dimension
     size_t dim2() const 
     {
-      return dim2(orien);
+      return dim2(orientation());
     }
 
     // offset of key (pointer) w.r.t. data 

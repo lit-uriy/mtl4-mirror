@@ -6,10 +6,14 @@
 #include <algorithm>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_matrix.hpp>
-#include <boost/numeric/mtl/dim_type.hpp>
+#include <boost/numeric/mtl/dimensions.hpp>
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/index.hpp>
 #include <boost/numeric/mtl/property_map.hpp>
+#include <boost/numeric/mtl/range_generator.hpp>
+#include <boost/numeric/mtl/detail/range_generator.hpp>
+#include <boost/numeric/mtl/complexity.hpp>
+#include <boost/numeric/mtl/glas_tags.hpp>
 
 namespace mtl {
 
@@ -88,10 +92,11 @@ template <class Elt> //, class Offset>
   };
 
   
-  // M and N as template parameters might be considered later
-  template <class Elt, class Orientation= row_major, class Index= index::c_index,
-	    class Dimensions= mtl::non_fixed::dimensions>
-  class dense2D : public detail::base_matrix<Elt, Orientation, Dimensions> {
+// M and N as template parameters might be considered later
+template <class Elt, class Orientation= row_major, class Index= index::c_index,
+	  class Dimensions= mtl::non_fixed::dimensions>
+class dense2D : public detail::base_matrix<Elt, Orientation, Dimensions> 
+{
     typedef detail::base_matrix<Elt, Orientation, Dimensions>      super;
     typedef dense2D                       self;
   public:	
@@ -151,10 +156,10 @@ template <class Elt> //, class Offset>
     // friend class indexer_type; should work without friend declaration
 
     // begin and end cursors to iterate over all matrix elements
-    el_cursor_pair elements() const
-    {
-      return std::make_pair(data_ref(), data_ref() + nnz);
-    }
+//     el_cursor_pair elements() const
+//     {
+//       return std::make_pair(data_ref(), data_ref() + nnz);
+//     }
 
     // old style, better use value property map
     value_type operator() (size_t r, size_t c) const 
@@ -165,78 +170,103 @@ template <class Elt> //, class Offset>
     }
 
     indexer_type  indexer;
-  }; // dense2D
+ }; // dense2D
 
 
-  template <class Elt, class Orientation, class Index, class Dimensions>
-  struct is_mtl_type<dense2D<Elt, Orientation, Index, Dimensions> > 
-  {
+template <class Elt, class Orientation, class Index, class Dimensions>
+struct is_mtl_type<dense2D<Elt, Orientation, Index, Dimensions> > 
+{
     static bool const value= true; 
-  };
+};
 
-  // define corresponding type without all template parameters
-  template <class Elt, class Orientation, class Index, class Dimensions>
-  struct matrix_category<dense2D<Elt, Orientation, Index, Dimensions> > 
-  {
-    typedef dense2D_tag type;
-  };
+// define corresponding type without all template parameters
+template <class Elt, class Orientation, class Index, class Dimensions>
+struct matrix_category<dense2D<Elt, Orientation, Index, Dimensions> > 
+{
+    typedef tag::dense2D_tag type;
+};
 
-  namespace traits 
-  {
+
+// =============
+// Property Maps
+// =============
+
+namespace traits 
+{
     template <class Elt, class Orientation, class Index, class Dimensions>
     struct row<dense2D<Elt, Orientation, Index, Dimensions> >
     {
-      typedef mtl::detail::indexer_row_ref<dense2D<Elt, Orientation, Index, Dimensions> > type;
+        typedef mtl::detail::indexer_row_ref<dense2D<Elt, Orientation, Index, Dimensions> > type;
     };
 
     template <class Elt, class Orientation, class Index, class Dimensions>
     struct col<dense2D<Elt, Orientation, Index, Dimensions> >
     {
-      typedef mtl::detail::indexer_col_ref<dense2D<Elt, Orientation, Index, Dimensions> > type;
+        typedef mtl::detail::indexer_col_ref<dense2D<Elt, Orientation, Index, Dimensions> > type;
     };
 
     template <class Elt, class Orientation, class Index, class Dimensions>
     struct const_value<dense2D<Elt, Orientation, Index, Dimensions> >
     {
-      typedef mtl::detail::direct_const_value<dense2D<Elt, Orientation, Index, Dimensions> > type;
+        typedef mtl::detail::direct_const_value<dense2D<Elt, Orientation, Index, Dimensions> > type;
     };
 
     template <class Elt, class Orientation, class Index, class Dimensions>
     struct value<dense2D<Elt, Orientation, Index, Dimensions> >
     {
-      typedef mtl::detail::direct_value<dense2D<Elt, Orientation, Index, Dimensions> > type;
+        typedef mtl::detail::direct_value<dense2D<Elt, Orientation, Index, Dimensions> > type;
     };
 
-  } // namespace traits
+} // namespace traits
     
 
-  template <class Elt, class Orientation, class Index, class Dimensions>
-  inline typename traits::row<dense2D<Elt, Orientation, Index, Dimensions> >::type
-  row(const dense2D<Elt, Orientation, Index, Dimensions>& ma) 
-  {
+template <class Elt, class Orientation, class Index, class Dimensions>
+inline typename traits::row<dense2D<Elt, Orientation, Index, Dimensions> >::type
+row(const dense2D<Elt, Orientation, Index, Dimensions>& ma) 
+{
     return typename traits::row<dense2D<Elt, Orientation, Index, Dimensions> >::type(ma);
-  }
+}
 
-  template <class Elt, class Orientation, class Index, class Dimensions>
-  inline typename traits::col<dense2D<Elt, Orientation, Index, Dimensions> >::type
-  col(const dense2D<Elt, Orientation, Index, Dimensions>& ma)
-  {
+template <class Elt, class Orientation, class Index, class Dimensions>
+inline typename traits::col<dense2D<Elt, Orientation, Index, Dimensions> >::type
+col(const dense2D<Elt, Orientation, Index, Dimensions>& ma)
+{
     return typename traits::col<dense2D<Elt, Orientation, Index, Dimensions> >::type(ma);
-  }
+}
 
-  template <class Elt, class Orientation, class Index, class Dimensions>
-  inline typename traits::const_value<dense2D<Elt, Orientation, Index, Dimensions> >::type
-  const_value(const dense2D<Elt, Orientation, Index, Dimensions>& ma)
-  {
+template <class Elt, class Orientation, class Index, class Dimensions>
+inline typename traits::const_value<dense2D<Elt, Orientation, Index, Dimensions> >::type
+const_value(const dense2D<Elt, Orientation, Index, Dimensions>& ma)
+{
     return typename traits::const_value<dense2D<Elt, Orientation, Index, Dimensions> >::type(ma);
-  }
+}
 
-  template <class Elt, class Orientation, class Index, class Dimensions>
-  inline typename traits::value<dense2D<Elt, Orientation, Index, Dimensions> >::type
-  value(const dense2D<Elt, Orientation, Index, Dimensions>& ma)
-  {
+template <class Elt, class Orientation, class Index, class Dimensions>
+inline typename traits::value<dense2D<Elt, Orientation, Index, Dimensions> >::type
+value(const dense2D<Elt, Orientation, Index, Dimensions>& ma)
+{
     return typename traits::value<dense2D<Elt, Orientation, Index, Dimensions> >::type(ma);
-  }
+}
+
+// ================
+// Range generators
+// ================
+
+namespace traits
+{
+    template <class Elt, class Orientation, class Index, class Dimensions>
+    struct range_generator<glas::tags::all_t, dense2D<Elt, Orientation, Index, Dimensions> >
+      : detail::dense_element_range_generator<dense2D<Elt, Orientation, Index, Dimensions>,
+					      dense_el_cursor<Elt>, complexity::linear_cached>
+    {};
+
+    template <class Elt, class Orientation, class Index, class Dimensions>
+    struct range_generator<glas::tags::nz_t, dense2D<Elt, Orientation, Index, Dimensions> >
+      : detail::dense_element_range_generator<dense2D<Elt, Orientation, Index, Dimensions>,
+					      dense_el_cursor<Elt>, complexity::linear_cached>
+    {};
+
+} // namespace traits
 
 } // namespace mtl
 

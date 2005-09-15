@@ -4,6 +4,7 @@
 #define MTL_RANGE_GENERATOR_INCLUDE
 
 #include <boost/numeric/mtl/detail/range_generator.hpp>
+#include <boost/numeric/mtl/complexity.hpp>
 
 namespace mtl {
 
@@ -30,18 +31,24 @@ namespace traits
     // Cursors of level > 1 represent subsets of a collection and thus, it is only logical that
     // there must be range generators for these subset, which are applied on the cursor.
     template <typename Tag, typename Collection>
-    range_generator
+    struct range_generator
     {
-	typedef comlexity::infinite  complexity;
+	typedef complexity::infinite  complexity;
 	static int const             level = 0;
+	// specializations must contain the following members
+	// typedef xxx               type;
+	// type begin() { ... }
+	// type end()   { ... }
     };
-}
+} // namespace traits
+
+
 
 // Returns begin cursor over the Collection or a subset of the Collection
 // Form of traversal depends on Tag, cf glas_tags.hpp
 // On nested traversals, cursors of level > 1 must provide at least one range generator
 template <class Tag, class Collection>
-typename range_generator<Tag, Collection>::type 
+typename traits::range_generator<Tag, Collection>::type 
 begin(Collection& c)
 {
   return traits::range_generator<Tag, Collection>().begin(c);
@@ -49,13 +56,11 @@ begin(Collection& c)
 
 // Corresponding end cursor
 template <class Tag, class Collection>
-typename range_generator<Tag, Collection>::type 
+typename traits::range_generator<Tag, Collection>::type 
 end(Collection& c)
 {
   return traits::range_generator<Tag, Collection>().end(c);
 }
-
-
 
 
 } // namespace mtl

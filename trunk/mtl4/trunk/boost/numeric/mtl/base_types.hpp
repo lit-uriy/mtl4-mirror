@@ -52,7 +52,7 @@ namespace tag
 
 // Get matrix tag for dispatching
 // Has to be specialized for each matrix
-template <class Matrix> struct category {};
+template <class Matrix> struct matrix_category {};
 
 } // namespace mtl
 
