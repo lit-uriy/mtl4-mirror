@@ -18,7 +18,7 @@ struct f_index {};
 template <class T> struct which_index
 {
     typedef typename boost::mpl::if_c<
-          is_mtl_type<T>::value
+          traits::is_mtl_type<T>::value
         , typename T::index_type   // mtl data shall know their type
         , c_index                  // others are by default c
         >::type type;

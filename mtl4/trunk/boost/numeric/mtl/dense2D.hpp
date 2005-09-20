@@ -173,19 +173,6 @@ class dense2D : public detail::base_matrix<Elt, Orientation, Dimensions>
  }; // dense2D
 
 
-template <class Elt, class Orientation, class Index, class Dimensions>
-struct is_mtl_type<dense2D<Elt, Orientation, Index, Dimensions> > 
-{
-    static bool const value= true; 
-};
-
-// define corresponding type without all template parameters
-template <class Elt, class Orientation, class Index, class Dimensions>
-struct matrix_category<dense2D<Elt, Orientation, Index, Dimensions> > 
-{
-    typedef tag::dense2D_tag type;
-};
-
 
 // =============
 // Property Maps
@@ -215,6 +202,19 @@ namespace traits
     struct value<dense2D<Elt, Orientation, Index, Dimensions> >
     {
         typedef mtl::detail::direct_value<dense2D<Elt, Orientation, Index, Dimensions> > type;
+    };
+
+    template <class Elt, class Orientation, class Index, class Dimensions>
+    struct is_mtl_type<dense2D<Elt, Orientation, Index, Dimensions> > 
+    {
+	static bool const value= true; 
+    };
+
+    // define corresponding type without all template parameters
+    template <class Elt, class Orientation, class Index, class Dimensions>
+    struct matrix_category<dense2D<Elt, Orientation, Index, Dimensions> > 
+    {
+	typedef tag::dense2D type;
     };
 
 } // namespace traits
