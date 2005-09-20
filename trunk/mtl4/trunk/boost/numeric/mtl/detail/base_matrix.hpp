@@ -10,11 +10,11 @@ namespace mtl { namespace detail {
   using std::size_t;
   
   // base class for other matrices
-  template <class ELT, class Orientation = mtl::row_major, 
+  template <class Elt, class Orientation = mtl::row_major, 
 	    class Dimension = mtl::non_fixed::dimensions>
   struct base_matrix 
   {
-    typedef ELT                     value_type;
+    typedef Elt                     value_type;
     typedef value_type*             pointer_type;
     typedef const value_type*       const_pointer_type;
     typedef pointer_type            key_type;
