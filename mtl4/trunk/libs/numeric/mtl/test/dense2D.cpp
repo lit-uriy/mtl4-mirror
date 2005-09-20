@@ -29,6 +29,7 @@ int main(int argc, char** argv) {
     for (cursor_type cursor = begin<tag>(matrix), cend = end<tag>(matrix); cursor != cend; ++cursor)
 	cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
 
+    cout << '\n';
     typedef transposed_view<matrix_type> trans_matrix_type;
     trans_matrix_type   trans_matrix(matrix);
     
@@ -38,7 +39,7 @@ int main(int argc, char** argv) {
 
     typedef traits::range_generator<tag, trans_matrix_type>::type trans_cursor_type;
     for (trans_cursor_type cursor = begin<tag>(trans_matrix), cend = end<tag>(trans_matrix); cursor != cend; ++cursor)
-	cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
+	cout << "matrix[" << tr(*cursor) << ", " << tc(*cursor) << "] = " << tv(*cursor) << '\n';
 
     return 0;
 } 
