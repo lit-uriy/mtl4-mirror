@@ -128,24 +128,21 @@ namespace traits
 {
     template <class Tag, class Matrix>
     struct range_generator<Tag, transposed_view<Matrix> >
-	: range_generator<Tag, Matrix>
-    {};
+    {
+	typedef range_generator<Tag, Matrix>     generator;
+	typedef typename generator::complexity   complexity;
+	typedef typename generator::type         type;
+	static int const                         level = generator::level;
+	type begin(transposed_view<Matrix> const& m)
+	{
+	    return generator().begin(m.ref);
+	}
+	type end(transposed_view<Matrix> const& m)
+	{
+	    return generator().end(m.ref);
+	}
+    };
 }
-
-// Shouldn't be necessary, why begin in range_generator overloads ????
-// template <class Tag, class Collection>
-// typename traits::range_generator<Tag,  transposed_view<Collection> >::type 
-// inline begin(transposed_view<Collection>& c)
-// {
-//   return traits::range_generator<Tag, transposed_view<Collection> >().begin(c);
-// }
-
-// template <class Tag, class Collection>
-// typename traits::range_generator<Tag,  transposed_view<Collection> >::type 
-// inline end(transposed_view<Collection>& c)
-// {
-//   return traits::range_generator<Tag, transposed_view<Collection> >().end(c);
-// }
 
 
 } // namespace mtl
