@@ -13,7 +13,7 @@ class base_cursor {
     typedef base_cursor  self;
 
     base_cursor () {} 
-    base_cursor (key_type kk) : key(kk) {}
+    base_cursor (key_type key) : key(key) {}
 
     key_type operator*() const 
     { 
@@ -60,7 +60,6 @@ class base_cursor {
       return !(*this == cc); 
     }
   
-  protected:
     key_type key;
 }; // base_cursor
 

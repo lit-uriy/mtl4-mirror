@@ -30,6 +30,12 @@ int main(int argc, char** argv) {
 	cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
 
     cout << '\n';
+    typedef glas::tags::row_t                               rtag;
+    typedef traits::range_generator<rtag, matrix_type>::type rcursor_type;
+    for (rcursor_type cursor = begin<rtag>(matrix), cend = end<rtag>(matrix); cursor != cend; ++cursor)
+        cout << "matrix row " << cursor.key << '\n';
+    
+    cout << '\n';
     typedef transposed_view<matrix_type> trans_matrix_type;
     trans_matrix_type   trans_matrix(matrix);
     
@@ -45,16 +51,3 @@ int main(int argc, char** argv) {
 } 
 
 
-
-
-
-
-#if 0
-
-  // value(matrix, *tcursor, 11.0);
-  for (boost::tie(tcursor, tend)= trans_matrix.elements(); tcursor != tend; ++tcursor)
-    cout << "trans_matrix[" << tr(*tcursor) << ", " << tc(*tcursor)
-	 << "] = " << tv(*tcursor) << '\n';
-  cout << "trans_matrix dimensions = " << trans_matrix.dim_ref() << '\n';
-
-#endif

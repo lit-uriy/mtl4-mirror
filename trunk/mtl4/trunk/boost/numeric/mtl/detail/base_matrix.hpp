@@ -5,21 +5,24 @@
 
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/dimensions.hpp>
+#include <boost/numeric/mtl/index.hpp>
 
 namespace mtl { namespace detail {
-  using std::size_t;
+using std::size_t;
   
-  // base class for other matrices
-  template <class Elt, class Orientation = mtl::row_major, 
-	    class Dimension = mtl::non_fixed::dimensions>
-  struct base_matrix 
-  {
+// Base class for other matrices
+// will certainly be splitted multiple classes later when more matrices will be supported
+template <class Elt, class Orientation = mtl::row_major, class Index= index::c_index, 
+	  class Dimension = mtl::non_fixed::dimensions>
+struct base_matrix 
+{
     typedef Elt                     value_type;
     typedef value_type*             pointer_type;
     typedef const value_type*       const_pointer_type;
     typedef pointer_type            key_type;
     typedef Dimension               dim_type;
     typedef Orientation             orientation;
+    typedef Index                   index_type;
   protected:
     value_type*                     data;      // pointer to matrix
     bool                            ext;       // whether pointer to external data or own
@@ -64,11 +67,34 @@ namespace mtl { namespace detail {
     {
       return dim.num_rows();
     }
+    // First row taking indexing into account
+    size_t first_row() const 
+    {
+      return index::change_to(index_type(), 0);
+    }
+    // Past-end row taking indexing into account
+    size_t last_row() const 
+    {
+      return index::change_to(index_type(), num_rows());
+    }
+
     // number of colums
     size_t num_cols() const 
     {
       return dim.num_cols();
     }
+    // First column taking indexing into account
+    size_t first_col() const 
+    {
+      return index::change_to(index_type(), 0);
+    }
+    // Past-end column taking indexing into account
+    size_t last_col() const 
+    {
+      return index::change_to(index_type(), num_cols());
+    }
+
+
     // number of elements
     size_t num_elements() const
     {

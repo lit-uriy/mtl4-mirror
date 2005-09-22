@@ -13,11 +13,12 @@ template <class Matrix> class transposed_view
 public:	
     typedef Matrix                        other;
     typedef typename transposed_orientation<typename Matrix::orientation>::type orientation;
-    typedef typename Matrix::index_type     index_type;
-    typedef typename Matrix::value_type     value_type;
-    typedef typename Matrix::pointer_type   pointer_type;
-    typedef typename Matrix::key_type       key_type;
-    typedef typename Matrix::size_type      size_type;
+    typedef typename Matrix::index_type                index_type;
+    typedef typename Matrix::value_type                value_type;
+    typedef typename Matrix::pointer_type              pointer_type;
+    typedef typename Matrix::const_pointer_type        const_pointer_type;
+    typedef typename Matrix::key_type                  key_type;
+    typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
     // typedef typename Matrix::el_cursor_type el_cursor_type;
     // typedef std::pair<el_cursor_type, el_cursor_type> el_cursor_pair;
@@ -46,6 +47,11 @@ public:
     std::size_t offset(const value_type* p) const 
     { 
         return ref.offset(p); 
+    }
+
+    const_pointer_type elements() const 
+    {
+        return ref.elements(); 
     }
 
     dim_type dimensions() const 
@@ -142,6 +148,7 @@ namespace traits
 	    return generator().end(m.ref);
 	}
     };
+
 }
 
 
