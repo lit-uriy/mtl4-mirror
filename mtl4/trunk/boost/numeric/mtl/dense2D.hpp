@@ -89,15 +89,15 @@ template <class Elt> //, class Offset>
       size_t c= _col(ma.offset(key), ma.dim2(), typename Matrix::orientation());
       return index::change_to(typename Matrix::index_type(), c);
     }
-  };
+};
 
   
 // M and N as template parameters might be considered later
 template <class Elt, class Orientation= row_major, class Index= index::c_index,
 	  class Dimensions= mtl::non_fixed::dimensions>
-class dense2D : public detail::base_matrix<Elt, Orientation, Dimensions> 
+class dense2D : public detail::base_matrix<Elt, Orientation, Index, Dimensions> 
 {
-    typedef detail::base_matrix<Elt, Orientation, Dimensions>      super;
+    typedef detail::base_matrix<Elt, Orientation, Index, Dimensions>      super;
     typedef dense2D                       self;
   public:	
     typedef Orientation                   orientation;
@@ -264,6 +264,11 @@ namespace traits
     struct range_generator<glas::tags::nz_t, dense2D<Elt, Orientation, Index, Dimensions> >
       : detail::dense_element_range_generator<dense2D<Elt, Orientation, Index, Dimensions>,
 					      dense_el_cursor<Elt>, complexity::linear_cached>
+    {};
+
+    template <class Elt, class Orientation, class Index, class Dimensions>
+    struct range_generator<glas::tags::row_t, dense2D<Elt, Orientation, Index, Dimensions> >
+	: detail::all_rows_range_generator<dense2D<Elt, Orientation, Index, Dimensions>, complexity::linear_cached>
     {};
 
 } // namespace traits
