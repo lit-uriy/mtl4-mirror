@@ -32,9 +32,11 @@ int main(int argc, char** argv) {
 
     cout << '\n';
     typedef glas::tags::row_t                               rtag;
-    typedef traits::range_generator<rtag, matrix_type>::type rcursor_type;
+    typedef traits::detail::dense2D_row_cursor              rcursor_type;
+    // typedef traits::range_generator<rtag, matrix_type>::type rcursor_type;
     for (rcursor_type cursor = begin<rtag>(matrix), cend = end<rtag>(matrix); cursor != cend; ++cursor) {
 	typedef glas::tags::nz_t     ctag;
+	cout << traits::range_generator<ctag, rcursor_type>::level << " is level\n";
 	typedef traits::range_generator<ctag, rcursor_type>::type ccursor_type;
 	for (ccursor_type ccursor = begin<ctag>(cursor), ccend = end<ctag>(cursor); ccursor != ccend; ++ccursor) 
 	    cout << "matrix[" << r(*ccursor) << ", " << c(*ccursor) << "] = " << v(*ccursor) << '\n';
