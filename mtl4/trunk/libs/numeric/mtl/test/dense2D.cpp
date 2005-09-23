@@ -6,7 +6,7 @@
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/transposed_view.hpp>
 
-#include <boost/numeric/mtl/dimensions.hpp>
+#include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/raw_copy.hpp>
@@ -15,7 +15,8 @@ using namespace mtl;
 using namespace std;
 
 int main(int argc, char** argv) {
-    typedef dense2D<double, col_major, mtl::index::f_index, mtl::fixed::dimensions<2, 3> > matrix_type;
+    typedef matrix_parameters<col_major, mtl::index::f_index, mtl::fixed::dimensions<2, 3> > parameters;
+    typedef dense2D<double, parameters > matrix_type;
     matrix_type   matrix;
     double        val[] = {1., 2., 3., 4., 5., 6.};
     raw_copy(val, val+6, matrix);
@@ -32,9 +33,13 @@ int main(int argc, char** argv) {
     cout << '\n';
     typedef glas::tags::row_t                               rtag;
     typedef traits::range_generator<rtag, matrix_type>::type rcursor_type;
-    for (rcursor_type cursor = begin<rtag>(matrix), cend = end<rtag>(matrix); cursor != cend; ++cursor)
-        cout << "matrix row " << cursor.key << '\n';
-    
+    for (rcursor_type cursor = begin<rtag>(matrix), cend = end<rtag>(matrix); cursor != cend; ++cursor) {
+	typedef glas::tags::nz_t     ctag;
+	typedef traits::range_generator<ctag, rcursor_type>::type ccursor_type;
+	for (ccursor_type ccursor = begin<ctag>(cursor), ccend = end<ctag>(cursor); ccursor != ccend; ++ccursor) 
+	    cout << "matrix[" << r(*ccursor) << ", " << c(*ccursor) << "] = " << v(*ccursor) << '\n';
+    }
+
     cout << '\n';
     typedef transposed_view<matrix_type> trans_matrix_type;
     trans_matrix_type   trans_matrix(matrix);

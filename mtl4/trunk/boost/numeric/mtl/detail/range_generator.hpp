@@ -53,11 +53,11 @@ namespace mtl { namespace detail {
 
 	type begin(Collection const& c)
 	{
-	    return type(c.first_row(), c);
+	    return type(c.begin_row(), c);
 	}
 	type end(Collection const& c)
 	{
-	    return type(c.last_row(), c);
+	    return type(c.end_row(), c);
 	}
     };
 

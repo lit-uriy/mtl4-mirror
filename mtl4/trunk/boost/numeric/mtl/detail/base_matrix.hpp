@@ -12,17 +12,16 @@ using std::size_t;
   
 // Base class for other matrices
 // will certainly be splitted multiple classes later when more matrices will be supported
-template <class Elt, class Orientation = mtl::row_major, class Index= index::c_index, 
-	  class Dimension = mtl::non_fixed::dimensions>
+template <class Elt, class Parameters>
 struct base_matrix 
 {
+    typedef typename Parameters::orientation  orientation;
+    typedef typename Parameters::index        index_type;
+    typedef typename Parameters::dimensions   dim_type;
     typedef Elt                     value_type;
     typedef value_type*             pointer_type;
     typedef const value_type*       const_pointer_type;
     typedef pointer_type            key_type;
-    typedef Dimension               dim_type;
-    typedef Orientation             orientation;
-    typedef Index                   index_type;
   protected:
     value_type*                     data;      // pointer to matrix
     bool                            ext;       // whether pointer to external data or own
@@ -68,12 +67,12 @@ struct base_matrix
       return dim.num_rows();
     }
     // First row taking indexing into account
-    size_t first_row() const 
+    size_t begin_row() const 
     {
       return index::change_to(index_type(), 0);
     }
     // Past-end row taking indexing into account
-    size_t last_row() const 
+    size_t end_row() const 
     {
       return index::change_to(index_type(), num_rows());
     }
@@ -84,12 +83,12 @@ struct base_matrix
       return dim.num_cols();
     }
     // First column taking indexing into account
-    size_t first_col() const 
+    size_t begin_col() const 
     {
       return index::change_to(index_type(), 0);
     }
     // Past-end column taking indexing into account
-    size_t last_col() const 
+    size_t end_col() const 
     {
       return index::change_to(index_type(), num_cols());
     }
