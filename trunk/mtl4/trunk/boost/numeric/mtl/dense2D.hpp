@@ -17,75 +17,85 @@ namespace mtl {
 
 using std::size_t;
 
+// Forward declarations
+template <typename Elt, typename Parameters> class dense2D;
+struct dense2D_indexer;
+
+
 // cursor over every element
 template <class Elt> //, class Offset>
-  struct dense_el_cursor : public detail::base_cursor<const Elt*> 
-  {
+struct dense_el_cursor : public detail::base_cursor<const Elt*> 
+{
     typedef Elt                           value_type;
     typedef const value_type*             pointer_type; // ?
     typedef detail::base_cursor<const Elt*> super;
 
     dense_el_cursor () {} 
     dense_el_cursor (pointer_type me_) : super(me_) {}
-  };
+
+    template <typename Parameters>
+    dense_el_cursor(dense2D<Elt, Parameters> const& ma, size_t r, size_t c)
+	: super(ma.elements() + ma.indexer(ma, r, c))
+    {}
+};
 
 
-  struct dense2D_indexer 
-  {
-  private:
+struct dense2D_indexer 
+{
+private:
     // helpers for public functions
     size_t _offset(size_t dim2, size_t r, size_t c, row_major) const 
     {
-      return r * dim2 + c; 
+	return r * dim2 + c; 
     }
     size_t _offset(size_t dim2, size_t r, size_t c, col_major) const 
     {
-      return c * dim2 + r; 
+	return c * dim2 + r; 
     }
     
     size_t _row(size_t offset, size_t dim2, row_major) const 
     {
-      return offset / dim2; 
+	return offset / dim2; 
     }
     size_t _row(size_t offset, size_t dim2, col_major) const 
     {
-      return offset % dim2;
+	return offset % dim2;
     }
     
     size_t _col(size_t offset, size_t dim2, row_major) const 
     {
-      return offset % dim2;
+	return offset % dim2;
     }
     size_t _col(size_t offset, size_t dim2, col_major) const 
     {
-      return offset / dim2; 
+	return offset / dim2; 
     }
 
  public:
     template <class Matrix>
     size_t operator() (const Matrix& ma, size_t r, size_t c) const
     {
-      // convert into c indices
-      typename Matrix::index_type my_index;
-      size_t my_r= index::change_from(my_index, r);
-      size_t my_c= index::change_from(my_index, c);
-      return _offset(ma.dim2(), my_r, my_c, typename Matrix::orientation());
+	// convert into c indices
+	typename Matrix::index_type my_index;
+	size_t my_r= index::change_from(my_index, r);
+	size_t my_c= index::change_from(my_index, c);
+	return _offset(ma.dim2(), my_r, my_c, typename Matrix::orientation());
     }
 
     template <class Matrix>
     size_t row(const Matrix& ma, typename Matrix::key_type key) const
     {
-      // row with c-index for my orientation
-      size_t r= _row(ma.offset(key), ma.dim2(), typename Matrix::orientation());
-      return index::change_to(typename Matrix::index_type(), r);
+	// row with c-index for my orientation
+	size_t r= _row(ma.offset(key), ma.dim2(), typename Matrix::orientation());
+	return index::change_to(typename Matrix::index_type(), r);
     }
 
     template <class Matrix>
     size_t col(const Matrix& ma, typename Matrix::key_type key) const 
     {
-      // column with c-index for my orientation
-      size_t c= _col(ma.offset(key), ma.dim2(), typename Matrix::orientation());
-      return index::change_to(typename Matrix::index_type(), c);
+	// column with c-index for my orientation
+	size_t c= _col(ma.offset(key), ma.dim2(), typename Matrix::orientation());
+	return index::change_to(typename Matrix::index_type(), c);
     }
 };
 
@@ -152,18 +162,21 @@ class dense2D : public detail::base_matrix<Elt, Parameters>
 
     // friend class indexer_type; should work without friend declaration
 
-    // begin and end cursors to iterate over all matrix elements
-//     el_cursor_pair elements() const
-//     {
-//       return std::make_pair(data_ref(), data_ref() + nnz);
-//     }
-
     // old style, better use value property map
     value_type operator() (size_t r, size_t c) const 
     {
       size_t offset= indexer(*this, r, c);
       return data[offset];
-      // return data[indexer(*this, r, c)]; 
+    }
+
+    value_type& reference(size_t r, size_t c)
+    {
+	return data[indexer(*this, r, c)]; 
+    }
+
+    value_type const& reference(size_t r, size_t c) const
+    {
+	return data[indexer(*this, r, c)]; 
     }
 
     indexer_type  indexer;
@@ -268,6 +281,16 @@ namespace traits
 	: detail::all_rows_range_generator<dense2D<Elt, Parameters>, complexity::linear_cached>
     {};
 
+    // some typedefs, put into detail to not pollute namespaces
+    namespace detail 
+    {
+	typedef          range_generator<glas::tags::row_t, 
+					 dense2D<double, 
+						 matrix_parameters<col_major, 
+								   mtl::index::f_index, 
+								   mtl::fixed::dimensions<2, 3> > > 
+	                                 >::type dense2D_row_cursor;
+    }
 
     // For a cursor pointing to some row give the range of elements in this row 
     template <class Elt, class Parameters>
@@ -280,14 +303,31 @@ namespace traits
 	typedef dense_el_cursor<Elt> type;
 	type begin(cursor const& c)
 	{
-	    return c.ref.indexer(c.ref, c.key, c.begin_col());
+	    return c.ref.indexer(c.ref, c.key, c.ref.begin_col());
 	}
-	type begin(cursor const& c)
+	type end(cursor const& c)
 	{
-	    return c.ref.indexer(c.ref, c.key, c.end_col());
+	    return c.ref.indexer(c.ref, c.key, c.ref.end_col());
 	}
     };
 
+    template <>
+    struct range_generator<glas::tags::nz_t, 
+			   detail::dense2D_row_cursor>
+    {
+	typedef detail::dense2D_row_cursor cursor;
+	typedef complexity::cached   complexity;
+	static int const             level = 1;
+	typedef dense_el_cursor<double> type;
+	type begin(cursor const& c)
+	{
+	    return type(c.ref, c.key, c.ref.begin_col());
+	}
+	type end(cursor const& c)
+	{
+	    return type(c.ref, c.key, c.ref.end_col());
+	}
+    };
 
 } // namespace traits
 
