@@ -6,8 +6,8 @@
 namespace mtl { namespace detail {
 
 // base class for different cursors, works with pointers and integers
-template <class Key>
-class base_cursor {
+template <class Key> class base_cursor 
+{
  public:
     typedef Key          key_type;
     typedef base_cursor  self;
