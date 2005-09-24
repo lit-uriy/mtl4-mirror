@@ -330,6 +330,12 @@ namespace traits
 	}
     };
 
+    template <class Elt, class Parameters>
+    struct range_generator<glas::tags::all_t, 
+			   detail::sub_matrix_cursor<dense2D<Elt, Parameters>, glas::tags::row_t, 2> >
+        : range_generator<glas::tags::nz_t, 
+			  detail::sub_matrix_cursor<dense2D<Elt, Parameters>, glas::tags::row_t, 2> >
+    {};
 
 } // namespace traits
 
