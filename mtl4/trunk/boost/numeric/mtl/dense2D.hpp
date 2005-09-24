@@ -14,6 +14,7 @@
 #include <boost/numeric/mtl/detail/range_generator.hpp>
 #include <boost/numeric/mtl/complexity.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
+#include <boost/mpl/if.hpp>
 
 namespace mtl {
 
@@ -297,9 +298,29 @@ namespace traits
 					      dense_el_cursor<Elt>, complexity::linear_cached>
     {};
 
+    namespace detail 
+    {
+	// complexity of dense row cursor depends on storage scheme
+	template <typename Orientation> struct dense2D_rc {};
+	template<> struct dense2D_rc<row_major>
+	{
+	    typedef complexity::linear_cached type;
+	};
+	template<> struct dense2D_rc<col_major>
+	{
+	    typedef complexity::linear type;
+	};
+
+	// Complexity of column cursor is of course opposite
+	template <typename Orientation> struct dense2D_cc
+	    : dense2D_rc<typename transposed_orientation<Orientation>::type>
+	{};
+    }
+
     template <class Elt, class Parameters>
     struct range_generator<glas::tags::row_t, dense2D<Elt, Parameters> >
-	: detail::all_rows_range_generator<dense2D<Elt, Parameters>, complexity::linear_cached>
+	: detail::all_rows_range_generator<dense2D<Elt, Parameters>, 
+					   typename detail::dense2D_rc<typename Parameters::orientation>::type>
     {};
  
     // For a cursor pointing to some row give the range of elements in this row 
@@ -309,7 +330,9 @@ namespace traits
     {
 	typedef dense2D<Elt, Parameters>  matrix;
 	typedef detail::sub_matrix_cursor<matrix, glas::tags::row_t, 2> cursor;
-	typedef complexity::cached   complexity;
+	
+	// is only linear for column first
+	typedef complexity::linear_cached   complexity;
 	static int const             level = 1;
 	typedef strided_dense_el_cursor<Elt> type;
 	size_t stride(cursor const&, row_major)
