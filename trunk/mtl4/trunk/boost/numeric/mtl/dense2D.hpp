@@ -301,62 +301,32 @@ namespace traits
     struct range_generator<glas::tags::row_t, dense2D<Elt, Parameters> >
 	: detail::all_rows_range_generator<dense2D<Elt, Parameters>, complexity::linear_cached>
     {};
-
-    // experimentations
-    namespace detail 
-    {
-	typedef          range_generator<glas::tags::row_t, 
-					 dense2D<double, 
-						 matrix_parameters<col_major, 
-								   mtl::index::f_index, 
-								   mtl::fixed::dimensions<2, 3> > > 
-	                                 >::type dense2D_row_cursor_old;
-    }
-
-#if 0
-    template <class Elt, class Parameters> struct dense2D_row_cursor
-    : range_generator<glas::tags::row_t, dense2D<Elt, Parameters> >::type
-    {};
-#endif
-
-
+ 
     // For a cursor pointing to some row give the range of elements in this row 
     template <class Elt, class Parameters>
     struct range_generator<glas::tags::nz_t, 
-			   // mtl::detail::sub_matrix_cursor<mtl::dense2D<Elt, Parameters> >
-			   // dense2D_row_cursor<Elt, Parameters> >
-			   typename range_generator<glas::tags::row_t, dense2D<Elt, Parameters> >::type>
+			   detail::sub_matrix_cursor<dense2D<Elt, Parameters>, glas::tags::row_t, 2> >
     {
-	typedef typename range_generator<glas::tags::row_t, dense2D<Elt, Parameters> >::type cursor;
+	typedef dense2D<Elt, Parameters>  matrix;
+	typedef detail::sub_matrix_cursor<matrix, glas::tags::row_t, 2> cursor;
 	typedef complexity::cached   complexity;
 	static int const             level = 1;
 	typedef strided_dense_el_cursor<Elt> type;
+	size_t stride(cursor const&, row_major)
+	{
+	    return 1;
+	}
+	size_t stride(cursor const& c, col_major)
+	{
+	    return c.ref.dim2();
+	}
 	type begin(cursor const& c)
 	{
-	    return type(c.ref, c.key, c.ref.begin_col(), c.ref.dim2());
+	    return type(c.ref, c.key, c.ref.begin_col(), stride(c, matrix::orientation()));
 	}
 	type end(cursor const& c)
 	{
-	    return type(c.ref, c.key, c.ref.end_col(), c.ref.dim2());
-	}
-    };
-
-
-    template <>
-    struct range_generator<glas::tags::nz_t, 
-			   detail::dense2D_row_cursor_old>
-    {
-	typedef detail::dense2D_row_cursor_old cursor;
-	typedef complexity::cached   complexity;
-	static int const             level = 1;
-	typedef strided_dense_el_cursor<double> type;
-	type begin(cursor const& c)
-	{
-	    return type(c.ref, c.key, c.ref.begin_col(), c.ref.dim2());
-	}
-	type end(cursor const& c)
-	{
-	    return type(c.ref, c.key, c.ref.end_col(), c.ref.dim2());
+	    return type(c.ref, c.key, c.ref.end_col(), stride(c, matrix::orientation()));
 	}
     };
 

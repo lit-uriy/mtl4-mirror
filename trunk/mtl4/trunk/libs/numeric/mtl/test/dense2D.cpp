@@ -15,7 +15,7 @@ using namespace mtl;
 using namespace std;
 
 int main(int argc, char** argv) {
-    typedef matrix_parameters<col_major, mtl::index::f_index, mtl::fixed::dimensions<2, 3> > parameters;
+    typedef matrix_parameters<row_major, mtl::index::f_index, mtl::fixed::dimensions<2, 3> > parameters;
     typedef dense2D<double, parameters > matrix_type;
     matrix_type   matrix;
     double        val[] = {1., 2., 3., 4., 5., 6.};

@@ -3,7 +3,10 @@
 #ifndef MTL_DETAIL_RANGE_GENERATOR_INCLUDE
 #define MTL_DETAIL_RANGE_GENERATOR_INCLUDE
 
-namespace mtl { namespace detail {
+#include <boost/numeric/mtl/glas_tags.hpp>
+#include <boost/numeric/mtl/detail/base_cursor.hpp>
+
+namespace mtl { namespace traits { namespace detail {
 
     // Range generator that traverses all elements of some densely stored collection 
     // or contiguous parts of such collection
@@ -31,11 +34,12 @@ namespace mtl { namespace detail {
     // can iterate over the elements in this row.
     // If this cursor refers to a block then a range can iterate over the rows in this block.
     // The level of a generated cursor must be of course at least one level less
-    template <typename Collection, int Level = 2>
+    // The tag serves to dispatching between row and column cursors
+    template <typename Collection, typename Tag, int Level = 2>
     struct sub_matrix_cursor
-	: base_cursor<int>
+	: mtl::detail::base_cursor<int>
     {
-	typedef base_cursor<int>    base;
+	typedef mtl::detail::base_cursor<int>    base;
 	static int const            level = Level;
 
 	sub_matrix_cursor(int i, Collection const& c)
@@ -49,7 +53,7 @@ namespace mtl { namespace detail {
     {
 	typedef Complexity          complexity;
 	static int const            level = Level;
-	typedef sub_matrix_cursor<Collection, Level> type;
+	typedef sub_matrix_cursor<Collection, glas::tags::row_t, Level> type;
 
 	type begin(Collection const& c)
 	{
@@ -61,6 +65,6 @@ namespace mtl { namespace detail {
 	}
     };
 
- }} // namespace mtl::detail
+}}} // namespace mtl::traits::detail
 
 #endif // MTL_DETAIL_RANGE_GENERATOR_INCLUDE
