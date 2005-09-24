@@ -5,7 +5,9 @@
 
 #include <algorithm>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
+#include <boost/numeric/mtl/detail/strided_base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_matrix.hpp>
+#include <boost/numeric/mtl/detail/range_generator.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/property_map.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>
@@ -23,7 +25,7 @@ struct dense2D_indexer;
 
 
 // cursor over every element
-template <class Elt> //, class Offset>
+template <class Elt> 
 struct dense_el_cursor : public detail::base_cursor<const Elt*> 
 {
     typedef Elt                           value_type;
@@ -31,13 +33,32 @@ struct dense_el_cursor : public detail::base_cursor<const Elt*>
     typedef detail::base_cursor<const Elt*> super;
 
     dense_el_cursor () {} 
-    dense_el_cursor (pointer_type me_) : super(me_) {}
+    dense_el_cursor (pointer_type me) : super(me) {}
 
     template <typename Parameters>
     dense_el_cursor(dense2D<Elt, Parameters> const& ma, size_t r, size_t c)
 	: super(ma.elements() + ma.indexer(ma, r, c))
     {}
 };
+
+// cursor over every element
+template <class Elt> 
+struct strided_dense_el_cursor : public detail::strided_base_cursor<const Elt*> 
+{
+    typedef Elt                           value_type;
+    typedef const value_type*             pointer_type; // ?
+    typedef detail::strided_base_cursor<const Elt*> super;
+
+    strided_dense_el_cursor () {} 
+    strided_dense_el_cursor (pointer_type me, size_t stride) : super(me, stride) {}
+
+    template <typename Parameters>
+    strided_dense_el_cursor(dense2D<Elt, Parameters> const& ma, size_t r, size_t c, size_t stride)
+	: super(ma.elements() + ma.indexer(ma, r, c), stride)
+    {}
+};
+
+
 
 
 struct dense2D_indexer 
@@ -281,7 +302,7 @@ namespace traits
 	: detail::all_rows_range_generator<dense2D<Elt, Parameters>, complexity::linear_cached>
     {};
 
-    // some typedefs, put into detail to not pollute namespaces
+    // experimentations
     namespace detail 
     {
 	typedef          range_generator<glas::tags::row_t, 
@@ -289,45 +310,56 @@ namespace traits
 						 matrix_parameters<col_major, 
 								   mtl::index::f_index, 
 								   mtl::fixed::dimensions<2, 3> > > 
-	                                 >::type dense2D_row_cursor;
+	                                 >::type dense2D_row_cursor_old;
     }
+
+#if 0
+    template <class Elt, class Parameters> struct dense2D_row_cursor
+    : range_generator<glas::tags::row_t, dense2D<Elt, Parameters> >::type
+    {};
+#endif
+
 
     // For a cursor pointing to some row give the range of elements in this row 
     template <class Elt, class Parameters>
     struct range_generator<glas::tags::nz_t, 
+			   // mtl::detail::sub_matrix_cursor<mtl::dense2D<Elt, Parameters> >
+			   // dense2D_row_cursor<Elt, Parameters> >
 			   typename range_generator<glas::tags::row_t, dense2D<Elt, Parameters> >::type>
     {
 	typedef typename range_generator<glas::tags::row_t, dense2D<Elt, Parameters> >::type cursor;
 	typedef complexity::cached   complexity;
 	static int const             level = 1;
-	typedef dense_el_cursor<Elt> type;
+	typedef strided_dense_el_cursor<Elt> type;
 	type begin(cursor const& c)
 	{
-	    return c.ref.indexer(c.ref, c.key, c.ref.begin_col());
+	    return type(c.ref, c.key, c.ref.begin_col(), c.ref.dim2());
 	}
 	type end(cursor const& c)
 	{
-	    return c.ref.indexer(c.ref, c.key, c.ref.end_col());
+	    return type(c.ref, c.key, c.ref.end_col(), c.ref.dim2());
 	}
     };
 
+
     template <>
     struct range_generator<glas::tags::nz_t, 
-			   detail::dense2D_row_cursor>
+			   detail::dense2D_row_cursor_old>
     {
-	typedef detail::dense2D_row_cursor cursor;
+	typedef detail::dense2D_row_cursor_old cursor;
 	typedef complexity::cached   complexity;
 	static int const             level = 1;
-	typedef dense_el_cursor<double> type;
+	typedef strided_dense_el_cursor<double> type;
 	type begin(cursor const& c)
 	{
-	    return type(c.ref, c.key, c.ref.begin_col());
+	    return type(c.ref, c.key, c.ref.begin_col(), c.ref.dim2());
 	}
 	type end(cursor const& c)
 	{
-	    return type(c.ref, c.key, c.ref.end_col());
+	    return type(c.ref, c.key, c.ref.end_col(), c.ref.dim2());
 	}
     };
+
 
 } // namespace traits
 
