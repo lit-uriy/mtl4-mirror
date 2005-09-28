@@ -65,6 +65,23 @@ namespace mtl { namespace traits { namespace detail {
 	}
     };
 
+    template <typename Collection, typename Complexity, int Level = 2>
+    struct all_cols_range_generator
+    {
+	typedef Complexity          complexity;
+	static int const            level = Level;
+	typedef sub_matrix_cursor<Collection, glas::tags::col_t, Level> type;
+
+	type begin(Collection const& c)
+	{
+	    return type(c.begin_col(), c);
+	}
+	type end(Collection const& c)
+	{
+	    return type(c.end_col(), c);
+	}
+    };
+
 }}} // namespace mtl::traits::detail
 
 #endif // MTL_DETAIL_RANGE_GENERATOR_INCLUDE

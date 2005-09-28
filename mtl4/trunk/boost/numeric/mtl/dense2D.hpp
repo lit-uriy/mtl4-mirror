@@ -301,6 +301,7 @@ namespace traits
     namespace detail 
     {
 	// complexity of dense row cursor depends on storage scheme
+	// if orientation is row_major then complexity is cached_linear, otherwise linear
 	template <typename Orientation> struct dense2D_rc {};
 	template<> struct dense2D_rc<row_major>
 	{
@@ -329,10 +330,8 @@ namespace traits
 			   detail::sub_matrix_cursor<dense2D<Elt, Parameters>, glas::tags::row_t, 2> >
     {
 	typedef dense2D<Elt, Parameters>  matrix;
-	typedef detail::sub_matrix_cursor<matrix, glas::tags::row_t, 2> cursor;
-	
-	// is only linear for column first
-	typedef complexity::linear_cached   complexity;
+	typedef detail::sub_matrix_cursor<matrix, glas::tags::row_t, 2> cursor;	
+	typedef typename detail::dense2D_rc<typename Parameters::orientation>::type   complexity;
 	static int const             level = 1;
 	typedef strided_dense_el_cursor<Elt> type;
 	size_t stride(cursor const&, row_major)
@@ -359,6 +358,51 @@ namespace traits
         : range_generator<glas::tags::nz_t, 
 			  detail::sub_matrix_cursor<dense2D<Elt, Parameters>, glas::tags::row_t, 2> >
     {};
+
+
+
+    template <class Elt, class Parameters>
+    struct range_generator<glas::tags::col_t, dense2D<Elt, Parameters> >
+	: detail::all_cols_range_generator<dense2D<Elt, Parameters>, 
+					   typename detail::dense2D_cc<typename Parameters::orientation>::type>
+    {};
+ 
+    // For a cursor pointing to some row give the range of elements in this row 
+    template <class Elt, class Parameters>
+    struct range_generator<glas::tags::nz_t, 
+			   detail::sub_matrix_cursor<dense2D<Elt, Parameters>, glas::tags::col_t, 2> >
+    {
+	typedef dense2D<Elt, Parameters>  matrix;
+	typedef detail::sub_matrix_cursor<matrix, glas::tags::col_t, 2> cursor;	
+	typedef typename detail::dense2D_cc<typename Parameters::orientation>::type   complexity;
+	static int const             level = 1;
+	typedef strided_dense_el_cursor<Elt> type;
+	size_t stride(cursor const&, col_major)
+	{
+	    return 1;
+	}
+	size_t stride(cursor const& c, row_major)
+	{
+	    return c.ref.dim2();
+	}
+	type begin(cursor const& c)
+	{
+	    return type(c.ref, c.ref.begin_row(), c.key, stride(c, matrix::orientation()));
+	}
+	type end(cursor const& c)
+	{
+	    return type(c.ref, c.ref.end_row(), c.key, stride(c, matrix::orientation()));
+	}
+    };
+
+    template <class Elt, class Parameters>
+    struct range_generator<glas::tags::all_t, 
+			   detail::sub_matrix_cursor<dense2D<Elt, Parameters>, glas::tags::col_t, 2> >
+        : range_generator<glas::tags::nz_t, 
+			  detail::sub_matrix_cursor<dense2D<Elt, Parameters>, glas::tags::col_t, 2> >
+    {};
+
+
 
 } // namespace traits
 
