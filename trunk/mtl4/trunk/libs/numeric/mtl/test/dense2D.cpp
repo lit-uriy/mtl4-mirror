@@ -15,7 +15,7 @@ using namespace mtl;
 using namespace std;
 
 int main(int argc, char** argv) {
-    typedef matrix_parameters<col_major, mtl::index::f_index, mtl::fixed::dimensions<2, 3> > parameters;
+    typedef matrix_parameters<row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 3> > parameters;
     typedef dense2D<double, parameters > matrix_type;
     matrix_type   matrix;
     double        val[] = {1., 2., 3., 4., 5., 6.};
@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 	cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
 
     cout << '\n';
-    typedef glas::tags::row_t                               rtag;
+    typedef glas::tags::row_t                                rtag;
     typedef traits::range_generator<rtag, matrix_type>::type rcursor_type;
     for (rcursor_type cursor = begin<rtag>(matrix), cend = end<rtag>(matrix); cursor != cend; ++cursor) {
 	typedef glas::tags::all_t     ctag;
@@ -39,6 +39,16 @@ int main(int argc, char** argv) {
 	for (ccursor_type ccursor = begin<ctag>(cursor), ccend = end<ctag>(cursor); ccursor != ccend; ++ccursor) 
 	    cout << "matrix[" << r(*ccursor) << ", " << c(*ccursor) << "] = " << v(*ccursor) << '\n';
     }
+
+    cout << '\n';
+    typedef glas::tags::col_t                                ctag;
+    typedef traits::range_generator<ctag, matrix_type>::type ccursor_type;
+    for (ccursor_type cursor = begin<ctag>(matrix), cend = end<ctag>(matrix); cursor != cend; ++cursor) {
+	typedef glas::tags::all_t     rtag;
+	typedef traits::range_generator<rtag, ccursor_type>::type rcursor_type;
+	for (rcursor_type rcursor = begin<rtag>(cursor), rcend = end<rtag>(cursor); rcursor != rcend; ++rcursor) 
+	    cout << "matrix[" << r(*rcursor) << ", " << c(*rcursor) << "] = " << v(*rcursor) << '\n';
+    } 
 
     cout << '\n';
     typedef transposed_view<matrix_type> trans_matrix_type;
