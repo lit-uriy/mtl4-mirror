@@ -14,7 +14,6 @@
 #include <boost/numeric/mtl/detail/range_generator.hpp>
 #include <boost/numeric/mtl/complexity.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
-#include <boost/mpl/if.hpp>
 
 namespace mtl {
 
@@ -330,9 +329,11 @@ namespace traits
 			   detail::sub_matrix_cursor<dense2D<Elt, Parameters>, glas::tags::row_t, 2> >
     {
 	typedef dense2D<Elt, Parameters>  matrix;
-	typedef detail::sub_matrix_cursor<matrix, glas::tags::row_t, 2> cursor;	
+	typedef detail::sub_matrix_cursor<matrix, glas::tags::row_t, 2> cursor;
+	// linear for col_major and linear_cached for row_major
 	typedef typename detail::dense2D_rc<typename Parameters::orientation>::type   complexity;
 	static int const             level = 1;
+	// for row_major dense_el_cursor would be enough, i.e. bit less overhead but uglier code
 	typedef strided_dense_el_cursor<Elt> type;
 	size_t stride(cursor const&, row_major)
 	{

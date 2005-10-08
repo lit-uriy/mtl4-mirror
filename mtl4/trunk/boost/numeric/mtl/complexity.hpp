@@ -147,8 +147,26 @@ struct times<X, infinite>
 
 template <typename X> struct times<infinite, X> : times<X, infinite> {};
 
+}} // namespace mtl::complexity
+
+#define MTL_PRINT_COMPLEXITY(TYPE, STRING) \
+std::ostream& operator<< (std::ostream& os, mtl::complexity::TYPE) \
+{                                                 \
+    return os << STRING;                          \
+}
+
+MTL_PRINT_COMPLEXITY(cached, "cached constant complexity")
+MTL_PRINT_COMPLEXITY(constant, "constant complexity")
+MTL_PRINT_COMPLEXITY(log_n, "logarithmic complexity")
+MTL_PRINT_COMPLEXITY(polylog_n, "poly-logarithmic complexity")
+MTL_PRINT_COMPLEXITY(linear_cached, "cached linear complexity")
+MTL_PRINT_COMPLEXITY(linear, "linear complexity")
+MTL_PRINT_COMPLEXITY(n_log_n, "n log n complexity")
+MTL_PRINT_COMPLEXITY(n_polylog_n, "n poly-log n complexity")
+MTL_PRINT_COMPLEXITY(quadratic, "quadratic complexity")
+MTL_PRINT_COMPLEXITY(polynomial, "polynomial complexity")
+MTL_PRINT_COMPLEXITY(infinite, "infinite complexity")
 
 
-}} // namespace mtl
 
 #endif // MTL_COMPLEXITY_INCLUDE
