@@ -10,6 +10,9 @@
 // #include "property_traits.hpp"
 // #include <glas/glas.hpp>
 
+#include <bits/concepts.h>
+#include <boost/numeric/mtl/scalar/concepts.hpp>
+
 // Pure algebraic functions (a little useless)
 
 namespace mtl {
@@ -18,9 +21,9 @@ namespace mtl {
 // {T, Op} must be a Magma
 // T must be EqualityComparable
 template <class T, class Op> 
-    where { EqualityComparable<T>, Magma<T, Op> }
-inline bool equalResults(const T& v1a, const T& v1b, 
-			 const T& v2a, const T& v2b, Op op) 
+    where { std::EqualityComparable<T>, Magma<T, Op> }
+inline bool equal_results(const T& v1a, const T& v1b, 
+			  const T& v2a, const T& v2b, Op op) 
 {
   return op(v1a, v1b) == op(v2a, v2b);
 }

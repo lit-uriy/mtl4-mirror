@@ -1,4 +1,4 @@
-CXXFLAGS += -I${BOOST_ROOT} -I${MTL_BOOST_ROOT} -I${GLAS_ROOT} -Wno-long-double
+CXXFLAGS += -I${BOOST_ROOT} -I${MTL_BOOST_ROOT} -I${GLAS_ROOT} 
 
 CXX = conceptg++
 

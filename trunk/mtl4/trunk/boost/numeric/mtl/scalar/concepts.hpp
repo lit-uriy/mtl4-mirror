@@ -28,13 +28,25 @@ struct concept Magma
 {
     Set Operation::operator() (Set, Set);
 };
-#endif
     
 template <typename Set, typename Operation>
 struct concept Magma
-    : Assignable<Set>, Callable2<Operation, Set, Set>
+  : std::Assignable<Set>, std::
+    
+template <typename Set, typename Operation>
+struct concept Magma
+  : std::Assignable<Set>, Callable2<Operation, Set, Set>
 {
     typename result_type = Set;
+};
+#endif
+
+template <typename Set, typename Operation>
+struct concept Magma
+{
+    typename result_type = Set;
+    Set operator() (Operation, Set, Set);
+    Set& operator= (Set&, Set const&);
 };
 
 } // namespace mtl
