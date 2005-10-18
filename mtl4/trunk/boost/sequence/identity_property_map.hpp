@@ -31,7 +31,7 @@ struct identity_property_map
     inline
     void operator()(K& k, V const& v) const
     {
-        return k = v;
+        k = v;
     }
 
     // This one is needed to support proxies
@@ -39,7 +39,7 @@ struct identity_property_map
     inline
     void operator()(K const& k, V const& v) const
     {
-        return k = v;
+        k = v;
     }
 };
 

@@ -4,8 +4,8 @@
 #ifndef BOOST_SEQUENCE_INTRINSIC_TAG_DWA2005616_HPP
 # define BOOST_SEQUENCE_INTRINSIC_TAG_DWA2005616_HPP
 
-# include <boost/sequence/tag_fwd.hpp>
-# include <boost/sequence/iterator_range_tag.hpp>
+# include <boost/sequence/intrinsic/tag_fwd.hpp>
+# include <boost/sequence/intrinsic/iterator_range_tag.hpp>
 # include <boost/sequence/fixed_size/tag.hpp>
 # include <boost/mpl/eval_if.hpp>
 # include <boost/type_traits/is_array.hpp>

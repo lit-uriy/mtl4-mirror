@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_INTRINSICS_FWD_DWA2005616_HPP
 # define BOOST_SEQUENCE_INTRINSICS_FWD_DWA2005616_HPP
 
-# include <boost/sequence/tag.hpp>
+# include <boost/sequence/intrinsic/tag.hpp>
 
 namespace boost { namespace sequence { 
 
@@ -16,7 +16,7 @@ namespace boost { namespace sequence {
 // result of the correspondingly-named intrinsic function.  Each one
 // should also have a nested ::type that indicates the result type of
 // its operator().
-template <class Sequence, class Tag = typename tag<Sequence>::type>
+template <class Sequence, class Tag = typename intrinsic::tag<Sequence>::type>
 struct intrinsics;
 
 }} // namespace boost::sequence

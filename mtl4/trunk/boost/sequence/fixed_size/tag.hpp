@@ -4,32 +4,35 @@
 #ifndef BOOST_SEQUENCE_FIXED_SIZE_TAG_DWA2005617_HPP
 # define BOOST_SEQUENCE_FIXED_SIZE_TAG_DWA2005617_HPP
 
-# include <boost/sequence/tag_fwd.hpp>
+# include <boost/sequence/intrinsic/tag_fwd.hpp>
 # include <cstddef>
 # include <boost/array.hpp>
 
-namespace boost { namespace sequence { 
+namespace boost { namespace sequence {
 
-template <std::size_t N>
-struct fixed_size_random_access_tag {};
-
-template <std::size_t N>
-struct fixed_size_indexable_tag
-  : fixed_size_random_access_tag<N>
-{};
-
-template <class T, std::size_t N>
-struct tag_impl<T[N]>
+namespace fixed_size
 {
-    typedef fixed_size_indexable_tag<N> type;
-};
+  // for all fixed-sized sequences S of size N,
+  // intrinsic::tag<S>::type should be fixed_size::tag<N>
+  template <std::size_t N>
+  struct tag {};
+}
 
-template <class T, std::size_t N>
-struct tag_impl<array<T,N> >
+namespace intrinsic
 {
-    typedef fixed_size_indexable_tag<N> type;
-};
+  template <class T, std::size_t N>
+  struct tag_impl<T[N]>
+  {
+      typedef fixed_size::tag<N> type;
+  };
 
-}} // namespace boost::sequence::fixed_size
+  template <class T, std::size_t N>
+  struct tag_impl<array<T,N> >
+  {
+      typedef fixed_size::tag<N> type;
+  };
+}
+
+}} // namespace boost::sequence
 
 #endif // BOOST_SEQUENCE_FIXED_SIZE_TAG_DWA2005617_HPP
