@@ -17,15 +17,15 @@ int test_main( int argc, char* argv[] )
 
     BOOST_MPL_ASSERT(
         (boost::is_same<
-         sequence::fixed_size_indexable_tag<11>
-         ,sequence::tag<boost::array<int,11> >::type
+         sequence::fixed_size::tag<11>
+         ,sequence::intrinsic::tag<boost::array<int,11> >::type
          >
         ));
 
     BOOST_MPL_ASSERT(
         (boost::is_same<
-         sequence::fixed_size_indexable_tag<11>
-         ,sequence::tag<char[11]>::type
+         sequence::fixed_size::tag<11>
+         ,sequence::intrinsic::tag<char[11]>::type
          >
         ));
 

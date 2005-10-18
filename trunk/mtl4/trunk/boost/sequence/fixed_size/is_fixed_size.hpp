@@ -6,14 +6,14 @@
 
 # include <boost/sequence/category_fwd.hpp>
 # include <boost/sequence/algorithm/fixed_size/category.hpp>
-# include <boost/type_traits/is_same.hpp>
+# include <boost/type_traits/is_convertible.hpp>
 # include <cstddef>
 
 namespace boost { namespace sequence { namespace fixed_size {
 
 template <class T>
 struct is_fixed_size
-  : is_same<
+  : is_convertible<
         typename category<T>::type
       , algorithm::fixed_size::category
     >

@@ -8,7 +8,7 @@
 # include <boost/sequence/fixed_size/intrinsics.hpp>
 # include <boost/sequence/fixed_size/tag.hpp>
 # include <boost/sequence/identity_property_map.hpp>
-# include <boost/sequence/iterator_range_tag.hpp>
+# include <boost/sequence/intrinsic/iterator_range_tag.hpp>
 
 # include <boost/range/begin.hpp>
 # include <boost/range/end.hpp>
@@ -16,9 +16,12 @@
 # include <boost/range/const_iterator.hpp>
 
 # include <boost/iterator/iterator_traits.hpp>
+# include <boost/iterator/is_lvalue_iterator.hpp>
 
 # include <boost/type_traits/is_array.hpp>
 # include <boost/utility/enable_if.hpp>
+
+# include <boost/mpl/or.hpp>
 
 namespace boost { namespace sequence {
 
@@ -57,7 +60,6 @@ struct iterator_range_intrinsics
         
     struct elements
     {
-
         typedef typename GetIterator::type type;
         
         type operator()(Sequence& s) const
@@ -69,14 +71,34 @@ struct iterator_range_intrinsics
 
 // Intrinsics specializations for iterator ranges.
 template <class Sequence>
-struct intrinsics<Sequence, iterator_range_tag>
+struct intrinsics<Sequence, intrinsic::iterator_range_tag>
   : iterator_range_intrinsics<
+# if 1
         Sequence, range_iterator<Sequence>
+# else
+        // Not sure what this was all about
+        typename mpl::if_<
+            mpl::or_<
+                is_convertible<
+                    typename iterator_category<
+                        typename range_iterator<Sequence>::type
+                    >::type
+                  , std::output_iterator_tag
+                >
+              , is_non_const_lvalue_iterator<
+                    typename range_iterator<Sequence>::type
+                >
+            >
+          , Sequence
+          , Sequence const
+        >::type
+      , range_result_iterator<Sequence>
+# endif 
     >
 {};
 
 template <class Sequence>
-struct intrinsics<Sequence const, iterator_range_tag>
+struct intrinsics<Sequence const, intrinsic::iterator_range_tag>
   : iterator_range_intrinsics<
         Sequence, range_const_iterator<Sequence>
     >
@@ -98,6 +120,17 @@ namespace intrinsic
   template <class Sequence>
   struct elements : intrinsics<Sequence>::elements {};
 
+  template <class Sequence>
+  struct homogenize
+  {
+      typedef Sequence& type;
+      
+      Sequence& operator()(Sequence& s)
+      {
+          return s;
+      }
+  };
+  
   template <class Cursor>
   struct next
   {
@@ -135,7 +168,7 @@ namespace intrinsic
       
       type operator()(Cursor1 const& c1, Cursor2 const& c2) const
       {
-          return c2 == c1;
+          return c1 == c2;
       }
   };
 

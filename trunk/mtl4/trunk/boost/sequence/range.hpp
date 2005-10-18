@@ -6,7 +6,7 @@
 
 # include <boost/sequence/range_fwd.hpp>
 # include <boost/compressed_pair.hpp>
-# include <boost/sequence/tag_fwd.hpp>
+# include <boost/sequence/intrinsic/tag_fwd.hpp>
 # include <boost/sequence/homogeneous.hpp>
 # include <boost/sequence/category_fwd.hpp>
 # include <boost/sequence/fixed_size/category.hpp>
@@ -56,16 +56,20 @@ namespace range_
       { return r; }
   };
 
+  // Identifies ranges for tag dispatch purposes
   struct tag {};
 }
 
 using range_::range;
 
-template <class Elements, class Begin, class End>
-struct tag<range<Elements,Begin,End> >
+namespace intrinsic
 {
-    typedef range_::tag type;
-};
+  template <class Elements, class Begin, class End>
+  struct tag<range<Elements,Begin,End> >
+  {
+      typedef range_::tag type;
+  };
+}
 
 template <class Range>
 struct intrinsics<Range, range_::tag>

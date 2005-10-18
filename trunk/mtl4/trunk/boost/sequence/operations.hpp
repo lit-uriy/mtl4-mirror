@@ -7,7 +7,7 @@
 # include <boost/sequence/intrinsics_fwd.hpp>
 # include <boost/sequence/fixed_size/intrinsics.hpp>
 # include <boost/sequence/identity_property_map.hpp>
-# include <boost/sequence/iterator_range_tag.hpp>
+# include <boost/sequence/intrinsic/iterator_range_tag.hpp>
 # include <boost/range/begin.hpp>
 # include <boost/range/end.hpp>
 # include <boost/range/iterator.hpp>
@@ -65,14 +65,14 @@ struct iterator_range_intrinsics
 
 // Intrinsics specializations for iterator ranges.
 template <class Sequence>
-struct intrinsics<Sequence, iterator_range_tag>
+struct intrinsics<Sequence, intrinsic::iterator_range_tag>
   : iterator_range_intrinsics<
         Sequence, range_iterator<Sequence>
     >
 {};
 
 template <class Sequence>
-struct intrinsics<Sequence const, iterator_range_tag>
+struct intrinsics<Sequence const, intrinsic::iterator_range_tag>
   : iterator_range_intrinsics<
         Sequence, range_const_iterator<Sequence>
     >
