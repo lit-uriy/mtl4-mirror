@@ -8,7 +8,7 @@
 # include <boost/sequence/detail/is_mpl_integral_constant.hpp>
 # include <boost/sequence/detail/typeof_add.hpp>
 # include <boost/sequence/detail/typeof_subtract.hpp>
-# include <boost/sequence/intrinsics.hpp>
+# include <boost/sequence/intrinsic/operations.hpp>
 # include <boost/utility/enable_if.hpp>
 # include <boost/type_traits/is_class.hpp>
 # include <boost/type_traits/is_integral.hpp>

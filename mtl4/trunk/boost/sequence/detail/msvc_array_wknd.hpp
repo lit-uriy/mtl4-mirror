@@ -6,6 +6,27 @@
 
 # include <boost/detail/workaround.hpp>
 
+// BOOST_SEQUENCE_MSVC_ARRAY_WKND(args, gen_result_type) --
+//
+// A workaround for a VC++ bug that causes non-const arrays to bind to
+// const references in preference to non-const references.
+//
+//   args: a Boost.Preprocessor SEQ of a function template's argument
+//     types
+//
+//   gen_result_type: a nullary metafunction that computes the
+//     function template's result type.
+//
+// Example:
+//
+//   template <class T>         // Should pick up non-const arrays
+//   tyepename result<T&>::type
+//   f(T& a0);                 
+//
+//   template <class T>
+//   BOOST_SEQUENCE_MSVC_ARRAY_WKND( (T) , result<T const&> )
+//   f(T const& a0);
+
 # if !BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050601))
 
 #  define BOOST_SEQUENCE_MSVC_ARRAY_WKND(args, gen_result_type) \
