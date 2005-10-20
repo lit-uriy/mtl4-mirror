@@ -132,22 +132,43 @@ value(const transposed_view<Matrix>& ma)
 
 namespace traits
 {
+
+    namespace detail
+    {
+	template <class UseTag, class Matrix>
+	struct range_transposer
+	{
+	    typedef range_generator<UseTag, Matrix>  generator;
+	    typedef typename generator::complexity   complexity;
+	    typedef typename generator::type         type;
+	    static int const                         level = generator::level;
+	    type begin(transposed_view<Matrix> const& m)
+	    {
+		return generator().begin(m.ref);
+	    }
+	    type end(transposed_view<Matrix> const& m)
+	    {
+		return generator().end(m.ref);
+	    }
+	};
+    }
+
+    // Row and column cursors are interchanged
+    template <class Matrix>
+    struct range_generator<glas::tags::col_t, transposed_view<Matrix> >
+	: detail::range_transposer<glas::tags::row_t, Matrix>
+    {};
+
+    template <class Matrix>
+    struct range_generator<glas::tags::row_t, transposed_view<Matrix> >
+	: detail::range_transposer<glas::tags::col_t, Matrix>
+    {};
+
+    // Other cursors are still use the same tag, e.g. elements
     template <class Tag, class Matrix>
     struct range_generator<Tag, transposed_view<Matrix> >
-    {
-	typedef range_generator<Tag, Matrix>     generator;
-	typedef typename generator::complexity   complexity;
-	typedef typename generator::type         type;
-	static int const                         level = generator::level;
-	type begin(transposed_view<Matrix> const& m)
-	{
-	    return generator().begin(m.ref);
-	}
-	type end(transposed_view<Matrix> const& m)
-	{
-	    return generator().end(m.ref);
-	}
-    };
+	: detail::range_transposer<Tag, Matrix>
+    {};
 
 }
 
