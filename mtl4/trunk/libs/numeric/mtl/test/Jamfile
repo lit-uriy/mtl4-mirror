@@ -4,11 +4,6 @@ project my_mtl
   ;
 
 exe dense2D : dense2D.cpp ; 
-#exe fractalu : fractalu.cpp : <include>$(BOOST_ROOT) <include>$(MTL_BOOST_ROOT) ;
-#exe mat_vec_mult_timing : mat_vec_mult_timing.cpp : <release><optimization>speed <include>$(BOOST_ROOT) <include>$(MTL_BOOST_ROOT) ;
-
-
-# exe dense2D : dense2D.cpp : <include>$(BOOST_ROOT) <include>../../../../boost/numeric ;
-# exe fractalu : fractalu.cpp : <include>$(BOOST_ROOT) <include>../../../../boost/numeric ;
-# exe mat_vec_mult_timing : mat_vec_mult_timing.cpp : <release><optimization>speed <include>$(BOOST_ROOT) <include>../../../../boost/numeric ; 
+#exe fractalu : fractalu.cpp ;
+#exe mat_vec_mult_timing : mat_vec_mult_timing.cpp : <release><optimization>speed ;
 
