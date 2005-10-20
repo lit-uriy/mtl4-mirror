@@ -69,38 +69,38 @@ namespace intrinsic
   {
       typedef range_::tag type;
   };
+
+  template <class Range>
+  struct operations<Range, range_::tag>
+  {
+      struct begin
+      {
+          typedef typename Range::begin type;
+          type operator()(Range& r)
+          {
+              return range_::accessor::data(r).first();
+          }
+      };
+
+      struct end
+      {
+          typedef typename Range::end type;
+          type operator()(Range& r)
+          {
+              return range_::accessor::data(r).second().first();
+          }
+      };
+
+      struct elements
+      {
+          typedef typename Range::elements type;
+          type operator()(Range& r)
+          {
+              return range_::accessor::data(r).second().second();
+          }
+      };
+  };
 }
-
-template <class Range>
-struct intrinsics<Range, range_::tag>
-{
-    struct begin
-    {
-        typedef typename Range::begin type;
-        type operator()(Range& r)
-        {
-            return range_::accessor::data(r).first();
-        }
-    };
-    
-    struct end
-    {
-        typedef typename Range::end type;
-        type operator()(Range& r)
-        {
-            return range_::accessor::data(r).second().first();
-        }
-    };
-
-    struct elements
-    {
-        typedef typename Range::elements type;
-        type operator()(Range& r)
-        {
-            return range_::accessor::data(r).second().second();
-        }
-    };
-};
 
 }} // namespace boost::sequence
 
