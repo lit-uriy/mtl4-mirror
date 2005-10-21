@@ -8,13 +8,16 @@
 # include <boost/sequence/make_range.hpp>
 # include <boost/sequence/range.hpp>
 # include <boost/sequence/next.hpp>
-# include <boost/sequence/algorithm/fixed_size/unrolled.hpp>
-# include <boost/sequence/detail/make_compressed_pair.hpp>
-# include <boost/sequence/algorithm/copy_fwd.hpp>
+# include <boost/sequence/homogenize.hpp>
 # include <boost/sequence/extent.hpp>
 # include <boost/sequence/elements.hpp>
 # include <boost/sequence/begin.hpp>
 # include <boost/sequence/end.hpp>
+
+# include <boost/sequence/algorithm/fixed_size/unrolled.hpp>
+# include <boost/sequence/detail/make_compressed_pair.hpp>
+# include <boost/sequence/algorithm/copy_fwd.hpp>
+
 # include <boost/mpl/size_t.hpp>
 
 namespace boost { namespace sequence { namespace algorithm { namespace fixed_size { 
@@ -128,8 +131,8 @@ copy(
 // should be copied by unrolled subsequence copies.
 //
 // We are also not trying to dispatch to machine intrinsics, yet.
-template <>
-struct unrolled< id::copy >
+template <bool homogeneous>
+struct unrolled< id::copy, homogeneous >
 {
     // Result type computer.  This metafunction is called "apply" so
     // that unrolled<id::copy> will be an MPL metafunction class.
@@ -150,25 +153,46 @@ struct unrolled< id::copy >
         > type;
     };
 
+    template <class Advancer, class Start, class Length, class Finish>
+    static typename Advancer::type
+    select_result(Advancer a, Start s, Length l, Finish)
+    {
+        return a(s,l);
+    }
+    
+    template <class Advancer, class Start, class Length>
+    static typename Advancer::type
+    select_result(Advancer, Start s, Length l, typename Advancer::type f)
+    {
+        return f;
+    }
+    
     // Implementation
     template <class Range1, class Range2>
     static typename apply<Range1,Range2>::type
     execute(Range1 const& in, Range2& out)
     {
         typedef typename extent<Range1>::type length;
-
+        typedef intrinsic::advance<typename apply<Range1,Range2>::start, length> advancer;
+            
         return make_range(
             sequence::elements(out)
-          , fixed_size::copy(
-                mpl::size_t<length::value>()
-              , sequence::elements(in)
-              , sequence::elements(out)
+          , select_result(
+                advancer()
+              , sequence::begin(out)
+              , length()
+                
+              , fixed_size::copy(
+                    mpl::size_t<length::value>()
+                  , sequence::elements(sequence::homogenize(in))
+                  , sequence::elements(sequence::homogenize(out))
 
-              , detail::make_compressed_pair(
-                    sequence::begin(in)
-                  , sequence::begin(out)
-                )
-            ).second()  // grab the out cursor
+                  , detail::make_compressed_pair(
+                        sequence::begin(sequence::homogenize(in))
+                      , sequence::begin(sequence::homogenize(out))
+                    )
+                ).second()  // grab the out cursor
+            )
             
           , sequence::end(out)
         );

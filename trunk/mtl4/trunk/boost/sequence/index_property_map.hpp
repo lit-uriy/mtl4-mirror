@@ -9,6 +9,11 @@
 
 namespace boost { namespace sequence { 
 
+# ifdef BOOST_MSVC
+#  pragma warning(push)
+#  pragma warning(disable:4512) // assignment operator could not be generated
+# endif
+
 // A property map for accessing indexable objects
 template <class Indexable>
 struct index_property_map
@@ -52,6 +57,11 @@ struct index_property_map
 
     Indexable index;
 };
+
+# ifdef BOOST_MSVC
+#  pragma warning(pop)
+# endif
+
 
 }} // namespace boost::sequence
 

@@ -9,7 +9,7 @@ namespace boost { namespace sequence {
 namespace range_
 {
   template <class Elements, class Begin, class End>
-  struct range;
+  class range;
 }
 
 using range_::range;
