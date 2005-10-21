@@ -25,14 +25,14 @@ namespace intrinsic
       struct begin
       {
           typedef fixed_size::cursor<0> type;
-          type operator()(Sequence const& s) const
+          type operator()(Sequence const&) const
           { return type(); }
       };
     
       struct end
       {
           typedef fixed_size::cursor<N> type;
-          type operator()(Sequence const& s) const
+          type operator()(Sequence const&) const
           { return type(); }
       };
 

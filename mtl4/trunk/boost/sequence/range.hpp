@@ -14,9 +14,14 @@
 
 namespace boost { namespace sequence { 
 
+#ifdef BOOST_MSVC
+# pragma warning(push)
+# pragma warning(disable:4512)
+#endif 
+
 namespace range_
 {
-  class accessor;
+  struct accessor;
   
   template <class Elements, class Begin, class End>
   class range
@@ -28,7 +33,7 @@ namespace range_
           >
       >
   {
-      friend class accessor;
+      friend struct accessor;
       
       typedef compressed_pair<
           Begin
@@ -59,6 +64,10 @@ namespace range_
   // Identifies ranges for tag dispatch purposes
   struct tag {};
 }
+
+#ifdef BOOST_MSVC
+# pragma warning(pop)
+#endif 
 
 using range_::range;
 
