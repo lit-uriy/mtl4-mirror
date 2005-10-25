@@ -7,10 +7,10 @@ namespace mtl {
 
 // Copies range of values into elements
 // As name says it is a raw operation and to used with uttermost care
-template <class Matrix, class InputIterator> 
-void raw_copy(InputIterator first, InputIterator last, Matrix& ma)
+template <typename Matrix, typename InputIterator> 
+void raw_copy(InputIterator first, InputIterator last, Matrix& matrix)
 {
-    std::copy(first, last, ma.elements());
+    std::copy(first, last, matrix.elements());
 }
 
 // Temporary solution
