@@ -63,29 +63,29 @@ struct dense2D_indexer
 {
 private:
     // helpers for public functions
-    size_t _offset(size_t dim2, size_t r, size_t c, row_major) const 
+    size_t offset(size_t dim2, size_t r, size_t c, row_major) const 
     {
 	return r * dim2 + c; 
     }
-    size_t _offset(size_t dim2, size_t r, size_t c, col_major) const 
+    size_t offset(size_t dim2, size_t r, size_t c, col_major) const 
     {
 	return c * dim2 + r; 
     }
     
-    size_t _row(size_t offset, size_t dim2, row_major) const 
+    size_t row(size_t offset, size_t dim2, row_major) const 
     {
 	return offset / dim2; 
     }
-    size_t _row(size_t offset, size_t dim2, col_major) const 
+    size_t row(size_t offset, size_t dim2, col_major) const 
     {
 	return offset % dim2;
     }
     
-    size_t _col(size_t offset, size_t dim2, row_major) const 
+    size_t col(size_t offset, size_t dim2, row_major) const 
     {
 	return offset % dim2;
     }
-    size_t _col(size_t offset, size_t dim2, col_major) const 
+    size_t col(size_t offset, size_t dim2, col_major) const 
     {
 	return offset / dim2; 
     }
@@ -98,14 +98,14 @@ private:
 	typename Matrix::index_type my_index;
 	size_t my_r= index::change_from(my_index, r);
 	size_t my_c= index::change_from(my_index, c);
-	return _offset(ma.dim2(), my_r, my_c, typename Matrix::orientation());
+	return offset(ma.dim2(), my_r, my_c, typename Matrix::orientation());
     }
 
     template <class Matrix>
     size_t row(const Matrix& ma, typename Matrix::key_type key) const
     {
 	// row with c-index for my orientation
-	size_t r= _row(ma.offset(key), ma.dim2(), typename Matrix::orientation());
+	size_t r= row(ma.offset(key), ma.dim2(), typename Matrix::orientation());
 	return index::change_to(typename Matrix::index_type(), r);
     }
 
@@ -113,10 +113,10 @@ private:
     size_t col(const Matrix& ma, typename Matrix::key_type key) const 
     {
 	// column with c-index for my orientation
-	size_t c= _col(ma.offset(key), ma.dim2(), typename Matrix::orientation());
+	size_t c= col(ma.offset(key), ma.dim2(), typename Matrix::orientation());
 	return index::change_to(typename Matrix::index_type(), c);
     }
-};
+}; // dense2D_indexer
 
   
 // Dense 2D matrix type

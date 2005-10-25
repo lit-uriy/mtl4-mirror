@@ -33,7 +33,7 @@ struct base_matrix
     // derived class is responsible that nnz is correctly set
     void allocate() 
     {
-      if (! ext && data) delete data; 
+      if (! ext && data) delete[] data; 
       data = new value_type[nnz];
       ext = false;
     }
@@ -59,7 +59,7 @@ struct base_matrix
     // destruct if my own data (and allocated)
     ~base_matrix() 
     { 
-      if (! ext && data) delete data; 
+      if (! ext && data) delete[] data; 
     }
     
     // number of rows
