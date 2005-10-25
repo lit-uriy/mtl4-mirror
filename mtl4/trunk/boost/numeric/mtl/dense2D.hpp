@@ -24,7 +24,7 @@ template <typename Elt, typename Parameters> class dense2D;
 struct dense2D_indexer;
 
 
-// cursor over every element
+// Cursor over every element
 template <class Elt> 
 struct dense_el_cursor : public detail::base_cursor<const Elt*> 
 {
@@ -41,7 +41,7 @@ struct dense_el_cursor : public detail::base_cursor<const Elt*>
     {}
 };
 
-// cursor over every element
+// Cursor over strided elements
 template <class Elt> 
 struct strided_dense_el_cursor : public detail::strided_base_cursor<const Elt*> 
 {
@@ -58,9 +58,7 @@ struct strided_dense_el_cursor : public detail::strided_base_cursor<const Elt*>
     {}
 };
 
-
-
-
+// Indexing for dense matrices
 struct dense2D_indexer 
 {
 private:
@@ -121,7 +119,7 @@ private:
 };
 
   
-// M and N as template parameters might be considered later
+// Dense 2D matrix type
 template <typename Elt, typename Parameters>
 class dense2D : public detail::base_matrix<Elt, Parameters>
 {
@@ -136,7 +134,7 @@ class dense2D : public detail::base_matrix<Elt, Parameters>
     typedef pointer_type                  key_type;
     typedef std::size_t                   size_type;
     typedef dense_el_cursor<Elt>          el_cursor_type;  
-    typedef std::pair<el_cursor_type, el_cursor_type> el_cursor_pair;
+    // typedef std::pair<el_cursor_type, el_cursor_type> el_cursor_pair; not used 
     typedef dense2D_indexer               indexer_type;
 
   protected:

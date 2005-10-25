@@ -3,6 +3,7 @@
 #ifndef MTL_BASE_MATRIX_INCLUDE
 #define MTL_BASE_MATRIX_INCLUDE
 
+#include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/dimensions.hpp>
 #include <boost/numeric/mtl/index.hpp>
@@ -52,7 +53,7 @@ struct base_matrix
     // sets dimensions and pointer to external data
     explicit base_matrix(value_type* a) : data(a), ext(true), nnz(0) 
     { 
-//       BOOST_ASSERT((dim_type::is_static));
+      BOOST_STATIC_ASSERT((dim_type::is_static));
     }
 
     // destruct if my own data (and allocated)
