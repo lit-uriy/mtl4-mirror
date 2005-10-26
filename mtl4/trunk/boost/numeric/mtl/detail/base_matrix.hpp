@@ -122,12 +122,13 @@ struct base_matrix
       return dim.num_rows();
     }
   
-    // dispatched functions for major
-    size_t major(size_t r, size_t c, row_major) const
+    // Dispatched functions for major
+    // Trailing _ due to conflicts with macro major
+    size_t major_(size_t r, size_t, row_major) const
     {
 	return r; 
     }
-    size_t major(size_t r, size_t c, row_major) const
+    size_t major_(size_t, size_t c, col_major) const
     {
 	return c; 
     }    
@@ -146,15 +147,17 @@ struct base_matrix
     }
 
     // Returns the row for row_major otherwise the column
-    size_t major(size_t r, size_t c) const
+    // Trailing _ due to conflicts with macro major
+    size_t major_(size_t r, size_t c) const
     {
-	return major(r, c, orientation());
+	return major_(r, c, orientation());
     }
 
     // Returns the row for col_major otherwise the column
-    size_t minor(size_t r, size_t c) const
+    // Trailing _ for consistency with major
+    size_t minor_(size_t r, size_t c) const
     {
-	return major(c, r, orientation());
+	return major_(c, r, orientation());
     }
 	
     // offset of key (pointer) w.r.t. data 

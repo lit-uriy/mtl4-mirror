@@ -49,11 +49,11 @@ struct compressed_updating_el_cursor : public detail::base_cursor<const Elt*>
     typedef const value_type*             pointer_type; // ?
     typedef detail::base_cursor<const Elt*> super;
 
-    compressed_el_cursor () {} 
-    compressed_el_cursor (pointer_type me, ) : super(me) {}
+    compressed_updating_el_cursor () {} 
+    compressed_updating_el_cursor (pointer_type me, ) : super(me) {}
 
     template <typename Parameters>
-    compressed_el_cursor(compressed2D<Elt, Parameters> const& ma, size_t r, size_t c)
+    compressed_updating_el_cursor(compressed2D<Elt, Parameters> const& ma, size_t r, size_t c)
 	: super(ma.elements() + ma.indexer(ma, r, c))
     {}
 };
@@ -82,7 +82,7 @@ public:
 	typename Matrix::index_type my_index;
 	size_t my_r= index::change_from(my_index, r);
 	size_t my_c= index::change_from(my_index, c);
-	return offset(ma, major(my_r, my_c), minor(my_r, my_c));
+	return offset(ma, major_(my_r, my_c), minor_(my_r, my_c));
     }
 
 
