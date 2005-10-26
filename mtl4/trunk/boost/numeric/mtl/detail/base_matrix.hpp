@@ -122,6 +122,16 @@ struct base_matrix
       return dim.num_rows();
     }
   
+    // dispatched functions for major
+    size_t major(size_t r, size_t c, row_major) const
+    {
+	return r; 
+    }
+    size_t major(size_t r, size_t c, row_major) const
+    {
+	return c; 
+    }    
+
   public:
     // return major dimension
     size_t dim1() const 
@@ -129,12 +139,24 @@ struct base_matrix
       return dim1(orientation());
     }
 
-    // return major dimension
+    // return minor dimension
     size_t dim2() const 
     {
       return dim2(orientation());
     }
 
+    // Returns the row for row_major otherwise the column
+    size_t major(size_t r, size_t c) const
+    {
+	return major(r, c, orientation());
+    }
+
+    // Returns the row for col_major otherwise the column
+    size_t minor(size_t r, size_t c) const
+    {
+	return major(c, r, orientation());
+    }
+	
     // offset of key (pointer) w.r.t. data 
     // values must be stored consecutively
     size_t offset(const value_type* p) const 

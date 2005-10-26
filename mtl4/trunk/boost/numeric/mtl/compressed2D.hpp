@@ -3,6 +3,18 @@
 #ifndef MTL_COMPRESSED2D_INCLUDE
 #define MTL_COMPRESSED2D_INCLUDE
 
+#include <algorithm>
+#include <boost/numeric/mtl/detail/base_cursor.hpp>
+#include <boost/numeric/mtl/detail/base_matrix.hpp>
+#include <boost/numeric/mtl/detail/range_generator.hpp>
+#include <boost/numeric/mtl/matrix_parameters.hpp>
+#include <boost/numeric/mtl/property_map.hpp>
+#include <boost/numeric/mtl/range_generator.hpp>
+#include <boost/numeric/mtl/maybe.hpp>
+#include <boost/numeric/mtl/complexity.hpp>
+#include <boost/numeric/mtl/glas_tags.hpp>
+
+
 namespace mtl {
 
 using std::size_t;
@@ -49,12 +61,38 @@ struct compressed_updating_el_cursor : public detail::base_cursor<const Elt*>
 
 // Indexing for compressed matrices
 struct compressed2D_indexer 
-    // For a given offset the minor 
+{
+private:
+    // helpers for public functions
+    maybe<size_t> offset(const Matrix& ma, size_t major, size_t minor) const 
+    {
+	size_t *first = &ma.indices[ ma.starts[major] ],
+	       *last = &ma.indices[ ma.starts[major+1] ];
+	size_t *index = std::lower_bound(first, last, minor);
+	return maybe(index - ma.indices.begin(), *index == minor);
+    }
+
+public:
+    // Returns the offset if found
+    // If not found it returns the position where it would be inserted
+    template <class Matrix>
+    maybe<size_t> operator() (const Matrix& ma, size_t r, size_t c) const
+    {
+	// convert into c indices
+	typename Matrix::index_type my_index;
+	size_t my_r= index::change_from(my_index, r);
+	size_t my_c= index::change_from(my_index, c);
+	return offset(ma, major(my_r, my_c), minor(my_r, my_c));
+    }
+
+
+    // For a given offset the minor can be accessed directly, the major dim has to be searched
     template <class Matrix>
     size_type find_major(const Matrix& ma, size_type offset)
     {
-	
+	return std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
     }
+
 }; // compressed2D_indexer
 
 
@@ -124,7 +162,8 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 
     friend compressed2D_indexer;
 
- protected:
+    indexer_type  indexer;
+protected:
     vector<size_t>          starts;
     vector<size_t>          indices;
 };
