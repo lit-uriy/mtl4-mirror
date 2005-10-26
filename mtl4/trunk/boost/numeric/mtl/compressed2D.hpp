@@ -69,8 +69,11 @@ private:
     maybe<size_t> offset(const Matrix& ma, size_t major, size_t minor) const 
     {
 	const size_t *first = &ma.indices[ ma.starts[major] ],
-	             *last = &ma.indices[ ma.starts[major+1] ],
-	             *index = std::lower_bound(first, last, minor);
+	             *last = &ma.indices[ ma.starts[major+1] ];
+	// if empty row (or column) return start of next one
+	if (first == last) 
+	    return maybe<size_t> (first - &ma.indices[0], false);
+	const size_t *index = std::lower_bound(first, last, minor);
 	return maybe<size_t> (index - &ma.indices[0], *index == minor);
     }
 
