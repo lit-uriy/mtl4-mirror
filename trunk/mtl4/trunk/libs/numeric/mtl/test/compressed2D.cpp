@@ -9,6 +9,7 @@
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
+#include <boost/numeric/mtl/maybe.hpp>
 #include <boost/numeric/mtl/operations/raw_copy.hpp>
 
 using namespace mtl;
@@ -17,8 +18,8 @@ using namespace std;
 
 int test_main(int argc, char* argv[])
 {
-    typedef matrix_parameters<row_major, mtl::index::c_index, fixed::dimensions<4, 5> > parameters1;
-    typedef compressed2D<double, Parameters> matrix_type;
+    typedef matrix_parameters<row_major, mtl::index::c_index, fixed::dimensions<4, 5> > parameters;
+    typedef compressed2D<double, parameters> matrix_type;
     matrix_type   matrix;
 	
     size_t        sts[] = {0, 3, 3, 5, 10},
@@ -28,7 +29,17 @@ int test_main(int argc, char* argv[])
 
     for (size_t r = 0; r < matrix.num_rows(); ++r)
 	for (size_t c = 0; c < matrix.num_cols(); ++c)
-	    cout << r << ", " << c << ": " << matrix.indexer(r, c);
+	    cout << r << ", " << c << ": " << matrix.indexer(matrix, r, c) << '\n';
+
+    for (size_t r = 0; r < matrix.num_rows(); ++r) {
+	cout << '[';
+	for (size_t c = 0; c < matrix.num_cols(); ++c) {
+	    maybe<size_t> m = matrix.indexer(matrix, r, c);
+	    cout << (m ? m.value() : 0) << ", "; }
+	cout << "]\n";
+    }
+
 
     return 0;
 }
+ 
