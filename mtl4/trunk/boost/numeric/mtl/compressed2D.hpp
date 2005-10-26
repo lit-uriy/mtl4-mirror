@@ -4,6 +4,7 @@
 #define MTL_COMPRESSED2D_INCLUDE
 
 #include <algorithm>
+#include <vector>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_matrix.hpp>
 #include <boost/numeric/mtl/detail/range_generator.hpp>
@@ -50,7 +51,7 @@ struct compressed_updating_el_cursor : public detail::base_cursor<const Elt*>
     typedef detail::base_cursor<const Elt*> super;
 
     compressed_updating_el_cursor () {} 
-    compressed_updating_el_cursor (pointer_type me, ) : super(me) {}
+    compressed_updating_el_cursor (pointer_type me) : super(me) {}
 
     template <typename Parameters>
     compressed_updating_el_cursor(compressed2D<Elt, Parameters> const& ma, size_t r, size_t c)
@@ -64,12 +65,13 @@ struct compressed2D_indexer
 {
 private:
     // helpers for public functions
+    template <class Matrix>
     maybe<size_t> offset(const Matrix& ma, size_t major, size_t minor) const 
     {
-	size_t *first = &ma.indices[ ma.starts[major] ],
-	       *last = &ma.indices[ ma.starts[major+1] ];
-	size_t *index = std::lower_bound(first, last, minor);
-	return maybe(index - ma.indices.begin(), *index == minor);
+	const size_t *first = &ma.indices[ ma.starts[major] ],
+	             *last = &ma.indices[ ma.starts[major+1] ],
+	             *index = std::lower_bound(first, last, minor);
+	return maybe<size_t> (index - &ma.indices[0], *index == minor);
     }
 
 public:
@@ -82,13 +84,13 @@ public:
 	typename Matrix::index_type my_index;
 	size_t my_r= index::change_from(my_index, r);
 	size_t my_c= index::change_from(my_index, c);
-	return offset(ma, major_(my_r, my_c), minor_(my_r, my_c));
+	return offset(ma, ma.major_(my_r, my_c), ma.minor_(my_r, my_c));
     }
 
 
     // For a given offset the minor can be accessed directly, the major dim has to be searched
     template <class Matrix>
-    size_type find_major(const Matrix& ma, size_type offset)
+    size_t find_major(const Matrix& ma, size_t offset)
     {
 	return std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
     }
@@ -118,9 +120,9 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     void allocate(size_t new_nnz)
     {
 	if (new_nnz) {
-	    nnz = new_nnz;
+	    super::nnz = new_nnz;
 	    super::allocate();
-	    indices.resize(nnz);
+	    indices.resize(super::nnz);
 	}
     }
 
@@ -128,14 +130,14 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     explicit compressed2D () 
 	: super() 
     {
-	if (dim_type::is_static) starts.resize(dim1() + 1);
+	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
 
     // setting dimension and allocate starting vector
     explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
       : super(d) 
     {
-	starts.resize(dim1() + 1);
+	starts.resize(super::dim1() + 1);
 	allocate(nnz);
     }
 
@@ -149,9 +151,9 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 	// check if starts has right size
 	allocate(last_value - first_value);
 	// check if nnz and indices has right size
-	std::copy(first_value, last_value, matrix.elements());
-	std::copy(first_start, first_start + matrix.dim1() + 1, matrix.starts);
-	std::copy(first_index, first_index + matrix.num_elements(), matrix);
+	std::copy(first_value, last_value, super::elements());
+	std::copy(first_start, first_start + super::dim1() + 1, starts.begin());
+	std::copy(first_index, first_index + super::num_elements(), indices.begin());
     }
 
     // Consistency check urgently needed !!!
@@ -160,12 +162,12 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     // void insert(size_t row, size_t col, value_type value)
 
 
-    friend compressed2D_indexer;
+    friend struct compressed2D_indexer;
 
     indexer_type  indexer;
 protected:
-    vector<size_t>          starts;
-    vector<size_t>          indices;
+    std::vector<size_t>          starts;
+    std::vector<size_t>          indices;
 };
 
 
