@@ -7,7 +7,7 @@
 
 namespace mtl {
     
-// Inherited version would look like this
+// Refined version (with inheritance) would look like this
 #if 0
 template <typename Set, typename Operation>
 struct concept Magma
