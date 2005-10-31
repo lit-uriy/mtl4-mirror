@@ -35,10 +35,10 @@ public:
     {
 	return my_age != y.my_age;
     }
-
+ 
 };
  
-
+ 
 namespace mtl { 
   template<> concept Monoid <age, glas::add<age> > {};
 }
