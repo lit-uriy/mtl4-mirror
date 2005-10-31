@@ -12,6 +12,7 @@
 
 #include <bits/concepts.h>
 #include <boost/numeric/mtl/scalar/concepts.hpp>
+#include <glas/identity.hpp>
 
 // Pure algebraic functions (a little useless)
 
@@ -25,17 +26,19 @@ template <class T, class Op>
 inline bool equal_results(const T& v1a, const T& v1b, 
 			  const T& v2a, const T& v2b, Op op) 
 {
-  return op(v1a, v1b) == op(v2a, v2b);
+    return op(v1a, v1b) == op(v2a, v2b);
 }
-
-#if 0
 
 // {T, Op} must be a Monoid
 // T must be EqualityComparable
 template <class T, class Op>
-inline bool identityPair(const T& v1, const T& v2, Op op) {
-  return op(v1, v2) == glas::identity<T, Op>::value ;
+    where { std::EqualityComparable<T>, Monoid<T, Op> }
+inline bool identity_pair(const T& v1, const T& v2, Op op) 
+{
+    return op(v1, v2) == glas::identity<T, Op>::value ;
 }
+
+#if 0
 
 // {T, Op} must be a Monoid
 template <class T, class Op>

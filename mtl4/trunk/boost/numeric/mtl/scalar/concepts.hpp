@@ -31,7 +31,34 @@ struct concept Magma
     Set& operator= (Set&, Set const&);
 };
 
+// SemiGroup is a refinement which must be nominal
+template <typename Set, typename Operation>
+concept SemiGroup
+  : Magma<Set, Operation>
+{};
 
+// SemiGroup is a refinement which must be nominal
+template <typename Set, typename Operation>
+concept CommutativeSemiGroup
+  : SemiGroup<Set, Operation>
+{};
+
+#if 0
+// Just a mapping from one set to the same
+template <typename Set, typename Operation>
+struct concept EndomorphicConstant
+{
+    Set operator();
+};
+#endif
+
+template <typename Set, typename Operation>
+concept Monoid
+  : SemiGroup<Set, Operation>
+{
+    typename identity = glas::identity<Set, Operation>;
+    // where EndomorphicConstant< identity<Set, Operation> >;
+};
 
 } // namespace mtl
 

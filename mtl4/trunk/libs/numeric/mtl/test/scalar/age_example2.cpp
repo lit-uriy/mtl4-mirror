@@ -38,6 +38,11 @@ public:
 
 };
  
+
+namespace mtl { 
+  template<> concept Monoid <age, glas::add<age> > {};
+}
+
 inline std::ostream& operator<< (std::ostream& stream, const age& a) 
 {
     return stream << a.sayAge(); 
@@ -51,9 +56,14 @@ int main(int, char* [])
     glas::add<age>     ageAdd;
   
     std::cout << "equal_results(a2,a5,  a3,a4, ageAdd) " 
-	      << mtl::equal_results(a2,a5,  a3,a4, ageAdd)  << std::endl;
+	      << mtl::equal_results(a2,a5,  a3,a4, ageAdd)  << '\n';
     std::cout << "equal_results(a2,a4,  a3,a4, ageAdd) " 
-	      << mtl::equal_results(a2,a4,  a3,a4, ageAdd)  << std::endl;
+	      << mtl::equal_results(a2,a4,  a3,a4, ageAdd)  << '\n';
+
+    std::cout << "identity_pair(a2,a4, ageAdd) " 
+	      << mtl::identity_pair(a2,a4, ageAdd)  << '\n';
+    std::cout << "identity_pair(a0,a0, ageAdd) " 
+	      << mtl::identity_pair(a0,a0, ageAdd)  << '\n';
 
     return 0;
 }
