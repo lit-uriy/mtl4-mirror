@@ -14,7 +14,7 @@
 #include <boost/numeric/mtl/scalar/concepts.hpp>
 #include <glas/identity.hpp>
 
-// Pure algebraic functions (a little useless)
+// Pure algebraic functions (mainly for applying concepts)
 
 namespace mtl {
 
@@ -35,20 +35,23 @@ template <class T, class Op>
     where { std::EqualityComparable<T>, Monoid<T, Op> }
 inline bool identity_pair(const T& v1, const T& v2, Op op) 
 {
-    return op(v1, v2) == glas::identity<T, Op>::value ;
+    return op(v1, v2) == glas::identity<T, Op>()() ;
 }
-
-#if 0
 
 // {T, Op} must be a Monoid
 template <class T, class Op>
-inline T multiplyAndSquare(T base, int exp, Op op) {
-  T value= glas::identity<T, Op>()(), square(base);
-  for (; exp > 0; exp>>= 1) {
-    if (exp & 1) value= op(value, square);
-    square= op(square, square); }
-  return value;  
+    where { Monoid<T, Op>, std::CopyConstructible<T> }
+inline T multiplyAndSquare(T base, int exp, Op op) 
+{
+    T value= glas::identity<T, Op>()(), square= base;
+    for (; exp > 0; exp>>= 1) {
+	if (exp & 1) value= op(value, square);
+	square= op(square, square); 
+    }
+    return value;  
 } 
+
+#if 0
 
 // {T, Op} must be a Group
 // T must be LessThanComparable and Assignable

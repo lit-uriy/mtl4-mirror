@@ -4,9 +4,14 @@
 #define MTL_CONCEPTS_INCLUDE
 
 #include <bits/concepts.h>
+#include <glas/identity.hpp>
+#include <glas/is_invertible.hpp>
+#include <glas/inverse.hpp>
 
 namespace mtl {
-    
+
+#ifdef __GXX_CONCEPTS__
+
 // Refined version (with inheritance) would look like this
 #if 0
 template <typename Set, typename Operation>
@@ -37,28 +42,52 @@ concept SemiGroup
   : Magma<Set, Operation>
 {};
 
-// SemiGroup is a refinement which must be nominal
+
 template <typename Set, typename Operation>
 concept CommutativeSemiGroup
   : SemiGroup<Set, Operation>
 {};
 
-#if 0
-// Just a mapping from one set to the same
-template <typename Set, typename Operation>
-struct concept EndomorphicConstant
-{
-    Set operator();
-};
-#endif
-
+// Adding identity
 template <typename Set, typename Operation>
 concept Monoid
-  : SemiGroup<Set, Operation>
+: SemiGroup<Set, Operation> 
 {
-    typename identity = glas::identity<Set, Operation>;
-    // where EndomorphicConstant< identity<Set, Operation> >;
+    Set operator() (glas::identity<Set, Operation>);
 };
+
+template <typename Set, typename Operation>
+concept CommutativeMonoid
+  : Monoid<Set, Operation>
+{};
+
+
+template <typename Set, typename Operation>
+concept PartiallyInvertibleMonoid
+  : Monoid<Set, Operation> 
+{
+    bool operator() (glas::is_invertible<Set, Operation>, Set);
+};
+
+template <typename Set, typename Operation>
+concept PartiallyInvertibleCommutativeMonoid
+  : PartiallyInvertibleMonoid<Set, Operation>, CommutativeMonoid<Set, Operation>
+{};
+
+template <typename Set, typename Operation>
+concept Group
+  : PartiallyInvertibleMonoid<Set, Operation>
+{
+    Set operator() (glas::inverse<Set, Operation>, Set);
+};
+
+template <typename Set, typename Operation>
+concept AbelianGroup
+  : Group<Set, Operation>, PartiallyInvertibleCommutativeMonoid<Set, Operation>
+{};
+
+
+#endif // __GXX_CONCEPTS__
 
 } // namespace mtl
 
