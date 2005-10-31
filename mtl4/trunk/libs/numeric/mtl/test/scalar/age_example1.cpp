@@ -3,6 +3,7 @@
 
 #include <glas/operators.hpp>
 #include "algebraic_functions.hpp"
+#include <boost/numeric/mtl/scalar/concepts.hpp>
 
 // User defined data types and operators
 
@@ -25,21 +26,31 @@ public:
 	return my_age + y.my_age;
     }
 
-    bool operator==(age const y) const
+    bool operator==(age const& y) const
     {
 	return my_age == y.my_age;
     }
     
-    bool operator!=(age const y) const
+    bool operator!=(age const& y) const
     {
 	return my_age != y.my_age;
     }
 
 };
+ 
+// Explicit model declarations would look like this
+#if 0
+namespace std { 
+ template<> concept EqualityComparable<age> {};
+}
 
-//namespace std { 
-//  template<> struct concept EqualityComparable<age> {};
-//}
+namespace mtl { 
+  template<> concept Magma <age, glas::add<age> > 
+  {
+    typedef age result_type;
+  };
+}
+#endif
 
 inline std::ostream& operator<< (std::ostream& stream, const age& a) 
 {
