@@ -106,6 +106,12 @@ public:
 	return undilate_lut[tmp & 0xff] + (undilate_lut[(tmp >> 16) & 0xff] << 8);
     }
 
+    self& operator= (self const& x)
+    {
+	i = x.i;
+	return *this;
+    }
+
     self& operator++ ()
     {
 	static T const x = Normalized ? bit_mask : T(-1);
