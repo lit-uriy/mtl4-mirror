@@ -27,7 +27,7 @@ void test_inc(string s, T dil, typename T::value_type exp_increment)
 	if (dil.i != dilated.i) throw morton_exception();
 	// check both pre and post increment
 	i & 1 ? ++dil : dil++;
-    }
+    } 
     
     printf("dilated_zero = %x, dilated_one = %x\n", dil.dilated_zero, dil.dilated_one);
 

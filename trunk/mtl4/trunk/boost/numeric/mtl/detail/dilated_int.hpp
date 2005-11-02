@@ -22,26 +22,6 @@ struct odd_bits
     static T const value = ~even_bits<T>::value;
 };
 
-// bin_op1 is binary 'and' for Normalized and binary 'or' for Anti-Normalized
-// Probably not needed
-template <typename T, bool Normalized>
-struct bin_op1_f
-{
-    T operator() (T x, T y) const
-    {
-	return x & y;
-    }
-};
-
-template <typename T>
-struct bin_op1_f<T, false>
-{
-    T operator() (T x, T y) const
-    {
-	return x | y;
-    }
-};
-
 // And is mostly used with original mask
 template <typename T, T BitMask, bool Normalized>
 struct masking
@@ -89,9 +69,6 @@ struct dilated_int
     typedef T                                       value_type;
     typedef dilated_int<T, BitMask, Normalized>     self;
     
-    typedef bin_op1_f<T, Normalized>                bin_op1;
-    typedef bin_op1_f<T, !Normalized>               bin_op2;
-    
     typedef masking<T, BitMask, Normalized>         clean_carry;
     typedef masking<T, BitMask, !Normalized>        init_carry;
 
@@ -110,8 +87,7 @@ public:
     {
 	i = Normalized ? 0 : anti_mask;
     }
-	
-
+    
     // Only works for odd and even bits and 4-byte-int at this point !!!!!!!!!!!!!!!!!!!
     explicit dilated_int(T x)
     {
@@ -219,10 +195,11 @@ public:
 
 };
 
-}
+} // namespace mtl::dilated
+
 using dilated::dilated_int;
 
-} // namespace mtl::dilated
+} // namespace mtl
 
 template <typename T, T BitMask, bool Normalized>
 inline std::ostream& operator<< (std::ostream& os, mtl::dilated::dilated_int<T, BitMask, Normalized> d)
