@@ -150,7 +150,7 @@ template <typename X> struct times<infinite, X> : times<X, infinite> {};
 }} // namespace mtl::complexity
 
 #define MTL_PRINT_COMPLEXITY(TYPE, STRING) \
-std::ostream& operator<< (std::ostream& os, mtl::complexity::TYPE) \
+inline std::ostream& operator<< (std::ostream& os, mtl::complexity::TYPE) \
 {                                                 \
     return os << STRING;                          \
 }
