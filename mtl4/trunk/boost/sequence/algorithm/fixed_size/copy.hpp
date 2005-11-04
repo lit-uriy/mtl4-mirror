@@ -131,8 +131,8 @@ copy(
 // should be copied by unrolled subsequence copies.
 //
 // We are also not trying to dispatch to machine intrinsics, yet.
-template <bool homogeneous>
-struct unrolled< id::copy, homogeneous >
+template <>
+struct unrolled< id::copy, false >
 {
     // Result type computer.  This metafunction is called "apply" so
     // that unrolled<id::copy> will be an MPL metafunction class.
@@ -198,6 +198,28 @@ struct unrolled< id::copy, homogeneous >
         );
     }
 };
+
+template <>
+struct unrolled< id::copy, true >
+  : unrolled< id::copy, false >
+{
+    // Implementation
+    template <class Range1, class Range2>
+    static typename apply<Range1,Range2>::type
+    execute(Range1 const& in, Range2& out)
+    {
+        typedef typename extent<Range1>::type length;
+            
+        return make_range(
+            sequence::elements(out)
+          , sequence::advance(
+              , sequence::begin(out)
+              , length()
+            )
+          , sequence::end(out)
+        );
+    }
+}
 
 }}}} // namespace boost::sequence::algorithm::fixed_size
 
