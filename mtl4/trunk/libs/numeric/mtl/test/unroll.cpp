@@ -77,45 +77,17 @@ double dot4(vector<double> const& v1, vector<double> const& v2)
     return sum + sum2 + sum3 + sum4;
 }
 
-template <unsigned Depth>
-struct recursive_data
-{
-    static unsigned const    depth= Depth;
-    double                   sum;
-    recursive_data<Depth-1>  remainder;
-
-    recursive_data(double s) : sum(s), remainder(s) {}
-    
-    double sum_up()
-    {
-	return sum + remainder.sum_up();
-    }
-};
-       
-template <>
-struct recursive_data<1> 
-{
-    static unsigned const    depth= 1;
-    double                   sum;
-
-    recursive_data(double s) : sum(s) {}
-    
-    double sum_up()
-    {
-	return sum;
-    }
-};
-
 template <unsigned Depth, unsigned MaxDepth>
 struct dot_block
 {
     static unsigned const offset= MaxDepth - Depth;
 
-    void operator() (vector<double> const& v1, vector<double> const& v2,
-		     recursive_data<Depth>& sum_block, unsigned i)
+    void operator() (vector<double> const& v1, vector<double> const& v2, unsigned i,
+		     double& s0, double& s1, double& s2, double& s3,
+		     double& s4, double& s5, double& s6, double& s7)
     {
-	sum_block.sum+= v1[ i + offset ] * v2[ i + offset ];
-	dot_block<Depth-1, MaxDepth>() (v1, v2, sum_block.remainder, i);
+	s0+= v1[ i + offset ] * v2[ i + offset ];
+	dot_block<Depth-1, MaxDepth>() (v1, v2, i, s1, s2, s3, s4, s5, s6, s7, s0);
     }
 };
 
@@ -124,10 +96,11 @@ struct dot_block<1, MaxDepth>
 {
     static unsigned const offset= MaxDepth - 1;
 
-    void operator() (vector<double> const& v1, vector<double> const& v2,
-		     recursive_data<1>& sum_block, unsigned i)
+    void operator() (vector<double> const& v1, vector<double> const& v2, unsigned i,
+		     double& s0, double&, double&, double&,
+		     double&, double&, double&, double&)
     {
-	sum_block.sum+= v1[ i + offset ] * v2[ i + offset ];
+	s0+= v1[ i + offset ] * v2[ i + offset ];
     }
 };
 
@@ -137,14 +110,14 @@ double unrolled_dot(vector<double> const& v1, vector<double> const& v2)
     // check v1.size() == v2.size();
     unsigned size= v1.size(), blocks= size / Depth, blocked_size= blocks * Depth;
 
-    recursive_data<Depth> sum_block(0.0);
+    double s0= 0.0, s1= 0.0, s2= 0.0, s3= 0.0, s4= 0.0, s5= 0.0, s6= 0.0, s7= 0.0;
     for (unsigned i= 0; i < blocked_size; i+= Depth)
-	dot_block<Depth, Depth>()(v1, v2, sum_block, i);
+	dot_block<Depth, Depth>()(v1, v2, i, s0, s1, s2, s3, s4, s5, s6, s7);
 
-    double sum= sum_block.sum_up();
+    s0+= s1 + s2 + s3 + s4 + s5 + s6 + s7;
     for (unsigned i= blocked_size; i < size; ++i)
-	sum+= v1[i] * v2[i];
-    return sum;
+	s0+= v1[i] * v2[i];
+    return s0;
 }
 
 
@@ -168,8 +141,11 @@ int test_main(int argc, char* argv[])
     time_dot("template 8", unrolled_dot<8>);
     time_dot("template 9", unrolled_dot<9>);
     time_dot("template10", unrolled_dot<10>);
+    time_dot("template11", unrolled_dot<11>);
     time_dot("template12", unrolled_dot<12>);
+    time_dot("template13", unrolled_dot<13>);
     time_dot("template14", unrolled_dot<14>);
+    time_dot("template15", unrolled_dot<15>);
     time_dot("template16", unrolled_dot<16>);
 
     return 0;
