@@ -89,25 +89,25 @@ struct recursive_data<1>
 template <unsigned Depth, unsigned MaxDepth>
 struct dot_block
 {
-    inline void operator() (vector<double> const& v1, vector<double> const& v2,
+    static unsigned const offset= MaxDepth - Depth;
+
+    void operator() (vector<double> const& v1, vector<double> const& v2,
 		     recursive_data<Depth>& sum_block, unsigned i)
     {
-	static unsigned const depth= sum_block.depth;
-	sum_block.sum+= v1[ i + MaxDepth - depth ] * v2[ i + MaxDepth - depth ];
-	// dot_block<recursive_data<depth-1>, MaxDepth>(v1, v2, sum_block.remainder, i);
-	dot_block<depth-1, MaxDepth>() (v1, v2, sum_block.remainder, i);
+	sum_block.sum+= v1[ i + offset ] * v2[ i + offset ];
+	dot_block<Depth-1, MaxDepth>() (v1, v2, sum_block.remainder, i);
     }
 };
 
 template <unsigned MaxDepth>
 struct dot_block<1, MaxDepth>
 {
-    // static const unsigned offset= MaxDepth - 1;
+    static unsigned const offset= MaxDepth - 1;
 
-    inline void operator() (vector<double> const& v1, vector<double> const& v2,
+    void operator() (vector<double> const& v1, vector<double> const& v2,
 		     recursive_data<1>& sum_block, unsigned i)
     {
-	sum_block.sum+= v1[ i + MaxDepth - 1 ] * v2[ i + MaxDepth - 1 ];
+	sum_block.sum+= v1[ i + offset ] * v2[ i + offset ];
     }
 };
 
