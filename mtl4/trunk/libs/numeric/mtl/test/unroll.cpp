@@ -7,7 +7,7 @@
 
 using namespace std;
 
-int const vector_size = 10; // 1000
+int const vector_size = 1000; // 1000
 
 vector<double> gv1(vector_size, 2.0), gv2(vector_size, 3.0);
 
@@ -17,7 +17,7 @@ void time_dot(std::string fname, F f)
 
     boost::timer start;
     double result;
-    for (int i= 0; i < 1; i++) // 100000
+    for (int i= 0; i < 100000; i++) // 100000
 	result= f(gv1, gv2);
     double duration = start.elapsed();
     cout << fname << ": " << duration << "s, result = " << result << "\n";
@@ -89,7 +89,7 @@ struct recursive_data<1>
 template <unsigned Depth, unsigned MaxDepth>
 struct dot_block
 {
-    void operator() (vector<double> const& v1, vector<double> const& v2,
+    inline void operator() (vector<double> const& v1, vector<double> const& v2,
 		     recursive_data<Depth>& sum_block, unsigned i)
     {
 	static unsigned const depth= sum_block.depth;
@@ -102,7 +102,9 @@ struct dot_block
 template <unsigned MaxDepth>
 struct dot_block<1, MaxDepth>
 {
-    void operator() (vector<double> const& v1, vector<double> const& v2,
+    // static const unsigned offset= MaxDepth - 1;
+
+    inline void operator() (vector<double> const& v1, vector<double> const& v2,
 		     recursive_data<1>& sum_block, unsigned i)
     {
 	sum_block.sum+= v1[ i + MaxDepth - 1 ] * v2[ i + MaxDepth - 1 ];
@@ -112,9 +114,17 @@ struct dot_block<1, MaxDepth>
 template <unsigned Depth>
 double unrolled_dot(vector<double> const& v1, vector<double> const& v2)
 {
+    // check v1.size() == v2.size();
+    unsigned size= v1.size(), blocks= size / Depth, blocked_size= blocks * Depth;
+
     recursive_data<Depth> sum_block(0.0);
-    dot_block<Depth, Depth>()(v1, v2, sum_block, 0);
-    return sum_block.sum_up();
+    for (unsigned i= 0; i < blocked_size; i+= Depth)
+	dot_block<Depth, Depth>()(v1, v2, sum_block, i);
+
+    double sum= sum_block.sum_up();
+    for (unsigned i= blocked_size; i < size; ++i)
+	sum+= v1[i] * v2[i];
+    return sum;
 }
 
 
@@ -124,12 +134,20 @@ int test_main(int argc, char* argv[])
     time_dot("regular   ", dot);
     time_dot("unrolled 2", dot2);
     time_dot("unrolled 4", dot4);
-
-
-    cout << "unrolled 2: " << unrolled_dot<2>(gv1, gv2) << '\n';
-    cout << "unrolled 3: " << unrolled_dot<3>(gv1, gv2) << '\n';
-    cout << "unrolled 4: " << unrolled_dot<4>(gv1, gv2) << '\n';
-
+    
+    cout << "--------------------\n";
+    time_dot("unrolled 2", unrolled_dot<2>);
+    time_dot("unrolled 3", unrolled_dot<3>);
+    time_dot("unrolled 4", unrolled_dot<4>);
+    time_dot("unrolled 5", unrolled_dot<5>);
+    time_dot("unrolled 6", unrolled_dot<6>);
+    time_dot("unrolled 7", unrolled_dot<7>);
+    time_dot("unrolled 8", unrolled_dot<8>);
+    time_dot("unrolled 9", unrolled_dot<9>);
+    time_dot("unrolled10", unrolled_dot<10>);
+    time_dot("unrolled12", unrolled_dot<12>);
+    time_dot("unrolled14", unrolled_dot<14>);
+    time_dot("unrolled16", unrolled_dot<16>);
 
     return 0;
 }
