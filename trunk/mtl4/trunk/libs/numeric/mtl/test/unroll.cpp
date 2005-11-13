@@ -8,7 +8,7 @@
 using namespace std;
 
 int const vector_size = 1000; // 1000
-
+ 
 vector<double> gv1(vector_size, 2.0), gv2(vector_size, 3.0);
 
 template <typename F>
@@ -17,7 +17,7 @@ void time_dot(std::string fname, F f)
 
     boost::timer start;
     double result;
-    for (int i= 0; i < 100000; i++) // 100000
+    for (int i= 0; i < 1000000; i++) // 1000000
 	result= f(gv1, gv2);
     double duration = start.elapsed();
     cout << fname << ": " << duration << "s, result = " << result << "\n";
@@ -43,6 +43,27 @@ double dot2(vector<double> const& v1, vector<double> const& v2)
     return sum + sum2;
 }
 
+struct dot2slow_t
+{
+    double sum;
+    struct {
+	double sum2;
+    } xx;
+};
+
+double dot2slow(vector<double> const& v1, vector<double> const& v2)
+{
+    dot2slow_t data;
+
+    data.sum= 0.0, data.xx.sum2 = 0.0;
+    for (unsigned i= 0; i < v1.size(); i+= 2) {
+	data.sum+= v1[i] * v2[i];
+	data.xx.sum2+= v1[i+1] * v2[i+1];
+    }
+
+    return data.sum + data.xx.sum2;
+}
+
 double dot4(vector<double> const& v1, vector<double> const& v2)
 {
     double sum= 0.0, sum2 = 0.0, sum3= 0.0, sum4= 0.0;
@@ -56,7 +77,6 @@ double dot4(vector<double> const& v1, vector<double> const& v2)
     return sum + sum2 + sum3 + sum4;
 }
 
-
 template <unsigned Depth>
 struct recursive_data
 {
@@ -68,7 +88,6 @@ struct recursive_data
     
     double sum_up()
     {
-	// cout << "l" << depth << ' ' << sum << ", ";
 	return sum + remainder.sum_up();
     }
 };
@@ -83,7 +102,6 @@ struct recursive_data<1>
     
     double sum_up()
     {
-	// cout << "l1 " << sum << '\n';
 	return sum;
     }
 };
@@ -92,21 +110,12 @@ template <unsigned Depth, unsigned MaxDepth>
 struct dot_block
 {
     static unsigned const offset= MaxDepth - Depth;
-    double                   sum;
-    dot_block<Depth-1, MaxDepth> remainder;
 
-    dot_block() : sum(0.0), remainder() {}
-
-    void operator() (vector<double> const& v1, vector<double> const& v2, 
-		     unsigned i, double sum[MaxDepth])
+    void operator() (vector<double> const& v1, vector<double> const& v2,
+		     recursive_data<Depth>& sum_block, unsigned i)
     {
-	sum[offset]+= v1[ i + offset ] * v2[ i + offset ];
-	remainder (v1, v2, i, sum);
-    }
-    double sum_up()
-    {
-	// cout << "l" << Depth << ' ' << sum << ", ";
-	return sum + remainder.sum_up();
+	sum_block.sum+= v1[ i + offset ] * v2[ i + offset ];
+	dot_block<Depth-1, MaxDepth>() (v1, v2, sum_block.remainder, i);
     }
 };
 
@@ -114,18 +123,11 @@ template <unsigned MaxDepth>
 struct dot_block<1, MaxDepth>
 {
     static unsigned const offset= MaxDepth - 1;
-    double                   sum;
-    dot_block() : sum(0.0) {}
 
-    void operator() (vector<double> const& v1, vector<double> const& v2, 
-		     unsigned i, double sum[MaxDepth])
+    void operator() (vector<double> const& v1, vector<double> const& v2,
+		     recursive_data<1>& sum_block, unsigned i)
     {
-	sum[offset]+= v1[ i + offset ] * v2[ i + offset ];
-    }
-    double sum_up()
-    {
-	// cout << "l1 " << sum << '\n';
-	return sum;
+	sum_block.sum+= v1[ i + offset ] * v2[ i + offset ];
     }
 };
 
@@ -134,46 +136,41 @@ double unrolled_dot(vector<double> const& v1, vector<double> const& v2)
 {
     // check v1.size() == v2.size();
     unsigned size= v1.size(), blocks= size / Depth, blocked_size= blocks * Depth;
-    double sum[Depth];
-    for (unsigned i= 0; i < Depth; i++) sum[i]= 0.0;
 
-
-
-    // recursive_data<Depth> sum_block(0.0);
-
-    dot_block<Depth, Depth> dot_object;
+    recursive_data<Depth> sum_block(0.0);
     for (unsigned i= 0; i < blocked_size; i+= Depth)
-	dot_object(v1, v2, i, sum);
+	dot_block<Depth, Depth>()(v1, v2, sum_block, i);
 
-    // double sum= dot_object.sum_up();
+    double sum= sum_block.sum_up();
     for (unsigned i= blocked_size; i < size; ++i)
-	sum[0]+= v1[i] * v2[i];
-    for (unsigned i= 1; i < Depth; i++) sum[0]+= sum[i];
-
-    return sum[0];
+	sum+= v1[i] * v2[i];
+    return sum;
 }
 
 
 int test_main(int argc, char* argv[])
 {
 
+    time_dot("init      ", dot);
     time_dot("regular   ", dot);
     time_dot("unrolled 2", dot2);
+    time_dot("struct 2  ", dot2slow);
     time_dot("unrolled 4", dot4);
     
     cout << "--------------------\n";
-    time_dot("unrolled 2", unrolled_dot<2>);
-    time_dot("unrolled 3", unrolled_dot<3>);
-    time_dot("unrolled 4", unrolled_dot<4>);
-    time_dot("unrolled 5", unrolled_dot<5>);
-    time_dot("unrolled 6", unrolled_dot<6>);
-    time_dot("unrolled 7", unrolled_dot<7>);
-    time_dot("unrolled 8", unrolled_dot<8>);
-    time_dot("unrolled 9", unrolled_dot<9>);
-    time_dot("unrolled10", unrolled_dot<10>);
-    time_dot("unrolled12", unrolled_dot<12>);
-    time_dot("unrolled14", unrolled_dot<14>);
-    time_dot("unrolled16", unrolled_dot<16>);
+    time_dot("template 1", unrolled_dot<1>);
+    time_dot("template 2", unrolled_dot<2>);
+    time_dot("template 3", unrolled_dot<3>);
+    time_dot("template 4", unrolled_dot<4>);
+    time_dot("template 5", unrolled_dot<5>);
+    time_dot("template 6", unrolled_dot<6>);
+    time_dot("template 7", unrolled_dot<7>);
+    time_dot("template 8", unrolled_dot<8>);
+    time_dot("template 9", unrolled_dot<9>);
+    time_dot("template10", unrolled_dot<10>);
+    time_dot("template12", unrolled_dot<12>);
+    time_dot("template14", unrolled_dot<14>);
+    time_dot("template16", unrolled_dot<16>);
 
     return 0;
 }
