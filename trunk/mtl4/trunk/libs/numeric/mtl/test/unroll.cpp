@@ -68,6 +68,7 @@ struct recursive_data
     
     double sum_up()
     {
+	// cout << "l" << depth << ' ' << sum << ", ";
 	return sum + remainder.sum_up();
     }
 };
@@ -82,6 +83,7 @@ struct recursive_data<1>
     
     double sum_up()
     {
+	// cout << "l1 " << sum << '\n';
 	return sum;
     }
 };
@@ -90,12 +92,21 @@ template <unsigned Depth, unsigned MaxDepth>
 struct dot_block
 {
     static unsigned const offset= MaxDepth - Depth;
+    double                   sum;
+    dot_block<Depth-1, MaxDepth> remainder;
 
-    void operator() (vector<double> const& v1, vector<double> const& v2,
-		     recursive_data<Depth>& sum_block, unsigned i)
+    dot_block() : sum(0.0), remainder() {}
+
+    void operator() (vector<double> const& v1, vector<double> const& v2, 
+		     unsigned i, double sum[MaxDepth])
     {
-	sum_block.sum+= v1[ i + offset ] * v2[ i + offset ];
-	dot_block<Depth-1, MaxDepth>() (v1, v2, sum_block.remainder, i);
+	sum[offset]+= v1[ i + offset ] * v2[ i + offset ];
+	remainder (v1, v2, i, sum);
+    }
+    double sum_up()
+    {
+	// cout << "l" << Depth << ' ' << sum << ", ";
+	return sum + remainder.sum_up();
     }
 };
 
@@ -103,11 +114,18 @@ template <unsigned MaxDepth>
 struct dot_block<1, MaxDepth>
 {
     static unsigned const offset= MaxDepth - 1;
+    double                   sum;
+    dot_block() : sum(0.0) {}
 
-    void operator() (vector<double> const& v1, vector<double> const& v2,
-		     recursive_data<1>& sum_block, unsigned i)
+    void operator() (vector<double> const& v1, vector<double> const& v2, 
+		     unsigned i, double sum[MaxDepth])
     {
-	sum_block.sum+= v1[ i + offset ] * v2[ i + offset ];
+	sum[offset]+= v1[ i + offset ] * v2[ i + offset ];
+    }
+    double sum_up()
+    {
+	// cout << "l1 " << sum << '\n';
+	return sum;
     }
 };
 
@@ -116,15 +134,23 @@ double unrolled_dot(vector<double> const& v1, vector<double> const& v2)
 {
     // check v1.size() == v2.size();
     unsigned size= v1.size(), blocks= size / Depth, blocked_size= blocks * Depth;
+    double sum[Depth];
+    for (unsigned i= 0; i < Depth; i++) sum[i]= 0.0;
 
-    recursive_data<Depth> sum_block(0.0);
+
+
+    // recursive_data<Depth> sum_block(0.0);
+
+    dot_block<Depth, Depth> dot_object;
     for (unsigned i= 0; i < blocked_size; i+= Depth)
-	dot_block<Depth, Depth>()(v1, v2, sum_block, i);
+	dot_object(v1, v2, i, sum);
 
-    double sum= sum_block.sum_up();
+    // double sum= dot_object.sum_up();
     for (unsigned i= blocked_size; i < size; ++i)
-	sum+= v1[i] * v2[i];
-    return sum;
+	sum[0]+= v1[i] * v2[i];
+    for (unsigned i= 1; i < Depth; i++) sum[0]+= sum[i];
+
+    return sum[0];
 }
 
 
