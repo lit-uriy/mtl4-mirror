@@ -8,7 +8,6 @@
 #include <boost/numeric/mtl/detail/dilated_int.hpp>
 
 using namespace mtl;
-// using namespace mtl::dilated;
 using namespace std;
 
 struct morton_exception {};

@@ -140,7 +140,7 @@ class dense2D : public detail::base_matrix<Elt, Parameters>
   protected:
     void set_nnz()
     {
-      nnz = dim.num_rows() * dim.num_cols();
+      this->nnz = this->dim.num_rows() * this->dim.num_cols();
     }
 
   public:
@@ -185,17 +185,17 @@ class dense2D : public detail::base_matrix<Elt, Parameters>
     value_type operator() (size_t r, size_t c) const 
     {
       size_t offset= indexer(*this, r, c);
-      return data[offset];
+      return this->data[offset];
     }
 
     value_type& reference(size_t r, size_t c)
     {
-	return data[indexer(*this, r, c)]; 
+	return this->data[indexer(*this, r, c)]; 
     }
 
     value_type const& reference(size_t r, size_t c) const
     {
-	return data[indexer(*this, r, c)]; 
+	return this->data[indexer(*this, r, c)]; 
     }
 
     indexer_type  indexer;
@@ -343,11 +343,11 @@ namespace traits
 	}
 	type begin(cursor const& c)
 	{
-	    return type(c.ref, c.key, c.ref.begin_col(), stride(c, matrix::orientation()));
+	    return type(c.ref, c.key, c.ref.begin_col(), stride(c, typename matrix::orientation()));
 	}
 	type end(cursor const& c)
 	{
-	    return type(c.ref, c.key, c.ref.end_col(), stride(c, matrix::orientation()));
+	    return type(c.ref, c.key, c.ref.end_col(), stride(c, typename matrix::orientation()));
 	}
     };
 
@@ -386,11 +386,11 @@ namespace traits
 	}
 	type begin(cursor const& c)
 	{
-	    return type(c.ref, c.ref.begin_row(), c.key, stride(c, matrix::orientation()));
+	    return type(c.ref, c.ref.begin_row(), c.key, stride(c, typename matrix::orientation()));
 	}
 	type end(cursor const& c)
 	{
-	    return type(c.ref, c.ref.end_row(), c.key, stride(c, matrix::orientation()));
+	    return type(c.ref, c.ref.end_row(), c.key, stride(c, typename matrix::orientation()));
 	}
     };
 

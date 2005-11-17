@@ -21,33 +21,33 @@ template <class Key> struct strided_base_cursor
 
     self& operator++ () 
     { 
-	key+= stride; return *this; 
+	this->key+= stride; return *this; 
     }
     self operator++ (int) 
     { 
 	self tmp = *this; 
-	key+= stride; 
+	this->key+= stride; 
 	return tmp; 
     }
     self& operator-- () 
     { 
-	key-= stride; 
+	this->key-= stride; 
 	return *this; 
     }
     self operator-- (int) 
     { 
 	self tmp = *this; 
-	key-= stride; 
+	this->key-= stride; 
 	return tmp; 
     }
     self& operator+=(int n) 
     { 
-	key += stride * n; 
+	this->key += stride * n; 
 	return *this; 
     }
     self& operator-=(int n) 
     { 
-	key -= stride * n; 
+	this->key -= stride * n; 
 	return *this; 
     }
     std::size_t stride;

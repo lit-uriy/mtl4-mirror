@@ -22,7 +22,7 @@ void check_same_type(T1, T2)
 {
     throw test_dense2D_exception();
 }
-
+ 
 // If same type we're fine
 template <typename T1>
 void check_same_type(T1, T1) {}

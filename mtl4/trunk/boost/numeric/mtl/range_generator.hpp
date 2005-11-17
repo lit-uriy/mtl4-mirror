@@ -51,7 +51,7 @@ template <class Tag, class Collection>
 typename traits::range_generator<Tag, Collection>::type 
 inline begin(Collection& c)
 {
-  return ::mtl::traits::range_generator<Tag, Collection>().begin(c);
+  return traits::range_generator<Tag, Collection>().begin(c);
 }
 
 // Corresponding end cursor
@@ -59,7 +59,7 @@ template <class Tag, class Collection>
 typename traits::range_generator<Tag, Collection>::type 
 inline end(Collection& c)
 {
-  return ::mtl::traits::range_generator<Tag, Collection>().end(c);
+  return traits::range_generator<Tag, Collection>().end(c);
 }
 
 
