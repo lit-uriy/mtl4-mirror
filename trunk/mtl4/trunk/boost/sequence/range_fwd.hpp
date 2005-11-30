@@ -8,7 +8,9 @@ namespace boost { namespace sequence {
 
 namespace range_
 {
-  template <class Elements, class Begin, class End>
+  struct not_stored;
+  
+  template <class Elements, class Begin, class End, class Size = not_stored>
   class range;
 }
 

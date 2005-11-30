@@ -10,30 +10,9 @@ namespace boost { namespace sequence { namespace detail {
 
 template <class T1, class T2>
 compressed_pair<T1,T2>
-make_compressed_pair(T1& x1, T2& x2)
-{
-    return compressed_pair<T1,T2>(x1,x2);
-}
-
-template <class T1, class T2>
-compressed_pair<T1 const,T2>
-make_compressed_pair(T1 const& x1, T2& x2)
-{
-    return compressed_pair<T1 const,T2>(x1,x2);
-}
-
-template <class T1, class T2>
-compressed_pair<T1,T2 const>
-make_compressed_pair(T1& x1, T2 const& x2)
-{
-    return compressed_pair<T1,T2 const>(x1,x2);
-}
-
-template <class T1, class T2>
-compressed_pair<T1 const,T2 const>
 make_compressed_pair(T1 const& x1, T2 const& x2)
 {
-    return compressed_pair<T1 const,T2 const>(x1,x2);
+    return compressed_pair<T1,T2>(x1,x2);
 }
 
 }}} // namespace boost::sequence::detail

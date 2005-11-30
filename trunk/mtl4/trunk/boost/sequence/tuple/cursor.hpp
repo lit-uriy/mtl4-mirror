@@ -1,10 +1,10 @@
 // Copyright David Abrahams 2005. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_SEQUENCE_FIXED_SIZE_CURSOR_DWA2005330_HPP
-# define BOOST_SEQUENCE_FIXED_SIZE_CURSOR_DWA2005330_HPP
+#ifndef BOOST_SEQUENCE_TUPLE_CURSOR_DWA2005330_HPP
+# define BOOST_SEQUENCE_TUPLE_CURSOR_DWA2005330_HPP
 
-# include <boost/sequence/fixed_size/cursor_fwd.hpp>
+# include <boost/sequence/tuple/cursor_fwd.hpp>
 # include <boost/sequence/detail/is_mpl_integral_constant.hpp>
 # include <boost/sequence/detail/typeof_add.hpp>
 # include <boost/sequence/detail/typeof_subtract.hpp>
@@ -18,7 +18,7 @@
 
 namespace boost {
 namespace sequence {
-namespace fixed_size { 
+namespace tuple { 
 
   namespace cursor_ // namespace for ADL protection.
   {
@@ -41,7 +41,7 @@ namespace fixed_size {
     }
 
     // Relational operators returning mpl::bool_ constants.
-  # define BOOST_SEQUENCE_fixed_size_cursor_relational(op) \
+  # define BOOST_SEQUENCE_tuple_cursor_relational(op) \
     template <std::size_t N1, std::size_t N2>              \
     inline mpl::bool_<(N1 op N2)>                          \
     operator op(cursor<N1>,cursor<N2>)                     \
@@ -49,14 +49,14 @@ namespace fixed_size {
         return mpl::bool_<(N1 op N2)>();                   \
     }
 
-    BOOST_SEQUENCE_fixed_size_cursor_relational(==)
-    BOOST_SEQUENCE_fixed_size_cursor_relational(!=)
-    BOOST_SEQUENCE_fixed_size_cursor_relational(<)
-    BOOST_SEQUENCE_fixed_size_cursor_relational(<=)
-    BOOST_SEQUENCE_fixed_size_cursor_relational(>=)
-    BOOST_SEQUENCE_fixed_size_cursor_relational(>)
+    BOOST_SEQUENCE_tuple_cursor_relational(==)
+    BOOST_SEQUENCE_tuple_cursor_relational(!=)
+    BOOST_SEQUENCE_tuple_cursor_relational(<)
+    BOOST_SEQUENCE_tuple_cursor_relational(<=)
+    BOOST_SEQUENCE_tuple_cursor_relational(>=)
+    BOOST_SEQUENCE_tuple_cursor_relational(>)
 
-  # undef BOOST_SEQUENCE_fixed_size_cursor_relational
+  # undef BOOST_SEQUENCE_tuple_cursor_relational
 
     //
     // Random access interactions with integral constants -- these
@@ -143,47 +143,47 @@ namespace fixed_size {
     }
   } // namespace cursor_
 
-} // namespace fixed_size
+} // namespace tuple
 
 namespace intrinsic
 {
   // Increment and decrement
   template <std::size_t N>
-  struct next<fixed_size::cursor<N> >
+  struct next<tuple::cursor<N> >
   {
-      typedef fixed_size::cursor<(N+1)> type;
-      type operator()(fixed_size::cursor<N> const&) const
+      typedef tuple::cursor<(N+1)> type;
+      type operator()(tuple::cursor<N> const&) const
       {
           return type();
       }
   };
 
   template <std::size_t N>
-  struct prev<fixed_size::cursor<N> >
+  struct prev<tuple::cursor<N> >
   {
-      typedef fixed_size::cursor<(N-1)> type;
-      type operator()(fixed_size::cursor<N> const&) const
+      typedef tuple::cursor<(N-1)> type;
+      type operator()(tuple::cursor<N> const&) const
       {
           return type();
       }
   };
 
   template <std::size_t N, class D>
-  struct advance<fixed_size::cursor<N>, D>
+  struct advance<tuple::cursor<N>, D>
   {
-      typedef fixed_size::cursor<(N+D::value)> type;
-      type operator()(fixed_size::cursor<N> const&, D const&) const
+      typedef tuple::cursor<(N+D::value)> type;
+      type operator()(tuple::cursor<N> const&, D const&) const
       {
           return type();
       }
   };
 
   template <std::size_t N0, std::size_t N1>
-  struct distance<fixed_size::cursor<N0>, fixed_size::cursor<N1> >
+  struct distance<tuple::cursor<N0>, tuple::cursor<N1> >
   {
       typedef mpl::integral_c<std::ptrdiff_t,(N1-N0)> type;
       
-      type operator()(fixed_size::cursor<N0> const&, fixed_size::cursor<N1> const&) const
+      type operator()(tuple::cursor<N0> const&, tuple::cursor<N1> const&) const
       {
           return type();
       }
@@ -192,4 +192,4 @@ namespace intrinsic
 
 }} // namespace boost::sequence
 
-#endif // BOOST_SEQUENCE_FIXED_SIZE_CURSOR_DWA2005330_HPP
+#endif // BOOST_SEQUENCE_TUPLE_CURSOR_DWA2005330_HPP

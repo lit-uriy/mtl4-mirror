@@ -4,18 +4,18 @@
 #ifndef PREDECESSOR_DWA200555_HPP
 # define PREDECESSOR_DWA200555_HPP
 
-# include <boost/sequence/fixed_size/cursor.hpp>
+# include <boost/sequence/tuple/cursor.hpp>
 
 namespace boost { namespace sequence
 
 template <class Cursor> struct predecessor;
 
 template <std::size_t N>
-struct predecessor<fixed_size::cursor<N> >
+struct predecessor<tuple::cursor<N> >
 {
-    typedef fixed_size::cursor<N-1> type;
+    typedef tuple::cursor<N-1> type;
 };
     
-}} // namespace boost::sequence::fixed_size
+}} // namespace boost::sequence::tuple
 
 #endif // PREDECESSOR_DWA200555_HPP

@@ -4,24 +4,24 @@
 #ifndef ADVANCED_DWA200555_HPP
 # define ADVANCED_DWA200555_HPP
 
-# include <boost/sequence/fixed_size/cursor.hpp>
+# include <boost/sequence/tuple/cursor.hpp>
 
 namespace boost { namespace sequence {
 
 template <class Cursor, class Amount> struct advanced;
 
 template <std::size_t N, class Amount>
-struct advanced<fixed_size::cursor<N>, Amount>
+struct advanced<tuple::cursor<N>, Amount>
 {
-    typedef fixed_size::cursor<N + Amount::value> type;
+    typedef tuple::cursor<N + Amount::value> type;
 };
     
 template <std::size_t N, class Amount>
-struct advanced<fixed_size::cursor<N> const, Amount>
+struct advanced<tuple::cursor<N> const, Amount>
 {
-    typedef fixed_size::cursor<N + Amount::value> type;
+    typedef tuple::cursor<N + Amount::value> type;
 };
     
-}} // namespace boost::sequence::fixed_size
+}} // namespace boost::sequence::tuple
 
 #endif // ADVANCED_DWA200555_HPP
