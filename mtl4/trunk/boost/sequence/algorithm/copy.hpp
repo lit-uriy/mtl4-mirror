@@ -6,7 +6,7 @@
 
 # include <boost/sequence/algorithm/dispatch.hpp>
 # include <boost/sequence/detail/instance.hpp>
-# include <boost/sequence/algorithm/fixed_size/copy.hpp>
+# include <boost/sequence/algorithm/unrolled/copy.hpp>
 # include <boost/typeof/typeof.hpp>
 # include <boost/type_traits/add_const.hpp>
 

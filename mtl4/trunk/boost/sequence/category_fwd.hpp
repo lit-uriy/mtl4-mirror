@@ -7,7 +7,12 @@
 namespace boost { namespace sequence { 
 
 template <class Sequence>
-struct category;
+struct category_impl;
+
+template <class Sequence>
+struct category
+  : category_impl<Sequence>
+{};
 
 // In general, a const T has the same category as T.
 template <class T>
@@ -18,6 +23,9 @@ struct category<T const>
 template <class T>
 struct category<T&>
   : category<T> {};
+
+struct sequence_tag {};
+struct o1_size_tag : sequence_tag {};
 
 }} // namespace boost::sequence
 

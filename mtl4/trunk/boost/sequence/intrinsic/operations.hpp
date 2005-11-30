@@ -6,23 +6,24 @@
 
 # include <boost/sequence/intrinsic/operations_fwd.hpp>
 
-# include <boost/sequence/fixed_size/intrinsics.hpp>
-# include <boost/sequence/fixed_size/tag.hpp>
 # include <boost/sequence/identity_property_map.hpp>
 # include <boost/sequence/intrinsic/iterator_range_tag.hpp>
+
+# include <boost/sequence/detail/is_mpl_integral_constant.hpp>
 
 # include <boost/range/begin.hpp>
 # include <boost/range/end.hpp>
 # include <boost/range/iterator.hpp>
 # include <boost/range/const_iterator.hpp>
+# include <boost/range/size.hpp>
 
-# include <boost/iterator/iterator_traits.hpp>
 # include <boost/iterator/is_lvalue_iterator.hpp>
 
-# include <boost/type_traits/is_array.hpp>
-# include <boost/utility/enable_if.hpp>
+# include <boost/type_traits/remove_cv.hpp>
+# include <boost/type_traits/is_convertible.hpp>
 
-# include <boost/mpl/or.hpp>
+# include <boost/mpl/size_t.hpp>
+# include <boost/array.hpp>
 
 namespace boost { namespace sequence { namespace intrinsic {
 
@@ -61,11 +62,24 @@ struct iterator_range_operations
         
     struct elements
     {
-        typedef typename GetIterator::type type;
+        typedef identity_property_map type;
         
-        type operator()(Sequence& s) const
+        type operator()(Sequence const& s) const
         {
             return type();
+        }
+    };
+
+    struct size
+    {
+        typedef typename boost::range_size<
+            typename remove_cv<Sequence>::type
+        >::type type;
+
+        type operator()(Sequence& s) const
+        {
+            
+            return boost::size(s);
         }
     };
 };
@@ -77,7 +91,9 @@ struct operations<Sequence, iterator_range_tag>
 # if 1
         Sequence, range_iterator<Sequence>
 # else
-        // Not sure what this was all about
+        // This appears to be code for proxy support.  We will need
+        // something like this, unless Thorsten fixes his library
+        // first.
         typename mpl::if_<
             mpl::or_<
                 is_convertible<
@@ -101,7 +117,7 @@ struct operations<Sequence, iterator_range_tag>
 template <class Sequence>
 struct operations<Sequence const, intrinsic::iterator_range_tag>
   : iterator_range_operations<
-        Sequence, range_const_iterator<Sequence>
+        Sequence const, range_const_iterator<Sequence>
     >
 {};
 
@@ -119,18 +135,41 @@ struct end : operations<Sequence>::end {};
   
 template <class Sequence>
 struct elements : operations<Sequence>::elements {};
+  
+template <class Sequence>
+struct size : operations<Sequence>::size {};
 
 template <class Sequence>
-struct homogenize
+struct size<Sequence const>
+  : size<Sequence>
+{};
+
+template <class Sequence>
+struct size<Sequence&>
+  : size<Sequence>
+{};
+
+template <class T, std::size_t N>
+struct size<T[N]>
 {
-    typedef Sequence& type;
-      
-    Sequence& operator()(Sequence& s)
-    {
-        return s;
-    }
+    typedef mpl::size_t<N> type;
+    type operator()(T const (&)[N]) { return type(); }
 };
-  
+
+template <class T, std::size_t N>
+struct size<T const[N]> : size<T[N]> {};
+
+template <class T, std::size_t N>
+struct size<boost::array<T,N> >
+{
+    typedef mpl::size_t<N> type;
+    type operator()(boost::array<T,N> const&) { return type(); }
+};
+
+template <class T, std::size_t N>
+struct size<array<T,N> const> : size<array<T,N> > {};
+
+
 template <class Cursor>
 struct next
 {
@@ -187,58 +226,6 @@ struct equal<Cursor1, Cursor2 const>
   : equal<Cursor1,Cursor2>
 {};
   
-  
-template <class Cursor1, class Cursor2>
-struct distance
-{
-    typedef typename iterator_difference<Cursor1>::type type;
-      
-    type operator()(Cursor1 const& c1, Cursor2 const& c2) const
-    {
-        return c2 - c1;
-    }
-};
-
-template <class Cursor1, class Cursor2>
-struct distance<Cursor1 const, Cursor2 const>
-  : distance<Cursor1,Cursor2>
-{};
-  
-template <class Cursor1, class Cursor2>
-struct distance<Cursor1 const, Cursor2>
-  : distance<Cursor1,Cursor2>
-{};
-  
-template <class Cursor1, class Cursor2>
-struct distance<Cursor1, Cursor2 const>
-  : distance<Cursor1,Cursor2>
-{};
-  
-template <class Cursor, class Distance>
-struct advance
-{
-    typedef Cursor type;
-      
-    type operator()(Cursor c, Distance const& d) const
-    {
-        return c += d;
-    }
-};
-  
-template <class Cursor, class Distance>
-struct advance<Cursor const, Distance const>
-  : advance<Cursor,Distance>
-{};
-  
-template <class Cursor, class Distance>
-struct advance<Cursor const, Distance>
-  : advance<Cursor,Distance>
-{};
-  
-template <class Cursor, class Distance>
-struct advance<Cursor, Distance const>
-  : advance<Cursor,Distance>
-{};
 
 }}} // namespace boost::sequence::intrinsic
 

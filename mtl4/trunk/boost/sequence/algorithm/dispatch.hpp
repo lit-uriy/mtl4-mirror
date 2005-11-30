@@ -5,9 +5,10 @@
 # define BOOST_SEQUENCE_ALGORITHM_DISPATCH_DWA200559_HPP
 
 # include <boost/sequence/category.hpp>
-# include <boost/sequence/algorithm/fixed_size/category.hpp>
 # include <boost/typeof/typeof.hpp>
 # include <boost/mpl/apply_wrap.hpp>
+# include <boost/mpl/assert.hpp>
+# include <boost/type_traits/is_same.hpp>
 
 namespace boost { namespace sequence { namespace algorithm { 
 
@@ -77,6 +78,7 @@ struct dispatch<AlgorithmID(Range1&,Range2&)>
     // implementation class for this algorithm id and sequence
     // categories.  lookup_implementation is the *only* symbol that is
     // subject to ADL in this dispatching scheme.
+    
     typedef BOOST_TYPEOF_TPL(
          lookup_implementation(AlgorithmID(), cat1(), cat2())
     ) implementation;

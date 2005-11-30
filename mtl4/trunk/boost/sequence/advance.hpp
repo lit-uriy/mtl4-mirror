@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_ADVANCE_DWA2005815_HPP
 # define BOOST_SEQUENCE_ADVANCE_DWA2005815_HPP
 
-# include <boost/sequence/intrinsic/operations.hpp>
+# include <boost/sequence/intrinsic/advance.hpp>
 # include <boost/sequence/detail/function2.hpp>
 # include <boost/sequence/detail/instance.hpp>
 
