@@ -19,11 +19,12 @@
 namespace mtl {
 
 using std::size_t;
+using std::vector;
 
 // Forward declarations
-template <typename Elt, typename Parameters> class compressed2D;
 struct compressed2D_indexer;
-
+template <typename Elt, typename Parameters> class compressed2D;
+template <typename Elt, typename Parameters> class compressed2D_inserter;
 
 // Cursor over every element
 template <class Elt> 
@@ -125,22 +126,23 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 	if (new_nnz) {
 	    super::nnz = new_nnz;
 	    super::allocate();
-	    indices.resize(super::nnz);
+	    indices.resize(super::nnz, 0);
+	    data.resize(super::nnz, 0); // ! overloads base matrix
 	}
     }
 
     // if compile time matrix size, we can set the start vector
     explicit compressed2D () 
-	: super() 
+	: super(), inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
 
     // setting dimension and allocate starting vector
     explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
-      : super(d) 
+      : super(d), inserting(false)
     {
-	starts.resize(super::dim1() + 1);
+	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
     }
 
@@ -152,9 +154,10 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 		  StartIterator first_start, IndexIterator first_index)
     {
 	// check if starts has right size
-	allocate(last_value - first_value);
+	allocate(last_value - first_value); // ???? 
 	// check if nnz and indices has right size
-	std::copy(first_value, last_value, super::elements());
+	std::copy(first_value, last_value, super::elements()); // for base matrix
+	std::copy(first_value, last_value, data.begin());
 	std::copy(first_start, first_start + super::dim1() + 1, starts.begin());
 	std::copy(first_index, first_index + super::num_elements(), indices.begin());
     }
@@ -166,12 +169,80 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 
 
     friend struct compressed2D_indexer;
+    friend struct compressed2D_inserter<Elt, Parameters>;
 
     indexer_type  indexer;
-protected:
-    std::vector<size_t>          starts;
-    std::vector<size_t>          indices;
+  protected:
+    vector<value_type>      data; // ! overloads base matrix
+    vector<size_t>          starts;
+    vector<size_t>          indices;
+    bool                    inserting;
 };
+
+// Additional data structure to insert into compressed 2D matrix type
+template <typename Elt, typename Parameters>
+class compressed2D_inserter
+{
+    typedef compressed2D<Elt, Parameters>     matrix_type;
+    typedef typename matrix_type::size_type   size_type;
+    typedef typename matrix_type::value_type  value_type;
+
+    // stretch matrix rows or columns to slot size (or leave it if equal or greater)
+    void stretch();
+
+  public:
+    compressed2D_inserter(matrix_type& matrix, size_type slot_size = 5)
+	: matrix(matrix), elements(matrix.data), starts(matrix.starts), indices(matrix.indices), 
+	  slot_size(slot_size), slot_ends(matrix.dim1()) 
+    {
+	matrix.inserting = true;
+	stretch();
+    }
+
+    ~compressed2D_inserter()
+    {
+	// compress();
+	matrix.inserting = true;
+    }
+	
+
+  protected:
+    compressed2D<Elt, Parameters>&      matrix;
+    vector<value_type>&                 elements;
+    vector<size_type>&                  starts;
+    vector<size_type>&                  indices;
+    size_type                           slot_size;
+    vector<size_type>                   slot_ends;
+};
+
+template <typename Elt, typename Parameters>
+void compressed2D_inserter<Elt, Parameters>::stretch()
+{
+    vector<size_type>  new_starts(matrix.dim1() + 1);
+    new_starts[0] = 0;
+    for (size_type i = 0; i < matrix.dim1(); i++) {
+	size_type entries = starts[i+1] - starts[i];
+	slot_ends[i] = new_starts[i] + entries; 
+	new_starts[i+1] = new_starts[i] + std::max(entries, slot_size);
+    }
+
+    size_type new_total = new_starts[matrix.dim1()];
+    elements.resize(new_total);
+    indices.resize(new_total);
+    
+    // copy normally if not overlapping and backward if overlapping
+    // i goes down to 1 (not to 0) because i >= 0 never stops for unsigned ;-)
+    for (size_type i = matrix.dim1(); i > 0; i--)
+	if (starts[i] <= new_starts[i-1]) {
+	    std::copy(&elements[starts[i-1]], &elements[starts[i]], &elements[new_starts[i-1]]);
+	    std::copy(&indices[starts[i-1]], &indices[starts[i]], &indices[new_starts[i-1]]);
+	} else {
+	    std::copy_backward(&elements[starts[i-1]], &elements[starts[i]], &elements[slot_ends[i-1]]);
+	    std::copy_backward(&indices[starts[i-1]], &indices[starts[i]], &indices[slot_ends[i-1]]);
+	}
+    std::swap(starts, new_starts);		    
+}
+
 
 
 } // namespace mtl

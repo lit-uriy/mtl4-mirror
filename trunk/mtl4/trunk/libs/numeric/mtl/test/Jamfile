@@ -6,6 +6,7 @@ project my_mtl
 
 exe dense2D : dense2D.cpp ; 
 exe compressed2D : compressed2D.cpp ; 
+exe compressed2D_inserter : compressed2D_inserter.cpp ; 
 exe dilated_int : dilated_int.cpp ; 
 exe unroll : unroll.cpp ;
 
