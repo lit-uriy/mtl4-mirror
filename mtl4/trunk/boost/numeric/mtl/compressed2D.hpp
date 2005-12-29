@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <map>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_matrix.hpp>
 #include <boost/numeric/mtl/detail/range_generator.hpp>
@@ -14,11 +15,12 @@
 #include <boost/numeric/mtl/maybe.hpp>
 #include <boost/numeric/mtl/complexity.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
+#include <boost/tuple/tuple.hpp>
 
 
 namespace mtl {
 
-using std::size_t;
+using std::size_t; 
 using std::vector;
 
 // Forward declarations
@@ -64,7 +66,9 @@ struct compressed_updating_el_cursor : public detail::base_cursor<const Elt*>
 // Indexing for compressed matrices
 struct compressed2D_indexer 
 {
-private:
+    typedef size_t                            size_type;
+    typedef std::pair<size_type, size_type>   size_pair;
+  private:
     // helpers for public functions
     template <class Matrix>
     maybe<size_t> offset(const Matrix& ma, size_t major, size_t minor) const 
@@ -78,19 +82,34 @@ private:
 	return maybe<size_t> (index - &ma.indices[0], *index == minor);
     }
 
-public:
-    // Returns the offset if found
-    // If not found it returns the position where it would be inserted
+  public:
+    // Returns major and minor index in C style (starting with 0)
     template <class Matrix>
-    maybe<size_t> operator() (const Matrix& ma, size_t r, size_t c) const
+    size_pair major_minor_c(const Matrix& ma, size_t row, size_t col) const
     {
 	// convert into c indices
 	typename Matrix::index_type my_index;
-	size_t my_r= index::change_from(my_index, r);
-	size_t my_c= index::change_from(my_index, c);
-	return offset(ma, ma.major_(my_r, my_c), ma.minor_(my_r, my_c));
+	size_t my_row= index::change_from(my_index, row),
+	       my_col= index::change_from(my_index, col);
+	return make_pair(ma.major_(my_row, my_col), ma.minor_(my_row, my_col));
     }
 
+    // Returns the offset if found
+    // If not found it returns the position where it would be inserted
+    template <class Matrix>
+    maybe<size_t> operator() (const Matrix& ma, size_t row, size_t col) const
+    {
+	size_t major, minor;
+	boost::tie(major, minor) = major_minor_c(ma, row, col);
+	return offset(ma, major, minor);
+    }
+
+    // Same as above if internal representation is already known
+    template <class Matrix>
+    maybe<size_t> operator() (const Matrix& ma, size_pair major_minor) const 
+    {
+	return offset(ma, major_minor.first, major_minor.second);
+    }
 
     // For a given offset the minor can be accessed directly, the major dim has to be searched
     template <class Matrix>
@@ -172,8 +191,8 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     friend struct compressed2D_inserter<Elt, Parameters>;
 
     indexer_type  indexer;
-  protected:
     vector<value_type>      data; // ! overloads base matrix
+  protected:
     vector<size_t>          starts;
     vector<size_t>          indices;
     bool                    inserting;
@@ -186,6 +205,8 @@ class compressed2D_inserter
     typedef compressed2D<Elt, Parameters>     matrix_type;
     typedef typename matrix_type::size_type   size_type;
     typedef typename matrix_type::value_type  value_type;
+    typedef std::pair<size_type, size_type>   size_pair;
+    typedef std::map<size_pair, value_type>   map_type;
 
     // stretch matrix rows or columns to slot size (or leave it if equal or greater)
     void stretch();
@@ -195,16 +216,22 @@ class compressed2D_inserter
 	: matrix(matrix), elements(matrix.data), starts(matrix.starts), indices(matrix.indices), 
 	  slot_size(slot_size), slot_ends(matrix.dim1()) 
     {
+	if (matrix.inserting) throw "Two inserters on same matrix";
 	matrix.inserting = true;
 	stretch();
     }
 
     ~compressed2D_inserter()
     {
-	// compress();
-	matrix.inserting = true;
+	replace();
+	insert_spare();
+	matrix.inserting = false;
     }
 	
+    void update(size_type row, size_type col, value_type val);
+    maybe<size_type> matrix_offset(size_pair);
+    void replace();
+    void insert_spare();
 
   protected:
     compressed2D<Elt, Parameters>&      matrix;
@@ -213,6 +240,7 @@ class compressed2D_inserter
     vector<size_type>&                  indices;
     size_type                           slot_size;
     vector<size_type>                   slot_ends;
+    map_type                            spare;
 };
 
 template <typename Elt, typename Parameters>
@@ -243,7 +271,99 @@ void compressed2D_inserter<Elt, Parameters>::stretch()
     std::swap(starts, new_starts);		    
 }
 
+template <typename Elt, typename Parameters>
+maybe<typename compressed2D_inserter<Elt, Parameters>::size_type> 
+compressed2D_inserter<Elt, Parameters>::matrix_offset(size_pair mm)
+{
+    size_type major, minor;
+    boost::tie(major, minor) = mm;
+    
+    const size_t *first = &indices[ starts[major] ],
+  	         *last =  &indices[ slot_ends[major] ];
+    if (first == last) 
+	return maybe<size_t> (first - &indices[0], false);
+    const size_t *index = std::lower_bound(first, last, minor);
+    return maybe<size_t> (index - &indices[0], *index == minor);  
+}
 
+template <typename Elt, typename Parameters>
+void compressed2D_inserter<Elt, Parameters>::update(size_type row, size_type col, value_type val)
+{
+    compressed2D_indexer   indexer;
+    size_pair              mm = indexer.major_minor_c(matrix, row, col);
+    size_type              major, minor;
+    boost::tie(major, minor) = mm;
+
+    maybe<size_type>       pos = matrix_offset(mm);
+    // Check if already in matrix and update it
+    if (pos) 
+	elements[pos]= val;                 // replace with updater !!!!
+    else {
+	size_type& my_end = slot_ends[major];
+	// Check if place in matrix to insert there
+	if (my_end != starts[major+1]) { 
+	    std::copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
+	    std::copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
+	    elements[pos] = val; indices[pos] = minor;
+	    my_end++;
+	} else {
+	    typename map_type::iterator it = spare.find(mm);
+	    // If not in map insert it, otherwise update the value
+	    if (it == spare.end()) 
+		spare.insert(std::make_pair(mm, val));
+	    else 
+		it->second = val;         // replace with updater !!!!
+	}
+    }
+}  
+
+template <typename Elt, typename Parameters>
+void compressed2D_inserter<Elt, Parameters>::replace()
+{
+    vector<size_type>  new_starts(matrix.dim1() + 1);
+    new_starts[0] = 0;
+
+    typename map_type::iterator it = spare.begin();
+    for (size_type i = 0; i < matrix.dim1(); i++) {
+	size_type entries = slot_ends[i] - starts[i];
+	while (it != spare.end() && it->first.first == i)
+	    entries++, it++;
+	new_starts[i+1] = new_starts[i] + entries;
+    }
+
+    size_type new_total = new_starts[matrix.dim1()];
+    elements.resize(new_total);
+    indices.resize(new_total);
+ 
+    for (size_type i = matrix.dim1(); i-- > 0; ) {
+	size_type new_end = new_starts[i] + slot_ends[i] - starts[i];
+	if (slot_ends[i] <= new_starts[i]) {
+	    std::copy(&elements[starts[i]], &elements[slot_ends[i]], &elements[new_starts[i]]);
+	    std::copy(&indices[starts[i]], &indices[slot_ends[i]], &indices[new_starts[i]]);
+	} else {
+	    std::copy_backward(&elements[starts[i]], &elements[slot_ends[i]], &elements[new_end]);
+	    std::copy_backward(&indices[starts[i]], &indices[slot_ends[i]], &indices[new_end]);
+	}
+	slot_ends[i] = new_end;
+    }
+    std::swap(starts, new_starts);		    
+}
+
+template <typename Elt, typename Parameters>
+void compressed2D_inserter<Elt, Parameters>::insert_spare()
+{
+    for (typename map_type::iterator it = spare.begin(); it != spare.end(); ++it) {
+	size_pair              mm = it->first;
+	size_type              major = mm.first, minor = mm.second;
+	maybe<size_type>       pos = matrix_offset(mm);
+	size_type&             my_end = slot_ends[major];
+
+	std::copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
+	std::copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
+	elements[pos] = it->second; indices[pos] = minor;
+	my_end++;
+    }
+}
 
 } // namespace mtl
 
