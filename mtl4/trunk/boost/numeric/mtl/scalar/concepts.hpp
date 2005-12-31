@@ -14,76 +14,77 @@ namespace mtl {
 
 // Refined version (with inheritance) would look like this
 #if 0
-template <typename Set, typename Operation>
+template <typename Element, typename Operation>
 struct concept Magma
-  : std::Callable2<Operation, Set, Set>
+  : std::Callable2<Operation, Element, Element>
 {
-    where std::Assignable<Set>;
+    where std::Assignable<Element>;
 
     // Short version
-    where result_type == Set;
+    where result_type == Element;
     
     // Long version if multiple refined concepts have result_type
-    // where std::Callable2<Operation, Set, Set>::result_type == Set;
+    // where std::Callable2<Operation, Element, Element>::result_type == Element;
 };
 #endif
 
-template <typename Set, typename Operation>
+template <typename Element, typename Operation>
 struct concept Magma
 {
-    typename result_type = Set;
-    Set operator() (Operation, Set, Set);
-    Set& operator= (Set&, Set const&);
+    typename result_type = Element;
+    Element operator() (Operation, Element, Element);
+    Element const& operator= (Element&, Element const&);
+  //Element& operator= (Element&, Element const&);
 };
 
 // SemiGroup is a refinement which must be nominal
-template <typename Set, typename Operation>
+template <typename Element, typename Operation>
 concept SemiGroup
-  : Magma<Set, Operation>
+  : Magma<Element, Operation>
 {};
 
 
-template <typename Set, typename Operation>
+template <typename Element, typename Operation>
 concept CommutativeSemiGroup
-  : SemiGroup<Set, Operation>
+  : SemiGroup<Element, Operation>
 {};
 
 // Adding identity
-template <typename Set, typename Operation>
+template <typename Element, typename Operation>
 concept Monoid
-: SemiGroup<Set, Operation> 
+: SemiGroup<Element, Operation> 
 {
-    Set operator() (glas::identity<Set, Operation>);
+    Element operator() (glas::identity<Element, Operation>);
 };
 
-template <typename Set, typename Operation>
+template <typename Element, typename Operation>
 concept CommutativeMonoid
-  : Monoid<Set, Operation>
+  : Monoid<Element, Operation>
 {};
 
 
-template <typename Set, typename Operation>
+template <typename Element, typename Operation>
 concept PartiallyInvertibleMonoid
-  : Monoid<Set, Operation> 
+  : Monoid<Element, Operation> 
 {
-    bool operator() (glas::is_invertible<Set, Operation>, Set);
+    bool operator() (glas::is_invertible<Element, Operation>, Element);
 };
 
-template <typename Set, typename Operation>
+template <typename Element, typename Operation>
 concept PartiallyInvertibleCommutativeMonoid
-  : PartiallyInvertibleMonoid<Set, Operation>, CommutativeMonoid<Set, Operation>
+  : PartiallyInvertibleMonoid<Element, Operation>, CommutativeMonoid<Element, Operation>
 {};
 
-template <typename Set, typename Operation>
+template <typename Element, typename Operation>
 concept Group
-  : PartiallyInvertibleMonoid<Set, Operation>
+  : PartiallyInvertibleMonoid<Element, Operation>
 {
-    Set operator() (glas::inverse<Set, Operation>, Set);
+    Element operator() (glas::inverse<Element, Operation>, Element);
 };
 
-template <typename Set, typename Operation>
+template <typename Element, typename Operation>
 concept AbelianGroup
-  : Group<Set, Operation>, PartiallyInvertibleCommutativeMonoid<Set, Operation>
+  : Group<Element, Operation>, PartiallyInvertibleCommutativeMonoid<Element, Operation>
 {};
 
 

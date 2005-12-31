@@ -11,6 +11,7 @@
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/maybe.hpp>
 #include <boost/numeric/mtl/operations/raw_copy.hpp>
+#include <boost/numeric/mtl/operations/update.hpp>
 
 using namespace mtl;
 using namespace std;
@@ -28,7 +29,8 @@ int test_main(int argc, char* argv[])
     matrix.raw_copy(val, val+18, sts, ind);
 
     { 
-        compressed2D_inserter<double, parameters> inserter(matrix, 3);    
+      // compressed2D_inserter<double, parameters> inserter(matrix, 3);    
+        compressed2D_inserter<double, parameters, operations::update_add<double> > inserter(matrix, 3);    
  
 	inserter.update(2, 2, 21.); inserter.update(2, 4, 22.); inserter.update(6, 1, 23.); 
 	inserter.update(7, 2, 24.); inserter.update(4, 2, 25.); inserter.update(2, 5, 26.); 
