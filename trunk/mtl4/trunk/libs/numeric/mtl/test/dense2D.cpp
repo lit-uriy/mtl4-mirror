@@ -45,7 +45,7 @@ struct test_dense2D
 	for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
 	    typedef glas::tags::all_t     inner_tag;
 	    typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
-	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor) 
+	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
 		cout << "matrix[" << r(*icursor) << ", " << c(*icursor) << "] = " << v(*icursor) << '\n';
 	}
     }
