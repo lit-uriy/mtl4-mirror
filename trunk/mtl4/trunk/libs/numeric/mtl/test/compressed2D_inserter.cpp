@@ -45,6 +45,27 @@ int test_main(int argc, char* argv[])
 		 << (c < matrix.num_cols() - 1 ? ", " : "]\n"); } 
     }    
 
+
+    cout << "\n\n";
+    matrix_type   m2(non_fixed::dimensions(8, 6)); 
+    m2.raw_copy(val, val+18, sts, ind);
+
+    {
+	// compressed2D_inserter<double, parameters> i2(m2, 3);    
+        compressed2D_inserter<double, parameters, operations::update_add<double> > i2(m2, 3);    
+ 
+	i2(2, 2) = 21.; i2(2, 4) = 22.; i2(6, 1) = 23.; 
+	i2(7, 2) = 24.; i2(4, 2) = 25.; i2(2, 5) = 26.; 
+	i2(0, 2) = 27.; i2(3, 1) = 28.; i2(4, 2) = 29.; 
+    }
+
+    for (size_t r = 0; r < matrix.num_rows(); ++r) {
+	cout << '[';
+	for (size_t c = 0; c < matrix.num_cols(); ++c) {
+	    cout << m2(r, c) 
+		 << (c < matrix.num_cols() - 1 ? ", " : "]\n"); } 
+    }    
+
     return 0;
 }
  
