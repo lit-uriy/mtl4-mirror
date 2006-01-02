@@ -41,18 +41,37 @@ struct update_adapter
     }
 };
 
+template <typename Element, typename Updater>
+struct update_reference
+{
+    typedef update_reference   self;
 
+    explicit update_reference(Element& ref) : ref(ref) {}
+    
+    self& operator= (Element const& val)
+    {
+	Updater() (ref, val);
+	return *this;
+    }
+
+    Element&  ref;
+};
 
 }} // namespace mtl::operations
 
-#if 0
+
 namespace math {
 
+// temporary hack, must go to a proper place
 template <typename Element, typename MonoidOp>
-struct identity< Element, mtl::operations::update_adaptor< Element, MonoidOp > >
+struct identity {};
+
+#if 0
+template <typename Element, typename MonoidOp>
+struct identity< Element, mtl::operations::update_adapter< Element, MonoidOp > >
     : struct identity< Element, MonoidOp >
 {};
-
+#endif
 
 
 template < class T >
@@ -90,6 +109,5 @@ template < class T >
 const T identity< T, mtl::operations::update_mult< T > >::value ;
 
 }
-#endif
 
 #endif // MTL_UPDATE_INCLUDE
