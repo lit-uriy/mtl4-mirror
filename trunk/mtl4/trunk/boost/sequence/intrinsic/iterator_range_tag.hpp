@@ -6,6 +6,8 @@
 
 namespace boost { namespace sequence { namespace intrinsic {
 
+// Identifying tag for sequences conforming to the Boost.Range
+// ForwardRange concept.
 struct iterator_range_tag {};
 
 }}} // namespace boost::sequence::intrinsic

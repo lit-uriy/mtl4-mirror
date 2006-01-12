@@ -21,7 +21,7 @@ struct function1
     {};
 
     template <class X0>
-    BOOST_SEQUENCE_MSVC_ARRAY_WKND( (X0) , result<X0 const&> )
+    BOOST_SEQUENCE_MSVC_ARRAY_WKND( (X0) , (result<X0 const&>) )
     operator()(X0 const& a0) const
     {
         return F<X0 const>()(a0);

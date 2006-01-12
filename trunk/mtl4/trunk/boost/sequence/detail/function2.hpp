@@ -24,22 +24,23 @@ struct function2
         >
     {};
 
+    
     template <class A0, class A1>
-    BOOST_SEQUENCE_MSVC_ARRAY_WKND((A0)(A1), comma_protect<int(result<A0 const&, A1 const&>)>)
+    BOOST_SEQUENCE_MSVC_ARRAY_WKND((A0)(A1), (result<A0 const&, A1 const&>))
     operator()(A0 const& a0, A1 const& a1) const
     {
         return F<A0 const,A1 const>()(a0, a1);
     }
 
     template <class A0, class A1>
-    BOOST_SEQUENCE_MSVC_ARRAY_WKND((A1), comma_protect<int(result<A0&, A1 const&>)>)
+    BOOST_SEQUENCE_MSVC_ARRAY_WKND((A1), (result<A0&, A1 const&>))
     operator()(A0& a0, A1 const& a1) const
     {
         return F<A0,A1 const>()(a0, a1);
     }
 
     template <class A0, class A1>
-    BOOST_SEQUENCE_MSVC_ARRAY_WKND((A0), comma_protect<int(result<A0 const&, A1&>)>)
+    BOOST_SEQUENCE_MSVC_ARRAY_WKND((A0), (result<A0 const&, A1&>))
     operator()(A0 const& a0, A1& a1) const
     {
         return F<A0 const,A1>()(a0, a1);

@@ -42,7 +42,7 @@ struct minus_impl<
 {
     typedef typename mpl::minus<N1,N2>::type type;
       
-    type operator()(N1 const& c1, N2 const& c2) const
+    type operator()(N1 const&, N2 const&) const
     {
         return type();
     }

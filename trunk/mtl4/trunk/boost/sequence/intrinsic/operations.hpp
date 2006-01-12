@@ -64,7 +64,7 @@ struct iterator_range_operations
     {
         typedef identity_property_map type;
         
-        type operator()(Sequence const& s) const
+        type operator()(Sequence const&) const
         {
             return type();
         }
