@@ -24,7 +24,7 @@
 //   f(T& a0);                 
 //
 //   template <class T>
-//   BOOST_SEQUENCE_MSVC_ARRAY_WKND( (T) , result<T const&> )
+//   BOOST_SEQUENCE_MSVC_ARRAY_WKND( (T) , (result<T const&>) )
 //   f(T const& a0);
 
 # if !BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050601))
@@ -38,38 +38,42 @@
 #  include <boost/utility/enable_if.hpp>
 #  include <boost/mpl/or.hpp>
 
+#  include <boost/sequence/detail/comma_protect.hpp>
+
 #  include <boost/preprocessor/control/if.hpp>
 #  include <boost/preprocessor/comparison/equal.hpp>
-#  include <boost/preprocessor/seq/fold_left.hpp>
+#  include <boost/preprocessor/seq/for_each.hpp>
+#  include <boost/preprocessor/seq/for_each_i.hpp>
 #  include <boost/preprocessor/seq/seq.hpp>
+#  include <boost/preprocessor/seq/size.hpp>
+#  include <boost/preprocessor/arithmetic/dec.hpp>
 #  include <boost/preprocessor/cat.hpp>
 
-#  define BOOST_SEQUENCE_MSVC_ARRAY_WKND_TEST0(state, elem) \
-   boost::is_array<elem>
+#  define BOOST_SEQUENCE_CLOSE_ANGLE >
+#  define BOOST_SEQUENCE_MSVC_ARRAY_WKND_TEST_1(elem) \
+   boost::is_array<elem
 
-#  define BOOST_SEQUENCE_MSVC_ARRAY_WKND_TEST1(state, elem) \
-   boost::mpl::or_< boost::is_array<elem>, state >
+#  define BOOST_SEQUENCE_MSVC_ARRAY_WKND_TEST_0(elem) \
+   boost::mpl::or_< boost::is_array<elem> , 
 
-#  define BOOST_SEQUENCE_MSVC_ARRAY_WKND_TEST(s, state, elem)   \
-   (                                                            \
-       BOOST_PP_CAT(                                            \
-           BOOST_SEQUENCE_MSVC_ARRAY_WKND_TEST                  \
-         , BOOST_PP_SEQ_HEAD(BOOST_PP_SEQ_TAIL(state))          \
-       ) (state, elem)                                          \
-   ) (1)
+#  define BOOST_SEQUENCE_MSVC_ARRAY_WKND_TEST(r, max, i, elem)      \
+    BOOST_PP_CAT(                                                   \
+        BOOST_SEQUENCE_MSVC_ARRAY_WKND_TEST_, BOOST_PP_EQUAL(max,i) \
+    )(elem)
 
-#  define BOOST_SEQUENCE_MSVC_ARRAY_WKND(args, gen_result_type) \
-   typename boost::lazy_disable_if<                             \
-       BOOST_PP_SEQ_HEAD(                                       \
-           BOOST_PP_SEQ_FOLD_RIGHT(                             \
-               BOOST_SEQUENCE_MSVC_ARRAY_WKND_TEST              \
-             , (~)(0)                                           \
-             , args                                             \
-           )                                                    \
-       )                                                        \
-     , gen_result_type                                          \
+#  define BOOST_SEQUENCE_MSVC_ARRAY_WKND_CLOSE(r, x, elem) >
+
+#  define BOOST_SEQUENCE_MSVC_ARRAY_WKND(args, gen_result_type)             \
+   typename boost::lazy_disable_if<                                         \
+       BOOST_PP_SEQ_FOR_EACH_I(                                             \
+           BOOST_SEQUENCE_MSVC_ARRAY_WKND_TEST                              \
+         , BOOST_PP_DEC(BOOST_PP_SEQ_SIZE(args))                            \
+         , args                                                             \
+       )                                                                    \
+       BOOST_PP_SEQ_FOR_EACH(BOOST_SEQUENCE_MSVC_ARRAY_WKND_CLOSE, ~, args) \
+     , boost::sequence::detail::comma_protect<int gen_result_type>          \
    >::type
-           
+
 # endif 
 
 #endif // BOOST_SEQUENCE_DETAIL_MSVC_ARRAY_WKND_DWA2005815_HPP

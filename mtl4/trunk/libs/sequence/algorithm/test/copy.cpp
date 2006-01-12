@@ -26,9 +26,9 @@ bool expect_fixed_size_range(
 {
     typedef sequence::range<Elements,Begin,End,Size> r;
 
-    BOOST_MPL_ASSERT((is_same<typename sequence::intrinsic::tag<r>::type,sequence::range_::tag>));
+    BOOST_MPL_ASSERT((boost::is_same<typename sequence::intrinsic::tag<r>::type,sequence::range_::tag>));
     
-    BOOST_MPL_ASSERT((is_same<typename sequence::intrinsic::tag<r const>::type,sequence::range_::tag>));
+    BOOST_MPL_ASSERT((boost::is_same<typename sequence::intrinsic::tag<r const>::type,sequence::range_::tag>));
     
     BOOST_MPL_ASSERT(
         (boost::is_convertible<
