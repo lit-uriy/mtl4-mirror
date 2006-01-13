@@ -186,7 +186,7 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 
     // Consistency check urgently needed !!!
 
-    value_type operator() (size_type row, size_type col)
+    value_type operator() (size_type row, size_type col) const
     {
 	maybe<size_type> pos = indexer(*this, row, col);
 	return pos ? data[pos] : value_type(0);
@@ -205,15 +205,17 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 
 // Additional data structure to insert into compressed 2D matrix type
 template <typename Elt, typename Parameters, typename Updater = mtl::operations::update_store<Elt> >
-class compressed2D_inserter
+struct compressed2D_inserter
 {
+    typedef compressed2D_inserter             self;
     typedef compressed2D<Elt, Parameters>     matrix_type;
     typedef typename matrix_type::size_type   size_type;
     typedef typename matrix_type::value_type  value_type;
     typedef std::pair<size_type, size_type>   size_pair;
     typedef std::map<size_pair, value_type>   map_type;
-    typedef operations::update_reference<value_type, Updater>   reference_type;
+    typedef operations::update_proxy<self, size_type>   proxy_type;
 
+  private: 
     // stretch matrix rows or columns to slot size (or leave it if equal or greater)
     void stretch();
 
@@ -234,8 +236,14 @@ class compressed2D_inserter
 	matrix.inserting = false;
     }
 	
+    proxy_type operator() (size_type row, size_type col)
+    {
+	return proxy_type(*this, row, col);
+    }
+
     void update(size_type row, size_type col, value_type val);
-    reference_type operator() (size_type row, size_type col);
+
+  private:
     maybe<size_type> matrix_offset(size_pair);
     void final_place();
     void insert_spare();
@@ -320,46 +328,6 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type ro
 		spare.insert(std::make_pair(mm, val));
 	    else 
 		Updater() (it->second, val);
-	}
-    }
-}  
-
-// Returns a reference to the Element in the matrix or map
-// If no element exist the neutral element of the update operation is inserted
-template <typename Elt, typename Parameters, typename Updater>
-inline typename compressed2D_inserter<Elt, Parameters, Updater>::reference_type
-compressed2D_inserter<Elt, Parameters, Updater>::operator() (size_type row, size_type col)
-{
-    typedef typename compressed2D_inserter<Elt, Parameters, Updater>::reference_type   ref_type;
-    compressed2D_indexer   indexer;
-    size_pair              mm = indexer.major_minor_c(matrix, row, col);
-    size_type              major, minor;
-    boost::tie(major, minor) = mm;
-
-    maybe<size_type>       pos = matrix_offset(mm);
-    // Check if already in matrix and update it
-    if (pos) 
-	return ref_type(elements[pos]);
-    else {
-	size_type& my_end = slot_ends[major];
-	// Check if place in matrix to insert there
-	if (my_end != starts[major+1]) { 
-	    std::copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
-	    std::copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
-	    elements[pos] = math::identity< value_type, Updater >() (); 
-	    indices[pos] = minor;
-	    my_end++;
-	    return ref_type(elements[pos]);
-	} else {
-	    typename map_type::iterator it = spare.find(mm);
-	    // If not in map insert it, otherwise update the value
-	    if (it == spare.end()) {
-		maybe<typename map_type::iterator> new_element
-		    = spare.insert(std::make_pair(mm, math::identity< value_type, Updater >() ()));
-		throw_debug_exception(!new_element, "Cannot insert new element into matrix");
-		return ref_type(new_element.value()->second);
-	    }
-	    return ref_type(it->second);
 	}
     }
 }  
