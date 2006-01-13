@@ -41,20 +41,23 @@ struct update_adapter
     }
 };
 
-template <typename Element, typename Updater>
-struct update_reference
+template <typename Inserter, typename SizeType = std::size_t>
+struct update_proxy
 {
-    typedef update_reference   self;
+    typedef update_proxy          self;
+    typedef typename Inserter::value_type  value_type;
 
-    explicit update_reference(Element& ref) : ref(ref) {}
+    explicit update_proxy(Inserter& ins, SizeType row, SizeType col) 
+	: ins(ins), row(row), col(col) {}
     
-    self& operator= (Element const& val)
+    self& operator<< (value_type const& val)
     {
-	Updater() (ref, val);
+	ins.update (row, col, val);
 	return *this;
     }
 
-    Element&  ref;
+    Inserter&  ins;
+    SizeType   row, col;
 };
 
 }} // namespace mtl::operations
