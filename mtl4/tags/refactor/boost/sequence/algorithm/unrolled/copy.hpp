@@ -19,7 +19,7 @@
 
 # include <boost/sequence/core/detail/range_difference.hpp>
 
-# include <boost/sequence/core/advance.hpp>
+# include <boost/sequence/operations/advance.hpp>
 
 # include <boost/mpl/size_t.hpp>
 

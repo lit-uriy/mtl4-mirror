@@ -4,10 +4,10 @@
 #ifndef BOOST_SEQUENCE_DETAIL_FUNCTION2_DWA2005812_HPP
 # define BOOST_SEQUENCE_DETAIL_FUNCTION2_DWA2005812_HPP
 
-# include <boost/sequence/core/detail/function/intrinsic_arg.hpp>
+# include <boost/sequence/intrinsic/detail/function/intrinsic_arg.hpp>
 # include <boost/mpl/or.hpp>
-# include <boost/sequence/core/detail/function/msvc_array_wknd.hpp>
-# include <boost/sequence/core/detail/function/comma_protect.hpp>
+# include <boost/sequence/intrinsic/detail/function/msvc_array_wknd.hpp>
+# include <boost/sequence/intrinsic/detail/function/comma_protect.hpp>
 
 namespace boost { namespace sequence { namespace detail { 
 

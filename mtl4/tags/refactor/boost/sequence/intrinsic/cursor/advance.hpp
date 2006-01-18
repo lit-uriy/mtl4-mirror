@@ -5,8 +5,8 @@
 # define BOOST_SEQUENCE_ADVANCE_DWA2005815_HPP
 
 # include <boost/sequence/operations/advance.hpp>
-# include <boost/sequence/core/detail/function/function2.hpp>
-# include <boost/sequence/core/detail/instance.hpp>
+# include <boost/sequence/intrinsic/detail/function/function2.hpp>
+# include <boost/sequence/intrinsic/detail/instance.hpp>
 
 namespace boost {
 namespace sequence {

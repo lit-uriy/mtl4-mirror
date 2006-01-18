@@ -5,8 +5,8 @@
 # define BOOST_SEQUENCE_DISTANCE_DWA2005815_HPP
 
 # include <boost/sequence/operations/distance.hpp>
-# include <boost/sequence/core/detail/function/function2.hpp>
-# include <boost/sequence/core/detail/instance.hpp>
+# include <boost/sequence/intrinsic/detail/function/function2.hpp>
+# include <boost/sequence/intrinsic/detail/instance.hpp>
 
 namespace boost {
 namespace sequence {

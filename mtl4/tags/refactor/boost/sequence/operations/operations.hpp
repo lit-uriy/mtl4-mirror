@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_INTRINSIC_OPERATIONS_DWA2005616_HPP
 # define BOOST_SEQUENCE_INTRINSIC_OPERATIONS_DWA2005616_HPP
 
-# include <boost/sequence/core/operations_fwd.hpp>
+# include <boost/sequence/operations/operations_fwd.hpp>
 
 # include <boost/sequence/core/property_map/identity_property_map.hpp>
 # include <boost/sequence/core/iterator_range_tag.hpp>

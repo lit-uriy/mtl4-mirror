@@ -5,8 +5,8 @@
 # define BOOST_SEQUENCE_DETAIL_FUNCTION1_DWA2005812_HPP
 
 # include <boost/utility/enable_if.hpp>
-# include <boost/sequence/core/detail/function/intrinsic_arg.hpp>
-# include <boost/sequence/core/detail/function/msvc_array_wknd.hpp>
+# include <boost/sequence/intrinsic/detail/function/intrinsic_arg.hpp>
+# include <boost/sequence/intrinsic/detail/function/msvc_array_wknd.hpp>
 
 namespace boost { namespace sequence { namespace detail { 
 
