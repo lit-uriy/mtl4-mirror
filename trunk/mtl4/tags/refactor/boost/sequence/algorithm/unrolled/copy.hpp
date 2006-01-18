@@ -17,7 +17,7 @@
 # include <boost/sequence/core/detail/make_compressed_pair.hpp>
 # include <boost/sequence/algorithm/copy_fwd.hpp>
 
-# include <boost/sequence/core/detail/range_difference.hpp>
+# include <boost/sequence/class/range/detail/range_difference.hpp>
 
 # include <boost/sequence/operations/advance.hpp>
 
