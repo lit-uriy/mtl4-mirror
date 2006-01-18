@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_DETAIL_RANGE_DIFFERENCE_DWA20051129_HPP
 # define BOOST_SEQUENCE_DETAIL_RANGE_DIFFERENCE_DWA20051129_HPP
 
-# include <boost/sequence/minus.hpp>
+# include <boost/sequence/arithmetic/minus.hpp>
 # include <boost/sequence/intrinsic/sequence/size.hpp>
 # include <boost/sequence/core/category.hpp>
 # include <boost/sequence/core/operations.hpp>
