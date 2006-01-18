@@ -4,7 +4,7 @@
 #ifndef INDEX_PROPERTY_MAP_DWA200552_HPP
 # define INDEX_PROPERTY_MAP_DWA200552_HPP
 
-# include <boost/sequence/intrinsic/detail/index_result.hpp>
+# include <boost/sequence/core/detail/o1_size_cursors.hpp>
 # include <boost/utility/result_of.hpp>
 
 namespace boost { namespace sequence { 

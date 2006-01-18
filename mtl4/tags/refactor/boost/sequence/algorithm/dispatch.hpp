@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_ALGORITHM_DISPATCH_DWA200559_HPP
 # define BOOST_SEQUENCE_ALGORITHM_DISPATCH_DWA200559_HPP
 
-# include <boost/sequence/core/category.hpp>
+# include <boost/sequence/operations/category.hpp>
 # include <boost/typeof/typeof.hpp>
 # include <boost/mpl/apply_wrap.hpp>
 # include <boost/mpl/assert.hpp>

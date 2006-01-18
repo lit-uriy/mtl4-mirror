@@ -5,7 +5,7 @@
 # define BOOST_SEQUENCE_ALGORITHM_UNROLLED_DISPATCH_DWA200559_HPP
 
 # include <boost/typeof/typeof.hpp>
-# include <boost/sequence/core/category_fwd.hpp>
+# include <boost/sequence/operations/category_fwd.hpp>
 # include <boost/sequence/core/fixed_size/category.hpp>
 
 #include BOOST_TYPEOF_INCREMENT_REGISTRATION_GROUP()
