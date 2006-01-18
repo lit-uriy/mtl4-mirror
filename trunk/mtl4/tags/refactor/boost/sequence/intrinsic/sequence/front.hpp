@@ -5,11 +5,11 @@
 # define BOOST_SEQUENCE_FRONT_DWA2005511_HPP
 
 # include <boost/utility/result_of.hpp>
-# include <boost/sequence/elements.hpp>
-# include <boost/sequence/begin.hpp>
+# include <boost/sequence/intrinsic/sequence/elements.hpp>
+# include <boost/sequence/intrinsic/sequence/begin.hpp>
 # include <boost/sequence/accessor.hpp>
 # include <boost/sequence/dereferenced.hpp>
-# include <boost/sequence/begin.hpp>
+# include <boost/sequence/intrinsic/sequence/begin.hpp>
 
 namespace boost { namespace sequence { 
 
