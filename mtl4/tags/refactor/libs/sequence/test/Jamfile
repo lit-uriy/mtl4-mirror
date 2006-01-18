@@ -2,7 +2,7 @@ import testing ;
 import mtl4 ;
 
 compile has_value.cpp ;
-compile end_cursor.cpp ;
+#compile end_cursor.cpp ;
 compile range.cpp ;
 compile size.cpp ;
 run minus.cpp /boost/test//boost_test_exec_monitor ;
