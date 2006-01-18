@@ -38,7 +38,7 @@
 #  include <boost/utility/enable_if.hpp>
 #  include <boost/mpl/or.hpp>
 
-#  include <boost/sequence/core/detail/function/comma_protect.hpp>
+#  include <boost/sequence/intrinsic/detail/function/comma_protect.hpp>
 
 #  include <boost/preprocessor/control/if.hpp>
 #  include <boost/preprocessor/comparison/equal.hpp>

@@ -5,10 +5,10 @@
 # define BOOST_SEQUENCE_CATEGORY_DWA200559_HPP
 
 # include <boost/sequence/core/category_fwd.hpp>
-# include <boost/sequence/core/detail/o1_size_cursors.hpp>
+# include <boost/sequence/intrinsic/detail/o1_size_cursors.hpp>
 # include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
 # include <boost/sequence/core/fixed_size/category.hpp>
-# include <boost/sequence/core/operations.hpp>
+# include <boost/sequence/operations/operations.hpp>
 
 # include <boost/mpl/eval_if.hpp>
 # include <boost/mpl/if.hpp>
