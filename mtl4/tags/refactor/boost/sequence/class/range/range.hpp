@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_RANGE_DWA200559_HPP
 # define BOOST_SEQUENCE_RANGE_DWA200559_HPP
 
-# include <boost/sequence/range_fwd.hpp>
+# include <boost/sequence/class/range/range_fwd.hpp>
 # include <boost/compressed_pair.hpp>
 # include <boost/sequence/core/tag_fwd.hpp>
 # include <boost/sequence/core/category_fwd.hpp>

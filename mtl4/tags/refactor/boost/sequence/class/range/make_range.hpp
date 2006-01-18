@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_MAKE_RANGE_DWA200559_HPP
 # define BOOST_SEQUENCE_MAKE_RANGE_DWA200559_HPP
 
-# include <boost/sequence/range.hpp>
+# include <boost/sequence/class/range/range.hpp>
 # include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
 # include <boost/mpl/not.hpp>
 # include <boost/mpl/or.hpp>
