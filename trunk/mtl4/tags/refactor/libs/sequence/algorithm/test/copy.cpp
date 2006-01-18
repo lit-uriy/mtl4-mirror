@@ -6,7 +6,7 @@
 # pragma warning(disable:4996) // warning C4996: 'std::_Equal' was declared deprecated
 #endif 
 #include <boost/sequence/algorithm/copy.hpp>
-#include <boost/sequence/category.hpp>
+#include <boost/sequence/operations/category.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/test/unit_test.hpp>
 #include <algorithm>

@@ -4,8 +4,8 @@
 
 #include <boost/mpl/assert.hpp>
 #include <boost/type_traits/is_same.hpp>
-#include <boost/sequence/category.hpp>
-#include <boost/sequence/range.hpp>
+#include <boost/sequence/operations/category.hpp>
+#include <boost/sequence/class/range/range.hpp>
 
 namespace seq =  boost::sequence;
 

@@ -3,10 +3,10 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <boost/mpl/assert.hpp>
-#include <boost/sequence/fixed_size/is_fixed_size.hpp>
-#include <boost/sequence/fixed_size/cursor.hpp>
-#include <boost/sequence/index_property_map.hpp>
-#include <boost/sequence/range.hpp>
+#include <boost/sequence/operations/fixed_size/is_fixed_size.hpp>
+#include <boost/sequence/operations/fixed_size/cursor.hpp>
+#include <boost/sequence/core/property_map/index_property_map.hpp>
+#include <boost/sequence/class/range/range.hpp>
 
 namespace sequence = boost::sequence;
 
