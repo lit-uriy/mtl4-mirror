@@ -7,7 +7,7 @@
 # include <boost/sequence/core/category_fwd.hpp>
 # include <boost/sequence/core/detail/o1_size_cursors.hpp>
 # include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
-# include <boost/sequence/fixed_size/category.hpp>
+# include <boost/sequence/core/fixed_size/category.hpp>
 # include <boost/sequence/core/operations.hpp>
 
 # include <boost/mpl/eval_if.hpp>
