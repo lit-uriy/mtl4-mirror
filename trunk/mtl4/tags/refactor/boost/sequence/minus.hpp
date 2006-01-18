@@ -4,9 +4,9 @@
 #ifndef BOOST_SEQUENCE_MINUS_DWA2005815_HPP
 # define BOOST_SEQUENCE_MINUS_DWA2005815_HPP
 
-# include <boost/sequence/intrinsic/minus.hpp>
-# include <boost/sequence/detail/function2.hpp>
-# include <boost/sequence/detail/instance.hpp>
+# include <boost/sequence/core/minus.hpp>
+# include <boost/sequence/core/detail/function/function2.hpp>
+# include <boost/sequence/core/detail/instance.hpp>
 
 namespace boost {
 namespace sequence {

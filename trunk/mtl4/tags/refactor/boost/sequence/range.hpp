@@ -6,13 +6,12 @@
 
 # include <boost/sequence/range_fwd.hpp>
 # include <boost/compressed_pair.hpp>
-# include <boost/sequence/intrinsic/tag_fwd.hpp>
-# include <boost/sequence/homogeneous.hpp>
+# include <boost/sequence/core/tag_fwd.hpp>
 # include <boost/sequence/category_fwd.hpp>
 # include <boost/sequence/distance.hpp>
-# include <boost/sequence/intrinsic/operations_fwd.hpp>
-# include <boost/sequence/detail/make_compressed_pair.hpp>
-# include <boost/sequence/detail/is_mpl_integral_constant.hpp>
+# include <boost/sequence/core/operations_fwd.hpp>
+# include <boost/sequence/core/detail/make_compressed_pair.hpp>
+# include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
 
 # include <boost/mpl/if.hpp>
 
