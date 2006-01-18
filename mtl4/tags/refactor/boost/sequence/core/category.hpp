@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_CATEGORY_DWA200559_HPP
 # define BOOST_SEQUENCE_CATEGORY_DWA200559_HPP
 
-# include <boost/sequence/category_fwd.hpp>
+# include <boost/sequence/core/category_fwd.hpp>
 # include <boost/sequence/core/detail/o1_size_cursors.hpp>
 # include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
 # include <boost/sequence/fixed_size/category.hpp>
