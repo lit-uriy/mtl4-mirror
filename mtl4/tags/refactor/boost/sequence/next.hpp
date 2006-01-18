@@ -4,9 +4,9 @@
 #ifndef BOOST_SEQUENCE_NEXT_DWA2005815_HPP
 # define BOOST_SEQUENCE_NEXT_DWA2005815_HPP
 
-# include <boost/sequence/intrinsic/operations.hpp>
-# include <boost/sequence/detail/function1.hpp>
-# include <boost/sequence/detail/instance.hpp>
+# include <boost/sequence/core/operations.hpp>
+# include <boost/sequence/core/detail/function/function1.hpp>
+# include <boost/sequence/core/detail/instance.hpp>
 
 namespace boost {
 namespace sequence {
