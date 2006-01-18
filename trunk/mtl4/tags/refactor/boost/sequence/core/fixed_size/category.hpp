@@ -4,7 +4,7 @@
 #ifndef BOOST_FIXED_SIZE_SEQUENCE_CATEGORY_DWA200559_HPP
 # define BOOST_FIXED_SIZE_SEQUENCE_CATEGORY_DWA200559_HPP
 
-# include <boost/sequence/core/category_fwd.hpp>
+# include <boost/sequence/operations/category_fwd.hpp>
 # include <boost/array.hpp>
 # include <cstddef>
 
