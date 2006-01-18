@@ -7,11 +7,11 @@
 # include <cstddef>
 # include <boost/sequence/make_range.hpp>
 # include <boost/sequence/range.hpp>
-# include <boost/sequence/next.hpp>
-# include <boost/sequence/size.hpp>
-# include <boost/sequence/elements.hpp>
-# include <boost/sequence/begin.hpp>
-# include <boost/sequence/end.hpp>
+# include <boost/sequence/intrinsic/cursor/next.hpp>
+# include <boost/sequence/intrinsic/sequence/size.hpp>
+# include <boost/sequence/intrinsic/sequence/elements.hpp>
+# include <boost/sequence/intrinsic/sequence/begin.hpp>
+# include <boost/sequence/intrinsic/sequence/end.hpp>
 
 # include <boost/sequence/algorithm/unrolled/dispatch.hpp>
 # include <boost/sequence/core/detail/make_compressed_pair.hpp>
