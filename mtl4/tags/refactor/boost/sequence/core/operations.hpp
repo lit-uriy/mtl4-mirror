@@ -6,7 +6,7 @@
 
 # include <boost/sequence/core/operations_fwd.hpp>
 
-# include <boost/sequence/property_map/identity_property_map.hpp>
+# include <boost/sequence/core/property_map/identity_property_map.hpp>
 # include <boost/sequence/core/iterator_range_tag.hpp>
 
 # include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
