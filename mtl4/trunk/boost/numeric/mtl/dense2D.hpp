@@ -121,9 +121,11 @@ private:
   
 // Dense 2D matrix type
 template <typename Elt, typename Parameters>
-class dense2D : public detail::base_matrix<Elt, Parameters>
+class dense2D : public detail::base_matrix<Elt, Parameters>, 
+		public detail::contiguous_memory_matrix<Elt, Parameters>
 {
-    typedef detail::base_matrix<Elt, Parameters>      super;
+    typedef detail::base_matrix<Elt, Parameters>                super;
+    typedef detail::contiguous_memory_matrix<Elt, Parameters>   super_memory;
     typedef dense2D                       self;
   public:	
     typedef typename Parameters::orientation  orientation;
@@ -144,39 +146,28 @@ class dense2D : public detail::base_matrix<Elt, Parameters>
     }
 
   public:
-    // Allocate memory
-    void allocate() 
-    {
-      set_nnz();
-      super::allocate();
-    }
-
     // if compile time matrix size allocate memory
-    dense2D() 
-      : super() 
-    {
-        if (dim_type::is_static) allocate();
-    }
+    dense2D() : super(), super_memory(dim_type().num_rows() * dim_type().num_cols()) {}
 
     // only sets dimensions, only for run-time dimensions
     explicit dense2D(mtl::non_fixed::dimensions d) 
-      : super(d) 
+	: super(d), super_memory(d.num_rows() * d.num_cols()) 
     {
-        allocate();
-    } 
+	set_nnz();
+    }
 
     // sets dimensions and pointer to external data
     explicit dense2D(mtl::non_fixed::dimensions d, value_type* a) 
-      : super(d, a) 
+      : super(d), super_memory(a) 
     { 
         set_nnz();
     }
 
     // same constructor for compile time matrix size
     // sets dimensions and pointer to external data
-    explicit dense2D(value_type* a) : super(a) 
+    explicit dense2D(value_type* a) : super(), super_memory(a) 
     { 
-        // BOOST_ASSERT((dim_type::is_static));
+	BOOST_ASSERT((dim_type::is_static));
     }
 
     // friend class indexer_type; should work without friend declaration
