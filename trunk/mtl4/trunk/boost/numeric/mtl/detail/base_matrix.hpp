@@ -20,48 +20,16 @@ struct base_matrix
     typedef typename Parameters::index        index_type;
     typedef typename Parameters::dimensions   dim_type;
     typedef Elt                     value_type;
-    typedef value_type*             pointer_type;
-    typedef const value_type*       const_pointer_type;
-    typedef pointer_type            key_type;
   protected:
-    value_type*                     data;      // pointer to matrix
-    bool                            ext;       // whether pointer to external data or own
     dim_type                        dim;       // # of rows and columns
     size_t                          nnz;       // # of non-zeros, to be set by derived matrix
     
-    // allocate memory for contiguous formats
-    // derived class is responsible that nnz is correctly set
-    void allocate() 
-    {
-      if (! ext && data) delete[] data; 
-      data = new value_type[nnz];
-      ext = false;
-    }
-    
   public:
-    base_matrix() : data(0), ext(false), nnz(0) {}
+    base_matrix() :  nnz(0) {}
 
-    // setting dimension, internal data but not yet allocated
-    explicit base_matrix(mtl::non_fixed::dimensions d) : data(0), ext(false), dim(d), nnz(0) {}
-
-    // setting dimension and reference to external data
-    // nnz should be set by derived class 
-    explicit base_matrix(mtl::non_fixed::dimensions d, value_type* a) 
-      : data(a), ext(true), dim(d), nnz(0) {}
-
-    // same constructors for compile time matrix size
-    // sets dimensions and pointer to external data
-    explicit base_matrix(value_type* a) : data(a), ext(true), nnz(0) 
-    { 
-      BOOST_STATIC_ASSERT((dim_type::is_static));
-    }
-
-    // destruct if my own data (and allocated)
-    ~base_matrix() 
-    { 
-      if (! ext && data) delete[] data; 
-    }
-    
+    // setting dimension
+    explicit base_matrix(mtl::non_fixed::dimensions d) : dim(d), nnz(0) {}
+   
     // number of rows
     size_t num_rows() const 
     {
@@ -93,7 +61,6 @@ struct base_matrix
     {
       return index::change_to(index_type(), num_cols());
     }
-
 
     // number of elements
     size_t num_elements() const
@@ -160,6 +127,45 @@ struct base_matrix
 	return major_(c, r, orientation());
     }
 	
+    // returns copy of dim
+    dim_type dimensions() const 
+    {
+      return dim; 
+    }
+
+    
+};
+
+
+template <class Elt, class Parameters>
+struct contiguous_memory_matrix 
+{
+    typedef typename Parameters::orientation  orientation;
+    typedef typename Parameters::index        index_type;
+    typedef typename Parameters::dimensions   dim_type;
+    typedef Elt                     value_type;
+    typedef value_type*             pointer_type;
+    typedef const value_type*       const_pointer_type;
+    typedef pointer_type            key_type;
+  protected:
+    bool                            ext;       // whether pointer to external data or own
+    // allocate memory for contiguous formats
+    // derived class is responsible that nnz is correctly set
+    
+    explicit contiguous_memory_matrix(value_type* a)
+      : data(a), ext(true) {}
+
+    explicit contiguous_memory_matrix(std::size_t size)
+	: ext(false)
+    {
+	data = new value_type[size];
+    }
+
+    ~contiguous_memory_matrix()
+    {
+	if (!ext && data) delete[] data;
+    }
+
     // offset of key (pointer) w.r.t. data 
     // values must be stored consecutively
     size_t offset(const value_type* p) const 
@@ -179,21 +185,16 @@ struct base_matrix
       return data; 
     }
 
-    // returns copy of dim
-    dim_type dimensions() const 
-    {
-      return dim; 
-    }
-
     // returns n-th value in consecutive memory
     // (whatever this means in the corr. matrix format)
     value_type value_n(size_t offset) const 
     { 
       return data[offset]; 
     }
-    
-  };
 
+  protected:
+    value_type*                     data;      // pointer to matrix
+};
 }} // namespace mtl::detail
 
 #endif // MTL_BASE_MATRIX_INCLUDE
