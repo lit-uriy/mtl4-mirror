@@ -10,13 +10,16 @@
 namespace mtl {
 
 // This type exist only for bundling template parameters (to reduce typing)
-template <class Orientation= row_major, class Index= index::c_index,
-	  class Dimensions= mtl::non_fixed::dimensions>
+template <typename Orientation= row_major, 
+	  typename Index= index::c_index,
+	  typename Dimensions= mtl::non_fixed::dimensions,
+	  bool OnHeap= false>
 struct matrix_parameters 
 {
     typedef Orientation orientation;
     typedef Index       index;
     typedef Dimensions  dimensions;
+    static bool const   on_heap= OnHeap;
 };
 
 
