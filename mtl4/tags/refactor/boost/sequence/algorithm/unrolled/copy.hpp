@@ -5,8 +5,8 @@
 # define BOOST_SEQUENCE_ALGORITHM_UNROLLED_COPY_DWA200559_HPP
 
 # include <cstddef>
-# include <boost/sequence/class/range/make_range.hpp>
-# include <boost/sequence/class/range/range.hpp>
+# include <boost/sequence/view/range/make_range.hpp>
+# include <boost/sequence/view/range/range.hpp>
 # include <boost/sequence/intrinsic/cursor/next.hpp>
 # include <boost/sequence/intrinsic/sequence/size.hpp>
 # include <boost/sequence/intrinsic/sequence/elements.hpp>
@@ -17,7 +17,7 @@
 # include <boost/sequence/core/detail/make_compressed_pair.hpp>
 # include <boost/sequence/algorithm/copy_fwd.hpp>
 
-# include <boost/sequence/class/range/detail/range_difference.hpp>
+# include <boost/sequence/view/range/detail/range_difference.hpp>
 
 # include <boost/sequence/operations/advance.hpp>
 
