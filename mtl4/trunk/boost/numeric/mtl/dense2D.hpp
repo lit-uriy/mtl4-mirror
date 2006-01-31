@@ -119,26 +119,51 @@ private:
     }
 }; // dense2D_indexer
 
+
+namespace detail 
+{
+    
+    // Compute required memory
+    // Enabling mechanism to make sure that computation is valid
+    template <typename Parameters, bool Enable>
+    struct dense2D_array_size {
+	static std::size_t const value= 0;
+    };
+
+    template <typename Parameters>
+    struct dense2D_array_size<Parameters, true>
+    {
+	typedef typename Parameters::dimensions   dimensions;
+	BOOST_STATIC_ASSERT((dimensions::is_static));
+	static std::size_t const value= dimensions::Num_Rows * dimensions::Num_Cols;
+    };
+
+} // namespace detail
+
   
 // Dense 2D matrix type
 template <typename Elt, typename Parameters>
 class dense2D : public detail::base_matrix<Elt, Parameters>, 
-		public detail::contiguous_memory_matrix<Elt, Parameters>
+		public detail::contiguous_memory_matrix< Elt, Parameters::on_stack, 
+							 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >
 {
-    typedef detail::base_matrix<Elt, Parameters>                super;
-    typedef detail::contiguous_memory_matrix<Elt, Parameters>   super_memory;
-    typedef dense2D                       self;
-  public:	
+    typedef dense2D                                    self;
+    typedef detail::base_matrix<Elt, Parameters>       super;
+  public:
+    typedef Parameters                        parameters;
     typedef typename Parameters::orientation  orientation;
     typedef typename Parameters::index        index_type;
     typedef typename Parameters::dimensions   dim_type;
-    typedef Elt                           value_type;
-    typedef const value_type*             pointer_type;
-    typedef pointer_type                  key_type;
-    typedef std::size_t                   size_type;
-    typedef dense_el_cursor<Elt>          el_cursor_type;  
-    // typedef std::pair<el_cursor_type, el_cursor_type> el_cursor_pair; not used 
-    typedef dense2D_indexer               indexer_type;
+    typedef Elt                               value_type;
+
+    typedef detail::contiguous_memory_matrix<Elt, Parameters::on_stack, 
+					     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     super_memory;
+
+    typedef const value_type*                 pointer_type;
+    typedef pointer_type                      key_type;
+    typedef std::size_t                       size_type;
+    typedef dense_el_cursor<Elt>              el_cursor_type;  
+    typedef dense2D_indexer                   indexer_type;
 
   protected:
     void set_nnz()
@@ -168,7 +193,7 @@ class dense2D : public detail::base_matrix<Elt, Parameters>,
     // sets dimensions and pointer to external data
     explicit dense2D(value_type* a) : super(), super_memory(a) 
     { 
-	BOOST_ASSERT((dim_type::is_static));
+	BOOST_STATIC_ASSERT((dim_type::is_static));
     }
 
     // friend class indexer_type; should work without friend declaration
@@ -396,6 +421,7 @@ namespace traits
 
 
 } // namespace traits
+
 
 } // namespace mtl
 
