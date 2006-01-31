@@ -5,6 +5,7 @@
 
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_matrix.hpp>
+#include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/detail/range_generator.hpp>
 #include <boost/numeric/mtl/property_map.hpp>
@@ -19,10 +20,10 @@ namespace mtl {
 // Dense Morton matrix type
 template <typename Elt, typename Parameters>
 class morton_dense : public detail::base_matrix<Elt, Parameters>, 
-		     public detail::contiguous_memory_matrix<Elt, Parameters>
+		     public detail::contiguous_memory_matrix<Elt, false>
 {
     typedef detail::base_matrix<Elt, Parameters>                super;
-    typedef detail::contiguous_memory_matrix<Elt, Parameters>   super_memory;
+    typedef detail::contiguous_memory_matrix<Elt, false>        super_memory;
     typedef morton_dense                                        self;
   public:	
     typedef typename Parameters::orientation  orientation;
