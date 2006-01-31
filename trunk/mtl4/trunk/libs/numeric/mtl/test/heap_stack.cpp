@@ -63,6 +63,7 @@ struct s2 : public generic_array<int, true, 10>
   float b;
 };
 
+#if 0
 template <typename Matrix>
 struct basis
   : public generic_array<Matrix::value_type, true, 10>
@@ -73,7 +74,7 @@ struct superclass : public basis<superclass<Elt> >
 {
   typedef Elt    value_type;
 };
-
+#endif
 
 
 int main(int argc, char* argv[])
