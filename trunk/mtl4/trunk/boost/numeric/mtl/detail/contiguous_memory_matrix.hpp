@@ -11,63 +11,84 @@
 namespace mtl { namespace detail {
 using std::size_t;
   
-// Base class for matrices that have contigous piece of memory
-template <class Elt, class Parameters>
-struct contiguous_memory_matrix 
+template <typename Matrix, bool Enable>
+struct array_size
 {
-    typedef typename Parameters::orientation  orientation;
-    typedef typename Parameters::index        index_type;
-    typedef typename Parameters::dimensions   dim_type;
-    typedef Elt                     value_type;
-    typedef value_type*             pointer_type;
-    typedef const value_type*       const_pointer_type;
-    typedef pointer_type            key_type;
+    // More convenient when always exist (and then not use it)
+    static std::size_t const value= 0;
+};
+
+template <typename Elt, bool OnStack, unsigned Size= 0>
+struct generic_array
+{
+    Elt    *data;
+};
+
+template <typename Elt, unsigned Size>
+struct generic_array<Elt, true, Size>
+{
+    Elt    data[Size];
+};
+
+
+// Base class for matrices that have contigous piece of memory
+template <typename Elt, bool OnStack, unsigned Size= 0>
+struct contiguous_memory_matrix 
+  : public generic_array<Elt, OnStack, Size>
+{
+    typedef generic_array<Elt, OnStack, Size>       base;
+
+    static bool const                         on_stack= OnStack;
+    
+    typedef Elt                               value_type;
+    typedef value_type*                       pointer_type;
+    typedef const value_type*                 const_pointer_type;
+
   protected:
     bool                            ext;       // whether pointer to external data or own
 
   public:
+    // Reference to external data (must be heap)
     explicit contiguous_memory_matrix(value_type* a)
-      : data(a), ext(true) {}
+      : base::data(a), ext(true) {}
 
     explicit contiguous_memory_matrix(std::size_t size)
 	: ext(false)
     {
-	data = new value_type[size];
+	if (!on_stack) this->data = new value_type[size];
     }
 
     ~contiguous_memory_matrix()
     {
-	if (!ext && data) delete[] data;
+	if (!on_stack && !ext && data) delete[] this->data;
     }
 
     // offset of key (pointer) w.r.t. data 
     // values must be stored consecutively
     size_t offset(const value_type* p) const 
     { 
-      return p - data; 
+      return p - this->data; 
     }
 
     // returns pointer to data
     pointer_type elements()
     {
-      return data; 
+      return this->data; 
     }
 
     // returns const pointer to data
     const_pointer_type elements() const 
     {
-      return data; 
+      return this->data; 
     }
 
     // returns n-th value in consecutive memory
     // (whatever this means in the corr. matrix format)
     value_type value_n(size_t offset) const 
     { 
-      return data[offset]; 
+      return this->data[offset]; 
     }
 
-  protected:
-    value_type*                     data;      // pointer to matrix
 };
 
 }} // namespace mtl::detail

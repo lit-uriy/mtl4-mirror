@@ -19,10 +19,11 @@ using std::size_t;
 template <class Elt, class Parameters>
 struct base_matrix 
 {
+    typedef Elt                               value_type;
     typedef typename Parameters::orientation  orientation;
     typedef typename Parameters::index        index_type;
     typedef typename Parameters::dimensions   dim_type;
-    typedef Elt                     value_type;
+    static bool const                         on_stack= Parameters::on_stack;
   protected:
     dim_type                        dim;       // # of rows and columns
     size_t                          nnz;       // # of non-zeros, to be set by derived matrix
