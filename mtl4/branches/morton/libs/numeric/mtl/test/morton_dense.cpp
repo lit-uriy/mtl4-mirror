@@ -4,7 +4,6 @@
 #include <boost/test/minimal.hpp>
 #include <boost/tuple/tuple.hpp>
 
-#include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>
