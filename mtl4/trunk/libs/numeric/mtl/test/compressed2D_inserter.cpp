@@ -9,12 +9,14 @@
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
-#include <boost/numeric/mtl/maybe.hpp>
+#include <boost/numeric/mtl/utilities/maybe.hpp>
 #include <boost/numeric/mtl/operations/raw_copy.hpp>
 #include <boost/numeric/mtl/operations/update.hpp>
 
 using namespace mtl;
 using namespace std;
+
+using utilities::maybe;
 
 template <typename Matrix>
 void print_matrix(Matrix const& matrix)
