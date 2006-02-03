@@ -9,9 +9,7 @@ exe compressed2D : compressed2D.cpp ;
 exe compressed2D_inserter : compressed2D_inserter.cpp ; 
 exe dilated_int : dilated_int.cpp ; 
 exe unroll : unroll.cpp ;
-exe iterator_adapter : iterator_adapter.cpp ;
 
-#exe heap_stack : heap_stack.cpp ;
 #exe fractalu : fractalu.cpp ;
 #exe mat_vec_mult_timing : mat_vec_mult_timing.cpp : <release><optimization>speed ;
 

@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_ALGORITHM_DISPATCH_DWA200559_HPP
 # define BOOST_SEQUENCE_ALGORITHM_DISPATCH_DWA200559_HPP
 
-# include <boost/sequence/category.hpp>
+# include <boost/sequence/operations/category.hpp>
 # include <boost/typeof/typeof.hpp>
 # include <boost/mpl/apply_wrap.hpp>
 # include <boost/mpl/assert.hpp>
@@ -32,6 +32,9 @@ template <class Signature> struct dispatch;
 
 # if BOOST_WORKAROUND(BOOST_MSVC, <= 1310)                          \
   || BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050601))
+
+# pragma warning(push)
+# pragma warning(disable: 4675) // warning resolved overload was found by argument-dependent lookup
 
 namespace aux_
 {

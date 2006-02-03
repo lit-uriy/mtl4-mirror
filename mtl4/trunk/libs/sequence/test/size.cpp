@@ -2,9 +2,9 @@
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/sequence/size.hpp>
-#include <boost/sequence/minus.hpp>
-#include <boost/sequence/detail/is_mpl_integral_constant.hpp>
+#include <boost/sequence/intrinsic/sequence/size.hpp>
+#include <boost/sequence/arithmetic/minus.hpp>
+#include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
 #include <boost/mpl/assert.hpp>
 
 namespace sequence = boost::sequence;

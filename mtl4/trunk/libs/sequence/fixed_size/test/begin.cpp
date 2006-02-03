@@ -4,8 +4,8 @@
 
 #include <boost/mpl/assert.hpp>
 #include <boost/sequence/begin_cursor.hpp>
-#include <boost/sequence/detail/is_specialized.hpp>
-#include <boost/sequence/begin.hpp>
+#include <boost/sequence/core/detail/is_specialized.hpp>
+#include <boost/sequence/intrinsic/sequence/begin.hpp>
 
 namespace sequence = boost::sequence;
 
