@@ -1,0 +1,8 @@
+project my_mtl
+  : requirements
+    <include>${BOOST_ROOT} <include>${MTL_BOOST_ROOT} <include>../../../..
+    # CXXFLAGS=-Wno-long-long
+  ;
+
+exe morton_dense : morton_dense.cpp ; 
+
