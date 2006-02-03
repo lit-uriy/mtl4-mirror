@@ -3,6 +3,7 @@
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <numeric>
 
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/dense2D.hpp>
@@ -11,159 +12,13 @@
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/raw_copy.hpp>
+#include <boost/numeric/mtl/utilities/iterator_adapter.hpp>
 
 using namespace mtl;
 using namespace std;
 
-//template <typename PropertyMap, typename Cursor, typename ValueType>
-
-
-
-
-
-
-template <typename Adapter>
-struct adapter_operators
-{
-    Adapter& operator++() 
-    {
-	Adapter& me = static_cast<Adapter&>(*this);
-	++me.cursor;
-	return me;
-    }
-
-    Adapter& operator++(int) 
-    {
-	Adapter& me = static_cast<Adapter&>(*this);
-	Adapter  tmp(me);
-	++me.cursor;
-	return tmp;
-    }
-    
-    bool operator==(Adapter const& x) const
-    {
-	Adapter const& me = static_cast<Adapter const&>(*this);
-
-	// Compare addresses of property maps
-	return &me.map == &x.map && me.cursor == x.cursor;
-
-	// Certainly better they provide comparison
-	// return me.map == x.map && me.cursor == x.cursor; 
-    }
-
-    bool operator!=(Adapter const& x) const
-    {
-	return !operator==(x);
-	//Adapter const& me = static_cast<Adapter const&>(*this);
-	//return !(me == x);
-    }
-};
-
-
-template <typename PropertyMap, typename Cursor, typename ValueType>
-struct const_iterator_proxy
-{
-    const_iterator_proxy(PropertyMap const& map, Cursor cursor) 
-	: map(map), cursor(cursor) {}
-
-    operator ValueType() const
-    {
-	return map(*cursor);
-    }
-
-    PropertyMap const&     map;
-    Cursor                 cursor;
-};
-
-template <typename PropertyMap, typename Cursor, typename ValueType>
-struct iterator_proxy
-{
-    typedef iterator_proxy                    self;
-
-    iterator_proxy(PropertyMap& map, Cursor cursor) 
-	: map(map), cursor(cursor) {}
-
-    operator ValueType() const
-    {
-	return map(*cursor);
-    }
-
-    self& operator=(ValueType const& value)
-    {
-	map(*cursor, value);
-	return *this;
-    }
-
-    PropertyMap&           map;
-    Cursor                 cursor;
-};
-
-
-template <typename PropertyMap, typename Cursor, typename ValueType>
-struct const_iterator_adapter
-    : public adapter_operators< const_iterator_adapter<PropertyMap, Cursor, ValueType> >
-//: public iterator_adapter<PropertyMap, Cursor, ValueType>
-{
-    // typedef iterator_adapter<PropertyMap, Cursor, ValueType>         base;
-    typedef const_iterator_adapter                                   self;
-    typedef const_iterator_proxy<PropertyMap, Cursor, ValueType>     proxy;
-
-    const_iterator_adapter(PropertyMap const& map, Cursor cursor) 
-	: map(map), cursor(cursor) {}
-
-    proxy operator*()
-    {
-	return proxy(map, cursor);
-    }
-
-    PropertyMap const&     map;
-    Cursor                 cursor;
-};
-
-
-template <typename PropertyMap, typename Cursor, typename ValueType>
-struct iterator_adapter
-    : public adapter_operators< iterator_adapter<PropertyMap, Cursor, ValueType> >
-{
-    typedef iterator_adapter                                 self;
-    typedef iterator_proxy<PropertyMap, Cursor, ValueType>   proxy;
-
-    iterator_adapter(PropertyMap& map, Cursor cursor) : map(map), cursor(cursor) {}
-
-#if 0
-    self& operator++() 
-    {
-	++cursor;
-	return *this;
-    }
-
-    self& operator++(int) 
-    {
-	self    tmp(*this);
-	++cursor;
-	return tmp;
-    }
-    
-    bool operator==(self const& x) const
-    {
-	return map == x.map && cursor == x.cursor;
-    }
-
-    bool operator!=(self const& x) const
-    {
-	return !(*this == x);
-    }    
-#endif
-
-    proxy operator*()
-    {
-	return proxy(map, cursor);
-    }
-
-    PropertyMap&     map;
-    Cursor           cursor;
-};
-
+using mtl::utilities::iterator_adapter;
+using mtl::utilities::const_iterator_adapter;
 
 struct test_dense2D_exception {};
 
@@ -219,10 +74,8 @@ struct test_dense2D
 
 	typedef const_iterator_adapter<typename traits::row<Matrix>::type, cursor_type, double> row_adapter_type;
 	row_adapter_type row_iter(r, begin<tag>(matrix)), row_end(r, end<tag>(matrix));
-
 	typedef const_iterator_adapter<typename traits::col<Matrix>::type, cursor_type, double> col_adapter_type;
 	col_adapter_type col_iter(c, begin<tag>(matrix));
-
 	typedef iterator_adapter<typename traits::value<Matrix>::type, cursor_type, double> value_adapter_type;
 	value_adapter_type value_iter(v, begin<tag>(matrix));
 
@@ -231,8 +84,8 @@ struct test_dense2D
 	    cout << "matrix[" << *row_iter << ", " << *col_iter << "] = " << *value_iter << '\n';
 	}
 
-	
-
+	value_adapter_type value_first(v, begin<tag>(matrix)), value_last(v, end<tag>(matrix));
+	cout << "Sum of all values = " << accumulate(value_first, value_last, 0.0) << "\n";
     }
     
     void operator() (double element_1_2)
