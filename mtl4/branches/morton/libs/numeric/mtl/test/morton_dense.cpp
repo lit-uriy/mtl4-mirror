@@ -12,7 +12,7 @@
 
 using namespace mtl;
 using namespace std;
-
+ 
  
 int test_main(int argc, char* argv[])
 {
@@ -20,7 +20,7 @@ int test_main(int argc, char* argv[])
     typedef morton_dense<double, matrix_parameters<> > matrix_type;
     
     matrix_type matrix(non_fixed::dimensions(2, 3));
-    
+   
 #if 0
     traits::row<matrix_type>::type                         r = row(matrix);
     traits::col<matrix_type>::type                         c = col(matrix);
