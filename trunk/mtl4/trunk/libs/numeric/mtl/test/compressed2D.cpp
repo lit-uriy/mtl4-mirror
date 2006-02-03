@@ -36,7 +36,7 @@ int test_main(int argc, char* argv[])
 	cout << '[';
 	for (size_t c = 0; c < matrix.num_cols(); ++c) {
 	    maybe<size_t> m = matrix.indexer(matrix, r, c);
-	    cout << matrix(r, c)
+	    cout << (m ? matrix.value_n(m.value()) : 0)
 		 << (c < matrix.num_cols() - 1 ? ", " : "]\n"); } 
     }
 
