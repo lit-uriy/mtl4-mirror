@@ -173,7 +173,10 @@ class dense2D : public detail::base_matrix<Elt, Parameters>,
 
   public:
     // if compile time matrix size allocate memory
-    dense2D() : super(), super_memory(dim_type().num_rows() * dim_type().num_cols()) {}
+    dense2D() : super(), super_memory(dim_type().num_rows() * dim_type().num_cols()) 
+    {
+	set_nnz();
+    }
 
     // only sets dimensions, only for run-time dimensions
     explicit dense2D(mtl::non_fixed::dimensions d) 
@@ -194,6 +197,7 @@ class dense2D : public detail::base_matrix<Elt, Parameters>,
     explicit dense2D(value_type* a) : super(), super_memory(a) 
     { 
 	BOOST_STATIC_ASSERT((dim_type::is_static));
+        set_nnz();
     }
 
     // friend class indexer_type; should work without friend declaration

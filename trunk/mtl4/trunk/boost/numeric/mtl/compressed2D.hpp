@@ -12,7 +12,7 @@
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/property_map.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>
-#include <boost/numeric/mtl/maybe.hpp>
+#include <boost/numeric/mtl/utilities/maybe.hpp>
 #include <boost/numeric/mtl/complexity.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/update.hpp>
@@ -25,6 +25,8 @@ namespace mtl {
 
 using std::size_t; 
 using std::vector;
+using utilities::maybe;  
+
 
 // Forward declarations
 struct compressed2D_indexer;
@@ -136,8 +138,8 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     typedef typename Parameters::index               index_type;
     typedef typename Parameters::dimensions          dimensions;
     typedef Elt                                      value_type;
-    typedef const value_type*                        pointer_type;
-    // typedef pointer_type                             key_type;
+    typedef const value_type*                        const_pointer_type;
+    // typedef const_pointer_type                             key_type;
     typedef size_t                                   size_type;
     // typedef compressed_el_cursor<Elt>                el_cursor_type;  
     typedef compressed2D_indexer                     indexer_type;
@@ -146,10 +148,10 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     void allocate(size_t new_nnz)
     {
 	if (new_nnz) {
-	    super::nnz = new_nnz;
-	    super::allocate();
-	    indices.resize(super::nnz, 0);
-	    data.resize(super::nnz, 0); // ! overloads base matrix
+	    this->nnz = new_nnz;
+	    data.resize(this->nnz);
+	    indices.resize(this->nnz, 0);
+	    data.resize(this->nnz, 0); // ! overloads base matrix
 	}
     }
 
@@ -178,7 +180,7 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 	// check if starts has right size
 	allocate(last_value - first_value); // ???? 
 	// check if nnz and indices has right size
-	std::copy(first_value, last_value, super::elements()); // for base matrix
+
 	std::copy(first_value, last_value, data.begin());
 	std::copy(first_start, first_start + super::dim1() + 1, starts.begin());
 	std::copy(first_index, first_index + super::num_elements(), indices.begin());
@@ -188,6 +190,7 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 
     value_type operator() (size_type row, size_type col) const
     {
+        throw_debug_exception(!inserting, "Reading data during insertion has undefined behavior!\n");
 	maybe<size_type> pos = indexer(*this, row, col);
 	return pos ? data[pos] : value_type(0);
     }
@@ -196,7 +199,7 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     template <typename, typename, typename> friend struct compressed2D_inserter;
 
     indexer_type  indexer;
-    vector<value_type>      data; // ! overloads base matrix
+    vector<value_type>      data; 
   protected:
     vector<size_t>          starts;
     vector<size_t>          indices;
