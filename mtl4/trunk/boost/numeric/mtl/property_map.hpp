@@ -12,7 +12,7 @@ template <class Matrix> struct indexer_row_ref
     typedef typename Matrix::key_type   key_type;
     indexer_row_ref(const matrix_type& ma) : ma(ma) {} 
     
-    typename Matrix::size_type operator() (key_type key)
+    typename Matrix::size_type operator() (key_type key) const
     {
 	return ma.indexer.row(ma, key);
     }
@@ -25,7 +25,7 @@ template <class Matrix> struct indexer_col_ref
     typedef typename Matrix::key_type   key_type;
     indexer_col_ref(const matrix_type& ma) : ma(ma) {} 
     
-    typename Matrix::size_type operator() (key_type key)
+    typename Matrix::size_type operator() (key_type key) const
     {
 	return ma.indexer.col(ma, key);
     }
@@ -36,7 +36,7 @@ template <class Matrix> struct indexer_col_ref
 template <class Matrix> struct direct_const_value
 {
     direct_const_value(const Matrix&) {} // for compatibility
-    typename Matrix::value_type operator() (typename Matrix::key_type key)
+    typename Matrix::value_type operator() (typename Matrix::key_type key) const
     {
 	return *key;
     }
@@ -58,7 +58,7 @@ template <class Matrix> struct direct_value
     }
 
     // should be inherited
-    typename Matrix::value_type operator() (typename Matrix::key_type key) 
+    typename Matrix::value_type operator() (typename Matrix::key_type key) const
     {
 	return *key;
     }

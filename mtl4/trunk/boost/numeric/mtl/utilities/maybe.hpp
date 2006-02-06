@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-namespace mtl {
+namespace mtl { namespace utilities {
 
 template <class Value>
 struct maybe : public std::pair<Value, bool> 
@@ -42,6 +42,6 @@ inline std::ostream& operator<< (std::ostream& os, maybe<Value> const&  m)
     return os << '(' << m.value() << ", " << (m ? "true" : "false") << ')';
 }
 
-} // namespace mtl
+}} // namespace mtl::utilities
 
 #endif // MTL_MAYBE_INCLUDE
