@@ -6,7 +6,7 @@
 
 # include <boost/sequence/view/range/range_fwd.hpp>
 # include <boost/compressed_pair.hpp>
-# include <boost/sequence/core/tag_fwd.hpp>
+# include <boost/sequence/operations/tag_fwd.hpp>
 # include <boost/sequence/operations/category_fwd.hpp>
 # include <boost/sequence/intrinsic/cursor/distance.hpp>
 # include <boost/sequence/operations/operations_fwd.hpp>
