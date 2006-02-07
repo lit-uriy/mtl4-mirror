@@ -14,7 +14,7 @@
 # include <boost/sequence/intrinsic/sequence/end.hpp>
 
 # include <boost/sequence/algorithm/unrolled/dispatch.hpp>
-# include <boost/sequence/core/detail/make_compressed_pair.hpp>
+# include <boost/sequence/detail/make_compressed_pair.hpp>
 # include <boost/sequence/algorithm/copy_fwd.hpp>
 
 # include <boost/sequence/view/range/detail/range_difference.hpp>

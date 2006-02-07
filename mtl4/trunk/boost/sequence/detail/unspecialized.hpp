@@ -5,7 +5,7 @@
 # define UNSPECIALIZED_DWA200552_HPP
 
 # include <boost/type_traits/is_convertible.hpp>
-# include <boost/sequence/core/detail/unspecialized.hpp>
+# include <boost/sequence/detail/unspecialized.hpp>
 
 namespace boost { namespace sequence { namespace detail {
 

@@ -5,7 +5,7 @@
 # define BOOST_SEQUENCE_INTRINSIC_MINUS_DWA20051128_HPP
 
 # include <boost/typeof/typeof.hpp>
-# include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
+# include <boost/sequence/detail/is_mpl_integral_constant.hpp>
 # include <boost/utility/enable_if.hpp>
 # include <boost/mpl/and.hpp>
 # include <boost/mpl/minus.hpp>

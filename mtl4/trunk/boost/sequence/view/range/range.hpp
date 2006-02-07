@@ -10,8 +10,8 @@
 # include <boost/sequence/operations/category_fwd.hpp>
 # include <boost/sequence/intrinsic/cursor/distance.hpp>
 # include <boost/sequence/operations/operations_fwd.hpp>
-# include <boost/sequence/core/detail/make_compressed_pair.hpp>
-# include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
+# include <boost/sequence/detail/make_compressed_pair.hpp>
+# include <boost/sequence/detail/is_mpl_integral_constant.hpp>
 
 # include <boost/mpl/if.hpp>
 
