@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_INTRINSIC_OPERATIONS_FWD_DWA2005616_HPP
 # define BOOST_SEQUENCE_INTRINSIC_OPERATIONS_FWD_DWA2005616_HPP
 
-# include <boost/sequence/core/tag.hpp>
+# include <boost/sequence/operations/tag.hpp>
 
 namespace boost { namespace sequence { namespace intrinsic {
 

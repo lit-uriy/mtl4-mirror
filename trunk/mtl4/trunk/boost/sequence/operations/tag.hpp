@@ -4,8 +4,8 @@
 #ifndef BOOST_SEQUENCE_INTRINSIC_TAG_DWA2005616_HPP
 # define BOOST_SEQUENCE_INTRINSIC_TAG_DWA2005616_HPP
 
-# include <boost/sequence/core/tag_fwd.hpp>
-# include <boost/sequence/core/iterator_range_tag.hpp>
+# include <boost/sequence/operations/tag_fwd.hpp>
+# include <boost/sequence/operations/iterator_range_tag.hpp>
 
 //
 // The tag<S> metafunction provides a dispatch tag for selecting
