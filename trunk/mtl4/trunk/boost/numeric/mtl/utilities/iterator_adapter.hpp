@@ -1,20 +1,20 @@
 // $COPYRIGHT$
 
-#ifndef MTL_ITERATOR_ADAPTER_INCLUDE
-#define MTL_ITERATOR_ADAPTER_INCLUDE
+#ifndef MTL_ITERATOR_ADAPTOR_INCLUDE
+#define MTL_ITERATOR_ADAPTOR_INCLUDE
 
-#include <boost/numeric/mtl/utilities/iterator_adapter_detail.hpp>
+#include <boost/numeric/mtl/utilities/iterator_adaptor_detail.hpp>
 
 namespace mtl { namespace utilities {
 
 
 template <typename PropertyMap, typename Cursor, typename ValueType>
-struct const_iterator_adapter
-    : public detail::adapter_operators< const_iterator_adapter<PropertyMap, Cursor, ValueType> >
+struct const_iterator_adaptor
+    : public detail::adaptor_operators< const_iterator_adaptor<PropertyMap, Cursor, ValueType> >
 {
     typedef detail::const_iterator_proxy<PropertyMap, Cursor, ValueType>     proxy;
 
-    const_iterator_adapter(PropertyMap const& map, Cursor cursor) 
+    const_iterator_adaptor(PropertyMap const& map, Cursor cursor) 
 	: map(map), cursor(cursor) {}
 
     proxy operator*()
@@ -28,12 +28,12 @@ struct const_iterator_adapter
 
 
 template <typename PropertyMap, typename Cursor, typename ValueType>
-struct iterator_adapter
-    : public detail::adapter_operators< iterator_adapter<PropertyMap, Cursor, ValueType> >
+struct iterator_adaptor
+    : public detail::adaptor_operators< iterator_adaptor<PropertyMap, Cursor, ValueType> >
 {
     typedef detail::iterator_proxy<PropertyMap, Cursor, ValueType>   proxy;
 
-    iterator_adapter(PropertyMap& map, Cursor cursor) 
+    iterator_adaptor(PropertyMap& map, Cursor cursor) 
 	: map(map), cursor(cursor) {}
 
     proxy operator*()
@@ -48,4 +48,4 @@ struct iterator_adapter
 
 }} // namespace mtl::utilities
 
-#endif // MTL_ITERATOR_ADAPTER_INCLUDE
+#endif // MTL_ITERATOR_ADAPTOR_INCLUDE

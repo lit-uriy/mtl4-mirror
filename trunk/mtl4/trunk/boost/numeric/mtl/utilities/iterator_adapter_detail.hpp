@@ -1,32 +1,32 @@
 // $COPYRIGHT$
 
-#ifndef MTL_ITERATOR_ADAPTER_DETAIL_INCLUDE
-#define MTL_ITERATOR_ADAPTER_DETAIL_INCLUDE
+#ifndef MTL_ITERATOR_ADAPTOR_DETAIL_INCLUDE
+#define MTL_ITERATOR_ADAPTOR_DETAIL_INCLUDE
 
 namespace mtl { namespace utilities { namespace detail {
 
 
-template <typename Adapter>
-struct adapter_operators
+template <typename Adaptor>
+struct adaptor_operators
 {
-    Adapter& operator++() 
+    Adaptor& operator++() 
     {
-	Adapter& me = static_cast<Adapter&>(*this);
+	Adaptor& me = static_cast<Adaptor&>(*this);
 	++me.cursor;
 	return me;
     }
 
-    Adapter& operator++(int) 
+    Adaptor& operator++(int) 
     {
-	Adapter& me = static_cast<Adapter&>(*this);
-	Adapter  tmp(me);
+	Adaptor& me = static_cast<Adaptor&>(*this);
+	Adaptor  tmp(me);
 	++me.cursor;
 	return tmp;
     }
     
-    bool operator==(Adapter const& x) const
+    bool operator==(Adaptor const& x) const
     {
-	Adapter const& me = static_cast<Adapter const&>(*this);
+	Adaptor const& me = static_cast<Adaptor const&>(*this);
 
 	// Compare addresses of property maps
 	return &me.map == &x.map && me.cursor == x.cursor;
@@ -35,7 +35,7 @@ struct adapter_operators
 	// return me.map == x.map && me.cursor == x.cursor; 
     }
 
-    bool operator!=(Adapter const& x) const
+    bool operator!=(Adaptor const& x) const
     {
 	return !operator==(x);
     }
@@ -83,4 +83,4 @@ struct iterator_proxy
 
 }}} // namespace mtl::utilities::detail
 
-#endif // MTL_ITERATOR_ADAPTER_DETAIL_INCLUDE
+#endif // MTL_ITERATOR_ADAPTOR_DETAIL_INCLUDE
