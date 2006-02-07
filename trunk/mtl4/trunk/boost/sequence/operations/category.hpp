@@ -8,7 +8,9 @@
 # include <boost/sequence/core/detail/o1_size_cursors.hpp>
 # include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
 # include <boost/sequence/operations/fixed_size/category.hpp>
-# include <boost/sequence/operations/operations.hpp>
+# include <boost/sequence/operations/begin.hpp>
+# include <boost/sequence/operations/end.hpp>
+# include <boost/sequence/operations/size.hpp>
 
 # include <boost/mpl/eval_if.hpp>
 # include <boost/mpl/if.hpp>

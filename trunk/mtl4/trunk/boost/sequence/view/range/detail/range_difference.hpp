@@ -7,7 +7,9 @@
 # include <boost/sequence/arithmetic/minus.hpp>
 # include <boost/sequence/intrinsic/sequence/size.hpp>
 # include <boost/sequence/operations/category.hpp>
-# include <boost/sequence/operations/operations.hpp>
+# include <boost/sequence/operations/end.hpp>
+# include <boost/sequence/operations/minus.hpp>
+# include <boost/sequence/operations/size.hpp>
 
 namespace boost { namespace sequence { namespace detail {
 
