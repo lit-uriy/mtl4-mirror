@@ -4,9 +4,9 @@
 #ifndef IS_MPL_INTEGRAL_CONSTANT_DWA200541_HPP
 # define IS_MPL_INTEGRAL_CONSTANT_DWA200541_HPP
 
-# include <boost/sequence/core/detail/has_value_type.hpp>
-# include <boost/sequence/core/detail/has_type.hpp>
-# include <boost/sequence/core/detail/has_value.hpp>
+# include <boost/sequence/detail/has_value_type.hpp>
+# include <boost/sequence/detail/has_type.hpp>
+# include <boost/sequence/detail/has_value.hpp>
 # include <boost/type_traits/is_same.hpp>
 # include <boost/mpl/and.hpp>
 # include <boost/mpl/bool.hpp>

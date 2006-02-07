@@ -5,7 +5,7 @@
 # define BOOST_SEQUENCE_DETAIL_INDEX_RESULT_DWA2005617_HPP
 
 # include <boost/type_traits/remove_reference.hpp>
-# include <boost/sequence/core/detail/transfer_cv.hpp>
+# include <boost/sequence/detail/transfer_cv.hpp>
 # include <boost/mpl/if.hpp>
 
 namespace boost { namespace sequence { namespace detail { 

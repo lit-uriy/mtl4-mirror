@@ -4,9 +4,9 @@
 #ifndef IS_CONTAINER_DWA200541_HPP
 # define IS_CONTAINER_DWA200541_HPP
 
-# include <boost/sequence/core/detail/has_iterator.hpp>
-# include <boost/sequence/core/detail/has_const_iterator.hpp>
-# include <boost/sequence/core/detail/has_value_type.hpp>
+# include <boost/sequence/detail/has_iterator.hpp>
+# include <boost/sequence/detail/has_const_iterator.hpp>
+# include <boost/sequence/detail/has_value_type.hpp>
 # include <boost/mpl/and.hpp>
 
 namespace boost { namespace sequence {

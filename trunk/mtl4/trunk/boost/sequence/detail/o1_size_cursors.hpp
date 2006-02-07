@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_DETAIL_O1_SIZE_CURSORS_DWA20051129_HPP
 # define BOOST_SEQUENCE_DETAIL_O1_SIZE_CURSORS_DWA20051129_HPP
 
-# include <boost/sequence/core/detail/is_random_access_cursor.hpp>
+# include <boost/sequence/detail/is_random_access_cursor.hpp>
 
 # include <boost/type_traits/is_same.hpp>
 

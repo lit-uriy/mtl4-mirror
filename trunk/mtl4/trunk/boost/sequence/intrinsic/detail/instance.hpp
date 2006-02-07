@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_DETAIL_INSTANCE_DWA200559_HPP
 # define BOOST_SEQUENCE_DETAIL_INSTANCE_DWA200559_HPP
 
-# include <boost/sequence/core/detail/config.hpp>
+# include <boost/sequence/detail/config.hpp>
 
 namespace boost { namespace sequence { namespace detail { 
 

@@ -5,8 +5,8 @@
 # define BOOST_SEQUENCE_CATEGORY_DWA200559_HPP
 
 # include <boost/sequence/operations/category_fwd.hpp>
-# include <boost/sequence/core/detail/o1_size_cursors.hpp>
-# include <boost/sequence/core/detail/is_mpl_integral_constant.hpp>
+# include <boost/sequence/detail/o1_size_cursors.hpp>
+# include <boost/sequence/detail/is_mpl_integral_constant.hpp>
 # include <boost/sequence/operations/fixed_size/category.hpp>
 # include <boost/sequence/operations/begin.hpp>
 # include <boost/sequence/operations/end.hpp>

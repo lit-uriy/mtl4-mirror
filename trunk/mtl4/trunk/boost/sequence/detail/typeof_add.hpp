@@ -5,7 +5,7 @@
 # define BOOST_SEQUENCE_DETAIL_TYPEOF_ADD_DWA2005520_HPP
 
 # include <boost/typeof/typeof.hpp>
-# include <boost/sequence/core/detail/make.hpp>
+# include <boost/sequence/detail/make.hpp>
 
 namespace boost { namespace sequence { namespace detail { 
 
