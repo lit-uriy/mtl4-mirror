@@ -6,7 +6,7 @@
 
 # include <boost/sequence/operations/operations_fwd.hpp>
 
-# include <boost/sequence/core/property_map/identity_property_map.hpp>
+# include <boost/sequence/property_map/identity_property_map.hpp>
 # include <boost/sequence/operations/iterator_range_tag.hpp>
 
 # include <boost/range/begin.hpp>
