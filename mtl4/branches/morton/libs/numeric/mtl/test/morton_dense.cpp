@@ -5,32 +5,45 @@
 #include <boost/tuple/tuple.hpp>
 
 #include <boost/numeric/mtl/morton_dense.hpp>
+//#include <boost/numeric/mtl/dense2D.hpp>
+#include <boost/numeric/mtl/transposed_view.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/raw_copy.hpp>
 
+
 using namespace mtl;
 using namespace std;
+
  
  
 int test_main(int argc, char* argv[])
 {
 
-    typedef morton_dense<double, matrix_parameters<> > matrix_type;
-    
+    // typedef dense2D<double, matrix_parameters<> > matrix_type;
+    // typedef matrix_parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters1;
+    // typedef dense2D<double, Parameters> matrix_type;
+    //  matrix_type   matrix;
+    // double        val[] = {1., 2., 3., 4., 5., 6.};
+    // raw_copy(val, val+6, matrix); 
+
+    typedef morton_dense<double, matrix_parameters<> > matrix_type;    
     matrix_type matrix(non_fixed::dimensions(2, 3));
    
-#if 0
     traits::row<matrix_type>::type                         r = row(matrix);
     traits::col<matrix_type>::type                         c = col(matrix);
     traits::value<matrix_type>::type                       v = value(matrix);
-
     
     typedef glas::tags::all_t all_tag;
-    typedef traits::range_generator<glas::tags::all_tag, matrix_type> cursor_type;
-    for (cursor_type cursor = begin<all_tag>(matrix), cend = end<all_tag>(matrix); cursor != cend; ++cursor) 
-	cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
+    typedef traits::range_generator<all_tag, matrix_type> cursor_type;
+    //    cursor_type cursor = begin<all_tag>(matrix);
+
+
+    //    for (cursor_type cursor = begin<all_tag>(matrix), cend = end<all_tag>(matrix); cursor != cend; ++cursor) 
+    //  	cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
+
+#if 0
 
     typedef glas::tags::row_t row_tag;
     typedef traits::range_generator<row_tag, matrix_type> row_cursor_type;
