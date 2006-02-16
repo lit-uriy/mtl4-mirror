@@ -31,6 +31,7 @@ public:
   // assignment operator
   self_type& operator=(const self_type& a) {
     index_ = a.index_;
+    return *this;
   }
  
   // destructors

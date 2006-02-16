@@ -3,9 +3,11 @@
 #ifndef MTL_MORTON_DENSE_INCLUDE
 #define MTL_MORTON_DENSE_INCLUDE
 
+#include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_matrix.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
+#include <boost/numeric/mtl/detail/dilated_int.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/detail/range_generator.hpp>
 #include <boost/numeric/mtl/property_map.hpp>
@@ -17,6 +19,62 @@
 #include <vector>
 
 namespace mtl {
+
+template <std::size_t  BitMask>
+struct morton_dense_el_cursor
+{
+    typedef std::size_t    size_t;
+    typedef dilated_int<std::size_t, BitMask, true>   dilated_row_t;
+    typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 
+    typedef morton_dense_el_cursor                    self;
+
+    morton_dense_el_cursor(size_t my_row, size_t my_col, size_t num_cols) 
+	: my_row(my_row), my_col(my_col), dilated_row(my_row), dilated_col(my_col), num_cols(num_cols) 
+    {}
+
+    self& operator++ ()
+    {
+	++my_col; ++dilated_col;
+	if (my_col == num_cols) {
+	    my_col= 0; dilated_col= dilated_col_t(0);
+	    ++my_row; ++dilated_row;
+	}
+	return *this;
+    }
+
+    self& operator* ()
+    {
+	return *this;
+    }
+
+    bool operator== (self const& x)
+    {
+	assert (num_cols == x.num_cols);
+	return my_row == x.my_row && my_col == x.my_col;
+    }
+
+    bool operator!= (self const& x)
+    {
+	return !(*this == x);
+    }
+
+    size_t row() const
+    {
+	return my_row;
+    }
+
+    size_t col() const
+    {
+	return my_col;
+    }
+
+protected:
+    size_t                       my_row, my_col;   
+    dilated_row_t                dilated_row;
+    dilated_col_t                dilated_col; 
+    size_t                       num_cols;
+};
+
 
 // Morton Dense matrix type
 template <typename Elt, typename Parameters>
@@ -37,13 +95,13 @@ class morton_dense : public detail::base_matrix<Elt, Parameters>,
     // typedef morton_dense_el_cursor<Elt>       el_cursor_type;  
     // typedef morton_dense_indexer              indexer_type;
 
-   //  implement cursor for morton matrix, somewhere
-   //  also, morton indexer?
-  typedef const value_type*                 pointer_type;
-  typedef pointer_type                      key_type;
-  typedef std::size_t                       size_type;
-  //  typedef morton_dense_el_cursor<Elt>       el_cursor_type;
-  //  typedef morton_dense_indexer              indexer_type;
+    //  implement cursor for morton matrix, somewhere
+    //  also, morton indexer?
+
+    typedef morton_dense_el_cursor<0x55555555>    key_type;
+    typedef std::size_t                           size_type;
+    
+    //  typedef morton_dense_indexer              indexer_type;
 
 
   public: 
@@ -174,13 +232,13 @@ namespace traits
   template <class Elt, class Parameters>
   struct row<morton_dense<Elt, Parameters> >
   {
-    typedef mtl::detail::indexer_row_ref<morton_dense<Elt, Parameters> > type;
+    typedef mtl::detail::row_in_key<morton_dense<Elt, Parameters> > type;
   };
 
   template <class Elt, class Parameters>
   struct col<morton_dense<Elt, Parameters> >
   {
-    typedef mtl::detail::indexer_col_ref<morton_dense<Elt, Parameters> > type;
+    typedef mtl::detail::col_in_key<morton_dense<Elt, Parameters> > type;
   };
 
   template <class Elt, class Parameters>
@@ -205,7 +263,7 @@ namespace traits
   template <class Elt, class Parameters>
   struct matrix_category<morton_dense<Elt, Parameters> >
   {
-    typedef tag::morton_dense type;
+    typedef mtl::tag::morton_dense type;
   };
 
 } // namespace traits
@@ -261,7 +319,7 @@ namespace traits
 					    dense_el_cursor<Elt>, complexity::linear_cached>
     {};
 
-#endif
+
 
     namespace detail
     {
@@ -388,44 +446,11 @@ namespace traits
   : range_generator<glas::tags::nz_t,
 		    detail::sub_matrix_cursor<morton_dense<Elt, Parameters>, glas::tags::col_t, 2> >
   {};
-
+#endif
 
 } // namespace traits
 
 
-// Cursor over every element
-template <class Elt>
-struct morton_dense_el_cursor : public detail::base_cursor<const Elt*>
-{
-  typedef Elt                           value_type;
-  typedef const value_type*             pointer_type; // ?
-  typedef detail::base_cursor<const Elt*> super;
-
-  morton_dense_el_cursor () {}
-  morton_dense_el_cursor (pointer_type me) : super(me) {}
-
-    template <typename Parameters>
-    morton_dense_el_cursor(morton_dense<Elt, Parameters> const& ma, size_t r, size_t c)
-      : super(ma.elements() + ma.indexer(ma, r, c))
-  {}
-};
-
-// Cursor over strided elements
-template <class Elt>
-struct strided_morton_dense_el_cursor : public detail::strided_base_cursor<const Elt*>
-{
-  typedef Elt                           value_type;
-  typedef const value_type*             pointer_type; // ?
-  typedef detail::strided_base_cursor<const Elt*> super;
-
-  strided_morton_dense_el_cursor () {}
-  strided_morton_dense_el_cursor (pointer_type me, size_t stride) : super(me, stride) {}
-
-    template <typename Parameters>
-    strided_morton_dense_el_cursor(morton_dense2D<Elt, Parameters> const& ma, size_t r, size_t c, size_t stride)
-      : super(ma.elements() + ma.indexer(ma, r, c), stride)
-  {}
-};
 
 // Indexing for dense matrices
 struct dense2D_indexer
@@ -486,26 +511,6 @@ public:
   }
 }; // dense2D_indexer
 
-
-namespace detail
-{
-
-  // Compute required memory
-  // Enabling mechanism to make sure that computation is valid
-  template <typename Parameters, bool Enable>
-  struct dense2D_array_size {
-    static std::size_t const value= 0;
-  };
-
-    template <typename Parameters>
-    struct dense2D_array_size<Parameters, true>
-    {
-      typedef typename Parameters::dimensions   dimensions;
-      BOOST_STATIC_ASSERT((dimensions::is_static));
-      static std::size_t const value= dimensions::Num_Rows * dimensions::Num_Cols;
-    };
-
-} // namespace detail
 
 
 } // namespace mtl

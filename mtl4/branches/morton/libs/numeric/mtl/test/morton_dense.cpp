@@ -16,7 +16,7 @@
 using namespace mtl;
 using namespace std;
 
- 
+
  
 int test_main(int argc, char* argv[])
 {
@@ -33,6 +33,15 @@ int test_main(int argc, char* argv[])
    
     traits::row<matrix_type>::type                         r = row(matrix);
     traits::col<matrix_type>::type                         c = col(matrix);
+
+    morton_dense_el_cursor<0x55555555>   cursor(0, 0, 3), cursor_end(2, 0, 3);
+    for (; cursor != cursor_end; ++cursor)
+	cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << "?" << '\n';
+	
+
+#if 0
+    traits::row<matrix_type>::type                         r = row(matrix);
+    traits::col<matrix_type>::type                         c = col(matrix);
     traits::value<matrix_type>::type                       v = value(matrix);
     
     typedef glas::tags::all_t all_tag;
@@ -43,7 +52,6 @@ int test_main(int argc, char* argv[])
     //    for (cursor_type cursor = begin<all_tag>(matrix), cend = end<all_tag>(matrix); cursor != cend; ++cursor) 
     //  	cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
 
-#if 0
 
     typedef glas::tags::row_t row_tag;
     typedef traits::range_generator<row_tag, matrix_type> row_cursor_type;
