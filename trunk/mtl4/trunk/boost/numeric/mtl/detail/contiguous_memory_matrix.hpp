@@ -60,7 +60,7 @@ struct contiguous_memory_matrix
 
     ~contiguous_memory_matrix()
     {
-	if (!on_stack && !ext && data) delete[] this->data;
+	if (!on_stack && !ext && this->data) delete[] this->data;
     }
 
     // offset of key (pointer) w.r.t. data 

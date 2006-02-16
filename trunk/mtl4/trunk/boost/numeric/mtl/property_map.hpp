@@ -18,6 +18,20 @@ template <class Matrix> struct indexer_row_ref
     }
     const matrix_type& ma;
 };
+
+// functor with matrix reference to access rows 
+template <class Matrix> struct row_in_key
+{
+    typedef Matrix                      matrix_type;
+    typedef typename Matrix::key_type   key_type;
+    row_in_key(const matrix_type&) {} 
+    
+    typename Matrix::size_type operator() (key_type const& key) const
+    {
+	return key.row();
+    }
+};
+
     
 template <class Matrix> struct indexer_col_ref
 {
@@ -31,6 +45,20 @@ template <class Matrix> struct indexer_col_ref
     }
     const matrix_type& ma;
 };
+
+// functor with matrix reference to access cols 
+template <class Matrix> struct col_in_key
+{
+    typedef Matrix                      matrix_type;
+    typedef typename Matrix::key_type   key_type;
+    col_in_key(const matrix_type&) {} 
+    
+    typename Matrix::size_type operator() (key_type const& key) const
+    {
+	return key.col();
+    }
+};
+
 
 // property map to read value if key is referring to value, e.g. pointer
 template <class Matrix> struct direct_const_value
