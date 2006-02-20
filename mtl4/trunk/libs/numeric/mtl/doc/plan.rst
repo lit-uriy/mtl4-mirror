@@ -6,12 +6,13 @@
 
 .. admonition:: Current Status
 
-  My work on FAST_ has taken me into the realm of `how to represent
-  sequences`__ with cursors and property maps, and `how to dispatch
-  algorithms.`__
-
-__ ../../../../sequence/doc/html/index.html
-__ algorithm_dispatch.rst
+  Joel de Guzman has kindly taken a whack at the sequence code to
+  make sure the protocols we're using are compatible with the
+  Fusion tuple metaprogramming library and the Phoenix library,
+  which will become the next version of Boost.Lambda.  He also made
+  great strides in cleaning up the structure.  That should leave us
+  well-positioned to continue our work there once March madness
+  dies down.
 
 .. contents:: Index
 
@@ -100,6 +101,17 @@ Develop Fixed Algorithm Size Template Library (FAST)
 
 Cursors have types that represent their positions.  That is to
 say, a cursor has a different type from each of its neighbors.
+
+
+.. Note:: Research
+
+  My work on FAST_ has taken me into the realm of `how to represent
+  sequences`__ with cursors and property maps, and `how to dispatch
+  algorithms.`__
+
+__ ../../../../sequence/doc/html/index.html
+__ algorithm_dispatch.rst
+
 
 .. _MPL: http://www.boost.org/libs/mpl
 
@@ -358,7 +370,7 @@ Milestone 2
 Eigensystems
 ============
 
-Givens ROtations
+Givens Rotations
 ----------------
 
 ..
