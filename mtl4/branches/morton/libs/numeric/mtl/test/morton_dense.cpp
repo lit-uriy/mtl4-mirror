@@ -14,7 +14,7 @@
 
 
 using namespace mtl;
-using namespace std;
+using namespace std;  
 
 
  
@@ -28,15 +28,20 @@ int test_main(int argc, char* argv[])
     // double        val[] = {1., 2., 3., 4., 5., 6.};
     // raw_copy(val, val+6, matrix); 
 
-    typedef morton_dense<double, matrix_parameters<> > matrix_type;    
+    typedef morton_dense<double,  0x55555555, matrix_parameters<> > matrix_type;    
     matrix_type matrix(non_fixed::dimensions(2, 3));
    
     traits::row<matrix_type>::type                         r = row(matrix);
     traits::col<matrix_type>::type                         c = col(matrix);
+    traits::value<matrix_type>::type                       v = value(matrix);
 
     morton_dense_el_cursor<0x55555555>   cursor(0, 0, 3), cursor_end(2, 0, 3);
-    for (; cursor != cursor_end; ++cursor)
-	cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << "?" << '\n';
+    for (double x= 7.3; cursor != cursor_end; ++cursor, x+= 1.0)
+      v(cursor, x);
+	
+    morton_dense_el_cursor<0x55555555>   cursor2(0, 0, 3);
+    for (; cursor2 != cursor_end; ++cursor2)
+	cout << "matrix[" << r(*cursor2) << ", " << c(*cursor2) << "] = " << v(cursor2) << '\n';
 	
 
 #if 0

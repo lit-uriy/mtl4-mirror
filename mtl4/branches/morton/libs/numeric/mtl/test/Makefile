@@ -1,4 +1,4 @@
-INCLUDE_DIRS = -I${HOME}/mtl4/branches/morton -I${HOME}/mtl4/trunk -I{HOME}/software/boost_1_33_1
+INCLUDE_DIRS = -I${MTL_MORTON_BOOST_ROOT} -I${MTL_BOOST_ROOT} -I${BOOST_ROOT}
 
 CXX_FLAGS = ${INCLUDE_DIRS}
 
@@ -10,3 +10,6 @@ morton_dense:	morton_dense.cpp
 
 clean:
 	rm morton_dense
+
+
+

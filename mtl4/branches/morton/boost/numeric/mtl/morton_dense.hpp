@@ -21,35 +21,19 @@
 namespace mtl {
 
 template <std::size_t  BitMask>
-struct morton_dense_el_cursor
+struct morton_dense_key
 {
-    typedef std::size_t    size_t;
+    typedef std::size_t                               size_t;
     typedef dilated_int<std::size_t, BitMask, true>   dilated_row_t;
     typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 
-    typedef morton_dense_el_cursor                    self;
+    typedef morton_dense_key                          self;
 
-    morton_dense_el_cursor(size_t my_row, size_t my_col, size_t num_cols) 
-	: my_row(my_row), my_col(my_col), dilated_row(my_row), dilated_col(my_col), num_cols(num_cols) 
+    morton_dense_key(size_t my_row, size_t my_col) 
+	: my_row(my_row), my_col(my_col), dilated_row(my_row), dilated_col(my_col)
     {}
-
-    self& operator++ ()
-    {
-	++my_col; ++dilated_col;
-	if (my_col == num_cols) {
-	    my_col= 0; dilated_col= dilated_col_t(0);
-	    ++my_row; ++dilated_row;
-	}
-	return *this;
-    }
-
-    self& operator* ()
-    {
-	return *this;
-    }
 
     bool operator== (self const& x)
     {
-	assert (num_cols == x.num_cols);
 	return my_row == x.my_row && my_col == x.my_col;
     }
 
@@ -68,16 +52,46 @@ struct morton_dense_el_cursor
 	return my_col;
     }
 
-protected:
+public:
     size_t                       my_row, my_col;   
     dilated_row_t                dilated_row;
     dilated_col_t                dilated_col; 
+};
+
+template <std::size_t  BitMask>
+struct morton_dense_el_cursor 
+    : public morton_dense_key<BitMask>
+{
+    typedef std::size_t                               size_t;
+    typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 
+    typedef morton_dense_el_cursor                    self;
+    typedef morton_dense_key<BitMask>                 base;
+
+    morton_dense_el_cursor(size_t my_row, size_t my_col, size_t num_cols) 
+	: base(my_row, my_col), num_cols(num_cols) 
+    {}
+
+    self& operator++ ()
+    {
+	++this->my_col; ++this->dilated_col;
+	if (this->my_col == num_cols) {
+	    this->my_col= 0; this->dilated_col= dilated_col_t(0);
+	    ++this->my_row; ++this->dilated_row;
+	}
+	return *this;
+    }
+
+    base& operator* ()
+    {
+	return *this;
+    }
+
+protected:
     size_t                       num_cols;
 };
 
-
 // Morton Dense matrix type
-template <typename Elt, typename Parameters>
+template <typename Elt, std::size_t  BitMask, typename Parameters>
 class morton_dense : public detail::base_matrix<Elt, Parameters>, 
 		     public detail::contiguous_memory_matrix<Elt, false>
 {
@@ -98,9 +112,11 @@ class morton_dense : public detail::base_matrix<Elt, Parameters>,
     //  implement cursor for morton matrix, somewhere
     //  also, morton indexer?
 
-    typedef morton_dense_el_cursor<0x55555555>    key_type;
-    typedef std::size_t                           size_type;
+    typedef morton_dense_key<0x55555555>          key_type;
+    typedef morton_dense_el_cursor<0x55555555>    el_cursor_type; 
     
+    typedef dilated_int<std::size_t, BitMask, true>   dilated_row_t;
+    typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 
     //  typedef morton_dense_indexer              indexer_type;
 
 
@@ -161,6 +177,15 @@ class morton_dense : public detail::base_matrix<Elt, Parameters>,
 	BOOST_ASSERT((dim_type::is_static));
     }
 
+    value_type operator() (key_type const& key) const
+    {
+	return this->data[key.dilated_row.dilated_value() + key.dilated_col.dilated_value()];
+    }
+
+    void operator()(key_type const& key, value_type const& value)
+    {
+	this->data[key.dilated_row.dilated_value() + key.dilated_col.dilated_value()]= value;
+    }
 
   protected:
     void set_nnz()
@@ -170,7 +195,9 @@ class morton_dense : public detail::base_matrix<Elt, Parameters>,
     
     size_type memory_need(size_type rows, size_type cols)
     {
-	return 3; // change this
+        dilated_row_t n_rows(rows - 1);
+        dilated_col_t n_cols(cols - 1);
+        return (n_rows.dilated_value() + n_cols.dilated_value() + 1);
     }
     
 
@@ -205,14 +232,14 @@ class morton_dense : public detail::base_matrix<Elt, Parameters>,
 // boundary checking of Ahnentafel index
 
 // check if the index is the root
-template <typename Elt, typename Parameters>
-bool morton_dense<Elt, Parameters>::isRoot(const AhnenIndex& index) const {
+template <typename Elt, std::size_t  BitMask, typename Parameters>
+bool morton_dense<Elt, BitMask, Parameters>::isRoot(const AhnenIndex& index) const {
     return index.getIndex() == 3;
 }
 
 // check if the index is a leaf
-template <typename Elt, typename Parameters>
-bool morton_dense<Elt, Parameters>::isLeaf(const AhnenIndex& index) const {
+template <typename Elt, std::size_t  BitMask, typename Parameters>
+bool morton_dense<Elt, BitMask, Parameters>::isLeaf(const AhnenIndex& index) const {
   // a possible better way: compare index with the boundary
   // vector directly, instead of calling isInBound()
     if(isInBound(index))
@@ -229,39 +256,39 @@ bool morton_dense<Elt, Parameters>::isLeaf(const AhnenIndex& index) const {
 
 namespace traits
 {
-  template <class Elt, class Parameters>
-  struct row<morton_dense<Elt, Parameters> >
+  template <class Elt, std::size_t  BitMask, class Parameters>
+  struct row<morton_dense<Elt, BitMask, Parameters> >
   {
-    typedef mtl::detail::row_in_key<morton_dense<Elt, Parameters> > type;
+    typedef mtl::detail::row_in_key<morton_dense<Elt, BitMask, Parameters> > type;
   };
 
-  template <class Elt, class Parameters>
-  struct col<morton_dense<Elt, Parameters> >
+  template <class Elt, std::size_t  BitMask, class Parameters>
+  struct col<morton_dense<Elt, BitMask, Parameters> >
   {
-    typedef mtl::detail::col_in_key<morton_dense<Elt, Parameters> > type;
+    typedef mtl::detail::col_in_key<morton_dense<Elt, BitMask, Parameters> > type;
   };
 
-  template <class Elt, class Parameters>
-  struct const_value<morton_dense<Elt, Parameters> >
+  template <class Elt, std::size_t  BitMask, class Parameters>
+  struct const_value<morton_dense<Elt, BitMask, Parameters> >
   {
-    typedef mtl::detail::direct_const_value<morton_dense<Elt, Parameters> > type;
+    typedef mtl::detail::matrix_const_value_ref<morton_dense<Elt, BitMask, Parameters> > type;
   };
 
-  template <class Elt, class Parameters>
-  struct value<morton_dense<Elt, Parameters> >
+  template <class Elt, std::size_t  BitMask, class Parameters>
+  struct value<morton_dense<Elt, BitMask, Parameters> >
   {
-    typedef mtl::detail::direct_value<morton_dense<Elt, Parameters> > type;
+    typedef mtl::detail::matrix_value_ref<morton_dense<Elt, BitMask, Parameters> > type;
   };
 
-  template <class Elt, class Parameters>
-  struct is_mtl_type<morton_dense<Elt, Parameters> >
+  template <class Elt, std::size_t  BitMask, class Parameters>
+  struct is_mtl_type<morton_dense<Elt, BitMask, Parameters> >
   {
     static bool const value= true;
   };
 
   // define corresponding type without all template parameters
-  template <class Elt, class Parameters>
-  struct matrix_category<morton_dense<Elt, Parameters> >
+  template <class Elt, std::size_t  BitMask, class Parameters>
+  struct matrix_category<morton_dense<Elt, BitMask, Parameters> >
   {
     typedef mtl::tag::morton_dense type;
   };
@@ -269,32 +296,32 @@ namespace traits
 } // namespace traits
 
 
-template <class Elt, class Parameters>
-inline typename traits::row<morton_dense<Elt, Parameters> >::type
-row(const morton_dense<Elt, Parameters>& ma)
+template <class Elt, std::size_t  BitMask, class Parameters>
+inline typename traits::row<morton_dense<Elt, BitMask, Parameters> >::type
+row(const morton_dense<Elt, BitMask, Parameters>& ma)
 {
-  return typename traits::row<morton_dense<Elt, Parameters> >::type(ma);
+  return typename traits::row<morton_dense<Elt, BitMask, Parameters> >::type(ma);
 }
 
-template <class Elt, class Parameters>
-inline typename traits::col<morton_dense<Elt, Parameters> >::type
-col(const morton_dense<Elt, Parameters>& ma)
+template <class Elt, std::size_t  BitMask, class Parameters>
+inline typename traits::col<morton_dense<Elt, BitMask, Parameters> >::type
+col(const morton_dense<Elt, BitMask, Parameters>& ma)
 {
-  return typename traits::col<morton_dense<Elt, Parameters> >::type(ma);
+  return typename traits::col<morton_dense<Elt, BitMask, Parameters> >::type(ma);
 }
 
-template <class Elt, class Parameters>
-inline typename traits::const_value<morton_dense<Elt, Parameters> >::type
-const_value(const morton_dense<Elt, Parameters>& ma)
+template <class Elt, std::size_t  BitMask, class Parameters>
+inline typename traits::const_value<morton_dense<Elt, BitMask, Parameters> >::type
+const_value(const morton_dense<Elt, BitMask, Parameters>& ma)
 {
-  return typename traits::const_value<morton_dense<Elt, Parameters> >::type(ma);
+  return typename traits::const_value<morton_dense<Elt, BitMask, Parameters> >::type(ma);
 }
 
-template <class Elt, class Parameters>
-inline typename traits::value<morton_dense<Elt, Parameters> >::type
-value(const morton_dense<Elt, Parameters>& ma)
+template <class Elt, std::size_t  BitMask, class Parameters>
+inline typename traits::value<morton_dense<Elt, BitMask, Parameters> >::type
+value(morton_dense<Elt, BitMask, Parameters>& ma)
 {
-  return typename traits::value<morton_dense<Elt, Parameters> >::type(ma);
+  return typename traits::value<morton_dense<Elt, BitMask, Parameters> >::type(ma);
 }
 
 
