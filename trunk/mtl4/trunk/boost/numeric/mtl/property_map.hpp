@@ -12,7 +12,7 @@ template <class Matrix> struct indexer_row_ref
     typedef typename Matrix::key_type   key_type;
     indexer_row_ref(const matrix_type& ma) : ma(ma) {} 
     
-    typename Matrix::size_type operator() (key_type key) const
+    typename Matrix::size_type operator() (key_type const& key) const
     {
 	return ma.indexer.row(ma, key);
     }
@@ -39,7 +39,7 @@ template <class Matrix> struct indexer_col_ref
     typedef typename Matrix::key_type   key_type;
     indexer_col_ref(const matrix_type& ma) : ma(ma) {} 
     
-    typename Matrix::size_type operator() (key_type key) const
+    typename Matrix::size_type operator() (key_type const& key) const
     {
 	return ma.indexer.col(ma, key);
     }
@@ -80,18 +80,54 @@ template <class Matrix> struct direct_value
       : direct_const_value<Matrix>(ma) 
     {} // for compatibility
 
-    void operator() (typename Matrix::key_type key, value_type value)
+    // May be to be replaced by inserter
+    void operator() (typename Matrix::key_type const& key, value_type value)
     {
 	* const_cast<value_type *>(key) = value;
     }
 
     // should be inherited
-    typename Matrix::value_type operator() (typename Matrix::key_type key) const
+    typename Matrix::value_type operator() (typename Matrix::key_type const& key) const
     {
 	return *key;
     }
 };
     
+template <class Matrix> struct matrix_const_value_ref
+{
+    typedef Matrix                      matrix_type;
+    typedef typename Matrix::key_type   key_type;
+    matrix_const_value_ref(const matrix_type& ma) : ma(ma) {} 
+    
+    typename Matrix::value_type operator() (key_type const& key) const
+    {
+	return ma(key);
+    }
+    const matrix_type& ma;
+};
+
+template <class Matrix> struct matrix_value_ref
+{
+    typedef Matrix                      matrix_type;
+    typedef typename Matrix::key_type   key_type;
+    typedef typename Matrix::value_type value_type;
+    matrix_value_ref(matrix_type& ma) : ma(ma) {} 
+    
+    typename Matrix::value_type operator() (key_type const& key) const
+    {
+	return ma(key);
+    }
+
+    // Much better with inserters
+    void operator() (typename Matrix::key_type const& key, value_type const& value)
+    {
+	ma(key, value);
+    }
+
+    matrix_type& ma;
+};
+
+
 } // namespace detail
 
 namespace traits 

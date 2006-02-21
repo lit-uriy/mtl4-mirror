@@ -106,6 +106,11 @@ public:
 	return undilate_lut[tmp & 0xff] + (undilate_lut[(tmp >> 16) & 0xff] << 8);
     }
 
+    T dilated_value() const
+    {
+	return i;
+    }
+
     self& operator= (self const& x)
     {
 	i = x.i;
