@@ -42,6 +42,10 @@ inline std::ostream& operator<< (std::ostream& os, maybe<Value> const&  m)
     return os << '(' << m.value() << ", " << (m ? "true" : "false") << ')';
 }
 
-}} // namespace mtl::utilities
+} // namespace utilities
+
+using utilities::maybe; 
+
+} // namespace mtl
 
 #endif // MTL_MAYBE_INCLUDE

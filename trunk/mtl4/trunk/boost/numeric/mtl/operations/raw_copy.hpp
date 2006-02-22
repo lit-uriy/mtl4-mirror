@@ -10,7 +10,8 @@ namespace mtl {
 template <typename Matrix, typename InputIterator> 
 void raw_copy(InputIterator first, InputIterator last, Matrix& matrix)
 {
-    std::copy(first, last, matrix.elements());
+    using std::copy;
+    copy(first, last, matrix.elements());
 }
 
 // Temporary solution
