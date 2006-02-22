@@ -16,8 +16,6 @@
 using namespace mtl;
 using namespace std;
 
-using utilities::maybe;
-
 template <typename Matrix>
 void print_matrix(Matrix const& matrix)
 {
