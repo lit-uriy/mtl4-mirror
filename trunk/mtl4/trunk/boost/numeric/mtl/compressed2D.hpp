@@ -33,39 +33,60 @@ struct compressed2D_indexer;
 template <typename Elt, typename Parameters> class compressed2D;
 template <typename Elt, typename Parameters, typename Updater> class compressed2D_inserter;
 
-// Cursor over every element
-template <class Elt> 
-struct compressed_el_cursor : public detail::base_cursor<const Elt*> 
+struct compressed_key
 {
-    typedef Elt                           value_type;
-    typedef const value_type*             pointer_type; // ?
-    typedef detail::base_cursor<const Elt*> super;
+    typedef std::size_t                               size_t;
+    
+    template <typename Elt, typename Parameters>
+    explicit compressed_key(compressed2D<Elt, Parameters> const& matrix, size_t offset) : offset(offset)
+    {
+	major= matrix.indexer(matrix, offset);
+    }
 
-    compressed_el_cursor () {} 
-    compressed_el_cursor (pointer_type me) : super(me) {}
+    template <typename Elt, typename Parameters>
+    explicit compressed_key(compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
+    {
+	offset= matrix.indexer(matrix, r, c);
+	major= matrix.indexer.major_minor_c(matrix, r, c).first;
+    }
 
-    template <typename Parameters>
-    compressed_el_cursor(compressed2D<Elt, Parameters> const& ma, size_t r, size_t c)
-	: super(ma.elements() + ma.indexer(ma, r, c))
-    {}
+    size_t       major;
+    size_t       offset;
 };
 
 // Cursor over every element
-template <class Elt> 
-struct compressed_updating_el_cursor : public detail::base_cursor<const Elt*> 
+template <typename Elt, typename Parameters>
+struct compressed_el_cursor 
+    : public compressed_key 
 {
     typedef Elt                           value_type;
-    typedef const value_type*             pointer_type; // ?
-    typedef detail::base_cursor<const Elt*> super;
-
-    compressed_updating_el_cursor () {} 
-    compressed_updating_el_cursor (pointer_type me) : super(me) {}
-
-    template <typename Parameters>
-    compressed_updating_el_cursor(compressed2D<Elt, Parameters> const& ma, size_t r, size_t c)
-	: super(ma.elements() + ma.indexer(ma, r, c))
+    typedef compressed_key                base;
+    typedef compressed_el_cursor          self;
+    
+    explicit compressed_el_cursor(compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
+	: base(matrix, r, c), matrix(matrix)
     {}
+
+    explicit compressed_el_cursor(compressed2D<Elt, Parameters> const& matrix, size_t offset) 
+	: base(matrix, offset), matrix(matrix)
+    {}
+
+    self& operator++ ()
+    {
+	++offset;
+	throw_debug_exception(matrix.starts[major+1] < offset, "Inconsistent incrementation!\n");
+	if (matrix.starts[major+1] == offset) 
+	    ++major;
+    }
+
+    base& operator* ()
+    {
+	return *this;
+    }
+
+    compressed2D<Elt, Parameters> const& matrix;
 };
+
 
 
 // Indexing for compressed matrices
@@ -190,7 +211,7 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 
     value_type operator() (size_type row, size_type col) const
     {
-        throw_debug_exception(!inserting, "Reading data during insertion has undefined behavior!\n");
+        throw_debug_exception(inserting, "Reading data during insertion has undefined behavior!\n");
 	maybe<size_type> pos = indexer(*this, row, col);
 	return pos ? data[pos] : value_type(0);
     }
