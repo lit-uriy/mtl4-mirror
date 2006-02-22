@@ -20,8 +20,8 @@ void shift_blocks(Size blocks, Starts const& starts, NewStarts const& new_starts
 		  Ends const& ends, Data& data)
 {
     for (Size i = 0; i < blocks; ) {
-	detail::copy_forward(i, blocks, starts, new_starts, ends, data);
-	detail::copy_backward(i, blocks, starts, new_starts, ends, data);
+	detail::copy_blocks_forward(i, blocks, starts, new_starts, ends, data);
+	detail::copy_blocks_backward(i, blocks, starts, new_starts, ends, data);
     }
 }
 

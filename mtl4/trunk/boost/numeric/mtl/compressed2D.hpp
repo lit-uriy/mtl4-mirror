@@ -23,9 +23,9 @@
 
 namespace mtl {
 
-using std::size_t; 
-using std::vector;
-using utilities::maybe;  
+// using std::size_t; 
+// using std::vector;
+// using utilities::maybe;  
 
 
 // Forward declarations
@@ -62,7 +62,8 @@ struct compressed_el_cursor
     typedef Elt                           value_type;
     typedef compressed_key                base;
     typedef compressed_el_cursor          self;
-    
+    typedef std::size_t                   size_t;
+
     explicit compressed_el_cursor(compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
 	: base(matrix, r, c), matrix(matrix)
     {}
@@ -92,6 +93,7 @@ struct compressed_el_cursor
 // Indexing for compressed matrices
 struct compressed2D_indexer 
 {
+    typedef std::size_t                               size_t;
     typedef size_t                            size_type;
     typedef std::pair<size_type, size_type>   size_pair;
   private:
@@ -152,6 +154,7 @@ struct compressed2D_indexer
 template <typename Elt, typename Parameters>
 class compressed2D : public detail::base_matrix<Elt, Parameters>
 {
+    typedef std::size_t                              size_t;
     typedef detail::base_matrix<Elt, Parameters>     super;
     typedef compressed2D                             self;
   public:	
@@ -198,13 +201,15 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     void raw_copy(ValueIterator first_value, ValueIterator last_value, 
 		  StartIterator first_start, IndexIterator first_index)
     {
+	using std::copy;
+
 	// check if starts has right size
 	allocate(last_value - first_value); // ???? 
 	// check if nnz and indices has right size
 
-	std::copy(first_value, last_value, data.begin());
-	std::copy(first_start, first_start + super::dim1() + 1, starts.begin());
-	std::copy(first_index, first_index + super::num_elements(), indices.begin());
+	copy(first_value, last_value, data.begin());
+	copy(first_start, first_start + super::dim1() + 1, starts.begin());
+	copy(first_index, first_index + super::num_elements(), indices.begin());
     }
 
     // Consistency check urgently needed !!!
@@ -219,11 +224,11 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
 
-    indexer_type  indexer;
-    vector<value_type>      data; 
+    indexer_type            indexer;
+    std::vector<value_type> data; 
   protected:
-    vector<size_t>          starts;
-    vector<size_t>          indices;
+    std::vector<size_t>     starts;
+    std::vector<size_t>     indices;
     bool                    inserting;
 };
 
@@ -274,18 +279,22 @@ struct compressed2D_inserter
 
   protected:
     compressed2D<Elt, Parameters>&      matrix;
-    vector<value_type>&                 elements;
-    vector<size_type>&                  starts;
-    vector<size_type>&                  indices;
+    std::vector<value_type>&            elements;
+    std::vector<size_type>&             starts;
+    std::vector<size_type>&             indices;
     size_type                           slot_size;
-    vector<size_type>                   slot_ends;
+    std::vector<size_type>              slot_ends;
     map_type                            spare;
 };
 
 template <typename Elt, typename Parameters, typename Updater>
 void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
 {
-    vector<size_type>  new_starts(matrix.dim1() + 1);
+    using std::copy;
+    using std::copy_backward;
+    using std::swap;
+
+    std::vector<size_type>  new_starts(matrix.dim1() + 1);
     new_starts[0] = 0;
     for (size_type i = 0; i < matrix.dim1(); i++) {
 	size_type entries = starts[i+1] - starts[i];
@@ -301,13 +310,13 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
     // i goes down to 1 (not to 0) because i >= 0 never stops for unsigned ;-)
     for (size_type i = matrix.dim1(); i > 0; i--)
 	if (starts[i] <= new_starts[i-1]) {
-	    std::copy(&elements[starts[i-1]], &elements[starts[i]], &elements[new_starts[i-1]]);
-	    std::copy(&indices[starts[i-1]], &indices[starts[i]], &indices[new_starts[i-1]]);
+	    copy(&elements[starts[i-1]], &elements[starts[i]], &elements[new_starts[i-1]]);
+	    copy(&indices[starts[i-1]], &indices[starts[i]], &indices[new_starts[i-1]]);
 	} else {
-	    std::copy_backward(&elements[starts[i-1]], &elements[starts[i]], &elements[slot_ends[i-1]]);
-	    std::copy_backward(&indices[starts[i-1]], &indices[starts[i]], &indices[slot_ends[i-1]]);
+	    copy_backward(&elements[starts[i-1]], &elements[starts[i]], &elements[slot_ends[i-1]]);
+	    copy_backward(&indices[starts[i-1]], &indices[starts[i]], &indices[slot_ends[i-1]]);
 	}
-    std::swap(starts, new_starts);		    
+    swap(starts, new_starts);		    
 }
 
 template <typename Elt, typename Parameters, typename Updater>
@@ -328,6 +337,8 @@ compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm)
 template <typename Elt, typename Parameters, typename Updater>
 inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type row, size_type col, value_type val)
 {
+    using std::copy_backward;
+
     compressed2D_indexer   indexer;
     size_pair              mm = indexer.major_minor_c(matrix, row, col);
     size_type              major, minor;
@@ -341,8 +352,8 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type ro
 	size_type& my_end = slot_ends[major];
 	// Check if place in matrix to insert there
 	if (my_end != starts[major+1]) { 
-	    std::copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
-	    std::copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
+	    copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
+	    copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
 	    elements[pos] = val; indices[pos] = minor;
 	    my_end++;
 	} else {
@@ -360,8 +371,10 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type ro
 template <typename Elt, typename Parameters, typename Updater>
 void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
 {
+    using std::swap;
+
     size_type          dim1 = matrix.dim1();
-    vector<size_type>  new_starts(dim1 + 1);
+    std::vector<size_type>  new_starts(dim1 + 1);
     new_starts[0] = 0;
 
     typename map_type::iterator it = spare.begin();
@@ -387,20 +400,22 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
     for (size_type i = 0; i < dim1; i++)
 	slot_ends[i] = new_starts[i] + slot_ends[i] - starts[i];
 
-    std::swap(starts, new_starts);		    
+    swap(starts, new_starts);		    
 }
 
 template <typename Elt, typename Parameters, typename Updater>
 void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
 {
+    using std::copy_backward;
+
     for (typename map_type::iterator it = spare.begin(); it != spare.end(); ++it) {
 	size_pair              mm = it->first;
 	size_type              major = mm.first, minor = mm.second;
 	maybe<size_type>       pos = matrix_offset(mm);
 	size_type&             my_end = slot_ends[major];
 
-	std::copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
-	std::copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
+	copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
+	copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
 	elements[pos] = it->second; indices[pos] = minor;
 	my_end++;
     }
