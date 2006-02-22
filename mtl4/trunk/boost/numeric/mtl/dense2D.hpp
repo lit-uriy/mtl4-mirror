@@ -30,11 +30,11 @@ template <class Elt>
 struct dense_el_cursor : public detail::base_cursor<const Elt*> 
 {
     typedef Elt                           value_type;
-    typedef const value_type*             pointer_type; // ?
+    typedef const value_type*             const_pointer_type; // ?
     typedef detail::base_cursor<const Elt*> super;
 
     dense_el_cursor () {} 
-    dense_el_cursor (pointer_type me) : super(me) {}
+    dense_el_cursor (const_pointer_type me) : super(me) {}
 
     template <typename Parameters>
     dense_el_cursor(dense2D<Elt, Parameters> const& ma, size_t r, size_t c)
@@ -47,11 +47,11 @@ template <class Elt>
 struct strided_dense_el_cursor : public detail::strided_base_cursor<const Elt*> 
 {
     typedef Elt                           value_type;
-    typedef const value_type*             pointer_type; // ?
+    typedef const value_type*             const_pointer_type; // ?
     typedef detail::strided_base_cursor<const Elt*> super;
 
     strided_dense_el_cursor () {} 
-    strided_dense_el_cursor (pointer_type me, size_t stride) : super(me, stride) {}
+    strided_dense_el_cursor (const_pointer_type me, size_t stride) : super(me, stride) {}
 
     template <typename Parameters>
     strided_dense_el_cursor(dense2D<Elt, Parameters> const& ma, size_t r, size_t c, size_t stride)
@@ -159,8 +159,8 @@ class dense2D : public detail::base_matrix<Elt, Parameters>,
     typedef detail::contiguous_memory_matrix<Elt, Parameters::on_stack, 
 					     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     super_memory;
 
-    typedef const value_type*                 pointer_type;
-    typedef pointer_type                      key_type;
+    typedef const value_type*                 const_pointer_type;
+    typedef const_pointer_type                key_type;
     typedef std::size_t                       size_type;
     typedef dense_el_cursor<Elt>              el_cursor_type;  
     typedef dense2D_indexer                   indexer_type;

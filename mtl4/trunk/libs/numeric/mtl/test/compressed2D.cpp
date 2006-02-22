@@ -31,12 +31,11 @@ int test_main(int argc, char* argv[])
 	for (size_t c = 0; c < matrix.num_cols(); ++c)
 	    cout << r << ", " << c << ": " << matrix.indexer(matrix, r, c) << '\n'; 
     cout << '\n';
-
+ 
     for (size_t r = 0; r < matrix.num_rows(); ++r) {
 	cout << '[';
 	for (size_t c = 0; c < matrix.num_cols(); ++c) {
-	    maybe<size_t> m = matrix.indexer(matrix, r, c);
-	    cout << (m ? matrix.value_n(m.value()) : 0)
+	    cout << matrix(r, c)
 		 << (c < matrix.num_cols() - 1 ? ", " : "]\n"); } 
     }
 
