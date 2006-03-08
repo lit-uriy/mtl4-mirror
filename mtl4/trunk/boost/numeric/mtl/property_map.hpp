@@ -3,6 +3,22 @@
 #ifndef MTL_PROPERTY_MAP_INCLUDE
 #define MTL_PROPERTY_MAP_INCLUDE
 
+#include <boost/numeric/mtl/property_map.hpp>
+
+namespace mtl { namespace traits 
+{    
+    template <class Matrix> struct row {};
+    template <class Matrix> struct col {};
+    template <class Matrix> struct const_value {};
+    template <class Matrix> struct value {};
+
+}} // namespace mtl::traits
+
+
+
+
+
+
 namespace mtl { namespace detail {
 
 // functor with matrix reference to access rows 
@@ -59,6 +75,48 @@ template <class Matrix> struct col_in_key
     }
 };
 
+template <typename Matrix>
+struct const_value_from_other
+{
+    typedef typename Matrix::other     other;
+    typedef typename other::key_type   key_type;
+    typedef typename other::value_type value_type;
+
+    explicit const_value_from_other(Matrix const& matrix) 
+	: its_const_value(matrix.ref) {}
+
+    value_type operator() (key_type const& key) const
+    {
+	return its_const_value(key);
+    }
+
+  protected:
+    typename traits::const_value<other>::type  its_const_value;
+};
+
+template <typename Matrix>
+struct value_from_other
+{
+    typedef typename Matrix::other     other;
+    typedef typename other::key_type   key_type;
+    typedef typename other::value_type value_type;
+
+    explicit value_from_other(Matrix const& matrix) 
+	: its_value(matrix.ref) {}
+
+    value_type operator() (key_type const& key) const
+    {
+	return its_value(key);
+    }
+
+    void operator() (key_type const& key, value_type value) const
+    {
+	its_value(key, value);
+    }
+
+  protected:
+    typename traits::value<other>::type  its_value;
+};
 
 // property map to read value if key is referring to value, e.g. pointer
 template <class Matrix> struct direct_const_value
@@ -92,6 +150,8 @@ template <class Matrix> struct direct_value
 	return *key;
     }
 };
+
+
     
 template <class Matrix> struct matrix_const_value_ref
 {
@@ -128,20 +188,14 @@ template <class Matrix> struct matrix_value_ref
 };
 
 
-} // namespace detail
+}} // namespace mtl::detail
 
-namespace traits 
-{    
-    template <class Matrix> struct row {};
-    template <class Matrix> struct col {};
-    template <class Matrix> struct const_value {};
-    template <class Matrix> struct value {};
-
-} // namespace traits
 
 
 // Default definition of property maps refers back to type traits
-
+// Remove complete function definitions -> replaced by constructors
+// was in namespace mtl
+#if 0 
 template <typename Matrix>
 inline typename traits::row<Matrix>::type
 row(Matrix const& matrix)
@@ -169,8 +223,8 @@ value(Matrix& matrix)
 {
     return typename traits::value<Matrix>::type(matrix);
 }
+#endif
 
-}  // namespace mtl
 
 #endif // MTL_PROPERTY_MAP_INCLUDE
 

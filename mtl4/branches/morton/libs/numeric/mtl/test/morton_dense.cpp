@@ -22,9 +22,9 @@ struct test_morton_dense
     template <typename Matrix, typename Tag>
     void two_d_iteration(char const* outer, Matrix & matrix, Tag)
     {
-	typename traits::row<Matrix>::type                         r = row(matrix);
-	typename traits::col<Matrix>::type                         c = col(matrix);
-	typename traits::value<Matrix>::type                       v = value(matrix);
+	typename traits::row<Matrix>::type                         row(matrix);
+	typename traits::col<Matrix>::type                         col(matrix);
+	typename traits::value<Matrix>::type                       value(matrix);
 	typedef typename traits::range_generator<Tag, Matrix>::type        cursor_type;
 
 	cout << outer << '\n';
@@ -32,22 +32,22 @@ struct test_morton_dense
 	    typedef glas::tags::all_t     inner_tag;
 	    typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
 	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
-		cout << "matrix[" << r(*icursor) << ", " << c(*icursor) << "] = " << v(*icursor) << '\n';
+		cout << "matrix[" << row(*icursor) << ", " << col(*icursor) << "] = " << value(*icursor) << '\n';
 	}
     }
 
     template <typename Matrix>
     void one_d_iteration(char const* name, Matrix & matrix)
     {
-	typename traits::row<Matrix>::type                         r = row(matrix);
-	typename traits::col<Matrix>::type                         c = col(matrix);
-	typename traits::value<Matrix>::type                       v = value(matrix);
+	typename traits::row<Matrix>::type                         row(matrix);
+	typename traits::col<Matrix>::type                         col(matrix);
+	typename traits::value<Matrix>::type                       value(matrix);
 	typedef  glas::tags::nz_t                                  tag;
 	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
 
 	cout << name << "\nElements: \n";
 	for (cursor_type cursor = begin<tag>(matrix), cend = end<tag>(matrix); cursor != cend; ++cursor) {
-	    cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
+	    cout << "matrix[" << row(*cursor) << ", " << col(*cursor) << "] = " << value(*cursor) << '\n';
 	}
     }
     
