@@ -17,63 +17,67 @@ using namespace mtl;
 using namespace std;  
 
 
+struct test_morton_dense
+{
+    template <typename Matrix, typename Tag>
+    void two_d_iteration(char const* outer, Matrix & matrix, Tag)
+    {
+	typename traits::row<Matrix>::type                         r = row(matrix);
+	typename traits::col<Matrix>::type                         c = col(matrix);
+	typename traits::value<Matrix>::type                       v = value(matrix);
+	typedef typename traits::range_generator<Tag, Matrix>::type        cursor_type;
+
+	cout << outer << '\n';
+	for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
+	    typedef glas::tags::all_t     inner_tag;
+	    typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
+	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
+		cout << "matrix[" << r(*icursor) << ", " << c(*icursor) << "] = " << v(*icursor) << '\n';
+	}
+    }
+
+    template <typename Matrix>
+    void one_d_iteration(char const* name, Matrix & matrix)
+    {
+	typename traits::row<Matrix>::type                         r = row(matrix);
+	typename traits::col<Matrix>::type                         c = col(matrix);
+	typename traits::value<Matrix>::type                       v = value(matrix);
+	typedef  glas::tags::nz_t                                  tag;
+	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
+
+	cout << name << "\nElements: \n";
+	for (cursor_type cursor = begin<tag>(matrix), cend = end<tag>(matrix); cursor != cend; ++cursor) {
+	    cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
+	}
+    }
+    
+    template <typename Matrix>
+    void operator() (Matrix& matrix)
+    {
+	one_d_iteration("\nMatrix", matrix);
+	two_d_iteration("\nRows: ", matrix, glas::tags::row_t());
+	two_d_iteration("\nColumns: ", matrix, glas::tags::col_t());
+
+	transposed_view<Matrix> trans_matrix(matrix);
+	one_d_iteration("\nTransposed matrix", trans_matrix);
+	two_d_iteration("\nRows: ", trans_matrix, glas::tags::row_t());
+	two_d_iteration("\nColumns: ", trans_matrix, glas::tags::col_t());
+    }
+};
+
+
  
 int test_main(int argc, char* argv[])
 {
-
-    // typedef dense2D<double, matrix_parameters<> > matrix_type;
-    // typedef matrix_parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters1;
-    // typedef dense2D<double, Parameters> matrix_type;
-    //  matrix_type   matrix;
-    // double        val[] = {1., 2., 3., 4., 5., 6.};
-    // raw_copy(val, val+6, matrix); 
-
     typedef morton_dense<double,  0x55555555, matrix_parameters<> > matrix_type;    
     matrix_type matrix(non_fixed::dimensions(2, 3));
    
-    traits::row<matrix_type>::type                         r = row(matrix);
-    traits::col<matrix_type>::type                         c = col(matrix);
     traits::value<matrix_type>::type                       v = value(matrix);
 
     morton_dense_el_cursor<0x55555555>   cursor(0, 0, 3), cursor_end(2, 0, 3);
     for (double x= 7.3; cursor != cursor_end; ++cursor, x+= 1.0)
-      v(cursor, x);
-	
-    morton_dense_el_cursor<0x55555555>   cursor2(0, 0, 3);
-    for (; cursor2 != cursor_end; ++cursor2)
-	cout << "matrix[" << r(*cursor2) << ", " << c(*cursor2) << "] = " << v(cursor2) << '\n';
-	
+	v(cursor, x);
 
-#if 0
-    traits::row<matrix_type>::type                         r = row(matrix);
-    traits::col<matrix_type>::type                         c = col(matrix);
-    traits::value<matrix_type>::type                       v = value(matrix);
-    
-    typedef glas::tags::all_t all_tag;
-    typedef traits::range_generator<all_tag, matrix_type> cursor_type;
-    //    cursor_type cursor = begin<all_tag>(matrix);
-
-
-    //    for (cursor_type cursor = begin<all_tag>(matrix), cend = end<all_tag>(matrix); cursor != cend; ++cursor) 
-    //  	cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
-
-
-    typedef glas::tags::row_t row_tag;
-    typedef traits::range_generator<row_tag, matrix_type> row_cursor_type;
-    for (row_cursor_type cursor = begin<row_tag>(matrix), cend = end<row_tag>(matrix); cursor != cend; ++cursor) {
-	typedef typename traits::range_generator<all_tag, row_cursor_type>::type icursor_type;
-	for (icursor_type icursor = begin<all_tag>(cursor), icend = end<all_tag>(cursor); icursor != icend; ++icursor)
-		cout << "matrix[" << r(*icursor) << ", " << c(*icursor) << "] = " << v(*icursor) << '\n';
-    }
-	
-    typedef glas::tags::col_t col_tag;
-    typedef traits::range_generator<col_tag, matrix_type> col_cursor_type;
-    for (col_cursor_type cursor = begin<col_tag>(matrix), cend = end<col_tag>(matrix); cursor != cend; ++cursor) {
-	typedef typename traits::range_generator<all_tag, col_cursor_type>::type icursor_type;
-	for (icursor_type icursor = begin<all_tag>(cursor), icend = end<all_tag>(cursor); icursor != icend; ++icursor)
-		cout << "matrix[" << r(*icursor) << ", " << c(*icursor) << "] = " << v(*icursor) << '\n';
-    }
-#endif	
-
+    test_morton_dense()(matrix);
     return 0;
 }
