@@ -34,9 +34,9 @@ struct test_dense2D
     template <typename Matrix, typename Tag, typename ExpComplexity>
     void two_d_iteration(char const* outer, Matrix & matrix, Tag, ExpComplexity)
     {
-	typename traits::row<Matrix>::type                         r = row(matrix);
-	typename traits::col<Matrix>::type                         c = col(matrix);
-	typename traits::value<Matrix>::type                       v = value(matrix);
+	typename traits::row<Matrix>::type                         row(matrix); // r = row(matrix);
+	typename traits::col<Matrix>::type                         col(matrix); // c = col(matrix);
+	typename traits::const_value<Matrix>::type                 value(matrix); // v = value(matrix);
 	typedef typename traits::range_generator<Tag, Matrix>::type        cursor_type;
 	typedef typename traits::range_generator<Tag, Matrix>::complexity  complexity;
 
@@ -46,24 +46,24 @@ struct test_dense2D
 	    typedef glas::tags::all_t     inner_tag;
 	    typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
 	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
-		cout << "matrix[" << r(*icursor) << ", " << c(*icursor) << "] = " << v(*icursor) << '\n';
+		cout << "matrix[" << row(*icursor) << ", " << col(*icursor) << "] = " << value(*icursor) << '\n';
 	}
     } 
 
     template <typename Matrix>
     void one_d_iteration(char const* name, Matrix & matrix, size_t check_row, size_t check_col, double check)
     {
-	typename traits::row<Matrix>::type                         r = row(matrix);
-	typename traits::col<Matrix>::type                         c = col(matrix);
-	typename traits::value<Matrix>::type                       v = value(matrix);
+	typename traits::row<Matrix>::type                         row(matrix);
+	typename traits::col<Matrix>::type                         col(matrix);
+	typename traits::value<Matrix>::type                       value(matrix);
 	typedef  glas::tags::nz_t                                  tag;
 	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
 	typedef typename traits::range_generator<tag, Matrix>::complexity  complexity;
 
 	cout << name << "\nElements: " << complexity() << '\n';
 	for (cursor_type cursor = begin<tag>(matrix), cend = end<tag>(matrix); cursor != cend; ++cursor) {
-	    cout << "matrix[" << r(*cursor) << ", " << c(*cursor) << "] = " << v(*cursor) << '\n';
-	    if (r(*cursor) == check_row && c(*cursor) == check_col && v(*cursor) != check) throw test_dense2D_exception();
+	    cout << "matrix[" << row(*cursor) << ", " << col(*cursor) << "] = " << value(*cursor) << '\n';
+	    if (row(*cursor) == check_row && col(*cursor) == check_col && value(*cursor) != check) throw test_dense2D_exception();
 	}
     }
     

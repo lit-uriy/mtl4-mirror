@@ -4,6 +4,8 @@
 #define MTL_TRANSPOSED_VIEW_INCLUDE
 
 #include <boost/numeric/mtl/base_types.hpp>
+#include <boost/numeric/mtl/property_map.hpp>
+
 
 namespace mtl {
 
@@ -70,33 +72,102 @@ namespace traits {
 	static bool const value= is_mtl_type<Matrix>::value; 
     };
 
-    template <class Matrix> struct matrix_category<transposed_view<Matrix> >
+    template <class Matrix> 
+    struct matrix_category<transposed_view<Matrix> >
     {
 	typedef typename matrix_category<Matrix>::type type;
     };
 
-    template <class Matrix> struct row<transposed_view<Matrix> >
+    namespace detail {
+
+    template <class Matrix> 
+        struct transposed_row
+        {
+    	typedef typename Matrix::key_type   key_type;
+    	typedef typename Matrix::size_type  size_type;
+    	
+    	transposed_row(transposed_view<Matrix> const& transposed_matrix) 
+    	    : its_col(transposed_matrix.ref) {}
+
+    	size_type operator() (key_type const& key) const
+    	{
+    	    return its_col(key);
+    	}
+
+          protected:
+    	typename col<Matrix>::type  its_col;
+        };
+
+
+        template <class Matrix> 
+        struct transposed_col
+        {
+    	typedef typename Matrix::key_type   key_type;
+    	typedef typename Matrix::size_type  size_type;
+    	
+    	transposed_col(transposed_view<Matrix> const& transposed_matrix) 
+    	    : its_row(transposed_matrix.ref) {}
+
+    	size_type operator() (key_type const& key) const
+    	{
+    	    return its_row(key);
+    	}
+
+          protected:
+    	typename col<Matrix>::type  its_row;
+        };
+	
+    } // namespace detail
+        
+    template <class Matrix> 
+    struct row<transposed_view<Matrix> >
     {
-	typedef typename col<Matrix>::type type;
+	typedef detail::transposed_row<Matrix>  type;
     };
 
-    template <class Matrix> struct col<transposed_view<Matrix> >
+    template <class Matrix> 
+    struct col<transposed_view<Matrix> >
+    {
+	typedef detail::transposed_col<Matrix>  type;
+    };
+
+    template <class Matrix> 
+    struct const_value<transposed_view<Matrix> >
+    {
+	typedef mtl::detail::const_value_from_other<transposed_view<Matrix> > type;
+    };
+
+    template <class Matrix> 
+    struct value<transposed_view<Matrix> >
+    {
+	typedef mtl::detail::value_from_other<transposed_view<Matrix> > type;
+    };
+
+
+#if 0
+    template <class Matrix> 
+    struct col<transposed_view<Matrix> >
     {
 	typedef typename row<Matrix>::type type;
     };
 
-    template <class Matrix> struct const_value<transposed_view<Matrix> >
+    template <class Matrix> 
+    struct const_value<transposed_view<Matrix> >
     {
 	typedef typename const_value<Matrix>::type type;
     };
     
-    template <class Matrix> struct value<transposed_view<Matrix> >
+    template <class Matrix> 
+    struct value<transposed_view<Matrix> >
     {
 	typedef typename value<Matrix>::type type;
     };
+#endif
 
 } // namespace traits
 
+    // should work without 
+#if 0
 template <class Matrix> 
 inline typename traits::row<transposed_view<Matrix> >::type
 row(transposed_view<Matrix> const& ma)
@@ -124,7 +195,7 @@ value(transposed_view<Matrix>& ma)
 {
     return value(ma.ref);
 }
-
+#endif
 
 // ================
 // Range generators
