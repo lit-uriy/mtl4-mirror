@@ -99,28 +99,28 @@ namespace traits {
 
 template <class Matrix> 
 inline typename traits::row<transposed_view<Matrix> >::type
-row(const transposed_view<Matrix>& ma)
+row(transposed_view<Matrix> const& ma)
 {
     return col(ma.ref);
 }
 
 template <class Matrix>
 inline typename traits::col<transposed_view<Matrix> >::type
-col(const transposed_view<Matrix>& ma)
+col(transposed_view<Matrix> const& ma)
 {
     return row(ma.ref);
 }
 
 template <class Matrix>
 inline typename traits::const_value<transposed_view<Matrix> >::type
-const_value(const transposed_view<Matrix>& ma)
+const_value(transposed_view<Matrix> const& ma)
 {
     return const_value(ma.ref);
 }
 
 template <class Matrix>
 inline typename traits::value<transposed_view<Matrix> >::type
-value(const transposed_view<Matrix>& ma)
+value(transposed_view<Matrix>& ma)
 {
     return value(ma.ref);
 }

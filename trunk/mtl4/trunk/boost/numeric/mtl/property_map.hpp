@@ -139,7 +139,39 @@ namespace traits
 
 } // namespace traits
 
+
+// Default definition of property maps refers back to type traits
+
+template <typename Matrix>
+inline typename traits::row<Matrix>::type
+row(Matrix const& matrix)
+{
+    return typename traits::row<Matrix>::type(matrix);
 }
+
+template <typename Matrix>
+inline typename traits::col<Matrix>::type
+col(Matrix const& matrix)
+{
+    return typename traits::col<Matrix>::type(matrix);
+}
+
+template <typename Matrix>
+inline typename traits::const_value<Matrix>::type
+const_value(Matrix const& matrix)
+{
+    return typename traits::const_value<Matrix>::type(matrix);
+}
+
+template <typename Matrix>
+inline typename traits::value<Matrix>::type
+value(Matrix& matrix)
+{
+    return typename traits::value<Matrix>::type(matrix);
+}
+
+}  // namespace mtl
+
 #endif // MTL_PROPERTY_MAP_INCLUDE
 
 
