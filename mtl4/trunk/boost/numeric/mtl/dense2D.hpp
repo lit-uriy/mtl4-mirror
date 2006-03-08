@@ -269,34 +269,35 @@ namespace traits
 
 } // namespace traits
     
-
 template <class Elt, class Parameters>
 inline typename traits::row<dense2D<Elt, Parameters> >::type
-row(const dense2D<Elt, Parameters>& ma) 
+row(dense2D<Elt, Parameters>  const& matrix)
 {
-    return typename traits::row<dense2D<Elt, Parameters> >::type(ma);
+    return typename traits::row<dense2D<Elt, Parameters> >::type(matrix);
 }
 
 template <class Elt, class Parameters>
 inline typename traits::col<dense2D<Elt, Parameters> >::type
-col(const dense2D<Elt, Parameters>& ma)
+col(dense2D<Elt, Parameters>  const& matrix)
 {
-    return typename traits::col<dense2D<Elt, Parameters> >::type(ma);
+    return typename traits::col<dense2D<Elt, Parameters> >::type(matrix);
 }
 
 template <class Elt, class Parameters>
 inline typename traits::const_value<dense2D<Elt, Parameters> >::type
-const_value(const dense2D<Elt, Parameters>& ma)
+const_value(dense2D<Elt, Parameters>  const& matrix)
 {
-    return typename traits::const_value<dense2D<Elt, Parameters> >::type(ma);
+    return typename traits::const_value<dense2D<Elt, Parameters> >::type(matrix);
 }
 
 template <class Elt, class Parameters>
 inline typename traits::value<dense2D<Elt, Parameters> >::type
-value(const dense2D<Elt, Parameters>& ma)
+value(dense2D<Elt, Parameters> & matrix)
 {
-    return typename traits::value<dense2D<Elt, Parameters> >::type(ma);
+    return typename traits::value<dense2D<Elt, Parameters> >::type(matrix);
 }
+
+
 
 // ================
 // Range generators

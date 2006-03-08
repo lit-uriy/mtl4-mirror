@@ -48,7 +48,7 @@ struct test_dense2D
 	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
 		cout << "matrix[" << r(*icursor) << ", " << c(*icursor) << "] = " << v(*icursor) << '\n';
 	}
-    }
+    } 
 
     template <typename Matrix>
     void one_d_iteration(char const* name, Matrix & matrix, size_t check_row, size_t check_col, double check)

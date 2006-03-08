@@ -80,6 +80,14 @@ struct dilated_int
 	
     T i;
 
+    void dilate(T x)
+    {
+	static const T to_switch_on = Normalized ? 0 : anti_mask,
+	       	       to_move = anti_mask & 1;
+	T d = dilate_lut[ x & 0xff ] + (dilate_lut[ (x >> 8) & 0xff ] << 16);
+	i = d << to_move | to_switch_on;
+    }
+
 public:
 
     // Default constructor
@@ -91,10 +99,7 @@ public:
     // Only works for odd and even bits and 4-byte-int at this point !!!!!!!!!!!!!!!!!!!
     explicit dilated_int(T x)
     {
-	static const T to_switch_on = Normalized ? 0 : anti_mask,
-	       	       to_move = anti_mask & 1;
-	T d = dilate_lut[ x & 0xff ] + (dilate_lut[ (x >> 8) & 0xff ] << 16);
-	i = d << to_move | to_switch_on;
+	dilate(x);
     }
 
     // Only works for odd and even bits and 4-byte-int at this point !!!!!!!!!!!!!!!!!!!
@@ -114,6 +119,12 @@ public:
     self& operator= (self const& x)
     {
 	i = x.i;
+	return *this;
+    }
+
+    self& operator= (T x)
+    {
+	dilate(x);
 	return *this;
     }
 
