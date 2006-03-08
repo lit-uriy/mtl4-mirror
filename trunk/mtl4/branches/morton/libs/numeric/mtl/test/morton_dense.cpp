@@ -22,9 +22,9 @@ struct test_morton_dense
     template <typename Matrix, typename Tag>
     void two_d_iteration(char const* outer, Matrix & matrix, Tag)
     {
-	typename traits::row<Matrix>::type                         row(matrix);
-	typename traits::col<Matrix>::type                         col(matrix);
-	typename traits::value<Matrix>::type                       value(matrix);
+	typename traits::row<Matrix>::type                                 row(matrix);
+	typename traits::col<Matrix>::type                                 col(matrix);
+	typename traits::value<Matrix>::type                               value(matrix);
 	typedef typename traits::range_generator<Tag, Matrix>::type        cursor_type;
 
 	cout << outer << '\n';
@@ -39,10 +39,10 @@ struct test_morton_dense
     template <typename Matrix>
     void one_d_iteration(char const* name, Matrix & matrix)
     {
-	typename traits::row<Matrix>::type                         row(matrix);
-	typename traits::col<Matrix>::type                         col(matrix);
-	typename traits::value<Matrix>::type                       value(matrix);
-	typedef  glas::tags::nz_t                                  tag;
+	typename traits::row<Matrix>::type                                 row(matrix);
+	typename traits::col<Matrix>::type                                 col(matrix);
+	typename traits::value<Matrix>::type                               value(matrix);
+	typedef  glas::tags::nz_t                                          tag;
 	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
 
 	cout << name << "\nElements: \n";
@@ -72,11 +72,11 @@ int test_main(int argc, char* argv[])
     typedef morton_dense<double,  0x55555555, matrix_parameters<> > matrix_type;    
     matrix_type matrix(non_fixed::dimensions(2, 3));
    
-    traits::value<matrix_type>::type                       v = value(matrix);
-
+    traits::value<matrix_type>::type                       value(matrix);
+ 
     morton_dense_el_cursor<0x55555555>   cursor(0, 0, 3), cursor_end(2, 0, 3);
     for (double x= 7.3; cursor != cursor_end; ++cursor, x+= 1.0)
-	v(cursor, x);
+	value(cursor, x);
 
     test_morton_dense()(matrix);
     return 0;

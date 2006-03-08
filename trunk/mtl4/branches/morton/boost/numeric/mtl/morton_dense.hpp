@@ -364,36 +364,6 @@ namespace traits
 
 } // namespace traits
 
-template <class Elt, std::size_t BitMask, class Parameters>
-inline typename traits::row<morton_dense<Elt, BitMask, Parameters> >::type
-row(morton_dense<Elt, BitMask, Parameters>  const& matrix)
-{
-    return typename traits::row<morton_dense<Elt, BitMask, Parameters> >::type(matrix);
-}
-
-template <class Elt, std::size_t  BitMask, class Parameters>
-inline typename traits::col<morton_dense<Elt, BitMask, Parameters> >::type
-col(morton_dense<Elt, BitMask, Parameters>  const& matrix)
-{
-    return typename traits::col<morton_dense<Elt, BitMask, Parameters> >::type(matrix);
-}
-
-template <class Elt, std::size_t  BitMask, class Parameters>
-inline typename traits::const_value<morton_dense<Elt, BitMask, Parameters> >::type
-const_value(morton_dense<Elt, BitMask, Parameters>  const& matrix)
-{
-    return typename traits::const_value<morton_dense<Elt, BitMask, Parameters> >::type(matrix);
-}
-
-template <class Elt, std::size_t  BitMask, class Parameters>
-inline typename traits::value<morton_dense<Elt, BitMask, Parameters> >::type
-value(morton_dense<Elt, BitMask, Parameters> & matrix)
-{
-    return typename traits::value<morton_dense<Elt, BitMask, Parameters> >::type(matrix);
-}
-
-
-
 
 // Range generators
 // ================
