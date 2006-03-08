@@ -34,9 +34,9 @@ struct test_dense2D
     template <typename Matrix, typename Tag, typename ExpComplexity>
     void two_d_iteration(char const* outer, Matrix & matrix, Tag, ExpComplexity)
     {
-	typename traits::row<Matrix>::type                         row(matrix); // r = row(matrix);
-	typename traits::col<Matrix>::type                         col(matrix); // c = col(matrix);
-	typename traits::const_value<Matrix>::type                 value(matrix); // v = value(matrix);
+	typename traits::row<Matrix>::type                                 row(matrix); 
+	typename traits::col<Matrix>::type                                 col(matrix); 
+	typename traits::const_value<Matrix>::type                         value(matrix); 
 	typedef typename traits::range_generator<Tag, Matrix>::type        cursor_type;
 	typedef typename traits::range_generator<Tag, Matrix>::complexity  complexity;
 
@@ -53,10 +53,10 @@ struct test_dense2D
     template <typename Matrix>
     void one_d_iteration(char const* name, Matrix & matrix, size_t check_row, size_t check_col, double check)
     {
-	typename traits::row<Matrix>::type                         row(matrix);
-	typename traits::col<Matrix>::type                         col(matrix);
-	typename traits::value<Matrix>::type                       value(matrix);
-	typedef  glas::tags::nz_t                                  tag;
+	typename traits::row<Matrix>::type                                 row(matrix);
+	typename traits::col<Matrix>::type                                 col(matrix);
+	typename traits::value<Matrix>::type                               value(matrix);
+	typedef  glas::tags::nz_t                                          tag;
 	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
 	typedef typename traits::range_generator<tag, Matrix>::complexity  complexity;
 
