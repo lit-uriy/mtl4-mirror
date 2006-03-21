@@ -19,6 +19,12 @@ struct row_t {};
 // Generated cursors must provide range generators
 struct col_t {};
 
+// To iterate over the major dimension (like MTL 2)
+struct major_t {};
+
+// For internal use (to invalidate range generators)
+struct unsupported_t {};
+
 }} // namespace glas::tags
 
 #endif // GLAS_GLAS_TAGS_INCLUDE
