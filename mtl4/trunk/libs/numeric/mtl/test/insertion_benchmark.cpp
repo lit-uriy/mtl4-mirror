@@ -94,7 +94,7 @@ struct poisson_generator
 	switch (offset) {
 	    case 0: c= r - d2; v= -1; break;
 	    case 1: c= r - 1; v= -1; break;
-	    case 2: c= r; v= -4; break;
+	    case 2: c= r; v= 4; break;
 	    case 3: c= r + 1; v= -1; break;
 	    case 4: c= r + d2; v= -1; 
 	}
