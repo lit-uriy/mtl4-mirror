@@ -5,16 +5,18 @@
 
 #include <boost/numeric/mtl/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
-
+#include <boost/random.hpp>
 
 #include <boost/numeric/mtl/operations/update.hpp>
 
 using namespace mtl;
 using namespace std;
+using namespace boost;
 
 template <typename Generator>
-void generator_overhead(int s, Generator gen)
+double generator_overhead(int s, Generator gen)
 {
+  return 0;
 }
 
 template <typename Generator>
@@ -47,7 +49,36 @@ void insert_mtl4(int s, Generator gen, double overhead)
     // t.elapsed() - overhead ==> gnuplot or whatever
 }
 
+// produce a matrix with s nonzeros, randomly distributed
+template <typename size_type, typename val_type, typename RandomGen,
+	  int nnz,
+	  typename distribution = uniform_int<size_type> >
+struct random_generator
+{
+    typedef val_type value_type;
+    explicit random_generator( size_type s ) :
+	mygen( RandomGen() ), size( nnz ), pick_col( distribution(0,s-1) ), 
+	pick_row( distribution(0,s-1) ) {}
+	
+    bool finished() 
+    {
+	return !(bool)size;
+    }
 
+    
+    void operator()( size_type& i, size_type& j, value_type& v )
+    {
+	i = pick_row( mygen );
+	j = pick_col( mygen );
+	v = 1.;
+	size--;
+    }
+
+    RandomGen mygen;
+    size_type size;
+    distribution pick_row, pick_col;
+};
+    
 
 template <typename Size, typename Value>
 struct poisson_generator
@@ -138,12 +169,18 @@ void check_dims()
 
 int main(int argc, char* argv[])
 {
-    // check_dims();
-    // poisson_generator<int, double> poisson_9(9);
-    // insert_mtl4(9, poisson_9, 0.0);
+    check_dims();
+    poisson_generator<int, double> poisson_9(9);
+    insert_mtl4(9, poisson_9, 0.0);
 
-    // run<poisson_generator<int, double> > (atoi(argv[1]));
+    minstd_rand gen;
+    random_generator<int, double, minstd_rand, 25> random_9(9);
+    insert_mtl4(9, random_9, 0.0);
+
+    if( argc > 1 ) {
+	run<poisson_generator<int, double> > (atoi(argv[1]));
+	run<random_generator<int, double, minstd_rand, 25> > (atoi(argv[1]));
+    }
 
     return 0;
 }
- 
