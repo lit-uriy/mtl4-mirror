@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <vector>
 #include <map>
+#include <boost/tuple/tuple.hpp>
+#include <boost/type_traits.hpp>
+
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_matrix.hpp>
 #include <boost/numeric/mtl/detail/range_generator.hpp>
@@ -18,8 +21,6 @@
 #include <boost/numeric/mtl/operations/update.hpp>
 #include <boost/numeric/mtl/operations/shift_blocks.hpp>
 #include <boost/numeric/mtl/mtl_exception.hpp>
-#include <boost/tuple/tuple.hpp>
-
 
 namespace mtl {
 
@@ -89,6 +90,39 @@ struct compressed_el_cursor
 };
 
 
+// Cursor over every element
+template <typename Elt, typename Parameters>
+struct compressed_minor_cursor 
+    : public compressed_key 
+{
+    typedef Elt                           value_type;
+    typedef compressed_key                base;
+    typedef compressed_minor_cursor       self;
+    typedef std::size_t                   size_t;
+
+    explicit compressed_minor_cursor(compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
+	: base(matrix, r, c), matrix(matrix)
+    {}
+
+    explicit compressed_minor_cursor(compressed2D<Elt, Parameters> const& matrix, size_t offset) 
+	: base(matrix, offset), matrix(matrix)
+    {}
+
+    self& operator++ ()
+    {
+	++offset;
+    }
+
+    base& operator* ()
+    {
+	return *this;
+    }
+
+    compressed2D<Elt, Parameters> const& matrix;
+};
+
+
+
 
 // Indexing for compressed matrices
 struct compressed2D_indexer 
@@ -140,10 +174,18 @@ struct compressed2D_indexer
     }
 
     // For a given offset the minor can be accessed directly, the major dim has to be searched
+    // Returned in internal (c) representation
     template <class Matrix>
-    size_t find_major(const Matrix& ma, size_t offset)
+    size_t find_major(const Matrix& ma, size_t offset) const
     {
 	return std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
+    }
+
+    template <class Matrix>
+    size_t minor_from_offset(const Matrix& ma, size_t offset) const
+    {
+	typedef typename Matrix::index_type index;
+	return index::change_to(index(), ma.indices[offset]);
     }
 
 }; // compressed2D_indexer
@@ -221,6 +263,18 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 	return pos ? data[pos] : value_type(0);
     }
 
+    value_type value_from_offset(size_type offset) const
+    {
+	throw_debug_exception(offset >= this->nnz, "Offset larger than matrix!\n");
+	return data[offset];
+    }
+
+    value_type& value_from_offset(size_type offset)
+    {
+	throw_debug_exception(offset >= this->nnz, "Offset larger than matrix!\n");
+	return data[offset];
+    }
+
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
 
@@ -231,6 +285,12 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     std::vector<size_t>     indices;
     bool                    inserting;
 };
+
+
+
+// ========
+// Inserter
+// ========
 
 // Additional data structure to insert into compressed 2D matrix type
 template <typename Elt, typename Parameters, typename Updater = mtl::operations::update_store<Elt> >
@@ -420,6 +480,50 @@ void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
 	my_end++;
     }
 }
+
+
+// =============
+// Property Maps
+// =============
+
+namespace traits 
+{
+    template <class Elt, class Parameters>
+    struct row<compressed2D<Elt, Parameters> >
+    {
+        typedef typename boost::mpl::if_<
+	    boost::is_same<typename Parameters::orientation, row_major>
+	  , mtl::detail::major_in_key<compressed2D<Elt, Parameters> >
+	  , mtl::detail::indexer_minor_ref<compressed2D<Elt, Parameters> >
+	>::type type;  
+    };
+
+    template <class Elt, class Parameters>
+    struct col<compressed2D<Elt, Parameters> >
+    {
+        typedef typename boost::mpl::if_<
+	    boost::is_same<typename Parameters::orientation, row_major>
+	  , mtl::detail::indexer_minor_ref<compressed2D<Elt, Parameters> >
+	  , mtl::detail::major_in_key<compressed2D<Elt, Parameters> >
+	>::type type;  
+    };
+
+    template <class Elt, class Parameters>
+    struct const_value<compressed2D<Elt, Parameters> >
+    {
+	typedef mtl::detail::matrix_offset_const_value<compressed2D<Elt, Parameters> > type;
+    };
+
+    template <class Elt, class Parameters>
+    struct value<compressed2D<Elt, Parameters> >
+    {
+	typedef mtl::detail::matrix_offset_value<compressed2D<Elt, Parameters> > type;
+    };
+
+
+}
+
+
 
 } // namespace mtl
 

@@ -3,7 +3,7 @@
 #ifndef MTL_PROPERTY_MAP_INCLUDE
 #define MTL_PROPERTY_MAP_INCLUDE
 
-#include <boost/numeric/mtl/property_map.hpp>
+#include <boost/numeric/mtl/index.hpp>
 
 namespace mtl { namespace traits 
 {    
@@ -35,7 +35,7 @@ template <class Matrix> struct indexer_row_ref
     const matrix_type& ma;
 };
 
-// functor with matrix reference to access rows 
+// functor to access rows using the key itself
 template <class Matrix> struct row_in_key
 {
     typedef Matrix                      matrix_type;
@@ -44,9 +44,41 @@ template <class Matrix> struct row_in_key
     
     typename Matrix::size_type operator() (key_type const& key) const
     {
-	return key.row();
+	typedef typename Matrix::index_type index;
+	return index::change_from(index(), key.row());
     }
 };
+
+// functor access the major dimension in key itself
+template <class Matrix> struct major_in_key
+{
+    typedef Matrix                      matrix_type;
+    typedef typename Matrix::key_type   key_type;
+    major_in_key(const matrix_type&) {} 
+
+    typename Matrix::size_type operator() (key_type const& key) const
+    {
+	typedef typename Matrix::index_type my_index;
+	return index::change_from(my_index(), key.major);
+    }
+};
+
+template <class Matrix> struct indexer_minor_ref
+{
+    typedef Matrix                      matrix_type;
+    typedef typename Matrix::key_type   key_type;
+    indexer_minor_ref(const matrix_type& ma) : ma(ma) {} 
+    
+    typename Matrix::size_type operator() (key_type const& key) const
+    {
+	return ma.indexer.minor_from_offset(ma, key);
+    }
+    const matrix_type& ma;
+};
+
+
+
+
 
     
 template <class Matrix> struct indexer_col_ref
@@ -62,7 +94,7 @@ template <class Matrix> struct indexer_col_ref
     const matrix_type& ma;
 };
 
-// functor with matrix reference to access cols 
+
 template <class Matrix> struct col_in_key
 {
     typedef Matrix                      matrix_type;
@@ -71,7 +103,8 @@ template <class Matrix> struct col_in_key
     
     typename Matrix::size_type operator() (key_type const& key) const
     {
-	return key.col();
+	typedef typename Matrix::index_type index;
+	return index::change_from(index(), key.col());
     }
 };
 
@@ -186,6 +219,44 @@ template <class Matrix> struct matrix_value_ref
 
     matrix_type& ma;
 };
+
+
+template <class Matrix> struct matrix_offset_const_value
+{
+    typedef Matrix                      matrix_type;
+    typedef typename Matrix::key_type   key_type;
+    matrix_offset_const_value(const matrix_type& ma) : ma(ma) {} 
+    
+    typename Matrix::value_type operator() (key_type const& key) const
+    {
+	return ma.value_from_offset(key.offset);
+    }
+    const matrix_type& ma;
+};
+
+template <class Matrix> struct matrix_offset_value
+{
+    typedef Matrix                      matrix_type;
+    typedef typename Matrix::key_type   key_type;
+    typedef typename Matrix::value_type value_type;
+    matrix_offset_value(matrix_type& ma) : ma(ma) {} 
+    
+    typename Matrix::value_type operator() (key_type const& key) const
+    {
+	return ma.value_from_offset(key.offset);
+    }
+
+    // Much better with inserters
+    void operator() (typename Matrix::key_type const& key, value_type const& value)
+    {
+	ma.value_from_offset(key.offset) = value;
+    }
+
+    matrix_type& ma;
+};
+
+
+
 
 }} // namespace mtl::detail
 
