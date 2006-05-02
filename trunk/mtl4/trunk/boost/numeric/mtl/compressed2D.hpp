@@ -8,6 +8,7 @@
 #include <map>
 #include <boost/tuple/tuple.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/mpl/if.hpp>
 
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_matrix.hpp>
@@ -158,6 +159,7 @@ struct compressed_minor_cursor
     self& operator++ ()
     {
 	++offset;
+	return *this;
     }
 
     base& operator* ()
@@ -592,8 +594,74 @@ namespace traits
 					    complexity::linear_cached>
     {};
 
+    // Cursor over all rows
+    // Supported if row major matrix
+    template <typename Elt, typename Parameters>
+    struct range_generator<glas::tags::row_t, compressed2D<Elt, Parameters> >
+      : boost::mpl::if_<
+	    boost::is_same<typename Parameters::orientation, row_major>
+ 	  , detail::all_rows_range_generator<compressed2D<Elt, Parameters>, complexity::linear_cached>
+ 	  , range_generator<glas::tags::unsupported_t, compressed2D<Elt, Parameters> >
+        >::type {};
 
 
+    template <class Elt, class Parameters>
+    struct range_generator<glas::tags::nz_t, 
+			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::row_t, 2> >
+    {
+	typedef detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::row_t, 2> cursor_type;
+	typedef complexity::linear_cached                 complexity;
+	typedef compressed_minor_cursor<Elt, Parameters>  type;
+	static int const                                  level = 1;
+
+	type begin(cursor_type const& cursor) const
+	{
+	    return type(cursor.ref, cursor.key, cursor.ref.begin_col());
+	}
+	type end(cursor_type const& cursor) const
+	{
+	    return type(cursor.ref, cursor.key, cursor.ref.end_col());
+	}
+    };
+
+    // Cursor over all columns
+    // Supported if column major matrix
+    template <typename Elt, typename Parameters>
+    struct range_generator<glas::tags::col_t, compressed2D<Elt, Parameters> >
+      : boost::mpl::if_<
+	    boost::is_same<typename Parameters::orientation, col_major>
+ 	  , detail::all_cols_range_generator<compressed2D<Elt, Parameters>, complexity::linear_cached>
+ 	  , range_generator<glas::tags::unsupported_t, compressed2D<Elt, Parameters> >
+        >::type {};
+
+
+    template <class Elt, class Parameters>
+    struct range_generator<glas::tags::nz_t, 
+			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::col_t, 2> >
+    {
+	typedef detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::col_t, 2> cursor_type;
+	typedef complexity::linear_cached                 complexity;
+	typedef compressed_minor_cursor<Elt, Parameters>  type;
+	static int const                                  level = 1;
+
+	type begin(cursor_type const& cursor) const
+	{
+	    return type(cursor.ref, cursor.ref.begin_row(), cursor.key);
+	}
+	type end(cursor_type const& cursor) const
+	{
+	    return type(cursor.ref, cursor.ref.end_row(), cursor.key);
+	}
+    };
+
+    // Cursor over all rows or columns, depending which one is major
+    template <typename Elt, typename Parameters>
+    struct range_generator<glas::tags::major_t, compressed2D<Elt, Parameters> >
+      : boost::mpl::if_<
+	    boost::is_same<typename Parameters::orientation, row_major>
+	  , range_generator<glas::tags::row_t, compressed2D<Elt, Parameters> >
+	  , range_generator<glas::tags::col_t, compressed2D<Elt, Parameters> >
+        >::type {};
 
 
 

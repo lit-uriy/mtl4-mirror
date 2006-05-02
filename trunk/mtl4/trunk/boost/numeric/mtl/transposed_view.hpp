@@ -5,6 +5,7 @@
 
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/property_map.hpp>
+#include <boost/numeric/mtl/range_generator.hpp>
 
 
 namespace mtl {
@@ -48,6 +49,7 @@ public:
         return ref.dim1(); 
     }
     
+    // Do we really need this?
     std::size_t offset(const value_type* p) const 
     { 
         return ref.offset(p); 
@@ -181,7 +183,7 @@ namespace traits
     namespace detail
     {
 	template <class UseTag, class Matrix>
-	struct range_transposer
+	struct range_transposer_impl
 	{
 	    typedef range_generator<UseTag, Matrix>  generator;
 	    typedef typename generator::complexity   complexity;
@@ -196,6 +198,17 @@ namespace traits
 		return generator().end(m.ref);
 	    }
 	};
+
+	// If considered range_generator for Matrix isn't supported, i.e. has infinite complexity
+	// then define as unsupported for transposed view 
+	// (range_transposer_impl wouldn't compile in this case)
+	template <class UseTag, class Matrix>
+	struct range_transposer
+	    : boost::mpl::if_<
+	          boost::is_same<typename range_generator<UseTag, Matrix>::complexity, complexity::infinite>
+	        , range_generator<glas::tags::unsupported_t, Matrix>
+	        , range_transposer_impl<UseTag, Matrix>
+	      >::type {};
     }
 
     // Row and column cursors are interchanged
