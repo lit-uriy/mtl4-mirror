@@ -16,9 +16,6 @@ namespace mtl { namespace traits
 
 
 
-
-
-
 namespace mtl { namespace detail {
 
 // functor with matrix reference to access rows 
@@ -35,6 +32,7 @@ template <class Matrix> struct indexer_row_ref
     const matrix_type& ma;
 };
 
+
 // functor to access rows using the key itself
 template <class Matrix> struct row_in_key
 {
@@ -45,9 +43,10 @@ template <class Matrix> struct row_in_key
     typename Matrix::size_type operator() (key_type const& key) const
     {
 	typedef typename Matrix::index_type index;
-	return index::change_from(index(), key.row());
+	return index::change_to(index(), key.row());
     }
 };
+
 
 // functor access the major dimension in key itself
 template <class Matrix> struct major_in_key
@@ -59,9 +58,10 @@ template <class Matrix> struct major_in_key
     typename Matrix::size_type operator() (key_type const& key) const
     {
 	typedef typename Matrix::index_type my_index;
-	return index::change_from(my_index(), key.major);
+	return index::change_to(my_index(), key.major);
     }
 };
+
 
 template <class Matrix> struct indexer_minor_ref
 {
@@ -71,14 +71,10 @@ template <class Matrix> struct indexer_minor_ref
     
     typename Matrix::size_type operator() (key_type const& key) const
     {
-	return ma.indexer.minor_from_offset(ma, key);
+	return ma.indexer.minor_from_offset(ma, key.offset);
     }
     const matrix_type& ma;
 };
-
-
-
-
 
     
 template <class Matrix> struct indexer_col_ref
@@ -104,9 +100,10 @@ template <class Matrix> struct col_in_key
     typename Matrix::size_type operator() (key_type const& key) const
     {
 	typedef typename Matrix::index_type index;
-	return index::change_from(index(), key.col());
+	return index::change_to(index(), key.col());
     }
 };
+
 
 template <typename Matrix>
 struct const_value_from_other
@@ -126,6 +123,7 @@ struct const_value_from_other
   protected:
     typename traits::const_value<other>::type  its_const_value;
 };
+
 
 template <typename Matrix>
 struct value_from_other
@@ -151,6 +149,7 @@ struct value_from_other
     typename traits::value<other>::type  its_value;
 };
 
+
 // property map to read value if key is referring to value, e.g. pointer
 template <class Matrix> struct direct_const_value
 {
@@ -160,6 +159,7 @@ template <class Matrix> struct direct_const_value
 	return *key;
     }
 };
+
     
 // same with writing
 template <class Matrix> struct direct_value 
@@ -184,7 +184,6 @@ template <class Matrix> struct direct_value
     }
 };
 
-
     
 template <class Matrix> struct matrix_const_value_ref
 {
@@ -198,6 +197,7 @@ template <class Matrix> struct matrix_const_value_ref
     }
     const matrix_type& ma;
 };
+
 
 template <class Matrix> struct matrix_value_ref
 {
@@ -234,6 +234,7 @@ template <class Matrix> struct matrix_offset_const_value
     const matrix_type& ma;
 };
 
+
 template <class Matrix> struct matrix_offset_value
 {
     typedef Matrix                      matrix_type;
@@ -254,9 +255,6 @@ template <class Matrix> struct matrix_offset_value
 
     matrix_type& ma;
 };
-
-
-
 
 }} // namespace mtl::detail
 

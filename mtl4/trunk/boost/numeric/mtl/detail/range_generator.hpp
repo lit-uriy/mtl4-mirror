@@ -10,22 +10,44 @@ namespace mtl { namespace traits { namespace detail {
 
     // Range generator that traverses all elements of some densely stored collection 
     // or contiguous parts of such collection
-    // works if Collection is derived from base_matrix
-    template <typename Collection, typename Cursor, typename Complexity>
+    // works if Matrix is derived from base_matrix
+    template <typename Matrix, typename Cursor, typename Complexity>
     struct dense_element_range_generator
     {
 	typedef Complexity          complexity;
-	static int const            level = 1;
 	typedef Cursor              type;
-	type begin(Collection const& c)
+	static int const            level = 1;
+
+	type begin(Matrix const& matrix)
 	{
-	    return c.elements();
+	    return matrix.elements();
 	}
-	type end(Collection const& c)
+	type end(Matrix const& matrix)
 	{
-	    return c.elements() + c.num_elements();
+	    return matrix.elements() + matrix.num_elements();
 	}
     };
+
+
+    // Like above over all elements but in terms of offsets
+    // Also with reference to collection in cursor
+    template <typename Matrix, typename Cursor, typename Complexity>
+    struct all_offsets_range_generator
+    {
+	typedef Complexity          complexity;
+	typedef Cursor              type;
+	static int const            level = 1;
+
+	type begin(Matrix const& matrix) const
+	{
+	    return type(matrix, 0);
+	}
+	type end(Matrix const& matrix) const
+	{
+	    return type(matrix, matrix.num_elements());
+	}
+    };
+    
 
     // Cursor to some submatrix (e.g. row, column, block matrix, block row)
     // This cursor is intended to be used by range generators to iterate 
@@ -35,48 +57,50 @@ namespace mtl { namespace traits { namespace detail {
     // If this cursor refers to a block then a range can iterate over the rows in this block.
     // The level of a generated cursor must be of course at least one level less
     // The tag serves to dispatching between row and column cursors
-    template <typename Collection, typename Tag, int Level = 2>
+    template <typename Matrix, typename Tag, int Level = 2>
     struct sub_matrix_cursor
 	: mtl::detail::base_cursor<int>
     {
 	typedef mtl::detail::base_cursor<int>    base;
 	static int const            level = Level;
 
-	sub_matrix_cursor(int i, Collection const& c)
+	sub_matrix_cursor(int i, Matrix const& c)
 	    : base(i), ref(c) 
 	{}	
-	Collection const& ref;
+	Matrix const& ref;
     };
 
-    template <typename Collection, typename Complexity, int Level = 2>
+
+    template <typename Matrix, typename Complexity, int Level = 2>
     struct all_rows_range_generator
     {
 	typedef Complexity          complexity;
 	static int const            level = Level;
-	typedef sub_matrix_cursor<Collection, glas::tags::row_t, Level> type;
+	typedef sub_matrix_cursor<Matrix, glas::tags::row_t, Level> type;
 
-	type begin(Collection const& c)
+	type begin(Matrix const& c)
 	{
 	    return type(c.begin_row(), c);
 	}
-	type end(Collection const& c)
+	type end(Matrix const& c)
 	{
 	    return type(c.end_row(), c);
 	}
     };
 
-    template <typename Collection, typename Complexity, int Level = 2>
+
+    template <typename Matrix, typename Complexity, int Level = 2>
     struct all_cols_range_generator
     {
 	typedef Complexity          complexity;
 	static int const            level = Level;
-	typedef sub_matrix_cursor<Collection, glas::tags::col_t, Level> type;
+	typedef sub_matrix_cursor<Matrix, glas::tags::col_t, Level> type;
 
-	type begin(Collection const& c)
+	type begin(Matrix const& c)
 	{
 	    return type(c.begin_col(), c);
 	}
-	type end(Collection const& c)
+	type end(Matrix const& c)
 	{
 	    return type(c.end_col(), c);
 	}

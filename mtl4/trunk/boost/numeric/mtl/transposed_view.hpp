@@ -17,8 +17,10 @@ public:
     typedef typename transposed_orientation<typename Matrix::orientation>::type orientation;
     typedef typename Matrix::index_type                index_type;
     typedef typename Matrix::value_type                value_type;
+#if 0 // not sure if I want these anymore
     typedef typename Matrix::pointer_type              pointer_type;
     typedef typename Matrix::const_pointer_type        const_pointer_type;
+#endif
     typedef typename Matrix::key_type                  key_type;
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
@@ -51,15 +53,38 @@ public:
         return ref.offset(p); 
     }
 
+#if 0 // seems dumb
     const_pointer_type elements() const 
     {
         return ref.elements(); 
     }
+#endif
 
     dim_type dimensions() const 
     {
         return ref.dimensions().transpose(); 
     }
+
+    std::size_t begin_row() const
+    {
+	return ref.begin_col();
+    }
+
+    std::size_t end_row() const
+    {
+	return ref.end_col();
+    }
+
+    std::size_t begin_col() const
+    {
+	return ref.begin_row();
+    }
+
+    std::size_t end_col() const
+    {
+	return ref.end_row();
+    }
+
 
     other& ref;
 };
