@@ -37,11 +37,13 @@ template <typename Elt, typename Parameters, typename Updater> class compressed2
 struct compressed_key
 {
     typedef std::size_t                               size_t;
+    typedef compressed_key                            self;
     
     template <typename Elt, typename Parameters>
     explicit compressed_key(compressed2D<Elt, Parameters> const& matrix, size_t offset) : offset(offset)
     {
-	major= matrix.indexer(matrix, offset);
+	std::size_t my_major= matrix.indexer.find_major(matrix, offset);
+	major= my_major;
     }
 
     template <typename Elt, typename Parameters>
@@ -51,9 +53,35 @@ struct compressed_key
 	major= matrix.indexer.major_minor_c(matrix, r, c).first;
     }
 
+    compressed_key(compressed_key const& other) 
+    {
+	offset= other.offset; major= other.major;
+    }
+
+    self& operator= (self const& other)
+    {
+	offset= other.offset; major= other.major;
+	return *this;
+    }
+
+    bool operator== (compressed_key const& other)
+    {
+	//if (offset == other.offset && major != other.major) 
+	//    std::cout << offset << " " << other.offset << " " << major << " " << other.major << '\n';
+	throw_debug_exception(offset == other.offset && major != other.major,
+			      "equal offsets imply equal major\n");
+	return offset == other.offset;
+    }
+
+    bool operator!= (compressed_key const& other)
+    {
+	return !(*this == other);
+    }
+
     size_t       major;
     size_t       offset;
 };
+
 
 // Cursor over every element
 template <typename Elt, typename Parameters>
@@ -73,12 +101,23 @@ struct compressed_el_cursor
 	: base(matrix, offset), matrix(matrix)
     {}
 
+    compressed_el_cursor(const compressed_el_cursor<Elt, Parameters>& other) 
+	: base(other), matrix(other.matrix) 
+    {}
+
+    self& operator= (self const& other)
+    {
+	base::operator=(other);
+	return *this;
+    }
+
     self& operator++ ()
     {
 	++offset;
 	throw_debug_exception(matrix.starts[major+1] < offset, "Inconsistent incrementation!\n");
-	if (matrix.starts[major+1] == offset) 
+	while (major < matrix.starts.size()-1 && matrix.starts[major+1] == offset) 
 	    ++major;
+	return *this;
     }
 
     base& operator* ()
@@ -107,6 +146,14 @@ struct compressed_minor_cursor
     explicit compressed_minor_cursor(compressed2D<Elt, Parameters> const& matrix, size_t offset) 
 	: base(matrix, offset), matrix(matrix)
     {}
+
+    compressed_minor_cursor(self const& other) : base(other), matrix(other.matrix) {}
+
+    self& operator= (self const& other)
+    {
+	base::operator=(other);
+	return *this;
+    }
 
     self& operator++ ()
     {
@@ -178,14 +225,16 @@ struct compressed2D_indexer
     template <class Matrix>
     size_t find_major(const Matrix& ma, size_t offset) const
     {
-	return std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
+	throw_debug_exception(ma.starts.empty(), "Major vector can't be empty\n");
+	size_t my_major= std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
+	return --my_major;
     }
 
     template <class Matrix>
     size_t minor_from_offset(const Matrix& ma, size_t offset) const
     {
-	typedef typename Matrix::index_type index;
-	return index::change_to(index(), ma.indices[offset]);
+	typedef typename Matrix::index_type my_index;
+	return index::change_to(my_index(), ma.indices[offset]);
     }
 
 }; // compressed2D_indexer
@@ -199,15 +248,17 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
     typedef std::size_t                              size_t;
     typedef detail::base_matrix<Elt, Parameters>     super;
     typedef compressed2D                             self;
-  public:	
+  public:
+    typedef Parameters                               parameters;
     typedef typename Parameters::orientation         orientation;
     typedef typename Parameters::index               index_type;
     typedef typename Parameters::dimensions          dimensions;
     typedef Elt                                      value_type;
-    typedef const value_type*                        const_pointer_type;
+    // typedef const value_type*                        const_pointer_type;
+    typedef compressed_key                           key_type;
+
     // typedef const_pointer_type                             key_type;
     typedef size_t                                   size_type;
-    // typedef compressed_el_cursor<Elt>                el_cursor_type;  
     typedef compressed2D_indexer                     indexer_type;
 
     // Only allocation of new data, doesn't copy if already existent
@@ -277,6 +328,9 @@ class compressed2D : public detail::base_matrix<Elt, Parameters>
 
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
+    template <typename, typename> friend struct compressed_el_cursor;
+    template <typename, typename> friend struct compressed_minor_cursor;
+
 
     indexer_type            indexer;
     std::vector<value_type> data; 
@@ -415,13 +469,15 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type ro
 	    copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
 	    copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
 	    elements[pos] = val; indices[pos] = minor;
-	    my_end++;
+	    my_end++;	    
+	    matrix.nnz++;      // new entry
 	} else {
 	    typename map_type::iterator it = spare.find(mm);
 	    // If not in map insert it, otherwise update the value
-	    if (it == spare.end()) 
+	    if (it == spare.end()) {
 		spare.insert(std::make_pair(mm, val));
-	    else 
+		matrix.nnz++;      // new entry
+	    } else 
 		Updater() (it->second, val);
 	}
     }
@@ -520,8 +576,28 @@ namespace traits
 	typedef mtl::detail::matrix_offset_value<compressed2D<Elt, Parameters> > type;
     };
 
+} // namespace traits
 
-}
+
+// ================
+// Range generators
+// ================
+
+namespace traits
+{
+    template <class Elt, class Parameters>
+    struct range_generator<glas::tags::nz_t, compressed2D<Elt, Parameters> >
+      : detail::all_offsets_range_generator<compressed2D<Elt, Parameters>,
+					    compressed_el_cursor<Elt, Parameters>, 
+					    complexity::linear_cached>
+    {};
+
+
+
+
+
+
+} // namespace traits
 
 
 

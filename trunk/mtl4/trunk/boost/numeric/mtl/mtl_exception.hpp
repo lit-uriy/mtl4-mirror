@@ -14,6 +14,7 @@ if (Test) throw Message; \
 #define throw_debug_exception(Test,Message)
 #endif
 
+struct test_exception {};
 
 } // namespace mtl
 
