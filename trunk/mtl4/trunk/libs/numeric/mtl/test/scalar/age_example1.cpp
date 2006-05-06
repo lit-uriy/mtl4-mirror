@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cmath>
 
-#include <glas/operators.hpp>
+#include <boost/numeric/linear_algebra/operators.hpp>
 #include "algebraic_functions.hpp"
 #include <boost/numeric/mtl/scalar/concepts.hpp>
 
@@ -48,7 +48,7 @@ inline std::ostream& operator<< (std::ostream& stream, const age& a)
 int main(int, char* []) 
 {
     age a0(0.0), a2(2.0), a3(3.0), a4(4.0), a5(5.0);
-    glas::add<age>     ageAdd;
+    math::add<age>     ageAdd;
   
     std::cout << "equal_results(a2,a5,  a3,a4, ageAdd) " 
 	      << mtl::equal_results(a2,a5,  a3,a4, ageAdd)  << std::endl;
