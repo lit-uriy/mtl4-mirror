@@ -12,7 +12,7 @@
 
 #include <bits/concepts.h>
 #include <boost/numeric/mtl/scalar/concepts.hpp>
-#include <glas/identity.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 // Pure algebraic functions (mainly for applying concepts)
 
@@ -22,7 +22,7 @@ namespace mtl {
 // {T, Op} must be a Magma
 // T must be EqualityComparable
 template <class T, class Op> 
-    where { std::EqualityComparable<T>, Magma<T, Op> }
+  where std::EqualityComparable<T> && math::Magma<T, Op>
 inline bool equal_results(const T& v1a, const T& v1b, 
 			  const T& v2a, const T& v2b, Op op) 
 {
@@ -32,18 +32,18 @@ inline bool equal_results(const T& v1a, const T& v1b,
 // {T, Op} must be a Monoid
 // T must be EqualityComparable
 template <class T, class Op>
-    where { std::EqualityComparable<T>, Monoid<T, Op> }
+  where std::EqualityComparable<T> && math::Monoid<T, Op>
 inline bool identity_pair(const T& v1, const T& v2, Op op) 
 {
-    return op(v1, v2) == glas::identity<T, Op>()() ;
+    return op(v1, v2) == math::identity<T, Op>()(v1) ;
 }
 
 // {T, Op} must be a Monoid
 template <class T, class Op>
-    where { Monoid<T, Op>, std::CopyConstructible<T> }
+  where std::CopyConstructible<T> && math::Monoid<T, Op>
 inline T multiplyAndSquare(T base, int exp, Op op) 
 {
-    T value= glas::identity<T, Op>()(), square= base;
+    T value= math::identity<T, Op>()(base), square= base;
     for (; exp > 0; exp>>= 1) {
 	if (exp & 1) value= op(value, square);
 	square= op(square, square); 
@@ -80,6 +80,7 @@ inline int poorMensAbsDivision(const T& v1, const T& v2, Op op) {
   if (tmp < id) counter--;
   return counter;
 }
+
 
 // {Iter*, Op} must be a CommutativeMonoid
 struct sortedAccumulate_t {

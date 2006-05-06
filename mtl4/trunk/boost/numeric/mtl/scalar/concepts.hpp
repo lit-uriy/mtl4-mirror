@@ -4,13 +4,43 @@
 #define MTL_CONCEPTS_INCLUDE
 
 #include <bits/concepts.h>
-#include <glas/identity.hpp>
-#include <glas/is_invertible.hpp>
-#include <glas/inverse.hpp>
+// #include <concepts>
 
-namespace mtl {
+#include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/linear_algebra/is_invertible.hpp>
+#include <boost/numeric/linear_algebra/inverse.hpp>
 
 #ifdef __GXX_CONCEPTS__
+#  define MTL_WITH_CONCEPTS
+#else
+#  define MTL_NO_CONCEPTS
+#  warning "Concepts are not used"
+#endif
+
+
+namespace math {
+
+#ifdef MTL_WITH_CONCEPTS
+
+// Concepts for functions mapping to same type or convertible
+auto concept UnaryIsoFunction<typename Element, typename Operation>
+  : std::Callable1<Operation, Element>
+{
+    where std::Convertible<result_type, Element>;
+};
+
+auto concept BinaryIsoFunction<typename Element, typename Operation>
+  : std::Callable2<Operation, Element, Element>
+{
+    where std::Convertible<result_type, Element>;
+};
+
+
+auto concept Magma<typename Element, typename Operation>
+  : BinaryIsoFunction<Element, Operation>
+{
+  where std::Assignable<Element>;
+};
 
 // Refined version (with inheritance) would look like this
 #if 0
@@ -26,64 +56,67 @@ struct concept Magma
     // Long version if multiple refined concepts have result_type
     // where std::Callable2<Operation, Element, Element>::result_type == Element;
 };
-#endif
 
-template <typename Element, typename Operation>
-struct concept Magma
+
+struct concept Magma<typename Element, typename Operation>
 {
     typename result_type = Element;
     Element operator() (Operation, Element, Element);
     Element const& operator= (Element&, Element const&);
   //Element& operator= (Element&, Element const&);
 };
+#endif
 
 // SemiGroup is a refinement which must be nominal
-template <typename Element, typename Operation>
-concept SemiGroup
+concept SemiGroup<typename Element, typename Operation>
   : Magma<Element, Operation>
 {};
 
 
-template <typename Element, typename Operation>
-concept CommutativeSemiGroup
+concept CommutativeSemiGroup<typename Element, typename Operation>
   : SemiGroup<Element, Operation>
 {};
 
 // Adding identity
-template <typename Element, typename Operation>
-concept Monoid
+concept Monoid<typename Element, typename Operation>
 : SemiGroup<Element, Operation> 
 {
-    Element operator() (glas::identity<Element, Operation>);
+    where UnaryIsoFunction< identity<Element, Operation>, Element >;
+
+    // typename Element, typename Operation>;
+
+    // Element operator() (glas::identity<Element, Operation>);
 };
 
-template <typename Element, typename Operation>
-concept CommutativeMonoid
+
+concept CommutativeMonoid<typename Element, typename Operation>
   : Monoid<Element, Operation>
 {};
 
 
-template <typename Element, typename Operation>
-concept PartiallyInvertibleMonoid
+concept PartiallyInvertibleMonoid<typename Element, typename Operation>
   : Monoid<Element, Operation> 
 {
-    bool operator() (glas::is_invertible<Element, Operation>, Element);
+    where std::Predicate< is_invertible<Element, Operation>, Element >;
+
+	// bool operator() (glas::is_invertible<Element, Operation>, Element);
 };
 
-template <typename Element, typename Operation>
-concept PartiallyInvertibleCommutativeMonoid
+concept PartiallyInvertibleCommutativeMonoid<typename Element, typename Operation>
   : PartiallyInvertibleMonoid<Element, Operation>, CommutativeMonoid<Element, Operation>
 {};
 
-template <typename Element, typename Operation>
-concept Group
+
+concept Group<typename Element, typename Operation>
   : PartiallyInvertibleMonoid<Element, Operation>
 {
-    Element operator() (glas::inverse<Element, Operation>, Element);
+    where UnaryIsoFunction< inverse<Element, Operation>, Element >;
+
+    // Element operator() (glas::inverse<Element, Operation>, Element);
 };
 
-template <typename Element, typename Operation>
-concept AbelianGroup
+
+concept AbelianGroup<typename Element, typename Operation>
   : Group<Element, Operation>, PartiallyInvertibleCommutativeMonoid<Element, Operation>
 {};
 
