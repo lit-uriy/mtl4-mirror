@@ -8,14 +8,24 @@
 # include <boost/sequence/begin.hpp>
 # include <boost/sequence/end.hpp>
 # include <boost/sequence/elements.hpp>
+# include <boost/type_traits/add_reference.hpp>
 
 namespace boost { namespace sequence { 
 
+using namespace boost::property_map;
+
 template <class S>
 struct Sequence
-  : ReadablePropertyMap<
-        typename result_of<op::elements(S)>::type
-      , typename result_of<op::begin(S)>::type
+  : ReadablePropertyMap<   
+        typename result_of<
+            // Note that we *must* add_reference to S because it might
+            // be an array type that would otherwise decay into a
+            // pointer.
+            op::elements(typename add_reference<S>::type)
+        >::type
+      , typename result_of<
+            op::begin(typename add_reference<S>::type)
+        >::type
     >
 {
     // Associated types cursor, elements, key_type, value_type,
@@ -23,17 +33,20 @@ struct Sequence
 
     // The end cursor doesn't have to have the same type as the begin
     // cursor, just as long as you can compare them.
-    typedef typename result_of<op::end(S)>::type  end_cursor;
+    typedef typename result_of<
+        op::end(typename add_reference<S>::type)
+    >::type  end_cursor;
 
     // This isn't quite the right requirement because it imposes
     // convertibility, but it's good enough for a first approximation.
-    BOOST_CONCEPT_ASSERT((InteroperableIterator<cursor,end_cursor>));
+    BOOST_CONCEPT_ASSERT((
+        InteroperableIterator<typename Sequence::cursor,end_cursor>));
 
     ~Sequence()
     {
-        elements e = sequence::elements(s);
-        cursor c = sequence::begin(s);
-        end_cursor e = sequence::end(s);
+        typename Sequence::elements elts = sequence::elements(s);
+        typename Sequence::cursor c = sequence::begin(s);
+        end_cursor end = sequence::end(s);
     }
  private:
     S s;
@@ -76,7 +89,7 @@ struct RandomAccessSequence
     
 template <class S>
 struct MutableSequence
-  : Sequence
+  : Sequence<S>
 {
     BOOST_CONCEPT_ASSERT((
         ReadWritePropertyMap<
