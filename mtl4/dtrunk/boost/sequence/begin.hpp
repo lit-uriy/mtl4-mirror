@@ -4,7 +4,7 @@
 #ifndef BOOST_SEQUENCE_BEGIN_DWA200655_HPP
 # define BOOST_SEQUENCE_BEGIN_DWA200655_HPP
 
-# include <boost/range/iterator.hpp>
+# include <boost/range/result_iterator.hpp>
 # include <boost/range/begin.hpp>
 # include <boost/detail/function1.hpp>
 # include <boost/iterator/counting_iterator.hpp>
@@ -18,7 +18,7 @@ namespace impl
   struct begin
   {
       typedef counting_iterator<
-          typename range_iterator<S>::type
+          typename range_result_iterator<S>::type
       > result_type;
       
       result_type operator()(S& s) const
