@@ -1,0 +1,42 @@
+# Copyright David Abrahams 2004. Distributed under the Boost
+# Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+import modules ;
+import os ;
+import path ;
+
+import mtl4 ;
+
+path-constant mtl4-css : default.css ;
+
+.bootstrap-file = [ path.make [ modules.peek : .bootstrap-file ] ] ;
+.boost = $(.bootstrap-file) ;
+for local x in 1 2 3 4 5
+{
+    .boost = [ path.parent $(.boost) ] ;
+}
+.boost = [ path.native $(.boost) ] ;
+
+# If someone sets BUILD_DIR in boost-build.jam, use that.
+.build-dir = [ modules.peek : BUILD_DIR ] ;
+if $(.build-dir)
+{
+    .build-dir = build-dir $(.build-dir) ;
+}
+
+use-project /boost : $(.boost) ;
+
+project mtl4
+  : requirements <include>. <source>/boost//headers 
+    : $(.build-dir)
+  ;
+
+# .my-dir = [ modules.binding $(__name__) ] ;
+
+# modules.poke : BOOST_BUILD_PATH 
+#   :  $(.my-dir:D)
+#     [ modules.peek : BOOST_BUILD_PATH ] ;
+   
+build-project libs/numeric/mtl/doc ;
+build-project libs/sequence/doc ;
+
