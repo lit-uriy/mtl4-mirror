@@ -1,15 +1,15 @@
 // Copyright David Abrahams 2006. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_PROPERTY_MAP_CONCEPT_DWA2006430_HPP
-# define BOOST_PROPERTY_MAP_CONCEPT_DWA2006430_HPP
+#ifndef BOOST_PROPERTY_MAP_CONCEPTS_DWA2006430_HPP
+# define BOOST_PROPERTY_MAP_CONCEPTS_DWA2006430_HPP
 
 # include <boost/iterator/iterator_concepts.hpp>
 # include <boost/iterator/iterator_traits.hpp>
 # include <boost/concept_check.hpp>
 # include <boost/property_map/traits/value_type.hpp>
 
-namespace boost { namespace property_map { 
+namespace boost { namespace property_map { namespace concepts {
 
 using namespace boost_concepts;
 
@@ -71,6 +71,6 @@ struct ReadWritePropertyMap
   , ReadablePropertyMap<UnaryBinaryFunc,Iter>
 {};
 
-}} // namespace boost::property_map
+}}} // namespace boost::property_map::concepts
 
-#endif // BOOST_PROPERTY_MAP_CONCEPT_DWA2006430_HPP
+#endif // BOOST_PROPERTY_MAP_CONCEPTS_DWA2006430_HPP

@@ -1,18 +1,18 @@
 // Copyright David Abrahams 2006. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_SEQUENCE_CONCEPT_DWA200652_HPP
-# define BOOST_SEQUENCE_CONCEPT_DWA200652_HPP
+#ifndef BOOST_SEQUENCE_CONCEPTS_DWA200652_HPP
+# define BOOST_SEQUENCE_CONCEPTS_DWA200652_HPP
 
-# include <boost/property_map/concept.hpp>
+# include <boost/property_map/concepts.hpp>
 # include <boost/sequence/begin.hpp>
 # include <boost/sequence/end.hpp>
 # include <boost/sequence/elements.hpp>
 # include <boost/type_traits/add_reference.hpp>
 
-namespace boost { namespace sequence { 
+namespace boost { namespace sequence { namespace concepts { 
 
-using namespace boost::property_map;
+using namespace boost::property_map::concepts;
 
 template <class S>
 struct Sequence
@@ -122,6 +122,6 @@ struct Mutable_RandomAccessSequence
   , RandomAccessSequence<S>
 {};
 
-}} // namespace boost::sequence
+}}} // namespace boost::sequence::concepts
 
-#endif // BOOST_SEQUENCE_CONCEPT_DWA200652_HPP
+#endif // BOOST_SEQUENCE_CONCEPTS_DWA200652_HPP
