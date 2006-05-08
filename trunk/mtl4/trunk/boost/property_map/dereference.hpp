@@ -24,7 +24,7 @@ struct dereference
            typename remove_reference<I>::type
         >::type iter;
         
-        typedef typename ReadableIterator<iter>::reference type;
+        typedef typename std::iterator_traits<iter>::reference type;
     };
 
     template<class This, class K, class V>
