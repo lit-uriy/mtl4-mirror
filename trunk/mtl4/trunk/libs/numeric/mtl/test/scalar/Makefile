@@ -1,4 +1,4 @@
-CXXFLAGS += -I${BOOST_ROOT} -I${MTL_BOOST_ROOT} -I${GLAS_ROOT}/branches/state_2006_2_23/glas 
+CXXFLAGS += -I${BOOST_ROOT} -I${MTL_BOOST_ROOT} # -I${GLAS_ROOT}/branches/state_2006_2_23/glas 
 
 CXX = conceptg++
 

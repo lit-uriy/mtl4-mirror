@@ -22,11 +22,20 @@ namespace mtl {
 // {T, Op} must be a Magma
 // T must be EqualityComparable
 template <class T, class Op> 
+#if 0
+  where math::Magma<T, Op>
+        && std::EqualityComparable< math::Magma<T, Op>::result_type > 
+#endif
   where std::EqualityComparable<T> && math::Magma<T, Op>
 inline bool equal_results(const T& v1a, const T& v1b, 
 			  const T& v2a, const T& v2b, Op op) 
 {
+    T res1= op(v1a, v1b), res2= op(v2a, v2b);
+    return res1 == res2;
+
+#if 0
     return op(v1a, v1b) == op(v2a, v2b);
+#endif
 }
 
 // {T, Op} must be a Monoid
@@ -35,7 +44,11 @@ template <class T, class Op>
   where std::EqualityComparable<T> && math::Monoid<T, Op>
 inline bool identity_pair(const T& v1, const T& v2, Op op) 
 {
-    return op(v1, v2) == math::identity<T, Op>()(v1) ;
+    using math::identity;
+    T res1= op(v1, v2), res2= identity<T, Op>()(v1);
+    return res1 == res2;
+
+    // return op(v1, v2) == math::identity<T, Op>()(v1) ;
 }
 
 // {T, Op} must be a Monoid
