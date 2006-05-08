@@ -9,6 +9,8 @@
 # include <boost/sequence/end.hpp>
 # include <boost/sequence/elements.hpp>
 # include <boost/type_traits/add_reference.hpp>
+# include <boost/sequence/traits/size_type.hpp>
+# include <boost/sequence/traits/index_type.hpp>
 
 namespace boost { namespace sequence { namespace concepts { 
 
@@ -50,6 +52,31 @@ struct Sequence
     }
  private:
     S s;
+};
+
+template <class S>
+struct O1SizeSequence
+  : Sequence<S>
+{
+    typedef typename sequence::size_type<S>::type size_type;
+    typedef typename sequence::index_type<S>::type index_type;
+    
+    ~Sequence()
+    {
+        size_type size = sequence::size(s);
+
+        BOOST_CONCEPT_ASSERT((Convertible<size_type,index_type>));
+
+        index_type i = sequence::size(s);
+        
+        // Need EqualityComparable2
+        i == size;
+        i != size;
+        size == i;
+        size != i;
+    }
+ private:
+    Sequence s;
 };
 
 template <class S>
