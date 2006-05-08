@@ -26,20 +26,32 @@ namespace math {
 auto concept UnaryIsoFunction<typename Element, typename Operation>
   : std::Callable1<Operation, Element>
 {
-    where std::Convertible<result_type, Element>;
+    where std::Convertible<std::Callable1<Operation, Element>::result_type, Element>;
+
+    typename result_type = std::Callable1<Operation, Element>::result_type;
+    //    result_type operator()(Operation&, Element);
 };
 
 auto concept BinaryIsoFunction<typename Element, typename Operation>
-  : std::Callable2<Operation, Element, Element>
+//: std::Callable2<Operation, Element, Element>
 {
-    where std::Convertible<result_type, Element>;
+    where std::Callable2<Operation, Element, Element>;
+    where std::Convertible<std::Callable2<Operation, Element, Element>::result_type, Element>;
+
+    typename result_type = std::Callable2<Operation, Element, Element>::result_type;
+
+    // typename result_type;
+    // result_type operator()(Operation&, Element, Element);
 };
 
 
 auto concept Magma<typename Element, typename Operation>
-  : BinaryIsoFunction<Element, Operation>
+// : BinaryIsoFunction<Element, Operation>
 {
-  where std::Assignable<Element>;
+    where std::Assignable<Element>;
+    where BinaryIsoFunction<Element, Operation>;
+
+    typename result_type = BinaryIsoFunction<Element, Operation>::result_type;
 };
 
 // Refined version (with inheritance) would look like this
@@ -81,7 +93,7 @@ concept CommutativeSemiGroup<typename Element, typename Operation>
 concept Monoid<typename Element, typename Operation>
 : SemiGroup<Element, Operation> 
 {
-    where UnaryIsoFunction< identity<Element, Operation>, Element >;
+    where UnaryIsoFunction< Element, identity<Element, Operation> >;
 
     // typename Element, typename Operation>;
 

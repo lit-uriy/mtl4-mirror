@@ -43,7 +43,11 @@ inline std::ostream& operator<< (std::ostream& stream, const age& a)
     return stream << a.sayAge(); 
 }
 
-
+// Shouldn't be needed 
+namespace math 
+{
+  // concept_map Magma <age, math::add<age> > {};
+}
 
 int main(int, char* []) 
 {
