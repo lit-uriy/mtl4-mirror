@@ -6,16 +6,16 @@ import os ;
 import path ;
 
 import mtl4 ;
+import build-system ;
 
 path-constant mtl4-css : default.css ;
 
-.bootstrap-file = [ path.make [ modules.peek : .bootstrap-file ] ] ;
-.boost = $(.bootstrap-file) ;
-for local x in 1 2 3 4 5
-{
-    .boost = [ path.parent $(.boost) ] ;
-}
+.bootstrap-dir = [ build-system.location ] ;
+ECHO .bootstrap-dir= $(.bootstrap-dir) ;
+.boost = [ path.join $(.bootstrap-dir) ../../.. ] ;
+ECHO .boost= $(.boost) ;
 .boost = [ path.native $(.boost) ] ;
+ECHO .boost= $(.boost) ;
 
 # If someone sets BUILD_DIR in boost-build.jam, use that.
 .build-dir = [ modules.peek : BUILD_DIR ] ;
@@ -30,13 +30,9 @@ project mtl4
   : requirements <include>. <source>/boost//headers 
     : $(.build-dir)
   ;
-
-# .my-dir = [ modules.binding $(__name__) ] ;
-
-# modules.poke : BOOST_BUILD_PATH 
-#   :  $(.my-dir:D)
-#     [ modules.peek : BOOST_BUILD_PATH ] ;
    
-build-project libs/numeric/mtl/doc ;
-build-project libs/sequence/doc ;
+build-project libs/sequence/test ;
+build-project libs/property_map/test ;
+
+# build-project libs/sequence/doc ;
 
