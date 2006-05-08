@@ -76,11 +76,21 @@ Proposed Solution
 -----------------
 
 We propose to solve these problems by dividing the responsibilities
-of iterators into two objects: cursors, which traverse a sequence
-of keys, and property maps, which associate those keys with values.
+of an iterator into two objects: a *cursor* and a *property map*.
+A **cursor** is actually a kind of iterator, but instead of
+iterating over sequence elements, it iterates over *keys*.  A
+**key** is just a representation of a position in the sequence.  A
+**property map** is just a kind of function object that associates
+keys with values.  To read the value at a particular position, pass
+its key to the property map.  To write a new value into a position,
+pass the position's key and the new value to the property map.
+
+.. |Series| replace:: :concept:`Series`
+
 An ordinary iterator range is be represented by a property map and
-two cursors.  The following table shows how some iterator
-operations correspond to those on cursors and property maps:
+two cursors, which form a |Series|.  The following table shows how
+some iterator operations correspond to those on cursors and
+property maps:
 
   ============= ================  ====================
   Operation     C++'98 approach     new approach
@@ -95,7 +105,31 @@ operations correspond to those on cursors and property maps:
 
 In the table above, ``it`` is an iterator, and ``pm`` and ``c`` are
 a corresponding property map and cursor.  ``X`` is the iterator's
-map's value type and ``val`` is an object of type ``X``.
+value type and ``val`` is an object of type ``X``.
+
+::
+
+  concept<typename C, typename PM>
+  where 
+  { 
+      ReadableIterator<C>
+    , Callable1<PM, ReadableIterator<C>::value_type> 
+  }
+  ReadableSeries
+  {
+      typedef result_of<PM(C::value_type)>::type value_type;
+  };
+
+  concept<typename C, typename PM, typename V>
+  where 
+  { 
+      ReadableIterator<C>
+    , Callable2<PM, ReadableIterator<C>::value_type, V> 
+  }
+  WritableSeries;
+
+.. table:: |Series|\ ``<typename C, typename PM>`` Requirements
+
 
 Cursors are essentially input iterators, optionally
 refined with bidirectional or random access traversal.  The cursor
@@ -172,14 +206,18 @@ dereferenced), we can use the ``key_type`` metafunction::
 
   typename key_type<Cursor>::type key = *c;
 
-An obvious [#obvious]_ default implementation for ``key_type`` is::
+The (default) implementation of ``key_type`` is::
 
   template <class Cursor>
   struct key_type
   {
       typedef typename 
-        std::iterator_traits<Cursor>::value_type type;
+        std::iterator_traits<Cursor>::reference type;
   };
+
+.. Note:: It's important that key_type be reference-preserving if
+   ``identity_property_map`` is going to work with cursors that are
+   iterators.  Consider
 
 Property maps don't necessarily have a “value type.”  Indeed, the
 ``identity_property_map`` shown above can read and write arbitrary
@@ -191,18 +229,6 @@ through a property map of type ``PropertyMap``, we can write::
 In other words, due to its use of the function call interface, we
 don't need to introduce a new trait metafunction to describe the
 result of accessing a property map.
-
-.. [#obvious] It isn't clear yet whether it would be more useful to
-   know when the key type is a reference.  In that case, ::
-
-      template <class Cursor>
-      struct key_type
-      {
-          typedef typename 
-            std::iterator_traits<Cursor>::reference type;
-      };
-
-   might be a more appropriate implementation.
 
 .. [ASW04] David Abrahams, Jeremy Siek, Thomas Witt, `New Iterator
    Concepts`,
