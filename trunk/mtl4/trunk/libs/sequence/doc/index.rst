@@ -49,31 +49,32 @@ specified.
 
 .. table:: Sequence Requirements
 
-   +-----------------------+--------------------------------------+---------------------+
-   |Valid Expression       |Type                                  |Semantics            |
-   +=======================+======================================+=====================+
-   |::                     |::                                    |Returns a |Property  |
-   |                       |                                      |Map|_ that accesses  |
-   |  sequence::elements(s)|  result_of<                          |the elements of      |
-   |                       |      sequence::id::elements(S const&)|``x``.  If ``x`` is  |
-   |                       |  >::type                             |writable, the result |
-   |                       |                                      |is a model of        |
-   |                       |                                      ||Writable Property   |
-   |                       |                                      |Map|.                |
-   +-----------------------+--------------------------------------+---------------------+
-   |``sequence::begin(x)`` |::                                    |Returns a |Cursor|_  |
-   |                       |                                      |that, when used with |
-   |                       |  result_of<                          |the ``elements``     |
-   |                       |      sequence::begin::id(S const&)   |property map,        |
-   |                       |  >::type                             |traverses the        |
-   |                       |                                      |elements of ``x``.   |
-   +-----------------------+--------------------------------------+---------------------+
-   |``sequence::end(x)``   |::                                    |Returns a suitble    |
-   |                       |                                      ||Cursor|_ for        |
-   |                       |  result_of<                          |terminating the      |
-   |                       |      sequence::end::id(S const&)     |traversal of ``x``.  |
-   |                       |  >::type                             |                     |
-   +-----------------------+--------------------------------------+---------------------+
+   +-----------------------+--------------------------------+---------------------+
+   |Valid Expression       |Type                            |Semantics            |
+   +=======================+================================+=====================+
+   |::                     |::                              |Returns a |Property  |
+   |                       |                                |Map|_ that accesses  |
+   |  sequence::elements(s)|  result_of<                    |the elements of      |
+   |                       |      sequence::id::elements(S&)|``x``.  If ``x`` is  |
+   |                       |  >::type                       |writable, the result |
+   |                       |                                |is a model of        |
+   |                       |                                ||Writable Property   |
+   |                       |                                |Map|.                |
+   +-----------------------+--------------------------------+---------------------+
+   |``sequence::begin(x)`` |::                              |Returns a |Cursor|_  |
+   |                       |                                |that, when used with |
+   |                       |  result_of<                    |the ``elements``     |
+   |                       |      sequence::id::begin(S&)   |property map,        |
+   |                       |  >::type                       |traverses the        |
+   |                       |                                |elements of ``x``.   |
+   +-----------------------+--------------------------------+---------------------+
+   |``sequence::end(x)``   |::                              |Returns a suitble    |
+   |                       |                                ||Cursor|_ for        |
+   |                       |  result_of<                    |terminating the      |
+   |                       |      sequence::id::end(S&)     |traversal of ``x``.  |
+   |                       |  >::type                       |                     |
+   +-----------------------+--------------------------------+---------------------+
+
 
 .. [#naming] We realize the standard has already used the term
    “sequence,” but there are few reasonable terms left and the
