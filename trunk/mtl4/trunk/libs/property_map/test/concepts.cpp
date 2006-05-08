@@ -3,6 +3,7 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <list>
+#include <vector>
 #include <boost/property_map/concept.hpp>
 #include <boost/property_map/identity.hpp>
 #include <boost/property_map/dereference.hpp>
@@ -45,5 +46,7 @@ int main()
 #if CONCEPT_FAIL == 5
     BOOST_CONCEPT_ASSERT((pm::ReadablePropertyMap<pm::dereference,int*>));
 #endif 
-
+    BOOST_CONCEPT_ASSERT((pm::ReadablePropertyMap<pm::identity,std::vector<bool>::const_iterator>));
+    BOOST_CONCEPT_ASSERT((pm::ReadWritePropertyMap<pm::identity,std::vector<bool>::iterator>));
+    BOOST_CONCEPT_ASSERT((pm::WritablePropertyMap<pm::identity,std::vector<bool>::iterator>));
 }

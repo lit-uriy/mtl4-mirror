@@ -5,7 +5,10 @@
 # define BOOST_SEQUENCE_END_DWA200655_HPP
 
 # include <boost/range/iterator.hpp>
+# include <boost/range/end.hpp>
 # include <boost/detail/function1.hpp>
+# include <boost/iterator/counting_iterator.hpp>
+# include <boost/detail/pod_singleton.hpp>
 
 namespace boost { namespace sequence { 
 
@@ -20,7 +23,7 @@ namespace impl
       
       result_type operator()(S& s) const
       {
-          return boost::end(s);
+          return result_type(boost::end(s));
       }
   };
 }

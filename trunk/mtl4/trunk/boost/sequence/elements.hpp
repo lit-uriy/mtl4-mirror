@@ -5,6 +5,8 @@
 # define BOOST_SEQUENCE_ELEMENTS_DWA200656_HPP
 
 # include <boost/detail/function1.hpp>
+# include <boost/property_map/dereference.hpp>
+# include <boost/detail/pod_singleton.hpp>
 
 namespace boost { namespace sequence { 
 

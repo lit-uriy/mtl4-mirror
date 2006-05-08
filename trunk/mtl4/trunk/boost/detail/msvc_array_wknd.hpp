@@ -27,11 +27,14 @@
 //   BOOST_MSVC_ARRAY_WKND( (T) , (result<T const&>) )
 //   f(T const& a0);
 
-//# if !BOOST_WORKAROUND(_MSC_FULL_VER, BOOST_TESTED_AT(140050601))
-# if !BOOST_WORKAROUND(BOOST_MSVC, < 1400) 
+// Todo: move this file into boost/detail
+#  include <boost/parameter/aux_/parenthesized_type.hpp>
+
+// This will become needed eventually
+# if 1 // !BOOST_WORKAROUND(BOOST_MSVC, < 1400) 
 
 #  define BOOST_MSVC_ARRAY_WKND(args, gen_result_type) \
-    typename gen_result_type ::type
+    typename BOOST_PARAMETER_PARENTHESIZED_TYPE(gen_result_type) ::type
 
 # else
 
@@ -39,8 +42,6 @@
 #  include <boost/utility/enable_if.hpp>
 #  include <boost/mpl/or.hpp>
 
-// Todo: move this file into boost/detail
-#  include <boost/parameter/aux_/parenthesized_type.hpp>
 
 #  include <boost/preprocessor/control/if.hpp>
 #  include <boost/preprocessor/comparison/equal.hpp>

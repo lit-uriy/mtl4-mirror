@@ -19,8 +19,11 @@ namespace boost { namespace detail {
 template <template <class A0> class F>
 struct function1
 {
-    template <class A0>
-    struct result
+    template <class Signature>
+    struct result;
+
+    template <class This, class A0>
+    struct result<This(A0)>
     {
         // How adding const to arguments handles rvalues.
         //
@@ -31,7 +34,7 @@ struct function1
         // T const      T const       const T rvalue  
         // T            T const       non-const T rvalue
         typedef typename remove_reference<A0 const>::type arg0;
-        typedef typename F<arg0> impl;
+        typedef F<arg0> impl;
         typedef typename impl::result_type type;
         
         BOOST_CONCEPT_ASSERT((UnaryFunction<impl,type,A0>));
@@ -39,21 +42,21 @@ struct function1
     
     // Handles mutable lvalues
     template <class A0>
-    typename result<A0&>::type
+    typename result<function1(A0&)>::type
     operator()(A0& a0) const
     {
-        typedef typename result<A0&>::impl impl;
+        typedef typename result<function1(A0&)>::impl impl;
         return impl()(a0);
     }
 
     // Handles const lvalues and all rvalues
     template <class A0>
-    typename BOOST_MSVC_ARRAY_WKND(
+    BOOST_MSVC_ARRAY_WKND(
         (A0)
-      , ( result<A0 const&> ))
+      , ( result<function1(A0 const&)> ))
     operator()(A0 const& a0) const
     {
-        typedef typename result<A0&>::impl impl;
+        typedef typename result<function1(A0 const&)>::impl impl;
         return impl()(a0);
     }
 };

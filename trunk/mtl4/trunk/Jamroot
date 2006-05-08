@@ -24,8 +24,10 @@ if $(.build-dir)
     .build-dir = build-dir $(.build-dir) ;
 }
 
+use-project /boost : $(.boost) ;
+
 project mtl4
-  : requirements <include>. <include>$(.boost) 
+  : requirements <include>. <source>/boost//headers 
     : $(.build-dir)
   ;
 
@@ -37,5 +39,4 @@ project mtl4
    
 build-project libs/numeric/mtl/doc ;
 build-project libs/sequence/doc ;
-use-project /boost : $(.boost) ;
 
