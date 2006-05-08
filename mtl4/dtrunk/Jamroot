@@ -10,12 +10,8 @@ import build-system ;
 
 path-constant mtl4-css : default.css ;
 
-.bootstrap-dir = [ build-system.location ] ;
-ECHO .bootstrap-dir= $(.bootstrap-dir) ;
-.boost = [ path.join $(.bootstrap-dir) ../../.. ] ;
-ECHO .boost= $(.boost) ;
-.boost = [ path.native $(.boost) ] ;
-ECHO .boost= $(.boost) ;
+.build-system-dir = [ build-system.location ] ;
+.boost = [ path.native [ path.join $(.build-system-dir) ../../.. ] ] ;
 
 # If someone sets BUILD_DIR in boost-build.jam, use that.
 .build-dir = [ modules.peek : BUILD_DIR ] ;
@@ -30,9 +26,7 @@ project mtl4
   : requirements <include>. <source>/boost//headers 
     : $(.build-dir)
   ;
-   
-build-project libs/sequence/test ;
-build-project libs/property_map/test ;
 
-# build-project libs/sequence/doc ;
+alias test : libs/sequence/test libs/property_map/test ;
+explicit test ;
 
