@@ -37,6 +37,8 @@ project mtl4
 #   :  $(.my-dir:D)
 #     [ modules.peek : BOOST_BUILD_PATH ] ;
    
-build-project libs/numeric/mtl/doc ;
-build-project libs/sequence/doc ;
+# build-project libs/numeric/mtl/doc ;
+# build-project libs/sequence/doc ;
+
+alias html ;  # empty target to keep the cron job that updates the site happy
 
