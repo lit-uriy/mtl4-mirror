@@ -1,18 +1,18 @@
 CXXFLAGS += -I${BOOST_ROOT} -I${MTL_BOOST_ROOT} # -I${GLAS_ROOT}/branches/state_2006_2_23/glas 
 
-CXX = conceptg++
+XTRA_SOURCES = # algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_algebra/concepts.hpp
 
-TARGETS =	age_example1	age_example2
+CXX = g++ # conceptg++
+
+TARGETS =	positive_real	positive_real_explicit
 
 it:	all
 
 all:	${TARGETS}
 
-age_example1:	age_example1.cpp 
+positive_real:	positive_real.cpp ${XTRA_SOURCES}
 
-age_example2:	age_example2.cpp 
-
-concepts_hpp:	${MTL_BOOST_ROOT}/boost/numeric/mtl/scalar/concepts.hpp
+positive_real_explicit:	positive_real_explicit.cpp  ${XTRA_SOURCES}
 
 clean:
 	rm -rf ${TARGETS}
