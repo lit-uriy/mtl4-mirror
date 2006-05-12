@@ -10,7 +10,7 @@
 
 namespace math {
 
-    template <typename Element, typename Op>
+    template <typename Op, typename Element>
     struct is_invertible 
     {
 	bool operator()(const Element&) const;
@@ -20,7 +20,7 @@ namespace math {
     // Scalars are supposed to have an additive inverse unless unsigned
     // Other types have by default no inverse (specialization needed)
     template <typename Element>
-    struct is_invertible< Element, add<Element> >
+    struct is_invertible< add<Element>, Element >
     {
 	bool operator() (const Element&) const 
 	{
@@ -36,7 +36,7 @@ namespace math {
 
     // Default for scalars: integral are never invertible and floating points if not 0
     template <typename Element>
-    struct is_invertible< Element, mult<Element> >
+    struct is_invertible< mult<Element>, Element >
     {
 	typename boost::enable_if<boost::is_float<Element>, bool>::type
 	operator() (const Element& v) const 

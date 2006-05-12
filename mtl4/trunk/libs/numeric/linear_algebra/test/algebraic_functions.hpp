@@ -14,6 +14,7 @@
 
 #include <boost/numeric/linear_algebra/concepts.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/linear_algebra/inverse.hpp>
 
 // Pure algebraic functions (mainly for applying concepts)
 
@@ -48,6 +49,20 @@ inline bool equal_results(const Element& v1a, const Element& v1b,
 }
 
 
+// Same for AdditiveMagma
+template <typename Element>
+LA_WHERE ( math::AdditiveMagma<Element> 
+	   && math::Closed2EqualityComparable< math::add<Element>, Element > )
+inline bool equal_add_results(const Element& v1a, const Element& v1b, 
+			      const Element& v2a, const Element& v2b) 
+{
+    return v1a + v1b == v2a + v2b;
+}
+
+
+
+
+
 // {Op, Element} must be a Monoid
 // The result of the operation must be EqualityComparable
 template <typename Op, typename Element>
@@ -60,9 +75,10 @@ inline bool identity_pair(const Element& v1, const Element& v2, Op op)
 
 
 // {Op, Element} must be a Monoid
-template <typename Op, typename Element>
-  LA_WHERE( math::Monoid<Op, Element> )
-inline Element multiply_and_square(Element base, int exp, Op op) 
+template <typename Op, typename Element, typename Exponent>
+  LA_WHERE( math::Monoid<Op, Element> 
+            && std::Integral<Exponent> )             // TBD: not minimal requirements, will refine it later
+inline Element multiply_and_square(Element base, Exponent exp, Op op) 
 {
     using math::identity;
     Element value= identity<Op, Element>()(base), square= base;
@@ -74,36 +90,36 @@ inline Element multiply_and_square(Element base, int exp, Op op)
     return value;  
 } 
 
+
+// {Op, Element} must be a Group
+// Element must be LessThanComparable
+// Under construction w.r.t. semantic requirements, introduction of ordered group needed
+template <typename Op, typename Element>
+  LA_WHERE( math::Closed2LessThanComparable<Op, Element> 
+	    && math::Group<Op, Element> )
+inline int algebraic_division(const Element& v1, const Element& v2, Op op)
+{
+    using math::identity; using math::inverse;
+
+    // Temporaries to avoid redundant operations
+    Element id= identity<Op, Element>()(v1),     // Identity
+            iv2= inverse<Op, Element>()(v2),     // Inverse of v2
+   	    tmp(v1);                             // Copy of v1, will be lessened until < id
+    
+    if (v1 <= id) return 0;
+    int counter= 0;
+    for (; tmp > id; counter++) 
+	tmp= op(tmp, iv2);
+    // counter only correct if tmp == id
+    if (tmp < id) 
+	counter--;
+    return counter;
+}
+
+
+
+
 #if 0
-
-// {Op, Element} must be a Group
-// Element must be LessThanComparable and Assignable
-template <class Element, class Op>
-inline int poorMensDivision(const Element& v1, const Element& v2, Op op) {
-  // copies to avoid redundant operations
-  Element id= glas::identity<Op, Element>()(), iv2= glas::inverse<Op, Element>()(v2), tmp(v1);
-
-  if (v1 <= id) return 0;
-  int counter= 0;
-  for (; tmp > id; counter++) tmp= op(tmp, iv2);
-  if (tmp < id) counter--;
-  return counter;
-}
-
-// {Op, Element} must be a Group
-// Element must be LessThanComparable and Assignable
-template <class Element, class Op>
-inline int poorMensAbsDivision(const Element& v1, const Element& v2, Op op) {
-  // copies to avoid redundant operations
-  Element id= glas::identity<Op, Element>()(), iv2(v2 < id ? v2 : glas::inverse<Op, Element>()(v2)),
-    va1(v1 < id ? glas::inverse<Op, Element>()(v1) : v1), tmp(va1);
-  if (va1 <= id) return 0;
-  int counter= 0;
-  for (; tmp > id; counter++) tmp= op(tmp, iv2);
-  if (tmp < id) counter--;
-  return counter;
-}
-
 
 // {Iter*, Op} must be a CommutativeMonoid
 struct sortedAccumulate_t {
