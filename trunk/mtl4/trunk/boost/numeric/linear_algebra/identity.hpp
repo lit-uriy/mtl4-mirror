@@ -5,7 +5,7 @@
 
 namespace math {
 
-    template <typename Element, typename Operator>
+    template <typename Operator, typename Element>
     struct identity 
     {
 	Element operator() (const Element&) const;
@@ -19,7 +19,7 @@ namespace math {
     // It is strongly recommended to specialize this tyypetrait
     // for better efficiency.
     template <typename Element>
-    struct identity< Element, add<Element> > 
+    struct identity< add<Element>, Element > 
     { 
 	Element operator() (const Element& ref)
 	{
@@ -33,7 +33,7 @@ namespace math {
     // Multiplicative identity of Element type is by default a converted 1
     // Same comments as above.
     template <typename Element>
-    struct identity< Element, mult<Element> > 
+    struct identity< mult<Element>, Element > 
     { 
 	Element operator() (const Element& ref)
 	{

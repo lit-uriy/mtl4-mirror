@@ -24,10 +24,15 @@ public:
 	return value; 
     }
 
-    positive_real operator+(positive_real const y) const
+    positive_real operator+(positive_real const& y) const
     {
 	return value + y.value;
     }
+
+    positive_real operator+=(positive_real const& y) const
+    {
+	return value + y.value;
+    }    
 
     bool operator==(positive_real const& y) const
     {
@@ -56,6 +61,11 @@ int main(int, char* [])
 	      << mtl::equal_results(a2,a5,  a3,a4, my_add)  << std::endl;
     std::cout << "equal_results(a2,a4,  a3,a4, my_add) " 
 	      << mtl::equal_results(a2,a4,  a3,a4, my_add)  << std::endl;
+
+    std::cout << "equal_add_results(a2,a5,  a3,a4) " 
+	      << mtl::equal_add_results(a2,a5,  a3,a4)  << std::endl;
+    std::cout << "equal_add_results(a2,a4,  a3,a4) " 
+	      << mtl::equal_add_results(a2,a4,  a3,a4)  << std::endl;
 
     return 0;
 }

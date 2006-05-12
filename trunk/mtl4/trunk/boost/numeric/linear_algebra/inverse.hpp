@@ -7,26 +7,26 @@
 
 namespace math {
 
-    template <typename Element, typename Op>
+    template <typename Op, typename Element>
     struct inverse {} ;
 
 
     template <typename Element>
-    struct inverse< Element, add<Element> > 
+    struct inverse< add<Element>, Element >
     { 
 	Element operator()(const Element& v) 
 	{ 
-	    return identity< Element, add<Element> >()(v) - v; 
+	    return identity< add<Element>, Element >()(v) - v; 
 	} 
     };
 
 
     template <typename Element>
-    struct inverse< Element, mult<Element> > 
+    struct inverse< mult<Element>, Element >
     { 
 	Element operator()(const Element& v) 
 	{ 
-	    return identity< Element, mult<Element> >()(v) / v ; 
+	    return identity< mult<Element>, Element >()(v) / v ; 
 	} 
     };
 
