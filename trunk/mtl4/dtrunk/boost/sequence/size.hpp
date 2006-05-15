@@ -18,8 +18,9 @@ namespace impl
       // For now, this will compile for some sequences that can't
       // provide size in O(1) (e.g. pairs of list iterators), and for
       // some non-sequences (e.g. char const*).  Enforcing this
-      // semantic constraint is up to the user.
-      typename range_size<S>::type result_type;
+      // semantic constraint is up to the user.  When Boost.Range is
+      // fixed, it will fall to the library.
+      typedef typename range_size<S>::type result_type;
       
       result_type operator()(S& s) const
       {

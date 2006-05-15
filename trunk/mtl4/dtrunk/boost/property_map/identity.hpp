@@ -4,6 +4,7 @@
 #ifndef BOOST_PROPERTY_MAP_IDENTITY_DWA200657_HPP
 # define BOOST_PROPERTY_MAP_IDENTITY_DWA200657_HPP
 
+# include <boost/type_traits/add_const.hpp>
 # include <boost/type_traits/add_reference.hpp>
 
 namespace boost { namespace property_map { 
@@ -14,13 +15,12 @@ struct identity
     template<class K>
     struct result;
 
+    // Return references unchanged.  
+    // Add const& to all non-references.
     template<class This, class K>
     struct result<This(K)>
-    {
-        // Return references unchanged.  Add const& to all
-        // non-references.
-        typedef typename add_reference<K const>::type type;
-    };
+      : add_reference< typename add_const<K>::type >
+    {};
 
     template<class This, class K, class V>
     struct result<This(K,V)>

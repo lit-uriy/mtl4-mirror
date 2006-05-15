@@ -37,7 +37,7 @@ struct Sequence
     // cursor, just as long as you can compare them.
     typedef typename result_of<
         op::end(typename add_reference<S>::type)
-    >::type  end_cursor;
+    >::type end_cursor;
 
     // This isn't quite the right requirement because it imposes
     // convertibility, but it's good enough for a first approximation.
@@ -46,11 +46,16 @@ struct Sequence
 
     ~Sequence()
     {
-        typename Sequence::elements elts = sequence::elements(s);
-        typename Sequence::cursor c = sequence::begin(s);
-        end_cursor end = sequence::end(s);
+        typename Sequence::elements elts = boost::sequence::elements(s);
+        typename Sequence::cursor c = boost::sequence::begin(s);
+        end_cursor end = boost::sequence::end(s);
+        
+        ignore_unused_variable_warning(elts);
+        ignore_unused_variable_warning(c);
+        ignore_unused_variable_warning(end);
     }
  private:
+    Sequence(); // satisfying some older GCCs
     S s;
 };
 
@@ -58,10 +63,16 @@ template <class S>
 struct O1SizeSequence
   : Sequence<S>
 {
-    typedef typename sequence::size_type<S>::type size_type;
-    typedef typename sequence::index_type<S>::type index_type;
+    // A type representing the size of the sequence.
+    typedef typename sequence::traits::size_type<S>::type size_type;
+
+    // A type that can act as an index into the sequence.  Because
+    // size_type may be a wrapper for a compile-time constant,
+    // e.g. mpl::size_t<N>, we need a distinct type in order to be
+    // able to count at runtime.
+    typedef typename sequence::traits::index_type<S>::type index_type;
     
-    ~Sequence()
+    ~O1SizeSequence()
     {
         size_type size = sequence::size(s);
 
@@ -76,7 +87,7 @@ struct O1SizeSequence
         size != i;
     }
  private:
-    Sequence s;
+    S s;
 };
 
 template <class S>
@@ -115,37 +126,37 @@ struct RandomAccessSequence
 };
     
 template <class S>
-struct MutableSequence
+struct Mutable_Sequence
   : Sequence<S>
 {
     BOOST_CONCEPT_ASSERT((
         ReadWritePropertyMap<
-            typename MutableSequence::elements
-          , typename MutableSequence::cursor>));
+            typename Mutable_Sequence::elements
+          , typename Mutable_Sequence::cursor>));
 };
 
 
 template <class S>
 struct Mutable_SinglePassSequence
   : SinglePassSequence<S>
-  , MutableSequence<S>
+  , Mutable_Sequence<S>
 {};
 
 template <class S>
 struct Mutable_ForwardSequence
-  : MutableSequence<S>
+  : Mutable_Sequence<S>
   , ForwardSequence<S>
 {};
 
 template <class S>
 struct Mutable_BidirectionalSequence
-  : MutableSequence<S>
+  : Mutable_Sequence<S>
   , BidirectionalSequence<S>
 {};
 
 template <class S>
 struct Mutable_RandomAccessSequence
-  : MutableSequence<S>
+  : Mutable_Sequence<S>
   , RandomAccessSequence<S>
 {};
 

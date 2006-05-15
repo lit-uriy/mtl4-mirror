@@ -27,6 +27,8 @@ project mtl4
     : $(.build-dir)
   ;
 
-alias test : libs/sequence/test libs/property_map/test ;
+.test-jamfiles = [ path.glob libs : */test/Jamfile ] ;
+ECHO test projects: $(.test-jamfiles:D) ;
+alias test : $(.test-jamfiles:D) ;
 explicit test ;
 
