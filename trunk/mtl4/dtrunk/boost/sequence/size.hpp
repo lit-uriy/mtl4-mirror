@@ -7,12 +7,13 @@
 # include <boost/range/size.hpp>
 # include <boost/detail/function1.hpp>
 # include <boost/detail/pod_singleton.hpp>
+# include <boost/mpl/placeholders.hpp>
 
 namespace boost { namespace sequence { 
 
 namespace impl
 {
-  template <class S>
+  template <class S, class = typename tag<S>::type>
   struct size
   {
       // For now, this will compile for some sequences that can't
@@ -31,7 +32,8 @@ namespace impl
 
 namespace op
 {
-  struct size : boost::detail::function1<impl::size> {};
+  using mpl::_;
+  struct size : boost::detail::function1<impl::size<_, impl::tag<_> > > {};
 }
 
 namespace

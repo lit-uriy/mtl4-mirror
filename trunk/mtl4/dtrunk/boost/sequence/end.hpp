@@ -6,21 +6,34 @@
 
 # include <boost/detail/function1.hpp>
 # include <boost/detail/pod_singleton.hpp>
-# include <boost/sequence/boost_range.hpp>
+# include <boost/range/result_iterator.hpp>
+# include <boost/range/end.hpp>
+# include <boost/sequence/tag.hpp>
+# include <boost/mpl/placeholders.hpp>
+# include <boost/iterator/counting_iterator.hpp>
 
 namespace boost { namespace sequence { 
 
 namespace impl
 {
-  template <class S>
+  template <class S, class = typename tag<S>::type>
   struct end
-    : intrinsics<S>::end
-  {};
+  {
+      typedef counting_iterator<
+          typename range_result_iterator<S>::type
+      > result_type;
+      
+      result_type operator()(S& s) const
+      {
+          return result_type(boost::end(s));
+      }
+  };
 }
 
 namespace op
 {
-  struct end : boost::detail::function1<impl::end> {};
+  using mpl::_;
+  struct end : boost::detail::function1<impl::end<_, impl::tag<_> > > {};
 }
 
 namespace

@@ -7,16 +7,17 @@
 # include <boost/concept_check.hpp>
 # include <boost/type_traits/remove_reference.hpp>
 # include <boost/type_traits/add_const.hpp>
+# include <boost/mpl/apply.hpp>
 
 namespace boost { namespace detail { 
 
 // A utility for creating unary function objects that play nicely with
 // boost::result_of and that handle the forwarding problem.
 // 
-// F<A0> is expected to be a stateless function object that accepts an
-// argument of type A0&.  It is also expected to have a nested
-// ::result_type identical to its return type.
-template <template <class A0> class F>
+// mpl::apply<F,A0>::type is expected to be a stateless function
+// object that accepts an argument of type A0&.  It is also expected
+// to have a nested ::result_type identical to its return type.
+template <class F>
 struct function1
 {
     template <class Signature>
@@ -37,7 +38,7 @@ struct function1
             typename add_const< A0 >::type
         >::type arg0;
         
-        typedef F<arg0> impl;
+        typedef typename mpl::apply1<F,arg0>::type impl;
         typedef typename impl::result_type type;
         
         BOOST_CONCEPT_ASSERT((UnaryFunction<impl,type,A0>));

@@ -6,6 +6,8 @@
 // #ifndef BOOST_DETAIL_FUNCTION_N_DWA2006514_HPP
 // # define BOOST_DETAIL_FUNCTION_N_DWA2006514_HPP
 
+#include <boost/mpl/apply.hpp>
+
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/preprocessor/repetition/enum_params.hpp>
@@ -22,7 +24,7 @@ namespace boost { namespace detail {
         typename add_const< BOOST_PP_CAT(A,n) >::type   \
     >::type BOOST_PP_CAT(arg,n);
     
-template <template <BOOST_PP_ENUM_PARAMS(n, class A)> class F>
+template <class F>
 struct BOOST_PP_CAT(function,n)
 {
     template <class Signature>
@@ -34,7 +36,10 @@ struct BOOST_PP_CAT(function,n)
     {
         BOOST_PP_REPEAT(n, BOOST_DETAIL_function_arg, ~)
         
-        typedef F<BOOST_PP_ENUM_PARAMS(n,arg)> impl;
+        typedef typename mpl::BOOST_PP_CAT(apply,n)<
+            F BOOST_PP_ENUM_TRAILING_PARAMS(n,arg)
+        >::type impl;
+    
         typedef typename impl::result_type type;
         
 //      BOOST_CONCEPT_ASSERT((BinaryFunction<impl,type,A0,A1>));

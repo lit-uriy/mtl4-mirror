@@ -6,7 +6,7 @@
 
 # include <boost/property_map/identity.hpp>
 # include <boost/compressed_pair.hpp>
-# include <boost/sequence/intrinsics.hpp>
+# include <boost/sequence/tag.hpp>
 
 namespace boost { namespace sequence { 
 
@@ -41,36 +41,34 @@ namespace impl
   };
 
   template <class S>
-  struct intrinsics<S, composed_tag>
+  struct begin<S, composed_tag>
   {
-      struct begin
+      typedef typename S::cursor result_type;
+      result_type operator()(S& s) const
       {
-          typedef typename S::cursor result_type;
-          result_type operator()(S& s) const
-          {
-              return s.begin();
-          }
-      };
-      
-      struct end
-      {
-          typedef typename S::cursor result_type;
-          result_type operator()(S& s) const
-          {
-              return s.end();
-          }
-      };
-
-      struct elements
-      {
-          typedef typename S::mapping result_type;
-          result_type operator()(S& s) const
-          {
-              return s.elements();
-          }
-      };
+          return s.begin();
+      }
   };
-  
+      
+  template <class S>
+  struct end<S, composed_tag>
+  {
+      typedef typename S::cursor result_type;
+      result_type operator()(S& s) const
+      {
+          return s.end();
+      }
+  };
+
+  template <class S>
+  struct elements<S, composed_tag>
+  {
+      typedef typename S::mapping result_type;
+      result_type operator()(S& s) const
+      {
+          return s.elements();
+      }
+  };
 }
 
 }} // namespace boost::sequence
