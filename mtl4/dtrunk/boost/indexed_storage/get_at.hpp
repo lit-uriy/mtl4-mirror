@@ -6,8 +6,10 @@
 
 # include <boost/detail/function2.hpp>
 # include <boost/detail/pod_singleton.hpp>
+# include <boost/sequence/tag.hpp>
 # include <boost/sequence/concepts.hpp>
 # include <boost/sequence/composed.hpp>
+# include <boost/mpl/placeholders.hpp>
 
 namespace boost { namespace indexed_storage { 
 
@@ -18,7 +20,7 @@ namespace concepts
 
 namespace impl
 {
-  template <class S, class I>
+  template <class S, class I, class = typename sequence::impl::tag<S>::type>
   struct get_at
   {
       typedef typename concepts::Sequence<S>::reference result_type;
@@ -28,27 +30,21 @@ namespace impl
       }
   };
 
-  template <class Iter, class Mapping, class Index>
-  struct get_at< sequence::composed<Iter,Mapping> const, Index >
+  template <class S, class I>
+  struct get_at< S, I, sequence::impl::composed_tag >
   {
-      typedef sequence::composed<Iter,Mapping> const S;
-      
       typedef typename concepts::Sequence<S>::reference result_type;
-      result_type operator()(S& s, Index& i)
+      result_type operator()(S& s, I& i)
       {
           return sequence::elements(s)(*(sequence::begin(s) + i));
       }
   };
-
-  template <class Iter, class Mapping, class Index>
-  struct get_at< sequence::composed<Iter,Mapping>, Index >
-    : get_at< sequence::composed<Iter,Mapping> const, Index >
-  {};
 }
 
 namespace op
 {
-  struct get_at : boost::detail::function2<impl::get_at> {};
+  using mpl::_;
+  struct get_at : boost::detail::function2<impl::get_at<_,_,sequence::impl::tag<_> > > {};
 }
 
 namespace

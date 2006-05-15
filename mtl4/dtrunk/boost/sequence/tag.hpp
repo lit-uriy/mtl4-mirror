@@ -9,7 +9,10 @@ namespace boost { namespace sequence {
 namespace impl
 {
   template <class S>
-  struct tag;
+  struct tag
+  {
+      typedef void type;
+  };
 
   template <class S>
   struct tag<S const>

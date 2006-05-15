@@ -6,21 +6,29 @@
 
 # include <boost/detail/function1.hpp>
 # include <boost/detail/pod_singleton.hpp>
-# include <boost/sequence/boost_range.hpp>
+# include <boost/mpl/placeholders.hpp>
+# include <boost/property_map/dereference.hpp>
 
 namespace boost { namespace sequence { 
 
 namespace impl
 {
-  template <class S>
+  template <class S, class = typename tag<S>::type>
   struct elements
-    : intrinsics<S>::elements
-  {};
+  {
+      typedef property_map::dereference result_type;
+      
+      result_type operator()(S& s) const
+      {
+          return result_type();
+      }
+  };
 }
 
 namespace op
 {
-  struct elements : boost::detail::function1<impl::elements> {};
+  using mpl::_;
+  struct elements : boost::detail::function1<impl::elements<_,impl::tag<_> > > {};
 }
 
 namespace

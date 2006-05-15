@@ -6,12 +6,13 @@
 
 # include <boost/detail/function3.hpp>
 # include <boost/detail/pod_singleton.hpp>
+# include <boost/mpl/placeholders.hpp>
 
 namespace boost { namespace indexed_storage { 
 
 namespace impl
 {
-  template <class S, class I, class V>
+  template <class S, class I, class V, class = typename sequence::impl::tag<S>::type>
   struct set_at
   {
       typedef void result_type;
@@ -22,27 +23,22 @@ namespace impl
       }
   };
   
-  template <class Iter, class Mapping, class Index, class V>
-  struct set_at< sequence::composed<Iter,Mapping> const, Index, V>
+  template <class S, class I, class V>
+  struct set_at<S,I,V,sequence::impl::composed_tag>
   {
       typedef void result_type;
 
-      template <class S>
-      result_type operator()(S& s, Index& i, V& v)
+      result_type operator()(S& s, I& i, V& v)
       {
           sequence::elements(s)(*(sequence::begin(s) + i), v);
       }
   };
-
-  template <class Iter, class Mapping, class Index, class V>
-  struct set_at< sequence::composed<Iter,Mapping>, Index, V>
-    : set_at< sequence::composed<Iter,Mapping> const, Index, V>
-  {};
 }
 
 namespace op
 {
-  struct set_at : boost::detail::function3<impl::set_at> {};
+  using mpl::_;
+  struct set_at : boost::detail::function3<impl::set_at<_,_,_,sequence::impl::tag<_> > > {};
 }
 
 namespace

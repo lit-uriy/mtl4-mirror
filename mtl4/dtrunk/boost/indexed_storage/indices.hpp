@@ -18,6 +18,8 @@
 # include <boost/type_traits/is_convertible.hpp>
 # include <boost/type_traits/is_pointer.hpp>
 
+# include <boost/mpl/placeholders.hpp>
+
 namespace boost {
 
 namespace indexed_storage { 
@@ -93,7 +95,7 @@ namespace impl
 
 namespace op
 {
-  struct indices : boost::detail::function1<impl::indices> {};
+  struct indices : boost::detail::function1<impl::indices<mpl::_> > {};
 }
 
 namespace
