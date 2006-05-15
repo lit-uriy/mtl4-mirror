@@ -310,14 +310,10 @@ concept MultiplicativeCommutativeMonoid<typename Element>
 {};
 
 
-
-
-concept MultiplicativeGroup<typename Element>
-  : MultiplicativeMonoid<Element>,
-    Group< math::mult<Element>, Element >
+auto concept DividableWithAssign<typename T, typename U = T>
 {
-    // Operator -, binary and unary
-    where std::Subtractable<Element>;   
+    typename result_type;
+    result_type operator/(const Element& t, const Element& u);
 
     // Operator -= by default defined with -, which is not efficient
     // not efficient, user should implement its own
@@ -329,19 +325,18 @@ concept MultiplicativeGroup<typename Element>
 	return x= x / y;                      defaults NYS
     }
 #endif 
-     
-    result_type operator-(Element x);
-#if 0
-    {
-	return identity<math::mult<Element>, Element>()(x) / x;      defaults NYS
-    }
-#endif 
-    
+}    
+
+
+concept MultiplicativeGroup<typename Element>
+  : MultiplicativeMonoid<Element>,
+    Group< math::mult<Element>, Element >,
+    DividableWithAssign<Element>
+{        
     axiom Consistency(math::mult<Element> op, Element x, Element y)
     {
 	// consistency between Group and MultiplicativeGroup
 	// op(x, inverse<math::mult<Element>, Element>() (y)) == x / y;                    NYS
-	// inverse<math::mult<Element>, Element>() (y) == -y;
 
 	// I don't know how to express consistency between / and /=
     }  
@@ -360,14 +355,72 @@ concept MultiplicativeAbelianGroup<typename Element>
 // ======================================
 
 
+// Alternative definitions use MultiplicativeMonoid<Element> for Ring
+// and call such concepts Pseudo-Ring
+
 concept Ring<typename Element>
   : AdditiveAbelianGroup<Element>,
-    MultiplicativeMonoid<Element>
-{};
+    MultiplicativeSemiGroup<Element>
+{
+    axiom Distributivity(Element x, Element y, Element z)
+    {
+	// From left
+	// x * (y + z) == x * y + x * From;
+	// z right
+	// (x + y) * z == x * y + x * z;
+    }
+};
 
 
 concept CommutativeRing<typename Element>
   : Ring<Element>,
+    MultiplicativeCommutativeSemiGroup<Element>
+{};
+
+
+concept RingWithIdentity<typename Element>
+  : Ring<Element>,
+    MultiplicativeMonoid<Element>
+{};
+ 
+
+concept CommutativeRingWithIdentity<typename Element>
+  : Ring<Element>,
+    MultiplicativeCommutativeMonoid<Element>
+{};
+ 
+
+concept DivisionRing<typename Element>
+  : RingWithIdentity<Element>,
+    DividableWithAssign<Element>
+{
+    axiom Consistency(Element x, Element y)
+    {
+	// I don't know how to express consistency between / and /=
+    }  
+
+    axiom ZeroIsDifferentFromOne()
+    {
+	// 0 != 1
+	// Note that it is possible to allow 0 == 1 in a DivisionRing, this structure would be even
+	// a field. On the other hand this Field would only contain one single element
+	// as a consequence of 0 == 1. It is called the trivial field and of no practical value.
+	// Therefore, we exclude this field and require 0 != 1.
+ 
+	identity<math::add<Element>, Element> != identity<math::mult<Element>, Element>;
+    }
+
+    axiom NonZeroDividability(Element x)
+    {
+	// if (x != 0) x / x == 1
+	if (x != identity<math::add<Element>, Element>) 
+	    x / x == identity<math::mult<Element>, Element>;
+    }
+};    
+
+
+concept Field<typename Element>
+  : DivisionRing<Element>,
     MultiplicativeCommutativeMonoid<Element>
 {};
 
