@@ -4,9 +4,9 @@
 #ifndef BOOST_DETAIL_FUNCTION1_DWA200655_HPP
 # define BOOST_DETAIL_FUNCTION1_DWA200655_HPP
 
-# include <boost/detail/msvc_array_wknd.hpp>
 # include <boost/concept_check.hpp>
 # include <boost/type_traits/remove_reference.hpp>
+# include <boost/type_traits/add_const.hpp>
 
 namespace boost { namespace detail { 
 
@@ -33,7 +33,10 @@ struct function1
         // T&           T             non-const T lvalue
         // T const      T const       const T rvalue  
         // T            T const       non-const T rvalue
-        typedef typename remove_reference<A0 const>::type arg0;
+        typedef typename remove_reference<
+            typename add_const< A0 >::type
+        >::type arg0;
+        
         typedef F<arg0> impl;
         typedef typename impl::result_type type;
         
@@ -51,9 +54,7 @@ struct function1
 
     // Handles const lvalues and all rvalues
     template <class A0>
-    BOOST_MSVC_ARRAY_WKND(
-        (A0)
-      , ( result<function1(A0 const&)> ))
+    typename result<function1(A0 const&)>::type
     operator()(A0 const& a0) const
     {
         typedef typename result<function1(A0 const&)>::impl impl;

@@ -5,7 +5,7 @@
 # define BOOST_SEQUENCE_TRAITS_SIZE_TYPE_DWA200658_HPP
 
 # include <boost/utility/result_of.hpp>
-# include <boost/boost/sequence/size.hpp>
+# include <boost/sequence/size.hpp>
 # include <boost/type_traits/add_reference.hpp>
 
 namespace boost { namespace sequence { namespace traits { 
@@ -14,7 +14,7 @@ namespace boost { namespace sequence { namespace traits {
 template <class S>
 struct size_type
   : result_of<
-        op::size(typename add_reference<S>)
+        op::size(typename add_reference<S>::type)
     >
 {};
 

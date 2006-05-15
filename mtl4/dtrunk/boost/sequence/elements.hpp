@@ -1,12 +1,12 @@
 // Copyright David Abrahams 2006. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_SEQUENCE_ELEMENTS_DWA200656_HPP
-# define BOOST_SEQUENCE_ELEMENTS_DWA200656_HPP
+#ifndef BOOST_SEQUENCE_ELEMENTS_DWA200655_HPP
+# define BOOST_SEQUENCE_ELEMENTS_DWA200655_HPP
 
 # include <boost/detail/function1.hpp>
-# include <boost/property_map/dereference.hpp>
 # include <boost/detail/pod_singleton.hpp>
+# include <boost/sequence/boost_range.hpp>
 
 namespace boost { namespace sequence { 
 
@@ -14,14 +14,8 @@ namespace impl
 {
   template <class S>
   struct elements
-  {
-      typedef property_map::dereference result_type;
-      
-      result_type operator()(S& s) const
-      {
-          return result_type();
-      }
-  };
+    : intrinsics<S>::elements
+  {};
 }
 
 namespace op
@@ -36,4 +30,4 @@ namespace
 
 }} // namespace boost::sequence
 
-#endif // BOOST_SEQUENCE_ELEMENTS_DWA200656_HPP
+#endif // BOOST_SEQUENCE_ELEMENTS_DWA200655_HPP
