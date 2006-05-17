@@ -19,8 +19,17 @@
 #include <boost/numeric/linear_algebra/inverse.hpp>
 #include <boost/numeric/linear_algebra/operators.hpp>
 
+// If desired one can disable the default concept maps with LA_NO_CONCEPT_MAPS
+
+#ifndef LA_NO_CONCEPT_MAPS
+#  include <complex>
+#endif
 
 namespace math {
+
+// ================
+// Utility Concepts
+// ================
 
 
 // Concepts for functions mapping to same type or convertible
@@ -47,6 +56,85 @@ auto concept Negatable<typename Element>
    typename result_type;
    result_type operator-(Element x);
 }
+auto concept Divisible<typename T, typename U = T>
+{
+    typename result_type;
+    result_type operator/(T t, U u);
+};
+
+
+auto concept DivisibleWithAssign<typename T, typename U = T>
+  : Divisible<T, U>
+{
+    // Operator /= by default defined with /, which is not efficient
+    // not efficient, user should implement its own
+    // It's not yet supported anyway
+    typename result_type;  
+    result_type operator/=(T& x, U y);
+#if 0
+    {
+	return x= x / y;                      defaults NYS
+    }
+#endif 
+}; 
+
+
+auto concept AddableWithAssign<typename T, typename U = T>
+{
+    where std::Addable<T, U>;
+
+    // Operator += by default defined with +, which is not efficient
+    // not efficient, user should implement its own
+    // It's not yet supported anyway
+    typename result_type;  
+    result_type operator+=(T& x, U y);
+#if 0
+    {
+	return x= x + y;                      defaults NYS
+    }
+#endif 
+}; 
+
+
+auto concept SubtractableWithAssign<typename T, typename U = T>
+{
+    where std::Subtractable<T, U>;
+    
+    // Operator -= by default defined with -, which is not efficient
+    // not efficient, user should implement its own
+    // It's not yet supported anyway
+    typename result_type;  
+    result_type operator-=(T& x, U y);
+#if 0
+    {
+	return x= x - y;                      defaults NYS
+    }
+#endif 
+}; 
+
+
+auto concept MultiplicableWithAssign<typename T, typename U = T>
+{
+    where std::Multiplicable<T, U>;
+
+    // Operator *= by default defined with *, which is not efficient
+    // not efficient, user should implement its own
+    // It's not yet supported anyway
+    typename result_type;  
+    result_type operator*=(T& x, U y);
+#if 0
+    {
+	return x= x * y;                      defaults NYS
+    }
+#endif 
+}; 
+
+
+
+// ==================
+// Algebraic Concepts
+// ==================
+
 
 auto concept Magma<typename Operation, typename Element>
     : BinaryIsoFunction<Operation, Element>
@@ -99,6 +187,17 @@ concept PartiallyInvertibleMonoid<typename Operation, typename Element>
   : Monoid<Operation, Element> 
 {
     where std::Predicate< is_invertible<Operation, Element>, Element >;
+
+    where UnaryIsoFunction< inverse<Operation, Element>, Element >; 
+
+    axiom Inversion(Operation op, Element x)
+    {
+	// Only for invertible elements:
+	// if ( is_invertible<Operation, Element>()(x) )
+	//     op( x, inverse<Operation, Element>()(x) ) == identity<Operation, Element>()(x);   NYS
+	// if ( is_invertible<Operation, Element>()(x) )
+	//     op( inverse<Operation, Element>()(x), x ) == identity<Operation, Element>()(x);   NYS
+    }
 };
 
 
@@ -111,10 +210,11 @@ concept PartiallyInvertibleCommutativeMonoid<typename Operation, typename Elemen
 concept Group<typename Operation, typename Element>
   : PartiallyInvertibleMonoid<Operation, Element>
 {
-    where UnaryIsoFunction< inverse<Operation, Element>, Element >;
+    where UnaryIsoFunction< inverse<Operation, Element>, Element >; // put to PartiallyInvertibleMonoid
 
     axiom Inversion(Operation op, Element x)
     {
+	// In contrast to PartiallyInvertibleMonoid all elements must be invertible
 	// op( x, inverse<Operation, Element>()(x) ) == identity<Operation, Element>()(x);   NYS
 	// op( inverse<Operation, Element>()(x), x ) == identity<Operation, Element>()(x);   NYS
     }
@@ -310,28 +410,10 @@ concept MultiplicativeCommutativeMonoid<typename Element>
 {};
 
 
-auto concept DividableWithAssign<typename T, typename U = T>
-{
-    typename result_type;
-    result_type operator/(const Element& t, const Element& u);
-
-    // Operator -= by default defined with -, which is not efficient
-    // not efficient, user should implement its own
-    // It's not yet supported anyway
-    typename result_type;  
-    result_type operator/=(Element& x, Element y);
-#if 0
-    {
-	return x= x / y;                      defaults NYS
-    }
-#endif 
-}    
-
-
 concept MultiplicativeGroup<typename Element>
   : MultiplicativeMonoid<Element>,
     Group< math::mult<Element>, Element >,
-    DividableWithAssign<Element>
+    DivisibleWithAssign<Element>
 {        
     axiom Consistency(math::mult<Element> op, Element x, Element y)
     {
@@ -353,6 +435,12 @@ concept MultiplicativeAbelianGroup<typename Element>
 // ======================================
 // Algebraic concepts with two connectors
 // ======================================
+
+// ------------------
+// Based on operators 
+// ------------------
+
+// Handier, less generic
 
 
 // Alternative definitions use MultiplicativeMonoid<Element> for Ring
@@ -385,21 +473,21 @@ concept RingWithIdentity<typename Element>
  
 
 concept CommutativeRingWithIdentity<typename Element>
-  : Ring<Element>,
-    MultiplicativeCommutativeMonoid<Element>
+  : RingWithIdentity<Element>,
+    CommutativeRing<Element>
 {};
  
 
 concept DivisionRing<typename Element>
   : RingWithIdentity<Element>,
-    DividableWithAssign<Element>
+    DivisibleWithAssign<Element>
 {
     axiom Consistency(Element x, Element y)
     {
 	// I don't know how to express consistency between / and /=
     }  
 
-    axiom ZeroIsDifferentFromOne()
+    axiom ZeroIsDifferentFromOne(Element x)
     {
 	// 0 != 1
 	// Note that it is possible to allow 0 == 1 in a DivisionRing, this structure would be even
@@ -407,29 +495,98 @@ concept DivisionRing<typename Element>
 	// as a consequence of 0 == 1. It is called the trivial field and of no practical value.
 	// Therefore, we exclude this field and require 0 != 1.
  
-	identity<math::add<Element>, Element> != identity<math::mult<Element>, Element>;
+	// identity<math::add<Element>, Element>()(x) != identity<math::mult<Element>, Element>()(x);        NYS
     }
 
-    axiom NonZeroDividability(Element x)
+    axiom NonZeroDivisibility(Element x)
     {
 	// if (x != 0) x / x == 1
-	if (x != identity<math::add<Element>, Element>) 
-	    x / x == identity<math::mult<Element>, Element>;
+	// if (x != identity<math::add<Element>, Element>()(x))                                         NYS
+	//     x / x == identity<math::mult<Element>, Element>()(x);
     }
 };    
 
 
 concept Field<typename Element>
   : DivisionRing<Element>,
-    MultiplicativeCommutativeMonoid<Element>
+    CommutativeRingWithIdentity<Element>
+{};
+
+// -----------------
+// Based on functors
+// -----------------
+
+// More generic, less handy to use
+
+concept GenericRing<typename AddOp, typename MultOp, typename Element>
+{
+    where AbelianGroup<AddOp, Element>;
+
+    where SemiGroup<MultOp, Element>;
+
+    axiom Distributivity(AddOp add, MultOp mult, Element x, Element y, Element z)
+    {
+	// From left
+	// mult(x, add(y, z)) == add(mult(x, y), mult(x, z));
+	// z right
+	// mult(add(x, y), z) == add(mult(x, z), mult(y, z));
+    }
+};
+
+
+concept GenericCommutativeRing<typename AddOp, typename MultOp, typename Element>
+  : GenericRing<AddOp, MultOp, Element>
+{
+    where CommutativeSemiGroup<MultOp, Element>;
+};
+
+
+concept GenericRingWithIdentity<typename AddOp, typename MultOp, typename Element>
+  : GenericRing<AddOp, MultOp, Element>
+{
+    where Monoid<MultOp, Element>;
+};
+
+
+concept GenericCommutativeRingWithIdentity<typename AddOp, typename MultOp, typename Element>
+  : GenericRingWithIdentity<AddOp, MultOp, Element>,
+    GenericCommutativeRing<AddOp, MultOp, Element>
 {};
 
 
+concept GenericDivisionRing<typename AddOp, typename MultOp, typename Element>
+  : GenericRingWithIdentity<AddOp, MultOp, Element>
+{
+    where UnaryIsoFunction< inverse<MultOp, Element>, Element >; 
 
-// ====================================
+    axiom ZeroIsDifferentFromOne(Element x)
+    {
+	// 0 != 1
+	// Comments see DivisionRing
+
+	// identity<AddOp, Element>()(x) != identity<MultOp, Element>()(x);        NYS
+    }
+
+    axiom NonZeroDivisibility(MultOp mult, Element x)
+    {
+	// if (x != 0) x / x == 1
+	// if (x != identity<AddOp, Element>()(x))                                         NYS
+	//     mult(x, inverse<MultOp, Element>()(x)) == identity<MultOp, Element>()(x);
+    }
+};    
+
+
+concept GenericField<typename AddOp, typename MultOp, typename Element>
+  : GenericDivisionRing<AddOp, MultOp, Element>,
+    GenericCommutativeRingWithIdentity<AddOp, MultOp, Element>
+{};
+
+
+// ======================
 // Miscellaneous concepts
+// ======================
+
 // that shall find a better place later
-// ====================================
 
 
 // Closure of EqualityComparable under a binary operation:
@@ -466,6 +623,75 @@ auto concept Closed2LessThanComparable<typename Operation, typename Element>
     where FullLessThanComparable< BinaryIsoFunction<Operation, Element>::result_type, Element >;
 };
 
+#if 0
+auto concept NumericOperatorResultConvertible<typename T>
+  : AddableWithAssign<T>,
+    SubtractableWithAssign<T>,
+    MultiplicableWithAssign<T>,
+    DivisibleWithAssign<T>
+{
+    where std::Convertible< AddableWithAssign<T>::result_type, T>;
+    where std::Convertible< SubtractableWithAssign<T>::result_type, T>;
+    where std::Convertible< MultiplicableWithAssign<T>::result_type, T>;
+    where std::Convertible< DivisibleWithAssign<T>::result_type, T>;
+}
+#endif
+
+auto concept AdditionResultConvertible<typename T>
+{
+    typename result_type;
+    result_type operator+(T t, T u);
+    where std::Convertible<result_type, T>;
+
+    typename result_type;
+    result_type operator+=(T& t, T u);
+    where std::Convertible<result_type, T>;
+};    
+
+
+auto concept SubtractionResultConvertible<typename T>
+{
+    typename result_type;
+    result_type operator-(T t, T u);
+    where std::Convertible<result_type, T>;
+
+    typename result_type;
+    result_type operator-=(T& t, T u);
+    where std::Convertible<result_type, T>;
+};    
+
+auto concept NumericOperatorResultConvertible<typename T>
+  : AdditionResultConvertible<T>,
+    SubtractionResultConvertible<T>
+{};
+
+
+// ====================
+// Default Concept Maps
+// ====================
+
+#ifndef LA_NO_CONCEPT_MAPS
+
+// concept_map CommutativeRingWithIdentity<char> {}
+// concept_map CommutativeRingWithIdentity<short> {}
+concept_map CommutativeRingWithIdentity<int> {}
+concept_map CommutativeRingWithIdentity<long> {}
+concept_map CommutativeRingWithIdentity<long long> {}
+
+concept_map Field<float> {}
+concept_map Field<double> {}
+
+#if 0
+    // Convertibility from results into complex<T> must be expressed properly for co
+    template <typename T>
+      where Field<T> && NumericOperatorResultConvertible< std::complex<T> >
+    concept_map Field< std::complex<T> > {}
+#endif
+
+concept_map Field< std::complex<float> > {}
+concept_map Field< std::complex<double> > {}
+
+#endif
 
 } // namespace math
 
