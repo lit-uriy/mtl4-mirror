@@ -4,6 +4,9 @@ import testing ;
 import mtl4 ;
 
 run concepts.cpp ;
+run dereference.cpp ;
+run compose.cpp ;
+
 for local n in 1 2 3 4 5
 {
     compile-fail concept-fail$(n).cpp ;

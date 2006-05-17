@@ -24,6 +24,7 @@ use-project /boost : $(.boost) ;
 
 project mtl4
   : requirements <include>. <source>/boost//headers 
+     <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
     : $(.build-dir)
   ;
 
