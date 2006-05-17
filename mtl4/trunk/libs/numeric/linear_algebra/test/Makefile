@@ -5,7 +5,7 @@ XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_al
 
 CXX = conceptg++
 
-TARGETS =	positive_real	positive_real_explicit
+TARGETS =	positive_real	positive_real_explicit string_example
 
 it:	all
 
@@ -16,6 +16,9 @@ positive_real:	positive_real.cpp ${XTRA_SOURCES}
 
 positive_real_explicit:	positive_real_explicit.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ positive_real_explicit.cpp
+
+string_example:	string_example.cpp  ${XTRA_SOURCES}
+	${CXX} ${CXXFLAGS} -o $@ string_example.cpp
 
 clean:
 	rm -rf ${TARGETS}
