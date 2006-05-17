@@ -11,6 +11,7 @@
 # include <boost/iterator/iterator_traits.hpp>
 
 # include <boost/sequence/concepts.hpp>
+# include <boost/sequence/tag.hpp>
 # include <boost/detail/function1.hpp>
 # include <boost/detail/pod_singleton.hpp>
 # include <boost/utility/enable_if.hpp>
@@ -32,18 +33,13 @@ namespace detail
 namespace impl
 {
   template <class S, class enable = void>
-  struct indices_base;
-  
-  template <class S>
-  struct indices
-    : indices_base<S>
-  {};
+  struct indices;
 
   // By default, every Boost.Range is a sequence whose cursors are
   // counting_iterators, so we'll provide a default implementation of
   // indices that works for that case.
   template <class S>
-  struct indices_base<
+  struct indices<
       S
     , typename enable_if<
           mpl::and_<
@@ -58,7 +54,7 @@ namespace impl
               >
           >
       >::type
-  >
+  >  
   {
       typedef difference1<
           typename sequence::concepts::Sequence<S>::cursor
@@ -73,7 +69,7 @@ namespace impl
   // Sequences whose cursors are pointers can also have a default
   // indices implementation
   template <class S>
-  struct indices_base<
+  struct indices<
       S
     , typename enable_if<
           is_pointer<
@@ -95,7 +91,10 @@ namespace impl
 
 namespace op
 {
-  struct indices : boost::detail::function1<impl::indices<mpl::_> > {};
+  using mpl::_;
+  struct indices
+    : boost::detail::function1<impl::indices<mpl::_> >
+  {};
 }
 
 namespace

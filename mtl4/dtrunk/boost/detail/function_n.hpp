@@ -7,6 +7,8 @@
 // # define BOOST_DETAIL_FUNCTION_N_DWA2006514_HPP
 
 #include <boost/mpl/apply.hpp>
+#include <boost/type_traits/remove_reference.hpp>
+#include <boost/type_traits/add_const.hpp>
 
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
@@ -15,15 +17,11 @@
 #include <boost/preprocessor/repetition/repeat.hpp>
 #include <boost/preprocessor/seq/for_each_i.hpp>
 #include <boost/preprocessor/seq/for_each_product.hpp>
-#include <boost/preprocessor/seq/size.hpp>
 
 namespace boost { namespace detail { 
 
-# define BOOST_DETAIL_function_arg(z, n, _)             \
-    typedef typename remove_reference<                  \
-        typename add_const< BOOST_PP_CAT(A,n) >::type   \
-    >::type BOOST_PP_CAT(arg,n);
-    
+// Generalization of function1 to n arguments.  See function1.hpp.
+// Thanks to Paul Mensonides for fast operator() overload generation.
 template <class F>
 struct BOOST_PP_CAT(function,n)
 {
@@ -31,6 +29,11 @@ struct BOOST_PP_CAT(function,n)
     struct result;
 
     
+# define BOOST_DETAIL_function_arg(z, n, _)             \
+    typedef typename remove_reference<                  \
+        typename add_const< BOOST_PP_CAT(A,n) >::type   \
+    >::type BOOST_PP_CAT(arg,n);
+
     template <class This BOOST_PP_ENUM_TRAILING_PARAMS(n, class A)>
     struct result<This(BOOST_PP_ENUM_PARAMS(n, A))>
     {
@@ -90,6 +93,7 @@ struct BOOST_PP_CAT(function,n)
 # undef arg_type
 
 # undef n
+# undef BOOST_DETAIL_function_arg
 };
 
 }} // namespace boost::detail

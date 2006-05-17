@@ -6,6 +6,8 @@
 
 # include <boost/iterator/iterator_concepts.hpp>
 # include <boost/concept/where.hpp>
+# include <boost/type_traits/remove_reference.hpp>
+# include <boost/type_traits/remove_cv.hpp>
 
 namespace boost { namespace property_map { 
 
