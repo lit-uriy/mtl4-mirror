@@ -19,7 +19,7 @@ namespace math {
     {
 	Element operator() (const Element& x, const Element& y)
 	{
-	    return x + y;
+	    return x * y;
 	}
     };
 
