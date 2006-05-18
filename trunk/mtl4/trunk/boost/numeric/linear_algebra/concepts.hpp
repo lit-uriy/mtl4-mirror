@@ -186,7 +186,7 @@ concept CommutativeMonoid<typename Operation, typename Element>
 concept PartiallyInvertibleMonoid<typename Operation, typename Element>
   : Monoid<Operation, Element> 
 {
-    where std::Predicate< is_invertible<Operation, Element>, Element >;
+    where std::Predicate< math::is_invertible<Operation, Element>, Element >;
 
     where UnaryIsoFunction< inverse<Operation, Element>, Element >; 
 
@@ -238,7 +238,7 @@ auto concept AdditiveMagma<typename Element>
     // Operator + 
     where std::Addable<Element>;
 
-    // Operator += by default defined with +, which is not efficient
+    // Operator += by default defined with +, which is
     // not efficient, user should implement its own
     // It's not yet supported anyway
     typename result_type;  
@@ -284,9 +284,10 @@ concept AdditiveMonoid<typename Element>
 {};
 
 
-// We really need only one of the additive concepts, 
+// We really need only one of the additive concepts for the requirements, 
 // the requirements of the other would be implied.
-// To make the refinement hierarchy clearer, we add them both
+// Vice versa, to derive concept maps of nested concepts from
+// concept maps of refined concepts, they are needed all.
 concept AdditiveCommutativeMonoid<typename Element>
   : AdditiveMonoid<Element>,
     AdditiveCommutativeSemiGroup<Element>,
@@ -304,7 +305,7 @@ concept AdditiveGroup<typename Element>
     where std::Subtractable<Element>;   
     where Negatable<Element>;
 
-    // Operator -= by default defined with -, which is not efficient
+    // Operator -= by default defined with -, which is
     // not efficient, user should implement its own
     // It's not yet supported anyway
     typename result_type;  
@@ -354,7 +355,7 @@ auto concept MultiplicativeMagma<typename Element>
     // Operator + 
     where std::Multiplicable<Element>;
 
-    // Operator += by default defined with +, which is not efficient
+    // Operator += by default defined with +, which is 
     // not efficient, user should implement its own
     // It's not yet supported anyway
     typename result_type;  
@@ -402,7 +403,7 @@ concept MultiplicativeMonoid<typename Element>
 
 // We really need only one of the multiplicative concepts, 
 // the requirements of the other would be implied.
-// To make the refinement hierarchy clearer, we add them both
+
 concept MultiplicativeCommutativeMonoid<typename Element>
   : MultiplicativeMonoid<Element>,
     MultiplicativeCommutativeSemiGroup<Element>,
@@ -589,21 +590,31 @@ concept GenericField<typename AddOp, typename MultOp, typename Element>
 // that shall find a better place later
 
 
+// EqualityComparable will have the != when defaults are supported
+// At this point the following won't needed anymore
+auto concept FullEqualityComparable<typename T, typename U = T>
+{
+  //where std::EqualityComparable<T, U>;
+
+    bool operator==(const T&, const U&);
+    bool operator!=(const T&, const U&);
+};
+
 // Closure of EqualityComparable under a binary operation:
 // That is, the result of this binary operation is also EqualityComparable
 // with itself and with the operand type.
 auto concept Closed2EqualityComparable<typename Operation, typename Element>
   : BinaryIsoFunction<Operation, Element>
 {
-    where std::EqualityComparable<Element>;
-    where std::EqualityComparable< BinaryIsoFunction<Operation, Element>::result_type >;
-    where std::EqualityComparable< Element, BinaryIsoFunction<Operation, Element>::result_type >;
-    where std::EqualityComparable< BinaryIsoFunction<Operation, Element>::result_type, Element >;
+    where FullEqualityComparable<Element>;
+    where FullEqualityComparable< BinaryIsoFunction<Operation, Element>::result_type >;
+    where FullEqualityComparable< Element, BinaryIsoFunction<Operation, Element>::result_type >;
+    where FullEqualityComparable< BinaryIsoFunction<Operation, Element>::result_type, Element >;
 };
 
 
 // LessThanComparable will have the other operators when defaults are supported
-// At this point the following isn't needed anymore
+// At this point the following won't needed anymore
 auto concept FullLessThanComparable<typename T, typename U = T>
 {
     bool operator<(const T&, const U&);
@@ -691,7 +702,10 @@ concept_map Field<double> {}
 concept_map Field< std::complex<float> > {}
 concept_map Field< std::complex<double> > {}
 
-#endif
+// concept_map AbelianGroup< math::add<float>, float > {}
+concept_map PartiallyInvertibleCommutativeMonoid< math::mult<float>, float > {}
+
+#endif // LA_NO_CONCEPT_MAPS
 
 } // namespace math
 
