@@ -1,0 +1,28 @@
+Problems and questions with numerical concepts
+
+- is_invertible with templated type
+- how to express convertibility of results (needed for templated concept map of complex)
+- how to express consistency between * and *= and so on
+- if different result_type are defined in a concept C which one is C::result_type ?
+- mutually convertible result of Addable<T> and Magma< add<T>, T > 
+- concept maps of char and short
+- Can we express Prime<N> as a concept?
+
+- namespaces in concepts vs. template functions 
+  when using NS::f in template function, how to express the concept that
+  f is searched in NS unless ADL says otherwise
+
+
+- Can we check types for classes, e.g. is integral
+
+
+
+
+
+
+
+
+
+Long-term problems
+
+- Algebraic structures as equivalence classes instead of one type

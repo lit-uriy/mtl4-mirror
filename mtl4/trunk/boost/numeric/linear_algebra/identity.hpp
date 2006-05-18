@@ -3,6 +3,8 @@
 #ifndef MATH_IDENTITY_INCLUDE
 #define MATH_IDENTITY_INCLUDE
 
+#include <boost/numeric/linear_algebra/operators.hpp>
+
 namespace math {
 
     template <typename Operator, typename Element>

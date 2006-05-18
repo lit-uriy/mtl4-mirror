@@ -91,15 +91,43 @@ inline Element multiply_and_square(Element base, Exponent exp, Op op)
 } 
 
 
-// {Op, Element} must be a Group
+// {Op, Element} must be a PartiallyInvertibleMonoid
+// Element and results must be EqualityComparable
+// Only 
+template <typename Op, typename Element>
+  LA_WHERE( math::Closed2EqualityComparable<Op, Element> 
+	    && math::PartiallyInvertibleMonoid<Op, Element> )
+inline int algebraic_division(const Element& v1, const Element& v2, Op op)
+{
+    using math::identity; using math::inverse; using math::is_invertible;
+
+    if (!is_invertible<Op, Element>() (v2))
+	throw "In algebraic division: v2 must be invertible!\n";
+
+    // Temporaries to avoid redundant operations
+    Element id= identity<Op, Element>()(v1),     // Identity
+            iv2= inverse<Op, Element>()(v2),     // Inverse of v2
+   	    tmp(v1);                             // Copy of v1, will be lessened until < id
+
+    int counter= 0;
+    for (; tmp != id; counter++) 
+	tmp= op(tmp, iv2);
+    return counter;
+}
+
+
+// {Op, Element} must be a PartiallyInvertibleMonoid
 // Element must be LessThanComparable
 // Under construction w.r.t. semantic requirements, introduction of ordered group needed
 template <typename Op, typename Element>
   LA_WHERE( math::Closed2LessThanComparable<Op, Element> 
-	    && math::Group<Op, Element> )
-inline int algebraic_division(const Element& v1, const Element& v2, Op op)
+	    && math::PartiallyInvertibleMonoid<Op, Element> )
+inline int ordered_algebraic_division(const Element& v1, const Element& v2, Op op)
 {
-    using math::identity; using math::inverse;
+    using math::identity; using math::inverse; using math::is_invertible;
+
+    if (!is_invertible<Op, Element>() (v2))
+	throw "In algebraic division: v2 must be invertible!\n";
 
     // Temporaries to avoid redundant operations
     Element id= identity<Op, Element>()(v1),     // Identity

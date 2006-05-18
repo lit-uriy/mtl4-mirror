@@ -23,7 +23,7 @@ namespace math
 
 # ifdef LA_WITH_CONCEPTS
     concept_map Monoid< math::add<string>, string > {}
-# endif
+# endif // LA_WITH_CONCEPTS
 }        
 
 int main(int, char* []) 
