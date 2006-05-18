@@ -1,4 +1,4 @@
-CXXFLAGS += -g -I${BOOST_ROOT} -I${MTL_BOOST_ROOT} # -I${GLAS_ROOT}/branches/state_2006_2_23/glas 
+CXXFLAGS += -g -I${BOOST_ROOT} -I${MTL_BOOST_ROOT} -Wno-long-double # -I${GLAS_ROOT}/branches/state_2006_2_23/glas 
 
 XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_algebra/concepts.hpp \
                  Makefile
