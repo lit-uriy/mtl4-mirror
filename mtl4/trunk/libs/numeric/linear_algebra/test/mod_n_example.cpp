@@ -24,15 +24,12 @@ class mod_n_t
 
     static const T modulo= N;
 
-    explicit mod_n_t(T const& v) : value( v % modulo ) {
-	// std::cout << "v " << v << ", modulo " << modulo  << ", value " << value  << "\n";
-    }    
+    explicit mod_n_t(T const& v) : value( v % modulo ) {}
 
     // modulo of negative numbers can be bizarre
     // better use constructor for T
     explicit mod_n_t(int v) 
     {
-	// std::cout << "v " << v << ", modulo " << modulo << ", v%modulo " << v%modulo << "\n";
 	value= v >= 0 ? v%modulo : modulo - -v%modulo; 
     }
 
@@ -151,14 +148,14 @@ inline mod_n_t<T, N> operator* (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y)
     // --> v2 * y mod N == 1
     // --> x * v2 == x / y
     // v1, u1, and r1 not used
-#if 0
 template<typename T, T N>
 inline mod_n_t<T, N> operator/ (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
 {
     check(x); check(y);
     if (y.get() == 0) throw "Division by 0";
 
-    int u= N, v= y.get(), u1= 1, u2= 0, v1= 0, v2= 1, q, r, r1, r2;
+    // Goes wrong with unsigned b/c some values will be negative
+    int u= N, v= y.get(), /* u1= 1, */  u2= 0, /* v1= 0, */  v2= 1, q, r, /* r1, */  r2;
 
     while (u % v != 0) {
 	q= u / v;
@@ -170,31 +167,39 @@ inline mod_n_t<T, N> operator/ (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y)
 
     return x * mod_n_t<T, N>(v2); 
 } 
-#endif
-
-
-template<typename T, T N>
-inline mod_n_t<T, N> operator/ (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
-{
-    if (y.get() == 0) throw "Division by 0";
-
-    int u= y.get(), v= N, x1= 1, x2= 0, q, r, x0;
-  
-    while (v % u != 0) {
-	q= v/u; 
-	r= v%u; 
-	x0= x2 - q*x1; 
-	v= u; 
-	u= r; 
-	x2= x1; 
-	x1= x0;
-    }
-    return x * mod_n_t<T, N>(x1); 
-} 
 
 
 
 namespace math {
+
+    template<typename T, T N>
+    struct identity< add< mod_n_t<T, N> >, mod_n_t<T, N> >
+    {
+	mod_n_t<T, N> operator() (mod_n_t<T, N> const& v) const
+	{
+	    return mod_n_t<T, N>(0);
+	}
+    };
+
+
+    // Reverse definition, a little more efficient if / uses inverse
+    template<typename T, T N>
+    struct inverse< add< mod_n_t<T, N> >, mod_n_t<T, N> >
+    {
+	mod_n_t<T, N> operator() (mod_n_t<T, N> const& v) const
+	{
+	    return identity< add< mod_n_t<T, N> >, mod_n_t<T, N> >(v) - v;
+	}
+    };
+    
+
+    template<typename T, T N>
+    struct is_invertible< add< mod_n_t<T, N> >, mod_n_t<T, N> >
+    {
+	bool operator() (mod_n_t<T, N> const& v) const
+	{ return true; }
+    };
+    
 
     template<typename T, T N>
     struct identity< mult< mod_n_t<T, N> >, mod_n_t<T, N> >
@@ -228,8 +233,8 @@ namespace math {
     };
     
 
-
 # ifdef LA_WITH_CONCEPTS
+
 
 #if 0 // more operators needed for this
     // All modulo sets are commutative rings with identity
@@ -245,9 +250,12 @@ namespace math {
     template <typename T, T N>
     concept_map PartiallyInvertibleMonoid< mult< mod_n_t<T, N> >, mod_n_t<T, N> > {}
 
-    // Shouldn't be needed
     template <typename T, T N>
-    concept_map Closed2EqualityComparable< mult< mod_n_t<T, N> >, mod_n_t<T, N> > {}
+    concept_map GenericCommutativeRingWithIdentity
+       < add< mod_n_t<T, N> >, 
+	 mult< mod_n_t<T, N> >, 
+	 mod_n_t<T, N> 
+       > {}
 
 # endif // LA_WITH_CONCEPTS
 
@@ -269,25 +277,8 @@ int main(int, char* [])
     cout << "algebraic_division(mod_5(4), mod_5(2), mult_mod_5) "
 	 << algebraic_division(mod_5(4u), mod_5(2u), mult_mod_5) << endl; 
 
-    for (unsigned i= 0; i < 5; i++)
-      for (unsigned j= 0; j < 5; j++) {
-	mod_5 mi(i), mj(j);
-	cout << mi << " * " << mj << " = " << mi*mj;
-	if (j != 0)
-	  cout << ", div = " << mi/mj;
-	cout << ", add = " << mi+mj << ", minus = " << mi-mj << "\n";
-      }
-
-
     typedef mod_n_t<unsigned, 127>  mod_127;
     math::mult<mod_127>             mult_mod_127;
-
-
-    for (unsigned i= 0; i < 126; i++)
-      for (unsigned j= 1; j < 126; j++) {
-	mod_127 mi(i), mj(j);
-	assert((mi / mj) * mj == mi);
-      }
 
     mod_127   v78(78), v113(113), v90(90), v80(80);
    
