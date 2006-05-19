@@ -64,7 +64,7 @@ struct compose_
     void call(A0& x0, A1& x1) const
     {
 # if BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1400))
-        BOOST_MPL_ASSERT((is_reference< typename result<compose_ const(A0)>::type >));
+        BOOST_MPL_ASSERT((is_reference< typename result< compose_ const(A0&) >::type >));
 # endif 
         this->f.first()( this->f.second()( x0 ) ) = x1;
     }
