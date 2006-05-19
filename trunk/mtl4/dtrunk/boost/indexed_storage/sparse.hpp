@@ -8,30 +8,43 @@
 # include <boost/detail/transfer_cv.hpp>
 # include <boost/detail/project1st.hpp>
 # include <boost/detail/project2nd.hpp>
+# include <boost/detail/compressed_pair.hpp>
 
 namespace boost {
 
 namespace indexed_storage
-{ 
-  template <class PairSequence, class LookupPolicy>
-  struct sparse : LookupPolicy
+{
+  template <class PairSequence, class Lookup, class GetUnstored, class SetUnstored>
+  struct sparse
   {
       typedef PairSequence storage;
-      typedef typename Sequence<PairSequence>::value_type pair_type;
+      typedef typename concepts::Sequence<PairSequence>::value_type pair_type;
       typedef typename pair_type::first_type index_type;
       typedef typename pair_type::second_type value_type;
 
       sparse() {}
       
-      sparse(
-          typename add_reference<
-              typename add_const<storage>::type
-          >::type pairs
-      )
-        : pairs(pairs)
-      {}
+      storage& lookup() { return members.first(); }
+      Lookup& get_unstored() { return members.second().first(); }
+      GetUnstored& set_unstored() { return members.second().second().first(); }
+      SetUnstored& pairs() { return members.second().second().second(); }
       
-      storage pairs;
+      storage const& lookup() const { return members.first(); }
+      Lookup const& get_unstored() const { return members.second().first(); }
+      GetUnstored const& set_unstored() const { return members.second().second().first(); }
+      SetUnstored const& pairs() const { return members.second().second().second(); }
+      
+   private:
+      compressed_pair<
+          Lookup
+        , compressed_pair<
+              GetUnstored
+            , compressed_pair<
+                  SetUnstored
+                , PairSequence
+              >
+          >
+      > members;
   };
 
   struct sparse_tag {};
@@ -46,7 +59,7 @@ namespace indexed_storage
     template <class S, class I>
     struct get_at<S, I, indexed_storage::sparse_tag>
     {
-        typedef typename
+        
         detail::transfer_cv<
             typename detail::transfer_cv<S, typename S::storage>::type
           , S::value_type
@@ -54,22 +67,40 @@ namespace indexed_storage
 
         result_type operator()(S& s, I& i)
         {
-            return sequence::elements(s)(*s.find(s.pairs,i));
+            typename concepts::Sequence<S>::cursor
+                pos = s.lookup()(s.pairs,i);
+
+            if (pos != sequence::end(s))
+            {
+                typename concepts::Sequence<typename S::storage>::reference
+                    x = sequence::elements(s.pairs())(*pos);
+                    
+                if (x.first == i)
+                    return x.second;
+            }
+            return s.get_unstored()(s.pairs(), pos, i);
         }
     };
 
     template <class S, class I, class V>
-    struct get_at<S, I, V, indexed_storage::sparse_tag>
+    struct set_at<S, I, V, indexed_storage::sparse_tag>
     {
-        typedef typename
-        detail::transfer_cv<
-            typename detail::transfer_cv<S, typename S::storage>::type
-          , S::value_type
-        >::type& result_type;
+        typedef void result_type;
 
         result_type operator()(S& s, I& i, V& v)
         {
-            return sequence::elements(s)(*s.find(s.pairs,i));
+            typename concepts::Sequence<S>::cursor
+                pos = s.lookup()(s.pairs,i);
+
+            if (pos != sequence::end(s))
+            {
+                typename concepts::Sequence<typename S::storage>::reference
+                    x = sequence::elements(s.pairs())(*pos);
+                    
+                if (x.first == i)
+                    x.second = v;
+            }
+            return s.set_unstored()(s.pairs(), pos, i, v);
         }
     };
   }
