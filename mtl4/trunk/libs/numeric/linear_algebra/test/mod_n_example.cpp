@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <boost/operators.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/linear_algebra/is_invertible.hpp>
 #include <boost/numeric/linear_algebra/inverse.hpp>
@@ -14,6 +15,12 @@ using std::ostream;
 template<typename T, T N>
 // where Integral<T>
 class mod_n_t 
+  : boost::equality_comparable< mod_n_t<T, N> >,
+    boost::less_than_comparable< mod_n_t<T, N> >,
+    boost::addable< mod_n_t<T, N> >,
+    boost::subtractable< mod_n_t<T, N> >,
+    boost::multipliable< mod_n_t<T, N> >,
+    boost::dividable< mod_n_t<T, N> >
 {
     // or BOOST_STATIC_ASSERT((IS_INTEGRAL))
 
@@ -54,6 +61,47 @@ class mod_n_t
     {
 	return value; 
     }
+
+    bool operator==(self const& y) const
+    {
+	check(*this); check(y);
+	return this->value == y.value;
+    }
+
+    bool operator<(self const& y) const
+    {
+	check(*this); check(y);
+	return this->value < y.value;
+    }
+
+    self operator+= (self const& y)
+    {
+	check(*this); check(y);
+	this->value += y.value;
+	this->value %= modulo;
+	return *this;
+    }
+
+    self operator-= (self const& y)
+    {
+	check(*this); check(y);
+	// add n to avoid negative numbers esp. if T is unsigned
+	this->value += modulo;
+	this->value -= y.value;
+	this->value %= modulo;
+	return *this;
+    }
+
+    self operator*= (self const& y)
+    {
+	check(*this); check(y);
+	this->value *= y.value;
+	this->value %= modulo;
+	return *this;
+    }
+
+    self operator/= (self const& y);
+    
 };
 
 template<typename T, T N>
@@ -69,12 +117,14 @@ inline ostream& operator<< (ostream& stream, const mod_n_t<T, N>& a)
     return stream << a.get(); 
 }
 
+#if 0
 template<typename T, T N>
 inline bool operator==(const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
 {
     check(x); check(y);
     return x.get() == y.get(); 
 } 
+
 
 template<typename T, T N>
 inline bool operator!=(const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
@@ -103,6 +153,7 @@ inline bool operator>(const mod_n_t<T, N>& x, const mod_n_t<T, N>& y)
     check(x); check(y);
     return x.get() > y.get(); 
 } 
+
 
 template<typename T, T N>
 inline bool operator<(const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
@@ -133,6 +184,7 @@ inline mod_n_t<T, N> operator* (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y)
 
     return mod_n_t<T, N>(x.get() * y.get()); 
 } 
+#endif
 
 // Extended Euclidian algorithm in vector notation
     // uu = (u1, u2, u3) := (1, 0, u)
@@ -148,6 +200,28 @@ inline mod_n_t<T, N> operator* (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y)
     // --> v2 * y mod N == 1
     // --> x * v2 == x / y
     // v1, u1, and r1 not used
+
+template<typename T, T N>
+inline mod_n_t<T, N> mod_n_t<T, N>::operator/= (const mod_n_t<T, N>& y) 
+{
+    check(*this); check(y);
+    if (y.get() == 0) throw "Division by 0";
+
+    // Goes wrong with unsigned b/c some values will be negative
+    int u= N, v= y.get(), /* u1= 1, */  u2= 0, /* v1= 0, */  v2= 1, q, r, /* r1, */  r2;
+
+    while (u % v != 0) {
+	q= u / v;
+
+	r= u % v; /* r1= u1 - q * v1; */ r2= u2 - q * v2;
+	u= v; /* u1= v1; */ u2= v2;
+	v= r; /* v1= r1; */ v2= r2;
+    }
+
+    return *this *= mod_n_t<T, N>(v2); 
+}
+
+#if 0
 template<typename T, T N>
 inline mod_n_t<T, N> operator/ (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
 {
@@ -167,8 +241,7 @@ inline mod_n_t<T, N> operator/ (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y)
 
     return x * mod_n_t<T, N>(v2); 
 } 
-
-
+#endif
 
 namespace math {
 
