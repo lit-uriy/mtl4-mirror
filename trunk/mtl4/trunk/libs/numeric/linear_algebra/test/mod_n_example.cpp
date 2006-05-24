@@ -117,74 +117,6 @@ inline ostream& operator<< (ostream& stream, const mod_n_t<T, N>& a)
     return stream << a.get(); 
 }
 
-#if 0
-template<typename T, T N>
-inline bool operator==(const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
-{
-    check(x); check(y);
-    return x.get() == y.get(); 
-} 
-
-
-template<typename T, T N>
-inline bool operator!=(const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
-{
-    check(x); check(y);
-    return x.get() != y.get(); 
-} 
-
-template<typename T, T N>
-inline bool operator>=(const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
-{
-    check(x); check(y);
-    return x.get() >= y.get(); 
-} 
-
-template<typename T, T N>
-inline bool operator<=(const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
-{
-    check(x); check(y);
-    return x.get() <= y.get(); 
-} 
-
-template<typename T, T N>
-inline bool operator>(const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
-{
-    check(x); check(y);
-    return x.get() > y.get(); 
-} 
-
-
-template<typename T, T N>
-inline bool operator<(const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
-{
-    check(x); check(y);
-    return x.get() < y.get(); 
-} 
-
-template<typename T, T N>
-inline mod_n_t<T, N> operator+ (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
-{
-    check(x); check(y);
-    return mod_n_t<T, N>(x.get() + y.get()); 
-} 
-
-template<typename T, T N>
-inline mod_n_t<T, N> operator- (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
-{
-    check(x); check(y);
-    // add n to avoid negative numbers
-    return mod_n_t<T, N>(N + x.get() - y.get()); 
-} 
-
-template<typename T, T N>
-inline mod_n_t<T, N> operator* (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
-{
-    check(x); check(y);
-
-    return mod_n_t<T, N>(x.get() * y.get()); 
-} 
-#endif
 
 // Extended Euclidian algorithm in vector notation
     // uu = (u1, u2, u3) := (1, 0, u)
@@ -200,7 +132,6 @@ inline mod_n_t<T, N> operator* (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y)
     // --> v2 * y mod N == 1
     // --> x * v2 == x / y
     // v1, u1, and r1 not used
-
 template<typename T, T N>
 inline mod_n_t<T, N> mod_n_t<T, N>::operator/= (const mod_n_t<T, N>& y) 
 {
@@ -221,27 +152,14 @@ inline mod_n_t<T, N> mod_n_t<T, N>::operator/= (const mod_n_t<T, N>& y)
     return *this *= mod_n_t<T, N>(v2); 
 }
 
-#if 0
-template<typename T, T N>
-inline mod_n_t<T, N> operator/ (const mod_n_t<T, N>& x, const mod_n_t<T, N>& y) 
+inline int gcd(int u, int v)
 {
-    check(x); check(y);
-    if (y.get() == 0) throw "Division by 0";
-
-    // Goes wrong with unsigned b/c some values will be negative
-    int u= N, v= y.get(), /* u1= 1, */  u2= 0, /* v1= 0, */  v2= 1, q, r, /* r1, */  r2;
-
-    while (u % v != 0) {
-	q= u / v;
-
-	r= u % v; /* r1= u1 - q * v1; */ r2= u2 - q * v2;
-	u= v; /* u1= v1; */ u2= v2;
-	v= r; /* v1= r1; */ v2= r2;
+    int r;
+    while ((r= u % v) != 0) {
+	u= v; v= r;
     }
-
-    return x * mod_n_t<T, N>(v2); 
-} 
-#endif
+    return v;
+}
 
 namespace math {
 
@@ -301,7 +219,7 @@ namespace math {
 	bool operator() (mod_n_t<T, N> const& v) const
 	{
 	    T value = v.get();
-	    return value != 0 && N%value != 0;
+	    return value != 0 && gcd(N, value) == 1;
 	}
     };
     
@@ -349,6 +267,20 @@ int main(int, char* [])
 
     cout << "algebraic_division(mod_5(4), mod_5(2), mult_mod_5) "
 	 << algebraic_division(mod_5(4u), mod_5(2u), mult_mod_5) << endl; 
+
+    typedef mod_n_t<unsigned, 28>    mod_28;
+    typedef math::mult<mod_28>       mult_mod_28_t;
+    
+    cout << "1/3 " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(3)) 
+	 << " check " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(3)) * mod_28(3) << endl;
+    cout << "1/5 " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(5)) 
+	 << " check " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(5)) * mod_28(5) << endl;
+    cout << "1/9 " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(9)) 
+	 << " check " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(9)) * mod_28(9) << endl;
+
+    cout << "gcd(24, 28): " << gcd(24, 28) << endl;
+    cout << "gcd(25, 28): " << gcd(25, 28) << endl;
+    
 
     typedef mod_n_t<unsigned, 127>  mod_127;
     math::mult<mod_127>             mult_mod_127;
