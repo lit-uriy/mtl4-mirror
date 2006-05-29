@@ -7,43 +7,40 @@
 
 namespace math {
 
-    template <typename Operator, typename Element>
-    struct identity 
+template <typename Operation, typename Element>
+struct identity {};
+
+
+// Additive identity of Element type is by default a converted 0
+// However, for vectors one needs to know the dimension
+// (and in parallel eventually also the distribution).
+// Therefore, an element is passed as reference.
+// It is strongly recommended to specialize this tyypetrait
+// for better efficiency.
+template <typename Element>
+struct identity< add<Element>, Element > 
+{ 
+    Element operator() (const Element& ref)
     {
-	Element operator() (const Element&) const;
-    };
+	Element tmp(ref);
+	tmp= 0;
+	return tmp;
+    }
+};
 
 
-    // Additive identity of Element type is by default a converted 0
-    // However, for vectors one needs to know the dimension
-    // (and in parallel eventually also the distribution).
-    // Therefore, an element is passed as reference.
-    // It is strongly recommended to specialize this tyypetrait
-    // for better efficiency.
-    template <typename Element>
-    struct identity< add<Element>, Element > 
-    { 
-	Element operator() (const Element& ref)
-	{
-	    Element tmp(ref);
-	    tmp= 0;
-	    return tmp;
-	}
-    };
-
-
-    // Multiplicative identity of Element type is by default a converted 1
-    // Same comments as above.
-    template <typename Element>
-    struct identity< mult<Element>, Element > 
-    { 
-	Element operator() (const Element& ref)
-	{
-	    Element tmp(ref);
-	    tmp= 1;
-	    return tmp;
-	}
-    };
+// Multiplicative identity of Element type is by default a converted 1
+// Same comments as above.
+template <typename Element>
+struct identity< mult<Element>, Element > 
+{ 
+    Element operator() (const Element& ref)
+    {
+	Element tmp(ref);
+	tmp= 1;
+	return tmp;
+    }
+};
 
 } // namespace math
 

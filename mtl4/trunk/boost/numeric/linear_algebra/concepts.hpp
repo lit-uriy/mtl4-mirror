@@ -144,6 +144,19 @@ auto concept Magma<typename Operation, typename Element>
 };
 
 
+// For algebraic structures that are commutative but not associative
+// As an example floating point numbers are commutative but not associative
+//   w.r.t. addition and multiplication
+concept CommutativeMagma<typename Operation, typename Element>
+  : Magma<Operation, Element>
+{
+    axiom Commutativity(Operation op, Element x, Element y)
+    {
+	// op(x, y) == op(y, x);   NYS
+    }   
+};
+
+
 // SemiGroup is a refinement which must be nominal
 concept SemiGroup<typename Operation, typename Element>
   : Magma<Operation, Element>
@@ -156,13 +169,10 @@ concept SemiGroup<typename Operation, typename Element>
 
 
 concept CommutativeSemiGroup<typename Operation, typename Element>
-  : SemiGroup<Operation, Element>
-{
-    axiom Commutativity(Operation op, Element x, Element y)
-    {
-	// op(x, y) == op(y, x);   NYS
-    }   
-};
+  : SemiGroup<Operation, Element>,
+    CommutativeMagma<Operation, Element>
+{};
+
 
 // Adding identity
 concept Monoid<typename Operation, typename Element>
@@ -179,7 +189,8 @@ concept Monoid<typename Operation, typename Element>
 
 
 concept CommutativeMonoid<typename Operation, typename Element>
-  : SemiGroup<Operation, Element>, Monoid<Operation, Element>
+  : CommutativeSemiGroup<Operation, Element>, 
+    Monoid<Operation, Element>
 {};
 
 
@@ -210,7 +221,7 @@ concept PartiallyInvertibleCommutativeMonoid<typename Operation, typename Elemen
 concept Group<typename Operation, typename Element>
   : PartiallyInvertibleMonoid<Operation, Element>
 {
-    where UnaryIsoFunction< inverse<Operation, Element>, Element >; // put to PartiallyInvertibleMonoid
+    // where UnaryIsoFunction< inverse<Operation, Element>, Element >; // put to PartiallyInvertibleMonoid
 
     axiom Inversion(Operation op, Element x)
     {
@@ -235,35 +246,37 @@ concept AbelianGroup<typename Operation, typename Element>
 auto concept AdditiveMagma<typename Element>
   : Magma< math::add<Element>, Element >
 {
-    // Operator + 
-    where std::Addable<Element>;
+    typename assign_result_type;  
+    assign_result_type operator+=(Element& x, Element y);
 
-    // Operator += by default defined with +, which is
-    // not efficient, user should implement its own
-    // It's not yet supported anyway
+    // Operator + is by default defined with +=
     typename result_type;  
-    result_type operator+=(Element& x, Element y);
+    result_type operator+(Element& x, Element y);
 #if 0
     {
-	return x= x + y;                      defaults NYS
+	Element tmp(x);
+	return tmp += y;                      defaults NYS
     }
 #endif 
-
-    // Consistency with Magma
-
-    where std::SameType< std::Addable<Element>::result_type, 
+    
+    // Type consistency with Magma
+    where std::SameType< result_type, 
 	                 Magma< math::add<Element>, Element >::result_type>;
-    // or so?
-    // where std::MutuallyConvertible< std::Addable<Element>::result_type, 
-    //                                 Magma< math::add<Element>, Element >::result_type;
 
     axiom Consistency(math::add<Element> op, Element x, Element y)
     {
 	// op(x, y) == x + y;                    NYS
-	// I don't know how to express consistency between + and +=
-	// Element tmp = x; tmp+= y; tmp == x + y; 
+	// Might change later
+        // x + y == x += y;
+	// Element tmp = x; tmp+= y; tmp == x + y; not proposal-compliant
     }  
 }
+
+
+concept AdditiveCommutativeMagma<typename Element>
+  : AdditiveMagma<Element>, 
+    CommutativeMagma< math::add<Element>, Element >
+{};
 
 
 concept AdditiveSemiGroup<typename Element>
@@ -272,8 +285,13 @@ concept AdditiveSemiGroup<typename Element>
 {};
 
 
+// We really need only one of the additive concepts for the requirements, 
+// the requirements of the other would be implied.
+// Vice versa, to derive concept maps of nested concepts from
+// concept maps of refined concepts, they are needed all.
 concept AdditiveCommutativeSemiGroup<typename Element>
   : AdditiveSemiGroup<Element>,
+    AdditiveCommutativeMagma<Element>,
     CommutativeSemiGroup< math::add<Element>, Element >
 {};
 
@@ -295,46 +313,65 @@ concept AdditiveCommutativeMonoid<typename Element>
 {};
 
 
-
-
-concept AdditiveGroup<typename Element>
+concept AdditivePartiallyInvertibleMonoid<typename Element>
   : AdditiveMonoid<Element>,
-    Group< math::add<Element>, Element >
+    PartiallyInvertibleMonoid< math::add<Element>, Element >
 {
     // Operator -, binary and unary
     where std::Subtractable<Element>;   
     where Negatable<Element>;
 
-    // Operator -= by default defined with -, which is
-    // not efficient, user should implement its own
-    // It's not yet supported anyway
+    typename assign_result_type;  
+    assign_result_type operator-=(Element& x, Element y);
+     
+    // Operator - by default defined with -=
     typename result_type;  
-    result_type operator-=(Element& x, Element y);
+    result_type operator-(Element& x, Element y);
 #if 0
     {
-	return x= x - y;                      defaults NYS
+	Element tmp(x);
+	return tmp -= y;                      defaults NYS
     }
 #endif 
-     
-    result_type operator-(Element x);
+
+    typename unary_result_type;  
+    unary_result_type operator-(Element x);
 #if 0
     {
 	return identity<math::add<Element>, Element>()(x) - x;      defaults NYS
     }
 #endif 
     
-    axiom Consistency(math::add<Element> op, Element x, Element y)
+    axiom Consistency(math::add<Element> op, Element x, Element y);
+#if 0
     {
-	// consistency between Group and AdditiveGroup
-	// op(x, inverse<math::add<Element>, Element>() (y)) == x - y;                    NYS
-	// inverse<math::add<Element>, Element>() (y) == -y;
+	// consistency between additive and pure algebraic concept
+	op(x, inverse<math::add<Element>, Element>() (y)) == x - y;            NYS
+	inverse<math::add<Element>, Element>() (y) == -y;                      NYS
 
 	// consistency between unary and binary -
-	// Element(0) - x == -x
+	identity<math::add<Element>, Element>() (x) - x == -x;                 NYS
 
-	// I don't know how to express consistency between - and -=
+	// Might change later
+        x - y == x -= y;                                                       NYS
+	// Element tmp = x; tmp-= y; tmp == x - y; not proposal-compliant
     }  
+#endif 
 };
+
+
+concept AdditivePartiallyInvertibleCommutativeMonoid<typename Element>
+  : AdditivePartiallyInvertibleMonoid<Element>,
+    AdditiveCommutativeMonoid<Element>,
+    PartiallyInvertibleCommutativeMonoid< math::add<Element>, Element >
+{};
+
+
+
+concept AdditiveGroup<typename Element>
+  : AdditivePartiallyInvertibleMonoid<Element>,
+    Group< math::add<Element>, Element >
+{};
 
 
 concept AdditiveAbelianGroup<typename Element>

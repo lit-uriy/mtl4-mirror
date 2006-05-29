@@ -10,7 +10,7 @@
 
 namespace math {
 
-    template <typename Op, typename Element>
+    template <typename Operation, typename Element>
     struct is_invertible 
     {
 	bool operator()(const Element&) const;
