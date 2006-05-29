@@ -5,25 +5,24 @@
 
 namespace math {
 
-    template <typename Element>
-    struct add
+template <typename Element>
+struct add
+{
+    Element operator() (const Element& x, const Element& y)
     {
-	Element operator() (const Element& x, const Element& y)
-	{
-	    return x + y;
-	}
-    };
+	return x + y;
+    }
+};
 
-    template <typename Element>
-    struct mult
+template <typename Element>
+struct mult
+{
+    Element operator() (const Element& x, const Element& y)
     {
-	Element operator() (const Element& x, const Element& y)
-	{
-	    return x * y;
-	}
-    };
+	return x * y;
+    }
+};
 
-    
 } // namespace math
 
 #endif // MATH_OPERATORS_INCLUDE
