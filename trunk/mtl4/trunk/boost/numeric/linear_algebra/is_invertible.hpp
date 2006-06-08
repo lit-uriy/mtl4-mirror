@@ -33,7 +33,7 @@ namespace math {
 	}
     };
 
-
+#if 0
     // shouldn't be needed !
     template <>
     struct is_invertible< mult<float>, float >
@@ -43,24 +43,17 @@ namespace math {
 	    return v != 0.0f;
 	}
     };
-
+#endif
 
     // Default for scalars: integral are never invertible and floating points if not 0
+    // Enabling with enable_if is problematic, instead we control it with concept maps
     template <typename Element>
     struct is_invertible< mult<Element>, Element >
     {
-        // typename boost::enable_if<boost::is_float<Element>, bool>::type
-        bool 
-	operator() (const Element& v) const 
+	bool operator() (const Element& v) const 
 	{
-	    return v != 0.0;
+	    return v != Element(0);
 	}
-
-	typename boost::enable_if<boost::is_integral<Element>, bool>::type
-	operator() (const Element&) const 
-	{
-	    return false;
-	}    
     };
 
 } // namespace math

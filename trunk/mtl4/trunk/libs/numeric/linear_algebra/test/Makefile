@@ -1,9 +1,9 @@
-CXXFLAGS += -g -I${BOOST_ROOT} -I${MTL_BOOST_ROOT} -Wno-long-double # -I${GLAS_ROOT}/branches/state_2006_2_23/glas 
+CXXFLAGS += -g -I${BOOST_ROOT} -I${MTL_BOOST_ROOT} --include bits/stdc++.h # -Wno-long-double # 
 
 XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_algebra/concepts.hpp \
                  Makefile
 
-CXX = g++ # conceptg++
+CXX =  conceptg++
 
 TARGETS =	positive_real	positive_real_explicit string_example \
 		float_example int_example mod_n_example
@@ -30,5 +30,8 @@ int_example:	int_example.cpp  ${XTRA_SOURCES}
 mod_n_example:	mod_n_example.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ mod_n_example.cpp
 
+concept_map_test:	concept_map_test.cpp  ${XTRA_SOURCES}
+	${CXX} ${CXXFLAGS} -o $@ concept_map_test.cpp
+
 clean:
-	rm -rf ${TARGETS}
+	rm -rf ${TARGETS} *~ 
