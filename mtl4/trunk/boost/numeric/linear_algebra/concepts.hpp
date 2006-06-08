@@ -56,13 +56,15 @@ auto concept Negatable<typename Element>
    typename result_type;
    result_type operator-(Element x);
 }
+
+
 auto concept Divisible<typename T, typename U = T>
 {
     typename result_type;
     result_type operator/(T t, U u);
 };
 
-
+#if 0
 auto concept DivisibleWithAssign<typename T, typename U = T>
   : Divisible<T, U>
 {
@@ -77,7 +79,7 @@ auto concept DivisibleWithAssign<typename T, typename U = T>
     }
 #endif 
 }; 
-
+#endif 
 
 auto concept AddableWithAssign<typename T, typename U = T>
 {
@@ -152,7 +154,7 @@ concept CommutativeMagma<typename Operation, typename Element>
 {
     axiom Commutativity(Operation op, Element x, Element y)
     {
-	// op(x, y) == op(y, x);   NYS
+	op(x, y) == op(y, x); 
     }   
 };
 
@@ -163,7 +165,7 @@ concept SemiGroup<typename Operation, typename Element>
 {
     axiom Associativity(Operation op, Element x, Element y, Element z)
     {
-	// op(x, op(y, z)) == op(op(x, y), z);              NYS
+	op(x, op(y, z)) == op(op(x, y), z); 
     }
 };
 
@@ -182,8 +184,8 @@ concept Monoid<typename Operation, typename Element>
 
     axiom Neutrality(Operation op, Element x)
     {
-	// op( x, identity<Operation, Element>()(x) ) == x;   NYS
-	// op( identity<Operation, Element>()(x), x ) == x;   NYS
+	op( x, identity<Operation, Element>()(x) ) == x;
+	op( identity<Operation, Element>()(x), x ) == x;
     }
 };
 
@@ -221,13 +223,17 @@ concept PartiallyInvertibleCommutativeMonoid<typename Operation, typename Elemen
 concept Group<typename Operation, typename Element>
   : PartiallyInvertibleMonoid<Operation, Element>
 {
-    // where UnaryIsoFunction< inverse<Operation, Element>, Element >; // put to PartiallyInvertibleMonoid
+    axiom AlwaysInvertible(Operation op, Element x)
+    {
+	is_invertible<Operation, Element>()(x);
+    }
 
     axiom Inversion(Operation op, Element x)
     {
-	// In contrast to PartiallyInvertibleMonoid all elements must be invertible
-	// op( x, inverse<Operation, Element>()(x) ) == identity<Operation, Element>()(x);   NYS
-	// op( inverse<Operation, Element>()(x), x ) == identity<Operation, Element>()(x);   NYS
+	// In fact this is implied by AlwaysInvertible and inherited Inversion axiom
+	// However, we don't rely on the compiler to deduce this
+	op( x, inverse<Operation, Element>()(x) ) == identity<Operation, Element>()(x);
+	op( inverse<Operation, Element>()(x), x ) == identity<Operation, Element>()(x);
     }
 };
 
@@ -244,14 +250,15 @@ concept AbelianGroup<typename Operation, typename Element>
 
 
 auto concept AdditiveMagma<typename Element>
-  : Magma< math::add<Element>, Element >
 {
+    where Magma< math::add<Element>, Element >;
+
     typename assign_result_type;  
     assign_result_type operator+=(Element& x, Element y);
 
     // Operator + is by default defined with +=
     typename result_type;  
-    result_type operator+(Element& x, Element y);
+    result_type operator+(Element x, Element y);
 #if 0
     {
 	Element tmp(x);
@@ -265,24 +272,26 @@ auto concept AdditiveMagma<typename Element>
 
     axiom Consistency(math::add<Element> op, Element x, Element y)
     {
-	// op(x, y) == x + y;                    NYS
+	op(x, y) == x + y;                    
 	// Might change later
-        // x + y == x += y;
+        x + y == x += y;
 	// Element tmp = x; tmp+= y; tmp == x + y; not proposal-compliant
-    }  
+    }   
 }
 
 
 concept AdditiveCommutativeMagma<typename Element>
-  : AdditiveMagma<Element>, 
-    CommutativeMagma< math::add<Element>, Element >
-{};
+  : AdditiveMagma<Element> 
+{
+    where CommutativeMagma< math::add<Element>, Element >;
+};
 
 
 concept AdditiveSemiGroup<typename Element>
-  : AdditiveMagma<Element>, 
-    SemiGroup< math::add<Element>, Element >
-{};
+  : AdditiveMagma<Element>
+{
+    where SemiGroup< math::add<Element>, Element >;
+};
 
 
 // We really need only one of the additive concepts for the requirements, 
@@ -291,15 +300,17 @@ concept AdditiveSemiGroup<typename Element>
 // concept maps of refined concepts, they are needed all.
 concept AdditiveCommutativeSemiGroup<typename Element>
   : AdditiveSemiGroup<Element>,
-    AdditiveCommutativeMagma<Element>,
-    CommutativeSemiGroup< math::add<Element>, Element >
-{};
+    AdditiveCommutativeMagma<Element>
+{
+    where CommutativeSemiGroup< math::add<Element>, Element >;
+};
 
 
 concept AdditiveMonoid<typename Element>
-  : AdditiveSemiGroup<Element>,
-    Monoid< math::add<Element>, Element >
-{};
+  : AdditiveSemiGroup<Element>
+{
+    where Monoid< math::add<Element>, Element >;
+};
 
 
 // We really need only one of the additive concepts for the requirements, 
@@ -308,15 +319,17 @@ concept AdditiveMonoid<typename Element>
 // concept maps of refined concepts, they are needed all.
 concept AdditiveCommutativeMonoid<typename Element>
   : AdditiveMonoid<Element>,
-    AdditiveCommutativeSemiGroup<Element>,
-    CommutativeMonoid< math::add<Element>, Element >
-{};
+    AdditiveCommutativeSemiGroup<Element>
+{
+    where CommutativeMonoid< math::add<Element>, Element >;
+};
 
 
 concept AdditivePartiallyInvertibleMonoid<typename Element>
-  : AdditiveMonoid<Element>,
-    PartiallyInvertibleMonoid< math::add<Element>, Element >
+  : AdditiveMonoid<Element>
 {
+    where PartiallyInvertibleMonoid< math::add<Element>, Element >;
+
     // Operator -, binary and unary
     where std::Subtractable<Element>;   
     where Negatable<Element>;
@@ -334,6 +347,8 @@ concept AdditivePartiallyInvertibleMonoid<typename Element>
     }
 #endif 
 
+    // #if 0 // end of input localization
+
     typename unary_result_type;  
     unary_result_type operator-(Element x);
 #if 0
@@ -342,43 +357,53 @@ concept AdditivePartiallyInvertibleMonoid<typename Element>
     }
 #endif 
     
-    axiom Consistency(math::add<Element> op, Element x, Element y);
-#if 0
+    axiom Consistency(math::add<Element> op, Element x, Element y)
     {
+#if 0
+	// Conditional axioms have problems
+	// -->  error: expected `(' before 'if'   '
 	// consistency between additive and pure algebraic concept
-	op(x, inverse<math::add<Element>, Element>() (y)) == x - y;            NYS
-	inverse<math::add<Element>, Element>() (y) == -y;                      NYS
+	if ( is_invertible<math::add<Element>, Element>()(y) )
+	    op(x, inverse<math::add<Element>, Element>() (y)) == x - y;            
+	if ( is_invertible<math::add<Element>, Element>()(y) )
+	    inverse<math::add<Element>, Element>() (y) == -y;                      
 
 	// consistency between unary and binary -
-	identity<math::add<Element>, Element>() (x) - x == -x;                 NYS
+	if ( is_invertible<math::add<Element>, Element>()(x) )
+	    identity<math::add<Element>, Element>() (x) - x == -x;                 
 
 	// Might change later
-        x - y == x -= y;                                                       NYS
+	if ( is_invertible<math::add<Element>, Element>()(y) )
+	    x - y == x -= y;                                                       
 	// Element tmp = x; tmp-= y; tmp == x - y; not proposal-compliant
-    }  
 #endif 
+    }  
+
 };
 
 
 concept AdditivePartiallyInvertibleCommutativeMonoid<typename Element>
   : AdditivePartiallyInvertibleMonoid<Element>,
-    AdditiveCommutativeMonoid<Element>,
-    PartiallyInvertibleCommutativeMonoid< math::add<Element>, Element >
-{};
+    AdditiveCommutativeMonoid<Element>
+{
+    where PartiallyInvertibleCommutativeMonoid< math::add<Element>, Element >;
+};
 
 
 
 concept AdditiveGroup<typename Element>
-  : AdditivePartiallyInvertibleMonoid<Element>,
-    Group< math::add<Element>, Element >
-{};
+  : AdditivePartiallyInvertibleMonoid<Element>
+{
+    where Group< math::add<Element>, Element >;
+};
 
 
 concept AdditiveAbelianGroup<typename Element>
   : AdditiveGroup<Element>,
-    AdditiveCommutativeMonoid<Element>,
-    AbelianGroup< math::add<Element>, Element >
-{};
+    AdditiveCommutativeMonoid<Element>
+{
+    where AbelianGroup< math::add<Element>, Element >;
+};
 
 
 // ============================
@@ -387,87 +412,121 @@ concept AdditiveAbelianGroup<typename Element>
 
 
 auto concept MultiplicativeMagma<typename Element>
-  : Magma< math::mult<Element>, Element >
 {
-    // Operator + 
-    where std::Multiplicable<Element>;
+    where Magma< math::mult<Element>, Element >;
 
-    // Operator += by default defined with +, which is 
-    // not efficient, user should implement its own
-    // It's not yet supported anyway
+    typename assign_result_type;  
+    assign_result_type operator*=(Element& x, Element y);
+
+    // Operator * is by default defined with *=
     typename result_type;  
-    result_type operator*=(Element& x, Element y);
+    result_type operator*(Element& x, Element y);
 #if 0
     {
-	return x= x * y;                      defaults NYS
+	Element tmp(x);
+	return tmp *= y;                      defaults NYS
     }
 #endif 
-
-    // Consistency with Magma
-
-    where std::SameType< std::Addable<Element>::result_type, 
+    
+    // Type consistency with Magma
+    where std::SameType< result_type, 
 	                 Magma< math::mult<Element>, Element >::result_type>;
-    // or so?
-    // where std::MutuallyConvertible< std::Addable<Element>::result_type, 
-    //                                 Magma< math::mult<Element>, Element >::result_type;
 
     axiom Consistency(math::mult<Element> op, Element x, Element y)
     {
-	// op(x, y) == x * y;                    NYS
-	// I don't know how to express consistency between * and *=
-	// Element tmp = x; tmp*= y; tmp == x * y; 
+	op(x, y) == x * y;                    
+	// Might change later
+        x * y == x *= y;
+	// Element tmp = x; tmp*= y; tmp == x * y; not proposal-compliant
     }  
+
 }
 
 
 concept MultiplicativeSemiGroup<typename Element>
-  : MultiplicativeMagma<Element>, 
-    SemiGroup< math::mult<Element>, Element >
-{};
+  : MultiplicativeMagma<Element>
+{ 
+    where SemiGroup< math::mult<Element>, Element >;
+};
 
 
 concept MultiplicativeCommutativeSemiGroup<typename Element>
-  : MultiplicativeSemiGroup<Element>,
-    CommutativeSemiGroup< math::mult<Element>, Element >
-{};
+  : MultiplicativeSemiGroup<Element>
+{
+    where CommutativeSemiGroup< math::mult<Element>, Element >;
+};
 
 
 concept MultiplicativeMonoid<typename Element>
-  : MultiplicativeSemiGroup<Element>,
-    Monoid< math::mult<Element>, Element >
-{};
+  : MultiplicativeSemiGroup<Element>
+{
+    where Monoid< math::mult<Element>, Element >;
+};
 
-
-// We really need only one of the multiplicative concepts, 
-// the requirements of the other would be implied.
 
 concept MultiplicativeCommutativeMonoid<typename Element>
   : MultiplicativeMonoid<Element>,
-    MultiplicativeCommutativeSemiGroup<Element>,
-    CommutativeMonoid< math::mult<Element>, Element >
-{};
+    MultiplicativeCommutativeSemiGroup<Element>
+{
+    where CommutativeMonoid< math::mult<Element>, Element >;
+};
+
+
+concept MultiplicativePartiallyInvertibleMonoid<typename Element>
+  : MultiplicativeMonoid<Element>
+{
+    where PartiallyInvertibleMonoid< math::mult<Element>, Element >;
+
+    typename assign_result_type;  
+    assign_result_type operator/=(Element& x, Element y);
+     
+    // Operator / by default defined with /=
+    typename result_type;  
+    result_type operator/(Element& x, Element y);
+#if 0
+    {
+	Element tmp(x);
+	return tmp /= y;                      defaults NYS
+    }
+#endif 
+    
+    axiom Consistency(math::mult<Element> op, Element x, Element y)
+    {
+#if 0
+	// consistency between multiplicative and pure algebraic concept
+	if ( is_invertible<math::mult<Element>, Element>()(y) )
+	    op(x, inverse<math::mult<Element>, Element>() (y)) == x / y;           NYS
+
+	// Consistency between / and /=, might change later
+	if ( is_invertible<math::mult<Element>, Element>()(y) )
+	    x / y == x /= y;                                                       NYS
+	// Element tmp = x; tmp/= y; tmp == x / y; not proposal-compliant
+#endif 
+    }  
+};
+
+
+concept MultiplicativePartiallyInvertibleCommutativeMonoid<typename Element>
+  : MultiplicativePartiallyInvertibleMonoid<Element>,
+    MultiplicativeCommutativeMonoid<Element>
+{
+    where PartiallyInvertibleCommutativeMonoid< math::mult<Element>, Element >;
+};
 
 
 concept MultiplicativeGroup<typename Element>
-  : MultiplicativeMonoid<Element>,
-    Group< math::mult<Element>, Element >,
-    DivisibleWithAssign<Element>
+  : MultiplicativeMonoid<Element>
 {        
-    axiom Consistency(math::mult<Element> op, Element x, Element y)
-    {
-	// consistency between Group and MultiplicativeGroup
-	// op(x, inverse<math::mult<Element>, Element>() (y)) == x / y;                    NYS
-
-	// I don't know how to express consistency between / and /=
-    }  
+    where Group< math::mult<Element>, Element >;
 };
 
 
 concept MultiplicativeAbelianGroup<typename Element>
   : MultiplicativeGroup<Element>,
-    MultiplicativeCommutativeMonoid<Element>,
-    AbelianGroup< math::mult<Element>, Element >
-{};
+    MultiplicativeCommutativeMonoid<Element>
+{
+    where AbelianGroup< math::mult<Element>, Element >;
+};
 
 
 // ======================================
@@ -491,9 +550,9 @@ concept Ring<typename Element>
     axiom Distributivity(Element x, Element y, Element z)
     {
 	// From left
-	// x * (y + z) == x * y + x * From;
-	// z right
-	// (x + y) * z == x * y + x * z;
+	x * (y + z) == x * y + x * z;
+	// From right
+	(x + y) * z == x * y + x * z;
     }
 };
 
@@ -518,7 +577,7 @@ concept CommutativeRingWithIdentity<typename Element>
 
 concept DivisionRing<typename Element>
   : RingWithIdentity<Element>,
-    DivisibleWithAssign<Element>
+    MultiplicativePartiallyInvertibleMonoid<Element>
 {
     axiom Consistency(Element x, Element y)
     {
@@ -533,7 +592,7 @@ concept DivisionRing<typename Element>
 	// as a consequence of 0 == 1. It is called the trivial field and of no practical value.
 	// Therefore, we exclude this field and require 0 != 1.
  
-	// identity<math::add<Element>, Element>()(x) != identity<math::mult<Element>, Element>()(x);        NYS
+	identity<math::add<Element>, Element>()(x) != identity<math::mult<Element>, Element>()(x);
     }
 
     axiom NonZeroDivisibility(Element x)
@@ -720,11 +779,38 @@ auto concept NumericOperatorResultConvertible<typename T>
 
 #ifndef LA_NO_CONCEPT_MAPS
 
+// ==============
+// Integral Types
+// ==============
+
+// concept_map AbelianGroup<math::add<char>, char> {}
+// concept_map AbelianGroup<math::add<short>, short> {}
+concept_map AbelianGroup<math::add<int>, int> {}
+concept_map AbelianGroup<math::add<long>, long> {}
+concept_map AbelianGroup<math::add<long long>, long long> {}
+
+// concept_map CommutativeMonoid<math::mult<char>, char> {}
+// concept_map CommutativeMonoid<math::mult<short>, short> {}
+concept_map CommutativeMonoid<math::mult<int>, int> {}
+concept_map CommutativeMonoid<math::mult<long>, long> {}
+concept_map CommutativeMonoid<math::mult<long long>, long long> {}
+
 // concept_map CommutativeRingWithIdentity<char> {}
 // concept_map CommutativeRingWithIdentity<short> {}
 concept_map CommutativeRingWithIdentity<int> {}
 concept_map CommutativeRingWithIdentity<long> {}
 concept_map CommutativeRingWithIdentity<long long> {}
+
+
+// ====================
+// Floating Point Types
+// ====================
+
+concept_map AbelianGroup<math::add<float>, float> {}
+concept_map AbelianGroup<math::add<double>, double> {}
+
+concept_map PartiallyInvertibleCommutativeMonoid<math::mult<float>, float> {} 
+concept_map PartiallyInvertibleCommutativeMonoid<math::mult<double>, double> {} 
 
 concept_map Field<float> {}
 concept_map Field<double> {}
@@ -736,11 +822,14 @@ concept_map Field<double> {}
     concept_map Field< std::complex<T> > {}
 #endif
 
+concept_map AbelianGroup< math::add< std::complex<float> >, std::complex<float> > {}
+concept_map AbelianGroup< math::add< std::complex<double> >, std::complex<double> > {}
+
+concept_map PartiallyInvertibleCommutativeMonoid<math::mult< std::complex<float> >, std::complex<float> > {} 
+concept_map PartiallyInvertibleCommutativeMonoid<math::mult< std::complex<double> >, std::complex<double> > {}
+
 concept_map Field< std::complex<float> > {}
 concept_map Field< std::complex<double> > {}
-
-// concept_map AbelianGroup< math::add<float>, float > {}
-concept_map PartiallyInvertibleCommutativeMonoid< math::mult<float>, float > {}
 
 #endif // LA_NO_CONCEPT_MAPS
 
