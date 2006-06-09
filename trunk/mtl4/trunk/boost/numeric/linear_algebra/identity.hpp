@@ -15,7 +15,7 @@ struct identity {};
 // However, for vectors one needs to know the dimension
 // (and in parallel eventually also the distribution).
 // Therefore, an element is passed as reference.
-// It is strongly recommended to specialize this tyypetrait
+// It is strongly recommended to specialize this functor
 // for better efficiency.
 template <typename Element>
 struct identity< add<Element>, Element > 
@@ -41,6 +41,31 @@ struct identity< mult<Element>, Element >
 	return tmp;
     }
 };
+
+
+// Function is shorter than typetrait-like functor
+template <typename Element, typename Operation>
+Element identity_f(const Element& v)
+{
+    return identity<Operation, Element>() (v);
+}
+
+
+// Short-cut for multiplicative identity
+template <typename Element>
+Element zero(const Element& v)
+{
+    return identity<math::add<Element>, Element>() (v);
+}
+
+
+// Short-cut for multiplicative identity
+template <typename Element>
+Element one(const Element& v)
+{
+    return identity<math::mult<Element>, Element>() (v);
+}
+
 
 } // namespace math
 

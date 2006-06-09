@@ -6,7 +6,7 @@ XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_al
 CXX =  conceptg++
 
 TARGETS =	positive_real	positive_real_explicit string_example \
-		float_example int_example mod_n_example
+		float_example int_example # mod_n_example stumbles at the moment over compiler error
 
 it:	all
 
@@ -32,6 +32,9 @@ mod_n_example:	mod_n_example.cpp  ${XTRA_SOURCES}
 
 concept_map_test:	concept_map_test.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ concept_map_test.cpp
+
+vector_test:	vector_test.cpp  ${XTRA_SOURCES}
+	${CXX} ${CXXFLAGS} -o $@ vector_test.cpp
 
 clean:
 	rm -rf ${TARGETS} *~ 
