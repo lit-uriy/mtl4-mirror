@@ -240,6 +240,15 @@ namespace math {
 
     // Can we express Prime<N> as a concept?
 
+    // template <unsigned N>
+    concept_map PartiallyInvertibleMonoid< mult< mod_n_t<unsigned, 23> >, mod_n_t<unsigned, 23> > {}
+
+
+
+
+
+#if 0
+    // internal compiler error
     template <typename T, T N>
     concept_map PartiallyInvertibleMonoid< mult< mod_n_t<T, N> >, mod_n_t<T, N> > {}
 
@@ -249,6 +258,8 @@ namespace math {
 	 mult< mod_n_t<T, N> >, 
 	 mod_n_t<T, N> 
        > {}
+#endif
+
 
 # endif // LA_WITH_CONCEPTS
 

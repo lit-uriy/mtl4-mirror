@@ -5,14 +5,12 @@
 
 #include <boost/config/concept_macros.hpp>
 
-#ifdef LA_NO_CONCEPTS
+#ifdef LA_WITH_CONCEPTS
+#  include <concepts>
+#else
 #  warning "Concepts are not used"
 #endif
 
-#ifdef LA_WITH_CONCEPTS
-
-#include <bits/concepts.h>
-// #include <concepts>
 
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/linear_algebra/is_invertible.hpp>
@@ -21,16 +19,19 @@
 
 // If desired one can disable the default concept maps with LA_NO_CONCEPT_MAPS
 
-#ifndef LA_NO_CONCEPT_MAPS
-#  include <complex>
-#endif
+
+#include <complex>
+
 
 namespace math {
+
+#ifdef LA_WITH_CONCEPTS
+
+
 
 // ================
 // Utility Concepts
 // ================
-
 
 // Concepts for functions mapping to same type or convertible
 auto concept UnaryIsoFunction<typename Operation, typename Element>
@@ -50,86 +51,6 @@ auto concept BinaryIsoFunction<typename Operation, typename Element>
     typename result_type = std::Callable2<Operation, Element, Element>::result_type;
 };
 
-
-auto concept Negatable<typename Element>
-{
-   typename result_type;
-   result_type operator-(Element x);
-}
-
-
-auto concept Divisible<typename T, typename U = T>
-{
-    typename result_type;
-    result_type operator/(T t, U u);
-};
-
-#if 0
-auto concept DivisibleWithAssign<typename T, typename U = T>
-  : Divisible<T, U>
-{
-    // Operator /= by default defined with /, which is not efficient
-    // not efficient, user should implement its own
-    // It's not yet supported anyway
-    typename result_type;  
-    result_type operator/=(T& x, U y);
-#if 0
-    {
-	return x= x / y;                      defaults NYS
-    }
-#endif 
-}; 
-#endif 
-
-auto concept AddableWithAssign<typename T, typename U = T>
-{
-    where std::Addable<T, U>;
-
-    // Operator += by default defined with +, which is not efficient
-    // not efficient, user should implement its own
-    // It's not yet supported anyway
-    typename result_type;  
-    result_type operator+=(T& x, U y);
-#if 0
-    {
-	return x= x + y;                      defaults NYS
-    }
-#endif 
-}; 
-
-
-auto concept SubtractableWithAssign<typename T, typename U = T>
-{
-    where std::Subtractable<T, U>;
-    
-    // Operator -= by default defined with -, which is not efficient
-    // not efficient, user should implement its own
-    // It's not yet supported anyway
-    typename result_type;  
-    result_type operator-=(T& x, U y);
-#if 0
-    {
-	return x= x - y;                      defaults NYS
-    }
-#endif 
-}; 
-
-
-auto concept MultiplicableWithAssign<typename T, typename U = T>
-{
-    where std::Multiplicable<T, U>;
-
-    // Operator *= by default defined with *, which is not efficient
-    // not efficient, user should implement its own
-    // It's not yet supported anyway
-    typename result_type;  
-    result_type operator*=(T& x, U y);
-#if 0
-    {
-	return x= x * y;                      defaults NYS
-    }
-#endif 
-}; 
 
 
 
@@ -330,10 +251,6 @@ concept AdditivePartiallyInvertibleMonoid<typename Element>
 {
     where PartiallyInvertibleMonoid< math::add<Element>, Element >;
 
-    // Operator -, binary and unary
-    where std::Subtractable<Element>;   
-    where Negatable<Element>;
-
     typename assign_result_type;  
     assign_result_type operator-=(Element& x, Element y);
      
@@ -420,7 +337,7 @@ auto concept MultiplicativeMagma<typename Element>
 
     // Operator * is by default defined with *=
     typename result_type;  
-    result_type operator*(Element& x, Element y);
+    result_type operator*(Element x, Element y);
 #if 0
     {
 	Element tmp(x);
@@ -772,7 +689,6 @@ auto concept NumericOperatorResultConvertible<typename T>
     SubtractionResultConvertible<T>
 {};
 
-
 // ====================
 // Default Concept Maps
 // ====================
@@ -833,9 +749,66 @@ concept_map Field< std::complex<double> > {}
 
 #endif // LA_NO_CONCEPT_MAPS
 
+#endif // LA_WITH_CONCEPTS
+
+
+// =================================================
+// Concept to specify return type of abs (and norms)
+// =================================================
+
+
+#ifdef LA_WITH_CONCEPTS
+
+// Concept to specify return type of abs and norms
+concept ScalarWithMagnitude<typename T>
+{
+    typename type;
+};
+
+template <typename T>
+  where std::Integral<T>
+concept_map ScalarWithMagnitude<T>
+{
+    typedef T type;
+}
+
+concept_map ScalarWithMagnitude<float> { typedef float magnitude_type; };
+concept_map ScalarWithMagnitude<double> { typedef double magnitude_type; };
+
+template <typename T>
+  where ScalarWithMagnitude<T>
+concept_map ScalarWithMagnitude< std::complex<T> >
+{
+    typedef T type;
+    // Or recursively ?
+    // typedef ScalarWithMagnitude<T>::magnitude_type type;
+};
+
+
+// concept_map ScalarWithMagnitude<short> { typedef short magnitude_type };
+
+#else
+
+// For the moment everything is its own magnitude type, unless stated otherwise
+template <typename T>
+struct magnitude_type_trait
+{
+    typedef T type;
+};
+
+template <typename T>
+struct magnitude_type_trait< std::complex<T> >
+{
+    typedef T type;
+};
+
+#endif
+
+
+
+
 } // namespace math
 
 
-#endif // LA_WITH_CONCEPTS
 
 #endif // LA_CONCEPTS_INCLUDE
