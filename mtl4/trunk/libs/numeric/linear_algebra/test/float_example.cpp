@@ -11,7 +11,7 @@
 
 using math::identity; using math::add;
 
-int main(int, char* []) 
+int main(int, char* [])
 {
     using namespace std;
     using namespace mtl;
