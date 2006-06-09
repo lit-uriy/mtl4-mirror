@@ -6,6 +6,7 @@
 #include <boost/numeric/linear_algebra/inverse.hpp>
 #include <boost/numeric/linear_algebra/operators.hpp>
 #include <boost/numeric/linear_algebra/concepts.hpp>
+#include <cassert>
 
 #include "algebraic_functions.hpp"
 
@@ -138,7 +139,8 @@ inline mod_n_t<T, N> mod_n_t<T, N>::operator/= (const mod_n_t<T, N>& y)
     check(*this); check(y);
     if (y.get() == 0) throw "Division by 0";
 
-    // Goes wrong with unsigned b/c some values will be negative
+    // Goes wrong with unsigned b/c some values will be negative (even if the result isn't)
+    // Something like remove_sign<T>::type would be cute
     int u= N, v= y.get(), /* u1= 1, */  u2= 0, /* v1= 0, */  v2= 1, q, r, /* r1, */  r2;
 
     while (u % v != 0) {
@@ -251,6 +253,19 @@ namespace math {
 # endif // LA_WITH_CONCEPTS
 
 }
+
+#if 0 
+
+concept Prime<int N> {}
+
+template <int N>
+where std::True<is_prime<N>::value> 
+concept_map Prime<N> {}
+
+concept True<bool> { }
+concept_map True<true> { }
+
+#endif
 
 
 
