@@ -25,7 +25,8 @@ Problems and questions with numerical concepts
 
 - problem with concept map
 
-
+- if a default implementation requires a concept which is otherwise not needed?
+  e.g. derivation of + from += needs CopyConstructible
 
 
 
