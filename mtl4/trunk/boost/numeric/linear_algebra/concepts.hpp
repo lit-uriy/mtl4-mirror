@@ -760,34 +760,34 @@ concept_map Field< std::complex<double> > {}
 #ifdef LA_WITH_CONCEPTS
 
 // Concept to specify return type of abs and norms
-concept ScalarWithMagnitude<typename T>
+concept MagnitudeType<typename T>
 {
     typename type;
+
+    // where FullEqualityComparable<type>;
+    // where FullLessThanComparable<type>;
 };
 
 template <typename T>
   where std::Integral<T>
-concept_map ScalarWithMagnitude<T>
+concept_map MagnitudeType<T>
 {
     typedef T type;
 }
 
-concept_map ScalarWithMagnitude<float> { typedef float magnitude_type; };
-concept_map ScalarWithMagnitude<double> { typedef double magnitude_type; };
+concept_map MagnitudeType<float> { typedef float magnitude_type; };
+concept_map MagnitudeType<double> { typedef double magnitude_type; };
 
 template <typename T>
-  where ScalarWithMagnitude<T>
-concept_map ScalarWithMagnitude< std::complex<T> >
+  where MagnitudeType<T>
+concept_map MagnitudeType< std::complex<T> >
 {
     typedef T type;
     // Or recursively ?
-    // typedef ScalarWithMagnitude<T>::magnitude_type type;
+    // typedef MagnitudeType<T>::magnitude_type type;
 };
 
-
-// concept_map ScalarWithMagnitude<short> { typedef short magnitude_type };
-
-#else
+#else  // now without concepts
 
 // For the moment everything is its own magnitude type, unless stated otherwise
 template <typename T>
@@ -802,9 +802,173 @@ struct magnitude_type_trait< std::complex<T> >
     typedef T type;
 };
 
-#endif
+#endif  // LA_WITH_CONCEPTS
+
+// =========================================
+// Concepts for convenience (many from Rolf)
+// =========================================
 
 
+#ifdef LA_WITH_CONCEPTS
+
+//The following concepts Addable, Subtractable etc. differ from std::Addable, std::Subtractable 
+//etc. in so far that no default for result_type is provided, thus allowing automated return type deduction
+
+auto concept Addable<typename T, typename U = T>
+{
+    typename result_type;
+    result_type operator+(const T& t, const U& u);
+};
+  
+ 
+// Usually + and += are both defined
+// + can be efficiently derived from += but not vice versa
+auto concept AddableWithAssign<typename T, typename U = T>
+{
+    typename assign_result_type;  
+    assign_result_type operator+=(T& x, U y);
+
+    // Operator + is by default defined with +=
+    typename result_type;  
+    result_type operator+(T x, U y);
+#if 0
+    {
+	// Default requires std::CopyConstructible, without default not needed
+	Element tmp(x);                       
+	return tmp += y;                      defaults NYS
+    }
+#endif 
+};
+
+
+auto concept Subtractable<typename T, typename U = T>
+{
+    typename result_type;
+    result_type operator-(const T& t, const U& u);
+};
+  
+
+// Usually - and -= are both defined
+// - can be efficiently derived from -= but not vice versa
+auto concept SubtractableWithAssign<typename T, typename U = T>
+{
+    typename assign_result_type;  
+    assign_result_type operator-=(T& x, U y);
+
+    // Operator - is by default defined with -=
+    typename result_type;  
+    result_type operator-(T x, U y);
+#if 0
+    {
+	// Default requires std::CopyConstructible, without default not needed
+	Element tmp(x);                       
+	return tmp -= y;                      defaults NYS
+    }
+#endif 
+};
+
+
+auto concept Multiplicable<typename T, typename U = T>
+{
+    typename result_type;
+    result_type operator*(const T& t, const U& u);
+};
+
+
+// Usually * and *= are both defined
+// * can be efficiently derived from *= but not vice versa
+auto concept MultiplicableWithAssign<typename T, typename U = T>
+{
+    typename assign_result_type;  
+    assign_result_type operator*=(T& x, U y);
+
+    // Operator * is by default defined with *=
+    typename result_type;  
+    result_type operator*(T x, U y);
+#if 0
+    {
+	// Default requires std::CopyConstructible, without default not needed
+	Element tmp(x);                       
+	return tmp *= y;                      defaults NYS
+    }
+#endif 
+};
+
+
+auto concept Divisible<typename T, typename U = T>
+{
+    typename result_type;
+    result_type operator / (const T&, const U&);
+};
+
+
+// Usually * and *= are both defined
+// * can be efficiently derived from *= but not vice versa
+auto concept DivisibleWithAssign<typename T, typename U = T>
+{
+    typename assign_result_type;  
+    assign_result_type operator*=(T& x, U y);
+
+    // Operator * is by default defined with *=
+    typename result_type;  
+    result_type operator*(T x, U y);
+#if 0
+    {
+	// Default requires std::CopyConstructible, without default not needed
+	Element tmp(x);                       
+	return tmp *= y;                      defaults NYS
+    }
+#endif 
+};
+
+
+auto concept Transposable<typename T>
+{
+    typename result_type;
+    result_type trans(T&);
+};  
+
+
+// Unary Negation -> Any suggestions for better names?! Is there a word as "negatable"?!
+auto concept Negatable<typename S>
+{
+    typename result_type = S;
+    result_type operator-(const S&);
+};
+
+
+// Dot product to be defined:
+auto concept Dottable<typename T, typename U = T>
+{
+    typename result_type = T;
+    result_type dot(const T&t, const U& u);
+};
+    
+
+auto concept OneNormApplicable<typename V> 
+{
+    typename result_type;
+    result_type one_norm(const V&);
+};
+
+
+auto concept TwoNormApplicable<typename V> 
+{
+    typename result_type;
+    result_type two_norm(const V&);
+};
+
+
+auto concept InfinityNormApplicable<typename V> 
+{
+    typename result_type;
+    result_type inf_norm(const V&);
+};
+
+
+
+
+#endif  // LA_WITH_CONCEPTS
 
 
 } // namespace math
