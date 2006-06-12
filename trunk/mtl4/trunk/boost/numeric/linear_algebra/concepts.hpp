@@ -759,7 +759,9 @@ concept_map Field< std::complex<double> > {}
 
 #ifdef LA_WITH_CONCEPTS
 
-// Concept to specify return type of abs and norms
+// Concept to specify to specify projection of scalar value to comparable type
+// For instance as return type of abs
+// Minimalist definition for maximal applicability
 concept MagnitudeType<typename T>
 {
     typename type;
@@ -775,19 +777,37 @@ concept_map MagnitudeType<T>
     typedef T type;
 }
 
-concept_map MagnitudeType<float> { typedef float magnitude_type; };
-concept_map MagnitudeType<double> { typedef double magnitude_type; };
+
+// Concept for norms etc., which are real values in mathematical definitions
+concept RealMagnitude<typename T>
+  : MagnitudeType<T>
+{
+    where FullEqualityComparable<type>;
+    where FullLessThanComparable<type>;
+
+    where Field<type>;
+
+    type sqrt(type);
+    // typename sqrt_result;
+    // sqrt_result sqrt(type);
+    // where std::Convertible<sqrt_result, type>;
+
+    using std::abs;
+    type abs(T);
+}
+
+concept_map MagnitudeType<float> { typedef float type; };
+concept_map MagnitudeType<double> { typedef double type; };
 
 template <typename T>
   where MagnitudeType<T>
 concept_map MagnitudeType< std::complex<T> >
 {
     typedef T type;
-    // Or recursively ?
-    // typedef MagnitudeType<T>::magnitude_type type;
 };
 
 #else  // now without concepts
+
 
 // For the moment everything is its own magnitude type, unless stated otherwise
 template <typename T>
@@ -936,6 +956,24 @@ auto concept Negatable<typename S>
     result_type operator-(const S&);
 };
 
+// Or HasAbs?
+auto concept AbsApplicable<typename S>
+{
+    // There are better ways to define abs than the way it is done in std
+    // Likely we replace the using one day
+    using std::abs;
+    typename result_type;
+    result_type abs(const S&);
+};
+
+
+auto concept HasConjugate<typename S>
+{
+    using std::conj;
+    typename result_type;
+    result_type conj(const S&);
+};
+    
 
 // Dot product to be defined:
 auto concept Dottable<typename T, typename U = T>
