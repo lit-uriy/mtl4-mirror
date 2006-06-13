@@ -14,7 +14,7 @@ namespace math {
 
 
 // I'm not sure if we want the division here
-concept VectorSpace<typename Vector, typename Scalar = Vector::value_type>
+concept VectorSpace<typename Vector, typename Scalar = typename Vector::value_type>
   : Field<Scalar>,
     AdditiveAbelianGroup<Vector>,
     Multiplicable<Scalar, Vector>,
@@ -39,7 +39,7 @@ concept VectorSpace<typename Vector, typename Scalar = Vector::value_type>
 
 // The following concept introduces operations that are not needed in VectorSpace
 // but which are very common in numeric software
-concept ExtendedVectorSpace<typename Vector, typename Scalar = Vector::value_type>
+concept ExtendedVectorSpace<typename Vector, typename Scalar = typename Vector::value_type>
   : VectorSpace<Vector, Scalar>
 {
     // valid expression: "vector2 += scalar*vector1"
@@ -55,7 +55,7 @@ concept ExtendedVectorSpace<typename Vector, typename Scalar = Vector::value_typ
 
 
 concept Norm<typename N, typename Vector, 
-	     typename Scalar = Vector::value_type>
+	     typename Scalar = typename Vector::value_type>
   : std::Callable1<N, Vector>
 {
     where VectorSpace<Vector, Scalar>;
@@ -88,7 +88,7 @@ concept Norm<typename N, typename Vector,
 
 
 concept SemiNorm<typename N, typename Vector, 
-		 typename Scalar = Vector::value_type>
+		 typename Scalar = typename Vector::value_type>
   : Norm<N, Vector, Scalar>
 {
     axiom PositiveDefiniteness(N norm, Vector v)
@@ -112,14 +112,14 @@ concept SemiNorm<typename N, typename Vector,
 // finite precision arithmetic types.
 // Another subtle difference is that  Norm is not refined from Vectorspace
 concept BanachSpace<typename N, typename Vector, 
-		    typename Scalar = Vector::value_type>
+		    typename Scalar = typename Vector::value_type>
   : Norm<N, Vector, Scalar>,
     VectorSpace<Vector, Scalar>
 {};
 
 
 concept InnerProduct<typename I, typename Vector, 
-		     typename Scalar = Vector::value_type>
+		     typename Scalar = typename Vector::value_type>
   : std::Callable2<I, Vector, Vector>
 {
     where VectorSpace<Vector, Scalar>;
@@ -156,7 +156,7 @@ concept InnerProduct<typename I, typename Vector,
 	magnitude_type (inner(v, v)) >= magnitude_type(0);
     }
 
-    asiom NonDegeneracy(I inner, Vector v, Vector w)
+    axiom NonDegeneracy(I inner, Vector v, Vector w)
     {
 	// conditional axioms not yet supported
 #if 0
@@ -171,7 +171,7 @@ concept InnerProduct<typename I, typename Vector,
 
 // A dot product is only a semantically special case of an inner product
 concept DotProduct<typename I, typename Vector, 
-		   typename Scalar = Vector::value_type>
+		   typename Scalar = typename Vector::value_type>
   : InnerProduct<I, Vector, Scalar>
 {};
 
@@ -181,7 +181,7 @@ concept DotProduct<typename I, typename Vector,
 // Might be moved to another place later
 // Definition as class and function
 template <typename I, typename Vector,
-	  typename Scalar = Vector::value_type>
+	  typename Scalar = typename Vector::value_type>
 #if 0 
   where InnerProduct<I, Vector, Scalar> 
         && RealMagnitude<Scalar>
@@ -207,9 +207,9 @@ struct induced_norm_t
 };
 
 
-
+#if 0
 template <typename I, typename Vector,
-	  typename Scalar = Vector::value_type>
+	  typename Scalar = typename Vector::value_type>
   LA_WHERE( InnerProduct<I, Vector, Scalar> 
 	    && RealMagnitude<Scalar> )
 magnitude_type_trait<Scalar>::type
@@ -217,16 +217,16 @@ induced_norm(const I& inner, const Vector& v)
 {
     return induced_norm_t<I, Vector, Scalar>() (inner, v);
 }
-
+#endif
 
 #ifdef LA_WITH_CONCEPTS
 
 
 concept HilbertSpace<typename I, typename Vector,
-		     typename Scalar = Vector::value_type>
+		     typename Scalar = typename Vector::value_type>
   : InnerProduct<I, Vector, Scalar>,
-    VectorSpace<Vector, Scalar>
-    // BanachSpace<induced_norm_t<I, Vector, Scalar>, Vector, Scalar>
+    //VectorSpace<Vector, Scalar>
+    BanachSpace<induced_norm_t<I, Vector, Scalar>, Vector, Scalar>
 {};
 
 #endif // LA_WITH_CONCEPTS

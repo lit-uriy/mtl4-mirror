@@ -247,7 +247,7 @@ namespace math {
 
 
 
-#if 0
+  //#if 0
     // internal compiler error
     template <typename T, T N>
     concept_map PartiallyInvertibleMonoid< mult< mod_n_t<T, N> >, mod_n_t<T, N> > {}
@@ -258,7 +258,7 @@ namespace math {
 	 mult< mod_n_t<T, N> >, 
 	 mod_n_t<T, N> 
        > {}
-#endif
+  //#endif
 
 
 # endif // LA_WITH_CONCEPTS
