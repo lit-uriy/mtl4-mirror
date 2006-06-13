@@ -792,7 +792,7 @@ concept RealMagnitude<typename T>
     // sqrt_result sqrt(type);
     // where std::Convertible<sqrt_result, type>;
 
-    using std::abs;
+    // using std::abs;
     type abs(T);
 }
 
@@ -806,9 +806,10 @@ concept_map MagnitudeType< std::complex<T> >
     typedef T type;
 };
 
-#else  // now without concepts
+//#else  // now without concepts
+#endif  // LA_WITH_CONCEPTS
 
-
+// Type trait version both available with and w/o concepts (TBD: Macro finally :-( )
 // For the moment everything is its own magnitude type, unless stated otherwise
 template <typename T>
 struct magnitude_type_trait
@@ -822,7 +823,6 @@ struct magnitude_type_trait< std::complex<T> >
     typedef T type;
 };
 
-#endif  // LA_WITH_CONCEPTS
 
 // =========================================
 // Concepts for convenience (many from Rolf)
@@ -957,19 +957,19 @@ auto concept Negatable<typename S>
 };
 
 // Or HasAbs?
+using std::abs;
 auto concept AbsApplicable<typename S>
 {
     // There are better ways to define abs than the way it is done in std
     // Likely we replace the using one day
-    using std::abs;
     typename result_type;
     result_type abs(const S&);
 };
 
 
+using std::conj;
 auto concept HasConjugate<typename S>
 {
-    using std::conj;
     typename result_type;
     result_type conj(const S&);
 };
