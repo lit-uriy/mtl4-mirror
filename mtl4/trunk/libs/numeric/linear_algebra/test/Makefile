@@ -1,4 +1,4 @@
-CXXFLAGS += -g -I${BOOST_ROOT} -I${MTL_BOOST_ROOT} --include bits/stdc++.h # -Wno-long-double # 
+CXXFLAGS += -g -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} --include bits/stdc++.h # -Wno-long-double # 
 
 XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_algebra/concepts.hpp \
                  Makefile
@@ -37,4 +37,4 @@ vector_test:	vector_test.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ vector_test.cpp
 
 clean:
-	rm -rf ${TARGETS} *~ 
+	rm -rf ${TARGETS} *~

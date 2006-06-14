@@ -27,6 +27,53 @@ namespace math {
 
 #ifdef LA_WITH_CONCEPTS
 
+// ==================================
+// Classification of Arithmetic Types
+// ==================================
+
+// In addtion to std::Integral
+concept Float<typename T> 
+  : std::DefaultConstructible<T>, std::CopyConstructible<T>,
+    std::LessThanComparable<T>, std::EqualityComparable<T>
+{
+  T operator+(T);
+  T operator+(T, T);
+  T& operator+=(T&, T);
+  T operator-(T, T);
+  T operator-(T);
+  T& operator-=(T&, T);
+  T operator*(T, T);
+  T& operator*=(T&, T);
+  T operator/(T, T);
+  T& operator/=(T&, T);
+
+  // TBD: Some day, these will come from LessThanComparable,
+  // EqualityComparable, etc.
+  bool operator>(T, T);
+  bool operator<=(T, T);
+  bool operator>=(T, T);
+  bool operator!=(T, T);
+
+  where std::Assignable<T> && std::SameType<std::Assignable<T>::result_type, T&>;
+}
+
+concept_map Float<float> {}
+concept_map Float<double> {}
+concept_map Float<long double> {}
+
+concept Arithmetic<typename T> {}
+
+template <typename T>
+  where std::Integral<T>
+concept_map Arithmetic<T> {}
+
+template <typename T>
+  where Float<T>
+concept_map Arithmetic<T> {}
+
+template <typename T>
+  where Arithmetic<T>
+concept_map Arithmetic< std::complex<T> > {}
 
 
 // ================
@@ -450,82 +497,6 @@ concept MultiplicativeAbelianGroup<typename Element>
 // Algebraic concepts with two connectors
 // ======================================
 
-// ------------------
-// Based on operators 
-// ------------------
-
-// Handier, less generic
-
-
-// Alternative definitions use MultiplicativeMonoid<Element> for Ring
-// and call such concepts Pseudo-Ring
-
-concept Ring<typename Element>
-  : AdditiveAbelianGroup<Element>,
-    MultiplicativeSemiGroup<Element>
-{
-    axiom Distributivity(Element x, Element y, Element z)
-    {
-	// From left
-	x * (y + z) == x * y + x * z;
-	// From right
-	(x + y) * z == x * y + x * z;
-    }
-};
-
-
-concept CommutativeRing<typename Element>
-  : Ring<Element>,
-    MultiplicativeCommutativeSemiGroup<Element>
-{};
-
-
-concept RingWithIdentity<typename Element>
-  : Ring<Element>,
-    MultiplicativeMonoid<Element>
-{};
- 
-
-concept CommutativeRingWithIdentity<typename Element>
-  : RingWithIdentity<Element>,
-    CommutativeRing<Element>
-{};
- 
-
-concept DivisionRing<typename Element>
-  : RingWithIdentity<Element>,
-    MultiplicativePartiallyInvertibleMonoid<Element>
-{
-    axiom Consistency(Element x, Element y)
-    {
-	// I don't know how to express consistency between / and /=
-    }  
-
-    axiom ZeroIsDifferentFromOne(Element x)
-    {
-	// 0 != 1
-	// Note that it is possible to allow 0 == 1 in a DivisionRing, this structure would be even
-	// a field. On the other hand this Field would only contain one single element
-	// as a consequence of 0 == 1. It is called the trivial field and of no practical value.
-	// Therefore, we exclude this field and require 0 != 1.
- 
-	identity<math::add<Element>, Element>()(x) != identity<math::mult<Element>, Element>()(x);
-    }
-
-    axiom NonZeroDivisibility(Element x)
-    {
-	// if (x != 0) x / x == 1
-	// if (x != identity<math::add<Element>, Element>()(x))                                         NYS
-	//     x / x == identity<math::mult<Element>, Element>()(x);
-    }
-};    
-
-
-concept Field<typename Element>
-  : DivisionRing<Element>,
-    CommutativeRingWithIdentity<Element>
-{};
-
 // -----------------
 // Based on functors
 // -----------------
@@ -533,33 +504,29 @@ concept Field<typename Element>
 // More generic, less handy to use
 
 concept GenericRing<typename AddOp, typename MultOp, typename Element>
+  : AbelianGroup<AddOp, Element>,
+    SemiGroup<MultOp, Element>
 {
-    where AbelianGroup<AddOp, Element>;
-
-    where SemiGroup<MultOp, Element>;
-
     axiom Distributivity(AddOp add, MultOp mult, Element x, Element y, Element z)
     {
 	// From left
-	// mult(x, add(y, z)) == add(mult(x, y), mult(x, z));
+	mult(x, add(y, z)) == add(mult(x, y), mult(x, z));
 	// z right
-	// mult(add(x, y), z) == add(mult(x, z), mult(y, z));
+	mult(add(x, y), z) == add(mult(x, z), mult(y, z));
     }
 };
 
 
 concept GenericCommutativeRing<typename AddOp, typename MultOp, typename Element>
-  : GenericRing<AddOp, MultOp, Element>
-{
-    where CommutativeSemiGroup<MultOp, Element>;
-};
+  : GenericRing<AddOp, MultOp, Element>,
+    CommutativeSemiGroup<MultOp, Element>
+{};
 
 
 concept GenericRingWithIdentity<typename AddOp, typename MultOp, typename Element>
-  : GenericRing<AddOp, MultOp, Element>
-{
-    where Monoid<MultOp, Element>;
-};
+  : GenericRing<AddOp, MultOp, Element>,
+    Monoid<MultOp, Element>
+{};
 
 
 concept GenericCommutativeRingWithIdentity<typename AddOp, typename MultOp, typename Element>
@@ -578,14 +545,14 @@ concept GenericDivisionRing<typename AddOp, typename MultOp, typename Element>
 	// 0 != 1
 	// Comments see DivisionRing
 
-	// identity<AddOp, Element>()(x) != identity<MultOp, Element>()(x);        NYS
+	identity<AddOp, Element>()(x) != identity<MultOp, Element>()(x);       
     }
 
     axiom NonZeroDivisibility(MultOp mult, Element x)
     {
-	// if (x != 0) x / x == 1
-	// if (x != identity<AddOp, Element>()(x))                                         NYS
-	//     mult(x, inverse<MultOp, Element>()(x)) == identity<MultOp, Element>()(x);
+	if (x != 0) x / x == 1;
+	if (x != identity<AddOp, Element>()(x))                                         
+	    mult(x, inverse<MultOp, Element>()(x)) == identity<MultOp, Element>()(x);
     }
 };    
 
@@ -594,6 +561,123 @@ concept GenericField<typename AddOp, typename MultOp, typename Element>
   : GenericDivisionRing<AddOp, MultOp, Element>,
     GenericCommutativeRingWithIdentity<AddOp, MultOp, Element>
 {};
+
+
+// ------------------
+// Based on operators 
+// ------------------
+
+// Handier, less generic
+
+
+// Alternative definitions use MultiplicativeMonoid<Element> for Ring
+// and call such concepts Pseudo-Ring
+
+
+concept Ring<typename Element>
+  : AdditiveAbelianGroup<Element>,
+    MultiplicativeSemiGroup<Element>
+{
+    where GenericRing<math::add<Element>, math::mult<Element>, Element>;
+};
+
+
+concept CommutativeRing<typename Element>
+  : Ring<Element>,
+    MultiplicativeCommutativeSemiGroup<Element>   
+{
+    where GenericCommutativeRing<math::add<Element>, math::mult<Element>, Element>;
+};
+
+
+concept RingWithIdentity<typename Element>
+  : Ring<Element>,
+    MultiplicativeMonoid<Element>
+{
+    where GenericRingWithIdentity<math::add<Element>, math::mult<Element>, Element>;
+};
+ 
+
+concept CommutativeRingWithIdentity<typename Element>
+  : RingWithIdentity<Element>,
+    CommutativeRing<Element>
+{
+    where GenericCommutativeRingWithIdentity<math::add<Element>, math::mult<Element>, Element>;
+};
+
+
+concept DivisionRing<typename Element>
+  : RingWithIdentity<Element>,
+    MultiplicativePartiallyInvertibleMonoid<Element>
+{ 
+    where GenericDivisionRing<math::add<Element>, math::mult<Element>, Element>;
+
+    axiom NonZeroDivisibility(Element x)
+    {
+	if (x != zero(x)) 
+	    x / x == one(x);
+    }
+};    
+
+
+concept Field<typename Element>
+  : DivisionRing<Element>,
+    CommutativeRingWithIdentity<Element>
+{
+    where GenericField<math::add<Element>, math::mult<Element>, Element>;
+};
+
+#if 0
+// Commented out due to problems with concept map nesting
+
+concept Ring<typename Element>
+  : AdditiveAbelianGroup<Element>,
+    MultiplicativeSemiGroup<Element>,
+    GenericRing<math::add<Element>, math::mult<Element>, Element>
+{};
+
+
+concept CommutativeRing<typename Element>
+  : Ring<Element>,
+    MultiplicativeCommutativeSemiGroup<Element>,
+    GenericCommutativeRing<math::add<Element>, math::mult<Element>, Element>    
+{};
+
+
+concept RingWithIdentity<typename Element>
+  : Ring<Element>,
+    MultiplicativeMonoid<Element>,
+    GenericRingWithIdentity<math::add<Element>, math::mult<Element>, Element>
+{};
+ 
+
+concept CommutativeRingWithIdentity<typename Element>
+  : RingWithIdentity<Element>,
+    CommutativeRing<Element>,
+    GenericCommutativeRingWithIdentity<math::add<Element>, math::mult<Element>, Element>
+{};
+
+
+concept DivisionRing<typename Element>
+  : RingWithIdentity<Element>,
+    MultiplicativePartiallyInvertibleMonoid<Element>, 
+    GenericDivisionRing<math::add<Element>, math::mult<Element>, Element>
+{
+    axiom NonZeroDivisibility(Element x)
+    {
+	if (x != zero(x)) 
+	    x / x == one(x);
+    }
+};    
+
+
+concept Field<typename Element>
+  : DivisionRing<Element>,
+    CommutativeRingWithIdentity<Element>,
+    GenericField<math::add<Element>, math::mult<Element>, Element>
+{};
+
+#endif  
 
 
 // ======================
@@ -699,37 +783,47 @@ auto concept NumericOperatorResultConvertible<typename T>
 // Integral Types
 // ==============
 
-// concept_map AbelianGroup<math::add<char>, char> {}
-// concept_map AbelianGroup<math::add<short>, short> {}
-concept_map AbelianGroup<math::add<int>, int> {}
-concept_map AbelianGroup<math::add<long>, long> {}
-concept_map AbelianGroup<math::add<long long>, long long> {}
 
-// concept_map CommutativeMonoid<math::mult<char>, char> {}
-// concept_map CommutativeMonoid<math::mult<short>, short> {}
-concept_map CommutativeMonoid<math::mult<int>, int> {}
-concept_map CommutativeMonoid<math::mult<long>, long> {}
-concept_map CommutativeMonoid<math::mult<long long>, long long> {}
+// The following two concept maps will be implied by nesting
+template <typename T>
+  where std::SignedIntegral<T>
+concept_map AbelianGroup<math::add<T>, T> {}
 
-// concept_map CommutativeRingWithIdentity<char> {}
-// concept_map CommutativeRingWithIdentity<short> {}
-concept_map CommutativeRingWithIdentity<int> {}
-concept_map CommutativeRingWithIdentity<long> {}
-concept_map CommutativeRingWithIdentity<long long> {}
+template <typename T>
+  where std::SignedIntegral<T>
+concept_map CommutativeMonoid<math::mult<T>, T> {}
+
+template <typename T>
+  where std::SignedIntegral<T>
+concept_map GenericCommutativeRingWithIdentity<math::add<T>, math::mult<T>, T> {}
+
+template <typename T>
+  where std::SignedIntegral<T>
+concept_map CommutativeRingWithIdentity<T> {}
 
 
 // ====================
 // Floating Point Types
 // ====================
 
-concept_map AbelianGroup<math::add<float>, float> {}
-concept_map AbelianGroup<math::add<double>, double> {}
 
-concept_map PartiallyInvertibleCommutativeMonoid<math::mult<float>, float> {} 
-concept_map PartiallyInvertibleCommutativeMonoid<math::mult<double>, double> {} 
+// The following two concept maps will be implied by nesting
+template <typename T>
+  where Float<T>
+concept_map AbelianGroup<math::add<T>, T> {}
 
-concept_map Field<float> {}
-concept_map Field<double> {}
+template <typename T>
+  where Float<T>
+concept_map PartiallyInvertibleCommutativeMonoid<math::mult<T>, T> {} 
+
+template <typename T>
+  where Float<T>
+concept_map GenericField<math::add<T>, math::mult<T>, T> {}
+
+template <typename T>
+  where Float<T>
+concept_map Field<T> {}
+
 
 #if 0
     // Convertibility from results into complex<T> must be expressed properly for co
@@ -743,6 +837,9 @@ concept_map AbelianGroup< math::add< std::complex<double> >, std::complex<double
 
 concept_map PartiallyInvertibleCommutativeMonoid<math::mult< std::complex<float> >, std::complex<float> > {} 
 concept_map PartiallyInvertibleCommutativeMonoid<math::mult< std::complex<double> >, std::complex<double> > {}
+
+concept_map GenericField<math::add<std::complex<float> >, math::mult<std::complex<float> >, std::complex<float> > {}
+concept_map GenericField<math::add<std::complex<double> >, math::mult<std::complex<double> >, std::complex<double> > {}
 
 concept_map Field< std::complex<float> > {}
 concept_map Field< std::complex<double> > {}
