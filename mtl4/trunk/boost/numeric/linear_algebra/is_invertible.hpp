@@ -4,57 +4,49 @@
 #define MATH_IS_INVERTIBLE_INCLUDE
 
 #include <boost/numeric/linear_algebra/operators.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/type_traits.hpp>
-
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace math {
 
-    template <typename Operation, typename Element>
-    struct is_invertible 
-    {
-	bool operator()(const Element&) const;
-    };
+template <typename Operation, typename Element>
+struct is_invertible_t
+{
+    // bool operator()(const Operation&, const Element&) const;
+};
 
 
-    // Scalars are supposed to have an additive inverse unless unsigned
-    // Other types have by default no inverse (specialization needed)
-    template <typename Element>
-    struct is_invertible< add<Element>, Element >
+// By default all elements are invertible w.r.t. addition
+// If only part of the elements are invertible it shall be handled by specialization of the type
+// Whether invertibility is relevant at all shall be concrolled by the user with concept maps
+template <typename Element>
+struct is_invertible_t< add<Element>, Element >
+{
+    bool operator() (const add<Element>&, const Element&) const 
     {
-	bool operator() (const Element&) const 
-	{
-	    return boost::is_arithmetic<Element>::value 
-		&& !boost::is_same<Element, unsigned char>::value 
-		&& !boost::is_same<Element, unsigned short>::value 
-		&& !boost::is_same<Element, unsigned int>::value 
-		&& !boost::is_same<Element, unsigned long>::value 
-		&& !boost::is_same<Element, unsigned long long>::value; 
-	}
-    };
+	return true;
+    }
+};
 
-#if 0
-    // shouldn't be needed !
-    template <>
-    struct is_invertible< mult<float>, float >
-    {
-	bool operator() (float v) const
-	{
-	    return v != 0.0f;
-	}
-    };
-#endif
 
-    // Default for scalars: integral are never invertible and floating points if not 0
-    // Enabling with enable_if is problematic, instead we control it with concept maps
-    template <typename Element>
-    struct is_invertible< mult<Element>, Element >
+// By default all non-zero elements are invertible w.r.t. multiplication
+// If another part of the elements or all elements are invertible it shall be handled by specialization of the type
+// Whether invertibility is relevant at all shall be concrolled by the user with concept maps
+template <typename Element>
+struct is_invertible_t< mult<Element>, Element >
+{
+    bool operator() (const mult<Element>&, const Element& v) const 
     {
-	bool operator() (const Element& v) const 
-	{
-	    return v != Element(0);
-	}
-    };
+	return v == zero(v);
+    }
+};
+
+
+// Function is shorter than typetrait-like functor
+template <typename Operation, typename Element>
+inline bool is_invertible(const Operation& op, const Element& v)
+{
+    return is_invertible_t<Operation, Element>() (op, v);
+}
 
 } // namespace math
 
