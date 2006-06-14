@@ -805,7 +805,7 @@ auto concept NumericOperatorResultConvertible<typename T>
 // ==============
 
 
-// The following two concept maps will be implied by nesting
+// The following three concept maps will be implied by nesting
 template <typename T>
   where std::SignedIntegral<T>
 concept_map AbelianGroup<math::add<T>, T> {}
