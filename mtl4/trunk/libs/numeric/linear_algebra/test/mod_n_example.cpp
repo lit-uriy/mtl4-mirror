@@ -268,11 +268,6 @@ concept_map GenericCommutativeRingWithIdentity
 	 mod_n_t<T, N> 
        > {}
 
-#if 0 
-template <typename T, T N>
-    where meta_math::Prime<N>
-concept_map CommutativeSemiGroup< mult< mod_n_t<T, N> >, mod_n_t<T, N> > {} 
-#endif
 
 template <typename T, T N>
     where meta_math::Prime<N>
