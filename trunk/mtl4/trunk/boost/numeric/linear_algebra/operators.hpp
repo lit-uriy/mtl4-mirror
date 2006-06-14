@@ -52,7 +52,7 @@ struct heterogeneous_mult
 {
     R operator() (const A1& x, const A2& y)
     {
-	return x + y;
+	return x * y;
     }
 };
 

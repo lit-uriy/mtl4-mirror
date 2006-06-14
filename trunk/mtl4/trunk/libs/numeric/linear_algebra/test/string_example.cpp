@@ -13,11 +13,11 @@ using std::string;
 namespace math 
 {
     template<> 
-    struct identity< math::add<string>, string >  
+    struct identity_t< math::add<string>, string >  
     { 
-        string operator()(const string&) const 
+        string operator()(const math::add<string>&, const string&) const 
         {
-    	return string(); 
+	    return string(); 
         } 
     } ;
 

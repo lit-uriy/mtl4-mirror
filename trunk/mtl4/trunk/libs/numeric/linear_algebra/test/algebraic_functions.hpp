@@ -70,7 +70,7 @@ template <typename Op, typename Element>
 inline bool identity_pair(const Element& v1, const Element& v2, Op op) 
 {
     using math::identity;
-    return op(v1, v2) == identity<Op, Element>()(v1) ;
+    return op(v1, v2) == identity(op, v1) ;
 }
 
 
@@ -81,7 +81,7 @@ template <typename Op, typename Element, typename Exponent>
 inline Element multiply_and_square(Element base, Exponent exp, Op op) 
 {
     using math::identity;
-    Element value= identity<Op, Element>()(base), square= base;
+    Element value= identity(op, base), square= base;
     for (; exp > 0; exp>>= 1) {
 	if (exp & 1) 
 	    value= op(value, square);
@@ -101,12 +101,12 @@ inline int algebraic_division(const Element& v1, const Element& v2, Op op)
 {
     using math::identity; using math::inverse; using math::is_invertible;
 
-    if (!is_invertible<Op, Element>() (v2))
+    if (!is_invertible(op, v2))
 	throw "In algebraic division: v2 must be invertible!\n";
 
     // Temporaries to avoid redundant operations
-    Element id= identity<Op, Element>()(v1),     // Identity
-            iv2= inverse<Op, Element>()(v2),     // Inverse of v2
+    Element id= identity(op, v1),     // Identity
+            iv2= inverse(op, v2),     // Inverse of v2
    	    tmp(v1);                             // Copy of v1, will be lessened until < id
 
     int counter= 0;
@@ -126,12 +126,12 @@ inline int ordered_algebraic_division(const Element& v1, const Element& v2, Op o
 {
     using math::identity; using math::inverse; using math::is_invertible;
 
-    if (!is_invertible<Op, Element>() (v2))
+    if (!is_invertible(op, v2))
 	throw "In algebraic division: v2 must be invertible!\n";
 
     // Temporaries to avoid redundant operations
-    Element id= identity<Op, Element>()(v1),     // Identity
-            iv2= inverse<Op, Element>()(v2),     // Inverse of v2
+    Element id= identity(op, v1),     // Identity
+            iv2= inverse(op, v2),     // Inverse of v2
    	    tmp(v1);                             // Copy of v1, will be lessened until < id
     
     if (v1 <= id) return 0;

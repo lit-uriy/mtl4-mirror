@@ -6,6 +6,7 @@
 #include <boost/numeric/linear_algebra/inverse.hpp>
 #include <boost/numeric/linear_algebra/operators.hpp>
 #include <boost/numeric/linear_algebra/concepts.hpp>
+#include <boost/numeric/meta_math/is_prime.hpp>
 #include <cassert>
 
 #include "algebraic_functions.hpp"
@@ -166,59 +167,65 @@ inline int gcd(int u, int v)
 namespace math {
 
     template<typename T, T N>
-    struct identity< add< mod_n_t<T, N> >, mod_n_t<T, N> >
+    struct identity_t< add< mod_n_t<T, N> >, mod_n_t<T, N> >
     {
-	mod_n_t<T, N> operator() (mod_n_t<T, N> const& v) const
+	typedef mod_n_t<T, N> mod_t;
+	mod_t operator() (add<mod_t> const&, mod_t const& v) const
 	{
-	    return mod_n_t<T, N>(0);
+	    return mod_t(0);
 	}
     };
 
 
     // Reverse definition, a little more efficient if / uses inverse
     template<typename T, T N>
-    struct inverse< add< mod_n_t<T, N> >, mod_n_t<T, N> >
+    struct inverse_t< add< mod_n_t<T, N> >, mod_n_t<T, N> >
     {
-	mod_n_t<T, N> operator() (mod_n_t<T, N> const& v) const
+	typedef mod_n_t<T, N> mod_t;
+	mod_t operator() (add<mod_t> const& op, mod_t const& v) const
 	{
-	    return identity< add< mod_n_t<T, N> >, mod_n_t<T, N> >(v) - v;
+	    return identity(op, v) - v;
 	}
     };
     
 
     template<typename T, T N>
-    struct is_invertible< add< mod_n_t<T, N> >, mod_n_t<T, N> >
+    struct is_invertible_t< add< mod_n_t<T, N> >, mod_n_t<T, N> >
     {
-	bool operator() (mod_n_t<T, N> const& v) const
+	typedef mod_n_t<T, N> mod_t;
+	bool operator() (add<mod_t> const&, mod_t const& v) const
 	{ return true; }
     };
     
 
     template<typename T, T N>
-    struct identity< mult< mod_n_t<T, N> >, mod_n_t<T, N> >
+    struct identity_t< mult< mod_n_t<T, N> >, mod_n_t<T, N> >
     {
-	mod_n_t<T, N> operator() (mod_n_t<T, N> const& v) const
+	typedef mod_n_t<T, N> mod_t;
+	mod_t operator() (mult<mod_t> const&, mod_t const& v) const
 	{
-	    return mod_n_t<T, N>(1);
+	    return mod_t(1);
 	}
     };
 
 
     // Reverse definition, a little more efficient if / uses inverse
     template<typename T, T N>
-    struct inverse< mult< mod_n_t<T, N> >, mod_n_t<T, N> >
+    struct inverse_t< mult< mod_n_t<T, N> >, mod_n_t<T, N> >
     {
-	mod_n_t<T, N> operator() (mod_n_t<T, N> const& v) const
+	typedef mod_n_t<T, N> mod_t;
+	mod_t operator() (mult<mod_t> const&, mod_t const& v) const
 	{
-	    return mod_n_t<T, N>(1) / v;
+	    return mod_t(1) / v;
 	}
     };
     
 
     template<typename T, T N>
-    struct is_invertible< mult< mod_n_t<T, N> >, mod_n_t<T, N> >
+    struct is_invertible_t< mult< mod_n_t<T, N> >, mod_n_t<T, N> >
     {
-	bool operator() (mod_n_t<T, N> const& v) const
+	typedef mod_n_t<T, N> mod_t;
+	bool operator() (mult<mod_t> const&, mod_t const& v) const
 	{
 	    T value = v.get();
 	    return value != 0 && gcd(N, value) == 1;
@@ -228,55 +235,119 @@ namespace math {
 
 # ifdef LA_WITH_CONCEPTS
 
-
-#if 0 // more operators needed for this
-    // All modulo sets are commutative rings with identity
-    // but only if N is prime it is also a field
-    template <typename T, T N>
-    concept_map CommutativeRingWithIdentity< mod_n_t<T, N> > {}
-
-    concept_map Field< mod_n_t<unsigned, 127> > {}
-#endif    
-
-    // Can we express Prime<N> as a concept?
-
-    // template <unsigned N>
-    concept_map PartiallyInvertibleMonoid< mult< mod_n_t<unsigned, 23> >, mod_n_t<unsigned, 23> > {}
+// Concept mapping
+// All modulo sets are commutative rings with identity
+// but only if N is prime it is also a field
+// Due to some mapping nesting trouble we define normally derived maps
 
 
+template <typename T, T N>
+concept_map AbelianGroup< add< mod_n_t<T, N> >, mod_n_t<T, N> > 
+{
+    // Why do we need the typedefs???
+    
+    typedef mod_n_t<T, N> inverse_result_type;
+    typedef mod_n_t<T, N> identity_result_type;
+    typedef bool          is_invertible_result_type;
+}
 
+template <typename T, T N>
+concept_map PartiallyInvertibleCommutativeMonoid< mult< mod_n_t<T, N> >, mod_n_t<T, N> > 
+{
+    // Why do we need the typedefs???
+    
+    typedef mod_n_t<T, N> inverse_result_type;
+    typedef mod_n_t<T, N> identity_result_type;
+    typedef bool          is_invertible_result_type;
+}
 
-
-  //#if 0
-    // internal compiler error
-    template <typename T, T N>
-    concept_map PartiallyInvertibleMonoid< mult< mod_n_t<T, N> >, mod_n_t<T, N> > {}
-
-    template <typename T, T N>
-    concept_map GenericCommutativeRingWithIdentity
+template <typename T, T N>
+concept_map GenericCommutativeRingWithIdentity
        < add< mod_n_t<T, N> >, 
 	 mult< mod_n_t<T, N> >, 
 	 mod_n_t<T, N> 
        > {}
-  //#endif
 
+#if 0 
+template <typename T, T N>
+    where meta_math::Prime<N>
+concept_map CommutativeSemiGroup< mult< mod_n_t<T, N> >, mod_n_t<T, N> > {} 
+#endif
+
+template <typename T, T N>
+    where meta_math::Prime<N>
+concept_map GenericField
+       < add< mod_n_t<T, N> >, 
+	 mult< mod_n_t<T, N> >, 
+	 mod_n_t<T, N> 
+       > 
+{
+    // Why do we need the typedefs???
+    
+    typedef mod_n_t<T, N> inverse_result_type;
+    typedef mod_n_t<T, N> identity_result_type;
+    typedef bool          is_invertible_result_type;
+}
+
+
+template <typename T, T N>
+concept_map CommutativeRingWithIdentity< mod_n_t<T, N> > 
+{
+    // Why do we need the typedefs???
+    
+    typedef mod_n_t<T, N>& assign_result_type;
+    typedef mod_n_t<T, N>  result_type;
+    typedef mod_n_t<T, N>  unary_result_type;
+}
+
+
+template <typename T, T N>
+    where meta_math::Prime<N>
+concept_map Field< mod_n_t<T, N> >
+{
+    // Why do we need the typedefs???
+    
+    typedef mod_n_t<T, N>& assign_result_type;
+    typedef mod_n_t<T, N>  result_type;
+    typedef mod_n_t<T, N>  unary_result_type;
+}
+
+
+// Shall be only called if T is a Field 
+template <typename T>
+   where Field<T>
+bool is_field(const T&)
+{
+    return true;
+}
+
+// Shall be only called if T is not a Field 
+template <typename T>
+bool is_field(const T&)
+{
+    return false;
+}
+
+#if 0
+// Shall be only called if T is a Field 
+template <typename Add, typename Mult, typename T>
+   where GenericField<Add, Mult, T>
+bool is_field(const Add&, const Mult&, const T&)
+{
+    return true;
+}
+
+// Shall be only called if T is not a Field 
+template <typename Add, typename Mult, typename T>
+bool is_field(const Add&, const Mult&, const T&)
+{
+    return false;
+}
+#endif
 
 # endif // LA_WITH_CONCEPTS
 
 }
-
-#if 0 
-
-concept Prime<int N> {}
-
-template <int N>
-where std::True<is_prime<N>::value> 
-concept_map Prime<N> {}
-
-concept True<bool> { }
-concept_map True<true> { }
-
-#endif
 
 
 
@@ -295,14 +366,16 @@ int main(int, char* [])
 	 << algebraic_division(mod_5(4u), mod_5(2u), mult_mod_5) << endl; 
 
     typedef mod_n_t<unsigned, 28>    mod_28;
-    typedef math::mult<mod_28>       mult_mod_28_t;
+    math::mult<mod_28>               mult_mod_28;
+    math::add<mod_28>                add_mod_28;
     
-    cout << "1/3 " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(3)) 
-	 << " check " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(3)) * mod_28(3) << endl;
-    cout << "1/5 " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(5)) 
-	 << " check " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(5)) * mod_28(5) << endl;
-    cout << "1/9 " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(9)) 
-	 << " check " << math::inverse<mult_mod_28_t, mod_28>()(mod_28(9)) * mod_28(9) << endl;
+    cout << "1/3 " << math::inverse(mult_mod_28, mod_28(3)) 
+	 << " check " << math::inverse(mult_mod_28, mod_28(3)) * mod_28(3) << endl;
+    cout << "1/5 " << math::inverse(mult_mod_28, mod_28(5)) 
+	 << " check " << math::inverse(mult_mod_28, mod_28(5)) * mod_28(5) << endl;
+    cout << "1/9 " << math::inverse(mult_mod_28, mod_28(9)) 
+	 << " check " << math::inverse(mult_mod_28, mod_28(9)) * mod_28(9) << endl;
+    cout << "mod_28 is field: " << (math::is_field(mod_28(0)) ? "true\n" : "false\n");
 
     cout << "gcd(24, 28): " << gcd(24, 28) << endl;
     cout << "gcd(25, 28): " << gcd(25, 28) << endl;
@@ -310,6 +383,7 @@ int main(int, char* [])
 
     typedef mod_n_t<unsigned, 127>  mod_127;
     math::mult<mod_127>             mult_mod_127;
+    math::add<mod_127>              add_mod_127;
 
     mod_127   v78(78), v113(113), v90(90), v80(80);
    
@@ -330,6 +404,40 @@ int main(int, char* [])
     
     cout << "multiply_and_square(v78, 8, mult_mod_127) = 78^8 "
 	 << multiply_and_square(v78, 8, mult_mod_127) << endl;
+    cout << "mod_127 is field: " << (math::is_field(mod_127(0)) ? "true\n" : "false\n");
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if 0
+concept_map AbelianGroup<math::add<mod_n_t<unsigned int, 127u> >, mod_n_t<unsigned int, 127u> > {}
+concept_map CommutativeSemiGroup<math::mult<mod_n_t<unsigned int, 127u> >, mod_n_t<unsigned int, 127u> > {}
+
+concept_map GenericField
+       < add< mod_n_t<unsigned, 127> >, 
+	 mult< mod_n_t<unsigned, 127> >, 
+	 mod_n_t<unsigned, 127> 
+       > 
+{
+    // Why do we need the typedefs???
+    
+    typedef mod_n_t<unsigned, 127> inverse_result_type;
+    typedef mod_n_t<unsigned, 127> identity_result_type;
+    typedef bool          is_invertible_result_type;
+}
+#endif 
+
+

@@ -8,8 +8,9 @@
 namespace math {
 
 template <typename Operation, typename Element>
-struct identity {};
+struct identity_t {};
 
+// TBD: Do we the case that the return type is different? Using std::unary_function?
 
 // Additive identity of Element type is by default a converted 0
 // However, for vectors one needs to know the dimension
@@ -18,9 +19,9 @@ struct identity {};
 // It is strongly recommended to specialize this functor
 // for better efficiency.
 template <typename Element>
-struct identity< add<Element>, Element > 
+struct identity_t< add<Element>, Element > 
 { 
-    Element operator() (const Element& ref)
+    Element operator() (const add<Element>&, const Element& ref) const
     {
 	Element tmp(ref);
 	tmp= 0;
@@ -31,10 +32,11 @@ struct identity< add<Element>, Element >
 
 // Multiplicative identity of Element type is by default a converted 1
 // Same comments as above.
+// In contrast to additive identity, this default more likely to be wrong (e.g. matrices with all 1s)
 template <typename Element>
-struct identity< mult<Element>, Element > 
+struct identity_t< mult<Element>, Element > 
 { 
-    Element operator() (const Element& ref)
+    Element operator() (const mult<Element>&, const Element& ref) const
     {
 	Element tmp(ref);
 	tmp= 1;
@@ -44,26 +46,26 @@ struct identity< mult<Element>, Element >
 
 
 // Function is shorter than typetrait-like functor
-template <typename Element, typename Operation>
-Element identity_f(const Element& v)
+template <typename Operation, typename Element>
+inline Element identity(const Operation& op, const Element& v)
 {
-    return identity<Operation, Element>() (v);
+    return identity_t<Operation, Element>() (op, v);
+}
+
+
+// Short-cut for additive identity
+template <typename Element>
+inline Element zero(const Element& v)
+{
+    return identity_t<math::add<Element>, Element>() (math::add<Element>(), v);
 }
 
 
 // Short-cut for multiplicative identity
 template <typename Element>
-Element zero(const Element& v)
+inline Element one(const Element& v)
 {
-    return identity<math::add<Element>, Element>() (v);
-}
-
-
-// Short-cut for multiplicative identity
-template <typename Element>
-Element one(const Element& v)
-{
-    return identity<math::mult<Element>, Element>() (v);
+    return identity_t<math::mult<Element>, Element>() (math::mult<Element>(), v);
 }
 
 
