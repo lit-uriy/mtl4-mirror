@@ -7,7 +7,8 @@
 
 using namespace std;
 
-int const vector_size = 1000; // 1000
+int const vector_size = 1000, // 1000
+          repetitions = 500000;
  
 vector<double> gv1(vector_size, 2.0), gv2(vector_size, 3.0);
 
@@ -17,10 +18,12 @@ void time_dot(std::string fname, F f)
 
     boost::timer start;
     double result;
-    for (int i= 0; i < 1000000; i++) // 1000000
+    for (int i= 0; i < repetitions; i++) // 1000000
 	result= f(gv1, gv2);
     double duration = start.elapsed();
-    cout << fname << ": " << duration << "s, result = " << result << "\n";
+    cout << fname << ": " << duration / repetitions * 1000000 << "µs" 
+      // << ", result = " << result 
+	 << "\n";
 }
 
 double dot(vector<double> const& v1, vector<double> const& v2)
