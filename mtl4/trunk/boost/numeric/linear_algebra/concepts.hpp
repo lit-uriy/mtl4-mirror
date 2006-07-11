@@ -184,7 +184,6 @@ concept CommutativeSemiGroup<typename Operation, typename Element>
 concept Monoid<typename Operation, typename Element>
   : SemiGroup<Operation, Element> 
 {
-    // where UnaryIsoFunction< identity<Operation, Element>, Element >;
     typename identity_result_type;
     identity_result_type identity(Operation, Element);
     where std::Convertible<identity_result_type, Element>;
@@ -206,12 +205,10 @@ concept CommutativeMonoid<typename Operation, typename Element>
 concept PartiallyInvertibleMonoid<typename Operation, typename Element>
   : Monoid<Operation, Element> 
 {
-    // where std::Predicate< math::is_invertible<Operation, Element>, Element >;
     typename is_invertible_result_type;
     is_invertible_result_type is_invertible(Operation, Element);
     where std::Convertible<is_invertible_result_type, bool>;
 
-    // where UnaryIsoFunction< inverse<Operation, Element>, Element >; 
     typename inverse_result_type;
     inverse_result_type inverse(Operation, Element);
     where std::Convertible<inverse_result_type, Element>;
@@ -265,8 +262,6 @@ concept AbelianGroup<typename Operation, typename Element>
 auto concept AdditiveMagma<typename Element>
   : Magma< math::add<Element>, Element >
 {
-  // where Magma< math::add<Element>, Element >;
-
     typename plus_assign_result_type;  
     plus_assign_result_type operator+=(Element& x, Element y);
     where std::Convertible<plus_assign_result_type, Element>;
@@ -305,8 +300,6 @@ concept AdditiveCommutativeMagma<typename Element>
   : AdditiveMagma<Element>,
     CommutativeMagma< math::add<Element>, Element >
 {};
-//    where CommutativeMagma< math::add<Element>, Element >;
-
 
 
 concept AdditiveSemiGroup<typename Element>
@@ -787,6 +780,15 @@ auto concept NumericOperatorResultConvertible<typename T>
 template <typename T>
   where std::SignedIntegral<T>
 concept_map CommutativeRingWithIdentity<T> {}
+
+
+template <typename T>
+  where std::UnsignedIntegral<T>
+concept_map AdditiveCommutativeMonoid<T> {}
+
+template <typename T>
+  where std::UnsignedIntegral<T>
+concept_map MultiplicativeCommutativeMonoid<T> {}
 
 
 // ====================
