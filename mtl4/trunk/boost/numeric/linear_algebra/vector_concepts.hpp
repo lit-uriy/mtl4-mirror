@@ -15,12 +15,13 @@ namespace math {
 
 // I'm not sure if we want the division here
 concept VectorSpace<typename Vector, typename Scalar = typename Vector::value_type>
-  : Field<Scalar>,
-    AdditiveAbelianGroup<Vector>,
-    Multiplicable<Scalar, Vector>,
-    MultiplicableWithAssign<Vector, Scalar>,
-    DivisibleWithAssign<Vector, Scalar>
+: AdditiveAbelianGroup<Vector>
 {
+    where Field<Scalar>;
+    where Multiplicable<Scalar, Vector>;
+    where MultiplicableWithAssign<Vector, Scalar>;
+    where DivisibleWithAssign<Vector, Scalar>;
+  
     where std::Assignable<Vector, Multiplicable<Scalar, Vector>::result_type>;
     where std::Assignable<Vector, Multiplicable<Vector, Scalar>::result_type>;
     where std::Assignable<Vector, Divisible<Vector, Scalar>::result_type>;
@@ -68,10 +69,11 @@ concept Norm<typename N, typename Vector,
 
     typename result_type = std::Callable1<N, Vector>::result_type;
     where std::Convertible<result_type, magnitude_type>;
+    where std::Convertible<magnitude_type, Scalar>;
 
     axiom Positivity(N norm, Vector v, magnitude_type ref)
     {
-	norm(v) >= magnitude_type(0); // or zero(ref)
+	norm(v) >= zero(ref);
     }
 
     // The following is covered by RealMagnitude
@@ -124,13 +126,14 @@ concept BanachSpace<typename N, typename Vector,
 
 concept InnerProduct<typename I, typename Vector, 
 		     typename Scalar = typename Vector::value_type>
-  : std::Callable2<I, Vector, Vector>
 {
     where VectorSpace<Vector, Scalar>;
+    where std::Callable2<I, Vector, Vector>;
 
     // Result of the inner product must be convertible to Scalar
-    typename result_type = std::Callable2<I, Vector, Vector>::result_type;
-    where std::Convertible<result_type, Scalar>;
+    where std::Convertible<std::Callable2<I, Vector, Vector>::result_type, Scalar>;
+
+    where ets::InnerProduct<I, Vector, Scalar>;
 
     where HasConjugate<Scalar>;
 
@@ -148,27 +151,23 @@ concept InnerProduct<typename I, typename Vector,
 	inner(u + v, w) == inner(u, w) + inner(v, w);
     }
 
+    where RealMagnitude<Scalar>;
     typename magnitude_type = RealMagnitude<Scalar>::type;
-
-    // typename magnitude_type = MagnitudeType<Scalar>::type;
     // where FullLessThanComparable<magnitude_type>;
 
-    axiom NonNegativity(I inner, Vector v)
+    axiom NonNegativity(I inner, Vector v, MagnitudeType<Scalar>::type magnitude)
     {
 	// inner(v, v) == conj(inner(v, v)) implies inner(v, v) is real
 	// ergo representable as magnitude type
-	magnitude_type (inner(v, v)) >= magnitude_type(0);
+	const_cast<magnitude_type> (inner(v, v)) >= zero(magnitude)
     }
 
-    axiom NonDegeneracy(I inner, Vector v, Vector w)
+    axiom NonDegeneracy(I inner, Vector v, Vector w, Scalar s)
     {
-	// conditional axioms not yet supported
-#if 0
 	if (v == zero(v))
-	    inner(v, w) == Scalar(0);
-	if (inner(v, w) == Scalar(0))
+	    inner(v, w) == zero(s);
+	if (inner(v, w) == zero(s))
 	    v == zero(v);
-#endif
     }
 };
 
@@ -184,12 +183,11 @@ concept DotProduct<typename I, typename Vector,
 // Norm induced by inner product
 // Might be moved to another place later
 // Definition as class and function
+// Conversion from scalar to magnitude_type is covered by norm concept
 template <typename I, typename Vector,
 	  typename Scalar = typename Vector::value_type>
-#if 0 
-  where InnerProduct<I, Vector, Scalar> 
-        && RealMagnitude<Scalar>
-#endif
+  LA_WHERE(InnerProduct<I, Vector, Scalar> 
+	   && RealMagnitude<Scalar>)
 struct induced_norm_t
 {
     // Return type evtl. with macro to use concept definition
@@ -206,7 +204,7 @@ struct induced_norm_t
 	// typedef RealMagnitude<Scalar>::type magnitude_type;
 
 	typedef typename magnitude_type_trait<Scalar>::type magnitude_type;
-	return sqrt((magnitude_type)inner(v, v));
+	return sqrt(static_cast<magnitude_type> (inner(v, v)));
     }
 };
 
@@ -227,11 +225,16 @@ induced_norm(const I& inner, const Vector& v)
 
 
 concept HilbertSpace<typename I, typename Vector,
-		     typename Scalar = typename Vector::value_type>
+		     typename Scalar = typename Vector::value_type, 
+		     typename N = induced_norm_t<I, Vector, Scalar> >
   : InnerProduct<I, Vector, Scalar>,
-    //VectorSpace<Vector, Scalar>
-    BanachSpace<induced_norm_t<I, Vector, Scalar>, Vector, Scalar>
-{};
+    BanachSpace<N, Vector, Scalar>
+{
+    axiom Consistency(Vector v)
+    {
+	math::induced_norm_t<I, Vector, Scalar>()(v) == N()(v);                    
+    }   
+};
 
 #endif // LA_WITH_CONCEPTS
 
