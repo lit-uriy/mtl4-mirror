@@ -25,6 +25,10 @@ concept VectorSpace<typename Vector, typename Scalar = typename Vector::value_ty
     where std::Assignable<Vector, Multiplicable<Vector, Scalar>::result_type>;
     where std::Assignable<Vector, Divisible<Vector, Scalar>::result_type>;
     
+    // Associated types of Field<Scalar> and AdditiveAbelianGroup<Vector> collide
+    // typename result_type = AdditiveAbelianGroup<Vector>::result_type;
+    // typename assign_result_type = AdditiveAbelianGroup<Vector>::assign_result_type;
+
     axiom Distributivity(Vector v, Vector w, Scalar a, Scalar b)
     {
 	a * (v + w) == a * v + a * w;
