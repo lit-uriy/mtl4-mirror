@@ -16,11 +16,10 @@
 #include <boost/numeric/linear_algebra/is_invertible.hpp>
 #include <boost/numeric/linear_algebra/inverse.hpp>
 #include <boost/numeric/linear_algebra/operators.hpp>
+#include <complex>
 
 // If desired one can disable the default concept maps with LA_NO_CONCEPT_MAPS
 
-
-#include <complex>
 
 
 namespace math {
@@ -236,27 +235,34 @@ auto concept AdditiveMagma<typename Element>
 {
     where Magma< math::add<Element>, Element >;
 
-    typename assign_result_type;  
-    assign_result_type operator+=(Element& x, Element y);
+    typename plus_assign_result_type;  
+    plus_assign_result_type operator+=(Element& x, Element y);
+    where std::Convertible<plus_assign_result_type, Element>;
 
     // Operator + is by default defined with +=
-    typename result_type;  
-    result_type operator+(Element x, Element y);
+    typename addition_result_type;  
+    addition_result_type operator+(Element x, Element y);
 #if 0
     {
 	Element tmp(x);
 	return tmp += y;                      defaults NYS
     }
 #endif 
-    
+    where std::Convertible<addition_result_type, Element>;
+
     // Type consistency with Magma
-    where std::SameType< result_type, 
-	                 Magma< math::add<Element>, Element >::result_type>;
+    where std::Convertible< addition_result_type,   
+                            Magma< math::add<Element>, Element >::result_type>;
+
+    // SameType requires more rigorous specializations on pure algebraic functors
+    // where std::SameType< addition_result_type, 
+    // 	                    Magma< math::add<Element>, Element >::result_type>;
 
     axiom Consistency(math::add<Element> op, Element x, Element y)
     {
-	op(x, y) == x + y;                    
-	// Might change later
+	op(x, y) == x + y;     
+               
+	// Consistency definition between + and += might change later
         x + y == x += y;
 	// Element tmp = x; tmp+= y; tmp == x + y; not proposal-compliant
     }   
@@ -315,20 +321,21 @@ concept AdditivePartiallyInvertibleMonoid<typename Element>
 {
     where PartiallyInvertibleMonoid< math::add<Element>, Element >;
 
-    typename assign_result_type;  
-    assign_result_type operator-=(Element& x, Element y);
+    typename minus_assign_result_type;  
+    minus_assign_result_type operator-=(Element& x, Element y);
+    where std::Convertible<minus_assign_result_type, Element>;
      
     // Operator - by default defined with -=
-    typename result_type;  
-    result_type operator-(Element& x, Element y);
+    typename subtraction_result_type;  
+    subtraction_result_type operator-(Element& x, Element y);
 #if 0
     {
 	Element tmp(x);
 	return tmp -= y;                      defaults NYS
     }
 #endif 
+    where std::Convertible<subtraction_result_type, Element>;
 
-    // #if 0 // end of input localization
 
     typename unary_result_type;  
     unary_result_type operator-(Element x);
@@ -337,6 +344,7 @@ concept AdditivePartiallyInvertibleMonoid<typename Element>
 	return zero(x) - x;      defaults NYS
     }
 #endif 
+    where std::Convertible<unary_result_type, Element>;
     
     axiom Consistency(math::add<Element> op, Element x, Element y)
     {
@@ -392,27 +400,35 @@ auto concept MultiplicativeMagma<typename Element>
 {
     where Magma< math::mult<Element>, Element >;
 
-    typename assign_result_type;  
-    assign_result_type operator*=(Element& x, Element y);
+    typename mult_assign_result_type;  
+    mult_assign_result_type operator*=(Element& x, Element y);
+    where std::Convertible<mult_assign_result_type, Element>;
 
     // Operator * is by default defined with *=
-    typename result_type;  
-    result_type operator*(Element x, Element y);
+    typename mult_result_type;  
+    mult_result_type operator*(Element x, Element y);
 #if 0
     {
 	Element tmp(x);
 	return tmp *= y;                      defaults NYS
     }
 #endif 
+    where std::Convertible<mult_result_type, Element>;
     
     // Type consistency with Magma
-    where std::SameType< result_type, 
-	                 Magma< math::mult<Element>, Element >::result_type>;
+    where std::Convertible< mult_result_type,   
+                            Magma< math::mult<Element>, Element >::result_type>;
+
+    // SameType requires more rigorous specializations on pure algebraic functors
+    // where std::SameType< mult_result_type, 
+    // 	                    Magma< math::mult<Element>, Element >::result_type>;
+
 
     axiom Consistency(math::mult<Element> op, Element x, Element y)
     {
-	op(x, y) == x * y;                    
-	// Might change later
+	op(x, y) == x * y;                 
+   
+	// Consistency definition between * and *= might change later
         x * y == x *= y;
 	// Element tmp = x; tmp*= y; tmp == x * y; not proposal-compliant
     }  
@@ -456,18 +472,20 @@ concept MultiplicativePartiallyInvertibleMonoid<typename Element>
 {
     where PartiallyInvertibleMonoid< math::mult<Element>, Element >;
 
-    typename assign_result_type;  
-    assign_result_type operator/=(Element& x, Element y);
+    typename divide_assign_result_type;  
+    divide_assign_result_type operator/=(Element& x, Element y);
+    where std::Convertible<divide_assign_result_type, Element>;
      
     // Operator / by default defined with /=
-    typename result_type = Element;  
-    result_type operator/(Element& x, Element y);
+    typename division_result_type = Element;  
+    division_result_type operator/(Element& x, Element y);
 #if 0
     {
 	Element tmp(x);
 	return tmp /= y;                      defaults NYS
     }
 #endif 
+    where std::Convertible<division_result_type, Element>;
     
     axiom Consistency(math::mult<Element> op, Element x, Element y)
     {
@@ -897,7 +915,7 @@ concept_map MagnitudeType<T>
 
 
 // Concept for norms etc., which are real values in mathematical definitions
-concept RealMagnitude<typename T>
+auto concept RealMagnitude<typename T>
   : MagnitudeType<T>
 {
     where FullEqualityComparable<type>;
