@@ -10,19 +10,10 @@
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 
+#include <boost/numeric/mtl/common_includes.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
-#include <boost/numeric/mtl/detail/base_matrix.hpp>
-#include <boost/numeric/mtl/detail/range_generator.hpp>
-#include <boost/numeric/mtl/matrix_parameters.hpp>
-#include <boost/numeric/mtl/property_map.hpp>
-#include <boost/numeric/mtl/range_generator.hpp>
-#include <boost/numeric/mtl/utilities/maybe.hpp>
-#include <boost/numeric/mtl/complexity.hpp>
-#include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/update.hpp>
-#include <boost/numeric/mtl/matrix_inserter.hpp>
 #include <boost/numeric/mtl/operations/shift_blocks.hpp>
-#include <boost/numeric/mtl/mtl_exception.hpp>
 
 namespace mtl {
 
