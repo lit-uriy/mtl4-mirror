@@ -52,13 +52,13 @@ inline bool equal_results(const Element& v1a, const Element& v1b,
 // Same for AdditiveMagma
 template <typename Element>
 LA_WHERE ( math::AdditiveMagma<Element> 
-	   && math::Closed2EqualityComparable< math::add<Element>, Element > )
+	   // && math::Closed2EqualityComparable< math::add<Element>, Element > )
+	   && std::EqualityComparable< math::AdditiveMagma<Element>::addition_result_type > )
 inline bool equal_add_results(const Element& v1a, const Element& v1b, 
 			      const Element& v2a, const Element& v2b) 
 {
     return v1a + v1b == v2a + v2b;
 }
-
 
 
 

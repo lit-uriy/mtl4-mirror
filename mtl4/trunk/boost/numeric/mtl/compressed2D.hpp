@@ -237,7 +237,9 @@ struct compressed2D_indexer
 // Compressed 2D matrix type
 // For now no external data
 template <typename Elt, typename Parameters>
-class compressed2D : public detail::base_matrix<Elt, Parameters>
+class compressed2D 
+  : public detail::base_matrix<Elt, Parameters>,
+    public detail::const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >
 {
     typedef std::size_t                              size_t;
     typedef detail::base_matrix<Elt, Parameters>     super;

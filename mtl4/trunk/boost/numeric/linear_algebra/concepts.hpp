@@ -604,9 +604,9 @@ concept GenericDivisionRing<typename AddOp, typename MultOp, typename Element>
     axiom NonZeroDivisibility(AddOp add, MultOp mult, Element x)
     {
 	if (x != identity(add, x))
-	    mult(x, inverse(mult, x)) == identity(mult, x);
-	if (x != identity(add, x))
 	    mult(inverse(mult, x), x) == identity(mult, x);
+	if (x != identity(add, x))
+	    mult(x, inverse(mult, x)) == identity(mult, x);
     }
 };    
 

@@ -28,8 +28,12 @@ Problems and questions with numerical concepts
 - if a default implementation requires a concept which is otherwise not needed?
   e.g. derivation of + from += needs CopyConstructible
 
+_______
 
-
+- ambiguity if more then one operator is defined cf. Closed2EqualityComparable in algebraic_functions.hpp
+  -> addition_result_type is not used in Closed2EqualityComparable (only result_type)
+- assigning N of type T to constant
+- typedefs in mod_n concept_map, why ?????????
 
 Long-term problems
 

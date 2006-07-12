@@ -5,6 +5,7 @@
 
 
 #include <boost/numeric/linear_algebra/concepts.hpp>
+#include <boost/numeric/linear_algebra/ets_concepts.hpp>
 
 
 namespace math {

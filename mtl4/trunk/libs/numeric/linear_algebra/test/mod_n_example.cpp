@@ -11,18 +11,20 @@
 
 #include "algebraic_functions.hpp"
 
+#include <boost/config/concept_macros.hpp> 
+
+#ifdef LA_WITH_CONCEPTS
+#  include <bits/concepts.h>
+#endif
+
 using std::ostream;
 
 
 template<typename T, T N>
-// where Integral<T>
+// where std::Integral<T>
 class mod_n_t 
-  : boost::equality_comparable< mod_n_t<T, N> >,
-    boost::less_than_comparable< mod_n_t<T, N> >,
-    boost::addable< mod_n_t<T, N> >,
-    boost::subtractable< mod_n_t<T, N> >,
-    boost::multipliable< mod_n_t<T, N> >,
-    boost::dividable< mod_n_t<T, N> >
+  : boost::totally_ordered< mod_n_t<T, N> >,
+    boost::arithmetic< mod_n_t<T, N> >
 {
     // or BOOST_STATIC_ASSERT((IS_INTEGRAL))
 
@@ -31,7 +33,7 @@ class mod_n_t
     typedef T         value_type;
     typedef mod_n_t   self;
 
-    static const T modulo= N;
+    static T const modulo= N;
 
     explicit mod_n_t(T const& v) : value( v % modulo ) {}
 
@@ -240,7 +242,7 @@ namespace math {
 // but only if N is prime it is also a field
 // Due to some mapping nesting trouble we define normally derived maps
 
-
+#if 0
 template <typename T, T N>
 concept_map AbelianGroup< add< mod_n_t<T, N> >, mod_n_t<T, N> > 
 {
@@ -283,6 +285,7 @@ concept_map GenericField
     typedef mod_n_t<T, N> identity_result_type;
     typedef bool          is_invertible_result_type;
 }
+#endif
 
 
 template <typename T, T N>
@@ -290,9 +293,20 @@ concept_map CommutativeRingWithIdentity< mod_n_t<T, N> >
 {
     // Why do we need the typedefs???
     
-    typedef mod_n_t<T, N>& assign_result_type;
-    typedef mod_n_t<T, N>  result_type;
+    typedef mod_n_t<T, N>& plus_assign_result_type;
+    typedef mod_n_t<T, N>  addition_result_type;
     typedef mod_n_t<T, N>  unary_result_type;
+    typedef mod_n_t<T, N>& minus_assign_result_type;
+    typedef mod_n_t<T, N>  subtraction_result_type;
+
+    typedef mod_n_t<T, N>& mult_assign_result_type;
+    typedef mod_n_t<T, N>  mult_result_type;
+    typedef mod_n_t<T, N>& divide_assign_result_type;
+    typedef mod_n_t<T, N>  division_result_type;
+
+    typedef mod_n_t<T, N>  inverse_result_type;
+    typedef mod_n_t<T, N>  identity_result_type;
+    typedef bool           is_invertible_result_type;
 }
 
 
@@ -302,9 +316,20 @@ concept_map Field< mod_n_t<T, N> >
 {
     // Why do we need the typedefs???
     
-    typedef mod_n_t<T, N>& assign_result_type;
-    typedef mod_n_t<T, N>  result_type;
+    typedef mod_n_t<T, N>& plus_assign_result_type;
+    typedef mod_n_t<T, N>  addition_result_type;
     typedef mod_n_t<T, N>  unary_result_type;
+    typedef mod_n_t<T, N>& minus_assign_result_type;
+    typedef mod_n_t<T, N>  subtraction_result_type;
+
+    typedef mod_n_t<T, N>& mult_assign_result_type;
+    typedef mod_n_t<T, N>  mult_result_type;
+    typedef mod_n_t<T, N>& divide_assign_result_type;
+    typedef mod_n_t<T, N>  division_result_type;
+
+    typedef mod_n_t<T, N>  inverse_result_type;
+    typedef mod_n_t<T, N>  identity_result_type;
+    typedef bool           is_invertible_result_type;
 }
 
 
