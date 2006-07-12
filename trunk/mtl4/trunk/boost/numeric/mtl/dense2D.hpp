@@ -4,17 +4,11 @@
 #define MTL_DENSE2D_INCLUDE
 
 #include <algorithm>
+#include <boost/numeric/mtl/common_includes.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/strided_base_cursor.hpp>
-#include <boost/numeric/mtl/detail/base_matrix.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
-#include <boost/numeric/mtl/detail/range_generator.hpp>
-#include <boost/numeric/mtl/matrix_parameters.hpp>
-#include <boost/numeric/mtl/property_map.hpp>
-#include <boost/numeric/mtl/range_generator.hpp>
-#include <boost/numeric/mtl/detail/range_generator.hpp>
-#include <boost/numeric/mtl/complexity.hpp>
-#include <boost/numeric/mtl/glas_tags.hpp>
+
 
 namespace mtl {
 
