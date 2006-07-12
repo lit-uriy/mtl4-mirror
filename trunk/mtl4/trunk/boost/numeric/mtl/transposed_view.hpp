@@ -3,14 +3,12 @@
 #ifndef MTL_TRANSPOSED_VIEW_INCLUDE
 #define MTL_TRANSPOSED_VIEW_INCLUDE
 
-#include <boost/numeric/mtl/base_types.hpp>
-#include <boost/numeric/mtl/property_map.hpp>
-#include <boost/numeric/mtl/range_generator.hpp>
-
+#
 
 namespace mtl {
 
 template <class Matrix> class transposed_view 
+  : public detail::const_crtp_base_matrix< transposed_view<Matrix>, typename Matrix::value_type, typename Matrix::size_type >
 {
     typedef transposed_view               self;
 public:	

@@ -139,7 +139,8 @@ namespace detail
 template <typename Elt, typename Parameters>
 class dense2D : public detail::base_matrix<Elt, Parameters>, 
 		public detail::contiguous_memory_matrix< Elt, Parameters::on_stack, 
-							 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >
+							 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
+                public detail::crtp_base_matrix< dense2D<Elt, Parameters>, Elt, std::size_t >
 {
     typedef dense2D                                    self;
     typedef detail::base_matrix<Elt, Parameters>       super;

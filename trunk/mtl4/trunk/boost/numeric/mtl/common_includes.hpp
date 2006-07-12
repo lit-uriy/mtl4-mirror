@@ -4,6 +4,7 @@
 #define MTL_COMMON_INCLUDES_INCLUDE
 
 #include <boost/numeric/mtl/detail/base_matrix.hpp>
+#include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/property_map.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>

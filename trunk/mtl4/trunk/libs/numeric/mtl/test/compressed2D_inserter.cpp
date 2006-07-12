@@ -80,6 +80,13 @@ void test_compressed2D_insertion()
     if (matrix(4+io, 2+io) != 54) throw "Error adding to existing value twice (in 2 statements)";
     if (matrix(7+io, 2+io) != 43) throw "Error adding to existing value twice (in 1 statement)";
     cout << "\n\n";
+ 
+    {
+	matrix_inserter<matrix_type, operations::update_add<int> >  i3(matrix, 7);
+	i3(2+io, 2+io) << 1;
+    }
+    if (matrix(2+io, 2+io) != 28) throw "Error adding to existing value";
+    cout << "\nmatrix[2][2] = " << matrix[2+io][2+io] << "\n";
 }
  
 int test_main(int argc, char* argv[])

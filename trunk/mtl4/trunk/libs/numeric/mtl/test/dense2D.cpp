@@ -11,6 +11,7 @@
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/raw_copy.hpp>
+#include <boost/numeric/mtl/matrix_inserter.hpp>
 
 using namespace mtl;
 using namespace std;
@@ -82,6 +83,18 @@ struct test_dense2D
 	one_d_iteration("\nTransposed matrix", trans_matrix, 2, 1, element_1_2);
 	two_d_iteration("\nRows: ", trans_matrix, glas::tags::row_t(), ExpColComplexity());
 	two_d_iteration("\nColumns: ", trans_matrix, glas::tags::col_t(), ExpRowComplexity());
+
+	cout << "\nmatrix[1][2] = " << matrix[1][2] << "\n";
+	matrix[1][2]= 18.0;
+	cout << "matrix[1][2] = " << matrix[1][2] << "\n";
+	cout << "trans_matrix[1][2] = " << trans_matrix[1][2] << "\n";
+	
+
+#if 0
+	matrix_inserter<matrix_type>  i(matrix);
+	i(1, 2) << 17.0;
+	cout << "matrix[1, 2] = " << matrix(1, 2) << "\n";	
+#endif
     }
 };
 
