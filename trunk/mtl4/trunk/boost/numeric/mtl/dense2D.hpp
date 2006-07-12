@@ -205,10 +205,16 @@ class dense2D : public detail::base_matrix<Elt, Parameters>,
     // old style, better use value property map
     value_type operator() (size_t r, size_t c) const 
     {
-      size_t offset= indexer(*this, r, c);
-      return this->data[offset];
+	size_t offset= indexer(*this, r, c);
+        return this->data[offset];
     }
 
+    value_type& operator() (size_t r, size_t c)
+    {
+	return this->data[indexer(*this, r, c)]; 
+    }    
+
+    // to be removed ???
     value_type& reference(size_t r, size_t c)
     {
 	return this->data[indexer(*this, r, c)]; 

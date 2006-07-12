@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/complexity.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/update.hpp>
+#include <boost/numeric/mtl/matrix_inserter.hpp>
 #include <boost/numeric/mtl/operations/shift_blocks.hpp>
 #include <boost/numeric/mtl/mtl_exception.hpp>
 
@@ -365,7 +366,7 @@ struct compressed2D_inserter
     void stretch();
 
   public:
-    compressed2D_inserter(matrix_type& matrix, size_type slot_size = 5)
+    explicit compressed2D_inserter(matrix_type& matrix, size_type slot_size = 5)
 	: matrix(matrix), elements(matrix.data), starts(matrix.starts), indices(matrix.indices), 
 	  slot_size(slot_size), slot_ends(matrix.dim1()) 
     {
@@ -538,6 +539,28 @@ void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
 	my_end++;
     }
 }
+
+template <typename Elt, typename Parameters>
+struct matrix_inserter<compressed2D<Elt, Parameters>, mtl::operations::update_store<Elt> >
+  : compressed2D_inserter<Elt, Parameters, mtl::operations::update_store<Elt> >
+{
+    typedef compressed2D<Elt, Parameters>     matrix_type;
+    typedef typename matrix_type::size_type   size_type;
+    typedef compressed2D_inserter<Elt, Parameters, mtl::operations::update_store<Elt> > base;
+
+    explicit matrix_inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix. slot_size) {}
+};
+
+template <typename Elt, typename Parameters, typename Updater>
+struct matrix_inserter<compressed2D<Elt, Parameters>, Updater>
+  : compressed2D_inserter<Elt, Parameters, Updater>
+{
+    typedef compressed2D<Elt, Parameters>     matrix_type;
+    typedef typename matrix_type::size_type   size_type;
+    typedef compressed2D_inserter<Elt, Parameters, Updater > base;
+
+    explicit matrix_inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix, slot_size) {}
+};
 
 
 // =============
