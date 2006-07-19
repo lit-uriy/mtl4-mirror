@@ -78,7 +78,7 @@ class mod_n_t
 	return this->value < y.value;
     }
 
-    self operator+= (self const& y)
+    self& operator+= (self const& y)
     {
 	check(*this); check(y);
 	this->value += y.value;
@@ -86,7 +86,7 @@ class mod_n_t
 	return *this;
     }
 
-    self operator-= (self const& y)
+    self& operator-= (self const& y)
     {
 	check(*this); check(y);
 	// add n to avoid negative numbers esp. if T is unsigned
@@ -96,7 +96,7 @@ class mod_n_t
 	return *this;
     }
 
-    self operator*= (self const& y)
+    self& operator*= (self const& y)
     {
 	check(*this); check(y);
 	this->value *= y.value;
@@ -104,7 +104,7 @@ class mod_n_t
 	return *this;
     }
 
-    self operator/= (self const& y);
+    self& operator/= (self const& y);
     
 };
 
@@ -137,7 +137,7 @@ inline ostream& operator<< (ostream& stream, const mod_n_t<T, N>& a)
     // --> x * v2 == x / y
     // v1, u1, and r1 not used
 template<typename T, T N>
-inline mod_n_t<T, N> mod_n_t<T, N>::operator/= (const mod_n_t<T, N>& y) 
+inline mod_n_t<T, N>& mod_n_t<T, N>::operator/= (const mod_n_t<T, N>& y) 
 {
     check(*this); check(y);
     if (y.get() == 0) throw "Division by 0";
@@ -315,7 +315,7 @@ template <typename T, T N>
 concept_map Field< mod_n_t<T, N> >
 {
     // Why do we need the typedefs???
-    
+
     typedef mod_n_t<T, N>& plus_assign_result_type;
     typedef mod_n_t<T, N>  addition_result_type;
     typedef mod_n_t<T, N>  unary_result_type;
