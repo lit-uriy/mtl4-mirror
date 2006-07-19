@@ -1,4 +1,4 @@
-CXXFLAGS += -g -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} # --include bits/stdc++.h # -Wno-long-double # 
+CXXFLAGS += -Winvalid-pch -m64 -L/u/pgottsch/software/conceptgcc/darwin/lib/ppc64/ -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} # --include bits/stdc++.h # -Wno-long-double # 
 
 XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_algebra/concepts.hpp \
                  Makefile
@@ -9,6 +9,7 @@ TARGETS =	positive_real	positive_real_explicit string_example \
 		float_example int_example # mod_n_example stumbles at the moment over compiler error
 
 it:	all
+
 
 all:	${TARGETS}
 
@@ -26,6 +27,9 @@ float_example:	float_example.cpp  ${XTRA_SOURCES}
 
 int_example:	int_example.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ int_example.cpp
+
+accumulation_example:	accumulation_example.cpp  ${XTRA_SOURCES}
+	${CXX} ${CXXFLAGS} -o $@ accumulation_example.cpp
 
 mod_n_example:	mod_n_example.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ mod_n_example.cpp

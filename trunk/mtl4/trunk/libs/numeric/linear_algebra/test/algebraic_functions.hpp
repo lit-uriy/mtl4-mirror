@@ -9,7 +9,8 @@
 #include <boost/config/concept_macros.hpp> 
 
 #ifdef LA_WITH_CONCEPTS
-#  include <bits/concepts.h>
+#  include <concepts>
+#  include <bits/iterator_concepts.h>
 #endif
 
 #include <boost/numeric/linear_algebra/concepts.hpp>
@@ -89,6 +90,30 @@ inline Element multiply_and_square(Element base, Exponent exp, Op op)
     }
     return value;  
 } 
+
+//#if 0
+template <typename Iter, typename Value, typename Op>
+  LA_WHERE( std::RandomAccessIterator<Iter> 
+	    && std::Convertible<Value, std::RandomAccessIterator<Iter>::value_type>
+	    && math::CommutativeMonoid<Op, std::RandomAccessIterator<Iter>::value_type> )
+typename std::RandomAccessIterator<Iter>::value_type accumulate_unrolled(Iter first, Iter last, Value init, Op op)
+{
+    typedef typename std::RandomAccessIterator<Iter>::value_type value_type;
+    typedef typename std::RandomAccessIterator<Iter>::difference_type difference_type;
+    value_type        t0= identity(op, init), t1= identity(op, init), t2= identity(op, init), t3= init;
+    difference_type size= last - first, bsize= size >> 2 << 2, i;
+    
+    for (i= 0; i < bsize; i+= 4) {
+	t0= op(t0, first[i]);
+	t1= op(t1, first[i+1]);
+	t2= op(t2, first[i+2]);
+	t3= op(t3, first[i+3]);
+    }
+    for (; i < size; i++)
+	t0= op(t0, first[i]);
+    return op(op(t0, t1), op(t2, t3));
+}
+//#endif
 
 
 // {Op, Element} must be a PartiallyInvertibleMonoid
