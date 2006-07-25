@@ -4,6 +4,7 @@
 #define MTL_PRINT_MATRIX_INCLUDE
 
 #include <iostream>
+#include <boost/numeric/mtl/glas_tags.hpp>
 
 namespace mtl {
 
@@ -12,10 +13,30 @@ void print_matrix(Matrix const& matrix, std::ostream& out= std::cout)
 {
     for (size_t r = matrix.begin_row(); r < matrix.end_row(); ++r) {
 	out << '[';
-	for (size_t c = matrix.begin_col(); c < matrix.end_col(); ++c) {
+	for (size_t c = matrix.begin_col(); c < matrix.end_col(); ++c)
 	    out << matrix(r, c) 
-		<< (c < matrix.end_col() - 1 ? ", " : "]\n"); } 
+		<< (c < matrix.end_col() - 1 ? ", " : "]\n");
     }    
+}
+
+
+template <typename Matrix>
+void print_matrix_row_cursor(Matrix const& matrix, std::ostream& out= std::cout)
+{
+    typedef glas::tags::row_t                                          Tag;
+    typename traits::const_value<Matrix>::type                         value(matrix);
+    typedef typename traits::range_generator<Tag, Matrix>::type        cursor_type;
+
+    for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
+	out << '[';
+	typedef glas::tags::all_t     inner_tag;
+	typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
+	for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ) {
+	    out << value(*icursor);
+	    ++icursor;
+	    out << ( icursor != icend ? ", " : "]\n");
+	}
+    }
 }
 
 } // namespace mtl

@@ -5,7 +5,6 @@
 #include <boost/tuple/tuple.hpp>
 
 #include <boost/numeric/mtl/morton_dense.hpp>
-//#include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/transposed_view.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>
@@ -17,7 +16,7 @@ using namespace mtl;
 using namespace std;  
 
 
-struct test_morton_dense
+struct test_morton_dense 
 {
     template <typename Matrix, typename Tag>
     void two_d_iteration(char const* outer, Matrix & matrix, Tag)

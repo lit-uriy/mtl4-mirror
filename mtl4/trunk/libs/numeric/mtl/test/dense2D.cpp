@@ -6,13 +6,13 @@
 
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/dense2D.hpp>
-#include <boost/numeric/mtl/transposed_view.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/raw_copy.hpp>
 #include <boost/numeric/mtl/matrix_inserter.hpp>
-
+#include <boost/numeric/mtl/transposed_view.hpp>
+ 
 using namespace mtl;
 using namespace std;
 
