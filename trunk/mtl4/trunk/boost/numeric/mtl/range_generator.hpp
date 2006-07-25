@@ -49,7 +49,7 @@ namespace traits
 // On nested traversals, cursors of level > 1 must provide at least one range generator
 template <class Tag, class Collection>
 typename traits::range_generator<Tag, Collection>::type 
-inline begin(Collection& c)
+inline begin(Collection const& c)
 {
   return traits::range_generator<Tag, Collection>().begin(c);
 }
@@ -57,7 +57,7 @@ inline begin(Collection& c)
 // Corresponding end cursor
 template <class Tag, class Collection>
 typename traits::range_generator<Tag, Collection>::type 
-inline end(Collection& c)
+inline end(Collection const& c)
 {
   return traits::range_generator<Tag, Collection>().end(c);
 }

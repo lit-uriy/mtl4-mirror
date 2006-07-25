@@ -3,7 +3,8 @@
 #ifndef MTL_TRANSPOSED_VIEW_INCLUDE
 #define MTL_TRANSPOSED_VIEW_INCLUDE
 
-#
+#include <boost/numeric/mtl/traits.hpp>
+#include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
 
 namespace mtl {
 
@@ -106,8 +107,8 @@ namespace traits {
     namespace detail {
 
     template <class Matrix> 
-        struct transposed_row
-        {
+    struct transposed_row
+    {
     	typedef typename Matrix::key_type   key_type;
     	typedef typename Matrix::size_type  size_type;
     	
@@ -127,19 +128,19 @@ namespace traits {
         template <class Matrix> 
         struct transposed_col
         {
-    	typedef typename Matrix::key_type   key_type;
-    	typedef typename Matrix::size_type  size_type;
+	    typedef typename Matrix::key_type   key_type;
+	    typedef typename Matrix::size_type  size_type;
     	
-    	transposed_col(transposed_view<Matrix> const& transposed_matrix) 
-    	    : its_row(transposed_matrix.ref) {}
+	    transposed_col(transposed_view<Matrix> const& transposed_matrix) 
+		: its_row(transposed_matrix.ref) {}
 
-    	size_type operator() (key_type const& key) const
-    	{
-    	    return its_row(key);
-    	}
+	    size_type operator() (key_type const& key) const
+	    {
+		return its_row(key);
+	    }
 
           protected:
-    	typename row<Matrix>::type  its_row;
+	    typename row<Matrix>::type  its_row;
         };
 	
     } // namespace detail

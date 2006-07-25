@@ -3,32 +3,25 @@
 #ifndef MTL_MORTON_DENSE_INCLUDE
 #define MTL_MORTON_DENSE_INCLUDE
 
+#include <boost/numeric/mtl/common_includes.hpp>
 #include <boost/numeric/mtl/base_types.hpp>
-#include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
 #include <boost/numeric/mtl/detail/dilated_int.hpp>
-#include <boost/numeric/mtl/matrix_parameters.hpp>
-#include <boost/numeric/mtl/detail/range_generator.hpp>
-#include <boost/numeric/mtl/property_map.hpp>
-#include <boost/numeric/mtl/range_generator.hpp>
-#include <boost/numeric/mtl/detail/range_generator.hpp>
-#include <boost/numeric/mtl/complexity.hpp>
-#include <boost/numeric/mtl/glas_tags.hpp>
-#include <boost/numeric/mtl/ahnentafel_index.hpp>
-#include <vector>
+// #include <boost/numeric/mtl/ahnentafel_index.hpp>
+// #include <vector>
 
 namespace mtl {
 
 template <std::size_t  BitMask>
 struct morton_dense_key
 {
-    typedef std::size_t                               size_t;
+    typedef std::size_t                               size_type;
     typedef dilated_int<std::size_t, BitMask, true>   dilated_row_t;
     typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 
     typedef morton_dense_key                          self;
 
-    morton_dense_key(size_t my_row, size_t my_col) 
+    morton_dense_key(size_type my_row, size_type my_col) 
 	: my_row(my_row), my_col(my_col), dilated_row(my_row), dilated_col(my_col)
     {}
 
@@ -42,18 +35,18 @@ struct morton_dense_key
 	return !(*this == x);
     }
 
-    size_t row() const
+    size_type row() const
     {
 	return my_row;
     }
 
-    size_t col() const
+    size_type col() const
     {
 	return my_col;
     }
 
 public:
-    size_t                       my_row, my_col;   
+    size_type                       my_row, my_col;   
     dilated_row_t                dilated_row;
     dilated_col_t                dilated_col; 
 };
@@ -62,12 +55,12 @@ template <std::size_t  BitMask>
 struct morton_dense_el_cursor 
     : public morton_dense_key<BitMask>
 {
-    typedef std::size_t                               size_t;
+    typedef std::size_t                               size_type;
     typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 
     typedef morton_dense_el_cursor                    self;
     typedef morton_dense_key<BitMask>                 base;
 
-    morton_dense_el_cursor(size_t my_row, size_t my_col, size_t num_cols) 
+    morton_dense_el_cursor(size_type my_row, size_type my_col, size_type num_cols) 
 	: base(my_row, my_col), num_cols(num_cols) 
     {}
 
@@ -174,6 +167,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
   public: 
 
+#if 0
+    // All Ahnentafel stuff is commented out
     // add morton functions here
 
     // boundary checking of the Ahnentafel index
@@ -201,6 +196,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     // debugging functions
     void printVec() const;
     void printMat() const;
+#endif
 
   protected:
     
@@ -269,7 +265,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
         return (n_rows.dilated_value() + n_cols.dilated_value() + 1);
     }
     
-
+#if 0
   private:
   // add morton member variables here
 
@@ -294,10 +290,11 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     void setBoundVec();         // set boundary vectors
     void setMaskVec();          // set mask vectors
     void mkMortonSPDMatrix();   // make default Morton matrix
+#endif
 };
 
 
-
+#if 0
 // boundary checking of Ahnentafel index
 
 // check if the index is the root
@@ -315,7 +312,7 @@ bool morton_dense<Elt, BitMask, Parameters>::isLeaf(const AhnenIndex& index) con
         return (index.getIndex() >= lowBoundVec_[maxLevel_]);
     else return 0;
 }
-
+#endif
 
 
 
@@ -458,6 +455,7 @@ namespace traits
         : range_generator<glas::tags::nz_t, 
 			  detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tags::col_t, 2> >
     {};
+} // namespace traits
 
 
 } // namespace mtl
