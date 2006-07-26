@@ -4,54 +4,12 @@
 #include <boost/numeric/linear_algebra/operators.hpp>
 #include <boost/numeric/linear_algebra/concepts.hpp>
 
-#include "algebraic_functions.hpp"
+#include <libs/numeric/linear_algebra/test/algebraic_functions.hpp>
+#include <libs/numeric/linear_algebra/test/positive_real.hpp>
 
-
-// User defined data types and operators
-
-
-class positive_real 
-{
-    double value;
-public:
-    positive_real(double m): value(m) 
-    {
-	if (m < 0.0) throw "Negative value not allowed!\n"; 
-    }
-
-    double get_value() const 
-    {
-	return value; 
-    }
-
-    positive_real operator+(positive_real const& y) const
-    {
-	return value + y.value;
-    }
-
-    positive_real operator+=(positive_real const& y) const
-    {
-	return value + y.value;
-    }    
-
-    bool operator==(positive_real const& y) const
-    {
-	return value == y.value;
-    }
-    
-    bool operator!=(positive_real const& y) const
-    {
-	return value != y.value;
-    }
-};
-
-
-inline std::ostream& operator<< (std::ostream& stream, const positive_real& a) 
-{
-    return stream << a.get_value(); 
-}
-
+using mtl::positive_real;
  
+
 int main(int, char* [])  
 {
     positive_real                a0(0.0), a2(2.0), a3(3.0), a4(4.0), a5(5.0);

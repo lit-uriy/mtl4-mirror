@@ -1,4 +1,4 @@
-CXXFLAGS += -Winvalid-pch -m64 -L/u/pgottsch/software/conceptgcc/darwin/lib/ppc64/ -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} # --include bits/stdc++.h # -Wno-long-double # 
+CXXFLAGS += -L/u/pgottsch/software/conceptgcc/darwin/lib/ppc64/ -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} #  -Winvalid-pch -m64 --include bits/stdc++.h # -Wno-long-double # 
 
 XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_algebra/concepts.hpp \
                  Makefile
