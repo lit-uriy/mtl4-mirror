@@ -119,10 +119,6 @@ inline Element multiply_and_square(const Element& base, Exponent exp, Op op)
 } 
 
 
-
-
-
-
 template <typename Iter, typename Value, typename Op>
   LA_WHERE( std::RandomAccessIterator<Iter> 
 	    && std::Convertible<Value, std::RandomAccessIterator<Iter>::value_type>
@@ -147,6 +143,7 @@ accumulate_unrolled(Iter first, Iter last, Value init, Op op)
 }
 
 
+// {Op, Element} must be a PartiallyInvertibleMonoid
 // Element and results must be EqualityComparable
 // Only 
 template <typename Op, typename Element>
