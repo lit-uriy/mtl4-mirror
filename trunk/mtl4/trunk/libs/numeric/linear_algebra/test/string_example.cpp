@@ -11,8 +11,7 @@ using math::identity; using math::add;
 
 using std::string;
 
-namespace math 
-{
+namespace math {
     template<> 
     struct identity_t< math::add<string>, string >  
     { 
