@@ -4,7 +4,8 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/linear_algebra/concepts.hpp>
 
-#include "algebraic_functions.hpp"
+#include <libs/numeric/linear_algebra/test/algebraic_functions.hpp>
+
 
 using math::identity; using math::add;
 

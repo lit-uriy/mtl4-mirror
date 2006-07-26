@@ -78,9 +78,11 @@ inline bool identity_pair(const Element& v1, const Element& v2, Op op)
 // {Op, Element} must be a Monoid
 template <typename Op, typename Element, typename Exponent>
   LA_WHERE( math::Monoid<Op, Element> 
-            && std::Integral<Exponent> )             // TBD: not minimal requirements, will refine it later
-inline Element multiply_and_square(Element base, Exponent exp, Op op) 
+            && std::Integral<Exponent> )             // Integral might be lifted
+inline Element multiply_and_square(const Element& base, Exponent exp, Op op) 
 {
+    if (exp < 0) throw "In multiply_and_square: negative exponent";
+
     using math::identity;
     Element value= identity(op, base), square= base;
     for (; exp > 0; exp>>= 1) {
@@ -91,12 +93,13 @@ inline Element multiply_and_square(Element base, Exponent exp, Op op)
     return value;  
 } 
 
-//#if 0
+
 template <typename Iter, typename Value, typename Op>
   LA_WHERE( std::RandomAccessIterator<Iter> 
 	    && std::Convertible<Value, std::RandomAccessIterator<Iter>::value_type>
 	    && math::CommutativeMonoid<Op, std::RandomAccessIterator<Iter>::value_type> )
-typename std::RandomAccessIterator<Iter>::value_type accumulate_unrolled(Iter first, Iter last, Value init, Op op)
+typename std::RandomAccessIterator<Iter>::value_type 
+accumulate_unrolled(Iter first, Iter last, Value init, Op op)
 {
     typedef typename std::RandomAccessIterator<Iter>::value_type value_type;
     typedef typename std::RandomAccessIterator<Iter>::difference_type difference_type;
@@ -113,10 +116,8 @@ typename std::RandomAccessIterator<Iter>::value_type accumulate_unrolled(Iter fi
 	t0= op(t0, first[i]);
     return op(op(t0, t1), op(t2, t3));
 }
-//#endif
 
 
-// {Op, Element} must be a PartiallyInvertibleMonoid
 // Element and results must be EqualityComparable
 // Only 
 template <typename Op, typename Element>
