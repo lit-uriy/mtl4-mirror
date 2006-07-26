@@ -5,7 +5,7 @@ XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_al
 
 CXX =  conceptg++
 
-TARGETS =	positive_real	positive_real_explicit string_example \
+TARGETS =	positive_real	positive_real_explicit positive_real_power string_example \
 		float_example int_example # mod_n_example stumbles at the moment over compiler error
 
 it:	all

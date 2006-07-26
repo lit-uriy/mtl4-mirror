@@ -75,6 +75,31 @@ inline bool identity_pair(const Element& v1, const Element& v2, Op op)
 }
 
 
+// {Op, Element} must be a SemiGroup
+template <typename Op, typename Element, typename Exponent>
+  LA_WHERE( math::SemiGroup<Op, Element> 
+            && std::Integral<Exponent> )             // Integral might be lifted
+Element recursive_multiply_and_square(const Element& base, Exponent exp, Op op) 
+{
+    if (exp <= 0) throw "In recursive_multiply_and_square: exponent must greater than 0";
+
+    Exponent half= exp >> 1;
+
+    // If halt is 0 then exp must be 1 and the result is base
+    if (half == 0)
+	return base;
+
+    // compute power of downward rounded exponent and square the result
+    Element value= recursive_multiply_and_square(base, half, op);
+    value= op(value, value);
+
+    // if odd another multiplication with base is needed
+    if (exp & 1) 
+	value= op(value, base);
+    return value;
+} 
+
+
 // {Op, Element} must be a Monoid
 template <typename Op, typename Element, typename Exponent>
   LA_WHERE( math::Monoid<Op, Element> 
@@ -92,6 +117,10 @@ inline Element multiply_and_square(const Element& base, Exponent exp, Op op)
     }
     return value;  
 } 
+
+
+
+
 
 
 template <typename Iter, typename Value, typename Op>

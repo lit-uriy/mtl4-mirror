@@ -17,6 +17,7 @@ using mtl::positive_real;
 
 // We assume that 0 and infinity is not to guarantee invertibility
 
+struct semigroup_mult : public math::mult<positive_real> {};
 struct monoid_mult : public math::mult<positive_real> {};
 struct group_mult : public math::mult<positive_real> {};
 
@@ -34,6 +35,7 @@ namespace math {
 
 # ifdef LA_WITH_CONCEPTS
   namespace math { 
+      concept_map SemiGroup< semigroup_mult, positive_real > {};
       concept_map Monoid< monoid_mult, positive_real > {};
       concept_map Group< group_mult, positive_real > {};
   }
@@ -45,19 +47,21 @@ int main(int, char* [])
     using mtl::power;
     using math::mult;
 
-    positive_real          value(3.0);
+    positive_real          value(1.1);
 
-    std::cout << "3.0^77 as Magma: " << power(value, 77, mult<positive_real>())  << '\n'; 
+    std::cout << "3.0^777 as Magma: " << power(value, 777, mult<positive_real>())  << '\n'; 
+ 
+    std::cout << "3.0^777 as SemiGroup: " << power(value, 777, semigroup_mult())  << '\n'; 
 
-    std::cout << "3.0^77 as Monoid: " << power(value, 77, monoid_mult())  << '\n'; 
+    std::cout << "3.0^777 as Monoid: " << power(value, 777, monoid_mult())  << '\n'; 
     try {
-	std::cout << "3.0^-77 as Monoid: " << power(value, -77, monoid_mult())  << '\n'; 
+	std::cout << "3.0^-777 as Monoid: " << power(value, -777, monoid_mult())  << '\n'; 
     } catch (char const* message) {
 	std::cout << message << '\n';
     }
 
-    std::cout << "3.0^77 as Group: " << power(value, 77, group_mult())  << '\n'; 
-    std::cout << "3.0^-77 as Group: " << power(value, -77, group_mult())  << '\n'; 
+    std::cout << "3.0^777 as Group: " << power(value, 777, group_mult())  << '\n'; 
+    std::cout << "3.0^-777 as Group: " << power(value, -777, group_mult())  << '\n'; 
  
     return 0;
 }
