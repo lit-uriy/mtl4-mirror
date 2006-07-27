@@ -1,4 +1,4 @@
-CXXFLAGS += -L/u/pgottsch/software/conceptgcc/darwin/lib/ppc64/ -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} #  -Winvalid-pch -m64 --include bits/stdc++.h # -Wno-long-double # 
+CXXFLAGS += -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} # -L/u/pgottsch/software/conceptgcc/darwin/lib/ppc64/ -Winvalid-pch -m64 --include bits/stdc++.h # -Wno-long-double # 
 
 XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_algebra/concepts.hpp \
                  Makefile
@@ -6,7 +6,8 @@ XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_al
 CXX =  conceptg++
 
 TARGETS =	positive_real	positive_real_explicit positive_real_power string_example \
-		float_example int_example # mod_n_example stumbles at the moment over compiler error
+		float_example int_example mod_n_example accumulation_example \
+		concept_map_test      int_example 
 
 it:	all
 
@@ -15,9 +16,12 @@ all:	${TARGETS}
 
 positive_real:	positive_real.cpp ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ positive_real.cpp
-
+ 
 positive_real_explicit:	positive_real_explicit.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ positive_real_explicit.cpp
+
+positive_real_power:	positive_real_power.cpp  ${XTRA_SOURCES}
+	${CXX} ${CXXFLAGS} -o $@ positive_real_power.cpp
 
 string_example:	string_example.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ string_example.cpp
