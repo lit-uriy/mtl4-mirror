@@ -8,6 +8,7 @@
 #include <boost/numeric/mtl/transposed_view.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/operations/print_matrix.hpp>
+#include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 
 
 using namespace mtl;
@@ -21,8 +22,24 @@ struct test_morton_dense
     {
 	print_matrix_row_cursor(matrix);
 	cout << endl;
+	Matrix sub_matrix(matrix.sub_matrix(2, 6, 2, 5));
+	print_matrix_row_cursor(sub_matrix);
+
+	typename traits::row<Matrix>::type                                 row(matrix);
+	cout << row(*begin<glas::tags::nz_t>(sub_matrix)) << endl;
+
+	cout << endl;
+	print_matrix_row_cursor(matrix.sub_matrix(3, 5, 2, 4));
+ 
+	recursion::matrix_recurator<Matrix> recurator(matrix);
+	cout << endl;
+	print_matrix_row_cursor(recurator.north_west().get_value());
+
+	
+
 	transposed_view<Matrix> trans_matrix(matrix);
-	print_matrix_row_cursor(trans_matrix);
+	print_matrix_row_cursor(trans_matrix); 
+
     }
 };
 
@@ -47,7 +64,7 @@ void fill_matrix(Matrix& matrix)
 int test_main(int argc, char* argv[])
 {
     typedef morton_dense<double,  0x55555555, matrix_parameters<> > matrix_type;    
-    matrix_type matrix(non_fixed::dimensions(6, 5));
+    matrix_type matrix(non_fixed::dimensions(16, 15));
    
     fill_matrix(matrix);
 
