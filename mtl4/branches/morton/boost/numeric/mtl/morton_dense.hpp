@@ -204,11 +204,19 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     dilated_row_t            my_begin_row, my_end_row;
     dilated_col_t            my_begin_col, my_end_col;
 
-    void set_ranges(size_type er, size_type ec)
+    // Set ranges from begin_r to end_r and begin_c to end_c
+    void set_ranges(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
     {
-	super::set_ranges(0, er, 0, ec);
-	my_begin_row= 0; my_end_row= er;
-	my_begin_col= 0; my_end_col= ec;
+	super::set_ranges(begin_r, end_r, begin_c, end_c);
+	my_begin_row= begin_r; my_end_row= end_r;
+	my_begin_col= begin_c; my_end_col= end_c;
+    }
+
+    // Set ranges from 0 to end_r and 0 to end_c
+    // Does not yet work with Fortran indices !!!!
+    void set_ranges(size_type end_r, size_type end_c)
+    {
+	set_ranges(0, end_r, 0, end_c);
     }
 
   public:
@@ -250,6 +258,30 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     void operator()(key_type const& key, value_type const& value)
     {
 	this->data[key.dilated_row.dilated_value() + key.dilated_col.dilated_value()]= value;
+    }
+
+    self sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    {
+	throw_debug_exception(begin_r < begin_row(), "begin_row out of range\n");
+	throw_debug_exception(end_r > end_row(), "end_row out of range\n");
+	throw_debug_exception(begin_c < begin_col(), "begin_col out of range\n");
+	throw_debug_exception(end_c > end_col(), "end_col out of range\n");
+
+	// Probably check whether power of 2 is crossed (ask David and Michael)
+
+	self  tmp(*this);
+
+	dilated_row_t  dilated_row(begin_r);
+	dilated_col_t  dilated_col(begin_c);
+
+	// Set new start address within masked matrix
+	tmp.data += dilated_row.dilated_value() + dilated_col.dilated_value();
+	tmp.set_ranges(end_r - begin_r, end_c - begin_c);
+
+	// sub matrix doesn't own the memory (and must not free at the end)
+	tmp.extern_memory= true;
+
+	return tmp;
     }
 
   protected:

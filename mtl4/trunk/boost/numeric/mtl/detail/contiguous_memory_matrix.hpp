@@ -45,22 +45,22 @@ struct contiguous_memory_matrix
     typedef const value_type*                 const_pointer_type;
 
   protected:
-    bool                            ext;       // whether pointer to external data or own
+    bool                            extern_memory;       // whether pointer to external data or own
 
   public:
     // Reference to external data (must be heap)
     explicit contiguous_memory_matrix(value_type* a)
-      : base::data(a), ext(true) {}
+      : base::data(a), extern_memory(true) {}
 
     explicit contiguous_memory_matrix(std::size_t size)
-	: ext(false)
+	: extern_memory(false)
     {
 	if (!on_stack) this->data = new value_type[size];
     }
 
     ~contiguous_memory_matrix()
     {
-	if (!on_stack && !ext && this->data) delete[] this->data;
+	if (!on_stack && !extern_memory && this->data) delete[] this->data;
     }
 
     // offset of key (pointer) w.r.t. data 
