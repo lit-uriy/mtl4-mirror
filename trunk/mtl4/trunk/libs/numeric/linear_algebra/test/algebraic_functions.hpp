@@ -140,11 +140,8 @@ inline Element multiply_and_square(const Element& base, Exponent exp, Op op)
     if (exp < 0) throw "In multiply_and_square: negative exponent";
 
     using math::identity;
-    Element value= identity(op, base), square= base;
+    Element value= bool(exp & 1) ? Element(base) : Element(identity(op, base)), square= base;
 
-    if (exp & 1) 
-	value= base;
-    
     for (exp>>= 1; exp > 0; exp>>= 1) {
 	square= op(square, square); 
 	if (exp & 1) 

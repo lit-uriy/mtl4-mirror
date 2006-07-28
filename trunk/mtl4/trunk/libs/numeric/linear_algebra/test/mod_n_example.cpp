@@ -21,7 +21,7 @@ using std::ostream;
 
 
 template<typename T, T N>
- where std::Integral<T>
+//  where std::Integral<T>
 class mod_n_t 
   : boost::totally_ordered< mod_n_t<T, N> >,
     boost::arithmetic< mod_n_t<T, N> >
