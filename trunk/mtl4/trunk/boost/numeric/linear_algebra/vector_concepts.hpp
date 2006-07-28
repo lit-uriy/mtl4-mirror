@@ -1,3 +1,4 @@
+// Copyright 2006. Peter Gottschling, Matthias Troyer, Rolf Bonderer
 // $COPYRIGHT$
 
 #ifndef LA_VECTOR_CONCEPTS_INCLUDE
@@ -5,16 +6,13 @@
 
 
 #include <boost/numeric/linear_algebra/concepts.hpp>
+
+#ifdef __GXX_CONCEPTS__
+
 #include <boost/numeric/linear_algebra/ets_concepts.hpp>
 
-
-namespace math {
-
-
-#ifdef LA_WITH_CONCEPTS
-
-
-// I'm not sure if we want the division here
+namespace math {  
+  
 concept VectorSpace<typename Vector, typename Scalar = typename Vector::value_type>
 : AdditiveAbelianGroup<Vector>
 {
@@ -43,23 +41,6 @@ concept VectorSpace<typename Vector, typename Scalar = typename Vector::value_ty
 }
 
 
-// The following concept introduces operations that are not needed in VectorSpace
-// but which are very common in numeric software
-concept ExtendedVectorSpace<typename Vector, typename Scalar = typename Vector::value_type>
-  : VectorSpace<Vector, Scalar>
-{
-    // valid expression: "vector2 += scalar*vector1"
-    typename res_type_1;
-    res_type_1 operator+=(Vector&, Multiplicable<Scalar, Vector>::result_type);
-    
-    // valid expression: "vector2 -= scalar*vector1"
-    typename res_type_2;
-    res_type_2 operator-=(Vector&, Multiplicable<Scalar, Vector>::result_type);
-
-    // These two epxressions might not be needed with approbriate VectorSpace dealing with ET
-};
-
-
 concept Norm<typename N, typename Vector, 
 	     typename Scalar = typename Vector::value_type>
   : std::Callable1<N, Vector>
@@ -67,10 +48,20 @@ concept Norm<typename N, typename Vector,
     where VectorSpace<Vector, Scalar>;
     where RealMagnitude<Scalar>;
     typename magnitude_type = MagnitudeType<Scalar>::type;
-
-    typename result_type = std::Callable1<N, Vector>::result_type;
-    where std::Convertible<result_type, magnitude_type>;
     where std::Convertible<magnitude_type, Scalar>;
+
+    typename result_type_norm = std::Callable1<N, Vector>::result_type;
+    where std::Convertible<result_type_norm, RealMagnitude<Scalar>::magnitude_type>;
+    where std::Convertible<result_type_norm, Scalar>;
+
+    // Version with function instead functor, as used by Rolf and Matthias
+    // Axioms there defined without norm functor and concept has only 2 types
+#if 0       
+    typename result_type_norm; 
+    result_type_norm norm(const Vector&);
+    where std::Convertible<result_type_norm, magnitude_type>;
+    where std::Convertible<result_type_norm, Scalar>;
+#endif
 
     axiom Positivity(N norm, Vector v, magnitude_type ref)
     {
@@ -98,15 +89,12 @@ concept SemiNorm<typename N, typename Vector,
 		 typename Scalar = typename Vector::value_type>
   : Norm<N, Vector, Scalar>
 {
-    axiom PositiveDefiniteness(N norm, Vector v)
+    axiom PositiveDefiniteness(N norm, Vector v, magnitude_type ref)
     {
-#if 0
-	// axioms with if not yet supported, zero(v) NYD
-	if (norm(v) == magnitude_type(0))
+	if (norm(v) == zero(ref))
 	    v == zero(v);
 	if (v == zero(v))
-	    norm(v) == magnitude_type(0);
-#endif
+	    norm(v) == zero(ref);
     }
 }
 
@@ -134,7 +122,8 @@ concept InnerProduct<typename I, typename Vector,
     // Result of the inner product must be convertible to Scalar
     where std::Convertible<std::Callable2<I, Vector, Vector>::result_type, Scalar>;
 
-    where ets::InnerProduct<I, Vector, Scalar>;
+    // Let's try without this
+    // where ets::InnerProduct<I, Vector, Scalar>;
 
     where HasConjugate<Scalar>;
 
@@ -160,7 +149,7 @@ concept InnerProduct<typename I, typename Vector,
     {
 	// inner(v, v) == conj(inner(v, v)) implies inner(v, v) is real
 	// ergo representable as magnitude type
-	const_cast<magnitude_type> (inner(v, v)) >= zero(magnitude)
+	magnitude_type(inner(v, v)) >= zero(magnitude)
     }
 
     axiom NonDegeneracy(I inner, Vector v, Vector w, Scalar s)
@@ -174,12 +163,16 @@ concept InnerProduct<typename I, typename Vector,
 
 
 // A dot product is only a semantically special case of an inner product
+// Questionable if we want such a concept
+
+#if 0
 concept DotProduct<typename I, typename Vector, 
 		   typename Scalar = typename Vector::value_type>
   : InnerProduct<I, Vector, Scalar>
 {};
+#endif
 
-#endif  // LA_WITH_CONCEPTS
+#endif  // __GXX_CONCEPTS__
 
 // Norm induced by inner product
 // Might be moved to another place later
@@ -222,7 +215,7 @@ induced_norm(const I& inner, const Vector& v)
 }
 #endif
 
-#ifdef LA_WITH_CONCEPTS
+#ifdef __GXX_CONCEPTS__
 
 
 concept HilbertSpace<typename I, typename Vector,
@@ -237,7 +230,7 @@ concept HilbertSpace<typename I, typename Vector,
     }   
 };
 
-#endif // LA_WITH_CONCEPTS
+#endif // __GXX_CONCEPTS__
 
 } // namespace math
 
