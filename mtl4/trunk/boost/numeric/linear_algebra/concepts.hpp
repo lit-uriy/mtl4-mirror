@@ -17,6 +17,7 @@
 #include <boost/numeric/linear_algebra/is_invertible.hpp>
 #include <boost/numeric/linear_algebra/inverse.hpp>
 #include <boost/numeric/linear_algebra/operators.hpp>
+#include <boost/numeric/linear_algebra/algebraic_concepts.hpp>
 #include <complex>
 
 // If desired one can disable the default concept maps with LA_NO_CONCEPT_MAPS
@@ -155,24 +156,14 @@ auto concept Magma<typename Operation, typename Element>
 // As an example floating point numbers are commutative but not associative
 //   w.r.t. addition and multiplication
 concept CommutativeMagma<typename Operation, typename Element>
-  : Magma<Operation, Element>
-{
-    axiom Commutativity(Operation op, Element x, Element y)
-    {
-	op(x, y) == op(y, x); 
-    }   
-};
+  : Magma<Operation, Element>, algebra::Commutative<Operation, Element>
+{};
 
 
 // SemiGroup is a refinement which must be nominal
 concept SemiGroup<typename Operation, typename Element>
-  : Magma<Operation, Element>
-{
-    axiom Associativity(Operation op, Element x, Element y, Element z)
-    {
-	op(x, op(y, z)) == op(op(x, y), z); 
-    }
-};
+  : Magma<Operation, Element>, algebra::SemiGroup<Operation, Element>
+{};
 
 
 concept CommutativeSemiGroup<typename Operation, typename Element>
@@ -183,17 +174,9 @@ concept CommutativeSemiGroup<typename Operation, typename Element>
 
 // Adding identity
 concept Monoid<typename Operation, typename Element>
-  : SemiGroup<Operation, Element> 
+  : SemiGroup<Operation, Element>, algebra::Monoid<Operation, Element> 
 {
-    typename identity_result_type;
-    identity_result_type identity(Operation, Element);
     where std::Convertible<identity_result_type, Element>;
-
-    axiom Neutrality(Operation op, Element x)
-    {
-	op( x, identity(op, x) ) == x;
-	op( identity(op, x), x ) == x;
-    }
 };
 
 
@@ -204,16 +187,15 @@ concept CommutativeMonoid<typename Operation, typename Element>
 
 
 concept PartiallyInvertibleMonoid<typename Operation, typename Element>
-  : Monoid<Operation, Element> 
+  : Monoid<Operation, Element>, algebra::Inversion<Operation, Element> 
 {
     typename is_invertible_result_type;
     is_invertible_result_type is_invertible(Operation, Element);
     where std::Convertible<is_invertible_result_type, bool>;
 
-    typename inverse_result_type;
-    inverse_result_type inverse(Operation, Element);
     where std::Convertible<inverse_result_type, Element>;
 
+    // Does it overwrites the axiom from algebra::Inversion
     axiom Inversion(Operation op, Element x)
     {
 	// Only for invertible elements:
@@ -232,7 +214,8 @@ concept PartiallyInvertibleCommutativeMonoid<typename Operation, typename Elemen
 
 
 concept Group<typename Operation, typename Element>
-  : PartiallyInvertibleMonoid<Operation, Element>
+  : PartiallyInvertibleMonoid<Operation, Element>,
+    algebra::Group<Operation, Element>
 {
     axiom AlwaysInvertible(Operation op, Element x)
     {
@@ -251,7 +234,8 @@ concept Group<typename Operation, typename Element>
 
 concept AbelianGroup<typename Operation, typename Element>
   : Group<Operation, Element>, 
-    PartiallyInvertibleCommutativeMonoid<Operation, Element>
+    PartiallyInvertibleCommutativeMonoid<Operation, Element>,
+    algebra::AbelianGroup<Operation, Element>
 {};
 
 
@@ -522,14 +506,14 @@ concept MultiplicativePartiallyInvertibleMonoid<typename Element>
 	// Element tmp = x; tmp/= y; tmp == x / y; not proposal-compliant 
     }  
 };
-
+ 
 
 concept MultiplicativePartiallyInvertibleCommutativeMonoid<typename Element>
   : MultiplicativePartiallyInvertibleMonoid<Element>,
     MultiplicativeCommutativeMonoid<Element>,
     PartiallyInvertibleCommutativeMonoid< math::mult<Element>, Element >
 {};
-
+ 
 
 concept MultiplicativeGroup<typename Element>
   : MultiplicativeMonoid<Element>,
@@ -554,67 +538,44 @@ concept MultiplicativeAbelianGroup<typename Element>
 
 // More generic, less handy to use
 
-concept GenericRing<typename AddOp, typename MultOp, typename Element>
+auto concept GenericRing<typename AddOp, typename MultOp, typename Element>
   : AbelianGroup<AddOp, Element>,
-    SemiGroup<MultOp, Element>
-{
-    axiom Distributivity(AddOp add, MultOp mult, Element x, Element y, Element z)
-    {
-	// From left
-	mult(x, add(y, z)) == add(mult(x, y), mult(x, z));
-	// z right
-	mult(add(x, y), z) == add(mult(x, z), mult(y, z));
-    }
-};
+    SemiGroup<MultOp, Element>,
+    algebra::Ring<AddOp, MultOp, Element>
+{};
 
 
-concept GenericCommutativeRing<typename AddOp, typename MultOp, typename Element>
+auto concept GenericCommutativeRing<typename AddOp, typename MultOp, typename Element>
   : GenericRing<AddOp, MultOp, Element>,
     CommutativeSemiGroup<MultOp, Element>
 {};
 
 
-concept GenericRingWithIdentity<typename AddOp, typename MultOp, typename Element>
+auto concept GenericRingWithIdentity<typename AddOp, typename MultOp, typename Element>
   : GenericRing<AddOp, MultOp, Element>,
-    Monoid<MultOp, Element>
+    Monoid<MultOp, Element>,
+    algebra::RingWithIdentity<AddOp, MultOp, Element>
 {};
 
 
-concept GenericCommutativeRingWithIdentity<typename AddOp, typename MultOp, typename Element>
+auto concept GenericCommutativeRingWithIdentity<typename AddOp, typename MultOp, typename Element>
   : GenericRingWithIdentity<AddOp, MultOp, Element>,
     GenericCommutativeRing<AddOp, MultOp, Element>
 {};
 
 
 concept GenericDivisionRing<typename AddOp, typename MultOp, typename Element>
-  : GenericRingWithIdentity<AddOp, MultOp, Element>
+  : GenericRingWithIdentity<AddOp, MultOp, Element>,
+    algebra::DivisionRing<AddOp, MultOp, Element>
 {
-    // where UnaryIsoFunction< inverse<MultOp, Element>, Element >; 
-    typename inverse_result_type;
-    inverse_result_type inverse(MultOp, Element);
     where std::Convertible<inverse_result_type, Element>;
-
-    // 0 != 1
-    // Comments see DivisionRing
-    axiom ZeroIsDifferentFromOne(AddOp add, MultOp mult, Element x)
-    {
-	identity(add, x) != identity(mult, x);       
-    }
-
-    // Non-zero divisibility from left and from right
-    axiom NonZeroDivisibility(AddOp add, MultOp mult, Element x)
-    {
-	if (x != identity(add, x))
-	    mult(inverse(mult, x), x) == identity(mult, x);
-	if (x != identity(add, x))
-	    mult(x, inverse(mult, x)) == identity(mult, x);
-    }
 };    
 
 
-concept GenericField<typename AddOp, typename MultOp, typename Element>
+auto concept GenericField<typename AddOp, typename MultOp, typename Element>
   : GenericDivisionRing<AddOp, MultOp, Element>,
-    GenericCommutativeRingWithIdentity<AddOp, MultOp, Element>
+    GenericCommutativeRingWithIdentity<AddOp, MultOp, Element>,
+    algebra::Field<AddOp, MultOp, Element>
 {};
 
 
