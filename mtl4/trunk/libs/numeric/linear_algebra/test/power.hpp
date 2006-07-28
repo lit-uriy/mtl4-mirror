@@ -32,7 +32,7 @@ template <typename Op, typename Element, typename Exponent>
 inline Element power(const Element& base, Exponent exp, Op op)
 {
     // std::cout << "[SemiGroup] ";
-    return recursive_multiply_and_square(base, exp, op);
+    return multiply_and_square_horner(base, exp, op);
 }
 
 template <typename Op, typename Element, typename Exponent>

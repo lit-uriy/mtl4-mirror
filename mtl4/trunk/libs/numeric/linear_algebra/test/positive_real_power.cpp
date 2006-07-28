@@ -49,19 +49,19 @@ int main(int, char* [])
 
     positive_real          value(1.1);
 
-    std::cout << "3.0^777 as Magma: " << power(value, 777, mult<positive_real>())  << '\n'; 
+    std::cout << "1.1^777 as Magma: " << power(value, 777, mult<positive_real>())  << '\n'; 
  
-    std::cout << "3.0^777 as SemiGroup: " << power(value, 777, semigroup_mult())  << '\n'; 
+    std::cout << "1.1^777 as SemiGroup: " << power(value, 777, semigroup_mult())  << '\n'; 
 
-    std::cout << "3.0^777 as Monoid: " << power(value, 777, monoid_mult())  << '\n'; 
+    std::cout << "1.1^777 as Monoid: " << power(value, 777, monoid_mult())  << '\n'; 
     try {
-	std::cout << "3.0^-777 as Monoid: " << power(value, -777, monoid_mult())  << '\n'; 
+	std::cout << "1.1^-777 as Monoid: " << power(value, -777, monoid_mult())  << '\n'; 
     } catch (char const* message) {
 	std::cout << message << '\n';
     }
 
-    std::cout << "3.0^777 as Group: " << power(value, 777, group_mult())  << '\n'; 
-    std::cout << "3.0^-777 as Group: " << power(value, -777, group_mult())  << '\n'; 
+    std::cout << "1.1^777 as Group: " << power(value, 777, group_mult())  << '\n'; 
+    std::cout << "1.1^-777 as Group: " << power(value, -777, group_mult())  << '\n'; 
  
     return 0;
 }
