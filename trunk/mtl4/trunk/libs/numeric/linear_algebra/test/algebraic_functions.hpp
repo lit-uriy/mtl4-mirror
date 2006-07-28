@@ -78,7 +78,7 @@ inline bool identity_pair(const Element& v1, const Element& v2, Op op)
 // {Op, Element} must be a SemiGroup
 template <typename Op, typename Element, typename Exponent>
   LA_WHERE( math::SemiGroup<Op, Element> 
-            && std::Integral<Exponent> )             // Integral might be lifted
+            && std::Integral<Exponent> )  
 Element recursive_multiply_and_square(const Element& base, Exponent exp, Op op) 
 {
     if (exp <= 0) throw "In recursive_multiply_and_square: exponent must greater than 0";
@@ -100,11 +100,65 @@ Element recursive_multiply_and_square(const Element& base, Exponent exp, Op op)
 } 
 
 
+// {Op, Element} must be a SemiGroup
+template <typename Op, typename Element, typename Exponent>
+  LA_WHERE( math::SemiGroup<Op, Element> 
+            && std::Integral<Exponent> )  
+inline Element multiply_and_square_horner(const Element& base, Exponent exp, Op op) 
+{
+    if (exp <= 0) throw "In multiply_and_square_horner: exponent must greater than 0";
+
+    // Set mask to highest bit
+    Exponent mask= 1 << (8 * sizeof(mask) - 1);
+
+    // If this is a negative number right shift can insert 1s instead of 0s -> infinite loop
+    // Therefore we take the 2nd-highest bit
+    if (mask < 0)
+	mask= 1 << (8 * sizeof(mask) - 2);
+
+    // find highest 1 bit
+    while(!(bool)(mask & exp)) mask>>= 1;
+
+    Element value= base;
+    for (mask>>= 1; mask; mask>>= 1) {
+	value= op(value, value);
+	if (exp & mask) 
+	    value= op(value, base);
+    }
+    return value;
+}
+
+
 // {Op, Element} must be a Monoid
 template <typename Op, typename Element, typename Exponent>
   LA_WHERE( math::Monoid<Op, Element> 
-            && std::Integral<Exponent> )             // Integral might be lifted
+            && std::Integral<Exponent> ) 
 inline Element multiply_and_square(const Element& base, Exponent exp, Op op) 
+{
+    // Same as the simpler form except that the first multiplication is made before 
+    // the loop and one squaring is saved this way
+    if (exp < 0) throw "In multiply_and_square: negative exponent";
+
+    using math::identity;
+    Element value= identity(op, base), square= base;
+
+    if (exp & 1) 
+	value= base;
+    
+    for (exp>>= 1; exp > 0; exp>>= 1) {
+	square= op(square, square); 
+	if (exp & 1) 
+	    value= op(value, square);
+    }
+    return value;  
+} 
+
+
+// {Op, Element} must be a Monoid
+template <typename Op, typename Element, typename Exponent>
+  LA_WHERE( math::Monoid<Op, Element> 
+            && std::Integral<Exponent> ) 
+inline Element multiply_and_square_simple(const Element& base, Exponent exp, Op op) 
 {
     if (exp < 0) throw "In multiply_and_square: negative exponent";
 
