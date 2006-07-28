@@ -1,3 +1,4 @@
+// Copyright 2006. Peter Gottschling, Matthias Troyer, Rolf Bonderer
 // $COPYRIGHT$
 
 #ifndef MATH_INVERSE_INCLUDE

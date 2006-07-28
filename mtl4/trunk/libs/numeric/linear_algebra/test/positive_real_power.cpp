@@ -46,7 +46,7 @@ int main(int, char* [])
 {
     using mtl::power;
     using math::mult;
-
+ 
     positive_real          value(1.1);
 
     std::cout << "1.1^777 as Magma: " << power(value, 777, mult<positive_real>())  << '\n'; 

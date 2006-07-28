@@ -1,3 +1,4 @@
+// Copyright 2006. Peter Gottschling, Matthias Troyer, Rolf Bonderer
 // $COPYRIGHT$
 
 #ifndef LA_CONCEPTS_INCLUDE
@@ -5,7 +6,7 @@
 
 #include <boost/config/concept_macros.hpp>
 
-#ifdef LA_WITH_CONCEPTS
+#ifdef __GXX_CONCEPTS__
 #  include <concepts>
 #else
 #  warning "Concepts are not used"
@@ -24,7 +25,7 @@
 
 namespace math {
 
-#ifdef LA_WITH_CONCEPTS
+#ifdef __GXX_CONCEPTS__
 
 // ==================================
 // Classification of Arithmetic Types
@@ -264,7 +265,7 @@ auto concept AdditiveMagma<typename Element>
 {
     typename plus_assign_result_type;  
     plus_assign_result_type operator+=(Element& x, Element y);
-    where std::Convertible<plus_assign_result_type, Element>;
+    // where std::Convertible<plus_assign_result_type, Element>;
 
     // Operator + is by default defined with +=
     typename addition_result_type;  
@@ -349,7 +350,7 @@ concept AdditivePartiallyInvertibleMonoid<typename Element>
 {
     typename minus_assign_result_type;  
     minus_assign_result_type operator-=(Element& x, Element y);
-    where std::Convertible<minus_assign_result_type, Element>;
+    // where std::Convertible<minus_assign_result_type, Element>;
      
     // Operator - by default defined with -=
     typename subtraction_result_type;  
@@ -424,7 +425,7 @@ auto concept MultiplicativeMagma<typename Element>
 {
     typename mult_assign_result_type;  
     mult_assign_result_type operator*=(Element& x, Element y);
-    where std::Convertible<mult_assign_result_type, Element>;
+    // where std::Convertible<mult_assign_result_type, Element>;
 
     // Operator * is by default defined with *=
     typename mult_result_type;  
@@ -496,7 +497,7 @@ concept MultiplicativePartiallyInvertibleMonoid<typename Element>
 {
     typename divide_assign_result_type;  
     divide_assign_result_type operator/=(Element& x, Element y);
-    where std::Convertible<divide_assign_result_type, Element>;
+    // where std::Convertible<divide_assign_result_type, Element>;
      
     // Operator / by default defined with /=
     typename division_result_type = Element;  
@@ -806,7 +807,7 @@ concept_map Field<T> {}
 
 #endif // LA_NO_CONCEPT_MAPS
 
-#endif // LA_WITH_CONCEPTS
+#endif // __GXX_CONCEPTS__
 
 
 // =================================================
@@ -814,22 +815,18 @@ concept_map Field<T> {}
 // =================================================
 
 
-#ifdef LA_WITH_CONCEPTS
+#ifdef __GXX_CONCEPTS__
 
 // Concept to specify to specify projection of scalar value to comparable type
 // For instance as return type of abs
 // Minimalist definition for maximal applicability
 concept MagnitudeType<typename T>
 {
-    typename type;
-
-    // where FullEqualityComparable<type>;
-    // where FullLessThanComparable<type>;
+    typename type = T;
 };
 
 template <typename T>
-  where std::Integral<T>
-concept_map MagnitudeType<T>
+concept_map MagnitudeType<std::complex<T> >
 {
     typedef T type;
 }
@@ -853,18 +850,25 @@ auto concept RealMagnitude<typename T>
     type abs(T);
 }
 
-concept_map MagnitudeType<float> { typedef float type; };
-concept_map MagnitudeType<double> { typedef double type; };
+#else  // now without concepts
 
 template <typename T>
-  where MagnitudeType<T>
-concept_map MagnitudeType< std::complex<T> >
+struct MagnitudeType
 {
-    typedef T type;
+    typename type = T;
 };
 
-//#else  // now without concepts
-#endif  // LA_WITH_CONCEPTS
+template <typename T>
+struct MagnitudeType<std::complex<T> >
+{
+    typedef T type;
+}
+
+template <typename T> struct RealMagnitude
+  : public MagnitudeType<T>
+{}
+
+#endif  // __GXX_CONCEPTS__
 
 // Type trait version both available with and w/o concepts (TBD: Macro finally :-( )
 // For the moment everything is its own magnitude type, unless stated otherwise
@@ -886,7 +890,7 @@ struct magnitude_type_trait< std::complex<T> >
 // =========================================
 
 
-#ifdef LA_WITH_CONCEPTS
+#ifdef __GXX_CONCEPTS__
 
 //The following concepts Addable, Subtractable etc. differ from std::Addable, std::Subtractable 
 //etc. in so far that no default for result_type is provided, thus allowing automated return type deduction
@@ -1063,7 +1067,7 @@ auto concept InfinityNormApplicable<typename V>
 
 
 
-#endif  // LA_WITH_CONCEPTS
+#endif  // __GXX_CONCEPTS__
 
 
 } // namespace math
