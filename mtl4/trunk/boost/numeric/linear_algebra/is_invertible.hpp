@@ -49,6 +49,22 @@ inline bool is_invertible(const Operation& op, const Element& v)
     return is_invertible_t<Operation, Element>() (op, v);
 }
 
+
+namespace detail {
+    
+    // Helper type whose operator returns true if v is not 0
+    // 0 must be convertible into Element and Element must be EqualityComparable
+    template <typename Operation, typename Element>
+    struct non_zero_is_invertible_t
+    {
+	bool operator() (const Operation&, const Element& v)
+	{
+	    return !(v == Element(0));
+	}
+    };
+
+} // namespace detail
+
 } // namespace math
 
 #endif // MATH_IS_INVERTIBLE_INCLUDE
