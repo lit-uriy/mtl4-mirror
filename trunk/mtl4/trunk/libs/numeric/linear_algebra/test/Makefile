@@ -1,11 +1,12 @@
-CXXFLAGS += -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -L/u/pgottsch/software/conceptgcc/darwin/lib/ppc64/ -Winvalid-pch -m64 # --include bits/stdc++.h # -Wno-long-double # 
+CXXFLAGS += -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} # -L/u/pgottsch/software/conceptgcc/darwin/lib/ppc64/ -Winvalid-pch -m64 # --include bits/stdc++.h # -Wno-long-double # 
 
 XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_algebra/concepts.hpp \
                  Makefile
 
 CXX =  conceptg++
 
-TARGETS =	positive_real	positive_real_explicit positive_real_power string_example \
+TARGETS =	positive_real	positive_real_explicit positive_real_power \
+		positive_real_power_explicit string_example \
 		float_example int_example mod_n_example accumulation_example \
 		concept_map_test      int_example 
 
@@ -22,6 +23,9 @@ positive_real_explicit:	positive_real_explicit.cpp  ${XTRA_SOURCES}
 
 positive_real_power:	positive_real_power.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ positive_real_power.cpp
+
+positive_real_power_explicit:	positive_real_power_explicit.cpp  ${XTRA_SOURCES}
+	${CXX} ${CXXFLAGS} -o $@ positive_real_power_explicit.cpp
 
 string_example:	string_example.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ string_example.cpp

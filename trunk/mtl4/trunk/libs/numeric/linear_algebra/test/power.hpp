@@ -3,6 +3,7 @@
 #ifndef MTL_POWER_INCLUDE
 #define MTL_POWER_INCLUDE
 
+#include <libs/numeric/linear_algebra/test/algebraic_functions.hpp>
 
 
 namespace mtl {
@@ -41,6 +42,20 @@ inline Element power(const Element& base, Exponent exp, Op op)
 {
     // std::cout << "[Monoid] ";
     return multiply_and_square(base, exp, op);
+}
+
+template <typename Op, typename Element, typename Exponent>
+    where math::PartiallyInvertibleMonoid<Op, Element> && std::SignedIntegral<Exponent>
+inline Element power(const Element& base, Exponent exp, Op op)
+{
+    // std::cout << "[PartiallyInvertibleMonoid] ";
+    using math::inverse;
+
+    if (exp < 0 && !is_invertible(op, base)) 
+        throw "In power [PartiallyInvertibleMonoid]: base must be invertible with negative exponent";
+
+    return exp >= 0 ? multiply_and_square(base, exp, op) 
+	            : multiply_and_square(inverse(op, base), -exp, op);
 }
 
 template <typename Op, typename Element, typename Exponent>
