@@ -1,6 +1,7 @@
 // $COPYRIGHT$
 
 #include <iostream>
+#include <string>
 #include <boost/test/minimal.hpp>
 #include <boost/tuple/tuple.hpp>
 
@@ -15,12 +16,25 @@ using namespace mtl;
 using namespace std;  
 
 
-struct test_morton_dense 
-{    
+template <typename Recurator>
+void print_depth_first(Recurator const& recurator, string str)
+{
+    cout << "\nRecursion: " << str << endl;
+    print_matrix_row_cursor(recurator.get_value());
+  
+    if (!recurator.is_leaf()) {   
+	print_depth_first((const_cast<Recurator&>(recurator)).north_west(), string("north west of ") + str);
+	print_depth_first((const_cast<Recurator&>(recurator)).south_west(), string("south west of ") + str);
+	print_depth_first((const_cast<Recurator&>(recurator)).north_east(), string("north east of ") + str);
+	print_depth_first((const_cast<Recurator&>(recurator)).south_east(), string("south east of ") + str);
+    }
+}
+
     template <typename Matrix>
-    void operator() (Matrix& matrix)
+    void test_sub_matrix(Matrix& matrix)
     {
 	print_matrix_row_cursor(matrix);
+#if 0
 	cout << endl;
 	Matrix sub_matrix(matrix.sub_matrix(2, 6, 2, 5));
 	print_matrix_row_cursor(sub_matrix);
@@ -30,18 +44,37 @@ struct test_morton_dense
 
 	cout << endl;
 	print_matrix_row_cursor(matrix.sub_matrix(3, 5, 2, 4));
- 
+ #endif
+
 	recursion::matrix_recurator<Matrix> recurator(matrix);
-	cout << endl;
+
+	print_depth_first(recurator, "");
+
+#if 0
+	cout << "\nNorth west: " << endl;
 	print_matrix_row_cursor(recurator.north_west().get_value());
 
+	cout << "\nSouth west: " << endl;
+	print_matrix_row_cursor(recurator.south_west().get_value());
 	
+	cout << "\nNorth east: " << endl;
+	print_matrix_row_cursor(recurator.north_east().get_value());
 
+	cout << "\nSouth east: " << endl;
+	print_matrix_row_cursor(recurator.south_east().get_value());
+	
+	cout << "\nSouth east of south east: " << endl;
+	print_matrix_row_cursor(recurator.south_east().south_east().get_value());
+	
+	cout << "\nSouth east of south east of south east: " << endl;
+	print_matrix_row_cursor(recurator.south_east().south_east().south_east().get_value());
+	
 	transposed_view<Matrix> trans_matrix(matrix);
 	print_matrix_row_cursor(trans_matrix); 
+#endif
 
     }
-};
+
 
 template <typename Matrix>
 void fill_matrix(Matrix& matrix)
@@ -59,15 +92,17 @@ void fill_matrix(Matrix& matrix)
     }
        
 }
-
+  
  
 int test_main(int argc, char* argv[])
 {
     typedef morton_dense<double,  0x55555555, matrix_parameters<> > matrix_type;    
-    matrix_type matrix(non_fixed::dimensions(16, 15));
+    matrix_type matrix(non_fixed::dimensions(6, 5));
    
-    fill_matrix(matrix);
+    fill_matrix(matrix); 
+    test_sub_matrix(matrix);
 
-    test_morton_dense()(matrix);
+    
+
     return 0;
 }
