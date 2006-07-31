@@ -151,6 +151,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     typedef typename Parameters::dimensions   dim_type;
     typedef Elt                               value_type;
     typedef std::size_t                       size_type;
+    typedef self                              sub_matrix_type;
+
     // typedef morton_dense_el_cursor<Elt>       el_cursor_type;  
     // typedef morton_dense_indexer              indexer_type;
 
@@ -260,7 +262,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	this->data[key.dilated_row.dilated_value() + key.dilated_col.dilated_value()]= value;
     }
 
-    self sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    sub_matrix_type sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
     {
 	throw_debug_exception(begin_r < begin_row(), "begin_row out of range\n");
 	throw_debug_exception(end_r > end_row(), "end_row out of range\n");
@@ -269,7 +271,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
 	// Probably check whether power of 2 is crossed (ask David and Michael)
 
-	self  tmp(*this);
+	sub_matrix_type  tmp(*this);
 
 	dilated_row_t  dilated_row(begin_r);
 	dilated_col_t  dilated_col(begin_c);
