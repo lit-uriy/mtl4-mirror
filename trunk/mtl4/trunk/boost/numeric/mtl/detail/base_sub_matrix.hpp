@@ -25,13 +25,34 @@ struct base_sub_matrix
     typedef std::size_t                       size_type;
 
   protected:
-    size_type                       nnz,       // # of non-zeros, to be set by derived matrix (drop maybe?)
+    size_type                       my_nnz,       // # of non-zeros, to be set by derived matrix (drop maybe?)
                                     my_begin_row, my_end_row,
                                     my_begin_col, my_end_col;
 
+    void constructor_helper(dim_type dim)
+    {
+	my_begin_row= index::change_to(index_type(), 0);
+	my_end_row=   index::change_to(index_type(), dim.num_rows());
+	my_begin_col= index::change_to(index_type(), 0);
+	my_end_col=   index::change_to(index_type(), dim.num_cols());
+	my_nnz= 0;
+    }
+
   public:
-    base_sub_matrix() :  nnz(0), my_begin_row(0), my_end_row(0), my_begin_col(0), my_end_col(0) {}
+    // base_sub_matrix() :  my_nnz(0), my_begin_row(0), my_end_row(0), my_begin_col(0), my_end_col(0) {}
    
+    base_sub_matrix() 
+    {
+	// With no static dimension information, it is by default 0
+	constructor_helper(dim_type());
+    }
+
+    explicit base_sub_matrix(mtl::non_fixed::dimensions d) 
+    {
+	constructor_helper(d);
+    }
+    
+
     void set_ranges(size_type br, size_type er, size_type bc, size_type ec)
     {
 	throw_debug_exception(br > er, "begin row > end row\n");
@@ -39,7 +60,15 @@ struct base_sub_matrix
 	my_begin_row= br; my_end_row= er; my_begin_col= bc; my_end_col= ec;
     }
 
-    explicit base_sub_matrix(size_type br, size_type er, size_type bc, size_type ec) : nnz(0)
+    void check_ranges(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c) const
+    {
+	throw_debug_exception(begin_r < begin_row(), "begin_row out of range\n");
+	throw_debug_exception(end_r > end_row(), "end_row out of range\n");
+	throw_debug_exception(begin_c < begin_col(), "begin_col out of range\n");
+	throw_debug_exception(end_c > end_col(), "end_col out of range\n");
+    }
+
+    explicit base_sub_matrix(size_type br, size_type er, size_type bc, size_type ec) : my_nnz(0)
     {
 	set_ranges(br, er, bc, ec);
     }
@@ -50,16 +79,16 @@ struct base_sub_matrix
 	return my_end_row - my_begin_row;
     }
 
-    // First row taking indexing into account
+    // First row taking indexing into account (already stored as such)
     size_type begin_row() const 
     {
-	return index::change_to(index_type(), my_begin_row);
+	return my_begin_row;
     }
     
-    // Past-end row taking indexing into account
+    // Past-end row taking indexing into account (already stored as such)
     size_type end_row() const 
     {
-	return index::change_to(index_type(), my_end_row);
+	return my_end_row;
     }
 
     // Number of columns
@@ -68,16 +97,22 @@ struct base_sub_matrix
 	return my_end_col - my_begin_col;
     }
 
-    // First column taking indexing into account
+    // First column taking indexing into account (already stored as such)
     size_type begin_col() const 
     {
-	return index::change_to(index_type(), my_begin_col);
+	return my_begin_col;
     }
     
-    // Past-end column taking indexing into account
+    // Past-end column taking indexing into account (already stored as such)
     size_type end_col() const 
     {
-	return index::change_to(index_type(), my_end_col);
+	return my_end_col;
+    }
+
+    // Number of non-zeros
+    size_type nnz() const
+    {
+      return my_nnz;
     }
 
   protected:
@@ -147,3 +182,9 @@ struct base_sub_matrix
 }} // namespace mtl::detail
 
 #endif // MTL_BASE_SUB_MATRIX_INCLUDE
+
+
+/* 
+   Question:
+   - Shall we keep the position in the original matrix?
+*/

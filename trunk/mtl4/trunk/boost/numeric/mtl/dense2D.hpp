@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <boost/numeric/mtl/common_includes.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
+#include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
 #include <boost/numeric/mtl/detail/strided_base_cursor.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
 
@@ -58,31 +59,31 @@ struct dense2D_indexer
 {
 private:
     // helpers for public functions
-    size_t offset(size_t dim2, size_t r, size_t c, row_major) const 
+    size_t offset(size_t ldim, size_t r, size_t c, row_major) const 
     {
-	return r * dim2 + c; 
+	return r * ldim + c; 
     }
-    size_t offset(size_t dim2, size_t r, size_t c, col_major) const 
+    size_t offset(size_t ldim, size_t r, size_t c, col_major) const 
     {
-	return c * dim2 + r; 
-    }
-    
-    size_t row(size_t offset, size_t dim2, row_major) const 
-    {
-	return offset / dim2; 
-    }
-    size_t row(size_t offset, size_t dim2, col_major) const 
-    {
-	return offset % dim2;
+	return c * ldim + r; 
     }
     
-    size_t col(size_t offset, size_t dim2, row_major) const 
+    size_t row(size_t offset, size_t ldim, row_major) const 
     {
-	return offset % dim2;
+	return offset / ldim; 
     }
-    size_t col(size_t offset, size_t dim2, col_major) const 
+    size_t row(size_t offset, size_t ldim, col_major) const 
     {
-	return offset / dim2; 
+	return offset % ldim;
+    }
+    
+    size_t col(size_t offset, size_t ldim, row_major) const 
+    {
+	return offset % ldim;
+    }
+    size_t col(size_t offset, size_t ldim, col_major) const 
+    {
+	return offset / ldim; 
     }
 
  public:
@@ -93,14 +94,14 @@ private:
 	typename Matrix::index_type my_index;
 	size_t my_r= index::change_from(my_index, r);
 	size_t my_c= index::change_from(my_index, c);
-	return offset(ma.dim2(), my_r, my_c, typename Matrix::orientation());
+	return offset(ma.ldim, my_r, my_c, typename Matrix::orientation());
     }
 
     template <class Matrix>
     size_t row(const Matrix& ma, typename Matrix::key_type key) const
     {
 	// row with c-index for my orientation
-	size_t r= row(ma.offset(key), ma.dim2(), typename Matrix::orientation());
+	size_t r= row(ma.offset(key), ma.ldim, typename Matrix::orientation());
 	return index::change_to(typename Matrix::index_type(), r);
     }
 
@@ -108,7 +109,7 @@ private:
     size_t col(const Matrix& ma, typename Matrix::key_type key) const 
     {
 	// column with c-index for my orientation
-	size_t c= col(ma.offset(key), ma.dim2(), typename Matrix::orientation());
+	size_t c= col(ma.offset(key), ma.ldim, typename Matrix::orientation());
 	return index::change_to(typename Matrix::index_type(), c);
     }
 }; // dense2D_indexer
@@ -137,13 +138,13 @@ namespace detail
   
 // Dense 2D matrix type
 template <typename Elt, typename Parameters>
-class dense2D : public detail::base_matrix<Elt, Parameters>, 
+class dense2D : public detail::base_sub_matrix<Elt, Parameters>, 
 		public detail::contiguous_memory_matrix< Elt, Parameters::on_stack, 
 							 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
                 public detail::crtp_base_matrix< dense2D<Elt, Parameters>, Elt, std::size_t >
 {
     typedef dense2D                                    self;
-    typedef detail::base_matrix<Elt, Parameters>       super;
+    typedef detail::base_sub_matrix<Elt, Parameters>   super;
   public:
     typedef Parameters                        parameters;
     typedef typename Parameters::orientation  orientation;
@@ -160,31 +161,51 @@ class dense2D : public detail::base_matrix<Elt, Parameters>,
     typedef dense_el_cursor<Elt>              el_cursor_type;  
     typedef dense2D_indexer                   indexer_type;
 
+    // Self-similar type unless dimension is fixed
+    // Not supported for the moment
+    typedef self                              sub_matrix_type;  
+
   protected:
+    // Obviously, the next 3 functions must be called after setting dimensions
     void set_nnz()
     {
-      this->nnz = this->dim.num_rows() * this->dim.num_cols();
+	this->my_nnz = this->num_rows() * this->num_cols();
+    }
+
+    void set_ldim(row_major)
+    {
+	ldim= this->num_cols();
+    }
+
+    void set_ldim(col_major)
+    {
+	ldim= this->num_rows();
+    }
+
+    void set_ldim()
+    {
+	set_ldim(orientation());
     }
 
   public:
     // if compile time matrix size allocate memory
     dense2D() : super(), super_memory(dim_type().num_rows() * dim_type().num_cols()) 
     {
-	set_nnz();
+	set_nnz(); set_ldim();
     }
 
     // only sets dimensions, only for run-time dimensions
     explicit dense2D(mtl::non_fixed::dimensions d) 
 	: super(d), super_memory(d.num_rows() * d.num_cols()) 
     {
-	set_nnz();
+	set_nnz(); set_ldim();
     }
 
     // sets dimensions and pointer to external data
     explicit dense2D(mtl::non_fixed::dimensions d, value_type* a) 
       : super(d), super_memory(a) 
     { 
-        set_nnz();
+        set_nnz(); set_ldim();
     }
 
     // same constructor for compile time matrix size
@@ -192,10 +213,8 @@ class dense2D : public detail::base_matrix<Elt, Parameters>,
     explicit dense2D(value_type* a) : super(), super_memory(a) 
     { 
 	BOOST_STATIC_ASSERT((dim_type::is_static));
-        set_nnz();
+        set_nnz(); set_ldim();
     }
-
-    // friend class indexer_type; should work without friend declaration
 
     // old style, better use value property map
     value_type operator() (size_t r, size_t c) const 
@@ -209,19 +228,57 @@ class dense2D : public detail::base_matrix<Elt, Parameters>,
 	return this->data[indexer(*this, r, c)]; 
     }    
 
-    // to be removed ???
-    value_type& reference(size_t r, size_t c)
+  protected:
+    
+    // Set ranges from begin_r to end_r and begin_c to end_c
+    void set_ranges(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
     {
-	return this->data[indexer(*this, r, c)]; 
+	super::set_ranges(begin_r, end_r, begin_c, end_c);
+	set_nnz();
+    }
+	
+    // Set ranges to a num_row x num_col matrix, keeps indexing
+    void set_ranges(size_type num_rows, size_type num_cols)
+    {
+	set_ranges(this->begin_row(), this->begin_row() + num_rows, 
+		   this->begin_col(), this->begin_col() + num_cols);
+    }
+    
+
+  public:
+
+    sub_matrix_type sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    {
+	check_ranges(begin_r, end_r, begin_c, end_c);
+
+	sub_matrix_type  tmp(*this);
+
+	// Leading dimension doesn't change
+	tmp.data += indexer(*this, begin_r, begin_rc);  // Takes care of indexing
+	tmp.set_ranges(end_r - begin_r, end_c - begin_c);
+
+	// sub matrix doesn't own the memory (and must not free at the end)
+	tmp.extern_memory= true;
+
+	return tmp;
     }
 
-    value_type const& reference(size_t r, size_t c) const
+    const sub_matrix_type 
+    sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c) const
     {
-	return this->data[indexer(*this, r, c)]; 
+	// To minimize code duplication, we use the non-const version
+	sub_matrix_type tmp(const_cast<self*>(this)->sub_matrix(begin_r, end_r, begin_c, end_c));
+	return tmp;
     }
 
     indexer_type  indexer;
- }; // dense2D
+  protected:
+    // Leading dimension is minor dimension in original matrix 
+    // Opposed to other dims doesn't change in sub-matrices
+    size_type     ldim; 
+
+    friend class indexer_type; 
+}; // dense2D
 
 
 
@@ -407,3 +464,8 @@ namespace traits
 
 
 
+/*
+Limitations:
+- with compile-time constant dimension, submatrices are not supported (would violate self-similarity)
+- Element cursor doesn't work for sub-matrices (not contiguous)
+*/

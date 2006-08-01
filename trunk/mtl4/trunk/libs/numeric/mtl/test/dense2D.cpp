@@ -1,5 +1,5 @@
 // $COPYRIGHT$
-
+ 
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -79,7 +79,7 @@ struct test_dense2D
 	two_d_iteration("\nRows: ", matrix, glas::tags::row_t(), ExpRowComplexity());
 	two_d_iteration("\nColumns: ", matrix, glas::tags::col_t(), ExpColComplexity());
 
-	transposed_view<matrix_type> trans_matrix(matrix);
+	transposed_view<matrix_type> trans_matrix(matrix); 
 	one_d_iteration("\nTransposed matrix", trans_matrix, 2, 1, element_1_2);
 	two_d_iteration("\nRows: ", trans_matrix, glas::tags::row_t(), ExpColComplexity());
 	two_d_iteration("\nColumns: ", trans_matrix, glas::tags::col_t(), ExpRowComplexity());
@@ -87,8 +87,8 @@ struct test_dense2D
 	cout << "\nmatrix[1][2] = " << matrix[1][2] << "\n";
 	matrix[1][2]= 18.0;
 	cout << "matrix[1][2] = " << matrix[1][2] << "\n";
-	cout << "trans_matrix[1][2] = " << trans_matrix[1][2] << "\n";
-	
+	cout << "trans_matrix[2][1] = " << trans_matrix[2][1] << "\n";
+       
 
 #if 0
 	matrix_inserter<matrix_type>  i(matrix);
