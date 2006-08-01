@@ -93,7 +93,7 @@ struct test_dense2D
 #if 0
 	matrix_inserter<matrix_type>  i(matrix);
 	i(1, 2) << 17.0;
-	cout << "matrix[1, 2] = " << matrix(1, 2) << "\n";	
+	cout << "matrix[1, 2] = " << matrix(1, 2) << "\n";	 
 #endif
     }
 };

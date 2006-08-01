@@ -87,30 +87,35 @@ private:
     }
 
  public:
-    template <class Matrix>
-    size_t operator() (const Matrix& ma, size_t r, size_t c) const
+    template <class Elt, class Parameters>
+    size_t operator() (const dense2D<Elt, Parameters>& ma, size_t r, size_t c) const
     {
+	typedef dense2D<Elt, Parameters> matrix_type;
 	// convert into c indices
-	typename Matrix::index_type my_index;
+	typename matrix_type::index_type my_index;
 	size_t my_r= index::change_from(my_index, r);
 	size_t my_c= index::change_from(my_index, c);
-	return offset(ma.ldim, my_r, my_c, typename Matrix::orientation());
+	return offset(ma.ldim, my_r, my_c, typename matrix_type::orientation());
     }
 
-    template <class Matrix>
-    size_t row(const Matrix& ma, typename Matrix::key_type key) const
+    template <class Elt, class Parameters>
+    size_t row(const dense2D<Elt, Parameters>& ma, 
+	       typename dense2D<Elt, Parameters>::key_type key) const
     {
+	typedef dense2D<Elt, Parameters> matrix_type;
 	// row with c-index for my orientation
-	size_t r= row(ma.offset(key), ma.ldim, typename Matrix::orientation());
-	return index::change_to(typename Matrix::index_type(), r);
+	size_t r= row(ma.offset(key), ma.ldim, typename matrix_type::orientation());
+	return index::change_to(typename matrix_type::index_type(), r);
     }
 
-    template <class Matrix>
-    size_t col(const Matrix& ma, typename Matrix::key_type key) const 
+    template <class Elt, class Parameters>
+    size_t col(const dense2D<Elt, Parameters>& ma, 
+	       typename dense2D<Elt, Parameters>::key_type key) const 
     {
+	typedef dense2D<Elt, Parameters> matrix_type;
 	// column with c-index for my orientation
-	size_t c= col(ma.offset(key), ma.ldim, typename Matrix::orientation());
-	return index::change_to(typename Matrix::index_type(), c);
+	size_t c= col(ma.offset(key), ma.ldim, typename matrix_type::orientation());
+	return index::change_to(typename matrix_type::index_type(), c);
     }
 }; // dense2D_indexer
 
@@ -254,7 +259,7 @@ class dense2D : public detail::base_sub_matrix<Elt, Parameters>,
 	sub_matrix_type  tmp(*this);
 
 	// Leading dimension doesn't change
-	tmp.data += indexer(*this, begin_r, begin_rc);  // Takes care of indexing
+	tmp.data += indexer(*this, begin_r, begin_c);  // Takes care of indexing
 	tmp.set_ranges(end_r - begin_r, end_c - begin_c);
 
 	// sub matrix doesn't own the memory (and must not free at the end)
@@ -271,6 +276,7 @@ class dense2D : public detail::base_sub_matrix<Elt, Parameters>,
 	return tmp;
     }
 
+    template <typename> friend struct sub_matrix_t;
     indexer_type  indexer;
   protected:
     // Leading dimension is minor dimension in original matrix 
@@ -456,6 +462,43 @@ namespace traits
 
 } // namespace traits
 
+
+// ==========
+// Sub matrix
+// ==========
+
+template <typename Elt, typename Parameters>
+struct sub_matrix_t<dense2D<Elt, Parameters> >
+{
+    typedef dense2D<Elt, Parameters>        matrix_type;
+    typedef matrix_type                     sub_matrix_type;
+    typedef matrix_type const               const_sub_matrix_type;
+    typedef typename matrix_type::size_type size_type;
+    
+    sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    {
+	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
+
+	sub_matrix_type  tmp(matrix);
+
+	// Leading dimension doesn't change
+	tmp.data += matrix.indexer(matrix, begin_r, begin_c);  // Takes care of indexing
+	tmp.set_ranges(end_r - begin_r, end_c - begin_c);
+
+	// sub matrix doesn't own the memory (and must not free at the end)
+	tmp.extern_memory= true;
+
+	return tmp;
+    }
+
+    const_sub_matrix_type
+    operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    {
+	// To minimize code duplication, we use the non-const version
+	sub_matrix_type tmp((*this)(const_cast<matrix_type&>(matrix), begin_r, end_r, begin_c, end_c));
+	return tmp;
+    }	
+};
 
 } // namespace mtl
 
