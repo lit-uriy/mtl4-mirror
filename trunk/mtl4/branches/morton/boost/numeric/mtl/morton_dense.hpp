@@ -286,6 +286,13 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	return tmp;
     }
 
+    const sub_matrix_type 
+    sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c) const
+    {
+	sub_matrix_type tmp(const_cast<self*>(this)->sub_matrix(begin_r, end_r, begin_c, end_c));
+	return tmp;
+    }
+
   protected:
     void set_nnz()
     {
