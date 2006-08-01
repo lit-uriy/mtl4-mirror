@@ -47,6 +47,7 @@ void print_depth_first(Recurator const& recurator, string str)
 
 	print_depth_first(recurator, "");
 
+#if 0
 	cout << "\nNorth west: " << endl;
 	print_matrix_row_cursor(recurator.north_west().get_value());
 
@@ -64,11 +65,11 @@ void print_depth_first(Recurator const& recurator, string str)
 	
 	cout << "\nSouth east of south east of south east: " << endl;
 	print_matrix_row_cursor(recurator.south_east().south_east().south_east().get_value());
-	
-#if 0
+#endif
+	 
 	transposed_view<Matrix> trans_matrix(matrix);
 	print_matrix_row_cursor(trans_matrix); 
-#endif
+	print_matrix_row_cursor(sub_matrix(trans_matrix, 0, 2, 0, 4)); 
 
     }
 

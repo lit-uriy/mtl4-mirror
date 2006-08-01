@@ -5,6 +5,7 @@
 
 #include <boost/numeric/mtl/traits.hpp>
 #include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
+#include <boost/numeric/mtl/operations/sub_matrix.hpp>
 
 namespace mtl {
 
@@ -229,6 +230,36 @@ namespace traits
 
 }
 
+
+// ==========
+// Sub matrix
+// ==========
+
+template <typename Matrix>
+struct sub_matrix_t< transposed_view<Matrix> >
+{
+    typedef transposed_view<Matrix>                                               matrix_type;
+
+    // Transposed of submatrix type
+    typedef transposed_view<typename sub_matrix_t<Matrix>::sub_matrix_type>       sub_matrix_type;
+    typedef transposed_view<typename sub_matrix_t<Matrix>::const_sub_matrix_type> const_sub_matrix_type;
+    typedef typename matrix_type::size_type                                       size_type;
+    
+    sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    {
+	// Submatrix of referred matrix, colums and rows interchanged
+	typename sub_matrix_t<Matrix>::sub_matrix_type   sub(sub_matrix(matrix.ref, begin_c, end_c, begin_r, end_r));
+	return sub_matrix_type(sub);
+    }
+    
+    const_sub_matrix_type operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, 
+				     size_type begin_c, size_type end_c)
+    {
+	// Submatrix of referred matrix, colums and rows interchanged
+	typename sub_matrix_t<Matrix>::const_sub_matrix_type   sub(sub_matrix(matrix.ref, begin_c, end_c, begin_r, end_r));
+	return const_sub_matrix_type(sub);
+    }
+};
 
 } // namespace mtl
 
