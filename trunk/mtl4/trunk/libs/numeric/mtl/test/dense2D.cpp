@@ -10,6 +10,8 @@
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/raw_copy.hpp>
+#include <boost/numeric/mtl/operations/sub_matrix.hpp>
+#include <boost/numeric/mtl/operations/print_matrix.hpp>
 #include <boost/numeric/mtl/matrix_inserter.hpp>
 #include <boost/numeric/mtl/transposed_view.hpp>
  
@@ -75,6 +77,10 @@ struct test_dense2D
 	double        val[] = {1., 2., 3., 4., 5., 6.};
 	raw_copy(val, val+6, matrix);
 
+	transposed_view<matrix_type> trans_matrix(matrix); 
+	print_matrix_row_cursor(sub_matrix(trans_matrix, 0, 1, 0, 2));
+
+#if 0
 	one_d_iteration("\nMatrix", matrix, 1, 2, element_1_2);
 	two_d_iteration("\nRows: ", matrix, glas::tags::row_t(), ExpRowComplexity());
 	two_d_iteration("\nColumns: ", matrix, glas::tags::col_t(), ExpColComplexity());
@@ -90,7 +96,6 @@ struct test_dense2D
 	cout << "trans_matrix[2][1] = " << trans_matrix[2][1] << "\n";
        
 
-#if 0
 	matrix_inserter<matrix_type>  i(matrix);
 	i(1, 2) << 17.0;
 	cout << "matrix[1, 2] = " << matrix(1, 2) << "\n";	 
@@ -103,6 +108,7 @@ int test_main(int argc, char* argv[])
     typedef matrix_parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters1;
     test_dense2D<parameters1, complexity::linear_cached, complexity::linear>()(6.0);
 
+#if 0
     typedef matrix_parameters<row_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters2;
     test_dense2D<parameters2, complexity::linear_cached, complexity::linear>()(2.0);
 
@@ -111,6 +117,7 @@ int test_main(int argc, char* argv[])
 
     typedef matrix_parameters<col_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters4;
     test_dense2D<parameters4, complexity::linear, complexity::linear_cached>()(3.0);
+#endif
 
     return 0;
 }
