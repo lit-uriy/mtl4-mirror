@@ -252,31 +252,6 @@ class dense2D : public detail::base_sub_matrix<Elt, Parameters>,
 
   public:
 
-    sub_matrix_type sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-    {
-	check_ranges(begin_r, end_r, begin_c, end_c);
-
-	sub_matrix_type  tmp(*this);
-
-	// Leading dimension doesn't change
-	tmp.data += indexer(*this, begin_r, begin_c);  // Takes care of indexing
-	tmp.set_ranges(end_r - begin_r, end_c - begin_c);
-
-	// sub matrix doesn't own the memory (and must not free at the end)
-	tmp.extern_memory= true;
-
-	return tmp;
-    }
-
-    const sub_matrix_type 
-    sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c) const
-    {
-	// To minimize code duplication, we use the non-const version
-	sub_matrix_type tmp(const_cast<self*>(this)->sub_matrix(begin_r, end_r, begin_c, end_c));
-	return tmp;
-    }
-
-    template <typename> friend struct sub_matrix_t;
     indexer_type  indexer;
   protected:
     // Leading dimension is minor dimension in original matrix 
@@ -284,6 +259,8 @@ class dense2D : public detail::base_sub_matrix<Elt, Parameters>,
     size_type     ldim; 
 
     friend class indexer_type; 
+    template <typename> friend struct sub_matrix_t;
+
 }; // dense2D
 
 

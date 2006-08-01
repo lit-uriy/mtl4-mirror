@@ -37,24 +37,16 @@ void print_depth_first(Recurator const& recurator, string str)
     {
 	print_matrix_row_cursor(matrix);
 
-	print_matrix_row_cursor(sub_matrix(matrix, 2, 6, 2, 5));
 #if 0
-	cout << endl;
-	Matrix sub_matrix(matrix.sub_matrix(2, 6, 2, 5));
-	print_matrix_row_cursor(sub_matrix);
-
 	typename traits::row<Matrix>::type                                 row(matrix);
 	cout << row(*begin<glas::tags::nz_t>(sub_matrix)) << endl;
 
-	cout << endl;
-	print_matrix_row_cursor(matrix.sub_matrix(3, 5, 2, 4));
+#endif
  
 	recursion::matrix_recurator<Matrix> recurator(matrix);
 
 	print_depth_first(recurator, "");
-#endif
 
-#if 0
 	cout << "\nNorth west: " << endl;
 	print_matrix_row_cursor(recurator.north_west().get_value());
 
@@ -73,6 +65,7 @@ void print_depth_first(Recurator const& recurator, string str)
 	cout << "\nSouth east of south east of south east: " << endl;
 	print_matrix_row_cursor(recurator.south_east().south_east().south_east().get_value());
 	
+#if 0
 	transposed_view<Matrix> trans_matrix(matrix);
 	print_matrix_row_cursor(trans_matrix); 
 #endif
@@ -113,3 +106,4 @@ int test_main(int argc, char* argv[])
     return 0;
 }
 
+ 
