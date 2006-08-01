@@ -23,13 +23,13 @@ struct base_matrix
     typedef std::size_t                       size_type;
   protected:
     dim_type                        dim;       // # of rows and columns
-    size_type                       nnz;       // # of non-zeros, to be set by derived matrix
+    size_type                       my_nnz;       // # of non-zeros, to be set by derived matrix
     
   public:
-    base_matrix() :  nnz(0) {}
+    base_matrix() :  my_nnz(0) {}
 
     // setting dimension
-    explicit base_matrix(mtl::non_fixed::dimensions d) : dim(d), nnz(0) {}
+    explicit base_matrix(mtl::non_fixed::dimensions d) : dim(d), my_nnz(0) {}
    
     // Number of rows
     size_type num_rows() const 
@@ -63,10 +63,10 @@ struct base_matrix
       return index::change_to(index_type(), num_cols());
     }
 
-    // number of elements
-    size_type num_elements() const
+    // Number of non-zeros
+    size_type nnz() const
     {
-      return nnz;
+      return my_nnz;
     }
 
   protected:

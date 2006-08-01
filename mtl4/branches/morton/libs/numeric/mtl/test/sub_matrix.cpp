@@ -22,7 +22,7 @@ void print_depth_first(Recurator const& recurator, string str)
     cout << "\nRecursion: " << str << endl;
     print_matrix_row_cursor(recurator.get_value());
   
-    if (!recurator.is_leaf() && str.length() < 20) {    
+    if (!recurator.is_leaf() && str.length() < 20) {     
 	print_depth_first(recurator.north_west(), string("north west of ") + str);
 	print_depth_first(recurator.south_west(), string("south west of ") + str);
 	print_depth_first(recurator.north_east(), string("north east of ") + str);
@@ -106,3 +106,4 @@ int test_main(int argc, char* argv[])
 
     return 0;
 }
+

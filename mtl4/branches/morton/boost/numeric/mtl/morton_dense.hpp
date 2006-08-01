@@ -212,13 +212,14 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	super::set_ranges(begin_r, end_r, begin_c, end_c);
 	my_begin_row= begin_r; my_end_row= end_r;
 	my_begin_col= begin_c; my_end_col= end_c;
+	set_nnz();
     }
 
-    // Set ranges from 0 to end_r and 0 to end_c
-    // Does not yet work with Fortran indices !!!!
-    void set_ranges(size_type end_r, size_type end_c)
+    // Set ranges to a num_row x num_col matrix, keeps indexing
+    void set_ranges(size_type num_rows, size_type num_cols)
     {
-	set_ranges(0, end_r, 0, end_c);
+	set_ranges(this->begin_row(), this->begin_row() + num_rows, 
+		   this->begin_col(), this->begin_col() + num_cols);
     }
 
   public:
@@ -264,11 +265,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
     sub_matrix_type sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
     {
-	throw_debug_exception(begin_r < begin_row(), "begin_row out of range\n");
-	throw_debug_exception(end_r > end_row(), "end_row out of range\n");
-	throw_debug_exception(begin_c < begin_col(), "begin_col out of range\n");
-	throw_debug_exception(end_c > end_col(), "end_col out of range\n");
-
+	check_ranges(begin_r, end_r, begin_c, end_c);
 	// Probably check whether power of 2 is crossed (ask David and Michael)
 
 	sub_matrix_type  tmp(*this);
@@ -289,6 +286,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     const sub_matrix_type 
     sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c) const
     {
+	// To minimize code duplication, we use the non-const version
 	sub_matrix_type tmp(const_cast<self*>(this)->sub_matrix(begin_r, end_r, begin_c, end_c));
 	return tmp;
     }
@@ -296,7 +294,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
   protected:
     void set_nnz()
     {
-      this->nnz = this->dim.num_rows() * this->dim.num_cols();
+      this->my_nnz = this->num_rows() * this->num_cols();
     }
     
     size_type memory_need(size_type rows, size_type cols)

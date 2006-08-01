@@ -261,10 +261,10 @@ class compressed2D
     void allocate(size_t new_nnz)
     {
 	if (new_nnz) {
-	    this->nnz = new_nnz;
-	    data.resize(this->nnz);
-	    indices.resize(this->nnz, 0);
-	    data.resize(this->nnz, 0); // ! overloads base matrix
+	    this->my_nnz = new_nnz;
+	    data.resize(this->my_nnz);
+	    indices.resize(this->my_nnz, 0);
+	    data.resize(this->my_nnz, 0); // ! overloads base matrix
 	}
     }
 
@@ -312,13 +312,13 @@ class compressed2D
 
     value_type value_from_offset(size_type offset) const
     {
-	throw_debug_exception(offset >= this->nnz, "Offset larger than matrix!\n");
+	throw_debug_exception(offset >= this->my_nnz, "Offset larger than matrix!\n");
 	return data[offset];
     }
 
     value_type& value_from_offset(size_type offset)
     {
-	throw_debug_exception(offset >= this->nnz, "Offset larger than matrix!\n");
+	throw_debug_exception(offset >= this->my_nnz, "Offset larger than matrix!\n");
 	return data[offset];
     }
 
@@ -466,13 +466,13 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type ro
 	    copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
 	    elements[pos] = val; indices[pos] = minor;
 	    my_end++;	    
-	    matrix.nnz++;      // new entry
+	    matrix.my_nnz++;      // new entry
 	} else {
 	    typename map_type::iterator it = spare.find(mm);
 	    // If not in map insert it, otherwise update the value
 	    if (it == spare.end()) {
 		spare.insert(std::make_pair(mm, val));
-		matrix.nnz++;      // new entry
+		matrix.my_nnz++;      // new entry
 	    } else 
 		Updater() (it->second, val);
 	}

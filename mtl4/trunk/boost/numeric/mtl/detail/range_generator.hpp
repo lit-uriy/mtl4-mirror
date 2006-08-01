@@ -24,7 +24,7 @@ namespace mtl { namespace traits { namespace detail {
 	}
 	type end(Matrix const& matrix)
 	{
-	    return matrix.elements() + matrix.num_elements();
+	    return matrix.elements() + matrix.nnz();
 	}
     };
 
