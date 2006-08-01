@@ -14,6 +14,7 @@
 #include <boost/numeric/mtl/traits.hpp>
 #include <boost/numeric/mtl/matrix_inserter.hpp>
 #include <boost/numeric/mtl/operations/matrix_brackets.hpp>
+#include <boost/numeric/mtl/operations/sub_matrix.hpp>
 #include <boost/numeric/mtl/utilities/maybe.hpp>
 #include <boost/numeric/mtl/mtl_exception.hpp>
 

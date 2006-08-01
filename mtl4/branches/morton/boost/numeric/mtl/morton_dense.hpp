@@ -303,6 +303,9 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
         dilated_col_t n_cols(cols - 1);
         return (n_rows.dilated_value() + n_cols.dilated_value() + 1);
     }
+
+
+    template <typename> friend struct sub_matrix_t;    
     
 #if 0
   private:
@@ -496,6 +499,48 @@ namespace traits
     {};
 } // namespace traits
 
+
+// ==========
+// Sub matrix
+// ==========
+
+template <typename Elt, std::size_t  BitMask, typename Parameters>
+struct sub_matrix_t<morton_dense<Elt, BitMask, Parameters> >
+{
+    typedef morton_dense<Elt, BitMask, Parameters>    matrix_type;
+    typedef matrix_type                     sub_matrix_type;
+    typedef matrix_type const               const_sub_matrix_type;
+    typedef typename matrix_type::size_type size_type;
+    
+    sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    {
+	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
+	// Probably check whether power of 2 is crossed (ask David and Michael)
+
+	sub_matrix_type  tmp(matrix);
+
+	typename matrix_type::dilated_row_t  dilated_row(begin_r);
+	typename matrix_type::dilated_col_t  dilated_col(begin_c);
+
+	// Set new start address within masked matrix
+	tmp.data += dilated_row.dilated_value() + dilated_col.dilated_value();
+	tmp.set_ranges(end_r - begin_r, end_c - begin_c);
+
+	// sub matrix doesn't own the memory (and must not free at the end)
+	tmp.extern_memory= true;
+
+	return tmp;
+
+    }
+
+    const_sub_matrix_type
+    operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    {
+	// To minimize code duplication, we use the non-const version
+	sub_matrix_type tmp((*this)(const_cast<matrix_type&>(matrix), begin_r, end_r, begin_c, end_c));
+	return tmp;
+    }	
+};
 
 } // namespace mtl
 

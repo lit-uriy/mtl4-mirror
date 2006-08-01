@@ -5,16 +5,18 @@
 #include <boost/test/minimal.hpp>
 #include <boost/tuple/tuple.hpp>
 
+#include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
 #include <boost/numeric/mtl/transposed_view.hpp>
 #include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/operations/print_matrix.hpp>
+#include <boost/numeric/mtl/operations/sub_matrix.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 
 
 using namespace mtl;
 using namespace std;  
-
+ 
 
 template <typename Recurator>
 void print_depth_first(Recurator const& recurator, string str)
@@ -34,6 +36,8 @@ void print_depth_first(Recurator const& recurator, string str)
     void test_sub_matrix(Matrix& matrix)
     {
 	print_matrix_row_cursor(matrix);
+
+	print_matrix_row_cursor(sub_matrix(matrix, 2, 6, 2, 5));
 #if 0
 	cout << endl;
 	Matrix sub_matrix(matrix.sub_matrix(2, 6, 2, 5));
@@ -44,11 +48,11 @@ void print_depth_first(Recurator const& recurator, string str)
 
 	cout << endl;
 	print_matrix_row_cursor(matrix.sub_matrix(3, 5, 2, 4));
- #endif
-
+ 
 	recursion::matrix_recurator<Matrix> recurator(matrix);
 
 	print_depth_first(recurator, "");
+#endif
 
 #if 0
 	cout << "\nNorth west: " << endl;
@@ -102,7 +106,9 @@ int test_main(int argc, char* argv[])
     fill_matrix(matrix); 
     test_sub_matrix(matrix);
 
-    
+    dense2D<double, matrix_parameters<> >   dmatrix(non_fixed::dimensions(6, 5));
+    fill_matrix(dmatrix); 
+    test_sub_matrix(dmatrix);
 
     return 0;
 }
