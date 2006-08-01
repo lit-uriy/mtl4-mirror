@@ -18,7 +18,7 @@ struct sub_matrix_t
     
 
 template <typename Matrix>
-typename sub_matrix_t<Matrix>::sub_matrix_type 
+inline typename sub_matrix_t<Matrix>::sub_matrix_type 
 sub_matrix(Matrix& matrix, 
 	   typename sub_matrix_t<Matrix>::size_type begin_row, 
 	   typename sub_matrix_t<Matrix>::size_type end_row, 
@@ -29,7 +29,7 @@ sub_matrix(Matrix& matrix,
 }
 
 template <typename Matrix>
-typename sub_matrix_t<Matrix>::const_sub_matrix_type 
+inline typename sub_matrix_t<Matrix>::const_sub_matrix_type 
 sub_matrix(Matrix const& matrix, 
 	   typename sub_matrix_t<Matrix>::size_type begin_row, 
 	   typename sub_matrix_t<Matrix>::size_type end_row, 

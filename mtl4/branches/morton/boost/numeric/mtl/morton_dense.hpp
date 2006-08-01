@@ -151,8 +151,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     typedef typename Parameters::dimensions   dim_type;
     typedef Elt                               value_type;
     typedef std::size_t                       size_type;
-    typedef self                              sub_matrix_type;
 
+    // typedef self                              sub_matrix_type;
     // typedef morton_dense_el_cursor<Elt>       el_cursor_type;  
     // typedef morton_dense_indexer              indexer_type;
 
@@ -261,34 +261,6 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     void operator()(key_type const& key, value_type const& value)
     {
 	this->data[key.dilated_row.dilated_value() + key.dilated_col.dilated_value()]= value;
-    }
-
-    sub_matrix_type sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-    {
-	check_ranges(begin_r, end_r, begin_c, end_c);
-	// Probably check whether power of 2 is crossed (ask David and Michael)
-
-	sub_matrix_type  tmp(*this);
-
-	dilated_row_t  dilated_row(begin_r);
-	dilated_col_t  dilated_col(begin_c);
-
-	// Set new start address within masked matrix
-	tmp.data += dilated_row.dilated_value() + dilated_col.dilated_value();
-	tmp.set_ranges(end_r - begin_r, end_c - begin_c);
-
-	// sub matrix doesn't own the memory (and must not free at the end)
-	tmp.extern_memory= true;
-
-	return tmp;
-    }
-
-    const sub_matrix_type 
-    sub_matrix(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c) const
-    {
-	// To minimize code duplication, we use the non-const version
-	sub_matrix_type tmp(const_cast<self*>(this)->sub_matrix(begin_r, end_r, begin_c, end_c));
-	return tmp;
     }
 
   protected:
