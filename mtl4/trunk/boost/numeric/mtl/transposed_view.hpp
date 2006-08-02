@@ -3,6 +3,7 @@
 #ifndef MTL_TRANSPOSED_VIEW_INCLUDE
 #define MTL_TRANSPOSED_VIEW_INCLUDE
 
+#include <boost/shared_ptr.hpp>
 #include <boost/numeric/mtl/traits.hpp>
 #include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/operations/sub_matrix.hpp>
@@ -18,22 +19,15 @@ public:
     typedef typename transposed_orientation<typename Matrix::orientation>::type orientation;
     typedef typename Matrix::index_type                index_type;
     typedef typename Matrix::value_type                value_type;
-#if 0 // not sure if I want these anymore
-    typedef typename Matrix::pointer_type              pointer_type;
-    typedef typename Matrix::const_pointer_type        const_pointer_type;
-#endif
     typedef typename Matrix::key_type                  key_type;
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
-    // typedef typename Matrix::el_cursor_type el_cursor_type;
-    // typedef std::pair<el_cursor_type, el_cursor_type> el_cursor_pair;
 
     transposed_view (other& ref) : ref(ref) {}
     
-//     el_cursor_pair elements() const 
-//     {
-//         return ref.elements();
-//     }
+    transposed_view (boost::shared_ptr<Matrix> p) : my_copy(p), ref(*p) {}
+    
+    // ~transposed_view() { delete(my_copy); }
 
     value_type operator() (std::size_t r, std::size_t c) const
     { 
@@ -49,19 +43,6 @@ public:
         return ref.dim1(); 
     }
     
-    // Do we really need this?
-    std::size_t offset(const value_type* p) const 
-    { 
-        return ref.offset(p); 
-    }
-
-#if 0 // seems dumb
-    const_pointer_type elements() const 
-    {
-        return ref.elements(); 
-    }
-#endif
-
     dim_type dimensions() const 
     {
         return ref.dimensions().transpose(); 
@@ -77,6 +58,11 @@ public:
 	return ref.end_col();
     }
 
+    std::size_t num_rows() const
+    {
+	return ref.end_col() - ref.begin_col();
+    }
+
     std::size_t begin_col() const
     {
 	return ref.begin_row();
@@ -87,8 +73,15 @@ public:
 	return ref.end_row();
     }
 
+    std::size_t num_cols() const
+    {
+	return ref.end_row() - ref.begin_row();
+    }
 
-    other& ref;
+protected:
+    boost::shared_ptr<Matrix>           my_copy;
+public:
+    other&            ref;
 };
   
 
@@ -227,7 +220,6 @@ namespace traits
     struct range_generator<Tag, transposed_view<Matrix> >
 	: detail::range_transposer<Tag, Matrix>
     {};
-
 }
 
 
@@ -247,18 +239,27 @@ struct sub_matrix_t< transposed_view<Matrix> >
     
     sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
     {
+	typedef typename sub_matrix_t<Matrix>::sub_matrix_type   ref_sub_type;
+	typedef boost::shared_ptr<ref_sub_type>                  pointer_type;
+
 	// Submatrix of referred matrix, colums and rows interchanged
-	typename sub_matrix_t<Matrix>::sub_matrix_type   sub(sub_matrix(matrix.ref, begin_c, end_c, begin_r, end_r));
-	return sub_matrix_type(sub);
+	// Create a submatrix, whos address will be kept by transposed_view
+	pointer_type p(new ref_sub_type(sub_matrix(matrix.ref, begin_c, end_c, begin_r, end_r)));
+	return sub_matrix_type(p); 
     }
     
     const_sub_matrix_type operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, 
 				     size_type begin_c, size_type end_c)
     {
+	typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type   ref_sub_type;
+	typedef boost::shared_ptr<ref_sub_type>                        pointer_type;
+
 	// Submatrix of referred matrix, colums and rows interchanged
-	typename sub_matrix_t<Matrix>::const_sub_matrix_type   sub(sub_matrix(matrix.ref, begin_c, end_c, begin_r, end_r));
-	return const_sub_matrix_type(sub);
+	// Create a submatrix, whos address will be kept by transposed_view
+	pointer_type p(new ref_sub_type(sub_matrix(matrix.ref, begin_c, end_c, begin_r, end_r)));
+	return const_sub_matrix_type(p); 
     }
+
 };
 
 } // namespace mtl

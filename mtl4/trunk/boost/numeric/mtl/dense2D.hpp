@@ -258,9 +258,9 @@ class dense2D : public detail::base_sub_matrix<Elt, Parameters>,
     // Opposed to other dims doesn't change in sub-matrices
     size_type     ldim; 
 
-    friend class indexer_type; 
+    friend class dense2D_indexer;
     template <typename> friend struct sub_matrix_t;
-
+    template <typename, typename> friend struct traits::range_generator;
 }; // dense2D
 
 
@@ -373,7 +373,7 @@ namespace traits
 	}
 	size_t stride(cursor const& c, col_major)
 	{
-	    return c.ref.dim2();
+	    return c.ref.ldim;
 	}
 	type begin(cursor const& c)
 	{
@@ -416,7 +416,7 @@ namespace traits
 	}
 	size_t stride(cursor const& c, row_major)
 	{
-	    return c.ref.dim2();
+	    return c.ref.ldim;
 	}
 	type begin(cursor const& c)
 	{

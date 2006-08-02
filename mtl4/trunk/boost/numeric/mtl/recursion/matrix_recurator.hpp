@@ -5,6 +5,7 @@
 
 #include <boost/numeric/mtl/recursion/utilities.hpp>
 #include <boost/numeric/mtl/operations/sub_matrix.hpp>
+#include <boost/numeric/mtl/transposed_view.hpp>
 
 namespace mtl { namespace recursion {
 
@@ -18,12 +19,36 @@ struct matrix_recurator
     typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type  const_sub_matrix_type;
     typedef typename Matrix::size_type                            size_type;
 
+private:
+    
+    template <typename M>
+    sub_matrix_type constructor_helper(M const& matrix)
+    {
+	return sub_matrix(matrix, matrix.begin_row(), matrix.end_row(),
+			  matrix.begin_col(), matrix.end_col());
+    }
+
+    // For views without own data, we need to generate a new sub_matrix as shared_ptr
+    template <typename M>
+    sub_matrix_type constructor_helper(transposed_view<M> const& matrix)
+    {
+	typedef typename sub_matrix_t<M>::sub_matrix_type   ref_sub_type;
+	typedef boost::shared_ptr<ref_sub_type>                  pointer_type;
+
+	// Submatrix of referred matrix, colums and rows interchanged
+	// Create a submatrix, whos address will be kept by transposed_view
+	pointer_type p(new ref_sub_type(sub_matrix(matrix.ref, matrix.begin_col(), matrix.end_col(), 
+						   matrix.begin_row(), matrix.end_row())));
+	return sub_matrix_type(p); 
+    }
+    
+
+public:
     // Constructor takes the whole matrix as sub-matrix
     // This allows to have different type for the matrix and the sub-matrix
     // This also enables matrices to have references as sub-matrices
     explicit matrix_recurator(Matrix const& matrix) 
-      : my_sub_matrix(sub_matrix(matrix, matrix.begin_row(), matrix.end_row(),
-				 matrix.begin_col(), matrix.end_col()))
+	: my_sub_matrix(constructor_helper(matrix))
     {}
 
     // Sub-matrices are copied directly
@@ -68,7 +93,7 @@ struct matrix_recurator
     self south_west()
     {
 	sub_matrix_type sm(sub_matrix(my_sub_matrix, row_split(), my_sub_matrix.end_row(), 
-						    my_sub_matrix.begin_col(), col_split()));
+				      my_sub_matrix.begin_col(), col_split()));
 	self tmp(sm);
 	return tmp;
     }
@@ -76,7 +101,7 @@ struct matrix_recurator
     self north_east()
     {
 	sub_matrix_type sm(sub_matrix(my_sub_matrix, my_sub_matrix.begin_row(), row_split(),
-						    col_split(), my_sub_matrix.end_col()));
+				      col_split(), my_sub_matrix.end_col()));
 	self tmp(sm);
 	return tmp;
     }
@@ -84,7 +109,7 @@ struct matrix_recurator
     self south_east()
     {
 	sub_matrix_type sm(sub_matrix(my_sub_matrix, row_split(), my_sub_matrix.end_row(), 
-						    col_split(), my_sub_matrix.end_col()));
+				      col_split(), my_sub_matrix.end_col()));
 	self tmp(sm);
 	return tmp;
     }
@@ -93,36 +118,35 @@ struct matrix_recurator
 
     self const north_west() const
     {
-	sub_matrix_type const sm(sub_matrix(my_sub_matrix, my_sub_matrix.begin_row(), row_split(),
-							  my_sub_matrix.begin_col(), col_split()));
-	self const tmp(sm);
+	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, my_sub_matrix.begin_row(), row_split(),
+				      my_sub_matrix.begin_col(), col_split()));
+	self tmp(sm);
 	return tmp;
     }
 
     self const south_west() const 
     {
-	sub_matrix_type const sm(sub_matrix(my_sub_matrix, row_split(), my_sub_matrix.end_row(), 
-							  my_sub_matrix.begin_col(), col_split()));
-	self const tmp(sm);
+	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, row_split(), my_sub_matrix.end_row(), 
+				      my_sub_matrix.begin_col(), col_split()));
+	self tmp(sm);
 	return tmp;
     }
 
     self const north_east() const 
     {
-	sub_matrix_type const sm(sub_matrix(my_sub_matrix, my_sub_matrix.begin_row(), row_split(),
-							  col_split(), my_sub_matrix.end_col()));
-	self const tmp(sm);
+	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, my_sub_matrix.begin_row(), row_split(),
+				      col_split(), my_sub_matrix.end_col()));
+	self tmp(sm);
 	return tmp;
     }
 
     self const south_east() const 
     {
-	sub_matrix_type const sm(sub_matrix(my_sub_matrix, row_split(), my_sub_matrix.end_row(), 
-							  col_split(), my_sub_matrix.end_col()));
-	self const tmp(sm);
+	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, row_split(), my_sub_matrix.end_row(), 
+				      col_split(), my_sub_matrix.end_col()));
+	self tmp(sm);
 	return tmp;
     }
-
 
     bool is_leaf() const
     {
