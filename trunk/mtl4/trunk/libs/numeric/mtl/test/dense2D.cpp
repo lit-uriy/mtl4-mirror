@@ -76,11 +76,7 @@ struct test_dense2D
 	matrix_type   matrix;
 	double        val[] = {1., 2., 3., 4., 5., 6.};
 	raw_copy(val, val+6, matrix);
-
-	transposed_view<matrix_type> trans_matrix(matrix); 
-	print_matrix_row_cursor(sub_matrix(trans_matrix, 0, 1, 0, 2));
-
-#if 0
+ 
 	one_d_iteration("\nMatrix", matrix, 1, 2, element_1_2);
 	two_d_iteration("\nRows: ", matrix, glas::tags::row_t(), ExpRowComplexity());
 	two_d_iteration("\nColumns: ", matrix, glas::tags::col_t(), ExpColComplexity());
@@ -93,22 +89,20 @@ struct test_dense2D
 	cout << "\nmatrix[1][2] = " << matrix[1][2] << "\n";
 	matrix[1][2]= 18.0;
 	cout << "matrix[1][2] = " << matrix[1][2] << "\n";
-	cout << "trans_matrix[2][1] = " << trans_matrix[2][1] << "\n";
+	cout << "trans_matrix[2][1] = " << trans_matrix[2][1] << "\n"; 
        
 
 	matrix_inserter<matrix_type>  i(matrix);
 	i(1, 2) << 17.0;
 	cout << "matrix[1, 2] = " << matrix(1, 2) << "\n";	 
-#endif
     }
-};
+}; 
 
 int test_main(int argc, char* argv[])
 {
     typedef matrix_parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters1;
     test_dense2D<parameters1, complexity::linear_cached, complexity::linear>()(6.0);
 
-#if 0
     typedef matrix_parameters<row_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters2;
     test_dense2D<parameters2, complexity::linear_cached, complexity::linear>()(2.0);
 
@@ -117,7 +111,6 @@ int test_main(int argc, char* argv[])
 
     typedef matrix_parameters<col_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters4;
     test_dense2D<parameters4, complexity::linear, complexity::linear_cached>()(3.0);
-#endif
 
     return 0;
 }
