@@ -24,53 +24,32 @@ void print_depth_first(Recurator const& recurator, string str)
     cout << "\nRecursion: " << str << endl;
     print_matrix_row_cursor(recurator.get_value());
   
+    // for full recursion remove the string length limitation
     if (!recurator.is_leaf() && str.length() < 20) {     
 	print_depth_first(recurator.north_west(), string("north west of ") + str);
 	print_depth_first(recurator.south_west(), string("south west of ") + str);
 	print_depth_first(recurator.north_east(), string("north east of ") + str);
 	print_depth_first(recurator.south_east(), string("south east of ") + str);
     }
-}
+} 
 
     template <typename Matrix>
     void test_sub_matrix(Matrix& matrix)
     {
 	print_matrix_row_cursor(matrix);
 
-#if 0
-	typename traits::row<Matrix>::type                                 row(matrix);
-	cout << row(*begin<glas::tags::nz_t>(sub_matrix)) << endl;
-
-#endif
- 
 	recursion::matrix_recurator<Matrix> recurator(matrix);
-
 	print_depth_first(recurator, "");
 
-#if 0
-	cout << "\nNorth west: " << endl;
-	print_matrix_row_cursor(recurator.north_west().get_value());
-
-	cout << "\nSouth west: " << endl;
-	print_matrix_row_cursor(recurator.south_west().get_value());
-	
-	cout << "\nNorth east: " << endl;
-	print_matrix_row_cursor(recurator.north_east().get_value());
-
-	cout << "\nSouth east: " << endl;
-	print_matrix_row_cursor(recurator.south_east().get_value());
-	
-	cout << "\nSouth east of south east: " << endl;
-	print_matrix_row_cursor(recurator.south_east().south_east().get_value());
-	
-	cout << "\nSouth east of south east of south east: " << endl;
-	print_matrix_row_cursor(recurator.south_east().south_east().south_east().get_value());
-#endif
 	 
+	cout << "\n====================\n"
+	     <<   "Same with transposed\n"
+	     <<   "====================\n\n";
+
 	transposed_view<Matrix> trans_matrix(matrix);
 	print_matrix_row_cursor(trans_matrix); 
-	print_matrix_row_cursor(sub_matrix(trans_matrix, 0, 2, 0, 4)); 
-
+	recursion::matrix_recurator< transposed_view<Matrix> > trans_recurator(trans_matrix);
+	print_depth_first(trans_recurator, "");
     }
 
 
@@ -94,11 +73,19 @@ void fill_matrix(Matrix& matrix)
  
 int test_main(int argc, char* argv[])
 {
+
+    cout << "=====================\n"
+	 << "Morton-ordered matrix\n"
+	 << "=====================\n\n";
+
     typedef morton_dense<double,  0x55555555, matrix_parameters<> > matrix_type;    
-    matrix_type matrix(non_fixed::dimensions(6, 5));
-   
+    matrix_type matrix(non_fixed::dimensions(6, 5));   
     fill_matrix(matrix); 
     test_sub_matrix(matrix);
+
+    cout << "\n=====================\n"
+	 << "Ordinary dense matrix\n"
+	 << "=====================\n\n";
 
     dense2D<double, matrix_parameters<> >   dmatrix(non_fixed::dimensions(6, 5));
     fill_matrix(dmatrix); 
