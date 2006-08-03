@@ -13,7 +13,7 @@
 
 #include <boost/config/concept_macros.hpp> 
 
-#ifdef LA_WITH_CONCEPTS
+#ifdef __GXX_CONCEPTS__
 #  include <bits/concepts.h>
 #endif
 
@@ -235,57 +235,12 @@ namespace math {
     };
     
 
-# ifdef LA_WITH_CONCEPTS
+# ifdef __GXX_CONCEPTS__
 
 // Concept mapping
 // All modulo sets are commutative rings with identity
 // but only if N is prime it is also a field
 // Due to some mapping nesting trouble we define normally derived maps
-
-#if 0
-template <typename T, T N>
-concept_map AbelianGroup< add< mod_n_t<T, N> >, mod_n_t<T, N> > 
-{
-    // Why do we need the typedefs???
-    
-    typedef mod_n_t<T, N> inverse_result_type;
-    typedef mod_n_t<T, N> identity_result_type;
-    typedef bool          is_invertible_result_type;
-}
-
-template <typename T, T N>
-concept_map PartiallyInvertibleCommutativeMonoid< mult< mod_n_t<T, N> >, mod_n_t<T, N> > 
-{
-    // Why do we need the typedefs???
-    
-    typedef mod_n_t<T, N> inverse_result_type;
-    typedef mod_n_t<T, N> identity_result_type;
-    typedef bool          is_invertible_result_type;
-}
-
-template <typename T, T N>
-concept_map GenericCommutativeRingWithIdentity
-       < add< mod_n_t<T, N> >, 
-	 mult< mod_n_t<T, N> >, 
-	 mod_n_t<T, N> 
-       > {}
-
-
-template <typename T, T N>
-    where meta_math::Prime<N>
-concept_map GenericField
-       < add< mod_n_t<T, N> >, 
-	 mult< mod_n_t<T, N> >, 
-	 mod_n_t<T, N> 
-       > 
-{
-    // Why do we need the typedefs???
-    
-    typedef mod_n_t<T, N> inverse_result_type;
-    typedef mod_n_t<T, N> identity_result_type;
-    typedef bool          is_invertible_result_type;
-}
-#endif
 
 
 template <typename T, T N>
@@ -336,36 +291,36 @@ concept_map Field< mod_n_t<T, N> >
 // Shall be only called if T is a Field 
 template <typename T>
    where Field<T>
-bool is_field(const T&)
+bool inline is_field(const T&)
 {
     return true;
 }
 
 // Shall be only called if T is not a Field 
 template <typename T>
-bool is_field(const T&)
+bool inline is_field(const T&)
 {
     return false;
 }
 
-#if 0
+// Same with functor instead of operators
+
 // Shall be only called if T is a Field 
 template <typename Add, typename Mult, typename T>
    where GenericField<Add, Mult, T>
-bool is_field(const Add&, const Mult&, const T&)
+bool inline is_field(const Add&, const Mult&, const T&)
 {
     return true;
 }
 
 // Shall be only called if T is not a Field 
 template <typename Add, typename Mult, typename T>
-bool is_field(const Add&, const Mult&, const T&)
+bool inline is_field(const Add&, const Mult&, const T&)
 {
     return false;
 }
-#endif
 
-# endif // LA_WITH_CONCEPTS
+# endif // __GXX_CONCEPTS__
 
 }
 

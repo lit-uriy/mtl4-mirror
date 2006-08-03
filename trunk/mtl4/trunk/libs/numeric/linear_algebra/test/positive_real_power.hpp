@@ -40,7 +40,7 @@ namespace math {
 }
 
 
-# ifdef LA_WITH_CONCEPTS
+# ifdef __GXX_CONCEPTS__
   namespace math { 
       concept_map SemiGroup< semigroup_mult, positive_real > {};
       concept_map Monoid< monoid_mult, positive_real > {};

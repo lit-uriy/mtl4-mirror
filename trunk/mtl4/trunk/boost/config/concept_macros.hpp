@@ -1,22 +1,16 @@
-// $COPYRIGHT$
+// Copyright 2006. Peter Gottschling, Matthias Troyer, Rolf Bonderer
 
 #ifndef  CONCEPT_MACROS_INCLUDE
 #define  CONCEPT_MACROS_INCLUDE
 
-#ifdef __GXX_CONCEPTS__
-#  define LA_WITH_CONCEPTS
-#  define MTL_WITH_CONCEPTS
-#  define LA_WHERE(...) where __VA_ARGS__
-#  define MTL_WHERE(...) where __VA_ARGS__
-#else
-#  define LA_NO_CONCEPTS
-#  define MTL_NO_CONCEPTS
-#  define LA_WHERE(...)
-#  define MTL_WHERE(...)
+// By defining LA_SHOW_WARNINGS a warning is emitted
+// when a compiler which does not support concepts is used.
+
+#ifndef __GXX_CONCEPTS__
+#  define _GLIBCXX_WHERE(...) //WHERE Macro for concept-disabled compilers.
+#  ifdef LA_SHOW_WARNINGS
+#    warning "Concepts are NOT used"
+#  endif
 #endif
-
-
-
-
 
 #endif //  CONCEPT_MACROS_INCLUDE

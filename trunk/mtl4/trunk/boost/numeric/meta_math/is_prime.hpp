@@ -6,7 +6,7 @@
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/meta_math/sqrt.hpp>
 #include <boost/config/concept_macros.hpp>
-#ifdef LA_WITH_CONCEPTS
+#ifdef __GXX_CONCEPTS__
 #   include <concepts>
 #endif
 
@@ -70,7 +70,7 @@ template <> struct is_prime<3> : mpl::true_ {};
 template <> struct is_prime<5> : mpl::true_ {};
 
 
-#ifdef LA_WITH_CONCEPTS
+#ifdef __GXX_CONCEPTS__
     concept Prime<long int N> {}
 
     template <long int N>

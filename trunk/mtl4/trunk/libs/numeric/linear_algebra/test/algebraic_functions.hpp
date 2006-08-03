@@ -8,7 +8,7 @@
 
 #include <boost/config/concept_macros.hpp> 
 
-#ifdef LA_WITH_CONCEPTS
+#ifdef __GXX_CONCEPTS__
 #  include <concepts>
 #  include <bits/iterator_concepts.h>
 #endif
@@ -29,10 +29,10 @@ namespace mtl {
 // It is thus more limiting than necessary, well slightly.
 template <typename Op, typename Element>
 #if 0
-  LA_WHERE( math::Magma<Op, Element>
+  _GLIBCXX_WHERE( math::Magma<Op, Element>
 	    && std::EqualityComparable< math::Magma<Op, Element>::result_type > )
 #endif
-  LA_WHERE( math::Closed2EqualityComparable<Op, Element> && math::Magma<Op, Element> )
+  _GLIBCXX_WHERE( math::Closed2EqualityComparable<Op, Element> && math::Magma<Op, Element> )
 inline bool equal_results(const Element& v1a, const Element& v1b, 
 			  const Element& v2a, const Element& v2b, Op op) 
 {
@@ -52,7 +52,7 @@ inline bool equal_results(const Element& v1a, const Element& v1b,
 
 // Same for AdditiveMagma
 template <typename Element>
-LA_WHERE ( math::AdditiveMagma<Element> 
+_GLIBCXX_WHERE ( math::AdditiveMagma<Element> 
 	   // && math::Closed2EqualityComparable< math::add<Element>, Element > )
 	   && std::EqualityComparable< math::AdditiveMagma<Element>::addition_result_type > )
 inline bool equal_add_results(const Element& v1a, const Element& v1b, 
@@ -67,7 +67,7 @@ inline bool equal_add_results(const Element& v1a, const Element& v1b,
 // {Op, Element} must be a Monoid
 // The result of the operation must be EqualityComparable
 template <typename Op, typename Element>
-  LA_WHERE( math::Closed2EqualityComparable<Op, Element> && math::Monoid<Op, Element> )
+  _GLIBCXX_WHERE( math::Closed2EqualityComparable<Op, Element> && math::Monoid<Op, Element> )
 inline bool identity_pair(const Element& v1, const Element& v2, Op op) 
 {
     using math::identity;
@@ -77,7 +77,7 @@ inline bool identity_pair(const Element& v1, const Element& v2, Op op)
 
 // {Op, Element} must be a SemiGroup
 template <typename Op, typename Element, typename Exponent>
-  LA_WHERE( math::SemiGroup<Op, Element> 
+  _GLIBCXX_WHERE( math::SemiGroup<Op, Element> 
             && std::Integral<Exponent> )  
 Element recursive_multiply_and_square(const Element& base, Exponent exp, Op op) 
 {
@@ -102,7 +102,7 @@ Element recursive_multiply_and_square(const Element& base, Exponent exp, Op op)
 
 // {Op, Element} must be a SemiGroup
 template <typename Op, typename Element, typename Exponent>
-  LA_WHERE( math::SemiGroup<Op, Element> 
+  _GLIBCXX_WHERE( math::SemiGroup<Op, Element> 
             && std::Integral<Exponent> )  
 inline Element multiply_and_square_horner(const Element& base, Exponent exp, Op op) 
 {
@@ -131,7 +131,7 @@ inline Element multiply_and_square_horner(const Element& base, Exponent exp, Op 
 
 // {Op, Element} must be a Monoid
 template <typename Op, typename Element, typename Exponent>
-  LA_WHERE( math::Monoid<Op, Element> 
+  _GLIBCXX_WHERE( math::Monoid<Op, Element> 
             && std::Integral<Exponent> ) 
 inline Element multiply_and_square(const Element& base, Exponent exp, Op op) 
 {
@@ -153,7 +153,7 @@ inline Element multiply_and_square(const Element& base, Exponent exp, Op op)
 
 // {Op, Element} must be a Monoid
 template <typename Op, typename Element, typename Exponent>
-  LA_WHERE( math::Monoid<Op, Element> 
+  _GLIBCXX_WHERE( math::Monoid<Op, Element> 
             && std::Integral<Exponent> ) 
 inline Element multiply_and_square_simple(const Element& base, Exponent exp, Op op) 
 {
@@ -171,7 +171,7 @@ inline Element multiply_and_square_simple(const Element& base, Exponent exp, Op 
 
 
 template <typename Iter, typename Value, typename Op>
-  LA_WHERE( std::RandomAccessIterator<Iter> 
+  _GLIBCXX_WHERE( std::RandomAccessIterator<Iter> 
 	    && std::Convertible<Value, std::RandomAccessIterator<Iter>::value_type>
 	    && math::CommutativeMonoid<Op, std::RandomAccessIterator<Iter>::value_type> )
 typename std::RandomAccessIterator<Iter>::value_type 
@@ -198,7 +198,7 @@ accumulate_unrolled(Iter first, Iter last, Value init, Op op)
 // Element and results must be EqualityComparable
 // Only 
 template <typename Op, typename Element>
-  LA_WHERE( math::Closed2EqualityComparable<Op, Element> 
+  _GLIBCXX_WHERE( math::Closed2EqualityComparable<Op, Element> 
 	    && math::PartiallyInvertibleMonoid<Op, Element> )
 inline int algebraic_division(const Element& v1, const Element& v2, Op op)
 {
@@ -223,7 +223,7 @@ inline int algebraic_division(const Element& v1, const Element& v2, Op op)
 // Element must be LessThanComparable
 // Under construction w.r.t. semantic requirements, introduction of ordered group needed
 template <typename Op, typename Element>
-  LA_WHERE( math::Closed2LessThanComparable<Op, Element> 
+  _GLIBCXX_WHERE( math::Closed2LessThanComparable<Op, Element> 
 	    && math::PartiallyInvertibleMonoid<Op, Element> )
 inline int ordered_algebraic_division(const Element& v1, const Element& v2, Op op)
 {

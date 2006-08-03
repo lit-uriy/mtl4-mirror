@@ -21,9 +21,9 @@ namespace math {
         } 
     } ;
 
-# ifdef LA_WITH_CONCEPTS
+# ifdef __GXX_CONCEPTS__
     concept_map Monoid< math::add<string>, string > {}
-# endif // LA_WITH_CONCEPTS
+# endif // __GXX_CONCEPTS__
 }        
 
 int main(int, char* []) 
