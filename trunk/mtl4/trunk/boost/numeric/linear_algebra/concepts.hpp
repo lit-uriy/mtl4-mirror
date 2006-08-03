@@ -485,7 +485,7 @@ concept MultiplicativePartiallyInvertibleMonoid<typename Element>
      
     // Operator / by default defined with /=
     typename division_result_type = Element;  
-    division_result_type operator/(Element& x, Element y);
+    division_result_type operator/(Element x, Element y);
 #if 0
     {
 	Element tmp(x);
@@ -781,7 +781,7 @@ concept_map Field<T> {}
 // Concept to specify to specify projection of scalar value to comparable type
 // For instance as return type of abs
 // Minimalist definition for maximal applicability
-concept MagnitudeType<typename T>
+auto concept MagnitudeType<typename T>
 {
     typename type = T;
 };
@@ -995,7 +995,17 @@ auto concept HasConjugate<typename S>
     typename result_type;
     result_type conj(const S&);
 };
-    
+  
+  
+// We need the following; might be placed somewhere else later
+template <Float T>
+concept_map HasConjugate<T> 
+{ 
+    typedef T result_type;
+    result_type conj(const T& s) {return s;}
+}
+
+
 
 // Dot product to be defined:
 auto concept Dottable<typename T, typename U = T>
