@@ -9,7 +9,7 @@
 namespace mtl {
 
 template <typename Op, typename Element, typename Exponent>
-  LA_WHERE( math::Magma<Op, Element> 
+  _GLIBCXX_WHERE( math::Magma<Op, Element> 
             && std::Integral<Exponent> )             // Integral might be lifted
 inline Element power(const Element& base, Exponent exp, Op op) 
 {
@@ -23,9 +23,11 @@ inline Element power(const Element& base, Exponent exp, Op op)
 }
 
 
-# ifdef LA_NO_CONCEPTS
-#   warning "Automatic dispatching only works with concept compiler"
-#   warning "If structure is a Monoid you can call square_and_multiply directly"
+# ifndef __GXX_CONCEPTS__
+#   ifdef LA_SHOW_WARNINGS
+#     warning "Automatic dispatching only works with concept compiler"
+#     warning "If structure is a Monoid you can call square_and_multiply directly"
+#   endif
 # else
 
 template <typename Op, typename Element, typename Exponent>
@@ -70,7 +72,7 @@ inline Element power(const Element& base, Exponent exp, Op op)
 }
 
 
-# endif 
+# endif  // __GXX_CONCEPTS__
 
 } // namespace mtl
 

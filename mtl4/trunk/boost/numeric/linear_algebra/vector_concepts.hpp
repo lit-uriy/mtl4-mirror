@@ -180,8 +180,8 @@ concept DotProduct<typename I, typename Vector,
 // Conversion from scalar to magnitude_type is covered by norm concept
 template <typename I, typename Vector,
 	  typename Scalar = typename Vector::value_type>
-  LA_WHERE(InnerProduct<I, Vector, Scalar> 
-	   && RealMagnitude<Scalar>)
+  _GLIBCXX_WHERE(InnerProduct<I, Vector, Scalar> 
+		 && RealMagnitude<Scalar>)
 struct induced_norm_t
 {
     // Return type evtl. with macro to use concept definition
