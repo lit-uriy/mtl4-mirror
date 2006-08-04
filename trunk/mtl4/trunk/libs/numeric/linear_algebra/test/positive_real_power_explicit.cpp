@@ -38,16 +38,20 @@ int main(int, char* [])
     positive_real          value(1.1), zero(0.0);
 
     compute_power(value, 777, mult<positive_real>(), "Magma");
+    std::cout << '\n';
  
     compute_power(value, 777, semigroup_mult(), "SemiGroup");
+    std::cout << '\n';
 
     compute_power(value, 777, monoid_mult(), "Monoid");
     compute_power(value, -777, monoid_mult(), "Monoid");
+    std::cout << '\n';
  
     compute_power(value, 777, group_mult(), "Group");
     compute_power(value, -777, group_mult(), "Group");
     compute_power(zero, 777, group_mult(), "Group");
     compute_power(zero, -777, group_mult(), "Group");
+    std::cout << '\n';
    
     return 0;
 }
