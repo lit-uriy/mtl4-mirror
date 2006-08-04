@@ -3,7 +3,7 @@
 #include <boost/numeric/linear_algebra/operators.hpp>
 #include <boost/numeric/linear_algebra/concepts.hpp>
 
-#include "algebraic_functions.hpp"
+#include <libs/numeric/linear_algebra/test/algebraic_functions.hpp>
 
 // float has a concept map for Field 
 // and PartiallyInvertibleMonoid w.r.t. mult
