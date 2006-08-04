@@ -10,18 +10,18 @@ namespace mtl {
 
 template <typename Op, typename Element, typename Exponent>
   _GLIBCXX_WHERE( math::Magma<Op, Element> 
-            && std::Integral<Exponent> )             // Integral might be lifted
-inline Element power(const Element& base, Exponent exp, Op op) 
+            && std::Integral<Exponent> )      
+inline Element power(const Element& a, Exponent n, Op op) 
 {
 #   ifdef MTL_TRACE_POWER_DISPATCHING 
        std::cout << "[Magma] ";
 #   endif
 
-    if (exp < 1) throw "In power: exponent must be greater than 0";
+    if (n < 1) throw "In power: exponent must be greater than 0";
     
-    Element value= base;
-    for (; exp > 1; --exp)
-	value= op(value, base);
+    Element value= a;
+    for (; n > 1; --n)
+	value= op(value, a);
     return value;
 }
 
@@ -35,53 +35,53 @@ inline Element power(const Element& base, Exponent exp, Op op)
 
 template <typename Op, typename Element, typename Exponent>
     where math::SemiGroup<Op, Element> && std::Integral<Exponent>
-inline Element power(const Element& base, Exponent exp, Op op)
+inline Element power(const Element& a, Exponent n, Op op)
 {
 #   ifdef MTL_TRACE_POWER_DISPATCHING 
        std::cout << "[SemiGroup] ";
 #   endif
 
-    return recursive_multiply_and_square(base, exp, op);
+    return recursive_multiply_and_square(a, n, op);
 }
 
 template <typename Op, typename Element, typename Exponent>
     where math::Monoid<Op, Element> && std::Integral<Exponent>
-inline Element power(const Element& base, Exponent exp, Op op)
+inline Element power(const Element& a, Exponent n, Op op)
 {
 #   ifdef MTL_TRACE_POWER_DISPATCHING 
        std::cout << "[Monoid] ";
 #   endif
 
-    return multiply_and_square(base, exp, op);
+    return multiply_and_square(a, n, op);
 }
 
 template <typename Op, typename Element, typename Exponent>
     where math::PartiallyInvertibleMonoid<Op, Element> && std::SignedIntegral<Exponent>
-inline Element power(const Element& base, Exponent exp, Op op)
+inline Element power(const Element& a, Exponent n, Op op)
 {
 #   ifdef MTL_TRACE_POWER_DISPATCHING 
        std::cout << "[PartiallyInvertibleMonoid] ";
 #   endif
     using math::inverse; using math::is_invertible;
 
-    if (exp < 0 && !is_invertible(op, base)) 
-        throw "In power [PartiallyInvertibleMonoid]: base must be invertible with negative exponent";
+    if (n < 0 && !is_invertible(op, a)) 
+        throw "In power [PartiallyInvertibleMonoid]: a must be invertible with negative exponent";
 
-    return exp >= 0 ? multiply_and_square(base, exp, op) 
-	            : multiply_and_square(inverse(op, base), -exp, op);
+    return n >= 0 ? multiply_and_square(a, n, op) 
+	          : multiply_and_square(inverse(op, a), -n, op);
 }
 
 template <typename Op, typename Element, typename Exponent>
     where math::Group<Op, Element> && std::SignedIntegral<Exponent>
-inline Element power(const Element& base, Exponent exp, Op op)
+inline Element power(const Element& a, Exponent n, Op op)
 {
 #   ifdef MTL_TRACE_POWER_DISPATCHING 
        std::cout << "[Group] ";
 #   endif
     using math::inverse;
 
-    return exp >= 0 ? multiply_and_square(base, exp, op) 
-	            : multiply_and_square(inverse(op, base), -exp, op);
+    return n >= 0 ? multiply_and_square(a, n, op) 
+                  : multiply_and_square(inverse(op, a), -n, op);
 }
 
 
