@@ -15,6 +15,7 @@
 
 using mtl::positive_real;
 
+struct magma_mult : public math::mult<positive_real> {};
 struct semigroup_mult : public math::mult<positive_real> {};
 struct monoid_mult : public math::mult<positive_real> {};
 struct pim_mult : public math::mult<positive_real> {};     // Partially invertible monoid
@@ -40,15 +41,17 @@ namespace math {
 }
 
 
-# ifdef __GXX_CONCEPTS__
-  namespace math { 
-      concept_map SemiGroup< semigroup_mult, positive_real > {};
-      concept_map Monoid< monoid_mult, positive_real > {};
-      concept_map PartiallyInvertibleMonoid< pim_mult, positive_real > {};
-      concept_map Group< group_mult, positive_real > {};
-  }
-# endif
- 
+template <typename Op>
+void compute_power(positive_real base, int exp, Op op, const char* structure)
+{
+    using mtl::power;
+    try {
+	std::cout << base << "^" << exp << " as " << structure << "  " << power(base, exp, op) << '\n';
+    } catch (char const* message) {
+	std::cout << "\n==== Exception caught: " << message << '\n';
+    }
+}
+
 
 
 #endif // MTL_POSITIVE_REAL_POWER_INCLUDE

@@ -18,17 +18,16 @@ using mtl::positive_real;
 
 // We assume that 0 and infinity is not to guarantee invertibility
 
+# ifdef __GXX_CONCEPTS__
+  namespace math { 
+      concept_map SemiGroup< semigroup_mult, positive_real > {};
+      concept_map Monoid< monoid_mult, positive_real > {};
+      concept_map PartiallyInvertibleMonoid< pim_mult, positive_real > {};
+      concept_map Group< group_mult, positive_real > {};
+  }
+# endif
+ 
 
-template <typename Op>
-void compute_power(positive_real base, int exp, Op op, const char* structure)
-{
-    using mtl::power;
-    try {
-	std::cout << base << "^" << exp << " as " << structure << "  " << power(base, exp, op) << '\n';
-    } catch (char const* message) {
-	std::cout << "\n==== Exception caught: " << message << '\n';
-    }
-}
 
 
 int main(int, char* []) 
@@ -38,7 +37,7 @@ int main(int, char* [])
  
     positive_real          value(1.1), zero(0.0);
 
-    compute_power(value, 777, mult<positive_real>(), "Magma");
+    compute_power(value, 777, magma_mult(), "Magma");
     std::cout << '\n';
 
     compute_power(value, 777, semigroup_mult(), "SemiGroup");
