@@ -79,23 +79,23 @@ inline bool identity_pair(const Element& v1, const Element& v2, Op op)
 template <typename Op, typename Element, typename Exponent>
   _GLIBCXX_WHERE( math::SemiGroup<Op, Element> 
             && std::Integral<Exponent> )  
-Element recursive_multiply_and_square(const Element& base, Exponent exp, Op op) 
+Element recursive_multiply_and_square(const Element& a, Exponent n, Op op) 
 {
-    if (exp <= 0) throw "In recursive_multiply_and_square: exponent must greater than 0";
+    if (n <= 0) throw "In recursive_multiply_and_square: exponent must greater than 0";
 
-    Exponent half= exp >> 1;
+    Exponent half= n >> 1;
 
-    // If halt is 0 then exp must be 1 and the result is base
+    // If half is 0 then n must be 1 and the result is a
     if (half == 0)
-	return base;
+	return a;
 
     // compute power of downward rounded exponent and square the result
-    Element value= recursive_multiply_and_square(base, half, op);
+    Element value= recursive_multiply_and_square(a, half, op);
     value= op(value, value);
 
-    // if odd another multiplication with base is needed
-    if (exp & 1) 
-	value= op(value, base);
+    // if odd another multiplication with a is needed
+    if (n & 1) 
+	value= op(value, a);
     return value;
 } 
 
@@ -104,9 +104,9 @@ Element recursive_multiply_and_square(const Element& base, Exponent exp, Op op)
 template <typename Op, typename Element, typename Exponent>
   _GLIBCXX_WHERE( math::SemiGroup<Op, Element> 
             && std::Integral<Exponent> )  
-inline Element multiply_and_square_horner(const Element& base, Exponent exp, Op op) 
+inline Element multiply_and_square_horner(const Element& a, Exponent n, Op op) 
 {
-    if (exp <= 0) throw "In multiply_and_square_horner: exponent must greater than 0";
+    if (n <= 0) throw "In multiply_and_square_horner: exponent must be greater than 0";
 
     // Set mask to highest bit
     Exponent mask= 1 << (8 * sizeof(mask) - 1);
@@ -117,13 +117,13 @@ inline Element multiply_and_square_horner(const Element& base, Exponent exp, Op 
 	mask= 1 << (8 * sizeof(mask) - 2);
 
     // find highest 1 bit
-    while(!(bool)(mask & exp)) mask>>= 1;
+    while(!(bool)(mask & n)) mask>>= 1;
 
-    Element value= base;
+    Element value= a;
     for (mask>>= 1; mask; mask>>= 1) {
 	value= op(value, value);
-	if (exp & mask) 
-	    value= op(value, base);
+	if (n & mask) 
+	    value= op(value, a);
     }
     return value;
 }
@@ -133,18 +133,18 @@ inline Element multiply_and_square_horner(const Element& base, Exponent exp, Op 
 template <typename Op, typename Element, typename Exponent>
   _GLIBCXX_WHERE( math::Monoid<Op, Element> 
             && std::Integral<Exponent> ) 
-inline Element multiply_and_square(const Element& base, Exponent exp, Op op) 
+inline Element multiply_and_square(const Element& a, Exponent n, Op op) 
 {
     // Same as the simpler form except that the first multiplication is made before 
     // the loop and one squaring is saved this way
-    if (exp < 0) throw "In multiply_and_square: negative exponent";
+    if (n < 0) throw "In multiply_and_square: negative exponent";
 
     using math::identity;
-    Element value= bool(exp & 1) ? Element(base) : Element(identity(op, base)), square= base;
+    Element value= bool(n & 1) ? Element(a) : Element(identity(op, a)), square= a;
 
-    for (exp>>= 1; exp > 0; exp>>= 1) {
+    for (n>>= 1; n > 0; n>>= 1) {
 	square= op(square, square); 
-	if (exp & 1) 
+	if (n & 1) 
 	    value= op(value, square);
     }
     return value;  
@@ -155,14 +155,14 @@ inline Element multiply_and_square(const Element& base, Exponent exp, Op op)
 template <typename Op, typename Element, typename Exponent>
   _GLIBCXX_WHERE( math::Monoid<Op, Element> 
             && std::Integral<Exponent> ) 
-inline Element multiply_and_square_simple(const Element& base, Exponent exp, Op op) 
+inline Element multiply_and_square_simple(const Element& a, Exponent n, Op op) 
 {
-    if (exp < 0) throw "In multiply_and_square: negative exponent";
+    if (n < 0) throw "In multiply_and_square: negative exponent";
 
     using math::identity;
-    Element value= identity(op, base), square= base;
-    for (; exp > 0; exp>>= 1) {
-	if (exp & 1) 
+    Element value= identity(op, a), square= a;
+    for (; n > 0; n>>= 1) {
+	if (n & 1) 
 	    value= op(value, square);
 	square= op(square, square); 
     }

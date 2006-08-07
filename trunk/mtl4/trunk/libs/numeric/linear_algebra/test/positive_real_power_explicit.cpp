@@ -17,18 +17,16 @@ using mtl::positive_real;
 
 // We assume that 0 and infinity is not to guarantee invertibility
 
- 
-template <typename Op>
-void compute_power(positive_real base, int exp, Op op, const char* structure)
-{
-    using mtl::power;
-    try {
-	std::cout << base << "^" << exp << " as " << structure << "  " << power(base, exp, op) << '\n';
-    } catch (char const* message) {
-	std::cout << "\n==== Exception caught: " << message << '\n';
-    }
-}
+# ifdef __GXX_CONCEPTS__
+  namespace algebra { 
+      concept_map SemiGroup< semigroup_mult, positive_real > {};
+      concept_map Monoid< monoid_mult, positive_real > {};
+      concept_map Group< group_mult, positive_real > {};
+  }
+# endif
 
+
+ 
 
 int main(int, char* []) 
 {
