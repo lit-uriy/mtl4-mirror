@@ -297,8 +297,8 @@ class compressed2D
 	// check if nnz and indices has right size
 
 	copy(first_value, last_value, data.begin());
-	copy(first_start, first_start + super::dim1() + 1, starts.begin());
-	copy(first_index, first_index + super::num_elements(), indices.begin());
+	copy(first_start, first_start + this->dim1() + 1, starts.begin());
+	copy(first_index, first_index + this->nnz(), indices.begin());
     }
 
     // Consistency check urgently needed !!!

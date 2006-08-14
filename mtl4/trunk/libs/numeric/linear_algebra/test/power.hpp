@@ -60,12 +60,12 @@ template <typename Op, typename Element, typename Exponent>
 inline Element power(const Element& a, Exponent n, Op op)
 {
 #   ifdef MTL_TRACE_POWER_DISPATCHING 
-       std::cout << "[PartiallyInvertibleMonoid] ";
+       std::cout << "[PIMonoid] ";
 #   endif
     using math::inverse; using math::is_invertible;
 
     if (n < 0 && !is_invertible(op, a)) 
-        throw "In power [PartiallyInvertibleMonoid]: a must be invertible with negative exponent";
+        throw "In power [PIMonoid]: a must be invertible with negative n";
 
     return n >= 0 ? multiply_and_square(a, n, op) 
 	          : multiply_and_square(inverse(op, a), -n, op);
