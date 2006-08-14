@@ -44,7 +44,7 @@ namespace mtl { namespace traits { namespace detail {
 	}
 	type end(Matrix const& matrix) const
 	{
-	    return type(matrix, matrix.num_elements());
+	    return type(matrix, matrix.nnz());
 	}
     };
     
