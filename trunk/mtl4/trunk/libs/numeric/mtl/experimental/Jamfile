@@ -7,7 +7,12 @@ project my_mtl
 exe dense2D : dense2D.cpp ; 
 exe compressed2D : compressed2D.cpp ; 
 exe compressed2D_inserter : compressed2D_inserter.cpp ; 
+exe insertion_benchmark : insertion_benchmark.cpp ;
+exe dilated_int : dilated_int.cpp ; 
 exe unroll : unroll.cpp ;
 exe unroll_rec : unroll_rec.cpp ;
+exe iterator_adapter : iterator_adapter.cpp ;
 
+#exe fractalu : fractalu.cpp ;
+#exe mat_vec_mult_timing : mat_vec_mult_timing.cpp : <release><optimization>speed ;
 

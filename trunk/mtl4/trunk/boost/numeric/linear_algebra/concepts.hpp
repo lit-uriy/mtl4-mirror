@@ -9,7 +9,9 @@
 #ifdef __GXX_CONCEPTS__
 #  include <concepts>
 #else
-#  warning "Concepts are not used"
+#  ifdef LA_SHOW_WARNINGS
+#    warning "Concepts are not used"
+#  endif
 #endif
 
 
@@ -22,7 +24,8 @@
 
 // If desired one can disable the default concept maps with LA_NO_CONCEPT_MAPS
 
-
+// We consider to change the namespace from math to numeric
+// More precisely, the concepts may be moved into namespace numeric and the standard functions stay in math
 
 namespace math {
 

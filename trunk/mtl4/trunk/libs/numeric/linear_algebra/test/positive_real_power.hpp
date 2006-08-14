@@ -48,7 +48,7 @@ void compute_power(positive_real base, int exp, Op op, const char* structure)
     try {
 	std::cout << base << "^" << exp << " as " << structure << "  " << power(base, exp, op) << '\n';
     } catch (char const* message) {
-	std::cout << "\n==== Exception caught: " << message << '\n';
+	std::cout << "\n== Exception: " << message << '\n';
     }
 }
 

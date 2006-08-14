@@ -67,7 +67,7 @@ template <typename Op, typename Element, typename Exponent>
           && std::Integral<Exponent>
           && std::Callable2<Op, Element, Element>
           && std::Assignable<Element, std::Callable2<Op, Element, Element>::result_type>
-          && std::Assignable<Element, algebra::Monoid<Op, Element>::identity_result_type>
+// && std::Assignable<Element, algebdra::Monoid<Op, Element>::identity_result_type>
           && std::Assignable<Element, Element>
 inline Element multiply_and_square(const Element& base, Exponent n, Op op) 
 {
@@ -78,8 +78,6 @@ inline Element multiply_and_square(const Element& base, Exponent n, Op op)
     using math::identity;
     Element value= identity(op, base), square= identity(op, base);
 
-    square= base;
-    value= identity(op, base);
     if (n & 1)
         value= base;
 
@@ -95,11 +93,9 @@ template <typename Op, typename Element, typename Exponent>
     where algebra::Monoid<Op, Element> && std::Integral<Exponent>
           && std::Callable2<Op, Element, Element>
           && std::Assignable<Element, std::Callable2<Op, Element, Element>::result_type>            
-          && std::Assignable<Element, algebra::Monoid<Op, Element>::identity_result_type>
           && std::Assignable<Element, Element>
 inline Element power(const Element& base, Exponent n, Op op)
 {
-    // std::cout << "[Monoid] ";
     return multiply_and_square(base, n, op);
 }
 
@@ -107,11 +103,9 @@ template <typename Op, typename Element, typename Exponent>
     where algebra::Group<Op, Element> && std::SignedIntegral<Exponent>
           && std::Callable2<Op, Element, Element>
           && std::Assignable<Element, std::Callable2<Op, Element, Element>::result_type>            
-          && std::Assignable<Element, algebra::Monoid<Op, Element>::identity_result_type>
           && std::Assignable<Element, Element>
 inline Element power(const Element& base, Exponent n, Op op)
 {
-    // std::cout << "[Group] ";
     using math::inverse;
 
     return n >= 0 ? multiply_and_square(base, n, op) 

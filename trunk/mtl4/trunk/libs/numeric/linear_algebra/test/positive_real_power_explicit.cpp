@@ -14,7 +14,7 @@
 // User defined data types and operators
 
 using mtl::positive_real;
-
+  
 // We assume that 0 and infinity is not to guarantee invertibility
 
 # ifdef __GXX_CONCEPTS__
