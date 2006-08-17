@@ -268,10 +268,11 @@ int masked_dilation_tables<T, Mask>::n_valid_table= 0;
 
 
 // Masking: syntax e.g. mask<0x55555555>(7);
-template <typename T, T Mask>
+// Mask must be in front of T -> need casting :-(
+template <long unsigned Mask, typename T>
 inline T mask(T const& value)
 {
-    masked_dilation_tables<T, Mask>  tables;
+    masked_dilation_tables<T, T(Mask)>  tables;
     return tables.to_masked(value);
 }
 
@@ -285,10 +286,11 @@ inline T mask(T const& value, masked_dilation_tables<T, Mask> tables)
 
 
 // Unmasking: syntax e.g. unmask<0x55555555>(7);
-template <typename T, T Mask>
+// Mask must be in front of T -> need casting :-(
+template <long unsigned Mask, typename T>
 inline T unmask(T const& value)
 {
-    masked_dilation_tables<T, Mask>  tables;
+    masked_dilation_tables<T, T(Mask)>  tables;
     return tables.to_unmasked(value);
 }
 
@@ -300,6 +302,23 @@ inline T unmask(T const& value, masked_dilation_tables<T, Mask> tables)
     return tables.to_unmasked(value);
 }
 
+
+// Conversion from Mask1 to Mask2
+// syntax e.g. from Morton to Doppler convert<0x55555555, 0x5555ff00>(7); 
+// Mask must be in front of T -> need casting :-(
+template <long unsigned Mask1, long unsigned Mask2, typename T>
+inline T convert(T const& value)
+{
+    return mask<Mask2>(unmask<Mask1>(value));
+}
+
+// Conversion from Mask1 to Mask2
+template <long unsigned Mask1, long unsigned Mask2, typename T>
+inline T convert(T const& value, masked_dilation_tables<T, Mask1> const& tables1, 
+		 masked_dilation_tables<T, Mask2> const& tables2)
+{
+    return tables2.to_masked(tables1.to_unmasked(value));
+}
 
 
 
