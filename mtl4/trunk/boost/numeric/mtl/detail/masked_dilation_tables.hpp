@@ -3,14 +3,19 @@
 #ifndef MTL_MASKED_DILATION_TABLES_INCLUDE
 #define MTL_MASKED_DILATION_TABLES_INCLUDE
 
+#include <iostream>
+#include <iomanip>
+
 namespace mtl { namespace dilated {
 
 template <class T, T Mask>
 struct masked_dilation_tables
 {
-    static const unsigned n_bytes= sizeof(T);           // number of bytes of the unmasked value of this type
-
     typedef masked_dilation_tables     self;
+    typedef T                          value_type;
+    const static T                     mask= Mask;
+
+    static const unsigned n_bytes= sizeof(T);           // number of bytes of the unmasked value of this type
     typedef T                          lookup_type[n_bytes][256];
     typedef T                          mp_type[n_bytes];
     typedef int                        it_type[n_bytes];  // int table type
@@ -27,37 +32,37 @@ protected:
 public:
     lookup_type& mask_lut()
     {
-	if (my_mask_lut == 0) compute_tables();
+	// if (my_mask_lut == 0) compute_tables();   should be handled by check()
 	return *my_mask_lut;
     }
 
     lookup_type& unmask_lut()
     {
-	if (my_unmask_lut == 0) compute_tables();
+	// if (my_unmask_lut == 0) compute_tables();   should be handled by check()
 	return *my_unmask_lut;
     }
 
     mp_type& mask_piece()
     {
-	if (my_mask_piece == 0) compute_tables();
+	// if (my_mask_piece == 0) compute_tables();   should be handled by check()
 	return *my_mask_piece;
     }
 
     it_type& mask_size()
     {
-	if (my_mask_size == 0) compute_tables();
+	// if (my_mask_size == 0) compute_tables();   should be handled by check()
 	return *my_mask_size;
     }
 
     it_type& mask_shift_table()
     {
-	if (my_mask_shift_table == 0) compute_tables();
+	// if (my_mask_shift_table == 0) compute_tables();   should be handled by check()
 	return *my_mask_shift_table;
     }
 
     it_type& unmask_shift_table()
     {
-	if (my_unmask_shift_table == 0) compute_tables();
+	// if (my_unmask_shift_table == 0) compute_tables();   should be handled by check()
 	return *my_unmask_shift_table;
     }
 
@@ -168,7 +173,7 @@ private:
 	    tmp = t_mask & get_f_mask(8);
 	    count = count_n_ones(tmp);
 	    unmask_shift_table()[i] = count + unmask_shift_table()[i - 1];
-	    t_mask = t_mask >> (8*i);
+	    t_mask >>= 8;
 	}
 
 	mask_shift_table()[0] = 0;  // don't need shift for the first table
@@ -231,13 +236,13 @@ public:
 	check();
 	T result = 0;
 	x &= Mask;
-	for (int i = 0; i < n_bytes; ++i)
+	for (int i = 0; i < n_bytes; ++i) {
+	    // std::cout << "unmasking: x = " << std::hex << x  << ", i = " << i << ", index = " << (0xff & (x >> (8*i)))
+	    //           << ", return from table = " << unmask_lut()[i][0xff & (x >> (8*i)) ] << std::endl;
 	    result += unmask_lut()[i][0xff & (x >> (8*i)) ];
+	}
 	return result;
     }
-
-protected:
-    // T value;               // value of the integer
 };
 
 template <class T, T Mask>
@@ -260,6 +265,42 @@ typename masked_dilation_tables<T, Mask>::it_type* masked_dilation_tables<T, Mas
 
 template <class T, T Mask>
 int masked_dilation_tables<T, Mask>::n_valid_table= 0;
+
+
+// Masking: syntax e.g. mask<0x55555555>(7);
+template <typename T, T Mask>
+inline T mask(T const& value)
+{
+    masked_dilation_tables<T, Mask>  tables;
+    return tables.to_masked(value);
+}
+
+
+// Masking: syntax e.g. mask(7, table_object);
+template <typename T, T Mask>
+inline T mask(T const& value, masked_dilation_tables<T, Mask> tables)
+{
+    return tables.to_masked(value);
+}
+
+
+// Unmasking: syntax e.g. unmask<0x55555555>(7);
+template <typename T, T Mask>
+inline T unmask(T const& value)
+{
+    masked_dilation_tables<T, Mask>  tables;
+    return tables.to_unmasked(value);
+}
+
+
+// Unmasking: syntax e.g. unmask(7, table_object);
+template <typename T, T Mask>
+inline T unmask(T const& value, masked_dilation_tables<T, Mask> tables)
+{
+    return tables.to_unmasked(value);
+}
+
+
 
 
 } // namespace mtl::dilated
