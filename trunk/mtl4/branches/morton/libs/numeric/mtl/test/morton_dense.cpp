@@ -10,6 +10,7 @@
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/raw_copy.hpp>
+#include <boost/numeric/mtl/operations/print_matrix.hpp>
 
 
 using namespace mtl;
@@ -68,6 +69,15 @@ struct test_morton_dense
  
 int test_main(int argc, char* argv[])
 {
+    morton_dense<double,  0x55555555, matrix_parameters<> > matrix1(non_fixed::dimensions(5, 6));
+    matrix1(3, 4)= 2.3;
+    cout << "matrix1(3, 4) = " << matrix1(3, 4) << endl;
+
+    morton_dense<double,  0x55555553, matrix_parameters<> > matrix2(non_fixed::dimensions(5, 6));
+    matrix2(3, 4)= 2.4;
+    cout << "matrix2(3, 4) = " << matrix2(3, 4) << endl;
+    return 0;
+
     typedef morton_dense<double,  0x55555555, matrix_parameters<> > matrix_type;    
     matrix_type matrix(non_fixed::dimensions(2, 3));
    
