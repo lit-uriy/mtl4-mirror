@@ -159,8 +159,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     //  implement cursor for morton matrix, somewhere
     //  also, morton indexer?
 
-    typedef morton_dense_key<0x55555555>          key_type;
-    typedef morton_dense_el_cursor<0x55555555>    el_cursor_type; 
+    typedef morton_dense_key<BitMask>          key_type;
+    typedef morton_dense_el_cursor<BitMask>    el_cursor_type; 
     
     typedef dilated_int<std::size_t, BitMask, true>   dilated_row_t;
     typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 

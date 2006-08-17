@@ -83,13 +83,22 @@ int test_main(int argc, char* argv[])
     fill_matrix(matrix); 
     test_sub_matrix(matrix);
 
-    cout << "\n=====================\n"
-	 << "Ordinary dense matrix\n"
-	 << "=====================\n\n";
+    cout << "\n=========================\n"
+	 << "Doppler matrix (4x4 base)\n"
+	 << "=========================\n\n";
 
-    dense2D<double, matrix_parameters<> >   dmatrix(non_fixed::dimensions(6, 5));
+    typedef morton_dense<double,  0x55555553, matrix_parameters<> > dmatrix_type;    
+    dmatrix_type dmatrix(non_fixed::dimensions(6, 5));   
     fill_matrix(dmatrix); 
     test_sub_matrix(dmatrix);
+
+    cout << "\n======================\n"
+	 << "Row-major dense matrix\n"
+	 << "======================\n\n";
+
+    dense2D<double, matrix_parameters<> >   rmatrix(non_fixed::dimensions(6, 5));
+    fill_matrix(rmatrix); 
+    test_sub_matrix(rmatrix);
 
     return 0;
 }
