@@ -30,4 +30,7 @@ int main()
 
     BOOST_CONCEPT_ASSERT((RandomAccessSequence<composed<char const*> >));
     BOOST_CONCEPT_ASSERT((Mutable_RandomAccessSequence<composed<char *> >));
+
+    BOOST_CONCEPT_ASSERT((InsertableSequence<std::vector<int> >));
+    BOOST_CONCEPT_ASSERT((InsertableSequence<std::list<int> >));
 }

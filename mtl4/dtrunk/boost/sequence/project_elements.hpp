@@ -10,13 +10,13 @@
 
 namespace boost { namespace sequence { 
 
-// A function object that takes an instance of s and yields a property
+// A function object that takes an instance of S and yields a property
 // map function that is a projection of the instance's elements map.
 template <class S, class Projection>
 struct project_elements
 {
     BOOST_CONCEPT_ASSERT((concepts::Sequence<S>));
-    
+
     typedef typename result_of<
         property_map::op::compose(
             Projection

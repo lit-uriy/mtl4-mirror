@@ -5,6 +5,7 @@
 # define BOOST_DETAIL_COMPRESSED_SINGLE_DWA2006519_HPP
 
 # include <boost/type_traits/is_class.hpp>
+# include <boost/type_traits/is_convertible.hpp>
 # include <boost/utility/enable_if.hpp>
 
 namespace boost { namespace detail { 
@@ -45,8 +46,6 @@ struct compressed_single_base<T const,true>
     {}
     
     T const& first() const { return *this; }
- private:
-    void operator=(compressed_single_base const&);
 };
 
 template <class T>
@@ -108,7 +107,22 @@ template <class T>
 struct compressed_single
   : compressed_single_base<T, is_class<T>::value>
 {
-    template <class 
+    typedef T first_type;
+    typedef void second_type;   // for uniformity w/compressed_tuple
+    
+    typedef compressed_single_base<T,is_class<T>::value> base;
+    
+    template <class U>
+    compressed_single(
+        compressed_single<U> const& u
+      , typename enable_if<is_convertible<T,U> >::type* = 0
+    )
+      : base(u.first)
+    {}
+
+    explicit compressed_single(T const& x)
+      : base(x)
+    {}
 };
 
 }} // namespace boost::detail

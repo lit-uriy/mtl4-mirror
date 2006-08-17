@@ -5,147 +5,314 @@
 # define BOOST_INDEXED_STORAGE_SPARSE_DWA2006515_HPP
 
 # include <boost/sequence/project_elements.hpp>
+# include <boost/sequence/lower_bound.hpp>
 # include <boost/detail/transfer_cv.hpp>
-# include <boost/detail/project1st.hpp>
-# include <boost/detail/project2nd.hpp>
-# include <boost/detail/compressed_pair.hpp>
+# include <boost/functional/project1st.hpp>
+# include <boost/functional/project2nd.hpp>
+# include <boost/compressed_pair.hpp>
+# include <boost/detail/compressed_tuple.hpp>
+# include <boost/detail/compressed_single.hpp>
+# include <boost/detail/callable.hpp>
 
-namespace boost {
+# if 0
+#  include <boost/spirit/phoenix/bind.hpp>
+# endif 
+# include <boost/functional/less.hpp>
+# include <boost/mpl/vector.hpp>
 
-namespace indexed_storage
+namespace boost { namespace indexed_storage {
+
+namespace sparse_
 {
-  template <class PairSequence, class Lookup, class GetUnstored, class SetUnstored>
+  template <class F, class Elements>
+  struct comparator
+    : boost::compressed_pair<F,Elements>
+  {
+      comparator(F f, Elements elements)
+        : boost::compressed_pair<F,Elements>(f,elements)
+      {}
+
+      typedef bool result_type;
+
+      template <class K, class T>
+      bool operator()(K const& k, T const& x) const
+      {
+          return this->first()( this->second()(k).first, x );
+      }
+  };
+
+  template <class F, class Elements>
+  comparator<F,Elements>
+  make_comparator(F f, Elements elements)
+  {
+      return comparator<F,Elements>(f,elements);
+  }
+  
+  template  <class Cmp = functional::less>
+  struct sorted
+    : private boost::detail::compressed_single<Cmp>
+  {
+      sorted(Cmp const& cmp = Cmp())
+        : boost::detail::compressed_single<Cmp>(cmp)
+      {}
+
+      template <class S, class Index>
+      typename concepts::Sequence<S>::cursor
+      operator()(S& s, Index const& i) const
+      {
+//          namespace p = phoenix;
+          
+          functional::project1st proj1;
+          
+          return sequence::lower_bound(
+              s, i
+            , sparse_::make_comparator(this->first(), sequence::elements(s))
+# if 0
+            , p::make_function(this->first())(
+                  p::make_function(functional::project1st())(
+                    p::bind(sequence::elements(s), p::arg1)
+                  )
+                , p::arg2
+              )
+# endif 
+          );
+      }
+  };
+
+  namespace compressed_tuple = boost::detail::compressed_tuple;
+
+  struct get_default
+  {
+      template <class Signature> struct result;
+
+      template <class This, class S, class C, class I>
+      struct result<This(S,C,I)>
+      {
+          typedef typename remove_reference<
+              typename add_const<S>::type
+          >::type seq;
+
+          typedef typename concepts::Sequence<
+              seq
+          >::value_type::second_type type;
+      };
+
+      template <class S, class C, class I>
+      typename result_of<get_default(S,C,I)>::type
+      operator()(S const&, C const&, I const&) const
+      {
+          return typename concepts::Sequence<S>::value_type::first_type();
+      }
+  };
+
+  struct insert_sorted : boost::detail::callable<insert_sorted>
+  {
+      typedef void result_type;
+
+      template <class S, class C, class I, class V>
+      void call(S& s, C& c, I& i, V& v) const
+      {
+          sequence::insert(s, c, std::make_pair(i,v));
+      }
+  };
+
+  using boost::detail::transfer_cv;
+
+  namespace impl
+  {
+    template <class N, class S>
+    struct get_member_
+    {
+        typedef typename result_of<
+            compressed_tuple::op::get(
+                N&, typename transfer_cv<S,typename S::members_type>::type&
+            )
+        >::type result_type;
+
+        result_type operator()(S& s) const
+        {
+            return compressed_tuple::get(N(), s.members);
+        }
+    };
+  }
+
+  namespace op
+  {
+    using mpl::_;
+    using boost::detail::function1;
+    using mpl::int_;
+
+    struct lookup : function1<impl::get_member_<int_<0>,_> > {};
+    struct get_unstored : function1<impl::get_member_<int_<1>,_> > {};
+    struct set_unstored : function1<impl::get_member_<int_<2>,_> > {};
+    struct storage : function1<impl::get_member_<int_<3>,_> > {};
+  }
+
+  namespace
+  {
+    op::lookup const& lookup = boost::detail::pod_singleton<op::lookup>::instance;
+    op::get_unstored const& get_unstored = boost::detail::pod_singleton<op::get_unstored>::instance;
+    op::set_unstored const& set_unstored = boost::detail::pod_singleton<op::set_unstored>::instance;
+    op::storage const& storage = boost::detail::pod_singleton<op::storage>::instance;
+  }
+
+  template <
+      class PairSequence
+    , class Lookup = sorted<>
+    , class GetUnstored = get_default
+    , class SetUnstored = insert_sorted
+  >
   struct sparse
   {
+      typedef Lookup lookup;
+      typedef GetUnstored get_unstored;
+      typedef SetUnstored set_unstored;
       typedef PairSequence storage;
-      typedef typename concepts::Sequence<PairSequence>::value_type pair_type;
+      typedef typename concepts::Sequence<storage>::value_type pair_type;
       typedef typename pair_type::first_type index_type;
       typedef typename pair_type::second_type value_type;
 
       sparse() {}
-      
-      storage& lookup() { return members.first(); }
-      Lookup& get_unstored() { return members.second().first(); }
-      GetUnstored& set_unstored() { return members.second().second().first(); }
-      SetUnstored& pairs() { return members.second().second().second(); }
-      
-      storage const& lookup() const { return members.first(); }
-      Lookup const& get_unstored() const { return members.second().first(); }
-      GetUnstored const& set_unstored() const { return members.second().second().first(); }
-      SetUnstored const& pairs() const { return members.second().second().second(); }
-      
+
    private:
-      compressed_pair<
-          Lookup
-        , compressed_pair<
-              GetUnstored
-            , compressed_pair<
-                  SetUnstored
-                , PairSequence
-              >
-          >
-      > members;
+      template <class N, class S> friend struct impl::get_member_;
+
+      typedef typename boost::detail::compressed_tuple::generate<
+          mpl::vector<Lookup,GetUnstored,SetUnstored,PairSequence>
+      >::type members_type;
+
+      members_type members;
   };
 
-  struct sparse_tag {};
+  struct tag {};
 
-  namespace impl
+} // namespace sparse_
+
+using sparse_::sparse;
+  
+namespace impl
+{
+  template <class S>
+  struct indices<S, indexed_storage::sparse_::tag>
   {
-    template <class S>
-    struct indices<S, indexed_storage::sparse_tag>
-      : sequence::project_elements<S,boost::detail::project1st>
-    {};
+      typedef sequence::project_elements<S,functional::project1st> impl;
+      
+      typedef typename impl::result_type result_type;
+      
+      result_type operator()(S& s) const
+      {
+          return impl()( sparse_::storage(s) );
+      }
+  };
 
-    template <class S, class I>
-    struct get_at<S, I, indexed_storage::sparse_tag>
-    {
-        
-        detail::transfer_cv<
-            typename detail::transfer_cv<S, typename S::storage>::type
-          , S::value_type
-        >::type& result_type;
+  template <class S, class I>
+  struct get_at<S, I, indexed_storage::sparse_::tag>
+  {
 
-        result_type operator()(S& s, I& i)
-        {
-            typename concepts::Sequence<S>::cursor
-                pos = s.lookup()(s.pairs,i);
+      typedef typename
+        concepts::Sequence<typename S::storage>::value_type::second_type
+      result_type;
 
-            if (pos != sequence::end(s))
-            {
-                typename concepts::Sequence<typename S::storage>::reference
-                    x = sequence::elements(s.pairs())(*pos);
-                    
-                if (x.first == i)
-                    return x.second;
-            }
-            return s.get_unstored()(s.pairs(), pos, i);
-        }
-    };
+      result_type operator()(S& s, I& i)
+      {
+          typename concepts::Sequence<S>::cursor
+              pos = sparse_::lookup(s)( sparse_::storage(s), i );
 
-    template <class S, class I, class V>
-    struct set_at<S, I, V, indexed_storage::sparse_tag>
-    {
-        typedef void result_type;
+          if (pos != sequence::end(s))
+          {
+              typename boost::detail::transfer_cv<
+                  typename boost::detail::transfer_cv<S, typename S::storage>::type
+                , typename concepts::Sequence<typename S::storage>::value_type
+              >::type x = sequence::elements(sparse_::storage(s))( *pos );
 
-        result_type operator()(S& s, I& i, V& v)
-        {
-            typename concepts::Sequence<S>::cursor
-                pos = s.lookup()(s.pairs,i);
+              if (x.first == i)
+                  return x.second;
+          }
+          return sparse_::get_unstored(s)( sparse_::storage(s), pos, i );
+      }
+  };
 
-            if (pos != sequence::end(s))
-            {
-                typename concepts::Sequence<typename S::storage>::reference
-                    x = sequence::elements(s.pairs())(*pos);
-                    
-                if (x.first == i)
-                    x.second = v;
-            }
-            return s.set_unstored()(s.pairs(), pos, i, v);
-        }
-    };
-  }
+  template <class S, class I, class V>
+  struct set_at<S, I, V, indexed_storage::sparse_::tag>
+  {
+      BOOST_CONCEPT_ASSERT(
+          (sequence::concepts::InsertableSequence<typename S::storage>)
+      );
+
+      typedef void result_type;
+
+      result_type operator()(S& s, I& i, V& v)
+      {
+          typename concepts::Sequence<S>::cursor
+              pos = sparse_::lookup(s)( sparse_::storage(s),i );
+
+          if (pos != sequence::end(s))
+          {
+              typename concepts::Sequence<typename S::storage>::reference
+                  x = sequence::elements( sparse_::storage(s) )(*pos);
+
+              if (x.first == i)
+                  x.second = v;
+          }
+          sparse_::set_unstored(s)( sparse_::storage(s), pos, i, v );
+      }
+  };
+}
 }
 
 namespace sequence { namespace impl
 {
-  template <class PairContainer>
-  struct tag<indexed_storage<PairContainer> >
+  template <class PairSequence, class Lookup, class GetUnstored, class SetUnstored>
+  struct tag<
+      indexed_storage::sparse<PairSequence, Lookup, GetUnstored, SetUnstored>
+  >
   {
-      typedef indexed_storage::sparse_tag type;
+      typedef indexed_storage::sparse_::tag type;
   };
 
   template <class S>
-  struct begin<S, indexed_storage::sparse_tag>
+  struct begin<S, indexed_storage::sparse_::tag>
   {
       typedef typename
-        detail::transfer_cv<S, typename S::storage>::type
+        boost::detail::transfer_cv<S, typename S::storage>::type
       storage;
 
       typedef typename begin<storage>::result_type result_type;
       result_type operator()(S& s)
       {
-          return sequence::begin(s.pairs);
+          return sequence::begin( indexed_storage::sparse_::storage(s) );
       }
   };
       
   template <class S>
-  struct end<S, indexed_storage::sparse_tag>
+  struct end<S, indexed_storage::sparse_::tag>
   {
       typedef typename
-        detail::transfer_cv<S, typename S::storage>::type
+        boost::detail::transfer_cv<S, typename S::storage>::type
       storage;
 
       typedef typename end<storage>::result_type result_type;
       result_type operator()(S& s)
       {
-          return sequence::end(s.pairs);
+          return sequence::end( indexed_storage::sparse_::storage(s) );
       }
   };
       
   template <class S>
-  struct elements<S, indexed_storage::sparse_tag>
-    : sequence::project_elements<S,boost::detail::project2nd>
-  {};
+  struct elements<S, indexed_storage::sparse_::tag>
+  {
+      typedef sequence::project_elements<
+          typename boost::detail::transfer_cv<S,typename S::storage>::type
+        , functional::project2nd
+      > impl;
+
+      typedef typename impl::result_type result_type;
+
+      result_type operator()( S& s ) const
+      {
+          return impl()( indexed_storage::sparse_::storage(s) );
+      }
+  };
 }} // namespace sequence::impl
 
 } // namespace boost

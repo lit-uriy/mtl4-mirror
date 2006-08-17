@@ -9,8 +9,8 @@
 #include <boost/utility/result_of.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include <boost/detail/transfer_cv.hpp>
-#include <boost/detail/project1st.hpp>
-#include <boost/detail/project2nd.hpp>
+#include <boost/functional/project1st.hpp>
+#include <boost/functional/project2nd.hpp>
 #include <functional>
 
 using namespace boost;
