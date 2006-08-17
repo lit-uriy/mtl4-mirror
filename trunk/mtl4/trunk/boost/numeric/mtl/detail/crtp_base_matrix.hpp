@@ -20,6 +20,8 @@ struct const_crtp_base_matrix
 template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_base_matrix : public const_crtp_base_matrix<Matrix, ValueType, SizeType>
 {    
+    using const_crtp_base_matrix<Matrix, ValueType, SizeType>::operator[];
+
     operations::bracket_proxy<Matrix, Matrix&, ValueType&>
     operator[] (SizeType row)
     {

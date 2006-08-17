@@ -87,13 +87,7 @@ public:
     void dilate(T x)
     {
 	static const T to_switch_on = Normalized ? 0 : anti_mask;
-	// I doubt that I need this anymore
-	// to_move = anti_mask & 1;
-	T tmp= mask<bit_mask>(x);
 	i = mask<bit_mask>(x) | to_switch_on;
-
-	// T d = dilate_lut[ x & 0xff ] + (dilate_lut[ (x >> 8) & 0xff ] << 16);
-	// i = d << to_move | to_switch_on;
     }
 
 public:
@@ -113,12 +107,6 @@ public:
     // Only works for odd and even bits and 4-byte-int at this point !!!!!!!!!!!!!!!!!!!
     T undilate()
     {
-#if 0
-	static const T to_move = anti_mask & 1;
-	T tmp = (i & bit_mask) >> to_move;
-	tmp = (tmp >> 7) + tmp;
-	return undilate_lut[tmp & 0xff] + (undilate_lut[(tmp >> 16) & 0xff] << 8);
-#endif
 	return unmask<bit_mask>(i);
     }
 
