@@ -5,7 +5,7 @@
 #ifndef MTL_DILATED_INT_INCLUDE
 #define MTL_DILATED_INT_INCLUDE
 
-#include <boost/numeric/mtl/detail/dilation_table.hpp>
+#include <boost/numeric/mtl/detail/masked_dilation_tables.hpp>
 #include <iostream>
 
 namespace mtl { namespace dilated {
