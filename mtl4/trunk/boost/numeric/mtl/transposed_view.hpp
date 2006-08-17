@@ -11,7 +11,7 @@
 namespace mtl {
 
 template <class Matrix> class transposed_view 
-  : public detail::const_crtp_base_matrix< transposed_view<Matrix>, typename Matrix::value_type, typename Matrix::size_type >
+  : public detail::crtp_base_matrix< transposed_view<Matrix>, typename Matrix::value_type, typename Matrix::size_type >
 {
     typedef transposed_view               self;
 public:	
@@ -27,18 +27,21 @@ public:
     
     transposed_view (boost::shared_ptr<Matrix> p) : my_copy(p), ref(*p) {}
     
-    // ~transposed_view() { delete(my_copy); }
-
-    value_type operator() (std::size_t r, std::size_t c) const
+    value_type operator() (size_type r, size_type c) const
     { 
         return ref(c, r); 
     }
 
-    std::size_t dim1() const 
+    value_type& operator() (size_type r, size_type c)
+    { 
+        return ref(c, r); 
+    }
+
+    size_type dim1() const 
     { 
         return ref.dim2(); 
     }
-    std::size_t dim2() const 
+    size_type dim2() const 
     { 
         return ref.dim1(); 
     }
@@ -48,32 +51,32 @@ public:
         return ref.dimensions().transpose(); 
     }
 
-    std::size_t begin_row() const
+    size_type begin_row() const
     {
 	return ref.begin_col();
     }
 
-    std::size_t end_row() const
+    size_type end_row() const
     {
 	return ref.end_col();
     }
 
-    std::size_t num_rows() const
+    size_type num_rows() const
     {
 	return ref.end_col() - ref.begin_col();
     }
 
-    std::size_t begin_col() const
+    size_type begin_col() const
     {
 	return ref.begin_row();
     }
 
-    std::size_t end_col() const
+    size_type end_col() const
     {
 	return ref.end_row();
     }
 
-    std::size_t num_cols() const
+    size_type num_cols() const
     {
 	return ref.end_row() - ref.begin_row();
     }
