@@ -138,7 +138,8 @@ struct morton_dense_col_cursor
 // Morton Dense matrix type
 template <typename Elt, std::size_t  BitMask, typename Parameters>
 class morton_dense : public detail::base_sub_matrix<Elt, Parameters>, 
-		     public detail::contiguous_memory_matrix<Elt, false>
+		     public detail::contiguous_memory_matrix<Elt, false>,
+                     public detail::crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >
 {
     typedef detail::base_sub_matrix<Elt, Parameters>            super;
     typedef detail::contiguous_memory_matrix<Elt, false>        super_memory;
@@ -164,8 +165,6 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     
     typedef dilated_int<std::size_t, BitMask, true>   dilated_row_t;
     typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 
-    //  typedef morton_dense_indexer              indexer_type;
-
 
   public: 
 
@@ -262,6 +261,19 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     {
 	this->data[key.dilated_row.dilated_value() + key.dilated_col.dilated_value()]= value;
     }
+
+    value_type operator() (size_type row, size_type col) const
+    {
+	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
+    }
+
+    value_type& operator() (size_type row, size_type col)
+    {
+	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
+    }
+
+
+
 
   protected:
     void set_nnz()

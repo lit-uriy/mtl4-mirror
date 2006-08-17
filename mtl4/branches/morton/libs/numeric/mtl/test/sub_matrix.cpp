@@ -36,17 +36,26 @@ void print_depth_first(Recurator const& recurator, string str)
     template <typename Matrix>
     void test_sub_matrix(Matrix& matrix)
     {
+#if 0
+	matrix[3][4]= 2.3; 
+	cout << "matrix[3][4] = " << matrix[3][4] << endl;
+#endif
+
 	print_matrix_row_cursor(matrix);
 
 	recursion::matrix_recurator<Matrix> recurator(matrix);
 	print_depth_first(recurator, "");
-
 	 
 	cout << "\n====================\n"
 	     <<   "Same with transposed\n"
 	     <<   "====================\n\n";
 
 	transposed_view<Matrix> trans_matrix(matrix);
+#if 0
+	trans_matrix[3][4]= 2.3; 
+	cout << "trans_matrix[3][4] = " << trans_matrix[3][4] << endl;
+#endif
+
 	print_matrix_row_cursor(trans_matrix); 
 	recursion::matrix_recurator< transposed_view<Matrix> > trans_recurator(trans_matrix);
 	print_depth_first(trans_recurator, "");
