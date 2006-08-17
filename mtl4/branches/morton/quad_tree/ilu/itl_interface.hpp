@@ -27,7 +27,7 @@
 Matrix-vector multiply
 produces: w = Ax + b
 */
-__attribute__((always inline))
+//__attribute__((always inline))
 template <typename Vx, typename Vb, typename Vw>
 inline void mult( const Both& A, const Vx& x, const Vb& b, Vw& w)
 {
@@ -41,13 +41,9 @@ Ax = b.
 produce x.
 forward + backward substitution.
 */
-__attribute__((always inline))
+// __attribute__((always inline))
 template <typename Vb, typename Vx>
-inline void solve(const Both& M, const Vb& b, Vx& x)
-{
-	for_solve<Vb,Vx>(M, b, x);
-	back_solve<Vx,Vx>(M, x, x);
-}
+inline void solve(const Both& M, const Vb& b, Vx& x);
 
 #include "itl_interface_impl.hpp"
 

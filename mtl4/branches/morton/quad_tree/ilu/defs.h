@@ -77,6 +77,8 @@ typedef struct dc {
 #define LEVEL_START 0    //starting level
 #define SMALL_ERROR 0.0000000001 //Small error tolerance when comparing results
 
+#define MAX_FLAG_SIZE 	5		// Keep flag size to 5 chars maximum
+
 #endif
 //////////////////////////////////////////////////////////////////////////////
 

@@ -16,7 +16,6 @@
 #include "sysSolve.h"
 
 
-#define MAX_FLAG_SIZE 	5		// Keep flag size to 5 chars maximum
 
 typedef struct f{
 	char* name;

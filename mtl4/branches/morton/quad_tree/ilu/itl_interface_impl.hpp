@@ -19,6 +19,12 @@
 #ifndef ITL_INTERFACE_IMP_HPP
 #define ITL_INTERFACE_IMP_HPP
 
+#include "mtl/dense1D.h"
+#include "mtl/scaled1D.h"
+#include "itl/interface/mtl.h"
+
+
+
 template <typename Vx, typename Vb, typename Vw>
 void mult(	const Both& LUmat, indexType bIndex, int bc, int level,
 			const Vx& x, int xI,
@@ -30,12 +36,19 @@ template <typename Vy, typename Vx>
 void back_solve(const Both& LUmat, indexType bIndex, int bc, int level,
 				const Vy& y, Vx& x, int yI);
 
+template <typename Vb, typename Vx>
+inline void solve(const Both& M, const Vb& b, Vx& x)
+{
+	for_solve<Vb,Vx>(M, b, x);
+	back_solve<Vx,Vx>(M, x, x);
+}
+
 /*
 Forward substitute
 LUx = b <--> Ly = b
 return y
 */
-__attribute__((always inline))
+// __attribute__((always inline))
 template <typename Vb, typename Vy>
 inline void for_solve(const Both& M, const Vb& b, Vy& y)
 {
@@ -47,11 +60,11 @@ Backward substitute
 LUx = b <--> Ly = b & Ux = y
 return x
 */
-__attribute__((always inline))
+// __attribute__((always inline))
 template <typename Vy, typename Vx>
 inline void back_solve(const Both& M, const Vy& y, Vx& x)
 {
-	back_solve<Vy,Vx>(M, MTN_START, BND_PART_ALL, LEVEL_START, b, y, 0);
+  back_solve<Vy,Vx>(M, MTN_START, BND_PART_ALL, LEVEL_START, y, x, 0);
 }
 
 
@@ -173,7 +186,7 @@ void back_solve(const Both& LUmat, indexType bIndex, int bc, int level,
 		int r, c, i, j, rI, iBO;
 		dataType D;
 		mat.bnd.getEndBaseLimits(bc, &r, &c);
-		rhsIndex *= baseOrder;
+		yI *= baseOrder;
 		for(i=r-1; i>=0; i--) {
 			rI = yI + i;
 			iBO = i*baseOrder;
