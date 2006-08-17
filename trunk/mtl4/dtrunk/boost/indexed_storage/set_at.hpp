@@ -37,8 +37,10 @@ namespace impl
 
 namespace op
 {
+  using namespace sequence;
+  
   using mpl::_;
-  struct set_at : boost::detail::function3<impl::set_at<_,_,_,sequence::impl::tag<_> > > {};
+  struct set_at : boost::detail::function3<impl::set_at<_,_,_,sequence::impl::tag<_> > >  {};
 }
 
 namespace

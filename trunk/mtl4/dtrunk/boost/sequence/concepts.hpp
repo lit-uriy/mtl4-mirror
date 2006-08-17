@@ -8,6 +8,7 @@
 # include <boost/sequence/begin.hpp>
 # include <boost/sequence/end.hpp>
 # include <boost/sequence/elements.hpp>
+# include <boost/sequence/insert.hpp>
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/sequence/traits/size_type.hpp>
 # include <boost/sequence/traits/index_type.hpp>
@@ -90,6 +91,21 @@ struct O1SizeSequence
     S s;
 };
 
+template <class S>
+struct InsertableSequence
+  : Sequence<S>
+{
+    ~InsertableSequence()
+    {
+        typename InsertableSequence::cursor pos;
+        pos = sequence::insert(s, pos, v);
+    }
+    
+ private:
+    S s;
+    typename InsertableSequence::value_type const v;
+};
+    
 template <class S>
 struct LvalueSequence
   : Sequence<S>
