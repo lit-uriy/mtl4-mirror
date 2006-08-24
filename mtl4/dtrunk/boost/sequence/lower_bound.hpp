@@ -5,11 +5,9 @@
 # define BOOST_SEQUENCE_LOWER_BOUND_DWA200665_HPP
 
 # include <boost/detail/function3.hpp>
-
-# include <boost/spirit/phoenix/core/argument.hpp>
-# include <boost/spirit/phoenix/bind.hpp>
-# include <boost/spirit/phoenix/function.hpp>
-# include <algorithm>
+# include <boost/concept/where.hpp>
+# include <boost/concept_check.hpp>
+# include <boost/detail/binary_search.hpp>
 
 namespace boost { namespace sequence { 
 
@@ -28,11 +26,13 @@ namespace impl
       template <class K, class T>
       bool operator()(K const& k, T const& x) const
       {
+          this->second()(k);
+          this->first()( this->second()(k), x );
           return this->first()( this->second()(k), x );
       }
   };
 
-  template <class F, class Elements>
+  template <class F, class Elements>  
   comparator<F,Elements>
   make_comparator(F f, Elements elements)
   {
@@ -42,24 +42,25 @@ namespace impl
   template <class S, class Target, class Cmp>
   struct lower_bound
   {
+      BOOST_CONCEPT_ASSERT((concepts::Sequence<S>));
+      
       typedef typename
         concepts::Sequence<S>::cursor
       result_type;
+
+      typedef typename concepts::Sequence<S>::value_type value_type;
       
-      result_type operator()(S& s, Target& t, Cmp& c) const
+      BOOST_CONCEPT_ASSERT((BinaryPredicate<Cmp,value_type,Target>));
+      
+      result_type
+      operator()(S& s, Target& t, Cmp& c) const
       {
-//          namespace p = phoenix;
-          
-          return std::lower_bound(
+          // Using the version in boost because some standard
+          // libraries still include outdated checks for strict weak
+          // ordering.
+          return boost::detail::lower_bound(
               sequence::begin(s), sequence::end(s), t
             , impl::make_comparator(c, sequence::elements(s))
-# if 0
-              p::bind(
-                  c
-                , p::bind(sequence::elements(s), p::arg1)
-                , p::arg2
-              )
-# endif 
           );
       }
   };

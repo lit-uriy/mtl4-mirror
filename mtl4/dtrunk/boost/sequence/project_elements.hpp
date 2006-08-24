@@ -10,8 +10,8 @@
 
 namespace boost { namespace sequence { 
 
-// A function object that takes an instance of S and yields a property
-// map function that is a projection of the instance's elements map.
+// A function object that takes an instance of S and yields an
+// accessor that is a projection of the instance's accessor.
 template <class S, class Projection>
 struct project_elements
 {
