@@ -19,9 +19,6 @@
 # include <boost/indexed_storage/indices.hpp>
 # include <boost/utility/result_of.hpp>
 
-# if 0
-#  include <boost/spirit/phoenix/bind.hpp>
-# endif 
 # include <boost/functional/less.hpp>
 # include <boost/mpl/vector.hpp>
 
