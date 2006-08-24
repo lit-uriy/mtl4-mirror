@@ -13,9 +13,15 @@ struct less
     typedef bool result_type;
     
     template <class T>
-    bool operator()(T const& x, T const& y)
+    bool operator()(T const& x, T const& y) const
     {
         return std::less<T>()(x,y);
+    }
+
+    template <class T, class U>
+    bool operator()(T const& x, U const& y) const
+    {
+        return x < y;
     }
 };
 

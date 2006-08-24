@@ -42,7 +42,7 @@ pair pairs[] = { {1,'b'}, {2,'c'}, {3,'d'}, {4,'e'}, {5,'f'}};
 
 typedef result_of<
     property_map::op::compose(
-        boost::detail::project1st
+        boost::functional::project1st
       , property_map::identity
     )
 >::type first_t;
@@ -51,7 +51,7 @@ first_t first;
 
 result_of<
     property_map::op::compose(
-        boost::detail::project2nd
+        boost::functional::project2nd
       , property_map::identity
     )
 >::type second;

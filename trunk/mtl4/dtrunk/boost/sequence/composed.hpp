@@ -7,6 +7,7 @@
 # include <boost/property_map/identity.hpp>
 # include <boost/compressed_pair.hpp>
 # include <boost/sequence/tag.hpp>
+# include <boost/property_map/concepts.hpp>
 
 namespace boost { namespace sequence { 
 
@@ -15,6 +16,8 @@ struct composed
 {
     typedef Cursor cursor;
     typedef Mapping mapping;
+
+    BOOST_CONCEPT_ASSERT((property_map::concepts::BasicPropertyMap<Mapping,Cursor>));
     
     composed(Cursor start, Cursor finish, Mapping mapping)
       : start(start)

@@ -6,6 +6,7 @@
 
 # include <boost/sequence/project_elements.hpp>
 # include <boost/sequence/lower_bound.hpp>
+# include <boost/sequence/compose.hpp>
 # include <boost/detail/transfer_cv.hpp>
 # include <boost/functional/project1st.hpp>
 # include <boost/functional/project2nd.hpp>
@@ -13,6 +14,10 @@
 # include <boost/detail/compressed_tuple.hpp>
 # include <boost/detail/compressed_single.hpp>
 # include <boost/detail/callable.hpp>
+# include <boost/type_traits/remove_reference.hpp>
+# include <boost/indexed_storage/concepts.hpp>
+# include <boost/indexed_storage/indices.hpp>
+# include <boost/utility/result_of.hpp>
 
 # if 0
 #  include <boost/spirit/phoenix/bind.hpp>
@@ -24,30 +29,6 @@ namespace boost { namespace indexed_storage {
 
 namespace sparse_
 {
-  template <class F, class Elements>
-  struct comparator
-    : boost::compressed_pair<F,Elements>
-  {
-      comparator(F f, Elements elements)
-        : boost::compressed_pair<F,Elements>(f,elements)
-      {}
-
-      typedef bool result_type;
-
-      template <class K, class T>
-      bool operator()(K const& k, T const& x) const
-      {
-          return this->first()( this->second()(k).first, x );
-      }
-  };
-
-  template <class F, class Elements>
-  comparator<F,Elements>
-  make_comparator(F f, Elements elements)
-  {
-      return comparator<F,Elements>(f,elements);
-  }
-  
   template  <class Cmp = functional::less>
   struct sorted
     : private boost::detail::compressed_single<Cmp>
@@ -56,26 +37,31 @@ namespace sparse_
         : boost::detail::compressed_single<Cmp>(cmp)
       {}
 
-      template <class S, class Index>
-      typename concepts::Sequence<S>::cursor
-      operator()(S& s, Index const& i) const
+      template <class Storage, class SeekIndex>
+      typename concepts::Sequence<Storage>::cursor
+      operator()(Storage& s, SeekIndex const& i) const
       {
-//          namespace p = phoenix;
+          BOOST_CONCEPT_ASSERT((concepts::Sequence<Storage>));
           
-          functional::project1st proj1;
+          typedef sequence::project_elements<Storage, functional::project1st> create_projection;
+          typedef typename create_projection::result_type access_indices;
           
+          typedef typename concepts::Sequence<Storage>::cursor cursor;
+          
+          typedef typename result_of<
+              sequence::op::compose(cursor, cursor, access_indices)
+          >::type index_sequence;
+          BOOST_CONCEPT_ASSERT((concepts::Sequence<index_sequence>));
+
+          typedef typename concepts::Sequence<index_sequence>::value_type index;
+          
+          BOOST_CONCEPT_ASSERT((
+               BinaryPredicate<Cmp, index, SeekIndex>
+          ));
+               
           return sequence::lower_bound(
-              s, i
-            , sparse_::make_comparator(this->first(), sequence::elements(s))
-# if 0
-            , p::make_function(this->first())(
-                  p::make_function(functional::project1st())(
-                    p::bind(sequence::elements(s), p::arg1)
-                  )
-                , p::arg2
-              )
-# endif 
-          );
+              sequence::compose(sequence::begin(s), sequence::end(s), create_projection()(s))
+            , i, this->first() );
       }
   };
 
@@ -195,7 +181,10 @@ namespace impl
   template <class S>
   struct indices<S, indexed_storage::sparse_::tag>
   {
-      typedef sequence::project_elements<S,functional::project1st> impl;
+      typedef sequence::project_elements<
+          typename boost::detail::transfer_cv<S,typename S::storage>::type
+        , functional::project1st
+      > impl;
       
       typedef typename impl::result_type result_type;
       
