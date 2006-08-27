@@ -1,33 +1,142 @@
 #include <iostream>
+#include <algorithm>
+#include <concepts>
 
 #include <boost/numeric/linear_algebra/operators.hpp>
 #include <boost/numeric/linear_algebra/concepts.hpp>
 
 #include <libs/numeric/linear_algebra/test/algebraic_functions.hpp>
 
-// float has a concept map for Field 
-// and PartiallyInvertibleMonoid w.r.t. mult
-// This implies concept maps for all other scalar concepts
+
+
+concept AccurateArithmetic<typename T> {}
+
+template <typename T>
+    where std::Integral<T>
+concept_map AccurateArithmetic<T> {}
+
+
+concept TolerateRoundingErrors<typename T> {}
+
+#define BlameFloatRoundingErrors
+
+# ifndef BlameFloatRoundingErrors
+    template <typename T>
+        where math::Float<T>
+    concept_map TolerateRoundingErrors<T> {}
+# endif
+
+concept_map TolerateRoundingErrors<double> {}
+
+concept SelectiveOperation<typename Operation, typename Element> {}
+
+template <typename Element>
+concept_map SelectiveOperation<math::min<Element>, Element> {}
+
+template <typename Element>
+concept_map SelectiveOperation<math::max<Element>, Element> {}
+
+concept RegularReduction<typename Operation, typename Element> {}
+
+template <typename Operation, typename Element>
+  where AccurateArithmetic<Element>
+concept_map RegularReduction<Operation, Element> {}
+
+template <typename Operation, typename Element>
+  where TolerateRoundingErrors<Element>
+concept_map RegularReduction<Operation, Element> {}
+
+template <typename Operation, typename Element>
+  where SelectiveOperation<Operation, Element> 
+        && !AccurateArithmetic<Element> 
+        && !TolerateRoundingErrors<Element>
+concept_map RegularReduction<Operation, Element> {}
+
+
+
+
+// ######################################################################
+
+namespace mtl {
+
+
+// Dispatching between simple and unrolled version
+template <typename Iter, typename Value, typename Op>
+  where std::ForwardIterator<Iter> 
+                  && std::Convertible<Value, std::ForwardIterator<Iter>::value_type>
+                  && math::Magma<Op, std::ForwardIterator<Iter>::value_type>
+                  && RegularReduction<Op, std::ForwardIterator<Iter>::value_type>
+typename std::ForwardIterator<Iter>::value_type 
+inline my_accumulate(Iter first, Iter last, Value init, Op op)
+{
+    std::cout << "Simple accumulate\n";
+    return mtl::accumulate_simple(first, last, init, op);
+}
+
+
+template <typename Iter, typename Value, typename Op>
+    where  std::RandomAccessIterator<Iter> 
+	          && std::Convertible<Value, std::RandomAccessIterator<Iter>::value_type>
+		  && math::CommutativeMonoid<Op, std::RandomAccessIterator<Iter>::value_type> 
+                  && RegularReduction<Op, std::RandomAccessIterator<Iter>::value_type>
+typename std::RandomAccessIterator<Iter>::value_type 
+inline my_accumulate(Iter first, Iter last, Value init, Op op)
+{
+    std::cout << "Unrolled accumulate\n";
+    return mtl::accumulate_unrolled(first, last, init, op);
+}
+
+// Special Treatment
+template <typename Iter, typename Value, typename Op>
+  where std::ForwardIterator<Iter> 
+                  && std::Convertible<Value, std::ForwardIterator<Iter>::value_type>
+                  && math::Magma<Op, std::ForwardIterator<Iter>::value_type>
+typename std::ForwardIterator<Iter>::value_type 
+inline my_accumulate(Iter first, Iter last, Value init, Op op)
+{
+    std::cout << "Special accumulate\n";
+    return mtl::accumulate_simple(first, last, init, op);
+}
+
+
+
+} // namespace mtl
+
+// ######################################################################
+
+
+
+
+
 
 using math::identity; using math::add;
 
+const int   array_size= 10;
+
+template <typename Element>
+void test_accumulate(const char* name)
+{
+    Element     array[array_size];
+    for (int i= 0; i < array_size; i++) 
+	array[i]= Element(i);
+
+    std::cout << '\n' << name << '\n' << " Add: ";
+    mtl::my_accumulate(&array[0], array+array_size, Element(0), math::add<Element>());
+    std::cout << "Mult: ";
+    mtl::my_accumulate(array, array+array_size, Element(1), math::mult<Element>());
+    std::cout << " Min: ";
+    mtl::my_accumulate(array, array+array_size, Element(1), math::min<Element>());
+    std::cout << " Max: ";
+    mtl::my_accumulate(array, array+array_size, Element(1), math::max<Element>());
+}
+
+
 int main(int, char* [])
 {
-    using namespace std;
-    using namespace mtl;
 
-    math::add<float>    float_add;
-    math::mult<float>   float_mult;
+    test_accumulate<int>("int");
+    test_accumulate<float>("float");
+    test_accumulate<double>("double");
 
-    const int   array_size= 2000;
-    float       array[array_size];
-    
-    for (int i= 0; i < array_size; i++)
-	array[i]= (float)(i);
-
-    cout << "STL accumulate" << std::accumulate(array, array+array_size, 0.0, float_add) << '\n';
-    
-    // cout << "Unrolled accumulate" << accumulate_unrolled(array, array+array_size, 0.0, float_add) << '\n';
-
-   return 0;
+    return 0;
 }

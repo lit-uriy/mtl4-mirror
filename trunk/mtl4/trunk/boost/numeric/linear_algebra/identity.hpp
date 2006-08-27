@@ -5,6 +5,7 @@
 #define MATH_IDENTITY_INCLUDE
 
 #include <boost/numeric/linear_algebra/operators.hpp>
+#include <limits>
 
 namespace math {
 
@@ -44,6 +45,31 @@ struct identity_t< mult<Element>, Element >
 	return tmp;
     }
 };
+
+
+// Identity of max is minimal representable value, for standard types defined in numeric_limits
+template <typename Element>
+struct identity_t< max<Element>, Element > 
+{ 
+    Element operator() (const max<Element>&, const Element& ref) const
+    {
+	using std::numeric_limits;
+	return numeric_limits<Element>::min();
+    }
+};
+
+
+// Identity of min is maximal representable value, for standard types defined in numeric_limits
+template <typename Element>
+struct identity_t< min<Element>, Element > 
+{ 
+    Element operator() (const min<Element>&, const Element& ref) const
+    {
+	using std::numeric_limits;
+	return numeric_limits<Element>::max();
+    }
+};
+
 
 
 // Function is shorter than typetrait-like functor
