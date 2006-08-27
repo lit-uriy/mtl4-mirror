@@ -171,11 +171,26 @@ inline Element multiply_and_square_simple(const Element& a, Exponent n, Op op)
 
 
 template <typename Iter, typename Value, typename Op>
+  _GLIBCXX_WHERE( std::ForwardIterator<Iter> 
+                  && std::Convertible<Value, std::ForwardIterator<Iter>::value_type>
+		  && math::Magma<Op, std::ForwardIterator<Iter>::value_type> )
+typename std::ForwardIterator<Iter>::value_type 
+inline accumulate_simple(Iter first, Iter last, Value init, Op op)
+{
+    typedef typename std::RandomAccessIterator<Iter>::value_type value_type;
+    value_type        t0= init;
+    
+    for (; first != last; ++first)
+	t0= op(t0, *first);
+    return t0;
+}
+
+template <typename Iter, typename Value, typename Op>
   _GLIBCXX_WHERE( std::RandomAccessIterator<Iter> 
 	    && std::Convertible<Value, std::RandomAccessIterator<Iter>::value_type>
 	    && math::CommutativeMonoid<Op, std::RandomAccessIterator<Iter>::value_type> )
 typename std::RandomAccessIterator<Iter>::value_type 
-accumulate_unrolled(Iter first, Iter last, Value init, Op op)
+inline accumulate_unrolled(Iter first, Iter last, Value init, Op op)
 {
     typedef typename std::RandomAccessIterator<Iter>::value_type value_type;
     typedef typename std::RandomAccessIterator<Iter>::difference_type difference_type;
@@ -192,6 +207,34 @@ accumulate_unrolled(Iter first, Iter last, Value init, Op op)
 	t0= op(t0, first[i]);
     return op(op(t0, t1), op(t2, t3));
 }
+
+
+
+// Dispatching between simple and unrolled version
+template <typename Iter, typename Value, typename Op>
+  _GLIBCXX_WHERE( std::ForwardIterator<Iter> 
+                  && std::Convertible<Value, std::ForwardIterator<Iter>::value_type>
+		  && math::Magma<Op, std::ForwardIterator<Iter>::value_type> )
+typename std::ForwardIterator<Iter>::value_type 
+inline accumulate(Iter first, Iter last, Value init, Op op)
+{
+    std::cout << "Simple accumulate\n";
+    return accumulate_simple(first, last, init, op);
+}
+
+
+template <typename Iter, typename Value, typename Op>
+  _GLIBCXX_WHERE( std::RandomAccessIterator<Iter> 
+	          && std::Convertible<Value, std::RandomAccessIterator<Iter>::value_type>
+		  && math::CommutativeMonoid<Op, std::RandomAccessIterator<Iter>::value_type> )
+typename std::RandomAccessIterator<Iter>::value_type 
+inline accumulate(Iter first, Iter last, Value init, Op op)
+{
+    std::cout << "Unrolled accumulate\n";
+    return accumulate_unrolled(first, last, init, op);
+}
+
+
 
 
 // {Op, Element} must be a PartiallyInvertibleMonoid

@@ -563,7 +563,8 @@ auto concept GenericRingWithIdentity<typename AddOp, typename MultOp, typename E
 
 auto concept GenericCommutativeRingWithIdentity<typename AddOp, typename MultOp, typename Element>
   : GenericRingWithIdentity<AddOp, MultOp, Element>,
-    GenericCommutativeRing<AddOp, MultOp, Element>
+    GenericCommutativeRing<AddOp, MultOp, Element>,
+    CommutativeMonoid<MultOp, Element>
 {};
 
 
@@ -615,6 +616,7 @@ concept RingWithIdentity<typename Element>
 concept CommutativeRingWithIdentity<typename Element>
   : RingWithIdentity<Element>,
     CommutativeRing<Element>,
+    MultiplicativeCommutativeMonoid<Element>,
     GenericCommutativeRingWithIdentity<math::add<Element>, math::mult<Element>, Element>
 {};
 
@@ -768,6 +770,27 @@ concept_map Field<T> {}
 template <typename T>
   where Complex<T>
 concept_map Field<T> {}
+
+
+// ===========
+// Min and Max
+// ===========
+
+// Draft version: defined generously unless there will be problems with some types
+
+template <typename Element>
+concept_map CommutativeMonoid< max<Element>, Element > 
+{
+    // Why do we need this?
+    typedef Element identity_result_type;
+}
+
+template <typename Element>
+concept_map CommutativeMonoid< min<Element>, Element >
+{
+    // Why do we need this?
+    typedef Element identity_result_type;
+}
 
 #endif // LA_NO_CONCEPT_MAPS
 
