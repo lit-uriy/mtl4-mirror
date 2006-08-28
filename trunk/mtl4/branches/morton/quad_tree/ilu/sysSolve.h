@@ -15,7 +15,7 @@
 #ifndef SYSSOLVE_H
 #define SYSSOLVE_H
 
-#include "LU.h"
+#include "matrix.h"
 
 extern double OMEGA;		  //damping factor
 

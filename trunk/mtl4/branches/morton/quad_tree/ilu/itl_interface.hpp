@@ -19,7 +19,6 @@
 #define ITL_INTERFACE_HPP
 
 #include <vector>
-#include "LU.h"
 
 //------------- Function Abstractions -------------------
 

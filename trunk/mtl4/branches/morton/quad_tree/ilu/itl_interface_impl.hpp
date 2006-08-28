@@ -19,11 +19,10 @@
 #ifndef ITL_INTERFACE_IMP_HPP
 #define ITL_INTERFACE_IMP_HPP
 
-#include "mtl/dense1D.h"
-#include "mtl/scaled1D.h"
-#include "itl/interface/mtl.h"
-
-
+#include "<mtl/mtl.h>"
+#include "mtl/utils.h"
+#include "<itl/interface/mtl.h>"
+#include "env_setup.h"
 
 template <typename Vx, typename Vb, typename Vw>
 void mult(	const Both& LUmat, indexType bIndex, int bc, int level,
@@ -214,10 +213,16 @@ void back_solve(const Both& LUmat, indexType bIndex, int bc, int level,
 	}
 }
 
+template<typename T>
+void copy_vec (const T& from, T& to)
+{
+   for(int i=0; i<from.size(); i++)
+      to[i] = from[i];
+}
 
+#include <itl/krylov/gmres_quadtree.h>"
 
 #endif // ITL_INTERFACE_IMP_HPP
-
 
 
 //////////////////////////////////////////////////////////////////////////////
