@@ -87,8 +87,8 @@ int test_main(int argc, char* argv[])
 	 << "Morton-ordered matrix\n"
 	 << "=====================\n\n";
 
-    typedef morton_dense<double,  0x55555555, matrix_parameters<> > matrix_type;    
-    matrix_type matrix(non_fixed::dimensions(6, 5));   
+    typedef morton_dense<double,  0x55555555> matrix_type;    
+    matrix_type matrix(6, 5);   
     fill_matrix(matrix); 
     test_sub_matrix(matrix);
 
@@ -96,8 +96,8 @@ int test_main(int argc, char* argv[])
 	 << "Doppler matrix (4x4 base)\n"
 	 << "=========================\n\n";
 
-    typedef morton_dense<double,  0x55555553, matrix_parameters<> > dmatrix_type;    
-    dmatrix_type dmatrix(non_fixed::dimensions(6, 5));   
+    typedef morton_dense<double,  0x55555553> dmatrix_type;    
+    dmatrix_type dmatrix(6, 5);   
     fill_matrix(dmatrix); 
     test_sub_matrix(dmatrix);
 

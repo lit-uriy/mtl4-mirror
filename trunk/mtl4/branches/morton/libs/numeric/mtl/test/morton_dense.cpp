@@ -1,7 +1,7 @@
 // $COPYRIGHT$
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
+#include <boost/test/minimal.hpp> 
 #include <boost/tuple/tuple.hpp>
 
 #include <boost/numeric/mtl/morton_dense.hpp>
@@ -52,8 +52,27 @@ struct test_morton_dense
     }
     
     template <typename Matrix>
+    void fill_matrix(Matrix & matrix)
+    {
+	typename traits::value<Matrix>::type                               value(matrix);
+	typedef  glas::tags::nz_t                                          tag;
+	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
+
+	typename Matrix::value_type  v= 1;
+
+	for (cursor_type cursor = begin<tag>(matrix), cend = end<tag>(matrix); cursor != cend; ++cursor) {
+	    value(*cursor, v);
+	    v+= 1;
+	}
+    }
+
+
+
+    template <typename Matrix>
     void operator() (Matrix& matrix)
     {
+	fill_matrix(matrix);
+
 	one_d_iteration("\nMatrix", matrix);
 	two_d_iteration("\nRows: ", matrix, glas::tags::row_t());
 	two_d_iteration("\nColumns: ", matrix, glas::tags::col_t());
@@ -66,16 +85,21 @@ struct test_morton_dense
 };
 
 
+
  
 int test_main(int argc, char* argv[])
 {
-    morton_dense<double,  0x55555555, matrix_parameters<> > matrix1(non_fixed::dimensions(5, 6));
-    matrix1(3, 4)= 2.3;
-    cout << "matrix1(3, 4) = " << matrix1(3, 4) << endl;
+    morton_dense<double,  0x55555555> matrix1(3, 5);
+    matrix1[1][3]= 2.3;
+    cout << "matrix1[1][3] = " << matrix1[1][3] << endl;
 
-    morton_dense<double,  0x55555553, matrix_parameters<> > matrix2(non_fixed::dimensions(5, 6));
-    matrix2(3, 4)= 2.4;
-    cout << "matrix2(3, 4) = " << matrix2(3, 4) << endl;
+    morton_dense<int,  0x55555553> matrix2(5, 6);
+    matrix2[1][3]= 3;
+    cout << "matrix2[1][3] = " << matrix2[1][3] << endl;
+
+    test_morton_dense()(matrix1);
+    test_morton_dense()(matrix2);
+
     return 0;
 
     typedef morton_dense<double,  0x55555555, matrix_parameters<> > matrix_type;    

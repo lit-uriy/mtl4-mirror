@@ -133,10 +133,8 @@ struct morton_dense_col_cursor
 
 
 
-
-
-// Morton Dense matrix type
-template <typename Elt, std::size_t  BitMask, typename Parameters>
+// Morton Dense matrix type 
+template <typename Elt, std::size_t  BitMask, typename Parameters = mtl::matrix_parameters<> >
 class morton_dense : public detail::base_sub_matrix<Elt, Parameters>, 
 		     public detail::contiguous_memory_matrix<Elt, false>,
                      public detail::crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >
@@ -234,6 +232,14 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     {
 	// set_nnz();
 	set_ranges(d.num_rows(), d.num_cols());
+    }
+
+    // Same with separated row and column number
+    morton_dense(size_type num_rows, size_type num_cols) 
+	: super_memory( memory_need(num_rows, num_cols) )
+    {
+	// set_nnz();
+	set_ranges(num_rows, num_cols);
     }
 
     // sets dimensions and pointer to external data
