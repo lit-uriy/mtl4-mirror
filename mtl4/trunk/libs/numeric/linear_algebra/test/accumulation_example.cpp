@@ -18,17 +18,19 @@ concept_map AccurateArithmetic<T> {}
 
 concept TolerateRoundingErrors<typename T> {}
 
-#define BlameFloatRoundingErrors
+#define ConsiderFloatRoundingErrors
 
-# ifndef BlameFloatRoundingErrors
+# ifndef ConsiderFloatRoundingErrors
     template <typename T>
         where math::Float<T>
     concept_map TolerateRoundingErrors<T> {}
 # endif
 
-concept_map TolerateRoundingErrors<double> {}
+// concept_map TolerateRoundingErrors<double> {}
 
 concept SelectiveOperation<typename Operation, typename Element> {}
+ // : std::CopyConstructible<std::vector<std::vector<Element> > >
+
 
 template <typename Element>
 concept_map SelectiveOperation<math::min<Element>, Element> {}
@@ -36,7 +38,7 @@ concept_map SelectiveOperation<math::min<Element>, Element> {}
 template <typename Element>
 concept_map SelectiveOperation<math::max<Element>, Element> {}
 
-concept RegularReduction<typename Operation, typename Element> {}
+concept RegularReduction<typename Operation, typename Element> {} // : std::Integral<float> {}
 
 template <typename Operation, typename Element>
   where AccurateArithmetic<Element>
