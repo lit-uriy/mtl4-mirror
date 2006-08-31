@@ -9,6 +9,10 @@
 
 using mtl::positive_real;
  
+namespace math {
+    concept_map AdditiveMagma<mtl::positive_real> {};
+}
+
 
 int main(int, char* [])  
 {

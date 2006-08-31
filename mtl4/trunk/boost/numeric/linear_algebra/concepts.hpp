@@ -252,7 +252,7 @@ auto concept AbelianGroup<typename Operation, typename Element>
 // ========================
 
 
-auto concept AdditiveMagma<typename Element>
+concept AdditiveMagma<typename Element>
   : Magma< math::add<Element>, Element >
 {
     typename plus_assign_result_type;  
@@ -412,7 +412,7 @@ auto concept AdditiveAbelianGroup<typename Element>
 // ============================
 
 
-auto concept MultiplicativeMagma<typename Element>
+concept MultiplicativeMagma<typename Element>
   : Magma< math::mult<Element>, Element >
 {
     typename mult_assign_result_type;  
