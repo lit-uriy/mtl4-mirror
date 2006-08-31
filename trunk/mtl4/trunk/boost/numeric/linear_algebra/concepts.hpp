@@ -289,13 +289,13 @@ auto concept AdditiveMagma<typename Element>
 }
 
 
-concept AdditiveCommutativeMagma<typename Element>
+auto concept AdditiveCommutativeMagma<typename Element>
   : AdditiveMagma<Element>,
     CommutativeMagma< math::add<Element>, Element >
 {};
 
 
-concept AdditiveSemiGroup<typename Element>
+auto concept AdditiveSemiGroup<typename Element>
   : AdditiveMagma<Element>, 
     SemiGroup< math::add<Element>, Element >
 {};
@@ -305,7 +305,7 @@ concept AdditiveSemiGroup<typename Element>
 // the requirements of the other would be implied.
 // Vice versa, to derive concept maps of nested concepts from
 // concept maps of refined concepts, they are needed all.
-concept AdditiveCommutativeSemiGroup<typename Element>
+auto concept AdditiveCommutativeSemiGroup<typename Element>
   : AdditiveSemiGroup<Element>,
     AdditiveCommutativeMagma<Element>,
     CommutativeSemiGroup< math::add<Element>, Element >
@@ -329,7 +329,7 @@ concept AdditiveMonoid<typename Element>
 // the requirements of the other would be implied.
 // Vice versa, to derive concept maps of nested concepts from
 // concept maps of refined concepts, they are needed all.
-concept AdditiveCommutativeMonoid<typename Element>
+auto concept AdditiveCommutativeMonoid<typename Element>
   : AdditiveMonoid<Element>,
     AdditiveCommutativeSemiGroup<Element>,
     CommutativeMonoid< math::add<Element>, Element >
@@ -386,7 +386,7 @@ concept AdditivePartiallyInvertibleMonoid<typename Element>
 };
 
 
-concept AdditivePartiallyInvertibleCommutativeMonoid<typename Element>
+auto concept AdditivePartiallyInvertibleCommutativeMonoid<typename Element>
   : AdditivePartiallyInvertibleMonoid<Element>,
     AdditiveCommutativeMonoid<Element>, 
     PartiallyInvertibleCommutativeMonoid< math::add<Element>, Element >
@@ -394,13 +394,13 @@ concept AdditivePartiallyInvertibleCommutativeMonoid<typename Element>
 
 
 
-concept AdditiveGroup<typename Element>
+auto concept AdditiveGroup<typename Element>
   : AdditivePartiallyInvertibleMonoid<Element>,
     Group< math::add<Element>, Element >
 {};
 
 
-concept AdditiveAbelianGroup<typename Element>
+auto concept AdditiveAbelianGroup<typename Element>
   : AdditiveGroup<Element>,
     AdditiveCommutativeMonoid<Element>,
     AbelianGroup< math::add<Element>, Element >
@@ -451,13 +451,13 @@ auto concept MultiplicativeMagma<typename Element>
 }
 
 
-concept MultiplicativeSemiGroup<typename Element>
+auto concept MultiplicativeSemiGroup<typename Element>
   : MultiplicativeMagma<Element>,
     SemiGroup< math::mult<Element>, Element >
 {};
 
 
-concept MultiplicativeCommutativeSemiGroup<typename Element>
+auto concept MultiplicativeCommutativeSemiGroup<typename Element>
   : MultiplicativeSemiGroup<Element>,
     CommutativeSemiGroup< math::mult<Element>, Element >
 {};
@@ -476,7 +476,7 @@ concept MultiplicativeMonoid<typename Element>
 };
 
 
-concept MultiplicativeCommutativeMonoid<typename Element>
+auto concept MultiplicativeCommutativeMonoid<typename Element>
   : MultiplicativeMonoid<Element>,
     MultiplicativeCommutativeSemiGroup<Element>,
     CommutativeMonoid< math::mult<Element>, Element >
@@ -516,20 +516,20 @@ concept MultiplicativePartiallyInvertibleMonoid<typename Element>
 };
  
 
-concept MultiplicativePartiallyInvertibleCommutativeMonoid<typename Element>
+auto concept MultiplicativePartiallyInvertibleCommutativeMonoid<typename Element>
   : MultiplicativePartiallyInvertibleMonoid<Element>,
     MultiplicativeCommutativeMonoid<Element>,
     PartiallyInvertibleCommutativeMonoid< math::mult<Element>, Element >
 {};
  
 
-concept MultiplicativeGroup<typename Element>
+auto concept MultiplicativeGroup<typename Element>
   : MultiplicativeMonoid<Element>,
     Group< math::mult<Element>, Element >
 {};
 
 
-concept MultiplicativeAbelianGroup<typename Element>
+auto concept MultiplicativeAbelianGroup<typename Element>
   : MultiplicativeGroup<Element>,
     MultiplicativeCommutativeMonoid<Element>,
     AbelianGroup< math::mult<Element>, Element >
