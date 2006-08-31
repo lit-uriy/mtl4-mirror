@@ -158,27 +158,27 @@ auto concept Magma<typename Operation, typename Element>
 // For algebraic structures that are commutative but not associative
 // As an example floating point numbers are commutative but not associative
 //   w.r.t. addition and multiplication
-concept CommutativeMagma<typename Operation, typename Element>
+auto concept CommutativeMagma<typename Operation, typename Element>
   : Magma<Operation, Element>, 
     algebra::Commutative<Operation, Element>
 {};
 
 
 // SemiGroup is a refinement which must be nominal
-concept SemiGroup<typename Operation, typename Element>
+auto concept SemiGroup<typename Operation, typename Element>
   : Magma<Operation, Element>, 
     algebra::SemiGroup<Operation, Element>
 {};
 
 
-concept CommutativeSemiGroup<typename Operation, typename Element>
+auto concept CommutativeSemiGroup<typename Operation, typename Element>
   : SemiGroup<Operation, Element>,
     CommutativeMagma<Operation, Element>
 {};
 
 
 // Adding identity
-concept Monoid<typename Operation, typename Element>
+auto concept Monoid<typename Operation, typename Element>
   : SemiGroup<Operation, Element>, 
     algebra::Monoid<Operation, Element> 
 {
@@ -186,7 +186,7 @@ concept Monoid<typename Operation, typename Element>
 };
 
 
-concept CommutativeMonoid<typename Operation, typename Element>
+auto concept CommutativeMonoid<typename Operation, typename Element>
   : CommutativeSemiGroup<Operation, Element>, 
     Monoid<Operation, Element>
 {};
@@ -214,7 +214,7 @@ concept PartiallyInvertibleMonoid<typename Operation, typename Element>
 };
 
 
-concept PartiallyInvertibleCommutativeMonoid<typename Operation, typename Element>
+auto concept PartiallyInvertibleCommutativeMonoid<typename Operation, typename Element>
   : PartiallyInvertibleMonoid<Operation, Element>, 
     CommutativeMonoid<Operation, Element>   
 {};
@@ -239,7 +239,7 @@ concept Group<typename Operation, typename Element>
 };
 
 
-concept AbelianGroup<typename Operation, typename Element>
+auto concept AbelianGroup<typename Operation, typename Element>
   : Group<Operation, Element>, 
     PartiallyInvertibleCommutativeMonoid<Operation, Element>,
     algebra::AbelianGroup<Operation, Element>
