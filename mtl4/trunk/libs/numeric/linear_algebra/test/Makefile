@@ -21,7 +21,7 @@ CXXFLAGS += -g
 
 XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_algebra/concepts.hpp \
                  Makefile
-
+ 
 CXX =  conceptg++
 
 TARGETS =	positive_real	positive_real_explicit positive_real_power \

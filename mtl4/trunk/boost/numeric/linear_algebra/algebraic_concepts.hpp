@@ -100,7 +100,6 @@ auto concept RingWithIdentity<typename AddOp, typename MultOp, typename Element>
 {};
 
 
-// Also called SkewField
 concept DivisionRing<typename AddOp, typename MultOp, typename Element>
   : RingWithIdentity<AddOp, MultOp, Element>,
     Inversion<MultOp, Element>
@@ -120,6 +119,12 @@ concept DivisionRing<typename AddOp, typename MultOp, typename Element>
 	    mult(x, inverse(mult, x)) == identity(mult, x);
     }
 };    
+
+
+// SkewField is defined as synonym for DivisionRing
+auto concept SkewField<typename AddOp, typename MultOp, typename Element>
+  : DivisionRing<AddOp, MultOp, Element>
+{};
 
 
 auto concept Field<typename AddOp, typename MultOp, typename Element>
