@@ -573,6 +573,7 @@ auto concept GenericCommutativeRingWithIdentity<typename AddOp, typename MultOp,
 {};
 
 
+// auto
 concept GenericDivisionRing<typename AddOp, typename MultOp, typename Element>
   : GenericRingWithIdentity<AddOp, MultOp, Element>,
     algebra::DivisionRing<AddOp, MultOp, Element>
@@ -597,28 +598,29 @@ auto concept GenericField<typename AddOp, typename MultOp, typename Element>
 // Alternative definitions use MultiplicativeMonoid<Element> for Ring
 // and call such concepts Pseudo-Ring
 
-concept Ring<typename Element>
+
+auto concept Ring<typename Element>
   : AdditiveAbelianGroup<Element>,
     MultiplicativeSemiGroup<Element>,
     GenericRing<math::add<Element>, math::mult<Element>, Element>
 {};
 
 
-concept CommutativeRing<typename Element>
+auto concept CommutativeRing<typename Element>
   : Ring<Element>,
     MultiplicativeCommutativeSemiGroup<Element>,
     GenericCommutativeRing<math::add<Element>, math::mult<Element>, Element>    
 {};
 
 
-concept RingWithIdentity<typename Element>
+auto concept RingWithIdentity<typename Element>
   : Ring<Element>,
     MultiplicativeMonoid<Element>,
     GenericRingWithIdentity<math::add<Element>, math::mult<Element>, Element>
 {};
  
 
-concept CommutativeRingWithIdentity<typename Element>
+auto concept CommutativeRingWithIdentity<typename Element>
   : RingWithIdentity<Element>,
     CommutativeRing<Element>,
     MultiplicativeCommutativeMonoid<Element>,
@@ -639,7 +641,7 @@ concept DivisionRing<typename Element>
 };    
 
 
-concept Field<typename Element>
+auto concept Field<typename Element>
   : DivisionRing<Element>,
     CommutativeRingWithIdentity<Element>,
     GenericField<math::add<Element>, math::mult<Element>, Element>
