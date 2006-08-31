@@ -159,13 +159,15 @@ auto concept Magma<typename Operation, typename Element>
 // As an example floating point numbers are commutative but not associative
 //   w.r.t. addition and multiplication
 concept CommutativeMagma<typename Operation, typename Element>
-  : Magma<Operation, Element>, algebra::Commutative<Operation, Element>
+  : Magma<Operation, Element>, 
+    algebra::Commutative<Operation, Element>
 {};
 
 
 // SemiGroup is a refinement which must be nominal
 concept SemiGroup<typename Operation, typename Element>
-  : Magma<Operation, Element>, algebra::SemiGroup<Operation, Element>
+  : Magma<Operation, Element>, 
+    algebra::SemiGroup<Operation, Element>
 {};
 
 
@@ -177,7 +179,8 @@ concept CommutativeSemiGroup<typename Operation, typename Element>
 
 // Adding identity
 concept Monoid<typename Operation, typename Element>
-  : SemiGroup<Operation, Element>, algebra::Monoid<Operation, Element> 
+  : SemiGroup<Operation, Element>, 
+    algebra::Monoid<Operation, Element> 
 {
     where std::Convertible<identity_result_type, Element>;
 };
@@ -190,7 +193,8 @@ concept CommutativeMonoid<typename Operation, typename Element>
 
 
 concept PartiallyInvertibleMonoid<typename Operation, typename Element>
-  : Monoid<Operation, Element>, algebra::Inversion<Operation, Element> 
+  : Monoid<Operation, Element>, 
+    algebra::Inversion<Operation, Element> 
 {
     typename is_invertible_result_type;
     is_invertible_result_type is_invertible(Operation, Element);
