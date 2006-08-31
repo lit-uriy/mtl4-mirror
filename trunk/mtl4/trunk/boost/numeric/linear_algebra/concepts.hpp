@@ -178,7 +178,8 @@ auto concept CommutativeSemiGroup<typename Operation, typename Element>
 
 
 // Adding identity
-auto concept Monoid<typename Operation, typename Element>
+// auto 
+concept Monoid<typename Operation, typename Element>
   : SemiGroup<Operation, Element>, 
     algebra::Monoid<Operation, Element> 
 {
