@@ -6,15 +6,17 @@
 #include <boost/numeric/mtl/recursion/utilities.hpp>
 #include <boost/numeric/mtl/operations/sub_matrix.hpp>
 #include <boost/numeric/mtl/transposed_view.hpp>
+#include <boost/numeric/mtl/recursion/dim_splitter.hpp>
 
 namespace mtl { namespace recursion {
 
 // To use matrix_recurator with const matrices Reference must be 'Matrix const&'
-template <typename Matrix> 
+template <typename Matrix, typename Splitter = max_dim_splitter<Matrix> > 
 struct matrix_recurator
 {
     typedef matrix_recurator                                      self;
     typedef Matrix                                                matrix_type;
+    typedef Splitter                                              splitter_type;
     typedef typename sub_matrix_t<Matrix>::sub_matrix_type        sub_matrix_type;
     typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type  const_sub_matrix_type;
     typedef typename Matrix::size_type                            size_type;
@@ -32,7 +34,7 @@ private:
     template <typename M>
     sub_matrix_type constructor_helper(transposed_view<M> const& matrix)
     {
-	typedef typename sub_matrix_t<M>::sub_matrix_type   ref_sub_type;
+	typedef typename sub_matrix_t<M>::sub_matrix_type        ref_sub_type;
 	typedef boost::shared_ptr<ref_sub_type>                  pointer_type;
 
 	// Submatrix of referred matrix, colums and rows interchanged
@@ -48,7 +50,7 @@ public:
     // This allows to have different type for the matrix and the sub-matrix
     // This also enables matrices to have references as sub-matrices
     explicit matrix_recurator(Matrix const& matrix) 
-	: my_sub_matrix(constructor_helper(matrix))
+	: my_sub_matrix(constructor_helper(matrix)), splitter(my_sub_matrix)
     {}
 
     // Sub-matrices are copied directly
@@ -64,52 +66,36 @@ public:
 	return my_sub_matrix;
     }
 
-  protected:
-    // End of northern half and beginning of southern
-    size_type row_split() const
-    {
-	return my_sub_matrix.begin_row() + first_part(my_sub_matrix.num_rows());
-    }
-
-    // End of western half and beginning of eastern
-    size_type col_split() const
-    {
-	return my_sub_matrix.begin_col() + first_part(my_sub_matrix.num_cols());
-    }
-
-  public:
-
-
-    // Returning quadrants for const recurator
+    // Returning quadrants for non-const recurator
 
     self north_west()
     {
-	sub_matrix_type sm(sub_matrix(my_sub_matrix, my_sub_matrix.begin_row(), row_split(),
-				      my_sub_matrix.begin_col(), col_split()));
+	sub_matrix_type sm(sub_matrix(my_sub_matrix, my_sub_matrix.begin_row(), splitter.row_split(),
+				      my_sub_matrix.begin_col(), splitter.col_split()));
 	self tmp(sm);
 	return tmp;
     }
 
     self south_west()
     {
-	sub_matrix_type sm(sub_matrix(my_sub_matrix, row_split(), my_sub_matrix.end_row(), 
-				      my_sub_matrix.begin_col(), col_split()));
+	sub_matrix_type sm(sub_matrix(my_sub_matrix, splitter.row_split(), my_sub_matrix.end_row(), 
+				      my_sub_matrix.begin_col(), splitter.col_split()));
 	self tmp(sm);
 	return tmp;
     }
 
     self north_east()
     {
-	sub_matrix_type sm(sub_matrix(my_sub_matrix, my_sub_matrix.begin_row(), row_split(),
-				      col_split(), my_sub_matrix.end_col()));
+	sub_matrix_type sm(sub_matrix(my_sub_matrix, my_sub_matrix.begin_row(), splitter.row_split(),
+				      splitter.col_split(), my_sub_matrix.end_col()));
 	self tmp(sm);
 	return tmp;
     }
 
     self south_east()
     {
-	sub_matrix_type sm(sub_matrix(my_sub_matrix, row_split(), my_sub_matrix.end_row(), 
-				      col_split(), my_sub_matrix.end_col()));
+	sub_matrix_type sm(sub_matrix(my_sub_matrix, splitter.row_split(), my_sub_matrix.end_row(), 
+				      splitter.col_split(), my_sub_matrix.end_col()));
 	self tmp(sm);
 	return tmp;
     }
@@ -118,35 +104,60 @@ public:
 
     self const north_west() const
     {
-	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, my_sub_matrix.begin_row(), row_split(),
-				      my_sub_matrix.begin_col(), col_split()));
+	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, my_sub_matrix.begin_row(), splitter.row_split(),
+				      my_sub_matrix.begin_col(), splitter.col_split()));
 	self tmp(sm);
 	return tmp;
     }
 
     self const south_west() const 
     {
-	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, row_split(), my_sub_matrix.end_row(), 
-				      my_sub_matrix.begin_col(), col_split()));
+	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, splitter.row_split(), my_sub_matrix.end_row(), 
+				      my_sub_matrix.begin_col(), splitter.col_split()));
 	self tmp(sm);
 	return tmp;
     }
 
     self const north_east() const 
     {
-	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, my_sub_matrix.begin_row(), row_split(),
-				      col_split(), my_sub_matrix.end_col()));
+	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, my_sub_matrix.begin_row(), splitter.row_split(),
+				      splitter.col_split(), my_sub_matrix.end_col()));
 	self tmp(sm);
 	return tmp;
     }
 
     self const south_east() const 
     {
-	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, row_split(), my_sub_matrix.end_row(), 
-				      col_split(), my_sub_matrix.end_col()));
+	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, splitter.row_split(), my_sub_matrix.end_row(), 
+				      splitter.col_split(), my_sub_matrix.end_col()));
 	self tmp(sm);
 	return tmp;
     }
+
+    // Checking whether a quadrant is empty
+
+    // For completeness
+    bool north_west_empty() const
+    {
+	return false;
+    }
+
+    bool north_east_empty() const
+    {
+	return splitter.col_split() == my_sub_matrix.end_col();
+    }
+
+    bool south_west_empty() const
+    {
+	return splitter.row_split() == my_sub_matrix.end_row();
+    }
+
+    bool south_east_empty() const
+    {
+	return splitter.row_split() == my_sub_matrix.end_row() 
+	       || splitter.col_split() == my_sub_matrix.end_col();
+    }
+
 
     bool is_leaf() const
     {
@@ -155,6 +166,7 @@ public:
 
   protected:
     sub_matrix_type     my_sub_matrix;
+    splitter_type       splitter;
 };
 
 
