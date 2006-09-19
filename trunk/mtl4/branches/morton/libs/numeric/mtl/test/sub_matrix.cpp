@@ -25,11 +25,15 @@ void print_depth_first(Recurator const& recurator, string str)
     print_matrix_row_cursor(recurator.get_value());
   
     // for full recursion remove the string length limitation
-    if (!recurator.is_leaf() && str.length() < 20) {     
-	print_depth_first(recurator.north_west(), string("north west of ") + str);
-	print_depth_first(recurator.south_west(), string("south west of ") + str);
-	print_depth_first(recurator.north_east(), string("north east of ") + str);
-	print_depth_first(recurator.south_east(), string("south east of ") + str);
+    if (!recurator.is_leaf()) { // && str.length() < 20) {     
+	if (!recurator.north_west_empty())
+	    print_depth_first(recurator.north_west(), string("north west of ") + str);
+	if (!recurator.south_west_empty())
+	    print_depth_first(recurator.south_west(), string("south west of ") + str);
+	if (!recurator.north_east_empty())
+	    print_depth_first(recurator.north_east(), string("north east of ") + str);
+	if (!recurator.south_east_empty())
+	    print_depth_first(recurator.south_east(), string("south east of ") + str);
     }
 } 
 
@@ -108,8 +112,15 @@ int test_main(int argc, char* argv[])
     dense2D<double, matrix_parameters<> >   rmatrix(non_fixed::dimensions(6, 5));
     fill_matrix(rmatrix); 
     test_sub_matrix(rmatrix);
+ 
+    cout << "=================================\n"
+	 << "Vector-like morton-ordered matrix\n"
+	 << "=================================\n\n";
+
+    matrix_type vmatrix(17, 2);   
+    fill_matrix(vmatrix); 
+    test_sub_matrix(vmatrix);
 
     return 0;
 }
 
- 
