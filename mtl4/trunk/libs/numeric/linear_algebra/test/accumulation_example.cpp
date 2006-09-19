@@ -18,9 +18,9 @@ concept_map AccurateArithmetic<T> {}
 
 concept TolerateRoundingErrors<typename T> {}
 
-#define ConsiderFloatRoundingErrors
+#define CONSIDER_FLOAT_ROUNDING_ERRORS
 
-# ifndef ConsiderFloatRoundingErrors
+# ifndef CONSIDER_FLOAT_ROUNDING_ERRORS
     template <typename T>
         where math::Float<T>
     concept_map TolerateRoundingErrors<T> {}

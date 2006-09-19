@@ -11,6 +11,8 @@ namespace mtl { namespace recursion {
 // Splits a number into a next-smallest power of 2 and rest
 std::size_t inline first_part(std::size_t n)
 {
+    if (n == 0) return 0;
+
     std::size_t  i= std::numeric_limits<std::size_t>::max()/2 + 1;
 
     while(i >= n) i>>= 1;
