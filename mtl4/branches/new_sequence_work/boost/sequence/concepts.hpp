@@ -32,7 +32,7 @@ struct Sequence
 
     typedef mpl::not_< is_incrementable<begin_cursor> > has_static_size;
 
-    BOOST_CONCEPT_ASSERT((Cursor<begin_cursor>));
+    BOOST_CONCEPT_ASSERT((SinglePassCursor<begin_cursor>));
     BOOST_CONCEPT_ASSERT((Cursor<end_cursor>));
     BOOST_CONCEPT_ASSERT((EqualityComparable<begin_cursor,end_cursor>));
     
@@ -57,81 +57,48 @@ struct ReadableSequence
         op::reader(typename add_reference<S>::type)
     >::type reader;
 
+    typedef typename result_of<
+        reader(typename op
+               
     BOOST_CONCEPT_ASSERT((CopyConstructible<reader>));
     BOOST_CONCEPT_ASSERT((Assignable<reader>));
     
     BOOST_CONCEPT_USAGE(ReadableSequence)
     {
-        reader r = sequence::reader(s);
-        ignore_unused_variable_warning(r);
+        typedef typename ReadableSequence::has_static_size is_static;
+        test_reader(is_static());
     }
     
  private:
+    void test_reader(mpl::false_ is_static)
+    {
+        reader r = sequence::reader(s);
+        r(deref(begin(s)));
+        BOOST_CONCEPT_ASSERT((UnaryFunction<reader,
+    }
+        
     S s;
 };
 
+
 template <class S>
-struct ReadableSequence
+struct WritableSequence
   : Sequence<S>
 {
     typedef typename result_of<
-        op::reader(typename add_reference<S>::type)
-    >::type reader;
+        op::writer(typename add_reference<S>::type)
+    >::type writer;
 
-    BOOST_CONCEPT_ASSERT((CopyConstructible<reader>));
-    BOOST_CONCEPT_ASSERT((Assignable<reader>));
+    BOOST_CONCEPT_ASSERT((CopyConstructible<writer>));
+    BOOST_CONCEPT_ASSERT((Assignable<writer>));
     
-    BOOST_CONCEPT_USAGE(ReadableSequence)
+    BOOST_CONCEPT_USAGE(WritableSequence)
     {
-        reader r = sequence::reader(s);
-        ignore_unused_variable_warning(r);
+        writer w = sequence::writer(s);
+        ignore_unused_variable_warning(w);
     }
     
  private:
-    S s;
-};
-
-
-template <class S>
-struct Sequence
-  : ReadablePropertyMap<   
-        typename result_of<
-            // Note that we *must* add_reference to S because it might
-            // be an array type that would otherwise decay into a
-            // pointer.
-            op::elements(typename add_reference<S>::type)
-        >::type
-      , typename result_of<
-            op::begin(typename add_reference<S>::type)
-        >::type
-    >
-{
-    // Associated types cursor, elements, key_type, value_type,
-    // and reference, all come from ReadablePropertyMap
-
-    // The end cursor doesn't have to have the same type as the begin
-    // cursor, just as long as you can compare them.
-    typedef typename result_of<
-        op::end(typename add_reference<S>::type)
-    >::type end_cursor;
-
-    // This isn't quite the right requirement because it imposes
-    // convertibility, but it's good enough for a first approximation.
-    BOOST_CONCEPT_ASSERT((
-        InteroperableIterator<typename Sequence::cursor,end_cursor>));
-
-    ~Sequence()
-    {
-        typename Sequence::elements elts = boost::sequence::elements(s);
-        typename Sequence::cursor c = boost::sequence::begin(s);
-        end_cursor end = boost::sequence::end(s);
-        
-        ignore_unused_variable_warning(elts);
-        ignore_unused_variable_warning(c);
-        ignore_unused_variable_warning(end);
-    }
- private:
-    Sequence(); // satisfying some older GCCs
     S s;
 };
 

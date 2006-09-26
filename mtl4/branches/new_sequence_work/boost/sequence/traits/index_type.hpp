@@ -9,6 +9,8 @@
 
 namespace boost { namespace sequence { namespace traits { 
 
+// Yields a mutable type that can be used to index S, a
+// randomly-accessible sequence,
 template <class S>
 struct index_type
   : detail::mutable_index_type<

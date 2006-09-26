@@ -18,9 +18,10 @@ namespace impl
   template <class S, class = typename tag<S>::type>
   struct reader
   {
-      // The default cursor is a counting_iterator; we read the
-      // element at its position by dereferencing it to get a key, and
-      // then dereferencing that.  The function object returned by
+      // The default cursor is a (STL or fusion) counting_iterator; we
+      // read the element at its position by dereferencing it to get a
+      // key (which is an iterator), and then dereferencing that to
+      // get to the element.  The function object returned by
       // reader(s) supplies the 2nd dereference.
       typedef cursor::op::deref result_type;
       
