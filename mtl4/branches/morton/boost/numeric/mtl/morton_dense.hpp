@@ -404,7 +404,7 @@ namespace traits
     struct range_generator<glas::tags::all_t, morton_dense<Elt, BitMask, Parameters> >
     {
 	typedef morton_dense<Elt, BitMask, Parameters>        Matrix;
-	typedef complexity::linear_cached        complexity;
+	typedef complexity_classes::linear_cached        complexity;
 	static int const                         level = 1;
 	typedef morton_dense_el_cursor<BitMask>  type;
 	type begin(Matrix const& matrix)
@@ -424,7 +424,7 @@ namespace traits
 
     template <class Elt, std::size_t  BitMask, class Parameters>
     struct range_generator<glas::tags::row_t, morton_dense<Elt, BitMask, Parameters> >
-	: detail::all_rows_range_generator<morton_dense<Elt, BitMask, Parameters>, complexity::linear_cached> 
+	: detail::all_rows_range_generator<morton_dense<Elt, BitMask, Parameters>, complexity_classes::linear_cached> 
     {};
 
     // For a cursor pointing to some row give the range of elements in this row 
@@ -434,7 +434,7 @@ namespace traits
     {
 	typedef morton_dense<Elt, BitMask, Parameters>                   matrix;
 	typedef detail::sub_matrix_cursor<matrix, glas::tags::row_t, 2>  cursor;
-	typedef complexity::linear_cached                                complexity;
+	typedef complexity_classes::linear_cached                        complexity;
 	static int const                                                 level = 1;
 	typedef morton_dense_col_cursor<BitMask>                         type;
 	
@@ -457,7 +457,7 @@ namespace traits
 
     template <class Elt, std::size_t  BitMask, class Parameters>
     struct range_generator<glas::tags::col_t, morton_dense<Elt, BitMask, Parameters> >
-	: detail::all_cols_range_generator<morton_dense<Elt, BitMask, Parameters>, complexity::linear_cached> 
+	: detail::all_cols_range_generator<morton_dense<Elt, BitMask, Parameters>, complexity_classes::linear_cached> 
     {};
 
     // For a cursor pointing to some row give the range of elements in this row 
@@ -467,7 +467,7 @@ namespace traits
     {
 	typedef morton_dense<Elt, BitMask, Parameters>                   matrix;
 	typedef detail::sub_matrix_cursor<matrix, glas::tags::col_t, 2>  cursor;
-	typedef complexity::linear_cached                                complexity;
+	typedef complexity_classes::linear_cached                        complexity;
 	static int const                                                 level = 1;
 	typedef morton_dense_row_cursor<BitMask>                         type;
 	

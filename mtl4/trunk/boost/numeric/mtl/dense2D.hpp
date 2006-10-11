@@ -326,7 +326,7 @@ namespace traits
     template <class Elt, class Parameters>
     struct range_generator<glas::tags::nz_t, dense2D<Elt, Parameters> >
       : detail::dense_element_range_generator<dense2D<Elt, Parameters>,
-					      dense_el_cursor<Elt>, complexity::linear_cached>
+					      dense_el_cursor<Elt>, complexity_classes::linear_cached>
     {};
 
     namespace detail 
@@ -336,11 +336,11 @@ namespace traits
 	template <typename Orientation> struct dense2D_rc {};
 	template<> struct dense2D_rc<row_major>
 	{
-	    typedef complexity::linear_cached type;
+	    typedef complexity_classes::linear_cached type;
 	};
 	template<> struct dense2D_rc<col_major>
 	{
-	    typedef complexity::linear type;
+	    typedef complexity_classes::linear type;
 	};
 
 	// Complexity of column cursor is of course opposite

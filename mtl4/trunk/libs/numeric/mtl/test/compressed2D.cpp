@@ -63,7 +63,7 @@ void two_d_iteration_impl(char const* outer, Matrix & matrix, Tag, Complexity)
 
 
 template <typename Matrix, typename Tag>
-void two_d_iteration_impl(char const* name, Matrix & matrix, Tag, complexity::infinite)
+void two_d_iteration_impl(char const* name, Matrix & matrix, Tag, complexity_classes::infinite)
 {
     cout << name << ": Tag has no implementation\n";
 }

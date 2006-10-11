@@ -18,7 +18,7 @@
 
 // Summation and multiplication of complexities is planned
 
-namespace mtl { namespace complexity {
+namespace mtl { namespace complexity_classes {
 
 
 // Special type for traversals to distinguish between strided or random memory access with 'constant' 
@@ -150,7 +150,7 @@ template <typename X> struct times<infinite, X> : times<X, infinite> {};
 }} // namespace mtl::complexity
 
 #define MTL_PRINT_COMPLEXITY(TYPE, STRING) \
-inline std::ostream& operator<< (std::ostream& os, mtl::complexity::TYPE) \
+inline std::ostream& operator<< (std::ostream& os, mtl::complexity_classes::TYPE) \
 {                                                 \
     return os << STRING;                          \
 }
