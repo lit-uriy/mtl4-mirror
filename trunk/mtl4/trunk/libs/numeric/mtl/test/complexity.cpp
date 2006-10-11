@@ -7,7 +7,7 @@
 
 
 using namespace std;
-using namespace mtl::complexity;
+using namespace mtl::complexity_classes;
 namespace mpl = boost::mpl;
 
 struct wahr {
@@ -61,11 +61,11 @@ template <typename X, typename Y> void write_less(X, Y) {
 }
 
 template <typename X, typename Y> void write_plus(X, Y) {
-  schreib(typename mtl::complexity::plus<X, Y>::type());
+  schreib(typename mtl::complexity_classes::plus<X, Y>::type());
 }
 
 template <typename X, typename Y> void write_mal(X, Y) {
-  schreib(typename mtl::complexity::times<X, Y>::type());
+  schreib(typename mtl::complexity_classes::times<X, Y>::type());
 }
 
  

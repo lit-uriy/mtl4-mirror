@@ -201,7 +201,7 @@ namespace traits
 	template <class UseTag, class Matrix>
 	struct range_transposer
 	    : boost::mpl::if_<
-	          boost::is_same<typename range_generator<UseTag, Matrix>::complexity, complexity::infinite>
+	          boost::is_same<typename range_generator<UseTag, Matrix>::complexity, complexity_classes::infinite>
 	        , range_generator<glas::tags::unsupported_t, Matrix>
 	        , range_transposer_impl<UseTag, Matrix>
 	      >::type {};

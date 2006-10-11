@@ -607,7 +607,7 @@ namespace traits
     struct range_generator<glas::tags::nz_t, compressed2D<Elt, Parameters> >
       : detail::all_offsets_range_generator<compressed2D<Elt, Parameters>,
 					    compressed_el_cursor<Elt, Parameters>, 
-					    complexity::linear_cached>
+					    complexity_classes::linear_cached>
     {};
 
     // Cursor over all rows
@@ -616,7 +616,7 @@ namespace traits
     struct range_generator<glas::tags::row_t, compressed2D<Elt, Parameters> >
       : boost::mpl::if_<
 	    boost::is_same<typename Parameters::orientation, row_major>
- 	  , detail::all_rows_range_generator<compressed2D<Elt, Parameters>, complexity::linear_cached>
+ 	  , detail::all_rows_range_generator<compressed2D<Elt, Parameters>, complexity_classes::linear_cached>
  	  , range_generator<glas::tags::unsupported_t, compressed2D<Elt, Parameters> >
         >::type {};
 
@@ -626,7 +626,7 @@ namespace traits
 			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::row_t, 2> >
     {
 	typedef detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::row_t, 2> cursor_type;
-	typedef complexity::linear_cached                 complexity;
+	typedef complexity_classes::linear_cached         complexity;
 	typedef compressed_minor_cursor<Elt, Parameters>  type;
 	static int const                                  level = 1;
 
@@ -646,7 +646,7 @@ namespace traits
     struct range_generator<glas::tags::col_t, compressed2D<Elt, Parameters> >
       : boost::mpl::if_<
 	    boost::is_same<typename Parameters::orientation, col_major>
- 	  , detail::all_cols_range_generator<compressed2D<Elt, Parameters>, complexity::linear_cached>
+ 	  , detail::all_cols_range_generator<compressed2D<Elt, Parameters>, complexity_classes::linear_cached>
  	  , range_generator<glas::tags::unsupported_t, compressed2D<Elt, Parameters> >
         >::type {};
 
@@ -656,7 +656,7 @@ namespace traits
 			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::col_t, 2> >
     {
 	typedef detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::col_t, 2> cursor_type;
-	typedef complexity::linear_cached                 complexity;
+	typedef complexity_classes::linear_cached         complexity;
 	typedef compressed_minor_cursor<Elt, Parameters>  type;
 	static int const                                  level = 1;
 

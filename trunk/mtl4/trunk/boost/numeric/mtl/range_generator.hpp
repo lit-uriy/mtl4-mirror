@@ -33,7 +33,7 @@ namespace traits
     template <typename Tag, typename Collection>
     struct range_generator
     {
-	typedef complexity::infinite  complexity;
+	typedef complexity_classes::infinite  complexity;
 	static int const             level = 0;
 	// specializations must contain the following members
 	// typedef xxx               type;

@@ -101,16 +101,16 @@ struct test_dense2D
 int test_main(int argc, char* argv[])
 {
     typedef matrix_parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters1;
-    test_dense2D<parameters1, complexity::linear_cached, complexity::linear>()(6.0);
+    test_dense2D<parameters1, complexity_classes::linear_cached, complexity_classes::linear>()(6.0);
 
     typedef matrix_parameters<row_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters2;
-    test_dense2D<parameters2, complexity::linear_cached, complexity::linear>()(2.0);
+    test_dense2D<parameters2, complexity_classes::linear_cached, complexity_classes::linear>()(2.0);
 
     typedef matrix_parameters<col_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters3;
-    test_dense2D<parameters3, complexity::linear, complexity::linear_cached>()(6.0);
+    test_dense2D<parameters3, complexity_classes::linear, complexity_classes::linear_cached>()(6.0);
 
     typedef matrix_parameters<col_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters4;
-    test_dense2D<parameters4, complexity::linear, complexity::linear_cached>()(3.0);
+    test_dense2D<parameters4, complexity_classes::linear, complexity_classes::linear_cached>()(3.0);
 
     return 0;
 }
