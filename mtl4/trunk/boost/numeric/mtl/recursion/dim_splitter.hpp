@@ -105,9 +105,7 @@ struct outer_bound_splitter
     }
 
 private:
-    //    Matrix const&   matrix;
-    int             my_split, // minimal 2^(k-1) such that 2^k >= max(num_rows, num_cols)
-                    my_row_split, my_col_split;
+    int             my_row_split, my_col_split;
 };
 
 
