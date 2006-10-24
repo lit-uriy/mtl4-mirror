@@ -172,11 +172,32 @@ public:
 	return my_bound;
     }
 
+    template <typename R1, typename R2> friend equalize_depth<> (R1&, R2&);   
+    template <typename R1, typename R2, typename R3> friend equalize_depth<> (R1&, R2&, R3&);   
+
   protected:
     sub_matrix_type     my_sub_matrix;
     size_type           my_bound;
     splitter_type       splitter;
 };
+
+
+template <typename Recurator1, typename Recurator2>
+void inline equalize_depth(Recurator1& r1, Recurator2& r2)
+{
+    typename Recurator1::size_type max_bound= std::max(r1.bound(), r2.bound());
+    r1.my_bound= max_bound;
+    r2.my_bound= max_bound;
+}
+
+template <typename Recurator1, typename Recurator2, typename Recurator3>
+void inline equalize_depth(Recurator1& r1, Recurator2& r2, Recurator3& r3)
+{
+    typename Recurator1::size_type max_bound= std::max(std::max(r1.bound(), r2.bound()), r3.bound());
+    r1.my_bound= max_bound;
+    r2.my_bound= max_bound;
+    r3.my_bound= max_bound;
+}
 
 
 }} // namespace mtl::recursion
