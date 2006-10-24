@@ -8,6 +8,8 @@
 #include <boost/numeric/mtl/transposed_view.hpp>
 #include <boost/numeric/mtl/recursion/dim_splitter.hpp>
 
+// Obsolete: superseded by version in branch
+
 namespace mtl { namespace recursion {
 
 // To use matrix_recurator with const matrices Reference must be 'Matrix const&'
