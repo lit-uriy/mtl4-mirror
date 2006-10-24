@@ -35,8 +35,8 @@ void recurator_matrix_mult(RecuratorA const& ra, RecuratorB const& rb, Recurator
 }
 
 
-template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseTest= mtl::recursion::max_dim_test_32>
-void recursive_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseTest const& base_test= BaseTest(32))
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseTest= mtl::recursion::max_dim_test_static<32> >
+void recursive_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseTest const& base_test= BaseTest())
 {
     using mtl::recursion::recurator;
     
@@ -49,8 +49,9 @@ void recursive_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseT
     matrix_recurator<MatrixA>  ra(a);
     matrix_recurator<MatrixB>  rb(b);
     matrix_recurator<MatrixC>  rc(c);
-    // compatible recurators to each other
-    // equalize_depth(ra, rb, rc);
+
+    // Set trees to same depth
+    equalize_depth(ra, rb, rc);
 
     mtl::recursion::base_mult<MatrixA, MatrixB, MatrixC, BaseTest> bm;
 
