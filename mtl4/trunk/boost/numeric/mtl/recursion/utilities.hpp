@@ -28,7 +28,7 @@ std::size_t inline second_part(std::size_t n)
 
 
 template <typename Matrix>
-std::size_t outer_bound(Matrix const& matrix)
+std::size_t inline outer_bound(Matrix const& matrix)
 {
   std::size_t max_dim=std::max((matrix.num_rows(), matrix.num_cols())), bound= 1;
   for (; bound < max_dim;) bound<<= 1;
@@ -36,6 +36,25 @@ std::size_t outer_bound(Matrix const& matrix)
 }
 
 
+template <typename Integral>
+Integral inline least_significat_one_bit(Integral x)
+{
+  return (x ^ x-1) + 1 >> 1;
+}
+
+
+template <unsigned long X>
+struct least_significat_one_bit_meta
+{
+  static const unsigned long value= (X ^ X-1) + 1 >> 1;
+}
+
+
+template <typename Integral>
+bool inline is_power_of_2(Integral x)
+{
+  return x == least_significat_one_bit(x);
+}
 
 }} // namespace mtl::recursion
 

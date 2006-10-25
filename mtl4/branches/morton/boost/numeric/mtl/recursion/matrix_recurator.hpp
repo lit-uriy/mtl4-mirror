@@ -25,18 +25,18 @@ struct matrix_recurator
 
 private:
     
-    template <typename M>
-    sub_matrix_type constructor_helper(M const& matrix)
+    template <typename Matrix>
+    sub_matrix_type constructor_helper(Matrix const& matrix)
     {
 	return sub_matrix(matrix, matrix.begin_row(), matrix.end_row(),
 			  matrix.begin_col(), matrix.end_col());
     }
 
     // For views without own data, we need to generate a new sub_matrix as shared_ptr
-    template <typename M>
-    sub_matrix_type constructor_helper(transposed_view<M> const& matrix)
+    template <typename Matrix>
+    sub_matrix_type constructor_helper(transposed_view<Matrix> const& matrix)
     {
-	typedef typename sub_matrix_t<M>::sub_matrix_type        ref_sub_type;
+	typedef typename sub_matrix_t<Matrix>::sub_matrix_type   ref_sub_type;
 	typedef boost::shared_ptr<ref_sub_type>                  pointer_type;
 
 	// Submatrix of referred matrix, colums and rows interchanged
@@ -50,10 +50,18 @@ public:
     // Constructor takes the whole matrix as sub-matrix
     // This allows to have different type for the matrix and the sub-matrix
     // This also enables matrices to have references as sub-matrices
-    explicit matrix_recurator(Matrix const& matrix) 
+    explicit matrix_recurator(Matrix const& matrix, size_type bound= 0) 
 	: my_sub_matrix(constructor_helper(matrix)), my_bound(outer_bound(matrix)),
 	  splitter(*this)
-    {}
+    {
+      if (bound == 0)
+	my_bound= outer_bound(matrix);
+      else {
+	assert(is_power_of_2(bound));
+	assert(bound >= matrix.num_rows() && bound >= matrix.num_cols());
+	my_bound= bound;
+      }
+    }
 
     // Sub-matrices are copied directly
     // explicit matrix_recurator(sub_matrix_type sub_matrix) : my_sub_matrix(sub_matrix) {}
@@ -74,7 +82,7 @@ public:
     {
 	sub_matrix_type sm(sub_matrix(my_sub_matrix, my_sub_matrix.begin_row(), splitter.row_split(),
 				      my_sub_matrix.begin_col(), splitter.col_split()));
-	self tmp(sm);
+	self tmp(sm, my_bound / 2);
 	return tmp;
     }
 
@@ -82,7 +90,7 @@ public:
     {
 	sub_matrix_type sm(sub_matrix(my_sub_matrix, splitter.row_split(), my_sub_matrix.end_row(), 
 				      my_sub_matrix.begin_col(), splitter.col_split()));
-	self tmp(sm);
+	self tmp(sm, my_bound / 2);
 	return tmp;
     }
 
@@ -90,7 +98,7 @@ public:
     {
 	sub_matrix_type sm(sub_matrix(my_sub_matrix, my_sub_matrix.begin_row(), splitter.row_split(),
 				      splitter.col_split(), my_sub_matrix.end_col()));
-	self tmp(sm);
+	self tmp(sm, my_bound / 2);
 	return tmp;
     }
 
@@ -98,7 +106,7 @@ public:
     {
 	sub_matrix_type sm(sub_matrix(my_sub_matrix, splitter.row_split(), my_sub_matrix.end_row(), 
 				      splitter.col_split(), my_sub_matrix.end_col()));
-	self tmp(sm);
+	self tmp(sm, my_bound / 2);
 	return tmp;
     }
 
@@ -108,7 +116,7 @@ public:
     {
 	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, my_sub_matrix.begin_row(), splitter.row_split(),
 				      my_sub_matrix.begin_col(), splitter.col_split()));
-	self tmp(sm);
+	self tmp(sm, my_bound / 2);
 	return tmp;
     }
 
@@ -116,7 +124,7 @@ public:
     {
 	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, splitter.row_split(), my_sub_matrix.end_row(), 
 				      my_sub_matrix.begin_col(), splitter.col_split()));
-	self tmp(sm);
+	self tmp(sm, my_bound / 2);
 	return tmp;
     }
 
@@ -124,7 +132,7 @@ public:
     {
 	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, my_sub_matrix.begin_row(), splitter.row_split(),
 				      splitter.col_split(), my_sub_matrix.end_col()));
-	self tmp(sm);
+	self tmp(sm, my_bound / 2);
 	return tmp;
     }
 
@@ -132,7 +140,7 @@ public:
     {
 	sub_matrix_type sm(sub_matrix(const_cast<self*>(this)->my_sub_matrix, splitter.row_split(), my_sub_matrix.end_row(), 
 				      splitter.col_split(), my_sub_matrix.end_col()));
-	self tmp(sm);
+	self tmp(sm, my_bound / 2);
 	return tmp;
     }
 
