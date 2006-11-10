@@ -180,6 +180,7 @@ inline accumulate_simple(Iter first, Iter last, Value init, Op op)
     typedef typename std::RandomAccessIterator<Iter>::value_type value_type;
     value_type        t0= init;
     
+    // std::cout << "accumulate_simple\n";
     for (; first != last; ++first)
 	t0= op(t0, *first);
     return t0;

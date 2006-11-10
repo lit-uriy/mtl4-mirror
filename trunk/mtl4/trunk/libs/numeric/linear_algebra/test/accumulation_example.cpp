@@ -1,12 +1,7 @@
-#include <iostream>
-#include <algorithm>
-#include <concepts>
 
-#include <boost/numeric/linear_algebra/operators.hpp>
-#include <boost/numeric/linear_algebra/concepts.hpp>
+#include <libs/numeric/linear_algebra/test/accumulation.hpp>
 
-#include <libs/numeric/linear_algebra/test/algebraic_functions.hpp>
-
+#include <boost/timer.hpp>
 
 
 concept AccurateArithmetic<typename T> {}
@@ -100,16 +95,9 @@ inline my_accumulate(Iter first, Iter last, Value init, Op op)
     return mtl::accumulate_simple(first, last, init, op);
 }
 
-
-
 } // namespace mtl
 
 // ######################################################################
-
-
-
-
-
 
 using math::identity; using math::add;
 
@@ -135,7 +123,6 @@ void test_accumulate(const char* name)
 
 int main(int, char* [])
 {
-
     test_accumulate<int>("int");
     test_accumulate<float>("float");
     test_accumulate<double>("double");
