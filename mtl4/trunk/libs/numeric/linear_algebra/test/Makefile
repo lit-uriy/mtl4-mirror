@@ -8,7 +8,8 @@ CXXFLAGS += -DMTL_TRACE_POWER_DISPATCHING
 # For modular arithmetic to see which invertibility test was chosen
 CXXFLAGS += -DMTL_TRACE_MOD_N_INVERTIBILITY_DISPATCHING 
 
-CXXFLAGS += -g
+# CXXFLAGS += -g
+CXXFLAGS += -O2
 
 # CXXFLAGS += -Wno-long-double
 
@@ -27,7 +28,7 @@ CXX =  conceptg++
 TARGETS =	positive_real	positive_real_explicit positive_real_power \
 		positive_real_power_explicit string_example \
 		float_example int_example mod_n_example mod_n_power accumulation_example \
-		concept_map_test      int_example 
+		concept_map_test      int_example  accumulation_measuring
 
 it:	all
 
