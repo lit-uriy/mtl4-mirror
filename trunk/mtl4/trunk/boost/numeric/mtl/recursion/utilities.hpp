@@ -37,14 +37,14 @@ std::size_t inline outer_bound(Matrix const& matrix)
 
 
 template <typename Integral>
-Integral inline least_significat_one_bit(Integral x)
+Integral inline least_significant_one_bit(Integral x)
 {
   return (x ^ x-1) + 1 >> 1;
 }
 
 
 template <unsigned long X>
-struct least_significat_one_bit_meta
+struct least_significant_one_bit_meta
 {
   static const unsigned long value= (X ^ X-1) + 1 >> 1;
 }
