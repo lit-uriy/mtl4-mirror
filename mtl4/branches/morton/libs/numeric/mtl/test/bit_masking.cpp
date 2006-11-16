@@ -1,7 +1,11 @@
 // $COPYRIGHT$
 
 #include <iostream>
+#include <boost/test/minimal.hpp>
+#include <boost/type_traits.hpp>
+#include <boost/mpl/if.hpp>
 
+#include <boost/numeric/mtl/base_types.hpp>
 
 // using namespace mtl;
 using namespace std;  
@@ -13,14 +17,14 @@ using namespace std;
      i-order (cyrillic i):
      ---------------------
   
-     binary:     0101010101 ....
+     binary:     01010101 ... 01
      0x55555555
 
 
      z-order:
      --------
      
-     binary:     1010101010 ...
+     binary:     10101010 ... 10
      0xaaaaaaaa
 
      row major:
@@ -129,6 +133,36 @@ struct col_major_mask
 {};
 
 
+// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask, is a row-major matrix
+template <unsigned long K, unsigned long Mask>
+struct is_k_power_base_case_row_major
+{
+    static const bool value= same_mask<lsb_bits<2*K, Mask>::value, row_major_mask<K>::value>::value;
+};
+
+
+// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask, is a column-major matrix
+template <unsigned long K, unsigned long Mask>
+struct is_k_power_base_case_col_major
+{
+    static const bool value= same_mask<lsb_bits<2*K, Mask>::value, col_major_mask<K>::value>::value;
+};
+
+
+// Checks whether 32x32 base case of hybric matrix, defined by Mask, is a row-major matrix
+template <unsigned long Mask>
+struct is_32_base_case_row_major
+    : public is_k_power_base_case_row_major<5, Mask>
+{};
+
+
+// Checks whether 32x32 base case of hybric matrix, defined by Mask, is a col-major matrix
+template <unsigned long Mask>
+struct is_32_base_case_col_major
+    : public is_k_power_base_case_col_major<5, Mask>
+{};
+
+
 // Row-major mask for 2^K by 2^K base case with 2^T shark teeth
 template <unsigned long K, unsigned long T>
 struct row_major_shark_mask
@@ -145,35 +179,22 @@ struct col_major_shark_mask
 };
 
 
-// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask, is a row-major matrix
-template <unsigned long K, unsigned long Mask>
-struct is_k_bit_base_case_row_major
+// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask,
+//   is a row-major matrix shark-tooth with 2^T tooth length
+template <unsigned long K, unsigned long T, unsigned long Mask>
+struct is_k_power_base_case_row_major_t_shark
 {
-    static const bool value= same_mask<lsb_bits<2*K, Mask>::value, row_major_mask<K>::value>::value;
+    static const bool value= same_mask<lsb_bits<2*K, Mask>::value, row_major_shark_mask<K, T>::value>::value;
 };
 
 
-// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask, is a column-major matrix
-template <unsigned long K, unsigned long Mask>
-struct is_k_bit_base_case_col_major
+// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask,
+//   is a col-major matrix shark-tooth with 2^T tooth length
+template <unsigned long K, unsigned long T, unsigned long Mask>
+struct is_k_power_base_case_col_major_t_shark
 {
-    static const bool value= same_mask<lsb_bits<2*K, Mask>::value, col_major_mask<K>::value>::value;
+    static const bool value= same_mask<lsb_bits<2*K, Mask>::value, col_major_shark_mask<K, T>::value>::value;
 };
-
-
-// Checks whether 32x32 base case of hybric matrix, defined by Mask, is a row-major matrix
-template <unsigned long Mask>
-struct is_32_base_case_row_major
-    : public is_k_bit_base_case_row_major<5, Mask>
-{};
-
-
-
-// Checks whether 32x32 base case of hybric matrix, defined by Mask, is a col-major matrix
-template <unsigned long Mask>
-struct is_32_base_case_col_major
-    : public is_k_bit_base_case_col_major<5, Mask>
-{};
 
 
 // i-order mask of N bits
@@ -198,26 +219,53 @@ struct z_order_mask
 template<> struct z_order_mask<0> : public lsb_mask<0> {};  // set to 0
 
 
-
-
+// Generate arbitrary hybrid mask
+//    IOrder: if true then i-order otherwise z-order
+//    K:      2^K by 2^K base case 
+//    order:  mtl::row_major or mtl::col_major
+//    T:      2^T tooth length
+template <bool IOrder, unsigned long K, typename Orientation, unsigned long T>
+class generate_mask
+{
+    static const unsigned long rec_size= 8 * sizeof(unsigned long) - 2 * K,
+	rec_part= (IOrder ? i_order_mask<rec_size>::value : z_order_mask<rec_size>::value) << 2*K;
+    typedef typename boost::mpl::if_<
+	boost::is_same<Orientation, mtl::row_major>
+      , row_major_shark_mask<K, T>
+      , col_major_shark_mask<K, T>
+    >::type base_part_type;
+public:
+    static const unsigned long value= rec_part | base_part_type::value;
+};
 
 
 template <unsigned long Mask>
 void test()
 {
-    printf("Mask %x, last 10 bits %x, is row major base case %i, is column-major %i"
+    printf("Mask %x, 32x32 base is row-major %i, is column-major %i, shark 2 row-major %i"
 	   ", 4x4 row-major %i, column-major %i\n",
-	   Mask, lsb_bits<10, Mask>::value, is_32_base_case_row_major<Mask>::value,
-	   is_k_bit_base_case_col_major<5, Mask>::value,
-	   is_k_bit_base_case_row_major<2, Mask>::value,
-	   is_k_bit_base_case_col_major<2, Mask>::value);
+	   Mask, is_32_base_case_row_major<Mask>::value,
+	   is_k_power_base_case_col_major<5, Mask>::value,
+	   is_k_power_base_case_row_major_t_shark<5, 1, Mask>::value,
+	   is_k_power_base_case_row_major<2, Mask>::value,
+	   is_k_power_base_case_col_major<2, Mask>::value);
+}
+
+template <unsigned long Mask1, unsigned long Mask2>
+void check_same_mask()
+{
+    printf("Mask1 %x, Mask2 %x\n", Mask1, Mask2);
+    if (Mask1 != Mask2) throw "Different masks\n";
 }
 
 
-int main(int argc, char* argv[])
+int test_main(int argc, char* argv[])
 {
+    using mtl::row_major; using mtl::col_major;
+
     const unsigned long morton= 0x55555555, morton_z= 0xaaaaaaaa, doppler_4_row= 0x5555555c,
-                        doppler_4_col= 0x55555553, doppler_32_row= 0x555557e0, doppler_32_col= 0x5555541f;
+	doppler_4_col= 0x55555553, doppler_32_row= 0x555557e0, doppler_32_col= 0x5555541f,
+	doppler_32_row_shark_2= 0x555557c1;
 
     test<morton>();
     test<morton_z>();
@@ -225,6 +273,23 @@ int main(int argc, char* argv[])
     test<doppler_4_col>();
     test<doppler_32_row>();
     test<doppler_32_col>();
+    test<doppler_32_row_shark_2>();
+
+    const unsigned long morton_gen= generate_mask<true, 0, row_major, 0>::value,
+	morton_z_gen= generate_mask<false, 0, row_major, 0>::value,
+	doppler_4_row_gen= generate_mask<true, 2, row_major, 0>::value,
+	doppler_4_col_gen= generate_mask<true, 2, col_major, 0>::value,
+	doppler_32_row_gen= generate_mask<true, 5, row_major, 0>::value,
+	doppler_32_col_gen= generate_mask<true, 5, col_major, 0>::value,
+	doppler_32_row_shark_2_gen= generate_mask<true, 5, row_major, 1>::value;
+
+    check_same_mask<morton, morton_gen>();
+    check_same_mask<morton_z, morton_z_gen>();
+    check_same_mask<doppler_4_row, doppler_4_row_gen>();
+    check_same_mask<doppler_4_col, doppler_4_col_gen>();
+    check_same_mask<doppler_32_row, doppler_32_row_gen>();
+    check_same_mask<doppler_32_col, doppler_32_col_gen>();
+    check_same_mask<doppler_32_row_shark_2, doppler_32_row_shark_2_gen>();
 
     return 0;
 }
