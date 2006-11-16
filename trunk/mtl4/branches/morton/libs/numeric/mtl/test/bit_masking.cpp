@@ -50,11 +50,29 @@ using namespace std;
      e.g. 32 by 32 base case 0101...01 11111 00000 = 0x555557e0
 
      column major
-     binary     0101....010...01...10...0
-                               ----- k 1s at the end (LSB); means columns
-                          ----- k 0s before; means rows
+     binary     0101....010...01...1
+                               ----- k 1s at the end (LSB); means rows
+                          ----- k 0s before; means columns
                 ---------- i order
      e.g. 32 by 32 base case 0101...01 00000 11111 = 0x5555541f
+
+     Shark-tooth base case:
+     ----------------------
+
+     2^t tooth length
+     in  2^k by 2^k base case (of course t <= k)
+     row-major
+     binary     1..1 00..0 1..1
+                           ---- t 1s at the end (LSB); means 2^t tooth allong rows
+                     ---- k 0s before; means columns
+                ---- k-t 1s before; means rows
+
+     column-major
+     binary     0..0 11..1 0..0
+                           ---- t 0s at the end (LSB); means 2^t tooth allong columns
+                     ---- k 1s before; means rows
+                ---- k-t 0s before; means columns
+
 
 */
 
@@ -111,6 +129,22 @@ struct col_major_mask
 {};
 
 
+// Row-major mask for 2^K by 2^K base case with 2^T shark teeth
+template <unsigned long K, unsigned long T>
+struct row_major_shark_mask
+{
+    static const unsigned long value= (lsb_mask<K-T>::value << K+T) | lsb_mask<T>::value;
+};
+
+
+// Row-major mask for 2^K by 2^K base case with 2^T shark teeth
+template <unsigned long K, unsigned long T>
+struct col_major_shark_mask
+{
+    static const unsigned long value= lsb_mask<K>::value << T;
+};
+
+
 // Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask, is a row-major matrix
 template <unsigned long K, unsigned long Mask>
 struct is_k_bit_base_case_row_major
@@ -140,6 +174,32 @@ template <unsigned long Mask>
 struct is_32_base_case_col_major
     : public is_k_bit_base_case_col_major<5, Mask>
 {};
+
+
+// i-order mask of N bits
+template <unsigned long N>
+struct i_order_mask
+{
+    // Check if N is even !!!
+    static const unsigned long value= (i_order_mask<N-2>::value << 2) | 1;
+};
+
+template<> struct i_order_mask<0> : public lsb_mask<0> {};  // set to 0
+
+
+// z-order mask of N bits
+template <unsigned long N>
+struct z_order_mask
+{
+    // Check if N is even !!!
+    static const unsigned long value= (z_order_mask<N-2>::value << 2) | 2;
+};
+
+template<> struct z_order_mask<0> : public lsb_mask<0> {};  // set to 0
+
+
+
+
 
 
 template <unsigned long Mask>
