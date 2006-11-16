@@ -18,7 +18,7 @@
 
 using namespace mtl;
 using namespace std;  
- 
+
 
 template <typename Recurator>
 void print_depth_first(Recurator const& recurator, string str)
