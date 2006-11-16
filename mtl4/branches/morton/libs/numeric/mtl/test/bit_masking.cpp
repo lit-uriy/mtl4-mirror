@@ -12,6 +12,8 @@ using namespace std;
 
  
 /*
+     The bit masks are row masks, that mean 1s represent rows and 0s columns.
+
      Bit masks:
 
      i-order (cyrillic i):
