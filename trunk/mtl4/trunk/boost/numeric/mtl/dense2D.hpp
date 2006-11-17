@@ -142,7 +142,7 @@ namespace detail
 
   
 // Dense 2D matrix type
-template <typename Elt, typename Parameters>
+template <typename Elt, typename Parameters = mtl::matrix_parameters<> >
 class dense2D : public detail::base_sub_matrix<Elt, Parameters>, 
 		public detail::contiguous_memory_matrix< Elt, Parameters::on_stack, 
 							 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
@@ -202,6 +202,13 @@ class dense2D : public detail::base_sub_matrix<Elt, Parameters>,
     // only sets dimensions, only for run-time dimensions
     explicit dense2D(mtl::non_fixed::dimensions d) 
 	: super(d), super_memory(d.num_rows() * d.num_cols()) 
+    {
+	set_nnz(); set_ldim();
+    }
+
+    dense2D(size_type num_rows, size_type num_cols) 
+	: super(mtl::non_fixed::dimensions(num_rows, num_cols)), 
+	  super_memory(num_rows * num_cols) 
     {
 	set_nnz(); set_ldim();
     }
@@ -320,7 +327,7 @@ namespace traits
     template <class Elt, class Parameters>
     struct range_generator<glas::tags::all_t, dense2D<Elt, Parameters> >
       : detail::dense_element_range_generator<dense2D<Elt, Parameters>,
-					      dense_el_cursor<Elt>, complexity::linear_cached>
+					      dense_el_cursor<Elt>, complexity_classes::linear_cached>
     {};
 
     template <class Elt, class Parameters>
