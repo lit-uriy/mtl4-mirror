@@ -680,6 +680,22 @@ namespace traits
         >::type {};
 
 
+    template <class Elt, class Parameters>
+    struct is_mtl_type<compresse2D<Elt, Parameters> > 
+    {
+	static bool const value= true; 
+    };
+
+
+    // define corresponding type without all template parameters
+    template <class Elt, class Parameters>
+    struct matrix_category<compressed2D<Elt, Parameters> > 
+    {
+	typedef tag::sparse type;
+    };
+
+
+
 
 } // namespace traits
 

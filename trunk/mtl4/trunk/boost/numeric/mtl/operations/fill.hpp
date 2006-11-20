@@ -3,6 +3,8 @@
 #ifndef MTL_FILL_INCLUDE
 #define MTL_FILL_INCLUDE
 
+#include <algorithm>
+
 namespace mtl {
 
 // Sets all values of a matrix

@@ -6,10 +6,11 @@
 
 #include <functional>
 
+
 namespace math {
 
 template <typename Element>
-struct add : std::binary_function<Element, Element, Element>
+struct add : public std::binary_function<Element, Element, Element>
 {
     Element operator() (const Element& x, const Element& y)
     {
@@ -21,7 +22,7 @@ struct add : std::binary_function<Element, Element, Element>
 // Heterogeneous addition, i.e. addends and result type may be different
 template <typename A1, typename A2, typename R>
 struct heterogeneous_add 
-  : std::binary_function<A1, A2, R>
+  : public std::binary_function<A1, A2, R>
 {
     R operator() (const A1& x, const A2& y)
     {
@@ -38,7 +39,7 @@ template <> struct add<unsigned short> : heterogeneous_add<unsigned short, unsig
 
 
 template <typename Element>
-struct mult : std::binary_function<Element, Element, Element>
+struct mult : public std::binary_function<Element, Element, Element>
 {
     Element operator() (const Element& x, const Element& y)
     {
@@ -49,7 +50,7 @@ struct mult : std::binary_function<Element, Element, Element>
 
 template <typename A1, typename A2, typename R>
 struct heterogeneous_mult 
-  : std::binary_function<A1, A2, R>
+  : public std::binary_function<A1, A2, R>
 {
     R operator() (const A1& x, const A2& y)
     {
@@ -66,7 +67,7 @@ template <> struct mult<unsigned short> : heterogeneous_mult<unsigned short, uns
 
 
 template <typename Element>
-struct min : std::binary_function<Element, Element, Element>
+struct min : public std::binary_function<Element, Element, Element>
 {
     Element operator() (const Element& x, const Element& y)
     {
@@ -76,7 +77,7 @@ struct min : std::binary_function<Element, Element, Element>
 
 
 template <typename Element>
-struct max : std::binary_function<Element, Element, Element>
+struct max : public std::binary_function<Element, Element, Element>
 {
     Element operator() (const Element& x, const Element& y)
     {

@@ -3,10 +3,13 @@
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
+// #include <boost/numeric_cast.hpp>
 
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
 #include <boost/numeric/mtl/operations/print_matrix.hpp>
+#include <boost/numeric/mtl/operations/set_to_0.hpp>
+#include <boost/numeric/mtl/range_generator.hpp>
 
 using namespace mtl;
 using namespace std;  
@@ -20,8 +23,9 @@ using namespace std;
 
 */
 
+// Not really generic
 template <typename Value>
-Value result_i_j (Value i, Value j, Value N)
+double result_i_j (Value i, Value j, Value N)
 {
     return 1.0/3.0 * N * (1.0 - 3*i - 3*j + 6*i*j - 3*N + 3*i*N + 3*j*N + 2*N*N);
 }
@@ -38,6 +42,43 @@ void fill_matrix(Matrix& matrix, Value factor)
 	for (size_type c= matrix.begin_col(); c < matrix.end_col(); c++)
 	    matrix[r][c]= factor * (value_type(r) + value_type(c));
 }
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
+
+    set_to_0(c);
+
+    typename traits::const_value<MatrixA>::type                        a_value(a);
+    typename traits::const_value<MatrixB>::type                        b_value(b);
+    typename traits::value<MatrixA>::type                              c_value(c);
+
+    typedef typename traits::range_generator<row_t, MatrixA>::type     a_cur_type;
+    typedef typename traits::range_generator<row_t, MatrixC>::type     c_cur_type;
+    
+    typedef typename traits::range_generator<col_t, MatrixB>::type     b_cur_type;
+    typedef typename traits::range_generator<all_t, c_cur_type>::type  c_icur_type;
+
+    typedef typename traits::range_generator<all_t, a_cur_type>::type  a_icur_type;
+    typedef typename traits::range_generator<all_t, b_cur_type>::type  b_icur_type;
+
+    a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
+    for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+
+	b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
+	for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
+
+	    typename MatrixC::value_type c_tmp(c_value(*cic));
+	    a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
+	    for (b_icur_type bic= begin<all_t>(bc); aic != aiend; ++aic, ++bic)
+		c_tmp+= a_value(*aic) * b_value(*bic);
+	    c_value(*cic, c_tmp);
+	}
+    }
+}
+
 
 
 template <typename Value>
@@ -84,28 +125,35 @@ void check_matrix_product(Matrix const& c, typename Matrix::size_type reduced_di
 	cout << "Result in c[" << (rb+rl)/2 << "][" << (cb+cl)/2 << "] should be " << result_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)
 	     << " but is " << c[(rb+rl)/2][(cb+cl)/2] << "\n";
 	throw "Wrong result"; }
-
-    
 }
+
+
+
+
+
 
 
 
 int test_main(int argc, char* argv[])
 {
+    //morton_dense<double,  0x55555555>      mda(3, 7), mdb(7, 2), mdc(3, 2);
     morton_dense<double,  0x55555555>      mda(5, 7), mdb(7, 6), mdc(5, 6);
     fill_matrix(mda, 1.0); fill_matrix(mdb, 2.0);
-    cout << "mda:\n"; 
-    print_matrix_row_cursor(mda);
-    cout << "\nmdb:\n"; 
-    print_matrix_row_cursor(mdb);
+    cout << "mda:\n";    print_matrix_row_cursor(mda);
+    cout << "\nmdb:\n";  print_matrix_row_cursor(mdb);
+
+    matrix_mult_simple(mda, mdb, mdc);
+    cout << "\nmdc:\n";  print_matrix_row_cursor(mdc);
+    check_matrix_product(mdc, 7);
 
     mtl::dense2D<double> da(5, 7), db(7, 6), dc(5, 6);
     fill_matrix(da, 1.0); fill_matrix(db, 2.0);
-    cout << "\nda:\n"; 
-    print_matrix_row_cursor(da);
-    cout << "\ndb:\n"; 
-    print_matrix_row_cursor(db);
+    cout << "\nda:\n";   print_matrix_row_cursor(da);
+    cout << "\ndb:\n";   print_matrix_row_cursor(db);
 
+    matrix_mult_simple(da, db, dc);
+    cout << "\ndc:\n";   print_matrix_row_cursor(dc);
+    check_matrix_product(dc, 7);
 
     return 0;
 }

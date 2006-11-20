@@ -278,8 +278,12 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
 
-
-
+#if 0
+    size_type used_memory() const
+    {
+	return my_used_memory;
+    }
+#endif
 
   protected:
     void set_nnz()
@@ -296,8 +300,10 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
 
     template <typename> friend struct sub_matrix_t;    
-    
+
 #if 0
+    size_type my_used_memory;
+    
   private:
   // add morton member variables here
 
