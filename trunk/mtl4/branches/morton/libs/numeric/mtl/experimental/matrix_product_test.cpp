@@ -44,41 +44,67 @@ void fill_matrix(Matrix& matrix, Value factor)
 }
 
 
-template <typename MatrixA, typename MatrixB, typename MatrixC>
-void matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
-{
-    using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
+namespace functor {
 
-    set_to_0(c);
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    struct matrix_mult_variations
+    {
+        // set_to_0(c);
+	using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
 
-    typename traits::const_value<MatrixA>::type                        a_value(a);
-    typename traits::const_value<MatrixB>::type                        b_value(b);
-    typename traits::value<MatrixA>::type                              c_value(c);
+        typedef typename traits::const_value<MatrixA>::type                a_value_type;
+        typedef typename traits::const_value<MatrixB>::type                b_value_type;
+        typedef typename traits::value<MatrixA>::type                      c_value_type;
 
-    typedef typename traits::range_generator<row_t, MatrixA>::type     a_cur_type;
-    typedef typename traits::range_generator<row_t, MatrixC>::type     c_cur_type;
-    
-    typedef typename traits::range_generator<col_t, MatrixB>::type     b_cur_type;
-    typedef typename traits::range_generator<all_t, c_cur_type>::type  c_icur_type;
+        typedef typename traits::range_generator<row_t, MatrixA>::type     a_cur_type;
+        typedef typename traits::range_generator<row_t, MatrixC>::type     c_cur_type;
+        
+        typedef typename traits::range_generator<col_t, MatrixB>::type     b_cur_type;
+        typedef typename traits::range_generator<all_t, c_cur_type>::type  c_icur_type;
 
-    typedef typename traits::range_generator<all_t, a_cur_type>::type  a_icur_type;
-    typedef typename traits::range_generator<all_t, b_cur_type>::type  b_icur_type;
+        typedef typename traits::range_generator<all_t, a_cur_type>::type  a_icur_type;
+        typedef typename traits::range_generator<all_t, b_cur_type>::type  b_icur_type;
 
-    a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
-    for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+        void mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
+        {
+	    using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
+    		
+            a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
+            for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
 
-	b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
-	for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
-
-	    typename MatrixC::value_type c_tmp(c_value(*cic));
-	    a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
-	    for (b_icur_type bic= begin<all_t>(bc); aic != aiend; ++aic, ++bic)
-		c_tmp+= a_value(*aic) * b_value(*bic);
-	    c_value(*cic, c_tmp);
-	}
+		b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
+		for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
+		    
+		    typename MatrixC::value_type c_tmp(c_value(*cic));
+		    a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
+		    for (b_icur_type bic= begin<all_t>(bc); aic != aiend; ++aic, ++bic)
+			c_tmp+= a_value(*aic) * b_value(*bic);
+		    c_value(*cic, c_tmp);
+		}
+	    }
+        }
     }
-}
 
+        
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    struct mult_add_simple_t
+    {
+	void operator(MatrixA const& a, MatrixB const& b, MatrixC& c)
+	{
+	    matrix_mult_variations<MatrixA, MatrixB, MatrixC>().mult_add_simple(a, b, c);
+	}
+
+    };
+
+} // namespace functor 
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    set_to_0(c);
+    functor::mult_add_simple_t<MatrixA, MatrixB, MatrixC>()(a, b, c);
+}
 
 
 template <typename Value>
@@ -157,3 +183,45 @@ int test_main(int argc, char* argv[])
 
     return 0;
 }
+
+
+
+
+#if 0
+
+// Pure function implementation, for reference purposes kept for a while
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
+
+    set_to_0(c);
+
+    typename traits::const_value<MatrixA>::type                        a_value(a);
+    typename traits::const_value<MatrixB>::type                        b_value(b);
+    typename traits::value<MatrixA>::type                              c_value(c);
+
+    typedef typename traits::range_generator<row_t, MatrixA>::type     a_cur_type;
+    typedef typename traits::range_generator<row_t, MatrixC>::type     c_cur_type;
+    
+    typedef typename traits::range_generator<col_t, MatrixB>::type     b_cur_type;
+    typedef typename traits::range_generator<all_t, c_cur_type>::type  c_icur_type;
+
+    typedef typename traits::range_generator<all_t, a_cur_type>::type  a_icur_type;
+    typedef typename traits::range_generator<all_t, b_cur_type>::type  b_icur_type;
+
+    a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
+    for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+
+	b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
+	for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
+
+	    typename MatrixC::value_type c_tmp(c_value(*cic));
+	    a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
+	    for (b_icur_type bic= begin<all_t>(bc); aic != aiend; ++aic, ++bic)
+		c_tmp+= a_value(*aic) * b_value(*bic);
+	    c_value(*cic, c_tmp);
+	}
+    }
+}
+#endif
