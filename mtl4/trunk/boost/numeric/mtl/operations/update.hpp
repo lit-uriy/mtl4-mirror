@@ -62,6 +62,8 @@ struct update_proxy
 
 }} // namespace mtl::operations
 
+#if 0
+// inconsistent with linear_algebra/identity.hpp
 
 namespace math {
 
@@ -112,5 +114,6 @@ template < class T >
 const T identity< T, mtl::operations::update_mult< T > >::value ;
 
 }
+#endif
 
 #endif // MTL_UPDATE_INCLUDE

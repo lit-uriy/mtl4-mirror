@@ -15,6 +15,7 @@ struct inverse_t {} ;
 
 template <typename Element>
 struct inverse_t< add<Element>, Element >
+  : public std::binary_function<add<Element>, Element, Element>
 { 
     Element operator()(const add<Element>&, const Element& v) const
     { 
@@ -25,6 +26,7 @@ struct inverse_t< add<Element>, Element >
 
 template <typename Element>
 struct inverse_t< mult<Element>, Element >
+  : public std::binary_function<mult<Element>, Element, Element>
 { 
     Element operator()(const mult<Element>&, const Element& v) const
     { 

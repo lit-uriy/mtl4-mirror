@@ -21,6 +21,7 @@ struct is_invertible_t
 // Whether invertibility is relevant at all shall be concrolled by the user with concept maps
 template <typename Element>
 struct is_invertible_t< add<Element>, Element >
+  : public std::binary_function<add<Element>, Element, Element>
 {
     bool operator() (const add<Element>&, const Element&) const 
     {
@@ -34,6 +35,7 @@ struct is_invertible_t< add<Element>, Element >
 // Whether invertibility is relevant at all shall be concrolled by the user with concept maps
 template <typename Element>
 struct is_invertible_t< mult<Element>, Element >
+  : public std::binary_function<mult<Element>, Element, Element>
 {
     bool operator() (const mult<Element>&, const Element& v) const 
     {

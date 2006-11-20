@@ -36,7 +36,7 @@ template <typename Elt, bool OnStack, unsigned Size= 0>
 struct contiguous_memory_matrix 
   : public generic_array<Elt, OnStack, Size>
 {
-    typedef generic_array<Elt, OnStack, Size>       base;
+    typedef generic_array<Elt, OnStack, Size> base;
 
     static bool const                         on_stack= OnStack;
     
@@ -45,15 +45,16 @@ struct contiguous_memory_matrix
     typedef const value_type*                 const_pointer_type;
 
   protected:
-    bool                            extern_memory;       // whether pointer to external data or own
+    bool                                      extern_memory;       // whether pointer to external data or own
+    std::size_t                               my_used_memory;
 
   public:
     // Reference to external data (must be heap)
-    explicit contiguous_memory_matrix(value_type* a)
-      : base::data(a), extern_memory(true) {}
+    explicit contiguous_memory_matrix(value_type* a, std::size_t size)
+      : base::data(a), extern_memory(true), my_used_memory(size) {}
 
     explicit contiguous_memory_matrix(std::size_t size)
-	: extern_memory(false)
+	: extern_memory(false), my_used_memory(size)
     {
 	if (!on_stack) this->data = new value_type[size];
     }
@@ -89,6 +90,10 @@ struct contiguous_memory_matrix
       return this->data[offset]; 
     }
 
+    std::size_t used_memory() const
+    {
+	return my_used_memory;
+    }
 };
 
 }} // namespace mtl::detail

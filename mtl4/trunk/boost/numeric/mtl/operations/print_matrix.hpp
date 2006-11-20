@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <boost/numeric/mtl/glas_tags.hpp>
+#include <boost/numeric/mtl/range_generator.hpp>
 
 namespace mtl {
 

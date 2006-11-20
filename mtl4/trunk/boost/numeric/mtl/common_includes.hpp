@@ -11,6 +11,7 @@
 #include <boost/numeric/mtl/detail/range_generator.hpp>
 #include <boost/numeric/mtl/complexity.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
+#include <boost/numeric/mtl/tag.hpp>
 #include <boost/numeric/mtl/traits.hpp>
 #include <boost/numeric/mtl/matrix_inserter.hpp>
 #include <boost/numeric/mtl/operations/matrix_brackets.hpp>

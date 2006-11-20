@@ -6,6 +6,8 @@
 
 #include <boost/numeric/linear_algebra/operators.hpp>
 #include <limits>
+#include <functional>
+
 
 namespace math {
 
@@ -22,6 +24,7 @@ struct identity_t {};
 // for better efficiency.
 template <typename Element>
 struct identity_t< add<Element>, Element > 
+  : public std::binary_function<add<Element>, Element, Element>
 { 
     Element operator() (const add<Element>&, const Element& ref) const
     {
@@ -37,6 +40,7 @@ struct identity_t< add<Element>, Element >
 // In contrast to additive identity, this default more likely to be wrong (e.g. matrices with all 1s)
 template <typename Element>
 struct identity_t< mult<Element>, Element > 
+  : public std::binary_function<mult<Element>, Element, Element>
 { 
     Element operator() (const mult<Element>&, const Element& ref) const
     {
@@ -50,6 +54,7 @@ struct identity_t< mult<Element>, Element >
 // Identity of max is minimal representable value, for standard types defined in numeric_limits
 template <typename Element>
 struct identity_t< max<Element>, Element > 
+  : public std::binary_function<max<Element>, Element, Element>
 { 
     Element operator() (const max<Element>&, const Element& ref) const
     {
@@ -62,6 +67,7 @@ struct identity_t< max<Element>, Element >
 // Identity of min is maximal representable value, for standard types defined in numeric_limits
 template <typename Element>
 struct identity_t< min<Element>, Element > 
+  : public std::binary_function<min<Element>, Element, Element>
 { 
     Element operator() (const min<Element>&, const Element& ref) const
     {
