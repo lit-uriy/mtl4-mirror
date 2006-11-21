@@ -57,7 +57,10 @@ namespace functor {
 			 Value& s0, Value& s1, Value& s2, Value& s3,
 			 Value& s4, Value& s5, Value& s6, Value& s7)
 	{
-	    s0+= prop1(i1 + offset) * prop2(i2 + offset);
+	    Cursor1 tmp1(i1); tmp1+= offset;
+	    Cursor2 tmp2(i2); tmp2+= offset;
+	    s0+= prop1(*tmp1) * prop2(*tmp2);
+	    // s0+= prop1(i1 + offset) * prop2(i2 + offset);
 	    typedef cursor_pseudo_dot_block<MaxDepth, Value, Cursor1, Prop1, Cursor2, Prop2, Depth-1> block_rest;
 	    block_rest() (i1, prop1, i2, prop2, s1, s2, s3, s4, s5, s6, s7, s0);
 	}
@@ -73,7 +76,7 @@ namespace functor {
 			 Value& s0, Value&, Value&, Value&,
 			 Value&, Value&, Value&, Value&)
 	{
-	    s0+= prop1(i1 + offset) * prop2(i2 + offset);
+	    s0+= prop1(*(i1 + offset)) * prop2(*(i2 + offset));
 	}
     };      
 
@@ -100,7 +103,7 @@ namespace functor {
 	    return s0;
 	}
     };
-
+ 
 } // namespace functor 
 
 template <unsigned MaxDepth, typename Value, typename Cursor1, typename Prop1, typename Cursor2, typename Prop2>
@@ -110,10 +113,60 @@ Value cursor_pseudo_dot(Cursor1 i1, Cursor1 end1, Prop1 prop1, Cursor2 i2, Prop2
 }
 
 
+template <typename MultiAction, unsigned MaxSteps, unsigned RemainingSteps>
+struct multi_action_helper
+{
+    static unsigned const step= MaxSteps - RemainingSteps;
+
+    void operator() (MultiAction const& action) const
+    {
+	action(step);
+	multi_action_helper<MultiAction, MaxSteps, RemainingSteps-1>()(action);
+    }
+
+    void operator() (MultiAction& action) const
+    {
+	action(step);
+	multi_action_helper<MultiAction, MaxSteps, RemainingSteps-1>()(action);
+    }    
+};
+
+
+template <typename MultiAction, unsigned MaxSteps>
+struct multi_action_helper<MultiAction, MaxSteps, 1>
+{
+    static unsigned const step= MaxSteps - 1;
+
+    void operator() (MultiAction const& action) const
+    {
+	action(step);
+    }
+
+    void operator() (MultiAction& action) const
+    {
+	action(step);
+    }    
+};
+
+
+template <typename MultiAction, unsigned Steps>
+struct multi_action_block
+{
+    void operator() (MultiAction const& action) const
+    {
+	multi_action_helper<MultiAction, Steps, Steps>()(action);
+    }
+
+    void operator() (MultiAction& action) const
+    {
+	multi_action_helper<MultiAction, Steps, Steps>()(action);
+    }
+};
 
 namespace functor {
 
-    template <typename MatrixA, typename MatrixB, typename MatrixC, unsigned DotUnroll= 8>
+    template <typename MatrixA, typename MatrixB, typename MatrixC, 
+	      unsigned DotUnroll= 8, unsigned MiddleUnroll= 4, unsigned OuterUnroll= 1>
     struct matrix_mult_variations
     {
 	// using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
@@ -165,10 +218,10 @@ namespace functor {
             a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
             for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
 
+		a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); // constant in inner loop
 		b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
 		for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
 		    
-		    a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
 		    b_icur_type bic= begin<all_t>(bc);
 		    typename MatrixC::value_type c_tmp= c_value(*cic),
 			dot_tmp= cursor_pseudo_dot<DotUnroll>(aic, aiend, a_value, bic, b_value, c_tmp);
@@ -176,6 +229,132 @@ namespace functor {
 		}		    
 	    }
         }
+
+
+        void mult_add_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c)
+        {
+	    if (b.num_rows() % MiddleUnroll != 0)
+		throw "B's number of rows must be divisible by MiddleUnroll";
+
+	    a_value_type   a_value(a);
+	    b_value_type   b_value(b);
+	    c_value_type   c_value(c);
+    		
+            a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
+            for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+
+		b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
+		for (c_icur_type cic= begin<all_t>(cc); bc != bend; bc+= MiddleUnroll, cic+= MiddleUnroll) { 
+
+		    inner_block my_inner_block(a_value, b_value, c_value, ac, bc, cic);
+		    multi_action_block<inner_block, MiddleUnroll>() (my_inner_block);
+		}
+	    }
+        }
+
+	struct inner_block
+	{
+	    inner_block(a_value_type const& a_value, b_value_type const& b_value, c_value_type& c_value, 
+			a_cur_type const& ac, b_cur_type const& bc, c_icur_type const& cic) 
+		: a_value(a_value), b_value(b_value), c_value(c_value), ac(ac), bc(bc), cic(cic)
+	    {}
+
+	    void operator()(unsigned step)
+	    {
+		cout << "In inner_block: step " << step << "\n";
+		b_cur_type my_bc= bc + step;
+		c_icur_type my_cic= cic + step;
+
+		typename MatrixC::value_type c_tmp(c_value(*my_cic));
+		a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
+		for (b_icur_type bic= begin<all_t>(my_bc); aic != aiend; ++aic, ++bic)
+		    c_tmp+= a_value(*aic) * b_value(*bic);
+		c_value(*my_cic, c_tmp);
+	    }
+	private:
+	    a_value_type const&   a_value;
+	    b_value_type const&   b_value;
+	    c_value_type&         c_value;
+	    a_cur_type const&     ac;
+	    b_cur_type const&     bc;
+	    c_icur_type const&    cic;
+	};
+	
+
+ 	struct fast_inner_block
+	{
+	    fast_inner_block(a_value_type const& a_value, b_value_type const& b_value, c_value_type& c_value, 
+			a_cur_type const& ac, b_cur_type const& bc, c_icur_type const& cic) 
+		: a_value(a_value), b_value(b_value), c_value(c_value), ac(ac), bc(bc), cic(cic)
+	    {}
+
+	    void operator()(unsigned step)
+	    {
+		cout << "In inner_block: step " << step << "\n";
+		b_cur_type my_bc= bc + step;
+		c_icur_type my_cic= cic + step;
+
+		a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
+		b_icur_type bic= begin<all_t>(my_bc);
+		typename MatrixC::value_type c_tmp= c_value(*my_cic),
+		    dot_tmp= cursor_pseudo_dot<DotUnroll>(aic, aiend, a_value, bic, b_value, c_tmp);
+		c_value(*my_cic, c_tmp + dot_tmp);
+	    }
+	private:
+	    a_value_type const&   a_value;
+	    b_value_type const&   b_value;
+	    c_value_type&         c_value;
+	    a_cur_type const&     ac;
+	    b_cur_type const&     bc;
+	    c_icur_type const&    cic;
+	};
+	
+
+       void mult_add_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c)
+        {
+	    if (a.num_rows() % OuterUnroll != 0)
+		throw "B's number of rows must be divisible by MiddleUnroll";
+
+	    a_value_type   a_value(a);
+	    b_value_type   b_value(b);
+	    c_value_type   c_value(c);
+    		
+            a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
+            for (c_cur_type cc= begin<row_t>(c); ac != aend; ac+= OuterUnroll, cc+= OuterUnroll) {
+		middle_block my_middle_block(a_value, b_value, c_value, ac, b, cc);
+		multi_action_block<middle_block, OuterUnroll>() (my_middle_block);
+	    }
+        }
+
+	struct middle_block
+	{
+	    middle_block(a_value_type const& a_value, b_value_type const& b_value, c_value_type& c_value, 
+			 a_cur_type const& ac, MatrixB const& b, c_cur_type const& cc) 
+		: a_value(a_value), b_value(b_value), c_value(c_value), ac(ac), b(b), cc(cc)
+	    {}
+
+	    void operator()(unsigned step)
+	    {
+		cout << "In middle_block: step " << step << "\n";
+		a_cur_type my_ac= ac + step;
+		c_cur_type my_cc= cc + step;
+		
+		b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
+		for (c_icur_type cic= begin<all_t>(my_cc); bc != bend; bc+= MiddleUnroll, cic+= MiddleUnroll) { 
+
+		    fast_inner_block my_inner_block(a_value, b_value, c_value, my_ac, bc, cic);
+		    multi_action_block<fast_inner_block, MiddleUnroll>() (my_inner_block);
+		}
+	    }
+	private:
+	    a_value_type const&   a_value;
+	    b_value_type const&   b_value;
+	    c_value_type&         c_value;
+	    a_cur_type const&     ac;
+	    MatrixB const&        b;
+	    c_cur_type const&     cc;
+	};
+	
     };
 
         
@@ -195,6 +374,27 @@ namespace functor {
 	{
 	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, DotUnroll> object;
 	    object.mult_add_fast_dot(a, b, c);
+	}
+    };
+
+    template <typename MatrixA, typename MatrixB, typename MatrixC, unsigned DotUnroll= 8, unsigned MiddleUnroll= 4>
+    struct mult_add_fast_middle_t
+    {
+	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c)
+	{
+	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll> object;
+	    object.mult_add_fast_middle(a, b, c);
+	}
+    };
+
+    template <typename MatrixA, typename MatrixB, typename MatrixC, 
+	      unsigned DotUnroll= 8, unsigned MiddleUnroll= 4, unsigned OuterUnroll= 2>
+    struct mult_add_fast_outer_t
+    {
+	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c)
+	{
+	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, OuterUnroll> object;
+	    object.mult_add_fast_outer(a, b, c);
 	}
     };
 
@@ -229,6 +429,73 @@ void matrix_mult_fast_dot(MatrixA const& a, MatrixB const& b, MatrixC& c)
     set_to_0(c);
     functor::mult_add_fast_dot_t<MatrixA, MatrixB, MatrixC, 8>()(a, b, c);
 }
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void mult_add_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    functor::mult_add_fast_middle_t<MatrixA, MatrixB, MatrixC, 8, 4>()(a, b, c);
+}
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    set_to_0(c);
+    functor::mult_add_fast_middle_t<MatrixA, MatrixB, MatrixC, 8, 4>()(a, b, c);
+}
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void mult_add_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, 8, 4, 2>()(a, b, c);
+}
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    set_to_0(c);
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, 8, 4, 2>()(a, b, c);
+}
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    cout << "matrix_mult without parameters\n";
+    set_to_0(c);
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, 8, 4, 2>()(a, b, c);
+}
+
+template <unsigned DotUnroll, typename MatrixA, typename MatrixB, typename MatrixC>
+void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    cout << "matrix_mult with 1 parameter\n";
+    set_to_0(c);
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, 4, 2>()(a, b, c);
+}
+
+template <unsigned DotUnroll, unsigned MiddleUnroll, 
+	  typename MatrixA, typename MatrixB, typename MatrixC>
+void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    cout << "matrix_mult with 2 parameters\n";
+    set_to_0(c);
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, 2>()(a, b, c);
+}
+
+template <unsigned DotUnroll, unsigned MiddleUnroll, unsigned OuterUnroll, 
+	  typename MatrixA, typename MatrixB, typename MatrixC>
+void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    cout << "matrix_mult with 3 parameters\n";
+    set_to_0(c);
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, OuterUnroll>()(a, b, c);
+}
+
+
 
 
 template <typename Value>
@@ -317,47 +584,56 @@ int test_main(int argc, char* argv[])
     cout << "\ndc:\n";   print_matrix_row_cursor(dc);
     check_matrix_product(dc, 7);
 
+    
+    mtl::dense2D<double> da8(8, 8), db8(8, 8), dc8(8, 8);
+    fill_matrix(da8, 1.0); fill_matrix(db8, 2.0);
+    cout << "\nda8:\n";   print_matrix_row_cursor(da8);
+    cout << "\ndb8:\n";   print_matrix_row_cursor(db8);
+
+    matrix_mult_fast_middle(da8, db8, dc8);
+    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_matrix_product(dc8, 8);
+
+    matrix_mult_fast_outer(da8, db8, dc8);
+    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_matrix_product(dc8, 8);
+
+    matrix_mult(da8, db8, dc8);
+    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_matrix_product(dc8, 8);
+
+    matrix_mult<4>(da8, db8, dc8);
+    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_matrix_product(dc8, 8);
+
+    matrix_mult<4, 4>(da8, db8, dc8);
+    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_matrix_product(dc8, 8);
+
+    matrix_mult<4, 4, 4>(da8, db8, dc8);
+    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_matrix_product(dc8, 8);
+
     return 0;
 }
 
 
 
 
-#if 0
 
-// Pure function implementation, for reference purposes kept for a while
-template <typename MatrixA, typename MatrixB, typename MatrixC>
-void matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
-{
-    using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
+/*
 
-    set_to_0(c);
+Unrolling matrix product with dimensions that are not multiples of blocks
 
-    typename traits::const_value<MatrixA>::type                        a_value(a);
-    typename traits::const_value<MatrixB>::type                        b_value(b);
-    typename traits::value<MatrixA>::type                              c_value(c);
+1. Do with optimization:
+   C_nw += A_nw * B_nw
+   - wherby the matrix dimensions of sub-matrices are the largest multiples of block sizes 
+     smaller or equal to the matrix dimensions of the original matrix
 
-    typedef typename traits::range_generator<row_t, MatrixA>::type     a_cur_type;
-    typedef typename traits::range_generator<row_t, MatrixC>::type     c_cur_type;
-    
-    typedef typename traits::range_generator<col_t, MatrixB>::type     b_cur_type;
-    typedef typename traits::range_generator<all_t, c_cur_type>::type  c_icur_type;
 
-    typedef typename traits::range_generator<all_t, a_cur_type>::type  a_icur_type;
-    typedef typename traits::range_generator<all_t, b_cur_type>::type  b_icur_type;
+2. Dow without optimization
+   C_nw += A_ne * B_sw
+   C_ne += A_n * B_e
+   C_s += A_s * B
 
-    a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
-    for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
-
-	b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
-	for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
-
-	    typename MatrixC::value_type c_tmp(c_value(*cic));
-	    a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
-	    for (b_icur_type bic= begin<all_t>(bc); aic != aiend; ++aic, ++bic)
-		c_tmp+= a_value(*aic) * b_value(*bic);
-	    c_value(*cic, c_tmp);
-	}
-    }
-}
-#endif
+*/
