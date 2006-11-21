@@ -27,6 +27,7 @@ struct dense_el_cursor : public detail::base_cursor<const Elt*>
     typedef Elt                           value_type;
     typedef const value_type*             const_pointer_type; // ?
     typedef detail::base_cursor<const Elt*> super;
+    typedef dense_el_cursor               self;
 
     dense_el_cursor () {} 
     dense_el_cursor (const_pointer_type me) : super(me) {}
@@ -35,6 +36,11 @@ struct dense_el_cursor : public detail::base_cursor<const Elt*>
     dense_el_cursor(dense2D<Elt, Parameters> const& ma, size_t r, size_t c)
 	: super(ma.elements() + ma.indexer(ma, r, c))
     {}
+
+    self operator+(self const& x)
+    {
+	return super::operator+(x);
+    }
 };
 
 // Cursor over strided elements

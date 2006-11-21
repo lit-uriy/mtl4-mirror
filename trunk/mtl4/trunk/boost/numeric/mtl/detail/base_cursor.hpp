@@ -46,20 +46,38 @@ template <class Key> class base_cursor
       key += n; 
       return *this; 
     }
+  
+    self operator+(int n) const
+    {
+	self tmp = *this;
+	tmp+= n;
+	return tmp;
+    }
+    
     self& operator-=(int n) 
     { 
       key -= n; 
       return *this; 
     }
+
+    int operator-(const self& cc) const 
+    {
+	return *this - cc.key;
+    }
+
     bool operator==(const self& cc) const 
     {
       return key == cc.key; 
     }
+
     bool operator!=(const self& cc) const 
     {
       return !(*this == cc); 
     }
   
+  
+
+
     key_type key;
 }; // base_cursor
 
