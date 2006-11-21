@@ -1,6 +1,7 @@
 // $COPYRIGHT$
 
 #include <iostream>
+#include <cmath>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 // #include <boost/numeric_cast.hpp>
@@ -25,7 +26,7 @@ using namespace std;
 
 // Not really generic
 template <typename Value>
-double result_i_j (Value i, Value j, Value N)
+double inline result_i_j (Value i, Value j, Value N)
 {
     return 1.0/3.0 * N * (1.0 - 3*i - 3*j + 6*i*j - 3*N + 3*i*N + 3*j*N + 2*N*N);
 }
@@ -44,13 +45,81 @@ void fill_matrix(Matrix& matrix, Value factor)
 }
 
 
+
 namespace functor {
 
-    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    template <unsigned MaxDepth, typename Value, typename Cursor1, typename Prop1, typename Cursor2, typename Prop2, unsigned Depth>
+    struct cursor_pseudo_dot_block
+    {
+	static unsigned const offset= MaxDepth - Depth;
+	
+	void operator() (Cursor1 i1, Prop1& prop1, Cursor2 i2, Prop2& prop2,
+			 Value& s0, Value& s1, Value& s2, Value& s3,
+			 Value& s4, Value& s5, Value& s6, Value& s7)
+	{
+	    s0+= prop1(i1 + offset) * prop2(i2 + offset);
+	    typedef cursor_pseudo_dot_block<MaxDepth, Value, Cursor1, Prop1, Cursor2, Prop2, Depth-1> block_rest;
+	    block_rest() (i1, prop1, i2, prop2, s1, s2, s3, s4, s5, s6, s7, s0);
+	}
+    };
+
+    //template <>
+    template <unsigned MaxDepth, typename Value, typename Cursor1, typename Prop1, typename Cursor2, typename Prop2>
+    struct cursor_pseudo_dot_block<MaxDepth, Value, Cursor1, Prop1, Cursor2, Prop2, 1>
+    {
+	static unsigned const offset= MaxDepth - 1;
+	
+	void operator() (Cursor1 i1, Prop1& prop1, Cursor2 i2, Prop2& prop2,
+			 Value& s0, Value&, Value&, Value&,
+			 Value&, Value&, Value&, Value&)
+	{
+	    s0+= prop1(i1 + offset) * prop2(i2 + offset);
+	}
+    };      
+
+    template <unsigned MaxDepth, typename Value, typename Cursor1, typename Prop1, typename Cursor2, typename Prop2>
+    struct cursor_pseudo_dot_t
+    {
+	Value operator() (Cursor1 i1, Cursor1 end1, Prop1& prop1, Cursor2 i2, Prop2& prop2)
+	{
+	    using math::zero;
+	    Value         ref, my_zero(zero(ref)),
+                          s0= my_zero, s1= my_zero, s2= my_zero, s3= my_zero, 
+		          s4= my_zero, s5= my_zero, s6= my_zero, s7= my_zero;
+	    std::size_t size= end1 - i1, blocks= size / MaxDepth, blocked_size= blocks * MaxDepth;
+
+	    typedef cursor_pseudo_dot_block<MaxDepth, Value, Cursor1, Prop1, Cursor2, Prop2, MaxDepth> dot_block_type;
+	    for (unsigned i= 0; i < blocked_size; i+= MaxDepth, i1+= MaxDepth, i2+= MaxDepth) {
+		dot_block_type()(i1, prop1, i2, prop2, s0, s1, s2, s3, s4, s5, s6, s7);
+	    }
+
+	    typedef cursor_pseudo_dot_block<MaxDepth, Value, Cursor1, Prop1, Cursor2, Prop2, MaxDepth> dot_single_type;
+	    s0+= s1 + s2 + s3 + s4 + s5 + s6 + s7;
+	    for (unsigned i= blocked_size; i < size; ++i, ++i1, ++i2)
+		dot_single_type()(i1, prop1, i2, prop2, s0, s1, s2, s3, s4, s5, s6, s7);
+	    return s0;
+	}
+    };
+
+} // namespace functor 
+
+template <unsigned MaxDepth, typename Value, typename Cursor1, typename Prop1, typename Cursor2, typename Prop2>
+Value cursor_pseudo_dot(Cursor1 i1, Cursor1 end1, Prop1 prop1, Cursor2 i2, Prop2 prop2, Value)
+{
+    return functor::cursor_pseudo_dot_t<MaxDepth, Value, Cursor1, Prop1, Cursor2, Prop2>()(i1, end1, prop1, i2, prop2);
+}
+
+
+
+namespace functor {
+
+    template <typename MatrixA, typename MatrixB, typename MatrixC, unsigned DotUnroll= 8>
     struct matrix_mult_variations
     {
-        // set_to_0(c);
-	using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
+	// using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
+	typedef glas::tags::row_t                                          row_t;
+	typedef glas::tags::col_t                                          col_t;
+	typedef glas::tags::all_t                                          all_t;
 
         typedef typename traits::const_value<MatrixA>::type                a_value_type;
         typedef typename traits::const_value<MatrixB>::type                b_value_type;
@@ -67,7 +136,9 @@ namespace functor {
 
         void mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
         {
-	    using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
+	    a_value_type   a_value(a);
+	    b_value_type   b_value(b);
+	    c_value_type   c_value(c);
     		
             a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
             for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
@@ -83,17 +154,48 @@ namespace functor {
 		}
 	    }
         }
-    }
+
+	// template<unsigned DotUnroll>
+        void mult_add_fast_dot(MatrixA const& a, MatrixB const& b, MatrixC& c)
+        {
+	    a_value_type   a_value(a);
+	    b_value_type   b_value(b);
+	    c_value_type   c_value(c);
+    		
+            a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
+            for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+
+		b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
+		for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
+		    
+		    a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
+		    b_icur_type bic= begin<all_t>(bc);
+		    typename MatrixC::value_type c_tmp= c_value(*cic),
+			dot_tmp= cursor_pseudo_dot<DotUnroll>(aic, aiend, a_value, bic, b_value, c_tmp);
+		    c_value(*cic, c_tmp + dot_tmp);
+		}		    
+	    }
+        }
+    };
 
         
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     struct mult_add_simple_t
     {
-	void operator(MatrixA const& a, MatrixB const& b, MatrixC& c)
+	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c)
 	{
 	    matrix_mult_variations<MatrixA, MatrixB, MatrixC>().mult_add_simple(a, b, c);
 	}
+    };
 
+    template <typename MatrixA, typename MatrixB, typename MatrixC, unsigned DotUnroll= 8>
+    struct mult_add_fast_dot_t
+    {
+	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c)
+	{
+	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, DotUnroll> object;
+	    object.mult_add_fast_dot(a, b, c);
+	}
     };
 
 } // namespace functor 
@@ -102,8 +204,30 @@ namespace functor {
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
+    functor::mult_add_simple_t<MatrixA, MatrixB, MatrixC>()(a, b, c);
+}
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
     set_to_0(c);
     functor::mult_add_simple_t<MatrixA, MatrixB, MatrixC>()(a, b, c);
+}
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void mult_add_fast_dot(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    functor::mult_add_fast_dot_t<MatrixA, MatrixB, MatrixC, 8>()(a, b, c);
+}
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void matrix_mult_fast_dot(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    set_to_0(c);
+    functor::mult_add_fast_dot_t<MatrixA, MatrixB, MatrixC, 8>()(a, b, c);
 }
 
 
@@ -178,6 +302,18 @@ int test_main(int argc, char* argv[])
     cout << "\ndb:\n";   print_matrix_row_cursor(db);
 
     matrix_mult_simple(da, db, dc);
+    cout << "\ndc:\n";   print_matrix_row_cursor(dc);
+    check_matrix_product(dc, 7);
+
+    cout << "\nNow with fast pseudo dot product\n\n";
+
+#if 0
+    matrix_mult_fast_dot(mda, mdb, mdc);
+    cout << "\nmdc:\n";  print_matrix_row_cursor(mdc);
+    check_matrix_product(mdc, 7);
+#endif
+
+    matrix_mult_fast_dot(da, db, dc);
     cout << "\ndc:\n";   print_matrix_row_cursor(dc);
     check_matrix_product(dc, 7);
 
