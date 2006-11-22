@@ -43,18 +43,19 @@ Integral inline least_significant_one_bit(Integral x)
 }
 
 
-template <unsigned long X>
-struct least_significant_one_bit_meta
-{
-  static const unsigned long value= (X ^ X-1) + 1 >> 1;
-}
-
-
 template <typename Integral>
 bool inline is_power_of_2(Integral x)
 {
   return x == least_significat_one_bit(x);
 }
+
+
+    
+
+}
+
+
+
 
 }} // namespace mtl::recursion
 
