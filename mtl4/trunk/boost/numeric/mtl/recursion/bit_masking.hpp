@@ -42,7 +42,7 @@ namespace mtl {
      binary:    000000000...0111...1
                              ------- k 1s at the end (LSB), all bits before 0s (MSB)
 
-     hybrid (Doppler):
+     hybrid (Doppled):
      -----------------
 
      i-order
@@ -198,7 +198,7 @@ struct is_k_power_base_case_col_major_t_shark
     static const bool value= same_mask<lsb_bits<2*K, Mask>::value, col_major_shark_mask<K, T>::value>::value;
 };
 
-
+  // e-order
 // i-order mask of N bits
 template <unsigned long N>
 struct i_order_mask
