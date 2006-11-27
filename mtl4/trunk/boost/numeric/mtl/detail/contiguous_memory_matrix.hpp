@@ -21,6 +21,8 @@ struct array_size
 template <typename Elt, bool OnStack, unsigned Size= 0>
 struct generic_array
 {
+    generic_array() {}
+    explicit generic_array(Elt *data) : data(data) {}
     Elt    *data;
 };
 
@@ -51,7 +53,7 @@ struct contiguous_memory_matrix
   public:
     // Reference to external data (must be heap)
     explicit contiguous_memory_matrix(value_type* a, std::size_t size)
-      : base::data(a), extern_memory(true), my_used_memory(size) {}
+      : base(a), extern_memory(true), my_used_memory(size) {}
 
     explicit contiguous_memory_matrix(std::size_t size)
 	: extern_memory(false), my_used_memory(size)

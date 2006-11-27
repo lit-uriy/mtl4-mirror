@@ -45,6 +45,12 @@ template <class Key> struct strided_base_cursor
 	this->key += stride * n; 
 	return *this; 
     }
+    self operator+(int n) const
+    {
+	self tmp(*this);
+	tmp+= n;
+	return tmp;
+    }
     self& operator-=(int n) 
     { 
 	this->key -= stride * n; 

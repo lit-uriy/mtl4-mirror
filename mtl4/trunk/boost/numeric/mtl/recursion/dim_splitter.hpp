@@ -86,7 +86,7 @@ struct outer_bound_splitter
 
     explicit outer_bound_splitter(Recurator const& recurator) 
     {
-	Matrix const& matrix= recurator.get_value();
+	typename Recurator::matrix_type const& matrix= recurator.get_value();
 	my_row_split= std::min(matrix.begin_row() + recurator.bound() / 2, matrix.end_row());
 	my_col_split= std::min(matrix.begin_col() + recurator.bound() / 2, matrix.end_col());
     }

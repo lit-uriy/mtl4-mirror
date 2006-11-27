@@ -150,6 +150,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     typedef typename Parameters::dimensions   dim_type;
     typedef Elt                               value_type;
     typedef std::size_t                       size_type;
+    const static size_type                    mask= BitMask;
 
     // typedef self                              sub_matrix_type;
     // typedef morton_dense_el_cursor<Elt>       el_cursor_type;  

@@ -6,12 +6,12 @@
 namespace mtl {
 
 #ifndef NDEBUG
-#define throw_debug_exception(Test,Message) \
-{ \
-if (Test) throw Message; \
-}
+#  define throw_debug_exception(Test,Message) \
+   {                                          \
+      if (Test) throw Message;                \
+   }
 #else
-#define throw_debug_exception(Test,Message)
+#  define throw_debug_exception(Test,Message)
 #endif
 
 struct test_exception {};

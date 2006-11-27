@@ -66,15 +66,17 @@ private:
 
 
 // Same with compile-time comparison
-template <unsigned Comp>
+template <unsigned long BaseCaseSize>
 struct max_dim_test_static
 {
+    static const unsigned long base_case_size= BaseCaseSize;
+
     template <typename Recurator>
     bool operator() (Recurator const& recurator) const
     {
 	return std::max(recurator.get_value().num_rows(), 
 			recurator.get_value().num_cols()) 
-	       <= Comp;
+	       <= BaseCaseSize;
     }
 };
 

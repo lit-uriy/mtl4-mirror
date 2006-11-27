@@ -50,13 +50,6 @@ bool inline is_power_of_2(Integral x)
 }
 
 
-    
-
-}
-
-
-
-
 }} // namespace mtl::recursion
 
 #endif // MTL_RECURSION_UTILITIES_INCLUDE
