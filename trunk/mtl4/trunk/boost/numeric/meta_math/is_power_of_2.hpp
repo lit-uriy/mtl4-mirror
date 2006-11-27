@@ -10,7 +10,7 @@ namespace meta_math {
 template <unsigned long X>
 struct is_power_of_2
 {
-    static const bool value= X == least_significant_one_bit_meta<X>::value;
+    static const bool value= X == least_significant_one_bit<X>::value;
 };
 
 } // namespace meta_math
