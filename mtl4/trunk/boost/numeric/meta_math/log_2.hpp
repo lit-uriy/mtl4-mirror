@@ -23,7 +23,8 @@ template <> struct log_2<1>
 
 template <> struct log_2<0>
 {
-#error "Logarithm of 0 is undefined"
+  // #error "Logarithm of 0 is undefined"
+  BOOST_STATIC_ASSERT(true); // Logarithm of 0 is undefined
 };
 
 
