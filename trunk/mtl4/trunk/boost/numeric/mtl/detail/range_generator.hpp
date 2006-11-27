@@ -61,12 +61,20 @@ namespace mtl { namespace traits { namespace detail {
     struct sub_matrix_cursor
 	: mtl::detail::base_cursor<int>
     {
+	typedef sub_matrix_cursor                self;
 	typedef mtl::detail::base_cursor<int>    base;
 	static int const            level = Level;
 
 	sub_matrix_cursor(int i, Matrix const& c)
 	    : base(i), ref(c) 
 	{}	
+
+	self operator+(int offset) const
+	{
+	    return self(key + offset, ref);
+	    // return base::operator+(offset);
+	}
+	
 	Matrix const& ref;
     };
 

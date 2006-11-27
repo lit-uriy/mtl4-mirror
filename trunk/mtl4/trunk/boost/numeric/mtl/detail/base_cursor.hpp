@@ -62,7 +62,7 @@ template <class Key> class base_cursor
 
     int operator-(const self& cc) const 
     {
-	return *this - cc.key;
+	return this->key - cc.key;
     }
 
     bool operator==(const self& cc) const 

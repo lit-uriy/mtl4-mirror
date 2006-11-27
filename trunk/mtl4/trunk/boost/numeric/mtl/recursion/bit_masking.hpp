@@ -139,6 +139,7 @@ template <unsigned long K, unsigned long Mask>
 struct is_k_power_base_case_row_major
 {
     static const bool value= same_mask<lsb_bits<2*K, Mask>::value, row_major_mask<K>::value>::value;
+    // typedef 
 };
 
 

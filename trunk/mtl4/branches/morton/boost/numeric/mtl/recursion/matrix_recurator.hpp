@@ -25,7 +25,7 @@ struct matrix_recurator
 
 private:
     
-    template <typename Matrix>
+    // template <typename Matrix> why was it templated ???
     sub_matrix_type constructor_helper(Matrix const& matrix)
     {
 	return sub_matrix(matrix, matrix.begin_row(), matrix.end_row(),
@@ -33,7 +33,7 @@ private:
     }
 
     // For views without own data, we need to generate a new sub_matrix as shared_ptr
-    template <typename Matrix>
+    // template <typename Matrix>
     sub_matrix_type constructor_helper(transposed_view<Matrix> const& matrix)
     {
 	typedef typename sub_matrix_t<Matrix>::sub_matrix_type   ref_sub_type;
@@ -180,8 +180,10 @@ public:
 	return my_bound;
     }
 
-    template <typename R1, typename R2> friend equalize_depth<> (R1&, R2&);   
-    template <typename R1, typename R2, typename R3> friend equalize_depth<> (R1&, R2&, R3&);   
+#if 0
+    template <typename R1, typename R2> friend void equalize_depth<> (R1&, R2&);   
+    template <typename R1, typename R2, typename R3> friend void equalize_depth<> (R1&, R2&, R3&);   
+#endif
 
   protected:
     sub_matrix_type     my_sub_matrix;
@@ -189,7 +191,7 @@ public:
     splitter_type       splitter;
 };
 
-
+#if 0
 template <typename Recurator1, typename Recurator2>
 void inline equalize_depth(Recurator1& r1, Recurator2& r2)
 {
@@ -206,7 +208,7 @@ void inline equalize_depth(Recurator1& r1, Recurator2& r2, Recurator3& r3)
     r2.my_bound= max_bound;
     r3.my_bound= max_bound;
 }
-
+#endif
 
 }} // namespace mtl::recursion
 

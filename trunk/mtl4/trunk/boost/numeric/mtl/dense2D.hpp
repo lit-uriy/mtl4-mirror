@@ -37,9 +37,14 @@ struct dense_el_cursor : public detail::base_cursor<const Elt*>
 	: super(ma.elements() + ma.indexer(ma, r, c))
     {}
 
-    self operator+(self const& x)
+    self operator+(int x) const
     {
 	return super::operator+(x);
+    }
+
+    self operator-(self const& x)
+    {
+	return super::operator-(x);
     }
 };
 
@@ -50,14 +55,23 @@ struct strided_dense_el_cursor : public detail::strided_base_cursor<const Elt*>
     typedef Elt                           value_type;
     typedef const value_type*             const_pointer_type; // ?
     typedef detail::strided_base_cursor<const Elt*> super;
+    typedef strided_dense_el_cursor       self;
 
-    strided_dense_el_cursor () {} 
+    //  strided_dense_el_cursor () {} 
     strided_dense_el_cursor (const_pointer_type me, size_t stride) : super(me, stride) {}
 
     template <typename Parameters>
     strided_dense_el_cursor(dense2D<Elt, Parameters> const& ma, size_t r, size_t c, size_t stride)
 	: super(ma.elements() + ma.indexer(ma, r, c), stride)
     {}
+
+    // Why do we need this?
+    strided_dense_el_cursor(super const& x) : super(x) {}
+
+    self operator+(int x) const
+    {
+	return super::operator+(x);
+    }
 };
 
 // Indexing for dense matrices
@@ -221,7 +235,7 @@ class dense2D : public detail::base_sub_matrix<Elt, Parameters>,
 
     // sets dimensions and pointer to external data
     explicit dense2D(mtl::non_fixed::dimensions d, value_type* a) 
-      : super(d), super_memory(a) 
+      : super(d), super_memory(a, d.num_rows() * d.num_cols()) 
     { 
         set_nnz(); set_ldim();
     }
