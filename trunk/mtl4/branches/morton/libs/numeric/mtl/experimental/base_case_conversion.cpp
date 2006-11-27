@@ -79,7 +79,7 @@ simplify_base_case_matrix(Matrix const& matrix, BaseCaseTest const&)
     // cout << "simplify dim " <<  matrix.num_rows() << ", " << matrix.num_cols() << "\n";
     if (matrix.num_rows() != BaseCaseTest::base_case_size 
 	|| matrix.num_cols() != BaseCaseTest::base_case_size) throw "Base case and matrix have different dimensions";
-    return impl::simplify_base_case_matrix(matrix, base_case_matrix<Matrix, BaseCaseTest>::type());
+    return impl::simplify_base_case_matrix(matrix, typename base_case_matrix<Matrix, BaseCaseTest>::type());
 }
 
 } // namespace mtl
