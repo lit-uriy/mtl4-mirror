@@ -394,11 +394,33 @@ namespace functor {
 	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c)
 	{
 	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, OuterUnroll> object;
-	    object.mult_add_fast_outer(a, b, c);
+
+	    typename MatrixC::size_type m= c.num_rows(), m_blocked= (m/OuterUnroll) * OuterUnroll,
+	      k= a.num_cols(), k_blocked= (k/MiddleUnroll) * MiddleUnroll,
+	      c_row_split= c.begin_row() + m_blocked, c_col_split= c.begin_col() + k_blocked;
+	    typename MatrixA::size_type a_row_split= a.begin_row() + m_blocked;
+	    typename MatrixB::size_type b_col_split= b.begin_col() + k_blocked;
+
+	    MatrixA a_n= sub_matrix(a, a.begin_row(), a_row_split, a.begin_col(), a.end_col()),
+	      a_s= sub_matrix(a, a_row_split, a.end_row(), a.begin_col(), a.end_col());
+	    MatrixB b_w= sub_matrix(b, b.begin_row(), b.end_row(), b.begin_col(), b_col_split),
+	      b_e= sub_matrix(b, b.begin_row(), b.end_row(), b_col_split, b.end_col());
+
+	    MatrixC c_nw= sub_matrix(c, c.begin_row(), c_row_split, c.begin_col(), c_col_split),
+	      c_ne= sub_matrix(c, c.begin_row(), c_row_split, c_col_split, c.end_col()),
+	      c_s= sub_matrix(c, c_row_split, c.end_row(), c.begin_col(), c.end_col());
+
+	    object.mult_add_fast_outer(a_n, b_w, c_nw);
+	    object.mult_add_fast_dot(a_n, b_e, c_ne);
+	    object.mult_add_fast_dot(a_s, b, c_s);
+
+	    // object.mult_add_fast_outer(a, b, c);
 	}
     };
 
 } // namespace functor 
+
+
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
@@ -442,7 +464,7 @@ template <typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     set_to_0(c);
-    functor::mult_add_fast_middle_t<MatrixA, MatrixB, MatrixC, 8, 4>()(a, b, c);
+    mult_add_fast_middle(a, b, c);
 }
 
 
@@ -457,7 +479,7 @@ template <typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     set_to_0(c);
-    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, 8, 4, 2>()(a, b, c);
+    mult_add_fast_outer(a, b, c);
 }
 
 
@@ -598,6 +620,10 @@ int test_main(int argc, char* argv[])
     cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
     check_matrix_product(dc8, 8);
 
+    matrix_mult_fast_outer(da, db, dc);
+    cout << "\ndc:\n";   print_matrix_row_cursor(dc);
+    check_matrix_product(dc, 7);
+
     matrix_mult(da8, db8, dc8);
     cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
     check_matrix_product(dc8, 8);
@@ -631,9 +657,22 @@ Unrolling matrix product with dimensions that are not multiples of blocks
      smaller or equal to the matrix dimensions of the original matrix
 
 
-2. Dow without optimization
+2. Do without optimization
    C_nw += A_ne * B_sw
    C_ne += A_n * B_e
    C_s += A_s * B
+
+The inner loop can be unrolled arbitrarily. So, we can simplify
+
+1. Do with optimization:
+   C_nw += A_n * B_w
+   - wherby the matrix dimensions of sub-matrices are the largest multiples of block sizes 
+     smaller or equal to the matrix dimensions of the original matrix
+
+
+2. Do with optimization only in inner loop
+   C_ne += A_n * B_e
+   C_s += A_s * B
+  
 
 */
