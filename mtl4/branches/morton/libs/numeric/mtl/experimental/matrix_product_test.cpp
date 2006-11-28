@@ -26,7 +26,7 @@ using namespace std;
 
 // Not really generic
 template <typename Value>
-double inline result_i_j (Value i, Value j, Value N)
+double inline hessian_product_i_j (Value i, Value j, Value N)
 {
     return 1.0/3.0 * N * (1.0 - 3*i - 3*j + 6*i*j - 3*N + 3*i*N + 3*j*N + 2*N*N);
 }
@@ -35,7 +35,7 @@ double inline result_i_j (Value i, Value j, Value N)
 // Only to be used for dense matrices
 // Would work on sparse matrices with inserter but would be very expensive
 template <typename Matrix, typename Value>
-void fill_matrix(Matrix& matrix, Value factor)
+void fill_hessian_matrix(Matrix& matrix, Value factor)
 {
     typedef typename Matrix::value_type    value_type;
     typedef typename Matrix::size_type     size_type;
@@ -261,7 +261,7 @@ namespace functor {
 
 	    void operator()(unsigned step)
 	    {
-		cout << "In inner_block: step " << step << "\n";
+		// std::cout << "In inner_block: step " << step << "\n";
 		b_cur_type my_bc= bc + step;
 		c_icur_type my_cic= cic + step;
 
@@ -290,7 +290,7 @@ namespace functor {
 
 	    void operator()(unsigned step)
 	    {
-		cout << "In inner_block: step " << step << "\n";
+		// std::cout << "In inner_block: step " << step << "\n";
 		b_cur_type my_bc= bc + step;
 		c_icur_type my_cic= cic + step;
 
@@ -335,7 +335,7 @@ namespace functor {
 
 	    void operator()(unsigned step)
 	    {
-		cout << "In middle_block: step " << step << "\n";
+		// std::cout << "In middle_block: step " << step << "\n";
 		a_cur_type my_ac= ac + step;
 		c_cur_type my_cc= cc + step;
 		
@@ -377,16 +377,36 @@ namespace functor {
 	}
     };
 
-    template <typename MatrixA, typename MatrixB, typename MatrixC, unsigned DotUnroll= 8, unsigned MiddleUnroll= 4>
-    struct mult_add_fast_middle_t
-    {
-	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c)
-	{
-	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll> object;
-	    object.mult_add_fast_middle(a, b, c);
-	}
-    };
 
+/*
+
+Unrolling matrix product with dimensions that are not multiples of blocks
+
+1. Do with optimization:
+   C_nw += A_nw * B_nw
+   - wherby the matrix dimensions of sub-matrices are the largest multiples of block sizes 
+     smaller or equal to the matrix dimensions of the original matrix
+
+
+2. Do without optimization
+   C_nw += A_ne * B_sw
+   C_ne += A_n * B_e
+   C_s += A_s * B
+
+The inner loop can be unrolled arbitrarily. So, we can simplify
+
+1. Do with optimization:
+   C_nw += A_n * B_w
+   - wherby the matrix dimensions of sub-matrices are the largest multiples of block sizes 
+     smaller or equal to the matrix dimensions of the original matrix
+
+
+2. Do with optimization only in inner loop
+   C_ne += A_n * B_e
+   C_s += A_s * B
+  
+
+*/
     template <typename MatrixA, typename MatrixB, typename MatrixC, 
 	      unsigned DotUnroll= 8, unsigned MiddleUnroll= 4, unsigned OuterUnroll= 2>
     struct mult_add_fast_outer_t
@@ -418,6 +438,21 @@ namespace functor {
 	}
     };
 
+    template <typename MatrixA, typename MatrixB, typename MatrixC, unsigned DotUnroll= 8, unsigned MiddleUnroll= 4>
+    struct mult_add_fast_middle_t
+    {
+	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c)
+	{
+	    mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, 1> fast_outer; 
+	    fast_outer(a, b, c);
+#if 0
+	    // Has less overhead if loops can be unrolled perfectly, otherwise crashes
+	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll> object;
+	    object.mult_add_fast_middle(a, b, c);
+#endif
+	}
+    };
+
 } // namespace functor 
 
 
@@ -434,7 +469,7 @@ template <typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     set_to_0(c);
-    functor::mult_add_simple_t<MatrixA, MatrixB, MatrixC>()(a, b, c);
+    mult_add_simple(a, b, c);
 }
 
 
@@ -449,7 +484,7 @@ template <typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult_fast_dot(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     set_to_0(c);
-    functor::mult_add_fast_dot_t<MatrixA, MatrixB, MatrixC, 8>()(a, b, c);
+    mult_add_fast_dot(a, b, c);
 }
 
 
@@ -486,7 +521,7 @@ void matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c)
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
-    cout << "matrix_mult without parameters\n";
+    std::cout << "matrix_mult without parameters\n";
     set_to_0(c);
     functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, 8, 4, 2>()(a, b, c);
 }
@@ -494,7 +529,7 @@ void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 template <unsigned DotUnroll, typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
-    cout << "matrix_mult with 1 parameter\n";
+    std::cout << "matrix_mult with 1 parameter\n";
     set_to_0(c);
     functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, 4, 2>()(a, b, c);
 }
@@ -503,7 +538,7 @@ template <unsigned DotUnroll, unsigned MiddleUnroll,
 	  typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
-    cout << "matrix_mult with 2 parameters\n";
+    std::cout << "matrix_mult with 2 parameters\n";
     set_to_0(c);
     functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, 2>()(a, b, c);
 }
@@ -512,7 +547,7 @@ template <unsigned DotUnroll, unsigned MiddleUnroll, unsigned OuterUnroll,
 	  typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
-    cout << "matrix_mult with 3 parameters\n";
+    std::cout << "matrix_mult with 3 parameters\n";
     set_to_0(c);
     functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, OuterUnroll>()(a, b, c);
 }
@@ -532,36 +567,37 @@ inline bool similar_values(Value x, Value y)
 // C has dimensions M x L and reduced_dim is N, see above
 // A, B, and C are supposed to have the same indices: either all starting  from 0 or all from 1
 template <typename Matrix>
-void check_matrix_product(Matrix const& c, typename Matrix::size_type reduced_dim)
+void check_hessian_matrix_product(Matrix const& c, typename Matrix::size_type reduced_dim)
 {
     typedef typename Matrix::value_type    value_type;
     typedef typename Matrix::size_type     size_type;
     size_type  rb= c.begin_row(), rl= c.end_row() - 1,
                cb= c.begin_col(), cl= c.end_col() - 1;
 
-    if (!similar_values(value_type(result_i_j(rb, cb, reduced_dim)), c[rb][cb])) {
-	cout << "Result in c[" << rb << "][" << cb << "] should be " << result_i_j(rb, cb, reduced_dim)
+    if (!similar_values(value_type(hessian_product_i_j(rb, cb, reduced_dim)), c[rb][cb])) {
+	std::cout << "Result in c[" << rb << "][" << cb << "] should be " << hessian_product_i_j(rb, cb, reduced_dim)
 	     << " but is " << c[rb][cb] << "\n";
 	throw "Wrong result"; }
 
-    if (!similar_values(value_type(result_i_j(rl, cb, reduced_dim)), c[rl][cb])) {
-	cout << "Result in c[" << rl << "][" << cb << "] should be " << result_i_j(rl, cb, reduced_dim)
+    if (!similar_values(value_type(hessian_product_i_j(rl, cb, reduced_dim)), c[rl][cb])) {
+	std::cout << "Result in c[" << rl << "][" << cb << "] should be " << hessian_product_i_j(rl, cb, reduced_dim)
 	     << " but is " << c[rl][cb] << "\n";
 	throw "Wrong result"; }
 
-    if (!similar_values(value_type(result_i_j(rb, cl, reduced_dim)), c[rb][cl])) {
-	cout << "Result in c[" << rb << "][" << cb << "] should be " << result_i_j(rb, cl, reduced_dim)
+    if (!similar_values(value_type(hessian_product_i_j(rb, cl, reduced_dim)), c[rb][cl])) {
+	std::cout << "Result in c[" << rb << "][" << cb << "] should be " << hessian_product_i_j(rb, cl, reduced_dim)
 	     << " but is " << c[rb][cl] << "\n";
 	throw "Wrong result"; }
 
-    if (!similar_values(value_type(result_i_j(rl, cl, reduced_dim)), c[rl][cl])) {
-	cout << "Result in c[" << rl << "][" << cb << "] should be " << result_i_j(rl, cl, reduced_dim)
+    if (!similar_values(value_type(hessian_product_i_j(rl, cl, reduced_dim)), c[rl][cl])) {
+	std::cout << "Result in c[" << rl << "][" << cb << "] should be " << hessian_product_i_j(rl, cl, reduced_dim)
 	     << " but is " << c[rl][cl] << "\n";
 	throw "Wrong result"; }
 
     // In the center of the matrix
-    if (!similar_values(value_type(result_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)), c[(rb+rl)/2][(cb+cl)/2])) {
-	cout << "Result in c[" << (rb+rl)/2 << "][" << (cb+cl)/2 << "] should be " << result_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)
+    if (!similar_values(value_type(hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)), c[(rb+rl)/2][(cb+cl)/2])) {
+	std::cout << "Result in c[" << (rb+rl)/2 << "][" << (cb+cl)/2 << "] should be " 
+		  << hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)
 	     << " but is " << c[(rb+rl)/2][(cb+cl)/2] << "\n";
 	throw "Wrong result"; }
 }
@@ -577,68 +613,72 @@ int test_main(int argc, char* argv[])
 {
     //morton_dense<double,  0x55555555>      mda(3, 7), mdb(7, 2), mdc(3, 2);
     morton_dense<double,  0x55555555>      mda(5, 7), mdb(7, 6), mdc(5, 6);
-    fill_matrix(mda, 1.0); fill_matrix(mdb, 2.0);
-    cout << "mda:\n";    print_matrix_row_cursor(mda);
-    cout << "\nmdb:\n";  print_matrix_row_cursor(mdb);
+    fill_hessian_matrix(mda, 1.0); fill_hessian_matrix(mdb, 2.0);
+    std::cout << "mda:\n";    print_matrix_row_cursor(mda);
+    std::cout << "\nmdb:\n";  print_matrix_row_cursor(mdb);
 
     matrix_mult_simple(mda, mdb, mdc);
-    cout << "\nmdc:\n";  print_matrix_row_cursor(mdc);
-    check_matrix_product(mdc, 7);
+    std::cout << "\nmdc:\n";  print_matrix_row_cursor(mdc);
+    check_hessian_matrix_product(mdc, 7);
 
     mtl::dense2D<double> da(5, 7), db(7, 6), dc(5, 6);
-    fill_matrix(da, 1.0); fill_matrix(db, 2.0);
-    cout << "\nda:\n";   print_matrix_row_cursor(da);
-    cout << "\ndb:\n";   print_matrix_row_cursor(db);
+    fill_hessian_matrix(da, 1.0); fill_hessian_matrix(db, 2.0);
+    std::cout << "\nda:\n";   print_matrix_row_cursor(da);
+    std::cout << "\ndb:\n";   print_matrix_row_cursor(db);
 
     matrix_mult_simple(da, db, dc);
-    cout << "\ndc:\n";   print_matrix_row_cursor(dc);
-    check_matrix_product(dc, 7);
+    std::cout << "\ndc:\n";   print_matrix_row_cursor(dc);
+    check_hessian_matrix_product(dc, 7);
 
-    cout << "\nNow with fast pseudo dot product\n\n";
+    std::cout << "\nNow with fast pseudo dot product\n\n";
 
 #if 0
     matrix_mult_fast_dot(mda, mdb, mdc);
-    cout << "\nmdc:\n";  print_matrix_row_cursor(mdc);
-    check_matrix_product(mdc, 7);
+    std::cout << "\nmdc:\n";  print_matrix_row_cursor(mdc);
+    check_hessian_matrix_product(mdc, 7);
 #endif
 
     matrix_mult_fast_dot(da, db, dc);
-    cout << "\ndc:\n";   print_matrix_row_cursor(dc);
-    check_matrix_product(dc, 7);
+    std::cout << "\ndc:\n";   print_matrix_row_cursor(dc);
+    check_hessian_matrix_product(dc, 7);
 
     
     mtl::dense2D<double> da8(8, 8), db8(8, 8), dc8(8, 8);
-    fill_matrix(da8, 1.0); fill_matrix(db8, 2.0);
-    cout << "\nda8:\n";   print_matrix_row_cursor(da8);
-    cout << "\ndb8:\n";   print_matrix_row_cursor(db8);
+    fill_hessian_matrix(da8, 1.0); fill_hessian_matrix(db8, 2.0);
+    std::cout << "\nda8:\n";   print_matrix_row_cursor(da8);
+    std::cout << "\ndb8:\n";   print_matrix_row_cursor(db8);
 
     matrix_mult_fast_middle(da8, db8, dc8);
-    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_matrix_product(dc8, 8);
+    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_hessian_matrix_product(dc8, 8);
+
+    matrix_mult_fast_middle(da, db, dc);
+    std::cout << "\ndc:\n";   print_matrix_row_cursor(dc);
+    check_hessian_matrix_product(dc, 7);
 
     matrix_mult_fast_outer(da8, db8, dc8);
-    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_matrix_product(dc8, 8);
+    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_hessian_matrix_product(dc8, 8);
 
     matrix_mult_fast_outer(da, db, dc);
-    cout << "\ndc:\n";   print_matrix_row_cursor(dc);
-    check_matrix_product(dc, 7);
+    std::cout << "\ndc:\n";   print_matrix_row_cursor(dc);
+    check_hessian_matrix_product(dc, 7);
 
     matrix_mult(da8, db8, dc8);
-    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_matrix_product(dc8, 8);
+    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_hessian_matrix_product(dc8, 8);
 
     matrix_mult<4>(da8, db8, dc8);
-    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_matrix_product(dc8, 8);
+    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_hessian_matrix_product(dc8, 8);
 
     matrix_mult<4, 4>(da8, db8, dc8);
-    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_matrix_product(dc8, 8);
+    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_hessian_matrix_product(dc8, 8);
 
     matrix_mult<4, 4, 4>(da8, db8, dc8);
-    cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_matrix_product(dc8, 8);
+    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
+    check_hessian_matrix_product(dc8, 8);
 
     return 0;
 }
@@ -646,33 +686,3 @@ int test_main(int argc, char* argv[])
 
 
 
-
-/*
-
-Unrolling matrix product with dimensions that are not multiples of blocks
-
-1. Do with optimization:
-   C_nw += A_nw * B_nw
-   - wherby the matrix dimensions of sub-matrices are the largest multiples of block sizes 
-     smaller or equal to the matrix dimensions of the original matrix
-
-
-2. Do without optimization
-   C_nw += A_ne * B_sw
-   C_ne += A_n * B_e
-   C_s += A_s * B
-
-The inner loop can be unrolled arbitrarily. So, we can simplify
-
-1. Do with optimization:
-   C_nw += A_n * B_w
-   - wherby the matrix dimensions of sub-matrices are the largest multiples of block sizes 
-     smaller or equal to the matrix dimensions of the original matrix
-
-
-2. Do with optimization only in inner loop
-   C_ne += A_n * B_e
-   C_s += A_s * B
-  
-
-*/
