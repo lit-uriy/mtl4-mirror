@@ -4,6 +4,7 @@
 #define MTL_RECURSION_UTILITIES_INCLUDE
 
 #include <limits>
+#include <cmath>
 
 namespace mtl { namespace recursion {
 
@@ -30,7 +31,7 @@ std::size_t inline second_part(std::size_t n)
 template <typename Matrix>
 std::size_t inline outer_bound(Matrix const& matrix)
 {
-  std::size_t max_dim=std::max((matrix.num_rows(), matrix.num_cols())), bound= 1;
+  std::size_t max_dim=std::max(matrix.num_rows(), matrix.num_cols()), bound= 1;
   for (; bound < max_dim;) bound<<= 1;
   return bound;
 }
@@ -46,7 +47,7 @@ Integral inline least_significant_one_bit(Integral x)
 template <typename Integral>
 bool inline is_power_of_2(Integral x)
 {
-  return x == least_significat_one_bit(x);
+  return x == least_significant_one_bit(x);
 }
 
 
