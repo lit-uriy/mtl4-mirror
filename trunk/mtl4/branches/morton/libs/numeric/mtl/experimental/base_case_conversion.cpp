@@ -11,91 +11,37 @@
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
 #include <boost/numeric/mtl/transposed_view.hpp>
-#include <boost/numeric/mtl/matrix_parameters.hpp>
+//#include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/operations/print_matrix.hpp>
-#include <boost/numeric/mtl/operations/sub_matrix.hpp>
+//#include <boost/numeric/mtl/operations/sub_matrix.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 
-#include <boost/numeric/meta_math/log_2.hpp>
-#include <boost/numeric/meta_math/is_power_of_2.hpp>
+//#include <boost/numeric/meta_math/log_2.hpp>
+//#include <boost/numeric/meta_math/is_power_of_2.hpp>
 
-#include <boost/numeric/mtl/recursion/bit_masking.hpp>
+//#include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
+#include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
+#include <boost/numeric/mtl/recursion/simplify_base_case_matrix.hpp>
+#include <boost/numeric/mtl/recursion/enable_fast_dense_matrix_mult.hpp>
 
 using namespace mtl;
 using namespace std;  
  
-namespace mtl {
-
-template <typename Matrix, typename BaseCaseTest>
-struct base_case_matrix
-{
-    typedef Matrix type;
-};
-
-template <typename Elt, unsigned long Mask, typename Parameters, typename BaseCaseTest>
-struct base_case_matrix<morton_dense<Elt, Mask, Parameters>, BaseCaseTest>
-{
-    BOOST_STATIC_ASSERT(meta_math::is_power_of_2<BaseCaseTest::base_case_size>::value);
-    static const unsigned long base_case_bits= meta_math::log_2<BaseCaseTest::base_case_size>::value;
-
-    typedef typename boost::mpl::if_<
-	is_k_power_base_case_row_major<base_case_bits, Mask>
-      , dense2D<Elt, matrix_parameters<row_major> >
-      , typename boost::mpl::if_<
-	    is_k_power_base_case_col_major<base_case_bits, Mask>
-	  , dense2D<Elt, matrix_parameters<col_major> >
-          , morton_dense<Elt, Mask, Parameters>
-        >::type
-    >::type type;
-};
-
-namespace impl {
-
-    // Without conversion, i.e. when target and source type are identical
-    template <typename Matrix>
-    inline Matrix 
-    simplify_base_case_matrix(Matrix const& matrix, Matrix const&)
-    {
-	return matrix;
-    }
-
-    // With conversion, i.e. when target and source type are different
-    template <typename Matrix, typename BaseCaseMatrix>
-    inline BaseCaseMatrix 
-    simplify_base_case_matrix(Matrix const& matrix, BaseCaseMatrix const&)
-    {
-	return BaseCaseMatrix(non_fixed::dimensions(matrix.num_rows(), matrix.num_cols()),
-			      &const_cast<Matrix&>(matrix)[matrix.begin_row()][matrix.begin_col()]);
-    }
-
-
-} // namespace impl
-
-template <typename Matrix, typename BaseCaseTest>
-typename base_case_matrix<Matrix, BaseCaseTest>::type inline
-simplify_base_case_matrix(Matrix const& matrix, BaseCaseTest const&)
-{
-    // cout << "simplify dim " <<  matrix.num_rows() << ", " << matrix.num_cols() << "\n";
-    if (matrix.num_rows() != BaseCaseTest::base_case_size 
-	|| matrix.num_cols() != BaseCaseTest::base_case_size) throw "Base case and matrix have different dimensions";
-    return impl::simplify_base_case_matrix(matrix, typename base_case_matrix<Matrix, BaseCaseTest>::type());
-}
-
-} // namespace mtl
-
-
-
-
+using mtl::recursion::base_case_matrix;
+using mtl::recursion::simplify_base_case_matrix;
+using mtl::recursion::enable_fast_dense_matrix_mult;
 
 
 template <typename Matrix>
 void test(Matrix& matrix)
 {    
+    using mtl::recursion::base_case_matrix;
+
     typedef recursion::max_dim_test_static<4>   base_test_type;
     base_test_type                              base_test;
 
-    typedef typename mtl::base_case_matrix<Matrix, base_test_type>::type base_type;
+    typedef typename base_case_matrix<Matrix, base_test_type>::type base_type;
     base_type base_matrix;
     cout << typeid(base_matrix).name() << "\n";
     
@@ -103,6 +49,22 @@ void test(Matrix& matrix)
     // cout << typeid(simplify_base_case_matrix(sm, base_test)).name() << "\n";
     typename base_case_matrix<Matrix, base_test_type>::type simplified(simplify_base_case_matrix(sm, base_test));
 }
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
+void test_mult(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test,
+	       const char* name)
+{
+    typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
+    typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
+    typedef typename base_case_matrix<MatrixC, BaseCaseTest>::type base_c_type;
+
+    std::cout << name << ": enable_fast_dense_matrix_mult: " 
+	      << enable_fast_dense_matrix_mult<base_a_type, base_b_type, base_c_type>::value << "\n";
+}
+
+
+
 
 
 int test_main(int argc, char* argv[])
@@ -120,6 +82,17 @@ int test_main(int argc, char* argv[])
     test(m2);
     test(m3);
     test(m4);
+
+    recursion::max_dim_test_static<4> base_test;
+    test_mult(d1, d1, d1, base_test, "Only dense");
+    test_mult(d1, d1, m2, base_test, "Dense and pure Morton");
+    test_mult(m2, m2, m2, base_test, "Only pure Morton");
+    test_mult(m1, m1, m1, base_test, "col-major hybrid");
+    test_mult(m1, m1, d1, base_test, "col-major hybrid and dense");
+    test_mult(m1, m1, m3, base_test, "col-major hybrid and row-major hybrid");
+    test_mult(m1, m3, d1, base_test, "col-major hybrid, row-major hybrid and dense");
+    test_mult(m1, m1, m2, base_test, "col-major hybrid and pure Morton");
+
 
     return 0;
 } 
