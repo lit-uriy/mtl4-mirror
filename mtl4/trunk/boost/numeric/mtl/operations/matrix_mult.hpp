@@ -8,12 +8,29 @@
 #include <boost/numeric/mtl/operations/cursor_pseudo_dot.hpp>
 #include <boost/numeric/mtl/operations/multi_action_block.hpp>
 
+
+// Define defaults if not yet given as Compiler flag
+#ifndef MTL_MATRIX_MULT_OUTER_UNROLL
+#  define MTL_MATRIX_MULT_OUTER_UNROLL 1
+#endif
+
+#ifndef MTL_MATRIX_MULT_MIDDLE_UNROLL
+#  define MTL_MATRIX_MULT_MIDDLE_UNROLL 4
+#endif
+
+#ifndef MTL_MATRIX_MULT_INNER_UNROLL
+#  define MTL_MATRIX_MULT_INNER_UNROLL 8
+#endif
+
+
 namespace mtl {
 
 namespace functor {
 
     template <typename MatrixA, typename MatrixB, typename MatrixC, 
-	      unsigned DotUnroll= 8, unsigned MiddleUnroll= 4, unsigned OuterUnroll= 1>
+	      unsigned InnerUnroll= MTL_MATRIX_MULT_INNER_UNROLL, 
+	      unsigned MiddleUnroll= MTL_MATRIX_MULT_MIDDLE_UNROLL, 
+	      unsigned OuterUnroll= MTL_MATRIX_MULT_OUTER_UNROLL>
     struct matrix_mult_variations
     {
 	// using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
@@ -55,7 +72,7 @@ namespace functor {
 	    }
         }
 
-	// template<unsigned DotUnroll>
+	// template<unsigned InnerUnroll>
         void mult_add_fast_dot(MatrixA const& a, MatrixB const& b, MatrixC& c)
         {
 	    a_value_type   a_value(a);
@@ -71,7 +88,7 @@ namespace functor {
 		    
 		    b_icur_type bic= begin<all_t>(bc);
 		    typename MatrixC::value_type c_tmp= c_value(*cic),
-			dot_tmp= cursor_pseudo_dot<DotUnroll>(aic, aiend, a_value, bic, b_value, c_tmp);
+			dot_tmp= cursor_pseudo_dot<InnerUnroll>(aic, aiend, a_value, bic, b_value, c_tmp);
 		    c_value(*cic, c_tmp + dot_tmp);
 		}		    
 	    }
@@ -144,7 +161,7 @@ namespace functor {
 		a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
 		b_icur_type bic= begin<all_t>(my_bc);
 		typename MatrixC::value_type c_tmp= c_value(*my_cic),
-		    dot_tmp= cursor_pseudo_dot<DotUnroll>(aic, aiend, a_value, bic, b_value, c_tmp);
+		    dot_tmp= cursor_pseudo_dot<InnerUnroll>(aic, aiend, a_value, bic, b_value, c_tmp);
 		c_value(*my_cic, c_tmp + dot_tmp);
 	    }
 	private:
@@ -214,12 +231,13 @@ namespace functor {
 	}
     };
 
-    template <typename MatrixA, typename MatrixB, typename MatrixC, unsigned DotUnroll= 8>
+    template <typename MatrixA, typename MatrixB, typename MatrixC, 
+	      unsigned InnerUnroll= MTL_MATRIX_MULT_INNER_UNROLL>
     struct mult_add_fast_dot_t
     {
 	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c) const
 	{
-	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, DotUnroll> object;
+	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, InnerUnroll> object;
 	    object.mult_add_fast_dot(a, b, c);
 	}
     };
@@ -255,12 +273,14 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 
 */
     template <typename MatrixA, typename MatrixB, typename MatrixC, 
-	      unsigned DotUnroll= 8, unsigned MiddleUnroll= 4, unsigned OuterUnroll= 2>
+	      unsigned InnerUnroll= MTL_MATRIX_MULT_INNER_UNROLL, 
+	      unsigned MiddleUnroll= MTL_MATRIX_MULT_MIDDLE_UNROLL, 
+	      unsigned OuterUnroll= MTL_MATRIX_MULT_OUTER_UNROLL>
     struct mult_add_fast_outer_t
     {
 	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c) const
 	{
-	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, OuterUnroll> object;
+	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, InnerUnroll, MiddleUnroll, OuterUnroll> object;
 
 	    typename MatrixC::size_type m= c.num_rows(), m_blocked= (m/OuterUnroll) * OuterUnroll,
 	      k= a.num_cols(), k_blocked= (k/MiddleUnroll) * MiddleUnroll,
@@ -285,16 +305,18 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 	}
     };
 
-    template <typename MatrixA, typename MatrixB, typename MatrixC, unsigned DotUnroll= 8, unsigned MiddleUnroll= 4>
+    template <typename MatrixA, typename MatrixB, typename MatrixC, 
+	      unsigned InnerUnroll= MTL_MATRIX_MULT_INNER_UNROLL, 
+	      unsigned MiddleUnroll= MTL_MATRIX_MULT_MIDDLE_UNROLL>
     struct mult_add_fast_middle_t
     {
 	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c) const
 	{
-	    mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, 1> fast_outer; 
+	    mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, InnerUnroll, MiddleUnroll> fast_outer; 
 	    fast_outer(a, b, c);
 #if 0
 	    // Has less overhead if loops can be unrolled perfectly, otherwise crashes
-	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll> object;
+	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, InnerUnroll, MiddleUnroll> object;
 	    object.mult_add_fast_middle(a, b, c);
 #endif
 	}
@@ -353,7 +375,7 @@ void matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c)
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void mult_add_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
-    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, 8, 4, 2>()(a, b, c);
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC>()(a, b, c);
 }
 
 
@@ -370,33 +392,33 @@ void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     std::cout << "matrix_mult without parameters\n";
     set_to_0(c);
-    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, 8, 4, 2>()(a, b, c);
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC>()(a, b, c);
 }
 
-template <unsigned DotUnroll, typename MatrixA, typename MatrixB, typename MatrixC>
+template <unsigned InnerUnroll, typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     std::cout << "matrix_mult with 1 parameter\n";
     set_to_0(c);
-    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, 4, 2>()(a, b, c);
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, InnerUnroll>()(a, b, c);
 }
 
-template <unsigned DotUnroll, unsigned MiddleUnroll, 
+template <unsigned InnerUnroll, unsigned MiddleUnroll, 
 	  typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     std::cout << "matrix_mult with 2 parameters\n";
     set_to_0(c);
-    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, 2>()(a, b, c);
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, InnerUnroll, MiddleUnroll>()(a, b, c);
 }
 
-template <unsigned DotUnroll, unsigned MiddleUnroll, unsigned OuterUnroll, 
+template <unsigned InnerUnroll, unsigned MiddleUnroll, unsigned OuterUnroll, 
 	  typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     std::cout << "matrix_mult with 3 parameters\n";
     set_to_0(c);
-    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, DotUnroll, MiddleUnroll, OuterUnroll>()(a, b, c);
+    functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, InnerUnroll, MiddleUnroll, OuterUnroll>()(a, b, c);
 }
 
 

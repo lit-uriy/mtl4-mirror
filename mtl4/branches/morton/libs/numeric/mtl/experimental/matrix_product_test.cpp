@@ -24,7 +24,7 @@ int test_main(int argc, char* argv[])
     fill_hessian_matrix(mda, 1.0); fill_hessian_matrix(mdb, 2.0);
     std::cout << "mda:\n";    print_matrix_row_cursor(mda);
     std::cout << "\nmdb:\n";  print_matrix_row_cursor(mdb);
-
+ 
     matrix_mult_simple(mda, mdb, mdc);
     std::cout << "\nmdc:\n";  print_matrix_row_cursor(mdc);
     check_hessian_matrix_product(mdc, 7);

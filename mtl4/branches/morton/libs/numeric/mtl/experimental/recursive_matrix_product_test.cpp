@@ -30,7 +30,7 @@ void recurator_mult_add(RecuratorA const& rec_a, RecuratorB const& rec_b,
     if (test(rec_a)) {
 	typename RecuratorC::matrix_type c(rec_c.get_value());
 	base_case(rec_a.get_value(), rec_b.get_value(), c);
-	std::cout << "C after base case multiplication\n"; print_matrix_row_cursor(c);
+	// std::cout << "C after base case multiplication\n"; print_matrix_row_cursor(c);
     } else {
 	RecuratorC c_north_west= rec_c.north_west(), c_north_east= rec_c.north_east(),
 	           c_south_west= rec_c.south_west(), c_south_east= rec_c.south_east();
@@ -72,10 +72,18 @@ void recursive_matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c
 
 
 
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void test(MatrixA const& a, MatrixB const& b, MatrixC& c,
+	  const char* name)
+{
+    std::cout << "\nMatrix type(s): " << name << "\n";
+    std::cout << "Result simple recursive multiplication:\n";
+    recursive_matrix_mult_simple(a, b, c);
+    print_matrix_row_cursor(c);
+    check_hessian_matrix_product(c, 7);
 
 
-
-
+}
 
 
 int test_main(int argc, char* argv[])
@@ -94,84 +102,12 @@ int test_main(int argc, char* argv[])
     mtl::dense2D<double> da(5, 7), db(7, 6), dc(5, 6);
     fill_hessian_matrix(da, 1.0); fill_hessian_matrix(db, 2.0);
 
-
-    recursive_matrix_mult_simple(mda, mdb, mdc);
-    std::cout << "\nMult simple with pure Morton, mdc:\n";  print_matrix_row_cursor(mdc);
-    check_hessian_matrix_product(mdc, 7);
-
-    recursive_matrix_mult_simple(da, db, dc);
-    std::cout << "\nMult simple with dense2D, dc:\n";   print_matrix_row_cursor(dc);
-    check_hessian_matrix_product(dc, 7);
-
-    recursive_matrix_mult_simple(mra, mrb, mrc);
-    std::cout << "\nMult simple with Hybrid row-major, mrc:\n";  print_matrix_row_cursor(mrc);
-    check_hessian_matrix_product(mrc, 7);
-
-    recursive_matrix_mult_simple(mca, mcb, mcc);
-    std::cout << "\nMult simple with Hybrid col-major, mcc:\n";  print_matrix_row_cursor(mcc);
-    check_hessian_matrix_product(mcc, 7);
-
-
-
-
-
-
-
-
-
-
-
-    return 0;
-
-    std::cout << "\nNow with fast pseudo dot product\n\n";
-
-#if 0
-    matrix_mult_fast_dot(mda, mdb, mdc);
-    std::cout << "\nmdc:\n";  print_matrix_row_cursor(mdc);
-    check_hessian_matrix_product(mdc, 7);
-#endif
-
-    matrix_mult_fast_dot(da, db, dc);
-    std::cout << "\ndc:\n";   print_matrix_row_cursor(dc);
-    check_hessian_matrix_product(dc, 7);
-
-    
-    mtl::dense2D<double> da8(8, 8), db8(8, 8), dc8(8, 8);
-    fill_hessian_matrix(da8, 1.0); fill_hessian_matrix(db8, 2.0);
-    std::cout << "\nda8:\n";   print_matrix_row_cursor(da8);
-    std::cout << "\ndb8:\n";   print_matrix_row_cursor(db8);
-
-    matrix_mult_fast_middle(da8, db8, dc8);
-    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_hessian_matrix_product(dc8, 8);
-
-    matrix_mult_fast_middle(da, db, dc);
-    std::cout << "\ndc:\n";   print_matrix_row_cursor(dc);
-    check_hessian_matrix_product(dc, 7);
-
-    matrix_mult_fast_outer(da8, db8, dc8);
-    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_hessian_matrix_product(dc8, 8);
-
-    matrix_mult_fast_outer(da, db, dc);
-    std::cout << "\ndc:\n";   print_matrix_row_cursor(dc);
-    check_hessian_matrix_product(dc, 7);
-
-    matrix_mult(da8, db8, dc8);
-    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_hessian_matrix_product(dc8, 8);
-
-    matrix_mult<4>(da8, db8, dc8);
-    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_hessian_matrix_product(dc8, 8);
-
-    matrix_mult<4, 4>(da8, db8, dc8);
-    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_hessian_matrix_product(dc8, 8);
-
-    matrix_mult<4, 4, 4>(da8, db8, dc8);
-    std::cout << "\ndc8:\n";   print_matrix_row_cursor(dc8);
-    check_hessian_matrix_product(dc8, 8);
+    test(mda, mdb, mdc, "pure Morton");
+    test(da, db, dc, "dense2D");
+    test(mra, mrb, mrc, "Hybrid row-major");
+    test(mca, mcb, mcc, "Hybrid col-major");
+    test(mra, mcb, mrc, "Hybrid col-major and row-major");
+    test(mra, db, mrc, "dense2D and row-major");
 
     return 0;
 }
