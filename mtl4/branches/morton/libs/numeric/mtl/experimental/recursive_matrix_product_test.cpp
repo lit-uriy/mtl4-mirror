@@ -80,24 +80,36 @@ void recursive_matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c
 
 int test_main(int argc, char* argv[])
 {
-    //morton_dense<double,  0x55555555>      mda(3, 7), mdb(7, 2), mdc(3, 2);
     morton_dense<double,  0x55555555>      mda(5, 7), mdb(7, 6), mdc(5, 6);
     fill_hessian_matrix(mda, 1.0); fill_hessian_matrix(mdb, 2.0);
-    std::cout << "mda:\n";    print_matrix_row_cursor(mda);
-    std::cout << "\nmdb:\n";  print_matrix_row_cursor(mdb);
 
-    recursive_matrix_mult_simple(mda, mdb, mdc);
-    std::cout << "\nmdc:\n";  print_matrix_row_cursor(mdc);
-    check_hessian_matrix_product(mdc, 7);
+    // Hybrid col-major
+    morton_dense<double,  0x55555553>      mca(5, 7), mcb(7, 6), mcc(5, 6);
+    fill_hessian_matrix(mca, 1.0); fill_hessian_matrix(mcb, 2.0);
+
+    // Hybrid row-major
+    morton_dense<double,  0x5555555c>      mra(5, 7), mrb(7, 6), mrc(5, 6);
+    fill_hessian_matrix(mra, 1.0); fill_hessian_matrix(mrb, 2.0);
 
     mtl::dense2D<double> da(5, 7), db(7, 6), dc(5, 6);
     fill_hessian_matrix(da, 1.0); fill_hessian_matrix(db, 2.0);
-    std::cout << "\nda:\n";   print_matrix_row_cursor(da);
-    std::cout << "\ndb:\n";   print_matrix_row_cursor(db);
+
+
+    recursive_matrix_mult_simple(mda, mdb, mdc);
+    std::cout << "\nMult simple with pure Morton, mdc:\n";  print_matrix_row_cursor(mdc);
+    check_hessian_matrix_product(mdc, 7);
 
     recursive_matrix_mult_simple(da, db, dc);
-    std::cout << "\ndc:\n";   print_matrix_row_cursor(dc);
+    std::cout << "\nMult simple with dense2D, dc:\n";   print_matrix_row_cursor(dc);
     check_hessian_matrix_product(dc, 7);
+
+    recursive_matrix_mult_simple(mra, mrb, mrc);
+    std::cout << "\nMult simple with Hybrid row-major, mrc:\n";  print_matrix_row_cursor(mrc);
+    check_hessian_matrix_product(mrc, 7);
+
+    recursive_matrix_mult_simple(mca, mcb, mcc);
+    std::cout << "\nMult simple with Hybrid col-major, mcc:\n";  print_matrix_row_cursor(mcc);
+    check_hessian_matrix_product(mcc, 7);
 
 
 
