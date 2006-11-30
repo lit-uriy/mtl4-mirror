@@ -56,6 +56,12 @@ template <class Key> struct strided_base_cursor
 	this->key -= stride * n; 
 	return *this; 
     }
+
+    int operator-(const self& cc) const 
+    {
+	return (this->key - cc.key) / stride;
+    }
+
     std::size_t stride;
 };
 

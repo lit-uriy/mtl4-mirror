@@ -3,8 +3,9 @@
 #include <iostream>
 #include <cmath>
 #include <boost/test/minimal.hpp>
-#include <boost/numeric/mtl/glas_tags.hpp>
+#include <boost/mpl/if.hpp>
 
+// #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
 #include <boost/numeric/mtl/operations/print_matrix.hpp>
@@ -13,10 +14,14 @@
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 #include <boost/numeric/mtl/operations/set_to_0.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
+#include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
+#include <boost/numeric/mtl/recursion/simplify_base_case_matrix.hpp>
+#include <boost/numeric/mtl/recursion/enable_fast_dense_matrix_mult.hpp>
 
 
 
 using namespace mtl;
+using namespace mtl::recursion;
 using namespace std;  
 
 
@@ -26,11 +31,21 @@ template <typename RecuratorA, typename RecuratorB, typename RecuratorC,
 	  typename BaseCase, typename BaseCaseTest>
 void recurator_mult_add(RecuratorA const& rec_a, RecuratorB const& rec_b, 
 			RecuratorC& rec_c, BaseCase const& base_case, BaseCaseTest const& test)
-{
-    if (test(rec_a)) {
-	typename RecuratorC::matrix_type c(rec_c.get_value());
-	base_case(rec_a.get_value(), rec_b.get_value(), c);
-	// std::cout << "C after base case multiplication\n"; print_matrix_row_cursor(c);
+{ 
+    if (test(rec_a)) { 
+	typename base_case_matrix<typename RecuratorC::matrix_type, BaseCaseTest>::type
+	    c(simplify_base_case_matrix(rec_c.get_value(), test)); 
+	base_case(simplify_base_case_matrix(rec_a.get_value(), test), 
+		  simplify_base_case_matrix(rec_b.get_value(), test), 
+		  c);
+#if 0
+	cout << "A as base matrix\n"; print_matrix_row_cursor(simplify_base_case_matrix(rec_a.get_value(), test));
+	cout << "A in original format\n"; print_matrix_row_cursor(rec_a.get_value());
+	cout << "B as base matrix\n"; print_matrix_row_cursor(simplify_base_case_matrix(rec_b.get_value(), test));
+	cout << "B in original format\n"; print_matrix_row_cursor(rec_b.get_value());
+	cout << "C as base matrix\n"; print_matrix_row_cursor(c);
+	cout << "C in original format\n"; print_matrix_row_cursor(rec_c.get_value());
+#endif
     } else {
 	RecuratorC c_north_west= rec_c.north_west(), c_north_east= rec_c.north_east(),
 	           c_south_west= rec_c.south_west(), c_south_east= rec_c.south_east();
@@ -57,8 +72,15 @@ void recursive_mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
     equalize_depth(rec_a, rec_b, rec_c);
 
     // cout << "wart mal\n";
+    typedef recursion::max_dim_test_static<4>                      BaseCaseTest;
+    typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
+    typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
+    typedef typename base_case_matrix<MatrixC, BaseCaseTest>::type base_c_type;
+
+    typedef functor::mult_add_simple_t<base_a_type, base_b_type, base_c_type>       mult_type;
+
     functor::mult_add_simple_t<MatrixA, MatrixB, MatrixC> multiplicator;
-    recurator_mult_add(rec_a, rec_b, rec_c, multiplicator, recursion::max_dim_test_static<4>());
+    recurator_mult_add(rec_a, rec_b, rec_c, mult_type(), BaseCaseTest());
     // recurator_mult_add(rec_a, rec_b, rec_c, functor::mult_add_simple_t(), recursion::max_dim_test_static<4>());
 }
 
@@ -71,6 +93,71 @@ void recursive_matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c
 }
 
 
+template <typename FastBaseCase, typename SlowBaseCase, typename BaseCaseTest,
+	  typename MatrixA, typename MatrixB, typename MatrixC>
+struct base_case_dispatcher
+{
+    typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
+    typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
+    typedef typename base_case_matrix<MatrixC, BaseCaseTest>::type base_c_type;
+
+    typedef typename boost::mpl::if_<
+	recursion::enable_fast_dense_matrix_mult<base_a_type, base_b_type, base_c_type>
+      , FastBaseCase
+      , SlowBaseCase
+    >::type base_case_type;
+
+    void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c) const
+    {
+	base_case_type()(a, b, c);
+    }
+};
+
+
+template <typename FastBaseCase, typename SlowBaseCase, typename BaseCaseTest,
+	  typename MatrixA, typename MatrixB, typename MatrixC>
+void recursive_mult_add(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+{
+    using recursion::matrix_recurator;
+    matrix_recurator<MatrixA>    rec_a(a);
+    matrix_recurator<MatrixB>    rec_b(b);
+    matrix_recurator<MatrixC>    rec_c(c);
+    equalize_depth(rec_a, rec_b, rec_c);
+
+    typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
+    typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
+    typedef typename base_case_matrix<MatrixC, BaseCaseTest>::type base_c_type;
+    base_case_dispatcher<FastBaseCase, SlowBaseCase, BaseCaseTest, base_a_type, base_b_type, base_c_type> multiplier;
+    // typename base_case_dispatcher<FastBaseCase, SlowBaseCase, BaseCaseTest, MatrixA, MatrixB, MatrixC>::base_case_type bc;
+
+    // std::cout << "Multiplier: " << typeid(bc).name() << "\n";
+    recurator_mult_add(rec_a, rec_b, rec_c, multiplier, test);
+}
+
+
+template <typename FastBaseCase, typename SlowBaseCase, typename BaseCaseTest,
+	  typename MatrixA, typename MatrixB, typename MatrixC>
+void recursive_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+{
+    set_to_0(c);
+    recursive_mult_add<FastBaseCase, SlowBaseCase>(a, b, c, test);
+}
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void recursive_matrix_mult_fast_inner(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    typedef recursion::max_dim_test_static<4>                      BaseCaseTest;
+    typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
+    typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
+    typedef typename base_case_matrix<MatrixC, BaseCaseTest>::type base_c_type;
+
+    typedef functor::mult_add_fast_inner_t<base_a_type, base_b_type, base_c_type>   fast_mult_type;
+    typedef functor::mult_add_simple_t<base_a_type, base_b_type, base_c_type>       slow_mult_type;
+
+    recursive_matrix_mult<fast_mult_type, slow_mult_type>(a, b, c, BaseCaseTest());
+}
+
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void test(MatrixA const& a, MatrixB const& b, MatrixC& c,
@@ -82,7 +169,10 @@ void test(MatrixA const& a, MatrixB const& b, MatrixC& c,
     print_matrix_row_cursor(c);
     check_hessian_matrix_product(c, 7);
 
-
+    std::cout << "Result recursive multiplication with unrolling inner loop:\n";
+    recursive_matrix_mult_fast_inner(a, b, c);
+    print_matrix_row_cursor(c);
+    check_hessian_matrix_product(c, 7);
 }
 
 

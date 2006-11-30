@@ -73,7 +73,7 @@ namespace functor {
         }
 
 	// template<unsigned InnerUnroll>
-        void mult_add_fast_dot(MatrixA const& a, MatrixB const& b, MatrixC& c)
+        void mult_add_fast_inner(MatrixA const& a, MatrixB const& b, MatrixC& c)
         {
 	    a_value_type   a_value(a);
 	    b_value_type   b_value(b);
@@ -233,12 +233,12 @@ namespace functor {
 
     template <typename MatrixA, typename MatrixB, typename MatrixC, 
 	      unsigned InnerUnroll= MTL_MATRIX_MULT_INNER_UNROLL>
-    struct mult_add_fast_dot_t
+    struct mult_add_fast_inner_t
     {
 	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c) const
 	{
 	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, InnerUnroll> object;
-	    object.mult_add_fast_dot(a, b, c);
+	    object.mult_add_fast_inner(a, b, c);
 	}
     };
 
@@ -298,8 +298,8 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 	      c_s= sub_matrix(c, c_row_split, c.end_row(), c.begin_col(), c.end_col());
 
 	    object.mult_add_fast_outer(a_n, b_w, c_nw);
-	    object.mult_add_fast_dot(a_n, b_e, c_ne);
-	    object.mult_add_fast_dot(a_s, b, c_s);
+	    object.mult_add_fast_inner(a_n, b_e, c_ne);
+	    object.mult_add_fast_inner(a_s, b, c_s);
 
 	    // object.mult_add_fast_outer(a, b, c);
 	}
@@ -343,17 +343,17 @@ void matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
-void mult_add_fast_dot(MatrixA const& a, MatrixB const& b, MatrixC& c)
+void mult_add_fast_inner(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
-    functor::mult_add_fast_dot_t<MatrixA, MatrixB, MatrixC, 8>()(a, b, c);
+    functor::mult_add_fast_inner_t<MatrixA, MatrixB, MatrixC, 8>()(a, b, c);
 }
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
-void matrix_mult_fast_dot(MatrixA const& a, MatrixB const& b, MatrixC& c)
+void matrix_mult_fast_inner(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     set_to_0(c);
-    mult_add_fast_dot(a, b, c);
+    mult_add_fast_inner(a, b, c);
 }
 
 

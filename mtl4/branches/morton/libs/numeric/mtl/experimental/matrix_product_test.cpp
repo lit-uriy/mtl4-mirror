@@ -16,7 +16,6 @@ using namespace mtl;
 using namespace std;  
 
 
-
 int test_main(int argc, char* argv[])
 {
     //morton_dense<double,  0x55555555>      mda(3, 7), mdb(7, 2), mdc(3, 2);
@@ -46,7 +45,7 @@ int test_main(int argc, char* argv[])
     check_hessian_matrix_product(mdc, 7);
 #endif
 
-    matrix_mult_fast_dot(da, db, dc);
+    matrix_mult_fast_inner(da, db, dc);
     std::cout << "\ndc:\n";   print_matrix_row_cursor(dc);
     check_hessian_matrix_product(dc, 7);
 
