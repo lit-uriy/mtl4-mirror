@@ -175,11 +175,18 @@ public:
 	       || splitter.col_split() == my_sub_matrix.end_col();
     }
 
+    bool is_empty() const
+    {
+	return my_sub_matrix.begin_row() == my_sub_matrix.end_row()
+	       || my_sub_matrix.begin_col() == my_sub_matrix.end_col();
+    }
 
+#if 0
     bool is_leaf() const
     {
 	return my_sub_matrix.num_rows() < 2 || my_sub_matrix.num_cols() < 2;
     }
+#endif
 
     size_type bound() const
     {
