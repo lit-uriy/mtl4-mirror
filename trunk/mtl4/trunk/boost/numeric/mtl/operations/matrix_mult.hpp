@@ -8,6 +8,9 @@
 #include <boost/numeric/mtl/operations/cursor_pseudo_dot.hpp>
 #include <boost/numeric/mtl/operations/multi_action_block.hpp>
 
+#include <boost/numeric/mtl/dense2D.hpp>
+
+
 
 // Define defaults if not yet given as Compiler flag
 #ifndef MTL_MATRIX_MULT_OUTER_UNROLL
@@ -321,6 +324,44 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 #endif
 	}
     };
+
+    // fast version for 32x32 double
+    struct mult_add_row_times_col_major_32_t
+    {
+	typedef dense2D<double, matrix_parameters<col_major> > b_type;
+
+	void operator() (dense2D<double> const& a, dense2D<double, matrix_parameters<col_major> > const& b,
+			 dense2D<double> c)
+	{
+	    if (a.num_rows() != 32 || a.num_cols() != 32 || b.num_cols() != 32) {
+		mult_add_fast_outer_t<dense2D<double>, dense2D<double, matrix_parameters<col_major> >, dense2D<double> >()(a, b, c);
+		return;
+	    }
+	    dense2D<double>& a_nc= const_cast<dense2D<double>&>(a);
+	    b_type& b_nc= const_cast<b_type&>(b);
+	    
+	    for (unsigned i= 0; i < 32; i++)
+		for  (unsigned k= 0; k < 32; k+= 2) {
+		    double tmp00= 0.0, tmp01= 0.0, tmp02= 0.0, tmp03= 0.0;
+		    for (const double *ap= &a_nc(i, 0), *aend= &a_nc(i, 32), *bp= &b_nc(0, k); ap != aend; ap+= 4, bp+= 4) {
+			tmp00+= *ap * *bp;
+			tmp01+= *(ap+1) * *(bp+1);
+			tmp02+= *(ap+2) * *(bp+2);
+			tmp03+= *(ap+3) * *(bp+3);
+		    }
+		    c[i][k]+= tmp00 + tmp01 + tmp02 + tmp03;
+		    double tmp10= 0.0, tmp11= 0.0, tmp12= 0.0, tmp13= 0.0;
+		    for (const double *ap= &a_nc(i, 0), *aend= &a_nc(i, 32), *bp= &b_nc(0, k+1); ap != aend; ap+= 4, bp+= 4) {
+			tmp10+= *ap * *bp;
+			tmp11+= *(ap+1) * *(bp+1);
+			tmp12+= *(ap+2) * *(bp+2);
+			tmp13+= *(ap+3) * *(bp+3);
+		    }
+		    c[i][k+1]+= tmp10 + tmp11 + tmp12 + tmp13;
+		}
+	}
+    };
+
 
 } // namespace functor 
 

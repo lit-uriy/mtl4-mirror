@@ -65,7 +65,7 @@ private:
 };
 
 
-// Same with compile-time comparison
+// Same with compile-time reference value
 template <unsigned long BaseCaseSize>
 struct max_dim_test_static
 {
@@ -79,6 +79,37 @@ struct max_dim_test_static
 	       <= BaseCaseSize;
     }
 };
+
+
+// Upper bound of dimensions in recurator is less or equal to the reference value
+struct bound_test
+{
+    bound_test(std::size_t comp) : comp(comp) {}
+
+    template <typename Recurator>
+    bool operator() (Recurator const& recurator) const
+    {
+	return recurator.bound() <= comp;
+    }
+
+private:
+    std::size_t  comp;
+};
+
+
+// Same with compile-time reference value
+template <unsigned long BaseCaseSize>
+struct bound_test_static
+{
+    static const unsigned long base_case_size= BaseCaseSize;
+
+    template <typename Recurator>
+    bool operator() (Recurator const& recurator) const
+    {
+	return recurator.bound() <= base_case_size;
+    }
+};
+
 
 
 }} // namespace mtl::recursion

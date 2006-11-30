@@ -63,7 +63,10 @@ struct base_sub_matrix
     void check_ranges(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c) const
     {
 	throw_debug_exception(begin_r < begin_row(), "begin_row out of range\n");
+	if (end_r > end_row())
+	    std::cout << "end_row out of range\n";
 	throw_debug_exception(end_r > end_row(), "end_row out of range\n");
+			      
 	throw_debug_exception(begin_c < begin_col(), "begin_col out of range\n");
 	throw_debug_exception(end_c > end_col(), "end_col out of range\n");
     }

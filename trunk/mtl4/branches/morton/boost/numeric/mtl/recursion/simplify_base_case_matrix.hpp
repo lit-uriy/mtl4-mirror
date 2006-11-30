@@ -46,7 +46,8 @@ simplify_base_case_matrix(Matrix const& matrix, BaseCaseTest const&)
 {
     // cout << "simplify dim " <<  matrix.num_rows() << ", " << matrix.num_cols() << "\n";
     if (matrix.num_rows() > BaseCaseTest::base_case_size 
-	|| matrix.num_cols() > BaseCaseTest::base_case_size) throw "Matrix dimension is larger than base case";
+	|| matrix.num_cols() > BaseCaseTest::base_case_size) 
+      throw "Matrix dimension is larger than base case";
     return impl::simplify_base_case_matrix(matrix, typename base_case_matrix<Matrix, BaseCaseTest>::type(),
 					   BaseCaseTest());
 }
