@@ -283,7 +283,7 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 	    matrix_mult_variations<MatrixA, MatrixB, MatrixC, InnerUnroll, MiddleUnroll, OuterUnroll> object;
 
 	    typename MatrixC::size_type m= c.num_rows(), m_blocked= (m/OuterUnroll) * OuterUnroll,
-	      k= a.num_cols(), k_blocked= (k/MiddleUnroll) * MiddleUnroll,
+	      k= c.num_cols(), k_blocked= (k/MiddleUnroll) * MiddleUnroll,
 	      c_row_split= c.begin_row() + m_blocked, c_col_split= c.begin_col() + k_blocked;
 	    typename MatrixA::size_type a_row_split= a.begin_row() + m_blocked;
 	    typename MatrixB::size_type b_col_split= b.begin_col() + k_blocked;
