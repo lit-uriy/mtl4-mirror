@@ -341,7 +341,7 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 	    b_type& b_nc= const_cast<b_type&>(b);
 	    
 	    for (unsigned i= 0; i < 32; i++)
-		for  (unsigned k= 0; k < 32; k+= 2) {
+		for  (unsigned k= 0; k < 32; k++) {
 		    double tmp00= 0.0, tmp01= 0.0, tmp02= 0.0, tmp03= 0.0;
 		    for (const double *ap= &a_nc(i, 0), *aend= &a_nc(i, 32), *bp= &b_nc(0, k); ap != aend; ap+= 4, bp+= 4) {
 			tmp00+= *ap * *bp;
@@ -349,7 +349,8 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 			tmp02+= *(ap+2) * *(bp+2);
 			tmp03+= *(ap+3) * *(bp+3);
 		    }
-		    c[i][k]+= tmp00 + tmp01 + tmp02 + tmp03;
+		    c[i][k]+= (tmp00 + tmp01 + tmp02 + tmp03);
+#if 0
 		    double tmp10= 0.0, tmp11= 0.0, tmp12= 0.0, tmp13= 0.0;
 		    for (const double *ap= &a_nc(i, 0), *aend= &a_nc(i, 32), *bp= &b_nc(0, k+1); ap != aend; ap+= 4, bp+= 4) {
 			tmp10+= *ap * *bp;
@@ -358,6 +359,7 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 			tmp13+= *(ap+3) * *(bp+3);
 		    }
 		    c[i][k+1]+= tmp10 + tmp11 + tmp12 + tmp13;
+#endif
 		}
 	}
     };

@@ -55,13 +55,13 @@ void recurator_mult_add(RecuratorA const& rec_a, RecuratorB const& rec_b,
 	           c_south_west= rec_c.south_west(), c_south_east= rec_c.south_east();
 
 	recurator_mult_add(rec_a.north_west(), rec_b.north_west(), c_north_west, base_case, test);
-	recurator_mult_add(rec_a.north_east(), rec_b.south_west(), c_north_west, base_case, test);
 	recurator_mult_add(rec_a.north_west(), rec_b.north_east(), c_north_east, base_case, test);
-	recurator_mult_add(rec_a.north_east(), rec_b.south_east(), c_north_east, base_case, test);
+	recurator_mult_add(rec_a.south_west(), rec_b.north_east(), c_south_east, base_case, test);
 	recurator_mult_add(rec_a.south_west(), rec_b.north_west(), c_south_west, base_case, test);
 	recurator_mult_add(rec_a.south_east(), rec_b.south_west(), c_south_west, base_case, test);
-	recurator_mult_add(rec_a.south_west(), rec_b.north_east(), c_south_east, base_case, test);
 	recurator_mult_add(rec_a.south_east(), rec_b.south_east(), c_south_east, base_case, test);
+	recurator_mult_add(rec_a.north_east(), rec_b.south_east(), c_north_east, base_case, test);
+	recurator_mult_add(rec_a.north_east(), rec_b.south_west(), c_north_west, base_case, test);
     }
 }
 
