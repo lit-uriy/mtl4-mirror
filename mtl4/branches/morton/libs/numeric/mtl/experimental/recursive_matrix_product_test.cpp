@@ -173,7 +173,8 @@ void recursive_matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, Matri
     typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
     typedef typename base_case_matrix<MatrixC, BaseCaseTest>::type base_c_type;
 
-    typedef functor::mult_add_fast_middle_t<base_a_type, base_b_type, base_c_type, InnerUnroll>   fast_mult_type;
+    typedef functor::mult_add_fast_middle_t<base_a_type, base_b_type, base_c_type, 
+	                                    InnerUnroll, MiddleUnroll>              fast_mult_type;
     typedef functor::mult_add_simple_t<base_a_type, base_b_type, base_c_type>       slow_mult_type;
 
     recursive_matrix_mult<fast_mult_type, slow_mult_type>(a, b, c, test);
@@ -184,6 +185,30 @@ template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCas
 void recursive_matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     recursive_matrix_mult_fast_middle<MTL_MATRIX_MULT_INNER_UNROLL, MTL_MATRIX_MULT_MIDDLE_UNROLL>(a, b, c, test);
+}
+
+
+template <unsigned InnerUnroll, unsigned MiddleUnroll, unsigned OuterUnroll,
+	  typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
+void recursive_matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+{
+    typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
+    typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
+    typedef typename base_case_matrix<MatrixC, BaseCaseTest>::type base_c_type;
+
+    typedef functor::mult_add_fast_outer_t<base_a_type, base_b_type, base_c_type, 
+	                                   InnerUnroll, MiddleUnroll, OuterUnroll>  fast_mult_type;
+    typedef functor::mult_add_simple_t<base_a_type, base_b_type, base_c_type>       slow_mult_type;
+
+    recursive_matrix_mult<fast_mult_type, slow_mult_type>(a, b, c, test);
+} 
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
+void recursive_matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+{
+    recursive_matrix_mult_fast_outer<MTL_MATRIX_MULT_INNER_UNROLL, MTL_MATRIX_MULT_MIDDLE_UNROLL,
+	                             MTL_MATRIX_MULT_OUTER_UNROLL>(a, b, c, test);
 }
 
 
@@ -205,7 +230,12 @@ void test(MatrixA const& a, MatrixB const& b, MatrixC& c,
     check_hessian_matrix_product(c, 7);
 
     std::cout << "Result recursive multiplication with unrolling inner and middle loop:\n";
-    recursive_matrix_mult_fast_middle(a, b, c, base_case_test);
+    recursive_matrix_mult_fast_middle<4, 8>(a, b, c, base_case_test);
+    print_matrix_row_cursor(c);
+    check_hessian_matrix_product(c, 7);
+
+    std::cout << "Result recursive multiplication with unrolling all loops:\n";
+    recursive_matrix_mult_fast_outer<2, 2, 8>(a, b, c, base_case_test);
     print_matrix_row_cursor(c);
     check_hessian_matrix_product(c, 7);
 }
