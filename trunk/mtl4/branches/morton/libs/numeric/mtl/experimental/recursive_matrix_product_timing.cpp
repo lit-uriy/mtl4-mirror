@@ -97,7 +97,7 @@ void measure_mult_pointer_16(MatrixA const& a, MatrixB const& b, MatrixC& c,
 
 int test_main(int argc, char* argv[])
 {
-    // Bitmasks:
+    // Bitmasks: 
 
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
 	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,

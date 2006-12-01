@@ -37,12 +37,12 @@ void recurator_mult_add(RecuratorA const& rec_a, RecuratorB const& rec_b,
 		  simplify_base_case_matrix(rec_b.get_value(), test), 
 		  c);
 #if 0
-	cout << "A as base matrix\n"; print_matrix_row_cursor(simplify_base_case_matrix(rec_a.get_value(), test));
-	cout << "A in original format\n"; print_matrix_row_cursor(rec_a.get_value());
-	cout << "B as base matrix\n"; print_matrix_row_cursor(simplify_base_case_matrix(rec_b.get_value(), test));
-	cout << "B in original format\n"; print_matrix_row_cursor(rec_b.get_value());
-	cout << "C as base matrix\n"; print_matrix_row_cursor(c);
-	cout << "C in original format\n"; print_matrix_row_cursor(rec_c.get_value());
+	std::cout << "A as base matrix\n"; print_matrix_row_cursor(simplify_base_case_matrix(rec_a.get_value(), test));
+	std::cout << "A in original format\n"; print_matrix_row_cursor(rec_a.get_value());
+	std::cout << "B as base matrix\n"; print_matrix_row_cursor(simplify_base_case_matrix(rec_b.get_value(), test));
+	std::cout << "B in original format\n"; print_matrix_row_cursor(rec_b.get_value());
+	std::cout << "C as base matrix\n"; print_matrix_row_cursor(c);
+	std::cout << "C in original format\n"; print_matrix_row_cursor(rec_c.get_value());
 #endif
     } else {
 	RecuratorC c_north_west= rec_c.north_west(), c_north_east= rec_c.north_east(),
@@ -124,7 +124,7 @@ void recursive_mult_add(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCase
     base_case_dispatcher<FastBaseCase, SlowBaseCase, BaseCaseTest, base_a_type, base_b_type, base_c_type> multiplier;
     // typename base_case_dispatcher<FastBaseCase, SlowBaseCase, BaseCaseTest, MatrixA, MatrixB, MatrixC>::base_case_type bc;
 
-    // std::cout << "Multiplier: " << typeid(bc).name() << "\n";
+    // std::std::cout << "Multiplier: " << typeid(bc).name() << "\n";
     recurator_mult_add(rec_a, rec_b, rec_c, multiplier, test);
 }
 
