@@ -26,7 +26,7 @@ using namespace mtl::recursion;
 using namespace std;  
 
 
-
+ 
 // BaseCaseTest must have static information
 template <typename RecuratorA, typename RecuratorB, typename RecuratorC, 
 	  typename BaseCase, typename BaseCaseTest>
@@ -85,7 +85,7 @@ void recursive_mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c, B
 }
 
 
-template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest> 
 void recursive_matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     set_to_0(c);
@@ -219,8 +219,8 @@ void test(MatrixA const& a, MatrixB const& b, MatrixC& c,
 	  const char* name)
 {
     std::cout << "\nMatrix type(s): " << name << "\n";
-    recursion::max_dim_test_static<4>    base_case_test;
-    //recursion::bound_test_static<4>    base_case_test;
+    //recursion::max_dim_test_static<4>    base_case_test;
+    recursion::bound_test_static<4>    base_case_test;
 
     std::cout << "Result simple recursive multiplication:\n";
     recursive_matrix_mult_simple(a, b, c, base_case_test);
@@ -248,8 +248,8 @@ void test_pointer(MatrixA const& a, MatrixB const& b, MatrixC& c,
 		  const char* name)
 {
     std::cout << "\nMatrix type(s): " << name << "\n";
-    recursion::max_dim_test_static<32>    base_case_test;
-    //recursion::bound_test_static<32>    base_case_test;
+    //recursion::max_dim_test_static<32>    base_case_test;
+    recursion::bound_test_static<32>    base_case_test;
 
     std::cout << "Result recursive multiplication with pointers:\n";
 
@@ -272,8 +272,8 @@ void measure_mult(MatrixA const& a, MatrixB const& b, MatrixC& c,
 {
     std::cout << "\nMatrix type(s): " << name << "\n";
 
-    recursion::max_dim_test_static<32>    base_case_test;
-    //recursion::bound_test_static<32>    base_case_test;
+    //recursion::max_dim_test_static<32>    base_case_test;
+    recursion::bound_test_static<32>    base_case_test;
 
     std::cout << "Simple recursive multiplication:\n";
     boost::timer start1;
@@ -311,12 +311,29 @@ void measure_mult_pointer(MatrixA const& a, MatrixB const& b, MatrixC& c,
 {
     std::cout << "\nMult with low abstraction, Matrix type(s): " << name << "\n";
 
-    recursion::max_dim_test_static<32>                   base_case_test;
+    //recursion::max_dim_test_static<32>                   base_case_test;
+    recursion::bound_test_static<32>                     base_case_test;
     typedef functor::mult_add_row_times_col_major_32_t   fast_mult_type;
 
     boost::timer start1;
     recursive_matrix_mult<fast_mult_type, fast_mult_type>(a, b, c, base_case_test);
     print_time_and_mflops(start1.elapsed(), a.num_rows());
+}
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void measure_mult_pointer_16(MatrixA const& a, MatrixB const& b, MatrixC& c,
+				  const char* name)
+{
+    std::cout << "\nMult with low abstraction, base case 16x16, Matrix type(s): " << name << "\n";
+
+    //recursion::max_dim_test_static<16>                   base_case_test16;
+    recursion::bound_test_static<16>                     base_case_test16;
+    typedef functor::mult_add_row_times_col_major_16_t   fast_mult_type16;
+
+    boost::timer start2;
+    recursive_matrix_mult<fast_mult_type16, fast_mult_type16>(a, b, c, base_case_test16);
+    print_time_and_mflops(start2.elapsed(), a.num_rows());
 }
 
 
@@ -329,26 +346,28 @@ int test_main(int argc, char* argv[])
 	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
 	doppler_4_row_mask= generate_mask<true, 2, row_major, 0>::value,
 	doppler_4_col_mask= generate_mask<true, 2, col_major, 0>::value,
+	doppler_16_row_mask= generate_mask<true, 4, row_major, 0>::value,
+	doppler_16_col_mask= generate_mask<true, 4, col_major, 0>::value,
 	doppler_32_row_mask= generate_mask<true, 5, row_major, 0>::value,
 	doppler_32_col_mask= generate_mask<true, 5, col_major, 0>::value;
 
     // For testing:
     // ============
 #if 0
-    morton_dense<double,  0x55555555>      mda(5, 7), mdb(7, 6), mdc(5, 6);
+    morton_dense<double,  0x55555555>      mda(5, 7), mdb(7, 9), mdc(5, 9);
     fill_hessian_matrix(mda, 1.0); fill_hessian_matrix(mdb, 2.0);
 
     // Hybrid col-major
-    morton_dense<double,  0x55555553>      mca(5, 7), mcb(7, 6), mcc(5, 6);
+    morton_dense<double,  0x55555553>      mca(5, 7), mcb(7, 9), mcc(5, 9);
     morton_dense<double, doppler_32_col_mask>  mcb32(32, 32);
     fill_hessian_matrix(mca, 1.0); fill_hessian_matrix(mcb, 2.0); fill_hessian_matrix(mcb32, 2.0);
 
     // Hybrid row-major
-    morton_dense<double,  0x5555555c>      mra(5, 7), mrb(7, 6), mrc(5, 6);
+    morton_dense<double,  0x5555555c>      mra(5, 7), mrb(7, 9), mrc(5, 9);
     morton_dense<double, doppler_32_row_mask>  mra32(32, 32), mrc32(32, 32);
     fill_hessian_matrix(mra, 1.0); fill_hessian_matrix(mrb, 2.0); fill_hessian_matrix(mra32, 1.0); 
 
-    mtl::dense2D<double> da(5, 7), db(7, 6), dc(5, 6);
+    mtl::dense2D<double> da(5, 7), db(7, 9), dc(5, 9);
     fill_hessian_matrix(da, 1.0); fill_hessian_matrix(db, 2.0);
 
     test_pointer(mra32, mcb32, mrc32, "Hybrid col-major and row-major");
@@ -363,39 +382,49 @@ int test_main(int argc, char* argv[])
 
     // For measuring:
     // ==============
-
     unsigned size= 65; 
     if (argc > 1) size= atoi(argv[1]);
 
     std::cout << "Matrix size " << size << "x" << size << ":\n";
-
     {
-    morton_dense<double,  morton_mask>      mdal(size, size), mdbl(size, size), mdcl(size, size);
-    fill_hessian_matrix(mdal, 1.0); fill_hessian_matrix(mdbl, 2.0);
-    measure_mult(mdal, mdbl, mdcl, "pure Morton");
+	morton_dense<double,  morton_mask>      mdal(size, size), mdbl(size, size), mdcl(size, size);
+	fill_hessian_matrix(mdal, 1.0); fill_hessian_matrix(mdbl, 2.0);
+	measure_mult(mdal, mdbl, mdcl, "pure Morton");
     }
 
     {
-    mtl::dense2D<double> dal(size, size), dbl(size, size), dcl(size, size);
-    fill_hessian_matrix(dal, 1.0); fill_hessian_matrix(dbl, 2.0);
-    measure_mult(dal, dbl, dcl, "dense2D");
+	mtl::dense2D<double> dal(size, size), dbl(size, size), dcl(size, size);
+	fill_hessian_matrix(dal, 1.0); fill_hessian_matrix(dbl, 2.0);
+	measure_mult(dal, dbl, dcl, "dense2D");
     }
 
     {
-    // Hybrid col-major
-    morton_dense<double, doppler_32_col_mask>      mcal(size, size), mcbl(size, size), mccl(size, size);
-    fill_hessian_matrix(mcal, 1.0); fill_hessian_matrix(mcbl, 2.0);
-
-    // Hybrid row-major
-    morton_dense<double, doppler_32_row_mask>      mral(size, size), mrbl(size, size), mrcl(size, size);
-    fill_hessian_matrix(mral, 1.0); fill_hessian_matrix(mrbl, 2.0);
-
-    measure_mult(mral, mrbl, mrcl, "Hybrid row-major");
-    measure_mult(mcal, mcbl, mccl, "Hybrid col-major");
-    measure_mult(mral, mcbl, mrcl, "Hybrid col-major and row-major");
-    measure_mult_pointer(mral, mcbl, mrcl, "Hybrid col-major and row-major");
+	// Hybrid col-major
+	morton_dense<double, doppler_32_col_mask>      mcal(size, size), mcbl(size, size), mccl(size, size);
+	fill_hessian_matrix(mcal, 1.0); fill_hessian_matrix(mcbl, 2.0);
+	
+	// Hybrid row-major
+	morton_dense<double, doppler_32_row_mask>      mral(size, size), mrbl(size, size), mrcl(size, size);
+	fill_hessian_matrix(mral, 1.0); fill_hessian_matrix(mrbl, 2.0);
+	
+	measure_mult(mral, mrbl, mrcl, "Hybrid row-major");
+	measure_mult(mcal, mcbl, mccl, "Hybrid col-major");
+	measure_mult(mral, mcbl, mrcl, "Hybrid col-major and row-major");
+	measure_mult_pointer(mral, mcbl, mrcl, "Hybrid col-major and row-major");
     }
  
+    {
+	// Hybrid col-major
+	morton_dense<double, doppler_16_col_mask> mcbl(size, size);
+	fill_hessian_matrix(mcbl, 2.0);
+
+	// Hybrid row-major
+	morton_dense<double, doppler_16_row_mask>      mral(size, size), mrcl(size, size);
+	fill_hessian_matrix(mral, 1.0); 
+	
+	measure_mult_pointer_16(mral, mcbl, mrcl, "Hybrid col-major and row-major");
+    }
+
     return 0;
 }
 
