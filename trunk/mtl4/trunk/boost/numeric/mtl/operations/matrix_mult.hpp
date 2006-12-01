@@ -364,6 +364,45 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 	}
     };
 
+    // fast version for 16x16 double
+    struct mult_add_row_times_col_major_16_t
+    {
+	typedef dense2D<double, matrix_parameters<col_major> > b_type;
+
+	void operator() (dense2D<double> const& a, dense2D<double, matrix_parameters<col_major> > const& b,
+			 dense2D<double> c)
+	{
+	    if (a.num_rows() != 16 || a.num_cols() != 16 || b.num_cols() != 16) {
+		mult_add_fast_outer_t<dense2D<double>, dense2D<double, matrix_parameters<col_major> >, dense2D<double> >()(a, b, c);
+		return;
+	    }
+	    dense2D<double>& a_nc= const_cast<dense2D<double>&>(a);
+	    b_type& b_nc= const_cast<b_type&>(b);
+	    
+	    for (unsigned i= 0; i < 16; i++)
+		for  (unsigned k= 0; k < 16; k++) {
+		    double tmp00= 0.0, tmp01= 0.0, tmp02= 0.0, tmp03= 0.0;
+		    for (const double *ap= &a_nc(i, 0), *aend= &a_nc(i, 16), *bp= &b_nc(0, k); ap != aend; ap+= 4, bp+= 4) {
+			tmp00+= *ap * *bp;
+			tmp01+= *(ap+1) * *(bp+1);
+			tmp02+= *(ap+2) * *(bp+2);
+			tmp03+= *(ap+3) * *(bp+3);
+		    }
+		    c[i][k]+= (tmp00 + tmp01 + tmp02 + tmp03);
+#if 0
+		    double tmp10= 0.0, tmp11= 0.0, tmp12= 0.0, tmp13= 0.0;
+		    for (const double *ap= &a_nc(i, 0), *aend= &a_nc(i, 16), *bp= &b_nc(0, k+1); ap != aend; ap+= 4, bp+= 4) {
+			tmp10+= *ap * *bp;
+			tmp11+= *(ap+1) * *(bp+1);
+			tmp12+= *(ap+2) * *(bp+2);
+			tmp13+= *(ap+3) * *(bp+3);
+		    }
+		    c[i][k+1]+= tmp10 + tmp11 + tmp12 + tmp13;
+#endif
+		}
+	}
+    };
+
 
 } // namespace functor 
 
