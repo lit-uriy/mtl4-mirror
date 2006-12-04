@@ -32,6 +32,15 @@ struct generic_array<Elt, true, Size>
     Elt    data[Size];
 };
 
+// Minimal size of memory allocation using alignment
+#ifndef MTL_ALIGNMENT_LIMIT
+#  define MTL_ALIGNMENT_LIMIT 1024
+#endif
+
+// Alignment in memory
+#ifndef MTL_ALIGNMENT
+#  define MTL_ALIGNMENT 128
+#endif
 
 // Base class for matrices that have contigous piece of memory
 template <typename Elt, bool OnStack, unsigned Size= 0>
@@ -49,6 +58,7 @@ struct contiguous_memory_matrix
   protected:
     bool                                      extern_memory;       // whether pointer to external data or own
     std::size_t                               my_used_memory;
+    char*                                     malloc_address;
 
   public:
     // Reference to external data (must be heap)
@@ -58,12 +68,21 @@ struct contiguous_memory_matrix
     explicit contiguous_memory_matrix(std::size_t size)
 	: extern_memory(false), my_used_memory(size)
     {
-	if (!on_stack) this->data = new value_type[size];
+	if (!on_stack) 
+	    if (size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT) {
+		malloc_address= new char[size * sizeof(value_type) + MTL_ALIGNMENT - 1];
+		char* p= malloc_address;
+		while (int(p) % MTL_ALIGNMENT) p++;
+		this->data= reinterpret_cast<value_type*>(p);
+	    } else {
+		this->data= new value_type[size];
+		malloc_address= reinterpret_cast<char*>(this->data);
+	    }
     }
 
     ~contiguous_memory_matrix()
     {
-	if (!on_stack && !extern_memory && this->data) delete[] this->data;
+	if (!on_stack && !extern_memory && this->data) delete[] this->malloc_address;
     }
 
     // offset of key (pointer) w.r.t. data 

@@ -16,8 +16,7 @@ using namespace mtl;
 using namespace mtl::recursion;
 using namespace std;  
 
-
-
+ 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void test(MatrixA const& a, MatrixB const& b, MatrixC& c,
 	  const char* name)
@@ -46,7 +45,7 @@ void test(MatrixA const& a, MatrixB const& b, MatrixC& c,
     print_matrix_row_cursor(c);
     check_hessian_matrix_product(c, 7);
 }
-
+ 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void test_pointer(MatrixA const& a, MatrixB const& b, MatrixC& c,
 		  const char* name)
@@ -54,7 +53,7 @@ void test_pointer(MatrixA const& a, MatrixB const& b, MatrixC& c,
     std::cout << "\nMatrix type(s): " << name << "\n";
     //recursion::max_dim_test_static<32>    base_case_test;
     recursion::bound_test_static<32>    base_case_test;
-
+  
     std::cout << "Result recursive multiplication with pointers:\n";
 
     typedef functor::mult_add_row_times_col_major_32_t   fast_mult_type;
@@ -78,7 +77,7 @@ int test_main(int argc, char* argv[])
 	doppler_16_col_mask= generate_mask<true, 4, col_major, 0>::value,
 	doppler_32_row_mask= generate_mask<true, 5, row_major, 0>::value,
 	doppler_32_col_mask= generate_mask<true, 5, col_major, 0>::value;
-
+ 
     morton_dense<double, morton_z_mask>      mda(5, 7), mdb(7, 9), mdc(5, 9);
     fill_hessian_matrix(mda, 1.0); fill_hessian_matrix(mdb, 2.0);
 
