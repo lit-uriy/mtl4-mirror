@@ -325,6 +325,16 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 	}
     };
 
+
+    struct mult_add_empty_t
+    {
+	template <typename MatrixA, typename MatrixB, typename MatrixC>
+	void operator() (MatrixA const& a, MatrixB const& b, MatrixC& c) const
+	{
+	}
+    };
+
+
     // fast version for 32x32 double
     struct mult_add_row_times_col_major_32_t
     {
@@ -340,16 +350,73 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 	    dense2D<double>& a_nc= const_cast<dense2D<double>&>(a);
 	    b_type& b_nc= const_cast<b_type&>(b);
 	    
+	    
+
+	    for (unsigned i= 0; i < 32; i++)
+		for  (unsigned k= 0; k < 32; k+= 2) {
+		    double tmp00= 0.0, tmp01= 0.0, tmp02= 0.0, tmp03= 0.0;
+		    for (const double *ap= &a_nc(i, 0), *aend= &a_nc(i, 32), *bp= &b_nc(0, k); ap != aend; ap+= 4, bp+= 4) {
+			tmp00+= *ap * *bp;
+ 			tmp01+= *(ap+1) * *(bp+1);
+			tmp02+= *(ap+2) * *(bp+2);
+			tmp03+= *(ap+3) * *(bp+3);
+		    }
+		    c[i][k]+= (tmp00 + tmp01 + tmp02 + tmp03);
+		    //#if 0
+		    double tmp10= 0.0, tmp11= 0.0, tmp12= 0.0, tmp13= 0.0;
+		    for (const double *ap= &a_nc(i, 0), *aend= &a_nc(i, 32), *bp= &b_nc(0, k+1); ap != aend; ap+= 4, bp+= 4) {
+			tmp10+= *ap * *bp;
+			tmp11+= *(ap+1) * *(bp+1);
+			tmp12+= *(ap+2) * *(bp+2);
+			tmp13+= *(ap+3) * *(bp+3);
+		    }
+		    c[i][k+1]+= tmp10 + tmp11 + tmp12 + tmp13;
+		    //#endif
+		}
+	}
+    };
+
+#if 0
+    // fast version for 32x32 double
+    struct mult_add_row_times_col_major_32_cast_t
+    {
+	typedef dense2D<double, matrix_parameters<col_major> > b_type;
+
+      bool ff(double a[][32]) {
+	return true;
+      }
+
+	void operator() (dense2D<double> const& a, b_type const& b,
+			 dense2D<double> c)
+	{
+	    if (a.num_rows() != 32 || a.num_cols() != 32 || b.num_cols() != 32) {
+		mult_add_fast_outer_t<dense2D<double>, dense2D<double, matrix_parameters<col_major> >, dense2D<double> >()(a, b, c);
+		return;
+	    }
+	    
+	    dense2D<double>& a_nc= const_cast<dense2D<double>&>(a), &c_nc= const_cast<dense2D<double>&>(c);
+	    b_type& b_nc= const_cast<b_type&>(b);
+	    
+	    //double *aa[32]= &a_nc(0, 0), *ba[32]= &b_nc(0, 0), *ca[32]= &c_nc(0, 0);
+	    double *ap= &a_nc(0, 0);
+	    (double *)aa[32]; //, *ba[32], *ca[32];
+	    ff(ap);
+
+ 	    aa= reinterpret_cast<double(*)[32]> (ap); 
+// 	    ca= &c_nc(0, 0); ca= &c_nc(0, 0); 
+
 	    for (unsigned i= 0; i < 32; i++)
 		for  (unsigned k= 0; k < 32; k++) {
 		    double tmp00= 0.0, tmp01= 0.0, tmp02= 0.0, tmp03= 0.0;
-		    for (const double *ap= &a_nc(i, 0), *aend= &a_nc(i, 32), *bp= &b_nc(0, k); ap != aend; ap+= 4, bp+= 4) {
+
+		    // ba is c-array (row-major) but b is column-major -> access like transposed matrix, i.e. row <-> col
+		    for (const double *ap= &aa[i][0], *aend= &aa[i][32], *bp= &ba[k][0]; ap != aend; ap+= 4, bp+= 4) {
 			tmp00+= *ap * *bp;
 			tmp01+= *(ap+1) * *(bp+1);
 			tmp02+= *(ap+2) * *(bp+2);
 			tmp03+= *(ap+3) * *(bp+3);
 		    }
-		    c[i][k]+= (tmp00 + tmp01 + tmp02 + tmp03);
+		    ca[i][k]+= (tmp00 + tmp01 + tmp02 + tmp03);
 #if 0
 		    double tmp10= 0.0, tmp11= 0.0, tmp12= 0.0, tmp13= 0.0;
 		    for (const double *ap= &a_nc(i, 0), *aend= &a_nc(i, 32), *bp= &b_nc(0, k+1); ap != aend; ap+= 4, bp+= 4) {
@@ -363,6 +430,8 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 		}
 	}
     };
+#endif
+
 
     // fast version for 16x16 double
     struct mult_add_row_times_col_major_16_t
