@@ -1,7 +1,7 @@
 INCLUDE_DIRS = -I${MTL_MORTON_BOOST_ROOT} -I${MTL_BOOST_ROOT} -I${BOOST_ROOT}
 
-CXXFLAGS = ${INCLUDE_DIRS} -Wno-long-double # -g
-CXXFLAGS += -DNDEBUG -O3 -fast  -ffast-math  -funsafe-math-optimizations -ffinite-math-only -fast
+CXXFLAGS = ${INCLUDE_DIRS} -Wno-long-double  -g
+#CXXFLAGS += -DNDEBUG -O3 -fast  -ffast-math  -funsafe-math-optimizations -ffinite-math-only 
 
 all: morton_dense matrix_product
 

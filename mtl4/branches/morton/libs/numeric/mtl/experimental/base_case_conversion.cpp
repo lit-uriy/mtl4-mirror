@@ -2,11 +2,7 @@
 
 #include <iostream>
 #include <string>
-#include <boost/static_assert.hpp>
 #include <boost/test/minimal.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/mpl/print.hpp>
 
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>

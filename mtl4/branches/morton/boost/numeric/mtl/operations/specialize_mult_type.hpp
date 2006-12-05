@@ -13,7 +13,7 @@ template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCas
 struct specialize_mult_type
 {
     typedef DefaultMult type;
-}
+};
 
 } // namespace mtl
 
