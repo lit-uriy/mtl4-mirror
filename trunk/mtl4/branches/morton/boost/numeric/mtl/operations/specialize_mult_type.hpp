@@ -17,6 +17,6 @@ struct specialize_mult_type
 
 } // namespace mtl
 
-#include <boost/numeric/mtl/operations/specialize_mult_type_opteron.hpp>
+#include <boost/numeric/mtl/operations/opteron/specialize_mult_type_opteron.hpp>
 
 #endif // MTL_SPECIALIZE_MULT_TYPE_INCLUDE

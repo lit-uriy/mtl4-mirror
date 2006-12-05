@@ -50,6 +50,8 @@ int test_main(int argc, char* argv[])
 
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
 	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
+	doppler_32_row_mask_no_shark= generate_mask<true, 5, row_major, 0>::value,
+	doppler_32_col_mask_no_shark= generate_mask<true, 5, col_major, 0>::value,
 	doppler_32_row_mask= generate_mask<true, 5, row_major, 1>::value,
 	doppler_32_col_mask= generate_mask<true, 5, col_major, 1>::value,
 	doppler_z_32_row_mask= generate_mask<false, 5, row_major, 1>::value,
@@ -60,6 +62,8 @@ int test_main(int argc, char* argv[])
 
     morton_dense<double,  morton_mask> mda(size, size), mdb(size, size), mdc(size, size);
     mtl::dense2D<double>               da(size, size), db(size, size), dc(size, size);
+    morton_dense<double, doppler_32_row_mask_no_shark>      mrans(size, size), mrcns(size, size);;
+    morton_dense<double, doppler_32_col_mask_no_shark>      mcbns(size, size);
     morton_dense<double, doppler_32_col_mask>      mca(size, size), mcb(size, size), mcc(size, size);
     morton_dense<double, doppler_32_row_mask>      mra(size, size), mrb(size, size), mrc(size, size);
     morton_dense<double, doppler_z_32_col_mask>    mzca(size, size), mzcb(size, size), mzcc(size, size);
@@ -70,6 +74,7 @@ int test_main(int argc, char* argv[])
     test(mda, mdb, mdc, "pure Morton", false);
     test(mca, mcb, mcc, "Hybrid col-major", false);
     test(mra, mrb, mrc, "Hybrid row-major", false);
+    test(mra, mcb, mrc, "Hybrid col-major and row-major, no shark tooth", false);
     test(mra, mcb, mrc, "Hybrid col-major and row-major", true);
     test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z-order", true);
     test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z and E-order", true);
