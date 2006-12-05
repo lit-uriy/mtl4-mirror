@@ -11,15 +11,9 @@
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
 #include <boost/numeric/mtl/transposed_view.hpp>
-//#include <boost/numeric/mtl/matrix_parameters.hpp>
 #include <boost/numeric/mtl/operations/print_matrix.hpp>
-//#include <boost/numeric/mtl/operations/sub_matrix.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 
-//#include <boost/numeric/meta_math/log_2.hpp>
-//#include <boost/numeric/meta_math/is_power_of_2.hpp>
-
-//#include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
 #include <boost/numeric/mtl/recursion/simplify_base_case_matrix.hpp>
