@@ -8,16 +8,17 @@
 #include <boost/mpl/if.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
+#include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/meta_math/is_power_of_2.hpp>
 #include <boost/numeric/meta_math/log_2.hpp>
 
 namespace mtl {
 
-    struct opteron_mult_hack {};
+struct opteron_mult_hack {};
 
-template <typename EA, typename MaskA, typename PA,
-	  typename EB, typename MaskB, typename PB,
-	  typename EC, typename MaskC, typename PC, typename DefaultMult>
+template <typename EA, unsigned long MaskA, typename PA,
+	  typename EB, unsigned long MaskB, typename PB,
+	  typename EC, unsigned long MaskC, typename PC, typename DefaultMult>
 struct specialize_mult_type<morton_dense<EA, MaskA, PA>, morton_dense<EB, MaskB, PB>, 
 			    morton_dense<EC, MaskC, PC>, recursion::bound_test_static<32>, DefaultMult>
 {

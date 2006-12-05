@@ -232,7 +232,7 @@ class generate_mask
     static const unsigned long rec_size= 8 * sizeof(unsigned long) - 2 * K,
 	rec_part= (IOrder ? i_order_mask<rec_size>::value : z_order_mask<rec_size>::value) << 2*K;
     typedef typename boost::mpl::if_<
-	boost::is_same<Orientation, mtl::row_major>
+	boost::is_same<Orientation, row_major>
       , row_major_shark_mask<K, T>
       , col_major_shark_mask<K, T>
     >::type base_part_type;
