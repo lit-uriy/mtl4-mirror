@@ -16,11 +16,11 @@ namespace mtl {
 
 struct opteron_mult_hack {};
 
-template <typename EA, unsigned long MaskA, typename PA,
-	  typename EB, unsigned long MaskB, typename PB,
-	  typename EC, unsigned long MaskC, typename PC, typename DefaultMult>
-struct specialize_mult_type<morton_dense<EA, MaskA, PA>, morton_dense<EB, MaskB, PB>, 
-			    morton_dense<EC, MaskC, PC>, recursion::bound_test_static<32>, DefaultMult>
+template <unsigned long MaskA, typename PA,
+	  unsigned long MaskB, typename PB,
+	  unsigned long MaskC, typename PC, typename DefaultMult>
+struct specialize_mult_type<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
+			    morton_dense<double, MaskC, PC>, recursion::bound_test_static<32>, DefaultMult>
 {
     static const unsigned long base_case_bits= 5, // ld of 32
 	                       tooth_length = 1;
