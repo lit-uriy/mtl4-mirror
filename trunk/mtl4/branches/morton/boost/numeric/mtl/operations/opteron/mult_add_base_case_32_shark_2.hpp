@@ -1,11 +1,38 @@
 
 // $COPYRIGHT$
 
-// Written by Michael Adams
+// Written mostly by Michael Adams
 // Modified by Peter Gottschling
 
 #ifndef MTL_MULT_ADD_BASE_CASE_32_SHARK_2_INCLUDE
 #define MTL_MULT_ADD_BASE_CASE_32_SHARK_2_INCLUDE
+
+
+#ifdef MTL_USE_OPTERON_OPTIMIZATION
+
+/* 
+   TBD:
+   - substraction to addition
+   - decent type checking for matrices   ok
+   - write test program
+     - test function dispatching         ok
+     - check results
+   - write operator
+   - handle non-divisible cases
+   - test with simple function
+   - test (ifdef) for icc 
+   - find emmintrin.h
+   - test assembly code
+
+   On odin:
+   - test other functions
+
+
+ */
+
+#include <iostream>
+#include <boost/static_assert.hpp>
+#include <boost/numeric/mtl/operations/matrix_mult.hpp>
 
 namespace mtl {
 
@@ -17,10 +44,22 @@ namespace mtl {
 
 struct mult_add_base_case_32_shark_2_opteron
 {
+  typedef mult_add_base_case_32_shark_2_opteron   self;
 
-  template <typename MatrixA, typename MatrixB, typename MatrixC>
-  void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c) 
+  template <unsigned long MaskA, typename PA,
+	    unsigned long MaskB, typename PB,
+	    unsigned long MaskC, typename PC>
+  void operator()(const morton_dense<double, MaskA, PA>& a, const morton_dense<double, MaskB, PB>& b, 
+		  morton_dense<double, MaskC, PC>& c) const
   {
+    // BOOST_STATIC_ASSERT(boost::is_same<typename specialize_mult_type<MatrixA, MatrixB, MatrixC>::type, self>::value);
+
+    std::cout << "In specialized multiplication\n";
+    if (a.num_rows() != 32 || a.num_cols() != 32 || b.num_cols() != 32) {
+      matrix_mult_simple(a, b, c);
+      return;
+    }
+
     // cast away const of a and b
     // ap= &a[0][0];
 
@@ -30,7 +69,7 @@ struct mult_add_base_case_32_shark_2_opteron
   }
 
 private:
-  void schurBase(double * D, double * C, double * BT)
+  void schurBase(double * D, double * C, double * BT) const
   {
     const int baseOrder= 32,
               stride = baseOrder; 
@@ -41,7 +80,7 @@ private:
       + ((c*baseSize)&colMask);
     */
 
-  #if 0
+  #if 1
     for (int i = 0; i < baseOrder; i+=2)
       for (int j = 0; j < baseOrder; j+=2)
         for (int k = 0; k < baseOrder; k++)
@@ -548,7 +587,7 @@ private:
       }
   #endif
 
-  #if 1
+  #if 0
     // Factor and unroll i
   #define MM_LOAD1_PD(a,b) \
   { \
@@ -714,5 +753,7 @@ private:
 };
 
 } // namespace mtl
+
+#endif // MTL_USE_OPTERON_OPTIMIZATION
 
 #endif // MTL_MULT_ADD_BASE_CASE_32_SHARK_2_INCLUDE

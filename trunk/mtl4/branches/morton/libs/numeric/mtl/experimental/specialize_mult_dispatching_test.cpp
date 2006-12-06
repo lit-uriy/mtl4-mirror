@@ -11,36 +11,52 @@
 #include <boost/numeric/mtl/operations/specialize_mult_type.hpp>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/numeric/mtl/operations/opteron/mult_add_base_case_32_shark_2.hpp>
+#include <boost/numeric/mtl/operations/matrix_mult.hpp>
+#include <boost/numeric/mtl/recursion/recursive_matrix_mult.hpp>
+#include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
+#include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
 
 
-struct gen_mult_t {};
+namespace mtl {
 
-bool is_optimized(const mtl::mult_add_base_case_32_shark_2_opteron& )
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void specialized_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC const& c)
 {
-    return true;
+    typedef recursion::bound_test_static<32>                      BaseCaseTest;
+
+    using recursion::base_case_matrix;
+    typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
+    typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
+    typedef typename base_case_matrix<MatrixC, BaseCaseTest>::type base_c_type;
+
+    typedef typename mtl::specialize_mult_type<
+        MatrixA, MatrixB, MatrixC
+      , BaseCaseTest
+      , functor::mult_add_simple_t<base_a_type, base_b_type, base_c_type>
+    >::type                                                       mult_type;
+
+    using recursion::matrix_recurator;
+    matrix_recurator<MatrixA>    rec_a(a);
+    matrix_recurator<MatrixB>    rec_b(b);
+    matrix_recurator<MatrixC>    rec_c(c);
+    equalize_depth(rec_a, rec_b, rec_c);
+
+    using recursion::recurator_mult_add;
+    recurator_mult_add(rec_a, rec_b, rec_c, mult_type(), BaseCaseTest());
 }
 
-bool is_optimized(const gen_mult_t& )
-{
-    return false;
-}
+
+} // namespace mtl
+
+
+
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void test(MatrixA const& a, MatrixB const& b, MatrixC const& c, const char* name, bool check)
 {
-#if 0    
-    typedef mtl::specialize_mult_type<MatrixA, MatrixB, MatrixC,
-	mtl::recursion::bound_test_static<32>, gen_mult_t>                 dispatcher;
-    std::cout << name << " match a: " << dispatcher::match_a << ", bits: " << dispatcher::base_case_bits << "\n";
-#endif
-
-    typedef typename mtl::specialize_mult_type<MatrixA, MatrixB, MatrixC,
-	mtl::recursion::bound_test_static<32>, gen_mult_t>::type           mult_type;
-    bool opt= is_optimized(mult_type());
-
-    std::cout << name << " is optimized = " << opt << ", should be = "
-	      << check << "\n";
-    if (opt != check) throw "wrong dispatching\n";
+    std::cout << "\n" << name << "  --- calling specializing mult:\n";
+    mtl::specialized_matrix_mult(a, b, c);
 }
 
 using namespace std;
