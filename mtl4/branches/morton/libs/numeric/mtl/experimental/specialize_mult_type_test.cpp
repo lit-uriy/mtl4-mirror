@@ -4,16 +4,23 @@
 #include <boost/test/minimal.hpp>
 
 // We define for optimization here to check if dispatching works
-#define MTL_USE_OPTERON_OPTIMIZATION
+#ifndef MTL_USE_OPTERON_OPTIMIZATION
+#  define MTL_USE_OPTERON_OPTIMIZATION
+#endif
 
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
 #include <boost/numeric/mtl/operations/specialize_mult_type.hpp>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/numeric/mtl/operations/opteron/mult_add_base_case_32_shark_2.hpp>
+#include <boost/numeric/mtl/recursion/base_case_test.hpp>
 
 
 struct gen_mult_t {};
+
+#ifndef __INTEL_COMPILER
+namespace mtl { struct mult_add_base_case_32_shark_2_opteron {}; }
+#endif
 
 bool is_optimized(const mtl::mult_add_base_case_32_shark_2_opteron& )
 {
@@ -33,7 +40,7 @@ void test(MatrixA const& a, MatrixB const& b, MatrixC const& c, const char* name
 	mtl::recursion::bound_test_static<32>, gen_mult_t>                 dispatcher;
     std::cout << name << " match a: " << dispatcher::match_a << ", bits: " << dispatcher::base_case_bits << "\n";
 #endif
-
+    
     typedef typename mtl::specialize_mult_type<MatrixA, MatrixB, MatrixC,
 	mtl::recursion::bound_test_static<32>, gen_mult_t>::type           mult_type;
     bool opt= is_optimized(mult_type());
@@ -73,6 +80,12 @@ int test_main(int argc, char* argv[])
     morton_dense<float, doppler_32_col_mask>       mcaf(size, size), mcbf(size, size), mccf(size, size);
     morton_dense<float, doppler_32_row_mask>       mraf(size, size), mrbf(size, size), mrcf(size, size);
 
+#ifdef __INTEL_COMPILER
+    bool true_on_intel= true;
+#else
+    bool true_on_intel= false;
+#endif 
+
     std::cout << "Testing base case optimization\n";
     test(da, db, dc, "dense2D", false);
     test(mda, mdb, mdc, "pure Morton", false);
@@ -80,9 +93,9 @@ int test_main(int argc, char* argv[])
     test(mra, mrb, mrc, "Hybrid row-major", false);
     test(mrans, mcbns, mrcns, "Hybrid col-major and row-major, no shark tooth", false);
     test(mraf, mcbf, mrcf, "Hybrid col-major and row-major with float", false);
-    test(mra, mcb, mrc, "Hybrid col-major and row-major", true);
-    test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z-order", true);
-    test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z and E-order", true);
+    test(mra, mcb, mrc, "Hybrid col-major and row-major", true_on_intel);
+    test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z-order", true_on_intel);
+    test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z and E-order", true_on_intel);
 
     return 0;
 }

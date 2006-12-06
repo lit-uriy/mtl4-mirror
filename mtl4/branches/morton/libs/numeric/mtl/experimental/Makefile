@@ -1,7 +1,26 @@
 INCLUDE_DIRS = -I${MTL_MORTON_BOOST_ROOT} -I${MTL_BOOST_ROOT} -I${BOOST_ROOT}
 
-CXXFLAGS = ${INCLUDE_DIRS} -Wno-long-double  -g
-#CXXFLAGS += -DNDEBUG -O3 -fast  -ffast-math  -funsafe-math-optimizations -ffinite-math-only 
+CXXFLAGS = ${INCLUDE_DIRS} 
+
+# CXXFLAGS += -Wno-long-double 
+
+# Debugging
+CXXFLAGS += -g
+
+# PowerPC optimization
+#CXXFLAGS += -DNDEBUG -O3 -ffast-math  -funsafe-math-optimizations -ffinite-math-only 
+
+# Additional G5 optimization
+# CXXFLAGS += -fast
+
+# Intel optimization
+# CXXFLAGS += -DNDEBUG -O3 
+
+# To use Michaels assembly code (only on Intel compiler)
+CXXFLAGS += -DMTL_USE_OPTERON_OPTIMIZATION
+
+
+CXX = icc
 
 all: morton_dense matrix_product
 

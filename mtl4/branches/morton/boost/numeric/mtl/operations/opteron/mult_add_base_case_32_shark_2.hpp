@@ -8,7 +8,7 @@
 #define MTL_MULT_ADD_BASE_CASE_32_SHARK_2_INCLUDE
 
 
-#ifdef MTL_USE_OPTERON_OPTIMIZATION
+#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __INTEL_COMPILER
 
 /* 
    TBD:
@@ -20,7 +20,7 @@
    - write operator                      ok
    - handle non-divisible cases          ok
    - test with simple function           ok
-   - test (ifdef) for icc 
+   - test (ifdef) for icc                ok
    - find emmintrin.h
    - test assembly code
 
@@ -37,9 +37,8 @@
 namespace mtl {
 
 
-// #include <emmintrin.h>
+#include <emmintrin.h>
 
-// #include "schurBase-intr-shark.h"
 
 
 struct mult_add_base_case_32_shark_2_opteron
@@ -64,13 +63,6 @@ struct mult_add_base_case_32_shark_2_opteron
            *bp= &const_cast<morton_dense<double, MaskB, PB>&>(b)[0][0], *cp= &c[0][0];
 
     mult_add_assembler(cp, ap, bp);
-
-    // cast away const of a and b
-    // ap= &a[0][0];
-
-    // schurBase(cp, ap, bp);
-
-    // if not divisible ?????????????
   }
 
 private:
@@ -85,7 +77,7 @@ private:
       + ((c*baseSize)&colMask);
     */
 
-  #if 1
+  #if 0
     for (int i = 0; i < baseOrder; i+=2)
       for (int j = 0; j < baseOrder; j+=2)
         for (int k = 0; k < baseOrder; k++)
@@ -592,7 +584,7 @@ private:
       }
   #endif
 
-  #if 0
+  #if 1
     // Factor and unroll i
   #define MM_LOAD1_PD(a,b) \
   { \

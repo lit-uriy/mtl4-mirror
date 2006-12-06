@@ -4,7 +4,7 @@
 #include <boost/test/minimal.hpp>
 
 // We define for optimization here to check if dispatching works
-#define MTL_USE_OPTERON_OPTIMIZATION
+// #define MTL_USE_OPTERON_OPTIMIZATION
 
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
@@ -39,6 +39,8 @@ void specialized_mult_add(MatrixA const& a, MatrixB const& b, MatrixC& c)
       , functor::mult_add_simple_t<base_a_type, base_b_type, base_c_type>
     >::type                                                       mult_type;
 
+    // std::cout << "Mult type " << typeid(mult_type()).name() << "\n";
+
     using recursion::matrix_recurator;
     matrix_recurator<MatrixA>    rec_a(a);
     matrix_recurator<MatrixB>    rec_b(b);
@@ -48,7 +50,7 @@ void specialized_mult_add(MatrixA const& a, MatrixB const& b, MatrixC& c)
     using recursion::recurator_mult_add;
     recurator_mult_add(rec_a, rec_b, rec_c, mult_type(), BaseCaseTest());
 }
-
+ 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void specialized_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
@@ -59,7 +61,7 @@ void specialized_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 } // namespace mtl
 
 
-
+ 
 using namespace std;
 using namespace mtl;
 
@@ -72,14 +74,24 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name, bool check)
     fill_hessian_matrix(b, 2.0);
     specialized_matrix_mult(a, b, c);
 
-    if (a.num_cols() <= 32) {
+    if (a.num_cols() <= 10) {
 	print_matrix_row_cursor(a); print_matrix_row_cursor(b); print_matrix_row_cursor(c); }
 
     check_hessian_matrix_product(c, a.num_cols());
 }
-
+ 
 int test_main(int argc, char* argv[])
 {
+
+#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __INTEL_COMPILER
+  cout << "optimized\n";
+#else
+  cout << "not optimized\n";
+#endif
+
+  // return 0;
+ 
+
     // Bitmasks:
 
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
