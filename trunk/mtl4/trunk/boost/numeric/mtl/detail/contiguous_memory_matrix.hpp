@@ -72,7 +72,7 @@ struct contiguous_memory_matrix
 	    if (size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT) {
 		malloc_address= new char[size * sizeof(value_type) + MTL_ALIGNMENT - 1];
 		char* p= malloc_address;
-		while (int(p) % MTL_ALIGNMENT) p++;
+		while ((long int)(p) % MTL_ALIGNMENT) p++;
 		this->data= reinterpret_cast<value_type*>(p);
 	    } else {
 		this->data= new value_type[size];
