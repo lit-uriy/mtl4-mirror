@@ -12,14 +12,14 @@
 
 /* 
    TBD:
-   - substraction to addition
+   - substraction to addition            ok
    - decent type checking for matrices   ok
-   - write test program
+   - write test program                  ok
      - test function dispatching         ok
-     - check results
-   - write operator
-   - handle non-divisible cases
-   - test with simple function
+     - check results                     ok
+   - write operator                      ok
+   - handle non-divisible cases          ok
+   - test with simple function           ok
    - test (ifdef) for icc 
    - find emmintrin.h
    - test assembly code
@@ -54,11 +54,16 @@ struct mult_add_base_case_32_shark_2_opteron
   {
     // BOOST_STATIC_ASSERT(boost::is_same<typename specialize_mult_type<MatrixA, MatrixB, MatrixC>::type, self>::value);
 
-    std::cout << "In specialized multiplication\n";
+    // std::cout << "In specialized multiplication\n";
     if (a.num_rows() != 32 || a.num_cols() != 32 || b.num_cols() != 32) {
-      matrix_mult_simple(a, b, c);
+      mult_add_simple(a, b, c);
       return;
     }
+
+    double *ap= &const_cast<morton_dense<double, MaskA, PA>&>(a)[0][0],
+           *bp= &const_cast<morton_dense<double, MaskB, PB>&>(b)[0][0], *cp= &c[0][0];
+
+    mult_add_assembler(cp, ap, bp);
 
     // cast away const of a and b
     // ap= &a[0][0];
@@ -69,7 +74,7 @@ struct mult_add_base_case_32_shark_2_opteron
   }
 
 private:
-  void schurBase(double * D, double * C, double * BT) const
+  void mult_add_assembler(double * D, double * C, double * BT) const
   {
     const int baseOrder= 32,
               stride = baseOrder; 
@@ -85,10 +90,10 @@ private:
       for (int j = 0; j < baseOrder; j+=2)
         for (int k = 0; k < baseOrder; k++)
         {
-  	D[0+(i)*stride+2*(j+0)] -= C[0+(i)*stride+2*k] * BT[0+(j)*stride+2*k];
-  	D[0+(i)*stride+2*(j+1)] -= C[0+(i)*stride+2*k] * BT[1+(j)*stride+2*k];
-  	D[1+(i)*stride+2*(j+0)] -= C[1+(i)*stride+2*k] * BT[0+(j)*stride+2*k];
-  	D[1+(i)*stride+2*(j+1)] -= C[1+(i)*stride+2*k] * BT[1+(j)*stride+2*k];
+  	D[0+(i)*stride+2*(j+0)] += C[0+(i)*stride+2*k] * BT[0+(j)*stride+2*k];
+  	D[0+(i)*stride+2*(j+1)] += C[0+(i)*stride+2*k] * BT[1+(j)*stride+2*k];
+  	D[1+(i)*stride+2*(j+0)] += C[1+(i)*stride+2*k] * BT[0+(j)*stride+2*k];
+  	D[1+(i)*stride+2*(j+1)] += C[1+(i)*stride+2*k] * BT[1+(j)*stride+2*k];
         }
   #endif
 
@@ -101,16 +106,16 @@ private:
         {
           for (int i2 = i; i2 < i+16; i2+=2)
   	{
-            D[0+(i2)*stride+2*(j+0)] -= C[0+(i2)*stride+2*k] * BT[0+(j)*stride+2*k];
-            D[1+(i2)*stride+2*(j+0)] -= C[1+(i2)*stride+2*k] * BT[0+(j)*stride+2*k];
+            D[0+(i2)*stride+2*(j+0)] += C[0+(i2)*stride+2*k] * BT[0+(j)*stride+2*k];
+            D[1+(i2)*stride+2*(j+0)] += C[1+(i2)*stride+2*k] * BT[0+(j)*stride+2*k];
   	}
         }
         for (int k = 0; k < baseOrder; k++)
         {
           for (int i2 = i; i2 < i+16; i2+=2)
   	{
-            D[0+(i2)*stride+2*(j+1)] -= C[0+(i2)*stride+2*k] * BT[1+(j)*stride+2*k];
-            D[1+(i2)*stride+2*(j+1)] -= C[1+(i2)*stride+2*k] * BT[1+(j)*stride+2*k];
+            D[0+(i2)*stride+2*(j+1)] += C[0+(i2)*stride+2*k] * BT[1+(j)*stride+2*k];
+            D[1+(i2)*stride+2*(j+1)] += C[1+(i2)*stride+2*k] * BT[1+(j)*stride+2*k];
   	}
         }
       }
@@ -124,41 +129,41 @@ private:
       {
         for (int k = 0; k < baseOrder; k++)
         {
-          D[0+(i+ 0)*stride+2*(j+0)]-=C[0+(i+ 0)*stride+2*k]*BT[0+j*stride+2*k];
-          D[1+(i+ 0)*stride+2*(j+0)]-=C[1+(i+ 0)*stride+2*k]*BT[0+j*stride+2*k];
-          D[0+(i+ 2)*stride+2*(j+0)]-=C[0+(i+ 2)*stride+2*k]*BT[0+j*stride+2*k];
-          D[1+(i+ 2)*stride+2*(j+0)]-=C[1+(i+ 2)*stride+2*k]*BT[0+j*stride+2*k];
-          D[0+(i+ 4)*stride+2*(j+0)]-=C[0+(i+ 4)*stride+2*k]*BT[0+j*stride+2*k];
-          D[1+(i+ 4)*stride+2*(j+0)]-=C[1+(i+ 4)*stride+2*k]*BT[0+j*stride+2*k];
-          D[0+(i+ 6)*stride+2*(j+0)]-=C[0+(i+ 6)*stride+2*k]*BT[0+j*stride+2*k];
-          D[1+(i+ 6)*stride+2*(j+0)]-=C[1+(i+ 6)*stride+2*k]*BT[0+j*stride+2*k];
-          D[0+(i+ 8)*stride+2*(j+0)]-=C[0+(i+ 8)*stride+2*k]*BT[0+j*stride+2*k];
-          D[1+(i+ 8)*stride+2*(j+0)]-=C[1+(i+ 8)*stride+2*k]*BT[0+j*stride+2*k];
-          D[0+(i+10)*stride+2*(j+0)]-=C[0+(i+10)*stride+2*k]*BT[0+j*stride+2*k];
-          D[1+(i+10)*stride+2*(j+0)]-=C[1+(i+10)*stride+2*k]*BT[0+j*stride+2*k];
-          D[0+(i+12)*stride+2*(j+0)]-=C[0+(i+12)*stride+2*k]*BT[0+j*stride+2*k];
-          D[1+(i+12)*stride+2*(j+0)]-=C[1+(i+12)*stride+2*k]*BT[0+j*stride+2*k];
-          D[0+(i+14)*stride+2*(j+0)]-=C[0+(i+14)*stride+2*k]*BT[0+j*stride+2*k];
-          D[1+(i+14)*stride+2*(j+0)]-=C[1+(i+14)*stride+2*k]*BT[0+j*stride+2*k];
+          D[0+(i+ 0)*stride+2*(j+0)]+=C[0+(i+ 0)*stride+2*k]*BT[0+j*stride+2*k];
+          D[1+(i+ 0)*stride+2*(j+0)]+=C[1+(i+ 0)*stride+2*k]*BT[0+j*stride+2*k];
+          D[0+(i+ 2)*stride+2*(j+0)]+=C[0+(i+ 2)*stride+2*k]*BT[0+j*stride+2*k];
+          D[1+(i+ 2)*stride+2*(j+0)]+=C[1+(i+ 2)*stride+2*k]*BT[0+j*stride+2*k];
+          D[0+(i+ 4)*stride+2*(j+0)]+=C[0+(i+ 4)*stride+2*k]*BT[0+j*stride+2*k];
+          D[1+(i+ 4)*stride+2*(j+0)]+=C[1+(i+ 4)*stride+2*k]*BT[0+j*stride+2*k];
+          D[0+(i+ 6)*stride+2*(j+0)]+=C[0+(i+ 6)*stride+2*k]*BT[0+j*stride+2*k];
+          D[1+(i+ 6)*stride+2*(j+0)]+=C[1+(i+ 6)*stride+2*k]*BT[0+j*stride+2*k];
+          D[0+(i+ 8)*stride+2*(j+0)]+=C[0+(i+ 8)*stride+2*k]*BT[0+j*stride+2*k];
+          D[1+(i+ 8)*stride+2*(j+0)]+=C[1+(i+ 8)*stride+2*k]*BT[0+j*stride+2*k];
+          D[0+(i+10)*stride+2*(j+0)]+=C[0+(i+10)*stride+2*k]*BT[0+j*stride+2*k];
+          D[1+(i+10)*stride+2*(j+0)]+=C[1+(i+10)*stride+2*k]*BT[0+j*stride+2*k];
+          D[0+(i+12)*stride+2*(j+0)]+=C[0+(i+12)*stride+2*k]*BT[0+j*stride+2*k];
+          D[1+(i+12)*stride+2*(j+0)]+=C[1+(i+12)*stride+2*k]*BT[0+j*stride+2*k];
+          D[0+(i+14)*stride+2*(j+0)]+=C[0+(i+14)*stride+2*k]*BT[0+j*stride+2*k];
+          D[1+(i+14)*stride+2*(j+0)]+=C[1+(i+14)*stride+2*k]*BT[0+j*stride+2*k];
         }
         for (int k = 0; k < baseOrder; k++)
         {
-          D[0+(i+ 0)*stride+2*(j+1)]-=C[0+(i+ 0)*stride+2*k]*BT[1+j*stride+2*k];
-          D[1+(i+ 0)*stride+2*(j+1)]-=C[1+(i+ 0)*stride+2*k]*BT[1+j*stride+2*k];
-          D[0+(i+ 2)*stride+2*(j+1)]-=C[0+(i+ 2)*stride+2*k]*BT[1+j*stride+2*k];
-          D[1+(i+ 2)*stride+2*(j+1)]-=C[1+(i+ 2)*stride+2*k]*BT[1+j*stride+2*k];
-          D[0+(i+ 4)*stride+2*(j+1)]-=C[0+(i+ 4)*stride+2*k]*BT[1+j*stride+2*k];
-          D[1+(i+ 4)*stride+2*(j+1)]-=C[1+(i+ 4)*stride+2*k]*BT[1+j*stride+2*k];
-          D[0+(i+ 6)*stride+2*(j+1)]-=C[0+(i+ 6)*stride+2*k]*BT[1+j*stride+2*k];
-          D[1+(i+ 6)*stride+2*(j+1)]-=C[1+(i+ 6)*stride+2*k]*BT[1+j*stride+2*k];
-          D[0+(i+ 8)*stride+2*(j+1)]-=C[0+(i+ 8)*stride+2*k]*BT[1+j*stride+2*k];
-          D[1+(i+ 8)*stride+2*(j+1)]-=C[1+(i+ 8)*stride+2*k]*BT[1+j*stride+2*k];
-          D[0+(i+10)*stride+2*(j+1)]-=C[0+(i+10)*stride+2*k]*BT[1+j*stride+2*k];
-          D[1+(i+10)*stride+2*(j+1)]-=C[1+(i+10)*stride+2*k]*BT[1+j*stride+2*k];
-          D[0+(i+12)*stride+2*(j+1)]-=C[0+(i+12)*stride+2*k]*BT[1+j*stride+2*k];
-          D[1+(i+12)*stride+2*(j+1)]-=C[1+(i+12)*stride+2*k]*BT[1+j*stride+2*k];
-          D[0+(i+14)*stride+2*(j+1)]-=C[0+(i+14)*stride+2*k]*BT[1+j*stride+2*k];
-          D[1+(i+14)*stride+2*(j+1)]-=C[1+(i+14)*stride+2*k]*BT[1+j*stride+2*k];
+          D[0+(i+ 0)*stride+2*(j+1)]+=C[0+(i+ 0)*stride+2*k]*BT[1+j*stride+2*k];
+          D[1+(i+ 0)*stride+2*(j+1)]+=C[1+(i+ 0)*stride+2*k]*BT[1+j*stride+2*k];
+          D[0+(i+ 2)*stride+2*(j+1)]+=C[0+(i+ 2)*stride+2*k]*BT[1+j*stride+2*k];
+          D[1+(i+ 2)*stride+2*(j+1)]+=C[1+(i+ 2)*stride+2*k]*BT[1+j*stride+2*k];
+          D[0+(i+ 4)*stride+2*(j+1)]+=C[0+(i+ 4)*stride+2*k]*BT[1+j*stride+2*k];
+          D[1+(i+ 4)*stride+2*(j+1)]+=C[1+(i+ 4)*stride+2*k]*BT[1+j*stride+2*k];
+          D[0+(i+ 6)*stride+2*(j+1)]+=C[0+(i+ 6)*stride+2*k]*BT[1+j*stride+2*k];
+          D[1+(i+ 6)*stride+2*(j+1)]+=C[1+(i+ 6)*stride+2*k]*BT[1+j*stride+2*k];
+          D[0+(i+ 8)*stride+2*(j+1)]+=C[0+(i+ 8)*stride+2*k]*BT[1+j*stride+2*k];
+          D[1+(i+ 8)*stride+2*(j+1)]+=C[1+(i+ 8)*stride+2*k]*BT[1+j*stride+2*k];
+          D[0+(i+10)*stride+2*(j+1)]+=C[0+(i+10)*stride+2*k]*BT[1+j*stride+2*k];
+          D[1+(i+10)*stride+2*(j+1)]+=C[1+(i+10)*stride+2*k]*BT[1+j*stride+2*k];
+          D[0+(i+12)*stride+2*(j+1)]+=C[0+(i+12)*stride+2*k]*BT[1+j*stride+2*k];
+          D[1+(i+12)*stride+2*(j+1)]+=C[1+(i+12)*stride+2*k]*BT[1+j*stride+2*k];
+          D[0+(i+14)*stride+2*(j+1)]+=C[0+(i+14)*stride+2*k]*BT[1+j*stride+2*k];
+          D[1+(i+14)*stride+2*(j+1)]+=C[1+(i+14)*stride+2*k]*BT[1+j*stride+2*k];
         }
       }
   #endif
@@ -187,22 +192,22 @@ private:
           double d15 = D[1+(i+14)*stride+2*(j+0)];
         for (int k = 0; k < baseOrder; k++)
         {
-          d00-=C[0+(i+ 0)*stride+2*k]*BT[0+j*stride+2*k];
-          d01-=C[1+(i+ 0)*stride+2*k]*BT[0+j*stride+2*k];
-          d02-=C[0+(i+ 2)*stride+2*k]*BT[0+j*stride+2*k];
-          d03-=C[1+(i+ 2)*stride+2*k]*BT[0+j*stride+2*k];
-          d04-=C[0+(i+ 4)*stride+2*k]*BT[0+j*stride+2*k];
-          d05-=C[1+(i+ 4)*stride+2*k]*BT[0+j*stride+2*k];
-          d06-=C[0+(i+ 6)*stride+2*k]*BT[0+j*stride+2*k];
-          d07-=C[1+(i+ 6)*stride+2*k]*BT[0+j*stride+2*k];
-          d08-=C[0+(i+ 8)*stride+2*k]*BT[0+j*stride+2*k];
-          d09-=C[1+(i+ 8)*stride+2*k]*BT[0+j*stride+2*k];
-          d10-=C[0+(i+10)*stride+2*k]*BT[0+j*stride+2*k];
-          d11-=C[1+(i+10)*stride+2*k]*BT[0+j*stride+2*k];
-          d12-=C[0+(i+12)*stride+2*k]*BT[0+j*stride+2*k];
-          d13-=C[1+(i+12)*stride+2*k]*BT[0+j*stride+2*k];
-          d14-=C[0+(i+14)*stride+2*k]*BT[0+j*stride+2*k];
-          d15-=C[1+(i+14)*stride+2*k]*BT[0+j*stride+2*k];
+          d00+=C[0+(i+ 0)*stride+2*k]*BT[0+j*stride+2*k];
+          d01+=C[1+(i+ 0)*stride+2*k]*BT[0+j*stride+2*k];
+          d02+=C[0+(i+ 2)*stride+2*k]*BT[0+j*stride+2*k];
+          d03+=C[1+(i+ 2)*stride+2*k]*BT[0+j*stride+2*k];
+          d04+=C[0+(i+ 4)*stride+2*k]*BT[0+j*stride+2*k];
+          d05+=C[1+(i+ 4)*stride+2*k]*BT[0+j*stride+2*k];
+          d06+=C[0+(i+ 6)*stride+2*k]*BT[0+j*stride+2*k];
+          d07+=C[1+(i+ 6)*stride+2*k]*BT[0+j*stride+2*k];
+          d08+=C[0+(i+ 8)*stride+2*k]*BT[0+j*stride+2*k];
+          d09+=C[1+(i+ 8)*stride+2*k]*BT[0+j*stride+2*k];
+          d10+=C[0+(i+10)*stride+2*k]*BT[0+j*stride+2*k];
+          d11+=C[1+(i+10)*stride+2*k]*BT[0+j*stride+2*k];
+          d12+=C[0+(i+12)*stride+2*k]*BT[0+j*stride+2*k];
+          d13+=C[1+(i+12)*stride+2*k]*BT[0+j*stride+2*k];
+          d14+=C[0+(i+14)*stride+2*k]*BT[0+j*stride+2*k];
+          d15+=C[1+(i+14)*stride+2*k]*BT[0+j*stride+2*k];
         }
           D[0+(i+ 0)*stride+2*(j+0)] = d00;
           D[1+(i+ 0)*stride+2*(j+0)] = d01;
@@ -241,22 +246,22 @@ private:
           double d15 = D[1+(i+14)*stride+2*(j+1)];
         for (int k = 0; k < baseOrder; k++)
         {
-          d00-=C[0+(i+ 0)*stride+2*k]*BT[1+j*stride+2*k];
-          d01-=C[1+(i+ 0)*stride+2*k]*BT[1+j*stride+2*k];
-          d02-=C[0+(i+ 2)*stride+2*k]*BT[1+j*stride+2*k];
-          d03-=C[1+(i+ 2)*stride+2*k]*BT[1+j*stride+2*k];
-          d04-=C[0+(i+ 4)*stride+2*k]*BT[1+j*stride+2*k];
-          d05-=C[1+(i+ 4)*stride+2*k]*BT[1+j*stride+2*k];
-          d06-=C[0+(i+ 6)*stride+2*k]*BT[1+j*stride+2*k];
-          d07-=C[1+(i+ 6)*stride+2*k]*BT[1+j*stride+2*k];
-          d08-=C[0+(i+ 8)*stride+2*k]*BT[1+j*stride+2*k];
-          d09-=C[1+(i+ 8)*stride+2*k]*BT[1+j*stride+2*k];
-          d10-=C[0+(i+10)*stride+2*k]*BT[1+j*stride+2*k];
-          d11-=C[1+(i+10)*stride+2*k]*BT[1+j*stride+2*k];
-          d12-=C[0+(i+12)*stride+2*k]*BT[1+j*stride+2*k];
-          d13-=C[1+(i+12)*stride+2*k]*BT[1+j*stride+2*k];
-          d14-=C[0+(i+14)*stride+2*k]*BT[1+j*stride+2*k];
-          d15-=C[1+(i+14)*stride+2*k]*BT[1+j*stride+2*k];
+          d00+=C[0+(i+ 0)*stride+2*k]*BT[1+j*stride+2*k];
+          d01+=C[1+(i+ 0)*stride+2*k]*BT[1+j*stride+2*k];
+          d02+=C[0+(i+ 2)*stride+2*k]*BT[1+j*stride+2*k];
+          d03+=C[1+(i+ 2)*stride+2*k]*BT[1+j*stride+2*k];
+          d04+=C[0+(i+ 4)*stride+2*k]*BT[1+j*stride+2*k];
+          d05+=C[1+(i+ 4)*stride+2*k]*BT[1+j*stride+2*k];
+          d06+=C[0+(i+ 6)*stride+2*k]*BT[1+j*stride+2*k];
+          d07+=C[1+(i+ 6)*stride+2*k]*BT[1+j*stride+2*k];
+          d08+=C[0+(i+ 8)*stride+2*k]*BT[1+j*stride+2*k];
+          d09+=C[1+(i+ 8)*stride+2*k]*BT[1+j*stride+2*k];
+          d10+=C[0+(i+10)*stride+2*k]*BT[1+j*stride+2*k];
+          d11+=C[1+(i+10)*stride+2*k]*BT[1+j*stride+2*k];
+          d12+=C[0+(i+12)*stride+2*k]*BT[1+j*stride+2*k];
+          d13+=C[1+(i+12)*stride+2*k]*BT[1+j*stride+2*k];
+          d14+=C[0+(i+14)*stride+2*k]*BT[1+j*stride+2*k];
+          d15+=C[1+(i+14)*stride+2*k]*BT[1+j*stride+2*k];
         }
           D[0+(i+ 0)*stride+2*(j+1)] = d00;
           D[1+(i+ 0)*stride+2*(j+1)] = d01;
@@ -295,14 +300,14 @@ private:
         for (int k = 0; k < baseOrder; k++)
         {
           __m128d bt0 = _mm_load1_pd(&BT[0+j*stride+2*k]);
-  	d00-=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt0;
-          d02-=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt0;
-  	d04-=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt0;
-  	d06-=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt0;
-  	d08-=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt0;
-  	d10-=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt0;
-  	d12-=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt0;
-  	d14-=_mm_load_pd(&C[0+(i+14)*stride+2*k])*bt0;
+  	d00+=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt0;
+          d02+=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt0;
+  	d04+=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt0;
+  	d06+=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt0;
+  	d08+=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt0;
+  	d10+=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt0;
+  	d12+=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt0;
+  	d14+=_mm_load_pd(&C[0+(i+14)*stride+2*k])*bt0;
         }
           _mm_store_pd(&D[0+(i+ 0)*stride+2*(j+0)], d00);
           _mm_store_pd(&D[0+(i+ 2)*stride+2*(j+0)], d02);
@@ -326,14 +331,14 @@ private:
         for (int k = 0; k < baseOrder; k++)
         {
           __m128d bt0 = _mm_load1_pd(&BT[1+j*stride+2*k]);
-  	d00-=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt0;
-          d02-=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt0;
-  	d04-=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt0;
-  	d06-=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt0;
-  	d08-=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt0;
-  	d10-=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt0;
-  	d12-=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt0;
-  	d14-=_mm_load_pd(&C[0+(i+14)*stride+2*k])*bt0;
+  	d00+=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt0;
+          d02+=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt0;
+  	d04+=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt0;
+  	d06+=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt0;
+  	d08+=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt0;
+  	d10+=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt0;
+  	d12+=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt0;
+  	d14+=_mm_load_pd(&C[0+(i+14)*stride+2*k])*bt0;
         }
           _mm_store_pd(&D[0+(i+ 0)*stride+2*(j+1)], d00);
           _mm_store_pd(&D[0+(i+ 2)*stride+2*(j+1)], d02);
@@ -377,15 +382,15 @@ private:
         {
           __m128d bt0;
           MM_LOAD1_PD(bt0, &BT[0+j*stride+2*k]);
-  	d00-=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt0;
-          d02-=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt0;
-  	d04-=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt0;
-  	d06-=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt0;
-  	d08-=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt0;
-  	d10-=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt0;
-  	d12-=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt0;
+  	d00+=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt0;
+          d02+=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt0;
+  	d04+=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt0;
+  	d06+=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt0;
+  	d08+=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt0;
+  	d10+=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt0;
+  	d12+=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt0;
           MM_MUL_PD(bt0, &C[0+(i+14)*stride+2*k]);
-          d14-=bt0;
+          d14+=bt0;
         }
           _mm_store_pd(&D[0+(i+ 0)*stride+2*(j+0)], d00);
           _mm_store_pd(&D[0+(i+ 2)*stride+2*(j+0)], d02);
@@ -410,15 +415,15 @@ private:
         {
           __m128d bt1;
   	MM_LOAD1U_PD(bt1, &BT[1+j*stride+2*k]);
-  	d00-=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt1;
-          d02-=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt1;
-  	d04-=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt1;
-  	d06-=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt1;
-  	d08-=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt1;
-  	d10-=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt1;
-  	d12-=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt1;
+  	d00+=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt1;
+          d02+=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt1;
+  	d04+=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt1;
+  	d06+=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt1;
+  	d08+=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt1;
+  	d10+=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt1;
+  	d12+=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt1;
           MM_MUL_PD(bt1, &C[0+(i+14)*stride+2*k]);
-  	d14-=bt1;
+  	d14+=bt1;
         }
           _mm_store_pd(&D[0+(i+ 0)*stride+2*(j+1)], d00);
           _mm_store_pd(&D[0+(i+ 2)*stride+2*(j+1)], d02);
@@ -450,29 +455,29 @@ private:
         { \
           __m128d bt0; \
           MM_LOAD1_PD(bt0, &BT[0+j*stride+2*k]); \
-  	d00-=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt0; \
-          d02-=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt0; \
-  	d04-=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt0; \
-  	d06-=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt0; \
-  	d08-=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt0; \
-  	d10-=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt0; \
-  	d12-=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt0; \
+  	d00+=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt0; \
+          d02+=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt0; \
+  	d04+=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt0; \
+  	d06+=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt0; \
+  	d08+=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt0; \
+  	d10+=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt0; \
+  	d12+=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt0; \
           MM_MUL_PD(bt0, &C[0+(i+14)*stride+2*k]); \
-          d14-=bt0; \
+          d14+=bt0; \
         }
   #define BLOCK0_1(i,j,k) \
         { \
           __m128d bt1; \
   	MM_LOAD1U_PD(bt1, &BT[1+j*stride+2*k]); \
-  	d00-=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt1; \
-          d02-=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt1; \
-  	d04-=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt1; \
-  	d06-=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt1; \
-  	d08-=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt1; \
-  	d10-=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt1; \
-  	d12-=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt1; \
+  	d00+=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt1; \
+          d02+=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt1; \
+  	d04+=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt1; \
+  	d06+=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt1; \
+  	d08+=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt1; \
+  	d10+=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt1; \
+  	d12+=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt1; \
           MM_MUL_PD(bt1, &C[0+(i+14)*stride+2*k]); \
-  	d14-=bt1; \
+  	d14+=bt1; \
         }
     for (int j = 0; j < baseOrder; j+=2)
       for (int i = 0; i < baseOrder; i+=16)
@@ -605,29 +610,29 @@ private:
         { \
           __m128d bt0; \
           MM_LOAD1_PD(bt0, &BT[0+j*stride+2*k]); \
-  	d00-=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt0; \
-          d02-=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt0; \
-  	d04-=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt0; \
-  	d06-=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt0; \
-  	d08-=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt0; \
-  	d10-=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt0; \
-  	d12-=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt0; \
+  	d00+=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt0; \
+          d02+=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt0; \
+  	d04+=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt0; \
+  	d06+=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt0; \
+  	d08+=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt0; \
+  	d10+=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt0; \
+  	d12+=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt0; \
           MM_MUL_PD(bt0, &C[0+(i+14)*stride+2*k]); \
-          d14-=bt0; \
+          d14+=bt0; \
         }
   #define BLOCK0_1(i,j,k) \
         { \
           __m128d bt1; \
   	MM_LOAD1U_PD(bt1, &BT[1+j*stride+2*k]); \
-  	d00-=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt1; \
-          d02-=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt1; \
-  	d04-=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt1; \
-  	d06-=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt1; \
-  	d08-=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt1; \
-  	d10-=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt1; \
-  	d12-=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt1; \
+  	d00+=_mm_load_pd(&C[0+(i+ 0)*stride+2*k])*bt1; \
+          d02+=_mm_load_pd(&C[0+(i+ 2)*stride+2*k])*bt1; \
+  	d04+=_mm_load_pd(&C[0+(i+ 4)*stride+2*k])*bt1; \
+  	d06+=_mm_load_pd(&C[0+(i+ 6)*stride+2*k])*bt1; \
+  	d08+=_mm_load_pd(&C[0+(i+ 8)*stride+2*k])*bt1; \
+  	d10+=_mm_load_pd(&C[0+(i+10)*stride+2*k])*bt1; \
+  	d12+=_mm_load_pd(&C[0+(i+12)*stride+2*k])*bt1; \
           MM_MUL_PD(bt1, &C[0+(i+14)*stride+2*k]); \
-  	d14-=bt1; \
+  	d14+=bt1; \
         }
   #define BLOCK1_0(i,j) \
         { \
