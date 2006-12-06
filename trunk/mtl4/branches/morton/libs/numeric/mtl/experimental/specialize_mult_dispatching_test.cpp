@@ -8,6 +8,8 @@
 
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
+#include <boost/numeric/mtl/operations/set_to_0.hpp>
+#include <boost/numeric/mtl/operations/print_matrix.hpp>
 #include <boost/numeric/mtl/operations/specialize_mult_type.hpp>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/numeric/mtl/operations/opteron/mult_add_base_case_32_shark_2.hpp>
@@ -15,13 +17,14 @@
 #include <boost/numeric/mtl/recursion/recursive_matrix_mult.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
+#include <boost/numeric/mtl/operations/hessian_matrix_utilities.hpp>
 
 
 namespace mtl {
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
-void specialized_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC const& c)
+void specialized_mult_add(MatrixA const& a, MatrixB const& b, MatrixC& c) 
 {
     typedef recursion::bound_test_static<32>                      BaseCaseTest;
 
@@ -46,21 +49,34 @@ void specialized_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC const& 
     recurator_mult_add(rec_a, rec_b, rec_c, mult_type(), BaseCaseTest());
 }
 
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void specialized_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
+{
+    set_to_0(c);
+    specialized_mult_add(a, b, c);
+}
 
 } // namespace mtl
 
 
 
-
-template <typename MatrixA, typename MatrixB, typename MatrixC>
-void test(MatrixA const& a, MatrixB const& b, MatrixC const& c, const char* name, bool check)
-{
-    std::cout << "\n" << name << "  --- calling specializing mult:\n";
-    mtl::specialized_matrix_mult(a, b, c);
-}
-
 using namespace std;
 using namespace mtl;
+
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name, bool check)
+{
+    std::cout << "\n" << name << "  --- calling specializing mult:\n";
+ 
+    fill_hessian_matrix(a, 1.0);
+    fill_hessian_matrix(b, 2.0);
+    specialized_matrix_mult(a, b, c);
+
+    if (a.num_cols() <= 32) {
+	print_matrix_row_cursor(a); print_matrix_row_cursor(b); print_matrix_row_cursor(c); }
+
+    check_hessian_matrix_product(c, a.num_cols());
+}
 
 int test_main(int argc, char* argv[])
 {
