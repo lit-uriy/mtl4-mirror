@@ -61,7 +61,7 @@ void recurator_mult_add(RecuratorA const& rec_a, RecuratorB const& rec_b,
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
-void recursive_mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+void inline recursive_mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     using recursion::matrix_recurator;
     matrix_recurator<MatrixA>    rec_a(a);
@@ -80,7 +80,7 @@ void recursive_mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c, B
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest> 
-void recursive_matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+void inline recursive_matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     set_to_0(c);
     recursive_mult_add_simple(a, b, c, test);
@@ -110,7 +110,7 @@ struct base_case_dispatcher
 
 template <typename FastBaseCase, typename SlowBaseCase, typename BaseCaseTest,
 	  typename MatrixA, typename MatrixB, typename MatrixC>
-void recursive_mult_add(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+void inline recursive_mult_add(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     using recursion::matrix_recurator;
     matrix_recurator<MatrixA>    rec_a(a);
@@ -122,7 +122,6 @@ void recursive_mult_add(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCase
     typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
     typedef typename base_case_matrix<MatrixC, BaseCaseTest>::type base_c_type;
     base_case_dispatcher<FastBaseCase, SlowBaseCase, BaseCaseTest, base_a_type, base_b_type, base_c_type> multiplier;
-    // typename base_case_dispatcher<FastBaseCase, SlowBaseCase, BaseCaseTest, MatrixA, MatrixB, MatrixC>::base_case_type bc;
 
     // std::std::cout << "Multiplier: " << typeid(bc).name() << "\n";
     recurator_mult_add(rec_a, rec_b, rec_c, multiplier, test);
@@ -131,7 +130,7 @@ void recursive_mult_add(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCase
 
 template <typename FastBaseCase, typename SlowBaseCase, typename BaseCaseTest,
 	  typename MatrixA, typename MatrixB, typename MatrixC>
-void recursive_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+void inline recursive_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     set_to_0(c);
     recursive_mult_add<FastBaseCase, SlowBaseCase>(a, b, c, test);
@@ -139,7 +138,7 @@ void recursive_matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseC
 
 
 template <unsigned InnerUnroll, typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
-void recursive_matrix_mult_fast_inner(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+void inline recursive_matrix_mult_fast_inner(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
     typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
@@ -153,7 +152,7 @@ void recursive_matrix_mult_fast_inner(MatrixA const& a, MatrixB const& b, Matrix
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
-void recursive_matrix_mult_fast_inner(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+void inline recursive_matrix_mult_fast_inner(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     recursive_matrix_mult_fast_inner<MTL_MATRIX_MULT_INNER_UNROLL>(a, b, c, test);
 }
@@ -161,7 +160,7 @@ void recursive_matrix_mult_fast_inner(MatrixA const& a, MatrixB const& b, Matrix
 
 template <unsigned InnerUnroll, unsigned MiddleUnroll,
 	  typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
-void recursive_matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+void inline recursive_matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
     typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
@@ -176,7 +175,7 @@ void recursive_matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, Matri
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
-void recursive_matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+void inline recursive_matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     recursive_matrix_mult_fast_middle<MTL_MATRIX_MULT_INNER_UNROLL, MTL_MATRIX_MULT_MIDDLE_UNROLL>(a, b, c, test);
 }
@@ -184,7 +183,7 @@ void recursive_matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, Matri
 
 template <unsigned InnerUnroll, unsigned MiddleUnroll, unsigned OuterUnroll,
 	  typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
-void recursive_matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+void inline recursive_matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
     typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
@@ -199,7 +198,7 @@ void recursive_matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, Matrix
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
-void recursive_matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
+void inline recursive_matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test)
 {
     recursive_matrix_mult_fast_outer<MTL_MATRIX_MULT_INNER_UNROLL, MTL_MATRIX_MULT_MIDDLE_UNROLL,
 	                             MTL_MATRIX_MULT_OUTER_UNROLL>(a, b, c, test);

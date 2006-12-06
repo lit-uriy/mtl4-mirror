@@ -12,9 +12,11 @@
 #include <boost/numeric/meta_math/is_power_of_2.hpp>
 #include <boost/numeric/meta_math/log_2.hpp>
 
+#include <boost/numeric/mtl/operations/opteron/mult_add_base_case_32_shark_2.hpp>
+
 namespace mtl {
 
-struct opteron_mult_hack {};
+  // struct opteron_mult_hack {};
 
 template <unsigned long MaskA, typename PA,
 	  unsigned long MaskB, typename PB,
@@ -33,7 +35,7 @@ struct specialize_mult_type<morton_dense<double, MaskA, PA>, morton_dense<double
 
     typedef typename boost::mpl::if_c<
 	match_all
-      , opteron_mult_hack
+      , mult_add_base_case_32_shark_2_opteron
       , DefaultMult
     >::type type;
 };
