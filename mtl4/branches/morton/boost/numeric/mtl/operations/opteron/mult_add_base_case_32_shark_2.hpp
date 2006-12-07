@@ -8,7 +8,8 @@
 #define MTL_MULT_ADD_BASE_CASE_32_SHARK_2_INCLUDE
 
 
-#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __INTEL_COMPILER
+//#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __INTEL_COMPILER
+#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __GNUC__ && !defined __INTEL_COMPILER
 
 /* 
    TBD:
@@ -53,7 +54,7 @@ struct mult_add_base_case_32_shark_2_opteron
   {
     // BOOST_STATIC_ASSERT(boost::is_same<typename specialize_mult_type<MatrixA, MatrixB, MatrixC>::type, self>::value);
 
-    // std::cout << "In specialized multiplication\n";
+    std::cout << "In specialized multiplication\n";
     if (a.num_rows() != 32 || a.num_cols() != 32 || b.num_cols() != 32) {
       mult_add_simple(a, b, c);
       return;

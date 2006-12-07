@@ -16,11 +16,11 @@ CXXFLAGS += -g
 # Intel optimization
 # CXXFLAGS += -DNDEBUG -O3 
 
-# To use Michaels assembly code (only on Intel compiler)
+# To use Michaels assembly code (is not used when not compiled with g++)
 CXXFLAGS += -DMTL_USE_OPTERON_OPTIMIZATION
 
 
-CXX = icc
+#CXX = icc
 
 all: morton_dense matrix_product
 
