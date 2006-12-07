@@ -7,10 +7,10 @@ CXXFLAGS = ${INCLUDE_DIRS}
 # Debugging
 CXXFLAGS += -g
 
-# PowerPC optimization
-#CXXFLAGS += -DNDEBUG -O3 -ffast-math  -funsafe-math-optimizations -ffinite-math-only 
+# g++ optimization
+CXXFLAGS += -DNDEBUG -O3 -ffast-math  -funsafe-math-optimizations -ffinite-math-only 
 
-# Additional G5 optimization
+# Additional G5 optimization on g++
 # CXXFLAGS += -fast
 
 # Intel optimization
@@ -20,7 +20,7 @@ CXXFLAGS += -g
 CXXFLAGS += -DMTL_USE_OPTERON_OPTIMIZATION
 
 
-#CXX = icc
+# CXX = icc
 
 all: morton_dense matrix_product
 
