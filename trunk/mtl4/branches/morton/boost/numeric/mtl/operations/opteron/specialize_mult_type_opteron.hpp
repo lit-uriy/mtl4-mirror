@@ -3,8 +3,7 @@
 #ifndef MTL_SPECIALIZE_MULT_TYPE_OPTERON_INCLUDE
 #define MTL_SPECIALIZE_MULT_TYPE_OPTERON_INCLUDE
 
-#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __INTEL_COMPILER
-
+#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __GNUC__ && !defined __INTEL_COMPILER
 
 #include <boost/mpl/if.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>

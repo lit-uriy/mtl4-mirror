@@ -5,7 +5,7 @@
 
 // We define for optimization here to check if dispatching works
 // #define MTL_USE_OPTERON_OPTIMIZATION
-
+ 
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp>
 #include <boost/numeric/mtl/operations/set_to_0.hpp>
@@ -22,7 +22,7 @@
 
 namespace mtl {
 
-
+ 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void specialized_mult_add(MatrixA const& a, MatrixB const& b, MatrixC& c) 
 {
@@ -83,13 +83,13 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name, bool check)
 int test_main(int argc, char* argv[])
 {
 
-#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __INTEL_COMPILER
-  cout << "optimized\n";
+#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __GNUC__ && !defined __INTEL_COMPILER
+ cout << "optimized on gcc\n";
 #else
-  cout << "not optimized\n";
+  cout << "not optimized on gcc\n";
 #endif
 
-  // return 0;
+  // return 0; 
  
 
     // Bitmasks:

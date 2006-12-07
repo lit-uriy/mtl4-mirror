@@ -18,7 +18,7 @@
 
 struct gen_mult_t {};
 
-#ifndef __INTEL_COMPILER
+#if !defined __GNUC__ || defined __INTEL_COMPILER
 namespace mtl { struct mult_add_base_case_32_shark_2_opteron {}; }
 #endif
 
@@ -80,11 +80,11 @@ int test_main(int argc, char* argv[])
     morton_dense<float, doppler_32_col_mask>       mcaf(size, size), mcbf(size, size), mccf(size, size);
     morton_dense<float, doppler_32_row_mask>       mraf(size, size), mrbf(size, size), mrcf(size, size);
 
-#ifdef __INTEL_COMPILER
-    bool true_on_intel= true;
+#if defined __GNUC__ && !defined __INTEL_COMPILER
+    bool true_on_gcc= true;
 #else
-    bool true_on_intel= false;
-#endif 
+    bool true_on_gcc= false;
+#endif
 
     std::cout << "Testing base case optimization\n";
     test(da, db, dc, "dense2D", false);
@@ -93,9 +93,9 @@ int test_main(int argc, char* argv[])
     test(mra, mrb, mrc, "Hybrid row-major", false);
     test(mrans, mcbns, mrcns, "Hybrid col-major and row-major, no shark tooth", false);
     test(mraf, mcbf, mrcf, "Hybrid col-major and row-major with float", false);
-    test(mra, mcb, mrc, "Hybrid col-major and row-major", true_on_intel);
-    test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z-order", true_on_intel);
-    test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z and E-order", true_on_intel);
+    test(mra, mcb, mrc, "Hybrid col-major and row-major", true_on_gcc);
+    test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z-order", true_on_gcc);
+    test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z and E-order", true_on_gcc);
 
     return 0;
 }
