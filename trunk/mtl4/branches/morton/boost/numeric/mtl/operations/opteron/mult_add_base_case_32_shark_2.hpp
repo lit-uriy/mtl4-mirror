@@ -54,7 +54,7 @@ struct mult_add_base_case_32_shark_2_opteron
   {
     // BOOST_STATIC_ASSERT(boost::is_same<typename specialize_mult_type<MatrixA, MatrixB, MatrixC>::type, self>::value);
 
-    std::cout << "In specialized multiplication\n";
+    // std::cout << "In specialized multiplication\n";
     if (a.num_rows() != 32 || a.num_cols() != 32 || b.num_cols() != 32) {
       mult_add_simple(a, b, c);
       return;
@@ -161,7 +161,7 @@ private:
       }
   #endif
 
-  #if 0
+  #if 1
     // Prep k
     for (int j = 0; j < baseOrder; j+=2)
       for (int i = 0; i < baseOrder; i+=16)
@@ -585,7 +585,7 @@ private:
       }
   #endif
 
-  #if 1
+  #if 0
     // Factor and unroll i
   #define MM_LOAD1_PD(a,b) \
   { \

@@ -76,15 +76,9 @@ void measure_mult_pointer(MatrixA const& a, MatrixB const& b, MatrixC& c,
     recursive_matrix_mult<fast_mult_type, fast_mult_type>(a, b, c, base_case_test);
     print_time_and_mflops(start1.elapsed(), a.num_rows());
 
-    std::cout << "\nUsing casts to double[][], Matrix type(s): " << name << "\n";
 
-//     typedef functor::mult_add_row_times_col_major_32_cast_t   cast_type;
-
-//     boost::timer start2;
-//     recursive_matrix_mult<cast_type, cast_type>(a, b, c, base_case_test);
-//     print_time_and_mflops(start2.elapsed(), a.num_rows());
-
-    std::cout << "\nOnly recursive part without actual multiplication, Matrix type(s): " << name << "\n";
+    std::cout << "\nOnly recursive part without actual multiplication (MFlops nonsense), Matrix type(s): " 
+	      << name << "\n";
     typedef functor::mult_add_empty_t  empty_type;
     // typedef functor::mult_add_empty_t<MatrixA, MatrixB, MatrixC>  empty_type;
     boost::timer start3;
