@@ -1,0 +1,11 @@
+Measuring base case optimization
+
+# dense2D  --- calling specializing mult:
+# Gnu-Format size, time, MFlops
+200, 0.0222222, 720
+400, 0.181667, 704.587
+600, 0.66, 654.545
+800, 1.54, 664.935
+1000, 3.06, 653.595
+1200, 5.21, 663.34
+1400, 8.28, 662.802
