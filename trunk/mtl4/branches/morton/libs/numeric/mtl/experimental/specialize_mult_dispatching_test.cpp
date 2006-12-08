@@ -40,8 +40,6 @@ int test_main(int argc, char* argv[])
 #else
     cout << "not optimized on gcc\n";
 #endif
-
-  // return 0; 
  
 
     // Bitmasks:

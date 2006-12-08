@@ -56,7 +56,8 @@ struct mult_add_base_case_32_shark_2_opteron
 
     // std::cout << "In specialized multiplication\n";
     if (a.num_rows() != 32 || a.num_cols() != 32 || b.num_cols() != 32) {
-      mult_add_simple(a, b, c);
+      my_mult_add(a, b, c);
+      // mult_add_simple(a, b, c);
       return;
     }
 
@@ -66,7 +67,51 @@ struct mult_add_base_case_32_shark_2_opteron
     mult_add_assembler(cp, ap, bp);
   }
 
+  
+
+
 private:
+
+  template <unsigned long MaskA, typename PA,
+	    unsigned long MaskB, typename PB,
+	    unsigned long MaskC, typename PC>
+  void my_mult_add(const morton_dense<double, MaskA, PA>& a, const morton_dense<double, MaskB, PB>& b, 
+		morton_dense<double, MaskC, PC>& c) const
+  {
+    typedef typename morton_dense<double, MaskA, PA>::size_type  size_type;
+    size_type i_max= a.num_rows(), i_block= 2 * (i_max / 2),
+              j_max= a.num_cols(), j_block= 2 * (j_max / 2),
+              k_max= b.num_cols();
+    const int stride= 32;
+
+    double *ap= &const_cast<morton_dense<double, MaskA, PA>&>(a)[0][0],
+           *bp= &const_cast<morton_dense<double, MaskB, PB>&>(b)[0][0], *cp= &c[0][0];
+
+    for (size_type i= 0; i < i_block; i+=2)
+      for (int j = 0; j < j_block; j+=2)
+        for (int k = 0; k < k_max; k++) {
+	  cp[0+(i)*stride+2*(j+0)] += ap[0+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
+	  cp[0+(i)*stride+2*(j+1)] += ap[0+(i)*stride+2*k] * bp[1+(j)*stride+2*k];
+	  cp[1+(i)*stride+2*(j+0)] += ap[1+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
+	  cp[1+(i)*stride+2*(j+1)] += ap[1+(i)*stride+2*k] * bp[1+(j)*stride+2*k];
+        }
+
+    // Possibly 1 last row in C (except last column if # columns is odd)
+    for (size_type i= i_block; i < i_max; i++)
+      for (int j = 0; j < j_block; j+=2)
+        for (int k = 0; k < k_max; k++) {
+	  cp[0+(i)*stride+2*(j+0)] += ap[0+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
+	  cp[0+(i)*stride+2*(j+1)] += ap[0+(i)*stride+2*k] * bp[1+(j)*stride+2*k];
+        }
+
+    // Possibly 1 last column in C
+    for (size_type i= 0; i < i_max; i++)
+      for (int j = j_block; j < j_max; j++)
+        for (int k = 0; k < k_max; k++) {
+	  cp[0+(i)*stride+2*(j+0)] += ap[0+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
+        }
+  }
+
   void mult_add_assembler(double * D, double * C, double * BT) const
   {
     const int baseOrder= 32,
@@ -98,23 +143,23 @@ private:
         for (int k = 0; k < baseOrder; k++)
         {
           for (int i2 = i; i2 < i+16; i2+=2)
-  	{
-            D[0+(i2)*stride+2*(j+0)] += C[0+(i2)*stride+2*k] * BT[0+(j)*stride+2*k];
-            D[1+(i2)*stride+2*(j+0)] += C[1+(i2)*stride+2*k] * BT[0+(j)*stride+2*k];
-  	}
+	    {
+	      D[0+(i2)*stride+2*(j+0)] += C[0+(i2)*stride+2*k] * BT[0+(j)*stride+2*k];
+	      D[1+(i2)*stride+2*(j+0)] += C[1+(i2)*stride+2*k] * BT[0+(j)*stride+2*k];
+	    }
         }
         for (int k = 0; k < baseOrder; k++)
         {
           for (int i2 = i; i2 < i+16; i2+=2)
-  	{
-            D[0+(i2)*stride+2*(j+1)] += C[0+(i2)*stride+2*k] * BT[1+(j)*stride+2*k];
-            D[1+(i2)*stride+2*(j+1)] += C[1+(i2)*stride+2*k] * BT[1+(j)*stride+2*k];
-  	}
+	    {
+	      D[0+(i2)*stride+2*(j+1)] += C[0+(i2)*stride+2*k] * BT[1+(j)*stride+2*k];
+	      D[1+(i2)*stride+2*(j+1)] += C[1+(i2)*stride+2*k] * BT[1+(j)*stride+2*k];
+	    }
         }
       }
   #endif
 
-  #if 0
+  #if 1
     // Unroll i2
 
     for (int j = 0; j < baseOrder; j+=2)

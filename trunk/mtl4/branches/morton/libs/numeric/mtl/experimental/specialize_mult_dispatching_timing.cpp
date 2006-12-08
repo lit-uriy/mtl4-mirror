@@ -36,7 +36,7 @@ double time_measure(MatrixA&, MatrixB&, MatrixC&, unsigned size)
     MatrixC c(size, size);
 
     fill_hessian_matrix(a, 1.0);
-    fill_hessian_matrix(b, 2.0);
+    fill_hessian_matrix(b, 2.0); 
 
     // repeat multiplication if it is less than a second (until it is a second)
     int i; boost::timer start1;
