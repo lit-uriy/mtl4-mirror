@@ -22,7 +22,9 @@ CXXFLAGS += -DMTL_USE_OPTERON_OPTIMIZATION
 
 # CXX = icc
 
-all: morton_dense matrix_product
+
+specialize_mult_dispatching_timing: specialize_mult_dispatching_timing.cpp ../src/mult_add_base_case_32_shark_2_impl.cpp
+	${CXX} ${CXXFLAGS} $? -o $@
 
 
 #morton_dense:	morton_dense.cpp

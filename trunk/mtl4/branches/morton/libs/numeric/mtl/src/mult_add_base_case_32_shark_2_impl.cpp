@@ -1,119 +1,17 @@
-
 // $COPYRIGHT$
 
-// Written mostly by Michael Adams
-// Modified by Peter Gottschling
-
-#ifndef MTL_MULT_ADD_BASE_CASE_32_SHARK_2_INCLUDE
-#define MTL_MULT_ADD_BASE_CASE_32_SHARK_2_INCLUDE
-
-
-//#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __INTEL_COMPILER
 #if defined MTL_USE_OPTERON_OPTIMIZATION && defined __GNUC__ && !defined __INTEL_COMPILER
 
-/* 
-   TBD:
-   - substraction to addition            ok
-   - decent type checking for matrices   ok
-   - write test program                  ok
-     - test function dispatching         ok
-     - check results                     ok
-   - write operator                      ok
-   - handle non-divisible cases          ok
-   - test with simple function           ok
-   - test (ifdef) for icc                ok
-   - find emmintrin.h
-   - test assembly code
-
-   On odin:
-   - test other functions
-
-
- */
-
-#include <iostream>
-#include <boost/static_assert.hpp>
-#include <boost/numeric/mtl/operations/matrix_mult.hpp>
-
 #include <emmintrin.h>
-
+#include <iostream>
 
 namespace mtl {
 
-
-// Code in branches/morton/libs/numeric/mtl/src/mult_add_base_case_32_shark_2_impl.cpp
-void mult_add_base_case_32_shark_2_impl(double * D, double * C, double * BT);
-
-struct mult_add_base_case_32_shark_2_opteron
-{
-  typedef mult_add_base_case_32_shark_2_opteron   self;
-
-  template <unsigned long MaskA, typename PA,
-	    unsigned long MaskB, typename PB,
-	    unsigned long MaskC, typename PC>
-  void operator()(const morton_dense<double, MaskA, PA>& a, const morton_dense<double, MaskB, PB>& b, 
-		  morton_dense<double, MaskC, PC>& c) const
-  {
-    // BOOST_STATIC_ASSERT(boost::is_same<typename specialize_mult_type<MatrixA, MatrixB, MatrixC>::type, self>::value);
-
-    // std::cout << "In specialized multiplication\n";
-    if (a.num_rows() != 32 || a.num_cols() != 32 || b.num_cols() != 32) {
-      my_mult_add(a, b, c);
-      // mult_add_simple(a, b, c);
-      return;
-    }
-
-    double *ap= &const_cast<morton_dense<double, MaskA, PA>&>(a)[0][0],
-           *bp= &const_cast<morton_dense<double, MaskB, PB>&>(b)[0][0], *cp= &c[0][0];
-
-    mult_add_base_case_32_shark_2_impl(cp, ap, bp);
-    // mult_add_assembler(cp, ap, bp);
+  void abcd(double *p) {
+    std::cout << *p << "abcd\n";
   }
 
-  
-private:
-
-  template <unsigned long MaskA, typename PA,
-	    unsigned long MaskB, typename PB,
-	    unsigned long MaskC, typename PC>
-  void my_mult_add(const morton_dense<double, MaskA, PA>& a, const morton_dense<double, MaskB, PB>& b, 
-		morton_dense<double, MaskC, PC>& c) const
-  {
-    typedef typename morton_dense<double, MaskA, PA>::size_type  size_type;
-    size_type i_max= a.num_rows(), i_block= 2 * (i_max / 2),
-              j_max= a.num_cols(), j_block= 2 * (j_max / 2),
-              k_max= b.num_cols();
-    const int stride= 32;
-
-    double *ap= &const_cast<morton_dense<double, MaskA, PA>&>(a)[0][0],
-           *bp= &const_cast<morton_dense<double, MaskB, PB>&>(b)[0][0], *cp= &c[0][0];
-
-    for (size_type i= 0; i < i_block; i+=2)
-      for (int j = 0; j < j_block; j+=2)
-        for (int k = 0; k < k_max; k++) {
-	  cp[0+(i)*stride+2*(j+0)] += ap[0+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
-	  cp[0+(i)*stride+2*(j+1)] += ap[0+(i)*stride+2*k] * bp[1+(j)*stride+2*k];
-	  cp[1+(i)*stride+2*(j+0)] += ap[1+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
-	  cp[1+(i)*stride+2*(j+1)] += ap[1+(i)*stride+2*k] * bp[1+(j)*stride+2*k];
-        }
-
-    // Possibly 1 last row in C (except last column if # columns is odd)
-    for (size_type i= i_block; i < i_max; i++)
-      for (int j = 0; j < j_block; j+=2)
-        for (int k = 0; k < k_max; k++) {
-	  cp[0+(i)*stride+2*(j+0)] += ap[0+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
-	  cp[0+(i)*stride+2*(j+1)] += ap[0+(i)*stride+2*k] * bp[1+(j)*stride+2*k];
-        }
-
-    // Possibly 1 last column in C
-    for (size_type i= 0; i < i_max; i++)
-      for (int j = j_block; j < j_max; j++)
-        for (int k = 0; k < k_max; k++) {
-	  cp[0+(i)*stride+2*(j+0)] += ap[0+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
-        }
-  }
-
-  void mult_add_assembler(double * D, double * C, double * BT) const
+  void mult_add_base_case_32_shark_2_impl(double * D, double * C, double * BT)
   {
     const int baseOrder= 32,
               stride = baseOrder; 
@@ -793,11 +691,9 @@ private:
 
   }
    
-  
-};
 
 } // namespace mtl
 
 #endif // MTL_USE_OPTERON_OPTIMIZATION
 
-#endif // MTL_MULT_ADD_BASE_CASE_32_SHARK_2_INCLUDE
+

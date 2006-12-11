@@ -1,5 +1,5 @@
 // $COPYRIGHT$
-
+ 
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/timer.hpp>
@@ -20,13 +20,13 @@ using namespace std;
 using namespace mtl;
 
 void print_time_and_mflops(double time, double size)
-{
+{ 
     // std::cout << "    takes " << time << "s = " << 2.0 * size * size * size / time / 1e6f << "MFlops\n";
     std::cout << size << ", " << time << ", " << 2.0 * size * size * size / time / 1e6f << "\n";
     std::cout.flush();
 }
 
-
+ 
 // Matrices are only placeholder to provide the type
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 double time_measure(MatrixA&, MatrixB&, MatrixC&, unsigned size)
@@ -46,7 +46,7 @@ double time_measure(MatrixA&, MatrixB&, MatrixC&, unsigned size)
     print_time_and_mflops(elapsed, size);
     return elapsed;
 }
-
+ 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void time_series(MatrixA& a, MatrixB& b, MatrixC& c, const char* name, unsigned steps, unsigned max_size)
 {
