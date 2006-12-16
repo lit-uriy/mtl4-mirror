@@ -21,8 +21,6 @@ template <typename Recurator1, typename Recurator2, typename Recurator3>
 void inline equalize_depth(Recurator1& r1, Recurator2& r2, Recurator3& r3);
 
 
-  //#ifndef MTL_USE_OLD_RECURATOR
-
 // To use matrix_recurator with const matrices Reference must be 'Matrix const&'
 template <typename Matrix>
 struct matrix_recurator
@@ -176,10 +174,6 @@ public:
 
     // splitter_type       splitter;
 };
-
-
-
-  //#else // other-wise use old iterator
 
 
 
@@ -367,10 +361,6 @@ public:
     size_type           my_bound;
     splitter_type       splitter;
 };
-
-//#endif // MTL_USE_OLD_RECURATOR
-
-
 
 
 template <typename Recurator1, typename Recurator2>
