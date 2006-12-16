@@ -8,6 +8,37 @@
 
 namespace mtl { namespace recursion {
 
+// Splits dimensions of a matrix separately into halfs (first value rounded up)
+template <typename Matrix> 
+struct half_splitter
+{
+    typedef typename Matrix::size_type                            size_type;
+
+    explicit half_splitter(Matrix const& matrix) 
+    {
+	size_type nr= matrix.num_rows(), nc= matrix.num_cols();
+	nr-= nr / 2; // keep the part (by removind the down-rounded half)
+	nc-= nc / 2;
+	my_row_split= matrix.begin_row() + nr;
+	my_col_split= matrix.begin_col() + nc;
+    }
+
+    // End of northern half and beginning of southern
+    size_type row_split() const
+    {
+	return my_row_split;
+    }
+
+    // End of western half and beginning of eastern
+    size_type col_split() const
+    {
+	return my_col_split;
+    }
+
+private:
+    size_type             my_row_split, my_col_split;
+};
+
 // Splits dimensions of a matrix separately into a first part that
 //   is the largest power of 2 smaller than m or n, plus rest;
 //   doesn't yield empty submatrices if both dimension > 1
@@ -17,8 +48,7 @@ struct separate_dim_splitter
     typedef typename Matrix::size_type                            size_type;
 
     explicit separate_dim_splitter(Matrix const& matrix) 
-	: matrix(matrix),
-	  my_row_split(matrix.begin_row() + first_part(matrix.num_rows())),
+	: my_row_split(matrix.begin_row() + first_part(matrix.num_rows())),
 	  my_col_split(matrix.begin_col() + first_part(matrix.num_cols()))
     {}
 
@@ -35,8 +65,7 @@ struct separate_dim_splitter
     }
 
 private:
-    Matrix const&   matrix;
-    int             my_row_split, my_col_split;
+    size_type             my_row_split, my_col_split;
 };
 
 // Splits dimensions of a matrix separately into a first part that
@@ -69,7 +98,7 @@ struct max_dim_splitter
 
 private:
     //    Matrix const&   matrix;
-    int             my_split, // minimal 2^(k-1) such that 2^k >= max(num_rows, num_cols)
+    size_type             my_split, // minimal 2^(k-1) such that 2^k >= max(num_rows, num_cols)
                     my_row_split, my_col_split;
 };
 
@@ -105,7 +134,7 @@ struct outer_bound_splitter
     }
 
 private:
-    int             my_row_split, my_col_split;
+    size_type             my_row_split, my_col_split;
 };
 
 
