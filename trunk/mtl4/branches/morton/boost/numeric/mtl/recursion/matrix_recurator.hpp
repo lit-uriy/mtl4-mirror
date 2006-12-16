@@ -21,7 +21,7 @@ template <typename Recurator1, typename Recurator2, typename Recurator3>
 void inline equalize_depth(Recurator1& r1, Recurator2& r2, Recurator3& r3);
 
 
-#ifndef MTL_USE_OLD_RECURATOR
+  //#ifndef MTL_USE_OLD_RECURATOR
 
 // To use matrix_recurator with const matrices Reference must be 'Matrix const&'
 template <typename Matrix>
@@ -179,20 +179,21 @@ public:
 
 
 
-#else // other-wise use old iterator
+  //#else // other-wise use old iterator
 
 
 
 // To use matrix_recurator with const matrices Reference must be 'Matrix const&'
-template <typename Matrix>
-struct matrix_recurator
+template <typename Matrix, typename Splitter = max_dim_splitter<Matrix> >
+struct matrix_recurator_s
 {
-    typedef matrix_recurator                                      self;
+    typedef matrix_recurator_s                                    self;
     typedef Matrix                                                matrix_type;
+    typedef Splitter                                              splitter_type;
     typedef typename sub_matrix_t<Matrix>::sub_matrix_type        sub_matrix_type;
     typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type  const_sub_matrix_type;
     typedef typename Matrix::size_type                            size_type;
-    typedef outer_bound_splitter<self>                            splitter_type;
+    // typedef outer_bound_splitter<self>                            splitter_type;
 
 private:
     
@@ -221,9 +222,9 @@ public:
     // Constructor takes the whole matrix as sub-matrix
     // This allows to have different type for the matrix and the sub-matrix
     // This also enables matrices to have references as sub-matrices
-    explicit matrix_recurator(Matrix const& matrix, size_type bound= 0) 
+    explicit matrix_recurator_s(Matrix const& matrix, size_type bound= 0) 
 	: my_sub_matrix(constructor_helper(matrix)), my_bound(outer_bound(matrix)),
-	  splitter(*this)
+	  splitter(my_sub_matrix)
     {
       if (bound == 0)
 	my_bound= outer_bound(matrix);
@@ -367,7 +368,7 @@ public:
     splitter_type       splitter;
 };
 
-#endif // MTL_USE_OLD_RECURATOR
+//#endif // MTL_USE_OLD_RECURATOR
 
 
 
