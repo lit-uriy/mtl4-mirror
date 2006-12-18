@@ -104,6 +104,9 @@ void measure_mult_pointer_16(MatrixA const& a, MatrixB const& b, MatrixC& c,
  
 
 
+
+
+
 int test_main(int argc, char* argv[])
 {
     // Bitmasks: 

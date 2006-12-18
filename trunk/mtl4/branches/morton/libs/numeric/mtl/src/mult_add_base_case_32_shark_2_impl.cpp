@@ -289,7 +289,7 @@ namespace mtl {
       }
   #endif
 
-  #if 1
+  #if 0
     // Tweak SSE
   #define MM_LOAD1_PD(a,b) \
   { \
@@ -529,7 +529,7 @@ namespace mtl {
       }
   #endif
 
-  #if 0
+  #if 1
     // Factor and unroll i
   #define MM_LOAD1_PD(a,b) \
   { \
