@@ -107,6 +107,7 @@ struct dot_block<1, MaxDepth>
     }
 };
 
+
 template <unsigned Depth>
 double unrolled_dot(vector<double> const& v1, vector<double> const& v2)
 {
@@ -124,6 +125,102 @@ double unrolled_dot(vector<double> const& v1, vector<double> const& v2)
 }
 
 
+template <unsigned Depth>
+struct sum_helper_t
+{
+    double operator()(double& s0, double& s1, double& s2, double& s3,
+		      double& s4, double& s5, double& s6, double& s7)
+    {
+	return s0 + sum_helper_t<Depth-1>()(s1, s2, s3, s4, s5, s6, s7, s0);
+    }
+};
+
+template <>
+struct sum_helper_t<1>
+{
+    double operator()(double& s0, double&, double&, double&,
+		      double&, double&, double&, double&)
+    {
+	return s0;
+    }
+};
+
+
+
+template <unsigned Depth>
+struct unrolled_dot_helper_t
+{
+    double inline operator()(vector<double> const& v1, vector<double> const& v2,
+		      double& s0, double& s1, double& s2, double& s3,
+		      double& s4, double& s5, double& s6, double& s7)
+    {
+	unsigned size= v1.size(), blocks= size / Depth, blocked_size= blocks * Depth;
+	for (unsigned i= 0; i < blocked_size; i+= Depth)
+	    dot_block<Depth, Depth>()(v1, v2, i, s0, s1, s2, s3, s4, s5, s6, s7);
+	for (unsigned i= blocked_size; i < size; ++i)
+	    s0+= v1[i] * v2[i];
+	return sum_helper_t<Depth>()(s0, s1, s2, s3, s4, s5, s6, s7);
+    }
+};
+
+
+// #define TRICKY
+
+template <unsigned Depth>
+struct unrolled_dot_t
+{
+    double inline operator()(vector<double> const& v1, vector<double> const& v2)
+    {
+#ifdef TRICKY
+	double s0= 0.0, s1= 0.0, s2= 0.0, s3= 0.0, s4= 0.0, s5= 0.0, s6= 0.0, s7= 0.0;
+	return unrolled_dot_helper_t<Depth>()(v1, v2, s0, s1, s2, s3, s4, s5, s6, s7);
+#else
+	unsigned size= v1.size(), blocks= size / Depth, blocked_size= blocks * Depth;
+
+	double s0= 0.0, s1= 0.0, s2= 0.0, s3= 0.0, s4= 0.0, s5= 0.0, s6= 0.0, s7= 0.0;
+	for (unsigned i= 0; i < blocked_size; i+= Depth)
+	    dot_block<Depth, Depth>()(v1, v2, i, s0, s1, s2, s3, s4, s5, s6, s7);
+	
+	s0+= s1 + s2 + s3 + s4 + s5 + s6 + s7;
+	for (unsigned i= blocked_size; i < size; ++i)
+	    s0+= v1[i] * v2[i];
+	return s0;
+#endif
+    }
+};
+	
+template <>
+struct unrolled_dot_t<4>
+{
+    double inline operator()(vector<double> const& v1, vector<double> const& v2)
+    {
+#ifdef TRICKY
+	double s0= 0.0, s1= 0.0, s2= 0.0, s3= 0.0;
+	return unrolled_dot_helper_t<4>()(v1, v2, s0, s1, s2, s3, s0, s1, s2, s3);
+#else
+	static const unsigned Depth= 4;
+	unsigned size= v1.size(), blocks= size / Depth, blocked_size= blocks * Depth;
+
+	double s0= 0.0, s1= 0.0, s2= 0.0, s3= 0.0;
+	for (unsigned i= 0; i < blocked_size; i+= Depth)
+	    dot_block<Depth, Depth>()(v1, v2, i, s0, s1, s2, s3, s0, s1, s2, s3);
+	
+	s0+= s1 + s2 + s3;
+	for (unsigned i= blocked_size; i < size; ++i)
+	    s0+= v1[i] * v2[i];
+	return s0;
+#endif
+    }
+};
+	
+
+template <unsigned Depth>
+double unrolled_dot_id(vector<double> const& v1, vector<double> const& v2)
+{
+    return unrolled_dot_t<Depth>()(v1, v2);
+}
+
+
 int test_main(int argc, char* argv[])
 {
 
@@ -132,6 +229,12 @@ int test_main(int argc, char* argv[])
     time_dot("unrolled 2", dot2);
     time_dot("struct 2  ", dot2slow);
     time_dot("unrolled 4", dot4);
+
+    cout << "--------------------\n";
+    time_dot("template 1", unrolled_dot_id<1>);
+    time_dot("template 2", unrolled_dot_id<2>);
+    time_dot("template 3", unrolled_dot_id<3>);
+    time_dot("template 4", unrolled_dot_id<4>);
     
     cout << "--------------------\n";
     time_dot("template 1", unrolled_dot<1>);
