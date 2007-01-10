@@ -8,7 +8,7 @@ CXXFLAGS = ${INCLUDE_DIRS}
 # CXXFLAGS += -g
 
 # g++ optimization
-# CXXFLAGS += -DNDEBUG -O3 -ffast-math  -funsafe-math-optimizations -ffinite-math-only 
+CXXFLAGS += -DNDEBUG -O3 -ffast-math 
 
 # Additional G5 optimization on g++
 # CXXFLAGS += -fast
@@ -20,7 +20,7 @@ CXXFLAGS += -DNDEBUG -O3
 CXXFLAGS += -DMTL_USE_OPTERON_OPTIMIZATION
 
 
-CXX = icc
+# CXX = icc
 
 
 specialize_mult_dispatching_timing: specialize_mult_dispatching_timing.cpp ../src/mult_add_base_case_32_shark_2_impl.cpp

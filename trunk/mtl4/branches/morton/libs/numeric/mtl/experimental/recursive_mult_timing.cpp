@@ -4,7 +4,6 @@
 #include <cmath>
 #include <string>
 #include <vector>
-// #include <boost/test/minimal.hpp>
 #include <boost/timer.hpp>
 
 #include <boost/numeric/mtl/matrix_parameters.hpp>
@@ -60,7 +59,7 @@ double time_measure(MatrixA&, MatrixB&, MatrixC&, unsigned size)
     std::cout.flush();
     return start1.elapsed(); // total time (approx)
 }
-    
+     
  
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void time_series(MatrixA& a, MatrixB& b, MatrixC& c, const string& name, unsigned steps, unsigned max_size)
@@ -79,7 +78,6 @@ void time_series(MatrixA& a, MatrixB& b, MatrixC& c, const string& name, unsigne
 }
 
 
-
 int main(int argc, char* argv[])
 {
     using std::string;
@@ -93,6 +91,7 @@ int main(int argc, char* argv[])
     scenarii.push_back(string("Hybrid row-major"));
     scenarii.push_back(string("Hybrid row/col-major (R, C, R)"));
     // scenarii.push_back(string("Z/E Hybrid row/col-major (Z-R, Z-C, E-R)"));
+    // scenarii.push_back(string("Morton Z-order and Dense col-major"));
 
     using std::cout;
     if (argc < 4) {
@@ -135,72 +134,9 @@ int main(int argc, char* argv[])
       case 6: 	time_series(mra, mrb, mrc, scenarii[6], steps, max_size); break;
       case 7: 	time_series(mra, mcb, mrc, scenarii[7], steps, max_size); break;
 	  //case 8: 	time_series(mzra, mzcb, mrc, scenarii[8], steps, max_size); break;
+	//case 8: 	time_series(mzda, dcb, dcc, scenarii[8], steps, max_size); break;
     }
 
-
-
-
-
-
-
-
-#if 0
-    morton_dense<double,  morton_mask> mda(size, size), mdb(size, size), mdc(size, size);
-    mtl::dense2D<double>               da(size, size), db(size, size), dc(size, size);
-    
-
-    morton_dense<double, doppler_32_row_mask_no_shark>      mrans(size, size), mrcns(size, size);;
-    morton_dense<double, doppler_32_col_mask_no_shark>      mcbns(size, size);
-    morton_dense<double, doppler_32_col_mask>      mca(size, size), mcb(size, size), mcc(size, size);
-    morton_dense<double, doppler_32_row_mask>      mra(size, size), mrb(size, size), mrc(size, size);
-    morton_dense<double, doppler_z_32_col_mask>    mzca(size, size), mzcb(size, size), mzcc(size, size);
-    morton_dense<double, doppler_z_32_row_mask>    mzra(size, size), mzrb(size, size), mzrc(size, size);
-    morton_dense<float, doppler_32_col_mask>       mcaf(size, size), mcbf(size, size), mccf(size, size);
-    morton_dense<float, doppler_32_row_mask>       mraf(size, size), mrbf(size, size), mrcf(size, size);
-#endif
-
-
-#if 0
-    std::cout << "Matrix size " << size << "x" << size << ":\n";
-    {
-	morton_dense<double,  morton_mask>      mdal(size, size), mdbl(size, size), mdcl(size, size);
-	fill_hessian_matrix(mdal, 1.0); fill_hessian_matrix(mdbl, 2.0);
-	measure_mult(mdal, mdbl, mdcl, "pure Morton");
-    }
-
-    {
-	mtl::dense2D<double> dal(size, size), dbl(size, size), dcl(size, size);
-	fill_hessian_matrix(dal, 1.0); fill_hessian_matrix(dbl, 2.0);
-	measure_mult(dal, dbl, dcl, "dense2D");
-    }
-
-    {
-	// Hybrid col-major
-	morton_dense<double, doppler_32_col_mask>      mcal(size, size), mcbl(size, size), mccl(size, size);
-	fill_hessian_matrix(mcal, 1.0); fill_hessian_matrix(mcbl, 2.0);
-	
-	// Hybrid row-major
-	morton_dense<double, doppler_32_row_mask>      mral(size, size), mrbl(size, size), mrcl(size, size);
-	fill_hessian_matrix(mral, 1.0); fill_hessian_matrix(mrbl, 2.0);
-	
-	measure_mult(mral, mrbl, mrcl, "Hybrid row-major");
-	measure_mult(mcal, mcbl, mccl, "Hybrid col-major");
-	measure_mult(mral, mcbl, mrcl, "Hybrid col-major and row-major");
-	measure_mult_pointer(mral, mcbl, mrcl, "Hybrid col-major and row-major");
-    }
- 
-    {
-	// Hybrid col-major
-	morton_dense<double, doppler_16_col_mask> mcbl(size, size);
-	fill_hessian_matrix(mcbl, 2.0);
-
-	// Hybrid row-major
-	morton_dense<double, doppler_16_row_mask>      mral(size, size), mrcl(size, size);
-	fill_hessian_matrix(mral, 1.0); 
-	
-	measure_mult_pointer_16(mral, mcbl, mrcl, "Hybrid col-major and row-major");
-    }
-#endif
     return 0;
 }
  
