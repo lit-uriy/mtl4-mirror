@@ -156,6 +156,33 @@ void mult_simple_ptu22(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 }
 
 
+void mult_simple_ptu24(dense2D<double>& a, cm_type& b, dense2D<double>& c)
+{
+    for (unsigned i= 0; i < c.num_rows(); i++)
+	for (unsigned k= 0; k < c.num_cols(); k+=2) {
+	    int ld1= b.num_rows(), ld2= 2*ld1, ld3=3*ld1;
+	    double tmp00= 0.0, tmp01= 0.0, tmp02= 0.0, tmp03= 0.0,
+	  	   tmp10= 0.0, tmp11= 0.0, tmp12= 0.0, tmp13= 0.0;
+
+	    double *begin_a= &a[i][0], *end_a= &a[i][a.num_cols()];
+	    double *begin_b= &b[0][k];
+	    for (; begin_a != end_a; ++begin_a, ++begin_b) {
+		tmp00+= *begin_a * *begin_b;
+		tmp01+= *begin_a * *(begin_b+ld1);
+		tmp02+= *begin_a * *(begin_b+ld2);
+		tmp03+= *begin_a * *(begin_b+ld3);
+		tmp10+= *(begin_a+ld1) * *begin_b;
+		tmp11+= *(begin_a+ld1) * *(begin_b+ld1);
+		tmp12+= *(begin_a+ld1) * *(begin_b+ld2);
+		tmp13+= *(begin_a+ld1) * *(begin_b+ld3);
+	    }
+	    c[i][k]= tmp00; c[i][k+1]= tmp01;
+	    c[i][k+2]= tmp02; c[i][k+3]= tmp03;
+	    c[i+1][k]= tmp10; c[i+1][k+1]= tmp11;
+	    c[i+1][k+2]= tmp12; c[i+1][k+3]= tmp13;
+	}
+}
+
 int test_main(int argc, char* argv[])
 {
     unsigned steps= 32, max_size= 128, size= 32; 
@@ -169,12 +196,13 @@ int test_main(int argc, char* argv[])
     fill_hessian_matrix(db, 2.0); 
     fill_hessian_matrix(dbt, 2.0); 
 
-    time_series(da, db, dc, mult_simple, "Simple mult", steps, max_size);
-    time_series(da, db, dc, mult_simple_p, "Simple mult (pointers)", steps, max_size);
-    time_series(da, dbt, dc, mult_simple_pt, "Simple mult (pointers transposed)", steps, max_size);
-    time_series(da, dbt, dc, mult_simple_ptu, "Simple mult (pointers trans unrolled 2)", steps, max_size);
-    time_series(da, dbt, dc, mult_simple_ptu4, "Simple mult (pointers trans unrolled 4)", steps, max_size);
+    time_series(da, dbt, dc, mult_simple_ptu24, "Simple mult (pointers trans unrolled 2x4)", steps, max_size);
     time_series(da, dbt, dc, mult_simple_ptu22, "Simple mult (pointers trans unrolled 2x2)", steps, max_size);
+    time_series(da, dbt, dc, mult_simple_ptu4, "Simple mult (pointers trans unrolled 4)", steps, max_size);
+    time_series(da, dbt, dc, mult_simple_ptu, "Simple mult (pointers trans unrolled 2)", steps, max_size);
+    time_series(da, dbt, dc, mult_simple_pt, "Simple mult (pointers transposed)", steps, max_size);
+    time_series(da, db, dc, mult_simple_p, "Simple mult (pointers)", steps, max_size);
+    time_series(da, db, dc, mult_simple, "Simple mult", steps, max_size);
 
 
     return 0;
