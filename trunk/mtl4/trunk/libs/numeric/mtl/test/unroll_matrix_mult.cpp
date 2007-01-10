@@ -37,6 +37,7 @@ double time_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size)
 	mult(a, b, c);
     double elapsed= start1.elapsed() / double(i);
     print_time_and_mflops(elapsed, size);
+    check_hessian_matrix_product(c, size);
     return elapsed;
 }
  
@@ -146,7 +147,7 @@ void mult_simple_ptu22(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 	    for (; begin_a != end_a; ++begin_a, ++begin_b) {
 		tmp00+= *begin_a * *begin_b;
 		tmp01+= *begin_a * *(begin_b+ld);
-		tmp10+= *begin_a * *begin_b;
+		tmp10+= *(begin_a+ld) * *begin_b;
 		tmp11+= *(begin_a+ld) * *(begin_b+ld);
 	    }
 	    c[i][k]= tmp00; c[i][k+1]= tmp01;
@@ -168,12 +169,12 @@ int test_main(int argc, char* argv[])
     fill_hessian_matrix(db, 2.0); 
     fill_hessian_matrix(dbt, 2.0); 
 
-    time_series(da, dbt, dc, mult_simple_ptu22, "Simple mult (pointers trans unrolled 2x2)", steps, max_size);
-    time_series(da, dbt, dc, mult_simple_ptu4, "Simple mult (pointers trans unrolled 4)", steps, max_size);
-    time_series(da, dbt, dc, mult_simple_ptu, "Simple mult (pointers trans unrolled 2)", steps, max_size);
-    time_series(da, dbt, dc, mult_simple_pt, "Simple mult (pointers transposed)", steps, max_size);
-    time_series(da, db, dc, mult_simple_p, "Simple mult (pointers)", steps, max_size);
     time_series(da, db, dc, mult_simple, "Simple mult", steps, max_size);
+    time_series(da, db, dc, mult_simple_p, "Simple mult (pointers)", steps, max_size);
+    time_series(da, dbt, dc, mult_simple_pt, "Simple mult (pointers transposed)", steps, max_size);
+    time_series(da, dbt, dc, mult_simple_ptu, "Simple mult (pointers trans unrolled 2)", steps, max_size);
+    time_series(da, dbt, dc, mult_simple_ptu4, "Simple mult (pointers trans unrolled 4)", steps, max_size);
+    time_series(da, dbt, dc, mult_simple_ptu22, "Simple mult (pointers trans unrolled 2x2)", steps, max_size);
 
 
     return 0;
