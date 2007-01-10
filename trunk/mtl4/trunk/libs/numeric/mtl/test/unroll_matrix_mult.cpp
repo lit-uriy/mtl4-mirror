@@ -156,6 +156,30 @@ void mult_simple_ptu22(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 }
 
 
+// C must be square!
+// no use of temporaries, let's see how the compiler handles this
+void mult_simple_ptu22n(dense2D<double>& a, cm_type& b, dense2D<double>& c)
+{
+    for (unsigned i= 0; i < c.num_rows(); i+=2)
+	for (unsigned k= 0; k < c.num_cols(); k+=2) {
+	    int ld= b.num_rows();
+	    double &tmp00= c[i][k], &tmp01= c[i][k+1], &tmp10=  c[i+1][k], &tmp11= c[i+1][k+1];
+	    tmp00= 0.0, tmp01= 0.0, tmp10= 0.0, tmp11= 0.0;
+
+	    double *begin_a= &a[i][0], *end_a= &a[i][a.num_cols()];
+	    double *begin_b= &b[0][k];
+	    for (; begin_a != end_a; ++begin_a, ++begin_b) {
+		tmp00+= *begin_a * *begin_b;
+		tmp01+= *begin_a * *(begin_b+ld);
+		tmp10+= *(begin_a+ld) * *begin_b;
+		tmp11+= *(begin_a+ld) * *(begin_b+ld);
+	    }
+	    //c[i][k]= tmp00; c[i][k+1]= tmp01;
+	    //c[i+1][k]= tmp10; c[i+1][k+1]= tmp11;
+	}
+}
+
+
 void mult_simple_ptu24(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 {
     for (unsigned i= 0; i < c.num_rows(); i++)
@@ -197,6 +221,7 @@ int test_main(int argc, char* argv[])
     fill_hessian_matrix(dbt, 2.0); 
 
     time_series(da, dbt, dc, mult_simple_ptu24, "Simple mult (pointers trans unrolled 2x4)", steps, max_size);
+    time_series(da, dbt, dc, mult_simple_ptu22n, "Simple mult (pointers trans unrolled 2x2 no temps)", steps, max_size);
     time_series(da, dbt, dc, mult_simple_ptu22, "Simple mult (pointers trans unrolled 2x2)", steps, max_size);
     time_series(da, dbt, dc, mult_simple_ptu4, "Simple mult (pointers trans unrolled 4)", steps, max_size);
     time_series(da, dbt, dc, mult_simple_ptu, "Simple mult (pointers trans unrolled 2)", steps, max_size);
