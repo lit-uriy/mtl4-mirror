@@ -77,7 +77,7 @@ struct strided_dense_el_cursor : public detail::strided_base_cursor<const Elt*>
 // Indexing for dense matrices
 struct dense2D_indexer 
 {
-private:
+  private:
     // helpers for public functions
     size_t offset(size_t ldim, size_t r, size_t c, row_major) const 
     {
@@ -137,6 +137,7 @@ private:
 	size_t c= col(ma.offset(key), ma.ldim, typename matrix_type::orientation());
 	return index::change_to(typename matrix_type::index_type(), c);
     }
+    template <typename, typename> friend struct dense2D;
 }; // dense2D_indexer
 
 
@@ -259,6 +260,12 @@ class dense2D : public detail::base_sub_matrix<Elt, Parameters>,
     {
 	return this->data[indexer(*this, r, c)]; 
     }    
+
+    // offset regarding c-style indices
+    size_t c_offset(size_t r, size_t c)
+    {
+	return indexer.offset(ldim, r, c, orientation());
+    }
 
   protected:
     
