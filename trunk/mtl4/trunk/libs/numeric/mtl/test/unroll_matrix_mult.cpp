@@ -117,7 +117,7 @@ void mult_simple_ptu(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 void mult_simple_ptu4(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 {
     for (unsigned i= 0; i < c.num_rows(); i++)
-	for (unsigned k= 0; k < c.num_cols(); k+=2) {
+	for (unsigned k= 0; k < c.num_cols(); k+=4) {
 	    int ld1= b.num_rows(), ld2= 2*ld1, ld3=3*ld1;
 	    double tmp0= 0.0, tmp1= 0.0, tmp2= 0.0, tmp3= 0.0;
 
@@ -182,8 +182,8 @@ void mult_simple_ptu22n(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 
 void mult_simple_ptu24(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 {
-    for (unsigned i= 0; i < c.num_rows(); i++)
-	for (unsigned k= 0; k < c.num_cols(); k+=2) {
+    for (unsigned i= 0; i < c.num_rows(); i+=2)
+	for (unsigned k= 0; k < c.num_cols(); k+=4) {
 	    int ld1= b.num_rows(), ld2= 2*ld1, ld3=3*ld1;
 	    double tmp00= 0.0, tmp01= 0.0, tmp02= 0.0, tmp03= 0.0,
 	  	   tmp10= 0.0, tmp11= 0.0, tmp12= 0.0, tmp13= 0.0;
@@ -228,7 +228,6 @@ int test_main(int argc, char* argv[])
     time_series(da, dbt, dc, mult_simple_pt, "Simple mult (pointers transposed)", steps, max_size);
     time_series(da, db, dc, mult_simple_p, "Simple mult (pointers)", steps, max_size);
     time_series(da, db, dc, mult_simple, "Simple mult", steps, max_size);
-
 
     return 0;
 }
