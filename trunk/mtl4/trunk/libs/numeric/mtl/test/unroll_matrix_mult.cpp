@@ -4,6 +4,7 @@
 #include <vector>
 #include <boost/test/minimal.hpp>
 #include <boost/timer.hpp>
+#include <boost/static_assert.hpp>
 
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/operations/hessian_matrix_utilities.hpp>
@@ -212,7 +213,7 @@ void mult_simple_ptu224(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 {
     for (unsigned i= 0; i < c.num_rows(); i+=2)
 	for (unsigned k= 0; k < c.num_cols(); k+=4) {
-	    int ld1= b.num_rows(), ld2= 2*ld1, ld3=3*ld1;
+	    int ld1= b.num_rows(), ld2= 2*ld1, ld3=3*ld1, lda1= a.num_rows();
 	    double tmp000= 0.0, tmp001= 0.0, tmp002= 0.0, tmp003= 0.0,
 	           tmp010= 0.0, tmp011= 0.0, tmp012= 0.0, tmp013= 0.0,
 	  	   tmp100= 0.0, tmp101= 0.0, tmp102= 0.0, tmp103= 0.0,
@@ -229,14 +230,14 @@ void mult_simple_ptu224(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 		tmp011+= *(begin_a+1) * *(begin_b+1+ld1);
 		tmp012+= *(begin_a+1) * *(begin_b+1+ld2);
 		tmp013+= *(begin_a+1) * *(begin_b+1+ld3);
-		tmp100+= *(begin_a+ld1) * *(begin_b);
-		tmp101+= *(begin_a+ld1) * *(begin_b+ld1);
-		tmp102+= *(begin_a+ld1) * *(begin_b+ld2);
-		tmp103+= *(begin_a+ld1) * *(begin_b+ld3);
-		tmp110+= *(begin_a+1+ld1) * *(begin_b+1);
-		tmp111+= *(begin_a+1+ld1) * *(begin_b+1+ld1);
-		tmp112+= *(begin_a+1+ld1) * *(begin_b+1+ld2);
-		tmp113+= *(begin_a+1+ld1) * *(begin_b+1+ld3);
+		tmp100+= *(begin_a+lda1) * *(begin_b);
+		tmp101+= *(begin_a+lda1) * *(begin_b+ld1);
+		tmp102+= *(begin_a+lda1) * *(begin_b+ld2);
+		tmp103+= *(begin_a+lda1) * *(begin_b+ld3);
+		tmp110+= *(begin_a+1+lda1) * *(begin_b+1);
+		tmp111+= *(begin_a+1+lda1) * *(begin_b+1+ld1);
+		tmp112+= *(begin_a+1+lda1) * *(begin_b+1+ld2);
+		tmp113+= *(begin_a+1+lda1) * *(begin_b+1+ld3);
 	    }
 	    c[i][k]= tmp000 + tmp010; c[i][k+1]= tmp001 + tmp011;
 	    c[i][k+2]= tmp002 + tmp012; c[i][k+3]= tmp003 + tmp013;
@@ -244,6 +245,47 @@ void mult_simple_ptu224(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 	    c[i+1][k+2]= tmp102 + tmp112; c[i+1][k+3]= tmp103 + tmp113;
 	}
 }
+
+
+void mult_simple_ptu224g(dense2D<double>& a, cm_type& b, dense2D<double>& c)
+{
+    using std::size_t;
+    for (unsigned i= 0; i < c.num_rows(); i+=2)
+	for (unsigned k= 0; k < c.num_cols(); k+=4) {
+	    size_t ari= a.c_offset(1, 0), // how much is the offset of A's entry increased by incrementing row
+		   aci= a.c_offset(0, 1), bri= b.c_offset(1, 0), bci= b.c_offset(0, 1);
+	    double tmp000= 0.0, tmp001= 0.0, tmp002= 0.0, tmp003= 0.0,
+	           tmp010= 0.0, tmp011= 0.0, tmp012= 0.0, tmp013= 0.0,
+	  	   tmp100= 0.0, tmp101= 0.0, tmp102= 0.0, tmp103= 0.0,
+	  	   tmp110= 0.0, tmp111= 0.0, tmp112= 0.0, tmp113= 0.0;
+
+	    double *begin_a= &a[i][0], *end_a= &a[i][a.num_cols()];
+	    double *begin_b= &b[0][k];
+	    for (; begin_a != end_a; begin_a+= 2*aci, begin_b+= 2*bri) {
+		tmp000+= *(begin_a) * *(begin_b);
+		tmp001+= *(begin_a) * *(begin_b+1*bci);
+		tmp002+= *(begin_a) * *(begin_b+2*bci);
+		tmp003+= *(begin_a) * *(begin_b+3*bci);
+		tmp010+= *(begin_a+1*aci) * *(begin_b+1*bri);
+		tmp011+= *(begin_a+1*aci) * *(begin_b+1*bri+1*bci);
+		tmp012+= *(begin_a+1*aci) * *(begin_b+1*bri+2*bci);
+		tmp013+= *(begin_a+1*aci) * *(begin_b+1*bri+3*bci);
+		tmp100+= *(begin_a+1*ari) * *(begin_b);
+		tmp101+= *(begin_a+1*ari) * *(begin_b+1*bci);
+		tmp102+= *(begin_a+1*ari) * *(begin_b+2*bci);
+		tmp103+= *(begin_a+1*ari) * *(begin_b+3*bci);
+		tmp110+= *(begin_a+1*aci+1*ari) * *(begin_b+1*bri);
+		tmp111+= *(begin_a+1*aci+1*ari) * *(begin_b+1*bri+1*bci);
+		tmp112+= *(begin_a+1*aci+1*ari) * *(begin_b+1*bri+2*bci);
+		tmp113+= *(begin_a+1*aci+1*ari) * *(begin_b+1*bri+3*bci);
+	    }
+	    c[i][k]= tmp000 + tmp010; c[i][k+1]= tmp001 + tmp011;
+	    c[i][k+2]= tmp002 + tmp012; c[i][k+3]= tmp003 + tmp013;
+	    c[i+1][k]= tmp100 + tmp110; c[i+1][k+1]= tmp101 + tmp111;
+	    c[i+1][k+2]= tmp102 + tmp112; c[i+1][k+3]= tmp103 + tmp113;
+	}
+}
+
 
 
 int test_main(int argc, char* argv[])
@@ -259,6 +301,7 @@ int test_main(int argc, char* argv[])
     fill_hessian_matrix(db, 2.0); 
     fill_hessian_matrix(dbt, 2.0); 
 
+    time_series(da, dbt, dc, mult_simple_ptu224g, "Simple mult (pointers trans unrolled 2x2x4 generic)", steps, max_size);
     time_series(da, dbt, dc, mult_simple_ptu224, "Simple mult (pointers trans unrolled 2x2x4)", steps, max_size);
     time_series(da, dbt, dc, mult_simple_ptu214, "Simple mult (pointers trans unrolled 2x1x4)", steps, max_size);
     time_series(da, dbt, dc, mult_simple_ptu22n, "Simple mult (pointers trans unrolled 2x1x2 no temps)", steps, max_size);
