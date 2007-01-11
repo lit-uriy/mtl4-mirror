@@ -18,22 +18,9 @@ struct array_size
     static std::size_t const value= 0;
 };
 
-template <typename Elt, bool OnStack, unsigned Size= 0>
-struct generic_array
-{
-    generic_array() {}
-    explicit generic_array(Elt *data) : data(data) {}
-    Elt    *data;
-};
-
-template <typename Elt, unsigned Size>
-struct generic_array<Elt, true, Size>
-{
-    Elt    data[Size];
-};
-
 // Minimal size of memory allocation using alignment
 #ifndef MTL_ALIGNMENT_LIMIT
+    //#  define MTL_ALIGNMENT_LIMIT 1   // work around 
 #  define MTL_ALIGNMENT_LIMIT 1024
 #endif
 
@@ -42,48 +29,71 @@ struct generic_array<Elt, true, Size>
 #  define MTL_ALIGNMENT 128
 #endif
 
-// Base class for matrices that have contigous piece of memory
-template <typename Elt, bool OnStack, unsigned Size= 0>
-struct contiguous_memory_matrix 
-  : public generic_array<Elt, OnStack, Size>
+template <typename Value, bool OnStack, unsigned Size= 0>
+struct generic_array
 {
-    typedef generic_array<Elt, OnStack, Size> base;
+    typedef Value                             value_type;
+  protected:
+    bool                                      extern_memory;       // whether pointer to external data or own
+    char*                                     malloc_address;
+  public:
+    generic_array() {}
+
+    explicit generic_array(Value *data) : extern_memory(true), data(data) {}
+
+    explicit generic_array(std::size_t size) : extern_memory(false)
+    {
+	if (size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT) {
+	    char* p= this->malloc_address= new char[size * sizeof(value_type) + MTL_ALIGNMENT - 1];
+	    while ((long int)(p) % MTL_ALIGNMENT) p++;
+	    this->data= reinterpret_cast<value_type*>(p);
+	} else {
+	    // malloc_address= new char[size * sizeof(value_type)];
+	    // this->data= reinterpret_cast<value_type*>(malloc_address);
+	    this->data= new value_type[size];
+	    malloc_address= reinterpret_cast<char*>(this->data);
+	}
+    }
+
+    ~generic_array()
+    {
+	//printf("data %p, malloc %p\n", this->data, malloc_address);      
+	if (!extern_memory && malloc_address) delete[] malloc_address;
+    }
+
+    Value    *data;
+};
+
+template <typename Value, unsigned Size>
+struct generic_array<Value, true, Size>
+{
+    Value    data[Size];
+    explicit generic_array(std::size_t) {}
+};
+
+// Base class for matrices that have contigous piece of memory
+template <typename Value, bool OnStack, unsigned Size= 0>
+struct contiguous_memory_matrix 
+  : public generic_array<Value, OnStack, Size>
+{
+    typedef generic_array<Value, OnStack, Size> base;
 
     static bool const                         on_stack= OnStack;
     
-    typedef Elt                               value_type;
+    typedef Value                             value_type;
     typedef value_type*                       pointer_type;
     typedef const value_type*                 const_pointer_type;
 
   protected:
-    bool                                      extern_memory;       // whether pointer to external data or own
     std::size_t                               my_used_memory;
-    char*                                     malloc_address;
 
   public:
     // Reference to external data (must be heap)
     explicit contiguous_memory_matrix(value_type* a, std::size_t size)
-      : base(a), extern_memory(true), my_used_memory(size) {}
+      : base(a), my_used_memory(size) {}
 
     explicit contiguous_memory_matrix(std::size_t size)
-	: extern_memory(false), my_used_memory(size)
-    {
-	if (!on_stack) 
-	    if (size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT) {
-		malloc_address= new char[size * sizeof(value_type) + MTL_ALIGNMENT - 1];
-		char* p= malloc_address;
-		while ((long int)(p) % MTL_ALIGNMENT) p++;
-		this->data= reinterpret_cast<value_type*>(p);
-	    } else {
-		this->data= new value_type[size];
-		malloc_address= reinterpret_cast<char*>(this->data);
-	    }
-    }
-
-    ~contiguous_memory_matrix()
-    {
-	if (!on_stack && !extern_memory && this->data) delete[] this->malloc_address;
-    }
+	: base(size), my_used_memory(size) {}
 
     // offset of key (pointer) w.r.t. data 
     // values must be stored consecutively
