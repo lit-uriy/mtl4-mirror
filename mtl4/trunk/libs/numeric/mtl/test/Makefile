@@ -1,5 +1,8 @@
 CXXFLAGS+=  -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -O3 -DNDEBUG -ffast-math  -funsafe-math-optimizations -ffinite-math-only 
 
+# G5 Optimization
+# CXXFLAGS+=  -fast
+
 #CXXFLAGS+= -Wno-long-double
 
 # on Big Red with IBM Compiler
