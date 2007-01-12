@@ -13,6 +13,42 @@
 using namespace std;
 using namespace mtl;
 
+template <unsigned Outer, unsigned OuterMax, unsigned Inner, unsigned InnerMax>
+struct double_unroll
+{
+    static unsigned const outer= Outer - 1, next_outer= Outer,
+            	          inner= Inner - 1, next_inner= Inner + 1;
+    void operator() ()
+    {
+	cout << outer << " : " << inner << "\n";
+	double_unroll<next_outer, OuterMax, next_inner, InnerMax>() ();
+    }
+};
+
+
+template <unsigned Outer, unsigned OuterMax, unsigned InnerMax>
+struct double_unroll<Outer, OuterMax, InnerMax, InnerMax>
+{
+    static unsigned const outer= Outer - 1, next_outer= Outer + 1,
+            	          inner= InnerMax - 1, next_inner= 1;
+    void operator() ()
+    {
+	cout << outer << " : " << inner << "\n";
+	double_unroll<next_outer, OuterMax, next_inner, InnerMax>() ();
+    }
+};
+
+
+template <unsigned OuterMax, unsigned InnerMax>
+struct double_unroll<OuterMax, OuterMax, InnerMax, InnerMax>
+{
+    static unsigned const outer= OuterMax - 1,
+            	          inner= InnerMax - 1;
+    void operator() ()
+    {
+	cout << outer << " : " << inner << "\n";
+    }
+};
 
 template <unsigned Outer, unsigned OuterMax, unsigned Middle, unsigned MiddleMax,
 	  unsigned Inner, unsigned InnerMax>
@@ -462,13 +498,107 @@ void double_matmat_mult_template(MatrixA& a, MatrixB& b, MatrixC& c)
 	}
 }
 
+
+// i, k, j == Outer, Inner, __
+// i == Outer == row of A and C
+// k == Inner == column of B and C
+// j == column of A and row of B  is not unrolled !!!
+template <unsigned Outer, unsigned OuterMax, unsigned Inner, unsigned InnerMax>
+struct twice_double_matmat_mult_block 
+    : public double_unroll<Outer, OuterMax, Inner, InnerMax>
+{
+    typedef double_unroll<Outer, OuterMax, Inner, InnerMax> base;
+    typedef twice_double_matmat_mult_block<base::next_outer, OuterMax, base::next_inner, InnerMax> next_t;
+    typedef double       v_t;
+    typedef std::size_t  s_t;
+
+    void operator() (v_t &tmp00, v_t &tmp01, v_t &tmp02, v_t &tmp03, v_t &tmp04, 
+		     v_t &tmp05, v_t &tmp06, v_t &tmp07, v_t &tmp08, v_t &tmp09, 
+		     v_t &tmp10, v_t &tmp11, v_t &tmp12, v_t &tmp13, v_t &tmp14, v_t &tmp15, 
+		     v_t *&begin_a, s_t &ari, s_t &aci, v_t *&begin_b, s_t &bri, s_t &bci)
+    {
+	tmp00+= begin_a[ this->outer * ari ] * begin_b[ this->inner * bci ];
+	next_t()(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
+		 tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp00, 
+		 begin_a, ari, aci, begin_b, bri, bci); 
+    }
+
+    template<typename MatrixC>
+    void update(v_t &tmp00, v_t &tmp01, v_t &tmp02, v_t &tmp03, v_t &tmp04, 
+		v_t &tmp05, v_t &tmp06, v_t &tmp07, v_t &tmp08, v_t &tmp09, 
+		v_t &tmp10, v_t &tmp11, v_t &tmp12, v_t &tmp13, v_t &tmp14, v_t &tmp15, 
+		MatrixC& c, s_t i, s_t k)
+    {
+	c[i + this->outer][k + this->inner]+= tmp00;
+	next_t().update(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
+			tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp00, 
+			c, i, k);
+    }
+};
+
+template <unsigned OuterMax, unsigned InnerMax>
+struct twice_double_matmat_mult_block<OuterMax, OuterMax, InnerMax, InnerMax>
+    : public double_unroll<OuterMax, OuterMax, InnerMax, InnerMax>
+{
+    typedef double       v_t;
+    typedef std::size_t  s_t;
+
+    void operator() (v_t &tmp00, v_t &, v_t &, v_t &, v_t &, 
+		     v_t &, v_t &, v_t &, v_t &, v_t &, 
+		     v_t &, v_t &, v_t &, v_t &, v_t &, v_t &, 
+		     v_t *&begin_a, s_t &ari, s_t &aci, v_t *&begin_b, s_t &bri, s_t &bci)
+    {
+	tmp00+= begin_a[ this->outer * ari ] * begin_b[ this->inner * bci ];
+    }
+
+    template<typename MatrixC>
+    void update(v_t &tmp00, v_t &, v_t &, v_t &, v_t &, 
+		v_t &, v_t &, v_t &, v_t &, v_t &, 
+		v_t &, v_t &, v_t &, v_t &, v_t &, v_t &, 
+		MatrixC& c, s_t i, s_t k)
+    {
+	c[i + this->outer][k + this->inner]+= tmp00;
+   }
+
+};
+
+
+template<unsigned Outer, unsigned Inner, typename MatrixA, typename MatrixB, typename MatrixC>
+void twice_double_matmat_mult_template(MatrixA& a, MatrixB& b, MatrixC& c)
+{
+    BOOST_STATIC_ASSERT(Outer * Inner <= 16);
+ 
+    set_to_0(c);
+    twice_double_matmat_mult_block<1, Outer, 1, Inner> block;
+    using std::size_t;
+    for (size_t i= 0; i < c.num_rows(); i+= Outer)
+	for (size_t k= 0; k < c.num_cols(); k+= Inner) {
+	    size_t ari= a.c_offset(1, 0), // how much is the offset of A's entry increased by incrementing row
+		   aci= a.c_offset(0, 1), bri= b.c_offset(1, 0), bci= b.c_offset(0, 1);
+	    double tmp00= 0.0, tmp01= 0.0, tmp02= 0.0, tmp03= 0.0, tmp04= 0.0,
+                   tmp05= 0.0, tmp06= 0.0, tmp07= 0.0, tmp08= 0.0, tmp09= 0.0,
+ 		   tmp10= 0.0, tmp11= 0.0, tmp12= 0.0, tmp13= 0.0, tmp14= 0.0, tmp15= 0.0;
+	    double *begin_a= &a[i][0], *end_a= &a[i][a.num_cols()], *begin_b= &b[0][k];
+
+	    for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
+		block(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
+		      tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
+		      begin_a, ari, aci, begin_b, bri, bci); 
+	    block.update(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
+			 tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
+			 c, i, k);
+	}
+}
+
+
+
+
 int test_main(int argc, char* argv[])
 {
-    triple_wrapper<1, 4, 1, 4, 1, 4>() ();
+    //double_unroll<1, 4, 1, 6>()();
+    //triple_wrapper<1, 4, 1, 4, 1, 4>() ();
     //triple_unroll<4, 4, 4, 4, 4, 4>() ();
     //triple_unroll<3, 3, 6, 6, 4, 4>() ();
-
-    //return 0;
 
     unsigned steps= 32, max_size= 128, size= 32; 
     if (argc > 2) {
@@ -480,6 +610,18 @@ int test_main(int argc, char* argv[])
     fill_hessian_matrix(da, 1.0);
     fill_hessian_matrix(db, 2.0); 
     fill_hessian_matrix(dbt, 2.0); 
+
+    time_series(da, dbt, dc, twice_double_matmat_mult_template<1, 1, rm_type, cm_type, rm_type>, 
+		"Simple mult (pointers trans unrolled 1x1 template)", steps, max_size);
+    time_series(da, dbt, dc, twice_double_matmat_mult_template<2, 2, rm_type, cm_type, rm_type>, 
+		"Simple mult (pointers trans unrolled 2x2 template)", steps, max_size);
+    time_series(da, dbt, dc, twice_double_matmat_mult_template<2, 4, rm_type, cm_type, rm_type>, 
+		"Simple mult (pointers trans unrolled 2x4 template)", steps, max_size);
+    time_series(da, dbt, dc, twice_double_matmat_mult_template<4, 2, rm_type, cm_type, rm_type>, 
+		"Simple mult (pointers trans unrolled 4x2 template)", steps, max_size);
+    time_series(da, dbt, dc, twice_double_matmat_mult_template<4, 4, rm_type, cm_type, rm_type>, 
+		"Simple mult (pointers trans unrolled 4x4 template)", steps, max_size);
+
 
     time_series(da, dbt, dc, double_matmat_mult_template<2, 2, 2, rm_type, cm_type, rm_type>, 
 		"Simple mult (pointers trans unrolled 2x2x2 template)", steps, max_size);
