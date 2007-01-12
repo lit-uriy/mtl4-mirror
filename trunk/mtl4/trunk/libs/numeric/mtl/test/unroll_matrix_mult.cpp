@@ -74,10 +74,13 @@ template <unsigned Outer, unsigned OuterMax, unsigned Middle, unsigned MiddleMax
 	  unsigned Inner, unsigned InnerMax>
 struct triple_wrapper : public triple_unroll<Outer, OuterMax, Middle, MiddleMax, Inner, InnerMax>
 {
+    typedef triple_unroll<Outer, OuterMax, Middle, MiddleMax, Inner, InnerMax> base;
+    typedef triple_wrapper<base::next_outer, OuterMax, base::next_middle, MiddleMax, base::next_inner, InnerMax> next_t;
+
     void operator() ()
     {
 	cout << this->outer << " : " << this->middle << " : " << this->inner << "\n";
-	triple_wrapper<this->next_middle, OuterMax, this->next_middle, MiddleMax, this->next_inner, InnerMax>() ();
+	next_t() ();
     }  
 };
 
