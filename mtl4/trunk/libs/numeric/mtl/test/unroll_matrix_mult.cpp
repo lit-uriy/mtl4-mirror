@@ -347,22 +347,22 @@ void mult_simple_ptu224g(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 	    double *begin_a= &a[i][0], *end_a= &a[i][a.num_cols()];
 	    double *begin_b= &b[0][k];
 	    for (; begin_a != end_a; begin_a+= 2*aci, begin_b+= 2*bri) {
-		tmp000+= *(begin_a) * *(begin_b);
-		tmp001+= *(begin_a) * *(begin_b+1*bci);
-		tmp002+= *(begin_a) * *(begin_b+2*bci);
-		tmp003+= *(begin_a) * *(begin_b+3*bci);
-		tmp010+= *(begin_a+1*aci) * *(begin_b+1*bri);
-		tmp011+= *(begin_a+1*aci) * *(begin_b+1*bri+1*bci);
-		tmp012+= *(begin_a+1*aci) * *(begin_b+1*bri+2*bci);
-		tmp013+= *(begin_a+1*aci) * *(begin_b+1*bri+3*bci);
-		tmp100+= *(begin_a+1*ari) * *(begin_b);
-		tmp101+= *(begin_a+1*ari) * *(begin_b+1*bci);
-		tmp102+= *(begin_a+1*ari) * *(begin_b+2*bci);
-		tmp103+= *(begin_a+1*ari) * *(begin_b+3*bci);
-		tmp110+= *(begin_a+1*aci+1*ari) * *(begin_b+1*bri);
-		tmp111+= *(begin_a+1*aci+1*ari) * *(begin_b+1*bri+1*bci);
-		tmp112+= *(begin_a+1*aci+1*ari) * *(begin_b+1*bri+2*bci);
-		tmp113+= *(begin_a+1*aci+1*ari) * *(begin_b+1*bri+3*bci);
+		tmp000+= *(begin_a+0*ari+0*aci) * *(begin_b+0*bri+0*bci);
+		tmp001+= *(begin_a+0*ari+0*aci) * *(begin_b+0*bri+1*bci);
+		tmp002+= *(begin_a+0*ari+0*aci) * *(begin_b+0*bri+2*bci);
+		tmp003+= *(begin_a+0*ari+0*aci) * *(begin_b+0*bri+3*bci);
+		tmp010+= *(begin_a+0*ari+1*aci) * *(begin_b+1*bri+0*bci);
+		tmp011+= *(begin_a+0*ari+1*aci) * *(begin_b+1*bri+1*bci);
+		tmp012+= *(begin_a+0*ari+1*aci) * *(begin_b+1*bri+2*bci);
+		tmp013+= *(begin_a+0*ari+1*aci) * *(begin_b+1*bri+3*bci);
+		tmp100+= *(begin_a+1*ari+0*aci) * *(begin_b+0*bri+0*bci);
+		tmp101+= *(begin_a+1*ari+0*aci) * *(begin_b+0*bri+1*bci);
+		tmp102+= *(begin_a+1*ari+0*aci) * *(begin_b+0*bri+2*bci);
+		tmp103+= *(begin_a+1*ari+0*aci) * *(begin_b+0*bri+3*bci);
+		tmp110+= *(begin_a+1*ari+1*aci) * *(begin_b+1*bri+0*bci);
+		tmp111+= *(begin_a+1*ari+1*aci) * *(begin_b+1*bri+1*bci);
+		tmp112+= *(begin_a+1*ari+1*aci) * *(begin_b+1*bri+2*bci);
+		tmp113+= *(begin_a+1*ari+1*aci) * *(begin_b+1*bri+3*bci);
 	    }
 	    c[i][k]= tmp000 + tmp010; c[i][k+1]= tmp001 + tmp011;
 	    c[i][k+2]= tmp002 + tmp012; c[i][k+3]= tmp003 + tmp013;
@@ -388,7 +388,7 @@ struct double_matmat_mult_block
     void operator() (v_t &tmp00, v_t &tmp01, v_t &tmp02, v_t &tmp03, v_t &tmp04, 
 		     v_t &tmp05, v_t &tmp06, v_t &tmp07, v_t &tmp08, v_t &tmp09, 
 		     v_t &tmp10, v_t &tmp11, v_t &tmp12, v_t &tmp13, v_t &tmp14, v_t &tmp15, 
-		     v_t *begin_a, s_t ari, s_t aci, v_t *begin_b, s_t bri, s_t bci)
+		     v_t *&begin_a, s_t &ari, s_t &aci, v_t *&begin_b, s_t &bri, s_t &bci)
     {
 	tmp00+= begin_a[ this->outer * ari + this->inner * aci ] * begin_b[ this->inner * bri + this->middle * bci ];
 	next_t()(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
@@ -419,7 +419,7 @@ struct double_matmat_mult_block<OuterMax, OuterMax, MiddleMax, MiddleMax, InnerM
     void operator() (v_t &tmp00, v_t &, v_t &, v_t &, v_t &, 
 		     v_t &, v_t &, v_t &, v_t &, v_t &, 
 		     v_t &, v_t &, v_t &, v_t &, v_t &, v_t &, 
-		     v_t *begin_a, s_t ari, s_t aci, v_t *begin_b, s_t bri, s_t bci)
+		     v_t *&begin_a, s_t &ari, s_t &aci, v_t *&begin_b, s_t &bri, s_t &bci)
     {
 	tmp00+= begin_a[ this->outer * ari + this->inner * aci ] * begin_b[ this->inner * bri + this->middle * bci ];
     }
