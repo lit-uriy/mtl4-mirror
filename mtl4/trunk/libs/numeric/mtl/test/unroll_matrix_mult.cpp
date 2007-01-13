@@ -580,15 +580,10 @@ void twice_double_matmat_mult_template(MatrixA& a, MatrixB& b, MatrixC& c)
  		   tmp10= 0.0, tmp11= 0.0, tmp12= 0.0, tmp13= 0.0, tmp14= 0.0, tmp15= 0.0;
 	    double *begin_a= &a[i][0], *end_a= &a[i][a.num_cols()], *begin_b= &b[0][k];
 
-	    for (; begin_a != end_a; begin_a+= 2*aci, begin_b+= 2*bri) {
+	    for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
 		block(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
 		      tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
 		      begin_a, ari, begin_b, bci); 
-		block(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
-		      tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
-		      begin_a+aci, ari, begin_b+bri, bci); 
-
-	    }
 	    block.update(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
 			 tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
 			 c, i, k);
