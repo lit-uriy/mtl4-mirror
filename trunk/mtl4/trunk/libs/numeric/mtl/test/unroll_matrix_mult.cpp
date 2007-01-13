@@ -515,7 +515,7 @@ struct twice_double_matmat_mult_block
     void operator() (v_t &tmp00, v_t &tmp01, v_t &tmp02, v_t &tmp03, v_t &tmp04, 
 		     v_t &tmp05, v_t &tmp06, v_t &tmp07, v_t &tmp08, v_t &tmp09, 
 		     v_t &tmp10, v_t &tmp11, v_t &tmp12, v_t &tmp13, v_t &tmp14, v_t &tmp15, 
-		     v_t *&begin_a, s_t &ari, v_t *&begin_b, s_t &bci)
+		     v_t *begin_a, s_t &ari, v_t *begin_b, s_t &bci)
     {
 	tmp00+= begin_a[ this->outer * ari ] * begin_b[ this->inner * bci ];
 	next_t()(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
@@ -546,7 +546,7 @@ struct twice_double_matmat_mult_block<OuterMax, OuterMax, InnerMax, InnerMax>
     void operator() (v_t &tmp00, v_t &, v_t &, v_t &, v_t &, 
 		     v_t &, v_t &, v_t &, v_t &, v_t &, 
 		     v_t &, v_t &, v_t &, v_t &, v_t &, v_t &, 
-		     v_t *&begin_a, s_t &ari, v_t *&begin_b, s_t &bci)
+		     v_t *begin_a, s_t &ari, v_t *begin_b, s_t &bci)
     {
 	tmp00+= begin_a[ this->outer * ari ] * begin_b[ this->inner * bci ];
     }
@@ -580,10 +580,15 @@ void twice_double_matmat_mult_template(MatrixA& a, MatrixB& b, MatrixC& c)
  		   tmp10= 0.0, tmp11= 0.0, tmp12= 0.0, tmp13= 0.0, tmp14= 0.0, tmp15= 0.0;
 	    double *begin_a= &a[i][0], *end_a= &a[i][a.num_cols()], *begin_b= &b[0][k];
 
-	    for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
+	    for (; begin_a != end_a; begin_a+= 2*aci, begin_b+= 2*bri) {
 		block(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
 		      tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
 		      begin_a, ari, begin_b, bci); 
+		block(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
+		      tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
+		      begin_a+aci, ari, begin_b+bri, bci); 
+
+	    }
 	    block.update(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
 			 tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
 			 c, i, k);
