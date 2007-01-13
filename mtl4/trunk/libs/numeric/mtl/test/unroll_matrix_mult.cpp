@@ -597,7 +597,6 @@ void twice_double_matmat_mult_template(MatrixA& a, MatrixB& b, MatrixC& c)
 
 
 
-
 int test_main(int argc, char* argv[])
 {
     //double_unroll<1, 4, 1, 6>()();
