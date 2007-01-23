@@ -33,6 +33,8 @@ struct test_morton_dense
 	    typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
 	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
 		cout << "matrix[" << row(*icursor) << ", " << col(*icursor) << "] = " << value(*icursor) << '\n';
+	    icursor_type ibeg = begin<inner_tag>(cursor), icursor= ibeg + 2;
+	    cout << "--\nmatrix[" << row(*icursor) << ", " << col(*icursor) << "] = " << value(*icursor) << "\n--\n";
 	}
     }
 
@@ -66,12 +68,28 @@ struct test_morton_dense
 	}
     }
 
-
+    template <typename Matrix>
+    void check_cursor_increment(Matrix& matrix)
+    {
+	typename traits::row<Matrix>::type                                 row(matrix);
+	typename traits::col<Matrix>::type                                 col(matrix);
+	typename traits::value<Matrix>::type                               value(matrix);
+	typedef  glas::tags::nz_t                                          tag;
+	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
+	
+	cursor_type cursor = begin<tag>(matrix);
+	cout << "begin: matrix[" << row(*cursor) << ", " << col(*cursor) << "] = " << value(*cursor) << '\n';
+	cursor.advance(2, 2);
+	cout << "advance (2,2): matrix[" << row(*cursor) << ", " << col(*cursor) << "] = " << value(*cursor) << '\n';
+	cursor.advance(-1, -1);
+	cout << "advance (-1, -1): matrix[" << row(*cursor) << ", " << col(*cursor) << "] = " << value(*cursor) << '\n';
+    }
 
     template <typename Matrix>
     void operator() (Matrix& matrix)
     {
 	fill_matrix(matrix);
+	check_cursor_increment(matrix);
 
 	one_d_iteration("\nMatrix", matrix);
 	two_d_iteration("\nRows: ", matrix, glas::tags::row_t());
@@ -93,9 +111,11 @@ int test_main(int argc, char* argv[])
     matrix1[1][3]= 2.3;
     cout << "matrix1[1][3] = " << matrix1[1][3] << endl;
 
-    morton_dense<int,  0x55555553> matrix2(5, 6);
+    typedef morton_dense<int,  0x55555553> matrix2_type;
+    matrix2_type                           matrix2(5, 6);
     matrix2[1][3]= 3;
     cout << "matrix2[1][3] = " << matrix2[1][3] << endl;
+    
 
     test_morton_dense()(matrix1);
     test_morton_dense()(matrix2);
