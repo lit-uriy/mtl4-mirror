@@ -44,8 +44,46 @@ struct morton_dense_key
 	return my_col;
     }
 
+    self& advance_row(int row_inc)
+    {
+#if 0
+	size_type (row_inc >= 0 ? row_inc : -row_inc)
+	dilated_row_t d();
+	if (row_inc > 0) 
+	    dilated_row+= d;
+	else 
+	    dilated_row-= d;
+#endif
+	dilated_row.advance(row_inc);
+	// potential addition of signed and unsigned
+	my_row+= row_inc;
+	return *this;
+    }
+
+    self& advance_col(int col_inc)
+    {
+#if 0
+	dilated_col_t d(size_type(col_inc >= 0 ? col_inc : -col_inc));
+	if (col_inc > 0) 
+	    dilated_col+= d;
+	else 
+	    dilated_col-= d;
+#endif
+	dilated_col.advance(col_inc);
+	// potential addition of signed and unsigned
+	my_col+= col_inc;
+	return *this;
+    }
+
+    self& advance(int row_inc, int col_inc)
+    {
+	advance_row(row_inc);
+	advance_col(col_inc);
+	return *this;
+    }
+
 public:
-    size_type                       my_row, my_col;   
+    size_type                    my_row, my_col;   
     dilated_row_t                dilated_row;
     dilated_col_t                dilated_col; 
 };
@@ -100,6 +138,13 @@ struct morton_dense_row_cursor
 	return *this;
     }
 
+    self operator+ (int inc) const
+    {
+	self tmp(*this);
+	tmp.advance_row(inc);
+	return tmp;
+    }
+
     base& operator* ()
     {
 	return *this;
@@ -122,6 +167,13 @@ struct morton_dense_col_cursor
     {
 	++this->my_col; ++this->dilated_col;
 	return *this;
+    }
+
+    self operator+ (int inc) const
+    {
+	self tmp(*this);
+	tmp.advance_col(inc);
+	return tmp;
     }
 
     base& operator* ()
