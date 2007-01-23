@@ -681,7 +681,7 @@ namespace traits
 
 
     template <class Elt, class Parameters>
-    struct is_mtl_type<compresse2D<Elt, Parameters> > 
+    struct is_mtl_type<compressed2D<Elt, Parameters> > 
     {
 	static bool const value= true; 
     };
