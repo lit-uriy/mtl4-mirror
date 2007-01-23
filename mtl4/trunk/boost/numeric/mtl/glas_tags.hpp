@@ -11,6 +11,18 @@ struct nz_t {};
 // To iterate over all elements
 struct all_t {};
 
+// To iterate only over non-zero elements with a (non-const) iterator
+struct nz_it {};
+
+// To iterate over all elements with a (non-const) iterator
+struct all_it {};
+
+// To iterate only over non-zero elements with a const iterator
+struct nz_cit {};
+
+// To iterate over all elements with a const iterator
+struct all_cit {};
+
 // To iterate over rows
 // Generated cursors must provide range generators
 struct row_t {};

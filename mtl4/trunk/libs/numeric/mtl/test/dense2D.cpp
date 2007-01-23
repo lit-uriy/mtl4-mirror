@@ -53,12 +53,33 @@ struct test_dense2D
 	}
     } 
 
+    template <typename Matrix, typename Tag, typename ExpComplexity>
+    void two_d_iterator_iteration(char const* outer, Matrix & matrix, Tag, ExpComplexity)
+    {
+	typename traits::row<Matrix>::type                                 row(matrix); 
+	typename traits::col<Matrix>::type                                 col(matrix); 
+	typename traits::const_value<Matrix>::type                         value(matrix); 
+	typedef typename traits::range_generator<Tag, Matrix>::type        cursor_type;
+	typedef typename traits::range_generator<Tag, Matrix>::complexity  complexity;
+
+	cout // << "Matrix traversal with iterators" 
+	     << outer << complexity() << '\n';
+	check_same_type(complexity(), ExpComplexity());
+	for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
+	    typedef glas::tags::all_it     inner_tag;
+	    typedef typename traits::range_generator<inner_tag, cursor_type>::type iter_type;
+	    for (iter_type iter = begin<inner_tag>(cursor), i_end = end<inner_tag>(cursor); iter != i_end; ++iter)
+		cout << *iter << '\n';
+	}
+    }
+
+
     template <typename Matrix>
     void one_d_iteration(char const* name, Matrix & matrix, size_t check_row, size_t check_col, double check)
     {
 	typename traits::row<Matrix>::type                                 row(matrix);
 	typename traits::col<Matrix>::type                                 col(matrix);
-	typename traits::value<Matrix>::type                               value(matrix);
+	typename traits::value<Matrix>::type                               value(matrix); 
 	typedef  glas::tags::nz_t                                          tag;
 	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
 	typedef typename traits::range_generator<tag, Matrix>::complexity  complexity;
@@ -80,6 +101,8 @@ struct test_dense2D
 	one_d_iteration("\nMatrix", matrix, 1, 2, element_1_2);
 	two_d_iteration("\nRows: ", matrix, glas::tags::row_t(), ExpRowComplexity());
 	two_d_iteration("\nColumns: ", matrix, glas::tags::col_t(), ExpColComplexity());
+	two_d_iterator_iteration("\nRows (iterator): ", matrix, glas::tags::row_t(), ExpRowComplexity());
+	two_d_iterator_iteration("\nColumns (iterator): ", matrix, glas::tags::col_t(), ExpColComplexity());
 
 	transposed_view<matrix_type> trans_matrix(matrix); 
 	one_d_iteration("\nTransposed matrix", trans_matrix, 2, 1, element_1_2);
