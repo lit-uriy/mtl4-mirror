@@ -177,12 +177,24 @@ public:
 	return *this;
     }
 	
-    self operator- (self const& x)
+    self operator- (self const& x) const
     {
 	self tmp(*this);
 	return tmp -= x;
     }
     
+    // advance in both directions, special care is needed for negative values
+    self& advance(int inc)
+    {
+	value_type incv(inc >= 0 ? inc : -inc);
+	self incd(incv);
+	if (inc >= 0)
+	    operator+=(incd);
+	else
+	    operator-=(incd);
+	return *this;
+    }
+
     bool operator== (self const& x) const
     {
 	return i == x.i;
