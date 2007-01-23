@@ -680,6 +680,107 @@ namespace traits
         >::type {};
 
 
+// =============
+// For iterators
+// =============
+
+
+ 
+
+    template <class Elt, class Parameters>
+    struct range_generator<glas::tags::nz_cit, 
+			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::row_t, 2> >
+    {
+	typedef compressed2D<Elt, Parameters>                                         matrix_type;
+	typedef typename matrix_type::size_type                                       size_type;
+	typedef typename matrix_type::value_type                                      value_type;
+	typedef detail::sub_matrix_cursor<matrix_type, glas::tags::row_t, 2>          cursor;
+	
+	typedef complexity_classes::linear_cached                                     complexity;
+	static int const                                                              level = 1;
+	typedef const value_type*                                                     type;
+	
+	type begin(cursor const& c)
+	{
+	    const matrix_type& matrix= c.ref;
+	    size_type offset= matrix.indexer(matrix, c.key, matrix.begin_col());
+	    return &matrix.data[offset];
+	}
+	
+	// returned pointer can pass the end and must only be used for comparison
+	type end(cursor const& c)
+	{
+	    const matrix_type& matrix= c.ref;
+	    size_type offset= matrix.indexer(matrix, c.key, matrix.end_col());
+	    return &matrix.data[offset];
+	}	
+    };
+
+
+    template <class Elt, class Parameters>
+    struct range_generator<glas::tags::nz_cit, 
+			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::col_t, 2> >
+    {
+	typedef compressed2D<Elt, Parameters>                                         matrix_type;
+	typedef typename matrix_type::size_type                                       size_type;
+	typedef typename matrix_type::value_type                                      value_type;
+	typedef detail::sub_matrix_cursor<matrix_type, glas::tags::col_t, 2>          cursor;
+	
+	typedef complexity_classes::linear_cached                                     complexity;
+	static int const                                                              level = 1;
+	typedef const value_type*                                                     type;
+	
+	type begin(cursor const& c)
+	{
+	    const matrix_type& matrix= c.ref;
+	    size_type offset= matrix.indexer(matrix, matrix.begin_row(), c.key);
+	    return &matrix.data[offset];
+	}
+	
+	// returned pointer can pass the end and must only be used for comparison
+	type end(cursor const& c)
+	{
+	    const matrix_type& matrix= c.ref;
+	    size_type offset= matrix.indexer(matrix, matrix.end_row(), c.key);
+	    return &matrix.data[offset];
+	}	
+    };
+
+#if 0
+        template <typename OuterTag, typename Matrix>
+        struct compressed2D_iterator_range_generator
+        {
+	    typedef Matrix                                                                matrix_type;
+	    typedef typename matrix_type::size_type                                       size_type;
+	    typedef typename matrix_type::value_type                                      value_type;
+	    typedef typename matrix_type::parameters                                      parameters;
+	    typedef detail::sub_matrix_cursor<matrix_type, OuterTag, 2>                   cursor;
+
+	    typedef complexity_classes::linear_cached                                     complexity;
+	    static int const                                                              level = 1;
+	    typedef value_type*                                                           type;
+
+	    type begin(cursor const& c)
+	    {
+		const matrix_type& matrix= c.ref;
+		size_type offset= matrix.indexer(matrix, c.key, matrix.begin_col());
+		return &matrix.data[offset];
+	    }
+
+
+
+	    type end(cursor const& c)
+	    {
+		
+	    }	
+        };
+#endif
+ 
+
+
+
+
+
     template <class Elt, class Parameters>
     struct is_mtl_type<compressed2D<Elt, Parameters> > 
     {

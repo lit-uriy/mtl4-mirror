@@ -68,11 +68,37 @@ void two_d_iteration_impl(char const* name, Matrix & matrix, Tag, complexity_cla
     cout << name << ": Tag has no implementation\n";
 }
 
+template <typename Matrix, typename Tag, typename Complexity>
+void two_d_iterator_iteration_impl(char const* outer, Matrix & matrix, Tag, Complexity)
+{
+    typename traits::row<Matrix>::type                                 row(matrix); 
+    typename traits::col<Matrix>::type                                 col(matrix); 
+    typename traits::const_value<Matrix>::type                         value(matrix); 
+    typedef typename traits::range_generator<Tag, Matrix>::type        cursor_type;
+
+    cout << outer << " with iterators: " << Complexity() << '\n';
+    for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
+	typedef glas::tags::nz_cit     inner_tag;
+	cout << "---\n";
+	typedef typename traits::range_generator<inner_tag, cursor_type>::type iter_type;
+	for (iter_type iter = begin<inner_tag>(cursor), i_end = end<inner_tag>(cursor); iter != i_end; ++iter)
+	    cout << *iter << '\n';
+    }
+} 
+
+
+template <typename Matrix, typename Tag>
+void two_d_iterator_iteration_impl(char const* name, Matrix & matrix, Tag, complexity_classes::infinite)
+{
+    cout << name << ": Tag has no implementation\n";
+}
+
 template <typename Matrix, typename Tag>
 void two_d_iteration(char const* name, Matrix & matrix, Tag)
 {
     typedef typename traits::range_generator<Tag, Matrix>::complexity  complexity;
     two_d_iteration_impl(name, matrix, Tag(), complexity());
+    two_d_iterator_iteration_impl(name, matrix, Tag(), complexity());
 }    
 
 
@@ -101,7 +127,7 @@ void test_compressed2D(char const* name)
     std::cout << "\n\n";
     print_matrix(matrix);
 
-    one_d_iteration("\nMatrix", matrix);
+    one_d_iteration("\nMatrix", matrix); 
 
     two_d_iteration("Row-wise", matrix, glas::tags::row_t());
     two_d_iteration("Column-wise", matrix, glas::tags::col_t());
