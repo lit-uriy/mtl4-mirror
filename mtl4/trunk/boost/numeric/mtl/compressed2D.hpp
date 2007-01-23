@@ -603,6 +603,11 @@ namespace traits
 
 namespace traits
 {
+
+// ===========
+// For cursors
+// ===========
+
     template <class Elt, class Parameters>
     struct range_generator<glas::tags::nz_t, compressed2D<Elt, Parameters> >
       : detail::all_offsets_range_generator<compressed2D<Elt, Parameters>,
@@ -683,8 +688,6 @@ namespace traits
 // =============
 // For iterators
 // =============
-
-
  
 
     template <class Elt, class Parameters>
@@ -745,40 +748,6 @@ namespace traits
 	    return &matrix.data[offset];
 	}	
     };
-
-#if 0
-        template <typename OuterTag, typename Matrix>
-        struct compressed2D_iterator_range_generator
-        {
-	    typedef Matrix                                                                matrix_type;
-	    typedef typename matrix_type::size_type                                       size_type;
-	    typedef typename matrix_type::value_type                                      value_type;
-	    typedef typename matrix_type::parameters                                      parameters;
-	    typedef detail::sub_matrix_cursor<matrix_type, OuterTag, 2>                   cursor;
-
-	    typedef complexity_classes::linear_cached                                     complexity;
-	    static int const                                                              level = 1;
-	    typedef value_type*                                                           type;
-
-	    type begin(cursor const& c)
-	    {
-		const matrix_type& matrix= c.ref;
-		size_type offset= matrix.indexer(matrix, c.key, matrix.begin_col());
-		return &matrix.data[offset];
-	    }
-
-
-
-	    type end(cursor const& c)
-	    {
-		
-	    }	
-        };
-#endif
- 
-
-
-
 
 
     template <class Elt, class Parameters>
