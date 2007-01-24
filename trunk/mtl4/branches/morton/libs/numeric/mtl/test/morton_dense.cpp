@@ -118,6 +118,8 @@ struct test_morton_dense
 	one_d_iteration("\nTransposed matrix", trans_matrix);
 	two_d_iteration("\nRows: ", trans_matrix, glas::tags::row_t());
 	two_d_iteration("\nColumns: ", trans_matrix, glas::tags::col_t());
+	two_d_iterator_iteration("\nRows (iterator): ", trans_matrix, glas::tags::row_t());
+	two_d_iterator_iteration("\nColumns (iterator): ", trans_matrix, glas::tags::col_t());
     }
 };
 
