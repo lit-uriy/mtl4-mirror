@@ -38,7 +38,19 @@ void one_d_iteration(char const* name, Matrix & matrix)
     }
 }
 
-
+#if 0
+template <typename Matrix>
+void one_d_iterator_iteration(char const* name, Matrix & matrix)
+{
+    typedef  glas::tags::nz_cit                                          tag;
+    typedef typename traits::range_generator<tag, Matrix>::type        iterator_type;
+    typedef typename traits::range_generator<tag, Matrix>::complexity  complexity;
+    
+    cout << name << "\nElements: " << complexity() << '\n';
+    for (iterator_type iterator(begin<tag>(matrix)), cend(end<tag>(matrix)); iterator != cend; ++iterator) 
+	cout << *iterator << '\n';
+}
+#endif
 
 
 template <typename Matrix, typename Tag, typename Complexity>
@@ -128,6 +140,7 @@ void test_compressed2D(char const* name)
     print_matrix(matrix);
 
     one_d_iteration("\nMatrix", matrix); 
+    //one_d_iterator_iteration("\nMatrix (iterator)", matrix); 
 
     two_d_iteration("Row-wise", matrix, glas::tags::row_t());
     two_d_iteration("Column-wise", matrix, glas::tags::col_t());
@@ -139,6 +152,7 @@ void test_compressed2D(char const* name)
     print_matrix(trans_matrix);
 
     one_d_iteration("\nTransposed matrix", trans_matrix);
+    //one_d_iterator_iteration("\nMatrix (iterator)", trans_matrix); 
 
     two_d_iteration("Transposed row-wise", trans_matrix, glas::tags::row_t());
     two_d_iteration("Transposed Column-wise", trans_matrix, glas::tags::col_t());
