@@ -24,14 +24,27 @@ struct adaptor_operators
 	return tmp;
     }
     
+    // Should be optional if a cursor has no operator+
+    // So far all (dense) cursors (within rows/columns) have random access
+    Adaptor operator+(int i) const
+    {
+	const Adaptor& me = static_cast<const Adaptor&>(*this);
+	return Adaptor(me.cursor + i, me.map);
+    }
+
     bool operator==(Adaptor const& x) const
     {
 	Adaptor const& me = static_cast<Adaptor const&>(*this);
 
+	// Sloppy, nothing tested about property map
+	return me.cursor == x.cursor;
+
 	// Compare addresses of property maps
-	return &me.map == &x.map && me.cursor == x.cursor;
+	// Problem: different addresses doesn't imply that the maps are different
+	// return &me.map == &x.map && me.cursor == x.cursor;
 
 	// Certainly better they provide comparison
+	// Problem: not guaranteed to exist or can be ridiculously expensive
 	// return me.map == x.map && me.cursor == x.cursor; 
     }
 
