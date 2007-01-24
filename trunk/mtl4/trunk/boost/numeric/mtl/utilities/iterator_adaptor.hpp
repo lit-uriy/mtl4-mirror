@@ -17,7 +17,7 @@ struct const_iterator_adaptor
     const_iterator_adaptor(PropertyMap const& map, Cursor cursor) 
 	: map(map), cursor(cursor) {}
 
-    proxy operator*()
+    proxy operator*() const
     {
 	return proxy(map, cursor);
     }
