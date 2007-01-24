@@ -97,6 +97,7 @@ void test_sub_matrix(Matrix& matrix)
     // print_depth_first(recurator, "");
     recursive_print_checked(recurator, "", is_base);
 	 
+#if 0
     cout << "\n====================\n"
 	 <<   "Same with transposed\n"
 	 <<   "====================\n\n";
@@ -113,6 +114,7 @@ void test_sub_matrix(Matrix& matrix)
 	 <<   "=============================\n\n";
 
     recursion::for_each(trans_recurator, print_functor(), is_base);
+#endif
 }
 
 
