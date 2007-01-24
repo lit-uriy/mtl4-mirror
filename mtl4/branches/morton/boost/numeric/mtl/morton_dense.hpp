@@ -202,7 +202,7 @@ struct morton_dense_row_const_iterator
     typedef typename traits::const_value<Matrix>::type  map_type;
     typedef typename Matrix::value_type                 value_type;
     typedef typename Matrix::size_type                  size_type;
-    typedef utilities::iterator_adaptor<map_type, cursor_type, value_type> base;
+    typedef utilities::const_iterator_adaptor<map_type, cursor_type, value_type> base;
     
     morton_dense_row_const_iterator(const Matrix& matrix, size_type row, size_type col)
 	: base(map_type(matrix), cursor_type(row, col))
@@ -240,7 +240,7 @@ struct morton_dense_col_const_iterator
     typedef typename traits::const_value<Matrix>::type  map_type;
     typedef typename Matrix::value_type                 value_type;
     typedef typename Matrix::size_type                  size_type;
-    typedef utilities::iterator_adaptor<map_type, cursor_type, value_type> base;
+    typedef utilities::const_iterator_adaptor<map_type, cursor_type, value_type> base;
     
     morton_dense_col_const_iterator(const Matrix& matrix, size_type row, size_type col)
 	: base(map_type(matrix), cursor_type(row, col))

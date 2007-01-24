@@ -19,4 +19,8 @@
 #include <boost/numeric/mtl/utilities/maybe.hpp>
 #include <boost/numeric/mtl/mtl_exception.hpp>
 
+
+// Under construction
+// #include <boost/numeric/mtl/utilities/iterator_adaptor_1D.hpp>
+
 #endif // MTL_COMMON_INCLUDES_INCLUDE
