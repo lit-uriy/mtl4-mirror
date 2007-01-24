@@ -108,6 +108,8 @@ struct test_dense2D
 	one_d_iteration("\nTransposed matrix", trans_matrix, 2, 1, element_1_2);
 	two_d_iteration("\nRows: ", trans_matrix, glas::tags::row_t(), ExpColComplexity());
 	two_d_iteration("\nColumns: ", trans_matrix, glas::tags::col_t(), ExpRowComplexity());
+	two_d_iterator_iteration("\nRows (iterator): ", trans_matrix, glas::tags::row_t(), ExpColComplexity());
+	two_d_iterator_iteration("\nColumns (iterator): ", trans_matrix, glas::tags::col_t(), ExpRowComplexity());
 
 	cout << "\nmatrix[1][2] = " << matrix[1][2] << "\n";
 	matrix[1][2]= 18.0;
