@@ -3,11 +3,17 @@
 #ifndef MTL_MORTON_DENSE_INCLUDE
 #define MTL_MORTON_DENSE_INCLUDE
 
+#include <boost/type_traits.hpp>
+#include <boost/mpl/if.hpp>
+
 #include <boost/numeric/mtl/common_includes.hpp>
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
 #include <boost/numeric/mtl/detail/dilated_int.hpp>
+#include <boost/numeric/mtl/utilities/iterator_adaptor.hpp>
+
+
 // #include <boost/numeric/mtl/ahnentafel_index.hpp>
 
 namespace mtl {
@@ -24,7 +30,7 @@ struct morton_dense_key
 	: my_row(my_row), my_col(my_col), dilated_row(my_row), dilated_col(my_col)
     {}
 
-    bool operator== (self const& x)
+    bool operator== (self const& x) const
     {
 	return my_row == x.my_row && my_col == x.my_col;
     }
@@ -81,6 +87,7 @@ struct morton_dense_el_cursor
     typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 
     typedef morton_dense_el_cursor                    self;
     typedef morton_dense_key<BitMask>                 base;
+    typedef base                                      key_type;
 
     morton_dense_el_cursor(size_type my_row, size_type my_col, size_type num_cols) 
 	: base(my_row, my_col), num_cols(num_cols) 
@@ -101,6 +108,11 @@ struct morton_dense_el_cursor
 	return *this;
     }
 
+    const base& operator* () const
+    {
+	return *this;
+    }
+
 protected:
     size_t                       num_cols;
 };
@@ -112,6 +124,7 @@ struct morton_dense_row_cursor
     typedef std::size_t                               size_type;
     typedef morton_dense_row_cursor                   self;
     typedef morton_dense_key<BitMask>                 base;
+    typedef base                                      key_type;
 
     morton_dense_row_cursor(size_type my_row, size_type my_col) 
 	: base(my_row, my_col)
@@ -134,6 +147,11 @@ struct morton_dense_row_cursor
     {
 	return *this;
     }
+
+    const base& operator* () const
+    {
+	return *this;
+    }
 };
 
 template <unsigned long BitMask>
@@ -143,6 +161,7 @@ struct morton_dense_col_cursor
     typedef std::size_t                               size_type;
     typedef morton_dense_col_cursor                   self;
     typedef morton_dense_key<BitMask>                 base;
+    typedef base                                      key_type;
 
     morton_dense_col_cursor(size_type my_row, size_type my_col) 
 	: base(my_row, my_col)
@@ -165,6 +184,87 @@ struct morton_dense_col_cursor
     {
 	return *this;
     }
+
+    const base& operator* () const
+    {
+	return *this;
+    }
+};
+
+
+template <typename Matrix>
+struct morton_dense_row_const_iterator
+    : utilities::const_iterator_adaptor<typename traits::const_value<Matrix>::type, morton_dense_row_cursor<Matrix::mask>,
+					typename Matrix::value_type>
+{
+    static const unsigned long                          mask= Matrix::mask;
+    typedef morton_dense_row_cursor<mask>               cursor_type;
+    typedef typename traits::const_value<Matrix>::type  map_type;
+    typedef typename Matrix::value_type                 value_type;
+    typedef typename Matrix::size_type                  size_type;
+    typedef utilities::iterator_adaptor<map_type, cursor_type, value_type> base;
+    
+    morton_dense_row_const_iterator(const Matrix& matrix, size_type row, size_type col)
+	: base(map_type(matrix), cursor_type(row, col))
+    {}
+};
+
+
+template <typename Matrix>
+struct morton_dense_row_iterator
+    : utilities::iterator_adaptor<typename traits::value<Matrix>::type, morton_dense_row_cursor<Matrix::mask>,
+				  typename Matrix::value_type>
+{
+    static const unsigned long                          mask= Matrix::mask;
+    typedef morton_dense_row_cursor<mask>               cursor_type;
+    typedef typename traits::value<Matrix>::type        map_type;
+    typedef typename Matrix::value_type                 value_type;
+    typedef typename Matrix::size_type                  size_type;
+    typedef utilities::iterator_adaptor<map_type, cursor_type, value_type> base;
+    
+    morton_dense_row_iterator(Matrix& matrix, size_type row, size_type col)
+	: my_map(matrix), base(my_map, cursor_type(row, col))
+    {}
+private:
+    map_type   my_map;
+};
+
+
+template <typename Matrix>
+struct morton_dense_col_const_iterator
+    : utilities::const_iterator_adaptor<typename traits::const_value<Matrix>::type, morton_dense_col_cursor<Matrix::mask>,
+					typename Matrix::value_type>
+{
+    static const unsigned long                          mask= Matrix::mask;
+    typedef morton_dense_col_cursor<mask>               cursor_type;
+    typedef typename traits::const_value<Matrix>::type  map_type;
+    typedef typename Matrix::value_type                 value_type;
+    typedef typename Matrix::size_type                  size_type;
+    typedef utilities::iterator_adaptor<map_type, cursor_type, value_type> base;
+    
+    morton_dense_col_const_iterator(const Matrix& matrix, size_type row, size_type col)
+	: base(map_type(matrix), cursor_type(row, col))
+    {}
+};
+
+
+template <typename Matrix>
+struct morton_dense_col_iterator
+    : utilities::iterator_adaptor<typename traits::value<Matrix>::type, morton_dense_col_cursor<Matrix::mask>,
+				  typename Matrix::value_type>
+{
+    static const unsigned long                          mask= Matrix::mask;
+    typedef morton_dense_col_cursor<mask>               cursor_type;
+    typedef typename traits::value<Matrix>::type        map_type;
+    typedef typename Matrix::value_type                 value_type;
+    typedef typename Matrix::size_type                  size_type;
+    typedef utilities::iterator_adaptor<map_type, cursor_type, value_type> base;
+    
+    morton_dense_col_iterator(Matrix& matrix, size_type row, size_type col)
+	: my_map(matrix), base(my_map, cursor_type(row, col))
+    {}
+private:
+    map_type   my_map;
 };
 
 
@@ -181,6 +281,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
   public:
 
+    typedef Parameters                        parameters;
     typedef typename Parameters::orientation  orientation;
     typedef typename Parameters::index        index_type;
     typedef typename Parameters::dimensions   dim_type;
@@ -437,11 +538,16 @@ namespace traits
 } // namespace traits
 
 
+// ================
 // Range generators
 // ================
 
 namespace traits
 {
+
+// ===========
+// For cursors
+// ===========
 
     template <class Elt, unsigned long BitMask, class Parameters>
     struct range_generator<glas::tags::all_t, morton_dense<Elt, BitMask, Parameters> >
@@ -530,6 +636,105 @@ namespace traits
         : range_generator<glas::tags::nz_t, 
 			  detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tags::col_t, 2> >
     {};
+
+
+// =============
+// For iterators
+// =============
+
+    namespace detail {
+
+        template <typename OuterTag, typename Matrix, bool is_const>
+        struct morton_dense_iterator_range_generator
+        {
+	    typedef Matrix                                                                matrix_type;
+	    typedef typename matrix_type::size_type                                       size_type;
+	    typedef typename matrix_type::value_type                                      value_type;
+	    typedef typename matrix_type::parameters                                      parameters;
+	    typedef detail::sub_matrix_cursor<matrix_type, OuterTag, 2>                   cursor;
+
+	    typedef complexity_classes::linear_cached                                     complexity;
+	    static int const                                                              level = 1;
+
+	    typedef typename boost::mpl::if_<
+		boost::is_same<OuterTag, glas::tags::row_t>
+	      , typename boost::mpl::if_c<
+    	            is_const 
+		  , morton_dense_col_const_iterator<Matrix>
+		  , morton_dense_col_iterator<Matrix>
+		>::type
+	      , typename boost::mpl::if_c<
+    	            is_const 
+		  , morton_dense_row_const_iterator<Matrix>
+		  , morton_dense_row_iterator<Matrix>
+		>::type
+	    >::type type;  
+
+        private:
+
+	    typedef typename boost::mpl::if_c<is_const, const Matrix&, Matrix&>::type    mref_type; 
+
+	    type begin_dispatch(cursor const& c, glas::tags::row_t)
+	    {
+		return type(const_cast<mref_type>(c.ref), c.key, c.ref.begin_col());
+	    }
+	    
+	    type end_dispatch(cursor const& c, glas::tags::row_t)
+	    {
+		return type(const_cast<mref_type>(c.ref), c.key, c.ref.end_col());
+	    }
+
+	    type begin_dispatch(cursor const& c, glas::tags::col_t)
+	    {
+		return type(const_cast<mref_type>(c.ref), c.ref.begin_row(), c.key);
+	    }
+
+	    type end_dispatch(cursor const& c, glas::tags::col_t)
+	    {
+		return type(const_cast<mref_type>(c.ref), c.ref.end_row(), c.key);
+	    }
+
+        public:
+
+	    type begin(cursor const& c)
+	    {
+		return begin_dispatch(c, OuterTag());
+	    }
+
+	    type end(cursor const& c)
+	    {
+		return end_dispatch(c, OuterTag());
+	    }	
+        };
+
+    } // namespace detail
+
+        
+    template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
+    struct range_generator<glas::tags::nz_it, 
+			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
+      : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, false>
+    {};
+
+    template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
+    struct range_generator<glas::tags::all_it, 
+			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
+      : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, false>
+    {};
+
+    template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
+    struct range_generator<glas::tags::nz_cit, 
+			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
+      : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, true>
+    {};
+
+    template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
+    struct range_generator<glas::tags::all_cit, 
+			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
+      : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, true>
+    {};
+
+
 } // namespace traits
 
 
@@ -537,10 +742,10 @@ namespace traits
 // Sub matrix
 // ==========
 
-template <typename Elt, unsigned long BitMask, typename Parameters>
-struct sub_matrix_t<morton_dense<Elt, BitMask, Parameters> >
+template <typename Value, unsigned long BitMask, typename Parameters>
+struct sub_matrix_t<morton_dense<Value, BitMask, Parameters> >
 {
-    typedef morton_dense<Elt, BitMask, Parameters>    matrix_type;
+    typedef morton_dense<Value, BitMask, Parameters>    matrix_type;
     typedef matrix_type                     sub_matrix_type;
     typedef matrix_type const               const_sub_matrix_type;
     typedef typename matrix_type::size_type size_type;
