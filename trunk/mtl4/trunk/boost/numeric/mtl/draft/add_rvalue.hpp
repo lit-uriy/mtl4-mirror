@@ -49,6 +49,21 @@ struct add_rvalue<morton_dense<Value, Mask, Para> >
     typedef morton_dense<Value, Mask, typename detail::add_rvalue_parameters<Para>::type>   type;
 }
 
+#if 0
+
+// How it could be used
+
+template <typename Matrix, typename Matrix>
+typename add_rvalue_parameters<Matrix>::type
+inline operator* (const Matrix& a, const Matrix& b)
+{
+    typename add_rvalue_parameters<Matrix>::type c;
+    matmat_mult(a, b, c);
+    return c;
+}
+
+
+#endif 
 
 
 } // namespace mtl
