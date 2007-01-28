@@ -52,7 +52,6 @@ struct add_rvalue<morton_dense<Value, Mask, Para> >
 #if 0
 
 // How it could be used
-
 template <typename Matrix, typename Matrix>
 typename add_rvalue_parameters<Matrix>::type
 inline operator* (const Matrix& a, const Matrix& b)
@@ -61,6 +60,19 @@ inline operator* (const Matrix& a, const Matrix& b)
     matmat_mult(a, b, c);
     return c;
 }
+
+// At least this works for unary operators or if operands are requested to be equal
+
+// The more general case would be like this, but the result could still shallow copyable
+template <typename MatrixA, typename MatrixB>
+typename matmat_mult_op_result<MatrixA, MatrixB>::type
+inline operator* (const Matrix& a, const Matrix& b)
+{
+    typename matmat_mult_op_result<MatrixA, MatrixB>::type
+    matmat_mult(a, b, c);
+    return c;
+}
+
 
 
 #endif 
