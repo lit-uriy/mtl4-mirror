@@ -5,6 +5,7 @@
 
 #include <boost/numeric/mtl/dimensions.hpp>
 #include <boost/numeric/mtl/operations/sub_matrix.hpp>
+#include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
 
 
 namespace mtl { namespace recursion {
