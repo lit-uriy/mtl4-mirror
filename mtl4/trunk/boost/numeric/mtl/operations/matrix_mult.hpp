@@ -629,7 +629,7 @@ struct gen_blas_dense_mat_mat_mult_t
 
 template<typename ParaA, typename ParaB, typename ParaC, typename Backup>
 struct gen_blas_dense_mat_mat_mult_t<dense2D<float, ParaA>, dense2D<float, ParaB>, 
-				     dense2D<float, ParaC>, mult_assign_t, Backup>
+				     dense2D<float, ParaC>, modes::mult_assign_t, Backup>
     : public Backup
 {
     void operator(const dense2D<float, ParaA>& a, const dense2D<float, ParaB>& b, 
