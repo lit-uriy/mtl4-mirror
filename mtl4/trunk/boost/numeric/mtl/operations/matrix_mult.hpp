@@ -573,6 +573,130 @@ void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 }
 
 
+#define MTL_UGLY_DENSE_MAT_MAT_MULT_ITERATOR_TYPEDEFS \
+	using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;           \
+	using glas::tags::all_cit; using glas::tags::all_it; using traits::range_generator;  \
+        typedef typename range_generator<row_t, MatrixA>::type       a_cur_type;             \
+        typedef typename range_generator<row_t, MatrixC>::type       c_cur_type;             \
+	typedef typename range_generator<col_t, MatrixB>::type       b_cur_type;             \
+        typedef typename range_generator<all_it, c_cur_type>::type   c_icur_type;            \
+        typedef typename range_generator<all_cit, a_cur_type>::type  a_icur_type;            \
+        typedef typename range_generator<all_cit, b_cur_type>::type  b_icur_type;          
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
+struct gen_dense_mat_mat_mult_t
+{
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	// MTL_UGLY_DENSE_MAT_MAT_MULT_ITERATOR_TYPEDEFS
+	using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;           
+	using glas::tags::all_cit; using glas::tags::all_it; using traits::range_generator;  
+        typedef typename range_generator<row_t, MatrixA>::type       a_cur_type;             
+        typedef typename range_generator<row_t, MatrixC>::type       c_cur_type;             
+	typedef typename range_generator<col_t, MatrixB>::type       b_cur_type;             
+        typedef typename range_generator<all_it, c_cur_type>::type   c_icur_type;            
+        typedef typename range_generator<all_cit, a_cur_type>::type  a_icur_type;            
+        typedef typename range_generator<all_cit, b_cur_type>::type  b_icur_type;          
+
+	if (Assign::init_to_0) set_to_0(c);
+
+	a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
+	for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+
+	    b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
+	    for (c_icur_type cic= begin<all_it>(cc); bc != bend; ++bc, ++cic) { 
+		    
+		typename MatrixC::value_type c_tmp(*cic);
+		a_icur_type aic= begin<all_cit>(ac), aiend= end<all_cit>(ac); 
+		for (b_icur_type bic= begin<all_cit>(bc); aic != aiend; ++aic, ++bic)
+		    Assign::update(c_tmp, a_value(*aic) * b_value(*bic));
+		
+		*cic= c_tmp;
+	    }
+	}
+    }    
+};
+
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign, 
+	  typename Backup= gen_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC, Assign> >
+struct gen_blas_dense_mat_mat_mult_t
+    : public Backup
+{};
+
+
+#ifdef MTL_HAS_BLAS 
+
+template<typename ParaA, typename ParaB, typename ParaC, typename Backup>
+struct gen_blas_dense_mat_mat_mult_t<dense2D<float, ParaA>, dense2D<float, ParaB>, 
+				     dense2D<float, ParaC>, mult_assign_t, Backup>
+    : public Backup
+{
+    void operator(const dense2D<float, ParaA>& a, const dense2D<float, ParaB>& b, 
+		  dense2D<float, ParaC>& c)
+    {
+	int atrans= boost::is_same<typename ParaA::orientation, col_major>::value, ... ;
+	fgemm(, atrans, &a[0][0], ...)
+    }
+};
+
+
+#endif
+
+
+namespace functor {
+
+    using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
+    using glas::tags::all_cit; using glas::tags::all_it; using traits::range_generator;
+
+    template <typename MatrixA, typename MatrixB, typename MatrixC, 
+	      typename Assign, 
+	      unsigned InnerUnroll= MTL_MATRIX_MULT_INNER_UNROLL, 
+	      unsigned MiddleUnroll= MTL_MATRIX_MULT_MIDDLE_UNROLL, 
+	      unsigned OuterUnroll= MTL_MATRIX_MULT_OUTER_UNROLL>>
+    struct gen_matrix_mult_variations
+    {
+        typedef typename range_generator<row_t, MatrixA>::type     a_cur_type;
+        typedef typename range_generator<row_t, MatrixC>::type     c_cur_type;
+	typedef typename range_generator<col_t, MatrixB>::type     b_cur_type;
+        typedef typename range_generator<all_t, c_cur_type>::type  c_icur_type;
+        typedef typename range_generator<all_t, a_cur_type>::type  a_icur_type;
+        typedef typename range_generator<all_t, b_cur_type>::type  b_icur_type;
+
+	void gen_dense_mat_mat_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
+	{
+        typedef typename range_generator<row_t, MatrixA>::type     a_cur_type;
+        typedef typename range_generator<row_t, MatrixC>::type     c_cur_type;
+	typedef typename range_generator<col_t, MatrixB>::type     b_cur_type;
+        typedef typename range_generator<all_t, c_cur_type>::type  c_icur_type;
+        typedef typename range_generator<all_t, a_cur_type>::type  a_icur_type;
+        typedef typename range_generator<all_t, b_cur_type>::type  b_icur_type;
+
+	    if (Assign::init_to_0) set_to_0(c);
+
+            a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
+            for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+
+		b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
+		for (c_icur_type cic= begin<all_it>(cc); bc != bend; ++bc, ++cic) { 
+		    
+		    typename MatrixC::value_type c_tmp(*cic);
+		    a_icur_type aic= begin<all_cit>(ac), aiend= end<all_cit>(ac); 
+		    for (b_icur_type bic= begin<all_cit>(bc); aic != aiend; ++aic, ++bic)
+			Assign::update(c_tmp, a_value(*aic) * b_value(*bic));
+
+		    *cic= c_tmp;
+		}
+	    }
+	}
+
+    };
+
+} // namespace functor
+
+
+
+
 
 
 } // namespace mtl

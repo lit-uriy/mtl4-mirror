@@ -13,13 +13,15 @@ namespace mtl {
 template <typename Orientation= row_major, 
 	  typename Index= index::c_index,
 	  typename Dimensions= mtl::non_fixed::dimensions,
-	  bool OnStack= false>
+	  bool OnStack= false,
+	  bool RValue= false>
 struct matrix_parameters 
 {
     typedef Orientation orientation;
     typedef Index       index;
     typedef Dimensions  dimensions;
     static bool const   on_stack= OnStack;
+    static bool const   is_rvalue= RValue;  // to enable shallow copy
 
     // Matrix dimensions must be known at compile time to be on the stack
     BOOST_STATIC_ASSERT(( !on_stack || dimensions::is_static ));
