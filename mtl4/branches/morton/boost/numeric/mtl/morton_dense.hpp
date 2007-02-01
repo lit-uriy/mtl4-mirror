@@ -223,10 +223,8 @@ struct morton_dense_row_iterator
     typedef utilities::iterator_adaptor<map_type, cursor_type, value_type> base;
     
     morton_dense_row_iterator(Matrix& matrix, size_type row, size_type col)
-	: my_map(matrix), base(my_map, cursor_type(row, col))
+	:  base(map_type(matrix), cursor_type(row, col))
     {}
-private:
-    map_type   my_map;
 };
 
 
@@ -261,10 +259,7 @@ struct morton_dense_col_iterator
     typedef utilities::iterator_adaptor<map_type, cursor_type, value_type> base;
     
     morton_dense_col_iterator(Matrix& matrix, size_type row, size_type col)
-	: my_map(matrix), base(my_map, cursor_type(row, col))
-    {}
-private:
-    map_type   my_map;
+      : base(map_type(matrix), cursor_type(row, col))  {}    
 };
 
 

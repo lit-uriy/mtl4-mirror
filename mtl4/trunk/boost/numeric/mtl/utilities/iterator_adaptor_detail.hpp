@@ -58,7 +58,7 @@ struct adaptor_operators
 template <typename PropertyMap, typename Cursor, typename ValueType>
 struct const_iterator_proxy
 {
-    const_iterator_proxy(PropertyMap const& map, Cursor cursor) 
+    const_iterator_proxy(PropertyMap map, Cursor cursor) 
 	: map(map), cursor(cursor) {}
 
     operator ValueType() const
@@ -66,7 +66,7 @@ struct const_iterator_proxy
 	return map(*cursor);
     }
 
-    PropertyMap const&     map;
+    PropertyMap            map;
     Cursor                 cursor;
 };
 
@@ -76,7 +76,7 @@ struct iterator_proxy
 {
     typedef iterator_proxy                    self;
 
-    iterator_proxy(PropertyMap& map, Cursor cursor) 
+    iterator_proxy(PropertyMap map, Cursor cursor) 
 	: map(map), cursor(cursor) {}
 
     operator ValueType() const
@@ -90,7 +90,7 @@ struct iterator_proxy
 	return *this;
     }
 
-    PropertyMap&           map;
+    PropertyMap           map;
     Cursor                 cursor;
 };
 

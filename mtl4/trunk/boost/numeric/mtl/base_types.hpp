@@ -26,6 +26,9 @@ template<> struct transposed_orientation<col_major>
     typedef row_major type; 
 };
 
+// Dummy type to define empty types
+struct null_type {};
+
 } // namespace mtl
 
 #endif // MTL_BASE_TYPES_INCLUDE

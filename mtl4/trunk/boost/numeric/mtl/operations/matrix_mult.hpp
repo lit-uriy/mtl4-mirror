@@ -7,6 +7,8 @@
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/operations/cursor_pseudo_dot.hpp>
 #include <boost/numeric/mtl/operations/multi_action_block.hpp>
+#include <boost/numeric/mtl/operations/assign_modes.hpp>
+#include <boost/numeric/mtl/base_types.hpp>
 
 #include <boost/numeric/mtl/dense2D.hpp>
 
@@ -573,18 +575,8 @@ void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 }
 
 
-#define MTL_UGLY_DENSE_MAT_MAT_MULT_ITERATOR_TYPEDEFS \
-	using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;           \
-	using glas::tags::all_cit; using glas::tags::all_it; using traits::range_generator;  \
-        typedef typename range_generator<row_t, MatrixA>::type       a_cur_type;             \
-        typedef typename range_generator<row_t, MatrixC>::type       c_cur_type;             \
-	typedef typename range_generator<col_t, MatrixB>::type       b_cur_type;             \
-        typedef typename range_generator<all_it, c_cur_type>::type   c_icur_type;            \
-        typedef typename range_generator<all_cit, a_cur_type>::type  a_icur_type;            \
-        typedef typename range_generator<all_cit, b_cur_type>::type  b_icur_type;          
-
-
-template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t> 
+//typename Backup= null_type>     // To allow 5th parameter, is ignored
 struct gen_dense_mat_mat_mult_t
 {
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
@@ -609,12 +601,14 @@ struct gen_dense_mat_mat_mult_t
 		    
 		typename MatrixC::value_type c_tmp(*cic);
 		a_icur_type aic= begin<all_cit>(ac), aiend= end<all_cit>(ac); 
-		for (b_icur_type bic= begin<all_cit>(bc); aic != aiend; ++aic, ++bic)
-		    Assign::update(c_tmp, a_value(*aic) * b_value(*bic));
-		
+		for (b_icur_type bic= begin<all_cit>(bc); aic != aiend; ++aic, ++bic) {
+		  //std::cout << "aic " << *aic << "bic " << *bic << '\n';
+		    Assign::update(c_tmp, *aic * *bic);
+		}
 		*cic= c_tmp;
 	    }
 	}
+	std::cout.flush();
     }    
 };
 
@@ -642,6 +636,17 @@ struct gen_blas_dense_mat_mat_mult_t<dense2D<float, ParaA>, dense2D<float, ParaB
 
 
 #endif
+
+#if 0
+#define MTL_UGLY_DENSE_MAT_MAT_MULT_ITERATOR_TYPEDEFS \
+	using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;           \
+	using glas::tags::all_cit; using glas::tags::all_it; using traits::range_generator;  \
+        typedef typename range_generator<row_t, MatrixA>::type       a_cur_type;             \
+        typedef typename range_generator<row_t, MatrixC>::type       c_cur_type;             \
+	typedef typename range_generator<col_t, MatrixB>::type       b_cur_type;             \
+        typedef typename range_generator<all_it, c_cur_type>::type   c_icur_type;            \
+        typedef typename range_generator<all_cit, a_cur_type>::type  a_icur_type;            \
+        typedef typename range_generator<all_cit, b_cur_type>::type  b_icur_type;          
 
 
 namespace functor {
@@ -694,7 +699,7 @@ namespace functor {
 
 } // namespace functor
 
-
+#endif
 
 
 
