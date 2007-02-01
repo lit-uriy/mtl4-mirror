@@ -53,15 +53,15 @@ struct test_morton_dense
 	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
 		cout << *icursor <<'\n';
 	}
-    }
+    } 
 
-    template <typename Matrix>
+    template <typename Matrix> 
     void one_d_iteration(char const* name, Matrix & matrix)
     {
 	typename traits::row<Matrix>::type                                 row(matrix);
 	typename traits::col<Matrix>::type                                 col(matrix);
 	typename traits::value<Matrix>::type                               value(matrix);
-	typedef  glas::tags::nz_t                                          tag;
+	typedef  glas::tags::nz_t                                          tag; 
 	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
 
 	cout << name << "\nElements: \n";

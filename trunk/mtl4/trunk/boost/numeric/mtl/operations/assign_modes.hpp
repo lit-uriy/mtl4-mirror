@@ -12,14 +12,14 @@ struct mult_assign_t
     static const bool init_to_0= true;
 
     template <typename T>
-    static void init(T& v) const
+    static void init(T& v)
     {
 	using math::zero;
 	v= zero(v);
     }
 
     template <typename T, typename U>
-    static void update(T& x, const U& y) const
+    static void update(T& x, const U& y)
     {
 	x+= y;
     }
@@ -34,7 +34,7 @@ struct add_mult_assign_t
     static void init(T& v) {}
 
     template <typename T, typename U>
-    static void update(T& x, const U& y) const
+    static void update(T& x, const U& y)
     {
 	x+= y;
     }
@@ -49,7 +49,7 @@ struct minus_mult_assign_t
     static void init(T& v) {}
 
     template <typename T, typename U>
-    static void update(T& x, const U& y) const
+    static void update(T& x, const U& y)
     {
 	x-= y;
     }

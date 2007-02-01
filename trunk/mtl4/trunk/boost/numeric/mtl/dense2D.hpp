@@ -35,6 +35,7 @@ struct dense_el_cursor : public detail::base_cursor<const Value*>
 
     dense_el_cursor () {} 
     dense_el_cursor (const_pointer_type me) : super(me) {}
+    dense_el_cursor (super s) : super(s) {}
 
     template <typename Parameters>
     dense_el_cursor(dense2D<Value, Parameters> const& ma, size_t r, size_t c)
@@ -43,10 +44,10 @@ struct dense_el_cursor : public detail::base_cursor<const Value*>
 
     self operator+(int x) const
     {
-	return super::operator+(x);
+	return self(super::operator+(x));
     }
 
-    self operator-(self const& x)
+    int operator-(self const& x)
     {
 	return super::operator-(x);
     }

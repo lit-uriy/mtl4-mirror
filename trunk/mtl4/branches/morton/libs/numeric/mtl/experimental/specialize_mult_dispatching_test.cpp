@@ -24,6 +24,7 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
  
     fill_hessian_matrix(a, 1.0);
     fill_hessian_matrix(b, 2.0);
+
     specialized_matrix_mult(a, b, c);
 
     if (a.num_cols() <= 10) {

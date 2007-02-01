@@ -14,7 +14,7 @@ struct const_iterator_adaptor
 {
     typedef detail::const_iterator_proxy<PropertyMap, Cursor, ValueType>     proxy;
 
-    const_iterator_adaptor(PropertyMap const& map, Cursor cursor) 
+    const_iterator_adaptor(PropertyMap map, Cursor cursor) 
 	: map(map), cursor(cursor) {}
 
     proxy operator*() const
@@ -22,7 +22,7 @@ struct const_iterator_adaptor
 	return proxy(map, cursor);
     }
 
-    PropertyMap const&     map;
+    PropertyMap            map;
     Cursor                 cursor;
 };
 
@@ -33,7 +33,7 @@ struct iterator_adaptor
 {
     typedef detail::iterator_proxy<PropertyMap, Cursor, ValueType>   proxy;
 
-    iterator_adaptor(PropertyMap& map, Cursor cursor) 
+    iterator_adaptor(PropertyMap map, Cursor cursor) 
 	: map(map), cursor(cursor) {}
 
     proxy operator*()
@@ -41,7 +41,7 @@ struct iterator_adaptor
 	return proxy(map, cursor);
     }
 
-    PropertyMap&     map;
+    PropertyMap      map;
     Cursor           cursor;
 };
 
