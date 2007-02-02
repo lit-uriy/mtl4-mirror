@@ -14,6 +14,7 @@
 #include <boost/numeric/mtl/operations/print_matrix.hpp>
 #include <boost/numeric/mtl/operations/matrix_mult.hpp>
 #include <boost/numeric/mtl/operations/hessian_matrix_utilities.hpp>
+#include <boost/numeric/mtl/operations/assign_modes.hpp>
 
 using namespace mtl;
 using namespace std;  
@@ -22,16 +23,28 @@ using namespace std;
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 {
- 
+    using modes::add_mult_assign_t; using modes::minus_mult_assign_t; 
+
     fill_hessian_matrix(a, 1.0);
     fill_hessian_matrix(b, 2.0);
 
     std::cout << "\n" << name << "  --- calling simple mult:\n"; std::cout.flush();
-    //gen_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC>  mult;
     gen_dense_mat_mat_mult_t<>  mult;
 
     mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols());
+
+    std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
+    gen_dense_mat_mat_mult_t<add_mult_assign_t>  add_mult;
+
+    add_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    
+    std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
+    gen_dense_mat_mat_mult_t<minus_mult_assign_t>  minus_mult;
+
+    minus_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols(), 1.0);
 
 #ifdef MTL_HAS_BLAS
     std::cout << "\n" << name << "  --- calling blas mult (empty):\n"; std::cout.flush(); 
@@ -42,10 +55,22 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
 #ifdef MTL_USE_OPTERON_OPTIMIZATION
     std::cout << "\n" << name << "  --- calling platform specific mult (empty):\n"; std::cout.flush(); 
-    //gen_platform_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC>  platform_mult;
     gen_platform_dense_mat_mat_mult_t<>  platform_mult;
     platform_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols());
+
+    std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
+    gen_platform_dense_mat_mat_mult_t<add_mult_assign_t>  platform_add_mult;
+
+    platform_add_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    
+    std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
+    gen_platform_dense_mat_mat_mult_t<minus_mult_assign_t>  platform_minus_mult;
+
+    platform_minus_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+
 #endif
 
     if (a.num_cols() <= 0) {
