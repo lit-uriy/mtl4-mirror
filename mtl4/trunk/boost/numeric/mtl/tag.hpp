@@ -8,30 +8,55 @@ namespace mtl { namespace tag {
 // For non-MTL types not explicitly defined
 struct unknown {};
 
+// tag for all types
+struct universe {};
+
 // tag for any MTL matrix
-struct matrix {};
+struct matrix : virtual universe {};
 
 // Tag for any dense MTL matrix
-struct dense : public matrix {};
+struct dense : virtual universe {};
     
 // Tag for any sparse MTL matrix
-struct sparse : public matrix {};
+struct sparse : virtual universe {};
     
 // Tag for matrices where values are stored contigously in memory
-struct contiguous_memory : public matrix {};
+struct contiguous_memory : virtual universe {};
 
-struct contiguous_dense : public dense, public contiguous_memory {};
+// short cut
+struct contiguous_dense : virtual dense, virtual contiguous_memory {};
+
+struct has_iterator : virtual universe {};
+
+struct has_ra_iterator : virtual has_iterator {};
+
+struct has_fast_ra_iterator : virtual has_ra_iterator {};
+
+struct has_cursor : virtual universe {};
+
+struct has_ra_cursor : virtual has_cursor {};
+
+struct has_fast_ra_cursor : virtual has_ra_cursor {};
 
 // Tags for dispatching on matrix types without dealing 
 // with template parameters
-struct dense2D : public contiguous_dense {};
+struct dense2D 
+  : virtual matrix, virtual contiguous_dense, virtual has_fast_ra_cursor, 
+    virtual has_fast_ra_iterator
+{};
 
-struct morton_dense : public dense {};
+struct morton_dense 
+  : virtual matrix, virtual contiguous_dense, virtual has_ra_cursor, 
+    virtual has_ra_iterator
+ {};
 
-struct compressed2D : public sparse {};
+struct compressed2D 
+  : virtual matrix, virtual sparse, virtual has_iterator,
+    virtual has_cursor
+{};
 
 // deprecated
-// struct fractal : public dense {};
+// struct fractal : virtual dense {};
 
 
 }} // namespace mtl::tag
