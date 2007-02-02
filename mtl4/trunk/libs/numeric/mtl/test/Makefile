@@ -1,9 +1,20 @@
-CXXFLAGS+=  -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -g # -O3 -DNDEBUG -ffast-math  -funsafe-math-optimizations -ffinite-math-only 
+INCLUDE_DIRS = -I${MTL_MORTON_BOOST_ROOT} -I${MTL_BOOST_ROOT} -I${BOOST_ROOT}
 
-# G5 Optimization
-CXXFLAGS+=  -fast
+CXXFLAGS = ${INCLUDE_DIRS} 
 
-CXXFLAGS+= -Wno-long-double
+CXXFLAGS += -Wno-long-double 
+
+# Debugging
+#CXXFLAGS += -g
+
+# g++ optimization
+CXXFLAGS += -DNDEBUG -O3 -ffast-math 
+
+# Additional G5 optimization on g++
+# CXXFLAGS += -fast
+
+# Intel optimization
+#CXXFLAGS += -DNDEBUG -O3 
 
 # on Big Red with IBM Compiler
 #CXX= xlC
