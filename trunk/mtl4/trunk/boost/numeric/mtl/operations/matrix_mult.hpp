@@ -577,7 +577,7 @@ void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t,
 	  typename Backup= row_major>     // To allow 5th parameter, is ignored
-struct gen_dense_mat_mat_mult_t
+struct gen_dense_mat_mat_mult_ft
 {
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
@@ -612,16 +612,39 @@ struct gen_dense_mat_mat_mult_t
 };
 
 
+template <typename Assign= modes::mult_assign_t,
+	  typename Backup= row_major>     // To allow 2nd parameter, is ignored
+struct gen_dense_mat_mat_mult_t
+{
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	gen_dense_mat_mat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>()(a, b, c);
+    }
+};
+
 // ==================================
 // Plattform specific implementations
 // ==================================
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t, 
-	  typename Backup= gen_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC, Assign> >
-struct gen_platform_dense_mat_mat_mult_t
+	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
+struct gen_platform_dense_mat_mat_mult_ft
     : public Backup
 {};
+
+
+template <typename Assign= modes::mult_assign_t, 
+	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
+struct gen_platform_dense_mat_mat_mult_t
+{
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	gen_platform_dense_mat_mat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>()(a, b, c);
+    }
+};
 
 
 // ==================================
@@ -630,8 +653,8 @@ struct gen_platform_dense_mat_mat_mult_t
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t, 
-	  typename Backup= gen_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC, Assign> >
-struct gen_blas_dense_mat_mat_mult_t
+	  typename Backup= gen_dense_mat_mat_mult_ft<MatrixA, MatrixB, MatrixC, Assign> >
+struct gen_blas_dense_mat_mat_mult_ft
     : public Backup
 {};
 
@@ -639,7 +662,7 @@ struct gen_blas_dense_mat_mat_mult_t
 #ifdef MTL_HAS_BLAS 
 // Only sketch
 template<typename ParaA, typename ParaB, typename ParaC, typename Backup>
-struct gen_blas_dense_mat_mat_mult_t<dense2D<float, ParaA>, dense2D<float, ParaB>, 
+struct gen_blas_dense_mat_mat_mult_ft<dense2D<float, ParaA>, dense2D<float, ParaB>, 
 				     dense2D<float, ParaC>, modes::mult_assign_t, Backup>
 {
     void operator()(const dense2D<float, ParaA>& a, const dense2D<float, ParaB>& b, 
@@ -655,7 +678,7 @@ struct gen_blas_dense_mat_mat_mult_t<dense2D<float, ParaA>, dense2D<float, ParaB
 };
 
 template<typename ParaA, typename ParaB, typename ParaC, typename Backup>
-struct gen_blas_dense_mat_mat_mult_t<dense2D<double, ParaA>, dense2D<double, ParaB>, 
+struct gen_blas_dense_mat_mat_mult_ft<dense2D<double, ParaA>, dense2D<double, ParaB>, 
 				     dense2D<double, ParaC>, modes::mult_assign_t, Backup>
 {
     void operator()(const dense2D<double, ParaA>& a, const dense2D<double, ParaB>& b, 
@@ -671,6 +694,18 @@ struct gen_blas_dense_mat_mat_mult_t<dense2D<double, ParaA>, dense2D<double, Par
 };
 
 #endif
+
+template <typename Assign= modes::mult_assign_t, 
+	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
+struct gen_blas_dense_mat_mat_mult_t
+    : public Backup
+{
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	gen_blas_dense_mat_mat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>()(a, b, c);
+    }
+};
 
 
 

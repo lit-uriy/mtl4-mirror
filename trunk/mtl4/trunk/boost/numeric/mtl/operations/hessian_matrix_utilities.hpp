@@ -50,7 +50,7 @@ namespace impl {
 // C has dimensions M x L and reduced_dim is N, see above
 // A, B, and C are supposed to have the same indices: either all starting  from 0 or all from 1
 template <typename Matrix>
-void check_hessian_matrix_product(Matrix const& c, typename Matrix::size_type reduced_dim)
+void check_hessian_matrix_product(Matrix const& c, typename Matrix::size_type reduced_dim, double factor= 1.0)
 {
     using impl::similar_values; using impl::hessian_product_i_j;
     typedef typename Matrix::value_type    value_type;
@@ -58,30 +58,35 @@ void check_hessian_matrix_product(Matrix const& c, typename Matrix::size_type re
     size_type  rb= c.begin_row(), rl= c.end_row() - 1,
                cb= c.begin_col(), cl= c.end_col() - 1;
 
-    if (!similar_values(value_type(hessian_product_i_j(rb, cb, reduced_dim)), c[rb][cb])) {
-	std::cout << "Result in c[" << rb << "][" << cb << "] should be " << hessian_product_i_j(rb, cb, reduced_dim)
+    if (!similar_values(value_type(factor * hessian_product_i_j(rb, cb, reduced_dim)), c[rb][cb])) {
+	std::cout << "Result in c[" << rb << "][" << cb << "] should be " 
+		  << factor * hessian_product_i_j(rb, cb, reduced_dim)
 	     << " but is " << c[rb][cb] << "\n";
 	throw "Wrong result"; }
 
-    if (!similar_values(value_type(hessian_product_i_j(rl, cb, reduced_dim)), c[rl][cb])) {
-	std::cout << "Result ixn c[" << rl << "][" << cb << "] should be " << hessian_product_i_j(rl, cb, reduced_dim)
+    if (!similar_values(value_type(factor * hessian_product_i_j(rl, cb, reduced_dim)), c[rl][cb])) {
+	std::cout << "Result ixn c[" << rl << "][" << cb << "] should be " 
+		  << factor * hessian_product_i_j(rl, cb, reduced_dim)
 	     << " but is " << c[rl][cb] << "\n";
 	throw "Wrong result"; }
 
-    if (!similar_values(value_type(hessian_product_i_j(rb, cl, reduced_dim)), c[rb][cl])) {
-	std::cout << "Result in c[" << rb << "][" << cb << "] should be " << hessian_product_i_j(rb, cl, reduced_dim)
+    if (!similar_values(value_type(factor * hessian_product_i_j(rb, cl, reduced_dim)), c[rb][cl])) {
+	std::cout << "Result in c[" << rb << "][" << cb << "] should be " 
+		  << factor * hessian_product_i_j(rb, cl, reduced_dim)
 	     << " but is " << c[rb][cl] << "\n";
 	throw "Wrong result"; }
 
-    if (!similar_values(value_type(hessian_product_i_j(rl, cl, reduced_dim)), c[rl][cl])) {
-	std::cout << "Result in c[" << rl << "][" << cb << "] should be " << hessian_product_i_j(rl, cl, reduced_dim)
+    if (!similar_values(value_type(factor * hessian_product_i_j(rl, cl, reduced_dim)), c[rl][cl])) {
+	std::cout << "Result in c[" << rl << "][" << cb << "] should be " 
+		  << factor * hessian_product_i_j(rl, cl, reduced_dim)
 	     << " but is " << c[rl][cl] << "\n";
 	throw "Wrong result"; }
 
     // In the center of the matrix
-    if (!similar_values(value_type(hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)), c[(rb+rl)/2][(cb+cl)/2])) {
+    if (!similar_values(value_type(factor * hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)), 
+			c[(rb+rl)/2][(cb+cl)/2])) {
 	std::cout << "Result in c[" << (rb+rl)/2 << "][" << (cb+cl)/2 << "] should be " 
-		  << hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)
+		  << factor * hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)
 	     << " but is " << c[(rb+rl)/2][(cb+cl)/2] << "\n";
 	throw "Wrong result"; }
 }
