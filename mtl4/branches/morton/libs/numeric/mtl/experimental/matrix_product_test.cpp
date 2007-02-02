@@ -27,21 +27,23 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     fill_hessian_matrix(b, 2.0);
 
     std::cout << "\n" << name << "  --- calling simple mult:\n"; std::cout.flush();
-    gen_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC>  mult;
+    //gen_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC>  mult;
+    gen_dense_mat_mat_mult_t<>  mult;
 
     mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols());
 
 #ifdef MTL_HAS_BLAS
     std::cout << "\n" << name << "  --- calling blas mult (empty):\n"; std::cout.flush(); 
-    gen_blas_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC>  blas_mult;
+    gen_blas_dense_mat_mat_mult_t<>  blas_mult;
     blas_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols());
 #endif    
 
 #ifdef MTL_USE_OPTERON_OPTIMIZATION
     std::cout << "\n" << name << "  --- calling platform specific mult (empty):\n"; std::cout.flush(); 
-    gen_platform_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC>  platform_mult;
+    //gen_platform_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC>  platform_mult;
+    gen_platform_dense_mat_mat_mult_t<>  platform_mult;
     platform_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols());
 #endif
