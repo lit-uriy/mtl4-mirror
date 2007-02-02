@@ -45,7 +45,7 @@ namespace functor {
 
         typedef typename traits::const_value<MatrixA>::type                a_value_type;
         typedef typename traits::const_value<MatrixB>::type                b_value_type;
-        typedef typename traits::value<MatrixA>::type                      c_value_type;
+        typedef typename traits::value<MatrixC>::type                      c_value_type;
 
         typedef typename traits::range_generator<row_t, MatrixA>::type     a_cur_type;
         typedef typename traits::range_generator<row_t, MatrixC>::type     c_cur_type;
@@ -575,6 +575,11 @@ void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 }
 
 
+
+// =====================================
+// Generic matrix product with iterators
+// =====================================
+
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t,
 	  typename Backup= row_major>     // To allow 5th parameter, is ignored
 struct gen_dense_mat_mat_mult_ft
@@ -620,6 +625,69 @@ struct gen_dense_mat_mat_mult_t
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
 	gen_dense_mat_mat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>()(a, b, c);
+    }
+};
+
+
+// =====================================================
+// Generic matrix product with cursors and property maps
+// =====================================================
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t,
+	  typename Backup= row_major>     // To allow 5th parameter, is ignored
+struct gen_cursor_dense_mat_mat_mult_ft
+{
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	typedef glas::tags::row_t                                          row_t;
+	typedef glas::tags::col_t                                          col_t;
+	typedef glas::tags::all_t                                          all_t;
+
+        typedef typename traits::const_value<MatrixA>::type                a_value_type;
+        typedef typename traits::const_value<MatrixB>::type                b_value_type;
+        typedef typename traits::value<MatrixC>::type                      c_value_type;
+
+        typedef typename traits::range_generator<row_t, MatrixA>::type     a_cur_type;
+        typedef typename traits::range_generator<row_t, MatrixC>::type     c_cur_type;
+        
+        typedef typename traits::range_generator<col_t, MatrixB>::type     b_cur_type;
+        typedef typename traits::range_generator<all_t, c_cur_type>::type  c_icur_type;
+
+        typedef typename traits::range_generator<all_t, a_cur_type>::type  a_icur_type;
+        typedef typename traits::range_generator<all_t, b_cur_type>::type  b_icur_type;
+
+	if (Assign::init_to_0) set_to_0(c);
+
+	a_value_type   a_value(a);
+	b_value_type   b_value(b);
+	c_value_type   c_value(c);
+    		
+	a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
+	for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+	    
+	    b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
+	    for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
+		
+		typename MatrixC::value_type c_tmp(c_value(*cic));
+		a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
+		for (b_icur_type bic= begin<all_t>(bc); aic != aiend; ++aic, ++bic)
+		    Assign::update(c_tmp, a_value(*aic) * b_value(*bic));
+		c_value(*cic, c_tmp);
+	    }
+	} 
+    }
+};
+
+
+template <typename Assign= modes::mult_assign_t,
+	  typename Backup= row_major>     // To allow 2nd parameter, is ignored
+struct gen_cursor_dense_mat_mat_mult_t
+{
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	gen_cursor_dense_mat_mat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>()(a, b, c);
     }
 };
 

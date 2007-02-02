@@ -46,6 +46,24 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
 
+    std::cout << "\n" << name << "  --- calling mult with cursors and property maps:\n"; std::cout.flush();
+    gen_cursor_dense_mat_mat_mult_t<>  cursor_mult;
+
+    cursor_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols());
+
+    std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
+    gen_cursor_dense_mat_mat_mult_t<add_mult_assign_t>  cursor_add_mult;
+
+    cursor_add_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    
+    std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
+    gen_cursor_dense_mat_mat_mult_t<minus_mult_assign_t>  cursor_minus_mult; 
+
+    cursor_minus_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+
 #ifdef MTL_HAS_BLAS
     std::cout << "\n" << name << "  --- calling blas mult (empty):\n"; std::cout.flush(); 
     gen_blas_dense_mat_mat_mult_t<>  blas_mult;
