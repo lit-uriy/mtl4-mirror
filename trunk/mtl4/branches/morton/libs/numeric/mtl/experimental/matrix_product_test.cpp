@@ -4,8 +4,8 @@
 #include <cmath>
 #include <boost/test/minimal.hpp>
 
-#define MTL_HAS_BLAS
-#define MTL_USE_OPTERON_OPTIMIZATION
+// #define MTL_HAS_BLAS
+// #define MTL_USE_OPTERON_OPTIMIZATION
 
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/dense2D.hpp>
@@ -27,7 +27,7 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
     fill_hessian_matrix(a, 1.0);
     fill_hessian_matrix(b, 2.0);
-
+#if 0
     std::cout << "\n" << name << "  --- calling simple mult:\n"; std::cout.flush();
     gen_dense_mat_mat_mult_t<>  mult;
 
@@ -63,12 +63,30 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
     cursor_minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
+#endif 
+    std::cout << "\n" << name << "  --- calling mult with tiling:\n"; std::cout.flush();
+    gen_tiling_dense_mat_mat_mult_t<2, 2>  tiling_mult;
+
+    tiling_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols()); 
+
+    std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
+    gen_tiling_dense_mat_mat_mult_t<2, 2, add_mult_assign_t>  tiling_add_mult;
+
+    tiling_add_mult(a, b, c); 
+    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    
+    std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
+    gen_tiling_dense_mat_mat_mult_t<2, 2, minus_mult_assign_t>  tiling_minus_mult; 
+
+    tiling_minus_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols(), 1.0);
 
 #ifdef MTL_HAS_BLAS
     std::cout << "\n" << name << "  --- calling blas mult (empty):\n"; std::cout.flush(); 
     gen_blas_dense_mat_mat_mult_t<>  blas_mult;
     blas_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols());
+    check_hessian_matrix_product(c, a.num_cols()); 
 #endif    
 
 #ifdef MTL_USE_OPTERON_OPTIMIZATION

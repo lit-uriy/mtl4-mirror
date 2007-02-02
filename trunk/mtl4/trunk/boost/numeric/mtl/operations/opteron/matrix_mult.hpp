@@ -35,9 +35,9 @@ namespace detail {
 	// Never sets the matrix to zero; this is supposed to be done before if necessary
 
 	typedef typename morton_dense<double, MaskA, PA>::size_type  size_type;
-	size_type i_max= a.num_rows(), i_block= 2 * (i_max / 2),
-	          j_max= a.num_cols(), j_block= 2 * (j_max / 2),
-	          k_max= b.num_cols();
+	size_type i_max= c.num_rows(), i_block= 2 * (i_max / 2),
+	          j_max= c.num_cols(), j_block= 2 * (j_max / 2),
+	          k_max= a.num_cols();
 	const int stride= 32;
 
 	double *ap= &const_cast<morton_dense<double, MaskA, PA>&>(a)[0][0],

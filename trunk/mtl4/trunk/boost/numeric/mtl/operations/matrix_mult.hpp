@@ -3,12 +3,16 @@
 #ifndef MTL_MATRIX_MULT_INCLUDE
 #define MTL_MATRIX_MULT_INCLUDE
 
+#include <boost/type_traits.hpp>
+
 #include <boost/numeric/mtl/operations/set_to_0.hpp>
 #include <boost/numeric/mtl/range_generator.hpp>
 #include <boost/numeric/mtl/operations/cursor_pseudo_dot.hpp>
 #include <boost/numeric/mtl/operations/multi_action_block.hpp>
 #include <boost/numeric/mtl/operations/assign_modes.hpp>
 #include <boost/numeric/mtl/base_types.hpp>
+#include <boost/numeric/mtl/tag.hpp>
+#include <boost/numeric/meta_math/loop.hpp>
 
 #include <boost/numeric/mtl/dense2D.hpp>
 
@@ -150,13 +154,159 @@ struct gen_cursor_dense_mat_mat_mult_t
 #endif
 
 
+template <unsigned long Index0, unsigned long Max0, unsigned long Index1, unsigned long Max1, typename Assign>
+struct gen_tiling_dense_mat_mat_mult_block
+    : public meta_math::loop2<Index0, Max0, Index1, Max1>
+{
+    typedef meta_math::loop2<Index0, Max0, Index1, Max1>                              base;
+    typedef gen_tiling_dense_mat_mat_mult_block<base::next_index0, Max0, base::next_index1, Max1, Assign>  next_t;
+
+    template <typename Value, typename ValueA, typename SizeA, typename ValueB, typename SizeB>
+    static inline void apply(Value& tmp00, Value& tmp01, Value& tmp02, Value& tmp03, Value& tmp04, 
+			     Value& tmp05, Value& tmp06, Value& tmp07, Value& tmp08, Value& tmp09, 
+			     Value& tmp10, Value& tmp11, Value& tmp12, Value& tmp13, Value& tmp14, Value& tmp15, 
+			     ValueA *begin_a, SizeA& ari, ValueB *begin_b, SizeB& bci)
+    {
+	tmp00+= begin_a[ base::index0 * ari ] * begin_b[ base::index1 * bci ];
+	next_t::apply(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
+		      tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp00, 
+		      begin_a, ari, begin_b, bci); 
+    }
+
+    template <typename Value, typename MatrixC, typename SizeC>
+    static inline void update(Value& tmp00, Value& tmp01, Value& tmp02, Value& tmp03, Value& tmp04, 
+			      Value& tmp05, Value& tmp06, Value& tmp07, Value& tmp08, Value& tmp09, 
+			      Value& tmp10, Value& tmp11, Value& tmp12, Value& tmp13, Value& tmp14, Value& tmp15,
+			      MatrixC& c, SizeC i, SizeC k)
+    {
+	Assign::update(c[i + base::index0][k + base::index1], tmp00);
+	next_t::update(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
+		       tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp00, 
+		       c, i, k);
+    }
+};
+
+template <unsigned long Max0, unsigned long Max1, typename Assign>
+struct gen_tiling_dense_mat_mat_mult_block<Max0, Max0, Max1, Max1, Assign>
+    : public meta_math::loop2<Max0, Max0, Max1, Max1>
+{
+    typedef meta_math::loop2<Max0, Max0, Max1, Max1>  base;
+
+    template <typename Value, typename ValueA, typename SizeA, typename ValueB, typename SizeB>
+    static inline void apply(Value& tmp00, Value& tmp01, Value& tmp02, Value& tmp03, Value& tmp04, 
+			     Value& tmp05, Value& tmp06, Value& tmp07, Value& tmp08, Value& tmp09, 
+			     Value& tmp10, Value& tmp11, Value& tmp12, Value& tmp13, Value& tmp14, Value& tmp15, 
+			     ValueA *begin_a, SizeA& ari, ValueB *begin_b, SizeB& bci)
+    {
+	tmp00+= begin_a[ base::index0 * ari ] * begin_b[ base::index1 * bci ];
+    }
+
+    template <typename Value, typename MatrixC, typename SizeC>
+    static inline void update(Value& tmp00, Value& tmp01, Value& tmp02, Value& tmp03, Value& tmp04, 
+			      Value& tmp05, Value& tmp06, Value& tmp07, Value& tmp08, Value& tmp09, 
+			      Value& tmp10, Value& tmp11, Value& tmp12, Value& tmp13, Value& tmp14, Value& tmp15,
+			      MatrixC& c, SizeC i, SizeC k)
+    {
+	Assign::update(c[i + base::index0][k + base::index1], tmp00);
+    }
+};
+
+
+template <typename MatrixA, typename MatrixB, typename MatrixC, 
+	  unsigned long Tiling1= MTL_DENSE_MATMAT_MULT_TILING1,
+	  unsigned long Tiling2= MTL_DENSE_MATMAT_MULT_TILING2,
+	  typename Assign= modes::mult_assign_t, 
+	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
+struct gen_tiling_dense_mat_mat_mult_ft
+{
+    BOOST_STATIC_ASSERT(Tiling1 * Tiling2 <= 16);
+  
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	apply(a, b, c, typename traits::matrix_category<MatrixA>::type(),
+	      typename traits::matrix_category<MatrixB>::type(), 
+	      typename traits::matrix_category<MatrixC>::type());
+#if 0
+	using boost::is_base_of;
+	if (is_base_of<tag::has_2D_layout, typename traits::matrix_category<MatrixA>::type>::value
+	      && is_base_of<tag::has_2D_layout, typename traits::matrix_category<MatrixB>::type>::value
+	      && is_base_of<tag::has_2D_layout, typename traits::matrix_category<MatrixC>::type>::value)
+	    apply(a, b, c);
+	else
+	    Backup()(a, b, c);
+#endif
+    }    
+
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::universe, tag::universe, tag::universe)
+    {
+	Backup()(a, b, c);
+    }
+
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, 
+	       tag::has_2D_layout, tag::has_2D_layout)
+    {
+	std::cout << "do unrolling\n";
+
+	if (Assign::init_to_0) set_to_0(c);
+
+// 	Backup()(a, b, c);
+// 	return;
+
+	typedef gen_tiling_dense_mat_mat_mult_block<1, Tiling1, 1, Tiling2, Assign>  block;
+	typedef typename MatrixC::size_type                                          size_type;
+	typedef typename MatrixC::value_type                                         value_type;
+
+	// Temporary solution; dense matrices need to return const referencens
+	MatrixA& aref= const_cast<MatrixA&>(a);
+	MatrixB& bref= const_cast<MatrixB&>(b);
+
+	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
+	          k_max= c.num_rows(), k_block= Tiling2 * (k_max / Tiling2);
+	    
+	for (size_type i= 0; i < i_block; i+= Tiling1)
+	    for (size_type k= 0; k < k_block; k+= Tiling2) {
+
+		const value_type z= math::zero(value_type());
+		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
+                           tmp05= z, tmp06= z, tmp07= z, tmp08= z, tmp09= z,
+ 		           tmp10= z, tmp11= z, tmp12= z, tmp13= z, tmp14= z, tmp15= z;
+		const typename MatrixA::value_type *begin_a= &aref[i][0], *end_a= &aref[i][a.num_cols()];
+		const typename MatrixB::value_type *begin_b= &bref[0][k];
+
+		size_t ari= a.c_offset(1, 0), // how much is the offset of A's entry increased by incrementing row
+		       aci= a.c_offset(0, 1), bri= b.c_offset(1, 0), bci= b.c_offset(0, 1);
+		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
+		    block::apply(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
+				 tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
+				 begin_a, ari, begin_b, bci); 
+		block::update(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
+			      tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
+			      c, i, k);
+	    }
+
+		
 
 
 
 
 
+    }
+};
 
-
+template <unsigned long Tiling1= MTL_DENSE_MATMAT_MULT_TILING1,
+	  unsigned long Tiling2= MTL_DENSE_MATMAT_MULT_TILING2,
+	  typename Assign= modes::mult_assign_t, 
+	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
+struct gen_tiling_dense_mat_mat_mult_t
+{
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	gen_tiling_dense_mat_mat_mult_ft<
+	     MatrixA, MatrixB, MatrixC, Tiling1, Tiling2, Assign, Backup
+	>()(a, b, c);
+    }
+};
 
 
 

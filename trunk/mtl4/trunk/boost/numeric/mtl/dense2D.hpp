@@ -342,7 +342,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }    
 
     // offset regarding c-style indices
-    size_t c_offset(size_t r, size_t c)
+    size_t c_offset(size_t r, size_t c) const
     {
 	return indexer.offset(ldim, r, c, orientation());
     }

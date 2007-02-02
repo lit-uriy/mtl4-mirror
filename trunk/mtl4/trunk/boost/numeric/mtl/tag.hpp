@@ -17,6 +17,9 @@ struct matrix : virtual universe {};
 // Tag for any dense MTL matrix
 struct dense : virtual universe {};
     
+// Tag for matrizes where offet a_ij is x*i + y*j for some x and y
+struct has_2D_layout : virtual dense {};
+    
 // Tag for any sparse MTL matrix
 struct sparse : virtual universe {};
     
@@ -28,6 +31,7 @@ struct contiguous_dense : virtual dense, virtual contiguous_memory {};
 
 struct has_iterator : virtual universe {};
 
+// Meaning: is worth unrolling and such
 struct has_ra_iterator : virtual has_iterator {};
 
 struct has_fast_ra_iterator : virtual has_ra_iterator {};
@@ -36,13 +40,14 @@ struct has_cursor : virtual universe {};
 
 struct has_ra_cursor : virtual has_cursor {};
 
+// Meaning: is worth unrolling and such
 struct has_fast_ra_cursor : virtual has_ra_cursor {};
 
 // Tags for dispatching on matrix types without dealing 
 // with template parameters
 struct dense2D 
   : virtual matrix, virtual contiguous_dense, virtual has_fast_ra_cursor, 
-    virtual has_fast_ra_iterator
+    virtual has_fast_ra_iterator, virtual has_2D_layout
 {};
 
 struct morton_dense 
