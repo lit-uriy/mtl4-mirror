@@ -10,7 +10,9 @@ using namespace std;
 int const vector_size = 1000, // 1000
           repetitions = 500000;
  
-vector<double> gv1(vector_size, 2.0), gv2(vector_size, 3.0);
+vector<double> gv1(vector_size, 2.0), gv2(vector_size, 3.0),
+               gv3(vector_size, 4.0), gv4(vector_size, 5.0),
+               gv5(vector_size, 6.0), gv6(vector_size, 7.0);
 
 template <typename F>
 void time_dot(std::string fname, F f)
@@ -26,7 +28,8 @@ void time_dot(std::string fname, F f)
 	 << "\n";
 }
 
-double dot(vector<double> const& v1, vector<double> const& v2)
+inline double 
+dot(vector<double> const& v1, vector<double> const& v2)
 {
     double sum= 0.0;
     for (unsigned i= 0; i < v1.size(); i++)
@@ -35,7 +38,8 @@ double dot(vector<double> const& v1, vector<double> const& v2)
     return sum;
 }
 
-double dot2(vector<double> const& v1, vector<double> const& v2)
+inline double 
+dot2(vector<double> const& v1, vector<double> const& v2)
 {
     double sum= 0.0, sum2 = 0.0;
     for (unsigned i= 0; i < v1.size(); i+= 2) {
@@ -212,7 +216,6 @@ struct unrolled_dot_t<4>
 #endif
     }
 };
-	
 
 template <unsigned Depth>
 double unrolled_dot_id(vector<double> const& v1, vector<double> const& v2)
@@ -221,8 +224,156 @@ double unrolled_dot_id(vector<double> const& v1, vector<double> const& v2)
 }
 
 
+
+// ===========================
+// Enough dot product !!!!!!!!
+// ===========================
+	
+
+
+inline void
+expr(vector<double>& v1, vector<double> const& v2,
+     vector<double> const& v3, vector<double> const& v4,
+     double s1, double s2, double s3)
+{
+    for (unsigned i= 0; i < v1.size(); i++)
+	v1[i] = s1 * v2[i] + s2 * v3[i] + s3 * v4[i];
+}
+
+
+inline void
+expr4(vector<double>& v1, vector<double> const& v2,
+     vector<double> const& v3, vector<double> const& v4,
+     double s1, double s2, double s3)
+{
+    double t0= 0.0, t1= 0.0, t2= 0.0, t3= 0.0;
+    for (unsigned i= 0; i < v1.size(); i+= 4) {
+	t0=  s1 * v2[i] + s2 * v3[i] + s3 * v4[i];
+	t1=  s1 * v2[i+1] + s2 * v3[i+1] + s3 * v4[i+1];
+	t2=  s1 * v2[i+2] + s2 * v3[i+2] + s3 * v4[i+2];
+	t3=  s1 * v2[i+3] + s2 * v3[i+3] + s3 * v4[i+3];
+	v1[i]= t0; v1[i+1]= t1; v1[i+2]= t2; v1[i+3]= t3;
+    }
+}
+
+
+inline void
+expr8(vector<double>& v1, vector<double> const& v2,
+     vector<double> const& v3, vector<double> const& v4,
+     double s1, double s2, double s3)
+{
+    double t0= 0.0, t1= 0.0, t2= 0.0, t3= 0.0, t4= 0.0, t5= 0.0, t6= 0.0, t7= 0.0;
+    for (unsigned i= 0; i < v1.size(); i+= 8) {
+	t0=  s1 * v2[i] + s2 * v3[i] + s3 * v4[i];
+	t1=  s1 * v2[i+1] + s2 * v3[i+1] + s3 * v4[i+1];
+	t2=  s1 * v2[i+2] + s2 * v3[i+2] + s3 * v4[i+2];
+	t3=  s1 * v2[i+3] + s2 * v3[i+3] + s3 * v4[i+3];
+	t4=  s1 * v2[i+4] + s2 * v3[i+4] + s3 * v4[i+4];
+	t5=  s1 * v2[i+5] + s2 * v3[i+5] + s3 * v4[i+5];
+	t6=  s1 * v2[i+6] + s2 * v3[i+6] + s3 * v4[i+6];
+	t7=  s1 * v2[i+7] + s2 * v3[i+7] + s3 * v4[i+7];
+	v1[i]= t0; v1[i+1]= t1; v1[i+2]= t2; v1[i+3]= t3;
+	v1[i+4]= t4; v1[i+5]= t5; v1[i+6]= t6; v1[i+7]= t7;
+    }
+}
+
+
+template <typename F>
+void time_expr(std::string fname, F f)
+{
+
+    boost::timer start;
+    for (int i= 0; i < repetitions; i++) // 1000000
+	f(gv1, gv2, gv3, gv4, 2.0, 3.0, 4.0); 
+    double duration = start.elapsed();
+    cout << fname << ": " << duration / repetitions * 1000000 << "µs" 
+      // << ", result = " << result 
+	 << "\n";
+}
+
+// =============================
+// Again with binary combination
+// =============================
+
+
+
+
+
+inline void
+bexpr(vector<double>& v1, vector<double> const& v2,
+     vector<double> const& v3, 
+     double s1, double s2)
+{
+    for (unsigned i= 0; i < v1.size(); i++)
+	v1[i] = s1 * v2[i] + s2 * v3[i];
+}
+
+
+inline void
+bexpr4(vector<double>& v1, vector<double> const& v2,
+     vector<double> const& v3, 
+     double s1, double s2)
+{
+    double t0= 0.0, t1= 0.0, t2= 0.0, t3= 0.0;
+    for (unsigned i= 0; i < v1.size(); i+= 4) {
+	t0=  s1 * v2[i] + s2 * v3[i];
+	t1=  s1 * v2[i+1] + s2 * v3[i+1];
+	t2=  s1 * v2[i+2] + s2 * v3[i+2];
+	t3=  s1 * v2[i+3] + s2 * v3[i+3];
+	v1[i]= t0; v1[i+1]= t1; v1[i+2]= t2; v1[i+3]= t3;
+    }
+}
+
+
+inline void
+bexpr8(vector<double>& v1, vector<double> const& v2,
+     vector<double> const& v3, 
+     double s1, double s2)
+{
+    double t0= 0.0, t1= 0.0, t2= 0.0, t3= 0.0, t4= 0.0, t5= 0.0, t6= 0.0, t7= 0.0;
+    for (unsigned i= 0; i < v1.size(); i+= 8) {
+	t0=  s1 * v2[i] + s2 * v3[i];
+	t1=  s1 * v2[i+1] + s2 * v3[i+1];
+	t2=  s1 * v2[i+2] + s2 * v3[i+2];
+	t3=  s1 * v2[i+3] + s2 * v3[i+3];
+	t4=  s1 * v2[i+4] + s2 * v3[i+4];
+	t5=  s1 * v2[i+5] + s2 * v3[i+5];
+	t6=  s1 * v2[i+6] + s2 * v3[i+6];
+	t7=  s1 * v2[i+7] + s2 * v3[i+7];
+	v1[i]= t0; v1[i+1]= t1; v1[i+2]= t2; v1[i+3]= t3;
+	v1[i+4]= t4; v1[i+5]= t5; v1[i+6]= t6; v1[i+7]= t7;
+    }
+}
+
+
+template <typename F>
+void time_bexpr(std::string fname, F f)
+{
+
+    boost::timer start;
+    for (int i= 0; i < repetitions; i++) // 1000000
+	f(gv1, gv2, gv3, 2.0, 3.0); 
+    double duration = start.elapsed();
+    cout << fname << ": " << duration / repetitions * 1000000 << "µs" 
+      // << ", result = " << result 
+	 << "\n";
+}
+
+
+
+
 int test_main(int argc, char* argv[])
 {
+    time_bexpr("init      ", bexpr);
+    time_bexpr("reg bexpr  ", bexpr);
+    time_bexpr("bexpr 4    ", bexpr4);
+    time_bexpr("bexpr 8    ", bexpr8);
+
+    time_expr("reg expr  ", expr);
+    time_expr("expr 4    ", expr4);
+    time_expr("expr 8    ", expr8);
+
+    return 0;
 
     time_dot("init      ", dot);
     time_dot("regular   ", dot);
