@@ -373,8 +373,6 @@ int test_main(int argc, char* argv[])
     time_expr("expr 4    ", expr4);
     time_expr("expr 8    ", expr8);
 
-    return 0;
-
     time_dot("init      ", dot);
     time_dot("regular   ", dot);
     time_dot("unrolled 2", dot2);
