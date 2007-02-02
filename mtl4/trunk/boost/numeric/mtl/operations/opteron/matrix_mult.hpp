@@ -89,7 +89,7 @@ template <unsigned long MaskA, typename PA,
 	  unsigned long MaskB, typename PB,
 	  unsigned long MaskC, typename PC,
 	  typename Assign, typename Backup>
-struct gen_platform_dense_mat_mat_mult_t<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
+struct gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
 					 morton_dense<double, MaskC, PC>, Assign, Backup>
 {
     void mult_ass(double * D, double * C, double * BT) const;
@@ -120,7 +120,7 @@ template <unsigned long MaskA, typename PA,
 	  unsigned long MaskB, typename PB,
 	  unsigned long MaskC, typename PC,
 	  typename Backup>
-struct gen_platform_dense_mat_mat_mult_t<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
+struct gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
 					 morton_dense<double, MaskC, PC>, modes::minus_mult_assign_t, Backup>
 {
     void mult_ass(double * D, double * C, double * BT) const;
@@ -151,7 +151,7 @@ template <unsigned long MaskA, typename PA,
 	  unsigned long MaskB, typename PB,
 	  unsigned long MaskC, typename PC,
 	  typename Assign, typename Backup>
-void gen_platform_dense_mat_mat_mult_t<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
+void gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
 				       morton_dense<double, MaskC, PC>, Assign, Backup>::
 mult_ass(double * D, double * C, double * BT) const
 {
@@ -843,13 +843,15 @@ template <unsigned long MaskA, typename PA,
 	  unsigned long MaskB, typename PB,
 	  unsigned long MaskC, typename PC,
 	  typename Backup>
-void gen_platform_dense_mat_mat_mult_t<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
+void gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
 				       morton_dense<double, MaskC, PC>, modes::minus_mult_assign_t, Backup>::
 mult_ass(double * D, double * C, double * BT) const
 {
     	std::cout << "in Assembly\n";
 
-  const int stride = baseOrder; 
+    const int baseOrder= 32,
+              stride = baseOrder; 
+  
   /*
   double * restrict D  =  aa + ((d*baseSize)&(rowMask|colMask));
   double * restrict C  =  aa + ((c*baseSize)&(rowMask|colMask));
