@@ -88,6 +88,7 @@ private:
     double *ap= &const_cast<morton_dense<double, MaskA, PA>&>(a)[0][0],
            *bp= &const_cast<morton_dense<double, MaskB, PB>&>(b)[0][0], *cp= &c[0][0];
 
+    // C_nw += A_n * B_n
     for (size_type i= 0; i < i_block; i+=2)
       for (int j = 0; j < j_block; j+=2)
         for (int k = 0; k < k_max; k++) {
@@ -97,6 +98,23 @@ private:
 	  cp[1+(i)*stride+2*(j+1)] += ap[1+(i)*stride+2*k] * bp[1+(j)*stride+2*k];
         }
 
+    // C_ne += A_n * B_e
+    for (size_type i= 0; i < i_block; i+=2)
+      for (int j = j_block; j < j_max; j++)
+        for (int k = 0; k < k_max; k++) {
+	  cp[0+(i)*stride+2*(j+0)] += ap[0+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
+	  cp[1+(i)*stride+2*(j+0)] += ap[1+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
+        }
+
+    // C_s += A_s * B
+    for (size_type i= i_block; i < i_max; i++)
+      for (int j = 0; j < j_max; j++)
+        for (int k = 0; k < k_max; k++) {
+	  cp[0+(i)*stride+2*(j+0)] += ap[0+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
+        }
+
+
+#if 0
     // Possibly 1 last row in C (except last column if # columns is odd)
     for (size_type i= i_block; i < i_max; i++)
       for (int j = 0; j < j_block; j+=2)
@@ -111,6 +129,7 @@ private:
         for (int k = 0; k < k_max; k++) {
 	  cp[0+(i)*stride+2*(j+0)] += ap[0+(i)*stride+2*k] * bp[0+(j)*stride+2*k];
         }
+#endif
   }
 
   void mult_add_assembler(double * D, double * C, double * BT) const
