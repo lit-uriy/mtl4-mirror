@@ -3,7 +3,9 @@
 #include <iostream>
 #include <cmath>
 #include <boost/test/minimal.hpp>
-// #include <boost/numeric_cast.hpp>
+
+#define MTL_HAS_BLAS
+#define MTL_USE_OPTERON_OPTIMIZATION
 
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/dense2D.hpp>
@@ -28,10 +30,25 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     gen_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC>  mult;
 
     mult(a, b, c);
-    if (a.num_cols() <= 10) {
+    check_hessian_matrix_product(c, a.num_cols());
+
+#ifdef MTL_HAS_BLAS
+    std::cout << "\n" << name << "  --- calling blas mult (empty):\n"; std::cout.flush(); 
+    gen_blas_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC>  blas_mult;
+    blas_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols());
+#endif    
+
+#ifdef MTL_USE_OPTERON_OPTIMIZATION
+    std::cout << "\n" << name << "  --- calling platform specific mult (empty):\n"; std::cout.flush(); 
+    gen_platform_dense_mat_mat_mult_t<MatrixA, MatrixB, MatrixC>  platform_mult;
+    platform_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols());
+#endif
+
+    if (a.num_cols() <= 0) {
 	print_matrix_row_cursor(a); std::cout << "\n"; print_matrix_row_cursor(b); std::cout << "\n"; 
 	print_matrix_row_cursor(c); std::cout << "\n"; }
-    check_hessian_matrix_product(c, a.num_cols());
 }
  
 int test_main(int argc, char* argv[])
@@ -56,12 +73,15 @@ int test_main(int argc, char* argv[])
 	doppler_z_32_col_mask= generate_mask<false, 5, col_major, 1>::value;
  
     unsigned size= 13; 
-    if (argc > 1) size= atoi(argv[1]);
+    if (argc > 1) size= atoi(argv[1]); 
 
+    dense2D<double>               da(size, size), db(size, size), dc(size, size); 
+    dense2D<double, matrix_parameters<col_major> >  dca(size, size), dcb(size, size), dcc(size, size);
+    dense2D<float>               fa(size, size), fb(size, size), fc(size, size);
+    dense2D<float, matrix_parameters<col_major> >  fca(size, size), fcb(size, size), fcc(size, size);
     morton_dense<double,  morton_mask> mda(size, size), mdb(size, size), mdc(size, size);
-    mtl::dense2D<double>               da(size, size), db(size, size), dc(size, size);
     morton_dense<double, doppler_32_row_mask_no_shark>      mrans(size, size), mrcns(size, size);;
-    morton_dense<double, doppler_32_col_mask_no_shark>      mcbns(size, size);
+    morton_dense<double, doppler_32_col_mask_no_shark>      mcbns(size, size); 
     morton_dense<double, doppler_32_col_mask>      mca(size, size), mcb(size, size), mcc(size, size);
     morton_dense<double, doppler_32_row_mask>      mra(size, size), mrb(size, size), mrc(size, size);
     morton_dense<double, doppler_z_32_col_mask>    mzca(size, size), mzcb(size, size), mzcc(size, size);
@@ -69,8 +89,12 @@ int test_main(int argc, char* argv[])
     morton_dense<float, doppler_32_col_mask>       mcaf(size, size), mcbf(size, size), mccf(size, size);
     morton_dense<float, doppler_32_row_mask>       mraf(size, size), mrbf(size, size), mrcf(size, size);
 
-    std::cout << "Testing base case optimization\n";
-    //test(da, db, dc, "dense2D"); 
+    std::cout << "Testing different products\n";
+    test(da, db, dc, "dense2D"); 
+    test(dca, dcb, dcc, "dense2D col-major"); 
+    test(da, dcb, dc, "dense2D mixed"); 
+    test(fa, fcb, fc, "dense2D mixed, float"); 
+    test(da, fcb, fc, "dense2D mixed, dense and float"); 
     test(mda, mdb, mdc, "pure Morton");
     test(mca, mcb, mcc, "Hybrid col-major");
     test(mra, mrb, mrc, "Hybrid row-major");
@@ -78,7 +102,8 @@ int test_main(int argc, char* argv[])
     test(mraf, mcbf, mrcf, "Hybrid col-major and row-major with float");
     test(mra, mcb, mrc, "Hybrid col-major and row-major");
     test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z-order");
-    test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z and E-order");
+    test(mra, mzcb, mzrc, "Hybrid col-major and row-major, Z and E-order");
+    test(mra, dcb, mzrc, "Hybrid col-major and row-major, Z and E-order mixed with dense2D");
 
     return 0;
 }

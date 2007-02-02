@@ -11,13 +11,13 @@ CXXFLAGS += -g
 #CXXFLAGS += -DNDEBUG -O3 -ffast-math 
 
 # Additional G5 optimization on g++
-# CXXFLAGS += -fast
+#CXXFLAGS += -fast
 
 # Intel optimization
 #CXXFLAGS += -DNDEBUG -O3 
 
 # To use Michaels assembly code (is not used when not compiled with g++)
-CXXFLAGS += -DMTL_USE_OPTERON_OPTIMIZATION
+#CXXFLAGS += -DMTL_USE_OPTERON_OPTIMIZATION
 
 
 # CXX = icc
