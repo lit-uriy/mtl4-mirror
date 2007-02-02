@@ -226,15 +226,6 @@ struct gen_tiling_dense_mat_mat_mult_ft
 	apply(a, b, c, typename traits::matrix_category<MatrixA>::type(),
 	      typename traits::matrix_category<MatrixB>::type(), 
 	      typename traits::matrix_category<MatrixC>::type());
-#if 0
-	using boost::is_base_of;
-	if (is_base_of<tag::has_2D_layout, typename traits::matrix_category<MatrixA>::type>::value
-	      && is_base_of<tag::has_2D_layout, typename traits::matrix_category<MatrixB>::type>::value
-	      && is_base_of<tag::has_2D_layout, typename traits::matrix_category<MatrixC>::type>::value)
-	    apply(a, b, c);
-	else
-	    Backup()(a, b, c);
-#endif
     }    
 
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::universe, tag::universe, tag::universe)
@@ -249,12 +240,10 @@ struct gen_tiling_dense_mat_mat_mult_ft
 
 	if (Assign::init_to_0) set_to_0(c);
 
-// 	Backup()(a, b, c);
-// 	return;
-
 	typedef gen_tiling_dense_mat_mat_mult_block<1, Tiling1, 1, Tiling2, Assign>  block;
 	typedef typename MatrixC::size_type                                          size_type;
 	typedef typename MatrixC::value_type                                         value_type;
+	const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
 
 	// Temporary solution; dense matrices need to return const referencens
 	MatrixA& aref= const_cast<MatrixA&>(a);
@@ -262,19 +251,19 @@ struct gen_tiling_dense_mat_mat_mult_ft
 
 	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
 	          k_max= c.num_rows(), k_block= Tiling2 * (k_max / Tiling2);
+	size_t ari= a.c_offset(1, 0), // how much is the offset of A's entry increased by incrementing row
+	       aci= a.c_offset(0, 1), bri= b.c_offset(1, 0), bci= b.c_offset(0, 1);
 	    
+	// C_nw += A_n * B_n
 	for (size_type i= 0; i < i_block; i+= Tiling1)
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
 
-		const value_type z= math::zero(value_type());
 		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
                            tmp05= z, tmp06= z, tmp07= z, tmp08= z, tmp09= z,
  		           tmp10= z, tmp11= z, tmp12= z, tmp13= z, tmp14= z, tmp15= z;
 		const typename MatrixA::value_type *begin_a= &aref[i][0], *end_a= &aref[i][a.num_cols()];
 		const typename MatrixB::value_type *begin_b= &bref[0][k];
 
-		size_t ari= a.c_offset(1, 0), // how much is the offset of A's entry increased by incrementing row
-		       aci= a.c_offset(0, 1), bri= b.c_offset(1, 0), bci= b.c_offset(0, 1);
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
 		    block::apply(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
 				 tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
@@ -284,12 +273,29 @@ struct gen_tiling_dense_mat_mat_mult_ft
 			      c, i, k);
 	    }
 
-		
+	// C_ne += A_n * B_e
+	for (size_type i= 0; i < i_block; i++)
+	    for (int k = k_block; k < k_max; k++) {
+		value_type tmp00= z;
+		const typename MatrixA::value_type *begin_a= &aref[i][0], *end_a= &aref[i][a.num_cols()];
+		const typename MatrixB::value_type *begin_b= &bref[0][k];
 
+		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
+		    tmp00 += *begin_a * *begin_b;
+		Assign::update(c[i][k], tmp00);
+	    }
 
+	// C_s += A_s * B
+	for (size_type i= i_block; i < i_max; i++)
+	    for (int k = 0; k < k_max; k++) {
+		value_type tmp00= z;
+		const typename MatrixA::value_type *begin_a= &aref[i][0], *end_a= &aref[i][a.num_cols()];
+		const typename MatrixB::value_type *begin_b= &bref[0][k];
 
-
-
+		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
+		    tmp00 += *begin_a * *begin_b;
+		Assign::update(c[i][k], tmp00);
+	    }
     }
 };
 
