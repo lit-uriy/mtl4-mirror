@@ -135,10 +135,10 @@ struct gen_cursor_dense_mat_mat_mult_t
 
 
 
-// ==================================
+// =======================
 // Unrolled with iterators
-// required has_fast_ra_iterators
-// ==================================
+// required has_2D_layout
+// =======================
 
 // Define defaults if not yet given as Compiler flag
 #ifndef MTL_DENSE_MATMAT_MULT_TILING1
