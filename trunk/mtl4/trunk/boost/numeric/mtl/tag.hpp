@@ -43,16 +43,19 @@ struct has_ra_cursor : virtual has_cursor {};
 // Meaning: is worth unrolling and such
 struct has_fast_ra_cursor : virtual has_ra_cursor {};
 
+// Subdividable, i.e. has sub_matrix function
+struct sub_dividable : virtual universe {};
+
 // Tags for dispatching on matrix types without dealing 
 // with template parameters
 struct dense2D 
   : virtual matrix, virtual contiguous_dense, virtual has_fast_ra_cursor, 
-    virtual has_fast_ra_iterator, virtual has_2D_layout
+    virtual has_fast_ra_iterator, virtual has_2D_layout, virtual sub_dividable
 {};
 
 struct morton_dense 
   : virtual matrix, virtual contiguous_dense, virtual has_ra_cursor, 
-    virtual has_ra_iterator
+    virtual has_ra_iterator, virtual sub_dividable
  {};
 
 struct compressed2D 

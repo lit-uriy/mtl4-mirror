@@ -13,6 +13,10 @@
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/tag.hpp>
 #include <boost/numeric/meta_math/loop.hpp>
+#include <boost/numeric/mtl/recursion/base_case_test.hpp>
+#include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
+#include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
+#include <boost/numeric/mtl/recursion/base_case_cast.hpp>
 
 #include <boost/numeric/mtl/dense2D.hpp>
 
@@ -226,8 +230,9 @@ struct gen_tiling_dense_mat_mat_mult_ft
 	apply(a, b, c, typename traits::matrix_category<MatrixA>::type(),
 	      typename traits::matrix_category<MatrixB>::type(), 
 	      typename traits::matrix_category<MatrixC>::type());
-    }    
-
+    }   
+ 
+private:
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::universe, tag::universe, tag::universe)
     {
 	Backup()(a, b, c);
@@ -315,6 +320,91 @@ struct gen_tiling_dense_mat_mat_mult_t
 };
 
 
+// ========================
+// Recursive Multiplication
+// ========================
+
+template <typename BaseMult, typename BaseTest= recursion::bound_test_static<64> >
+struct recurator_dense_mat_mat_mult_t
+{
+    template <typename RecA, typename RecB, typename RecC>
+    void operator()(RecA const& rec_a, RecB const& rec_b, RecC& rec_c)
+    {
+	using recursion::base_case_cast;
+
+	if (rec_a.is_empty() || rec_b.is_empty() || rec_c.is_empty())
+	    return;
+
+	if (BaseTest()(rec_a)) {
+	    typename recursion::base_case_matrix<typename RecC::matrix_type, BaseTest>::type
+		c= base_case_cast<BaseTest>(rec_c.get_value());
+	    BaseMult()(base_case_cast<BaseTest>(rec_a.get_value()),
+		       base_case_cast<BaseTest>(rec_b.get_value()), c);
+	} else {
+	    RecC c_north_west= rec_c.north_west(), c_north_east= rec_c.north_east(),
+		 c_south_west= rec_c.south_west(), c_south_east= rec_c.south_east();
+
+	    (*this)(rec_a.north_west(), rec_b.north_west(), c_north_west);
+	    (*this)(rec_a.north_west(), rec_b.north_east(), c_north_east);
+	    (*this)(rec_a.south_west(), rec_b.north_east(), c_south_east);
+	    (*this)(rec_a.south_west(), rec_b.north_west(), c_south_west);
+	    (*this)(rec_a.south_east(), rec_b.south_west(), c_south_west);
+	    (*this)(rec_a.south_east(), rec_b.south_east(), c_south_east);
+	    (*this)(rec_a.north_east(), rec_b.south_east(), c_north_east);
+	    (*this)(rec_a.north_east(), rec_b.south_west(), c_north_west);
+	}
+    }
+
+};
+
+
+template <typename BaseMult, 
+	  typename BaseTest= recursion::bound_test_static<64>,
+	  typename Assign= modes::mult_assign_t, 
+	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
+struct gen_recursive_dense_mat_mat_mult_t
+{
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	apply(a, b, c, typename traits::matrix_category<MatrixA>::type(),
+	      typename traits::matrix_category<MatrixB>::type(), 
+	      typename traits::matrix_category<MatrixC>::type());
+    }   
+ 
+private:
+    // If one matrix is not sub-dividable then take backup function
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::universe, tag::universe, tag::universe)
+    {
+	Backup()(a, b, c);
+    }
+
+    // Only if matrix is sub-dividable, otherwise backup
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, 
+	       tag::sub_dividable, tag::sub_dividable, tag::sub_dividable)
+    {
+	std::cout << "do recursion\n";
+
+	if (Assign::init_to_0) set_to_0(c);
+
+	// Make sure that mult functor of basecase has appropriate assign mode (in all nestings)
+	// i.e. replace modes::mult_assign_t by modes::add_mult_assign_t including backup functor
+	
+	using recursion::matrix_recurator;
+	matrix_recurator<MatrixA>    rec_a(a);
+	matrix_recurator<MatrixB>    rec_b(b);
+	matrix_recurator<MatrixC>    rec_c(c);
+	equalize_depth(rec_a, rec_b, rec_c);
+
+	recurator_dense_mat_mat_mult_t<BaseMult, BaseTest>() (rec_a, rec_b, rec_c);
+    }
+};
+
+
+
+
 
 // ==================================
 // Plattform specific implementations
@@ -348,7 +438,7 @@ struct gen_platform_dense_mat_mat_mult_t
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t, 
-	  typename Backup= gen_dense_mat_mat_mult_ft<MatrixA, MatrixB, MatrixC, Assign> >
+	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_blas_dense_mat_mat_mult_ft
     : public Backup
 {};
