@@ -19,6 +19,9 @@
 #include <boost/numeric/mtl/recursion/base_case_cast.hpp>
 
 #include <boost/numeric/mtl/dense2D.hpp>
+#include <boost/numeric/mtl/operations/print_matrix.hpp>
+
+#include <iostream>
 
 namespace mtl {
 
@@ -255,7 +258,7 @@ private:
 	MatrixB& bref= const_cast<MatrixB&>(b);
 
 	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
-	          k_max= c.num_rows(), k_block= Tiling2 * (k_max / Tiling2);
+	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
 	size_t ari= a.c_offset(1, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= a.c_offset(0, 1), bri= b.c_offset(1, 0), bci= b.c_offset(0, 1);
 	    
@@ -331,6 +334,12 @@ struct recurator_dense_mat_mat_mult_t
     void operator()(RecA const& rec_a, RecB const& rec_b, RecC& rec_c)
     {
 	using recursion::base_case_cast;
+#if 0
+	std::cout << "\n\n before matrix multiplication:\n";
+	std::cout << "A:\n"; print_matrix_row_cursor(rec_a.get_value());
+	std::cout << "B:\n"; print_matrix_row_cursor(rec_b.get_value());
+	std::cout << "C:\n"; print_matrix_row_cursor(rec_c.get_value());
+#endif
 
 	if (rec_a.is_empty() || rec_b.is_empty() || rec_c.is_empty())
 	    return;
@@ -353,6 +362,12 @@ struct recurator_dense_mat_mat_mult_t
 	    (*this)(rec_a.north_east(), rec_b.south_east(), c_north_east);
 	    (*this)(rec_a.north_east(), rec_b.south_west(), c_north_west);
 	}
+#if 0
+	std::cout << "\n\n after matrix multiplication:\n";
+	std::cout << "A:\n"; print_matrix_row_cursor(rec_a.get_value());
+	std::cout << "B:\n"; print_matrix_row_cursor(rec_b.get_value());
+	std::cout << "C:\n"; print_matrix_row_cursor(rec_c.get_value());
+#endif
     }
 
 };
