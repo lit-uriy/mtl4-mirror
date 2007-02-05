@@ -8,14 +8,11 @@ CXXFLAGS = ${INCLUDE_DIRS} -g -Wno-long-double
 
 EXECUTABLES = morton_dense sub_matrix
 
-all: ${EXECUTABLES}
+#all: ${EXECUTABLES}
 
 
 #morton_dense:	morton_dense.cpp
 #	g++ morton_dense.cpp -o morton_dense ${CXX_FLAGS}
 
 clean:
-	rm ${EXECUTABLES} *.o *~
-
-
-
+	rm morton_dense
