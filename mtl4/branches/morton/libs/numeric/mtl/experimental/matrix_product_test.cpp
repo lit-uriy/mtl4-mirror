@@ -29,6 +29,7 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
     fill_hessian_matrix(a, 1.0);
     fill_hessian_matrix(b, 2.0);
+
     std::cout << "\n" << name << "  --- calling simple mult:\n"; std::cout.flush();
     typedef gen_dense_mat_mat_mult_t<>  mult_t;
     mult_t                              mult;
@@ -93,39 +94,38 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
  
     std::cout << "\n" << name << "  --- calling mult recursively:\n"; std::cout.flush();
     // The recursive functor is C= A*B but the base case must be C+= A*B !!!!!!
-    gen_recursive_dense_mat_mat_mult_t<add_mult_t, bound_test_static<2> >  recursive_mult;
+    gen_recursive_dense_mat_mat_mult_t<add_mult_t, bound_test_static<32> >  recursive_mult;
 
     recursive_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols()); 
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
-    gen_recursive_dense_mat_mat_mult_t<add_mult_t, bound_test_static<2>, add_mult_assign_t>  recursive_add_mult;
+    gen_recursive_dense_mat_mat_mult_t<add_mult_t, bound_test_static<32>, add_mult_assign_t>  recursive_add_mult;
 
     recursive_add_mult(a, b, c); 
     check_hessian_matrix_product(c, a.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
-    gen_recursive_dense_mat_mat_mult_t<minus_mult_t, bound_test_static<2>, minus_mult_assign_t>  recursive_minus_mult; 
+    gen_recursive_dense_mat_mat_mult_t<minus_mult_t, bound_test_static<32>, minus_mult_assign_t>  recursive_minus_mult; 
 
     recursive_minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
 
-
     std::cout << "\n" << name << "  --- calling mult recursively with tiling:\n"; std::cout.flush();
     // The recursive functor is C= A*B but the base case must be C+= A*B !!!!!!
-    gen_recursive_dense_mat_mat_mult_t<tiling_add_mult_t, bound_test_static<2> >  recursive_tiling_mult;
+    gen_recursive_dense_mat_mat_mult_t<tiling_add_mult_t, bound_test_static<32> >  recursive_tiling_mult;
 
     recursive_tiling_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols()); 
-
+ 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
-    gen_recursive_dense_mat_mat_mult_t<tiling_add_mult_t, bound_test_static<2>, add_mult_assign_t>  recursive_tiling_add_mult;
+    gen_recursive_dense_mat_mat_mult_t<tiling_add_mult_t, bound_test_static<32>, add_mult_assign_t>  recursive_tiling_add_mult;
 
     recursive_tiling_add_mult(a, b, c); 
     check_hessian_matrix_product(c, a.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
-    gen_recursive_dense_mat_mat_mult_t<tiling_minus_mult_t, bound_test_static<2>, minus_mult_assign_t>  recursive_tiling_minus_mult; 
+    gen_recursive_dense_mat_mat_mult_t<tiling_minus_mult_t, bound_test_static<32>, minus_mult_assign_t>  recursive_tiling_minus_mult; 
 
     recursive_tiling_minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
@@ -221,8 +221,8 @@ int test_main(int argc, char* argv[])
     dense2D<float>               fa(size, size), fb(size, size), fc(size, size);
     dense2D<float, matrix_parameters<col_major> >  fca(size, size), fcb(size, size), fcc(size, size);
     morton_dense<double,  morton_mask> mda(size, size), mdb(size, size), mdc(size, size);
-    morton_dense<double, doppler_32_row_mask_no_shark>      mrans(size, size), mrcns(size, size);;
-    morton_dense<double, doppler_32_col_mask_no_shark>      mcbns(size, size); 
+    morton_dense<double, doppler_32_row_mask_no_shark>      mrans(size, size), mrbns(size, size), mrcns(size, size);;
+    morton_dense<double, doppler_32_col_mask_no_shark>      mcans(size, size), mcbns(size, size), mccns(size, size); 
     morton_dense<double, doppler_32_col_mask>      mca(size, size), mcb(size, size), mcc(size, size);
     morton_dense<double, doppler_32_row_mask>      mra(size, size), mrb(size, size), mrc(size, size);
     morton_dense<double, doppler_z_32_col_mask>    mzca(size, size), mzcb(size, size), mzcc(size, size);
@@ -240,8 +240,9 @@ int test_main(int argc, char* argv[])
 #endif
 
     std::cout << "Testing different products\n";
+
     test(da, db, dc, "dense2D");
-    test(dca, dcb, dcc, "dense2D col-major"); 
+    test(dca, dcb, dcc, "dense2D col-major");
     test(da, dcb, dc, "dense2D mixed"); 
     test(fa, fcb, fc, "dense2D mixed, float"); 
     test(da, fcb, fc, "dense2D mixed, dense and float"); 
@@ -249,11 +250,14 @@ int test_main(int argc, char* argv[])
     test(mca, mcb, mcc, "Hybrid col-major");
     test(mra, mrb, mrc, "Hybrid row-major");
     test(mrans, mcbns, mrcns, "Hybrid col-major and row-major, no shark tooth");
+    test(mrans, mrbns, mrcns, "Hybrid row-major, no shark tooth");
     test(mraf, mcbf, mrcf, "Hybrid col-major and row-major with float");
     test(mra, mcb, mrc, "Hybrid col-major and row-major");
     test(mzra, mzcb, mzrc, "Hybrid col-major and row-major, Z-order");
     test(mra, mzcb, mzrc, "Hybrid col-major and row-major, Z and E-order");
     test(mra, dcb, mzrc, "Hybrid col-major and row-major, Z and E-order mixed with dense2D");
+    test(mra, db, mrcns, "Hybric matrix = Shark * dense2D");
+    test(mrans, db, mccns, "Hybric matrix (col-major) = hybrid (row) * dense2D");
     return 0;
 }
  
