@@ -43,8 +43,14 @@ struct has_ra_cursor : virtual has_cursor {};
 // Meaning: is worth unrolling and such
 struct has_fast_ra_cursor : virtual has_ra_cursor {};
 
+// Only declares that sub_matrix function exist and doesn't say for which ranges it is defined
+struct has_sub_matrix : virtual universe {};
+
+// Sub-dividable into quadrants, doesn't require arbitrary ranges to be computable for sub_matrix
+struct qsub_dividable : virtual has_sub_matrix {};
+
 // Subdividable, i.e. has sub_matrix function
-struct sub_dividable : virtual universe {};
+struct sub_dividable : virtual qsub_dividable {};
 
 // Tags for dispatching on matrix types without dealing 
 // with template parameters
@@ -55,7 +61,7 @@ struct dense2D
 
 struct morton_dense 
   : virtual matrix, virtual contiguous_dense, virtual has_ra_cursor, 
-    virtual has_ra_iterator, virtual sub_dividable
+    virtual has_ra_iterator, virtual qsub_dividable
  {};
 
 struct compressed2D 

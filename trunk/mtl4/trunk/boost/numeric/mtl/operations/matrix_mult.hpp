@@ -231,18 +231,16 @@ struct gen_tiling_dense_mat_mat_mult_ft
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
 	apply(a, b, c, typename traits::matrix_category<MatrixA>::type(),
-	      typename traits::matrix_category<MatrixB>::type(), 
-	      typename traits::matrix_category<MatrixC>::type());
+	      typename traits::matrix_category<MatrixB>::type());
     }   
  
 private:
-    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::universe, tag::universe, tag::universe)
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::universe, tag::universe)
     {
 	Backup()(a, b, c);
     }
 
-    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, 
-	       tag::has_2D_layout, tag::has_2D_layout)
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
 	std::cout << "do unrolling\n";
 
@@ -398,7 +396,7 @@ private:
     // Only if matrix is sub-dividable, otherwise backup
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, 
-	       tag::sub_dividable, tag::sub_dividable, tag::sub_dividable)
+	       tag::qsub_dividable, tag::qsub_dividable, tag::qsub_dividable)
     {
 	std::cout << "do recursion\n";
 
