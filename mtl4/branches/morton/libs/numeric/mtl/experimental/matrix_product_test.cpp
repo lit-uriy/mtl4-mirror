@@ -243,7 +243,7 @@ int test_main(int argc, char* argv[])
 
     test(da, db, dc, "dense2D");
     test(dca, dcb, dcc, "dense2D col-major");
-    test(da, dcb, dc, "dense2D mixed"); 
+    test(da, dcb, dc, "dense2D mixed");
     test(fa, fcb, fc, "dense2D mixed, float"); 
     test(da, fcb, fc, "dense2D mixed, dense and float"); 
     test(mda, mdb, mdc, "pure Morton");

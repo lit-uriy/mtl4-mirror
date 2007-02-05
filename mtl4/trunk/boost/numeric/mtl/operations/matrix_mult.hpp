@@ -186,7 +186,7 @@ struct gen_tiling_dense_mat_mat_mult_block
 			      Value& tmp10, Value& tmp11, Value& tmp12, Value& tmp13, Value& tmp14, Value& tmp15,
 			      MatrixC& c, SizeC i, SizeC k)
     {
-	Assign::update(c[i + base::index0][k + base::index1], tmp00);
+	Assign::update(c(i + base::index0, k + base::index1), tmp00);
 	next_t::update(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
 		       tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp00, 
 		       c, i, k);
@@ -214,7 +214,7 @@ struct gen_tiling_dense_mat_mat_mult_block<Max0, Max0, Max1, Max1, Assign>
 			      Value& tmp10, Value& tmp11, Value& tmp12, Value& tmp13, Value& tmp14, Value& tmp15,
 			      MatrixC& c, SizeC i, SizeC k)
     {
-	Assign::update(c[i + base::index0][k + base::index1], tmp00);
+	Assign::update(c(i + base::index0, k + base::index1), tmp00);
     }
 };
 
@@ -267,8 +267,8 @@ private:
 		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
                            tmp05= z, tmp06= z, tmp07= z, tmp08= z, tmp09= z,
  		           tmp10= z, tmp11= z, tmp12= z, tmp13= z, tmp14= z, tmp15= z;
-		const typename MatrixA::value_type *begin_a= &aref[i][0], *end_a= &aref[i][a.num_cols()];
-		const typename MatrixB::value_type *begin_b= &bref[0][k];
+		const typename MatrixA::value_type *begin_a= &aref(i, 0), *end_a= &aref(i, a.num_cols());
+		const typename MatrixB::value_type *begin_b= &bref(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
 		    block::apply(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
@@ -283,24 +283,24 @@ private:
 	for (size_type i= 0; i < i_block; i++)
 	    for (int k = k_block; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &aref[i][0], *end_a= &aref[i][a.num_cols()];
-		const typename MatrixB::value_type *begin_b= &bref[0][k];
+		const typename MatrixA::value_type *begin_a= &aref(i, 0), *end_a= &aref(i, a.num_cols());
+		const typename MatrixB::value_type *begin_b= &bref(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
 		    tmp00 += *begin_a * *begin_b;
-		Assign::update(c[i][k], tmp00);
+		Assign::update(c(i, k), tmp00);
 	    }
 
 	// C_s += A_s * B
 	for (size_type i= i_block; i < i_max; i++)
 	    for (int k = 0; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &aref[i][0], *end_a= &aref[i][a.num_cols()];
-		const typename MatrixB::value_type *begin_b= &bref[0][k];
+		const typename MatrixA::value_type *begin_a= &aref(i, 0), *end_a= &aref(i, a.num_cols());
+		const typename MatrixB::value_type *begin_b= &bref(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
 		    tmp00 += *begin_a * *begin_b;
-		Assign::update(c[i][k], tmp00);
+		Assign::update(c(i, k), tmp00);
 	    }
     }
 };
