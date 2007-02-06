@@ -242,7 +242,7 @@ private:
 
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
-	std::cout << "do unrolling\n";
+	// std::cout << "do unrolling\n";
 
 	if (Assign::init_to_0) set_to_0(c);
 
@@ -632,7 +632,7 @@ private:
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, 
 	       tag::qsub_dividable, tag::qsub_dividable, tag::qsub_dividable)
     {
-	std::cout << "do recursion\n";
+	// std::cout << "do recursion\n";
 
 	if (Assign::init_to_0) set_to_0(c);
 
