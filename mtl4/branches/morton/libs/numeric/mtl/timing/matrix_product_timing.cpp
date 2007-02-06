@@ -68,7 +68,7 @@ void print_time_and_mflops(double time, double size)
 
 // Matrices are only placeholder to provide the type
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Mult>
-double single_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size, std::vector<int>& enabled, int i)
+void single_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size, std::vector<int>& enabled, int i)
 {
     MatrixA a(size, size);
     MatrixB b(size, size);
