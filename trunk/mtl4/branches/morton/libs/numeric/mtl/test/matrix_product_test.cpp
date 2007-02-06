@@ -265,6 +265,8 @@ int test_main(int argc, char* argv[])
     dense2D<float>               fa(size, size), fb(size, size), fc(size, size);
     dense2D<float, matrix_parameters<col_major> >  fca(size, size), fcb(size, size), fcc(size, size);
     morton_dense<double,  morton_mask> mda(size, size), mdb(size, size), mdc(size, size);
+
+    typedef morton_dense<double, doppler_32_row_mask_no_shark>  morton_t;
     morton_dense<double, doppler_32_row_mask_no_shark>      mrans(size, size), mrbns(size, size), mrcns(size, size);;
     morton_dense<double, doppler_32_col_mask_no_shark>      mcans(size, size), mcbns(size, size), mccns(size, size); 
     morton_dense<double, doppler_32_col_mask>      mca(size, size), mcb(size, size), mcc(size, size);
@@ -273,6 +275,9 @@ int test_main(int argc, char* argv[])
     morton_dense<double, doppler_z_32_row_mask>    mzra(size, size), mzrb(size, size), mzrc(size, size);
     morton_dense<float, doppler_32_col_mask>       mcaf(size, size), mcbf(size, size), mccf(size, size);
     morton_dense<float, doppler_32_row_mask>       mraf(size, size), mrbf(size, size), mrcf(size, size);
+
+    transposed_view<dense2D<double> > trans_db(db); 
+    transposed_view<morton_t >        trans_mrbns(mrbns); 
 
 #if 0 
     dense2D<double> ta(1, 2), tb(2, 2), tc(1, 2);
@@ -285,6 +290,8 @@ int test_main(int argc, char* argv[])
 
     std::cout << "Testing different products\n";
 
+    //test(da, trans_db, dc, "dense2D and transposed dense2D");
+    
     test(da, db, dc, "dense2D");
     test(dca, dcb, dcc, "dense2D col-major");
     test(da, dcb, dc, "dense2D mixed");
