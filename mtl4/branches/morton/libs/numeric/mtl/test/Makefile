@@ -6,7 +6,7 @@ CXXFLAGS = ${INCLUDE_DIRS} -g -Wno-long-double
 #CXX= xlC
 
 
-EXECUTABLES = morton_dense sub_matrix
+EXECUTABLES = morton_dense sub_matrix matrix_product_test
 
 #all: ${EXECUTABLES}
 

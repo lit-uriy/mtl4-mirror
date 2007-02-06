@@ -92,6 +92,50 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
 
  
+    std::cout << "\n" << name << "  --- calling mult with tiling 2x2:\n"; std::cout.flush();
+    typedef gen_tiling_22_dense_mat_mat_mult_t<>  tiling_22_mult_t;
+    tiling_22_mult_t tiling_22_mult;
+
+    tiling_22_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols()); 
+
+    std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
+    typedef gen_tiling_22_dense_mat_mat_mult_t<add_mult_assign_t>  tiling_22_add_mult_t;
+    tiling_22_add_mult_t tiling_22_add_mult;
+
+    tiling_22_add_mult(a, b, c); 
+    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    
+    std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
+    typedef gen_tiling_22_dense_mat_mat_mult_t<minus_mult_assign_t>  tiling_22_minus_mult_t;
+    tiling_22_minus_mult_t tiling_22_minus_mult;
+
+    tiling_22_minus_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+
+
+    std::cout << "\n" << name << "  --- calling mult with tiling 4x4:\n"; std::cout.flush();
+    typedef gen_tiling_44_dense_mat_mat_mult_t<>  tiling_44_mult_t;
+    tiling_44_mult_t tiling_44_mult;
+
+    tiling_44_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols()); 
+
+    std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
+    typedef gen_tiling_44_dense_mat_mat_mult_t<add_mult_assign_t>  tiling_44_add_mult_t;
+    tiling_44_add_mult_t tiling_44_add_mult;
+
+    tiling_44_add_mult(a, b, c); 
+    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    
+    std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
+    typedef gen_tiling_44_dense_mat_mat_mult_t<minus_mult_assign_t>  tiling_44_minus_mult_t;
+    tiling_44_minus_mult_t tiling_44_minus_mult;
+
+    tiling_44_minus_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+
+ 
     std::cout << "\n" << name << "  --- calling mult recursively:\n"; std::cout.flush();
     // The recursive functor is C= A*B but the base case must be C+= A*B !!!!!!
     gen_recursive_dense_mat_mat_mult_t<add_mult_t, bound_test_static<32> >  recursive_mult;
