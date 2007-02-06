@@ -257,8 +257,12 @@ private:
 
 	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
 	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
+	size_t ari= &aref(1, 0) - &aref(0, 0), // how much is the offset of A's entry increased by incrementing row
+	       aci= &aref(0, 1) - &aref(0, 0), bri= &bref(1, 0) - &bref(0, 0), bci= &bref(0, 1) - &bref(0, 0);
+#if 0
 	size_t ari= a.c_offset(1, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= a.c_offset(0, 1), bri= b.c_offset(1, 0), bci= b.c_offset(0, 1);
+#endif
 	    
 	// C_nw += A_n * B_n
 	for (size_type i= 0; i < i_block; i+= Tiling1)
@@ -362,9 +366,12 @@ private:
 
 	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
 	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
+	size_t ari= &aref(1, 0) - &aref(0, 0), // how much is the offset of A's entry increased by incrementing row
+	       aci= &aref(0, 1) - &aref(0, 0), bri= &bref(1, 0) - &bref(0, 0), bci= &bref(0, 1) - &bref(0, 0);
+#if 0
 	size_t ari= a.c_offset(1, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= a.c_offset(0, 1), bri= b.c_offset(1, 0), bci= b.c_offset(0, 1);
-	    
+#endif	    
 	// C_nw += A_n * B_n
 	for (size_type i= 0; i < i_block; i+= Tiling1)
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
@@ -492,9 +499,12 @@ private:
 
 	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
 	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
+	size_t ari= &aref(1, 0) - &aref(0, 0), // how much is the offset of A's entry increased by incrementing row
+	       aci= &aref(0, 1) - &aref(0, 0), bri= &bref(1, 0) - &bref(0, 0), bci= &bref(0, 1) - &bref(0, 0);
+#if 0
 	size_t ari= a.c_offset(1, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= a.c_offset(0, 1), bri= b.c_offset(1, 0), bci= b.c_offset(0, 1);
-	    
+#endif
 	// C_nw += A_n * B_n
 	for (size_type i= 0; i < i_block; i+= Tiling1)
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
