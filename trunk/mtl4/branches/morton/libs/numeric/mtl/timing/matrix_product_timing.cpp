@@ -28,14 +28,33 @@ void print_time_and_mflops(double time, double size)
 
 // Matrices are only placeholder to provide the type
 template <typename MatrixA, typename MatrixB, typename MatrixC>
-double time_measure(MatrixA&, MatrixB&, MatrixC&, unsigned size)
+double time_measure(MatrixA&, MatrixB&, MatrixC&, unsigned size, std::vector<bool> enabled)
 {
+    using std::cout;
+
+    const double max_time= 1200.0;
+
     MatrixA a(size, size);
     MatrixB b(size, size);
     MatrixC c(size, size);
 
     fill_hessian_matrix(a, 1.0);
     fill_hessian_matrix(b, 2.0); 
+
+    typedef recursion::bound_test_static<32>    test32;
+    typedef recursion::bound_test_static<64>    test64;
+
+    cout << size << ", ";
+
+    if (enabled[0]) {
+	boost::timer start;	
+	// do some mult
+	print_time_and_mflops(start.elapsed(), a.num_rows());
+	if (start.elapsed() > max_time)
+	    enabled[0]= false;
+    } else
+	cout << ", , ";
+
 
     recursion::bound_test_static<32>    base_case_test;
     std::cout << size << ", ";
@@ -66,13 +85,14 @@ void time_series(MatrixA& a, MatrixB& b, MatrixC& c, const string& name, unsigne
 {
     // Maximal time per measurement 20 min
     double max_time= 1200.0;
+    std::vector<bool> enabled(10, true);
 
     std::cout << "# " << name << "  --- with dispatching recursive multiplication:\n";
     std::cout << "# Gnu-Format size, time, MFlops\n";
     std::cout.flush();
 
     for (unsigned i= steps; i <= max_size; i+= steps) {
-	double elapsed= time_measure(a, b, c, i);
+	double elapsed= time_measure(a, b, c, i, enabled);
 	if (elapsed > max_time) break;
     }
 }
@@ -90,8 +110,12 @@ int main(int argc, char* argv[])
     scenarii.push_back(string("Dense row/col-major (R, C, R)"));
     scenarii.push_back(string("Hybrid row-major"));
     scenarii.push_back(string("Hybrid row/col-major (R, C, R)"));
-    // scenarii.push_back(string("Z/E Hybrid row/col-major (Z-R, Z-C, E-R)"));
-    // scenarii.push_back(string("Morton Z-order and Dense col-major"));
+    scenarii.push_back(string("Z/E Hybrid row/col-major (Z-R, Z-C, E-R)"));
+    scenarii.push_back(string("Hybrid 64 row-major"));
+    scenarii.push_back(string("Hybrid 64 row/col-major (R, C, R)"));
+    scenarii.push_back(string("Z/E Hybrid 64 row/col-major (Z-R, Z-C, E-R)"));
+    scenarii.push_back(string("Morton Z-order and Dense col-major"));
+    scenarii.push_back(string("Hybrid 64 row-major and dense col-major"));
 
     using std::cout;
     if (argc < 4) {
@@ -107,8 +131,35 @@ int main(int argc, char* argv[])
 	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
 	doppler_32_row_mask= generate_mask<true, 5, row_major, 0>::value,
 	doppler_32_col_mask= generate_mask<true, 5, col_major, 0>::value,
+	doppler_z_32_row_mask= generate_mask<false, 5, row_major, 0>::value,
+	doppler_z_32_col_mask= generate_mask<false, 5, col_major, 0>::value,
+	doppler_64_row_mask= generate_mask<true, 6, row_major, 0>::value,
+	doppler_64_col_mask= generate_mask<true, 6, col_major, 0>::value,
+	doppler_z_64_row_mask= generate_mask<false, 6, row_major, 0>::value,
+	doppler_z_64_col_mask= generate_mask<false, 6, col_major, 0>::value,
+	shark_32_row_mask= generate_mask<true, 5, row_major, 1>::value,
+	shark_32_col_mask= generate_mask<true, 5, col_major, 1>::value,
+	shark_z_32_row_mask= generate_mask<false, 5, row_major, 1>::value,
+	shark_z_32_col_mask= generate_mask<false, 5, col_major, 1>::value,
+	shark_64_row_mask= generate_mask<true, 6, row_major, 1>::value,
+	shark_64_col_mask= generate_mask<true, 6, col_major, 1>::value,
+	shark_z_64_row_mask= generate_mask<false, 6, row_major, 1>::value,
+	shark_z_64_col_mask= generate_mask<false, 6, col_major, 1>::value;
+
+#if 0
+    const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
+	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
+	doppler_32_row_mask= generate_mask<true, 5, row_major, 0>::value,
+	doppler_32_col_mask= generate_mask<true, 5, col_major, 0>::value,
 	doppler_z_32_row_mask= generate_mask<false, 5, row_major, 1>::value,
 	doppler_z_32_col_mask= generate_mask<false, 5, col_major, 1>::value;
+#endif
+
+
+
+
+
+
 
     // Matrices are actually only place holders for the type
     mtl::dense2D<double>                           da(size, size), db(size, size), dc(size, size);
