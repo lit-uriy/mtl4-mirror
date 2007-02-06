@@ -21,7 +21,7 @@ using namespace std;
 
 // Maximum time for a single measurement
 // is 20 min
-const double max_time= 1200.0;
+const double max_time= 900;
 
     // Bitmasks: 
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
@@ -68,7 +68,7 @@ void print_time_and_mflops(double time, double size)
 
 // Matrices are only placeholder to provide the type
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Mult>
-double single_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size, std::vector<bool>& enabled, int i)
+double single_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size, std::vector<int>& enabled, int i)
 {
     MatrixA a(size, size);
     MatrixB b(size, size);
@@ -77,20 +77,20 @@ double single_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size, st
     fill_hessian_matrix(b, 1.0);
 
     if (enabled[i]) {
+	int reps= 0;
 	boost::timer start;	
-	int i= 0;
-	for (; start.elapsed() < 0.1; i++)
+	for (; start.elapsed() < 5; reps++)
 	    mult(a, b, c);
-	double time= start.elapsed() / double(i);
+	double time= start.elapsed() / double(reps);
 	print_time_and_mflops(time, a.num_rows());
 	if (time > max_time)
-	    enabled[i]= false;
+	    enabled[i]= 0;
     } else
 	std::cout << ", , ";
 }
 
 // The matrices in the following functions are only place holders, the real matrices are used in single_measure
-void measure_morton_order(unsigned size, std::vector<bool>& enabled)
+void measure_morton_order(unsigned size, std::vector<int>& enabled)
 {
     morton_dense<double,  morton_mask>             mda(4, 4), mdb(4, 4), mdc(4, 4);
     morton_dense<double,  morton_z_mask>           mzda(4, 4), mzdb(4, 4), mzdc(4, 4);
@@ -106,7 +106,7 @@ void measure_morton_order(unsigned size, std::vector<bool>& enabled)
 }
 
 
-void measure_cast(unsigned size, std::vector<bool>& enabled)
+void measure_cast(unsigned size, std::vector<int>& enabled)
 {
     morton_dense<double,  morton_mask>             mda(4, 4), mdb(4, 4), mdc(4, 4);
     morton_dense<double,  doppler_32_row_mask>     d32ra(4, 4), d32rb(4, 4), d32rc(4, 4);
@@ -124,7 +124,7 @@ void measure_cast(unsigned size, std::vector<bool>& enabled)
 }
 
 
-void measure_with_unroll(unsigned size, std::vector<bool>& enabled)
+void measure_with_unroll(unsigned size, std::vector<int>& enabled)
 {
     morton_dense<double,  doppler_32_row_mask>     d32r(4, 4);
     morton_dense<double,  doppler_32_col_mask>     d32c(4, 4);
@@ -142,9 +142,11 @@ void measure_with_unroll(unsigned size, std::vector<bool>& enabled)
     single_measure(d32c, d32c, d32c, mult, size, enabled, 3);
     single_measure(d32c, d32c, d32c, mult_22, size, enabled, 4);
     single_measure(d32c, d32c, d32c, mult_44, size, enabled, 5);
+ 
+    std::cout << "0\n";  std::cout.flush();
 }
 
-void measure_base_size(unsigned size, std::vector<bool>& enabled)
+void measure_base_size(unsigned size, std::vector<int>& enabled)
 {
     morton_dense<double,  doppler_16_row_mask>     d16r(4, 4);
     morton_dense<double,  doppler_32_row_mask>     d32r(4, 4);
@@ -169,7 +171,7 @@ void measure_base_size(unsigned size, std::vector<bool>& enabled)
 }
 
 template <typename Matrix> 
-void measure_unrolling(unsigned size, std::vector<bool>& enabled, Matrix& matrix)
+void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix)
 {
     std::cout << size << ", ";
  
@@ -202,15 +204,17 @@ void measure_unrolling(unsigned size, std::vector<bool>& enabled, Matrix& matrix
     single_measure(matrix, matrix, matrix, mult_m42, size, enabled, 5);
     single_measure(matrix, matrix, matrix, mult_m35, size, enabled, 6);
     single_measure(matrix, matrix, matrix, mult_m44, size, enabled, 7);
+ 
+    std::cout << "0\n";  std::cout.flush();
 }
 
-void measure_unrolling_hybrid(unsigned size, std::vector<bool>& enabled)
+void measure_unrolling_hybrid(unsigned size, std::vector<int>& enabled)
 {
     morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
     measure_unrolling(size, enabled, d64r);
 }
 
-void measure_unrolling_dense(unsigned size, std::vector<bool>& enabled)
+void measure_unrolling_dense(unsigned size, std::vector<int>& enabled)
 {
     dense2D<double> dense(4, 4);
     measure_unrolling(size, enabled, dense);
@@ -220,26 +224,46 @@ void measure_unrolling_dense(unsigned size, std::vector<bool>& enabled)
 template <typename Measure>
 void series(unsigned steps, unsigned max_size, Measure measure, const string& comment)
 {
-    std::cout << comment;
+    std::cout << "# " << comment << '\n';
     std::cout << "# Gnu-Format size, time, MFlops\n"; std::cout.flush();
 
-    std::vector<bool> enabled(16, true);
+    std::vector<int> enabled(16, 1);
     for (unsigned i= steps; i <= max_size; i+= steps)
-	measure_cast(i, enabled);
+	measure(i, enabled);
 }
 
 
 
 int main(int argc, char* argv[])
 {
-    series(10, 30, measure_morton_order, "# Comparing Z-, N-order and mixed with recursive multiplication:\n");
-    series(10, 30, measure_cast, "# Comparing base case cast (64) for Z-order, hybrid 32, hybrid 64 row and col-major:\n");
-    series(10, 30, measure_with_unroll, "# Using unrolled mult on hybrid row- and column-major matrices:\n");
-    series(10, 30, measure_base_size, "# Comparing base case sizes for corresponding hybrid row-major matrices:\n");
-    series(10, 30, measure_unrolling_hybrid, "# Comparing different unrolling for hybrid row-major matrices:\n");
-    series(10, 30, measure_unrolling_dense, "# Comparing different unrolling for row-major dense matrices:\n");
 
-    return 0;
+    std::vector<std::string> scenarii;
+    scenarii.push_back(string("Comparing Z-, N-order and mixed with recursive multiplication"));
+    scenarii.push_back(string("Comparing base case cast (64) for Z-order, hybrid 32, hybrid 64 row and col-major"));
+    scenarii.push_back(string("Using unrolled mult on hybrid row- and column-major matrices"));
+    scenarii.push_back(string("Comparing base case sizes for corresponding hybrid row-major matrices"));
+    scenarii.push_back(string("Comparing different unrolling for hybrid row-major matrices"));
+    scenarii.push_back(string("Comparing different unrolling for row-major dense matrices"));
+
+    using std::cout;
+    if (argc < 4) {
+	cerr << "usage: recursive_mult_timing <scenario> <steps> <max_size>\nScenarii:\n"; 
+	for (unsigned i= 0; i < scenarii.size(); i++)
+	    cout << i << ": " << scenarii[i] << "\n";
+	exit(1);
+    }
+    unsigned int scenario= atoi(argv[1]), steps= atoi(argv[2]), max_size= atoi(argv[3]), size= 32; 
+
+    switch (scenario) {
+      case 0: 	series(steps, max_size, measure_morton_order, scenarii[0]); break;
+      case 1: 	series(steps, max_size, measure_cast, scenarii[1]); break;
+      case 2: 	series(steps, max_size, measure_with_unroll, scenarii[2]); break;
+      case 3: 	series(steps, max_size, measure_base_size, scenarii[3]); break;
+      case 4: 	series(steps, max_size, measure_unrolling_hybrid, scenarii[4]); break;
+      case 5: 	series(steps, max_size, measure_unrolling_dense, scenarii[5]); break;
+    }
+
+    return 0; 
 
 }
  
@@ -254,7 +278,22 @@ int main(int argc, char* argv[])
 
 
 
+
+
+
 #if 0
+
+    series(10, 30, measure_morton_order, "Comparing Z-, N-order and mixed with recursive multiplication:");
+    series(10, 30, measure_cast, "Comparing base case cast (64) for Z-order, hybrid 32, hybrid 64 row and col-major:");
+    series(10, 30, measure_with_unroll, "Using unrolled mult on hybrid row- and column-major matrices:");
+    series(10, 30, measure_base_size, "Comparing base case sizes for corresponding hybrid row-major matrices:");
+    series(10, 30, measure_unrolling_hybrid, "Comparing different unrolling for hybrid row-major matrices:");
+    series(10, 30, measure_unrolling_dense, "Comparing different unrolling for row-major dense matrices:");
+
+
+
+
+
     using std::string;
     std::vector<std::string> scenarii;
     scenarii.push_back(string("Morton Z-order"));
@@ -297,7 +336,7 @@ int main(int argc, char* argv[])
     morton_dense<double, doppler_z_32_col_mask>    mzca(size, size), mzcb(size, size), mzcc(size, size);
     morton_dense<double, doppler_z_32_row_mask>    mzra(size, size), mzrb(size, size), mzrc(size, size);
 
-    cout << "# Measuring block-recursive computations\n";
+    cout << "Measuring block-recursive computations\n";
     switch (scenario) {
       case 0: 	time_series(mzda, mzdb, mzdc, scenarii[0], steps, max_size); break;
       case 1: 	time_series(mda, mdb, mdc, scenarii[1], steps, max_size); break;
@@ -322,7 +361,7 @@ int main(int argc, char* argv[])
 
 // Matrices are only placeholder to provide the type
 template <typename MatrixA, typename MatrixB, typename MatrixC>
-double time_measure(MatrixA&, MatrixB&, MatrixC&, unsigned size, std::vector<bool> enabled)
+double time_measure(MatrixA&, MatrixB&, MatrixC&, unsigned size, std::vector<int> enabled)
 {
     using std::cout;
 
@@ -379,7 +418,7 @@ void time_series(MatrixA& a, MatrixB& b, MatrixC& c, const string& name, unsigne
 {
     // Maximal time per measurement 20 min
     double max_time= 1200.0;
-    std::vector<bool> enabled(10, true);
+    std::vector<int> enabled(10, true);
 
     std::cout << "# " << name << "  --- with dispatching recursive multiplication:\n";
     std::cout << "# Gnu-Format size, time, MFlops\n";
