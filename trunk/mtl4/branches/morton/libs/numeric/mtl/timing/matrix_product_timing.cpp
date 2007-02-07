@@ -223,6 +223,8 @@ void measure_unrolling_dense(unsigned size, std::vector<int>& enabled)
 
 void measure_orientation(unsigned size, std::vector<int>& enabled)
 {
+    std::cout << size << ", ";
+ 
     morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
     morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
 
