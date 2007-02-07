@@ -240,9 +240,9 @@ private:
 	Backup()(a, b, c);
     }
 
+#if MTL_OUTLINE_TILING_DENSE_MAT_MAT_MULT_APPLY
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout);
-
-#if 0
+#else
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
 	// std::cout << "do unrolling\n";
@@ -329,7 +329,7 @@ struct gen_tiling_dense_mat_mat_mult_t
 };
 
 
-
+#if MTL_OUTLINE_TILING_DENSE_MAT_MAT_MULT_APPLY
 template <typename MatrixA, typename MatrixB, typename MatrixC, 
 	  unsigned long Tiling1, unsigned long Tiling2,
 	  typename Assign, typename Backup>
@@ -401,7 +401,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 		Assign::update(c(i, k), tmp00);
 	    }
 }
-
+#endif
 
 // =================================
 // Unrolled with iterators fixed 4x4
@@ -426,9 +426,9 @@ private:
 	Backup()(a, b, c);
     }
 
+#if MTL_OUTLINE_TILING_DENSE_MAT_MAT_MULT_APPLY
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout);
-
-#if 0
+#else
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
         // std::cout << "do unrolling\n";
@@ -540,7 +540,7 @@ struct gen_tiling_44_dense_mat_mat_mult_t
 };
 
 
-
+#if MTL_OUTLINE_TILING_DENSE_MAT_MAT_MULT_APPLY
 template <typename MatrixA, typename MatrixB, typename MatrixC, 
 	  typename Assign, typename Backup>
 void gen_tiling_44_dense_mat_mat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>::
@@ -638,7 +638,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 		Assign::update(c(i, k), tmp00);
 	    }
 }
-
+#endif
 
 
 
@@ -665,9 +665,9 @@ private:
 	Backup()(a, b, c);
     }
 
+#if MTL_OUTLINE_TILING_DENSE_MAT_MAT_MULT_APPLY
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout);
-
-#if 0
+#else
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
         // std::cout << "do unrolling\n";
@@ -753,6 +753,7 @@ struct gen_tiling_22_dense_mat_mat_mult_t
 };
 
 
+#if MTL_OUTLINE_TILING_DENSE_MAT_MAT_MULT_APPLY
 template <typename MatrixA, typename MatrixB, typename MatrixC, 
 	  typename Assign, typename Backup>
 void gen_tiling_22_dense_mat_mat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>::
@@ -824,6 +825,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 		Assign::update(c(i, k), tmp00);
 	    }
 }
+#endif
 
 
 // ========================
