@@ -50,6 +50,7 @@ const double max_time= 900;
 typedef modes::add_mult_assign_t                            ama_t;
 
 typedef recursion::bound_test_static<32>                    test32_t;
+typedef recursion::bound_test_static<64>                    test64_t;
 
 typedef gen_dense_mat_mat_mult_t<modes::add_mult_assign_t>  base_mult_t;
 typedef gen_recursive_dense_mat_mat_mult_t<base_mult_t>     rec_mult_t;
@@ -248,6 +249,48 @@ void measure_orientation(unsigned size, std::vector<int>& enabled)
 }
 
 
+void measure_unrolling_32(unsigned size, std::vector<int>& enabled)
+{
+    std::cout << size << ", ";
+ 
+    gen_recursive_dense_mat_mat_mult_t<base_mult_t, test32_t>           mult;
+    gen_recursive_dense_mat_mat_mult_t<tiling_22_base_mult_t, test32_t> mult_22;
+    gen_recursive_dense_mat_mat_mult_t<tiling_44_base_mult_t, test32_t> mult_44;
+
+    typedef gen_tiling_dense_mat_mat_mult_t<2, 2, ama_t>  tiling_m22_base_mult_t;
+    gen_recursive_dense_mat_mat_mult_t<tiling_m22_base_mult_t, test32_t> mult_m22;
+    
+    typedef gen_tiling_dense_mat_mat_mult_t<2, 4, ama_t>  tiling_m24_base_mult_t;
+    gen_recursive_dense_mat_mat_mult_t<tiling_m24_base_mult_t, test32_t> mult_m24;
+
+    typedef gen_tiling_dense_mat_mat_mult_t<4, 2, ama_t>  tiling_m42_base_mult_t;
+    gen_recursive_dense_mat_mat_mult_t<tiling_m42_base_mult_t, test32_t> mult_m42;
+
+    typedef gen_tiling_dense_mat_mat_mult_t<3, 5, ama_t>  tiling_m35_base_mult_t;
+    gen_recursive_dense_mat_mat_mult_t<tiling_m35_base_mult_t, test32_t> mult_m35;
+
+    typedef gen_tiling_dense_mat_mat_mult_t<4, 4, ama_t>  tiling_m44_base_mult_t;
+    gen_recursive_dense_mat_mat_mult_t<tiling_m44_base_mult_t, test32_t> mult_m44;
+
+    
+    morton_dense<double,  doppler_32_row_mask>     d32r(4, 4);
+    morton_dense<double,  doppler_32_col_mask>     d32c(4, 4);
+
+
+    single_measure(d32r, d32c, d32r, mult, size, enabled, 0);
+    single_measure(d32r, d32c, d32r, mult_22, size, enabled, 1);
+    single_measure(d32r, d32c, d32r, mult_44, size, enabled, 2);
+
+    single_measure(d32r, d32c, d32r, mult_m22, size, enabled, 3);
+    single_measure(d32r, d32c, d32r, mult_m24, size, enabled, 4);
+    single_measure(d32r, d32c, d32r, mult_m42, size, enabled, 5);
+    single_measure(d32r, d32c, d32r, mult_m35, size, enabled, 6);
+    single_measure(d32r, d32c, d32r, mult_m44, size, enabled, 7);
+ 
+    std::cout << "0\n";  std::cout.flush();
+}
+
+
 template <typename Measure>
 void series(unsigned steps, unsigned max_size, Measure measure, const string& comment)
 {
@@ -272,6 +315,7 @@ int main(int argc, char* argv[])
     scenarii.push_back(string("Comparing different unrolling for hybrid row-major matrices"));
     scenarii.push_back(string("Comparing different unrolling for row-major dense matrices"));
     scenarii.push_back(string("Comparing different orientations for hybrid row-major matrices"));
+    scenarii.push_back(string("Comparing different unrolling for hybrid 32 row-major times col-major matrices"));
 
     using std::cout;
     if (argc < 4) {
@@ -290,6 +334,7 @@ int main(int argc, char* argv[])
       case 4: 	series(steps, max_size, measure_unrolling_hybrid, scenarii[4]); break;
       case 5: 	series(steps, max_size, measure_unrolling_dense, scenarii[5]); break;
       case 6: 	series(steps, max_size, measure_orientation, scenarii[6]); break;
+      case 7: 	series(steps, max_size, measure_unrolling_32, scenarii[7]); break;
     }
 
     return 0; 
