@@ -48,7 +48,7 @@ tri_solve_base (Matrix & SW, Matrix & NW)
 }
 
 
-// Lower(SE) -= SW^T * SW^T
+// Lower(SE) -= SW * SW^T
 template < typename MatrixSE, typename MatrixSW > void
 tri_schur_base (MatrixSE & SE, MatrixSW & SW)
 {
