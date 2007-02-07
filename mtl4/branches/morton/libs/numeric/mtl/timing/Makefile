@@ -11,7 +11,7 @@ CXXFLAGS = ${INCLUDE_DIRS}
 CXXFLAGS += -DNDEBUG -O3 -ffast-math 
 
 # Additional G5 optimization on g++
-# CXXFLAGS += -fast
+CXXFLAGS += -fast
 
 # Intel optimization
 # CXXFLAGS += -DNDEBUG -O3 

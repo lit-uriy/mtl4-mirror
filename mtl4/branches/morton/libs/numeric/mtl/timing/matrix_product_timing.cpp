@@ -285,7 +285,7 @@ int main(int argc, char* argv[])
       case 3: 	series(steps, max_size, measure_base_size, scenarii[3]); break;
       case 4: 	series(steps, max_size, measure_unrolling_hybrid, scenarii[4]); break;
       case 5: 	series(steps, max_size, measure_unrolling_dense, scenarii[5]); break;
-      case 6: 	series(steps, max_size, measure_unrolling_dense, scenarii[6]); break;
+      case 6: 	series(steps, max_size, measure_orientation, scenarii[6]); break;
     }
 
     return 0; 
