@@ -241,6 +241,8 @@ void measure_orientation(unsigned size, std::vector<int>& enabled)
     single_measure(d64c, d64c, d64c, mult_m44, size, enabled, 5);
     single_measure(d64r, d64c, d64r, mult_m44, size, enabled, 6);
     single_measure(d64c, d64r, d64r, mult_m44, size, enabled, 7);
+ 
+    std::cout << "0\n";  std::cout.flush();
 }
 
 
