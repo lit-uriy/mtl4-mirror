@@ -221,6 +221,29 @@ void measure_unrolling_dense(unsigned size, std::vector<int>& enabled)
 }
 
 
+void measure_orientation(unsigned size, std::vector<int>& enabled)
+{
+    morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
+    morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
+
+    typedef gen_tiling_dense_mat_mat_mult_t<4, 2, ama_t>  tiling_m42_base_mult_t;
+    gen_recursive_dense_mat_mat_mult_t<tiling_m42_base_mult_t> mult_m42;
+
+    typedef gen_tiling_dense_mat_mat_mult_t<4, 4, ama_t>  tiling_m44_base_mult_t;
+    gen_recursive_dense_mat_mat_mult_t<tiling_m44_base_mult_t> mult_m44;
+    
+    single_measure(d64r, d64r, d64r, mult_m42, size, enabled, 0);
+    single_measure(d64c, d64c, d64c, mult_m42, size, enabled, 1);
+    single_measure(d64r, d64c, d64r, mult_m42, size, enabled, 2);
+    single_measure(d64c, d64r, d64r, mult_m42, size, enabled, 3);
+    
+    single_measure(d64r, d64r, d64r, mult_m44, size, enabled, 4);
+    single_measure(d64c, d64c, d64c, mult_m44, size, enabled, 5);
+    single_measure(d64r, d64c, d64r, mult_m44, size, enabled, 6);
+    single_measure(d64c, d64r, d64r, mult_m44, size, enabled, 7);
+}
+
+
 template <typename Measure>
 void series(unsigned steps, unsigned max_size, Measure measure, const string& comment)
 {
@@ -244,6 +267,7 @@ int main(int argc, char* argv[])
     scenarii.push_back(string("Comparing base case sizes for corresponding hybrid row-major matrices"));
     scenarii.push_back(string("Comparing different unrolling for hybrid row-major matrices"));
     scenarii.push_back(string("Comparing different unrolling for row-major dense matrices"));
+    scenarii.push_back(string("Comparing different orientations for hybrid row-major matrices"));
 
     using std::cout;
     if (argc < 4) {
@@ -261,6 +285,7 @@ int main(int argc, char* argv[])
       case 3: 	series(steps, max_size, measure_base_size, scenarii[3]); break;
       case 4: 	series(steps, max_size, measure_unrolling_hybrid, scenarii[4]); break;
       case 5: 	series(steps, max_size, measure_unrolling_dense, scenarii[5]); break;
+      case 6: 	series(steps, max_size, measure_unrolling_dense, scenarii[6]); break;
     }
 
     return 0; 
