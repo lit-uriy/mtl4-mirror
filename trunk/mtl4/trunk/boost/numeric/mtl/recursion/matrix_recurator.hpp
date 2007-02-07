@@ -381,6 +381,10 @@ void inline equalize_depth(Recurator1& r1, Recurator2& r2, Recurator3& r3)
 }
 
 
-}} // namespace mtl::recursion
+} // namespace recursion
+
+using recursion::matrix_recurator;
+
+} // namespace mtl
 
 #endif // MTL_MATRIX_RECURATOR_INCLUDE
