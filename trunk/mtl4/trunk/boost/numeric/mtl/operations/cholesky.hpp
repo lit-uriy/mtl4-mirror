@@ -8,6 +8,7 @@
 #include <boost/numeric/mtl/operations/matrix_mult.hpp>
 #include <boost/numeric/mtl/operations/assign_modes.hpp>
 #include <boost/numeric/mtl/transposed_view.hpp>
+#include <boost/numeric/mtl/recursion/base_case_cast.hpp>
 
 namespace mtl {
 
@@ -387,11 +388,18 @@ namespace with_recurator {
     template <typename Recurator, typename Visitor>
     void schur_update(Recurator E, Recurator W, Recurator N, Visitor vis= Visitor())
     {
+	using namespace recursion;
+
 	if (E.is_empty() || W.is_empty() || N.is_empty())
 	    return;
 
 	if(vis.is_base(E)) {
-	    typename Recurator::matrix_type  base_E(E.get_value()), base_W(W.get_value()),base_N(N.get_value());
+	    typedef typename Visitor::base_test  base_test;
+	    typedef typename base_case_matrix<typename Recurator::matrix_type, base_test>::type matrix_type;
+	    
+	    matrix_type  base_E(base_case_cast<base_test>(E.get_value())), 
+		base_W(base_case_cast<base_test>(W.get_value())),
+		base_N(base_case_cast<base_test>(N.get_value()));
 	    vis.schur_update_base(base_E, base_W, base_N);
 	} else{
 	    schur_update(     E.north_east(),W.north_west()     ,N.south_west()     , vis);
@@ -412,11 +420,18 @@ namespace with_recurator {
     template <typename Recurator, typename Visitor>
     void tri_solve(Recurator S, Recurator N, Visitor vis= Visitor())
     {
+	using namespace recursion;
+
         if (S.is_empty())
 	    return;
 
         if(vis.is_base(S)) {   
-	    typename Recurator::matrix_type  base_S(S.get_value()), base_N(N.get_value());
+	    typedef typename Visitor::base_test  base_test;
+	    typedef typename base_case_matrix<typename Recurator::matrix_type, base_test>::type matrix_type;
+	    
+	    matrix_type  base_S(base_case_cast<base_test>(S.get_value())), 
+		base_N(base_case_cast<base_test>(N.get_value()));
+
 	    vis.tri_solve_base(base_S, base_N);
         } else{
      
@@ -433,11 +448,17 @@ namespace with_recurator {
     template <typename Recurator, typename Visitor>
     void tri_schur(Recurator E, Recurator W, Visitor vis= Visitor())
     { 
+	using namespace recursion;
+
         if (E.is_empty() || W.is_empty())
 	    return;
 
         if (vis.is_base(W)) {
-	    typename Recurator::matrix_type  base_E(E.get_value()), base_W(W.get_value());
+	    typedef typename Visitor::base_test  base_test;
+	    typedef typename base_case_matrix<typename Recurator::matrix_type, base_test>::type matrix_type;
+	    
+	    matrix_type  base_E(base_case_cast<base_test>(E.get_value())), 
+               		 base_W(base_case_cast<base_test>(W.get_value()));
 	    vis.tri_schur_base(base_E, base_W);
         } else{ 
          
@@ -454,11 +475,16 @@ namespace with_recurator {
     template <typename Recurator, typename Visitor>
     void cholesky(Recurator recurator, Visitor vis= Visitor())
     {
+	using namespace recursion;
+
         if (recurator.is_empty())
 	    return;
 
         if (vis.is_base (recurator)){    
-	    typename Recurator::matrix_type  base_matrix(recurator.get_value());
+	    typedef typename Visitor::base_test  base_test;
+	    typedef typename base_case_matrix<typename Recurator::matrix_type, base_test>::type matrix_type;
+	    
+	    matrix_type  base_matrix(base_case_cast<base_test>(recurator.get_value()));
 	    vis.cholesky_base (base_matrix);      
         } else {
 	    cholesky(recurator.north_west(), vis);
