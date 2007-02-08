@@ -19,6 +19,8 @@ using namespace std;
     // Bitmasks: 
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
 	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
+	doppler_2_row_mask= generate_mask<true, 1, row_major, 0>::value,
+	doppler_2_col_mask= generate_mask<true, 1, col_major, 0>::value,
 	doppler_16_row_mask= generate_mask<true, 4, row_major, 0>::value,
 	doppler_16_col_mask= generate_mask<true, 4, col_major, 0>::value,
 	doppler_32_row_mask= generate_mask<true, 5, row_major, 0>::value,
@@ -128,6 +130,8 @@ int test_main(int argc, char* argv[])
     dense2D<double, matrix_parameters<col_major> > dc(size, size);
     morton_dense<double,  morton_mask>             md(size, size);
     morton_dense<double,  morton_z_mask>           mzd(size, size);
+    morton_dense<double,  doppler_2_row_mask>      d2r(size, size);
+    morton_dense<double,  doppler_2_col_mask>      d2c(size, size);
     morton_dense<double,  doppler_16_row_mask>     d16r(size, size);
     morton_dense<double,  doppler_32_row_mask>     d32r(size, size);
     morton_dense<double,  doppler_64_row_mask>     d64r(size, size);
@@ -138,11 +142,10 @@ int test_main(int argc, char* argv[])
     test(dc, "Dense column major");
     test(md, "Morton N-order");
     test(mzd, "Morton Z-order");
+    test(d2r, "Hybrid 2 row-major");
+    test(d2c, "Hybrid 2 column-major");
     test(d16r, "Hybrid 16 row-major");
-    test(d32r, "Hybrid 32 row-major");
-    test(d64r, "Hybrid 64 row-major");
-    test(d64c, "Hybrid 64 column-major");
-    test(d128r, "Hybrid 128 row-major");
+
 
     return 0;
 }
