@@ -8,9 +8,12 @@
 namespace mtl { namespace utilities {
 
 
+// Should be distinguished between random access and forward iterator
+// So far all (dense) cursors (within rows/columns) have random access
+
 template <typename PropertyMap, typename Cursor, typename ValueType>
 struct const_iterator_adaptor
-    : public detail::adaptor_operators< const_iterator_adaptor<PropertyMap, Cursor, ValueType> >
+    : public detail::ra_adaptor_operators< const_iterator_adaptor<PropertyMap, Cursor, ValueType> >
 {
     typedef detail::const_iterator_proxy<PropertyMap, Cursor, ValueType>     proxy;
 
@@ -29,7 +32,7 @@ struct const_iterator_adaptor
 
 template <typename PropertyMap, typename Cursor, typename ValueType>
 struct iterator_adaptor
-    : public detail::adaptor_operators< iterator_adaptor<PropertyMap, Cursor, ValueType> >
+    : public detail::ra_adaptor_operators< iterator_adaptor<PropertyMap, Cursor, ValueType> >
 {
     typedef detail::iterator_proxy<PropertyMap, Cursor, ValueType>   proxy;
 

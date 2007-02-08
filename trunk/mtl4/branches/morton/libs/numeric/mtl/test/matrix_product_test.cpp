@@ -29,7 +29,7 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
     fill_hessian_matrix(a, 1.0);
     fill_hessian_matrix(b, 2.0);
-
+   
     std::cout << "\n" << name << "  --- calling simple mult:\n"; std::cout.flush();
     typedef gen_dense_mat_mat_mult_t<>  mult_t;
     mult_t                              mult;
@@ -135,7 +135,6 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     tiling_44_minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
 
- 
     std::cout << "\n" << name << "  --- calling mult recursively:\n"; std::cout.flush();
     // The recursive functor is C= A*B but the base case must be C+= A*B !!!!!!
     gen_recursive_dense_mat_mat_mult_t<add_mult_t, bound_test_static<32> >  recursive_mult;
@@ -151,7 +150,6 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
     gen_recursive_dense_mat_mat_mult_t<minus_mult_t, bound_test_static<32>, minus_mult_assign_t>  recursive_minus_mult; 
-
     recursive_minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
 
@@ -290,12 +288,14 @@ int test_main(int argc, char* argv[])
 
     std::cout << "Testing different products\n";
 
-    //test(da, trans_db, dc, "dense2D and transposed dense2D");
-    
+#if 0
+    test(da, trans_db, dc, "dense2D and transposed dense2D");
+    test(mrans, trans_mrbns, mrcns, "hybrid with transposed matrix");
+#endif
     test(da, db, dc, "dense2D");
     test(dca, dcb, dcc, "dense2D col-major");
     test(da, dcb, dc, "dense2D mixed");
-    test(fa, fcb, fc, "dense2D mixed, float"); 
+    test(fa, fcb, fc, "dense2D mixed, float");
     test(da, fcb, fc, "dense2D mixed, dense and float"); 
     test(mda, mdb, mdc, "pure Morton");
     test(mca, mcb, mcc, "Hybrid col-major");
@@ -309,6 +309,7 @@ int test_main(int argc, char* argv[])
     test(mra, dcb, mzrc, "Hybrid col-major and row-major, Z and E-order mixed with dense2D");
     test(mra, db, mrcns, "Hybric matrix = Shark * dense2D");
     test(mrans, db, mccns, "Hybric matrix (col-major) = hybrid (row) * dense2D");
+
     return 0;
 }
  

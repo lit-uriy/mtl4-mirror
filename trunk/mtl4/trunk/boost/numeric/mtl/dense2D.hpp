@@ -137,7 +137,9 @@ struct strided_dense_el_iterator
 
     self operator+(int x) const
     {
-	return super::operator+(x);
+	self tmp(*this);
+	tmp+= x;
+	return tmp;
     }
 
     Value& operator*() const

@@ -34,24 +34,25 @@ struct matrix_recurator
 
 private:
     
-    // template <typename Matrix> why was it templated ???
-    sub_matrix_type constructor_helper(Matrix const& matrix)
+    template <typename MatrixType> // why was it templated ???
+    sub_matrix_type constructor_helper(MatrixType const& matrix)
     {
 	return sub_matrix(matrix, matrix.begin_row(), matrix.end_row(),
 			  matrix.begin_col(), matrix.end_col());
     }
 
     // For views without own data, we need to generate a new sub_matrix as shared_ptr
-    // template <typename Matrix>
-    sub_matrix_type constructor_helper(transposed_view<Matrix> const& matrix)
+    template <typename MatrixType>
+    sub_matrix_type constructor_helper(transposed_view<MatrixType> const& view)
     {
-	typedef typename sub_matrix_t<Matrix>::sub_matrix_type   ref_sub_type;
+	typedef typename sub_matrix_t<MatrixType>::sub_matrix_type   ref_sub_type;
 	typedef boost::shared_ptr<ref_sub_type>                  pointer_type;
+	typedef typename transposed_view<MatrixType>::other      ref_type;
 
 	// Submatrix of referred matrix, colums and rows interchanged
 	// Create a submatrix, whos address will be kept by transposed_view
-	pointer_type p(new ref_sub_type(sub_matrix(matrix.ref, matrix.begin_col(), matrix.end_col(), 
-						   matrix.begin_row(), matrix.end_row())));
+	pointer_type p(new ref_sub_type(sub_matrix(const_cast<ref_type&>(view.ref), view.begin_col(), view.end_col(), 
+						   view.begin_row(), view.end_row())));
 	return sub_matrix_type(p); 
     }
 
@@ -82,6 +83,29 @@ public:
     }
 #endif
 
+private:
+
+    template <typename SubMatrix>
+    sub_matrix_type get_value_dispatch(const SubMatrix& matrix, 
+				   size_type br, size_type er, size_type bc, size_type ec) const
+    {
+	return sub_matrix(my_sub_matrix, bc, ec, br, er);
+    }
+
+    template <typename SubMatrix>
+    sub_matrix_type get_value_dispatch(transposed_view<SubMatrix> view, 
+				       size_type br, size_type er, size_type bc, size_type ec) const
+    {
+	typedef typename sub_matrix_t<SubMatrix>::sub_matrix_type   ref_sub_type;
+	typedef boost::shared_ptr<ref_sub_type>                     pointer_type;
+	typedef typename transposed_view<SubMatrix>::other          ref_type;
+
+	pointer_type p(new ref_sub_type(sub_matrix(const_cast<ref_type&>(view.ref), bc, ec, br, er)));
+	return sub_matrix_type(p); 	
+    }
+
+
+public:
     sub_matrix_type get_value() const
     {
 	using std::min;
@@ -89,7 +113,8 @@ public:
 	          end_row= min(begin_row + my_bound, my_sub_matrix.end_row()),
 	          begin_col= my_sub_matrix.begin_col() + my_first_col,
 	          end_col= min(begin_col + my_bound, my_sub_matrix.end_col());
-	return sub_matrix(my_sub_matrix, begin_row, end_row, begin_col, end_col);
+
+	return get_value_dispatch(my_sub_matrix, begin_row, end_row, begin_col, end_col);
     }
 
 

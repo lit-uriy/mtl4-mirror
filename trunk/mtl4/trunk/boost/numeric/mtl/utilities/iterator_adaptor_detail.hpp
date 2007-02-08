@@ -24,14 +24,6 @@ struct adaptor_operators
 	return tmp;
     }
     
-    // Should be optional if a cursor has no operator+
-    // So far all (dense) cursors (within rows/columns) have random access
-    Adaptor operator+(int i) const
-    {
-	const Adaptor& me = static_cast<const Adaptor&>(*this);
-	return Adaptor(me.cursor + i, me.map);
-    }
-
     bool operator==(Adaptor const& x) const
     {
 	Adaptor const& me = static_cast<Adaptor const&>(*this);
@@ -53,6 +45,26 @@ struct adaptor_operators
 	return !operator==(x);
     }
 };
+
+template <typename Adaptor>
+struct ra_adaptor_operators 
+  : public adaptor_operators<Adaptor>
+{
+    Adaptor operator+(int i) const
+    {
+	const Adaptor& me = static_cast<const Adaptor&>(*this);
+	return Adaptor(me.map, me.cursor + i);
+    }
+
+    Adaptor& operator+=(int i)
+    {
+	Adaptor& me = static_cast<Adaptor&>(*this);
+	me.cursor+= i;
+	return me;
+    }
+};
+
+
 
 
 template <typename PropertyMap, typename Cursor, typename ValueType>

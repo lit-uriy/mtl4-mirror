@@ -12,6 +12,7 @@
 #include <boost/numeric/mtl/operations/assign_modes.hpp>
 #include <boost/numeric/mtl/base_types.hpp>
 #include <boost/numeric/mtl/tag.hpp>
+#include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/meta_math/loop.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
@@ -245,7 +246,7 @@ private:
 #else
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
-	// std::cout << "do unrolling\n";
+	std::cout << "do unrolling\n";
 
 	if (Assign::init_to_0) set_to_0(c);
 
@@ -431,7 +432,7 @@ private:
 #else
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
-        // std::cout << "do unrolling\n";
+        std::cout << "do unrolling\n";
 
 	if (Assign::init_to_0) set_to_0(c);
 
@@ -670,7 +671,7 @@ private:
 #else
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
-        // std::cout << "do unrolling\n";
+        std::cout << "do unrolling\n";
 
 	if (Assign::init_to_0) set_to_0(c);
 
@@ -759,7 +760,7 @@ template <typename MatrixA, typename MatrixB, typename MatrixC,
 void gen_tiling_22_dense_mat_mat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>::
 apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
 {
-        // std::cout << "do unrolling\n";
+        std::cout << "do unrolling\n";
 
 	if (Assign::init_to_0) set_to_0(c);
 
