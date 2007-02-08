@@ -22,12 +22,9 @@ using namespace std;
 
 
 
-
-
-
 // Maximum time for a single measurement
-// is 10 min
-const double max_time= 600;
+// is 5 min
+const double max_time= 300;
 
     // Bitmasks: 
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
