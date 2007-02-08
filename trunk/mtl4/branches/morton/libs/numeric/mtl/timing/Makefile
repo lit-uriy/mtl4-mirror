@@ -2,7 +2,7 @@ INCLUDE_DIRS = -I${MTL_MORTON_BOOST_ROOT} -I${MTL_BOOST_ROOT} -I${BOOST_ROOT}
 
 CXXFLAGS = ${INCLUDE_DIRS} 
 
-# CXXFLAGS += -Wno-long-double 
+CXXFLAGS += -Wno-long-double 
 
 # Debugging
 #CXXFLAGS += -g
