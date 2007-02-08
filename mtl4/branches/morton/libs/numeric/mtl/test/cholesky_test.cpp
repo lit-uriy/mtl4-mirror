@@ -154,16 +154,3 @@ int test_main(int argc, char* argv[])
 
 
 
-
-
-
-
-#if 0
-	using glas::tags::row_t; using glas::tags::all_it;
-        typedef typename traits::range_generator<row_t, Matrix>::type       cur_type;             
-        typedef typename traits::range_generator<all_it, cur_type>::type    iter_type;            
-	
-	cur_type rb= begin<row_t>(matrix);
-	iter_type ib= begin<all_it>(rb);
-	ib+= 7;
-#endif
