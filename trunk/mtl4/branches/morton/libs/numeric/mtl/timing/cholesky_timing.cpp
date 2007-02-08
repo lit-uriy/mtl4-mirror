@@ -155,12 +155,12 @@ int main(int argc, char* argv[])
     typedef with_iterator::recursive_cholesky_base_visitor_t    iterator_t;
 
     typedef detail::mult_schur_update_t<gen_tiling_22_dense_mat_mat_mult_t<modes::minus_mult_assign_t> > schur_update_22_t;
-    typedef recursive_cholesky_visitor_t<recursion::bound_test_static<2>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
+    typedef recursive_cholesky_visitor_t<recursion::bound_test_static<64>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
 	                                 with_iterator::tri_schur_base_t, schur_update_22_t>   
 	tiling_22_t;
 
     typedef detail::mult_schur_update_t<gen_tiling_44_dense_mat_mat_mult_t<modes::minus_mult_assign_t> > schur_update_44_t;
-    typedef recursive_cholesky_visitor_t<recursion::bound_test_static<2>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
+    typedef recursive_cholesky_visitor_t<recursion::bound_test_static<64>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
 	                                 with_iterator::tri_schur_base_t, schur_update_44_t>   
 	tiling_44_t;
 
