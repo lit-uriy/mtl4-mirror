@@ -8,6 +8,7 @@
 #include <boost/numeric/mtl/morton_dense.hpp> 
 #include <boost/numeric/mtl/operations/print_matrix.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
+#include <boost/numeric/mtl/operations/assign_modes.hpp>
 #include <boost/numeric/mtl/operations/matrix_mult.hpp>
 #include <boost/numeric/mtl/operations/cholesky.hpp>
 
@@ -74,6 +75,45 @@ void test(Matrix& matrix, const char* name)
 	print_matrix(matrix); std::cout << "\n"; 
     }
 
+    fill_matrix_for_cholesky(matrix);
+
+    recursive_cholesky_visitor_t<recursion::bound_test_static<2>, with_bracket::cholesky_base_t, with_bracket::tri_solve_base_t, 
+                                 with_bracket::tri_schur_base_t, with_bracket::schur_update_base_t>   
+        iter_vis2; 
+    recursive_cholesky(matrix, iter_vis2);
+    if (matrix.num_cols() <= 10) { 
+	print_matrix(matrix); std::cout << "\n"; 
+    }
+
+    fill_matrix_for_cholesky(matrix);
+
+    recursive_cholesky_visitor_t<recursion::bound_test_static<2>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
+                                 with_iterator::tri_schur_base_t, with_iterator::schur_update_base_t>   
+        iter_vis3;
+
+    recursive_cholesky(matrix, iter_vis3);
+    if (matrix.num_cols() <= 10) { 
+	print_matrix(matrix); std::cout << "\n"; 
+    }
+
+
+    fill_matrix_for_cholesky(matrix);
+
+    typedef detail::mult_schur_update_t<gen_tiling_22_dense_mat_mat_mult_t<modes::minus_mult_assign_t> > schur_update_22_t;
+    recursive_cholesky_visitor_t<recursion::bound_test_static<2>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
+                                 with_iterator::tri_schur_base_t, schur_update_22_t>   
+        iter_vis4;
+
+    recursive_cholesky(matrix, iter_vis4);
+    if (matrix.num_cols() <= 10) { 
+	print_matrix(matrix); std::cout << "\n"; 
+    }
+
+
+#if 0
+    typedef detail::mult_schur_update_t<gen_tiling_44_dense_mat_mat_mult_t<minus_mult_assign_t> > schur_update_44_t;
+
+#endif
 }
 
 

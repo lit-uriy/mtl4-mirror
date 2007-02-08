@@ -10,6 +10,7 @@
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/morton_dense.hpp> 
+#include <boost/numeric/mtl/transposed_view.hpp>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/numeric/mtl/operations/print_matrix.hpp>
 #include <boost/numeric/mtl/operations/matrix_mult.hpp>
