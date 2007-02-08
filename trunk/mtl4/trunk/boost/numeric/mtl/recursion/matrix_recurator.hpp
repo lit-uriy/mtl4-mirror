@@ -89,7 +89,7 @@ private:
     sub_matrix_type get_value_dispatch(const SubMatrix& matrix, 
 				   size_type br, size_type er, size_type bc, size_type ec) const
     {
-	return sub_matrix(my_sub_matrix, bc, ec, br, er);
+	return sub_matrix(my_sub_matrix, br, er, bc, ec);
     }
 
     template <typename SubMatrix>

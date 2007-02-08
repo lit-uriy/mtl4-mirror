@@ -331,15 +331,22 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
         set_nnz(); set_ldim();
     }
 
+    bool check_indices(size_t r, size_t c) const
+    {
+	return r >= this->begin_row() && r < this->end_row() && c >= this->begin_col() && c < this->end_col();
+    }
+
     // old style, better use value property map
     value_type operator() (size_t r, size_t c) const 
     {
+	// assert(check_indices(r, c));  // causes trouble for iterator/cursor creation
 	size_t offset= indexer(*this, r, c);
         return this->data[offset];
     }
 
     value_type& operator() (size_t r, size_t c)
     {
+	// assert(check_indices(r, c));  // causes trouble for iterator/cursor creation
 	return this->data[indexer(*this, r, c)]; 
     }    
 

@@ -6,7 +6,8 @@
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 #include <boost/numeric/mtl/glas_tags.hpp>
 #include <boost/numeric/mtl/operations/matrix_mult.hpp>
-
+#include <boost/numeric/mtl/operations/assign_modes.hpp>
+#include <boost/numeric/mtl/transposed_view.hpp>
 
 namespace mtl {
 
@@ -66,7 +67,7 @@ namespace with_bracket {
     template < typename MatrixNE, typename MatrixNW, typename MatrixSW >
     void schur_update_base(MatrixNE & NE, const MatrixNW & NW, const MatrixSW & SW)
     {
-	for (int k = 0; k < NW.num_rows (); k++) 
+	for (int k = 0; k < NW.num_cols (); k++) 
 	    for (int i = 0; i < NE.num_rows (); i++) {
 		typename MatrixNW::value_type d = NW[i][k];
 		for (int j = 0; j < NE.num_cols (); j++)
@@ -191,7 +192,7 @@ namespace with_iterator {
 		typename MatrixSW::value_type d = SW[i][k] /= NW[k][k];
 
 		rcur_type sw_i= begin<row_t>(SW);     sw_i+= i;  // row i
-		riter_type it1= begin<all_it>(sw_i);    it1+ k+1;  // SW[i][k+1]
+		riter_type it1= begin<all_it>(sw_i);  it1+= k+1; // SW[i][k+1]
 		riter_type it1end= end<all_it>(sw_i);    
 	
 		ccur_type nw_k= begin<col_t>(NW);     nw_k+= k;  // column k
@@ -243,7 +244,7 @@ namespace with_iterator {
 	typedef typename range_generator<row_t, MatrixNE>::type       rcur_type;
 	typedef typename range_generator<all_it, rcur_type>::type     riter_type;   
 
-	for (int k = 0; k < NW.num_rows (); k++) 
+	for (int k = 0; k < NW.num_cols (); k++) 
 	    for (int i = 0; i < NE.num_rows (); i++) {
 		typename MatrixNW::value_type d = NW[i][k];
 
@@ -308,8 +309,7 @@ namespace with_iterator {
 // ==================================
 
 
-template <typename CholeskyBase, typename TriSolveBase, typename TriSchur, typename SchurUpdate,
-	  typename BaseTest>
+template <typename BaseTest, typename CholeskyBase, typename TriSolveBase, typename TriSchur, typename SchurUpdate>
 struct recursive_cholesky_visitor_t
 {
     typedef  BaseTest                   base_test;
@@ -346,15 +346,32 @@ struct recursive_cholesky_visitor_t
 };
 
 
+namespace detail {
+
+    // Compute schur update with external multiplication; must have Assign == minus_mult_assign_t !!!
+    template <typename MatrixMult>
+    struct mult_schur_update_t
+    {
+	template < typename MatrixNE, typename MatrixNW, typename MatrixSW >
+	void operator()(MatrixNE & NE, const MatrixNW & NW, const MatrixSW & SW)
+	{
+	    transposed_view<MatrixSW> trans_sw(const_cast<MatrixSW&>(SW)); 
+	    MatrixMult()(NW, trans_sw, NE);
+	}
+    };
+
+} // detail
+
+
 namespace with_bracket {
-    typedef recursive_cholesky_visitor_t<cholesky_base_t, tri_solve_base_t, tri_schur_base_t, schur_update_base_t,
-					 recursion::bound_test_static<64> > 
+    typedef recursive_cholesky_visitor_t<recursion::bound_test_static<64>, cholesky_base_t, tri_solve_base_t, 
+					 tri_schur_base_t, schur_update_base_t > 
                recursive_cholesky_base_visitor_t;
 }
 
 namespace with_iterator {
-    typedef recursive_cholesky_visitor_t<cholesky_base_t, tri_solve_base_t, tri_schur_base_t, schur_update_base_t,
-					 recursion::bound_test_static<64> > 
+    typedef recursive_cholesky_visitor_t<recursion::bound_test_static<64>, 
+					 cholesky_base_t, tri_solve_base_t, tri_schur_base_t, schur_update_base_t>
                recursive_cholesky_base_visitor_t;
 }
 
