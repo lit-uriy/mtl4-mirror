@@ -65,6 +65,15 @@ void test(Matrix& matrix, const char* name)
     if (matrix.num_cols() <= 10) { 
 	print_matrix(matrix); std::cout << "\n"; 
     }
+
+    fill_matrix_for_cholesky(matrix);
+
+    with_iterator::recursive_cholesky_base_visitor_t  iter_vis;
+    recursive_cholesky(matrix, iter_vis);
+    if (matrix.num_cols() <= 10) { 
+	print_matrix(matrix); std::cout << "\n"; 
+    }
+
 }
 
 
@@ -76,6 +85,7 @@ int test_main(int argc, char* argv[])
     if (argc > 1) size= atoi(argv[1]); 
 
     dense2D<double>                                dr(size, size);
+    dense2D<double, matrix_parameters<col_major> > dc(size, size);
     morton_dense<double,  morton_mask>             md(size, size);
     morton_dense<double,  morton_z_mask>           mzd(size, size);
     morton_dense<double,  doppler_16_row_mask>     d16r(size, size);
@@ -85,6 +95,7 @@ int test_main(int argc, char* argv[])
     morton_dense<double,  doppler_128_col_mask>    d128r(size, size);
 
     test(dr, "Dense row major");
+    test(dc, "Dense column major");
     test(md, "Morton N-order");
     test(mzd, "Morton Z-order");
     test(d16r, "Hybrid 16 row-major");
@@ -95,3 +106,21 @@ int test_main(int argc, char* argv[])
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+#if 0
+	using glas::tags::row_t; using glas::tags::all_it;
+        typedef typename traits::range_generator<row_t, Matrix>::type       cur_type;             
+        typedef typename traits::range_generator<all_it, cur_type>::type    iter_type;            
+	
+	cur_type rb= begin<row_t>(matrix);
+	iter_type ib= begin<all_it>(rb);
+	ib+= 7;
+#endif

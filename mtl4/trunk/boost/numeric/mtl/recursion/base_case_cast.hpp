@@ -17,6 +17,14 @@ base_case_cast(Matrix const& matrix)
 }
 
 
+template <typename BaseCaseTest, typename Matrix>
+typename base_case_matrix<Matrix, BaseCaseTest>::type inline
+base_case_cast(Matrix& matrix)
+{
+    return simplify_base_case_matrix(matrix, BaseCaseTest());
+}
+
+
 }} // namespace mtl::recursion
 
 #endif // MTL_BASE_CASE_CAST_INCLUDE
