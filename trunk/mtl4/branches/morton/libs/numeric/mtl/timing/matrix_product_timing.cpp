@@ -172,7 +172,7 @@ void measure_base_size(unsigned size, std::vector<int>& enabled)
 }
 
 template <typename Matrix> 
-void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix)
+void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix, Matrix& matrixb)
 {
     std::cout << size << ", ";
  
@@ -196,15 +196,15 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix)
     gen_recursive_dense_mat_mat_mult_t<tiling_m44_base_mult_t> mult_m44;
 
 
-    single_measure(matrix, matrix, matrix, mult, size, enabled, 0);
-    single_measure(matrix, matrix, matrix, mult_22, size, enabled, 1);
-    single_measure(matrix, matrix, matrix, mult_44, size, enabled, 2);
+    single_measure(matrix, matrixb, matrix, mult, size, enabled, 0);
+    single_measure(matrix, matrixb, matrix, mult_22, size, enabled, 1);
+    single_measure(matrix, matrixb, matrix, mult_44, size, enabled, 2);
 
-    single_measure(matrix, matrix, matrix, mult_m22, size, enabled, 3);
-    single_measure(matrix, matrix, matrix, mult_m24, size, enabled, 4);
-    single_measure(matrix, matrix, matrix, mult_m42, size, enabled, 5);
-    single_measure(matrix, matrix, matrix, mult_m35, size, enabled, 6);
-    single_measure(matrix, matrix, matrix, mult_m44, size, enabled, 7);
+    single_measure(matrix, matrixb, matrix, mult_m22, size, enabled, 3);
+    single_measure(matrix, matrixb, matrix, mult_m24, size, enabled, 4);
+    single_measure(matrix, matrixb, matrix, mult_m42, size, enabled, 5);
+    single_measure(matrix, matrixb, matrix, mult_m35, size, enabled, 6);
+    single_measure(matrix, matrixb, matrix, mult_m44, size, enabled, 7);
  
     std::cout << "0\n";  std::cout.flush();
 }
@@ -212,13 +212,15 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix)
 void measure_unrolling_hybrid(unsigned size, std::vector<int>& enabled)
 {
     morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
-    measure_unrolling(size, enabled, d64r);
+    morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
+    measure_unrolling(size, enabled, d64r, d64c);
 }
 
 void measure_unrolling_dense(unsigned size, std::vector<int>& enabled)
 {
     dense2D<double> dense(4, 4);
-    measure_unrolling(size, enabled, dense);
+    dense2D<double, matrix_parameters<col_major> >    b(4, 4);
+    measure_unrolling(size, enabled, dense, b);
 }
 
 
