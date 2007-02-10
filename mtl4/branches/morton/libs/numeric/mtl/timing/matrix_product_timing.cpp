@@ -171,8 +171,8 @@ void measure_base_size(unsigned size, std::vector<int>& enabled)
     std::cout << "0\n";  std::cout.flush();
 }
 
-template <typename Matrix> 
-void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix, Matrix& matrixb)
+template <typename Matrix, typename MatrixB> 
+void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix, MatrixB& matrixb)
 {
     std::cout << size << ", ";
  
