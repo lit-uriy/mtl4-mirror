@@ -44,7 +44,7 @@ namespace fixed
     };
 
     template <std::size_t R, std::size_t C>
-    std::ostream& operator<< (std::ostream& stream, dimensions<R, C>) 
+    inline std::ostream& operator<< (std::ostream& stream, dimensions<R, C>) 
     {
 	return stream << R << 'x' << C; 
     }
@@ -85,7 +85,7 @@ namespace non_fixed
 	size_type r, c;
     };
 
-    std::ostream& operator<< (std::ostream& stream, dimensions d) 
+    inline std::ostream& operator<< (std::ostream& stream, dimensions d) 
     {
 	return stream << d.num_rows() << 'x' << d.num_cols(); 
     }
