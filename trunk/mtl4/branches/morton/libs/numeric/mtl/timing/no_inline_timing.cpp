@@ -95,9 +95,20 @@ void single_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size, std:
 template <typename Functor, typename Result, typename Arg1, typename Arg2, typename Arg3>
 struct no_inline3
 {
+    Result operator()(Arg1& arg1, Arg2& arg2, Arg3& arg3)
+    {
+	Functor* f= new(Functor);  // should be scoped pointer
+	return apply(f, arg1, arg2, arg3);
+    }
+
+    Result apply(Functor* f, Arg1& arg1, Arg2& arg2, Arg3& arg3)
+    {
+	return (*f)(arg1, arg2, arg3);
+    }
 };
 
-
+#if 0
+// Specialization not needed, at least not with g++
 template <typename Functor, typename Arg1, typename Arg2, typename Arg3>
 struct no_inline3<Functor, void, Arg1, Arg2, Arg3>
 {
@@ -114,7 +125,37 @@ struct no_inline3<Functor, void, Arg1, Arg2, Arg3>
 	(*f)(arg1, arg2, arg3);
     }
 };
+#endif
 
+#if 0
+void hybrid_ext_mult_44(const morton_dense<double,  doppler_64_row_mask>& a, 
+			const morton_dense<double,  doppler_64_col_mask>& b,
+			morton_dense<double,  doppler_64_row_mask>& c);
+
+void dense_ext_mult_44(const dense2D<double>& a,
+		       const dense2D<double, matrix_parameters<col_major> >& b,
+		       dense2D<double>& c);
+ 
+struct ext_mult_44
+{
+#if 0
+    void operator()(const morton_dense<double,  doppler_64_row_mask>& a, 
+		    const morton_dense<double,  doppler_64_col_mask>& b,
+		    morton_dense<double,  doppler_64_row_mask>& c)
+    {
+	hybrid_ext_mult_44(a, b, c);
+    }
+#endif
+
+    void operator()(const dense2D<double>& a,
+		    const dense2D<double, matrix_parameters<col_major> >& b,
+		    dense2D<double>& c)
+    {
+	dense_ext_mult_44(a, b, c);
+    }
+};
+
+#endif
 
 template <typename Matrix, typename MatrixB> 
 void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix, MatrixB& matrixb)
@@ -133,11 +174,21 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix,
       tiling_44_t;
     typedef no_inline3<tiling_44_t, void, const Matrix, const MatrixB, Matrix> tiling_44_no_inline_t;
 
+    // gen_recursive_dense_mat_mat_mult_t<ext_mult_44>           rec_ext_mult_44;
+
+    typedef typename base_case_matrix<Matrix, test64_t>::type    BaseMatrix;
+    typedef typename base_case_matrix<MatrixB, test64_t>::type   BaseMatrixB;
+    typedef no_inline3<tiling_44_t, void, const BaseMatrix, const BaseMatrixB, BaseMatrix> tiling_44_base_t;
+    gen_recursive_dense_mat_mat_mult_t<tiling_44_base_mult_t>    rec_no_inline_mult_44;
+    
+
     single_measure(matrix, matrixb, matrix, mult, size, enabled, 0);
     single_measure(matrix, matrixb, matrix, mult_22, size, enabled, 1);
     single_measure(matrix, matrixb, matrix, mult_44, size, enabled, 2);
     single_measure(matrix, matrixb, matrix, tiling_22_no_inline_t(), size, enabled, 3);
     single_measure(matrix, matrixb, matrix, tiling_44_no_inline_t(), size, enabled, 4);
+    // single_measure(matrix, matrixb, matrix, rec_ext_mult_44, size, enabled, 5);
+    single_measure(matrix, matrixb, matrix, rec_no_inline_mult_44, size, enabled, 5);
 
     std::cout << "0\n";  std::cout.flush();
 }
