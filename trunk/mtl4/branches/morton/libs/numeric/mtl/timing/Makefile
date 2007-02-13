@@ -26,12 +26,11 @@ CXXFLAGS += -fast
 specialize_mult_dispatching_timing: specialize_mult_dispatching_timing.cpp ../src/mult_add_base_case_32_shark_2_impl.cpp
 	${CXX} ${CXXFLAGS} $? -o $@
 
-
-#morton_dense:	morton_dense.cpp
-#	g++ morton_dense.cpp -o morton_dense ${CXX_FLAGS}
+no_inline_timing: no_inline_timing.cpp no_inline_ext.cpp
+	${CXX} ${CXXFLAGS} $? -o $@
 
 clean:
-	rm morton_dense matrix_product *~
+	rm no_inline_timing
 
 
 
