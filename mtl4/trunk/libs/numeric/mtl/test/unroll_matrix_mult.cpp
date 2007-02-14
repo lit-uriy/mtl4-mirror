@@ -6,9 +6,11 @@
 #include <boost/timer.hpp>
 #include <boost/static_assert.hpp>
 
+#include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/dense2D.hpp>
 #include <boost/numeric/mtl/operations/hessian_matrix_utilities.hpp>
 #include <boost/numeric/mtl/operations/set_to_0.hpp>
+#include <boost/numeric/mtl/operations/assign_modes.hpp>
 
 using namespace std;
 using namespace mtl;
@@ -277,6 +279,47 @@ void mult_simple_ptu22(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 	}
 }
 
+// C must have even dimensions
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void mult_simple_ptu22t(const MatrixA& a, const MatrixB& b, MatrixC& c)
+{
+    typedef typename MatrixC::value_type  value_type;
+    const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
+    
+    set_to_0(c);b
+
+    // Temporary solution; dense matrices need to return const referencens
+    MatrixA& aref= const_cast<MatrixA&>(a);
+    MatrixB& bref= const_cast<MatrixB&>(b);
+
+    size_t ari= &aref(1, 0) - &aref(0, 0), // how much is the offset of A's entry increased by incrementing row
+	aci= &aref(0, 1) - &aref(0, 0), bri= &bref(1, 0) - &bref(0, 0), bci= &bref(0, 1) - &bref(0, 0);
+
+    for (unsigned i= 0; i < c.num_rows(); i+=2)
+	for (unsigned k= 0; k < c.num_cols(); k+=2) {
+	    int ld= b.num_rows();
+	    value_type tmp00= z, tmp01= z, tmp10= z, tmp11= z;
+
+	    const value_type *begin_a= &aref[i][0], *end_a= &aref[i][a.num_cols()];
+	    const value_type *begin_b= &bref[0][k];
+	    for (; begin_a != end_a; begin_a+= aci, begin_b+= bri) {
+		tmp00+= *begin_a * *begin_b;
+		tmp01+= *begin_a * *(begin_b+bci);
+		tmp10+= *(begin_a+ari) * *begin_b;
+		tmp11+= *(begin_a+ari) * *(begin_b+bci);
+	    }
+	    modes::mult_assign_t::update(c[i][k], tmp00);
+	    modes::mult_assign_t::update(c[i][k+1], tmp01);
+	    modes::mult_assign_t::update(c[i+1][k], tmp10);
+	    modes::mult_assign_t::update(c[i+1][k+1], tmp11);
+
+#if 0
+	    c[i][k]= tmp00; c[i][k+1]= tmp01;
+	    c[i+1][k]= tmp10; c[i+1][k+1]= tmp11;
+#endif
+	}
+}
+
 
 // C must be square!
 // no use of temporaries, let's see how the compiler handles this
@@ -304,6 +347,8 @@ void mult_simple_ptu22n(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 
 void mult_simple_ptu214(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 {
+
+    // const double z= zero(
     for (unsigned i= 0; i < c.num_rows(); i+=2)
 	for (unsigned k= 0; k < c.num_cols(); k+=4) {
 	    int ld1= b.num_rows(), ld2= 2*ld1, ld3=3*ld1;
@@ -609,6 +654,10 @@ int test_main(int argc, char* argv[])
     fill_hessian_matrix(da, 1.0);
     fill_hessian_matrix(db, 2.0); 
     fill_hessian_matrix(dbt, 2.0); 
+
+    time_series(da, dbt, dc, mult_simple_ptu22t<rm_type, cm_type, rm_type>, "Same templated", steps, max_size);
+    time_series(da, dbt, dc, mult_simple_ptu22, "Simple mult (pointers trans unrolled 2x1x2)", steps, max_size);
+    return 0;
 
     time_series(da, dbt, dc, twice_double_matmat_mult_template<1, 1, rm_type, cm_type, rm_type>, 
 		"Simple mult (pointers trans unrolled 1x1 template)", steps, max_size);
