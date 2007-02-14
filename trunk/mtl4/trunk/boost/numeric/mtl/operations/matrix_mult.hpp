@@ -702,10 +702,10 @@ private:
 		const typename MatrixB::value_type *begin_b= &bref(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri) {
-		    tmp00+= begin_a[ 0 * ari ] * begin_b[ 0 * bci ];
-		    tmp01+= begin_a[ 0 * ari ] * begin_b[ 1 * bci ];
-		    tmp02+= begin_a[ 1 * ari ] * begin_b[ 0 * bci ];
-		    tmp03+= begin_a[ 1 * ari ] * begin_b[ 1 * bci ];
+		    tmp00+= begin_a[ 0 ] * begin_b[ 0 ];
+		    tmp01+= begin_a[ 0 ] * begin_b[bci];
+		    tmp02+= begin_a[ari] * begin_b[ 0 ];
+		    tmp03+= begin_a[ari] * begin_b[bci];
 		}
 		Assign::update(c(i + 0, k + 0), tmp00);
 		Assign::update(c(i + 0, k + 1), tmp01);
