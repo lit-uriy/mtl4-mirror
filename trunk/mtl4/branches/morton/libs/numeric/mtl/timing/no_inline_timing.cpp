@@ -57,6 +57,7 @@ typedef gen_recursive_dense_mat_mat_mult_t<base_mult_t>     rec_mult_t;
 
 typedef gen_tiling_22_dense_mat_mat_mult_t<modes::add_mult_assign_t>  tiling_22_base_mult_t;
 typedef gen_tiling_44_dense_mat_mat_mult_t<modes::add_mult_assign_t>  tiling_44_base_mult_t;
+typedef gen_tiling_dense_mat_mat_mult_t<2, 4, modes::add_mult_assign_t>  tiling_24_base_mult_t;
 
 
 
@@ -97,7 +98,7 @@ struct no_inline3
 {
     Result operator()(Arg1& arg1, Arg2& arg2, Arg3& arg3)
     {
-	Functor* f= new(Functor);  // should be scoped pointer
+	static Functor* f= new(Functor);  
 	return apply(f, arg1, arg2, arg3);
     }
 
@@ -156,6 +157,49 @@ struct ext_mult_44
     }
 };
 
+typedef dense2D<double> rmt;
+typedef dense2D<double, matrix_parameters<col_major> > cmt;
+
+// C must have even dimensions
+template <typename MatrixA, typename MatrixB, typename MatrixC>
+void mult_simple_ptu22t(const MatrixA& a, const MatrixB& b, MatrixC& c)
+{
+    typedef typename MatrixC::value_type  value_type;
+    const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
+    
+    set_to_0(c);
+
+    // Temporary solution; dense matrices need to return const referencens
+    MatrixA& aref= const_cast<MatrixA&>(a);
+    MatrixB& bref= const_cast<MatrixB&>(b);
+
+    size_t ari= &aref(1, 0) - &aref(0, 0), // how much is the offset of A's entry increased by incrementing row
+	aci= &aref(0, 1) - &aref(0, 0), bri= &bref(1, 0) - &bref(0, 0), bci= &bref(0, 1) - &bref(0, 0);
+
+    for (unsigned i= 0; i < c.num_rows(); i+=2)
+	for (unsigned k= 0; k < c.num_cols(); k+=2) {
+	    int ld= b.num_rows();
+	    value_type tmp00= z, tmp01= z, tmp10= z, tmp11= z;
+
+	    const value_type *begin_a= &aref[i][0], *end_a= &aref[i][a.num_cols()];
+	    const value_type *begin_b= &bref[0][k];
+	    for (; begin_a != end_a; begin_a+= aci, begin_b+= bri) {
+		tmp00+= *begin_a * *begin_b;
+		tmp01+= *begin_a * *(begin_b+bci);
+		tmp10+= *(begin_a+ari) * *begin_b;
+		tmp11+= *(begin_a+ari) * *(begin_b+bci);
+	    }
+	    modes::mult_assign_t::update(c[i][k], tmp00);
+	    modes::mult_assign_t::update(c[i][k+1], tmp01);
+	    modes::mult_assign_t::update(c[i+1][k], tmp10);
+	    modes::mult_assign_t::update(c[i+1][k+1], tmp11);
+
+#if 0
+	    c[i][k]= tmp00; c[i][k+1]= tmp01;
+	    c[i+1][k]= tmp10; c[i+1][k+1]= tmp11;
+#endif
+	}
+}
 
 
 template <typename Matrix, typename MatrixB> 
@@ -163,9 +207,13 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix,
 {
     std::cout << size << ", ";
  
+    dense2D<double> dense(4, 4);
+    dense2D<double, matrix_parameters<col_major> >    denseb(4, 4);
+ 
     gen_recursive_dense_mat_mat_mult_t<base_mult_t>           mult;
     gen_recursive_dense_mat_mat_mult_t<tiling_22_base_mult_t> mult_22;
     gen_recursive_dense_mat_mat_mult_t<tiling_44_base_mult_t> mult_44;
+    gen_recursive_dense_mat_mat_mult_t<tiling_24_base_mult_t> mult_24;
 
     typedef gen_tiling_22_dense_mat_mat_mult_ft<Matrix, MatrixB, Matrix, modes::add_mult_assign_t> 
       tiling_22_t;
@@ -189,8 +237,11 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix,
     single_measure(matrix, matrixb, matrix, tiling_22_no_inline_t(), size, enabled, 3);
     single_measure(matrix, matrixb, matrix, tiling_44_no_inline_t(), size, enabled, 4);
     single_measure(matrix, matrixb, matrix, rec_ext_mult_44, size, enabled, 5);
-    single_measure(matrix, matrixb, matrix, rec_no_inline_mult_44, size, enabled, 5);
-
+    single_measure(matrix, matrixb, matrix, rec_no_inline_mult_44, size, enabled, 6);
+    single_measure(dense, denseb, dense, tiling_22_base_mult_t(), size, enabled, 7);
+    single_measure(dense, denseb, dense, tiling_44_base_mult_t(), size, enabled, 8);
+    single_measure(dense, denseb, dense, mult_simple_ptu22t<rmt, cmt, rmt>, size, enabled, 9);
+    //single_measure(matrix, matrixb, matrix, mult_24, size, enabled, 10);
     std::cout << "0\n";  std::cout.flush();
 }
 

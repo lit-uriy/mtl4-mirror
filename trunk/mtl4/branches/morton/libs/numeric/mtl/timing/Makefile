@@ -2,16 +2,17 @@ INCLUDE_DIRS = -I${MTL_MORTON_BOOST_ROOT} -I${MTL_BOOST_ROOT} -I${BOOST_ROOT}
 
 CXXFLAGS = ${INCLUDE_DIRS} 
 
-CXXFLAGS += -Wno-long-double 
+# CXXFLAGS += -Wno-long-double 
 
 # Debugging
 #CXXFLAGS += -g
 
 # g++ optimization
 CXXFLAGS += -DNDEBUG -O3 -ffast-math 
+CXXFLAGS += -time -ftime-report
 
 # Additional G5 optimization on g++
-CXXFLAGS += -fast
+# CXXFLAGS += -fast
 
 # Intel optimization
 # CXXFLAGS += -DNDEBUG -O3 
@@ -22,12 +23,13 @@ CXXFLAGS += -fast
 
 # CXX = icc
 
+CXXLINK = $(CXX)
 
 specialize_mult_dispatching_timing: specialize_mult_dispatching_timing.cpp ../src/mult_add_base_case_32_shark_2_impl.cpp
-	${CXX} ${CXXFLAGS} $? -o $@
+	${CXX} ${CXXFLAGS} $< -o $@
 
 no_inline_timing: no_inline_timing.cpp no_inline_ext.cpp
-	${CXX} ${CXXFLAGS} $? -o $@
+	$(CXX) ${CXXFLAGS} $? -o $@
 
 clean:
 	rm no_inline_timing
