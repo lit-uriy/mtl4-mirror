@@ -1,7 +1,6 @@
 Import('debug_env')
 
-list = Split('dense2D.cpp compressed2D.cpp compressed2D_inserter.cpp')
-#print list
+list = Split('dense2D.cpp complexity.cpp compressed2D.cpp compressed2D_inserter.cpp')
 
 for program in list:
     debug_env.Program(program)

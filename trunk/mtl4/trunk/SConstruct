@@ -75,7 +75,6 @@ if os.environ.has_key('MTL_BOOST_ROOT') :
     my_cpppath.append(os.environ['MTL_BOOST_ROOT'])
 if os.environ.has_key('BOOST_ROOT') :
     my_cpppath.append(os.environ['BOOST_ROOT'])
-print my_cpppath
 env.Append(CPPPATH = my_cpppath)
 
 
@@ -142,5 +141,5 @@ if add_optflag:
 
 Export('env basic_env debug_env opt_env high_opt_env')
 
-SConscript(['libs/numeric/mtl/test/SConscript'])
+SConscript(['libs/numeric/mtl/test/SConscript', 'libs/numeric/mtl/experimental/SConscript'])
 
