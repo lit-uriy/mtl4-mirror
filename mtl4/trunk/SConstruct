@@ -26,6 +26,7 @@ def check_g5():
 # add optimization flags to environment
 # normal optimization for opt=1, for opt=2 high optimization
 def add_opt(env, opt):
+    env.Append(CCFLAGS = '-DNDEBUG')
     if (opt == 2):
 	env.Append(CCFLAGS = '-O3')
 	if conf.env['CC'] == 'gcc':
