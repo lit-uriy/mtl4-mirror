@@ -1,0 +1,146 @@
+import getopt, sys, os, re, string
+
+######################
+# Helper functions
+######################
+
+
+# add debugging flags to environment
+def add_debug(env):
+     env.Append(CCFLAGS = '-g')
+   
+
+def check_g5():
+    print "platform ", sys.platform
+    if sys.platform == "darwin" :
+
+	system("/usr/bin/system_profiler SPHardwareDataType")
+	profile = os.popen("system_profiler SPHardwareDataType").read()
+	print profile
+	if profile.find("Mac G5") != -1:
+	    print "is G5"
+	    return 1
+    print "isn't G5"
+    return None
+
+# add optimization flags to environment
+# normal optimization for opt=1, for opt=2 high optimization
+def add_opt(env, opt):
+    if (opt == 2):
+	env.Append(CCFLAGS = '-O3')
+	if conf.env['CC'] == 'gcc':
+	    env.Append(CCFLAGS = '-ffast-math')
+	#check_g5()
+    elif int(opt) == 1:
+	env.Append(CCFLAGS = '-O2')
+    env.Append(CXXFLAGS = conf.env['CCFLAGS'])
+	
+def check_no_long_double(conf):
+    cc = conf.env['CC']
+    if cc == 'gcc':
+	output = os.popen(cc + " --version").read()
+	st = output.split('\n')[0]
+	tmatch = re.search(".* \(GCC\) (\d\.\d)", st)
+	if tmatch and string.atof(tmatch.group(1)) >= 4.0:
+	    conf.env.Append(CCFLAGS = '-Wno-long-double')
+	    # conf.env.Append(CXXFLAGS = '-Wno-long-double')
+
+
+def add_user_opt(env, add_optflag):
+     env.Append(CCFLAGS = add_optflag)
+     env.Append(CXXFLAGS = add_optflag)
+
+
+######################
+# Start setting up env
+######################
+
+
+SourceSignatures('timestamp')
+
+env = Environment()
+
+conf = Configure(env)
+check_no_long_double(conf)
+
+env = conf.Finish()
+
+######################
+# Include paths
+######################
+
+
+my_cpppath = []
+if os.environ.has_key('MTL_BOOST_ROOT') :
+    my_cpppath.append(os.environ['MTL_BOOST_ROOT'])
+if os.environ.has_key('BOOST_ROOT') :
+    my_cpppath.append(os.environ['BOOST_ROOT'])
+print my_cpppath
+env.Append(CPPPATH = my_cpppath)
+
+
+######################
+# Opt. and debug flags
+######################
+
+
+opts = Options()
+opts.Add('opt', 'Set to 1 for normal optimization, 2 for high optimization', 0)
+opts.Add('debug', 'Set to 1 for debugging', 0)
+
+opts.Add('add_ccflag', 'Add extra CC compiler flags that aren\'t automatically set', '')
+opts.Add('add_cxxflag', 'Add extra CXX compiler flags that aren\'t automatically set', '')
+opts.Add('add_optflag', 'Add extra optimization flags that aren\'t automatically set', '')
+
+
+
+Help(opts.GenerateHelpText(env))
+
+#env.Append(CCFLAGS = ARGUMENTS.get('debug', ''))
+
+# add user-defined CC flags 
+add_ccflag = ARGUMENTS.get('add_ccflag', '')
+if add_ccflag:
+     env.Append(CCFLAGS = add_ccflag)
+
+# add user-defined CXX flags 
+add_cxxflag = ARGUMENTS.get('add_cxxflag', '')
+if add_cxxflag:
+     env.Append(CXXFLAGS = add_cxxflag)
+
+#create alternative environments
+basic_env = env.Copy()
+debug_env = env.Copy()
+opt_env = env.Copy()
+high_opt_env = env.Copy()
+
+# add debugging flags to appropriate environment
+debug = ARGUMENTS.get('debug', 0)
+if int(debug):
+    add_debug(env)
+add_debug(debug_env)
+
+
+# add optimization flags to appropriate environment
+opt = ARGUMENTS.get('opt', 0)
+if int(opt):
+    add_opt(env, int(opt))
+add_opt(opt_env, 1)
+add_opt(high_opt_env, 2)
+
+# add user-defined optimization flags 
+add_optflag = ARGUMENTS.get('add_optflag', '')
+if add_optflag:
+     add_user_opt(env, add_optflag)
+     add_user_opt(opt_env, add_optflag)
+     add_user_opt(high_opt_env, add_optflag)
+
+
+#####################
+# Sub-directories
+#####################
+
+Export('env basic_env debug_env opt_env high_opt_env')
+
+SConscript(['libs/numeric/mtl/test/SConscript'])
+

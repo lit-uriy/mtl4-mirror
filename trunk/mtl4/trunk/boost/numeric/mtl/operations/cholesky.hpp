@@ -386,20 +386,20 @@ typedef with_bracket::recursive_cholesky_base_visitor_t                    recur
 namespace with_recurator {
 
     template <typename Recurator, typename Visitor>
-    void schur_update(Recurator E, Recurator W, Recurator N, Visitor vis= Visitor())
+    void schur_update(Recurator E, Recurator W, Recurator N, Visitor vis)
     {
 	using namespace recursion;
 
 	if (E.is_empty() || W.is_empty() || N.is_empty())
 	    return;
 
-	if(vis.is_base(E)) {
+	if (vis.is_base(E)) {
 	    typedef typename Visitor::base_test  base_test;
 	    typedef typename base_case_matrix<typename Recurator::matrix_type, base_test>::type matrix_type;
 	    
 	    matrix_type  base_E(base_case_cast<base_test>(E.get_value())), 
-		base_W(base_case_cast<base_test>(W.get_value())),
-		base_N(base_case_cast<base_test>(N.get_value()));
+		         base_W(base_case_cast<base_test>(W.get_value())),
+		         base_N(base_case_cast<base_test>(N.get_value()));
 	    vis.schur_update_base(base_E, base_W, base_N);
 	} else{
 	    schur_update(     E.north_east(),W.north_west()     ,N.south_west()     , vis);
@@ -418,19 +418,19 @@ namespace with_recurator {
 
 
     template <typename Recurator, typename Visitor>
-    void tri_solve(Recurator S, Recurator N, Visitor vis= Visitor())
+    void tri_solve(Recurator S, Recurator N, Visitor vis)
     {
 	using namespace recursion;
 
         if (S.is_empty())
 	    return;
 
-        if(vis.is_base(S)) {   
+        if (vis.is_base(S)) {   
 	    typedef typename Visitor::base_test  base_test;
 	    typedef typename base_case_matrix<typename Recurator::matrix_type, base_test>::type matrix_type;
 	    
 	    matrix_type  base_S(base_case_cast<base_test>(S.get_value())), 
-		base_N(base_case_cast<base_test>(N.get_value()));
+		         base_N(base_case_cast<base_test>(N.get_value()));
 
 	    vis.tri_solve_base(base_S, base_N);
         } else{
@@ -446,7 +446,7 @@ namespace with_recurator {
 
 
     template <typename Recurator, typename Visitor>
-    void tri_schur(Recurator E, Recurator W, Visitor vis= Visitor())
+    void tri_schur(Recurator E, Recurator W, Visitor vis)
     { 
 	using namespace recursion;
 
@@ -473,7 +473,7 @@ namespace with_recurator {
 
 
     template <typename Recurator, typename Visitor>
-    void cholesky(Recurator recurator, Visitor vis= Visitor())
+    void cholesky(Recurator recurator, Visitor vis)
     {
 	using namespace recursion;
 
