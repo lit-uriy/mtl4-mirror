@@ -12,15 +12,13 @@
 
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
-#include <boost/numeric/mtl/recursion/simplify_base_case_matrix.hpp>
-#include <boost/numeric/mtl/recursion/enable_fast_dense_matrix_mult.hpp>
+#include <boost/numeric/mtl/recursion/base_case_cast.hpp>
 
 using namespace mtl;
 using namespace std;  
  
 using mtl::recursion::base_case_matrix;
 using mtl::recursion::simplify_base_case_matrix;
-using mtl::recursion::enable_fast_dense_matrix_mult;
 
 
 template <typename Matrix>
@@ -41,20 +39,6 @@ void test(Matrix& matrix)
 }
 
 
-template <typename MatrixA, typename MatrixB, typename MatrixC, typename BaseCaseTest>
-void test_mult(MatrixA const& a, MatrixB const& b, MatrixC& c, BaseCaseTest const& test,
-	       const char* name)
-{
-    typedef typename base_case_matrix<MatrixA, BaseCaseTest>::type base_a_type;
-    typedef typename base_case_matrix<MatrixB, BaseCaseTest>::type base_b_type;
-    typedef typename base_case_matrix<MatrixC, BaseCaseTest>::type base_c_type;
-
-    std::cout << name << ": enable_fast_dense_matrix_mult: " 
-	      << enable_fast_dense_matrix_mult<base_a_type, base_b_type, base_c_type>::value << "\n";
-}
-
-
-
 
 
 int test_main(int argc, char* argv[])
@@ -72,17 +56,6 @@ int test_main(int argc, char* argv[])
     test(m2);
     test(m3);
     test(m4);
-
-    recursion::max_dim_test_static<4> base_test;
-    test_mult(d1, d1, d1, base_test, "Only dense");
-    test_mult(d1, d1, m2, base_test, "Dense and pure Morton");
-    test_mult(m2, m2, m2, base_test, "Only pure Morton");
-    test_mult(m1, m1, m1, base_test, "col-major hybrid");
-    test_mult(m1, m1, d1, base_test, "col-major hybrid and dense");
-    test_mult(m1, m1, m3, base_test, "col-major hybrid and row-major hybrid");
-    test_mult(m1, m3, d1, base_test, "col-major hybrid, row-major hybrid and dense");
-    test_mult(m1, m1, m2, base_test, "col-major hybrid and pure Morton");
-
 
     return 0;
 } 
