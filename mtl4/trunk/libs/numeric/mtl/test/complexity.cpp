@@ -57,7 +57,7 @@ void schreib(cached) {
 
 template <typename X, typename Y> void write_less(X, Y) {
   typedef mpl::less<X, Y> less_res;
-  mpl::if_<less_res, wahr, falsch>::type()();
+  typename mpl::if_<less_res, wahr, falsch>::type()();
 }
 
 template <typename X, typename Y> void write_plus(X, Y) {
