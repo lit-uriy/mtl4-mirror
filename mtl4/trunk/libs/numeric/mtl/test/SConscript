@@ -1,6 +1,20 @@
 Import('debug_env')
 
-list = Split('dense2D.cpp complexity.cpp compressed2D.cpp compressed2D_inserter.cpp')
+sources = Split("""base_case_conversion.cpp
+             bit_masking.cpp
+             cholesky_test.cpp
+             complexity.cpp
+             compressed2D.cpp
+             compressed2D_inserter.cpp
+             dense2D.cpp
+             dilated_int.cpp
+             matrix_product_test.cpp
+             morton_dense.cpp
+             sub_matrix.cpp
+""")
 
-for program in list:
-    debug_env.Program(program)
+programs = []
+for p in sources:
+    programs.append(debug_env.Program(p))
+
+Default(programs)

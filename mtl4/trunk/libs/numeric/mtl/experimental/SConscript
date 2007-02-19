@@ -1,9 +1,9 @@
 Import('debug_env')
 
-list = Split("""iterator_adapter.cpp unroll.cpp unroll_rec.cpp 
+sources = Split("""iterator_adapter.cpp unroll.cpp unroll_rec.cpp 
    mat_vec_mult_timing.cpp unroll_matrix_mult.cpp insertion_timing.cpp empty.cpp""")
 
-for program in list:
-    debug_env.Program(program)
+for p in sources:
+    debug_env.Program(p)
 
 Default('empty')
