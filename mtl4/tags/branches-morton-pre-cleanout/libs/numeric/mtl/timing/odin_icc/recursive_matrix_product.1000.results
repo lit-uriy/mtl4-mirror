@@ -1,0 +1,64 @@
+Matrix size 1000x1000:
+
+Matrix type(s): pure Morton
+Simple recursive multiplication:
+    takes 6.3s = 317.46MFlops
+Recursive multiplication with unrolling inner loop:
+    takes 6.31s = 316.957MFlops
+Recursive multiplication with unrolling inner and middle loop:
+    takes 6.34s = 315.457MFlops
+Recursive multiplication with unrolling all loops:
+    takes 6.32s = 316.456MFlops
+
+Matrix type(s): dense2D
+Simple recursive multiplication:
+    takes 2.85s = 701.754MFlops
+Recursive multiplication with unrolling inner loop:
+    takes 3.51s = 569.801MFlops
+Recursive multiplication with unrolling inner and middle loop:
+    takes 2.79s = 716.846MFlops
+Recursive multiplication with unrolling all loops:
+    takes 2.52s = 793.651MFlops
+
+Matrix type(s): Hybrid row-major
+Simple recursive multiplication:
+    takes 2.71s = 738.007MFlops
+Recursive multiplication with unrolling inner loop:
+    takes 2.63s = 760.456MFlops
+Recursive multiplication with unrolling inner and middle loop:
+    takes 2.17s = 921.659MFlops
+Recursive multiplication with unrolling all loops:
+    takes 1.93s = 1036.27MFlops
+
+Matrix type(s): Hybrid col-major
+Simple recursive multiplication:
+    takes 2.8s = 714.286MFlops
+Recursive multiplication with unrolling inner loop:
+    takes 3.37s = 593.472MFlops
+Recursive multiplication with unrolling inner and middle loop:
+    takes 2.97s = 673.401MFlops
+Recursive multiplication with unrolling all loops:
+    takes 2.63s = 760.456MFlops
+
+Matrix type(s): Hybrid col-major and row-major
+Simple recursive multiplication:
+    takes 2.74s = 729.927MFlops
+Recursive multiplication with unrolling inner loop:
+    takes 1.97s = 1015.23MFlops
+Recursive multiplication with unrolling inner and middle loop:
+    takes 2s = 1000MFlops
+Recursive multiplication with unrolling all loops:
+    takes 1.95s = 1025.64MFlops
+
+Mult with low abstraction, Matrix type(s): Hybrid col-major and row-major
+    takes 1.55s = 1290.32MFlops
+
+Using casts to double[][], Matrix type(s): Hybrid col-major and row-major
+
+Only recursive part without actual multiplication, Matrix type(s): Hybrid col-major and row-major
+    takes 0.04s = 50000MFlops
+
+Mult with low abstraction, base case 16x16, Matrix type(s): Hybrid col-major and row-major
+    takes 2.12s = 943.396MFlops
+
+**** no errors detected
