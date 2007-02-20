@@ -4,9 +4,9 @@
 #define MTL_TRANSPOSED_VIEW_INCLUDE
 
 #include <boost/shared_ptr.hpp>
-#include <boost/numeric/mtl/traits.hpp>
+#include <boost/numeric/mtl/utility/traits.hpp>
 #include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
-#include <boost/numeric/mtl/operations/sub_matrix.hpp>
+#include <boost/numeric/mtl/operation/sub_matrix.hpp>
 
 namespace mtl {
 
@@ -106,15 +106,17 @@ public:
 
 namespace traits {
 
+#if 0
     template <class Matrix> struct is_mtl_type<transposed_view<Matrix> > 
     {
 	static bool const value= is_mtl_type<Matrix>::value; 
     };
+#endif
 
     template <class Matrix> 
-    struct matrix_category<transposed_view<Matrix> >
+    struct category<transposed_view<Matrix> >
     {
-	typedef typename matrix_category<Matrix>::type type;
+	typedef typename category<Matrix>::type type;
     };
 
     namespace detail {
@@ -218,20 +220,20 @@ namespace traits
 	struct range_transposer
 	    : boost::mpl::if_<
 	          boost::is_same<typename range_generator<UseTag, Matrix>::complexity, complexity_classes::infinite>
-	        , range_generator<glas::tags::unsupported_t, Matrix>
+	        , range_generator<tag::unsupported, Matrix>
 	        , range_transposer_impl<UseTag, Matrix>
 	      >::type {};
     }
 
     // Row and column cursors are interchanged
     template <class Matrix>
-    struct range_generator<glas::tags::col_t, transposed_view<Matrix> >
-	: detail::range_transposer<glas::tags::row_t, Matrix>
+    struct range_generator<glas::tag::col, transposed_view<Matrix> >
+	: detail::range_transposer<glas::tag::row, Matrix>
     {};
 
     template <class Matrix>
-    struct range_generator<glas::tags::row_t, transposed_view<Matrix> >
-	: detail::range_transposer<glas::tags::col_t, Matrix>
+    struct range_generator<glas::tag::row, transposed_view<Matrix> >
+	: detail::range_transposer<glas::tag::col, Matrix>
     {};
 
     // Other cursors are still use the same tag, e.g. elements

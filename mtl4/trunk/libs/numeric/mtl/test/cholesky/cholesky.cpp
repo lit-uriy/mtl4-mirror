@@ -13,12 +13,12 @@
 #include <boost/test/minimal.hpp>
 #include <boost/tuple/tuple.hpp>
 
-#include <boost/numeric/mtl/dense2D.hpp>
-#include <boost/numeric/mtl/morton_dense.hpp>
-#include <boost/numeric/mtl/transposed_view.hpp>
-#include <boost/numeric/mtl/matrix_parameters.hpp>
-#include <boost/numeric/mtl/operations/print_matrix.hpp>
-#include <boost/numeric/mtl/operations/sub_matrix.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/matrix/morton_dense.hpp>
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
+#include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/for_each.hpp>
@@ -63,7 +63,7 @@ void fill_matrix(Matrix& matrix){
     typename traits::row<Matrix>::type                                 row(matrix);
     typename traits::col<Matrix>::type                                 col(matrix);
     typename traits::value<Matrix>::type                               value(matrix);
-    typedef  glas::tags::nz_t                                          tag;
+    typedef  glas::tag::nz                                          tag;
     typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
     
     double x= 1.0;      

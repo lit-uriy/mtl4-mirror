@@ -4,17 +4,17 @@
 #include <boost/test/minimal.hpp>
 #include <boost/type_traits.hpp>
 
-#include <boost/numeric/mtl/base_types.hpp>
-#include <boost/numeric/mtl/compressed2D.hpp>
-#include <boost/numeric/mtl/transposed_view.hpp>
-#include <boost/numeric/mtl/matrix_parameters.hpp>
-#include <boost/numeric/mtl/range_generator.hpp>
-#include <boost/numeric/mtl/glas_tags.hpp>
-#include <boost/numeric/mtl/index.hpp>
-#include <boost/numeric/mtl/utilities/maybe.hpp>
-#include <boost/numeric/mtl/operations/raw_copy.hpp>
-#include <boost/numeric/mtl/operations/update.hpp>
-#include <boost/numeric/mtl/operations/print_matrix.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/matrix/compressed2D.hpp>
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/glas_tag.hpp>
+#include <boost/numeric/mtl/detail/index.hpp>
+#include <boost/numeric/mtl/utility/maybe.hpp>
+#include <boost/numeric/mtl/operation/raw_copy.hpp>
+#include <boost/numeric/mtl/operation/update.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
 
 using namespace mtl;
 using namespace std;

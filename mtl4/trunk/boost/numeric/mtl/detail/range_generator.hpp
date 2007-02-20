@@ -3,7 +3,7 @@
 #ifndef MTL_DETAIL_RANGE_GENERATOR_INCLUDE
 #define MTL_DETAIL_RANGE_GENERATOR_INCLUDE
 
-#include <boost/numeric/mtl/glas_tags.hpp>
+#include <boost/numeric/mtl/utility/glas_tag.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 
 namespace mtl { namespace traits { namespace detail {
@@ -84,7 +84,7 @@ namespace mtl { namespace traits { namespace detail {
     {
 	typedef Complexity          complexity;
 	static int const            level = Level;
-	typedef sub_matrix_cursor<Matrix, glas::tags::row_t, Level> type;
+	typedef sub_matrix_cursor<Matrix, glas::tag::row, Level> type;
 
 	type begin(Matrix const& c)
 	{
@@ -102,7 +102,7 @@ namespace mtl { namespace traits { namespace detail {
     {
 	typedef Complexity          complexity;
 	static int const            level = Level;
-	typedef sub_matrix_cursor<Matrix, glas::tags::col_t, Level> type;
+	typedef sub_matrix_cursor<Matrix, glas::tag::col, Level> type;
 
 	type begin(Matrix const& c)
 	{

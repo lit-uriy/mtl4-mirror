@@ -4,10 +4,9 @@
 #define MTL_BASE_SUB_MATRIX_INCLUDE
 
 #include <boost/static_assert.hpp>
-#include <boost/numeric/mtl/base_types.hpp>
-#include <boost/numeric/mtl/dimensions.hpp>
-#include <boost/numeric/mtl/index.hpp>
-#include <boost/numeric/mtl/mtl_exception.hpp>
+#include <boost/numeric/mtl/matrix/dimension.hpp>
+#include <boost/numeric/mtl/detail/index.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { namespace detail {
 

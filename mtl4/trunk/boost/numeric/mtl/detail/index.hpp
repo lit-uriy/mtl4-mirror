@@ -3,8 +3,10 @@
 #ifndef MTL_INDEX_INCLUDE
 #define MTL_INDEX_INCLUDE
 
+// The whole idea of changing indices is insane!
+// Thus, the file shouldn't exist at all.
+
 #include <boost/mpl/if.hpp>
-#include <boost/numeric/mtl/base_types.hpp>
 
 namespace mtl { namespace index {
 
@@ -14,6 +16,8 @@ struct c_index {};
 // Index like Fortran
 struct f_index {};
 
+
+#if 0
 // Which index has type T
 template <class T> struct which_index
 {
@@ -22,6 +26,13 @@ template <class T> struct which_index
         , typename T::index_type   // mtl data shall know their type
         , c_index                  // others are by default c
         >::type type;
+};
+#endif
+
+
+template <class T> struct which_index
+{
+    typedef typename T::index_type type;
 };
 
 // Change from internal representation to requested index type

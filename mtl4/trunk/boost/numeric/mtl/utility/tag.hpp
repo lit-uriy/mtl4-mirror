@@ -87,8 +87,8 @@ struct col_major {};
 } // namespace mtl::tag
 
 
-using row_major;
-using col_major;
+using tag::row_major;
+using tag::col_major;
 
 // =====================
 // Tags for traversals

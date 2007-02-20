@@ -7,7 +7,8 @@
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 
-#include <boost/numeric/mtl/common_includes.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
 #include <boost/numeric/mtl/detail/strided_base_cursor.hpp>
@@ -419,15 +420,17 @@ namespace traits
         typedef mtl::detail::direct_value<dense2D<Value, Parameters> > type;
     };
 
+#if 0
     template <typename Value, class Parameters>
     struct is_mtl_type<dense2D<Value, Parameters> > 
     {
 	static bool const value= true; 
     };
+#endif
 
     // define corresponding type without all template parameters
     template <typename Value, class Parameters>
-    struct matrix_category<dense2D<Value, Parameters> > 
+    struct category<dense2D<Value, Parameters> > 
     {
 	typedef tag::dense2D type;
     };
@@ -447,13 +450,13 @@ namespace traits
 // ===========
 
     template <typename Value, class Parameters>
-    struct range_generator<glas::tags::all_t, dense2D<Value, Parameters> >
+    struct range_generator<glas::tag::all, dense2D<Value, Parameters> >
       : detail::dense_element_range_generator<dense2D<Value, Parameters>,
 					      dense_el_cursor<Value>, complexity_classes::linear_cached>
     {};
 
     template <typename Value, class Parameters>
-    struct range_generator<glas::tags::nz_t, dense2D<Value, Parameters> >
+    struct range_generator<glas::tag::nz, dense2D<Value, Parameters> >
       : detail::dense_element_range_generator<dense2D<Value, Parameters>,
 					      dense_el_cursor<Value>, complexity_classes::linear_cached>
     {};
@@ -479,19 +482,19 @@ namespace traits
     }
 
     template <typename Value, class Parameters>
-    struct range_generator<glas::tags::row_t, dense2D<Value, Parameters> >
+    struct range_generator<glas::tag::row, dense2D<Value, Parameters> >
 	: detail::all_rows_range_generator<dense2D<Value, Parameters>, 
 					   typename detail::dense2D_rc<typename Parameters::orientation>::type>
     {};
  
     // For a cursor pointing to some row give the range of elements in this row 
     template <typename Value, class Parameters>
-    struct range_generator<glas::tags::nz_t, 
-			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tags::row_t, 2> >
+    struct range_generator<glas::tag::nz, 
+			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tag::row, 2> >
     {
 	typedef dense2D<Value, Parameters>                                            matrix;
 	typedef typename matrix::size_type                                            size_type;
-	typedef detail::sub_matrix_cursor<matrix, glas::tags::row_t, 2>               cursor;
+	typedef detail::sub_matrix_cursor<matrix, glas::tag::row, 2>               cursor;
 
 	// linear for col_major and linear_cached for row_major
 	typedef typename detail::dense2D_rc<typename Parameters::orientation>::type   complexity;
@@ -527,27 +530,27 @@ namespace traits
     };
 
     template <typename Value, class Parameters>
-    struct range_generator<glas::tags::all_t, 
-			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tags::row_t, 2> >
-        : range_generator<glas::tags::nz_t, 
-			  detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tags::row_t, 2> >
+    struct range_generator<glas::tag::all, 
+			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tag::row, 2> >
+        : range_generator<glas::tag::nz, 
+			  detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tag::row, 2> >
     {};
 
 
     template <typename Value, class Parameters>
-    struct range_generator<glas::tags::col_t, dense2D<Value, Parameters> >
+    struct range_generator<glas::tag::col, dense2D<Value, Parameters> >
 	: detail::all_cols_range_generator<dense2D<Value, Parameters>, 
 					   typename detail::dense2D_cc<typename Parameters::orientation>::type>
     {};
  
     // For a cursor pointing to some row give the range of elements in this row 
     template <typename Value, class Parameters>
-    struct range_generator<glas::tags::nz_t, 
-			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tags::col_t, 2> >
+    struct range_generator<glas::tag::nz, 
+			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tag::col, 2> >
     {
 	typedef dense2D<Value, Parameters>                                            matrix;
 	typedef typename matrix::size_type                                            size_type;
-	typedef detail::sub_matrix_cursor<matrix, glas::tags::col_t, 2>               cursor;	
+	typedef detail::sub_matrix_cursor<matrix, glas::tag::col, 2>               cursor;	
 	typedef typename detail::dense2D_cc<typename Parameters::orientation>::type   complexity;
 	static int const                                                              level = 1;
 
@@ -582,10 +585,10 @@ namespace traits
     };
 
     template <typename Value, class Parameters>
-    struct range_generator<glas::tags::all_t, 
-			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tags::col_t, 2> >
-      : public range_generator<glas::tags::nz_t, 
-			       detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tags::col_t, 2> >
+    struct range_generator<glas::tag::all, 
+			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tag::col, 2> >
+      : public range_generator<glas::tag::nz, 
+			       detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tag::col, 2> >
     {};
 
 // =============
@@ -602,12 +605,12 @@ namespace traits
 	    static const bool value= false;
         };
           
-        template <> struct major_traversal<glas::tags::row_t, row_major>
+        template <> struct major_traversal<glas::tag::row, row_major>
         {
 	    static const bool value= true;
         };
         
-        template <> struct major_traversal<glas::tags::col_t, col_major>
+        template <> struct major_traversal<glas::tag::col, col_major>
         {
 	    static const bool value= true;
         };
@@ -662,23 +665,23 @@ namespace traits
 		return type(ref, row, col, ref.ldim);
 	    }
 
-	    type begin_dispatch(cursor const& c, glas::tags::row_t)
+	    type begin_dispatch(cursor const& c, glas::tag::row)
 	    {
 		return dispatch(c, c.key, c.ref.begin_col(), complexity());
 	    }
 	    
-	    type end_dispatch(cursor const& c, glas::tags::row_t)
+	    type end_dispatch(cursor const& c, glas::tag::row)
 	    {
 		return dispatch(c, c.key, c.ref.end_col(), complexity());
 	    }
 
 
-	    type begin_dispatch(cursor const& c, glas::tags::col_t)
+	    type begin_dispatch(cursor const& c, glas::tag::col)
 	    {
 		return dispatch(c, c.ref.begin_row(), c.key, complexity());
 	    }
 
-	    type end_dispatch(cursor const& c, glas::tags::col_t)
+	    type end_dispatch(cursor const& c, glas::tag::col)
 	    {
 		return dispatch(c, c.ref.end_row(), c.key, complexity());
 	    }
@@ -700,25 +703,25 @@ namespace traits
 
         
     template <typename Value, typename Parameters, typename OuterTag>
-    struct range_generator<glas::tags::nz_it, 
+    struct range_generator<tag::iter::nz, 
 			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, OuterTag, 2> >
       : public detail::dense2D_iterator_range_generator<OuterTag, dense2D<Value, Parameters>, false>
     {};
 
     template <typename Value, typename Parameters, typename OuterTag>
-    struct range_generator<glas::tags::all_it, 
+    struct range_generator<tag::iter::all, 
 			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, OuterTag, 2> >
       : public detail::dense2D_iterator_range_generator<OuterTag, dense2D<Value, Parameters>, false>
     {};
 
     template <typename Value, typename Parameters, typename OuterTag>
-    struct range_generator<glas::tags::nz_cit, 
+    struct range_generator<tag::const_iter::nz, 
 			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, OuterTag, 2> >
       : public detail::dense2D_iterator_range_generator<OuterTag, dense2D<Value, Parameters>, true>
     {};
 
     template <typename Value, typename Parameters, typename OuterTag>
-    struct range_generator<glas::tags::all_cit, 
+    struct range_generator<tag::const_iter::all, 
 			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, OuterTag, 2> >
       : public detail::dense2D_iterator_range_generator<OuterTag, dense2D<Value, Parameters>, true>
     {};

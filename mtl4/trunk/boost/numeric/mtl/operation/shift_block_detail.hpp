@@ -4,7 +4,7 @@
 #define MTL_SHIFT_BLOCKS_DETAIL_INCLUDE
 
 #include <algorithm>
-#include <boost/numeric/mtl/mtl_exception.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { namespace operations { namespace detail {
 

@@ -4,8 +4,8 @@
 #define MTL_SET_TO_0_INCLUDE
 
 #include <algorithm>
-#include <boost/numeric/mtl/tag.hpp>
-#include <boost/numeric/mtl/traits.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/traits.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace mtl {
@@ -13,7 +13,7 @@ namespace mtl {
     namespace impl {
 
 	template <class Matrix>
-	void set_to_0(Matrix& matrix, tag::contiguous_dense)
+	void set_to_zero(Matrix& matrix, tag::contiguous_dense)
 	{
 	    using math::zero;
 	    typename Matrix::value_type  ref, my_zero(zero(ref));
@@ -21,7 +21,7 @@ namespace mtl {
 	}
 
 	template <class Matrix>
-	void set_to_0(Matrix& matrix, tag::morton_dense)
+	void set_to_zero(Matrix& matrix, tag::morton_dense)
 	{
 	    using math::zero;
 	    typename Matrix::value_type  ref, my_zero(zero(ref));
@@ -37,9 +37,9 @@ namespace mtl {
 // Sets all values of a matrix to 0
 // More spefically the defined multiplicative identity element
 template <class Matrix>
-void set_to_0(Matrix& matrix)
+void set_to_zero(Matrix& matrix)
 {
-    impl::set_to_0(matrix, typename traits::matrix_category<Matrix>::type());
+    impl::set_to_zero(matrix, typename traits::category<Matrix>::type());
 }
     
 

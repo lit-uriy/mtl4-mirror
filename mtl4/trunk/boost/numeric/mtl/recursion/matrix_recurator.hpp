@@ -4,9 +4,9 @@
 #define MTL_MATRIX_RECURATOR_INCLUDE
 
 #include <cmath>
-#include <boost/numeric/mtl/recursion/utilities.hpp>
-#include <boost/numeric/mtl/operations/sub_matrix.hpp>
-#include <boost/numeric/mtl/transposed_view.hpp>
+#include <boost/numeric/mtl/recursion/utility.hpp>
+#include <boost/numeric/mtl/operation/sub_matrix.hpp>
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/recursion/dim_splitter.hpp>
 
 // supersedes version in trunk (will be deleted one day)

@@ -3,9 +3,10 @@
 #ifndef MTL_MATRIX_PARAMETERS_INCLUDE
 #define MTL_MATRIX_PARAMETERS_INCLUDE
 
-#include <boost/numeric/mtl/base_types.hpp>
-#include <boost/numeric/mtl/index.hpp>
-#include <boost/numeric/mtl/dimensions.hpp>
+#include <boost/static_assert.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/detail/index.hpp>
+#include <boost/numeric/mtl/matrix/dimension.hpp>
 
 namespace mtl {
 

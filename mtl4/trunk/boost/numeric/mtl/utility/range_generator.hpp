@@ -4,7 +4,7 @@
 #define MTL_RANGE_GENERATOR_INCLUDE
 
 #include <boost/numeric/mtl/detail/range_generator.hpp>
-#include <boost/numeric/mtl/complexity.hpp>
+#include <boost/numeric/mtl/utility/complexity.hpp>
 
 namespace mtl {
 
@@ -13,7 +13,7 @@ namespace traits
     // Functor for generating begin and end cursors over a collection
     // Thus functor must contain begin and end member functions which are used by free functions
     // The cursor type must be defined as 'typedef xxx type;'
-    // complexity characterizes the run time of a traveral, cf. complexity.hpp
+    // complexity characterizes the run time of a traveral, cf. utility/complexity.hpp
     //   complexity can be used to dispatch between different traversals depending on algorithm
     //   and on collection (corr. subset represented by cursor)
     // level indicates the maximal level of nesting
@@ -45,7 +45,7 @@ namespace traits
 
 
 // Returns begin cursor over the Collection or a subset of the Collection
-// Form of traversal depends on Tag, cf glas_tags.hpp
+// Form of traversal depends on Tag, cf utility/glas_tag.hpp
 // On nested traversals, cursors of level > 1 must provide at least one range generator
 template <class Tag, class Collection>
 typename traits::range_generator<Tag, Collection>::type 

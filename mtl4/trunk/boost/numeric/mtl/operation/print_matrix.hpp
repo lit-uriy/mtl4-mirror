@@ -4,8 +4,8 @@
 #define MTL_PRINT_MATRIX_INCLUDE
 
 #include <iostream>
-#include <boost/numeric/mtl/glas_tags.hpp>
-#include <boost/numeric/mtl/range_generator.hpp>
+#include <boost/numeric/mtl/utility/glas_tag.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
 
 namespace mtl {
 
@@ -24,13 +24,13 @@ void print_matrix(Matrix const& matrix, std::ostream& out= std::cout)
 template <typename Matrix>
 void print_matrix_row_cursor(Matrix const& matrix, std::ostream& out= std::cout)
 {
-    typedef glas::tags::row_t                                          Tag;
+    typedef glas::tag::row                                          Tag;
     typename traits::const_value<Matrix>::type                         value(matrix);
     typedef typename traits::range_generator<Tag, Matrix>::type        cursor_type;
 
     for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
 	out << '[';
-	typedef glas::tags::all_t     inner_tag;
+	typedef glas::tag::all     inner_tag;
 	typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
 	for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ) {
 	    out << value(*icursor);

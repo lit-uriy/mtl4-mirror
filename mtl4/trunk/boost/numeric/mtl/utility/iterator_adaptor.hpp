@@ -3,7 +3,7 @@
 #ifndef MTL_ITERATOR_ADAPTOR_INCLUDE
 #define MTL_ITERATOR_ADAPTOR_INCLUDE
 
-#include <boost/numeric/mtl/utilities/iterator_adaptor_detail.hpp>
+#include <boost/numeric/mtl/utility/iterator_adaptor_detail.hpp>
 
 namespace mtl { namespace utilities {
 

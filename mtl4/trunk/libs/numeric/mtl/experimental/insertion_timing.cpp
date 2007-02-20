@@ -3,9 +3,9 @@
 #include <iostream>
 // #include <boost/test/minimal.hpp>
 
-#include <boost/numeric/mtl/operations/update.hpp>
-#include <boost/numeric/mtl/compressed2D.hpp>
-#include <boost/numeric/mtl/matrix_parameters.hpp>
+#include <boost/numeric/mtl/operation/update.hpp>
+#include <boost/numeric/mtl/matrix/compressed2D.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/random.hpp>
 #include <boost/timer.hpp>
 

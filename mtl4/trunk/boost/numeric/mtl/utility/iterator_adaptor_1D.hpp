@@ -3,9 +3,9 @@
 #ifndef MTL_ITERATOR_ADAPTOR_1D_INCLUDE
 #define MTL_ITERATOR_ADAPTOR_1D_INCLUDE
 
-#include <boost/numeric/mtl/range_generator.hpp>
-#include <boost/numeric/mtl/glas_tags.hpp>
-#include <boost/numeric/mtl/utilities/iterator_adaptor.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/glas_tag.hpp>
+#include <boost/numeric/mtl/utility/iterator_adaptor.hpp>
 
 namespace mtl { namespace traits {
 
@@ -13,10 +13,10 @@ namespace mtl { namespace traits {
 // Implemented by means of cursors and value map
 
 template <typename Matrix>
-struct range_generator<glas::tags::nz_cit, Matrix>
+struct range_generator<tag::const_iter::nz, Matrix>
 {
     typedef typename traits::const_value<Matrix>::type     map_type;
-    typedef typename glas::tags::nz_t                      cursor_tag;
+    typedef typename glas::tag::nz                      cursor_tag;
     typedef range_generator<cursor_tag, Matrix>            cursor_range;
     typedef typename cursor_range::type                    cursor_type;
     typedef typename Matrix::value_type                    value_type;
@@ -40,10 +40,10 @@ struct range_generator<glas::tags::nz_cit, Matrix>
 
 #if 0
 template <typename Matrix>
-struct range_generator<glas::tags::nz_it, Matrix>
+struct range_generator<tag::iter::nz, Matrix>
 {
     typedef typename traits::value<Matrix>::type                                  map_type;
-    typedef typename glas::tags::nz_t                                             cursor_tag;
+    typedef typename glas::tag::nz                                             cursor_tag;
     typedef typename range_generator<cursor_tag, Matrix>::type                    cursor_type;
     typedef typename Matrix::value_type                                           value_type;
     typedef typename range_generator<cursor_tag, Matrix>::complexity              complexity;
@@ -67,10 +67,10 @@ struct range_generator<glas::tags::nz_it, Matrix>
 
 
 template <typename Matrix>
-struct range_generator<glas::tags::all_cit, Matrix>
+struct range_generator<tag::const_iter::all, Matrix>
 {
     typedef typename traits::const_value<Matrix>::type                            map_type;
-    typedef typename glas::tags::all_t                                            cursor_tag;
+    typedef typename glas::tag::all                                            cursor_tag;
     typedef typename range_generator<cursor_tag, Matrix>::type                    cursor_type;
     typedef typename Matrix::value_type                                           value_type;
     typedef typename range_generator<cursor_tag, Matrix>::complexity              complexity;
@@ -91,10 +91,10 @@ struct range_generator<glas::tags::all_cit, Matrix>
 };
 
 template <typename Matrix>
-struct range_generator<glas::tags::all_it, Matrix>
+struct range_generator<tag::iter::all, Matrix>
 {
     typedef typename traits::value<Matrix>::type                                  map_type;
-    typedef typename glas::tags::all_t                                            cursor_tag;
+    typedef typename glas::tag::all                                            cursor_tag;
     typedef typename range_generator<cursor_tag, Matrix>::type                    cursor_type;
     typedef typename Matrix::value_type                                           value_type;
     typedef typename range_generator<cursor_tag, Matrix>::complexity              complexity;

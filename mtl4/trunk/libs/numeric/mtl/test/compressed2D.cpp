@@ -3,16 +3,17 @@
 #include <iostream>
 #include <boost/test/minimal.hpp>
 
-#include <boost/numeric/mtl/base_types.hpp>
-#include <boost/numeric/mtl/compressed2D.hpp>
-#include <boost/numeric/mtl/transposed_view.hpp>
-#include <boost/numeric/mtl/matrix_parameters.hpp>
-#include <boost/numeric/mtl/range_generator.hpp>
-#include <boost/numeric/mtl/glas_tags.hpp>
-#include <boost/numeric/mtl/mtl_exception.hpp>
-#include <boost/numeric/mtl/utilities/maybe.hpp>
-#include <boost/numeric/mtl/complexity.hpp>
-#include <boost/numeric/mtl/operations/print_matrix.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/matrix/compressed2D.hpp>
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/glas_tag.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/maybe.hpp>
+#include <boost/numeric/mtl/utility/complexity.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
 
 using namespace mtl;
 using namespace std;
@@ -24,7 +25,7 @@ void one_d_iteration(char const* name, Matrix & matrix)
     typename traits::row<Matrix>::type                                 row(matrix);
     typename traits::col<Matrix>::type                                 col(matrix);
     typename traits::value<Matrix>::type                               value(matrix);
-    typedef  glas::tags::nz_t                                          tag;
+    typedef  glas::tag::nz                                          tag;
     typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
     typedef typename traits::range_generator<tag, Matrix>::complexity  complexity;
     
@@ -42,7 +43,7 @@ void one_d_iteration(char const* name, Matrix & matrix)
 template <typename Matrix>
 void one_d_iterator_iteration(char const* name, Matrix & matrix)
 {
-    typedef  glas::tags::nz_cit                                          tag;
+    typedef  tag::const_iter::nz                                          tag;
     typedef typename traits::range_generator<tag, Matrix>::type        iterator_type;
     typedef typename traits::range_generator<tag, Matrix>::complexity  complexity;
     
@@ -65,7 +66,7 @@ void two_d_iteration_impl(char const* outer, Matrix & matrix, Tag, Complexity)
     cout << outer << ": " << Complexity() << '\n';
     // check_same_type(complexity(), ExpComplexity());
     for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
-	typedef glas::tags::nz_t     inner_tag;
+	typedef glas::tag::nz     inner_tag;
 	cout << "---\n";
 	typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
 	for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
@@ -90,7 +91,7 @@ void two_d_iterator_iteration_impl(char const* outer, Matrix & matrix, Tag, Comp
 
     cout << outer << " with iterators: " << Complexity() << '\n';
     for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
-	typedef glas::tags::nz_cit     inner_tag;
+	typedef tag::const_iter::nz     inner_tag;
 	cout << "---\n";
 	typedef typename traits::range_generator<inner_tag, cursor_type>::type iter_type;
 	for (iter_type iter = begin<inner_tag>(cursor), i_end = end<inner_tag>(cursor); iter != i_end; ++iter)
@@ -142,9 +143,9 @@ void test_compressed2D(char const* name)
     one_d_iteration("\nMatrix", matrix); 
     //one_d_iterator_iteration("\nMatrix (iterator)", matrix); 
 
-    two_d_iteration("Row-wise", matrix, glas::tags::row_t());
-    two_d_iteration("Column-wise", matrix, glas::tags::col_t());
-    two_d_iteration("On Major", matrix, glas::tags::major_t());
+    two_d_iteration("Row-wise", matrix, glas::tag::row());
+    two_d_iteration("Column-wise", matrix, glas::tag::col());
+    two_d_iteration("On Major", matrix, glas::tag::major());
 
 
     transposed_view<matrix_type> trans_matrix(matrix);
@@ -154,9 +155,9 @@ void test_compressed2D(char const* name)
     one_d_iteration("\nTransposed matrix", trans_matrix);
     //one_d_iterator_iteration("\nMatrix (iterator)", trans_matrix); 
 
-    two_d_iteration("Transposed row-wise", trans_matrix, glas::tags::row_t());
-    two_d_iteration("Transposed Column-wise", trans_matrix, glas::tags::col_t());
-    two_d_iteration("Transposed On Major", trans_matrix, glas::tags::major_t());
+    two_d_iteration("Transposed row-wise", trans_matrix, glas::tag::row());
+    two_d_iteration("Transposed Column-wise", trans_matrix, glas::tag::col());
+    two_d_iteration("Transposed On Major", trans_matrix, glas::tag::major());
 
 };
 

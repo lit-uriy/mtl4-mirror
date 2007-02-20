@@ -4,13 +4,13 @@
 #include <boost/test/minimal.hpp> 
 #include <boost/tuple/tuple.hpp>
 
-#include <boost/numeric/mtl/morton_dense.hpp>
-#include <boost/numeric/mtl/transposed_view.hpp>
-#include <boost/numeric/mtl/matrix_parameters.hpp>
-#include <boost/numeric/mtl/range_generator.hpp>
-#include <boost/numeric/mtl/glas_tags.hpp>
-#include <boost/numeric/mtl/operations/raw_copy.hpp>
-#include <boost/numeric/mtl/operations/print_matrix.hpp>
+#include <boost/numeric/mtl/matrix/morton_dense.hpp>
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/glas_tag.hpp>
+#include <boost/numeric/mtl/operation/raw_copy.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
 
 
 using namespace mtl;
@@ -29,7 +29,7 @@ struct test_morton_dense
 
 	cout << outer << '\n';
 	for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
-	    typedef glas::tags::all_t     inner_tag;
+	    typedef glas::tag::all     inner_tag;
 	    typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
 	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
 		cout << "matrix[" << row(*icursor) << ", " << col(*icursor) << "] = " << value(*icursor) << '\n';
@@ -48,7 +48,7 @@ struct test_morton_dense
 
 	cout << outer << '\n';
 	for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
-	    typedef glas::tags::all_it     inner_tag;
+	    typedef tag::iter::all     inner_tag;
 	    typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
 	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
 		cout << *icursor <<'\n';
@@ -61,7 +61,7 @@ struct test_morton_dense
 	typename traits::row<Matrix>::type                                 row(matrix);
 	typename traits::col<Matrix>::type                                 col(matrix);
 	typename traits::value<Matrix>::type                               value(matrix);
-	typedef  glas::tags::nz_t                                          tag; 
+	typedef  glas::tag::nz                                          tag; 
 	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
 
 	cout << name << "\nElements: \n";
@@ -74,7 +74,7 @@ struct test_morton_dense
     void fill_matrix(Matrix & matrix)
     {
 	typename traits::value<Matrix>::type                               value(matrix);
-	typedef  glas::tags::nz_t                                          tag;
+	typedef  glas::tag::nz                                          tag;
 	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
 
 	typename Matrix::value_type  v= 1;
@@ -91,7 +91,7 @@ struct test_morton_dense
 	typename traits::row<Matrix>::type                                 row(matrix);
 	typename traits::col<Matrix>::type                                 col(matrix);
 	typename traits::value<Matrix>::type                               value(matrix);
-	typedef  glas::tags::nz_t                                          tag;
+	typedef  glas::tag::nz                                          tag;
 	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
 	
 	cursor_type cursor = begin<tag>(matrix);
@@ -109,17 +109,17 @@ struct test_morton_dense
 	check_cursor_increment(matrix);
 
 	one_d_iteration("\nMatrix", matrix);
-	two_d_iteration("\nRows: ", matrix, glas::tags::row_t());
-	two_d_iteration("\nColumns: ", matrix, glas::tags::col_t());
-	two_d_iterator_iteration("\nRows (iterator): ", matrix, glas::tags::row_t());
-	two_d_iterator_iteration("\nColumns (iterator): ", matrix, glas::tags::col_t());
+	two_d_iteration("\nRows: ", matrix, glas::tag::row());
+	two_d_iteration("\nColumns: ", matrix, glas::tag::col());
+	two_d_iterator_iteration("\nRows (iterator): ", matrix, glas::tag::row());
+	two_d_iterator_iteration("\nColumns (iterator): ", matrix, glas::tag::col());
 
 	transposed_view<Matrix> trans_matrix(matrix);
 	one_d_iteration("\nTransposed matrix", trans_matrix);
-	two_d_iteration("\nRows: ", trans_matrix, glas::tags::row_t());
-	two_d_iteration("\nColumns: ", trans_matrix, glas::tags::col_t());
-	two_d_iterator_iteration("\nRows (iterator): ", trans_matrix, glas::tags::row_t());
-	two_d_iterator_iteration("\nColumns (iterator): ", trans_matrix, glas::tags::col_t());
+	two_d_iteration("\nRows: ", trans_matrix, glas::tag::row());
+	two_d_iteration("\nColumns: ", trans_matrix, glas::tag::col());
+	two_d_iterator_iteration("\nRows (iterator): ", trans_matrix, glas::tag::row());
+	two_d_iterator_iteration("\nColumns (iterator): ", trans_matrix, glas::tag::col());
     }
 };
 

@@ -4,10 +4,10 @@
 #include <string>
 #include <boost/test/minimal.hpp>
 
-#include <boost/numeric/mtl/dense2D.hpp>
-#include <boost/numeric/mtl/morton_dense.hpp>
-#include <boost/numeric/mtl/transposed_view.hpp>
-#include <boost/numeric/mtl/operations/print_matrix.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/matrix/morton_dense.hpp>
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>

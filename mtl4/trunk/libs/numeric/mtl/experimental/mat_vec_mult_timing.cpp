@@ -1,9 +1,9 @@
 #include <iostream>
 #include <vector>
-#include <mtl/base_types.hpp>
-#include <mtl/dense2D.hpp>
+#include <mtl/utility/tag.hpp>
+#include <mtl/matrix/dense2D.hpp>
 #include <mtl/fractalu.hpp>
-#include <mtl/property_map.hpp>
+#include <mtl/utility/property_map.hpp>
 #include <mtl/mat_vec_mult.hpp>
 #include <boost/timer.hpp>
 
