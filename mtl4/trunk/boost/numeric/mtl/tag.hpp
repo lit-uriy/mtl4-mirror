@@ -69,10 +69,23 @@ struct compressed2D
     virtual has_cursor
 {};
 
-// deprecated
-// struct fractal : virtual dense {};
+
+// =====================
+// Types for orientation
+// =====================
+
+// will be exported to ::mtl
+struct row_major {};
+struct col_major {};
 
 
-}} // namespace mtl::tag
+} // namespace mtl::tag
+
+
+using row_major;
+using col_major;
+
+
+} // namespace mtl
 
 #endif // MTL_TAG_INCLUDE
