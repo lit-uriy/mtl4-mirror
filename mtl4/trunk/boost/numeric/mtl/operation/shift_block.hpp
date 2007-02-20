@@ -3,7 +3,7 @@
 #ifndef MTL_SHIFT_BLOCKS_INCLUDE
 #define MTL_SHIFT_BLOCKS_INCLUDE
 
-#include <boost/numeric/mtl/operations/shift_blocks_detail.hpp>
+#include <boost/numeric/mtl/operations/shift_block_detail.hpp>
 
 namespace mtl { namespace operations {
 

@@ -13,7 +13,7 @@
 #include <boost/numeric/mtl/common_includes.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/operations/update.hpp>
-#include <boost/numeric/mtl/operations/shift_blocks.hpp>
+#include <boost/numeric/mtl/operations/shift_block.hpp>
 
 namespace mtl {
 

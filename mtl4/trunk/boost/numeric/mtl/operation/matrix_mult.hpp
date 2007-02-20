@@ -46,7 +46,7 @@ struct gen_dense_mat_mat_mult_ft
         typedef typename range_generator<all_cit, a_cur_type>::type  a_icur_type;            
         typedef typename range_generator<all_cit, b_cur_type>::type  b_icur_type;          
 
-	if (Assign::init_to_0) set_to_0(c);
+	if (Assign::init_to_zero) set_to_0(c);
 
 	a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
 	for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
@@ -107,7 +107,7 @@ struct gen_cursor_dense_mat_mat_mult_ft
         typedef typename traits::range_generator<all_t, a_cur_type>::type  a_icur_type;
         typedef typename traits::range_generator<all_t, b_cur_type>::type  b_icur_type;
 
-	if (Assign::init_to_0) set_to_0(c);
+	if (Assign::init_to_zero) set_to_0(c);
 
 	a_value_type   a_value(a);
 	b_value_type   b_value(b);
@@ -248,7 +248,7 @@ private:
     {
 	// std::cout << "do unrolling\n";
 
-	if (Assign::init_to_0) set_to_0(c);
+	if (Assign::init_to_zero) set_to_0(c);
 
 	typedef gen_tiling_dense_mat_mat_mult_block<1, Tiling1, 1, Tiling2, Assign>  block;
 	typedef typename MatrixC::size_type                                          size_type;
@@ -339,7 +339,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 {
 	// std::cout << "do unrolling\n";
 
-	if (Assign::init_to_0) set_to_0(c);
+	if (Assign::init_to_zero) set_to_0(c);
 
 	typedef gen_tiling_dense_mat_mat_mult_block<1, Tiling1, 1, Tiling2, Assign>  block;
 	typedef typename MatrixC::size_type                                          size_type;
@@ -434,7 +434,7 @@ private:
     {
         // std::cout << "do unrolling\n";
 
-	if (Assign::init_to_0) set_to_0(c);
+	if (Assign::init_to_zero) set_to_0(c);
 
 	typedef typename MatrixC::size_type                                          size_type;
 	typedef typename MatrixC::value_type                                         value_type;
@@ -549,7 +549,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 {
         // std::cout << "do unrolling\n";
 
-	if (Assign::init_to_0) set_to_0(c);
+	if (Assign::init_to_zero) set_to_0(c);
 
 	typedef typename MatrixC::size_type                                          size_type;
 	typedef typename MatrixC::value_type                                         value_type;
@@ -673,7 +673,7 @@ private:
     {
         // std::cout << "do unrolling\n";
 
-	if (Assign::init_to_0) set_to_0(c);
+	if (Assign::init_to_zero) set_to_0(c);
 
 	typedef typename MatrixC::size_type                                          size_type;
 	typedef typename MatrixC::value_type                                         value_type;
@@ -762,7 +762,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 {
         // std::cout << "do unrolling\n";
 
-	if (Assign::init_to_0) set_to_0(c);
+	if (Assign::init_to_zero) set_to_0(c);
 
 	typedef typename MatrixC::size_type                                          size_type;
 	typedef typename MatrixC::value_type                                         value_type;
@@ -908,7 +908,7 @@ private:
     {
 	// std::cout << "do recursion\n";
 
-	if (Assign::init_to_0) set_to_0(c);
+	if (Assign::init_to_zero) set_to_0(c);
 
 	// Make sure that mult functor of basecase has appropriate assign mode (in all nestings)
 	// i.e. replace modes::mult_assign_t by modes::add_mult_assign_t including backup functor

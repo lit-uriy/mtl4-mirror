@@ -100,7 +100,7 @@ struct gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morto
 	std::cout << "pretend Assembly\n";
 
 	if (detail::opteron_shark_teeth<MaskA, MaskB, MaskC>::value) {
-	    if (Assign::init_to_0) 
+	    if (Assign::init_to_zero) 
 		set_to_0(c);
 	    if (a.num_rows() == 32 && a.num_cols() == 32 && b.num_cols() == 32) {
 		double *ap= &const_cast<morton_dense<double, MaskA, PA>&>(a)[0][0],
