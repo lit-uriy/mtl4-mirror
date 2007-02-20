@@ -1,0 +1,14 @@
+Boost MTL Project
+
+To make Boost.Build work in this project, create a file
+called "boost-build.jam" in this directory, containing:
+
+  boost-build path/to/boost/tools/build/v2 ;
+
+Where path/to/boost/tools/build/v2 is the path to the tools/build/v2
+subdirectory of a standard Boost CVS image.  Whitespace is
+significant, so preserve the space before the ';'.
+
+Then issue the command
+
+   bjam
