@@ -3,9 +3,9 @@
 #ifndef MTL_MAT_VEC_MULT_INCLUDE
 #define MTL_MAT_VEC_MULT_INCLUDE
 
-#include <boost/numeric/mtl/property_map.hpp>
-#include <boost/numeric/mtl/index.hpp>
-#include <boost/numeric/mtl/base_types.hpp>
+#include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/detail/index.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/fractalu.hpp>
 #include <iostream>
 

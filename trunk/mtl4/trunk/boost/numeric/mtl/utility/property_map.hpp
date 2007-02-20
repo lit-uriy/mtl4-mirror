@@ -3,7 +3,7 @@
 #ifndef MTL_PROPERTY_MAP_INCLUDE
 #define MTL_PROPERTY_MAP_INCLUDE
 
-#include <boost/numeric/mtl/index.hpp>
+#include <boost/numeric/mtl/detail/index.hpp>
 
 namespace mtl { namespace traits 
 {    

@@ -6,7 +6,7 @@
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 
-#include <boost/numeric/mtl/base_types.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
 
 namespace mtl {
 

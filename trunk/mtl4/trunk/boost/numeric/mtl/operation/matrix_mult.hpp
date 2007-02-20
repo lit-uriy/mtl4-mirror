@@ -5,22 +5,22 @@
 
 #include <boost/type_traits.hpp>
 
-#include <boost/numeric/mtl/operations/set_to_0.hpp>
-#include <boost/numeric/mtl/range_generator.hpp>
-#include <boost/numeric/mtl/operations/cursor_pseudo_dot.hpp>
-#include <boost/numeric/mtl/operations/multi_action_block.hpp>
-#include <boost/numeric/mtl/operations/assign_modes.hpp>
-#include <boost/numeric/mtl/base_types.hpp>
-#include <boost/numeric/mtl/tag.hpp>
-#include <boost/numeric/mtl/glas_tags.hpp>
+#include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/operation/cursor_pseudo_dot.hpp>
+#include <boost/numeric/mtl/operation/multi_action_block.hpp>
+#include <boost/numeric/mtl/operation/assign_mode.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/glas_tag.hpp>
 #include <boost/numeric/meta_math/loop.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 #include <boost/numeric/mtl/recursion/base_case_cast.hpp>
 
-#include <boost/numeric/mtl/dense2D.hpp>
-#include <boost/numeric/mtl/operations/print_matrix.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
 
 #include <iostream>
 
@@ -30,33 +30,37 @@ namespace mtl {
 // Generic matrix product with iterators
 // =====================================
 
-template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t,
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= assign::assign_sum,
 	  typename Backup= row_major>     // To allow 5th parameter, is ignored
 struct gen_dense_mat_mat_mult_ft
 {
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
+	using namespace tag;
+	using traits::range_generator;  
+#if 0
 	// MTL_UGLY_DENSE_MAT_MAT_MULT_ITERATOR_TYPEDEFS
-	using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;           
-	using glas::tags::all_cit; using glas::tags::all_it; using traits::range_generator;  
-        typedef typename range_generator<row_t, MatrixA>::type       a_cur_type;             
-        typedef typename range_generator<row_t, MatrixC>::type       c_cur_type;             
-	typedef typename range_generator<col_t, MatrixB>::type       b_cur_type;             
-        typedef typename range_generator<all_it, c_cur_type>::type   c_icur_type;            
-        typedef typename range_generator<all_cit, a_cur_type>::type  a_icur_type;            
-        typedef typename range_generator<all_cit, b_cur_type>::type  b_icur_type;          
+	using glas::tag::row; using glas::tag::col; using glas::tag::all;           
+	using tag::const_iter::all; using tag::iter::all; 
+#endif
+        typedef typename range_generator<row, MatrixA>::type       a_cur_type;             
+        typedef typename range_generator<row, MatrixC>::type       c_cur_type;             
+	typedef typename range_generator<col, MatrixB>::type       b_cur_type;             
+        typedef typename range_generator<iter::all, c_cur_type>::type   c_icur_type;            
+        typedef typename range_generator<const_iter::all, a_cur_type>::type  a_icur_type;            
+        typedef typename range_generator<const_iter::all, b_cur_type>::type  b_icur_type;          
 
-	if (Assign::init_to_zero) set_to_0(c);
+	if (Assign::init_to_zero) set_to_zero(c);
 
-	a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
-	for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+	a_cur_type ac= begin<row>(a), aend= end<row>(a);
+	for (c_cur_type cc= begin<row>(c); ac != aend; ++ac, ++cc) {
 
-	    b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
-	    for (c_icur_type cic= begin<all_it>(cc); bc != bend; ++bc, ++cic) { 
+	    b_cur_type bc= begin<col>(b), bend= end<col>(b);
+	    for (c_icur_type cic= begin<iter::all>(cc); bc != bend; ++bc, ++cic) { 
 		    
 		typename MatrixC::value_type c_tmp(*cic);
-		a_icur_type aic= begin<all_cit>(ac), aiend= end<all_cit>(ac); 
-		for (b_icur_type bic= begin<all_cit>(bc); aic != aiend; ++aic, ++bic) {
+		a_icur_type aic= begin<const_iter::all>(ac), aiend= end<const_iter::all>(ac); 
+		for (b_icur_type bic= begin<const_iter::all>(bc); aic != aiend; ++aic, ++bic) {
 		    //std::cout << "aic " << *aic << ", bic " << *bic << '\n'; std::cout.flush();
 		    Assign::update(c_tmp, *aic * *bic);
 		}
@@ -67,7 +71,7 @@ struct gen_dense_mat_mat_mult_ft
 };
 
 
-template <typename Assign= modes::mult_assign_t,
+template <typename Assign= assign::assign_sum,
 	  typename Backup= row_major>     // To allow 2nd parameter, is ignored
 struct gen_dense_mat_mat_mult_t
 {
@@ -84,44 +88,44 @@ struct gen_dense_mat_mat_mult_t
 // =====================================================
 
 
-template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t,
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= assign::assign_sum,
 	  typename Backup= row_major>     // To allow 5th parameter, is ignored
 struct gen_cursor_dense_mat_mat_mult_ft
 {
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
-	typedef glas::tags::row_t                                          row_t;
-	typedef glas::tags::col_t                                          col_t;
-	typedef glas::tags::all_t                                          all_t;
+	typedef glas::tag::row                                          row;
+	typedef glas::tag::col                                          col;
+	typedef glas::tag::all                                          all;
 
         typedef typename traits::const_value<MatrixA>::type                a_value_type;
         typedef typename traits::const_value<MatrixB>::type                b_value_type;
         typedef typename traits::value<MatrixC>::type                      c_value_type;
 
-        typedef typename traits::range_generator<row_t, MatrixA>::type     a_cur_type;
-        typedef typename traits::range_generator<row_t, MatrixC>::type     c_cur_type;
+        typedef typename traits::range_generator<row, MatrixA>::type     a_cur_type;
+        typedef typename traits::range_generator<row, MatrixC>::type     c_cur_type;
         
-        typedef typename traits::range_generator<col_t, MatrixB>::type     b_cur_type;
-        typedef typename traits::range_generator<all_t, c_cur_type>::type  c_icur_type;
+        typedef typename traits::range_generator<col, MatrixB>::type     b_cur_type;
+        typedef typename traits::range_generator<all, c_cur_type>::type  c_icur_type;
 
-        typedef typename traits::range_generator<all_t, a_cur_type>::type  a_icur_type;
-        typedef typename traits::range_generator<all_t, b_cur_type>::type  b_icur_type;
+        typedef typename traits::range_generator<all, a_cur_type>::type  a_icur_type;
+        typedef typename traits::range_generator<all, b_cur_type>::type  b_icur_type;
 
-	if (Assign::init_to_zero) set_to_0(c);
+	if (Assign::init_to_zero) set_to_zero(c);
 
 	a_value_type   a_value(a);
 	b_value_type   b_value(b);
 	c_value_type   c_value(c);
     		
-	a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
-	for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+	a_cur_type ac= begin<row>(a), aend= end<row>(a);
+	for (c_cur_type cc= begin<row>(c); ac != aend; ++ac, ++cc) {
 	    
-	    b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
-	    for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
+	    b_cur_type bc= begin<col>(b), bend= end<col>(b);
+	    for (c_icur_type cic= begin<all>(cc); bc != bend; ++bc, ++cic) { 
 		
 		typename MatrixC::value_type c_tmp(c_value(*cic));
-		a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
-		for (b_icur_type bic= begin<all_t>(bc); aic != aiend; ++aic, ++bic)
+		a_icur_type aic= begin<all>(ac), aiend= end<all>(ac); 
+		for (b_icur_type bic= begin<all>(bc); aic != aiend; ++aic, ++bic)
 		    Assign::update(c_tmp, a_value(*aic) * b_value(*bic));
 		c_value(*cic, c_tmp);
 	    }
@@ -130,7 +134,7 @@ struct gen_cursor_dense_mat_mat_mult_ft
 };
 
 
-template <typename Assign= modes::mult_assign_t,
+template <typename Assign= assign::assign_sum,
 	  typename Backup= row_major>     // To allow 2nd parameter, is ignored
 struct gen_cursor_dense_mat_mat_mult_t
 {
@@ -223,7 +227,7 @@ struct gen_tiling_dense_mat_mat_mult_block<Max0, Max0, Max1, Max1, Assign>
 template <typename MatrixA, typename MatrixB, typename MatrixC,
 	  unsigned long Tiling1= MTL_DENSE_MATMAT_MULT_TILING1,
 	  unsigned long Tiling2= MTL_DENSE_MATMAT_MULT_TILING2,
-	  typename Assign= modes::mult_assign_t, 
+	  typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_tiling_dense_mat_mat_mult_ft
 {
@@ -231,8 +235,8 @@ struct gen_tiling_dense_mat_mat_mult_ft
   
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
-	apply(a, b, c, typename traits::matrix_category<MatrixA>::type(),
-	      typename traits::matrix_category<MatrixB>::type());
+	apply(a, b, c, typename traits::category<MatrixA>::type(),
+	      typename traits::category<MatrixB>::type());
     }   
  
 private:
@@ -248,7 +252,7 @@ private:
     {
 	// std::cout << "do unrolling\n";
 
-	if (Assign::init_to_zero) set_to_0(c);
+	if (Assign::init_to_zero) set_to_zero(c);
 
 	typedef gen_tiling_dense_mat_mat_mult_block<1, Tiling1, 1, Tiling2, Assign>  block;
 	typedef typename MatrixC::size_type                                          size_type;
@@ -316,7 +320,7 @@ private:
 
 template <unsigned long Tiling1= MTL_DENSE_MATMAT_MULT_TILING1,
 	  unsigned long Tiling2= MTL_DENSE_MATMAT_MULT_TILING2,
-	  typename Assign= modes::mult_assign_t, 
+	  typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_tiling_dense_mat_mat_mult_t
 {
@@ -339,7 +343,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 {
 	// std::cout << "do unrolling\n";
 
-	if (Assign::init_to_zero) set_to_0(c);
+	if (Assign::init_to_zero) set_to_zero(c);
 
 	typedef gen_tiling_dense_mat_mat_mult_block<1, Tiling1, 1, Tiling2, Assign>  block;
 	typedef typename MatrixC::size_type                                          size_type;
@@ -411,14 +415,14 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, 
-	  typename Assign= modes::mult_assign_t, 
+	  typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_tiling_44_dense_mat_mat_mult_ft
 {
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
-	apply(a, b, c, typename traits::matrix_category<MatrixA>::type(),
-	      typename traits::matrix_category<MatrixB>::type());
+	apply(a, b, c, typename traits::category<MatrixA>::type(),
+	      typename traits::category<MatrixB>::type());
     }   
  
 private:
@@ -434,7 +438,7 @@ private:
     {
         // std::cout << "do unrolling\n";
 
-	if (Assign::init_to_zero) set_to_0(c);
+	if (Assign::init_to_zero) set_to_zero(c);
 
 	typedef typename MatrixC::size_type                                          size_type;
 	typedef typename MatrixC::value_type                                         value_type;
@@ -527,7 +531,7 @@ private:
 #endif
 };
 
-template <typename Assign= modes::mult_assign_t, 
+template <typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_tiling_44_dense_mat_mat_mult_t
 {
@@ -549,7 +553,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 {
         // std::cout << "do unrolling\n";
 
-	if (Assign::init_to_zero) set_to_0(c);
+	if (Assign::init_to_zero) set_to_zero(c);
 
 	typedef typename MatrixC::size_type                                          size_type;
 	typedef typename MatrixC::value_type                                         value_type;
@@ -650,14 +654,14 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, 
-	  typename Assign= modes::mult_assign_t, 
+	  typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_tiling_22_dense_mat_mat_mult_ft
 {
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
-	apply(a, b, c, typename traits::matrix_category<MatrixA>::type(),
-	      typename traits::matrix_category<MatrixB>::type());
+	apply(a, b, c, typename traits::category<MatrixA>::type(),
+	      typename traits::category<MatrixB>::type());
     }   
  
 private:
@@ -673,7 +677,7 @@ private:
     {
         // std::cout << "do unrolling\n";
 
-	if (Assign::init_to_zero) set_to_0(c);
+	if (Assign::init_to_zero) set_to_zero(c);
 
 	typedef typename MatrixC::size_type                                          size_type;
 	typedef typename MatrixC::value_type                                         value_type;
@@ -740,7 +744,7 @@ private:
 #endif
 };
 
-template <typename Assign= modes::mult_assign_t, 
+template <typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_tiling_22_dense_mat_mat_mult_t
 {
@@ -762,7 +766,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 {
         // std::cout << "do unrolling\n";
 
-	if (Assign::init_to_zero) set_to_0(c);
+	if (Assign::init_to_zero) set_to_zero(c);
 
 	typedef typename MatrixC::size_type                                          size_type;
 	typedef typename MatrixC::value_type                                         value_type;
@@ -881,16 +885,16 @@ struct recurator_dense_mat_mat_mult_t
 
 template <typename BaseMult, 
 	  typename BaseTest= recursion::bound_test_static<64>,
-	  typename Assign= modes::mult_assign_t, 
+	  typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_recursive_dense_mat_mat_mult_t
 {
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
-	apply(a, b, c, typename traits::matrix_category<MatrixA>::type(),
-	      typename traits::matrix_category<MatrixB>::type(), 
-	      typename traits::matrix_category<MatrixC>::type());
+	apply(a, b, c, typename traits::category<MatrixA>::type(),
+	      typename traits::category<MatrixB>::type(), 
+	      typename traits::category<MatrixC>::type());
     }   
  
 private:
@@ -908,10 +912,10 @@ private:
     {
 	// std::cout << "do recursion\n";
 
-	if (Assign::init_to_zero) set_to_0(c);
+	if (Assign::init_to_zero) set_to_zero(c);
 
 	// Make sure that mult functor of basecase has appropriate assign mode (in all nestings)
-	// i.e. replace modes::mult_assign_t by modes::add_mult_assign_t including backup functor
+	// i.e. replace assign::assign_sum by assign::plus_sum including backup functor
 	
 	using recursion::matrix_recurator;
 	matrix_recurator<MatrixA>    rec_a(a);
@@ -934,14 +938,14 @@ private:
 // Here only general definition that calls backup function
 // Special implementations needed in other files, which are included at the end
 
-template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t, 
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_platform_dense_mat_mat_mult_ft
     : public Backup
 {};
 
 
-template <typename Assign= modes::mult_assign_t, 
+template <typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_platform_dense_mat_mat_mult_t
 {
@@ -958,7 +962,7 @@ struct gen_platform_dense_mat_mat_mult_t
 // ==================================
 
 
-template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= modes::mult_assign_t, 
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_blas_dense_mat_mat_mult_ft
     : public Backup
@@ -969,7 +973,7 @@ struct gen_blas_dense_mat_mat_mult_ft
 // Only sketch
 template<typename ParaA, typename ParaB, typename ParaC, typename Backup>
 struct gen_blas_dense_mat_mat_mult_ft<dense2D<float, ParaA>, dense2D<float, ParaB>, 
-				     dense2D<float, ParaC>, modes::mult_assign_t, Backup>
+				     dense2D<float, ParaC>, assign::assign_sum, Backup>
 {
     void operator()(const dense2D<float, ParaA>& a, const dense2D<float, ParaB>& b, 
 		    dense2D<float, ParaC>& c)
@@ -985,7 +989,7 @@ struct gen_blas_dense_mat_mat_mult_ft<dense2D<float, ParaA>, dense2D<float, Para
 
 template<typename ParaA, typename ParaB, typename ParaC, typename Backup>
 struct gen_blas_dense_mat_mat_mult_ft<dense2D<double, ParaA>, dense2D<double, ParaB>, 
-				     dense2D<double, ParaC>, modes::mult_assign_t, Backup>
+				     dense2D<double, ParaC>, assign::assign_sum, Backup>
 {
     void operator()(const dense2D<double, ParaA>& a, const dense2D<double, ParaB>& b, 
 		    dense2D<double, ParaC>& c)
@@ -1001,7 +1005,7 @@ struct gen_blas_dense_mat_mat_mult_ft<dense2D<double, ParaA>, dense2D<double, Pa
 
 #endif
 
-template <typename Assign= modes::mult_assign_t, 
+template <typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dense_mat_mat_mult_t<Assign> >
 struct gen_blas_dense_mat_mat_mult_t
     : public Backup
@@ -1020,7 +1024,7 @@ struct gen_blas_dense_mat_mat_mult_t
 #endif // MTL_MATRIX_MULT_INCLUDE
 
 // Include plattform specific implementations
-#include <boost/numeric/mtl/operations/opteron/matrix_mult.hpp>
+#include <boost/numeric/mtl/operation/opteron/matrix_mult.hpp>
 
 
 
@@ -1059,23 +1063,23 @@ namespace functor {
 	      unsigned OuterUnroll= MTL_MATRIX_MULT_OUTER_UNROLL>
     struct matrix_mult_variations
     {
-	// using glas::tags::row_t; using glas::tags::col_t; using glas::tags::all_t;
-	typedef glas::tags::row_t                                          row_t;
-	typedef glas::tags::col_t                                          col_t;
-	typedef glas::tags::all_t                                          all_t;
+	// using glas::tag::row; using glas::tag::col; using glas::tag::all;
+	typedef glas::tag::row                                          row;
+	typedef glas::tag::col                                          col;
+	typedef glas::tag::all                                          all;
 
         typedef typename traits::const_value<MatrixA>::type                a_value_type;
         typedef typename traits::const_value<MatrixB>::type                b_value_type;
         typedef typename traits::value<MatrixC>::type                      c_value_type;
 
-        typedef typename traits::range_generator<row_t, MatrixA>::type     a_cur_type;
-        typedef typename traits::range_generator<row_t, MatrixC>::type     c_cur_type;
+        typedef typename traits::range_generator<row, MatrixA>::type     a_cur_type;
+        typedef typename traits::range_generator<row, MatrixC>::type     c_cur_type;
         
-        typedef typename traits::range_generator<col_t, MatrixB>::type     b_cur_type;
-        typedef typename traits::range_generator<all_t, c_cur_type>::type  c_icur_type;
+        typedef typename traits::range_generator<col, MatrixB>::type     b_cur_type;
+        typedef typename traits::range_generator<all, c_cur_type>::type  c_icur_type;
 
-        typedef typename traits::range_generator<all_t, a_cur_type>::type  a_icur_type;
-        typedef typename traits::range_generator<all_t, b_cur_type>::type  b_icur_type;
+        typedef typename traits::range_generator<all, a_cur_type>::type  a_icur_type;
+        typedef typename traits::range_generator<all, b_cur_type>::type  b_icur_type;
 
         void mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
         {
@@ -1083,15 +1087,15 @@ namespace functor {
 	    b_value_type   b_value(b);
 	    c_value_type   c_value(c);
     		
-            a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
-            for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+            a_cur_type ac= begin<row>(a), aend= end<row>(a);
+            for (c_cur_type cc= begin<row>(c); ac != aend; ++ac, ++cc) {
 
-		b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
-		for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
+		b_cur_type bc= begin<col>(b), bend= end<col>(b);
+		for (c_icur_type cic= begin<all>(cc); bc != bend; ++bc, ++cic) { 
 		    
 		    typename MatrixC::value_type c_tmp(c_value(*cic));
-		    a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
-		    for (b_icur_type bic= begin<all_t>(bc); aic != aiend; ++aic, ++bic)
+		    a_icur_type aic= begin<all>(ac), aiend= end<all>(ac); 
+		    for (b_icur_type bic= begin<all>(bc); aic != aiend; ++aic, ++bic)
 			c_tmp+= a_value(*aic) * b_value(*bic);
 		    c_value(*cic, c_tmp);
 		}
@@ -1105,14 +1109,14 @@ namespace functor {
 	    b_value_type   b_value(b);
 	    c_value_type   c_value(c);
     		
-            a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
-            for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+            a_cur_type ac= begin<row>(a), aend= end<row>(a);
+            for (c_cur_type cc= begin<row>(c); ac != aend; ++ac, ++cc) {
 
-		a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); // constant in inner loop
-		b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
-		for (c_icur_type cic= begin<all_t>(cc); bc != bend; ++bc, ++cic) { 
+		a_icur_type aic= begin<all>(ac), aiend= end<all>(ac); // constant in inner loop
+		b_cur_type bc= begin<col>(b), bend= end<col>(b);
+		for (c_icur_type cic= begin<all>(cc); bc != bend; ++bc, ++cic) { 
 		    
-		    b_icur_type bic= begin<all_t>(bc);
+		    b_icur_type bic= begin<all>(bc);
 		    typename MatrixC::value_type c_tmp= c_value(*cic),
 			dot_tmp= cursor_pseudo_dot<InnerUnroll>(aic, aiend, a_value, bic, b_value, c_tmp);
 		    c_value(*cic, c_tmp + dot_tmp);
@@ -1130,11 +1134,11 @@ namespace functor {
 	    b_value_type   b_value(b);
 	    c_value_type   c_value(c);
     		
-            a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
-            for (c_cur_type cc= begin<row_t>(c); ac != aend; ++ac, ++cc) {
+            a_cur_type ac= begin<row>(a), aend= end<row>(a);
+            for (c_cur_type cc= begin<row>(c); ac != aend; ++ac, ++cc) {
 
-		b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
-		for (c_icur_type cic= begin<all_t>(cc); bc != bend; bc+= MiddleUnroll, cic+= MiddleUnroll) { 
+		b_cur_type bc= begin<col>(b), bend= end<col>(b);
+		for (c_icur_type cic= begin<all>(cc); bc != bend; bc+= MiddleUnroll, cic+= MiddleUnroll) { 
 
 		    inner_block my_inner_block(a_value, b_value, c_value, ac, bc, cic);
 		    multi_action_block<inner_block, MiddleUnroll>() (my_inner_block);
@@ -1156,8 +1160,8 @@ namespace functor {
 		c_icur_type my_cic= cic + step;
 
 		typename MatrixC::value_type c_tmp(c_value(*my_cic));
-		a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
-		for (b_icur_type bic= begin<all_t>(my_bc); aic != aiend; ++aic, ++bic)
+		a_icur_type aic= begin<all>(ac), aiend= end<all>(ac); 
+		for (b_icur_type bic= begin<all>(my_bc); aic != aiend; ++aic, ++bic)
 		    c_tmp+= a_value(*aic) * b_value(*bic);
 		c_value(*my_cic, c_tmp);
 	    }
@@ -1184,8 +1188,8 @@ namespace functor {
 		b_cur_type my_bc= bc + step;
 		c_icur_type my_cic= cic + step;
 
-		a_icur_type aic= begin<all_t>(ac), aiend= end<all_t>(ac); 
-		b_icur_type bic= begin<all_t>(my_bc);
+		a_icur_type aic= begin<all>(ac), aiend= end<all>(ac); 
+		b_icur_type bic= begin<all>(my_bc);
 		typename MatrixC::value_type c_tmp= c_value(*my_cic),
 		    dot_tmp= cursor_pseudo_dot<InnerUnroll>(aic, aiend, a_value, bic, b_value, c_tmp);
 		c_value(*my_cic, c_tmp + dot_tmp);
@@ -1209,8 +1213,8 @@ namespace functor {
 	    b_value_type   b_value(b);
 	    c_value_type   c_value(c);
     		
-            a_cur_type ac= begin<row_t>(a), aend= end<row_t>(a);
-            for (c_cur_type cc= begin<row_t>(c); ac != aend; ac+= OuterUnroll, cc+= OuterUnroll) {
+            a_cur_type ac= begin<row>(a), aend= end<row>(a);
+            for (c_cur_type cc= begin<row>(c); ac != aend; ac+= OuterUnroll, cc+= OuterUnroll) {
 		middle_block my_middle_block(a_value, b_value, c_value, ac, b, cc);
 		multi_action_block<middle_block, OuterUnroll>() (my_middle_block);
 	    }
@@ -1229,8 +1233,8 @@ namespace functor {
 		a_cur_type my_ac= ac + step;
 		c_cur_type my_cc= cc + step;
 		
-		b_cur_type bc= begin<col_t>(b), bend= end<col_t>(b);
-		for (c_icur_type cic= begin<all_t>(my_cc); bc != bend; bc+= MiddleUnroll, cic+= MiddleUnroll) { 
+		b_cur_type bc= begin<col>(b), bend= end<col>(b);
+		for (c_icur_type cic= begin<all>(my_cc); bc != bend; bc+= MiddleUnroll, cic+= MiddleUnroll) { 
 
 		    fast_inner_block my_inner_block(a_value, b_value, c_value, my_ac, bc, cic);
 		    multi_action_block<fast_inner_block, MiddleUnroll>() (my_inner_block);
@@ -1359,7 +1363,7 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 
 
     // fast version for 32x32 double
-    struct mult_add_row_times_col_major_32_t
+    struct mult_add_rowimes_col_major_32_t
     {
 	typedef dense2D<double, matrix_parameters<col_major> > b_type;
 
@@ -1401,7 +1405,7 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 
 #if 0
     // fast version for 32x32 double
-    struct mult_add_row_times_col_major_32_cast_t
+    struct mult_add_rowimes_col_major_32_cast_t
     {
 	typedef dense2D<double, matrix_parameters<col_major> > b_type;
 
@@ -1457,7 +1461,7 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 
 
     // fast version for 16x16 double
-    struct mult_add_row_times_col_major_16_t
+    struct mult_add_rowimes_col_major_16_t
     {
 	typedef dense2D<double, matrix_parameters<col_major> > b_type;
 
@@ -1511,7 +1515,7 @@ void mult_add_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult_simple(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
-    set_to_0(c);
+    set_to_zero(c);
     mult_add_simple(a, b, c);
 }
 
@@ -1526,7 +1530,7 @@ void mult_add_fast_inner(MatrixA const& a, MatrixB const& b, MatrixC& c)
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult_fast_inner(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
-    set_to_0(c);
+    set_to_zero(c);
     mult_add_fast_inner(a, b, c);
 }
 
@@ -1541,7 +1545,7 @@ void mult_add_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c)
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult_fast_middle(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
-    set_to_0(c);
+    set_to_zero(c);
     mult_add_fast_middle(a, b, c);
 }
 
@@ -1556,7 +1560,7 @@ void mult_add_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c)
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult_fast_outer(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
-    set_to_0(c);
+    set_to_zero(c);
     mult_add_fast_outer(a, b, c);
 }
 
@@ -1565,7 +1569,7 @@ template <typename MatrixA, typename MatrixB, typename MatrixC>
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     std::cout << "matrix_mult without parameters\n";
-    set_to_0(c);
+    set_to_zero(c);
     functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC>()(a, b, c);
 }
 
@@ -1573,7 +1577,7 @@ template <unsigned InnerUnroll, typename MatrixA, typename MatrixB, typename Mat
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     std::cout << "matrix_mult with 1 parameter\n";
-    set_to_0(c);
+    set_to_zero(c);
     functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, InnerUnroll>()(a, b, c);
 }
 
@@ -1582,7 +1586,7 @@ template <unsigned InnerUnroll, unsigned MiddleUnroll,
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     std::cout << "matrix_mult with 2 parameters\n";
-    set_to_0(c);
+    set_to_zero(c);
     functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, InnerUnroll, MiddleUnroll>()(a, b, c);
 }
 
@@ -1591,7 +1595,7 @@ template <unsigned InnerUnroll, unsigned MiddleUnroll, unsigned OuterUnroll,
 void matrix_mult(MatrixA const& a, MatrixB const& b, MatrixC& c)
 {
     std::cout << "matrix_mult with 3 parameters\n";
-    set_to_0(c);
+    set_to_zero(c);
     functor::mult_add_fast_outer_t<MatrixA, MatrixB, MatrixC, InnerUnroll, MiddleUnroll, OuterUnroll>()(a, b, c);
 }
 

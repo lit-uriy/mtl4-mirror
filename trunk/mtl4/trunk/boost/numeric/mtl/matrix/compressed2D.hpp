@@ -10,10 +10,10 @@
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 
-#include <boost/numeric/mtl/common_includes.hpp>
+#include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
-#include <boost/numeric/mtl/operations/update.hpp>
-#include <boost/numeric/mtl/operations/shift_block.hpp>
+#include <boost/numeric/mtl/operation/update.hpp>
+#include <boost/numeric/mtl/operation/shift_block.hpp>
 
 namespace mtl {
 
@@ -609,7 +609,7 @@ namespace traits
 // ===========
 
     template <class Elt, class Parameters>
-    struct range_generator<glas::tags::nz_t, compressed2D<Elt, Parameters> >
+    struct range_generator<glas::tag::nz, compressed2D<Elt, Parameters> >
       : detail::all_offsets_range_generator<compressed2D<Elt, Parameters>,
 					    compressed_el_cursor<Elt, Parameters>, 
 					    complexity_classes::linear_cached>
@@ -618,19 +618,19 @@ namespace traits
     // Cursor over all rows
     // Supported if row major matrix
     template <typename Elt, typename Parameters>
-    struct range_generator<glas::tags::row_t, compressed2D<Elt, Parameters> >
+    struct range_generator<glas::tag::row, compressed2D<Elt, Parameters> >
       : boost::mpl::if_<
 	    boost::is_same<typename Parameters::orientation, row_major>
  	  , detail::all_rows_range_generator<compressed2D<Elt, Parameters>, complexity_classes::linear_cached>
- 	  , range_generator<glas::tags::unsupported_t, compressed2D<Elt, Parameters> >
+ 	  , range_generator<tag::unsupported, compressed2D<Elt, Parameters> >
         >::type {};
 
 
     template <class Elt, class Parameters>
-    struct range_generator<glas::tags::nz_t, 
-			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::row_t, 2> >
+    struct range_generator<glas::tag::nz, 
+			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tag::row, 2> >
     {
-	typedef detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::row_t, 2> cursor_type;
+	typedef detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tag::row, 2> cursor_type;
 	typedef complexity_classes::linear_cached         complexity;
 	typedef compressed_minor_cursor<Elt, Parameters>  type;
 	static int const                                  level = 1;
@@ -648,19 +648,19 @@ namespace traits
     // Cursor over all columns
     // Supported if column major matrix
     template <typename Elt, typename Parameters>
-    struct range_generator<glas::tags::col_t, compressed2D<Elt, Parameters> >
+    struct range_generator<glas::tag::col, compressed2D<Elt, Parameters> >
       : boost::mpl::if_<
 	    boost::is_same<typename Parameters::orientation, col_major>
  	  , detail::all_cols_range_generator<compressed2D<Elt, Parameters>, complexity_classes::linear_cached>
- 	  , range_generator<glas::tags::unsupported_t, compressed2D<Elt, Parameters> >
+ 	  , range_generator<tag::unsupported, compressed2D<Elt, Parameters> >
         >::type {};
 
 
     template <class Elt, class Parameters>
-    struct range_generator<glas::tags::nz_t, 
-			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::col_t, 2> >
+    struct range_generator<glas::tag::nz, 
+			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tag::col, 2> >
     {
-	typedef detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::col_t, 2> cursor_type;
+	typedef detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tag::col, 2> cursor_type;
 	typedef complexity_classes::linear_cached         complexity;
 	typedef compressed_minor_cursor<Elt, Parameters>  type;
 	static int const                                  level = 1;
@@ -677,11 +677,11 @@ namespace traits
 
     // Cursor over all rows or columns, depending which one is major
     template <typename Elt, typename Parameters>
-    struct range_generator<glas::tags::major_t, compressed2D<Elt, Parameters> >
+    struct range_generator<glas::tag::major, compressed2D<Elt, Parameters> >
       : boost::mpl::if_<
 	    boost::is_same<typename Parameters::orientation, row_major>
-	  , range_generator<glas::tags::row_t, compressed2D<Elt, Parameters> >
-	  , range_generator<glas::tags::col_t, compressed2D<Elt, Parameters> >
+	  , range_generator<glas::tag::row, compressed2D<Elt, Parameters> >
+	  , range_generator<glas::tag::col, compressed2D<Elt, Parameters> >
         >::type {};
 
 
@@ -691,13 +691,13 @@ namespace traits
  
 
     template <class Elt, class Parameters>
-    struct range_generator<glas::tags::nz_cit, 
-			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::row_t, 2> >
+    struct range_generator<tag::const_iter::nz, 
+			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tag::row, 2> >
     {
 	typedef compressed2D<Elt, Parameters>                                         matrix_type;
 	typedef typename matrix_type::size_type                                       size_type;
 	typedef typename matrix_type::value_type                                      value_type;
-	typedef detail::sub_matrix_cursor<matrix_type, glas::tags::row_t, 2>          cursor;
+	typedef detail::sub_matrix_cursor<matrix_type, glas::tag::row, 2>          cursor;
 	
 	typedef complexity_classes::linear_cached                                     complexity;
 	static int const                                                              level = 1;
@@ -721,13 +721,13 @@ namespace traits
 
 
     template <class Elt, class Parameters>
-    struct range_generator<glas::tags::nz_cit, 
-			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tags::col_t, 2> >
+    struct range_generator<tag::const_iter::nz, 
+			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tag::col, 2> >
     {
 	typedef compressed2D<Elt, Parameters>                                         matrix_type;
 	typedef typename matrix_type::size_type                                       size_type;
 	typedef typename matrix_type::value_type                                      value_type;
-	typedef detail::sub_matrix_cursor<matrix_type, glas::tags::col_t, 2>          cursor;
+	typedef detail::sub_matrix_cursor<matrix_type, glas::tag::col, 2>          cursor;
 	
 	typedef complexity_classes::linear_cached                                     complexity;
 	static int const                                                              level = 1;
@@ -749,17 +749,17 @@ namespace traits
 	}	
     };
 
-
+#if 0
     template <class Elt, class Parameters>
     struct is_mtl_type<compressed2D<Elt, Parameters> > 
     {
 	static bool const value= true; 
     };
-
+#endif
 
     // define corresponding type without all template parameters
     template <class Elt, class Parameters>
-    struct matrix_category<compressed2D<Elt, Parameters> > 
+    struct category<compressed2D<Elt, Parameters> > 
     {
 	typedef tag::sparse type;
     };

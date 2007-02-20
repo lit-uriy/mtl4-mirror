@@ -3,7 +3,7 @@
 #ifndef MTL_TRIVIAL_INSERTER_INCLUDE
 #define MTL_TRIVIAL_INSERTER_INCLUDE
 
-#include <boost/numeric/mtl/operations/update.hpp>
+#include <boost/numeric/mtl/operation/update.hpp>
 
 
 namespace mtl { namespace detail {

@@ -7,15 +7,15 @@
 // #define MTL_HAS_BLAS
 // #define MTL_USE_OPTERON_OPTIMIZATION
 
-#include <boost/numeric/mtl/glas_tags.hpp>
-#include <boost/numeric/mtl/dense2D.hpp>
-#include <boost/numeric/mtl/morton_dense.hpp> 
-#include <boost/numeric/mtl/transposed_view.hpp>
+#include <boost/numeric/mtl/utility/glas_tag.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/matrix/morton_dense.hpp> 
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
-#include <boost/numeric/mtl/operations/print_matrix.hpp>
-#include <boost/numeric/mtl/operations/matrix_mult.hpp>
-#include <boost/numeric/mtl/operations/hessian_matrix_utilities.hpp>
-#include <boost/numeric/mtl/operations/assign_modes.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
+#include <boost/numeric/mtl/operation/matrix_mult.hpp>
+#include <boost/numeric/mtl/operation/hessian_matrix_utility.hpp>
+#include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 
 using namespace mtl;
@@ -25,7 +25,7 @@ using namespace std;
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 {
-    using modes::add_mult_assign_t; using modes::minus_mult_assign_t; 
+    using assign::plus_sum; using assign::minus_sum; 
     using recursion::bound_test_static;
 
     fill_hessian_matrix(a, 1.0);
@@ -39,14 +39,14 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     check_hessian_matrix_product(c, a.num_cols());
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
-    typedef gen_dense_mat_mat_mult_t<add_mult_assign_t>  add_mult_t;
+    typedef gen_dense_mat_mat_mult_t<plus_sum>  add_mult_t;
     add_mult_t add_mult;
 
     add_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
-    typedef gen_dense_mat_mat_mult_t<minus_mult_assign_t>  minus_mult_t;
+    typedef gen_dense_mat_mat_mult_t<minus_sum>  minus_mult_t;
     minus_mult_t minus_mult;
 
     minus_mult(a, b, c);
@@ -60,13 +60,13 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     check_hessian_matrix_product(c, a.num_cols());
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
-    gen_cursor_dense_mat_mat_mult_t<add_mult_assign_t>  cursor_add_mult;
+    gen_cursor_dense_mat_mat_mult_t<plus_sum>  cursor_add_mult;
 
     cursor_add_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
-    gen_cursor_dense_mat_mat_mult_t<minus_mult_assign_t>  cursor_minus_mult; 
+    gen_cursor_dense_mat_mat_mult_t<minus_sum>  cursor_minus_mult; 
 
     cursor_minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
@@ -79,14 +79,14 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     check_hessian_matrix_product(c, a.num_cols()); 
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
-    typedef gen_tiling_dense_mat_mat_mult_t<2, 2, add_mult_assign_t>  tiling_add_mult_t;
+    typedef gen_tiling_dense_mat_mat_mult_t<2, 2, plus_sum>  tiling_add_mult_t;
     tiling_add_mult_t tiling_add_mult;
 
     tiling_add_mult(a, b, c); 
     check_hessian_matrix_product(c, a.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
-    typedef gen_tiling_dense_mat_mat_mult_t<2, 2, minus_mult_assign_t>  tiling_minus_mult_t;
+    typedef gen_tiling_dense_mat_mat_mult_t<2, 2, minus_sum>  tiling_minus_mult_t;
     tiling_minus_mult_t tiling_minus_mult;
 
     tiling_minus_mult(a, b, c);
@@ -101,14 +101,14 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     check_hessian_matrix_product(c, a.num_cols()); 
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
-    typedef gen_tiling_22_dense_mat_mat_mult_t<add_mult_assign_t>  tiling_22_add_mult_t;
+    typedef gen_tiling_22_dense_mat_mat_mult_t<plus_sum>  tiling_22_add_mult_t;
     tiling_22_add_mult_t tiling_22_add_mult;
 
     tiling_22_add_mult(a, b, c); 
     check_hessian_matrix_product(c, a.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
-    typedef gen_tiling_22_dense_mat_mat_mult_t<minus_mult_assign_t>  tiling_22_minus_mult_t;
+    typedef gen_tiling_22_dense_mat_mat_mult_t<minus_sum>  tiling_22_minus_mult_t;
     tiling_22_minus_mult_t tiling_22_minus_mult;
 
     tiling_22_minus_mult(a, b, c);
@@ -123,14 +123,14 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     check_hessian_matrix_product(c, a.num_cols()); 
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
-    typedef gen_tiling_44_dense_mat_mat_mult_t<add_mult_assign_t>  tiling_44_add_mult_t;
+    typedef gen_tiling_44_dense_mat_mat_mult_t<plus_sum>  tiling_44_add_mult_t;
     tiling_44_add_mult_t tiling_44_add_mult;
 
     tiling_44_add_mult(a, b, c); 
     check_hessian_matrix_product(c, a.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
-    typedef gen_tiling_44_dense_mat_mat_mult_t<minus_mult_assign_t>  tiling_44_minus_mult_t;
+    typedef gen_tiling_44_dense_mat_mat_mult_t<minus_sum>  tiling_44_minus_mult_t;
     tiling_44_minus_mult_t tiling_44_minus_mult;
 
     tiling_44_minus_mult(a, b, c);
@@ -144,13 +144,13 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     check_hessian_matrix_product(c, a.num_cols()); 
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
-    gen_recursive_dense_mat_mat_mult_t<add_mult_t, bound_test_static<32>, add_mult_assign_t>  recursive_add_mult;
+    gen_recursive_dense_mat_mat_mult_t<add_mult_t, bound_test_static<32>, plus_sum>  recursive_add_mult;
 
     recursive_add_mult(a, b, c); 
     check_hessian_matrix_product(c, a.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
-    gen_recursive_dense_mat_mat_mult_t<minus_mult_t, bound_test_static<32>, minus_mult_assign_t>  recursive_minus_mult; 
+    gen_recursive_dense_mat_mat_mult_t<minus_mult_t, bound_test_static<32>, minus_sum>  recursive_minus_mult; 
     recursive_minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
 
@@ -162,19 +162,19 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     check_hessian_matrix_product(c, a.num_cols()); 
  
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
-    gen_recursive_dense_mat_mat_mult_t<tiling_add_mult_t, bound_test_static<32>, add_mult_assign_t>  recursive_tiling_add_mult;
+    gen_recursive_dense_mat_mat_mult_t<tiling_add_mult_t, bound_test_static<32>, plus_sum>  recursive_tiling_add_mult;
 
     recursive_tiling_add_mult(a, b, c); 
     check_hessian_matrix_product(c, a.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
-    gen_recursive_dense_mat_mat_mult_t<tiling_minus_mult_t, bound_test_static<32>, minus_mult_assign_t>  recursive_tiling_minus_mult; 
+    gen_recursive_dense_mat_mat_mult_t<tiling_minus_mult_t, bound_test_static<32>, minus_sum>  recursive_tiling_minus_mult; 
 
     recursive_tiling_minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
 
     std::cout << "\n" << name << "  --- calling mult recursively platform specific plus tiling:\n"; std::cout.flush();
-    typedef gen_platform_dense_mat_mat_mult_t<add_mult_assign_t, tiling_add_mult_t> platform_tiling_add_mult_t;
+    typedef gen_platform_dense_mat_mat_mult_t<plus_sum, tiling_add_mult_t> platform_tiling_add_mult_t;
     gen_recursive_dense_mat_mat_mult_t<platform_tiling_add_mult_t, bound_test_static<32> >  recursive_platform_tiling_mult;
     
     recursive_platform_tiling_mult(a, b, c);
@@ -194,13 +194,13 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     check_hessian_matrix_product(c, a.num_cols());
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
-    gen_platform_dense_mat_mat_mult_t<add_mult_assign_t>  platform_add_mult;
+    gen_platform_dense_mat_mat_mult_t<plus_sum>  platform_add_mult;
 
     platform_add_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
-    gen_platform_dense_mat_mat_mult_t<minus_mult_assign_t>  platform_minus_mult;
+    gen_platform_dense_mat_mat_mult_t<minus_sum>  platform_minus_mult;
 
     platform_minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
@@ -218,7 +218,7 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void single_test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 {
-    using modes::add_mult_assign_t; using modes::minus_mult_assign_t; 
+    using assign::plus_sum; using assign::minus_sum; 
     using recursion::bound_test_static;
 
     std::cout << "\n\n before matrix multiplication:\n";
@@ -226,7 +226,7 @@ void single_test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     std::cout << "B:\n"; print_matrix_row_cursor(b); 
     std::cout << "C:\n"; print_matrix_row_cursor(c); std::cout << "\n"; 
 
-    typedef gen_tiling_dense_mat_mat_mult_t<2, 2, add_mult_assign_t>  tiling_add_mult_t;
+    typedef gen_tiling_dense_mat_mat_mult_t<2, 2, plus_sum>  tiling_add_mult_t;
     tiling_add_mult_t tiling_add_mult;
     tiling_add_mult(a, b, c); 
     

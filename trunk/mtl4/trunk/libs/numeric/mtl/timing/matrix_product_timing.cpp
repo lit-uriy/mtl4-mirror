@@ -6,13 +6,13 @@
 #include <vector>
 #include <boost/timer.hpp>
 
-#include <boost/numeric/mtl/matrix_parameters.hpp>
-#include <boost/numeric/mtl/dense2D.hpp>
-#include <boost/numeric/mtl/morton_dense.hpp>
-#include <boost/numeric/mtl/operations/print_matrix.hpp>
-#include <boost/numeric/mtl/operations/matrix_mult.hpp>
-#include <boost/numeric/mtl/operations/hessian_matrix_utilities.hpp>
-#include <boost/numeric/mtl/operations/assign_modes.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/matrix/morton_dense.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
+#include <boost/numeric/mtl/operation/matrix_mult.hpp>
+#include <boost/numeric/mtl/operation/hessian_matrix_utility.hpp>
+#include <boost/numeric/mtl/operation/assign_mode.hpp>
 // #include <boost/numeric/mtl/recursion/recursive_matrix_mult.hpp>
 
 using namespace mtl;
@@ -47,16 +47,16 @@ const double max_time= 900;
 	shark_z_64_row_mask= generate_mask<false, 6, row_major, 1>::value,
 	shark_z_64_col_mask= generate_mask<false, 6, col_major, 1>::value;
 
-typedef modes::add_mult_assign_t                            ama_t;
+typedef assign::plus_sum                            ama_t;
 
 typedef recursion::bound_test_static<32>                    test32_t;
 typedef recursion::bound_test_static<64>                    test64_t;
 
-typedef gen_dense_mat_mat_mult_t<modes::add_mult_assign_t>  base_mult_t;
+typedef gen_dense_mat_mat_mult_t<assign::plus_sum>  base_mult_t;
 typedef gen_recursive_dense_mat_mat_mult_t<base_mult_t>     rec_mult_t;
 
-typedef gen_tiling_22_dense_mat_mat_mult_t<modes::add_mult_assign_t>  tiling_22_base_mult_t;
-typedef gen_tiling_44_dense_mat_mat_mult_t<modes::add_mult_assign_t>  tiling_44_base_mult_t;
+typedef gen_tiling_22_dense_mat_mat_mult_t<assign::plus_sum>  tiling_22_base_mult_t;
+typedef gen_tiling_44_dense_mat_mat_mult_t<assign::plus_sum>  tiling_44_base_mult_t;
 
 
 

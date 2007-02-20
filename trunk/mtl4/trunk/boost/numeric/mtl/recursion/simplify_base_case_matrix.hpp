@@ -3,8 +3,8 @@
 #ifndef MTL_SIMPLIFY_BASE_CASE_MATRIX_INCLUDE
 #define MTL_SIMPLIFY_BASE_CASE_MATRIX_INCLUDE
 
-#include <boost/numeric/mtl/dimensions.hpp>
-#include <boost/numeric/mtl/operations/sub_matrix.hpp>
+#include <boost/numeric/mtl/matrix/dimension.hpp>
+#include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
 
 

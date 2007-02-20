@@ -3,7 +3,7 @@
 #ifndef MTL_CRTP_BASE_MATRIX_INCLUDE
 #define MTL_CRTP_BASE_MATRIX_INCLUDE
 
-#include <boost/numeric/mtl/operations/matrix_brackets.hpp>
+#include <boost/numeric/mtl/operation/matrix_bracket.hpp>
 
 namespace mtl { namespace detail {
 

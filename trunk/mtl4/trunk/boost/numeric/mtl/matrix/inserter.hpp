@@ -3,7 +3,7 @@
 #ifndef MTL_MATRIX_INSERTER_INCLUDE
 #define MTL_MATRIX_INSERTER_INCLUDE
 
-#include <boost/numeric/mtl/operations/update.hpp>
+#include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/detail/trivial_inserter.hpp>
 
 

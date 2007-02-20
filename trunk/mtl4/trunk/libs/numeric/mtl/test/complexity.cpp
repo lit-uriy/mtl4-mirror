@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 
-#include <boost/numeric/mtl/complexity.hpp>
+#include <boost/numeric/mtl/utility/complexity.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/less.hpp>
 

@@ -4,10 +4,10 @@
 #define MTL_CHOLESKY_INCLUDE
 
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
-#include <boost/numeric/mtl/glas_tags.hpp>
-#include <boost/numeric/mtl/operations/matrix_mult.hpp>
-#include <boost/numeric/mtl/operations/assign_modes.hpp>
-#include <boost/numeric/mtl/transposed_view.hpp>
+#include <boost/numeric/mtl/utility/glas_tag.hpp>
+#include <boost/numeric/mtl/operation/matrix_mult.hpp>
+#include <boost/numeric/mtl/operation/assign_mode.hpp>
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/recursion/base_case_cast.hpp>
 
 namespace mtl {
@@ -130,17 +130,18 @@ namespace with_iterator {
     template < typename Matrix > 
     void cholesky_base (Matrix& matrix)
     {
-	using namespace glas::tags; using traits::range_generator;
+	using namespace glas::tag; using traits::range_generator;
+	typedef tag::iter::all    all_it;
 
         typedef typename Matrix::value_type                         value_type;
-        typedef typename range_generator<col_t, Matrix>::type       cur_type;             
+        typedef typename range_generator<col, Matrix>::type       cur_type;             
         typedef typename range_generator<all_it, cur_type>::type    iter_type;            
 
-	typedef typename range_generator<row_t, Matrix>::type       rcur_type;
+	typedef typename range_generator<row, Matrix>::type       rcur_type;
 	typedef typename range_generator<all_it, rcur_type>::type   riter_type;   
 	
 	typename Matrix::size_type k= 0;
-	for (cur_type kb= begin<col_t>(matrix), kend= end<col_t>(matrix); kb != kend; ++kb, ++k) {
+	for (cur_type kb= begin<col>(matrix), kend= end<col>(matrix); kb != kend; ++kb, ++k) {
 
 	    iter_type ib= begin<all_it>(kb), iend= end<all_it>(kb); 
 	    ib+= k; // points now to matrix[k][k]
@@ -149,7 +150,7 @@ namespace with_iterator {
 	    *ib= root;
 
 	    ++ib; // points now to matrix[k+1][k]
-	    rcur_type rb= begin<row_t>(matrix); rb+= k+1; // to row k+1
+	    rcur_type rb= begin<row>(matrix); rb+= k+1; // to row k+1
 	    for (int i= k + 1; ib != iend; ++ib, ++rb, ++i) {
 		*ib = *ib / root;
 		typename Matrix::value_type d = *ib;
@@ -160,31 +161,20 @@ namespace with_iterator {
 		    *it1 = *it1 - d * *it2;
 	    }
 	}
-#if 0
-	for (int k = 0; k < matrix.num_rows (); k++) {
-	    matrix[k][k] = sqrt (matrix[k][k]);
-	    
-	    for (int i = k + 1; i < matrix.num_rows (); i++) {
-		matrix[i][k] /= matrix[k][k];
-		typename Matrix::value_type d = matrix[i][k];
-		
-		for (int j = k + 1; j <= i; j++)
-		    matrix[i][j] -= d * matrix[j][k];
-	    }
-	}
-#endif
     }
 
     
     template < typename MatrixSW, typename MatrixNW > 
     void tri_solve_base(MatrixSW & SW, const MatrixNW & NW)
     {
-	using namespace glas::tags; using traits::range_generator;
+	using namespace glas::tag; using traits::range_generator;
+	typedef tag::iter::all        all_it;
+	typedef tag::const_iter::all  all_cit;
 
-        typedef typename range_generator<col_t, MatrixNW>::type       ccur_type;             
+        typedef typename range_generator<col, MatrixNW>::type       ccur_type;             
         typedef typename range_generator<all_cit, ccur_type>::type    citer_type;            
 
-	typedef typename range_generator<row_t, MatrixSW>::type       rcur_type;
+	typedef typename range_generator<row, MatrixSW>::type       rcur_type;
 	typedef typename range_generator<all_it, rcur_type>::type     riter_type;   
 
 	for (int k = 0; k < NW.num_rows (); k++) 
@@ -192,11 +182,11 @@ namespace with_iterator {
 
 		typename MatrixSW::value_type d = SW[i][k] /= NW[k][k];
 
-		rcur_type sw_i= begin<row_t>(SW);     sw_i+= i;  // row i
+		rcur_type sw_i= begin<row>(SW);     sw_i+= i;  // row i
 		riter_type it1= begin<all_it>(sw_i);  it1+= k+1; // SW[i][k+1]
 		riter_type it1end= end<all_it>(sw_i);    
 	
-		ccur_type nw_k= begin<col_t>(NW);     nw_k+= k;  // column k
+		ccur_type nw_k= begin<col>(NW);     nw_k+= k;  // column k
 		citer_type it2= begin<all_cit>(nw_k); it2+= k+1; // NW[k+1][k]
 
 		for(; it1 != it1end; ++it1, ++it2)
@@ -209,23 +199,25 @@ namespace with_iterator {
     template < typename MatrixSE, typename MatrixSW > 
     void tri_schur_base(MatrixSE & SE, const MatrixSW & SW)
     {
-	using namespace glas::tags; using traits::range_generator;
+	using namespace glas::tag; using traits::range_generator;
+	typedef tag::iter::all        all_it;
+	typedef tag::const_iter::all  all_cit;
 
-        typedef typename range_generator<col_t, MatrixSW>::type       ccur_type;             
+        typedef typename range_generator<col, MatrixSW>::type       ccur_type;             
         typedef typename range_generator<all_cit, ccur_type>::type    citer_type;            
 
-	typedef typename range_generator<row_t, MatrixSE>::type       rcur_type;
+	typedef typename range_generator<row, MatrixSE>::type       rcur_type;
 	typedef typename range_generator<all_it, rcur_type>::type     riter_type;   
 
 	for (int k = 0; k < SW.num_cols (); k++)
 	    for (int i = 0; i < SE.num_rows (); i++) {
 		typename MatrixSW::value_type d = SW[i][k];
 
-		rcur_type se_i= begin<row_t>(SE);       se_i+= i;      // row i
+		rcur_type se_i= begin<row>(SE);       se_i+= i;      // row i
 		riter_type it1= begin<all_it>(se_i);                   // SE[i][0]
 		riter_type it1end= begin<all_it>(se_i); it1end+= i+1;  // SE[i][i+i]
 
-		ccur_type sw_k= begin<col_t>(SW);     sw_k+= k;        // column k
+		ccur_type sw_k= begin<col>(SW);     sw_k+= k;        // column k
 		citer_type it2= begin<all_cit>(sw_k);                  // SW[0][k]
 
 		for(; it1 != it1end; ++it1, ++it2)
@@ -237,23 +229,25 @@ namespace with_iterator {
     template < typename MatrixNE, typename MatrixNW, typename MatrixSW >
     void schur_update_base(MatrixNE & NE, const MatrixNW & NW, const MatrixSW & SW)
     {
-	using namespace glas::tags; using traits::range_generator;
+	using namespace glas::tag; using traits::range_generator;
+	typedef tag::iter::all        all_it;
+	typedef tag::const_iter::all  all_cit;
 
-        typedef typename range_generator<col_t, MatrixSW>::type       ccur_type;             
+        typedef typename range_generator<col, MatrixSW>::type       ccur_type;             
         typedef typename range_generator<all_cit, ccur_type>::type    citer_type;            
 
-	typedef typename range_generator<row_t, MatrixNE>::type       rcur_type;
+	typedef typename range_generator<row, MatrixNE>::type       rcur_type;
 	typedef typename range_generator<all_it, rcur_type>::type     riter_type;   
 
 	for (int k = 0; k < NW.num_cols (); k++) 
 	    for (int i = 0; i < NE.num_rows (); i++) {
 		typename MatrixNW::value_type d = NW[i][k];
 
-		rcur_type ne_i= begin<row_t>(NE);       ne_i+= i;      // row i
+		rcur_type ne_i= begin<row>(NE);       ne_i+= i;      // row i
 		riter_type it1= begin<all_it>(ne_i);                   // NE[i][0]
 		riter_type it1end= end<all_it>(ne_i);                  // NE[i][num_col]
 
-		ccur_type sw_k= begin<col_t>(SW);     sw_k+= k;        // column k
+		ccur_type sw_k= begin<col>(SW);     sw_k+= k;        // column k
 		citer_type it2= begin<all_cit>(sw_k);                  // SW[0][k]
 
 		for (int j = 0; j < NE.num_cols (); j++)
@@ -510,7 +504,7 @@ struct recursive_cholesky_t
     template <typename Matrix, typename Visitor>
     void operator()(Matrix& matrix, Visitor vis)
     {
-	apply(matrix, vis, typename traits::matrix_category<Matrix>::type());
+	apply(matrix, vis, typename traits::category<Matrix>::type());
     }   
  
 private:

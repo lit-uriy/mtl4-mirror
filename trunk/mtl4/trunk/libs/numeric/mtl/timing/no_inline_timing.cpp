@@ -6,13 +6,13 @@
 #include <vector>
 #include <boost/timer.hpp>
 
-#include <boost/numeric/mtl/matrix_parameters.hpp>
-#include <boost/numeric/mtl/dense2D.hpp>
-#include <boost/numeric/mtl/morton_dense.hpp>
-#include <boost/numeric/mtl/operations/print_matrix.hpp>
-#include <boost/numeric/mtl/operations/matrix_mult.hpp>
-#include <boost/numeric/mtl/operations/hessian_matrix_utilities.hpp>
-#include <boost/numeric/mtl/operations/assign_modes.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/matrix/morton_dense.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
+#include <boost/numeric/mtl/operation/matrix_mult.hpp>
+#include <boost/numeric/mtl/operation/hessian_matrix_utility.hpp>
+#include <boost/numeric/mtl/operation/assign_mode.hpp>
 // #include <boost/numeric/mtl/recursion/recursive_matrix_mult.hpp>
 
 using namespace mtl;
@@ -47,17 +47,17 @@ const double max_time= 900;
 	shark_z_64_row_mask= generate_mask<false, 6, row_major, 1>::value,
 	shark_z_64_col_mask= generate_mask<false, 6, col_major, 1>::value;
 
-typedef modes::add_mult_assign_t                            ama_t;
+typedef assign::plus_sum                            ama_t;
 
 typedef recursion::bound_test_static<32>                    test32_t;
 typedef recursion::bound_test_static<64>                    test64_t;
 
-typedef gen_dense_mat_mat_mult_t<modes::add_mult_assign_t>  base_mult_t;
+typedef gen_dense_mat_mat_mult_t<assign::plus_sum>  base_mult_t;
 typedef gen_recursive_dense_mat_mat_mult_t<base_mult_t>     rec_mult_t;
 
-typedef gen_tiling_22_dense_mat_mat_mult_t<modes::add_mult_assign_t>  tiling_22_base_mult_t;
-typedef gen_tiling_44_dense_mat_mat_mult_t<modes::add_mult_assign_t>  tiling_44_base_mult_t;
-typedef gen_tiling_dense_mat_mat_mult_t<2, 4, modes::add_mult_assign_t>  tiling_24_base_mult_t;
+typedef gen_tiling_22_dense_mat_mat_mult_t<assign::plus_sum>  tiling_22_base_mult_t;
+typedef gen_tiling_44_dense_mat_mat_mult_t<assign::plus_sum>  tiling_44_base_mult_t;
+typedef gen_tiling_dense_mat_mat_mult_t<2, 4, assign::plus_sum>  tiling_24_base_mult_t;
 
 
 
@@ -167,7 +167,7 @@ void mult_simple_ptu22t(const MatrixA& a, const MatrixB& b, MatrixC& c)
     typedef typename MatrixC::value_type  value_type;
     const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
     
-    set_to_0(c);
+    set_to_zero(c);
 
     // Temporary solution; dense matrices need to return const referencens
     MatrixA& aref= const_cast<MatrixA&>(a);
@@ -189,10 +189,10 @@ void mult_simple_ptu22t(const MatrixA& a, const MatrixB& b, MatrixC& c)
 		tmp10+= *(begin_a+ari) * *begin_b;
 		tmp11+= *(begin_a+ari) * *(begin_b+bci);
 	    }
-	    modes::mult_assign_t::update(c[i][k], tmp00);
-	    modes::mult_assign_t::update(c[i][k+1], tmp01);
-	    modes::mult_assign_t::update(c[i+1][k], tmp10);
-	    modes::mult_assign_t::update(c[i+1][k+1], tmp11);
+	    assign::assign_sum::update(c[i][k], tmp00);
+	    assign::assign_sum::update(c[i][k+1], tmp01);
+	    assign::assign_sum::update(c[i+1][k], tmp10);
+	    assign::assign_sum::update(c[i+1][k+1], tmp11);
 
 #if 0
 	    c[i][k]= tmp00; c[i][k+1]= tmp01;
@@ -215,11 +215,11 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix,
     gen_recursive_dense_mat_mat_mult_t<tiling_44_base_mult_t> mult_44;
     gen_recursive_dense_mat_mat_mult_t<tiling_24_base_mult_t> mult_24;
 
-    typedef gen_tiling_22_dense_mat_mat_mult_ft<Matrix, MatrixB, Matrix, modes::add_mult_assign_t> 
+    typedef gen_tiling_22_dense_mat_mat_mult_ft<Matrix, MatrixB, Matrix, assign::plus_sum> 
       tiling_22_t;
     typedef no_inline3<tiling_22_t, void, const Matrix, const MatrixB, Matrix> tiling_22_no_inline_t;
 
-    typedef gen_tiling_44_dense_mat_mat_mult_ft<Matrix, MatrixB, Matrix, modes::add_mult_assign_t> 
+    typedef gen_tiling_44_dense_mat_mat_mult_ft<Matrix, MatrixB, Matrix, assign::plus_sum> 
       tiling_44_t;
     typedef no_inline3<tiling_44_t, void, const Matrix, const MatrixB, Matrix> tiling_44_no_inline_t;
 

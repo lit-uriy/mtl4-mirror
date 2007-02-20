@@ -4,7 +4,7 @@
 #define MTL_DIM_SPLITTER_INCLUDE
 
 #include <algorithm>
-#include <boost/numeric/mtl/recursion/utilities.hpp>
+#include <boost/numeric/mtl/recursion/utility.hpp>
 
 namespace mtl { namespace recursion {
 

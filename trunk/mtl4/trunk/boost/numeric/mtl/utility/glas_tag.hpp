@@ -3,6 +3,8 @@
 #ifndef GLAS_GLAS_TAG_INCLUDE
 #define GLAS_GLAS_TAG_INCLUDE
 
+#undef major
+
 namespace glas { namespace tag {
 
 // To iterate only over non-zero elements

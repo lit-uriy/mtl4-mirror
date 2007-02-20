@@ -8,8 +8,8 @@
 
 #if defined MTL_USE_OPTERON_OPTIMIZATION && defined __GNUC__ && !defined __INTEL_COMPILER
 
-#include <boost/numeric/mtl/operations/assign_modes.hpp>
-#include <boost/numeric/mtl/operations/set_to_0.hpp>
+#include <boost/numeric/mtl/operation/assign_mode.hpp>
+#include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
 
 
@@ -101,7 +101,7 @@ struct gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morto
 
 	if (detail::opteron_shark_teeth<MaskA, MaskB, MaskC>::value) {
 	    if (Assign::init_to_zero) 
-		set_to_0(c);
+		set_to_zero(c);
 	    if (a.num_rows() == 32 && a.num_cols() == 32 && b.num_cols() == 32) {
 		double *ap= &const_cast<morton_dense<double, MaskA, PA>&>(a)[0][0],
 		       *bp= &const_cast<morton_dense<double, MaskB, PB>&>(b)[0][0], *cp= &c[0][0];
@@ -121,7 +121,7 @@ template <unsigned long MaskA, typename PA,
 	  unsigned long MaskC, typename PC,
 	  typename Backup>
 struct gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
-					 morton_dense<double, MaskC, PC>, modes::minus_mult_assign_t, Backup>
+					 morton_dense<double, MaskC, PC>, assign::minus_sum, Backup>
 {
     void mult_ass(double * D, double * C, double * BT) const;
 
@@ -136,7 +136,7 @@ struct gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morto
 		       *bp= &const_cast<morton_dense<double, MaskB, PB>&>(b)[0][0], *cp= &c[0][0];
 		mult_ass(cp, ap, bp);
 	    } else 
-		detail::opteron_shark_teeth_mult<modes::minus_mult_assign_t>(a, b, c);
+		detail::opteron_shark_teeth_mult<assign::minus_sum>(a, b, c);
 	    return;
 	}
 	Backup()(a, b, c);
@@ -844,7 +844,7 @@ template <unsigned long MaskA, typename PA,
 	  unsigned long MaskC, typename PC,
 	  typename Backup>
 void gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
-				       morton_dense<double, MaskC, PC>, modes::minus_mult_assign_t, Backup>::
+				       morton_dense<double, MaskC, PC>, assign::minus_sum, Backup>::
 mult_ass(double * D, double * C, double * BT) const
 {
     	std::cout << "in Assembly\n";

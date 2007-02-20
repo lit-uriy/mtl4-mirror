@@ -7,10 +7,10 @@
 #include <boost/static_assert.hpp>
 
 #include <boost/numeric/linear_algebra/identity.hpp>
-#include <boost/numeric/mtl/dense2D.hpp>
-#include <boost/numeric/mtl/operations/hessian_matrix_utilities.hpp>
-#include <boost/numeric/mtl/operations/set_to_0.hpp>
-#include <boost/numeric/mtl/operations/assign_modes.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/operation/hessian_matrix_utility.hpp>
+#include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/mtl/operation/assign_mode.hpp>
 
 using namespace std;
 using namespace mtl;
@@ -286,7 +286,7 @@ void mult_simple_ptu22t(const MatrixA& a, const MatrixB& b, MatrixC& c)
     typedef typename MatrixC::value_type  value_type;
     const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
     
-    set_to_0(c);b
+    set_to_zero(c);b
 
     // Temporary solution; dense matrices need to return const referencens
     MatrixA& aref= const_cast<MatrixA&>(a);
@@ -308,10 +308,10 @@ void mult_simple_ptu22t(const MatrixA& a, const MatrixB& b, MatrixC& c)
 		tmp10+= *(begin_a+ari) * *begin_b;
 		tmp11+= *(begin_a+ari) * *(begin_b+bci);
 	    }
-	    modes::mult_assign_t::update(c[i][k], tmp00);
-	    modes::mult_assign_t::update(c[i][k+1], tmp01);
-	    modes::mult_assign_t::update(c[i+1][k], tmp10);
-	    modes::mult_assign_t::update(c[i+1][k+1], tmp11);
+	    assign::assign_sum::update(c[i][k], tmp00);
+	    assign::assign_sum::update(c[i][k+1], tmp01);
+	    assign::assign_sum::update(c[i+1][k], tmp10);
+	    assign::assign_sum::update(c[i+1][k+1], tmp11);
 
 #if 0
 	    c[i][k]= tmp00; c[i][k+1]= tmp01;
@@ -521,7 +521,7 @@ void double_matmat_mult_template(MatrixA& a, MatrixB& b, MatrixC& c)
 {
     BOOST_STATIC_ASSERT(Outer * Middle * Inner <= 16);
  
-    set_to_0(c);
+    set_to_zero(c);
     double_matmat_mult_block<1, Outer, 1, Middle, 1, Inner> block;
     using std::size_t;
     for (size_t i= 0; i < c.num_rows(); i+= Outer)
@@ -613,7 +613,7 @@ void twice_double_matmat_mult_template(MatrixA& a, MatrixB& b, MatrixC& c)
 {
     BOOST_STATIC_ASSERT(Outer * Inner <= 16);
  
-    set_to_0(c);
+    set_to_zero(c);
     twice_double_matmat_mult_block<1, Outer, 1, Inner> block;
     using std::size_t;
     for (size_t i= 0; i < c.num_rows(); i+= Outer)

@@ -4,13 +4,14 @@
 #include <cmath>
 #include <boost/test/minimal.hpp>
 
-#include <boost/numeric/mtl/dense2D.hpp>
-#include <boost/numeric/mtl/morton_dense.hpp> 
-#include <boost/numeric/mtl/operations/print_matrix.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/matrix/morton_dense.hpp> 
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
+#include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
-#include <boost/numeric/mtl/operations/assign_modes.hpp>
-#include <boost/numeric/mtl/operations/matrix_mult.hpp>
-#include <boost/numeric/mtl/operations/cholesky.hpp>
+#include <boost/numeric/mtl/operation/assign_mode.hpp>
+#include <boost/numeric/mtl/operation/matrix_mult.hpp>
+#include <boost/numeric/mtl/operation/cholesky.hpp>
 
 using namespace mtl;
 using namespace std;  
@@ -101,7 +102,7 @@ void test(Matrix& matrix, const char* name)
 
     fill_matrix_for_cholesky(matrix);
 
-    typedef detail::mult_schur_update_t<gen_tiling_22_dense_mat_mat_mult_t<modes::minus_mult_assign_t> > schur_update_22_t;
+    typedef detail::mult_schur_update_t<gen_tiling_22_dense_mat_mat_mult_t<assign::minus_sum> > schur_update_22_t;
     recursive_cholesky_visitor_t<recursion::bound_test_static<2>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
                                  with_iterator::tri_schur_base_t, schur_update_22_t>   
         iter_vis4;
