@@ -3,10 +3,15 @@
 #ifndef MTL_TAG_INCLUDE
 #define MTL_TAG_INCLUDE
 
+#include <boost/numeric/mtl/utility/glas_tag.hpp>
+
 namespace mtl { namespace tag {
 
 // For non-MTL types not explicitly defined
 struct unknown {};
+
+// For internal use (e.g., to invalidate range generators)
+struct unsupported {};
 
 // tag for all types
 struct universe {};
@@ -84,6 +89,42 @@ struct col_major {};
 
 using row_major;
 using col_major;
+
+// =====================
+// Tags for traversals
+// Import some from GLAS
+// =====================
+
+namespace tag {
+
+    using glas::tag::nz;
+    using glas::tag::all;
+
+    using glas::tag::row;
+    using glas::tag::col;
+
+    using glas::tag::major;
+    using glas::tag::minor;
+
+    // To define iterators over matrices or rows/cols of it, vectors
+
+    namespace iter {
+
+	struct nz {};
+	struct all {};
+
+    } // namespace mtl::tag::iter
+
+    // Same with const iterators
+
+    namespace const_iter {
+
+	struct nz {};
+	struct all {};
+
+    } // namespace mtl::tag::const_iter
+
+} // namespace mtl::tag
 
 
 } // namespace mtl
