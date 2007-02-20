@@ -106,13 +106,6 @@ public:
 
 namespace traits {
 
-#if 0
-    template <class Matrix> struct is_mtl_type<transposed_view<Matrix> > 
-    {
-	static bool const value= is_mtl_type<Matrix>::value; 
-    };
-#endif
-
     template <class Matrix> 
     struct category<transposed_view<Matrix> >
     {
