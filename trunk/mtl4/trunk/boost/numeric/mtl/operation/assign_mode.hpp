@@ -1,15 +1,15 @@
 // $COPYRIGHT$
 
-#ifndef MTL_ASSIGN_MODES_INCLUDE
-#define MTL_ASSIGN_MODES_INCLUDE
+#ifndef MTL_ASSIGN_MODE_INCLUDE
+#define MTL_ASSIGN_MODE_INCLUDE
 
 #include <boost/numeric/linear_algebra/identity.hpp>
 
-namespace mtl { namespace modes {
+namespace mtl { namespace assign {
 
-struct mult_assign_t
+struct assign_sum
 {
-    static const bool init_to_0= true;
+    static const bool init_to_zero= true;
 
     template <typename T>
     static void init(T& v)
@@ -26,9 +26,9 @@ struct mult_assign_t
 };
 
 
-struct add_mult_assign_t
+struct plus_sum
 {
-    static const bool init_to_0= false;
+    static const bool init_to_zero= false;
 
     template <typename T>
     static void init(T& v) {}
@@ -41,9 +41,9 @@ struct add_mult_assign_t
 };
 
 
-struct minus_mult_assign_t
+struct minus_sum
 {
-    static const bool init_to_0= false;
+    static const bool init_to_zero= false;
 
     template <typename T>
     static void init(T& v) {}
@@ -56,6 +56,6 @@ struct minus_mult_assign_t
 };
 
 
-}} // namespace mtl::modes
+}} // namespace mtl::assign
 
-#endif // MTL_ASSIGN_MODES_INCLUDE
+#endif // MTL_ASSIGN_MODE_INCLUDE
