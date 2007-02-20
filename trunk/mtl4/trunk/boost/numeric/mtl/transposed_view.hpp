@@ -10,6 +10,22 @@
 
 namespace mtl {
 
+
+// Orientation type for transposed matrix
+template <class T> struct transposed_orientation {};
+
+template<> struct transposed_orientation<tag::row_major> 
+{
+    typedef tag::col_major type; 
+};
+
+template<> struct transposed_orientation<tag::col_major> 
+{
+    typedef tag::row_major type; 
+};
+
+
+
 template <class Matrix> class transposed_view 
   : public detail::crtp_base_matrix< transposed_view<Matrix>, typename Matrix::value_type, typename Matrix::size_type >
 {
