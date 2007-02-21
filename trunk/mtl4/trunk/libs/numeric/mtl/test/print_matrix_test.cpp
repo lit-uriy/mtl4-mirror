@@ -10,7 +10,7 @@
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
-#include <boost/numeric/mtl/operation/print_matrix.hpp>
+#include <boost/numeric/mtl/operation/print.hpp>
 
 
 
@@ -63,16 +63,26 @@ void print_matrix(Matrix& matrix)
 template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
-    std::cout << name;
+    {
+	matrix_inserter<Matrix> ins(matrix);
+	for (int i= 0; i < matrix.num_rows(); i++)
+	    for (int j= 0; j < matrix.num_cols(); j++)
+		if ((i + j) & 1)
+		    ins(i, j) << i + 2*j;
+    }
 
-    matrix_inserter<Matrix> ins(matrix);
-    for (int i= 0; i < matrix.num_rows(); i++)
-	for (int j= 0; j < matrix.num_cols(); j++)
-	    if ((i + j) & 1)
-		ins(i, j) << i + j;
+    std::cout << "\n" << name << "\n";
+    mtl::print_matrix(matrix);
 
-    print_matrix(matrix);
+    transposed_view<Matrix> trans(matrix);
+    std::cout << "Transposed" << "\n";
+    mtl::print_matrix(trans);
 
+    std::cout << "with <<" << "\n"
+	      << trans << "\n";
+
+    std::cout << "with << and formatted" << "\n"
+	      << mtl::with_format(trans, 7, 4) << "\n";
 }
 
 

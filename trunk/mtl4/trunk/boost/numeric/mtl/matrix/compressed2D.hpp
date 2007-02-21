@@ -23,9 +23,8 @@ namespace mtl {
 
 
 // Forward declarations
-struct compressed2D_indexer;
-template <typename Elt, typename Parameters> class compressed2D;
-template <typename Elt, typename Parameters, typename Updater> class compressed2D_inserter;
+// template <typename Elt, typename Parameters> class compressed2D;
+// template <typename Elt, typename Parameters, typename Updater> class compressed2D_inserter;
 
 struct compressed_key
 {
@@ -541,16 +540,6 @@ void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
     }
 }
 
-template <typename Elt, typename Parameters>
-struct matrix_inserter<compressed2D<Elt, Parameters>, mtl::operations::update_store<Elt> >
-  : compressed2D_inserter<Elt, Parameters, mtl::operations::update_store<Elt> >
-{
-    typedef compressed2D<Elt, Parameters>     matrix_type;
-    typedef typename matrix_type::size_type   size_type;
-    typedef compressed2D_inserter<Elt, Parameters, mtl::operations::update_store<Elt> > base;
-
-    explicit matrix_inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix. slot_size) {}
-};
 
 template <typename Elt, typename Parameters, typename Updater>
 struct matrix_inserter<compressed2D<Elt, Parameters>, Updater>
@@ -762,7 +751,7 @@ namespace traits
     template <class Elt, class Parameters>
     struct category<compressed2D<Elt, Parameters> > 
     {
-	typedef tag::sparse type;
+	typedef tag::compressed2D type;
     };
 
 
