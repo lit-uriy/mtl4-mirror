@@ -122,6 +122,6 @@ verify_matrix (Matrix & A)
 		element += A[i][k] * A[j][k];
 	    std::cout << element << "  ";
 	}
-	std::cout << endl;
+	std::cout << std::endl;
     }
 }
