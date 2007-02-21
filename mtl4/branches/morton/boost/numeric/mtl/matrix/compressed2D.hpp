@@ -23,9 +23,8 @@ namespace mtl {
 
 
 // Forward declarations
-struct compressed2D_indexer;
-template <typename Elt, typename Parameters> class compressed2D;
-template <typename Elt, typename Parameters, typename Updater> class compressed2D_inserter;
+// template <typename Elt, typename Parameters> class compressed2D;
+// template <typename Elt, typename Parameters, typename Updater> class compressed2D_inserter;
 
 struct compressed_key
 {
@@ -236,7 +235,7 @@ struct compressed2D_indexer
 
 // Compressed 2D matrix type
 // For now no external data
-template <typename Elt, typename Parameters>
+template <typename Elt, typename Parameters = matrix_parameters<> >
 class compressed2D 
   : public detail::base_matrix<Elt, Parameters>,
     public detail::const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >
@@ -278,6 +277,14 @@ class compressed2D
     // setting dimension and allocate starting vector
     explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
       : super(d), inserting(false)
+    {
+	starts.resize(super::dim1() + 1, 0);
+	allocate(nnz);
+    }
+
+    // setting dimension and allocate starting vector
+    explicit compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
+      : super(non_fixed::dimensions(num_rows, num_cols)), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
@@ -533,16 +540,6 @@ void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
     }
 }
 
-template <typename Elt, typename Parameters>
-struct matrix_inserter<compressed2D<Elt, Parameters>, mtl::operations::update_store<Elt> >
-  : compressed2D_inserter<Elt, Parameters, mtl::operations::update_store<Elt> >
-{
-    typedef compressed2D<Elt, Parameters>     matrix_type;
-    typedef typename matrix_type::size_type   size_type;
-    typedef compressed2D_inserter<Elt, Parameters, mtl::operations::update_store<Elt> > base;
-
-    explicit matrix_inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix. slot_size) {}
-};
 
 template <typename Elt, typename Parameters, typename Updater>
 struct matrix_inserter<compressed2D<Elt, Parameters>, Updater>
@@ -749,19 +746,12 @@ namespace traits
 	}	
     };
 
-#if 0
-    template <class Elt, class Parameters>
-    struct is_mtl_type<compressed2D<Elt, Parameters> > 
-    {
-	static bool const value= true; 
-    };
-#endif
 
     // define corresponding type without all template parameters
     template <class Elt, class Parameters>
     struct category<compressed2D<Elt, Parameters> > 
     {
-	typedef tag::sparse type;
+	typedef tag::compressed2D type;
     };
 
 

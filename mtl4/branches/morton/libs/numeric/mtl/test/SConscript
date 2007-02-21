@@ -11,6 +11,7 @@ sources = Split("""base_case_conversion.cpp
              matrix_product_test.cpp
              morton_dense.cpp
              sub_matrix.cpp
+	     print_matrix_test.cpp
 """)
 
 programs = []
