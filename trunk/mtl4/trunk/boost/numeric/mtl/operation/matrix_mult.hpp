@@ -837,50 +837,53 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 // Recursive Multiplication
 // ========================
 
-template <typename BaseMult, typename BaseTest= recursion::bound_test_static<64> >
-struct recurator_dense_mat_mat_mult_t
-{
-    template <typename RecA, typename RecB, typename RecC>
-    void operator()(RecA const& rec_a, RecB const& rec_b, RecC& rec_c)
+namespace with_recurator {
+
+    template <typename BaseMult, typename BaseTest= recursion::bound_test_static<64> >
+    struct gen_dense_mat_mat_mult_t
     {
-	using recursion::base_case_cast;
+	template <typename RecA, typename RecB, typename RecC>
+	void operator()(RecA const& rec_a, RecB const& rec_b, RecC& rec_c)
+	{
+	    using recursion::base_case_cast;
 #if 0
-	std::cout << "\n\n before matrix multiplication:\n";
-	std::cout << "A:\n"; print_matrix_row_cursor(rec_a.get_value());
-	std::cout << "B:\n"; print_matrix_row_cursor(rec_b.get_value());
-	std::cout << "C:\n"; print_matrix_row_cursor(rec_c.get_value());
+	    std::cout << "\n\n before matrix multiplication:\n";
+	    std::cout << "A:\n"; print_matrix_row_cursor(rec_a.get_value());
+	    std::cout << "B:\n"; print_matrix_row_cursor(rec_b.get_value());
+	    std::cout << "C:\n"; print_matrix_row_cursor(rec_c.get_value());
 #endif
 
-	if (rec_a.is_empty() || rec_b.is_empty() || rec_c.is_empty())
-	    return;
+	    if (rec_a.is_empty() || rec_b.is_empty() || rec_c.is_empty())
+		return;
 
-	if (BaseTest()(rec_a)) {
-	    typename recursion::base_case_matrix<typename RecC::matrix_type, BaseTest>::type
-		c= base_case_cast<BaseTest>(rec_c.get_value());
-	    BaseMult()(base_case_cast<BaseTest>(rec_a.get_value()),
-		       base_case_cast<BaseTest>(rec_b.get_value()), c);
-	} else {
-	    RecC c_north_west= rec_c.north_west(), c_north_east= rec_c.north_east(),
-		 c_south_west= rec_c.south_west(), c_south_east= rec_c.south_east();
+	    if (BaseTest()(rec_a)) {
+		typename recursion::base_case_matrix<typename RecC::matrix_type, BaseTest>::type
+		    c= base_case_cast<BaseTest>(rec_c.get_value());
+		BaseMult()(base_case_cast<BaseTest>(rec_a.get_value()),
+			   base_case_cast<BaseTest>(rec_b.get_value()), c);
+	    } else {
+		RecC c_north_west= rec_c.north_west(), c_north_east= rec_c.north_east(),
+		    c_south_west= rec_c.south_west(), c_south_east= rec_c.south_east();
 
-	    (*this)(rec_a.north_west(), rec_b.north_west(), c_north_west);
-	    (*this)(rec_a.north_west(), rec_b.north_east(), c_north_east);
-	    (*this)(rec_a.south_west(), rec_b.north_east(), c_south_east);
-	    (*this)(rec_a.south_west(), rec_b.north_west(), c_south_west);
-	    (*this)(rec_a.south_east(), rec_b.south_west(), c_south_west);
-	    (*this)(rec_a.south_east(), rec_b.south_east(), c_south_east);
-	    (*this)(rec_a.north_east(), rec_b.south_east(), c_north_east);
-	    (*this)(rec_a.north_east(), rec_b.south_west(), c_north_west);
+		(*this)(rec_a.north_west(), rec_b.north_west(), c_north_west);
+		(*this)(rec_a.north_west(), rec_b.north_east(), c_north_east);
+		(*this)(rec_a.south_west(), rec_b.north_east(), c_south_east);
+		(*this)(rec_a.south_west(), rec_b.north_west(), c_south_west);
+		(*this)(rec_a.south_east(), rec_b.south_west(), c_south_west);
+		(*this)(rec_a.south_east(), rec_b.south_east(), c_south_east);
+		(*this)(rec_a.north_east(), rec_b.south_east(), c_north_east);
+		(*this)(rec_a.north_east(), rec_b.south_west(), c_north_west);
+	    }
+#if 0
+	    std::cout << "\n\n after matrix multiplication:\n";
+	    std::cout << "A:\n"; print_matrix_row_cursor(rec_a.get_value());
+	    std::cout << "B:\n"; print_matrix_row_cursor(rec_b.get_value());
+	    std::cout << "C:\n"; print_matrix_row_cursor(rec_c.get_value());
+#endif
 	}
-#if 0
-	std::cout << "\n\n after matrix multiplication:\n";
-	std::cout << "A:\n"; print_matrix_row_cursor(rec_a.get_value());
-	std::cout << "B:\n"; print_matrix_row_cursor(rec_b.get_value());
-	std::cout << "C:\n"; print_matrix_row_cursor(rec_c.get_value());
-#endif
-    }
+    };
 
-};
+} // namespace with_recurator
 
 
 template <typename BaseMult, 
@@ -923,7 +926,7 @@ private:
 	matrix_recurator<MatrixC>    rec_c(c);
 	equalize_depth(rec_a, rec_b, rec_c);
 
-	recurator_dense_mat_mat_mult_t<BaseMult, BaseTest>() (rec_a, rec_b, rec_c);
+	with_recurator::gen_dense_mat_mat_mult_t<BaseMult, BaseTest>() (rec_a, rec_b, rec_c);
     }
 };
 
