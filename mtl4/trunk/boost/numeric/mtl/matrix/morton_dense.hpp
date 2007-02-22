@@ -413,7 +413,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	this->data[key.dilated_row.dilated_value() + key.dilated_col.dilated_value()]= value;
     }
 
-    value_type operator() (size_type row, size_type col) const
+    const value_type& operator() (size_type row, size_type col) const
     {
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }

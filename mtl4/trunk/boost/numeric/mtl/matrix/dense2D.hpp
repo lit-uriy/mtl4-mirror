@@ -337,8 +337,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	return r >= this->begin_row() && r < this->end_row() && c >= this->begin_col() && c < this->end_col();
     }
 
-    // old style, better use value property map
-    value_type operator() (size_t r, size_t c) const 
+    
+    const value_type& operator() (size_t r, size_t c) const 
     {
 	// assert(check_indices(r, c));  // causes trouble for iterator/cursor creation
 	size_t offset= indexer(*this, r, c);

@@ -10,17 +10,21 @@ namespace mtl { namespace detail {
 template <typename Matrix, typename ValueType, typename SizeType>
 struct const_crtp_base_matrix
 {    
-    operations::bracket_proxy<Matrix, Matrix const&, ValueType>
+    operations::bracket_proxy<Matrix, const Matrix&, ValueType>
     operator[] (SizeType row) const
     {
-	return operations::bracket_proxy<Matrix, Matrix const&, ValueType>(static_cast<Matrix const&>(*this), row);
+	return operations::bracket_proxy<Matrix, const Matrix&, ValueType>(static_cast<const Matrix&>(*this), row);
     }
 };
 
 template <typename Matrix, typename ValueType, typename SizeType>
-struct crtp_base_matrix : public const_crtp_base_matrix<Matrix, ValueType, SizeType>
+struct crtp_base_matrix // : public const_crtp_base_matrix<Matrix, ValueType, SizeType>
 {    
-    using const_crtp_base_matrix<Matrix, ValueType, SizeType>::operator[];
+    operations::bracket_proxy<Matrix, const Matrix&, const ValueType&>
+    operator[] (SizeType row) const
+    {
+        return operations::bracket_proxy<Matrix, const Matrix&, const ValueType&>(static_cast<const Matrix&>(*this), row);
+    }
 
     operations::bracket_proxy<Matrix, Matrix&, ValueType&>
     operator[] (SizeType row)
