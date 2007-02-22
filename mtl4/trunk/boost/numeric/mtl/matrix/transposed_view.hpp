@@ -35,6 +35,7 @@ public:
     typedef typename transposed_orientation<typename Matrix::orientation>::type orientation;
     typedef typename Matrix::index_type                index_type;
     typedef typename Matrix::value_type                value_type;
+    typedef typename Matrix::const_access_type         const_access_type;
     typedef typename Matrix::key_type                  key_type;
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
@@ -43,7 +44,7 @@ public:
     
     transposed_view (boost::shared_ptr<Matrix> p) : my_copy(p), ref(*p) {}
     
-    value_type operator() (size_type r, size_type c) const
+    const_access_type operator() (size_type r, size_type c) const
     { 
         return ref(c, r); 
     }

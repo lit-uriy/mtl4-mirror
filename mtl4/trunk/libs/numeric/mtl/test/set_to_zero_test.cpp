@@ -9,27 +9,14 @@
 #include <boost/numeric/mtl/matrix/compressed2D.hpp> 
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 
-#include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
+#include <boost/numeric/mtl/operation/set_to_zero.hpp>
 
 
 using namespace mtl;
 using namespace mtl::recursion;
 using namespace std;  
-
-template <typename Matrix>
-void print_matrix(Matrix& matrix)
-{ 
-    using std::cout;
-    for (int i=0 ; i<matrix.num_rows(); i++ ){
-	for(int j=0; j<matrix.num_cols();  j++ ){
-	    cout.fill (' '); cout.width (8); cout.precision (5); cout.flags (ios_base::left);
-	    cout << showpoint <<  matrix[i][j] <<"  ";
-	}
-	cout << endl;
-    }
-}
 
 
 template <typename Matrix>
@@ -43,18 +30,10 @@ void test(Matrix& matrix, const char* name)
 		    ins(i, j) << i + 2*j;
     }
 
-    std::cout << "\n" << name << "\n";
-    mtl::print_matrix(matrix);
+    std::cout << "\n" << name << "\n" << matrix << "\n";
+    set_to_zero(matrix);
+    std::cout << "should be empty now:\n" << matrix << "\n";
 
-    transposed_view<Matrix> trans(matrix);
-    std::cout << "Transposed" << "\n";
-    mtl::print_matrix(trans);
-
-    std::cout << "with <<" << "\n"
-	      << trans << "\n";
-
-    std::cout << "with << and formatted" << "\n"
-	      << mtl::with_format(trans, 7, 4) << "\n";
 }
 
 
