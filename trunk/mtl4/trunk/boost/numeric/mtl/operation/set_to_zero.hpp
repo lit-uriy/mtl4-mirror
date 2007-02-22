@@ -30,7 +30,12 @@ namespace mtl {
 	    std::fill(matrix.elements(), matrix.elements() + matrix.used_memory(), my_zero);
 	}	
 
-	// TBD: sparse matrices by resetting the sparsity structure
+	// Is approbriate for all sparse matrices and vectors
+	template <class Matrix>
+	void set_to_zero(Matrix& matrix, tag::sparse)
+	{
+	    matrix.make_empty();
+	}
 	
     }
 

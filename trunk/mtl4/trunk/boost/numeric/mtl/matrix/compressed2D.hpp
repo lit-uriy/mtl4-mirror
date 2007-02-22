@@ -249,8 +249,9 @@ class compressed2D
     typedef typename Parameters::index               index_type;
     typedef typename Parameters::dimensions          dimensions;
     typedef Elt                                      value_type;
-    // typedef const value_type*                        const_pointer_type;
     typedef compressed_key                           key_type;
+    // return type of operator() const
+    typedef value_type                               const_access_type;
 
     // typedef const_pointer_type                             key_type;
     typedef size_t                                   size_type;
@@ -263,8 +264,16 @@ class compressed2D
 	    this->my_nnz = new_nnz;
 	    data.resize(this->my_nnz);
 	    indices.resize(this->my_nnz, 0);
-	    data.resize(this->my_nnz, 0); // ! overloads base matrix
 	}
+    }
+
+    // removes all values; e.g. for set_to_zero
+    void make_empty()
+    {
+	this->my_nnz = 0;
+	data.resize(0);
+	indices.resize(0);
+	std::fill(starts.begin(), starts.end(), 0);
     }
 
     // if compile time matrix size, we can set the start vector
@@ -310,7 +319,7 @@ class compressed2D
 
     // Consistency check urgently needed !!!
 
-    value_type operator() (size_type row, size_type col) const
+    const_access_type operator() (size_type row, size_type col) const
     {
         throw_debug_exception(inserting, "Reading data during insertion has undefined behavior!\n");
 	maybe<size_type> pos = indexer(*this, row, col);
@@ -333,7 +342,6 @@ class compressed2D
     template <typename, typename, typename> friend struct compressed2D_inserter;
     template <typename, typename> friend struct compressed_el_cursor;
     template <typename, typename> friend struct compressed_minor_cursor;
-
 
     indexer_type            indexer;
     std::vector<value_type> data; 
