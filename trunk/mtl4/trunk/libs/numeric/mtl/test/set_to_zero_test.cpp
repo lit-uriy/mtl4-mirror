@@ -1,6 +1,7 @@
 // $COPYRIGHT$
 
 #include <iostream>
+#include <complex>
 #include <cmath>
 #include <boost/test/minimal.hpp>
 
@@ -33,7 +34,9 @@ void test(Matrix& matrix, const char* name)
     std::cout << "\n" << name << "\n" << matrix << "\n";
     set_to_zero(matrix);
     std::cout << "should be empty now:\n" << matrix << "\n";
-
+    typename Matrix::value_type zero(0.0);
+    if (matrix(0, 1) != zero)
+	throw "not properly set to zero";
 }
 
 
@@ -41,15 +44,19 @@ int test_main(int argc, char* argv[])
 {
     dense2D<double>                                dr(5, 7);
     dense2D<double, matrix_parameters<col_major> > dc(5, 7);
+    dense2D<std::complex<double> >                 cdr(5, 7);
     morton_dense<double,  morton_mask>             md(5, 7);
     morton_dense<double,  doppler_16_row_mask>     d16r(5, 7);
     compressed2D<double>                           comp(5, 7);
+    compressed2D<std::complex<double> >            ccomp(5, 7);
 
     test(dr, "Dense row major");
     test(dc, "Dense column major");
+    test(cdr, "Complex dense row major");
     test(md, "Morton N-order");
     test(d16r, "Hybrid 16 row-major");
     test(comp, "compressed2D");
+    test(ccomp, "complex compressed2D");
 
     return 0;
 }
