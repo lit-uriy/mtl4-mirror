@@ -30,6 +30,13 @@ struct base_matrix
 
     // setting dimension
     explicit base_matrix(mtl::non_fixed::dimensions d) : dim(d), my_nnz(0) {}
+
+    // Change dimension
+    // Will fail for fixed::dimension
+    void change_dim(mtl::non_fixed::dimensions d)
+    {
+	dim= d;
+    }
    
     // Number of rows
     size_type num_rows() const 

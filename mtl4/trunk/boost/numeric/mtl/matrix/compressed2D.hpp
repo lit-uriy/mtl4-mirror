@@ -276,6 +276,13 @@ class compressed2D
 	std::fill(starts.begin(), starts.end(), 0);
     }
 
+    void change_dim(size_type num_rows, size_type num_cols)
+    {
+	super::change_dim(mtl::non_fixed::dimensions(num_rows, num_cols));
+	starts.resize(this->dim1());
+	make_empty();
+    }
+
     // if compile time matrix size, we can set the start vector
     explicit compressed2D () 
 	: super(), inserting(false)
@@ -297,6 +304,12 @@ class compressed2D
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
+    }
+
+    template <typename MatrixSrc>
+    self& operator=(const MatrixSrc& src)
+    {
+	return matrix::copy(src, *this);
     }
 
     // Copies range of values and their coordinates into compressed matrix

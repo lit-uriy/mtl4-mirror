@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/matrix_bracket.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
+#include <boost/numeric/mtl/operation/copy.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 

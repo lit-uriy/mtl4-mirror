@@ -12,6 +12,7 @@
 #include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
 #include <boost/numeric/mtl/detail/dilated_int.hpp>
 #include <boost/numeric/mtl/utility/iterator_adaptor.hpp>
+#include <boost/numeric/mtl/operation/set_to_zero.hpp>
 
 
 // #include <boost/numeric/mtl/ahnentafel_detail/index.hpp>
@@ -366,35 +367,38 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 		   this->begin_col(), this->begin_col() + num_cols);
     }
 
+    void init(size_type num_rows, size_type num_cols)
+    {
+	set_ranges(num_rows, num_cols);
+	set_to_zero(*this);
+    }
+
   public:
     // if compile time matrix size allocate memory
     morton_dense() : super_memory( memory_need( dim_type().num_rows(), dim_type().num_cols() ) ) 
     {
-	set_ranges(dim_type().num_rows(), dim_type().num_cols());
+	init(dim_type().num_rows(), dim_type().num_cols());
     }
 
     // only sets dimensions, only for run-time dimensions
     explicit morton_dense(mtl::non_fixed::dimensions d) 
 	: super_memory( memory_need( d.num_rows(), d.num_cols() ) ) 
     {
-	// set_nnz();
-	set_ranges(d.num_rows(), d.num_cols());
+	init(d.num_rows(), d.num_cols());
     }
 
     // Same with separated row and column number
     morton_dense(size_type num_rows, size_type num_cols) 
 	: super_memory( memory_need(num_rows, num_cols) )
     {
-	// set_nnz();
-	set_ranges(num_rows, num_cols);
+	init(num_rows, num_cols);
     }
 
     // sets dimensions and pointer to external data
     explicit morton_dense(mtl::non_fixed::dimensions d, value_type* a) 
       : super_memory(a) 
     { 
-        // set_nnz();
-	set_ranges(d.num_rows(), d.num_cols());
+	init(d.num_rows(), d.num_cols());
     }
 
     // same constructor for compile time matrix size
@@ -402,8 +406,25 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     explicit morton_dense(value_type* a) : super_memory(a) 
     { 
 	BOOST_ASSERT((dim_type::is_static));
-	set_ranges(dim_type().num_rows(), dim_type().num_cols());
+	init(dim_type().num_rows(), dim_type().num_cols());
     }
+
+
+    void change_dim(size_type num_rows, size_type num_cols)
+    {
+	if (this->extern_memory && (num_rows != this->num_rows() || num_cols != this->num_cols()))
+	    throw "Can't change the size of matrices with external memory";
+
+	set_ranges(num_rows, num_cols);
+	this->realloc(memory_need(num_rows, num_cols));
+    }
+
+    template <typename MatrixSrc>
+    self& operator=(const MatrixSrc& src)
+    {
+	return matrix::copy(src, *this);
+    }
+
 
     value_type operator() (key_type const& key) const
     {

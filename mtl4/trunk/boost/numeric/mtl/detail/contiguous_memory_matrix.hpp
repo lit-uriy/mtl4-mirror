@@ -20,7 +20,6 @@ struct array_size
 
 // Minimal size of memory allocation using alignment
 #ifndef MTL_ALIGNMENT_LIMIT
-    //#  define MTL_ALIGNMENT_LIMIT 1   // work around 
 #  define MTL_ALIGNMENT_LIMIT 1024
 #endif
 
@@ -36,12 +35,8 @@ struct generic_array
   protected:
     bool                                      extern_memory;       // whether pointer to external data or own
     char*                                     malloc_address;
-  public:
-    generic_array() {}
 
-    explicit generic_array(Value *data) : extern_memory(true), data(data) {}
-
-    explicit generic_array(std::size_t size) : extern_memory(false)
+    void alloc(std::size_t size)
     {
 	if (size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT) {
 	    char* p= this->malloc_address= new char[size * sizeof(value_type) + MTL_ALIGNMENT - 1];
@@ -53,6 +48,30 @@ struct generic_array
 	    this->data= new value_type[size];
 	    malloc_address= reinterpret_cast<char*>(this->data);
 	}
+
+    }
+
+  public:
+    generic_array() {}
+
+    explicit generic_array(Value *data) : extern_memory(true), data(data) {}    
+
+    explicit generic_array(std::size_t size) : extern_memory(false)
+    {
+	alloc(size);
+    }
+
+    void realloc(std::size_t size, std::size_t old_size)
+    {
+	// If already have memory of the right size we can keep it
+	if (size == old_size) 
+	    return;
+	if (extern_memory)
+	    throw "Can't change the size of collections with external memory";
+	// Free old memory (if allocated)
+	if (!extern_memory && malloc_address) 
+	    delete[] malloc_address;
+	alloc(size);
     }
 
     ~generic_array()
@@ -69,6 +88,11 @@ struct generic_array<Value, true, Size>
 {
     Value    data[Size];
     explicit generic_array(std::size_t) {}
+
+    void realloc(std::size_t) 
+    {
+	// #error "Arrays on stack cannot be reallocated"
+    }
 };
 
 // Base class for matrices that have contigous piece of memory
@@ -94,6 +118,13 @@ struct contiguous_memory_matrix
 
     explicit contiguous_memory_matrix(std::size_t size)
 	: base(size), my_used_memory(size) {}
+
+    void realloc(std::size_t size) 
+    {
+	base::realloc(size, my_used_memory);
+	my_used_memory= size;
+    }
+
 
     // offset of key (pointer) w.r.t. data 
     // values must be stored consecutively

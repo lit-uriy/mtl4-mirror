@@ -13,6 +13,7 @@ sources = Split("""base_case_conversion.cpp
              sub_matrix.cpp
 	     print_matrix_test.cpp
 	     set_to_zero_test.cpp
+	     assign_test.cpp
 """)
 
 programs = []

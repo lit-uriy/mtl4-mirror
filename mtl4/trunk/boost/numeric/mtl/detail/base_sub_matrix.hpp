@@ -50,7 +50,11 @@ struct base_sub_matrix
     {
 	constructor_helper(d);
     }
-    
+
+    void change_dim(mtl::non_fixed::dimensions d)
+    {
+	constructor_helper(d);
+    }    
 
     void set_ranges(size_type br, size_type er, size_type bc, size_type ec)
     {
