@@ -309,7 +309,8 @@ class compressed2D
     template <typename MatrixSrc>
     self& operator=(const MatrixSrc& src)
     {
-	return matrix::copy(src, *this);
+	matrix::copy(src, *this);
+	return *this;
     }
 
     // Copies range of values and their coordinates into compressed matrix

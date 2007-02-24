@@ -349,7 +349,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     template <typename MatrixSrc>
     self& operator=(const MatrixSrc& src)
     {
-	return matrix::copy(src, *this);
+	matrix::copy(src, *this);
+	return *this;
     }
 
 
