@@ -47,11 +47,8 @@ void test(MatrixSrc& src, const char* name_src,
     std::cout << "source initialized:\n" << src << "\n";
 
     matrix::copy(src, new_dest);
+    // new_dest= src;
     std::cout << "dest after assignment:\n" << new_dest << "\n\n";
-#if 0
-    new_dest= src;
-    std::cout << "dest after assignment:\n" << new_dest << "\n\n";
-#endif
 }
 
 
