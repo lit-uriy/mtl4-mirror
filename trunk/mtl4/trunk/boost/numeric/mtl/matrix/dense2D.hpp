@@ -13,7 +13,7 @@
 #include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
 #include <boost/numeric/mtl/detail/strided_base_cursor.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
-
+#include <boost/numeric/mtl/operation/set_to_zero.hpp>
 
 namespace mtl {
 
@@ -269,7 +269,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     typedef const value_type*                 const_pointer_type;
     typedef const_pointer_type                key_type;
     typedef std::size_t                       size_type;
-    typedef dense_el_cursor<Value>              el_cursor_type;  
+    typedef dense_el_cursor<Value>            el_cursor_type;  
     typedef dense2D_indexer                   indexer_type;
 
     // Self-similar type unless dimension is fixed
@@ -298,32 +298,37 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	set_ldim(orientation());
     }
 
+    void init()
+    {
+	set_nnz(); set_ldim(); set_to_zero(*this);
+    }
+
   public:
     // if compile time matrix size allocate memory
     dense2D() : super(), super_memory(dim_type().num_rows() * dim_type().num_cols()) 
-    {
-	set_nnz(); set_ldim();
+    { 
+	init(); 
     }
 
     // only sets dimensions, only for run-time dimensions
     explicit dense2D(mtl::non_fixed::dimensions d) 
 	: super(d), super_memory(d.num_rows() * d.num_cols()) 
-    {
-	set_nnz(); set_ldim();
+    { 
+	init(); 
     }
 
     dense2D(size_type num_rows, size_type num_cols) 
 	: super(mtl::non_fixed::dimensions(num_rows, num_cols)), 
 	  super_memory(num_rows * num_cols) 
-    {
-	set_nnz(); set_ldim();
+    { 
+	init(); 
     }
 
     // sets dimensions and pointer to external data
     explicit dense2D(mtl::non_fixed::dimensions d, value_type* a) 
       : super(d), super_memory(a, d.num_rows() * d.num_cols()) 
     { 
-        set_nnz(); set_ldim();
+	init(); 
     }
 
     // same constructor for compile time matrix size
@@ -331,8 +336,22 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     explicit dense2D(value_type* a) : super(), super_memory(a) 
     { 
 	BOOST_STATIC_ASSERT((dim_type::is_static));
-        set_nnz(); set_ldim();
+        init();
     }
+
+    void change_dim(size_type num_rows, size_type num_cols)
+    {
+	super::change_dim(mtl::non_fixed::dimensions(num_rows, num_cols));
+	set_nnz(); set_ldim();
+	this->realloc(num_rows * num_cols);
+    }
+
+    template <typename MatrixSrc>
+    self& operator=(const MatrixSrc& src)
+    {
+	return matrix::copy(src, *this);
+    }
+
 
     bool check_indices(size_t r, size_t c) const
     {

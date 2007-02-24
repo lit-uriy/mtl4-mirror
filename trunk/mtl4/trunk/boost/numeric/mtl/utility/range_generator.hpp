@@ -5,6 +5,9 @@
 
 #include <boost/numeric/mtl/detail/range_generator.hpp>
 #include <boost/numeric/mtl/utility/complexity.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/type_traits.hpp>
+#include <boost/mpl/if.hpp>
 
 namespace mtl {
 
@@ -60,6 +63,24 @@ typename traits::range_generator<Tag, Collection>::type
 inline end(Collection const& c)
 {
   return traits::range_generator<Tag, Collection>().end(c);
+}
+
+
+
+namespace traits {
+
+    // Dispatch between row and column-major traversal
+    template <typename Matrix>
+    struct range_generator<tag::major, Matrix>
+	: public range_generator<
+	    typename boost::mpl::if_<
+	       boost::is_same<typename Matrix::orientation, row_major>
+	     , ::mtl::tag::row
+             , ::mtl::tag::col
+            >::type, 
+          Matrix>
+    {};
+
 }
 
 
