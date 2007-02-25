@@ -49,6 +49,15 @@ void test(MatrixSrc& src, const char* name_src,
     // matrix::copy(src, new_dest);
     new_dest= src;
     std::cout << "dest after assignment:\n" << new_dest << "\n\n";
+
+    if (new_dest.num_rows() != 5 || new_dest.num_cols() != 7)
+	throw "wrong dimension";
+    typename MatrixDest::value_type zero(0.0), three(3.0);
+    if (new_dest(1, 2) != zero)
+	throw "not properly set to zero";
+    if (new_dest(1, 1) != three)
+	throw "not properly set to non-zero";
+
 }
 
 
