@@ -17,6 +17,7 @@ namespace mtl {
 	{
 	    using math::zero;
 	    typename Matrix::value_type  ref, my_zero(zero(ref));
+	    // std::cout << "set_to_zero: used_memory = " << matrix.used_memory() << "\n";
 	    std::fill(matrix.elements(), matrix.elements()+matrix.used_memory(), my_zero);
 	}
 

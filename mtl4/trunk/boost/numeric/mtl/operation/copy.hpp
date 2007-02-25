@@ -49,7 +49,7 @@ namespace mtl {
 		typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
 		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); 
 		     icursor != icend; ++icursor) {
-		    // std::cout << "in " << row(*icursor) << ", " << col(*icursor) << " insert " << value(*icursor) << '\n';
+		    //std::cout << "in " << row(*icursor) << ", " << col(*icursor) << " insert " << value(*icursor) << '\n';
 		    ins(row(*icursor), col(*icursor)) << value(*icursor); }
 	    }
 	}

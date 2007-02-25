@@ -32,9 +32,6 @@ template <typename Value, bool OnStack, unsigned Size= 0>
 struct generic_array
 {
     typedef Value                             value_type;
-  protected:
-    bool                                      extern_memory;       // whether pointer to external data or own
-    char*                                     malloc_address;
 
     void alloc(std::size_t size)
     {
@@ -69,17 +66,22 @@ struct generic_array
 	if (extern_memory)
 	    throw "Can't change the size of collections with external memory";
 	// Free old memory (if allocated)
-	if (!extern_memory && malloc_address) 
-	    delete[] malloc_address;
+	if (!extern_memory && malloc_address) {
+	    // printf("realloc: data %p, malloc %p\n", this->data, malloc_address);      
+	    delete[] malloc_address; }
 	alloc(size);
     }
 
     ~generic_array()
     {
-	//printf("data %p, malloc %p\n", this->data, malloc_address);      
+	// printf("destructor: data %p, malloc %p\n", this->data, malloc_address);      
 	if (!extern_memory && malloc_address) delete[] malloc_address;
     }
 
+  protected:
+    bool                                      extern_memory;       // whether pointer to external data or own
+    char*                                     malloc_address;
+  public:
     Value    *data;
 };
 
