@@ -54,9 +54,9 @@ void test(MatrixSrc& src, const char* name_src,
 	throw "wrong dimension";
     typename MatrixDest::value_type zero(0.0), three(3.0);
     if (new_dest(1, 2) != zero)
-	throw "not properly set to zero";
+	throw "m[1][2] should be zero";
     if (new_dest(1, 1) != three)
-	throw "not properly set to non-zero";
+	throw "m[1][1] should be three";
 
 }
 
