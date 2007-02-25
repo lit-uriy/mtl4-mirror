@@ -346,6 +346,14 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->realloc(num_rows * num_cols);
     }
 
+    self& operator=(const self& src)
+    {
+	change_dim(src.num_rows(), src.num_cols());
+	std::copy(src.elements(), src.elements()+src.used_memory(), this->elements());
+	// matrix::copy(src, *this);
+	return *this;
+    }
+
     template <typename MatrixSrc>
     self& operator=(const MatrixSrc& src)
     {
