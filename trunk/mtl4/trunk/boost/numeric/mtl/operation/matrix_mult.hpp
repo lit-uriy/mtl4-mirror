@@ -38,11 +38,6 @@ struct gen_dense_mat_mat_mult_ft
     {
 	using namespace tag;
 	using traits::range_generator;  
-#if 0
-	// MTL_UGLY_DENSE_MAT_MAT_MULT_ITERATOR_TYPEDEFS
-	using glas::tag::row; using glas::tag::col; using glas::tag::all;           
-	using tag::const_iter::all; using tag::iter::all; 
-#endif
         typedef typename range_generator<row, MatrixA>::type       a_cur_type;             
         typedef typename range_generator<row, MatrixC>::type       c_cur_type;             
 	typedef typename range_generator<col, MatrixB>::type       b_cur_type;             
@@ -259,20 +254,10 @@ private:
 	typedef typename MatrixC::value_type                                         value_type;
 	const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
 
-#if 0
-	// Temporary solution; dense matrices need to return const referencens
-	MatrixA& aref= const_cast<MatrixA&>(a);
-	MatrixB& bref= const_cast<MatrixB&>(b);
-#endif
-
 	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
 	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
 	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
-#if 0
-	size_t ari= a.c_offset(1, 0), // how much is the offset of A's entry increased by incrementing row
-	       aci= a.c_offset(0, 1), bri= b.c_offset(1, 0), bci= b.c_offset(0, 1);
-#endif
 	    
 	// C_nw += A_n * B_n
 	for (size_type i= 0; i < i_block; i+= Tiling1)
