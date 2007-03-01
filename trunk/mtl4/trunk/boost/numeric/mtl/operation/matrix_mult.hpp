@@ -11,7 +11,6 @@
 #include <boost/numeric/mtl/operation/multi_action_block.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
-#include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
 #include <boost/numeric/meta_math/loop.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
@@ -789,7 +788,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 // Recursive Multiplication
 // ========================
 
-namespace with_recurator {
+namespace wrec {
 
     template <typename BaseMult, typename BaseTest= recursion::bound_test_static<64> >
     struct gen_dense_mat_mat_mult_t
@@ -835,7 +834,7 @@ namespace with_recurator {
 	}
     };
 
-} // namespace with_recurator
+} // namespace wrec
 
 
 template <typename BaseMult, 
@@ -878,7 +877,7 @@ private:
 	matrix_recurator<MatrixC>    rec_c(c);
 	equalize_depth(rec_a, rec_b, rec_c);
 
-	with_recurator::gen_dense_mat_mat_mult_t<BaseMult, BaseTest>() (rec_a, rec_b, rec_c);
+	wrec::gen_dense_mat_mat_mult_t<BaseMult, BaseTest>() (rec_a, rec_b, rec_c);
     }
 };
 
