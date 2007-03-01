@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 #include <boost/numeric/mtl/recursion/base_case_cast.hpp>
+#include <boost/numeric/mtl/interface/blas.hpp>
 
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
@@ -923,7 +924,44 @@ struct gen_blas_dense_mat_mat_mult_ft
 {};
 
 
-#ifdef MTL_HAS_BLAS 
+#ifdef MTL_HAS_BLAS
+
+namespace detail {
+
+    // Transform from assign representation to BLAS
+    double dgemm_alpha(assign::assign_sum)
+    {
+	return 1.0;
+    }
+
+    double dgemm_alpha(assign::plus_sum)
+    {
+	return 1.0;
+    }
+ 
+    double dgemm_alpha(assign::minus_sum)
+    {
+	return -1.0;
+    }
+
+    // Transform from assign representation to BLAS
+    double dgemm_beta(assign::assign_sum)
+    {
+	return 0.0;
+    }
+
+    double dgemm_beta(assign::plus_sum)
+    {
+	return 1.0;
+    }
+ 
+    double dgemm_beta(assign::minus_sum)
+    {
+	return 1.0;
+    }
+
+} // detail
+ 
 // Only sketch
 template<typename ParaA, typename ParaB, typename ParaC, typename Backup>
 struct gen_blas_dense_mat_mat_mult_ft<dense2D<float, ParaA>, dense2D<float, ParaB>, 
@@ -941,18 +979,27 @@ struct gen_blas_dense_mat_mat_mult_ft<dense2D<float, ParaA>, dense2D<float, Para
     }
 };
 
-template<typename ParaA, typename ParaB, typename ParaC, typename Backup>
+template<typename ParaA, typename ParaB, typename ParaC, typename Assign, typename Backup>
 struct gen_blas_dense_mat_mat_mult_ft<dense2D<double, ParaA>, dense2D<double, ParaB>, 
-				     dense2D<double, ParaC>, assign::assign_sum, Backup>
+				     dense2D<double, ParaC>, Assign, Backup>
 {
     void operator()(const dense2D<double, ParaA>& a, const dense2D<double, ParaB>& b, 
 		    dense2D<double, ParaC>& c)
     {
 	std::cout << "pretend BLAS\n";
 	Backup()(a, b, c);
+	
 #if 0
-	int atrans= boost::is_same<typename ParaA::orientation, col_major>::value, ... ;
-	fgemm(, atrans, &a[0][0], ...)
+	if (is_row_major<ParaC>::value)
+	    Backup()(a, b, c);
+
+	// C needs to be transposed if row-major !!!!!!!!!! That means physically in memory
+	std::cout << "use BLAS\n";
+	int m= a.num_rows(), n= c.num_cols(), k= a.num_cols(), lda= a.get_ldim(), ldb= b.get_ldim(), ldc.get_ldim();
+	double alpha= dgemm_alpha(Assign()), beta= dgemm_beta(Assign());
+
+	dgemm_(is_row_major<ParaA>::value ? "T" : "N", is_row_major<ParaB>::value ? "T" : "N",
+	       &m, &n, &k, &alpha, &a[0][0], &lda, &b[0][0], &beta, &c[0][0], &ldc);
 #endif
     }
 };

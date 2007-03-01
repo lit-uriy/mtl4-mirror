@@ -387,6 +387,11 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	return indexer.offset(ldim, r, c, orientation());
     }
 
+    size_type get_ldim() const
+    {
+	return ldim;
+    }
+
   protected:
     
     // Set ranges from begin_r to end_r and begin_c to end_c

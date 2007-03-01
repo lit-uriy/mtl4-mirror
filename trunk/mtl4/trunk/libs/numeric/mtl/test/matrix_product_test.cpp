@@ -236,6 +236,45 @@ void single_test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     std::cout << "C:\n"; print_matrix_row_cursor(c); std::cout << "\n"; 
 }
 
+#ifdef MTL_HAS_BLAS
+extern "C" {
+void dgemm_(const char* transa, const char* transb, 
+	    const int* m, const int* n, const int* k,
+	    const double* alpha,  const double *da,  const int* lda,
+	    const double *db, const int* ldb, const double* dbeta,
+	    double *dc, const int* ldc);
+}
+
+typedef dense2D<double, matrix_parameters<col_major> >        dc_t;
+
+struct dgemm_t
+{
+    void operator()(const dc_t& a, const dc_t& b, dc_t& c)
+    {
+	int size= a.num_rows();
+	double alpha= 1.0, beta= 0.0;
+	dgemm_("N", "N", &size, &size, &size, &alpha, 
+	       const_cast<double*>(&a[0][0]), &size, const_cast<double*>(&b[0][0]), 
+	       &size, &beta, &c[0][0], &size);
+
+    }
+};
+
+
+void test_blas()
+{
+    dense2D<double, matrix_parameters<col_major> > a(7, 7), b(7, 7), c(7, 7);
+    fill_hessian_matrix(a, 1.0);
+    fill_hessian_matrix(b, 2.0);
+    dgemm_t()(a, b, c);
+
+    print_matrix_row_cursor(c);
+    check_hessian_matrix_product(c, a.num_cols());
+    
+}
+
+#endif // MTL_HAS_BLAS
+
 int test_main(int argc, char* argv[])
 {
 
@@ -293,6 +332,12 @@ int test_main(int argc, char* argv[])
     test(da, trans_db, dc, "dense2D and transposed dense2D");
     test(mrans, trans_mrbns, mrcns, "hybrid with transposed matrix");
 #endif
+
+#ifdef MTL_HAS_BLAS
+    test_blas();
+    return 0;
+#endif
+
     test(da, db, dc, "dense2D");
     test(dca, dcb, dcc, "dense2D col-major");
     test(da, dcb, dc, "dense2D mixed");
