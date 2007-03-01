@@ -23,6 +23,9 @@
 
 // /san/intel/cce/9.0/bin/icc -g no_inline_papi_timing.cpp -o no_inline_papi_timing -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAVE_PAPI -DMTL_HAS_BLAS -lblas -DMTL_HAS_LAPACK -llapack
 
+// or
+// g++4 -DNDEBUG -O3 -ffast-math no_inline_papi_timing.cpp -o no_inline_papi_timing -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS -lblas -DMTL_HAS_LAPACK -llapack
+
 /* **** on odin ****
 setenv LD_LIBRARY_PATH /usr/local/lib64
 -I/usr/local/include -L/usr/local/lib -lpapi
@@ -131,37 +134,6 @@ void single_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size, std:
 
 	print_time_and_mflops(time, a.num_rows());
 	std::cout << papi[l1i]/reps << ", " << papi[l2i]/reps << ", " << papi[tlbi]/reps << ", ";
-
-
-#if 0
-
-	int evv[8], num= 8;
-	PAPI_list_events(EventSet, evv, &num);
-	for (int i= 0; i < num; i++ ) std::cout << evv[i] << "\n";
-
-	int reps= 0;
-	boost::timer start;
-#ifdef MTL_HAS_PAPI
-	if ((retval = PAPI_reset(EventSet)) != PAPI_OK) { printf("papi reset error\n"); }
-#endif
-
-	for (; start.elapsed() < 1; reps++)
-	    mult(a, b, c);
-
-#ifdef MTL_HAS_PAPI
-	if ((retval = PAPI_read(EventSet, values)) != PAPI_OK) { printf("papi read error\n"); }
-#endif
-
-	double time= start.elapsed() / double(reps);
-
-	print_time_and_mflops(time, a.num_rows());
-#ifdef MTL_HAS_PAPI
-	std::cout << *values << ", " << values[1] << ", ";
-#else
-	std::cout << ", , ";
-#endif
-
-#endif
 
 	if (time > max_time)
 	    enabled[i]= 0;

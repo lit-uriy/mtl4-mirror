@@ -13,7 +13,8 @@
 #include <boost/numeric/mtl/operation/matrix_mult.hpp>
 #include <boost/numeric/mtl/operation/hessian_matrix_utility.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
-// #include <boost/numeric/mtl/recursion/recursive_matrix_mult.hpp>
+#include <boost/numeric/mtl/recursion/predefined_masks.hpp>
+#include <boost/numeric/mtl/utility/papi.hpp>
 
 using namespace mtl;
 using namespace mtl::recursion; 
@@ -22,30 +23,6 @@ using namespace std;
 // Maximum time for a single measurement
 // is 20 min
 const double max_time= 900;
-
-    // Bitmasks: 
-    const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
-	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
-	doppler_16_row_mask= generate_mask<true, 4, row_major, 0>::value,
-	doppler_16_col_mask= generate_mask<true, 4, col_major, 0>::value,
-	doppler_32_row_mask= generate_mask<true, 5, row_major, 0>::value,
-	doppler_32_col_mask= generate_mask<true, 5, col_major, 0>::value,
-	doppler_z_32_row_mask= generate_mask<false, 5, row_major, 0>::value,
-	doppler_z_32_col_mask= generate_mask<false, 5, col_major, 0>::value,
-	doppler_64_row_mask= generate_mask<true, 6, row_major, 0>::value,
-	doppler_64_col_mask= generate_mask<true, 6, col_major, 0>::value,
-	doppler_z_64_row_mask= generate_mask<false, 6, row_major, 0>::value,
-	doppler_z_64_col_mask= generate_mask<false, 6, col_major, 0>::value,
-	doppler_128_row_mask= generate_mask<true, 7, row_major, 0>::value,
-	doppler_128_col_mask= generate_mask<true, 7, col_major, 0>::value,
-	shark_32_row_mask= generate_mask<true, 5, row_major, 1>::value,
-	shark_32_col_mask= generate_mask<true, 5, col_major, 1>::value,
-	shark_z_32_row_mask= generate_mask<false, 5, row_major, 1>::value,
-	shark_z_32_col_mask= generate_mask<false, 5, col_major, 1>::value,
-	shark_64_row_mask= generate_mask<true, 6, row_major, 1>::value,
-	shark_64_col_mask= generate_mask<true, 6, col_major, 1>::value,
-	shark_z_64_row_mask= generate_mask<false, 6, row_major, 1>::value,
-	shark_z_64_col_mask= generate_mask<false, 6, col_major, 1>::value;
 
 typedef assign::plus_sum                            ama_t;
 
@@ -58,7 +35,36 @@ typedef gen_recursive_dense_mat_mat_mult_t<base_mult_t>     rec_mult_t;
 typedef gen_tiling_22_dense_mat_mat_mult_t<assign::plus_sum>  tiling_22_base_mult_t;
 typedef gen_tiling_44_dense_mat_mat_mult_t<assign::plus_sum>  tiling_44_base_mult_t;
 
+// ugly short cuts
+typedef dense2D<double>                                       dr_t;
+typedef dense2D<double, matrix_parameters<col_major> >        dc_t;
 
+utility::papi_t papi;
+int l1i= papi.add_event("PAPI_L1_DCM");
+int l2i= papi.add_event("PAPI_L2_DCM");
+int tlbi= papi.add_event("PAPI_TLB_DM");
+
+
+extern "C" {
+void dgemm_(const char* transa, const char* transb, 
+	    const int* m, const int* n, const int* k,
+	    const double* alpha,  const double *da,  const int* lda,
+	    const double *db, const int* ldb, const double* dbeta,
+	    double *dc, const int* ldc);
+}
+
+struct dgemm_t
+{
+    void operator()(const dc_t& a, const dc_t& b, dc_t& c)
+    {
+	int size= a.num_rows();
+	double alpha= 1.0, beta= 0.0;
+	dgemm_("N", "N", &size, &size, &size, &alpha, 
+	       const_cast<double*>(&a[0][0]), &size, const_cast<double*>(&b[0][0]), 
+	       &size, &beta, &c[0][0], &size);
+
+    }
+};
 
 void print_time_and_mflops(double time, double size)
 {
@@ -80,14 +86,18 @@ void single_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size, std:
     if (enabled[i]) {
 	int reps= 0;
 	boost::timer start;	
+	papi.reset();
 	for (; start.elapsed() < 5; reps++)
 	    mult(a, b, c);
+	papi.read();
 	double time= start.elapsed() / double(reps);
+
 	print_time_and_mflops(time, a.num_rows());
+	std::cout << papi[l1i]/reps << ", " << papi[l2i]/reps << ", " << papi[tlbi]/reps << ", ";
 	if (time > max_time)
 	    enabled[i]= 0;
     } else
-	std::cout << ", , ";
+	std::cout << ", , , , , ";
 }
 
 // The matrices in the following functions are only place holders, the real matrices are used in single_measure
@@ -95,12 +105,14 @@ void measure_morton_order(unsigned size, std::vector<int>& enabled)
 {
     morton_dense<double,  morton_mask>             mda(4, 4), mdb(4, 4), mdc(4, 4);
     morton_dense<double,  morton_z_mask>           mzda(4, 4), mzdb(4, 4), mzdc(4, 4);
+    dc_t                                           dc(4, 4);
     
     std::cout << size << ", ";
     rec_mult_t  mult;
     single_measure(mda, mdb, mdc, mult, size, enabled, 0);
     single_measure(mzda, mzdb, mzdc, mult, size, enabled, 1);
     single_measure(mda, mzdb, mdc, mult, size, enabled, 2);
+    single_measure(dc, dc, dc, dgemm_t(), size, enabled, 3);
     
     std::cout << "0\n"; // to not finish with comma
     std::cout.flush();
@@ -297,7 +309,7 @@ template <typename Measure>
 void series(unsigned steps, unsigned max_size, Measure measure, const string& comment)
 {
     std::cout << "# " << comment << '\n';
-    std::cout << "# Gnu-Format size, time, MFlops\n"; std::cout.flush();
+    std::cout << "# Gnu-Format size, (time, MFlops, L1, L2, TLB, time, MFlops, )*\n"; std::cout.flush();
 
     std::vector<int> enabled(16, 1);
     for (unsigned i= steps; i <= max_size; i+= steps)
@@ -308,6 +320,7 @@ void series(unsigned steps, unsigned max_size, Measure measure, const string& co
 
 int main(int argc, char* argv[])
 {
+    papi.start();
 
     std::vector<std::string> scenarii;
     scenarii.push_back(string("Comparing Z-, N-order and mixed with recursive multiplication"));
@@ -348,162 +361,10 @@ int main(int argc, char* argv[])
 
 
 
-
-
-
-
-
-
-
-
-
 #if 0
 
-    series(10, 30, measure_morton_order, "Comparing Z-, N-order and mixed with recursive multiplication:");
-    series(10, 30, measure_cast, "Comparing base case cast (64) for Z-order, hybrid 32, hybrid 64 row and col-major:");
-    series(10, 30, measure_with_unroll, "Using unrolled mult on hybrid row- and column-major matrices:");
-    series(10, 30, measure_base_size, "Comparing base case sizes for corresponding hybrid row-major matrices:");
-    series(10, 30, measure_unrolling_hybrid, "Comparing different unrolling for hybrid row-major matrices:");
-    series(10, 30, measure_unrolling_dense, "Comparing different unrolling for row-major dense matrices:");
+// scheiss Kommandos
 
+// g++4 -g matrix_product_timing.cpp  -o matrix_product_timing  -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/goto-blas -lgoto_opteron-64 -lpthread xerbla.o
 
-
-
-
-    using std::string;
-    std::vector<std::string> scenarii;
-    scenarii.push_back(string("Morton Z-order"));
-    scenarii.push_back(string("Morton E-order"));
-    scenarii.push_back(string("Morton Z/E-order (A,C in Z, B in E-order)"));
-    scenarii.push_back(string("Dense row-major"));
-    scenarii.push_back(string("Dense col-major"));
-    scenarii.push_back(string("Dense row/col-major (R, C, R)"));
-    scenarii.push_back(string("Hybrid row-major"));
-    scenarii.push_back(string("Hybrid row/col-major (R, C, R)"));
-    scenarii.push_back(string("Z/E Hybrid row/col-major (Z-R, Z-C, E-R)"));
-    scenarii.push_back(string("Hybrid 64 row-major"));
-    scenarii.push_back(string("Hybrid 64 row/col-major (R, C, R)"));
-    scenarii.push_back(string("Z/E Hybrid 64 row/col-major (Z-R, Z-C, E-R)"));
-    scenarii.push_back(string("Morton Z-order and Dense col-major"));
-    scenarii.push_back(string("Hybrid 64 row-major and dense col-major"));
-
-    using std::cout;
-    if (argc < 4) {
-	cerr << "usage: recursive_mult_timing <scenario> <steps> <max_size>\nScenarii:\n"; 
-	for (unsigned i= 0; i < scenarii.size(); i++)
-	    cout << i << ": " << scenarii[i] << "\n";
-	exit(1);
-    }
-    unsigned int scenario= atoi(argv[1]), steps= atoi(argv[2]), max_size= atoi(argv[3]), size= 32; 
-
-
-
-
-    // Matrices are actually only place holders for the type
-    mtl::dense2D<double>                           da(size, size), db(size, size), dc(size, size);
-    mtl::dense2D<double, matrix_parameters<col_major> >  dca(size, size), dcb(size, size), dcc(size, size);
-
-    morton_dense<double,  morton_mask>             mda(size, size), mdb(size, size), mdc(size, size);
-    morton_dense<double,  morton_z_mask>           mzda(size, size), mzdb(size, size), mzdc(size, size);
-
-    morton_dense<double, doppler_32_col_mask>      mca(size, size), mcb(size, size), mcc(size, size);
-    morton_dense<double, doppler_32_row_mask>      mra(size, size), mrb(size, size), mrc(size, size);
-
-    morton_dense<double, doppler_z_32_col_mask>    mzca(size, size), mzcb(size, size), mzcc(size, size);
-    morton_dense<double, doppler_z_32_row_mask>    mzra(size, size), mzrb(size, size), mzrc(size, size);
-
-    cout << "Measuring block-recursive computations\n";
-    switch (scenario) {
-      case 0: 	time_series(mzda, mzdb, mzdc, scenarii[0], steps, max_size); break;
-      case 1: 	time_series(mda, mdb, mdc, scenarii[1], steps, max_size); break;
-      case 2: 	time_series(mzda, mdb, mzdc, scenarii[2], steps, max_size); break;
-      case 3: 	time_series(da, db, dc, scenarii[3], steps, max_size); break;
-      case 4: 	time_series(dca, dcb, dcc, scenarii[4], steps, max_size); break;
-      case 5: 	time_series(da, dcb, dc, scenarii[5], steps, max_size); break;
-      case 6: 	time_series(mra, mrb, mrc, scenarii[6], steps, max_size); break;
-      case 7: 	time_series(mra, mcb, mrc, scenarii[7], steps, max_size); break;
-	  //case 8: 	time_series(mzra, mzcb, mrc, scenarii[8], steps, max_size); break;
-	//case 8: 	time_series(mzda, dcb, dcc, scenarii[8], steps, max_size); break;
-    }
-
-    return 0;
 #endif
-
-
-
-
-
-#if 0
-
-// Matrices are only placeholder to provide the type
-template <typename MatrixA, typename MatrixB, typename MatrixC>
-double time_measure(MatrixA&, MatrixB&, MatrixC&, unsigned size, std::vector<int> enabled)
-{
-    using std::cout;
-
-    const double max_time= 1200.0;
-
-    MatrixA a(size, size);
-    MatrixB b(size, size);
-    MatrixC c(size, size);
-
-    fill_hessian_matrix(a, 1.0);
-    fill_hessian_matrix(b, 2.0); 
-
-    typedef recursion::bound_test_static<32>    test32;
-    typedef recursion::bound_test_static<64>    test64;
-
-    cout << size << ", ";
-
-    if (enabled[0]) {
-	boost::timer start;	
-	// do some mult
-	print_time_and_mflops(start.elapsed(), a.num_rows());
-	if (start.elapsed() > max_time)
-	    enabled[0]= false;
-    } else
-	cout << ", , ";
-
-
-    recursion::bound_test_static<32>    base_case_test;
-    std::cout << size << ", ";
-    boost::timer start1;
-    recursive_matrix_mult_simple(a, b, c, base_case_test); 
-    print_time_and_mflops(start1.elapsed(), a.num_rows());
-
-    boost::timer start2;
-    recursive_matrix_mult_fast_inner(a, b, c, base_case_test);
-    print_time_and_mflops(start2.elapsed(), a.num_rows());
-
-    boost::timer start3;
-    recursive_matrix_mult_fast_middle<4, 8>(a, b, c, base_case_test);
-    print_time_and_mflops(start3.elapsed(), a.num_rows());
-
-    boost::timer start4;
-    recursive_matrix_mult_fast_outer<2, 2, 8>(a, b, c, base_case_test);
-    print_time_and_mflops(start4.elapsed(), a.num_rows());
-
-    std::cout << "0\n"; // to not finish with comma
-    std::cout.flush();
-    return start1.elapsed(); // total time (approx)
-}
-     
- 
-template <typename MatrixA, typename MatrixB, typename MatrixC>
-void time_series(MatrixA& a, MatrixB& b, MatrixC& c, const string& name, unsigned steps, unsigned max_size)
-{
-    // Maximal time per measurement 20 min
-    double max_time= 1200.0;
-    std::vector<int> enabled(10, true);
-
-    std::cout << "# " << name << "  --- with dispatching recursive multiplication:\n";
-    std::cout << "# Gnu-Format size, time, MFlops\n";
-    std::cout.flush();
-
-    for (unsigned i= steps; i <= max_size; i+= steps) {
-	double elapsed= time_measure(a, b, c, i, enabled);
-	if (elapsed > max_time) break;
-    }
-}
-#endif
-
