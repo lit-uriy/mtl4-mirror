@@ -367,4 +367,7 @@ int main(int argc, char* argv[])
 
 // g++4 -g matrix_product_timing.cpp  -o matrix_product_timing  -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/goto-blas -lgoto_opteron-64 -lpthread xerbla.o
 
+
+// g++4 -g matrix_product_timing.cpp  -o matrix_product_timing  -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/acml-2-6-0-gnu-64bit/gnu64/lib -lacml -L/usr/lib/gcc/x86_64-redhat-linux/3.4.3 -lg2c
+
 #endif

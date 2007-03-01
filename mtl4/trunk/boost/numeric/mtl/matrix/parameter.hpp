@@ -28,6 +28,20 @@ struct matrix_parameters
     BOOST_STATIC_ASSERT(( !on_stack || dimensions::is_static ));
 };
 
+template <typename Parameter>
+struct is_row_major {};
+
+template <typename Index, typename Dimensions, bool OnStack, bool RValue>
+struct is_row_major<matrix_parameters<row_major, Index, Dimensions, OnStack, RValue> >
+{
+  static const bool value= true;
+};
+
+template <typename Index, typename Dimensions, bool OnStack, bool RValue>
+struct is_row_major<matrix_parameters<col_major, Index, Dimensions, OnStack, RValue> >
+{
+  static const bool value= false;
+};
 
 
 } // namespace mtl

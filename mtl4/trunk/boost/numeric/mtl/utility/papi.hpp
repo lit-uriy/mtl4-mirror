@@ -67,7 +67,7 @@ public:
 	int code;
 	if (PAPI_event_name_to_code(const_cast<char*>(name), &code) != PAPI_OK) 
 	    throw papi_name_to_code_error();
-	std::cout << "add event " << const_cast<char*>(name) << " " << code << "\n";
+	// std::cout << "add event " << const_cast<char*>(name) << " " << code << "\n";
 	if (PAPI_query_event(code) != PAPI_OK)
 	    throw papi_query_event_error();
 	if (PAPI_add_event(event_set, code) != PAPI_OK) 

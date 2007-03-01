@@ -1,11 +1,13 @@
-/*
 // $COPYRIGHT$
-*/
 
-#ifndef MTL_BLAS_H
-#define MTL_BLAS_H
 
-#include "mtl/mtl_config.h"
+#ifndef MTL_BLAS_INCLUDE
+#define MTL_BLAS_INCLUDE
+
+
+#ifdef MTL_HAS_BLAS
+
+// #include "mtl/mtl_config.h"
 
 #if 0
 #include "mtl/mtl_complex.h"
@@ -128,4 +130,7 @@ void dgemm_(const char* transa, const char* transb,
 } // extern "C"
 #endif
 
-#endif
+
+#endif // MTL_HAS_BLAS
+
+#endif // MTL_BLAS_INCLUDE
