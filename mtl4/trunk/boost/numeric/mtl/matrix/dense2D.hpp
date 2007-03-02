@@ -300,7 +300,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
     void init()
     {
-	set_nnz(); set_ldim(); set_to_zero(*this);
+      set_nnz(); set_ldim(); // set_to_zero(*this);
     }
 
   public:

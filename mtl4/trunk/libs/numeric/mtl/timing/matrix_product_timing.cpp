@@ -4,6 +4,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <complex>
 #include <boost/timer.hpp>
 
 #include <boost/numeric/mtl/matrix/parameter.hpp>
@@ -67,6 +68,21 @@ struct dgemm_t
 #endif
     }
 };
+
+struct dgemm_add_t
+{
+    void operator()(const dc_t& a, const dc_t& b, dc_t& c)
+    {
+	int size= a.num_rows();
+	double alpha= 1.0, beta= 1.0;
+	dgemm_("N", "N", &size, &size, &size, &alpha, 
+	       const_cast<double*>(&a[0][0]), &size, const_cast<double*>(&b[0][0]), 
+	       &size, &beta, &c[0][0], &size);
+
+    }
+};
+
+
 
 void print_time_and_mflops(double time, double size)
 {
@@ -231,6 +247,10 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix,
     dc_t                                           dc(4, 4);
     single_measure(dc, dc, dc, dgemm_t(), size, enabled, 8);
 
+    gen_recursive_dense_mat_mat_mult_t<dgemm_add_t> mult_blas;
+    single_measure(dc, dc, dc, mult_blas, size, enabled, 9);
+
+
     std::cout << "0\n";  std::cout.flush();
 }
 
@@ -324,6 +344,85 @@ void measure_unrolling_32(unsigned size, std::vector<int>& enabled)
 }
 
 
+
+void measure_hetero_value(unsigned size, std::vector<int>& enabled)
+{
+    using std::complex;
+    typedef gen_tiling_dense_mat_mat_mult_t<4, 4, ama_t>  tiling_m44_base_mult_t;
+    gen_recursive_dense_mat_mat_mult_t<tiling_m44_base_mult_t> mult;
+
+    dc_t                                           dc(4, 4);
+    dr_t                                           dr(4, 4);
+    dense2D<float, matrix_parameters<row_major> >  fr(4, 4);
+    dense2D<float, matrix_parameters<col_major> >  fc(4, 4);
+    dense2D<complex<float>, matrix_parameters<col_major> >   cc(4, 4);
+    dense2D<complex<double>, matrix_parameters<col_major> >  zc(4, 4);
+    dense2D<complex<double>, matrix_parameters<row_major> >  zr(4, 4);
+
+    morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
+    morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
+    
+    morton_dense<float,  doppler_64_row_mask>     f64r(4, 4);
+    morton_dense<float,  doppler_64_col_mask>     f64c(4, 4);
+
+    morton_dense<complex<float>,  doppler_64_row_mask>     c64r(4, 4);
+    morton_dense<complex<float>,  doppler_64_col_mask>     c64c(4, 4);
+
+    morton_dense<complex<double>,  doppler_64_row_mask>     z64r(4, 4);
+    morton_dense<complex<double>,  doppler_64_col_mask>     z64c(4, 4);
+
+    single_measure(dr, fc, dr, mult, size, enabled, 0);
+    single_measure(fr, fc, dr, mult, size, enabled, 1);
+   
+    //single_measure(fr, zc, zr, mult, size, enabled, 2);
+    //single_measure(dr, cc, zr, mult, size, enabled, 3);
+    
+    single_measure(d64r, f64c, d64r, mult, size, enabled, 4);
+    single_measure(d64r, z64c, z64r, mult, size, enabled, 5);
+    std::cout << "0\n";  std::cout.flush();
+}
+
+
+void measure_hetero_layout(unsigned size, std::vector<int>& enabled)
+{
+    using std::complex;
+    typedef gen_tiling_dense_mat_mat_mult_t<4, 4, ama_t>  tiling_m44_base_mult_t;
+    gen_recursive_dense_mat_mat_mult_t<tiling_m44_base_mult_t> mult;
+
+    dc_t                                           dc(4, 4);
+    dr_t                                           dr(4, 4);
+    dense2D<float, matrix_parameters<row_major> >  fr(4, 4);
+    dense2D<float, matrix_parameters<col_major> >  fc(4, 4);
+    dense2D<complex<float>, matrix_parameters<col_major> >   cc(4, 4);
+    dense2D<complex<double>, matrix_parameters<col_major> >  zc(4, 4);
+    dense2D<complex<double>, matrix_parameters<row_major> >  zr(4, 4);
+
+    morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
+    morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
+    
+    morton_dense<float,  doppler_64_row_mask>     f64r(4, 4);
+    morton_dense<float,  doppler_64_col_mask>     f64c(4, 4);
+
+    morton_dense<complex<float>,  doppler_64_row_mask>     c64r(4, 4);
+    morton_dense<complex<float>,  doppler_64_col_mask>     c64c(4, 4);
+
+    morton_dense<complex<double>,  doppler_64_row_mask>     z64r(4, 4);
+    morton_dense<complex<double>,  doppler_64_col_mask>     z64c(4, 4);
+
+    single_measure(dr, f64c, dr, mult, size, enabled, 0);
+    single_measure(fr, f64c, dr, mult, size, enabled, 1);
+   
+    //single_measure(f64r, zc, zr, mult, size, enabled, 2);
+    single_measure(d64r, zc, zr, mult, size, enabled, 3);
+    
+    single_measure(d64r, f64c, dr, mult, size, enabled, 4);
+    //single_measure(f64r, z64c, zr, mult, size, enabled, 5);
+    std::cout << "0\n";  std::cout.flush();
+}
+
+
+
+
 template <typename Measure>
 void series(unsigned steps, unsigned max_size, Measure measure, const string& comment)
 {
@@ -350,6 +449,8 @@ int main(int argc, char* argv[])
     scenarii.push_back(string("Comparing different unrolling for row-major dense matrices"));
     scenarii.push_back(string("Comparing different orientations for hybrid row-major matrices"));
     scenarii.push_back(string("Comparing different unrolling for hybrid 32 row-major times col-major matrices"));
+    scenarii.push_back(string("Multiplying matrices with different value types"));
+    scenarii.push_back(string("Multiplying matrices with different matrix layouts"));
 
     using std::cout;
     if (argc < 4) {
@@ -369,6 +470,8 @@ int main(int argc, char* argv[])
       case 5: 	series(steps, max_size, measure_unrolling_dense, scenarii[5]); break;
       case 6: 	series(steps, max_size, measure_orientation, scenarii[6]); break;
       case 7: 	series(steps, max_size, measure_unrolling_32, scenarii[7]); break;
+      case 8: 	series(steps, max_size, measure_hetero_value, scenarii[8]); break;
+      case 9: 	series(steps, max_size, measure_hetero_layout, scenarii[9]); break;
     }
 
     return 0; 
@@ -384,9 +487,9 @@ int main(int argc, char* argv[])
 
 // scheiss Kommandos
 
-// g++4 -g matrix_product_timing.cpp  -o matrix_product_timing  -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/goto-blas -lgoto_opteron-64 -lpthread xerbla.o -DMTL_UGLY_MULT_HACK
+// g++4 matrix_product_timing.cpp  -o matrix_product_timing -O3 -DNDEBUG -ffast-math  -mcpu=opteron -mtune=opteron -msse2 -mfpmath=sse -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/goto-blas -lgoto_opteron-64 -lpthread xerbla.o
 
 
-// g++4 -g matrix_product_timing.cpp  -o matrix_product_timing -O3 -DNDEBUG -ffast-math -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/acml-2-6-0-gnu-64bit/gnu64/lib -lacml -L/usr/lib/gcc/x86_64-redhat-linux/3.4.3 -lg2c -DMTL_UGLY_MULT_HACK
+// g++4 matrix_product_timing.cpp  -o matrix_product_timing -O3 -DNDEBUG -ffast-math  -mcpu=opteron -mtune=opteron -msse2 -mfpmath=sse -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/acml-2-6-0-gnu-64bit/gnu64/lib -lacml -L/usr/lib/gcc/x86_64-redhat-linux/3.4.3 -lg2c
 
 #endif

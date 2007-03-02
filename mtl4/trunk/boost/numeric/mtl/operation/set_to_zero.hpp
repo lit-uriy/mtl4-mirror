@@ -19,6 +19,11 @@ namespace mtl {
 	    typename Matrix::value_type  ref, my_zero(zero(ref));
 	    // std::cout << "set_to_zero: used_memory = " << matrix.used_memory() << "\n";
 	    std::fill(matrix.elements(), matrix.elements()+matrix.used_memory(), my_zero);
+#if 0
+	    for (int i= 0; i < matrix.num_rows(); i++)
+	      for (int j= 0; i < matrix.num_cols(); i++)
+		matrix[i][j]= my_zero;
+#endif
 	}
 
 	template <class Matrix>
@@ -28,7 +33,14 @@ namespace mtl {
 	    typename Matrix::value_type  ref, my_zero(zero(ref));
 	    // maybe faster to do it straight
 	    // if performance problems we'll take care of the holes
+	    // std::cout << "set_to_zero: used_memory = " << matrix.used_memory() << "\n";
 	    std::fill(matrix.elements(), matrix.elements() + matrix.used_memory(), my_zero);
+
+#if 0
+	    for (int i= 0; i < matrix.num_rows(); i++)
+	      for (int j= 0; i < matrix.num_cols(); i++)
+		matrix[i][j]= my_zero;
+#endif
 	}	
 
 	// Is approbriate for all sparse matrices and vectors
