@@ -44,7 +44,7 @@ int l1i= papi.add_event("PAPI_L1_DCM");
 int l2i= papi.add_event("PAPI_L2_DCM");
 int tlbi= papi.add_event("PAPI_TLB_DM");
 
-
+#ifdef MTL_USE_BLAS
 extern "C" {
 void dgemm_(const char* transa, const char* transb, 
 	    const int* m, const int* n, const int* k,
@@ -52,17 +52,19 @@ void dgemm_(const char* transa, const char* transb,
 	    const double *db, const int* ldb, const double* dbeta,
 	    double *dc, const int* ldc);
 }
+#endif
 
 struct dgemm_t
 {
     void operator()(const dc_t& a, const dc_t& b, dc_t& c)
     {
+#ifdef MTL_USE_BLAS
 	int size= a.num_rows();
 	double alpha= 1.0, beta= 0.0;
 	dgemm_("N", "N", &size, &size, &size, &alpha, 
 	       const_cast<double*>(&a[0][0]), &size, const_cast<double*>(&b[0][0]), 
 	       &size, &beta, &c[0][0], &size);
-
+#endif
     }
 };
 

@@ -4,7 +4,6 @@ sources = Split("""base_case_conversion.cpp
              bit_masking.cpp
              cholesky_test.cpp
              complexity.cpp
-             compressed2D.cpp
              compressed2D_inserter.cpp
              dense2D.cpp
              dilated_int.cpp
@@ -16,6 +15,7 @@ sources = Split("""base_case_conversion.cpp
 	     set_to_zero_test.cpp
 	     assign_test.cpp
 """)
+#compressed2D.cpp
 
 programs = []
 for p in sources:
