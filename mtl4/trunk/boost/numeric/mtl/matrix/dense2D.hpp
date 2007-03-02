@@ -346,6 +346,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->realloc(num_rows * num_cols);
     }
 
+#ifndef MTL_UGLY_MULT_HACK
     self& operator=(const self& src)
     {
 	change_dim(src.num_rows(), src.num_cols());
@@ -353,6 +354,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	// matrix::copy(src, *this);
 	return *this;
     }
+#endif
 
     template <typename MatrixSrc>
     self& operator=(const MatrixSrc& src)
