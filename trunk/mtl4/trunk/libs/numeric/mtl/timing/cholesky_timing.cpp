@@ -14,7 +14,7 @@
 #include <boost/numeric/mtl/operation/matrix_mult.hpp>
 #include <boost/numeric/mtl/operation/hessian_matrix_utility.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
-// #include <boost/numeric/mtl/recursion/recursive_matrix_mult.hpp>
+#include <boost/numeric/mtl/utility/papi.hpp>
 
 using namespace mtl;
 using namespace mtl::recursion; 
@@ -61,6 +61,33 @@ typedef gen_recursive_dense_mat_mat_mult_t<base_mult_t>     rec_mult_t;
 typedef gen_tiling_22_dense_mat_mat_mult_t<assign::plus_sum>  tiling_22_base_mult_t;
 typedef gen_tiling_44_dense_mat_mat_mult_t<assign::plus_sum>  tiling_44_base_mult_t;
 
+utility::papi_t papi;
+int l1i= papi.add_event("PAPI_L1_DCM");
+int l2i= papi.add_event("PAPI_L2_DCM");
+int tlbi= papi.add_event("PAPI_TLB_DM");
+
+
+// ugly short cuts
+typedef dense2D<double>                                       dr_t;
+typedef dense2D<double, matrix_parameters<col_major> >        dc_t;
+
+#ifdef MTL_HAS_LAPACK
+extern "C" {
+  void dpotrf_(char* uplo, int*, double*, int*, int*);
+}
+#endif
+
+struct dpotrf_t
+{
+    void operator()(dc_t& a)
+    {
+#ifdef MTL_HAS_LAPACK
+	int size= a.num_rows(), info;
+	dpotrf_("U", &size, &a[0][0], &size, &info);
+#endif
+    }
+};
+
 
 
 void print_time_and_mflops(double time, double size)
@@ -80,14 +107,41 @@ void single_measure(Matrix&, Visitor visitor, unsigned size, std::vector<int>& e
     if (enabled[i]) {
 	int reps= 0;
 	boost::timer start;	
+	papi.reset();
 	for (; start.elapsed() < 5; reps++)
 	    recursive_cholesky(matrix, visitor);
+	papi.read();
 	double time= start.elapsed() / double(reps);
 	print_time_and_mflops(time, size);
+	std::cout << papi[l1i]/reps << ", " << papi[l2i]/reps << ", " << papi[tlbi]/reps << ", ";
 	if (time > max_time)
 	    enabled[i]= 0;
     } else
-	std::cout << ", , ";
+	std::cout << ", , , , , ";
+}
+
+
+// Matrices are only placeholder to provide the type
+template <typename Matrix, typename Functor>
+void single_measure_dpotrf(Matrix&, Functor fcholesky, unsigned size, std::vector<int>& enabled, int i)
+{
+    Matrix matrix(size, size);
+    fill_matrix_for_cholesky(matrix);
+
+    if (enabled[i]) {
+	int reps= 0;
+	boost::timer start;	
+	papi.reset();
+	for (; start.elapsed() < 5; reps++)
+	    fcholesky(matrix);
+	papi.read();
+	double time= start.elapsed() / double(reps);
+	print_time_and_mflops(time, size);
+	std::cout << papi[l1i]/reps << ", " << papi[l2i]/reps << ", " << papi[tlbi]/reps << ", ";
+	if (time > max_time)
+	    enabled[i]= 0;
+    } else
+	std::cout << ", , , , , ";
 }
 
 
@@ -112,6 +166,8 @@ void measure(unsigned size, std::vector<int>& enabled)
     single_measure(dc, visitor, size, enabled, 3);
     single_measure(d32r, visitor, size, enabled, 4);
     single_measure(d64r, visitor, size, enabled, 5);
+
+    single_measure_dpotrf(dc, dpotrf_t(), size, enabled, 6);
     
     std::cout << "0\n"; // to not finish with comma
     std::cout.flush();
@@ -132,6 +188,7 @@ void series(unsigned steps, unsigned max_size, Measure measure, const string& co
 
 int main(int argc, char* argv[])
 {
+    papi.start();
 
     std::vector<std::string> scenarii;
     scenarii.push_back(string("Comparing canonical implementation with different matrix types"));
@@ -167,12 +224,6 @@ int main(int argc, char* argv[])
       case 1: 	series(steps, max_size, measure<iterator_t>, scenarii[1]); break;
       case 2: 	series(steps, max_size, measure<tiling_22_t>, scenarii[2]); break;
       case 3: 	series(steps, max_size, measure<tiling_44_t>, scenarii[3]); break;
-#if 0
-      case 4: 	series(steps, max_size, measure_unrolling_hybrid, scenarii[4]); break;
-      case 5: 	series(steps, max_size, measure_unrolling_dense, scenarii[5]); break;
-      case 6: 	series(steps, max_size, measure_orientation, scenarii[6]); break;
-      case 7: 	series(steps, max_size, measure_unrolling_32, scenarii[7]); break;
-#endif
     }
 
     return 0; 
@@ -181,3 +232,5 @@ int main(int argc, char* argv[])
  
 
 
+// Compile command:
+// g++4 cholesky_timing.cpp -o cholesky_timing -O3 -DNDEBUG -ffast-math  -mcpu=opteron -mtune=opteron -msse2 -mfpmath=sse  -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS -DMTL_HAS_LAPACK -L/u/htor/projekte/mathlibs/acml-2-6-0-gnu-64bit/gnu64/lib -lacml -L/usr/lib/gcc/x86_64-redhat-linux/3.4.3 -lg2c
