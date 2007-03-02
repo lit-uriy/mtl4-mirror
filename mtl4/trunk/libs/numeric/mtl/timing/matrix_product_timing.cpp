@@ -132,6 +132,9 @@ void measure_cast(unsigned size, std::vector<int>& enabled)
     single_measure(d32ra, d32rb, d32rc, mult, size, enabled, 1);
     single_measure(d64ra, d64rb, d64rc, mult, size, enabled, 2);
     single_measure(d64ca, d64cb, d64cc, mult, size, enabled, 3);
+
+    dc_t                                           dc(4, 4);
+    single_measure(dc, dc, dc, dgemm_t(), size, enabled, 4);
  
     std::cout << "0\n";  std::cout.flush();
 }
@@ -155,6 +158,8 @@ void measure_with_unroll(unsigned size, std::vector<int>& enabled)
     single_measure(d32c, d32c, d32c, mult, size, enabled, 3);
     single_measure(d32c, d32c, d32c, mult_22, size, enabled, 4);
     single_measure(d32c, d32c, d32c, mult_44, size, enabled, 5);
+    dc_t                                           dc(4, 4);
+    single_measure(dc, dc, dc, dgemm_t(), size, enabled, 6);
  
     std::cout << "0\n";  std::cout.flush();
 }
@@ -179,6 +184,9 @@ void measure_base_size(unsigned size, std::vector<int>& enabled)
 
     gen_recursive_dense_mat_mat_mult_t<tiling_22_base_mult_t, recursion::bound_test_static<128> > mult128;
     single_measure(d128r, d128r, d128r, mult128, size, enabled, 3);
+
+    dc_t                                           dc(4, 4);
+    single_measure(dc, dc, dc, dgemm_t(), size, enabled, 4);
  
     std::cout << "0\n";  std::cout.flush();
 }
@@ -218,6 +226,9 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix,
     single_measure(matrix, matrixb, matrix, mult_m35, size, enabled, 6);
     single_measure(matrix, matrixb, matrix, mult_m44, size, enabled, 7);
  
+    dc_t                                           dc(4, 4);
+    single_measure(dc, dc, dc, dgemm_t(), size, enabled, 8);
+
     std::cout << "0\n";  std::cout.flush();
 }
 
@@ -259,6 +270,9 @@ void measure_orientation(unsigned size, std::vector<int>& enabled)
     single_measure(d64r, d64c, d64r, mult_m44, size, enabled, 6);
     single_measure(d64c, d64r, d64r, mult_m44, size, enabled, 7);
  
+    dc_t                                           dc(4, 4);
+    single_measure(dc, dc, dc, dgemm_t(), size, enabled, 8);
+
     std::cout << "0\n";  std::cout.flush();
 }
 
@@ -301,6 +315,9 @@ void measure_unrolling_32(unsigned size, std::vector<int>& enabled)
     single_measure(d32r, d32c, d32r, mult_m35, size, enabled, 6);
     single_measure(d32r, d32c, d32r, mult_m44, size, enabled, 7);
  
+    dc_t                                           dc(4, 4);
+    single_measure(dc, dc, dc, dgemm_t(), size, enabled, 8);
+
     std::cout << "0\n";  std::cout.flush();
 }
 
@@ -365,9 +382,9 @@ int main(int argc, char* argv[])
 
 // scheiss Kommandos
 
-// g++4 -g matrix_product_timing.cpp  -o matrix_product_timing  -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/goto-blas -lgoto_opteron-64 -lpthread xerbla.o
+// g++4 -g matrix_product_timing.cpp  -o matrix_product_timing  -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/goto-blas -lgoto_opteron-64 -lpthread xerbla.o -DMTL_UGLY_MULT_HACK
 
 
-// g++4 -g matrix_product_timing.cpp  -o matrix_product_timing  -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/acml-2-6-0-gnu-64bit/gnu64/lib -lacml -L/usr/lib/gcc/x86_64-redhat-linux/3.4.3 -lg2c
+// g++4 -g matrix_product_timing.cpp  -o matrix_product_timing -O3 -DNDEBUG -ffast-math -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/acml-2-6-0-gnu-64bit/gnu64/lib -lacml -L/usr/lib/gcc/x86_64-redhat-linux/3.4.3 -lg2c -DMTL_UGLY_MULT_HACK
 
 #endif
