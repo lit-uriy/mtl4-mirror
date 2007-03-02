@@ -49,9 +49,9 @@ struct generic_array
     }
 
   public:
-    generic_array() {}
+    generic_array(): extern_memory(true), malloc_address(0), data(0) {}
 
-    explicit generic_array(Value *data) : extern_memory(true), data(data) {}    
+    explicit generic_array(Value *data) : extern_memory(true), malloc_address(0), data(data) {}    
 
     explicit generic_array(std::size_t size) : extern_memory(false)
     {

@@ -427,7 +427,6 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	// matrix::copy(src, *this);
 	return *this;
     }
-#endif
 
     template <typename MatrixSrc>
     self& operator=(const MatrixSrc& src)
@@ -435,6 +434,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	matrix::copy(src, *this);
 	return *this;
     }
+#endif
 
 
     value_type operator() (key_type const& key) const

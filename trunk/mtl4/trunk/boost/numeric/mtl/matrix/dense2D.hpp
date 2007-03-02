@@ -354,7 +354,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	// matrix::copy(src, *this);
 	return *this;
     }
-#endif
 
     template <typename MatrixSrc>
     self& operator=(const MatrixSrc& src)
@@ -362,6 +361,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	matrix::copy(src, *this);
 	return *this;
     }
+#endif
 
 
     bool check_indices(size_t r, size_t c) const

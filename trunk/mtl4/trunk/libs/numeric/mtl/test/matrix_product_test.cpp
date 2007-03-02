@@ -30,7 +30,7 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
     fill_hessian_matrix(a, 1.0);
     fill_hessian_matrix(b, 2.0);
-   
+  goto recursive;
     std::cout << "\n" << name << "  --- calling simple mult:\n"; std::cout.flush();
     typedef gen_dense_mat_mat_mult_t<>  mult_t;
     mult_t                              mult;
@@ -135,7 +135,7 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
     tiling_44_minus_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
-
+ recursive:
     std::cout << "\n" << name << "  --- calling mult recursively:\n"; std::cout.flush();
     // The recursive functor is C= A*B but the base case must be C+= A*B !!!!!!
     gen_recursive_dense_mat_mat_mult_t<add_mult_t, bound_test_static<32> >  recursive_mult;
@@ -337,7 +337,7 @@ int test_main(int argc, char* argv[])
     test_blas();
     return 0;
 #endif
-
+  goto hybrid;
     test(da, db, dc, "dense2D");
     test(dca, dcb, dcc, "dense2D col-major");
     test(da, dcb, dc, "dense2D mixed");
@@ -346,6 +346,7 @@ int test_main(int argc, char* argv[])
     test(mda, mdb, mdc, "pure Morton");
     test(mca, mcb, mcc, "Hybrid col-major");
     test(mra, mrb, mrc, "Hybrid row-major");
+ hybrid:
     test(mrans, mcbns, mrcns, "Hybrid col-major and row-major, no shark tooth");
     test(mrans, mrbns, mrcns, "Hybrid row-major, no shark tooth");
     test(mraf, mcbf, mrcf, "Hybrid col-major and row-major with float");
