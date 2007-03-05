@@ -52,6 +52,97 @@ def add_user_opt(env, add_optflag):
      env.Append(CCFLAGS = add_optflag)
      env.Append(CXXFLAGS = add_optflag)
 
+###############################
+# check for installed blas ...
+# search different libraries
+###############################
+def detected_blas(env): # blas library found
+   env.Append(CPPDEFINES = 'MTL_HAS_BLAS')
+
+def check_for_blas(env):
+ # symbolname
+ symname = 'dgemm_'
+ found_blas = 0
+
+ # get command line blas path
+ blas_path = ARGUMENTS.get('blas_path', '')
+ if blas_path:
+   print 'adding ' + blas_path + ' to LIBPATH.'
+   env.Append(LIBPATH = [ blas_path, blas_path + '/lib/' ])
+ 
+ # extra linker flags for blas
+ blas_ldflags = ARGUMENTS.get('blas_ldflags', '')
+ if blas_ldflags:
+   env.Prepend(_LIBFLAGS=blas_ldflags.split())
+
+ # get command line blas lib
+ blas_lib = ARGUMENTS.get('blas_lib', '')
+ if blas_lib:
+   myenv = env.Copy()
+   conf = Configure(myenv)
+   # check supplied lib
+   print "Checking for lib " + blas_lib + "..."
+   if conf.CheckLib(blas_lib, symname):
+     detected_blas(myenv)
+     found_blas = 1
+   myenv = conf.Finish()
+   if(found_blas == 1):
+     return myenv
+ else:
+   print "Autodetecting BLAS support. See config.log for details!"
+     
+   ########################
+   # check for acml
+   myenv = env.Copy()
+   # new configure object
+   conf = Configure(myenv)
+   # additional libs needed for acml
+   myenv.Append(LIBS=['m', 'g2c'])
+   if conf.CheckLib('acml', symname):
+     detected_blas(myenv)
+     found_blas = 1
+   myenv = conf.Finish()
+   if(found_blas == 1):
+     return myenv
+  
+   ########################
+   # check for goto
+   myenv = env.Copy()
+   # new configure object
+   conf = Configure(myenv)
+   # additional libs needed for goto
+   myenv.Append(LIBS=['pthread'])
+   # extra linker flags for libgoto
+   myenv.Append(_LIBFLAGS=['build/xerbla.c'])
+   if conf.CheckLib('goto', symname) or conf.CheckLib('goto_opteron-64', symname) or \
+      conf.CheckLib('goto_coppermine-32', symname) or conf.CheckLib('goto_opteron-32', symname) or \
+      conf.CheckLib('goto_itanium2-64', symname) or conf.CheckLib('goto_katmai-32', symname) or \
+      conf.CheckLib('goto_northwood-32', symname) or conf.CheckLib('goto_prescott-32', symname) or \
+      conf.CheckLib('goto_prescott-64', symname):
+     detected_blas(myenv)
+     found_blas = 1
+   myenv = conf.Finish()
+   if(found_blas == 1):
+     return myenv
+  
+   ########################
+   # check for ATLAS
+   myenv = env.Copy()
+   # new configure object
+   conf = Configure(myenv)
+   # additional libs needed for goto
+   myenv.Append(LIBS=['f77blas', 'g2c'])
+   if conf.CheckLib('atlas', symname):
+     detected_blas(myenv)
+     found_blas = 1
+   myenv = conf.Finish()
+   if(found_blas == 1):
+     return myenv
+
+ return env
+ 
+ 
+
 
 ######################
 # Start setting up env
@@ -64,8 +155,10 @@ env = Environment()
 
 conf = Configure(env)
 check_no_long_double(conf)
-
 env = conf.Finish()
+
+env = check_for_blas(env)
+
 
 ######################
 # Include paths
@@ -100,6 +193,9 @@ opts.Add('add_ccflag', 'Add extra CC compiler flags that aren\'t automatically s
 opts.Add('add_cxxflag', 'Add extra CXX compiler flags that aren\'t automatically set', '')
 opts.Add('add_optflag', 'Add extra optimization flags that aren\'t automatically set', '')
 
+opts.Add('blas_path', 'Add path of blas library', '')
+opts.Add('blas_lib', 'Add name of blas library', '')
+opts.Add('blas_ldflags', 'Add LDFLAGS for blas library', '')
 
 
 Help(opts.GenerateHelpText(env))
