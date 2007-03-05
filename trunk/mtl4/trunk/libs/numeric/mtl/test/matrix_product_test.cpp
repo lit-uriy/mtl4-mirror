@@ -338,6 +338,7 @@ int test_main(int argc, char* argv[])
     return 0;
 #endif
   goto hybrid;
+    goto hybrid;
     test(da, db, dc, "dense2D");
     test(dca, dcb, dcc, "dense2D col-major");
     test(da, dcb, dc, "dense2D mixed");
