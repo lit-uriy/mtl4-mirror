@@ -8,7 +8,6 @@ sources = Split("""base_case_conversion.cpp
              dense2D.cpp
              dilated_int.cpp
              matrix_product_test.cpp
-             matrix_product_timing.cpp
              morton_dense.cpp
              sub_matrix.cpp
 	     print_matrix_test.cpp
