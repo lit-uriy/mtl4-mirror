@@ -16,14 +16,14 @@ namespace math {
 concept VectorSpace<typename Vector, typename Scalar = typename Vector::value_type>
 : AdditiveAbelianGroup<Vector>
 {
-    where Field<Scalar>;
-    where Multiplicable<Scalar, Vector>;
-    where MultiplicableWithAssign<Vector, Scalar>;
-    where DivisibleWithAssign<Vector, Scalar>;
+    requires Field<Scalar>;
+    requires Multiplicable<Scalar, Vector>;
+    requires MultiplicableWithAssign<Vector, Scalar>;
+    requires DivisibleWithAssign<Vector, Scalar>;
   
-    where std::Assignable<Vector, Multiplicable<Scalar, Vector>::result_type>;
-    where std::Assignable<Vector, Multiplicable<Vector, Scalar>::result_type>;
-    where std::Assignable<Vector, Divisible<Vector, Scalar>::result_type>;
+    requires std::Assignable<Vector, Multiplicable<Scalar, Vector>::result_type>;
+    requires std::Assignable<Vector, Multiplicable<Vector, Scalar>::result_type>;
+    requires std::Assignable<Vector, Divisible<Vector, Scalar>::result_type>;
     
     // Associated types of Field<Scalar> and AdditiveAbelianGroup<Vector> collide
     // typename result_type = AdditiveAbelianGroup<Vector>::result_type;
@@ -45,22 +45,22 @@ concept Norm<typename N, typename Vector,
 	     typename Scalar = typename Vector::value_type>
   : std::Callable1<N, Vector>
 {
-    where VectorSpace<Vector, Scalar>;
-    where RealMagnitude<Scalar>;
+    requires VectorSpace<Vector, Scalar>;
+    requires RealMagnitude<Scalar>;
     typename magnitude_type = MagnitudeType<Scalar>::type;
-    where std::Convertible<magnitude_type, Scalar>;
+    requires std::Convertible<magnitude_type, Scalar>;
 
     typename result_type_norm = std::Callable1<N, Vector>::result_type;
-    where std::Convertible<result_type_norm, RealMagnitude<Scalar>::magnitude_type>;
-    where std::Convertible<result_type_norm, Scalar>;
+    requires std::Convertible<result_type_norm, RealMagnitude<Scalar>::magnitude_type>;
+    requires std::Convertible<result_type_norm, Scalar>;
 
     // Version with function instead functor, as used by Rolf and Matthias
     // Axioms there defined without norm functor and concept has only 2 types
 #if 0       
     typename result_type_norm; 
     result_type_norm norm(const Vector&);
-    where std::Convertible<result_type_norm, magnitude_type>;
-    where std::Convertible<result_type_norm, Scalar>;
+    requires std::Convertible<result_type_norm, magnitude_type>;
+    requires std::Convertible<result_type_norm, Scalar>;
 #endif
 
     axiom Positivity(N norm, Vector v, magnitude_type ref)
@@ -69,9 +69,9 @@ concept Norm<typename N, typename Vector,
     }
 
     // The following is covered by RealMagnitude
-    // where AbsApplicable<Scalar>;
-    // where std::Convertible<AbsApplicable<Scalar>::result_type, magnitude_type>;
-    // where Multiplicable<magnitude_type>;
+    // requires AbsApplicable<Scalar>;
+    // requires std::Convertible<AbsApplicable<Scalar>::result_type, magnitude_type>;
+    // requires Multiplicable<magnitude_type>;
 
     axiom PositiveHomogeneity(N norm, Vector v, Scalar a)
     {
@@ -116,16 +116,16 @@ concept BanachSpace<typename N, typename Vector,
 concept InnerProduct<typename I, typename Vector, 
 		     typename Scalar = typename Vector::value_type>
 {
-    where VectorSpace<Vector, Scalar>;
-    where std::Callable2<I, Vector, Vector>;
+    requires VectorSpace<Vector, Scalar>;
+    requires std::Callable2<I, Vector, Vector>;
 
     // Result of the inner product must be convertible to Scalar
-    where std::Convertible<std::Callable2<I, Vector, Vector>::result_type, Scalar>;
+    requires std::Convertible<std::Callable2<I, Vector, Vector>::result_type, Scalar>;
 
     // Let's try without this
-    // where ets::InnerProduct<I, Vector, Scalar>;
+    // requires ets::InnerProduct<I, Vector, Scalar>;
 
-    where HasConjugate<Scalar>;
+    requires HasConjugate<Scalar>;
 
     axiom ConjugateSymmetry(I inner, Vector v, Vector w)
     {
@@ -136,14 +136,14 @@ concept InnerProduct<typename I, typename Vector,
     {
 	inner(v, b * w) == b * inner(v, w);
 	inner(u, v + w) == inner(u, v) + inner(u, w);
-	// This implies the following (will compilers interfere/deduce?)
+	// This implies the following (will compilers infere/deduce?)
 	inner(a * v, w) == conj(a) * inner(v, w);
 	inner(u + v, w) == inner(u, w) + inner(v, w);
     }
 
-    where RealMagnitude<Scalar>;
+    requires RealMagnitude<Scalar>;
     typename magnitude_type = RealMagnitude<Scalar>::type;
-    // where FullLessThanComparable<magnitude_type>;
+    // requires FullLessThanComparable<magnitude_type>;
 
     axiom NonNegativity(I inner, Vector v, MagnitudeType<Scalar>::type magnitude)
     {

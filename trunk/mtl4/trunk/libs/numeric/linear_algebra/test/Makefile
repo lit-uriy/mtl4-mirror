@@ -24,6 +24,7 @@ XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_al
                  Makefile
  
 CXX =  conceptg++
+#CXX =  g++
 
 TARGETS =	positive_real	positive_real_explicit positive_real_power \
 		positive_real_power_explicit string_example \
@@ -67,6 +68,9 @@ concept_map_test:	concept_map_test.cpp  ${XTRA_SOURCES}
 
 vector_test:	vector_test.cpp  ${XTRA_SOURCES}
 	${CXX} ${CXXFLAGS} -o $@ vector_test.cpp
+
+vector_test_rolf:	vector_test_rolf.cpp  ${XTRA_SOURCES}
+	${CXX} ${CXXFLAGS} -o $@ vector_test_rolf.cpp
 
 clean:
 	rm -rf ${TARGETS} *~

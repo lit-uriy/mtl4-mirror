@@ -259,7 +259,7 @@ private:
 	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
 	    
-	// C_nw += A_n * B_n
+	// C_nw += A_nw * B_nw
 	for (size_type i= 0; i < i_block; i+= Tiling1)
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
 
@@ -342,7 +342,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
 	    
-	// C_nw += A_n * B_n
+	// C_nw += A_nw * B_nw
 	for (size_type i= 0; i < i_block; i+= Tiling1)
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
 
@@ -430,7 +430,7 @@ private:
 	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
 
-	// C_nw += A_n * B_n
+	// C_nw += A_nw * B_nw
 	for (size_type i= 0; i < i_block; i+= Tiling1)
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
 
@@ -539,7 +539,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
 
-	// C_nw += A_n * B_n
+	// C_nw += A_nw * B_nw
 	for (size_type i= 0; i < i_block; i+= Tiling1)
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
 
@@ -656,7 +656,7 @@ private:
 	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
 
-	// C_nw += A_n * B_n
+	// C_nw += A_nw * B_nw
 	for (size_type i= 0; i < i_block; i+= Tiling1)
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
 
@@ -738,7 +738,7 @@ apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::h
 	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
 
-	// C_nw += A_n * B_n
+	// C_nw += A_nw * B_nw
 	for (size_type i= 0; i < i_block; i+= Tiling1)
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
 

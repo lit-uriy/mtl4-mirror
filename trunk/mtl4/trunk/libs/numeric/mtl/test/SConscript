@@ -13,6 +13,7 @@ sources = Split("""base_case_conversion.cpp
 	     print_matrix_test.cpp
 	     set_to_zero_test.cpp
 	     assign_test.cpp
+             dense_vector_test.cpp
 """)
 #compressed2D.cpp
 
