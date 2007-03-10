@@ -59,6 +59,7 @@ namespace mtl {
 #if 0
     template <typename MatrixSrc, typename MatrixDest>
     inline void copy(const MatrixSrc& src, tag::matrix, MatrixDest& dest, tag::matrix)
+    // inline void copy(const MatrixSrc& src, tag::matrix_expr, MatrixDest& dest, tag::matrix)
     {
 	return matrix::copy(src, dest);
     }

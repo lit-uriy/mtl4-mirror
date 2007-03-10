@@ -17,10 +17,16 @@ struct unsupported {};
 struct universe {};
 
 // tag for any MTL matrix
+struct vector : virtual universe {};
+
+// tag for any MTL matrix
 struct matrix : virtual universe {};
 
-// Tag for any dense MTL matrix
+// Tag for any dense MTL structure
 struct dense : virtual universe {};
+    
+// Tag for vectors where offet v_i is x*i for some x 
+struct has_1D_layout : virtual dense {};
     
 // Tag for matrizes where offet a_ij is x*i + y*j for some x and y
 struct has_2D_layout : virtual dense {};
@@ -57,8 +63,13 @@ struct qsub_dividable : virtual has_sub_matrix {};
 // Subdividable, i.e. has sub_matrix function
 struct sub_dividable : virtual qsub_dividable {};
 
-// Tags for dispatching on matrix types without dealing 
+// Tags for dispatching on vector and matrix types without dealing 
 // with template parameters
+struct dense_vector
+  : virtual vector, virtual contiguous_dense, 
+    virtual has_1D_layout
+{};
+
 struct dense2D 
   : virtual matrix, virtual contiguous_dense, virtual has_fast_ra_cursor, 
     virtual has_fast_ra_iterator, virtual has_2D_layout, virtual sub_dividable

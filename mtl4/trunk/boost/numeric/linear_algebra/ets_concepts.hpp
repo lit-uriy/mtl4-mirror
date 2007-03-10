@@ -17,7 +17,7 @@ namespace ets {
 
   auto concept Field<typename Element>
   {
-    where std::Assignable<Element, math::AdditivePartiallyInvertibleMonoid<Element>::unary_result_type>; //"x=-y" valid
+    requires std::Assignable<Element, math::AdditivePartiallyInvertibleMonoid<Element>::unary_result_type>; //"x=-y" valid
   };
   
   auto concept VectorSpace<typename Vector, typename Scalar>
@@ -35,8 +35,8 @@ namespace ets {
     res_type_3 operator*=(Vector&, const math::AdditivePartiallyInvertibleMonoid<Scalar>::unary_result_type&);
     
     //valid expression: "vector3 = vector1 + scalar*vector2"
-    where math::Addable<Vector, math::Multiplicable<Scalar, Vector>::result_type>; //"vector1+scalar*vector2" valid 
-    where std::Assignable<Vector, math::Addable<Vector, math::Multiplicable<Scalar, Vector>::result_type>::result_type>; //"vector3 = vector1 + scalar*vector2" valid
+    requires math::Addable<Vector, math::Multiplicable<Scalar, Vector>::result_type>; //"vector1+scalar*vector2" valid 
+    requires std::Assignable<Vector, math::Addable<Vector, math::Multiplicable<Scalar, Vector>::result_type>::result_type>; //"vector3 = vector1 + scalar*vector2" valid
   
   };
    

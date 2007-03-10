@@ -58,7 +58,7 @@ concept Float<typename T>
   bool operator>=(T, T);
   bool operator!=(T, T);
 
-  where std::Assignable<T> && std::SameType<std::Assignable<T>::result_type, T&>;
+  requires std::Assignable<T>, std::SameType<std::Assignable<T>::result_type, T&>;
 }
 
 concept_map Float<float> {}
@@ -84,11 +84,11 @@ concept Complex<typename T>
   // TBD: Some day, these will come from EqualityComparable
   bool operator!=(T, T);
 
-  where std::Assignable<T> && std::SameType<std::Assignable<T>::result_type, T&>;
+  requires std::Assignable<T>, std::SameType<std::Assignable<T>::result_type, T&>;
 }
 
 template <typename T>
-  where Float<T>
+  requires Float<T>
 concept_map Complex<std::complex<T> > {}
 
 
@@ -97,15 +97,15 @@ concept_map Complex<std::complex<T> > {}
 concept Arithmetic<typename T> {}
 
 template <typename T>
-  where std::Integral<T>
+  requires std::Integral<T>
 concept_map Arithmetic<T> {}
 
 template <typename T>
-  where Float<T>
+  requires Float<T>
 concept_map Arithmetic<T> {}
 
 template <typename T>
-  where Arithmetic<T>
+  requires Arithmetic<T>
 concept_map Arithmetic< std::complex<T> > {}
 
 
@@ -118,8 +118,8 @@ concept_map Arithmetic< std::complex<T> > {}
 // Concepts for functions mapping to same type or convertible
 auto concept UnaryIsoFunction<typename Operation, typename Element>
 {
-    where std::Callable1<Operation, Element>;
-    where std::Convertible<std::Callable1<Operation, Element>::result_type, Element>;
+    requires std::Callable1<Operation, Element>;
+    requires std::Convertible<std::Callable1<Operation, Element>::result_type, Element>;
 
     typename result_type = std::Callable1<Operation, Element>::result_type;
 };
@@ -127,8 +127,8 @@ auto concept UnaryIsoFunction<typename Operation, typename Element>
 
 auto concept BinaryIsoFunction<typename Operation, typename Element>
 {
-    where std::Callable2<Operation, Element, Element>;
-    where std::Convertible<std::Callable2<Operation, Element, Element>::result_type, Element>;
+    requires std::Callable2<Operation, Element, Element>;
+    requires std::Convertible<std::Callable2<Operation, Element, Element>::result_type, Element>;
 
     typename result_type = std::Callable2<Operation, Element, Element>::result_type;
 };
@@ -138,7 +138,7 @@ auto concept CompatibleBinaryFunction<typename A1, typename A2, typename Result>
 {
     typename result_type;
     result_type F(A1, A2);
-    where std::Convertible<result_type, Result>;
+    requires std::Convertible<result_type, Result>;
 }
 #endif
 
@@ -150,8 +150,8 @@ auto concept CompatibleBinaryFunction<typename A1, typename A2, typename Result>
 auto concept Magma<typename Operation, typename Element>
     : BinaryIsoFunction<Operation, Element>
 {
-    where std::Assignable<Element>;
-    where std::Assignable<Element, BinaryIsoFunction<Operation, Element>::result_type>;
+    requires std::Assignable<Element>;
+    requires std::Assignable<Element, BinaryIsoFunction<Operation, Element>::result_type>;
 };
 
 
@@ -183,7 +183,7 @@ concept Monoid<typename Operation, typename Element>
   : SemiGroup<Operation, Element>, 
     algebra::Monoid<Operation, Element> 
 {
-    where std::Convertible<identity_result_type, Element>;
+    requires std::Convertible<identity_result_type, Element>;
 };
 
 
@@ -199,9 +199,9 @@ concept PartiallyInvertibleMonoid<typename Operation, typename Element>
 {
     typename is_invertible_result_type;
     is_invertible_result_type is_invertible(Operation, Element);
-    where std::Convertible<is_invertible_result_type, bool>;
+    requires std::Convertible<is_invertible_result_type, bool>;
 
-    where std::Convertible<inverse_result_type, Element>;
+    requires std::Convertible<inverse_result_type, Element>;
 
     // Does it overwrites the axiom from algebra::Inversion
     axiom Inversion(Operation op, Element x)
@@ -257,7 +257,7 @@ concept AdditiveMagma<typename Element>
 {
     typename plus_assign_result_type;  
     plus_assign_result_type operator+=(Element& x, Element y);
-    // where std::Convertible<plus_assign_result_type, Element>;
+    // requires std::Convertible<plus_assign_result_type, Element>;
 
     // Operator + is by default defined with +=
     typename addition_result_type;  
@@ -268,14 +268,14 @@ concept AdditiveMagma<typename Element>
 	return tmp += y;                      defaults NYS
     }
 #endif 
-    where std::Convertible<addition_result_type, Element>;
+    requires std::Convertible<addition_result_type, Element>;
 
     // Type consistency with Magma
-    where std::Convertible< addition_result_type,   
+    requires std::Convertible< addition_result_type,   
                             Magma< math::add<Element>, Element >::result_type>;
 
     // SameType requires more rigorous specializations on pure algebraic functors
-    // where std::SameType< addition_result_type, 
+    // requires std::SameType< addition_result_type, 
     // 	                    Magma< math::add<Element>, Element >::result_type>;
 
     axiom Consistency(math::add<Element> op, Element x, Element y)
@@ -342,7 +342,7 @@ concept AdditivePartiallyInvertibleMonoid<typename Element>
 {
     typename minus_assign_result_type;  
     minus_assign_result_type operator-=(Element& x, Element y);
-    // where std::Convertible<minus_assign_result_type, Element>;
+    // requires std::Convertible<minus_assign_result_type, Element>;
      
     // Operator - by default defined with -=
     typename subtraction_result_type;  
@@ -353,7 +353,7 @@ concept AdditivePartiallyInvertibleMonoid<typename Element>
 	return tmp -= y;                      defaults NYS
     }
 #endif 
-    where std::Convertible<subtraction_result_type, Element>;
+    requires std::Convertible<subtraction_result_type, Element>;
 
 
     typename unary_result_type;  
@@ -363,7 +363,7 @@ concept AdditivePartiallyInvertibleMonoid<typename Element>
 	return zero(x) - x;      defaults NYS
     }
 #endif 
-    where std::Convertible<unary_result_type, Element>;
+    requires std::Convertible<unary_result_type, Element>;
     
     axiom Consistency(math::add<Element> op, Element x, Element y)
     {
@@ -417,7 +417,7 @@ concept MultiplicativeMagma<typename Element>
 {
     typename mult_assign_result_type;  
     mult_assign_result_type operator*=(Element& x, Element y);
-    // where std::Convertible<mult_assign_result_type, Element>;
+    // requires std::Convertible<mult_assign_result_type, Element>;
 
     // Operator * is by default defined with *=
     typename mult_result_type;  
@@ -428,14 +428,14 @@ concept MultiplicativeMagma<typename Element>
 	return tmp *= y;                      defaults NYS
     }
 #endif 
-    where std::Convertible<mult_result_type, Element>;
+    requires std::Convertible<mult_result_type, Element>;
     
     // Type consistency with Magma
-    where std::Convertible< mult_result_type,   
+    requires std::Convertible< mult_result_type,   
                             Magma< math::mult<Element>, Element >::result_type>;
 
     // SameType requires more rigorous specializations on pure algebraic functors
-    // where std::SameType< mult_result_type, 
+    // requires std::SameType< mult_result_type, 
     // 	                    Magma< math::mult<Element>, Element >::result_type>;
 
 
@@ -489,7 +489,7 @@ concept MultiplicativePartiallyInvertibleMonoid<typename Element>
 {
     typename divide_assign_result_type;  
     divide_assign_result_type operator/=(Element& x, Element y);
-    // where std::Convertible<divide_assign_result_type, Element>;
+    // requires std::Convertible<divide_assign_result_type, Element>;
      
     // Operator / by default defined with /=
     typename division_result_type = Element;  
@@ -500,7 +500,7 @@ concept MultiplicativePartiallyInvertibleMonoid<typename Element>
 	return tmp /= y;                      defaults NYS
     }
 #endif 
-    where std::Convertible<division_result_type, Element>;
+    requires std::Convertible<division_result_type, Element>;
     
     axiom Consistency(math::mult<Element> op, Element x, Element y)
     {
@@ -578,7 +578,7 @@ concept GenericDivisionRing<typename AddOp, typename MultOp, typename Element>
   : GenericRingWithIdentity<AddOp, MultOp, Element>,
     algebra::DivisionRing<AddOp, MultOp, Element>
 {
-    where std::Convertible<inverse_result_type, Element>;
+    requires std::Convertible<inverse_result_type, Element>;
 };    
 
 
@@ -659,7 +659,7 @@ auto concept Field<typename Element>
 // At this point the following won't needed anymore
 auto concept FullEqualityComparable<typename T, typename U = T>
 {
-  //where std::EqualityComparable<T, U>;
+  //requires std::EqualityComparable<T, U>;
 
     bool operator==(const T&, const U&);
     bool operator!=(const T&, const U&);
@@ -671,10 +671,10 @@ auto concept FullEqualityComparable<typename T, typename U = T>
 auto concept Closed2EqualityComparable<typename Operation, typename Element>
   : BinaryIsoFunction<Operation, Element>
 {
-    where FullEqualityComparable<Element>;
-    where FullEqualityComparable< BinaryIsoFunction<Operation, Element>::result_type >;
-    where FullEqualityComparable< Element, BinaryIsoFunction<Operation, Element>::result_type >;
-    where FullEqualityComparable< BinaryIsoFunction<Operation, Element>::result_type, Element >;
+    requires FullEqualityComparable<Element>;
+    requires FullEqualityComparable< BinaryIsoFunction<Operation, Element>::result_type >;
+    requires FullEqualityComparable< Element, BinaryIsoFunction<Operation, Element>::result_type >;
+    requires FullEqualityComparable< BinaryIsoFunction<Operation, Element>::result_type, Element >;
 };
 
 
@@ -693,10 +693,10 @@ auto concept FullLessThanComparable<typename T, typename U = T>
 auto concept Closed2LessThanComparable<typename Operation, typename Element>
   : BinaryIsoFunction<Operation, Element>
 {
-    where FullLessThanComparable<Element>;
-    where FullLessThanComparable< BinaryIsoFunction<Operation, Element>::result_type >;
-    where FullLessThanComparable< Element, BinaryIsoFunction<Operation, Element>::result_type >;
-    where FullLessThanComparable< BinaryIsoFunction<Operation, Element>::result_type, Element >;
+    requires FullLessThanComparable<Element>;
+    requires FullLessThanComparable< BinaryIsoFunction<Operation, Element>::result_type >;
+    requires FullLessThanComparable< Element, BinaryIsoFunction<Operation, Element>::result_type >;
+    requires FullLessThanComparable< BinaryIsoFunction<Operation, Element>::result_type, Element >;
 };
 
 #if 0
@@ -706,10 +706,10 @@ auto concept NumericOperatorResultConvertible<typename T>
     MultiplicableWithAssign<T>,
     DivisibleWithAssign<T>
 {
-    where std::Convertible< AddableWithAssign<T>::result_type, T>;
-    where std::Convertible< SubtractableWithAssign<T>::result_type, T>;
-    where std::Convertible< MultiplicableWithAssign<T>::result_type, T>;
-    where std::Convertible< DivisibleWithAssign<T>::result_type, T>;
+    requires std::Convertible< AddableWithAssign<T>::result_type, T>;
+    requires std::Convertible< SubtractableWithAssign<T>::result_type, T>;
+    requires std::Convertible< MultiplicableWithAssign<T>::result_type, T>;
+    requires std::Convertible< DivisibleWithAssign<T>::result_type, T>;
 }
 #endif
 
@@ -717,11 +717,11 @@ auto concept AdditionResultConvertible<typename T>
 {
     typename result_type;
     result_type operator+(T t, T u);
-    where std::Convertible<result_type, T>;
+    requires std::Convertible<result_type, T>;
 
     typename result_type;
     result_type operator+=(T& t, T u);
-    where std::Convertible<result_type, T>;
+    requires std::Convertible<result_type, T>;
 };    
 
 
@@ -729,11 +729,11 @@ auto concept SubtractionResultConvertible<typename T>
 {
     typename result_type;
     result_type operator-(T t, T u);
-    where std::Convertible<result_type, T>;
+    requires std::Convertible<result_type, T>;
 
     typename result_type;
     result_type operator-=(T& t, T u);
-    where std::Convertible<result_type, T>;
+    requires std::Convertible<result_type, T>;
 };    
 
 auto concept NumericOperatorResultConvertible<typename T>
@@ -752,16 +752,16 @@ auto concept NumericOperatorResultConvertible<typename T>
 // ==============
 
 template <typename T>
-  where std::SignedIntegral<T>
+  requires std::SignedIntegral<T>
 concept_map CommutativeRingWithIdentity<T> {}
 
 
 template <typename T>
-  where std::UnsignedIntegral<T>
+  requires std::UnsignedIntegral<T>
 concept_map AdditiveCommutativeMonoid<T> {}
 
 template <typename T>
-  where std::UnsignedIntegral<T>
+  requires std::UnsignedIntegral<T>
 concept_map MultiplicativeCommutativeMonoid<T> {}
 
 
@@ -770,12 +770,12 @@ concept_map MultiplicativeCommutativeMonoid<T> {}
 // ====================
 
 template <typename T>
-  where Float<T>
+  requires Float<T>
 concept_map Field<T> {}
 
 
 template <typename T>
-  where Complex<T>
+  requires Complex<T>
 concept_map Field<T> {}
 
 
@@ -830,15 +830,15 @@ concept_map MagnitudeType<std::complex<T> >
 auto concept RealMagnitude<typename T>
   : MagnitudeType<T>
 {
-    where FullEqualityComparable<type>;
-    where FullLessThanComparable<type>;
+    requires FullEqualityComparable<type>;
+    requires FullLessThanComparable<type>;
 
-    where Field<type>;
+    requires Field<type>;
 
     type sqrt(type);
     // typename sqrt_result;
     // sqrt_result sqrt(type);
-    // where std::Convertible<sqrt_result, type>;
+    // requires std::Convertible<sqrt_result, type>;
 
     // using std::abs;
     type abs(T);
