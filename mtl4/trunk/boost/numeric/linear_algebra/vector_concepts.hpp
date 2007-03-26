@@ -116,7 +116,7 @@ concept BanachSpace<typename N, typename Vector,
 concept InnerProduct<typename I, typename Vector, 
 		     typename Scalar = typename Vector::value_type>
 {
-    requires VectorSpace<Vector, Scalar>;
+    // requires VectorSpace<Vector, Scalar>;
     requires std::Callable2<I, Vector, Vector>;
 
     // Result of the inner product must be convertible to Scalar
