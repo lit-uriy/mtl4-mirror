@@ -371,6 +371,8 @@ void measure_hetero_value(unsigned size, std::vector<int>& enabled)
     morton_dense<complex<double>,  doppler_64_row_mask>     z64r(4, 4);
     morton_dense<complex<double>,  doppler_64_col_mask>     z64c(4, 4);
 
+    std::cout << size << ", ";
+
     single_measure(dr, fc, dr, mult, size, enabled, 0);
     single_measure(fr, fc, dr, mult, size, enabled, 1);
    
@@ -408,6 +410,8 @@ void measure_hetero_layout(unsigned size, std::vector<int>& enabled)
 
     morton_dense<complex<double>,  doppler_64_row_mask>     z64r(4, 4);
     morton_dense<complex<double>,  doppler_64_col_mask>     z64c(4, 4);
+
+    std::cout << size << ", ";
 
     single_measure(dr, f64c, dr, mult, size, enabled, 0);
     single_measure(fr, f64c, dr, mult, size, enabled, 1);

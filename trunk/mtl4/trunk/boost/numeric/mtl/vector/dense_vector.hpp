@@ -29,11 +29,11 @@ public:
     typedef T*                pointer ;
     typedef T const*          const_pointer ;
 
-    dense_vector( size_type n ): size( n ), data( new value_type[n] )  {}
+    dense_vector( size_type n ): my_size( n ), data( new value_type[n] )  {}
 
-    dense_vector( size_type n, value_type value ): size( n ), data( new value_type[n] )  
+    dense_vector( size_type n, value_type value ): my_size( n ), data( new value_type[n] )  
     {
-	std::fill(data, data+size, value);
+	std::fill(data, data+my_size, value);
     }
 
     ~dense_vector() {
@@ -56,12 +56,24 @@ public:
         return data[ i ] ;
     }
 
+    reference operator[]( size_type i ) 
+    {
+        assert( i<my_size ) ;
+        return data[ i ] ;
+    }
+
+    const_reference operator[]( size_type i ) const 
+    {
+        assert( i<my_size ) ;
+        return data[ i ] ;
+    }
+
     const_pointer begin() const { return data ; }
     const_pointer end() const { return data+my_size ; }
     
     pointer begin() { return data ; }
     pointer end() { return data+my_size ; }
-
+#if 0
     assign_expression<self, self> operator=( dense_vector const& e ) 
     {
 	return assign_expression<self, self>( *this, e );
@@ -73,18 +85,18 @@ public:
     {
 	return assign_expression<self, E>( *this, e );
     }
-
+#endif
     // Replace it later by expression (maybe)
     self& operator=(value_type value)
     {
-	std::fill(data, data+size, value);
+	std::fill(data, data+my_size, value);
 	return *this;
     }
 
 
     friend std::ostream& operator<<( std::ostream& s, dense_vector<T> const& v ) 
     {
-	s << "[" << v.my_size() << "]{" ;
+	s << "[" << v.my_size << "]{" ;
 	for (size_type i=0; i < v.my_size-1; ++ i) {
 	    s << v(i) << "," ;
 	}
@@ -97,7 +109,7 @@ public:
      pointer   data ;
 } ; // dense_vector
 
-template <typename Value>
+    //template <typename Value>
 
 
 
