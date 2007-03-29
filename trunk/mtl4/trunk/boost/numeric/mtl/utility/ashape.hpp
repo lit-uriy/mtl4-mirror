@@ -77,7 +77,7 @@ rv | rv*  s   x  rv
 template <typename Shape1, typename Shape2>
 struct emult_shape
 {
-    typedef err type;
+    typedef ndef type;
 };
 
 template <>
