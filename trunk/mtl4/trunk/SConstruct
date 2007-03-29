@@ -157,7 +157,8 @@ conf = Configure(env)
 check_no_long_double(conf)
 env = conf.Finish()
 
-env = check_for_blas(env)
+# produces too many output, omit it for now
+# env = check_for_blas(env)
 
 
 ######################

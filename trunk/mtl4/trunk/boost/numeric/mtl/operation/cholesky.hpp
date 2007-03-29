@@ -5,7 +5,7 @@
 
 #include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
-#include <boost/numeric/mtl/operation/matrix_mult.hpp>
+#include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/recursion/base_case_cast.hpp>
