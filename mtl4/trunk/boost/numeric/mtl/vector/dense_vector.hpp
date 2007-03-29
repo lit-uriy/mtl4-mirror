@@ -12,8 +12,8 @@
 #include <vector>
 #include <algorithm>
 #include <boost/numeric/mtl/utility/common_include.hpp>
-#include <boost/numeric/mtl/vector/add_expression.hpp>
-#include <boost/numeric/mtl/vector/assign_expression.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_add_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_asgn_expr.hpp>
 
 namespace mtl { namespace vector {
 
@@ -68,24 +68,32 @@ public:
         return data[ i ] ;
     }
 
+    void delay_assign() const {}
+
+    template <typename E2>
+    vec_vec_add_expr<self, E2> operator+ (const E2& e2) const
+    {
+	return vec_vec_add_expr<self, E2>(*this, e2);
+    }
+
     const_pointer begin() const { return data ; }
     const_pointer end() const { return data+my_size ; }
     
     pointer begin() { return data ; }
     pointer end() { return data+my_size ; }
-#if 0
-    assign_expression<self, self> operator=( dense_vector const& e ) 
+
+    vec_vec_asgn_expr<self, self> operator=( self const& e ) 
     {
-	return assign_expression<self, self>( *this, e );
+	return vec_vec_asgn_expr<self, self>( *this, e );
     }
 
 
     template <class E>
-    assign_expression<self, E> operator=( E const& e )
+    vec_vec_asgn_expr<self, E> operator=( E const& e )
     {
-	return assign_expression<self, E>( *this, e );
+	return vec_vec_asgn_expr<self, E>( *this, e );
     }
-#endif
+
     // Replace it later by expression (maybe)
     self& operator=(value_type value)
     {
