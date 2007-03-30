@@ -457,20 +457,6 @@ namespace traits
         typedef mtl::detail::direct_value<dense2D<Value, Parameters> > type;
     };
 
-#if 0
-    template <typename Value, class Parameters>
-    struct is_mtl_type<dense2D<Value, Parameters> > 
-    {
-	static bool const value= true; 
-    };
-#endif
-
-    // define corresponding type without all template parameters
-    template <typename Value, class Parameters>
-    struct category<dense2D<Value, Parameters> > 
-    {
-	typedef tag::dense2D type;
-    };
 
 } // namespace traits
     

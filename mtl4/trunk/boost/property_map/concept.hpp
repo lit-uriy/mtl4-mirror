@@ -5,7 +5,7 @@
 # define BOOST_PROPERTY_MAP_CONCEPT_DWA2006430_HPP
 
 # include <boost/iterator/iterator_concepts.hpp>
-# include <boost/iterator/iterator_utility/traits.hpp>
+# include <boost/iterator/iterator_utility/category.hpp>
 # include <boost/concept_check.hpp>
 # include <boost/property_map/traits/value_type.hpp>
 

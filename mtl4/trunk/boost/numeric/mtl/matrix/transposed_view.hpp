@@ -4,7 +4,7 @@
 #define MTL_TRANSPOSED_VIEW_INCLUDE
 
 #include <boost/shared_ptr.hpp>
-#include <boost/numeric/mtl/utility/traits.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 
