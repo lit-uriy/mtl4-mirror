@@ -7,8 +7,6 @@
 
 namespace mtl { namespace tag {
 
-// For non-MTL types not explicitly defined
-struct unknown {};
 
 // For internal use (e.g., to invalidate range generators)
 struct unsupported {};
@@ -16,10 +14,23 @@ struct unsupported {};
 // tag for all types
 struct universe {};
 
-// tag for any MTL matrix
+// tag for any scalar value
+// at the moment default for unknown types (will be precised later)
+struct scalar : virtual universe {};
+
+// For non-MTL types with category not explicitly defined
+struct unknown : virtual scalar {};
+
+// tag for any MTL vector (and user-declared MTL vectors)
 struct vector : virtual universe {};
 
-// tag for any MTL matrix
+// tag for any MTL column vector (and user-declared MTL vectors)
+struct col_vector : virtual vector {};
+
+// tag for any MTL row vector (and user-declared MTL vectors)
+struct row_vector : virtual vector {};
+
+// tag for any MTL matrix (and user-declared MTL matrices)
 struct matrix : virtual universe {};
 
 // Tag for any dense MTL structure
@@ -63,10 +74,14 @@ struct qsub_dividable : virtual has_sub_matrix {};
 // Subdividable, i.e. has sub_matrix function
 struct sub_dividable : virtual qsub_dividable {};
 
-// Tags for dispatching on vector and matrix types without dealing 
-// with template parameters
-struct dense_vector
-  : virtual vector, virtual contiguous_dense, 
+// Tags for existing MTL types
+struct dense_row_vector
+  : virtual row_vector, virtual contiguous_dense, 
+    virtual has_1D_layout
+{};
+
+struct dense_col_vector
+  : virtual col_vector, virtual contiguous_dense, 
     virtual has_1D_layout
 {};
 

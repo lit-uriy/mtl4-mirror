@@ -3,6 +3,9 @@
 #ifndef MTL_ASHAPE_INCLUDE
 #define MTL_ASHAPE_INCLUDE
 
+#include <boost/type_traits.hpp>
+#include <boost/mpl/if.hpp>
+
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 
 namespace mtl { namespace ashape {
@@ -11,9 +14,9 @@ namespace mtl { namespace ashape {
 
 // Types (tags)
 struct scal {};
-template <typename Value> rvec {};
-template <typename Value> cvec {};
-template <typename Value> mat {};
+template <typename Value> struct rvec {};
+template <typename Value> struct cvec {};
+template <typename Value> struct mat {};
 // Not defined
 struct ndef {};
 
@@ -25,32 +28,31 @@ struct ashape
 };
 
 // Vectors should be distinguished be
-template <typename Value>
-struct ashape<dense_vector<Value> >
+template <typename Value, typename Parameters>
+struct ashape<dense_vector<Value, Parameters> >
 {
-    typedef cvec<typename ashape<Value>::type> type;
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename Parameters::orientation, row_major>
+      , rvec<typename ashape<Value>::type>
+      , cvec<typename ashape<Value>::type>
+    >::type type;
 };
+
    
-template <typename Value>
-struct ashape<dense_row_vector<Value> >
-{
-    typedef rvec<typename ashape<Value>::type> type;
-};
-   
-template <typename Value>
-struct ashape<compressed2D<Value> >
-{
-    typedef mat<typename ashape<Value>::type> type;
-};
-   
-template <typename Value>
-struct ashape<dense2D<Value> >
+template <typename Value, typename Parameters>
+struct ashape<compressed2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
    
-template <typename Value, unsigned long Mask>
-struct ashape<morton_dense<Value, Mask> >
+template <typename Value, typename Parameters>
+struct ashape<dense2D<Value, Parameters> >
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+   
+template <typename Value, unsigned long Mask, typename Parameters>
+struct ashape<morton_dense<Value, Mask, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
@@ -87,34 +89,34 @@ struct emult_shape<scal, scal>
 };
 
 
-template <>
-struct emult_shape<cvec, rvec>
+template <typename Value1, typename Value2>
+struct emult_shape<cvec<Value1>, rvec<Value2> >
 {
-    typedef mat type;
+    typedef mat<typename emult_shape<Value1, Value2>::type> type;
 };
 
-template <>
-struct emult_shape<rvec, cvec>
+template <typename Value1, typename Value2>
+struct emult_shape<rvec<Value1>, cvec<Value2> >
 {
-    typedef scal type;
+    typedef typename emult_shape<Value1, Value2>::type type;
 };
 
-template <>
-struct emult_shape<rvec, mat>
+template <typename Value1, typename Value2>
+struct emult_shape<rvec<Value1>, mat<Value2> >
 {
-    typedef rvec type;
+    typedef rvec<typename emult_shape<Value1, Value2>::type> type;
 };
 
-template <>
-struct emult_shape<mat, cvec>
+template <typename Value1, typename Value2>
+struct emult_shape<mat<Value1>, cvec<Value2> >
 {
-    typedef cvec type;
+    typedef cvec<typename emult_shape<Value1, Value2>::type> type;
 };
 
-template <>
-struct emult_shape<mat, mat>
+template <typename Value1, typename Value2>
+struct emult_shape<mat<Value1>, mat<Value2> >
 {
-    typedef mat type;
+    typedef mat<typename emult_shape<Value1, Value2>::type> type;
 };
 
 // Results for entire collections, i.e. scalar * matrix (vector) are allowed
