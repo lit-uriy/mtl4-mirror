@@ -6,14 +6,17 @@
 #ifndef MTL_VEC_VEC_ADD_EXPR_INCLUDE
 #define MTL_VEC_VEC_ADD_EXPR_INCLUDE
 
+#include <boost/numeric/mtl/vector/vec_expr.hpp>
 
 namespace mtl { namespace vector {
 
 // Model of VectorExpression
 template <class E1, class E2>
 class vec_vec_add_expr 
+    : public vec_expr< vec_vec_add_expr<E1, E2> >
 {
 public:
+    typedef vec_expr< vec_vec_add_expr<E1, E2> > expr_base;
     typedef vec_vec_add_expr                     self;
 
     // temporary solution
@@ -31,7 +34,7 @@ public:
     
 public:
     vec_vec_add_expr( first_argument_type const& v1, second_argument_type const& v2 )
-	: first( v1 ), second( v2 )
+	: expr_base( *this ), first( v1 ), second( v2 )
     {
 	second.delay_assign();
     }
@@ -54,19 +57,21 @@ public:
         return first( i ) + second( i ) ;
     }
 
-    template <typename Expr2>
-    vec_vec_add_expr<self, Expr2> operator+ (const Expr2& expr2) const
-    {
-	return vec_vec_add_expr<self, Expr2>(*this, expr2);
-    }
-
   private:
     first_argument_type const&  first ;
     second_argument_type const& second ;
-  } ; // vec_vec_add_expr
+} ; // vec_vec_add_expr
+
+    
+template <typename E1, typename E2>
+inline vec_vec_add_expr<E1, E2>
+operator+ (const vec_expr<E1>& e1, const vec_expr<E2>& e2)
+{
+    return vec_vec_add_expr<E1, E2>(e1.ref, e2.ref);
+}
 
 
-} } // Namespace glas::vector
+} } // Namespace mtl::vector
 
 
 
