@@ -11,11 +11,12 @@
 #include <cassert>
 #include <vector>
 #include <algorithm>
+#include <boost/static_assert.hpp>
+#include <boost/type_traits.hpp>
+
+#include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
-#include <boost/numeric/mtl/vector/vec_expr.hpp>
-#include <boost/numeric/mtl/vector/vec_vec_plus_expr.hpp>
-#include <boost/numeric/mtl/vector/vec_vec_minus_expr.hpp>
-#include <boost/numeric/mtl/vector/vec_vec_asgn_expr.hpp>
+#include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 
 
@@ -95,6 +96,10 @@ public:
     template <class E>
     vec_vec_asgn_expr<self, E> operator=( vec_expr<E> const& e )
     {
+#if 0
+	BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<self>::type, 
+			                    typename ashape::ashape<E>::type>::value));
+#endif
 	return vec_vec_asgn_expr<self, E>( *this, e.ref );
     }
 
@@ -105,6 +110,25 @@ public:
 	return *this;
     }
 
+    template <class E>
+    vec_vec_plus_asgn_expr<self, E> operator+=( vec_expr<E> const& e )
+    {
+#if 0
+	BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<self>::type, 
+			                    typename ashape::ashape<E>::type>::value));
+#endif
+	return vec_vec_plus_asgn_expr<self, E>( *this, e.ref );
+    }
+
+    template <class E>
+    vec_vec_minus_asgn_expr<self, E> operator-=( vec_expr<E> const& e )
+    {
+#if 0
+	BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<self>::type, 
+			                    typename ashape::ashape<E>::type>::value));
+#endif
+	return vec_vec_minus_asgn_expr<self, E>( *this, e.ref );
+    }
 
     friend std::ostream& operator<<( std::ostream& s, dense_vector<T> const& v ) 
     {
@@ -124,11 +148,6 @@ public:
 
 }} // Namespace mtl::vector
 
-namespace mtl { 
-    
-    // using vector::dense_vector;
-
-}
 
 #endif // MTL_DENSE_VECTOR_INCLUDE
 

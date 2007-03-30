@@ -3,8 +3,6 @@
 #ifndef MTL_PROPERTY_MAP_IMPL_INCLUDE
 #define MTL_PROPERTY_MAP_IMPL_INCLUDE
 
-//#include <boost/numeric/mtl/mtl_fwd.hpp>
-
 
 namespace mtl { namespace detail {
 
