@@ -563,59 +563,6 @@ void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
 }
 
 
-template <typename Elt, typename Parameters, typename Updater>
-struct matrix_inserter<compressed2D<Elt, Parameters>, Updater>
-  : compressed2D_inserter<Elt, Parameters, Updater>
-{
-    typedef compressed2D<Elt, Parameters>     matrix_type;
-    typedef typename matrix_type::size_type   size_type;
-    typedef compressed2D_inserter<Elt, Parameters, Updater > base;
-
-    explicit matrix_inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix, slot_size) {}
-};
-
-
-// =============
-// Property Maps
-// =============
-
-namespace traits 
-{
-    template <class Elt, class Parameters>
-    struct row<compressed2D<Elt, Parameters> >
-    {
-        typedef typename boost::mpl::if_<
-	    boost::is_same<typename Parameters::orientation, row_major>
-	  , mtl::detail::major_in_key<compressed2D<Elt, Parameters> >
-	  , mtl::detail::indexer_minor_ref<compressed2D<Elt, Parameters> >
-	>::type type;  
-    };
-
-    template <class Elt, class Parameters>
-    struct col<compressed2D<Elt, Parameters> >
-    {
-        typedef typename boost::mpl::if_<
-	    boost::is_same<typename Parameters::orientation, row_major>
-	  , mtl::detail::indexer_minor_ref<compressed2D<Elt, Parameters> >
-	  , mtl::detail::major_in_key<compressed2D<Elt, Parameters> >
-	>::type type;  
-    };
-
-    template <class Elt, class Parameters>
-    struct const_value<compressed2D<Elt, Parameters> >
-    {
-	typedef mtl::detail::matrix_offset_const_value<compressed2D<Elt, Parameters> > type;
-    };
-
-    template <class Elt, class Parameters>
-    struct value<compressed2D<Elt, Parameters> >
-    {
-	typedef mtl::detail::matrix_offset_value<compressed2D<Elt, Parameters> > type;
-    };
-
-} // namespace traits
-
-
 // ================
 // Range generators
 // ================

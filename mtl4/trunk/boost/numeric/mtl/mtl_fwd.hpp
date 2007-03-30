@@ -9,6 +9,7 @@ namespace mtl {
     template <typename Value, unsigned long Mask, typename Parameters> struct morton_dense;
     
     template <typename Value, typename Parameters> struct compressed2D;
+    template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
     template <typename Matrix> struct transposed_orientation;
     template <typename Matrix> struct transposed_view;

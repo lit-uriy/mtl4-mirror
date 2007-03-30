@@ -24,6 +24,18 @@ struct matrix_inserter
 };
 
 
+template <typename Elt, typename Parameters, typename Updater>
+struct matrix_inserter<compressed2D<Elt, Parameters>, Updater>
+  : compressed2D_inserter<Elt, Parameters, Updater>
+{
+    typedef compressed2D<Elt, Parameters>     matrix_type;
+    typedef typename matrix_type::size_type   size_type;
+    typedef compressed2D_inserter<Elt, Parameters, Updater > base;
+
+    explicit matrix_inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix, slot_size) {}
+};
+
+
 } // namespace mtl
 
 #endif // MTL_MATRIX_INSERTER_INCLUDE
