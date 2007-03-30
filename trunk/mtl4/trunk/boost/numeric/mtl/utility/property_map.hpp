@@ -3,7 +3,6 @@
 #ifndef MTL_PROPERTY_MAP_INCLUDE
 #define MTL_PROPERTY_MAP_INCLUDE
 
-// #include <boost/numeric/mtl/detail/index.hpp> // deprecated
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/property_map_impl.hpp>
 

@@ -7,6 +7,7 @@
 #include <boost/mpl/if.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
 
 namespace mtl { namespace ashape {
 

@@ -20,7 +20,7 @@ class vec_vec_aop_expr
 {
 public:
     typedef vec_expr< vec_vec_aop_expr<E1, E2, SFunctor> >  expr_base;
-    typedef typename E1::value_type&              value_type;
+    typedef typename E1::value_type              value_type;
     
     // temporary solution
     typedef typename E1::size_type               size_type;
@@ -42,7 +42,6 @@ public:
 	if (!delayed_assign)
 	    for (size_type i= 0; i < first.size(); ++i)
 		SFunctor::apply( first(i), second(i) );
-		// first( i )= second( i );
     }
     
     void delay_assign() const { delayed_assign= true; }
@@ -52,16 +51,14 @@ public:
 	return first.size() ;
     }
 
-     value_type operator() ( size_type i ) const {
+     value_type& operator() ( size_type i ) const {
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
-        //return first( i )= second( i ) ;
      }
 
-     value_type operator[] ( size_type i ) const{
+     value_type& operator[] ( size_type i ) const{
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
-        // return first( i )= second( i ) ;
      }
 
   private:
