@@ -27,22 +27,29 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     cout << "u: " << u << "\n"; std::cout.flush();
     if (u[0] != 18.0) throw "wrong";
 
-    std::cout << "\n" << name << "  --- u= w + v= w + w;:\n"; std::cout.flush();
+    std::cout << "\n" << name << "  --- u= w + (v= w + w);:\n"; std::cout.flush();
     u= w + (v= w + w);
     cout << "u: " << u << "\n" << "v: " << v << "\n"; std::cout.flush();
     //cout << u << "\n"; std::cout.flush();
     if (v[0] != 10.0) throw "v wrong";
     if (u[0] != 15.0) throw "u wrong";
 
-#if 0
     v= (typename VectorV::value_type)(4.0); 
     w= (typename VectorW::value_type)(5.0); 
-    std::cout << "\n" << name << "  --- u= w + v= w + w;:\n"; std::cout.flush();
+    std::cout << "\n" << name << "  --- u= (v= w + w) + v;:\n"; std::cout.flush();
     u= (v= w + w) + v;
     cout << "u: " << u << "\n" << "v: " << v << "\n"; std::cout.flush();
     if (v[0] != 10.0) throw "v wrong";
     if (u[0] != 20.0) throw "u wrong";
-#endif
+
+    w= (typename VectorW::value_type)(4.0); 
+    std::cout << "\n" << name << "  --- w= 4; u-= (v= w + w) - w;:\n"; std::cout.flush();
+    u= (v= w + w) - w;
+    //u-= (v= w + w) - w;
+    cout << "u: " << u << "\n" << "v: " << v << "\n"; std::cout.flush();
+    if (v[0] != 8.0) throw "v wrong";
+    if (u[0] != 4.0) throw "u wrong";
+    // if (u[0] != 16.0) throw "u wrong"; // for -=
 }
  
 

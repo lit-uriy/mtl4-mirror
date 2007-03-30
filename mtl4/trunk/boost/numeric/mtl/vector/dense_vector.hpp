@@ -13,7 +13,8 @@
 #include <algorithm>
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
-#include <boost/numeric/mtl/vector/vec_vec_add_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_plus_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_minus_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_vec_asgn_expr.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 
@@ -92,9 +93,9 @@ public:
 
 
     template <class E>
-    vec_vec_asgn_expr<self, E> operator=( E const& e )
+    vec_vec_asgn_expr<self, E> operator=( vec_expr<E> const& e )
     {
-	return vec_vec_asgn_expr<self, E>( *this, e );
+	return vec_vec_asgn_expr<self, E>( *this, e.ref );
     }
 
     // Replace it later by expression (maybe)
@@ -120,25 +121,14 @@ public:
      pointer   data ;
 } ; // dense_vector
 
-    //template <typename Value>
-
-
 
 }} // Namespace mtl::vector
 
 namespace mtl { 
     
-    using vector::dense_vector;
+    // using vector::dense_vector;
 
-    namespace traits {
-
-	template <class T>
-	struct category< dense_vector<T> > {
-	    typedef tag::dense_vector   type ;
-	} ;
-    }
-
-} // Namespace mtl::traits
+}
 
 #endif // MTL_DENSE_VECTOR_INCLUDE
 

@@ -14,6 +14,17 @@ namespace mtl {
     template <typename Matrix> struct transposed_orientation;
     template <typename Matrix> struct transposed_view;
 
+    namespace vector {
+	template <typename Value, typename Parameters> struct dense_vector;
+    }
+
+    using vector::dense_vector;
+
+    namespace vector {
+	template <class E1, class E2> struct vec_vec_add_expr;
+	template <class E1, class E2> struct vec_vec_minus_expr;
+    }
+
     namespace traits {
 	template <typename Matrix> struct category;
 	template <typename Matrix> struct value;
