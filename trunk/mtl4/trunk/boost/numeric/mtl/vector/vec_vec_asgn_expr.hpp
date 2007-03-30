@@ -6,14 +6,18 @@
 #ifndef MTL_VEC_VEC_ASGN_EXPR_INCLUDE
 #define MTL_VEC_VEC_ASGN_EXPR_INCLUDE
 
+#include <boost/numeric/mtl/vector/vec_expr.hpp>
+
 
 namespace mtl { namespace vector {
 
 // Model of VectorExpression
 template <class E1, class E2>
 class vec_vec_asgn_expr 
+    : public vec_expr< vec_vec_asgn_expr<E1, E2> >
 {
 public:
+    typedef vec_expr< vec_vec_asgn_expr<E1, E2> >  expr_base;
     // temporary solution
     typedef typename E1::value_type              value_type;
     // typedef typename glas::value< glas::scalar::vec_vec_asgn_expr<typename E1::value_type, typename E2::value_type > >::type value_type ;
@@ -29,7 +33,7 @@ public:
     
 
     vec_vec_asgn_expr( first_argument_type& v1, second_argument_type const& v2 )
-	: first( v1 ), second( v2 ), delayed_assign( false )
+	: expr_base( *this ), first( v1 ), second( v2 ), delayed_assign( false )
     {
 	second.delay_assign();
     }

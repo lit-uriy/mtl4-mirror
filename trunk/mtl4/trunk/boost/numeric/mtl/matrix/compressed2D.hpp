@@ -663,7 +663,7 @@ namespace traits
 	typedef compressed2D<Elt, Parameters>                                         matrix_type;
 	typedef typename matrix_type::size_type                                       size_type;
 	typedef typename matrix_type::value_type                                      value_type;
-	typedef detail::sub_matrix_cursor<matrix_type, glas::tag::row, 2>          cursor;
+	typedef detail::sub_matrix_cursor<matrix_type, glas::tag::row, 2>             cursor;
 	
 	typedef complexity_classes::linear_cached                                     complexity;
 	static int const                                                              level = 1;
