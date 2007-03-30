@@ -29,6 +29,40 @@ struct minus
     }
 };
 
+template <typename Value1, typename Value2>
+struct assign
+{
+    // temporary solution
+    typedef Value1& result_type;
+
+    static inline result_type apply(Value1& v1, const Value2& v2)
+    {
+	return v1= v2;
+    }
+};
+    
+template <typename Value1, typename Value2>
+struct plus_assign
+{
+    typedef Value1& result_type;
+
+    static inline result_type apply(Value1& v1, const Value2& v2)
+    {
+	return v1+= v2;
+    }
+};
+    
+template <typename Value1, typename Value2>
+struct minus_assign
+{
+    typedef Value1& result_type;
+
+    static inline result_type apply(Value1& v1, const Value2& v2)
+    {
+	return v1-= v2;
+    }
+};
+
 
 
 }} // namespace mtl::sfunctor

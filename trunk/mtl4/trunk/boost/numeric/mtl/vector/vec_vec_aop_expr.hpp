@@ -3,8 +3,8 @@
 // Adapted from GLAS implementation by Karl Meerbergen and Toon Knappen
 
 
-#ifndef MTL_VEC_VEC_ASGN_EXPR_INCLUDE
-#define MTL_VEC_VEC_ASGN_EXPR_INCLUDE
+#ifndef MTL_VEC_VEC_AOP_EXPR_INCLUDE
+#define MTL_VEC_VEC_AOP_EXPR_INCLUDE
 
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/utility/sfunctor.hpp>
