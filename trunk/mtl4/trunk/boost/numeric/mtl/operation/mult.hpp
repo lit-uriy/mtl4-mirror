@@ -3,7 +3,7 @@
 #ifndef MTL_MULT_INCLUDE
 #define MTL_MULT_INCLUDE
 
-#include <boost/numeric/mtl/utility/traits.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
 #include <boost/numeric/mtl/operation/mult_specialize.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>

@@ -5,7 +5,7 @@
 
 #include <algorithm>
 #include <boost/numeric/mtl/utility/tag.hpp>
-#include <boost/numeric/mtl/utility/traits.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace mtl {

@@ -769,16 +769,6 @@ namespace traits
     };
 
 
-    // define corresponding type without all template parameters
-    template <class Elt, class Parameters>
-    struct category<compressed2D<Elt, Parameters> > 
-    {
-	typedef tag::compressed2D type;
-    };
-
-
-
-
 } // namespace traits
 
 

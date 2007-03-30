@@ -6,7 +6,7 @@
 #include <iostream>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
-#include <boost/numeric/mtl/utility/traits.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 
 namespace mtl {

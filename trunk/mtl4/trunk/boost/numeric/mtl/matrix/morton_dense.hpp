@@ -563,21 +563,6 @@ namespace traits
     typedef mtl::detail::matrix_value_ref<morton_dense<Elt, BitMask, Parameters> > type;
   };
 
-#if 0 // deprecated
-  template <class Elt, unsigned long BitMask, class Parameters>
-  struct is_mtl_type<morton_dense<Elt, BitMask, Parameters> >
-  {
-    static bool const value= true;
-  };
-#endif
-
-  // define corresponding type without all template parameters
-  template <class Elt, unsigned long BitMask, class Parameters>
-  struct category<morton_dense<Elt, BitMask, Parameters> >
-  {
-    typedef mtl::tag::morton_dense type;
-  };
-
 } // namespace traits
 
 
