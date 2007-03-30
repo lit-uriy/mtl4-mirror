@@ -532,40 +532,6 @@ bool morton_dense<Elt, BitMask, Parameters>::isLeaf(const AhnenIndex& index) con
 #endif
 
 
-
-// =============
-// Property Maps
-// =============
-
-namespace traits
-{
-  template <class Elt, unsigned long BitMask, class Parameters>
-  struct row<morton_dense<Elt, BitMask, Parameters> >
-  {
-    typedef mtl::detail::row_in_key<morton_dense<Elt, BitMask, Parameters> > type;
-  };
-
-  template <class Elt, unsigned long BitMask, class Parameters>
-  struct col<morton_dense<Elt, BitMask, Parameters> >
-  {
-    typedef mtl::detail::col_in_key<morton_dense<Elt, BitMask, Parameters> > type;
-  };
-
-  template <class Elt, unsigned long BitMask, class Parameters>
-  struct const_value<morton_dense<Elt, BitMask, Parameters> >
-  {
-    typedef mtl::detail::matrix_const_value_ref<morton_dense<Elt, BitMask, Parameters> > type;
-  };
-
-  template <class Elt, unsigned long BitMask, class Parameters>
-  struct value<morton_dense<Elt, BitMask, Parameters> >
-  {
-    typedef mtl::detail::matrix_value_ref<morton_dense<Elt, BitMask, Parameters> > type;
-  };
-
-} // namespace traits
-
-
 // ================
 // Range generators
 // ================

@@ -427,40 +427,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
 
 
-// =============
-// Property Maps
-// =============
-
-namespace traits 
-{
-    template <typename Value, class Parameters>
-    struct row<dense2D<Value, Parameters> >
-    {
-        typedef mtl::detail::indexer_row_ref<dense2D<Value, Parameters> > type;
-    };
-
-    template <typename Value, class Parameters>
-    struct col<dense2D<Value, Parameters> >
-    {
-        typedef mtl::detail::indexer_col_ref<dense2D<Value, Parameters> > type;
-    };
-
-    template <typename Value, class Parameters>
-    struct const_value<dense2D<Value, Parameters> >
-    {
-        typedef mtl::detail::direct_const_value<dense2D<Value, Parameters> > type;
-    };
-
-    template <typename Value, class Parameters>
-    struct value<dense2D<Value, Parameters> >
-    {
-        typedef mtl::detail::direct_value<dense2D<Value, Parameters> > type;
-    };
-
-
-} // namespace traits
-    
-
 // ================
 // Range generators
 // ================
