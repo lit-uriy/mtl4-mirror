@@ -60,7 +60,7 @@ struct compressed_key
     {
 	//if (offset == other.offset && major != other.major) 
 	//    std::cout << offset << " " << other.offset << " " << major << " " << other.major << '\n';
-	throw_debug_exception(offset == other.offset && major != other.major,
+	MTL_DEBUG_THROW_IF(offset == other.offset && major != other.major,
 			      "equal offsets imply equal major\n");
 	return offset == other.offset;
     }
@@ -106,7 +106,7 @@ struct compressed_el_cursor
     self& operator++ ()
     {
 	++offset;
-	throw_debug_exception(matrix.starts[major+1] < offset, "Inconsistent incrementation!\n");
+	MTL_DEBUG_THROW_IF(matrix.starts[major+1] < offset, "Inconsistent incrementation!\n");
 	while (major < matrix.starts.size()-1 && matrix.starts[major+1] == offset) 
 	    ++major;
 	return *this;
@@ -218,7 +218,7 @@ struct compressed2D_indexer
     template <class Matrix>
     size_t find_major(const Matrix& ma, size_t offset) const
     {
-	throw_debug_exception(ma.starts.empty(), "Major vector can't be empty\n");
+	MTL_DEBUG_THROW_IF(ma.starts.empty(), "Major vector can't be empty\n");
 	size_t my_major= std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
 	return --my_major;
     }
@@ -335,20 +335,20 @@ class compressed2D
 
     const_access_type operator() (size_type row, size_type col) const
     {
-        throw_debug_exception(inserting, "Reading data during insertion has undefined behavior!\n");
+        MTL_DEBUG_THROW_IF(inserting, "Reading data during insertion has undefined behavior!\n");
 	maybe<size_type> pos = indexer(*this, row, col);
 	return pos ? data[pos] : value_type(0);
     }
 
     value_type value_from_offset(size_type offset) const
     {
-	throw_debug_exception(offset >= this->my_nnz, "Offset larger than matrix!\n");
+	MTL_DEBUG_THROW_IF(offset >= this->my_nnz, "Offset larger than matrix!\n");
 	return data[offset];
     }
 
     value_type& value_from_offset(size_type offset)
     {
-	throw_debug_exception(offset >= this->my_nnz, "Offset larger than matrix!\n");
+	MTL_DEBUG_THROW_IF(offset >= this->my_nnz, "Offset larger than matrix!\n");
 	return data[offset];
     }
 

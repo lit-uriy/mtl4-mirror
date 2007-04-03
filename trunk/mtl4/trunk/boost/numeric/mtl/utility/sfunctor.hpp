@@ -3,7 +3,7 @@
 #ifndef MTL_SFUNCTOR_INCLUDE
 #define MTL_SFUNCTOR_INCLUDE
 
-#include <boost/numeric/mtl/utility/std_concept.hpp>
+#include <boost/numeric/mtl/concept/std_concept.hpp>
 
 namespace mtl { namespace sfunctor {
 
