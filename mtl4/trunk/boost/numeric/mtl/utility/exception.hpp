@@ -39,23 +39,6 @@ namespace mtl {
 #endif
 
 
-
-
-struct test_exception {};
-
-
-#ifndef NDEBUG
-    template <typename Exception>
-    inline void debug_throw_if(bool test, Exception exception)
-    {
-	if (test) throw exception;
-    }
-#else
-    template <typename Exception>
-    inline void debug_throw_if(bool, Exception) {}
-#endif
-
-
 } // namespace mtl
 
 #endif // MTL_MTL_EXCEPTION_INCLUDE
