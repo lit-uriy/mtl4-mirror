@@ -20,9 +20,9 @@ public:
     typedef vec_vec_op_expr                     self;
 
     // temporary solution
-    typedef typename E1::value_type              value_type;
+    // typedef typename E1::value_type              value_type;
     // typedef typename glas::value< glas::scalar::vec_vec_op_expr<typename E1::value_type, typename E2::value_type > >::type value_type ;
-    // typedef typename SFunctor::result_type       value_type;
+    typedef typename SFunctor::result_type       value_type;
 
     // temporary solution
     typedef typename E1::size_type               size_type;
