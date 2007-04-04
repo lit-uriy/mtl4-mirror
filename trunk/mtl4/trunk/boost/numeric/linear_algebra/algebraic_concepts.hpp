@@ -134,11 +134,11 @@ namespace algebra {
         <table summary="invariants">
           <tr>
             <td>Neutrality from right</td>
-    	<td>op( x, identity(op, x) ) == x</td>
+	    <td>op( x, identity(op, x) ) == x</td>
           </tr>
           <tr>
             <td>Neutrality from left</td>
-    	<td>op( identity(op, x), x ) == x</td>
+	    <td>op( identity(op, x), x ) == x</td>
           </tr>
         </table>
      */
