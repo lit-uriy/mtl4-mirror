@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 PROJECT_NAME           = Concepttest
 PROJECT_NUMBER         = "alpha 1"
-OUTPUT_DIRECTORY       = /private/var/automount/rontok/xraid/users/pgottsch/tmp/linear_algebra_documentation
+OUTPUT_DIRECTORY       = /u/pgottsch/tmp/linear_algebra_documentation
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
 USE_WINDOWS_ENCODING   = NO
@@ -82,7 +82,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = /private/var/automount/rontok/xraid/users/pgottsch/projects/mtl4/trunk/boost/numeric/linear_algebra
+INPUT                  = /Users/pgottsch/projects/mtl4/trunk/boost/numeric/linear_algebra
 FILE_PATTERNS          = *.c \
                          *.cc \
                          *.cxx \
@@ -260,7 +260,7 @@ CALLER_GRAPH           = NO
 GRAPHICAL_HIERARCHY    = YES
 DIRECTORY_GRAPH        = YES
 DOT_IMAGE_FORMAT       = png
-DOT_PATH               = /Volumes/Doxygen/Doxygen.app/Contents/Resources/
+DOT_PATH               = /Applications/Doxygen.app/Contents/Resources/
 DOTFILE_DIRS           = 
 MAX_DOT_GRAPH_WIDTH    = 1024
 MAX_DOT_GRAPH_HEIGHT   = 1024
