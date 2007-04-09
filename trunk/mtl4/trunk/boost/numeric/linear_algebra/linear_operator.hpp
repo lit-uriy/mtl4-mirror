@@ -5,6 +5,8 @@
 
 #ifdef __GXX_CONCEPTS__
 #  include <concepts>
+#else 
+#  include <boost/numeric/linear_algebra/pseudo_concept.hpp>
 #endif
 
 namespace math {
@@ -18,7 +20,8 @@ namespace math {
 	typename result_type;
 	result_type operator* (Operator, VectorDomain);
 	
-	requires Assignable<VectorImage, result_type>;
+	typename assign_type;
+	assign_type operator= (VectorImage, result_type);
 
 	// The following two requirements are subject to discussion
 	typename plus_assign_type;
@@ -47,12 +50,15 @@ namespace math {
 	\param VectorDomain The the type of a vector in the domain vector space
 	\param VectorImage The the type of a vector in the image vector space
 	
-        \par Refinement of:
-	- VectorSpace <VectorDomain>
-	- VectorSpace <VectorImage>
-
 	\par Associated Types:
 	- result_type
+	- assign_type
+	- plus_assign_type
+	- minus_assign_type
+
+	\par Requires:
+	- VectorSpace < VectorDomain >
+	- VectorSpace < VectorImage >
 
         \par Notation:
         <table summary="notation">
@@ -109,9 +115,42 @@ namespace math {
     template <typename Operator, typename VectorDomain, typename VectorImage>
     struct LinearOperator
     {
-	typename result_type;
+	/// Associated type: result of multiplication; automatically deducted
+	typedef associated_type result_type;
+	/// Multiplication of linear operator with vector
 	result_type operator* (Operator, VectorDomain);
 
+	/// Associated type: return type of assigning product to vector.
+	/** Automatically deducted. Using expression templates it can be different from VectorImage& */
+	typedef associated_type assign_type;
+	/// Product must be assignable
+	assign_type operator= (VectorImage, result_type);
+
+	// The following two requirements are subject to discussion
+	/// Associated type: return type of incrementally assigning product to vector.
+	/** Automatically deducted. Using expression templates it can be different from VectorImage& */
+	typedef associated_type plus_assign_type;
+	/// Product must be assignable with increment
+	plus_assign_type operator+= (VectorImage, result_type);
+	
+	// The following two requirements are subject to discussion
+	/// Associated type: return type of decrementally assigning product to vector.
+	/** Automatically deducted. Using expression templates it can be different from VectorImage& */
+	typedef associated_type minus_assign_type;
+	/// Product must be assignable with decrement
+	minus_assign_type operator+= (VectorImage, result_type);
+
+	/// Invariant: the linear projection of a sum is the sum of the linear projections
+	axiom Addability(Operator a, VectorDomain x, VectorDomain y)
+	{
+	    a * (x + y) == a*x  + a*y;
+	}
+
+	/// Invariant: the linear projection of a scaled vector is the scaling of the vector's linear projections
+	axiom Scalability(Operator a, VectorSpace<VectorDomain>::scalar_type alpha, VectorDomain x)
+	{
+	    a * (alpha * x) == alpha * (a * x);
+	}	
     };
 #endif
 
