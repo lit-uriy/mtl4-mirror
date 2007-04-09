@@ -397,7 +397,6 @@ struct DotProduct
 
 
 
-#endif  // __GXX_CONCEPTS__
 
 // Norm induced by inner product
 // Might be moved to another place later
