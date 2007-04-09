@@ -5,6 +5,8 @@
 
 #ifdef __GXX_CONCEPTS__
 #  include <concepts>
+#else 
+#  include <boost/numeric/linear_algebra/pseudo_concept.hpp>
 #endif
 
 #include <boost/numeric/linear_algebra/identity.hpp>
@@ -147,7 +149,7 @@ namespace algebra {
       : SemiGroup<Operation, Element> 
     {
 	/// Associated type; if not defined in concept_map automatically detected as result of identity
-        typedef xxx identity_result_type; 
+        typedef associated_type identity_result_type; 
         identity_result_type identity(Operation, Element); ///< Identity element of Operation
     };
 #else
@@ -187,7 +189,7 @@ namespace algebra {
     struct Inversion
     {
 	/// Associated type; if not defined in concept_map automatically detected as result of inverse
-        typedef xxx inverse_result_type;
+        typedef associated_type inverse_result_type;
 
 	/// Returns inverse of \p x regarding operation \p op
         inverse_result_type inverse(Operation op, Element x);

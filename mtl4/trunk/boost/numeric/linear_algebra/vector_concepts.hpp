@@ -6,13 +6,18 @@
 
 
 #include <boost/numeric/linear_algebra/concepts.hpp>
+#include <boost/numeric/linear_algebra/ets_concepts.hpp>
 
 #ifdef __GXX_CONCEPTS__
+#  include <concepts>
+#else 
+#  include <boost/numeric/linear_algebra/pseudo_concept.hpp>
+#endif
 
-#include <boost/numeric/linear_algebra/ets_concepts.hpp>
 
 namespace math {  
   
+#ifdef __GXX_CONCEPTS__
 concept VectorSpace<typename Vector, typename Scalar = typename Vector::value_type>
 : AdditiveAbelianGroup<Vector>
 {
@@ -39,8 +44,41 @@ concept VectorSpace<typename Vector, typename Scalar = typename Vector::value_ty
 	v * (a + b) == v * a + v * b;
     }
 }
+#else
+    //! Concept VectorSpace
+    /*!
+	\param Vector   The the type of a vector or a collection 
+        \param Scalar   The scalar over which the vector field is defined
+        
+	\par Requires:
+	- Field < Scalar >;
+	- Multiplicable <Scalar, Vector>;
+	- MultiplicableWithAssign <Vector, Scalar>;
+	- DivisibleWithAssign <Vector, Scalar>;
+	- std::Assignable <Vector, Multiplicable<Scalar, Vector>::result_type>;
+	- std::Assignable <Vector, Multiplicable<Vector, Scalar>::result_type>;
+	- std::Assignable <Vector, Divisible<Vector, Scalar>::result_type>;
 
+    */
+    template <typename Vector, typename Scalar = typename Vector::value_type>
+    struct VectorSpace
+      : AdditiveAbelianGroup<Vector>
+    {
+	/// Invariant: Distributivity of scalars and vectors from left and from right
+	axiom Distributivity(Vector v, Vector w, Scalar a, Scalar b)
+	{
+	    /// a * (v + w) == a * v + a * w;       // Scalar from left
 
+	    /// Vector from right: (a + b) * v == a * v + b * v; 
+
+	    /// Scalar from right: (v + w) * a == v * a + w * a; 
+
+	    /// Vector from left:  v * (a + b) == v * a + v * b;
+	}
+    };
+#endif
+
+#ifdef __GXX_CONCEPTS__
 concept Norm<typename N, typename Vector, 
 	     typename Scalar = typename Vector::value_type>
   : std::Callable1<N, Vector>
@@ -83,8 +121,65 @@ concept Norm<typename N, typename Vector,
 	norm(u + v) <= norm(u) + norm(v);
     }
 }
+#else
+    //! Concept Norm
+    /*!
+        Semantic requirements of a norm
+
+	\param N        Norm functor
+	\param Vector   The the type of a vector or a collection 
+        \param Scalar   The scalar over which the vector field is defined
+        
+	\par Refinement of:
+	- std::Callable1 <N, Vector>
+
+	\par Associated types:
+	- magnitude_type
+	- result_type_norm
+
+	\par Requires:
+	- VectorSpace <Vector, Scalar>;
+	- RealMagnitude < Scalar >;
+	- std::Convertible <magnitude_type, Scalar>;
+	- std::Convertible <result_type_norm, RealMagnitude<Scalar>::magnitude_type>;
+	- std::Convertible <result_type_norm, Scalar>;
+
+    */
+template <typename N, typename Vector, 
+	  typename Scalar = typename Vector::value_type>
+struct Norm
+  : std::Callable1<N, Vector>
+{
+    /// Associated type to represent real values in teh Field of scalar (with default)
+    /** By default MagnitudeType<Scalar>::type */
+    typedef associated_type magnitude_type;
+
+    /// Associated type for result of norm functor
+    /** Automatically detected */
+    typedef associated_type result_type_norm;
+
+    /// Invariant: norm of vector is larger than zero 
+    axiom Positivity(N norm, Vector v, magnitude_type ref)
+    {
+	/// norm(v) >= zero(ref);
+    }
+
+    /// Invariant: positive homogeneity with scalar
+    axiom PositiveHomogeneity(N norm, Vector v, Scalar a)
+    {
+	/// norm(a * v) == abs(a) * norm(v);
+    }
+
+    /// Invariant: triangle inequality
+    axiom TriangleInequality(N norm, Vector u, Vector v)
+    {
+	/// norm(u + v) <= norm(u) + norm(v);
+    }
+};
+#endif
 
 
+#ifdef __GXX_CONCEPTS__
 concept SemiNorm<typename N, typename Vector, 
 		 typename Scalar = typename Vector::value_type>
   : Norm<N, Vector, Scalar>
@@ -97,28 +192,74 @@ concept SemiNorm<typename N, typename Vector,
 	    norm(v) == zero(ref);
     }
 }
+#else
+    //! Concept SemiNorm
+    /*!
+        Semantic requirements of a semi-norm
 
+	\param N        Norm functor
+	\param Vector   The the type of a vector or a collection 
+        \param Scalar   The scalar over which the vector field is defined
+        
+	\par Refinement of:
+	- Norm <N, Vector, Scalar>
+    */
+template <typename N, typename Vector, 
+	  typename Scalar = typename Vector::value_type>
+struct SemiNorm
+  : Norm<N, Vector, Scalar>
+{
+    /// The norm of a vector is zero if and only if the vector is the zero vector
+    axiom PositiveDefiniteness(N norm, Vector v, magnitude_type ref)
+    {
+	/// if (norm(v) == zero(ref)) v == zero(v);
 
-// A Banach space is a vector space with a norm
-// The (expressible) requirements of Banach Space are already given in Norm.
-// The difference between the requirements is the completeness of the 
-// Banach space, i.e. that every Cauchy sequence w.r.t. norm(v-w) has a limit
-// in the space. Unfortunately, completeness is never satisfied for
-// finite precision arithmetic types.
-// Another subtle difference is that  Norm is not refined from Vectorspace
+	/// if (v == zero(v)) norm(v) == zero(ref);
+    }
+};
+#endif
+
+#ifdef __GXX_CONCEPTS__
 concept BanachSpace<typename N, typename Vector, 
 		    typename Scalar = typename Vector::value_type>
   : Norm<N, Vector, Scalar>,
     VectorSpace<Vector, Scalar>
 {};
+#else
+    //! Concept BanachSpace
+    /*!
+        A Banach space is a vector space with a norm
+
+	\param N        Norm functor
+	\param Vector   The the type of a vector or a collection 
+        \param Scalar   The scalar over which the vector field is defined
+        
+	\par Refinement of:
+	- Norm <N, Vector, Scalar>
+	- VectorSpace <Vector, Scalar>
+
+	\note
+	- The (expressible) requirements of Banach Space are already given in Norm.
+	- The difference between the requirements is the completeness of the 
+	  Banach space, i.e. that every Cauchy sequence w.r.t. norm(v-w) has a limit
+	  in the space. Unfortunately, completeness is never satisfied for
+	  finite precision arithmetic types.
+	- Another subtle difference is that Norm is not a refinement of Vectorspace
+    */
+template <typename N, typename Vector, 
+	  typename Scalar = typename Vector::value_type>
+struct BanachSpace
+  : Norm<N, Vector, Scalar>,
+    VectorSpace<Vector, Scalar>
+{};
+#endif
 
 
+#ifdef __GXX_CONCEPTS__
 concept InnerProduct<typename I, typename Vector, 
 		     typename Scalar = typename Vector::value_type>
+  : std::Callable2<I, Vector, Vector>
 {
-    // requires VectorSpace<Vector, Scalar>;
-    requires std::Callable2<I, Vector, Vector>;
-
     // Result of the inner product must be convertible to Scalar
     requires std::Convertible<std::Callable2<I, Vector, Vector>::result_type, Scalar>;
 
@@ -160,17 +301,101 @@ concept InnerProduct<typename I, typename Vector,
 	    v == zero(v);
     }
 };
+#else
+    //! Concept InnerProduct
+    /*!
+        Semantic requirements of a inner product
+
+	\param I        The inner product functor
+	\param Vector   The the type of a vector or a collection 
+        \param Scalar   The scalar over which the vector field is defined
+        
+	\par Refinement of:
+	- std::Callable2 <I, Vector, Vector>
+
+	\par Associated types:
+	- magnitude_type
+
+	\par Requires:
+	- std::Convertible<std::Callable2 <I, Vector, Vector>::result_type, Scalar> ;
+	  result of inner product convertible to scalar to be used in expressions
+	- HasConjugate < Scalar >
+	- RealMagnitude < Scalar > ; the scalar value needs a real magnitude type
+    */
+template <typename I, typename Vector, 
+          typename Scalar = typename Vector::value_type>
+struct InnerProduct
+  : std::Callable2<I, Vector, Vector>
+{
+    /// Associated type: the  real magnitude type of the scalar
+    /** By default RealMagnitude<Scalar>::type */
+    typename associated_type magnitude_type;
+    // requires FullLessThanComparable<magnitude_type>;
+
+    /// The arguments can be changed and the result is then the complex conjugate
+    axiom ConjugateSymmetry(I inner, Vector v, Vector w)
+    {
+	/// inner(v, w) == conj(inner(w, v));
+    }
+
+    /// The inner product is linear in the second argument and conjugate linear in the first one
+    /** The equalities are partly redundant with ConjugateSymmetry */
+    axiom SequiLinearity(I inner, Scalar a, Scalar b, Vector u, Vector v, Vector w)
+    {
+	/// inner(v, b * w) == b * inner(v, w);
+
+	/// inner(u, v + w) == inner(u, v) + inner(u, w);
+
+	/// inner(a * v, w) == conj(a) * inner(v, w);
+
+	/// inner(u + v, w) == inner(u, w) + inner(v, w);
+    }
+
+    /// The inner product of a vector with itself is not negative
+    /** inner(v, v) == conj(inner(v, v)) implies inner(v, v) is representable as real */
+    axiom NonNegativity(I inner, Vector v, MagnitudeType<Scalar>::type magnitude)
+    {
+	/// magnitude_type(inner(v, v)) >= zero(magnitude);
+    }
+
+    /// Non-degeneracy not representable with axiom
+    axiom NonDegeneracy(I inner, Vector v, Vector w, Scalar s)
+    {
+	/// \f$\langle v, w\rangle = 0 \forall w \Leftrightarrow v = \vec{0}\f$
+    }
+};
+#endif
 
 
+
+
+#ifdef __GXX_CONCEPTS_
 // A dot product is only a semantically special case of an inner product
 // Questionable if we want such a concept
-
-#if 0
 concept DotProduct<typename I, typename Vector, 
 		   typename Scalar = typename Vector::value_type>
   : InnerProduct<I, Vector, Scalar>
 {};
+#else
+    //! Concept DotProduct
+    /*!
+        Semantic requirements of dot product. The dot product is a specific inner product.
+
+	\param I        Norm functor
+	\param Vector   The the type of a vector or a collection 
+        \param Scalar   The scalar over which the vector field is defined
+        
+	\par Refinement of:
+	- InnerProduct <I, Vector, Scalar>
+    */
+template <typename I, typename Vector, 
+	  typename Scalar = typename Vector::value_type>
+struct DotProduct
+  : InnerProduct<I, Vector, Scalar>
+{};
 #endif
+
+
 
 #endif  // __GXX_CONCEPTS__
 
@@ -229,8 +454,41 @@ concept HilbertSpace<typename I, typename Vector,
 	math::induced_norm_t<I, Vector, Scalar>()(v) == N()(v);                    
     }   
 };
+#else
+    //! Concept HilbertSpace
+    /*!
+        A Hilbert space is a vector space with an inner product that induces a norm
 
+	\param I        Inner product functor
+	\param Vector   The the type of a vector or a collection 
+        \param Scalar   The scalar over which the vector field is defined
+	\param N        Norm functor
+        
+	\par Refinement of:
+	- InnerProduct <I, Vector, Scalar>
+	- BanachSpace <N, Vector, Scalar>
+
+	\note
+	- The (expressible) requirements of Banach Space are already given in InnerProduct
+	  (besides consistency of the functors).
+	- A difference is that InnerProduct is not a refinement of Vectorspace
+    */
+template <typename I, typename Vector,
+          typename Scalar = typename Vector::value_type, 
+	  typename N = induced_norm_t<I, Vector, Scalar> >
+struct HilbertSpace
+  : InnerProduct<I, Vector, Scalar>,
+    BanachSpace<N, Vector, Scalar>
+{
+    /// Consistency between norm and induced norm
+    axiom Consistency(Vector v)
+    {
+	/// math::induced_norm_t<I, Vector, Scalar>()(v) == N()(v);                    
+    }   
+};
 #endif // __GXX_CONCEPTS__
+
+
 
 } // namespace math
 
