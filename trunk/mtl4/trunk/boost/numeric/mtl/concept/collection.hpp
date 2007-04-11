@@ -3,6 +3,7 @@
 #ifndef MTL_COLLECTION_INCLUDE
 #define MTL_COLLECTION_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 
 #ifdef __GXX_CONCEPTS__
 #  include <concepts>
@@ -54,6 +55,42 @@ namespace mtl {
     };
 #endif
 
+
+
+// ======================================
+// Concept maps (and emulations)
+// ======================================
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value, typename Parameters>
+    concept_map Collection<dense2D<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename dense2D<Value, Parameters>::size_type size_type;
+    };
+
+    template <typename Value, typename Parameters>
+    concept_map MutableCollection<dense2D<Value, Parameters> >
+    {
+	typedef Value&           reference;
+    };
+#else
+    template <typename Value, typename Parameters>
+    struct Collection<dense2D<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename dense2D<Value, Parameters>::size_type size_type;
+    };
+
+    template <typename Value, typename Parameters>
+    struct MutableCollection<dense2D<Value, Parameters> >
+	: public Collection<dense2D<Value, Parameters> >
+    {
+	typedef Value&           reference;
+    };
+#endif
 
 } // namespace mtl
 
