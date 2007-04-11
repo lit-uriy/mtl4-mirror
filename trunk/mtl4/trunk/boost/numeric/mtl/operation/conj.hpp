@@ -75,7 +75,8 @@ namespace sfunctor {
     {
 	static inline Value apply(const Value& v)
 	{
-	    return v;
+	    using math::zero;
+	    return zero(v);
 	}
     };
 
