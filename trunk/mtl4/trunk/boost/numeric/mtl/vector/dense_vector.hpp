@@ -22,21 +22,33 @@
 
 namespace mtl { namespace vector {
 
-template <class T, typename Parameters = mtl::vector::parameters<> >
+template <class Value, typename Parameters = mtl::vector::parameters<> >
 class dense_vector
-    : public vec_expr<dense_vector<T> >
+    : public vec_expr<dense_vector<Value> >,
+      public detail::contiguous_memory_matrix< Value, Parameters::on_stack, Parameters::dimension::value >
 {
+    typedef detail::contiguous_memory_matrix< Value, Parameters::on_stack, Parameters::dimension::value >   super_memory;
 public:
-    typedef vec_expr<dense_vector<T> >  expr_base;
+    typedef vec_expr<dense_vector<Value> >  expr_base;
     typedef dense_vector      self;
-    typedef T                 value_type ; 
+    typedef Value             value_type ; 
     typedef std::size_t       size_type ;
     typedef value_type&       reference ;
     typedef value_type const& const_reference ;
-    typedef T*                pointer ;
-    typedef T const*          const_pointer ;
+    typedef Value*            pointer ;
+    typedef Value const*      const_pointer ;
     typedef typename Parameters::orientation  orientation;
 
+    
+    
+
+
+
+
+
+
+
+#if 0
     dense_vector( size_type n )
 	: expr_base( *this ), my_size( n ), data( new value_type[n] )  
     {}
@@ -50,42 +62,46 @@ public:
     ~dense_vector() {
         delete[] data ;
     }
+#endif
 
-    size_type size() const { return my_size ; }
+    size_type size() const { return this->used_memory() ; }
     
     size_type stride() const { return 1 ; }
 
+    void check_index( size_type i )
+    {
+	MTL_DEBUG_THROW_IF( i < 0 || i > size(), bad_range());
+    }
+
     reference operator()( size_type i ) 
     {
-        assert( i<my_size ) ;
-        return data[ i ] ;
+        check_index(i);
+        return this->value_n( i ) ;
     }
 
     const_reference operator()( size_type i ) const 
     {
-        assert( i<my_size ) ;
-        return data[ i ] ;
+        check_index(i);
+        return this->value_n( i ) ;
     }
 
     reference operator[]( size_type i ) 
     {
-        assert( i<my_size ) ;
-        return data[ i ] ;
+	return (*this)( i ) ;
     }
 
     const_reference operator[]( size_type i ) const 
     {
-        assert( i<my_size ) ;
-        return data[ i ] ;
+	return (*this)( i ) ;
     }
 
     void delay_assign() const {}
 
-    const_pointer begin() const { return data ; }
-    const_pointer end() const { return data+my_size ; }
+    const_pointer begin() const { return this->elements() ; }
+    const_pointer end() const { return this->elements() + size() ; }
     
-    pointer begin() { return data ; }
-    pointer end() { return data+my_size ; }
+    pointer begin() { return this->elements() ; }
+    pointer end() { return this->elements() + size() ; }
 
     vec_vec_asgn_expr<self, self> operator=( self const& e ) 
     {
@@ -130,7 +146,7 @@ public:
 	return vec_vec_minus_asgn_expr<self, E>( *this, e.ref );
     }
 
-    friend std::ostream& operator<<( std::ostream& s, dense_vector<T> const& v ) 
+    friend std::ostream& operator<<( std::ostream& s, dense_vector<Value> const& v ) 
     {
 	s << "[" << v.my_size << "]{" ;
 	for (size_type i=0; i < v.my_size-1; ++ i) {
@@ -141,8 +157,8 @@ public:
     }
 
   private:
-     size_type my_size ;
-     pointer   data ;
+    // size_type my_size ;
+    // pointer   data ;
 } ; // dense_vector
 
 

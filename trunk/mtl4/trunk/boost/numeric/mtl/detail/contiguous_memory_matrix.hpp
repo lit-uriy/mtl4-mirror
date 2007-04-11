@@ -149,7 +149,14 @@ struct contiguous_memory_matrix
 
     // returns n-th value in consecutive memory
     // (whatever this means in the corr. matrix format)
-    value_type value_n(size_t offset) const 
+    value_type& value_n(size_t offset)
+    { 
+      return this->data[offset]; 
+    }
+
+    // returns n-th value in consecutive memory
+    // (whatever this means in the corr. matrix format)
+    const value_type& value_n(size_t offset) const 
     { 
       return this->data[offset]; 
     }

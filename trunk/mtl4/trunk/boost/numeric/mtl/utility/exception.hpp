@@ -38,6 +38,7 @@ namespace mtl {
    }
 #endif
 
+    struct bad_range {};
 
 } // namespace mtl
 

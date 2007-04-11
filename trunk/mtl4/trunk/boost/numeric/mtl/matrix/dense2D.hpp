@@ -254,6 +254,9 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 {
     typedef dense2D                                    self;
     typedef detail::base_sub_matrix<Value, Parameters>   super;
+    typedef detail::contiguous_memory_matrix<Value, Parameters::on_stack, 
+					     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     super_memory;
+
   public:
     typedef Parameters                        parameters;
     typedef typename Parameters::orientation  orientation;
@@ -262,9 +265,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     typedef Value                             value_type;
     // return type of operator() const
     typedef const value_type&                 const_access_type;
-
-    typedef detail::contiguous_memory_matrix<Value, Parameters::on_stack, 
-					     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     super_memory;
 
     typedef const value_type*                 const_pointer_type;
     typedef const_pointer_type                key_type;
