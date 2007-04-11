@@ -116,10 +116,59 @@ public:
 };
 
 
-
-
-
 #endif;
+
+
+#ifdef __GXX_CONCEPTS__
+
+    concept UnaryStaticFunctor<typename T>
+    {
+	typename result_type;
+	
+	static result_type apply(T);
+    };
+
+#else
+
+/// Concept UnaryStaticFunctor
+template <typename T>
+struct UnaryStaticFunctor
+{
+    /// Result type of apply
+    typedef associated_type result_type;
+
+    /// The unary static function
+    static result_type apply(T);
+}
+
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+
+    concept BinaryStaticFunctor<typename T, typename U>
+    {
+	typename result_type;
+	
+	static result_type apply(T, U);
+    };
+
+#else
+
+/// Concept BinaryStaticFunctor
+template <typename T, typename U>
+struct BinaryStaticFunctor
+{
+    /// Result type of apply
+    typedef associated_type result_type;
+
+    /// The unary static function
+    static result_type apply(T, U);
+}
+
+#endif
+
+
 
 } // namespace mtl
 
