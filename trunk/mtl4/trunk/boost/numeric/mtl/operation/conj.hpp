@@ -16,7 +16,9 @@ namespace sfunctor {
     template <typename Value>
     struct conj
     {
-	static inline Value apply(const Value& v)
+	typedef Value result_type;
+
+	static inline result_type apply(const Value& v)
 	{
 	    return v;
 	}
@@ -25,7 +27,9 @@ namespace sfunctor {
     template <typename Value>
     struct conj<std::complex<Value> >
     {
-	static inline std::complex<Value> apply(const std::complex<Value>& v)
+	typedef std::complex<Value> result_type;
+
+	static inline result_type apply(const std::complex<Value>& v)
 	{
 	    return std::conj(v);
 	}
@@ -34,9 +38,9 @@ namespace sfunctor {
 }
     
 template <typename Value>
-Value inline conj(const Value& v)
+sfunctor::conj<Value>::result_type inline conj(const Value& v)
 {
-    return sfunctor::conj::apply(v);
+    return sfunctor::conj<Value>::apply(v);
 };
 
 
@@ -45,6 +49,8 @@ namespace sfunctor {
     template <typename Value>
     struct real
     {
+	typedef Value result_type;
+
 	static inline Value apply(const Value& v)
 	{
 	    return v;
@@ -54,7 +60,9 @@ namespace sfunctor {
     template <typename Value>
     struct real<std::complex<Value> >
     {
-	static inline std::complex<Value> apply(const std::complex<Value>& v)
+	typedef std::complex<Value> result_type;
+
+	static inline result_type apply(const std::complex<Value>& v)
 	{
 	    return std::real(v);
 	}
@@ -62,9 +70,9 @@ namespace sfunctor {
 }
 
 template <typename Value>
-Value inline real(const Value& v)
+inline sfunctor::real<Value>::result_type real(const Value& v)
 {
-    return sfunctor::real::apply(v);
+    return sfunctor::real<Value>::apply(v);
 };
 
 
@@ -73,6 +81,8 @@ namespace sfunctor {
     template <typename Value>
     struct imag
     {
+	typedef Value result_type;
+
 	static inline Value apply(const Value& v)
 	{
 	    using math::zero;
@@ -83,6 +93,8 @@ namespace sfunctor {
     template <typename Value>
     struct imag<std::complex<Value> >
     {
+	typedef std::complex<Value> result_type;
+
 	static inline std::complex<Value> apply(const std::complex<Value>& v)
 	{
 	    return std::imag(v);
@@ -92,9 +104,9 @@ namespace sfunctor {
 }
 
 template <typename Value>
-Value inline imag(const Value& v)
+inline sfunctor::imag<Value>::result_type imag(const Value& v)
 {
-    return sfunctor::imag::apply(v);
+    return sfunctor::imag<Value>::apply(v);
 };
 
 
