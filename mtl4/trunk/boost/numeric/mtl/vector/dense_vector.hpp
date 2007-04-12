@@ -14,6 +14,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
@@ -98,14 +99,23 @@ public:
 	return vec_vec_asgn_expr<self, self>( *this, e );
     }
 
+    template <class E>
+    void check_consistent_shape( vec_expr<E> const& e ) const
+    {
+      #if 0 // leave this for later
+	MTL_THROW_IF((!boost::is_same<
+		         typename ashape::ashape<self>::type
+		       , typename ashape::ashape<E>::type
+		      >::value),
+		     bad_range());
+	// Might be optimized out by smart compilers
+      #endif 
+    }
 
     template <class E>
     vec_vec_asgn_expr<self, E> operator=( vec_expr<E> const& e )
     {
-#if 0
-	BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<self>::type, 
-			                    typename ashape::ashape<E>::type>::value));
-#endif
+	check_consistent_shape(e);
 	return vec_vec_asgn_expr<self, E>( *this, e.ref );
     }
 
@@ -119,20 +129,14 @@ public:
     template <class E>
     vec_vec_plus_asgn_expr<self, E> operator+=( vec_expr<E> const& e )
     {
-#if 0
-	BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<self>::type, 
-			                    typename ashape::ashape<E>::type>::value));
-#endif
+	check_consistent_shape(e);
 	return vec_vec_plus_asgn_expr<self, E>( *this, e.ref );
     }
 
     template <class E>
     vec_vec_minus_asgn_expr<self, E> operator-=( vec_expr<E> const& e )
     {
-#if 0
-	BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<self>::type, 
-			                    typename ashape::ashape<E>::type>::value));
-#endif
+	check_consistent_shape(e);
 	return vec_vec_minus_asgn_expr<self, E>( *this, e.ref );
     }
 
