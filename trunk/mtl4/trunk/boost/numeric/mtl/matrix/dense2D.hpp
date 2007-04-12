@@ -9,11 +9,13 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
-#include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
-#include <boost/numeric/mtl/detail/strided_base_cursor.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
+#include <boost/numeric/mtl/utility/strided_dense_el_cursor.hpp>
+#include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
+
 
 namespace mtl {
 
@@ -22,133 +24,6 @@ using std::size_t;
 // Forward declarations
 template <typename Value, typename Parameters> class dense2D;
 struct dense2D_indexer;
-
-
-// Cursor over every element
-template <typename Value> 
-struct dense_el_cursor : public detail::base_cursor<const Value*> 
-{
-    typedef Value                           value_type;
-    typedef const value_type*             const_pointer_type; // ?
-    typedef detail::base_cursor<const Value*> super;
-
-    typedef dense_el_cursor               self;
-
-    dense_el_cursor () {} 
-    dense_el_cursor (const_pointer_type me) : super(me) {}
-    dense_el_cursor (super s) : super(s) {}
-
-    template <typename Parameters>
-    dense_el_cursor(dense2D<Value, Parameters> const& ma, size_t r, size_t c)
-	: super(ma.elements() + ma.indexer(ma, r, c))
-    {}
-
-    self operator+(int x) const
-    {
-	return self(super::operator+(x));
-    }
-
-    int operator-(self const& x)
-    {
-	return super::operator-(x);
-    }
-};
-
-// Cursor over strided elements
-template <typename Value> 
-struct strided_dense_el_cursor : public detail::strided_base_cursor<const Value*> 
-{
-    typedef Value                           value_type;
-    typedef const value_type*             const_pointer_type; // ?
-    typedef detail::strided_base_cursor<const Value*> super;
-    typedef strided_dense_el_cursor       self;
-
-    //  strided_dense_el_cursor () {} 
-    strided_dense_el_cursor (const_pointer_type me, size_t stride) : super(me, stride) {}
-
-    template <typename Parameters>
-    strided_dense_el_cursor(dense2D<Value, Parameters> const& ma, size_t r, size_t c, size_t stride)
-	: super(ma.elements() + ma.indexer(ma, r, c), stride)
-    {}
-
-    // Why do we need this?
-    strided_dense_el_cursor(super const& x) : super(x) {}
-
-    self operator+(int x) const
-    {
-	return super::operator+(x);
-    }
-};
-
-
-#if 0
-// Iterator over every element (contiguous memory)
-// Simply a pointer 
-template <typename Value> 
-typedef Value* dense_el_iterator;
-
-// Same with const
-template <typename Value> 
-typedef const Value* dense_el_const_iterator;
-#endif
-
-// Strided iterator *operator returns (const) reference to Value instead of key
-// row(i) and col(i) doesn't work
-template <typename Value>
-struct strided_dense_el_const_iterator
-    : public detail::strided_base_cursor<const Value*> 
-{
-    typedef const Value*                              key_type;
-    typedef detail::strided_base_cursor<key_type>     super;
-    typedef strided_dense_el_const_iterator           self;
-
-    strided_dense_el_const_iterator(key_type me, size_t stride) : super(me, stride) {}
-
-    template <typename Parameters>
-    strided_dense_el_const_iterator(dense2D<Value, Parameters> const& ma, size_t r, size_t c, size_t stride)
-	: super(ma.elements() + ma.indexer(ma, r, c), stride)
-    {}
-
-    self operator+(int x) const
-    {
-	return super::operator+(x);
-    }
-
-    const Value& operator*() const
-    {
-	return *(this->key);
-    }
-};
-
-
-template <typename Value>
-struct strided_dense_el_iterator
-    : public detail::strided_base_cursor<Value*> 
-{
-    typedef Value*                                    key_type;
-    typedef detail::strided_base_cursor<key_type>     super;
-    typedef strided_dense_el_iterator                 self;
-
-    strided_dense_el_iterator(key_type me, size_t stride) : super(me, stride) {}
-
-    template <typename Parameters>
-    strided_dense_el_iterator(dense2D<Value, Parameters>& ma, size_t r, size_t c, size_t stride)
-	: super(ma.elements() + ma.indexer(ma, r, c), stride)
-    {}
-
-    self operator+(int x) const
-    {
-	self tmp(*this);
-	tmp+= x;
-	return tmp;
-    }
-
-    Value& operator*() const
-    {
-	return *(this->key);
-    }
-};
-
 
 
 // Indexing for dense matrices
