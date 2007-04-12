@@ -221,7 +221,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->realloc(num_rows * num_cols);
     }
 
-#ifndef MTL_UGLY_MULT_HACK
+
     self& operator=(const self& src)
     {
 	change_dim(src.num_rows(), src.num_cols());
@@ -236,7 +236,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	matrix::copy(src, *this);
 	return *this;
     }
-#endif
 
 
     bool check_indices(size_t r, size_t c) const
@@ -301,17 +300,13 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 }; // dense2D
 
 
-
-// ================
-// Range generators
-// ================
-
 namespace traits
 {
 
-// ===========
+// ================
+// Range generators
 // For cursors
-// ===========
+// ================
 
     template <typename Value, class Parameters>
     struct range_generator<glas::tag::all, dense2D<Value, Parameters> >

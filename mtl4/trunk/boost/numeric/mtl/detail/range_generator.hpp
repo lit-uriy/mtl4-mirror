@@ -8,23 +8,24 @@
 
 namespace mtl { namespace traits { namespace detail {
 
-    // Range generator that traverses all elements of some densely stored collection 
-    // or contiguous parts of such collection
-    // works if Matrix is derived from base_matrix
-    template <typename Matrix, typename Cursor, typename Complexity>
+    /// Range generator that traverses all elements of some densely stored collection 
+    /** - Or contiguous parts of such collection
+        - Works for matrices and vectors when derived from contiguous_memory_block
+    **/
+    template <typename Collection, typename Cursor, typename Complexity>
     struct dense_element_range_generator
     {
 	typedef Complexity          complexity;
 	typedef Cursor              type;
 	static int const            level = 1;
 
-	type begin(Matrix const& matrix)
+	type begin(Collection const& collection)
 	{
-	    return matrix.elements();
+	    return collection.elements();
 	}
-	type end(Matrix const& matrix)
+	type end(Collection const& collection)
 	{
-	    return matrix.elements() + matrix.nnz();
+	    return collection.elements() + collection.used_memory();
 	}
     };
 
