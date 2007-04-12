@@ -10,7 +10,7 @@
 
 #include <boost/numeric/mtl/vector/vec_vec_aop_expr.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
-#include <boost/numeric/mtl/utility/sfunctor.hpp>
+#include <boost/numeric/mtl/operation/sfunctor.hpp>
 
 namespace mtl { namespace vector {
 

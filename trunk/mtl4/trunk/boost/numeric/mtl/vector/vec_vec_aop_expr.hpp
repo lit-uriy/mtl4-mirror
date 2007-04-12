@@ -7,7 +7,7 @@
 #define MTL_VEC_VEC_AOP_EXPR_INCLUDE
 
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
-#include <boost/numeric/mtl/utility/sfunctor.hpp>
+#include <boost/numeric/mtl/operation/sfunctor.hpp>
 
 
 namespace mtl { namespace vector {

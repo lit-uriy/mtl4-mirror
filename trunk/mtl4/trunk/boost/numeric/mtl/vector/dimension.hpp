@@ -27,25 +27,24 @@ namespace fixed {
 
 namespace non_fixed {
 
-    template <std::size_t Size>
     struct dimension
     {
 	typedef std::size_t  size_type;
 	
 	static size_type const value= 0; // for compatibility
 
-	dimension() : value(0) {}
-	dimension(size_type v) : value(v) {}
+	dimension() : my_size(0) {}
+	dimension(size_type v) : my_size(v) {}
 
 	size_type size() const
 	{
-	    return value;
+	    return my_size;
 	}
 
 	// to check whether it is static
 	static bool const is_static= false;
     protected:
-	size_type value;
+	size_type my_size;
     };
 }
 

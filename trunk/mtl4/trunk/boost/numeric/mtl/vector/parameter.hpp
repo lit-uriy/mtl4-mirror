@@ -4,12 +4,13 @@
 #define MTL_VECTOR_PARAMETERS_INCLUDE
 
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/vector/dimension.hpp>
 
 namespace mtl { namespace vector {
 
 // This type exist only for bundling template parameters (to reduce typing)
 template <typename Orientation= col_major, 
-	  typename Dimensions= non_fixed::dimension,
+	  typename Dimension= non_fixed::dimension,
 	  bool OnStack= false,
 	  bool RValue= false>
 struct parameters 
@@ -23,14 +24,14 @@ struct parameters
 template <typename Parameter>
 struct is_row_major {};
 
-template <bool OnStack, bool RValue>
-struct is_row_major<parameters<row_major, OnStack, RValue> >
+template <typename Dimension, bool OnStack, bool RValue>
+struct is_row_major<parameters<row_major, Dimension, OnStack, RValue> >
 {
   static const bool value= true;
 };
 
-template <bool OnStack, bool RValue>
-struct is_row_major<parameters<col_major, OnStack, RValue> >
+template <typename Dimension, bool OnStack, bool RValue>
+struct is_row_major<parameters<col_major, Dimension, OnStack, RValue> >
 {
   static const bool value= false;
 };
