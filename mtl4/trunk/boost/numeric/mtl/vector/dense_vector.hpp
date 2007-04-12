@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
+#include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
 
 
 namespace mtl { namespace vector {
@@ -40,11 +41,17 @@ public:
     typedef typename Parameters::orientation  orientation;
 
     
+    dense_vector( ) : expr_base( *this ), super_memory( Parameters::dimension::value ) {}
     
-
-
-
-
+    dense_vector( size_type n )
+	: expr_base( *this ), super_memory( n ) 
+    {}
+    
+    dense_vector( size_type n, value_type value )
+	: expr_base( *this ), super_memory( n ) 
+    {
+	std::fill(begin(), end(), value);
+    }
 
 
 
@@ -68,7 +75,7 @@ public:
     
     size_type stride() const { return 1 ; }
 
-    void check_index( size_type i )
+    void check_index( size_type i ) const
     {
 	MTL_DEBUG_THROW_IF( i < 0 || i > size(), bad_range());
     }
@@ -122,7 +129,7 @@ public:
     // Replace it later by expression (maybe)
     self& operator=(value_type value)
     {
-	std::fill(data, data+my_size, value);
+	std::fill(begin(), end(), value);
 	return *this;
     }
 
@@ -148,11 +155,11 @@ public:
 
     friend std::ostream& operator<<( std::ostream& s, dense_vector<Value> const& v ) 
     {
-	s << "[" << v.my_size << "]{" ;
-	for (size_type i=0; i < v.my_size-1; ++ i) {
+	s << "[" << v.size() << "]{" ;
+	for (size_type i=0; i < v.size()-1; ++ i) {
 	    s << v(i) << "," ;
 	}
-	s << v(v.my_size-1) << "}" ;
+	s << v(v.size()-1) << "}" ;
 	return s ;
     }
 

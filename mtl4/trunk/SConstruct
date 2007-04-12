@@ -43,7 +43,7 @@ def check_no_long_double(conf):
 	output = os.popen(cc + " --version").read()
 	st = output.split('\n')[0]
 	tmatch = re.search(".* \(GCC\) (\d\.\d)", st)
-	if tmatch and string.atof(tmatch.group(1)) >= 4.0:
+	if tmatch and string.atof(tmatch.group(1)) == 4.0:
 	    conf.env.Append(CCFLAGS = '-Wno-long-double')
 	    # conf.env.Append(CXXFLAGS = '-Wno-long-double')
 
