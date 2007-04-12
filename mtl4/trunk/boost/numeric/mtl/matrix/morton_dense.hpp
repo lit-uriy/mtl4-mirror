@@ -9,7 +9,7 @@
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
-#include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
+#include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
 #include <boost/numeric/mtl/detail/dilated_int.hpp>
 #include <boost/numeric/mtl/utility/iterator_adaptor.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
@@ -280,11 +280,11 @@ struct morton_dense_col_iterator
 // Morton Dense matrix type 
 template <typename Elt, unsigned long BitMask, typename Parameters = mtl::matrix_parameters<> >
 class morton_dense : public detail::base_sub_matrix<Elt, Parameters>, 
-		     public detail::contiguous_memory_matrix<Elt, false>,
+		     public detail::contiguous_memory_block<Elt, false>,
                      public detail::crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >
 {
     typedef detail::base_sub_matrix<Elt, Parameters>            super;
-    typedef detail::contiguous_memory_matrix<Elt, false>        super_memory;
+    typedef detail::contiguous_memory_block<Elt, false>        super_memory;
     typedef morton_dense                                        self;
 
   public:
