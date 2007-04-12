@@ -13,6 +13,9 @@ template <class Matrix> struct col {};
 template <class Matrix> struct const_value {};
 template <class Matrix> struct value {};
 
+// For vectors
+template <class Matrix> struct index {};
+
 // ===========
 // For dense2D
 // ===========
@@ -107,7 +110,31 @@ struct value<compressed2D<Elt, Parameters> >
 {
     typedef mtl::detail::matrix_offset_value<compressed2D<Elt, Parameters> > type;
 };
-    
+  
+  
+// ================
+// For dense_vector
+// ================
+
+template <class Elt, class Parameters>
+struct index<dense_vector<Elt, Parameters> >
+{
+    typedef mtl::detail::index_from_offset< dense_vector<Elt, Parameters> > type;
+};
+
+template <typename Value, class Parameters>
+struct const_value<dense_vector<Value, Parameters> >
+{
+    typedef mtl::detail::direct_const_value<dense_vector<Value, Parameters> > type;
+};
+
+template <typename Value, class Parameters>
+struct value<dense_vector<Value, Parameters> >
+{
+    typedef mtl::detail::direct_value<dense_vector<Value, Parameters> > type;
+};
+
+
 
 }} // namespace mtl::traits
 

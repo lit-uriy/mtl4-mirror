@@ -14,12 +14,15 @@
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
+#include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
 
 
 namespace mtl { namespace vector {
@@ -41,6 +44,7 @@ public:
     typedef Value const*      const_pointer ;
     typedef typename Parameters::orientation  orientation;
 
+    typedef const_pointer     key_type;
     
     dense_vector( ) : expr_base( *this ), super_memory( Parameters::dimension::value ) {}
     
@@ -150,21 +154,82 @@ public:
 	return s ;
     }
 
-  private:
-    // size_type my_size ;
-    // pointer   data ;
 } ; // dense_vector
 
-namespace traits {
+}} // namespace mtl::vector
+
+
+
+namespace mtl { namespace traits {
 
     template <typename Value, typename Parameters>
     struct is_row_major<dense_vector<Value, Parameters> >
 	: public  is_row_major<Parameters>
     {};
 
-} // namespace traits
+// ================
+// Range generators
+// For cursors
+// ================
 
-}} // Namespace mtl::vector
+    template <typename Value, class Parameters>
+    struct range_generator<tag::all, dense_vector<Value, Parameters> >
+      : public detail::dense_element_range_generator<dense_vector<Value, Parameters>,
+						     dense_el_cursor<Value>, complexity_classes::linear_cached>
+    {};
+
+    template <typename Value, class Parameters>
+    struct range_generator<tag::nz, dense_vector<Value, Parameters> >
+	: public range_generator<tag::all, dense_vector<Value, Parameters> >
+    {};
+
+    template <typename Value, class Parameters>
+    struct range_generator<tag::iter::all, dense_vector<Value, Parameters> >
+    {
+	typedef dense_vector<Value, Parameters>   collection_t;
+	typedef complexity_classes::linear_cached complexity;
+	static int const                          level = 1;
+	typedef typename collection_t::pointer    type;
+
+	type begin(collection_t& collection) const
+	{
+	    return collection.begin();
+	}
+	type end(collection_t& collection) const
+	{
+	    return collection.begin();
+	}
+    };
+
+    template <typename Value, class Parameters>
+    struct range_generator<tag::iter::nz, dense_vector<Value, Parameters> >
+	: public range_generator<tag::iter::all, dense_vector<Value, Parameters> >
+    {};
+
+    template <typename Value, class Parameters>
+    struct range_generator<tag::const_iter::all, dense_vector<Value, Parameters> >
+    {
+	typedef dense_vector<Value, Parameters>   collection_t;
+	typedef complexity_classes::linear_cached complexity;
+	static int const                          level = 1;
+	typedef typename collection_t::const_pointer type;
+
+	type begin(const collection_t& collection) const
+	{
+	    return collection.begin();
+	}
+	type end(const collection_t& collection) const
+	{
+	    return collection.begin();
+	}
+    };
+
+    template <typename Value, class Parameters>
+    struct range_generator<tag::const_iter::nz, dense_vector<Value, Parameters> >
+	: public range_generator<tag::const_iter::all, dense_vector<Value, Parameters> >
+    {};
+	
+}} // namespace mtl::traits
 
 
 #endif // MTL_DENSE_VECTOR_INCLUDE

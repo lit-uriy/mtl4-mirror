@@ -92,6 +92,22 @@ template <class Matrix> struct col_in_key
     }
 };
 
+// Collection must be derived from contiguous_memory_block
+// key must contain pointer
+template <class Collection> struct index_from_offset
+{
+    typedef Collection                      collection_type;
+    
+    index_from_offset(const collection_type& coll) : coll(coll) {} 
+
+    template <typename Key>
+    typename Collection::size_type operator() (Key const& key) const
+    {
+	return coll.offset(&*key);
+    }
+private:
+    const collection_type& coll;
+};
 
 template <typename Matrix>
 struct const_value_from_other
