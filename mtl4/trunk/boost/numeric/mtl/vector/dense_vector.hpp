@@ -25,12 +25,12 @@ namespace mtl { namespace vector {
 
 template <class Value, typename Parameters = mtl::vector::parameters<> >
 class dense_vector
-    : public vec_expr<dense_vector<Value> >,
+    : public vec_expr<dense_vector<Value, Parameters> >,
       public detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >
 {
     typedef detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >   super_memory;
 public:
-    typedef vec_expr<dense_vector<Value> >  expr_base;
+    typedef vec_expr<dense_vector<Value, Parameters> >  expr_base;
     typedef dense_vector      self;
     typedef Value             value_type ; 
     typedef std::size_t       size_type ;
@@ -54,30 +54,13 @@ public:
     }
 
 
-
-#if 0
-    dense_vector( size_type n )
-	: expr_base( *this ), my_size( n ), data( new value_type[n] )  
-    {}
-
-    dense_vector( size_type n, value_type value )
-	: expr_base( *this ), my_size( n ), data( new value_type[n] )  
-    {
-	std::fill(data, data+my_size, value);
-    }
-
-    ~dense_vector() {
-        delete[] data ;
-    }
-#endif
-
     size_type size() const { return this->used_memory() ; }
     
     size_type stride() const { return 1 ; }
 
     void check_index( size_type i ) const
     {
-	MTL_DEBUG_THROW_IF( i < 0 || i > size(), bad_range());
+	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), bad_range());
     }
 
     reference operator()( size_type i ) 
@@ -153,9 +136,9 @@ public:
 	return vec_vec_minus_asgn_expr<self, E>( *this, e.ref );
     }
 
-    friend std::ostream& operator<<( std::ostream& s, dense_vector<Value> const& v ) 
+    friend std::ostream& operator<<( std::ostream& s, dense_vector<Value, Parameters> const& v ) 
     {
-	s << "[" << v.size() << "]{" ;
+	s << "[" << v.size() << (traits::is_row_major<Parameters>::value ? "R" : "C") << "]{" ;
 	for (size_type i=0; i < v.size()-1; ++ i) {
 	    s << v(i) << "," ;
 	}
@@ -168,6 +151,14 @@ public:
     // pointer   data ;
 } ; // dense_vector
 
+namespace traits {
+
+    template <typename Value, typename Parameters>
+    struct is_row_major<dense_vector<Value, Parameters> >
+	: public  is_row_major<Parameters>
+    {};
+
+} // namespace traits
 
 }} // Namespace mtl::vector
 

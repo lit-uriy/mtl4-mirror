@@ -12,14 +12,10 @@ namespace mtl {
 #ifndef NDEBUG
 #  ifdef MTL_ASSERT_FOR_THROW
 #    define MTL_DEBUG_THROW_IF(Test, Exception) \
-     {                                          \
-        assert(Test)                            \
-     }
+        assert(!(Test));
 #  else
 #    define MTL_DEBUG_THROW_IF(Test, Exception) \
-     {                                          \
-        if (Test) throw Exception;              \
-     }
+        if (Test) throw Exception;
 #  endif
 #else
 #  define MTL_DEBUG_THROW_IF(Test,Exception)
@@ -29,7 +25,7 @@ namespace mtl {
 #ifdef MTL_ASSERT_FOR_THROW
 #  define MTL_THROW_IF(Test, Exception)       \
    {                                          \
-      assert(Test)                            \
+       assert(!(Test));			      \
    }
 #else
 #  define MTL_THROW_IF(Test, Exception)       \

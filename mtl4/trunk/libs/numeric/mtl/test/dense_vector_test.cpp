@@ -4,7 +4,7 @@
 #include <cmath>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
-
+#include <boost/numeric/mtl/vector/parameter.hpp>
 
 using namespace mtl;
 using namespace std;  
@@ -52,6 +52,8 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using mtl::vector::parameters;
+
     dense_vector<float>   u(5), v(5), w(5);
     dense_vector<double>  x(5), y(5), z(5);
 
@@ -67,6 +69,11 @@ int test_main(int argc, char* argv[])
     test(u, v, w, "test float");
     test(x, y, z, "test double");
     test(u, x, y, "test float, double mixed");
+
+    dense_vector<float, parameters<row_major> >   ur(5), vr(5), wr(5);
+    test(ur, vr, wr, "test float in row vector");
+    
+    // test(ur, v, wr, "test float in mixed vector (shouldn't work)"); 
 
     return 0;
 }

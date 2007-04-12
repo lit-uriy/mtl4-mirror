@@ -7,7 +7,7 @@ import getopt, sys, os, re, string
 
 # add debugging flags to environment
 def add_debug(env):
-     env.Append(CCFLAGS = '-g')
+     env.Append(CCFLAGS = '-g -DMTL_ASSERT_FOR_THROW')
    
 
 def check_g5():
