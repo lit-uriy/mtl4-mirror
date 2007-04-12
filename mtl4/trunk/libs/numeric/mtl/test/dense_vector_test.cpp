@@ -10,12 +10,33 @@ using namespace mtl;
 using namespace std;  
 
 
+template <typename Vector>
+void one_d_iteration(char const* name, Vector & vector, size_t check_index, double check)
+{
+    typename traits::index<Vector>::type                               index(vector);
+    typename traits::value<Vector>::type                               value(vector); 
+    typedef  glas::tag::nz                                             tag;
+    typedef typename traits::range_generator<tag, Vector>::type        cursor_type;
+    typedef typename traits::range_generator<tag, Vector>::complexity  complexity;
+
+    cout << name << "\nElements: " << complexity() << '\n';
+    for (cursor_type cursor = begin<tag>(vector), cend = end<tag>(vector); cursor != cend; ++cursor) {
+	cout << "vector[" << index(*cursor) << "] = " << value(*cursor) << '\n';
+	if (index(*cursor) == check_index && value(*cursor) != check) 
+	    throw "wrong check value";
+    }
+}
+    
+
 template <typename VectorU, typename VectorV, typename VectorW>
 void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 {
     u= (typename VectorU::value_type)(3.0); 
     v= (typename VectorV::value_type)(4.0); 
     w= (typename VectorW::value_type)(5.0); 
+
+    std::cout << "\n\n";
+    one_d_iteration(name, u, 2, (typename VectorU::value_type)(3.0));
 
     std::cout << "\n" << name << "  --- u= v + w:\n"; std::cout.flush();
     u= v + w;
