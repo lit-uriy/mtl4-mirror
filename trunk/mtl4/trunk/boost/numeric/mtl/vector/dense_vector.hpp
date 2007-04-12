@@ -18,7 +18,7 @@
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
-#include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
+#include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
 
 
 namespace mtl { namespace vector {
@@ -26,9 +26,9 @@ namespace mtl { namespace vector {
 template <class Value, typename Parameters = mtl::vector::parameters<> >
 class dense_vector
     : public vec_expr<dense_vector<Value> >,
-      public detail::contiguous_memory_matrix< Value, Parameters::on_stack, Parameters::dimension::value >
+      public detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >
 {
-    typedef detail::contiguous_memory_matrix< Value, Parameters::on_stack, Parameters::dimension::value >   super_memory;
+    typedef detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >   super_memory;
 public:
     typedef vec_expr<dense_vector<Value> >  expr_base;
     typedef dense_vector      self;

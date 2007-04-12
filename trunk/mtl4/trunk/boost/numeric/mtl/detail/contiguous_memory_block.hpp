@@ -1,7 +1,7 @@
 // $COPYRIGHT$
 
-#ifndef MTL_CONTIGUOUS_MEMORY_MATRIX_INCLUDE
-#define MTL_CONTIGUOUS_MEMORY_MATRIX_INCLUDE
+#ifndef MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE
+#define MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE
 
 #include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -99,7 +99,7 @@ struct generic_array<Value, true, Size>
 
 // Base class for matrices that have contigous piece of memory
 template <typename Value, bool OnStack, unsigned Size= 0>
-struct contiguous_memory_matrix 
+struct contiguous_memory_block 
   : public generic_array<Value, OnStack, Size>
 {
     typedef generic_array<Value, OnStack, Size> base;
@@ -115,10 +115,10 @@ struct contiguous_memory_matrix
 
   public:
     // Reference to external data (must be heap)
-    explicit contiguous_memory_matrix(value_type* a, std::size_t size)
+    explicit contiguous_memory_block(value_type* a, std::size_t size)
       : base(a), my_used_memory(size) {}
 
-    explicit contiguous_memory_matrix(std::size_t size)
+    explicit contiguous_memory_block(std::size_t size)
 	: base(size), my_used_memory(size) {}
 
     void realloc(std::size_t size) 
@@ -169,4 +169,4 @@ struct contiguous_memory_matrix
 
 }} // namespace mtl::detail
 
-#endif // MTL_CONTIGUOUS_MEMORY_MATRIX_INCLUDE
+#endif // MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE

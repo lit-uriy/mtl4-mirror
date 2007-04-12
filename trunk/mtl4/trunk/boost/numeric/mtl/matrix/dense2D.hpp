@@ -12,7 +12,7 @@
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
 #include <boost/numeric/mtl/detail/strided_base_cursor.hpp>
-#include <boost/numeric/mtl/detail/contiguous_memory_matrix.hpp>
+#include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 
 namespace mtl {
@@ -248,13 +248,13 @@ namespace traits { namespace detail {
 // Dense 2D matrix type
 template <typename Value, typename Parameters = mtl::matrix_parameters<> >
 class dense2D : public detail::base_sub_matrix<Value, Parameters>, 
-		public detail::contiguous_memory_matrix< Value, Parameters::on_stack, 
+		public detail::contiguous_memory_block< Value, Parameters::on_stack, 
 							 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
                 public detail::crtp_base_matrix< dense2D<Value, Parameters>, Value, std::size_t >
 {
     typedef dense2D                                    self;
     typedef detail::base_sub_matrix<Value, Parameters>   super;
-    typedef detail::contiguous_memory_matrix<Value, Parameters::on_stack, 
+    typedef detail::contiguous_memory_block<Value, Parameters::on_stack, 
 					     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     super_memory;
 
   public:
