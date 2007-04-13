@@ -8,6 +8,8 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
+#include <boost/numeric/mtl/operation/sfunctor.hpp>
+#include <boost/numeric/mtl/operation/tfunctor.hpp>
 
 
 
@@ -36,7 +38,7 @@ public:
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
 
-    map_view (const Functor& functor, other& ref) 
+    map_view (const Functor& functor, const other& ref) 
 	: functor(functor), ref(ref) 
     {}
     
@@ -46,7 +48,7 @@ public:
     
     const_access_type operator() (size_type r, size_type c) const
     { 
-        return Functor::apply(ref(r, c));
+        return functor(ref(r, c));
     }
 
     size_type dim1() const 
@@ -99,7 +101,7 @@ protected:
     boost::shared_ptr<Matrix>           my_copy;
 public:
     Functor           functor;
-    other&            ref;
+    const other&      ref;
 };
    
 }} // namespace mtl::matrix
@@ -197,10 +199,26 @@ struct sub_matrix_t< matrix::map_view<Functor, Matrix> >
     }
 };
 
-
-
-
 } // namespace mtl
 
+namespace mtl { namespace matrix {
+
+template <typename Scaling, typename Matrix>
+struct scaled_view
+    : public map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, Matrix>
+{
+    typedef tfunctor::scale<Scaling, typename Matrix::value_type>  functor_type;
+    typedef map_view<functor_type, Matrix>                         base;
+
+    scaled_view(const Scaling& scaling, const Matrix& matrix)
+	: base(functor_type(scaling), matrix)
+    {}
+    
+    scaled_view(const Scaling& scaling, boost::shared_ptr<Matrix> p)
+	: base(functor_type(scaling), p)
+    {}
+};
+
+}} // namespace mtl::matrix
 
 #endif // MTL_MAP_VIEW_INCLUDE

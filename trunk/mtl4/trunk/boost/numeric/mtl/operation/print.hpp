@@ -53,6 +53,12 @@ namespace mtl {
 	return print(value, out);
     }
 
+    template <typename Functor, typename Matrix>
+    inline std::ostream& operator<< (std::ostream& out, matrix::map_view<Functor, Matrix> const& value) 
+    {
+	return print(value, out);
+    }
+
 
 // ======================
 // use formatting with <<
