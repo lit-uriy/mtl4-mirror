@@ -22,7 +22,13 @@ namespace sfunctor {
 	{
 	    return v;
 	}
+
+	result_type operator() (const Value& v)
+	{
+	    return v;
+	}
     };
+
 
     template <typename Value>
     struct conj<std::complex<Value> >
@@ -30,6 +36,11 @@ namespace sfunctor {
 	typedef std::complex<Value> result_type;
 
 	static inline result_type apply(const std::complex<Value>& v)
+	{
+	    return std::conj(v);
+	}
+
+	result_type operator() (const std::complex<Value>& v)
 	{
 	    return std::conj(v);
 	}

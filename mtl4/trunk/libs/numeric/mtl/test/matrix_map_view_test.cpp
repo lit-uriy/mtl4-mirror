@@ -78,13 +78,13 @@ void test(Matrix& matrix, const char* name)
     cout << "\n\n" << name << "\n";
     cout << "Original matrix:\n" << matrix << "\n";
 
-#if 0
 
     matrix::scaled_view<double, Matrix>  scaled_matrix(2.0, matrix);
     cout << "matrix  scaled with 2.0\n" << scaled_matrix << "\n";
     if (scaled_matrix(2, 3) != svalue(ref)) 
 	throw "scaling wrong";
     
+#if 0
     matrix::conj_view<Matrix>  conj_matrix(matrix);
     cout << "conjugated matrix\n" << conj_matrix << "\n";
     if (conj_matrix(2, 3) != cvalue(ref)) 

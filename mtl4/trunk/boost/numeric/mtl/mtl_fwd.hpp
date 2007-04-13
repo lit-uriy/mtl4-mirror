@@ -41,6 +41,10 @@ namespace mtl {
     template <typename Matrix> struct transposed_orientation;
     template <typename Matrix> struct transposed_view;
 
+    namespace matrix {
+	template <typename Functor, typename Matrix> class map_view;
+    }
+
     namespace vector {
 	template <typename Value, typename Parameters> struct dense_vector;
     }
