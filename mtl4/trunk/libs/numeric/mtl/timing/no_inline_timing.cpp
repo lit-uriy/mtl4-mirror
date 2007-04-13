@@ -143,7 +143,7 @@ void hybrid_ext_mult_44(const morton_dense<double,  doppler_64_row_mask>& a,
 #endif
 
 void dense_ext_mult_44(const dense2D<double>& a,
-		       const dense2D<double, matrix_parameters<col_major> >& b,
+		       const dense2D<double, matrix::parameters<col_major> >& b,
 		       dense2D<double>& c);
  
 struct ext_mult_44
@@ -158,7 +158,7 @@ struct ext_mult_44
 #endif
 
     void operator()(const dense2D<double>& a,
-		    const dense2D<double, matrix_parameters<col_major> >& b,
+		    const dense2D<double, matrix::parameters<col_major> >& b,
 		    dense2D<double>& c)
     {
 	dense_ext_mult_44(a, b, c);
@@ -166,7 +166,7 @@ struct ext_mult_44
 };
 
 typedef dense2D<double> rmt;
-typedef dense2D<double, matrix_parameters<col_major> > cmt;
+typedef dense2D<double, matrix::parameters<col_major> > cmt;
 
 // C must have even dimensions
 template <typename MatrixA, typename MatrixB, typename MatrixC>
@@ -216,7 +216,7 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix,
     std::cout << size << ", ";
  
     dense2D<double> dense(4, 4);
-    dense2D<double, matrix_parameters<col_major> >    denseb(4, 4);
+    dense2D<double, matrix::parameters<col_major> >    denseb(4, 4);
  
     gen_recursive_dense_mat_mat_mult_t<base_mult_t>           mult;
     gen_recursive_dense_mat_mat_mult_t<tiling_22_base_mult_t> mult_22;
@@ -263,7 +263,7 @@ void measure_unrolling_hybrid(unsigned size, std::vector<int>& enabled)
 void measure_unrolling_dense(unsigned size, std::vector<int>& enabled)
 {
     dense2D<double> dense(4, 4);
-    dense2D<double, matrix_parameters<col_major> >    b(4, 4);
+    dense2D<double, matrix::parameters<col_major> >    b(4, 4);
     measure_unrolling(size, enabled, dense, b);
 }
 

@@ -205,8 +205,8 @@ void mult_simple_p(dense2D<double>& a, dense2D<double>& b, dense2D<double>& c)
 	}
 }
 
-typedef dense2D<double, matrix_parameters<col_major> >   cm_type;
-typedef dense2D<double, matrix_parameters<row_major> >   rm_type;
+typedef dense2D<double, matrix::parameters<col_major> >   cm_type;
+typedef dense2D<double, matrix::parameters<row_major> >   rm_type;
 
 void mult_simple_pt(dense2D<double>& a, cm_type& b, dense2D<double>& c)
 {

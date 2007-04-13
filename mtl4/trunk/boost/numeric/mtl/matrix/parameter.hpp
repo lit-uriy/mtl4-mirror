@@ -8,7 +8,7 @@
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 // This type exist only for bundling template parameters (to reduce typing)
 template <typename Orientation= row_major, 
@@ -16,7 +16,7 @@ template <typename Orientation= row_major,
 	  typename Dimensions= mtl::non_fixed::dimensions,
 	  bool OnStack= false,
 	  bool RValue= false>
-struct matrix_parameters 
+struct parameters 
 {
     typedef Orientation orientation;
     typedef Index       index;
@@ -28,25 +28,27 @@ struct matrix_parameters
     BOOST_STATIC_ASSERT(( !on_stack || dimensions::is_static ));
 };
 
-namespace traits {
+}}
+
+namespace mtl { namespace traits {
 
     template <typename Parameter>
     struct is_row_major {};
     
     template <typename Index, typename Dimensions, bool OnStack, bool RValue>
-    struct is_row_major<matrix_parameters<row_major, Index, Dimensions, OnStack, RValue> >
+    struct is_row_major<matrix::parameters<row_major, Index, Dimensions, OnStack, RValue> >
     {
 	static const bool value= true;
     };
     
     template <typename Index, typename Dimensions, bool OnStack, bool RValue>
-    struct is_row_major<matrix_parameters<col_major, Index, Dimensions, OnStack, RValue> >
+    struct is_row_major<matrix::parameters<col_major, Index, Dimensions, OnStack, RValue> >
     {
 	static const bool value= false;
     };
 
 }
 
-} // namespace mtl
+} // namespace mtl::traits
 
 #endif // MTL_MATRIX_PARAMETERS_INCLUDE

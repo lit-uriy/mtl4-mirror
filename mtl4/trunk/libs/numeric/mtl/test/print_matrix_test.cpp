@@ -36,7 +36,7 @@ template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
     {
-	matrix_inserter<Matrix> ins(matrix);
+	matrix::inserter<Matrix> ins(matrix);
 	for (int i= 0; i < matrix.num_rows(); i++)
 	    for (int j= 0; j < matrix.num_cols(); j++)
 		if ((i + j) & 1)
@@ -61,7 +61,7 @@ void test(Matrix& matrix, const char* name)
 int test_main(int argc, char* argv[])
 {
     dense2D<double>                                dr(5, 7);
-    dense2D<double, matrix_parameters<col_major> > dc(5, 7);
+    dense2D<double, matrix::parameters<col_major> > dc(5, 7);
     morton_dense<double,  morton_mask>             md(5, 7);
     morton_dense<double,  doppler_16_row_mask>     d16r(5, 7);
     compressed2D<double>                           comp(5, 7);

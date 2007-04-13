@@ -27,7 +27,8 @@ template<> struct transposed_orientation<tag::col_major>
 
 
 template <class Matrix> class transposed_view 
-  : public detail::crtp_base_matrix< transposed_view<Matrix>, typename Matrix::value_type, typename Matrix::size_type >
+  : public detail::crtp_base_matrix< transposed_view<Matrix>, 
+				     typename Matrix::value_type, typename Matrix::size_type >
 {
     typedef transposed_view               self;
 public:	
@@ -115,22 +116,22 @@ namespace traits {
 
     namespace detail {
 
-    template <class Matrix> 
-    struct transposed_row
-    {
-    	typedef typename Matrix::key_type   key_type;
-    	typedef typename Matrix::size_type  size_type;
+	template <class Matrix> 
+	struct transposed_row
+	{
+	    typedef typename Matrix::key_type   key_type;
+	    typedef typename Matrix::size_type  size_type;
     	
-    	transposed_row(transposed_view<Matrix> const& transposed_matrix) 
-    	    : its_col(transposed_matrix.ref) {}
+	    transposed_row(transposed_view<Matrix> const& transposed_matrix) 
+		: its_col(transposed_matrix.ref) {}
 
-    	size_type operator() (key_type const& key) const
-    	{
-    	    return its_col(key);
-    	}
+	    size_type operator() (key_type const& key) const
+	    {
+		return its_col(key);
+	    }
 
-          protected:
-    	typename col<Matrix>::type  its_col;
+	  protected:
+	    typename col<Matrix>::type  its_col;
         };
 
 

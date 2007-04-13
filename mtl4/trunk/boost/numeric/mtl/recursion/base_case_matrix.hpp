@@ -26,10 +26,10 @@ struct base_case_matrix<morton_dense<Elt, Mask, Parameters>, BaseCaseTest>
 
     typedef typename boost::mpl::if_<
 	is_k_power_base_case_row_major<base_case_bits, Mask>
-      , dense2D<Elt, matrix_parameters<row_major> >
+      , dense2D<Elt, matrix::parameters<row_major> >
       , typename boost::mpl::if_<
 	    is_k_power_base_case_col_major<base_case_bits, Mask>
-	  , dense2D<Elt, matrix_parameters<col_major> >
+	  , dense2D<Elt, matrix::parameters<col_major> >
           , morton_dense<Elt, Mask, Parameters>
         >::type
     >::type type;
