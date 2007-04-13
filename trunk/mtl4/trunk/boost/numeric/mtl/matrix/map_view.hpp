@@ -5,16 +5,23 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 
+
+
+namespace mtl { namespace traits { namespace detail {
+    // Forward declaration for friend declaration
+    template <typename, typename> struct map_value;
+}}}
 
 namespace mtl { namespace matrix {
 
 template <typename Functor, typename Matrix> 
 class map_view 
-  : public detail::crtp_base_matrix< map_view<Functor, Matrix>, 
-				     typename Functor::result_type, typename Matrix::size_type >
+  : public mtl::detail::const_crtp_base_matrix< map_view<Functor, Matrix>, 
+					   typename Functor::result_type, typename Matrix::size_type >
 {
     typedef map_view               self;
 public:	
@@ -102,7 +109,7 @@ namespace mtl { namespace traits {
 
     template <typename Functor, typename Matrix> 
     struct category<matrix::map_view<Functor, Matrix> > 
-	: public category<Functor, Matrix>
+	: public category<Matrix>
     {};
 
     template <typename Functor, typename Matrix> 
@@ -125,16 +132,17 @@ namespace mtl { namespace traits {
 	    typedef typename matrix::map_view<Functor, Matrix>::value_type value_type;
     	
 	    map_value(matrix::map_view<Functor, Matrix> const& map_matrix) 
-		: its_value(map_matrix.ref) 
+		: map_matrix(map_matrix), its_value(map_matrix.ref) 
 	    {}
 
-	    value_type_type operator() (key_type const& key) const
+	    value_type operator() (key_type const& key) const
 	    {
-		return mapped_matrix.functor(its_value(key));
+		return map_matrix.functor(its_value(key));
 	    }
 
 	  protected:
-	    typename const_value<Matrix>::type  its_value;
+	    matrix::map_view<Functor, Matrix> const&   map_matrix;
+	    typename const_value<Matrix>::type         its_value;
         };
 
     } // detail
@@ -155,7 +163,7 @@ namespace mtl { namespace traits {
     template <typename Tag, typename Functor, typename Matrix> 
     struct range_generator<Tag, matrix::map_view<Functor, Matrix> >
 	: public range_generator<Tag, Matrix>
-    {}
+    {};
 
 
 }} // mtl::traits
@@ -166,7 +174,7 @@ namespace mtl {
 // Sub matrix
 // ==========
 
-template <typename Matrix>
+template <typename Functor, typename Matrix>
 struct sub_matrix_t< matrix::map_view<Functor, Matrix> >
 {
     typedef matrix::map_view<Functor, Matrix>                                     matrix_type;
@@ -174,6 +182,7 @@ struct sub_matrix_t< matrix::map_view<Functor, Matrix> >
     // Mapping of sub-matrix type
     typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type                  ref_sub_type;
     typedef matrix::map_view<Functor, ref_sub_type>                               const_sub_matrix_type;
+    typedef typename matrix_type::size_type                                       size_type;
 
     const_sub_matrix_type operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, 
 				     size_type begin_c, size_type end_c)
