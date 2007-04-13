@@ -42,7 +42,7 @@ void raw_copy_test(Matrix& matrix, col_major)
 template <typename Orientation, typename Indexing>
 void test_compressed2D_insertion()
 {
-    typedef matrix_parameters<Orientation, Indexing, fixed::dimensions<8, 6> >         parameters;
+    typedef matrix::parameters<Orientation, Indexing, fixed::dimensions<8, 6> >         parameters;
     typedef compressed2D<int, parameters>                                              matrix_type;
     matrix_type   matrix; 
     const int io= mtl::index::change_to(Indexing(), 0);  // index offset 1 for Fortran, 0 for C
@@ -82,7 +82,7 @@ void test_compressed2D_insertion()
     cout << "\n\n";
  
     {
-	matrix_inserter<matrix_type, operations::update_add<int> >  i3(matrix, 7);
+	matrix::inserter<matrix_type, operations::update_add<int> >  i3(matrix, 7);
 	i3(2+io, 2+io) << 1;
     }
     if (matrix(2+io, 2+io) != 28) throw "Error adding to existing value";

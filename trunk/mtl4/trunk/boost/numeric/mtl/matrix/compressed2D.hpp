@@ -235,7 +235,7 @@ struct compressed2D_indexer
 
 // Compressed 2D matrix type
 // For now no external data
-template <typename Elt, typename Parameters = matrix_parameters<> >
+template <typename Elt, typename Parameters = matrix::parameters<> >
 class compressed2D 
   : public detail::base_matrix<Elt, Parameters>,
     public detail::const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >
@@ -299,7 +299,7 @@ class compressed2D
     }
 
     // setting dimension and allocate starting vector
-    explicit compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
+    compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
       : super(non_fixed::dimensions(num_rows, num_cols)), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);

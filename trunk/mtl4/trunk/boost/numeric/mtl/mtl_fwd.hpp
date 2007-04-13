@@ -5,8 +5,35 @@
 
 namespace mtl {
 
+    namespace tag {
+	struct row_major;
+	struct col_major;
+    }
+    using tag::row_major;
+    using tag::col_major;
+
+    namespace index {
+	struct c_index;
+	struct f_index;
+    }
+
+    namespace fixed {
+	template <std::size_t Rows, std::size_t Cols> struct dimensions;
+    }
+
+    namespace non_fixed {
+	struct dimensions;
+    }
+
+    namespace matrix {
+	template <typename Orientation, typename Index, typename Dimensions,
+		  bool OnStack, bool RValue>
+	struct parameters;
+    }
+
     template <typename Value, typename Parameters> struct dense2D;
-    template <typename Value, unsigned long Mask, typename Parameters> struct morton_dense;
+    template <typename Value, unsigned long Mask, typename Parameters> 
+    struct morton_dense;
     
     template <typename Value, typename Parameters> struct compressed2D;
     template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;

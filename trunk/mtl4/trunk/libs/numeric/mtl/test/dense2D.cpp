@@ -117,7 +117,7 @@ struct test_dense2D
 	cout << "trans_matrix[2][1] = " << trans_matrix[2][1] << "\n"; 
        
 
-	matrix_inserter<matrix_type>  i(matrix);
+	matrix::inserter<matrix_type>  i(matrix);
 	i(1, 2) << 17.0;
 	cout << "matrix[1, 2] = " << matrix(1, 2) << "\n";	 
     }
@@ -125,16 +125,16 @@ struct test_dense2D
 
 int test_main(int argc, char* argv[])
 {
-    typedef matrix_parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters1;
+    typedef matrix::parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters1;
     test_dense2D<parameters1, complexity_classes::linear_cached, complexity_classes::linear>()(6.0);
 
-    typedef matrix_parameters<row_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters2;
+    typedef matrix::parameters<row_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters2;
     test_dense2D<parameters2, complexity_classes::linear_cached, complexity_classes::linear>()(2.0);
 
-    typedef matrix_parameters<col_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters3;
+    typedef matrix::parameters<col_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters3;
     test_dense2D<parameters3, complexity_classes::linear, complexity_classes::linear_cached>()(6.0);
 
-    typedef matrix_parameters<col_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters4;
+    typedef matrix::parameters<col_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters4;
     test_dense2D<parameters4, complexity_classes::linear, complexity_classes::linear_cached>()(3.0);
 
     return 0;

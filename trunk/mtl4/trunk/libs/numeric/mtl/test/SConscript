@@ -14,6 +14,7 @@ sources = Split("""base_case_conversion.cpp
 	     set_to_zero_test.cpp
 	     assign_test.cpp
              dense_vector_test.cpp
+             matrix_map_view_test.cpp
 """)
 #compressed2D.cpp
 

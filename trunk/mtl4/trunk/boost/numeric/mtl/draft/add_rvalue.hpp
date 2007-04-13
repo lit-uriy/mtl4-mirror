@@ -24,7 +24,7 @@ namespace detail {
 	typedef boost::if_c<
 	    Para::on_stack
 	  , Para
-	  , matrix_parameters<typename Para::orientation, typename Para::index, typename Para::dimensions, false, true>
+	  , matrix::parameters<typename Para::orientation, typename Para::index, typename Para::dimensions, false, true>
 	>::type type;
     };
 }

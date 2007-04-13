@@ -278,7 +278,7 @@ struct morton_dense_col_iterator
 
 
 // Morton Dense matrix type 
-template <typename Elt, unsigned long BitMask, typename Parameters = mtl::matrix_parameters<> >
+template <typename Elt, unsigned long BitMask, typename Parameters = mtl::matrix::parameters<> >
 class morton_dense : public detail::base_sub_matrix<Elt, Parameters>, 
 		     public detail::contiguous_memory_block<Elt, false>,
                      public detail::crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >

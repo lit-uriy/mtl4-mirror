@@ -121,7 +121,7 @@ namespace traits { namespace detail {
 
   
 // Dense 2D matrix type
-template <typename Value, typename Parameters = mtl::matrix_parameters<> >
+template <typename Value, typename Parameters = mtl::matrix::parameters<> >
 class dense2D : public detail::base_sub_matrix<Value, Parameters>, 
 		public detail::contiguous_memory_block< Value, Parameters::on_stack, 
 							 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,

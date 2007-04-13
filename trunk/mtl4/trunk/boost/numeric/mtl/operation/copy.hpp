@@ -41,7 +41,7 @@ namespace mtl {
 	    typename traits::const_value<MatrixSrc>::type     value(src); 
 	    typedef typename traits::range_generator<tag::major, MatrixSrc>::type  cursor_type;
 	    
-	    matrix_inserter<MatrixDest>   ins(dest);
+	    matrix::inserter<MatrixDest>   ins(dest);
 	    for (cursor_type cursor = begin<tag::major>(src), cend = end<tag::major>(src); 
 		 cursor != cend; ++cursor) {
 		// std::cout << dest << '\n';

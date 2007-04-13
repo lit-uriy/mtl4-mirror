@@ -38,7 +38,7 @@ typedef gen_tiling_44_dense_mat_mat_mult_t<assign::plus_sum>  tiling_44_base_mul
 
 // ugly short cuts
 typedef dense2D<double>                                       dr_t;
-typedef dense2D<double, matrix_parameters<col_major> >        dc_t;
+typedef dense2D<double, matrix::parameters<col_major> >        dc_t;
 
 utility::papi_t papi;
 int l1i= papi.add_event("PAPI_L1_DCM");
@@ -264,7 +264,7 @@ void measure_unrolling_hybrid(unsigned size, std::vector<int>& enabled)
 void measure_unrolling_dense(unsigned size, std::vector<int>& enabled)
 {
     dense2D<double> dense(4, 4);
-    dense2D<double, matrix_parameters<col_major> >    b(4, 4);
+    dense2D<double, matrix::parameters<col_major> >    b(4, 4);
     measure_unrolling(size, enabled, dense, b);
 }
 
@@ -353,11 +353,11 @@ void measure_hetero_value(unsigned size, std::vector<int>& enabled)
 
     dc_t                                           dc(4, 4);
     dr_t                                           dr(4, 4);
-    dense2D<float, matrix_parameters<row_major> >  fr(4, 4);
-    dense2D<float, matrix_parameters<col_major> >  fc(4, 4);
-    dense2D<complex<float>, matrix_parameters<col_major> >   cc(4, 4);
-    dense2D<complex<double>, matrix_parameters<col_major> >  zc(4, 4);
-    dense2D<complex<double>, matrix_parameters<row_major> >  zr(4, 4);
+    dense2D<float, matrix::parameters<row_major> >  fr(4, 4);
+    dense2D<float, matrix::parameters<col_major> >  fc(4, 4);
+    dense2D<complex<float>, matrix::parameters<col_major> >   cc(4, 4);
+    dense2D<complex<double>, matrix::parameters<col_major> >  zc(4, 4);
+    dense2D<complex<double>, matrix::parameters<row_major> >  zr(4, 4);
 
     morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
     morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
@@ -393,11 +393,11 @@ void measure_hetero_layout(unsigned size, std::vector<int>& enabled)
 
     dc_t                                           dc(4, 4);
     dr_t                                           dr(4, 4);
-    dense2D<float, matrix_parameters<row_major> >  fr(4, 4);
-    dense2D<float, matrix_parameters<col_major> >  fc(4, 4);
-    dense2D<complex<float>, matrix_parameters<col_major> >   cc(4, 4);
-    dense2D<complex<double>, matrix_parameters<col_major> >  zc(4, 4);
-    dense2D<complex<double>, matrix_parameters<row_major> >  zr(4, 4);
+    dense2D<float, matrix::parameters<row_major> >  fr(4, 4);
+    dense2D<float, matrix::parameters<col_major> >  fc(4, 4);
+    dense2D<complex<float>, matrix::parameters<col_major> >   cc(4, 4);
+    dense2D<complex<double>, matrix::parameters<col_major> >  zc(4, 4);
+    dense2D<complex<double>, matrix::parameters<row_major> >  zr(4, 4);
 
     morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
     morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);

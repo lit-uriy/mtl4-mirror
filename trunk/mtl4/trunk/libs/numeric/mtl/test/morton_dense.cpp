@@ -143,7 +143,7 @@ int test_main(int argc, char* argv[])
 
     return 0;
 
-    typedef morton_dense<double,  0x55555555, matrix_parameters<> > matrix_type;    
+    typedef morton_dense<double,  0x55555555, matrix::parameters<> > matrix_type;    
     matrix_type matrix(non_fixed::dimensions(2, 3));
    
     traits::value<matrix_type>::type                       value(matrix);

@@ -69,7 +69,7 @@ int tlbi= papi.add_event("PAPI_TLB_DM");
 
 // ugly short cuts
 typedef dense2D<double>                                       dr_t;
-typedef dense2D<double, matrix_parameters<col_major> >        dc_t;
+typedef dense2D<double, matrix::parameters<col_major> >        dc_t;
 
 #ifdef MTL_HAS_LAPACK
 extern "C" {
@@ -153,7 +153,7 @@ void measure(unsigned size, std::vector<int>& enabled)
     morton_dense<double,  morton_mask>             md(4, 4);
     morton_dense<double,  morton_z_mask>           mzd(4, 4);
     dense2D<double>                                dr(4, 4);
-    dense2D<double, matrix_parameters<col_major> > dc(4, 4);
+    dense2D<double, matrix::parameters<col_major> > dc(4, 4);
     morton_dense<double,  doppler_32_row_mask>     d32r(4, 4);
     morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
 

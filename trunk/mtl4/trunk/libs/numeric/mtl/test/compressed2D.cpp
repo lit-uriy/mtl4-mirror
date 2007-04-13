@@ -132,7 +132,7 @@ template <typename Orientation, typename Indexing>
 void test_compressed2D(char const* name)
 {
     cout << "\n====================\n" << name << "\n====================\n";
-    typedef matrix_parameters<Orientation, Indexing, fixed::dimensions<8, 6> >         parameters;
+    typedef matrix::parameters<Orientation, Indexing, fixed::dimensions<8, 6> >         parameters;
     typedef compressed2D<int, parameters>                                              matrix_type;
     matrix_type                                                                        matrix; 
 

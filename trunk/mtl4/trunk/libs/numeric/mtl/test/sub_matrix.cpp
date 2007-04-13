@@ -161,7 +161,7 @@ int test_main(int argc, char* argv[])
 	 << "Row-major dense matrix\n"
 	 << "======================\n\n";
 
-    dense2D<double, matrix_parameters<> >   rmatrix(non_fixed::dimensions(6, 5));
+    dense2D<double, matrix::parameters<> >   rmatrix(non_fixed::dimensions(6, 5));
     fill_matrix(rmatrix); 
     test_sub_matrix(rmatrix);
  
