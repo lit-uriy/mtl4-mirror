@@ -23,7 +23,7 @@ namespace sfunctor {
 	    return v;
 	}
 
-	result_type operator() (const Value& v)
+	result_type operator() (const Value& v) const
 	{
 	    return v;
 	}
@@ -40,16 +40,16 @@ namespace sfunctor {
 	    return std::conj(v);
 	}
 
-	result_type operator() (const std::complex<Value>& v)
+	result_type operator() (const std::complex<Value>& v) const
 	{
 	    return std::conj(v);
 	}
     };
 
-}
+} // namespace sfunctor
     
 template <typename Value>
-sfunctor::conj<Value>::result_type inline conj(const Value& v)
+typename sfunctor::conj<Value>::result_type inline conj(const Value& v)
 {
     return sfunctor::conj<Value>::apply(v);
 };
@@ -81,7 +81,7 @@ namespace sfunctor {
 }
 
 template <typename Value>
-inline sfunctor::real<Value>::result_type real(const Value& v)
+inline typename sfunctor::real<Value>::result_type real(const Value& v)
 {
     return sfunctor::real<Value>::apply(v);
 };
@@ -115,7 +115,7 @@ namespace sfunctor {
 }
 
 template <typename Value>
-inline sfunctor::imag<Value>::result_type imag(const Value& v)
+inline typename sfunctor::imag<Value>::result_type imag(const Value& v)
 {
     return sfunctor::imag<Value>::apply(v);
 };

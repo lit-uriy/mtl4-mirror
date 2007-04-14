@@ -84,12 +84,12 @@ void test(Matrix& matrix, const char* name)
     if (scaled_matrix(2, 3) != svalue(ref)) 
 	throw "scaling wrong";
     
-#if 0
     matrix::conj_view<Matrix>  conj_matrix(matrix);
     cout << "conjugated matrix\n" << conj_matrix << "\n";
     if (conj_matrix(2, 3) != cvalue(ref)) 
 	throw " wrong";
 
+#if 0
     matrix::scaled_view<ct, Matrix>  cscaled_matrix(ct(0.0, 1.0), matrix);
     cout << "matrix scaled with i (complex(0, 1))\n" << cscaled_matrix << "\n";
     if (cscaled_matrix(2, 3) != csvalue(ref)) 
