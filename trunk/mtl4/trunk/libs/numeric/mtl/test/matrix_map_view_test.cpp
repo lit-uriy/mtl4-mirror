@@ -8,6 +8,7 @@
 #include <boost/numeric/mtl/matrix/morton_dense.hpp> 
 #include <boost/numeric/mtl/matrix/compressed2D.hpp> 
 #include <boost/numeric/mtl/matrix/map_view.hpp>
+#include <boost/numeric/mtl/matrix/hermitian_view.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
@@ -94,13 +95,12 @@ void test(Matrix& matrix, const char* name)
     if (cscaled_matrix(2, 3) != csvalue(ref)) 
 	throw "complex scaling wrong";
 
-#if 0    
     matrix::hermitian_view<Matrix>  hermitian_matrix(matrix);
     cout << "Hermitian matrix (conjugate transposed)\n" << hermitian_matrix << "\n";
     if (hermitian_matrix(3, 2) != cvalue(ref)) 
 	throw "conjugate transposing  wrong";
 
-
+#if 0    
 
     cout << "matrix  scaled with 2.0\n" << scale(2.0, matrix) << "\n";
     if (scale(2.0, matrix)(2, 3) != svalue(ref)) 
