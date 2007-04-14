@@ -26,7 +26,8 @@ template<> struct transposed_orientation<tag::col_major>
 
 
 
-template <class Matrix> class transposed_view 
+template <class Matrix> 
+class transposed_view 
   : public detail::crtp_base_matrix< transposed_view<Matrix>, 
 				     typename Matrix::value_type, typename Matrix::size_type >
 {
