@@ -10,6 +10,7 @@
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/tfunctor.hpp>
+#include <boost/numeric/mtl/operation/conj.hpp>
 
 
 
@@ -218,6 +219,24 @@ struct scaled_view
 	: base(functor_type(scaling), p)
     {}
 };
+
+
+template <typename Matrix>
+struct conj_view
+    : public map_view<sfunctor::conj<typename Matrix::value_type>, Matrix>
+{
+    typedef sfunctor::conj<typename Matrix::value_type>            functor_type;
+    typedef map_view<functor_type, Matrix>                         base;
+
+    conj_view(const Matrix& matrix)
+	: base(functor_type(), matrix)
+    {}
+    
+    conj_view(boost::shared_ptr<Matrix> p)
+	: base(functor_type(), p)
+    {}
+};
+
 
 }} // namespace mtl::matrix
 
