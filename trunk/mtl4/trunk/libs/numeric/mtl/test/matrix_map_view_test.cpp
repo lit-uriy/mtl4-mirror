@@ -89,12 +89,12 @@ void test(Matrix& matrix, const char* name)
     if (conj_matrix(2, 3) != cvalue(ref)) 
 	throw " wrong";
 
-#if 0
     matrix::scaled_view<ct, Matrix>  cscaled_matrix(ct(0.0, 1.0), matrix);
     cout << "matrix scaled with i (complex(0, 1))\n" << cscaled_matrix << "\n";
     if (cscaled_matrix(2, 3) != csvalue(ref)) 
 	throw "complex scaling wrong";
-    
+
+#if 0    
     matrix::hermitian_view<Matrix>  hermitian_matrix(matrix);
     cout << "Hermitian matrix (conjugate transposed)\n" << hermitian_matrix << "\n";
     if (hermitian_matrix(3, 2) != cvalue(ref)) 
