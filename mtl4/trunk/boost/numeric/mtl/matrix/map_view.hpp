@@ -111,11 +111,6 @@ public:
 namespace mtl { namespace traits {
 
     template <typename Functor, typename Matrix> 
-    struct category<matrix::map_view<Functor, Matrix> > 
-	: public category<Matrix>
-    {};
-
-    template <typename Functor, typename Matrix> 
     struct row<matrix::map_view<Functor, Matrix> >
 	: public row<Matrix>
     {};
@@ -200,6 +195,7 @@ struct sub_matrix_t< matrix::map_view<Functor, Matrix> >
     }
 };
 
+
 } // namespace mtl
 
 namespace mtl { namespace matrix {
@@ -239,5 +235,22 @@ struct conj_view
 
 
 }} // namespace mtl::matrix
+
+
+namespace mtl {
+
+template <typename Scaling, typename Matrix>
+struct sub_matrix_t< matrix::scaled_view<Scaling, Matrix> >
+    : public sub_matrix_t< matrix::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
+					    Matrix> >
+{};
+
+template <typename Matrix>
+struct sub_matrix_t< matrix::conj_view<Matrix> >
+    : public sub_matrix_t< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
+{};
+
+
+} // namespace mtl
 
 #endif // MTL_MAP_VIEW_INCLUDE

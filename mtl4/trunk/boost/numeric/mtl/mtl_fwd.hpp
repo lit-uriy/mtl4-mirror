@@ -43,6 +43,8 @@ namespace mtl {
 
     namespace matrix {
 	template <typename Functor, typename Matrix> class map_view;
+	template <typename Scaling, typename Matrix> class scaled_view;
+	template <typename Matrix>  class conj_view;
     }
 
     namespace vector {
@@ -62,6 +64,14 @@ namespace mtl {
 	template <typename Matrix> struct const_value;
 	template <typename Matrix> struct row;
 	template <typename Matrix> struct col;
+    }
+
+    namespace tfunctor {
+	template <typename V1, typename V2> struct scale;
+    }
+
+    namespace sfunctor {
+	template <typename Value> struct conj;
     }
 
 } // namespace mtl
