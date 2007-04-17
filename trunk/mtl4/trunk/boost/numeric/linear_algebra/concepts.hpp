@@ -27,6 +27,8 @@
 // We consider to change the namespace from math to numeric
 // More precisely, the concepts may be moved into namespace numeric and the standard functions stay in math
 
+/// Namespace for mathematical concepts
+/** In contrast to the ones in algebra the concepts can require basic implementation concepts like std::Assignable */  
 namespace math {
 
 #ifdef __GXX_CONCEPTS__

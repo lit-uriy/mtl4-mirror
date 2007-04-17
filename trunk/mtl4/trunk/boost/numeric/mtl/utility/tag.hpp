@@ -5,8 +5,12 @@
 
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
 
+
 namespace mtl { namespace tag {
 
+/** @defgroup Tags Tags for concept-free dispatching
+ *  @{
+ */
 
 // For internal use (e.g., to invalidate range generators)
 // Is this the same as bottom?
@@ -127,7 +131,7 @@ struct compressed2D
 /// Tag for bottom of the category lattice
 struct bottom
     : virtual compressed2D, virtual morton_dense, virtual dense2D, 
-      virtual dense_col_vector, virtual dense_row_vector
+      virtual dense_col_vector, virtual dense_row_vector, virtual unknown
 {};
 
 // =====================
@@ -141,8 +145,13 @@ struct row_major {};
 /// Characterizes column-major orientation in matrices and column vector in 1D
 struct col_major {};
 
+/*@}*/ // end of group Tags
+
 } // namespace mtl::tag
 
+/** @addtogroup Tags
+ *  @{
+ */
 
 /// Characterizes row-major orientation in matrices and row vector in 1D
 using tag::row_major;
@@ -150,12 +159,18 @@ using tag::row_major;
 /// Characterizes column-major orientation in matrices and column vector in 1D
 using tag::col_major;
 
+/*@}*/ // end of group Tags
+
 // =====================
 // Tags for traversals
 // Import some from GLAS
 // =====================
 
 namespace tag {
+
+/** @addtogroup Tags
+ *  @{
+ */
 
     /// Tag for cursor traversal of non-zero elements of a collection
     /** Also used for elements within rows and columns */
@@ -207,6 +222,8 @@ namespace tag {
 	struct all {};
 
     } // namespace mtl::tag::const_iter
+
+/*@}*/ // end of group Tags
 
 } // namespace mtl::tag
 

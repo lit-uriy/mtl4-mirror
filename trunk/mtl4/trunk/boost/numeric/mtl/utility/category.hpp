@@ -13,8 +13,9 @@
 namespace mtl { namespace traits {
 
 /// Meta-function for categorizing MTL and external types
-/** Has to be specialized for each matrix, vector, ...
+/** Has to be specialized for each %matrix, %vector, ...
     Extensively used for dispatching 
+    @ingroup Tags
 */
 template <typename Collection> struct category 
 {
@@ -89,8 +90,9 @@ struct category< matrix::conj_view<Matrix> >
 
 
 
-/// Meta-function for categorizing types into scalar, vector, and matrix
+/// Meta-function for categorizing types into tag::scalar, tag::vector, and tag::matrix
 /** Automatically derived from category 
+    @ingroup Tags
 */
 template <typename T>
 struct algebraic_category

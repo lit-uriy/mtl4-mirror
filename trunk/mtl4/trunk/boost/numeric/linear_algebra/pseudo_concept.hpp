@@ -3,6 +3,9 @@
 #ifndef PSEUDO_CONCEPT_INCLUDE
 #define PSEUDO_CONCEPT_INCLUDE
 
+/** @addtogroup Concepts
+ *  @{
+ */
 
 #ifndef __GXX_CONCEPTS__
 
@@ -15,5 +18,7 @@ struct axiom {};
 struct associated_type {};
 
 #endif // __GXX_CONCEPTS__
+
+/*@}*/ // end of group Concepts
 
 #endif // PSEUDO_CONCEPT_INCLUDE

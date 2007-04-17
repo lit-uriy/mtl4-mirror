@@ -17,6 +17,10 @@
 
 namespace math {  
   
+/** @addtogroup Concepts
+ *  @{
+ */
+
 #ifdef __GXX_CONCEPTS__
 concept VectorSpace<typename Vector, typename Scalar = typename Vector::value_type>
 : AdditiveAbelianGroup<Vector>
@@ -487,7 +491,7 @@ struct HilbertSpace
 };
 #endif // __GXX_CONCEPTS__
 
-
+/*@}*/ // end of group Concepts
 
 } // namespace math
 

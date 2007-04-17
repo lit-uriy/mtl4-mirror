@@ -125,9 +125,10 @@ FILE_PATTERNS          = *.c \
                          *.MM \
                          *.PY
 RECURSIVE              = YES
-EXCLUDE                = libs/numeric/mtl/doc
+EXCLUDE                = libs/numeric/mtl/doc/* \
+                         libs/numeric/mtl/doc-complete/*
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = 
+EXCLUDE_PATTERNS       = .svn
 EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
