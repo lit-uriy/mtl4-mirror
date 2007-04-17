@@ -14,6 +14,11 @@
 
 namespace mtl {
 
+/**
+ * \defgroup Concepts Concepts
+ */
+/*@{*/
+
 #ifdef __GXX_CONCEPTS__
 
     using std::Addable;
@@ -34,6 +39,8 @@ namespace mtl {
     //   - Separate types for all operations
     //   - result_type like in concept
 
+    /// Concept Addable: Binary operation
+    /** In concept-free compilations also used for return type deduction */ 
     template<class X, class Y>
     class Addable
     {
@@ -51,10 +58,13 @@ namespace mtl {
 	typedef typename boost::mpl::at_c<
 	    typename base_type::types, index>::type id;
     public:
+	/// Result of addition
 	typedef typename id::type result_type;
     };
 
 
+    /// Concept Subtractable: Binary operation
+    /** In concept-free compilations also used for return type deduction */ 
     template<class X, class Y>
     class Subtractable
     {
@@ -72,9 +82,12 @@ namespace mtl {
         typedef typename boost::mpl::at_c<
     	typename base_type::types, index>::type id;
     public:
+	/// Result of subtraction
         typedef typename id::type result_type;
     };
 
+    /// Concept Multiplicable: Binary operation
+    /** In concept-free compilations also used for return type deduction */ 
     template<class X, class Y>
     class Multiplicable
     {
@@ -92,9 +105,12 @@ namespace mtl {
         typedef typename boost::mpl::at_c<
     	typename base_type::types, index>::type id;
     public:
+	/// Result of multiplication
         typedef typename id::type result_type;
     };
         
+    /// Concept Divisible: Binary operation
+    /** In concept-free compilations also used for return type deduction */ 
     template<class X, class Y>
     class Divisible
     {
@@ -112,6 +128,7 @@ namespace mtl {
         typedef typename boost::mpl::at_c<
     	typename base_type::types, index>::type id;
     public:
+	/// Result of division
         typedef typename id::type result_type;
     };
         
@@ -130,14 +147,22 @@ namespace mtl {
 #else
 
     /// Concept UnaryStaticFunctor
+    /**
+       \par Refinement of:
+       - BinaryStaticFunctor <T, U>
+    */
     template <typename T>
     struct UnaryStaticFunctor
+	: public UnaryFunctor
     {
 	/// Result type of apply
 	typedef associated_type result_type;
 	
 	/// The unary static function
 	static result_type apply(T);
+
+	/// The application operator behaves like apply. Exists for compatibility with UnaryFunctor
+	result_type operator()(T);
     };
 #endif
 
@@ -154,18 +179,27 @@ namespace mtl {
 #else
 
     /// Concept BinaryStaticFunctor
+    /**
+       \par Refinement of:
+       - BinaryStaticFunctor <T, U>
+    */
     template <typename T, typename U>
     struct BinaryStaticFunctor
+	: public BinaryFunctor <T, U>
     {
 	/// Result type of apply
 	typedef associated_type result_type;
 	
 	/// The unary static function
 	static result_type apply(T, U);
+
+	/// The application operator behaves like apply. Exists for compatibility with BinaryFunctor
+	result_type operator()(T, U);
     };
 
 #endif
 
+/*@}*/ // end of group Concepts
 
 } // namespace mtl
 

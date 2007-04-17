@@ -11,6 +11,10 @@
 
 namespace math {
 
+/** @addtogroup Concepts
+ *  @{
+ */
+
 #ifdef __GXX_CONCEPTS__
     concept LinearOperator<typename Operator, typename VectorDomain, typename VectorImage>
     {
@@ -225,6 +229,8 @@ namespace math {
         RealOperator<Operator, VectorDomain, VectorImage>
     {};
 #endif
+
+/*@}*/ // end of group Concepts
 
 } // namespace math
 

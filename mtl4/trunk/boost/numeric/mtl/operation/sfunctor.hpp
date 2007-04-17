@@ -5,7 +5,6 @@
 
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 
-/// Namespace for functors with static function apply and fully typed paramaters
 namespace mtl { namespace sfunctor {
 
 template <typename Value1, typename Value2>

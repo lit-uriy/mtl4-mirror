@@ -12,8 +12,12 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/linear_algebra/inverse.hpp>
 
-
+/// Namespace for purely algebraic concepts
 namespace algebra {
+
+/** @addtogroup Concepts
+ *  @{
+ */
 
 #ifndef __GXX_CONCEPTS__
     //! Concept Commutative
@@ -499,6 +503,8 @@ namespace algebra {
         Commutative<MultOp, Element>
     {};
 #endif
+
+/*@}*/ // end of group Concepts
 
 } // algebra
 
