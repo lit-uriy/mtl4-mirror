@@ -136,24 +136,35 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-
     concept UnaryStaticFunctor<typename T>
+      : std::Callable1<T>
     {
 	typename result_type;
 	
 	static result_type apply(T);
     };
-
 #else
+    /// Concept UnaryFunctor
+    /** With concept corresponds to std::Callable1 */ 
+    template <typename T>
+    struct UnaryFunctor
+    {
+	/// Result type of operator()
+	typedef associated_type result_type;
+	
+	/// The unary  function
+	result_type operator()(T);
+    };
+
 
     /// Concept UnaryStaticFunctor
     /**
        \par Refinement of:
-       - BinaryStaticFunctor <T, U>
+       - std::Callable1 < T >
     */
     template <typename T>
     struct UnaryStaticFunctor
-	: public UnaryFunctor
+      : public UnaryFunctor<T>
     {
 	/// Result type of apply
 	typedef associated_type result_type;
@@ -168,20 +179,30 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-
     concept BinaryStaticFunctor<typename T, typename U>
+      : std::Callable2<T, U>
     {
 	typename result_type;
 	
 	static result_type apply(T, U);
     };
-
 #else
+    /// Concept BinaryFunctor
+    /** With concept corresponds to std::Callable2 */ 
+    template <typename T, typename U>
+    struct BinaryFunctor
+    {
+	/// Result type of operator()
+	typedef associated_type result_type;
+	
+	/// The unary  function
+	result_type operator()(T, U);
+    };
 
     /// Concept BinaryStaticFunctor
     /**
        \par Refinement of:
-       - BinaryStaticFunctor <T, U>
+       - BinaryFunctor <T, U>
     */
     template <typename T, typename U>
     struct BinaryStaticFunctor
@@ -196,7 +217,6 @@ namespace mtl {
 	/// The application operator behaves like apply. Exists for compatibility with BinaryFunctor
 	result_type operator()(T, U);
     };
-
 #endif
 
 /*@}*/ // end of group Concepts
