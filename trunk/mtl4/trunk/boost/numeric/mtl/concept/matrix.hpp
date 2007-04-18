@@ -203,6 +203,49 @@ namespace mtl {
     {};
 #endif
 
+
+#ifdef __GXX_CONCEPTS__
+    concept ResizeableMatrix<typename T>
+      : Matrix<T>
+    {
+	void T::resize(size_type r, size_type c);
+    };
+#else
+    /// Concept ResizeableMatrix
+    /**
+        \par Refinement of:
+	- Matrix < T >
+     */ 
+    template <typename T>
+    struct ConstantSizeMatrix
+      : public Matrix<T>
+    {
+	/// Resize function
+	/** If new memory should be allocated only if total size changes */
+	void resize(size_type r, size_type c);
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    concept RowTraversableMatrix<typename M>
+      : Matrix<M>,
+        TraversableCollection<mtl::tag::row, M> 
+    {};
+#else
+    /// Concept RowTraversableMatrix: provides begin and end cursor to traverse rows
+    /**
+        \par Refinement of:
+	- Matrix < M >
+	- TraversableCollection <mtl::tag::row, M> 
+     */ 
+    template <typename M>
+    struct ConstantSizeMatrix
+      : public Matrix<M>,
+        public TraversableCollection<mtl::tag::row, M>
+    {};
+#endif
+
     
 
 /*@}*/ // end of group Concepts
