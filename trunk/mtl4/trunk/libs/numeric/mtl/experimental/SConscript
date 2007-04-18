@@ -1,7 +1,13 @@
 Import('debug_env')
 
-sources = Split("""iterator_adapter.cpp unroll.cpp unroll_rec.cpp 
-   mat_vec_mult_timing.cpp unroll_matrix_mult.cpp insertion_timing.cpp empty.cpp""")
+sources = Split("""iterator_adapter.cpp 
+	           unroll.cpp 
+		   unroll_rec.cpp 
+		   mat_vec_mult_timing.cpp 
+		   unroll_matrix_mult.cpp 
+		   insertion_timing.cpp 
+		   algebraic_category.cpp
+		   empty.cpp""")
 
 for p in sources:
     debug_env.Program(p)
