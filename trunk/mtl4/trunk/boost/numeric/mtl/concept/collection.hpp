@@ -77,6 +77,43 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
+    concept AlgebraCollection<typename T>
+      : Collection<T>
+    {
+	size_type num_rows(T);
+	size_type num_cols(T);
+	size_type size(T);
+    };
+#else
+    /// Concept AlgebraCollection: common requirements of matrices, vectors, and scalars in computations
+    /** For more design clarity we consider them all as matrices (as Matlab does) and we regard 
+	Scalar and Vector as special cases (see there).  However, the implementation of vectors
+	is supposed to differ from the ones of matrices in order to provide efficient computations and storage.
+        \par Refinement of:
+	- Collection < T >
+	\par Notation:
+	- X is a type that models Matrix
+	- A is an object of type X
+	\par Valid expressions:
+	- Number of rows: \n num_rows(A) \n Return Type: size_type
+	- Number of columns: \n num_cols(A) \n Return Type: size_type
+	- Number of elements: \n size(A) \n Return Type: size_type
+	  \n Sematics: num_rows(A) * num_cols(A) (but possibly faster implemented)
+    */
+    template <typename T>
+    struct AlgebraCollection
+	: Collection<T>
+    {
+    };
+#endif
+
+
+
+
+
+
+
+#ifdef __GXX_CONCEPTS__
 #if 0
     concept CategorizedType<typename T>
     {
