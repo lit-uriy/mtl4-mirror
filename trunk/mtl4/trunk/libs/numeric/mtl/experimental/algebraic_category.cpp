@@ -82,12 +82,16 @@ struct my_category<Value[Rows][Cols]>
 };
 
 template <typename> struct algebra_size;
+template <typename> struct static_num_rows;
+template <typename> struct static_num_cols;
+
 
 template <typename T>
 void test2(T const& x)
 {
     cout << typeid(T).name() << "  " << typeid(typename my_category<T>::type).name() << "\n";
     algebra_size<T>()(x);
+    cout << "static_num_rows = " << static_num_rows<T>::value << " static_num_cols = " << static_num_cols<T>::value << "\n\n";
 }
 
 
@@ -132,6 +136,47 @@ struct algebra_size<Value[Rows][Cols]>
     }
 };
 
+template <typename T>
+struct static_num_rows 
+{
+    static const unsigned long value = 1;
+};
+
+template <typename T>
+struct static_num_cols 
+{
+    static const unsigned long value = 1;
+};
+
+
+
+template <typename Value, unsigned Rows>
+struct static_num_rows<Value[Rows]>
+{
+    static const unsigned long value = Rows;
+};
+
+template <typename Value, unsigned Rows>
+struct static_num_cols<Value[Rows]>
+{
+    static const unsigned long value = 1;
+};
+
+
+
+template <typename Value, unsigned Rows, unsigned Cols>
+struct static_num_rows<Value[Rows][Cols]>
+{
+    static const unsigned long value = Rows;
+};
+
+template <typename Value, unsigned Rows, unsigned Cols>
+struct static_num_cols<Value[Rows][Cols]>
+{
+    static const unsigned long value = Cols;
+};
+
+
 
 int test_main(int argc, char* argv[])
 {
@@ -156,16 +201,20 @@ int test_main(int argc, char* argv[])
     matrix::scaled_view<double, dense2D<double> >        scaled_matrix(2.0, dr);
     int   array[7];
     int   array2D[7][6];
+    int   array3D[7][6][5];
 
     test2(i);
     test2(array);
     test2(array2D);
+    test2(array3D);
 
     test3<int>()(i);
     test3<int[7]>()(array);
     test3<int[7][6]>()(array2D);
+    test3<int[7][6][5]>()(array3D);
 
     algebra_size<int[7][6]>()(array2D);
+    algebra_size<int[7][6][5]>()(array3D);
 
     return 0;
 
