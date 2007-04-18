@@ -81,19 +81,15 @@ struct my_category<Value[Rows][Cols]>
     typedef tag::matrix type;
 };
 
-#if 0
-template <typename Value, unsigned Cols>
-struct my_category<Value[Cols]*>
-{
-    typedef tag::matrix type;
-};
-#endif
+template <typename> struct algebra_size;
 
 template <typename T>
-void test2(T x)
+void test2(T const& x)
 {
     cout << typeid(T).name() << "  " << typeid(typename my_category<T>::type).name() << "\n";
+    algebra_size<T>()(x);
 }
+
 
 template <typename T>
 struct test3
@@ -101,6 +97,38 @@ struct test3
     void operator()(T x)
     {
 	cout << typeid(T).name() << "  " << typeid(typename my_category<T>::type).name() << "\n";
+    }
+};
+
+template <typename T>
+struct algebra_size 
+{
+    void operator()(const T& x)
+    {
+	cout << "Scalar\n";
+    }
+};
+
+
+template <typename Value, unsigned Rows>
+struct algebra_size<Value[Rows]>
+{
+    typedef Value  array_type[Rows];
+
+    void operator()(const array_type& x)
+    {
+	cout << "size() = " << sizeof(x) / sizeof(x[0]) << "\n"; 
+    }
+};
+
+template <typename Value, unsigned Rows, unsigned Cols>
+struct algebra_size<Value[Rows][Cols]>
+{
+    typedef Value  array_type[Rows][Cols];
+
+    void operator()(const array_type& x)
+    {
+	cout << "num_rows() = " << sizeof(x) / sizeof(x[0]) << " num_cols() = " << sizeof(x[0]) / sizeof(x[0][0]) << "\n"; 
     }
 };
 
@@ -127,7 +155,7 @@ int test_main(int argc, char* argv[])
 
     matrix::scaled_view<double, dense2D<double> >        scaled_matrix(2.0, dr);
     int   array[7];
-    int   array2D[7][7];
+    int   array2D[7][6];
 
     test2(i);
     test2(array);
@@ -135,7 +163,9 @@ int test_main(int argc, char* argv[])
 
     test3<int>()(i);
     test3<int[7]>()(array);
-    test3<int[7][7]>()(array2D);
+    test3<int[7][6]>()(array2D);
+
+    algebra_size<int[7][6]>()(array2D);
 
     return 0;
 
