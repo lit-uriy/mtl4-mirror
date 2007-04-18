@@ -81,6 +81,14 @@ struct my_category<Value[Rows][Cols]>
     typedef tag::matrix type;
 };
 
+#if 0
+template <typename Value, unsigned Cols>
+struct my_category<Value[Cols]*>
+{
+    typedef tag::matrix type;
+};
+#endif
+
 template <typename T>
 void test2(T x)
 {
