@@ -77,7 +77,7 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-    concept AlgebraCollection<typename T>
+    concept AlgebraicCollection<typename T>
       : Collection<T>
     {
 	size_type num_rows(T);
@@ -85,29 +85,72 @@ namespace mtl {
 	size_type size(T);
     };
 #else
-    /// Concept AlgebraCollection: common requirements of matrices, vectors, and scalars in computations
+    /// Concept AlgebraicCollection: common requirements of matrices, vectors, and scalars in computations
     /** For more design clarity we consider them all as matrices (as Matlab does) and we regard 
 	Scalar and Vector as special cases (see there).  However, the implementation of vectors
 	is supposed to differ from the ones of matrices in order to provide efficient computations and storage.
         \par Refinement of:
 	- Collection < T >
 	\par Notation:
-	- X is a type that models Matrix
-	- A is an object of type X
+	- X is a type that models AlgebraicCollection
+	- x is an object of type X
 	\par Valid expressions:
-	- Number of rows: \n num_rows(A) \n Return Type: size_type
-	- Number of columns: \n num_cols(A) \n Return Type: size_type
-	- Number of elements: \n size(A) \n Return Type: size_type
-	  \n Sematics: num_rows(A) * num_cols(A) (but possibly faster implemented)
+	- Number of rows: \n num_rows(x) \n Return Type: size_type
+	- Number of columns: \n num_cols(x) \n Return Type: size_type
+	- Number of elements: \n size(x) \n Return Type: size_type
+	  \n Sematics: num_rows(x) * num_cols(x) (but possibly faster implemented)
     */
     template <typename T>
-    struct AlgebraCollection
-	: Collection<T>
-    {
-    };
+    struct AlgebraicCollection
+	: public Collection<T>
+    {};
 #endif
 
 
+#ifdef __GXX_CONCEPTS__
+    concept ConstantSizeAlgebraicCollection<typename T>
+      : AlgebraicCollection<T>,
+        ConstantSizeCollection<T>
+    {
+	typename static_num_rows;
+	typename static_num_cols;
+	typename static_size;
+    };
+#else
+    /// Concept ConstantSizeAlgebraicCollection: extension of AlgebraicCollection with meta-functions
+    /** This concept is used for algebraic collections with sizes known at compile time. 
+	The motivation is that if the size of the collection is
+	is small, arithmetic operations can be unrolled at compile time.
+
+        \par Refinement of:
+	- Collection < T >
+	\par Notation:
+	- X is a type that models ConstantSizeAlgebraicCollection
+	- x is an object of type X
+	\par Valid expressions:
+	- Number of rows: \n static_num_rows<X>::value
+	- Number of columns: \n static_num_cols<X>::value
+	- Number of elements: \n static_size<X>::value
+	  \n Sematics: static_num_rows<X>::value * static_size<X>::value
+	\note
+	-# For more design clarity we consider them all as matrices (as Matlab does) and we regard 
+	   Scalar and Vector as special cases (see there).  However, the implementation of vectors
+	   is supposed to differ from the ones of matrices in order to provide efficient computations and storage.
+
+    */
+    template <typename T>
+    struct ConstantSizeAlgebraicCollection
+      : public AlgebraicCollection<T>,
+        public ConstantSizeCollection<T>
+    {
+	/// Associated type: meta-function for number of rows
+	typedef associated_type static_num_rows;
+	/// Associated type: meta-function for number of columns
+	typedef associated_type static_num_cols;
+	/// Associated type: meta-function for number of elements
+	typedef associated_type static_size;
+    };
+#endif
 
 
 

@@ -20,12 +20,10 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     concept Matrix<typename T>
-      : AlgebraCollection<T>
+      : AlgebraicCollection<T>
     {
 	const_reference T::operator() (size_type row, size_type col) const;
 
-	size_type num_rows(T);
-	size_type num_cols(T);
 	size_type nnz(T);
 
 	// A[r][c] equivalent to A(r, c)
@@ -34,7 +32,7 @@ namespace mtl {
     /// Concept Matrix
     /**
         \par Refinement of:
-	- Collection < T >
+	- AlgebraicCollection < T >
 	\par Notation:
 	- X is a type that models Matrix
 	- A is an object of type X
@@ -48,13 +46,15 @@ namespace mtl {
 	- morton_dense
 	- compressed2D
 	\note
-	- The access via A[r][c] is supposed to implemented by means of A(r, c) (typically via CRTP and proxies).
+	-# The access via A[r][c] is supposed to be implemented by means of A(r, c) (typically via CRTP and proxies).
 	  If it would become (extremely) important to support 2D C arrays, it might be necessary to drop the requirement
 	  of element access by A(r, c).
+	-# The name const_reference does not imply that the return type is necessarily referrable. For instance compressed2D
+	   returns value_type.
      */ 
     template <typename T>
     struct Matrix
-	: AlgebraCollection<T>
+	: public AlgebraicCollection<T>
     {
 	/// Element access
 	const_reference T::operator() (size_type row, size_type col) const;
@@ -99,10 +99,10 @@ namespace mtl {
 	- Insertion with shift operator: \n
 	   A(r, c) << v \n
 	   Return type: T
-	\notes
-	- Used in concept InsertableMatrix
 	\par Models:
 	- mtl::matrix::inserter < T >
+	\note
+	-# Used in concept InsertableMatrix
      */
     template <typename T>
     struct MatrixInserter
@@ -128,6 +128,12 @@ namespace mtl {
     /** 
 	\par Requires:
 	- MatrixInserter < mtl::matrix::inserter< T > >
+	\par Models:
+	- dense2D
+	- morton_dense
+	- compressed2D
+	\note
+	-# All matrices in MTL model this concept in order and all future matrices are supposed to.
     */
     template <typename T>
     struct InsertableMatrix
@@ -135,6 +141,69 @@ namespace mtl {
     {};
 #endif
 
+
+#ifdef __GXX_CONCEPTS__
+    concept MutableMatrix<typename T>
+      : Matrix<T>,
+	MutableCollection<T>
+    {
+	reference T::operator() (size_type row, size_type col);
+
+	// A[r][c] equivalent to A(r, c)
+    };
+#else
+    /// Concept MutableMatrix
+    /**
+        \par Refinement of:
+	- Matrix < T >
+	- MutableCollection < T >
+	\par Notation:
+	- X is a type that models MutableMatrix
+	- A is an object of type X
+	- r, c are objects of size_type
+	\par Valid expressions:
+	- Element access: \n A(r, c) \n Return Type: reference 
+	  \n Semantics: Element in row \p r and column \p c
+	- Element access: \n A[r][c] \n Equivalent to A(r, c)
+	\par Models:
+	- dense2D
+	- morton_dense
+	\note
+	-# The access via A[r][c] is supposed to be implemented by means of A(r, c) (typically via CRTP and proxies).
+	  If it would become (extremely) important to support 2D C arrays, it might be necessary to drop the requirement
+	  of element access by A(r, c).
+     */ 
+    template <typename T>
+    struct MutableMatrix
+	: public Matrix<T>,
+	  public MutableCollection<T>
+    {
+	/// Element access (in addition to const access)
+	reference T::operator() (size_type row, size_type col);
+    };
+#endif
+
+    
+#ifdef __GXX_CONCEPTS__
+    concept ConstantSizeMatrix<typename T>
+      : Matrix<T>,
+	ConstantSizeAlgebraicCollection<T>
+    {};
+#else
+    /// Concept ConstantSizeMatrix
+    /**
+        \par Refinement of:
+	- Matrix < T >
+	- ConstantSizeAlgebraicCollection < T >
+     */ 
+    template <typename T>
+    struct ConstantSizeMatrix
+      : public Matrix<T>,
+	public ConstantSizeAlgebraicCollection<T>
+    {};
+#endif
+
+    
 
 /*@}*/ // end of group Concepts
 
