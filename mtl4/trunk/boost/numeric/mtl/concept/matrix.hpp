@@ -20,7 +20,7 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     concept Matrix<typename T>
-      : Collection<T>
+      : AlgebraCollection<T>
     {
 	const_reference T::operator() (size_type row, size_type col) const;
 
@@ -43,13 +43,18 @@ namespace mtl {
 	- Element access: \n A(r, c) \n Return Type: const_reference 
 	  \n Semantics: Element in row \p r and column \p c
 	- Element access: \n A[r][c] \n Equivalent to A(r, c)
-	- Number of rows: \n num_rows(A) \n Return Type: size_type
-	- Number of columns: \n num_cols(A) \n Return Type: size_type
-	\invariant
+	\par Models:
+	- dense2D
+	- morton_dense
+	- compressed2D
+	\note
+	- The access via A[r][c] is supposed to implemented by means of A(r, c) (typically via CRTP and proxies).
+	  If it would become (extremely) important to support 2D C arrays, it might be necessary to drop the requirement
+	  of element access by A(r, c).
      */ 
     template <typename T>
     struct Matrix
-	: Collection<T>
+	: AlgebraCollection<T>
     {
 	/// Element access
 	const_reference T::operator() (size_type row, size_type col) const;
