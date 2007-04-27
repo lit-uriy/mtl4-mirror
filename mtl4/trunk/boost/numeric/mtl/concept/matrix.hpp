@@ -217,7 +217,7 @@ namespace mtl {
 	- Matrix < T >
      */ 
     template <typename T>
-    struct ConstantSizeMatrix
+    struct ResizeableMatrix
       : public Matrix<T>
     {
 	/// Resize function
@@ -240,13 +240,216 @@ namespace mtl {
 	- TraversableCollection <mtl::tag::row, M> 
      */ 
     template <typename M>
-    struct ConstantSizeMatrix
+    struct RowTraversableMatrix
       : public Matrix<M>,
         public TraversableCollection<mtl::tag::row, M>
     {};
 #endif
 
     
+#ifdef __GXX_CONCEPTS__
+    concept ColumnTraversableMatrix<typename M>
+      : Matrix<M>,
+        TraversableCollection<mtl::tag::col, M> 
+    {};
+#else
+    /// Concept ColumnTraversableMatrix: provides begin and end cursor to traverse columns
+    /**
+        \par Refinement of:
+	- Matrix < M >
+	- TraversableCollection <mtl::tag::col, M> 
+     */ 
+    template <typename M>
+    struct ColumnTraversableMatrix
+      : public Matrix<M>,
+        public TraversableCollection<mtl::tag::col, M>
+    {};
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    concept MajorTraversableMatrix<typename M>
+      : Matrix<M>,
+        TraversableCollection<mtl::tag::major, M> 
+    {};
+#else
+    /// Concept MajorTraversableMatrix: traversable on major dimension
+    /**
+        Concept for matrices that are traversable along the major dimension, i.e.
+	traversing the rows of a row-major matrix and the columns of a column-major matrices.
+	The cursors begin and end are provided.
+        \par Refinement of:
+	- Matrix < M >
+	- TraversableCollection <mtl::tag::major, M> 
+	\note
+	-# This traversal corresponds to the iterator design in MTL 2.
+     */ 
+    template <typename M>
+    struct MajorTraversableMatrix
+      : public Matrix<M>,
+        public TraversableCollection<mtl::tag::major, M>
+    {};
+#endif
+    
+
+#ifdef __GXX_CONCEPTS__
+    concept MinorTraversableMatrix<typename M>
+      : Matrix<M>,
+        TraversableCollection<mtl::tag::minor, M> 
+    {};
+#else
+    /// Concept MinorTraversableMatrix: traversable on minor dimension
+    /**
+        Concept for matrices that are traversable along the minor dimension, i.e.
+	traversing the columns of a row-major matrix and the rows of a column-major matrices.
+	The cursors begin and end are provided.
+        \par Refinement of:
+	- Matrix < M >
+	- TraversableCollection <mtl::tag::minor, M> 
+	\note
+	-# This traversal corresponds to the iterator design in MTL 2.
+     */ 
+    template <typename M>
+    struct MinorTraversableMatrix
+      : public Matrix<M>,
+        public TraversableCollection<mtl::tag::minor, M>
+    {};
+#endif
+    
+
+#ifdef __GXX_CONCEPTS__
+    concept AllTraversableMatrix<typename M>
+      : Matrix<M>,
+        TraversableCollection<mtl::tag::all, M> 
+    {};
+#else
+    /// Concept AllTraversableMatrix: provides traversion over all elements
+    /**
+        All elements of a matrix are traversed, including structural zeros. Can be used, e.g.,
+	for printing.
+	The cursors begin and end are provided.
+        \par Refinement of:
+	- Matrix < M >
+	- TraversableCollection <mtl::tag::all, M> 
+	\note
+	-# For dense matrices the concept is equivalent to NonZeroTraversableMatrix.
+     */ 
+    template <typename M>
+    struct AllTraversableMatrix
+      : public Matrix<M>,
+        public TraversableCollection<mtl::tag::all, M>
+    {};
+#endif
+    
+
+#ifdef __GXX_CONCEPTS__
+    concept NonZeroTraversableMatrix<typename M>
+      : Matrix<M>,
+        TraversableCollection<mtl::tag::nz, M> 
+    {};
+#else
+    /// Concept NonZeroTraversableMatrix: provides traversion over all structural non-zeros
+    /**
+        All structural non-zero elements of a matrix are traversed. Can be used, e.g.,
+	for copying.
+	The cursors begin and end are provided.
+        \par Refinement of:
+	- Matrix < M >
+	- TraversableCollection <mtl::tag::all, M> 
+	\note
+	-# For dense matrices the concept is equivalent to AllTraversableMatrix.
+     */ 
+    template <typename M>
+    struct AllTraversableMatrix
+      : public Matrix<M>,
+        public TraversableCollection<mtl::tag::all, M>
+    {};
+#endif
+    
+
+#ifdef __GXX_CONCEPTS__
+    concept AllTraversableSubMatrix<typename Tag, typename M>
+      : Matrix<M>,
+        TraversableCollection<Tag, M>,
+	TraversableCollection<mtl::tag::all, TraversableCollection<Tag, M>::result_type>
+    {};
+#else
+    /// Concept AllTraversableSubMatrix: provides traversion of rows, columns of matrices
+    /**
+        All elements of a row or a column, according to the Tag, are traversed.
+	The cursors begin and end are provided.
+        \par Refinement of:
+	- Matrix < M >
+        - TraversableCollection<Tag, M>,
+	- TraversableCollection<mtl::tag::all, TraversableCollection<Tag, M>::result_type>
+     */ 
+    template <typename Tag, typename M>
+    struct AllTraversableMatrix
+      : public Matrix<M>,
+        public TraversableCollection<Tag, M>,
+	public TraversableCollection<mtl::tag::all, TraversableCollection<Tag, M>::result_type>
+    {};
+#endif
+    
+    
+
+#ifdef __GXX_CONCEPTS__
+    concept NonZeroTraversableSubMatrix<typename Tag, typename M>
+      : Matrix<M>,
+        TraversableCollection<Tag, M>,
+	TraversableCollection<mtl::tag::nz, TraversableCollection<Tag, M>::result_type>
+    {};
+#else
+    /// Concept NonZeroTraversableSubMatrix: provides traversion of non-zero in rows or columns of matrices
+    /**
+        All structural non-zero elements of a row or a column, according to the Tag, are traversed.
+	The cursors begin and end are provided.
+        \par Refinement of:
+	- Matrix < M >
+        - TraversableCollection<Tag, M>,
+	- TraversableCollection<mtl::tag::nz, TraversableCollection<Tag, M>::result_type>
+     */ 
+    template <typename Tag, typename M>
+    struct NonZeroTraversableSubMatrix
+      : public Matrix<M>,
+        public TraversableCollection<Tag, M>,
+	public TraversableCollection<mtl::tag::nz, TraversableCollection<Tag, M>::result_type>
+    {};
+#endif
+    
+
+#ifdef __GXX_CONCEPTS__
+    concept IteratableSubMatrix<typename Tag, typename ITag, typename M>
+      : Matrix<M>,
+        TraversableCollection<Tag, M>,
+	TraversableCollection<ITag, TraversableCollection<Tag, M>::result_type>
+    {};
+#else
+    /// Concept IteratableSubMatrix: provides iteration over elements within rows or columns of matrices
+    /**
+        This concepts actually combines four sub-concepts. The iteration can be either performed over
+	all elements or only over structural non-zero elements whereby the iterator can be a const-iterator
+	or a mutable iterator. These four combinations are specified by the tags mtl::tag::iter::all, 
+	mtl::tag::iter::nz, mtl::tag::const_iter::all,  and
+	mtl::tag::const_iter::nz for ITag. The template parameter Tag can be mtl::tag::major or mtl::tag::column.
+	The cursors begin and end are provided.
+        \par Refinement of:
+	- Matrix < M >
+        - TraversableCollection<Tag, M>,
+	- TraversableCollection<ITag, TraversableCollection<Tag, M>::result_type>
+     */ 
+    template <typename Tag, typename ITag, typename M>
+    struct IteratableSubMatrix
+      : public Matrix<M>,
+        public TraversableCollection<Tag, M>,
+	public TraversableCollection<ITag, TraversableCollection<Tag, M>::result_type>
+    {};
+#endif
+
+
+
+
+
 
 /*@}*/ // end of group Concepts
 
