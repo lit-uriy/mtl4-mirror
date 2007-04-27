@@ -101,8 +101,11 @@ void test(Matrix& matrix, const char* name)
 	throw "conjugate transposing  wrong";
 
 #if 0    
+    cout << "conjugated matrix (free function)\n" << conj(matrix) << "\n";
+    if (conj(matrix)(2, 3) != cvalue(ref)) 
+	throw "conjugating wrong";
 
-    cout << "matrix  scaled with 2.0\n" << scale(2.0, matrix) << "\n";
+    cout << "matrix  scaled with 2.0 (free function)\n" << scale(2.0, matrix) << "\n";
     if (scale(2.0, matrix)(2, 3) != svalue(ref)) 
 	throw "scaling wrong";
 
@@ -110,11 +113,11 @@ void test(Matrix& matrix, const char* name)
     if (conj(matrix)(2, 3) != cvalue(ref)) 
 	throw "conjugating wrong";
 
-    cout << "matrix scaled with i (complex(0, 1))\n" << scale(ct(0.0, 1.0), matrix) << "\n";
+    cout << "matrix scaled with i (complex(0, 1)) (free function)\n" << scale(ct(0.0, 1.0), matrix) << "\n";
     if (scale(ct(0.0, 1.0), matrix)(2, 3) != csvalue(ref)) 
 	throw "complex scaling wrong";
 
-    cout << "Hermitian  matrix (conjugate transposed)\n" << hermitian(matrix) << "\n";
+    cout << "Hermitian  matrix (conjugate transposed) (free function)\n" << hermitian(matrix) << "\n";
     if (hermitian(matrix)(3, 2) != cvalue(ref)) 
 	throw "conjugate transposing wrong";
 

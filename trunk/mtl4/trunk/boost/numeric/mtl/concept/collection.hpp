@@ -159,26 +159,22 @@ namespace mtl {
       : Collection<C>
     {
 	typename begin_type;
-	begin_type begin<Tag>(const C& c);
 
-	typename end_type;
-	end_type end<Tag>(const C& c);
+	begin_type begin<Tag>(const C& c);
+	end_type   end<Tag>(const C& c);
     }
 #else
     /// Concept TraversableCollection: collections that can be traversed by cursor or iterator
-    template <typename C>
+    template <typename Tag, typename C>
     struct TraversableCollection
 	: public Collection<C>
     {
-	/// Associated type: return type of tagged begin function
+	/// Associated type: return type of tagged begin and end function
 	typedef associated_type begin_type;
 
 	/// Tagged function that returns a cursor or iterator at the begin of an interval 
 	/** The interval is specified by the Tag */
 	begin_type begin<Tag>(const C& c);
-
-	/// Associated type: return type of tagged end function
-	typedef associated_type end_type;
 
 	/// Tagged function that returns a cursor or iterator at the end of an interval 
 	/** The interval is specified by the Tag */
@@ -192,14 +188,13 @@ namespace mtl {
       : MutableCollection<C>
     {
 	typename begin_type;
-	begin_type begin<Tag>(C& c);
 
-	typename end_type;
-	end_type end<Tag>(C& c);
+	begin_type begin<Tag>(C& c);
+	end_type   end<Tag>(C& c);
     }
 #else
     /// Concept TraversableMutableCollection: collections that can be traversed by (mutable) iterator
-    template <typename C>
+    template <typename Tag, typename C>
     struct TraversableMutableCollection
 	: public MutableCollection<C>
     {
@@ -209,9 +204,6 @@ namespace mtl {
 	/// Tagged function that returns a cursor or iterator at the begin of an interval 
 	/** The interval is specified by the Tag */
 	begin_type begin<Tag>(C& c);
-
-	/// Associated type: return type of tagged end function
-	typedef associated_type end_type;
 
 	/// Tagged function that returns a cursor or iterator at the end of an interval 
 	/** The interval is specified by the Tag */
