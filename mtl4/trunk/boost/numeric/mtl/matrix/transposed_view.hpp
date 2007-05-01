@@ -7,6 +7,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
+#include <boost/numeric/mtl/matrix/mat_expr.hpp>
 
 namespace mtl {
 
@@ -29,9 +30,11 @@ template<> struct transposed_orientation<tag::col_major>
 template <class Matrix> 
 class transposed_view 
   : public detail::crtp_base_matrix< transposed_view<Matrix>, 
-				     typename Matrix::value_type, typename Matrix::size_type >
+				     typename Matrix::value_type, typename Matrix::size_type >,
+    public matrix::mat_expr< transposed_view<Matrix> >
 {
     typedef transposed_view               self;
+    typedef matrix::mat_expr< self >      expr_base;
 public:	
     typedef Matrix                        other;
     typedef typename transposed_orientation<typename Matrix::orientation>::type orientation;
@@ -42,9 +45,9 @@ public:
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
 
-    transposed_view (other& ref) : ref(ref) {}
+    transposed_view (other& ref) : expr_base(*this), ref(ref) {}
     
-    transposed_view (boost::shared_ptr<Matrix> p) : my_copy(p), ref(*p) {}
+    transposed_view (boost::shared_ptr<Matrix> p) : expr_base(*this), my_copy(p), ref(*p) {}
     
     const_access_type operator() (size_type r, size_type c) const
     { 

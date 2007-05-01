@@ -13,6 +13,7 @@
 #include <boost/numeric/mtl/detail/dilated_int.hpp>
 #include <boost/numeric/mtl/utility/iterator_adaptor.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/mtl/matrix/mat_expr.hpp>
 
 
 // #include <boost/numeric/mtl/ahnentafel_detail/index.hpp>
@@ -281,11 +282,13 @@ struct morton_dense_col_iterator
 template <typename Elt, unsigned long BitMask, typename Parameters = mtl::matrix::parameters<> >
 class morton_dense : public detail::base_sub_matrix<Elt, Parameters>, 
 		     public detail::contiguous_memory_block<Elt, false>,
-                     public detail::crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >
+                     public detail::crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >,
+		     public matrix::mat_expr< morton_dense<Elt, BitMask, Parameters> >
 {
-    typedef detail::base_sub_matrix<Elt, Parameters>            super;
-    typedef detail::contiguous_memory_block<Elt, false>        super_memory;
-    typedef morton_dense                                        self;
+    typedef detail::base_sub_matrix<Elt, Parameters>                   super;
+    typedef detail::contiguous_memory_block<Elt, false>                super_memory;
+    typedef morton_dense                                               self;
+    typedef matrix::mat_expr< morton_dense<Elt, BitMask, Parameters> > expr_base;
 
   public:
 
@@ -375,35 +378,35 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
   public:
     // if compile time matrix size allocate memory
-    morton_dense() : super_memory( memory_need( dim_type().num_rows(), dim_type().num_cols() ) ) 
+    morton_dense() : super_memory( memory_need( dim_type().num_rows(), dim_type().num_cols() ) ), expr_base(*this)  
     {
 	init(dim_type().num_rows(), dim_type().num_cols());
     }
 
     // only sets dimensions, only for run-time dimensions
     explicit morton_dense(mtl::non_fixed::dimensions d) 
-	: super_memory( memory_need( d.num_rows(), d.num_cols() ) ) 
+	: super_memory( memory_need( d.num_rows(), d.num_cols() ) ), expr_base(*this)  
     {
 	init(d.num_rows(), d.num_cols());
     }
 
     // Same with separated row and column number
     morton_dense(size_type num_rows, size_type num_cols) 
-	: super_memory( memory_need(num_rows, num_cols) )
+	: super_memory( memory_need(num_rows, num_cols) ), expr_base(*this) 
     {
 	init(num_rows, num_cols);
     }
 
     // sets dimensions and pointer to external data
     explicit morton_dense(mtl::non_fixed::dimensions d, value_type* a) 
-      : super_memory(a) 
+      : super_memory(a), expr_base(*this) 
     { 
 	init(d.num_rows(), d.num_cols());
     }
 
     // same constructor for compile time matrix size
     // sets dimensions and pointer to external data
-    explicit morton_dense(value_type* a) : super_memory(a) 
+    explicit morton_dense(value_type* a) : super_memory(a), expr_base(*this) 
     { 
 	BOOST_ASSERT((dim_type::is_static));
 	init(dim_type().num_rows(), dim_type().num_cols());

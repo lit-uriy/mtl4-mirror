@@ -5,7 +5,10 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/matrix/map_view.hpp>
+#include <boost/numeric/mtl/vector/map_view.hpp>
 
 #include <complex>
 
@@ -13,7 +16,7 @@ namespace mtl {
 
 namespace sfunctor {
 
-    template <typename Value>
+    template <typename Value, typename AlgebraicCategory>
     struct conj
     {
 	typedef Value result_type;
@@ -30,8 +33,8 @@ namespace sfunctor {
     };
 
 
-    template <typename Value>
-    struct conj<std::complex<Value> >
+    template <typename Value, typename AlgebraicCategory>
+    struct conj<std::complex<Value>, AlgebraicCategory>
     {
 	typedef std::complex<Value> result_type;
 
@@ -46,12 +49,47 @@ namespace sfunctor {
 	}
     };
 
+    template <typename Matrix>
+    struct conj<Matrix, tag::matrix>
+    {
+	typedef matrix::conj_view<Matrix> result_type;
+
+	static inline result_type apply(const Matrix& matrix)
+	{
+	    return result_type(matrix);
+	}
+
+	result_type operator() (const Matrix& matrix) const
+	{
+	    return apply(matrix);
+	}
+    };
+
+    template <typename Vector>
+    struct conj<Vector, tag::vector>
+    {
+	typedef vector::conj_view<Vector> result_type;
+
+	static inline result_type apply(const Vector& vector)
+	{
+	    return result_type(vector);
+	}
+
+	result_type operator() (const Vector& vector) const
+	{
+	    return apply(vector);
+	}
+    };
+
+
 } // namespace sfunctor
     
+
 template <typename Value>
-typename sfunctor::conj<Value>::result_type inline conj(const Value& v)
+typename sfunctor::conj<Value, typename traits::algebraic_category<Value>::type>::result_type 
+inline conj(const Value& v)
 {
-    return sfunctor::conj<Value>::apply(v);
+    return sfunctor::conj<Value, typename traits::algebraic_category<Value>::type>::apply(v);
 };
 
 

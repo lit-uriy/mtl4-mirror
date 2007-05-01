@@ -14,6 +14,7 @@
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/shift_block.hpp>
+#include <boost/numeric/mtl/matrix/mat_expr.hpp>
 
 namespace mtl {
 
@@ -238,11 +239,13 @@ struct compressed2D_indexer
 template <typename Elt, typename Parameters = matrix::parameters<> >
 class compressed2D 
   : public detail::base_matrix<Elt, Parameters>,
-    public detail::const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >
+    public detail::const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >,
+    public matrix::mat_expr< compressed2D<Elt, Parameters> >
 {
     typedef std::size_t                              size_t;
     typedef detail::base_matrix<Elt, Parameters>     super;
     typedef compressed2D                             self;
+    typedef matrix::mat_expr< compressed2D<Elt, Parameters> >   expr_base;
   public:
     typedef Parameters                               parameters;
     typedef typename Parameters::orientation         orientation;
@@ -285,14 +288,14 @@ class compressed2D
 
     // if compile time matrix size, we can set the start vector
     explicit compressed2D () 
-	: super(), inserting(false)
+	: super(), expr_base(*this), inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
 
     // setting dimension and allocate starting vector
     explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
-      : super(d), inserting(false)
+      : super(d), expr_base(*this), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
@@ -300,10 +303,16 @@ class compressed2D
 
     // setting dimension and allocate starting vector
     compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
-      : super(non_fixed::dimensions(num_rows, num_cols)), inserting(false)
+      : super(non_fixed::dimensions(num_rows, num_cols)), expr_base(*this), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
+    }
+
+    self& operator=(const self& src)
+    {
+	matrix::copy(src, *this);
+	return *this;
     }
 
     template <typename MatrixSrc>

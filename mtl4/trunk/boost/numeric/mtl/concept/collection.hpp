@@ -158,10 +158,10 @@ namespace mtl {
     concept TraversableCollection<typename Tag, typename C>
       : Collection<C>
     {
-	typename begin_type;
+	typename cursor_type;
 
-	begin_type begin<Tag>(const C& c);
-	end_type   end<Tag>(const C& c);
+	cursor_type begin<Tag>(const C& c);
+	cursor_type   end<Tag>(const C& c);
     }
 #else
     /// Concept TraversableCollection: collections that can be traversed by cursor or iterator
@@ -170,15 +170,15 @@ namespace mtl {
 	: public Collection<C>
     {
 	/// Associated type: return type of tagged begin and end function
-	typedef associated_type begin_type;
+	typedef associated_type cursor_type;
 
-	/// Tagged function that returns a cursor or iterator at the begin of an interval 
-	/** The interval is specified by the Tag */
-	begin_type begin<Tag>(const C& c);
+	/// Tagged free function that returns a cursor or iterator at the begin of an interval 
+	/** The interval is specified by the Tag, i.e. the function is called begin<Tag>(c); */
+	cursor_type begin(const C& c);
 
-	/// Tagged function that returns a cursor or iterator at the end of an interval 
-	/** The interval is specified by the Tag */
-	end_type end<Tag>(const C& c);
+	/// Tagged free function that returns a cursor or iterator at the end of an interval 
+	/** The interval is specified by the Tag, i.e. the function is called end<Tag>(c);  */
+	cursor_type end(const C& c);
     };
 #endif
 
@@ -187,10 +187,10 @@ namespace mtl {
     concept TraversableMutableCollection<typename Tag, typename C>
       : MutableCollection<C>
     {
-	typename begin_type;
+	typename cursor_type;
 
-	begin_type begin<Tag>(C& c);
-	end_type   end<Tag>(C& c);
+	cursor_type begin<Tag>(C& c);
+	cursor_type   end<Tag>(C& c);
     }
 #else
     /// Concept TraversableMutableCollection: collections that can be traversed by (mutable) iterator
@@ -199,15 +199,15 @@ namespace mtl {
 	: public MutableCollection<C>
     {
 	/// Associated type: return type of tagged begin function
-	typedef associated_type begin_type;
+	typedef associated_type cursor_type;
 
-	/// Tagged function that returns a cursor or iterator at the begin of an interval 
-	/** The interval is specified by the Tag */
-	begin_type begin<Tag>(C& c);
+	/// Tagged free function that returns a cursor or iterator at the begin of an interval 
+	/** The interval is specified by the Tag, i.e. the function is called begin<Tag>(c); */
+	cursor_type begin(const C& c);
 
-	/// Tagged function that returns a cursor or iterator at the end of an interval 
-	/** The interval is specified by the Tag */
-	end_type end<Tag>(C& c);
+	/// Tagged free function that returns a cursor or iterator at the end of an interval 
+	/** The interval is specified by the Tag, i.e. the function is called end<Tag>(c);  */
+	cursor_type end(const C& c);
     };
 #endif
 
@@ -224,6 +224,33 @@ namespace mtl {
 #endif
 
 
+#ifdef __GXX_CONCEPTS__
+    concept OrientedCollection<typename T>
+      : Collection<T>
+    {
+	typename orientation;
+
+    };
+#else
+    /// Concept OrientedCollection: collections with concept-awareness in terms of associated type
+    /** Concept-awareness is given for matrices as well as for vectors consistent to the unification in
+	AlgebraicCollection. The orientation of vectors determines whether it is a row or a column vector.
+	The orientation of matrices only characterizes the internal representation and has no semantic consequences.
+        \par Refinement of:
+	- Collection < T >
+	\par Associated type:
+	- orientation
+    */
+    template <typename T>
+    struct OrientedCollection
+	: public Collection<T>
+    {
+	/// Associated type for orientation; by default identical with member type
+	typedef typename T::orientation orientation;
+    };
+#endif
+
+
 
 
 
@@ -234,7 +261,6 @@ namespace mtl {
 // ============================================
 
 #ifdef __GXX_CONCEPTS__
-
     template <typename Value, typename Parameters>
     concept_map Collection<dense2D<Value, Parameters> >
     {
@@ -242,9 +268,7 @@ namespace mtl {
 	typedef const Value&     const_reference;
 	typedef typename dense2D<Value, Parameters>::size_type size_type;
     };
-
 #else
-
     template <typename Value, typename Parameters>
     struct Collection<dense2D<Value, Parameters> >
     {
@@ -252,28 +276,252 @@ namespace mtl {
 	typedef const Value&     const_reference;
 	typedef typename dense2D<Value, Parameters>::size_type size_type;
     };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value, unsigned long Mask, typename Parameters>
+    concept_map Collection<morton_dense<Value, Mask, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename morton_dense<Value, Mask, Parameters>::size_type size_type;
+    };
+#else
+    template <typename Value, unsigned long Mask, typename Parameters>
+    struct Collection<morton_dense<Value, Mask, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename morton_dense<Value, Mask, Parameters>::size_type size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value, typename Parameters>
+    concept_map Collection<compressed2D<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename compressed2D<Value, Parameters>::size_type size_type;
+    };
+#else
+    template <typename Value, typename Parameters>
+    struct Collection<compressed2D<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef Value            const_reference;
+	typedef typename compressed2D<Value, Parameters>::size_type size_type;
+    };
 
 #endif
 
 
 #ifdef __GXX_CONCEPTS__
+    template <typename Scaling, typename Coll>
+    concept_map Collection<matrix::scaled_view<Scaling, Coll> >
+    {
+	typedef typename matrix::scaled_view<Scaling, Coll>::value_type        value_type;
+	typedef typename matrix::scaled_view<Scaling, Coll>::const_reference   const_reference;
+	typedef typename matrix::scaled_view<Scaling, Coll>::size_type         size_type;
+    };
+#else
+    template <typename Scaling, typename Coll>
+    struct Collection<matrix::scaled_view<Scaling, Coll> >
+    {
+	typedef typename matrix::scaled_view<Scaling, Coll>::value_type        value_type;
+	typedef typename matrix::scaled_view<Scaling, Coll>::const_reference   const_reference;
+	typedef typename matrix::scaled_view<Scaling, Coll>::size_type         size_type;
+    };
+#endif
 
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Scaling, typename Coll>
+    concept_map Collection<vector::scaled_view<Scaling, Coll> >
+    {
+	typedef typename vector::scaled_view<Scaling, Coll>::value_type        value_type;
+	typedef typename vector::scaled_view<Scaling, Coll>::const_reference   const_reference;
+	typedef typename vector::scaled_view<Scaling, Coll>::size_type         size_type;
+    };
+#else
+    template <typename Scaling, typename Coll>
+    struct Collection<vector::scaled_view<Scaling, Coll> >
+    {
+	typedef typename vector::scaled_view<Scaling, Coll>::value_type        value_type;
+	typedef typename vector::scaled_view<Scaling, Coll>::const_reference   const_reference;
+	typedef typename vector::scaled_view<Scaling, Coll>::size_type         size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map Collection<matrix::conj_view<Coll> >
+    {
+	typedef typename matrix::conj_view<Coll>::value_type        value_type;
+	typedef typename matrix::conj_view<Coll>::const_reference   const_reference;
+	typedef typename matrix::conj_view<Coll>::size_type         size_type;
+    };
+#else
+    template <typename Coll>
+    struct Collection<matrix::conj_view<Coll> >
+    {
+	typedef typename matrix::conj_view<Coll>::value_type        value_type;
+	typedef typename matrix::conj_view<Coll>::const_reference   const_reference;
+	typedef typename matrix::conj_view<Coll>::size_type         size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map Collection<vector::conj_view<Coll> >
+    {
+	typedef typename vector::conj_view<Coll>::value_type        value_type;
+	typedef typename vector::conj_view<Coll>::const_reference   const_reference;
+	typedef typename vector::conj_view<Coll>::size_type         size_type;
+    };
+#else
+    template <typename Coll>
+    struct Collection<vector::conj_view<Coll> >
+    {
+	typedef typename vector::conj_view<Coll>::value_type        value_type;
+	typedef typename vector::conj_view<Coll>::const_reference   const_reference;
+	typedef typename vector::conj_view<Coll>::size_type         size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Matrix>
+    concept_map Collection<matrix::hermitian_view<Matrix> >
+    {
+	typedef typename matrix::hermitian_view<Matrix>::value_type        value_type;
+	typedef typename matrix::hermitian_view<Matrix>::const_reference   const_reference;
+	typedef typename matrix::hermitian_view<Matrix>::size_type         size_type;
+    };
+#else
+    template <typename Matrix>
+    struct Collection<matrix::hermitian_view<Matrix> >
+    {
+	typedef typename matrix::hermitian_view<Matrix>::value_type        value_type;
+	typedef typename matrix::hermitian_view<Matrix>::const_reference   const_reference;
+	typedef typename matrix::hermitian_view<Matrix>::size_type         size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
     template <typename Value, typename Parameters>
     concept_map MutableCollection<dense2D<Value, Parameters> >
     {
 	typedef Value&           reference;
     };
-
 #else
-
     template <typename Value, typename Parameters>
     struct MutableCollection<dense2D<Value, Parameters> >
 	: public Collection<dense2D<Value, Parameters> >
     {
 	typedef Value&           reference;
     };
+#endif
+
+#ifdef __GXX_CONCEPTS__
+
+    template <typename Value, typename Parameters>
+    concept_map MutableCollection<morton_dense<Value, Parameters> >
+    {
+	typedef Value&           reference;
+    };
+
+#else
+
+    template <typename Value, unsigned long Mask, typename Parameters>
+    struct MutableCollection<morton_dense<Value, Mask, Parameters> >
+	: public Collection<morton_dense<Value, Mask, Parameters> >
+    {
+	typedef Value&           reference;
+    };
 
 #endif
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Scaling, typename Coll>
+    concept_map OrientedCollection< matrix::scaled_view<Scaling, Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#else
+    template <typename Scaling, typename Coll>
+    struct OrientedCollection< matrix::scaled_view<Scaling, Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Scaling, typename Coll>
+    concept_map OrientedCollection< vector::scaled_view<Scaling, Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#else
+    template <typename Scaling, typename Coll>
+    struct OrientedCollection< vector::scaled_view<Scaling, Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map OrientedCollection<matrix::conj_view<Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#else
+    template <typename Coll>
+    struct OrientedCollection<matrix::conj_view<Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map OrientedCollection<vector::conj_view<Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#else
+    template <typename Coll>
+    struct OrientedCollection<vector::conj_view<Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map OrientedCollection<matrix::hermitian_view<Coll> >
+    {
+	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
+    };
+#else
+    template <typename Coll>
+    struct OrientedCollection<matrix::hermitian_view<Coll> >
+    {
+	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
+    };
+#endif
+
+
 
 /*@}*/ // end of group Concepts
 

@@ -10,7 +10,7 @@
 
 namespace mtl { namespace matrix {
 
-// This type exist only for bundling template parameters (to reduce typing)
+/// Type for bundling template parameters of common matrix types
 template <typename Orientation= row_major, 
 	  typename Index= index::c_index,
 	  typename Dimensions= mtl::non_fixed::dimensions,
@@ -28,27 +28,6 @@ struct parameters
     BOOST_STATIC_ASSERT(( !on_stack || dimensions::is_static ));
 };
 
-}}
-
-namespace mtl { namespace traits {
-
-    template <typename Parameter>
-    struct is_row_major {};
-    
-    template <typename Index, typename Dimensions, bool OnStack, bool RValue>
-    struct is_row_major<matrix::parameters<row_major, Index, Dimensions, OnStack, RValue> >
-    {
-	static const bool value= true;
-    };
-    
-    template <typename Index, typename Dimensions, bool OnStack, bool RValue>
-    struct is_row_major<matrix::parameters<col_major, Index, Dimensions, OnStack, RValue> >
-    {
-	static const bool value= false;
-    };
-
-}
-
-} // namespace mtl::traits
+}} // namespace mtl::matrix
 
 #endif // MTL_MATRIX_PARAMETERS_INCLUDE

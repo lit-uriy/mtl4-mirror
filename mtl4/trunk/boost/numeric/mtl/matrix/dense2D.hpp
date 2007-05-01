@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
+#include <boost/numeric/mtl/matrix/mat_expr.hpp>
 
 
 namespace mtl {
@@ -125,13 +126,14 @@ template <typename Value, typename Parameters = mtl::matrix::parameters<> >
 class dense2D : public detail::base_sub_matrix<Value, Parameters>, 
 		public detail::contiguous_memory_block< Value, Parameters::on_stack, 
 							 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
-                public detail::crtp_base_matrix< dense2D<Value, Parameters>, Value, std::size_t >
+                public detail::crtp_base_matrix< dense2D<Value, Parameters>, Value, std::size_t >,
+		public matrix::mat_expr< dense2D<Value, Parameters> >
 {
-    typedef dense2D                                    self;
-    typedef detail::base_sub_matrix<Value, Parameters>   super;
+    typedef dense2D                                           self;
+    typedef detail::base_sub_matrix<Value, Parameters>        super;
     typedef detail::contiguous_memory_block<Value, Parameters::on_stack, 
 					     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     super_memory;
-
+    typedef matrix::mat_expr< dense2D<Value, Parameters> >    expr_base;
   public:
     typedef Parameters                        parameters;
     typedef typename Parameters::orientation  orientation;
@@ -180,35 +182,35 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
   public:
     // if compile time matrix size allocate memory
-    dense2D() : super(), super_memory(dim_type().num_rows() * dim_type().num_cols()) 
+    dense2D() : super(), super_memory(dim_type().num_rows() * dim_type().num_cols()), expr_base(*this) 
     { 
 	init(); 
     }
 
     // only sets dimensions, only for run-time dimensions
     explicit dense2D(mtl::non_fixed::dimensions d) 
-	: super(d), super_memory(d.num_rows() * d.num_cols()) 
+	: super(d), super_memory(d.num_rows() * d.num_cols()), expr_base(*this) 
     { 
 	init(); 
     }
 
     dense2D(size_type num_rows, size_type num_cols) 
 	: super(mtl::non_fixed::dimensions(num_rows, num_cols)), 
-	  super_memory(num_rows * num_cols) 
+	  super_memory(num_rows * num_cols), expr_base(*this) 
     { 
 	init(); 
     }
 
     // sets dimensions and pointer to external data
     explicit dense2D(mtl::non_fixed::dimensions d, value_type* a) 
-      : super(d), super_memory(a, d.num_rows() * d.num_cols()) 
+      : super(d), super_memory(a, d.num_rows() * d.num_cols()), expr_base(*this) 
     { 
 	init(); 
     }
 
     // same constructor for compile time matrix size
     // sets dimensions and pointer to external data
-    explicit dense2D(value_type* a) : super(), super_memory(a) 
+    explicit dense2D(value_type* a) : super(), super_memory(a), expr_base(*this) 
     { 
 	BOOST_STATIC_ASSERT((dim_type::is_static));
         init();
