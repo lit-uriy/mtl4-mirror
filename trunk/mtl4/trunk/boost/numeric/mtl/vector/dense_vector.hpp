@@ -30,9 +30,9 @@ namespace mtl { namespace vector {
 template <class Value, typename Parameters = mtl::vector::parameters<> >
 class dense_vector
     : public vec_expr<dense_vector<Value, Parameters> >,
-      public detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >
+      public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >
 {
-    typedef detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >   super_memory;
+    typedef ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >   super_memory;
 public:
     typedef vec_expr<dense_vector<Value, Parameters> >  expr_base;
     typedef dense_vector      self;
@@ -156,6 +156,50 @@ public:
 
 } ; // dense_vector
 
+
+// ================
+// Free functions
+// ================
+
+template <typename Value, typename Parameters>
+typename dense_vector<Value, Parameters>::size_type
+inline size(const dense_vector<Value, Parameters>& vector)
+{
+    return vector.size();
+}
+
+
+template <typename Value, typename Parameters>
+typename dense_vector<Value, Parameters>::size_type
+inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::row_major)
+{
+    return vector.size();
+}
+
+template <typename Value, typename Parameters>
+typename dense_vector<Value, Parameters>::size_type
+inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::col_major)
+{
+    return 1;
+}
+
+
+template <typename Value, typename Parameters>
+typename dense_vector<Value, Parameters>::size_type
+inline num_rows(const dense_vector<Value, Parameters>& vector)
+{
+    return num_rows_aux(vector, typename Parameters::orientation());
+}
+
+
+template <typename Value, typename Parameters>
+typename dense_vector<Value, Parameters>::size_type
+inline num_cols(const dense_vector<Value, Parameters>& vector)
+{
+    return num_rows_aux(vector, typename transposed_orientation<typename Parameters::orientation>::type());
+}
+
+
 }} // namespace mtl::vector
 
 
@@ -228,6 +272,7 @@ namespace mtl { namespace traits {
     struct range_generator<tag::const_iter::nz, dense_vector<Value, Parameters> >
 	: public range_generator<tag::const_iter::all, dense_vector<Value, Parameters> >
     {};
+
 	
 }} // namespace mtl::traits
 

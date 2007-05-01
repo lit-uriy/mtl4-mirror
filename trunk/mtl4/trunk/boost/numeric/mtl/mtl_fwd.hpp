@@ -10,6 +10,10 @@ namespace mtl {
     namespace tag {
 	struct row_major;
 	struct col_major;
+
+	struct scalar;
+	struct vector;
+	struct matrix;
     }
     using tag::row_major;
     using tag::col_major;
@@ -47,9 +51,11 @@ namespace mtl {
     template <typename Matrix> struct transposed_view;
 
     namespace matrix {
-	template <typename Functor, typename Matrix> class map_view;
-	template <typename Scaling, typename Matrix> class scaled_view;
-	template <typename Matrix>  class conj_view;
+	template <typename Matrix> struct mat_expr;
+	template <typename Functor, typename Matrix> struct map_view;
+	template <typename Scaling, typename Matrix> struct scaled_view;
+	template <typename Matrix>  struct conj_view;
+	template <typename Matrix>  struct hermitian_view;
     }
 
     /// Namespace for vectors and views and %operations exclusively on vectors
@@ -60,27 +66,31 @@ namespace mtl {
     using vector::dense_vector;
 
     namespace vector {
-	template <class E1, class E2> struct vec_vec_add_expr;
-	template <class E1, class E2> struct vec_vec_minus_expr;
+	template <typename Vector> struct vec_expr;
+	template <typename E1, typename E2> struct vec_vec_add_expr;
+	template <typename E1, typename E2> struct vec_vec_minus_expr;
     }
 
     /// Namespace for type %traits
     namespace traits {
-	template <typename Matrix> struct category;
-	template <typename Matrix> struct value;
-	template <typename Matrix> struct const_value;
-	template <typename Matrix> struct row;
-	template <typename Matrix> struct col;
+	template <typename Value> struct category;
+	template <typename Value> struct algebraic_category;
+
+	template <typename Collection> struct value;
+	template <typename Collection> struct const_value;
+	template <typename Collection> struct row;
+	template <typename Collection> struct col;
     }
 
     /// Namespace for functors with application operator and fully typed paramaters
     namespace tfunctor {
-	template <typename V1, typename V2> struct scale;
+	/// Functor for scaling matrices, vectors and ordinary scalars
+	template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct scale;
     }
 
     /// Namespace for functors with static function apply and fully typed paramaters
     namespace sfunctor {
-	template <typename Value> struct conj;
+	template <typename Value, typename AlgebraicCategory = tag::scalar> struct conj;
     }
 
     // Namespace documentations
@@ -111,6 +121,13 @@ namespace mtl {
 
     /// Namespace for implementations using recurators
     namespace wrec {}
+
+    namespace detail {
+	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_common_operations;
+	template <typename Matrix, typename ValueType, typename SizeType> struct const_crtp_base_matrix;
+	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_base_matrix;
+	template <typename Value, bool OnStack, unsigned Size= 0> struct contiguous_memory_block;
+    }
 
 } // namespace mtl
 

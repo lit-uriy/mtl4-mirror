@@ -10,9 +10,12 @@
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/matrix/hermitian_view.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
+#include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
-#include <boost/numeric/mtl/recursion/predefined_masks.hpp>
+#include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/scale.hpp>
+#include <boost/numeric/mtl/operation/hermitian.hpp>
 
 using namespace mtl;
 using namespace std;  
@@ -100,16 +103,11 @@ void test(Matrix& matrix, const char* name)
     if (hermitian_matrix(3, 2) != cvalue(ref)) 
 	throw "conjugate transposing  wrong";
 
-#if 0    
-    cout << "conjugated matrix (free function)\n" << conj(matrix) << "\n";
-    if (conj(matrix)(2, 3) != cvalue(ref)) 
-	throw "conjugating wrong";
-
     cout << "matrix  scaled with 2.0 (free function)\n" << scale(2.0, matrix) << "\n";
     if (scale(2.0, matrix)(2, 3) != svalue(ref)) 
 	throw "scaling wrong";
 
-    cout << "conjugated matrix \n" << conj(matrix) << "\n";
+    cout << "conjugated matrix (free function) \n" << conj(matrix) << "\n";
     if (conj(matrix)(2, 3) != cvalue(ref)) 
 	throw "conjugating wrong";
 
@@ -120,8 +118,6 @@ void test(Matrix& matrix, const char* name)
     cout << "Hermitian  matrix (conjugate transposed) (free function)\n" << hermitian(matrix) << "\n";
     if (hermitian(matrix)(3, 2) != cvalue(ref)) 
 	throw "conjugate transposing wrong";
-
-#endif
 }
 
 

@@ -22,23 +22,6 @@ struct parameters
     static bool const   is_rvalue= RValue;  // to enable shallow copy
 };
 
-namespace traits {
-
-    template <typename Parameter>
-    struct is_row_major {};
-
-    template <typename Dimension, bool OnStack, bool RValue>
-    struct is_row_major<parameters<row_major, Dimension, OnStack, RValue> >
-	: public boost::mpl::true_
-    {};
-
-    template <typename Dimension, bool OnStack, bool RValue>
-    struct is_row_major<parameters<col_major, Dimension, OnStack, RValue> >
-	: public boost::mpl::false_
-    {};
-
-
-}
 
 }} // namespace mtl::vector
 

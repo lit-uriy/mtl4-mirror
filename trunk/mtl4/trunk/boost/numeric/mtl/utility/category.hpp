@@ -8,6 +8,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/operation/conj.hpp>
 
 
 namespace mtl { namespace traits {
@@ -101,7 +102,7 @@ struct algebraic_category
 	boost::is_base_of<tag::matrix, typename category<T>::type>
       , tag::matrix
       , typename boost::mpl::if_<
-       	  boost::is_base_of<tag::vector, typename category<T>::type>
+       	    boost::is_base_of<tag::vector, typename category<T>::type>
 	  , tag::vector
 	  , tag::scalar
 	>::type

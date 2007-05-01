@@ -6,6 +6,7 @@
 #include <iostream>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
+#include <boost/numeric/mtl/operation/print_vector.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 
 namespace mtl {
@@ -18,7 +19,29 @@ namespace mtl {
 	{
 	    return print_matrix(value, out, width, precision);
 	}
+
+	template <typename Value>
+	inline std::ostream&
+	print(Value const& value, tag::vector, std::ostream& out= std::cout, int width= 3, int precision= 2)
+	{
+	    return print_vector(value, out, width, precision);
+	}
+
     } // namespace detail
+
+
+    template <typename Matrix>
+    inline std::ostream& operator<< (std::ostream& out, const matrix::mat_expr<Matrix>& expr)
+    {
+	return print_matrix(expr.ref, out, 3, 2);
+    }
+
+
+    template <typename Vector>
+    inline std::ostream& operator<< (std::ostream& out, const vector::vec_expr<Vector>& expr)
+    {
+	return print_vector(expr.ref, out, 0, 0);
+    }
 
 
     template <typename Value>
@@ -27,6 +50,10 @@ namespace mtl {
     {
 	return detail::print(value, typename traits::category<Value>::type(), out, width, precision);
     }
+
+
+
+#if 0
 
 
     template <typename Value, typename Parameter>
@@ -59,6 +86,10 @@ namespace mtl {
 	return print(value, out);
     }
 
+#endif
+
+
+
 
 // ======================
 // use formatting with <<
@@ -67,31 +98,31 @@ namespace mtl {
 
     namespace detail {
 
-	template <typename Matrix>
+	template <typename Collection>
 	struct with_format_t
 	{
-	    explicit with_format_t(const Matrix& matrix, int width, int precision) 
-		: matrix(matrix), width(width), precision(precision)
+	    explicit with_format_t(const Collection& collection, int width, int precision) 
+		: collection(collection), width(width), precision(precision)
 	    {}
 
-	    const Matrix& matrix;
+	    const Collection& collection;
 	    int width, precision;
 	};
 
     } // detail
 
 
-    template <typename Matrix>
-    inline detail::with_format_t<Matrix> with_format(const Matrix& matrix, int width= 3, int precision= 2)
+    template <typename Collection>
+    inline detail::with_format_t<Collection> with_format(const Collection& collection, int width= 3, int precision= 2)
     {
-	return detail::with_format_t<Matrix>(matrix, width, precision);
+	return detail::with_format_t<Collection>(collection, width, precision);
     }
 
 
-    template <typename Matrix>
-    inline std::ostream& operator<< (std::ostream& out, detail::with_format_t<Matrix> const& value) 
+    template <typename Collection>
+    inline std::ostream& operator<< (std::ostream& out, detail::with_format_t<Collection> const& value) 
     {
-	return print(value.matrix, out, value.width, value.precision);
+	return print(value.collection, out, value.width, value.precision);
     }
     
 

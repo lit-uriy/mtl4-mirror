@@ -6,15 +6,17 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/tfunctor.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/matrix/mat_expr.hpp>
 
 
 
-namespace mtl { namespace traits { namespace detail {
+namespace mtl { namespace matrix { namespace detail {
     // Forward declaration for friend declaration
     template <typename, typename> struct map_value;
 }}}
@@ -24,30 +26,34 @@ namespace mtl { namespace matrix {
 template <typename Functor, typename Matrix> 
 class map_view 
   : public mtl::detail::const_crtp_base_matrix< map_view<Functor, Matrix>, 
-					   typename Functor::result_type, typename Matrix::size_type >
+						typename Functor::result_type, typename Matrix::size_type >,
+    public mat_expr< map_view<Functor, Matrix> >
 {
-    typedef map_view               self;
+    typedef map_view                                   self;
+    typedef matrix::mat_expr< self >                   expr_base;
 public:	
-    typedef Matrix                        other;
+    typedef Matrix                                     other;
     typedef typename Matrix::orientation               orientation;
     typedef typename Matrix::index_type                index_type;
 
-    typedef typename Functor::result_type             value_type;
-    typedef typename Functor::result_type             const_access_type;
-    typedef typename Functor::result_type             const_reference_type;
+    typedef typename Functor::result_type              value_type;
+    typedef typename Functor::result_type              const_reference_type;
+
+    // Obsolete:
+    typedef typename Functor::result_type              const_access_type;
     typedef typename Matrix::key_type                  key_type;
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
 
     map_view (const Functor& functor, const other& ref) 
-	: functor(functor), ref(ref) 
+	: expr_base(*this), functor(functor), ref(ref) 
     {}
     
     map_view (const Functor& functor, boost::shared_ptr<Matrix> p) 
-	: functor(functor), my_copy(p), ref(*p)
+	: expr_base(*this), functor(functor), my_copy(p), ref(*p)
     {}
     
-    const_access_type operator() (size_type r, size_type c) const
+    const_reference_type operator() (size_type r, size_type c) const
     { 
         return functor(ref(r, c));
     }
@@ -96,30 +102,15 @@ public:
 	return ref.num_cols();
     }
     
-    template <typename, typename> friend struct traits::detail::map_value;
+    template <typename, typename> friend struct detail::map_value;
 
-protected:
+  protected:
     boost::shared_ptr<Matrix>           my_copy;
-public:
+  public:
     Functor           functor;
     const other&      ref;
 };
    
-}} // namespace mtl::matrix
-
-
-namespace mtl { namespace traits {
-
-    template <typename Functor, typename Matrix> 
-    struct row<matrix::map_view<Functor, Matrix> >
-	: public row<Matrix>
-    {};
-
-    template <typename Functor, typename Matrix> 
-    struct col<matrix::map_view<Functor, Matrix> >
-	: public col<Matrix>
-    {};
-
 
     namespace detail {
 
@@ -140,16 +131,31 @@ namespace mtl { namespace traits {
 
 	  protected:
 	    matrix::map_view<Functor, Matrix> const&   map_matrix;
-	    typename const_value<Matrix>::type         its_value;
+	    typename traits::const_value<Matrix>::type its_value;
         };
 
     } // detail
 
+}} // namespace mtl::matrix
+
+
+namespace mtl { namespace traits {
 
     template <typename Functor, typename Matrix> 
+    struct row<matrix::map_view<Functor, Matrix> >
+	: public row<Matrix>
+    {};
+
+    template <typename Functor, typename Matrix> 
+    struct col<matrix::map_view<Functor, Matrix> >
+	: public col<Matrix>
+    {};
+
+
+   template <typename Functor, typename Matrix> 
     struct const_value<matrix::map_view<Functor, Matrix> >
     {
-	typedef detail::map_value<Functor, Matrix>  type;
+	typedef matrix::detail::map_value<Functor, Matrix>  type;
     };
 
 

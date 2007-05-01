@@ -4,6 +4,7 @@
 #define MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE
 
 #include <boost/static_assert.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
@@ -98,7 +99,7 @@ struct generic_array<Value, true, Size>
 };
 
 // Base class for matrices that have contigous piece of memory
-template <typename Value, bool OnStack, unsigned Size= 0>
+template <typename Value, bool OnStack, unsigned Size>
 struct contiguous_memory_block 
   : public generic_array<Value, OnStack, Size>
 {
