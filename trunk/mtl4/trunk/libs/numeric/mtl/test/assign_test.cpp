@@ -47,6 +47,7 @@ void test(MatrixSrc& src, const char* name_src,
     std::cout << "source initialized:\n" << src << "\n";
 
     // matrix::copy(src, new_dest);
+    new_dest.change_dim(num_rows(src), num_cols(src));
     new_dest= src;
     std::cout << "dest after assignment:\n" << new_dest << "\n\n";
 
@@ -98,13 +99,4 @@ int test_main(int argc, char* argv[])
     return 0;
 }
 
-
-
-
-
-#if 0
-    typename Matrix::value_type zero(0.0);
-    if (matrix(0, 1) != zero)
-	throw "not properly set to zero";
-#endif
 

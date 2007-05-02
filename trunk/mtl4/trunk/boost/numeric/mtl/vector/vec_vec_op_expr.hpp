@@ -13,7 +13,7 @@ namespace mtl { namespace vector {
 // Model of VectorExpression
 template <typename E1, typename E2, typename SFunctor>
 class vec_vec_op_expr 
-    : public vec_expr< vec_vec_op_expr<E1, E2, SFunctor> >
+   : public vec_expr< vec_vec_op_expr<E1, E2, SFunctor> >
 {
 public:
     typedef vec_expr< vec_vec_op_expr<E1, E2, SFunctor> > expr_base;

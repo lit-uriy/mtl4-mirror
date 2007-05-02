@@ -17,6 +17,7 @@ sources = Split("""base_case_conversion.cpp
              matrix_map_view_test.cpp
              vector_map_view_test.cpp
              algebraic_category.cpp
+             matrix_add_test.cpp
 """)
 #compressed2D.cpp
 

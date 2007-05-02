@@ -15,7 +15,8 @@
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
-#include <boost/numeric/mtl/matrix/mat_expr.hpp>
+#include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
+#include <boost/numeric/mtl/matrix/operators.hpp>
 
 
 namespace mtl {
@@ -134,6 +135,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     typedef detail::contiguous_memory_block<Value, Parameters::on_stack, 
 					     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     super_memory;
     typedef matrix::mat_expr< dense2D<Value, Parameters> >    expr_base;
+    typedef detail::crtp_base_matrix< self, Value, std::size_t > crtp_base;
+    typedef detail::crtp_matrix_assign< self, Value, std::size_t > assign_base;
   public:
     typedef Parameters                        parameters;
     typedef typename Parameters::orientation  orientation;
@@ -226,18 +229,61 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
     self& operator=(const self& src)
     {
+	// no self-copy
+	if (this == &src) return *this;
+
 	change_dim(src.num_rows(), src.num_cols());
 	std::copy(src.elements(), src.elements()+src.used_memory(), this->elements());
-	// matrix::copy(src, *this);
 	return *this;
     }
 
+
+#if 1
+    using assign_base::operator=;
+#else
+
+    /// Assign matrix expressions by copying except for some special expressions
     template <typename MatrixSrc>
-    self& operator=(const MatrixSrc& src)
+    self& operator=(const matrix::mat_expr<MatrixSrc>& src)
     {
-	matrix::copy(src, *this);
+	matrix_copy(src.ref, *this);
 	return *this;
     }
+
+
+    /// Assign sum by assigning first argument and adding second
+    /** Note that this is more special then assigning arbitrary expressions including matrices itself
+	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
+    template <typename E1, typename E2>
+    self& operator=(const matrix::mat_mat_plus_expr<E1, E2>& src)
+    {
+	*this= src.first;
+	*this+= src.second;
+
+	return *this;
+    }
+
+    /// Assign-add matrix expressions by incrementally copying except for some special expressions
+    template <typename MatrixSrc>
+    self& operator+=(const matrix::mat_expr<MatrixSrc>& src)
+    {
+	matrix_copy_plus(src.ref, *this);
+	return *this;
+    }
+
+    /// Assign-add sum by adding both arguments
+    /** Note that this is more special then assigning arbitrary expressions including matrices itself
+	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from 
+	matrix::mat_expr < MatrixSrc >. **/
+    template <typename E1, typename E2>
+    self& operator+=(const matrix::mat_mat_plus_expr<E1, E2>& src)
+    {
+	*this+= src.first;
+	*this+= src.second;
+
+	return *this;
+    }
+#endif
 
 
     bool check_indices(size_t r, size_t c) const
@@ -302,6 +348,32 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 }; // dense2D
 
 
+// ================
+// Free functions
+// ================
+
+template <typename Value, typename Parameters>
+typename dense2D<Value, Parameters>::size_type
+inline num_rows(const dense2D<Value, Parameters>& matrix)
+{
+    return matrix.num_rows();
+}
+
+template <typename Value, typename Parameters>
+typename dense2D<Value, Parameters>::size_type
+inline num_cols(const dense2D<Value, Parameters>& matrix)
+{
+    return matrix.num_cols();
+}
+
+template <typename Value, typename Parameters>
+typename dense2D<Value, Parameters>::size_type
+inline size(const dense2D<Value, Parameters>& matrix)
+{
+    return matrix.num_cols() * matrix.num_rows();
+}
+
+
 namespace traits
 {
 
@@ -310,13 +382,13 @@ namespace traits
 // For cursors
 // ================
 
-    template <typename Value, class Parameters>
+    template <typename Value, typename Parameters>
     struct range_generator<glas::tag::all, dense2D<Value, Parameters> >
       : detail::dense_element_range_generator<dense2D<Value, Parameters>,
 					      dense_el_cursor<Value>, complexity_classes::linear_cached>
     {};
 
-    template <typename Value, class Parameters>
+    template <typename Value, typename Parameters>
     struct range_generator<glas::tag::nz, dense2D<Value, Parameters> >
       : detail::dense_element_range_generator<dense2D<Value, Parameters>,
 					      dense_el_cursor<Value>, complexity_classes::linear_cached>
@@ -342,14 +414,14 @@ namespace traits
 	{};
     }
 
-    template <typename Value, class Parameters>
+    template <typename Value, typename Parameters>
     struct range_generator<glas::tag::row, dense2D<Value, Parameters> >
 	: detail::all_rows_range_generator<dense2D<Value, Parameters>, 
 					   typename detail::dense2D_rc<typename Parameters::orientation>::type>
     {};
  
     // For a cursor pointing to some row give the range of elements in this row 
-    template <typename Value, class Parameters>
+    template <typename Value, typename Parameters>
     struct range_generator<glas::tag::nz, 
 			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tag::row, 2> >
     {
@@ -390,7 +462,7 @@ namespace traits
 	}	
     };
 
-    template <typename Value, class Parameters>
+    template <typename Value, typename Parameters>
     struct range_generator<glas::tag::all, 
 			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tag::row, 2> >
         : range_generator<glas::tag::nz, 
@@ -398,14 +470,14 @@ namespace traits
     {};
 
 
-    template <typename Value, class Parameters>
+    template <typename Value, typename Parameters>
     struct range_generator<glas::tag::col, dense2D<Value, Parameters> >
 	: detail::all_cols_range_generator<dense2D<Value, Parameters>, 
 					   typename detail::dense2D_cc<typename Parameters::orientation>::type>
     {};
  
     // For a cursor pointing to some row give the range of elements in this row 
-    template <typename Value, class Parameters>
+    template <typename Value, typename Parameters>
     struct range_generator<glas::tag::nz, 
 			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tag::col, 2> >
     {
@@ -445,7 +517,7 @@ namespace traits
 	}	
     };
 
-    template <typename Value, class Parameters>
+    template <typename Value, typename Parameters>
     struct range_generator<glas::tag::all, 
 			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, glas::tag::col, 2> >
       : public range_generator<glas::tag::nz, 

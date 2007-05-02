@@ -52,6 +52,12 @@ namespace mtl {
 
     namespace matrix {
 	template <typename Matrix> struct mat_expr;
+	template <typename Matrix> struct dmat_expr;
+	template <typename Matrix> struct smat_expr;
+	template <typename E1, typename E2, typename SFunctor> struct mat_mat_op_expr;
+	template <typename E1, typename E2> struct mat_mat_plus_expr;
+
+	template <typename Matrix> struct mat_expr;
 	template <typename Functor, typename Matrix> struct map_view;
 	template <typename Scaling, typename Matrix> struct scaled_view;
 	template <typename Matrix>  struct conj_view;
@@ -123,10 +129,13 @@ namespace mtl {
     namespace wrec {}
 
     namespace detail {
-	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_common_operations;
+	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_matrix_assign;
+	template <typename Matrix, typename ValueType, typename SizeType> struct const_crtp_matrix_bracket;
+	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_matrix_bracket;
 	template <typename Matrix, typename ValueType, typename SizeType> struct const_crtp_base_matrix;
 	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_base_matrix;
 	template <typename Value, bool OnStack, unsigned Size= 0> struct contiguous_memory_block;
+	template <typename Matrix, typename Updater> struct trivial_inserter;
     }
 
 } // namespace mtl

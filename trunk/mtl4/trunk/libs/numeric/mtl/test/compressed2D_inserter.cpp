@@ -66,7 +66,7 @@ void test_compressed2D_insertion()
     if (matrix(4+io, 4+io) != 37) throw "Error overwriting existing value twice";
 
     {   // Inserter that adds to the old values
-        compressed2D_inserter<int, parameters, operations::update_add<int> > i2(matrix, 3);    
+        compressed2D_inserter<int, parameters, operations::update_plus<int> > i2(matrix, 3);    
  
 	i2(2+io, 2+io) << 21; i2(2+io, 4+io) << 22; i2(6+io, 1+io) << 23; 
 	i2(7+io, 2+io) << 24 << 2; i2(4+io, 2+io) << 25; i2(2+io, 5+io) << 26; 
@@ -82,7 +82,7 @@ void test_compressed2D_insertion()
     cout << "\n\n";
  
     {
-	matrix::inserter<matrix_type, operations::update_add<int> >  i3(matrix, 7);
+	matrix::inserter<matrix_type, operations::update_plus<int> >  i3(matrix, 7);
 	i3(2+io, 2+io) << 1;
     }
     if (matrix(2+io, 2+io) != 28) throw "Error adding to existing value";
