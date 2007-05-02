@@ -8,36 +8,85 @@ namespace mtl { namespace operations {
 template <typename Element>
 struct update_store
 {
-    Element& operator() (Element& x, Element const& y)
+    template <typename Value>
+    Element& operator() (Element& x, Value const& y)
     {
 	return x= y;
     }
-};
 
-template <typename Element>
-struct update_add
-{
-    Element& operator() (Element& x, Element const& y)
+    // How to fill empty entries; typically directly with /p y
+    template <typename Value>
+    Element init(Value const& y)
     {
-	return x+= y;
+	return y;
     }
 };
 
 template <typename Element>
-struct update_mult
+struct update_plus
 {
-    Element& operator() (Element& x, Element const& y)
+    template <typename Value>
+    Element& operator() (Element& x, Value const& y)
+    {
+	return x+= y;
+    }
+
+    // How to fill empty entries; typically directly with /p y
+    template <typename Value>
+    Element init(Value const& y)
+    {
+	return y;
+    }
+};
+
+template <typename Element>
+struct update_minus
+{
+    template <typename Value>
+    Element& operator() (Element& x, Value const& y)
+    {
+	return x-= y;
+    }
+
+    // How to fill empty entries. Here the inverse of /p y is needed!!!
+    template <typename Value>
+    Element init(Value const& y)
+    {
+	return -y;
+    }
+};
+
+template <typename Element>
+struct update_times
+{
+    template <typename Value>
+    Element& operator() (Element& x, Value const& y)
     {
 	return x*= y;
+    }
+
+    // How to fill empty entries; typically directly with /p y
+    template <typename Value>
+    Element init(Value const& y)
+    {
+	return y;
     }
 };
 
 template <typename Element, typename MonoidOp>
 struct update_adapter
 {
-    Element& operator() (Element& x, Element const& y)
+    template <typename Value>
+    Element& operator() (Element& x, Value const& y)
     {
 	return x= MonoidOp()(x, y);
+    }
+
+    // How to fill empty entries
+    template <typename Value>
+    Element init(Value const& y)
+    {
+	return y;
     }
 };
 
@@ -50,7 +99,8 @@ struct update_proxy
     explicit update_proxy(Inserter& ins, SizeType row, SizeType col) 
 	: ins(ins), row(row), col(col) {}
     
-    self& operator<< (value_type const& val)
+    template <typename Value>
+    self& operator<< (Value const& val)
     {
 	ins.update (row, col, val);
 	return *this;
@@ -92,14 +142,14 @@ const T identity< T, mtl::operations::update_store< T > >::value ;
 
 
 template < class T >
-struct identity< T, mtl::operations::update_add<T> > 
+struct identity< T, mtl::operations::update_plus<T> > 
 { 
     static const T value = 0 ; 
     T operator()() const { return value ; }
 } ;
 
 template < class T >
-const T identity< T, mtl::operations::update_add< T > >::value ;
+const T identity< T, mtl::operations::update_plus< T > >::value ;
 
 
 

@@ -26,7 +26,8 @@ struct trivial_inserter
 	return proxy_type(*this, row, col);
     }
 
-    void update(size_type row, size_type col, value_type val)
+    template <typename Value>
+    void update(size_type row, size_type col, Value val)
     {
 	Updater() (matrix(row, col), val);
     }

@@ -110,6 +110,32 @@ public:
 };
   
 
+// ================
+// Free functions
+// ================
+
+template <typename Matrix>
+typename transposed_view<Matrix>::size_type
+inline num_rows(const transposed_view<Matrix>& matrix)
+{
+    return matrix.num_rows();
+}
+
+template <typename Matrix>
+typename transposed_view<Matrix>::size_type
+inline num_cols(const transposed_view<Matrix>& matrix)
+{
+    return matrix.num_cols();
+}
+
+template <typename Matrix>
+typename transposed_view<Matrix>::size_type
+inline size(const transposed_view<Matrix>& matrix)
+{
+    return matrix.num_cols() * matrix.num_rows();
+}
+
+
 namespace traits {
 
     template <class Matrix> 

@@ -112,6 +112,33 @@ public:
 };
    
 
+// ================
+// Free functions
+// ================
+
+template <typename Functor, typename Matrix>
+typename map_view<Functor, Matrix>::size_type
+inline num_rows(const map_view<Functor, Matrix>& matrix)
+{
+    return matrix.num_rows();
+}
+
+template <typename Functor, typename Matrix>
+typename map_view<Functor, Matrix>::size_type
+inline num_cols(const map_view<Functor, Matrix>& matrix)
+{
+    return matrix.num_cols();
+}
+
+template <typename Functor, typename Matrix>
+typename map_view<Functor, Matrix>::size_type
+inline size(const map_view<Functor, Matrix>& matrix)
+{
+    return matrix.num_cols() * matrix.num_rows();
+}
+
+
+
     namespace detail {
 
 	template <typename Functor, typename Matrix> 

@@ -14,9 +14,9 @@ namespace mtl { namespace matrix {
 template <typename Matrix, 
 	  typename Updater = mtl::operations::update_store<typename Matrix::value_type> >
 struct inserter 
-  : public detail::trivial_inserter<Matrix, Updater>
+  : public mtl::detail::trivial_inserter<Matrix, Updater>
 {
-    typedef detail::trivial_inserter<Matrix, Updater>     base;
+    typedef mtl::detail::trivial_inserter<Matrix, Updater>     base;
 
     explicit inserter(Matrix& matrix) : base(matrix) 
     {

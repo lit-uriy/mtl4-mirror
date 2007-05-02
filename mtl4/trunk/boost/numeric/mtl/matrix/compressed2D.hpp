@@ -190,6 +190,7 @@ struct compressed2D_indexer
     template <class Matrix>
     size_pair major_minor_c(const Matrix& ma, size_t row, size_t col) const
     {
+	using std::make_pair;
 	// convert into c indices
 	typename Matrix::index_type my_index;
 	size_t my_row= index::change_from(my_index, row),
@@ -240,12 +241,15 @@ template <typename Elt, typename Parameters = matrix::parameters<> >
 class compressed2D 
   : public detail::base_matrix<Elt, Parameters>,
     public detail::const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >,
+    public detail::crtp_matrix_assign< compressed2D<Elt, Parameters>, Elt, std::size_t >,
     public matrix::mat_expr< compressed2D<Elt, Parameters> >
 {
     typedef std::size_t                              size_t;
     typedef detail::base_matrix<Elt, Parameters>     super;
     typedef compressed2D                             self;
-    typedef matrix::mat_expr< compressed2D<Elt, Parameters> >   expr_base;
+    typedef matrix::mat_expr< compressed2D<Elt, Parameters> >          expr_base;
+    typedef detail::crtp_matrix_assign< self, Elt, std::size_t >       assign_base;
+
   public:
     typedef Parameters                               parameters;
     typedef typename Parameters::orientation         orientation;
@@ -311,16 +315,15 @@ class compressed2D
 
     self& operator=(const self& src)
     {
-	matrix::copy(src, *this);
+	// no self-copy
+	if (this == &src) return *this;
+
+	matrix_copy(src, *this);
 	return *this;
     }
 
-    template <typename MatrixSrc>
-    self& operator=(const MatrixSrc& src)
-    {
-	matrix::copy(src, *this);
-	return *this;
-    }
+    using assign_base::operator=;
+
 
     // Copies range of values and their coordinates into compressed matrix
     // For brute force initialization, should be used with uttermost care
@@ -487,6 +490,7 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type ro
 {
     using std::copy_backward;
 
+    Updater                updater;  
     compressed2D_indexer   indexer;
     size_pair              mm = indexer.major_minor_c(matrix, row, col);
     size_type              major, minor;
@@ -495,24 +499,24 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type ro
     maybe<size_type>       pos = matrix_offset(mm);
     // Check if already in matrix and update it
     if (pos) 
-	Updater() (elements[pos], val); 
+	updater (elements[pos], val); 
     else {
 	size_type& my_end = slot_ends[major];
 	// Check if place in matrix to insert there
 	if (my_end != starts[major+1]) { 
 	    copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
 	    copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
-	    elements[pos] = val; indices[pos] = minor;
+	    elements[pos] = updater.init(val); indices[pos] = minor;
 	    my_end++;	    
 	    matrix.my_nnz++;      // new entry
 	} else {
 	    typename map_type::iterator it = spare.find(mm);
 	    // If not in map insert it, otherwise update the value
 	    if (it == spare.end()) {
-		spare.insert(std::make_pair(mm, val));
+		spare.insert(std::make_pair(mm, updater.init(val)));
 		matrix.my_nnz++;      // new entry
 	    } else 
-		Updater() (it->second, val);
+		updater(it->second, val);
 	}
     }
 }  
@@ -570,6 +574,34 @@ void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
 	my_end++;
     }
 }
+
+// ================
+// Free functions
+// ================
+
+template <typename Value, typename Parameters>
+typename compressed2D<Value, Parameters>::size_type
+inline num_rows(const compressed2D<Value, Parameters>& matrix)
+{
+    return matrix.num_rows();
+}
+
+template <typename Value, typename Parameters>
+typename compressed2D<Value, Parameters>::size_type
+inline num_cols(const compressed2D<Value, Parameters>& matrix)
+{
+    return matrix.num_cols();
+}
+
+template <typename Value, typename Parameters>
+typename compressed2D<Value, Parameters>::size_type
+inline size(const compressed2D<Value, Parameters>& matrix)
+{
+    return matrix.num_cols() * matrix.num_rows();
+}
+
+
+
 
 
 // ================

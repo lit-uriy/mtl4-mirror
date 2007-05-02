@@ -289,6 +289,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     typedef detail::contiguous_memory_block<Elt, false>                super_memory;
     typedef morton_dense                                               self;
     typedef matrix::mat_expr< morton_dense<Elt, BitMask, Parameters> > expr_base;
+    typedef detail::crtp_matrix_assign< self, Elt, std::size_t >       assign_base;
 
   public:
 
@@ -422,22 +423,17 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	this->realloc(memory_need(num_rows, num_cols));
     }
 
-#ifndef MTL_UGLY_MULT_HACK
     self& operator=(const self& src)
     {
+	// no self-copy
+	if (this == &src) return *this;
+
 	change_dim(src.num_rows(), src.num_cols());
 	std::copy(src.elements(), src.elements()+src.used_memory(), this->elements());
-	// matrix::copy(src, *this);
 	return *this;
     }
 
-    template <typename MatrixSrc>
-    self& operator=(const MatrixSrc& src)
-    {
-	matrix::copy(src, *this);
-	return *this;
-    }
-#endif
+    using assign_base::operator=;
 
 
     value_type operator() (key_type const& key) const
@@ -533,6 +529,35 @@ bool morton_dense<Elt, BitMask, Parameters>::isLeaf(const AhnenIndex& index) con
     else return 0;
 }
 #endif
+
+
+
+// ================
+// Free functions
+// ================
+
+template <typename Value, unsigned long Mask, typename Parameters>
+typename morton_dense<Value, Mask, Parameters>::size_type
+inline num_rows(const morton_dense<Value, Mask, Parameters>& matrix)
+{
+    return matrix.num_rows();
+}
+
+template <typename Value, unsigned long Mask, typename Parameters>
+typename morton_dense<Value, Mask, Parameters>::size_type
+inline num_cols(const morton_dense<Value, Mask, Parameters>& matrix)
+{
+    return matrix.num_cols();
+}
+
+template <typename Value, unsigned long Mask, typename Parameters>
+typename morton_dense<Value, Mask, Parameters>::size_type
+inline size(const morton_dense<Value, Mask, Parameters>& matrix)
+{
+    return matrix.num_cols() * matrix.num_rows();
+}
+
+
 
 
 // ================
