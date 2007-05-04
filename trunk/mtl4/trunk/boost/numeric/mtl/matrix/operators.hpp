@@ -1,7 +1,7 @@
 // $COPYRIGHT$
 
-#ifndef MTL_OPERATORS_INCLUDE
-#define MTL_OPERATORS_INCLUDE
+#ifndef MTL_MATRIX_OPERATORS_INCLUDE
+#define MTL_MATRIX_OPERATORS_INCLUDE
 
 #include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
@@ -50,4 +50,4 @@ operator- (const mat_expr<M1>& m1, const mat_expr<M2>& m2)
 
 }} // namespace mtl::matrix
 
-#endif // MTL_OPERATORS_INCLUDE
+#endif // MTL_MATRIX_OPERATORS_INCLUDE

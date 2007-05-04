@@ -128,6 +128,19 @@ struct ashape< matrix::mat_mat_minus_expr<M1, M2> >
 // Operation types:
 
 struct scal_scal_mult {};
+struct cvec_rvec_mult {}; // outer product
+struct rvec_cvec_mult {}; // inner product (without conj)
+struct rvec_mat_mult {};
+struct mat_cvec_mult {};
+struct mat_mat_mult {};
+struct scal_rvec_mult {};
+struct scal_cvec_mult {};
+struct scal_mat_mult {};
+struct rvec_scal_mult {};
+struct cvec_scal_mult {};
+struct mat_scal_mult {};
+
+
 
 // =====================
 // Results of operations
@@ -150,7 +163,9 @@ rv | rv*  s   x  rv
 
 /// Algebraic shape of multiplication's result when elements of collections are multiplied.
 /** The types are the same as for multiplications of entire collections except that scalar *
-    matrix (or vector) is excluded to avoid ambiguities. **/
+    matrix (or vector) is excluded to avoid ambiguities. 
+    emult_shape <Shape1, Shape2> is only properly defined if emult_op <Shape1, Shape2>::type is not ndef!
+**/
 template <typename Shape1, typename Shape2>
 struct emult_shape
 {
@@ -180,7 +195,7 @@ struct emult_op<scal, scal>
     typedef scal_scal_mult type;
 };
 
-
+// Row times column vector, i.e. outer product
 template <typename Value1, typename Value2>
 struct emult_shape<cvec<Value1>, rvec<Value2> >
 {
@@ -188,17 +203,55 @@ struct emult_shape<cvec<Value1>, rvec<Value2> >
 };
 
 template <typename Value1, typename Value2>
+struct emult_op<cvec<Value1>, rvec<Value2> >
+{
+    // if product of elements is undefined then product is undefined too
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+      , ndef
+      , cvec_rvec_mult
+    >::type type;
+};
+
+
+// Row times column vector, i.e. inner product (without conj)
+template <typename Value1, typename Value2>
 struct emult_shape<rvec<Value1>, cvec<Value2> >
 {
     typedef typename emult_shape<Value1, Value2>::type type;
 };
 
 template <typename Value1, typename Value2>
+struct emult_op<rvec<Value1>, cvec<Value2> >
+{
+    // if product of elements is undefined then product is undefined too
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+      , ndef
+      , rvec_cvec_mult
+    >::type type;
+};
+
+// Row vector times matrix
+template <typename Value1, typename Value2>
 struct emult_shape<rvec<Value1>, mat<Value2> >
 {
     typedef rvec<typename emult_shape<Value1, Value2>::type> type;
 };
 
+
+template <typename Value1, typename Value2>
+struct emult_op<rvec<Value1>, mat<Value2> >
+{
+    // if product of elements is undefined then product is undefined too
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+      , ndef
+      , rvec_mat_mult
+    >::type type;
+};
+
+// Matrix times column vector
 template <typename Value1, typename Value2>
 struct emult_shape<mat<Value1>, cvec<Value2> >
 {
@@ -206,17 +259,53 @@ struct emult_shape<mat<Value1>, cvec<Value2> >
 };
 
 template <typename Value1, typename Value2>
+struct emult_op<mat<Value1>, cvec<Value2> >
+{
+    // if product of elements is undefined then product is undefined too
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+      , ndef
+      , mat_cvec_mult
+    >::type type;
+};
+
+
+// Matrix product
+template <typename Value1, typename Value2>
 struct emult_shape<mat<Value1>, mat<Value2> >
 {
     typedef mat<typename emult_shape<Value1, Value2>::type> type;
 };
 
+template <typename Value1, typename Value2>
+struct emult_op<mat<Value1>, mat<Value2> >
+{
+    // if product of elements is undefined then product is undefined too
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+      , ndef
+      , mat_mat_mult
+    >::type type;
+};
+
+
+
 // Results for entire collections, i.e. scalar * matrix (vector) are allowed
+
+
+// Multiplying collections as emult
 
 template  <typename Shape1, typename Shape2>
 struct mult_shape
     : public emult_shape<Shape1, Shape2>
 {};
+
+template  <typename Shape1, typename Shape2>
+struct mult_op
+    : public emult_op<Shape1, Shape2>
+{};
+
+// Scale collection from left
 
 template <typename Shape2>
 struct mult_shape<scal, Shape2>
@@ -224,11 +313,50 @@ struct mult_shape<scal, Shape2>
     typedef Shape2 type;
 };
 
+template <typename Value2>
+struct mult_op<scal, rvec<Value2> >
+{
+    typedef scal_rvec_mult type;
+};
+
+template <typename Value2>
+struct mult_op<scal, cvec<Value2> >
+{
+    typedef scal_cvec_mult type;
+};
+
+template <typename Value2>
+struct mult_op<scal, mat<Value2> >
+{
+    typedef scal_mat_mult type;
+};
+
+// Scale collection from right
+
 template <typename Shape1>
 struct mult_shape<Shape1, scal>
 {
     typedef Shape1 type;
 };
+
+template <typename Value1>
+struct mult_op<rvec<Value1>, scal>
+{
+    typedef rvec_scal_mult type;
+};
+
+template <typename Value1>
+struct mult_op<cvec<Value1>, scal>
+{
+    typedef cvec_scal_mult type;
+};
+
+template <typename Value1>
+struct mult_op<mat<Value1>, scal>
+{
+    typedef mat_scal_mult type;
+};
+
 
 // Arbitration
 template <>

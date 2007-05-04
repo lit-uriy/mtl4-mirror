@@ -6,6 +6,7 @@
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/mat_mat_minus_expr.hpp>
 #include <boost/numeric/mtl/matrix/mat_mat_plus_expr.hpp>
+#include <boost/numeric/mtl/matrix/mat_mat_times_expr.hpp>
 
 #if 0
 #include <boost/numeric/mtl/matrix/mat_mat_asgn_expr.hpp>
