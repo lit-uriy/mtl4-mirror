@@ -9,6 +9,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/operation/matrix_bracket.hpp>
 #include <boost/numeric/mtl/operation/copy.hpp>
+#include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 
 namespace mtl { namespace detail {
@@ -44,6 +45,16 @@ struct crtp_matrix_assign
     {
 	static_cast<Matrix&>(*this)= src.first;
 	static_cast<Matrix&>(*this)-= src.second;
+
+	return static_cast<Matrix&>(*this);
+    }
+
+    /// Assign product by calling mult
+    /** Note that this does not work for arbitrary expressions. **/
+    template <typename E1, typename E2>
+    Matrix& operator=(const matrix::mat_mat_times_expr<E1, E2>& src)
+    {
+	mult(src.first, src.second, static_cast<Matrix&>(*this));
 
 	return static_cast<Matrix&>(*this);
     }
