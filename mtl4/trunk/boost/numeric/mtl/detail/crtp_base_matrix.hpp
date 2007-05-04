@@ -11,6 +11,8 @@
 #include <boost/numeric/mtl/operation/copy.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 
 namespace mtl { namespace detail {
 
@@ -93,6 +95,17 @@ struct crtp_matrix_assign
 	return static_cast<Matrix&>(*this);
     }
 
+    /// Assign-add product by calling gen_mult
+    /** Note that this does not work for arbitrary expressions. **/
+    template <typename E1, typename E2>
+    Matrix& operator+=(const matrix::mat_mat_times_expr<E1, E2>& src)
+    {
+	gen_mult(src.first, src.second, static_cast<Matrix&>(*this), 
+		 assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
+
+	return static_cast<Matrix&>(*this);
+    }
+
     /// Assign-subtract matrix expressions by decrementally copying except for some special expressions
     template <typename MatrixSrc>
     Matrix& operator-=(const matrix::mat_expr<MatrixSrc>& src)
@@ -123,6 +136,17 @@ struct crtp_matrix_assign
     {
 	static_cast<Matrix&>(*this)-= src.first;
 	static_cast<Matrix&>(*this)+= src.second;
+
+	return static_cast<Matrix&>(*this);
+    }
+
+    /// Assign-add product by calling gen_mult
+    /** Note that this does not work for arbitrary expressions. **/
+    template <typename E1, typename E2>
+    Matrix& operator-=(const matrix::mat_mat_times_expr<E1, E2>& src)
+    {
+	gen_mult(src.first, src.second, static_cast<Matrix&>(*this), 
+		 assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 
 	return static_cast<Matrix&>(*this);
     }
