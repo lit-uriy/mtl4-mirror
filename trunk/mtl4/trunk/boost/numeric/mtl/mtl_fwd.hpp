@@ -54,8 +54,9 @@ namespace mtl {
 	template <typename Matrix> struct mat_expr;
 	template <typename Matrix> struct dmat_expr;
 	template <typename Matrix> struct smat_expr;
-	template <typename E1, typename E2, typename SFunctor> struct mat_mat_op_expr;
-	template <typename E1, typename E2> struct mat_mat_plus_expr;
+	template <typename M1, typename M2, typename SFunctor> struct mat_mat_op_expr;
+	template <typename M1, typename M2> struct mat_mat_plus_expr;
+	template <typename M1, typename M2> struct mat_mat_minus_expr;
 
 	template <typename Matrix> struct mat_expr;
 	template <typename Functor, typename Matrix> struct map_view;
@@ -67,6 +68,8 @@ namespace mtl {
     /// Namespace for vectors and views and %operations exclusively on vectors
     namespace vector {
 	template <typename Value, typename Parameters> struct dense_vector;
+	template <typename Vector>  struct conj_view;
+	template <typename Scaling, typename Vector> struct scaled_view;
     }
 
     using vector::dense_vector;
