@@ -51,21 +51,21 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_mat_mult>
     typedef matrix::scaled_view<Op1, Op2> type;
 };
 
-/// Scale matrix from right
+#if 0
+/// Scale matrix from right needs functor for scaling from right (not yet implemented)
 template <typename Op1, typename Op2>
 struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_scal_mult> 
 {
-    typedef matrix::scaled_view<Op1, Op2> type;
+    typedef matrix::rscaled_view<Op1, Op2> type;
 };
+#endif
 
-#if 0
 /// Multiply matrices
 template <typename Op1, typename Op2>
-struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_mat_mult> 
+struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_mat_mult> 
 {
     typedef matrix::mat_mat_times_expr<Op1, Op2> type;
 };
-#endif
 
 
 
