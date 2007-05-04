@@ -225,6 +225,14 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     c= a * b;
     check_hessian_matrix_product(c, a.num_cols());
 
+    std::cout << "\n" << name << "  --- check c+= a * b:\n"; std::cout.flush();
+    c+= a * b;
+    check_hessian_matrix_product(c, a.num_cols(), 2.5);
+
+    std::cout << "\n" << name << "  --- check c-= a * b:\n"; std::cout.flush();
+    c-= a * b;
+    check_hessian_matrix_product(c, a.num_cols(), 2.5);
+
     if (a.num_cols() <= 0) { 
 	print_matrix_row_cursor(a); std::cout << "\n"; print_matrix_row_cursor(b); std::cout << "\n"; 
 	print_matrix_row_cursor(c); std::cout << "\n"; } 
