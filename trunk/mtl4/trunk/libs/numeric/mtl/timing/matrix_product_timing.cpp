@@ -12,7 +12,7 @@
 #include <boost/numeric/mtl/matrix/morton_dense.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
 #include <boost/numeric/mtl/operation/matrix_mult.hpp>
-#include <boost/numeric/mtl/operation/hessian_matrix_utility.hpp>
+#include <boost/numeric/mtl/matrix/hessian_setup.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 #include <boost/numeric/mtl/utility/papi.hpp>

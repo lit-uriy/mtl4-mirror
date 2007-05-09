@@ -33,19 +33,23 @@ inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag
 }
 
 
-// Dense Matrix multiplication
+/// Dense matrix multiplication
+/**  The function for dense matrix multiplication defines a default multiplication functor. 
+     Alternatively the user can define his own functors for specific triplets of matrix types, 
+     see detail::dmat_dmat_mult_specialize.
+     The default functor for dense matrix multiplication is: 
+     -# Use BLAS   if available, otherwise
+     -# Recursive multiplication with:
+        -# Platform optimized mult on blocks   if available, otherwise
+        -# Tiled multiplication on blocks      if available, otherwise
+        -# Naive multiplication on blocks
+     -# Naive multiplication on entire matrices if recursion is not available
+**/
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::dense, tag::dense, tag::dense)
 {
     using assign::plus_sum; using assign::assign_sum; 
 
-    // Construct default functor: 
-    // 1. Use BLAS   if available, otherwise
-    // 2. Recursive multiplication with:
-    //    1. Platform optimized mult on blocks   if available, otherwise
-    //    2. Tiled multiplication on blocks      if available, otherwise
-    //    3. Naive multiplication on blocks
-    // 3. Naive multiplication on entire matrices if recursion is not available
     static const unsigned long tiling1= detail::dmat_dmat_mult_tiling1<MatrixA, MatrixB, MatrixC>::value;
     static const unsigned long tiling2= detail::dmat_dmat_mult_tiling2<MatrixA, MatrixB, MatrixC>::value;
     typedef gen_tiling_dmat_dmat_mult_t<tiling1, tiling2, plus_sum>    tiling_mult_t;
@@ -54,14 +58,14 @@ inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign,
     typedef gen_recursive_dmat_dmat_mult_t<platform_mult_t>            recursive_mult_t;
     typedef gen_blas_dmat_dmat_mult_t<assign_sum, recursive_mult_t>    default_functor_t;
 
-    // Use user-defined functor if provided (assign mode can be arbitrary)
+    /// Use user-defined functor if provided (assign mode can be arbitrary)
     typedef typename boost::mpl::if_<
 	detail::dmat_dmat_mult_specialize<MatrixA, MatrixB, MatrixC>
       , typename detail::dmat_dmat_mult_specialize<MatrixA, MatrixB, MatrixC>::type
       , default_functor_t
     >::type raw_functor_type;
 
-    // Finally substitute assign mode (consistently)
+    /// Finally substitute assign mode (consistently)
     typename assign::mult_assign_mode<raw_functor_type, Assign>::type functor;
 
     functor(a, b, c);
