@@ -23,18 +23,18 @@ void test(Matrix& matrix, unsigned dim1, unsigned dim2, const char* name)
     cout << "Laplacian matrix:\n" << matrix << "\n";
     
     if (dim1 > 1 && dim2 > 1) {
-	typename Collection<Matrix>::value_type four(4.0), one(1.0), zero(0.0);
+	typename Collection<Matrix>::value_type four(4.0), minus_one(-1.0), zero(0.0);
 	if (matrix[0][0] != four)
 	    throw "wrong diagonal";
-	if (matrix[0][1] != one)
+	if (matrix[0][1] != minus_one)
 	    throw "wrong east neighbor";
-	if (matrix[0][dim2] != one)
+	if (matrix[0][dim2] != minus_one)
 	    throw "wrong south neighbor";
 	if (dim2 > 2 && matrix[0][2] != zero)
 	    throw "wrong zero-element";
-	if (matrix[1][0] != one)
+	if (matrix[1][0] != minus_one)
 	    throw "wrong west neighbor";
-	if (matrix[dim2][0] != one)
+	if (matrix[dim2][0] != minus_one)
 	    throw "wrong north neighbor";
 	if (dim2 > 2 && matrix[2][0] != zero)
 	    throw "wrong zero-element";
