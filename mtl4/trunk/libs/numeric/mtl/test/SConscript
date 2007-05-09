@@ -19,6 +19,7 @@ sources = Split("""base_case_conversion.cpp
              algebraic_category.cpp
              matrix_add_test.cpp
              laplacian_setup_test.cpp
+             sparse_matrix_product_test.cpp
 """)
 #compressed2D.cpp
 

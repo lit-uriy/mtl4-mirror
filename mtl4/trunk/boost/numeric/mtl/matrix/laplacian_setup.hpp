@@ -9,10 +9,12 @@
 namespace mtl { namespace matrix {
 
 /// Setup a matrix according to a Laplacian equation on a 2D-grid using a five-point-stencil
-/** Intended for sparse matrices but works also with dense matrices **/
+/** Intended for sparse matrices but works also with dense matrices. Changes the size of
+    the matrix if necessary. **/
 template <typename Matrix>
 inline void laplacian_setup(Matrix& matrix, unsigned dim1, unsigned dim2)
 {
+    matrix.change_dim(dim1*dim2, dim1*dim2);
     set_to_zero(matrix);
     inserter<Matrix>      ins(matrix);
 

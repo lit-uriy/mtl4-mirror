@@ -3,8 +3,10 @@
 #ifndef MTL_MULT_INCLUDE
 #define MTL_MULT_INCLUDE
 
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
+#include <boost/numeric/mtl/operation/smat_smat_mult.hpp>
 #include <boost/numeric/mtl/operation/mult_specialize.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
@@ -71,7 +73,13 @@ inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign,
     functor(a, b, c);
 }
 
-
+/// Sparse matrix multiplication
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
+inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::sparse, tag::sparse)
+{
+    smat_smat_mult(a, b, c, Assign(), typename OrientedCollection<MatrixA>::orientation(),
+		   typename OrientedCollection<MatrixB>::orientation());
+}
 
 
 
