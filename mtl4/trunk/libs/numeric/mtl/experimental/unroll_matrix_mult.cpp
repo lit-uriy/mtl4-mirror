@@ -8,7 +8,7 @@
 
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
-#include <boost/numeric/mtl/operation/hessian_matrix_utility.hpp>
+#include <boost/numeric/mtl/matrix/hessian_setup.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 
