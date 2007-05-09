@@ -519,6 +519,7 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type ro
 		updater(it->second, val);
 	}
     }
+    // std::cout << "inserter update: " << matrix.my_nnz << " non-zero elements, new value is " << elements[pos] << "\n";
 }  
 
 

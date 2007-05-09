@@ -3,6 +3,8 @@
 #ifndef MTL_UPDATE_INCLUDE
 #define MTL_UPDATE_INCLUDE
 
+#include <boost/numeric/mtl/operation/assign_mode.hpp>
+
 namespace mtl { namespace operations {
 
 template <typename Element>
@@ -110,7 +112,48 @@ struct update_proxy
     SizeType   row, col;
 };
 
+/// Compute updater that corresponds to assign_mode
+template <typename Assign, typename Value>
+struct update_assign_mode {};
+
+template <typename Value>
+struct update_assign_mode<assign::assign_sum, Value>
+{
+    typedef update_plus<Value> type;
+};
+
+template <typename Value>
+struct update_assign_mode<assign::plus_sum, Value>
+{
+    typedef update_plus<Value> type;
+};
+
+template <typename Value>
+struct update_assign_mode<assign::minus_sum, Value>
+{
+    typedef update_minus<Value> type;
+};
+
 }} // namespace mtl::operations
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #if 0
 // inconsistent with linear_algebra/identity.hpp
