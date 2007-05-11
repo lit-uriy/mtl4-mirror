@@ -178,16 +178,16 @@ The inner loop can be unrolled arbitrarily. So, we can simplify
 // =======================
 
 // Define defaults if not yet given as Compiler flag
-#ifndef MTL_DENSE_MATMAT_MULT_TILING1
-#  define MTL_DENSE_MATMAT_MULT_TILING1 2
+#ifndef MTL_DMAT_DMAT_MULT_TILING1
+#  define MTL_DMAT_DMAT_MULT_TILING1 2
 #endif
 
-#ifndef MTL_DENSE_MATMAT_MULT_TILING2
-#  define MTL_DENSE_MATMAT_MULT_TILING2 4
+#ifndef MTL_DMAT_DMAT_MULT_TILING2
+#  define MTL_DMAT_DMAT_MULT_TILING2 4
 #endif
 
-#ifndef MTL_DENSE_MATMAT_MULT_INNER_UNROLL
-#  define MTL_DENSE_MATMAT_MULT_INNER_UNROLL 8
+#ifndef MTL_DMAT_DMAT_MULT_INNER_UNROLL
+#  define MTL_DMAT_DMAT_MULT_INNER_UNROLL 8
 #endif
 
 
@@ -250,8 +250,8 @@ struct gen_tiling_dmat_dmat_mult_block<Max0, Max0, Max1, Max1, Assign>
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC,
-	  unsigned long Tiling1= MTL_DENSE_MATMAT_MULT_TILING1,
-	  unsigned long Tiling2= MTL_DENSE_MATMAT_MULT_TILING2,
+	  unsigned long Tiling1= MTL_DMAT_DMAT_MULT_TILING1,
+	  unsigned long Tiling2= MTL_DMAT_DMAT_MULT_TILING2,
 	  typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dmat_dmat_mult_t<Assign> >
 struct gen_tiling_dmat_dmat_mult_ft
@@ -335,8 +335,8 @@ private:
 #endif
 };
 
-template <unsigned long Tiling1= MTL_DENSE_MATMAT_MULT_TILING1,
-	  unsigned long Tiling2= MTL_DENSE_MATMAT_MULT_TILING2,
+template <unsigned long Tiling1= MTL_DMAT_DMAT_MULT_TILING1,
+	  unsigned long Tiling2= MTL_DMAT_DMAT_MULT_TILING2,
 	  typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dmat_dmat_mult_t<Assign> >
 struct gen_tiling_dmat_dmat_mult_t
