@@ -73,12 +73,35 @@ inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign,
     functor(a, b, c);
 }
 
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
+inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::dense, tag::dense)
+{
+    // This is a useless and extremely inefficient operation!!!!
+    // We compute this with a dense matrix and copy the result back
+    dense2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
+    c_copy= c;
+    mat_mat_mult(a, b, c_copy, Assign(), tag::dense(), tag::dense(), tag::dense());
+    c= c_copy;
+}
+
 /// Sparse matrix multiplication
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::sparse, tag::sparse)
 {
     smat_smat_mult(a, b, c, Assign(), typename OrientedCollection<MatrixA>::orientation(),
 		   typename OrientedCollection<MatrixB>::orientation());
+}
+
+template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
+inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::dense, tag::sparse, tag::sparse)
+{
+    // This is a useless and extremely inefficient operation!!!!
+    // We compute this with a sparse matrix and copy the result back
+    compressed2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
+    c_copy= c;
+    smat_smat_mult(a, b, c_copy, Assign(), typename OrientedCollection<MatrixA>::orientation(),
+		   typename OrientedCollection<MatrixB>::orientation());
+    c= c_copy;
 }
 
 
