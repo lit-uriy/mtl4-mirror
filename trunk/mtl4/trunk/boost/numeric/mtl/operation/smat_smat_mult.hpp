@@ -38,7 +38,6 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
     typedef typename traits::range_generator<tag::row, MatrixA>::type  cursor_type;
     cursor_type cursor = begin<tag::row>(a), cend = end<tag::row>(a); 
     for (unsigned ra= 0; cursor != cend; ++ra, ++cursor) {
-	// std::cout << "ra = " << ra << "\n";
 	// Iterate over non-zeros of each row of A
 	typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
 	for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor) {
@@ -49,7 +48,6 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 	    typedef typename traits::range_generator<tag::row, MatrixB>::type  b_cursor_type;
 	    b_cursor_type b_cursor = begin<tag::row>(b);
 	    b_cursor+= ca;
-	    //std::cout << "ca = rb = " << ca << "\n";
 
 	    // Iterate over non-zeros of this row 
 	    typedef typename traits::range_generator<tag::nz, b_cursor_type>::type ib_cursor_type;
@@ -57,9 +55,6 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 		 ib_cursor != ib_cend; ++ib_cursor) {
 		typename Collection<MatrixB>::size_type     cb= col_b(ib_cursor);   // column of non-zero
 		typename Collection<MatrixB>::value_type    vb= value_b(ib_cursor); // value of non-zero
-		//std::cout << "cb = " << cb << "\n";
-		
-		//std::cout << "va = " << va << ", vb = " << vb << "\n";
 		ins(ra, cb) << va * vb;		
 	    }
 	}
@@ -94,7 +89,6 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
     typedef typename traits::range_generator<tag::col, MatrixB>::type  cursor_type;
     cursor_type cursor = begin<tag::col>(b), cend = end<tag::col>(b); 
     for (unsigned cb= 0; cursor != cend; ++cb, ++cursor) {
-	// std::cout << "cb = " << cb << "\n";
 	// Iterate over non-zeros of each column of B
 	typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
 	for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor) {
@@ -105,7 +99,6 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 	    typedef typename traits::range_generator<tag::col, MatrixA>::type  a_cursor_type;
 	    a_cursor_type a_cursor = begin<tag::col>(a);
 	    a_cursor+= rb;
-	    //std::cout << "ca = rb = " << rb << "\n";
 
 	    // Iterate over non-zeros of this column
 	    typedef typename traits::range_generator<tag::nz, a_cursor_type>::type ia_cursor_type;
@@ -113,9 +106,6 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 		 ia_cursor != ia_cend; ++ia_cursor) {
 		typename Collection<MatrixA>::size_type     ra= row_a(ia_cursor);   // row of non-zero
 		typename Collection<MatrixA>::value_type    va= value_a(ia_cursor); // value of non-zero
-		//std::cout << "ra = " << ra << "\n";
-		
-		//std::cout << "va = " << va << ", vb = " << vb << "\n";
 		ins(ra, cb) << va * vb;		
 	    }
 	}
@@ -163,7 +153,6 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
         {
 	    typename Collection<MatrixA>::size_type     ra= row_a(ia_cursor);   // row of non-zero
 	    typename Collection<MatrixA>::value_type    va= value_a(ia_cursor); // value of non-zero
-	    //std::cout << "ra = " << ra << "\n";
 
 	    // Iterate over non-zeros of B's row 
 	    typedef typename traits::range_generator<tag::nz, b_cursor_type>::type ib_cursor_type;
@@ -172,8 +161,6 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
             {
 		typename Collection<MatrixB>::size_type     cb= col_b(ib_cursor);   // column of non-zero
 		typename Collection<MatrixB>::value_type    vb= value_b(ib_cursor); // value of non-zero
-
-		//std::cout << "va = " << va << ", vb = " << vb << "\n";
 		ins(ra, cb) << va * vb;		
 	    }
 	}
@@ -188,8 +175,6 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 {
     // Copy B into a row-major matrix
     compressed2D<typename Collection<MatrixB>::value_type, matrix::parameters<> > b_copy(b);
-    //compressed2D<typename Collection<MatrixB>::value_type, matrix::parameters<> > b_copy(num_rows(b), num_cols(b));
-    //b_copy= b;
     smat_smat_mult(a, b_copy, c, Assign(), tag::row_major(), tag::row_major());
 }
 
