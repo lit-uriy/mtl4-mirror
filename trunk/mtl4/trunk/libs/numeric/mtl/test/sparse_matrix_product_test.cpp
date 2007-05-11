@@ -14,18 +14,18 @@ using namespace mtl;
 using namespace std;  
 
 template <typename MatrixA, typename MatrixB>
-void test(MatrixA& a, MatrixB&, unsigned dim1, unsigned dim2, const char* name)
+void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name)
 {
+    const unsigned max_print_size= 25;
     cout << "\n" << name << "\n";
     laplacian_setup(a, dim1, dim2);
-    MatrixB b;
     laplacian_setup(b, dim1, dim2);
 
     unsigned size= dim1 * dim2;
     compressed2D<double>  c(size, size);
     c= a * b;
 
-    if (size <= 25)
+    if (size <= max_print_size)
 	cout << "A= \n\n" << a << "B= \n\n" << b << "A*B= \n\n" << c << "\n";
 
     // Check for stencil below in the middle of the matrix
@@ -52,6 +52,34 @@ void test(MatrixA& a, MatrixB&, unsigned dim1, unsigned dim2, const char* name)
 	if (c[12][22] != one)
 	    throw "wrong south south neighbor";
     }
+
+    c+= a * b;
+
+    if (size <= max_print_size)
+	cout << "C+= A*B= \n\n" << c << "\n";
+
+    // Check for stencil, must be doubled now
+    if (dim1 == 5 && dim2 == 5) {
+	typename Collection<MatrixA>::value_type forty(40.0), four(4.0);
+	if (c[12][12] != forty)
+	    throw "wrong diagonal";
+	if (c[12][18] != four)
+	    throw "wrong south east neighbor";
+    }
+
+    c-= a * b;
+
+    if (size <= max_print_size)
+	cout << "C-= A*B= \n\n" << c << "\n";
+
+    // Check for stencil, must be A*B now
+    if (dim1 == 5 && dim2 == 5) {
+	typename Collection<MatrixA>::value_type twenty(20.0), two(2.0);
+	if (c[12][12] != twenty)
+	    throw "wrong diagonal";
+	if (c[12][18] != two)
+	    throw "wrong south east neighbor";
+    }
 }
 
 
@@ -77,8 +105,8 @@ int test_main(int argc, char* argv[])
     test(cr, cc, dim1, dim2, "Row-major times column-major");
 
     test(cc, cr, dim1, dim2, "Column-major times row-major");
-    test(cc, cc, dim1, dim2, "Column-major times column-major");
 #endif
+    test(cc, cc, dim1, dim2, "Column-major times column-major");
 
     return 0;
 }
