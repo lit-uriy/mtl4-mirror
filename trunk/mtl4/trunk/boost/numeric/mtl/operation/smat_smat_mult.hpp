@@ -41,8 +41,8 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 	// Iterate over non-zeros of each row of A
 	typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
 	for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor) {
-	    typename Collection<MatrixA>::size_type     ca= col_a(icursor);   // column of non-zero
-	    typename Collection<MatrixA>::value_type    va= value_a(icursor); // value of non-zero
+	    typename Collection<MatrixA>::size_type     ca= col_a(*icursor);   // column of non-zero
+	    typename Collection<MatrixA>::value_type    va= value_a(*icursor); // value of non-zero
  
 	    // Get cursor corresponding to row 'ca' in matrix B
 	    typedef typename traits::range_generator<tag::row, MatrixB>::type  b_cursor_type;
@@ -53,8 +53,8 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 	    typedef typename traits::range_generator<tag::nz, b_cursor_type>::type ib_cursor_type;
 	    for (ib_cursor_type ib_cursor = begin<tag::nz>(b_cursor), ib_cend = end<tag::nz>(b_cursor); 
 		 ib_cursor != ib_cend; ++ib_cursor) {
-		typename Collection<MatrixB>::size_type     cb= col_b(ib_cursor);   // column of non-zero
-		typename Collection<MatrixB>::value_type    vb= value_b(ib_cursor); // value of non-zero
+		typename Collection<MatrixB>::size_type     cb= col_b(*ib_cursor);   // column of non-zero
+		typename Collection<MatrixB>::value_type    vb= value_b(*ib_cursor); // value of non-zero
 		ins(ra, cb) << va * vb;		
 	    }
 	}
@@ -92,8 +92,8 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 	// Iterate over non-zeros of each column of B
 	typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
 	for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor) {
-	    typename Collection<MatrixB>::size_type     rb= row_b(icursor);   // row of non-zero
-	    typename Collection<MatrixB>::value_type    vb= value_b(icursor); // value of non-zero
+	    typename Collection<MatrixB>::size_type     rb= row_b(*icursor);   // row of non-zero
+	    typename Collection<MatrixB>::value_type    vb= value_b(*icursor); // value of non-zero
  
 	    // Get cursor corresponding to column 'rb' in matrix A
 	    typedef typename traits::range_generator<tag::col, MatrixA>::type  a_cursor_type;
@@ -104,8 +104,8 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 	    typedef typename traits::range_generator<tag::nz, a_cursor_type>::type ia_cursor_type;
 	    for (ia_cursor_type ia_cursor = begin<tag::nz>(a_cursor), ia_cend = end<tag::nz>(a_cursor); 
 		 ia_cursor != ia_cend; ++ia_cursor) {
-		typename Collection<MatrixA>::size_type     ra= row_a(ia_cursor);   // row of non-zero
-		typename Collection<MatrixA>::value_type    va= value_a(ia_cursor); // value of non-zero
+		typename Collection<MatrixA>::size_type     ra= row_a(*ia_cursor);   // row of non-zero
+		typename Collection<MatrixA>::value_type    va= value_a(*ia_cursor); // value of non-zero
 		ins(ra, cb) << va * vb;		
 	    }
 	}
@@ -151,16 +151,16 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 	for (ia_cursor_type ia_cursor = begin<tag::nz>(a_cursor), ia_cend = end<tag::nz>(a_cursor); 
 	     ia_cursor != ia_cend; ++ia_cursor) 
         {
-	    typename Collection<MatrixA>::size_type     ra= row_a(ia_cursor);   // row of non-zero
-	    typename Collection<MatrixA>::value_type    va= value_a(ia_cursor); // value of non-zero
+	    typename Collection<MatrixA>::size_type     ra= row_a(*ia_cursor);   // row of non-zero
+	    typename Collection<MatrixA>::value_type    va= value_a(*ia_cursor); // value of non-zero
 
 	    // Iterate over non-zeros of B's row 
 	    typedef typename traits::range_generator<tag::nz, b_cursor_type>::type ib_cursor_type;
 	    for (ib_cursor_type ib_cursor = begin<tag::nz>(b_cursor), ib_cend = end<tag::nz>(b_cursor); 
 		 ib_cursor != ib_cend; ++ib_cursor) 
             {
-		typename Collection<MatrixB>::size_type     cb= col_b(ib_cursor);   // column of non-zero
-		typename Collection<MatrixB>::value_type    vb= value_b(ib_cursor); // value of non-zero
+		typename Collection<MatrixB>::size_type     cb= col_b(*ib_cursor);   // column of non-zero
+		typename Collection<MatrixB>::value_type    vb= value_b(*ib_cursor); // value of non-zero
 		ins(ra, cb) << va * vb;		
 	    }
 	}
