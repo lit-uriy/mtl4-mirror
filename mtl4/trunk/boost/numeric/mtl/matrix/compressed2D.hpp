@@ -27,6 +27,20 @@ namespace mtl {
 // template <typename Elt, typename Parameters> class compressed2D;
 // template <typename Elt, typename Parameters, typename Updater> class compressed2D_inserter;
 
+template <typename Value, typename Parameters>
+typename compressed2D<Value, Parameters>::size_type
+inline num_rows(const compressed2D<Value, Parameters>& matrix);
+
+template <typename Value, typename Parameters>
+typename compressed2D<Value, Parameters>::size_type
+inline num_cols(const compressed2D<Value, Parameters>& matrix);
+
+template <typename Value, typename Parameters>
+typename compressed2D<Value, Parameters>::size_type
+inline size(const compressed2D<Value, Parameters>& matrix);
+
+
+
 struct compressed_key
 {
     typedef std::size_t                               size_t;
@@ -311,6 +325,21 @@ class compressed2D
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
+    }
+
+    explicit compressed2D(const self& src)
+      : super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), expr_base(*this), inserting(false)
+    {
+	starts.resize(super::dim1() + 1, 0);
+	matrix_copy(src, *this);
+    }
+
+    template <typename SrcValue, typename SrcParameters>
+    explicit compressed2D(const compressed2D<SrcValue, SrcParameters>& src)
+	: super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), expr_base(*this), inserting(false)
+    {
+	starts.resize(super::dim1() + 1, 0);
+	matrix_copy(src, *this);
     }
 
     self& operator=(const self& src)

@@ -101,11 +101,9 @@ int test_main(int argc, char* argv[])
     compressed2D<complex<double> >                       crc(size, size);
 
     test(cr, cr, dim1, dim2, "Row-major times row-major");
-#if 0
     test(cr, cc, dim1, dim2, "Row-major times column-major");
 
     test(cc, cr, dim1, dim2, "Column-major times row-major");
-#endif
     test(cc, cc, dim1, dim2, "Column-major times column-major");
 
     return 0;
