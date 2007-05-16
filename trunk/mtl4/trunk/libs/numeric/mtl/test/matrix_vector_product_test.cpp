@@ -8,6 +8,7 @@
 #include <boost/numeric/mtl/matrix/compressed2D.hpp> 
 #include <boost/numeric/mtl/matrix/dense2D.hpp> 
 #include <boost/numeric/mtl/matrix/laplacian_setup.hpp> 
+#include <boost/numeric/mtl/vector/dense_vector.hpp> 
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 
@@ -30,11 +31,13 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
     typedef typename Collection<MatrixA>::value_type rvalue_type;
     dense_vector<rvalue_type> w(size);
 
-    w= a * v;
+    //w= a * v;
+    mult(a, v, w);
 
     if (size <= max_print_size)
-	cout << "A= \n\n" << a << "v= \n\n" << v << "A*v= \n\n" << w << "\n";
+	cout << "A= \n" << a << "\n\nv= " << v << "\n\nA*v= " << w << "\n";
 
+    // Same test as in matrix product: resulting vector corresponds to column 12
     // Check for stencil below in the middle of the matrix
     //        1
     //     2 -8  2
@@ -59,6 +62,7 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 	    throw "wrong south south neighbor";
     }
 
+#if 0
     c+= a * b;
 
     if (size <= max_print_size)
@@ -86,6 +90,7 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 	if (w[18] != two)
 	    throw "wrong south east neighbor";
     }
+#endif
 }
 
 
@@ -106,9 +111,10 @@ int test_main(int argc, char* argv[])
     dense2D<double>                                      dr(size, size);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
 
+#if 0
     test(cr, dim1, dim2, "Row-major sparse");
     test(cc, dim1, dim2, "Column-major sparse");
-
+#endif
     test(dr, dim1, dim2, "Row-major dense");
     test(dc, dim1, dim2, "Column-major dense");
 

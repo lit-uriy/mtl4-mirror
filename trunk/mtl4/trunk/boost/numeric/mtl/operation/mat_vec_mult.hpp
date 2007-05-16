@@ -4,10 +4,79 @@
 #define MTL_MAT_VEC_MULT_INCLUDE
 
 #include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
-#include <boost/numeric/mtl/fractalu.hpp>
+#include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
+
+
+
 #include <iostream>
+
+namespace mtl {
+
+// Dense matrix vector multiplication
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void mat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::dense)
+{
+    // Naive implementation, will be moved to a functor and complemented with more efficient ones
+
+    using math::zero;
+    if (size(w) == 0) return;
+
+    if (Assign::init_to_zero) set_to_zero(w);
+
+    typedef typename Collection<VectorOut>::value_type value_type;
+    value_type                                         ref= w[0], z= zero(ref);
+
+    for (unsigned i= 0; i < num_rows(a); i++) {
+	value_type tmp= z;
+	for (unsigned j= 0; j < num_cols(a); j++) 
+	    tmp+= a[i][j] * v[j];
+	Assign::update(w[i], tmp);
+    }
+}
+
+
+
+// Sparse matrix vector multiplication
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void mat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::sparse)
+{
+    smat_cvec_mult(a, v, w, Assign(), typename OrientedCollection<Matrix>::orientation());
+}
+
+
+
+// Sparse row-major matrix vector multiplication
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void smat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
+{
+
+
+
+
+}
+
+// Sparse column-major matrix vector multiplication
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void smat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::col_major)
+{
+
+
+
+}
+
+
+} // namespace mtl
+
+
+
+#if 0
+
+
+// obselete code -> to be deleted soon
 
 namespace mtl {
   using std::size_t;
@@ -93,6 +162,8 @@ namespace mtl {
   }
 
 } // namespace mtl
+
+#endif
 
 #endif // MTL_MAT_VEC_MULT_INCLUDE
 
