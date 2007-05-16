@@ -5,6 +5,7 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
 #include <boost/numeric/mtl/operation/smat_smat_mult.hpp>
 #include <boost/numeric/mtl/operation/smat_dmat_mult.hpp>
@@ -12,6 +13,7 @@
 #include <boost/numeric/mtl/operation/mult_specialize.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
+#include <boost/static_assert.hpp>
 #include <boost/mpl/if.hpp>
 
 namespace mtl {
@@ -178,6 +180,13 @@ inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, t
     // Vector must be column vector
     // If vector is row vector then matrix must have one column and the operation is a outer product
     //   -> result should be a matrix too
+
+    // Check if element types are compatible (in contrast to tag dispatching, nesting is considered here)
+    BOOST_STATIC_ASSERT((boost::is_same< typename ashape::mult_op<typename ashape::ashape<Matrix>::type, 
+			                                          typename ashape::ashape<VectorIn>::type >::type,
+			                 ::mtl::ashape::mat_cvec_mult
+			               >::value));
+
 
     // dispatch between dense and sparse matrices
     using traits::category;

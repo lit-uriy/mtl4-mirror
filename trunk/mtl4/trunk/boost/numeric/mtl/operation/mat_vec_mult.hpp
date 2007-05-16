@@ -53,10 +53,27 @@ inline void mat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assi
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void smat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
+    using namespace tag; 
+    using traits::range_generator;  
+    using math::zero;
 
+    typedef typename range_generator<row, Matrix>::type       a_cur_type;    
+    typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
+    typename traits::col<Matrix>::type                        col_a(a); 
+    typename traits::const_value<Matrix>::type                value_a(a); 
 
+    if (Assign::init_to_zero) set_to_zero(w);
 
+    typedef typename Collection<VectorOut>::value_type        value_type;
+    value_type                                                ref= w[0], z= zero(ref);
 
+    a_cur_type ac= begin<row>(a), aend= end<row>(a);
+    for (unsigned i= 0; ac != aend; ++ac, ++i) {
+	value_type tmp= z;
+	for (a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac); aic != aiend; ++aic) 
+	    tmp+= value_a(*aic) * v[col_a(*aic)];	
+	Assign::update(w[i], tmp);
+    }
 }
 
 // Sparse column-major matrix vector multiplication

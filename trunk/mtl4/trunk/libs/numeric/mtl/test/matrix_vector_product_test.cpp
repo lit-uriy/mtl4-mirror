@@ -111,8 +111,8 @@ int test_main(int argc, char* argv[])
     dense2D<double>                                      dr(size, size);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
 
-#if 0
     test(cr, dim1, dim2, "Row-major sparse");
+#if 0
     test(cc, dim1, dim2, "Column-major sparse");
 #endif
     test(dr, dim1, dim2, "Row-major dense");
