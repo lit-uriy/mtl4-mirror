@@ -8,6 +8,7 @@
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
 #include <boost/numeric/mtl/operation/smat_smat_mult.hpp>
 #include <boost/numeric/mtl/operation/smat_dmat_mult.hpp>
+#include <boost/numeric/mtl/operation/mat_vec_mult.hpp>
 #include <boost/numeric/mtl/operation/mult_specialize.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
@@ -167,6 +168,22 @@ inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign,
     a_copy= a;
     mat_mat_mult(a_copy, b, c, Assign(), tag::sparse(), tag::sparse(), tag::sparse());
 }
+
+
+
+// Matrix vector multiplication
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::matrix, tag::vector, tag::vector)
+{
+    // Vector must be column vector
+    // If vector is row vector then matrix must have one column and the operation is a outer product
+    //   -> result should be a matrix too
+
+    // dispatch between dense and sparse matrices
+    using traits::category;
+    mat_cvec_mult(a, v, w, Assign(), typename category<Matrix>::type()); 
+}
+
 
 
 } // namespace mtl

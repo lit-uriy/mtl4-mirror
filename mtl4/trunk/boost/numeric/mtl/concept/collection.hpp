@@ -415,6 +415,25 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Value, typename Parameters>
+    concept_map Collection<vector::dense_vector<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename vector::dense_vector<Value, Parameters>::size_type size_type;
+    };
+#else
+    template <typename Value, typename Parameters>
+    struct Collection<vector::dense_vector<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename vector::dense_vector<Value, Parameters>::size_type size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value, typename Parameters>
     concept_map MutableCollection<dense2D<Value, Parameters> >
     {
 	typedef Value&           reference;
