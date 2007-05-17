@@ -21,7 +21,7 @@
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
-#include <boost/numeric/mtl/detail/crtp_base_vector.hpp>
+#include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 
@@ -32,13 +32,13 @@ template <class Value, typename Parameters = mtl::vector::parameters<> >
 class dense_vector
     : public vec_expr<dense_vector<Value, Parameters> >,
       public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >,
-      public detail::crtp_base_vector< dense_vector<Value, Parameters>, Value, std::size_t >
+      public crtp_base_vector< dense_vector<Value, Parameters>, Value, std::size_t >
 {
     typedef dense_vector                                                             self;
     typedef ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, 
                                                     Parameters::dimension::value >   super_memory;
-    typedef detail::crtp_base_vector< self, Value, std::size_t >                     crtp_base;
-    typedef detail::crtp_vector_assign< self, Value, std::size_t >                   assign_base;
+    typedef crtp_base_vector< self, Value, std::size_t >                             crtp_base;
+    typedef crtp_vector_assign< self, Value, std::size_t >                           assign_base;
     typedef vec_expr<dense_vector<Value, Parameters> >                               expr_base;
 public:
     typedef Value             value_type ; 
@@ -133,6 +133,12 @@ public:
     }
 #endif
 
+    self& fill(value_type const& value)
+    {
+	std::fill(begin(), end(), value);
+	return *this;
+    }
+
     // Replace it later by expression (maybe)
     self& operator=(value_type value)
     {
@@ -140,6 +146,7 @@ public:
 	return *this;
     }
 
+#if 0
     template <class E>
     vec_vec_plus_asgn_expr<self, E> operator+=( vec_expr<E> const& e )
     {
@@ -163,6 +170,7 @@ public:
 	s << v(v.size()-1) << "}" ;
 	return s ;
     }
+#endif
 
 } ; // dense_vector
 
