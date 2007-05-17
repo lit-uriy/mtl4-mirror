@@ -80,9 +80,22 @@ inline void smat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Ass
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void smat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::col_major)
 {
+	using namespace tag;
+	using traits::range_generator;  
+        typedef typename range_generator<col, Matrix>::type       a_cur_type;             
+        typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
 
+	typename traits::row<Matrix>::type                        row_a(a); 
+	typename traits::const_value<Matrix>::type                value_a(a); 
 
+	if (Assign::init_to_zero) set_to_zero(w);
 
+	unsigned rv= 0; // traverse all rows of v
+	for (a_cur_type ac= begin<col>(a), aend= end<col>(a); ac != aend; ++ac, ++rv) {
+	    typename Collection<VectorIn>::value_type    vv= v[rv]; 
+	    for (a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac); aic != aiend; ++aic) 
+		Assign::update(w[row_a(*aic)], value_a(*aic) * vv);
+	}
 }
 
 
