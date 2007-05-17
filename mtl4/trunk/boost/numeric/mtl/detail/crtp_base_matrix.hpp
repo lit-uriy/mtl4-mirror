@@ -141,7 +141,7 @@ struct crtp_matrix_assign
 	return static_cast<Matrix&>(*this);
     }
 
-    /// Assign-add product by calling gen_mult
+    /// Assign-subtract product by calling gen_mult
     /** Note that this does not work for arbitrary expressions. **/
     template <typename E1, typename E2>
     Matrix& operator-=(const matrix::mat_mat_times_expr<E1, E2>& src)

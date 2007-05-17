@@ -73,7 +73,7 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_mat_mult>
 template <typename Op1, typename Op2>
 struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_cvec_mult> 
 {
-    typedef matrix::mat_cvec_times_expr<Op1, Op2> type;
+    typedef mat_cvec_times_expr<Op1, Op2> type;
 };
 
 

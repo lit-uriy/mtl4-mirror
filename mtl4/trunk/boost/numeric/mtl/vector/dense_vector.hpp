@@ -133,12 +133,6 @@ public:
     }
 #endif
 
-    self& fill(value_type const& value)
-    {
-	std::fill(begin(), end(), value);
-	return *this;
-    }
-
     // Replace it later by expression (maybe)
     self& operator=(value_type value)
     {
@@ -146,31 +140,7 @@ public:
 	return *this;
     }
 
-#if 0
-    template <class E>
-    vec_vec_plus_asgn_expr<self, E> operator+=( vec_expr<E> const& e )
-    {
-	check_consistent_shape(e);
-	return vec_vec_plus_asgn_expr<self, E>( *this, e.ref );
-    }
-
-    template <class E>
-    vec_vec_minus_asgn_expr<self, E> operator-=( vec_expr<E> const& e )
-    {
-	check_consistent_shape(e);
-	return vec_vec_minus_asgn_expr<self, E>( *this, e.ref );
-    }
-
-    friend std::ostream& operator<<( std::ostream& s, dense_vector<Value, Parameters> const& v ) 
-    {
-	s << "[" << v.size() << (traits::is_row_major<Parameters>::value ? "R" : "C") << "]{" ;
-	for (size_type i=0; i < v.size()-1; ++ i) {
-	    s << v(i) << "," ;
-	}
-	s << v(v.size()-1) << "}" ;
-	return s ;
-    }
-#endif
+    template <typename Value2> friend void fill(self&, const Value2&);
 
 } ; // dense_vector
 
@@ -178,6 +148,13 @@ public:
 // ================
 // Free functions
 // ================
+
+template <typename Value, typename Parameters, typename Value2>
+inline void fill(dense_vector<Value, Parameters>& vector, const Value2& value)
+{
+    std::fill(vector.begin(), vector.end(), value);    
+}
+
 
 template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type

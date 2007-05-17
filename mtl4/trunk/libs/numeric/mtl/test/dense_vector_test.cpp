@@ -31,9 +31,12 @@ void one_d_iteration(char const* name, Vector & vector, size_t check_index, doub
 template <typename VectorU, typename VectorV, typename VectorW>
 void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 {
-    u= (typename VectorU::value_type)(3.0); 
-    v= (typename VectorV::value_type)(4.0); 
-    w= (typename VectorW::value_type)(5.0); 
+    // u= (typename VectorU::value_type)(3.0); 
+    // v= (typename VectorV::value_type)(4.0); 
+    // w= (typename VectorW::value_type)(5.0); 
+    mtl::vector::fill(u, 3.0);
+    mtl::vector::fill(v, 4.0);
+    mtl::vector::fill(w, 5.0);
 
     std::cout << "\n\n";
     one_d_iteration(name, u, 2, (typename VectorU::value_type)(3.0));

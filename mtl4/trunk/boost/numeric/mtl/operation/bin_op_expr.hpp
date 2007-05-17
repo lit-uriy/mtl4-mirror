@@ -14,11 +14,10 @@ struct bin_op_expr
     typedef E1                                   first_argument_type ;
     typedef E2                                   second_argument_type ;
 
-    mat_mat_op_expr( first_argument_type const& v1, second_argument_type const& v2 )
+    bin_op_expr( first_argument_type const& v1, second_argument_type const& v2 )
 	: first( v1 ), second( v2 )
     {}
 
-protected:
     first_argument_type const&  first ;
     second_argument_type const& second ;
 };

@@ -12,7 +12,7 @@ struct mat_cvec_times_expr
     : public bin_op_expr< E1, E2 >
 {
     typedef bin_op_expr< E1, E2 >   base;
-    mat_cvec_times_expr( first_argument_type const& matrix, second_argument_type const& vector )
+    mat_cvec_times_expr( E1 const& matrix, E2 const& vector )
 	: base(matrix, vector)
     {}
 };

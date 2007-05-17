@@ -31,8 +31,8 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
     typedef typename Collection<MatrixA>::value_type rvalue_type;
     dense_vector<rvalue_type> w(size);
 
-    //w= a * v;
-    mult(a, v, w);
+    w= a * v;
+    //mult(a, v, w);
 
     if (size <= max_print_size)
 	cout << "A= \n" << a << "\n\nv= " << v << "\n\nA*v= " << w << "\n";
@@ -62,8 +62,7 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 	    throw "wrong south south neighbor";
     }
 
-#if 0
-    c+= a * b;
+    w+= a * v;
 
     if (size <= max_print_size)
 	cout << "w+= A*v= \n\n" << w << "\n";
@@ -77,7 +76,7 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 	    throw "wrong south east neighbor";
     }
 
-    c-= a * b;
+    w-= a * v;
 
     if (size <= max_print_size)
 	cout << "w-= A*v= \n\n" << w << "\n";
@@ -90,7 +89,6 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 	if (w[18] != two)
 	    throw "wrong south east neighbor";
     }
-#endif
 }
 
 
