@@ -5,6 +5,8 @@
 
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/matrix/map_view.hpp>
+#include <boost/numeric/mtl/matrix/mat_mat_times_expr.hpp>
+#include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
 
 namespace mtl { namespace traits {
 
@@ -67,6 +69,12 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_mat_mult>
     typedef matrix::mat_mat_times_expr<Op1, Op2> type;
 };
 
+/// Multiply matrix with column vector
+template <typename Op1, typename Op2>
+struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_cvec_mult> 
+{
+    typedef matrix::mat_cvec_times_expr<Op1, Op2> type;
+};
 
 
 }} // namespace mtl::traits

@@ -18,7 +18,7 @@ template <class E1, class E2>
 class vec_vec_add_expr 
     : public vec_vec_op_expr< E1, E2, sfunctor::add<E1::value_type, E2::value_type> >
 {
-    typedef public vec_vec_op_expr< E1, E2, sfunctor::add<E1::value_type, E2::value_type> > base;
+    typedef vec_vec_op_expr< E1, E2, sfunctor::add<E1::value_type, E2::value_type> > base;
     vec_vec_add_expr( first_argument_type const& v1, second_argument_type const& v2 )
 	: base( v1, v2 )
     {}

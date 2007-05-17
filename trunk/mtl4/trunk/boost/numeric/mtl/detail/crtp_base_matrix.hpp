@@ -16,6 +16,7 @@
 
 namespace mtl { namespace detail {
 
+/// Base class to provide matrix assignment operators generically 
 template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_matrix_assign
 {
