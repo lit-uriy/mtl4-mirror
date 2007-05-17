@@ -11,6 +11,7 @@
 #include <boost/mpl/if.hpp>
 
 #include <boost/numeric/mtl/utility/common_include.hpp>
+#include <boost/numeric/mtl/utility/maybe.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/shift_block.hpp>
@@ -188,15 +189,15 @@ struct compressed2D_indexer
   private:
     // helpers for public functions
     template <class Matrix>
-    maybe<size_t> offset(const Matrix& ma, size_t major, size_t minor) const 
+    utilities::maybe<size_t> offset(const Matrix& ma, size_t major, size_t minor) const 
     {
 	const size_t *first = &ma.indices[ ma.starts[major] ],
 	             *last = &ma.indices[ ma.starts[major+1] ];
 	// if empty row (or column) return start of next one
 	if (first == last) 
-	    return maybe<size_t> (first - &ma.indices[0], false);
+	    return utilities::maybe<size_t> (first - &ma.indices[0], false);
 	const size_t *index = std::lower_bound(first, last, minor);
-	return maybe<size_t> (index - &ma.indices[0], index != last && *index == minor);
+	return utilities::maybe<size_t> (index - &ma.indices[0], index != last && *index == minor);
     }
 
   public:
@@ -215,7 +216,7 @@ struct compressed2D_indexer
     // Returns the offset if found
     // If not found it returns the position where it would be inserted
     template <class Matrix>
-    maybe<size_t> operator() (const Matrix& ma, size_t row, size_t col) const
+    utilities::maybe<size_t> operator() (const Matrix& ma, size_t row, size_t col) const
     {
 	size_t major, minor;
 	boost::tie(major, minor) = major_minor_c(ma, row, col);
@@ -224,7 +225,7 @@ struct compressed2D_indexer
 
     // Same as above if internal representation is already known
     template <class Matrix>
-    maybe<size_t> operator() (const Matrix& ma, size_pair major_minor) const 
+    utilities::maybe<size_t> operator() (const Matrix& ma, size_pair major_minor) const 
     {
 	return offset(ma, major_minor.first, major_minor.second);
     }
@@ -377,7 +378,7 @@ class compressed2D
     const_access_type operator() (size_type row, size_type col) const
     {
         MTL_DEBUG_THROW_IF(inserting, "Reading data during insertion has undefined behavior!\n");
-	maybe<size_type> pos = indexer(*this, row, col);
+	utilities::maybe<size_type> pos = indexer(*this, row, col);
 	return pos ? data[pos] : value_type(0);
     }
 
@@ -453,7 +454,7 @@ struct compressed2D_inserter
     void update(size_type row, size_type col, value_type val);
 
   private:
-    maybe<size_type> matrix_offset(size_pair);
+    utilities::maybe<size_type> matrix_offset(size_pair);
     void final_place();
     void insert_spare();
 
@@ -500,7 +501,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
 }
 
 template <typename Elt, typename Parameters, typename Updater>
-inline maybe<typename compressed2D_inserter<Elt, Parameters, Updater>::size_type> 
+inline utilities::maybe<typename compressed2D_inserter<Elt, Parameters, Updater>::size_type> 
 compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm)
 {
     size_type major, minor;
@@ -509,9 +510,9 @@ compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm)
     const size_t *first = &indices[ starts[major] ],
   	         *last =  &indices[ slot_ends[major] ];
     if (first == last) 
-	return maybe<size_t> (first - &indices[0], false);
+	return utilities::maybe<size_t> (first - &indices[0], false);
     const size_t *index = std::lower_bound(first, last, minor);
-    return maybe<size_t> (index - &indices[0], index != last && *index == minor);  
+    return utilities::maybe<size_t> (index - &indices[0], index != last && *index == minor);  
 }
 
 template <typename Elt, typename Parameters, typename Updater>
@@ -525,7 +526,7 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type ro
     size_type              major, minor;
     boost::tie(major, minor) = mm;
 
-    maybe<size_type>       pos = matrix_offset(mm);
+    utilities::maybe<size_type>       pos = matrix_offset(mm);
     // Check if already in matrix and update it
     if (pos) 
 	updater (elements[pos], val); 
@@ -595,7 +596,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
     for (typename map_type::iterator it = spare.begin(); it != spare.end(); ++it) {
 	size_pair              mm = it->first;
 	size_type              major = mm.first, minor = mm.second;
-	maybe<size_type>       pos = matrix_offset(mm);
+	utilities::maybe<size_type>       pos = matrix_offset(mm);
 	size_type&             my_end = slot_ends[major];
 
 	copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);

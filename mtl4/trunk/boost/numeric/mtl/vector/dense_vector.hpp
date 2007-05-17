@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
+#include <boost/numeric/mtl/detail/crtp_base_vector.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 
@@ -30,12 +31,16 @@ namespace mtl { namespace vector {
 template <class Value, typename Parameters = mtl::vector::parameters<> >
 class dense_vector
     : public vec_expr<dense_vector<Value, Parameters> >,
-      public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >
+      public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >,
+      public detail::crtp_base_vector< dense_vector<Value, Parameters>, Value, std::size_t >
 {
-    typedef ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >   super_memory;
+    typedef dense_vector                                                             self;
+    typedef ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, 
+                                                    Parameters::dimension::value >   super_memory;
+    typedef detail::crtp_base_vector< self, Value, std::size_t >                     crtp_base;
+    typedef detail::crtp_vector_assign< self, Value, std::size_t >                   assign_base;
+    typedef vec_expr<dense_vector<Value, Parameters> >                               expr_base;
 public:
-    typedef vec_expr<dense_vector<Value, Parameters> >  expr_base;
-    typedef dense_vector      self;
     typedef Value             value_type ; 
     typedef std::size_t       size_type ;
     typedef value_type&       reference ;
@@ -116,12 +121,17 @@ public:
       #endif 
     }
 
+#if 1
+    using assign_base::operator=;
+#else
+
     template <class E>
     vec_vec_asgn_expr<self, E> operator=( vec_expr<E> const& e )
     {
 	check_consistent_shape(e);
 	return vec_vec_asgn_expr<self, E>( *this, e.ref );
     }
+#endif
 
     // Replace it later by expression (maybe)
     self& operator=(value_type value)

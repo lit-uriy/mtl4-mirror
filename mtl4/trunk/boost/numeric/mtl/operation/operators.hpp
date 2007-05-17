@@ -24,7 +24,7 @@ inline operator*(const Op1& op1, const Op2& op2)
 
 
 #if 0
-// If we implement operator* in different way for each type of operation it would like the following
+// If we implement operator* in a different way for each type of operation it would like the following
 
 // Scale matrix from left
 template <typename Op1, typename Op2>
