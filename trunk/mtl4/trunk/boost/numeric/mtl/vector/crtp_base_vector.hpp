@@ -3,7 +3,7 @@
 #ifndef MTL_CRTP_BASE_VECTOR_INCLUDE
 #define MTL_CRTP_BASE_VECTOR_INCLUDE
 
-
+#include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 
 namespace mtl { namespace vector {
 
@@ -20,8 +20,22 @@ struct crtp_vector_assign
 	return vec_vec_asgn_expr<Vector, E>( static_cast<Vector&>(*this), e.ref );
     }
 
+    template <class E>
+    vec_vec_plus_asgn_expr<Vector, E> operator+=( vec_expr<E> const& e )
+    {
+	static_cast<Vector*>(this)->check_consistent_shape(e);
+	return vec_vec_plus_asgn_expr<Vector, E>( static_cast<Vector&>(*this), e.ref );
+    }
 
-}
+    template <class E>
+    vec_vec_minus_asgn_expr<Vector, E> operator-=( vec_expr<E> const& e )
+    {
+	static_cast<Vector*>(this)->check_consistent_shape(e);
+	return vec_vec_minus_asgn_expr<Vector, E>( static_cast<Vector&>(*this), e.ref );
+    }
+
+
+};
 
 
 
