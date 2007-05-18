@@ -58,6 +58,8 @@ public:
         return functor(ref[i]);
     }
     
+    void delay_assign() const {}
+    
     template <typename, typename> friend struct detail::map_value;
 
   protected:
