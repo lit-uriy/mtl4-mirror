@@ -23,6 +23,7 @@ sources = Split("""base_case_conversion.cpp
              sparse_dense_matrix_product_test.cpp
              matrix_vector_product_test.cpp
              rank_one_update_test.cpp
+             rank_two_update_test.cpp
 """)
 #compressed2D.cpp
 
