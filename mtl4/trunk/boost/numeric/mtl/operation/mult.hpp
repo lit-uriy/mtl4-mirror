@@ -18,6 +18,10 @@
 
 namespace mtl {
 
+
+/// Multiplication: mult(a, b, c) computes c= a * b; 
+/** The 3 types must be compatible, e.g. all three matrices or b and c are column vectors and a is a matrix.
+    The dimensions are checked at compile time. **/
 template <typename A, typename B, typename C>
 inline void mult(const A& a, const B& b, C& c)
 {
@@ -25,6 +29,30 @@ inline void mult(const A& a, const B& b, C& c)
     using traits::category;
     gen_mult(a, b, c, assign::assign_sum(), typename category<A>::type(), 
 	     typename category<B>::type(), typename category<C>::type());
+}
+
+
+/// Multiplication: mult_add(a, b, c) computes c+= a * b; 
+/** The 3 types must be compatible, e.g. all three matrices or b and c are column vectors and a is a matrix.
+    The dimensions are checked at compile time. **/
+template <typename A, typename B, typename C>
+inline void mult_add(const A& a, const B& b, C& c)
+{
+    // dispatch between matrices, vectors, and scalars
+    using traits::category;
+    gen_mult(a, b, c, assign::plus_sum(), typename category<A>::type(), 
+	     typename category<B>::type(), typename category<C>::type());
+}
+
+
+/// Four term multiplication: mult(a, x, y, z) computes z= a * x + y; 
+/** The 4 types must be compatible, i.e. a*x must be assignable to z and z must be incrementable by y.
+    Right now, it is not more efficient than z= a * x; z+= y. For compatibility with MTL2. **/
+template <typename A, typename X, typename Y, typename Z>
+inline void mult(const A& a, const X& x, const Y& y, Z& z)
+{
+    mult(a, x, z);
+    z+= y;
 }
 
 
