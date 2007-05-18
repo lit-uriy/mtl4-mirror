@@ -130,17 +130,11 @@ namespace mtl { namespace traits {
     // ================
 
     template <typename Functor, typename Vector> 
-    struct row<vector::map_view<Functor, Vector> >
-	: public row<Vector>
+    struct index<vector::map_view<Functor, Vector> >
+	: public index<Vector>
     {};
 
     template <typename Functor, typename Vector> 
-    struct col<vector::map_view<Functor, Vector> >
-	: public col<Vector>
-    {};
-
-
-   template <typename Functor, typename Vector> 
     struct const_value<vector::map_view<Functor, Vector> >
     {
 	typedef vector::detail::map_value<Functor, Vector>  type;
