@@ -6,6 +6,7 @@
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/matrix/mat_mat_times_expr.hpp>
+#include <boost/numeric/mtl/vector/map_view.hpp>
 #include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
 
 namespace mtl { namespace traits {
@@ -76,6 +77,20 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_cvec_mult>
     typedef mat_cvec_times_expr<Op1, Op2> type;
 };
 
+
+/// Scale row vector from left
+template <typename Op1, typename Op2>
+struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_rvec_mult> 
+{
+    typedef vector::scaled_view<Op1, Op2> type;
+};
+
+/// Scale column vector from left
+template <typename Op1, typename Op2>
+struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_cvec_mult> 
+{
+    typedef vector::scaled_view<Op1, Op2> type;
+};
 
 }} // namespace mtl::traits
 
