@@ -13,7 +13,7 @@
 namespace mtl {
 
 
-/// Rank one update: rank_one_update(A, x, y) computes A+= x * conj(y)^T
+/// Rank-one update: rank_one_update(A, x, y) computes A+= x * conj(y)^T
 /** The current implementation works for column and row vectors (although
     the notation above refers to column vectors). **/
 template <typename Matrix, typename VectorX, typename VectorY>
