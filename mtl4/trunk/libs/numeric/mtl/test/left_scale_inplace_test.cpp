@@ -35,7 +35,6 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     if (a[0][0] != eight)
 	throw "Scaling with scalar wrong";
 
-#if 0
     left_scale_inplace(0.5, a);
     left_scale_inplace(b, a);
 
@@ -66,7 +65,6 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
 	if (a[12][22] != one)
 	    throw "wrong south south neighbor";
     }
-#endif
 }
 
 
