@@ -141,6 +141,9 @@ namespace mtl {
 	template <typename Matrix, typename Updater> struct trivial_inserter;
     }
 
+    /// Free function defined for all matrix and vector types
+    template <typename Collection> void swap(Collection& c1, Collection& c2);
+
 } // namespace mtl
 
 #endif // MTL_MTL_FWD_INCLUDE
