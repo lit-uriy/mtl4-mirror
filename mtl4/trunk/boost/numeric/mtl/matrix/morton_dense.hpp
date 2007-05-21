@@ -456,12 +456,6 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
 
-#if 0
-    size_type used_memory() const
-    {
-	return my_used_memory;
-    }
-#endif
 
   protected:
     void set_nnz()
@@ -476,6 +470,11 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
         return (n_rows.dilated_value() + n_cols.dilated_value() + 1);
     }
 
+    friend void swap(self& matrix1, self& matrix2)
+    {
+	static_cast<super_memory&>(matrix1).swap(matrix2);
+	static_cast<super&>(matrix1).swap(matrix2);
+    }
 
     template <typename> friend struct sub_matrix_t;    
 

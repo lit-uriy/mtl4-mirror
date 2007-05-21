@@ -113,9 +113,9 @@ int test_main(int argc, char* argv[])
 
     test(dr, dim1, dim2, "Dense row major");
     test(dc, dim1, dim2, "Dense column major");
-#if 0
     test(mzd, dim1, dim2, "Morton Z-order");
     test(d2r, dim1, dim2, "Hybrid 2 row-major");
+#if 0
     test(cr, dim1, dim2, "Compressed row major");
     test(cc, dim1, dim2, "Compressed column major");
     test(drc, dim1, dim2, "Dense row major complex");
