@@ -42,39 +42,39 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     std::cout << "\n\n";
     one_d_iteration(name, u, 2, (typename VectorU::value_type)(3.0));
 
-    std::cout << "\n" << name << "  --- u= v + w:\n"; std::cout.flush();
+    std::cout << name << "  --- u= v + w:\n"; std::cout.flush();
     u= v + w;
     cout << "u: " << u << "\n"; std::cout.flush();
     if (u[0] != 9.0) throw "wrong";
 
-    std::cout << "\n" << name << "  --- u= v + w + v + w:\n"; std::cout.flush();
+    std::cout << name << "  --- u= v + w + v + w:\n"; std::cout.flush();
     u= v + w + v + w;
     cout << "u: " << u << "\n"; std::cout.flush();
     if (u[0] != 18.0) throw "wrong";
 
-    std::cout << "\n" << name << "  --- u= w + (v= w + w);:\n"; std::cout.flush();
+    std::cout << name << "  --- u= w + (v= w + w);:\n"; std::cout.flush();
     u= w + (v= w + w);
-    cout << "u: " << u << "\n" << "v: " << v << "\n"; std::cout.flush();
+    cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
     if (v[0] != 10.0) throw "v wrong";
     if (u[0] != 15.0) throw "u wrong";
 
     mtl::vector::fill(v, 4.0);
     mtl::vector::fill(w, 5.0);
-    std::cout << "\n" << name << "  --- u= (v= w + w) + v;:\n"; std::cout.flush();
+    std::cout << name << "  --- u= (v= w + w) + v;:\n"; std::cout.flush();
     u= (v= w + w) + v;
-    cout << "u: " << u << "\n" << "v: " << v << "\n"; std::cout.flush();
+    cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
     if (v[0] != 10.0) throw "v wrong";
     if (u[0] != 20.0) throw "u wrong";
 
     mtl::vector::fill(w, 4.0);
-    std::cout << "\n" << name << "  --- w= 4; u-= (v= w + w) - w;:\n"; std::cout.flush();
+    std::cout << name << "  --- w= 4; u-= (v= w + w) - w;:\n"; std::cout.flush();
     u-= (v= w + w) - w;
-    cout << "u: " << u << "\n" << "v: " << v << "\n"; std::cout.flush();
+    cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
     if (v[0] != 8.0) throw "v wrong";
     if (u[0] != 16.0) throw "u wrong"; // for -=
 
     
-    std::cout << "\n" << name << "  --- v= 3*u + 4*w;:\n"; std::cout.flush();
+    std::cout << name << "  --- v= 3*u + 4*w;:\n"; std::cout.flush();
     v= 3*u + 4*w;
     cout << "v: " << v << "\n"; std::cout.flush();
     if (v[0] != 64.0) throw "v wrong";
@@ -82,11 +82,21 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     mtl::vector::fill(u, 3.0);
     mtl::vector::fill(v, 4.0);
     mtl::vector::fill(w, 5.0);
-    std::cout << "\n" << name << "  --- u= 3; v= 4; w=5; u+= v+= 3.0 * w;:\n"; std::cout.flush();
+    std::cout << name << "  --- u= 3; v= 4; w=5; u+= v+= 3.0 * w;:\n"; std::cout.flush();
     u+= v+= 3.0 * w;
-    cout << "u: " << u << "\n" << "v: " << v << "\n"; std::cout.flush();
+    cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
     if (v[0] != 19.0) throw "v wrong";
     if (u[0] != 22.0) throw "u wrong";
+
+    mtl::vector::fill(u, 3.0);
+    mtl::vector::fill(v, 4.0);
+    mtl::vector::fill(w, 5.0);
+    std::cout << name << "  --- u= 3; v= 4; w=5; u+= (v*= 3.0) + (w*= 2.0);:\n"; std::cout.flush();
+    u+= (v*= 3.0) + (w*= 2.0);
+    cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
+    if (v[0] != 12.0) throw "v wrong";
+    if (w[0] != 10.0) throw "v wrong";
+    if (u[0] != 25.0) throw "u wrong";
 }
  
 
