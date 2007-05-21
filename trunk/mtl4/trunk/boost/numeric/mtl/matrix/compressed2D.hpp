@@ -394,6 +394,17 @@ class compressed2D
 	return data[offset];
     }
 
+    friend void swap(self& matrix1, self& matrix2)
+    {
+	using std::swap;
+	static_cast<super&>(matrix1).swap(matrix2);
+
+	swap(matrix1.data, matrix2.data);
+	swap(matrix1.starts, matrix2.starts);
+	swap(matrix1.indices, matrix2.indices);
+	swap(matrix1.inserting, matrix2.inserting);
+    }
+
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
     template <typename, typename> friend struct compressed_el_cursor;
