@@ -74,12 +74,11 @@ struct crtp_vector_assign
     }
 
     /// Scale vector (in place) with scalar value 
-    /** In the future, row vectors can be scaled with a matrix **/
+    /** In the future, row vectors be possibly scaled by a matrix **/
     template <typename Factor>
-    Vector& operator*=(const Factor& alpha)
+    vec_scal_times_asgn_expr<Vector, Factor> operator*=(const Factor& alpha)
     {
-	right_scale_inplace(static_cast<Vector&>(*this), alpha);
-	return static_cast<Vector&>(*this);
+	return vec_scal_times_asgn_expr<Vector, Factor>( static_cast<Vector&>(*this), alpha );
     }	
 };
 
