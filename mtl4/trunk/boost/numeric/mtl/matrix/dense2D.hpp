@@ -238,52 +238,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 
 
-#if 1
+    // import operators from CRTP base class
     using assign_base::operator=;
-#else
-
-    /// Assign matrix expressions by copying except for some special expressions
-    template <typename MatrixSrc>
-    self& operator=(const matrix::mat_expr<MatrixSrc>& src)
-    {
-	matrix_copy(src.ref, *this);
-	return *this;
-    }
-
-
-    /// Assign sum by assigning first argument and adding second
-    /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
-    template <typename E1, typename E2>
-    self& operator=(const matrix::mat_mat_plus_expr<E1, E2>& src)
-    {
-	*this= src.first;
-	*this+= src.second;
-
-	return *this;
-    }
-
-    /// Assign-add matrix expressions by incrementally copying except for some special expressions
-    template <typename MatrixSrc>
-    self& operator+=(const matrix::mat_expr<MatrixSrc>& src)
-    {
-	matrix_copy_plus(src.ref, *this);
-	return *this;
-    }
-
-    /// Assign-add sum by adding both arguments
-    /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from 
-	matrix::mat_expr < MatrixSrc >. **/
-    template <typename E1, typename E2>
-    self& operator+=(const matrix::mat_mat_plus_expr<E1, E2>& src)
-    {
-	*this+= src.first;
-	*this+= src.second;
-
-	return *this;
-    }
-#endif
 
 
     bool check_indices(size_t r, size_t c) const
