@@ -27,7 +27,8 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     laplacian_setup(a, dim1, dim2);
     laplacian_setup(b, dim1, dim2);
 
-    right_scale_inplace(a, 2.0);
+    // right_scale_inplace(a, 2.0);
+    a*= 2.0;
     if (size <= max_print_size)
 	cout << "A= \n\n" << a << "\n";
 
@@ -35,8 +36,8 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     if (a[0][0] != eight)
 	throw "Scaling with scalar wrong";
 
-    right_scale_inplace(a, 0.5);
-    right_scale_inplace(a, b);
+    a*= 0.5; // right_scale_inplace(a, 0.5);
+    a*= b;   // right_scale_inplace(a, b);
 
     if (size <= max_print_size)
 	cout << "A= \n\n" << a << "B= \n\n" << b << "\n";

@@ -10,6 +10,7 @@
 #include <boost/numeric/mtl/operation/matrix_bracket.hpp>
 #include <boost/numeric/mtl/operation/copy.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
+#include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
@@ -152,6 +153,14 @@ struct crtp_matrix_assign
 	return static_cast<Matrix&>(*this);
     }
 
+    /// Scale matrix (in place) with scalar value or other matrix
+    template <typename Factor>
+    Matrix& operator*=(const Factor& alpha)
+    {
+	right_scale_inplace(static_cast<Matrix&>(*this), alpha);
+	return static_cast<Matrix&>(*this);
+    }	
+    
 };
 
 

@@ -8,6 +8,7 @@
 #include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
+#include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 
 namespace mtl { namespace vector {
 
@@ -71,6 +72,15 @@ struct crtp_vector_assign
 
 	return static_cast<Vector&>(*this);
     }
+
+    /// Scale vector (in place) with scalar value 
+    /** In the future, row vectors can be scaled with a matrix **/
+    template <typename Factor>
+    Vector& operator*=(const Factor& alpha)
+    {
+	right_scale_inplace(static_cast<Vector&>(*this), alpha);
+	return static_cast<Vector&>(*this);
+    }	
 };
 
 
