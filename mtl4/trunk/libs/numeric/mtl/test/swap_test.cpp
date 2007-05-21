@@ -117,10 +117,8 @@ int test_main(int argc, char* argv[])
     test(d2r, dim1, dim2, "Hybrid 2 row-major");
     test(cr, dim1, dim2, "Compressed row major");
     test(cc, dim1, dim2, "Compressed column major");
-#if 0
     test(drc, dim1, dim2, "Dense row major complex");
     test(crc, dim1, dim2, "Compressed row major complex");
-#endif
 
     dense_vector<float>                                       cv(size);
     dense_vector<float, mtl::vector::parameters<row_major> >  rv(size);
