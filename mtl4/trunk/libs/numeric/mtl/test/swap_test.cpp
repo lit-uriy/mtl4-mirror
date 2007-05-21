@@ -63,7 +63,7 @@ void test(Matrix& matrix, unsigned dim1, unsigned dim2, const char* name)
 template <typename Vector>
 void vtest2(Vector& vector, unsigned dim1, unsigned dim2)
 {
-    Vector tmp(dim1*dim2);
+    Vector tmp(dim1*dim2, 0.0);
     if (dim1 > 1 && dim2 > 1)
 	tmp[2]= 4.0;
     swap(vector, tmp);
@@ -115,9 +115,9 @@ int test_main(int argc, char* argv[])
     test(dc, dim1, dim2, "Dense column major");
     test(mzd, dim1, dim2, "Morton Z-order");
     test(d2r, dim1, dim2, "Hybrid 2 row-major");
-#if 0
     test(cr, dim1, dim2, "Compressed row major");
     test(cc, dim1, dim2, "Compressed column major");
+#if 0
     test(drc, dim1, dim2, "Dense row major complex");
     test(crc, dim1, dim2, "Compressed row major complex");
 #endif

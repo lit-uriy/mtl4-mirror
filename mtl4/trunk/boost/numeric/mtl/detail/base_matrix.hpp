@@ -3,6 +3,7 @@
 #ifndef MTL_BASE_MATRIX_INCLUDE
 #define MTL_BASE_MATRIX_INCLUDE
 
+#include <algorithm>
 #include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
@@ -15,6 +16,7 @@ namespace mtl { namespace detail {
 template <class Elt, class Parameters>
 struct base_matrix 
 {
+    typedef base_matrix                       self;
     typedef Elt                               value_type;
     typedef typename Parameters::orientation  orientation;
     typedef typename Parameters::index        index_type;
@@ -30,6 +32,13 @@ struct base_matrix
 
     // setting dimension
     explicit base_matrix(mtl::non_fixed::dimensions d) : dim(d), my_nnz(0) {}
+
+    void swap(self& other)
+    {
+	using std::swap;
+	swap(my_nnz, other.my_nnz);
+	swap(dim, other.dim);
+    }
 
     // Change dimension
     // Will fail for fixed::dimension
