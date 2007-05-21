@@ -10,6 +10,7 @@
 #include <boost/numeric/mtl/matrix/laplacian_setup.hpp> 
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
+#include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 
 using namespace mtl;
 using namespace std;  
@@ -34,7 +35,7 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     if (a[0][0] != eight)
 	throw "Scaling with scalar wrong";
 
-  return;
+#if 0
     left_scale_inplace(0.5, a);
     left_scale_inplace(b, a);
 
@@ -65,6 +66,7 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
 	if (a[12][22] != one)
 	    throw "wrong south south neighbor";
     }
+#endif
 }
 
 
