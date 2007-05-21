@@ -3,6 +3,8 @@
 #ifndef MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE
 #define MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE
 
+#include <cassert>
+#include <algorithm>
 #include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -33,6 +35,7 @@ template <typename Value, bool OnStack, unsigned Size= 0>
 struct generic_array
 {
     typedef Value                             value_type;
+    typedef generic_array                     self;
 
     void alloc(std::size_t size)
     {
@@ -79,6 +82,14 @@ struct generic_array
 	if (!extern_memory && malloc_address) delete[] malloc_address;
     }
 
+    void swap(self& other)
+    {
+	using std::swap;
+	swap(extern_memory, other.extern_memory);
+	swap(malloc_address, other.malloc_address);
+	swap(data, other.data);
+    }	
+
   protected:
     bool                                      extern_memory;       // whether pointer to external data or own
     char*                                     malloc_address;
@@ -92,9 +103,15 @@ struct generic_array<Value, true, Size>
     Value    data[Size];
     explicit generic_array(std::size_t) {}
 
+    void swap (generic_array<Value, true, Size>& other)
+    {
+	using std::swap;
+	swap(*this, other);
+    }
+
     void realloc(std::size_t) 
     {
-	// #error "Arrays on stack cannot be reallocated"
+	assert(false); // Arrays on stack cannot be reallocated
     }
 };
 
@@ -103,6 +120,7 @@ template <typename Value, bool OnStack, unsigned Size>
 struct contiguous_memory_block 
   : public generic_array<Value, OnStack, Size>
 {
+    typedef contiguous_memory_block             self;
     typedef generic_array<Value, OnStack, Size> base;
 
     static bool const                         on_stack= OnStack;
@@ -121,6 +139,12 @@ struct contiguous_memory_block
 
     explicit contiguous_memory_block(std::size_t size)
 	: base(size), my_used_memory(size) {}
+
+    void swap(self& other)
+    {
+	base::swap(other);
+	std::swap(my_used_memory, other.my_used_memory);
+    }
 
     void realloc(std::size_t size) 
     {
