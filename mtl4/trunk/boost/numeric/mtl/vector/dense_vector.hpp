@@ -142,6 +142,11 @@ public:
 
     template <typename Value2> friend void fill(self&, const Value2&);
 
+    friend void swap(self& vector1, self& vector2)
+    {
+	static_cast<super_memory&>(vector1).swap(vector2);
+    }
+
 } ; // dense_vector
 
 
