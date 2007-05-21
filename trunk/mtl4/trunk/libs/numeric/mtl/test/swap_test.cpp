@@ -111,9 +111,9 @@ int test_main(int argc, char* argv[])
     dense2D<complex<double> >                            drc(size, size);
     compressed2D<complex<double> >                       crc(size, size);
 
-#if 0
     test(dr, dim1, dim2, "Dense row major");
     test(dc, dim1, dim2, "Dense column major");
+#if 0
     test(mzd, dim1, dim2, "Morton Z-order");
     test(d2r, dim1, dim2, "Hybrid 2 row-major");
     test(cr, dim1, dim2, "Compressed row major");

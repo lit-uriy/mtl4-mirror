@@ -316,6 +316,14 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	return ldim;
     }
 
+    friend void swap(self& matrix1, self& matrix2)
+    {
+	static_cast<super_memory&>(matrix1).swap(matrix2);
+	static_cast<super&>(matrix1).swap(matrix2);
+	std::swap(matrix1.ldim, matrix2.ldim);
+    }
+
+
   protected:
     
     // Set ranges from begin_r to end_r and begin_c to end_c
