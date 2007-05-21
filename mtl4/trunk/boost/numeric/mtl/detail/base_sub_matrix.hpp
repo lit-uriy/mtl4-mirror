@@ -3,6 +3,7 @@
 #ifndef MTL_BASE_SUB_MATRIX_INCLUDE
 #define MTL_BASE_SUB_MATRIX_INCLUDE
 
+#include <algorithm>
 #include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
@@ -22,6 +23,7 @@ struct base_sub_matrix
     typedef typename Parameters::dimensions   dim_type;
     static bool const                         on_stack= Parameters::on_stack;
     typedef std::size_t                       size_type;
+    typedef base_sub_matrix                   self;
 
   protected:
     size_type                       my_nnz,       // # of non-zeros, to be set by derived matrix (drop maybe?)
@@ -49,6 +51,15 @@ struct base_sub_matrix
     explicit base_sub_matrix(mtl::non_fixed::dimensions d) 
     {
 	constructor_helper(d);
+    }
+
+    void swap(self& other)
+    {
+	std::swap(my_nnz, other.my_nnz);
+	std::swap(my_begin_row, other.my_begin_row);
+	std::swap(my_end_row, other.my_end_row);
+	std::swap(my_begin_col, other.my_begin_col);
+	std::swap(my_end_col, other.my_end_col);
     }
 
     void change_dim(mtl::non_fixed::dimensions d)
