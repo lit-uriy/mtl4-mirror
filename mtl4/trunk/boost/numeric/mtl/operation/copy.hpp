@@ -6,12 +6,15 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
-
-#include <iostream>
 #include <boost/numeric/mtl/operation/print.hpp>
+
+#include <boost/static_assert.hpp>
+#include <boost/type_traits.hpp>
+#include <iostream>
 
 namespace mtl {
 	
@@ -67,14 +70,14 @@ namespace mtl {
     }
     
 
-    // Add matrix \p src to matrix \p dest in copy-like style
+    /// Add matrix \p src to matrix \p dest in copy-like style
     template <typename MatrixSrc, typename MatrixDest>
     inline void matrix_copy_plus(const MatrixSrc& src, MatrixDest& dest)
     {
 	gen_matrix_copy< operations::update_plus<typename MatrixDest::value_type> >(src, dest, false);
     }
 	
-    // Subtract matrix \p src from matrix \p dest in copy-like style
+    /// Subtract matrix \p src from matrix \p dest in copy-like style
     template <typename MatrixSrc, typename MatrixDest>
     inline void matrix_copy_minus(const MatrixSrc& src, MatrixDest& dest)
     {
@@ -88,6 +91,61 @@ namespace mtl {
 	// inline void copy(const MatrixSrc& src, tag::matrix_expr, MatrixDest& dest, tag::matrix)
     {
 	return matrix_copy(src, dest);
+    }
+
+  
+
+    template <typename Updater, typename VectorSrc, typename VectorDest>
+    inline void gen_vector_copy(const VectorSrc& src, VectorDest& dest, bool with_reset)
+    {
+	// Works only with dense vectors as dest !!!!! (source could be sparse)
+	// Needs vector inserter
+
+	BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<VectorSrc>::type,
+ 			                    typename ashape::ashape<VectorDest>::type>::value));
+
+	MTL_THROW_IF(size(src) != size(dest), bad_range);
+
+	if (with_reset)
+	    detail::zero_with_sparse_src(dest, typename traits::category<VectorSrc>::type());
+	
+	typename traits::index<VectorSrc>::type           index(src); 
+	typename traits::const_value<VectorSrc>::type     value(src); 
+
+	typedef typename traits::range_generator<tag::nz, VectorSrc>::type  cursor_type;
+	for (cursor_type cursor = begin<tag::nz>(src), cend = end<tag::nz>(src); 
+	     cursor != cend; ++cursor)
+	    Updater()(dest[index(*cursor)], value(*cursor));
+    }
+	    
+    /// Copy vector \p src into vector \p dest
+    template <typename VectorSrc, typename VectorDest>
+    inline void vector_copy(const VectorSrc& src, VectorDest& dest)
+    {
+	gen_vector_copy< operations::update_store<typename VectorDest::value_type> >(src, dest, true);
+    }
+    
+
+    /// Add vector \p src to vector \p dest in copy-like style
+    template <typename VectorSrc, typename VectorDest>
+    inline void vector_copy_plus(const VectorSrc& src, VectorDest& dest)
+    {
+	gen_vector_copy< operations::update_plus<typename VectorDest::value_type> >(src, dest, false);
+    }
+	
+    /// Subtract vector \p src from vector \p dest in copy-like style
+    template <typename VectorSrc, typename VectorDest>
+    inline void vector_copy_minus(const VectorSrc& src, VectorDest& dest)
+    {
+	gen_vector_copy< operations::update_minus<typename VectorDest::value_type> >(src, dest, false);
+    }
+	
+
+       
+    template <typename VectorSrc, typename VectorDest>
+    inline void copy(const VectorSrc& src, tag::vector, VectorDest& dest, tag::vector)	
+    {
+	return vector_copy(src, dest);
     }
 
 
