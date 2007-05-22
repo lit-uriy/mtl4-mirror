@@ -8,6 +8,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/meta_math/loop1.hpp>
 
 namespace mtl { namespace functor {
 

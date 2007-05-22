@@ -6,6 +6,7 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
+#include <boost/numeric/mtl/operation/dot.hpp>
 
 using namespace mtl;
 using namespace std;  
@@ -97,6 +98,19 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     if (v[0] != 12.0) throw "v wrong";
     if (w[0] != 10.0) throw "v wrong";
     if (u[0] != 25.0) throw "u wrong";
+
+    mtl::vector::fill(u, 3.0);
+    mtl::vector::fill(v, 4.0);
+    mtl::vector::fill(w, 5.0);
+    std::cout << name << "  --- u= 3; v= 4; w=5; u+= dot(v, w) * w;:\n"; std::cout.flush();
+    u+= dot(v, w) * w;
+    cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
+    if (u[0] != 503.0) throw "u wrong";
+
+    std::cout << name << "  --- u+= dot<12>(v, w) * w;:\n"; std::cout.flush();
+    u+= dot<12>(v, w) * w;
+    cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
+    if (u[0] != 1003.0) throw "u wrong";
 }
  
 
