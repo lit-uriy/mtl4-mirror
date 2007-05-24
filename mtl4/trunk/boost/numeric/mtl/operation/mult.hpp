@@ -6,6 +6,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
 #include <boost/numeric/mtl/operation/smat_smat_mult.hpp>
 #include <boost/numeric/mtl/operation/smat_dmat_mult.hpp>
@@ -60,6 +61,8 @@ inline void mult(const A& a, const X& x, const Y& y, Z& z)
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::matrix, tag::matrix, tag::matrix)
 {
+    MTL_THROW_IF(num_rows(a) != num_rows(c) || num_cols(a) != num_rows(b) || num_cols(b) != num_cols(c),
+		 incompatible_size());
     // dispatch between dense and sparse
     using traits::category;
     mat_mat_mult(a, b, c, Assign(), typename category<MatrixA>::type(), 
@@ -215,6 +218,7 @@ inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, t
 			                 ::mtl::ashape::mat_cvec_mult
 			               >::value));
 
+    MTL_THROW_IF(num_rows(a) != num_rows(w) || num_cols(a) != num_rows(v), incompatible_size());
 
     // dispatch between dense and sparse matrices
     using traits::category;

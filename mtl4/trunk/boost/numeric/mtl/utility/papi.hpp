@@ -6,23 +6,68 @@
 #ifdef MTL_HAS_PAPI
 
 #include <papi.h>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 #endif // MTL_HAS_PAPI
 
 namespace mtl { namespace utility {
 
+/// Exception for errors with PAPI, is sub-divided further
+struct papi_error : public runtime_error
+{
+    explicit papi_error(const char *s= "PAPI error") : runtime_error(s) {}
+};
 
-struct papi_error {};
-struct papi_version_mismatch : papi_error {};
-struct papi_no_counters : papi_error {};
-struct papi_create_eventset_error : papi_error {};
-struct papi_name_to_code_error : papi_error {};
-struct papi_query_event_error : papi_error {};
-struct papi_start_event_error : papi_error {};
-struct papi_add_event_error : papi_error {};
-struct papi_reset_error : papi_error {};
-struct papi_read_error : papi_error {};
-struct papi_index_range_error : papi_error {};
+struct papi_version_mismatch : public papi_error 
+{
+    explicit papi_version_mismatch(const char *s= "PAPI: version mismatch") : papi_error(s) {}
+};
+
+struct papi_no_counters : public papi_error 
+{
+    explicit papi_no_counters(const char *s= "PAPI: no counters") : papi_error(s) {}
+};
+
+struct papi_create_eventset_error : public papi_error 
+{
+    explicit papi_create_eventset_error(const char *s= "PAPI: create event set error") : papi_error(s) {}
+};
+
+struct papi_name_to_code_error : public papi_error 
+{
+    explicit papi_name_to_code_error(const char *s= "PAPI: name to code error") : papi_error(s) {}
+};
+
+struct papi_query_event_error : public papi_error 
+{
+    explicit papi_query_event_error(const char *s= "PAPI: query event error") : papi_error(s) {}
+};
+
+struct papi_start_event_error : public papi_error
+{
+    explicit papi_start_event_error(const char *s= "PAPI: start event error") : papi_error(s) {}
+};
+
+struct papi_add_event_error : public papi_error 
+{
+    explicit papi_add_event_error(const char *s= "PAPI: add event error") : papi_error(s) {}
+};
+
+struct papi_reset_error : public papi_error 
+{
+    explicit papi_reset_error(const char *s= "PAPI: reset error") : papi_error(s) {}
+};
+
+struct papi_read_error : public papi_error 
+{
+    explicit papi_read_error(const char *s= "PAPI: read error") : papi_error(s) {}
+};
+
+struct papi_index_range_error : public papi_error 
+{
+    explicit papi_index_range_error(const char *s= "PAPI: index range error") : papi_error(s) {}
+};
+
 
 #ifdef MTL_HAS_PAPI
 
@@ -33,15 +78,15 @@ class papi_t
 	static bool initialized= false;
 	if (!initialized) {
 
-	    if ( PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT )
-		throw papi_version_mismatch();
+	    MTL_THROW_IF(PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT,
+			 papi_version_mismatch());
 
 	    num_counters = PAPI_get_opt(PAPI_MAX_HWCTRS, NULL);
-	    if (num_counters <= 0) throw papi_no_counters();
+	    MTL_THROW_IF(num_counters <= 0, papi_no_counters());
 
 	    counters= new long_long[num_counters];
 
-	    if (PAPI_create_eventset(&event_set) != PAPI_OK) throw papi_create_eventset_error();
+	    MTL_THROW_IF(PAPI_create_eventset(&event_set) != PAPI_OK, papi_create_eventset_error());
 	    initialized= true;
 	}
     }
@@ -65,21 +110,21 @@ public:
     int add_event(const char* name)
     {
 	int code;
-	if (PAPI_event_name_to_code(const_cast<char*>(name), &code) != PAPI_OK) 
-	    throw papi_name_to_code_error();
+	MTL_THROW_IF(PAPI_event_name_to_code(const_cast<char*>(name), &code) != PAPI_OK, 
+		     papi_name_to_code_error());
 	// std::cout << "add event " << const_cast<char*>(name) << " " << code << "\n";
-	if (PAPI_query_event(code) != PAPI_OK)
-	    throw papi_query_event_error();
-	if (PAPI_add_event(event_set, code) != PAPI_OK) 
-	    throw papi_add_event_error();
+	MTL_THROW_IF (PAPI_query_event(code) != PAPI_OK,
+		      papi_query_event_error());
+	MTL_THROW_IF (PAPI_add_event(event_set, code) != PAPI_OK,
+		      papi_add_event_error());
 	list_events();
 	return active_events++;
     }
 
     void start() 
     {
-	if (PAPI_start(event_set) != PAPI_OK)
-	    throw papi_start_event_error();
+	MTL_THROW_IF (PAPI_start(event_set) != PAPI_OK,
+		      papi_start_event_error());
 	reset();
     }
 
@@ -101,13 +146,13 @@ public:
 
     void reset()
     {
-	if (PAPI_reset(event_set) != PAPI_OK) throw papi_reset_error();
+	MTL_THROW_IF(PAPI_reset(event_set) != PAPI_OK, papi_reset_error());
     }
 
     void read()
     {
 	list_events();
-	if (PAPI_read(event_set, counters) != PAPI_OK) throw papi_read_error();
+	MTL_THROW_IF (PAPI_read(event_set, counters) != PAPI_OK, papi_read_error());
 	// std::cout << "counters read, first value: " << *counters << "\n";
     }
 

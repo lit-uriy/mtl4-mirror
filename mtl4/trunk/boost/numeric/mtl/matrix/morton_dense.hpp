@@ -8,6 +8,7 @@
 
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
 #include <boost/numeric/mtl/detail/dilated_int.hpp>
@@ -416,8 +417,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
     void change_dim(size_type num_rows, size_type num_cols)
     {
-	if (this->extern_memory && (num_rows != this->num_rows() || num_cols != this->num_cols()))
-	    throw "Can't change the size of matrices with external memory";
+	MTL_THROW_IF(this->extern_memory && (num_rows != this->num_rows() || num_cols != this->num_cols()),
+		     runtime_error("Can't change the size of matrices with external memory"));
 
 	set_ranges(num_rows, num_cols);
 	this->realloc(memory_need(num_rows, num_cols));
@@ -774,7 +775,13 @@ struct sub_matrix_t<morton_dense<Value, BitMask, Parameters> >
     sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
     {
 	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
-	// Probably check whether power of 2 is crossed (ask David and Michael)
+
+	// Check wether sub-matrix is contigous memory block
+	// by comparing the address of the last and the first element in the entire and the sub-matrix
+	MTL_THROW_IF(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
+		     != &matrix[end_r-begin_r-1][end_c-begin_c-1] - &matrix[0][0],
+		     range_error("This sub-matrix cannot be used because it is split in memory"));
+	// Check with David if this is a sufficient condition (it is a necessary at least)
 
 	sub_matrix_type  tmp(matrix);
 
