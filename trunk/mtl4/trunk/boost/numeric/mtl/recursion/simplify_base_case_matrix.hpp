@@ -4,6 +4,7 @@
 #define MTL_SIMPLIFY_BASE_CASE_MATRIX_INCLUDE
 
 #include <boost/numeric/mtl/matrix/dimension.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
 
@@ -74,10 +75,9 @@ typename base_case_matrix<Matrix, BaseCaseTest>::type inline
 simplify_base_case_matrix(Matrix const& matrix, BaseCaseTest test)
 {
     // cout << "simplify dim " <<  matrix.num_rows() << ", " << matrix.num_cols() << "\n";
-    if (matrix.num_rows() > BaseCaseTest::base_case_size 
-	|| matrix.num_cols() > BaseCaseTest::base_case_size)  {
-      throw "Matrix dimension is larger than base case";
-    }
+    MTL_DEBUG_THROW_IF(num_rows(matrix) > BaseCaseTest::base_case_size || num_cols(matrix) > BaseCaseTest::base_case_size,
+		       logic_error("Matrix dimension is larger than base case"));
+
     return impl::simplify_base_case_matrix<Matrix, typename base_case_matrix<Matrix, BaseCaseTest>::type, BaseCaseTest>()(matrix, test);
 
 }

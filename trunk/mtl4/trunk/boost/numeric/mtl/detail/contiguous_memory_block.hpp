@@ -67,8 +67,8 @@ struct generic_array
 	// If already have memory of the right size we can keep it
 	if (size == old_size) 
 	    return;
-	if (extern_memory)
-	    throw "Can't change the size of collections with external memory";
+	MTL_THROW_IF(extern_memory, 
+		     logic_error("Can't change the size of collections with external memory"));
 	// Free old memory (if allocated)
 	if (!extern_memory && malloc_address) {
 	    // printf("realloc: data %p, malloc %p\n", this->data, malloc_address);      

@@ -19,7 +19,7 @@ namespace mtl {
 template <typename Matrix, typename VectorX, typename VectorY>
 inline void rank_one_update(Matrix& matrix, const VectorX& x, const VectorY& y)
 {
-    if (num_rows(matrix) != size(x) || num_cols(matrix) != size(y)) throw "mismatch";
+    MTL_THROW_IF(num_rows(matrix) != size(x) || num_cols(matrix) != size(y), incompatible_size());
 
     typedef typename traits::range_generator<tag::nz, VectorX>::type x_cursor;
     typename traits::index<VectorX>::type             index_x(x); 
