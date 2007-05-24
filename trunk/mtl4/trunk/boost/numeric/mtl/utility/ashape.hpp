@@ -3,6 +3,7 @@
 #ifndef MTL_ASHAPE_INCLUDE
 #define MTL_ASHAPE_INCLUDE
 
+#include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 
@@ -50,6 +51,71 @@ struct ashape<dense_vector<Value, Parameters> >
 };
 
    
+template <typename E1, typename E2>
+struct ashape< vector::vec_vec_plus_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape< vector::vec_vec_minus_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2, typename SFunctor>
+struct ashape< vector::vec_vec_op_expr<E1, E2, SFunctor> >
+{
+#if 0 // not sure if this is true in all operations
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+#endif
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape< vector::vec_vec_plus_asgn_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape< vector::vec_vec_minus_asgn_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape< vector::vec_vec_times_asgn_expr<E1, E2> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2, typename SFunctor>
+struct ashape< vector::vec_vec_aop_expr<E1, E2, SFunctor> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2, typename SFunctor>
+struct ashape< vector::vec_scal_aop_expr<E1, E2, SFunctor> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
+// ========
+// Matrices
+// ========
+
+
 template <typename Value, typename Parameters>
 struct ashape<compressed2D<Value, Parameters> >
 {
@@ -66,6 +132,24 @@ template <typename Value, unsigned long Mask, typename Parameters>
 struct ashape<morton_dense<Value, Mask, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
+};
+
+
+// =====
+// Views
+// =====
+
+
+template <typename Functor, typename Coll>
+struct ashape<matrix::map_view<Functor, Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Functor, typename Coll>
+struct ashape<vector::map_view<Functor, Coll> >
+{
+    typedef typename ashape<Coll>::type type;
 };
 
 template <typename Scaling, typename Coll>

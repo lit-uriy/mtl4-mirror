@@ -1,4 +1,4 @@
-Import('debug_env')
+Import('debug_env check')
 
 sources = Split("""base_case_conversion.cpp
              bit_masking.cpp
@@ -33,5 +33,9 @@ sources = Split("""base_case_conversion.cpp
 programs = []
 for p in sources:
     programs.append(debug_env.Program(p))
+
+if int(check):
+    for p in programs:
+        debug_env.AddPostAction(p, p[0].abspath)
 
 Default(programs)

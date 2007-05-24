@@ -111,6 +111,13 @@ public:
     template <class E>
     void check_consistent_shape( vec_expr<E> const& e ) const
     {
+	if (!boost::is_same<
+			        typename ashape::ashape<self>::type
+			      , typename ashape::ashape<E>::type
+	    >::value)
+	    std::cout << typeid(typename ashape::ashape<self>::type).name() << " is not " 
+		      << typeid(typename ashape::ashape<E>::type).name() << "\n";
+
 	MTL_DEBUG_THROW_IF((!boost::is_same<
 			        typename ashape::ashape<self>::type
 			      , typename ashape::ashape<E>::type
