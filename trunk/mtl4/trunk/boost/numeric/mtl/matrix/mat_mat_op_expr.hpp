@@ -41,13 +41,7 @@ struct mat_mat_op_expr
     
     void delay_assign() const {}
 
-    void check_shape() const
-    {
-#if 0
-	MTL_DEBUG_THROW_IF( num_rows(first) != num_rows(second) 
-	                    || num_cols(first) != num_cols(second), bad_shape());
-#endif
-    }
+    void check_shape() const {} // consistency of shapes depend on operation
 
     const_dereference_type operator() (size_type row, size_type col) const
     {

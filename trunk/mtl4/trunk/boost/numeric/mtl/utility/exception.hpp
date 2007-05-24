@@ -4,6 +4,7 @@
 #define MTL_MTL_EXCEPTION_INCLUDE
 
 #include <cassert>
+#include <stdexcept>
 
 namespace mtl {
 
@@ -34,7 +35,79 @@ namespace mtl {
    }
 #endif
 
-    struct bad_range {};
+
+#if 0 
+standard errors:
+
+exception
+    logic_error
+        domain_error
+        invalid_argument
+        length_error
+        out_of_range
+    runtime_error
+        range_error
+        overflow_error
+        underflow_error
+bad_alloc
+bad_cast
+bad_exception
+bad_typeid
+
+#endif
+
+/// Exception for indices out of range
+struct index_out_of_range
+    : public std::out_of_range
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit index_out_of_range(const char *s= "Index out of range") 
+	: std::out_of_range(s) {}
+};
+
+/// Exception for invalid range definitions, esp. in constructors
+struct range_error
+    : public std::range_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit range_error(const char *s= "Invalid range") : std::range_error(s) {}
+};
+
+/// Exception for arguments with incompatible sizes
+struct incompatible_size
+    : public std::domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit incompatible_size(const char *s= "Arguments have incompatible size")
+	: std::domain_error(s) {}
+};
+
+/// Exception for arguments with incompatible shapes, e.g. adding matrices and vectors
+struct incompatible_shape
+    : public std::domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit incompatible_shape(const char *s= "Arguments have incompatible shape")
+	: std::domain_error(s) {}
+};
+
+/// Exception for run-time errors that doesn't fit into specific categories
+struct runtime_error
+    : public std::runtime_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit runtime_error(const char *s= "Run-time error")
+	: std::runtime_error(s) {}
+};
+
+/// Exception for logic errors that doesn't fit into specific categories
+struct logic_error
+    : public std::logic_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit logic_error(const char *s= "Run-time error")
+	: std::logic_error(s) {}
+};
 
 } // namespace mtl
 
