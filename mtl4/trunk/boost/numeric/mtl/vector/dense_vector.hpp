@@ -70,7 +70,7 @@ public:
 
     void check_index( size_type i ) const
     {
-	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), bad_range());
+	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), index_out_of_range());
     }
 
     reference operator()( size_type i ) 
@@ -111,27 +111,15 @@ public:
     template <class E>
     void check_consistent_shape( vec_expr<E> const& e ) const
     {
-      #if 0 // leave this for later
-	MTL_THROW_IF((!boost::is_same<
-		         typename ashape::ashape<self>::type
-		       , typename ashape::ashape<E>::type
-		      >::value),
-		     bad_range());
-	// Might be optimized out by smart compilers
-      #endif 
+	MTL_DEBUG_THROW_IF((!boost::is_same<
+			        typename ashape::ashape<self>::type
+			      , typename ashape::ashape<E>::type
+			    >::value),
+			   incompatible_shape());
     }
 
-#if 1
     using assign_base::operator=;
-#else
 
-    template <class E>
-    vec_vec_asgn_expr<self, E> operator=( vec_expr<E> const& e )
-    {
-	check_consistent_shape(e);
-	return vec_vec_asgn_expr<self, E>( *this, e.ref );
-    }
-#endif
 
     // Replace it later by expression (maybe)
     self& operator=(value_type value)

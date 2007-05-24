@@ -69,20 +69,19 @@ struct base_sub_matrix
 
     void set_ranges(size_type br, size_type er, size_type bc, size_type ec)
     {
-	MTL_DEBUG_THROW_IF(br > er, "begin row > end row\n");
-	MTL_DEBUG_THROW_IF(bc > ec, "begin column > end column\n");
+	MTL_DEBUG_THROW_IF(br > er, range_error("begin row > end row"));
+	MTL_DEBUG_THROW_IF(bc > ec, range_error("begin column > end column"));
 	my_begin_row= br; my_end_row= er; my_begin_col= bc; my_end_col= ec;
     }
 
     void check_ranges(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c) const
     {
-	MTL_DEBUG_THROW_IF(begin_r < begin_row(), "begin_row out of range\n");
-	if (end_r > end_row())
-	    std::cout << "end_row out of range\n";
-	MTL_DEBUG_THROW_IF(end_r > end_row(), "end_row out of range\n");
+	MTL_DEBUG_THROW_IF(begin_r < begin_row(), range_error("begin_row out of range"));
+	// if (end_r > end_row()) std::cout << "end_row out of range\n";
+	MTL_DEBUG_THROW_IF(end_r > end_row(), range_error("end_row out of range"));
 			      
-	MTL_DEBUG_THROW_IF(begin_c < begin_col(), "begin_col out of range\n");
-	MTL_DEBUG_THROW_IF(end_c > end_col(), "end_col out of range\n");
+	MTL_DEBUG_THROW_IF(begin_c < begin_col(), range_error("begin_col out of range"));
+	MTL_DEBUG_THROW_IF(end_c > end_col(), range_error("end_col out of range"));
     }
 
     explicit base_sub_matrix(size_type br, size_type er, size_type bc, size_type ec) : my_nnz(0)
