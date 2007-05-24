@@ -68,8 +68,17 @@ namespace mtl {
     /// Namespace for vectors and views and %operations exclusively on vectors
     namespace vector {
 	template <typename Value, typename Parameters> struct dense_vector;
+	template <typename Functor, typename Vector> struct map_view;
 	template <typename Vector>  struct conj_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
+	template <class E1, class E2, typename SFunctor> struct vec_vec_op_expr;
+	template <class E1, class E2> struct vec_vec_plus_expr;
+	template <class E1, class E2> struct vec_vec_minus_expr;
+	template <class E1, class E2, typename SFunctor> struct vec_vec_aop_expr;
+	template <class E1, class E2, typename SFunctor> struct vec_scal_aop_expr;
+	template <class E1, class E2> struct vec_vec_plus_asgn_expr;
+	template <class E1, class E2> struct vec_vec_minus_asgn_expr;
+	template <class E1, class E2> struct vec_vec_times_asgn_expr;
     }
 
     using vector::dense_vector;
