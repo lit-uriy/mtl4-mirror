@@ -111,13 +111,6 @@ public:
     template <class E>
     void check_consistent_shape( vec_expr<E> const& e ) const
     {
-	if (!boost::is_same<
-			        typename ashape::ashape<self>::type
-			      , typename ashape::ashape<E>::type
-	    >::value)
-	    std::cout << typeid(typename ashape::ashape<self>::type).name() << " is not " 
-		      << typeid(typename ashape::ashape<E>::type).name() << "\n";
-
 	MTL_DEBUG_THROW_IF((!boost::is_same<
 			        typename ashape::ashape<self>::type
 			      , typename ashape::ashape<E>::type
@@ -134,7 +127,7 @@ public:
 	std::fill(begin(), end(), value);
 	return *this;
     }
-
+ 
     template <typename Value2> friend void fill(self&, const Value2&);
 
     friend void swap(self& vector1, self& vector2)
