@@ -157,7 +157,11 @@ conf = Configure(env)
 check_no_long_double(conf)
 env = conf.Finish()
 
-# produces too many output, omit it for now
+# Search only for BLAS when explicitly asked for
+with_blas = ARGUMENTS.get('with_blas', 0)
+if int(with_blas):
+    env = check_for_blas(env)
+
 # env = check_for_blas(env)
 
 
@@ -195,6 +199,7 @@ opts.Add('add_ccflag', 'Add extra CC compiler flags that aren\'t automatically s
 opts.Add('add_cxxflag', 'Add extra CXX compiler flags that aren\'t automatically set', '')
 opts.Add('add_optflag', 'Add extra optimization flags that aren\'t automatically set', '')
 
+opts.Add('with_blas', 'Link with BLAS (have to given each time :-( until we can save configurations)', 0)
 opts.Add('blas_path', 'Add path of blas library', '')
 opts.Add('blas_lib', 'Add name of blas library', '')
 opts.Add('blas_ldflags', 'Add LDFLAGS for blas library', '')
