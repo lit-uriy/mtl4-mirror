@@ -91,6 +91,15 @@ struct incompatible_shape
 	: std::domain_error(s) {}
 };
 
+/// Exception for arguments with incompatible sizes
+struct matrix_not_square
+    : public std::domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit matrix_not_square(const char *s= "Matrix must be square for this operation")
+	: std::domain_error(s) {}
+};
+
 /// Exception for run-time errors that doesn't fit into specific categories
 struct runtime_error
     : public std::runtime_error
@@ -105,7 +114,7 @@ struct logic_error
     : public std::logic_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit logic_error(const char *s= "Run-time error")
+    explicit logic_error(const char *s= "Logic error")
 	: std::logic_error(s) {}
 };
 

@@ -27,6 +27,7 @@ sources = Split("""base_case_conversion.cpp
              left_scale_inplace_test.cpp
              right_scale_inplace_test.cpp
              swap_test.cpp
+             trace_test.cpp
 """)
 #compressed2D.cpp
 
