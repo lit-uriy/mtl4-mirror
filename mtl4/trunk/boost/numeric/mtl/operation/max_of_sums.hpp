@@ -39,7 +39,6 @@ inline max_of_sums(const Matrix& matrix, bool aligned, MinorIndex minor_index, u
     if (aligned) {
 	real_type maxv= my_zero;
 	for (cursor_type cursor = begin<tag::major>(matrix), cend = end<tag::major>(matrix); cursor != cend; ++cursor) {
-
 	    real_type sum= my_zero;
 	    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
 		sum+= abs(value(*icursor));
