@@ -30,6 +30,7 @@ sources = Split("""base_case_conversion.cpp
              trace_test.cpp
              one_norm_matrix_test.cpp
              infinity_norm_matrix_test.cpp
+             frobenius_norm_test.cpp
 """)
 #compressed2D.cpp
 

@@ -23,7 +23,7 @@ inline max_of_sums(const Matrix& matrix, bool aligned, MinorIndex minor_index, u
 {
     using std::max; using std::abs; using math::zero;
 
-    typedef typename Collection<Matrix>::value_type  value_type;
+    typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename RealMagnitude<value_type>::type  real_type;
     real_type ref, my_zero= zero(ref);
 
