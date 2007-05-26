@@ -36,6 +36,19 @@ namespace mtl {
 #endif
 
 
+#ifdef MTL_ASSERT_FOR_THROW
+#  define MTL_THROW(Exception)       \
+   {                                 \
+       assert(0);		     \
+   }
+#else
+#  define MTL_THROW(Exception)       \
+   {                                 \
+      throw Exception;               \
+   }
+#endif
+
+
 #if 0 
 standard errors:
 
@@ -78,7 +91,7 @@ struct incompatible_size
     : public std::domain_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit incompatible_size(const char *s= "Arguments have incompatible size")
+    explicit incompatible_size(const char *s= "Arguments have incompatible size.")
 	: std::domain_error(s) {}
 };
 
@@ -87,7 +100,7 @@ struct incompatible_shape
     : public std::domain_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit incompatible_shape(const char *s= "Arguments have incompatible shape")
+    explicit incompatible_shape(const char *s= "Arguments have incompatible shape.")
 	: std::domain_error(s) {}
 };
 
@@ -96,7 +109,16 @@ struct matrix_not_square
     : public std::domain_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit matrix_not_square(const char *s= "Matrix must be square for this operation")
+    explicit matrix_not_square(const char *s= "Matrix must be square for this operation.")
+	: std::domain_error(s) {}
+};
+
+/// Exception for arguments with incompatible sizes
+struct not_expected_result
+    : public std::domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit not_expected_result(const char *s= "The result of an operation is not the expected one.")
 	: std::domain_error(s) {}
 };
 

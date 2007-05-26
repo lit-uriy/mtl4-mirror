@@ -4,6 +4,8 @@
 #define MTL_HESSIAN_MATRIX_UTILITIES_INCLUDE
 
 #include <cmath>
+#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl {
 
@@ -58,39 +60,42 @@ void check_hessian_matrix_product(Matrix const& c, typename Matrix::size_type re
     size_type  rb= c.begin_row(), rl= c.end_row() - 1,
                cb= c.begin_col(), cl= c.end_col() - 1;
 
-#if 0
     if (!similar_values(value_type(factor * hessian_product_i_j(rb, cb, reduced_dim)), c[rb][cb])) {
 	std::cout << "Result in c[" << rb << "][" << cb << "] should be " 
 		  << factor * hessian_product_i_j(rb, cb, reduced_dim)
-	     << " but is " << c[rb][cb] << "\n";
-	throw "Wrong result"; }
+		  << " but is " << c[rb][cb] << "\n";
+	MTL_THROW(not_expected_result());
+    }
 
     if (!similar_values(value_type(factor * hessian_product_i_j(rl, cb, reduced_dim)), c[rl][cb])) {
 	std::cout << "Result ixn c[" << rl << "][" << cb << "] should be " 
 		  << factor * hessian_product_i_j(rl, cb, reduced_dim)
-	     << " but is " << c[rl][cb] << "\n";
-	throw "Wrong result"; }
+		  << " but is " << c[rl][cb] << "\n";
+	MTL_THROW(not_expected_result()); 
+    }
 
     if (!similar_values(value_type(factor * hessian_product_i_j(rb, cl, reduced_dim)), c[rb][cl])) {
 	std::cout << "Result in c[" << rb << "][" << cb << "] should be " 
 		  << factor * hessian_product_i_j(rb, cl, reduced_dim)
-	     << " but is " << c[rb][cl] << "\n";
-	throw "Wrong result"; }
+		  << " but is " << c[rb][cl] << "\n";
+	MTL_THROW(not_expected_result());
+    }
 
     if (!similar_values(value_type(factor * hessian_product_i_j(rl, cl, reduced_dim)), c[rl][cl])) {
 	std::cout << "Result in c[" << rl << "][" << cb << "] should be " 
 		  << factor * hessian_product_i_j(rl, cl, reduced_dim)
-	     << " but is " << c[rl][cl] << "\n";
-	throw "Wrong result"; }
+		  << " but is " << c[rl][cl] << "\n";
+	MTL_THROW(not_expected_result()); 
+    }
 
     // In the center of the matrix
     if (!similar_values(value_type(factor * hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)), 
 			c[(rb+rl)/2][(cb+cl)/2])) {
 	std::cout << "Result in c[" << (rb+rl)/2 << "][" << (cb+cl)/2 << "] should be " 
 		  << factor * hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)
-	     << " but is " << c[(rb+rl)/2][(cb+cl)/2] << "\n";
-	throw "Wrong result"; }
-#endif
+		  << " but is " << c[(rb+rl)/2][(cb+cl)/2] << "\n";
+	MTL_THROW(not_expected_result()); 
+    }
 }
 
 
