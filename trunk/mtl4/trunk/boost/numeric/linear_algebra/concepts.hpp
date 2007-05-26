@@ -816,13 +816,13 @@ concept_map CommutativeMonoid< min<Element>, Element >
 // Concept to specify to specify projection of scalar value to comparable type
 // For instance as return type of abs
 // Minimalist definition for maximal applicability
-auto concept MagnitudeType<typename T>
+auto concept Magnitude<typename T>
 {
     typename type = T;
 };
 
 template <typename T>
-concept_map MagnitudeType<std::complex<T> >
+concept_map Magnitude<std::complex<T> >
 {
     typedef T type;
 }
@@ -830,7 +830,7 @@ concept_map MagnitudeType<std::complex<T> >
 
 // Concept for norms etc., which are real values in mathematical definitions
 auto concept RealMagnitude<typename T>
-  : MagnitudeType<T>
+  : Magnitude<T>
 {
     requires FullEqualityComparable<type>;
     requires FullLessThanComparable<type>;
@@ -849,19 +849,19 @@ auto concept RealMagnitude<typename T>
 #else  // now without concepts
 
 template <typename T>
-struct MagnitudeType
+struct Magnitude
 {
     typename type = T;
 };
 
 template <typename T>
-struct MagnitudeType<std::complex<T> >
+struct Magnitude<std::complex<T> >
 {
     typedef T type;
 }
 
 template <typename T> struct RealMagnitude
-  : public MagnitudeType<T>
+  : public Magnitude<T>
 {}
 
 #endif  // __GXX_CONCEPTS__
