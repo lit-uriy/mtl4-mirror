@@ -34,7 +34,7 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
     fill_hessian_matrix(a, 1.0);
     fill_hessian_matrix(b, 2.0);
-
+  goto blas;
     std::cout << "\n" << name << "  --- calling simple mult:\n"; std::cout.flush();
     typedef gen_dmat_dmat_mult_t<>  mult_t;
     mult_t                              mult;
@@ -191,10 +191,14 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
 
 #ifdef MTL_HAS_BLAS
+
+ blas:
     std::cout << "\n" << name << "  --- calling blas mult (empty):\n"; std::cout.flush(); 
     gen_blas_dmat_dmat_mult_t<>  blas_mult;
     blas_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols()); 
+
+    goto end;
 #endif    
 
 #ifdef MTL_USE_OPTERON_OPTIMIZATION
@@ -232,6 +236,8 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     std::cout << "\n" << name << "  --- check c-= a * b:\n"; std::cout.flush();
     c-= a * b;
     check_hessian_matrix_product(c, a.num_cols(), 1.0);
+
+ end:
 
     if (a.num_cols() <= 0) { 
 	print_matrix_row_cursor(a); std::cout << "\n"; print_matrix_row_cursor(b); std::cout << "\n"; 
@@ -343,14 +349,6 @@ int test_main(int argc, char* argv[])
     transposed_view<dense2D<double> > trans_db(db); 
     transposed_view<morton_t >        trans_mrbns(mrbns); 
 
-#if 0 
-    dense2D<double> ta(1, 2), tb(2, 2), tc(1, 2);
-    ta[0][0]= 2.; ta[0][1]= 3.; 
-    tb[0][0]= 0.; tb[0][1]= 2.; 
-    tb[1][0]= 2.; tb[1][1]= 4.; 
-    tc[0][0]= 10.; 
-    single_test(ta, tb, tc, "Single test");
-#endif
 
     std::cout << "Testing different products\n";
 
@@ -359,7 +357,7 @@ int test_main(int argc, char* argv[])
     test(mrans, trans_mrbns, mrcns, "hybrid with transposed matrix");
 #endif
 
-#ifdef MTL_HAS_BLAS
+#if defined MTL_HAS_BLAS && 0
     test_blas();
     return 0;
 #endif

@@ -21,6 +21,8 @@ using std::complex;
    May 6, 1998
 ----------------------------------------------------------*/
 
+#define MTL_BLAS_NAME(name) name##_
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -29,74 +31,73 @@ extern "C" {
     Level 1 BLAS
 -----------------------------------------------------------*/
 
-
 /*
 //  Dot product functions
 */
-float sdot_(int*, float*, int*, float*, int*);
-double dsdot_(int*, float*, int*, float*, int*);
-float sdsdot_(int*, float*, float*, int*, float*, int*);
-double ddot_(int*, double*, int*, double*, int*);
+float MTL_BLAS_NAME(sdot)(int*, float*, int*, float*, int*);
+double MTL_BLAS_NAME(dsdot)(int*, float*, int*, float*, int*);
+float MTL_BLAS_NAME(sdsdot)(int*, float*, float*, int*, float*, int*);
+double MTL_BLAS_NAME(ddot)(int*, double*, int*, double*, int*);
 
 /*
     AXPY
 */
-void saxpy_(int*, float*, float*, int*, float*, int*);
-void daxpy_(int*, double*, double*, int*, double*, int*);
+void MTL_BLAS_NAME(saxpy)(int*, float*, float*, int*, float*, int*);
+void MTL_BLAS_NAME(daxpy)(int*, double*, double*, int*, double*, int*);
 
 /*
     Copy
 */
-void scopy_(int*, float*, int*, float*, int*);
-void dcopy_(int*, double*, int*, double*, int*);
+void MTL_BLAS_NAME(scopy)(int*, float*, int*, float*, int*);
+void MTL_BLAS_NAME(dcopy)(int*, double*, int*, double*, int*);
 
 /*
     Swap
 */
-void sswap_(int*, float*, int*, float*, int*);
-void dswap_(int*, double*, int*, double*, int*);
+void MTL_BLAS_NAME(sswap)(int*, float*, int*, float*, int*);
+void MTL_BLAS_NAME(dswap)(int*, double*, int*, double*, int*);
 
 /*
     2 Norm
 */
-float snrm2_(int *, float*, int*);
-double dnrm2_(int *, double*, int*);
+float MTL_BLAS_NAME(snrm2)(int *, float*, int*);
+double MTL_BLAS_NAME(dnrm2)(int *, double*, int*);
 
 /*
     Sum of Absolute Values
 */
-float sasum_(int *, float*, int*);
-double dasum_(int *, double*, int*);
+float MTL_BLAS_NAME(sasum)(int *, float*, int*);
+double MTL_BLAS_NAME(dasum)(int *, double*, int*);
 
 /*
     Scale
 */
-void sscal_(int*, float*, float*, int*);
-void dscal_(int*, double*, double*, int*);
+void MTL_BLAS_NAME(sscal)(int*, float*, float*, int*);
+void MTL_BLAS_NAME(dscal)(int*, double*, double*, int*);
 
 /*
     Maximum absolute value
 */
-int isamax_(int *, float*, int*);
-int idamax_(int *, double*, int*);
+int MTL_BLAS_NAME(isamax)(int *, float*, int*);
+int MTL_BLAS_NAME(idamax)(int *, double*, int*);
 
 
 /*
     Givens Plane Rotation
 */
-void srotg_(float*, float*, float*, float*);
-void drotg_(double*, double*, double*, double*);
+void MTL_BLAS_NAME(srotg)(float*, float*, float*, float*);
+void MTL_BLAS_NAME(drotg)(double*, double*, double*, double*);
 #if 0
-void crotg_(complex<float>*,complex<float>*,float*,complex<float>*);
-void zrotg_(complex<double>*,complex<double>*,double*,complex<double>*);
+void MTL_BLAS_NAME(crotg)(complex<float>*,complex<float>*,float*,complex<float>*);
+void MTL_BLAS_NAME(zrotg)(complex<double>*,complex<double>*,double*,complex<double>*);
 #endif
-void srot_(int*, float*, int*, float*, int*, float*, float*);
-void drot_(int*, double*, int*, double*, int*, double*, double*);
+void MTL_BLAS_NAME(srot)(int*, float*, int*, float*, int*, float*, float*);
+void MTL_BLAS_NAME(drot)(int*, double*, int*, double*, int*, double*, double*);
 #if 0
 /* MTL implements ccrot and zzrot */
-void csrot_(int*, complex<float>*, int*, complex<float>*, int*, 
+void MTL_BLAS_NAME(csrot)(int*, complex<float>*, int*, complex<float>*, int*, 
 	    complex<float>*, complex<float>*);
-void zdrot_(int*, complex<double>*, int*, complex<double>*, int*,
+void MTL_BLAS_NAME(zdrot)(int*, complex<double>*, int*, complex<double>*, int*,
 	    double*, double*);
 #endif
 
@@ -104,23 +105,23 @@ void zdrot_(int*, complex<double>*, int*, complex<double>*, int*,
     Level 2 BLAS
 -----------------------------------------------------------*/
 
-void dgemv_(char*, int*, int*, double*, double*, int*,
+void MTL_BLAS_NAME(dgemv)(char*, int*, int*, double*, double*, int*,
 	    double*, int*, double*, double*, int*);
 
-void dger_(int*, int*, double*, double*, int*, double*,
+void MTL_BLAS_NAME(dger)(int*, int*, double*, double*, int*, double*,
 	   int*, double*, int*);
 
-void dgbmv_(char*, int*, int*, int*, int*, double*, double*, int*,
+void MTL_BLAS_NAME(dgbmv)(char*, int*, int*, int*, int*, double*, double*, int*,
 	    double*, int*, double*, double*, int*);
 
 
-void dtrsv_(char* uplo, char* trans, char* diag, int* n, double *da, 
+void MTL_BLAS_NAME(dtrsv)(char* uplo, char* trans, char* diag, int* n, double *da, 
 	    int* lda, double *dx, int* incx);
 
 /*---------------------------------------------------------
     Level 3 BLAS
 -----------------------------------------------------------*/
-void dgemm_(const char* transa, const char* transb, 
+void MTL_BLAS_NAME(dgemm)(const char* transa, const char* transb, 
 	    const int* m, const int* n, const int* k,
 	    const double* alpha,  const double *da,  const int* lda,
 	    const double *db, const int* ldb, const double* dbeta,
@@ -129,7 +130,6 @@ void dgemm_(const char* transa, const char* transb,
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
 
 #endif // MTL_HAS_BLAS
 
