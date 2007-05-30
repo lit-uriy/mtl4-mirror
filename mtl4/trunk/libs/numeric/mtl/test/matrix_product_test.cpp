@@ -239,7 +239,10 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
  end:
 
-    if (a.num_cols() <= 0) { 
+    if (a.num_cols() <= 10) 
+	std::cout << a << "\n" << b << "\n" << c << "\n";
+
+    if (0) {
 	print_matrix_row_cursor(a); std::cout << "\n"; print_matrix_row_cursor(b); std::cout << "\n"; 
 	print_matrix_row_cursor(c); std::cout << "\n"; } 
 }
@@ -309,14 +312,6 @@ void test_blas()
 
 int test_main(int argc, char* argv[])
 {
-
-#if defined MTL_USE_OPTERON_OPTIMIZATION && defined __GNUC__ && !defined __INTEL_COMPILER
-    cout << "optimized on gcc\n";
-#else
-    cout << "not optimized on gcc\n";
-#endif
- 
-
     // Bitmasks:
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
 	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
@@ -327,24 +322,25 @@ int test_main(int argc, char* argv[])
 	doppler_z_32_row_mask= generate_mask<false, 5, row_major, 1>::value,
 	doppler_z_32_col_mask= generate_mask<false, 5, col_major, 1>::value;
  
-    unsigned size= 13; 
+    unsigned size= 5; 
     if (argc > 1) size= atoi(argv[1]); 
+    if (size < 2) size= 2;
 
-    dense2D<double>               da(size, size), db(size, size), dc(size, size); 
-    dense2D<double, matrix::parameters<col_major> >  dca(size, size), dcb(size, size), dcc(size, size);
-    dense2D<float>               fa(size, size), fb(size, size), fc(size, size);
-    dense2D<float, matrix::parameters<col_major> >  fca(size, size), fcb(size, size), fcc(size, size);
-    morton_dense<double,  morton_mask> mda(size, size), mdb(size, size), mdc(size, size);
+    dense2D<double>                                  da(size, size-1), db(size-1, size-2), dc(size, size-2); 
+    dense2D<double, matrix::parameters<col_major> >  dca(size, size-1), dcb(size-1, size-2), dcc(size, size-2);
+    dense2D<float>                                   fa(size, size-1), fb(size-1, size-2), fc(size, size-2);
+    dense2D<float, matrix::parameters<col_major> >   fca(size, size-1), fcb(size-1, size-2), fcc(size, size-2);
+    morton_dense<double,  morton_mask>               mda(size, size-1), mdb(size-1, size-2), mdc(size, size-2);
 
     typedef morton_dense<double, doppler_32_row_mask_no_shark>  morton_t;
-    morton_dense<double, doppler_32_row_mask_no_shark>      mrans(size, size), mrbns(size, size), mrcns(size, size);;
-    morton_dense<double, doppler_32_col_mask_no_shark>      mcans(size, size), mcbns(size, size), mccns(size, size); 
-    morton_dense<double, doppler_32_col_mask>      mca(size, size), mcb(size, size), mcc(size, size);
-    morton_dense<double, doppler_32_row_mask>      mra(size, size), mrb(size, size), mrc(size, size);
-    morton_dense<double, doppler_z_32_col_mask>    mzca(size, size), mzcb(size, size), mzcc(size, size);
-    morton_dense<double, doppler_z_32_row_mask>    mzra(size, size), mzrb(size, size), mzrc(size, size);
-    morton_dense<float, doppler_32_col_mask>       mcaf(size, size), mcbf(size, size), mccf(size, size);
-    morton_dense<float, doppler_32_row_mask>       mraf(size, size), mrbf(size, size), mrcf(size, size);
+    morton_dense<double, doppler_32_row_mask_no_shark>      mrans(size, size-1), mrbns(size-1, size-2), mrcns(size, size-2);;
+    morton_dense<double, doppler_32_col_mask_no_shark>      mcans(size, size-1), mcbns(size-1, size-2), mccns(size, size-2); 
+    morton_dense<double, doppler_32_col_mask>      mca(size, size-1), mcb(size-1, size-2), mcc(size, size-2);
+    morton_dense<double, doppler_32_row_mask>      mra(size, size-1), mrb(size-1, size-2), mrc(size, size-2);
+    morton_dense<double, doppler_z_32_col_mask>    mzca(size, size-1), mzcb(size-1, size-2), mzcc(size, size-2);
+    morton_dense<double, doppler_z_32_row_mask>    mzra(size, size-1), mzrb(size-1, size-2), mzrc(size, size-2);
+    morton_dense<float, doppler_32_col_mask>       mcaf(size, size-1), mcbf(size-1, size-2), mccf(size, size-2);
+    morton_dense<float, doppler_32_row_mask>       mraf(size, size-1), mrbf(size-1, size-2), mrcf(size, size-2);
 
     transposed_view<dense2D<double> > trans_db(db); 
     transposed_view<morton_t >        trans_mrbns(mrbns); 
