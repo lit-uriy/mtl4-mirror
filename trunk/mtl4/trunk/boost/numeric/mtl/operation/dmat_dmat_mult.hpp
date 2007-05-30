@@ -997,7 +997,7 @@ namespace detail {
     {
 	std::cout << "use generic BLAS\n";
 	int m= num_rows(a), n= num_cols(b), k= num_cols(a), lda= a.get_ldim(), ldb= b.get_ldim(), ldc= c.get_ldim();
-	double alpha= dgemm_alpha(Assign()), beta= dgemm_beta(Assign());
+	Value alpha= dgemm_alpha(Assign()), beta= dgemm_beta(Assign());
 	char a_trans= traits::is_row_major<ParaA>::value ? 'T' : 'N', 
              b_trans= traits::is_row_major<ParaB>::value ? 'T' : 'N';
 
@@ -1012,20 +1012,14 @@ namespace detail {
 
 } // detail
  
-// Only sketch
-template<typename ParaA, typename ParaB, typename ParaC, typename Backup>
+template<typename ParaA, typename ParaB, typename ParaC, typename Assign, typename Backup>
 struct gen_blas_dmat_dmat_mult_ft<dense2D<float, ParaA>, dense2D<float, ParaB>, 
-				     dense2D<float, ParaC>, assign::assign_sum, Backup>
+				  dense2D<float, ParaC>, Assign, Backup>
 {
     void operator()(const dense2D<float, ParaA>& a, const dense2D<float, ParaB>& b, 
 		    dense2D<float, ParaC>& c)
     {
-	std::cout << "pretend BLAS\n";
-	Backup()(a, b, c);
-#if 0
-	int atrans= boost::is_same<typename ParaA::orientation, col_major>::value, ... ;
-	fgemm(, atrans, &a[0][0], ...)
-#endif
+	detail::xgemm(a, b, c, MTL_BLAS_NAME(sgemm), Assign());
     }
 };
 

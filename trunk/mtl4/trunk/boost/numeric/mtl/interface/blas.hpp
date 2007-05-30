@@ -121,11 +121,30 @@ void MTL_BLAS_NAME(dtrsv)(char* uplo, char* trans, char* diag, int* n, double *d
 /*---------------------------------------------------------
     Level 3 BLAS
 -----------------------------------------------------------*/
+
+void MTL_BLAS_NAME(sgemm)(const char* transa, const char* transb, 
+	    const int* m, const int* n, const int* k,
+	    const float* alpha,  const float *da,  const int* lda,
+	    const float *db, const int* ldb, const float* dbeta,
+	    float *dc, const int* ldc);
+
 void MTL_BLAS_NAME(dgemm)(const char* transa, const char* transb, 
 	    const int* m, const int* n, const int* k,
 	    const double* alpha,  const double *da,  const int* lda,
 	    const double *db, const int* ldb, const double* dbeta,
 	    double *dc, const int* ldc);
+
+void MTL_BLAS_NAME(cgemm)(const char* transa, const char* transb, 
+	    const int* m, const int* n, const int* k,
+	    const std::complex<float>* alpha,  const std::complex<float> *da,  const int* lda,
+	    const std::complex<float> *db, const int* ldb, const std::complex<float>* dbeta,
+	    std::complex<float> *dc, const int* ldc);
+
+void MTL_BLAS_NAME(zgemm)(const char* transa, const char* transb, 
+	    const int* m, const int* n, const int* k,
+	    const std::complex<double>* alpha,  const std::complex<double> *da,  const int* lda,
+	    const std::complex<double> *db, const int* ldb, const std::complex<double>* dbeta,
+	    std::complex<double> *dc, const int* ldc);
 
 #ifdef __cplusplus
 } // extern "C"
