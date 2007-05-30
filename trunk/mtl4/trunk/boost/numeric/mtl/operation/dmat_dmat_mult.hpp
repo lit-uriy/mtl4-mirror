@@ -991,6 +991,11 @@ namespace detail {
 	return 1.0;
     }
 
+    template <typename Value, typename ParaA, typename ParaB, typename ParaC, typename Function>
+    void inline xgemm(const dense2D<Value, ParaA>& a, const dense2D<Value, ParaB>& b, 
+		      dense2D<Value, ParaC>& c, Function f)
+    {}
+
 } // detail
  
 // Only sketch
@@ -1022,18 +1027,20 @@ struct gen_blas_dmat_dmat_mult_ft<dense2D<double, ParaA>, dense2D<double, ParaB>
 	Backup()(a, b, c);
 	
 #else
-	if (traits::is_row_major<ParaC>::value) {
-	    Backup()(a, b, c);
-	    return;
-	}
-
-	// C needs to be transposed if row-major !!!!!!!!!! That means physically in memory
 	std::cout << "use BLAS\n";
-	int m= a.num_rows(), n= c.num_cols(), k= a.num_cols(), lda= a.get_ldim(), ldb= b.get_ldim(), ldc= c.get_ldim();
+	int m= num_rows(a), n= num_cols(b), k= num_cols(a), lda= a.get_ldim(), ldb= b.get_ldim(), ldc= c.get_ldim();
 	double alpha= detail::dgemm_alpha(Assign()), beta= detail::dgemm_beta(Assign());
+	char a_trans= traits::is_row_major<ParaA>::value ? 'T' : 'N', 
+             b_trans= traits::is_row_major<ParaB>::value ? 'T' : 'N';
 
-	dgemm_(traits::is_row_major<ParaA>::value ? "T" : "N", traits::is_row_major<ParaB>::value ? "T" : "N",
-	       &m, &n, &k, &alpha, &a[0][0], &lda, &b[0][0], &ldb, &beta, &c[0][0], &ldc);
+	if (traits::is_row_major<ParaC>::value) {
+	    // C^T= B^T * A^T
+	    a_trans= 'T' + 'N' - a_trans; b_trans= 'T' + 'N' - b_trans; 
+	    MTL_BLAS_NAME(dgemm)(&b_trans, &a_trans, &n /* col(b) */, &m /* row(a) */, &k /* col(a)=row(b) */, 
+				 &alpha, &b[0][0], &ldb, &a[0][0], &lda, &beta, &c[0][0], &ldc);
+	} else 
+	    MTL_BLAS_NAME(dgemm)(&a_trans, &b_trans, &m, &n, &k, 
+				 &alpha, &a[0][0], &lda, &b[0][0], &ldb, &beta, &c[0][0], &ldc);
 #endif
     }
 };
