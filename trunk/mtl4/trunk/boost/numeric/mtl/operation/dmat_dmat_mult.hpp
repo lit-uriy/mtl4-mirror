@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/operation/no_op.hpp>
 
 #include <iostream>
+#include <complex>
 
 namespace mtl {
 
@@ -1055,6 +1056,32 @@ struct gen_blas_dmat_dmat_mult_ft<dense2D<double, ParaA>, dense2D<double, ParaB>
 #endif
     }
 };
+
+
+template<typename ParaA, typename ParaB, typename ParaC, typename Assign, typename Backup>
+struct gen_blas_dmat_dmat_mult_ft<dense2D<std::complex<float>, ParaA>, dense2D<std::complex<float>, ParaB>, 
+				  dense2D<std::complex<float>, ParaC>, Assign, Backup>
+{
+    void operator()(const dense2D<std::complex<float>, ParaA>& a, const dense2D<std::complex<float>, ParaB>& b, 
+		    dense2D<std::complex<float>, ParaC>& c)
+    {
+	detail::xgemm(a, b, c, MTL_BLAS_NAME(cgemm), Assign());
+    }
+};
+
+
+template<typename ParaA, typename ParaB, typename ParaC, typename Assign, typename Backup>
+struct gen_blas_dmat_dmat_mult_ft<dense2D<std::complex<double>, ParaA>, dense2D<std::complex<double>, ParaB>, 
+				  dense2D<std::complex<double>, ParaC>, Assign, Backup>
+{
+    void operator()(const dense2D<std::complex<double>, ParaA>& a, const dense2D<std::complex<double>, ParaB>& b, 
+		    dense2D<std::complex<double>, ParaC>& c)
+    {
+	detail::xgemm(a, b, c, MTL_BLAS_NAME(zgemm), Assign());
+    }
+};
+
+
 
 #endif
 
