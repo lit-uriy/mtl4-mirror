@@ -996,7 +996,7 @@ namespace detail {
     void inline xgemm(const dense2D<Value, ParaA>& a, const dense2D<Value, ParaB>& b, 
 		      dense2D<Value, ParaC>& c, Function f, Assign)
     {
-	std::cout << "use generic BLAS\n";
+	// std::cout << "use generic BLAS\n";
 	int m= num_rows(a), n= num_cols(b), k= num_cols(a), lda= a.get_ldim(), ldb= b.get_ldim(), ldc= c.get_ldim();
 	Value alpha= dgemm_alpha(Assign()), beta= dgemm_beta(Assign());
 	char a_trans= traits::is_row_major<ParaA>::value ? 'T' : 'N', 
@@ -1031,29 +1031,7 @@ struct gen_blas_dmat_dmat_mult_ft<dense2D<double, ParaA>, dense2D<double, ParaB>
     void operator()(const dense2D<double, ParaA>& a, const dense2D<double, ParaB>& b, 
 		    dense2D<double, ParaC>& c)
     {
-#if 0
-	std::cout << "pretend BLAS\n";
-	Backup()(a, b, c);
-	
-#elif 1
 	detail::xgemm(a, b, c, MTL_BLAS_NAME(dgemm), Assign());
-
-#else
-	std::cout << "use BLAS\n";
-	int m= num_rows(a), n= num_cols(b), k= num_cols(a), lda= a.get_ldim(), ldb= b.get_ldim(), ldc= c.get_ldim();
-	double alpha= detail::dgemm_alpha(Assign()), beta= detail::dgemm_beta(Assign());
-	char a_trans= traits::is_row_major<ParaA>::value ? 'T' : 'N', 
-             b_trans= traits::is_row_major<ParaB>::value ? 'T' : 'N';
-
-	if (traits::is_row_major<ParaC>::value) {
-	    // C^T= B^T * A^T
-	    a_trans= 'T' + 'N' - a_trans; b_trans= 'T' + 'N' - b_trans; 
-	    MTL_BLAS_NAME(dgemm)(&b_trans, &a_trans, &n /* col(b) */, &m /* row(a) */, &k /* col(a)=row(b) */, 
-				 &alpha, &b[0][0], &ldb, &a[0][0], &lda, &beta, &c[0][0], &ldc);
-	} else 
-	    MTL_BLAS_NAME(dgemm)(&a_trans, &b_trans, &m, &n, &k, 
-				 &alpha, &a[0][0], &lda, &b[0][0], &ldb, &beta, &c[0][0], &ldc);
-#endif
     }
 };
 
