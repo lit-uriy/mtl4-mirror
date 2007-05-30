@@ -113,7 +113,12 @@ def check_for_blas(env):
    # additional libs needed for goto
    myenv.Append(LIBS=['pthread'])
    # extra linker flags for libgoto
-   myenv.Append(_LIBFLAGS=['build/xerbla.c'])
+   # myenv.Append(_LIBFLAGS=['libs/numeric/mtl/build/xerbla.c'])
+   myenv.Append(_LIBFLAGS=['libs/numeric/mtl/build/xerbla.o']) # not portable !!! 
+   # myenv.Library('build/xerbla', 'build/xerbla.c')
+   # myenv.Append(LIBS=['xerbla'])
+   # myenv.Append(LIBPATH=['build'])
+
    if conf.CheckLib('goto', symname) or conf.CheckLib('goto_opteron-64', symname) or \
       conf.CheckLib('goto_coppermine-32', symname) or conf.CheckLib('goto_opteron-32', symname) or \
       conf.CheckLib('goto_itanium2-64', symname) or conf.CheckLib('goto_katmai-32', symname) or \
@@ -256,7 +261,8 @@ check = ARGUMENTS.get('check', 0)
 
 Export('env basic_env debug_env opt_env high_opt_env check')
 
-SConscript(['libs/numeric/mtl/test/SConscript', 
+SConscript(['libs/numeric/mtl/build/SConscript', 
+            'libs/numeric/mtl/test/SConscript', 
             'libs/numeric/mtl/experimental/SConscript',
             'libs/numeric/mtl/timing/SConscript'])
 
