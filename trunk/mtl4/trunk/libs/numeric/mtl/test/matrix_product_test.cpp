@@ -193,9 +193,21 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 #ifdef MTL_HAS_BLAS
 
  blas:
-    std::cout << "\n" << name << "  --- calling blas mult (empty):\n"; std::cout.flush(); 
+    std::cout << "\n" << name << "  --- calling blas mult:\n"; std::cout.flush(); 
     gen_blas_dmat_dmat_mult_t<>  blas_mult;
     blas_mult(a, b, c);
+    check_hessian_matrix_product(c, a.num_cols()); 
+
+    std::cout << "\n" << name << "  --- c= a * b:\n"; std::cout.flush(); 
+    c= a * b;
+    check_hessian_matrix_product(c, a.num_cols()); 
+
+    std::cout << "\n" << name << "  --- c+= a * b:\n"; std::cout.flush(); 
+    c+= a * b;
+    check_hessian_matrix_product(c, a.num_cols(), 2.0); 
+
+    std::cout << "\n" << name << "  --- c-= a * b:\n"; std::cout.flush(); 
+    c-= a * b;
     check_hessian_matrix_product(c, a.num_cols()); 
 
     goto end;
@@ -360,8 +372,8 @@ int test_main(int argc, char* argv[])
 
     test(da, db, dc, "dense2D");
     test(dca, dcb, dcc, "dense2D col-major");
-    test(da, dcb, dc, "dense2D mixed");
-    test(fa, fcb, fc, "dense2D mixed, float");
+    test(da, dcb, dc, "dense2D row x column-major");
+    test(fa, fcb, fc, "dense2D float, row x column-major");
     test(da, fcb, fc, "dense2D mixed, dense and float"); 
     test(mda, mdb, mdc, "pure Morton");
     test(mca, mcb, mcc, "Hybrid col-major");
