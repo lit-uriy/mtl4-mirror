@@ -12,6 +12,7 @@
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
+#include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/meta_math/loop.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
@@ -1016,20 +1017,23 @@ struct gen_blas_dmat_dmat_mult_ft<dense2D<double, ParaA>, dense2D<double, ParaB>
     void operator()(const dense2D<double, ParaA>& a, const dense2D<double, ParaB>& b, 
 		    dense2D<double, ParaC>& c)
     {
+#if 0
 	std::cout << "pretend BLAS\n";
 	Backup()(a, b, c);
 	
-#if 0
-	if (is_row_major<ParaC>::value)
+#else
+	if (traits::is_row_major<ParaC>::value) {
 	    Backup()(a, b, c);
+	    return;
+	}
 
 	// C needs to be transposed if row-major !!!!!!!!!! That means physically in memory
 	std::cout << "use BLAS\n";
-	int m= a.num_rows(), n= c.num_cols(), k= a.num_cols(), lda= a.get_ldim(), ldb= b.get_ldim(), ldc.get_ldim();
-	double alpha= dgemm_alpha(Assign()), beta= dgemm_beta(Assign());
+	int m= a.num_rows(), n= c.num_cols(), k= a.num_cols(), lda= a.get_ldim(), ldb= b.get_ldim(), ldc= c.get_ldim();
+	double alpha= detail::dgemm_alpha(Assign()), beta= detail::dgemm_beta(Assign());
 
-	dgemm_(is_row_major<ParaA>::value ? "T" : "N", is_row_major<ParaB>::value ? "T" : "N",
-	       &m, &n, &k, &alpha, &a[0][0], &lda, &b[0][0], &beta, &c[0][0], &ldc);
+	dgemm_(traits::is_row_major<ParaA>::value ? "T" : "N", traits::is_row_major<ParaB>::value ? "T" : "N",
+	       &m, &n, &k, &alpha, &a[0][0], &lda, &b[0][0], &ldb, &beta, &c[0][0], &ldc);
 #endif
     }
 };

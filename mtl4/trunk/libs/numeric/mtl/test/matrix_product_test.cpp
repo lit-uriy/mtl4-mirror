@@ -12,7 +12,7 @@
 #include <boost/numeric/mtl/matrix/morton_dense.hpp> 
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
-#include <boost/numeric/mtl/operation/print_matrix.hpp>
+#include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
@@ -240,7 +240,7 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
  end:
 
     if (a.num_cols() <= 10) 
-	std::cout << a << "\n" << b << "\n" << c << "\n";
+	std::cout << a << "\n" << b << "\n" << with_format(c, 4, 4) << "\n";
 
     if (0) {
 	print_matrix_row_cursor(a); std::cout << "\n"; print_matrix_row_cursor(b); std::cout << "\n"; 
