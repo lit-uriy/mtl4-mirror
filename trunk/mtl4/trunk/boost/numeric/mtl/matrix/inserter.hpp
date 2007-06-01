@@ -18,10 +18,7 @@ struct inserter
 {
     typedef mtl::detail::trivial_inserter<Matrix, Updater>     base;
 
-    explicit inserter(Matrix& matrix) : base(matrix) 
-    {
-      // std::cout << "in default inserter\n";
-    }
+    explicit inserter(Matrix& matrix) : base(matrix) {}
 };
 
 

@@ -92,6 +92,7 @@ struct update_adapter
     }
 };
 
+
 template <typename Inserter, typename SizeType = std::size_t>
 struct update_proxy
 {

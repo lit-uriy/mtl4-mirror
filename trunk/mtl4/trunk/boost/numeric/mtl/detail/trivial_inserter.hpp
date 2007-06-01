@@ -4,7 +4,8 @@
 #define MTL_TRIVIAL_INSERTER_INCLUDE
 
 #include <boost/numeric/mtl/operation/update.hpp>
-
+#include <boost/numeric/mtl/matrix/element_matrix.hpp> 
+#include <boost/numeric/mtl/matrix/element_array.hpp> 
 
 namespace mtl { namespace detail {
 
@@ -30,6 +31,24 @@ struct trivial_inserter
     void update(size_type row, size_type col, Value val)
     {
 	Updater() (matrix(row, col), val);
+    }
+
+    template <typename EMatrix, typename Rows, typename Cols>
+    self& operator<< (const matrix::element_matrix_t<EMatrix, Rows, Cols>& elements)
+    {
+	for (unsigned ri= 0; ri < elements.rows.size(); ri++)
+	    for (unsigned ci= 0; ci < elements.cols.size(); ci++)
+		update (elements.rows[ri], elements.cols[ci], elements.matrix(ri, ci));
+	return *this;
+    }
+
+    template <typename EMatrix, typename Rows, typename Cols>
+    self& operator<< (const matrix::element_array_t<EMatrix, Rows, Cols>& elements)
+    {
+	for (unsigned ri= 0; ri < elements.rows.size(); ri++)
+	    for (unsigned ci= 0; ci < elements.cols.size(); ci++)
+		update (elements.rows[ri], elements.cols[ci], elements.array[ri][ci]);
+	return *this;
     }
 
   protected:
