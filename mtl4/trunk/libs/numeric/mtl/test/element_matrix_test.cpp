@@ -28,15 +28,17 @@ void test(Matrix& matrix, const char* name)
     dense2D<double>       m1(2, 2);
     m1[0][0]= 1.0; m1[0][1]= 2.0; 
     m1[1][0]= 3.0; m1[1][1]= 4.0; 
-    std::vector<int>           row1(2), col1(2);
+    std::vector<int>           row1, col1;
     row1.push_back(1); row1.push_back(2);
     col1.push_back(0); col1.push_back(2);
     
 
     double a2[2][2]= {{11., 12.},{13., 14.}};
-    std::vector<int>           ind2(2);
+    std::vector<int>           ind2;
     ind2.push_back(2); ind2.push_back(4);
 
+    std::vector<int>           ind3;
+    ind3.push_back(3); ind3.push_back(1);
 
     set_to_zero(matrix); // dense matrices are not automatically set to zero
 
@@ -45,19 +47,19 @@ void test(Matrix& matrix, const char* name)
 
 	ins << element_matrix(m1, row1, col1)
 	    << element_array(a2, ind2);
+	ins << element_array(a2, ind3);
     }
 
     cout << "Filled matrix:\n" << matrix << "\n";
-
-    {
-	value_type one(1.0), fivteen(4.0), zero(0.0);
-	if (matrix[0][0] != zero)
-	    throw "wrong zero-element";
-	if (matrix[1][0] != one)
-	    throw "wrong insertion (single value)";
-	if (matrix[2][2] != fivteen)
-	    throw "wrong summation";
-    }
+    if (matrix[0][0] != 0.0)
+	throw "wrong zero-element";
+    if (matrix[1][0] != 1.0)
+	throw "wrong insertion (single value)";
+    if (matrix[2][2] != 15.0)
+	throw "wrong summation";
+    if (matrix[1][1] != 14.0)
+	throw "wrong insertion (single value)";
+    
 }
 
 
