@@ -16,6 +16,8 @@
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/shift_block.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
+#include <boost/numeric/mtl/matrix/element_matrix.hpp> 
+#include <boost/numeric/mtl/matrix/element_array.hpp> 
 
 namespace mtl {
 
@@ -463,6 +465,24 @@ struct compressed2D_inserter
     }
 
     void update(size_type row, size_type col, value_type val);
+
+    template <typename Matrix, typename Rows, typename Cols>
+    self& operator<< (const matrix::element_matrix_t<Matrix, Rows, Cols>& elements)
+    {
+	for (unsigned ri= 0; ri < elements.rows.size(); ri++)
+	    for (unsigned ci= 0; ci < elements.cols.size(); ci++)
+		update (elements.rows[ri], elements.cols[ci], elements.matrix(ri, ci));
+	return *this;
+    }
+
+    template <typename Matrix, typename Rows, typename Cols>
+    self& operator<< (const matrix::element_array_t<Matrix, Rows, Cols>& elements)
+    {
+	for (unsigned ri= 0; ri < elements.rows.size(); ri++)
+	    for (unsigned ci= 0; ci < elements.cols.size(); ci++)
+		update (elements.rows[ri], elements.cols[ci], elements.array[ri][ci]);
+	return *this;
+    }
 
   private:
     utilities::maybe<size_type> matrix_offset(size_pair);
