@@ -3,12 +3,14 @@
 #ifndef MTL_CRTP_BASE_VECTOR_INCLUDE
 #define MTL_CRTP_BASE_VECTOR_INCLUDE
 
+#include <boost/utility/enable_if.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 #include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
+#include <boost/numeric/mtl/utility/ashape.hpp>
 
 namespace mtl { namespace vector {
 
@@ -17,6 +19,17 @@ namespace mtl { namespace vector {
 template <typename Vector, typename ValueType, typename SizeType>
 struct crtp_vector_assign
 {
+    /// Assign scalar to a vecttor by setting all elements to it
+    template <typename Value>
+    typename boost::enable_if<typename boost::is_same<typename ashape::ashape<Value>::type,
+						      ashape::scal>,
+			      vec_scal_asgn_expr<Vector, Value> 
+                             >::type
+    operator=(const Value& value)
+    {
+	return vec_scal_asgn_expr<Vector, Value>( static_cast<Vector&>(*this), value );
+    }
+
     /// Assign vector expression
     template <class E>
     vec_vec_asgn_expr<Vector, E> operator=( vec_expr<E> const& e )

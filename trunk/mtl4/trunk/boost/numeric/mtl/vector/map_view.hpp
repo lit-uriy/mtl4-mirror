@@ -33,20 +33,24 @@ public:
     typedef typename Functor::result_type              value_type;
     typedef typename Functor::result_type              const_access_type;
     typedef typename Functor::result_type              const_reference_type;
-    typedef typename Vector::key_type                  key_type;
+    // typedef typename Vector::key_type                  key_type;
     typedef typename Vector::size_type                 size_type;
 
     // Deprecated: concept map defined in collection.hpp
-    typedef typename Vector::orientation               orientation;
+    // typedef typename Vector::orientation               orientation;
     
 
     map_view (const Functor& functor, const other& ref) 
 	: expr_base(*this), functor(functor), ref(ref) 
-    {}
+    {
+	ref.delay_assign();
+    }
     
     map_view (const Functor& functor, boost::shared_ptr<Vector> p) 
 	: expr_base(*this), functor(functor), my_copy(p), ref(*p)
-    {}
+    {
+	ref.delay_assign();
+    }
 
     const_reference_type operator() (size_type i) const
     { 
@@ -108,20 +112,7 @@ inline size(const map_view<Functor, Vector>& view)
 
 }} // namespace mtl::vector
 
-    // typedef typename OrientatedCollection<Vector>::orientation orientation;  // concept-style
 
-namespace mtl { 
-
-#if 0
-    // orientation in concept-style; not yet implemented
-    template <typename Functor, typename Vector> 
-    struct OrientatedCollection< vector::map_view<Functor, Vector> >
-    {
-	typedef typename OrientatedCollection< Vector >::type type;
-    };
-    // and concept map
-#endif
-}
 
 namespace mtl { namespace traits {
 

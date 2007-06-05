@@ -12,6 +12,7 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 
 #include <numeric>
+#include <cmath>
 
 
 namespace mtl { namespace impl {
@@ -26,7 +27,6 @@ inline max_of_sums(const Matrix& matrix, bool aligned, MinorIndex minor_index, u
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename RealMagnitude<value_type>::type  real_type;
     real_type ref, my_zero= zero(ref);
-
 
     // If matrix is empty then the result is the identity from the default-constructed value
     if (num_rows(matrix) == 0 || num_cols(matrix) == 0)

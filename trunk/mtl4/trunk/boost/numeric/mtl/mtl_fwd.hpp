@@ -79,6 +79,8 @@ namespace mtl {
 	template <class E1, class E2> struct vec_vec_plus_asgn_expr;
 	template <class E1, class E2> struct vec_vec_minus_asgn_expr;
 	template <class E1, class E2> struct vec_vec_times_asgn_expr;
+	template <class E1, class E2> struct vec_scal_times_asgn_expr;
+	template <class E1, class E2> struct vec_scal_asgn_expr;
     }
 
     using vector::dense_vector;

@@ -527,6 +527,21 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
+    template <typename Functor, typename Coll>
+    concept_map OrientedCollection< vector::map_view<Functor, Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#else
+    template <typename Functor, typename Coll>
+    struct OrientedCollection< vector::map_view<Functor, Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
     template <typename Coll>
     concept_map OrientedCollection<matrix::hermitian_view<Coll> >
     {

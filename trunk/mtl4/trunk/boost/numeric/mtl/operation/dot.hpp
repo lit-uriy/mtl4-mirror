@@ -7,6 +7,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/meta_math/loop1.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace mtl {
 
