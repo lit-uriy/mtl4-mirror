@@ -4,6 +4,7 @@
 #define MTL_CRTP_BASE_MATRIX_INCLUDE
 
 #include <iostream>
+#include <boost/utility/enable_if.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
@@ -12,7 +13,9 @@
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
+#include <boost/numeric/mtl/matrix/diagonal_setup.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 
 namespace mtl { namespace detail {
@@ -21,6 +24,18 @@ namespace mtl { namespace detail {
 template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_matrix_assign
 {
+    /// Assign scalar to a matrix by setting the matrix to a multiple of unity matrix
+    /** Throws an expception if matrix is not square **/
+    template <typename Value>
+    typename boost::enable_if<typename boost::is_same<typename ashape::ashape<Value>::type,
+						      ashape::scal>,
+			      Matrix&>::type
+    operator=(const Value& value)
+    {
+	matrix::diagonal_setup(static_cast<Matrix&>(*this), value);
+	return static_cast<Matrix&>(*this);
+    }
+
     /// Assign matrix expressions by copying except for some special expressions
     template <typename MatrixSrc>
     Matrix& operator=(const matrix::mat_expr<MatrixSrc>& src)

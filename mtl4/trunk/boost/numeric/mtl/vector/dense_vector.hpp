@@ -120,13 +120,15 @@ public:
 
     using assign_base::operator=;
 
-
+#if 0
+    Doesn't work in expressions'
     // Replace it later by expression (maybe)
     self& operator=(value_type value)
     {
 	std::fill(begin(), end(), value);
 	return *this;
     }
+#endif 
  
     template <typename Value2> friend void fill(self&, const Value2&);
 

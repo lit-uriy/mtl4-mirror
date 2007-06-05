@@ -111,6 +111,18 @@ struct ashape< vector::vec_scal_aop_expr<E1, E2, SFunctor> >
     typedef typename ashape<E1>::type type;
 };
 
+template <typename E1, typename E2>
+struct ashape< vector::vec_scal_asgn_expr<E1, E2> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape< vector::vec_scal_times_asgn_expr<E1, E2> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
 // ========
 // Matrices
 // ========

@@ -13,7 +13,7 @@ using namespace std;
 
 
 template <typename Vector>
-void one_d_iteration(char const* name, Vector & vector, size_t check_index, double check)
+void one_d_iteration(char const* name, Vector & vector, size_t check_index, typename Vector::value_type check)
 {
     typename traits::index<Vector>::type                               index(vector);
     typename traits::value<Vector>::type                               value(vector); 
@@ -23,7 +23,7 @@ void one_d_iteration(char const* name, Vector & vector, size_t check_index, doub
 
     cout << name << "\nElements: " << complexity() << '\n';
     for (cursor_type cursor = begin<tag>(vector), cend = end<tag>(vector); cursor != cend; ++cursor) {
-	cout << "vector[" << index(*cursor) << "] = " << value(*cursor) << '\n';
+	// cout << "vector[" << index(*cursor) << "] = " << value(*cursor) << '\n';
 	if (index(*cursor) == check_index && value(*cursor) != check) 
 	    throw "wrong check value";
     }
@@ -33,12 +33,7 @@ void one_d_iteration(char const* name, Vector & vector, size_t check_index, doub
 template <typename VectorU, typename VectorV, typename VectorW>
 void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 {
-    // u= (typename VectorU::value_type)(3.0); 
-    // v= (typename VectorV::value_type)(4.0); 
-    // w= (typename VectorW::value_type)(5.0); 
-    mtl::vector::fill(u, 3.0);
-    mtl::vector::fill(v, 4.0);
-    mtl::vector::fill(w, 5.0);
+    u= 3.0; v= 4.0; w= 5.0;
 
     std::cout << "\n\n";
     one_d_iteration(name, u, 2, (typename VectorU::value_type)(3.0));
@@ -59,17 +54,14 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     if (v[0] != 10.0) throw "v wrong";
     if (u[0] != 15.0) throw "u wrong";
 
-    mtl::vector::fill(v, 4.0);
-    mtl::vector::fill(w, 5.0);
     std::cout << name << "  --- u= (v= w + w) + v;:\n"; std::cout.flush();
-    u= (v= w + w) + v;
+    v= 4.0; w= 5.0; u= (v= w + w) + v;
     cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
     if (v[0] != 10.0) throw "v wrong";
     if (u[0] != 20.0) throw "u wrong";
 
-    mtl::vector::fill(w, 4.0);
     std::cout << name << "  --- w= 4; u-= (v= w + w) - w;:\n"; std::cout.flush();
-    u-= (v= w + w) - w;
+    w= 4; u-= (v= w + w) - w;
     cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
     if (v[0] != 8.0) throw "v wrong";
     if (u[0] != 16.0) throw "u wrong"; // for -=
@@ -80,30 +72,22 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     cout << "v: " << v << "\n"; std::cout.flush();
     if (v[0] != 64.0) throw "v wrong";
 
-    mtl::vector::fill(u, 3.0);
-    mtl::vector::fill(v, 4.0);
-    mtl::vector::fill(w, 5.0);
-    std::cout << name << "  --- u= 3; v= 4; w=5; u+= v+= 3.0 * w;:\n"; std::cout.flush();
-    u+= v+= 3.0 * w;
+    std::cout << name << "  --- u= 3; v= 4; u+= v+= 3.0 * (w= 5);:\n"; std::cout.flush();
+    u= 3; v= 4; 
+    u+= v+= 3.0 * (w= 5.0);
     cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
     if (v[0] != 19.0) throw "v wrong";
     if (u[0] != 22.0) throw "u wrong";
 
-    mtl::vector::fill(u, 3.0);
-    mtl::vector::fill(v, 4.0);
-    mtl::vector::fill(w, 5.0);
     std::cout << name << "  --- u= 3; v= 4; w=5; u+= (v*= 3.0) + (w*= 2.0);:\n"; std::cout.flush();
-    u+= (v*= 3.0) + (w*= 2.0);
+    u= 3; v= 4; w=5; u+= (v*= 3.0) + (w*= 2.0);
     cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
     if (v[0] != 12.0) throw "v wrong";
     if (w[0] != 10.0) throw "v wrong";
     if (u[0] != 25.0) throw "u wrong";
 
-    mtl::vector::fill(u, 3.0);
-    mtl::vector::fill(v, 4.0);
-    mtl::vector::fill(w, 5.0);
     std::cout << name << "  --- u= 3; v= 4; w=5; u+= dot(v, w) * w;:\n"; std::cout.flush();
-    u+= dot(v, w) * w;
+    u= 3; v= 4; w=5; u+= dot(v, w) * w;
     cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
     if (u[0] != 503.0) throw "u wrong";
 
@@ -120,19 +104,18 @@ int test_main(int argc, char* argv[])
 
     dense_vector<float>   u(5), v(5), w(5);
     dense_vector<double>  x(5), y(5), z(5);
+    dense_vector<std::complex<double> >  xc(5), yc(5), zc(5);
 
     std::cout << "Testing vector operations\n";
-
-    u[0]= 1.0, u[1]= 2.0, u[2]= 3.0, u[3]= 5.0, u[4]= 6.0;
-    cout << "u element-wise assigned\n" << u << "\n";
-
-    u= 3.0f;
-    cout << "u assigned from scalar\n" << u << "\n";
-
 
     test(u, v, w, "test float");
     test(x, y, z, "test double");
     test(u, x, y, "test float, double mixed");
+#if 0
+    // test is not designed for complex
+    test(xc, yc, zc, "test complex<double>");
+    test(x, yc, zc, "test complex<double>, double mixed");
+#endif
 
     dense_vector<float, parameters<row_major> >   ur(5), vr(5), wr(5);
     test(ur, vr, wr, "test float in row vector");

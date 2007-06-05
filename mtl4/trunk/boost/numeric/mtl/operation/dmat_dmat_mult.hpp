@@ -3,6 +3,7 @@
 #ifndef MTL_DMAT_DMAT_MULT_INCLUDE
 #define MTL_DMAT_DMAT_MULT_INCLUDE
 
+#include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
@@ -258,7 +259,7 @@ template <typename MatrixA, typename MatrixB, typename MatrixC,
 	  typename Backup= gen_dmat_dmat_mult_t<Assign> >
 struct gen_tiling_dmat_dmat_mult_ft
 {
-    BOOST_STATIC_ASSERT(Tiling1 * Tiling2 <= 16);
+    BOOST_STATIC_ASSERT((Tiling1 * Tiling2 <= 16));
   
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
