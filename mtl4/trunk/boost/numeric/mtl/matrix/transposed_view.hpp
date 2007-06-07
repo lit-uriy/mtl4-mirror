@@ -261,6 +261,12 @@ namespace traits
 	: detail::range_transposer<glas::tag::col, Matrix>
     {};
 
+    // To traverse the major dimension refer to the Matrix
+    template <class Matrix>
+    struct range_generator<tag::major, transposed_view<Matrix> >
+	: detail::range_transposer<tag::major, Matrix>
+    {};
+
     // Other cursors are still use the same tag, e.g. elements
     template <class Tag, class Matrix>
     struct range_generator<Tag, transposed_view<Matrix> >

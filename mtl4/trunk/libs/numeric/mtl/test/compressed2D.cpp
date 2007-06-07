@@ -18,6 +18,7 @@
 using namespace mtl;
 using namespace std;
 
+struct test_exception {};
 
 template <typename Matrix>
 void one_d_iteration(char const* name, Matrix & matrix)
