@@ -263,6 +263,7 @@ Export('env basic_env debug_env opt_env high_opt_env check')
 
 SConscript(['libs/numeric/mtl/build/SConscript', 
             'libs/numeric/mtl/test/SConscript', 
+            'libs/numeric/mtl/examples/SConscript', 
             'libs/numeric/mtl/experimental/SConscript',
             'libs/numeric/mtl/timing/SConscript'])
 
