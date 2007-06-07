@@ -34,6 +34,7 @@ sources = Split("""base_case_conversion.cpp
              element_matrix_test.cpp
              diagonal_setup_test.cpp
              vector_reduction_test.cpp
+             compressed2D.cpp
 """)
 #compressed2D.cpp
 
