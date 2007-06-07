@@ -1,0 +1,15 @@
+Import('env check')
+
+sources = Split("""vector1.cpp
+""")
+
+
+programs = []
+for p in sources:
+    programs.append(env.Program(p))
+
+if int(check):
+    for p in programs:
+        env.AddPostAction(p, p[0].abspath)
+
+Default(programs)
