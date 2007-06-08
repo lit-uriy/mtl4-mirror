@@ -36,7 +36,6 @@ sources = Split("""base_case_conversion.cpp
              vector_reduction_test.cpp
              compressed2D.cpp
 """)
-#compressed2D.cpp
 
 programs = []
 for p in sources:

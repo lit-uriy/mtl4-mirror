@@ -8,7 +8,7 @@
 #include <boost/numeric/mtl/matrix/compressed2D.hpp> 
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 
-#include <boost/numeric/mtl/matrix/parameters.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/laplacian_setup.hpp> 
 #include <boost/numeric/mtl/matrix/hessian_setup.hpp> 
 
