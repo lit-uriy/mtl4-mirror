@@ -134,6 +134,8 @@ This tutorial introduces the user into:
 -# \subpage vector_def
 -# \subpage vector_functions
 -# \subpage vector_expr 
+-# \subpage rich_vector_expr 
+-# \subpage matrix_types
 
 
 
@@ -266,6 +268,85 @@ Proceed to \ref vector_expr "vector expressions".
 
 
 /*! \page vector_expr Vector expressions
+
+The following program illustrates the usage of basic vector
+expressions.
+
+\include vector_expr.cpp
+
+The mathematical definition of vector spaces requires that
+vectors can be added, multiplied with scalar values
+and the results can be assigned to vectors.
+In MTL4, the vectors must have the same algebraic shape, 
+see \ref ashape,
+ for addition
+and assignment, i.e. column vectors cannot be assigned to row vectors.
+If the elements of the vectors are vectors themselves or matrices
+then the elements must also be of the same algebraic shape.
+
+Products of scalars and vectors are
+ implemented by a view, see \ref vector::scaled_view,
+and vector elements are multiplied with the factor when
+accessing an element of the view.
+Please notice that the scaling factor's type is not required to be
+identical with the vector's value type.
+Furthermore, the value type of the view can be different from
+the vector's value type if necessary to represent the products.
+The command is an example for it: multiplying a double vector
+with a complex number requires a complex vector view to 
+guarantee the correctness of the results.
+
+Traditional definitions of operators perform computations
+in temporary variables that are returned at the end of the
+calculation.
+The presence of multiple operators, say n, in a single expression
+(which is always the case except for an assignment without numerics)
+requires then the execution of n loops (possibly more to copy
+the temporaries on the stack).
+If the vectors are too large for the cache, values must be loaded
+repeatingly from slower memories.
+Expression templates circumvent this repeated loading of vector
+elements by
+performing only one loop.
+
+
+Proceed to \ref rich_vector_expr "rich vector expressions".  
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page rich_vector_expr Rich vector expressions
+
+As discussed in the previous chapter, 
+vector operation can be accelerated by improving
+their cache locality via expression templates.
+Cache locality can be further improved in applications
+when subsequent vector expressions are evaluated
+in one loop, data dependencies allowing.
+Unfortunately, this so-called loop fusion cannot be 
+realized with expression templates.
+At least not when the loops are performed in the assignment.
+
+In colloboration with Karl Meerbergen, we developed expression
+templates that can be nested, called rich expression templates.
+The following program shows some examples of rich expression
+templates:
+
+\include rich_vector_expr.cpp
+
+
+
+
+Proceed to \ref matrix_types "matrix types".  
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page matrix_types "Matrix types"
 
 
 
