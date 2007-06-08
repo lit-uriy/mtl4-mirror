@@ -7,6 +7,9 @@ sources = Split("""vector1.cpp
                    dot.cpp
                    vector_expr.cpp
                    rich_vector_expr.cpp
+                   dense2D.cpp
+                   morton_dense.cpp
+                   compressed2D.cpp
 """)
 
 

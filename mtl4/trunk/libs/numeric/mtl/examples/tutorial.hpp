@@ -136,6 +136,7 @@ This tutorial introduces the user into:
 -# \subpage vector_expr 
 -# \subpage rich_vector_expr 
 -# \subpage matrix_types
+-# \subpage matrix_insertion
 
 
 
@@ -336,7 +337,16 @@ templates:
 
 \include rich_vector_expr.cpp
 
+The first example shows the combination of an incremental
+assignment with a vector addition.
+The second statement fuses four vector expressions:
+-# The value 2 is assigned to every element of x;
+-# w is scaled in-place with 3;
+-# v is incremented by the sum of both vector; and
+-# u is incremented by the new value of v.
 
+Again, all these operations are performed in one loop and each vector
+element is acceessed exactly once.
 
 
 Proceed to \ref matrix_types "matrix types".  
@@ -346,8 +356,81 @@ Proceed to \ref matrix_types "matrix types".
 //-----------------------------------------------------------
 
 
-/*! \page matrix_types "Matrix types"
+/*! \page matrix_types Matrix types
 
+Right now, MTL4 provides three matrix types:
+- \ref dense2D;
+- \ref morton_dense; and
+- \ref compressed.
+
+The type \ref dense2D defines regular 
+row-major and column-major matrices:
+
+\include dense2D.cpp
+
+If no matrix parameters are defined, dense matrices are
+by default row-major.
+There are more matrix parameters besides the orientation.
+As they are not yet fully supported we refrain from discussing
+them.
+
+Matrix elements can be accessed by a(i, j) or in the more
+familiar form a[i][j].
+The second form is internally transformed into the first
+one at compile time so that the run-time performance is not
+affected (unless the compiler does not inline completely
+which we never observed so far).
+Also, the compile time is not conceivably increased by this
+transformation.
+
+Please notice that overwriting single matrix elements is only
+defined for dense matrix types. 
+For a generic way to modify matrices see \ref matrix_insertion.
+
+Assigning a scalar value to a matrix stores a multiple of
+the identity matrix, i.e. the scalar is assigned to all
+diagonal elements and all off-diagonal elements are 0.
+If the matrix is not square this assignment throws an exception.
+By the way, this operation is generic (i.e. applicable to
+all matrix types).
+
+Dense matrices with a recursively designed memory layout
+can be defined with the type \ref morton_dense:
+
+\include morton_dense.cpp
+
+A detailed description will be added soon.
+
+Sparse matrices are defined with the type \ref compressed2D:
+
+\include compressed2D.cpp
+
+Matrix a is stored as compressed row storage (CRS).
+Its assigned values correspond to a discretized Laplace operator.
+To change or insert single elements of a compressed matrix
+is not supported
+Especially for very large matrices, this would result in an
+unbearable performance burden.
+
+However, it is allowede to assign a scalar value to the entire matrix
+given it is square as in the example.
+Matrix b is stored in compressed column storage (CCS).
+
+Which orientation is favorable dependents on the performed
+operations and might require some experimentation.
+All operations are provided in the same way for both formats
+
+How to fill  sparse matrices is shown in the following chapter.
+
+
+Proceed to \ref matrix_insertion "matrix insertion".  
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page matrix_insertion Matrix insertion
 
 
 */
