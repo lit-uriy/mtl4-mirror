@@ -45,15 +45,23 @@ auto concept RealMagnitude<typename T>
 
 #else  // now without concepts
 
+/// Concept/Type-trait for magnitudes of scalar values
+/** This name is overloaded: when MTL4 is compiled with a concept-compiler
+    Magnitude is a concept otherwise a type-trait.
+    It is used for instance in norms. 
+**/
 template <typename T>
 struct Magnitude
 {
+    /// Associated type; the default is T; must be specialized appropriately
     typedef T type;
 };
 
+/// Specialization for complex numbers
 template <typename T>
 struct Magnitude<std::complex<T> >
 {
+    /// The associated type is defined to the complex's value type
     typedef T type;
 };
 
