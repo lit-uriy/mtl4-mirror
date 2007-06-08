@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/operation/scale.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
+#include <boost/numeric/mtl/operation/sum.hpp>
 #include <boost/numeric/mtl/operation/trace.hpp>
 
 #endif // MTL_OPERATIONS_INCLUDE

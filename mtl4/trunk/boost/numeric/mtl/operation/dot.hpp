@@ -39,6 +39,12 @@ namespace mtl {
 	    {
 		using mtl::conj;
 		tmp00+= v1[ i + base::index0 ] * conj( v2[ i + base::index0 ] );
+#if 0
+		std::cout << "dot_aux: v1[ " << i + base::index0 << " ] * conj(v2[ .. ] : "
+			  << v1[ i + base::index0 ] << " * " 
+			  << conj( v2[ i + base::index0 ] )
+			  << " -> tmp00 is now: " << tmp00 << "\n";
+#endif
 		next_t::apply(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp00,
 			      v1, v2, i);
 	    }
@@ -57,6 +63,12 @@ namespace mtl {
 	    {
 		using mtl::conj;
 		tmp00+= v1[ i + base::index0 ] * conj( v2[ i + base::index0 ] );
+#if 0
+		std::cout << "dot_aux<Max0>: v1[ " << i + base::index0 << " ] * conj(v2[ .. ] : "
+			  << v1[ i + base::index0 ] << " * " 
+			  << conj( v2[ i + base::index0 ] )
+			  << " -> tmp00 is now: " << tmp00 << "\n";
+#endif
 	    }
 	};
 
@@ -78,7 +90,7 @@ namespace mtl {
 		size_type  i_max= size(v1), i_block= Unroll * (i_max / Unroll);
 
 		for (size_type i= 0; i < i_block; i+= Unroll)
-		    dot_aux<Unroll, Unroll>::apply(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, v1, v2, i);
+		    dot_aux<1, Unroll>::apply(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, v1, v2, i);
 
 		using mtl::conj;
 		for (size_type i= i_block; i < i_max; i++) 
