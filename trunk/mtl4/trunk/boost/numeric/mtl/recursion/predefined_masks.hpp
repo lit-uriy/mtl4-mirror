@@ -12,6 +12,8 @@ namespace mtl { namespace recursion {
 	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
 	doppler_2_row_mask= generate_mask<true, 1, row_major, 0>::value,
 	doppler_2_col_mask= generate_mask<true, 1, col_major, 0>::value,
+	doppler_4_row_mask= generate_mask<true, 2, row_major, 0>::value,
+	doppler_4_col_mask= generate_mask<true, 2, col_major, 0>::value,
 	doppler_16_row_mask= generate_mask<true, 4, row_major, 0>::value,
 	doppler_16_col_mask= generate_mask<true, 4, col_major, 0>::value,
 	doppler_z_16_row_mask= generate_mask<false, 4, row_major, 0>::value,
