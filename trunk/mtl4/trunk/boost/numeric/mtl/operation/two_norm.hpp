@@ -46,6 +46,14 @@ inline two_norm(const Value& value)
     return impl::two_norm<Unroll>(value, typename traits::category<Value>::type());
 }
 
+/*! Two-norm for vectors: two_norm(x) \f$\rightarrow |x|_2\f$.
+    \retval The magnitude type of the respective value type, see Magnitude.
+    The norms are defined as \f$|v|_2=\sqrt{\sum_i |v_i|^2}\f$.
+
+    Vector norms are unrolled 8-fold by default. 
+    An n-fold unrolling can be generated with two_norm<n>(x).
+    The maximum for n is 8 (it might be increased later).
+**/
 template <typename Value>
 typename RealMagnitude<typename Collection<Value>::value_type>::type
 inline two_norm(const Value& value)

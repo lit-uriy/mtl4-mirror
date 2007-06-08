@@ -30,8 +30,8 @@ struct ndef {};
 
 /// Meta-function for algebraic shape of T
 /** Unknown types are treated like scalars. ashape of collections are template
-    parameterized with ashape of their elements, e.g., ashape< matrix < vector <double> > >::type is
-    mat< rvec <scal> > >. 
+    parameterized with ashape of their elements, e.g., ashape< matrix < vector < double > > >::type is
+    mat< rvec < scal > > >. 
 **/
 template <typename T>
 struct ashape

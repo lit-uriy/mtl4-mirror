@@ -3,6 +3,8 @@
 #ifndef MTL_TUTORIAL_INCLUDE
 #define MTL_TUTORIAL_INCLUDE
 
+// for references
+namespace mtl {
 
 // This file contains no source code but only documentation.
 
@@ -212,6 +214,9 @@ The following program shows how to compute norms:
 
 Since this code is almost self-explanatory, we give only a few
 comments here.
+The definitions of the \ref one_norm, \ref two_norm, and 
+\ref infinity_norm can
+be found in their respective documentations.
 Vector norms are for performance reasons computed with unrolled loops.
 Since we do not want to rely on the compilers' capability and 
 in order to have more control over the optimization, the unrolling
@@ -236,6 +241,23 @@ be computed:
 
 \include vector_reduction.cpp
 
+As vector reductions base on the same implementation as norms, the
+unrolling can be explicitly controlled as shown in the last
+command.
+The results of these reductions are the value type of the vector.
+
+The dot product of two vectors is computed with the function \ref dot:
+
+\include dot.cpp
+
+As the previous computation the evaluation is unrolled, either with
+a user-defined parameter or by default eight times.
+
+The result type of \ref dot is of type of the values' product.
+If MTL4 is compiled with a concept-compiler, the result type is 
+taken from the concept std::Multiple and without concepts
+Joel de Guzman's result type deduction from Boost is used.
+
 Proceed to \ref vector_expr "vector expressions".  
 
 */
@@ -249,6 +271,6 @@ Proceed to \ref vector_expr "vector expressions".
 
 */
 
-
+} // namespace mtl
 
 #endif // MTL_TUTORIAL_INCLUDE
