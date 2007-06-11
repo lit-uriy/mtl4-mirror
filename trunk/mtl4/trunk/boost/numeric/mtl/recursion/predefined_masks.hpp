@@ -42,6 +42,8 @@ namespace mtl { namespace recursion {
 
 } // namespace recursion
 
+    // Export masks into MTL namespace
+
 using recursion::morton_mask;
 using recursion::morton_z_mask;
 using recursion::doppler_2_row_mask;
