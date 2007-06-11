@@ -10,6 +10,7 @@ sources = Split("""vector1.cpp
                    dense2D.cpp
                    morton_dense.cpp
                    compressed2D.cpp
+                   matrix_mult_simple.cpp
 """)
 
 

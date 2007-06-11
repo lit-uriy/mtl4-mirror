@@ -40,6 +40,39 @@ namespace mtl { namespace recursion {
 	shark_z_64_col_mask= generate_mask<false, 6, col_major, 1>::value;
 
 
-}} // namespace mtl::recursion
+} // namespace recursion
+
+using recursion::morton_mask;
+using recursion::morton_z_mask;
+using recursion::doppler_2_row_mask;
+using recursion::doppler_2_col_mask;
+using recursion::doppler_4_row_mask;
+using recursion::doppler_4_col_mask;
+using recursion::doppler_16_row_mask;
+using recursion::doppler_16_col_mask;
+using recursion::doppler_z_16_row_mask;
+using recursion::doppler_z_16_col_mask;
+using recursion::doppler_32_row_mask;
+using recursion::doppler_32_col_mask;
+using recursion::doppler_z_32_row_mask;
+using recursion::doppler_z_32_col_mask;
+using recursion::doppler_64_row_mask;
+using recursion::doppler_64_col_mask;
+using recursion::doppler_z_64_row_mask;
+using recursion::doppler_z_64_col_mask;
+using recursion::doppler_128_row_mask;
+using recursion::doppler_128_col_mask;
+using recursion::doppler_z_128_row_mask;
+using recursion::doppler_z_128_col_mask;
+using recursion::shark_32_row_mask;
+using recursion::shark_32_col_mask;
+using recursion::shark_z_32_row_mask;
+using recursion::shark_z_32_col_mask;
+using recursion::shark_64_row_mask;
+using recursion::shark_64_col_mask;
+using recursion::shark_z_64_row_mask;
+using recursion::shark_z_64_col_mask;
+
+} // namespace mtl
 
 #endif // MTL_PREDEFINED_MASKS_INCLUDE
