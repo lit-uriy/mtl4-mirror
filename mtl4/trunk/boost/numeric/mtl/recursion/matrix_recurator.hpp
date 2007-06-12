@@ -117,6 +117,10 @@ public:
 	return get_value_dispatch(my_sub_matrix, begin_row, end_row, begin_col, end_col);
     }
 
+    sub_matrix_type operator*() const
+    {
+	return get_value();
+    }
 
     // Returning quadrants for non-const recurator
 
