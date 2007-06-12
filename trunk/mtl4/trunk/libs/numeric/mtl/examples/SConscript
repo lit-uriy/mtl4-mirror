@@ -12,6 +12,7 @@ sources = Split("""vector1.cpp
                    compressed2D.cpp
                    matrix_mult_simple.cpp
                    matrix_operations.cpp
+                   insert.cpp
 """)
 
 

@@ -135,7 +135,14 @@ struct update_assign_mode<assign::minus_sum, Value>
     typedef update_minus<Value> type;
 };
 
-}} // namespace mtl::operations
+} // namespace operations
+
+using operations::update_store;
+using operations::update_plus;
+using operations::update_minus;
+using operations::update_times;
+
+} // namespace mtl
 
 
 
