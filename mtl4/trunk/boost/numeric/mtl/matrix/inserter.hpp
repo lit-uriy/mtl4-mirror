@@ -17,8 +17,9 @@ struct inserter
   : public mtl::detail::trivial_inserter<Matrix, Updater>
 {
     typedef mtl::detail::trivial_inserter<Matrix, Updater>     base;
+    typedef typename Matrix::size_type   size_type;
 
-    explicit inserter(Matrix& matrix) : base(matrix) {}
+    explicit inserter(Matrix& matrix, size_type slot_size = 0) : base(matrix, slot_size) {}
 };
 
 

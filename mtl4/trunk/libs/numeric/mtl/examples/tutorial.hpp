@@ -485,8 +485,13 @@ We hope that this ability facilitates the development of FEM code.
 
 For performance reasons it is advisable to customize the number of elements per row (or column),
 e.g., ins(m, 13).
-Reason being, the overflow container requires more memory per element then the (stretched) matrix.
+Reason being, the overflow container consumes  more memory per element then the 
+regular matrix container.
 In most applications, an upper limit can be easily given.
+However, the limit is not that strict: if some rows need more memory than the slot size it only
+results in slightly higher memory need for the overflow container.
+If the number of elements per row is very irregular we recommand a slot size over the average
+(and maybe under the maximum).
 Since only a small part of the data is  copied during the compression, sparse matrices 
 can be created that fill almost the entire memory.
 
@@ -496,6 +501,12 @@ However, dense inserters can be also very useful in the future for extending the
 library to parallel computations.
 Then the inserter can be used to write values into remote matrix elements.
 
+A more powerful method to fill sparse (and dense) matrices provide the two functions
+element_matrix() and element_array().
+
+The following program illustrates how to use them:
+
+\include element_matrix.cpp
 
 
 */

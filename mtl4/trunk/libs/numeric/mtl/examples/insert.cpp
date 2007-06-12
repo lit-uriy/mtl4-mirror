@@ -27,7 +27,7 @@ void modify(Matrix& m)
 
     // Create inserter for matrix m
     // Existing values are not overwritten but inserted
-    matrix::inserter<Matrix, update_plus<value_type> > ins(m);
+    matrix::inserter<Matrix, update_plus<value_type> > ins(m, 3);
     
     // Increment value in m[0][0]
     ins(0, 0) << 1.0;
