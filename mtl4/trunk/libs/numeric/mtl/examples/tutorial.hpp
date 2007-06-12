@@ -13,7 +13,7 @@ namespace mtl {
 \author Peter Gottschling
 \date June 2007
 
-The Matrix Template Library (incarnation) 4 is a generic library for linear
+The %Matrix Template Library (incarnation) 4 is a generic library for linear
 algebra operations on matrices and vectors.
 Its goal is to facilitate its usage comparable to mathematical libraries
 like Mathematica and Matlab and to approach, at the same time, performance 
@@ -33,7 +33,7 @@ An important distinction to BLAS is that sparse matrices are supported.
 /*! \page intro Introduction
 
 
-The Matrix Template Library (incarnation) 4 is a generic library for linear
+The %Matrix Template Library (incarnation) 4 is a generic library for linear
 algebra operations on matrices and vectors.
 Its goal is to facilitate its usage comparable to mathematical libraries
 like Mathematica and Matlab and to approach, at the same time, performance 
@@ -358,7 +358,7 @@ Proceed to \ref matrix_types "matrix types".
 
 /*! \page matrix_types Matrix types
 
-Right now, MTL4 provides three matrix types:
+Right now, MTL4 provides three %matrix types:
 - \ref dense2D;
 - \ref morton_dense; and
 - \ref compressed.
@@ -368,13 +368,13 @@ row-major and column-major matrices:
 
 \include dense2D.cpp
 
-If no matrix parameters are defined, dense matrices are
+If no %matrix parameters are defined, dense matrices are
 by default row-major.
-There are more matrix parameters besides the orientation.
+There are more %matrix parameters besides the orientation.
 As they are not yet fully supported we refrain from discussing
 them.
 
-Matrix elements can be accessed by a(i, j) or in the more
+%Matrix elements can be accessed by a(i, j) or in the more
 familiar form a[i][j].
 The second form is internally transformed into the first
 one at compile time so that the run-time performance is not
@@ -383,16 +383,16 @@ which we never observed so far).
 Also, the compile time is not conceivably increased by this
 transformation.
 
-Please notice that overwriting single matrix elements is only
-defined for dense matrix types. 
+Please notice that overwriting single %matrix elements is only
+defined for dense %matrix types. 
 For a generic way to modify matrices see \ref matrix_insertion.
 
-Assigning a scalar value to a matrix stores a multiple of
-the identity matrix, i.e. the scalar is assigned to all
+Assigning a scalar value to a %matrix stores a multiple of
+the identity %matrix, i.e. the scalar is assigned to all
 diagonal elements and all off-diagonal elements are 0.
-If the matrix is not square this assignment throws an exception.
+If the %matrix is not square this assignment throws an exception.
 By the way, this operation is generic (i.e. applicable to
-all matrix types).
+all %matrix types).
 
 Dense matrices with a recursively designed memory layout
 can be defined with the type \ref morton_dense:
@@ -405,20 +405,20 @@ Sparse matrices are defined with the type \ref compressed2D:
 
 \include compressed2D.cpp
 
-Matrix a is stored as compressed row storage (CRS).
+%Matrix a is stored as compressed row storage (CRS).
 Its assigned values correspond to a discretized Laplace operator.
-To change or insert single elements of a compressed matrix
-is not supported
+To change or insert single elements of a compressed %matrix
+is not supported.
 Especially for very large matrices, this would result in an
 unbearable performance burden.
 
-However, it is allowede to assign a scalar value to the entire matrix
+However, it is allowede to %assign a scalar value to the entire %matrix
 given it is square as in the example.
-Matrix b is stored in compressed column storage (CCS).
+%Matrix b is stored in compressed column storage (CCS).
 
 Which orientation is favorable dependents on the performed
-operations and might require some experimentation.
-All operations are provided in the same way for both formats
+%operations and might require some experimentation.
+All %operations are provided in the same way for both formats
 
 How to fill  sparse matrices is shown in the following chapter.
 
@@ -431,6 +431,71 @@ Proceed to \ref matrix_insertion "matrix insertion".
 
 
 /*! \page matrix_insertion Matrix insertion
+
+Setting the values of a dense %matrix is an easy task since each element
+has its dedicated location in memory.
+Setting sparse matrices, esp. compressed ones, is a little more complicated.
+There exist two extreme approaches:
+- Inserting all values on the fly at any time; or
+- Providing a special insertion phase and then creating the compressed format
+  once and forever.
+
+The former approach has the advantage that it is handier and that the set-up
+of sparse matrices can be handled like dense matrices (which eases the development
+of generic code).
+However, when matrices grow larger, the insertion becomes more and more expensive,
+to the point of unusability.
+Most high-performance libraries use therefore the second approach.
+In practice, a sparse %matrix is usually the result of discretization (FEM, FDM, ...)
+that is set up once and then used many times in linear or non-linear solvers.
+Many libraries even establish a two-phase set-up: first building the sparsity pattern
+and then populating the non-zero elements with values.
+
+The MTL4 approach lies somewhere between.
+Sparse matrices can be either written (inserted) or read.
+However, there can be multiple insertion phases.
+
+Before giving more details, we want to show you a short example:
+
+\include insert.cpp
+
+The first aspect worth pointing at is that sparse and dense matrices are treated
+the same way.
+If we cannot handle sparse matrices like dense (at least not efficiently), we
+can treat dense matrices like sparse ones.
+
+Internally the inserters for dense and sparse matrices are implemented completely
+differently but the interface is the same.
+Dense inserters insert the value directly and there is not much to say about.
+
+Sparse inserters are more complicated.
+The constructor stretches the matrix so that the first five elements in a row
+(in a CCS matrix likewise the first 5 elements in a column) are inserted directly.
+During the live time of the inserter, new elements are written directly into
+empty slots. 
+If all slots of a row (or column) are filled, new elements are written into an std::map.
+During the entire insertion process, no data is shifted.
+
+If an element is inserted twice then the existing element is overwritten, regardless
+if the element is stored in the matrix itself or in the overflow container.
+Overwriting is only the default. The function modify() illustrates how to use the inserter
+incrementally.
+Existing elements are incremented by the new value.
+We hope that this ability facilitates the development of FEM code.
+
+For performance reasons it is advisable to customize the number of elements per row (or column),
+e.g., ins(m, 13).
+Reason being, the overflow container requires more memory per element then the (stretched) matrix.
+In most applications, an upper limit can be easily given.
+Since only a small part of the data is  copied during the compression, sparse matrices 
+can be created that fill almost the entire memory.
+
+Nota bene: inserters for dense matrices are not much more than facades for the matrices themselves
+in order to provide the same interface as for sparse ones.
+However, dense inserters can be also very useful in the future for extending the 
+library to parallel computations.
+Then the inserter can be used to write values into remote matrix elements.
+
 
 
 */
