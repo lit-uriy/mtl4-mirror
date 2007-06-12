@@ -13,6 +13,7 @@ sources = Split("""vector1.cpp
                    matrix_mult_simple.cpp
                    matrix_operations.cpp
                    insert.cpp
+                   element_matrix.cpp
 """)
 
 

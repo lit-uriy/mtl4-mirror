@@ -20,7 +20,7 @@ struct trivial_inserter
     typedef typename matrix_type::value_type            value_type;
     typedef operations::update_proxy<self, size_type>   proxy_type;
     
-    explicit trivial_inserter(matrix_type& matrix) : matrix(matrix) {}
+    explicit trivial_inserter(matrix_type& matrix, size_type) : matrix(matrix) {}
 
     proxy_type operator() (size_type row, size_type col)
     {
