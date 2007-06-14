@@ -26,12 +26,12 @@ typedef gen_tiling_44_dense_mat_mat_mult_t<assign::plus_sum>  tiling_44_base_mul
 #if 0
     // Bitmasks: 
     const unsigned long 
-	doppler_64_row_mask= generate_mask<true, 6, row_major, 0>::value,
-	doppler_64_col_mask= generate_mask<true, 6, col_major, 0>::value;
+	doppled_64_row_mask= generate_mask<true, 6, row_major, 0>::value,
+	doppled_64_col_mask= generate_mask<true, 6, col_major, 0>::value;
 
-void hybrid_ext_mult_44(const morton_dense<double,  doppler_64_row_mask>& a, 
-			const morton_dense<double,  doppler_64_col_mask>& b,
-			morton_dense<double,  doppler_64_row_mask>& c)
+void hybrid_ext_mult_44(const morton_dense<double,  doppled_64_row_mask>& a, 
+			const morton_dense<double,  doppled_64_col_mask>& b,
+			morton_dense<double,  doppled_64_row_mask>& c)
 {
   tiling_44_base_mult_t()(a, b, c);
 }

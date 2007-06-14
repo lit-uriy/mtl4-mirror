@@ -309,12 +309,12 @@ int test_main(int argc, char* argv[])
     // Bitmasks:
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
 	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
-	doppler_32_row_mask_no_shark= generate_mask<true, 5, row_major, 0>::value,
-	doppler_32_col_mask_no_shark= generate_mask<true, 5, col_major, 0>::value,
-	doppler_32_row_mask= generate_mask<true, 5, row_major, 1>::value,
-	doppler_32_col_mask= generate_mask<true, 5, col_major, 1>::value,
-	doppler_z_32_row_mask= generate_mask<false, 5, row_major, 1>::value,
-	doppler_z_32_col_mask= generate_mask<false, 5, col_major, 1>::value;
+	doppled_32_row_mask_no_shark= generate_mask<true, 5, row_major, 0>::value,
+	doppled_32_col_mask_no_shark= generate_mask<true, 5, col_major, 0>::value,
+	doppled_32_row_mask= generate_mask<true, 5, row_major, 1>::value,
+	doppled_32_col_mask= generate_mask<true, 5, col_major, 1>::value,
+	doppled_z_32_row_mask= generate_mask<false, 5, row_major, 1>::value,
+	doppled_z_32_col_mask= generate_mask<false, 5, col_major, 1>::value;
  
     unsigned size= 5; 
     if (argc > 1) size= atoi(argv[1]); 
@@ -326,15 +326,15 @@ int test_main(int argc, char* argv[])
     dense2D<float, matrix::parameters<col_major> >   fca(size, size-1), fcb(size-1, size-2), fcc(size, size-2);
     morton_dense<double,  morton_mask>               mda(size, size-1), mdb(size-1, size-2), mdc(size, size-2);
 
-    typedef morton_dense<double, doppler_32_row_mask_no_shark>  morton_t;
-    morton_dense<double, doppler_32_row_mask_no_shark>      mrans(size, size-1), mrbns(size-1, size-2), mrcns(size, size-2);;
-    morton_dense<double, doppler_32_col_mask_no_shark>      mcans(size, size-1), mcbns(size-1, size-2), mccns(size, size-2); 
-    morton_dense<double, doppler_32_col_mask>      mca(size, size-1), mcb(size-1, size-2), mcc(size, size-2);
-    morton_dense<double, doppler_32_row_mask>      mra(size, size-1), mrb(size-1, size-2), mrc(size, size-2);
-    morton_dense<double, doppler_z_32_col_mask>    mzca(size, size-1), mzcb(size-1, size-2), mzcc(size, size-2);
-    morton_dense<double, doppler_z_32_row_mask>    mzra(size, size-1), mzrb(size-1, size-2), mzrc(size, size-2);
-    morton_dense<float, doppler_32_col_mask>       mcaf(size, size-1), mcbf(size-1, size-2), mccf(size, size-2);
-    morton_dense<float, doppler_32_row_mask>       mraf(size, size-1), mrbf(size-1, size-2), mrcf(size, size-2);
+    typedef morton_dense<double, doppled_32_row_mask_no_shark>  morton_t;
+    morton_dense<double, doppled_32_row_mask_no_shark>      mrans(size, size-1), mrbns(size-1, size-2), mrcns(size, size-2);;
+    morton_dense<double, doppled_32_col_mask_no_shark>      mcans(size, size-1), mcbns(size-1, size-2), mccns(size, size-2); 
+    morton_dense<double, doppled_32_col_mask>      mca(size, size-1), mcb(size-1, size-2), mcc(size, size-2);
+    morton_dense<double, doppled_32_row_mask>      mra(size, size-1), mrb(size-1, size-2), mrc(size, size-2);
+    morton_dense<double, doppled_z_32_col_mask>    mzca(size, size-1), mzcb(size-1, size-2), mzcc(size, size-2);
+    morton_dense<double, doppled_z_32_row_mask>    mzra(size, size-1), mzrb(size-1, size-2), mzrc(size, size-2);
+    morton_dense<float, doppled_32_col_mask>       mcaf(size, size-1), mcbf(size-1, size-2), mccf(size, size-2);
+    morton_dense<float, doppled_32_row_mask>       mraf(size, size-1), mrbf(size-1, size-2), mrcf(size, size-2);
 
     transposed_view<dense2D<double> > trans_db(db); 
     transposed_view<morton_t >        trans_mrbns(mrbns); 

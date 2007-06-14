@@ -32,33 +32,33 @@ int test_main(int argc, char* argv[])
 {
     using mtl::row_major; using mtl::col_major;
 
-    const unsigned long morton= 0x55555555, morton_z= 0xaaaaaaaa, doppler_4_row= 0x5555555c,
-	doppler_4_col= 0x55555553, doppler_32_row= 0x555557e0, doppler_32_col= 0x5555541f,
-	doppler_32_row_shark_2= 0x555557c1;
+    const unsigned long morton= 0x55555555, morton_z= 0xaaaaaaaa, doppled_4_row= 0x5555555c,
+	doppled_4_col= 0x55555553, doppled_32_row= 0x555557e0, doppled_32_col= 0x5555541f,
+	doppled_32_row_shark_2= 0x555557c1;
 
     test<morton>();
     test<morton_z>();
-    test<doppler_4_row>();
-    test<doppler_4_col>();
-    test<doppler_32_row>();
-    test<doppler_32_col>();
-    test<doppler_32_row_shark_2>();
+    test<doppled_4_row>();
+    test<doppled_4_col>();
+    test<doppled_32_row>();
+    test<doppled_32_col>();
+    test<doppled_32_row_shark_2>();
 
     const unsigned long morton_gen= generate_mask<true, 0, row_major, 0>::value,
 	morton_z_gen= generate_mask<false, 0, row_major, 0>::value,
-	doppler_4_row_gen= generate_mask<true, 2, row_major, 0>::value,
-	doppler_4_col_gen= generate_mask<true, 2, col_major, 0>::value,
-	doppler_32_row_gen= generate_mask<true, 5, row_major, 0>::value,
-	doppler_32_col_gen= generate_mask<true, 5, col_major, 0>::value,
-	doppler_32_row_shark_2_gen= generate_mask<true, 5, row_major, 1>::value;
+	doppled_4_row_gen= generate_mask<true, 2, row_major, 0>::value,
+	doppled_4_col_gen= generate_mask<true, 2, col_major, 0>::value,
+	doppled_32_row_gen= generate_mask<true, 5, row_major, 0>::value,
+	doppled_32_col_gen= generate_mask<true, 5, col_major, 0>::value,
+	doppled_32_row_shark_2_gen= generate_mask<true, 5, row_major, 1>::value;
 
     check_same_mask<morton, morton_gen>();
     check_same_mask<morton_z, morton_z_gen>();
-    check_same_mask<doppler_4_row, doppler_4_row_gen>();
-    check_same_mask<doppler_4_col, doppler_4_col_gen>();
-    check_same_mask<doppler_32_row, doppler_32_row_gen>();
-    check_same_mask<doppler_32_col, doppler_32_col_gen>();
-    check_same_mask<doppler_32_row_shark_2, doppler_32_row_shark_2_gen>();
+    check_same_mask<doppled_4_row, doppled_4_row_gen>();
+    check_same_mask<doppled_4_col, doppled_4_col_gen>();
+    check_same_mask<doppled_32_row, doppled_32_row_gen>();
+    check_same_mask<doppled_32_col, doppled_32_col_gen>();
+    check_same_mask<doppled_32_row_shark_2, doppled_32_row_shark_2_gen>();
 
     return 0;
 }

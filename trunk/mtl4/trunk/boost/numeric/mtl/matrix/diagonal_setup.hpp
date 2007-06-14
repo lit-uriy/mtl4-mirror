@@ -6,6 +6,7 @@
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -17,7 +18,12 @@ inline void diagonal_setup(Matrix& matrix, const Value& value)
 {
     MTL_THROW_IF(num_rows(matrix) != num_cols(matrix), matrix_not_square());
     set_to_zero(matrix);
-    inserter<Matrix>      ins(matrix);
+    
+    if (num_rows(matrix) == 0) return;
+
+    if (value == math::zero(matrix[0][0])) return;
+
+    inserter<Matrix>      ins(matrix, 1);
 
     for (unsigned i= 0; i < num_rows(matrix); i++)
 	ins(i, i) << value;
