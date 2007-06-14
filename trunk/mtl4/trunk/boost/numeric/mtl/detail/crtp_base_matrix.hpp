@@ -25,7 +25,7 @@ template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_matrix_assign
 {
     /// Assign scalar to a matrix by setting the matrix to a multiple of unity matrix
-    /** Throws an expception if matrix is not square **/
+    /** Uses internally \sa diagonal_setup, for details see there. **/
     template <typename Value>
     typename boost::enable_if<typename boost::is_same<typename ashape::ashape<Value>::type,
 						      ashape::scal>,

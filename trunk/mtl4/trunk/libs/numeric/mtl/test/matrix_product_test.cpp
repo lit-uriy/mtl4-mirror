@@ -32,8 +32,8 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     using assign::minus_sum; using assign::mult_assign_mode; 
     using recursion::bound_test_static;
 
-    fill_hessian_matrix(a, 1.0);
-    fill_hessian_matrix(b, 2.0);
+    hessian_setup(a, 1.0);
+    hessian_setup(b, 2.0);
 
     std::cout << "\n" << name << "  --- calling simple mult:\n"; std::cout.flush();
     typedef gen_dmat_dmat_mult_t<>  mult_t;
@@ -293,8 +293,8 @@ struct dgemm_t
 void test_blas()
 {
     dense2D<double, matrix::parameters<col_major> > a(7, 7), b(7, 7), c(7, 7);
-    fill_hessian_matrix(a, 1.0);
-    fill_hessian_matrix(b, 2.0);
+    hessian_setup(a, 1.0);
+    hessian_setup(b, 2.0);
     dgemm_t()(a, b, c);
 
     print_matrix_row_cursor(c);

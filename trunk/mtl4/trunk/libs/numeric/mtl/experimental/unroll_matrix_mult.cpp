@@ -151,8 +151,8 @@ double time_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size)
     MatrixB b(size, size);
     MatrixC c(size, size);
 
-    fill_hessian_matrix(a, 1.0);
-    fill_hessian_matrix(b, 2.0); 
+    hessian_setup(a, 1.0);
+    hessian_setup(b, 2.0); 
 
     // repeat multiplication if it is less than a second (until it is a second)
     int i; boost::timer start1;
@@ -651,9 +651,9 @@ int test_main(int argc, char* argv[])
     
     mtl::dense2D<double>               da(size, size), db(size, size), dc(size, size);
     cm_type                            dat(size, size), dbt(size, size), dct(size, size);
-    fill_hessian_matrix(da, 1.0);
-    fill_hessian_matrix(db, 2.0); 
-    fill_hessian_matrix(dbt, 2.0); 
+    hessian_setup(da, 1.0);
+    hessian_setup(db, 2.0); 
+    hessian_setup(dbt, 2.0); 
 
     time_series(da, dbt, dc, mult_simple_ptu22t<rm_type, cm_type, rm_type>, "Same templated", steps, max_size);
     time_series(da, dbt, dc, mult_simple_ptu22, "Simple mult (pointers trans unrolled 2x1x2)", steps, max_size);
