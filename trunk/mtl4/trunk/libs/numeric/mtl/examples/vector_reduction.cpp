@@ -8,10 +8,10 @@ int main(int argc, char* argv[])
     using namespace mtl;
 
     typedef std::complex<double>  cdouble;
-    dense_vector<cdouble>         v(10000);
+    dense_vector<cdouble>         v(100);
 
     for (int i= 0; i < size(v); i++)
-	v[i]= cdouble(i+1, 10000-i);
+	v[i]= cdouble(i+1, 100-i);
 
     std::cout << "sum(v) is " << sum(v)<< "\n";
     

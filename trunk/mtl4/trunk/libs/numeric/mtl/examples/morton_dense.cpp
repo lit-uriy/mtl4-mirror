@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     std::cout << "a is \n" << a << "\n";
     
     // b is a N-order matrix with column-major 4x4 blocks
-    morton_dense<float, recursion::doppler_4_col_mask> b(10, 10);
+    morton_dense<float, recursion::doppled_4_col_mask> b(10, 10);
 
     // Assign a three times the identity to b
     b= 3;

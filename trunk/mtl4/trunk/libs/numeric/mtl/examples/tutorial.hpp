@@ -444,7 +444,7 @@ The former approach has the advantage that it is handier and that the set-up
 of sparse matrices can be handled like dense matrices (which eases the development
 of generic code).
 However, when matrices grow larger, the insertion becomes more and more expensive,
-to the point of unusability.
+up to the point  of being unusable.
 Most high-performance libraries use therefore the second approach.
 In practice, a sparse %matrix is usually the result of discretization (FEM, FDM, ...)
 that is set up once and then used many times in linear or non-linear solvers.
@@ -463,6 +463,9 @@ The first aspect worth pointing at is that sparse and dense matrices are treated
 the same way.
 If we cannot handle sparse matrices like dense (at least not efficiently), we
 can treat dense matrices like sparse ones.
+For performance reasons, matrices are not initialized by default. 
+Therefore, the first operation in fill is to set the matrix to zero.
+
 
 Internally the inserters for dense and sparse matrices are implemented completely
 differently but the interface is the same.

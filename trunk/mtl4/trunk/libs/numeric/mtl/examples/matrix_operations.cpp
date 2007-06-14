@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
     const unsigned n= 10;
     dense2D<int, matrix::parameters<col_major> > b(n, n);
     morton_dense<double, 0x55555555>             c(n, n);
-    morton_dense<double, 0x555555fa>             d(n, n);
+    morton_dense<double, 0x555555f0>             d(n, n);
 
     b= 0; d= 0;
 
@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
     std::cout << std::complex<double>(0, 1) * c;
     d*= 7.0;
 
-    b+= c - d;
+    d+= c - b;
 
     return 0;
 }
