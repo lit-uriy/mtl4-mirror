@@ -9,6 +9,9 @@ using namespace mtl;
 template <typename Matrix>
 void fill(Matrix& m)
 {
+    // Matrices are not initialized by default
+    m= 0.0;
+
     // Type of m's elements
     typedef typename Collection<Matrix>::value_type value_type;
 

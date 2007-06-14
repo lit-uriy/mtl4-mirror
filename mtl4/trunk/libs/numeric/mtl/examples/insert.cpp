@@ -8,6 +8,9 @@ using namespace mtl;
 template <typename Matrix>
 void fill(Matrix& m)
 {
+    // Matrices are not initialized by default
+    m= 0.0;
+
     // Create inserter for matrix m
     matrix::inserter<Matrix> ins(m);
     
