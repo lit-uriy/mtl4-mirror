@@ -46,9 +46,10 @@ inline one_norm(const Value& value)
 
 /*! One-norm for vectors and matrices: one_norm(x) \f$\rightarrow |x|_1\f$.
     \retval The magnitude type of the respective value type, see Magnitude.
+
     The norms are defined
     - For vectors: \f$|v|_1=\sum_i |v_i|\f$; and
-    - For matrices: \f$|A|_1=\max_j\{sum_i(|A_{ij}|)\}\f$.
+    - For matrices: \f$|A|_1=\max_j\{\sum_i(|A_{ij}|)\}\f$.
 
     Vector norms are unrolled 8-fold by default. 
     An n-fold unrolling can be generated with one_norm<n>(x).

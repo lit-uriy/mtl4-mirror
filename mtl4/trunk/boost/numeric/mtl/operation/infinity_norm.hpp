@@ -48,9 +48,10 @@ inline infinity_norm(const Value& value)
 
 /*! Infinity-norm for vectors and matrices: infinity_norm(x) \f$\rightarrow |x|_\infty\f$.
     \retval The magnitude type of the respective value type, see Magnitude.
+
     The norms are defined
     - For vectors: \f$|v|_\infty=\max_i |v_i|\f$; and
-    - For matrices: \f$|A|_\infty=\max_i\{sum_j(|A_{ij}|)\}\f$.
+    - For matrices: \f$|A|_\infty=\max_i\{\sum_j(|A_{ij}|)\}\f$.
 
     Vector norms are unrolled 8-fold by default. 
     An n-fold unrolling can be generated with infinity_norm<n>(x).

@@ -34,18 +34,18 @@ const double max_time= 900;
     // Bitmasks: 
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
 	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
-	doppler_16_row_mask= generate_mask<true, 4, row_major, 0>::value,
-	doppler_16_col_mask= generate_mask<true, 4, col_major, 0>::value,
-	doppler_32_row_mask= generate_mask<true, 5, row_major, 0>::value,
-	doppler_32_col_mask= generate_mask<true, 5, col_major, 0>::value,
-	doppler_z_32_row_mask= generate_mask<false, 5, row_major, 0>::value,
-	doppler_z_32_col_mask= generate_mask<false, 5, col_major, 0>::value,
-	doppler_64_row_mask= generate_mask<true, 6, row_major, 0>::value,
-	doppler_64_col_mask= generate_mask<true, 6, col_major, 0>::value,
-	doppler_z_64_row_mask= generate_mask<false, 6, row_major, 0>::value,
-	doppler_z_64_col_mask= generate_mask<false, 6, col_major, 0>::value,
-	doppler_128_row_mask= generate_mask<true, 7, row_major, 0>::value,
-	doppler_128_col_mask= generate_mask<true, 7, col_major, 0>::value,
+	doppled_16_row_mask= generate_mask<true, 4, row_major, 0>::value,
+	doppled_16_col_mask= generate_mask<true, 4, col_major, 0>::value,
+	doppled_32_row_mask= generate_mask<true, 5, row_major, 0>::value,
+	doppled_32_col_mask= generate_mask<true, 5, col_major, 0>::value,
+	doppled_z_32_row_mask= generate_mask<false, 5, row_major, 0>::value,
+	doppled_z_32_col_mask= generate_mask<false, 5, col_major, 0>::value,
+	doppled_64_row_mask= generate_mask<true, 6, row_major, 0>::value,
+	doppled_64_col_mask= generate_mask<true, 6, col_major, 0>::value,
+	doppled_z_64_row_mask= generate_mask<false, 6, row_major, 0>::value,
+	doppled_z_64_col_mask= generate_mask<false, 6, col_major, 0>::value,
+	doppled_128_row_mask= generate_mask<true, 7, row_major, 0>::value,
+	doppled_128_col_mask= generate_mask<true, 7, col_major, 0>::value,
 	shark_32_row_mask= generate_mask<true, 5, row_major, 1>::value,
 	shark_32_col_mask= generate_mask<true, 5, col_major, 1>::value,
 	shark_z_32_row_mask= generate_mask<false, 5, row_major, 1>::value,
@@ -137,9 +137,9 @@ struct no_inline3<Functor, void, Arg1, Arg2, Arg3>
 #endif
 
 #if 0
-void hybrid_ext_mult_44(const morton_dense<double,  doppler_64_row_mask>& a, 
-			const morton_dense<double,  doppler_64_col_mask>& b,
-			morton_dense<double,  doppler_64_row_mask>& c);
+void hybrid_ext_mult_44(const morton_dense<double,  doppled_64_row_mask>& a, 
+			const morton_dense<double,  doppled_64_col_mask>& b,
+			morton_dense<double,  doppled_64_row_mask>& c);
 #endif
 
 void dense_ext_mult_44(const dense2D<double>& a,
@@ -149,9 +149,9 @@ void dense_ext_mult_44(const dense2D<double>& a,
 struct ext_mult_44
 {
 #if 0
-    void operator()(const morton_dense<double,  doppler_64_row_mask>& a, 
-		    const morton_dense<double,  doppler_64_col_mask>& b,
-		    morton_dense<double,  doppler_64_row_mask>& c)
+    void operator()(const morton_dense<double,  doppled_64_row_mask>& a, 
+		    const morton_dense<double,  doppled_64_col_mask>& b,
+		    morton_dense<double,  doppled_64_row_mask>& c)
     {
 	hybrid_ext_mult_44(a, b, c);
     }
@@ -255,8 +255,8 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix,
 
 void measure_unrolling_hybrid(unsigned size, std::vector<int>& enabled)
 {
-    morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
-    morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
+    morton_dense<double,  doppled_64_row_mask>     d64r(4, 4);
+    morton_dense<double,  doppled_64_col_mask>     d64c(4, 4);
     measure_unrolling(size, enabled, d64r, d64c);
 }
 

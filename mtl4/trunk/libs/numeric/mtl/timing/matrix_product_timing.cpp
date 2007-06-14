@@ -140,9 +140,9 @@ void measure_morton_order(unsigned size, std::vector<int>& enabled)
 void measure_cast(unsigned size, std::vector<int>& enabled)
 {
     morton_dense<double,  morton_mask>             mda(4, 4), mdb(4, 4), mdc(4, 4);
-    morton_dense<double,  doppler_32_row_mask>     d32ra(4, 4), d32rb(4, 4), d32rc(4, 4);
-    morton_dense<double,  doppler_64_row_mask>     d64ra(4, 4), d64rb(4, 4), d64rc(4, 4);
-    morton_dense<double,  doppler_64_col_mask>     d64ca(4, 4), d64cb(4, 4), d64cc(4, 4); 
+    morton_dense<double,  doppled_32_row_mask>     d32ra(4, 4), d32rb(4, 4), d32rc(4, 4);
+    morton_dense<double,  doppled_64_row_mask>     d64ra(4, 4), d64rb(4, 4), d64rc(4, 4);
+    morton_dense<double,  doppled_64_col_mask>     d64ca(4, 4), d64cb(4, 4), d64cc(4, 4); 
     
     rec_mult_t  mult;
     std::cout << size << ", ";
@@ -160,8 +160,8 @@ void measure_cast(unsigned size, std::vector<int>& enabled)
 
 void measure_with_unroll(unsigned size, std::vector<int>& enabled)
 {
-    morton_dense<double,  doppler_32_row_mask>     d32r(4, 4);
-    morton_dense<double,  doppler_32_col_mask>     d32c(4, 4);
+    morton_dense<double,  doppled_32_row_mask>     d32r(4, 4);
+    morton_dense<double,  doppled_32_col_mask>     d32c(4, 4);
 
     std::cout << size << ", ";
 
@@ -184,10 +184,10 @@ void measure_with_unroll(unsigned size, std::vector<int>& enabled)
 
 void measure_base_size(unsigned size, std::vector<int>& enabled)
 {
-    morton_dense<double,  doppler_16_row_mask>     d16r(4, 4);
-    morton_dense<double,  doppler_32_row_mask>     d32r(4, 4);
-    morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
-    morton_dense<double,  doppler_128_col_mask>    d128r(4, 4);
+    morton_dense<double,  doppled_16_row_mask>     d16r(4, 4);
+    morton_dense<double,  doppled_32_row_mask>     d32r(4, 4);
+    morton_dense<double,  doppled_64_row_mask>     d64r(4, 4);
+    morton_dense<double,  doppled_128_col_mask>    d128r(4, 4);
     
     std::cout << size << ", ";
 
@@ -256,8 +256,8 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix,
 
 void measure_unrolling_hybrid(unsigned size, std::vector<int>& enabled)
 {
-    morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
-    morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
+    morton_dense<double,  doppled_64_row_mask>     d64r(4, 4);
+    morton_dense<double,  doppled_64_col_mask>     d64c(4, 4);
     measure_unrolling(size, enabled, d64r, d64c);
 }
 
@@ -273,8 +273,8 @@ void measure_orientation(unsigned size, std::vector<int>& enabled)
 {
     std::cout << size << ", ";
  
-    morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
-    morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
+    morton_dense<double,  doppled_64_row_mask>     d64r(4, 4);
+    morton_dense<double,  doppled_64_col_mask>     d64c(4, 4);
 
     typedef gen_tiling_dense_mat_mat_mult_t<4, 2, ama_t>  tiling_m42_base_mult_t;
     gen_recursive_dense_mat_mat_mult_t<tiling_m42_base_mult_t> mult_m42;
@@ -323,8 +323,8 @@ void measure_unrolling_32(unsigned size, std::vector<int>& enabled)
     gen_recursive_dense_mat_mat_mult_t<tiling_m44_base_mult_t, test32_t> mult_m44;
 
     
-    morton_dense<double,  doppler_32_row_mask>     d32r(4, 4);
-    morton_dense<double,  doppler_32_col_mask>     d32c(4, 4);
+    morton_dense<double,  doppled_32_row_mask>     d32r(4, 4);
+    morton_dense<double,  doppled_32_col_mask>     d32c(4, 4);
 
 
     single_measure(d32r, d32c, d32r, mult, size, enabled, 0);
@@ -359,17 +359,17 @@ void measure_hetero_value(unsigned size, std::vector<int>& enabled)
     dense2D<complex<double>, matrix::parameters<col_major> >  zc(4, 4);
     dense2D<complex<double>, matrix::parameters<row_major> >  zr(4, 4);
 
-    morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
-    morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
+    morton_dense<double,  doppled_64_row_mask>     d64r(4, 4);
+    morton_dense<double,  doppled_64_col_mask>     d64c(4, 4);
     
-    morton_dense<float,  doppler_64_row_mask>     f64r(4, 4);
-    morton_dense<float,  doppler_64_col_mask>     f64c(4, 4);
+    morton_dense<float,  doppled_64_row_mask>     f64r(4, 4);
+    morton_dense<float,  doppled_64_col_mask>     f64c(4, 4);
 
-    morton_dense<complex<float>,  doppler_64_row_mask>     c64r(4, 4);
-    morton_dense<complex<float>,  doppler_64_col_mask>     c64c(4, 4);
+    morton_dense<complex<float>,  doppled_64_row_mask>     c64r(4, 4);
+    morton_dense<complex<float>,  doppled_64_col_mask>     c64c(4, 4);
 
-    morton_dense<complex<double>,  doppler_64_row_mask>     z64r(4, 4);
-    morton_dense<complex<double>,  doppler_64_col_mask>     z64c(4, 4);
+    morton_dense<complex<double>,  doppled_64_row_mask>     z64r(4, 4);
+    morton_dense<complex<double>,  doppled_64_col_mask>     z64c(4, 4);
 
     std::cout << size << ", ";
 
@@ -399,17 +399,17 @@ void measure_hetero_layout(unsigned size, std::vector<int>& enabled)
     dense2D<complex<double>, matrix::parameters<col_major> >  zc(4, 4);
     dense2D<complex<double>, matrix::parameters<row_major> >  zr(4, 4);
 
-    morton_dense<double,  doppler_64_row_mask>     d64r(4, 4);
-    morton_dense<double,  doppler_64_col_mask>     d64c(4, 4);
+    morton_dense<double,  doppled_64_row_mask>     d64r(4, 4);
+    morton_dense<double,  doppled_64_col_mask>     d64c(4, 4);
     
-    morton_dense<float,  doppler_64_row_mask>     f64r(4, 4);
-    morton_dense<float,  doppler_64_col_mask>     f64c(4, 4);
+    morton_dense<float,  doppled_64_row_mask>     f64r(4, 4);
+    morton_dense<float,  doppled_64_col_mask>     f64c(4, 4);
 
-    morton_dense<complex<float>,  doppler_64_row_mask>     c64r(4, 4);
-    morton_dense<complex<float>,  doppler_64_col_mask>     c64c(4, 4);
+    morton_dense<complex<float>,  doppled_64_row_mask>     c64r(4, 4);
+    morton_dense<complex<float>,  doppled_64_col_mask>     c64c(4, 4);
 
-    morton_dense<complex<double>,  doppler_64_row_mask>     z64r(4, 4);
-    morton_dense<complex<double>,  doppler_64_col_mask>     z64c(4, 4);
+    morton_dense<complex<double>,  doppled_64_row_mask>     z64r(4, 4);
+    morton_dense<complex<double>,  doppled_64_col_mask>     z64c(4, 4);
 
     std::cout << size << ", ";
 

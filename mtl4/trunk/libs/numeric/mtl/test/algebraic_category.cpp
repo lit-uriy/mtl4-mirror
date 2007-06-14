@@ -59,7 +59,7 @@ int test_main(int argc, char* argv[])
     dense2D<double>                                      dr(size, size);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
     morton_dense<double, recursion::morton_z_mask>       mzd(size, size);
-    morton_dense<double, recursion::doppler_2_row_mask>  d2r(size, size);
+    morton_dense<double, recursion::doppled_2_row_mask>  d2r(size, size);
     compressed2D<double>                                 cr(size, size);
     compressed2D<double, matrix::parameters<col_major> > cc(size, size);
 
