@@ -9,19 +9,22 @@
 
 namespace mtl {
 
-// Fills a matrix A with a_ij = factor * (i + j)
-// Only to be used for dense matrices
-// Would work on sparse matrices with inserter but would be very expensive
-template <typename Matrix, typename Value>
-void fill_hessian_matrix(Matrix& matrix, Value factor)
-{
-    typedef typename Matrix::value_type    value_type;
-    typedef typename Matrix::size_type     size_type;
-    for (size_type r= matrix.begin_row(); r < matrix.end_row(); r++)
-	for (size_type c= matrix.begin_col(); c < matrix.end_col(); c++)
-	    matrix[r][c]= factor * (value_type(r) + value_type(c));
-}
+    namespace matrix {
+	// Fills a matrix A with a_ij = factor * (i + j)
+	// Only to be used for dense matrices
+	// Would work on sparse matrices with inserter but would be very expensive
+	template <typename Matrix, typename Value>
+	void hessian_setup(Matrix& matrix, Value factor)
+	{
+	    typedef typename Matrix::value_type    value_type;
+	    typedef typename Matrix::size_type     size_type;
+	    for (size_type r= matrix.begin_row(); r < matrix.end_row(); r++)
+		for (size_type c= matrix.begin_col(); c < matrix.end_col(); c++)
+		    matrix[r][c]= factor * (value_type(r) + value_type(c));
+	}
+    }
 
+    using matrix::hessian_setup;
 
 namespace impl {
 

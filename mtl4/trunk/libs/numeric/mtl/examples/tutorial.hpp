@@ -464,7 +464,7 @@ the same way.
 If we cannot handle sparse matrices like dense (at least not efficiently), we
 can treat dense matrices like sparse ones.
 For performance reasons, matrices are not initialized by default. 
-Therefore, the first operation in fill is to set the matrix to zero.
+Therefore, the first operation in the function fill is to set the matrix to zero.
 
 
 Internally the inserters for dense and sparse matrices are implemented completely
@@ -510,6 +510,38 @@ element_matrix() and element_array().
 The following program illustrates how to use them:
 
 \include element_matrix.cpp
+
+The function element_array is designed for element matrices that are stored as 
+a 2D C array.
+The entries of such an element %matrix are accessed by A[i][j],
+while the entries are accessed by A(i, j) if the function element_matrix is used.
+Element matrices stored in MTL4 types can be accessed both ways and either
+element_array or element_matrix can be used.
+
+Both functions can be called with two or three arguments.
+In the former case the first argument is the element matrix and the second argument
+a vector containing the indices that correspond to the rows and columns of the
+assembled matrix.
+With three arguments, the second one is a vector of row indices and the third one
+a vector with column indices.
+Evidently, the size of the vector with the row/column indices should be equal to the
+number of rows/columns of the element matrix.
+
+The vector type must provide a member function size and a bracket operator.
+Thus, mtl::dense_vector and std::vector can used (are models).
+
+
+
+Proceed to \ref matrix_functions "matrix functions".  
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page matrix_functions Matrix functions
+
+
 
 
 */

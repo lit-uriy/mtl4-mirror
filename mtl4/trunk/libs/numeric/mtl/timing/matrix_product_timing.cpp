@@ -98,8 +98,8 @@ void single_measure(MatrixA&, MatrixB&, MatrixC&, Mult mult, unsigned size, std:
     MatrixA a(size, size);
     MatrixB b(size, size);
     MatrixC c(size, size);
-    fill_hessian_matrix(a, 1.0);
-    fill_hessian_matrix(b, 1.0);
+    hessian_setup(a, 1.0);
+    hessian_setup(b, 1.0);
 
     if (enabled[i]) {
 	int reps= 0;
