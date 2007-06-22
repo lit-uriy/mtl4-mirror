@@ -1,6 +1,7 @@
 Import('opt_env check')
 
 sources = Split("""cg_test.cpp
+	           bicg_test.cpp
 """)
 
 
