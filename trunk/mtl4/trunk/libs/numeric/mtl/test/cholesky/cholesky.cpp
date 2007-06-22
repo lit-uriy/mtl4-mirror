@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
-#include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
+#include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/for_each.hpp>
 
@@ -89,14 +89,14 @@ void fill_matrix(Matrix& matrix){
 }
 
 
-template <typename Recurator>
-void schur(Recurator E, Recurator W, Recurator N)
+template <typename Recursator>
+void schur(Recursator E, Recursator W, Recursator N)
 {
   if (E.is_empty() || W.is_empty() || N.is_empty())
     return;
 
   if(is_base(E)){
-     typename Recurator::matrix_type  base_E(E.get_value()), base_W(W.get_value()),base_N(N.get_value());
+     typename Recursator::matrix_type  base_E(E.get_value()), base_W(W.get_value()),base_N(N.get_value());
      schur_base(base_E, base_W, base_N);
   }
   else{
@@ -118,14 +118,14 @@ void schur(Recurator E, Recurator W, Recurator N)
 
 
 
-template <typename Recurator>
-void tri_solve(Recurator S, Recurator N)
+template <typename Recursator>
+void tri_solve(Recursator S, Recursator N)
 {
   if (S.is_empty())
     return;
 
   if(is_base(S)){   
-     typename Recurator::matrix_type  base_S(S.get_value()), base_N(N.get_value());
+     typename Recursator::matrix_type  base_S(S.get_value()), base_N(N.get_value());
      tri_solve_base(base_S, base_N);
   }
   else{ 
@@ -147,14 +147,14 @@ void tri_solve(Recurator S, Recurator N)
 
 
 
-template <typename Recurator>
-void tri_schur(Recurator E, Recurator W)
+template <typename Recursator>
+void tri_schur(Recursator E, Recursator W)
 { 
   if (E.is_empty() || W.is_empty())
     return;
 
   if(is_base(W)){
-     typename Recurator::matrix_type  base_E(E.get_value()), base_W(W.get_value());
+     typename Recursator::matrix_type  base_E(E.get_value()), base_W(W.get_value());
      tri_schur_base(base_E, base_W);
   }
   else{ 
@@ -173,26 +173,26 @@ void tri_schur(Recurator E, Recurator W)
 }
 
  
-template <typename Recurator>
+template <typename Recursator>
 void
-do_cholesky (Recurator recurator)
+do_cholesky (Recursator recursator)
 {
-  if (recurator.is_empty())
+  if (recursator.is_empty())
     return;
 
-  if (is_base (recurator)){    
-      typename Recurator::matrix_type  base_matrix(recurator.get_value());
+  if (is_base (recursator)){    
+      typename Recursator::matrix_type  base_matrix(recursator.get_value());
       do_cholesky_base (base_matrix);      
   }
   else{
 
-    do_cholesky(recurator.north_west()     );
+    do_cholesky(recursator.north_west()     );
       
-      tri_solve(recurator.south_west()     ,recurator.north_west()     );
+      tri_solve(recursator.south_west()     ,recursator.north_west()     );
 
-      tri_schur(     recurator.south_east(),recurator.south_west()     );
+      tri_schur(     recursator.south_east(),recursator.south_west()     );
 
-    do_cholesky(     recurator.south_east());
+    do_cholesky(     recursator.south_east());
 
   }
 }
@@ -214,14 +214,14 @@ int test_main(int argc, char* argv[])
   
   fill_matrix(matrix); 
   // test_sub_matrix(matrix);
-  recursion::matrix_recurator<matrix_type> recurator(matrix);
+  recursion::matrix_recursator<matrix_type> recursator(matrix);
   // print_matrix(matrix);
   time (&starttime);
   timeinfo = localtime (&starttime);
   printf("----------order = %d      Basecase = %d  -------------------->Start date and time are: %s",
      order, basecasesize, asctime (timeinfo));
 					  
-  do_cholesky(recurator); 
+  do_cholesky(recursator); 
   
   
   //    cout << "\n=============================\n"	 <<   "Again with cholesky\n"	 <<   "=============================\n\n";

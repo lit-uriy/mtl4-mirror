@@ -11,7 +11,7 @@
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
-#include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
+#include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/for_each.hpp>
 
@@ -20,56 +20,56 @@ using namespace mtl;
 using namespace std;  
 
 
-template <typename Recurator>
-void print_depth_first(Recurator const& recurator, string str)
+template <typename Recursator>
+void print_depth_first(Recursator const& recursator, string str)
 {
     cout << "\nRecursion: " << str << endl;
-    print_matrix_row_cursor(recurator.get_value());
+    print_matrix_row_cursor(recursator.get_value());
   
     // for full recursion remove the string length limitation
-    if (!recurator.is_leaf()) { // && str.length() < 20) {     
-	if (!recurator.north_west_empty())
-	    print_depth_first(recurator.north_west(), string("north west of ") + str);
-	if (!recurator.south_west_empty())
-	    print_depth_first(recurator.south_west(), string("south west of ") + str);
-	if (!recurator.north_east_empty())
-	    print_depth_first(recurator.north_east(), string("north east of ") + str);
-	if (!recurator.south_east_empty())
-	    print_depth_first(recurator.south_east(), string("south east of ") + str);
+    if (!recursator.is_leaf()) { // && str.length() < 20) {     
+	if (!recursator.north_west_empty())
+	    print_depth_first(recursator.north_west(), string("north west of ") + str);
+	if (!recursator.south_west_empty())
+	    print_depth_first(recursator.south_west(), string("south west of ") + str);
+	if (!recursator.north_east_empty())
+	    print_depth_first(recursator.north_east(), string("north east of ") + str);
+	if (!recursator.south_east_empty())
+	    print_depth_first(recursator.south_east(), string("south east of ") + str);
     }
 } 
 
 
-template <typename Recurator, typename BaseCaseTest>
-void recursive_print(Recurator const& recurator, string str, BaseCaseTest const& is_base)
+template <typename Recursator, typename BaseCaseTest>
+void recursive_print(Recursator const& recursator, string str, BaseCaseTest const& is_base)
 {
-    if (is_base(recurator)) {
+    if (is_base(recursator)) {
 	cout << "\nBase case: " << str << endl;
-	print_matrix_row_cursor(recurator.get_value());
+	print_matrix_row_cursor(recursator.get_value());
     } else {
-	recursive_print(recurator.north_west(), string("north west of ") + str, is_base);
-	recursive_print(recurator.south_west(), string("south west of ") + str, is_base);
-	recursive_print(recurator.north_east(), string("north east of ") + str, is_base);
-	recursive_print(recurator.south_east(), string("south east of ") + str, is_base);
+	recursive_print(recursator.north_west(), string("north west of ") + str, is_base);
+	recursive_print(recursator.south_west(), string("south west of ") + str, is_base);
+	recursive_print(recursator.north_east(), string("north east of ") + str, is_base);
+	recursive_print(recursator.south_east(), string("south east of ") + str, is_base);
     }
 } 
 
 
-template <typename Recurator, typename BaseCaseTest>
-void recursive_print_checked(Recurator const& recurator, string str, BaseCaseTest const& is_base)
+template <typename Recursator, typename BaseCaseTest>
+void recursive_print_checked(Recursator const& recursator, string str, BaseCaseTest const& is_base)
 {
-    if (is_base(recurator)) {
+    if (is_base(recursator)) {
 	cout << "\nBase case: " << str << endl;
-	print_matrix_row_cursor(recurator.get_value());
+	print_matrix_row_cursor(recursator.get_value());
     } else {
-	if (!recurator.north_west_empty())
-	    recursive_print_checked(recurator.north_west(), string("north west of ") + str, is_base);
-	if (!recurator.south_west_empty())
-	    recursive_print_checked(recurator.south_west(), string("south west of ") + str, is_base);
-	if (!recurator.north_east_empty())
-	    recursive_print_checked(recurator.north_east(), string("north east of ") + str, is_base);
-	if (!recurator.south_east_empty())
-	    recursive_print_checked(recurator.south_east(), string("south east of ") + str, is_base);
+	if (!recursator.north_west_empty())
+	    recursive_print_checked(recursator.north_west(), string("north west of ") + str, is_base);
+	if (!recursator.south_west_empty())
+	    recursive_print_checked(recursator.south_west(), string("south west of ") + str, is_base);
+	if (!recursator.north_east_empty())
+	    recursive_print_checked(recursator.north_east(), string("north east of ") + str, is_base);
+	if (!recursator.south_east_empty())
+	    recursive_print_checked(recursator.south_east(), string("south east of ") + str, is_base);
     }
 } 
 
@@ -93,9 +93,9 @@ void test_sub_matrix(Matrix& matrix)
     // recursion::min_dim_test             is_base(2);
     // recursion::undivisible_min_dim_test is_base(2);
     recursion::max_dim_test             is_base(2);
-    recursion::matrix_recurator<Matrix> recurator(matrix);
-    // print_depth_first(recurator, "");
-    recursive_print_checked(recurator, "", is_base);
+    recursion::matrix_recursator<Matrix> recursator(matrix);
+    // print_depth_first(recursator, "");
+    recursive_print_checked(recursator, "", is_base);
 	 
 #if 0 
     cout << "\n====================\n"
@@ -105,15 +105,15 @@ void test_sub_matrix(Matrix& matrix)
     transposed_view<Matrix> trans_matrix(matrix);
 
     print_matrix_row_cursor(trans_matrix); 
-    recursion::matrix_recurator< transposed_view<Matrix> > trans_recurator(trans_matrix);
-    // print_depth_first(trans_recurator, "");
-    recursive_print_checked(trans_recurator, "", is_base);
+    recursion::matrix_recursator< transposed_view<Matrix> > trans_recursator(trans_matrix);
+    // print_depth_first(trans_recursator, "");
+    recursive_print_checked(trans_recursator, "", is_base);
 	 
     cout << "\n=============================\n"
 	 <<   "Again with recursive for_each\n"
 	 <<   "=============================\n\n";
 
-    recursion::for_each(trans_recurator, print_functor(), is_base);
+    recursion::for_each(trans_recursator, print_functor(), is_base);
 #endif
 }
 

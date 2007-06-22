@@ -8,7 +8,7 @@
 #include <boost/numeric/mtl/matrix/morton_dense.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
-#include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
+#include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
 
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>

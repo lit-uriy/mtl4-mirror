@@ -3,6 +3,7 @@
 #ifndef MTL_DETAIL_RANGE_GENERATOR_INCLUDE
 #define MTL_DETAIL_RANGE_GENERATOR_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 
@@ -112,6 +113,25 @@ namespace mtl { namespace traits { namespace detail {
 	type end(Matrix const& c)
 	{
 	    return type(c.end_col(), c);
+	}
+    };
+
+    // Use RangeGenerator for Collection by applying to .ref
+    template <typename Collection, typename RangeGenerator>
+    struct referred_range_generator
+    {
+	typedef typename RangeGenerator::complexity complexity;
+	static int const                            level = RangeGenerator::level;
+	typedef typename RangeGenerator::type       type;
+	
+	type begin(const Collection& c)
+	{
+	    return RangeGenerator().begin(c.ref);
+	}
+
+	type end(const Collection& c)
+	{
+	    return RangeGenerator().end(c.ref);
 	}
     };
 

@@ -168,18 +168,58 @@ inline size(const map_view<Functor, Matrix>& matrix)
 
 namespace mtl { namespace traits {
 
+    namespace detail {
+
+	template <typename Functor, typename Matrix> 
+	struct mapped_row
+	{
+	    typedef typename Matrix::key_type   key_type;
+	    typedef typename Matrix::size_type  size_type;
+    	
+	    explicit mapped_row(const matrix::map_view<Functor, Matrix>& view) : its_row(view.ref) {}
+
+	    size_type operator() (key_type const& key) const
+	    {
+		return its_row(key);
+	    }
+
+	  protected:
+	    typename row<Matrix>::type  its_row;
+        };
+
+
+        template <typename Functor, typename Matrix> 
+        struct mapped_col
+        {
+	    typedef typename Matrix::key_type   key_type;
+	    typedef typename Matrix::size_type  size_type;
+    	
+	    mapped_col(const matrix::map_view<Functor, Matrix>& view) : its_col(view.ref) {}
+
+	    size_type operator() (key_type const& key) const
+	    {
+		return its_col(key);
+	    }
+
+          protected:
+	    typename col<Matrix>::type  its_col;
+        };
+	
+    } // namespace detail
+        
     template <typename Functor, typename Matrix> 
     struct row<matrix::map_view<Functor, Matrix> >
-	: public row<Matrix>
-    {};
+    {
+	typedef detail::mapped_row<Functor, Matrix>   type;
+    };
 
     template <typename Functor, typename Matrix> 
     struct col<matrix::map_view<Functor, Matrix> >
-	: public col<Matrix>
-    {};
+    {
+	typedef detail::mapped_col<Functor, Matrix>   type;
+    };
 
-
-   template <typename Functor, typename Matrix> 
+    template <typename Functor, typename Matrix> 
     struct const_value<matrix::map_view<Functor, Matrix> >
     {
 	typedef matrix::detail::map_value<Functor, Matrix>  type;
@@ -193,7 +233,15 @@ namespace mtl { namespace traits {
     // Use range_generator of original matrix
     template <typename Tag, typename Functor, typename Matrix> 
     struct range_generator<Tag, matrix::map_view<Functor, Matrix> >
-	: public range_generator<Tag, Matrix>
+	: public detail::referred_range_generator<matrix::map_view<Functor, Matrix>, 
+						  range_generator<Tag, Matrix> >
+    {};
+
+    // To disambigue
+    template <typename Functor, typename Matrix> 
+    struct range_generator<tag::major, matrix::map_view<Functor, Matrix> >
+	: public detail::referred_range_generator<matrix::map_view<Functor, Matrix>, 
+						  range_generator<tag::major, Matrix> >
     {};
 
 

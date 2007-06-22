@@ -164,10 +164,10 @@ void test_compressed2D(char const* name)
 
 int test_main(int argc, char* argv[])
 {
-    test_compressed2D<row_major, mtl::index::c_index>("CRS C");
-    test_compressed2D<row_major, mtl::index::f_index>("CRS F");
-    test_compressed2D<col_major, mtl::index::c_index>("CCS C");
-    test_compressed2D<col_major, mtl::index::f_index>("CCS F");
+    test_compressed2D<row_major, mtl::index::c_index>("CRS");
+    // test_compressed2D<row_major, mtl::index::f_index>("CRS Fortran"); deprecated
+    test_compressed2D<col_major, mtl::index::c_index>("CCS");
+    // test_compressed2D<col_major, mtl::index::f_index>("CCS Fortran"); deprecated
     
     return 0;
 }

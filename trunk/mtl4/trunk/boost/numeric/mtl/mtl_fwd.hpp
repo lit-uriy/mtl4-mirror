@@ -100,7 +100,16 @@ namespace mtl {
 	template <typename Collection> struct const_value;
 	template <typename Collection> struct row;
 	template <typename Collection> struct col;
+
+	template <typename Tag, typename Collection>  struct range_generator;
     }
+
+    template <class Tag, class Collection> typename traits::range_generator<Tag, Collection>::type 
+    begin(Collection const& c);
+    
+    template <class Tag, class Collection> typename traits::range_generator<Tag, Collection>::type 
+    end(Collection const& c);
+
 
     /// Namespace for functors with application operator and fully typed paramaters
     namespace tfunctor {
@@ -139,7 +148,7 @@ namespace mtl {
     /// Namespace for %utilities
     namespace utility {}
 
-    /// Namespace for implementations using recurators
+    /// Namespace for implementations using recursators
     namespace wrec {}
 
     namespace detail {
