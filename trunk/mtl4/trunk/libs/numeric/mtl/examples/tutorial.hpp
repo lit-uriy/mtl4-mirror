@@ -10,7 +10,7 @@ namespace mtl {
 
 /*! \mainpage MTL4 manual
 
-\author Peter Gottschling
+\author Peter Gottschling and Andrew Lumsdaine
 \date June 2007
 
 The %Matrix Template Library (incarnation) 4 is a generic library for linear
@@ -137,6 +137,10 @@ This tutorial introduces the user into:
 -# \subpage rich_vector_expr 
 -# \subpage matrix_types
 -# \subpage matrix_insertion
+-# \subpage matrix_functions
+-# \subpage matrix_expr 
+-# \subpage matrix_vector_functions 
+-# \subpage matrix_vector_expr 
 
 
 
@@ -177,7 +181,7 @@ The constructor in the example takes two arguments: the size and the
 initial value.
 
 Indices always start with zero.
-Earlier efforts to support one-based indices were abondoned because
+Earlier efforts to support one-based indices were abandoned because
 code became rather complicated when mixed indexing for different
 arguments of a function.
 We decided that the additional development
@@ -305,7 +309,7 @@ The presence of multiple operators, say n, in a single expression
 requires then the execution of n loops (possibly more to copy
 the temporaries on the stack).
 If the vectors are too large for the cache, values must be loaded
-repeatingly from slower memories.
+repeatedly from slower memories.
 Expression templates circumvent this repeated loading of vector
 elements by
 performing only one loop.
@@ -330,7 +334,7 @@ Unfortunately, this so-called loop fusion cannot be
 realized with expression templates.
 At least not when the loops are performed in the assignment.
 
-In colloboration with Karl Meerbergen, we developed expression
+In collaboration with Karl Meerbergen, we developed expression
 templates that can be nested, called rich expression templates.
 The following program shows some examples of rich expression
 templates:
@@ -346,7 +350,7 @@ The second statement fuses four vector expressions:
 -# u is incremented by the new value of v.
 
 Again, all these operations are performed in one loop and each vector
-element is acceessed exactly once.
+element is accessed exactly once.
 
 
 Proceed to \ref matrix_types "matrix types".  
@@ -412,7 +416,7 @@ is not supported.
 Especially for very large matrices, this would result in an
 unbearable performance burden.
 
-However, it is allowede to %assign a scalar value to the entire %matrix
+However, it is allowed to %assign a scalar value to the entire %matrix
 given it is square as in the example.
 %Matrix b is stored in compressed column storage (CCS).
 
@@ -493,7 +497,7 @@ regular matrix container.
 In most applications, an upper limit can be easily given.
 However, the limit is not that strict: if some rows need more memory than the slot size it only
 results in slightly higher memory need for the overflow container.
-If the number of elements per row is very irregular we recommand a slot size over the average
+If the number of elements per row is very irregular we recommend a slot size over the average
 (and maybe under the maximum).
 Since only a small part of the data is  copied during the compression, sparse matrices 
 can be created that fill almost the entire memory.
@@ -541,7 +545,12 @@ Proceed to \ref matrix_functions "matrix functions".
 
 /*! \page matrix_functions Matrix Functions
 
+Norms on matrices can be computed in the same fashion as on vectors:
 
+\include matrix_norms.cpp
+
+Another matrix function is the trace of a matrix: trace(A).
+More functions will be implemented in the future.
 
 
 Proceed to \ref matrix_expr "matrix expressions".  
@@ -577,7 +586,33 @@ The multiplication  can be executed with the function mult
 where the first two arguments are the operands and the third the result.
 Exactly the same is performed with the operator notation below.
 
+Products of three matrices are not supported.
+However, two-term products can be arbitrarily added and subtracted:
 
+\include matrix_mult_add.cpp
+
+Proceed to \ref matrix_vector_functions "matrix-vector functions"
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page matrix_vector_functions Matrix-Vector Functions
+
+rank_one_update and rank_two_update
+
+Proceed to \ref matrix_vector_expr "matrix-vector expressions".  
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page matrix_vector_expr Matrix-Vector Expressions
+
+y= A * x;
+y+= A * x;
 
 
 */
