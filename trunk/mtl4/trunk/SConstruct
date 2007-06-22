@@ -265,5 +265,6 @@ SConscript(['libs/numeric/mtl/build/SConscript',
             'libs/numeric/mtl/test/SConscript', 
             'libs/numeric/mtl/examples/SConscript', 
             'libs/numeric/mtl/experimental/SConscript',
-            'libs/numeric/mtl/timing/SConscript'])
+            'libs/numeric/mtl/timing/SConscript', 
+            'libs/numeric/itl/SConscript'])
 
