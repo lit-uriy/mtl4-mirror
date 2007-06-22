@@ -17,7 +17,7 @@
 #include <boost/numeric/meta_math/loop.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
-#include <boost/numeric/mtl/recursion/matrix_recurator.hpp>
+#include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
 #include <boost/numeric/mtl/recursion/base_case_cast.hpp>
 #include <boost/numeric/mtl/interface/blas.hpp>
 
@@ -905,10 +905,10 @@ private:
 	// Make sure that mult functor of basecase has appropriate assign mode (in all nestings)
 	// i.e. replace assign::assign_sum by assign::plus_sum including backup functor
 	
-	using recursion::matrix_recurator;
-	matrix_recurator<MatrixA>    rec_a(a);
-	matrix_recurator<MatrixB>    rec_b(b);
-	matrix_recurator<MatrixC>    rec_c(c);
+	using recursion::matrix_recursator;
+	matrix_recursator<MatrixA>    rec_a(a);
+	matrix_recursator<MatrixB>    rec_b(b);
+	matrix_recursator<MatrixC>    rec_c(c);
 	equalize_depth(rec_a, rec_b, rec_c);
 
 	wrec::gen_dmat_dmat_mult_t<BaseMult, BaseTest>() (rec_a, rec_b, rec_c);

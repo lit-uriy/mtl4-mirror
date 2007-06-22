@@ -103,21 +103,21 @@ private:
 };
 
 
-// Splitting within bounding box of power of 2, using recurators
+// Splitting within bounding box of power of 2, using recursators
 // For instance, the upper left part of a 530 x 17 matrix is
 //   530 x 17   if the bound is 2048 or larger
 //   512 x 17   if the bound is 1024
 //                 bound of 512 or smaller is a wrong bound
-template <typename Recurator>
+template <typename Recursator>
 struct outer_bound_splitter
 {
-    typedef typename Recurator::size_type                            size_type;
+    typedef typename Recursator::size_type                            size_type;
 
-    explicit outer_bound_splitter(Recurator const& recurator) 
+    explicit outer_bound_splitter(Recursator const& recursator) 
     {
-	typename Recurator::matrix_type const& matrix= recurator.get_value();
-	my_row_split= std::min(matrix.begin_row() + recurator.bound() / 2, matrix.end_row());
-	my_col_split= std::min(matrix.begin_col() + recurator.bound() / 2, matrix.end_col());
+	typename Recursator::matrix_type const& matrix= recursator.get_value();
+	my_row_split= std::min(matrix.begin_row() + recursator.bound() / 2, matrix.end_row());
+	my_col_split= std::min(matrix.begin_col() + recursator.bound() / 2, matrix.end_col());
     }
 
 

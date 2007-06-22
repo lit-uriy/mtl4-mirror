@@ -12,11 +12,11 @@ struct min_dim_test
 {
     min_dim_test(std::size_t comp) : comp(comp) {}
 
-    template <typename Recurator>
-    bool operator() (Recurator const& recurator) const
+    template <typename Recursator>
+    bool operator() (Recursator const& recursator) const
     {
-	return std::min(recurator.get_value().num_rows(), 
-			recurator.get_value().num_cols()) 
+	return std::min(recursator.get_value().num_rows(), 
+			recursator.get_value().num_cols()) 
 	       <= comp;
     }
 
@@ -31,13 +31,13 @@ struct undivisible_min_dim_test
 {
     undivisible_min_dim_test(std::size_t comp) : comp(comp) {}
 
-    template <typename Recurator>
-    bool operator() (Recurator const& recurator) const
+    template <typename Recursator>
+    bool operator() (Recursator const& recursator) const
     {
-	std::size_t min_dim= std::min(recurator.get_value().num_rows(), 
-				      recurator.get_value().num_cols()),
-	            max_dim= std::max(recurator.get_value().num_rows(),
-				      recurator.get_value().num_cols());
+	std::size_t min_dim= std::min(recursator.get_value().num_rows(), 
+				      recursator.get_value().num_cols()),
+	            max_dim= std::max(recursator.get_value().num_rows(),
+				      recursator.get_value().num_cols());
 
 	return min_dim <= comp && 2 * min_dim > max_dim;
     }
@@ -52,11 +52,11 @@ struct max_dim_test
 {
     max_dim_test(std::size_t comp) : comp(comp) {}
 
-    template <typename Recurator>
-    bool operator() (Recurator const& recurator) const
+    template <typename Recursator>
+    bool operator() (Recursator const& recursator) const
     {
-	return std::max(recurator.get_value().num_rows(), 
-			recurator.get_value().num_cols()) 
+	return std::max(recursator.get_value().num_rows(), 
+			recursator.get_value().num_cols()) 
 	       <= comp;
     }
 
@@ -71,25 +71,25 @@ struct max_dim_test_static
 {
     static const unsigned long base_case_size= BaseCaseSize;
 
-    template <typename Recurator>
-    bool operator() (Recurator const& recurator) const
+    template <typename Recursator>
+    bool operator() (Recursator const& recursator) const
     {
-	return std::max(recurator.get_value().num_rows(), 
-			recurator.get_value().num_cols()) 
+	return std::max(recursator.get_value().num_rows(), 
+			recursator.get_value().num_cols()) 
 	       <= BaseCaseSize;
     }
 };
 
 
-// Upper bound of dimensions in recurator is less or equal to the reference value
+// Upper bound of dimensions in recursator is less or equal to the reference value
 struct bound_test
 {
     bound_test(std::size_t comp) : comp(comp) {}
 
-    template <typename Recurator>
-    bool operator() (Recurator const& recurator) const
+    template <typename Recursator>
+    bool operator() (Recursator const& recursator) const
     {
-	return recurator.bound() <= comp;
+	return recursator.bound() <= comp;
     }
 
 private:
@@ -103,10 +103,10 @@ struct bound_test_static
 {
     static const unsigned long base_case_size= BaseCaseSize;
 
-    template <typename Recurator>
-    bool operator() (Recurator const& recurator) const
+    template <typename Recursator>
+    bool operator() (Recursator const& recursator) const
     {
-	return recurator.bound() <= base_case_size;
+	return recursator.bound() <= base_case_size;
     }
 };
 

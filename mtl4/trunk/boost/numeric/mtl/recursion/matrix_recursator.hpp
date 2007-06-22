@@ -14,18 +14,18 @@
 namespace mtl { namespace recursion {
 
 
-template <typename Recurator1, typename Recurator2>
-void inline equalize_depth(Recurator1& r1, Recurator2& r2);
+template <typename Recursator1, typename Recursator2>
+void inline equalize_depth(Recursator1& r1, Recursator2& r2);
 
-template <typename Recurator1, typename Recurator2, typename Recurator3>
-void inline equalize_depth(Recurator1& r1, Recurator2& r2, Recurator3& r3);
+template <typename Recursator1, typename Recursator2, typename Recursator3>
+void inline equalize_depth(Recursator1& r1, Recursator2& r2, Recursator3& r3);
 
 
-// To use matrix_recurator with const matrices Reference must be 'Matrix const&'
+// To use matrix_recursator with const matrices Reference must be 'Matrix const&'
 template <typename Matrix>
-struct matrix_recurator
+struct matrix_recursator
 {
-    typedef matrix_recurator                                      self;
+    typedef matrix_recursator                                      self;
     typedef Matrix                                                matrix_type;
     typedef typename sub_matrix_t<Matrix>::sub_matrix_type        sub_matrix_type;
     typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type  const_sub_matrix_type;
@@ -60,7 +60,7 @@ public:
     // Constructor takes the whole matrix as sub-matrix
     // This allows to have different type for the matrix and the sub-matrix
     // This also enables matrices to have references as sub-matrices
-    explicit matrix_recurator(Matrix const& matrix, size_type bound= 0) 
+    explicit matrix_recursator(Matrix const& matrix, size_type bound= 0) 
 	: my_sub_matrix(constructor_helper(matrix)), my_bound(outer_bound(matrix)),
 	  my_first_row(0), my_first_col(0)         // splitter(*this)
     {
@@ -74,7 +74,7 @@ public:
     }
 
     // Sub-matrices are copied directly
-    // explicit matrix_recurator(sub_matrix_type sub_matrix) : my_sub_matrix(sub_matrix) {}
+    // explicit matrix_recursator(sub_matrix_type sub_matrix) : my_sub_matrix(sub_matrix) {}
     
 #if 0
     sub_matrix_type& get_value()
@@ -122,7 +122,7 @@ public:
 	return get_value();
     }
 
-    // Returning quadrants for non-const recurator
+    // Returning quadrants for non-const recursator
 
     self north_west() const
     {
@@ -157,7 +157,7 @@ public:
     }
 
     // Checking whether a quadrant is empty
-    // Generation of recurator is fast enough
+    // Generation of recursator is fast enough
     // r.south_east().empty() shouldn't be much slower than r.south_east_empty()
 
     // For completeness
@@ -206,11 +206,11 @@ public:
 
 
 
-// To use matrix_recurator with const matrices Reference must be 'Matrix const&'
+// To use matrix_recursator with const matrices Reference must be 'Matrix const&'
 template <typename Matrix, typename Splitter = max_dim_splitter<Matrix> >
-struct matrix_recurator_s
+struct matrix_recursator_s
 {
-    typedef matrix_recurator_s                                    self;
+    typedef matrix_recursator_s                                    self;
     typedef Matrix                                                matrix_type;
     typedef Splitter                                              splitter_type;
     typedef typename sub_matrix_t<Matrix>::sub_matrix_type        sub_matrix_type;
@@ -245,7 +245,7 @@ public:
     // Constructor takes the whole matrix as sub-matrix
     // This allows to have different type for the matrix and the sub-matrix
     // This also enables matrices to have references as sub-matrices
-    explicit matrix_recurator_s(Matrix const& matrix, size_type bound= 0) 
+    explicit matrix_recursator_s(Matrix const& matrix, size_type bound= 0) 
 	: my_sub_matrix(constructor_helper(matrix)), my_bound(outer_bound(matrix)),
 	  splitter(my_sub_matrix)
     {
@@ -259,7 +259,7 @@ public:
     }
 
     // Sub-matrices are copied directly
-    // explicit matrix_recurator(sub_matrix_type sub_matrix) : my_sub_matrix(sub_matrix) {}
+    // explicit matrix_recursator(sub_matrix_type sub_matrix) : my_sub_matrix(sub_matrix) {}
     
     sub_matrix_type& get_value()
     {
@@ -271,7 +271,7 @@ public:
 	return my_sub_matrix;
     }
 
-    // Returning quadrants for non-const recurator
+    // Returning quadrants for non-const recursator
 
     self north_west()
     {
@@ -305,7 +305,7 @@ public:
 	return tmp;
     }
 
-    // Returning quadrants for const recurator
+    // Returning quadrants for const recursator
 
     self const north_west() const
     {
@@ -392,18 +392,18 @@ public:
 };
 
 
-template <typename Recurator1, typename Recurator2>
-void inline equalize_depth(Recurator1& r1, Recurator2& r2)
+template <typename Recursator1, typename Recursator2>
+void inline equalize_depth(Recursator1& r1, Recursator2& r2)
 {
-    typename Recurator1::size_type max_bound= std::max(r1.bound(), r2.bound());
+    typename Recursator1::size_type max_bound= std::max(r1.bound(), r2.bound());
     r1.my_bound= max_bound;
     r2.my_bound= max_bound;
 }
 
-template <typename Recurator1, typename Recurator2, typename Recurator3>
-void inline equalize_depth(Recurator1& r1, Recurator2& r2, Recurator3& r3)
+template <typename Recursator1, typename Recursator2, typename Recursator3>
+void inline equalize_depth(Recursator1& r1, Recursator2& r2, Recursator3& r3)
 {
-    typename Recurator1::size_type max_bound= std::max(std::max(r1.bound(), r2.bound()), r3.bound());
+    typename Recursator1::size_type max_bound= std::max(std::max(r1.bound(), r2.bound()), r3.bound());
     r1.my_bound= max_bound;
     r2.my_bound= max_bound;
     r3.my_bound= max_bound;
@@ -412,7 +412,7 @@ void inline equalize_depth(Recurator1& r1, Recurator2& r2, Recurator3& r3)
 
 } // namespace recursion
 
-using recursion::matrix_recurator;
+using recursion::matrix_recursator;
 
 } // namespace mtl
 

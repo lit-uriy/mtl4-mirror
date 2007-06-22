@@ -16,6 +16,7 @@ sources = Split("""vector1.cpp
                    element_matrix.cpp
                    matrix_norms.cpp
                    matrix_functions.cpp
+                   matrix_addition.cpp
 """)
 
 

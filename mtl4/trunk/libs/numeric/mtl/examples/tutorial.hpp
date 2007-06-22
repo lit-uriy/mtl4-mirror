@@ -539,7 +539,43 @@ Proceed to \ref matrix_functions "matrix functions".
 //-----------------------------------------------------------
 
 
-/*! \page matrix_functions Matrix functions
+/*! \page matrix_functions Matrix Functions
+
+
+
+
+Proceed to \ref matrix_expr "matrix expressions".  
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page matrix_expr Matrix Expressions
+
+
+The following program illustrates how to add matrices, including scaled matrices:
+
+\include matrix_addition.cpp
+
+The example shows that arbitrary combinations of matrices can be added, regardless their
+orientation, recursive or non-recursive memory layout, and sparseness.
+
+Matrix multiplication can be implemented as elegantly:
+
+
+\include matrix_mult_simple.cpp
+
+Arbitrary matrix types can be multiplied in MTL4.
+Although inefficient combinations might be implemented inefficiently--we 
+come back to this later.
+Let's start with the operation that is the holy grail in 
+high-performance computing:
+dense matrix multiplication.
+This is also the operation shown in the example above.
+The multiplication  can be executed with the function mult
+where the first two arguments are the operands and the third the result.
+Exactly the same is performed with the operator notation below.
 
 
 
