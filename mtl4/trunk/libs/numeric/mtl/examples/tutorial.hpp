@@ -129,7 +129,7 @@ Proceed to the \ref tutorial "the tutorial".
 
 /*! \page tutorial Tutorial
 
-This tutorial introduces the user into:
+This tutorial introduces:
 
 -# \subpage vector_def
 -# \subpage vector_functions
@@ -153,7 +153,7 @@ This tutorial introduces the user into:
 //-----------------------------------------------------------
 
 
-/*! \page vector_def Vector definitions
+/*! \page vector_def Vector Definitions
 
 To start the tutorial we want to give a very short example (we could call
 it the MTL4-hello-world).
@@ -208,7 +208,7 @@ Proceed to \ref vector_functions "vector functions".
 //-----------------------------------------------------------
 
 
-/*! \page vector_functions Vector functions
+/*! \page vector_functions Vector Functions
 
 
 Principal MTL4 functions are all defined in namespace mtl.
@@ -265,14 +265,22 @@ If MTL4 is compiled with a concept-compiler, the result type is
 taken from the concept std::Multiple and without concepts
 Joel de Guzman's result type deduction from Boost is used.
 
-Proceed to \ref vector_expr "vector expressions".  
+The example also showed how to compute the conjugate values of all
+elements.
+The vector is not changed but a view on the vector is created
+that conjugate an element when accessed.
+
+The transposition of vectors will be implemented soon.
+
+Proceed to \ref vector_expr "vector expressions"
+or return to \ref vector_def "vector definitions".  
 
 */
 
 //-----------------------------------------------------------
 
 
-/*! \page vector_expr Vector expressions
+/*! \page vector_expr Vector Expressions
 
 The following program illustrates the usage of basic vector
 expressions.
@@ -315,14 +323,15 @@ elements by
 performing only one loop.
 
 
-Proceed to \ref rich_vector_expr "rich vector expressions".  
+Proceed to \ref rich_vector_expr "rich vector expressions"
+or return to \ref vector_functions "vector functions".  
 
 */
 
 //-----------------------------------------------------------
 
 
-/*! \page rich_vector_expr Rich vector expressions
+/*! \page rich_vector_expr Rich Vector Expressions
 
 As discussed in the previous chapter, 
 vector operation can be accelerated by improving
@@ -353,14 +362,15 @@ Again, all these operations are performed in one loop and each vector
 element is accessed exactly once.
 
 
-Proceed to \ref matrix_types "matrix types".  
+Proceed to \ref matrix_types "matrix types"
+or return to \ref vector_expr "vector expressions".  
 
 */
 
 //-----------------------------------------------------------
 
 
-/*! \page matrix_types Matrix types
+/*! \page matrix_types Matrix Types
 
 Right now, MTL4 provides three %matrix types:
 - \ref dense2D;
@@ -427,14 +437,15 @@ All %operations are provided in the same way for both formats
 How to fill  sparse matrices is shown in the following chapter.
 
 
-Proceed to \ref matrix_insertion "matrix insertion".  
+Proceed to \ref matrix_insertion "matrix insertion"
+or return to \ref rich_vector_expr "rich vector expressions".  
 
 */
 
 //-----------------------------------------------------------
 
 
-/*! \page matrix_insertion Matrix insertion
+/*! \page matrix_insertion Matrix Insertion
 
 Setting the values of a dense %matrix is an easy task since each element
 has its dedicated location in memory.
@@ -536,7 +547,8 @@ Thus, mtl::dense_vector and std::vector can used (are models).
 
 
 
-Proceed to \ref matrix_functions "matrix functions".  
+Proceed to \ref matrix_functions "matrix functions"
+or return to \ref matrix_types "matrix types".  
 
 */
 
@@ -549,11 +561,19 @@ Norms on matrices can be computed in the same fashion as on vectors:
 
 \include matrix_norms.cpp
 
-Another matrix function is the trace of a matrix: trace(A).
+Other matrix functions compute trace of a matrix,
+the element-wise conjugates, and the transposed matrix:
+
+\include matrix_functions2.cpp
+
+The functions conj(A) and trans(A) do not change the matrices
+but they return views on them.
+
 More functions will be implemented in the future.
 
 
-Proceed to \ref matrix_expr "matrix expressions".  
+Proceed to \ref matrix_expr "matrix expressions"
+or return to \ref matrix_insertion "matrix insertion".  
 
 */
 
@@ -586,12 +606,18 @@ The multiplication  can be executed with the function mult
 where the first two arguments are the operands and the third the result.
 Exactly the same is performed with the operator notation below.
 
+Warning: the arguments and the result must be different!
+Expressions like A= A*B will throw an exception.
+More subtle aliasing, e.g., partial overlap of the matrices
+might not be detected and result in undefined mathematical behavior.
+
 Products of three matrices are not supported.
 However, two-term products can be arbitrarily added and subtracted:
 
 \include matrix_mult_add.cpp
 
 Proceed to \ref matrix_vector_functions "matrix-vector functions"
+or return to \ref matrix_functions "matrix functions".
 
 */
 
@@ -600,9 +626,30 @@ Proceed to \ref matrix_vector_functions "matrix-vector functions"
 
 /*! \page matrix_vector_functions Matrix-Vector Functions
 
-rank_one_update and rank_two_update
+Available matrix-vector operations are currently multiplication
+and updates.
+The former can also be expressed by operator and is described
+as \ref matrix_vector_expr expression.
+The application of rank-one and rank-two updates are
+illustrated in the following (hopefully self-explanatory)
+program:
 
-Proceed to \ref matrix_vector_expr "matrix-vector expressions".  
+\include rank_two_update.cpp
+
+The output of the matrix is formatted for better readability.
+The functions also work for sparse matrices although we
+cannot recommend this for the sake of efficiency.
+
+In the future, updates will be also expressible with operators.
+For instance, rank_one_update(A, v, w) can be written as
+A+= conj(v) * trans(w) if v and w are column vectors (if w
+is a row vector the transposition can-and must-be removed).
+Thus, the orientation is relevant in operator notation
+where the functions rank_one_update and rank_two_update
+ignore the orientation.
+
+Proceed to \ref matrix_vector_expr "matrix-vector expressions"
+or return to \ref matrix_expr "matrix expressions".  
 
 */
 
@@ -611,12 +658,71 @@ Proceed to \ref matrix_vector_expr "matrix-vector expressions".
 
 /*! \page matrix_vector_expr Matrix-Vector Expressions
 
-y= A * x;
-y+= A * x;
 
+Matrix-vector products are written in the natural way:
+
+\include matrix_vector_mult.cpp
+
+The example shows that sparse and dense matrices can be multiplied
+with vectors.
+For the sake of performance, the products are implemented with 
+different algorithms.
+The multiplication of Morton-ordered matrices with vectors is
+supported but currently not efficient.
+
+As all products the result of a matrix-vector multiplication can be 
+ -# Directly assigned;
+ -# Incrementally assigned; or
+ -# Decrementally assigned (not shown in the example).
+.
+to a vector variable.
+
+Warning: the vector argument and the result must be different!
+Expressions like v= A*v will throw an exception.
+More subtle aliasing, e.g., partial overlap of the vectors
+might not be detected and result in undefined mathematical behavior.
+
+Matrix-vector products (MVP) cannot be combined with arbitrary vector
+operations.
+It is planned for the future to support expressions like
+r= b - A*x.
+
+Already supported is scaling of arguments, as well for the matrix
+as for the vector:
+
+\include scaled_matrix_vector_mult.cpp
+
+All three expressions and the following two blocks
+compute the same result.
+However, since vector elements are accessed multiple times in an MVP
+it is inefficient to scale the vector
+and obviously it is an even bigger waste to  scale both
+arguments.
+
+The matrix scaling on the fly requires the same number of operations
+as an in-place scaling with subsequent MVP (as each matrix element is
+used only once).
+Thus, it is advisable to scale the matrix in the expression instead
+of scaling it before the multiplication and scaling it back afterwards
+(as the fourth block of operations).
+Scaling the vector upfront is more efficient under the quite likely
+assumption that A has more than 2*n non-zero elements.
+
+Return to \ref matrix_vector_functions "matrix-vector functions".
 
 */
 
 } // namespace mtl
+
+/* To Do:
+
+Vector:
+- conj
+
+Matrix:
+- conj
+- trans
+
+*/
 
 #endif // MTL_TUTORIAL_INCLUDE

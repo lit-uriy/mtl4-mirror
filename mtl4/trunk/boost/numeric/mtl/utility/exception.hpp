@@ -96,6 +96,15 @@ struct incompatible_size
 };
 
 /// Exception for arguments with incompatible shapes, e.g. adding matrices and vectors
+struct argument_result_conflict
+    : public std::domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit argument_result_conflict(const char *s= "Used same object illegally as argument and result.")
+	: std::domain_error(s) {}
+};
+
+/// Exception for arguments with incompatible shapes, e.g. adding matrices and vectors
 struct incompatible_shape
     : public std::domain_error
 {

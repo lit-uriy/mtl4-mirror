@@ -68,6 +68,23 @@ struct category< vector::vec_vec_minus_expr<E1,E2> >
 };
 
 
+template <typename Functor, typename Vector> 
+struct category<vector::map_view<Functor, Vector> >
+    : public category<Vector>
+{};
+
+template <typename Scaling, typename Vector>
+struct category< vector::scaled_view<Scaling, Vector> >
+    : public category< vector::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, 
+					    Vector> >
+{};
+
+template <typename Vector>
+struct category< vector::conj_view<Vector> >
+    : public category< vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
+{};
+
+
 template <typename Functor, typename Matrix> 
 struct category<matrix::map_view<Functor, Matrix> >
 {

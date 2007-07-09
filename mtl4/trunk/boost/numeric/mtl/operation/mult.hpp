@@ -26,6 +26,8 @@ namespace mtl {
 template <typename A, typename B, typename C>
 inline void mult(const A& a, const B& b, C& c)
 {
+    MTL_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
+
     // dispatch between matrices, vectors, and scalars
     using traits::category;
     gen_mult(a, b, c, assign::assign_sum(), typename category<A>::type(), 
@@ -61,6 +63,8 @@ inline void mult(const A& a, const X& x, const Y& y, Z& z)
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::matrix, tag::matrix, tag::matrix)
 {
+    MTL_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
+
     MTL_THROW_IF(num_rows(a) != num_rows(c) || num_cols(a) != num_rows(b) || num_cols(b) != num_cols(c),
 		 incompatible_size());
     // dispatch between dense and sparse
@@ -217,6 +221,8 @@ inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, t
 			                                          typename ashape::ashape<VectorIn>::type >::type,
 			                 ::mtl::ashape::mat_cvec_mult
 			               >::value));
+
+    MTL_THROW_IF((void*)&v == (void*)&w, argument_result_conflict());
 
     //MTL_THROW_IF(num_rows(a) != num_rows(w) || num_cols(a) != num_rows(v), incompatible_size());
     MTL_THROW_IF(num_rows(a) != size(w) || num_cols(a) != size(v), incompatible_size());
