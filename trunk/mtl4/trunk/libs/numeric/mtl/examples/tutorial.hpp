@@ -714,15 +714,5 @@ Return to \ref matrix_vector_functions "matrix-vector functions".
 
 } // namespace mtl
 
-/* To Do:
-
-Vector:
-- conj
-
-Matrix:
-- conj
-- trans
-
-*/
 
 #endif // MTL_TUTORIAL_INCLUDE
