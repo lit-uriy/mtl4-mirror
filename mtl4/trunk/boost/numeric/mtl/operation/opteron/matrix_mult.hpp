@@ -89,7 +89,7 @@ template <unsigned long MaskA, typename PA,
 	  unsigned long MaskB, typename PB,
 	  unsigned long MaskC, typename PC,
 	  typename Assign, typename Backup>
-struct gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
+struct gen_platform_dmat_dmat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
 					 morton_dense<double, MaskC, PC>, Assign, Backup>
 {
     void mult_ass(double * D, double * C, double * BT) const;
@@ -97,7 +97,7 @@ struct gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morto
     void operator()(const morton_dense<double, MaskA, PA>& a, const morton_dense<double, MaskB, PB>& b, 
 		    morton_dense<double, MaskC, PC>& c) const
     {
-	std::cout << "pretend Assembly\n";
+	// std::cout << "use Assembly\n";
 
 	if (detail::opteron_shark_teeth<MaskA, MaskB, MaskC>::value) {
 	    if (Assign::init_to_zero) 
@@ -120,7 +120,7 @@ template <unsigned long MaskA, typename PA,
 	  unsigned long MaskB, typename PB,
 	  unsigned long MaskC, typename PC,
 	  typename Backup>
-struct gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
+struct gen_platform_dmat_dmat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
 					 morton_dense<double, MaskC, PC>, assign::minus_sum, Backup>
 {
     void mult_ass(double * D, double * C, double * BT) const;
@@ -128,7 +128,7 @@ struct gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morto
     void operator()(const morton_dense<double, MaskA, PA>& a, const morton_dense<double, MaskB, PB>& b, 
 		    morton_dense<double, MaskC, PC>& c) const
     {
-	std::cout << "pretend Assembly\n";
+	// std::cout << "use Assembly\n";
 
 	if (detail::opteron_shark_teeth<MaskA, MaskB, MaskC>::value) {
 	    if (a.num_rows() == 32 && a.num_cols() == 32 && b.num_cols() == 32) {
@@ -151,7 +151,7 @@ template <unsigned long MaskA, typename PA,
 	  unsigned long MaskB, typename PB,
 	  unsigned long MaskC, typename PC,
 	  typename Assign, typename Backup>
-void gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
+void gen_platform_dmat_dmat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
 				       morton_dense<double, MaskC, PC>, Assign, Backup>::
 mult_ass(double * D, double * C, double * BT) const
 {
@@ -250,7 +250,7 @@ mult_ass(double * D, double * C, double * BT) const
       }
   #endif
 
-  #if 1
+  #if 0
     // Prep k
     for (int j = 0; j < baseOrder; j+=2)
       for (int i = 0; i < baseOrder; i+=16)
@@ -524,6 +524,7 @@ mult_ass(double * D, double * C, double * BT) const
   #define MM_LOAD1_PD(a,b) \
   { \
     __asm__("movlpd %1, %0" : "=x" (a) : "m"(*b)); \
+
     __asm__("movhpd %1, %0" : "=x" (a) : "m"(*b), "0" (a)); \
   }
   #define MM_LOAD1U_PD(a,b) \
@@ -674,7 +675,7 @@ mult_ass(double * D, double * C, double * BT) const
       }
   #endif
 
-  #if 0
+  #if 1
     // Factor and unroll i
   #define MM_LOAD1_PD(a,b) \
   { \
@@ -836,14 +837,22 @@ mult_ass(double * D, double * C, double * BT) const
 
 }											      
 
+// Avoid conflicts with further defitions
 
+#undef MM_LOAD1_PD
+#undef MM_LOAD1U_PD
+#undef MM_MUL_PD
+#undef BLOCK0_0
+#undef BLOCK0_1
+#undef BLOCK1_0
+#undef BLOCK1_1
 
 
 template <unsigned long MaskA, typename PA,
 	  unsigned long MaskB, typename PB,
 	  unsigned long MaskC, typename PC,
 	  typename Backup>
-void gen_platform_dense_mat_mat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
+void gen_platform_dmat_dmat_mult_ft<morton_dense<double, MaskA, PA>, morton_dense<double, MaskB, PB>, 
 				       morton_dense<double, MaskC, PC>, assign::minus_sum, Backup>::
 mult_ass(double * D, double * C, double * BT) const
 {
@@ -942,7 +951,7 @@ mult_ass(double * D, double * C, double * BT) const
     }
 #endif
 
-#if 1
+#if 0
   // Prep k
   for (int j = 0; j < baseOrder; j+=2)
     for (int i = 0; i < baseOrder; i+=16)
@@ -1366,7 +1375,7 @@ mult_ass(double * D, double * C, double * BT) const
     }
 #endif
 
-#if 0
+#if 1
   // Factor and unroll i
 #define MM_LOAD1_PD(a,b) \
 { \
@@ -1527,6 +1536,16 @@ mult_ass(double * D, double * C, double * BT) const
 #endif
 
 }										      
+
+// Avoid name space pollution
+
+#undef MM_LOAD1_PD
+#undef MM_LOAD1U_PD
+#undef MM_MUL_PD
+#undef BLOCK0_0
+#undef BLOCK0_1
+#undef BLOCK1_0
+#undef BLOCK1_1
 
 
 } // namespace mtl

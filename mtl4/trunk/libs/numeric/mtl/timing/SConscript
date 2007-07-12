@@ -2,6 +2,7 @@ Import('high_opt_env')
 
 sources = Split("""cholesky_timing.cpp
              matrix_product_timing.cpp
+             rec_matrix_product_timing.cpp
 	     empty.cpp
 """)
 
