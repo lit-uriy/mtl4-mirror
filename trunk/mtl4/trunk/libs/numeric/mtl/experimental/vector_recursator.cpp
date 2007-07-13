@@ -11,8 +11,6 @@ using namespace mtl::recursion;
 using namespace std;  
 
 
-
-
 int main(int argc, char* argv[])
 {
     // typedef dense2D<double> matrix_t;
