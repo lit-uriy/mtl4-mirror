@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/utility/iterator_adaptor.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
 
 
 // #include <boost/numeric/mtl/ahnentafel_detail/index.hpp>
@@ -375,7 +376,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     void init(size_type num_rows, size_type num_cols)
     {
 	set_ranges(num_rows, num_cols);
-	set_to_zero(*this);
+	// set_to_zero(*this);
     }
 
   public:
@@ -403,7 +404,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     explicit morton_dense(mtl::non_fixed::dimensions d, value_type* a) 
       : super_memory(a), expr_base(*this) 
     { 
-	init(d.num_rows(), d.num_cols());
+	set_ranges(d.num_rows(), d.num_cols());
     }
 
     // same constructor for compile time matrix size
@@ -411,9 +412,27 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     explicit morton_dense(value_type* a) : super_memory(a), expr_base(*this) 
     { 
 	BOOST_ASSERT((dim_type::is_static));
-	init(dim_type().num_rows(), dim_type().num_cols());
+	set_ranges(dim_type().num_rows(), dim_type().num_cols());
     }
 
+#if 0
+    // Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
+    morton_dense(self& m) 
+	: super_memory(&m[0][0]), expr_base(*this)
+    {
+	set_ranges(num_rows(m), num_cols(m));
+    }
+#endif
+
+#if 1
+    // Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
+    morton_dense(const self& m) 
+	: super_memory(&(const_cast<self&>(m)[0][0]), size(m)), expr_base(*this)
+    {
+	set_ranges(num_rows(m), num_cols(m));
+	// std::cout << "In copy constructor:\n"; print_matrix(*this);
+    }
+#endif
 
     void change_dim(size_type num_rows, size_type num_cols)
     {

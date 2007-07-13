@@ -8,6 +8,7 @@
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/recursion/dim_splitter.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
 
 // supersedes version in trunk (will be deleted one day)
 
@@ -73,15 +74,6 @@ public:
       }
     }
 
-    // Sub-matrices are copied directly
-    // explicit matrix_recursator(sub_matrix_type sub_matrix) : my_sub_matrix(sub_matrix) {}
-    
-#if 0
-    sub_matrix_type& get_value()
-    {
-	return my_sub_matrix;
-    }
-#endif
 
 private:
 
