@@ -213,6 +213,8 @@ opts.Add('blas_ldflags', 'Add LDFLAGS for blas library', '')
 Help(opts.GenerateHelpText(env))
 
 #env.Append(CCFLAGS = ARGUMENTS.get('debug', ''))
+# Hack, for test only
+env.Replace(CXX = '/san/intel/cc/9.0/bin/icc')
 
 # add user-defined CC flags 
 add_ccflag = ARGUMENTS.get('add_ccflag', '')
