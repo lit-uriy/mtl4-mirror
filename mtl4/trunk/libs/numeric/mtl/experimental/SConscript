@@ -7,6 +7,7 @@ sources = Split("""iterator_adapter.cpp
 		   unroll_matrix_mult.cpp 
 		   insertion_timing.cpp 
 		   algebraic_category.cpp
+		   vector_recursator.cpp
 		   empty.cpp""")
 
 for p in sources:
