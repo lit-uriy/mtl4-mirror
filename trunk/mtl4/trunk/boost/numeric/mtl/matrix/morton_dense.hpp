@@ -429,7 +429,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     morton_dense(const self& m) 
 	: super_memory(&(const_cast<self&>(m)[0][0]), size(m)), expr_base(*this)
     {
-	set_ranges(num_rows(m), num_cols(m));
+	set_ranges(m.num_rows(), m.num_cols());
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
 #endif
