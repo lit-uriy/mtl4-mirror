@@ -496,4 +496,6 @@ int main(int argc, char* argv[])
 
 // g++4 matrix_product_timing.cpp  -o matrix_product_timing -O3 -DNDEBUG -ffast-math  -mcpu=opteron -mtune=opteron -msse2 -mfpmath=sse -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS  -L/u/htor/projekte/mathlibs/acml-2-6-0-gnu-64bit/gnu64/lib -lacml -L/usr/lib/gcc/x86_64-redhat-linux/3.4.3 -lg2c
 
+// g++4 matrix_product_timing.cpp -o matrix_product_timing -O3 -DNDEBUG -ffast-math -mcpu=opteron -mtune=opteron -msse2 -mfpmath=sse -I${MTL_BOOST_ROOT} -I${BOOST_ROOT} -I/usr/local/include -L/usr/local/lib -lpapi -DMTL_HAS_PAPI -DMTL_HAS_BLAS -L/san/atlas/lib -lf77blas -latlas -L/usr/lib/gcc/x86_64-redhat-linux/3.4.3 -lg2c
+
 #endif

@@ -221,8 +221,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
     // Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
     dense2D(const self& m) 
-	: super(mtl::non_fixed::dimensions(num_rows(m), num_cols(m))), 
-	  super_memory(&(const_cast<self&>(m)[0][0]), size(m)), expr_base(*this)
+	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
+	  super_memory(&(const_cast<self&>(m)[0][0]), m.num_rows() * m.num_cols()), expr_base(*this)
     {
 	init();
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
