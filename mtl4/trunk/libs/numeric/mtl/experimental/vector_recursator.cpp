@@ -29,8 +29,16 @@ int main(int argc, char* argv[])
     std::vector<recursator_t>                         v;
     v.push_back(ra1); v.push_back(rc1);
 
+    // Of course you can also add sub-matrices
+    v.push_back(rc1.south_west());
+
+    // Only correct with latest revision (due to subtle problem just fixed)
     for (int i= 0; i < v.size(); i++)
-	cout << "Recursator " << i << ": \n" << v[i].north_west().north_west().get_value() << "\n";
+	cout << "Recursator " << i << ": \n" << *v[i].north_west() << "\n";
+
+    // Should also work with older version
+    for (int i= 0; i < v.size(); i++)
+	cout << "Recursator " << i << ": \n", print_matrix(*v[i].north_west()), cout << "\n";
 
     return 0;
 }
