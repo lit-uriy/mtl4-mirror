@@ -73,7 +73,7 @@ template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
     set_to_zero(matrix);
-    typename Matrix::value_type ref;
+    typename Matrix::value_type ref(0);
 
     {
 	matrix::inserter<Matrix>  ins(matrix);

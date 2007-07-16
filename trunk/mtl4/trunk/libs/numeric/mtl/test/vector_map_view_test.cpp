@@ -68,7 +68,7 @@ template <typename Vector>
 void test(Vector& vector, const char* name)
 {
     set_to_zero(vector);
-    typename Vector::value_type ref;
+    typename Vector::value_type ref(0);
 
     vector[2]= value(ref);
     vector[4]= value(ref) + 1.0;
