@@ -57,7 +57,7 @@ void test(Matrix& matrix, const char* name)
     dense_vector<value_type>                        x(nr, zero), y(nc, zero);
 
     x[1]= 1.0; x[2]= 2.0;
-    value_type ref, v= value(ref);
+    value_type ref(0), v= value(ref);
 
     y[4]= 4.0*v; y[5]= 5.0*v; y[6]= 6.0*v;
 
