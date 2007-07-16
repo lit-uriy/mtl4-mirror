@@ -25,6 +25,7 @@ void raw_copy_test(Matrix& matrix, row_major)
     size_t        sts[] = {0, 2, 3, 7, 9, 12, 16, 16, 18},
                   ind[] = {1, 4, 2, 0, 1, 2, 3, 3, 5, 1, 3, 4, 1, 3, 4, 5, 2, 5};
     int           val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
+    // Compiler warning on out of range access can be ignored, past-the-end address is intended
     matrix.raw_copy(val, val+18, sts, ind);
 }
 
@@ -35,6 +36,7 @@ void raw_copy_test(Matrix& matrix, col_major)
     size_t        sts[] = {0, 1, 5, 8, 12, 15, 18},
                   ind[] = {2, 0, 2, 4, 5, 1, 2, 7, 2, 3, 44, 5, 0, 4, 5, 5, 7};
     int           val[] = {4, 1, 5, 10, 13, 3, 6, 17, 7, 8, 11, 14, 2, 12, 15, 16, 18};
+    // Compiler warning on out of range access can be ignored, past-the-end address is intended
     matrix.raw_copy(val, val+18, sts, ind);
 }
 

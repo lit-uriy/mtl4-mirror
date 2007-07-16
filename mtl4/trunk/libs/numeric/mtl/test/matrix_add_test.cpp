@@ -75,7 +75,7 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
 
     set_to_zero(a); 
     {
-	typename MatrixA::value_type ref;
+	typename MatrixA::value_type ref(0);
 	matrix::inserter<MatrixA>  ins(a);
 	ins(2, 3) << value(ref);
 	ins(4, 3) << value(ref) + 1.0;
@@ -86,7 +86,7 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
 
     set_to_zero(b);
     {
-	typename MatrixB::value_type ref;
+	typename MatrixB::value_type ref(0);
 	matrix::inserter<MatrixB>  ins(b);
 	ins(2, 2) << value(ref) + 3.0;
 	ins(4, 3) << value(ref) + 4.0;
