@@ -1,2 +1,2 @@
-MTLVERSION=4
-MTLRELEASE=alpha.1
+setenv MTLVERSION 4
+setenv MTLRELEASE alpha.1
