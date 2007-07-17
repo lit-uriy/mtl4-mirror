@@ -1,4 +1,4 @@
-#! /usr/bin/tcsh -f
+#! /bin/tcsh -f
 #
 # Script for creating a MTL Distribution
 
