@@ -54,6 +54,7 @@ python insert_license.py license.short.txt cpattern cpppattern scriptpattern REA
 #
 
 echo "*** Removing non-release material"
+rm -f default.css index.html mtl4.jam Jamroot
 rm -f boost/numeric/linear_algebra/ets_concepts.hpp
 rm -rf boost/numeric/mtl/draft
 rm -rf boost/detail
@@ -61,6 +62,7 @@ rm -rf boost/property_map
 rm -rf boost/sequence
 rm -rf libs/numeric/mtl/experimental
 rm -rf libs/numeric/mtl/timing
+rm -rf libs/numeric/mtl/doc/*
 rm -rf libs/property_map
 rm -rf libs/sequence
 
@@ -72,60 +74,25 @@ mv SConstruct.tmp SConstruct
 echo "*** Removing license scripts"
 rm -f insert_license.py 
 
-exit
 
 echo "*** Making tar"
+set TARNAME="${FULLNAME}.tar.gz"
+tar czf $TARNAME boost Doxyfile INSTALL libs license.short.txt README \
+                           SConstruct license.mtl.txt README.scons VERSION
+cp $TARNAME $p
+cd $p
 
-
-
-set TMPDIR=mtl-2.1.2-23
-rm -rf $TMPDIR 
-mkdir $TMPDIR 
-chmod 777 $TMPDIR 
-autoconf
-autoheader # is autoheader neaded ?
-automake
-cp -p license.mtl.txt acconfig.h acinclude.m4 aclocal.m4 config.guess config.sub configure configure.in INSTALL VERSION missing install-sh Makefile.am Makefile.in README $TMPDIR
-chmod +x $TMPDIR/configure
-cp -pR contrib mtl test $TMPDIR
-tar czf mtl-2.1.2-23.tar.gz $TMPDIR
-cp mtl-*.tar.gz $p
-
-exit
-
-# don't use make dist
-
-#
-# ./configure so that we get a Makefile to "make dist"
-#
- 
-echo "*** Configuring (to make distribution tarfile)..."
-autoconf
-#./configure --prefix=$CONFIGURE_PREFIX $CONFIGURE_ARGS
-./configure
-
-rm -f aclocal.m4
-aclocal
-autoheader
-automake --add-missing
-chmod +x config.sub config.guess configure install-sh
-autoconf
-./configure
-
-echo "*** Performing make dist"
-REV = `svn info | grep Revision | sed 's/Revision: //'`
-# make dist TAR=/usr/local/src/gnu/bin/tar
-# make dist TAR=/sw/bin/tar
-make dist TAR=`which tar`
-mv mtl-*.tar.gz $p
-cd ..
+set MD=`md5sum $TARNAME`
+echo "MD5 sum is $MD"
 
 #
 # All done -- diss the temp area
 #
  
 echo "*** Removing temporary distribution tree..."
-rm -rf mtl.*
+rm -rf $DESTDIR
+
+exit
 
 cat <<EOF
 *** MTL distribution created
