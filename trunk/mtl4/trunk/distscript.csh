@@ -1,9 +1,16 @@
-#! /usr/local/bin/tcsh -f
+#! /usr/bin/tcsh -f
 #
 # Script for creating a MTL Distribution
 
-set DESTDIR=/tmp/mtl4.$$
+source VERSION
 
+set MTLREPOSITORY='https://svn.osl.iu.edu/tlc/trunk/mtl4/trunk'
+set MTLREVISION=`svn info ${MTLREPOSITORY}| grep Revision | sed 's/Revision: //'`
+
+set FULLNAME="mtl${MTLVERSION}-${MTLRELEASE}-r${MTLREVISION}"
+echo "Preparing distribution ${FULLNAME}"
+
+set DESTDIR=/tmp/mtl.$$
 
 set start=`date`
 cat <<EOF
@@ -18,7 +25,7 @@ EOF
 echo "*** Copying tree to $DESTDIR..."
 set p=`pwd`
 rm -rf $DESTDIR
-svn export https://svn.osl.iu.edu/tlc/trunk/mtl4/trunk $DESTDIR
+svn export ${MTLREPOSITORY} $DESTDIR
 cd $DESTDIR
 
 
@@ -47,42 +54,30 @@ python insert_license.py license.short.txt cpattern cpppattern scriptpattern REA
 #
 
 echo "*** Removing non-release material"
-rm -rf experiment
-rm -rf time
-rm -f src/sparse_contig2D.h
-rm -f src/coordinate.h
-rm -f src/MatrixElement.h
-rm -f src/MatrixMarket.h
-rm -f TODO
+rm -f boost/numeric/linear_algebra/ets_concepts.hpp
+rm -rf boost/numeric/mtl/draft
+rm -rf boost/detail
+rm -rf boost/property_map
+rm -rf boost/sequence
+rm -rf libs/numeric/mtl/experimental
+rm -rf libs/numeric/mtl/timing
+rm -rf libs/property_map
+rm -rf libs/sequence
 
-# Does not exist in MTL-stable
-#
-# Move the doc++ stuff up and clean doc/
-#
-#echo "*** Making postscript and PDF documents"
+# Also remove deleted directories in SConstruct
+grep -v 'libs/numeric/mtl/experimental/' SConstruct | grep -v 'libs/numeric/mtl/timing' > SConstruct.tmp
+mv SConstruct.tmp SConstruct
 
-#cd doc/doc++
-#make mtl.pdf mtl.html
-#make clean
-#cd ../..
-
-#echo "*** Cleaning up doc area"
-
-#rm -rf doc/talks
-#rm -rf doc/papers
-#rm -rf doc/theses
 
 echo "*** Removing license scripts"
-
-#rm -f insertlic.csh
-#rm -f insertlic.sed
-#rm -f license.hdr.cpp
-#rm -f license.hdr.shell
-#rm -f license.hdr.text
 rm -f insert_license.py 
-rm -f license.short.txt
+
+exit
 
 echo "*** Making tar"
+
+
+
 set TMPDIR=mtl-2.1.2-23
 rm -rf $TMPDIR 
 mkdir $TMPDIR 
