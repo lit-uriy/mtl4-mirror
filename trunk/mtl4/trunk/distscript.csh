@@ -89,6 +89,10 @@ set DOWNLOAD="/l/osl/download/www.osl.iu.edu/research/mtl"
 
 echo "On an OSL machine I can type: \ncp $TARNAME $DOWNLOAD\nchmod a+r ${DOWNLOAD}/${TARNAME}"
 
+set WEBDIR="/l/osl/www/www.osl.iu.edu/research/mtl/mtl4/doc"
+echo "To update dox type:\ndoxygen\ncp -R libs/numeric/mtl/doc/html/* $WEBDIR"
+echo "chmod -R a+r $WEBDIR"
+
 #
 # All done -- diss the temp area
 #
