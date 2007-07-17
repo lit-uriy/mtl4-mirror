@@ -87,11 +87,15 @@ echo "MD5 sum is $MD"
 
 set DOWNLOAD="/l/osl/download/www.osl.iu.edu/research/mtl"
 
-echo "On an OSL machine I can type: \ncp $TARNAME $DOWNLOAD\nchmod a+r ${DOWNLOAD}/${TARNAME}"
+echo "On an OSL machine I can type:"
+echo "cp $TARNAME $DOWNLOAD"
+echo "chmod a+r ${DOWNLOAD}/${TARNAME}"
 
 set WEBDIR="/l/osl/www/www.osl.iu.edu/research/mtl/mtl4/doc"
-echo "To update dox type:\ndoxygen\ncp -R libs/numeric/mtl/doc/html/* $WEBDIR"
-echo "chmod -R a+r $WEBDIR"
+echo "To update the documentations type:"
+echo "doxygen"
+echo "cp -R libs/numeric/mtl/doc/html/* $WEBDIR"
+echo "chmod -R a+rX $WEBDIR"
 
 #
 # All done -- diss the temp area
