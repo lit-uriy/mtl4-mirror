@@ -2,7 +2,7 @@
 #
 # Script for creating a MTL Distribution
 
-set DESTDIR=/tmp/mtl-stable.$$
+set DESTDIR=/tmp/mtl4.$$
 
 
 set start=`date`
@@ -18,10 +18,9 @@ EOF
 echo "*** Copying tree to $DESTDIR..."
 set p=`pwd`
 rm -rf $DESTDIR
-svn export https://svn.osl.iu.edu/tlc/trunk/mtl-stable $DESTDIR
-# cp -p $p/insertlic.csh $DESTDIR # jewillco hack
+svn export https://svn.osl.iu.edu/tlc/trunk/mtl4/trunk $DESTDIR
 cd $DESTDIR
-# cvs export -d . -D today mtl
+
 
 
 #
@@ -119,6 +118,7 @@ autoconf
 ./configure
 
 echo "*** Performing make dist"
+REV = `svn info | grep Revision | sed 's/Revision: //'`
 # make dist TAR=/usr/local/src/gnu/bin/tar
 # make dist TAR=/sw/bin/tar
 make dist TAR=`which tar`
