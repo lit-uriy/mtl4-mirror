@@ -87,7 +87,7 @@ echo "MD5 sum is $MD"
 
 set DOWNLOAD="/l/osl/download/www.osl.iu.edu/research/mtl"
 
-echo "On an OSL machine I can type: cp $TARNAME $DOWNLOAD; chmod a+r ${DOWNLOAD}/${TARNAME}"
+echo "On an OSL machine I can type: \ncp $TARNAME $DOWNLOAD\nchmod a+r ${DOWNLOAD}/${TARNAME}"
 
 #
 # All done -- diss the temp area
