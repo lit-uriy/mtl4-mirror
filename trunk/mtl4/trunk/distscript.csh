@@ -10,7 +10,10 @@ set MTLREVISION=`svn info ${MTLREPOSITORY}| grep Revision | sed 's/Revision: //'
 set FULLNAME="mtl${MTLVERSION}-${MTLRELEASE}-r${MTLREVISION}"
 echo "Preparing distribution ${FULLNAME}"
 
-set DESTDIR=/tmp/mtl.$$
+echo "*** Creating temporary dir with mtl4 subdir"
+set DESTROOTDIR=/tmp/mtl.$$
+set DESTDIR=${DESTROOTDIR}/mtl4
+mkdir $DESTROOTDIR
 
 set start=`date`
 cat <<EOF
@@ -77,8 +80,10 @@ rm -f insert_license.py
 
 echo "*** Making tar"
 set TARNAME="${FULLNAME}.tar.gz"
-tar czf $TARNAME boost Doxyfile INSTALL libs license.short.txt README \
-                           SConstruct license.mtl.txt README.scons VERSION
+#tar czf $TARNAME boost Doxyfile INSTALL libs license.short.txt README \
+#                           SConstruct license.mtl.txt README.scons VERSION
+cd ..
+tar czf $TARNAME mtl4
 cp $TARNAME $p
 cd $p
 
@@ -102,7 +107,7 @@ echo "chmod -R a+rX $WEBDIR"
 #
  
 echo "*** Removing temporary distribution tree..."
-rm -rf $DESTDIR
+rm -rf $DESTROOTDIR
 
 exit
 
