@@ -795,6 +795,14 @@ struct sub_matrix_t<morton_dense<Value, BitMask, Parameters> >
     {
 	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
 
+	// Treat empty sub-matrices first (don't hold the memory contiguousness check (but don't need to))
+	if (begin_r == end_r || begin_c == end_c) {
+	    sub_matrix_type  tmp(matrix);
+	    tmp.set_ranges(0, 0);
+	    tmp.extern_memory= true;
+	    return tmp;
+	}
+
 	// Check wether sub-matrix is contigous memory block
 	// by comparing the address of the last and the first element in the entire and the sub-matrix
 	MTL_THROW_IF(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
