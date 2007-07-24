@@ -7,7 +7,8 @@ using namespace itl;
 
 int main()
 {
-  const int size = 1000, N = size * size;
+  // For a more realistic example set size to 1000 or larger
+  const int size = 100, N = size * size;
 
   compressed2D<double> A(N, N);
   matrix::laplacian_setup(A, size, size);
