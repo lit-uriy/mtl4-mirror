@@ -22,6 +22,8 @@ sources = Split("""vector1.cpp
                    rank_two_update.cpp
                    matrix_vector_mult.cpp
                    scaled_matrix_vector_mult.cpp
+                   recursator.cpp
+                   recursator2.cpp
 """)
 
 

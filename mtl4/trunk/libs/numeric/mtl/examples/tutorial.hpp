@@ -11,7 +11,6 @@ namespace mtl {
 /*! \mainpage MTL4 manual
 
 \author Peter Gottschling and Andrew Lumsdaine
-\date June 2007
 
 The %Matrix Template Library (incarnation) 4 is a generic library for linear
 algebra operations on matrices and vectors.
@@ -129,19 +128,27 @@ Proceed to the \ref tutorial "the tutorial".
 
 /*! \page tutorial Tutorial
 
-This tutorial introduces:
+MTL4 is still in an early state of development and it is possible that
+some details may change during further implementation.
+However, we will do our best that applications are minimally affected.
+In particular, the topics in the tutorial are not subject to modifications.
+This, of course, does not exclude backward-compatible extensions.
 
--# \subpage vector_def
--# \subpage vector_functions
--# \subpage vector_expr 
--# \subpage rich_vector_expr 
--# \subpage matrix_types
--# \subpage matrix_insertion
--# \subpage matrix_functions
--# \subpage matrix_expr 
--# \subpage matrix_vector_functions 
--# \subpage matrix_vector_expr 
-
+-# Basic Types and Operations
+   -# \subpage vector_def
+   -# \subpage vector_functions
+   -# \subpage vector_expr 
+   -# \subpage rich_vector_expr 
+   -# \subpage matrix_types
+   -# \subpage matrix_insertion
+   -# \subpage matrix_functions
+   -# \subpage matrix_expr 
+   -# \subpage matrix_vector_functions 
+   -# \subpage matrix_vector_expr
+   .
+-# Traversal of Matrices and Vectors
+   -# \subpage iteration
+   -# \subpage rec_intro
 
 
 */
@@ -272,8 +279,9 @@ that conjugate an element when accessed.
 
 The transposition of vectors will be implemented soon.
 
-Proceed to \ref vector_expr "vector expressions"
-or return to \ref vector_def "vector definitions".  
+Return to \ref vector_def "vector definitions"
+or proceed to \ref vector_expr "vector expressions".
+
 
 */
 
@@ -323,8 +331,8 @@ elements by
 performing only one loop.
 
 
-Proceed to \ref rich_vector_expr "rich vector expressions"
-or return to \ref vector_functions "vector functions".  
+Return to \ref vector_functions "vector functions"
+or proceed to \ref rich_vector_expr "rich vector expressions".
 
 */
 
@@ -362,8 +370,8 @@ Again, all these operations are performed in one loop and each vector
 element is accessed exactly once.
 
 
-Proceed to \ref matrix_types "matrix types"
-or return to \ref vector_expr "vector expressions".  
+Return to \ref vector_expr "vector expressions"
+or proceed to \ref matrix_types "matrix types".
 
 */
 
@@ -437,8 +445,8 @@ All %operations are provided in the same way for both formats
 How to fill  sparse matrices is shown in the following chapter.
 
 
-Proceed to \ref matrix_insertion "matrix insertion"
-or return to \ref rich_vector_expr "rich vector expressions".  
+Return to \ref rich_vector_expr "rich vector expressions"
+or proceed to \ref matrix_insertion "matrix insertion".
 
 */
 
@@ -547,8 +555,8 @@ Thus, mtl::dense_vector and std::vector can used (are models).
 
 
 
-Proceed to \ref matrix_functions "matrix functions"
-or return to \ref matrix_types "matrix types".  
+Return to \ref matrix_types "matrix types"
+or proceed to \ref matrix_functions "matrix functions".
 
 */
 
@@ -572,8 +580,9 @@ but they return views on them.
 More functions will be implemented in the future.
 
 
-Proceed to \ref matrix_expr "matrix expressions"
-or return to \ref matrix_insertion "matrix insertion".  
+Return to \ref matrix_insertion "matrix insertion"
+or proceed to \ref matrix_expr "matrix expressions".
+
 
 */
 
@@ -616,8 +625,8 @@ However, two-term products can be arbitrarily added and subtracted:
 
 \include matrix_mult_add.cpp
 
-Proceed to \ref matrix_vector_functions "matrix-vector functions"
-or return to \ref matrix_functions "matrix functions".
+Return to \ref matrix_functions "matrix functions"
+or proceed to \ref matrix_vector_functions "matrix-vector functions".
 
 */
 
@@ -648,8 +657,9 @@ Thus, the orientation is relevant in operator notation
 where the functions rank_one_update and rank_two_update
 ignore the orientation.
 
-Proceed to \ref matrix_vector_expr "matrix-vector expressions"
-or return to \ref matrix_expr "matrix expressions".  
+Return to \ref matrix_expr "matrix expressions"
+or proceed to \ref matrix_vector_expr "matrix-vector expressions".
+
 
 */
 
@@ -708,7 +718,99 @@ of scaling it before the multiplication and scaling it back afterwards
 Scaling the vector upfront is more efficient under the quite likely
 assumption that A has more than 2*n non-zero elements.
 
-Return to \ref matrix_vector_functions "matrix-vector functions".
+Return to \ref matrix_vector_functions "matrix-vector functions"
+or proceed to \ref iteration "iteration".
+
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page iteration Iteration
+
+This section will be written soon.
+
+Return to \ref matrix_vector_expr "matrix-vector expressions"
+or proceed to \ref rec_intro "recursion".
+
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page rec_intro Recursion
+
+
+Recursion is an important theme in MTL4.
+Besides matrices with recursive recursive memory layout -- cf. \ref matrix_types and \ref morton_dense --
+recursion with regard to algorithms plays a decisive role.
+
+To support the implementation of recursive algorithms we introduced -- in collaboration with David S. Wise --
+the concept to Recursator, an analogon of <a href=" http://www.sgi.com/tech/stl/Iterators.html">Iterator</a>.
+The class matrix_recursator enables recursive subdivision of all matrices with a sub_matrix function
+(e.g., dense2D and morton_dense).
+We refrained from providing the sub_matrix functionality to compressed2D; this would possible but very inefficient
+and therefor not particularly useful.
+Thus matrix_recursator of compressed2D cannot be declared.
+A recursator for vectors is planned for the future.
+
+Generally spoken, the matrix_recursator (cf. \ref recursion::matrix_recursator)
+consistently divides a matrix into four quadrants 
+- north_west;
+- north_east;
+- south_west; and
+- south_east;
+.
+with the self-evident cartographic meaning (from here on we abreviate matrix recursator to recursator).
+The quadrants itself can be sub-divided again providing the recursive sub-division of matrices
+into scalars (or blocks with user-defined maximal size).
+
+The following program illustrates how to divide matrices via recursator:
+
+\include recursator.cpp
+
+The functions north_west(), north_east(), south_west(), and south_east()  return recursators
+that refer to sub-matrices.
+The sub-matrices can be accessed by dereferring the recursator, i.e. *rec.
+Only then a sub-matrix is created. 
+
+As the example shows, the quadrant (represented by a recursator) can be sub-divided
+further (returning another recursator).
+Block-recursive algorithms can be implemented efficiently by sub-dividing large matrices
+recursively into blocks of decreasing size until a block size is reached that allows efficient
+iterative treatment.
+Sub-matrices are only created at the base case and not during the recursive descent
+because the creation of sub-matrix might be a relatively expensive operation (e.g., with morton_dense) 
+while the creation of a new recursator requires only a few integer operations.
+
+The recursator uses internally a virtual bound that is a power of 2 and at least as large as
+the number of rows and columns.
+In the example, the bound is 16 (as shown by the member function bound).
+When computing a quadrant the bound is halved and the starting row and column are potentially increased.
+For instance, the north_east quadrant is a virtual 8 by 8 matrix starting at row 0 and column 8.
+The sub-matrix referred by the north_east recursator is the intersection of this virtual quadrant with
+the original matrix A, i.e. an 8 by 2 matrix starting in row 0 and column 8.
+
+More functionality of recursators is shown in the following example:
+
+\include recursator2.cpp
+
+The function is_empty applied on a recursator computes whether the referred sub-matrix is empty,
+i.e. the intersection of the virtual quadrant and the original matrix A is empty.
+The sub-matrix itself is not generated since this test can be performed from size and index information.
+In the same way, number of rows and columns of the referred sub-matrix can be computed without its creation.
+
+The function is_full() comes in handy in block-recursive algorithms.
+Assume we have a base case of 64 by 64, i.e. matrices with at most 64 rows and columns are treated iteratively.
+Then it is worthwile to write a blazingly fast iterative implementation  for 64 by 64 matrices,
+in other words when the sub-matrix fills the entire virtual quadrant (when bound is 64).
+Thus, the function is_full() can be used to dispatch between this optimized code and the (hopefully not
+much slower) code for smaller matrices.
+
+
+Return to \ref iteration "iteration".
 
 */
 

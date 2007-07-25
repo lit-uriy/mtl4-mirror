@@ -41,10 +41,35 @@ namespace mtl {
     }
 
     template <typename Value, typename Parameters> struct dense2D;
-    template <typename Value, unsigned long Mask, typename Parameters> 
-    struct morton_dense;
-    
+
+    template <typename Value, typename Parameters> 
+    typename dense2D<Value, Parameters>::size_type num_cols(const dense2D<Value, Parameters>& matrix);
+    template <typename Value, typename Parameters> 
+    typename dense2D<Value, Parameters>::size_type num_rows(const dense2D<Value, Parameters>& matrix);
+    template <typename Value, typename Parameters> 
+    typename dense2D<Value, Parameters>::size_type size(const dense2D<Value, Parameters>& matrix);
+
+
+    template <typename Value, unsigned long Mask, typename Parameters> struct morton_dense;
+
+    template <typename Value, unsigned long Mask, typename Parameters>
+    typename morton_dense<Value, Mask, Parameters>::size_type num_cols(const morton_dense<Value, Mask, Parameters>& matrix);
+    template <typename Value, unsigned long Mask, typename Parameters>
+    typename morton_dense<Value, Mask, Parameters>::size_type num_rows(const morton_dense<Value, Mask, Parameters>& matrix);
+    template <typename Value, unsigned long Mask, typename Parameters>
+    typename morton_dense<Value, Mask, Parameters>::size_type size(const morton_dense<Value, Mask, Parameters>& matrix);
+
+
     template <typename Value, typename Parameters> struct compressed2D;
+
+    template <typename Value, typename Parameters> 
+    typename compressed2D<Value, Parameters>::size_type num_cols(const compressed2D<Value, Parameters>& matrix);
+    template <typename Value, typename Parameters> 
+    typename compressed2D<Value, Parameters>::size_type num_rows(const compressed2D<Value, Parameters>& matrix);
+    template <typename Value, typename Parameters> 
+    typename compressed2D<Value, Parameters>::size_type size(const compressed2D<Value, Parameters>& matrix);
+
+
     template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
     template <typename Matrix> struct transposed_orientation;
