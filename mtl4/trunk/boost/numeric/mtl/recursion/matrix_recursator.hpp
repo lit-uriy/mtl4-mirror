@@ -172,13 +172,15 @@ public:
     size_type num_rows() const
     {
 	using std::min;
-	return min(my_bound, ::mtl::num_rows(my_sub_matrix) - my_first_row);
+	size_type tmp= ::mtl::num_rows(my_sub_matrix);
+	return my_first_row >= tmp ? 0 : min(my_bound, tmp - my_first_row);
     }
 	
     size_type num_cols() const
     {
 	using std::min;
-	return min(my_bound, ::mtl::num_cols(my_sub_matrix) - my_first_col);
+	size_type tmp= ::mtl::num_cols(my_sub_matrix);
+	return my_first_col >= tmp ? 0 : min(my_bound, tmp - my_first_col);
     }
 
 
@@ -481,6 +483,7 @@ bool is_empty(const matrix_recursator<Matrix>& rec)
 template <typename Matrix>
 bool is_full(const matrix_recursator<Matrix>& rec)
 {
+    int nr= rec.num_rows(), nc= rec.num_cols(), b= rec.bound();
     return rec.num_rows() == rec.bound() && rec.num_cols() == rec.bound();
 }
 
