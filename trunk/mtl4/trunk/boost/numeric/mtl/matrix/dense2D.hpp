@@ -211,9 +211,17 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	init(); 
     }
 
+    // sets dimensions and pointer to external data
+    dense2D(size_type num_rows, size_type num_cols, value_type* a) 
+      : super(mtl::non_fixed::dimensions(num_rows, num_cols)), super_memory(a, num_rows * num_cols), expr_base(*this) 
+    { 
+	init(); 
+    }
+
     // same constructor for compile time matrix size
     // sets dimensions and pointer to external data
-    explicit dense2D(value_type* a) : super(), super_memory(a), expr_base(*this) 
+    explicit dense2D(value_type* a) 
+	: super(), super_memory(a, dim_type().num_rows() * dim_type().num_cols()), expr_base(*this) 
     { 
 	BOOST_STATIC_ASSERT((dim_type::is_static));
         init();
@@ -654,12 +662,17 @@ struct sub_matrix_t<dense2D<Value, Parameters> >
 
 	sub_matrix_type  tmp(matrix);
 
-	// Leading dimension doesn't change
-	tmp.data += matrix.indexer(matrix, begin_r, begin_c);  // Takes care of indexing
-	tmp.set_ranges(end_r - begin_r, end_c - begin_c);
-
-	// sub matrix doesn't own the memory (and must not free at the end)
+	// Sub-matrix doesn't own the memory (and must not free at the end)
 	tmp.extern_memory= true;
+
+	// Treat empty sub-matrices specially
+	if(end_r <= begin_r || end_c <= begin_c)
+	    tmp.set_ranges(0, 0);
+	else {
+	    // Leading dimension doesn't change
+	    tmp.data += matrix.indexer(matrix, begin_r, begin_c);  // Takes care of indexing
+	    tmp.set_ranges(end_r - begin_r, end_c - begin_c);
+	}
 
 	return tmp;
     }
