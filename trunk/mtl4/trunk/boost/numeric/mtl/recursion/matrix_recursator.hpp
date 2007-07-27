@@ -24,11 +24,15 @@ void inline equalize_depth(Recursator1& r1, Recursator2& r2, Recursator3& r3);
 
 /*! Class for matrix recursator
 
-    How to use this class is described in the \ref rec_intro "recursion intro".
+    How to use this class is described in the \ref rec_intro "recursion introduction".
 
-    \sa mtl::north_west() \sa mtl::north_east() 
-    \sa mtl::south_west() \sa mtl::south_east() \sa mtl::is_empty() \sa mtl::is_full() \sa mtl::num_rows() \sa mtl::num_cols()
-    \sa mtl::size()
+    \sa \ref mtl::north_west, \ref mtl::north_east, 
+    \ref mtl::south_west, \ref mtl::south_east, 
+    \ref mtl::is_empty(const matrix_recursator<Matrix>&), 
+    \ref mtl::is_full(const matrix_recursator<Matrix>&), 
+    \ref mtl::num_rows(const matrix_recursator<Matrix>&), 
+    \ref mtl::num_cols(const matrix_recursator<Matrix>&),
+    \ref mtl::size(const matrix_recursator<Matrix>&)
 **/
 template <typename Matrix>
 struct matrix_recursator
@@ -191,7 +195,7 @@ public:
     }
 
     /*! Set the bound of the recursator.
-	/param bound  The new virtual bound; must be a power of 2.
+	\param bound  The new virtual bound; must be a power of 2.
 
         This function allows to declare a virtual bound smaller than the number of rows and/or columns.
 	It must be used with uttermost care.
@@ -205,9 +209,10 @@ public:
     template <typename R1, typename R2, typename R3> friend void equalize_depth (R1&, R2&, R3&);
 
   protected:
-    sub_matrix_type     my_sub_matrix;
-    size_type           my_bound, /// Virtual matrix size, i.e. upper bound for size of sub-matrix.
-	                my_first_row, my_first_col; /// First entry in submatrix 
+    sub_matrix_type     my_sub_matrix; /// Referred matrix (from which the sub-matrices are built)
+    size_type           my_bound,      /// Virtual matrix size, i.e. upper bound for size of sub-matrix.
+	                my_first_row,  /// Row of first entry in submatrix
+                        my_first_col;  /// Row of first entry in submatrix 
 };
 
 
@@ -430,7 +435,7 @@ using recursion::matrix_recursator;
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-matrix_recursator<Matrix> north_west(const matrix_recursator<Matrix>& rec)
+matrix_recursator<Matrix> inline north_west(const matrix_recursator<Matrix>& rec)
 {
     return rec.north_west();
 }
@@ -440,7 +445,7 @@ matrix_recursator<Matrix> north_west(const matrix_recursator<Matrix>& rec)
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-matrix_recursator<Matrix> north_east(const matrix_recursator<Matrix>& rec)
+matrix_recursator<Matrix> inline north_east(const matrix_recursator<Matrix>& rec)
 {
     return rec.north_east();
 }
@@ -450,7 +455,7 @@ matrix_recursator<Matrix> north_east(const matrix_recursator<Matrix>& rec)
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-matrix_recursator<Matrix> south_west(const matrix_recursator<Matrix>& rec)
+matrix_recursator<Matrix> inline south_west(const matrix_recursator<Matrix>& rec)
 {
     return rec.south_west();
 }
@@ -460,7 +465,7 @@ matrix_recursator<Matrix> south_west(const matrix_recursator<Matrix>& rec)
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-matrix_recursator<Matrix> south_east(const matrix_recursator<Matrix>& rec)
+matrix_recursator<Matrix> inline south_east(const matrix_recursator<Matrix>& rec)
 {
     return rec.south_east();
 }
@@ -470,7 +475,7 @@ matrix_recursator<Matrix> south_east(const matrix_recursator<Matrix>& rec)
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-bool is_empty(const matrix_recursator<Matrix>& rec)
+bool inline is_empty(const matrix_recursator<Matrix>& rec)
 {
     return rec.is_empty();
 }
@@ -481,7 +486,7 @@ bool is_empty(const matrix_recursator<Matrix>& rec)
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-bool is_full(const matrix_recursator<Matrix>& rec)
+bool inline is_full(const matrix_recursator<Matrix>& rec)
 {
     int nr= rec.num_rows(), nc= rec.num_cols(), b= rec.bound();
     return rec.num_rows() == rec.bound() && rec.num_cols() == rec.bound();
@@ -492,7 +497,7 @@ bool is_full(const matrix_recursator<Matrix>& rec)
 **/
 template <typename Matrix>
 typename matrix_recursator<Matrix>::size_type
-num_rows(const matrix_recursator<Matrix>& rec)
+inline num_rows(const matrix_recursator<Matrix>& rec)
 {
     return rec.num_rows();
 }
@@ -502,7 +507,7 @@ num_rows(const matrix_recursator<Matrix>& rec)
 **/
 template <typename Matrix>
 typename matrix_recursator<Matrix>::size_type
-num_cols(const matrix_recursator<Matrix>& rec)
+inline num_cols(const matrix_recursator<Matrix>& rec)
 {
     return rec.num_cols();
 }
@@ -512,7 +517,7 @@ num_cols(const matrix_recursator<Matrix>& rec)
 **/
 template <typename Matrix>
 typename matrix_recursator<Matrix>::size_type
-size(const matrix_recursator<Matrix>& rec)
+inline size(const matrix_recursator<Matrix>& rec)
 {
     return num_rows(rec) * num_cols(rec);
 }
