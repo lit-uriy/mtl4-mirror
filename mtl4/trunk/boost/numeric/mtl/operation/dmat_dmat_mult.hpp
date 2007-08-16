@@ -1062,7 +1062,7 @@ struct gen_blas_dmat_dmat_mult_ft<dense2D<std::complex<double>, ParaA>, dense2D<
 
 
 
-#endif
+#endif // MTL_HAS_BLAS
 
 template <typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dmat_dmat_mult_t<Assign> >
