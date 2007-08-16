@@ -149,7 +149,9 @@ This, of course, does not exclude backward-compatible extensions.
 -# Traversal of Matrices and Vectors
    -# \subpage iteration
    -# \subpage rec_intro
-
+   .
+-# Advanced Topics
+   -# \subpage function_nesting
 
 */
 
@@ -810,7 +812,223 @@ Thus, the function is_full() can be used to dispatch between this optimized code
 much slower) code for smaller matrices.
 
 
-Return to \ref iteration "iteration".
+Return to \ref iteration "iteration"
+or proceed to \ref function_nesting "why and how we use functors".
+
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page function_nesting Why and How we use Functors
+
+The standard user interface of MTL4 consists of functions and operators.
+Internally these functions are often implemented by means of functors.
+This has two reasons. The first reason is that functions cannot be partially specialized
+(cf. <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2001/n1295.asc">Document 
+number J16/01-0009 = WG21 N1295 from the C++ Standard Committee</a>)
+and the second reason is that functors allow an arbitrary composition.
+We illustrate in this section how function-like interfaces can be enriched by partial
+specialization and composition.
+
+Assume we want to write a templated multiplication function for matrices:
+
+\include nesting/function.hpp
+
+Dense matrix multiplication is the first operation where all the techniques on
+this page are applied.
+Of course it is planned to extend other operations in the same manner.
+
+
+
+\section functor_sec1 Step 1: Transform a Function into a Functor
+
+We replace this function by a class containing an application operator
+with the same signature:
+
+\include nesting/functor.hpp
+
+An object of this class
+
+\include nesting/functor_obj.hpp
+
+can be called like a function. Admittedly, the definition of this functor does not look very elegant.
+Nevertheless, it is necessary to provide composition and partial specialization whereby the impact for
+the user can be minimized by the techniques described below.
+
+Remark: the suffix "_ft" stands for fully templated, in contrast to functor classes where all or part of
+the types are automatically instantiated, as shown in step x.
+
+
+\section functor_sec2 Step 2: Template Specialization
+
+After the functor is implemented with a default behavior, one can write specializations for a certain
+type or like in our case a certain combination of types:
+
+\include nesting/special_functor.hpp
+
+Please note that specializations are not required to be written in the same file as the template function
+(i.e. by the same author) but can be added in any file that is included in the compilation unit.
+
+By the way, this explicit form of specialization is also supported for functions (but the following 
+techniques are not).
+
+
+\section functor_sec3 Step 3: Partial Specialization
+
+Very often specializations are not only possible for one single type (or tuple of types) but for an entire
+set of types.
+If, for instance, a more efficient implementation of mult is available for arbitrary triplets of dense2D matrices
+regardless their respective value types and parameters, the functor can be partially specialized:
+
+\include nesting/partial_functor.hpp
+
+Again, such specializations can be added later. 
+This becomes very handy when users define their own (matrix) types and 
+can also provide specialized implementations for certain functions or operators
+which are implemented in terms of functors.
+
+
+\section functor_sec4 Step 4: Reuse of Functors 
+
+
+Assume we want implement a functor that multiplies matrices using BLAS routines.
+We know upfront that only a few type triplets are supported and all other matrix types
+need another implementation.
+One solution to implement such a functor is to call by default an already implemented
+function and specialize this functor for certain type typles:
+
+\include nesting/blas_functor_ugly.hpp
+
+This code works but we can write it more elegantly with public inheritence:
+
+\include nesting/blas_functor.hpp
+
+This program is not only shorter but can eventually reduce the compilation cost,
+for details look in David Abraham's book for meta-function forwarding. 
+
+
+\section functor_sec5 Step 5: Conditional Specialization
+
+
+This is only a small change but it can make a conceivable difference.
+BLAS routines impressingly fast but we do not want to require mandatorily BLAS to be installed.
+Guarding the specializations with configuration-dependent macros allows us to provide
+the BLAS functions only when they are available.
+
+\include nesting/blas_functor_cond.hpp
+
+In case BLAS is not installed in MTL4, the programs calling the BLAS functor 
+still work (not necessarily as fast).
+
+In fact if you call an MTL4 functor, you are guaranteed that the operation is 
+correctly performed.
+If a functor with an optimized implementation cannot handle a certain type tuple,
+it calls another functor that can handle it (otherwise calls yet another functor in turn
+that can perform the operation (otherwise ...)).
+
+
+
+
+\section functor_sec6 Step 6: Functor Composition
+
+
+Resuming the previous sections, we can define a default behavior and one or more
+specialized behaviors for a template functor.
+Now we like to costumize the default behavior of functors.
+
+The only thing we need to do for it is to introduce a template parameter for
+the default functionality:
+
+
+\include nesting/blas_functor_comp.hpp
+
+The parameter for the default functor can of course have a default value, as in the example.
+The name "Backup" is understood that the functors implement a functionality for a certain
+set of type tuples.
+Type tuples that are not in this set are handled by the Backup functor.
+Theoretically, such functors can be composed arbitrarily.
+Since this is syntantically somewhat cumbersome we will give examples later.
+
+
+\section functor_sec7 Step 7: Functors with Automatic Instantiation
+
+The usage of functors had two purposes: the partial specialization and the composition.
+The former requires all types to be template arguments while the composition
+does not.
+Therefore we introduce another category of functors where the function arguments 
+are not template arguments.
+These functors (more precisely their operators) call the fully templated functors
+to not loose the capability of partial specialization:
+
+\include nesting/blas_functor_auto.hpp
+
+Before we finally come to some examples we want to introduce another template
+parameter.
+This leads us to the actual implemenation of the functors, 
+for instance the BLAS functor:
+
+\include nesting/blas_functor_mtl.hpp
+
+The parameter Assign allows the realization of C= A*B, C+= A*B, and C-= A*B with the
+same implementation (an explanation will follow).
+At this point we focus on the composition.
+
+The duality of fully and partially templated functors simplifies the syntax of composed
+functors significantly.
+Already the default type of the backup functor can benefit from the shorter syntax
+as shown in the example above.
+
+
+\section functor_avail Available Functors
+
+
+MTL4 provides several functors for dense matrix multiplication:
+-# Canonical implementation with 3 nested loops and iterators;
+-# A corresponding 3-loop implemtation with cursors and property maps;
+-# Tiled products for regular matrices using pointers with
+   -# With tile size 2 by 2;
+   -# With tile size 4 by 4; and 
+   -# Costumizable tile size;
+   .
+-# Recursive matrix product with costumizable base case (kernel);
+-# Platform optimized implementation; and
+   -# So far only one implementation from Michael Adams for Opteron
+   .
+-# BLAS functor calling the corresponding routines.
+
+All these functors have a Backup parameter which is by default set to 
+the canonical implementation with iterators.
+The two canonical products support all combination of matrix types
+and their Backup parameter is only added to unify the interface.
+
+\section functor_example Functor Composition Example
+
+As an example, we want to define a functor that calls:
+- BLAS if available, otherwise
+- The platform-specific code if available, otherwise
+- The 4 by 4 tiled product, otherwise
+- The canonical implementation.
+
+The Backup parameter needs only be set if another then the canonical implementation
+is used.
+If you use typedefs it is advisable to work from buttom up through the list:
+The tiled 4 by 4 product has already the right defaults.
+The platform-specific version needs a non-default backup parameter.
+This requires also the definition of the assign parameter because it is
+positioned before.
+We keep this combined functor type as a type definition and use
+it finally in the BLAS functor.
+Here we create directly an object of this type which can be later called like a function:
+
+\include nesting/comp_example.hpp
+
+Now we defined a functor that can handle arbitrary combinations of dense matrix types.
+We also specified our preferences how to compute this operation.
+When the compiler instantiate our functor for a given type combination it takes
+the first product implementation in our list that is admissible.
+
 
 */
 
