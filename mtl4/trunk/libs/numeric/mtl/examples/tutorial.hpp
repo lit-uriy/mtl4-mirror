@@ -836,9 +836,9 @@ Assume we want to write a templated multiplication function for matrices:
 
 \include nesting/function.hpp
 
-Dense matrix multiplication is the first operation where all the techniques on
+Dense %matrix multiplication is the first operation where all the techniques on
 this page are applied.
-Of course it is planned to extend other operations in the same manner.
+Of course it is planned to extend other %operations in the same manner.
 
 
 
@@ -885,7 +885,7 @@ regardless their respective value types and parameters, the functor can be parti
 \include nesting/partial_functor.hpp
 
 Again, such specializations can be added later. 
-This becomes very handy when users define their own (matrix) types and 
+This becomes very handy when users define their own (%matrix) types and 
 can also provide specialized implementations for certain functions or operators
 which are implemented in terms of functors.
 
@@ -894,7 +894,7 @@ which are implemented in terms of functors.
 
 
 Assume we want implement a functor that multiplies matrices using BLAS routines.
-We know upfront that only a few type triplets are supported and all other matrix types
+We know upfront that only a few type triplets are supported and all other %matrix types
 need another implementation.
 One solution to implement such a functor is to call by default an already implemented
 function and specialize this functor for certain type typles:
@@ -972,7 +972,8 @@ for instance the BLAS functor:
 \include nesting/blas_functor_mtl.hpp
 
 The parameter Assign allows the realization of C= A*B, C+= A*B, and C-= A*B with the
-same implementation (an explanation will follow).
+same implementation (an explanation will follow) by setting Assign respectively to
+assign::assign_sum, assign::plus_sum, and assign::minus_sum.
 At this point we focus on the composition.
 
 The duality of fully and partially templated functors simplifies the syntax of composed
@@ -984,7 +985,7 @@ as shown in the example above.
 \section functor_avail Available Functors
 
 
-MTL4 provides several functors for dense matrix multiplication:
+MTL4 provides several functors for dense %matrix multiplication:
 -# Canonical implementation with 3 nested loops and iterators;
 -# A corresponding 3-loop implemtation with cursors and property maps;
 -# Tiled products for regular matrices using pointers with
@@ -992,7 +993,7 @@ MTL4 provides several functors for dense matrix multiplication:
    -# With tile size 4 by 4; and 
    -# Costumizable tile size;
    .
--# Recursive matrix product with costumizable base case (kernel);
+-# Recursive %matrix product with costumizable base case (kernel);
 -# Platform optimized implementation; and
    -# So far only one implementation from Michael Adams for Opteron
    .
@@ -1000,7 +1001,7 @@ MTL4 provides several functors for dense matrix multiplication:
 
 All these functors have a Backup parameter which is by default set to 
 the canonical implementation with iterators.
-The two canonical products support all combination of matrix types
+The two canonical products support all combination of %matrix types
 and their Backup parameter is only added to unify the interface.
 
 \section functor_example Functor Composition Example
@@ -1016,7 +1017,7 @@ is used.
 If you use typedefs it is advisable to work from buttom up through the list:
 The tiled 4 by 4 product has already the right defaults.
 The platform-specific version needs a non-default backup parameter.
-This requires also the definition of the assign parameter because it is
+This requires also the definition of the Assign parameter because it is
 positioned before.
 We keep this combined functor type as a type definition and use
 it finally in the BLAS functor.
@@ -1024,7 +1025,7 @@ Here we create directly an object of this type which can be later called like a 
 
 \include nesting/comp_example.hpp
 
-Now we defined a functor that can handle arbitrary combinations of dense matrix types.
+Now we defined a functor that can handle arbitrary combinations of dense %matrix types.
 We also specified our preferences how to compute this operation.
 When the compiler instantiate our functor for a given type combination it takes
 the first product implementation in our list that is admissible.
