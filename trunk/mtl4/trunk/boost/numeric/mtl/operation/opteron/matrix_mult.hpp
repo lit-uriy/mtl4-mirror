@@ -155,9 +155,7 @@ void gen_platform_dmat_dmat_mult_ft<morton_dense<double, MaskA, PA>, morton_dens
 				       morton_dense<double, MaskC, PC>, Assign, Backup>::
 mult_ass(double * D, double * C, double * BT) const
 {
-    	std::cout << "in Assembly\n";
-
-
+    // std::cout << "in Assembly\n";
     const int baseOrder= 32,
               stride = baseOrder; 
     /*
@@ -856,8 +854,7 @@ void gen_platform_dmat_dmat_mult_ft<morton_dense<double, MaskA, PA>, morton_dens
 				       morton_dense<double, MaskC, PC>, assign::minus_sum, Backup>::
 mult_ass(double * D, double * C, double * BT) const
 {
-    	std::cout << "in Assembly\n";
-
+    // std::cout << "in Assembly\n";
     const int baseOrder= 32,
               stride = baseOrder; 
   
