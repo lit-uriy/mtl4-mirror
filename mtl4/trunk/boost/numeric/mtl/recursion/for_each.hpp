@@ -9,18 +9,18 @@ namespace mtl { namespace recursion {
 template <typename Matrix, typename Function, typename BaseCaseTest>
 void for_each(matrix_recursator<Matrix> const& recursator, Function const& f, BaseCaseTest const& is_base)
 {
-    if (is_base(recursator)) 
-	f(recursator.get_value());
-    else {
-	if (!recursator.north_west_empty())
-	    for_each(recursator.north_west(), f, is_base);
-	if (!recursator.south_west_empty())
-	    for_each(recursator.south_west(), f, is_base);
-	if (!recursator.north_east_empty())
-	    for_each(recursator.north_east(), f, is_base);
-	if (!recursator.south_east_empty())
-	    for_each(recursator.south_east(), f, is_base);
+    if (recursator.is_empty())
+	return;
+
+    if (is_base(recursator)) {
+	f(*recursator);
+	return;
     }
+
+    for_each(recursator.north_west(), f, is_base);
+    for_each(recursator.south_west(), f, is_base);
+    for_each(recursator.north_east(), f, is_base);
+    for_each(recursator.south_east(), f, is_base);
 }
 
 
@@ -30,22 +30,20 @@ void for_each(matrix_recursator<Matrix>& recursator, Function const& f, BaseCase
 {
     typedef matrix_recursator<Matrix> recursator_type;
 
-    if (is_base(recursator)) 
+    if (recursator.is_empty())
+	return;
+
+    if (is_base(recursator)) {
 	f(recursator.get_value());
-    else {
-	if (!recursator.north_west_empty()) {
-	    recursator_type  tmp(recursator.north_west());
-	    for_each(tmp, f, is_base); }
-	if (!recursator.south_west_empty()) {
-	    recursator_type  tmp(recursator.south_west());
-	    for_each(tmp, f, is_base); }
-	if (!recursator.north_east_empty()) {
-	    recursator_type  tmp(recursator.north_east());
-	    for_each(tmp, f, is_base); }
-	if (!recursator.south_east_empty()) {
-	    recursator_type  tmp(recursator.south_east());
-	    for_each(tmp, f, is_base); }
+	return;
     }
+
+    recursator_type  tmp_nw(recursator.north_west()), tmp_sw(recursator.south_west()),
+	             tmp_ne(recursator.north_east()), tmp_se(recursator.south_east());
+    for_each(tmp_nw, f, is_base);
+    for_each(tmp_sw, f, is_base);
+    for_each(tmp_ne, f, is_base);
+    for_each(tmp_se, f, is_base);
 }
 
 
