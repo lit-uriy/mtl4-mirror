@@ -485,7 +485,7 @@ struct compressed2D_inserter
     }
 
   private:
-    utilities::maybe<size_type> matrix_offset(size_pair);
+	utilities::maybe<typename self::size_type> matrix_offset(size_pair);
     void final_place();
     void insert_spare();
 
