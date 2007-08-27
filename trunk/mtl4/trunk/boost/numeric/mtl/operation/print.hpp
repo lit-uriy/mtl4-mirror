@@ -33,14 +33,14 @@ namespace mtl {
     template <typename Matrix>
     inline std::ostream& operator<< (std::ostream& out, const matrix::mat_expr<Matrix>& expr)
     {
-	return print_matrix(expr.ref, out, 3, 2);
+	return print_matrix(static_cast<const Matrix&>(expr), out, 3, 2);
     }
 
 
     template <typename Vector>
     inline std::ostream& operator<< (std::ostream& out, const vector::vec_expr<Vector>& expr)
     {
-	return print_vector(expr.ref, out, 0, 0);
+	return print_vector(static_cast<const Vector&>(expr), out, 0, 0);
     }
 
 
