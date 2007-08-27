@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
     morton_dense<double, 0x555555f0>             C(n, n), D(n, n);
 
     matrix::laplacian_setup(A, 2, 5);
-    matrix::hessian_setup(B, 1.0); matrix::hessian_setup(C, 2.0); matrix::hessian_setup(D, 3.0);
+    matrix::hessian_setup(B, 1); matrix::hessian_setup(C, 2.0); matrix::hessian_setup(D, 3.0);
 
     D+= A - 2 * B + C;
 

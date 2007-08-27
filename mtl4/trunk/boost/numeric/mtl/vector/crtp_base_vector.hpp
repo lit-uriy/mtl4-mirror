@@ -35,7 +35,8 @@ struct crtp_vector_assign
     vec_vec_asgn_expr<Vector, E> operator=( vec_expr<E> const& e )
     {
 	static_cast<Vector*>(this)->check_consistent_shape(e);
-	return vec_vec_asgn_expr<Vector, E>( static_cast<Vector&>(*this), e.ref );
+	return vec_vec_asgn_expr<Vector, E>( static_cast<Vector&>(*this), 
+					     static_cast<const E&>(e) );
     }
 
     /// Assign matrix vector product by calling mult
@@ -53,7 +54,7 @@ struct crtp_vector_assign
     vec_vec_plus_asgn_expr<Vector, E> operator+=( vec_expr<E> const& e )
     {
 	static_cast<Vector*>(this)->check_consistent_shape(e);
-	return vec_vec_plus_asgn_expr<Vector, E>( static_cast<Vector&>(*this), e.ref );
+	return vec_vec_plus_asgn_expr<Vector, E>( static_cast<Vector&>(*this), static_cast<const E&>(e) );
     }
 
     /// Assign-add matrix vector product by calling mult
@@ -72,7 +73,7 @@ struct crtp_vector_assign
     vec_vec_minus_asgn_expr<Vector, E> operator-=( vec_expr<E> const& e )
     {
 	static_cast<Vector*>(this)->check_consistent_shape(e);
-	return vec_vec_minus_asgn_expr<Vector, E>( static_cast<Vector&>(*this), e.ref );
+	return vec_vec_minus_asgn_expr<Vector, E>( static_cast<Vector&>(*this), static_cast<const E&>(e) );
     }
 
     /// Assign-subtract matrix vector product by calling mult

@@ -8,15 +8,7 @@
 namespace mtl { namespace vector {
 
 template <typename Vector>
-struct vec_expr
-{
-    typedef Vector   ref_type;
-
-    explicit vec_expr(Vector& ref) : ref(ref) {}
-
-    ref_type&        ref;
-};
-
+struct vec_expr {};
 
 }} // namespace mtl::vector
 

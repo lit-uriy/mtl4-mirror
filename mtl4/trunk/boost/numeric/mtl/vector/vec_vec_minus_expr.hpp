@@ -33,7 +33,7 @@ operator- (const vec_expr<E1>& e1, const vec_expr<E2>& e2)
     // do not minus row and column vectors (or inconsistent value types)
     BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
 			                typename ashape::ashape<E1>::type>::value));
-    return vec_vec_minus_expr<E1, E2>(e1.ref, e2.ref);
+    return vec_vec_minus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 
 
