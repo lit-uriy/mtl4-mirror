@@ -137,6 +137,12 @@ public:
 	static_cast<super_memory&>(vector1).swap(vector2);
     }
 
+    void change_dim(size_type n)
+    {
+	this->realloc(n);
+    }
+    
+
 } ; // dense_vector
 
 
