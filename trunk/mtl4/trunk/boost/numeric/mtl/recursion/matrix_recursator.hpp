@@ -125,9 +125,10 @@ public:
 	          begin_col= my_sub_matrix.begin_col() + my_first_col,
 	          end_col= min(begin_col + my_bound, my_sub_matrix.end_col());
 
+#if 0
 	std::cout << "get_value [" << begin_row << "-" << end_row << "]["
 		  << begin_col << "-" << end_col << "]\n";
-
+#endif
 	return get_value_dispatch(my_sub_matrix, begin_row, end_row, begin_col, end_col);
     }
 
@@ -211,7 +212,7 @@ public:
     template <typename R1, typename R2> friend void equalize_depth (R1&, R2&);   
     template <typename R1, typename R2, typename R3> friend void equalize_depth (R1&, R2&, R3&);
 
-    //protected:
+  protected:
     sub_matrix_type     my_sub_matrix; /// Referred matrix (from which the sub-matrices are built)
     size_type           my_bound,      /// Virtual matrix size, i.e. upper bound for size of sub-matrix.
 	                my_first_row,  /// Row of first entry in submatrix
