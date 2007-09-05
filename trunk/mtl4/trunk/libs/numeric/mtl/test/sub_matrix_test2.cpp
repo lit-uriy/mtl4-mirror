@@ -43,8 +43,15 @@ int test_main(int argc, char* argv[])
     const unsigned size= 5; 
 
     dense2D<double> dc(size, size-2);
+    dense2D<double, matrix::parameters<col_major> >  dcc(size, size-2);
+    dense2D<float>                                   fc(size, size-2);
+    morton_dense<double,  morton_mask>               mdc(size, size-2);
+    morton_dense<double, doppled_32_col_mask>        mcc(size, size-2);
 
     test(dc, "dense2D");
+    test(dcc, "dense2D col-major");
+    test(mdc, "pure Morton");
+    test(mcc, "Hybrid col-major");
 
     return 0;
 }
