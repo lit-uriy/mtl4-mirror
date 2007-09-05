@@ -36,8 +36,8 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     hessian_setup(b, 2.0);
 
     a= 0.0; b= 0.0;
-    a[0][0]= 1.0; a[1][1]= 1.0; a[2][2]= 1.0;
-    b[0][0]= 1.0;
+    a[0][0]= 3.0; a[1][1]= 4.0; a[2][2]= 5.0;
+    b[0][0]= 2.0;
 
     std::cout << "\n" << name << "  --- calling simple mult:\n"; std::cout.flush();
     typedef gen_dmat_dmat_mult_t<>  mult_t;
