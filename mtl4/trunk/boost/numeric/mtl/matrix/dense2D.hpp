@@ -232,7 +232,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
 	  super_memory(&(const_cast<self&>(m)[0][0]), m.num_rows() * m.num_cols()), expr_base(*this)
     {
-	init();
+	//init();
+	this->my_nnz= m.my_nnz; ldim= m.ldim;
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
 
@@ -664,6 +665,7 @@ struct sub_matrix_t<dense2D<Value, Parameters> >
 
 	// Sub-matrix doesn't own the memory (and must not free at the end)
 	tmp.extern_memory= true;
+	// tmp.ldim= matrix.ldim; // or in copy constructor ?
 
 	// Treat empty sub-matrices specially
 	if(end_r <= begin_r || end_c <= begin_c)

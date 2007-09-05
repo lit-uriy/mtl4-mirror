@@ -831,12 +831,11 @@ namespace wrec {
 	void operator()(RecA const& rec_a, RecB const& rec_b, RecC& rec_c)
 	{
 	    using recursion::base_case_cast;
-#if 1
+#if 0
 	    std::cout << "\n\n before matrix multiplication:\n";
 	    std::cout << "A:\n"; print_matrix_row_cursor(rec_a.get_value());
 	    std::cout << "B:\n"; print_matrix_row_cursor(rec_b.get_value());
 	    std::cout << "C:\n"; print_matrix_row_cursor(rec_c.get_value());
-	    std::cout << "whole C:\n"; print_matrix_row_cursor(rec_c.my_sub_matrix);
 #endif
 
 	    if (rec_a.is_empty() || rec_b.is_empty() || rec_c.is_empty())
@@ -860,12 +859,11 @@ namespace wrec {
 		(*this)(rec_a.north_east(), rec_b.south_east(), c_north_east);
 		(*this)(rec_a.north_east(), rec_b.south_west(), c_north_west);
 	    }
-#if 1
+#if 0
 	    std::cout << "\n\n after matrix multiplication:\n";
 	    std::cout << "A:\n"; print_matrix_row_cursor(rec_a.get_value());
 	    std::cout << "B:\n"; print_matrix_row_cursor(rec_b.get_value());
 	    std::cout << "C:\n"; print_matrix_row_cursor(rec_c.get_value());
-	    std::cout << "whole C:\n"; print_matrix_row_cursor(rec_c.my_sub_matrix);
 #endif
 	}
     };
