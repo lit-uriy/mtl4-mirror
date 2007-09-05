@@ -37,6 +37,7 @@ sources = Split("""base_case_conversion.cpp
              compressed2D.cpp
              dot_test.cpp
              resize_vector_test.cpp
+	     sub_matrix_test2.cpp
 """)
 
 programs = []
