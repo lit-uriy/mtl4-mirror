@@ -103,8 +103,8 @@ struct gen_platform_dmat_dmat_mult_ft<morton_dense<double, MaskA, PA>, morton_de
 	    if (Assign::init_to_zero) 
 		set_to_zero(c);
 	    if (a.num_rows() == 32 && a.num_cols() == 32 && b.num_cols() == 32) {
-		double *ap= &const_cast<morton_dense<double, MaskA, PA>&>(a)[0][0],
-		       *bp= &const_cast<morton_dense<double, MaskB, PB>&>(b)[0][0], *cp= &c[0][0];
+		double *ap= const_cast<morton_dense<double, MaskA, PA>&>(a).elements(),
+		       *bp= const_cast<morton_dense<double, MaskB, PB>&>(b).elements(), cp= &c.elements();
 		mult_ass(cp, ap, bp);
 	    } else 
 		detail::opteron_shark_teeth_mult<Assign>(a, b, c);
@@ -132,8 +132,8 @@ struct gen_platform_dmat_dmat_mult_ft<morton_dense<double, MaskA, PA>, morton_de
 
 	if (detail::opteron_shark_teeth<MaskA, MaskB, MaskC>::value) {
 	    if (a.num_rows() == 32 && a.num_cols() == 32 && b.num_cols() == 32) {
-		double *ap= &const_cast<morton_dense<double, MaskA, PA>&>(a)[0][0],
-		       *bp= &const_cast<morton_dense<double, MaskB, PB>&>(b)[0][0], *cp= &c[0][0];
+		double ap= &const_cast<morton_dense<double, MaskA, PA>&>(a).elements(),
+		       bp= &const_cast<morton_dense<double, MaskB, PB>&>(b).elements(), cp= &c.elements();
 		mult_ass(cp, ap, bp);
 	    } else 
 		detail::opteron_shark_teeth_mult<assign::minus_sum>(a, b, c);
