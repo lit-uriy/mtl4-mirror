@@ -814,7 +814,7 @@ much slower) code for smaller matrices.
 
 
 Return to \ref iteration "iteration"
-or proceed to \subpage copying.
+or proceed to \ref copying "copying".
 
 
 */
@@ -878,7 +878,7 @@ For now we can only recommend you to use assignments.
 
 
 
-Return to \subpage rec_intro
+Return to \ref rec_intro "recursion"
 or proceed to \ref function_nesting "why and how we use functors".
 
 */
@@ -1095,7 +1095,7 @@ We also specified our preferences how to compute this operation.
 When the compiler instantiate our functor for a given type combination it takes
 the first product implementation in our list that is admissible.
 
-Return to \subpage copying.
+Return to \ref copying "copying".
 
 */
 
