@@ -868,7 +868,7 @@ mult(B, C, A);
 \endcode
 A similar transformation does not exist for the copy constructor (yet).
 
-We agree that this situation -- the inconsistency between assignment and copy
+We admit that this situation -- the inconsistency between assignment and copy
 constructor -- is not satisfying.
 In some future release this misbehavior will be terminated by introducing
 move semantics that allows to limit shallow copy to cases where it is permissible.
@@ -878,7 +878,7 @@ For now we can only recommend you to use assignments.
 
 
 
-Return to \subpage recursion
+Return to \subpage rec_intro
 or proceed to \ref function_nesting "why and how we use functors".
 
 */
