@@ -13,7 +13,7 @@ namespace mtl {
 \author Peter Gottschling and Andrew Lumsdaine
 
 The %Matrix Template Library (incarnation) 4 is a generic library for linear
-algebra operations on matrices and vectors.
+%algebra %operations on matrices and vectors.
 Its goal is to facilitate its usage comparable to mathematical libraries
 like Mathematica and Matlab and to approach, at the same time, performance 
 characteristics of high-performance libraries like BLAS or ATLAS.
@@ -33,7 +33,7 @@ An important distinction to BLAS is that sparse matrices are supported.
 
 
 The %Matrix Template Library (incarnation) 4 is a generic library for linear
-algebra operations on matrices and vectors.
+%algebra %operations on matrices and vectors.
 Its goal is to facilitate its usage comparable to mathematical libraries
 like Mathematica and Matlab and to approach, at the same time, performance 
 characteristics of high-performance libraries like BLAS or ATLAS.
@@ -151,6 +151,7 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage rec_intro
    .
 -# Advanced Topics
+   -# \subpage copying
    -# \subpage function_nesting
 
 */
@@ -241,7 +242,7 @@ Specializations for certain compilers might be added later
 if there is a considerable performance gain over the meta-programming
 solution.
 
-Loops in reduction operations, like norms, are by default unrolled
+Loops in reduction %operations, like norms, are by default unrolled
 to 8 statements.
 The optimal unrolling depends on several factors, in particular
 the number of registers and the value type of the vector.
@@ -368,7 +369,7 @@ The second statement fuses four vector expressions:
 -# v is incremented by the sum of both vector; and
 -# u is incremented by the new value of v.
 
-Again, all these operations are performed in one loop and each vector
+Again, all these %operations are performed in one loop and each vector
 element is accessed exactly once.
 
 
@@ -489,7 +490,7 @@ the same way.
 If we cannot handle sparse matrices like dense (at least not efficiently), we
 can treat dense matrices like sparse ones.
 For performance reasons, matrices are not initialized by default. 
-Therefore, the first operation in the function fill is to set the matrix to zero.
+Therefore, the first operation in the function fill is to set the %matrix to zero.
 
 
 Internally the inserters for dense and sparse matrices are implemented completely
@@ -497,15 +498,15 @@ differently but the interface is the same.
 Dense inserters insert the value directly and there is not much to say about.
 
 Sparse inserters are more complicated.
-The constructor stretches the matrix so that the first five elements in a row
-(in a CCS matrix likewise the first 5 elements in a column) are inserted directly.
+The constructor stretches the %matrix so that the first five elements in a row
+(in a CCS %matrix likewise the first 5 elements in a column) are inserted directly.
 During the live time of the inserter, new elements are written directly into
 empty slots. 
 If all slots of a row (or column) are filled, new elements are written into an std::map.
 During the entire insertion process, no data is shifted.
 
 If an element is inserted twice then the existing element is overwritten, regardless
-if the element is stored in the matrix itself or in the overflow container.
+if the element is stored in the %matrix itself or in the overflow container.
 Overwriting is only the default. The function modify() illustrates how to use the inserter
 incrementally.
 Existing elements are incremented by the new value.
@@ -514,7 +515,7 @@ We hope that this ability facilitates the development of FEM code.
 For performance reasons it is advisable to customize the number of elements per row (or column),
 e.g., ins(m, 13).
 Reason being, the overflow container consumes  more memory per element then the 
-regular matrix container.
+regular %matrix container.
 In most applications, an upper limit can be easily given.
 However, the limit is not that strict: if some rows need more memory than the slot size it only
 results in slightly higher memory need for the overflow container.
@@ -527,7 +528,7 @@ Nota bene: inserters for dense matrices are not much more than facades for the m
 in order to provide the same interface as for sparse ones.
 However, dense inserters can be also very useful in the future for extending the 
 library to parallel computations.
-Then the inserter can be used to write values into remote matrix elements.
+Then the inserter can be used to write values into remote %matrix elements.
 
 A more powerful method to fill sparse (and dense) matrices provide the two functions
 element_matrix() and element_array().
@@ -544,13 +545,13 @@ Element matrices stored in MTL4 types can be accessed both ways and either
 element_array or element_matrix can be used.
 
 Both functions can be called with two or three arguments.
-In the former case the first argument is the element matrix and the second argument
+In the former case the first argument is the element %matrix and the second argument
 a vector containing the indices that correspond to the rows and columns of the
-assembled matrix.
+assembled %matrix.
 With three arguments, the second one is a vector of row indices and the third one
 a vector with column indices.
 Evidently, the size of the vector with the row/column indices should be equal to the
-number of rows/columns of the element matrix.
+number of rows/columns of the element %matrix.
 
 The vector type must provide a member function size and a bracket operator.
 Thus, mtl::dense_vector and std::vector can used (are models).
@@ -571,8 +572,8 @@ Norms on matrices can be computed in the same fashion as on vectors:
 
 \include matrix_norms.cpp
 
-Other matrix functions compute trace of a matrix,
-the element-wise conjugates, and the transposed matrix:
+Other %matrix functions compute trace of a %matrix,
+the element-wise conjugates, and the transposed %matrix:
 
 \include matrix_functions2.cpp
 
@@ -601,17 +602,17 @@ The following program illustrates how to add matrices, including scaled matrices
 The example shows that arbitrary combinations of matrices can be added, regardless their
 orientation, recursive or non-recursive memory layout, and sparseness.
 
-Matrix multiplication can be implemented as elegantly:
+%Matrix multiplication can be implemented as elegantly:
 
 
 \include matrix_mult_simple.cpp
 
-Arbitrary matrix types can be multiplied in MTL4.
+Arbitrary %matrix types can be multiplied in MTL4.
 Although inefficient combinations might be implemented inefficiently--we 
 come back to this later.
 Let's start with the operation that is the holy grail in 
 high-performance computing:
-dense matrix multiplication.
+dense %matrix multiplication.
 This is also the operation shown in the example above.
 The multiplication  can be executed with the function mult
 where the first two arguments are the operands and the third the result.
@@ -637,7 +638,7 @@ or proceed to \ref matrix_vector_functions "matrix-vector functions".
 
 /*! \page matrix_vector_functions Matrix-Vector Functions
 
-Available matrix-vector operations are currently multiplication
+Available %matrix-vector %operations are currently multiplication
 and updates.
 The former can also be expressed by operator and is described
 as \ref matrix_vector_expr expression.
@@ -647,7 +648,7 @@ program:
 
 \include rank_two_update.cpp
 
-The output of the matrix is formatted for better readability.
+The output of the %matrix is formatted for better readability.
 The functions also work for sparse matrices although we
 cannot recommend this for the sake of efficiency.
 
@@ -671,7 +672,7 @@ or proceed to \ref matrix_vector_expr "matrix-vector expressions".
 /*! \page matrix_vector_expr Matrix-Vector Expressions
 
 
-Matrix-vector products are written in the natural way:
+%Matrix-vector products are written in the natural way:
 
 \include matrix_vector_mult.cpp
 
@@ -682,7 +683,7 @@ different algorithms.
 The multiplication of Morton-ordered matrices with vectors is
 supported but currently not efficient.
 
-As all products the result of a matrix-vector multiplication can be 
+As all products the result of a %matrix-vector multiplication can be 
  -# Directly assigned;
  -# Incrementally assigned; or
  -# Decrementally assigned (not shown in the example).
@@ -694,12 +695,12 @@ Expressions like v= A*v will throw an exception.
 More subtle aliasing, e.g., partial overlap of the vectors
 might not be detected and result in undefined mathematical behavior.
 
-Matrix-vector products (MVP) cannot be combined with arbitrary vector
+%Matrix-vector products (MVP) cannot be combined with arbitrary vector
 operations.
 It is planned for the future to support expressions like
 r= b - A*x.
 
-Already supported is scaling of arguments, as well for the matrix
+Already supported is scaling of arguments, as well for the %matrix
 as for the vector:
 
 \include scaled_matrix_vector_mult.cpp
@@ -711,12 +712,12 @@ it is inefficient to scale the vector
 and obviously it is an even bigger waste to  scale both
 arguments.
 
-The matrix scaling on the fly requires the same number of operations
-as an in-place scaling with subsequent MVP (as each matrix element is
+The %matrix scaling on the fly requires the same number of %operations
+as an in-place scaling with subsequent MVP (as each %matrix element is
 used only once).
-Thus, it is advisable to scale the matrix in the expression instead
+Thus, it is advisable to scale the %matrix in the expression instead
 of scaling it before the multiplication and scaling it back afterwards
-(as the fourth block of operations).
+(as the fourth block of %operations).
 Scaling the vector upfront is more efficient under the quite likely
 assumption that A has more than 2*n non-zero elements.
 
@@ -747,7 +748,7 @@ or proceed to \ref rec_intro "recursion".
 
 Recursion is an important theme in MTL4.
 Besides matrices with recursive recursive memory layout -- cf. \ref matrix_types and \ref morton_dense --
-recursion with regard to algorithms plays a decisive role.
+%recursion with regard to algorithms plays a decisive role.
 
 To support the implementation of recursive algorithms we introduced -- in collaboration with David S. Wise --
 the concept to Recursator, an analogon of <a href=" http://www.sgi.com/tech/stl/Iterators.html">Iterator</a>.
@@ -759,13 +760,13 @@ Thus matrix_recursator of compressed2D cannot be declared.
 A recursator for vectors is planned for the future.
 
 Generally spoken, the matrix_recursator (cf. \ref recursion::matrix_recursator)
-consistently divides a matrix into four quadrants 
+consistently divides a %matrix into four quadrants 
 - north_west;
 - north_east;
 - south_west; and
 - south_east;
 .
-with the self-evident cartographic meaning (from here on we abreviate matrix recursator to recursator).
+with the self-evident cartographic meaning (from here on we abreviate %matrix recursator to recursator).
 The quadrants itself can be sub-divided again providing the recursive sub-division of matrices
 into scalars (or blocks with user-defined maximal size).
 
@@ -784,23 +785,23 @@ Block-recursive algorithms can be implemented efficiently by sub-dividing large 
 recursively into blocks of decreasing size until a block size is reached that allows efficient
 iterative treatment.
 Sub-matrices are only created at the base case and not during the recursive descent
-because the creation of sub-matrix might be a relatively expensive operation (e.g., with morton_dense) 
-while the creation of a new recursator requires only a few integer operations.
+because the creation of sub-matrix might be a relatively expensive %operation (e.g., with morton_dense) 
+while the creation of a new recursator requires only a few integer %operations.
 
 The recursator uses internally a virtual bound that is a power of 2 and at least as large as
 the number of rows and columns.
 In the example, the bound is 16 (as shown by the member function bound).
 When computing a quadrant the bound is halved and the starting row and column are potentially increased.
-For instance, the north_east quadrant is a virtual 8 by 8 matrix starting at row 0 and column 8.
+For instance, the north_east quadrant is a virtual 8 by 8 %matrix starting at row 0 and column 8.
 The sub-matrix referred by the north_east recursator is the intersection of this virtual quadrant with
-the original matrix A, i.e. an 8 by 2 matrix starting in row 0 and column 8.
+the original %matrix A, i.e. an 8 by 2 %matrix starting in row 0 and column 8.
 
 More functionality of recursators is shown in the following example:
 
 \include recursator2.cpp
 
 The function is_empty applied on a recursator computes whether the referred sub-matrix is empty,
-i.e. the intersection of the virtual quadrant and the original matrix A is empty.
+i.e. the intersection of the virtual quadrant and the original %matrix A is empty.
 The sub-matrix itself is not generated since this test can be performed from size and index information.
 In the same way, number of rows and columns of the referred sub-matrix can be computed without its creation.
 
@@ -813,8 +814,72 @@ much slower) code for smaller matrices.
 
 
 Return to \ref iteration "iteration"
-or proceed to \ref function_nesting "why and how we use functors".
+or proceed to \subpage copying.
 
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page copying Copying in MTL4: Shallow versus Deep
+
+Shallow copy -- i.e. copying data types with complex internal structures 
+by only copying pointers at the upper level -- allows for very short
+run-time since most of the data is not copied physically but only referred
+to in the target object.
+The draw-back is that changing either of the objects involved in a shallow
+copy will alter the other object too.
+Especially in complex mathematical applications this often leads to errors
+hard to track down.
+
+For that very reason we refrained from shallow copy semantics in assignments,
+that is after 
+\code 
+x= y; 
+\endcode one can change x or y without any impact on
+the other object.
+
+Some functions in MTL4 -- like sub_matrix -- return matrices or %matrix-like objects.
+Applying  deep copy here would cause a serious performance penalty.
+For that reason copy constructors use shallow copy.
+Thus the code
+\code
+matrix_type A(10, 10);
+A= B;
+\endcode
+is not equavalent to
+\code
+matrix_type A= B;
+\endcode
+
+With the current implementation we highly advise you to use the assignment
+wherever possible.
+The copy constructor is too dangerous in its present form!
+In addition, several expressions are transformed when used with assignment
+but not with copy constructor.
+For instance, 
+\code
+A= B * C;
+\endcode
+is internally handled as
+\code
+mult(B, C, A);
+\endcode
+A similar transformation does not exist for the copy constructor (yet).
+
+We agree that this situation -- the inconsistency between assignment and copy
+constructor -- is not satisfying.
+In some future release this misbehavior will be terminated by introducing
+move semantics that allows to limit shallow copy to cases where it is permissible.
+For now we can only recommend you to use assignments.
+
+
+
+
+
+Return to \subpage recursion
+or proceed to \ref function_nesting "why and how we use functors".
 
 */
 
@@ -1030,6 +1095,7 @@ We also specified our preferences how to compute this operation.
 When the compiler instantiate our functor for a given type combination it takes
 the first product implementation in our list that is admissible.
 
+Return to \subpage copying.
 
 */
 
