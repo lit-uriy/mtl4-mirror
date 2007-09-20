@@ -421,14 +421,14 @@ all %matrix types including sparse).
 
 Just in case you wonder why the %scalar value is only assigned to the diagonal
 elements of the %matrix not to all entries, this becomes quite clear
-when you think of a %matrix as a linear operator (from one vector space
+when you think of a %matrix as a linear operator (from one %vector space
 to another one).
 For instance, consider the multiplication of %vector x with the scalar alpha:
 \code
     y= alpha * x;
 \endcode
 where y is a %vector too.
-This %operation is equivalent to assigning alpha to the matrix A and multiplying x with 
+This %operation is equivalent to assigning alpha to the %matrix A and multiplying x with 
 A:
 \code
     A= alpha;
@@ -439,14 +439,14 @@ In other words, the %matrix A has the same impact on x as the scalar alpha itsel
 Assigning the %scalar value to the diagonal requires of course that the %matrix is 
 square.
 In the special case that the %scalar value is 0 (more precisely the multiplicative
-identity element of the %matrix's value_type) the matrix can be non-square.
+identity element of the %matrix's value_type) the %matrix can be non-square.
 This is consistent with the linear operator characteristic: applying the zero operator
-on some vector results in the zero vector with the dimension of the operators image.
+on some %vector results in the zero %vector with the dimension of the operators image.
 From a more pragmatic prospective 
 \code
     A= 0; 
 \endcode
-can be used to empty any %matrix, square or rectangular, sparse and dense. 
+can be used to clear any %matrix, square or rectangular, sparse and dense. 
 
 Dense matrices with a recursively designed memory layout
 can be defined with the type \ref morton_dense:
