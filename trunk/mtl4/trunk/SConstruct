@@ -208,7 +208,8 @@ if os.environ.has_key('BOOST_ROOT') :
 
 # In branches, the current directory is prepended
 pwd = os.getcwd()
-if not os.environ.has_key('MTL_BOOST_ROOT') or not os.path.samefile(pwd, mtlp):
+if not os.environ.has_key('MTL_BOOST_ROOT') \
+or (hasattr(os.path, 'samefile') and os.path.samefile(pwd, mtlp)):
      my_cpppath = [pwd] + my_cpppath
 
 env.Append(CPPPATH = my_cpppath)
