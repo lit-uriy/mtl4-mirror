@@ -19,6 +19,8 @@
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/sum.hpp>
+#include <boost/numeric/mtl/operation/min.hpp>
+#include <boost/numeric/mtl/operation/max.hpp>
 #include <boost/numeric/mtl/operation/trace.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 

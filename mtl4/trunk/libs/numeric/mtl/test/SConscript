@@ -34,6 +34,7 @@ sources = Split("""base_case_conversion.cpp
              element_matrix_test.cpp
              diagonal_setup_test.cpp
              vector_reduction_test.cpp
+             vector_min_max_test.cpp
              compressed2D.cpp
              dot_test.cpp
              resize_vector_test.cpp
