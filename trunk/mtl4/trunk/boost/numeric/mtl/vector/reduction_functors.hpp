@@ -31,6 +31,7 @@ struct one_norm_functor
     }
 };
 
+
 // sub-optimal if abs is not needed
 struct two_norm_functor
 {
@@ -54,6 +55,7 @@ struct two_norm_functor
 	value+= value2;
     }
 };
+
 
 struct infinity_norm_functor
 {
@@ -79,6 +81,7 @@ struct infinity_norm_functor
     }
 };
 
+
 struct sum_functor
 {
     template <typename Value>
@@ -100,6 +103,7 @@ struct sum_functor
 	value+= value2;
     }
 };
+
 
 struct product_functor
 {
@@ -124,6 +128,50 @@ struct product_functor
 };
 
 
+struct max_functor
+{
+    template <typename Value>
+    static inline void init(Value& value)
+    {
+	using math::identity; 
+	value= identity(math::max<Value>(), value);
+    }
+
+    template <typename Value, typename Element>
+    static inline void update(Value& value, const Element& x)
+    {    
+	value= math::max<Value>()(value, x);
+    }
+
+    template <typename Value>
+    static inline void finish(Value& value, const Value& value2)
+    {
+	value= math::max<Value>()(value, value2);
+    }
+};
+
+
+struct min_functor
+{
+    template <typename Value>
+    static inline void init(Value& value)
+    {
+	using math::identity; 
+	value= identity(math::min<Value>(), value);
+    }
+
+    template <typename Value, typename Element>
+    static inline void update(Value& value, const Element& x)
+    {    
+	value= math::min<Value>()(value, x);
+    }
+
+    template <typename Value>
+    static inline void finish(Value& value, const Value& value2)
+    {
+	value= math::min<Value>()(value, value2);
+    }
+};
 
 
 }} // namespace mtl::vector
