@@ -4,6 +4,7 @@ sources = Split("""vector1.cpp
                    vector2.cpp
                    vector_norm.cpp
                    vector_reduction.cpp
+                   vector_min_max.cpp
                    dot.cpp
                    vector_expr.cpp
                    rich_vector_expr.cpp

@@ -263,6 +263,10 @@ unrolling can be explicitly controlled as shown in the last
 command.
 The results of these reductions are the value type of the vector.
 
+In the same way, the maximum and minimum of vectors are computed:
+
+\include vector_min_max.cpp
+
 The dot product of two vectors is computed with the function \ref dot:
 
 \include dot.cpp
