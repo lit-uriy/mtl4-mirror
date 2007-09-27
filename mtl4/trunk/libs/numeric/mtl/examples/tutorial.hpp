@@ -186,7 +186,7 @@ most cases only a few seconds.
 
 The short program certainly does not need much explanation only some
 brief comments.
-The vector in the program above is a column vector.
+The %vector in the program above is a column %vector.
 The constructor in the example takes two arguments: the size and the 
 initial value.
 
@@ -200,7 +200,7 @@ penalty are not acceptable.
 Extra functionality will be provided in the future if necessary for 
 interoperability with Fortran libraries.
 
-The following program defines a row vector of 7 elements without 
+The following program defines a row %vector of 7 elements without 
 (explicit) initialization.
 
 \include vector2.cpp
@@ -208,7 +208,7 @@ The following program defines a row vector of 7 elements without
 Scalar values can be assigned to vectors if the type of the scalar
 value is assignable to the type of the elements.
 Scalar types are in MTL4 all types that are not explicitly defined
-by type traits as vectors or matrices, thus almost all types.
+by type %traits as vectors or matrices, thus almost all types.
 
 
 Proceed to \ref vector_functions "vector functions".  
@@ -234,7 +234,7 @@ comments here.
 The definitions of the \ref one_norm, \ref two_norm, and 
 \ref infinity_norm can
 be found in their respective documentations.
-Vector norms are for performance reasons computed with unrolled loops.
+%Vector norms are for performance reasons computed with unrolled loops.
 Since we do not want to rely on the compilers' capability and 
 in order to have more control over the optimization, the unrolling
 is realized by meta-programming.
@@ -245,7 +245,7 @@ solution.
 Loops in reduction %operations, like norms, are by default unrolled
 to 8 statements.
 The optimal unrolling depends on several factors, in particular
-the number of registers and the value type of the vector.
+the number of registers and the value type of the %vector.
 The last statement shows how to unroll the computation to six
 statements.
 The maximum for unrolling is 8 (it might be increased later).
@@ -258,10 +258,10 @@ be computed:
 
 \include vector_reduction.cpp
 
-As vector reductions base on the same implementation as norms, the
+As %vector reductions base on the same implementation as norms, the
 unrolling can be explicitly controlled as shown in the last
 command.
-The results of these reductions are the value type of the vector.
+The results of these reductions are the value type of the %vector.
 
 In the same way, the maximum and minimum of vectors are computed:
 
@@ -281,7 +281,7 @@ Joel de Guzman's result type deduction from Boost is used.
 
 The example also showed how to compute the conjugate values of all
 elements.
-The vector is not changed but a view on the vector is created
+The %vector is not changed but a view on the %vector is created
 that conjugate an element when accessed.
 
 The transposition of vectors will be implemented soon.
@@ -297,12 +297,12 @@ or proceed to \ref vector_expr "vector expressions".
 
 /*! \page vector_expr Vector Expressions
 
-The following program illustrates the usage of basic vector
+The following program illustrates the usage of basic %vector
 expressions.
 
 \include vector_expr.cpp
 
-The mathematical definition of vector spaces requires that
+The mathematical definition of %vector spaces requires that
 vectors can be added, multiplied with scalar values
 and the results can be assigned to vectors.
 In MTL4, the vectors must have the same algebraic shape, 
@@ -314,14 +314,14 @@ then the elements must also be of the same algebraic shape.
 
 Products of scalars and vectors are
  implemented by a view, see \ref vector::scaled_view,
-and vector elements are multiplied with the factor when
+and %vector elements are multiplied with the factor when
 accessing an element of the view.
 Please notice that the scaling factor's type is not required to be
 identical with the vector's value type.
 Furthermore, the value type of the view can be different from
 the vector's value type if necessary to represent the products.
-The command is an example for it: multiplying a double vector
-with a complex number requires a complex vector view to 
+The command is an example for it: multiplying a double %vector
+with a complex number requires a complex %vector view to 
 guarantee the correctness of the results.
 
 Traditional definitions of operators perform computations
@@ -333,7 +333,7 @@ requires then the execution of n loops (possibly more to copy
 the temporaries on the stack).
 If the vectors are too large for the cache, values must be loaded
 repeatedly from slower memories.
-Expression templates circumvent this repeated loading of vector
+Expression templates circumvent this repeated loading of %vector
 elements by
 performing only one loop.
 
@@ -349,10 +349,10 @@ or proceed to \ref rich_vector_expr "rich vector expressions".
 /*! \page rich_vector_expr Rich Vector Expressions
 
 As discussed in the previous chapter, 
-vector operation can be accelerated by improving
+%vector operation can be accelerated by improving
 their cache locality via expression templates.
 Cache locality can be further improved in applications
-when subsequent vector expressions are evaluated
+when subsequent %vector expressions are evaluated
 in one loop, data dependencies allowing.
 Unfortunately, this so-called loop fusion cannot be 
 realized with expression templates.
@@ -366,14 +366,14 @@ templates:
 \include rich_vector_expr.cpp
 
 The first example shows the combination of an incremental
-assignment with a vector addition.
-The second statement fuses four vector expressions:
+assignment with a %vector addition.
+The second statement fuses four %vector expressions:
 -# The value 2 is assigned to every element of x;
 -# w is scaled in-place with 3;
--# v is incremented by the sum of both vector; and
+-# v is incremented by the sum of both %vector; and
 -# u is incremented by the new value of v.
 
-Again, all these %operations are performed in one loop and each vector
+Again, all these %operations are performed in one loop and each %vector
 element is accessed exactly once.
 
 
@@ -579,14 +579,14 @@ element_array or element_matrix can be used.
 
 Both functions can be called with two or three arguments.
 In the former case the first argument is the element %matrix and the second argument
-a vector containing the indices that correspond to the rows and columns of the
+a %vector containing the indices that correspond to the rows and columns of the
 assembled %matrix.
-With three arguments, the second one is a vector of row indices and the third one
-a vector with column indices.
-Evidently, the size of the vector with the row/column indices should be equal to the
+With three arguments, the second one is a %vector of row indices and the third one
+a %vector with column indices.
+Evidently, the size of the %vector with the row/column indices should be equal to the
 number of rows/columns of the element %matrix.
 
-The vector type must provide a member function size and a bracket operator.
+The %vector type must provide a member function size and a bracket operator.
 Thus, mtl::dense_vector and std::vector can used (are models).
 
 
@@ -688,7 +688,7 @@ cannot recommend this for the sake of efficiency.
 In the future, updates will be also expressible with operators.
 For instance, rank_one_update(A, v, w) can be written as
 A+= conj(v) * trans(w) if v and w are column vectors (if w
-is a row vector the transposition can-and must-be removed).
+is a row %vector the transposition can-and must-be removed).
 Thus, the orientation is relevant in operator notation
 where the functions rank_one_update and rank_two_update
 ignore the orientation.
@@ -721,14 +721,14 @@ As all products the result of a %matrix-vector multiplication can be
  -# Incrementally assigned; or
  -# Decrementally assigned (not shown in the example).
 .
-to a vector variable.
+to a %vector variable.
 
-Warning: the vector argument and the result must be different!
+Warning: the %vector argument and the result must be different!
 Expressions like v= A*v will throw an exception.
-More subtle aliasing, e.g., partial overlap of the vectors
+More subtle aliasing, e.g., partial overlap of the %vectors
 might not be detected and result in undefined mathematical behavior.
 
-%Matrix-vector products (MVP) cannot be combined with arbitrary vector
+%Matrix-vector products (MVP) cannot be combined with arbitrary %vector
 operations.
 It is planned for the future to support expressions like
 r= b - A*x.
@@ -740,8 +740,8 @@ as for the vector:
 
 All three expressions and the following two blocks
 compute the same result.
-However, since vector elements are accessed multiple times in an MVP
-it is inefficient to scale the vector
+However, since %vector elements are accessed multiple times in an MVP
+it is inefficient to scale the %vector
 and obviously it is an even bigger waste to  scale both
 arguments.
 
@@ -751,7 +751,7 @@ used only once).
 Thus, it is advisable to scale the %matrix in the expression instead
 of scaling it before the multiplication and scaling it back afterwards
 (as the fourth block of %operations).
-Scaling the vector upfront is more efficient under the quite likely
+Scaling the %vector upfront is more efficient under the quite likely
 assumption that A has more than 2*n non-zero elements.
 
 Return to \ref matrix_vector_functions "matrix-vector functions"
