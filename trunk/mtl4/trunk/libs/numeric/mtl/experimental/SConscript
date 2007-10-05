@@ -15,4 +15,4 @@ sources = Split("""iterator_adapter.cpp
 for p in sources:
     debug_env.Program(p)
 
-Default('empty')
+Default(debug_env.Program('empty.cpp'))

@@ -358,11 +358,13 @@ inline size(const dense2D<Value, Parameters>& matrix)
 
 namespace traits
 {
+    // VC 8.0 finds ambiguity with mtl::tag::morton_dense (I wonder why, especially here)
+    using mtl::dense2D;
 
-// ================
-// Range generators
-// For cursors
-// ================
+    // ================
+    // Range generators
+    // For cursors
+    // ================
 
     template <typename Value, typename Parameters>
     struct range_generator<glas::tag::all, dense2D<Value, Parameters> >

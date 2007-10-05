@@ -6,6 +6,9 @@
 #include <limits>
 #include <cmath>
 
+// Protect from namespace pollution
+#undef max
+
 namespace mtl { namespace recursion {
 
 
@@ -14,7 +17,7 @@ std::size_t inline first_part(std::size_t n)
 {
     if (n == 0) return 0;
 
-    std::size_t  i= std::numeric_limits<std::size_t>::max()/2 + 1;
+    std::size_t i= std::numeric_limits<std::size_t>::max()/2 + 1;
 
     while(i >= n) i>>= 1;
     return i;

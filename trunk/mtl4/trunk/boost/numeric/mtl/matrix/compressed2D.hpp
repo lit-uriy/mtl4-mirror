@@ -149,11 +149,11 @@ struct compressed_minor_cursor
     typedef compressed_minor_cursor       self;
     typedef std::size_t                   size_t;
 
-    explicit compressed_minor_cursor(compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
+    explicit compressed_minor_cursor(mtl::compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
 	: base(matrix, r, c), matrix(matrix)
     {}
 
-    explicit compressed_minor_cursor(compressed2D<Elt, Parameters> const& matrix, size_t offset) 
+    explicit compressed_minor_cursor(mtl::compressed2D<Elt, Parameters> const& matrix, size_t offset) 
 	: base(matrix, offset), matrix(matrix)
     {}
 
@@ -176,7 +176,7 @@ struct compressed_minor_cursor
 	return *this;
     }
 
-    compressed2D<Elt, Parameters> const& matrix;
+    mtl::compressed2D<Elt, Parameters> const& matrix;
 };
 
 
@@ -672,11 +672,13 @@ inline size(const compressed2D<Value, Parameters>& matrix)
 
 namespace traits
 {
+    // VC 8.0 finds ambiguity with mtl::tag::morton_dense (I wonder why, especially here)
+    using mtl::compressed2D;
 
-// ===========
-// For cursors
-// ===========
-
+    // ===========
+    // For cursors
+    // ===========
+        
     template <class Elt, class Parameters>
     struct range_generator<glas::tag::nz, compressed2D<Elt, Parameters> >
       : detail::all_offsets_range_generator<compressed2D<Elt, Parameters>,

@@ -582,10 +582,12 @@ inline size(const morton_dense<Value, Mask, Parameters>& matrix)
 
 namespace traits
 {
+    // VC 8.0 finds ambiguity with mtl::tag::morton_dense (I wonder why)
+    using mtl::morton_dense;
 
-// ===========
-// For cursors
-// ===========
+    // ===========
+    // For cursors
+    // ===========
 
     template <class Elt, unsigned long BitMask, class Parameters>
     struct range_generator<glas::tag::all, morton_dense<Elt, BitMask, Parameters> >

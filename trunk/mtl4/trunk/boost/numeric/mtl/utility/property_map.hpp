@@ -80,35 +80,35 @@ struct value<morton_dense<Elt, BitMask, Parameters> >
 // ================
 
 template <class Elt, class Parameters>
-struct row<compressed2D<Elt, Parameters> >
+struct row<mtl::compressed2D<Elt, Parameters> >
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
-      , mtl::detail::major_in_key<compressed2D<Elt, Parameters> >
-      , mtl::detail::indexer_minor_ref<compressed2D<Elt, Parameters> >
+      , mtl::detail::major_in_key<mtl::compressed2D<Elt, Parameters> >
+      , mtl::detail::indexer_minor_ref<mtl::compressed2D<Elt, Parameters> >
     >::type type;  
 };
 
 template <class Elt, class Parameters>
-struct col<compressed2D<Elt, Parameters> >
+struct col<mtl::compressed2D<Elt, Parameters> >
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
-      , mtl::detail::indexer_minor_ref<compressed2D<Elt, Parameters> >
-      , mtl::detail::major_in_key<compressed2D<Elt, Parameters> >
+      , mtl::detail::indexer_minor_ref<mtl::compressed2D<Elt, Parameters> >
+      , mtl::detail::major_in_key<mtl::compressed2D<Elt, Parameters> >
     >::type type;  
 };
 
 template <class Elt, class Parameters>
-struct const_value<compressed2D<Elt, Parameters> >
+struct const_value<mtl::compressed2D<Elt, Parameters> >
 {
-    typedef mtl::detail::matrix_offset_const_value<compressed2D<Elt, Parameters> > type;
+    typedef mtl::detail::matrix_offset_const_value<mtl::compressed2D<Elt, Parameters> > type;
 };
 
 template <class Elt, class Parameters>
-struct value<compressed2D<Elt, Parameters> >
+struct value<mtl::compressed2D<Elt, Parameters> >
 {
-    typedef mtl::detail::matrix_offset_value<compressed2D<Elt, Parameters> > type;
+    typedef mtl::detail::matrix_offset_value<mtl::compressed2D<Elt, Parameters> > type;
 };
   
   

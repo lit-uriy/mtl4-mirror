@@ -17,7 +17,7 @@ def add_debug(env):
         env.Append(CCFLAGS = '/Z7')
     else:
         env.Append(CCFLAGS = '-g')
-    print macro_flag(env, 'MTL_ASSERT_FOR_THROW')
+    #print macro_flag(env, 'MTL_ASSERT_FOR_THROW')
     env.Append(CCFLAGS = macro_flag(env, 'MTL_ASSERT_FOR_THROW'))
    
 
@@ -34,10 +34,33 @@ def check_g5():
     print "isn't G5"
     return None
 
+
+def add_platform_flags(env):
+    if sys.platform == 'win32' and env['CC'] == 'cl':
+        # The following two if shouldn't be necessary
+        # Note that INCLUDE must be split and LIB must not :-P
+        if os.environ.has_key('INCLUDE') :
+            for p in os.environ['INCLUDE'].split(';'):
+                env.Append(CPPPATH = p)
+        if os.environ.has_key('LIB') :
+            env.Append(LIBPATH = os.environ['LIB'])
+
+        # I hope we find a cleaner way to get rid of this warning
+
+        # Problem with CRTP
+        env.Append(CCFLAGS = '/wd4355')
+
+        # Warning in VC's own headers :-!
+        env.Append(CCFLAGS = '/wd4996')
+
+
 # add optimization flags to environment
 # normal optimization for opt=1, for opt=2 high optimization
+# at the moment additional flags are added in this function
+# -> this needs to be cleaned up!
 def add_opt(env, opt):
-    env.Append(CCFLAGS = macro_flag(env, 'NDEBUG'))
+    if int(opt):
+        env.Append(CCFLAGS = macro_flag(env, 'NDEBUG'))
     if sys.platform == 'win32' and conf.env['CC'] == 'cl':
         if int(opt) == 1:
             env.Append(CCFLAGS = '/O2 /Ot /Ob2')
@@ -229,6 +252,10 @@ opts.Add('add_ccflag', 'Add extra CC compiler flags that aren\'t automatically s
 opts.Add('add_cxxflag', 'Add extra CXX compiler flags that aren\'t automatically set', '')
 opts.Add('add_optflag', 'Add extra optimization flags that aren\'t automatically set', '')
 
+############
+# BLAS flags
+############
+
 opts.Add('with_blas', 'Link with BLAS (have to given each time :-( until we can save configurations)', 0)
 opts.Add('blas_path', 'Add path of blas library', '')
 opts.Add('blas_lib', 'Add name of blas library', '')
@@ -251,8 +278,9 @@ add_cxxflag = ARGUMENTS.get('add_cxxflag', '')
 if add_cxxflag:
      env.Append(CXXFLAGS = add_cxxflag)
 
+add_platform_flags(env)
+
 #create alternative environments
-basic_env = env.Copy()
 debug_env = env.Copy()
 opt_env = env.Copy()
 high_opt_env = env.Copy()
@@ -288,7 +316,7 @@ check = ARGUMENTS.get('check', 0)
 # Sub-directories
 #####################
 
-Export('env basic_env debug_env opt_env high_opt_env check')
+Export('env debug_env opt_env high_opt_env check')
 
 SConscript(['libs/numeric/mtl/build/SConscript', 
             'libs/numeric/mtl/test/SConscript', 

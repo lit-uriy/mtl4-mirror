@@ -8,6 +8,9 @@
 #include <limits>
 #include <functional>
 
+// Protect from namespace pollution
+#undef max
+#undef min
 
 namespace math {
 

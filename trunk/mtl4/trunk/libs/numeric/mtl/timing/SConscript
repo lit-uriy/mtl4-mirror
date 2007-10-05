@@ -14,6 +14,6 @@ for p in sources:
 p = high_opt_env.Program(Split('no_inline_timing.cpp no_inline_ext.cpp'))
 programs.append(p)
 
-Default('empty')
+Default(high_opt_env.Program('empty.cpp'))
 
 # need target everything or something like that

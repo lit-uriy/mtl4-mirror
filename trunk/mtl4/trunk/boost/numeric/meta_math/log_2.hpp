@@ -13,7 +13,7 @@ template <unsigned long X>
 struct log_2
 {
     // BOOST_STATIC_ASSERT(is_power_of_2_meta<X>::value);
-    static const unsigned long value= log_2< X >> 1 >::value + 1;
+    static const unsigned long tmp= X >> 1, value= log_2<tmp>::value + 1;
 };
 
 template <> struct log_2<1>
