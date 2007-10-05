@@ -103,10 +103,13 @@ public:
     pointer begin() { return this->elements() ; }
     pointer end() { return this->elements() + size() ; }
 
+#ifndef _MSC_VER
+    // Alleged ambiguity
     vec_vec_asgn_expr<self, self> operator=( self const& e ) 
     {
 	return vec_vec_asgn_expr<self, self>( *this, e );
     }
+#endif
 
     template <class E>
     void check_consistent_shape( vec_expr<E> const& e ) const
