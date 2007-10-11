@@ -40,6 +40,7 @@ struct crtp_matrix_assign
     template <typename MatrixSrc>
     Matrix& operator=(const matrix::mat_expr<MatrixSrc>& src)
     {
+		std::cout << "In assignment\n";
 #ifdef  _MSC_VER
 		// For other compilers there is an assign operator for the same type
 		// and only this one checks for self-assignment.
