@@ -15,6 +15,7 @@ def macro_flag(env, flag):
 def add_debug(env):
     if sys.platform == 'win32' and conf.env['CC'] == 'cl':
         env.Append(CCFLAGS = '/Z7')
+        env.Append(CCFLAGS = '/MDd')
     else:
         env.Append(CCFLAGS = '-g')
     #print macro_flag(env, 'MTL_ASSERT_FOR_THROW')
@@ -36,7 +37,13 @@ def check_g5():
 
 
 def add_platform_flags(env):
-    if sys.platform == 'win32' and env['CC'] == 'cl':
+    if env['CC'] == 'cl':
+        # Turn off some warnings: 1. for problems with CRTP 2. with VC's own headers 3. ??? 
+        # I hope we find a cleaner way to get rid of this warning
+        wd = ' /wd4355 /wd4996 /wd4099'
+        conf.env.Append(CCFLAGS = '/EHsc /D_CONSOLE /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX' +
+                                  ' /D_HAS_ITERATOR_DEBUGGING=0 /D_SECURE_SCL=0' + wd)
+
         # The following two if shouldn't be necessary
         # Note that INCLUDE must be split and LIB must not :-P
         if os.environ.has_key('INCLUDE') :
@@ -44,14 +51,6 @@ def add_platform_flags(env):
                 env.Append(CPPPATH = p)
         if os.environ.has_key('LIB') :
             env.Append(LIBPATH = os.environ['LIB'])
-
-        # I hope we find a cleaner way to get rid of this warning
-
-        # Problem with CRTP
-        env.Append(CCFLAGS = '/wd4355')
-
-        # Warning in VC's own headers :-!
-        env.Append(CCFLAGS = '/wd4996')
 
 
 # add optimization flags to environment
@@ -66,6 +65,7 @@ def add_opt(env, opt):
             env.Append(CCFLAGS = '/O2 /Ot /Ob2')
         elif int(opt) == 2:
             env.Append(CCFLAGS = '/Ox')
+            env.Append(CCFLAGS = '/MD')
     else:
         if int(opt) == 2:
     	    env.Append(CCFLAGS = '-O3')
@@ -87,11 +87,6 @@ def check_no_long_double(conf):
 	if tmatch and string.atof(tmatch.group(1)) == 4.0:
 	    conf.env.Append(CCFLAGS = '-Wno-long-double')
 	    # conf.env.Append(CXXFLAGS = '-Wno-long-double')
-
-
-def strange_compiler_flags(conf):
-    if conf.env['CC'] == 'cl':
-         conf.env.Append(CCFLAGS = '/EHsc')
 
 
 def add_user_opt(env, add_optflag):
@@ -206,7 +201,6 @@ env = Environment()
 
 conf = Configure(env)
 check_no_long_double(conf)
-strange_compiler_flags(conf)
 env = conf.Finish()
 
 # Search only for BLAS when explicitly asked for

@@ -6,9 +6,6 @@
 #include <limits>
 #include <cmath>
 
-// Protect from namespace pollution
-#undef max
-
 namespace mtl { namespace recursion {
 
 
