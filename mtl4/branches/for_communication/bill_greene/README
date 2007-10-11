@@ -1,0 +1,102 @@
+-*- text -*-
+
+$COPYRIGHT$
+---------------------------------------------------------------
+
+              The Matrix Template Library
+                      Version 4 
+		   Release alpha.1
+
+I. Introduction
+===============
+
+The Matrix Template Library is a C++ class library for basic linear
+algebra. The MTL is designed for high-performance while at the same
+time taking advantage of the generic programming paradigm (ala the
+STL) to allow much greater flexibility and breadth of
+functionality. Many new and advanced programming techniques were used
+in the construction of this library.
+
+The MTL is a low level library in the sense that the user must be
+conscious of the matrix type being used, and that all computationally
+expensive operations are explicit. The MTL is not a C++ Matlab or
+Mathematica. Nevertheless, the interface is designed to be simple and easy
+to use.
+
+The matrix types provided include compressed sparse row/column,
+traditional row- and column-major dense, Morton-order, and block-recursive
+matrices. All matrix types share a common and easy to use interface.
+
+The algorithms consist of the traditional basic linear algebra
+routines (from the BLAS level-1 to 3) which includes matrix and vector
+arithmetic.
+
+
+II. Compilers
+=============
+
+The Matrix Template Library is written in compliance with the C++ standard
+and should be compilable with every compiler compliant with the standard.
+It has been tested (and passed) with the following compilers and architectures:
+
+Linux
+-----
+g++ 4.0.1
+g++ 4.1.1
+g++ 4.1.2
+icc 9.0
+
+Macintosh
+---------
+g++ 4.0.1
+
+More compilers will be tested in the future.
+
+Compilers that are not standard-compliant are not subject to support.
+
+
+III. Documentation
+==================
+
+The documentation can be generated with doxygen in the main directory and
+is found in the /libs/numeric/mtl/doc. You
+can also view the documentation at our web site:
+www.osl.iu.edu/research/mtl/mtl4/doc
+At the moment, the documentation illustrates the basic operations and
+partially provides a reference manual of some classes and functions.
+A detailed description of more features, especially tuning opportunities,
+is in the works.
+
+There are also a large number of examples in the /libs/numeric/mtl/examples
+directory.
+
+
+IV. Installation Procedure
+==========================
+
+See the file INSTALL in this directory.
+
+
+
+V. Contact Information
+=======================
+
+The Matrix Template Library is available at the main distribution site:
+
+    http://www.osl.iu.edu/research/mtl
+
+This distribution includes:
+
+    - Source code for the MTL (all header files /boost/numeric/mtl)
+    - Some completing sources (header files /boost/numeric/meta_math)
+    - A test suite (/libs/numeric/mtl/test)
+    - Some example code (/libs/numeric/mtl/examples)
+
+Bug reports should be sent to mtl4@osl.iu.edu.
+
+Questions, comments, suggestions, and requests for additional
+information should also be directed to mtl4@osl.iu.edu.
+
+Subscribe at:
+
+     http://www.osl.iu.edu/mailman/listinfo.cgi/mtl4
