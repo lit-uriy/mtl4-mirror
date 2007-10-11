@@ -72,7 +72,6 @@ int test_main(int argc, char* argv[])
     compressed2D<double>                           comp(5, 7);
     compressed2D<std::complex<double> >            ccomp(5, 7);
 
-    test(dc, "Dense column major", dr, "Dense row major");
     test(dc, "Dense column major", dc, "Dense column major");
     test(dc, "Dense column major", cdr, "Complex dense row major");
     test(dc, "Dense column major", md, "Morton N-order");

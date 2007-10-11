@@ -103,13 +103,12 @@ public:
     pointer begin() { return this->elements() ; }
     pointer end() { return this->elements() + size() ; }
 
-#ifndef _MSC_VER
-    // Alleged ambiguity
+    // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
+	// Removing the operator ends in run-time error
     vec_vec_asgn_expr<self, self> operator=( self const& e ) 
     {
 	return vec_vec_asgn_expr<self, self>( *this, e );
     }
-#endif
 
     template <class E>
     void check_consistent_shape( vec_expr<E> const& e ) const

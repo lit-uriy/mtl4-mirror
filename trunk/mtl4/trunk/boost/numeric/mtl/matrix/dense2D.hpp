@@ -245,7 +245,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 
 
-#ifndef _MSC_VER
+    // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
+	// Removing the operator ends in run-time error
    self& operator=(const self& src)
     {
 	// no self-copy
@@ -255,7 +256,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	std::copy(src.elements(), src.elements()+src.used_memory(), this->elements());
 	return *this;
     }
-#endif
 
     // import operators from CRTP base class
     using assign_base::operator=;

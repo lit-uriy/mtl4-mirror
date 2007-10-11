@@ -348,8 +348,8 @@ class compressed2D
 	matrix_copy(src, *this);
     }
 
-#ifndef _MSC_VER
-    // Alleged ambiguity
+    // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
+	// Removing the operator ends in run-time error
     self& operator=(const self& src)
     {
 	// no self-copy
@@ -358,7 +358,6 @@ class compressed2D
 	matrix_copy(src, *this);
 	return *this;
     }
-#endif
 
     using assign_base::operator=;
 
