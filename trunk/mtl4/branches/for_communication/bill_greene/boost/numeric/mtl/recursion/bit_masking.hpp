@@ -1,4 +1,11 @@
-// $COPYRIGHT$
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 
 #ifndef MTL_BIT_MASKING_INCLUDE
 #define MTL_BIT_MASKING_INCLUDE
@@ -169,7 +176,7 @@ struct is_32_base_case_col_major
 template <unsigned long K, unsigned long T>
 struct row_major_shark_mask
 {
-    static const unsigned long value= (lsb_mask<K-T>::value << K+T) | lsb_mask<T>::value;
+    static const unsigned long value= (lsb_mask<K-T>::value << (K+T)) | lsb_mask<T>::value;
 };
 
 

@@ -1,4 +1,11 @@
-// $COPYRIGHT$
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 
 #ifndef MTL_MORTON_DENSE_INCLUDE
 #define MTL_MORTON_DENSE_INCLUDE
@@ -639,18 +646,18 @@ namespace traits
     struct range_generator<glas::tag::all, 
 			   detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tag::row, 2> >
         : range_generator<glas::tag::nz, 
-			  detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tag::row, 2> >
+			  detail::sub_matrix_cursor<mtl::morton_dense<Elt, BitMask, Parameters>, glas::tag::row, 2> >
     {};
 
     template <class Elt, unsigned long BitMask, class Parameters>
     struct range_generator<glas::tag::col, morton_dense<Elt, BitMask, Parameters> >
-	: detail::all_cols_range_generator<morton_dense<Elt, BitMask, Parameters>, complexity_classes::linear_cached> 
+	: detail::all_cols_range_generator<mtl::morton_dense<Elt, BitMask, Parameters>, complexity_classes::linear_cached> 
     {};
 
     // For a cursor pointing to some row give the range of elements in this row 
     template <class Elt, unsigned long BitMask, class Parameters>
     struct range_generator<glas::tag::nz, 
-			   detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tag::col, 2> >
+			   detail::sub_matrix_cursor<mtl::morton_dense<Elt, BitMask, Parameters>, glas::tag::col, 2> >
     {
 	typedef morton_dense<Elt, BitMask, Parameters>                   matrix;
 	typedef detail::sub_matrix_cursor<matrix, glas::tag::col, 2>  cursor;
@@ -751,25 +758,25 @@ namespace traits
     template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
     struct range_generator<tag::iter::nz, 
 			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
-      : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, false>
+      : public detail::morton_dense_iterator_range_generator<OuterTag, mtl::morton_dense<Value, BitMask, Parameters>, false>
     {};
 
     template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
     struct range_generator<tag::iter::all, 
 			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
-      : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, false>
+      : public detail::morton_dense_iterator_range_generator<OuterTag, mtl::morton_dense<Value, BitMask, Parameters>, false>
     {};
 
     template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
     struct range_generator<tag::const_iter::nz, 
 			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
-      : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, true>
+      : public detail::morton_dense_iterator_range_generator<OuterTag, mtl::morton_dense<Value, BitMask, Parameters>, true>
     {};
 
     template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
     struct range_generator<tag::const_iter::all, 
 			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
-      : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, true>
+      : public detail::morton_dense_iterator_range_generator<OuterTag, mtl::morton_dense<Value, BitMask, Parameters>, true>
     {};
 
 

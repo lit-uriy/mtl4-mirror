@@ -1,4 +1,11 @@
-// $COPYRIGHT$
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 
 #ifndef MTL_PROPERTY_MAP_INCLUDE
 #define MTL_PROPERTY_MAP_INCLUDE
@@ -71,7 +78,7 @@ struct const_value<morton_dense<Elt, BitMask, Parameters> >
 template <class Elt, unsigned long BitMask, class Parameters>
 struct value<morton_dense<Elt, BitMask, Parameters> >
 {
-    typedef mtl::detail::matrix_value_ref<morton_dense<Elt, BitMask, Parameters> > type;
+    typedef mtl::detail::matrix_value_ref<mtl::morton_dense<Elt, BitMask, Parameters> > type;
 };
 
 
@@ -84,8 +91,8 @@ struct row<compressed2D<Elt, Parameters> >
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
-      , mtl::detail::major_in_key<compressed2D<Elt, Parameters> >
-      , mtl::detail::indexer_minor_ref<compressed2D<Elt, Parameters> >
+      , mtl::detail::major_in_key<mtl::compressed2D<Elt, Parameters> >
+      , mtl::detail::indexer_minor_ref<mtl::compressed2D<Elt, Parameters> >
     >::type type;  
 };
 
@@ -94,21 +101,21 @@ struct col<compressed2D<Elt, Parameters> >
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
-      , mtl::detail::indexer_minor_ref<compressed2D<Elt, Parameters> >
-      , mtl::detail::major_in_key<compressed2D<Elt, Parameters> >
+      , mtl::detail::indexer_minor_ref<mtl::compressed2D<Elt, Parameters> >
+      , mtl::detail::major_in_key<mtl::compressed2D<Elt, Parameters> >
     >::type type;  
 };
 
 template <class Elt, class Parameters>
 struct const_value<compressed2D<Elt, Parameters> >
 {
-    typedef mtl::detail::matrix_offset_const_value<compressed2D<Elt, Parameters> > type;
+    typedef mtl::detail::matrix_offset_const_value<mtl::compressed2D<Elt, Parameters> > type;
 };
 
 template <class Elt, class Parameters>
 struct value<compressed2D<Elt, Parameters> >
 {
-    typedef mtl::detail::matrix_offset_value<compressed2D<Elt, Parameters> > type;
+    typedef mtl::detail::matrix_offset_value<mtl::compressed2D<Elt, Parameters> > type;
 };
   
   

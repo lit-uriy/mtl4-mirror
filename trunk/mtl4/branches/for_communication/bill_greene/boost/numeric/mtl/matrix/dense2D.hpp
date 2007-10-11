@@ -1,4 +1,11 @@
-// $COPYRIGHT$
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 
 #ifndef MTL_DENSE2D_INCLUDE
 #define MTL_DENSE2D_INCLUDE
@@ -454,7 +461,7 @@ namespace traits
 
     template <typename Value, typename Parameters>
     struct range_generator<glas::tag::col, dense2D<Value, Parameters> >
-	: detail::all_cols_range_generator<dense2D<Value, Parameters>, 
+	: detail::all_cols_range_generator<mtl::dense2D<Value, Parameters>, 
 					   typename detail::dense2D_cc<typename Parameters::orientation>::type>
     {};
  
@@ -626,7 +633,7 @@ namespace traits
     template <typename Value, typename Parameters, typename OuterTag>
     struct range_generator<tag::iter::all, 
 			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, OuterTag, 2> >
-      : public detail::dense2D_iterator_range_generator<OuterTag, dense2D<Value, Parameters>, false>
+      : public detail::dense2D_iterator_range_generator<OuterTag, mtl::dense2D<Value, Parameters>, false>
     {};
 
     template <typename Value, typename Parameters, typename OuterTag>
@@ -638,7 +645,7 @@ namespace traits
     template <typename Value, typename Parameters, typename OuterTag>
     struct range_generator<tag::const_iter::all, 
 			   detail::sub_matrix_cursor<dense2D<Value, Parameters>, OuterTag, 2> >
-      : public detail::dense2D_iterator_range_generator<OuterTag, dense2D<Value, Parameters>, true>
+      : public detail::dense2D_iterator_range_generator<OuterTag, mtl::dense2D<Value, Parameters>, true>
     {};
 
 

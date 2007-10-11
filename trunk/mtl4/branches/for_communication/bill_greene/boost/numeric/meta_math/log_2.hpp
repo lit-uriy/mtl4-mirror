@@ -1,4 +1,11 @@
-// $COPYRIGHT$
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 
 #ifndef META_MATH_LOG_2_INCLUDE
 #define META_MATH_LOG_2_INCLUDE
@@ -10,10 +17,13 @@ namespace meta_math {
 // Computes the logarithm to the basis 2
 // Without testing if power of 2 it rounds values down to next integer
 template <unsigned long X>
-struct log_2
-{
-    // BOOST_STATIC_ASSERT(is_power_of_2_meta<X>::value);
-    static const unsigned long value= log_2< X >> 1 >::value + 1;
+ struct log_2 {
+  // BOOST_STATIC_ASSERT(is_power_of_2_meta<X>::value);
+private:
+  // tmp added to compile with vc++ 8.0 whg 10/2007
+  static const unsigned long tmp = X >> 1;
+public:
+  static const unsigned long value= log_2<tmp>::value + 1;
 };
 
 template <> struct log_2<1>
