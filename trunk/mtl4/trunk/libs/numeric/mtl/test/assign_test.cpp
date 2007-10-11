@@ -26,8 +26,8 @@ void init_matrix(Matrix& matrix, int offset= 0)
 {
     set_to_zero(matrix);
     matrix::inserter<Matrix> ins(matrix);
-    for (int i= 0; i < matrix.num_rows(); i++)
-	for (int j= 0; j < matrix.num_cols(); j++)
+    for (unsigned i= 0; i < matrix.num_rows(); i++)
+	for (unsigned j= 0; j < matrix.num_cols(); j++)
 	    if ((i + j + offset) & 1)
 		ins(i, j) << i + 2*j;
 }

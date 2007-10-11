@@ -34,8 +34,8 @@ template <typename Matrix>
 void raw_copy_test(Matrix& matrix, col_major)
 {
     size_t        sts[] = {0, 1, 5, 8, 12, 15, 18},
-                  ind[] = {2, 0, 2, 4, 5, 1, 2, 7, 2, 3, 44, 5, 0, 4, 5, 5, 7};
-    int           val[] = {4, 1, 5, 10, 13, 3, 6, 17, 7, 8, 11, 14, 2, 12, 15, 16, 18};
+                  ind[] = {2, 0, 2, 4, 5, 1, 2, 7, 2, 3, 4, 5, 0, 4, 5, 3, 5, 7};
+    int           val[] = {4, 1, 5, 10, 13, 3, 6, 17, 7, 8, 11, 14, 2, 12, 15, 9, 16, 18};
     // Compiler warning on out of range access can be ignored, past-the-end address is intended
     matrix.raw_copy(val, val+18, sts, ind);
 }
@@ -94,9 +94,7 @@ void test_compressed2D_insertion()
 int test_main(int argc, char* argv[])
 {
     test_compressed2D_insertion<row_major, mtl::index::c_index>();
-    test_compressed2D_insertion<row_major, mtl::index::f_index>();
     test_compressed2D_insertion<col_major, mtl::index::c_index>();
-    test_compressed2D_insertion<col_major, mtl::index::f_index>();
 
     return 0;
 }

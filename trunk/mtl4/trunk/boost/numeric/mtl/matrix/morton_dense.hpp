@@ -440,6 +440,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	this->realloc(memory_need(num_rows, num_cols));
     }
 
+#ifndef _MSC_VER
+    // Alleged ambiguity
     self& operator=(const self& src)
     {
 	// no self-copy
@@ -449,6 +451,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	std::copy(src.elements(), src.elements()+src.used_memory(), this->elements());
 	return *this;
     }
+#endif
 
     using assign_base::operator=;
 

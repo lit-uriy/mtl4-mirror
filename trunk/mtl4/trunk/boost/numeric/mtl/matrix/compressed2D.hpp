@@ -193,8 +193,11 @@ struct compressed2D_indexer
     template <class Matrix>
     utilities::maybe<size_t> offset(const Matrix& ma, size_t major, size_t minor) const 
     {
-	const size_t *first = &ma.indices[ ma.starts[major] ],
-	             *last = &ma.indices[ ma.starts[major+1] ];
+	assert(ma.starts[major] <= ma.starts[major+1]); // Check sortedness
+	assert(ma.starts[major+1] <= ma.my_nnz);        // Check bounds of indices
+	// Now we are save to use past-end addresses as iterators
+	const size_t *first = &ma.indices[0] + ma.starts[major],
+	             *last = &ma.indices[0] + ma.starts[major+1];
 	// if empty row (or column) return start of next one
 	if (first == last) 
 	    return utilities::maybe<size_t> (first - &ma.indices[0], false);
@@ -345,6 +348,8 @@ class compressed2D
 	matrix_copy(src, *this);
     }
 
+#ifndef _MSC_VER
+    // Alleged ambiguity
     self& operator=(const self& src)
     {
 	// no self-copy
@@ -353,6 +358,7 @@ class compressed2D
 	matrix_copy(src, *this);
 	return *this;
     }
+#endif
 
     using assign_base::operator=;
 
@@ -517,16 +523,17 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
     size_type new_total = new_starts[matrix.dim1()];
     elements.resize(new_total);
     indices.resize(new_total);
-    
+   
     // copy normally if not overlapping and backward if overlapping
     // i goes down to 1 (not to 0) because i >= 0 never stops for unsigned ;-)
+	// &v[i] is replaced by &v[0]+i to enable past-end addresses for STL copy
     for (size_type i = matrix.dim1(); i > 0; i--)
 	if (starts[i] <= new_starts[i-1]) {
-	    copy(&elements[starts[i-1]], &elements[starts[i]], &elements[new_starts[i-1]]);
-	    copy(&indices[starts[i-1]], &indices[starts[i]], &indices[new_starts[i-1]]);
+	    copy(&elements[0] + starts[i-1], &elements[0] + starts[i], &elements[0] + new_starts[i-1]);
+	    copy(&indices[0] + starts[i-1], &indices[0] + starts[i], &indices[0] + new_starts[i-1]);
 	} else {
-	    copy_backward(&elements[starts[i-1]], &elements[starts[i]], &elements[slot_ends[i-1]]);
-	    copy_backward(&indices[starts[i-1]], &indices[starts[i]], &indices[slot_ends[i-1]]);
+		copy_backward(&elements[0] + starts[i-1], &elements[0] + starts[i], &elements[0] + slot_ends[i-1]);
+		copy_backward(&indices[0] + starts[i-1], &indices[0] + starts[i], &indices[0] + slot_ends[i-1]);
 	}
     swap(starts, new_starts);		    
 }
@@ -538,8 +545,9 @@ compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm)
     size_type major, minor;
     boost::tie(major, minor) = mm;
     
-    const size_t *first = &indices[ starts[major] ],
-  	         *last =  &indices[ slot_ends[major] ];
+	// &v[i] isn't liked by all libs -> &v[0]+i circumvents complaints
+    const size_t *first = &indices[0] + starts[major],
+  	         *last =  &indices[0] + slot_ends[major];
     if (first == last) 
 	return utilities::maybe<size_t> (first - &indices[0], false);
     const size_t *index = std::lower_bound(first, last, minor);
@@ -565,8 +573,8 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type ro
 	size_type& my_end = slot_ends[major];
 	// Check if place in matrix to insert there
 	if (my_end != starts[major+1]) { 
-	    copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
-	    copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
+		copy_backward(&elements[0] + pos.value(), &elements[0] + my_end, &elements[0] + (my_end+1));
+		copy_backward(&indices[0] + pos.value(), &indices[0] + my_end, &indices[0] + (my_end+1));
 	    elements[pos] = updater.init(val); indices[pos] = minor;
 	    my_end++;	    
 	    matrix.my_nnz++;      // new entry
@@ -630,8 +638,9 @@ void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
 	utilities::maybe<size_type>       pos = matrix_offset(mm);
 	size_type&             my_end = slot_ends[major];
 
-	copy_backward(&elements[pos], &elements[my_end], &elements[my_end+1]);
-	copy_backward(&indices[pos], &indices[my_end], &indices[my_end+1]);
+	// &v[i] see above
+	copy_backward(&elements[0] + pos.value(), &elements[0] + my_end, &elements[0] + (my_end+1));
+	copy_backward(&indices[0] + pos.value(), &indices[0] + my_end, &indices[0] + (my_end+1));
 	elements[pos] = it->second; indices[pos] = minor;
 	my_end++;
     }
