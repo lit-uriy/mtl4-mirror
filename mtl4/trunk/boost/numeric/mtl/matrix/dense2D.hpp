@@ -245,7 +245,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 
 
-    self& operator=(const self& src)
+#ifndef _MSC_VER
+   self& operator=(const self& src)
     {
 	// no self-copy
 	if (this == &src) return *this;
@@ -254,7 +255,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	std::copy(src.elements(), src.elements()+src.used_memory(), this->elements());
 	return *this;
     }
-
+#endif
 
     // import operators from CRTP base class
     using assign_base::operator=;

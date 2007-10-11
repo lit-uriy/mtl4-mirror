@@ -8,6 +8,9 @@
 
 namespace mtl { namespace operations { namespace detail {
 
+// &v[i] is replaced by &v[0]+i to enable past-end addresses for STL copy
+// otherwise MSVC complaines
+
 template <typename Size, typename Starts, typename NewStarts, typename Ends, typename Data>
 inline void copy_blocks_forward(Size& i, Size blocks, Starts const& starts, NewStarts const& new_starts, 
 			 Ends const& ends, Data& data)
@@ -17,7 +20,7 @@ inline void copy_blocks_forward(Size& i, Size blocks, Starts const& starts, NewS
     // Copy forward as long as blocks are not shifted 
     for (; i < blocks && starts[i] >= new_starts[i]; ++i) 	
 	if (starts[i] > new_starts[i])
-	    copy(&data[starts[i]], &data[ends[i]], &data[new_starts[i]]);
+	    copy(&data[0] + starts[i], &data[0] + ends[i], &data[0] + new_starts[i]);
 }
 
 template <typename Size, typename Starts, typename NewStarts, typename Ends, typename Data>
@@ -33,9 +36,9 @@ inline void copy_blocks_backward(Size& i, Size blocks, Starts const& starts, New
 
     for (Size j = i; j-- > first; )
 	if (ends[j] <= new_starts[j])
-	    copy(&data[starts[j]], &data[ends[j]], &data[new_starts[j]]);
+	    copy(&data[0] + starts[j], &data[0] + ends[j], &data[0] + new_starts[j]);
 	else
-	    copy_backward(&data[starts[j]], &data[ends[j]], &data[new_starts[j]+ends[j]-starts[j]]);
+	    copy_backward(&data[0] + starts[j], &data[0] + ends[j], &data[0] + (new_starts[j]+ends[j]-starts[j]));
 }
 
 }}} // namespace mtl::operations::detail

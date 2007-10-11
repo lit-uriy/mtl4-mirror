@@ -40,6 +40,14 @@ struct crtp_matrix_assign
     template <typename MatrixSrc>
     Matrix& operator=(const matrix::mat_expr<MatrixSrc>& src)
     {
+#ifdef  _MSC_VER
+		// For other compilers there is an assign operator for the same type
+		// and only this one checks for self-assignment.
+		// Self-assignment between different types shouldn't happen.
+		if (static_cast<const void*>(this) == static_cast<const void*>(&src))
+			return static_cast<Matrix&>(*this);
+#endif
+
 	matrix_copy(src.ref, static_cast<Matrix&>(*this));
 	return static_cast<Matrix&>(*this);
     }
