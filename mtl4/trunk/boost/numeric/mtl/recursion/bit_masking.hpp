@@ -169,7 +169,7 @@ struct is_32_base_case_col_major
 template <unsigned long K, unsigned long T>
 struct row_major_shark_mask
 {
-    static const unsigned long value= (lsb_mask<K-T>::value << K+T) | lsb_mask<T>::value;
+    static const unsigned long value= (lsb_mask<K-T>::value << (K+T)) | lsb_mask<T>::value;
 };
 
 
