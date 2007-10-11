@@ -15,6 +15,7 @@ def macro_flag(env, flag):
 def add_debug(env):
     if sys.platform == 'win32' and conf.env['CC'] == 'cl':
         env.Append(CCFLAGS = '/Z7')
+        env.Append(CCFLAGS = '/MDd')
     else:
         env.Append(CCFLAGS = '-g')
     print macro_flag(env, 'MTL_ASSERT_FOR_THROW')
@@ -43,6 +44,7 @@ def add_opt(env, opt):
             env.Append(CCFLAGS = '/O2 /Ot /Ob2')
         elif int(opt) == 2:
             env.Append(CCFLAGS = '/Ox')
+            env.Append(CCFLAGS = '/MD')
     else:
         if int(opt) == 2:
     	    env.Append(CCFLAGS = '-O3')
@@ -68,7 +70,9 @@ def check_no_long_double(conf):
 
 def strange_compiler_flags(conf):
     if conf.env['CC'] == 'cl':
-         conf.env.Append(CCFLAGS = '/EHsc')
+         wd = ' /wd4355 /wd4996 /wd4099'
+         conf.env.Append(CCFLAGS = '/EHsc /D_CONSOLE /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX' +
+                                   ' /D_HAS_ITERATOR_DEBUGGING=0 /D_SECURE_SCL=0' + wd)
 
 
 def add_user_opt(env, add_optflag):
@@ -205,6 +209,7 @@ if os.environ.has_key('MTL_BOOST_ROOT') :
     my_cpppath.append(mtlp)
 if os.environ.has_key('BOOST_ROOT') :
     my_cpppath.append(os.environ['BOOST_ROOT'])
+my_cpppath.append('t:/boost/boost_1_34_1')
 
 # In branches, the current directory is prepended
 pwd = os.getcwd()
@@ -262,6 +267,7 @@ debug = ARGUMENTS.get('debug', 0)
 if int(debug):
     add_debug(env)
 add_debug(debug_env)
+
 
 
 # add optimization flags to appropriate environment

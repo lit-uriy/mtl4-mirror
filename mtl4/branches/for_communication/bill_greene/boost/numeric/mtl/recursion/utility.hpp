@@ -1,4 +1,11 @@
-// $COPYRIGHT$
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 
 #ifndef MTL_RECURSION_UTILITIES_INCLUDE
 #define MTL_RECURSION_UTILITIES_INCLUDE
@@ -40,7 +47,7 @@ std::size_t inline outer_bound(Matrix const& matrix)
 template <typename Integral>
 Integral inline least_significant_one_bit(Integral x)
 {
-  return (x ^ x-1) + 1 >> 1;
+  return ((x ^ x-1) + 1) >> 1;
 }
 
 

@@ -1,4 +1,11 @@
-// $COPYRIGHT$
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 
 #ifndef MTL_STRIDED_DENSE_EL_ITERATOR_INCLUDE
 #define MTL_STRIDED_DENSE_EL_ITERATOR_INCLUDE
@@ -23,7 +30,7 @@ struct strided_dense_el_const_iterator
     strided_dense_el_const_iterator(key_type me, size_t stride) : super(me, stride) {}
 
     template <typename Parameters>
-    strided_dense_el_const_iterator(dense2D<Value, Parameters> const& ma, size_t r, size_t c, size_t stride)
+    strided_dense_el_const_iterator(mtl::dense2D<Value, Parameters> const& ma, size_t r, size_t c, size_t stride)
 	: super(ma.elements() + ma.indexer(ma, r, c), stride)
     {}
 
@@ -53,7 +60,7 @@ struct strided_dense_el_iterator
     strided_dense_el_iterator(key_type me, size_t stride) : super(me, stride) {}
 
     template <typename Parameters>
-    strided_dense_el_iterator(dense2D<Value, Parameters>& ma, size_t r, size_t c, size_t stride)
+    strided_dense_el_iterator(mtl::dense2D<Value, Parameters>& ma, size_t r, size_t c, size_t stride)
 	: super(ma.elements() + ma.indexer(ma, r, c), stride)
     {}
 

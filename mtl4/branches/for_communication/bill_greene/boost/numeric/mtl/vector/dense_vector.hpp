@@ -1,4 +1,11 @@
-// $COPYRIGHT$
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 
 // Adapted from GLAS implementation by Karl Meerbergen and Toon Knappen
 
@@ -53,7 +60,7 @@ public:
     
     dense_vector( ) : expr_base( *this ), super_memory( Parameters::dimension::value ) {}
     
-    dense_vector( size_type n )
+    explicit dense_vector( size_type n )
 	: expr_base( *this ), super_memory( n ) 
     {}
     
@@ -117,6 +124,7 @@ public:
 			    >::value),
 			   incompatible_shape());
     }
+
 
     using assign_base::operator=;
 
