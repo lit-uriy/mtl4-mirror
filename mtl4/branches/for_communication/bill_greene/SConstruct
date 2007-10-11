@@ -4,10 +4,21 @@ import getopt, sys, os, re, string
 # Helper functions
 ######################
 
+# platform-dependent preprocessor definitions
+def macro_flag(env, flag):
+    if sys.platform == 'win32' and conf.env['CC'] == 'cl':
+        return '/D' + flag
+    else:
+        return '-D' + flag    
 
 # add debugging flags to environment
 def add_debug(env):
-     env.Append(CCFLAGS = '-g -DMTL_ASSERT_FOR_THROW')
+    if sys.platform == 'win32' and conf.env['CC'] == 'cl':
+        env.Append(CCFLAGS = '/Z7')
+    else:
+        env.Append(CCFLAGS = '-g')
+    print macro_flag(env, 'MTL_ASSERT_FOR_THROW')
+    env.Append(CCFLAGS = macro_flag(env, 'MTL_ASSERT_FOR_THROW'))
    
 
 def check_g5():
@@ -26,14 +37,21 @@ def check_g5():
 # add optimization flags to environment
 # normal optimization for opt=1, for opt=2 high optimization
 def add_opt(env, opt):
-    env.Append(CCFLAGS = '-DNDEBUG')
-    if (opt == 2):
-	env.Append(CCFLAGS = '-O3')
-	if conf.env['CC'] == 'gcc':
-	    env.Append(CCFLAGS = '-ffast-math')
-	#check_g5()
-    elif int(opt) == 1:
-	env.Append(CCFLAGS = '-O2')
+    env.Append(CCFLAGS = macro_flag(env, 'NDEBUG'))
+    if sys.platform == 'win32' and conf.env['CC'] == 'cl':
+        if int(opt) == 1:
+            env.Append(CCFLAGS = '/O2 /Ot /Ob2')
+        elif int(opt) == 2:
+            env.Append(CCFLAGS = '/Ox')
+    else:
+        if int(opt) == 2:
+    	    env.Append(CCFLAGS = '-O3')
+    	    if conf.env['CC'] == 'gcc':
+    	        env.Append(CCFLAGS = '-ffast-math')
+    	        #check_g5()
+        elif int(opt) == 1:
+    	    env.Append(CCFLAGS = '-O2')
+        
     env.Append(CXXFLAGS = conf.env['CCFLAGS'])
 	
 
@@ -46,6 +64,11 @@ def check_no_long_double(conf):
 	if tmatch and string.atof(tmatch.group(1)) == 4.0:
 	    conf.env.Append(CCFLAGS = '-Wno-long-double')
 	    # conf.env.Append(CXXFLAGS = '-Wno-long-double')
+
+
+def strange_compiler_flags(conf):
+    if conf.env['CC'] == 'cl':
+         conf.env.Append(CCFLAGS = '/EHsc')
 
 
 def add_user_opt(env, add_optflag):
@@ -160,6 +183,7 @@ env = Environment()
 
 conf = Configure(env)
 check_no_long_double(conf)
+strange_compiler_flags(conf)
 env = conf.Finish()
 
 # Search only for BLAS when explicitly asked for
@@ -184,7 +208,8 @@ if os.environ.has_key('BOOST_ROOT') :
 
 # In branches, the current directory is prepended
 pwd = os.getcwd()
-if not os.environ.has_key('MTL_BOOST_ROOT') or not os.path.samefile(pwd, mtlp):
+if not os.environ.has_key('MTL_BOOST_ROOT') \
+or (hasattr(os.path, 'samefile') and os.path.samefile(pwd, mtlp)):
      my_cpppath = [pwd] + my_cpppath
 
 env.Append(CPPPATH = my_cpppath)
@@ -241,8 +266,10 @@ add_debug(debug_env)
 
 # add optimization flags to appropriate environment
 opt = ARGUMENTS.get('opt', 0)
-if int(opt):
-    add_opt(env, int(opt))
+
+# Add optimization flags and then copy C flags into C++ flags
+add_opt(debug_env, 0) 
+add_opt(env, int(opt))
 add_opt(opt_env, 1)
 add_opt(high_opt_env, 2)
 
