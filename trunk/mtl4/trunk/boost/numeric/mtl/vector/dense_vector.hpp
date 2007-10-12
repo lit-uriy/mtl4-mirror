@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/utility/enable_if.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
@@ -104,7 +105,9 @@ public:
     pointer end() { return this->elements() + size() ; }
 
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
-	// Removing the operator ends in run-time error
+    // For confusion with other vector assignments
+    // For alleged ambiguity with scalar assign we omit template in CRTP
+    // Removing the operator ends in run-time error
     vec_vec_asgn_expr<self, self> operator=( self const& e ) 
     {
 	return vec_vec_asgn_expr<self, self>( *this, e );
