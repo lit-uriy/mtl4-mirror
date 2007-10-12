@@ -37,7 +37,6 @@ def check_g5():
 
 
 def add_platform_flags(env):
-    print "platform flags"
     if env['CC'] == 'cl':
         # Turn off some warnings: 1. for problems with CRTP 2. with VC's own headers 
         #                         3. alleged ambiguos assignment 4. ???
@@ -53,8 +52,6 @@ def add_platform_flags(env):
                 env.Append(CPPPATH = p)
         if os.environ.has_key('LIB') :
             env.Append(LIBPATH = os.environ['LIB'])
-    print "CCFLAGS:", env['CCFLAGS']
-    print "CXXFLAGS:", env['CXXFLAGS']
 
 
 # add optimization flags to environment
@@ -79,7 +76,8 @@ def add_opt(env, opt):
         elif int(opt) == 1:
     	    env.Append(CCFLAGS = '-O2')
         
-    env.Append(CXXFLAGS = conf.env['CCFLAGS'])
+    if env['CC'] != 'cl':
+        env.Append(CXXFLAGS = conf.env['CCFLAGS'])
 	
 
 def check_no_long_double(conf):

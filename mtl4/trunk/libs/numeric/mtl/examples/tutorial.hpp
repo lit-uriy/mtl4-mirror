@@ -209,7 +209,8 @@ Scalar values can be assigned to vectors if the type of the scalar
 value is assignable to the type of the elements.
 Scalar types are in MTL4 all types that are not explicitly defined
 by type %traits as vectors or matrices, thus almost all types.
-
+(Unfortunately, we needed to remove the templated assignment on MSVC 8.0
+so that only the first assignment with the complex value works there.)
 
 Proceed to \ref vector_functions "vector functions".  
 

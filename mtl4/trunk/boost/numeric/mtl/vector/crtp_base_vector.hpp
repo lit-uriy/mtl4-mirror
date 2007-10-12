@@ -19,6 +19,14 @@ namespace mtl { namespace vector {
 template <typename Vector, typename ValueType, typename SizeType>
 struct crtp_vector_assign
 {
+#ifdef _MSC_VER
+    // MSVC has trouble with alleged ambiguity
+    vec_scal_asgn_expr<Vector, ValueType>
+    operator=(const ValueType& value)
+    {
+	return vec_scal_asgn_expr<Vector, ValueType>( static_cast<Vector&>(*this), value );
+    }
+#else
     /// Assign scalar to a vecttor by setting all elements to it
     template <typename Value>
     typename boost::enable_if<typename boost::is_same<typename ashape::ashape<Value>::type,
@@ -29,6 +37,7 @@ struct crtp_vector_assign
     {
 	return vec_scal_asgn_expr<Vector, Value>( static_cast<Vector&>(*this), value );
     }
+#endif
 
     /// Assign vector expression
     template <class E>

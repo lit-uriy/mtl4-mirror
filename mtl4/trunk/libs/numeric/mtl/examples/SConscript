@@ -27,6 +27,9 @@ sources = Split("""vector1.cpp
                    recursator2.cpp
 """)
 
+if opt_env['CC'] == 'cl':
+    # assignment doesn't work with templates on cl
+    sources.remove('vector2.cpp')
 
 programs = []
 for p in sources:
