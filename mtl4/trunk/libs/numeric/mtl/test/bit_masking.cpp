@@ -27,14 +27,34 @@ void check_same_mask()
     if (Mask1 != Mask2) throw "Different masks\n";
 }
 
+template <bool is_4, unsigned long long s, unsigned long long l>
+struct mm
+{
+    static const unsigned long value= (const unsigned long) l;
+};
+
+template <unsigned long long s, unsigned long long l>
+struct mm<true, s, l>
+{
+    static const unsigned long value= (const unsigned long) s;
+};
+
+
+template <unsigned long long s, unsigned long long l>
+struct mask
+{
+    static const unsigned long value= mm<sizeof(unsigned long) == 4, s, l>::value;
+};
+
+
 
 int test_main(int argc, char* argv[])
 {
     using mtl::row_major; using mtl::col_major;
 
-    const unsigned long morton= 0x55555555, morton_z= 0xaaaaaaaa, doppled_4_row= 0x5555555c,
-	doppled_4_col= 0x55555553, doppled_32_row= 0x555557e0, doppled_32_col= 0x5555541f,
-	doppled_32_row_shark_2= 0x555557c1;
+    const unsigned long z= 0, morton= (z-1) / 3, morton_z= ~morton, doppled_4_row= morton + 7,
+                        doppled_4_col= morton - 2, doppled_32_row= morton + 651, 
+	                doppled_32_col= morton - 310, doppled_32_row_shark_2= morton + 620;
 
     test<morton>();
     test<morton_z>();
