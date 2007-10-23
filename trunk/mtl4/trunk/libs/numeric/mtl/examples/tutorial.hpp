@@ -25,6 +25,7 @@ An important distinction to BLAS is that sparse matrices are supported.
 - \subpage intro 
 - \subpage install 
 - \subpage tutorial  
+- \subpage IDE
 */
 
 //-----------------------------------------------------------
@@ -122,6 +123,115 @@ Proceed to the \ref tutorial "the tutorial".
 
 
 //-----------------------------------------------------------
+
+
+//-----------------------------------------------------------
+/*! \page IDE IDE
+
+Some short descriptions to use MTL4 with different IDE's.
+
+-# Linux
+-# Windows
+   -# \subpage winxp_eclipse32_gcc323
+   .
+
+*/
+
+//-----------------------------------------------------------
+/*! \page winxp_eclipse32_gcc323 WinXP / Eclipse-3.2 CDT-3.1 / gcc-3
+
+You should have some basic experience with Eclipse. So I won't explain
+each step for downloading and installing Eclipse/CDT. 
+
+Some informations about the used systems:
+-# OS: WinXP SP2 with all updates (it's my business notebook, so 
+   I can't do something against the updates  :-(   )
+-# Compiler: MinGW32 with gcc-3.2.3
+-# Eclipse-3.2
+-# CDT-3.1.2
+
+Some informations about the installation path:
+-# MinGW32: is installed in c:/MinGW
+-# Eclipse: is installed in c:/Programme/eclipse
+-# CDT-3.1.2: will be installed automatically in the eclipse directory
+-# MTL4/Boost: are installed in c:/cppLibs/mtl4 and in c:/cppLibs/boost_1_34_1
+
+Now let's starting Eclipse. If Eclipse is started, change to the c++ perspective.
+If this is the first time you can do it under:\n
+<tt>Window/Open Persepctive/Other</tt>\n
+Now chose \c c++ and the view will get a new look!
+
+To show the configuration we will create a new project. Chose\n
+<tt>File/New/Project.../Managed Make C++ Project</tt>\n
+This will open a new dialog. Enter <tt>vector1</tt> as project name. I will change
+the \c Location to <tt>u:/programming/vector1</tt>. To do this, click on the
+check box, now you can push the \c Browse button. The next dialog will open. Chose
+a path and in my case, the directory \c vector1 doesn't exist. So I have to
+push the button <tt>new directory</tt> and enter the directory name \c vector1.
+Now click \c Next.
+
+Click \c Finish on the new dialog. The new project will be created and you can
+see it on the left side in the \c Navigator or in the <tt>C/C++ Projects</tt> view.
+
+Now let's copy the \c vector1.cpp of the mtl4 example in the new project directory.
+Press \c F5 to update the C++ perspective. Maybe you have to push more than only once.
+Java isn't so fast :-)\n
+Now you can see the file \c vector1.cpp in the <tt>C/C++ Projects</tt> view.
+
+Before we start with configuring this project, let's check your installation of
+MinGW. Enter at the command prompt <tt>gcc --version</tt>. Now something similar
+like <tt>gcc (GCC) 3.2.3 (mingw special....)</tt> should appear. Be sure that you 
+don't have a second compiler in your path. Please don't install the MSYS package.
+This will cause some problems during the linking process. If you get here an error,
+please first fix this! Check your path variable and so on. Like the MSYS CYGWIN 
+will also cause some problems. Remove the path entry, if you have installed CYGWIN!
+
+Now mark with one left click your project in Eclipse. Than one right click to open 
+a context menu. Go down to \c Properties and click again. <tt>Properties for vector1
+</tt> dialog appears. Click on <tt>C/C++ Build</tt>. In this section, we will find 
+all the necessaries properties we have to configure.
+
+In <tt>Active configuration</tt> you can read \c Debug. For this simple example,
+change it to \c Release.
+
+Now in <tt>Configuration Settings / Tool Settings</tt> click on 
+<tt>GCC C++ Compiler / Directories</tt>. Here we have to include the
+directories of mtl4 and the boost library. We can do it with a click
+on the icon with the green cross. In the new dialog, click on 
+<tt>File system...</tt> and chose the mtl4 main directory and do the same 
+for the boost library. So this property will contain two entries.
+-# "C:\cppLibs\mtl4"
+-# "C:\cppLibs\boost_1_34_1"
+.
+\n
+in my case.
+
+Now change to the tab <tt>Build Settings</tt>. Enter an artifact name and an
+extension. For windows systems this should be \c exe . For artifact name you can
+take \c vector1 .\n
+Under <tt>Build command</tt> you have to enter <tt>mingw32-make -k</tt>.
+
+So we can go to the next tab \c Environment. I have installed several compiler
+vor AVM microcontrollers, CYGWIN and the MinGW. This step is necessary to compile
+the example successfull, even though I removed all the compiler entries in the
+path variable. Don't ask me why!\n
+Click on the button \c New in the configuration section. A next dialog appears.
+In the field \c Name enter \c path. In \c Value appears your path and in my
+case in the front of all the cygwin installation. Now remove this and all
+other compilers in this path (inside the value field). The field \c Delimiter
+contains the correct sign. Let's change the \c Operation to \c Replace and
+click on OK. So a new user variables appears. Click on apply and than on OK.
+
+Now you can test it if you can compile this simple example. Otherwise, please 
+restart Eclipse.
+
+P.S.: The description how to use the Eclipse is contributed by Michael Wendler
+      and we are very grateful for his efforts.
+*/
+
+
+
+
 
 
 //-----------------------------------------------------------
