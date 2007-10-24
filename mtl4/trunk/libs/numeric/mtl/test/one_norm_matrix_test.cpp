@@ -21,6 +21,7 @@ using namespace std;
 template <typename MatrixA>
 void test(MatrixA& a, const char* name)
 {
+	a= 0.0;
     {
 	matrix::inserter<MatrixA>  ins(a);
 	                  ins(0, 1) << 1.0; ins(0, 2) << 4.0;
