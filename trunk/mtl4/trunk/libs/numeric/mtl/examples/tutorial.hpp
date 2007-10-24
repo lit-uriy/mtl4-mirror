@@ -99,7 +99,13 @@ all tests are passed.
 Similarly, the example programs can be compiled.
 Go in directory libs/numeric/mtl/examples and type:\n
 <tt>scons -D .</tt>\n
-For the sake of simplicity, there are no checks in the examples.
+For the sake of simplicity, there are no checks in the examples (nevertheless an exceptions
+thrown in the examples help to fix a bug).
+
+To compile (and test) all programs you can run scons in the main directory (then you do not
+need the -D option and the dot) or in any directory of the tree if you use -D and omit the dot.
+You can also compile single files if you specify the name of the executable (including .exe on
+windows).
 
 If you want to use BLAS, you need to define the macro <tt>MTL_HAS_BLAS</tt>,
 e.g., by compiling your programs with 
