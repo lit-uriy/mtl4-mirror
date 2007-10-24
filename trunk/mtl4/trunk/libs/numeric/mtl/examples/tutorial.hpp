@@ -128,7 +128,7 @@ Proceed to the \ref tutorial "the tutorial".
 //-----------------------------------------------------------
 /*! \page IDE IDE
 
-Some short descriptions to use MTL4 with different IDE's.
+Some short descriptions how to use MTL4 with different IDE's.
 
 -# Linux
 -# Windows
