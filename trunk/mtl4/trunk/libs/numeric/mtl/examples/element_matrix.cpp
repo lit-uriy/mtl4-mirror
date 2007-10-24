@@ -39,7 +39,7 @@ void fill(Matrix& m)
     m2[1][0]= 2; m2[1][1]= 1.2; m2[1][2]= 1.1;
 
     // Vector for column indices 
-    dense_vector<int> v2(2);
+    dense_vector<int> v2(3);
     // Indices can be out of order
     v2[0]= 4; v2[1]= 1; v2[2]= 3;
 
