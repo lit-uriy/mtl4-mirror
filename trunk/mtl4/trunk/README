@@ -50,9 +50,13 @@ Macintosh
 ---------
 g++ 4.0.1
 
+Windows
+-------
+VC 8.0 from Visual Studio 2005
+
 More compilers will be tested in the future.
 
-Compilers that are not standard-compliant are not subject to support.
+Compilers that are not standard-compliant (e.g. VC 6.0 from VS 2003) are not subject to support.
 
 
 III. Documentation

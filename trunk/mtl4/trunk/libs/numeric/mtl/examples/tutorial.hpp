@@ -24,8 +24,8 @@ An important distinction to BLAS is that sparse matrices are supported.
 
 - \subpage intro 
 - \subpage install 
-- \subpage tutorial  
 - \subpage IDE
+- \subpage tutorial  
 */
 
 //-----------------------------------------------------------
@@ -42,8 +42,6 @@ In fact, programs can be written in a natural operator notation and the
 library can evaluate the expressions with an optimized library.
 However, this is limited to types that are supported by these libraries.
 An important distinction to BLAS is that sparse matrices are supported.
-
-
 
 
 Proceed to the \ref install "installation guide".
@@ -71,8 +69,19 @@ It is easy to install and takes only a few minutes.
 The scons-based build of MTL4 uses the environment variables 
 <tt>MTL_BOOST_ROOT</tt> to locate the MTL directory
 and <tt>BOOST_ROOT</tt> to locate the Boost directory.
-The path of the MTL directory is normally not needed if you do not
-have version control with multiple development branches for MTL4.
+
+If you compile MTL4 with VS2005 or its free express version
+you need to install the SDK (some boost files access it).
+Please make sure that the compiler is in the path.
+Then scons will find it.
+Additionally, you have to tell the compiler where the header files and
+the libraries of VC and the SDK are located, i.e. declare the 
+environment variables LIB and INCLUDE. For instance:\n
+<tt>LIB=c:/Program Files/Microsoft Visual Studio 8/vc/lib;c:/Program Files/MicrosoftVisual Studio 8/vc/platformsdk/lib</tt>\n
+<tt>INCLUDE=c:/Program Files/Microsoft Visual Studio 8/VC/include;c:/Program Files/Microsoft Visual Studio 8/VC/PlatformSDK/Include</tt>\n
+On some machines the compiler still did not find the files. For that reason the
+paths within these two variables are incorporated into the command line by our scons script.
+
 
 
 To execute the test programs go in MTL4's test directory
@@ -116,8 +125,27 @@ Resuming, for MTL4 you need to:
 - Optionally install a BLAS library; and
 - Optionally install doxygen.
 
+\section supported_compilers Supported compilers
 
-Proceed to the \ref tutorial "the tutorial".  
+The %Matrix Template Library is written in compliance with the C++ standard
+and should be compilable with every compiler compliant with the standard.
+It has been tested (and passed) with the following compilers and architectures:
+- Linux
+  - g++ 4.0.1
+  - g++ 4.1.1
+  - g++ 4.1.2
+  - icc 9.0
+- Macintosh
+  - g++ 4.0.1
+- Windows
+  - VC 8.0 from Visual Studio 2005
+
+More compilers will be tested in the future.
+
+Compilers that are not standard-compliant (e.g. VC 6.0 from VS 2003) are not subject to support.
+
+
+Proceed to the \ref IDE.  
 
 */
 
@@ -130,10 +158,19 @@ Proceed to the \ref tutorial "the tutorial".
 
 Some short descriptions how to use MTL4 with different IDE's.
 
--# Linux
--# Windows
-   -# \subpage winxp_eclipse32_gcc323
-   .
+- Eclipse
+  - Windows
+    - \subpage winxp_eclipse32_gcc323
+  - Linux
+- MS Visual Studio
+  - Visual studio 2005 was successfully used for debugging single files but until now nobody compiled the entire test suite (to our knowledge). 
+- WingIDE
+  - WingIDE is said to support scons and their is a how-to to this subject. But again, it is not yet tried.
+.
+
+Experiences with IDEs are welcome and we would be happy to provide more help in the future.
+
+Proceed to \ref tutorial "the tutorial".  
 
 */
 
