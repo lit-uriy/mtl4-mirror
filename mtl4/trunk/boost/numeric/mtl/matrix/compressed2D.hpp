@@ -193,16 +193,22 @@ struct compressed2D_indexer
     template <class Matrix>
     utilities::maybe<size_t> offset(const Matrix& ma, size_t major, size_t minor) const 
     {
+		typedef utilities::maybe<size_t>      result_type;
 	assert(ma.starts[major] <= ma.starts[major+1]); // Check sortedness
 	assert(ma.starts[major+1] <= ma.my_nnz);        // Check bounds of indices
 	// Now we are save to use past-end addresses as iterators
+
+	// Empty matrices are special cases
+	if (ma.indices.empty())
+		return result_type(0, false);
+
 	const size_t *first = &ma.indices[0] + ma.starts[major],
 	             *last = &ma.indices[0] + ma.starts[major+1];
 	// if empty row (or column) return start of next one
 	if (first == last) 
-	    return utilities::maybe<size_t> (first - &ma.indices[0], false);
+	    return result_type(first - &ma.indices[0], false);
 	const size_t *index = std::lower_bound(first, last, minor);
-	return utilities::maybe<size_t> (index - &ma.indices[0], index != last && *index == minor);
+	return result_type(index - &ma.indices[0], index != last && *index == minor);
     }
 
   public:
