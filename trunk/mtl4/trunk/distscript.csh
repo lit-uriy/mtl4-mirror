@@ -2,7 +2,7 @@
 #
 # Script for creating a MTL Distribution
 
-source VERSION
+source VERSION.INPUT
 
 set MTLREPOSITORY='https://svn.osl.iu.edu/tlc/trunk/mtl4/trunk'
 set MTLREVISION=`svn info ${MTLREPOSITORY}| grep Revision | sed 's/Revision: //'`
@@ -57,7 +57,7 @@ python insert_license.py license.short.txt cpattern cpppattern scriptpattern REA
 #
 
 echo "*** Removing non-release material"
-rm -f default.css index.html mtl4.jam Jamroot
+rm -f default.css index.html mtl4.jam Jamroot VERSION.INPUT
 rm -f boost/numeric/linear_algebra/ets_concepts.hpp
 rm -rf boost/numeric/mtl/draft
 rm -rf boost/detail
@@ -78,7 +78,7 @@ echo "*** Removing license scripts"
 rm -f insert_license.py 
 
 echo "*** Create version file"
-echo "setenv MTLVERSION 4\nsetenv MTLRELEASE alpha.1\nsetenv MTLREVISION $MTLREVISION" > VERSION
+echo "MTLVERSION $MTLVERSION\nMTLRELEASE $MTLRELEASE\nMTLREVISION $MTLREVISION" > VERSION
 
 echo "*** Making tar"
 set TARNAME="${FULLNAME}.tar.gz"
