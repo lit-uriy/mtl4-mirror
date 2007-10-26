@@ -77,6 +77,8 @@ mv SConstruct.tmp SConstruct
 echo "*** Removing license scripts"
 rm -f insert_license.py 
 
+echo "*** Create version file"
+echo "setenv MTLVERSION 4\nsetenv MTLRELEASE alpha.1\nsetenv MTLREVISION $MTLREVISION" > VERSION
 
 echo "*** Making tar"
 set TARNAME="${FULLNAME}.tar.gz"
