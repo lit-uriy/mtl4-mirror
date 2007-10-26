@@ -12,20 +12,34 @@ namespace mtl {
 
 \author Peter Gottschling and Andrew Lumsdaine
 
-The %Matrix Template Library (incarnation) 4 is a generic library for linear
-%algebra %operations on matrices and vectors.
-Its goal is to facilitate its usage comparable to mathematical libraries
-like Mathematica and Matlab and to approach, at the same time, performance 
-characteristics of high-performance libraries like BLAS or ATLAS.
-In fact, programs can be written in a natural operator notation and the 
-library can evaluate the expressions with an optimized library.
-However, this is limited to types that are supported by these libraries.
-An important distinction to BLAS is that sparse matrices are supported.
+Many things can be realized on a computer very elegantly and efficiently today
+thanks to progress in software and programming languages.
+One thing that cannot be done elegantly on a computer is computing.
+At least not computing fast.
+
+In the %Matrix Template Library 4 we aim for a natural mathematical 
+notation without sacrifying performancs.
+You can write an expression like x = y * z and the library will
+perform the according operation: scaling a vector, multiplying a
+sparse matrix with a dense vector or two sparse matrices.
+Some operations like dense matrix product use tuned BLAS implementation.
+General applicability is combined with maximal available performance.
+We developed new techniques to allow for:
+- Unrolling of dynamicly sized data with user-define block and tile sizes;
+- Combining multiple vector assignments in a single statement (and more importingly perform them in one single loop);
+- Storing matrices recursively in a never-before realized generality;
+- Performing operations on recursive and non-recursive matrices recursively;
+- Filling compressed sparse matrices efficiently;
+and much more.
+
 
 - \subpage intro 
 - \subpage install 
 - \subpage IDE
 - \subpage tutorial  
+
+
+
 */
 
 //-----------------------------------------------------------
@@ -33,15 +47,116 @@ An important distinction to BLAS is that sparse matrices are supported.
 /*! \page intro Introduction
 
 
-The %Matrix Template Library (incarnation) 4 is a generic library for linear
-%algebra %operations on matrices and vectors.
-Its goal is to facilitate its usage comparable to mathematical libraries
-like Mathematica and Matlab and to approach, at the same time, performance 
-characteristics of high-performance libraries like BLAS or ATLAS.
-In fact, programs can be written in a natural operator notation and the 
-library can evaluate the expressions with an optimized library.
-However, this is limited to types that are supported by these libraries.
-An important distinction to BLAS is that sparse matrices are supported.
+
+
+Many things can be realized on a computer very elegantly and efficiently today
+thanks to progress in software and programming languages.
+One thing that cannot be done elegantly on a computer is computing.
+At least not computing fast.
+
+High performance computing (HPC) is to a large extend influenced by some
+highly tuned numeric libraries.
+Assume we want to multiply two matrices, i.e. A = B * C.
+Then we can use some libraries that run at over 90 per cent peak performance.
+We only need to write something like:
+\code
+	int m= num_rows(a), n= num_cols(b), k= num_cols(a), 
+            lda= a.get_ldim(), ldb= b.get_ldim(), ldc= c.get_ldim();
+	double alpha= 1.0, beta= 1.0;
+	char a_trans= 'N', b_trans= 'N';
+	_dgemm(&a_trans, &b_trans, &m, &n, &k, &alpha, &a[0][0], &lda, 
+	       &b[0][0], &ldb, &beta, &c[0][0], &ldc);
+\endcode
+No doubt, next time we call dgemm we instantly remember the exact order of the 13 arguments.
+Certainly, calling the C-BLAS interface looks somewhat nicer and we can write functions
+that deal with the dimensions and the orientation, like dgemm(A, B, C).
+We can furthermore write polymorphic function gemm that accordingly calls _sgemm, _dgemm
+and so on.
+Indead, there is a project working on this.
+But is this all we want?
+Why not writing A = B * C; and the library calls the according BLAS function?
+What do we want to do if there is none?
+
+
+Programmers working with BLAS libraries
+are forced to limit themselves to the operations and types provided by these
+packages.
+As an example, if one likes to use single-precision floats for preconditioner
+matrices--to save memory bandwidth--while the vectors are double-valued, 
+one cannot use regular BLAS libraries.
+In contrast, any generic library that contains a matrix vector product
+can perform this operation.
+
+And what if somebody wants to build matrices and vectors of quaternions or intervals?
+Or rationals?
+How to calculate on them?
+This is no problem with a generic library but it would need enormous implementation efforts
+in Fortran or C (even more assembly language to squeaze out the last nano-second of run-time
+(on each platform)).
+
+
+Mathematica and Matlab by far more elegant than C or Fortran libraries.
+And as long as one uses standard operations as matrix products they are fast
+since they can use the tuned libraries.
+As soon as you start programming your own computations looping over elements
+of the matrices or vectors your performance won't be impressive, to say the least.
+
+MTL4 allows you to write A = B * C and let you use BLAS internally if available.
+Otherwise it provides you an implementation in C++ that is also reasonably fast (we usually
+reached 60 per cent peak).
+
+
+All this said, dense matrix multiplication is certainly the most benchmarked operation
+on high performance computers but not really the operation that high performance computers
+use the most in real applications.
+The dominant part of scientific computing in HPC are simulations that are mostly 
+handled with finite element methods (FEM), finite volume methods (FVM),
+finite difference methods (FDM), or alike.
+The numeric problems that arise from these methods are almost ever linear or non-linear
+systems of equations described by very large sparse matrices.
+
+In contrast to most other libraries we paid strong attention to sparse matrices and their
+operations.
+To start with, we developed an efficient method to fill the matrices and compress them
+in-place, cf. \ref matrix_insertion.
+This allows for matrix sizes that are close to the memory size.
+It is also possible to change the compressed matrices later.
+
+
+The product of sparse with dense matrices allows you to multiply a sparse matrix 
+simultaneously with multiple vectors.
+Besides cache reuse regarding the sparse matrix simple and efficient loop unrolling
+could be applied. (Performance plots still pending ;-) ) 
+
+Sparse matrices can be multiplied very fast.
+In the typical case that the number of non-zeros per row and per column is 
+limited by a constant for any dimension, 
+the run-time of the multiplication is linear in the number of rows or columns.
+(Remark: we did not use the condition that the number of non-zeros in the matrix is proportional to 
+the dimension. This condition includes the pathological case that the first matrix contains
+a column vector of non-zeros and the second one a row vector of non-zeros. Then
+the complexity would be quadratic.)
+Such matrices usually originate from FEM/FDM/FVM discrezations of PDEs on continous domains.
+Then the number of rows and columns corresponds to the number of nodes or cells in the 
+discretized domain.
+Sparse matrix products can be very useful in algebraic multigrid methods (AMG).
+
+Returning to the expression A = B * C; it can be used to express every product of 
+sparse and dense matrices.
+The library will dispatch to the appropriate algorithm.
+Moreover, the expression could also represent a matrix vector product if A and C
+are column vectors (one would probably choose lower-case names though).
+In fact,  x = y * z can represent four different operations:
+- matrix product;
+- matrix vector product;
+- scalar times matrix; or
+- scalar times vector.
+.
+
+
+There is much more to say about MTL.
+Some of it you will find in \ref tutorial, some of it still needs to be written.
+
 
 
 Proceed to the \ref install "installation guide".
