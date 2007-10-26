@@ -90,7 +90,7 @@ cp $TARNAME $p
 cd $p
 
 set MD=`md5sum $TARNAME`
-echo "MD5 sum is $MD"
+echo "MD5 sum for \"$TARNAME\" is \"$MD\""
 
 set DOWNLOAD="/l/osl/download/www.osl.iu.edu/research/mtl"
 
