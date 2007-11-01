@@ -389,7 +389,7 @@ click on OK. So a new user variables appears. Click on apply and than on OK.
 Now you can test it if you can compile this simple example. Otherwise, please 
 restart Eclipse.
 
-P.S.: The description how to use the Eclipse is contributed by Michael Wendler
+P.S.: The description how to use the Eclipse is contributed by Michael Schmid
       and we are very grateful for his efforts.
 */
 
