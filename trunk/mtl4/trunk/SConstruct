@@ -42,8 +42,8 @@ def add_platform_flags(env):
         #                         3. alleged ambiguos assignment 4. ???
         # I hope we find a cleaner way to get rid of this warning
         wd = ' /wd4355 /wd4996 /wd4522 /wd4099'
-        env.Append(CCFLAGS = '/EHsc /D_CONSOLE /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX' +
-                             ' /D_HAS_ITERATOR_DEBUGGING=0 /D_SECURE_SCL=0' + wd)
+        env.Append(CCFLAGS = '/EHa /D_CONSOLE /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX' +
+			     ' /D_SECURE_SCL=0' + wd)
 
         # The following two if shouldn't be necessary
         # Note that INCLUDE must be split and LIB must not :-P
