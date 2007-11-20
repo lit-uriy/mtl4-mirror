@@ -792,7 +792,7 @@ namespace traits
 	{
 	    const matrix_type& matrix= c.ref;
 	    size_type offset= matrix.indexer(matrix, c.key, matrix.begin_col());
-	    return &matrix.data[offset];
+	    return &matrix.data[0] + offset;
 	}
 	
 	// returned pointer can pass the end and must only be used for comparison
@@ -800,7 +800,7 @@ namespace traits
 	{
 	    const matrix_type& matrix= c.ref;
 	    size_type offset= matrix.indexer(matrix, c.key, matrix.end_col());
-	    return &matrix.data[offset];
+	    return &matrix.data[0] + offset;
 	}	
     };
 
@@ -822,7 +822,7 @@ namespace traits
 	{
 	    const matrix_type& matrix= c.ref;
 	    size_type offset= matrix.indexer(matrix, matrix.begin_row(), c.key);
-	    return &matrix.data[offset];
+	    return &matrix.data[0] + offset;
 	}
 	
 	// returned pointer can pass the end and must only be used for comparison
@@ -830,7 +830,7 @@ namespace traits
 	{
 	    const matrix_type& matrix= c.ref;
 	    size_type offset= matrix.indexer(matrix, matrix.end_row(), c.key);
-	    return &matrix.data[offset];
+	    return &matrix.data[0] + offset;
 	}	
     };
 
