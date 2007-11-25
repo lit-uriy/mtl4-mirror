@@ -146,6 +146,23 @@ struct ashape<morton_dense<Value, Mask, Parameters> >
     typedef mat<typename ashape<Value>::type> type;
 };
 
+template <typename E1, typename E2>
+struct ashape< matrix::mat_mat_plus_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape< matrix::mat_mat_minus_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+
 
 // =====
 // Views
@@ -200,19 +217,8 @@ struct ashape<matrix::hermitian_view<Matrix> >
     typedef typename ashape<Matrix>::type type;
 };
 
-template <typename M1, typename M2>
-struct ashape< matrix::mat_mat_plus_expr<M1, M2> >
-{
-    // M1 and M2 must have the same a-shape
-    typedef typename ashape<M1>::type type;
-};
 
-template <typename M1, typename M2>
-struct ashape< matrix::mat_mat_minus_expr<M1, M2> >
-{
-    // M1 and M2 must have the same a-shape
-    typedef typename ashape<M1>::type type;
-};
+
 
 // =====================
 // Shapes of products:
@@ -460,6 +466,20 @@ struct mult_shape<scal, scal>
 {
     typedef scal type;
 };
+
+
+
+// Needs to be verified for nested matrix types, cf. #140
+template <typename E1, typename E2>
+struct ashape< matrix::mat_mat_times_expr<E1, E2> >
+{
+    // typedef typename ashape<E1>::type type;
+    typedef typename mult_shape<typename ashape<E1>::type, 
+				typename ashape<E2>::type>::type type;
+};
+
+
+
 
 
 }} // namespace mtl::ashape
