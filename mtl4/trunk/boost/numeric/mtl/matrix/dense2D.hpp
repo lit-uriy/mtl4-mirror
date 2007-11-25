@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/operators.hpp>
+#include <boost/numeric/mtl/operation/compute_factors.hpp>
 
 
 namespace mtl {
@@ -236,6 +237,41 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
+
+    // Construction from sum of matrices
+    template <typename E1, typename E2>
+    dense2D(const matrix::mat_mat_plus_expr<E1, E2>& src)
+	: super(mtl::non_fixed::dimensions(num_rows(src.first), num_cols(src.first))),
+	  super_memory(num_rows(src.first) * num_cols(src.first)), expr_base(*this)		
+    {
+	init();
+	matrix_copy(src.first, *this);
+	*this+= src.second;
+    }
+
+    // Construction from difference of matrices
+    template <typename E1, typename E2>
+    dense2D(const matrix::mat_mat_minus_expr<E1, E2>& src)
+	: super(mtl::non_fixed::dimensions(num_rows(src.first), num_cols(src.first))),
+	  super_memory(num_rows(src.first) * num_cols(src.first)), expr_base(*this)		
+    {
+	init();
+	matrix_copy(src.first, *this);
+	*this-= src.second;
+    }
+
+
+    // Construction from product of matrices
+    template <typename E1, typename E2>
+    dense2D(const matrix::mat_mat_times_expr<E1, E2>& src)
+	: expr_base(*this)		
+    {
+	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+	change_dim(num_rows(factors.first), num_cols(factors.second));
+	mult(factors.first, factors.second, *this);
+    }
+
+
 
     void change_dim(size_type num_rows, size_type num_cols)
     {

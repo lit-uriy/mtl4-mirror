@@ -53,7 +53,7 @@ struct generic_array
     }
 
   public:
-    generic_array(): extern_memory(true), malloc_address(0), data(0) {}
+    generic_array(): extern_memory(false), malloc_address(0), data(0) {}
 
     explicit generic_array(Value *data) : extern_memory(true), malloc_address(0), data(data) {}    
 
@@ -139,6 +139,8 @@ struct contiguous_memory_block
 
     explicit contiguous_memory_block(std::size_t size)
 	: base(size), my_used_memory(size) {}
+
+    contiguous_memory_block() : my_used_memory(0) {}
 
     void swap(self& other)
     {

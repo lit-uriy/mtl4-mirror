@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
+#include <boost/numeric/mtl/operation/compute_factors.hpp>
 
 
 // #include <boost/numeric/mtl/ahnentafel_detail/index.hpp>
@@ -430,6 +431,35 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	set_ranges(m.num_rows(), m.num_cols());
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
+
+
+    // Construction from sum of matrices
+    template <typename E1, typename E2>
+    morton_dense(const matrix::mat_mat_plus_expr<E1, E2>& src) : expr_base(*this)
+    {
+	change_dim(num_rows(src.first), num_cols(src.first));
+	*this= src.first;
+	*this+= src.second;
+    }
+
+    // Construction from difference of matrices
+    template <typename E1, typename E2>
+    morton_dense(const matrix::mat_mat_minus_expr<E1, E2>& src) : expr_base(*this)
+    {
+	change_dim(num_rows(src.first), num_cols(src.first));
+	*this= src.first;
+	*this-= src.second;
+    }
+
+    // Construction from product of matrices
+    template <typename E1, typename E2>
+    morton_dense(const matrix::mat_mat_times_expr<E1, E2>& src)	: expr_base(*this)		
+    {
+	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+	change_dim(num_rows(factors.first), num_cols(factors.second));
+	mult(factors.first, factors.second, *this);
+    }
+
 
     void change_dim(size_type num_rows, size_type num_cols)
     {
