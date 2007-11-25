@@ -10,6 +10,7 @@
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
@@ -18,6 +19,7 @@
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/element_matrix.hpp> 
 #include <boost/numeric/mtl/matrix/element_array.hpp> 
+#include <boost/numeric/mtl/operation/compute_factors.hpp>
 
 namespace mtl {
 
@@ -353,6 +355,35 @@ class compressed2D
 	starts.resize(super::dim1() + 1, 0);
 	matrix_copy(src, *this);
     }
+
+
+    // Construction from sum of matrices
+    template <typename E1, typename E2>
+    compressed2D(const matrix::mat_mat_plus_expr<E1, E2>& src) : expr_base(*this), inserting(false)
+    {
+	change_dim(num_rows(src.first), num_cols(src.first));
+	matrix_copy(src.first, *this);
+	*this+= src.second;
+    }
+
+    // Construction from difference of matrices
+    template <typename E1, typename E2>
+    compressed2D(const matrix::mat_mat_minus_expr<E1, E2>& src) : expr_base(*this), inserting(false)
+    {
+	change_dim(num_rows(src.first), num_cols(src.first));
+	matrix_copy(src.first, *this);
+	*this-= src.second;
+    }
+
+    // Construction from product of matrices
+    template <typename E1, typename E2>
+    compressed2D(const matrix::mat_mat_times_expr<E1, E2>& src)	: expr_base(*this), inserting(false)		
+    {
+	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+	change_dim(num_rows(factors.first), num_cols(factors.second));
+	mult(factors.first, factors.second, *this);
+    }
+
 
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
 	// Removing the operator ends in run-time error
