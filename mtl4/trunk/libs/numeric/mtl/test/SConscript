@@ -40,6 +40,9 @@ sources = Split("""base_case_conversion.cpp
              resize_vector_test.cpp
 	     sub_matrix_test2.cpp
 	     direct_access.cpp
+	     matrix_multiple_left_products_test.cpp
+	     matrix_multiple_right_products_test.cpp
+	     matrix_multiple_products_test.cpp
 """)
 
 programs = []
