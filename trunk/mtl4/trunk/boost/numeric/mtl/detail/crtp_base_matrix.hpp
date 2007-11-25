@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
+#include <boost/numeric/mtl/operation/compute_factors.hpp>
 
 namespace mtl { namespace detail {
 
@@ -40,7 +41,7 @@ struct crtp_matrix_assign
     template <typename MatrixSrc>
     Matrix& operator=(const matrix::mat_expr<MatrixSrc>& src)
     {
-		std::cout << "In assignment\n";
+	// std::cout << "In assignment\n";
 #ifdef  _MSC_VER
 		// For other compilers there is an assign operator for the same type
 		// and only this one checks for self-assignment.
@@ -82,7 +83,8 @@ struct crtp_matrix_assign
     template <typename E1, typename E2>
     Matrix& operator=(const matrix::mat_mat_times_expr<E1, E2>& src)
     {
-	mult(src.first, src.second, static_cast<Matrix&>(*this));
+	operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+	mult(factors.first, factors.second, static_cast<Matrix&>(*this));
 
 	return static_cast<Matrix&>(*this);
     }
@@ -126,7 +128,8 @@ struct crtp_matrix_assign
     template <typename E1, typename E2>
     Matrix& operator+=(const matrix::mat_mat_times_expr<E1, E2>& src)
     {
-	gen_mult(src.first, src.second, static_cast<Matrix&>(*this), 
+	operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+	gen_mult(factors.first, factors.second, static_cast<Matrix&>(*this), 
 		 assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 
 	return static_cast<Matrix&>(*this);
@@ -171,7 +174,8 @@ struct crtp_matrix_assign
     template <typename E1, typename E2>
     Matrix& operator-=(const matrix::mat_mat_times_expr<E1, E2>& src)
     {
-	gen_mult(src.first, src.second, static_cast<Matrix&>(*this), 
+	operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+	gen_mult(factors.first, factors.second, static_cast<Matrix&>(*this), 
 		 assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 
 	return static_cast<Matrix&>(*this);

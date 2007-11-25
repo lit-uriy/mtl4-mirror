@@ -82,6 +82,7 @@ namespace mtl {
 	template <typename M1, typename M2, typename SFunctor> struct mat_mat_op_expr;
 	template <typename M1, typename M2> struct mat_mat_plus_expr;
 	template <typename M1, typename M2> struct mat_mat_minus_expr;
+	template <typename M1, typename M2> struct mat_mat_times_expr;
 
 	template <typename Matrix> struct mat_expr;
 	template <typename Functor, typename Matrix> struct map_view;
