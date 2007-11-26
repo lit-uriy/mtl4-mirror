@@ -359,7 +359,8 @@ class compressed2D
 
     // Construction from sum of matrices
     template <typename E1, typename E2>
-    compressed2D(const matrix::mat_mat_plus_expr<E1, E2>& src) : expr_base(*this), inserting(false)
+    explicit compressed2D(const matrix::mat_mat_plus_expr<E1, E2>& src) 
+	: expr_base(*this), inserting(false)
     {
 	change_dim(num_rows(src.first), num_cols(src.first));
 	matrix_copy(src.first, *this);
@@ -368,7 +369,8 @@ class compressed2D
 
     // Construction from difference of matrices
     template <typename E1, typename E2>
-    compressed2D(const matrix::mat_mat_minus_expr<E1, E2>& src) : expr_base(*this), inserting(false)
+    explicit compressed2D(const matrix::mat_mat_minus_expr<E1, E2>& src) 
+	: expr_base(*this), inserting(false)
     {
 	change_dim(num_rows(src.first), num_cols(src.first));
 	matrix_copy(src.first, *this);
@@ -377,7 +379,8 @@ class compressed2D
 
     // Construction from product of matrices
     template <typename E1, typename E2>
-    compressed2D(const matrix::mat_mat_times_expr<E1, E2>& src)	: expr_base(*this), inserting(false)		
+    explicit compressed2D(const matrix::mat_mat_times_expr<E1, E2>& src) 
+	: expr_base(*this), inserting(false)		
     {
 	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
 	change_dim(num_rows(factors.first), num_cols(factors.second));

@@ -34,8 +34,8 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
 
     cout << "\n\n" << name << "\n";
     // cout << "Input:\nA:\n" << A << "B1:\n" << B1 << "B2:\n" << B2;
-#if 0
-    MatrixC C= A * B1 * B2;
+
+    MatrixC C(A * B1 * B2);
 
     cout << "C constructed from A * B1 * B2 is:\n" << C << "\n";
 
@@ -44,7 +44,7 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
 
     if (C[0][3] != 1.0)
 	throw "C[0][3] should be 1!";
-#endif
+
     MatrixB B3(3, 4);
     B3= 0.0;
 
@@ -54,7 +54,7 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
 	B3_ins(2, 3) << 2.0;
     }
 	
-    MatrixC C2= A + B3;
+    MatrixC C2(A + B3);
     cout << "C2 constructed from A + B3 is:\n" << C2 << "\n";
 
     if (C2[0][0] != 0.0)
@@ -92,15 +92,8 @@ int test_main(int argc, char* argv[])
     test(mzd, mzd, mzd, "Morton Z-order");
     test(d2r, mzd, d2r, "Hybrid 2 row-major * Morton Z-order");
 
-#if 0
     test(cr, cr, cr, "Compressed row major");
     test(cc, cr, cc, "Compressed column major * row");
-
-    test(drc, drc, drc, "Dense row major complex");
-    test(drc, dc, drc, "Dense row major complex * column double");
-    test(crc, crc, crc, "Compressed row major complex");
-    test(crc, dc, crc, "Compressed row major complex * dense column major double");
-#endif
 
     return 0;
 }
