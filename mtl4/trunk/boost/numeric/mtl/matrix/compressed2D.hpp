@@ -564,6 +564,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
     size_type new_total = new_starts[matrix.dim1()];
     elements.resize(new_total);
     indices.resize(new_total);
+	if (elements.empty()) return;
    
     // copy normally if not overlapping and backward if overlapping
     // i goes down to 1 (not to 0) because i >= 0 never stops for unsigned ;-)
@@ -585,7 +586,10 @@ compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm)
 {
     size_type major, minor;
     boost::tie(major, minor) = mm;
-    
+
+    if (indices.empty())
+		return utilities::maybe<size_t> (0, false);
+
 	// &v[i] isn't liked by all libs -> &v[0]+i circumvents complaints
     const size_t *first = &indices[0] + starts[major],
   	         *last =  &indices[0] + slot_ends[major];
