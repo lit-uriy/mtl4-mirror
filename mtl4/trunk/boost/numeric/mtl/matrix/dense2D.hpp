@@ -238,6 +238,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
 
+#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
     // Construction from sum of matrices
     template <typename E1, typename E2>
     dense2D(const matrix::mat_mat_plus_expr<E1, E2>& src)
@@ -270,7 +271,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	change_dim(num_rows(factors.first), num_cols(factors.second));
 	mult(factors.first, factors.second, *this);
     }
-
+#endif
 
 
     void change_dim(size_type num_rows, size_type num_cols)
