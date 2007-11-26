@@ -274,7 +274,8 @@ namespace mtl {
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
-	typedef typename dense2D<Value, Parameters>::size_type size_type;
+        // Alleged ambiguity with mtl::tag::dense2D on MSVC
+        typedef typename mtl::dense2D<Value, Parameters>::size_type size_type;
     };
 #endif
 
