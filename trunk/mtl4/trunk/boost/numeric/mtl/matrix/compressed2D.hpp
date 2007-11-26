@@ -357,6 +357,7 @@ class compressed2D
     }
 
 
+#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
     // Construction from sum of matrices
     template <typename E1, typename E2>
     explicit compressed2D(const matrix::mat_mat_plus_expr<E1, E2>& src) 
@@ -386,6 +387,7 @@ class compressed2D
 	change_dim(num_rows(factors.first), num_cols(factors.second));
 	mult(factors.first, factors.second, *this);
     }
+#endif
 
 
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
