@@ -10,7 +10,8 @@ sources = Split("""iterator_adapter.cpp
 		   insertion_timing.cpp 
 		   algebraic_category.cpp
 		   vector_recursator.cpp
-		   empty.cpp""")
+		   empty.cpp
+""")
 
 for p in sources:
     debug_env.Program(p)
