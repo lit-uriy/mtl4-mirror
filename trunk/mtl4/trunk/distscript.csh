@@ -90,17 +90,16 @@ cp $TARNAME $p
 
 echo "*** Making zip"
 set ZIPNAME="${FULLNAME}.zip"
-zip -r $ZIPNAME mtl4
+zip -rq $ZIPNAME mtl4
 cp $ZIPNAME $p
 cd $p
 
-set MDTAR=`md5sum $TARNAME`
-echo "MD5 sum for \"$TARNAME\" is \"$MDTAR\""
-set MDZIP=`md5sum $ZIPNAME`
-echo "MD5 sum for \"$ZIPNAME\" is \"$MDZIP\""
+set MDTAR=`md5sum $TARNAME | cut --bytes=1-32`
+set MDZIP=`md5sum $ZIPNAME | cut --bytes=1-32`
 
-echo "addFile(\"Alpha-1 [x]\",\n        \"$TARNAME\", \"$MDTAR\");"
-echo "addFile(\"Alpha-1 [x]\",\n        \"$ZIPNAME\", \"$MDZIP\");"
+echo "For download file:"
+echo "t->addFile("\""Alpha-1 [x]"\"",\n           "\"$TARNAME\"", "\"$MDTAR\"");"
+echo "t->addFile("\""Alpha-1 [x]"\"",\n           "\"$ZIPNAME\"", "\"$MDZIP\"");"
 
 
 set DOWNLOAD="/l/osl/download/www.osl.iu.edu/research/mtl"
