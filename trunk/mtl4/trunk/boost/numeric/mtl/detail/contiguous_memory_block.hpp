@@ -21,6 +21,8 @@ struct array_size
     static std::size_t const value= 0;
 };
 
+// Macro MTL_DISABLE_ALIGNMENT is by default not set
+
 // Minimal size of memory allocation using alignment
 #ifndef MTL_ALIGNMENT_LIMIT
 #  define MTL_ALIGNMENT_LIMIT 1024
@@ -39,17 +41,31 @@ struct generic_array
 
     void alloc(std::size_t size)
     {
-	if (size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT) {
-	    char* p= this->malloc_address= new char[size * sizeof(value_type) + MTL_ALIGNMENT - 1];
-	    while ((long int)(p) % MTL_ALIGNMENT) p++;
-	    this->data= reinterpret_cast<value_type*>(p);
-	} else {
-	    // malloc_address= new char[size * sizeof(value_type)];
-	    // this->data= reinterpret_cast<value_type*>(malloc_address);
-	    this->data= new value_type[size];
-	    malloc_address= reinterpret_cast<char*>(this->data);
-	}
+#     ifdef MTL_DISABLE_ALIGNMENT
+	this->data= new value_type[size];
+#     else
+	bool        align= size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT;
+	std::size_t bytes= size * sizeof(value_type);
 
+	if (align)
+	    bytes+= MTL_ALIGNMENT - 1;
+
+	char* p= this->malloc_address= new char[bytes];
+	if (align)
+	    while ((long int)(p) % MTL_ALIGNMENT) p++;
+
+	this->data= reinterpret_cast<value_type*>(p);
+#     endif
+    }
+
+    void delete_it()
+    {
+	// printf("delete_it: data %p, malloc %p\n", this->data, malloc_address);      
+#       ifdef MTL_DISABLE_ALIGNMENT
+	    if (!extern_memory && this->data) delete[] this->data;
+#       else
+	    if (!extern_memory && malloc_address) delete[] malloc_address;
+#       endif
     }
 
   public:
@@ -69,30 +85,30 @@ struct generic_array
 	    return;
 	MTL_THROW_IF(extern_memory, 
 		     logic_error("Can't change the size of collections with external memory"));
-	// Free old memory (if allocated)
-	if (!extern_memory && malloc_address) {
-	    // printf("realloc: data %p, malloc %p\n", this->data, malloc_address);      
-	    delete[] malloc_address; }
+	delete_it();
 	alloc(size);
     }
 
     ~generic_array()
     {
-	// printf("destructor: data %p, malloc %p\n", this->data, malloc_address);      
-	if (!extern_memory && malloc_address) delete[] malloc_address;
+	delete_it();
     }
 
     void swap(self& other)
     {
 	using std::swap;
 	swap(extern_memory, other.extern_memory);
-	swap(malloc_address, other.malloc_address);
+#       ifndef MTL_DISABLE_ALIGNMENT
+	    swap(malloc_address, other.malloc_address);
+#       endif
 	swap(data, other.data);
     }	
 
   protected:
     bool                                      extern_memory;       // whether pointer to external data or own
+#ifndef MTL_DISABLE_ALIGNMENT
     char*                                     malloc_address;
+#endif
   public:
     Value    *data;
 };
