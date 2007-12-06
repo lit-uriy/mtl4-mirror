@@ -87,7 +87,6 @@ set TARNAME="${FULLNAME}.tar.gz"
 cd ..
 tar czf $TARNAME mtl4
 cp $TARNAME $p
-cd $p
 
 echo "*** Making zip"
 set ZIPNAME="${FULLNAME}.zip"
