@@ -89,14 +89,28 @@ tar czf $TARNAME mtl4
 cp $TARNAME $p
 cd $p
 
-set MD=`md5sum $TARNAME`
-echo "MD5 sum for \"$TARNAME\" is \"$MD\""
+echo "*** Making zip"
+set ZIPNAME="${FULLNAME}.zip"
+zip -r $ZIPNAME mtl4
+cp $ZIPNAME $p
+cd $p
+
+set MDTAR=`md5sum $TARNAME`
+echo "MD5 sum for \"$TARNAME\" is \"$MDTAR\""
+set MDZIP=`md5sum $ZIPNAME`
+echo "MD5 sum for \"$ZIPNAME\" is \"$MDZIP\""
+
+echo "addFile(\"Alpha-1 [x]\",\n        \"$TARNAME\", \"$MDTAR\");"
+echo "addFile(\"Alpha-1 [x]\",\n        \"$ZIPNAME\", \"$MDZIP\");"
+
 
 set DOWNLOAD="/l/osl/download/www.osl.iu.edu/research/mtl"
 
 echo "On an OSL machine I can type:"
 echo "cp $TARNAME $DOWNLOAD"
 echo "chmod a+r ${DOWNLOAD}/${TARNAME}"
+echo "cp $ZIPNAME $DOWNLOAD"
+echo "chmod a+r ${DOWNLOAD}/${ZIPNAME}"
 
 set WEBDIR="/l/osl/www/www.osl.iu.edu/research/mtl/mtl4/doc"
 echo "To update the documentations type:"
