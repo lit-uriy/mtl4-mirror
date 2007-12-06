@@ -94,8 +94,8 @@ zip -rq $ZIPNAME mtl4
 cp $ZIPNAME $p
 cd $p
 
-set MDTAR=`md5sum $TARNAME | cut --bytes=1-32`
-set MDZIP=`md5sum $ZIPNAME | cut --bytes=1-32`
+set MDTAR=`md5sum $TARNAME | cut -b 1-32`
+set MDZIP=`md5sum $ZIPNAME | cut -b 1-32`
 
 echo "For download file:"
 echo "t->addFile("\""Alpha-1 [x]"\"",\n           "\"$TARNAME\"", "\"$MDTAR\"");"
