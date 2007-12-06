@@ -109,7 +109,7 @@ void simulated_annealing(const vector_t& phreeqc_para, vector_t& min3p_para,
 
 int main(int argc, char* argv[])
 {
-    int max_iter= 100000; 
+    int max_iter= 10000; 
     if (argc > 1) max_iter= atoi(argv[1]);
 
     vector_t n2p(5), n2m(3); // N2 parameters for Phreeqc and Min3p Henry coefficients
@@ -130,20 +130,20 @@ int main(int argc, char* argv[])
 	temps[i]= 273.15 + double(i);
 
 #if 0
-    cout << "Error for N2 = " << error_fun(n2p, n2m, temps) << "\n";
+    cout << "Deviation for N2 = " << error_fun(n2p, n2m, temps) << "\n";
     simulated_annealing(n2p, n2m, temps, 0.001, 0.1, max_iter);
-    cout << "Error for N2 now = " << error_fun(n2p, n2m, temps) 
+    cout << "Deviation for N2 now = " << error_fun(n2p, n2m, temps) 
 	 << ", for n2m = " << n2m << "\n";
 
-    cout << "Error for H2 = " << error_fun(h2p, h2m, temps) << "\n";
+    cout << "Deviation for H2 = " << error_fun(h2p, h2m, temps) << "\n";
     simulated_annealing(h2p, h2m, temps, 0.001, 0.1, max_iter);
-    cout << "Error for H2 now = " << error_fun(h2p, h2m, temps) 
+    cout << "Deviation for H2 now = " << error_fun(h2p, h2m, temps) 
 	 << ", for h2m = " << h2m << "\n";
 #endif
 
-    cout << "Error for O2 = " << error_fun(o2p, o2m, temps) << "\n";
+    cout << "Deviation for O2 = " << error_fun(o2p, o2m, temps) << "\n";
     simulated_annealing(o2p, o2m, temps, 0.001, 0.1, max_iter);
-    cout << "Error for O2 now = " << error_fun(o2p, o2m, temps) 
+    cout << "Deviation for O2 now = " << error_fun(o2p, o2m, temps) 
 	 << ", for o2m = " << o2m << "\n";
 
     return 0;

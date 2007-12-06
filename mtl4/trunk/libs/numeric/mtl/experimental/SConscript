@@ -10,6 +10,7 @@ sources = Split("""iterator_adapter.cpp
 		   insertion_timing.cpp 
 		   algebraic_category.cpp
 		   vector_recursator.cpp
+		   gmp_test.cpp
 		   empty.cpp
 """)
 
