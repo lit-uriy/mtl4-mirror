@@ -98,8 +98,10 @@ set MDTAR=`md5sum $TARNAME | cut -b 1-32`
 set MDZIP=`md5sum $ZIPNAME | cut -b 1-32`
 
 echo "For download file:"
-echo "t->addFile("\""Alpha-1 [x]"\"",\n           "\"$TARNAME\"", "\"$MDTAR\"");"
-echo "t->addFile("\""Alpha-1 [x]"\"",\n           "\"$ZIPNAME\"", "\"$MDZIP\"");"
+echo "t->addFile("\""Alpha-1 [x]"\"","
+echo "           "\"$TARNAME\"", "\"$MDTAR\"");"
+echo "t->addFile("\""Alpha-1 [x]"\"","
+echo "           "\"$ZIPNAME\"", "\"$MDZIP\"");"
 
 
 set DOWNLOAD="/l/osl/download/www.osl.iu.edu/research/mtl"
@@ -110,11 +112,6 @@ echo "chmod a+r ${DOWNLOAD}/${TARNAME}"
 echo "cp $ZIPNAME $DOWNLOAD"
 echo "chmod a+r ${DOWNLOAD}/${ZIPNAME}"
 
-set WEBDIR="/l/osl/www/www.osl.iu.edu/research/mtl/mtl4/doc"
-echo "To update the documentations type:"
-echo "doxygen"
-echo "cp -R libs/numeric/mtl/doc/html/* $WEBDIR"
-echo "chmod -R a+rX $WEBDIR"
 
 #
 # All done -- diss the temp area
