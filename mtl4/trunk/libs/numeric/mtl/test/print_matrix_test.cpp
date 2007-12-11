@@ -4,11 +4,7 @@
 #include <cmath>
 #include <boost/test/minimal.hpp>
 
-#include <boost/numeric/mtl/matrix/dense2D.hpp>
-#include <boost/numeric/mtl/matrix/morton_dense.hpp> 
-#include <boost/numeric/mtl/matrix/compressed2D.hpp> 
-#include <boost/numeric/mtl/matrix/transposed_view.hpp>
-
+#include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
@@ -55,6 +51,15 @@ void test(Matrix& matrix, const char* name)
 
     std::cout << "with << and formatted" << "\n"
 	      << mtl::with_format(trans, 7, 4) << "\n";
+
+    Matrix square(5, 5);
+    square= matrix * trans;
+
+    std::cout << "squared before:\n" << mtl::with_format(trans, 4, 2)
+	      << "squared in place:\n" << matrix * trans << "\n";
+
+    // Comparison with FP!!!! :-! Make something better eventually
+    //if ((matrix * trans)[0][1] != 1.0) throw "Wrong multiplicatin result!";
 }
 
 
@@ -70,7 +75,7 @@ int test_main(int argc, char* argv[])
     test(dc, "Dense column major");
     test(md, "Morton N-order");
     test(d16r, "Hybrid 16 row-major");
-    test(comp, "compressed2D");
+    //test(comp, "compressed2D");
 
     return 0;
 }
