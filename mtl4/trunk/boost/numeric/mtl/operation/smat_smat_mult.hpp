@@ -174,7 +174,8 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
 			   tag::col_major)  // orientation b
 {
     // Copy B into a row-major matrix
-    compressed2D<typename Collection<MatrixB>::value_type, matrix::parameters<> > b_copy(b);
+    compressed2D<typename Collection<MatrixB>::value_type, matrix::parameters<> > b_copy(num_rows(b), num_cols(b));
+    b_copy= b;
     smat_smat_mult(a, b_copy, c, Assign(), tag::row_major(), tag::row_major());
 }
 
