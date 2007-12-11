@@ -21,7 +21,7 @@ struct array_size
     static std::size_t const value= 0;
 };
 
-// Macro MTL_DISABLE_ALIGNMENT is by default not set
+// Macro MTL_ENABLE_ALIGNMENT is by default not set
 
 // Minimal size of memory allocation using alignment
 #ifndef MTL_ALIGNMENT_LIMIT
@@ -41,7 +41,7 @@ struct generic_array
 
     void alloc(std::size_t size)
     {
-#     ifdef MTL_DISABLE_ALIGNMENT
+#     ifndef MTL_ENABLE_ALIGNMENT
 	this->data= new value_type[size];
 #     else
 	bool        align= size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT;
@@ -61,7 +61,7 @@ struct generic_array
     void delete_it()
     {
 	// printf("delete_it: data %p, malloc %p\n", this->data, malloc_address);      
-#       ifdef MTL_DISABLE_ALIGNMENT
+#       ifndef MTL_ENABLE_ALIGNMENT
 	    if (!extern_memory && this->data) delete[] this->data;
 #       else
 	    if (!extern_memory && malloc_address) delete[] malloc_address;
@@ -69,9 +69,21 @@ struct generic_array
     }
 
   public:
-    generic_array(): extern_memory(false), malloc_address(0), data(0) {}
+    generic_array()
+	: extern_memory(false), 
+#       ifdef MTL_ENABLE_ALIGNMENT
+	  malloc_address(0), 
+#       endif
+	  data(0) 
+    {}
 
-    explicit generic_array(Value *data) : extern_memory(true), malloc_address(0), data(data) {}    
+    explicit generic_array(Value *data) 
+	: extern_memory(true), 
+#       ifdef MTL_ENABLE_ALIGNMENT
+	  malloc_address(0), 
+#       endif
+	  data(data) 
+    {}    
 
     explicit generic_array(std::size_t size) : extern_memory(false)
     {
@@ -98,7 +110,7 @@ struct generic_array
     {
 	using std::swap;
 	swap(extern_memory, other.extern_memory);
-#       ifndef MTL_DISABLE_ALIGNMENT
+#       ifdef MTL_ENABLE_ALIGNMENT
 	    swap(malloc_address, other.malloc_address);
 #       endif
 	swap(data, other.data);
@@ -106,7 +118,7 @@ struct generic_array
 
   protected:
     bool                                      extern_memory;       // whether pointer to external data or own
-#ifndef MTL_DISABLE_ALIGNMENT
+#ifdef MTL_ENABLE_ALIGNMENT
     char*                                     malloc_address;
 #endif
   public:

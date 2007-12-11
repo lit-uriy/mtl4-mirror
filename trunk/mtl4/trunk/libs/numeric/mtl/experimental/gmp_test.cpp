@@ -8,7 +8,7 @@ int test_main(int argc, char** argv)
 {
     mtl::dense2D<mpq_class> A(2, 2);
     A(0, 0) = mpq_class(0);
-    // A(0, 1) = 0; problem
+    A(0, 1) = 0; // problem
     mpq_class x;
     x = 0;
     return 0;
