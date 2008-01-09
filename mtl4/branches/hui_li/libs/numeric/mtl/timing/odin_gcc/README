@@ -1,0 +1,5 @@
+Command:
+recursive_matrix_product_timing Size
+
+Compiled:
+g++ -DNDEBUG -O3 -ffast-math  -funsafe-math-optimizations -ffinite-math-only
