@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/operation/copy.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
+#include <boost/numeric/mtl/operation/divide_by_inplace.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/diagonal_setup.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -194,8 +195,16 @@ struct crtp_matrix_assign
     {
 	right_scale_inplace(static_cast<Matrix&>(*this), alpha);
 	return static_cast<Matrix&>(*this);
-    }	
+    }
     
+	/// Divide matrix (in place) by scalar value
+	// added by Hui Li
+	template <typename Factor>
+	Matrix& operator/=(const Factor& alpha)
+	{
+		divide_by_inplace(static_cast<Matrix&>(*this), alpha);
+		return static_cast<Matrix&>(*this);
+	}
 };
 
 

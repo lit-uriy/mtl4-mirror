@@ -445,7 +445,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     template <typename E1, typename E2>
     morton_dense(const matrix::mat_mat_plus_expr<E1, E2>& src) : expr_base(*this)
     {
-	change_dim(num_rows(src.first), num_cols(src.first));
+	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
 	*this= src.first;
 	*this+= src.second;
     }
@@ -454,7 +454,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     template <typename E1, typename E2>
     morton_dense(const matrix::mat_mat_minus_expr<E1, E2>& src) : expr_base(*this)
     {
-	change_dim(num_rows(src.first), num_cols(src.first));
+	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
 	*this= src.first;
 	*this-= src.second;
     }
@@ -464,7 +464,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     morton_dense(const matrix::mat_mat_times_expr<E1, E2>& src)	: expr_base(*this)		
     {
 	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-	change_dim(num_rows(factors.first), num_cols(factors.second));
+	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));
 	mult(factors.first, factors.second, *this);
     }
 #endif

@@ -14,6 +14,7 @@
 #include <boost/numeric/mtl/matrix/operators.hpp>
 //#include <boost/numeric/mtl/vector/operators.hpp>
 #include <boost/numeric/mtl/operation/mult_result.hpp>
+#include <boost/numeric/mtl/operation/div_result.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 
 
@@ -41,6 +42,16 @@ inline operator*(const Op1& op1, const Op2& op2)
     return typename traits::mult_result_if_equal<Op1, Op2, ashape::scal_mat_mult>::type(op1, op2);
 }
 #endif
+
+/// Division of matrices and vectors by salars
+/** Enable-if-like technique make sure that only called when properly defined **/
+// added by Hui Li
+template < typename Op1, typename Op2 >
+typename traits::div_result<Op1,Op2>::type
+inline operator/(const Op1& op1, const Op2& op2)
+{
+	return typename traits::div_result<Op1,Op2>::type(op1,op2);
+}
 
 } // namespace mtl
 

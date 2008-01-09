@@ -94,6 +94,8 @@ namespace mtl {
 	template <typename Matrix> struct mat_expr;
 	template <typename Functor, typename Matrix> struct map_view;
 	template <typename Scaling, typename Matrix> struct scaled_view;
+	template <typename Matrix, typename RScaling> struct rscaled_view; // added by Hui Li
+	template <typename Matrix, typename Divisor> struct divide_by_view; // added by Hui Li
 	template <typename Matrix>  struct conj_view;
 	template <typename Matrix>  struct hermitian_view;
     }
@@ -104,6 +106,8 @@ namespace mtl {
 	template <typename Functor, typename Vector> struct map_view;
 	template <typename Vector>  struct conj_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
+	template <typename Vector, typename RScaling> struct rscaled_view; // added by Hui Li
+	template <typename Vector, typename Divisor> struct divide_by_view; // added by Hui Li
 	template <class E1, class E2, typename SFunctor> struct vec_vec_op_expr;
 	template <class E1, class E2> struct vec_vec_plus_expr;
 	template <class E1, class E2> struct vec_vec_minus_expr;
@@ -113,6 +117,7 @@ namespace mtl {
 	template <class E1, class E2> struct vec_vec_minus_asgn_expr;
 	template <class E1, class E2> struct vec_vec_times_asgn_expr;
 	template <class E1, class E2> struct vec_scal_times_asgn_expr;
+	template <class E1, class E2> struct vec_scal_div_asgn_expr; // added by Hui Li
 	template <class E1, class E2> struct vec_scal_asgn_expr;
     }
 
@@ -148,6 +153,20 @@ namespace mtl {
     namespace tfunctor {
 	/// Functor for scaling matrices, vectors and ordinary scalars
 	template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct scale;
+    }
+
+    /// Namespace for functors with application operator and fully typed paramaters
+	// added by Hui Li
+    namespace tfunctor {
+	/// Functor for scaling matrices, vectors and ordinary scalars
+	template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct rscale;
+    }
+	
+    /// Namespace for functors with application operator and fully typed paramaters
+	// added by Hui Li
+    namespace tfunctor {
+		/// Functor for scaling matrices, vectors and ordinary scalars
+		template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct divide_by;
     }
 
     /// Namespace for functors with static function apply and fully typed paramaters
