@@ -14,8 +14,11 @@ sources = Split("""base_case_conversion.cpp
 	     set_to_zero_test.cpp
 	     assign_test.cpp
              dense_vector_test.cpp
+             dense_vector_test_2.cpp
              matrix_map_view_test.cpp
+             matrix_map_view_test_2.cpp
              vector_map_view_test.cpp
+             vector_map_view_test_2.cpp
              algebraic_category.cpp
              matrix_add_test.cpp
              laplacian_setup_test.cpp
@@ -26,6 +29,7 @@ sources = Split("""base_case_conversion.cpp
              rank_two_update_test.cpp
              left_scale_inplace_test.cpp
              right_scale_inplace_test.cpp
+             divide_by_inplace_test.cpp
              swap_test.cpp
              trace_test.cpp
              one_norm_matrix_test.cpp

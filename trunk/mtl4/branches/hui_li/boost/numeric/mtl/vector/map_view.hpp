@@ -169,6 +169,41 @@ struct scaled_view
     {}
 };
 
+// added by Hui Li
+template <typename Vector, typename RScaling>
+struct rscaled_view
+	: public map_view<tfunctor::rscale<typename Vector::value_type, RScaling>, Vector>
+{
+	typedef tfunctor::rscale<typename Vector::value_type, RScaling>  functor_type;
+	typedef map_view<functor_type, Vector>                          base;
+	
+	rscaled_view(const Vector& vector, const RScaling& rscaling)
+	: base(functor_type(rscaling), vector)
+	{}
+	
+	rscaled_view(boost::shared_ptr<Vector> p, const RScaling& rscaling)
+	: base(functor_type(rscaling), p)
+	{}
+};
+	
+
+// added by Hui Li
+template <typename Vector, typename Divisor>
+struct divide_by_view
+: public map_view<tfunctor::divide_by<typename Vector::value_type, Divisor>, Vector>
+{
+	typedef tfunctor::divide_by<typename Vector::value_type, Divisor>  functor_type;
+	typedef map_view<functor_type, Vector>                             base;
+	
+	divide_by_view(const Vector& vector, const Divisor& div)
+	: base(functor_type(div), vector)
+	{}
+	
+	divide_by_view(boost::shared_ptr<Vector> p, const Divisor& div)
+	: base(functor_type(div), p)
+	{}
+};
+	
 
 template <typename Vector>
 struct conj_view

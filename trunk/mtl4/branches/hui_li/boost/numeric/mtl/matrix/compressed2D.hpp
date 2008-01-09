@@ -370,7 +370,7 @@ class compressed2D
     explicit compressed2D(const matrix::mat_mat_plus_expr<E1, E2>& src) 
 	: expr_base(*this), inserting(false)
     {
-	change_dim(num_rows(src.first), num_cols(src.first));
+	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
 	matrix_copy(src.first, *this);
 	*this+= src.second;
     }
@@ -380,7 +380,7 @@ class compressed2D
     explicit compressed2D(const matrix::mat_mat_minus_expr<E1, E2>& src) 
 	: expr_base(*this), inserting(false)
     {
-	change_dim(num_rows(src.first), num_cols(src.first));
+	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
 	matrix_copy(src.first, *this);
 	*this-= src.second;
     }
@@ -391,7 +391,7 @@ class compressed2D
 	: expr_base(*this), inserting(false)		
     {
 	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-	change_dim(num_rows(factors.first), num_cols(factors.second));
+	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));
 	mult(factors.first, factors.second, *this);
     }
 #endif
