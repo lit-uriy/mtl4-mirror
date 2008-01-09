@@ -1,5 +1,12 @@
 // Copyright 2006. Peter Gottschling, Matthias Troyer, Rolf Bonderer
-// $COPYRIGHT$
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 
 #ifndef MATH_IDENTITY_INCLUDE
 #define MATH_IDENTITY_INCLUDE
