@@ -1,0 +1,8 @@
+project my_mtl
+  : requirements
+    <include>${BOOST_ROOT} <include>${MTL_BOOST_ROOT} <include>${GLAS_ROOT}
+  ;
+
+exe age_example1 : age_example1.cpp ; 
+
+
