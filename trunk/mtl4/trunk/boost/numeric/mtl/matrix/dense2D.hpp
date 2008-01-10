@@ -249,8 +249,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     // Construction from sum of matrices
     template <typename E1, typename E2>
     dense2D(const matrix::mat_mat_plus_expr<E1, E2>& src)
-	: super(mtl::non_fixed::dimensions(num_rows(src.first), num_cols(src.first))),
-	  super_memory(num_rows(src.first) * num_cols(src.first)), expr_base(*this)		
+	: super(mtl::non_fixed::dimensions(mtl::num_rows(src.first), mtl::num_cols(src.first))),
+	  super_memory(mtl::num_rows(src.first) * mtl::num_cols(src.first)), expr_base(*this)		
     {
 	init();
 	matrix_copy(src.first, *this);
@@ -260,8 +260,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     // Construction from difference of matrices
     template <typename E1, typename E2>
     dense2D(const matrix::mat_mat_minus_expr<E1, E2>& src)
-	: super(mtl::non_fixed::dimensions(num_rows(src.first), num_cols(src.first))),
-	  super_memory(num_rows(src.first) * num_cols(src.first)), expr_base(*this)		
+	: super(mtl::non_fixed::dimensions(mtl::num_rows(src.first), mtl::num_cols(src.first))),
+	  super_memory(mtl::num_rows(src.first) * mtl::num_cols(src.first)), expr_base(*this)		
     {
 	init();
 	matrix_copy(src.first, *this);
@@ -275,7 +275,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	: expr_base(*this)		
     {
 	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-	change_dim(num_rows(factors.first), num_cols(factors.second));
+	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));
 	mult(factors.first, factors.second, *this);
     }
 #endif

@@ -110,6 +110,14 @@ struct crtp_vector_assign
     {
 	return vec_scal_times_asgn_expr<Vector, Factor>( static_cast<Vector&>(*this), alpha );
     }	
+
+    /// Devide vector (in place) by a scalar value
+	// added by Hui Li 12/11/2007
+    template <typename Factor>
+    vec_scal_div_asgn_expr<Vector, Factor> operator/=(const Factor& alpha)
+    {
+		return vec_scal_div_asgn_expr<Vector, Factor>( static_cast<Vector&>(*this), alpha );
+    }	
 };
 
 

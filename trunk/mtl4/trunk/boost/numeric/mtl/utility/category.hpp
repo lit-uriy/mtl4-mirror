@@ -86,6 +86,20 @@ struct category< vector::scaled_view<Scaling, Vector> >
 					    Vector> >
 {};
 
+// added by Hui Li
+template <typename Vector,typename RScaling>
+struct category< vector::rscaled_view<Vector,RScaling> >
+: public category< vector::map_view<tfunctor::rscale<typename Vector::value_type,RScaling>, 
+Vector> >
+{};
+
+// added by Hui Li
+template <typename Vector,typename Divisor>
+struct category< vector::divide_by_view<Vector,Divisor> >
+: public category< vector::map_view<tfunctor::divide_by<typename Vector::value_type,Divisor>, 
+Vector> >
+{};
+
 template <typename Vector>
 struct category< vector::conj_view<Vector> >
     : public category< vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
@@ -106,6 +120,20 @@ template <typename Scaling, typename Matrix>
 struct category< matrix::scaled_view<Scaling, Matrix> >
     : public category< matrix::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
 					    Matrix> >
+{};
+
+// added by Hui Li
+template <typename Matrix, typename RScaling>
+struct category< matrix::rscaled_view<Matrix,RScaling> >
+: public category< matrix::map_view<tfunctor::rscale<typename Matrix::value_type,RScaling>, 
+Matrix> >
+{};
+
+// added by Hui Li
+template <typename Matrix, typename Divisor>
+struct category< matrix::divide_by_view<Matrix,Divisor> >
+: public category< matrix::map_view<tfunctor::divide_by<typename Matrix::value_type,Divisor>, 
+Matrix> >
 {};
 
 template <typename Matrix>

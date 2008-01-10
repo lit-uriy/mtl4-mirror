@@ -129,6 +129,12 @@ struct ashape< vector::vec_scal_times_asgn_expr<E1, E2> >
 {
     typedef typename ashape<E1>::type type;
 };
+	
+template <typename E1, typename E2> // added by Hui Li
+struct ashape< vector::vec_scal_div_asgn_expr<E1, E2> >
+{
+	typedef typename ashape<E1>::type type;
+};
 
 // ========
 // Matrices
@@ -194,10 +200,38 @@ struct ashape<matrix::scaled_view<Scaling, Coll> >
     typedef typename ashape<Coll>::type type;
 };
 
+// added by Hui Li
+template <typename Coll, typename RScaling>
+struct ashape<matrix::rscaled_view<Coll,RScaling> >
+{
+	typedef typename ashape<Coll>::type type;
+};
+
+// added by Hui Li
+template <typename Coll, typename Divisor>
+struct ashape<matrix::divide_by_view<Coll,Divisor> >
+{
+	typedef typename ashape<Coll>::type type;
+};
+	
 template <typename Scaling, typename Coll>
 struct ashape<vector::scaled_view<Scaling, Coll> >
 {
     typedef typename ashape<Coll>::type type;
+};
+
+// added by Hui Li
+template <typename Coll, typename RScaling>
+struct ashape<vector::rscaled_view<Coll,RScaling> >
+{
+	typedef typename ashape<Coll>::type type;
+};
+
+// added by Hui Li
+template <typename Coll, typename Divisor>
+struct ashape<vector::divide_by_view<Coll,Divisor> >
+{
+	typedef typename ashape<Coll>::type type;
 };
 
 template <typename Coll>
@@ -466,7 +500,6 @@ struct mult_op<mat<Value1>, scal>
     typedef mat_scal_mult type;
 };
 
-
 // Arbitration
 template <>
 struct mult_shape<scal, scal>
@@ -486,6 +519,104 @@ struct ashape< matrix::mat_mat_times_expr<E1, E2> >
 };
 
 
+// added by Hui Li (below) -----------------------------------------
+
+// =====================
+// Shapes of divisions:
+// =====================
+
+// Operation types:
+
+struct scal_scal_div {};
+struct cvec_scal_div {};
+struct rvec_scal_div {};
+struct mat_scal_div {};
+
+template < typename Shape1, typename Shape2 >
+struct div_shape
+{
+	typedef ndef type;
+};
+
+template < typename Shape1, typename Shape2 >
+struct div_op
+{
+	typedef ndef type;
+};
+
+template <>
+struct div_shape<scal,scal>
+{
+	typedef scal type;
+};
+
+template<>
+struct div_op<scal,scal>
+{
+	typedef scal type;
+};
+
+template < typename Value1 >
+struct div_shape < rvec<Value1>, scal >
+{
+	typedef typename boost::mpl::if_<
+		typename boost::is_same<typename div_shape<Value1,scal>::type,ndef>::type,
+		ndef,
+		rvec<typename div_shape<Value1,scal>::type>
+	>::type type;
+};
+
+template < typename Value1 >
+struct div_op< rvec<Value1>, scal >
+{
+	typedef typename boost::mpl::if_<
+		typename boost::is_same<typename div_shape<rvec<Value1>,scal>::type,ndef>::type,
+		ndef,
+		rvec_scal_div
+	>::type type;
+};
+
+template < typename Value1 >
+struct div_shape < cvec<Value1>, scal >
+{
+	typedef typename boost::mpl::if_<
+		typename boost::is_same<typename div_shape<Value1,scal>::type,ndef>::type,
+		ndef,
+		cvec<typename div_shape<Value1,scal>::type>
+	>::type type;
+};
+
+template < typename Value1 >
+struct div_op< cvec<Value1>, scal >
+{
+	typedef typename boost::mpl::if_<
+		typename boost::is_same<typename div_shape<cvec<Value1>,scal>::type,ndef>::type,
+		ndef,
+		cvec_scal_div
+	>::type type;
+};
+
+template < typename Value1 >
+struct div_shape < mat<Value1>, scal >
+{
+	typedef typename boost::mpl::if_<
+		typename boost::is_same<typename div_shape<Value1,scal>::type,ndef>::type,
+		ndef,
+		mat<typename div_shape<Value1,scal>::type>
+	>::type type;
+};
+
+template < typename Value1 >
+struct div_op < mat<Value1>, scal >
+{
+	typedef typename boost::mpl::if_<
+		typename boost::is_same<typename div_shape<mat<Value1>,scal>::type,ndef>::type,
+		ndef,
+		mat_scal_div
+	>::type type;
+};
+	
+// added by Hui Li (above) -----------------------------------------
 
 
 
