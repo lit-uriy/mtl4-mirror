@@ -104,7 +104,7 @@ struct lsb_mask<0>
 };
 
 
-// Last N bits of Value
+/// Last N bits of Value
 template <unsigned long N, unsigned long Value>
 struct lsb_bits
 {
@@ -112,7 +112,7 @@ struct lsb_bits
 };
 
 
-// Compares to masks
+/// Compares two masks
 template <unsigned long Mask1, unsigned long Mask2>
 struct same_mask
 {
@@ -126,7 +126,7 @@ struct same_mask<Mask, Mask>
 };
 
 
-// Row-major mask for 2^K by 2^K base case
+/// Row-major mask for 2^K by 2^K base case
 template <unsigned long K>
 struct row_major_mask
 {
@@ -134,14 +134,14 @@ struct row_major_mask
 };
 
 
-// Column-major mask for 2^K by 2^K base case
+/// Column-major mask for 2^K by 2^K base case
 template <unsigned long K>
 struct col_major_mask
     : public lsb_mask<K>
 {};
 
 
-// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask, is a row-major matrix
+/// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask, is a row-major matrix
 template <unsigned long K, unsigned long Mask>
 struct is_k_power_base_case_row_major
 {
@@ -150,7 +150,7 @@ struct is_k_power_base_case_row_major
 };
 
 
-// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask, is a column-major matrix
+/// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask, is a column-major matrix
 template <unsigned long K, unsigned long Mask>
 struct is_k_power_base_case_col_major
 {
@@ -158,21 +158,21 @@ struct is_k_power_base_case_col_major
 };
 
 
-// Checks whether 32x32 base case of hybric matrix, defined by Mask, is a row-major matrix
+/// Checks whether 32x32 base case of hybric matrix, defined by Mask, is a row-major matrix
 template <unsigned long Mask>
 struct is_32_base_case_row_major
     : public is_k_power_base_case_row_major<5, Mask>
 {};
 
 
-// Checks whether 32x32 base case of hybric matrix, defined by Mask, is a col-major matrix
+/// Checks whether 32x32 base case of hybric matrix, defined by Mask, is a col-major matrix
 template <unsigned long Mask>
 struct is_32_base_case_col_major
     : public is_k_power_base_case_col_major<5, Mask>
 {};
 
 
-// Row-major mask for 2^K by 2^K base case with 2^T shark teeth
+/// Row-major mask for 2^K by 2^K base case with 2^T shark teeth
 template <unsigned long K, unsigned long T>
 struct row_major_shark_mask
 {
@@ -180,7 +180,7 @@ struct row_major_shark_mask
 };
 
 
-// Row-major mask for 2^K by 2^K base case with 2^T shark teeth
+/// Row-major mask for 2^K by 2^K base case with 2^T shark teeth
 template <unsigned long K, unsigned long T>
 struct col_major_shark_mask
 {
@@ -188,8 +188,9 @@ struct col_major_shark_mask
 };
 
 
-// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask,
-//   is a row-major matrix shark-tooth with 2^T tooth length
+/** Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask,
+    is a row-major matrix shark-tooth with 2^T tooth length
+**/
 template <unsigned long K, unsigned long T, unsigned long Mask>
 struct is_k_power_base_case_row_major_t_shark
 {
@@ -197,8 +198,9 @@ struct is_k_power_base_case_row_major_t_shark
 };
 
 
-// Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask,
-//   is a col-major matrix shark-tooth with 2^T tooth length
+/** Checks whether 2^K by 2^K base case of hybric matrix, defined by Mask,
+    is a col-major matrix shark-tooth with 2^T tooth length
+**/
 template <unsigned long K, unsigned long T, unsigned long Mask>
 struct is_k_power_base_case_col_major_t_shark
 {
@@ -206,7 +208,7 @@ struct is_k_power_base_case_col_major_t_shark
 };
 
   // e-order
-// i-order mask of N bits
+/// N-order mask of N bits
 template <unsigned long N>
 struct i_order_mask
 {
@@ -217,7 +219,7 @@ struct i_order_mask
 template<> struct i_order_mask<0> : public lsb_mask<0> {};  // set to 0
 
 
-// z-order mask of N bits
+/// Z-order mask of N bits
 template <unsigned long N>
 struct z_order_mask
 {
@@ -228,11 +230,12 @@ struct z_order_mask
 template<> struct z_order_mask<0> : public lsb_mask<0> {};  // set to 0
 
 
-// Generate arbitrary hybrid mask
-//    IOrder: if true then i-order otherwise z-order
-//    K:      2^K by 2^K base case 
-//    order:  mtl::row_major or mtl::col_major
-//    T:      2^T tooth length
+/** Generate arbitrary hybrid mask.
+    \param IOrder if true then i-order otherwise z-order
+    \param K      2^K by 2^K base case 
+    \param Orientation  mtl::row_major or mtl::col_major
+    \param T      2^T tooth length
+**/
 template <bool IOrder, unsigned long K, typename Orientation, unsigned long T>
 class generate_mask
 {
