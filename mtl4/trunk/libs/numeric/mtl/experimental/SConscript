@@ -11,7 +11,6 @@ sources = Split("""iterator_adapter.cpp
 		   algebraic_category.cpp
 		   vector_recursator.cpp
 		   gmp_test.cpp
-                   print_matrix_product_test.cpp
 		   empty.cpp
 """)
 
