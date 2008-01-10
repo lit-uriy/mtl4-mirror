@@ -14,6 +14,7 @@
 #include <boost/numeric/mtl/matrix/mat_mat_op_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 
 namespace mtl { namespace matrix {
@@ -34,26 +35,24 @@ struct mat_mat_times_expr
     {}
 
     // To prevent that cout << A * B prints the element-wise product, suggestion by Hui Li
+    // It is rather inefficient, esp. for multiple products (complexity increases with the number of arguments :-!)
+    //    or sparse matrices. 
+    // Better compute your product first and print it then when compute time is an issue,
+    // this is ONLY for convenience.
     typename E1::value_type
     operator()(std::size_t r, std::size_t c) const
     {
-	// TBD: Type of matrix product should depend on E1 and E2 
-	static boost::shared_ptr<E1> pproduct;
+	using math::zero;
+	MTL_THROW_IF(num_cols(first) != num_rows(second), incompatible_size());
 
-	// If first time compute product
-	if (pproduct.get() == 0) {
-	    operation::compute_factors<E1, self> factors(*this);
-	    pproduct.reset(new E1(num_rows(factors.first), num_cols(factors.second)));
-	    *pproduct= factors.first * factors.second;
-	}
-	return (*pproduct)(r, c);
+	typename E1::value_type ref, sum(zero(ref));
+	for (std::size_t i= 0; i < num_cols(first); i++)
+	    sum+= first(r, i) * second(i, c);
+	return sum;
     }
 
     first_argument_type const&  first ;
     second_argument_type const& second ;
-private:
-    // TBD: Type of matrix product should depend on E1 and E2 
-    //E1  product;
 };
 
 
