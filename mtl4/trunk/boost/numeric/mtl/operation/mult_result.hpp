@@ -61,14 +61,14 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_mat_mult>
     typedef matrix::scaled_view<Op1, Op2> type;
 };
 
-#if 0
-/// Scale matrix from right needs functor for scaling from right (not yet implemented)
+//#if 1 // enabled by Hui Li
+/// Scale matrix from right needs functor for scaling from right
 template <typename Op1, typename Op2>
 struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_scal_mult> 
 {
     typedef matrix::rscaled_view<Op1, Op2> type;
 };
-#endif
+//#endif
 
 /// Multiply matrices
 template <typename Op1, typename Op2>
@@ -98,6 +98,23 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_cvec_mult>
 {
     typedef vector::scaled_view<Op1, Op2> type;
 };
+
+/// Scale row vector from right
+// added by Hui Li
+template <typename Op1, typename Op2>
+struct mult_result_aux<Op1, Op2, ::mtl::ashape::rvec_scal_mult> 
+{
+	typedef vector::rscaled_view<Op1, Op2> type;
+};
+
+/// Scale column vector from right
+// added by Hui Li
+template <typename Op1, typename Op2>
+struct mult_result_aux<Op1, Op2, ::mtl::ashape::cvec_scal_mult> 
+{
+	typedef vector::rscaled_view<Op1, Op2> type;
+};
+	
 
 }} // namespace mtl::traits
 

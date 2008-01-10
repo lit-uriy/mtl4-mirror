@@ -344,7 +344,26 @@ namespace mtl {
     };
 #endif
 
-
+// added by Hui Li
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll, typename RScaling>
+    concept_map Collection<matrix::rscaled_view<Coll,RScaling> >
+    {
+		typedef typename matrix::rscaled_view<Coll,RScaling>::value_type        value_type;
+		typedef typename matrix::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+		typedef typename matrix::rscaled_view<Coll,RScaling>::size_type         size_type;
+    };
+#else
+    template <typename Coll, typename RScaling>
+    struct Collection<matrix::rscaled_view<Coll,RScaling> >
+    {
+		typedef typename matrix::rscaled_view<Coll,RScaling>::value_type        value_type;
+		typedef typename matrix::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+		typedef typename matrix::rscaled_view<Coll,RScaling>::size_type         size_type;
+    };
+#endif
+	
+	
 #ifdef __GXX_CONCEPTS__
     template <typename Scaling, typename Coll>
     concept_map Collection<vector::scaled_view<Scaling, Coll> >
@@ -360,6 +379,25 @@ namespace mtl {
 	typedef typename vector::scaled_view<Scaling, Coll>::value_type        value_type;
 	typedef typename vector::scaled_view<Scaling, Coll>::const_reference   const_reference;
 	typedef typename vector::scaled_view<Scaling, Coll>::size_type         size_type;
+    };
+#endif
+
+// added by Hui Li
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll, typename RScaling>
+    concept_map Collection<vector::rscaled_view<Coll,RScaling> >
+    {
+		typedef typename vector::rscaled_view<Coll,RScaling>::value_type        value_type;
+		typedef typename vector::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+		typedef typename vector::rscaled_view<Coll,RScaling>::size_type         size_type;
+    };
+#else
+    template <typename Coll, typename RScaling>
+    struct Collection<vector::rscaled_view<Coll,RScaling> >
+    {
+		typedef typename vector::rscaled_view<Coll,RScaling>::value_type        value_type;
+		typedef typename vector::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+		typedef typename vector::rscaled_view<Coll,RScaling>::size_type         size_type;
     };
 #endif
 
@@ -488,7 +526,22 @@ namespace mtl {
     };
 #endif
 
+// added by Hui Li
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll, typename RScaling>
+    concept_map OrientedCollection< matrix::rscaled_view<Coll,RScaling> >
+    {
+		typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#else
+    template <typename Coll, typename RScaling>
+    struct OrientedCollection< matrix::rscaled_view<Coll,RScaling> >
+    {
+		typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#endif
 
+	
 #ifdef __GXX_CONCEPTS__
     template <typename Scaling, typename Coll>
     concept_map OrientedCollection< vector::scaled_view<Scaling, Coll> >
@@ -503,7 +556,22 @@ namespace mtl {
     };
 #endif
 
+//added by Hui Li
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll, typename RScaling>
+    concept_map OrientedCollection< vector::rscaled_view<Coll,RScaling> >
+    {
+		typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#else
+    template <typename Coll, typename RScaling>
+    struct OrientedCollection< vector::rscaled_view<Coll,RScaling> >
+    {
+		typedef typename OrientedCollection<Coll>::orientation       orientation;
+    };
+#endif
 
+	
 #ifdef __GXX_CONCEPTS__
     template <typename Coll>
     concept_map OrientedCollection<matrix::conj_view<Coll> >
