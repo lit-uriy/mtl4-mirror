@@ -46,11 +46,11 @@ chmod +x insert_license.py
 # Put in those headers
 #
  
-echo "*** Inserting license headers..."
+# echo "*** Inserting license headers..."
 umask 022
 
-rm distscript.csh
-python insert_license.py license.short.txt cpattern cpppattern scriptpattern README INSTALL
+# rm distscript.csh
+# python insert_license.py license.short.txt cpattern cpppattern scriptpattern README INSTALL
 
 #
 # Get rid of stuff not in release
