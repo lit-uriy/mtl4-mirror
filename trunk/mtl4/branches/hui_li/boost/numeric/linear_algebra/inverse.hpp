@@ -1,7 +1,7 @@
 // Copyright 2006. Peter Gottschling, Matthias Troyer, Rolf Bonderer
 // Software License for MTL
 // 
-// Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+// Copyright (c) 2007-2008 The Trustees of Indiana University. All rights reserved.
 // Authors: Peter Gottschling and Andrew Lumsdaine
 // 
 // This file is part of the Matrix Template Library
