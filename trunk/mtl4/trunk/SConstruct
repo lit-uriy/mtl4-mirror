@@ -39,9 +39,9 @@ def check_g5():
 def add_platform_flags(env):
     if env['CC'] == 'cl':
         # Turn off some warnings: 1. for problems with CRTP 2. with VC's own headers 
-        #                         3. alleged ambiguos assignment 4. ???
+        #                         3. alleged ambiguos assignment
         # I hope we find a cleaner way to get rid of this warning
-        wd = ' /wd4355 /wd4996 /wd4522 /wd4099'
+        wd = ' /wd4355 /wd4996 /wd4522'
         env.Append(CCFLAGS = '/EHa /D_CONSOLE /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX' +
 			     ' /D_SECURE_SCL=0' + wd)
 
