@@ -5,7 +5,7 @@
  *  Edited by Sarah Loos
  *  Project: Arcee
  *  
- *  Copyright (c) 2007 The Trustees of Indiana University. All rights reserved.
+ *  Copyright (c) 2007-2008 The Trustees of Indiana University. All rights reserved.
  *
  */
 
