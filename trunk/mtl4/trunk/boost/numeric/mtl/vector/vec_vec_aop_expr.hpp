@@ -15,7 +15,7 @@
 
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
-
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { namespace vector {
 
@@ -46,9 +46,16 @@ public:
 
     ~vec_vec_aop_expr()
     {
-	if (!delayed_assign)
+	if (!delayed_assign) {
+	    // If target is constructed by default it takes size of source
+	    if (first.size() == 0) first.change_dim(second.size());
+
+	    // If sizes are different for any other reason, it's an error
+	    MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
+
 	    for (size_type i= 0; i < first.size(); ++i)
 		SFunctor::apply( first(i), second(i) );
+	}
     }
     
     void delay_assign() const { delayed_assign= true; }
