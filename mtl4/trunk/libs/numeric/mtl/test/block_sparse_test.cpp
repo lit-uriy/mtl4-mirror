@@ -7,6 +7,8 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+// Currently needs -DMTL_DEEP_COPY_CONSTRUCTOR !!!
+
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
