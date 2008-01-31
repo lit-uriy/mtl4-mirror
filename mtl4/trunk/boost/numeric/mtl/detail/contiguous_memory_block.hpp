@@ -48,6 +48,7 @@ struct generic_array
 
     void alloc(std::size_t size)
     {
+	if (!size) return;
 #     ifndef MTL_ENABLE_ALIGNMENT
 	this->data= new value_type[size];
 #     else
@@ -92,7 +93,12 @@ struct generic_array
 	  data(data) 
     {}    
 
-    explicit generic_array(std::size_t size) : extern_memory(false)
+    explicit generic_array(std::size_t size) 
+	: extern_memory(false), 
+#       ifdef MTL_ENABLE_ALIGNMENT
+	  malloc_address(0), 
+#       endif
+	  data(0) 
     {
 	alloc(size);
     }

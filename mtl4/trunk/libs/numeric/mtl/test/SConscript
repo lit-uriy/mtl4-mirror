@@ -52,6 +52,11 @@ sources = Split("""base_case_conversion.cpp
 	     matrix_array_test.cpp
 """)
 
+# Work only with MTL_DEEP_COPY_CONSTRUCTOR
+#	     block_sparse_test.cpp
+#	     variable_size_block_sparse_test.cpp
+
+
 programs = []
 for p in sources:
     programs.append(debug_env.Program(p))

@@ -71,6 +71,13 @@ public:
 	std::fill(begin(), end(), value);
     }
 
+#ifdef MTL_DEEP_COPY_CONSTRUCTOR
+    dense_vector( const self& v )
+	: expr_base( *this ), super_memory( v.size() )
+    {
+	*this= v;
+    }
+#endif
 
     size_type size() const { return this->used_memory() ; }
     
