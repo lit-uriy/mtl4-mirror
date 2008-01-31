@@ -437,9 +437,7 @@ class compressed2D
 	using math::zero;
         MTL_DEBUG_THROW_IF(inserting, logic_error("Reading data during insertion has undefined behavior"));
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
-	// if (pos) return data[pos];
-	// else return value_type(0);  // does not work if elements are matrices !!!
-	return pos ? data[pos] : zero(value_type()); // Crashes for block-sparse
+	return pos ? data[pos] : zero(value_type()); 
     }
 
     value_type value_from_offset(size_type offset) const
