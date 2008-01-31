@@ -50,9 +50,11 @@ sources = Split("""base_case_conversion.cpp
              matrix_construction_from_expression_test.cpp
              print_matrix_product_test.cpp
 	     matrix_array_test.cpp
+	     multiply_transposed_sparse_matrix_test.cpp
+	     transposed_sparse_matrix_vector_product_test.cpp
 """)
 
-# Work only with MTL_DEEP_COPY_CONSTRUCTOR
+# Works only with MTL_DEEP_COPY_CONSTRUCTOR
 #	     block_sparse_test.cpp
 #	     variable_size_block_sparse_test.cpp
 
