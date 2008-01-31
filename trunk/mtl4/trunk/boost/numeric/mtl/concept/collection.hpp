@@ -442,6 +442,25 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Matrix>
+    concept_map Collection<transposed_view<Matrix> >
+    {
+	typedef typename transposed_view<Matrix>::value_type        value_type;
+	typedef typename transposed_view<Matrix>::const_reference   const_reference;
+	typedef typename transposed_view<Matrix>::size_type         size_type;
+    };
+#else
+    template <typename Matrix>
+    struct Collection<transposed_view<Matrix> >
+    {
+	typedef typename transposed_view<Matrix>::value_type        value_type;
+	typedef typename transposed_view<Matrix>::const_reference   const_reference;
+	typedef typename transposed_view<Matrix>::size_type         size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Matrix>
     concept_map Collection<matrix::hermitian_view<Matrix> >
     {
 	typedef typename matrix::hermitian_view<Matrix>::value_type        value_type;

@@ -109,6 +109,11 @@ public:
 	return ref.num_cols();
     }
     
+    size_type nnz() const
+    {
+	return ref.nnz();
+    }
+    
     template <typename, typename> friend struct detail::map_value;
 
   protected:

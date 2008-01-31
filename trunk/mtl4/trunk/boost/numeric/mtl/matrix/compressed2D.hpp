@@ -293,7 +293,8 @@ class compressed2D
     typedef Elt                                      value_type;
     typedef compressed_key                           key_type;
     // return type of operator() const
-    typedef value_type                               const_access_type;
+    typedef value_type                               const_access_type; 
+    typedef const value_type&                        const_reference;
 
     // typedef const_pointer_type                             key_type;
     typedef size_t                                   size_type;
