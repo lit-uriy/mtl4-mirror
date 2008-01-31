@@ -433,9 +433,12 @@ class compressed2D
 
     const_access_type operator() (size_type row, size_type col) const
     {
+	using math::zero;
         MTL_DEBUG_THROW_IF(inserting, logic_error("Reading data during insertion has undefined behavior"));
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
-	return pos ? data[pos] : value_type(0);
+	// if (pos) return data[pos];
+	// else return value_type(0);  // does not work if elements are matrices !!!
+	return pos ? data[pos] : zero(value_type()); // Crashes for block-sparse
     }
 
     value_type value_from_offset(size_type offset) const

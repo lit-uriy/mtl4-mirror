@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/operators.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 
 namespace mtl {
@@ -235,6 +236,17 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
         init();
     }
 
+#ifdef MTL_DEEP_COPY_CONSTRUCTOR
+    // Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
+    dense2D(const self& m) 
+	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
+	  super_memory(m.num_rows() * m.num_cols()), expr_base(*this)
+    {
+	init();
+	matrix_copy(m, *this);
+	// std::cout << "In copy constructor:\n"; print_matrix(*this);
+    }
+#else
     // Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
     dense2D(const self& m) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
@@ -244,6 +256,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
+#endif
 
 #ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
     // Construction from sum of matrices
@@ -736,6 +749,27 @@ struct sub_matrix_t<dense2D<Value, Parameters> >
 };
 
 } // namespace mtl
+
+namespace math {
+
+// Multiplicative identities of matrices
+template <typename Value, typename Parameters>
+struct identity_t< mult<mtl::dense2D<Value, Parameters> >, mtl::dense2D<Value, Parameters> >
+    : public std::binary_function< mult<mtl::dense2D<Value, Parameters> >, 
+				   mtl::dense2D<Value, Parameters>, 
+				   mtl::dense2D<Value, Parameters> >
+{
+    typedef mtl::dense2D<Value, Parameters>  matrix_type;
+
+    matrix_type operator() (const mult<matrix_type>&, const matrix_type& ref) const
+    {
+	matrix_type tmp(ref);
+	tmp= zero(matrix_type::value_type());
+	return tmp;
+    }
+};
+
+} // namespace math
 
 #endif // MTL_DENSE2D_INCLUDE
 
