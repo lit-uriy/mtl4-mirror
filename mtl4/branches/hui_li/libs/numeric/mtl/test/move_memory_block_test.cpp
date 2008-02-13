@@ -14,12 +14,11 @@
 
 
 // Everything in the test is double
-// How to test sparse generically? 
 
 
 using namespace std;
 using namespace mtl;
-using detail::contiguous_memory_block; //using detail::generic_array;
+using detail::contiguous_memory_block; 
 
 
 // Return a matrix with move semantics
@@ -45,19 +44,6 @@ bool compare(const contiguous_memory_block<double, true, 3>& block, double* p)
     return &block.data[0] == p;
 }
 
-
-
-#if 0
-bool compare(const generic_array<double, false, 0>& block, double* p)
-{
-    return &block.data[0] != p;
-}
-
-bool compare(const mtl::detail::generic_array<double, true, 3u>& block, double*& p)
-{
-    return &block.data[0] == p;
-}
-#endif
 
 
 
@@ -111,16 +97,6 @@ int test_main(int argc, char* argv[])
 
     test<dblock, sblock>();
     test<sblock, dblock>();
-
-#if 0
-
-    typedef generic_array<double, false, 0>            darray;
-    typedef generic_array<double, true, 3>             sarray;
-
-    test<darray, sarray>();
-    test<sarray, darray>();
-
-#endif	
 
     return 0;
 }
