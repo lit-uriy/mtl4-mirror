@@ -1,4 +1,4 @@
-import getopt, sys, os, re, string
+import getopt, sys, os, os.path, re, string
 
 ######################
 # Helper functions
@@ -230,6 +230,10 @@ pwd = os.getcwd()
 if not os.environ.has_key('MTL_BOOST_ROOT') \
 or (hasattr(os.path, 'samefile') and not os.path.samefile(pwd, mtlp)):
      my_cpppath = [pwd] + my_cpppath
+
+# Add directory of extern libraries if exist
+if os.path.exists('extern'):
+    my_cpppath.append(os.path.abspath('extern'))
 
 env.Append(CPPPATH = my_cpppath)
 
