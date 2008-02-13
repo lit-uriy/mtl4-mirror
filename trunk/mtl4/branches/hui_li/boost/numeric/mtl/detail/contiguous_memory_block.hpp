@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
+#include <adobe/move.hpp>
 
 namespace mtl { namespace detail {
 using std::size_t;
@@ -40,67 +41,212 @@ struct array_size
 #  define MTL_ALIGNMENT 128
 #endif
 
+
+// Manage size only if template parameter is 0
+template <unsigned Size>
+struct size_helper
+{
+    typedef size_helper self;
+
+    explicit size_helper(std::size_t size)
+    {
+	set_size(size);
+    }
+
+    void set_size(std::size_t size)
+    {
+#     ifndef MTL_IGNORE_STATIC_SIZE_VIOLATION
+	MTL_THROW_IF(Size != size, change_static_size());
+#     endif
+    }
+
+    std::size_t used_memory() const
+    {
+	return Size;
+    }
+
+    void swap(self& other) const {}
+};
+
+template <>
+struct size_helper<0>
+{
+    typedef size_helper self;
+
+    size_helper(std::size_t size= 0) : my_used_memory(size) {}
+
+    void set_size(std::size_t size)
+    {
+	my_used_memory= size;
+    }
+
+    std::size_t used_memory() const
+    {
+	return my_used_memory;
+    }
+
+    void swap(self& other) 
+    {
+	std::swap(my_used_memory, other.my_used_memory);
+    }
+
+  protected:
+    std::size_t                               my_used_memory;
+};
+
+
+// Encapsulate behavior of alignment
+
+# ifdef MTL_ENABLE_ALIGNMENT
+
+    template <typename Value>
+    struct alignment_helper
+    {
+	typedef alignment_helper self;
+
+	alignment_helper() : malloc_address(0) {}
+
+	Value* alligned_alloc(std::size_t size)
+	{
+	    bool        align= size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT;
+	    std::size_t bytes= size * sizeof(value_type);
+	    
+	    if (align)
+		bytes+= MTL_ALIGNMENT - 1;
+
+	    char* p= malloc_address= new char[bytes];
+	    if (align)
+		while ((long int)(p) % MTL_ALIGNMENT) p++;
+
+	    return reinterpret_cast<value_type*>(p);
+	}
+
+	void aligned_delete(bool extern_memory, Value*& data)
+	{
+	    if (!extern_memory && malloc_address) delete[] malloc_address;
+	    data= 0;
+	}
+
+	void swap(self& other) 
+	{
+	    swap(malloc_address, other.malloc_address);
+	}
+
+      private:	    
+	char*                                     malloc_address;
+    };
+
+# else
+
+    template <typename Value>
+    struct alignment_helper
+    {
+	typedef alignment_helper self;
+
+	Value* alligned_alloc(std::size_t size)
+	{
+	    return new Value[size];
+	}
+
+	void aligned_delete(bool extern_memory, Value*& data)
+	{
+	    if (!extern_memory && data) delete[] data;
+	}
+
+	void swap(self& other) const {}
+    };
+
+# endif
+
+
 template <typename Value, bool OnStack, unsigned Size= 0>
 struct generic_array
+    : public size_helper<Size>,
+      public alignment_helper<Value>
 {
     typedef Value                             value_type;
     typedef generic_array                     self;
+    typedef size_helper<Size>                 size_base;
+    typedef alignment_helper<Value>           alignment_base;
 
+  private:
     void alloc(std::size_t size)
     {
-#     ifndef MTL_ENABLE_ALIGNMENT
-	this->data= new value_type[size];
-#     else
-	bool        align= size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT;
-	std::size_t bytes= size * sizeof(value_type);
-
-	if (align)
-	    bytes+= MTL_ALIGNMENT - 1;
-
-	char* p= this->malloc_address= new char[bytes];
-	if (align)
-	    while ((long int)(p) % MTL_ALIGNMENT) p++;
-
-	this->data= reinterpret_cast<value_type*>(p);
-#     endif
+	this->set_size(size);
+	data= this->alligned_alloc(this->used_memory());
     }
 
     void delete_it()
     {
-	// printf("delete_it: data %p, malloc %p\n", this->data, malloc_address);      
-#       ifndef MTL_ENABLE_ALIGNMENT
-	    if (!extern_memory && this->data) delete[] this->data;
-#       else
-	    if (!extern_memory && malloc_address) delete[] malloc_address;
-#       endif
+	this->aligned_delete(extern_memory, data);
     }
 
   public:
-    generic_array()
-	: extern_memory(false), 
-#       ifdef MTL_ENABLE_ALIGNMENT
-	  malloc_address(0), 
-#       endif
-	  data(0) 
-    {}
+    generic_array() : extern_memory(false), data(0) {}
 
-    explicit generic_array(Value *data) 
-	: extern_memory(true), 
-#       ifdef MTL_ENABLE_ALIGNMENT
-	  malloc_address(0), 
-#       endif
-	  data(data) 
+    explicit generic_array(Value *data, std::size_t size) 
+	: extern_memory(true), size_base(size), data(data)
     {}    
 
     explicit generic_array(std::size_t size) : extern_memory(false)
     {
+	std::cout << "Constructor with size.\n";
 	alloc(size);
     }
 
-    void realloc(std::size_t size, std::size_t old_size)
+
+    // If possible move data
+    explicit generic_array(self& other, adobe::move_ctor)
+	: extern_memory(false), data(0)
+    {
+	std::cout << "Ich habe gemovet.\n";
+	swap(*this, other);
+    }
+
+    // Default copy constructor
+    generic_array(const self& other)
+    {
+	std::cout << "Ich habe kopiert (von gleichem array-Typ).\n";
+	
+	alloc(other.used_memory());
+	std::copy(other.data, other.data + other.used_memory(), data);
+    }
+
+
+public:
+    // Other types must be copied always
+    template<typename Value2, bool OnStack2, unsigned Size2>
+    explicit generic_array(const generic_array<Value2, OnStack2, Size2>& other)
+	: extern_memory(false)
+    {
+	std::cout << "Ich habe kopiert (von anderem array-Typ).\n";
+	
+	alloc(other.used_memory());
+	std::copy(other.data, other.data + other.used_memory(), data);
+    }
+
+
+    // Operator takes parameter by value and consumes it
+    self& operator=(self other)
+    {
+	std::cout << "Konsumierender Zuweisungsoperator.\n";
+	swap(other);
+	return *this;
+    }
+
+    template<typename Value2, bool OnStack2, unsigned Size2>
+    self& operator=(const generic_array<Value2, OnStack2, Size2>& other)
+    {
+	std::cout << "Zuweisung von anderem array-Typ -> Kopieren.\n";
+	MTL_DEBUG_THROW_IF(this->used_memory() != other.used_memory(), incompatible_size());
+	std::copy(other.data, other.data + other.used_memory(), data);
+    }
+
+
+    void realloc(std::size_t size)
     {
 	// If already have memory of the right size we can keep it
-	if (size == old_size) 
+	if (size == this->used_memory()) 
 	    return;
 	MTL_THROW_IF(extern_memory, 
 		     logic_error("Can't change the size of collections with external memory"));
@@ -110,6 +256,7 @@ struct generic_array
 
     ~generic_array()
     {
+	//std::cout << "Delete block with address " << data << '\n';
 	delete_it();
     }
 
@@ -117,36 +264,82 @@ struct generic_array
     {
 	using std::swap;
 	swap(extern_memory, other.extern_memory);
-#       ifdef MTL_ENABLE_ALIGNMENT
-	    swap(malloc_address, other.malloc_address);
-#       endif
 	swap(data, other.data);
+	size_base::swap(other);
+	alignment_base::swap(other);
+	
     }	
 
   protected:
     bool                                      extern_memory;       // whether pointer to external data or own
-#ifdef MTL_ENABLE_ALIGNMENT
-    char*                                     malloc_address;
-#endif
   public:
-    Value    *data;
+    Value                                     *data;
 };
 
 template <typename Value, unsigned Size>
 struct generic_array<Value, true, Size>
 {
+    typedef Value                             value_type;
+    typedef generic_array                     self;
+
     Value    data[Size];
     explicit generic_array(std::size_t) {}
 
-    void swap (generic_array<Value, true, Size>& other)
+    // Move-semantics ignored for arrays on stack
+    generic_array(const self& other)
+    {
+	std::cout << "Ich habe kopiert (von gleichem array-Typ).\n";
+	std::copy(other.data, other.data+Size, data);
+    }
+
+#if 0
+    // Move-semantics ignored for arrays on stack
+    generic_array(self& other, adobe::move_ctor)
+    {
+	std::copy(other.data, other.data+Size, data);
+    }
+#endif
+
+
+    template<typename Value2, bool OnStack2, unsigned Size2>
+    explicit generic_array(const generic_array<Value2, OnStack2, Size2>& other)
+    {
+	std::cout << "Ich habe kopiert (von anderem array-Typ).\n";
+	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
+	std::copy(other.data, other.data + other.used_memory(), data);
+    }
+
+    self& operator=(const self& other)
+    {
+	std::cout << "Zuweisung (von gleichem array-Typ).\n";
+	std::copy(other.data, other.data+Size, data);
+	return *this;
+    }
+
+    template<typename Value2, bool OnStack2, unsigned Size2>
+    self& operator=(const generic_array<Value2, OnStack2, Size2>& other)
+    {
+	std::cout << "Ich habe kopiert (von anderem array-Typ).\n";
+	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
+	std::copy(other.data, other.data + other.used_memory(), data);
+    }
+
+
+    void swap (self& other)
     {
 	using std::swap;
 	swap(*this, other);
     }
 
+
     void realloc(std::size_t) 
     {
 	assert(false); // Arrays on stack cannot be reallocated
+    }
+
+    std::size_t used_memory() const
+    {
+	return Size;
     }
 };
 
@@ -164,31 +357,13 @@ struct contiguous_memory_block
     typedef value_type*                       pointer_type;
     typedef const value_type*                 const_pointer_type;
 
-  protected:
-    std::size_t                               my_used_memory;
-
   public:
     // Reference to external data (must be heap)
-    explicit contiguous_memory_block(value_type* a, std::size_t size)
-      : base(a), my_used_memory(size) {}
+    explicit contiguous_memory_block(value_type* a, std::size_t size) : base(a, size) {}
 
-    explicit contiguous_memory_block(std::size_t size)
-	: base(size), my_used_memory(size) {}
+    explicit contiguous_memory_block(std::size_t size) : base(size) {}
 
-    contiguous_memory_block() : my_used_memory(0) {}
-
-    void swap(self& other)
-    {
-	base::swap(other);
-	std::swap(my_used_memory, other.my_used_memory);
-    }
-
-    void realloc(std::size_t size) 
-    {
-	base::realloc(size, my_used_memory);
-	my_used_memory= size;
-    }
-
+    // contiguous_memory_block() : my_used_memory(0) {}
 
     // offset of key (pointer) w.r.t. data 
     // values must be stored consecutively
@@ -223,12 +398,13 @@ struct contiguous_memory_block
       return this->data[offset]; 
     }
 
-    std::size_t used_memory() const
-    {
-	return my_used_memory;
-    }
 };
 
 }} // namespace mtl::detail
+
+namespace adobe {
+    template <typename Value, bool OnStack, unsigned Size>
+    struct is_movable< mtl::detail::generic_array<Value, OnStack, Size> > : boost::mpl::bool_<!OnStack> {};
+}
 
 #endif // MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE

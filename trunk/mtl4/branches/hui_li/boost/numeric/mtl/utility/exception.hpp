@@ -102,6 +102,15 @@ struct incompatible_size
 	: std::domain_error(s) {}
 };
 
+/// Exception for trying to change a fixed size (to another value)
+struct change_static_size
+    : public std::domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit change_static_size(const char *s= "You try to change a fixed size (to another value).")
+	: std::domain_error(s) {}
+};
+
 /// Exception for arguments with incompatible shapes, e.g. adding matrices and vectors
 struct argument_result_conflict
     : public std::domain_error
