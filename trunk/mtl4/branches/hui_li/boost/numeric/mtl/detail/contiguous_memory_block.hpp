@@ -159,13 +159,62 @@ struct size_helper<0>
 # endif
 
 
-template <typename Value, bool OnStack, unsigned Size= 0>
-struct generic_array
+template <typename Value, bool OnStack, unsigned Size>
+struct memory_crtp
+//    : public contiguous_memory_block<Value, OnStack, Size>
+{
+    typedef contiguous_memory_block<Value, OnStack, Size> base;
+
+    static bool const                         on_stack= OnStack;
+    
+    typedef Value                             value_type;
+    typedef value_type*                       pointer_type;
+    typedef const value_type*                 const_pointer_type;
+
+    // offset of key (pointer) w.r.t. data 
+    // values must be stored consecutively
+    size_t offset(const Value* p) const 
+    { 
+      return p - static_cast<const base&>(*this).data; 
+    }
+
+    // returns pointer to data
+    pointer_type elements()
+    {
+      return static_cast<base&>(*this).data; 
+    }
+
+    // returns const pointer to data
+    const_pointer_type elements() const 
+    {
+      return static_cast<const base&>(*this).data; 
+    }
+
+    // returns n-th value in consecutive memory
+    // (whatever this means in the corr. matrix format)
+    value_type& value_n(size_t offset)
+    { 
+      return static_cast<base&>(*this).data[offset]; 
+    }
+
+    // returns n-th value in consecutive memory
+    // (whatever this means in the corr. matrix format)
+    const value_type& value_n(size_t offset) const 
+    { 
+      return static_cast<const base&>(*this).data[offset]; 
+    }
+    
+};
+
+
+template <typename Value, bool OnStack, unsigned Size>
+struct contiguous_memory_block
     : public size_helper<Size>,
-      public alignment_helper<Value>
+      public alignment_helper<Value>,
+      public memory_crtp<Value, OnStack, Size>
 {
     typedef Value                             value_type;
-    typedef generic_array                     self;
+    typedef contiguous_memory_block                     self;
     typedef size_helper<Size>                 size_base;
     typedef alignment_helper<Value>           alignment_base;
 
@@ -182,13 +231,13 @@ struct generic_array
     }
 
   public:
-    generic_array() : extern_memory(false), data(0) {}
+    contiguous_memory_block() : extern_memory(false), data(0) {}
 
-    explicit generic_array(Value *data, std::size_t size) 
+    explicit contiguous_memory_block(Value *data, std::size_t size) 
 	: extern_memory(true), size_base(size), data(data)
     {}    
 
-    explicit generic_array(std::size_t size) : extern_memory(false)
+    explicit contiguous_memory_block(std::size_t size) : extern_memory(false)
     {
 	std::cout << "Constructor with size.\n";
 	alloc(size);
@@ -196,7 +245,7 @@ struct generic_array
 
 
     // If possible move data
-    explicit generic_array(self& other, adobe::move_ctor)
+    explicit contiguous_memory_block(self& other, adobe::move_ctor)
 	: extern_memory(false), data(0)
     {
 	std::cout << "Ich habe gemovet.\n";
@@ -204,7 +253,7 @@ struct generic_array
     }
 
     // Default copy constructor
-    generic_array(const self& other)
+    contiguous_memory_block(const self& other)
     {
 	std::cout << "Ich habe kopiert (von gleichem array-Typ).\n";
 	
@@ -212,11 +261,9 @@ struct generic_array
 	std::copy(other.data, other.data + other.used_memory(), data);
     }
 
-
-public:
     // Other types must be copied always
     template<typename Value2, bool OnStack2, unsigned Size2>
-    explicit generic_array(const generic_array<Value2, OnStack2, Size2>& other)
+    explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
 	: extern_memory(false)
     {
 	std::cout << "Ich habe kopiert (von anderem array-Typ).\n";
@@ -235,7 +282,7 @@ public:
     }
 
     template<typename Value2, bool OnStack2, unsigned Size2>
-    self& operator=(const generic_array<Value2, OnStack2, Size2>& other)
+    self& operator=(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {
 	std::cout << "Zuweisung von anderem array-Typ -> Kopieren.\n";
 	MTL_DEBUG_THROW_IF(this->used_memory() != other.used_memory(), incompatible_size());
@@ -254,7 +301,7 @@ public:
 	alloc(size);
     }
 
-    ~generic_array()
+    ~contiguous_memory_block()
     {
 	//std::cout << "Delete block with address " << data << '\n';
 	delete_it();
@@ -277,32 +324,24 @@ public:
 };
 
 template <typename Value, unsigned Size>
-struct generic_array<Value, true, Size>
+struct contiguous_memory_block<Value, true, Size>
 {
     typedef Value                             value_type;
-    typedef generic_array                     self;
+    typedef contiguous_memory_block                     self;
 
     Value    data[Size];
-    explicit generic_array(std::size_t) {}
+    explicit contiguous_memory_block(std::size_t) {}
 
     // Move-semantics ignored for arrays on stack
-    generic_array(const self& other)
+    contiguous_memory_block(const self& other)
     {
 	std::cout << "Ich habe kopiert (von gleichem array-Typ).\n";
 	std::copy(other.data, other.data+Size, data);
     }
 
-#if 0
-    // Move-semantics ignored for arrays on stack
-    generic_array(self& other, adobe::move_ctor)
-    {
-	std::copy(other.data, other.data+Size, data);
-    }
-#endif
-
 
     template<typename Value2, bool OnStack2, unsigned Size2>
-    explicit generic_array(const generic_array<Value2, OnStack2, Size2>& other)
+    explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {
 	std::cout << "Ich habe kopiert (von anderem array-Typ).\n";
 	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
@@ -317,7 +356,7 @@ struct generic_array<Value, true, Size>
     }
 
     template<typename Value2, bool OnStack2, unsigned Size2>
-    self& operator=(const generic_array<Value2, OnStack2, Size2>& other)
+    self& operator=(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {
 	std::cout << "Ich habe kopiert (von anderem array-Typ).\n";
 	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
@@ -343,6 +382,11 @@ struct generic_array<Value, true, Size>
     }
 };
 
+
+
+
+#if 0
+
 // Base class for matrices that have contigous piece of memory
 template <typename Value, bool OnStack, unsigned Size>
 struct contiguous_memory_block 
@@ -363,7 +407,27 @@ struct contiguous_memory_block
 
     explicit contiguous_memory_block(std::size_t size) : base(size) {}
 
-    // contiguous_memory_block() : my_used_memory(0) {}
+    explicit contiguous_memory_block(self& other, adobe::move_ctor)
+	: base(other, adobe::move_ctor())
+    {}
+
+    contiguous_memory_block(const self& other) : base(other) {}
+
+    template<typename Value2, bool OnStack2, unsigned Size2>
+    explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
+	: base(other) {}
+
+    // Inherited assignment operators return wrong type
+    // But one is called by value, the other isn't
+    // self& operator=(const self
+
+    template<typename Value2, bool OnStack2, unsigned Size2>
+    self& operator=(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
+    {
+	base::operator=(other);
+	return *this;
+    }
+
 
     // offset of key (pointer) w.r.t. data 
     // values must be stored consecutively
@@ -400,11 +464,17 @@ struct contiguous_memory_block
 
 };
 
+#endif
+
 }} // namespace mtl::detail
 
 namespace adobe {
+#if 0
     template <typename Value, bool OnStack, unsigned Size>
     struct is_movable< mtl::detail::generic_array<Value, OnStack, Size> > : boost::mpl::bool_<!OnStack> {};
+#endif
+    template <typename Value, bool OnStack, unsigned Size>
+    struct is_movable< mtl::detail::contiguous_memory_block<Value, OnStack, Size> > : boost::mpl::bool_<!OnStack> {};
 }
 
 #endif // MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE
