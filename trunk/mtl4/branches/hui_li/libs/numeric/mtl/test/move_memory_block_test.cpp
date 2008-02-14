@@ -20,6 +20,9 @@ using namespace std;
 using namespace mtl;
 using detail::contiguous_memory_block; 
 
+typedef contiguous_memory_block<double, false, 0>  dblock;
+typedef contiguous_memory_block<double, true, 3>   sblock;
+
 
 // Return a matrix with move semantics
 // Return also the address of the first entry to be sure that it is really moved
@@ -33,19 +36,23 @@ Block f(const Block&, double*& a00)
 }
 
 // For blocks on heap, different addresses means that moving failed
-bool compare(const contiguous_memory_block<double, false, 0>& block, double* p)
+bool compare(const dblock& block, double* p)
 {
     return &block.data[0] != p;
 }
 
 // For blocks on stack, equal addresses means accidental moving 
-bool compare(const contiguous_memory_block<double, true, 3>& block, double* p)
+bool compare(const sblock& block, double* p)
 {
     return &block.data[0] == p;
 }
 
 
-
+template <typename Block>
+void print(const Block& block, double* p)
+{
+    cout << "Data was " << (&block.data[0] == p ? "moved.\n" : "copied.\n");
+}
 
 template <typename Block, typename OtherBlock>
 void test()
@@ -56,6 +63,7 @@ void test()
    
     cout << "A= f(A, p);\n";
     A= f(A, p);
+    print(A, p);
 
     if (A.data[0] != 5.0) 
 	throw "Wrong value moving, should be 5.0!";
@@ -64,6 +72,7 @@ void test()
 
     cout << "Block B= f(A, p);\n";
     Block B= f(A, p);
+    print(B, p);
 
     if (B.data[0] != 5.0) 
 	throw "Wrong value moving, should be 5.0!";
@@ -78,25 +87,64 @@ void test()
 
     cout << "C= f(A, p);\n";
     C= f(A, p);
+    print(C, p);
 
     if (C.data[0] != 5.0) 
 	throw "Wrong value trying to move, should be 5.0!";
     if (&C.data[0] == p) 
 	throw "Block must be copied not moved!";
 
+    // New block, in this case the block MUST be copied
+    OtherBlock D(A);
+
+    cout << "D(A);\n";
+    print(C, &A.data[0]);
+
+    if (D.data[0] != 5.0) 
+	throw "Wrong value in copy constructor, should be 5.0!";
+    if (&D.data[0] == &A.data[0]) 
+	throw "Block must be copied not moved!";
+
 }
 
+enum e_t {own_e, external_e, view_e};
 
+void dynamic_test(dblock& block, e_t e, const char* name)
+{
+    cout << '\n' << name;
+
+    dblock A(block);
+    cout << "dblock A(block)\n";
+    print(A, &block.data[0]);
+
+    if (e == view_e ^ &block.data[0] == &A.data[0])
+	throw "Only views have shallow semantics.\n";
+
+
+    double *p;
+    
+    cout << "block= f(A, p);\n";
+    block= f(A, p);
+    print(block, p);
+
+    if (e == own_e ^ &block.data[0] == p)
+	throw "Only blocks with their own data can move results.\n";
+}
 
 
 int test_main(int argc, char* argv[])
 {
 
-    typedef contiguous_memory_block<double, false, 0>  dblock;
-    typedef contiguous_memory_block<double, true, 3>   sblock;
-
+    cout << "Copy/heap data in heap / other block on stack.\n";
     test<dblock, sblock>();
+    cout << "\nCopy data in stack / other block on heap.\n";
     test<sblock, dblock>();
+
+    dblock    own(3), external(&own.data[0], 3), view(&own.data[0], 3, true);
+
+    dynamic_test(own, own_e, "Own data\n");
+    dynamic_test(external, external_e, "External data\n");
+    dynamic_test(view, view_e, "View on own\n");
 
     return 0;
 }

@@ -114,9 +114,9 @@ struct size_helper<0>
 	    return reinterpret_cast<value_type*>(p);
 	}
 
-	void aligned_delete(bool extern_memory, Value*& data)
+	void aligned_delete(bool is_own, Value*& data)
 	{
-	    if (!extern_memory && malloc_address) delete[] malloc_address;
+	    if (is_own && malloc_address) delete[] malloc_address;
 	    data= 0;
 	}
 
@@ -141,9 +141,9 @@ struct size_helper<0>
 	    return new Value[size];
 	}
 
-	void aligned_delete(bool extern_memory, Value*& data)
+	void aligned_delete(bool is_own, Value*& data)
 	{
-	    if (!extern_memory && data) delete[] data;
+	    if (is_own && data) delete[] data;
 	}
 
 	void swap(self& other) const {}
@@ -212,25 +212,66 @@ struct contiguous_memory_block
     typedef alignment_helper<Value>           alignment_base;
 
   private:
+
+    /// Category of memory, determines behaviour
+    enum c_t {own,         //< My own memory: allocate and free it
+	      external,    //< Memory, complete memory block of other item, only reference 
+	      view         //< View of other's memory (e.g. sub-matrix), different construction than external
+    } category;
+
     void alloc(std::size_t size)
     {
+	category= own;
 	this->set_size(size);
 	data= this->alligned_alloc(this->used_memory());
     }
 
     void delete_it()
     {
-	this->aligned_delete(extern_memory, data);
+	this->aligned_delete(category == own, data);
+    }
+
+    template <typename Other>
+    void copy_construction(const Other& other)
+    {
+	// std::cout << "Copied in copy constructor.\n";	
+	alloc(other.used_memory());
+	std::copy(other.data, other.data + other.used_memory(), data);
+    }
+
+    void move_construction(self& other)
+    {
+	// std::cout << "Data moved in constructor.\n";
+	category= own; data= 0;
+	swap(*this, other);
+    }
+
+    // Copy the arguments of a view (shallowly) and leave original as it is
+    void copy_view(const self& other)
+    {
+	// std::cout << "View copied (shallowly).\n";
+	assert(other.category == view);
+	category= view;
+	this->set_size(other.used_memory());
+	data= other.data;
+    }
+
+    template <typename Other>
+    void copy_assignment(const Other& other)
+    {
+	// std::cout << "Copied in assignment.\n";	
+	MTL_DEBUG_THROW_IF(this->used_memory() != other.used_memory(), incompatible_size());
+	std::copy(other.data, other.data + other.used_memory(), data);
     }
 
   public:
-    contiguous_memory_block() : extern_memory(false), data(0) {}
+    contiguous_memory_block() : category(own), data(0) {}
 
-    explicit contiguous_memory_block(Value *data, std::size_t size) 
-	: extern_memory(true), size_base(size), data(data)
+    explicit contiguous_memory_block(Value *data, std::size_t size, bool is_view= false) 
+	: category(is_view ? view : external), size_base(size), data(data)
     {}    
 
-    explicit contiguous_memory_block(std::size_t size) : extern_memory(false)
+    explicit contiguous_memory_block(std::size_t size) : category(own)
     {
 	// std::cout << "Constructor with size.\n";
 	alloc(size);
@@ -239,36 +280,43 @@ struct contiguous_memory_block
 
     // If possible move data
     explicit contiguous_memory_block(self& other, adobe::move_ctor)
-	: extern_memory(false), data(0)
     {
-	// std::cout << "Data moved in constructor.\n";
-	swap(*this, other);
+	switch (other.category) {
+	case own:        move_construction(other); break;
+	case external:   copy_construction(other); break; // Shouldn't happen, maybe exception
+	case view:       copy_view(other);
+	}
     }
 
     // Default copy constructor
     contiguous_memory_block(const self& other)
     {
-	// std::cout << "Copied in copy constructor (same type).\n";	
-	alloc(other.used_memory());
-	std::copy(other.data, other.data + other.used_memory(), data);
+	// std::cout << "Copy constructor (same type).\n";	
+	if (other.category == view)
+	    copy_view(other);
+	else
+	    copy_construction(other);
     }
 
     // Other types must be copied always
     template<typename Value2, bool OnStack2, unsigned Size2>
     explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
-	: extern_memory(false)
     {
-	// std::cout << "Copied from different type (in constructor).\n";
-	alloc(other.used_memory());
-	std::copy(other.data, other.data + other.used_memory(), data);
+	// std::cout << "Copy constructor (different type).\n";
+	copy_construction(other);
     }
 
 
     // Operator takes parameter by value and consumes it
     self& operator=(self other)
     {
-	// std::cout << "Consuming assignment operator (same type).\n";
-	swap(other);
+	// std::cout << "Consuming assignment operator (if same type).\n";
+	// swap(other);
+	//#if 0   // already handled by constructors 
+	if (category == own)
+	    swap(other);
+	else
+	    copy_construction(other);
 	return *this;
     }
 
@@ -276,8 +324,7 @@ struct contiguous_memory_block
     self& operator=(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {
 	// std::cout << "Assignment from different array type -> Copy.\n";
-	MTL_DEBUG_THROW_IF(this->used_memory() != other.used_memory(), incompatible_size());
-	std::copy(other.data, other.data + other.used_memory(), data);
+	copy_assignment(other);
     }
 
 
@@ -286,7 +333,7 @@ struct contiguous_memory_block
 	// If already have memory of the right size we can keep it
 	if (size == this->used_memory()) 
 	    return;
-	MTL_THROW_IF(extern_memory, 
+	MTL_THROW_IF(category != own, 
 		     logic_error("Can't change the size of collections with external memory"));
 	delete_it();
 	alloc(size);
@@ -301,15 +348,13 @@ struct contiguous_memory_block
     void swap(self& other)
     {
 	using std::swap;
-	swap(extern_memory, other.extern_memory);
+	swap(category, other.category);
 	swap(data, other.data);
 	size_base::swap(other);
 	alignment_base::swap(other);
 	
     }	
 
-  protected:
-    bool                                      extern_memory;       // whether pointer to external data or own
   public:
     Value                                     *data;
 };
