@@ -24,6 +24,13 @@ typedef contiguous_memory_block<double, false, 0>  dblock;
 typedef contiguous_memory_block<double, true, 3>   sblock;
 
 
+namespace mtl {
+template <typename T>
+inline T clone(T& x) { return x; }
+}
+
+
+
 // Return a matrix with move semantics
 // Return also the address of the first entry to be sure that it is really moved
 template <typename Block>
@@ -113,7 +120,7 @@ void dynamic_test(dblock& block, e_t e, const char* name)
 {
     cout << '\n' << name;
 
-    dblock A(block);
+    dblock A= block;
     cout << "dblock A(block)\n";
     print(A, &block.data[0]);
 
@@ -129,6 +136,14 @@ void dynamic_test(dblock& block, e_t e, const char* name)
 
     if (e == own_e ^ &block.data[0] == p)
 	throw "Only blocks with their own data can move results.\n";
+
+    cout << "dblock B(clone(block));\n";
+    dblock B= clone(block);
+    print(B, &block.data[0]);
+
+    if (&block.data[0] == &B.data[0])
+	throw "Cloned blocks must all be copied.\n";
+
 }
 
 
