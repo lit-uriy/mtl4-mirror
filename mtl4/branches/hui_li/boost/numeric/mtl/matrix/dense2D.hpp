@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
+#include <adobe/move.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
@@ -141,7 +142,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     typedef dense2D                                           self;
     typedef detail::base_sub_matrix<Value, Parameters>        super;
     typedef detail::contiguous_memory_block<Value, Parameters::on_stack, 
-					     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     super_memory;
+					     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     memory_base;
     typedef matrix::mat_expr< dense2D<Value, Parameters> >    expr_base;
     typedef detail::crtp_base_matrix< self, Value, std::size_t > crtp_base;
     typedef detail::crtp_matrix_assign< self, Value, std::size_t > assign_base;
@@ -193,35 +194,35 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
   public:
     // if compile time matrix size allocate memory
-    dense2D() : super(), super_memory(dim_type().num_rows() * dim_type().num_cols()), expr_base(*this) 
+    dense2D() : super(), memory_base(dim_type().num_rows() * dim_type().num_cols()), expr_base(*this) 
     { 
 	init(); 
     }
 
     // only sets dimensions, only for run-time dimensions
     explicit dense2D(mtl::non_fixed::dimensions d) 
-	: super(d), super_memory(d.num_rows() * d.num_cols()), expr_base(*this) 
+	: super(d), memory_base(d.num_rows() * d.num_cols()), expr_base(*this) 
     { 
 	init(); 
     }
 
-    dense2D(size_type num_rows, size_type num_cols) 
+    explicit dense2D(size_type num_rows, size_type num_cols) 
 	: super(mtl::non_fixed::dimensions(num_rows, num_cols)), 
-	  super_memory(num_rows * num_cols), expr_base(*this) 
+	  memory_base(num_rows * num_cols), expr_base(*this) 
     { 
 	init(); 
     }
 
     // sets dimensions and pointer to external data
     explicit dense2D(mtl::non_fixed::dimensions d, value_type* a) 
-      : super(d), super_memory(a, d.num_rows() * d.num_cols()), expr_base(*this) 
+      : super(d), memory_base(a, d.num_rows() * d.num_cols()), expr_base(*this) 
     { 
 	init(); 
     }
 
     // sets dimensions and pointer to external data
-    dense2D(size_type num_rows, size_type num_cols, value_type* a) 
-      : super(mtl::non_fixed::dimensions(num_rows, num_cols)), super_memory(a, num_rows * num_cols), expr_base(*this) 
+    explicit dense2D(size_type num_rows, size_type num_cols, value_type* a) 
+      : super(mtl::non_fixed::dimensions(num_rows, num_cols)), memory_base(a, num_rows * num_cols), expr_base(*this) 
     { 
 	init(); 
     }
@@ -229,28 +230,37 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     // same constructor for compile time matrix size
     // sets dimensions and pointer to external data
     explicit dense2D(value_type* a) 
-	: super(), super_memory(a, dim_type().num_rows() * dim_type().num_cols()), expr_base(*this) 
+	: super(), memory_base(a, dim_type().num_rows() * dim_type().num_cols()), expr_base(*this) 
     { 
 	BOOST_STATIC_ASSERT((dim_type::is_static));
         init();
     }
 
-    // Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
-    dense2D(const self& m) 
+    // Old remark: Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
+    explicit dense2D(const self& m) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
-	  super_memory(&(const_cast<self&>(m)[0][0]), m.num_rows() * m.num_cols()), expr_base(*this)
+	  memory_base(m), expr_base(*this)
     {
-	//init();
+	// In case of sub-matrices we need m's ldim -> init doesn't work
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
-	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
+
+    explicit dense2D(self& m, adobe::move_ctor) 
+	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
+	  memory_base(m, adobe::move_ctor()), expr_base(*this)
+    {
+	// In case of sub-matrices we need m's ldim -> init doesn't work
+	this->my_nnz= m.my_nnz; ldim= m.ldim;
+    }
+
+
 
 #ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
     // Construction from sum of matrices
     template <typename E1, typename E2>
     dense2D(const matrix::mat_mat_plus_expr<E1, E2>& src)
 	: super(mtl::non_fixed::dimensions(mtl::num_rows(src.first), mtl::num_cols(src.first))),
-	  super_memory(mtl::num_rows(src.first) * mtl::num_cols(src.first)), expr_base(*this)		
+	  memory_base(mtl::num_rows(src.first) * mtl::num_cols(src.first)), expr_base(*this)		
     {
 	init();
 	matrix_copy(src.first, *this);
@@ -261,7 +271,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     template <typename E1, typename E2>
     dense2D(const matrix::mat_mat_minus_expr<E1, E2>& src)
 	: super(mtl::non_fixed::dimensions(mtl::num_rows(src.first), mtl::num_cols(src.first))),
-	  super_memory(mtl::num_rows(src.first) * mtl::num_cols(src.first)), expr_base(*this)		
+	  memory_base(mtl::num_rows(src.first) * mtl::num_cols(src.first)), expr_base(*this)		
     {
 	init();
 	matrix_copy(src.first, *this);
@@ -280,6 +290,13 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 #endif
 
+    // Either changed matrix is uninitialized (i.e. 0x0) or dimensions are equal
+    void check_dim(size_type num_rows, size_type num_cols) const
+    {
+	MTL_DEBUG_THROW_IF(this->num_rows() * this->num_cols() != 0
+			   && (this->num_rows() != num_rows || this->num_cols() != num_cols),
+			   incompatible_size());
+    }
 
     void change_dim(size_type num_rows, size_type num_cols)
     {
@@ -288,10 +305,10 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->realloc(num_rows * num_cols);
     }
 
-
+#if 0 // Need consuming assignment
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
 	// Removing the operator ends in run-time error
-   self& operator=(const self& src)
+    self& operator=(const self& src)
     {
 	// no self-copy
 	if (this == &src) return *this;
@@ -300,6 +317,18 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	std::copy(src.elements(), src.elements()+src.used_memory(), this->elements());
 	return *this;
     }
+#endif
+
+    self& operator=(self src)
+    {
+	// Self-copy would be an indication of an error
+	assert(this != &src);
+
+	check_dim(src.num_rows(), src.num_cols());
+	swap(*this, src);
+	return *this;
+    }
+
 
     // import operators from CRTP base class
     using assign_base::operator=;
@@ -337,7 +366,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
     friend void swap(self& matrix1, self& matrix2)
     {
-	static_cast<super_memory&>(matrix1).swap(matrix2);
+	static_cast<memory_base&>(matrix1).swap(matrix2);
 	static_cast<super&>(matrix1).swap(matrix2);
 	std::swap(matrix1.ldim, matrix2.ldim);
     }
@@ -736,6 +765,14 @@ struct sub_matrix_t<dense2D<Value, Parameters> >
 };
 
 } // namespace mtl
+
+#if 0
+namespace adobe {
+    // Enable move semantics
+    template <typename Value, typename Parameters>
+    struct is_movable< mtl::dense2D<Value, Parameters> > : boost::mpl::true_ {};
+}
+#endif
 
 #endif // MTL_DENSE2D_INCLUDE
 

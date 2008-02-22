@@ -10,6 +10,7 @@
 #ifndef MTL_OPERATIONS_INCLUDE
 #define MTL_OPERATIONS_INCLUDE
 
+#include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/fill.hpp>
