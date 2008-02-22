@@ -402,6 +402,7 @@ struct contiguous_memory_block<Value, true, Size>
 	// std::cout << "Assignment from different type.\n";
 	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
 	std::copy(other.data, other.data + other.used_memory(), data);
+	return *this;
     }
 
 
