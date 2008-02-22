@@ -28,7 +28,7 @@ namespace mtl {
     Modifications to either A or B have no effect to each other.
 **/
 template <typename T>
-inline T clone(T& x) 
+inline T clone(const T& x) 
 { 
     return x; 
 }

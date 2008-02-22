@@ -24,12 +24,6 @@ typedef contiguous_memory_block<double, false, 0>  dblock;
 typedef contiguous_memory_block<double, true, 3>   sblock;
 
 
-namespace mtl {
-template <typename T>
-inline T clone(T& x) { return x; }
-}
-
-
 
 // Return a matrix with move semantics
 // Return also the address of the first entry to be sure that it is really moved
@@ -39,7 +33,7 @@ Block f(const Block&, double*& a00)
     Block b(3);
     b.data[0]= 5.0;
     a00= &b.data[0];
-    return b;
+    return adobe::move(b);
 }
 
 // For blocks on heap, different addresses means that moving failed
@@ -83,9 +77,13 @@ void test()
 
     if (B.data[0] != 5.0) 
 	throw "Wrong value moving, should be 5.0!";
-    // There seems to be never a copy
+    // There seemed to be never a copy, now static arrays are copied
+#if 0
     if (&B.data[0] != p) 
 	throw "This is the first time that an expression in a constructor is copied!";
+#endif
+    if (compare(B, p)) 
+	throw "Block is not moved/copied appropriately!";
 
 
     // This type is guarateed to be different to f's return type

@@ -58,7 +58,7 @@ struct size_helper
 	return Size;
     }
 
-    void swap(self& other) const {}
+    friend void swap(self& x, self& y) {}
 };
 
 template <>
@@ -78,9 +78,9 @@ struct size_helper<0>
 	return my_used_memory;
     }
 
-    void swap(self& other) 
+    friend void swap(self& x, self& y) 
     {
-	std::swap(my_used_memory, other.my_used_memory);
+	std::swap(x.my_used_memory, y.my_used_memory);
     }
 
   protected:
@@ -110,6 +110,7 @@ struct size_helper<0>
 	    char* p= malloc_address= new char[bytes];
 	    if (align)
 		while ((long int)(p) % MTL_ALIGNMENT) p++;
+		// p+= MTL_ALIGNMENT - (long int)(p) % MTL_ALIGNMENT;
 
 	    return reinterpret_cast<value_type*>(p);
 	}
@@ -120,9 +121,10 @@ struct size_helper<0>
 	    data= 0;
 	}
 
-	void swap(self& other) 
+	friend void swap(self& x, self& y) 
 	{
-	    swap(malloc_address, other.malloc_address);
+	    using std::swap
+	    swap(x.malloc_address, y.malloc_address);
 	}
 
       private:	    
@@ -146,7 +148,7 @@ struct size_helper<0>
 	    if (is_own && data) delete[] data;
 	}
 
-	void swap(self& other) const {}
+	friend void swap(self& x, self& y) {}
     };
 
 # endif
@@ -211,13 +213,15 @@ struct contiguous_memory_block
     typedef size_helper<Size>                 size_base;
     typedef alignment_helper<Value>           alignment_base;
 
-  private:
+  protected:
 
     /// Category of memory, determines behaviour
     enum c_t {own,         //< My own memory: allocate and free it
 	      external,    //< Memory, complete memory block of other item, only reference 
 	      view         //< View of other's memory (e.g. sub-matrix), different construction than external
     } category;
+
+  private:
 
     void alloc(std::size_t size)
     {
@@ -311,10 +315,8 @@ struct contiguous_memory_block
     self& operator=(self other)
     {
 	// std::cout << "Consuming assignment operator (if same type).\n";
-	// swap(other);
-	//#if 0   // already handled by constructors 
 	if (category == own)
-	    swap(other);
+	    swap(*this, other);
 	else
 	    copy_construction(other);
 	return *this;
@@ -325,6 +327,7 @@ struct contiguous_memory_block
     {
 	// std::cout << "Assignment from different array type -> Copy.\n";
 	copy_assignment(other);
+	return *this;
     }
 
 
@@ -345,14 +348,13 @@ struct contiguous_memory_block
 	delete_it();
     }
 
-    void swap(self& other)
+    friend void swap(self& x, self& y)
     {
 	using std::swap;
-	swap(category, other.category);
-	swap(data, other.data);
-	size_base::swap(other);
-	alignment_base::swap(other);
-	
+	swap(x.category, y.category);
+	swap(x.data, y.data);
+	swap(static_cast<size_base&>(x), static_cast<size_base&>(y));
+	swap(static_cast<alignment_base&>(x), static_cast<alignment_base&>(y));
     }	
 
   public:
@@ -366,12 +368,15 @@ struct contiguous_memory_block<Value, true, Size>
     typedef contiguous_memory_block                     self;
 
     Value    data[Size];
-    explicit contiguous_memory_block(std::size_t) {}
+    explicit contiguous_memory_block(std::size_t size= Size) 
+    {
+	MTL_DEBUG_THROW_IF(Size != size, incompatible_size());
+    }
 
     // Move-semantics ignored for arrays on stack
     contiguous_memory_block(const self& other)
     {
-	std::cout << "Ich habe kopiert (von gleichem array-Typ).\n";
+	std::cout << "Copied in copy constructor (same type).\n";
 	std::copy(other.data, other.data+Size, data);
     }
 
@@ -379,7 +384,7 @@ struct contiguous_memory_block<Value, true, Size>
     template<typename Value2, bool OnStack2, unsigned Size2>
     explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {
-	// std::cout << "Copied in copy constructor (same type).\n";	
+	// std::cout << "Copied in copy constructor (different type).\n";	
 	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
 	std::copy(other.data, other.data + other.used_memory(), data);
     }
@@ -397,13 +402,6 @@ struct contiguous_memory_block<Value, true, Size>
 	// std::cout << "Assignment from different type.\n";
 	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
 	std::copy(other.data, other.data + other.used_memory(), data);
-    }
-
-
-    void swap (self& other)
-    {
-	using std::swap;
-	swap(*this, other);
     }
 
 
