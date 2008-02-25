@@ -339,20 +339,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->realloc(num_rows * num_cols);
     }
 
-#if 0 // Need consuming assignment
-    // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
-	// Removing the operator ends in run-time error
-    self& operator=(const self& src)
-    {
-	// no self-copy
-	if (this == &src) return *this;
-
-	change_dim(src.num_rows(), src.num_cols());
-	std::copy(src.elements(), src.elements()+src.used_memory(), this->elements());
-	return *this;
-    }
-#endif
-
     self& operator=(self src)
     {
 	// Self-copy would be an indication of an error
@@ -771,23 +757,6 @@ struct sub_matrix_t<dense2D<Value, Parameters> >
     sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
     {
 	return sub_matrix_type(matrix, dense2D_sub_ctor(), begin_r, end_r, begin_c, end_c);
-#if 0
-	sub_matrix_type  tmp(matrix);
-
-	tmp.set_view();
-	// tmp.ldim= matrix.ldim; is copied in constructor
-
-	// Treat empty sub-matrices specially
-	if(end_r <= begin_r || end_c <= begin_c)
-	    tmp.set_ranges(0, 0);
-	else {
-	    // Leading dimension doesn't change
-	    tmp.data += matrix.indexer(matrix, begin_r, begin_c);  // Takes care of indexing
-	    tmp.set_ranges(end_r - begin_r, end_c - begin_c);
-	}
-
-	return tmp;
-#endif
     }
 
     const_sub_matrix_type
