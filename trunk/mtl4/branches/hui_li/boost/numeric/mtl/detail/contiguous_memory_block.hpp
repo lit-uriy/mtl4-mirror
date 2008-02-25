@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
+#include <boost/numeric/mtl/operation/clone.hpp>
 
 
 #ifdef MTL_WITH_MOVE
@@ -286,7 +287,6 @@ struct contiguous_memory_block
 	alloc(size);
     }
 
-
 #ifdef MTL_WITH_MOVE
     // If possible move data
     explicit contiguous_memory_block(self& other, adobe::move_ctor)
@@ -310,6 +310,13 @@ struct contiguous_memory_block
 	    copy_construction(other);
     }
 
+    // Force copy construction
+    contiguous_memory_block(const self& other, clone_ctor)
+    {
+	// std::cout << "(Forced) Copy constructor (same type).\n";	
+	copy_construction(other);
+    }
+
     // Other types must be copied always
     template<typename Value2, bool OnStack2, unsigned Size2>
     explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
@@ -323,13 +330,25 @@ struct contiguous_memory_block
     self& operator=(self other)
     {
 	// std::cout << "Consuming assignment operator (if same type).\n";
-	if (category == own)
+	if (category == own && other.category == own)
 	    swap(*this, other);
 	else
 	    copy_construction(other);
 	return *this;
     }
 
+    // Same behavior as consuming assignment, to be used by derived classes
+protected:
+    void move_assignment(self& other)
+    {
+	// std::cout << "Consuming assignment operator (if same type).\n";
+	if (category == own && other.category == own)
+	    swap(*this, other);
+	else
+	    copy_construction(other);
+    }
+
+public:
     template<typename Value2, bool OnStack2, unsigned Size2>
     self& operator=(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {
@@ -338,6 +357,8 @@ struct contiguous_memory_block
 	return *this;
     }
 
+
+    void set_view() { category= view; }
 
     void realloc(std::size_t size)
     {

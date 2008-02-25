@@ -32,7 +32,7 @@ Matrix f(const Matrix&, double*& a00)
 }
 
 template <typename Matrix>
-void print(const Matrix& matrix, double*& p)
+void print(const Matrix& matrix, double* p)
 {
     cout << "Data was " << (&matrix.data[0] == p ? "moved.\n" : "copied.\n");
 }
@@ -54,7 +54,7 @@ void test(const Matrix&, const char* text)
 	throw "Wrong value moving, should be 5.0!";
     if (&A[0][0] != p) 
 	throw "Matrix is not moved but copied!";
-#if 0
+    
     cout << "Matrix B= f(A, p);\n";
     Matrix B= f(A, p);
     print(B, p);
@@ -76,7 +76,7 @@ void test(const Matrix&, const char* text)
     if (&C[0][0] == p) 
 	throw "Matrix must be copied not moved!";
 
-
+#if 0
     // Other matrix type, in this case the matrix MUST be copied
     morton_dense<double, recursion::morton_mask>   D(A);
 
@@ -87,30 +87,31 @@ void test(const Matrix&, const char* text)
 	throw "Wrong value in copy constructor, should be 5.0!";
     if (&D.data[0] == &A.data[0]) 
 	throw "Matrix must be copied not moved!";
+#endif
 
     Matrix E= sub_matrix(A, 0, 1, 0, 1);
 
     cout << "Matrix E= sub_matrix(A, 0, 1, 0, 1);\n";
-    print(E, &A.data[0][0]);
+    print(E, &A[0][0]);
 
-    if (&E.data[0][0] != &A.data[0][0]) 
+    if (&E[0][0] != &A[0][0]) 
 	throw "Sub-matrix must be referred to not copied!";
 
     cout << "E= sub_matrix(A, 1, 2, 1, 2);\n";
     E= sub_matrix(A, 1, 2, 1, 2);    
-    print(E, &A.data[1][1]);
+    print(E, &A[1][1]);
 
-    if (&E.data[0][0] == &A.data[1][1]) 
+    if (&E[0][0] == &A[1][1]) 
 	throw "Matrix must be copied not referred to!";
 
     Matrix F= clone(sub_matrix(A, 0, 1, 0, 1));
 
     cout << "Matrix F= clone(sub_matrix(A, 0, 1, 0, 1));\n";
-    print(F, &A.data[0][0]);
+    print(F, &A[0][0]);
 
-    if (&F.data[0][0] == &A.data[0][0]) 
+    if (&F[0][0] == &A[0][0]) 
 	throw "Sub-matrix must be forced to copy!";
-#endif
+
 }
 
 

@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/operators.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
+#include <boost/numeric/mtl/operation/clone.hpp>
 
 
 #ifdef MTL_WITH_MOVE
@@ -40,6 +41,8 @@ using std::size_t;
 template <typename Value, typename Parameters> class dense2D;
 struct dense2D_indexer;
 
+// Helper type
+struct dense2D_sub_ctor {};
 
 // Indexing for dense matrices
 struct dense2D_indexer 
@@ -249,6 +252,14 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
     }
 
+    dense2D(const self& m, clone_ctor) 
+	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
+	  memory_base(m, clone_ctor()), expr_base(*this)
+    {
+	// In case of sub-matrices we need m's ldim -> init doesn't work
+	this->my_nnz= m.my_nnz; ldim= m.ldim;
+    }
+
 #ifdef MTL_WITH_MOVE
     explicit dense2D(self& m, adobe::move_ctor) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
@@ -259,6 +270,23 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 #endif
 
+    explicit dense2D(self& matrix, dense2D_sub_ctor, 
+		     size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+	: super(mtl::non_fixed::dimensions(matrix.num_rows(), matrix.num_cols())),
+	  memory_base(matrix.data, matrix.my_nnz, true), // View constructor
+	  expr_base(*this)
+    {
+	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
+
+	if(end_r <= begin_r || end_c <= begin_c)
+	    set_ranges(0, 0);
+	else {
+	    // Leading dimension doesn't change
+	    this->data += matrix.indexer(matrix, begin_r, begin_c);  // Takes care of indexing
+	    set_ranges(end_r - begin_r, end_c - begin_c);
+	}
+	this->my_nnz= matrix.my_nnz; ldim= matrix.ldim;
+    }
 
 
 #ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
@@ -331,7 +359,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	assert(this != &src);
 
 	check_dim(src.num_rows(), src.num_cols());
-	swap(*this, src);
+	memory_base::move_assignment(src);
+	//swap(*this, src);
 	return *this;
     }
 
@@ -741,13 +770,12 @@ struct sub_matrix_t<dense2D<Value, Parameters> >
     
     sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
     {
-	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
-
+	return sub_matrix_type(matrix, dense2D_sub_ctor(), begin_r, end_r, begin_c, end_c);
+#if 0
 	sub_matrix_type  tmp(matrix);
 
-	// Sub-matrix doesn't own the memory (and must not free at the end)
-	tmp.extern_memory= true;
-	// tmp.ldim= matrix.ldim; // or in copy constructor ?
+	tmp.set_view();
+	// tmp.ldim= matrix.ldim; is copied in constructor
 
 	// Treat empty sub-matrices specially
 	if(end_r <= begin_r || end_c <= begin_c)
@@ -759,6 +787,7 @@ struct sub_matrix_t<dense2D<Value, Parameters> >
 	}
 
 	return tmp;
+#endif
     }
 
     const_sub_matrix_type

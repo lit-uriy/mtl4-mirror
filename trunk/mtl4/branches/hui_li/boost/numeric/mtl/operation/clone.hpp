@@ -12,6 +12,9 @@
 
 namespace mtl {
 
+// Helper type
+struct clone_ctor {};
+
 /// Move-semantics-related anti-dot: always copy in constructor.
 /** Some collections have referring semantics in copy constructors, e.g. sub-matrices.
     That means 
@@ -30,7 +33,8 @@ namespace mtl {
 template <typename T>
 inline T clone(const T& x) 
 { 
-    return x; 
+    // Should add type traits like in adobe::move
+    return T(x, clone_ctor()); 
 }
 
 
