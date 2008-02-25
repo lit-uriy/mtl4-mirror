@@ -17,7 +17,12 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
-#include <adobe/move.hpp>
+
+
+#ifdef MTL_WITH_MOVE
+#  include <adobe/move.hpp>
+#endif
+
 
 namespace mtl { namespace detail {
 using std::size_t;
@@ -282,6 +287,7 @@ struct contiguous_memory_block
     }
 
 
+#ifdef MTL_WITH_MOVE
     // If possible move data
     explicit contiguous_memory_block(self& other, adobe::move_ctor)
     {
@@ -291,6 +297,8 @@ struct contiguous_memory_block
 	case view:       copy_view(other);
 	}
     }
+#endif
+
 
     // Default copy constructor
     contiguous_memory_block(const self& other)
@@ -420,9 +428,11 @@ struct contiguous_memory_block<Value, true, Size>
 
 }} // namespace mtl::detail
 
-namespace adobe {
+#ifdef MTL_WITH_MOVE
+  namespace adobe {
     template <typename Value, bool OnStack, unsigned Size>
     struct is_movable< mtl::detail::contiguous_memory_block<Value, OnStack, Size> > : boost::mpl::bool_<!OnStack> {};
-}
+  }
+#endif
 
 #endif // MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE

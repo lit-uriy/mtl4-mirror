@@ -33,7 +33,8 @@ Block f(const Block&, double*& a00)
     Block b(3);
     b.data[0]= 5.0;
     a00= &b.data[0];
-    return adobe::move(b);
+    return b;
+    // return adobe::move(b);
 }
 
 // For blocks on heap, different addresses means that moving failed
@@ -78,12 +79,12 @@ void test()
     if (B.data[0] != 5.0) 
 	throw "Wrong value moving, should be 5.0!";
     // There seemed to be never a copy, now static arrays are copied
-#if 0
     if (&B.data[0] != p) 
 	throw "This is the first time that an expression in a constructor is copied!";
-#endif
+#if 0
     if (compare(B, p)) 
 	throw "Block is not moved/copied appropriately!";
+#endif
 
 
     // This type is guarateed to be different to f's return type

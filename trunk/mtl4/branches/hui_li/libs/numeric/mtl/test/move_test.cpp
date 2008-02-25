@@ -27,7 +27,8 @@ Matrix f(const Matrix&, double*& a00)
     Matrix A(3, 3);
     A= 5.0;
     a00= &A[0][0];
-    return adobe::move(A);
+    //return adobe::move(A);
+    return A;
 }
 
 template <typename Matrix>
