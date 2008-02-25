@@ -13,7 +13,6 @@
 #include <algorithm>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
-#include <adobe/move.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
@@ -26,6 +25,11 @@
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/operators.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
+
+
+#ifdef MTL_WITH_MOVE
+#  include <adobe/move.hpp>
+#endif
 
 
 namespace mtl {
@@ -237,7 +241,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 
     // Old remark: Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
-    explicit dense2D(const self& m) 
+    dense2D(const self& m) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
 	  memory_base(m), expr_base(*this)
     {
@@ -245,6 +249,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
     }
 
+#ifdef MTL_WITH_MOVE
     explicit dense2D(self& m, adobe::move_ctor) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
 	  memory_base(m, adobe::move_ctor()), expr_base(*this)
@@ -252,6 +257,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	// In case of sub-matrices we need m's ldim -> init doesn't work
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
     }
+#endif
 
 
 
@@ -366,7 +372,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
     friend void swap(self& matrix1, self& matrix2)
     {
-	static_cast<memory_base&>(matrix1).swap(matrix2);
+	swap(static_cast<memory_base&>(matrix1), static_cast<memory_base&>(matrix2));
 	static_cast<super&>(matrix1).swap(matrix2);
 	std::swap(matrix1.ldim, matrix2.ldim);
     }
@@ -766,13 +772,15 @@ struct sub_matrix_t<dense2D<Value, Parameters> >
 
 } // namespace mtl
 
-#if 0
-namespace adobe {
+
+#ifdef MTL_WITH_MOVE
+  namespace adobe {
     // Enable move semantics
     template <typename Value, typename Parameters>
     struct is_movable< mtl::dense2D<Value, Parameters> > : boost::mpl::true_ {};
-}
+  }
 #endif
+
 
 #endif // MTL_DENSE2D_INCLUDE
 
