@@ -524,9 +524,6 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
     void change_dim(size_type num_rows, size_type num_cols)
     {
-	MTL_THROW_IF(this->extern_memory && (num_rows != this->num_rows() || num_cols != this->num_cols()),
-		     runtime_error("Can't change the size of matrices with external memory"));
-
 	set_ranges(num_rows, num_cols);
 	this->realloc(memory_need(num_rows, num_cols));
     }

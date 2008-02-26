@@ -57,6 +57,7 @@ struct base_matrix
 			   incompatible_size());
     }
 
+protected:
     // Change dimension
     // Will fail for fixed::dimension
     void change_dim(mtl::non_fixed::dimensions d)
@@ -64,6 +65,12 @@ struct base_matrix
 	dim= d;
     }
    
+    void change_dim(size_type r, size_type c)
+    {
+	change_dim(non_fixed::dimensions(r, c));
+    }    
+
+public:
     // Number of rows
     size_type num_rows() const 
     {

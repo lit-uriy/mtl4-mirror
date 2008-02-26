@@ -77,9 +77,15 @@ struct base_sub_matrix
 			   incompatible_size());
     }
 
-    void change_dim(mtl::non_fixed::dimensions d)
+protected:
+    void change_dim(non_fixed::dimensions d)
     {
 	constructor_helper(d);
+    }    
+
+    void change_dim(size_type r, size_type c)
+    {
+	change_dim(non_fixed::dimensions(r, c));
     }    
 
     void set_ranges(size_type br, size_type er, size_type bc, size_type ec)
@@ -89,6 +95,7 @@ struct base_sub_matrix
 	my_begin_row= br; my_end_row= er; my_begin_col= bc; my_end_col= ec;
     }
 
+public:
     void check_ranges(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c) const
     {
 	MTL_DEBUG_THROW_IF(begin_r < begin_row(), range_error("begin_row out of range"));
