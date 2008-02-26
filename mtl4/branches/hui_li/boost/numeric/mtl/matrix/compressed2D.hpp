@@ -453,7 +453,7 @@ class compressed2D
     friend void swap(self& matrix1, self& matrix2)
     {
 	using std::swap;
-	static_cast<super&>(matrix1).swap(matrix2);
+	swap(static_cast<super&>(matrix1), static_cast<super&>(matrix2));
 
 	swap(matrix1.data, matrix2.data);
 	swap(matrix1.starts, matrix2.starts);
