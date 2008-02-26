@@ -329,12 +329,7 @@ struct contiguous_memory_block
     // Operator takes parameter by value and consumes it
     self& operator=(self other)
     {
-	// std::cout << "Consuming assignment operator (if same type).\n";
-	if (category == own && other.category == own)
-	    swap(*this, other);
-	else
-	    copy_construction(other);
-	return *this;
+	move_assignment(other);
     }
 
     // Same behavior as consuming assignment, to be used by derived classes
