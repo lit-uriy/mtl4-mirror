@@ -768,6 +768,10 @@ struct sub_matrix_t<dense2D<Value, Parameters> >
     }	
 };
 
+// Enable cloning of dense matrices
+template <typename Value, typename Parameters>
+struct is_clonable< mtl::dense2D<Value, Parameters> > : boost::mpl::true_ {};
+
 } // namespace mtl
 
 

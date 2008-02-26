@@ -456,4 +456,9 @@ struct contiguous_memory_block<Value, true, Size>
   }
 #endif
 
+namespace mtl {
+    template <typename Value, bool OnStack, unsigned Size>
+    struct is_clonable< detail::contiguous_memory_block<Value, OnStack, Size> > : boost::mpl::bool_<!OnStack> {};
+}
+
 #endif // MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE
