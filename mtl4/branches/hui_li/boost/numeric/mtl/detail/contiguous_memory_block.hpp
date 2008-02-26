@@ -219,13 +219,11 @@ struct contiguous_memory_block
     typedef size_helper<Size>                 size_base;
     typedef alignment_helper<Value>           alignment_base;
 
-  protected:
-
     /// Category of memory, determines behaviour
     enum c_t {own,         //< My own memory: allocate and free it
 	      external,    //< Memory, complete memory block of other item, only reference 
 	      view         //< View of other's memory (e.g. sub-matrix), different construction than external
-    } category;
+    };
 
   private:
 
@@ -382,7 +380,9 @@ public:
 	swap(static_cast<alignment_base&>(x), static_cast<alignment_base&>(y));
     }	
 
-  public:
+protected:
+    enum c_t                                  category;
+public:
     Value                                     *data;
 };
 

@@ -10,7 +10,6 @@
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
-#include <adobe/move.hpp>
 
 
 // Everything in the test is double
@@ -34,7 +33,6 @@ Block f(const Block&, double*& a00)
     b.data[0]= 5.0;
     a00= &b.data[0];
     return b;
-    // return adobe::move(b);
 }
 
 // For blocks on heap, different addresses means that moving failed

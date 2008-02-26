@@ -351,6 +351,13 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     // import operators from CRTP base class
     using assign_base::operator=;
 
+    void change_dim(size_type r, size_type c)
+    {
+	memory_base::realloc(r * c);
+	super::change_dim(r, c);
+	init();
+    }
+
 
     bool check_indices(size_t r, size_t c) const
     {
