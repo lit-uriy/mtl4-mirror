@@ -33,7 +33,7 @@ Matrix f(const Matrix&, double*& a00)
 template <typename Matrix>
 void print(const Matrix& matrix, double* p)
 {
-    cout << "Data was " << (&matrix.data[0] == p ? "moved.\n" : "copied.\n");
+    cout << "Data was " << (&matrix[0][0] == p ? "moved.\n" : "copied.\n");
 }
 
 template <typename Matrix>
@@ -110,6 +110,11 @@ void test(const Matrix&, const char* text)
 	throw "Sub-matrix must be forced to copy!";
 
 }
+
+
+
+
+
 
 
 
