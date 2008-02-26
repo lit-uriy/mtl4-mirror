@@ -393,35 +393,35 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
   public:
     // if compile time matrix size allocate memory
-    morton_dense() : memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols())), expr_base(*this)  
+    morton_dense() : memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
     {
 	init(dim_type().num_rows(), dim_type().num_cols());
     }
 
     // only sets dimensions, only for run-time dimensions
     explicit morton_dense(mtl::non_fixed::dimensions d) 
-	: memory_base(memory_need(d.num_rows(), d.num_cols())), expr_base(*this)  
+	: memory_base(memory_need(d.num_rows(), d.num_cols()))
     {
 	init(d.num_rows(), d.num_cols());
     }
 
     // Same with separated row and column number
     morton_dense(size_type num_rows, size_type num_cols) 
-	: memory_base(memory_need(num_rows, num_cols)), expr_base(*this) 
+	: memory_base(memory_need(num_rows, num_cols))
     {
 	init(num_rows, num_cols);
     }
 
     // sets dimensions and pointer to external data
     explicit morton_dense(mtl::non_fixed::dimensions d, value_type* a) 
-      : memory_base(a, memory_need(d.num_rows(), d.num_cols())), expr_base(*this) 
+      : memory_base(a, memory_need(d.num_rows(), d.num_cols()))
     { 
 	set_ranges(d.num_rows(), d.num_cols());
     }
 
     // sets dimensions and pointer to external data
     explicit morton_dense(size_type num_rows, size_type num_cols, value_type* a) 
-      : memory_base(a, memory_need(num_rows, num_cols)), expr_base(*this) 
+      : memory_base(a, memory_need(num_rows, num_cols))
     { 
 	set_ranges(num_rows, num_cols);
     }
@@ -429,7 +429,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     // same constructor for compile time matrix size
     // sets dimensions and pointer to external data
     explicit morton_dense(value_type* a) 
-	: memory_base(a, memory_need(dim_type().num_rows(), dim_type().num_cols())), expr_base(*this) 
+	: memory_base(a, memory_need(dim_type().num_rows(), dim_type().num_cols()))
     { 
 	BOOST_ASSERT((dim_type::is_static));
 	set_ranges(dim_type().num_rows(), dim_type().num_cols());
@@ -437,16 +437,14 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
     // Old remark: Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
     morton_dense(const self& m) 
-	: memory_base(m), 
-	  expr_base(*this)
+	: memory_base(m)
     {
 	set_ranges(m.num_rows(), m.num_cols());
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
 
     morton_dense(const self& m, clone_ctor) 
-	: memory_base(m, clone_ctor()), 
-	  expr_base(*this)
+	: memory_base(m, clone_ctor())
     {
 	set_ranges(m.num_rows(), m.num_cols());
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
@@ -456,8 +454,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     // Construct new matrix from a different matrix type
     template <typename MatrixSrc>
     morton_dense(const matrix::mat_expr<MatrixSrc>& src)
-	: memory_base(memory_need(num_rows(static_cast<const MatrixSrc&>(src)), num_cols(static_cast<const MatrixSrc&>(src)))), 
-	  expr_base(*this)
+	: memory_base(memory_need(num_rows(static_cast<const MatrixSrc&>(src)), num_cols(static_cast<const MatrixSrc&>(src))))
     {
 	const MatrixSrc& m= static_cast<const MatrixSrc&>(src);
 	set_ranges(m.num_rows(), m.num_cols());
@@ -467,8 +464,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     // Construct a sub-matrix as a view
     morton_dense(self& matrix, morton_dense_sub_ctor,
 		 size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-	: memory_base(matrix.data, memory_need(end_r - begin_r, end_c - begin_c), true), // View constructor
-	  expr_base(*this)
+	: memory_base(matrix.data, memory_need(end_r - begin_r, end_c - begin_c), true) // View constructor
     {
 	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
 
@@ -495,7 +491,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 #ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
     // Construction from sum of matrices
     template <typename E1, typename E2>
-    morton_dense(const matrix::mat_mat_plus_expr<E1, E2>& src) : expr_base(*this)
+    morton_dense(const matrix::mat_mat_plus_expr<E1, E2>& src)
     {
 	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
 	*this= src.first;
@@ -504,7 +500,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
     // Construction from difference of matrices
     template <typename E1, typename E2>
-    morton_dense(const matrix::mat_mat_minus_expr<E1, E2>& src) : expr_base(*this)
+    morton_dense(const matrix::mat_mat_minus_expr<E1, E2>& src)
     {
 	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
 	*this= src.first;
@@ -513,7 +509,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
     // Construction from product of matrices
     template <typename E1, typename E2>
-    morton_dense(const matrix::mat_mat_times_expr<E1, E2>& src)	: expr_base(*this)		
+    morton_dense(const matrix::mat_mat_times_expr<E1, E2>& src)
     {
 	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
 	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));

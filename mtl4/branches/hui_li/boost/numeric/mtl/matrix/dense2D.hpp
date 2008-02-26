@@ -201,35 +201,35 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
   public:
     // if compile time matrix size allocate memory
-    dense2D() : super(), memory_base(dim_type().num_rows() * dim_type().num_cols()), expr_base(*this) 
+    dense2D() : super(), memory_base(dim_type().num_rows() * dim_type().num_cols())
     { 
 	init(); 
     }
 
     // only sets dimensions, only for run-time dimensions
     explicit dense2D(mtl::non_fixed::dimensions d) 
-	: super(d), memory_base(d.num_rows() * d.num_cols()), expr_base(*this) 
+	: super(d), memory_base(d.num_rows() * d.num_cols())
     { 
 	init(); 
     }
 
     explicit dense2D(size_type num_rows, size_type num_cols) 
 	: super(mtl::non_fixed::dimensions(num_rows, num_cols)), 
-	  memory_base(num_rows * num_cols), expr_base(*this) 
+	  memory_base(num_rows * num_cols)
     { 
 	init(); 
     }
 
     // sets dimensions and pointer to external data
     explicit dense2D(mtl::non_fixed::dimensions d, value_type* a) 
-      : super(d), memory_base(a, d.num_rows() * d.num_cols()), expr_base(*this) 
+      : super(d), memory_base(a, d.num_rows() * d.num_cols())
     { 
 	init(); 
     }
 
     // sets dimensions and pointer to external data
     explicit dense2D(size_type num_rows, size_type num_cols, value_type* a) 
-      : super(mtl::non_fixed::dimensions(num_rows, num_cols)), memory_base(a, num_rows * num_cols), expr_base(*this) 
+      : super(mtl::non_fixed::dimensions(num_rows, num_cols)), memory_base(a, num_rows * num_cols)
     { 
 	init(); 
     }
@@ -237,7 +237,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     // same constructor for compile time matrix size
     // sets dimensions and pointer to external data
     explicit dense2D(value_type* a) 
-	: super(), memory_base(a, dim_type().num_rows() * dim_type().num_cols()), expr_base(*this) 
+	: super(), memory_base(a, dim_type().num_rows() * dim_type().num_cols())
     { 
 	BOOST_STATIC_ASSERT((dim_type::is_static));
         init();
@@ -246,7 +246,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     // Old remark: Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
     dense2D(const self& m) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
-	  memory_base(m), expr_base(*this)
+	  memory_base(m)
     {
 	// In case of sub-matrices we need m's ldim -> init doesn't work
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
@@ -254,7 +254,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
     dense2D(const self& m, clone_ctor) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
-	  memory_base(m, clone_ctor()), expr_base(*this)
+	  memory_base(m, clone_ctor())
     {
 	// In case of sub-matrices we need m's ldim -> init doesn't work
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
@@ -265,8 +265,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     dense2D(const matrix::mat_expr<MatrixSrc>& src)
 	: super(mtl::non_fixed::dimensions(num_rows(static_cast<const MatrixSrc&>(src)), 
 					   num_cols(static_cast<const MatrixSrc&>(src)))),
-	  memory_base(num_rows(static_cast<const MatrixSrc&>(src)) * num_cols(static_cast<const MatrixSrc&>(src))), 
-	  expr_base(*this)
+	  memory_base(num_rows(static_cast<const MatrixSrc&>(src)) * num_cols(static_cast<const MatrixSrc&>(src)))
     {
 	init();
 	matrix_copy(src, *this);
@@ -275,7 +274,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 #ifdef MTL_WITH_MOVE
     explicit dense2D(self& m, adobe::move_ctor) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
-	  memory_base(m, adobe::move_ctor()), expr_base(*this)
+	  memory_base(m, adobe::move_ctor())
     {
 	// In case of sub-matrices we need m's ldim -> init doesn't work
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
@@ -285,8 +284,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     explicit dense2D(self& matrix, dense2D_sub_ctor, 
 		     size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
 	: super(mtl::non_fixed::dimensions(matrix.num_rows(), matrix.num_cols())),
-	  memory_base(matrix.data, (end_r - begin_r) * (end_c - begin_c), true), // View constructor
-	  expr_base(*this)
+	  memory_base(matrix.data, (end_r - begin_r) * (end_c - begin_c), true) // View constructor
     {
 	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
 
@@ -306,7 +304,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     template <typename E1, typename E2>
     dense2D(const matrix::mat_mat_plus_expr<E1, E2>& src)
 	: super(mtl::non_fixed::dimensions(mtl::num_rows(src.first), mtl::num_cols(src.first))),
-	  memory_base(mtl::num_rows(src.first) * mtl::num_cols(src.first)), expr_base(*this)		
+	  memory_base(mtl::num_rows(src.first) * mtl::num_cols(src.first))
     {
 	init();
 	matrix_copy(src.first, *this);
@@ -317,7 +315,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     template <typename E1, typename E2>
     dense2D(const matrix::mat_mat_minus_expr<E1, E2>& src)
 	: super(mtl::non_fixed::dimensions(mtl::num_rows(src.first), mtl::num_cols(src.first))),
-	  memory_base(mtl::num_rows(src.first) * mtl::num_cols(src.first)), expr_base(*this)		
+	  memory_base(mtl::num_rows(src.first) * mtl::num_cols(src.first))
     {
 	init();
 	matrix_copy(src.first, *this);
@@ -328,7 +326,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     // Construction from product of matrices
     template <typename E1, typename E2>
     dense2D(const matrix::mat_mat_times_expr<E1, E2>& src)
-	: expr_base(*this)		
     {
 	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
 	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));

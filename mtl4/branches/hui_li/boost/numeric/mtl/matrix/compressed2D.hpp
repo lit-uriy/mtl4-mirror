@@ -327,14 +327,14 @@ class compressed2D
 
     // if compile time matrix size, we can set the start vector
     explicit compressed2D () 
-	: super(), expr_base(*this), inserting(false)
+	: super(), inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
 
     // setting dimension and allocate starting vector
     explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
-      : super(d), expr_base(*this), inserting(false)
+      : super(d), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
@@ -342,14 +342,14 @@ class compressed2D
 
     // setting dimension and allocate starting vector
     compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
-      : super(non_fixed::dimensions(num_rows, num_cols)), expr_base(*this), inserting(false)
+      : super(non_fixed::dimensions(num_rows, num_cols)), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
     }
 
     compressed2D(const self& src)
-      : super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), expr_base(*this), inserting(false)
+      : super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	matrix_copy(src, *this);
@@ -358,7 +358,7 @@ class compressed2D
 #if 0 // Superseded by the following constructor
     template <typename SrcValue, typename SrcParameters>
     explicit compressed2D(const compressed2D<SrcValue, SrcParameters>& src)
-	: super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), expr_base(*this), inserting(false)
+	: super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	matrix_copy(src, *this);
@@ -371,7 +371,7 @@ class compressed2D
     explicit compressed2D(const matrix::mat_expr<MatrixSrc>& src)
 	: super(mtl::non_fixed::dimensions(num_rows(static_cast<const MatrixSrc&>(src)), 
 					   num_cols(static_cast<const MatrixSrc&>(src)))),
-	  expr_base(*this), inserting(false)
+	  inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	matrix_copy(src, *this);
@@ -383,7 +383,7 @@ class compressed2D
     // Construction from sum of matrices
     template <typename E1, typename E2>
     explicit compressed2D(const matrix::mat_mat_plus_expr<E1, E2>& src) 
-	: expr_base(*this), inserting(false)
+	: inserting(false)
     {
 	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
 	matrix_copy(src.first, *this);
@@ -393,7 +393,7 @@ class compressed2D
     // Construction from difference of matrices
     template <typename E1, typename E2>
     explicit compressed2D(const matrix::mat_mat_minus_expr<E1, E2>& src) 
-	: expr_base(*this), inserting(false)
+	: inserting(false)
     {
 	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
 	matrix_copy(src.first, *this);
@@ -403,7 +403,7 @@ class compressed2D
     // Construction from product of matrices
     template <typename E1, typename E2>
     explicit compressed2D(const matrix::mat_mat_times_expr<E1, E2>& src) 
-	: expr_base(*this), inserting(false)		
+	: inserting(false)		
     {
 	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
 	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));
