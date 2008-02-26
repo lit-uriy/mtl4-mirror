@@ -348,13 +348,14 @@ class compressed2D
 	allocate(nnz);
     }
 
-    explicit compressed2D(const self& src)
+    compressed2D(const self& src)
       : super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), expr_base(*this), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	matrix_copy(src, *this);
     }
 
+#if 0 // Superseded by the following constructor
     template <typename SrcValue, typename SrcParameters>
     explicit compressed2D(const compressed2D<SrcValue, SrcParameters>& src)
 	: super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), expr_base(*this), inserting(false)
@@ -362,6 +363,20 @@ class compressed2D
 	starts.resize(super::dim1() + 1, 0);
 	matrix_copy(src, *this);
     }
+#endif
+
+
+    // Construct new matrix from a different matrix type
+    template <typename MatrixSrc>
+    explicit compressed2D(const matrix::mat_expr<MatrixSrc>& src)
+	: super(mtl::non_fixed::dimensions(num_rows(static_cast<const MatrixSrc&>(src)), 
+					   num_cols(static_cast<const MatrixSrc&>(src)))),
+	  expr_base(*this), inserting(false)
+    {
+	starts.resize(super::dim1() + 1, 0);
+	matrix_copy(src, *this);
+    }
+
 
 
 #ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
@@ -396,7 +411,7 @@ class compressed2D
     }
 #endif
 
-
+#if 0 // To be deleted
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
 	// Removing the operator ends in run-time error
     self& operator=(const self& src)
@@ -407,6 +422,20 @@ class compressed2D
 	matrix_copy(src, *this);
 	return *this;
     }
+#endif
+
+    // Consuming assignment operator
+    self& operator=(self src)
+    {
+	// Self-copy would be an indication of an error
+	assert(this != &src);
+
+	check_dim(num_rows(src), num_cols(src));
+	swap(*this, src);
+	return *this;
+    }
+
+
 
     using assign_base::operator=;
 

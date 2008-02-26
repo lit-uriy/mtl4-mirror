@@ -453,6 +453,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     }
 
 
+    // Construct new matrix from a different matrix type
     template <typename MatrixSrc>
     morton_dense(const matrix::mat_expr<MatrixSrc>& src)
 	: memory_base(memory_need(num_rows(static_cast<const MatrixSrc&>(src)), num_cols(static_cast<const MatrixSrc&>(src)))), 
