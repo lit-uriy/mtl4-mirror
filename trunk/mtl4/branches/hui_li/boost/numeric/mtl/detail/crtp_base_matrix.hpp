@@ -66,7 +66,7 @@ struct crtp_matrix_assign
 			return static_cast<Matrix&>(*this);
 #endif
 
-	matrix_copy(src.ref, static_cast<Matrix&>(*this));
+	matrix_copy(static_cast<const MatrixSrc&>(src), static_cast<Matrix&>(*this));
 	return static_cast<Matrix&>(*this);
     }
 
@@ -109,7 +109,7 @@ struct crtp_matrix_assign
     template <typename MatrixSrc>
     Matrix& operator+=(const matrix::mat_expr<MatrixSrc>& src)
     {
-	matrix_copy_plus(src.ref, static_cast<Matrix&>(*this));
+	matrix_copy_plus(static_cast<const MatrixSrc&>(src), static_cast<Matrix&>(*this));
 	return static_cast<Matrix&>(*this);
     }
 
@@ -155,7 +155,7 @@ struct crtp_matrix_assign
     template <typename MatrixSrc>
     Matrix& operator-=(const matrix::mat_expr<MatrixSrc>& src)
     {
-	matrix_copy_minus(src.ref, static_cast<Matrix&>(*this));
+	matrix_copy_minus(static_cast<const MatrixSrc&>(src), static_cast<Matrix&>(*this));
 	return static_cast<Matrix&>(*this);
     }
 
