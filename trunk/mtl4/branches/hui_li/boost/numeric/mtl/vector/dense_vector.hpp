@@ -44,7 +44,7 @@ class dense_vector
 {
     typedef dense_vector                                                             self;
     typedef ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, 
-                                                    Parameters::dimension::value >   super_memory;
+                                                    Parameters::dimension::value >   memory_base;
     typedef crtp_base_vector< self, Value, std::size_t >                             crtp_base;
     typedef crtp_vector_assign< self, Value, std::size_t >                           assign_base;
     typedef vec_expr<dense_vector<Value, Parameters> >                               expr_base;
@@ -59,27 +59,63 @@ public:
 
     typedef const_pointer     key_type;
     
-    dense_vector( ) : expr_base( *this ), super_memory( Parameters::dimension::value ) {}
+    void check_index( size_type i ) const
+    {
+	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), index_out_of_range());
+    }
+
+    template <typename Vector>
+    void check_size( const Vector& v ) const
+    {
+	MTL_DEBUG_THROW_IF( v.size() != size(), incompatible_size());
+    }
+
+
+    template <class E>
+    void check_consistent_shape( vec_expr<E> const& e ) const
+    {
+	MTL_DEBUG_THROW_IF((!boost::is_same<
+			        typename ashape::ashape<self>::type
+			      , typename ashape::ashape<E>::type
+			    >::value),
+			   incompatible_shape());
+    }
+
+
+
+    dense_vector( ) : expr_base( *this ), memory_base( Parameters::dimension::value ) {}
     
     dense_vector( size_type n )
-	: expr_base( *this ), super_memory( n ) 
+	: expr_base( *this ), memory_base( n ) 
     {}
     
     dense_vector( size_type n, value_type value )
-	: expr_base( *this ), super_memory( n ) 
+	: expr_base( *this ), memory_base( n ) 
     {
 	std::fill(begin(), end(), value);
+    }
+
+    dense_vector( const self& src )
+	: expr_base( *this ), memory_base( src.size() ) 
+    {
+	using std::copy;
+	copy(src.begin(), src.end(), begin());
+    }
+
+    // Might be generalized to arbitrary vectors later
+    template <class Value2, typename Parameters2>
+    explicit dense_vector( const dense_vector<Value2, Parameters2>& src )
+	: expr_base( *this ), memory_base( src.size() ) 
+    {
+	using std::copy;
+	check_consistent_shape(src);
+	copy(src.begin(), src.end(), begin());
     }
 
 
     size_type size() const { return this->used_memory() ; }
     
     size_type stride() const { return 1 ; }
-
-    void check_index( size_type i ) const
-    {
-	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), index_out_of_range());
-    }
 
     reference operator()( size_type i ) 
     {
@@ -111,6 +147,7 @@ public:
     pointer begin() { return this->elements() ; }
     pointer end() { return this->elements() + size() ; }
 
+#if 0
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
     // For confusion with other vector assignments
     // For alleged ambiguity with scalar assign we omit template in CRTP
@@ -119,34 +156,28 @@ public:
     {
 	return vec_vec_asgn_expr<self, self>( *this, e );
     }
+#endif
 
-    template <class E>
-    void check_consistent_shape( vec_expr<E> const& e ) const
+    self& operator=(self src)
     {
-	MTL_DEBUG_THROW_IF((!boost::is_same<
-			        typename ashape::ashape<self>::type
-			      , typename ashape::ashape<E>::type
-			    >::value),
-			   incompatible_shape());
+	// Self-copy would be an indication of an error
+	assert(this != &src);
+
+	check_size(src);
+	memory_base::move_assignment(src);
+	return *this;
     }
+
 
     using assign_base::operator=;
 
-#if 0
-    Doesn't work in expressions'
-    // Replace it later by expression (maybe)
-    self& operator=(value_type value)
-    {
-	std::fill(begin(), end(), value);
-	return *this;
-    }
-#endif 
+ 
  
     template <typename Value2> friend void fill(self&, const Value2&);
 
     friend void swap(self& vector1, self& vector2)
     {
-	static_cast<super_memory&>(vector1).swap(vector2);
+	swap(static_cast<memory_base&>(vector1), static_cast<memory_base&>(vector2));
     }
 
     void change_dim(size_type n)

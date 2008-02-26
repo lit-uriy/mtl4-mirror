@@ -344,7 +344,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
 	check_dim(src.num_rows(), src.num_cols());
 	memory_base::move_assignment(src);
-	//swap(*this, src);
 	return *this;
     }
 

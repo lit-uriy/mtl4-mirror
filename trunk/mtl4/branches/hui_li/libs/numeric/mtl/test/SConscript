@@ -51,6 +51,7 @@ sources = Split("""base_case_conversion.cpp
              print_matrix_product_test.cpp
              move_memory_block_test.cpp
              move_test.cpp
+             move_vector_test.cpp
 """)
 
 programs = []

@@ -244,9 +244,10 @@ struct contiguous_memory_block
     template <typename Other>
     void copy_construction(const Other& other)
     {
+	using std::copy;
 	// std::cout << "Copied in copy constructor.\n";	
 	alloc(other.used_memory());
-	std::copy(other.data, other.data + other.used_memory(), data);
+	copy(other.data, other.data + other.used_memory(), data);
     }
 
     void move_construction(self& other)
