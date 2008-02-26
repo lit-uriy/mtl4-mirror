@@ -260,6 +260,18 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
     }
 
+    // Construct new matrix from a different matrix type
+    template <typename MatrixSrc>
+    dense2D(const matrix::mat_expr<MatrixSrc>& src)
+	: super(mtl::non_fixed::dimensions(num_rows(static_cast<const MatrixSrc&>(src)), 
+					   num_cols(static_cast<const MatrixSrc&>(src)))),
+	  memory_base(num_rows(static_cast<const MatrixSrc&>(src)) * num_cols(static_cast<const MatrixSrc&>(src))), 
+	  expr_base(*this)
+    {
+	init();
+	matrix_copy(src, *this);
+    }
+
 #ifdef MTL_WITH_MOVE
     explicit dense2D(self& m, adobe::move_ctor) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
@@ -324,13 +336,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 #endif
 
-    // Either changed matrix is uninitialized (i.e. 0x0) or dimensions are equal
-    void check_dim(size_type num_rows, size_type num_cols) const
-    {
-	MTL_DEBUG_THROW_IF(this->num_rows() * this->num_cols() != 0
-			   && (this->num_rows() != num_rows || this->num_cols() != num_cols),
-			   incompatible_size());
-    }
 
     self& operator=(self src)
     {
