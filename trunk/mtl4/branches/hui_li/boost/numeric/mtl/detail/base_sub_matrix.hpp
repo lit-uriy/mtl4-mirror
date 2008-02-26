@@ -60,13 +60,21 @@ struct base_sub_matrix
 	constructor_helper(d);
     }
 
-    void swap(self& other)
+    friend void swap(self& x, self& y)
     {
-	std::swap(my_nnz, other.my_nnz);
-	std::swap(my_begin_row, other.my_begin_row);
-	std::swap(my_end_row, other.my_end_row);
-	std::swap(my_begin_col, other.my_begin_col);
-	std::swap(my_end_col, other.my_end_col);
+	std::swap(x.my_nnz, y.my_nnz);
+	std::swap(x.my_begin_row, y.my_begin_row);
+	std::swap(x.my_end_row, y.my_end_row);
+	std::swap(x.my_begin_col, y.my_begin_col);
+	std::swap(x.my_end_col, y.my_end_col);
+    }
+
+    // Either changed matrix is uninitialized (i.e. 0x0) or dimensions are equal
+    void check_dim(size_type num_rows, size_type num_cols) const
+    {
+	MTL_DEBUG_THROW_IF(this->num_rows() * this->num_cols() != 0
+			   && (this->num_rows() != num_rows || this->num_cols() != num_cols),
+			   incompatible_size());
     }
 
     void change_dim(mtl::non_fixed::dimensions d)

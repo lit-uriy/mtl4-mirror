@@ -75,18 +75,16 @@ void test(const Matrix&, const char* text)
     if (&C[0][0] == p) 
 	throw "Matrix must be copied not moved!";
 
-#if 0
     // Other matrix type, in this case the matrix MUST be copied
     morton_dense<double, recursion::morton_mask>   D(A);
 
     cout << "D(A);  // C and A have different types\n";
-    print(D, &A.data[0][0]);
+    print(D, &A[0][0]);
 
     if (D.data[0] != 5.0) 
 	throw "Wrong value in copy constructor, should be 5.0!";
-    if (&D.data[0] == &A.data[0]) 
+    if (&D.data[0] == &A[0][0]) 
 	throw "Matrix must be copied not moved!";
-#endif
 
     Matrix E= sub_matrix(A, 0, 1, 0, 1);
 
@@ -123,10 +121,10 @@ int test_main(int argc, char* argv[])
     morton_dense<double, recursion::morton_z_mask>       mzd(3, 3);
 
     test(dr, "Dense matrix");
-#if 0
     test(dc, "Column-major dense matrix");
     test(mzd, "Morton-order z-mask");
 
+#if 0
     compressed2D<double>                                 crs(3, 3);
     compressed2D<double, matrix::parameters<col_major> > ccs(3, 3);
 

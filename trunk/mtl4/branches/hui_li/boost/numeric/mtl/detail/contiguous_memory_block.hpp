@@ -420,6 +420,14 @@ struct contiguous_memory_block<Value, true, Size>
 	return *this;
     }
 
+    // For consistency with non-static blocks, to be used by derived classes
+protected:
+    void move_assignment(self& other)
+    {
+	std::copy(other.data, other.data+Size, data);
+    }
+
+public:
     template<typename Value2, bool OnStack2, unsigned Size2>
     self& operator=(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {

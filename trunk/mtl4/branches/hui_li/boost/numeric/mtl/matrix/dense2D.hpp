@@ -273,7 +273,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     explicit dense2D(self& matrix, dense2D_sub_ctor, 
 		     size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
 	: super(mtl::non_fixed::dimensions(matrix.num_rows(), matrix.num_cols())),
-	  memory_base(matrix.data, matrix.my_nnz, true), // View constructor
+	  memory_base(matrix.data, (end_r - begin_r) * (end_c - begin_c), true), // View constructor
 	  expr_base(*this)
     {
 	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
@@ -332,13 +332,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 			   incompatible_size());
     }
 
-    void change_dim(size_type num_rows, size_type num_cols)
-    {
-	super::change_dim(mtl::non_fixed::dimensions(num_rows, num_cols));
-	set_nnz(); set_ldim();
-	this->realloc(num_rows * num_cols);
-    }
-
     self& operator=(self src)
     {
 	// Self-copy would be an indication of an error
@@ -388,7 +381,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     friend void swap(self& matrix1, self& matrix2)
     {
 	swap(static_cast<memory_base&>(matrix1), static_cast<memory_base&>(matrix2));
-	static_cast<super&>(matrix1).swap(matrix2);
+	swap(static_cast<super&>(matrix1), static_cast<super&>(matrix2));
 	std::swap(matrix1.ldim, matrix2.ldim);
     }
 

@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { namespace detail {
   
@@ -40,11 +41,20 @@ struct base_matrix
     // setting dimension
     explicit base_matrix(mtl::non_fixed::dimensions d) : dim(d), my_nnz(0) {}
 
-    void swap(self& other)
+
+    friend void swap(self& x, self& y)
     {
 	using std::swap;
-	swap(my_nnz, other.my_nnz);
-	swap(dim, other.dim);
+	swap(x.my_nnz, y.my_nnz);
+	swap(x.dim, y.dim);
+    }
+
+    // Either changed matrix is uninitialized (i.e. 0x0) or dimensions are equal
+    void check_dim(size_type num_rows, size_type num_cols) const
+    {
+	MTL_DEBUG_THROW_IF(this->num_rows() * this->num_cols() != 0
+			   && (this->num_rows() != num_rows || this->num_cols() != num_cols),
+			   incompatible_size());
     }
 
     // Change dimension

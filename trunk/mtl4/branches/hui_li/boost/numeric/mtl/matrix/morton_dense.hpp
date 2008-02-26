@@ -24,11 +24,15 @@
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
+#include <boost/numeric/mtl/operation/clone.hpp>
 
 
 // #include <boost/numeric/mtl/ahnentafel_detail/index.hpp>
 
 namespace mtl {
+
+// Helper type
+struct morton_dense_sub_ctor {};
 
 template <unsigned long BitMask>
 struct morton_dense_key
@@ -296,7 +300,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 		     public matrix::mat_expr< morton_dense<Elt, BitMask, Parameters> >
 {
     typedef detail::base_sub_matrix<Elt, Parameters>                   super;
-    typedef detail::contiguous_memory_block<Elt, false>                super_memory;
+    typedef detail::contiguous_memory_block<Elt, false>                memory_base;
     typedef morton_dense                                               self;
     typedef matrix::mat_expr< morton_dense<Elt, BitMask, Parameters> > expr_base;
     typedef detail::crtp_matrix_assign< self, Elt, std::size_t >       assign_base;
@@ -389,35 +393,35 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
   public:
     // if compile time matrix size allocate memory
-    morton_dense() : super_memory(memory_need(dim_type().num_rows(), dim_type().num_cols())), expr_base(*this)  
+    morton_dense() : memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols())), expr_base(*this)  
     {
 	init(dim_type().num_rows(), dim_type().num_cols());
     }
 
     // only sets dimensions, only for run-time dimensions
     explicit morton_dense(mtl::non_fixed::dimensions d) 
-	: super_memory(memory_need(d.num_rows(), d.num_cols())), expr_base(*this)  
+	: memory_base(memory_need(d.num_rows(), d.num_cols())), expr_base(*this)  
     {
 	init(d.num_rows(), d.num_cols());
     }
 
     // Same with separated row and column number
     morton_dense(size_type num_rows, size_type num_cols) 
-	: super_memory(memory_need(num_rows, num_cols)), expr_base(*this) 
+	: memory_base(memory_need(num_rows, num_cols)), expr_base(*this) 
     {
 	init(num_rows, num_cols);
     }
 
     // sets dimensions and pointer to external data
     explicit morton_dense(mtl::non_fixed::dimensions d, value_type* a) 
-      : super_memory(a, memory_need(d.num_rows(), d.num_cols())), expr_base(*this) 
+      : memory_base(a, memory_need(d.num_rows(), d.num_cols())), expr_base(*this) 
     { 
 	set_ranges(d.num_rows(), d.num_cols());
     }
 
     // sets dimensions and pointer to external data
     explicit morton_dense(size_type num_rows, size_type num_cols, value_type* a) 
-      : super_memory(a, memory_need(num_rows, num_cols)), expr_base(*this) 
+      : memory_base(a, memory_need(num_rows, num_cols)), expr_base(*this) 
     { 
 	set_ranges(num_rows, num_cols);
     }
@@ -425,20 +429,67 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     // same constructor for compile time matrix size
     // sets dimensions and pointer to external data
     explicit morton_dense(value_type* a) 
-	: super_memory(a, memory_need(dim_type().num_rows(), dim_type().num_cols())), expr_base(*this) 
+	: memory_base(a, memory_need(dim_type().num_rows(), dim_type().num_cols())), expr_base(*this) 
     { 
 	BOOST_ASSERT((dim_type::is_static));
 	set_ranges(dim_type().num_rows(), dim_type().num_cols());
     }
 
-    // Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
+    // Old remark: Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
     morton_dense(const self& m) 
-	: super_memory(&(const_cast<self&>(m)[0][0]), size(m)), expr_base(*this)
+	: memory_base(m), 
+	  expr_base(*this)
     {
 	set_ranges(m.num_rows(), m.num_cols());
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
 
+    morton_dense(const self& m, clone_ctor) 
+	: memory_base(m, clone_ctor()), 
+	  expr_base(*this)
+    {
+	set_ranges(m.num_rows(), m.num_cols());
+	// std::cout << "In copy constructor:\n"; print_matrix(*this);
+    }
+
+
+    template <typename MatrixSrc>
+    morton_dense(const matrix::mat_expr<MatrixSrc>& src)
+	: memory_base(memory_need(num_rows(static_cast<const MatrixSrc&>(src)), num_cols(static_cast<const MatrixSrc&>(src)))), 
+	  expr_base(*this)
+    {
+	const MatrixSrc& m= static_cast<const MatrixSrc&>(src);
+	set_ranges(m.num_rows(), m.num_cols());
+	matrix_copy(m, *this);
+    }
+
+    // Construct a sub-matrix as a view
+    morton_dense(self& matrix, morton_dense_sub_ctor,
+		 size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+	: memory_base(matrix.data, memory_need(end_r - begin_r, end_c - begin_c), true), // View constructor
+	  expr_base(*this)
+    {
+	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
+
+	if (begin_r >= end_r || begin_c >= end_c) {
+	    set_ranges(0, 0);
+	    return;
+	}
+
+	// Check whether sub-matrix is contigous memory block
+	// by comparing the address of the last and the first element in the entire and the sub-matrix
+	MTL_DEBUG_THROW_IF(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
+			   != &matrix[end_r-begin_r-1][end_c-begin_c-1] - &matrix[0][0],
+			   range_error("This sub-matrix cannot be used because it is split in memory"));
+	// Check with David if this is a sufficient condition (it is a necessary at least)
+
+	dilated_row_t  dilated_row(begin_r);
+	dilated_col_t  dilated_col(begin_c);
+
+	// Set new start address within masked matrix
+	this->data += dilated_row.dilated_value() + dilated_col.dilated_value();
+	set_ranges(end_r - begin_r, end_c - begin_c);
+    }
 
 #ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
     // Construction from sum of matrices
@@ -479,6 +530,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	this->realloc(memory_need(num_rows, num_cols));
     }
 
+#if 0  // Obsolete, to be deleted
+
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
 	// Removing the operator ends in run-time error
     self& operator=(const self& src)
@@ -490,6 +543,18 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	std::copy(src.elements(), src.elements()+src.used_memory(), this->elements());
 	return *this;
     }
+#endif
+
+    self& operator=(self src)
+    {
+	// Self-copy would be an indication of an error
+	assert(this != &src);
+
+	check_dim(src.num_rows(), src.num_cols());
+	memory_base::move_assignment(src);
+	return *this;
+    }
+
 
     using assign_base::operator=;
 
@@ -530,8 +595,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
     friend void swap(self& matrix1, self& matrix2)
     {
-	static_cast<super_memory&>(matrix1).swap(matrix2);
-	static_cast<super&>(matrix1).swap(matrix2);
+	swap(static_cast<memory_base&>(matrix1), static_cast<memory_base&>(matrix2));
+	swap(static_cast<super&>(matrix1), static_cast<super&>(matrix2));
     }
 
     template <typename> friend struct sub_matrix_t;    
@@ -833,6 +898,9 @@ struct sub_matrix_t<morton_dense<Value, BitMask, Parameters> >
     
     sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
     {
+	return sub_matrix_type(matrix, morton_dense_sub_ctor(), begin_r, end_r, begin_c, end_c);
+
+#if 0
 	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
 
 	// Treat empty sub-matrices first (don't hold the memory contiguousness check (but don't need to))
@@ -863,7 +931,7 @@ struct sub_matrix_t<morton_dense<Value, BitMask, Parameters> >
 	tmp.extern_memory= true;
 
 	return tmp;
-
+#endif
     }
 
     const_sub_matrix_type
@@ -874,6 +942,11 @@ struct sub_matrix_t<morton_dense<Value, BitMask, Parameters> >
 	return tmp;
     }	
 };
+
+
+// Enable cloning of dense matrices
+template <typename Value, unsigned long BitMask, typename Parameters>
+struct is_clonable< morton_dense<Value, BitMask, Parameters> > : boost::mpl::true_ {};
 
 } // namespace mtl
 

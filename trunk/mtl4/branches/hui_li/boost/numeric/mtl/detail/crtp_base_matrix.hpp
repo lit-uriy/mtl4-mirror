@@ -45,9 +45,17 @@ struct crtp_matrix_assign
 	return static_cast<Matrix&>(*this);
     }
 
+
     /// Assign matrix expressions by copying except for some special expressions
     template <typename MatrixSrc>
     Matrix& operator=(const matrix::mat_expr<MatrixSrc>& src)
+#if 0 // Do I need this or is mat_expr good enough?
+    template <typename MatrixSrc>
+    typename boost::enable_if<typename boost::is_same<typename ashape::ashape<MatrixSrc>::type,
+						      ashape::mat>,
+			      Matrix&>::type
+    operator=(const matrix::mat_expr<MatrixSrc>& src)
+#endif
     {
 	// std::cout << "In assignment\n";
 #ifdef  _MSC_VER
