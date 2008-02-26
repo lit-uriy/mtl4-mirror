@@ -10,10 +10,16 @@
 #ifndef MTL_CLONE_INCLUDE
 #define MTL_CLONE_INCLUDE
 
+#include <boost/utility/enable_if.hpp>
+#include <boost/mpl/bool.hpp>
+
 namespace mtl {
 
-// Helper type
 struct clone_ctor {};
+
+template<typename T>
+struct is_clonable : boost::mpl::false_
+{ };
 
 /// Move-semantics-related anti-dot: always copy in constructor.
 /** Some collections have referring semantics in copy constructors, e.g. sub-matrices.
@@ -29,12 +35,26 @@ struct clone_ctor {};
     \endcode
     B now contains the values of A's sub-matrix but is an independent matrix.
     Modifications to either A or B have no effect to each other.
+    Requires that type T is declared clonable in terms of 
+    \code
+        is_clonable<T> : boost::mpl::true_ {}; 
+    \endcode
 **/
 template <typename T>
-inline T clone(const T& x) 
+typename boost::enable_if<is_clonable<T>, T>::type
+clone(const T& x) 
 { 
-    // Should add type traits like in adobe::move
+    // std::cout << "Cloning clone function.\n";
     return T(x, clone_ctor()); 
+}
+
+
+template <typename T>
+typename boost::disable_if<is_clonable<T>, T>::type
+clone(const T& x) 
+{ 
+    // std::cout << "Not cloning clone function.\n";
+    return x; 
 }
 
 

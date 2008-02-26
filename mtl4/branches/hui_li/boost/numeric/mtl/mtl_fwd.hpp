@@ -216,6 +216,13 @@ namespace mtl {
     /// Free function defined for all matrix and vector types
     template <typename Collection> void swap(Collection& c1, Collection& c2);
 
+    /// User registration that class has a clone constructor, otherwise use regular copy constructor.
+    template<typename T> struct is_clonable;
+
+    /// Helper type to define constructors that always copy
+    struct clone_ctor;
+
+
 } // namespace mtl
 
 #endif // MTL_MTL_FWD_INCLUDE
