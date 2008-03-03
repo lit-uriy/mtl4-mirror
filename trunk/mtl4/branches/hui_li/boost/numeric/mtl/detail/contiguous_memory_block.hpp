@@ -145,13 +145,17 @@ struct size_helper<0>
 	typedef alignment_helper self;
 
 	Value* alligned_alloc(std::size_t size)
-	{
-	    return new Value[size];
+	{	
+		Value* tmp= new Value[size];
+		//std::cout << "Allocated " << tmp << '\n';
+		return tmp;
+	    //return new Value[size];
 	}
 
 	void aligned_delete(bool is_own, Value*& data)
 	{
-	    if (is_own && data) delete[] data;
+		if (is_own && data) //std::cout << "Delete " << data << '\n', 
+			delete[] data;
 	}
 
 	friend void swap(self& x, self& y) {}
@@ -245,6 +249,7 @@ struct contiguous_memory_block
 	using std::copy;
 	// std::cout << "Copied in copy constructor.\n";	
 	alloc(other.used_memory());
+	// std::cout << "My address: " << data << ", other address: " << other.data << '\n';
 	copy(other.data, other.data + other.used_memory(), data);
     }
 
@@ -284,6 +289,7 @@ struct contiguous_memory_block
     {
 	// std::cout << "Constructor with size.\n";
 	alloc(size);
+	// std::cout << "New block at " << data << '\n';
     }
 
 #ifdef MTL_WITH_MOVE
@@ -320,7 +326,7 @@ struct contiguous_memory_block
     template<typename Value2, bool OnStack2, unsigned Size2>
     explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {
-	// std::cout << "Copy constructor (different type).\n";
+	std::cout << "Copy constructor (different type).\n";
 	copy_construction(other);
     }
 
@@ -329,6 +335,7 @@ struct contiguous_memory_block
     self& operator=(self other)
     {
 	move_assignment(other);
+	return *this;
     }
 
     // Same behavior as consuming assignment, to be used by derived classes

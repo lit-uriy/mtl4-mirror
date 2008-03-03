@@ -117,8 +117,8 @@ void dynamic_test(dblock& block, e_t e, const char* name)
 {
     cout << '\n' << name;
 
-    dblock A= block;
     cout << "dblock A(block)\n";
+    dblock A(block);
     print(A, &block.data[0]);
 
     if (e == view_e ^ &block.data[0] == &A.data[0])
@@ -153,6 +153,8 @@ int test_main(int argc, char* argv[])
     test<sblock, dblock>();
 
     dblock    own(3), external(&own.data[0], 3), view(&own.data[0], 3, true);
+	// Set a value to avoid that the allocation is optimized away
+	*own.data= 7.0; 
 
     dynamic_test(own, own_e, "Own data\n");
     dynamic_test(external, external_e, "External data\n");

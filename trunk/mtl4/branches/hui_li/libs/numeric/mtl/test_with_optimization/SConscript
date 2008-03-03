@@ -1,0 +1,17 @@
+Import('opt_env check')
+
+sources = Split("""             
+             move_memory_block_test.cpp
+             move_test.cpp
+             move_vector_test.cpp
+""")
+
+programs = []
+for p in sources:
+    programs.append(opt_env.Program(p))
+
+if int(check):
+    for p in programs:
+        opt_env.AddPostAction(p, p[0].abspath)
+
+Default(programs)
