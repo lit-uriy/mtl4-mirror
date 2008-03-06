@@ -1049,7 +1049,91 @@ or proceed to \ref iteration "iteration".
 
 /*! \page iteration Iteration
 
-This section will be written soon.
+
+Iterative traversal of collections is implemented in MTL4 in two ways:
+- By iterators and
+- By cursors and property maps
+.
+The latter is more general and allows especially for sparse structures 
+a cleaner abstraction.
+Initially MTL4 was implemented entirely with this paradigm but it
+has shown that algorithms running exclusively on dense structures
+are easier to implement in terms of iterators.
+
+All cursors and iterators are handled by:
+- The function begin();
+- The function end(); and
+- The class range_generator.
+
+
+They are all templated by a tag that determines the form of traversal.
+The following tags are currently available for cursors:
+- tag::all: iterate over all elements of a collection (or sub-collection);
+- tag::nz: iterate over all non-zero elements;
+- tag::row: iterate over all rows;
+- tag::col: iterate over all columns;
+- tag::major: iterate over the major dimension (according to orientation);
+- tag::minor: iterate over the minor dimension (according to orientation).
+.
+For iterators:
+- tag::iter::all: iterate over all elements of a collection (or sub-collection);
+- tag::iter::nz: iterate over all non-zero elements.
+.
+And finally for constant iterators:
+- tag::const_iter::all: iterate over all elements of a collection (or sub-collection);
+- tag::const_iter::nz: iterate over all non-zero elements.
+.
+
+Let's consider cursors in more detail.
+
+
+\section cursor Cursors 
+
+The approach was proposed by David Abrahams in order to separate the
+form of traversal from the manner of access.
+A cursor is a tool that can be used to visit different objects of a collection.
+In an array it can be compared with a position rather than a pointer
+because it is not fixed how one accesses the values.
+The traversal is essential the same as with iterators, e.g.:
+\code
+    for (Cursor cursor(begin(x)), cend(end(x)); cursor != cend; ++cursor)
+       do_something(cursor);
+\endcode
+
+In order to have more flexibility we templatized the begin and end functions:
+\code
+    for (Cursor cursor(begin<tag::all>(x)), cend(end<tag::all>(x)); cursor != cend; ++cursor)
+       do_something(cursor);
+\endcode
+This cursor for instance goes over all elements of a matrix or vector, including
+structural zeros.
+
+
+\section property_maps Property Maps
+
+The concept of property maps has not only the advantage to allow for different
+forms of accessibility of values but also to provide different views or details
+of this value.
+Matrices have four property maps:
+- row;
+- col; 
+- value; and
+- const_value.
+.
+They are all accessed by dereferenced cursors, e.g.
+\code
+    for (Cursor cursor(begin(x)), cend(end(x)); cursor != cend; ++cursor)
+	cout << "matrix[" << row(*cursor) << ", " << col(*cursor) << "] = " 
+	     << const_value(*cursor) << '\n';
+\endcode
+Three of the property maps are constant (guess which).
+Obviously only value can be changed. The syntax is the following:
+\code
+    value(*cursor, 7);
+\endcode
+
+
+
 
 Return to \ref matrix_vector_expr "matrix-vector expressions"
 or proceed to \ref rec_intro "recursion".
