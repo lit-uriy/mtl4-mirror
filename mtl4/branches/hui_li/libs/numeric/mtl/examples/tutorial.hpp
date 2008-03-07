@@ -1099,6 +1099,7 @@ The traversal is essential the same as with iterators, e.g.:
     for (Cursor cursor(begin(x)), cend(end(x)); cursor != cend; ++cursor)
        do_something(cursor);
 \endcode
+We will come back to the type Cursor later (please be patient).
 
 In order to have more flexibility we templatized the begin and end functions:
 \code
@@ -1107,6 +1108,29 @@ In order to have more flexibility we templatized the begin and end functions:
 \endcode
 This cursor for instance goes over all elements of a matrix or vector, including
 structural zeros.
+
+\section nested_cursor Nested Cursors 
+
+Several cursors can be used to create other cursors.
+This is necessary to traverse multi-dimensional collections like matrices.
+In most cases you will use nested cursors via the tags tag::row and tag::col.
+The returned cursor can be a certain collection (e.g. a vector)
+or just a place-holder that only contains some index and reference
+to a collection but cannot be used directly in operations.
+If the type and orientation permits, one can access the elements with
+tag::all or tag::nz, e.g.:
+\code
+    for (Cursor cursor(begin<tag::row>(x)), cend(end<tag::row>(x)); cursor != cend; ++cursor)
+       for (ICursor icursor(begin<tag::nz>(cursor)), icend(end<tag::nz>(cursor)); icursor != icend; ++icursor)
+           do_something(icursor);
+\endcode
+Often it is more efficient to adapt an algorithm to the orientation of a matrix.
+Then it is convenient to use tag::major instead of dispatching for row-major and column major matrices:
+\code
+    for (Cursor cursor(begin<tag::major>(x)), cend(end<tag::major>(x)); cursor != cend; ++cursor)
+       for (ICursor icursor(begin<tag::nz>(cursor)), icend(end<tag::nz>(cursor)); icursor != icend; ++icursor)
+           do_something(icursor);
+\endcode
 
 
 \section property_maps Property Maps
@@ -1122,7 +1146,7 @@ Matrices have four property maps:
 .
 They are all accessed by dereferenced cursors, e.g.
 \code
-    for (Cursor cursor(begin(x)), cend(end(x)); cursor != cend; ++cursor)
+    for (Cursor cursor(begin<tag::nz>(x)), cend(end<tag::nz>(x)); cursor != cend; ++cursor)
 	cout << "matrix[" << row(*cursor) << ", " << col(*cursor) << "] = " 
 	     << const_value(*cursor) << '\n';
 \endcode
@@ -1131,6 +1155,100 @@ Obviously only value can be changed. The syntax is the following:
 \code
     value(*cursor, 7);
 \endcode
+
+\section range_generator Range Generator
+
+The type traits traits::range_generator<Tag, Collection>
+is used to determine the type of cursor:
+\code
+    typedef typename traits::range_generator<tag::row, Matrix>::type c_type;
+    typedef typename traits::range_generator<tag::row, c_type>::type  ic_type;
+
+    for (c_type cursor(begin<tag::row>(x)), cend(end<tag::row>(x)); cursor != cend; ++cursor)
+       for (ic_type icursor(begin<tag::nz>(cursor)), icend(end<tag::nz>(cursor)); icursor != icend; ++icursor)
+           do_something(icursor);
+\endcode
+As can be seen in the examples, cursors that represents sub-collections (e.g. rows) can
+be used as collection type.
+
+\section iterators Iterators
+
+In some contexts, especially with dense data only,
+iterators are simpler to use.
+With the property map syntax, one cannot apply operators like +=
+or a modifying function.
+Therefore we provide iterators for dense matrices and vectors.
+For sparse matrices there was no use case so far because iterators
+do not reveal which matrix element they are pointing at.
+
+The usage of iterators is very similar to those of cursors:
+\code
+    for (Iter iter(begin<tag::const_iter::nz>(x)), iend(end<tag::const_iter::nz>(x)); 
+         iter != iend; ++iter)
+	cout << "matrix value = " << *iter << '\n';
+\endcode
+In contrast to the previous examples we can only output the value without the indices.
+The type of Iter can be determined with range_generator in the same way.
+
+\section nested_iterators Nested Iterators 
+
+Nesting of iterators is also analog to cursors.
+However, iterators only exist to access elements not sub-collections.
+The nesting is therefore realized by mixing cursors and iterators.
+\code
+    for (Cursor cursor(begin<tag::major>(x)), cend(end<tag::major>(x)); cursor != cend; ++cursor)
+        for (Iter iter(begin<tag::const_iter::nz>(cursor)), iend(end<tag::const_iter::nz>(cursor)); 
+             iter != iend; ++iter)
+	    cout << "matrix value = " << *iter << '\n';
+\endcode
+In the example we iterate over the rows by a cursor and then iterate over the elements with
+an iterator.
+
+
+\section range_complexity Advanced topic: Choosing traversal by complexity
+
+Range generators in MTL4 have a notion of complexity.
+That is for a given collection and a given form of traversal it can
+be said at compile time which complexity this traversal has.
+
+Dense matrices are traversed with linear or cached_linear complexity.
+The latter is used for contiguous memory access over strided ones,
+which is also linear but considerably slower.
+This distinction is mathematically questionable but useful
+in practical contexts.
+
+Sparse matrices have linear complexity when traversed along the orientation.
+Traversing compressed matrices perpendicular to the orientation 
+(e.g. a CRS matrix column-wise)
+has infinite complexity because it is not implemented.
+Moreover, the default (non-spezialized) range_generator has infinite
+complexity so that it is per se defined for arbitrary collections and tags.
+Whether the range generator is actually really implemented can be tested
+by comparing the complexity with infinite (by using MPL functions).
+
+The following example shows a simpler way to find out the best traversal:
+\include minimize_complexity.cpp
+
+Please not that the example uses compressed sparse matrices and not all
+forms of traversion are supported.
+Obviously a linear complexity is lower than an infinite and the 
+range generator without implemenation is never used.
+As the free functions begin() and end() are internally always implemented
+by member functions of range_generator (free template functions cannot be 
+spezialized partially) we used directly the member functions in the example.
+
+
+The range generator can also be minimized recursively between three and
+more alternatives:
+\code
+    typedef typename min<range_generator<tag::row, Matrix>, 
+	                 typename min<range_generator<tag::col, Matrix>,
+	                              range_generator<tag::major, Matrix> >::type 
+                        >::type range_type;
+\endcode
+
+In many cases there is no need for explicitly minimizing the complexity because
+tag::major usually will yield the same results (but this is not so cool).
 
 
 
