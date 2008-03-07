@@ -23,45 +23,55 @@
 // Complexities in a order, which of course will not be changed
 // The underlying MPL definitions might be modified to add finer grained distinctions
 
-// Summation and multiplication of complexities is planned
-
-namespace mtl { namespace complexity_classes {
 
 
-// Special type for traversals to distinguish between strided or random memory access with 'constant' 
-// (but slow) memory access and consecutive memory access with a good change that only one element
-// per cache line must be load from memory
+namespace mtl { 
+/// Namespace to define complexity classes
+namespace complexity_classes {
+
+/// Constant complexity where the value is expected to be in cache with high probability.
+/** Special type for traversals to distinguish between strided or random memory access with 'constant' 
+    (but slow) memory access and consecutive memory access with a good change that only one element
+    per cache line must be load from memory
+**/
 struct cached : boost::mpl::int_<1> {};
 
+/// Constant complexity 
 struct constant : boost::mpl::int_<2> {};
 
+/// Logarithmic complexity 
 struct log_n : boost::mpl::int_<4> {};
 
-// Polynomial logarithm, i.e. log^k n
+/// Polynomial logarithm, i.e. log^k n
 struct polylog_n : boost::mpl::int_<5> {};
 
-// Product of linear and cached
+/// Product of linear and cached
 struct linear_cached : boost::mpl::int_<21> {};
 
+/// Linear
 struct linear : boost::mpl::int_<22> {};
 
-// Logarithm times linear, i.e. n * log n
+/// Logarithm times linear, i.e. n * log n
 struct n_log_n : boost::mpl::int_<24> {};
 
-// Polynomial logarithm times linear, i.e. n * log^k n
+/// Polynomial logarithm times linear, i.e. n * log^k n
 struct n_polylog_n : boost::mpl::int_<25> {};
 
 struct quadratic : boost::mpl::int_<41> {};
 
-// All complexities larger than quadratic (< infinite) including n^2 log^k n
+/// All complexities larger than quadratic (< infinite) including n^2 log^k n
 struct polynomial : boost::mpl::int_<200> {};
 
-// Infinite time complexity, which usually means that the operation or traversal is not available
+/// Infinite time complexity, which usually means that the operation or traversal is not available
 struct infinite : boost::mpl::int_<1000> {};
 
-// Adding complexities of two operations is the maximal complexity of both operations
+/// Adding complexities of two operations is the maximal complexity of both operations
 template <typename X, typename Y> 
 struct plus : boost::mpl::if_< boost::mpl::less<X, Y>, Y, X> {};
+
+/// Minimal complexity class
+template <typename X, typename Y> 
+struct min : boost::mpl::if_< boost::mpl::less<X, Y>, X, Y> {};
 
 
 namespace detail
@@ -132,6 +142,7 @@ namespace detail
 
 } // namespace detail
 
+/// Product of complexities
 // Multiplication needs to be defined explicitly
 // At least is symmetric, so we only consider X <= Y
 template <typename X, typename Y> 

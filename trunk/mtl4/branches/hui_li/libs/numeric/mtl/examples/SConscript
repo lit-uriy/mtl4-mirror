@@ -26,6 +26,7 @@ sources = Split("""vector1.cpp
                    recursator.cpp
                    recursator2.cpp
                    simulated_annealing.cpp
+                   minimize_complexity.cpp
 """)
 
 if opt_env['CC'] == 'cl':
