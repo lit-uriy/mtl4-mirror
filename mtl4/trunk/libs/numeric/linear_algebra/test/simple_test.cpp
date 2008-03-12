@@ -58,14 +58,7 @@ concept Float<typename T>
   T operator/(T, T);
   T& operator/=(T&, T);
 
-  // TBD: Some day, these will come from LessThanComparable,
-  // EqualityComparable, etc.
-  bool operator>(T, T);
-  bool operator<=(T, T);
-  bool operator>=(T, T);
-  bool operator!=(T, T);
-
-  //requires std::Assignable<T>, std::SameType<std::Assignable<T>::result_type, T&>;
+  // requires std::Assignable<T>, std::SameType<std::Assignable<T>::result_type, T&>;
 }
 
 concept_map Float<float> {}
@@ -87,9 +80,6 @@ concept Complex<typename T>
   T& operator*=(T&, T);
   T operator/(T, T);
   T& operator/=(T&, T);
-
-  // TBD: Some day, these will come from EqualityComparable
-  bool operator!=(T, T);
 
   //requires std::Assignable<T>, std::SameType<std::Assignable<T>::result_type, T&>;
 }
