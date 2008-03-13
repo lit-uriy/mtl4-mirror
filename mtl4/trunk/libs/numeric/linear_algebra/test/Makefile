@@ -26,7 +26,7 @@ XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_al
 CXX =  conceptg++
 #CXX =  g++
 
-TARGETS =	positive_real	positive_real_explicit positive_real_power \
+TARGETS =	simple_test2 simple_test positive_real	positive_real_explicit positive_real_power \
 		positive_real_power_explicit string_example \
 		float_example int_example mod_n_example mod_n_power accumulation_example \
 		concept_map_test      int_example  accumulation_measuring

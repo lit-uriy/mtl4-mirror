@@ -11,14 +11,6 @@
 
 namespace algebra {
 
-    concept Commutative<typename Operation, typename Element>
-    {
-	axiom Commutativity(Operation op, Element x, Element y)
-	{
-	    op(x, y) == op(y, x); 
-	}   
-    };
-
     concept Associative<typename Operation, typename Element>
     {
         axiom Associativity(Operation op, Element x, Element y, Element z)
@@ -32,67 +24,26 @@ namespace algebra {
       : Associative<Operation, Element>
     {};
 
+    concept Monoid<typename Operation, typename Element>
+      : SemiGroup<Operation, Element> 
+    {
+    };
 
+    auto concept Ring<typename AddOp, typename MultOp, typename Element>
+      : Monoid<AddOp, Element>,
+        SemiGroup<MultOp, Element>
+    {};
+
+    auto concept RingWithIdentity<typename AddOp, typename MultOp, typename Element>
+      : Ring<AddOp, MultOp, Element>,
+        Monoid<MultOp, Element>
+    {};
 
 }
 
-namespace math {
-
-// ==================================
-// Classification of Arithmetic Types
-// ==================================
-
-// In addtion to std::Integral
-concept Float<typename T> 
-  : std::DefaultConstructible<T>, std::CopyConstructible<T>,
-    std::LessThanComparable<T>, std::EqualityComparable<T>
-{
-  T operator+(T);
-  T operator+(T, T);
-  T& operator+=(T&, T);
-  T operator-(T, T);
-  T operator-(T);
-  T& operator-=(T&, T);
-  T operator*(T, T);
-  T& operator*=(T&, T);
-  T operator/(T, T);
-  T& operator/=(T&, T);
-
-  // requires std::Assignable<T>, std::SameType<std::Assignable<T>::result_type, T&>;
-}
-
-concept_map Float<float> {}
-concept_map Float<double> {}
-concept_map Float<long double> {}
-
-// The difference to Float is the lack of LessThanComparable
-concept Complex<typename T> 
-  : std::DefaultConstructible<T>, std::CopyConstructible<T>,
-    std::EqualityComparable<T>
-{
-  T operator+(T);
-  T operator+(T, T);
-  T& operator+=(T&, T);
-  T operator-(T, T);
-  T operator-(T);
-  T& operator-=(T&, T);
-  T operator*(T, T);
-  T& operator*=(T&, T);
-  T operator/(T, T);
-  T& operator/=(T&, T);
-
-  //requires std::Assignable<T>, std::SameType<std::Assignable<T>::result_type, T&>;
-}
-
-template <typename T>
-  requires Float<T>
-concept_map Complex<std::complex<T> > {}
-
-} // namespace math
 
 
 int main(int, char* [])  
 {
-
     return 0;
 }
