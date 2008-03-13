@@ -26,12 +26,6 @@ concept Float<typename T>
   T operator/(T, T);
   T& operator/=(T&, T);
 
-  // TBD: Some day, these will come from LessThanComparable,
-  // EqualityComparable, etc.
-  bool operator>(T, T);
-  bool operator<=(T, T);
-  bool operator>=(T, T);
-  bool operator!=(T, T);
 
   //requires std::Assignable<T>, std::SameType<std::Assignable<T>::result_type, T&>;
 }
