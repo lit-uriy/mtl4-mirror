@@ -19,10 +19,9 @@ namespace mtl { namespace vector {
 
 // Model of VectorExpression
 template <typename E1, typename E2, typename SFunctor>
-class vec_vec_op_expr 
+struct vec_vec_op_expr 
    : public vec_expr< vec_vec_op_expr<E1, E2, SFunctor> >
 {
-public:
     typedef vec_expr< vec_vec_op_expr<E1, E2, SFunctor> > expr_base;
     typedef vec_vec_op_expr                     self;
 
@@ -42,7 +41,7 @@ public:
     
 public:
     vec_vec_op_expr( first_argument_type const& v1, second_argument_type const& v2 )
-	: expr_base( *this ), first( v1 ), second( v2 )
+	: first( v1 ), second( v2 )
     {
 	first.delay_assign();
 	second.delay_assign();

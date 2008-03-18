@@ -19,10 +19,9 @@ namespace mtl { namespace vector {
 // Generic assign operation expression template for vectors
 // Model of VectorExpression
 template <class E1, class E2, typename SFunctor>
-class vec_scal_aop_expr 
+struct vec_scal_aop_expr 
     : public vec_expr< vec_scal_aop_expr<E1, E2, SFunctor> >
 {
-public:
     typedef vec_expr< vec_scal_aop_expr<E1, E2, SFunctor> >  expr_base;
     typedef typename E1::value_type              value_type;
     
@@ -36,7 +35,7 @@ public:
     typedef E2 second_argument_type ;
     
     vec_scal_aop_expr( first_argument_type& v1, second_argument_type const& v2 )
-	: expr_base( *this ), first( v1 ), second( v2 ), delayed_assign( false )
+	  : first( v1 ), second( v2 ), delayed_assign( false )
     {}
 
     ~vec_scal_aop_expr()

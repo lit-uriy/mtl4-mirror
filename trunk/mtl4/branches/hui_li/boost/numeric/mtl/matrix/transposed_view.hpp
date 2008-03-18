@@ -35,14 +35,13 @@ template<> struct transposed_orientation<tag::col_major>
 
 
 template <class Matrix> 
-class transposed_view 
+struct transposed_view 
   : public detail::crtp_base_matrix< transposed_view<Matrix>, 
 				     typename Matrix::value_type, typename Matrix::size_type >,
     public matrix::mat_expr< transposed_view<Matrix> >
 {
     typedef transposed_view               self;
     typedef matrix::mat_expr< self >      expr_base;
-public:	
     typedef Matrix                        other;
     typedef typename transposed_orientation<typename Matrix::orientation>::type orientation;
     typedef typename Matrix::index_type                index_type;

@@ -29,6 +29,11 @@
 
 namespace mtl { namespace detail {
 
+template <typename Matrix, typename Source>
+struct assign {};
+
+
+
 /// Base class to provide matrix assignment operators generically 
 template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_matrix_assign
@@ -47,13 +52,15 @@ struct crtp_matrix_assign
 
 
     /// Assign matrix expressions by copying except for some special expressions
-    template <typename MatrixSrc>
+#if 0
+	template <typename MatrixSrc>
     Matrix& operator=(const matrix::mat_expr<MatrixSrc>& src)
-#if 0 // Do I need this or is mat_expr good enough?
+#endif
+#if 1 // Do I need this or is mat_expr good enough?
     template <typename MatrixSrc>
     typename boost::enable_if<typename boost::is_same<typename ashape::ashape<MatrixSrc>::type,
-						      ashape::mat>,
-			      Matrix&>::type
+							                          typename ashape::ashape<Matrix>::type>,
+			                  Matrix&>::type
     operator=(const matrix::mat_expr<MatrixSrc>& src)
 #endif
     {
