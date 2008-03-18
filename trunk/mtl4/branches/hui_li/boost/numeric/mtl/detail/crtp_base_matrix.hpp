@@ -30,8 +30,44 @@
 namespace mtl { namespace detail {
 
 template <typename Matrix, typename Source>
-struct assign {};
+struct crtp_assign 
+{
+    /// Assign scalar to a matrix by setting the matrix to a multiple of unity matrix
+    /** Uses internally \sa diagonal_setup, for details see there. **/
+    typename boost::enable_if<typename boost::is_same<typename ashape::ashape<Source>::type,
+						                              ashape::scal>,
+			                  Matrix&>::type
+    operator()(const Source& source, Matrix& matrix)
+    {
+	    matrix::diagonal_setup(matrix, value);
+	    return matrix;
+    }
 
+    /// Assign matrix expressions by copying except for some special expressions
+    typename boost::enable_if<typename boost::is_same<typename ashape::ashape<Source>::type,
+							                          typename ashape::ashape<Matrix>::type>,
+			                  Matrix&>::type
+    operator()(const Source& source, Matrix& matrix)
+	{
+		// Self-assignment between different types shouldn't happen.	
+		matrix_copy(source, matrix);
+	    return matrix;
+	}
+};
+
+/// Assign sum by assigning first argument and adding second
+/** Note that this is more special then assigning arbitrary expressions including matrices itself
+	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
+template <typename Matrix, typename E1, typename E2>
+struct crtp_assign<Matrix, matrix::mat_mat_plus_expr<E1, E2> > 
+{
+	Matrix& operator()(const matrix::mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
+	{
+		matrix= src.first;
+		matrix+= src.second;
+		return matrix;
+	}
+};
 
 
 /// Base class to provide matrix assignment operators generically 
@@ -40,6 +76,7 @@ struct crtp_matrix_assign
 {
     /// Assign scalar to a matrix by setting the matrix to a multiple of unity matrix
     /** Uses internally \sa diagonal_setup, for details see there. **/
+#if 0
     template <typename Value>
     typename boost::enable_if<typename boost::is_same<typename ashape::ashape<Value>::type,
 						      ashape::scal>,
@@ -49,7 +86,7 @@ struct crtp_matrix_assign
 	matrix::diagonal_setup(static_cast<Matrix&>(*this), value);
 	return static_cast<Matrix&>(*this);
     }
-
+#endif
 
     /// Assign matrix expressions by copying except for some special expressions
 #if 0
