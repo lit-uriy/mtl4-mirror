@@ -39,15 +39,14 @@ using std::size_t;
 
 // Forward declarations
 template <typename Value, typename Parameters> class dense2D;
-struct dense2D_indexer;
+class dense2D_indexer;
 
 // Helper type
 struct dense2D_sub_ctor {};
 
 // Indexing for dense matrices
-struct dense2D_indexer 
+class dense2D_indexer 
 {
-  private:
     // helpers for public functions
     size_t offset(size_t ldim, size_t r, size_t c, row_major) const 
     {
@@ -107,7 +106,7 @@ struct dense2D_indexer
 	size_t c= col(ma.offset(key), ma.ldim, typename matrix_type::orientation());
 	return index::change_to(typename matrix_type::index_type(), c);
     }
-    template <typename, typename> friend struct dense2D;
+    template <typename, typename> friend class dense2D;
 }; // dense2D_indexer
 
 

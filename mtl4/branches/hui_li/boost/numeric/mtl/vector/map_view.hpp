@@ -29,12 +29,11 @@ namespace mtl { namespace vector { namespace detail {
 namespace mtl { namespace vector {
 
 template <typename Functor, typename Vector> 
-class map_view 
+struct map_view 
   : public vec_expr< map_view<Functor, Vector> >
 {
     typedef map_view                                   self;
     typedef vector::vec_expr< self >                   expr_base;
-public:	
     typedef Vector                                     other;
 
     typedef typename Functor::result_type              value_type;
