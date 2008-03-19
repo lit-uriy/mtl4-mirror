@@ -32,30 +32,6 @@ namespace mtl { namespace detail {
 template <typename Source, typename Matrix>
 struct crtp_assign 
 {
-#if 0
-    /// Assign scalar to a matrix by setting the matrix to a multiple of unity matrix
-    /** Uses internally \sa diagonal_setup, for details see there. **/
-    typename boost::enable_if<typename boost::is_same<typename ashape::ashape<Source>::type,
-						                              ashape::scal>,
-			                  Matrix&>::type
-    operator()(const Source& source, Matrix& matrix)
-    {
-	    matrix::diagonal_setup(matrix, value);
-	    return matrix;
-    }
-
-    /// Assign matrix expressions by copying except for some special expressions
-    typename boost::enable_if<typename boost::is_same<typename ashape::ashape<Source>::type,
-							                          typename ashape::ashape<Matrix>::type>,
-			                  Matrix&>::type
-    operator()(const Source& source, Matrix& matrix)
-	{
-		// Self-assignment between different types shouldn't happen.	
-		matrix_copy(source, matrix);
-	    return matrix;
-	}
-#endif
-
     Matrix& operator()(const Source& source, Matrix& matrix)
 	{
 		return assign(source, matrix, typename ashape::ashape<Source>::type());
@@ -121,6 +97,122 @@ struct crtp_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix>
 	}
 }; 
 
+	
+/// Assign-add matrix expressions by incrementally copying except for some special expressions
+template <typename Source, typename Matrix>
+struct crtp_plus_assign 
+{
+    Matrix& operator()(const Source& source, Matrix& matrix)
+	{
+		return assign(source, matrix, typename ashape::ashape<Source>::type());
+	}
+private:
+	Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
+	{
+		matrix_copy_plus(source, matrix);
+		return matrix;
+	}
+};
+
+/// Assign-add sum by adding both arguments
+/** Note that this is more special then assigning arbitrary expressions including matrices itself
+	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from 
+	matrix::mat_expr < MatrixSrc >. **/
+template <typename E1, typename E2, typename Matrix>
+struct crtp_plus_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix> 
+{
+	Matrix& operator()(const matrix::mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
+	{
+		matrix+= src.first;
+		matrix+= src.second;
+		return matrix;
+	}
+};
+
+template <typename E1, typename E2, typename Matrix>
+struct crtp_plus_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix> 
+{
+	Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
+	{
+		matrix+= src.first;
+		matrix-= scr.second;
+		return matrix;
+	}
+};
+
+template <typename E1, typename E2, typename Matrix>
+struct crtp_plus_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix> 
+{
+	Matrix& operator()(const matrix::mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
+	{
+		operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+		gen_mult(factors.first, factors.second, matrix, assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
+		return matrix;
+	}
+};
+
+
+/// Assign-subtract matrix expressions by decrementally copying except for some special expressions
+template <typename Source, typename Matrix>
+struct crtp_minus_assign 
+{
+    Matrix& operator()(const Source& source, Matrix& matrix)
+	{
+		return assign(source, matrix, typename ashape::ashape<Source>::type());
+	}
+private:
+	Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
+	{
+		matrix_copy_minus(source, matrix);
+		return matrix;
+	}
+};
+
+/// Assign-subtract sum by adding both arguments
+/** Note that this is more special then assigning arbitrary expressions including matrices itself
+	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from 
+	matrix::mat_expr < MatrixSrc >. **/
+template <typename E1, typename E2, typename Matrix>
+struct crtp_minus_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix> 
+{
+	Matrix& operator()(const matrix::mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
+	{
+		matrix-= src.first;
+		matrix-= src.second;
+		return matrix;
+	}
+};
+
+/// Assign-subtracting difference by subtracting first argument and adding the second one
+/** Note that this is more special then assigning arbitrary expressions including matrices itself
+	because matrix::mat_mat_minus_expr <E1, E2> is a derived class from 
+	matrix::mat_expr < MatrixSrc >. **/
+template <typename E1, typename E2, typename Matrix>
+struct crtp_minus_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix> 
+{
+	Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
+	{
+		matrix-= src.first;
+		matrix+= scr.second;
+		return matrix;
+	}
+};
+
+/// Assign-subtract product by calling gen_mult
+/** Note that this does not work for arbitrary expressions. **/
+template <typename E1, typename E2, typename Matrix>
+struct crtp_minus_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix> 
+{
+	Matrix& operator()(const matrix::mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
+	{
+		operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+		gen_mult(factors.first, factors.second, matrix, assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
+		return matrix;
+	}
+};
+
+
+
 // Old code starts here
 
 
@@ -129,6 +221,7 @@ template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_matrix_assign
 {
 	/// Templated assignment implemented by functor to allow for partial specialization
+	// Despite there is only an untemplated assignement and despite the disable_if MSVC whines about ambiguity :-!
 	template <typename Source>
     typename boost::disable_if<typename boost::is_same<Matrix, Source>,
 							   Matrix&>::type
@@ -137,84 +230,20 @@ struct crtp_matrix_assign
 		return crtp_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
 	}
 
+	template <typename Source>
+	Matrix& operator+=(const Source& src)
+	{
+		return crtp_plus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+	}
+
+	template <typename Source>
+	Matrix& operator-=(const Source& src)
+	{
+		return crtp_minus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+	}
+
+
 #if 0
-    /// Assign scalar to a matrix by setting the matrix to a multiple of unity matrix
-    /** Uses internally \sa diagonal_setup, for details see there. **/
-#if 0
-    template <typename Value>
-    typename boost::enable_if<typename boost::is_same<typename ashape::ashape<Value>::type,
-						      ashape::scal>,
-			      Matrix&>::type
-    operator=(const Value& value)
-    {
-	matrix::diagonal_setup(static_cast<Matrix&>(*this), value);
-	return static_cast<Matrix&>(*this);
-    }
-#endif
-
-    /// Assign matrix expressions by copying except for some special expressions
-#if 0
-	template <typename MatrixSrc>
-    Matrix& operator=(const matrix::mat_expr<MatrixSrc>& src)
-#endif
-#if 1 // Do I need this or is mat_expr good enough?
-    template <typename MatrixSrc>
-    typename boost::enable_if<typename boost::is_same<typename ashape::ashape<MatrixSrc>::type,
-							                          typename ashape::ashape<Matrix>::type>,
-			                  Matrix&>::type
-    operator=(const matrix::mat_expr<MatrixSrc>& src)
-#endif
-    {
-	// std::cout << "In assignment\n";
-#ifdef  _MSC_VER
-		// For other compilers there is an assign operator for the same type
-		// and only this one checks for self-assignment.
-		// Self-assignment between different types shouldn't happen.
-		if (static_cast<const void*>(this) == static_cast<const void*>(&src))
-			return static_cast<Matrix&>(*this);
-#endif
-
-	matrix_copy(static_cast<const MatrixSrc&>(src), static_cast<Matrix&>(*this));
-	return static_cast<Matrix&>(*this);
-    }
-
-    /// Assign sum by assigning first argument and adding second
-    /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
-    template <typename E1, typename E2>
-    Matrix& operator=(const matrix::mat_mat_plus_expr<E1, E2>& src)
-    {
-	static_cast<Matrix&>(*this)= src.first;
-	static_cast<Matrix&>(*this)+= src.second;
-
-	return static_cast<Matrix&>(*this);
-    }
-
-    /// Assign difference by assigning first argument and subtracting second
-    /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_minus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
-    template <typename E1, typename E2>
-    Matrix& operator=(const matrix::mat_mat_minus_expr<E1, E2>& src)
-    {
-	static_cast<Matrix&>(*this)= src.first;
-	static_cast<Matrix&>(*this)-= src.second;
-
-	return static_cast<Matrix&>(*this);
-    }
-
-    /// Assign product by calling mult
-    /** Note that this does not work for arbitrary expressions. **/
-    template <typename E1, typename E2>
-    Matrix& operator=(const matrix::mat_mat_times_expr<E1, E2>& src)
-    {
-	operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-	mult(factors.first, factors.second, static_cast<Matrix&>(*this));
-
-	return static_cast<Matrix&>(*this);
-    }
-#endif
-
-
     /// Assign-add matrix expressions by incrementally copying except for some special expressions
     template <typename MatrixSrc>
     Matrix& operator+=(const matrix::mat_expr<MatrixSrc>& src)
@@ -260,7 +289,9 @@ struct crtp_matrix_assign
 
 	return static_cast<Matrix&>(*this);
     }
+#endif
 
+#if 0
     /// Assign-subtract matrix expressions by decrementally copying except for some special expressions
     template <typename MatrixSrc>
     Matrix& operator-=(const matrix::mat_expr<MatrixSrc>& src)
@@ -306,6 +337,7 @@ struct crtp_matrix_assign
 
 	return static_cast<Matrix&>(*this);
     }
+#endif
 
     /// Scale matrix (in place) with scalar value or other matrix
     template <typename Factor>
