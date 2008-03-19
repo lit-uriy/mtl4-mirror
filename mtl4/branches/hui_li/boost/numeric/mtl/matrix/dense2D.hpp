@@ -286,65 +286,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 
 
-#ifdef MTL_WITH_MOVE
-    explicit dense2D(self& m, adobe::move_ctor) 
-	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
-	  memory_base(m, adobe::move_ctor())
-    {
-	// In case of sub-matrices we need m's ldim -> init doesn't work
-	this->my_nnz= m.my_nnz; ldim= m.ldim;
-    }
-#endif
-
-#if 0
-    // Construct new matrix from a different matrix type
-    template <typename MatrixSrc>
-    explicit dense2D(const matrix::mat_expr<MatrixSrc>& src)
-	: super(mtl::non_fixed::dimensions(num_rows(static_cast<const MatrixSrc&>(src)), 
-					   num_cols(static_cast<const MatrixSrc&>(src)))),
-	  memory_base(num_rows(static_cast<const MatrixSrc&>(src)) * num_cols(static_cast<const MatrixSrc&>(src)))
-    {
-	init();
-	matrix_copy(src, *this);
-    }
-#endif
-
-#if 0
-//#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
-    // Construction from sum of matrices
-    template <typename E1, typename E2>
-    explicit dense2D(const matrix::mat_mat_plus_expr<E1, E2>& src)
-	: super(mtl::non_fixed::dimensions(mtl::num_rows(src.first), mtl::num_cols(src.first))),
-	  memory_base(mtl::num_rows(src.first) * mtl::num_cols(src.first))
-    {
-	init();
-	matrix_copy(src.first, *this);
-	*this+= src.second;
-    }
-
-    // Construction from difference of matrices
-    template <typename E1, typename E2>
-    explicit dense2D(const matrix::mat_mat_minus_expr<E1, E2>& src)
-	: super(mtl::non_fixed::dimensions(mtl::num_rows(src.first), mtl::num_cols(src.first))),
-	  memory_base(mtl::num_rows(src.first) * mtl::num_cols(src.first))
-    {
-	init();
-	matrix_copy(src.first, *this);
-	*this-= src.second;
-    }
-
-
-    // Construction from product of matrices
-    template <typename E1, typename E2>
-    explicit dense2D(const matrix::mat_mat_times_expr<E1, E2>& src)
-    {
-	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));
-	mult(factors.first, factors.second, *this);
-    }
-#endif
-
-
     self& operator=(self src)
     {
 	// Self-copy would be an indication of an error

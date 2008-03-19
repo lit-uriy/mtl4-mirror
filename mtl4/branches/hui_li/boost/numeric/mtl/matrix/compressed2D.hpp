@@ -366,75 +366,6 @@ class compressed2D
     }
 
 
-#if 0 // Superseded by the following constructor
-    template <typename SrcValue, typename SrcParameters>
-    explicit compressed2D(const compressed2D<SrcValue, SrcParameters>& src)
-	: super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), inserting(false)
-    {
-	starts.resize(super::dim1() + 1, 0);
-	matrix_copy(src, *this);
-    }
-#endif
-
-
- #if 0
-   // Construct new matrix from a different matrix type
-    template <typename MatrixSrc>
-    explicit compressed2D(const matrix::mat_expr<MatrixSrc>& src)
-	: super(mtl::non_fixed::dimensions(num_rows(static_cast<const MatrixSrc&>(src)), 
-					   num_cols(static_cast<const MatrixSrc&>(src)))),
-	  inserting(false)
-    {
-	starts.resize(super::dim1() + 1, 0);
-	matrix_copy(src, *this);
-    }
-
-
-//#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
-    // Construction from sum of matrices
-    template <typename E1, typename E2>
-    explicit compressed2D(const matrix::mat_mat_plus_expr<E1, E2>& src) 
-	: inserting(false)
-    {
-	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
-	matrix_copy(src.first, *this);
-	*this+= src.second;
-    }
-
-    // Construction from difference of matrices
-    template <typename E1, typename E2>
-    explicit compressed2D(const matrix::mat_mat_minus_expr<E1, E2>& src) 
-	: inserting(false)
-    {
-	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
-	matrix_copy(src.first, *this);
-	*this-= src.second;
-    }
-
-    // Construction from product of matrices
-    template <typename E1, typename E2>
-    explicit compressed2D(const matrix::mat_mat_times_expr<E1, E2>& src) 
-	: inserting(false)		
-    {
-	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));
-	mult(factors.first, factors.second, *this);
-    }
-#endif
-
-#if 0 // To be deleted
-    // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
-	// Removing the operator ends in run-time error
-    self& operator=(const self& src)
-    {
-	// no self-copy
-	if (this == &src) return *this;
-
-	matrix_copy(src, *this);
-	return *this;
-    }
-#endif
-
     // Consuming assignment operator
     self& operator=(self src)
     {
@@ -445,7 +376,6 @@ class compressed2D
 	swap(*this, src);
 	return *this;
     }
-
 
 
     using assign_base::operator=;
