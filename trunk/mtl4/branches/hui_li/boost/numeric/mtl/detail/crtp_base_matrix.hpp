@@ -41,7 +41,7 @@ private:
     /** Uses internally \sa diagonal_setup, for details see there. **/
 	Matrix& assign(const Source& source, Matrix& matrix, ashape::scal)
 	{
-	    matrix::diagonal_setup(matrix, value);
+	    matrix::diagonal_setup(matrix, source);
 	    return matrix;
 	}
 
@@ -92,7 +92,7 @@ struct crtp_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix>
 	Matrix& operator()(const matrix::mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
 	{
 		operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-		mult(factors.first, factors.second, static_cast<Matrix&>(*this));
+		mult(factors.first, factors.second, matrix);
 		return matrix;
 	}
 }; 
@@ -135,7 +135,7 @@ struct crtp_plus_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix>
 	Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
 	{
 		matrix+= src.first;
-		matrix-= scr.second;
+		matrix-= src.second;
 		return matrix;
 	}
 };
@@ -193,7 +193,7 @@ struct crtp_minus_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix>
 	Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
 	{
 		matrix-= src.first;
-		matrix+= scr.second;
+		matrix+= src.second;
 		return matrix;
 	}
 };
