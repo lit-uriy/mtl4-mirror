@@ -430,7 +430,7 @@ class compressed2D
 	// Self-copy would be an indication of an error
 	assert(this != &src);
 
-	check_dim(num_rows(src), num_cols(src));
+	check_dim(src.num_rows(), src.num_cols());
 	swap(*this, src);
 	return *this;
     }

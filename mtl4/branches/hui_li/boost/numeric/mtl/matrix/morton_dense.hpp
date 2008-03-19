@@ -443,7 +443,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
 
-    morton_dense(const self& m, clone_ctor) 
+    explicit morton_dense(const self& m, clone_ctor) 
 	: memory_base(m, clone_ctor())
     {
 	set_ranges(m.num_rows(), m.num_cols());
@@ -453,7 +453,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
     // Construct new matrix from a different matrix type
     template <typename MatrixSrc>
-    morton_dense(const matrix::mat_expr<MatrixSrc>& src)
+    explicit morton_dense(const matrix::mat_expr<MatrixSrc>& src)
 	: memory_base(memory_need(num_rows(static_cast<const MatrixSrc&>(src)), num_cols(static_cast<const MatrixSrc&>(src))))
     {
 	const MatrixSrc& m= static_cast<const MatrixSrc&>(src);
@@ -462,7 +462,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     }
 
     // Construct a sub-matrix as a view
-    morton_dense(self& matrix, morton_dense_sub_ctor,
+    explicit morton_dense(self& matrix, morton_dense_sub_ctor,
 		 size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
 	: memory_base(matrix.data, memory_need(end_r - begin_r, end_c - begin_c), true) // View constructor
     {
@@ -488,7 +488,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	set_ranges(end_r - begin_r, end_c - begin_c);
     }
 
-#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
+#if 0
+// #ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
     // Construction from sum of matrices
     template <typename E1, typename E2>
     morton_dense(const matrix::mat_mat_plus_expr<E1, E2>& src)

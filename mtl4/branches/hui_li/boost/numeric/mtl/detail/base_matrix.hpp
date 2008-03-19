@@ -19,8 +19,7 @@
 
 namespace mtl { namespace detail {
   
-// Base class for other matrices
-// Contains only very simple functionality that is used in all matrices
+/// Base class for other matrices, contains only very simple functionality that is used in all matrices.
 template <class Elt, class Parameters>
 struct base_matrix 
 {
@@ -32,16 +31,16 @@ struct base_matrix
     static bool const                         on_stack= Parameters::on_stack;
     typedef std::size_t                       size_type;
   protected:
-    dim_type                        dim;       // # of rows and columns
-    size_type                       my_nnz;       // # of non-zeros, to be set by derived matrix
+    dim_type                        dim;       ///< # of rows and columns
+    size_type                       my_nnz;    ///< # of non-zeros, to be set by derived matrix
     
   public:
     base_matrix() :  my_nnz(0) {}
 
-    // setting dimension
+    /// Setting dimension
     explicit base_matrix(mtl::non_fixed::dimensions d) : dim(d), my_nnz(0) {}
 
-
+	///	Swap base matrix
     friend void swap(self& x, self& y)
     {
 	using std::swap;
@@ -49,7 +48,10 @@ struct base_matrix
 	swap(x.dim, y.dim);
     }
 
-    // Either changed matrix is uninitialized (i.e. 0x0) or dimensions are equal
+    /// Either matrix to be changed is uninitialized (i.e. 0x0) or dimensions are equal
+	/** The matrices with dimension 0 x 0 are considered like stem cells: they can still
+		change into an arbitrary dimension and are compatible with any other matrix.  Once a matrix has a non-trivial dimension
+		it can be only changed explicitly and is only compatible with matrices of the same dimensionality. **/
     void check_dim(size_type num_rows, size_type num_cols) const
     {
 	MTL_DEBUG_THROW_IF(this->num_rows() * this->num_cols() != 0
@@ -58,8 +60,7 @@ struct base_matrix
     }
 
 protected:
-    // Change dimension
-    // Will fail for fixed::dimension
+    /** Will fail for fixed::dimension **/
     void change_dim(mtl::non_fixed::dimensions d)
     {
 	dim= d;
