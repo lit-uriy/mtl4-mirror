@@ -320,7 +320,7 @@ class compressed2D
 
     void change_dim(size_type r, size_type c)
     {
-		if (num_rows() != r || num_cols() != c) {
+	if (this->num_rows() != r || this->num_cols() != c) {
 			super::change_dim(mtl::non_fixed::dimensions(r, c));
 			starts.resize(this->dim1()+1);
 			make_empty();
