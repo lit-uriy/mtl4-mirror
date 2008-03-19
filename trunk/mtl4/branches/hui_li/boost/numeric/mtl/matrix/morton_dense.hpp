@@ -436,20 +436,57 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     }
 
     // Old remark: Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
-    morton_dense(const self& m) 
-	: memory_base(m)
+    morton_dense(const self& m) : memory_base(m)
     {
-	set_ranges(m.num_rows(), m.num_cols());
-	// std::cout << "In copy constructor:\n"; print_matrix(*this);
+		set_ranges(m.num_rows(), m.num_cols());
+		// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
 
     explicit morton_dense(const self& m, clone_ctor) 
-	: memory_base(m, clone_ctor())
+	    : memory_base(m, clone_ctor())
     {
 	set_ranges(m.num_rows(), m.num_cols());
 	// std::cout << "In copy constructor:\n"; print_matrix(*this);
     }
 
+
+    template <typename MatrixSrc>
+	explicit morton_dense(const MatrixSrc& src) 
+		: memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
+    {
+		init(dim_type().num_rows(), dim_type().num_cols());
+		*this= src;
+    }
+
+
+    // Construct a sub-matrix as a view
+    explicit morton_dense(self& matrix, morton_dense_sub_ctor,
+		                  size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+	  : memory_base(matrix.data, memory_need(end_r - begin_r, end_c - begin_c), true) // View constructor
+    {
+		matrix.check_ranges(begin_r, end_r, begin_c, end_c);
+
+		if (begin_r >= end_r || begin_c >= end_c) {
+			set_ranges(0, 0);
+			return;
+		}
+
+		// Check whether sub-matrix is contigous memory block
+		// by comparing the address of the last and the first element in the entire and the sub-matrix
+		MTL_DEBUG_THROW_IF(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
+				   != &matrix[end_r-begin_r-1][end_c-begin_c-1] - &matrix[0][0],
+				   range_error("This sub-matrix cannot be used because it is split in memory"));
+		// Check with David if this is a sufficient condition (it is a necessary at least)
+
+		dilated_row_t  dilated_row(begin_r);
+		dilated_col_t  dilated_col(begin_c);
+
+		// Set new start address within masked matrix
+		this->data += dilated_row.dilated_value() + dilated_col.dilated_value();
+		set_ranges(end_r - begin_r, end_c - begin_c);
+    }
+
+#if 0
 
     // Construct new matrix from a different matrix type
     template <typename MatrixSrc>
@@ -461,34 +498,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	matrix_copy(m, *this);
     }
 
-    // Construct a sub-matrix as a view
-    explicit morton_dense(self& matrix, morton_dense_sub_ctor,
-		 size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-	: memory_base(matrix.data, memory_need(end_r - begin_r, end_c - begin_c), true) // View constructor
-    {
-	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
 
-	if (begin_r >= end_r || begin_c >= end_c) {
-	    set_ranges(0, 0);
-	    return;
-	}
-
-	// Check whether sub-matrix is contigous memory block
-	// by comparing the address of the last and the first element in the entire and the sub-matrix
-	MTL_DEBUG_THROW_IF(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
-			   != &matrix[end_r-begin_r-1][end_c-begin_c-1] - &matrix[0][0],
-			   range_error("This sub-matrix cannot be used because it is split in memory"));
-	// Check with David if this is a sufficient condition (it is a necessary at least)
-
-	dilated_row_t  dilated_row(begin_r);
-	dilated_col_t  dilated_col(begin_c);
-
-	// Set new start address within masked matrix
-	this->data += dilated_row.dilated_value() + dilated_col.dilated_value();
-	set_ranges(end_r - begin_r, end_c - begin_c);
-    }
-
-#if 0
 // #ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
     // Construction from sum of matrices
     template <typename E1, typename E2>

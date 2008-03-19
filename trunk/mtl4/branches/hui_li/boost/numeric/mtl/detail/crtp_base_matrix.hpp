@@ -24,6 +24,7 @@
 #include <boost/numeric/mtl/matrix/diagonal_setup.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 
@@ -41,6 +42,8 @@ private:
     /** Uses internally \sa diagonal_setup, for details see there. **/
 	Matrix& assign(const Source& source, Matrix& matrix, ashape::scal)
 	{
+		MTL_DEBUG_THROW_IF(num_rows(matrix) * num_cols(matrix) == 0, 
+						   range_error("Trying to initialize a 0 by 0 matrix with a value"))
 	    matrix::diagonal_setup(matrix, source);
 	    return matrix;
 	}
@@ -49,6 +52,7 @@ private:
 	Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
 	{
 		// Self-assignment between different types shouldn't happen.	
+		matrix.checked_change_dim(num_rows(source), num_cols(source));
 		matrix_copy(source, matrix);
 	    return matrix;
 	}
@@ -64,6 +68,7 @@ struct crtp_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix>
 {
 	Matrix& operator()(const matrix::mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
 	{
+		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix= src.first;
 		matrix+= src.second;
 		return matrix;
@@ -78,6 +83,7 @@ struct crtp_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix>
 {
 	Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
 	{
+		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix= src.first;
 		matrix-= src.second;
 		return matrix;
@@ -92,6 +98,7 @@ struct crtp_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix>
 	Matrix& operator()(const matrix::mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
 	{
 		operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+		matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
 		mult(factors.first, factors.second, matrix);
 		return matrix;
 	}
@@ -109,6 +116,7 @@ struct crtp_plus_assign
 private:
 	Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
 	{
+		matrix.checked_change_dim(num_rows(source), num_cols(source));
 		matrix_copy_plus(source, matrix);
 		return matrix;
 	}
@@ -123,6 +131,7 @@ struct crtp_plus_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix>
 {
 	Matrix& operator()(const matrix::mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
 	{
+		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix+= src.first;
 		matrix+= src.second;
 		return matrix;
@@ -134,6 +143,7 @@ struct crtp_plus_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix>
 {
 	Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
 	{
+		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix+= src.first;
 		matrix-= src.second;
 		return matrix;
@@ -146,6 +156,7 @@ struct crtp_plus_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix>
 	Matrix& operator()(const matrix::mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
 	{
 		operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+		matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
 		gen_mult(factors.first, factors.second, matrix, assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 		return matrix;
 	}
@@ -163,6 +174,7 @@ struct crtp_minus_assign
 private:
 	Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
 	{
+		matrix.checked_change_dim(num_rows(source), num_cols(source));
 		matrix_copy_minus(source, matrix);
 		return matrix;
 	}
@@ -177,6 +189,7 @@ struct crtp_minus_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix>
 {
 	Matrix& operator()(const matrix::mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
 	{
+		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix-= src.first;
 		matrix-= src.second;
 		return matrix;
@@ -192,6 +205,7 @@ struct crtp_minus_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix>
 {
 	Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
 	{
+		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix-= src.first;
 		matrix+= src.second;
 		return matrix;
@@ -206,6 +220,7 @@ struct crtp_minus_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix>
 	Matrix& operator()(const matrix::mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
 	{
 		operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+		matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
 		gen_mult(factors.first, factors.second, matrix, assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 		return matrix;
 	}
@@ -220,6 +235,14 @@ struct crtp_minus_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix>
 template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_matrix_assign
 {
+	/// Check whether matrix sizes are compatible or if matrix is 0 by 0 change it to r by c.
+	void checked_change_dim(SizeType r, SizeType c)
+	{
+		Matrix& matrix= static_cast<Matrix&>(*this);
+		matrix.check_dim(r, c);
+		matrix.change_dim(r, c);
+	}
+
 	/// Templated assignment implemented by functor to allow for partial specialization
 	// Despite there is only an untemplated assignement and despite the disable_if MSVC whines about ambiguity :-!
 	template <typename Source>
