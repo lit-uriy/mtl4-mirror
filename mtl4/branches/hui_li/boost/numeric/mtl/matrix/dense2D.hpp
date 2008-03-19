@@ -259,16 +259,32 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
     }
 
-    // Construct new matrix from a different matrix type
     template <typename MatrixSrc>
-    explicit dense2D(const matrix::mat_expr<MatrixSrc>& src)
-	: super(mtl::non_fixed::dimensions(num_rows(static_cast<const MatrixSrc&>(src)), 
-					   num_cols(static_cast<const MatrixSrc&>(src)))),
-	  memory_base(num_rows(static_cast<const MatrixSrc&>(src)) * num_cols(static_cast<const MatrixSrc&>(src)))
-    {
-	init();
-	matrix_copy(src, *this);
+	explicit dense2D(const MatrixSrc& src) 
+		: super(), memory_base(dim_type().num_rows() * dim_type().num_cols())
+    { 
+		init(); 
+		*this= src;
     }
+
+
+    explicit dense2D(self& matrix, dense2D_sub_ctor, 
+					 size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+		: super(mtl::non_fixed::dimensions(matrix.num_rows(), matrix.num_cols())),
+		  memory_base(matrix.data, (end_r - begin_r) * (end_c - begin_c), true) // View constructor
+    {
+		matrix.check_ranges(begin_r, end_r, begin_c, end_c);
+
+		if(end_r <= begin_r || end_c <= begin_c)
+			set_ranges(0, 0);
+		else {
+			// Leading dimension doesn't change
+			this->data += matrix.indexer(matrix, begin_r, begin_c);  // Takes care of indexing
+			set_ranges(end_r - begin_r, end_c - begin_c);
+		}
+		this->my_nnz= matrix.my_nnz; ldim= matrix.ldim;
+    }
+
 
 #ifdef MTL_WITH_MOVE
     explicit dense2D(self& m, adobe::move_ctor) 
@@ -280,22 +296,18 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 #endif
 
-    explicit dense2D(self& matrix, dense2D_sub_ctor, 
-		     size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-	: super(mtl::non_fixed::dimensions(matrix.num_rows(), matrix.num_cols())),
-	  memory_base(matrix.data, (end_r - begin_r) * (end_c - begin_c), true) // View constructor
+#if 0
+    // Construct new matrix from a different matrix type
+    template <typename MatrixSrc>
+    explicit dense2D(const matrix::mat_expr<MatrixSrc>& src)
+	: super(mtl::non_fixed::dimensions(num_rows(static_cast<const MatrixSrc&>(src)), 
+					   num_cols(static_cast<const MatrixSrc&>(src)))),
+	  memory_base(num_rows(static_cast<const MatrixSrc&>(src)) * num_cols(static_cast<const MatrixSrc&>(src)))
     {
-	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
-
-	if(end_r <= begin_r || end_c <= begin_c)
-	    set_ranges(0, 0);
-	else {
-	    // Leading dimension doesn't change
-	    this->data += matrix.indexer(matrix, begin_r, begin_c);  // Takes care of indexing
-	    set_ranges(end_r - begin_r, end_c - begin_c);
-	}
-	this->my_nnz= matrix.my_nnz; ldim= matrix.ldim;
+	init();
+	matrix_copy(src, *this);
     }
+#endif
 
 #if 0
 //#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144

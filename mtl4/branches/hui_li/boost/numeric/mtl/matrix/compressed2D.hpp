@@ -318,11 +318,13 @@ class compressed2D
 	std::fill(starts.begin(), starts.end(), 0);
     }
 
-    void change_dim(size_type num_rows, size_type num_cols)
+    void change_dim(size_type r, size_type c)
     {
-	super::change_dim(mtl::non_fixed::dimensions(num_rows, num_cols));
-	starts.resize(this->dim1()+1);
-	make_empty();
+		if (num_rows() != r || num_cols() != c) {
+			super::change_dim(mtl::non_fixed::dimensions(r, c));
+			starts.resize(this->dim1()+1);
+			make_empty();
+		}
     }
 
     // if compile time matrix size, we can set the start vector
@@ -355,6 +357,15 @@ class compressed2D
 	matrix_copy(src, *this);
     }
 
+    template <typename MatrixSrc>
+    explicit compressed2D (const MatrixSrc& src) 
+	    : super(), inserting(false)
+    {
+		if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
+		*this= src;
+    }
+
+
 #if 0 // Superseded by the following constructor
     template <typename SrcValue, typename SrcParameters>
     explicit compressed2D(const compressed2D<SrcValue, SrcParameters>& src)
@@ -366,7 +377,8 @@ class compressed2D
 #endif
 
 
-    // Construct new matrix from a different matrix type
+ #if 0
+   // Construct new matrix from a different matrix type
     template <typename MatrixSrc>
     explicit compressed2D(const matrix::mat_expr<MatrixSrc>& src)
 	: super(mtl::non_fixed::dimensions(num_rows(static_cast<const MatrixSrc&>(src)), 
@@ -378,8 +390,7 @@ class compressed2D
     }
 
 
-
-#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
+//#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
     // Construction from sum of matrices
     template <typename E1, typename E2>
     explicit compressed2D(const matrix::mat_mat_plus_expr<E1, E2>& src) 
