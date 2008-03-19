@@ -251,7 +251,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
     }
 
-    dense2D(const self& m, clone_ctor) 
+    explicit dense2D(const self& m, clone_ctor) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
 	  memory_base(m, clone_ctor())
     {
@@ -261,7 +261,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
     // Construct new matrix from a different matrix type
     template <typename MatrixSrc>
-    dense2D(const matrix::mat_expr<MatrixSrc>& src)
+    explicit dense2D(const matrix::mat_expr<MatrixSrc>& src)
 	: super(mtl::non_fixed::dimensions(num_rows(static_cast<const MatrixSrc&>(src)), 
 					   num_cols(static_cast<const MatrixSrc&>(src)))),
 	  memory_base(num_rows(static_cast<const MatrixSrc&>(src)) * num_cols(static_cast<const MatrixSrc&>(src)))
@@ -297,11 +297,11 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	this->my_nnz= matrix.my_nnz; ldim= matrix.ldim;
     }
 
-
-#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
+#if 0
+//#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
     // Construction from sum of matrices
     template <typename E1, typename E2>
-    dense2D(const matrix::mat_mat_plus_expr<E1, E2>& src)
+    explicit dense2D(const matrix::mat_mat_plus_expr<E1, E2>& src)
 	: super(mtl::non_fixed::dimensions(mtl::num_rows(src.first), mtl::num_cols(src.first))),
 	  memory_base(mtl::num_rows(src.first) * mtl::num_cols(src.first))
     {
@@ -312,7 +312,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
     // Construction from difference of matrices
     template <typename E1, typename E2>
-    dense2D(const matrix::mat_mat_minus_expr<E1, E2>& src)
+    explicit dense2D(const matrix::mat_mat_minus_expr<E1, E2>& src)
 	: super(mtl::non_fixed::dimensions(mtl::num_rows(src.first), mtl::num_cols(src.first))),
 	  memory_base(mtl::num_rows(src.first) * mtl::num_cols(src.first))
     {
@@ -324,7 +324,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
     // Construction from product of matrices
     template <typename E1, typename E2>
-    dense2D(const matrix::mat_mat_times_expr<E1, E2>& src)
+    explicit dense2D(const matrix::mat_mat_times_expr<E1, E2>& src)
     {
 	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
 	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));
