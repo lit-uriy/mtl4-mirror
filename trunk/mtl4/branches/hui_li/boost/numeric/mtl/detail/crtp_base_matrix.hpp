@@ -228,9 +228,6 @@ struct crtp_minus_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix>
 
 
 
-// Old code starts here
-
-
 /// Base class to provide matrix assignment operators generically 
 template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_matrix_assign
@@ -264,103 +261,6 @@ struct crtp_matrix_assign
 	{
 		return crtp_minus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
 	}
-
-
-#if 0
-    /// Assign-add matrix expressions by incrementally copying except for some special expressions
-    template <typename MatrixSrc>
-    Matrix& operator+=(const matrix::mat_expr<MatrixSrc>& src)
-    {
-	matrix_copy_plus(static_cast<const MatrixSrc&>(src), static_cast<Matrix&>(*this));
-	return static_cast<Matrix&>(*this);
-    }
-
-    /// Assign-add sum by adding both arguments
-    /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from 
-	matrix::mat_expr < MatrixSrc >. **/
-    template <typename E1, typename E2>
-    Matrix& operator+=(const matrix::mat_mat_plus_expr<E1, E2>& src)
-    {
-	static_cast<Matrix&>(*this)+= src.first;
-	static_cast<Matrix&>(*this)+= src.second;
-
-	return static_cast<Matrix&>(*this);
-    }
-
-    /// Assign-add difference by adding first argument and subtracting the second one
-    /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_minus_expr <E1, E2> is a derived class from 
-	matrix::mat_expr < MatrixSrc >. **/
-    template <typename E1, typename E2>
-    Matrix& operator+=(const matrix::mat_mat_minus_expr<E1, E2>& src)
-    {
-	static_cast<Matrix&>(*this)+= src.first;
-	static_cast<Matrix&>(*this)-= src.second;
-
-	return static_cast<Matrix&>(*this);
-    }
-
-    /// Assign-add product by calling gen_mult
-    /** Note that this does not work for arbitrary expressions. **/
-    template <typename E1, typename E2>
-    Matrix& operator+=(const matrix::mat_mat_times_expr<E1, E2>& src)
-    {
-	operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-	gen_mult(factors.first, factors.second, static_cast<Matrix&>(*this), 
-		 assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
-
-	return static_cast<Matrix&>(*this);
-    }
-#endif
-
-#if 0
-    /// Assign-subtract matrix expressions by decrementally copying except for some special expressions
-    template <typename MatrixSrc>
-    Matrix& operator-=(const matrix::mat_expr<MatrixSrc>& src)
-    {
-	matrix_copy_minus(static_cast<const MatrixSrc&>(src), static_cast<Matrix&>(*this));
-	return static_cast<Matrix&>(*this);
-    }
-
-    /// Assign-subtract sum by adding both arguments
-    /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from 
-	matrix::mat_expr < MatrixSrc >. **/
-    template <typename E1, typename E2>
-    Matrix& operator-=(const matrix::mat_mat_plus_expr<E1, E2>& src)
-    {
-	static_cast<Matrix&>(*this)-= src.first;
-	static_cast<Matrix&>(*this)-= src.second;
-
-	return static_cast<Matrix&>(*this);
-    }
-
-    /// Assign-subtracting difference by subtracting first argument and adding the second one
-    /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_minus_expr <E1, E2> is a derived class from 
-	matrix::mat_expr < MatrixSrc >. **/
-    template <typename E1, typename E2>
-    Matrix& operator-=(const matrix::mat_mat_minus_expr<E1, E2>& src)
-    {
-	static_cast<Matrix&>(*this)-= src.first;
-	static_cast<Matrix&>(*this)+= src.second;
-
-	return static_cast<Matrix&>(*this);
-    }
-
-    /// Assign-subtract product by calling gen_mult
-    /** Note that this does not work for arbitrary expressions. **/
-    template <typename E1, typename E2>
-    Matrix& operator-=(const matrix::mat_mat_times_expr<E1, E2>& src)
-    {
-	operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-	gen_mult(factors.first, factors.second, static_cast<Matrix&>(*this), 
-		 assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
-
-	return static_cast<Matrix&>(*this);
-    }
-#endif
 
     /// Scale matrix (in place) with scalar value or other matrix
     template <typename Factor>

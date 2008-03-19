@@ -486,48 +486,6 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 		set_ranges(end_r - begin_r, end_c - begin_c);
     }
 
-#if 0
-
-    // Construct new matrix from a different matrix type
-    template <typename MatrixSrc>
-    explicit morton_dense(const matrix::mat_expr<MatrixSrc>& src)
-		: memory_base(memory_need(::mtl::num_rows(static_cast<const MatrixSrc&>(src)), ::mtl::num_cols(static_cast<const MatrixSrc&>(src))))
-    {
-	const MatrixSrc& m= static_cast<const MatrixSrc&>(src);
-	set_ranges(m.num_rows(), m.num_cols());
-	matrix_copy(m, *this);
-    }
-
-
-// #ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
-    // Construction from sum of matrices
-    template <typename E1, typename E2>
-    morton_dense(const matrix::mat_mat_plus_expr<E1, E2>& src)
-    {
-	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
-	*this= src.first;
-	*this+= src.second;
-    }
-
-    // Construction from difference of matrices
-    template <typename E1, typename E2>
-    morton_dense(const matrix::mat_mat_minus_expr<E1, E2>& src)
-    {
-	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
-	*this= src.first;
-	*this-= src.second;
-    }
-
-    // Construction from product of matrices
-    template <typename E1, typename E2>
-    morton_dense(const matrix::mat_mat_times_expr<E1, E2>& src)
-    {
-	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));
-	mult(factors.first, factors.second, *this);
-    }
-#endif
-
 
     void change_dim(size_type num_rows, size_type num_cols)
     {
@@ -535,20 +493,6 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	this->realloc(memory_need(num_rows, num_cols));
     }
 
-#if 0  // Obsolete, to be deleted
-
-    // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
-	// Removing the operator ends in run-time error
-    self& operator=(const self& src)
-    {
-	// no self-copy
-	if (this == &src) return *this;
-
-	change_dim(src.num_rows(), src.num_cols());
-	std::copy(src.elements(), src.elements()+src.used_memory(), this->elements());
-	return *this;
-    }
-#endif
 
     self& operator=(self src)
     {
