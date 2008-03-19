@@ -29,7 +29,7 @@
 
 namespace mtl { namespace detail {
 
-template <typename Matrix, typename Source>
+template <typename Source, typename Matrix>
 struct crtp_assign 
 {
 #if 0
@@ -83,8 +83,8 @@ private:
 /// Assign sum by assigning first argument and adding second
 /** Note that this is more special then assigning arbitrary expressions including matrices itself
 	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
-template <typename Matrix, typename E1, typename E2>
-struct crtp_assign<Matrix, matrix::mat_mat_plus_expr<E1, E2> > 
+template <typename E1, typename E2, typename Matrix>
+struct crtp_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix> 
 {
 	Matrix& operator()(const matrix::mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
 	{
@@ -97,8 +97,8 @@ struct crtp_assign<Matrix, matrix::mat_mat_plus_expr<E1, E2> >
 /// Assign difference by assigning first argument and subtracting second
 /** Note that this is more special then assigning arbitrary expressions including matrices itself
 	because matrix::mat_mat_minus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
-template <typename Matrix, typename E1, typename E2>
-struct crtp_assign<Matrix, matrix::mat_mat_minus_expr<E1, E2> > 
+template <typename E1, typename E2, typename Matrix>
+struct crtp_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix> 
 {
 	Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
 	{
@@ -110,8 +110,8 @@ struct crtp_assign<Matrix, matrix::mat_mat_minus_expr<E1, E2> >
 
 /// Assign product by calling mult
 /** Note that this does not work for arbitrary expressions. **/
-template <typename Matrix, typename E1, typename E2>
-struct crtp_assign<Matrix, matrix::mat_mat_times_expr<E1, E2> > 
+template <typename E1, typename E2, typename Matrix>
+struct crtp_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix> 
 {
 	Matrix& operator()(const matrix::mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
 	{
@@ -134,7 +134,7 @@ struct crtp_matrix_assign
 							   Matrix&>::type
 	operator=(const Source& src)
 	{
-		return crtp_assign<Matrix, Source>()(src, static_cast<Matrix&>(*this));
+		return crtp_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
 	}
 
 #if 0
