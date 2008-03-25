@@ -60,7 +60,7 @@ public:
 	: expr_base(*this), functor(functor), my_copy(p), ref(*p)
     {}
     
-    const_reference_type operator() (size_type r, size_type c) const
+    value_type operator() (size_type r, size_type c) const
     { 
         return functor(ref(r, c));
     }

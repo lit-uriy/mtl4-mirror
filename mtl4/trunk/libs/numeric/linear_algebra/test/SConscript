@@ -23,20 +23,23 @@ sources = Split("""
 # For testing only
 # sources = ["simple_test.cpp"]
 
+concept_env = debug_env.Copy()
+
 # Check if conceptg++ is in path (return code != 0)
-if os.system('conceptg++ -v'):
+# Turn off for now
+if 1: # os.system('conceptg++ -v'):
     sources = []
 else:
     # TBD: check whether options are okay
-    debug_env['ENV']['PATH'] = os.environ['PATH']
-    debug_env['CXX'] = 'conceptg++'
+    concept_env['ENV']['PATH'] = os.environ['PATH']
+    concept_env['CXX'] = 'conceptg++'
 
 programs = []
 for p in sources:
-    programs.append(debug_env.Program(p))
+    programs.append(concept_env.Program(p))
 
 if int(check):
     for p in programs:
-        debug_env.AddPostAction(p, p[0].abspath)
+        concept_env.AddPostAction(p, p[0].abspath)
 
 Default(programs)
