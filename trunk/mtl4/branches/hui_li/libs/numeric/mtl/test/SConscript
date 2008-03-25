@@ -49,6 +49,7 @@ sources = Split("""base_case_conversion.cpp
 	     matrix_multiple_products_test.cpp
              matrix_construction_from_expression_test.cpp
              print_matrix_product_test.cpp
+             array_initialization_test.cpp
 """)
 
 programs = []
