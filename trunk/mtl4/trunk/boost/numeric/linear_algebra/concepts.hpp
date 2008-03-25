@@ -126,15 +126,15 @@ concept_map Arithmetic< std::complex<T> > {}
 // For them we can define concept_maps regarding semantic behavior as monoids.
 
 concept IntrinsicSignedIntegral<typename T> 
-  : std::SignedIntegralLike<typename T> 
+  : std::SignedIntegralLike<T> 
 {}
 
 concept IntrinsicUnsignedIntegral<typename T> 
-  : std::UnsignedIntegralLike<typename T> 
+  : std::UnsignedIntegralLike<T> 
 {}
 
 concept IntrinsicFloatingPoint<typename T>
-  : std::FloatingPointLike<typename T> 
+  : std::FloatingPointLike<T> 
 {}
 
 
@@ -250,7 +250,7 @@ concept PartiallyInvertibleMonoid<typename Operation, typename Element>
     requires std::Convertible<inverse_result_type, Element>;
 
     // Does it overwrites the axiom from algebra::Inversion
-    axiom Inversion(Operation op, Element x)
+    axiom Inversivity(Operation op, Element x)
     {
 	// Only for invertible elements:
 	if (is_invertible(op, x))
@@ -276,7 +276,7 @@ concept Group<typename Operation, typename Element>
 	is_invertible(op, x);
     }
 
-    axiom Inversion(Operation op, Element x)
+    axiom GlobalInversivity(Operation op, Element x)
     {
 	// In fact this is implied by AlwaysInvertible and inherited Inversion axiom
 	// However, we don't rely on the compiler to deduce this

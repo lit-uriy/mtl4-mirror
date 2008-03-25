@@ -17,6 +17,9 @@ namespace algebra {
         {
 	    op(x, op(y, z)) == op(op(x, y), z); 
         }
+
+        typename some_type;
+        some_type some_function(Operation, Element);
     };
 
 

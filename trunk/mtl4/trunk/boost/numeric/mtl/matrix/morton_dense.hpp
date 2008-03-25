@@ -310,6 +310,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     typedef Elt                               value_type;
     // return type of operator() const
     typedef const value_type&                 const_access_type;
+    typedef const value_type&                 const_reference;
+    typedef value_type&                       reference;
     typedef std::size_t                       size_type;
     const static size_type                    mask= BitMask;
 

@@ -154,6 +154,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     typedef Value                             value_type;
     // return type of operator() const
     typedef const value_type&                 const_access_type;
+    typedef const value_type&                 const_reference;
+    typedef value_type&                       reference;
 
     typedef const value_type*                 const_pointer_type;
     typedef const_pointer_type                key_type;
