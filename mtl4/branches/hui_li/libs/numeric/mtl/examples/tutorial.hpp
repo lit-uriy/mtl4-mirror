@@ -422,6 +422,7 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage rich_vector_expr 
    -# \subpage matrix_types
    -# \subpage matrix_insertion
+   -# \subpage matrix_assignment
    -# \subpage matrix_functions
    -# \subpage matrix_expr 
    -# \subpage matrix_vector_functions 
@@ -436,6 +437,7 @@ This, of course, does not exclude backward-compatible extensions.
    .
 -# Discussion
    -# \subpage copying
+   -# \subpage shallow_copy_problems 
    -# \subpage peak_addiction
 */
 
@@ -798,6 +800,8 @@ The MTL4 approach lies somewhere between.
 Sparse matrices can be either written (inserted) or read.
 However, there can be multiple insertion phases.
 
+\section element_insertion Element-wise Insertion
+
 Before giving more details, we want to show you a short example:
 
 \include insert.cpp
@@ -847,6 +851,8 @@ However, dense inserters can be also very useful in the future for extending the
 library to parallel computations.
 Then the inserter can be used to write values into remote %matrix elements.
 
+\section block_insertion Block-wise Insertion
+
 A more powerful method to fill sparse (and dense) matrices provide the two functions
 element_matrix() and element_array().
 
@@ -855,7 +861,7 @@ The following program illustrates how to use them:
 \include element_matrix.cpp
 
 The function element_array is designed for element matrices that are stored as 
-a 2D C array.
+a 2D C/C++ array.
 The entries of such an element %matrix are accessed by A[i][j],
 while the entries are accessed by A(i, j) if the function element_matrix is used.
 Element matrices stored in MTL4 types can be accessed both ways and either
@@ -873,10 +879,191 @@ number of rows/columns of the element %matrix.
 The %vector type must provide a member function size and a bracket operator.
 Thus, mtl::dense_vector and std::vector can used (are models).
 
+\section init_from_array Initializing Matrices with Arrays
+
+For small matrices in examples it is more convenient to initialize the matrix from a 2D C/C++ array
+instead of filling it element-wise:
+
+\include array_initialization.cpp
+
+C/C++ arrays can be initialized be nested lists.
+All MTL4 %matrices provide construction from arrays.
+Unfortunately, it is not (yet) possible to initialize user-defined types with lists.
+This is proposed for the next C++ standard and we will incorporate this feature 
+as soon as it is generally available.
 
 
 Return to \ref matrix_types "matrix types"
+or proceed to \ref matrix_assignment "matrix assignment".
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page matrix_assignment Matrix Assignment
+
+Assignment of matrices verifies the dimensions, i.e.
+\code
+A= B;
+\endcode
+is only correct when A and B have the same number of rows and columns.
+If you need for some (probably avoidable) reason need to assign matrices of 
+different dimension you must explicitly change it:
+\code
+A.change_dim(num_rows(B), num_cols(B));
+A= B;
+\endcode
+We strongly recommand to avoid this because you risk to hide errors in your program.
+Assigning matrices of different dimension is in most cases an indication for an error.
+If memory consumption is the reason for such an assignment you should try to destroy unused
+matrices (e.g. by introducing additional blocks and define matrices within) and define
+new ones.
+
+\section stem_cells Matrix Stem Cells
+
+There is one exception that allows for the change of dimension, when the target has 
+dimension 0 by 0.
+These matrices are considered as stem cells, they can become whatever desired but 
+once they get a non-trivial dimensionality they obey algebraic compatibility rules.
+Default constructors of matrix types always create 0 by 0 matrices.
+This simplifies the implementation of generic setter function:
+\code
+dense2D<double> A;
+some_setter(A);
+\endcode
+
+\section move_semantics Move Semantics
+
+For numeric reliability we refrain from shallow copy semantics, cf. \ref shallow_copy_problems.
+There is an important exception that covers most
+algorithmically interesting cases where
+shallow copies are legitimate.
+Resulting objects of functions and operators exist only once and are
+destroyed after assignments.
+In the C++ community such arguments that can only appear on the
+right-hand side of an assignment are called rvalue.
+Rvalues that own their data can be copied shallowly without affecting the semantics.
+David Abrahams et al. formalized this approach and implemented
+the move library in the 
+<a href="http://opensource.adobe.com/group__move__related.html">Adobe Source Libraries (ASL)</a>.
+
+MTL4 uses move semantics to assign matrices of the same type when the source is an rvalue.
+Therefore, returning matrices (or vectors) in functions is rather cheap if the target has the same type, e.g.:
+
+\include move_matrix.cpp
+
+Assigning expressions to matrices or vectors does not use move semantics because MTL4 operators are implemented
+with expression templates and avoid unnecessary copies with other techniques.
+We assume that carefully designed algorithms use assignments of variables to copy their contents and that
+after changing one of the two variables the other still have the same value.
+\code 
+x= y;
+y= z;  // x has still the same value as before this operation
+\endcode
+Resuming this, you can (and should) take an algorithm from a text book, 
+implement it with the same operators and functions using MTL4
+- Without fearing aliasing effects; and
+- Without unnecessary copies.
+
+Please not that move semantics relies on compiler-intern optimizations that some
+compilers do not perform without optimization flags, e.g. MSVC.
+Therefore, the tests for move semantics are not in the regular test directory
+but in another one where the compilation uses optimization flags.
+On MSVC we noticed that for higher optimization some locations were equal that
+should not.
+This could be worked around by inserting print-outs of pointers.
+(Nevertheless this is not satisfying and help would be welcome.)
+
+Last but not least, we want to thank David Abrahams and Sean Parent who helped 
+to understand the subtle interplay between details of the implementation and
+the behavior of the compiler.
+
+
+Return to \ref matrix_insertion "matrix insertion"
 or proceed to \ref matrix_functions "matrix functions".
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page shallow_copy_problems Why Not Using Shallow Copy in Numerical Software
+
+Shallow copy has the advantage over deep copy of being considerably faster.
+This advantage does not justify all the dangers implied.
+
+\section scp_unawareness Unawareness
+
+The first risk is that many programmers are not aware of the aliasing
+behavior, which is that 
+after the assignment neither of the two arguments can be modified without 
+affecting the other.
+As one of the two variables can be changed in a sub-function of a sub-function of a ...
+it is hard to track down all possible modifications.
+
+\section scp_type_dependence Type Dependence of Copy behavior
+
+
+Moreover, the problem is even more confusing.
+Since shallow copy semantic is only feasible between objects of the same type,
+assignments between different types must copy data deeply.
+In generic functions aiming for maximal generality one do not want assume or
+require equality or distinctness of argument types so that the copy behavior 
+is unknown.
+
+\include shallow_copy_problems_type.cpp
+
+\section scp_operations Impact of Mathematically Neutral Operations
+
+
+In the same way mathematically neutral operations like multiplications with one
+or additions of zero vectors silently change the program behavior by 
+disabling shallow copies and eliminating the aliasing behavior.
+
+\code
+A= B;           // Aliasing of A and B
+A= 1.0 * B;     // A and B are independent
+\endcode
+
+\section scp_obfuscations Code Obfuscation
+
+Many higher level libraries like ITL assigns vectors with the
+copy function instead of the assignment operator in order to guarantee deep
+copy.
+
+\code 
+A= B;           // (Potential) shallow copy
+copy(B, A);     // Deep copy
+\endcode
+
+We refrain from this approach because this syntax does not correspond to the
+mathematical literature and more importantly we cannot be sure that all users
+of a library will replace assignments by copy.
+
+
+
+
+\section scp_undermining Undermining const Attributes
+
+
+Last  but not least
+all shallow copy implementations we have seen so far
+relentlessly undermined const attributes of arguments.
+
+
+\include shallow_copy_problems_const.cpp
+
+After calling f, A is modified despite it was passed as const argument and the 
+const-ness was not even casted away.
+
+\section scp_resume Resume
+
+For all these reasons we are convinced that reliable mathematical software
+can only be implemented with
+deep copy semantics.
+Unnecessary copies can be avoided by using advanced techniques as expression
+templates and \ref move_semantics.
 
 */
 
@@ -894,13 +1081,30 @@ the element-wise conjugates, and the transposed %matrix:
 
 \include matrix_functions2.cpp
 
-The functions conj(A) and trans(A) do not change the matrices
+The functions conj(A), hermitian(A), and trans(A) do not change the matrices
 but they return views on them.
+While conj is and hermitian are read-only views -- since the elements
+of the referred matrices are not accessed but a function on them -- trans(A)
+returns a mutable view.
+
+For the sake of reliability, we conserve the const-ness of the referred
+matrix.
+The transposed of a constant matrix is itself constant (this feature alone required 
+a fair amount of non-trivial meta-programming).
+Only when the referred matrix is mutable the transposed will be:
+
+\include matrix_functions2a.cpp
+
+Sub-matrices also preserve the const attribute of the referred matrices or sub-matrices:
+
+\include matrix_functions3.cpp
+
+Details on the copy behavior of sub-matrices can be found in  section \ref copy_sub_matrix.
 
 More functions will be implemented in the future.
 
 
-Return to \ref matrix_insertion "matrix insertion"
+Return to \ref matrix_assignment "matrix assignment"
 or proceed to \ref matrix_expr "matrix expressions".
 
 
@@ -1015,7 +1219,9 @@ might not be detected and result in undefined mathematical behavior.
 %Matrix-vector products (MVP) cannot be combined with arbitrary %vector
 operations.
 It is planned for the future to support expressions like
+\code
 r= b - A*x.
+\endcode
 
 Already supported is scaling of arguments, as well for the %matrix
 as for the vector:
@@ -1341,7 +1547,7 @@ or proceed to \ref copying "copying".
 //-----------------------------------------------------------
 
 
-/*! \page copying Copying in MTL4: Shallow versus Deep
+/*! \page copying Copying in MTL4
 
 Shallow copy -- i.e. copying data types with complex internal structures 
 by only copying pointers at the upper level -- allows for very short
@@ -1357,43 +1563,63 @@ that is after
 \code 
 x= y; 
 \endcode one can change x or y without any impact on
-the other object.
+the other object, see also \ref shallow_copy_problems.
 
-Some functions in MTL4 -- like sub_matrix -- return matrices or %matrix-like objects.
-Applying  deep copy here would cause a serious performance penalty.
-For that reason copy constructors use shallow copy.
-Thus the code
-\code
-matrix_type A(10, 10);
-A= B;
+\section copy_sub_matrix Copying Sub-matrices
+
+Sub-matrices are a special case.
+The expression
+\code 
+Matrix E= sub_matrix(A, 2, 5, 1, 9);
 \endcode
-is not equavalent to
-\code
-matrix_type A= B;
+means that E is defined as a mutable sub-matrix of A.
+Internally this is realized as a view on some of A's values.
+One could compare this to a window on A. 
+As a result, modifications of E affect A and modifications of A change
+E if the change was in the range of rows and columns that E refers to.
+This  admittedly behaves similarly to shallow copy behavior but is nevertheless
+different.
+In the case of a sub-matrix, we explicitly request aliasing.
+The modification of A can easily prevented by a const argument
+\code 
+const Matrix E= sub_matrix(A, 2, 5, 1, 9);
 \endcode
+Furthermore, the sub-matrix of a const matrix (or another const sub-matrix)
+is const itself.
+Unless explicitly casted away, const-ness is conserved within MTL4
+and cannot be circumvented like in other libraries with shallow copy assignment.
+Resuming, the construction of a matrix with sub_matrix is not a
+shallow copy but the definition of a reference to a part of another matrix.
 
-With the current implementation we highly advise you to use the assignment
-wherever possible.
-The copy constructor is too dangerous in its present form!
-In addition, several expressions are transformed when used with assignment
-but not with copy constructor.
-For instance, 
+Once sub-matrix is defined, assignments are regular deep copies, i.e.
 \code
-A= B * C;
+E= B;
 \endcode
-is internally handled as
+copies the values of B to E and implicitly to the corresponding entries of A.
+Sub-matrices are not move semantics, i.e.
 \code
-mult(B, C, A);
+E= f(B);
 \endcode
-A similar transformation does not exist for the copy constructor (yet).
+cannot use move semantics.
+It is correct regarding the destruction of the temporaries and the values of E
+but not concerning the modifications of A, which we defined E being a sub-matrix of.
 
-We admit that this situation -- the inconsistency between assignment and copy
-constructor -- is not satisfying.
-In some future release this misbehavior will be terminated by introducing
-move semantics that allows to limit shallow copy to cases where it is permissible.
-For now we can only recommend you to use assignments.
+If you do not want the aliasing behavior of sub_matrix but are only interested
+in the values of the sub-matrix, you can use the function \ref clone.
+\code 
+Matrix F= clone(sub_matrix(A, 2, 5, 1, 9));
+\endcode
+Then deep copy is explicitly used.
+F and A are thus entirely decoupled: any modification of either of them
+will not affect the other.
 
-
+Any older remarks on inconsistencies between copy construction and assignment
+are invalid now.
+In addition, every expression that can be assigned can also be used in copy
+constructors, e.g.:
+\code
+compressed2D<double> A(B * C * D + E);
+\endcode
 
 
 

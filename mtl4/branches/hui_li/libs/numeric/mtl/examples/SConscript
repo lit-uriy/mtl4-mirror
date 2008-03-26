@@ -1,4 +1,5 @@
 Import('opt_env check')
+import glob
 
 sources = Split("""vector1.cpp
                    vector2.cpp
@@ -27,7 +28,10 @@ sources = Split("""vector1.cpp
                    recursator2.cpp
                    simulated_annealing.cpp
                    minimize_complexity.cpp
+                   array_initialization.cpp
 """)
+
+sources = glob.glob("*.cpp")
 
 if opt_env['CC'] == 'cl':
     # assignment doesn't work with templates on cl

@@ -1,3 +1,5 @@
+import glob
+
 Import('debug_env check')
 
 sources = Split("""base_case_conversion.cpp
@@ -51,6 +53,8 @@ sources = Split("""base_case_conversion.cpp
              print_matrix_product_test.cpp
              array_initialization_test.cpp
 """)
+
+sources = glob.glob("*.cpp")
 
 programs = []
 for p in sources:
