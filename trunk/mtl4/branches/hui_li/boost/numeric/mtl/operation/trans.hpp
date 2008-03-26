@@ -25,19 +25,27 @@ namespace sfunctor {
 
     template <typename Matrix>
     struct trans<Matrix, tag::matrix>
-
     {
-	typedef transposed_view<Matrix> result_type;
+	typedef transposed_view<Matrix>               result_type;
+	
+	static inline result_type apply(Matrix& matrix)
+	{
+	    return result_type(matrix);
+	}
+    };
 
+    // General case is not defined
+    template <typename Value, typename AlgebraicCategory>
+    struct const_trans {};
+
+    template <typename Matrix>
+    struct const_trans<Matrix, tag::matrix>
+    {
+	typedef const transposed_view<const Matrix>   result_type;
+	
 	static inline result_type apply(const Matrix& matrix)
 	{
-	    // Needs improvement in the future !!!
-	    return result_type(const_cast<Matrix&>(matrix));
-	}
-
-	result_type operator() (const Matrix& matrix) const
-	{
-	    return apply(matrix);
+	    return result_type(matrix);
 	}
     };
 
@@ -45,11 +53,20 @@ namespace sfunctor {
 
 
 template <typename Value>
-typename sfunctor::trans<Value, typename traits::algebraic_category<Value>::type>::result_type 
+typename sfunctor::const_trans<Value, typename traits::algebraic_category<Value>::type>::result_type 
 inline trans(const Value& v)
+{
+    return sfunctor::const_trans<const Value, typename traits::algebraic_category<Value>::type>::apply(v);
+};
+
+template <typename Value>
+typename sfunctor::trans<Value, typename traits::algebraic_category<Value>::type>::result_type 
+inline trans(Value& v)
 {
     return sfunctor::trans<Value, typename traits::algebraic_category<Value>::type>::apply(v);
 };
+
+
 
 
 } // namespace mtl

@@ -14,6 +14,7 @@
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/fill.hpp>
+#include <boost/numeric/mtl/operation/hermitian.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/norms.hpp>

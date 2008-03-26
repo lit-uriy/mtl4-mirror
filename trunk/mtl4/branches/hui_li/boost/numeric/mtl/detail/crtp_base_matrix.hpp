@@ -334,11 +334,18 @@ struct const_crtp_base_matrix
 {};
 
 template <typename Matrix, typename ValueType, typename SizeType>
-struct crtp_base_matrix 
+struct mutable_crtp_base_matrix 
     : public crtp_matrix_bracket<Matrix, ValueType, SizeType>,
       public crtp_matrix_assign<Matrix, ValueType, SizeType>
 {};
 
+template <typename Matrix, typename ValueType, typename SizeType>
+struct crtp_base_matrix 
+    : boost::mpl::if_<boost::is_const<Matrix>,
+		      const_crtp_base_matrix<Matrix, ValueType, SizeType>,
+		      mutable_crtp_base_matrix<Matrix, ValueType, SizeType>
+                     >::type
+{};
 
 
 }} // namespace mtl::detail

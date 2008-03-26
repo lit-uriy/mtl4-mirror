@@ -11,6 +11,9 @@
 #define MTL_TRANSPOSED_VIEW_INCLUDE
 
 #include <boost/shared_ptr.hpp>
+#include <boost/mpl/if.hpp>
+#include <boost/type_traits.hpp>
+
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
@@ -36,13 +39,19 @@ template<> struct transposed_orientation<tag::col_major>
 
 template <class Matrix> 
 struct transposed_view 
-  : public detail::crtp_base_matrix< transposed_view<Matrix>, 
-				     typename Matrix::value_type, typename Matrix::size_type >,
+  : public boost::mpl::if_<
+          boost::is_const<Matrix>
+        , detail::const_crtp_base_matrix< const transposed_view<const Matrix>, 
+					  typename Matrix::value_type, typename Matrix::size_type >
+        , detail::crtp_base_matrix< transposed_view<Matrix>, 
+				    typename Matrix::value_type, typename Matrix::size_type >
+      >::type,
     public matrix::mat_expr< transposed_view<Matrix> >
 {
     typedef transposed_view               self;
     typedef matrix::mat_expr< self >      expr_base;
     typedef Matrix                        other;
+
     typedef typename transposed_orientation<typename Matrix::orientation>::type orientation;
     typedef typename Matrix::index_type                index_type;
     typedef typename Matrix::value_type                value_type;
@@ -51,16 +60,27 @@ struct transposed_view
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
 
-    transposed_view (other& ref) : expr_base(*this), ref(ref) {}
+    typedef typename boost::mpl::if_<boost::is_const<Matrix>,
+				     const_access_type,
+				     value_type&
+				    >::type                  access_type;
+
+    typedef typename boost::mpl::if_<boost::is_const<Matrix>,
+				     const Matrix&,
+				     Matrix&
+				    >::type                  ref_type;
+
+
+    transposed_view (ref_type ref) : /* expr_base(*this), */ ref(ref) {}
     
-    transposed_view (boost::shared_ptr<Matrix> p) : expr_base(*this), my_copy(p), ref(*p) {}
+    transposed_view (boost::shared_ptr<Matrix> p) : /* expr_base(*this), */ my_copy(p), ref(*p) {}
     
     const_access_type operator() (size_type r, size_type c) const
     { 
         return ref(c, r); 
     }
 
-    value_type& operator() (size_type r, size_type c)
+    access_type operator() (size_type r, size_type c)
     { 
         return ref(c, r); 
     }
@@ -112,7 +132,7 @@ struct transposed_view
 protected:
     boost::shared_ptr<Matrix>           my_copy;
 public:
-    other&            ref;
+    ref_type                            ref;
 };
   
 
