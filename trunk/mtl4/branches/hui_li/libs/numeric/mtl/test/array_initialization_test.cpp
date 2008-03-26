@@ -15,19 +15,28 @@
 using namespace std;
 using namespace mtl;
 
-template <typename MatrixA>
-void test(MatrixA& a, const char* name)
+template <typename Matrix>
+void test(Matrix& A, const char* name)
 {
-    typedef typename Collection<MatrixA>::value_type   value_type;
+    typedef typename Collection<Matrix>::value_type   value_type;
     
     value_type array[][3]= {{3, 7.2, 0}, {2, 4.444, 5}};
-    a= array;
+    A= array;
 
-    std::cout << "\n" << name << " a = \n" << a << "\n";
+    std::cout << "\n" << name << ", assignment: A = \n" << A << "\n";
 
-    if (num_rows(a) != 2 || num_cols(a) != 3)
+    if (num_rows(A) != 2 || num_cols(A) != 3)
 	throw "Wrong matrix size";
-    if (a[1][0] != value_type(2))
+    if (A[1][0] != value_type(2))
+	throw "Wrong value inserted";
+
+    Matrix B(array);
+
+    std::cout << "\n" << name << ", construction: B = \n" << B << "\n";
+
+    if (num_rows(B) != 2 || num_cols(B) != 3)
+	throw "Wrong matrix size";
+    if (B[1][0] != value_type(2))
 	throw "Wrong value inserted";
 }
 
