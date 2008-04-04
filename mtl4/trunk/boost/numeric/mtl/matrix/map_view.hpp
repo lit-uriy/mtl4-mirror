@@ -31,14 +31,13 @@ namespace mtl { namespace matrix { namespace detail {
 namespace mtl { namespace matrix {
 
 template <typename Functor, typename Matrix> 
-class map_view 
+struct map_view 
   : public mtl::detail::const_crtp_base_matrix< map_view<Functor, Matrix>, 
 						typename Functor::result_type, typename Matrix::size_type >,
     public mat_expr< map_view<Functor, Matrix> >
 {
     typedef map_view                                   self;
     typedef matrix::mat_expr< self >                   expr_base;
-public:	
     typedef Matrix                                     other;
     typedef typename Matrix::orientation               orientation;
     typedef typename Matrix::index_type                index_type;

@@ -141,6 +141,11 @@ struct category< matrix::conj_view<Matrix> >
     : public category< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
 {};
 
+template <typename Matrix>
+struct category< matrix::hermitian_view<Matrix> >
+    : public category< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+					transposed_view<Matrix> > >
+{};
 
 
 /// Meta-function for categorizing types into tag::scalar, tag::vector, and tag::matrix

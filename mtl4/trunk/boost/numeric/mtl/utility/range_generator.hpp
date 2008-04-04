@@ -45,6 +45,7 @@ namespace traits
     {
 	typedef complexity_classes::infinite  complexity;
 	static int const             level = 0;
+	typedef Tag                  tag;
 	// specializations must contain the following members
 	// typedef xxx               type;
 	// type begin() { ... }
@@ -84,6 +85,18 @@ namespace traits {
 	       boost::is_same<typename Matrix::orientation, row_major>
 	     , ::mtl::tag::row
              , ::mtl::tag::col
+            >::type, 
+          Matrix>
+    {};
+
+    // Dispatch between row and column-major traversal
+    template <typename Matrix>
+    struct range_generator<tag::minor, Matrix>
+	: public range_generator<
+	    typename boost::mpl::if_<
+	       boost::is_same<typename Matrix::orientation, row_major>
+             , ::mtl::tag::col
+	     , ::mtl::tag::row
             >::type, 
           Matrix>
     {};

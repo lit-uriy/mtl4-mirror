@@ -7,6 +7,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+
 // Adapted from GLAS implementation by Karl Meerbergen and Toon Knappen
 
 
@@ -61,7 +62,7 @@ public:
     void delay_assign() const { delayed_assign= true; }
 
     size_type size() const {
-	assert( first.size() == second.size() ) ;
+	assert( first.size() == 0 || first.size() == second.size() ) ;
 	return first.size() ;
     }
 
@@ -88,4 +89,5 @@ public:
 
 
 #endif
+
 

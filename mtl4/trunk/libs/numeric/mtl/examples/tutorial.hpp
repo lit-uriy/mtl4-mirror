@@ -422,6 +422,7 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage rich_vector_expr 
    -# \subpage matrix_types
    -# \subpage matrix_insertion
+   -# \subpage matrix_assignment
    -# \subpage matrix_functions
    -# \subpage matrix_expr 
    -# \subpage matrix_vector_functions 
@@ -436,6 +437,7 @@ This, of course, does not exclude backward-compatible extensions.
    .
 -# Discussion
    -# \subpage copying
+   -# \subpage shallow_copy_problems 
    -# \subpage peak_addiction
 */
 
@@ -798,6 +800,8 @@ The MTL4 approach lies somewhere between.
 Sparse matrices can be either written (inserted) or read.
 However, there can be multiple insertion phases.
 
+\section element_insertion Element-wise Insertion
+
 Before giving more details, we want to show you a short example:
 
 \include insert.cpp
@@ -847,6 +851,8 @@ However, dense inserters can be also very useful in the future for extending the
 library to parallel computations.
 Then the inserter can be used to write values into remote %matrix elements.
 
+\section block_insertion Block-wise Insertion
+
 A more powerful method to fill sparse (and dense) matrices provide the two functions
 element_matrix() and element_array().
 
@@ -855,7 +861,7 @@ The following program illustrates how to use them:
 \include element_matrix.cpp
 
 The function element_array is designed for element matrices that are stored as 
-a 2D C array.
+a 2D C/C++ array.
 The entries of such an element %matrix are accessed by A[i][j],
 while the entries are accessed by A(i, j) if the function element_matrix is used.
 Element matrices stored in MTL4 types can be accessed both ways and either
@@ -873,10 +879,191 @@ number of rows/columns of the element %matrix.
 The %vector type must provide a member function size and a bracket operator.
 Thus, mtl::dense_vector and std::vector can used (are models).
 
+\section init_from_array Initializing Matrices with Arrays
+
+For small matrices in examples it is more convenient to initialize the matrix from a 2D C/C++ array
+instead of filling it element-wise:
+
+\include array_initialization.cpp
+
+C/C++ arrays can be initialized be nested lists.
+All MTL4 %matrices provide construction from arrays.
+Unfortunately, it is not (yet) possible to initialize user-defined types with lists.
+This is proposed for the next C++ standard and we will incorporate this feature 
+as soon as it is generally available.
 
 
 Return to \ref matrix_types "matrix types"
+or proceed to \ref matrix_assignment "matrix assignment".
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page matrix_assignment Matrix Assignment
+
+Assignment of matrices verifies the dimensions, i.e.
+\code
+A= B;
+\endcode
+is only correct when A and B have the same number of rows and columns.
+If you need for some (probably avoidable) reason need to assign matrices of 
+different dimension you must explicitly change it:
+\code
+A.change_dim(num_rows(B), num_cols(B));
+A= B;
+\endcode
+We strongly recommand to avoid this because you risk to hide errors in your program.
+Assigning matrices of different dimension is in most cases an indication for an error.
+If memory consumption is the reason for such an assignment you should try to destroy unused
+matrices (e.g. by introducing additional blocks and define matrices within) and define
+new ones.
+
+\section stem_cells Matrix Stem Cells
+
+There is one exception that allows for the change of dimension, when the target has 
+dimension 0 by 0.
+These matrices are considered as stem cells, they can become whatever desired but 
+once they get a non-trivial dimensionality they obey algebraic compatibility rules.
+Default constructors of matrix types always create 0 by 0 matrices.
+This simplifies the implementation of generic setter function:
+\code
+dense2D<double> A;
+some_setter(A);
+\endcode
+
+\section move_semantics Move Semantics
+
+For numeric reliability we refrain from shallow copy semantics, cf. \ref shallow_copy_problems.
+There is an important exception that covers most
+algorithmically interesting cases where
+shallow copies are legitimate.
+Resulting objects of functions and operators exist only once and are
+destroyed after assignments.
+In the C++ community such arguments that can only appear on the
+right-hand side of an assignment are called rvalue.
+Rvalues that own their data can be copied shallowly without affecting the semantics.
+David Abrahams et al. formalized this approach and implemented
+the move library in the 
+<a href="http://opensource.adobe.com/group__move__related.html">Adobe Source Libraries (ASL)</a>.
+
+MTL4 uses move semantics to assign matrices of the same type when the source is an rvalue.
+Therefore, returning matrices (or vectors) in functions is rather cheap if the target has the same type, e.g.:
+
+\include move_matrix.cpp
+
+Assigning expressions to matrices or vectors does not use move semantics because MTL4 operators are implemented
+with expression templates and avoid unnecessary copies with other techniques.
+We assume that carefully designed algorithms use assignments of variables to copy their contents and that
+after changing one of the two variables the other still have the same value.
+\code 
+x= y;
+y= z;  // x has still the same value as before this operation
+\endcode
+Resuming this, you can (and should) take an algorithm from a text book, 
+implement it with the same operators and functions using MTL4
+- Without fearing aliasing effects; and
+- Without unnecessary copies.
+
+Please not that move semantics relies on compiler-intern optimizations that some
+compilers do not perform without optimization flags, e.g. MSVC.
+Therefore, the tests for move semantics are not in the regular test directory
+but in another one where the compilation uses optimization flags.
+On MSVC we noticed that for higher optimization some locations were equal that
+should not.
+This could be worked around by inserting print-outs of pointers.
+(Nevertheless this is not satisfying and help would be welcome.)
+
+Last but not least, we want to thank David Abrahams and Sean Parent who helped 
+to understand the subtle interplay between details of the implementation and
+the behavior of the compiler.
+
+
+Return to \ref matrix_insertion "matrix insertion"
 or proceed to \ref matrix_functions "matrix functions".
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page shallow_copy_problems Why Not Using Shallow Copy in Numerical Software
+
+Shallow copy has the advantage over deep copy of being considerably faster.
+This advantage does not justify all the dangers implied.
+
+\section scp_unawareness Unawareness
+
+The first risk is that many programmers are not aware of the aliasing
+behavior, which is that 
+after the assignment neither of the two arguments can be modified without 
+affecting the other.
+As one of the two variables can be changed in a sub-function of a sub-function of a ...
+it is hard to track down all possible modifications.
+
+\section scp_type_dependence Type Dependence of Copy behavior
+
+
+Moreover, the problem is even more confusing.
+Since shallow copy semantic is only feasible between objects of the same type,
+assignments between different types must copy data deeply.
+In generic functions aiming for maximal generality one do not want assume or
+require equality or distinctness of argument types so that the copy behavior 
+is unknown.
+
+\include shallow_copy_problems_type.cpp
+
+\section scp_operations Impact of Mathematically Neutral Operations
+
+
+In the same way mathematically neutral operations like multiplications with one
+or additions of zero vectors silently change the program behavior by 
+disabling shallow copies and eliminating the aliasing behavior.
+
+\code
+A= B;           // Aliasing of A and B
+A= 1.0 * B;     // A and B are independent
+\endcode
+
+\section scp_obfuscations Code Obfuscation
+
+Many higher level libraries like ITL assigns vectors with the
+copy function instead of the assignment operator in order to guarantee deep
+copy.
+
+\code 
+A= B;           // (Potential) shallow copy
+copy(B, A);     // Deep copy
+\endcode
+
+We refrain from this approach because this syntax does not correspond to the
+mathematical literature and more importantly we cannot be sure that all users
+of a library will replace assignments by copy.
+
+
+
+
+\section scp_undermining Undermining const Attributes
+
+
+Last  but not least
+all shallow copy implementations we have seen so far
+relentlessly undermined const attributes of arguments.
+
+
+\include shallow_copy_problems_const.cpp
+
+After calling f, A is modified despite it was passed as const argument and the 
+const-ness was not even casted away.
+
+\section scp_resume Resume
+
+For all these reasons we are convinced that reliable mathematical software
+can only be implemented with
+deep copy semantics.
+Unnecessary copies can be avoided by using advanced techniques as expression
+templates and \ref move_semantics.
 
 */
 
@@ -894,13 +1081,30 @@ the element-wise conjugates, and the transposed %matrix:
 
 \include matrix_functions2.cpp
 
-The functions conj(A) and trans(A) do not change the matrices
+The functions conj(A), hermitian(A), and trans(A) do not change the matrices
 but they return views on them.
+While conj is and hermitian are read-only views -- since the elements
+of the referred matrices are not accessed but a function on them -- trans(A)
+returns a mutable view.
+
+For the sake of reliability, we conserve the const-ness of the referred
+matrix.
+The transposed of a constant matrix is itself constant (this feature alone required 
+a fair amount of non-trivial meta-programming).
+Only when the referred matrix is mutable the transposed will be:
+
+\include matrix_functions2a.cpp
+
+Sub-matrices also preserve the const attribute of the referred matrices or sub-matrices:
+
+\include matrix_functions3.cpp
+
+Details on the copy behavior of sub-matrices can be found in  section \ref copy_sub_matrix.
 
 More functions will be implemented in the future.
 
 
-Return to \ref matrix_insertion "matrix insertion"
+Return to \ref matrix_assignment "matrix assignment"
 or proceed to \ref matrix_expr "matrix expressions".
 
 
@@ -1015,7 +1219,9 @@ might not be detected and result in undefined mathematical behavior.
 %Matrix-vector products (MVP) cannot be combined with arbitrary %vector
 operations.
 It is planned for the future to support expressions like
+\code
 r= b - A*x.
+\endcode
 
 Already supported is scaling of arguments, as well for the %matrix
 as for the vector:
@@ -1049,7 +1255,209 @@ or proceed to \ref iteration "iteration".
 
 /*! \page iteration Iteration
 
-This section will be written soon.
+
+Iterative traversal of collections is implemented in MTL4 in two ways:
+- By iterators and
+- By cursors and property maps
+.
+The latter is more general and allows especially for sparse structures 
+a cleaner abstraction.
+Initially MTL4 was implemented entirely with this paradigm but it
+has shown that algorithms running exclusively on dense structures
+are easier to implement in terms of iterators.
+
+All cursors and iterators are handled by:
+- The function begin();
+- The function end(); and
+- The class range_generator.
+
+
+They are all templated by a tag that determines the form of traversal.
+The following tags are currently available for cursors:
+- tag::all: iterate over all elements of a collection (or sub-collection);
+- tag::nz: iterate over all non-zero elements;
+- tag::row: iterate over all rows;
+- tag::col: iterate over all columns;
+- tag::major: iterate over the major dimension (according to orientation);
+- tag::minor: iterate over the minor dimension (according to orientation).
+.
+For iterators:
+- tag::iter::all: iterate over all elements of a collection (or sub-collection);
+- tag::iter::nz: iterate over all non-zero elements.
+.
+And finally for constant iterators:
+- tag::const_iter::all: iterate over all elements of a collection (or sub-collection);
+- tag::const_iter::nz: iterate over all non-zero elements.
+.
+
+Let's consider cursors in more detail.
+
+
+\section cursor Cursors 
+
+The approach was proposed by David Abrahams in order to separate the
+form of traversal from the manner of access.
+A cursor is a tool that can be used to visit different objects of a collection.
+In an array it can be compared with a position rather than a pointer
+because it is not fixed how one accesses the values.
+The traversal is essential the same as with iterators, e.g.:
+\code
+    for (Cursor cursor(begin(x)), cend(end(x)); cursor != cend; ++cursor)
+       do_something(cursor);
+\endcode
+We will come back to the type Cursor later (please be patient).
+
+In order to have more flexibility we templatized the begin and end functions:
+\code
+    for (Cursor cursor(begin<tag::all>(x)), cend(end<tag::all>(x)); cursor != cend; ++cursor)
+       do_something(cursor);
+\endcode
+This cursor for instance goes over all elements of a matrix or vector, including
+structural zeros.
+
+\section nested_cursor Nested Cursors 
+
+Several cursors can be used to create other cursors.
+This is necessary to traverse multi-dimensional collections like matrices.
+In most cases you will use nested cursors via the tags tag::row and tag::col.
+The returned cursor can be a certain collection (e.g. a vector)
+or just a place-holder that only contains some index and reference
+to a collection but cannot be used directly in operations.
+If the type and orientation permits, one can access the elements with
+tag::all or tag::nz, e.g.:
+\code
+    for (Cursor cursor(begin<tag::row>(x)), cend(end<tag::row>(x)); cursor != cend; ++cursor)
+       for (ICursor icursor(begin<tag::nz>(cursor)), icend(end<tag::nz>(cursor)); icursor != icend; ++icursor)
+           do_something(icursor);
+\endcode
+Often it is more efficient to adapt an algorithm to the orientation of a matrix.
+Then it is convenient to use tag::major instead of dispatching for row-major and column major matrices:
+\code
+    for (Cursor cursor(begin<tag::major>(x)), cend(end<tag::major>(x)); cursor != cend; ++cursor)
+       for (ICursor icursor(begin<tag::nz>(cursor)), icend(end<tag::nz>(cursor)); icursor != icend; ++icursor)
+           do_something(icursor);
+\endcode
+
+
+\section property_maps Property Maps
+
+The concept of property maps has not only the advantage to allow for different
+forms of accessibility of values but also to provide different views or details
+of this value.
+Matrices have four property maps:
+- row;
+- col; 
+- value; and
+- const_value.
+.
+They are all accessed by dereferenced cursors, e.g.
+\code
+    for (Cursor cursor(begin<tag::nz>(x)), cend(end<tag::nz>(x)); cursor != cend; ++cursor)
+	cout << "matrix[" << row(*cursor) << ", " << col(*cursor) << "] = " 
+	     << const_value(*cursor) << '\n';
+\endcode
+Three of the property maps are constant (guess which).
+Obviously only value can be changed. The syntax is the following:
+\code
+    value(*cursor, 7);
+\endcode
+
+\section range_generator Range Generator
+
+The type traits traits::range_generator<Tag, Collection>
+is used to determine the type of cursor:
+\code
+    typedef typename traits::range_generator<tag::row, Matrix>::type c_type;
+    typedef typename traits::range_generator<tag::row, c_type>::type  ic_type;
+
+    for (c_type cursor(begin<tag::row>(x)), cend(end<tag::row>(x)); cursor != cend; ++cursor)
+       for (ic_type icursor(begin<tag::nz>(cursor)), icend(end<tag::nz>(cursor)); icursor != icend; ++icursor)
+           do_something(icursor);
+\endcode
+As can be seen in the examples, cursors that represents sub-collections (e.g. rows) can
+be used as collection type.
+
+\section iterators Iterators
+
+In some contexts, especially with dense data only,
+iterators are simpler to use.
+With the property map syntax, one cannot apply operators like +=
+or a modifying function.
+Therefore we provide iterators for dense matrices and vectors.
+For sparse matrices there was no use case so far because iterators
+do not reveal which matrix element they are pointing at.
+
+The usage of iterators is very similar to those of cursors:
+\code
+    for (Iter iter(begin<tag::const_iter::nz>(x)), iend(end<tag::const_iter::nz>(x)); 
+         iter != iend; ++iter)
+	cout << "matrix value = " << *iter << '\n';
+\endcode
+In contrast to the previous examples we can only output the value without the indices.
+The type of Iter can be determined with range_generator in the same way.
+
+\section nested_iterators Nested Iterators 
+
+Nesting of iterators is also analog to cursors.
+However, iterators only exist to access elements not sub-collections.
+The nesting is therefore realized by mixing cursors and iterators.
+\code
+    for (Cursor cursor(begin<tag::major>(x)), cend(end<tag::major>(x)); cursor != cend; ++cursor)
+        for (Iter iter(begin<tag::const_iter::nz>(cursor)), iend(end<tag::const_iter::nz>(cursor)); 
+             iter != iend; ++iter)
+	    cout << "matrix value = " << *iter << '\n';
+\endcode
+In the example we iterate over the rows by a cursor and then iterate over the elements with
+an iterator.
+
+
+\section range_complexity Advanced topic: Choosing traversal by complexity
+
+Range generators in MTL4 have a notion of complexity.
+That is for a given collection and a given form of traversal it can
+be said at compile time which complexity this traversal has.
+
+Dense matrices are traversed with linear or cached_linear complexity.
+The latter is used for contiguous memory access over strided ones,
+which is also linear but considerably slower.
+This distinction is mathematically questionable but useful
+in practical contexts.
+
+Sparse matrices have linear complexity when traversed along the orientation.
+Traversing compressed matrices perpendicular to the orientation 
+(e.g. a CRS matrix column-wise)
+has infinite complexity because it is not implemented.
+Moreover, the default (non-spezialized) range_generator has infinite
+complexity so that it is per se defined for arbitrary collections and tags.
+Whether the range generator is actually really implemented can be tested
+by comparing the complexity with infinite (by using MPL functions).
+
+The following example shows a simpler way to find out the best traversal:
+\include minimize_complexity.cpp
+
+Please not that the example uses compressed sparse matrices and not all
+forms of traversion are supported.
+Obviously a linear complexity is lower than an infinite and the 
+range generator without implemenation is never used.
+As the free functions begin() and end() are internally always implemented
+by member functions of range_generator (free template functions cannot be 
+spezialized partially) we used directly the member functions in the example.
+
+
+The range generator can also be minimized recursively between three and
+more alternatives:
+\code
+    typedef typename min<range_generator<tag::row, Matrix>, 
+	                 typename min<range_generator<tag::col, Matrix>,
+	                              range_generator<tag::major, Matrix> >::type 
+                        >::type range_type;
+\endcode
+
+In many cases there is no need for explicitly minimizing the complexity because
+tag::major usually will yield the same results (but this is not so cool).
+
+
+
 
 Return to \ref matrix_vector_expr "matrix-vector expressions"
 or proceed to \ref rec_intro "recursion".
@@ -1139,7 +1547,7 @@ or proceed to \ref copying "copying".
 //-----------------------------------------------------------
 
 
-/*! \page copying Copying in MTL4: Shallow versus Deep
+/*! \page copying Copying in MTL4
 
 Shallow copy -- i.e. copying data types with complex internal structures 
 by only copying pointers at the upper level -- allows for very short
@@ -1155,43 +1563,63 @@ that is after
 \code 
 x= y; 
 \endcode one can change x or y without any impact on
-the other object.
+the other object, see also \ref shallow_copy_problems.
 
-Some functions in MTL4 -- like sub_matrix -- return matrices or %matrix-like objects.
-Applying  deep copy here would cause a serious performance penalty.
-For that reason copy constructors use shallow copy.
-Thus the code
-\code
-matrix_type A(10, 10);
-A= B;
+\section copy_sub_matrix Copying Sub-matrices
+
+Sub-matrices are a special case.
+The expression
+\code 
+Matrix E= sub_matrix(A, 2, 5, 1, 9);
 \endcode
-is not equavalent to
-\code
-matrix_type A= B;
+means that E is defined as a mutable sub-matrix of A.
+Internally this is realized as a view on some of A's values.
+One could compare this to a window on A. 
+As a result, modifications of E affect A and modifications of A change
+E if the change was in the range of rows and columns that E refers to.
+This  admittedly behaves similarly to shallow copy behavior but is nevertheless
+different.
+In the case of a sub-matrix, we explicitly request aliasing.
+The modification of A can easily prevented by a const argument
+\code 
+const Matrix E= sub_matrix(A, 2, 5, 1, 9);
 \endcode
+Furthermore, the sub-matrix of a const matrix (or another const sub-matrix)
+is const itself.
+Unless explicitly casted away, const-ness is conserved within MTL4
+and cannot be circumvented like in other libraries with shallow copy assignment.
+Resuming, the construction of a matrix with sub_matrix is not a
+shallow copy but the definition of a reference to a part of another matrix.
 
-With the current implementation we highly advise you to use the assignment
-wherever possible.
-The copy constructor is too dangerous in its present form!
-In addition, several expressions are transformed when used with assignment
-but not with copy constructor.
-For instance, 
+Once sub-matrix is defined, assignments are regular deep copies, i.e.
 \code
-A= B * C;
+E= B;
 \endcode
-is internally handled as
+copies the values of B to E and implicitly to the corresponding entries of A.
+Sub-matrices are not move semantics, i.e.
 \code
-mult(B, C, A);
+E= f(B);
 \endcode
-A similar transformation does not exist for the copy constructor (yet).
+cannot use move semantics.
+It is correct regarding the destruction of the temporaries and the values of E
+but not concerning the modifications of A, which we defined E being a sub-matrix of.
 
-We admit that this situation -- the inconsistency between assignment and copy
-constructor -- is not satisfying.
-In some future release this misbehavior will be terminated by introducing
-move semantics that allows to limit shallow copy to cases where it is permissible.
-For now we can only recommend you to use assignments.
+If you do not want the aliasing behavior of sub_matrix but are only interested
+in the values of the sub-matrix, you can use the function \ref clone.
+\code 
+Matrix F= clone(sub_matrix(A, 2, 5, 1, 9));
+\endcode
+Then deep copy is explicitly used.
+F and A are thus entirely decoupled: any modification of either of them
+will not affect the other.
 
-
+Any older remarks on inconsistencies between copy construction and assignment
+are invalid now.
+In addition, every expression that can be assigned can also be used in copy
+constructors, e.g.:
+\code
+compressed2D<double> A(B * C * D + E);
+\endcode
 
 
 

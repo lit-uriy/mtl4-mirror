@@ -13,6 +13,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
+#include <boost/mpl/less.hpp>
 
 namespace mtl { namespace traits { namespace detail {
 
@@ -142,6 +143,22 @@ namespace mtl { namespace traits { namespace detail {
 	}
     };
 
-}}} // namespace mtl::traits::detail
+} // namespace detail
+
+    namespace range {
+
+	template <typename Range1, typename Range2>
+	struct min
+	    : public boost::mpl::if_< 
+	            boost::mpl::less<
+	                   typename Range1::complexity, 
+	                   typename Range2::complexity>
+	          , Range1
+	          , Range2
+	      >
+	{};
+    }
+
+}} // namespace mtl::traits
 
 #endif // MTL_DETAIL_RANGE_GENERATOR_INCLUDE
