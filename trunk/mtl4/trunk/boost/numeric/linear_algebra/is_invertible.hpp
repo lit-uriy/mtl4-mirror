@@ -46,7 +46,7 @@ struct is_invertible_t< mult<Element>, Element >
 {
     bool operator() (const mult<Element>&, const Element& v) const 
     {
-	return !(v == zero(v));
+	return v != zero(v);
     }
 };
 
@@ -68,7 +68,7 @@ namespace detail {
     {
 	bool operator() (const Operation&, const Element& v)
 	{
-	    return !(v == Element(0));
+	    return v != Element(0);
 	}
     };
 
