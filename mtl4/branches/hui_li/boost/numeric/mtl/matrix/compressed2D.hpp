@@ -293,7 +293,9 @@ class compressed2D
     typedef Elt                                      value_type;
     typedef compressed_key                           key_type;
     // return type of operator() const
-    typedef value_type                               const_access_type;
+    typedef value_type                               const_access_type; 
+    // const value_type& isn't defined everywhere
+    typedef value_type                               const_reference;
 
     // typedef const_pointer_type                             key_type;
     typedef size_t                                   size_type;
@@ -403,9 +405,10 @@ class compressed2D
 
     const_access_type operator() (size_type row, size_type col) const
     {
+	using math::zero;
         MTL_DEBUG_THROW_IF(inserting, logic_error("Reading data during insertion has undefined behavior"));
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
-	return pos ? data[pos] : value_type(0);
+	return pos ? data[pos] : zero(value_type()); 
     }
 
     value_type value_from_offset(size_type offset) const

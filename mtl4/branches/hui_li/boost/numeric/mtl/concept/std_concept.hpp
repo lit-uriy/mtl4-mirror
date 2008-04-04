@@ -28,6 +28,14 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
 
+    // Stay with the old names (for the moment)
+
+    auto concept Addable<typename T, typename U = T> : std::HasPlus<T, U> {}
+    auto concept Subtractable<typename T, typename U = T> : std::HasMinus<T, U> {}
+    auto concept Multiplicable<typename T, typename U = T> : std::HasMultiply<T, U> {}
+    auto concept Divisible<typename T, typename U = T> : std::HasDivide<T, U> {}
+
+#if 0
     using std::Addable;
     using std::Subtractable;
     using std::Multiplicable;
@@ -37,6 +45,7 @@ namespace mtl {
 	typename result_type;
 	result_type operator/(const T& t, const U& u);
     };
+#endif
 
 #else // without concepts
 
@@ -144,7 +153,7 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     concept UnaryStaticFunctor<typename T>
-      : std::Callable1<T>
+    //: std::Callable1<T>
     {
 	typename result_type;
 	

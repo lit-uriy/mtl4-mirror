@@ -7,6 +7,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+
 // Adapted from GLAS implementation by Karl Meerbergen and Toon Knappen
 
 
@@ -15,16 +16,17 @@
 
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
-
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { namespace vector {
 
 // Generic assign operation expression template for vectors
 // Model of VectorExpression
 template <class E1, class E2, typename SFunctor>
-struct vec_vec_aop_expr 
+class vec_vec_aop_expr 
     : public vec_expr< vec_vec_aop_expr<E1, E2, SFunctor> >
 {
+public:
     typedef vec_expr< vec_vec_aop_expr<E1, E2, SFunctor> >  expr_base;
     typedef typename E1::value_type              value_type;
     
@@ -38,22 +40,29 @@ struct vec_vec_aop_expr
     typedef E2 second_argument_type ;
     
     vec_vec_aop_expr( first_argument_type& v1, second_argument_type const& v2 )
-	: first( v1 ), second( v2 ), delayed_assign( false )
+	: expr_base( *this ), first( v1 ), second( v2 ), delayed_assign( false )
     {
 	second.delay_assign();
     }
 
     ~vec_vec_aop_expr()
     {
-	if (!delayed_assign)
+	if (!delayed_assign) {
+	    // If target is constructed by default it takes size of source
+	    if (first.size() == 0) first.change_dim(second.size());
+
+	    // If sizes are different for any other reason, it's an error
+	    MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
+
 	    for (size_type i= 0; i < first.size(); ++i)
 		SFunctor::apply( first(i), second(i) );
+	}
     }
     
     void delay_assign() const { delayed_assign= true; }
 
     size_type size() const {
-	assert( first.size() == second.size() ) ;
+	assert( first.size() == 0 || first.size() == second.size() ) ;
 	return first.size() ;
     }
 
@@ -80,4 +89,5 @@ struct vec_vec_aop_expr
 
 
 #endif
+
 

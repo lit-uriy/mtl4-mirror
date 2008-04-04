@@ -39,7 +39,7 @@ namespace math {
 	plus_assign_type operator+= (VectorImage, result_type);
 	
 	typename minus_assign_type;
-	minus_assign_type operator+= (VectorImage, result_type);
+	minus_assign_type operator-= (VectorImage, result_type);
 
 	axiom Addability(Operator a, VectorDomain x, VectorDomain y)
 	{

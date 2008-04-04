@@ -26,6 +26,7 @@
 #include <boost/numeric/mtl/matrix/operators.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 
 #ifdef MTL_WITH_MOVE
@@ -160,6 +161,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     typedef Value                             value_type;
     // return type of operator() const
     typedef const value_type&                 const_access_type;
+    typedef const value_type&                 const_reference;
+    typedef value_type&                       reference;
 
     typedef const value_type*                 const_pointer_type;
     typedef const_pointer_type                key_type;
@@ -735,6 +738,28 @@ struct is_clonable< mtl::dense2D<Value, Parameters> > : boost::mpl::true_ {};
     struct is_movable< mtl::dense2D<Value, Parameters> > : boost::mpl::true_ {};
   }
 #endif
+
+
+namespace math {
+
+// Multiplicative identities of matrices
+template <typename Value, typename Parameters>
+struct identity_t< mult<mtl::dense2D<Value, Parameters> >, mtl::dense2D<Value, Parameters> >
+    : public std::binary_function< mult<mtl::dense2D<Value, Parameters> >, 
+				   mtl::dense2D<Value, Parameters>, 
+				   mtl::dense2D<Value, Parameters> >
+{
+    typedef mtl::dense2D<Value, Parameters>  matrix_type;
+
+    matrix_type operator() (const mult<matrix_type>&, const matrix_type& ref) const
+    {
+	matrix_type tmp(ref);
+	tmp= zero(matrix_type::value_type());
+	return tmp;
+    }
+};
+
+} // namespace math
 
 
 #endif // MTL_DENSE2D_INCLUDE

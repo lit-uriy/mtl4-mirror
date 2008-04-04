@@ -58,6 +58,16 @@ struct map_view
 	ref.delay_assign();
     }
 
+    size_type size() const 
+    { 
+	return ref.size(); 
+    }
+    
+    size_type stride() const 
+    { 
+	return ref.stride(); 
+    }
+
     const_reference_type operator() (size_type i) const
     { 
         return functor(ref(i));

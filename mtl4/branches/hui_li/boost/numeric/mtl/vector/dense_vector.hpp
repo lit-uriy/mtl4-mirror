@@ -67,7 +67,7 @@ public:
     template <typename Vector>
     void check_size( const Vector& v ) const
     {
-	MTL_DEBUG_THROW_IF( v.size() != size(), incompatible_size());
+	MTL_DEBUG_THROW_IF( v.size() == 0 && v.size() != size(), incompatible_size());
     }
 
 

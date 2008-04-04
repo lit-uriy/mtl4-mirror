@@ -34,8 +34,11 @@ struct scalar : virtual universe {};
 /** At the moment all treated as scalars (will be precised later) */
 struct unknown : virtual scalar {};
 
+/// Any collection, i.e. vectors, matrices or higher-dimensional tensor
+struct collection : virtual universe {};
+
 /// Tag for any MTL vector (and user-declared MTL vectors)
-struct vector : virtual universe {};
+struct vector : virtual collection {};
 
 /// Tag for any MTL column vector (and user-declared MTL vectors)
 struct col_vector : virtual vector {};
@@ -44,7 +47,7 @@ struct col_vector : virtual vector {};
 struct row_vector : virtual vector {};
 
 /// Tag for any MTL matrix (and user-declared MTL matrices)
-struct matrix : virtual universe {};
+struct matrix : virtual collection {};
 
 /// Tag for any dense collection
 struct dense : virtual universe {};
