@@ -25,6 +25,13 @@ namespace mtl { namespace operations {
 	    return matrix(row, col);
 	}
 
+#if 0
+	const ValueRef operator[] (size_type col) const
+	{
+	    return matrix(row, col);
+	}
+#endif
+
       protected:
 	Ref         matrix;
 	size_type   row;

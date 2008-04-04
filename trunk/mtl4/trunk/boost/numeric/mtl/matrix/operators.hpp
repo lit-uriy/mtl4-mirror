@@ -18,39 +18,39 @@
 
 namespace mtl { namespace matrix {
 
-template <typename M1, typename M2>
-inline mat_mat_plus_expr<M1, M2>
-operator+ (const mat_expr<M1>& m1, const mat_expr<M2>& m2)
+template <typename E1, typename E2>
+inline mat_mat_plus_expr<E1, E2>
+operator+ (const mat_expr<E1>& e1, const mat_expr<E2>& e2)
 {
     // do not add matrices with inconsistent value types
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<M1>::type, 
-			                typename ashape::ashape<M2>::type>::value));
-    return mat_mat_plus_expr<M1, M2>(m1.ref, m2.ref);
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
+			                typename ashape::ashape<E2>::type>::value));
+    return mat_mat_plus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 
 
 #if 0
 // Planned for future optimizations on sums of dense matrix expressions
-template <typename M1, typename M2>
-inline dmat_dmat_plus_expr<M1, M2>
-operator+ (const dmat_expr<M1>& m1, const dmat_expr<M2>& m2)
+template <typename E1, typename E2>
+inline dmat_dmat_plus_expr<E1, E2>
+operator+ (const dmat_expr<E1>& e1, const dmat_expr<E2>& e2)
 {
     // do not add matrices with inconsistent value types
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<M1>::type, 
-			                typename ashape::ashape<M2>::type>::value));
-    return dmat_dmat_plus_expr<M1, M2>(m1.ref, m2.ref);
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
+			                typename ashape::ashape<E2>::type>::value));
+    return dmat_dmat_plus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 #endif
 
 
-template <typename M1, typename M2>
-inline mat_mat_minus_expr<M1, M2>
-operator- (const mat_expr<M1>& m1, const mat_expr<M2>& m2)
+template <typename E1, typename E2>
+inline mat_mat_minus_expr<E1, E2>
+operator- (const mat_expr<E1>& e1, const mat_expr<E2>& e2)
 {
     // do not add matrices with inconsistent value types
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<M1>::type, 
-			                typename ashape::ashape<M2>::type>::value));
-    return mat_mat_minus_expr<M1, M2>(m1.ref, m2.ref);
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
+			                typename ashape::ashape<E2>::type>::value));
+    return mat_mat_minus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 
 

@@ -7,20 +7,20 @@ int main(int argc, char* argv[])
     
     typedef std::complex<double>      cdouble;
     const unsigned                    xd= 2, yd= 5, n= xd * yd;
-    compressed2D<cdouble>             A(n, n);
+    dense2D<cdouble>                  A(n, n);
     matrix::laplacian_setup(A, xd, yd); 
 
     // Fill imaginary part of the matrix
     A*= cdouble(1, -1);
     std::cout << "A is\n" << with_format(A, 7, 1) << "\n";
 
-    std::cout << "trace(A) is " << trace(A) << "\n\n";
+    std::cout << "sub_matrix(A, 2, 4, 1, 7) is\n" 
+	      << with_format(sub_matrix(A, 2, 4, 1, 7), 7, 1) << "\n";
 
-    std::cout << "conj(A) is\n" << with_format(conj(A), 7, 1) << "\n";
+    dense2D<cdouble> B= sub_matrix(A, 2, 4, 1, 7);
+    B[1][2]= 88;
 
-    std::cout << "trans(A) is\n" << with_format(trans(A), 7, 1) << "\n";
-
-    std::cout << "hermitian(A) is\n" << with_format(hermitian(A), 7, 1) << "\n";
+    std::cout << "A is\n" << with_format(A, 7, 1) << "\n";
 
     return 0;
 }

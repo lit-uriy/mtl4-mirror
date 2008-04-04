@@ -17,10 +17,6 @@ template <typename Matrix>
 struct mat_expr
 {
     typedef Matrix   ref_type;
-
-    explicit mat_expr(Matrix& ref) : ref(ref) {}
-
-    ref_type&        ref;
 };
 
 
@@ -30,8 +26,6 @@ struct dmat_expr
     : public mat_expr<Matrix>
 {
     typedef mat_expr<Matrix> base;
-
-    explicit dmat_expr(Matrix& ref) : base(ref) {}
 };
 
 
@@ -41,8 +35,6 @@ struct smat_expr
     : public mat_expr<Matrix>
 {
     typedef mat_expr<Matrix> base;
-
-    explicit smat_expr(Matrix& ref) : base(ref) {}
 };
 
 

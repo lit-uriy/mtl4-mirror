@@ -10,7 +10,7 @@
 #ifndef MTL_HERMITIAN_INCLUDE
 #define MTL_HERMITIAN_INCLUDE
 
-#include <boost/numeric/mtl/matrix/map_view.hpp>
+#include <boost/numeric/mtl/matrix/hermitian_view.hpp>
 
 namespace mtl { 
 

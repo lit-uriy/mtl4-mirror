@@ -17,17 +17,17 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
+#include <boost/numeric/mtl/operation/clone.hpp>
+
+
+#ifdef MTL_WITH_MOVE
+#  include <adobe/move.hpp>
+#endif
+
 
 namespace mtl { namespace detail {
 using std::size_t;
   
-template <typename Matrix, bool Enable>
-struct array_size
-{
-    // More convenient when always exist (and then not use it)
-    static std::size_t const value= 0;
-};
-
 // Macro MTL_ENABLE_ALIGNMENT is by default not set
 
 // Minimal size of memory allocation using alignment
@@ -40,129 +40,135 @@ struct array_size
 #  define MTL_ALIGNMENT 128
 #endif
 
-template <typename Value, bool OnStack, unsigned Size= 0>
-struct generic_array
+
+// Manage size only if template parameter is 0
+template <unsigned Size>
+struct size_helper
 {
-    typedef Value                             value_type;
-    typedef generic_array                     self;
+    typedef size_helper self;
 
-    void alloc(std::size_t size)
+    explicit size_helper(std::size_t size)
     {
-	if (!size) return;
-#     ifndef MTL_ENABLE_ALIGNMENT
-	this->data= new value_type[size];
-#     else
-	bool        align= size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT;
-	std::size_t bytes= size * sizeof(value_type);
+	set_size(size);
+    }
 
-	if (align)
-	    bytes+= MTL_ALIGNMENT - 1;
-
-	char* p= this->malloc_address= new char[bytes];
-	if (align)
-	    while ((long int)(p) % MTL_ALIGNMENT) p++;
-
-	this->data= reinterpret_cast<value_type*>(p);
+    void set_size(std::size_t size)
+    {
+#     ifndef MTL_IGNORE_STATIC_SIZE_VIOLATION
+	MTL_THROW_IF(Size != size, change_static_size());
 #     endif
     }
 
-    void delete_it()
+    std::size_t used_memory() const
     {
-	// printf("delete_it: data %p, malloc %p\n", this->data, malloc_address);      
-#       ifndef MTL_ENABLE_ALIGNMENT
-	    if (!extern_memory && this->data) delete[] this->data;
-#       else
-	    if (!extern_memory && malloc_address) delete[] malloc_address;
-#       endif
+	return Size;
     }
 
-  public:
-    generic_array()
-	: extern_memory(false), 
-#       ifdef MTL_ENABLE_ALIGNMENT
-	  malloc_address(0), 
-#       endif
-	  data(0) 
-    {}
+    friend void swap(self& x, self& y) {}
+};
 
-    explicit generic_array(Value *data) 
-	: extern_memory(true), 
-#       ifdef MTL_ENABLE_ALIGNMENT
-	  malloc_address(0), 
-#       endif
-	  data(data) 
-    {}    
+template <>
+struct size_helper<0>
+{
+    typedef size_helper self;
 
-    explicit generic_array(std::size_t size) 
-	: extern_memory(false), 
-#       ifdef MTL_ENABLE_ALIGNMENT
-	  malloc_address(0), 
-#       endif
-	  data(0) 
+    size_helper(std::size_t size= 0) : my_used_memory(size) {}
+
+    void set_size(std::size_t size)
     {
-	alloc(size);
+	my_used_memory= size;
     }
 
-    void realloc(std::size_t size, std::size_t old_size)
+    std::size_t used_memory() const
     {
-	// If already have memory of the right size we can keep it
-	if (size == old_size) 
-	    return;
-	MTL_THROW_IF(extern_memory, 
-		     logic_error("Can't change the size of collections with external memory"));
-	delete_it();
-	alloc(size);
+	return my_used_memory;
     }
 
-    ~generic_array()
+    friend void swap(self& x, self& y) 
     {
-	delete_it();
+	std::swap(x.my_used_memory, y.my_used_memory);
     }
-
-    void swap(self& other)
-    {
-	using std::swap;
-	swap(extern_memory, other.extern_memory);
-#       ifdef MTL_ENABLE_ALIGNMENT
-	    swap(malloc_address, other.malloc_address);
-#       endif
-	swap(data, other.data);
-    }	
 
   protected:
-    bool                                      extern_memory;       // whether pointer to external data or own
-#ifdef MTL_ENABLE_ALIGNMENT
-    char*                                     malloc_address;
-#endif
-  public:
-    Value    *data;
+    std::size_t                               my_used_memory;
 };
 
-template <typename Value, unsigned Size>
-struct generic_array<Value, true, Size>
-{
-    Value    data[Size];
-    explicit generic_array(std::size_t) {}
 
-    void swap (generic_array<Value, true, Size>& other)
+// Encapsulate behavior of alignment
+
+# ifdef MTL_ENABLE_ALIGNMENT
+
+    template <typename Value>
+    struct alignment_helper
     {
-	using std::swap;
-	swap(*this, other);
-    }
+	typedef alignment_helper self;
 
-    void realloc(std::size_t) 
+	alignment_helper() : malloc_address(0) {}
+
+	Value* alligned_alloc(std::size_t size)
+	{
+	    bool        align= size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT;
+	    std::size_t bytes= size * sizeof(value_type);
+	    
+	    if (align)
+		bytes+= MTL_ALIGNMENT - 1;
+
+	    char* p= malloc_address= new char[bytes];
+	    if (align)
+		while ((long int)(p) % MTL_ALIGNMENT) p++;
+		// p+= MTL_ALIGNMENT - (long int)(p) % MTL_ALIGNMENT;
+
+	    return reinterpret_cast<value_type*>(p);
+	}
+
+	void aligned_delete(bool is_own, Value*& data)
+	{
+	    if (is_own && malloc_address) delete[] malloc_address;
+	    data= 0;
+	}
+
+	friend void swap(self& x, self& y) 
+	{
+	    using std::swap
+	    swap(x.malloc_address, y.malloc_address);
+	}
+
+      private:	    
+	char*                                     malloc_address;
+    };
+
+# else
+
+    template <typename Value>
+    struct alignment_helper
     {
-	assert(false); // Arrays on stack cannot be reallocated
-    }
-};
+	typedef alignment_helper self;
 
-// Base class for matrices that have contigous piece of memory
+	Value* alligned_alloc(std::size_t size)
+	{	
+		Value* tmp= new Value[size];
+		//std::cout << "Allocated " << tmp << '\n';
+		return tmp;
+	    //return new Value[size];
+	}
+
+	void aligned_delete(bool is_own, Value*& data)
+	{
+		if (is_own && data) //std::cout << "Delete " << data << '\n', 
+			delete[] data;
+	}
+
+	friend void swap(self& x, self& y) {}
+    };
+
+# endif
+
+
 template <typename Value, bool OnStack, unsigned Size>
-struct contiguous_memory_block 
-  : public generic_array<Value, OnStack, Size>
+struct memory_crtp
+//    : public contiguous_memory_block<Value, OnStack, Size>
 {
-    typedef contiguous_memory_block             self;
-    typedef generic_array<Value, OnStack, Size> base;
+    typedef contiguous_memory_block<Value, OnStack, Size> base;
 
     static bool const                         on_stack= OnStack;
     
@@ -170,71 +176,300 @@ struct contiguous_memory_block
     typedef value_type*                       pointer_type;
     typedef const value_type*                 const_pointer_type;
 
-  protected:
-    std::size_t                               my_used_memory;
-
-  public:
-    // Reference to external data (must be heap)
-    explicit contiguous_memory_block(value_type* a, std::size_t size)
-      : base(a), my_used_memory(size) {}
-
-    explicit contiguous_memory_block(std::size_t size)
-	: base(size), my_used_memory(size) {}
-
-    contiguous_memory_block() : my_used_memory(0) {}
-
-    void swap(self& other)
-    {
-	base::swap(other);
-	std::swap(my_used_memory, other.my_used_memory);
-    }
-
-    void realloc(std::size_t size) 
-    {
-	base::realloc(size, my_used_memory);
-	my_used_memory= size;
-    }
-
-
     // offset of key (pointer) w.r.t. data 
     // values must be stored consecutively
-    size_t offset(const value_type* p) const 
+    size_t offset(const Value* p) const 
     { 
-      return p - this->data; 
+      return p - static_cast<const base&>(*this).data; 
     }
 
     // returns pointer to data
     pointer_type elements()
     {
-      return this->data; 
+      return static_cast<base&>(*this).data; 
     }
 
     // returns const pointer to data
     const_pointer_type elements() const 
     {
-      return this->data; 
+      return static_cast<const base&>(*this).data; 
     }
 
     // returns n-th value in consecutive memory
     // (whatever this means in the corr. matrix format)
     value_type& value_n(size_t offset)
     { 
-      return this->data[offset]; 
+      return static_cast<base&>(*this).data[offset]; 
     }
 
     // returns n-th value in consecutive memory
     // (whatever this means in the corr. matrix format)
     const value_type& value_n(size_t offset) const 
     { 
-      return this->data[offset]; 
+      return static_cast<const base&>(*this).data[offset]; 
+    }
+    
+};
+
+
+template <typename Value, bool OnStack, unsigned Size>
+struct contiguous_memory_block
+    : public size_helper<Size>,
+      public alignment_helper<Value>,
+      public memory_crtp<Value, OnStack, Size>
+{
+    typedef Value                             value_type;
+    typedef contiguous_memory_block                     self;
+    typedef size_helper<Size>                 size_base;
+    typedef alignment_helper<Value>           alignment_base;
+
+    /// Category of memory, determines behaviour
+    enum c_t {own,         //< My own memory: allocate and free it
+	      external,    //< Memory, complete memory block of other item, only reference 
+	      view         //< View of other's memory (e.g. sub-matrix), different construction than external
+    };
+
+  private:
+
+    void alloc(std::size_t size)
+    {
+	category= own;
+	this->set_size(size);
+	data= this->alligned_alloc(this->used_memory());
+    }
+
+    void delete_it()
+    {
+	this->aligned_delete(category == own, data);
+    }
+
+    template <typename Other>
+    void copy_construction(const Other& other)
+    {
+	using std::copy;
+	// std::cout << "Copied in copy constructor.\n";	
+	alloc(other.used_memory());
+	// std::cout << "My address: " << data << ", other address: " << other.data << '\n';
+	copy(other.data, other.data + other.used_memory(), data);
+    }
+
+    void move_construction(self& other)
+    {
+	// std::cout << "Data moved in constructor.\n";
+	category= own; data= 0;
+	swap(*this, other);
+    }
+
+    // Copy the arguments of a view (shallowly) and leave original as it is
+    void copy_view(const self& other)
+    {
+	// std::cout << "View copied (shallowly).\n";
+	assert(other.category == view);
+	category= view;
+	this->set_size(other.used_memory());
+	data= other.data;
+    }
+
+    template <typename Other>
+    void copy_assignment(const Other& other)
+    {
+	// std::cout << "Copied in assignment.\n";	
+	MTL_DEBUG_THROW_IF(this->used_memory() != other.used_memory(), incompatible_size());
+	std::copy(other.data, other.data + other.used_memory(), data);
+    }
+
+  public:
+    contiguous_memory_block() : category(own), data(0) {}
+
+    explicit contiguous_memory_block(Value *data, std::size_t size, bool is_view= false) 
+	: category(is_view ? view : external), size_base(size), data(data)
+    {}    
+
+    explicit contiguous_memory_block(std::size_t size) : category(own)
+    {
+	// std::cout << "Constructor with size.\n";
+	alloc(size);
+	// std::cout << "New block at " << data << '\n';
+    }
+
+#ifdef MTL_WITH_MOVE
+    // If possible move data
+    explicit contiguous_memory_block(self& other, adobe::move_ctor)
+    {
+	switch (other.category) {
+	case own:        move_construction(other); break;
+	case external:   copy_construction(other); break; // Shouldn't happen, maybe exception
+	case view:       copy_view(other);
+	}
+    }
+#endif
+
+
+    // Default copy constructor
+    contiguous_memory_block(const self& other)
+    {
+	// std::cout << "Copy constructor (same type).\n";	
+	if (other.category == view)
+	    copy_view(other);
+	else
+	    copy_construction(other);
+    }
+
+    // Force copy construction
+    contiguous_memory_block(const self& other, clone_ctor)
+    {
+	// std::cout << "(Forced) Copy constructor (same type).\n";	
+	copy_construction(other);
+    }
+
+    // Other types must be copied always
+    template<typename Value2, bool OnStack2, unsigned Size2>
+    explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
+    {
+	std::cout << "Copy constructor (different type).\n";
+	copy_construction(other);
+    }
+
+
+    // Operator takes parameter by value and consumes it
+    self& operator=(self other)
+    {
+	move_assignment(other);
+	return *this;
+    }
+
+    // Same behavior as consuming assignment, to be used by derived classes
+protected:
+    void move_assignment(self& other)
+    {
+	// std::cout << "Consuming assignment operator (if same type).\n";
+	if (category == own && other.category == own)
+	    swap(*this, other);
+	else
+	    copy_construction(other);
+    }
+
+public:
+    template<typename Value2, bool OnStack2, unsigned Size2>
+    self& operator=(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
+    {
+	// std::cout << "Assignment from different array type -> Copy.\n";
+	copy_assignment(other);
+	return *this;
+    }
+
+
+    void set_view() { category= view; }
+
+    void realloc(std::size_t size)
+    {
+	// If already have memory of the right size we can keep it
+	if (size == this->used_memory()) 
+	    return;
+	MTL_THROW_IF(category != own, 
+		     logic_error("Can't change the size of collections with external memory"));
+	delete_it();
+	alloc(size);
+    }
+
+    ~contiguous_memory_block()
+    {
+	//std::cout << "Delete block with address " << data << '\n';
+	delete_it();
+    }
+
+    friend void swap(self& x, self& y)
+    {
+	using std::swap;
+	swap(x.category, y.category);
+	swap(x.data, y.data);
+	swap(static_cast<size_base&>(x), static_cast<size_base&>(y));
+	swap(static_cast<alignment_base&>(x), static_cast<alignment_base&>(y));
+    }	
+
+protected:
+    enum c_t                                  category;
+public:
+    Value                                     *data;
+};
+
+template <typename Value, unsigned Size>
+struct contiguous_memory_block<Value, true, Size>
+{
+    typedef Value                             value_type;
+    typedef contiguous_memory_block                     self;
+
+    Value    data[Size];
+    explicit contiguous_memory_block(std::size_t size= Size) 
+    {
+	MTL_DEBUG_THROW_IF(Size != size, incompatible_size());
+    }
+
+    // Move-semantics ignored for arrays on stack
+    contiguous_memory_block(const self& other)
+    {
+	std::cout << "Copied in copy constructor (same type).\n";
+	std::copy(other.data, other.data+Size, data);
+    }
+
+
+    template<typename Value2, bool OnStack2, unsigned Size2>
+    explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
+    {
+	// std::cout << "Copied in copy constructor (different type).\n";	
+	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
+	std::copy(other.data, other.data + other.used_memory(), data);
+    }
+
+    self& operator=(const self& other)
+    {
+	// std::cout << "Assignment from same type.\n";
+	std::copy(other.data, other.data+Size, data);
+	return *this;
+    }
+
+    // For consistency with non-static blocks, to be used by derived classes
+protected:
+    void move_assignment(self& other)
+    {
+	std::copy(other.data, other.data+Size, data);
+    }
+
+public:
+    template<typename Value2, bool OnStack2, unsigned Size2>
+    self& operator=(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
+    {
+	// std::cout << "Assignment from different type.\n";
+	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
+	std::copy(other.data, other.data + other.used_memory(), data);
+	return *this;
+    }
+
+
+    void realloc(std::size_t) 
+    {
+	assert(false); // Arrays on stack cannot be reallocated
     }
 
     std::size_t used_memory() const
     {
-	return my_used_memory;
+	return Size;
     }
 };
 
+
 }} // namespace mtl::detail
+
+#ifdef MTL_WITH_MOVE
+  namespace adobe {
+    template <typename Value, bool OnStack, unsigned Size>
+    struct is_movable< mtl::detail::contiguous_memory_block<Value, OnStack, Size> > : boost::mpl::bool_<!OnStack> {};
+  }
+#endif
+
+namespace mtl {
+    template <typename Value, bool OnStack, unsigned Size>
+    struct is_clonable< detail::contiguous_memory_block<Value, OnStack, Size> > : boost::mpl::bool_<!OnStack> {};
+}
 
 #endif // MTL_CONTIGUOUS_MEMORY_BLOCK_INCLUDE

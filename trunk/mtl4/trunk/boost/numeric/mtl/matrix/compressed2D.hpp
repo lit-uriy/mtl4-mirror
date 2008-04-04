@@ -320,23 +320,25 @@ class compressed2D
 	std::fill(starts.begin(), starts.end(), 0);
     }
 
-    void change_dim(size_type num_rows, size_type num_cols)
+    void change_dim(size_type r, size_type c)
     {
-	super::change_dim(mtl::non_fixed::dimensions(num_rows, num_cols));
-	starts.resize(this->dim1()+1);
-	make_empty();
+	if (this->num_rows() != r || this->num_cols() != c) {
+			super::change_dim(mtl::non_fixed::dimensions(r, c));
+			starts.resize(this->dim1()+1);
+			make_empty();
+		}
     }
 
     // if compile time matrix size, we can set the start vector
     explicit compressed2D () 
-	: super(), expr_base(*this), inserting(false)
+	: super(), inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
 
     // setting dimension and allocate starting vector
     explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
-      : super(d), expr_base(*this), inserting(false)
+      : super(d), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
@@ -344,71 +346,39 @@ class compressed2D
 
     // setting dimension and allocate starting vector
     compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
-      : super(non_fixed::dimensions(num_rows, num_cols)), expr_base(*this), inserting(false)
+      : super(non_fixed::dimensions(num_rows, num_cols)), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
     }
 
-    explicit compressed2D(const self& src)
-      : super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), expr_base(*this), inserting(false)
+    compressed2D(const self& src)
+      : super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	matrix_copy(src, *this);
     }
 
-    template <typename SrcValue, typename SrcParameters>
-    explicit compressed2D(const compressed2D<SrcValue, SrcParameters>& src)
-	: super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), expr_base(*this), inserting(false)
+    template <typename MatrixSrc>
+    explicit compressed2D (const MatrixSrc& src) 
+	    : super(), inserting(false)
     {
-	starts.resize(super::dim1() + 1, 0);
-	matrix_copy(src, *this);
+		if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
+		*this= src;
     }
 
 
-#ifndef _MSC_VER // Constructors need rigorous reimplementation, cf. #142-#144
-    // Construction from sum of matrices
-    template <typename E1, typename E2>
-    explicit compressed2D(const matrix::mat_mat_plus_expr<E1, E2>& src) 
-	: expr_base(*this), inserting(false)
+    // Consuming assignment operator
+    self& operator=(self src)
     {
-	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
-	matrix_copy(src.first, *this);
-	*this+= src.second;
-    }
+	// Self-copy would be an indication of an error
+	assert(this != &src);
 
-    // Construction from difference of matrices
-    template <typename E1, typename E2>
-    explicit compressed2D(const matrix::mat_mat_minus_expr<E1, E2>& src) 
-	: expr_base(*this), inserting(false)
-    {
-	change_dim(mtl::num_rows(src.first), mtl::num_cols(src.first));
-	matrix_copy(src.first, *this);
-	*this-= src.second;
-    }
-
-    // Construction from product of matrices
-    template <typename E1, typename E2>
-    explicit compressed2D(const matrix::mat_mat_times_expr<E1, E2>& src) 
-	: expr_base(*this), inserting(false)		
-    {
-	operation::compute_factors<self, matrix::mat_mat_times_expr<E1, E2> > factors(src);
-	change_dim(mtl::num_rows(factors.first), mtl::num_cols(factors.second));
-	mult(factors.first, factors.second, *this);
-    }
-#endif
-
-
-    // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
-	// Removing the operator ends in run-time error
-    self& operator=(const self& src)
-    {
-	// no self-copy
-	if (this == &src) return *this;
-
-	matrix_copy(src, *this);
+	check_dim(src.num_rows(), src.num_cols());
+	swap(*this, src);
 	return *this;
     }
+
 
     using assign_base::operator=;
 
@@ -456,7 +426,7 @@ class compressed2D
     friend void swap(self& matrix1, self& matrix2)
     {
 	using std::swap;
-	static_cast<super&>(matrix1).swap(matrix2);
+	swap(static_cast<super&>(matrix1), static_cast<super&>(matrix2));
 
 	swap(matrix1.data, matrix2.data);
 	swap(matrix1.starts, matrix2.starts);

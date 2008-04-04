@@ -1,63 +1,14 @@
+import glob
+
 Import('debug_env check')
 
-sources = Split("""base_case_conversion.cpp
-             bit_masking.cpp
-             cholesky_test.cpp
-             complexity.cpp
-             compressed2D_inserter.cpp
-             dense2D.cpp
-             dilated_int.cpp
-             matrix_product_test.cpp
-             morton_dense.cpp
-             sub_matrix.cpp
-	     print_matrix_test.cpp
-	     set_to_zero_test.cpp
-	     assign_test.cpp
-             dense_vector_test.cpp
-             dense_vector_test_2.cpp
-             matrix_map_view_test.cpp
-             matrix_map_view_test_2.cpp
-             vector_map_view_test.cpp
-             vector_map_view_test_2.cpp
-             algebraic_category.cpp
-             matrix_add_test.cpp
-             laplacian_setup_test.cpp
-             sparse_matrix_product_test.cpp
-             sparse_dense_matrix_product_test.cpp
-             matrix_vector_product_test.cpp
-             rank_one_update_test.cpp
-             rank_two_update_test.cpp
-             left_scale_inplace_test.cpp
-             right_scale_inplace_test.cpp
-             divide_by_inplace_test.cpp
-             swap_test.cpp
-             trace_test.cpp
-             one_norm_matrix_test.cpp
-             infinity_norm_matrix_test.cpp
-             frobenius_norm_test.cpp
-             element_matrix_test.cpp
-             diagonal_setup_test.cpp
-             vector_reduction_test.cpp
-             vector_min_max_test.cpp
-             compressed2D.cpp
-             dot_test.cpp
-             resize_vector_test.cpp
-	     sub_matrix_test2.cpp
-	     direct_access.cpp
-	     matrix_multiple_left_products_test.cpp
-	     matrix_multiple_right_products_test.cpp
-	     matrix_multiple_products_test.cpp
-             matrix_construction_from_expression_test.cpp
-             print_matrix_product_test.cpp
-	     matrix_array_test.cpp
-	     multiply_transposed_sparse_matrix_test.cpp
-	     transposed_sparse_matrix_vector_product_test.cpp
-""")
+sources = glob.glob("*.cpp")
 
 # Works only with MTL_DEEP_COPY_CONSTRUCTOR
 #	     block_sparse_test.cpp
 #	     variable_size_block_sparse_test.cpp
-
+sources.remove('block_sparse_test.cpp')
+sources.remove('variable_size_block_sparse_test.cpp')
 
 programs = []
 for p in sources:

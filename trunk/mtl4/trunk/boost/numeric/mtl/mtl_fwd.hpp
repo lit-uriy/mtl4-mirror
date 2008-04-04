@@ -47,7 +47,7 @@ namespace mtl {
 	struct parameters;
     }
 
-    template <typename Value, typename Parameters> struct dense2D;
+    template <typename Value, typename Parameters> class dense2D;
 
     template <typename Value, typename Parameters> 
     typename dense2D<Value, Parameters>::size_type num_cols(const dense2D<Value, Parameters>& matrix);
@@ -57,7 +57,7 @@ namespace mtl {
     typename dense2D<Value, Parameters>::size_type size(const dense2D<Value, Parameters>& matrix);
 
 
-    template <typename Value, unsigned long Mask, typename Parameters> struct morton_dense;
+    template <typename Value, unsigned long Mask, typename Parameters> class morton_dense;
 
     template <typename Value, unsigned long Mask, typename Parameters>
     typename morton_dense<Value, Mask, Parameters>::size_type num_cols(const morton_dense<Value, Mask, Parameters>& matrix);
@@ -67,7 +67,7 @@ namespace mtl {
     typename morton_dense<Value, Mask, Parameters>::size_type size(const morton_dense<Value, Mask, Parameters>& matrix);
 
 
-    template <typename Value, typename Parameters> struct compressed2D;
+    template <typename Value, typename Parameters> class compressed2D;
 
     template <typename Value, typename Parameters> 
     typename compressed2D<Value, Parameters>::size_type num_cols(const compressed2D<Value, Parameters>& matrix);
@@ -102,7 +102,7 @@ namespace mtl {
 
     /// Namespace for vectors and views and %operations exclusively on vectors
     namespace vector {
-	template <typename Value, typename Parameters> struct dense_vector;
+	template <typename Value, typename Parameters> class dense_vector;
 	template <typename Functor, typename Vector> struct map_view;
 	template <typename Vector>  struct conj_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
@@ -215,6 +215,13 @@ namespace mtl {
 
     /// Free function defined for all matrix and vector types
     template <typename Collection> void swap(Collection& c1, Collection& c2);
+
+    /// User registration that class has a clone constructor, otherwise use regular copy constructor.
+    template<typename T> struct is_clonable;
+
+    /// Helper type to define constructors that always copy
+    struct clone_ctor;
+
 
 } // namespace mtl
 
