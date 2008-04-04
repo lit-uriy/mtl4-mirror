@@ -33,7 +33,9 @@ namespace mtl {
 template <typename A, typename B, typename C>
 inline void mult(const A& a, const B& b, C& c)
 {
+#if 1
     MTL_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
+#endif
 
     // dispatch between matrices, vectors, and scalars
     using traits::category;
@@ -70,7 +72,16 @@ inline void mult(const A& a, const X& x, const Y& y, Z& z)
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::matrix, tag::matrix, tag::matrix)
 {
+#if 1
     MTL_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
+#else
+    if ((void*)&a == (void*)&c || (void*)&b == (void*)&c) {
+	C tmp(num_rows(c), num_cols(c)); 
+	mult(a, b, tmp);
+	swap(C, tmp);
+	return;
+    }
+#endif
 
     MTL_THROW_IF(num_rows(a) != num_rows(c) || num_cols(a) != num_rows(b) || num_cols(b) != num_cols(c),
 		 incompatible_size());
@@ -229,7 +240,17 @@ inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, t
 			                 ::mtl::ashape::mat_cvec_mult
 			               >::value));
 
+
+#if 1
     MTL_THROW_IF((void*)&v == (void*)&w, argument_result_conflict());
+#else
+    if ((void*)&v == (void*)&w) {
+	VectorOut tmp(size(w)); 
+	mult(a, b, tmp);
+	swap(w, tmp);
+	return;
+    }
+#endif
 
     //MTL_THROW_IF(num_rows(a) != num_rows(w) || num_cols(a) != num_rows(v), incompatible_size());
     MTL_THROW_IF(num_rows(a) != size(w) || num_cols(a) != size(v), incompatible_size());

@@ -59,7 +59,7 @@ struct map_view
 	: expr_base(*this), functor(functor), my_copy(p), ref(*p)
     {}
     
-    const_reference_type operator() (size_type r, size_type c) const
+    value_type operator() (size_type r, size_type c) const
     { 
         return functor(ref(r, c));
     }
@@ -106,6 +106,11 @@ struct map_view
     size_type num_cols() const
     {
 	return ref.num_cols();
+    }
+    
+    size_type nnz() const
+    {
+	return ref.nnz();
     }
     
     template <typename, typename> friend struct detail::map_value;

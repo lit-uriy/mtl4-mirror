@@ -35,7 +35,8 @@
 // More precisely, the concepts may be moved into namespace numeric and the standard functions stay in math
 
 /// Namespace for mathematical concepts
-/** In contrast to the ones in algebra the concepts can require basic implementation concepts like std::Assignable */  
+/** In contrast to the ones in algebra the concepts can require 
+    basic implementation concepts like std::CopyAssignable */  
 namespace math {
 
 #ifdef __GXX_CONCEPTS__
@@ -43,6 +44,10 @@ namespace math {
 // ==================================
 // Classification of Arithmetic Types
 // ==================================
+
+// We omit this now because it became part of the standard concepts
+
+#if 0
 
 // In addtion to std::Integral
 concept Float<typename T> 
@@ -60,14 +65,8 @@ concept Float<typename T>
   T operator/(T, T);
   T& operator/=(T&, T);
 
-  // TBD: Some day, these will come from LessThanComparable,
-  // EqualityComparable, etc.
-  bool operator>(T, T);
-  bool operator<=(T, T);
-  bool operator>=(T, T);
-  bool operator!=(T, T);
-
-  requires std::Assignable<T>, std::SameType<std::Assignable<T>::result_type, T&>;
+  requires std::CopyAssignable<T>
+        && std::SameType<std::CopyAssignable<T>::result_type, T&>;
 }
 
 concept_map Float<float> {}
@@ -90,10 +89,8 @@ concept Complex<typename T>
   T operator/(T, T);
   T& operator/=(T&, T);
 
-  // TBD: Some day, these will come from EqualityComparable
-  bool operator!=(T, T);
-
-  requires std::Assignable<T>, std::SameType<std::Assignable<T>::result_type, T&>;
+  requires std::CopyAssignable<T> 
+        && std::SameType<std::CopyAssignable<T>::result_type, T&>;
 }
 
 template <typename T>
@@ -117,6 +114,46 @@ template <typename T>
   requires Arithmetic<T>
 concept_map Arithmetic< std::complex<T> > {}
 
+#endif 
+
+// The following concepts are used to classify intrinsic arithmetic types.
+// The standard concepts already define the syntactic requirements,
+// i.e. the interface.
+// However they sey nothing about the semantics.
+// Therefore, user-defined types can model the syntactic/interface
+// requirements while still having a different mathematical behavior.
+// For that reason, we introduce concepts that are only used for intrinsic types.
+// For them we can define concept_maps regarding semantic behavior as monoids.
+
+concept IntrinsicSignedIntegral<typename T> 
+  : std::SignedIntegralLike<T> 
+{}
+
+concept IntrinsicUnsignedIntegral<typename T> 
+  : std::UnsignedIntegralLike<T> 
+{}
+
+concept IntrinsicFloatingPoint<typename T>
+  : std::FloatingPointLike<T> 
+{}
+
+
+// Intrinsic types are chategorized:
+
+// concept_map IntrinsicSignedIntegral<char> {}; ???
+concept_map IntrinsicSignedIntegral<signed char> {};
+concept_map IntrinsicUnsignedIntegral<unsigned char> {};
+concept_map IntrinsicSignedIntegral<short> {};
+concept_map IntrinsicUnsignedIntegral<unsigned short> {};
+concept_map IntrinsicSignedIntegral<int> {};
+concept_map IntrinsicUnsignedIntegral<unsigned int> {};
+concept_map IntrinsicSignedIntegral<long> {};
+concept_map IntrinsicUnsignedIntegral<unsigned long> {};
+concept_map IntrinsicSignedIntegral<long long> {};
+concept_map IntrinsicUnsignedIntegral<unsigned long long> {};
+
+concept_map IntrinsicFloatingPoint<float> { }
+concept_map IntrinsicFloatingPoint<double> { }
 
 
 
@@ -159,8 +196,8 @@ auto concept CompatibleBinaryFunction<typename A1, typename A2, typename Result>
 auto concept Magma<typename Operation, typename Element>
     : BinaryIsoFunction<Operation, Element>
 {
-    requires std::Assignable<Element>;
-    requires std::Assignable<Element, BinaryIsoFunction<Operation, Element>::result_type>;
+    requires std::MoveAssignable<Element>
+	  && std::MoveAssignable<Element, BinaryIsoFunction<Operation, Element>::result_type>;
 };
 
 
@@ -213,7 +250,7 @@ concept PartiallyInvertibleMonoid<typename Operation, typename Element>
     requires std::Convertible<inverse_result_type, Element>;
 
     // Does it overwrites the axiom from algebra::Inversion
-    axiom Inversion(Operation op, Element x)
+    axiom Inversivity(Operation op, Element x)
     {
 	// Only for invertible elements:
 	if (is_invertible(op, x))
@@ -239,7 +276,7 @@ concept Group<typename Operation, typename Element>
 	is_invertible(op, x);
     }
 
-    axiom Inversion(Operation op, Element x)
+    axiom GlobalInversivity(Operation op, Element x)
     {
 	// In fact this is implied by AlwaysInvertible and inherited Inversion axiom
 	// However, we don't rely on the compiler to deduce this
@@ -761,16 +798,16 @@ auto concept NumericOperatorResultConvertible<typename T>
 // ==============
 
 template <typename T>
-  requires std::SignedIntegral<T>
+  requires IntrinsicSignedIntegral<T>
 concept_map CommutativeRingWithIdentity<T> {}
 
 
 template <typename T>
-  requires std::UnsignedIntegral<T>
+  requires IntrinsicUnsignedIntegral<T>
 concept_map AdditiveCommutativeMonoid<T> {}
 
 template <typename T>
-  requires std::UnsignedIntegral<T>
+  requires IntrinsicUnsignedIntegral<T>
 concept_map MultiplicativeCommutativeMonoid<T> {}
 
 
@@ -779,13 +816,13 @@ concept_map MultiplicativeCommutativeMonoid<T> {}
 // ====================
 
 template <typename T>
-  requires Float<T>
+  requires IntrinsicFloatingPoint<T>
 concept_map Field<T> {}
 
 
 template <typename T>
-  requires Complex<T>
-concept_map Field<T> {}
+  requires IntrinsicFloatingPoint<T>
+concept_map Field< std::complex<T> > {}
 
 
 // ===========
@@ -810,7 +847,36 @@ concept_map CommutativeMonoid< min<Element>, Element >
 
 #endif // LA_NO_CONCEPT_MAPS
 
+// Here come some mathematical concepts to be defined later
+
+/// Specify the semantic Behavior of natural numbers (TBD)
+/** Mathematic properties are in most cases only approximated
+    but not held exactly. Rigorous definition would impede
+    usage of real processors. **/
+concept NaturalNumber<typename T> {}
+
+/// Specify the semantic Behavior of integral numbers (TBD)
+/** Mathematic properties are in most cases only approximated
+    but not held exactly. Rigorous definition would impede
+    usage of real processors.
+    It is arguable if this is really a refinement **/
+concept IntegralNumber<typename T> : NaturalNumber<T> {}
+    
+/// Specify the semantic Behavior of complex numbers (TBD)
+/** Mathematic properties are in most cases only approximated
+    but not held exactly. Rigorous definition would impede
+    usage of real processors. **/
+concept ComplexNumber<typename T> {}
+
+/// Specify the semantic Behavior of real numbers (TBD)
+/** Mathematic properties are in most cases only approximated
+    but not held exactly. Rigorous definition would impede
+    usage of real processors. **/
+concept RealNumber<typename T> : ComplexNumber<T> {}
+
 #endif // __GXX_CONCEPTS__
+
+
 
 
 // =================================================

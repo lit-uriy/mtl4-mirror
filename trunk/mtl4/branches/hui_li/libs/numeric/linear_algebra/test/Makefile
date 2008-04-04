@@ -9,7 +9,7 @@ CXXFLAGS += -DMTL_TRACE_POWER_DISPATCHING
 CXXFLAGS += -DMTL_TRACE_MOD_N_INVERTIBILITY_DISPATCHING 
 
 # CXXFLAGS += -g
-CXXFLAGS += -O2
+# CXXFLAGS += -O2
 
 # CXXFLAGS += -Wno-long-double
 
@@ -26,51 +26,20 @@ XTRA_SOURCES = algebraic_functions.hpp ${MTL_BOOST_ROOT}/boost/numeric/linear_al
 CXX =  conceptg++
 #CXX =  g++
 
-TARGETS =	positive_real	positive_real_explicit positive_real_power \
+TARGETS =	simple_test2 simple_test positive_real	positive_real_explicit positive_real_power \
 		positive_real_power_explicit string_example \
 		float_example int_example mod_n_example mod_n_power accumulation_example \
 		concept_map_test      int_example  accumulation_measuring
 
-it:	all
+it:	simple_test
 
 
 all:	${TARGETS}
 
-positive_real:	positive_real.cpp ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ positive_real.cpp
- 
-positive_real_explicit:	positive_real_explicit.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ positive_real_explicit.cpp
 
-positive_real_power:	positive_real_power.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ positive_real_power.cpp
+.cpp:	$(@:=.cpp) $(XTRA_SOURCES)
+	${CXX} ${CXXFLAGS} -o $@ $?
 
-positive_real_power_explicit:	positive_real_power_explicit.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ positive_real_power_explicit.cpp
-
-string_example:	string_example.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ string_example.cpp
-
-float_example:	float_example.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ float_example.cpp
-
-int_example:	int_example.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ int_example.cpp
-
-accumulation_example:	accumulation_example.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ accumulation_example.cpp
-
-mod_n_example:	mod_n_example.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ mod_n_example.cpp
-
-concept_map_test:	concept_map_test.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ concept_map_test.cpp
-
-vector_test:	vector_test.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ vector_test.cpp
-
-vector_test_rolf:	vector_test_rolf.cpp  ${XTRA_SOURCES}
-	${CXX} ${CXXFLAGS} -o $@ vector_test_rolf.cpp
 
 clean:
 	rm -rf ${TARGETS} *~

@@ -35,10 +35,9 @@ inline void mat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assi
     if (Assign::init_to_zero) set_to_zero(w);
 
     typedef typename Collection<VectorOut>::value_type value_type;
-    value_type                                         ref= w[0], z= zero(ref);
 
     for (unsigned i= 0; i < num_rows(a); i++) {
-	value_type tmp= z;
+	value_type tmp= zero(w[i]);
 	for (unsigned j= 0; j < num_cols(a); j++) 
 	    tmp+= a[i][j] * v[j];
 	Assign::update(w[i], tmp);
@@ -72,11 +71,10 @@ inline void smat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Ass
     if (Assign::init_to_zero) set_to_zero(w);
 
     typedef typename Collection<VectorOut>::value_type        value_type;
-    value_type                                                ref= w[0], z= zero(ref);
 
     a_cur_type ac= begin<row>(a), aend= end<row>(a);
     for (unsigned i= 0; ac != aend; ++ac, ++i) {
-	value_type tmp= z;
+	value_type tmp= zero(w[i]);
 	for (a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac); aic != aiend; ++aic) 
 	    tmp+= value_a(*aic) * v[col_a(*aic)];	
 	Assign::update(w[i], tmp);
