@@ -34,6 +34,35 @@ struct trivial_inserter
 	return proxy_type(*this, row, col);
     }
 
+#if 0
+    proxy_type operator[] (size_type row, size_type col)
+    {
+	return proxy_type(*this, row, col);
+    }
+#endif
+
+  private:
+    
+    struct bracket_proxy
+    {
+	bracket_proxy(self& ref, size_type row) : ref(ref), row(row) {}
+	
+	proxy_type operator[](size_type col)
+	{
+	    return proxy_type(ref, row, col);
+	}
+
+	self&      ref;
+	size_type  row;
+    };
+
+  public:
+
+    bracket_proxy operator[] (size_type row)
+    {
+	return bracket_proxy(*this, row);
+    }
+
     template <typename Value>
     void update(size_type row, size_type col, Value val)
     {
