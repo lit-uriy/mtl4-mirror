@@ -33,6 +33,7 @@ void test(Matrix& A, const char* name)
     {
 	matrix::inserter<Matrix>  ins(A);
 	ins(1, 0)+= 1.;
+	//ins[1][0]+= 1.;
     }
     std::cout << "\n" << name << ", assignment: A = \n" << A << "\n";
     if (A[1][0] != value_type(3.0))
@@ -41,6 +42,8 @@ void test(Matrix& A, const char* name)
     {
 	matrix::inserter<Matrix, operations::update_plus<value_type> > ins(A);
 	ins(1, 2)= 4;
+	ins[1][2]= 4;
+	//ins[1, 2]= 4;
     }
     std::cout << "\n" << name << ", assignment: A = \n" << A << "\n";
     if (A[1][2] != value_type(4.0))

@@ -469,6 +469,19 @@ struct compressed2D_inserter
     // stretch matrix rows or columns to slot size (or leave it if equal or greater)
     void stretch();
 
+    struct bracket_proxy
+    {
+	bracket_proxy(self& ref, size_type row) : ref(ref), row(row) {}
+	
+	proxy_type operator[](size_type col)
+	{
+	    return proxy_type(ref, row, col);
+	}
+
+	self&      ref;
+	size_type  row;
+    };
+
   public:
     explicit compressed2D_inserter(matrix_type& matrix, size_type slot_size = 5)
 	: matrix(matrix), elements(matrix.data), starts(matrix.starts), indices(matrix.indices), 
@@ -486,6 +499,16 @@ struct compressed2D_inserter
 	matrix.inserting = false;
     }
 	
+    bracket_proxy operator[] (size_type row)
+    {
+	return bracket_proxy(*this, row);
+    }
+#if 0
+    proxy_type operator[] (size_type row, size_type col)
+    {
+	return proxy_type(*this, row, col);
+    }
+#endif
     proxy_type operator() (size_type row, size_type col)
     {
 	return proxy_type(*this, row, col);
@@ -625,45 +648,6 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type ro
 }  
 
 
-
-#if 0
-template <typename Elt, typename Parameters, typename Updater>
-inline void compressed2D_inserter<Elt, Parameters, Updater>::update(size_type row, size_type col, value_type val)
-{
-    using std::copy_backward;
-
-    Updater                updater;  
-    compressed2D_indexer   indexer;
-    size_pair              mm = indexer.major_minor_c(matrix, row, col);
-    size_type              major, minor;
-    boost::tie(major, minor) = mm;
-
-    utilities::maybe<size_type>       pos = matrix_offset(mm);
-    // Check if already in matrix and update it
-    if (pos) 
-	updater (elements[pos], val); 
-    else {
-	size_type& my_end = slot_ends[major];
-	// Check if place in matrix to insert there
-	if (my_end != starts[major+1]) { 
-		copy_backward(&elements[0] + pos.value(), &elements[0] + my_end, &elements[0] + (my_end+1));
-		copy_backward(&indices[0] + pos.value(), &indices[0] + my_end, &indices[0] + (my_end+1));
-	    elements[pos] = updater.init(val); indices[pos] = minor;
-	    my_end++;	    
-	    matrix.my_nnz++;      // new entry
-	} else {
-	    typename map_type::iterator it = spare.find(mm);
-	    // If not in map insert it, otherwise update the value
-	    if (it == spare.end()) {
-		spare.insert(std::make_pair(mm, updater.init(val)));
-		matrix.my_nnz++;      // new entry
-	    } else 
-		updater(it->second, val);
-	}
-    }
-    // std::cout << "inserter update: " << matrix.my_nnz << " non-zero elements, new value is " << elements[pos] << "\n";
-}  
-#endif
 
 template <typename Elt, typename Parameters, typename Updater>
 void compressed2D_inserter<Elt, Parameters, Updater>::final_place()

@@ -310,6 +310,13 @@ struct const_crtp_matrix_bracket
     {
 	return operations::bracket_proxy<Matrix, const Matrix&, ValueType>(static_cast<const Matrix&>(*this), row);
     }
+
+#if 0
+    ValueType operator[](SizeType row, SizeType col) const
+    {
+	return static_cast<const Matrix&>(*this)(row, col);
+    }
+#endif
 };
 
 template <typename Matrix, typename ValueType, typename SizeType>
@@ -326,6 +333,18 @@ struct crtp_matrix_bracket
     {
         return operations::bracket_proxy<Matrix, Matrix&, ValueType&>(static_cast<Matrix&>(*this), row);
     }
+
+#if 0
+    const ValueType& operator[](SizeType row, SizeType col) const
+    {
+	return static_cast<const Matrix&>(*this)(row, col);
+    }
+
+    ValueType& operator[](SizeType row, SizeType col)
+    {
+	return static_cast<Matrix&>(*this)(row, col);
+    }
+#endif
 };
 
 template <typename Matrix, typename ValueType, typename SizeType>
