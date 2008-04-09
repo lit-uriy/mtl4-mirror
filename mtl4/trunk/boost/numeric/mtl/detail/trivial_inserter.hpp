@@ -40,6 +40,13 @@ struct trivial_inserter
 	Updater() (matrix(row, col), val);
     }
 
+    template <typename Modifier, typename Value>
+    void modify(size_type row, size_type col, Value val)
+    {
+	Modifier() (matrix(row, col), val);
+    }
+
+
     template <typename EMatrix, typename Rows, typename Cols>
     self& operator<< (const matrix::element_matrix_t<EMatrix, Rows, Cols>& elements)
     {

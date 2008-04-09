@@ -116,6 +116,20 @@ struct update_proxy
 	return *this;
     }
 
+    template <typename Value>
+    self& operator= (Value const& val)
+    {
+	ins.template modify<update_store<value_type> > (row, col, val);
+	return *this;
+    }
+
+    template <typename Value>
+    self& operator+= (Value const& val)
+    {
+	ins.template modify<update_plus<value_type> > (row, col, val);
+	return *this;
+    }
+
     Inserter&  ins;
     SizeType   row, col;
 };

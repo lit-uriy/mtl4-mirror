@@ -93,6 +93,8 @@ void test_compressed2D_insertion()
     {
 	matrix::inserter<matrix_type, operations::update_plus<int> >  i3(matrix, 7);
 	i3(2+io, 2+io) << 1;
+	// cout << "read inserter" << (i3(0, 1) == 1.0) << endl;
+
     }
     if (matrix(2+io, 2+io) != 28) throw "Error adding to existing value";
     cout << "\nmatrix[2][2] = " << matrix[2+io][2+io] << "\n";
