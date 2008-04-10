@@ -50,6 +50,8 @@ struct crtp_vector_assign
     template <class E>
     vec_vec_asgn_expr<Vector, E> operator=( vec_expr<E> const& e )
     {
+	// std::cerr << "operator= size static_cast<const E&>(e) " << static_cast<const E&>(e).size() << "\n"; 
+
 	static_cast<Vector*>(this)->check_consistent_shape(e);
 	return vec_vec_asgn_expr<Vector, E>( static_cast<Vector&>(*this), 
 					     static_cast<const E&>(e) );

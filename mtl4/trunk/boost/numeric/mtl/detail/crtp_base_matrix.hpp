@@ -61,7 +61,7 @@ private:
 
 
 /// Assign sum by assigning first argument and adding second
-/** Note that this is more special then assigning arbitrary expressions including matrices itself
+/*  Note that this is more special then assigning arbitrary expressions including matrices itself
     because matrix::mat_mat_plus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
 template <typename E1, typename E2, typename Matrix>
 struct crtp_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix> 
@@ -76,7 +76,7 @@ struct crtp_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix>
 };
 
 /// Assign difference by assigning first argument and subtracting second
-/** Note that this is more special then assigning arbitrary expressions including matrices itself
+/*  Note that this is more special then assigning arbitrary expressions including matrices itself
     because matrix::mat_mat_minus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
 template <typename E1, typename E2, typename Matrix>
 struct crtp_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix> 
@@ -91,7 +91,6 @@ struct crtp_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix>
 };
 
 /// Assign product by calling mult
-/** Note that this does not work for arbitrary expressions. **/
 template <typename E1, typename E2, typename Matrix>
 struct crtp_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix> 
 {

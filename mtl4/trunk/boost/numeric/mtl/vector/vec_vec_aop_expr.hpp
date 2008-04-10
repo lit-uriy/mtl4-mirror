@@ -52,6 +52,7 @@ public:
 	    if (first.size() == 0) first.change_dim(second.size());
 
 	    // If sizes are different for any other reason, it's an error
+	    // std::cerr << "~vec_vec_aop_expr() " << first.size() << "  " << second.size() << "\n";
 	    MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
 
 	    for (size_type i= 0; i < first.size(); ++i)
