@@ -119,6 +119,7 @@ namespace mtl {
 	template <class E1, class E2> struct vec_scal_times_asgn_expr;
 	template <class E1, class E2> struct vec_scal_div_asgn_expr; // added by Hui Li
 	template <class E1, class E2> struct vec_scal_asgn_expr;
+	template <typename Vector> struct vec_const_ref_expr;
     }
 
     using vector::dense_vector;
@@ -128,6 +129,9 @@ namespace mtl {
 	template <typename E1, typename E2> struct vec_vec_add_expr;
 	template <typename E1, typename E2> struct vec_vec_minus_expr;
     }
+
+    template <typename E1, typename E2> struct mat_cvec_times_expr;
+
 
     /// Namespace for type %traits
     namespace traits {

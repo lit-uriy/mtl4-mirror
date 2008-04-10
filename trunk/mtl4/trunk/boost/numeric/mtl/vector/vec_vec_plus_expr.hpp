@@ -18,21 +18,58 @@
 #include <boost/numeric/mtl/vector/vec_vec_op_expr.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
+#include <boost/numeric/mtl/operation/compute_summand.hpp>
 
 namespace mtl { namespace vector {
 
 // Model of VectorExpression
 template <class E1, class E2>
 struct vec_vec_plus_expr 
-    : public vec_vec_op_expr< E1, E2, sfunctor::plus<typename E1::value_type, typename E2::value_type> >
+    : vec_expr< vec_vec_plus_expr<E1, E2> >
 {
-    typedef vec_vec_op_expr< E1, E2, sfunctor::plus<typename E1::value_type, typename E2::value_type> > base;
+    typedef typename operation::compute_summand<E1>::type    first_argument_type;
+    typedef typename operation::compute_summand<E2>::type    second_argument_type;
+
+    typedef typename sfunctor::plus<typename first_argument_type::value_type, 
+				    typename second_argument_type::value_type>::result_type 
+	const_dereference_type;
+    typedef const_dereference_type                           value_type;
+
+    typedef typename first_argument_type::size_type          size_type;
+
+
+    typedef vec_vec_op_expr< first_argument_type, second_argument_type,
+			     sfunctor::plus<typename E1::value_type, typename E2::value_type> > base;
+
     vec_vec_plus_expr( E1 const& v1, E2 const& v2 )
-	: base( v1, v2 )
+	: first(v1), second(v2)
     {}
+
+    void delay_assign() const {}
+
+    size_type size() const
+    {
+	// std::cerr << "vec_vec_plus_expr.size() " << first.value.size() << "  " << second.value.size() << "\n";
+	assert( first.value.size() == second.value.size() ) ;
+	return first.value.size() ;
+    }
+
+    const_dereference_type operator() (size_type i) const
+    {
+        return first.value(i) + second.value(i);
+    }
+
+    const_dereference_type operator[] (size_type i) const
+    {
+        return first.value[i] + second.value[i];
+    }
+
+  private:
+    operation::compute_summand<E1> first;
+    operation::compute_summand<E2> second;
 };
 
-    
+
 template <typename E1, typename E2>
 inline vec_vec_plus_expr<E1, E2>
 operator+ (const vec_expr<E1>& e1, const vec_expr<E2>& e2)

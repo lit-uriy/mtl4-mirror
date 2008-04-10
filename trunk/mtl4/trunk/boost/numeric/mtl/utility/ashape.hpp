@@ -136,6 +136,13 @@ struct ashape< vector::vec_scal_div_asgn_expr<E1, E2> >
 	typedef typename ashape<E1>::type type;
 };
 
+template <typename Vector>
+struct ashape< vector::vec_const_ref_expr<Vector> >
+{
+    typedef typename ashape<Vector>::type type;
+};
+
+
 // ========
 // Matrices
 // ========
@@ -517,6 +524,17 @@ struct ashape< matrix::mat_mat_times_expr<E1, E2> >
     typedef typename mult_shape<typename ashape<E1>::type, 
 				typename ashape<E2>::type>::type type;
 };
+
+
+
+
+template <typename E1, typename E2>
+struct ashape< mat_cvec_times_expr<E1, E2> >
+{
+    // Resulting vector has the same shape as the multiplied
+    typedef typename ashape<E2>::type type;
+};
+
 
 
 // added by Hui Li (below) -----------------------------------------
