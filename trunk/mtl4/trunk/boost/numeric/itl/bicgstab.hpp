@@ -10,9 +10,7 @@ bicgstab(const Matrix& A, Vector& x, const VectorB& b, Iteration& iter)
   TmpVec p(size(x)), phat(size(x)), s(size(x)), shat(size(x)), 
     t(size(x)), v(size(x)), r(size(x)), rtilde(size(x));
 
-  // r = b - A*x;
-  r = b;
-  r -= A*x;
+  r = b - A * x;
   rtilde = r;
 
   while (! iter.finished(r)) {

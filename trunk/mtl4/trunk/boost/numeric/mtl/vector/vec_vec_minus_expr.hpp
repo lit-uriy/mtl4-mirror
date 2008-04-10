@@ -41,7 +41,9 @@ struct vec_vec_minus_expr
 
     vec_vec_minus_expr( E1 const& v1, E2 const& v2 )
 	: first(v1), second(v2)
-    {}
+    {
+	first.value.delay_assign(); second.value.delay_assign();
+    }
 
     void delay_assign() const {}
 

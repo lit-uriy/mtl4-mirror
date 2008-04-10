@@ -12,9 +12,7 @@ cg(const LinearOperator& A, HilbertSpace& x, const HilbertSpace& b, Iteration& i
   Scalar rho, rho_1, alpha, beta;
   TmpVec p(size(x)), q(size(x)), r(size(x)), z(size(x));
   
-  // r = b - A*x;
-  r = b;
-  r -= A*x;
+  r = b - A*x;
 
   while (! iter.finished(r)) {
     rho = dot(r, r);
