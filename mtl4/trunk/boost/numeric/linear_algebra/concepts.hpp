@@ -196,8 +196,8 @@ auto concept CompatibleBinaryFunction<typename A1, typename A2, typename Result>
 auto concept Magma<typename Operation, typename Element>
     : BinaryIsoFunction<Operation, Element>
 {
-    requires std::MoveAssignable<Element>
-	  && std::MoveAssignable<Element, BinaryIsoFunction<Operation, Element>::result_type>;
+    requires std::CopyAssignable<Element>
+	  && std::CopyAssignable<Element, BinaryIsoFunction<Operation, Element>::result_type>;
 };
 
 
