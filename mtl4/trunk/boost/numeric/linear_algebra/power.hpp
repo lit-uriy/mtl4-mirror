@@ -18,8 +18,7 @@ namespace math {
 
     template <typename Op, typename Element, typename Exponent>
         requires std::IntegralLike<Exponent>
-              && std::CopyAssignable<Element>
-              && std::CopyConstructible<Element>
+              && std::Semiregular<Element>
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element power(const Element& a, Exponent n, Op op)
