@@ -1,33 +1,17 @@
-import os
+import os, glob
 
 Import('debug_env check')
 
-sources = Split("""
-		simple_test2.cpp 
-		simple_test.cpp 
-		positive_real.cpp	
-		positive_real_explicit.cpp 
-		positive_real_power.cpp 
-		positive_real_power_explicit.cpp 
-		string_example.cpp
-		float_example.cpp 
-		int_example.cpp 
-		mod_n_example.cpp 
-		mod_n_power.cpp 
-		accumulation_example.cpp
-		concept_map_test.cpp      
-		int_example.cpp  
-		accumulation_measuring.cpp
-""")
+sources = glob.glob('*.cpp')
 
-# For testing only
-# sources = ["simple_test.cpp"]
+# For testing only, the rest doesn't work yet
+sources = ["power_test.cpp"]
 
 concept_env = debug_env.Copy()
 
 # Check if conceptg++ is in path (return code != 0)
 # Turn off for now
-if 1: # os.system('conceptg++ -v'):
+if os.system('conceptg++ -v'):
     sources = []
 else:
     # TBD: check whether options are okay
