@@ -20,11 +20,16 @@ namespace math {
 #endif
     
     concept_map UnsignedIntegral<unsigned int> {}
+    concept_map AdditiveMonoid<unsigned int> {}
 
     concept_map SignedIntegral<int> {}
+    concept_map AdditiveSemiGroup<int> {}
 
     concept_map AbelianGroup< add<float>, float > {}
-    concept_map SemiGroup< mult<float>, float > {}
+    concept_map PIMonoid< mult<float>, float > {}
+    concept_map Commutative< mult<float>, float > {}
+    concept_map AdditiveMonoid< float > {}
+    //concept_map AdditiveAbelianGroup< float > {}
 
 
 

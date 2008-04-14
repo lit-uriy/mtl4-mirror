@@ -7,7 +7,7 @@
 concept AccurateArithmetic<typename T> {}
 
 template <typename T>
-    where std::Integral<T>
+    requires std::Integral<T>
 concept_map AccurateArithmetic<T> {}
 
 
@@ -17,11 +17,11 @@ concept TolerateRoundingErrors<typename T> {}
 
 # ifndef CONSIDER_FLOAT_ROUNDING_ERRORS
     template <typename T>
-        where math::Float<T>
+        requires math::Float<T>
     concept_map TolerateRoundingErrors<T> {}
 # endif
 
-// concept_map TolerateRoundingErrors<double> {}
+concept_map TolerateRoundingErrors<double> {}
 
 concept SelectiveOperation<typename Operation, typename Element> {}
  // : std::CopyConstructible<std::vector<std::vector<Element> > >
@@ -36,15 +36,15 @@ concept_map SelectiveOperation<math::max<Element>, Element> {}
 concept RegularReduction<typename Operation, typename Element> {} // : std::Integral<float> {}
 
 template <typename Operation, typename Element>
-  where AccurateArithmetic<Element>
+  requires AccurateArithmetic<Element>
 concept_map RegularReduction<Operation, Element> {}
 
 template <typename Operation, typename Element>
-  where TolerateRoundingErrors<Element>
+  requires TolerateRoundingErrors<Element>
 concept_map RegularReduction<Operation, Element> {}
 
 template <typename Operation, typename Element>
-  where SelectiveOperation<Operation, Element> 
+  requires SelectiveOperation<Operation, Element> 
         && !AccurateArithmetic<Element> 
         && !TolerateRoundingErrors<Element>
 concept_map RegularReduction<Operation, Element> {}
@@ -59,7 +59,7 @@ namespace mtl {
 
 // Dispatching between simple and unrolled version
 template <typename Iter, typename Value, typename Op>
-  where std::ForwardIterator<Iter> 
+  requires std::ForwardIterator<Iter> 
                   && std::Convertible<Value, std::ForwardIterator<Iter>::value_type>
                   && math::Magma<Op, std::ForwardIterator<Iter>::value_type>
                   && RegularReduction<Op, std::ForwardIterator<Iter>::value_type>
@@ -72,9 +72,10 @@ inline my_accumulate(Iter first, Iter last, Value init, Op op)
 
 
 template <typename Iter, typename Value, typename Op>
-    where  std::RandomAccessIterator<Iter> 
+    requires  std::RandomAccessIterator<Iter> 
 	          && std::Convertible<Value, std::RandomAccessIterator<Iter>::value_type>
-		  && math::CommutativeMonoid<Op, std::RandomAccessIterator<Iter>::value_type> 
+		  && math::Monoid<Op, std::RandomAccessIterator<Iter>::value_type> 
+		  && math::Commutative<Op, std::RandomAccessIterator<Iter>::value_type> 
                   && RegularReduction<Op, std::RandomAccessIterator<Iter>::value_type>
 typename std::RandomAccessIterator<Iter>::value_type 
 inline my_accumulate(Iter first, Iter last, Value init, Op op)
@@ -85,7 +86,7 @@ inline my_accumulate(Iter first, Iter last, Value init, Op op)
 
 // Special Treatment
 template <typename Iter, typename Value, typename Op>
-  where std::ForwardIterator<Iter> 
+  requires std::ForwardIterator<Iter> 
                   && std::Convertible<Value, std::ForwardIterator<Iter>::value_type>
                   && math::Magma<Op, std::ForwardIterator<Iter>::value_type>
 typename std::ForwardIterator<Iter>::value_type 
