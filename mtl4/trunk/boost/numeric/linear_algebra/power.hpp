@@ -12,13 +12,13 @@
 
 #include <concepts>
 #include <boost/numeric/linear_algebra/new_concepts.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 
 namespace math {
 
-    template <typename Op, std::Semiregular Element, typename Exponent>
-        requires Integral<Exponent>
-              && std::Callable2<Op, Element, Element>
+    template <typename Op, std::Semiregular Element, Integral Exponent>
+        requires std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element power(const Element& a, Exponent n, Op op)
     {
@@ -32,9 +32,8 @@ namespace math {
     }
 
 
-    template <typename Op, std::Semiregular Element, typename Exponent>
+    template <typename Op, std::Semiregular Element, Integral Exponent>
         requires SemiGroup<Op, Element> 
-              && Integral<Exponent>
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element power(const Element& a, Exponent n, Op op)
@@ -59,13 +58,15 @@ namespace math {
     }
 
 
-    template <typename Op, std::Semiregular Element, typename Exponent>
+    template <typename Op, std::Semiregular Element, Integral Exponent>
         requires Monoid<Op, Element> 
-              && Integral<Exponent>
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element multiply_and_square_horner(const Element& a, Exponent n, Op op) 
     {
+	if (n == 0)
+	    return Element(identity(op, a));
+
         if (n <= 0) throw "In multiply_and_square_horner: exponent must be greater than 0";
 
         // Set mask to highest bit
@@ -89,9 +90,8 @@ namespace math {
     }
         
 
-    template <typename Op, std::Semiregular Element, typename Exponent>
+    template <typename Op, std::Semiregular Element, Integral Exponent>
         requires Monoid<Op, Element> 
-              && Integral<Exponent>
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element power(const Element& a, Exponent n, Op op)
@@ -100,9 +100,8 @@ namespace math {
 	return multiply_and_square_horner(a, n, op);
     }
 
-    template <typename Op, std::Semiregular Element, typename Exponent>
+    template <typename Op, std::Semiregular Element, Integral Exponent>
         requires PIMonoid<Op, Element> 
-              && Integral<Exponent>
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element power(const Element& a, Exponent n, Op op)
@@ -117,10 +116,9 @@ namespace math {
 	    return multiply_and_square_horner(a, n, op);
     }
 
-
-    template <typename Op, std::Semiregular Element, typename Exponent>
+#if 1
+    template <typename Op, std::Semiregular Element, Integral Exponent>
         requires Group<Op, Element> 
-              && Integral<Exponent>
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element power(const Element& a, Exponent n, Op op)
@@ -133,8 +131,35 @@ namespace math {
 	else
 	    return multiply_and_square_horner(a, n, op);
     }
+#endif
 
 
+#if 0
+    template <typename Op, std::Semiregular Element, typename Exponent>
+        requires Group<Op, Element> 
+              && Integral<Exponent>
+              && std::Callable2<Op, Element, Element>
+              && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
+              && std::Semiregular<math::Inversion<Op, Element>::result_type>
+              && std::HasNegate<Exponent>
+              && math::Monoid<Op, math::Inversion<Op, Element>::result_type>
+              && Integral< std::HasNegate<Exponent>::result_type>
+              && std::Callable2<Op, math::Inversion<Op, Element>::result_type, 
+				math::Inversion<Op, Element>::result_type>
+              && std::Convertible<std::Callable2<Op, math::Inversion<Op, Element>::result_type, 
+						 math::Inversion<Op, Element>::result_type>::result_type, 
+				  math::Inversion<Op, Element>::result_type>
+    inline Element power(const Element& a, Exponent n, Op op)
+    {
+	std::cout << "[Group] ";
+	// For groups we don't need any range test
+
+	if (n < 0)
+	    return multiply_and_square_horner(inverse(op, a), -n, op);
+	else
+	    return multiply_and_square_horner(a, n, op);
+    }
+#endif
 
 } // namespace math
 
