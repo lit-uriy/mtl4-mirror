@@ -25,11 +25,11 @@ namespace math {
     // For them we can define concept_maps regarding semantic behavior as monoids.
 
     concept IntrinsicSignedIntegral<typename T> 
-      : std::SignedIntegralLike<T> 
+      : std::SignedIntegralLike<T>
     {}
 
     concept IntrinsicUnsignedIntegral<typename T> 
-      : std::UnsignedIntegralLike<T> 
+      : std::UnsignedIntegralLike<T>
     {}
 
     concept IntrinsicFloatingPoint<typename T>

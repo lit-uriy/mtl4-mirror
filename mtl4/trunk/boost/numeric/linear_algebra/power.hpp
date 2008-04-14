@@ -16,13 +16,13 @@
 
 namespace math {
 
-    template <typename Op, typename Element, typename Exponent>
-        requires std::IntegralLike<Exponent>
-              && std::Semiregular<Element>
+    template <typename Op, std::Semiregular Element, typename Exponent>
+        requires Integral<Exponent>
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element power(const Element& a, Exponent n, Op op)
     {
+	std::cout << "[Magma] ";
 	if (n < 1) throw "In power [magma]: exponent must be greater than 0";
 
 	Element value= a;
@@ -32,48 +32,107 @@ namespace math {
     }
 
 
-#if 0
-    template <typename Op, typename Element, typename Exponent>
+    template <typename Op, std::Semiregular Element, typename Exponent>
         requires SemiGroup<Op, Element> 
-              && std::Integral<Exponent>
+              && Integral<Exponent>
+              && std::Callable2<Op, Element, Element>
+              && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element power(const Element& a, Exponent n, Op op)
     {
-	return recursive_multiply_and_square(a, n, op);
+	std::cout << "[SemiGroup] ";
+        if (n <= 0) throw "In power [SemiGroup]: exponent must greater than 0";
+
+        Exponent half= n >> 1;
+
+        // If half is 0 then n must be 1 and the result is a
+        if (half == 0)
+	    return a;
+
+        // compute power of downward rounded exponent and square the result
+        Element value= power(a, half, op);
+        value= op(value, value);
+
+        // if odd another multiplication with a is needed
+        if (n & 1) 
+	    value= op(value, a);
+        return value;
     }
 
 
-    template <typename Op, typename Element, typename Exponent>
+    template <typename Op, std::Semiregular Element, typename Exponent>
         requires Monoid<Op, Element> 
-              && std::Integral<Exponent>
+              && Integral<Exponent>
+              && std::Callable2<Op, Element, Element>
+              && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
+    inline Element multiply_and_square_horner(const Element& a, Exponent n, Op op) 
     {
-	return multiply_and_square(a, n, op);
-    }
-#endif
+        if (n <= 0) throw "In multiply_and_square_horner: exponent must be greater than 0";
 
-#if 0 // PIMonoid not yet defined
-    template <typename Op, typename Element, typename Exponent>
+        // Set mask to highest bit
+        Exponent mask= 1 << (8 * sizeof(mask) - 1);
+
+        // If this is a negative number right shift can insert 1s instead of 0s -> infinite loop
+        // Therefore we take the 2nd-highest bit
+        if (mask < 0)
+	    mask= 1 << (8 * sizeof(mask) - 2);
+
+        // find highest 1 bit
+        while(!bool(mask & n)) mask>>= 1;
+
+        Element value= a;
+        for (mask>>= 1; mask; mask>>= 1) {
+	    value= op(value, value);
+	    if (n & mask) 
+		value= op(value, a);
+        }
+        return value;
+    }
+        
+
+    template <typename Op, std::Semiregular Element, typename Exponent>
+        requires Monoid<Op, Element> 
+              && Integral<Exponent>
+              && std::Callable2<Op, Element, Element>
+              && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
+    inline Element power(const Element& a, Exponent n, Op op)
+    {
+	std::cout << "[Monoid] ";
+	return multiply_and_square_horner(a, n, op);
+    }
+
+    template <typename Op, std::Semiregular Element, typename Exponent>
         requires PIMonoid<Op, Element> 
-              && std::Integral<Exponent>
+              && Integral<Exponent>
+              && std::Callable2<Op, Element, Element>
+              && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element power(const Element& a, Exponent n, Op op)
     {
+	std::cout << "[PIMonoid] ";
 	if (n < 0 && !is_invertible(op, a)) 
-	    throw "In power [PIMonoid]: a must be invertible with negative n";
+	    throw "In power [PIMonoid]: a must be invertible with negative exponent";
 
-	return n >= 0 ? multiply_and_square(a, n, op) 
-	              : multiply_and_square(inverse(op, a), -n, op);
+	if (n < 0)
+	    return multiply_and_square_horner(Element(inverse(op, a)), Exponent(-n), op);
+	else
+	    return multiply_and_square_horner(a, n, op);
     }
-#endif
 
-#if 0
-    template <typename Op, typename Element, typename Exponent>
+
+    template <typename Op, std::Semiregular Element, typename Exponent>
         requires Group<Op, Element> 
-              && std::Integral<Exponent>
+              && Integral<Exponent>
+              && std::Callable2<Op, Element, Element>
+              && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element power(const Element& a, Exponent n, Op op)
     {
-	return n >= 0 ? multiply_and_square(a, n, op) 
-	              : multiply_and_square(inverse(op, a), -n, op);
+	std::cout << "[Group] ";
+	// For groups we don't need any range test
+
+	if (n < 0)
+	    return multiply_and_square_horner(Element(inverse(op, a)), Exponent(-n), op);
+	else
+	    return multiply_and_square_horner(a, n, op);
     }
-#endif
 
 
 
