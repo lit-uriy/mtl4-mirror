@@ -50,21 +50,54 @@ namespace math {
 
     auto concept Inversion<typename Operation, typename Element>
     {
-        typename inverse_result_type;
-        inverse_result_type inverse(Operation, Element);
+        typename result_type;
+        result_type inverse(Operation, Element);
      
     };
 
 
-    concept Group<typename Operation, typename Element>
+    concept PIMonoid<typename Operation, typename Element>
       : Monoid<Operation, Element>, 
 	Inversion<Operation, Element>
     {
-        axiom Inversion(Operation op, Element x)
-        {
+	 bool is_invertible(Operation, Element);
+
+	 requires std::Convertible<Inversion<Operation, Element>::result_type, Element>;
+
+	 axiom Invertibility(Operation op, Element x)
+	 {
+	     // Only for invertible elements:
+	     if (is_invertible(op, x))
+		 op( x, inverse(op, x) ) == identity(op, x); 
+	     if ( is_invertible(op, x) )
+		 op( inverse(op, x), x ) == identity(op, x); 
+	 }
+    }
+
+#if 0
+    template <typename Operation, typename Element>
+        requires PIMonoid<Operation, Element>
+    concept_map PIMonoid<Operation, Inversion<Operation, Element>::result_type> {}
+#endif
+
+    concept Group<typename Operation, typename Element>
+      : PIMonoid<Operation, Element>
+    {
+	bool is_invertible(Operation, Element) { return true; }
+
+	// Just in case somebody redefines is_invertible
+	axiom AlwaysInvertible(Operation op, Element x)
+	{
+	    is_invertible(op, x);
+	}
+
+	axiom GlobalInvertibility(Operation op, Element x)
+	{
+	    // In fact this is implied by AlwaysInvertible and inherited Invertibility axiom
+	    // However, we don't rely on the compiler to deduce this
 	    op( x, inverse(op, x) ) == identity(op, x);
 	    op( inverse(op, x), x ) == identity(op, x);
-        }
+	}
     };
 
 
@@ -79,7 +112,7 @@ namespace math {
         {
 	    // From left
 	    mult(x, add(y, z)) == add(mult(x, y), mult(x, z));
-	    // z right
+	    // from right
 	    mult(add(x, y), z) == add(mult(x, z), mult(y, z));
         }
     };
@@ -125,7 +158,15 @@ namespace math {
     {};
 
 
+    // Integral is a semantic concept (still to be defined)
+    // that adds the semantic of whole (natural) numbers to std::IntegralLike
+    // e.g, some type T with T operator--() { return --x % 5 + 17; } 
+    // models std::IntegralLike but is not 
+    concept Integral<typename T> : std::IntegralLike<T> {}
 
+    concept UnsignedIntegral<typename T> : Integral<T> {}
+
+    concept SignedIntegral<typename T> : Integral<T> {}
 
 } // namespace math
 
