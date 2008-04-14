@@ -12,6 +12,7 @@
 
 #include <concepts>
 #include <boost/numeric/linear_algebra/intrinsic_concept_maps.hpp>
+#include <boost/numeric/linear_algebra/operators.hpp>
 
 
 namespace math {
@@ -74,7 +75,9 @@ namespace math {
 	 }
     }
 
-#if 0
+#if 0 
+    // Alternative approach to convert the result of inversion to Element
+    // Unfortunately, this doesn't compile
     template <typename Operation, typename Element>
         requires PIMonoid<Operation, Element>
     concept_map PIMonoid<Operation, Inversion<Operation, Element>::result_type> {}
@@ -91,10 +94,10 @@ namespace math {
 	    is_invertible(op, x);
 	}
 
+	// In fact this is implied by AlwaysInvertible and inherited Invertibility axiom
+	// Maybe remove
 	axiom GlobalInvertibility(Operation op, Element x)
 	{
-	    // In fact this is implied by AlwaysInvertible and inherited Invertibility axiom
-	    // However, we don't rely on the compiler to deduce this
 	    op( x, inverse(op, x) ) == identity(op, x);
 	    op( inverse(op, x), x ) == identity(op, x);
 	}
@@ -156,6 +159,233 @@ namespace math {
       : DivisionRing<AddOp, MultOp, Element>,
         Commutative<MultOp, Element>
     {};
+
+
+    // =======================
+    // Operator-based concepts
+    // =======================
+
+
+
+    concept AdditiveSemiGroup<typename Element>
+      : std::HasPlus<Element>,
+	SemiGroup< add<Element>, Element >
+    {
+	typename plus_assign_result_type;  
+	plus_assign_result_type operator+=(Element& x, Element y)
+	{
+	    x= x + y; return x;
+	}
+	
+	requires std::Convertible<plus_assign_result_type, Element&>;
+
+	// Do we need the opposite conversion too?
+	// This line produces a compiler error
+	// requires std::Convertible<add<Element>::result_type,
+	//                           std::HasPlus<Element>::result_type>;
+
+	axiom Consistency(add<Element> op, Element x, Element y)
+	{
+	    op(x, y) == x + y;
+	    op(x, y) == (x += y, x);
+	}
+    }
+
+
+    concept AdditiveMonoid<typename Element>
+      : AdditiveSemiGroup<Element>,
+	Monoid< add<Element>, Element >
+    {
+	Element zero(Element x)
+	{
+	    return identity(add<Element>(), x);
+	}
+	
+	// If we don't use the default definition
+	axiom IdentityConsistency (math::add<Element> op, Element x)
+	{
+	    zero(x) == identity(op, x);
+	}
+    };
+
+#if 0  // Uncompilable due to error in compiler
+    concept AdditivePIMonoid<typename Element>
+      : AdditiveMonoid<Element>,
+	PIMonoid< add<Element>, Element >
+    {
+	typename minus_assign_result_type;  
+	minus_assign_result_type operator-=(Element& x, Element y)
+	{
+	    x= x - y; return x;
+	}
+	
+	requires std::Convertible<minus_assign_result_type, Element&>;
+
+	typename unary_result_type;  
+	unary_result_type operator-(Element x)
+	{
+	    return zero(x) - x;
+	}
+
+	axiom InverseConsistency(add<Element> op, Element x, Element y)
+	{
+	    // consistency between additive and functor concept
+	    if ( is_invertible(op, y) )
+		op(x, inverse(op, y)) == x - y;
+	    if ( is_invertible(op, y) )
+		op(x, y) == (x -= y, x);
+
+	    // consistency of unary inversion
+	    if ( is_invertible(op, y) )
+		inverse(op, y) == -y;                      
+
+	    // consistency between unary and binary -
+	    if ( is_invertible(op, x) )
+		identity(op, x) - x == -x;                 
+	}
+    }
+
+
+    auto concept AdditiveGroup<typename Element>
+      : AdditivePIMonoid<Element>,
+	Group< add<Element>, Element >
+    {};
+
+
+    auto concept AdditiveAbelianGroup<typename Element>
+      : AdditiveGroup<Element>,
+        Commutative< add<Element>, Element >
+    {}
+
+#endif
+
+
+    concept MultiplicativeSemiGroup<typename Element>
+      : std::HasMultiply<Element>,
+	SemiGroup< mult<Element>, Element >
+    {
+	typename times_assign_result_type;  
+	times_assign_result_type operator*=(Element& x, Element y)
+	{
+	    x= x * y; return x;
+	}
+	
+	requires std::Convertible<times_assign_result_type, Element&>;
+
+	// Do we need the opposite conversion too?
+	// This line produces a compiler error
+	// requires std::Convertible<mult<Element>::result_type,
+	//                           std::HasMultiply<Element>::result_type>;
+
+	axiom Consistency(mult<Element> op, Element x, Element y)
+	{
+	    op(x, y) == x * y;
+	    op(x, y) == (x *= y, x);
+	}
+    }
+
+
+    concept MultiplicativeMonoid<typename Element>
+      : MultiplicativeSemiGroup<Element>,
+	Monoid< mult<Element>, Element >
+    {
+	Element one(Element x)
+	{
+	    return identity(mult<Element>(), x);
+	}
+	
+	// If we don't use the default definition
+	axiom IdentityConsistency (math::mult<Element> op, Element x)
+	{
+	    one(x) == identity(op, x);
+	}
+    };
+
+#if 0  // Uncompilable due to error in compiler
+    concept MultiplicativePIMonoid<typename Element>
+      : MultiplicativeMonoid<Element>,
+	PIMonoid< mult<Element>, Element >
+    {
+	typename divide_assign_result_type;  
+	divide_assign_result_type operator/=(Element& x, Element y)
+	{
+	    x= x / y; return x;
+	}
+	
+	requires std::Convertible<divide_assign_result_type, Element&>;
+
+	axiom InverseConsistency(mult<Element> op, Element x, Element y)
+	{
+	    // consistency between multiplicative and functor concept
+	    if ( is_invertible(op, y) )
+		op(x, inverse(op, y)) == x / y;
+	    if ( is_invertible(op, y) )
+		op(x, y) == (x /= y, x);
+	}
+    }
+
+
+    auto concept MultiplicativeGroup<typename Element>
+      : MultiplicativePIMonoid<Element>,
+	Group< mult<Element>, Element >
+    {};
+
+
+    auto concept MultiplicativeAbelianGroup<typename Element>
+      : MultiplicativeGroup<Element>,
+        Commutative< mult<Element>, Element >
+    {}
+
+
+
+
+    auto concept OperatorRing<typename Element>
+      : AdditiveAbelianGroup<Element>,
+        MultiplicativeSemiGroup<Element>,
+        Ring<add<Element>, mult<Element>, Element>
+    {};
+
+        
+    auto concept OperatorRingWithIdentity<typename Element>
+      : OperatorRing<Element>,
+        MultiplicativeMonoid<Element>,
+        RingWithIdentity<add<Element>, mult<Element>, Element>
+    {};
+       
+ 
+    auto concept OperatorDivisionRing<typename Element>
+      : OperatorRingWithIdentity<Element>,
+        MultiplicativePIMonoid<Element>, 
+        DivisionRing<add<Element>, mult<Element>, Element>
+    {};    
+
+
+    auto concept OperatorField<typename Element>
+      : OperatorDivisionRing<Element>,
+        Field<add<Element>, mult<Element>, Element>
+    {};
+        
+
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // Integral is a semantic concept (still to be defined)

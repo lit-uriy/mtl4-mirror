@@ -59,14 +59,11 @@ namespace math {
 
 
     template <typename Op, std::Semiregular Element, Integral Exponent>
-        requires Monoid<Op, Element> 
+        requires SemiGroup<Op, Element> 
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element multiply_and_square_horner(const Element& a, Exponent n, Op op) 
     {
-	if (n == 0)
-	    return Element(identity(op, a));
-
         if (n <= 0) throw "In multiply_and_square_horner: exponent must be greater than 0";
 
         // Set mask to highest bit
@@ -77,7 +74,7 @@ namespace math {
         if (mask < 0)
 	    mask= 1 << (8 * sizeof(mask) - 2);
 
-        // find highest 1 bit
+        // Find highest 1 bit
         while(!bool(mask & n)) mask>>= 1;
 
         Element value= a;
@@ -110,10 +107,11 @@ namespace math {
 	if (n < 0 && !is_invertible(op, a)) 
 	    throw "In power [PIMonoid]: a must be invertible with negative exponent";
 
-	if (n < 0)
-	    return multiply_and_square_horner(Element(inverse(op, a)), Exponent(-n), op);
-	else
-	    return multiply_and_square_horner(a, n, op);
+	if (n == 0)
+	    return Element(identity(op, a));
+	else 
+	    return n < 0 ? multiply_and_square_horner(Element(inverse(op, a)), Exponent(-n), op)
+	                 : multiply_and_square_horner(a, n, op);
     }
 
 #if 1
@@ -126,18 +124,20 @@ namespace math {
 	std::cout << "[Group] ";
 	// For groups we don't need any range test
 
-	if (n < 0)
-	    return multiply_and_square_horner(Element(inverse(op, a)), Exponent(-n), op);
-	else
-	    return multiply_and_square_horner(a, n, op);
+	if (n == 0)
+	    return Element(identity(op, a));
+	else 
+	    return n < 0 ? multiply_and_square_horner(Element(inverse(op, a)), Exponent(-n), op)
+	                 : multiply_and_square_horner(a, n, op);
     }
 #endif
 
 
 #if 0
-    template <typename Op, std::Semiregular Element, typename Exponent>
+    template <typename Op, typename Element, typename Exponent>
         requires Group<Op, Element> 
               && Integral<Exponent>
+              && std::Semiregular Element
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
               && std::Semiregular<math::Inversion<Op, Element>::result_type>
@@ -153,6 +153,8 @@ namespace math {
     {
 	std::cout << "[Group] ";
 	// For groups we don't need any range test
+	if (n == 0)
+	    return Element(identity(op, a));
 
 	if (n < 0)
 	    return multiply_and_square_horner(inverse(op, a), -n, op);

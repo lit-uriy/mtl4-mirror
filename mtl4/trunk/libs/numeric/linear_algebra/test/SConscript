@@ -5,7 +5,7 @@ Import('debug_env check')
 sources = glob.glob('*.cpp')
 
 # For testing only, the rest doesn't work yet
-sources = ["power_test.cpp"]
+# sources = ["power_test.cpp"]
 
 concept_env = debug_env.Copy()
 
