@@ -8,7 +8,13 @@
 #include <boost/numeric/linear_algebra/concept_maps.hpp>
 #include <boost/numeric/linear_algebra/power.hpp>
 
-
+#if 0 // only for testing other concepts
+namespace math {
+    concept_map AbelianGroup< add<float>, float > {}
+    concept_map Monoid< mult<float>, float > {}
+    concept_map SignedIntegral<int> {}
+} // namespace math
+#endif
 
 int main(int, char* []) 
 {

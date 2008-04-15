@@ -36,32 +36,6 @@ namespace math {
         requires SemiGroup<Op, Element> 
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
-    inline Element power(const Element& a, Exponent n, Op op)
-    {
-	std::cout << "[SemiGroup] ";
-        if (n <= 0) throw "In power [SemiGroup]: exponent must greater than 0";
-
-        Exponent half= n >> 1;
-
-        // If half is 0 then n must be 1 and the result is a
-        if (half == 0)
-	    return a;
-
-        // compute power of downward rounded exponent and square the result
-        Element value= power(a, half, op);
-        value= op(value, value);
-
-        // if odd another multiplication with a is needed
-        if (n & 1) 
-	    value= op(value, a);
-        return value;
-    }
-
-
-    template <typename Op, std::Semiregular Element, Integral Exponent>
-        requires SemiGroup<Op, Element> 
-              && std::Callable2<Op, Element, Element>
-              && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element multiply_and_square_horner(const Element& a, Exponent n, Op op) 
     {
         if (n <= 0) throw "In multiply_and_square_horner: exponent must be greater than 0";
@@ -85,7 +59,68 @@ namespace math {
         }
         return value;
     }
-        
+
+
+    template <typename Op, std::Semiregular Element, Integral Exponent>
+        requires SemiGroup<Op, Element> 
+              && std::Callable2<Op, Element, Element>
+              && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
+    inline Element power(const Element& a, Exponent n, Op op)
+    {
+	return multiply_and_square_horner(a, n, op);
+    }
+
+
+#if 0
+    // With Horner scheme we can avoid recursion  
+    // This one is more intuitive (I believe)      
+    template <typename Op, std::Semiregular Element, Integral Exponent>
+        requires SemiGroup<Op, Element> 
+              && std::Callable2<Op, Element, Element>
+              && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
+    inline Element power(const Element& a, Exponent n, Op op)
+    {
+	std::cout << "[SemiGroup] ";
+        if (n <= 0) throw "In power [SemiGroup]: exponent must be greater than 0";
+
+        // If half is 0 then n must be 1 and the result is a
+        if (half == 0)
+	    return a;
+
+        // Compute power of downward rounded exponent and "square" the result
+        Element value= power(a, half, op);
+        value= op(value, value);
+
+        // If n is odd another operation with a is needed
+        if (n & 1) 
+	    value= op(value, a);
+        return value;
+    }
+#endif
+
+
+
+    template <typename Op, std::Semiregular Element, Integral Exponent>
+        requires Monoid<Op, Element> 
+              && std::Callable2<Op, Element, Element>
+              && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
+    inline Element multiply_and_square(const Element& a, Exponent n, Op op) 
+    {
+	// Same as the simpler form except that the first multiplication is made before 
+	// the loop and one squaring is saved this way
+	if (n < 0) throw "In multiply_and_square: negative exponent";
+
+	using math::identity;
+	Element value= bool(n & 1) ? Element(a) : Element(identity(op, a)), square= a;
+	
+	for (n>>= 1; n > 0; n>>= 1) {
+	    square= op(square, square); 
+	    if (n & 1) 
+		value= op(value, square);
+	}
+	return value;  
+    } 
+
 
     template <typename Op, std::Semiregular Element, Integral Exponent>
         requires Monoid<Op, Element> 
@@ -94,8 +129,11 @@ namespace math {
     inline Element power(const Element& a, Exponent n, Op op)
     {
 	std::cout << "[Monoid] ";
-	return multiply_and_square_horner(a, n, op);
+	return multiply_and_square(a, n, op);
     }
+
+
+
 
     template <typename Op, std::Semiregular Element, Integral Exponent>
         requires PIMonoid<Op, Element> 
@@ -107,11 +145,8 @@ namespace math {
 	if (n < 0 && !is_invertible(op, a)) 
 	    throw "In power [PIMonoid]: a must be invertible with negative exponent";
 
-	if (n == 0)
-	    return Element(identity(op, a));
-	else 
-	    return n < 0 ? multiply_and_square_horner(Element(inverse(op, a)), Exponent(-n), op)
-	                 : multiply_and_square_horner(a, n, op);
+	return n < 0 ? multiply_and_square(Element(inverse(op, a)), Exponent(-n), op)
+	             : multiply_and_square(a, n, op);
     }
 
 #if 1
@@ -124,11 +159,8 @@ namespace math {
 	std::cout << "[Group] ";
 	// For groups we don't need any range test
 
-	if (n == 0)
-	    return Element(identity(op, a));
-	else 
-	    return n < 0 ? multiply_and_square_horner(Element(inverse(op, a)), Exponent(-n), op)
-	                 : multiply_and_square_horner(a, n, op);
+	return n < 0 ? multiply_and_square(Element(inverse(op, a)), Exponent(-n), op)
+	             : multiply_and_square(a, n, op);
     }
 #endif
 
@@ -151,15 +183,8 @@ namespace math {
 				  math::Inversion<Op, Element>::result_type>
     inline Element power(const Element& a, Exponent n, Op op)
     {
-	std::cout << "[Group] ";
-	// For groups we don't need any range test
-	if (n == 0)
-	    return Element(identity(op, a));
-
-	if (n < 0)
-	    return multiply_and_square_horner(inverse(op, a), -n, op);
-	else
-	    return multiply_and_square_horner(a, n, op);
+	return n < 0 ? multiply_and_square(inverse(op, a), -n, op)
+	             : multiply_and_square(a, n, op);
     }
 #endif
 
