@@ -13,6 +13,20 @@
 
 namespace mtl {
 
+// Dispatching between simple and unrolled version
+template <std::ForwardIterator Iter, std::CopyConstructible Value, typename Op>
+     requires std::Convertible<std::ForwardIterator<Iter>::value_type, Value>
+           && std::Callable2<Op, Value, Value>
+           && std::MoveAssignable<Value, std::Callable2<Op, Value, Value>::result_type>
+Value inline accumulate(Iter first, Iter last, Value init, Op op)
+{
+    std::cout << "Simple accumulate\n";
+
+    for (; first != last; ++first)
+	init= op(init, Value(*first));
+    return init;
+}
+
 
 template <std::RandomAccessIterator Iter, std::CopyConstructible Value, typename Op>
   requires std::Convertible<std::RandomAccessIterator<Iter>::value_type, Value>
@@ -42,21 +56,6 @@ Value inline accumulate(Iter first, Iter last, Value init, Op op)
 
     t0= op(t0, t1), t2= op(t2, t3), t0= op(t0, t2);
     return t0;
-}
-
-
-// Dispatching between simple and unrolled version
-template <std::ForwardIterator Iter, std::CopyConstructible Value, typename Op>
-     requires std::Convertible<std::ForwardIterator<Iter>::value_type, Value>
-           && std::Callable2<Op, Value, Value>
-           && std::MoveAssignable<Value, std::Callable2<Op, Value, Value>::result_type>
-Value inline accumulate(Iter first, Iter last, Value init, Op op)
-{
-    std::cout << "Simple accumulate\n";
-
-    for (; first != last; ++first)
-	init= op(init, Value(*first));
-    return init;
 }
 
 } // namespace mtl
