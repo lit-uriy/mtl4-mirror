@@ -150,7 +150,7 @@ concept AdditiveMonoid<typename Element>
     }
     
     // If we don't use the default definition
-    axiom IdentityConsistency (math::add<Element> op, Element x)
+    axiom IdentityConsistency (add<Element> op, Element x)
     {
 	zero(x) == identity(op, x);
     }
@@ -158,7 +158,7 @@ concept AdditiveMonoid<typename Element>
 
 #if 0  // Uncompilable due to error in compiler
 concept AdditivePIMonoid<typename Element>
-  : AdditiveMonoid<Element>,
+  : std::HasMinus<Element>, AdditiveMonoid<Element>, 
     PIMonoid< add<Element>, Element >
 {
     typename minus_assign_result_type;  
@@ -251,7 +251,7 @@ concept MultiplicativeMonoid<typename Element>
 
 #if 0  // Uncompilable due to error in compiler
 concept MultiplicativePIMonoid<typename Element>
-  : MultiplicativeMonoid<Element>,
+  : std::HasDivide<Element>, MultiplicativeMonoid<Element>,
     PIMonoid< mult<Element>, Element >
 {
     typename divide_assign_result_type;  
