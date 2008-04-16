@@ -9,10 +9,9 @@
 namespace math {
 
 // Dispatching between simple and unrolled version
-template <std::ForwardIterator Iter, std::CopyConstructible Value, typename Op>
-     requires std::Convertible<std::ForwardIterator<Iter>::value_type, Value>
-           && std::Callable2<Op, Value, Value>
-           && std::MoveAssignable<Value, std::Callable2<Op, Value, Value>::result_type>
+template <std::InputIterator Iter, std::CopyConstructible Value, typename Op>
+     requires std::Callable2<Op, Value, Value>
+           && std::CopyAssignable<Value, std::Callable2<Op, Value, Value>::result_type>
 Value inline accumulate(Iter first, Iter last, Value init, Op op)
 {
     // std::cout << "Simple accumulate\n";
@@ -23,9 +22,8 @@ Value inline accumulate(Iter first, Iter last, Value init, Op op)
 
 
 template <std::RandomAccessIterator Iter, std::CopyConstructible Value, typename Op>
-    requires std::Convertible<std::RandomAccessIterator<Iter>::value_type, Value>
-          && std::Callable2<Op, Value, Value>
-          && std::MoveAssignable<Value, std::Callable2<Op, Value, Value>::result_type>
+    requires std::Callable2<Op, Value, Value>
+          && std::CopyAssignable<Value, std::Callable2<Op, Value, Value>::result_type>
           && Commutative<Op, Value> 
           && Monoid<Op, Value> 
           && std::Convertible<Monoid<Op, Value>::identity_result_type, Value>
