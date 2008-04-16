@@ -1,17 +1,12 @@
-#ifndef MTL_ACCUMULATION_TEST_INCLUDE
-#define MTL_ACCUMULATION_TEST_INCLUDE
+#ifndef MATH_ACCUMULATE_INCLUDE
+#define MATH_ACCUMULATE_INCLUDE
 
-
-#include <iostream>
-#include <algorithm>
 #include <concepts>
 
-#include <boost/numeric/linear_algebra/operators.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/linear_algebra/new_concepts.hpp>
-#include <boost/numeric/linear_algebra/concept_maps.hpp>
 
-namespace mtl {
+namespace math {
 
 // Dispatching between simple and unrolled version
 template <std::ForwardIterator Iter, std::CopyConstructible Value, typename Op>
@@ -20,8 +15,7 @@ template <std::ForwardIterator Iter, std::CopyConstructible Value, typename Op>
            && std::MoveAssignable<Value, std::Callable2<Op, Value, Value>::result_type>
 Value inline accumulate(Iter first, Iter last, Value init, Op op)
 {
-    std::cout << "Simple accumulate\n";
-
+    // std::cout << "Simple accumulate\n";
     for (; first != last; ++first)
 	init= op(init, Value(*first));
     return init;
@@ -29,17 +23,15 @@ Value inline accumulate(Iter first, Iter last, Value init, Op op)
 
 
 template <std::RandomAccessIterator Iter, std::CopyConstructible Value, typename Op>
-  requires std::Convertible<std::RandomAccessIterator<Iter>::value_type, Value>
-        && std::Callable2<Op, Value, Value>
-        && std::MoveAssignable<Value, std::Callable2<Op, Value, Value>::result_type>
-        && math::Commutative<Op, Value> 
-        && math::Monoid<Op, Value> 
-        && std::Convertible<math::Monoid<Op, Value>::identity_result_type, Value>
+    requires std::Convertible<std::RandomAccessIterator<Iter>::value_type, Value>
+          && std::Callable2<Op, Value, Value>
+          && std::MoveAssignable<Value, std::Callable2<Op, Value, Value>::result_type>
+          && Commutative<Op, Value> 
+          && Monoid<Op, Value> 
+          && std::Convertible<Monoid<Op, Value>::identity_result_type, Value>
 Value inline accumulate(Iter first, Iter last, Value init, Op op)
 {
-    std::cout << "Unrolled accumulate\n";
-
-    typedef typename std::RandomAccessIterator<Iter>::value_type value_type;
+    // std::cout << "Unrolled accumulate\n";
     typedef typename std::RandomAccessIterator<Iter>::difference_type difference_type;
     Value             t0= identity(op, init), t1= identity(op, init), 
 	              t2= identity(op, init), t3= init;
@@ -58,6 +50,6 @@ Value inline accumulate(Iter first, Iter last, Value init, Op op)
     return t0;
 }
 
-} // namespace mtl
+} // namespace math
 
-#endif // MTL_ACCUMULATION_TEST_INCLUDE
+#endif // MATH_ACCUMULATE_INCLUDE

@@ -1,15 +1,17 @@
 
-#include <libs/numeric/linear_algebra/test/accumulation.hpp>
+#include <boost/numeric/linear_algebra/accumulate.hpp>
+#include <boost/numeric/linear_algebra/concept_maps.hpp>
+#include <boost/numeric/linear_algebra/operators.hpp>
 
 #include <boost/timer.hpp>
 
 
-
-const int   array_size= 10;
-
 template <typename Element>
 void test_accumulate(const char* name)
 {
+    using math::accumulate; using std::cout;
+
+    const int   array_size= 10;
     Element     array[array_size];
     for (int i= 0; i < array_size; i++) 
     	array[i]= Element(i);
