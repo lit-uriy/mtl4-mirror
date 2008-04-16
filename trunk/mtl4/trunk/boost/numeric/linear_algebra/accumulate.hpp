@@ -41,9 +41,9 @@ Value inline accumulate(Iter first, Iter last, Value init, Op op)
 {
     // std::cout << "Unrolled accumulate\n";
     typedef typename std::RandomAccessIterator<Iter>::difference_type difference_type;
-    Value             t0= identity(op, init), t1= identity(op, init), 
-	              t2= identity(op, init), t3= init;
-    difference_type   size= last - first, bsize= size >> 2 << 2, i;
+    Value            t0= identity(op, init), t1= identity(op, init), 
+	             t2= identity(op, init), t3= init;
+    difference_type  size= last - first, bsize= size >> 2 << 2, i;
     
     for (i= 0; i < bsize; i+= 4) {
 	t0= op(t0, Value(first[i]));
