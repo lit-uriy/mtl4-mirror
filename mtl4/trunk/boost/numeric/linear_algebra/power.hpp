@@ -169,7 +169,7 @@ namespace math {
     template <typename Op, typename Element, typename Exponent>
         requires Group<Op, Element> 
               && Integral<Exponent>
-              && std::Semiregular Element
+              && std::Semiregular<Element>
               && std::Callable2<Op, Element, Element>
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
               && std::Semiregular<math::Inversion<Op, Element>::result_type>

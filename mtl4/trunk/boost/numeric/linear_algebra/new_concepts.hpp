@@ -300,20 +300,20 @@ concept Distributive<typename AddOp, typename MultOp, typename Element>
 	// from right
 	mult(add(x, y), z) == add(mult(x, z), mult(y, z));
     }
-};
+}
 
 
 auto concept Ring<typename AddOp, typename MultOp, typename Element>
   : AbelianGroup<AddOp, Element>,
     SemiGroup<MultOp, Element>,
     Distributive<AddOp, MultOp, Element>
-{};
+{}
 
 
 auto concept RingWithIdentity<typename AddOp, typename MultOp, typename Element>
   : Ring<AddOp, MultOp, Element>,
     Monoid<MultOp, Element>
-{};
+{}
 
 
 concept DivisionRing<typename AddOp, typename MultOp, typename Element>
@@ -334,40 +334,40 @@ concept DivisionRing<typename AddOp, typename MultOp, typename Element>
 	if (x != identity(add, x))
 	    mult(x, inverse(mult, x)) == identity(mult, x);
     }
-};    
+}    
 
 
 auto concept Field<typename AddOp, typename MultOp, typename Element>
   : DivisionRing<AddOp, MultOp, Element>,
     Commutative<MultOp, Element>
-{};
+{}
 
 
 auto concept OperatorRing<typename Element>
   : AdditiveAbelianGroup<Element>,
     MultiplicativeSemiGroup<Element>,
     Ring<add<Element>, mult<Element>, Element>
-{};
+{}
 
         
 auto concept OperatorRingWithIdentity<typename Element>
   : OperatorRing<Element>,
     MultiplicativeMonoid<Element>,
     RingWithIdentity<add<Element>, mult<Element>, Element>
-{};
+{}
        
  
 auto concept OperatorDivisionRing<typename Element>
   : OperatorRingWithIdentity<Element>,
     MultiplicativePIMonoid<Element>, 
     DivisionRing<add<Element>, mult<Element>, Element>
-{};    
+{}    
 
 
 auto concept OperatorField<typename Element>
   : OperatorDivisionRing<Element>,
     Field<add<Element>, mult<Element>, Element>
-{};
+{}
         
 
 

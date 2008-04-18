@@ -1368,7 +1368,7 @@ The type traits traits::range_generator<Tag, Collection>
 is used to determine the type of cursor:
 \code
     typedef typename traits::range_generator<tag::row, Matrix>::type c_type;
-    typedef typename traits::range_generator<tag::row, c_type>::type  ic_type;
+    typedef typename traits::range_generator<tag::nz, c_type>::type  ic_type;
 
     for (c_type cursor(begin<tag::row>(x)), cend(end<tag::row>(x)); cursor != cend; ++cursor)
        for (ic_type icursor(begin<tag::nz>(cursor)), icend(end<tag::nz>(cursor)); icursor != icend; ++icursor)
