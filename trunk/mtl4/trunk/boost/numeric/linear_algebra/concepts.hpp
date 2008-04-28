@@ -140,20 +140,20 @@ concept IntrinsicFloatingPoint<typename T>
 
 // Intrinsic types are chategorized:
 
-// concept_map IntrinsicSignedIntegral<char> {}; ???
-concept_map IntrinsicSignedIntegral<signed char> {};
-concept_map IntrinsicUnsignedIntegral<unsigned char> {};
-concept_map IntrinsicSignedIntegral<short> {};
-concept_map IntrinsicUnsignedIntegral<unsigned short> {};
-concept_map IntrinsicSignedIntegral<int> {};
-concept_map IntrinsicUnsignedIntegral<unsigned int> {};
-concept_map IntrinsicSignedIntegral<long> {};
-concept_map IntrinsicUnsignedIntegral<unsigned long> {};
-concept_map IntrinsicSignedIntegral<long long> {};
-concept_map IntrinsicUnsignedIntegral<unsigned long long> {};
+concept_map IntrinsicSignedIntegral<char> {} 
+concept_map IntrinsicSignedIntegral<signed char> {}
+concept_map IntrinsicUnsignedIntegral<unsigned char> {}
+concept_map IntrinsicSignedIntegral<short> {}
+concept_map IntrinsicUnsignedIntegral<unsigned short> {}
+concept_map IntrinsicSignedIntegral<int> {}
+concept_map IntrinsicUnsignedIntegral<unsigned int> {}
+concept_map IntrinsicSignedIntegral<long> {}
+concept_map IntrinsicUnsignedIntegral<unsigned long> {}
+concept_map IntrinsicSignedIntegral<long long> {}
+concept_map IntrinsicUnsignedIntegral<unsigned long long> {}
 
-concept_map IntrinsicFloatingPoint<float> { }
-concept_map IntrinsicFloatingPoint<double> { }
+concept_map IntrinsicFloatingPoint<float> {}
+concept_map IntrinsicFloatingPoint<double> {}
 
 
 

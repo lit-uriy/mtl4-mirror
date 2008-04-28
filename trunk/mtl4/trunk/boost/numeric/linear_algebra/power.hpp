@@ -13,6 +13,7 @@
 #include <concepts>
 #include <boost/numeric/linear_algebra/new_concepts.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <stdexcept>
 
 
 namespace math {
@@ -23,7 +24,7 @@ namespace math {
     inline Element power(const Element& a, Exponent n, Op op)
     {
 	std::cout << "[Magma] ";
-	if (n < 1) throw "In power [magma]: exponent must be greater than 0";
+	if (n < 1) throw std::range_error("power [magma]: n must be > 0");
 
 	Element value= a;
 	for (; n > 1; --n)
@@ -38,7 +39,7 @@ namespace math {
               && std::Convertible<std::Callable2<Op, Element, Element>::result_type, Element>
     inline Element multiply_and_square_horner(const Element& a, Exponent n, Op op) 
     {
-        if (n <= 0) throw "In multiply_and_square_horner: exponent must be greater than 0";
+	if (n < 1) throw std::range_error("mult&square Horner: n must be > 0");
 
         // Set mask to highest bit
         Exponent mask= 1 << (8 * sizeof(mask) - 1);
@@ -81,7 +82,7 @@ namespace math {
     inline Element power(const Element& a, Exponent n, Op op)
     {
 	std::cout << "[SemiGroup] ";
-        if (n <= 0) throw "In power [SemiGroup]: exponent must be greater than 0";
+	if (n < 1) throw std::range_error("power [SemiGroup]: n must be > 0");
 
         // If half is 0 then n must be 1 and the result is a
         if (half == 0)
@@ -108,8 +109,8 @@ namespace math {
     {
 	// Same as the simpler form except that the first multiplication is made before 
 	// the loop and one squaring is saved this way
-	if (n < 0) throw "In multiply_and_square: negative exponent";
-
+	if (n < 0) throw std::range_error("mult&square: n must be >= 0");
+	
 	using math::identity;
 	Element value= bool(n & 1) ? Element(a) : Element(identity(op, a)), square= a;
 	
@@ -143,7 +144,7 @@ namespace math {
     {
 	std::cout << "[PIMonoid] ";
 	if (n < 0 && !is_invertible(op, a)) 
-	    throw "In power [PIMonoid]: a must be invertible with negative exponent";
+	    throw std::range_error("power [PIMonoid]: a must be invertible with n < 0");
 
 	return n < 0 ? multiply_and_square(Element(inverse(op, a)), Exponent(-n), op)
 	             : multiply_and_square(a, n, op);

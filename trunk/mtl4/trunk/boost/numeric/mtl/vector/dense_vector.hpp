@@ -85,18 +85,22 @@ public:
 
     dense_vector( ) : expr_base( *this ), memory_base( Parameters::dimension::value ) {}
     
-    dense_vector( size_type n )
-	: expr_base( *this ), memory_base( n ) 
+    explicit dense_vector( size_type n )
+	: memory_base( n ) 
     {}
     
-    dense_vector( size_type n, value_type value )
-	: expr_base( *this ), memory_base( n ) 
+    explicit dense_vector( size_type n, value_type value )
+	: memory_base( n ) 
     {
 	std::fill(begin(), end(), value);
     }
 
+    explicit dense_vector( size_type n, value_type *address )
+	: memory_base( address, n ) 
+    {}
+
     dense_vector( const self& src )
-	: expr_base( *this ), memory_base( src.size() ) 
+	: memory_base( src.size() ) 
     {
 	using std::copy;
 	copy(src.begin(), src.end(), begin());
@@ -105,7 +109,7 @@ public:
     // Might be generalized to arbitrary vectors later
     template <class Value2, typename Parameters2>
     explicit dense_vector( const dense_vector<Value2, Parameters2>& src )
-	: expr_base( *this ), memory_base( src.size() ) 
+	: memory_base( src.size() ) 
     {
 	using std::copy;
 	check_consistent_shape(src);

@@ -115,9 +115,8 @@ auto concept AbelianGroup<typename Operation, typename Element>
 // =======================
 
 
-concept AdditiveSemiGroup<typename Element>
-  : std::HasPlus<Element>,
-    SemiGroup< add<Element>, Element >
+concept Additive<typename Element>
+  : std::HasPlus<Element>
 {
     typename plus_assign_result_type;  
     plus_assign_result_type operator+=(Element& x, Element y)
@@ -138,6 +137,18 @@ concept AdditiveSemiGroup<typename Element>
 	op(x, y) == (x += y, x);
     }
 }
+
+    
+auto concept AdditiveCommutative<typename Element>
+  : Additive<Element>,
+    Commutative< add<Element>, Element >
+{}
+
+    
+auto concept AdditiveSemiGroup<typename Element>
+  : Additive<Element>,
+    SemiGroup< add<Element>, Element >
+{}
 
     
 concept AdditiveMonoid<typename Element>
@@ -208,9 +219,8 @@ auto concept AdditiveAbelianGroup<typename Element>
 #endif
 
 
-concept MultiplicativeSemiGroup<typename Element>
-  : std::HasMultiply<Element>,
-    SemiGroup< mult<Element>, Element >
+concept Multiplicative<typename Element>
+  : std::HasMultiply<Element>
 {
     typename times_assign_result_type;  
     times_assign_result_type operator*=(Element& x, Element y)
@@ -231,6 +241,18 @@ concept MultiplicativeSemiGroup<typename Element>
 	op(x, y) == (x *= y, x);
     }
 }
+
+
+auto concept MultiplicativeCommutative<typename Element>
+  : Multiplicative<Element>,
+    Commutative< mult<Element>, Element >
+{}
+
+    
+auto concept MultiplicativeSemiGroup<typename Element>
+  : Multiplicative<Element>,
+    SemiGroup< mult<Element>, Element >
+{}
 
 
 concept MultiplicativeMonoid<typename Element>
@@ -373,34 +395,202 @@ auto concept OperatorField<typename Element>
 
 #endif
 
+concept IntrinsicType<typename T> {}
+
+concept IntrinsicArithmetic<typename T> : IntrinsicType<T> {}
+
+concept IntrinsicIntegral<typename T> : IntrinsicArithmetic<T> {}
+
+concept IntrinsicSignedIntegral<typename T> 
+  : std::SignedIntegralLike<T>,
+    IntrinsicIntegral<T>
+{}
+
+concept IntrinsicUnsignedIntegral<typename T> 
+  : std::UnsignedIntegralLike<T>,
+    IntrinsicIntegral<T>
+{}
+
+concept IntrinsicFloatingPoint<typename T>
+  : std::FloatingPointLike<T>,
+    IntrinsicArithmetic<T>
+{}
 
 
+// Intrinsic types are chategorized:
+
+concept_map IntrinsicSignedIntegral<char> {} 
+concept_map IntrinsicSignedIntegral<signed char> {}
+concept_map IntrinsicUnsignedIntegral<unsigned char> {}
+concept_map IntrinsicSignedIntegral<short> {}
+concept_map IntrinsicUnsignedIntegral<unsigned short> {}
+concept_map IntrinsicSignedIntegral<int> {}
+concept_map IntrinsicUnsignedIntegral<unsigned int> {}
+concept_map IntrinsicSignedIntegral<long> {}
+concept_map IntrinsicUnsignedIntegral<unsigned long> {}
+concept_map IntrinsicSignedIntegral<long long> {}
+concept_map IntrinsicUnsignedIntegral<unsigned long long> {}
+
+concept_map IntrinsicFloatingPoint<float> {}
+concept_map IntrinsicFloatingPoint<double> {}
 
 
+#if 0
+
+// ====================
+// Default Concept Maps
+// ====================
+
+// ==============
+// Arithmetic
+// ==============
+
+// ----------------
+// Signed integrals
+// ----------------
+
+template <typename T>
+  requires IntrinsicSignedIntegral<T>
+concept_map OperatorRingWithIdentity<T> {}
+
+template <typename T>
+  requires IntrinsicSignedIntegral<T>
+concept_map MultiplicativeCommutative<T> {}
+
+// ------------------
+// Unsigned integrals
+// ------------------
 
 
+template <typename T>
+  requires IntrinsicUnsignedIntegral<T>
+concept_map AdditiveCommutative<T> {}
+
+template <typename T>
+  requires IntrinsicUnsignedIntegral<T>
+concept_map AdditiveMonoid<T> {}
+
+template <typename T>
+  requires IntrinsicUnsignedIntegral<T>
+concept_map MultiplicativeCommutative<T> {}
+
+template <typename T>
+  requires IntrinsicUnsignedIntegral<T>
+concept_map MultiplicativeMonoid<T> {}
+
+// ---------------
+// Floationg Point
+// ---------------
 
 
+template <typename T>
+  requires IntrinsicFloatingPoint<T>
+concept_map Field<T> {}
+
+template <typename T>
+  requires IntrinsicFloatingPoint<T>
+concept_map Field< std::complex<T> > {}
 
 
+// ===========
+// Min and Max
+// ===========
 
 
+template <typename T>
+  requires IntrinsicArithmetic<T>
+concept_map Commutative< max<T>, T > {}
+
+template <typename T>
+  requires IntrinsicArithmetic<T>
+concept_map Monoid< max<T>, T > {}
+
+template <typename T>
+  requires IntrinsicArithmetic<T>
+concept_map Commutative< min<T>, T > {}
+
+template <typename T>
+  requires IntrinsicArithmetic<T>
+concept_map Monoid< min<T>, T > {}
 
 
+// ==========
+// And and Or
+// ==========
+
+template <typename T>
+  requires Intrinsic<T> && std::HasLogicalAnd<T>
+concept_map Commutative< std::logical_and<T>, T > {}
+
+template <typename T>
+  requires Intrinsic<T> && std::HasLogicalAnd<T>
+concept_map Monoid< std::logical_and<T>, T > {}
+
+template <typename T>
+  requires Intrinsic<T> && std::HasLogicalOr<T>
+concept_map Commutative< std::logical_or<T>, T > {}
+
+template <typename T>
+  requires Intrinsic<T> && std::HasLogicalOr<T>
+concept_map Monoid< std::logical_or<T>, T > {}
+
+template <typename T>
+  requires Intrinsic<T> && std::HasLogicalAnd<T> && std::HasLogicalOr<T>
+concept_map Distributive<std::logical_and<T>, std::logical_or<T>, T> {}
+
+template <typename T>
+  requires Intrinsic<T> && std::HasLogicalAnd<T> && std::HasLogicalOr<T>
+concept_map Distributive<std::logical_or<T>, std::logical_and<T>, T> {}
 
 
+// ==================
+// Bitwise operations
+// ==================
+
+// not yet defined
+
+template <typename T>
+  requires IntrinsicIntegral<T>
+concept_map Commutative< bit_and<T>, T > {}
+
+template <typename T>
+  requires IntrinsicIntegral<T>
+concept_map Monoid< bit_and<T>, T > {}
+
+template <typename T>
+  requires IntrinsicIntegral<T>
+concept_map Commutative< bit_or<T>, T > {}
+
+template <typename T>
+  requires IntrinsicIntegral<T>
+concept_map Monoid< bit_or<T>, T > {}
+
+template <typename T>
+  requires IntrinsicIntegral<T>
+concept_map Distributive<bit_and<T>, bit_or<T>, T> {}
+
+template <typename T>
+  requires IntrinsicIntegral<T> 
+concept_map Distributive<bit_or<T>, bit_and<T>, T> {}
+
+template <typename T>
+  requires IntrinsicIntegral<T>
+concept_map Commutative< bit_xor<T>, T > {}
+
+template <typename T>
+  requires IntrinsicIntegral<T>
+concept_map SemiGroup< bit_xor<T>, T > {}
+
+// ====================
+// String concatenation
+// ====================
+
+concept_map AdditiveMonoid<std::string> {}
 
 
+#endif
 
-    // Integral is a semantic concept (still to be defined)
-    // that adds the semantic of whole (natural) numbers to std::IntegralLike
-    // e.g, some type T with T operator--() { return --x % 5 + 17; } 
-    // models std::IntegralLike but is not 
-    concept Integral<typename T> : std::IntegralLike<T> {}
 
-    concept UnsignedIntegral<typename T> : Integral<T> {}
-
-    concept SignedIntegral<typename T> : Integral<T> {}
 
 } // namespace math
 

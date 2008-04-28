@@ -13,7 +13,7 @@
 
 #include <functional>
 
-
+#ifndef MATH_DEFAULT_FUNCTORS_WITH_CONCEPTS
 namespace math {
 
 template <typename Element>
@@ -72,6 +72,34 @@ template <> struct mult<short> : heterogeneous_mult<short, short, int> {};
 template <> struct mult<unsigned char> : heterogeneous_mult<unsigned char, unsigned char, unsigned int> {};
 template <> struct mult<unsigned short> : heterogeneous_mult<unsigned short, unsigned short, unsigned int> {}; 
 
+#else
+
+// Now the same with concepts
+
+template <typename Element>
+  requires std::HasPlus<Element>
+struct add : public std::binary_function<Element, Element, result_type>
+{
+    result_type operator() (const Element& x, const Element& y)
+    {
+	return x + y;
+    }
+};
+
+template <typename Element>
+  requires std::HasMultiply<Element>
+struct mult : public std::binary_function<Element, Element, result_type>
+{
+    result_type operator() (const Element& x, const Element& y)
+    {
+	return x * y;
+    }
+};
+
+
+
+
+#endif // MATH_DEFAULT_FUNCTORS_WITH_CONCEPTS
 
 template <typename Element>
 struct min : public std::binary_function<Element, Element, Element>
@@ -89,6 +117,33 @@ struct max : public std::binary_function<Element, Element, Element>
     Element operator() (const Element& x, const Element& y)
     {
 	return x >= y ? x : y;
+    }
+};
+
+template <typename Element>
+struct bit_and : public std::binary_function<Element, Element, Element>
+{
+    Element operator() (const Element& x, const Element& y)
+    {
+	return x & y;
+    }
+};
+
+template <typename Element>
+struct bit_or : public std::binary_function<Element, Element, Element>
+{
+    Element operator() (const Element& x, const Element& y)
+    {
+	return x | y;
+    }
+};
+
+template <typename Element>
+struct bit_xor : public std::binary_function<Element, Element, Element>
+{
+    Element operator() (const Element& x, const Element& y)
+    {
+	return x ^ y;
     }
 };
 
