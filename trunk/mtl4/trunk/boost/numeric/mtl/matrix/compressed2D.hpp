@@ -345,7 +345,7 @@ class compressed2D
     }
 
     // setting dimension and allocate starting vector
-    compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
+    explicit compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
       : super(non_fixed::dimensions(num_rows, num_cols)), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
@@ -360,8 +360,8 @@ class compressed2D
     }
 
     template <typename MatrixSrc>
-    explicit compressed2D (const MatrixSrc& src) 
-	    : super(), inserting(false)
+    compressed2D (const MatrixSrc& src) 
+	: super(), inserting(false)
     {
 		if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
 		*this= src;
