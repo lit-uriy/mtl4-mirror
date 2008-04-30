@@ -30,6 +30,9 @@
 #include <boost/numeric/mtl/operation/sum.hpp>
 #include <boost/numeric/mtl/operation/min.hpp>
 #include <boost/numeric/mtl/operation/max.hpp>
+#include <boost/numeric/mtl/operation/num_cols.hpp>
+#include <boost/numeric/mtl/operation/num_rows.hpp>
+#include <boost/numeric/mtl/operation/size.hpp>
 #include <boost/numeric/mtl/operation/trace.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 
