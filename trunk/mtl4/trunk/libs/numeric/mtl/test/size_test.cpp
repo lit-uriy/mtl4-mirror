@@ -19,7 +19,7 @@ using namespace std;
 template <typename Vector>
 void test(Vector& v, const char* name)
 {
-    using mtl::size; using mtl::num_rows; using mtl::num_cols;
+    using mtl::size; using mtl::num_rows; // using mtl::num_cols;
 
     cout << "\n" << name << "\n";
 
@@ -35,10 +35,10 @@ void test(Vector& v, const char* name)
     if (num_rows(v) != 3)
 	throw "Vector number of rows should be 3";
 
-    cout << "num_cols(v) = " << num_cols(v) << "\n";
+    cout << "num_cols(v) = " << mtl::num_cols(v) << "\n";
 
     // Value is less critical main purpose of the test is to check compilibilit
-    if (num_cols(v) != 1)
+    if (mtl::num_cols(v) != 1)
 	throw "Vector number of columns should be 1";
 
 }
