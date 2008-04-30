@@ -36,4 +36,7 @@
 #include <boost/numeric/mtl/operation/trace.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 
+#include <boost/numeric/mtl/matrix/reorder.hpp>
+#include <boost/numeric/mtl/matrix/permutation.hpp>
+
 #endif // MTL_OPERATIONS_INCLUDE

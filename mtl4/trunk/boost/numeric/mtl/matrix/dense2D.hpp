@@ -263,8 +263,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 
     template <typename MatrixSrc>
-	explicit dense2D(const MatrixSrc& src) 
-		: super(), memory_base(dim_type().num_rows() * dim_type().num_cols())
+    dense2D(const MatrixSrc& src) 
+	: super(), memory_base(dim_type().num_rows() * dim_type().num_cols())
     { 
 		init(); 
 		*this= src;

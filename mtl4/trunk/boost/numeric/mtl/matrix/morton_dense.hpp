@@ -453,8 +453,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
 
     template <typename MatrixSrc>
-	explicit morton_dense(const MatrixSrc& src) 
-		: memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
+    morton_dense(const MatrixSrc& src) 
+	: memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
     {
 		init(dim_type().num_rows(), dim_type().num_cols());
 		*this= src;
