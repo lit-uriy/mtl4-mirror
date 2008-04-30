@@ -216,14 +216,14 @@ template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
 inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::row_major)
 {
-    return vector.size();
+    return 1;
 }
 
 template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
 inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::col_major)
 {
-    return 1;
+    return vector.size();
 }
 
 
