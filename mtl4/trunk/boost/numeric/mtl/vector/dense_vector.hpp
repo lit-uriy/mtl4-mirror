@@ -242,9 +242,7 @@ inline num_cols(const dense_vector<Value, Parameters>& vector)
     return num_rows_aux(vector, typename transposed_orientation<typename Parameters::orientation>::type());
 }
 
-
 }} // namespace mtl::vector
-
 
 
 namespace mtl { namespace traits {
