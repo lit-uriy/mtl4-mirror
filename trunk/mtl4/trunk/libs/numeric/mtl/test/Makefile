@@ -28,4 +28,4 @@ EXECS=$(shell ls *.cpp | sed -e 's/\.cpp//')
 it: ${EXECS}
 
 clean:
-	rm -f ${EXECUTABLES} *~ *.o
+	rm -f ${EXECS} *~ *.o
