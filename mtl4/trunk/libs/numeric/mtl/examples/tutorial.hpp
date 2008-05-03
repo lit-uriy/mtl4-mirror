@@ -25,7 +25,7 @@ One thing that cannot be done elegantly on a computer is computing.
 At least not computing fast.
 
 In the %Matrix Template Library 4 we aim for a natural mathematical 
-notation without sacrifying performancs.
+notation without sacrifying performance.
 You can write an expression like x = y * z and the library will
 perform the according operation: scaling a vector, multiplying a
 sparse matrix with a dense vector or two sparse matrices.
