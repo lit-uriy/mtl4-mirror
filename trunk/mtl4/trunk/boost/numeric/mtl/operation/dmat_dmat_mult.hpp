@@ -837,41 +837,28 @@ namespace wrec {
 	template <typename RecA, typename RecB, typename RecC>
 	void operator()(RecA const& rec_a, RecB const& rec_b, RecC& rec_c)
 	{
-	    using recursion::base_case_cast;
-#if 0
-	    std::cout << "\n\n before matrix multiplication:\n";
-	    std::cout << "A:\n"; print_matrix_row_cursor(rec_a.get_value());
-	    std::cout << "B:\n"; print_matrix_row_cursor(rec_b.get_value());
-	    std::cout << "C:\n"; print_matrix_row_cursor(rec_c.get_value());
-#endif
-
-	    if (rec_a.is_empty() || rec_b.is_empty() || rec_c.is_empty())
+	    using namespace recursion;
+	    if (is_empty(rec_a) || is_empty(rec_b) || is_empty(rec_c))
 		return;
 
 	    if (BaseTest()(rec_a)) {
-		typename recursion::base_case_matrix<typename RecC::matrix_type, BaseTest>::type
-		    c= base_case_cast<BaseTest>(rec_c.get_value());
-		BaseMult()(base_case_cast<BaseTest>(rec_a.get_value()),
-			   base_case_cast<BaseTest>(rec_b.get_value()), c);
+		typename base_case_matrix<typename RecC::matrix_type, BaseTest>::type
+		    c= base_case_cast<BaseTest>(*rec_c);
+		BaseMult()(base_case_cast<BaseTest>(*rec_a),
+			   base_case_cast<BaseTest>(*rec_b), c);
 	    } else {
-		RecC c_north_west= rec_c.north_west(), c_north_east= rec_c.north_east(),
-		    c_south_west= rec_c.south_west(), c_south_east= rec_c.south_east();
+		RecC c_north_west= north_west(rec_c), c_north_east= north_east(rec_c),
+		     c_south_west= south_west(rec_c), c_south_east= south_east(rec_c);
 
-		(*this)(rec_a.north_west(), rec_b.north_west(), c_north_west);
-		(*this)(rec_a.north_west(), rec_b.north_east(), c_north_east);
-		(*this)(rec_a.south_west(), rec_b.north_east(), c_south_east);
-		(*this)(rec_a.south_west(), rec_b.north_west(), c_south_west);
-		(*this)(rec_a.south_east(), rec_b.south_west(), c_south_west);
-		(*this)(rec_a.south_east(), rec_b.south_east(), c_south_east);
-		(*this)(rec_a.north_east(), rec_b.south_east(), c_north_east);
-		(*this)(rec_a.north_east(), rec_b.south_west(), c_north_west);
+		(*this)(north_west(rec_a), north_west(rec_b), c_north_west);
+		(*this)(north_west(rec_a), north_east(rec_b), c_north_east);
+		(*this)(south_west(rec_a), north_east(rec_b), c_south_east);
+		(*this)(south_west(rec_a), north_west(rec_b), c_south_west);
+		(*this)(south_east(rec_a), south_west(rec_b), c_south_west);
+		(*this)(south_east(rec_a), south_east(rec_b), c_south_east);
+		(*this)(north_east(rec_a), south_east(rec_b), c_north_east);
+		(*this)(north_east(rec_a), south_west(rec_b), c_north_west);
 	    }
-#if 0
-	    std::cout << "\n\n after matrix multiplication:\n";
-	    std::cout << "A:\n"; print_matrix_row_cursor(rec_a.get_value());
-	    std::cout << "B:\n"; print_matrix_row_cursor(rec_b.get_value());
-	    std::cout << "C:\n"; print_matrix_row_cursor(rec_c.get_value());
-#endif
 	}
     };
 
