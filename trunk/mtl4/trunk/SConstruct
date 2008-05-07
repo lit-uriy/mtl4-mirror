@@ -239,6 +239,7 @@ or not hasattr(os.path, 'samefile') or not os.path.samefile(pwd, mtlp):
 env.Append(CPPPATH = my_cpppath)
 
 
+
 ######################
 # Opt. and debug flags
 ######################
@@ -248,6 +249,8 @@ opts = Options()
 opts.Add('opt', 'Set to 1 for normal optimization, 2 for high optimization', 0)
 opts.Add('debug', 'Set to 1 for debugging', 0)
 opts.Add('check', 'Set to 1 if test programs shall be ran', 0)
+opts.Add('with_concepts', 'Set to 1 if test programs shall be compiled with conceptg++ (must be in ~/bin)', 0)
+
 
 opts.Add('add_ccflag', 'Add extra CC compiler flags that aren\'t automatically set', '')
 opts.Add('add_cxxflag', 'Add extra CXX compiler flags that aren\'t automatically set', '')
@@ -268,6 +271,13 @@ Help(opts.GenerateHelpText(env))
 #env.Append(CCFLAGS = ARGUMENTS.get('debug', ''))
 # Hack, for test only
 # env.Replace(CXX = '/san/intel/cc/9.0/bin/icc')
+
+# To test with conceptg++
+# requires
+if int(ARGUMENTS.get('with_concepts', 0)):
+    env['CXX'] = '~/bin/conceptg++'
+    env.Append(CCFLAGS = macro_flag(env, 'CONCEPTS_WITHOUT_OVERLOADED_REQUIREMENTS'))
+    
 
 # add user-defined CC flags 
 add_ccflag = ARGUMENTS.get('add_ccflag', '')

@@ -152,12 +152,12 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-    concept UnaryStaticFunctor<typename T>
-    //: std::Callable1<T>
+    concept UnaryStaticFunctor<typename F, typename T>
+      : std::Callable1<F, T>
     {
 	typename result_type;
 	
-	static result_type apply(T);
+	static result_type F::apply(T);
     };
 #else
     /// Concept UnaryFunctor
@@ -195,12 +195,12 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-    concept BinaryStaticFunctor<typename T, typename U>
-      : std::Callable2<T, U>
+    auto concept BinaryStaticFunctor<typename F, typename T, typename U>
+      : std::Callable2<F, T, U>
     {
 	typename result_type;
-	
-	static result_type apply(T, U);
+
+	static result_type F::apply(T, U);
     };
 #else
     /// Concept BinaryFunctor

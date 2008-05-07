@@ -43,7 +43,9 @@ auto concept RealMagnitude<typename T>
     requires std::EqualityComparable<type>;
     requires std::LessThanComparable<type>;
 
+#ifndef CONCEPTS_WITHOUT_OVERLOADED_REQUIREMENTS
     requires Field<type>;
+#endif
 
     type sqrt(type);
 
