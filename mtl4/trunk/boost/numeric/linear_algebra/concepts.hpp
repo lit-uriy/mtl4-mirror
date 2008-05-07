@@ -167,7 +167,7 @@ concept AdditiveMonoid<typename Element>
     }
 };
 
-#if 0  // Uncompilable due to error in compiler
+#ifndef CONCEPTS_WITHOUT_OVERLOADED_REQUIREMENTS  // Uncompilable due to error in compiler
 concept AdditivePIMonoid<typename Element>
   : std::HasMinus<Element>, AdditiveMonoid<Element>, 
     PIMonoid< add<Element>, Element >
@@ -271,7 +271,7 @@ concept MultiplicativeMonoid<typename Element>
     }
 };
 
-#if 0  // Uncompilable due to error in compiler
+#ifndef CONCEPTS_WITHOUT_OVERLOADED_REQUIREMENTS  // Uncompilable due to error in compiler
 concept MultiplicativePIMonoid<typename Element>
   : std::HasDivide<Element>, MultiplicativeMonoid<Element>,
     PIMonoid< mult<Element>, Element >
@@ -435,7 +435,7 @@ concept_map IntrinsicFloatingPoint<float> {}
 concept_map IntrinsicFloatingPoint<double> {}
 
 
-#if 0
+#ifndef CONCEPTS_WITHOUT_OVERLOADED_REQUIREMENTS
 
 // ====================
 // Default Concept Maps
