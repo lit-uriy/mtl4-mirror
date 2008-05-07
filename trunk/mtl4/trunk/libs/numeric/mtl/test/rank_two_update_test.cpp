@@ -48,6 +48,7 @@ inline complex<double> test_value(complex<double>)
 template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
+    using mtl::conj;
     const unsigned max_print_size= 25;
 
     if (num_rows(matrix) < 7 || num_cols(matrix) < 7) {
