@@ -25,7 +25,7 @@ namespace mtl {
  */
 
 #ifdef __GXX_CONCEPTS__
-    concept Collection<typename T>
+    auto concept Collection<typename T>
     {
 	typename value_type;
 	typename const_reference;
@@ -49,7 +49,7 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-    concept MutableCollection<typename T>
+    auto concept MutableCollection<typename T>
       : Collection<T>
     {
 	typename reference;
@@ -84,7 +84,7 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-    concept AlgebraicCollection<typename T>
+    auto concept AlgebraicCollection<typename T>
       : Collection<T>
     {
 	size_type num_rows(T);
@@ -115,13 +115,16 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-    concept ConstantSizeAlgebraicCollection<typename T>
+    auto concept ConstantSizeAlgebraicCollection<typename T>
       : AlgebraicCollection<T>,
         ConstantSizeCollection<T>
     {
-	typename static_num_rows;
-	typename static_num_cols;
-	typename static_size;
+#if 0
+	// Is there a way to require static members????
+	static Collection<T>::size_type T::static_num_rows;
+	static Collection<T>::size_type T::static_num_cols;
+	static Collection<T>::size_type T::static_size;
+#endif 
     };
 #else
     /// Concept ConstantSizeAlgebraicCollection: extension of AlgebraicCollection with meta-functions
@@ -162,13 +165,22 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-    concept TraversableCollection<typename Tag, typename C>
+    auto concept TraversableCollection<typename Tag, typename C>
       : Collection<C>
     {
+#if 0
+	// This might be impossible to declare with concepts
 	typename cursor_type;
 
 	cursor_type begin<Tag>(const C& c);
 	cursor_type   end<Tag>(const C& c);
+#endif
+
+	// Maybe we switch to this syntax for the sake of concepts
+	typename cursor_type;
+
+	cursor_type begin(const C& c, Tag);
+	cursor_type   end(const C& c, Tag);
     }
 #else
     /// Concept TraversableCollection: collections that can be traversed by cursor or iterator
@@ -191,13 +203,21 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-    concept TraversableMutableCollection<typename Tag, typename C>
+    auto concept TraversableMutableCollection<typename Tag, typename C>
       : MutableCollection<C>
     {
+#if 0
 	typename cursor_type;
 
 	cursor_type begin<Tag>(C& c);
 	cursor_type   end<Tag>(C& c);
+#endif
+
+	// Maybe we switch to this syntax for the sake of concepts
+	typename cursor_type;
+
+	cursor_type begin(C& c, Tag);
+	cursor_type   end(C& c, Tag);
     }
 #else
     /// Concept TraversableMutableCollection: collections that can be traversed by (mutable) iterator
@@ -268,13 +288,8 @@ namespace mtl {
 // ============================================
 
 #ifdef __GXX_CONCEPTS__
-    template <typename Value, typename Parameters>
-    concept_map Collection<dense2D<Value, Parameters> >
-    {
-	typedef Value            value_type;
-	typedef const Value&     const_reference;
-	typedef typename dense2D<Value, Parameters>::size_type size_type;
-    };
+    // Needs redefinition in refinements (at least in conceptg++)
+    // -> as a consequence we define it directly there
 #else
     template <typename Value, typename Parameters>
     struct Collection<dense2D<Value, Parameters> >
@@ -288,13 +303,7 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-    template <typename Value, unsigned long Mask, typename Parameters>
-    concept_map Collection<morton_dense<Value, Mask, Parameters> >
-    {
-	typedef Value            value_type;
-	typedef const Value&     const_reference;
-	typedef typename morton_dense<Value, Mask, Parameters>::size_type size_type;
-    };
+
 #else
     template <typename Value, unsigned long Mask, typename Parameters>
     struct Collection<morton_dense<Value, Mask, Parameters> >
@@ -349,17 +358,17 @@ namespace mtl {
     template <typename Coll, typename RScaling>
     concept_map Collection<matrix::rscaled_view<Coll,RScaling> >
     {
-		typedef typename matrix::rscaled_view<Coll,RScaling>::value_type        value_type;
-		typedef typename matrix::rscaled_view<Coll,RScaling>::const_reference   const_reference;
-		typedef typename matrix::rscaled_view<Coll,RScaling>::size_type         size_type;
+	typedef typename matrix::rscaled_view<Coll,RScaling>::value_type        value_type;
+	typedef typename matrix::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+	typedef typename matrix::rscaled_view<Coll,RScaling>::size_type         size_type;
     };
 #else
     template <typename Coll, typename RScaling>
     struct Collection<matrix::rscaled_view<Coll,RScaling> >
     {
-		typedef typename matrix::rscaled_view<Coll,RScaling>::value_type        value_type;
-		typedef typename matrix::rscaled_view<Coll,RScaling>::const_reference   const_reference;
-		typedef typename matrix::rscaled_view<Coll,RScaling>::size_type         size_type;
+	typedef typename matrix::rscaled_view<Coll,RScaling>::value_type        value_type;
+	typedef typename matrix::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+	typedef typename matrix::rscaled_view<Coll,RScaling>::size_type         size_type;
     };
 #endif
 	
@@ -387,17 +396,17 @@ namespace mtl {
     template <typename Coll, typename RScaling>
     concept_map Collection<vector::rscaled_view<Coll,RScaling> >
     {
-		typedef typename vector::rscaled_view<Coll,RScaling>::value_type        value_type;
-		typedef typename vector::rscaled_view<Coll,RScaling>::const_reference   const_reference;
-		typedef typename vector::rscaled_view<Coll,RScaling>::size_type         size_type;
+	typedef typename vector::rscaled_view<Coll,RScaling>::value_type        value_type;
+	typedef typename vector::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+	typedef typename vector::rscaled_view<Coll,RScaling>::size_type         size_type;
     };
 #else
     template <typename Coll, typename RScaling>
     struct Collection<vector::rscaled_view<Coll,RScaling> >
     {
-		typedef typename vector::rscaled_view<Coll,RScaling>::value_type        value_type;
-		typedef typename vector::rscaled_view<Coll,RScaling>::const_reference   const_reference;
-		typedef typename vector::rscaled_view<Coll,RScaling>::size_type         size_type;
+	typedef typename vector::rscaled_view<Coll,RScaling>::value_type        value_type;
+	typedef typename vector::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+	typedef typename vector::rscaled_view<Coll,RScaling>::size_type         size_type;
     };
 #endif
 
@@ -441,6 +450,25 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
+    template <typename Functor, typename Coll>
+    concept_map Collection< vector::map_view<Functor, Coll> >
+    {
+	typedef typename vector::map_view<Functor, Coll>::value_type        value_type;
+	typedef typename vector::map_view<Functor, Coll>::const_reference   const_reference;
+	typedef typename vector::map_view<Functor, Coll>::size_type         size_type;
+    };
+#else
+    template <typename Functor, typename Coll>
+    struct Collection< vector::map_view<Functor, Coll> >
+    {
+	typedef typename vector::map_view<Functor, Coll>::value_type        value_type;;
+	typedef typename vector::map_view<Functor, Coll>::const_reference   const_reference;
+	typedef typename vector::map_view<Functor, Coll>::size_type         size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
     template <typename Matrix>
     concept_map Collection<transposed_view<Matrix> >
     {
@@ -479,13 +507,7 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
-    template <typename Value, typename Parameters>
-    concept_map Collection<vector::dense_vector<Value, Parameters> >
-    {
-	typedef Value            value_type;
-	typedef const Value&     const_reference;
-	typedef typename vector::dense_vector<Value, Parameters>::size_type size_type;
-    };
+
 #else
     template <typename Value, typename Parameters>
     struct Collection<vector::dense_vector<Value, Parameters> >
@@ -501,6 +523,10 @@ namespace mtl {
     template <typename Value, typename Parameters>
     concept_map MutableCollection<dense2D<Value, Parameters> >
     {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename dense2D<Value, Parameters>::size_type size_type;
+
 	typedef Value&           reference;
     };
 #else
@@ -514,9 +540,13 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
 
-    template <typename Value, typename Parameters>
-    concept_map MutableCollection<morton_dense<Value, Parameters> >
+    template <typename Value, unsigned long Mask, typename Parameters>
+    concept_map MutableCollection<morton_dense<Value, Mask, Parameters> >
     {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename morton_dense<Value, Mask, Parameters>::size_type size_type;
+
 	typedef Value&           reference;
     };
 
@@ -531,15 +561,125 @@ namespace mtl {
 
 #endif
 
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value, typename Parameters>
+    concept_map MutableCollection<vector::dense_vector<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename vector::dense_vector<Value, Parameters>::size_type size_type;
+
+	typedef Value&           reference;
+    };
+#else
+    template <typename Value, typename Parameters>
+    struct MutableCollection<vector::dense_vector<Value, Parameters> >
+	: public Collection<vector::dense_vector<Value, Parameters> >
+    {
+	typedef Value&           reference;
+    };
+#endif
+
+
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value, typename Parameters>
+    concept_map OrientedCollection<dense2D<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename dense2D<Value, Parameters>::size_type size_type;
+
+	typedef typename dense2D<Value, Parameters>::orientation   orientation;
+    };
+#else
+    template <typename Value, typename Parameters>
+    struct OrientedCollection<dense2D<Value, Parameters> >
+	: public Collection<dense2D<Value, Parameters> >
+    {
+	typedef typename dense2D<Value, Parameters>::orientation   orientation;
+    };
+#endif
+
+#ifdef __GXX_CONCEPTS__
+
+    template <typename Value, unsigned long Mask, typename Parameters>
+    concept_map OrientedCollection<morton_dense<Value, Mask, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename morton_dense<Value, Mask, Parameters>::size_type size_type;
+
+	typedef typename morton_dense<Value, Mask, Parameters>::orientation   orientation;
+    };
+
+#else
+
+    template <typename Value, unsigned long Mask, typename Parameters>
+    struct OrientedCollection<morton_dense<Value, Mask, Parameters> >
+	: public Collection<morton_dense<Value, Mask, Parameters> >
+    {
+	typedef typename morton_dense<Value, Mask, Parameters>::orientation   orientation;
+    };
+
+#endif
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value, typename Parameters>
+    concept_map OrientedCollection<compressed2D<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename compressed2D<Value, Parameters>::size_type size_type;
+
+	typedef typename compressed2D<Value, Parameters>::orientation   orientation;
+    };
+#else
+    template <typename Value, typename Parameters>
+    struct OrientedCollection<compressed2D<Value, Parameters> >
+	: public Collection<compressed2D<Value, Parameters> >
+    {
+	typedef typename compressed2D<Value, Parameters>::orientation   orientation;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value, typename Parameters>
+    concept_map OrientedCollection<vector::dense_vector<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename vector::dense_vector<Value, Parameters>::size_type size_type;
+
+	typedef typename vector::dense_vector<Value, Parameters>::orientation   orientation;
+    };
+#else
+    template <typename Value, typename Parameters>
+    struct OrientedCollection<vector::dense_vector<Value, Parameters> >
+	: public Collection<vector::dense_vector<Value, Parameters> >
+    {
+	typedef typename vector::dense_vector<Value, Parameters>::orientation   orientation;
+    };
+#endif
+
+
 #ifdef __GXX_CONCEPTS__
     template <typename Scaling, typename Coll>
     concept_map OrientedCollection< matrix::scaled_view<Scaling, Coll> >
     {
+	typedef typename matrix::scaled_view<Scaling, Coll>::value_type        value_type;
+	typedef typename matrix::scaled_view<Scaling, Coll>::const_reference   const_reference;
+	typedef typename matrix::scaled_view<Scaling, Coll>::size_type         size_type;
+
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
 #else
     template <typename Scaling, typename Coll>
     struct OrientedCollection< matrix::scaled_view<Scaling, Coll> >
+	: public Collection< matrix::scaled_view<Scaling, Coll> >
     {
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
@@ -550,13 +690,18 @@ namespace mtl {
     template <typename Coll, typename RScaling>
     concept_map OrientedCollection< matrix::rscaled_view<Coll,RScaling> >
     {
-		typedef typename OrientedCollection<Coll>::orientation       orientation;
+	typedef typename matrix::rscaled_view<Coll,RScaling>::value_type        value_type;
+	typedef typename matrix::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+	typedef typename matrix::rscaled_view<Coll,RScaling>::size_type         size_type;
+
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
 #else
     template <typename Coll, typename RScaling>
     struct OrientedCollection< matrix::rscaled_view<Coll,RScaling> >
+	: public Collection< matrix::rscaled_view<Coll,RScaling> >
     {
-		typedef typename OrientedCollection<Coll>::orientation       orientation;
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
 #endif
 
@@ -565,11 +710,16 @@ namespace mtl {
     template <typename Scaling, typename Coll>
     concept_map OrientedCollection< vector::scaled_view<Scaling, Coll> >
     {
+	typedef typename vector::scaled_view<Scaling, Coll>::value_type        value_type;
+	typedef typename vector::scaled_view<Scaling, Coll>::const_reference   const_reference;
+	typedef typename vector::scaled_view<Scaling, Coll>::size_type         size_type;
+
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
 #else
     template <typename Scaling, typename Coll>
     struct OrientedCollection< vector::scaled_view<Scaling, Coll> >
+	: public Collection< vector::scaled_view<Scaling, Coll> 
     {
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
@@ -580,13 +730,18 @@ namespace mtl {
     template <typename Coll, typename RScaling>
     concept_map OrientedCollection< vector::rscaled_view<Coll,RScaling> >
     {
-		typedef typename OrientedCollection<Coll>::orientation       orientation;
+	typedef typename vector::rscaled_view<Coll,RScaling>::value_type        value_type;
+	typedef typename vector::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+	typedef typename vector::rscaled_view<Coll,RScaling>::size_type         size_type;
+
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
 #else
     template <typename Coll, typename RScaling>
     struct OrientedCollection< vector::rscaled_view<Coll,RScaling> >
+	: public Collection< vector::rscaled_view<Coll,RScaling> >
     {
-		typedef typename OrientedCollection<Coll>::orientation       orientation;
+	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
 #endif
 
@@ -595,11 +750,16 @@ namespace mtl {
     template <typename Coll>
     concept_map OrientedCollection<matrix::conj_view<Coll> >
     {
+	typedef typename matrix::conj_view<Coll>::value_type         value_type;
+	typedef typename matrix::conj_view<Coll>::const_reference    const_reference;
+	typedef typename matrix::conj_view<Coll>::size_type          size_type;
+
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
 #else
     template <typename Coll>
     struct OrientedCollection<matrix::conj_view<Coll> >
+	: public Collection<matrix::conj_view<Coll> >
     {
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
@@ -610,11 +770,16 @@ namespace mtl {
     template <typename Coll>
     concept_map OrientedCollection<vector::conj_view<Coll> >
     {
+	typedef typename vector::conj_view<Coll>::value_type        value_type;
+	typedef typename vector::conj_view<Coll>::const_reference   const_reference;
+	typedef typename vector::conj_view<Coll>::size_type         size_type;
+
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
 #else
     template <typename Coll>
     struct OrientedCollection<vector::conj_view<Coll> >
+	: public Collection<vector::conj_view<Coll> >
     {
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
@@ -625,11 +790,16 @@ namespace mtl {
     template <typename Functor, typename Coll>
     concept_map OrientedCollection< vector::map_view<Functor, Coll> >
     {
+	typedef typename vector::map_view<Functor, Coll>::value_type        value_type;
+	typedef typename vector::map_view<Functor, Coll>::const_reference   const_reference;
+	typedef typename vector::map_view<Functor, Coll>::size_type         size_type;
+
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
 #else
     template <typename Functor, typename Coll>
     struct OrientedCollection< vector::map_view<Functor, Coll> >
+	: public Collection< vector::map_view<Functor, Coll> >
     {
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
@@ -638,13 +808,37 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Coll>
+    concept_map OrientedCollection<transposed_view<Coll> >
+    {
+	typedef typename transposed_view<Coll>::value_type        value_type;
+	typedef typename transposed_view<Coll>::const_reference   const_reference;
+	typedef typename transposed_view<Coll>::size_type         size_type;
+
+	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
+    };
+#else
+    template <typename Coll>
+    struct OrientedCollection<transposed_view<Coll> >
+	: public Collection<transposed_view<Coll> >
+    {
+	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
+    };
+#endif
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
     concept_map OrientedCollection<matrix::hermitian_view<Coll> >
     {
+	typedef typename matrix::hermitian_view<Coll>::value_type        value_type;
+	typedef typename matrix::hermitian_view<Coll>::const_reference   const_reference;
+	typedef typename matrix::hermitian_view<Coll>::size_type         size_type;
+
 	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
     };
 #else
     template <typename Coll>
     struct OrientedCollection<matrix::hermitian_view<Coll> >
+	: public Collection<matrix::hermitian_view<Coll> >
     {
 	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
     };
