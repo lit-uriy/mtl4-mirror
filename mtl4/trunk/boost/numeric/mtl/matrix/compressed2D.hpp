@@ -30,14 +30,7 @@
 
 namespace mtl {
 
-// using std::size_t; 
-// using std::vector;
-// using utilities::maybe;  
-
-
 // Forward declarations
-// template <typename Elt, typename Parameters> class compressed2D;
-// template <typename Elt, typename Parameters, typename Updater> class compressed2D_inserter;
 
 template <typename Value, typename Parameters>
 typename compressed2D<Value, Parameters>::size_type
@@ -292,12 +285,9 @@ class compressed2D
     typedef typename Parameters::dimensions          dimensions;
     typedef Elt                                      value_type;
     typedef compressed_key                           key_type;
-    // return type of operator() const
-    typedef value_type                               const_access_type; 
     // const value_type& isn't defined everywhere
     typedef value_type                               const_reference;
 
-    // typedef const_pointer_type                             key_type;
     typedef size_t                                   size_type;
     typedef compressed2D_indexer                     indexer_type;
 
@@ -403,7 +393,7 @@ class compressed2D
 
     // Consistency check urgently needed !!!
 
-    const_access_type operator() (size_type row, size_type col) const
+    const_reference operator() (size_type row, size_type col) const
     {
 	using math::zero;
         MTL_DEBUG_THROW_IF(inserting, logic_error("Reading data during insertion has undefined behavior"));

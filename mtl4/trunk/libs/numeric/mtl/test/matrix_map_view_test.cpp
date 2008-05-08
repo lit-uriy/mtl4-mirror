@@ -79,6 +79,8 @@ ct csvalue(ct)
 template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
+    using mtl::conj;
+
     set_to_zero(matrix);
     typename Matrix::value_type ref(0);
 
