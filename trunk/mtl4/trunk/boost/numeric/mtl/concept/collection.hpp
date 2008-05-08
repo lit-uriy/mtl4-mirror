@@ -719,7 +719,7 @@ namespace mtl {
 #else
     template <typename Scaling, typename Coll>
     struct OrientedCollection< vector::scaled_view<Scaling, Coll> >
-	: public Collection< vector::scaled_view<Scaling, Coll> 
+	: public Collection< vector::scaled_view<Scaling, Coll> >
     {
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
