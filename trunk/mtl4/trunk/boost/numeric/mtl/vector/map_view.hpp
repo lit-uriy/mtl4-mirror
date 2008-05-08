@@ -37,9 +37,7 @@ struct map_view
     typedef Vector                                     other;
 
     typedef typename Functor::result_type              value_type;
-    typedef typename Functor::result_type              const_access_type;
-    typedef typename Functor::result_type              const_reference_type;
-    // typedef typename Vector::key_type                  key_type;
+    typedef typename Functor::result_type              const_reference;
     typedef typename Vector::size_type                 size_type;
 
     // Deprecated: concept map defined in collection.hpp
@@ -68,12 +66,12 @@ struct map_view
 	return ref.stride(); 
     }
 
-    const_reference_type operator() (size_type i) const
+    const_reference operator() (size_type i) const
     { 
         return functor(ref(i));
     }
 
-    const_reference_type operator[] (size_type i) const
+    const_reference operator[] (size_type i) const
     { 
         return functor(ref[i]);
     }

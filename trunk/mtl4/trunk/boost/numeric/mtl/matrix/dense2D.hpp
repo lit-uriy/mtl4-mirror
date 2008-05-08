@@ -159,8 +159,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     typedef typename Parameters::index        index_type;
     typedef typename Parameters::dimensions   dim_type;
     typedef Value                             value_type;
-    // return type of operator() const
-    typedef const value_type&                 const_access_type;
     typedef const value_type&                 const_reference;
     typedef value_type&                       reference;
 
@@ -317,7 +315,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     }
 
     
-    const_access_type operator() (size_t r, size_t c) const 
+    const_reference operator() (size_t r, size_t c) const 
     {
 	// assert(check_indices(r, c));  // causes trouble for iterator/cursor creation
 	size_t offset= indexer(*this, r, c);

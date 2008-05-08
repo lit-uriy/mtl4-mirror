@@ -312,16 +312,10 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     typedef typename Parameters::index        index_type;
     typedef typename Parameters::dimensions   dim_type;
     typedef Elt                               value_type;
-    // return type of operator() const
-    typedef const value_type&                 const_access_type;
     typedef const value_type&                 const_reference;
     typedef value_type&                       reference;
     typedef std::size_t                       size_type;
     const static size_type                    mask= BitMask;
-
-    // typedef self                              sub_matrix_type;
-    // typedef morton_dense_el_cursor<Elt>       el_cursor_type;  
-    // typedef morton_dense_indexer              indexer_type;
 
     //  implement cursor for morton matrix, somewhere
     //  also, morton indexer?
@@ -520,7 +514,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	this->data[key.dilated_row.dilated_value() + key.dilated_col.dilated_value()]= value;
     }
 
-    const_access_type operator() (size_type row, size_type col) const
+    const_reference operator() (size_type row, size_type col) const
     {
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
