@@ -159,6 +159,24 @@ struct divide_assign
 };
 
 
+// Might be helpful for surplus functor arguments
+template <typename Value>
+struct identity
+{
+    typedef Value result_type;
+
+    static inline result_type apply(const Value& v)
+    {
+	return v;
+    }
+
+    result_type operator() (const Value& v)
+    {
+	return v;
+    }
+};
+
+
 
 }} // namespace mtl::sfunctor
 

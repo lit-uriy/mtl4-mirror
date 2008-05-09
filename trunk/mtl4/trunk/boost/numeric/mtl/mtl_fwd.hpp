@@ -98,6 +98,7 @@ namespace mtl {
 	template <typename Matrix, typename Divisor> struct divide_by_view; // added by Hui Li
 	template <typename Matrix>  struct conj_view;
 	template <typename Matrix>  struct hermitian_view;
+	template <typename Matrix>  struct banded_view;
     }
 
     /// Namespace for vectors and views and %operations exclusively on vectors

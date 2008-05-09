@@ -214,6 +214,12 @@ public:
     {
 	return major_(c, r, orientation());
     }
+
+    dim_type get_dimensions() const 
+    {
+	return dim_type(num_rows(), num_cols()); 
+    }    
+
 };
 
 

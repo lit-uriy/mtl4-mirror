@@ -170,7 +170,7 @@ public:
     }
 	
     // returns copy of dim
-    dim_type dimensions() const 
+    dim_type get_dimensions() const 
     {
       return dim; 
     }    
