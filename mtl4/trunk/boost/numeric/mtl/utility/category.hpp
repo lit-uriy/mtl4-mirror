@@ -83,21 +83,21 @@ struct category<vector::map_view<Functor, Vector> >
 template <typename Scaling, typename Vector>
 struct category< vector::scaled_view<Scaling, Vector> >
     : public category< vector::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, 
-					    Vector> >
+					Vector> >
 {};
 
 // added by Hui Li
 template <typename Vector,typename RScaling>
 struct category< vector::rscaled_view<Vector,RScaling> >
-: public category< vector::map_view<tfunctor::rscale<typename Vector::value_type,RScaling>, 
-Vector> >
+    : public category< vector::map_view<tfunctor::rscale<typename Vector::value_type,RScaling>, 
+					Vector> >
 {};
 
 // added by Hui Li
 template <typename Vector,typename Divisor>
 struct category< vector::divide_by_view<Vector,Divisor> >
-: public category< vector::map_view<tfunctor::divide_by<typename Vector::value_type,Divisor>, 
-Vector> >
+    : public category< vector::map_view<tfunctor::divide_by<typename Vector::value_type,Divisor>, 
+					Vector> >
 {};
 
 template <typename Vector>
@@ -125,15 +125,15 @@ struct category< matrix::scaled_view<Scaling, Matrix> >
 // added by Hui Li
 template <typename Matrix, typename RScaling>
 struct category< matrix::rscaled_view<Matrix,RScaling> >
-: public category< matrix::map_view<tfunctor::rscale<typename Matrix::value_type,RScaling>, 
-Matrix> >
+    : public category< matrix::map_view<tfunctor::rscale<typename Matrix::value_type,RScaling>, 
+					Matrix> >
 {};
 
 // added by Hui Li
 template <typename Matrix, typename Divisor>
 struct category< matrix::divide_by_view<Matrix,Divisor> >
-: public category< matrix::map_view<tfunctor::divide_by<typename Matrix::value_type,Divisor>, 
-Matrix> >
+    : public category< matrix::map_view<tfunctor::divide_by<typename Matrix::value_type,Divisor>, 
+					Matrix> >
 {};
 
 template <typename Matrix>
@@ -146,6 +146,15 @@ struct category< matrix::hermitian_view<Matrix> >
     : public category< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
 					transposed_view<Matrix> > >
 {};
+
+// Not 100% sure about this
+template <typename Matrix>
+struct category< matrix::banded_view<Matrix> >
+// : public category<Matrix>  // requires sub-matrix for several types
+{
+    // multiplication needs at least dense or sparse
+    typedef tag::matrix   type;
+};
 
 
 /// Meta-function for categorizing types into tag::scalar, tag::vector, and tag::matrix

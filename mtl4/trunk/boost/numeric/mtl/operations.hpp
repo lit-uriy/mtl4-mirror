@@ -38,5 +38,10 @@
 
 #include <boost/numeric/mtl/matrix/reorder.hpp>
 #include <boost/numeric/mtl/matrix/permutation.hpp>
+#include <boost/numeric/mtl/matrix/bands.hpp>
+#include <boost/numeric/mtl/matrix/upper.hpp>
+#include <boost/numeric/mtl/matrix/strict_upper.hpp>
+#include <boost/numeric/mtl/matrix/lower.hpp>
+#include <boost/numeric/mtl/matrix/strict_lower.hpp>
 
 #endif // MTL_OPERATIONS_INCLUDE

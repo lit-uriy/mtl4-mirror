@@ -265,6 +265,11 @@ struct ashape<matrix::hermitian_view<Matrix> >
     typedef typename ashape<Matrix>::type type;
 };
 
+template <typename Matrix>
+struct ashape<matrix::banded_view<Matrix> >
+{
+    typedef typename ashape<Matrix>::type type;
+};
 
 
 

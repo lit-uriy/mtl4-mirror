@@ -47,7 +47,7 @@ struct map_view
 
     typedef typename Matrix::key_type                  key_type;
     typedef typename Matrix::size_type                 size_type;
-    typedef typename Matrix::dim_type::transposed_type dim_type;
+    typedef typename Matrix::dim_type                  dim_type;
 
     map_view (const Functor& functor, const other& ref) 
 	: expr_base(*this), functor(functor), ref(ref) 
@@ -186,6 +186,7 @@ namespace mtl { namespace traits {
 	    typedef typename Matrix::size_type  size_type;
     	
 	    explicit mapped_row(const matrix::map_view<Functor, Matrix>& view) : its_row(view.ref) {}
+	    explicit mapped_row(const matrix::banded_view<Matrix>& view) : its_row(view.ref) {}
 
 	    size_type operator() (key_type const& key) const
 	    {
@@ -204,6 +205,7 @@ namespace mtl { namespace traits {
 	    typedef typename Matrix::size_type  size_type;
     	
 	    mapped_col(const matrix::map_view<Functor, Matrix>& view) : its_col(view.ref) {}
+	    mapped_col(const matrix::banded_view<Matrix>& view) : its_col(view.ref) {}
 
 	    size_type operator() (key_type const& key) const
 	    {

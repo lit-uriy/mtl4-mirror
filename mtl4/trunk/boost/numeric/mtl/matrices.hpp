@@ -13,7 +13,13 @@
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/matrix/morton_dense.hpp> 
 #include <boost/numeric/mtl/matrix/compressed2D.hpp> 
+#include <boost/numeric/mtl/matrix/element_matrix.hpp> 
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
+
+#include <boost/numeric/mtl/matrix/map_view.hpp>
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
+#include <boost/numeric/mtl/matrix/hermitian_view.hpp>
+#include <boost/numeric/mtl/matrix/banded_view.hpp>
 
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/laplacian_setup.hpp> 
