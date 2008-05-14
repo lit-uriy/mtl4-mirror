@@ -37,69 +37,35 @@
 
 namespace mtl {
 
-// =====================================
-// Generic matrix product with iterators
-// =====================================
-
-template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= assign::assign_sum,
-	  typename Backup= no_op>     // To allow 5th parameter, is ignored
-struct gen_dmat_dmat_mult_ft
-{
-    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
-    {
-	using namespace tag;
-	using traits::range_generator;  
-        typedef typename range_generator<row, MatrixA>::type       a_cur_type;             
-        typedef typename range_generator<row, MatrixC>::type       c_cur_type;             
-	typedef typename range_generator<col, MatrixB>::type       b_cur_type;             
-        typedef typename range_generator<iter::all, c_cur_type>::type   c_icur_type;            
-        typedef typename range_generator<const_iter::all, a_cur_type>::type  a_icur_type;            
-        typedef typename range_generator<const_iter::all, b_cur_type>::type  b_icur_type;          
-
-	if (Assign::init_to_zero) set_to_zero(c);
-
-	a_cur_type ac= begin<row>(a), aend= end<row>(a);
-	for (c_cur_type cc= begin<row>(c); ac != aend; ++ac, ++cc) {
-
-	    b_cur_type bc= begin<col>(b), bend= end<col>(b);
-	    for (c_icur_type cic= begin<iter::all>(cc); bc != bend; ++bc, ++cic) { 
-		    
-		typename MatrixC::value_type c_tmp(*cic);
-		a_icur_type aic= begin<const_iter::all>(ac), aiend= end<const_iter::all>(ac); 
-		for (b_icur_type bic= begin<const_iter::all>(bc); aic != aiend; ++aic, ++bic) {
-		    //std::cout << "aic " << *aic << ", bic " << *bic << '\n'; std::cout.flush();
-		    Assign::update(c_tmp, *aic * *bic);
-		}
-		*cic= c_tmp;
-	    }
-	}
-    }    
-};
-
-
-template <typename Assign= assign::assign_sum,
-	  typename Backup= no_op>     // To allow 2nd parameter, is ignored
-struct gen_dmat_dmat_mult_t
-{
-    template <typename MatrixA, typename MatrixB, typename MatrixC>
-    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
-    {
-	gen_dmat_dmat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>()(a, b, c);
-    }
-};
-
-
 // =====================================================
 // Generic matrix product with cursors and property maps
 // =====================================================
+   
 
-
+// To allow 5th parameter, is ignored
+// This is the bottom line of dmat_dmat_mult implementations.
+// All MTL4 matrix types and views (so far) have cursors and property maps
+// so that we disabled the backup functor by default.
+// If some type has no cursor, one can still use a backup functor (whatever this may be).
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign= assign::assign_sum,
-	  typename Backup= no_op>     // To allow 5th parameter, is ignored
+	  typename Backup= no_op> 
 struct gen_cursor_dmat_dmat_mult_ft
 {
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
+	apply(a, b, c, typename traits::category<MatrixA>::type(),
+	      typename traits::category<MatrixB>::type());
+    }   
+
+private:
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::universe, tag::universe)
+    {
+	Backup()(a, b, c);
+    }
+
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_cursor, tag::has_cursor)
+    {
+	// std::cout << "Canonical cursor\n";
 	typedef glas::tag::row                                          row;
 	typedef glas::tag::col                                          col;
 	typedef glas::tag::all                                          all;
@@ -148,6 +114,71 @@ struct gen_cursor_dmat_dmat_mult_t
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
 	gen_cursor_dmat_dmat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>()(a, b, c);
+    }
+};
+
+
+// =====================================
+// Generic matrix product with iterators
+// =====================================
+
+template <typename MatrixA, typename MatrixB, typename MatrixC, 
+	  typename Assign= assign::assign_sum, 
+	  typename Backup= gen_cursor_dmat_dmat_mult_t<Assign> > 
+struct gen_dmat_dmat_mult_ft
+{
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	apply(a, b, c, typename traits::category<MatrixA>::type(),
+	      typename traits::category<MatrixB>::type());
+    }   
+
+private:
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::universe, tag::universe)
+    {
+	Backup()(a, b, c);
+    }
+
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_iterator, tag::has_iterator)
+    {
+	// std::cout << "Canonical iterator\n";
+	using namespace tag;
+	using traits::range_generator;  
+        typedef typename range_generator<row, MatrixA>::type       a_cur_type;             
+        typedef typename range_generator<row, MatrixC>::type       c_cur_type;             
+	typedef typename range_generator<col, MatrixB>::type       b_cur_type;             
+        typedef typename range_generator<iter::all, c_cur_type>::type   c_icur_type;            
+        typedef typename range_generator<const_iter::all, a_cur_type>::type  a_icur_type;            
+        typedef typename range_generator<const_iter::all, b_cur_type>::type  b_icur_type;          
+
+	if (Assign::init_to_zero) set_to_zero(c);
+
+	a_cur_type ac= begin<row>(a), aend= end<row>(a);
+	for (c_cur_type cc= begin<row>(c); ac != aend; ++ac, ++cc) {
+
+	    b_cur_type bc= begin<col>(b), bend= end<col>(b);
+	    for (c_icur_type cic= begin<iter::all>(cc); bc != bend; ++bc, ++cic) { 
+		    
+		typename MatrixC::value_type c_tmp(*cic);
+		a_icur_type aic= begin<const_iter::all>(ac), aiend= end<const_iter::all>(ac); 
+		for (b_icur_type bic= begin<const_iter::all>(bc); aic != aiend; ++aic, ++bic) {
+		    Assign::update(c_tmp, *aic * *bic);
+		}
+		*cic= c_tmp;
+	    }
+	}
+    }    
+};
+
+
+template <typename Assign= assign::assign_sum,
+	  typename Backup= gen_cursor_dmat_dmat_mult_t<Assign> >   
+struct gen_dmat_dmat_mult_t
+{
+    template <typename MatrixA, typename MatrixB, typename MatrixC>
+    void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
+    {
+	gen_dmat_dmat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>()(a, b, c);
     }
 };
 
@@ -280,13 +311,9 @@ private:
 	Backup()(a, b, c);
     }
 
-#if MTL_OUTLINE_TILING_DMAT_DMAT_MULT_APPLY
-    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout);
-#else
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
-	// std::cout << "do unrolling\n";
-
+	// std::cout << "meta-unrolling\n";
 	if (Assign::init_to_zero) set_to_zero(c);
 
 	typedef gen_tiling_dmat_dmat_mult_block<1, Tiling1, 1, Tiling2, Assign>  block;
@@ -342,7 +369,6 @@ private:
 		Assign::update(c(i, k), tmp00);
 	    }
     }
-#endif
 };
 
 template <unsigned long Tiling1= MTL_DMAT_DMAT_MULT_TILING1,
@@ -361,71 +387,6 @@ struct gen_tiling_dmat_dmat_mult_t
 };
 
 
-#if MTL_OUTLINE_TILING_DMAT_DMAT_MULT_APPLY
-template <typename MatrixA, typename MatrixB, typename MatrixC, 
-	  unsigned long Tiling1, unsigned long Tiling2,
-	  typename Assign, typename Backup>
-void gen_tiling_dmat_dmat_mult_ft<MatrixA, MatrixB, MatrixC, Tiling1, Tiling2, Assign, Backup>::
-apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
-{
-	// std::cout << "do unrolling\n";
-
-	if (Assign::init_to_zero) set_to_zero(c);
-
-	typedef gen_tiling_dmat_dmat_mult_block<1, Tiling1, 1, Tiling2, Assign>  block;
-	typedef typename MatrixC::size_type                                          size_type;
-	typedef typename MatrixC::value_type                                         value_type;
-	const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
-
-	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
-	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
-	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
-	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
-	    
-	// C_nw += A_nw * B_nw
-	for (size_type i= 0; i < i_block; i+= Tiling1)
-	    for (size_type k= 0; k < k_block; k+= Tiling2) {
-
-		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
-                           tmp05= z, tmp06= z, tmp07= z, tmp08= z, tmp09= z,
- 		           tmp10= z, tmp11= z, tmp12= z, tmp13= z, tmp14= z, tmp15= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
-		const typename MatrixB::value_type *begin_b= &b(0, k);
-
-		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
-		    block::apply(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
-				 tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
-				 begin_a, ari, begin_b, bci); 
-		block::update(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, 
-			      tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, 
-			      c, i, k);
-	    }
-
-	// C_ne += A_n * B_e
-	for (size_type i= 0; i < i_block; i++)
-	    for (int k = k_block; k < k_max; k++) {
-		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
-		const typename MatrixB::value_type *begin_b= &b(0, k);
-
-		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
-		    tmp00 += *begin_a * *begin_b;
-		Assign::update(c(i, k), tmp00);
-	    }
-
-	// C_s += A_s * B
-	for (size_type i= i_block; i < i_max; i++)
-	    for (int k = 0; k < k_max; k++) {
-		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
-		const typename MatrixB::value_type *begin_b= &b(0, k);
-
-		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
-		    tmp00 += *begin_a * *begin_b;
-		Assign::update(c(i, k), tmp00);
-	    }
-}
-#endif
 
 // =================================
 // Unrolled with iterators fixed 4x4
@@ -450,13 +411,9 @@ private:
 	Backup()(a, b, c);
     }
 
-#if MTL_OUTLINE_TILING_DMAT_DMAT_MULT_APPLY
-    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout);
-#else
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
-        // std::cout << "do unrolling\n";
-
+        // std::cout << "4x4 unrolling\n";
 	if (Assign::init_to_zero) set_to_zero(c);
 
 	typedef typename MatrixC::size_type                                          size_type;
@@ -540,7 +497,6 @@ private:
 		Assign::update(c(i, k), tmp00);
 	    }
     }
-#endif
 };
 
 template <typename Assign= assign::assign_sum, 
@@ -556,100 +512,6 @@ struct gen_tiling_44_dmat_dmat_mult_t
     }
 };
 
-
-#if MTL_OUTLINE_TILING_DMAT_DMAT_MULT_APPLY
-template <typename MatrixA, typename MatrixB, typename MatrixC, 
-	  typename Assign, typename Backup>
-void gen_tiling_44_dmat_dmat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>::
-apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
-{
-        // std::cout << "do unrolling\n";
-
-	if (Assign::init_to_zero) set_to_zero(c);
-
-	typedef typename MatrixC::size_type                                          size_type;
-	typedef typename MatrixC::value_type                                         value_type;
-
-	const size_type  Tiling1= 4, Tiling2= 4;
-	const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
-
-
-	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
-	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
-	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
-	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
-
-	// C_nw += A_nw * B_nw
-	for (size_type i= 0; i < i_block; i+= Tiling1)
-	    for (size_type k= 0; k < k_block; k+= Tiling2) {
-
-		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
-                           tmp05= z, tmp06= z, tmp07= z, tmp08= z, tmp09= z,
- 		           tmp10= z, tmp11= z, tmp12= z, tmp13= z, tmp14= z, tmp15= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
-		const typename MatrixB::value_type *begin_b= &b(0, k);
-
-		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri) {
-		    tmp00+= begin_a[ 0 * ari ] * begin_b[ 0 * bci ];
-		    tmp01+= begin_a[ 0 * ari ] * begin_b[ 1 * bci ];
-		    tmp02+= begin_a[ 0 * ari ] * begin_b[ 2 * bci ];
-		    tmp03+= begin_a[ 0 * ari ] * begin_b[ 3 * bci ];
-		    tmp04+= begin_a[ 1 * ari ] * begin_b[ 0 * bci ];
-		    tmp05+= begin_a[ 1 * ari ] * begin_b[ 1 * bci ];
-		    tmp06+= begin_a[ 1 * ari ] * begin_b[ 2 * bci ];
-		    tmp07+= begin_a[ 1 * ari ] * begin_b[ 3 * bci ];
-		    tmp08+= begin_a[ 2 * ari ] * begin_b[ 0 * bci ];
-		    tmp09+= begin_a[ 2 * ari ] * begin_b[ 1 * bci ];
-		    tmp10+= begin_a[ 2 * ari ] * begin_b[ 2 * bci ];
-		    tmp11+= begin_a[ 2 * ari ] * begin_b[ 3 * bci ];
-		    tmp12+= begin_a[ 3 * ari ] * begin_b[ 0 * bci ];
-		    tmp13+= begin_a[ 3 * ari ] * begin_b[ 1 * bci ];
-		    tmp14+= begin_a[ 3 * ari ] * begin_b[ 2 * bci ];
-		    tmp15+= begin_a[ 3 * ari ] * begin_b[ 3 * bci ];
-		}
-		Assign::update(c(i + 0, k + 0), tmp00);
-		Assign::update(c(i + 0, k + 1), tmp01);
-		Assign::update(c(i + 0, k + 2), tmp02);
-		Assign::update(c(i + 0, k + 3), tmp03);
-		Assign::update(c(i + 1, k + 0), tmp04);
-		Assign::update(c(i + 1, k + 1), tmp05);
-		Assign::update(c(i + 1, k + 2), tmp06);
-		Assign::update(c(i + 1, k + 3), tmp07);
-		Assign::update(c(i + 2, k + 0), tmp08);
-		Assign::update(c(i + 2, k + 1), tmp09);
-		Assign::update(c(i + 2, k + 2), tmp10);
-		Assign::update(c(i + 2, k + 3), tmp11);
-		Assign::update(c(i + 3, k + 0), tmp12);
-		Assign::update(c(i + 3, k + 1), tmp13);
-		Assign::update(c(i + 3, k + 2), tmp14);
-		Assign::update(c(i + 3, k + 3), tmp15);
-	    }
-
-	// C_ne += A_n * B_e
-	for (size_type i= 0; i < i_block; i++)
-	    for (int k = k_block; k < k_max; k++) {
-		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
-		const typename MatrixB::value_type *begin_b= &b(0, k);
-
-		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
-		    tmp00 += *begin_a * *begin_b;
-		Assign::update(c(i, k), tmp00);
-	    }
-
-	// C_s += A_s * B
-	for (size_type i= i_block; i < i_max; i++)
-	    for (int k = 0; k < k_max; k++) {
-		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
-		const typename MatrixB::value_type *begin_b= &b(0, k);
-
-		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
-		    tmp00 += *begin_a * *begin_b;
-		Assign::update(c(i, k), tmp00);
-	    }
-}
-#endif
 
 
 
@@ -676,13 +538,9 @@ private:
 	Backup()(a, b, c);
     }
 
-#if MTL_OUTLINE_TILING_DMAT_DMAT_MULT_APPLY
-    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout);
-#else
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
-        // std::cout << "do unrolling\n";
-
+        // std::cout << "2x2 unrolling\n";
 	if (Assign::init_to_zero) set_to_zero(c);
 
 	typedef typename MatrixC::size_type                                          size_type;
@@ -740,7 +598,6 @@ private:
 		Assign::update(c(i, k), tmp00);
 	    }
     }
-#endif
 };
 
 template <typename Assign= assign::assign_sum, 
@@ -757,72 +614,6 @@ struct gen_tiling_22_dmat_dmat_mult_t
 };
 
 
-#if MTL_OUTLINE_TILING_DMAT_DMAT_MULT_APPLY
-template <typename MatrixA, typename MatrixB, typename MatrixC, 
-	  typename Assign, typename Backup>
-void gen_tiling_22_dmat_dmat_mult_ft<MatrixA, MatrixB, MatrixC, Assign, Backup>::
-apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
-{
-        // std::cout << "do unrolling\n";
-
-	if (Assign::init_to_zero) set_to_zero(c);
-
-	typedef typename MatrixC::size_type                                          size_type;
-	typedef typename MatrixC::value_type                                         value_type;
-
-	const size_type  Tiling1= 2, Tiling2= 2;
-	const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
-
-	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
-	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
-	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
-	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
-
-	// C_nw += A_nw * B_nw
-	for (size_type i= 0; i < i_block; i+= Tiling1)
-	    for (size_type k= 0; k < k_block; k+= Tiling2) {
-
-		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
-		const typename MatrixB::value_type *begin_b= &b(0, k);
-
-		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri) {
-		    tmp00+= begin_a[ 0 * ari ] * begin_b[ 0 * bci ];
-		    tmp01+= begin_a[ 0 * ari ] * begin_b[ 1 * bci ];
-		    tmp02+= begin_a[ 1 * ari ] * begin_b[ 0 * bci ];
-		    tmp03+= begin_a[ 1 * ari ] * begin_b[ 1 * bci ];
-		}
-		Assign::update(c(i + 0, k + 0), tmp00);
-		Assign::update(c(i + 0, k + 1), tmp01);
-		Assign::update(c(i + 1, k + 0), tmp02);
-		Assign::update(c(i + 1, k + 1), tmp03);
-	    }
-
-	// C_ne += A_n * B_e
-	for (size_type i= 0; i < i_block; i++)
-	    for (int k = k_block; k < k_max; k++) {
-		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
-		const typename MatrixB::value_type *begin_b= &b(0, k);
-
-		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
-		    tmp00 += *begin_a * *begin_b;
-		Assign::update(c(i, k), tmp00);
-	    }
-
-	// C_s += A_s * B
-	for (size_type i= i_block; i < i_max; i++)
-	    for (int k = 0; k < k_max; k++) {
-		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
-		const typename MatrixB::value_type *begin_b= &b(0, k);
-
-		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
-		    tmp00 += *begin_a * *begin_b;
-		Assign::update(c(i, k), tmp00);
-	    }
-}
-#endif
 
 
 // ========================
@@ -837,6 +628,7 @@ namespace wrec {
 	template <typename RecA, typename RecB, typename RecC>
 	void operator()(RecA const& rec_a, RecB const& rec_b, RecC& rec_c)
 	{
+	    // std::cout << "wrec::mult \n";
 	    using namespace recursion;
 	    if (is_empty(rec_a) || is_empty(rec_b) || is_empty(rec_c))
 		return;
@@ -893,7 +685,6 @@ private:
 	       tag::qsub_dividable, tag::qsub_dividable, tag::qsub_dividable)
     {
 	// std::cout << "do recursion\n";
-
 	if (Assign::init_to_zero) set_to_zero(c);
 
 	// Make sure that mult functor of basecase has appropriate assign mode (in all nestings)
@@ -904,7 +695,7 @@ private:
 	matrix_recursator<MatrixB>    rec_b(b);
 	matrix_recursator<MatrixC>    rec_c(c);
 	equalize_depth(rec_a, rec_b, rec_c);
-
+	
 	wrec::gen_dmat_dmat_mult_t<BaseMult, BaseTest>() (rec_a, rec_b, rec_c);
     }
 };
@@ -956,36 +747,14 @@ struct gen_blas_dmat_dmat_mult_ft
 namespace detail {
 
     // Transform from assign representation to BLAS
-    double dgemm_alpha(assign::assign_sum)
-    {
-	return 1.0;
-    }
-
-    double dgemm_alpha(assign::plus_sum)
-    {
-	return 1.0;
-    }
- 
-    double dgemm_alpha(assign::minus_sum)
-    {
-	return -1.0;
-    }
+    double dgemm_alpha(assign::assign_sum) { return 1.0; }
+    double dgemm_alpha(assign::plus_sum) { return 1.0; } 
+    double dgemm_alpha(assign::minus_sum) { return -1.0; }
 
     // Transform from assign representation to BLAS
-    double dgemm_beta(assign::assign_sum)
-    {
-	return 0.0;
-    }
-
-    double dgemm_beta(assign::plus_sum)
-    {
-	return 1.0;
-    }
- 
-    double dgemm_beta(assign::minus_sum)
-    {
-	return 1.0;
-    }
+    double dgemm_beta(assign::assign_sum) { return 0.0; }
+    double dgemm_beta(assign::plus_sum) { return 1.0; }
+    double dgemm_beta(assign::minus_sum) { return 1.0; }
 
     template <typename Value, typename ParaA, typename ParaB, typename ParaC, typename Function, typename Assign>
     void inline xgemm(const dense2D<Value, ParaA>& a, const dense2D<Value, ParaB>& b, 

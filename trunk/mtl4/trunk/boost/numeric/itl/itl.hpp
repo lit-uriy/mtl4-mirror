@@ -119,7 +119,7 @@ namespace itl {
 
       Real normr_ = std::abs(two_norm(r)); 
       bool ret;
-      if (converged(normr_))
+      if (this->converged(normr_))
 	ret = true;
       else if (this->i < this->max_iter)
 	ret = false;
@@ -139,7 +139,7 @@ namespace itl {
       using std::endl;
 
       bool ret;
-      if (converged(r))
+      if (this->converged(r))
 	ret = true;
       else if (this->i < this->max_iter)
 	ret = false;
@@ -159,7 +159,7 @@ namespace itl {
       using std::endl;
 
       bool ret;
-      if (converged(std::abs(r)))
+      if (this->converged(std::abs(r)))
 	ret = true;
       else if (this->ii < this->imax_iter)
 	ret = false;
