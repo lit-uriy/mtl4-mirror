@@ -114,31 +114,45 @@ struct dense_col_vector
     virtual has_1D_layout
 {};
 
-/// Tag for a map of a (regular) dense matrix in the category lattice
-/** The map perform address computation and has therefore no 2D-layout */
-struct dense2D_map 
+/// Tag for a view on a (regular) dense matrix in the category lattice
+/** The map perform address computation and has therefore no 2D-layout.
+    It is also not (yet) assumed that the view provides iterators. */
+struct dense2D_view 
   : virtual matrix, virtual contiguous_dense, virtual has_fast_ra_cursor, 
-    virtual has_fast_ra_iterator, virtual sub_dividable
+    virtual sub_dividable
 {};
 
 /// Tag for (regular) dense matrix in the category lattice
 struct dense2D 
-  : virtual dense2D_map, virtual has_2D_layout
+  : virtual dense2D_view, virtual has_fast_ra_iterator, virtual has_2D_layout
 {};
+
+/// Tag for a view on a Morton-order matrix in the category lattice
+/** It is not (yet) assumed that the view provides iterators. */
+struct morton_view 
+  : virtual matrix, virtual contiguous_dense,  
+    virtual has_ra_cursor, virtual qsub_dividable
+ {};
+
 
 /// Tag for Morton-order matrix in the category lattice
 struct morton_dense 
-  : virtual matrix, virtual contiguous_dense, virtual has_ra_cursor, 
-    virtual has_ra_iterator, virtual qsub_dividable
+  : virtual morton_view, virtual has_ra_iterator
  {};
+
+/// Tag for a view on a compressed matrix in the category lattice
+/** It is not (yet) assumed that the view provides iterators. */
+struct compressed2D_view
+  : virtual matrix, virtual sparse, virtual has_cursor
+{};
 
 /// Tag for compressed matrix in the category lattice
 struct compressed2D 
-  : virtual matrix, virtual sparse, virtual has_iterator,
-    virtual has_cursor
+  : virtual compressed2D_view, virtual has_iterator
 {};
 
 /// Tag for bottom of the category lattice
+/** Only for completeness; probably not needed in practice. */
 struct bottom
     : virtual compressed2D, virtual morton_dense, virtual dense2D, 
       virtual dense_col_vector, virtual dense_row_vector, virtual unknown

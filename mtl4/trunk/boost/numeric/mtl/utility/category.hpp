@@ -106,15 +106,40 @@ struct category< vector::conj_view<Vector> >
 {};
 
 
+namespace detail {
+    
+    // Helper to remove unsupported techniques in views
+    template <typename Matrix>
+    struct simple_matrix_view_category
+    {
+      private:
+        typedef typename boost::mpl::if_<
+    	    boost::is_same<typename category<Matrix>::type, tag::dense2D>
+          , tag::dense2D_view
+          , typename category<Matrix>::type
+	>::type tmp1;
+
+        typedef typename boost::mpl::if_<
+    	    boost::is_same<typename category<Matrix>::type, tag::morton_dense>
+          , tag::morton_view
+          , tmp1
+	>::type tmp2;
+
+      public:
+        typedef typename boost::mpl::if_<
+    	    boost::is_same<typename category<Matrix>::type, tag::compressed2D>
+          , tag::compressed2D_view
+          , tmp2
+	>::type type;
+    };
+
+} // detail
+
+
 template <typename Functor, typename Matrix> 
 struct category<matrix::map_view<Functor, Matrix> >
-{
-    typedef typename boost::mpl::if_<
-	boost::is_same<typename category<Matrix>::type, tag::dense2D>
-      , tag::dense2D_map
-      , typename category<Matrix>::type
-    >::type type;
-};
+    : public detail::simple_matrix_view_category<Matrix>
+{};
 
 template <typename Scaling, typename Matrix>
 struct category< matrix::scaled_view<Scaling, Matrix> >
@@ -147,14 +172,11 @@ struct category< matrix::hermitian_view<Matrix> >
 					transposed_view<Matrix> > >
 {};
 
-// Not 100% sure about this
 template <typename Matrix>
 struct category< matrix::banded_view<Matrix> >
-// : public category<Matrix>  // requires sub-matrix for several types
-{
-    // multiplication needs at least dense or sparse
-    typedef tag::matrix   type;
-};
+    : public detail::simple_matrix_view_category<Matrix>
+{};
+
 
 
 /// Meta-function for categorizing types into tag::scalar, tag::vector, and tag::matrix

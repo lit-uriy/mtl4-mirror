@@ -267,23 +267,23 @@ namespace mtl {
 template <typename Functor, typename Matrix>
 struct sub_matrix_t< matrix::map_view<Functor, Matrix> >
 {
-    typedef matrix::map_view<Functor, Matrix>                                     matrix_type;
+    typedef matrix::map_view<Functor, Matrix>                                     view_type;
 
     // Mapping of sub-matrix type
     typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type                  ref_sub_type;
     typedef matrix::map_view<Functor, ref_sub_type>                               const_sub_matrix_type;
-    typedef typename matrix_type::size_type                                       size_type;
+    typedef typename view_type::size_type                                         size_type;
 
-    const_sub_matrix_type operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, 
+    const_sub_matrix_type operator()(view_type const& view, size_type begin_r, size_type end_r, 
 				     size_type begin_c, size_type end_c)
     {
 	typedef boost::shared_ptr<ref_sub_type>                        pointer_type;
 
-	// Submatrix of referred matrix
+	// Submatrix of referred matrix (or view)
 	// Create a submatrix, whos address will be kept by map_view
 	// Functor is copied from view
-	pointer_type p(new ref_sub_type(sub_matrix(matrix.ref, begin_r, end_r, begin_c, end_c)));
-	return const_sub_matrix_type(matrix.functor, p); 
+	pointer_type p(new ref_sub_type(sub_matrix(view.ref, begin_r, end_r, begin_c, end_c)));
+	return const_sub_matrix_type(view.functor, p); 
     }
 };
 

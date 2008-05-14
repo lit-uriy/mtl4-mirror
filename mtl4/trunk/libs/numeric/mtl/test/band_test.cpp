@@ -31,7 +31,7 @@ void check(const Matrix& A, int begin, int end)
 		if (A[i][j] != value_type(0))
 		    throw "Value must be zero right of the bands";
 	    } else
-		if (A[i][j] != value_type(band + 10))
+		if (A[i][j] != value_type(band + 0))
 		    throw "Wrong non-zero value within the bands";
 	}
 }
@@ -47,10 +47,9 @@ void test(Matrix& A, const char* name)
 	matrix::inserter<Matrix>   ins(A);
 	for (int i= 0; i < num_rows(A); i++)
 	    for (int j= 0; j < num_cols(A); j++)
-		ins[i][j]= value_type(j - i + 10);
+		ins[i][j]= value_type(j - i + 0);
     }
     cout << "\n" << name << "\n" << "A =\n" << A;
-
     Matrix B= bands(A, 2, 4);
     cout << "\nbands(A, 2, 4) = \n" << B;
     check(B, 2, 4);
@@ -71,10 +70,22 @@ void test(Matrix& A, const char* name)
     cout << "\nstrict_lower(A) = \n" << SL;
     check(SL, -10000, 0);
     
-    // Only check compilability (values are checked elsewhere)
-    // Matrix P= A * upper(A);
-    // cout << "\nA * upper(A) = \n" << P;
-    
+    Matrix P= trans(A) * upper(A), P_cmp= trans(A) * U, P_cmp2= trans(A) * A;
+    cout << "\ntrans(A) * upper(A) = \n" << with_format(P, 4, 3);
+    // cout << " for comparison trans(A) * U = \n" << with_format(P_cmp, 4, 3);
+    // cout << " for comparison trans(A) * A = \n" << with_format(P_cmp2, 4, 3);
+    if (abs(P[1][1] - P_cmp[1][1]) > .00001) throw "Multiplication wrong";
+
+#if 0
+    // Take this out as sparse matrices have no sub-matrix; only for debugging wrong products
+    Matrix A2= sub_matrix(A, 0, 3, 0, 3), U2= upper(A2);
+    Matrix P2= A2 * upper(A2); //, P2_cmp= A2 * U2, A2_square= A2 * A2;
+    cout << "\nA2 * upper(A2) = \n" << with_format(P2, 4, 3);
+    cout << " for comparison A2 * U = \n" << with_format(P2_cmp, 4, 3);
+    cout << " for comparison A2 * A2 = \n" << with_format(A2_square, 4, 3);
+    if (abs(P2[1][1] - P2_cmp[1][1]) > .00001) throw "Multiplication wrong";
+#endif
+
 
 #if 0
     // Would too painfully slow !
@@ -108,9 +119,11 @@ int test_main(int argc, char* argv[])
     test(mzd, "Morton Z-order");
     test(d2r, "Hybrid 2 row-major");
     test(cr, "Compressed row major");
-    test(cc, "Compressed column major");
     test(drc, "Dense row major complex");
     test(crc, "Compressed row major complex");
-	
+
+    // For better readability I don't want finish with a complex
+    test(cc, "Compressed column major");
+
     return 0;
 }

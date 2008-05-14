@@ -10,6 +10,7 @@
 #ifndef MTL_MATRIX_BANDED_VIEW_INCLUDE
 #define MTL_MATRIX_BANDED_VIEW_INCLUDE
 
+#include <boost/shared_ptr.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
@@ -63,6 +64,11 @@ struct banded_view
 	: base(ref.get_dimensions()), ref(ref), begin(begin), end(end) 
     {}
 
+    banded_view(boost::shared_ptr<Matrix> p, bsize_type begin, bsize_type end) 
+	: base(p->get_dimensions()), my_copy(p), ref(*p), begin(begin), end(end) 
+    {}
+
+
     value_type operator() (size_type r, size_type c) const
     {
 	using math::zero;
@@ -79,8 +85,11 @@ struct banded_view
 
     template <typename> friend struct detail::banded_value;
     template <typename, typename> friend struct detail::map_value;
+    //template <typename> friend struct ::mtl::sub_matrix_t<self>;
 
-    //protected:
+  protected:
+    boost::shared_ptr<Matrix>           my_copy;
+  public:
     const other&      ref;
     bsize_type        begin, end;
 };
@@ -195,5 +204,35 @@ namespace mtl { namespace traits {
 }} // mtl::traits
 
 
+namespace mtl {
+
+// ==========
+// Sub matrix
+// ==========
+
+template <typename Matrix>
+struct sub_matrix_t< matrix::banded_view<Matrix> >
+{
+    typedef matrix::banded_view<Matrix>                                           view_type;
+
+    // Mapping of sub-matrix type
+    typedef typename sub_matrix_t<Matrix>::sub_matrix_type                        ref_sub_type;
+    typedef matrix::banded_view<ref_sub_type>                                     const_sub_matrix_type;
+    typedef matrix::banded_view<ref_sub_type>                                     sub_matrix_type;
+    typedef typename view_type::size_type                                         size_type;
+
+    sub_matrix_type operator()(view_type const& view, size_type begin_r, size_type end_r, 
+				     size_type begin_c, size_type end_c)
+    {
+	typedef boost::shared_ptr<ref_sub_type>                        pointer_type;
+
+	// Submatrix of referred matrix (or view)
+	// Create a submatrix, whos address will be kept by banded_view
+	pointer_type p(new ref_sub_type(sub_matrix(view.ref, begin_r, end_r, begin_c, end_c)));
+	return sub_matrix_type(p, view.begin, view.end); 
+    }
+};
+
+} // mtl
 
 #endif // MTL_MATRIX_BANDED_VIEW_INCLUDE
