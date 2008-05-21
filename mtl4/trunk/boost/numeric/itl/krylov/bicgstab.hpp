@@ -1,14 +1,30 @@
-#include <boost/numeric/mtl/mtl.hpp>
+// Software License for MTL
+// 
+// Copyright (c) 2007-2008 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 
-template <class Matrix, class Vector, class VectorB, class Iteration>
-int
-bicgstab(const Matrix& A, Vector& x, const VectorB& b, Iteration& iter)
+#ifndef ITL_BICGSTAB_INCLUDE
+#define ITL_BICGSTAB_INCLUDE
+
+#include <boost/numeric/mtl/concept/collection.hpp>
+
+namespace itl {
+
+template < class LinearOperator, class HilbertSpaceX, class HilbertSpaceB, 
+	   class Preconditioner, class Iteration >
+int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
+	     const Preconditioner& M, Iteration& iter)
 {
-  typedef typename mtl::Collection<Vector>::value_type T;
-  T rho_1, rho_2, alpha, beta, omega;
-  typedef Vector TmpVec;
-  TmpVec p(size(x)), phat(size(x)), s(size(x)), shat(size(x)), 
-    t(size(x)), v(size(x)), r(size(x)), rtilde(size(x));
+  typedef typename mtl::Collection<HilbertSpaceX>::value_type T;
+  typedef HilbertSpaceX                                       TmpVec;
+
+  T          rho_1, rho_2, alpha, beta, omega;
+  TmpVec     p(size(x)), phat(size(x)), s(size(x)), shat(size(x)), 
+             t(size(x)), v(size(x)), r(size(x)), rtilde(size(x));
 
   r = b - A * x;
   rtilde = r;
@@ -28,7 +44,6 @@ bicgstab(const Matrix& A, Vector& x, const VectorB& b, Iteration& iter)
 	iter.fail(3, "bicg breakdown #2");
 	break;
       }
-      
       beta = (rho_1 / rho_2) * (alpha / omega);
       p = r + beta * (p - omega * v);
     }
@@ -54,10 +69,11 @@ bicgstab(const Matrix& A, Vector& x, const VectorB& b, Iteration& iter)
     
     ++iter;
   }
-  
+
   return iter.error_code();
 }
 
 
+} // namespace itl
 
-
+#endif // ITL_BICGSTAB_INCLUDE
