@@ -11,7 +11,7 @@
 #define MATH_POWER_INCLUDE
 
 #include <concepts>
-#include <boost/numeric/linear_algebra/new_concepts.hpp>
+#include <boost/numeric/linear_algebra/concepts.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <stdexcept>
 
@@ -32,7 +32,7 @@ namespace math {
 	return value;
     }
 
-
+#if 0
     template <typename Op, std::Semiregular Element, Integral Exponent>
         requires SemiGroup<Op, Element> 
               && std::Callable2<Op, Element, Element>
@@ -61,7 +61,6 @@ namespace math {
         return value;
     }
 
-
     template <typename Op, std::Semiregular Element, Integral Exponent>
         requires SemiGroup<Op, Element> 
               && std::Callable2<Op, Element, Element>
@@ -70,9 +69,10 @@ namespace math {
     {
 	return multiply_and_square_horner(a, n, op);
     }
+#endif
 
 
-#if 0
+#if 1
     // With Horner scheme we can avoid recursion  
     // This one is more intuitive (I believe)      
     template <typename Op, std::Semiregular Element, Integral Exponent>
@@ -84,6 +84,7 @@ namespace math {
 	std::cout << "[SemiGroup] ";
 	if (n < 1) throw std::range_error("power [SemiGroup]: n must be > 0");
 
+	Exponent half(n / 2);
         // If half is 0 then n must be 1 and the result is a
         if (half == 0)
 	    return a;

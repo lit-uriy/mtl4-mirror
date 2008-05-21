@@ -13,6 +13,7 @@
 
 #include <boost/numeric/linear_algebra/operators.hpp>
 #include <limits>
+#include <string>
 #include <functional>
 
 namespace math {
@@ -40,6 +41,15 @@ struct identity_t< add<Element>, Element >
     }
 };
 
+template <>
+struct identity_t< add<std::string>, std::string > 
+  : public std::binary_function<add<std::string>, std::string, std::string>
+{ 
+    std::string operator() (const add<std::string>&, const std::string&) const
+    {
+	return std::string();
+    }
+};
 
 // Multiplicative identity of Element type is by default a converted 1
 // Same comments as above.
@@ -82,7 +92,27 @@ struct identity_t< min<Element>, Element >
     }
 };
 
+// Identity of bit-wise and
+template <typename Element>
+struct identity_t< bitwise_and<Element>, Element > 
+  : public std::binary_function<bitwise_and<Element>, Element, Element>
+{ 
+    Element operator() (const bitwise_and<Element>&, const Element& ref) const
+    {
+	return 0;
+    }
+};
 
+// Identity of bit-wise or
+template <typename Element>
+struct identity_t< bitwise_or<Element>, Element > 
+  : public std::binary_function<bitwise_or<Element>, Element, Element>
+{ 
+    Element operator() (const bitwise_or<Element>&, const Element& ref) const
+    {
+	return 0 - 1;
+    }
+};
 
 // Function is shorter than typetrait-like functor
 template <typename Operation, typename Element>

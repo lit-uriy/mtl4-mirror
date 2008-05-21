@@ -1,0 +1,53 @@
+// Software License for MTL
+// 
+// Copyright (c) 2007-2008 The Trustees of Indiana University. All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
+
+#ifndef ITL_SOLVER_PROXY_INCLUDE
+#define ITL_SOLVER_PROXY_INCLUDE
+
+#include <boost/mpl/bool.hpp>
+
+namespace itl {
+
+
+template <typename Solver, typename VectorIn, bool trans= false>
+class solver_proxy
+{
+  public:
+    solver_proxy(const Solver& solver, const VectorIn& vector_in)
+	: solver(solver), vector_in(vector_in) 
+    {}
+
+    // Just call solve, the proxy knows whether it needs the transposed
+    template <typename VectorOut>
+    void solve(VectorOut& vector_out) const
+    {
+	solve(vector_out, boost::mpl::bool_<trans>());
+    }
+
+  protected:
+    template <typename VectorOut>
+    void solve(VectorOut& vector_out, boost::mpl::true_) const
+    {
+	solver.trans_solve(vector_in, vector_out);
+    }
+
+    template <typename VectorOut>
+    void solve(VectorOut& vector_out, boost::mpl::false_) const
+    {
+	solver.solve(vector_in, vector_out);
+    }
+
+    const Solver&     solver;
+    const VectorIn&   vector_in;
+};
+	     
+
+} // namespace itl
+
+#endif // ITL_SOLVER_PROXY_INCLUDE

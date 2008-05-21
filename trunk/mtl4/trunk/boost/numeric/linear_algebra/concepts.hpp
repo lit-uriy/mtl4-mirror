@@ -18,6 +18,7 @@
 namespace math {
 
 concept Commutative<typename Operation, typename Element>
+  : std::Callable2<Op, Element, Element>
 {
     axiom Commutativity(Operation op, Element x, Element y)
     {
@@ -27,6 +28,7 @@ concept Commutative<typename Operation, typename Element>
 
 
 concept SemiGroup<typename Operation, typename Element>
+  : std::Callable2<Op, Element, Element>
 {
     axiom Associativity(Operation op, Element x, Element y, Element z)
     {

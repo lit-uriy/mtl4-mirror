@@ -19,6 +19,8 @@
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 
+#include <boost/numeric/itl/itl_fwd.hpp>
+
 namespace mtl { namespace vector {
 
 
@@ -63,9 +65,17 @@ struct crtp_vector_assign
     Vector& operator=(const mat_cvec_times_expr<E1, E2>& src)
     {
 	mult(src.first, src.second, static_cast<Vector&>(*this));
-
 	return static_cast<Vector&>(*this);
     }
+
+    /// Assign a solver_proxy, i.e. perform y= inv(A)*x for expressions y= A.solve(x)
+    template<typename Solver, typename VectorIn, bool trans>
+    Vector& operator=(const itl::solver_proxy<Solver, VectorIn, trans>& proxy)
+    {
+	proxy.solve(static_cast<Vector&>(*this));
+	return static_cast<Vector&>(*this);
+    }
+	
 
     /// Assign-add vector expression
     template <class E>

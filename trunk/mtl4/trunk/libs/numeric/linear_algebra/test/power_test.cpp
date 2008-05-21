@@ -5,7 +5,7 @@
 #include <boost/numeric/linear_algebra/inverse.hpp>
 #include <boost/numeric/linear_algebra/is_invertible.hpp>
 #include <boost/numeric/linear_algebra/new_concepts.hpp>
-#include <boost/numeric/linear_algebra/concept_maps.hpp>
+//#include <boost/numeric/linear_algebra/concept_maps.hpp>
 #include <boost/numeric/linear_algebra/power.hpp>
 
 #if 0 // only for testing other concepts
@@ -22,9 +22,10 @@ int main(int, char* [])
     float a= 3.14;
 
     std::cout << "power(a, 5, mult<float>) " << power(a, 5, mult<float>()) << '\n';
+#if 0
     std::cout << "power(a, 5, add<float>) " << power(a, 5, add<float>()) << '\n';
     std::cout << "power(a, 0, add<float>) " << power(a, 0, add<float>()) << '\n';
-
+#endif
 
     return 0;
 }
