@@ -121,7 +121,7 @@ struct max : public std::binary_function<Element, Element, Element>
 };
 
 template <typename Element>
-struct bit_and : public std::binary_function<Element, Element, Element>
+struct bitwise_and : public std::binary_function<Element, Element, Element>
 {
     Element operator() (const Element& x, const Element& y)
     {
@@ -130,7 +130,7 @@ struct bit_and : public std::binary_function<Element, Element, Element>
 };
 
 template <typename Element>
-struct bit_or : public std::binary_function<Element, Element, Element>
+struct bitwise_or : public std::binary_function<Element, Element, Element>
 {
     Element operator() (const Element& x, const Element& y)
     {
@@ -139,7 +139,7 @@ struct bit_or : public std::binary_function<Element, Element, Element>
 };
 
 template <typename Element>
-struct bit_xor : public std::binary_function<Element, Element, Element>
+struct bitwise_xor : public std::binary_function<Element, Element, Element>
 {
     Element operator() (const Element& x, const Element& y)
     {

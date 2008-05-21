@@ -26,7 +26,7 @@ struct inverse_t< add<Element>, Element >
 { 
     Element operator()(const add<Element>&, const Element& v) const
     { 
-	return zero(v) - v; 
+	return -v; 
     } 
 };
 

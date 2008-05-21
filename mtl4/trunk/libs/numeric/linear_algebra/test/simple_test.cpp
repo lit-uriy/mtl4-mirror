@@ -12,6 +12,7 @@
 namespace algebra {
 
     concept Associative<typename Operation, typename Element>
+      : std::Callable2<Operation, Element, Element>
     {
         axiom Associativity(Operation op, Element x, Element y, Element z)
         {

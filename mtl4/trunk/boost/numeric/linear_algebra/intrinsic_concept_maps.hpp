@@ -54,6 +54,59 @@ namespace math {
     concept_map IntrinsicFloatingPoint<float> { }
     concept_map IntrinsicFloatingPoint<double> { }
         
+    concept Integral<typename T> : std::CopyAssignable<T>     
+    {
+        requires std::HasPlus<T> && std::HasMinus<T> && std::HasMultiply<T> && std::HasDivide<T>
+              && std::HasUnaryPlus<T> && std::HasNegate<T>;
+
+
+        T& operator++(T&);
+        T operator++(T& t, int) { T tmp(t); ++t; return tmp; }
+        T& operator--(T&);
+        T operator--(T& t, int) { T tmp(t); --t; return tmp; }
+
+        requires std::Convertible<std::HasUnaryPlus<T>::result_type, T>
+              && std::Convertible<std::HasNegate<T>::result_type, T>
+              && std::Convertible<std::HasPlus<T>::result_type, T>
+              && std::Convertible<std::HasMinus<T>::result_type, T>
+              && std::Convertible<std::HasMultiply<T>::result_type, T>
+              && std::Convertible<std::HasDivide<T>::result_type, T>;
+        
+        T& operator*=(T&, T);
+        T& operator/=(T&, T);
+        T& operator+=(T&, T);
+        T& operator-=(T&, T);
+    	
+        requires std::HasComplement<T> && std::HasModulus<T> && std::HasBitAnd<T>
+              && std::HasBitOr<T> && std::HasBitXor<T> && std::HasLeftShift<T> 
+              && std::HasRightShift<T>;
+
+        requires std::Convertible<std::HasComplement<T>::result_type, T>
+              && std::Convertible<std::HasModulus<T>::result_type, T>
+              && std::Convertible<std::HasBitAnd<T>::result_type, T>
+              && std::Convertible<std::HasBitOr<T>::result_type, T>
+              && std::Convertible<std::HasBitXor<T>::result_type, T>
+              && std::Convertible<std::HasLeftShift<T>::result_type, T>
+              && std::Convertible<std::HasRightShift<T>::result_type, T>;
+
+        requires std::LessThanComparable<T> && std::EqualityComparable<T>;
+
+        T& operator%=(T&, T);
+        T& operator&=(T&, T);
+        T& operator|=(T&, T);
+        T& operator^=(T&, T);
+        T& operator<<=(T&, T);
+        T& operator>>=(T&, T);
+    }
+
+
+    template <typename T>
+    requires IntrinsicUnsignedIntegral<T>
+    concept_map Integral<T> {typedef T result_type;}
+
+    template <IntrinsicSignedIntegral T>
+    concept_map Integral<T> {typedef T result_type;}
+
 
 } // namespace math
 
