@@ -15,7 +15,7 @@
 namespace itl {
 
 
-template <typename Solver, typename VectorIn, bool trans= false>
+template <typename Solver, typename VectorIn, bool adjoint= false>
 class solver_proxy
 {
   public:
@@ -23,18 +23,18 @@ class solver_proxy
 	: solver(solver), vector_in(vector_in) 
     {}
 
-    // Just call solve, the proxy knows whether it needs the transposed
+    // Just call solve, the proxy knows whether it needs the adjoint
     template <typename VectorOut>
     void solve(VectorOut& vector_out) const
     {
-	solve(vector_out, boost::mpl::bool_<trans>());
+	solve(vector_out, boost::mpl::bool_<adjoint>());
     }
 
   protected:
     template <typename VectorOut>
     void solve(VectorOut& vector_out, boost::mpl::true_) const
     {
-	solver.trans_solve(vector_in, vector_out);
+	solver.adjoint_solve(vector_in, vector_out);
     }
 
     template <typename VectorOut>
