@@ -23,11 +23,11 @@ namespace itl { namespace pc {
 template <typename Matrix>
 class diagonal
 {
+  public:
     typedef typename mtl::Collection<Matrix>::value_type  value_type;
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef diagonal                                      self;
 
-  public:
     diagonal(const Matrix& A) : inv_diag(num_rows(A))
     {
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
@@ -37,16 +37,36 @@ class diagonal
 	    inv_diag[i]= reciprocal(A[i][i]);
     }
 
+    template <typename Vector>
+    Vector solve(const Vector& x) const
+    {
+	MTL_THROW_IF(size(x) != size(inv_diag), mtl::incompatible_size());
+	Vector y(size(x));
+
+	for (size_type i= 0; i < size(inv_diag); ++i)
+	    y[i]= inv_diag[i] * x[i];
+	return y;
+    }
+
+    template <typename Vector>
+    Vector adjoint_solve(const Vector& x) const
+    {
+	return solve(x);
+    }
+
+
+
+#if 0
+    // This is more flexible but less generic as the vector type must support the proxy actively
+    // Otherwise it only needs move semantics
     template <typename VectorIn>
-    solver_proxy<self, VectorIn>
-    solve(const VectorIn& x) const
+    solver_proxy<self, VectorIn> solve(const VectorIn& x) const
     {
 	return solver_proxy<self, VectorIn>(*this, x);
     }
 
     template <typename VectorIn>
-    solver_proxy<self, VectorIn, false>
-    trans_solve(const VectorIn& x) const
+    solver_proxy<self, VectorIn, false> adjoint_solve(const VectorIn& x) const
     {
 	return solver_proxy<self, VectorIn, false>(*this, x);
     }
@@ -62,10 +82,11 @@ class diagonal
     }
 
     template <typename VectorIn, typename VectorOut>
-    void trans_solve(const VectorIn& x, VectorOut& y) const
+    void adjoint_solve(const VectorIn& x, VectorOut& y) const
     {
 	solve(x, y);
     }
+#endif
 
   protected:
     mtl::dense_vector<value_type>    inv_diag;

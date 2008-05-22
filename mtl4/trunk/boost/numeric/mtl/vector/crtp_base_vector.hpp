@@ -69,8 +69,8 @@ struct crtp_vector_assign
     }
 
     /// Assign a solver_proxy, i.e. perform y= inv(A)*x for expressions y= A.solve(x)
-    template<typename Solver, typename VectorIn, bool trans>
-    Vector& operator=(const itl::solver_proxy<Solver, VectorIn, trans>& proxy)
+    template<typename Solver, typename VectorIn, bool adjoint>
+    Vector& operator=(const itl::solver_proxy<Solver, VectorIn, adjoint>& proxy)
     {
 	proxy.solve(static_cast<Vector&>(*this));
 	return static_cast<Vector&>(*this);

@@ -14,8 +14,7 @@ int main()
   matrix::laplacian_setup(A, size, size);
 
   pc::diagonal<matrix_type>     P(A);
-
-  dense_vector<double> x(N, 1.0), b(N);
+  dense_vector<double>          x(N, 1.0), b(N);
 
   b = A * x;
   x= 0;
