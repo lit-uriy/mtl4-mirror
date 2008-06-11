@@ -166,8 +166,8 @@ inline size(const map_view<Functor, Matrix>& matrix)
 	    }
 
 	  protected:
-	    matrix::map_view<Functor, Matrix> const&   map_matrix;
-	    typename traits::const_value<Matrix>::type its_value;
+	    matrix::map_view<Functor, Matrix> const&        map_matrix;
+		typename mtl::traits::const_value<Matrix>::type its_value;
         };
 
     } // detail

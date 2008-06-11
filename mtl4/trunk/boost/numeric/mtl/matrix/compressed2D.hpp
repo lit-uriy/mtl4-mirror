@@ -350,7 +350,7 @@ class compressed2D
     }
 
     template <typename MatrixSrc>
-    compressed2D (const MatrixSrc& src) 
+    explicit compressed2D (const MatrixSrc& src) 
 	: super(), inserting(false)
     {
 		if (super::dim_type::is_static) starts.resize(super::dim1() + 1);

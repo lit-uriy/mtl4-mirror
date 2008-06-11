@@ -29,12 +29,12 @@ void test(Matrix& A, const char* name)
     typename matrix::traits::reorder<>::type  R= matrix::reorder(reordering);
     cout << "\nR =\n" << R;    
 
-    Matrix B= R * A;
+    Matrix B(R * A);
     cout << "\nB= R * A =\n" << B;
     
     if (B[1][0] != value_type(4.)) throw "Wrong value after row reordering!";
 
-    Matrix B2= B * trans(R);
+    Matrix B2(B * trans(R));
     cout << "\nB * trans(R) =\n" << B2;
     
     if (B2[1][0] != value_type(6.)) throw "Wrong value after column reordering!";    

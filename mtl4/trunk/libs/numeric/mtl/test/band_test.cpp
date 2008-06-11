@@ -50,27 +50,27 @@ void test(Matrix& A, const char* name)
 		ins[i][j]= value_type(j - i + 0);
     }
     cout << "\n" << name << "\n" << "A =\n" << A;
-    Matrix B= bands(A, 2, 4);
+    Matrix B( bands(A, 2, 4) );
     cout << "\nbands(A, 2, 4) = \n" << B;
     check(B, 2, 4);
 
-    Matrix U= upper(A);
+    Matrix U( upper(A) );
     cout << "\nupper(A) = \n" << U;
     check(U, 0, 10000);
 
-    Matrix SU= strict_upper(A);
+    Matrix SU( strict_upper(A) );
     cout << "\nstrict_upper(A) = \n" << SU;
     check(SU, 1, 10000);
 
-    Matrix L= lower(A);
+    Matrix L( lower(A) );
     cout << "\nlower(A) = \n" << L;
     check(L, -10000, 1);
     
-    Matrix SL= strict_lower(A);
+    Matrix SL( strict_lower(A) );
     cout << "\nstrict_lower(A) = \n" << SL;
     check(SL, -10000, 0);
     
-    Matrix P= trans(A) * upper(A), P_cmp= trans(A) * U, P_cmp2= trans(A) * A;
+    Matrix P( trans(A) * upper(A) ), P_cmp( trans(A) * U ), P_cmp2( trans(A) * A );
     cout << "\ntrans(A) * upper(A) = \n" << with_format(P, 4, 3);
     // cout << " for comparison trans(A) * U = \n" << with_format(P_cmp, 4, 3);
     // cout << " for comparison trans(A) * A = \n" << with_format(P_cmp2, 4, 3);
@@ -90,11 +90,11 @@ void test(Matrix& A, const char* name)
 #if 0
     // Would too painfully slow !
 
-    Matrix D= diagonal(A);
+    Matrix D( diagonal(A) );
     cout << "\ndiagonal(A) = \n" << D;
     check(D, 0, 1);
 
-    Matrix T= tri_diagonal(A);
+    Matrix T( tri_diagonal(A) );
     cout << "\ntri_diagonal(A) = \n" << T;
     check(T, 0, 1);
 #endif
