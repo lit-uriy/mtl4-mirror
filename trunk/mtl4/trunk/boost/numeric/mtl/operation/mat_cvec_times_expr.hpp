@@ -18,7 +18,7 @@ namespace mtl {
 template <typename E1, typename E2>
 struct mat_cvec_times_expr 
   : public bin_op_expr< E1, E2 >,
-    public vector::vec_expr< mat_cvec_times_expr<E1, E2> >
+    public mtl::vector::vec_expr< mat_cvec_times_expr<E1, E2> >
 {
     typedef bin_op_expr< E1, E2 >   base;
 

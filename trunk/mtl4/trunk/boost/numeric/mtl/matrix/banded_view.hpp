@@ -149,10 +149,10 @@ inline size(const banded_view<Matrix>& matrix)
 	    }
 
 	  protected:
-	    view_type const&                           view;
-	    typename traits::row<Matrix>::type         its_row;
-	    typename traits::col<Matrix>::type         its_col;
-	    typename traits::const_value<Matrix>::type its_value;
+	    view_type const&                                view;
+	    typename mtl::traits::row<Matrix>::type         its_row;
+	    typename mtl::traits::col<Matrix>::type         its_col;
+	    typename mtl::traits::const_value<Matrix>::type its_value;
         };
 
     } // detail

@@ -117,7 +117,8 @@ struct crtp_assign<Value[Rows][Cols], Matrix>
 	for (size_type r= 0; r < Rows; ++r)
 	    for (size_type c= 0; c < Cols; ++c)
 		ins(r, c) << src[r][c];
-    }
+		return matrix;
+	}
 };
 
 
