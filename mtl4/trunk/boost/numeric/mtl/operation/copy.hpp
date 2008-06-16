@@ -46,7 +46,7 @@ namespace mtl {
     {
 	// Deprecated, will  be removed
 	// dest.change_dim(num_rows(src), num_cols(src));
-	MTL_THROW_IF(num_rows(src) != num_rows(dest) || num_cols(src) != num_cols(dest), incompatible_size());
+	throw_if(num_rows(src) != num_rows(dest) || num_cols(src) != num_cols(dest), incompatible_size());
 
 	if (with_reset)
 	    detail::zero_with_sparse_src(dest, typename traits::category<MatrixSrc>::type());
@@ -111,7 +111,7 @@ namespace mtl {
 	BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<VectorSrc>::type,
  			                    typename ashape::ashape<VectorDest>::type>::value));
 
-	MTL_THROW_IF(size(src) != size(dest), incompatible_size());
+	throw_if(size(src) != size(dest), incompatible_size());
 
 	if (with_reset)
 	    detail::zero_with_sparse_src(dest, typename traits::category<VectorSrc>::type());

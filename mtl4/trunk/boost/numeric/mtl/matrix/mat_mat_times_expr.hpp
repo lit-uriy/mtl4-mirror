@@ -43,7 +43,7 @@ struct mat_mat_times_expr
     operator()(std::size_t r, std::size_t c) const
     {
 	using math::zero;
-	MTL_THROW_IF(num_cols(first) != num_rows(second), incompatible_size());
+	throw_if(num_cols(first) != num_rows(second), incompatible_size());
 
 	typename E1::value_type ref, sum(zero(ref));
 	for (std::size_t i= 0; i < num_cols(first); i++)

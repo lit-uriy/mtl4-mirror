@@ -25,7 +25,7 @@ inline trace(const Matrix& matrix)
     using math::one;
     typedef typename Collection<Matrix>::value_type value_type;
 
-    MTL_THROW_IF(num_rows(matrix) != num_cols(matrix), matrix_not_square());
+    throw_if(num_rows(matrix) != num_cols(matrix), matrix_not_square());
 
     // If matrix is empty then the result is the identity from the default-constructed value
     if (num_rows(matrix) == 0) {

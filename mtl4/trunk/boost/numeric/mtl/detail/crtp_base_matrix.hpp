@@ -42,7 +42,7 @@ private:
     /** Uses internally \sa diagonal_setup, for details see there. **/
     Matrix& assign(const Source& source, Matrix& matrix, ashape::scal)
     {
-	MTL_DEBUG_THROW_IF(num_rows(matrix) * num_cols(matrix) == 0, 
+	debug_throw_if(num_rows(matrix) * num_cols(matrix) == 0, 
 			   range_error("Trying to initialize a 0 by 0 matrix with a value"));
 	matrix::diagonal_setup(matrix, source);
 	return matrix;

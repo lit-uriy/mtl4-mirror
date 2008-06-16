@@ -53,7 +53,7 @@ public:
 
 	    // If sizes are different for any other reason, it's an error
 	    // std::cerr << "~vec_vec_aop_expr() " << first.size() << "  " << second.size() << "\n";
-	    MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
+	    debug_throw_if(first.size() != second.size(), incompatible_size());
 
 	    for (size_type i= 0; i < first.size(); ++i)
 		SFunctor::apply( first(i), second(i) );

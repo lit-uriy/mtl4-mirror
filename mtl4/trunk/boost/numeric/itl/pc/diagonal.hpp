@@ -30,7 +30,7 @@ class diagonal
 
     diagonal(const Matrix& A) : inv_diag(num_rows(A))
     {
-	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
+	throw_if(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 	using math::reciprocal;
 
 	for (size_type i= 0; i < num_rows(A); ++i)
@@ -40,7 +40,7 @@ class diagonal
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
-	MTL_THROW_IF(size(x) != size(inv_diag), mtl::incompatible_size());
+	throw_if(size(x) != size(inv_diag), mtl::incompatible_size());
 	Vector y(size(x));
 
 	for (size_type i= 0; i < size(inv_diag); ++i)
@@ -74,8 +74,8 @@ class diagonal
     template <typename VectorIn, typename VectorOut>
     void solve(const VectorIn& x, VectorOut& y) const
     {
-	MTL_THROW_IF(size(x) != size(y), mtl::incompatible_size());	
-	MTL_THROW_IF(size(x) != size(inv_diag), mtl::incompatible_size());	
+	throw_if(size(x) != size(y), mtl::incompatible_size());	
+	throw_if(size(x) != size(inv_diag), mtl::incompatible_size());	
 
 	for (size_type i= 0; i < size(inv_diag); ++i)
 	    y[i]= inv_diag[i] * x[i];

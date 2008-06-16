@@ -82,7 +82,7 @@ typename base_case_matrix<Matrix, BaseCaseTest>::type inline
 simplify_base_case_matrix(Matrix const& matrix, BaseCaseTest test)
 {
     // cout << "simplify dim " <<  matrix.num_rows() << ", " << matrix.num_cols() << "\n";
-    MTL_DEBUG_THROW_IF(num_rows(matrix) > BaseCaseTest::base_case_size || num_cols(matrix) > BaseCaseTest::base_case_size,
+    debug_throw_if(num_rows(matrix) > BaseCaseTest::base_case_size || num_cols(matrix) > BaseCaseTest::base_case_size,
 		       logic_error("Matrix dimension is larger than base case"));
 
     return impl::simplify_base_case_matrix<Matrix, typename base_case_matrix<Matrix, BaseCaseTest>::type, BaseCaseTest>()(matrix, test);

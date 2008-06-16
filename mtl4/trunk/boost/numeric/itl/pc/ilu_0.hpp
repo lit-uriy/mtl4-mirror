@@ -92,7 +92,7 @@ class ilu_0
 
     void factorize(const Matrix& A, mtl::tag::dense)
     {
-	MTL_THROW_IF(true, logic_error("ILU is not intended for dense matrices"));
+	throw_if(true, logic_error("ILU is not intended for dense matrices"));
     }
 
     void factorize(const Matrix& A, mtl::tag::sparse)
@@ -102,7 +102,7 @@ class ilu_0
     
     void sparse_factorize(const Matrix& A, mtl::tag::col_major)
     {
-	MTL_THROW_IF(true, logic_error("ILU for CCS not implemented yet"));
+	throw_if(true, logic_error("ILU for CCS not implemented yet"));
     }
 
     // CRS factorization like in Saad, sorted entries are required
@@ -111,7 +111,7 @@ class ilu_0
         using namespace tag;  using traits::range_generator;  
 	using math::min; math::identity; using math::zero; using math::reciprocal; 
 
-	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
+	throw_if(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 	const size_type       empty= identity(min<size_type>(), size_type());
 	Matrix                LU= A;
 
@@ -150,9 +150,9 @@ class ilu_0
 		    }
 		} else {
 		    uptr[k]= j;
-		    MTL_THROW_IF(jrow != k, mtl::logic_error("No diagonal in ILU_0"));
+		    throw_if(jrow != k, mtl::logic_error("No diagonal in ILU_0"));
 		    value_type &dia= LU.value_from_offset(j);
-		    MTL_THROW_IF(dia == zero(dia), mtl::logic_error("Zero diagonal in ILU_0"));
+		    throw_if(dia == zero(dia), mtl::logic_error("Zero diagonal in ILU_0"));
 		    dia= reciprocal(dia); 
 		    break;
 		}
