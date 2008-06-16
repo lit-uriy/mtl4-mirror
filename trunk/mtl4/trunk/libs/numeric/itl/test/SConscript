@@ -3,6 +3,7 @@ import glob
 Import('opt_env check')
 
 sources = glob.glob("*.cpp")
+sources.remove('ilu_0_bicgstab_test.cpp')
 
 
 programs = []

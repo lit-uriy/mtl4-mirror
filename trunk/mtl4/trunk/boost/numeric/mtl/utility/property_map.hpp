@@ -19,6 +19,7 @@ template <class Matrix> struct row {};
 template <class Matrix> struct col {};
 template <class Matrix> struct const_value {};
 template <class Matrix> struct value {};
+template <class Matrix> struct offset {};
 
 // For vectors
 template <class Matrix> struct index {};
@@ -116,6 +117,14 @@ template <class Elt, class Parameters>
 struct value<mtl::compressed2D<Elt, Parameters> >
 {
     typedef mtl::detail::matrix_offset_value<mtl::compressed2D<Elt, Parameters> > type;
+};
+ 
+// Offset that corresponds to cursor, e.g. to set values in a matrix with same pattern 
+// needed in ILU_0, so far only for compressed2D, could be useful for algos on sparse and dense
+template <class Elt, class Parameters>
+struct offset<mtl::compressed2D<Elt, Parameters> >
+{
+    typedef mtl::detail::offset_from_key<mtl::compressed2D<Elt, Parameters> > type;
 };
   
   

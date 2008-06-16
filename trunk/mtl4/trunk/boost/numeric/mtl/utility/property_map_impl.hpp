@@ -267,6 +267,20 @@ template <class Matrix> struct matrix_offset_value
     matrix_type& ma;
 };
 
+template <class Matrix> struct offset_from_key
+{
+    typedef Matrix                      matrix_type;
+    typedef typename Matrix::key_type   key_type;
+    typedef typename Matrix::size_type  size_type;
+    offset_from_key(const matrix_type& ) {} 
+    
+    size_type operator() (key_type const& key) const
+    {
+	return key.offset;
+    }
+};
+
+
 }} // namespace mtl::detail
 
 

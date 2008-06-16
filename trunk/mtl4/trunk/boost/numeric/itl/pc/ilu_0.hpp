@@ -37,12 +37,14 @@ class ilu_0
 	factorize(A, typename mtl::category<Matrix>::type()); 
     }
 
+    // solve x = LU y --> y= U^{-1} L^{-1} x
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
 	return mtl::upper_tri_solve(U, mtl::lower_tri_solve(L, x, false));
     }
 
+    // solve x = (LU)^T y --> y= L^{-T} U^{-T} x
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
@@ -103,33 +105,65 @@ class ilu_0
 	MTL_THROW_IF(true, logic_error("ILU for CCS not implemented yet"));
     }
 
+    // CRS factorization like in Saad, sorted entries are required
     void sparse_factorize(const Matrix& A, mtl::tag::row_major)
     {
-	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
-
         using namespace tag;  using traits::range_generator;  
-	using math::min; math::identity;
+	using math::min; math::identity; using math::zero; using math::reciprocal; 
 
-        typedef typename range_generator<row, Matrix>::type       a_cur_type;    
-        typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
-        typename traits::col<Matrix>::type                        col_a(a); 
-        typename traits::const_value<Matrix>::type                value_a(a); 
-
-	Matrix LU= A;
-	const size_type empty= identity(min<size_type>(), size_type());
-
-	mtl::dense_vector<size_type> iw(num_rows(A), empty);	
-
-	a_cur_type ac= begin<row>(a), aend= end<row>(a);
-	for (unsigned i= 0; ac != aend; ++ac, ++i) {
+	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
+	const size_type       empty= identity(min<size_type>(), size_type());
+	Matrix                LU= A;
 
 
+        typedef typename range_generator<row, Matrix>::type       cur_type;    
+        typedef typename range_generator<nz, cur_type>::type      icur_type;            
+        typename traits::col<Matrix>::type                        col(A), col_lu(LU); 
+        typename traits::offset<Matrix>::type                     offset(A), offset_lu(LU); 
+	mtl::dense_vector<size_type>                              iw(num_rows(A), empty);	
 
-	    value_type tmp= zero(w[i]);
-	    for (a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac); aic != aiend; ++aic) 
-		tmp+= value_a(*aic) * v[col_a(*aic)];	
-	    Assign::update(w[i], tmp);
+	cur_type ac= begin<row>(A), aend= end<row>(A);
+	for (unsigned k= 0; ac != aend; ++ac, ++k) {
+
+	    for (icur_type ic= begin<nz>(ac), iend= end<nz>(ac); ic != iend; ++ic) 
+		iw[col(*ic)] = offset(*ic);
+
+	    for (icur_type ic= begin<nz>(ac), iend= end<nz>(ac); ic != iend; ++ic) {
+		size_type jrow= col(*ic), j= offset(*ic);
+		if (jrow < k) {
+		    // Multiplier for jrow (immediately set below diagonal)
+		    value_type tl= LU.value_from_offset(j)*= LU.value_from_offset(uptr[k]);
+		    //value_type tl= LU.value_from_offset(j) * LU.value_from_offset(uptr[k]);
+		    //LU.value_from_offset(j)= tl;
+		    
+		    // Linear combination
+#if 0
+		    cur_type jrow_c= begin<row>(LU); jrow_c+= jrow;
+		    icur_type jjc= begin<nz>(jrow_c), jjend= end<nz>(jrow_c); 
+		    while (col_lu(*jjc) <= jrow) ++jjc;  // go behind diagonal
+#endif
+		    // Linear combination: From behind diagonal (by offset) till end of row
+		    for (icur_type jjc(LU, uptr[jrow]+1), jjend(LU, jrow+1, 0); jjc != jjend; ++jjc) {
+			size_type jw= iw[col_lu(*jjc)];
+			if (jw != empty) 
+			    LU.value_from_offset(jw)-= tl * LU.value_from_offset(offset_lu(*jjc));
+		    }
+		} else {
+		    uptr[k]= j;
+		    MTL_THROW_IF(jrow != k, mtl::logic_error("No diagonal in ILU_0"));
+		    value_type &dia= LU.value_from_offset(j);
+		    MTL_THROW_IF(dia == zero(dia), mtl::logic_error("Zero diagonal in ILU_0"));
+		    dia= reciprocal(dia); 
+		    break;
+		}
+	    }
+
+	    // Reset iw entries to empty
+	    for (icur_type ic= begin<nz>(ac), iend= end<nz>(ac); ic != iend; ++ic) 
+		iw[col(*ic)] = empty;
 	}
+	L= upper(LU); crop(L);
+	U= strict_lower(LU); crop(U);
     }
 
 
