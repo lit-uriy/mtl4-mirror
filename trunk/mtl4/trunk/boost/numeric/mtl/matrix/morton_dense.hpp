@@ -469,7 +469,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
 		// Check whether sub-matrix is contigous memory block
 		// by comparing the address of the last and the first element in the entire and the sub-matrix
-		MTL_DEBUG_THROW_IF(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
+		debug_throw_if(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
 				   != &matrix[end_r-begin_r-1][end_c-begin_c-1] - &matrix[0][0],
 				   range_error("This sub-matrix cannot be used because it is split in memory"));
 		// Check with David if this is a sufficient condition (it is a necessary at least)
@@ -858,7 +858,7 @@ struct sub_matrix_t<morton_dense<Value, BitMask, Parameters> >
 
 	// Check whether sub-matrix is contigous memory block
 	// by comparing the address of the last and the first element in the entire and the sub-matrix
-	MTL_DEBUG_THROW_IF(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
+	debug_throw_if(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
 			   != &matrix[end_r-begin_r-1][end_c-begin_c-1] - &matrix[0][0],
 			   range_error("This sub-matrix cannot be used because it is split in memory"));
 	// Check with David if this is a sufficient condition (it is a necessary at least)

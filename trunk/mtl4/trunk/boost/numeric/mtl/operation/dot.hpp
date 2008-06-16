@@ -87,7 +87,7 @@ namespace mtl {
 	    typename detail::dot_result<Vector1, Vector2>::type
 	    static inline apply(const Vector1& v1, const Vector2& v2)
 	    {
-		MTL_THROW_IF(size(v1) != size(v2), incompatible_size());
+		throw_if(size(v1) != size(v2), incompatible_size());
 
 		typedef typename Collection<Vector1>::size_type              size_type;
 		typedef typename detail::dot_result<Vector1, Vector2>::type  value_type;

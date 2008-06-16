@@ -46,7 +46,7 @@ reorder(const ReorderVector& v, std::size_t cols= 0)
     if (cols == 0) 
 	cols= my_max;
     else
-	MTL_THROW_IF(my_max > cols, range_error("Too large value in reorder vector"));
+	throw_if(my_max > cols, range_error("Too large value in reorder vector"));
 
     matrix_type                matrix(s, cols);
     inserter<matrix_type>      ins(matrix, 1);

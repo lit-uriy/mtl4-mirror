@@ -80,7 +80,7 @@ struct compressed_key
     {
 	//if (offset == other.offset && major != other.major) 
 	//    std::cout << offset << " " << other.offset << " " << major << " " << other.major << '\n';
-	MTL_DEBUG_THROW_IF(offset == other.offset && major != other.major,
+	debug_throw_if(offset == other.offset && major != other.major,
 			      logic_error("equal offsets imply equal major"));
 	return offset == other.offset;
     }
@@ -126,7 +126,7 @@ struct compressed_el_cursor
     self& operator++ ()
     {
 	++offset;
-	MTL_DEBUG_THROW_IF(matrix.starts[major+1] < offset, runtime_error("Inconsistent incrementation!"));
+	debug_throw_if(matrix.starts[major+1] < offset, runtime_error("Inconsistent incrementation!"));
 	while (major < matrix.starts.size()-1 && matrix.starts[major+1] == offset) 
 	    ++major;
 	return *this;
@@ -248,7 +248,7 @@ struct compressed2D_indexer
     template <class Matrix>
     size_t find_major(const Matrix& ma, size_t offset) const
     {
-	MTL_DEBUG_THROW_IF(ma.starts.empty(), logic_error("Major vector can't be empty"));
+	debug_throw_if(ma.starts.empty(), logic_error("Major vector can't be empty"));
 	size_t my_major= std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
 	return --my_major;
     }
@@ -396,20 +396,20 @@ class compressed2D
     const_reference operator() (size_type row, size_type col) const
     {
 	using math::zero;
-        MTL_DEBUG_THROW_IF(inserting, logic_error("Reading data during insertion has undefined behavior"));
+        debug_throw_if(inserting, logic_error("Reading data during insertion has undefined behavior"));
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
 	return pos ? data[pos] : zero(value_type()); 
     }
 
     value_type value_from_offset(size_type offset) const
     {
-	MTL_DEBUG_THROW_IF(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
+	debug_throw_if(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
 	return data[offset];
     }
 
     value_type& value_from_offset(size_type offset)
     {
-	MTL_DEBUG_THROW_IF(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
+	debug_throw_if(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
 	return data[offset];
     }
 
@@ -477,7 +477,7 @@ struct compressed2D_inserter
 	: matrix(matrix), elements(matrix.data), starts(matrix.starts), indices(matrix.indices), 
 	  slot_size(slot_size), slot_ends(matrix.dim1()) 
     {
-	MTL_THROW_IF(matrix.inserting, runtime_error("Two inserters on same matrix"));
+	throw_if(matrix.inserting, runtime_error("Two inserters on same matrix"));
 	matrix.inserting = true;
 	stretch();
     }

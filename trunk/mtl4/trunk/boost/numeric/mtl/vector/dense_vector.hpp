@@ -61,20 +61,20 @@ public:
     
     void check_index( size_type i ) const
     {
-	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), index_out_of_range());
+	debug_throw_if( i < 0 || i >= size(), index_out_of_range());
     }
 
     template <typename Vector>
     void check_size( const Vector& v ) const
     {
-	MTL_DEBUG_THROW_IF( v.size() == 0 && v.size() != size(), incompatible_size());
+	debug_throw_if( v.size() == 0 && v.size() != size(), incompatible_size());
     }
 
 
     template <class E>
     void check_consistent_shape( vec_expr<E> const& e ) const
     {
-	MTL_DEBUG_THROW_IF((!boost::is_same<
+	debug_throw_if((!boost::is_same<
 			        typename ashape::ashape<self>::type
 			      , typename ashape::ashape<E>::type
 			    >::value),
