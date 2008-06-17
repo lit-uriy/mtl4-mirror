@@ -6,13 +6,17 @@ project (boost_mtl4)
 # The BOOST_INCLUDE_DIR needs to point to the release BOOST tree
 # so that we can pick up boost/test/minimal.hpp
 # set (BOOST_ROOT "please-set-boost-include-dir" CACHE STRING "BOOST include directory")
-set (BOOST_ROOT ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
+set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
+find_path(Boost_INCLUDE_DIR boost/version.hpp PATHS "${BOOST_ROOT}")
+if(NOT Boost_INCLUDE_DIR)
+  message(FATAL_ERROR "boost wasn't found, please set BOOST_ROOT")
+endif(NOT Boost_INCLUDE_DIR)
 
 # set the local BOOST MTL4 include directory
 # to pick up the MTL4 include files
 set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root directory")
 
-# include_directories(${MTL_BOOST_ROOT} ${BOOST_ROOT})
+# include_directories(${Boost_INCLUDE_DIR})
 
 ######################## DevStudio funkyness   ################################
 # .NET 2003
