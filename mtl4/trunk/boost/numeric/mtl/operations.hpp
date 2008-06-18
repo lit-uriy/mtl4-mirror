@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/operation/fill.hpp>
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
+#include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/norms.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
@@ -36,6 +37,7 @@
 #include <boost/numeric/mtl/operation/size.hpp>
 #include <boost/numeric/mtl/operation/trace.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 
 #include <boost/numeric/mtl/matrix/reorder.hpp>
 #include <boost/numeric/mtl/matrix/permutation.hpp>

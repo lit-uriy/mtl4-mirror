@@ -89,58 +89,76 @@ struct range_error
     explicit range_error(const char *s= "Invalid range") : std::range_error(s) {}
 };
 
-/// Exception for arguments with incompatible sizes
-struct incompatible_size
+/// Domain errors in MTL4
+struct domain_error
     : public std::domain_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit incompatible_size(const char *s= "Arguments have incompatible size.")
+    explicit domain_error(const char *s= "MTL4 domain error.")
 	: std::domain_error(s) {}
+};
+
+/// Exception for arguments with incompatible sizes
+struct incompatible_size
+    : public domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit incompatible_size(const char *s= "Arguments have incompatible size.")
+	: domain_error(s) {}
 };
 
 /// Exception for trying to change a fixed size (to another value)
 struct change_static_size
-    : public std::domain_error
+    : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit change_static_size(const char *s= "You try to change a fixed size (to another value).")
-	: std::domain_error(s) {}
+	: domain_error(s) {}
 };
 
 /// Exception for arguments with incompatible shapes, e.g. adding matrices and vectors
 struct argument_result_conflict
-    : public std::domain_error
+    : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit argument_result_conflict(const char *s= "Used same object illegally as argument and result.")
-	: std::domain_error(s) {}
+	: domain_error(s) {}
 };
 
 /// Exception for arguments with incompatible shapes, e.g. adding matrices and vectors
 struct incompatible_shape
-    : public std::domain_error
+    : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit incompatible_shape(const char *s= "Arguments have incompatible shape.")
-	: std::domain_error(s) {}
+	: domain_error(s) {}
 };
 
 /// Exception for arguments with incompatible sizes
 struct matrix_not_square
-    : public std::domain_error
+    : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit matrix_not_square(const char *s= "Matrix must be square for this operation.")
-	: std::domain_error(s) {}
+	: domain_error(s) {}
 };
 
 /// Exception for arguments with incompatible sizes
-struct not_expected_result
-    : public std::domain_error
+struct missing_diagonal
+    : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit not_expected_result(const char *s= "The result of an operation is not the expected one.")
-	: std::domain_error(s) {}
+    explicit missing_diagonal(const char *s= "Diagonal entry missing or not where it belongs to.")
+	: domain_error(s) {}
+};
+
+/// Exception for a result that is not what it should be
+struct unexpected_result
+    : public domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit unexpected_result(const char *s= "The result of an operation is not the expected one.")
+	: domain_error(s) {}
 };
 
 /// Exception for run-time errors that doesn't fit into specific categories

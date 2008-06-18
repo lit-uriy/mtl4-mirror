@@ -158,6 +158,18 @@ struct morton_dense_row_cursor
 	return *this;
     };
 
+    self& operator-- ()
+    {
+	--this->my_row; --this->dilated_row;
+	return *this;
+    }
+
+    self& operator-=(int dec) 
+    {
+	this->advance_row(-dec);
+	return *this;
+    };
+
     self operator+ (int inc) const
     {
 	self tmp(*this);
@@ -198,6 +210,18 @@ struct morton_dense_col_cursor
     self& operator+=(int inc) 
     {
 	this->advance_col(inc);
+	return *this;
+    };
+
+    self& operator-- ()
+    {
+	--this->my_col; --this->dilated_col;
+	return *this;
+    }
+
+    self& operator-=(int dec) 
+    {
+	this->advance_col(-dec);
 	return *this;
     };
 

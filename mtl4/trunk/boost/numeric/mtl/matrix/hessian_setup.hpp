@@ -74,28 +74,28 @@ void check_hessian_matrix_product(Matrix const& c, typename Matrix::size_type re
 	std::cout << "Result in c[" << rb << "][" << cb << "] should be " 
 		  << factor * hessian_product_i_j(rb, cb, reduced_dim)
 		  << " but is " << c[rb][cb] << "\n";
-	throw_if(true, not_expected_result());
+	throw_if(true, unexpected_result());
     }
 
     if (!similar_values(value_type(factor * hessian_product_i_j(rl, cb, reduced_dim)), c[rl][cb])) {
 	std::cout << "Result ixn c[" << rl << "][" << cb << "] should be " 
 		  << factor * hessian_product_i_j(rl, cb, reduced_dim)
 		  << " but is " << c[rl][cb] << "\n";
-	throw_if(true, not_expected_result()); 
+	throw_if(true, unexpected_result()); 
     }
 
     if (!similar_values(value_type(factor * hessian_product_i_j(rb, cl, reduced_dim)), c[rb][cl])) {
 	std::cout << "Result in c[" << rb << "][" << cb << "] should be " 
 		  << factor * hessian_product_i_j(rb, cl, reduced_dim)
 		  << " but is " << c[rb][cl] << "\n";
-	throw_if(true, not_expected_result());
+	throw_if(true, unexpected_result());
     }
 
     if (!similar_values(value_type(factor * hessian_product_i_j(rl, cl, reduced_dim)), c[rl][cl])) {
 	std::cout << "Result in c[" << rl << "][" << cb << "] should be " 
 		  << factor * hessian_product_i_j(rl, cl, reduced_dim)
 		  << " but is " << c[rl][cl] << "\n";
-	throw_if(true, not_expected_result()); 
+	throw_if(true, unexpected_result()); 
     }
 
     // In the center of the matrix
@@ -104,7 +104,7 @@ void check_hessian_matrix_product(Matrix const& c, typename Matrix::size_type re
 	std::cout << "Result in c[" << (rb+rl)/2 << "][" << (cb+cl)/2 << "] should be " 
 		  << factor * hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)
 		  << " but is " << c[(rb+rl)/2][(cb+cl)/2] << "\n";
-	throw_if(true, not_expected_result()); 
+	throw_if(true, unexpected_result()); 
     }
 }
 
