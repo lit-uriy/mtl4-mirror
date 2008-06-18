@@ -63,12 +63,13 @@ struct crtp_assign
 template <typename Vector, typename E1, typename E2>
 struct crtp_assign<Vector, mat_cvec_times_expr<E1, E2> >
 {
-	typedef Vector& type;
-	type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
+    typedef Vector& type;
+    type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
     {
-		mult(src.first, src.second, vector);
-		return vector;
-	}
+	vector.checked_change_dim(num_rows(src.first));
+	mult(src.first, src.second, vector);
+	return vector;
+    }
 };
 
 /// Assign c-style 1D-array, because it's easier to initialize.
