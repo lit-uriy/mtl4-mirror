@@ -313,6 +313,12 @@ private:
 
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
+	// Indices run out of range for smaller matrices
+	if (num_rows(a) < 2 || num_cols(a) < 2 || num_cols(b) < 2) {
+	    Backup()(a, b, c);
+	    return;
+	}
+
 	// std::cout << "meta-unrolling\n";
 	if (Assign::init_to_zero) set_to_zero(c);
 
@@ -333,7 +339,7 @@ private:
 		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
                            tmp05= z, tmp06= z, tmp07= z, tmp08= z, tmp09= z,
  		           tmp10= z, tmp11= z, tmp12= z, tmp13= z, tmp14= z, tmp15= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -349,7 +355,7 @@ private:
 	for (size_type i= 0; i < i_block; i++)
 	    for (int k = k_block; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -361,7 +367,7 @@ private:
 	for (size_type i= i_block; i < i_max; i++)
 	    for (int k = 0; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -413,6 +419,12 @@ private:
 
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
+	// Indices run out of range for smaller matrices
+	if (num_rows(a) < 2 || num_cols(a) < 2 || num_cols(b) < 2) {
+	    Backup()(a, b, c);
+	    return;
+	}
+
         // std::cout << "4x4 unrolling\n";
 	if (Assign::init_to_zero) set_to_zero(c);
 
@@ -434,7 +446,7 @@ private:
 		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
                            tmp05= z, tmp06= z, tmp07= z, tmp08= z, tmp09= z,
  		           tmp10= z, tmp11= z, tmp12= z, tmp13= z, tmp14= z, tmp15= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri) {
@@ -477,7 +489,7 @@ private:
 	for (size_type i= 0; i < i_block; i++)
 	    for (int k = k_block; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -489,7 +501,7 @@ private:
 	for (size_type i= i_block; i < i_max; i++)
 	    for (int k = 0; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -540,6 +552,12 @@ private:
 
     void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout, tag::has_2D_layout)
     {
+	// Indices run out of range for smaller matrices
+	if (num_rows(a) < 2 || num_cols(a) < 2 || num_cols(b) < 2) {
+	    Backup()(a, b, c);
+	    return;
+	}
+
         // std::cout << "2x2 unrolling\n";
 	if (Assign::init_to_zero) set_to_zero(c);
 
@@ -559,7 +577,7 @@ private:
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
 
 		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri) {
@@ -578,7 +596,7 @@ private:
 	for (size_type i= 0; i < i_block; i++)
 	    for (int k = k_block; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -590,7 +608,7 @@ private:
 	for (size_type i= i_block; i < i_max; i++)
 	    for (int k = 0; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= &a(i, a.num_cols());
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)

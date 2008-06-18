@@ -317,14 +317,13 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     
     const_reference operator() (size_t r, size_t c) const 
     {
-	// assert(check_indices(r, c));  // causes trouble for iterator/cursor creation
-	size_t offset= indexer(*this, r, c);
-        return this->data[offset];
+	debug_throw_if(r < 0 || r >= this->num_rows() || c < 0 || c >= this->num_cols(), index_out_of_range());
+        return this->data[indexer(*this, r, c)];
     }
 
     value_type& operator() (size_t r, size_t c)
     {
-	// assert(check_indices(r, c));  // causes trouble for iterator/cursor creation
+	debug_throw_if(r < 0 || r >= this->num_rows() || c < 0 || c >= this->num_cols(), index_out_of_range());
 	return this->data[indexer(*this, r, c)]; 
     }    
 
@@ -618,9 +617,8 @@ namespace traits
 	    // if traverse first along major dim. then return address as pointer
 	    type dispatch(cursor const& c, size_type row, size_type col, complexity_classes::linear_cached)
 	    {
-		// cast const away (is dirty and should be improved later (cursors must distinct constness))
-		matrix_type& ref= const_cast<matrix_type&>(c.ref);
-		return &ref[row][col];
+		matrix_type& ma= const_cast<matrix_type&>(c.ref);
+		return ma.elements() + ma.indexer(ma, row, col); // &ref[row][col];
 	    }
 
 	    // otherwise strided 
