@@ -173,6 +173,12 @@ struct compressed_minor_cursor
 	return *this;
     }
 
+    self& operator-- ()
+    {
+	--offset;
+	return *this;
+    }
+
     base& operator* ()
     {
 	return *this;
