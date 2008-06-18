@@ -175,62 +175,6 @@ struct crtp_minus_assign<Vector, mat_cvec_times_expr<E1, E2> >
 template <typename Vector, typename ValueType, typename SizeType>
 struct crtp_vector_assign
 {
-#if 0 // to be deleted
-#ifdef _MSC_VER
-    // MSVC has trouble with alleged ambiguity
-    vec_scal_asgn_expr<Vector, ValueType>
-    operator=(const ValueType& value)
-    {
-	return vec_scal_asgn_expr<Vector, ValueType>( static_cast<Vector&>(*this), value );
-    }
-#else
-    /// Assign scalar to a vector by setting all elements to it
-    template <typename Value>
-    typename boost::enable_if<typename boost::is_same<,
-			      vec_scal_asgn_expr<Vector, Value> 
-                             >::type
-    operator=(const Value& value)
-    {
-	return vec_scal_asgn_expr<Vector, Value>( static_cast<Vector&>(*this), value );
-    }
-#endif
-    /// Assign vector expression
-    template <class E>
-    vec_vec_asgn_expr<Vector, E> operator=( vec_expr<E> const& e )
-    {
-	// std::cerr << "operator= size static_cast<const E&>(e) " << static_cast<const E&>(e).size() << "\n"; 
-
-	static_cast<Vector*>(this)->check_consistent_shape(e);
-	return vec_vec_asgn_expr<Vector, E>( static_cast<Vector&>(*this), 
-					     static_cast<const E&>(e) );
-    }
-
-    /// Assign a solver_proxy, i.e. perform y= inv(A)*x for expressions y= A.solve(x)
-    template<typename Solver, typename VectorIn, bool adjoint>
-    Vector& operator=(const itl::solver_proxy<Solver, VectorIn, adjoint>& proxy)
-    {
-	proxy.solve(static_cast<Vector&>(*this));
-	return static_cast<Vector&>(*this);
-    }
-    /// Assign-add vector expression
-    template <class E>
-    vec_vec_plus_asgn_expr<Vector, E> operator+=( vec_expr<E> const& e )
-    {
-		static_cast<Vector*>(this)->check_consistent_shape(e);
-		return vec_vec_plus_asgn_expr<Vector, E>( static_cast<Vector&>(*this), static_cast<const E&>(e) );
-    }
-
-    /// Assign-add matrix vector product by calling mult
-    /** Note that this does not work for arbitrary expressions. **/
-    template <typename E1, typename E2>
-    Vector& operator+=(const mat_cvec_times_expr<E1, E2>& src)
-    {
-	gen_mult(src.first, src.second, static_cast<Vector&>(*this),
-		 assign::plus_sum(), tag::matrix(), tag::vector(), tag::vector());
-
-	return static_cast<Vector&>(*this);
-    }
-#endif
     /// Templated assignment implemented by functor to allow for partial specialization
     template <typename E>
     typename boost::disable_if<boost::is_same<Vector, E>, 
@@ -254,18 +198,6 @@ struct crtp_vector_assign
 		return crtp_minus_assign<Vector, E>()(static_cast<Vector&>(*this), e);
     }
 
-#if 0
-    /// Assign-subtract matrix vector product by calling mult
-    /** Note that this does not work for arbitrary expressions. **/
-    template <typename E1, typename E2>
-    Vector& operator-=(const mat_cvec_times_expr<E1, E2>& src)
-    {
-	gen_mult(src.first, src.second, static_cast<Vector&>(*this),
-		 assign::minus_sum(), tag::matrix(), tag::vector(), tag::vector());
-
-	return static_cast<Vector&>(*this);
-    }
-#endif
     /// Scale vector (in place) with scalar value 
     /** In the future, row vectors be possibly scaled by a matrix **/
     template <typename Factor>
@@ -290,62 +222,6 @@ struct crtp_vector_assign
 		vector.change_dim(s);
     }
 };
-
-
-
-#if 0
-/// Base class to provide vector assignment operators generically 
-template <typename Vector, typename ValueType, typename SizeType>
-struct crtp_vector_assign
-{
-    /// Check whether vector sizes are compatible or if vector is 0 by 0 change it to r by c.
-    void checked_change_dim(SizeType s)
-    {
-		Vector& vector= static_cast<Vector&>(*this);
-		vector.check_dim(s);
-		vector.change_dim(s);
-    }
-
-    /// Templated assignment implemented by functor to allow for partial specialization
-    // Despite there is only an untemplated assignement and despite the disable_if MSVC whines about ambiguity :-!
-    template <typename Source>
-    typename boost::disable_if<typename boost::is_same<Vector, Source>, Vector&>::type
-    operator=(const Source& src)
-    {
-		return crtp_assign<Source, Vector>()(src, static_cast<Vector&>(*this));
-    }
-
-    template <typename Source>
-    Vector& operator+=(const Source& src)
-    {
-		return crtp_plus_assign<Source, Vector>()(src, static_cast<Vector&>(*this));
-    }
-    
-    template <typename Source>
-    Vector& operator-=(const Source& src)
-    {
-		return crtp_minus_assign<Source, Vector>()(src, static_cast<Vector&>(*this));
-    }
-    
-    /// Scale vector (in place) with scalar value or other vector
-    template <typename Factor>
-    Vector& operator*=(const Factor& alpha)
-    {
-		right_scale_inplace(static_cast<Vector&>(*this), alpha);
-		return static_cast<Vector&>(*this);
-    }
-    
-    /// Divide vector (in place) by scalar value
-    // added by Hui Li
-    template <typename Factor>
-    Vector& operator/=(const Factor& alpha)
-    {
-		divide_by_inplace(static_cast<Vector&>(*this), alpha);
-		return static_cast<Vector&>(*this);
-    }
-};
-#endif
-
 
 
 template <typename Vector, typename ValueType, typename SizeType>
