@@ -29,24 +29,24 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   r = b - A*x;
 
   while (! iter.finished(r)) {
-    z = M.solve(r);
-    rho = dot(r, z);
+      z = solve(M, r);
+      rho = dot(r, z);
     
-    if (iter.first())
-      p = z;
-    else {
-      beta = rho / rho_1;
-      p = z + beta * p;
-    }
-    
-    q = A * p;
-    alpha = rho / dot(p, q);
-    
-    x += alpha * p;
-    r -= alpha * q;
-    rho_1 = rho;
-    
-    ++iter;
+      if (iter.first())
+	  p = z;
+      else {
+	  beta = rho / rho_1;
+	  p = z + beta * p;
+      }
+      
+      q = A * p;
+      alpha = rho / dot(p, q);
+      
+      x += alpha * p;
+      r -= alpha * q;
+      rho_1 = rho;
+      
+      ++iter;
   }
   return iter.error_code();
 }
