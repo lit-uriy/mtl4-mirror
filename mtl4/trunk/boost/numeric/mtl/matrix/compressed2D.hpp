@@ -294,25 +294,25 @@ class compressed2D
     // Only allocation of new data, doesn't copy if already existent
     void allocate(size_t new_nnz)
     {
-	if (new_nnz) {
-	    this->my_nnz = new_nnz;
-	    data.resize(this->my_nnz);
-	    indices.resize(this->my_nnz, 0);
-	}
+		if (new_nnz) {
+			this->my_nnz = new_nnz;
+			data.resize(this->my_nnz);
+			indices.resize(this->my_nnz, 0);
+		}
     }
 
     // removes all values; e.g. for set_to_zero
     void make_empty()
     {
-	this->my_nnz = 0;
-	data.resize(0);
-	indices.resize(0);
-	std::fill(starts.begin(), starts.end(), 0);
+		this->my_nnz = 0;
+		data.resize(0);
+		indices.resize(0);
+		std::fill(starts.begin(), starts.end(), 0);
     }
 
     void change_dim(size_type r, size_type c)
     {
-	if (this->num_rows() != r || this->num_cols() != c) {
+		if (this->num_rows() != r || this->num_cols() != c) {
 			super::change_dim(mtl::non_fixed::dimensions(r, c));
 			starts.resize(this->dim1()+1);
 			make_empty();
@@ -321,37 +321,37 @@ class compressed2D
 
     // if compile time matrix size, we can set the start vector
     explicit compressed2D () 
-	: super(), inserting(false)
+	  : super(), inserting(false)
     {
-	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
+		if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
 
     // setting dimension and allocate starting vector
     explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
       : super(d), inserting(false)
     {
-	starts.resize(super::dim1() + 1, 0);
-	allocate(nnz);
+		starts.resize(super::dim1() + 1, 0);
+		allocate(nnz);
     }
 
     // setting dimension and allocate starting vector
     explicit compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
       : super(non_fixed::dimensions(num_rows, num_cols)), inserting(false)
     {
-	starts.resize(super::dim1() + 1, 0);
-	allocate(nnz);
+		starts.resize(super::dim1() + 1, 0);
+		allocate(nnz);
     }
 
     compressed2D(const self& src)
       : super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), inserting(false)
     {
-	starts.resize(super::dim1() + 1, 0);
-	matrix_copy(src, *this);
+		starts.resize(super::dim1() + 1, 0);
+		matrix_copy(src, *this);
     }
 
     template <typename MatrixSrc>
     explicit compressed2D (const MatrixSrc& src) 
-	: super(), inserting(false)
+	  : super(), inserting(false)
     {
 		if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
 		*this= src;
@@ -361,12 +361,12 @@ class compressed2D
     // Consuming assignment operator
     self& operator=(self src)
     {
-	// Self-copy would be an indication of an error
-	assert(this != &src);
+		// Self-copy would be an indication of an error
+		assert(this != &src);
 
-	check_dim(src.num_rows(), src.num_cols());
-	swap(*this, src);
-	return *this;
+		check_dim(src.num_rows(), src.num_cols());
+		swap(*this, src);
+		return *this;
     }
 
 
@@ -380,48 +380,48 @@ class compressed2D
     void raw_copy(ValueIterator first_value, ValueIterator last_value, 
 		  StartIterator first_start, IndexIterator first_index)
     {
-	using std::copy;
+		using std::copy;
 
-	// check if starts has right size
-	allocate(last_value - first_value); // ???? 
-	// check if nnz and indices has right size
+		// check if starts has right size
+		allocate(last_value - first_value); // ???? 
+		// check if nnz and indices has right size
 
-	copy(first_value, last_value, data.begin());
-	copy(first_start, first_start + this->dim1() + 1, starts.begin());
-	copy(first_index, first_index + this->nnz(), indices.begin());
+		copy(first_value, last_value, data.begin());
+		copy(first_start, first_start + this->dim1() + 1, starts.begin());
+		copy(first_index, first_index + this->nnz(), indices.begin());
     }
 
     // Consistency check urgently needed !!!
 
     const_reference operator() (size_type row, size_type col) const
     {
-	using math::zero;
+		using math::zero;
         debug_throw_if(inserting, logic_error("Reading data during insertion has undefined behavior"));
-	utilities::maybe<size_type> pos = indexer(*this, row, col);
-	return pos ? data[pos] : zero(value_type()); 
+		utilities::maybe<size_type> pos = indexer(*this, row, col);
+		return pos ? data[pos] : zero(value_type()); 
     }
 
     value_type value_from_offset(size_type offset) const
     {
-	debug_throw_if(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
-	return data[offset];
+		debug_throw_if(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
+		return data[offset];
     }
 
     value_type& value_from_offset(size_type offset)
     {
-	debug_throw_if(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
-	return data[offset];
+		debug_throw_if(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
+		return data[offset];
     }
 
     friend void swap(self& matrix1, self& matrix2)
     {
-	using std::swap;
-	swap(static_cast<super&>(matrix1), static_cast<super&>(matrix2));
+		using std::swap;
+		swap(static_cast<super&>(matrix1), static_cast<super&>(matrix2));
 
-	swap(matrix1.data, matrix2.data);
-	swap(matrix1.starts, matrix2.starts);
-	swap(matrix1.indices, matrix2.indices);
-	swap(matrix1.inserting, matrix2.inserting);
+		swap(matrix1.data, matrix2.data);
+		swap(matrix1.starts, matrix2.starts);
+		swap(matrix1.indices, matrix2.indices);
+		swap(matrix1.inserting, matrix2.inserting);
     }
 
     friend struct compressed2D_indexer;

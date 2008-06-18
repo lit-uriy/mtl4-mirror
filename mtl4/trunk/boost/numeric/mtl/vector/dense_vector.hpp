@@ -61,20 +61,26 @@ public:
     
     void check_index( size_type i ) const
     {
-	debug_throw_if( i < 0 || i >= size(), index_out_of_range());
+		debug_throw_if( i < 0 || i >= size(), index_out_of_range());
     }
 
+#if 0
     template <typename Vector>
-    void check_size( const Vector& v ) const
+    void check_dim( const Vector& v ) const
     {
-	debug_throw_if( v.size() == 0 && v.size() != size(), incompatible_size());
+		debug_throw_if( v.size() == 0 && v.size() != size(), incompatible_size());
     }
+#endif
 
+	void check_dim( size_type s ) const
+	{
+		debug_throw_if( size() != 0 && size() != s, incompatible_size());
+    }
 
     template <class E>
     void check_consistent_shape( vec_expr<E> const& e ) const
     {
-	debug_throw_if((!boost::is_same<
+	    debug_throw_if((!boost::is_same<
 			        typename ashape::ashape<self>::type
 			      , typename ashape::ashape<E>::type
 			    >::value),
@@ -83,29 +89,37 @@ public:
 
 
 
-    dense_vector( ) : expr_base( *this ), memory_base( Parameters::dimension::value ) {}
+    dense_vector( ) : memory_base( Parameters::dimension::value ) {}
     
     explicit dense_vector( size_type n )
-	: memory_base( n ) 
+	  : memory_base( n ) 
     {}
     
     explicit dense_vector( size_type n, value_type value )
-	: memory_base( n ) 
+	  : memory_base( n ) 
     {
-	std::fill(begin(), end(), value);
+		std::fill(begin(), end(), value);
     }
 
     explicit dense_vector( size_type n, value_type *address )
-	: memory_base( address, n ) 
+	  : memory_base( address, n ) 
     {}
 
     dense_vector( const self& src )
-	: memory_base( src.size() ) 
+	  : memory_base( src.size() ) 
     {
-	using std::copy;
-	copy(src.begin(), src.end(), begin());
+		using std::copy;
+		copy(src.begin(), src.end(), begin());
     }
 
+	template <typename VectorSrc>
+	explicit dense_vector(const VectorSrc& src,
+		typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
+	{
+		*this= src;
+	}
+
+#if 0
     // Might be generalized to arbitrary vectors later
     template <class Value2, typename Parameters2>
     explicit dense_vector( const dense_vector<Value2, Parameters2>& src )
@@ -115,7 +129,7 @@ public:
 	check_consistent_shape(src);
 	copy(src.begin(), src.end(), begin());
     }
-
+#endif
 
     size_type size() const { return this->used_memory() ; }
     
@@ -164,12 +178,12 @@ public:
 
     self& operator=(self src)
     {
-	// Self-copy would be an indication of an error
-	assert(this != &src);
+		// Self-copy would be an indication of an error
+		assert(this != &src);
 
-	check_size(src);
-	memory_base::move_assignment(src);
-	return *this;
+		check_dim(src.size());
+		memory_base::move_assignment(src);
+		return *this;
     }
 
 
@@ -186,7 +200,7 @@ public:
 
     void change_dim(size_type n)
     {
-	this->realloc(n);
+		this->realloc(n);
     }
     
 
