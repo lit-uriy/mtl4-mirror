@@ -540,11 +540,13 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 
     const_reference operator() (size_type row, size_type col) const
     {
+	debug_throw_if(row < 0 || row >= this->num_rows() || col < 0 || col >= this->num_cols(), index_out_of_range());
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
 
     value_type& operator() (size_type row, size_type col)
     {
+	debug_throw_if(row < 0 || row >= this->num_rows() || col < 0 || col >= this->num_cols(), index_out_of_range());
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
 

@@ -55,6 +55,17 @@ struct mat_mat_times_expr
     second_argument_type const& second ;
 };
 
+template <typename E1, typename E2>
+std::size_t inline num_rows(const mat_mat_times_expr<E1, E2>& expr) 
+{ return num_rows(expr.first); }
+
+template <typename E1, typename E2>
+std::size_t inline num_cols(const mat_mat_times_expr<E1, E2>& expr) 
+{ return num_cols(expr.second); }
+
+template <typename E1, typename E2>
+std::size_t inline size(const mat_mat_times_expr<E1, E2>& expr) 
+{ return num_rows(expr) * num_cols(expr); }
 
 }} // Namespace mtl::matrix
 

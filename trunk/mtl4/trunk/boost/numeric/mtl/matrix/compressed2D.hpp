@@ -401,10 +401,11 @@ class compressed2D
 
     const_reference operator() (size_type row, size_type col) const
     {
-		using math::zero;
+	using math::zero;
         debug_throw_if(inserting, logic_error("Reading data during insertion has undefined behavior"));
-		utilities::maybe<size_type> pos = indexer(*this, row, col);
-		return pos ? data[pos] : zero(value_type()); 
+	debug_throw_if(row < 0 || row >= this->num_rows() || col < 0 || col >= this->num_cols(), index_out_of_range());
+	utilities::maybe<size_type> pos = indexer(*this, row, col);
+	return pos ? data[pos] : zero(value_type()); 
     }
 
     value_type value_from_offset(size_type offset) const
