@@ -61,7 +61,7 @@ struct crtp_assign
 /// Assign matrix vector product by calling mult
 /** Note that this does not work for arbitrary expressions. **/
 template <typename Vector, typename E1, typename E2>
-struct crtp_assign<Vector, mat_cvec_times_expr<E1, E2>>
+struct crtp_assign<Vector, mat_cvec_times_expr<E1, E2> >
 {
 	typedef Vector& type;
 	type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
@@ -115,7 +115,7 @@ struct crtp_plus_assign
 /// Assign-add matrix vector product by calling mult
 /** Note that this does not work for arbitrary expressions. **/
 template <typename Vector, typename E1, typename E2>
-struct crtp_plus_assign<Vector, mat_cvec_times_expr<E1, E2>>
+struct crtp_plus_assign<Vector, mat_cvec_times_expr<E1, E2> >
 {
 	typedef Vector& type;
 	type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
@@ -155,7 +155,7 @@ struct crtp_minus_assign
 /// Assign-add matrix vector product by calling mult
 /** Note that this does not work for arbitrary expressions. **/
 template <typename Vector, typename E1, typename E2>
-struct crtp_minus_assign<Vector, mat_cvec_times_expr<E1, E2>>
+struct crtp_minus_assign<Vector, mat_cvec_times_expr<E1, E2> >
 {
 	typedef Vector& type;
 	type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
