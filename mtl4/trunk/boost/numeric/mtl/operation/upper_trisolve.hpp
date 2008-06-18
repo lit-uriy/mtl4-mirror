@@ -18,16 +18,19 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/adjust_cursor.hpp>
 
+#include <boost/numeric/linear_algebra/identity.hpp>
+
 namespace mtl {
 
 
 namespace detail {
 
     template <typename Matrix, typename Vector>
-    Vector upper_trisolve(const Matrix& A, const Vector& v, tag::row_major)
+    Vector upper_trisolve(const Matrix& A, const Vector& v, bool explicit_diagonal, tag::row_major)
     {
-	using namespace tag; using traits::range_generator; 
+	using namespace tag; using traits::range_generator; using math::one;
 
+	typedef typename Collection<Matrix>::value_type           value_type;
 	typedef typename range_generator<row, Matrix>::type       a_cur_type;    
 	typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
 	typename traits::col<Matrix>::type                        col_a(A); 
@@ -38,13 +41,14 @@ namespace detail {
 	a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	for (int r= num_rows(A) - 1; ac != aend--; --r) {
 	    a_icur_type aic= begin<nz>(aend), aiend= end<nz>(aend);
-	    adjust_cursor(r, aic, typename traits::category<Matrix>::type());
-	    throw_if(aic == aiend || col_a(*aic) != r, missing_diagonal());
+	    adjust_cursor(r + (explicit_diagonal ? 0 : 1), aic, typename traits::category<Matrix>::type());
+	    throw_if(explicit_diagonal && (aic == aiend || col_a(*aic) != r), missing_diagonal());
 
-	    typename Collection<Matrix>::value_type dia= value_a(*aic);
 	    typename Collection<Vector>::value_type rr= result[r];
+	    value_type dia= explicit_diagonal ? value_a(*aic) : one(value_type());
 
-	    for (++aic; aic != aiend; ++aic) {
+	    if (explicit_diagonal) ++aic;
+	    for (; aic != aiend; ++aic) {
 		debug_throw_if(col_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
 		rr-= value_a(*aic) * result[col_a(*aic)];
 	    }
@@ -55,7 +59,7 @@ namespace detail {
 
 
     template <typename Matrix, typename Vector>
-    Vector inline upper_trisolve(const Matrix& A, const Vector& v, tag::col_major)
+    Vector inline upper_trisolve(const Matrix& A, const Vector& v, bool explicit_diagonal, tag::col_major)
     {
 	using namespace tag; using traits::range_generator; 
 
@@ -69,10 +73,10 @@ namespace detail {
 	a_cur_type ac= begin<col>(A), aend= end<col>(A); 
 	for (int r= num_rows(A) - 1; ac != aend--; --r) {
 	    a_icur_type aic= begin<nz>(aend), aiend= end<nz>(aend);
-	    adjust_cursor(r - num_rows(A) + 1, aiend, typename traits::category<Matrix>::type());
+	    adjust_cursor(r - num_rows(A) + (explicit_diagonal ? 1 : 0), aiend, typename traits::category<Matrix>::type());
 
-	    throw_if(aic == aiend || row_a(*--aiend) != r, missing_diagonal());
-	    typename Collection<Vector>::value_type rr= (result[r]/= value_a(*aiend));
+	    throw_if(explicit_diagonal && (aic == aiend || row_a(*--aiend) != r), missing_diagonal());
+	    typename Collection<Vector>::value_type rr= explicit_diagonal ? (result[r]/= value_a(*aiend)) : result[r];
 
 	    for (; aic != aiend; ++aic) {
 		debug_throw_if(row_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
@@ -84,10 +88,10 @@ namespace detail {
 }
 
 template <typename Matrix, typename Vector>
-Vector inline upper_trisolve(const Matrix& A, const Vector& v)
+Vector inline upper_trisolve(const Matrix& A, const Vector& v, bool explicit_diagonal= true)
 {
     throw_if(num_rows(A) != num_cols(A), matrix_not_square());
-    return detail::upper_trisolve(A, v, typename OrientedCollection<Matrix>::orientation());
+    return detail::upper_trisolve(A, v, explicit_diagonal, typename OrientedCollection<Matrix>::orientation());
 }
 
 } // namespace mtl

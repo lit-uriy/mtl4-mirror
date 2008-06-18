@@ -18,6 +18,6 @@
 #include <boost/numeric/itl/krylov/bicgstab.hpp>
 
 #include <boost/numeric/itl/pc/diagonal.hpp>
-//#include <boost/numeric/itl/pc/ilu_0.hpp>
+#include <boost/numeric/itl/pc/ilu_0.hpp>
 
 #endif // ITL_ITL_INCLUDE

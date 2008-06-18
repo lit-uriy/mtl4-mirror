@@ -22,34 +22,32 @@ void test(Matrix& A, const char* name)
     A.change_dim(5, 5); A= 0.0;
     {
 	matrix::inserter<Matrix>   ins(A);
-	ins[0][0] << 7; ins[1][1] << 8; ins[1][3] << 2; ins[1][4] << 3;
-	ins[2][2] << 2; ins[3][3] << 4; ins[4][4] << 9;
+	ins[1][3] << 2; ins[1][4] << 3;
     }
     
     double xa[] = {1, 2, 3, 4, 5};
     dense_vector<double> x(xa), b;
     
-    b= A * x;
+    b= A * x + x;
     x= 0.0;
     
     cout << name << "\nA = \n" << A << "b = " << b << "\n";
     
-    x= upper_trisolve(A, b);
+    x= upper_trisolve(A, b, false);
     cout << "x = upper_trisolve(A, b) ==" << x << "\n\n";
     if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in upper_trisolve!";
-	
+
     x= xa;
     Matrix B(trans(A));
     
-    b= B * x;
+    b= B * x + x;
     x= 0.0;
     
     cout << "B = \n" << B << "b = " << b << "\n";
 	
-    x= lower_trisolve(B, b);
+    x= lower_trisolve(B, b, false);
     cout << "x = lower_trisolve(B, b) ==" << x << "\n\n";
     if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in lower_trisolve!";
-
 
 }
 

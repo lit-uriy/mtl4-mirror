@@ -47,7 +47,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
       beta = (rho_1 / rho_2) * (alpha / omega);
       p = r + beta * (p - omega * v);
     }
-    phat = M.solve(p);
+    phat = solve(M, p);
     v = A * phat;
 
     alpha = rho_1 / dot(v, rtilde);
@@ -57,7 +57,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
       x += alpha * phat;
       break;
     }
-    shat = M.solve(s);
+    shat = solve(M, s);
     t = A * shat;
     omega = dot(t, s) / dot(t, t);
     

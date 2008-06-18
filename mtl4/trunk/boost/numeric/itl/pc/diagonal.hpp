@@ -93,6 +93,20 @@ class diagonal
 }; 
 
 
+template <typename Matrix, typename Vector>
+Vector solve(const diagonal<Matrix>& P, const Vector& x)
+{
+    return P.solve(x);
+}
+
+template <typename Matrix, typename Vector>
+Vector adjoint_solve(const diagonal<Matrix>& P, const Vector& x)
+{
+    return P.adjoint_solve(x);
+}
+
+
+
 }} // namespace itl::pc
 
 #endif // ITL_PC_DIAGONAL_INCLUDE

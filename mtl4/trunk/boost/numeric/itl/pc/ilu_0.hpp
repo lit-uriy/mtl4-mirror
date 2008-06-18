@@ -13,13 +13,15 @@
 #include <boost/mpl/bool.hpp>
 
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/linear_algebra/inverse.hpp>
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/operation/lower_trisolve.hpp>
+#include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 
-#include <boost/numeric/itl/utility/solver_proxy.hpp>
 
 namespace itl { namespace pc {
 
@@ -34,21 +36,21 @@ class ilu_0
     // Factorization adapted from Saad
     ilu_0(const Matrix& A)
     {
-	factorize(A, typename mtl::category<Matrix>::type()); 
+	factorize(A, typename mtl::traits::category<Matrix>::type()); 
     }
 
     // solve x = LU y --> y= U^{-1} L^{-1} x
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
-	return mtl::upper_tri_solve(U, mtl::lower_tri_solve(L, x, false));
+	return mtl::upper_trisolve(U, mtl::lower_trisolve(L, x, false));
     }
 
     // solve x = (LU)^T y --> y= L^{-T} U^{-T} x
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
-	return mtl::upper_tri_solve(adjoint(L), mtl::lower_tri_solve(adjoint(U), x), false);
+	return mtl::upper_trisolve(adjoint(L), mtl::lower_trisolve(adjoint(U), x), false);
     }
 
 #if 0
@@ -92,34 +94,34 @@ class ilu_0
 
     void factorize(const Matrix& A, mtl::tag::dense)
     {
-	throw_if(true, logic_error("ILU is not intended for dense matrices"));
+	throw_if(true, mtl::logic_error("ILU is not intended for dense matrices"));
     }
 
     void factorize(const Matrix& A, mtl::tag::sparse)
     {
-	sparse_factorize(A, typename OrientedCollection<Matrix>::orientation());
+	sparse_factorize(A, typename mtl::OrientedCollection<Matrix>::orientation());
     }
     
     void sparse_factorize(const Matrix& A, mtl::tag::col_major)
     {
-	throw_if(true, logic_error("ILU for CCS not implemented yet"));
+	throw_if(true, mtl::logic_error("ILU for CCS not implemented yet"));
     }
 
     // CRS factorization like in Saad, sorted entries are required
     void sparse_factorize(const Matrix& A, mtl::tag::row_major)
     {
-        using namespace tag;  using traits::range_generator;  
-	using math::min; math::identity; using math::zero; using math::reciprocal; 
+        using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
+	using math::min; using math::identity; using math::zero; using math::reciprocal; 
 
 	throw_if(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 	const size_type       empty= identity(min<size_type>(), size_type());
 	Matrix                LU= A;
-
+	mtl::dense_vector<size_type>   uptr(num_rows(A));
 
         typedef typename range_generator<row, Matrix>::type       cur_type;    
         typedef typename range_generator<nz, cur_type>::type      icur_type;            
-        typename traits::col<Matrix>::type                        col(A), col_lu(LU); 
-        typename traits::offset<Matrix>::type                     offset(A), offset_lu(LU); 
+        typename mtl::traits::col<Matrix>::type                   col(A), col_lu(LU); 
+        typename mtl::traits::offset<Matrix>::type                offset(A), offset_lu(LU); 
 	mtl::dense_vector<size_type>                              iw(num_rows(A), empty);	
 
 	cur_type ac= begin<row>(A), aend= end<row>(A);
@@ -162,8 +164,8 @@ class ilu_0
 	    for (icur_type ic= begin<nz>(ac), iend= end<nz>(ac); ic != iend; ++ic) 
 		iw[col(*ic)] = empty;
 	}
-	L= upper(LU); crop(L);
-	U= strict_lower(LU); crop(U);
+	L= upper(LU); // crop(L);
+	U= strict_lower(LU); // crop(U);
     }
 
 
@@ -171,8 +173,17 @@ class ilu_0
 }; 
 
 
+template <typename Matrix, typename Vector>
+Vector solve(const ilu_0<Matrix>& P, const Vector& x)
+{
+    return P.solve(x);
+}
 
-
+template <typename Matrix, typename Vector>
+Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& x)
+{
+    return P.adjoint_solve(x);
+}
 
 
 }} // namespace itl::pc
