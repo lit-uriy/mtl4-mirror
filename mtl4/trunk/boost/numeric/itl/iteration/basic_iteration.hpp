@@ -84,7 +84,7 @@ namespace itl {
   
     inline int error_code() { return error; }
   
-    inline int iterations() { return i; }
+    inline int iterations() { return i + 1; }
   
     inline Real resid() { return resid_ * normb_; }
   

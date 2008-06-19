@@ -90,6 +90,7 @@ namespace detail {
 template <typename Matrix, typename Vector>
 Vector inline lower_trisolve(const Matrix& A, const Vector& v, bool explicit_diagonal= true)
 {
+    // std::cout << "Lower trisolve: A = \n" << A;
     throw_if(num_rows(A) != num_cols(A), matrix_not_square());
     return detail::lower_trisolve(A, v, explicit_diagonal, typename OrientedCollection<Matrix>::orientation());
 }
