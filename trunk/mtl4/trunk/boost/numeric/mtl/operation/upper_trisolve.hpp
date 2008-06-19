@@ -90,6 +90,7 @@ namespace detail {
 template <typename Matrix, typename Vector>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v, bool explicit_diagonal= true)
 {
+    // std::cout << "Upper trisolve: A = \n" << A;
     throw_if(num_rows(A) != num_cols(A), matrix_not_square());
     return detail::upper_trisolve(A, v, explicit_diagonal, typename OrientedCollection<Matrix>::orientation());
 }

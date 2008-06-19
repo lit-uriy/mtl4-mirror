@@ -53,42 +53,9 @@ class ilu_0
 	return mtl::upper_trisolve(adjoint(L), mtl::lower_trisolve(adjoint(U), x), false);
     }
 
-#if 0
-    // This is more flexible but less generic as the vector type must support the proxy actively
-    // Otherwise it only needs move semantics
-    template <typename VectorIn>
-    solver_proxy<self, VectorIn> solve(const VectorIn& x) const
-    {
-	return solver_proxy<self, VectorIn>(*this, x);
-    }
 
-    template <typename VectorIn>
-    solver_proxy<self, VectorIn, false> adjoint_solve(const VectorIn& x) const
-    {
-	return solver_proxy<self, VectorIn, false>(*this, x);
-    }
-
-    // x = LU y --> y= U^{-1} L^{-1} x
-    template <typename VectorIn, typename VectorOut>
-    void solve(const VectorIn& x, VectorOut& y) const
-    {
-	y= mtl::upper_tri_solve(U, mtl::lower_tri_solve(L, x, false));
-
-	VectorIn x2(size(x));
-	mtl::lower_tri_solve(L, x, x2, false);
-	mtl::upper_tri_solve(U, x2, y);
-    }
-
-    // x = (LU)^T y --> y= L^{-T} U^{-T} x
-    template <typename VectorIn, typename VectorOut>
-    void adjoint_solve(const VectorIn& x, VectorOut& y) const
-    {
-	y= mtl::upper_tri_solve(adjoint(L), mtl::lower_tri_solve(adjoint(U), x), false);
-	VectorIn x2(size(x));
-	mtl::lower_tri_solve(adjoint(U), x, x2);
-	mtl::upper_tri_solve(adjoint(L), x2, y, false);
-    }
-#endif
+    Matrix get_L() { return L; }
+    Matrix get_U() { return U; }
 
   protected:
 
@@ -107,67 +74,47 @@ class ilu_0
 	throw_if(true, mtl::logic_error("ILU for CCS not implemented yet"));
     }
 
-    // CRS factorization like in Saad, sorted entries are required
+    // CRS factorization, sorted entries are required
     void sparse_factorize(const Matrix& A, mtl::tag::row_major)
     {
         using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
-	using math::min; using math::identity; using math::zero; using math::reciprocal; 
+	using math::reciprocal; 
 
 	throw_if(num_rows(A) != num_cols(A), mtl::matrix_not_square());
-	const size_type       empty= identity(min<size_type>(), size_type());
-	Matrix                LU= A;
-	mtl::dense_vector<size_type>   uptr(num_rows(A));
 
+	Matrix                                                    LU= A;
         typedef typename range_generator<row, Matrix>::type       cur_type;    
         typedef typename range_generator<nz, cur_type>::type      icur_type;            
-        typename mtl::traits::col<Matrix>::type                   col(A), col_lu(LU); 
-        typename mtl::traits::offset<Matrix>::type                offset(A), offset_lu(LU); 
-	mtl::dense_vector<size_type>                              iw(num_rows(A), empty);	
+        typename mtl::traits::col<Matrix>::type                   col(LU);
+        typename mtl::traits::value<Matrix>::type                 value(LU); 
 
-	cur_type ac= begin<row>(A), aend= end<row>(A);
-	for (unsigned k= 0; ac != aend; ++ac, ++k) {
+	mtl::dense_vector<value_type>                             inv_dia(num_rows(A));
+	cur_type ic= begin<row>(LU), iend= end<row>(LU);
+	for (size_type i= 0; ic != iend; ++ic, ++i) {
 
-	    for (icur_type ic= begin<nz>(ac), iend= end<nz>(ac); ic != iend; ++ic) 
-		iw[col(*ic)] = offset(*ic);
+	    for (icur_type kc= begin<nz>(ic), kend= end<nz>(ic); kc != kend; ++kc) {
+		size_type k= col(*kc);
 
-	    for (icur_type ic= begin<nz>(ac), iend= end<nz>(ac); ic != iend; ++ic) {
-		size_type jrow= col(*ic), j= offset(*ic);
-		if (jrow < k) {
-		    // Multiplier for jrow (immediately set below diagonal)
-		    value_type tl= LU.value_from_offset(j)*= LU.value_from_offset(uptr[k]);
-		    //value_type tl= LU.value_from_offset(j) * LU.value_from_offset(uptr[k]);
-		    //LU.value_from_offset(j)= tl;
-		    
-		    // Linear combination
-#if 0
-		    cur_type jrow_c= begin<row>(LU); jrow_c+= jrow;
-		    icur_type jjc= begin<nz>(jrow_c), jjend= end<nz>(jrow_c); 
-		    while (col_lu(*jjc) <= jrow) ++jjc;  // go behind diagonal
-#endif
-		    // Linear combination: From behind diagonal (by offset) till end of row
-		    for (icur_type jjc(LU, uptr[jrow]+1), jjend(LU, jrow+1, 0); jjc != jjend; ++jjc) {
-			size_type jw= iw[col_lu(*jjc)];
-			if (jw != empty) 
-			    LU.value_from_offset(jw)-= tl * LU.value_from_offset(offset_lu(*jjc));
-		    }
-		} else {
-		    uptr[k]= j;
-		    throw_if(jrow != k, mtl::logic_error("No diagonal in ILU_0"));
-		    value_type &dia= LU.value_from_offset(j);
-		    throw_if(dia == zero(dia), mtl::logic_error("Zero diagonal in ILU_0"));
-		    dia= reciprocal(dia); 
-		    break;
-		}
+		if (k == i) break;
+
+		value_type aik= value(*kc) * inv_dia[k];
+		value(*kc, aik);
+
+		for (icur_type jc= kc + 1; jc != kend; ++jc)
+		    value(*jc, value(*jc) - aik * LU[k][col(*jc)]);
+		// std::cout << "LU after eliminating A[" << i << "][" << k << "] =\n" << LU;			  
 	    }
-
-	    // Reset iw entries to empty
-	    for (icur_type ic= begin<nz>(ac), iend= end<nz>(ac); ic != iend; ++ic) 
-		iw[col(*ic)] = empty;
+	    inv_dia[i]= reciprocal(LU[i][i]);
 	}
-	L= upper(LU); // crop(L);
-	U= strict_lower(LU); // crop(U);
-    }
 
+	U= upper(LU); 
+	L= strict_lower(LU); 
+	    
+#if 0
+	Matrix LD(num_rows(L), num_rows(L)); LD= 1.0; LD+= L;
+	std::cout << "ILU factorization of:\n" << A << "\nL = \n" << L << "\nU = \n" << U << "\nLU = \n" << Matrix(LD*U);
+#endif
+    }
 
     Matrix   L, U;
 }; 

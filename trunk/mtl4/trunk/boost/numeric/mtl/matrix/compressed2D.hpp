@@ -17,6 +17,8 @@
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 
+#include <boost/numeric/linear_algebra/identity.hpp>
+
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
@@ -167,13 +169,26 @@ struct compressed_minor_cursor
 	return *this;
     }
 
-    self& operator++ ()
+    self& operator++()
     {
 	++offset;
 	return *this;
     }
 
-    self& operator-- ()
+    self& operator+=(size_t inc)
+    {
+	offset+= inc;
+	return *this;
+    }
+
+    self operator+(size_t inc) const
+    {
+	self tmp(*this);
+	tmp+= inc;
+	return tmp;
+    }
+
+    self& operator--()
     {
 	--offset;
 	return *this;
@@ -516,6 +531,9 @@ struct compressed2D_inserter
 
     void update(size_type row, size_type col, value_type val)
     {
+	using math::zero;
+	// Might cause problems for weird updaters (will deal with it if necessary)
+	if (val == zero(val)) return;
 	modify<Updater>(row, col, val);
     }
 

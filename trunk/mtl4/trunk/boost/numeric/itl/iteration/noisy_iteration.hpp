@@ -63,7 +63,7 @@ namespace itl {
 	this->error = 1;
 	ret = true;
       }
-      cout << "iteration " << this->i << ": resid " 
+      cout << "iteration " << this->i  << ": resid " 
            << this->resid()
 	   << endl;
       return ret;
@@ -98,6 +98,7 @@ namespace itl {
 	   << this->resid()/this->normb() << " is actual relative tolerance achieved. "
 	   << endl;
       cout << "Relative tol: " << this->rtol_ << "  Absolute tol: " << this->atol_ << endl;
+      cout << "Convergence:  " << pow(this->rtol_, 1.0 / double(this->iterations())) << endl;
       return this->error;
     }
 
