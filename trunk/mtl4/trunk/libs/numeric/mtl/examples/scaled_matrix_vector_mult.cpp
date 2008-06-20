@@ -21,16 +21,9 @@ int main(int argc, char* argv[])
     v= 2 * A * (2 * w);
     std::cout << "v is " << v << "\n";
 
-    // Scale A before multiplying and scale it back afterwards
-    A*= 4;
+    // Scale v after the MVP
     v= A * w;
-    A*= 0.25;
-    std::cout << "v is " << v << "\n";
-
-    // Scale w before multiplying and scale it back afterwards
-    w*= 4;
-    v= A * w;
-    w*= 0.25;
+    v*= 4;
     std::cout << "v is " << v << "\n";
 
     return 0;
