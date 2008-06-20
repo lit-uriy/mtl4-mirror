@@ -15,9 +15,9 @@ void fill(Matrix& m)
     matrix::inserter<Matrix> ins(m);
     
     // Insert value in m[0][0]
-    ins(0, 0) << 2.0;
-    ins(1, 2) << 0.5;
-    ins(2, 1) << 3.0;
+    ins[0][0] << 2.0;
+    ins[1][2] << 0.5;
+    ins[2][1] << 3.0;
 
     // Destructor of ins sets final state of m
 }
@@ -33,12 +33,12 @@ void modify(Matrix& m)
     matrix::inserter<Matrix, update_plus<value_type> > ins(m, 3);
     
     // Increment value in m[0][0]
-    ins(0, 0) << 1.0;
+    ins[0][0] << 1.0;
 
     // Elements that doesn't exist (in sparse matrices) are inserted
-    ins(1, 1) << 2.5;
-    ins(2, 1) << 1.0;
-    ins(2, 2) << 4.0;
+    ins[1][1] << 2.5;
+    ins[2][1] << 1.0;
+    ins[2][2] << 4.0;
 
     // Destructor of ins sets final state of m
 }

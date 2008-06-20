@@ -273,6 +273,7 @@ It has been tested (and passed) with the following compilers and architectures:
   - g++ 4.0.1
 - Windows
   - VC 8.0 from Visual Studio 2005
+  - VC 9.0 from Visual Studio 2008
 
 More compilers will be tested in the future.
 
@@ -494,8 +495,6 @@ Scalar values can be assigned to vectors if the type of the scalar
 value is assignable to the type of the elements.
 Scalar types are in MTL4 all types that are not explicitly defined
 by type %traits as vectors or matrices, thus almost all types.
-(Unfortunately, we needed to remove the templated assignment on MSVC 8.0
-so that only the first assignment with the complex value works there.)
 
 Proceed to \ref vector_functions "vector functions".  
 
@@ -1129,8 +1128,6 @@ orientation, recursive or non-recursive memory layout, and sparseness.
 \include matrix_mult_simple.cpp
 
 Arbitrary %matrix types can be multiplied in MTL4.
-Although inefficient combinations might be implemented inefficiently--we 
-come back to this later.
 Let's start with the operation that is the holy grail in 
 high-performance computing:
 dense %matrix multiplication.
@@ -1144,8 +1141,10 @@ Expressions like A= A*B will throw an exception.
 More subtle aliasing, e.g., partial overlap of the matrices
 might not be detected and result in undefined mathematical behavior.
 
-Products of three matrices are not supported.
-However, two-term products can be arbitrarily added and subtracted:
+Products of three matrices are supported now.
+Internally they are realized by binary products creating temporaries
+(thus, sequences of two-term products should provide better performance). 
+Moreover, products can be arbitrarily added and subtracted:
 
 \include matrix_mult_add.cpp
 
@@ -1216,33 +1215,38 @@ Expressions like v= A*v will throw an exception.
 More subtle aliasing, e.g., partial overlap of the %vectors
 might not be detected and result in undefined mathematical behavior.
 
-%Matrix-vector products (MVP) cannot be combined with arbitrary %vector
+%Matrix-vector products (MVP) can be combined with other %vector
 operations.
-It is planned for the future to support expressions like
+The library now supports expressions like
 \code
 r= b - A*x.
 \endcode
 
-Already supported is scaling of arguments, as well for the %matrix
+Also supported is scaling of arguments, as well for the %matrix
 as for the vector:
 
 \include scaled_matrix_vector_mult.cpp
 
-All three expressions and the following two blocks
+All three expressions and the following block
 compute the same result.
-However, since %vector elements are accessed multiple times in an MVP
-it is inefficient to scale the %vector
-and obviously it is an even bigger waste to  scale both
-arguments.
+The first two versions are equivalent: matrix elements are more numerous
+but only used once while vector elements are less in number but accessed more
+often in the operation.
+In both cases nnz additional multiplications are performed where nnz is the
+number of non-zeros in A.
+One can easily see that the third expressions adds 2 nnz operations, 
+obviously much less efficient.
 
-The %matrix scaling on the fly requires the same number of %operations
-as an in-place scaling with subsequent MVP (as each %matrix element is
-used only once).
-Thus, it is advisable to scale the %matrix in the expression instead
-of scaling it before the multiplication and scaling it back afterwards
-(as the fourth block of %operations).
-Scaling the %vector upfront is more efficient under the quite likely
-assumption that A has more than 2*n non-zero elements.
+Under the assumption that n is smaller than nnz,
+clearly less operations are required when the matrix vector product is
+performed without scaling and the result is scaled afterward.
+However, on most computer MVP is memory bandwidth limited and most likely
+the additional sweep costs more time than the scaling in the expressions
+above.
+With the strong bandwidth limitation in MVP, the scaling in the three
+expression will not be perceived for most large vectors (it will be done while
+waiting anyway for data from memory).
+
 
 Return to \ref matrix_vector_functions "matrix-vector functions"
 or proceed to \ref iteration "iteration".
