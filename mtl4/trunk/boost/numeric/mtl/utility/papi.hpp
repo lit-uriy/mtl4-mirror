@@ -85,15 +85,15 @@ class papi_t
 	static bool initialized= false;
 	if (!initialized) {
 
-	    throw_if(PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT,
+	    MTL_THROW_IF(PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT,
 			 papi_version_mismatch());
 
 	    num_counters = PAPI_get_opt(PAPI_MAX_HWCTRS, NULL);
-	    throw_if(num_counters <= 0, papi_no_counters());
+	    MTL_THROW_IF(num_counters <= 0, papi_no_counters());
 
 	    counters= new long_long[num_counters];
 
-	    throw_if(PAPI_create_eventset(&event_set) != PAPI_OK, papi_create_eventset_error());
+	    MTL_THROW_IF(PAPI_create_eventset(&event_set) != PAPI_OK, papi_create_eventset_error());
 	    initialized= true;
 	}
     }
@@ -117,12 +117,12 @@ public:
     int add_event(const char* name)
     {
 	int code;
-	throw_if(PAPI_event_name_to_code(const_cast<char*>(name), &code) != PAPI_OK, 
+	MTL_THROW_IF(PAPI_event_name_to_code(const_cast<char*>(name), &code) != PAPI_OK, 
 		     papi_name_to_code_error());
 	// std::cout << "add event " << const_cast<char*>(name) << " " << code << "\n";
-	throw_if (PAPI_query_event(code) != PAPI_OK,
+	MTL_THROW_IF (PAPI_query_event(code) != PAPI_OK,
 		      papi_query_event_error());
-	throw_if (PAPI_add_event(event_set, code) != PAPI_OK,
+	MTL_THROW_IF (PAPI_add_event(event_set, code) != PAPI_OK,
 		      papi_add_event_error());
 	list_events();
 	return active_events++;
@@ -130,7 +130,7 @@ public:
 
     void start() 
     {
-	throw_if (PAPI_start(event_set) != PAPI_OK,
+	MTL_THROW_IF (PAPI_start(event_set) != PAPI_OK,
 		      papi_start_event_error());
 	reset();
     }
@@ -153,13 +153,13 @@ public:
 
     void reset()
     {
-	throw_if(PAPI_reset(event_set) != PAPI_OK, papi_reset_error());
+	MTL_THROW_IF(PAPI_reset(event_set) != PAPI_OK, papi_reset_error());
     }
 
     void read()
     {
 	list_events();
-	throw_if (PAPI_read(event_set, counters) != PAPI_OK, papi_read_error());
+	MTL_THROW_IF (PAPI_read(event_set, counters) != PAPI_OK, papi_read_error());
 	// std::cout << "counters read, first value: " << *counters << "\n";
     }
 

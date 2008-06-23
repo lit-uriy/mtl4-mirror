@@ -16,39 +16,43 @@
 namespace mtl {
 
 // If MTL_ASSERT_FOR_THROW is defined all throws become assert
-// debug_throw_if completely disappears if NDEBUG is defined
+// MTL_DEBUG_THROW_IF completely disappears if NDEBUG is defined
 #ifndef NDEBUG
-# ifdef MTL_ASSERT_FOR_THROW
-    template <typename Exception>
-    inline void debug_throw_if(bool test, Exception)
-    {
-	assert(!test);
-    }
-# else
-    template <typename Exception>
-    inline void debug_throw_if(bool test, Exception exception)
-    {
-	if (test) throw exception;
-    }
-# endif
+#  ifdef MTL_ASSERT_FOR_THROW
+#    define MTL_DEBUG_THROW_IF(Test, Exception) \
+        assert(!(Test));
+#  else
+#    define MTL_DEBUG_THROW_IF(Test, Exception) \
+        if (Test) throw Exception;
+#  endif
 #else
-    template <typename Exception>
-    inline void debug_throw_if(bool, Exception) {}
+#  define MTL_DEBUG_THROW_IF(Test,Exception)
 #endif
 
 
 #ifdef MTL_ASSERT_FOR_THROW
-    template <typename Exception>
-    inline void throw_if(bool test, Exception)
-    {
-	assert(!test);
-    }
+#  define MTL_THROW_IF(Test, Exception)       \
+   {                                          \
+       assert(!(Test));			      \
+   }
 #else
-    template <typename Exception>
-    inline void throw_if(bool test, Exception exception)
-    {
-	if (test) throw exception;
-    }
+#  define MTL_THROW_IF(Test, Exception)       \
+   {                                          \
+      if (Test) throw Exception;              \
+   }
+#endif
+
+
+#ifdef MTL_ASSERT_FOR_THROW
+#  define MTL_THROW(Exception)       \
+   {                                 \
+       assert(0);		     \
+   }
+#else
+#  define MTL_THROW(Exception)       \
+   {                                 \
+      throw Exception;               \
+   }
 #endif
 
 

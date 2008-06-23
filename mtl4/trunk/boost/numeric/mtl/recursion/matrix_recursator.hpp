@@ -93,8 +93,8 @@ public:
       if (bound == 0)
 	my_bound= outer_bound(matrix);
       else {
-	throw_if(!is_power_of_2(bound), range_error("Bound must be a power of 2"));
-	throw_if(bound < matrix.num_rows() || bound < matrix.num_cols(), 
+	MTL_THROW_IF(!is_power_of_2(bound), range_error("Bound must be a power of 2"));
+	MTL_THROW_IF(bound < matrix.num_rows() || bound < matrix.num_cols(), 
 		     range_error("Bound must not be smaller than matrix dimensions"));
 	my_bound= bound;
       }

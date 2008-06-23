@@ -61,7 +61,7 @@ class ilu_0
 
     void factorize(const Matrix& A, mtl::tag::dense)
     {
-	throw_if(true, mtl::logic_error("ILU is not intended for dense matrices"));
+	MTL_THROW_IF(true, mtl::logic_error("ILU is not intended for dense matrices"));
     }
 
     void factorize(const Matrix& A, mtl::tag::sparse)
@@ -71,7 +71,7 @@ class ilu_0
     
     void sparse_factorize(const Matrix& A, mtl::tag::col_major)
     {
-	throw_if(true, mtl::logic_error("ILU for CCS not implemented yet"));
+	MTL_THROW_IF(true, mtl::logic_error("ILU for CCS not implemented yet"));
     }
 
     // CRS factorization, sorted entries are required
@@ -80,7 +80,7 @@ class ilu_0
         using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
 	using math::reciprocal; 
 
-	throw_if(num_rows(A) != num_cols(A), mtl::matrix_not_square());
+	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 
 	Matrix                                                    LU= A;
         typedef typename range_generator<row, Matrix>::type       cur_type;    
@@ -94,7 +94,6 @@ class ilu_0
 
 	    for (icur_type kc= begin<nz>(ic), kend= end<nz>(ic); kc != kend; ++kc) {
 		size_type k= col(*kc);
-
 		if (k == i) break;
 
 		value_type aik= value(*kc) * inv_dia[k];

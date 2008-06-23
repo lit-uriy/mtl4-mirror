@@ -31,16 +31,16 @@ void dense_ilu_0(const Matrix&As, const Matrix& Ls, const Matrix& Us)
 int main()
 {
     // For a more realistic example set sz to 1000 or larger
-    const int sz = 3, N = sz * sz; 
+    const int size = 100, N = size * size; 
 
     typedef compressed2D<double>  matrix_type;
     compressed2D<double>          A(N, N), dia(N, N);
-    matrix::laplacian_setup(A, sz, sz);
+    matrix::laplacian_setup(A, size, size);
     
     pc::ilu_0<matrix_type>        P(A);
     dense_vector<double>          x(N, 1.0), b(N);
     
-    if(sz > 1 && sz < 4)
+    if(size > 1 && size < 4)
 	dense_ilu_0(A, P.get_L(), P.get_U());
 
     b = A * x;

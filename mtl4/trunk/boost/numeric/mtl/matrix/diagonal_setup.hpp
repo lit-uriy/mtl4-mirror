@@ -39,7 +39,7 @@ inline void diagonal_setup(Matrix& matrix, const Value& value)
 	return;
     }
     
-    throw_if(num_rows(matrix) != num_cols(matrix), matrix_not_square());
+    MTL_THROW_IF(num_rows(matrix) != num_cols(matrix), matrix_not_square());
     set_to_zero(matrix);
     
     inserter<Matrix>      ins(matrix, 1);
