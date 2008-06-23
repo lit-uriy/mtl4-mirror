@@ -45,7 +45,7 @@ void test(Matrix& A, const char* name)
     
     cout << "B = \n" << B << "b = " << b << "\n";
 	
-    x= lower_trisolve(B, b, false);
+    x= lower_trisolve(B, b, tag::unit_diagonal());
     cout << "x = lower_trisolve(B, b) ==" << x << "\n\n";
     if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in lower_trisolve!";
 

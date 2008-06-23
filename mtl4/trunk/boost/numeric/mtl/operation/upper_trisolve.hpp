@@ -77,7 +77,7 @@ namespace detail {
 
 
 	template <typename Vector>
-	Vector apply(const Vector& v, tag::row_major)
+	Vector inline apply(const Vector& v, tag::row_major)
 	{
 	    using namespace tag; using traits::range_generator; using math::one;
 	    typedef typename range_generator<row, Matrix>::type       ra_cur_type;    
@@ -157,102 +157,17 @@ namespace detail {
 	typename traits::row<Matrix>::type          row_a;
     };
 
-
-
-
-
-
-#if 0
-    template <typename Matrix, typename Vector>
-    Vector upper_trisolve(const Matrix& A, const Vector& v, bool explicit_diagonal, tag::row_major)
-    {
-	using namespace tag; using traits::range_generator; using math::one;
-
-	typedef typename Collection<Matrix>::value_type           value_type;
-	typedef typename range_generator<row, Matrix>::type       a_cur_type;    
-	typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
-	typename traits::col<Matrix>::type                        col_a(A); 
-	typename traits::const_value<Matrix>::type                value_a(A); 
-
-	Vector result(v);
-
-	a_cur_type ac= begin<row>(A), aend= end<row>(A); 
-	for (int r= num_rows(A) - 1; ac != aend--; --r) {
-	    a_icur_type aic= begin<nz>(aend), aiend= end<nz>(aend);
-
-
-
-	    adjust_cursor(r + (explicit_diagonal ? 0 : 1), aic, typename traits::category<Matrix>::type());
-	    MTL_THROW_IF(explicit_diagonal && (aic == aiend || col_a(*aic) != r), missing_diagonal());
-
-	    typename Collection<Vector>::value_type rr= result[r];
-	    value_type dia= explicit_diagonal ? value_a(*aic) : one(value_type());
-
-
-
-
-	    if (explicit_diagonal) ++aic;
-	    for (; aic != aiend; ++aic) {
-		MTL_DEBUG_THROW_IF(col_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
-		rr-= value_a(*aic) * result[col_a(*aic)];
-	    }
-	    result[r]= rr/= dia;
-	}
-	return result;
-    }	
-
-
-    template <typename Matrix, typename Vector>
-    Vector inline upper_trisolve(const Matrix& A, const Vector& v, bool explicit_diagonal, tag::col_major)
-    {
-	using namespace tag; using traits::range_generator; 
-
-	typedef typename range_generator<col, Matrix>::type       a_cur_type;    
-	typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
-	typename traits::row<Matrix>::type                        row_a(A); 
-	typename traits::const_value<Matrix>::type                value_a(A); 
-
-	Vector result(v);
-
-	a_cur_type ac= begin<col>(A), aend= end<col>(A); 
-	for (int r= num_rows(A) - 1; ac != aend--; --r) {
-	    a_icur_type aic= begin<nz>(aend), aiend= end<nz>(aend);
-	    adjust_cursor(r - num_rows(A) + (explicit_diagonal ? 1 : 0), aiend, typename traits::category<Matrix>::type());
-
-	    MTL_THROW_IF(explicit_diagonal && (aic == aiend || row_a(*--aiend) != r), missing_diagonal());
-	    typename Collection<Vector>::value_type rr= explicit_diagonal ? (result[r]/= value_a(*aiend)) : result[r];
-
-	    for (; aic != aiend; ++aic) {
-		MTL_DEBUG_THROW_IF(row_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
-		result[row_a(*aic)]-= value_a(*aic) * rr;
-	    }
-	}
-	return result;
-    }
-#endif 
-
-
 }
 
 template <typename Matrix, typename Vector>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v)
 {
-    // std::cout << "Upper trisolve: A = \n" << A;
-    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
-
     return detail::upper_trisolve_t<Matrix, tag::regular_diagonal>(A)(v);
-
-
-    // return detail::upper_trisolve(A, v, tag::regular_diagonal, typename OrientedCollection<Matrix>::orientation());
 }
 
 template <typename Matrix, typename Vector, typename DiaTag>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v, DiaTag)
 {
-    // std::cout << "Upper trisolve: A = \n" << A;
-    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
-    // return detail::upper_trisolve(A, v, DiaTag(), typename OrientedCollection<Matrix>::orientation());
-
     return detail::upper_trisolve_t<Matrix, DiaTag>(A)(v);
 }
 

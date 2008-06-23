@@ -34,8 +34,8 @@ class ilu_0
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef ilu_0                                         self;
 
-    typedef mtl::compressed2D<value_type, mtl::matrix::parameters<mtl::tag::col_major> > U_type;
-    typedef mtl::compressed2D<value_type>                                                L_type;
+    typedef mtl::compressed2D<value_type, mtl::matrix::parameters<mtl::tag::col_major> > L_type;
+    typedef mtl::compressed2D<value_type>                                                U_type;
 
 
     // Factorization adapted from Saad
@@ -48,7 +48,7 @@ class ilu_0
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
-	return mtl::upper_trisolve(U, mtl::lower_trisolve(L, x, false /*mtl::tag::unit_diagonal()*/ ),
+	return mtl::upper_trisolve(U, mtl::lower_trisolve(L, x, mtl::tag::unit_diagonal()),
 				   mtl::tag::inverse_diagonal());
     }
 
@@ -56,7 +56,7 @@ class ilu_0
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
-	return mtl::upper_trisolve(adjoint(L), mtl::lower_trisolve(adjoint(U), x /*, mtl::tag::inverse_diagonal() */ ), 
+	return mtl::upper_trisolve(adjoint(L), mtl::lower_trisolve(adjoint(U), x, mtl::tag::inverse_diagonal()), 
 				   mtl::tag::unit_diagonal());
     }
 
