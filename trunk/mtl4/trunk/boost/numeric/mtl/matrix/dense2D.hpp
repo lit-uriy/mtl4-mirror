@@ -317,13 +317,13 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     
     const_reference operator() (size_t r, size_t c) const 
     {
-	debug_throw_if(r < 0 || r >= this->num_rows() || c < 0 || c >= this->num_cols(), index_out_of_range());
+	MTL_DEBUG_THROW_IF(r < 0 || r >= this->num_rows() || c < 0 || c >= this->num_cols(), index_out_of_range());
         return this->data[indexer(*this, r, c)];
     }
 
     value_type& operator() (size_t r, size_t c)
     {
-	debug_throw_if(r < 0 || r >= this->num_rows() || c < 0 || c >= this->num_cols(), index_out_of_range());
+	MTL_DEBUG_THROW_IF(r < 0 || r >= this->num_rows() || c < 0 || c >= this->num_cols(), index_out_of_range());
 	return this->data[indexer(*this, r, c)]; 
     }    
 

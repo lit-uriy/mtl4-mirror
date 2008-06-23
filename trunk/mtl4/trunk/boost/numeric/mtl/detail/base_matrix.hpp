@@ -54,7 +54,7 @@ struct base_matrix
 		it can be only changed explicitly and is only compatible with matrices of the same dimensionality. **/
     void check_dim(size_type num_rows, size_type num_cols) const
     {
-	debug_throw_if(this->num_rows() * this->num_cols() != 0
+	MTL_DEBUG_THROW_IF(this->num_rows() * this->num_cols() != 0
 			   && (this->num_rows() != num_rows || this->num_cols() != num_cols),
 			   incompatible_size());
     }

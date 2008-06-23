@@ -42,14 +42,14 @@ namespace detail {
 	for (int r= num_rows(A) - 1; ac != aend--; --r) {
 	    a_icur_type aic= begin<nz>(aend), aiend= end<nz>(aend);
 	    adjust_cursor(r + (explicit_diagonal ? 0 : 1), aic, typename traits::category<Matrix>::type());
-	    throw_if(explicit_diagonal && (aic == aiend || col_a(*aic) != r), missing_diagonal());
+	    MTL_THROW_IF(explicit_diagonal && (aic == aiend || col_a(*aic) != r), missing_diagonal());
 
 	    typename Collection<Vector>::value_type rr= result[r];
 	    value_type dia= explicit_diagonal ? value_a(*aic) : one(value_type());
 
 	    if (explicit_diagonal) ++aic;
 	    for (; aic != aiend; ++aic) {
-		debug_throw_if(col_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
+		MTL_DEBUG_THROW_IF(col_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
 		rr-= value_a(*aic) * result[col_a(*aic)];
 	    }
 	    result[r]= rr/= dia;
@@ -75,11 +75,11 @@ namespace detail {
 	    a_icur_type aic= begin<nz>(aend), aiend= end<nz>(aend);
 	    adjust_cursor(r - num_rows(A) + (explicit_diagonal ? 1 : 0), aiend, typename traits::category<Matrix>::type());
 
-	    throw_if(explicit_diagonal && (aic == aiend || row_a(*--aiend) != r), missing_diagonal());
+	    MTL_THROW_IF(explicit_diagonal && (aic == aiend || row_a(*--aiend) != r), missing_diagonal());
 	    typename Collection<Vector>::value_type rr= explicit_diagonal ? (result[r]/= value_a(*aiend)) : result[r];
 
 	    for (; aic != aiend; ++aic) {
-		debug_throw_if(row_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
+		MTL_DEBUG_THROW_IF(row_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
 		result[row_a(*aic)]-= value_a(*aic) * rr;
 	    }
 	}
@@ -91,7 +91,7 @@ template <typename Matrix, typename Vector>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v, bool explicit_diagonal= true)
 {
     // std::cout << "Upper trisolve: A = \n" << A;
-    throw_if(num_rows(A) != num_cols(A), matrix_not_square());
+    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
     return detail::upper_trisolve(A, v, explicit_diagonal, typename OrientedCollection<Matrix>::orientation());
 }
 
