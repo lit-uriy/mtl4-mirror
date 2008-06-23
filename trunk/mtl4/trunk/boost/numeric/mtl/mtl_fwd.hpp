@@ -43,7 +43,7 @@ namespace mtl {
     /// Namespace for matrices and views and operations exclusively on matrices
     namespace matrix {
 	template <typename Orientation, typename Index, typename Dimensions,
-		  bool OnStack, bool RValue>
+		  bool OnStack>
 	struct parameters;
     }
 

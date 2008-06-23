@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
+#include <boost/numeric/mtl/matrix/compressed2D.hpp>
 
 
 namespace itl { namespace pc {
@@ -33,6 +34,10 @@ class ilu_0
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef ilu_0                                         self;
 
+    typedef mtl::compressed2D<value_type, mtl::matrix::parameters<mtl::tag::col_major> > U_type;
+    typedef mtl::compressed2D<value_type>                                                L_type;
+
+
     // Factorization adapted from Saad
     ilu_0(const Matrix& A)
     {
@@ -43,19 +48,21 @@ class ilu_0
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
-	return mtl::upper_trisolve(U, mtl::lower_trisolve(L, x, false));
+	return mtl::upper_trisolve(U, mtl::lower_trisolve(L, x, false /*mtl::tag::unit_diagonal()*/ ),
+				   mtl::tag::inverse_diagonal());
     }
 
     // solve x = (LU)^T y --> y= L^{-T} U^{-T} x
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
-	return mtl::upper_trisolve(adjoint(L), mtl::lower_trisolve(adjoint(U), x), false);
+	return mtl::upper_trisolve(adjoint(L), mtl::lower_trisolve(adjoint(U), x /*, mtl::tag::inverse_diagonal() */ ), 
+				   mtl::tag::unit_diagonal());
     }
 
 
-    Matrix get_L() { return L; }
-    Matrix get_U() { return U; }
+    L_type get_L() { return L; }
+    U_type get_U() { return U; }
 
   protected:
 
@@ -106,7 +113,7 @@ class ilu_0
 	    inv_dia[i]= reciprocal(LU[i][i]);
 	}
 
-	U= upper(LU); 
+	U= upper(LU); invert_diagonal(U);
 	L= strict_lower(LU); 
 	    
 #if 0
@@ -115,7 +122,10 @@ class ilu_0
 #endif
     }
 
-    Matrix   L, U;
+    // Matrix   L, U;
+    // Let's be a little less generic and a little more efficient
+    L_type                       L;
+    U_type                       U;
 }; 
 
 
@@ -133,7 +143,5 @@ Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& x)
 
 
 }} // namespace itl::pc
-
-#include <boost/numeric/itl/pc/ilu_0_aux.hpp>
 
 #endif // ITL_PC_ILU_0_INCLUDE

@@ -169,6 +169,24 @@ struct row_major {};
 /// Characterizes column-major orientation in matrices and column vector in 1D
 struct col_major {};
 
+/// Common base for diagonal tags
+struct universe_diagonal {};
+
+/// Tag indicating that diagonal is stored regularly
+struct regular_diagonal : universe_diagonal {};
+
+/// Tag indicating that diagonal contains unit elements
+struct unit_diagonal : universe_diagonal {};
+
+/// Tag indicating that diagonal entries are stored as inverses
+/** Storing value in different ways can be faster in several algorithms.
+    By the time of this writing it is experimental and only used
+    in upper_trisolve and lower_trisolve. **/
+struct inverse_diagonal : universe_diagonal {};
+
+
+
+
 /*@}*/ // end of group Tags
 
 } // namespace mtl::tag
@@ -182,6 +200,8 @@ using tag::row_major;
 
 /// Characterizes column-major orientation in matrices and column vector in 1D
 using tag::col_major;
+
+
 
 /*@}*/ // end of group Tags
 
