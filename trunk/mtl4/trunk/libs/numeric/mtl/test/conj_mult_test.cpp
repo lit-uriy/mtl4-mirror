@@ -31,7 +31,13 @@ void test(Matrix& A, const char* name)
     x=cdouble(1,2);
     
     Ax=conj(A) * x;
-    std::cout << "Ax is " << Ax << "\n";
+    std::cout << "conj(A) * x is " << Ax << "\n";
+    
+    Ax=trans(A) * x;
+    std::cout << "trans(A) * x is " << Ax << "\n";
+
+    Ax=hermitian(A) * x;
+    std::cout << "hermitian(A) * x is " << Ax << "\n";
 }
 
 

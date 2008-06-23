@@ -59,6 +59,7 @@ struct transposed_view
     typedef typename Matrix::key_type                  key_type;
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
+    typedef matrix::parameters<orientation, index_type, dim_type> parameters;
 
     typedef typename boost::mpl::if_<boost::is_const<Matrix>,
 				     const_reference,
