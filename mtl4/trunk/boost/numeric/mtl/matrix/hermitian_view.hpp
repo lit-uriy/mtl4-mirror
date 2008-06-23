@@ -39,7 +39,46 @@ struct hermitian_view
     transposed_view<Matrix>  trans_view;
 };
 
+// TBD submatrix of Hermitian (not trivial)
 
 }} // namespace mtl::matrix
+
+
+
+// Traits for Hermitian views
+namespace mtl { namespace traits {
+
+template <typename Matrix>
+struct row< matrix::hermitian_view<Matrix> >
+    : public row< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+				   transposed_view<Matrix> > >
+{};
+
+template <typename Matrix>
+struct col< matrix::hermitian_view<Matrix> >
+    : public col< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+				   transposed_view<Matrix> > >
+{};
+
+template <typename Matrix>
+struct const_value< matrix::hermitian_view<Matrix> >
+    : public const_value< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+					   transposed_view<Matrix> > >
+{};
+
+template <typename Tag, typename Matrix>
+struct range_generator< Tag, matrix::hermitian_view<Matrix> >
+    : public range_generator< Tag, matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+						    transposed_view<Matrix> > >
+{};
+
+template <typename Matrix>
+struct range_generator< tag::major, matrix::hermitian_view<Matrix> >
+    : public range_generator< tag::major, matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+							   transposed_view<Matrix> > >
+{};
+
+
+}} // mtl::traits
 
 #endif // MTL_HERMITIAN_VIEW_INCLUDE
