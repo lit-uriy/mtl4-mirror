@@ -43,7 +43,7 @@ struct banded_view
     public mtl::detail::base_matrix<typename Matrix::value_type, typename Matrix::parameters>
 {
     typedef banded_view                                self;
-    typedef matrix::mat_expr< self >                   expr_base;
+    typedef mtl::matrix::mat_expr< self >                   expr_base;
     typedef mtl::detail::base_matrix<typename Matrix::value_type, typename Matrix::parameters> base;
     
     typedef Matrix                                     other;
@@ -128,7 +128,7 @@ inline size(const banded_view<Matrix>& matrix)
 	{
 	    typedef typename Matrix::key_type                      key_type;
 	    typedef typename Matrix::value_type                    value_type;
-	    typedef matrix::banded_view<Matrix>                    view_type;
+	    typedef mtl::matrix::banded_view<Matrix>                    view_type;
     	
 	    banded_value(view_type const& view) 
 		: view(view), its_row(view.ref), its_col(view.ref), its_value(view.ref) 
@@ -163,23 +163,23 @@ inline size(const banded_view<Matrix>& matrix)
 namespace mtl { namespace traits {
 
     template <typename Matrix> 
-    struct row<matrix::banded_view<Matrix> >
+    struct row<mtl::matrix::banded_view<Matrix> >
     {
 	// from map_view
 	typedef detail::mapped_row<sfunctor::identity<typename Matrix::value_type>, Matrix>   type;
     };
 
     template <typename Matrix> 
-    struct col<matrix::banded_view<Matrix> >
+    struct col<mtl::matrix::banded_view<Matrix> >
     {
 	// from map_view
 	typedef detail::mapped_col<sfunctor::identity<typename Matrix::value_type>, Matrix>   type;
     };
 
     template <typename Matrix> 
-    struct const_value<matrix::banded_view<Matrix> >
+    struct const_value<mtl::matrix::banded_view<Matrix> >
     {
-	typedef matrix::detail::banded_value<Matrix>  type;
+	typedef mtl::matrix::detail::banded_value<Matrix>  type;
     };
 
     // ================
@@ -188,15 +188,15 @@ namespace mtl { namespace traits {
 
     // Use range_generator of original matrix
     template <typename Tag, typename Matrix> 
-    struct range_generator<Tag, matrix::banded_view<Matrix> >
-	: public detail::referred_range_generator<matrix::banded_view<Matrix>, 
+    struct range_generator<Tag, mtl::matrix::banded_view<Matrix> >
+	: public detail::referred_range_generator<mtl::matrix::banded_view<Matrix>, 
 						  range_generator<Tag, Matrix> >
     {};
 
     // To disambigue
     template <typename Matrix> 
-    struct range_generator<tag::major, matrix::banded_view<Matrix> >
-	: public detail::referred_range_generator<matrix::banded_view<Matrix>, 
+    struct range_generator<tag::major, mtl::matrix::banded_view<Matrix> >
+	: public detail::referred_range_generator<mtl::matrix::banded_view<Matrix>, 
 						  range_generator<tag::major, Matrix> >
     {};
 
@@ -211,14 +211,14 @@ namespace mtl {
 // ==========
 
 template <typename Matrix>
-struct sub_matrix_t< matrix::banded_view<Matrix> >
+struct sub_matrix_t< mtl::matrix::banded_view<Matrix> >
 {
-    typedef matrix::banded_view<Matrix>                                           view_type;
+    typedef mtl::matrix::banded_view<Matrix>                                           view_type;
 
     // Mapping of sub-matrix type
     typedef typename sub_matrix_t<Matrix>::sub_matrix_type                        ref_sub_type;
-    typedef matrix::banded_view<ref_sub_type>                                     const_sub_matrix_type;
-    typedef matrix::banded_view<ref_sub_type>                                     sub_matrix_type;
+    typedef mtl::matrix::banded_view<ref_sub_type>                                     const_sub_matrix_type;
+    typedef mtl::matrix::banded_view<ref_sub_type>                                     sub_matrix_type;
     typedef typename view_type::size_type                                         size_type;
 
     sub_matrix_type operator()(view_type const& view, size_type begin_r, size_type end_r, 

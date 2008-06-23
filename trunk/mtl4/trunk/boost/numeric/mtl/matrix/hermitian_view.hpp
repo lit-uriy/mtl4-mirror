@@ -49,32 +49,32 @@ struct hermitian_view
 namespace mtl { namespace traits {
 
 template <typename Matrix>
-struct row< matrix::hermitian_view<Matrix> >
-    : public row< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+struct row< mtl::matrix::hermitian_view<Matrix> >
+    : public row< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
 				   transposed_view<Matrix> > >
 {};
 
 template <typename Matrix>
-struct col< matrix::hermitian_view<Matrix> >
-    : public col< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+struct col< mtl::matrix::hermitian_view<Matrix> >
+    : public col< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
 				   transposed_view<Matrix> > >
 {};
 
 template <typename Matrix>
-struct const_value< matrix::hermitian_view<Matrix> >
-    : public const_value< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+struct const_value< mtl::matrix::hermitian_view<Matrix> >
+    : public const_value< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
 					   transposed_view<Matrix> > >
 {};
 
 template <typename Tag, typename Matrix>
-struct range_generator< Tag, matrix::hermitian_view<Matrix> >
-    : public range_generator< Tag, matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+struct range_generator< Tag, mtl::matrix::hermitian_view<Matrix> >
+    : public range_generator< Tag, mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
 						    transposed_view<Matrix> > >
 {};
 
 template <typename Matrix>
-struct range_generator< tag::major, matrix::hermitian_view<Matrix> >
-    : public range_generator< tag::major, matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+struct range_generator< tag::major, mtl::matrix::hermitian_view<Matrix> >
+    : public range_generator< tag::major, mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
 							   transposed_view<Matrix> > >
 {};
 
