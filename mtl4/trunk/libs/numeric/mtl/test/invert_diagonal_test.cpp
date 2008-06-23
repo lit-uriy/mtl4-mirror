@@ -22,32 +22,16 @@ void test(Matrix& A, const char* name)
     A.change_dim(5, 5); A= 0.0;
     {
 	matrix::inserter<Matrix>   ins(A);
-	ins[1][3] << 2; ins[1][4] << 3;
-    }
+	ins[0][0] << 7; ins[1][1] << 8; ins[1][3] << 2; ins[1][4] << 3;
+	ins[2][2] << 2; ins[3][3] << 4; ins[4][4] << 9;
+     }
     
-    double xa[] = {1, 2, 3, 4, 5};
-    dense_vector<double> x(xa), b;
+    cout << name << "\nA is set to \n" << A;
+    invert_diagonal(A);
     
-    b= A * x + x;
-    x= 0.0;
-    
-    cout << name << "\nA = \n" << A << "b = " << b << "\n";
-    
-    x= upper_trisolve(A, b, tag::unit_diagonal());
-    cout << "x = upper_trisolve(A, b) ==" << x << "\n\n";
-    if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in upper_trisolve!";
-
-    x= xa;
-    Matrix B(trans(A));
-    
-    b= B * x + x;
-    x= 0.0;
-    
-    cout << "B = \n" << B << "b = " << b << "\n";
-	
-    x= lower_trisolve(B, b, false);
-    cout << "x = lower_trisolve(B, b) ==" << x << "\n\n";
-    if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in lower_trisolve!";
+    cout << "\nAfter inverting the diagonal, it is: \n" << A;
+    if (std::abs(A[0][0] - 1.0 / 7.0) > 0.0001) throw "Wrong value after inverting diagonal!";
+    if (std::abs(A[1][3] - 2.0) > 0.0001) throw "Wrong value after inverting diagonal!";
 
 }
 

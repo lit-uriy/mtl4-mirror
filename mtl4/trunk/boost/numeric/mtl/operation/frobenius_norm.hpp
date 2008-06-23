@@ -13,8 +13,10 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/operation/max_of_sums.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 
 namespace mtl {

@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/fill.hpp>
 #include <boost/numeric/mtl/operation/hermitian.hpp>
+#include <boost/numeric/mtl/operation/invert_diagonal.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>

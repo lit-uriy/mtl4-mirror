@@ -5,8 +5,8 @@ using namespace mtl;
 using namespace itl;
 
 
-template <typename Matrix>
-void dense_ilu_0(const Matrix&As, const Matrix& Ls, const Matrix& Us)
+template <typename At, typename Lt, typename Ut>
+void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
 {
     dense2D<double> LU(As);
      
@@ -31,12 +31,14 @@ void dense_ilu_0(const Matrix&As, const Matrix& Ls, const Matrix& Us)
 int main()
 {
     // For a more realistic example set sz to 1000 or larger
-    const int size = 100, N = size * size; 
+    const int size = 1000, N = size * size; 
 
     typedef compressed2D<double>  matrix_type;
     compressed2D<double>          A(N, N), dia(N, N);
     matrix::laplacian_setup(A, size, size);
+    // dia= 1.0; A+= dia;
     
+   
     pc::ilu_0<matrix_type>        P(A);
     dense_vector<double>          x(N, 1.0), b(N);
     
