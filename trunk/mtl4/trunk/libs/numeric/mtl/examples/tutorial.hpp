@@ -445,18 +445,20 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage vector_reductions 
    .
 -# Other Functions
-   -# \subpage conj
-   -# \subpage trans
-   -# \subpage hermitian
+   -# \subpage conj_intro
+   -# \subpage trans_intro
+   -# \subpage hermitian_intro
    -# \subpage sub_matrices
    -# \subpage permutation
    -# \subpage banded_matrices
    -# \subpage rank_update
+   -# \subpage other_vector_functions
+   -# \subpage other_matrix_functions
    .
 -# Solving Linear Systems
-   -# \subpage trisolve_demo
-   -# \subpage krylov_demo
-   -# \subpage pc_demo
+   -# \subpage trisolve_intro
+   -# \subpage krylov_intro
+   -# \subpage pc_intro
    -# \subpage using_solvers
    .
 -# Traversing Matrices and Vectors
@@ -473,13 +475,14 @@ This, of course, does not exclude backward-compatible extensions.
 */
 
 
-
+\if Navigation \endif
+               Go \ref tutorial "Home"                or Proceed to \ref vector_def
 
 
 //-----------------------------------------------------------
 
 
-/*! \page vector_def Vector Definitions
+/*! \page vector_def Vector Types
 
 To start the tutorial we want to give a very short example (we could call
 it the MTL4-hello-world).
@@ -526,182 +529,8 @@ value is assignable to the type of the elements.
 Scalar types are in MTL4 all types that are not explicitly defined
 by type %traits as vectors or matrices, thus almost all types.
 
-Proceed to \ref vector_norms
-
-*/
-
-//-----------------------------------------------------------
-
-
-/*! \page vector_norms Vector Norms
-
-
-Principal MTL4 functions are all defined in namespace mtl.
-Helper functions are defined in sub-namespaces to avoid
-namespace pollution.
-
-The following program shows how to compute norms:
-
-\include vector_norm.cpp
-
-Since this code is almost self-explanatory, we give only a few
-comments here.
-The definitions of the \ref one_norm, \ref two_norm, and 
-\ref infinity_norm can
-be found in their respective documentations.
-%Vector norms are for performance reasons computed with unrolled loops.
-Since we do not want to rely on the compilers' capability and 
-in order to have more control over the optimization, the unrolling
-is realized by meta-programming.
-Specializations for certain compilers might be added later
-if there is a considerable performance gain over the meta-programming
-solution.
-
-Loops in reduction %operations, like norms, are by default unrolled
-to 8 statements.
-The optimal unrolling depends on several factors, in particular
-the number of registers and the value type of the %vector.
-The last statement shows how to unroll the computation to six
-statements.
-The maximum for unrolling is 8 (it might be increased later).
-
-The norms return the magnitude type of the vectors' value type, 
-see Magnitude.
-
-*/
-
-//-----------------------------------------------------------
-
-/*! \page vector_reductions Vector Reductions
-
-
-
-The sum and the product of all vector's elements can
-be computed:
-
-\include vector_reduction.cpp
-
-As %vector reductions base on the same implementation as norms, the
-unrolling can be explicitly controlled as shown in the last
-command.
-The results of these reductions are the value type of the %vector.
-
-In the same way, the maximum and minimum of vectors are computed:
-
-\include vector_min_max.cpp
-
-The dot product of two vectors is computed with the function \ref dot:
-
-\include dot.cpp
-
-As the previous computation the evaluation is unrolled, either with
-a user-defined parameter or by default eight times.
-
-The result type of \ref dot is of type of the values' product.
-If MTL4 is compiled with a concept-compiler, the result type is 
-taken from the concept std::Multiple and without concepts
-Joel de Guzman's result type deduction from Boost is used.
-
-The example also showed how to compute the conjugate values of all
-elements.
-The %vector is not changed but a view on the %vector is created
-that conjugate an element when accessed.
-
-The transposition of vectors will be implemented soon.
-
-Return to \ref vector_def "vector definitions"
-or proceed to \ref vector_expr "vector expressions".
-
-
-*/
-
-//-----------------------------------------------------------
-
-
-/*! \page vector_expr Vector Expressions
-
-The following program illustrates the usage of basic %vector
-expressions.
-
-\include vector_expr.cpp
-
-The mathematical definition of %vector spaces requires that
-vectors can be added, multiplied with scalar values
-and the results can be assigned to vectors.
-In MTL4, the vectors must have the same algebraic shape, 
-see \ref ashape,
- for addition
-and assignment, i.e. column vectors cannot be assigned to row vectors.
-If the elements of the vectors are vectors themselves or matrices
-then the elements must also be of the same algebraic shape.
-
-Products of scalars and vectors are
- implemented by a view, see \ref vector::scaled_view,
-and %vector elements are multiplied with the factor when
-accessing an element of the view.
-Please notice that the scaling factor's type is not required to be
-identical with the vector's value type.
-Furthermore, the value type of the view can be different from
-the vector's value type if necessary to represent the products.
-The command is an example for it: multiplying a double %vector
-with a complex number requires a complex %vector view to 
-guarantee the correctness of the results.
-
-Traditional definitions of operators perform computations
-in temporary variables that are returned at the end of the
-calculation.
-The presence of multiple operators, say n, in a single expression
-(which is always the case except for an assignment without numerics)
-requires then the execution of n loops (possibly more to copy
-the temporaries on the stack).
-If the vectors are too large for the cache, values must be loaded
-repeatedly from slower memories.
-Expression templates circumvent this repeated loading of %vector
-elements by
-performing only one loop.
-
-
-Return to \ref vector_functions "vector functions"
-or proceed to \ref rich_vector_expr "rich vector expressions".
-
-*/
-
-//-----------------------------------------------------------
-
-
-/*! \page rich_vector_expr Rich Vector Expressions
-
-As discussed in the previous chapter, 
-%vector operation can be accelerated by improving
-their cache locality via expression templates.
-Cache locality can be further improved in applications
-when subsequent %vector expressions are evaluated
-in one loop, data dependencies allowing.
-Unfortunately, this so-called loop fusion cannot be 
-realized with expression templates.
-At least not when the loops are performed in the assignment.
-
-In collaboration with Karl Meerbergen, we developed expression
-templates that can be nested, called rich expression templates.
-The following program shows some examples of rich expression
-templates:
-
-\include rich_vector_expr.cpp
-
-The first example shows the combination of an incremental
-assignment with a %vector addition.
-The second statement fuses four %vector expressions:
--# The value 2 is assigned to every element of x;
--# w is scaled in-place with 3;
--# v is incremented by the sum of both %vector; and
--# u is incremented by the new value of v.
-
-Again, all these %operations are performed in one loop and each %vector
-element is accessed exactly once.
-
-
-Return to \ref vector_expr "vector expressions"
-or proceed to \ref matrix_types "matrix types".
+\if Navigation \endif
+Return to \ref tutorial or                Go \ref tutorial "Home"                or Proceed to \ref matrix_types
 
 */
 
@@ -803,14 +632,31 @@ All %operations are provided in the same way for both formats
 
 How to fill  sparse matrices is shown in the following chapter.
 
-
-Return to \ref rich_vector_expr "rich vector expressions"
-or proceed to \ref matrix_insertion "matrix insertion".
+\if Navigation \endif
+Return to \ref vector_def or                Go \ref tutorial "Home"                or Proceed to \ref vector_insertion
 
 */
 
 //-----------------------------------------------------------
 
+
+/*! \page vector_insertion Vector Insertion
+
+Vectors are filled by setting the elements, e.g.:
+\code
+  v[1]= 7.0; v[4]= 8.0;
+\endcode
+If all elements are equal, one can set it in one statement:
+\code
+  v= 9.0;
+\endcode
+
+\if Navigation \endif
+Return to \ref matrix_types or                Go \ref tutorial "Home"                or Proceed to \ref matrix_insertion
+
+*/
+
+//-----------------------------------------------------------
 
 /*! \page matrix_insertion Matrix Insertion
 
@@ -929,14 +775,29 @@ Unfortunately, it is not (yet) possible to initialize user-defined types with li
 This is proposed for the next C++ standard and we will incorporate this feature 
 as soon as it is generally available.
 
-
-Return to \ref matrix_types "matrix types"
-or proceed to \ref matrix_assignment "matrix assignment".
+\if Navigation \endif
+Return to \ref vector_insertion or                Go \ref tutorial "Home"                or Proceed to \ref vector_assignment
 
 */
 
 //-----------------------------------------------------------
 
+
+/*! \page vector_assignment Vector Assignment
+
+
+Vectors assignments are in most cases performed by expression templated 
+(see \ref vector_expr).
+Functions that return vectors are subject to move semantics (see \ref copying
+and \ref move_semantics).
+
+
+\if Navigation \endif
+Return to \ref matrix_insertion or                Go \ref tutorial "Home"                or Proceed to \ref matrix_assignment
+
+*/
+
+//-----------------------------------------------------------
 
 /*! \page matrix_assignment Matrix Assignment
 
@@ -1016,134 +877,95 @@ Last but not least, we want to thank David Abrahams and Sean Parent who helped
 to understand the subtle interplay between details of the implementation and
 the behavior of the compiler.
 
+\if Navigation \endif
+Return to \ref vector_assignment or                Go \ref tutorial "Home"                or Proceed to \ref vector_expr
 
-Return to \ref matrix_insertion "matrix insertion"
-or proceed to \ref matrix_functions "matrix functions".
+*/
+
+//-----------------------------------------------------------
+
+/*! \page vector_expr Vector Expressions
+
+The following program illustrates the usage of basic %vector
+expressions.
+
+\include vector_expr.cpp
+
+The mathematical definition of %vector spaces requires that
+vectors can be added, multiplied with scalar values
+and the results can be assigned to vectors.
+In MTL4, the vectors must have the same algebraic shape, 
+see \ref ashape,
+ for addition
+and assignment, i.e. column vectors cannot be assigned to row vectors.
+If the elements of the vectors are vectors themselves or matrices
+then the elements must also be of the same algebraic shape.
+
+Products of scalars and vectors are
+ implemented by a view, see \ref vector::scaled_view,
+and %vector elements are multiplied with the factor when
+accessing an element of the view.
+Please notice that the scaling factor's type is not required to be
+identical with the vector's value type.
+Furthermore, the value type of the view can be different from
+the vector's value type if necessary to represent the products.
+The command is an example for it: multiplying a double %vector
+with a complex number requires a complex %vector view to 
+guarantee the correctness of the results.
+
+Traditional definitions of operators perform computations
+in temporary variables that are returned at the end of the
+calculation.
+The presence of multiple operators, say n, in a single expression
+(which is always the case except for an assignment without numerics)
+requires then the execution of n loops (possibly more to copy
+the temporaries on the stack).
+If the vectors are too large for the cache, values must be loaded
+repeatedly from slower memories.
+Expression templates circumvent this repeated loading of %vector
+elements by
+performing only one loop.
+
+\if Navigation \endif
+Return to \ref matrix_assignment or                Go \ref tutorial "Home"                or Proceed to \ref rich_vector_expr
 
 */
 
 //-----------------------------------------------------------
 
 
-/*! \page shallow_copy_problems Why Not Using Shallow Copy in Numerical Software
+/*! \page rich_vector_expr Rich Vector Expressions
 
-Shallow copy has the advantage over deep copy of being considerably faster.
-This advantage does not justify all the dangers implied.
+As discussed in the previous chapter, 
+%vector operation can be accelerated by improving
+their cache locality via expression templates.
+Cache locality can be further improved in applications
+when subsequent %vector expressions are evaluated
+in one loop, data dependencies allowing.
+Unfortunately, this so-called loop fusion cannot be 
+realized with expression templates.
+At least not when the loops are performed in the assignment.
 
-\section scp_unawareness Unawareness
+In collaboration with Karl Meerbergen, we developed expression
+templates that can be nested, called rich expression templates.
+The following program shows some examples of rich expression
+templates:
 
-The first risk is that many programmers are not aware of the aliasing
-behavior, which is that 
-after the assignment neither of the two arguments can be modified without 
-affecting the other.
-As one of the two variables can be changed in a sub-function of a sub-function of a ...
-it is hard to track down all possible modifications.
+\include rich_vector_expr.cpp
 
-\section scp_type_dependence Type Dependence of Copy behavior
+The first example shows the combination of an incremental
+assignment with a %vector addition.
+The second statement fuses four %vector expressions:
+-# The value 2 is assigned to every element of x;
+-# w is scaled in-place with 3;
+-# v is incremented by the sum of both %vector; and
+-# u is incremented by the new value of v.
 
+Again, all these %operations are performed in one loop and each %vector
+element is accessed exactly once.
 
-Moreover, the problem is even more confusing.
-Since shallow copy semantic is only feasible between objects of the same type,
-assignments between different types must copy data deeply.
-In generic functions aiming for maximal generality one do not want assume or
-require equality or distinctness of argument types so that the copy behavior 
-is unknown.
-
-\include shallow_copy_problems_type.cpp
-
-\section scp_operations Impact of Mathematically Neutral Operations
-
-
-In the same way mathematically neutral operations like multiplications with one
-or additions of zero vectors silently change the program behavior by 
-disabling shallow copies and eliminating the aliasing behavior.
-
-\code
-A= B;           // Aliasing of A and B
-A= 1.0 * B;     // A and B are independent
-\endcode
-
-\section scp_obfuscations Code Obfuscation
-
-Many higher level libraries like ITL assigns vectors with the
-copy function instead of the assignment operator in order to guarantee deep
-copy.
-
-\code 
-A= B;           // (Potential) shallow copy
-copy(B, A);     // Deep copy
-\endcode
-
-We refrain from this approach because this syntax does not correspond to the
-mathematical literature and more importantly we cannot be sure that all users
-of a library will replace assignments by copy.
-
-
-
-
-\section scp_undermining Undermining const Attributes
-
-
-Last  but not least
-all shallow copy implementations we have seen so far
-relentlessly undermined const attributes of arguments.
-
-
-\include shallow_copy_problems_const.cpp
-
-After calling f, A is modified despite it was passed as const argument and the 
-const-ness was not even casted away.
-
-\section scp_resume Resume
-
-For all these reasons we are convinced that reliable mathematical software
-can only be implemented with
-deep copy semantics.
-Unnecessary copies can be avoided by using advanced techniques as expression
-templates and \ref move_semantics.
-
-*/
-
-//-----------------------------------------------------------
-
-
-/*! \page matrix_functions Matrix Functions
-
-Norms on matrices can be computed in the same fashion as on vectors:
-
-\include matrix_norms.cpp
-
-Other %matrix functions compute trace of a %matrix,
-the element-wise conjugates, and the transposed %matrix:
-
-\include matrix_functions2.cpp
-
-The functions conj(A), hermitian(A), and trans(A) do not change the matrices
-but they return views on them.
-While conj is and hermitian are read-only views -- since the elements
-of the referred matrices are not accessed but a function on them -- trans(A)
-returns a mutable view.
-
-For the sake of reliability, we conserve the const-ness of the referred
-matrix.
-The transposed of a constant matrix is itself constant (this feature alone required 
-a fair amount of non-trivial meta-programming).
-Only when the referred matrix is mutable the transposed will be:
-
-\include matrix_functions2a.cpp
-
-Sub-matrices also preserve the const attribute of the referred matrices or sub-matrices:
-
-\include matrix_functions3.cpp
-
-Details on the copy behavior of sub-matrices can be found in  section \ref copy_sub_matrix.
-
-More functions will be implemented in the future.
-
-
-Return to \ref matrix_assignment "matrix assignment"
-or proceed to \ref matrix_expr "matrix expressions".
-
+\if Navigation \endif
+Return to \ref vector_expr or                Go \ref tutorial "Home"                or Proceed to \ref matrix_expr
 
 */
 
@@ -1186,46 +1008,11 @@ Moreover, products can be arbitrarily added and subtracted:
 
 \include matrix_mult_add.cpp
 
-Return to \ref matrix_functions "matrix functions"
-or proceed to \ref matrix_vector_functions "matrix-vector functions".
-
+\if Navigation \endif
+Return to \ref rich_vector_expr or                Go \ref tutorial "Home"                or Proceed to \ref matrix_vector_expr
 */
 
 //-----------------------------------------------------------
-
-
-/*! \page matrix_vector_functions Matrix-Vector Functions
-
-Available %matrix-vector %operations are currently multiplication
-and updates.
-The former can also be expressed by operator and is described
-as \ref matrix_vector_expr expression.
-The application of rank-one and rank-two updates are
-illustrated in the following (hopefully self-explanatory)
-program:
-
-\include rank_two_update.cpp
-
-The output of the %matrix is formatted for better readability.
-The functions also work for sparse matrices although we
-cannot recommend this for the sake of efficiency.
-
-In the future, updates will be also expressible with operators.
-For instance, rank_one_update(A, v, w) can be written as
-A+= conj(v) * trans(w) if v and w are column vectors (if w
-is a row %vector the transposition can-and must-be removed).
-Thus, the orientation is relevant in operator notation
-where the functions rank_one_update and rank_two_update
-ignore the orientation.
-
-Return to \ref matrix_expr "matrix expressions"
-or proceed to \ref matrix_vector_expr "matrix-vector expressions".
-
-
-*/
-
-//-----------------------------------------------------------
-
 
 /*! \page matrix_vector_expr Matrix-Vector Expressions
 
@@ -1286,14 +1073,330 @@ expression will not be perceived for most large vectors (it will be done while
 waiting anyway for data from memory).
 
 
-Return to \ref matrix_vector_functions "matrix-vector functions"
-or proceed to \ref iteration "iteration".
-
+\if Navigation \endif
+Return to \ref matrix_expr or                Go \ref tutorial "Home"                or Proceed to \ref vector_norms
 
 */
 
 //-----------------------------------------------------------
 
+
+/*! \page vector_norms Vector Norms
+
+
+Principal MTL4 functions are all defined in namespace mtl.
+Helper functions are defined in sub-namespaces to avoid
+namespace pollution.
+
+The following program shows how to compute norms:
+
+\include vector_norm.cpp
+
+Since this code is almost self-explanatory, we give only a few
+comments here.
+The definitions of the \ref one_norm, \ref two_norm, and 
+\ref infinity_norm can
+be found in their respective documentations.
+%Vector norms are for performance reasons computed with unrolled loops.
+Since we do not want to rely on the compilers' capability and 
+in order to have more control over the optimization, the unrolling
+is realized by meta-programming.
+Specializations for certain compilers might be added later
+if there is a considerable performance gain over the meta-programming
+solution.
+
+Loops in reduction %operations, like norms, are by default unrolled
+to 8 statements.
+The optimal unrolling depends on several factors, in particular
+the number of registers and the value type of the %vector.
+The last statement shows how to unroll the computation to six
+statements.
+The maximum for unrolling is 8 (it might be increased later).
+
+The norms return the magnitude type of the vectors' value type, 
+see Magnitude.
+
+\if Navigation \endif
+Return to \ref matrix_vector_expr or                Go \ref tutorial "Home"                or Proceed to \ref matrix_norms
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page matrix_norms Matrix Norms
+
+Norms on matrices can be computed in the same fashion as on vectors:
+
+\include matrix_norms.cpp
+
+\if Navigation \endif
+Return to \ref vector_norms or                Go \ref tutorial "Home"                or Proceed to \ref vector_reductions
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page vector_reductions Vector Reductions
+
+
+
+The sum and the product of all vector's elements can
+be computed:
+
+\include vector_reduction.cpp
+
+As %vector reductions base on the same implementation as norms, the
+unrolling can be explicitly controlled as shown in the last
+command.
+The results of these reductions are the value type of the %vector.
+
+\if Navigation \endif
+Return to \ref matrix_norms or                Go \ref tutorial "Home"                or Proceed to \ref vector_reductions
+In the same way, the maximum and minimum of vectors are computed:
+
+\include vector_min_max.cpp
+
+The dot product of two vectors is computed with the function \ref dot:
+
+\include dot.cpp
+
+As the previous computation the evaluation is unrolled, either with
+a user-defined parameter or by default eight times.
+
+The result type of \ref dot is of type of the values' product.
+If MTL4 is compiled with a concept-compiler, the result type is 
+taken from the concept std::Multiple and without concepts
+Joel de Guzman's result type deduction from Boost is used.
+
+
+\if Navigation \endif
+Return to \ref vector_reductions or                Go \ref tutorial "Home"                or Proceed to \ref conj_intro
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page conj_intro Conjugates
+
+The conjugate of a vector is computed by:
+\code
+  conv(v);
+\endcode
+The vector \p v is not altered but a immutable view is returned.
+
+In the same manner the conjugate of a matrix is calculated:
+
+\include matrix_functions2.cpp
+
+This is as well a constant view.
+
+
+\if Navigation \endif
+Return to \ref vector_reductions or                Go \ref tutorial "Home"                or Proceed to \ref trans_intro
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page trans_intro Transposed
+
+The transposition of vector is momentarilly not implemented yet.
+It will create a row vector view on a column vector and vice versa.
+
+Transposing a matrix can be realized by:
+
+\include matrix_functions2.cpp
+
+The function conj(A) does not change matrices
+but they return views on them.
+For the sake of reliability, we conserve the const-ness of the referred
+matrix.
+The transposed of a constant matrix is itself constant (this feature alone required 
+a fair amount of non-trivial meta-programming).
+Only when the referred matrix is mutable the transposed will be:
+
+
+
+\if Navigation \endif
+Return to \ref conj_intro or                Go \ref tutorial "Home"                or Proceed to \ref hermitian_intro
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page hermitian_intro Hermitian
+
+The Hermitians of vectors will be available as soon as transposition is implemented.
+
+Hermitians of matrices are calculated as conjugates of transposed:
+
+\include matrix_functions2.cpp
+
+It returns an immutable view on the matrix (expression).
+
+
+\if Navigation \endif
+Return to \ref trans_intro or                Go \ref tutorial "Home"                or Proceed to \ref sub_matrices
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page sub_matrices Sub-matrices
+
+Sub-matrices also preserve the const attribute of the referred matrices or sub-matrices:
+
+\include matrix_functions3.cpp
+
+Details on the copy behavior of sub-matrices can be found in  section \ref copy_sub_matrix.
+
+
+\if Navigation \endif
+Return to \ref hermitian_intro or                Go \ref tutorial "Home"                or Proceed to \ref permutation
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page permutation Permutations and Reordering
+
+
+
+\if Navigation \endif
+Return to \ref sub_matrices or                Go \ref tutorial "Home"                or Proceed to \ref banded_matrices
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page banded_matrices Banded Matrix View, Upper and Lower Triangular Views
+
+
+\if Navigation \endif
+Return to \ref permutation or                Go \ref tutorial "Home"                or Proceed to \ref rank_update
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page rank_update Rank-One and Rank-Two Update
+
+The application of rank-one and rank-two updates are
+illustrated in the following (hopefully self-explanatory)
+program:
+
+\include rank_two_update.cpp
+
+The output of the %matrix is formatted for better readability.
+The functions also work for sparse matrices although we
+cannot recommend this for the sake of efficiency.
+
+In the future, updates will be also expressible with operators.
+For instance, rank_one_update(A, v, w) can be written as
+A+= conj(v) * trans(w) if v and w are column vectors (if w
+is a row %vector the transposition can-and must-be removed).
+Thus, the orientation is relevant in operator notation
+where the functions rank_one_update and rank_two_update
+ignore the orientation.
+
+
+
+
+\if Navigation \endif
+Return to \ref banded_matrices or                Go \ref tutorial "Home"                or Proceed to \ref other_vector_functions
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page other_vector_functions Other Vector Functions
+
+
+
+
+\if Navigation \endif
+Return to \ref rank_update or                Go \ref tutorial "Home"                or Proceed to \ref other_matrix_functions
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page other_matrix_functions Other Matrix Functions
+
+
+
+
+
+\if Navigation \endif
+Return to \ref other_vector_functions or                Go \ref tutorial "Home"                or Proceed to \ref trisolve_intro
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page trisolve_intro Triagonal Solvers
+
+ (upper_trisolve and lower_trisolve)
+
+
+
+
+
+
+\if Navigation \endif
+Return to \ref other_matrix_functions or                Go \ref tutorial "Home"                or Proceed to \ref krylov_intro
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page krylov_intro Introduction Krylov-Subspace Methods
+
+
+
+
+
+
+\if Navigation \endif
+Return to \ref trisolve_intro or                Go \ref tutorial "Home"                or Proceed to \ref pc_intro
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page pc_intro Introduction Preconditioners
+
+
+
+
+
+
+\if Navigation \endif
+Return to \ref krylov_intro or                Go \ref tutorial "Home"                or Proceed to \ref using_solvers
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page using_solvers Using Predefined Linear Solvers
+
+
+
+
+
+
+\if Navigation \endif
+Return to \ref pc_intro or                Go \ref tutorial "Home"                or Proceed to \ref iteration
+
+*/
+
+//-----------------------------------------------------------
 
 /*! \page iteration Iteration
 
@@ -1500,9 +1603,8 @@ tag::major usually will yield the same results (but this is not so cool).
 
 
 
-
-Return to \ref matrix_vector_expr "matrix-vector expressions"
-or proceed to \ref rec_intro "recursion".
+\if Navigation \endif
+Return to \ref using_solvers or                Go \ref tutorial "Home"                or Proceed to \ref rec_intro
 
 
 */
@@ -1580,93 +1682,8 @@ Thus, the function is_full() can be used to dispatch between this optimized code
 much slower) code for smaller matrices.
 
 
-Return to \ref iteration "iteration"
-or proceed to \ref copying "copying".
-
-
-*/
-
-//-----------------------------------------------------------
-
-
-/*! \page copying Copying in MTL4
-
-Shallow copy -- i.e. copying data types with complex internal structures 
-by only copying pointers at the upper level -- allows for very short
-run-time since most of the data is not copied physically but only referred
-to in the target object.
-The draw-back is that changing either of the objects involved in a shallow
-copy will alter the other object too.
-Especially in complex mathematical applications this often leads to errors
-hard to track down.
-
-For that very reason we refrained from shallow copy semantics in assignments,
-that is after 
-\code 
-x= y; 
-\endcode one can change x or y without any impact on
-the other object, see also \ref shallow_copy_problems.
-
-\section copy_sub_matrix Copying Sub-matrices
-
-Sub-matrices are a special case.
-The expression
-\code 
-Matrix E= sub_matrix(A, 2, 5, 1, 9);
-\endcode
-means that E is defined as a mutable sub-matrix of A.
-Internally this is realized as a view on some of A's values.
-One could compare this to a window on A. 
-As a result, modifications of E affect A and modifications of A change
-E if the change was in the range of rows and columns that E refers to.
-This  admittedly behaves similarly to shallow copy behavior but is nevertheless
-different.
-In the case of a sub-matrix, we explicitly request aliasing.
-The modification of A can easily prevented by a const argument
-\code 
-const Matrix E= sub_matrix(A, 2, 5, 1, 9);
-\endcode
-Furthermore, the sub-matrix of a const matrix (or another const sub-matrix)
-is const itself.
-Unless explicitly casted away, const-ness is conserved within MTL4
-and cannot be circumvented like in other libraries with shallow copy assignment.
-Resuming, the construction of a matrix with sub_matrix is not a
-shallow copy but the definition of a reference to a part of another matrix.
-
-Once sub-matrix is defined, assignments are regular deep copies, i.e.
-\code
-E= B;
-\endcode
-copies the values of B to E and implicitly to the corresponding entries of A.
-Sub-matrices are not move semantics, i.e.
-\code
-E= f(B);
-\endcode
-cannot use move semantics.
-It is correct regarding the destruction of the temporaries and the values of E
-but not concerning the modifications of A, which we defined E being a sub-matrix of.
-
-If you do not want the aliasing behavior of sub_matrix but are only interested
-in the values of the sub-matrix, you can use the function \ref clone.
-\code 
-Matrix F= clone(sub_matrix(A, 2, 5, 1, 9));
-\endcode
-Then deep copy is explicitly used.
-F and A are thus entirely decoupled: any modification of either of them
-will not affect the other.
-
-Any older remarks on inconsistencies between copy construction and assignment
-are invalid now.
-In addition, every expression that can be assigned can also be used in copy
-constructors, e.g.:
-\code
-compressed2D<double> A(B * C * D + E);
-\endcode
-
-
-
-Return to \ref rec_intro "recursion"
-or proceed to \ref function_nesting "why and how we use functors".
+\if Navigation \endif
+Return to \ref iteration or                Go \ref tutorial "Home"                or Proceed to \ref function_nesting
 
 */
 
@@ -1882,12 +1899,176 @@ We also specified our preferences how to compute this operation.
 When the compiler instantiate our functor for a given type combination it takes
 the first product implementation in our list that is admissible.
 
-Return to \ref copying "copying"
-or proceed to \ref peak_addiction.
+\if Navigation \endif
+Return to \ref rec_intro or                Go \ref tutorial "Home"                or Proceed to \ref copying
 
 */
 
 //-----------------------------------------------------------
+
+/*! \page copying Copying in MTL4
+
+Shallow copy -- i.e. copying data types with complex internal structures 
+by only copying pointers at the upper level -- allows for very short
+run-time since most of the data is not copied physically but only referred
+to in the target object.
+The draw-back is that changing either of the objects involved in a shallow
+copy will alter the other object too.
+Especially in complex mathematical applications this often leads to errors
+hard to track down.
+
+For that very reason we refrained from shallow copy semantics in assignments,
+that is after 
+\code 
+x= y; 
+\endcode one can change x or y without any impact on
+the other object, see also \ref shallow_copy_problems.
+
+\section copy_sub_matrix Copying Sub-matrices
+
+Sub-matrices are a special case.
+The expression
+\code 
+Matrix E= sub_matrix(A, 2, 5, 1, 9);
+\endcode
+means that E is defined as a mutable sub-matrix of A.
+Internally this is realized as a view on some of A's values.
+One could compare this to a window on A. 
+As a result, modifications of E affect A and modifications of A change
+E if the change was in the range of rows and columns that E refers to.
+This  admittedly behaves similarly to shallow copy behavior but is nevertheless
+different.
+In the case of a sub-matrix, we explicitly request aliasing.
+The modification of A can easily prevented by a const argument
+\code 
+const Matrix E= sub_matrix(A, 2, 5, 1, 9);
+\endcode
+Furthermore, the sub-matrix of a const matrix (or another const sub-matrix)
+is const itself.
+Unless explicitly casted away, const-ness is conserved within MTL4
+and cannot be circumvented like in other libraries with shallow copy assignment.
+Resuming, the construction of a matrix with sub_matrix is not a
+shallow copy but the definition of a reference to a part of another matrix.
+
+Once sub-matrix is defined, assignments are regular deep copies, i.e.
+\code
+E= B;
+\endcode
+copies the values of B to E and implicitly to the corresponding entries of A.
+Sub-matrices are not move semantics, i.e.
+\code
+E= f(B);
+\endcode
+cannot use move semantics.
+It is correct regarding the destruction of the temporaries and the values of E
+but not concerning the modifications of A, which we defined E being a sub-matrix of.
+
+If you do not want the aliasing behavior of sub_matrix but are only interested
+in the values of the sub-matrix, you can use the function \ref clone.
+\code 
+Matrix F= clone(sub_matrix(A, 2, 5, 1, 9));
+\endcode
+Then deep copy is explicitly used.
+F and A are thus entirely decoupled: any modification of either of them
+will not affect the other.
+
+Any older remarks on inconsistencies between copy construction and assignment
+are invalid now.
+In addition, every expression that can be assigned can also be used in copy
+constructors, e.g.:
+\code
+compressed2D<double> A(B * C * D + E);
+\endcode
+
+
+\if Navigation \endif
+Return to \ref function_nesting or                Go \ref tutorial "Home"                or Proceed to \ref peak_addiction
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page shallow_copy_problems Why Not Using Shallow Copy in Numerical Software
+
+Shallow copy has the advantage over deep copy of being considerably faster.
+This advantage does not justify all the dangers implied.
+
+\section scp_unawareness Unawareness
+
+The first risk is that many programmers are not aware of the aliasing
+behavior, which is that 
+after the assignment neither of the two arguments can be modified without 
+affecting the other.
+As one of the two variables can be changed in a sub-function of a sub-function of a ...
+it is hard to track down all possible modifications.
+
+\section scp_type_dependence Type Dependence of Copy behavior
+
+
+Moreover, the problem is even more confusing.
+Since shallow copy semantic is only feasible between objects of the same type,
+assignments between different types must copy data deeply.
+In generic functions aiming for maximal generality one do not want assume or
+require equality or distinctness of argument types so that the copy behavior 
+is unknown.
+
+\include shallow_copy_problems_type.cpp
+
+\section scp_operations Impact of Mathematically Neutral Operations
+
+
+In the same way mathematically neutral operations like multiplications with one
+or additions of zero vectors silently change the program behavior by 
+disabling shallow copies and eliminating the aliasing behavior.
+
+\code
+A= B;           // Aliasing of A and B
+A= 1.0 * B;     // A and B are independent
+\endcode
+
+\section scp_obfuscations Code Obfuscation
+
+Many higher level libraries like ITL assigns vectors with the
+copy function instead of the assignment operator in order to guarantee deep
+copy.
+
+\code 
+A= B;           // (Potential) shallow copy
+copy(B, A);     // Deep copy
+\endcode
+
+We refrain from this approach because this syntax does not correspond to the
+mathematical literature and more importantly we cannot be sure that all users
+of a library will replace assignments by copy.
+
+
+
+
+\section scp_undermining Undermining const Attributes
+
+
+Last  but not least
+all shallow copy implementations we have seen so far
+relentlessly undermined const attributes of arguments.
+
+
+\include shallow_copy_problems_const.cpp
+
+After calling f, A is modified despite it was passed as const argument and the 
+const-ness was not even casted away.
+
+\section scp_resume Resume
+
+For all these reasons we are convinced that reliable mathematical software
+can only be implemented with
+deep copy semantics.
+Unnecessary copies can be avoided by using advanced techniques as expression
+templates and \ref move_semantics.
+
+*/
+
+//-----------------------------------------------------------
+
 
 
 /*! \page peak_addiction Addicted to peak performance
@@ -1937,9 +2118,20 @@ And we dare to bore the reader with the repetition of the fact that applications
 code like A = B * C and the library chooses the optimal implementation.
 So, what do you have to loose except that your programs look nicer?
 
-Return to \ref function_nesting.
+\if Navigation \endif
+Return to \ref copying or                Go \ref tutorial "Home"               
 
-\page performance_disclaimer Disclaimer
+*/ 
+
+
+
+
+
+
+// xxxxxxxxxxxxx
+
+
+/*! \page performance_disclaimer Disclaimer
 
 
 Unfortunately, the dispatching to BLAS is currently only available for %matrix multiplication.
