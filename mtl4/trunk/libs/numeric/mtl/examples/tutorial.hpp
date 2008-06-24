@@ -36,7 +36,8 @@ supported by BLAS.
 For short, general applicability is combined with maximal available performance.
 We developed new techniques to allow for:
 - Unrolling of dynamicly sized data with user-define block and tile sizes;
-- Combining multiple vector assignments in a single statement (and more importingly perform them in one single loop);
+- Combining multiple vector assignments in a single statement 
+  (and more importingly perform them in one single loop);
 - Storing matrices recursively in a never-before realized generality;
 - Performing operations on recursive and non-recursive matrices recursively;
 - Filling compressed sparse matrices efficiently;
@@ -416,20 +417,49 @@ However, we will do our best that applications are minimally affected.
 In particular, the topics in the tutorial are not subject to modifications.
 This, of course, does not exclude backward-compatible extensions.
 
--# Basic Types and Operations
+
+
+-# %Vector and %Matrix Types
    -# \subpage vector_def
-   -# \subpage vector_functions
+   -# \subpage matrix_types
+   .
+-# Generic Insertion
+   -# \subpage vector_insertion
+   -# \subpage matrix_insertion
+   .
+-# Assignment
+   -# \subpage vector_assignment
+   -# \subpage matrix_assignment
+   .
+-# Operators
    -# \subpage vector_expr 
    -# \subpage rich_vector_expr 
-   -# \subpage matrix_types
-   -# \subpage matrix_insertion
-   -# \subpage matrix_assignment
-   -# \subpage matrix_functions
    -# \subpage matrix_expr 
-   -# \subpage matrix_vector_functions 
    -# \subpage matrix_vector_expr
    .
--# Traversal of Matrices and Vectors
+-# Norms
+   -# \subpage vector_norms 
+   -# \subpage matrix_norms 
+   .
+-# Reductions
+   -# \subpage vector_reductions 
+   .
+-# Other Functions
+   -# \subpage conj
+   -# \subpage trans
+   -# \subpage hermitian
+   -# \subpage sub_matrices
+   -# \subpage permutation
+   -# \subpage banded_matrices
+   -# \subpage rank_update
+   .
+-# Solving Linear Systems
+   -# \subpage trisolve_demo
+   -# \subpage krylov_demo
+   -# \subpage pc_demo
+   -# \subpage using_solvers
+   .
+-# Traversing Matrices and Vectors
    -# \subpage iteration
    -# \subpage rec_intro
    .
@@ -496,14 +526,14 @@ value is assignable to the type of the elements.
 Scalar types are in MTL4 all types that are not explicitly defined
 by type %traits as vectors or matrices, thus almost all types.
 
-Proceed to \ref vector_functions "vector functions".  
+Proceed to \ref vector_norms
 
 */
 
 //-----------------------------------------------------------
 
 
-/*! \page vector_functions Vector Functions
+/*! \page vector_norms Vector Norms
 
 
 Principal MTL4 functions are all defined in namespace mtl.
@@ -538,7 +568,15 @@ The maximum for unrolling is 8 (it might be increased later).
 The norms return the magnitude type of the vectors' value type, 
 see Magnitude.
 
-Similarly, the sum and the product of all vector's elements can
+*/
+
+//-----------------------------------------------------------
+
+/*! \page vector_reductions Vector Reductions
+
+
+
+The sum and the product of all vector's elements can
 be computed:
 
 \include vector_reduction.cpp
