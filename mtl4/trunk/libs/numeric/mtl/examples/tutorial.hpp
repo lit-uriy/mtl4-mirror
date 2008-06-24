@@ -476,7 +476,7 @@ This, of course, does not exclude backward-compatible extensions.
 
 
 \if Navigation \endif
-               Go \ref tutorial "Home"                or Proceed to \ref vector_def
+\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref vector_def
 
 
 //-----------------------------------------------------------
@@ -530,7 +530,7 @@ Scalar types are in MTL4 all types that are not explicitly defined
 by type %traits as vectors or matrices, thus almost all types.
 
 \if Navigation \endif
-Return to \ref tutorial or                Go \ref tutorial "Home"                or Proceed to \ref matrix_types
+Return to \ref tutorial\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref matrix_types
 
 */
 
@@ -633,7 +633,7 @@ All %operations are provided in the same way for both formats
 How to fill  sparse matrices is shown in the following chapter.
 
 \if Navigation \endif
-Return to \ref vector_def or                Go \ref tutorial "Home"                or Proceed to \ref vector_insertion
+Return to \ref vector_def\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref vector_insertion
 
 */
 
@@ -652,7 +652,7 @@ If all elements are equal, one can set it in one statement:
 \endcode
 
 \if Navigation \endif
-Return to \ref matrix_types or                Go \ref tutorial "Home"                or Proceed to \ref matrix_insertion
+Return to \ref matrix_types\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref matrix_insertion
 
 */
 
@@ -776,7 +776,7 @@ This is proposed for the next C++ standard and we will incorporate this feature
 as soon as it is generally available.
 
 \if Navigation \endif
-Return to \ref vector_insertion or                Go \ref tutorial "Home"                or Proceed to \ref vector_assignment
+Return to \ref vector_insertion\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref vector_assignment
 
 */
 
@@ -788,12 +788,14 @@ Return to \ref vector_insertion or                Go \ref tutorial "Home"       
 
 Vectors assignments are in most cases performed by expression templated 
 (see \ref vector_expr).
+
+
 Functions that return vectors are subject to move semantics (see \ref copying
 and \ref move_semantics).
 
 
 \if Navigation \endif
-Return to \ref matrix_insertion or                Go \ref tutorial "Home"                or Proceed to \ref matrix_assignment
+Return to \ref matrix_insertion\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref matrix_assignment
 
 */
 
@@ -878,7 +880,7 @@ to understand the subtle interplay between details of the implementation and
 the behavior of the compiler.
 
 \if Navigation \endif
-Return to \ref vector_assignment or                Go \ref tutorial "Home"                or Proceed to \ref vector_expr
+Return to \ref vector_assignment\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref vector_expr
 
 */
 
@@ -927,7 +929,7 @@ elements by
 performing only one loop.
 
 \if Navigation \endif
-Return to \ref matrix_assignment or                Go \ref tutorial "Home"                or Proceed to \ref rich_vector_expr
+Return to \ref matrix_assignment\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref rich_vector_expr
 
 */
 
@@ -965,7 +967,7 @@ Again, all these %operations are performed in one loop and each %vector
 element is accessed exactly once.
 
 \if Navigation \endif
-Return to \ref vector_expr or                Go \ref tutorial "Home"                or Proceed to \ref matrix_expr
+Return to \ref vector_expr\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref matrix_expr
 
 */
 
@@ -1009,7 +1011,7 @@ Moreover, products can be arbitrarily added and subtracted:
 \include matrix_mult_add.cpp
 
 \if Navigation \endif
-Return to \ref rich_vector_expr or                Go \ref tutorial "Home"                or Proceed to \ref matrix_vector_expr
+Return to \ref rich_vector_expr\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref matrix_vector_expr
 */
 
 //-----------------------------------------------------------
@@ -1074,7 +1076,7 @@ waiting anyway for data from memory).
 
 
 \if Navigation \endif
-Return to \ref matrix_expr or                Go \ref tutorial "Home"                or Proceed to \ref vector_norms
+Return to \ref matrix_expr\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref vector_norms
 
 */
 
@@ -1117,7 +1119,7 @@ The norms return the magnitude type of the vectors' value type,
 see Magnitude.
 
 \if Navigation \endif
-Return to \ref matrix_vector_expr or                Go \ref tutorial "Home"                or Proceed to \ref matrix_norms
+Return to \ref matrix_vector_expr\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref matrix_norms
 
 */
 
@@ -1131,7 +1133,7 @@ Norms on matrices can be computed in the same fashion as on vectors:
 \include matrix_norms.cpp
 
 \if Navigation \endif
-Return to \ref vector_norms or                Go \ref tutorial "Home"                or Proceed to \ref vector_reductions
+Return to \ref vector_norms\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref vector_reductions
 
 */
 
@@ -1151,10 +1153,6 @@ unrolling can be explicitly controlled as shown in the last
 command.
 The results of these reductions are the value type of the %vector.
 
-\if Navigation \endif
-Return to \ref matrix_norms or                Go \ref tutorial "Home"                or Proceed to \ref vector_reductions
-In the same way, the maximum and minimum of vectors are computed:
-
 \include vector_min_max.cpp
 
 The dot product of two vectors is computed with the function \ref dot:
@@ -1171,7 +1169,7 @@ Joel de Guzman's result type deduction from Boost is used.
 
 
 \if Navigation \endif
-Return to \ref vector_reductions or                Go \ref tutorial "Home"                or Proceed to \ref conj_intro
+Return to \ref vector_reductions\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref conj_intro
 
 */
 
@@ -1193,7 +1191,7 @@ This is as well a constant view.
 
 
 \if Navigation \endif
-Return to \ref vector_reductions or                Go \ref tutorial "Home"                or Proceed to \ref trans_intro
+Return to \ref vector_reductions\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref trans_intro
 
 */
 
@@ -1219,7 +1217,7 @@ Only when the referred matrix is mutable the transposed will be:
 
 
 \if Navigation \endif
-Return to \ref conj_intro or                Go \ref tutorial "Home"                or Proceed to \ref hermitian_intro
+Return to \ref conj_intro\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref hermitian_intro
 
 */
 
@@ -1238,7 +1236,7 @@ It returns an immutable view on the matrix (expression).
 
 
 \if Navigation \endif
-Return to \ref trans_intro or                Go \ref tutorial "Home"                or Proceed to \ref sub_matrices
+Return to \ref trans_intro\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref sub_matrices
 
 */
 
@@ -1255,7 +1253,7 @@ Details on the copy behavior of sub-matrices can be found in  section \ref copy_
 
 
 \if Navigation \endif
-Return to \ref hermitian_intro or                Go \ref tutorial "Home"                or Proceed to \ref permutation
+Return to \ref hermitian_intro\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref permutation
 
 */
 
@@ -1267,7 +1265,7 @@ Return to \ref hermitian_intro or                Go \ref tutorial "Home"        
 
 
 \if Navigation \endif
-Return to \ref sub_matrices or                Go \ref tutorial "Home"                or Proceed to \ref banded_matrices
+Return to \ref sub_matrices\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref banded_matrices
 
 */
 
@@ -1278,7 +1276,7 @@ Return to \ref sub_matrices or                Go \ref tutorial "Home"           
 
 
 \if Navigation \endif
-Return to \ref permutation or                Go \ref tutorial "Home"                or Proceed to \ref rank_update
+Return to \ref permutation\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref rank_update
 
 */
 
@@ -1309,7 +1307,7 @@ ignore the orientation.
 
 
 \if Navigation \endif
-Return to \ref banded_matrices or                Go \ref tutorial "Home"                or Proceed to \ref other_vector_functions
+Return to \ref banded_matrices\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref other_vector_functions
 
 */
 
@@ -1321,7 +1319,7 @@ Return to \ref banded_matrices or                Go \ref tutorial "Home"        
 
 
 \if Navigation \endif
-Return to \ref rank_update or                Go \ref tutorial "Home"                or Proceed to \ref other_matrix_functions
+Return to \ref rank_update\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref other_matrix_functions
 
 */
 
@@ -1334,7 +1332,7 @@ Return to \ref rank_update or                Go \ref tutorial "Home"            
 
 
 \if Navigation \endif
-Return to \ref other_vector_functions or                Go \ref tutorial "Home"                or Proceed to \ref trisolve_intro
+Return to \ref other_vector_functions\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref trisolve_intro
 
 */
 
@@ -1350,7 +1348,7 @@ Return to \ref other_vector_functions or                Go \ref tutorial "Home" 
 
 
 \if Navigation \endif
-Return to \ref other_matrix_functions or                Go \ref tutorial "Home"                or Proceed to \ref krylov_intro
+Return to \ref other_matrix_functions\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref krylov_intro
 
 */
 
@@ -1364,7 +1362,7 @@ Return to \ref other_matrix_functions or                Go \ref tutorial "Home" 
 
 
 \if Navigation \endif
-Return to \ref trisolve_intro or                Go \ref tutorial "Home"                or Proceed to \ref pc_intro
+Return to \ref trisolve_intro\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref pc_intro
 
 */
 
@@ -1378,7 +1376,7 @@ Return to \ref trisolve_intro or                Go \ref tutorial "Home"         
 
 
 \if Navigation \endif
-Return to \ref krylov_intro or                Go \ref tutorial "Home"                or Proceed to \ref using_solvers
+Return to \ref krylov_intro\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref using_solvers
 
 */
 
@@ -1392,7 +1390,7 @@ Return to \ref krylov_intro or                Go \ref tutorial "Home"           
 
 
 \if Navigation \endif
-Return to \ref pc_intro or                Go \ref tutorial "Home"                or Proceed to \ref iteration
+Return to \ref pc_intro\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref iteration
 
 */
 
@@ -1604,7 +1602,7 @@ tag::major usually will yield the same results (but this is not so cool).
 
 
 \if Navigation \endif
-Return to \ref using_solvers or                Go \ref tutorial "Home"                or Proceed to \ref rec_intro
+Return to \ref using_solvers\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref rec_intro
 
 
 */
@@ -1683,7 +1681,7 @@ much slower) code for smaller matrices.
 
 
 \if Navigation \endif
-Return to \ref iteration or                Go \ref tutorial "Home"                or Proceed to \ref function_nesting
+Return to \ref iteration\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref function_nesting
 
 */
 
@@ -1900,7 +1898,7 @@ When the compiler instantiate our functor for a given type combination it takes
 the first product implementation in our list that is admissible.
 
 \if Navigation \endif
-Return to \ref rec_intro or                Go \ref tutorial "Home"                or Proceed to \ref copying
+Return to \ref rec_intro\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref copying
 
 */
 
@@ -1982,7 +1980,7 @@ compressed2D<double> A(B * C * D + E);
 
 
 \if Navigation \endif
-Return to \ref function_nesting or                Go \ref tutorial "Home"                or Proceed to \ref peak_addiction
+Return to \ref function_nesting\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref peak_addiction
 
 */
 
@@ -2119,7 +2117,7 @@ code like A = B * C and the library chooses the optimal implementation.
 So, what do you have to loose except that your programs look nicer?
 
 \if Navigation \endif
-Return to \ref copying or                Go \ref tutorial "Home"               
+Return to \ref copying\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly \ref tutorial "Table of Content"               \htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly
 
 */ 
 
