@@ -26,7 +26,7 @@ void test(Matrix& A, const char* name)
     cout << "\n" << name << "\n" << "A =\n" << A;
 
     int indices[]= {1, 2, 0};
-    typename matrix::traits::permutation<>::type P= matrix::permutation(indices);
+    matrix::traits::permutation<>::type P= matrix::permutation(indices);
     cout << "\nP =\n" << P;    
 
     Matrix A2( P * A );

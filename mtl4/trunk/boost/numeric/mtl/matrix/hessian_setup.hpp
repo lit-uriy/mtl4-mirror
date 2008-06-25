@@ -17,9 +17,9 @@
 namespace mtl {
 
     namespace matrix {
-	// Fills a matrix A with a_ij = factor * (i + j)
-	// Only to be used for dense matrices
-	// Would work on sparse matrices with inserter but would be very expensive
+	/// Fills a matrix A with a_ij = factor * (i + j)
+	/** Intended for dense matrices.
+	    Works on sparse matrices with inserter but is very expensive. **/
 	template <typename Matrix, typename Value>
 	void hessian_setup(Matrix& matrix, Value factor)
 	{
