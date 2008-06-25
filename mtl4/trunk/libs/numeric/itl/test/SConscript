@@ -1,16 +1,16 @@
 import glob
 
-Import('opt_env check')
+Import('high_opt_env check')
 
 sources = glob.glob("*.cpp")
 
 
 programs = []
 for p in sources:
-    programs.append(opt_env.Program(p))
+    programs.append(high_opt_env.Program(p))
 
 if int(check):
     for p in programs:
-        opt_env.AddPostAction(p, p[0].abspath)
+        high_opt_env.AddPostAction(p, p[0].abspath)
 
 Default(programs)
