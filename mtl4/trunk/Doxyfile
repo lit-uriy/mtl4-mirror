@@ -177,8 +177,8 @@ TREEVIEW_WIDTH         = 250
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
 GENERATE_LATEX         = YES
-LATEX_OUTPUT           = pdflatex
-LATEX_CMD_NAME         = pdflatex
+LATEX_OUTPUT           = latex
+LATEX_CMD_NAME         = latex
 MAKEINDEX_CMD_NAME     = makeindex
 COMPACT_LATEX          = NO
 PAPER_TYPE             = letter
