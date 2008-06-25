@@ -17,7 +17,7 @@ namespace mtl { namespace matrix {
 
 /// Setup a matrix according to a Laplacian equation on a 2D-grid using a five-point-stencil
 /** Intended for sparse matrices but works also with dense matrices. Changes the size of
-    the matrix \f$m\cdot n\times m\cdotn\f$. **/
+    the matrix \f$m\cdot n\times m\cdot n\f$. **/
 template <typename Matrix>
 inline void laplacian_setup(Matrix& matrix, unsigned m, unsigned n)
 {
