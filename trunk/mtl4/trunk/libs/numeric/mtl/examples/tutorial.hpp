@@ -27,16 +27,16 @@ At least not computing fast.
 In the %Matrix Template Library 4 we aim for a natural mathematical 
 notation without sacrifying performance.
 You can write an expression like x = y * z and the library will
-perform the according operation: scaling a vector, multiplying a
-sparse matrix with a dense vector or two sparse matrices.
-Some operations like dense matrix product use tuned BLAS implementation.
+perform the according operation: scaling a %vector, multiplying a
+sparse %matrix with a dense %vector or two sparse matrices.
+Some operations like dense %matrix product use tuned BLAS implementation.
 In parallel, all described operations in this manual are also realized in C++
 so that the library can be used without BLAS and is not limited to types
 supported by BLAS.
 For short, general applicability is combined with maximal available performance.
 We developed new techniques to allow for:
 - Unrolling of dynamicly sized data with user-define block and tile sizes;
-- Combining multiple vector assignments in a single statement 
+- Combining multiple %vector assignments in a single statement 
   (and more importingly perform them in one single loop);
 - Storing matrices recursively in a never-before realized generality;
 - Performing operations on recursive and non-recursive matrices recursively;
@@ -96,9 +96,9 @@ Programmers working with BLAS libraries
 are forced to limit themselves to the operations and types provided by these
 packages.
 As an example, if one likes to use single-precision floats for preconditioner
-matrices--to save memory bandwidth--while the vectors are double-valued, 
+matrices--to save memory bandwidth--while the %vectors are double-valued, 
 one cannot use regular BLAS libraries.
-In contrast, any generic library that contains a matrix vector product
+In contrast, any generic library that contains a %matrix %vector product
 can perform this operation.
 
 And what if somebody wants to build matrices and vectors of quaternions or intervals?
@@ -110,7 +110,7 @@ in Fortran or C (even more in an assembly language to squeaze out the last nano-
 
 
 Mathematica and Matlab are by far more elegant than C or Fortran libraries.
-And as long as one uses standard operations as matrix products they are fast
+And as long as one uses standard operations as %matrix products they are fast
 since they can use the tuned libraries.
 As soon as you start programming your own computations looping over elements
 of the matrices or vectors your performance won't be impressive, to say the least.
@@ -120,7 +120,7 @@ Otherwise it provides you an implementation in C++ that is also reasonably fast 
 reached 60 per cent peak).
 
 
-All this said, dense matrix multiplication is certainly the most benchmarked operation
+All this said, dense %matrix multiplication is certainly the most benchmarked operation
 on high performance computers but not really the operation that high performance computers
 use the most in real applications.
 The dominant part of scientific computing in HPC are simulations that are mostly 
@@ -133,38 +133,38 @@ In contrast to most other libraries we paid strong attention to sparse matrices 
 operations.
 To start with, we developed an efficient method to fill the matrices and compress them
 in-place, cf. \ref matrix_insertion.
-This allows for matrix sizes that are close to the memory size.
+This allows for %matrix sizes that are close to the memory size.
 It is also possible to change the compressed matrices later.
 
 
-The product of sparse matrices with dense ones allows you to multiply a sparse matrix 
+The product of sparse matrices with dense ones allows you to multiply a sparse %matrix 
 simultaneously with multiple vectors.
-Besides cache reuse regarding the sparse matrix simple and efficient loop unrolling
+Besides cache reuse regarding the sparse %matrix simple and efficient loop unrolling
 could be applied. (Performance plots still pending ;-) ) 
 
 Sparse matrices can be multiplied very fast with MTL4.
 In the typical case that the number of non-zeros per row and per column is 
 limited by a constant for any dimension, 
 the run-time of the multiplication is linear in the number of rows or columns.
-(Remark: we did not use the condition that the number of non-zeros in the matrix is proportional to 
-the dimension. This condition includes the pathological case that the first matrix contains
-a column vector of non-zeros and the second one a row vector of non-zeros. Then
+(Remark: we did not use the condition that the number of non-zeros in the %matrix is proportional to 
+the dimension. This condition includes the pathological case that the first %matrix contains
+a column %vector of non-zeros and the second one a row %vector of non-zeros. Then
 the complexity would be quadratic.)
 Such matrices usually originate from FEM/FDM/FVM discrezations of PDEs on continous domains.
 Then the number of rows and columns corresponds to the number of nodes or cells in the 
 discretized domain.
-Sparse matrix products can be very useful in algebraic multigrid methods (AMG).
+Sparse %matrix products can be very useful in algebraic multigrid methods (AMG).
 
 Returning to the expression A = B * C; it can be used to express every product of 
 sparse and dense matrices.
 The library will dispatch to the appropriate algorithm.
-Moreover, the expression could also represent a matrix vector product if A and C
+Moreover, the expression could also represent a %matrix %vector product if A and C
 are column vectors (one would probably choose lower-case names though).
 In fact,  x = y * z can represent four different operations:
-- matrix product;
-- matrix vector product;
-- scalar times matrix; or
-- scalar times vector.
+- %matrix product;
+- %matrix %vector product;
+- scalar times %matrix; or
+- scalar times %vector.
 .
 
 
@@ -764,7 +764,7 @@ Thus, mtl::dense_vector and std::vector can used (are models).
 
 \section init_from_array Initializing Matrices with Arrays
 
-For small matrices in examples it is more convenient to initialize the matrix from a 2D C/C++ array
+For small matrices in examples it is more convenient to initialize the %matrix from a 2D C/C++ array
 instead of filling it element-wise:
 
 \include array_initialization.cpp
@@ -826,7 +826,7 @@ There is one exception that allows for the change of dimension, when the target 
 dimension 0 by 0.
 These matrices are considered as stem cells, they can become whatever desired but 
 once they get a non-trivial dimensionality they obey algebraic compatibility rules.
-Default constructors of matrix types always create 0 by 0 matrices.
+Default constructors of %matrix types always create 0 by 0 matrices.
 This simplifies the implementation of generic setter function:
 \code
 dense2D<double> A;
@@ -910,7 +910,7 @@ accessing an element of the view.
 Please notice that the scaling factor's type is not required to be
 identical with the vector's value type.
 Furthermore, the value type of the view can be different from
-the vector's value type if necessary to represent the products.
+the %vector's value type if necessary to represent the products.
 The command is an example for it: multiplying a double %vector
 with a complex number requires a complex %vector view to 
 guarantee the correctness of the results.
@@ -1050,14 +1050,14 @@ r= b - A*x.
 \endcode
 
 Also supported is scaling of arguments, as well for the %matrix
-as for the vector:
+as for the %vector:
 
 \include scaled_matrix_vector_mult.cpp
 
 All three expressions and the following block
 compute the same result.
-The first two versions are equivalent: matrix elements are more numerous
-but only used once while vector elements are less in number but accessed more
+The first two versions are equivalent: %matrix elements are more numerous
+but only used once while %vector elements are less in number but accessed more
 often in the operation.
 In both cases nnz additional multiplications are performed where nnz is the
 number of non-zeros in A.
@@ -1065,7 +1065,7 @@ One can easily see that the third expressions adds 2 nnz operations,
 obviously much less efficient.
 
 Under the assumption that n is smaller than nnz,
-clearly less operations are required when the matrix vector product is
+clearly less operations are required when the %matrix %vector product is
 performed without scaling and the result is scaled afterward.
 However, on most computer MVP is memory bandwidth limited and most likely
 the additional sweep costs more time than the scaling in the expressions
@@ -1183,13 +1183,13 @@ Return to \ref matrix_norms\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n
 
 /*! \page conj_intro Conjugates
 
-The conjugate of a vector is computed by:
+The conjugate of a %vector is computed by:
 \code
   conj(v);
 \endcode
-The vector \p v is not altered but a immutable view is returned.
+The %vector \p v is not altered but a immutable view is returned.
 
-In the same manner the conjugate of a matrix is calculated:
+In the same manner the conjugate of a %matrix is calculated:
 
 \include matrix_functions2.cpp
 
@@ -1205,10 +1205,10 @@ Return to \ref vector_reductions\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb
 
 /*! \page trans_intro Transposed
 
-The transposition of vector is momentarilly not implemented yet.
-It will create a row vector view on a column vector and vice versa.
+The transposition of %vector is momentarilly not implemented yet.
+It will create a row %vector view on a column %vector and vice versa.
 
-Transposing a matrix can be realized by:
+Transposing a %matrix can be realized by:
 
 \include matrix_functions2.cpp
 
@@ -1216,9 +1216,9 @@ The function conj(A) does not change matrices
 but they return views on them.
 For the sake of reliability, we conserve the const-ness of the referred
 matrix.
-The transposed of a constant matrix is itself constant (this feature alone required 
+The transposed of a constant %matrix is itself constant (this feature alone required 
 a fair amount of non-trivial meta-programming).
-Only when the referred matrix is mutable the transposed will be:
+Only when the referred %matrix is mutable the transposed will be:
 
 
 
@@ -1238,7 +1238,7 @@ Hermitians of matrices are calculated as conjugates of transposed:
 
 \include matrix_functions2.cpp
 
-It returns an immutable view on the matrix (expression).
+It returns an immutable view on the %matrix (expression).
 
 
 \if Navigation \endif
@@ -1268,6 +1268,30 @@ Return to \ref hermitian_intro\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
 
 /*! \page permutation Permutations and Reordering
 
+The following example shows how to use permutations:
+
+\include permutation.cpp
+
+The function matrix::permutation returns a sparse %matrix computed from a permutation %vector.
+The permutation %vector is defined as where entries come from, i.e. v[i] == j means that the 
+i-th entry/row/column after the permutation was the j-th entry/row/column before the permutation.
+If your %vector is defined in the inverse manner -- i.e. i.e. v[i] == j signifies that the 
+i-th entry/row/column before the permutation becomes the j-th entry/row/column after the permutation --
+your permutation %matrix is the transposed of what MTL4 computes: P= trans(matrix::permutation(v)).
+
+Reordering is a generalization of permutation.
+The entries in the reorder %vector/array are defined in the same fashion as in the permutation %vector.
+However, the number of entries is not required to be equal to the set size of projectes indices.
+Therefore, the projected %matrix/%vector may have less rows or columns:
+
+\include reorder.cpp
+
+Indices may appear repeatedly in the reorder %vector implying that the respective rows/columns 
+appear multiple times in the resulting %matrix/%vector:
+
+\include reorder2.cpp
+ 
+
 
 
 \if Navigation \endif
@@ -1280,6 +1304,33 @@ Return to \ref sub_matrices\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n
 
 /*! \page banded_matrices Banded Matrix View, Upper and Lower Triangular Views
 
+For any %matrix A the upper and the strict upper triangular part can be accessed with the function 
+upper and strict_upper:
+
+\include upper.cpp
+
+The functions return views on the arguments. The resulting view can be used in expressions but
+this is not recommended in high-performance applications because the lower triangle is still 
+traversed while returning zero values.
+For the future it is planned to implement traversal of such views more efficiently.
+
+Likewise lower and strict lower triangle matrices are yielded:
+
+\include lower.cpp
+
+In case of sparse matrices the assignment of a lower triangle %matrix leads to an efficient representation
+because the entries in the upper part are not explicitly stored as zeros but omitted entirely.
+
+The most general form of views in this section is returned by the function bands
+(in fact the others are implemented by it).
+It returns bands in terms of half-open intervals of diagonals.
+For instance, the two off-diagonal right from the main diagonal are computed by bands(A, 1, 3):
+
+\include bands.cpp
+
+A tri-diagonal %matrix is returned for the band interval [-1, 2) as in the example above.
+For performance reasons it is advisable to store the tri-diagonal %matrix in a compressed
+format instead of using it directly.
 
 \if Navigation \endif
 Return to \ref permutation\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly\latexonly\hfill\endlatexonly \ref tutorial "Table of Content" \latexonly\hfill\endlatexonly\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\endhtmlonly Proceed to \ref rank_update
@@ -1334,6 +1385,22 @@ Return to \ref rank_update\htmlonly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb
 /*! \page other_matrix_functions Other Matrix Functions
 
 
+For setting up tests quickly, we implemented some convenience functions that initialize matrices:
+
+\include matrix_functions.cpp
+
+Hessian matrices are scaled by a factor, i.e. \ref matrix::hessian_setup(A, alpha) is:
+\f[ A= [a_{ij}] = [\alpha * (i + j)] \f]
+The funciton is intended for dense matrices.
+It works on sparse matrices but it is very expensive for large matrices.
+
+The Laplacian setup \ref matrix::laplacian(A, m, n) 
+initializes a matrices with the same values as a finite difference method 
+for a Laplace (Poisson) equation on an \f$m\times n\f$ grid.
+The matrix size is changed to \f$(m\cdot n)\times (m\cdot n)\f$.
+After the setup the diagonal is 4 and four off-diagonals are mostly set to -1, i.e. a simple
+five-point-stencil. 
+It is intended for sparse matrices but also works on dense ones.
 
 
 
@@ -1461,7 +1528,7 @@ In order to have more flexibility we templatized the begin and end functions:
     for (Cursor cursor(begin<tag::all>(x)), cend(end<tag::all>(x)); cursor != cend; ++cursor)
        do_something(cursor);
 \endcode
-This cursor for instance goes over all elements of a matrix or vector, including
+This cursor for instance goes over all elements of a %matrix or %vector, including
 structural zeros.
 
 \section nested_cursor Nested Cursors 
@@ -1469,7 +1536,7 @@ structural zeros.
 Several cursors can be used to create other cursors.
 This is necessary to traverse multi-dimensional collections like matrices.
 In most cases you will use nested cursors via the tags tag::row and tag::col.
-The returned cursor can be a certain collection (e.g. a vector)
+The returned cursor can be a certain collection (e.g. a %vector)
 or just a place-holder that only contains some index and reference
 to a collection but cannot be used directly in operations.
 If the type and orientation permits, one can access the elements with
@@ -1479,7 +1546,7 @@ tag::all or tag::nz, e.g.:
        for (ICursor icursor(begin<tag::nz>(cursor)), icend(end<tag::nz>(cursor)); icursor != icend; ++icursor)
            do_something(icursor);
 \endcode
-Often it is more efficient to adapt an algorithm to the orientation of a matrix.
+Often it is more efficient to adapt an algorithm to the orientation of a %matrix.
 Then it is convenient to use tag::major instead of dispatching for row-major and column major matrices:
 \code
     for (Cursor cursor(begin<tag::major>(x)), cend(end<tag::major>(x)); cursor != cend; ++cursor)
@@ -1534,7 +1601,7 @@ With the property map syntax, one cannot apply operators like +=
 or a modifying function.
 Therefore we provide iterators for dense matrices and vectors.
 For sparse matrices there was no use case so far because iterators
-do not reveal which matrix element they are pointing at.
+do not reveal which %matrix element they are pointing at.
 
 The usage of iterators is very similar to those of cursors:
 \code
@@ -1574,7 +1641,7 @@ in practical contexts.
 
 Sparse matrices have linear complexity when traversed along the orientation.
 Traversing compressed matrices perpendicular to the orientation 
-(e.g. a CRS matrix column-wise)
+(e.g. a CRS %matrix column-wise)
 has infinite complexity because it is not implemented.
 Moreover, the default (non-spezialized) range_generator has infinite
 complexity so that it is per se defined for arbitrary collections and tags.
@@ -1629,7 +1696,7 @@ The class matrix_recursator enables recursive subdivision of all matrices with a
 (e.g., dense2D and morton_dense).
 We refrained from providing the sub_matrix functionality to compressed2D; this would possible but very inefficient
 and therefor not particularly useful.
-Thus matrix_recursator of compressed2D cannot be declared.
+Thus %matrix_recursator of compressed2D cannot be declared.
 A recursator for vectors is planned for the future.
 
 Generally spoken, the matrix_recursator (cf. \ref recursion::matrix_recursator)
@@ -1947,12 +2014,12 @@ The modification of A can easily prevented by a const argument
 \code 
 const Matrix E= sub_matrix(A, 2, 5, 1, 9);
 \endcode
-Furthermore, the sub-matrix of a const matrix (or another const sub-matrix)
+Furthermore, the sub-matrix of a const %matrix (or another const sub-matrix)
 is const itself.
 Unless explicitly casted away, const-ness is conserved within MTL4
 and cannot be circumvented like in other libraries with shallow copy assignment.
-Resuming, the construction of a matrix with sub_matrix is not a
-shallow copy but the definition of a reference to a part of another matrix.
+Resuming, the construction of a %matrix with sub_matrix is not a
+shallow copy but the definition of a reference to a part of another %matrix.
 
 Once sub-matrix is defined, assignments are regular deep copies, i.e.
 \code

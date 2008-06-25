@@ -26,7 +26,7 @@ void test(Matrix& A, const char* name)
     cout << "\n" << name << "\n" << "A =\n" << A;
 
     int reordering[]= {2, 1};
-    typename matrix::traits::reorder<>::type  R= matrix::reorder(reordering);
+    matrix::traits::reorder<>::type  R= matrix::reorder(reordering);
     cout << "\nR =\n" << R;    
 
     Matrix B(R * A);
