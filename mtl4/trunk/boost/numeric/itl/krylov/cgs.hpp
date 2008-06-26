@@ -52,6 +52,7 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
 	r-= alpha * qhat;
 
 	rho_2 = rho_1;
+
 	++iter;
     }
     return iter.error_code();
