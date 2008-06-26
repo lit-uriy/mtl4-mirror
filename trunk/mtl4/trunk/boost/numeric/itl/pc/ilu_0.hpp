@@ -44,20 +44,18 @@ class ilu_0
 	factorize(A, typename mtl::traits::category<Matrix>::type()); 
     }
 
-    // solve x = LU y --> y= U^{-1} L^{-1} x
+    // Solve  LU x = b --> x= U^{-1} L^{-1} b
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
-	return mtl::upper_trisolve(U, mtl::lower_trisolve(L, x, mtl::tag::unit_diagonal()),
-				   mtl::tag::inverse_diagonal());
+	return mtl::inverse_upper_trisolve(U, mtl::unit_lower_trisolve(L, x));
     }
 
-    // solve x = (LU)^T y --> y= L^{-T} U^{-T} x
+    // Solve (LU)^T x = b --> x= L^{-T} U^{-T} b
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
-	return mtl::upper_trisolve(adjoint(L), mtl::lower_trisolve(adjoint(U), x, mtl::tag::inverse_diagonal()), 
-				   mtl::tag::unit_diagonal());
+	return mtl::unit_upper_trisolve(adjoint(L), mtl::inverse_lower_trisolve(adjoint(U), x));
     }
 
 
@@ -73,27 +71,17 @@ class ilu_0
 
     void factorize(const Matrix& A, mtl::tag::sparse)
     {
-	sparse_factorize(A, typename mtl::OrientedCollection<Matrix>::orientation());
-    }
-    
-    void sparse_factorize(const Matrix& A, mtl::tag::col_major)
-    {
-	MTL_THROW_IF(true, mtl::logic_error("ILU for CCS not implemented yet"));
-    }
-
-    // CRS factorization, sorted entries are required
-    void sparse_factorize(const Matrix& A, mtl::tag::row_major)
-    {
         using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
 	using math::reciprocal; 
 
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 
-	Matrix                                                    LU= A;
-        typedef typename range_generator<row, Matrix>::type       cur_type;    
+	typedef mtl::compressed2D<value_type>                     LU_type;
+        typedef typename range_generator<row, LU_type>::type      cur_type;    
         typedef typename range_generator<nz, cur_type>::type      icur_type;            
-        typename mtl::traits::col<Matrix>::type                   col(LU);
-        typename mtl::traits::value<Matrix>::type                 value(LU); 
+	LU_type                                                   LU= A;
+        typename mtl::traits::col<LU_type>::type                  col(LU);
+        typename mtl::traits::value<LU_type>::type                value(LU); 
 
 	mtl::dense_vector<value_type>                             inv_dia(num_rows(A));
 	cur_type ic= begin<row>(LU), iend= end<row>(LU);
@@ -115,26 +103,20 @@ class ilu_0
 
 	U= upper(LU); invert_diagonal(U);
 	L= strict_lower(LU); 
-	    
-#if 0
-	Matrix LD(num_rows(L), num_rows(L)); LD= 1.0; LD+= L;
-	std::cout << "ILU factorization of:\n" << A << "\nL = \n" << L << "\nU = \n" << U << "\nLU = \n" << Matrix(LD*U);
-#endif
     }
-
-    // Matrix   L, U;
-    // Let's be a little less generic and a little more efficient
+    
     L_type                       L;
     U_type                       U;
 }; 
 
-
+/// Solve LU x = b --> x= U^{-1} L^{-1} b
 template <typename Matrix, typename Vector>
 Vector solve(const ilu_0<Matrix>& P, const Vector& x)
 {
     return P.solve(x);
 }
 
+/// Solve (LU)^T x = b --> x= L^{-T} U^{-T} b
 template <typename Matrix, typename Vector>
 Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& x)
 {

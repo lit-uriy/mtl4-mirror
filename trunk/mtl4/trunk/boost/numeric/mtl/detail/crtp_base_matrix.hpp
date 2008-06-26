@@ -329,6 +329,16 @@ struct crtp_matrix_bracket
 };
 
 template <typename Matrix, typename ValueType, typename SizeType>
+struct crtp_matrix_lvalue 
+{ 
+    // Function must be overwritten by Matrix if m(row, col) does not return a reference
+    ValueType& lvalue(SizeType row, SizeType col)
+    {
+	return static_cast<Matrix&>(*this)(row, col);
+    }   
+};
+
+template <typename Matrix, typename ValueType, typename SizeType>
 struct const_crtp_base_matrix
     : public const_crtp_matrix_bracket<Matrix, ValueType, SizeType>
 {};

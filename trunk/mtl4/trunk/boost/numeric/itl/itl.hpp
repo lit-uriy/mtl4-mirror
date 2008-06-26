@@ -15,9 +15,12 @@
 #include <boost/numeric/itl/iteration/noisy_iteration.hpp>
 
 #include <boost/numeric/itl/krylov/cg.hpp>
+#include <boost/numeric/itl/krylov/cgs.hpp>
 #include <boost/numeric/itl/krylov/bicgstab.hpp>
+#include <boost/numeric/itl/krylov/bicg.hpp>
 
 #include <boost/numeric/itl/pc/diagonal.hpp>
 #include <boost/numeric/itl/pc/ilu_0.hpp>
+#include <boost/numeric/itl/pc/ic_0.hpp>
 
 #endif // ITL_ITL_INCLUDE

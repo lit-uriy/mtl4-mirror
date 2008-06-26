@@ -20,8 +20,25 @@ namespace itl {
     namespace pc {
 
 	template <typename Matrix> class diagonal;
+	template <typename Matrix> class ilu_0;
+	template <typename Matrix> class ic_0;
 
     } //  namespace pc
+
+    template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpaceB, 
+	       typename Preconditioner, typename Iteration >
+    int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
+	   const Preconditioner& M, Iteration& iter);
+
+    template < typename LinearOperator, typename Vector, 
+	       typename Preconditioner, typename Iteration >
+    int bicg(const LinearOperator &A, Vector &x, const Vector &b,
+	     const Preconditioner &M, Iteration& iter);
+
+    template < class LinearOperator, class HilbertSpaceX, class HilbertSpaceB, 
+	       class Preconditioner, class Iteration >
+    int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
+		 const Preconditioner& M, Iteration& iter);
 
 } // namespace itl
 

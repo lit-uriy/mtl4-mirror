@@ -170,21 +170,25 @@ Vector inline lower_trisolve(const Matrix& A, const Vector& v)
     return detail::lower_trisolve(A, v, typename OrientedCollection<Matrix>::orientation(), tag::regular_diagonal());
 }
 
+template <typename Matrix, typename Vector>
+Vector inline unit_lower_trisolve(const Matrix& A, const Vector& v)
+{
+    return detail::lower_trisolve(A, v, typename OrientedCollection<Matrix>::orientation(), tag::unit_diagonal());
+}
+
+template <typename Matrix, typename Vector>
+Vector inline inverse_lower_trisolve(const Matrix& A, const Vector& v)
+{
+    return detail::lower_trisolve(A, v, typename OrientedCollection<Matrix>::orientation(), tag::inverse_diagonal());
+}
+
 template <typename Matrix, typename Vector, typename DiaTag>
 Vector inline lower_trisolve(const Matrix& A, const Vector& v, DiaTag)
 {
     return detail::lower_trisolve(A, v, typename OrientedCollection<Matrix>::orientation(), DiaTag());
 }
 
-#if 0
-template <typename Matrix, typename Vector>
-Vector inline lower_trisolve(const Matrix& A, const Vector& v, bool explicit_diagonal= true)
-{
-    // std::cout << "Lower trisolve: A = \n" << A;
-    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
-    return detail::lower_trisolve(A, v, explicit_diagonal, typename OrientedCollection<Matrix>::orientation());
-}
-#endif
+
 
 } // namespace mtl
 

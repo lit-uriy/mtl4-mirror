@@ -423,6 +423,13 @@ class compressed2D
 	return pos ? data[pos] : zero(value_type()); 
     }
 
+    value_type& lvalue(size_type row, size_type col)
+    {
+	utilities::maybe<size_type> pos = indexer(*this, row, col);
+	MTL_DEBUG_THROW_IF(!pos, logic_error("This entry does not exist in the matrix"));
+	return data[pos];
+    }
+
     value_type value_from_offset(size_type offset) const
     {
 	MTL_DEBUG_THROW_IF(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));

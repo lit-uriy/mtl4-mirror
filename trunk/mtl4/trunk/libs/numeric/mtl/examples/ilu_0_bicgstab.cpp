@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     b= A * x; x= 0;
     
     // Termination criterion: r < 1e-6 * b or N iterations
-    noisy_iteration<double>       iter(b, N, 1.e-6);
+    noisy_iteration<double>       iter(b, 500, 1.e-6);
     
     // Solve Ax == b with preconditioner P
     bicgstab(A, x, b, P, iter);

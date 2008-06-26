@@ -15,8 +15,8 @@
 
 namespace itl {
 
-template < class LinearOperator, class HilbertSpaceX, class HilbertSpaceB, 
-	   class Preconditioner, class Iteration >
+template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpaceB, 
+	   typename Preconditioner, typename Iteration >
 int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
        const Preconditioner& M, Iteration& iter)
 {
