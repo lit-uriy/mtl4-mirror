@@ -2337,6 +2337,22 @@ Please not that this is compiler generated code not unrolled by hand.
 Thanks to Laurent Plagne for his support with the BTL and to Chris Cole for running the
 programs on a cluster node at Indiana University.
 
+\remark
+Performance measurings labeled MTL represent computations with MTL2.
+MTL2 was tuned for KCC and achieved excellent performance with this compiler (cf. 
+<a href="http://osl.iu.edu/research/mtl/performance.php3">MTL2 performance</a>).
+With MTL4 we did not rely on compilers for tiling, loop unrolling and similar transformations.
+There are two reasons for this: one is that compilers have very different behavior in this regard.
+The other reason is that many transformation rely on mathematical properties as commutativity 
+that are not known for user types and/or user-defined operations so that compiler optimization is limited
+to build-in types and operations.
+To cope with this, we implemented accelerating transformation by meta-programming and count
+on compilers regarding efficient inlining and reference forwarding.
+Our meta-programming optimizations -- short meta-tuning -- proved high efficiency in multiple
+measurings (the plots above are only few examples) and were always as fast as code directly 
+written in unrolled/tiled form.
+
+
 
 \if Navigation \endif
   Return to \ref peak_addiction &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 

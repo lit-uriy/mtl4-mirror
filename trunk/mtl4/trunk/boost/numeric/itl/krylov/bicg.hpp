@@ -42,14 +42,17 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
 	    p= z + beta * p;
 	    p_tilde= z_tilde + beta * p_tilde;
 	}
+
 	q= A * p;
 	q_tilde= adjoint(A) * p_tilde;
 	alpha= rho_1 / dot(p_tilde, q);
+
 	x+= alpha * p;
 	r-= alpha * q;
 	r_tilde-= alpha * q_tilde;
 
 	rho_2= rho_1;
+
 	++iter;
     }
     return iter.error_code();
