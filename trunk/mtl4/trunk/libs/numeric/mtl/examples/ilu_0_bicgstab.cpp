@@ -2,11 +2,11 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
+using namespace mtl;
+using namespace itl;
+
 int main(int argc, char* argv[])
 {
-    using namespace mtl;
-    using namespace itl;
-
     const int size = 100, N = size * size; 
     typedef compressed2D<double>  matrix_type;
 
