@@ -1510,16 +1510,19 @@ The following program illustrates how to solve a linear system:
 \include ilu_0_bicgstab.cpp
 
 Currently two solvers are available:
-- Conjugate gradient: itl::cg(A, x, b, P, iter); and 
-- BiCGStab: itl::bicgstab(A, x, b, P, iter)
+- Conjugate gradient: itl::cg(A, x, b, P, iter); 
+- Bi-Conjugate gradient: itl::bicg(A, x, b, P, iter); 
+- Conjugate gradient squared: itl::cgs(A, x, b, P, iter); and
+- BiCGStab: itl::bicgstab(A, x, b, P, iter);
 .
-More solvers will follow very soon.
+More solvers will follow.
 
 As preconditioners we provide at the moment:
-- Diagonal inversion: itl::pc::diagonal<Matrix>; and
-- Incomplete LU factorization without fill-in: itl::pc::ilu_0<Matrix>;
+- Diagonal inversion: itl::pc::diagonal<Matrix>;
+- Incomplete LU factorization without fill-in: itl::pc::ilu_0<Matrix>; and
+- Incomplete Cholesky factorization without fill-in: itl::pc::ic_0<Matrix>;
 .
-Incomplete Cholesky factorization will be available very soon.
+
 
 
 
