@@ -19,7 +19,7 @@ int main()
   b = A * x;
   x= 0;
 
-  noisy_iteration<double> iter(b, N, 1.e-6);
+  noisy_iteration<double> iter(b, 500, 1.e-6);
   bicgstab(A, x, b, P, iter);
 
   return 0;

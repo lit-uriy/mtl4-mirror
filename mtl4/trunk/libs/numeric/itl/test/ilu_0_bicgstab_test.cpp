@@ -18,12 +18,13 @@ void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
 		if (LU[i][j] != 0)
 		    LU[i][j]-= LU[i][k] * LU[k][j];
 	}
-    std::cout << "Factorizing A = \n" << As << "-> LU = \n" << LU;    
+    std::cout << "Factorizing A = \n" << As << "-> LU = \n" << LU;
+    // std::cout << "L = \n" << Ls << "\nU = \n" << Us;
 
     if (std::abs(LU[3][2] - Ls[3][2]) > 0.001) 
 	throw "Wrong value in L for sparse ILU(0) factorization";
 
-    if (std::abs(LU[3][3] - Us[3][3]) > 0.001)
+    if (std::abs(LU[3][3] - 1. / Us[3][3]) > 0.001)
 	throw "Wrong value in U for sparse ILU(0) factorization";
 }
 
@@ -31,7 +32,7 @@ void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
 int main()
 {
     // For a more realistic example set sz to 1000 or larger
-    const int size = 100, N = size * size; 
+    const int size = 3, N = size * size; 
 
     typedef compressed2D<double>  matrix_type;
     compressed2D<double>          A(N, N), dia(N, N);
