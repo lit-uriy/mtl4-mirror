@@ -137,26 +137,26 @@ namespace detail {
 
 
 template <typename Functor, typename Matrix> 
-struct category<matrix::map_view<Functor, Matrix> >
+struct category<mtl::matrix::map_view<Functor, Matrix> >
     : public detail::simple_matrix_view_category<Matrix>
 {};
 
 template <typename Scaling, typename Matrix>
-struct category< matrix::scaled_view<Scaling, Matrix> >
+struct category< mtl::matrix::scaled_view<Scaling, Matrix> >
     : public category< matrix::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
 					    Matrix> >
 {};
 
 // added by Hui Li
 template <typename Matrix, typename RScaling>
-struct category< matrix::rscaled_view<Matrix,RScaling> >
+struct category< mtl::matrix::rscaled_view<Matrix,RScaling> >
     : public category< matrix::map_view<tfunctor::rscale<typename Matrix::value_type,RScaling>, 
 					Matrix> >
 {};
 
 // added by Hui Li
 template <typename Matrix, typename Divisor>
-struct category< matrix::divide_by_view<Matrix,Divisor> >
+struct category< mtl::matrix::divide_by_view<Matrix,Divisor> >
     : public category< matrix::map_view<tfunctor::divide_by<typename Matrix::value_type,Divisor>, 
 					Matrix> >
 {};
@@ -168,12 +168,12 @@ struct category< matrix::conj_view<Matrix> >
 
 template <typename Matrix>
 struct category< matrix::hermitian_view<Matrix> >
-    : public category< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+	: public category< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
 					transposed_view<Matrix> > >
 {};
 
 template <typename Matrix>
-struct category< matrix::banded_view<Matrix> >
+struct category< mtl::matrix::banded_view<Matrix> >
     : public detail::simple_matrix_view_category<Matrix>
 {};
 
