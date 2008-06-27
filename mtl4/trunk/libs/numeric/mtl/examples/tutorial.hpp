@@ -1514,6 +1514,7 @@ Currently two solvers are available:
 - Bi-Conjugate gradient: itl::bicg(A, x, b, P, iter); 
 - Conjugate gradient squared: itl::cgs(A, x, b, P, iter); and
 - BiCGStab: itl::bicgstab(A, x, b, P, iter);
+- BiCGStab(2): itl::bicgstab_2(A, x, b, P, iter);  (Preconditioning still missing)
 .
 More solvers will follow.
 
@@ -2332,7 +2333,7 @@ Finally, we managed outperforming GotoBLAS in one function at least for some siz
 \image latex athlon/bench-dot.eps "Dot product." width=10cm
 
 The dot product in this plot used internally unrolling with block size 8.
-Please not that this is compiler generated code not unrolled by hand.
+Please note that this is compiler generated code not unrolled by hand.
 
 Thanks to Laurent Plagne for his support with the BTL and to Chris Cole for running the
 programs on a cluster node at Indiana University.
