@@ -19,6 +19,7 @@ namespace itl {
 
     namespace pc {
 
+	template <typename Matrix> class identity;
 	template <typename Matrix> class diagonal;
 	template <typename Matrix> class ilu_0;
 	template <typename Matrix> class ic_0;

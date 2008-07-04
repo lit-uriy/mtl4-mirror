@@ -31,7 +31,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 
   while (! iter.finished(r)) {
     
-    rho_1 = dot(rtilde, r);
+    rho_1 = dot(r, rtilde); 
     if (rho_1 == T(0.)) {
       iter.fail(2, "bicg breakdown #1");
       break;
@@ -59,7 +59,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
     }
     shat = solve(M, s);
     t = A * shat;
-    omega = dot(t, s) / dot(t, t);
+    omega = dot(s, t) / dot(t, t);
     
     x += omega * shat + alpha * phat;
     r = s - omega * t;
