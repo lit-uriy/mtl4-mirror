@@ -230,7 +230,12 @@ struct compressed2D_indexer
 	// if empty row (or column) return start of next one
 	if (first == last) 
 	    return result_type(first - &ma.indices[0], false);
-	const size_t *index = std::lower_bound(first, last, minor);
+
+	const size_t *index= first;
+	if (last - index < 10)
+	    while (index != last && *index < minor) ++index;
+	else
+	    index = std::lower_bound(first, last, minor);
 	return result_type(index - &ma.indices[0], index != last && *index == minor);
     }
 
@@ -504,7 +509,7 @@ struct compressed2D_inserter
   public:
     explicit compressed2D_inserter(matrix_type& matrix, size_type slot_size = 5)
 	: matrix(matrix), elements(matrix.data), starts(matrix.starts), indices(matrix.indices), 
-	  slot_size(slot_size), slot_ends(matrix.dim1()) 
+	  slot_size(slot_size), slot_ends(matrix.dim1()+1) 
     {
 	MTL_THROW_IF(matrix.inserting, runtime_error("Two inserters on same matrix"));
 	matrix.inserting = true;
@@ -584,6 +589,15 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
     using std::copy_backward;
     using std::swap;
 
+    // Stretching is much simpler for empty matrices
+    if (elements.empty()) {
+	for (size_type i= 0, s= 0; i <= matrix.dim1(); i++, s+= slot_size)
+	    slot_ends[i]= starts[i]= s;
+	size_type new_total= starts[matrix.dim1()];
+	elements.resize(new_total); indices.resize(new_total);
+	return;
+    }
+
     std::vector<size_type>  new_starts(matrix.dim1() + 1);
     new_starts[0] = 0;
     for (size_type i = 0; i < matrix.dim1(); i++) {
@@ -595,7 +609,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
     size_type new_total = new_starts[matrix.dim1()];
     elements.resize(new_total);
     indices.resize(new_total);
-	if (elements.empty()) return;
+	
    
     // copy normally if not overlapping and backward if overlapping
     // i goes down to 1 (not to 0) because i >= 0 never stops for unsigned ;-)
@@ -626,7 +640,14 @@ compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm)
   	         *last =  &indices[0] + slot_ends[major];
     if (first == last) 
 	return utilities::maybe<size_t> (first - &indices[0], false);
-    const size_t *index = std::lower_bound(first, last, minor);
+
+    const size_t *index= first;
+    if (last - index < 10)
+	while (index != last && *index < minor) ++index;
+    else
+	index = std::lower_bound(first, last, minor);
+
+    // const size_t *index = std::lower_bound(first, last, minor);
     return utilities::maybe<size_t> (index - &indices[0], index != last && *index == minor);  
 }
 
@@ -651,8 +672,10 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type ro
 	size_type& my_end = slot_ends[major];
 	// Check if place in matrix to insert there
 	if (my_end != starts[major+1]) { 
+	    if (pos.value() != my_end) {
 		copy_backward(&elements[0] + pos.value(), &elements[0] + my_end, &elements[0] + (my_end+1));
 		copy_backward(&indices[0] + pos.value(), &indices[0] + my_end, &indices[0] + (my_end+1));
+	    }
 	    elements[pos] = modifier.init(val); indices[pos] = minor;
 	    my_end++;	    
 	    matrix.my_nnz++;      // new entry

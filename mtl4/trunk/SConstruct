@@ -73,6 +73,8 @@ def add_opt(env, opt):
     	    if conf.env['CC'] == 'gcc':
     	        env.Append(CCFLAGS = '-ffast-math')
     	        #check_g5()
+            # env.Append(CCFLAGS = '-pg') # for profiling
+    	    # env.Append(LINKFLAGS = '-pg') # for profiling
         elif int(opt) == 1:
     	    env.Append(CCFLAGS = '-O2')
             # env.Append(CCFLAGS = '-pg') # for profiling
