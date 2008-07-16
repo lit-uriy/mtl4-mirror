@@ -45,7 +45,7 @@ namespace mtl {
 		  const Vector1& v1, const Vector2& v2, Size i)
 	    {
 		using mtl::conj;
-		tmp00+= v1[ i + base::index0 ] * conj( v2[ i + base::index0 ] );
+		tmp00+= conj(v1[ i + base::index0 ]) * v2[ i + base::index0 ];
 #if 0
 		std::cout << "dot_aux: v1[ " << i + base::index0 << " ] * conj(v2[ .. ] : "
 			  << v1[ i + base::index0 ] << " * " 
@@ -69,7 +69,7 @@ namespace mtl {
 		  const Vector1& v1, const Vector2& v2, Size i)
 	    {
 		using mtl::conj;
-		tmp00+= v1[ i + base::index0 ] * conj( v2[ i + base::index0 ] );
+		tmp00+= conj(v1[ i + base::index0 ]) * v2[ i + base::index0 ];
 #if 0
 		std::cout << "dot_aux<Max0>: v1[ " << i + base::index0 << " ] * conj(v2[ .. ] : "
 			  << v1[ i + base::index0 ] << " * " 
@@ -101,7 +101,7 @@ namespace mtl {
 
 		using mtl::conj;
 		for (size_type i= i_block; i < i_max; i++) 
-		    tmp00+= v1[i] * conj(v2[i]);
+		    tmp00+= conj(v1[i]) * v2[i];
 		return ((tmp00 + tmp01) + (tmp02 + tmp03)) + ((tmp04 + tmp05) + (tmp06 + tmp07));
 	    }
 	};

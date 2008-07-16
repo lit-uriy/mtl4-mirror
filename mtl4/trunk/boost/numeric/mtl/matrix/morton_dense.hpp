@@ -520,7 +520,10 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	assert(this != &src);
 
 	check_dim(src.num_rows(), src.num_cols());
-	memory_base::move_assignment(src);
+	if (this->category == memory_base::view || src.category == memory_base::view)
+	    matrix_copy(src, *this);
+	else
+	    memory_base::move_assignment(src);
 	return *this;
     }
 
