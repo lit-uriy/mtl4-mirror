@@ -346,7 +346,7 @@ protected:
 	if (category == own && other.category == own)
 	    swap(*this, other);
 	else
-	    copy_construction(other);
+	    copy_assignment(other);
     }
 
 public:

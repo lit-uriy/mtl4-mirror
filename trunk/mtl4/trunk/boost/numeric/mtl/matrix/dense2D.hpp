@@ -291,9 +291,14 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     {
 	// Self-copy would be an indication of an error
 	assert(this != &src);
+	// std::cout << "In move assignment: this* = \n" << *this << "src = \n" << src;
 
 	check_dim(src.num_rows(), src.num_cols());
-	memory_base::move_assignment(src);
+	if (this->category == memory_base::view || src.category == memory_base::view)
+	    matrix_copy(src, *this);
+	else
+	    memory_base::move_assignment(src);
+	// std::cout << "End of move assignment: this* = \n" << *this;
 	return *this;
     }
 
