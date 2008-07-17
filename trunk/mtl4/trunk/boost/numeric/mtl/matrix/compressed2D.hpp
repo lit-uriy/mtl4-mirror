@@ -635,7 +635,7 @@ compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm)
     if (indices.empty())
 		return utilities::maybe<size_t> (0, false);
 
-	// &v[i] isn't liked by all libs -> &v[0]+i circumvents complaints
+    // &v[i] isn't liked by all libs -> &v[0]+i circumvents complaints
     const size_t *first = &indices[0] + starts[major],
   	         *last =  &indices[0] + slot_ends[major];
     if (first == last) 
@@ -646,9 +646,7 @@ compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm)
 	while (index != last && *index < minor) ++index;
     else
 	index = std::lower_bound(first, last, minor);
-
-    // const size_t *index = std::lower_bound(first, last, minor);
-    return utilities::maybe<size_t> (index - &indices[0], index != last && *index == minor);  
+    return utilities::maybe<size_t>(index - &indices[0], index != last && *index == minor);  
 }
 
 
