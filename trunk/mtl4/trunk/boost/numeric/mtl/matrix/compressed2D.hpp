@@ -289,7 +289,7 @@ struct compressed2D_indexer
 }; // compressed2D_indexer
 
 
-// Compressed 2D matrix type
+/// Compressed 2D matrix type
 // For now no external data
 template <typename Elt, typename Parameters = matrix::parameters<> >
 class compressed2D 
@@ -327,7 +327,7 @@ class compressed2D
 		}
     }
 
-    // removes all values; e.g. for set_to_zero
+    /// Removes all values; e.g. for set_to_zero
     void make_empty()
     {
 		this->my_nnz = 0;
@@ -336,6 +336,7 @@ class compressed2D
 		std::fill(starts.begin(), starts.end(), 0);
     }
 
+    /// Change dimension of the matrix; data get lost.
     void change_dim(size_type r, size_type c)
     {
 		if (this->num_rows() != r || this->num_cols() != c) {
@@ -346,13 +347,14 @@ class compressed2D
     }
 
     // if compile time matrix size, we can set the start vector
+    /// Default constructor
     explicit compressed2D () 
 	  : super(), inserting(false)
     {
 		if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
 
-    // setting dimension and allocate starting vector
+    /// Setting dimension and allocate starting vector
     explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
       : super(d), inserting(false)
     {
@@ -360,7 +362,7 @@ class compressed2D
 		allocate(nnz);
     }
 
-    // setting dimension and allocate starting vector
+    /// Setting dimension and allocate starting vector
     explicit compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
       : super(non_fixed::dimensions(num_rows, num_cols)), inserting(false)
     {
@@ -368,6 +370,7 @@ class compressed2D
 		allocate(nnz);
     }
 
+    /// Copy constructor
     compressed2D(const self& src)
       : super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), inserting(false)
     {
@@ -375,6 +378,7 @@ class compressed2D
 		matrix_copy(src, *this);
     }
 
+    /// Copy from other times
     template <typename MatrixSrc>
     explicit compressed2D (const MatrixSrc& src) 
 	  : super(), inserting(false)
@@ -384,7 +388,7 @@ class compressed2D
     }
 
 
-    // Consuming assignment operator
+    /// Consuming assignment operator
     self& operator=(self src)
     {
 		// Self-copy would be an indication of an error
@@ -417,8 +421,7 @@ class compressed2D
 		copy(first_index, first_index + this->nnz(), indices.begin());
     }
 
-    // Consistency check urgently needed !!!
-
+    /// Value of matrix entry
     const_reference operator() (size_type row, size_type col) const
     {
 	using math::zero;
@@ -428,6 +431,8 @@ class compressed2D
 	return pos ? data[pos] : zero(value_type()); 
     }
 
+    /// L-value reference of stored matrix entry
+    /** To be used with care; in debub mode exception is thrown if entry is not found **/
     value_type& lvalue(size_type row, size_type col)
     {
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
@@ -435,7 +440,8 @@ class compressed2D
 	return data[pos];
     }
 
-    value_type value_from_offset(size_type offset) const
+    // For internal use
+    const value_type& value_from_offset(size_type offset) const
     {
 	MTL_DEBUG_THROW_IF(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
 	return data[offset];
@@ -447,16 +453,24 @@ class compressed2D
 	return data[offset];
     }
 
+    /// Swap matrices
     friend void swap(self& matrix1, self& matrix2)
     {
-		using std::swap;
-		swap(static_cast<super&>(matrix1), static_cast<super&>(matrix2));
-
-		swap(matrix1.data, matrix2.data);
-		swap(matrix1.starts, matrix2.starts);
-		swap(matrix1.indices, matrix2.indices);
-		swap(matrix1.inserting, matrix2.inserting);
+	using std::swap;
+	swap(static_cast<super&>(matrix1), static_cast<super&>(matrix2));
+	
+	swap(matrix1.data, matrix2.data);
+	swap(matrix1.starts, matrix2.starts);
+	swap(matrix1.indices, matrix2.indices);
+	swap(matrix1.inserting, matrix2.inserting);
     }
+
+    /// Address of first major index; to be used with care.
+    size_type* address_major() { return &starts[0]; }
+    /// Address of first minor index; to be used with care.
+    size_type* address_minor() { return &indices[0]; }
+    /// Address of first data entry; to be used with care.
+    value_type* address_data() { return &data[0]; }
 
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
@@ -527,12 +541,7 @@ struct compressed2D_inserter
     {
 	return bracket_proxy(*this, row);
     }
-#if 0
-    proxy_type operator[] (size_type row, size_type col)
-    {
-	return proxy_type(*this, row, col);
-    }
-#endif
+
     proxy_type operator() (size_type row, size_type col)
     {
 	return proxy_type(*this, row, col);
