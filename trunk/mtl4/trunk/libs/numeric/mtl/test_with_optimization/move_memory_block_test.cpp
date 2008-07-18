@@ -152,13 +152,13 @@ int test_main(int argc, char* argv[])
     cout << "\nCopy data in stack / other block on heap.\n";
     test<sblock, dblock>();
 
-    dblock    own(3), external(&own.data[0], 3), view(&own.data[0], 3, true);
+    dblock    own(3), fixed(3), external(&fixed.data[0], 3), view(&fixed.data[0], 3, true);
     // Store a value hoping for avoiding to optimize allocations away
     own.data[0]= 7.0; external.data[0]= 7.0; view.data[0]= 7.0;
     cout << "Adresses: " << own.data << ", " << external.data << ", " << view.data << "\n";
 
     dynamic_test(own, own_e, "Own data\n");
-    dynamic_test(external, external_e, "External data\n");
+    dynamic_test(external, external_e, "External data\n"); 
     dynamic_test(view, view_e, "View on own\n");
 
     return 0;
