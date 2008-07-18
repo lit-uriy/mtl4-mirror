@@ -198,11 +198,9 @@ public:
 	swap(static_cast<memory_base&>(vector1), static_cast<memory_base&>(vector2));
     }
 
-    void change_dim(size_type n)
-    {
-		this->realloc(n);
-    }
+    void change_dim(size_type n) { this->realloc(n); }
     
+    void crop() {} // Only dummy here
 
 } ; // dense_vector
 

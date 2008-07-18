@@ -465,6 +465,31 @@ class compressed2D
 	swap(matrix1.inserting, matrix2.inserting);
     }
 
+    /// Remove zero entries
+    void crop()
+    {
+	if (data.empty()) return;
+
+	using math::zero;
+	value_type z= zero(data[0]);
+	size_type nzi= 0; // Where to copy next non-zero
+	
+	std::vector<size_type>  new_starts(this->dim1() + 1);
+	new_starts[0] = 0;
+
+	for (size_type i = 0; i < this->dim1(); i++) {
+	    for (size_type j= starts[i], end= starts[i+1]; j != end; ++j)
+		if (data[j] != z)
+		    indices[nzi]= indices[j], data[nzi++]= data[j]; 
+	    new_starts[i+1]= nzi;
+	}
+	this->my_nnz= nzi;
+	data.resize(nzi);
+	indices.resize(nzi);
+	swap(starts, new_starts);
+    }	
+    
+
     /// Address of first major index; to be used with care.
     size_type* address_major() { return &starts[0]; }
     /// Address of first minor index; to be used with care.

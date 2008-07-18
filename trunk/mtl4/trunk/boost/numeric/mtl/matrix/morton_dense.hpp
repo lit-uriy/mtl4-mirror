@@ -553,6 +553,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
 
+    void crop() {} // Only dummy here
 
   protected:
     void set_nnz()
