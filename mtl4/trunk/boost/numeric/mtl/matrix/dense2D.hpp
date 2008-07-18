@@ -350,6 +350,7 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 	std::swap(matrix1.ldim, matrix2.ldim);
     }
 
+    void crop() {} // only dummy here
 
   protected:
     

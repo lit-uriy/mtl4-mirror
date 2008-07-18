@@ -13,6 +13,7 @@
 #include <boost/numeric/mtl/operation/adjoint.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/crop.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/fill.hpp>
 #include <boost/numeric/mtl/operation/hermitian.hpp>
