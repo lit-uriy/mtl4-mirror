@@ -20,11 +20,11 @@ template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpac
 int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
        const Preconditioner& M, Iteration& iter)
 {
-  typedef HilbertSpaceX TmpVec;
+  typedef HilbertSpaceX Vector;
   typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
 
-  Scalar rho, rho_1, alpha, beta;
-  TmpVec p(size(x)), q(size(x)), r(size(x)), z(size(x));
+  Scalar rho(0), rho_1(0), alpha(0), beta(0);
+  Vector p(size(x)), q(size(x)), r(size(x)), z(size(x));
   
   r = b - A*x;
 
