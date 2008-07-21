@@ -165,6 +165,11 @@ public:
     pointer begin() { return this->elements() ; }
     pointer end() { return this->elements() + size() ; }
 
+    /// Address of first data entry; to be used with care.
+    value_type* address_data() { return begin(); }
+    const value_type* address_data() const { return begin(); }
+    
+
 #if 0
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
     // For confusion with other vector assignments
