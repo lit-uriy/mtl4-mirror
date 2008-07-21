@@ -19,11 +19,11 @@ template < class LinearOperator, class HilbertSpaceX, class HilbertSpaceB,
 int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
 	     const Preconditioner& M, Iteration& iter)
 {
-  typedef typename mtl::Collection<HilbertSpaceX>::value_type T;
-  typedef HilbertSpaceX                                       TmpVec;
+  typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
+  typedef HilbertSpaceX                                       Vector;
 
-  T          rho_1, rho_2, alpha, beta, omega;
-  TmpVec     p(size(x)), phat(size(x)), s(size(x)), shat(size(x)), 
+  Scalar     rho_1(0), rho_2(0), alpha(0), beta(0), omega(0);
+  Vector     p(size(x)), phat(size(x)), s(size(x)), shat(size(x)), 
              t(size(x)), v(size(x)), r(size(x)), rtilde(size(x));
 
   r = b - A * x;
@@ -32,7 +32,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   while (! iter.finished(r)) {
     
     rho_1 = dot(rtilde, r); // switched back
-    if (rho_1 == T(0.)) {
+    if (rho_1 == Scalar(0.)) {
       iter.fail(2, "bicg breakdown #1");
       break;
     }
@@ -40,7 +40,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
     if (iter.first())
       p = r;
     else {
-      if (omega == T(0.)) {
+      if (omega == Scalar(0.)) {
 	iter.fail(3, "bicg breakdown #2");
 	break;
       }
