@@ -492,10 +492,13 @@ class compressed2D
 
     /// Address of first major index; to be used with care.
     size_type* address_major() { return &starts[0]; }
+    const size_type* address_major() const { return &starts[0]; }
     /// Address of first minor index; to be used with care.
     size_type* address_minor() { return &indices[0]; }
+    const size_type* address_minor() const { return &indices[0]; }
     /// Address of first data entry; to be used with care.
     value_type* address_data() { return &data[0]; }
+    const value_type* address_data() const { return &data[0]; }
 
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
