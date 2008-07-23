@@ -28,7 +28,7 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
     while (! iter.finished(r)) {
 	z= solve(M, r);
 	z_tilde= adjoint_solve(M, r_tilde);
-	rho_1= dot(z, r_tilde);
+	rho_1= dot(z_tilde, z);
 
 	if (rho_1 == 0.) {
 	    iter.fail(2, "bicg breakdown");
@@ -40,7 +40,7 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
 	} else {
 	    beta= rho_1 / rho_2;      
 	    p= z + beta * p;
-	    p_tilde= z_tilde + beta * p_tilde;
+	    p_tilde= z_tilde + conj(beta) * p_tilde;
 	}
 
 	q= A * p;
@@ -49,7 +49,7 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
 
 	x+= alpha * p;
 	r-= alpha * q;
-	r_tilde-= alpha * q_tilde;
+	r_tilde-= conj(alpha) * q_tilde;
 
 	rho_2= rho_1;
 
