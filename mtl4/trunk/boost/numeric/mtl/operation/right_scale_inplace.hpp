@@ -25,8 +25,7 @@ namespace mtl {
 template <typename Factor, typename Collection>
 void right_scale_inplace(Collection& c, const Factor& alpha, tag::scalar)
 {
-    using namespace boost::lambda;
-    assign_each_nonzero(c, _1 * alpha);
+    assign_each_nonzero(c, boost::lambda::_1 * alpha);
 }
 
 template <typename Factor, typename Matrix>
