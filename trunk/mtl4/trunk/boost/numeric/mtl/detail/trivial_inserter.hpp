@@ -34,12 +34,6 @@ struct trivial_inserter
 	return proxy_type(*this, row, col);
     }
 
-#if 0
-    proxy_type operator[] (size_type row, size_type col)
-    {
-	return proxy_type(*this, row, col);
-    }
-#endif
 
   private:
     
