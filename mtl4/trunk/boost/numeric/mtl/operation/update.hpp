@@ -11,6 +11,9 @@
 #define MTL_UPDATE_INCLUDE
 
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/ashape.hpp>
 
 namespace mtl { namespace operations {
 
@@ -112,8 +115,7 @@ struct update_proxy
     template <typename Value>
     self& operator<< (Value const& val)
     {
-	ins.update (row, col, val);
-	return *this;
+	return lshift(val, typename ashape::ashape<Value>::type());
     }
 
     template <typename Value>
@@ -127,6 +129,36 @@ struct update_proxy
     self& operator+= (Value const& val)
     {
 	ins.template modify<update_plus<value_type> > (row, col, val);
+	return *this;
+    }
+
+  private:
+
+    // Update scalar value as before
+    template <typename Value>
+    self& lshift (Value const& val, ashape::scal)
+    {
+	ins.update (row, col, val);
+	return *this;
+    }
+    
+    typedef typename ashape::ashape<typename Inserter::matrix_type>::type shape_type;
+
+    // Update an entire matrix considered as block
+    template <typename MatrixSrc>
+    self& lshift (const MatrixSrc& src, shape_type)
+    {
+	typename traits::row<MatrixSrc>::type             row(src); 
+	typename traits::col<MatrixSrc>::type             col(src); 
+	typename traits::const_value<MatrixSrc>::type     value(src); 
+
+	typedef typename traits::range_generator<tag::major, MatrixSrc>::type  cursor_type;
+	typedef typename traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
+	
+	for (cursor_type cursor = begin<tag::major>(src), cend = end<tag::major>(src); cursor != cend; ++cursor) 	    
+	    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
+		ins.update(row(*icursor) + this->row, col(*icursor) + this->col, value(*icursor));
+
 	return *this;
     }
 
