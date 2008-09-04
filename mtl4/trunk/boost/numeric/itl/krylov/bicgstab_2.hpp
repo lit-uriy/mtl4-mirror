@@ -11,6 +11,7 @@
 #define ITL_BICGSTAB_2_INCLUDE
 
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace itl {
 
@@ -18,7 +19,7 @@ namespace itl {
 template < typename LinearOperator, typename Vector, 
 	   typename Preconditioner, typename Iteration >
 int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
-	 const Preconditioner &M, Iteration& iter)
+	       const Preconditioner &M, Iteration& iter)
 {
     using math::zero; using math::one;
     typedef typename mtl::Collection<Vector>::value_type Scalar;

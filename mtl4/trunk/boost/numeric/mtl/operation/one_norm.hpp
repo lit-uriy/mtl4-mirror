@@ -61,8 +61,8 @@ inline one_norm(const Value& value)
     Vector norms are unrolled 8-fold by default. 
     An n-fold unrolling can be generated with one_norm<n>(x).
     The maximum for n is 8 (it might be increased later).
-    Matrix norms are not (yet)
-    optimized.
+    Matrix norms are not
+    optimized (yet).
 **/
 template <typename Value>
 typename RealMagnitude<typename Collection<Value>::value_type>::type

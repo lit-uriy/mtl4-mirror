@@ -11,6 +11,7 @@
 #define MTL_COLLECTION_INCLUDE
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <vector>
 
 #ifdef __GXX_CONCEPTS__
 #  include <concepts>
@@ -539,6 +540,19 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
+
+#else
+    template <typename Value>
+    struct Collection<std::vector<Value> >
+    {
+	typedef typename std::vector<Value>::value_type      value_type;
+	typedef typename std::vector<Value>::const_reference const_reference;
+	typedef typename std::vector<Value>::size_type       size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
     template <typename Value, typename Parameters>
     concept_map MutableCollection<dense2D<Value, Parameters> >
     {
@@ -597,6 +611,27 @@ namespace mtl {
 	: public Collection<vector::dense_vector<Value, Parameters> >
     {
 	typedef Value&           reference;
+    };
+#endif
+
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value>
+    concept_map MutableCollection<<std::vector<Value> >
+    {
+	typedef typename std::vector<Value>::value_type      value_type;
+	typedef typename std::vector<Value>::const_reference const_reference;
+	typedef typename std::vector<Value>::size_type       size_type;
+
+	typedef typename std::vector<Value>::reference       reference;
+    };
+#else
+    template <typename Value>
+    struct MutableCollection<std::vector<Value> >
+	: public Collection<std::vector<Value> >
+    {
+	typedef typename std::vector<Value>::reference       reference;
     };
 #endif
 

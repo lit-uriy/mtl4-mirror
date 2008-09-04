@@ -10,6 +10,8 @@
 #ifndef MTL_CATEGORY_INCLUDE
 #define MTL_CATEGORY_INCLUDE
 
+#include <vector>
+
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 
@@ -61,6 +63,7 @@ struct category< dense_vector<T, Parameters> >
 } ;
 
 
+
 template <class E1, class E2>
 struct category< vector::vec_vec_add_expr<E1,E2> >
 {
@@ -105,6 +108,12 @@ struct category< vector::conj_view<Vector> >
     : public category< vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
 {};
 
+// To handle std::vector in algorithms
+template <typename T>
+struct category< std::vector<T> >
+{
+    typedef tag::std_vector type;
+};
 
 namespace detail {
     

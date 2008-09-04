@@ -82,7 +82,7 @@ namespace itl {
   
     inline bool first() { return i == 0; }
   
-    inline int error_code() { return error; }
+    virtual int error_code() { return error; }
   
     inline int iterations() { return i + 1; }
   
@@ -93,10 +93,10 @@ namespace itl {
     inline Real tol() { return rtol_; }
     inline Real atol() { return atol_; } 
   
-    inline void fail(int err_code) { error = err_code; }
+    inline int fail(int err_code) { error = err_code; return error_code(); }
   
-    inline void fail(int err_code, const std::string& msg)
-    { error = err_code; err_msg = msg; }
+    inline int fail(int err_code, const std::string& msg)
+    { error = err_code; err_msg = msg; return error_code(); }
   
     inline void set(Real v) { normb_ = v; }
 
