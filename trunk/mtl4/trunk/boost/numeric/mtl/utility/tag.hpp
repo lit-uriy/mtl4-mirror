@@ -105,13 +105,18 @@ struct sub_dividable : virtual qsub_dividable {};
 /// Tag for dense row vector in the category lattice
 struct dense_row_vector
   : virtual row_vector, virtual contiguous_dense, 
-    virtual has_1D_layout
+    virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout
 {};
 
 /// Tag for dense column vector in the category lattice
 struct dense_col_vector
   : virtual col_vector, virtual contiguous_dense, 
-    virtual has_1D_layout
+    virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout
+{};
+
+/// Tag to handle std::vector in the category lattice
+struct std_vector
+  : virtual vector, virtual contiguous_dense, virtual has_1D_layout
 {};
 
 /// Tag for a view on a (regular) dense matrix in the category lattice

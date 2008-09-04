@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/norms.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
+#include <boost/numeric/mtl/operation/orth.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/product.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
