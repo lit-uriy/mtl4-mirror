@@ -21,6 +21,12 @@ namespace mtl {
 	struct scalar;
 	struct vector;
 	struct matrix;
+
+	/// Namespace for constant iterator tags
+	namespace const_iter {}
+
+	/// Namespace for iterator tags
+	namespace iter {}
     }
     using tag::row_major;
     using tag::col_major;
@@ -214,15 +220,6 @@ namespace mtl {
     /// Namespace for recursive operations and types with recursive memory layout
     namespace recursion {}
 
-    namespace tag {
-
-	/// Namespace for constant iterator tags
-	namespace const_iter {}
-
-	/// Namespace for iterator tags
-	namespace iter {}
-    }
-
     /// Namespace for %utilities
     namespace utility {}
 
@@ -235,6 +232,8 @@ namespace mtl {
 	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_matrix_bracket;
 	template <typename Matrix, typename ValueType, typename SizeType> struct const_crtp_base_matrix;
 	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_base_matrix;
+	template <typename Matrix> struct const_crtp_matrix_range_bracket;
+
 	template <typename Value, bool OnStack, unsigned Size= 0> struct contiguous_memory_block;
 	template <typename Matrix, typename Updater> struct trivial_inserter;
     }
@@ -248,6 +247,7 @@ namespace mtl {
     /// Helper type to define constructors that always copy
     struct clone_ctor;
 
+    class irange;
 
 } // namespace mtl
 

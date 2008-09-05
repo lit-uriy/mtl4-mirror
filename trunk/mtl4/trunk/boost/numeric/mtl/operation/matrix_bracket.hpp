@@ -10,6 +10,10 @@
 #ifndef MTL_MATRIX_BRACKETS_INCLUDE
 #define MTL_MATRIX_BRACKETS_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
+
 namespace mtl { namespace operations {
 
     template <typename Matrix, typename Ref, typename ValueRef>
@@ -36,6 +40,28 @@ namespace mtl { namespace operations {
 	Ref         matrix;
 	size_type   row;
     };
+
+
+    template <typename Matrix, typename Ref, typename ValueRef>
+    struct range_bracket_proxy
+    {
+	explicit range_bracket_proxy(Ref matrix, irange row_range) : matrix(matrix), row_range(row_range) {}
+
+	ValueRef operator[] (irange col_range)
+	{
+	    return sub_matrix(matrix, row_range.start(), row_range.finish(),
+			      col_range.start(), col_range.finish());
+	}
+
+      protected:
+	Ref         matrix;
+	irange row_range;
+    };
+
+
+
+
+
 } // namespace operations
 
 } // NAMESPACE mtl

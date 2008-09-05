@@ -32,6 +32,7 @@
 #include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
 
 
 namespace mtl { namespace vector {
@@ -157,6 +158,17 @@ public:
 	return (*this)( i ) ;
     }
 
+    self operator[]( irange r )
+    {
+	return sub_vector(*this, r.start(), r.finish());
+    }
+
+    const self  operator[]( irange r ) const
+    {
+	return sub_vector(*this, r.start(), r.finish());
+    }
+    
+
     void delay_assign() const {}
 
     const_pointer begin() const { return this->elements() ; }
@@ -262,26 +274,26 @@ inline num_cols(const dense_vector<Value, Parameters>& vector)
 template <typename Value, typename Parameters>
 dense_vector<Value, Parameters>
 inline sub_vector(dense_vector<Value, Parameters>& v, 
-		  typename dense_vector<Value, Parameters>::size_type first,
-		  typename dense_vector<Value, Parameters>::size_type last)
+		  typename dense_vector<Value, Parameters>::size_type start,
+		  typename dense_vector<Value, Parameters>::size_type finish)
 {
     using std::min;
     typedef dense_vector<Value, Parameters>    Vector;
 
-    MTL_DEBUG_THROW_IF( first < 0 || last < 0, index_out_of_range());
-    last= min(last, size(v));
-    first= min(first, last); // implies min(first, size(v))
-    return first < last ? Vector(last - first, &v[first]) : Vector();
+    MTL_DEBUG_THROW_IF( start < 0 || finish < 0, index_out_of_range());
+    finish= min(finish, size(v));
+    start= min(start, finish); // implies min(start, size(v))
+    return start < finish ? Vector(finish - start, &v[start]) : Vector();
 }
 
 template <typename Value, typename Parameters>
 const dense_vector<Value, Parameters>
 inline sub_vector(const dense_vector<Value, Parameters>& v, 
-		  typename dense_vector<Value, Parameters>::size_type first,
-		  typename dense_vector<Value, Parameters>::size_type last)
+		  typename dense_vector<Value, Parameters>::size_type start,
+		  typename dense_vector<Value, Parameters>::size_type finish)
 {
     typedef dense_vector<Value, Parameters>    Vector;
-    return sub_vector(const_cast<Vector&>(v), first, last);
+    return sub_vector(const_cast<Vector&>(v), start, finish);
 }
 
 

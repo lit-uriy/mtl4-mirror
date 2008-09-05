@@ -27,14 +27,15 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 		 const LeftPreconditioner &L, const RightPreconditioner &R, 
 		 Iteration& iter, size_t l)
 {
+    using mtl::irange; using mtl::imax; using mtl::matrix::strict_upper;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
-    const Scalar          zero= math::zero(b[0]), one= math::one(b[0]);
-    Vector                x0(size(x)), y(size(x));
-    std::vector<Vector>   r_hat(l+1,Vector(size(x))), u_hat(l+1,Vector(size(x)));
+    const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
+    Vector                      x0(size(x)), y(size(x));
+    mtl::dense_vector<Vector>   r_hat(l+1,Vector(size(x))), u_hat(l+1,Vector(size(x)));
 
     // shift problem 
     x0= zero;
@@ -51,7 +52,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
     u_hat[0]= zero;
 
     Scalar     rho_0(one), rho_1(zero), alpha(zero), Gamma(zero), beta(zero), omega(one); 
-    mtl::dense2D<Scalar>        tau(l, l+1);
+    mtl::dense2D<Scalar>        tau(l+1, l+1);
     mtl::dense_vector<Scalar>   sigma(l+1), gamma(l+1), gamma_a(l+1), gamma_aa(l+1);
 
     while (! iter.finished(r_hat[0])) {
@@ -84,6 +85,13 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	}
 
 	// mod GS (MR part)
+	mtl::dense_vector<Vector>   r_hat_tail(r_hat[irange(1, imax)]);
+	sub_matrix(tau, 1, imax, 1, imax)= orthogonalize_factors(r_hat_tail);
+	for (Size j= 1; j <= l; ++j) 
+	    gamma_a[j]= dot(r_hat[j], r_hat[0]) / tau[j][j];
+
+#if 0
+	// mod GS (MR part)
 	for (Size j= 1; j <= l; ++j) {
 	    for (Size i= 1; i < j; ++i) {
 		tau[i][j]= dot(r_hat[i], r_hat[j]) / sigma[i];
@@ -92,11 +100,13 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	    sigma[j]= dot(r_hat[j], r_hat[j]); 
 	    gamma_a[j]= dot(r_hat[j], r_hat[0]) / sigma[j];
 	}
+#endif
 
 	gamma[l]= gamma_a[l]; omega= gamma[l];
 	if (omega == zero)
 	    return iter.fail(3, "bicg breakdown #2");
 		
+	// is this something like a tri-solve? 
 	for (Size j= l-1; j > 0; --j) {
 	    Scalar sum= zero;
 	    for (Size i=j+1;i<=l;++i)
@@ -104,12 +114,18 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	    gamma[j] = gamma_a[j] - sum;
 	}
 
+	gamma_aa[irange(1, l)]= strict_upper(sub_matrix(tau, 1, l, 1, l)) * gamma[irange(2, l+1)] + gamma[irange(2, l+1)];
+	// or when diag(tau) == identity then
+	// gamma_aa[irange(1, l)]= upper(sub_matrix(tau, 1, l, 1, l)) * gamma[irange(2, l+1)];
+
+#if 0
 	for (Size j = 1; j < l; ++j) {
 	    Scalar sum= zero;
 	    for (Size i= j+1; i < l; ++i)
 		sum+= tau[j][i] * gamma[i+1];
 	    gamma_aa[j] = gamma[j+1] + sum;
 	}
+#endif
 
 	x+= gamma[1] * r_hat[0];
 	r_hat[0]-= gamma_a[l] * r_hat[l];
