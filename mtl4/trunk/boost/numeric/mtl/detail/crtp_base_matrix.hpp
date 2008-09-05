@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 
@@ -308,7 +309,7 @@ struct const_crtp_matrix_bracket
     operations::bracket_proxy<Matrix, const Matrix&, ValueType>
     operator[] (SizeType row) const
     {
-		return operations::bracket_proxy<Matrix, const Matrix&, ValueType>(static_cast<const Matrix&>(*this), row);
+	return operations::bracket_proxy<Matrix, const Matrix&, ValueType>(static_cast<const Matrix&>(*this), row);
     }
 };
 
@@ -357,6 +358,43 @@ struct crtp_base_matrix
                      >::type
 {};
 
+
+template <typename Matrix>
+struct const_crtp_matrix_range_bracket
+{    
+#if 0
+    operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>
+    operator[] (irange row_range) const
+    {
+	return operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>(static_cast<const Matrix&>(*this), row_range);
+    }
+
+    operations::range_bracket_proxy<Matrix, Matrix&, Matrix>
+    operator[] (irange row_range)
+    {
+	return operations::range_bracket_proxy<Matrix, Matrix&, Matrix>(static_cast<Matrix&>(*this), row_range);
+    }
+#endif
+};
+
+
+#if 0
+template <typename Matrix, typename ValueType, typename SizeType>
+struct crtp_matrix_bracket 
+{    
+    operations::bracket_proxy<Matrix, const Matrix&, const ValueType&>
+    operator[] (SizeType row) const
+    {
+        return operations::bracket_proxy<Matrix, const Matrix&, const ValueType&>(static_cast<const Matrix&>(*this), row);
+    }
+
+    operations::bracket_proxy<Matrix, Matrix&, ValueType&>
+    operator[] (SizeType row)
+    {
+        return operations::bracket_proxy<Matrix, Matrix&, ValueType&>(static_cast<Matrix&>(*this), row);
+    }
+};
+#endif
 
 }} // namespace mtl::detail
 

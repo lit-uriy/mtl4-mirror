@@ -13,4 +13,6 @@
 #include <boost/numeric/mtl/vectors.hpp>
 #include <boost/numeric/mtl/matrices.hpp>
 
+#include <boost/numeric/mtl/utility/irange.hpp>
+
 #endif // MTL_TYPES_INCLUDE

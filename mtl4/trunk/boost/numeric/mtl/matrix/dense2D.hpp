@@ -16,6 +16,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
+#include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
@@ -142,8 +143,9 @@ namespace traits { namespace detail {
 template <typename Value, typename Parameters = mtl::matrix::parameters<> >
 class dense2D : public detail::base_sub_matrix<Value, Parameters>, 
 		public detail::contiguous_memory_block< Value, Parameters::on_stack, 
-							 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
+							detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
                 public detail::crtp_base_matrix< dense2D<Value, Parameters>, Value, std::size_t >,
+                public detail::const_crtp_matrix_range_bracket< dense2D<Value, Parameters> >,
 		public matrix::mat_expr< dense2D<Value, Parameters> >
 {
     typedef dense2D                                           self;

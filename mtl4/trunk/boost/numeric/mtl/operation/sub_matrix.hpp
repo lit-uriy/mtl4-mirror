@@ -10,6 +10,8 @@
 #ifndef MTL_SUBMATRIX_INCLUDE
 #define MTL_SUBMATRIX_INCLUDE
 
+#include <cmath>
+
 namespace mtl {
 
 // Functor type as background for free submatrix function
@@ -23,6 +25,27 @@ struct sub_matrix_t
     // const_sub_matrix_type operator()(Matrix const&, size_type, size_type, size_type, size_type);
 };
     
+    namespace impl {
+
+	template <typename Matrix>
+	inline void correct_sub_matrix_indices(Matrix const& matrix, 
+					       typename sub_matrix_t<Matrix>::size_type& begin_row, 
+					       typename sub_matrix_t<Matrix>::size_type& end_row, 
+					       typename sub_matrix_t<Matrix>::size_type& begin_col, 
+					       typename sub_matrix_t<Matrix>::size_type& end_col)
+	{
+	    using std::min;
+	    MTL_DEBUG_THROW_IF( begin_row < 0 || end_row < 0, index_out_of_range());
+	    end_row= min(end_row, num_rows(matrix));
+	    begin_row= min(begin_row, end_row); // implies min(begin_row, num_rows(matrix))
+	    
+	    MTL_DEBUG_THROW_IF( begin_col < 0 || end_col < 0, index_out_of_range());
+	    end_col= min(end_col, num_cols(matrix));
+	    begin_col= min(begin_col, end_col); // implies likewise
+	}
+
+    } // namespace impl
+
 
 template <typename Matrix>
 inline typename sub_matrix_t<Matrix>::sub_matrix_type 
@@ -32,6 +55,7 @@ sub_matrix(Matrix& matrix,
 	   typename sub_matrix_t<Matrix>::size_type begin_col, 
 	   typename sub_matrix_t<Matrix>::size_type end_col)
 {
+    impl::correct_sub_matrix_indices(matrix, begin_row, end_row, begin_col, end_col);
     return sub_matrix_t<Matrix>()(matrix, begin_row, end_row, begin_col, end_col);
 }
 
@@ -43,6 +67,7 @@ sub_matrix(Matrix const& matrix,
 	   typename sub_matrix_t<Matrix>::size_type begin_col, 
 	   typename sub_matrix_t<Matrix>::size_type end_col)
 {
+    impl::correct_sub_matrix_indices(matrix, begin_row, end_row, begin_col, end_col);
     return sub_matrix_t<Matrix>()(matrix, begin_row, end_row, begin_col, end_col);
 }
 
