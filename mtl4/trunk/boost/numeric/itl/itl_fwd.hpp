@@ -46,6 +46,13 @@ namespace itl {
     int bicgstab_2(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
 		   const Preconditioner& M, Iteration& iter);
 
+    template < typename LinearOperator, typename Vector, 
+	       typename LeftPreconditioner, typename RightPreconditioner, 
+	       typename Iteration >
+    int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
+		     const LeftPreconditioner &L, const RightPreconditioner &R, 
+		     Iteration& iter, size_t l);
+
 } // namespace itl
 
 #endif // ITL_ITL_FWD_INCLUDE

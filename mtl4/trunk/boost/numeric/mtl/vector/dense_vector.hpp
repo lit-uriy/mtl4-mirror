@@ -72,9 +72,9 @@ public:
     }
 #endif
 
-	void check_dim( size_type s ) const
-	{
-		MTL_DEBUG_THROW_IF( size() != 0 && size() != s, incompatible_size());
+    void check_dim( size_type s ) const
+    {
+	MTL_DEBUG_THROW_IF( size() != 0 && size() != s, incompatible_size());
     }
 
     template <class E>
@@ -258,6 +258,32 @@ inline num_cols(const dense_vector<Value, Parameters>& vector)
 {
     return num_rows_aux(vector, typename transposed_orientation<typename Parameters::orientation>::type());
 }
+
+template <typename Value, typename Parameters>
+dense_vector<Value, Parameters>
+inline sub_vector(dense_vector<Value, Parameters>& v, 
+		  typename dense_vector<Value, Parameters>::size_type first,
+		  typename dense_vector<Value, Parameters>::size_type last)
+{
+    using std::min;
+    typedef dense_vector<Value, Parameters>    Vector;
+
+    MTL_DEBUG_THROW_IF( first < 0 || last < 0, index_out_of_range());
+    last= min(last, size(v));
+    first= min(first, last); // implies min(first, size(v))
+    return first < last ? Vector(last - first, &v[first]) : Vector();
+}
+
+template <typename Value, typename Parameters>
+const dense_vector<Value, Parameters>
+inline sub_vector(const dense_vector<Value, Parameters>& v, 
+		  typename dense_vector<Value, Parameters>::size_type first,
+		  typename dense_vector<Value, Parameters>::size_type last)
+{
+    typedef dense_vector<Value, Parameters>    Vector;
+    return sub_vector(const_cast<Vector&>(v), first, last);
+}
+
 
 }} // namespace mtl::vector
 

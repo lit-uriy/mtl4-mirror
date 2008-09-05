@@ -765,14 +765,14 @@ struct gen_blas_dmat_dmat_mult_ft
 namespace detail {
 
     // Transform from assign representation to BLAS
-    double dgemm_alpha(assign::assign_sum) { return 1.0; }
-    double dgemm_alpha(assign::plus_sum) { return 1.0; } 
-    double dgemm_alpha(assign::minus_sum) { return -1.0; }
+    double inline dgemm_alpha(assign::assign_sum) { return 1.0; }
+    double inline dgemm_alpha(assign::plus_sum) { return 1.0; } 
+    double inline dgemm_alpha(assign::minus_sum) { return -1.0; }
 
     // Transform from assign representation to BLAS
-    double dgemm_beta(assign::assign_sum) { return 0.0; }
-    double dgemm_beta(assign::plus_sum) { return 1.0; }
-    double dgemm_beta(assign::minus_sum) { return 1.0; }
+    double inline dgemm_beta(assign::assign_sum) { return 0.0; }
+    double inline dgemm_beta(assign::plus_sum) { return 1.0; }
+    double inline dgemm_beta(assign::minus_sum) { return 1.0; }
 
     template <typename Value, typename ParaA, typename ParaB, typename ParaC, typename Function, typename Assign>
     void inline xgemm(const dense2D<Value, ParaA>& a, const dense2D<Value, ParaB>& b, 

@@ -19,6 +19,7 @@
 #include <boost/numeric/itl/krylov/bicg.hpp>
 #include <boost/numeric/itl/krylov/bicgstab.hpp>
 #include <boost/numeric/itl/krylov/bicgstab_2.hpp>
+#include <boost/numeric/itl/krylov/bicgstab_ell.hpp>
 
 #include <boost/numeric/itl/pc/identity.hpp>
 #include <boost/numeric/itl/pc/diagonal.hpp>
