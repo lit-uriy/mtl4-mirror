@@ -34,8 +34,9 @@ void test(Vector& v, const T& x, const char* name, bool is_cmp= false)
     using std::abs; using std::cout;
     std::cout << "\n" << name << "\n";
     for (unsigned i= 0, c= 1; i < size(v); ++i)
-	for (unsigned j= 0; j < size(v[i]); ++j, c+= j)
+	for (unsigned j= 0; j < size(v[i]); ++j, c++)
 	    v[i][j]= f(T((i + j) % sz));
+
 
     cout << "w initially\n";
     Vector w(v);
