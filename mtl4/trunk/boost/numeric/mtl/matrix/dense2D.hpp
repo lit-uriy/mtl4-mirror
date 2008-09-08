@@ -145,7 +145,6 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 		public detail::contiguous_memory_block< Value, Parameters::on_stack, 
 							detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
                 public detail::crtp_base_matrix< dense2D<Value, Parameters>, Value, std::size_t >,
-                public detail::const_crtp_matrix_range_bracket< dense2D<Value, Parameters> >,
 		public matrix::mat_expr< dense2D<Value, Parameters> >
 {
     typedef dense2D                                           self;

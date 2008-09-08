@@ -86,7 +86,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 
 	// mod GS (MR part)
 	mtl::dense_vector<Vector>   r_hat_tail(r_hat[irange(1, imax)]);
-	sub_matrix(tau, 1, imax, 1, imax)= orthogonalize_factors(r_hat_tail);
+	tau[irange(1, imax)][irange(1, imax)]= orthogonalize_factors(r_hat_tail);
 	for (Size j= 1; j <= l; ++j) 
 	    gamma_a[j]= dot(r_hat[j], r_hat[0]) / tau[j][j];
 
@@ -114,9 +114,9 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	    gamma[j] = gamma_a[j] - sum;
 	}
 
-	gamma_aa[irange(1, l)]= strict_upper(sub_matrix(tau, 1, l, 1, l)) * gamma[irange(2, l+1)] + gamma[irange(2, l+1)];
+	gamma_aa[irange(1, l)]= strict_upper(tau[irange(1, l)][irange(1, l)]) * gamma[irange(2, l+1)] + gamma[irange(2, l+1)];
 	// or when diag(tau) == identity then
-	// gamma_aa[irange(1, l)]= upper(sub_matrix(tau, 1, l, 1, l)) * gamma[irange(2, l+1)];
+	// gamma_aa[irange(1, l)]= upper(tau[irange(1, l)][irange(1, l)]) * gamma[irange(2, l+1)];
 
 #if 0
 	for (Size j = 1; j < l; ++j) {

@@ -322,7 +322,6 @@ template <typename Elt, unsigned long BitMask, typename Parameters = mtl::matrix
 class morton_dense : public detail::base_sub_matrix<Elt, Parameters>, 
 		     public detail::contiguous_memory_block<Elt, false>,
                      public detail::crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >,
-                     public detail::const_crtp_matrix_range_bracket< morton_dense<Elt, BitMask, Parameters> >,
 		     public matrix::mat_expr< morton_dense<Elt, BitMask, Parameters> >
 {
     typedef detail::base_sub_matrix<Elt, Parameters>                   super;
