@@ -17,38 +17,46 @@
 using namespace mtl;
 using namespace std;  
 
-template <typename Size>
-struct ss
+
+template <typename Size, typename Derived>
+struct base1
 {
     int operator[](Size i) { cout << "Size\n"; return 1; }
-    int operator[](mtl::irange i) { cout << "irange\n"; return 2;}
+    int operator[](mtl::irange i) 
+    { 
+	cout << "irange\n"; 
+	return static_cast<Derived*>(this)
+	    ->susu(i.start(), i.finish());
+    }
+};
+    
 
+template <typename Size>
+struct ss : public base1<Size, ss<Size> >
+{
+    int susu(int i, int j) { cout << "susu\n"; return 3; }
 };
 
-void f(std::size_t i)
-{
-    cout << "with size_t\n";
-}
-
-void f(irange)
-{
-    cout << "with irange\n";
-}
+template <typename Size>
+struct ss2 : public base1<Size, ss<Size> >
+{};
 
 
+// For Morton matrices not applicable
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-#if 0  // Still working on it
-    f(1);
-    f(irange(1, 2));
-
+#if 0  // For testing
     ss<std::size_t> s;
     s[3];
     s[irange(1, 2)];
 
+    ss2<std::size_t> s2;
+    s2[3];
+#endif
+
     A= 0.0;
-    //A[1][1]= 1.0; 
+    A[1][1]= 1.0; 
     hessian_setup(A, 1.0);
 
     std::cout << "\n" << name << "\nA == \n" << A;
@@ -61,12 +69,35 @@ void test(Matrix& A, const char* name)
 
     if (A[irange(1, 4)][irange(1, imax)][1][1] != 4.0) throw "Wrong value in A[][]";
 
-    Matrix C(A[irange(3, imax)][irange(2, 3)]);
+    Matrix C(A[irange(3, imax)][irange(1, 2)]);
+    std::cout << "\n" << name << "\nA[irange(3, imax)][irange(1, 2)] == \n" << C;
+    if (C[1][0] != 5.0) throw "Wrong value in C";
+
+    cout << "A[irange(1, 4)][irange(1, imax)][irange(1, imax)][irange(1, imax)][0][0] == \n" 
+	 << A[irange(1, 4)][irange(1, imax)][irange(1, imax)][irange(1, imax)][0][0] << "\n"; 
+}
+
+template <typename Matrix>
+void test2(Matrix& A, const char* name)
+{
+    A= 0.0;
+    A[1][1]= 1.0; 
+    hessian_setup(A, 1.0);
+
+    std::cout << "\n" << name << "\nA == \n" << A;
+    
+    cout << "A[irange(2, 4)][irange(2, imax)] == \n" 
+	 << A[irange(2, 4)][irange(2, imax)] << "\n";
+
+    Matrix B(A[irange(2, 4)][irange(2, imax)]);
+    if (B[0][0] != 4.0) throw "Wrong value in B";
+
+    if (A[irange(2, 4)][irange(2, imax)][0][0] != 4.0) throw "Wrong value in A[][]";
+
+    Matrix C(A[irange(4, imax)][irange(0, imax)]);
+    std::cout << "\n" << name << "\nA[irange(4, imax)][irange(0, imax)] == \n" << C;
     if (C[0][1] != 5.0) throw "Wrong value in C";
 
-    cout << "A[irange(3, imax)][irange(2, 3)] == \n" 
-	 << A[irange(3, imax)][irange(2, 3)];
-#endif
 }
 
 
@@ -81,10 +112,12 @@ int test_main(int argc, char* argv[])
     morton_dense<double, doppled_32_col_mask>        mcc(size, size-2);
 
     test(dc, "dense2D");
-#if 0
     test(dcc, "dense2D col-major");
-    test(mdc, "pure Morton");
-    test(mcc, "Hybrid col-major");
-#endif
+
+    test2(dc, "dense2D");
+    test2(dcc, "dense2D col-major");
+    test2(mdc, "pure Morton");
+    test2(mcc, "Hybrid col-major");
+
     return 0;
 }

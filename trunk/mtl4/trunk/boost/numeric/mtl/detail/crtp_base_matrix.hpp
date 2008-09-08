@@ -311,6 +311,14 @@ struct const_crtp_matrix_bracket
     {
 	return operations::bracket_proxy<Matrix, const Matrix&, ValueType>(static_cast<const Matrix&>(*this), row);
     }
+
+    // Compiler error (later) if no sub_matrix function available
+    operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>
+    operator[] (irange row_range) const
+    {
+	return operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>(static_cast<const Matrix&>(*this), row_range);
+    }
+
 };
 
 template <typename Matrix, typename ValueType, typename SizeType>
@@ -326,6 +334,20 @@ struct crtp_matrix_bracket
     operator[] (SizeType row)
     {
         return operations::bracket_proxy<Matrix, Matrix&, ValueType&>(static_cast<Matrix&>(*this), row);
+    }
+
+    // Compiler error (later) if no sub_matrix function available
+    operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>
+    operator[] (irange row_range) const
+    {
+	return operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>(static_cast<const Matrix&>(*this), row_range);
+    }
+
+    // Compiler error (later) if no sub_matrix function available
+    operations::range_bracket_proxy<Matrix, Matrix&, Matrix>
+    operator[] (irange row_range)
+    {
+	return operations::range_bracket_proxy<Matrix, Matrix&, Matrix>(static_cast<Matrix&>(*this), row_range);
     }
 };
 
@@ -358,43 +380,6 @@ struct crtp_base_matrix
                      >::type
 {};
 
-
-template <typename Matrix>
-struct const_crtp_matrix_range_bracket
-{    
-#if 0
-    operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>
-    operator[] (irange row_range) const
-    {
-	return operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>(static_cast<const Matrix&>(*this), row_range);
-    }
-
-    operations::range_bracket_proxy<Matrix, Matrix&, Matrix>
-    operator[] (irange row_range)
-    {
-	return operations::range_bracket_proxy<Matrix, Matrix&, Matrix>(static_cast<Matrix&>(*this), row_range);
-    }
-#endif
-};
-
-
-#if 0
-template <typename Matrix, typename ValueType, typename SizeType>
-struct crtp_matrix_bracket 
-{    
-    operations::bracket_proxy<Matrix, const Matrix&, const ValueType&>
-    operator[] (SizeType row) const
-    {
-        return operations::bracket_proxy<Matrix, const Matrix&, const ValueType&>(static_cast<const Matrix&>(*this), row);
-    }
-
-    operations::bracket_proxy<Matrix, Matrix&, ValueType&>
-    operator[] (SizeType row)
-    {
-        return operations::bracket_proxy<Matrix, Matrix&, ValueType&>(static_cast<Matrix&>(*this), row);
-    }
-};
-#endif
 
 }} // namespace mtl::detail
 
