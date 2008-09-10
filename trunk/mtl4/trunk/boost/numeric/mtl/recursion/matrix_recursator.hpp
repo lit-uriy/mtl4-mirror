@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/recursion/dim_splitter.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
-
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl { namespace recursion {
 
@@ -48,7 +48,8 @@ struct matrix_recursator
     typedef Matrix                                                matrix_type;
     typedef typename sub_matrix_t<Matrix>::sub_matrix_type        sub_matrix_type;
     typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type  const_sub_matrix_type;
-    typedef typename Matrix::size_type                            size_type;
+    typedef typename Collection<Matrix>::size_type                size_type;
+    typedef typename Collection<Matrix>::value_type               matrix_value_type;
     typedef outer_bound_splitter<self>                            splitter_type;
 
 private:
@@ -93,9 +94,9 @@ public:
       if (bound == 0)
 	my_bound= outer_bound(matrix);
       else {
-	MTL_THROW_IF(!is_power_of_2(bound), range_error("Bound must be a power of 2"));
-	MTL_THROW_IF(bound < matrix.num_rows() || bound < matrix.num_cols(), 
-		     range_error("Bound must not be smaller than matrix dimensions"));
+	MTL_DEBUG_THROW_IF(!is_power_of_2(bound), range_error("Bound must be a power of 2"));
+	MTL_DEBUG_THROW_IF(bound < matrix.num_rows() || bound < matrix.num_cols(), 
+			   range_error("Bound must not be smaller than matrix dimensions"));
 	my_bound= bound;
       }
     }
@@ -219,6 +220,17 @@ public:
     template <typename R1, typename R2> friend void equalize_depth (R1&, R2&);   
     template <typename R1, typename R2, typename R3> friend void equalize_depth (R1&, R2&, R3&);
 
+    // Dirty feature to be used with care
+    matrix_value_type* first_address()
+    {
+	return &my_sub_matrix[my_first_row][my_first_col];
+    }
+
+    const matrix_value_type* first_address() const
+    {
+	return &my_sub_matrix[my_first_row][my_first_col];
+    }
+    
   protected:
     sub_matrix_type     my_sub_matrix; /// Referred matrix (from which the sub-matrices are built)
     size_type           my_bound,      /// Virtual matrix size, i.e. upper bound for size of sub-matrix.
@@ -532,7 +544,6 @@ inline size(const matrix_recursator<Matrix>& rec)
 {
     return num_rows(rec) * num_cols(rec);
 }
-
 
 } // namespace mtl
 

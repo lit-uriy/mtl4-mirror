@@ -42,6 +42,10 @@ void test(Matrix& A, const char* name)
 
     std::cout << "south_east of north_west:\n" << *south_east(nw) << '\n';
     if ((*south_east(nw))[0][0] != 4.0) throw "(*south_east(nw))[0][0] != 4.0";
+
+    std::cout << "nw.first_address() == " << nw.first_address() 
+	      << ", &(*nw)[0][0] == " << &(*nw)[0][0] << '\n';
+    if (nw.first_address() != &(*nw)[0][0]) throw "Inconsistency in address calculation";
 }
 
 
