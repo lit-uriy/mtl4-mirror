@@ -692,6 +692,7 @@ template <typename Modifier>
 inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type row, size_type col, value_type val)
 {
     using std::copy_backward;
+    MTL_DEBUG_THROW_IF(row < 0 || row >= num_rows(matrix) || col < 0 || col >= num_cols(matrix), index_out_of_range());
 
     Modifier               modifier;  
     compressed2D_indexer   indexer;

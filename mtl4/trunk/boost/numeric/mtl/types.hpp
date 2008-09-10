@@ -15,4 +15,6 @@
 
 #include <boost/numeric/mtl/utility/irange.hpp>
 
+#include <boost/numeric/mtl/io/matrix_market.hpp>
+
 #endif // MTL_TYPES_INCLUDE

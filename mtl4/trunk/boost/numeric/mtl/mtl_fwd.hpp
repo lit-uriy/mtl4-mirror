@@ -249,38 +249,19 @@ namespace mtl {
 
     class irange;
 
+    /// Namespace for I/O operations
+    namespace io {
+	class matrix_market_ifstream;
+	class matrix_market_ofstream;
+
+	template <typename MatrixIFStream, typename MatrixOFStream> class matrix_file;
+	typedef matrix_file<matrix_market_ifstream, matrix_market_ofstream> matrix_market_file;
+
+    }
+
+
 } // namespace mtl
 
 #endif // MTL_MTL_FWD_INCLUDE
 
 
-
-
-
-
-
-
-
-#if 0
- Once matrices are defined in namespace matrix
-namespace mtl {
-
-    namespace matrix {
-	
-	template <typename Value, typename Parameters> struct dense2D;
-	template <typename Value, unsigned long Mask, typename Parameters> struct morton_dense;
-
-	template <typename Value, typename Parameters> struct compressed2D;
-
-#if 0
-	template <typename Matrix> struct transposed_orientation;
-#endif
-
-    } // namespace matrix
-
-    using matrix::dense2D;
-    using matrix::morton_dense;
-    using matrix::compressed2D;
-
-} // namespace mtl
-#endif
