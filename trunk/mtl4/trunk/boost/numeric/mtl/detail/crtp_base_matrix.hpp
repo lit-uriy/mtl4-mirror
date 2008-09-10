@@ -122,9 +122,16 @@ struct crtp_assign<Value[Rows][Cols], Matrix>
 	}
 };
 
-
-
-
+/// Assign content of a file to the matrix
+template <typename IFStream, typename OFStream, typename Matrix>
+struct crtp_assign<io::matrix_file<IFStream, OFStream>, Matrix>
+{
+    Matrix& operator()(const io::matrix_file<IFStream, OFStream>& file, Matrix& matrix)
+    {
+	IFStream stream(file.file_name().c_str());
+	stream >> matrix;
+    }
+};
 	
 /// Assign-add matrix expressions by incrementally copying except for some special expressions
 template <typename Source, typename Matrix>
