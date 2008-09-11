@@ -255,7 +255,7 @@ namespace mtl {
 	class matrix_market_ofstream;
 
 	template <typename MatrixIFStream, typename MatrixOFStream> class matrix_file;
-	typedef matrix_file<matrix_market_ifstream, matrix_market_ofstream> matrix_market_file;
+	typedef matrix_file<matrix_market_ifstream, matrix_market_ofstream> matrix_market;
 
     }
 
