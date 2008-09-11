@@ -48,10 +48,10 @@ void test(Matrix& A, const char* name)
     // test_file(A, "matrix_market/plskz362.mtx", "Skew-symmetric"); // has only 0s in A[:9][:9]
     test_file(A, "matrix_market/bcsstk01.mtx", "Real symmetric");
 
-    Matrix B(io::matrix_market_file("matrix_market/jgl009.mtx")), C;
+    Matrix B(io::matrix_market("matrix_market/jgl009.mtx")), C;
     std::cout << "Matrix market file read in constructor:\n" << B;
 
-    C= io::matrix_market_file("matrix_market/jgl009.mtx");
+    C= io::matrix_market("matrix_market/jgl009.mtx");
     std::cout << "Matrix market file assigned:\n" << B;
     
 }
