@@ -50,4 +50,7 @@
 #include <boost/numeric/mtl/matrix/lower.hpp>
 #include <boost/numeric/mtl/matrix/strict_lower.hpp>
 
+#include <boost/numeric/mtl/utility/string_to_enum.hpp>
+
+
 #endif // MTL_OPERATIONS_INCLUDE

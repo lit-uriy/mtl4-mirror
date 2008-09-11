@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/string_to_enum.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 
@@ -42,28 +43,18 @@ class matrix_market_ifstream
   protected:
     template <typename Matrix> self& read(Matrix& A, tag::matrix);
 
-    void set_symmetry(const std::string& symmetry_text)
+    void set_symmetry(std::string& symmetry_text)
     {
-	if (symmetry_text == std::string("general"))
-	    my_symmetry= general;
-	else if (symmetry_text == std::string("symmetric"))
-	    my_symmetry= symmetric;
-	else if (symmetry_text == std::string("skew-symmetric"))
-	    my_symmetry= skew;
-	else if (symmetry_text == std::string("hermitian"))
-	    my_symmetry= Hermitian;
-	else
-	    MTL_THROW(runtime_error("Unknown symmetry tag in file"));
+	boost::to_lower(symmetry_text); 
+	const char* symmetry_options[]= {"general", "symmetric", "skew-symmetric", "hermitian"};
+	my_symmetry= string_to_enum(symmetry_text, symmetry_options, symmetry());
     }
 
-    void set_sparsity(const std::string& sparsity_text)
+    void set_sparsity(std::string& sparsity_text)
     {
-	if (sparsity_text == std::string("coordinate"))
-	    my_sparsity= coordinate;
-	else if (sparsity_text == std::string("array"))
-	    my_sparsity= array;
-	else
-	    MTL_THROW(runtime_error("Unknown sparsity tag in file"));
+	boost::to_lower(sparsity_text); 
+	const char* sparsity_options[]= {"coordinate", "array"};
+	my_sparsity= string_to_enum(sparsity_text, sparsity_options, sparsity());
     }
 
     template <typename Inserter, typename Value>
@@ -116,7 +107,6 @@ class matrix_market_ifstream
     enum symmetry {general, symmetric, skew, Hermitian} my_symmetry;
     enum sparsity {coordinate, array} my_sparsity;
     std::size_t nrows, ncols, nnz;
-
 };
 
 
@@ -136,8 +126,8 @@ matrix_market_ifstream& matrix_market_ifstream::read(Matrix& A, tag::matrix)
     MTL_THROW_IF(type != std::string("matrix"), 
 		 runtime_error("Try to read matrix from non-matrix file"));
 
-    boost::to_lower(symmetry_text); set_symmetry(symmetry_text);
-    boost::to_lower(sparsity_text); set_sparsity(sparsity_text);
+    set_symmetry(symmetry_text);
+    set_sparsity(sparsity_text);
 
     char first, comment[80];
     do {
