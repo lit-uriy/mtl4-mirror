@@ -20,10 +20,6 @@
 #include <boost/numeric/mtl/operation/clone.hpp>
 
 
-#ifdef MTL_WITH_MOVE
-#  include <adobe/move.hpp>
-#endif
-
 
 namespace mtl { namespace detail {
 using std::size_t;
@@ -291,19 +287,6 @@ struct contiguous_memory_block
 	alloc(size);
 	// std::cout << "New block at " << data << '\n';
     }
-
-#ifdef MTL_WITH_MOVE
-    // If possible move data
-    explicit contiguous_memory_block(self& other, adobe::move_ctor)
-    {
-	switch (other.category) {
-	case own:        move_construction(other); break;
-	case external:   copy_construction(other); break; // Shouldn't happen, maybe exception
-	case view:       copy_view(other);
-	}
-    }
-#endif
-
 
     // Default copy constructor
     contiguous_memory_block(const self& other)
