@@ -30,11 +30,6 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 
-#ifdef MTL_WITH_MOVE
-#  include <adobe/move.hpp>
-#endif
-
-
 namespace mtl {
 
 using std::size_t;
@@ -733,14 +728,6 @@ struct is_clonable< mtl::dense2D<Value, Parameters> > : boost::mpl::true_ {};
 
 } // namespace mtl
 
-
-#ifdef MTL_WITH_MOVE
-  namespace adobe {
-    // Enable move semantics
-    template <typename Value, typename Parameters>
-    struct is_movable< mtl::dense2D<Value, Parameters> > : boost::mpl::true_ {};
-  }
-#endif
 
 
 namespace math {
