@@ -10,8 +10,8 @@
 #ifndef MTL_COMMON_INCLUDES_INCLUDE
 #define MTL_COMMON_INCLUDES_INCLUDE
 
-#include <boost/numeric/mtl/detail/base_matrix.hpp>
-#include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
+#include <boost/numeric/mtl/matrix/base_matrix.hpp>
+#include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>

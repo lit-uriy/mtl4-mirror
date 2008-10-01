@@ -63,7 +63,7 @@ matrix_type M3_##lev(1<<(lgMtx-lev-1),1<<(lgMtx-lev-1));\
 matrix_type M4_##lev(1<<(lgMtx-lev-1),1<<(lgMtx-lev-1));\
 matrix_type M5_##lev(1<<(lgMtx-lev-1),1<<(lgMtx-lev-1));
 
-typedef matrix_recursator<matrix_type> recursator_t;
+typedef matrix::recursator<matrix_type> recursator_t;
 
 std::vector<recursator_t> M0;
 std::vector<recursator_t> M1;
@@ -292,7 +292,7 @@ makeRecs(5);*/
   fill_matrix_zero(matrix_P);  printf("\n");
 
 
-  recursion::matrix_recursator<matrix_type> recursator_P(matrix_P), 
+  recursion::matrix::recursator<matrix_type> recursator_P(matrix_P), 
                                             recursator_A(matrix_A),
                                             recursator_B(matrix_B);
 

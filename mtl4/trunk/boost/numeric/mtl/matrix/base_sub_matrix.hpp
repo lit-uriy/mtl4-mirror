@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 
-namespace mtl { namespace detail {
+namespace mtl { namespace matrix {
 
 // Base class for sub-matrices
 // Contains only very simple functionality that is used in all sub-matrices
@@ -223,7 +223,7 @@ public:
 };
 
 
-}} // namespace mtl::detail
+}} // namespace mtl::matrix
 
 #endif // MTL_BASE_SUB_MATRIX_INCLUDE
 

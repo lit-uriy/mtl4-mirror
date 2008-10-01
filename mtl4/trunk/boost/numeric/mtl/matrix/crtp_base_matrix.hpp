@@ -29,7 +29,7 @@
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 
-namespace mtl { namespace detail {
+namespace mtl { namespace matrix {
 
 template <typename Source, typename Matrix>
 struct crtp_assign 
@@ -45,7 +45,7 @@ private:
     {
 	MTL_DEBUG_THROW_IF(num_rows(matrix) * num_cols(matrix) == 0, 
 			   range_error("Trying to initialize a 0 by 0 matrix with a value"));
-	matrix::diagonal_setup(matrix, source);
+	diagonal_setup(matrix, source);
 	return matrix;
     }
 
@@ -63,11 +63,11 @@ private:
 
 /// Assign sum by assigning first argument and adding second
 /*  Note that this is more special then assigning arbitrary expressions including matrices itself
-    because matrix::mat_mat_plus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
+    because mat_mat_plus_expr <E1, E2> is a derived class from mat_expr < MatrixSrc >. **/
 template <typename E1, typename E2, typename Matrix>
-struct crtp_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix> 
+struct crtp_assign<mat_mat_plus_expr<E1, E2>, Matrix> 
 {
-    Matrix& operator()(const matrix::mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
+    Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
 		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix= src.first;
@@ -78,11 +78,11 @@ struct crtp_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix>
 
 /// Assign difference by assigning first argument and subtracting second
 /*  Note that this is more special then assigning arbitrary expressions including matrices itself
-    because matrix::mat_mat_minus_expr <E1, E2> is a derived class from matrix::mat_expr < MatrixSrc >. **/
+    because mat_mat_minus_expr <E1, E2> is a derived class from mat_expr < MatrixSrc >. **/
 template <typename E1, typename E2, typename Matrix>
-struct crtp_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix> 
+struct crtp_assign<mat_mat_minus_expr<E1, E2>, Matrix> 
 {
-    Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
+    Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
 		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix= src.first;
@@ -93,11 +93,11 @@ struct crtp_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix>
 
 /// Assign product by calling mult
 template <typename E1, typename E2, typename Matrix>
-struct crtp_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix> 
+struct crtp_assign<mat_mat_times_expr<E1, E2>, Matrix> 
 {
-    Matrix& operator()(const matrix::mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
+    Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
-		operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+		operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
 		matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
 		mult(factors.first, factors.second, matrix);
 		return matrix;
@@ -113,7 +113,7 @@ struct crtp_assign<Value[Rows][Cols], Matrix>
 		typedef typename Collection<Matrix>::size_type size_type;
 
 		matrix.checked_change_dim(Rows, Cols);
-		matrix::inserter<Matrix>  ins(matrix);
+		inserter<Matrix>  ins(matrix);
 
 		for (size_type r= 0; r < Rows; ++r)
 			for (size_type c= 0; c < Cols; ++c)
@@ -152,12 +152,12 @@ struct crtp_plus_assign
 
 /// Assign-add sum by adding both arguments
 /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from 
-	matrix::mat_expr < MatrixSrc >. **/
+	because mat_mat_plus_expr <E1, E2> is a derived class from 
+	mat_expr < MatrixSrc >. **/
 template <typename E1, typename E2, typename Matrix>
-struct crtp_plus_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix> 
+struct crtp_plus_assign<mat_mat_plus_expr<E1, E2>, Matrix> 
 {
-    Matrix& operator()(const matrix::mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
+    Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
 		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix+= src.first;
@@ -167,9 +167,9 @@ struct crtp_plus_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix>
 };
 
 template <typename E1, typename E2, typename Matrix>
-struct crtp_plus_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix> 
+struct crtp_plus_assign<mat_mat_minus_expr<E1, E2>, Matrix> 
 {
-    Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
+    Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
 		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix+= src.first;
@@ -179,11 +179,11 @@ struct crtp_plus_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix>
 };
 
 template <typename E1, typename E2, typename Matrix>
-struct crtp_plus_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix> 
+struct crtp_plus_assign<mat_mat_times_expr<E1, E2>, Matrix> 
 {
-    Matrix& operator()(const matrix::mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
+    Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
-		operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+		operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
 		matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
 		gen_mult(factors.first, factors.second, matrix, assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 		return matrix;
@@ -210,12 +210,12 @@ private:
 
 /// Assign-subtract sum by adding both arguments
 /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_plus_expr <E1, E2> is a derived class from 
-	matrix::mat_expr < MatrixSrc >. **/
+	because mat_mat_plus_expr <E1, E2> is a derived class from 
+	mat_expr < MatrixSrc >. **/
 template <typename E1, typename E2, typename Matrix>
-struct crtp_minus_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix> 
+struct crtp_minus_assign<mat_mat_plus_expr<E1, E2>, Matrix> 
 {
-    Matrix& operator()(const matrix::mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
+    Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
 		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix-= src.first;
@@ -226,12 +226,12 @@ struct crtp_minus_assign<matrix::mat_mat_plus_expr<E1, E2>, Matrix>
 
 /// Assign-subtracting difference by subtracting first argument and adding the second one
 /** Note that this is more special then assigning arbitrary expressions including matrices itself
-	because matrix::mat_mat_minus_expr <E1, E2> is a derived class from 
-	matrix::mat_expr < MatrixSrc >. **/
+	because mat_mat_minus_expr <E1, E2> is a derived class from 
+	mat_expr < MatrixSrc >. **/
 template <typename E1, typename E2, typename Matrix>
-struct crtp_minus_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix> 
+struct crtp_minus_assign<mat_mat_minus_expr<E1, E2>, Matrix> 
 {
-    Matrix& operator()(const matrix::mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
+    Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
 		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix-= src.first;
@@ -243,11 +243,11 @@ struct crtp_minus_assign<matrix::mat_mat_minus_expr<E1, E2>, Matrix>
 /// Assign-subtract product by calling gen_mult
 /** Note that this does not work for arbitrary expressions. **/
 template <typename E1, typename E2, typename Matrix>
-struct crtp_minus_assign<matrix::mat_mat_times_expr<E1, E2>, Matrix> 
+struct crtp_minus_assign<mat_mat_times_expr<E1, E2>, Matrix> 
 {
-    Matrix& operator()(const matrix::mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
+    Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
-		operation::compute_factors<Matrix, matrix::mat_mat_times_expr<E1, E2> > factors(src);
+		operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
 		matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
 		gen_mult(factors.first, factors.second, matrix, assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 		return matrix;
@@ -388,6 +388,7 @@ struct crtp_base_matrix
 {};
 
 
-}} // namespace mtl::detail
+
+}} // namespace mtl::matrix
 
 #endif // MTL_CRTP_BASE_MATRIX_INCLUDE

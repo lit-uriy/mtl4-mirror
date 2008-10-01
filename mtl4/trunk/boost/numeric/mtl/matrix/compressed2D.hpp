@@ -30,22 +30,7 @@
 #include <boost/numeric/mtl/matrix/element_array.hpp> 
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 
-namespace mtl {
-
-// Forward declarations
-
-template <typename Value, typename Parameters>
-typename compressed2D<Value, Parameters>::size_type
-inline num_rows(const compressed2D<Value, Parameters>& matrix);
-
-template <typename Value, typename Parameters>
-typename compressed2D<Value, Parameters>::size_type
-inline num_cols(const compressed2D<Value, Parameters>& matrix);
-
-template <typename Value, typename Parameters>
-typename compressed2D<Value, Parameters>::size_type
-inline size(const compressed2D<Value, Parameters>& matrix);
-
+namespace mtl { namespace matrix {
 
 
 struct compressed_key
@@ -293,16 +278,16 @@ struct compressed2D_indexer
 // For now no external data
 template <typename Elt, typename Parameters = matrix::parameters<> >
 class compressed2D 
-  : public detail::base_matrix<Elt, Parameters>,
-    public detail::const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >,
-    public detail::crtp_matrix_assign< compressed2D<Elt, Parameters>, Elt, std::size_t >,
-    public matrix::mat_expr< compressed2D<Elt, Parameters> >
+  : public base_matrix<Elt, Parameters>,
+    public const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >,
+    public crtp_matrix_assign< compressed2D<Elt, Parameters>, Elt, std::size_t >,
+    public mat_expr< compressed2D<Elt, Parameters> >
 {
     typedef std::size_t                              size_t;
-    typedef detail::base_matrix<Elt, Parameters>     super;
+    typedef base_matrix<Elt, Parameters>             super;
     typedef compressed2D                             self;
-    typedef matrix::mat_expr< compressed2D<Elt, Parameters> >          expr_base;
-    typedef detail::crtp_matrix_assign< self, Elt, std::size_t >       assign_base;
+    typedef mat_expr< compressed2D<Elt, Parameters> >          expr_base;
+    typedef crtp_matrix_assign< self, Elt, std::size_t >       assign_base;
 
   public:
     typedef Parameters                               parameters;
@@ -320,62 +305,62 @@ class compressed2D
     // Only allocation of new data, doesn't copy if already existent
     void allocate(size_t new_nnz)
     {
-		if (new_nnz) {
-			this->my_nnz = new_nnz;
-			data.resize(this->my_nnz);
-			indices.resize(this->my_nnz, 0);
-		}
+	if (new_nnz) {
+	    this->my_nnz = new_nnz;
+	    data.resize(this->my_nnz);
+	    indices.resize(this->my_nnz, 0);
+	}
     }
 
     /// Removes all values; e.g. for set_to_zero
     void make_empty()
     {
-		this->my_nnz = 0;
-		data.resize(0);
-		indices.resize(0);
-		std::fill(starts.begin(), starts.end(), 0);
+	this->my_nnz = 0;
+	data.resize(0);
+	indices.resize(0);
+	std::fill(starts.begin(), starts.end(), 0);
     }
 
     /// Change dimension of the matrix; data get lost.
     void change_dim(size_type r, size_type c)
     {
-		if (this->num_rows() != r || this->num_cols() != c) {
-			super::change_dim(mtl::non_fixed::dimensions(r, c));
-			starts.resize(this->dim1()+1);
-			make_empty();
-		}
+	if (this->num_rows() != r || this->num_cols() != c) {
+	    super::change_dim(mtl::non_fixed::dimensions(r, c));
+	    starts.resize(this->dim1()+1);
+	    make_empty();
+	}
     }
 
     // if compile time matrix size, we can set the start vector
     /// Default constructor
     explicit compressed2D () 
-	  : super(), inserting(false)
+	: super(), inserting(false)
     {
-		if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
+	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
 
     /// Setting dimension and allocate starting vector
     explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
       : super(d), inserting(false)
     {
-		starts.resize(super::dim1() + 1, 0);
-		allocate(nnz);
+	starts.resize(super::dim1() + 1, 0);
+	allocate(nnz);
     }
 
     /// Setting dimension and allocate starting vector
     explicit compressed2D (size_type num_rows, size_type num_cols, size_t nnz = 0) 
       : super(non_fixed::dimensions(num_rows, num_cols)), inserting(false)
     {
-		starts.resize(super::dim1() + 1, 0);
-		allocate(nnz);
+	starts.resize(super::dim1() + 1, 0);
+	allocate(nnz);
     }
 
     /// Copy constructor
     compressed2D(const self& src)
-      : super(non_fixed::dimensions(::mtl::num_rows(src), ::mtl::num_cols(src))), inserting(false)
+      : super(non_fixed::dimensions(num_rows(src), num_cols(src))), inserting(false)
     {
-		starts.resize(super::dim1() + 1, 0);
-		matrix_copy(src, *this);
+	starts.resize(super::dim1() + 1, 0);
+	matrix_copy(src, *this);
     }
 
     /// Copy from other times
@@ -383,25 +368,23 @@ class compressed2D
     explicit compressed2D (const MatrixSrc& src) 
 	  : super(), inserting(false)
     {
-		if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
-		*this= src;
+	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
+	*this= src;
     }
 
 
     /// Consuming assignment operator
     self& operator=(self src)
     {
-		// Self-copy would be an indication of an error
-		assert(this != &src);
-
-		check_dim(src.num_rows(), src.num_cols());
-		swap(*this, src);
-		return *this;
+	// Self-copy would be an indication of an error
+	assert(this != &src);
+	
+	check_dim(src.num_rows(), src.num_cols());
+	swap(*this, src);
+	return *this;
     }
 
-
     using assign_base::operator=;
-
 
     // Copies range of values and their coordinates into compressed matrix
     // For brute force initialization, should be used with uttermost care
@@ -410,15 +393,15 @@ class compressed2D
     void raw_copy(ValueIterator first_value, ValueIterator last_value, 
 		  StartIterator first_start, IndexIterator first_index)
     {
-		using std::copy;
+	using std::copy;
 
-		// check if starts has right size
-		allocate(last_value - first_value); // ???? 
-		// check if nnz and indices has right size
+	// check if starts has right size
+	allocate(last_value - first_value); // ???? 
+	// check if nnz and indices has right size
 
-		copy(first_value, last_value, data.begin());
-		copy(first_start, first_start + this->dim1() + 1, starts.begin());
-		copy(first_index, first_index + this->nnz(), indices.begin());
+	copy(first_value, last_value, data.begin());
+	copy(first_start, first_start + this->dim1() + 1, starts.begin());
+	copy(first_index, first_index + this->nnz(), indices.begin());
     }
 
     /// Value of matrix entry
@@ -809,6 +792,7 @@ inline size(const compressed2D<Value, Parameters>& matrix)
     return matrix.num_cols() * matrix.num_rows();
 }
 
+}} // namespace mtl::matrix
 
 
 
@@ -817,10 +801,12 @@ inline size(const compressed2D<Value, Parameters>& matrix)
 // Range generators
 // ================
 
-namespace traits
-{
+namespace mtl { namespace traits {
+
     // VC 8.0 finds ambiguity with mtl::tag::morton_dense (I wonder why, especially here)
-    using mtl::compressed2D;
+    using mtl::matrix::compressed2D;
+    using mtl::matrix::compressed_el_cursor;
+    using mtl::matrix::compressed_minor_cursor;
 
     // ===========
     // For cursors
@@ -968,10 +954,8 @@ namespace traits
     };
 
 
-} // namespace traits
+}} // namespace mtl::traits
 
 
-
-} // namespace mtl
 
 #endif // MTL_COMPRESSED2D_INCLUDE

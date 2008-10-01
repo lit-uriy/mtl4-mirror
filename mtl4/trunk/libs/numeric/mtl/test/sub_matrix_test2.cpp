@@ -25,7 +25,7 @@ void test(Matrix& A, const char* name)
     A[0][0]= 1.0; 
     hessian_setup(A, 1.0);
 
-    matrix_recursator<Matrix> rec(A), nw= north_west(rec);
+    matrix::recursator<Matrix> rec(A), nw= north_west(rec);
 
     std::cout << "\n" << name << "\n";
     std::cout << "north_west:\n" << *nw << '\n';    

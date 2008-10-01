@@ -11,10 +11,10 @@ int main(int argc, char* argv[])
     typedef morton_dense<double, recursion::morton_z_mask>  matrix_type;
     matrix_type                                             A(10, 10);
     matrix::hessian_setup(A, 3.0);
-    matrix_recursator<matrix_type>                          rec(A);
+    matrix::recursator<matrix_type>                          rec(A);
 
     // Create a recursator for the north_east quadrant of A
-    matrix_recursator<matrix_type>                          ne(north_east(rec));
+    matrix::recursator<matrix_type>                          ne(north_east(rec));
 
     cout << "Test if recursator 'ne' refers to an empty matrix (shouldn't): " << is_empty(ne) << "\n";
     cout << "Test if north_east of 'ne' refers to an empty matrix (it should): " << is_empty(north_east(ne)) << "\n";

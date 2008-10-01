@@ -131,7 +131,7 @@ void matrix_init(Matrix& matrix)
     typedef typename Matrix::parameters   parameters;
     typedef typename Matrix::value_type   value_type;
 
-    compressed2D_inserter<value_type, parameters> inserter(matrix);
+    matrix::compressed2D_inserter<value_type, parameters> inserter(matrix);
     inserter(2, 2) << 7; inserter(1, 4) << 3; inserter(3, 2) << 9; inserter(5, 1) << 5;
 }
     

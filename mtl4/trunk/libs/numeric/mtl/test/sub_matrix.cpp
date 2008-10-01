@@ -94,7 +94,7 @@ void test_sub_matrix(Matrix& matrix)
     print_matrix_row_cursor(matrix);
     
     recursion::max_dim_test              is_base(2);
-    recursion::matrix_recursator<Matrix> recursator(matrix);
+    matrix::recursator<Matrix> recursator(matrix);
     recursive_print_checked(recursator, "", is_base);
 	 
     cout << "\n====================\n"
@@ -104,7 +104,7 @@ void test_sub_matrix(Matrix& matrix)
     transposed_view<Matrix> trans_matrix(matrix);
 
     print_matrix_row_cursor(trans_matrix); 
-    recursion::matrix_recursator< transposed_view<Matrix> > trans_recursator(trans_matrix);
+    matrix::recursator< transposed_view<Matrix> > trans_recursator(trans_matrix);
     // print_depth_first(trans_recursator, "");
     recursive_print_checked(trans_recursator, "", is_base);
 	 

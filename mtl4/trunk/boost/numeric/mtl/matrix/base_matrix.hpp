@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 
-namespace mtl { namespace detail {
+namespace mtl { namespace matrix {
   
 /// Base class for other matrices, contains only very simple functionality that is used in all matrices.
 template <class Elt, class Parameters>
@@ -178,6 +178,6 @@ public:
 
 
 
-}} // namespace mtl::detail
+}} // namespace mtl::matrix
 
 #endif // MTL_BASE_MATRIX_INCLUDE

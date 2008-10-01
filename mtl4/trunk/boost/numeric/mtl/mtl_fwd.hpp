@@ -48,47 +48,42 @@ namespace mtl {
 
     /// Namespace for matrices and views and operations exclusively on matrices
     namespace matrix {
-	template <typename Orientation, typename Index, typename Dimensions,
-		  bool OnStack>
-	struct parameters;
-    }
 
-    template <typename Value, typename Parameters> class dense2D;
+	template <typename Orientation, typename Index, typename Dimensions, bool OnStack> struct parameters;
 
-    template <typename Value, typename Parameters> 
-    typename dense2D<Value, Parameters>::size_type num_cols(const dense2D<Value, Parameters>& matrix);
-    template <typename Value, typename Parameters> 
-    typename dense2D<Value, Parameters>::size_type num_rows(const dense2D<Value, Parameters>& matrix);
-    template <typename Value, typename Parameters> 
-    typename dense2D<Value, Parameters>::size_type size(const dense2D<Value, Parameters>& matrix);
+        template <typename Value, typename Parameters> class dense2D;
 
+        template <typename Value, typename Parameters> 
+        typename dense2D<Value, Parameters>::size_type num_cols(const dense2D<Value, Parameters>& matrix);
+        template <typename Value, typename Parameters> 
+        typename dense2D<Value, Parameters>::size_type num_rows(const dense2D<Value, Parameters>& matrix);
+        template <typename Value, typename Parameters> 
+        typename dense2D<Value, Parameters>::size_type size(const dense2D<Value, Parameters>& matrix);
 
-    template <typename Value, unsigned long Mask, typename Parameters> class morton_dense;
+        template <typename Value, unsigned long Mask, typename Parameters> class morton_dense;
 
-    template <typename Value, unsigned long Mask, typename Parameters>
-    typename morton_dense<Value, Mask, Parameters>::size_type num_cols(const morton_dense<Value, Mask, Parameters>& matrix);
-    template <typename Value, unsigned long Mask, typename Parameters>
-    typename morton_dense<Value, Mask, Parameters>::size_type num_rows(const morton_dense<Value, Mask, Parameters>& matrix);
-    template <typename Value, unsigned long Mask, typename Parameters>
-    typename morton_dense<Value, Mask, Parameters>::size_type size(const morton_dense<Value, Mask, Parameters>& matrix);
+        template <typename Value, unsigned long Mask, typename Parameters>
+        typename morton_dense<Value, Mask, Parameters>::size_type num_cols(const morton_dense<Value, Mask, Parameters>& matrix);
+        template <typename Value, unsigned long Mask, typename Parameters>
+        typename morton_dense<Value, Mask, Parameters>::size_type num_rows(const morton_dense<Value, Mask, Parameters>& matrix);
+        template <typename Value, unsigned long Mask, typename Parameters>
+        typename morton_dense<Value, Mask, Parameters>::size_type size(const morton_dense<Value, Mask, Parameters>& matrix);
 
+        template <typename Value, typename Parameters> class compressed2D;
 
-    template <typename Value, typename Parameters> class compressed2D;
-
-    template <typename Value, typename Parameters> 
-    typename compressed2D<Value, Parameters>::size_type num_cols(const compressed2D<Value, Parameters>& matrix);
-    template <typename Value, typename Parameters> 
-    typename compressed2D<Value, Parameters>::size_type num_rows(const compressed2D<Value, Parameters>& matrix);
-    template <typename Value, typename Parameters> 
-    typename compressed2D<Value, Parameters>::size_type size(const compressed2D<Value, Parameters>& matrix);
+        template <typename Value, typename Parameters> 
+        typename compressed2D<Value, Parameters>::size_type num_cols(const compressed2D<Value, Parameters>& matrix);
+        template <typename Value, typename Parameters> 
+        typename compressed2D<Value, Parameters>::size_type num_rows(const compressed2D<Value, Parameters>& matrix);
+        template <typename Value, typename Parameters> 
+        typename compressed2D<Value, Parameters>::size_type size(const compressed2D<Value, Parameters>& matrix);
 
 
-    template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
+        template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
-    template <typename Matrix> struct transposed_orientation;
-    template <typename Matrix> struct transposed_view;
-
-    namespace matrix {
+        template <typename Matrix> struct transposed_orientation;
+        template <typename Matrix> struct transposed_view;
+        
 	template <typename Matrix> struct mat_expr;
 	template <typename Matrix> struct dmat_expr;
 	template <typename Matrix> struct smat_expr;
@@ -106,6 +101,13 @@ namespace mtl {
 	template <typename Matrix>  struct hermitian_view;
 	template <typename Matrix>  struct banded_view;
     }
+
+    using matrix::dense2D;
+    using matrix::morton_dense;
+    using matrix::compressed2D;
+    using matrix::transposed_orientation;
+    using matrix::transposed_view;
+    
 
     /// Namespace for vectors and views and %operations exclusively on vectors
     namespace vector {
@@ -147,10 +149,12 @@ namespace mtl {
     using vector::dense_vector;
 
     // Export free vector functions into mtl namespace
+    // It is also needed to handle STL vectors in MTL
     using vector::fill;
     using vector::size;
     using vector::num_rows;
     using vector::num_cols;
+
 
     namespace vector {
 	template <typename Vector> struct vec_expr;
@@ -226,14 +230,16 @@ namespace mtl {
     /// Namespace for implementations using recursators
     namespace wrec {}
 
-    namespace detail {
+    namespace matrix {
 	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_matrix_assign;
 	template <typename Matrix, typename ValueType, typename SizeType> struct const_crtp_matrix_bracket;
 	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_matrix_bracket;
 	template <typename Matrix, typename ValueType, typename SizeType> struct const_crtp_base_matrix;
 	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_base_matrix;
 	template <typename Matrix> struct const_crtp_matrix_range_bracket;
+    }
 
+    namespace detail {
 	template <typename Value, bool OnStack, unsigned Size= 0> struct contiguous_memory_block;
 	template <typename Matrix, typename Updater> struct trivial_inserter;
     }

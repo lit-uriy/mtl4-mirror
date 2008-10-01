@@ -14,12 +14,13 @@
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits.hpp>
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
-#include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
+#include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 
 // Orientation type for transposed matrix
@@ -41,15 +42,15 @@ template <class Matrix>
 struct transposed_view 
   : public boost::mpl::if_<
           boost::is_const<Matrix>
-        , detail::const_crtp_base_matrix< const transposed_view<const Matrix>, 
-					  typename Matrix::value_type, typename Matrix::size_type >
-        , detail::crtp_base_matrix< transposed_view<Matrix>, 
-				    typename Matrix::value_type, typename Matrix::size_type >
+        , const_crtp_base_matrix< const transposed_view<const Matrix>, 
+				  typename Matrix::value_type, typename Matrix::size_type >
+        , crtp_base_matrix< transposed_view<Matrix>, 
+			    typename Matrix::value_type, typename Matrix::size_type >
       >::type,
     public matrix::mat_expr< transposed_view<Matrix> >
 {
     typedef transposed_view               self;
-    typedef matrix::mat_expr< self >      expr_base;
+    typedef mat_expr< self >              expr_base;
     typedef Matrix                        other;
 
     typedef typename transposed_orientation<typename Matrix::orientation>::type orientation;
@@ -148,27 +149,67 @@ public:
 
 template <typename Matrix>
 typename transposed_view<Matrix>::size_type
-inline num_rows(const transposed_view<Matrix>& matrix)
+inline num_rows(const transposed_view<Matrix>& A)
 {
-    return matrix.num_rows();
+    return A.num_rows();
 }
 
 template <typename Matrix>
 typename transposed_view<Matrix>::size_type
-inline num_cols(const transposed_view<Matrix>& matrix)
+inline num_cols(const transposed_view<Matrix>& A)
 {
-    return matrix.num_cols();
+    return A.num_cols();
 }
 
 template <typename Matrix>
 typename transposed_view<Matrix>::size_type
-inline size(const transposed_view<Matrix>& matrix)
+inline size(const transposed_view<Matrix>& A)
 {
-    return matrix.num_cols() * matrix.num_rows();
+    return A.num_cols() * A.num_rows();
 }
 
+// ==========
+// Sub matrix
+// ==========
 
-namespace traits {
+template <typename Matrix>
+struct sub_matrix_t< transposed_view<Matrix> >
+{
+    typedef transposed_view<Matrix>                                               matrix_type;
+
+    // Transposed of submatrix type
+    typedef transposed_view<typename sub_matrix_t<Matrix>::sub_matrix_type>       sub_matrix_type;
+    typedef transposed_view<typename sub_matrix_t<Matrix>::const_sub_matrix_type> const_sub_matrix_type;
+    typedef typename matrix_type::size_type                                       size_type;
+    
+    sub_matrix_type operator()(matrix_type& A, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    {
+	typedef typename sub_matrix_t<Matrix>::sub_matrix_type   ref_sub_type;
+	typedef boost::shared_ptr<ref_sub_type>                  pointer_type;
+
+	// Submatrix of referred matrix, colums and rows interchanged
+	// Create a submatrix, whos address will be kept by transposed_view
+	pointer_type p(new ref_sub_type(sub_matrix(A.ref, begin_c, end_c, begin_r, end_r)));
+	return sub_matrix_type(p); 
+    }
+    
+    const_sub_matrix_type operator()(matrix_type const& A, size_type begin_r, size_type end_r, 
+				     size_type begin_c, size_type end_c)
+    {
+	typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type   ref_sub_type;
+	typedef boost::shared_ptr<ref_sub_type>                        pointer_type;
+
+	// Submatrix of referred matrix, colums and rows interchanged
+	// Create a submatrix, whos address will be kept by transposed_view
+	pointer_type p(new ref_sub_type(sub_matrix(A.ref, begin_c, end_c, begin_r, end_r)));
+	return const_sub_matrix_type(p); 
+    }
+
+};
+
+}} // mtl::matrix
+
+namespace mtl { namespace traits {
 
     template <class Matrix> 
     struct category<transposed_view<Matrix> >
@@ -241,15 +282,10 @@ namespace traits {
 	typedef mtl::detail::value_from_other<transposed_view<Matrix> > type;
     };
 
-} // namespace traits
-
 
 // ================
 // Range generators
 // ================
-
-namespace traits
-{
 
     namespace detail
     {
@@ -304,49 +340,9 @@ namespace traits
     struct range_generator<Tag, transposed_view<Matrix> >
 	: detail::range_transposer<Tag, Matrix>
     {};
-}
 
 
-// ==========
-// Sub matrix
-// ==========
-
-template <typename Matrix>
-struct sub_matrix_t< transposed_view<Matrix> >
-{
-    typedef transposed_view<Matrix>                                               matrix_type;
-
-    // Transposed of submatrix type
-    typedef transposed_view<typename sub_matrix_t<Matrix>::sub_matrix_type>       sub_matrix_type;
-    typedef transposed_view<typename sub_matrix_t<Matrix>::const_sub_matrix_type> const_sub_matrix_type;
-    typedef typename matrix_type::size_type                                       size_type;
-    
-    sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-    {
-	typedef typename sub_matrix_t<Matrix>::sub_matrix_type   ref_sub_type;
-	typedef boost::shared_ptr<ref_sub_type>                  pointer_type;
-
-	// Submatrix of referred matrix, colums and rows interchanged
-	// Create a submatrix, whos address will be kept by transposed_view
-	pointer_type p(new ref_sub_type(sub_matrix(matrix.ref, begin_c, end_c, begin_r, end_r)));
-	return sub_matrix_type(p); 
-    }
-    
-    const_sub_matrix_type operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, 
-				     size_type begin_c, size_type end_c)
-    {
-	typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type   ref_sub_type;
-	typedef boost::shared_ptr<ref_sub_type>                        pointer_type;
-
-	// Submatrix of referred matrix, colums and rows interchanged
-	// Create a submatrix, whos address will be kept by transposed_view
-	pointer_type p(new ref_sub_type(sub_matrix(matrix.ref, begin_c, end_c, begin_r, end_r)));
-	return const_sub_matrix_type(p); 
-    }
-
-};
-
-} // namespace mtl
+}} // namespace mtl::traits
 
 #endif // MTL_TRANSPOSED_VIEW_INCLUDE
 

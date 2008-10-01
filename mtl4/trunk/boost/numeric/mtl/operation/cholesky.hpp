@@ -526,7 +526,7 @@ private:
     template <typename Matrix, typename Visitor>
     void apply(Matrix& matrix, Visitor vis, tag::qsub_dividable)
     {
-	matrix_recursator<Matrix>  recursator(matrix);
+	matrix::recursator<Matrix>  recursator(matrix);
 	with_recursator::cholesky(recursator, vis);
     }
 };

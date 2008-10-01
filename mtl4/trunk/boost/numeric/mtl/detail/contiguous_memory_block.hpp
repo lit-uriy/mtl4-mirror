@@ -443,13 +443,6 @@ public:
 
 }} // namespace mtl::detail
 
-#ifdef MTL_WITH_MOVE
-  namespace adobe {
-    template <typename Value, bool OnStack, unsigned Size>
-    struct is_movable< mtl::detail::contiguous_memory_block<Value, OnStack, Size> > : boost::mpl::bool_<!OnStack> {};
-  }
-#endif
-
 namespace mtl {
     template <typename Value, bool OnStack, unsigned Size>
     struct is_clonable< detail::contiguous_memory_block<Value, OnStack, Size> > : boost::mpl::bool_<!OnStack> {};
