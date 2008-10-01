@@ -14,7 +14,7 @@ namespace mtl { namespace recursion {
 
 // Go recursively down to base case and apply function on it
 template <typename Matrix, typename Function, typename BaseCaseTest>
-void for_each(matrix_recursator<Matrix> const& recursator, Function const& f, BaseCaseTest const& is_base)
+void for_each(matrix::recursator<Matrix> const& recursator, Function const& f, BaseCaseTest const& is_base)
 {
     if (recursator.is_empty())
 	return;
@@ -33,9 +33,9 @@ void for_each(matrix_recursator<Matrix> const& recursator, Function const& f, Ba
 
 // Non-const version
 template <typename Matrix, typename Function, typename BaseCaseTest>
-void for_each(matrix_recursator<Matrix>& recursator, Function const& f, BaseCaseTest const& is_base)
+void for_each(matrix::recursator<Matrix>& recursator, Function const& f, BaseCaseTest const& is_base)
 {
-    typedef matrix_recursator<Matrix> recursator_type;
+    typedef matrix::recursator<Matrix> recursator_type;
 
     if (recursator.is_empty())
 	return;

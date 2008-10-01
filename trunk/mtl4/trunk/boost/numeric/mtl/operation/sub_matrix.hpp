@@ -11,8 +11,9 @@
 #define MTL_SUBMATRIX_INCLUDE
 
 #include <cmath>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 // Functor type as background for free submatrix function
 template <typename Matrix>
@@ -71,6 +72,6 @@ sub_matrix(Matrix const& matrix,
     return sub_matrix_t<Matrix>()(matrix, begin_row, end_row, begin_col, end_col);
 }
 
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_SUBMATRIX_INCLUDE

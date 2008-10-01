@@ -30,7 +30,7 @@ void test(const char* text, const Matrix& A, Memory& m)
 
     // Define a bound (in our case of 16 x 16) and use it in the recursator
     int                          bound= num_rows(m);
-    matrix_recursator<Memory>    rec(tmp, bound);
+    matrix::recursator<Memory>    rec(tmp, bound);
 
     cout << "For matrix " << text << "\n";
     cout << "north_west(tmp)\n" << *north_west(rec);

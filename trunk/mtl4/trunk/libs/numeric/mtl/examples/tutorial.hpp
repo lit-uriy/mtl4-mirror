@@ -1757,14 +1757,14 @@ Besides matrices with recursive recursive memory layout -- cf. \ref matrix_types
 
 To support the implementation of recursive algorithms we introduced -- in collaboration with David S. Wise --
 the concept to Recursator, an analogon of <a href=" http://www.sgi.com/tech/stl/Iterators.html">Iterator</a>.
-The class matrix_recursator enables recursive subdivision of all matrices with a sub_matrix function
+The class matrix::recursator enables recursive subdivision of all matrices with a sub_matrix function
 (e.g., dense2D and morton_dense).
 We refrained from providing the sub_matrix functionality to compressed2D; this would possible but very inefficient
 and therefor not particularly useful.
-Thus %matrix_recursator of compressed2D cannot be declared.
+Thus %matrix::recursator of compressed2D cannot be declared.
 A recursator for vectors is planned for the future.
 
-Generally spoken, the matrix_recursator (cf. \ref recursion::matrix_recursator)
+Generally spoken, the matrix::recursator (cf. \ref recursion::matrix::recursator)
 consistently divides a %matrix into four quadrants 
 - north_west;
 - north_east;

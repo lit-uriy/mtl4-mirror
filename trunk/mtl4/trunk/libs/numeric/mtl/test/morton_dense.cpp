@@ -155,7 +155,7 @@ int test_main(int argc, char* argv[])
    
     traits::value<matrix_type>::type                       value(matrix);
  
-    morton_dense_el_cursor<0x55555555>   cursor(0, 0, 3), cursor_end(2, 0, 3);
+    mtl::matrix::morton_dense_el_cursor<0x55555555>   cursor(0, 0, 3), cursor_end(2, 0, 3);
     for (double x= 7.3; cursor != cursor_end; ++cursor, x+= 1.0)
 	value(cursor, x);
 

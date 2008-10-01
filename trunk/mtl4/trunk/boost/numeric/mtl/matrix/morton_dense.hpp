@@ -16,8 +16,8 @@
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
-#include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
-#include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
+#include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
+#include <boost/numeric/mtl/matrix/base_sub_matrix.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
 #include <boost/numeric/mtl/detail/dilated_int.hpp>
 #include <boost/numeric/mtl/utility/iterator_adaptor.hpp>
@@ -28,9 +28,8 @@
 #include <boost/numeric/mtl/operation/clone.hpp>
 
 
-// #include <boost/numeric/mtl/ahnentafel_detail/index.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 // Helper type
 struct morton_dense_sub_ctor {};
@@ -247,12 +246,12 @@ struct morton_dense_col_cursor
 
 template <typename Matrix>
 struct morton_dense_row_const_iterator
-    : utilities::const_iterator_adaptor<typename traits::const_value<Matrix>::type, morton_dense_row_cursor<Matrix::mask>,
+    : utilities::const_iterator_adaptor<typename mtl::traits::const_value<Matrix>::type, morton_dense_row_cursor<Matrix::mask>,
 					typename Matrix::value_type>
 {
     static const unsigned long                          mask= Matrix::mask;
     typedef morton_dense_row_cursor<mask>               cursor_type;
-    typedef typename traits::const_value<Matrix>::type  map_type;
+    typedef typename mtl::traits::const_value<Matrix>::type  map_type;
     typedef typename Matrix::value_type                 value_type;
     typedef typename Matrix::size_type                  size_type;
     typedef utilities::const_iterator_adaptor<map_type, cursor_type, value_type> base;
@@ -265,12 +264,12 @@ struct morton_dense_row_const_iterator
 
 template <typename Matrix>
 struct morton_dense_row_iterator
-    : utilities::iterator_adaptor<typename traits::value<Matrix>::type, morton_dense_row_cursor<Matrix::mask>,
+    : utilities::iterator_adaptor<typename mtl::traits::value<Matrix>::type, morton_dense_row_cursor<Matrix::mask>,
 				  typename Matrix::value_type>
 {
     static const unsigned long                          mask= Matrix::mask;
     typedef morton_dense_row_cursor<mask>               cursor_type;
-    typedef typename traits::value<Matrix>::type        map_type;
+    typedef typename mtl::traits::value<Matrix>::type   map_type;
     typedef typename Matrix::value_type                 value_type;
     typedef typename Matrix::size_type                  size_type;
     typedef utilities::iterator_adaptor<map_type, cursor_type, value_type> base;
@@ -283,12 +282,12 @@ struct morton_dense_row_iterator
 
 template <typename Matrix>
 struct morton_dense_col_const_iterator
-    : utilities::const_iterator_adaptor<typename traits::const_value<Matrix>::type, morton_dense_col_cursor<Matrix::mask>,
+    : utilities::const_iterator_adaptor<typename mtl::traits::const_value<Matrix>::type, morton_dense_col_cursor<Matrix::mask>,
 					typename Matrix::value_type>
 {
     static const unsigned long                          mask= Matrix::mask;
     typedef morton_dense_col_cursor<mask>               cursor_type;
-    typedef typename traits::const_value<Matrix>::type  map_type;
+    typedef typename mtl::traits::const_value<Matrix>::type  map_type;
     typedef typename Matrix::value_type                 value_type;
     typedef typename Matrix::size_type                  size_type;
     typedef utilities::const_iterator_adaptor<map_type, cursor_type, value_type> base;
@@ -301,12 +300,12 @@ struct morton_dense_col_const_iterator
 
 template <typename Matrix>
 struct morton_dense_col_iterator
-    : utilities::iterator_adaptor<typename traits::value<Matrix>::type, morton_dense_col_cursor<Matrix::mask>,
+    : utilities::iterator_adaptor<typename mtl::traits::value<Matrix>::type, morton_dense_col_cursor<Matrix::mask>,
 				  typename Matrix::value_type>
 {
     static const unsigned long                          mask= Matrix::mask;
     typedef morton_dense_col_cursor<mask>               cursor_type;
-    typedef typename traits::value<Matrix>::type        map_type;
+    typedef typename mtl::traits::value<Matrix>::type   map_type;
     typedef typename Matrix::value_type                 value_type;
     typedef typename Matrix::size_type                  size_type;
     typedef utilities::iterator_adaptor<map_type, cursor_type, value_type> base;
@@ -319,16 +318,16 @@ struct morton_dense_col_iterator
 
 // Morton Dense matrix type 
 template <typename Elt, unsigned long BitMask, typename Parameters = mtl::matrix::parameters<> >
-class morton_dense : public detail::base_sub_matrix<Elt, Parameters>, 
-		     public detail::contiguous_memory_block<Elt, false>,
-                     public detail::crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >,
-		     public matrix::mat_expr< morton_dense<Elt, BitMask, Parameters> >
+class morton_dense : public base_sub_matrix<Elt, Parameters>, 
+		     public mtl::detail::contiguous_memory_block<Elt, false>,
+                     public crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >,
+		     public mat_expr< morton_dense<Elt, BitMask, Parameters> >
 {
-    typedef detail::base_sub_matrix<Elt, Parameters>                   super;
-    typedef detail::contiguous_memory_block<Elt, false>                memory_base;
+    typedef base_sub_matrix<Elt, Parameters>                           super;
+    typedef mtl::detail::contiguous_memory_block<Elt, false>           memory_base;
     typedef morton_dense                                               self;
-    typedef matrix::mat_expr< morton_dense<Elt, BitMask, Parameters> > expr_base;
-    typedef detail::crtp_matrix_assign< self, Elt, std::size_t >       assign_base;
+    typedef mat_expr< morton_dense<Elt, BitMask, Parameters> >         expr_base;
+    typedef crtp_matrix_assign< self, Elt, std::size_t >               assign_base;
 
   public:
 
@@ -350,39 +349,6 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     
     typedef dilated_int<std::size_t, BitMask, true>   dilated_row_t;
     typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 
-
-  public: 
-
-#if 0
-    // All Ahnentafel stuff is commented out
-    // add morton functions here
-
-    // boundary checking of the Ahnentafel index
-
-    bool isRoot(const AhnenIndex& index) const;
-    bool isLeaf(const AhnenIndex& index) const;
-    bool isInBound(const AhnenIndex& index) const;
-
-
-    // matrix access functions
-
-    int getRows() const;
-    int getCols() const;
-    int getMaxLevel() const;
-    int getLevel(const AhnenIndex& index) const;
-    int getBlockOrder(const AhnenIndex& index) const;
-    int getBlockSize(const AhnenIndex& index) const;
-    // get the value of the matrix element corresponding
-    // to the Ahnentafel index
-    value_type getElement(const AhnenIndex& index) const;
-
-    int getRowMask() const;
-    int getColMask() const;
-
-    // debugging functions
-    void printVec() const;
-    void printMat() const;
-#endif
 
   protected:
     
@@ -475,8 +441,8 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     explicit morton_dense(const MatrixSrc& src) 
 	: memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
     {
-		init(dim_type().num_rows(), dim_type().num_cols());
-		*this= src;
+	init(dim_type().num_rows(), dim_type().num_cols());
+	*this= src;
     }
 
 
@@ -485,26 +451,26 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
 		                  size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
 	  : memory_base(matrix.data, memory_need(end_r - begin_r, end_c - begin_c), true) // View constructor
     {
-		matrix.check_ranges(begin_r, end_r, begin_c, end_c);
+	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
+	
+	if (begin_r >= end_r || begin_c >= end_c) {
+	    set_ranges(0, 0);
+	    return;
+	}
+	
+	// Check whether sub-matrix is contigous memory block
+	// by comparing the address of the last and the first element in the entire and the sub-matrix
+	MTL_DEBUG_THROW_IF(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
+			   != &matrix[end_r-begin_r-1][end_c-begin_c-1] - &matrix[0][0],
+			   range_error("This sub-matrix cannot be used because it is split in memory"));
+	// Check with David if this is a sufficient condition (it is a necessary at least)
+	
+	dilated_row_t  dilated_row(begin_r);
+	dilated_col_t  dilated_col(begin_c);
 
-		if (begin_r >= end_r || begin_c >= end_c) {
-			set_ranges(0, 0);
-			return;
-		}
-
-		// Check whether sub-matrix is contigous memory block
-		// by comparing the address of the last and the first element in the entire and the sub-matrix
-		MTL_DEBUG_THROW_IF(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
-				   != &matrix[end_r-begin_r-1][end_c-begin_c-1] - &matrix[0][0],
-				   range_error("This sub-matrix cannot be used because it is split in memory"));
-		// Check with David if this is a sufficient condition (it is a necessary at least)
-
-		dilated_row_t  dilated_row(begin_r);
-		dilated_col_t  dilated_col(begin_c);
-
-		// Set new start address within masked matrix
-		this->data += dilated_row.dilated_value() + dilated_col.dilated_value();
-		set_ranges(end_r - begin_r, end_c - begin_c);
+	// Set new start address within masked matrix
+	this->data += dilated_row.dilated_value() + dilated_col.dilated_value();
+	set_ranges(end_r - begin_r, end_c - begin_c);
     }
 
 
@@ -576,58 +542,7 @@ class morton_dense : public detail::base_sub_matrix<Elt, Parameters>,
     }
 
     template <typename> friend struct sub_matrix_t;    
-
-#if 0
-    size_type my_used_memory;
-    
-  private:
-  // add morton member variables here
-
-    int rows_;          // number of rows of the matrix
-    int cols_;          // number of columns of the matrix
-    int quadOrder_;     // order of the level-0 quad
-                        // quadOrder_ = pow(2, (int)log2(max(rows_, cols_))) + 1)
-                        // or quadOrder = pow(2, (int)log2(max(rows_, cols_)))),
-                        // depending on the value of rows_ and cols_.
-    int storageSize_;   // size of allocated storage for the matrix
-    int maxLevel_;      // maximum level of the quadtree for the matrix
-
-    std::vector<int> upBoundVec_;    // upper boundary vector
-    std::vector<int> lowBoundVec_;   // lower boundary vector
-    std::vector<int> rowMaskVec_;    // row mask vector
-    std::vector<int> colMaskVec_;    // col mask vector
-    // T* data_;                   // a pointer to the matrix data array
-
-    void setQuadOrder();        // set quadOrder_
-    void setStorageSize();      // set storageSize_
-    void setMaxLevel();         // set maxLevel_
-    void setBoundVec();         // set boundary vectors
-    void setMaskVec();          // set mask vectors
-    void mkMortonSPDMatrix();   // make default Morton matrix
-#endif
 };
-
-
-#if 0
-// boundary checking of Ahnentafel index
-
-// check if the index is the root
-template <typename Elt, unsigned long BitMask, typename Parameters>
-bool morton_dense<Elt, BitMask, Parameters>::isRoot(const AhnenIndex& index) const {
-    return index.getIndex() == 3;
-}
-
-// check if the index is a leaf
-template <typename Elt, unsigned long BitMask, typename Parameters>
-bool morton_dense<Elt, BitMask, Parameters>::isLeaf(const AhnenIndex& index) const {
-  // a possible better way: compare index with the boundary
-  // vector directly, instead of calling isInBound()
-    if(isInBound(index))
-        return (index.getIndex() >= lowBoundVec_[maxLevel_]);
-    else return 0;
-}
-#endif
-
 
 
 // ================
@@ -655,6 +570,8 @@ inline size(const morton_dense<Value, Mask, Parameters>& matrix)
     return matrix.num_cols() * matrix.num_rows();
 }
 
+}} // namespace mtl::matrix
+
 
 
 
@@ -662,10 +579,17 @@ inline size(const morton_dense<Value, Mask, Parameters>& matrix)
 // Range generators
 // ================
 
-namespace traits
-{
+namespace mtl { namespace traits {
+
     // VC 8.0 finds ambiguity with mtl::tag::morton_dense (I wonder why)
-    using mtl::morton_dense;
+    using mtl::matrix::morton_dense;
+    using mtl::matrix::morton_dense_el_cursor;
+    using mtl::matrix::morton_dense_col_cursor;
+    using mtl::matrix::morton_dense_row_cursor;
+    using mtl::matrix::morton_dense_col_const_iterator;
+    using mtl::matrix::morton_dense_row_const_iterator;
+    using mtl::matrix::morton_dense_col_iterator;
+    using mtl::matrix::morton_dense_row_iterator;
 
     // ===========
     // For cursors
@@ -675,8 +599,8 @@ namespace traits
     struct range_generator<glas::tag::all, morton_dense<Elt, BitMask, Parameters> >
     {
 	typedef morton_dense<Elt, BitMask, Parameters>        Matrix;
-	typedef complexity_classes::linear_cached        complexity;
-	static int const                         level = 1;
+	typedef complexity_classes::linear_cached             complexity;
+	static int const                                      level = 1;
 	typedef morton_dense_el_cursor<BitMask>  type;
 	type begin(Matrix const& matrix)
 	{
@@ -857,73 +781,45 @@ namespace traits
     {};
 
 
-} // namespace traits
+}} // namespace mtl::traits
 
 
-// ==========
-// Sub matrix
-// ==========
+namespace mtl { namespace matrix {
 
-template <typename Value, unsigned long BitMask, typename Parameters>
-struct sub_matrix_t<morton_dense<Value, BitMask, Parameters> >
-{
-    typedef morton_dense<Value, BitMask, Parameters>    matrix_type;
-    typedef matrix_type                     sub_matrix_type;
-    typedef matrix_type const               const_sub_matrix_type;
-    typedef typename matrix_type::size_type size_type;
-    
-    sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    // ==========
+    // Sub matrix
+    // ==========
+
+    template <typename Value, unsigned long BitMask, typename Parameters>
+    struct sub_matrix_t<morton_dense<Value, BitMask, Parameters> >
     {
-	return sub_matrix_type(matrix, morton_dense_sub_ctor(), begin_r, end_r, begin_c, end_c);
+        typedef morton_dense<Value, BitMask, Parameters>    matrix_type;
+        typedef matrix_type                     sub_matrix_type;
+        typedef matrix_type const               const_sub_matrix_type;
+        typedef typename matrix_type::size_type size_type;
+        
+        sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+        {
+    	return sub_matrix_type(matrix, morton_dense_sub_ctor(), begin_r, end_r, begin_c, end_c);
+        }
 
-#if 0
-	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
+        const_sub_matrix_type
+        operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+        {
+    	// To minimize code duplication, we use the non-const version
+    	sub_matrix_type tmp((*this)(const_cast<matrix_type&>(matrix), begin_r, end_r, begin_c, end_c));
+    	return tmp;
+        }	
+    };
+       
+}} // mtl::matrix
 
-	// Treat empty sub-matrices first (don't hold the memory contiguousness check (but don't need to))
-	if (begin_r >= end_r || begin_c >= end_c) {
-	    sub_matrix_type  tmp(matrix);
-	    tmp.set_ranges(0, 0);
-	    tmp.extern_memory= true;
-	    return tmp;
-	}
+namespace mtl {
 
-	// Check whether sub-matrix is contigous memory block
-	// by comparing the address of the last and the first element in the entire and the sub-matrix
-	MTL_DEBUG_THROW_IF(&matrix[end_r-1][end_c-1] - &matrix[begin_r][begin_c] 
-			   != &matrix[end_r-begin_r-1][end_c-begin_c-1] - &matrix[0][0],
-			   range_error("This sub-matrix cannot be used because it is split in memory"));
-	// Check with David if this is a sufficient condition (it is a necessary at least)
-
-	sub_matrix_type  tmp(matrix);
-
-	typename matrix_type::dilated_row_t  dilated_row(begin_r);
-	typename matrix_type::dilated_col_t  dilated_col(begin_c);
-
-	// Set new start address within masked matrix
-	tmp.data += dilated_row.dilated_value() + dilated_col.dilated_value();
-	tmp.set_ranges(end_r - begin_r, end_c - begin_c);
-
-	// sub matrix doesn't own the memory (and must not free at the end)
-	tmp.extern_memory= true;
-
-	return tmp;
-#endif
-    }
-
-    const_sub_matrix_type
-    operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-    {
-	// To minimize code duplication, we use the non-const version
-	sub_matrix_type tmp((*this)(const_cast<matrix_type&>(matrix), begin_r, end_r, begin_c, end_c));
-	return tmp;
-    }	
-};
-
-
-// Enable cloning of dense matrices
-template <typename Value, unsigned long BitMask, typename Parameters>
-struct is_clonable< morton_dense<Value, BitMask, Parameters> > : boost::mpl::true_ {};
-
+    // Enable cloning of dense matrices
+    template <typename Value, unsigned long BitMask, typename Parameters>
+    struct is_clonable< morton_dense<Value, BitMask, Parameters> > : boost::mpl::true_ {};
+        
 } // namespace mtl
 
 #endif // MTL_MORTON_DENSE_INCLUDE

@@ -11,16 +11,16 @@
 #define MTL_MAT_MAT_OP_EXPR_INCLUDE
 
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
-#include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
+#include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 
 namespace mtl { namespace matrix {
 
     
 template <typename E1, typename E2, typename SFunctor>
 struct mat_mat_op_expr
-    : public ::mtl::detail::const_crtp_matrix_bracket< mat_mat_op_expr<E1, E2, SFunctor>, 
-						       typename SFunctor::result_type, 
-						       typename E1::size_type >
+    : public const_crtp_matrix_bracket< mat_mat_op_expr<E1, E2, SFunctor>, 
+					typename SFunctor::result_type, 
+					typename E1::size_type >
    // : public mat_expr< mat_mat_op_expr<E1, E2, SFunctor> >
 {
     // typedef mat_expr< mat_mat_op_expr<E1, E2, SFunctor> > expr_base;

@@ -37,8 +37,7 @@ template <class Matrix> struct row_in_key
     
     typename Matrix::size_type operator() (key_type const& key) const
     {
-	typedef typename Matrix::index_type my_index;
-	return index::change_to(my_index(), key.row());
+	return key.row();
     }
 };
 
@@ -52,8 +51,7 @@ template <class Matrix> struct major_in_key
 
     typename Matrix::size_type operator() (key_type const& key) const
     {
-	typedef typename Matrix::index_type my_index;
-	return index::change_to(my_index(), key.major);
+	return key.major;
     }
 };
 
@@ -94,8 +92,7 @@ template <class Matrix> struct col_in_key
     
     typename Matrix::size_type operator() (key_type const& key) const
     {
-	typedef typename Matrix::index_type my_index;
-	return index::change_to(my_index(), key.col());
+	return key.col();
     }
 };
 

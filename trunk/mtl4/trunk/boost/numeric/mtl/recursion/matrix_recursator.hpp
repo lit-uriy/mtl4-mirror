@@ -11,15 +11,15 @@
 #define MTL_MATRIX_RECURATOR_INCLUDE
 
 #include <cmath>
-#include <boost/numeric/mtl/recursion/utility.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
+#include <boost/numeric/mtl/operation/print_matrix.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/recursion/dim_splitter.hpp>
-#include <boost/numeric/mtl/operation/print_matrix.hpp>
+#include <boost/numeric/mtl/recursion/utility.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
-#include <boost/numeric/mtl/concept/collection.hpp>
 
-namespace mtl { namespace recursion {
+namespace mtl { namespace matrix {
 
 
 template <typename Recursator1, typename Recursator2>
@@ -35,22 +35,22 @@ void inline equalize_depth(Recursator1& r1, Recursator2& r2, Recursator3& r3);
 
     \sa \ref mtl::north_west, \ref mtl::north_east, 
     \ref mtl::south_west, \ref mtl::south_east, 
-    \ref mtl::is_empty(const matrix_recursator<Matrix>&), 
-    \ref mtl::is_full(const matrix_recursator<Matrix>&), 
-    \ref mtl::num_rows(const matrix_recursator<Matrix>&), 
-    \ref mtl::num_cols(const matrix_recursator<Matrix>&),
-    \ref mtl::size(const matrix_recursator<Matrix>&)
+    \ref mtl::is_empty(const recursator<Matrix>&), 
+    \ref mtl::is_full(const recursator<Matrix>&), 
+    \ref mtl::num_rows(const recursator<Matrix>&), 
+    \ref mtl::num_cols(const recursator<Matrix>&),
+    \ref mtl::size(const recursator<Matrix>&)
 **/
 template <typename Matrix>
-struct matrix_recursator
+struct recursator
 {
-    typedef matrix_recursator                                     self;
+    typedef recursator                                     self;
     typedef Matrix                                                matrix_type;
     typedef typename sub_matrix_t<Matrix>::sub_matrix_type        sub_matrix_type;
     typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type  const_sub_matrix_type;
     typedef typename Collection<Matrix>::size_type                size_type;
     typedef typename Collection<Matrix>::value_type               matrix_value_type;
-    typedef outer_bound_splitter<self>                            splitter_type;
+    typedef recursion::outer_bound_splitter<self>                 splitter_type;
 
 private:
     
@@ -85,17 +85,17 @@ public:
         Constructor takes the entire matrix as sub-matrix.
         This allows to have different type for the matrix and the sub-matrix.
     **/
-    explicit matrix_recursator(Matrix const& matrix,
+    explicit recursator(Matrix const& matrix,
 			       size_type bound= 0
 			       ) 
-	: my_sub_matrix(constructor_helper(matrix)), my_bound(outer_bound(matrix)),
+	: my_sub_matrix(constructor_helper(matrix)), my_bound(recursion::outer_bound(matrix)),
 	  my_first_row(0), my_first_col(0)         // splitter(*this)
     {
       if (bound == 0)
-	my_bound= outer_bound(matrix);
+	my_bound= recursion::outer_bound(matrix);
       else {
-	MTL_DEBUG_THROW_IF(!is_power_of_2(bound), range_error("Bound must be a power of 2"));
-	MTL_DEBUG_THROW_IF(bound < matrix.num_rows() || bound < matrix.num_cols(), 
+	MTL_DEBUG_THROW_IF(!recursion::is_power_of_2(bound), range_error("Bound must be a power of 2"));
+	MTL_DEBUG_THROW_IF(bound < num_rows(matrix) || bound < num_cols(matrix), 
 			   range_error("Bound must not be smaller than matrix dimensions"));
 	my_bound= bound;
       }
@@ -182,21 +182,7 @@ public:
 
     bool is_empty() const
     {
-	return my_first_row >= my_sub_matrix.num_rows() || my_first_col >= my_sub_matrix.num_cols();
-    }
-
-    size_type num_rows() const
-    {
-	using std::min;
-	size_type tmp= ::mtl::num_rows(my_sub_matrix);
-	return my_first_row >= tmp ? 0 : min(my_bound, tmp - my_first_row);
-    }
-	
-    size_type num_cols() const
-    {
-	using std::min;
-	size_type tmp= ::mtl::num_cols(my_sub_matrix);
-	return my_first_col >= tmp ? 0 : min(my_bound, tmp - my_first_col);
+	return my_first_row >= num_rows(my_sub_matrix) || my_first_col >= num_cols(my_sub_matrix);
     }
 
 
@@ -220,6 +206,9 @@ public:
     template <typename R1, typename R2> friend void equalize_depth (R1&, R2&);   
     template <typename R1, typename R2, typename R3> friend void equalize_depth (R1&, R2&, R3&);
 
+    template <typename M> friend typename recursator<M>::size_type num_rows(const recursator<M>& rec);
+    template <typename M> friend typename recursator<M>::size_type num_cols(const recursator<M>& rec);
+
     // Dirty feature to be used with care
     matrix_value_type* first_address()
     {
@@ -238,13 +227,14 @@ public:
                         my_first_col;  /// Row of first entry in submatrix 
 };
 
+#if 0
 
-
-// To use matrix_recursator with const matrices Reference must be 'Matrix const&'
-template <typename Matrix, typename Splitter = max_dim_splitter<Matrix> >
-struct matrix_recursator_s
+// Obsolete, only left in code because discussed in a paper
+// To use recursator with const matrices Reference must be 'Matrix const&'
+template <typename Matrix, typename Splitter = recursion::max_dim_splitter<Matrix> >
+struct recursator_s
 {
-    typedef matrix_recursator_s                                    self;
+    typedef recursator_s                                    self;
     typedef Matrix                                                matrix_type;
     typedef Splitter                                              splitter_type;
     typedef typename sub_matrix_t<Matrix>::sub_matrix_type        sub_matrix_type;
@@ -279,7 +269,7 @@ public:
     // Constructor takes the whole matrix as sub-matrix
     // This allows to have different type for the matrix and the sub-matrix
     // This also enables matrices to have references as sub-matrices
-    explicit matrix_recursator_s(Matrix const& matrix, size_type bound= 0) 
+    explicit recursator_s(Matrix const& matrix, size_type bound= 0) 
 	: my_sub_matrix(constructor_helper(matrix)), my_bound(outer_bound(matrix)),
 	  splitter(my_sub_matrix)
     {
@@ -293,7 +283,7 @@ public:
     }
 
     // Sub-matrices are copied directly
-    // explicit matrix_recursator(sub_matrix_type sub_matrix) : my_sub_matrix(sub_matrix) {}
+    // explicit recursator(sub_matrix_type sub_matrix) : my_sub_matrix(sub_matrix) {}
     
     sub_matrix_type& get_value()
     {
@@ -425,6 +415,7 @@ public:
     splitter_type       splitter;
 };
 
+#endif
 
 template <typename Recursator1, typename Recursator2>
 void inline equalize_depth(Recursator1& r1, Recursator2& r2)
@@ -444,13 +435,6 @@ void inline equalize_depth(Recursator1& r1, Recursator2& r2, Recursator3& r3)
 }
 
 
-} // namespace recursion
-
-/*! Import matrix_recursator into the mtl namespace
-    \sa recursion::matrix_recursator, \ref rec_intro "recursion intro"
-**/
-using recursion::matrix_recursator;
-
 // Define free functions (from member functions)
 
 /*! Compute the north-west quadrant of a recursator (i.e. its referred matrix).
@@ -458,7 +442,7 @@ using recursion::matrix_recursator;
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-matrix_recursator<Matrix> inline north_west(const matrix_recursator<Matrix>& rec)
+recursator<Matrix> inline north_west(const recursator<Matrix>& rec)
 {
     return rec.north_west();
 }
@@ -468,7 +452,7 @@ matrix_recursator<Matrix> inline north_west(const matrix_recursator<Matrix>& rec
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-matrix_recursator<Matrix> inline north_east(const matrix_recursator<Matrix>& rec)
+recursator<Matrix> inline north_east(const recursator<Matrix>& rec)
 {
     return rec.north_east();
 }
@@ -478,7 +462,7 @@ matrix_recursator<Matrix> inline north_east(const matrix_recursator<Matrix>& rec
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-matrix_recursator<Matrix> inline south_west(const matrix_recursator<Matrix>& rec)
+recursator<Matrix> inline south_west(const recursator<Matrix>& rec)
 {
     return rec.south_west();
 }
@@ -488,7 +472,7 @@ matrix_recursator<Matrix> inline south_west(const matrix_recursator<Matrix>& rec
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-matrix_recursator<Matrix> inline south_east(const matrix_recursator<Matrix>& rec)
+recursator<Matrix> inline south_east(const recursator<Matrix>& rec)
 {
     return rec.south_east();
 }
@@ -498,7 +482,7 @@ matrix_recursator<Matrix> inline south_east(const matrix_recursator<Matrix>& rec
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-bool inline is_empty(const matrix_recursator<Matrix>& rec)
+bool inline is_empty(const recursator<Matrix>& rec)
 {
     return rec.is_empty();
 }
@@ -509,42 +493,46 @@ bool inline is_empty(const matrix_recursator<Matrix>& rec)
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-bool inline is_full(const matrix_recursator<Matrix>& rec)
+bool inline is_full(const recursator<Matrix>& rec)
 {
-    int nr= rec.num_rows(), nc= rec.num_cols(), b= rec.bound();
-    return rec.num_rows() == rec.bound() && rec.num_cols() == rec.bound();
+    int nr= num_rows(rec), nc= num_cols(rec), b= rec.bound();
+    return num_rows(rec) == rec.bound() && num_cols(rec) == rec.bound();
 }
 
 /*! The number of rows that a sub-matrix would have if it was constructed.
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-typename matrix_recursator<Matrix>::size_type
-inline num_rows(const matrix_recursator<Matrix>& rec)
+typename recursator<Matrix>::size_type
+inline num_rows(const recursator<Matrix>& rec)
 {
-    return rec.num_rows();
+    using std::min;
+    typename recursator<Matrix>::size_type tmp= num_rows(rec.my_sub_matrix);
+    return rec.my_first_row >= tmp ? 0 : min(rec.my_bound, tmp - rec.my_first_row);
 }
 
 /*! The number of columns that a sub-matrix would have if it was constructed.
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-typename matrix_recursator<Matrix>::size_type
-inline num_cols(const matrix_recursator<Matrix>& rec)
+typename recursator<Matrix>::size_type
+inline num_cols(const recursator<Matrix>& rec)
 {
-    return rec.num_cols();
+    using std::min;
+    typename recursator<Matrix>::size_type tmp= num_cols(rec.my_sub_matrix);
+    return rec.my_first_col >= tmp ? 0 : min(rec.my_bound, tmp - rec.my_first_col);
 }
 
 /*! The number of elements (rows times columns) that a sub-matrix would have if it was constructed.
     \sa \ref rec_intro "recursion intro"
 **/
 template <typename Matrix>
-typename matrix_recursator<Matrix>::size_type
-inline size(const matrix_recursator<Matrix>& rec)
+typename recursator<Matrix>::size_type
+inline size(const recursator<Matrix>& rec)
 {
     return num_rows(rec) * num_cols(rec);
 }
 
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_MATRIX_RECURATOR_INCLUDE

@@ -62,7 +62,7 @@ void test_compressed2D_insertion()
     if (matrix(2+io, 3+io) != 7) throw "Error in raw_copy, should be 7";
 
     {   // Inserter that overwrites the old values
-	compressed2D_inserter<int, parameters>  i1(matrix, 3);
+	matrix::compressed2D_inserter<int, parameters>  i1(matrix, 3);
 
 	i1(0+io, 3+io) << 31; i1(3+io, 3+io) << 33; i1(6+io, 0+io) << 34 << 35; i1(4+io, 4+io) << 36 << 37;
     }
@@ -75,7 +75,7 @@ void test_compressed2D_insertion()
     if (matrix(4+io, 4+io) != 37) throw "Error overwriting existing value twice";
 
     {   // Inserter that adds to the old values
-        compressed2D_inserter<int, parameters, operations::update_plus<int> > i2(matrix, 3);    
+        matrix::compressed2D_inserter<int, parameters, operations::update_plus<int> > i2(matrix, 3);    
  
 	i2(2+io, 2+io) << 21; i2(2+io, 4+io) << 22; i2(6+io, 1+io) << 23; 
 	i2(7+io, 2+io) << 24 << 2; i2(4+io, 2+io) << 25; i2(2+io, 5+io) << 26; 

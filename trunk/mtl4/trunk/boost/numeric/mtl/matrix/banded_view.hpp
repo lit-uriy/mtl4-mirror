@@ -14,8 +14,8 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
-#include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
-#include <boost/numeric/mtl/detail/base_matrix.hpp>
+#include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
+#include <boost/numeric/mtl/matrix/base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/map_view.hpp>
@@ -37,14 +37,14 @@ namespace detail {
 
 template <typename Matrix> 
 struct banded_view 
-  : public mtl::detail::const_crtp_base_matrix< banded_view<Matrix>, 
-						typename Matrix::value_type, typename Matrix::size_type >,
+  : public const_crtp_base_matrix< banded_view<Matrix>, 
+				   typename Matrix::value_type, typename Matrix::size_type >,
     public mat_expr< banded_view<Matrix> >,
-    public mtl::detail::base_matrix<typename Matrix::value_type, typename Matrix::parameters>
+    public base_matrix<typename Matrix::value_type, typename Matrix::parameters>
 {
     typedef banded_view                                self;
-    typedef mtl::matrix::mat_expr< self >                   expr_base;
-    typedef mtl::detail::base_matrix<typename Matrix::value_type, typename Matrix::parameters> base;
+    typedef mat_expr< self >                           expr_base;
+    typedef base_matrix<typename Matrix::value_type, typename Matrix::parameters> base;
     
     typedef Matrix                                     other;
     typedef typename Matrix::orientation               orientation;
@@ -119,92 +119,6 @@ inline size(const banded_view<Matrix>& matrix)
     return matrix.num_cols() * matrix.num_rows();
 }
 
-
-    namespace detail {
-
-	template <typename Matrix> 
-	struct banded_value
-	{
-	    typedef typename Matrix::key_type                      key_type;
-	    typedef typename Matrix::value_type                    value_type;
-	    typedef mtl::matrix::banded_view<Matrix>                    view_type;
-    	
-	    banded_value(view_type const& view) 
-		: view(view), its_row(view.ref), its_col(view.ref), its_value(view.ref) 
-	    {}
-
-	    value_type operator() (key_type const& key)
-	    {
-		using math::zero;
-		typedef typename view_type::bsize_type   bsize_type;
-
-		bsize_type br= static_cast<bsize_type>(its_row(key)), 
-                           bc= static_cast<bsize_type>(its_col(key)),
-		           band= bc - br;
-		// Need value to return correct zero as well (i.e. matrices itself)
-		const value_type v= its_value(key);
-
-		return view.get_begin() <= band && band < view.get_end() ? v : zero(v);
-	    }
-
-	  protected:
-	    view_type const&                                view;
-	    typename mtl::traits::row<Matrix>::type         its_row;
-	    typename mtl::traits::col<Matrix>::type         its_col;
-	    typename mtl::traits::const_value<Matrix>::type its_value;
-        };
-
-    } // detail
-
-
-}} // namespace mtl::matrix
-
-namespace mtl { namespace traits {
-
-    template <typename Matrix> 
-    struct row<mtl::matrix::banded_view<Matrix> >
-    {
-	// from map_view
-	typedef detail::mapped_row<sfunctor::identity<typename Matrix::value_type>, Matrix>   type;
-    };
-
-    template <typename Matrix> 
-    struct col<mtl::matrix::banded_view<Matrix> >
-    {
-	// from map_view
-	typedef detail::mapped_col<sfunctor::identity<typename Matrix::value_type>, Matrix>   type;
-    };
-
-    template <typename Matrix> 
-    struct const_value<mtl::matrix::banded_view<Matrix> >
-    {
-	typedef mtl::matrix::detail::banded_value<Matrix>  type;
-    };
-
-    // ================
-    // Range generators
-    // ================
-
-    // Use range_generator of original matrix
-    template <typename Tag, typename Matrix> 
-    struct range_generator<Tag, mtl::matrix::banded_view<Matrix> >
-	: public detail::referred_range_generator<mtl::matrix::banded_view<Matrix>, 
-						  range_generator<Tag, Matrix> >
-    {};
-
-    // To disambigue
-    template <typename Matrix> 
-    struct range_generator<tag::major, mtl::matrix::banded_view<Matrix> >
-	: public detail::referred_range_generator<mtl::matrix::banded_view<Matrix>, 
-						  range_generator<tag::major, Matrix> >
-    {};
-
-
-}} // mtl::traits
-
-
-namespace mtl {
-
 // ==========
 // Sub matrix
 // ==========
@@ -232,6 +146,90 @@ struct sub_matrix_t< mtl::matrix::banded_view<Matrix> >
     }
 };
 
-} // mtl
+
+}} // namespace mtl::matrix
+
+
+
+
+namespace mtl { namespace traits {
+
+    using mtl::matrix::banded_view;
+
+    template <typename Matrix> 
+    struct row<banded_view<Matrix> >
+    {
+	// from map_view
+	typedef detail::mapped_row<sfunctor::identity<typename Matrix::value_type>, Matrix>   type;
+    };
+
+    template <typename Matrix> 
+    struct col<banded_view<Matrix> >
+    {
+	// from map_view
+	typedef detail::mapped_col<sfunctor::identity<typename Matrix::value_type>, Matrix>   type;
+    };
+
+    namespace detail {
+
+	template <typename Matrix> 
+	struct banded_value
+	{
+	    typedef typename Matrix::key_type              key_type;
+	    typedef typename Matrix::value_type            value_type;
+	    typedef banded_view<Matrix>                    view_type;
+    	
+	    banded_value(view_type const& view) 
+		: view(view), its_row(view.ref), its_col(view.ref), its_value(view.ref) 
+	    {}
+
+	    value_type operator() (key_type const& key)
+	    {
+		using math::zero;
+		typedef typename view_type::bsize_type   bsize_type;
+
+		bsize_type br= static_cast<bsize_type>(its_row(key)), 
+                           bc= static_cast<bsize_type>(its_col(key)),
+		           band= bc - br;
+		// Need value to return correct zero as well (i.e. matrices itself)
+		const value_type v= its_value(key);
+
+		return view.get_begin() <= band && band < view.get_end() ? v : zero(v);
+	    }
+
+	  protected:
+	    view_type const&                                view;
+	    typename row<Matrix>::type         its_row;
+	    typename col<Matrix>::type         its_col;
+	    typename const_value<Matrix>::type its_value;
+        };
+
+    } // detail
+
+    template <typename Matrix> 
+    struct const_value<banded_view<Matrix> >
+    {
+	typedef detail::banded_value<Matrix>  type;
+    };
+
+    // ================
+    // Range generators
+    // ================
+
+    // Use range_generator of original matrix
+    template <typename Tag, typename Matrix> 
+    struct range_generator<Tag, banded_view<Matrix> >
+	: public detail::referred_range_generator<banded_view<Matrix>, range_generator<Tag, Matrix> >
+    {};
+
+    // To disambigue
+    template <typename Matrix> 
+    struct range_generator<tag::major, banded_view<Matrix> >
+	: public detail::referred_range_generator<banded_view<Matrix>, range_generator<tag::major, Matrix> >
+    {};
+
+
+}} // mtl::traits
+
 
 #endif // MTL_MATRIX_BANDED_VIEW_INCLUDE

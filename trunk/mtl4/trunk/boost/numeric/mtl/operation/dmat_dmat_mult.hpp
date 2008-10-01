@@ -708,10 +708,10 @@ private:
 	// Make sure that mult functor of basecase has appropriate assign mode (in all nestings)
 	// i.e. replace assign::assign_sum by assign::plus_sum including backup functor
 	
-	using recursion::matrix_recursator;
-	matrix_recursator<MatrixA>    rec_a(a);
-	matrix_recursator<MatrixB>    rec_b(b);
-	matrix_recursator<MatrixC>    rec_c(c);
+	using matrix::recursator;
+	recursator<MatrixA>    rec_a(a);
+	recursator<MatrixB>    rec_b(b);
+	recursator<MatrixC>    rec_c(c);
 	equalize_depth(rec_a, rec_b, rec_c);
 	
 	wrec::gen_dmat_dmat_mult_t<BaseMult, BaseTest>() (rec_a, rec_b, rec_c);

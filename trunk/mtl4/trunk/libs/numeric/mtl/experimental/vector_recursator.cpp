@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     hessian_setup(A1, 1.0);
     hessian_setup(C1, 2.0);
 
-    typedef matrix_recursator<matrix_t>               recursator_t;
+    typedef matrix::recursator<matrix_t>               recursator_t;
     recursator_t                                      ra1(A1), rc1(C1);
     std::vector<recursator_t>                         v;
     v.push_back(ra1); v.push_back(rc1);

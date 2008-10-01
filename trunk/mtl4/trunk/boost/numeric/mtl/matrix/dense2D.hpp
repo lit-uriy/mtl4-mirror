@@ -15,22 +15,27 @@
 #include <boost/mpl/if.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
-#include <boost/numeric/mtl/utility/common_include.hpp>
-#include <boost/numeric/mtl/detail/crtp_base_matrix.hpp>
-#include <boost/numeric/mtl/detail/base_sub_matrix.hpp>
+#include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
+#include <boost/numeric/mtl/matrix/base_sub_matrix.hpp>
+#include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
+#include <boost/numeric/mtl/matrix/operators.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/mtl/operation/compute_factors.hpp>
+#include <boost/numeric/mtl/operation/clone.hpp>
+#include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
-#include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
-#include <boost/numeric/mtl/matrix/operators.hpp>
-#include <boost/numeric/mtl/operation/compute_factors.hpp>
-#include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
+// Forward declaration (for friend declaration)
+namespace mtl { namespace traits { namespace detail {
+    template <typename, typename, bool> struct dense2D_iterator_range_generator;
+}}}
 
-namespace mtl {
+namespace mtl { namespace matrix {
+
 
 using std::size_t;
 
@@ -127,28 +132,22 @@ namespace detail
 
 } // namespace detail
 
-
-// Forward declaration (for friend declaration)
-namespace traits { namespace detail {
-    template <typename, typename, bool> struct dense2D_iterator_range_generator;
-}}
-
   
 // Dense 2D matrix type
-template <typename Value, typename Parameters = mtl::matrix::parameters<> >
-class dense2D : public detail::base_sub_matrix<Value, Parameters>, 
-		public detail::contiguous_memory_block< Value, Parameters::on_stack, 
-							detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
-                public detail::crtp_base_matrix< dense2D<Value, Parameters>, Value, std::size_t >,
-		public matrix::mat_expr< dense2D<Value, Parameters> >
+template <typename Value, typename Parameters = parameters<> >
+class dense2D : public base_sub_matrix<Value, Parameters>, 
+		public mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, 
+							     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
+                public crtp_base_matrix< dense2D<Value, Parameters>, Value, std::size_t >,
+		public mat_expr< dense2D<Value, Parameters> >
 {
     typedef dense2D                                           self;
-    typedef detail::base_sub_matrix<Value, Parameters>        super;
-    typedef detail::contiguous_memory_block<Value, Parameters::on_stack, 
-					     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     memory_base;
-    typedef matrix::mat_expr< dense2D<Value, Parameters> >    expr_base;
-    typedef detail::crtp_base_matrix< self, Value, std::size_t > crtp_base;
-    typedef detail::crtp_matrix_assign< self, Value, std::size_t > assign_base;
+    typedef base_sub_matrix<Value, Parameters>                super;
+    typedef mtl::detail::contiguous_memory_block<Value, Parameters::on_stack, 
+						 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     memory_base;
+    typedef mat_expr< dense2D<Value, Parameters> >            expr_base;
+    typedef crtp_base_matrix< self, Value, std::size_t >      crtp_base;
+    typedef crtp_matrix_assign< self, Value, std::size_t >    assign_base;
   public:
     typedef Parameters                        parameters;
     typedef typename Parameters::orientation  orientation;
@@ -260,26 +259,26 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
     explicit dense2D(const MatrixSrc& src) 
 	: super(), memory_base(dim_type().num_rows() * dim_type().num_cols())
     { 
-		init(); 
-		*this= src;
+	init(); 
+	*this= src;
     }
 
 
     explicit dense2D(self& matrix, dense2D_sub_ctor, 
-					 size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-		: super(mtl::non_fixed::dimensions(matrix.num_rows(), matrix.num_cols())),
-		  memory_base(matrix.data, (end_r - begin_r) * (end_c - begin_c), true) // View constructor
+		     size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+	: super(mtl::non_fixed::dimensions(matrix.num_rows(), matrix.num_cols())),
+	  memory_base(matrix.data, (end_r - begin_r) * (end_c - begin_c), true) // View constructor
     {
-		matrix.check_ranges(begin_r, end_r, begin_c, end_c);
-
-		if(end_r <= begin_r || end_c <= begin_c)
-			set_ranges(0, 0);
-		else {
-			// Leading dimension doesn't change
-			this->data += matrix.indexer(matrix, begin_r, begin_c);  // Takes care of indexing
-			set_ranges(end_r - begin_r, end_c - begin_c);
-		}
-		this->my_nnz= matrix.my_nnz; ldim= matrix.ldim;
+	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
+	
+	if(end_r <= begin_r || end_c <= begin_c)
+	    set_ranges(0, 0);
+	else {
+	    // Leading dimension doesn't change
+	    this->data += matrix.indexer(matrix, begin_r, begin_c);  // Takes care of indexing
+	    set_ranges(end_r - begin_r, end_c - begin_c);
+	}
+	this->my_nnz= matrix.my_nnz; ldim= matrix.ldim;
     }
 
 
@@ -375,8 +374,8 @@ class dense2D : public detail::base_sub_matrix<Value, Parameters>,
 
     friend class dense2D_indexer;
     template <typename> friend struct sub_matrix_t;
-    template <typename, typename> friend struct traits::range_generator;
-    template <typename, typename, bool> friend struct traits::detail::dense2D_iterator_range_generator;
+    template <typename, typename> friend struct mtl::traits::range_generator;
+    template <typename, typename, bool> friend struct mtl::traits::detail::dense2D_iterator_range_generator;
 }; // dense2D
 
 
@@ -405,11 +404,14 @@ inline size(const dense2D<Value, Parameters>& matrix)
     return matrix.num_cols() * matrix.num_rows();
 }
 
+}} // namespace mtl::matrix
 
-namespace traits
-{
-    // VC 8.0 finds ambiguity with mtl::tag::morton_dense (I wonder why, especially here)
-    using mtl::dense2D;
+
+namespace mtl { namespace traits {
+
+
+    // VC 8.0 finds ambiguity with mtl::tag::dense2D (I wonder why, especially here)
+    using mtl::matrix::dense2D;
 
     // ================
     // Range generators
@@ -693,62 +695,67 @@ namespace traits
     {};
 
 
-} // namespace traits
+}} // namespace mtl::traits
 
+namespace mtl { namespace matrix {
 
-// ==========
-// Sub matrix
-// ==========
+    // ==========
+    // Sub matrix
+    // ==========
 
-template <typename Value, typename Parameters>
-struct sub_matrix_t<dense2D<Value, Parameters> >
-{
-    typedef dense2D<Value, Parameters>        matrix_type;
-    typedef matrix_type                     sub_matrix_type;
-    typedef matrix_type const               const_sub_matrix_type;
-    typedef typename matrix_type::size_type size_type;
-    
-    sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+    template <typename Value, typename Parameters>
+    struct sub_matrix_t<dense2D<Value, Parameters> >
     {
-	return sub_matrix_type(matrix, dense2D_sub_ctor(), begin_r, end_r, begin_c, end_c);
-    }
+        typedef dense2D<Value, Parameters>      matrix_type;
+        typedef matrix_type                     sub_matrix_type;
+        typedef matrix_type const               const_sub_matrix_type;
+        typedef typename matrix_type::size_type size_type;
+        
+        sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+        {
+    	return sub_matrix_type(matrix, dense2D_sub_ctor(), begin_r, end_r, begin_c, end_c);
+        }
 
-    const_sub_matrix_type
-    operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-    {
-	// To minimize code duplication, we use the non-const version
-	sub_matrix_type tmp((*this)(const_cast<matrix_type&>(matrix), begin_r, end_r, begin_c, end_c));
-	return tmp;
-    }	
-};
+        const_sub_matrix_type
+        operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+        {
+    	// To minimize code duplication, we use the non-const version
+    	sub_matrix_type tmp((*this)(const_cast<matrix_type&>(matrix), begin_r, end_r, begin_c, end_c));
+    	return tmp;
+        }	
+    };
+        
+}} // mtl::matrix
 
-// Enable cloning of dense matrices
-template <typename Value, typename Parameters>
-struct is_clonable< mtl::dense2D<Value, Parameters> > : boost::mpl::true_ {};
+namespace mtl {
 
+    // Enable cloning of dense matrices
+    template <typename Value, typename Parameters>
+    struct is_clonable< mtl::dense2D<Value, Parameters> > : boost::mpl::true_ {};
+        
 } // namespace mtl
 
 
 
 namespace math {
 
-// Multiplicative identities of matrices
-template <typename Value, typename Parameters>
-struct identity_t< mult<mtl::dense2D<Value, Parameters> >, mtl::dense2D<Value, Parameters> >
-    : public std::binary_function< mult<mtl::dense2D<Value, Parameters> >, 
-				   mtl::dense2D<Value, Parameters>, 
-				   mtl::dense2D<Value, Parameters> >
-{
-    typedef mtl::dense2D<Value, Parameters>  matrix_type;
-
-    matrix_type operator() (const mult<matrix_type>&, const matrix_type& ref) const
+    // Multiplicative identities of matrices
+    template <typename Value, typename Parameters>
+    struct identity_t< mult<mtl::dense2D<Value, Parameters> >, mtl::dense2D<Value, Parameters> >
+        : public std::binary_function< mult<mtl::dense2D<Value, Parameters> >, 
+				       mtl::dense2D<Value, Parameters>, 
+				       mtl::dense2D<Value, Parameters> >
     {
-	matrix_type tmp(ref);
-	tmp= zero(matrix_type::value_type());
-	return tmp;
-    }
-};
+        typedef mtl::dense2D<Value, Parameters>  matrix_type;
 
+        matrix_type operator() (const mult<matrix_type>&, const matrix_type& ref) const
+        {
+	    matrix_type tmp(ref);
+	    tmp= zero(matrix_type::value_type());
+	    return tmp;
+        }
+    };
+        
 } // namespace math
 
 

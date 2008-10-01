@@ -214,7 +214,7 @@ int test_main(int argc, char* argv[])
   
   fill_matrix(matrix); 
   // test_sub_matrix(matrix);
-  recursion::matrix_recursator<matrix_type> recursator(matrix);
+  recursion::matrix::recursator<matrix_type> recursator(matrix);
   // print_matrix(matrix);
   time (&starttime);
   timeinfo = localtime (&starttime);
