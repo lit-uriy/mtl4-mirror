@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
  
-using namespace mtl;
+
 using namespace std;  
 
 
@@ -31,9 +31,9 @@ void test_file(Matrix& A, const char* file_name, const char* comment)
 
     if (num_rows(A) > 9 && num_cols(A) > 9) {
 	int reordering[]= {0, 1, 2, 3, 4, 5, 6, 7, 8};
-	matrix::traits::reorder<>::type  R= matrix::reorder(reordering, num_cols(A)),
-	    R2= matrix::reorder(reordering, num_rows(A));
-	Matrix B(R * A * trans(R2));
+	mtl::matrix::traits::reorder<>::type  R= mtl::matrix::reorder(reordering, num_cols(A)),
+	                                      R2= mtl::matrix::reorder(reordering, num_rows(A));
+	Matrix B0(R * A), B(B0 * trans(R2));
 	std::cout << "A[0:9][0:9] is:\n" << with_format(B, 8, 3);
     } else
 	std::cout << "A is:\n" << with_format(A, 8, 3);
@@ -50,10 +50,10 @@ void test(Matrix& A, const char* name)
     // test_file(A, "matrix_market/plskz362.mtx", "Skew-symmetric"); // has only 0s in A[:9][:9]
     test_file(A, "matrix_market/bcsstk01.mtx", "Real symmetric");
 
-    Matrix B(io::matrix_market("matrix_market/jgl009.mtx")), C;
+    Matrix B(mtl::io::matrix_market("matrix_market/jgl009.mtx")), C;
     std::cout << "Matrix market file read in constructor:\n" << B;
 
-    C= io::matrix_market("matrix_market/jgl009.mtx");
+    C= mtl::io::matrix_market("matrix_market/jgl009.mtx");
     std::cout << "Matrix market file assigned:\n" << B;
     
 }
@@ -61,6 +61,8 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     const unsigned size= 5; 
 
     compressed2D<double>                             cdc;

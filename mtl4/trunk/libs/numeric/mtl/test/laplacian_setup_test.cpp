@@ -21,18 +21,18 @@
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 template <typename Matrix>
 void test(Matrix& matrix, unsigned dim1, unsigned dim2, const char* name)
 {
     cout << "\n" << name << "\n";
-    matrix::laplacian_setup(matrix, dim1, dim2);
+    mtl::matrix::laplacian_setup(matrix, dim1, dim2);
     cout << "Laplacian matrix:\n" << matrix << "\n";
     
     if (dim1 > 1 && dim2 > 1) {
-	typename Collection<Matrix>::value_type four(4.0), minus_one(-1.0), zero(0.0);
+	typename mtl::Collection<Matrix>::value_type four(4.0), minus_one(-1.0), zero(0.0);
 	if (matrix[0][0] != four)
 	    throw "wrong diagonal";
 	if (matrix[0][1] != minus_one)
@@ -54,6 +54,8 @@ void test(Matrix& matrix, unsigned dim1, unsigned dim2, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     unsigned dim1= 3, dim2= 4;
 
     if (argc > 2) {

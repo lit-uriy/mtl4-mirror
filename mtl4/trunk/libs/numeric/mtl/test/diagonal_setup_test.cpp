@@ -22,16 +22,16 @@
 #include <boost/numeric/mtl/operation/print.hpp>
 
 
-using namespace mtl;
+
 using namespace std;  
 
 template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
     cout << "\n" << name << "\n";
-    typename Collection<Matrix>::value_type four(4.0), one(1.0), zero(0.0);
+    typename mtl::Collection<Matrix>::value_type four(4.0), one(1.0), zero(0.0);
 
-    matrix::diagonal_setup(matrix, 1.0);
+    diagonal_setup(matrix, 1.0);
     if (matrix[0][0] != one)
 	throw "wrong diagonal";
     if (matrix[0][1] != zero)
@@ -52,6 +52,7 @@ void test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     unsigned size= 7; 
 
     dense2D<double>                                      dr(size, size);

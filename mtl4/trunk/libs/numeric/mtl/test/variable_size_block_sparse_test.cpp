@@ -18,7 +18,7 @@
 int test_main(int argc, char* argv[])
 {
     using namespace std;
-    using namespace mtl;
+    
     
 
     // Define a 6x5 sparse matrix in a 3x3 block-sparse

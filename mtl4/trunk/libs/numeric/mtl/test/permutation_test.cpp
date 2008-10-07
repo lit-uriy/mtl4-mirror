@@ -15,12 +15,12 @@
 
 
 using namespace std;
-using namespace mtl;
+
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename Collection<Matrix>::value_type   value_type;
+    typedef typename mtl::Collection<Matrix>::value_type   value_type;
     
     value_type array[][3]= {{1., 2., 3.}, {4., 5., 6.}, {7., 8., 9.}};
     A= array;
@@ -28,7 +28,7 @@ void test(Matrix& A, const char* name)
     cout << "\n" << name << "\n" << "A =\n" << A;
 
     int indices[]= {1, 2, 0};
-    matrix::traits::permutation<>::type P= matrix::permutation(indices);
+    mtl::matrix::traits::permutation<>::type P= mtl::matrix::permutation(indices);
     cout << "\nP =\n" << P;    
 
     Matrix A2( P * A );
@@ -45,6 +45,7 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     
     dense2D<double>                                      dr;
     dense2D<double, matrix::parameters<col_major> >      dc;

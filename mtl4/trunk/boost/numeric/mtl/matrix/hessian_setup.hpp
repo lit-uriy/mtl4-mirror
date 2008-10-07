@@ -16,24 +16,20 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
-    namespace matrix {
-	/// Fills a matrix A with a_ij = factor * (i + j)
-	/** Intended for dense matrices.
-	    Works on sparse matrices with inserter but is very expensive. **/
-	template <typename Matrix, typename Value>
-	void hessian_setup(Matrix& matrix, Value factor)
-	{
-	    typedef typename Matrix::value_type    value_type;
-	    typedef typename Matrix::size_type     size_type;
-	    for (size_type r= matrix.begin_row(); r < matrix.end_row(); r++)
-		for (size_type c= matrix.begin_col(); c < matrix.end_col(); c++)
-		    matrix[r][c]= factor * (value_type(r) + value_type(c));
-	}
-    }
-
-    using matrix::hessian_setup;
+/// Fills a matrix A with a_ij = factor * (i + j)
+/** Intended for dense matrices.
+    Works on sparse matrices with inserter but is very expensive. **/
+template <typename Matrix, typename Value>
+void hessian_setup(Matrix& matrix, Value factor)
+{
+    typedef typename Matrix::value_type    value_type;
+    typedef typename Matrix::size_type     size_type;
+    for (size_type r= matrix.begin_row(); r < matrix.end_row(); r++)
+	for (size_type c= matrix.begin_col(); c < matrix.end_col(); c++)
+	    matrix[r][c]= factor * (value_type(r) + value_type(c));
+}
 
 namespace impl {
 
@@ -110,6 +106,10 @@ void check_hessian_matrix_product(Matrix const& c, typename Matrix::size_type re
     }
 }
 
+} // namespace matrix;
+
+using matrix::hessian_setup;
+using matrix::check_hessian_matrix_product;
 
 } // namespace mtl
 

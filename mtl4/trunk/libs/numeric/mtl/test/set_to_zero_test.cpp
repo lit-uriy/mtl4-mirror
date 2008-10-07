@@ -24,7 +24,7 @@
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 
 
-using namespace mtl;
+
 using namespace mtl::recursion;
 using namespace std;  
 
@@ -33,7 +33,7 @@ template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
     {
-	matrix::inserter<Matrix> ins(matrix);
+	mtl::matrix::inserter<Matrix> ins(matrix);
 	for (int i= 0; i < matrix.num_rows(); i++)
 	    for (int j= 0; j < matrix.num_cols(); j++)
 		if ((i + j) & 1)
@@ -51,6 +51,8 @@ void test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     dense2D<double>                                dr(5, 7);
     dense2D<double, matrix::parameters<col_major> > dc(5, 7);
     dense2D<std::complex<double> >                 cdr(5, 7);

@@ -15,7 +15,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 
-using namespace mtl;
+
 using namespace std;  
 
 
@@ -27,7 +27,7 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
     laplacian_setup(A, dim1, dim2);
 
     unsigned size= dim1 * dim2;
-    dense_vector<double> v(size), b(size), r(size);
+    mtl::dense_vector<double> v(size), b(size), r(size);
 
     for (unsigned i= 0; i < num_cols(A); i++)
 	v[i]= A[12][i];
@@ -58,6 +58,8 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     unsigned dim1= 5, dim2= 5;
 
     if (argc > 2) {

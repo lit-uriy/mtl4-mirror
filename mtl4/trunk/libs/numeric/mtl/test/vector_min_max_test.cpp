@@ -20,14 +20,15 @@
 #include <boost/numeric/mtl/operation/max.hpp>
 
 
-using namespace mtl;
+
 using namespace std;  
     
 
 template <typename Vector>
 void test(Vector& v, const char* name)
 {
-    typedef typename Collection<Vector>::value_type value_type;
+    typedef typename mtl::Collection<Vector>::value_type value_type;
+    using mtl::vector::min; using mtl::vector::max; 
 
     for (int i= 0; i < size(v); i++)
 	v[i]= value_type(double(i+1) * pow(-1.0, i)); 
@@ -49,15 +50,15 @@ int test_main(int argc, char* argv[])
 {
     using mtl::vector::parameters;
 
-    dense_vector<float>   u(5);
-    dense_vector<double>  x(5);
+    mtl::dense_vector<float>   u(5);
+    mtl::dense_vector<double>  x(5);
 
     std::cout << "Testing vector operations\n";
 
     test(u, "test float");
     test(x, "test double");
 
-    dense_vector<float, parameters<row_major> >   ur(5);
+    mtl::dense_vector<float, parameters<mtl::row_major> >   ur(5);
     test(ur, "test float in row vector");
 
     return 0;

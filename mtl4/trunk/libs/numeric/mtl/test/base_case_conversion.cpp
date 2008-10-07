@@ -23,7 +23,7 @@
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
 #include <boost/numeric/mtl/recursion/base_case_cast.hpp>
 
-using namespace mtl;
+
 using namespace std;  
  
 using mtl::recursion::base_case_matrix;
@@ -35,7 +35,7 @@ void test(Matrix& matrix)
 {    
     using mtl::recursion::base_case_matrix;
 
-    typedef recursion::max_dim_test_static<4>   base_test_type;
+    typedef mtl::recursion::max_dim_test_static<4>   base_test_type;
     base_test_type                              base_test;
 
     typedef typename base_case_matrix<Matrix, base_test_type>::type base_type;
@@ -52,6 +52,8 @@ void test(Matrix& matrix)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     typedef dense2D<int>                   d1t;
     typedef morton_dense<int, 0x55555553>  m1t; // col-major 4x4
     typedef morton_dense<int, 0x55555555>  m2t;

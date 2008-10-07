@@ -15,11 +15,13 @@
 
 
 using namespace std;
-using namespace mtl;
+
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
+    using mtl::Collection; using mtl::matrix::inserter; using mtl::operations::update_plus;
+
     typedef typename Collection<Matrix>::value_type   value_type;
     
     value_type array[][3]= {{3, 7.2, 0}, {2, 4.444, 5}};
@@ -33,7 +35,7 @@ void test(Matrix& A, const char* name)
 	throw "Wrong value inserted";
 
     {
-	matrix::inserter<Matrix>  ins(A);
+	inserter<Matrix>  ins(A);
 	ins(1, 0)+= 1.;
 	//ins[1][0]+= 1.;
     }
@@ -42,7 +44,7 @@ void test(Matrix& A, const char* name)
 	throw "Wrong value after +=";
 
     {
-	matrix::inserter<Matrix, operations::update_plus<value_type> > ins(A);
+	inserter<Matrix, update_plus<value_type> > ins(A);
 	ins(1, 2)= 4;
 	ins[1][2]= 4;
 	//ins[1, 2]= 4;
@@ -55,7 +57,8 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
-    
+    using namespace mtl;
+
     dense2D<double>                                      dr;
     dense2D<double, matrix::parameters<col_major> >      dc;
     morton_dense<double, recursion::morton_z_mask>       mzd;

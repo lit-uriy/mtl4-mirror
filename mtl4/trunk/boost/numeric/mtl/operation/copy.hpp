@@ -12,6 +12,8 @@
 #ifndef MTL_COPY_INCLUDE
 #define MTL_COPY_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>

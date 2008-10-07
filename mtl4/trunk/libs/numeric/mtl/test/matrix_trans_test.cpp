@@ -15,7 +15,7 @@
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 typedef complex<double> ct;
@@ -67,7 +67,7 @@ ct csvalue(ct)
 template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
-    typedef typename Collection<Matrix>::value_type value_type;
+    typedef typename mtl::Collection<Matrix>::value_type value_type;
     value_type  ar[][3] = {{3., 9., 0.},
 			   {1., 2., 7.},
 			   {9., 6., 8.}};
@@ -85,7 +85,7 @@ void test(Matrix& matrix, const char* name)
 template <typename Matrix>
 void mutable_test(Matrix& matrix, const char* name)
 {
-    typedef typename Collection<Matrix>::value_type value_type;
+    typedef typename mtl::Collection<Matrix>::value_type value_type;
     value_type  ar[][3] = {{3., 9., 0.},
 			   {1., 2., 7.},
 			   {9., 6., 8.}};
@@ -102,6 +102,8 @@ void mutable_test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+    
     unsigned size= 3; 
     if (argc > 1) size= atoi(argv[1]); 
 

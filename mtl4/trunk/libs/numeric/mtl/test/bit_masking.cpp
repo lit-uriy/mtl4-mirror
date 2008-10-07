@@ -13,7 +13,7 @@
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/test/minimal.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 
@@ -22,11 +22,11 @@ void test()
 {
     printf("Mask %x, 32x32 base is row-major %i, is column-major %i, shark 2 row-major %i"
 	   ", 4x4 row-major %i, column-major %i\n",
-	   Mask, is_32_base_case_row_major<Mask>::value,
-	   is_k_power_base_case_col_major<5, Mask>::value,
-	   is_k_power_base_case_row_major_t_shark<5, 1, Mask>::value,
-	   is_k_power_base_case_row_major<2, Mask>::value,
-	   is_k_power_base_case_col_major<2, Mask>::value);
+	   Mask, mtl::is_32_base_case_row_major<Mask>::value,
+	   mtl::is_k_power_base_case_col_major<5, Mask>::value,
+	   mtl::is_k_power_base_case_row_major_t_shark<5, 1, Mask>::value,
+	   mtl::is_k_power_base_case_row_major<2, Mask>::value,
+	   mtl::is_k_power_base_case_col_major<2, Mask>::value);
 }
 
 template <unsigned long Mask1, unsigned long Mask2>
@@ -59,7 +59,7 @@ struct mask
 
 int test_main(int argc, char* argv[])
 {
-    using mtl::row_major; using mtl::col_major;
+    using mtl::row_major; using mtl::col_major; using mtl::generate_mask;
 
     const unsigned long z= 0, morton= (z-1) / 3, morton_z= ~morton, doppled_4_row= morton + 7,
                         doppled_4_col= morton - 2, doppled_32_row= morton + 651, 

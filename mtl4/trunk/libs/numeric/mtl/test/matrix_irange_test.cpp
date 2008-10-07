@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 
@@ -48,14 +48,7 @@ struct ss2 : public base1<Size, ss<Size> >
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-#if 0  // For testing
-    ss<std::size_t> s;
-    s[3];
-    s[irange(1, 2)];
-
-    ss2<std::size_t> s2;
-    s2[3];
-#endif
+    using mtl::irange; using mtl::imax;
 
     A= 0.0;
     A[1][1]= 1.0; 
@@ -82,6 +75,8 @@ void test(Matrix& A, const char* name)
 template <typename Matrix>
 void test2(Matrix& A, const char* name)
 {
+    using mtl::irange; using mtl::imax;
+
     A= 0.0;
     A[1][1]= 1.0; 
     hessian_setup(A, 1.0);
@@ -105,6 +100,7 @@ void test2(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     const unsigned size= 5; 
 
     dense2D<double> dc(size, size-2);

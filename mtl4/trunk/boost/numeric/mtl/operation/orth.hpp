@@ -20,17 +20,17 @@
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/two_norm.hpp>
 
-namespace mtl {
+namespace mtl { namespace vector {
 
     namespace impl {
 
 	template <typename VVector>
 	inline void orth(VVector& v, typename mtl::Collection<VVector>::size_type j, tag::vector)
 	{
+	    using mtl::two_norm; using mtl::size;
 	    MTL_DEBUG_THROW_IF(j < 0 || j >= size(v), index_out_of_range());
-	    using ::mtl::two_norm;
-	    typedef typename mtl::Collection<VVector>::size_type  Size;
 
+	    typedef typename mtl::Collection<VVector>::size_type  Size;
 	    for (Size i= 0; i < j; ++i)
 		v[j]-= dot(v[i], v[j]) * v[i];
 	    v[j]/= two_norm(v[j]);
@@ -40,6 +40,7 @@ namespace mtl {
 	inline void orth(VVector& v, tag::vector)
 	{
 	    typedef typename mtl::Collection<VVector>::size_type  Size;
+	    using mtl::size;
 	    for (Size j= 0; j < size(v); ++j)
 		orth(v, j, tag::vector());
 	}
@@ -52,7 +53,7 @@ namespace mtl {
 		   >::value_type >
 	inline orthogonalize_factors(VVector& v, tag::vector)
 	{
-	    using ::mtl::two_norm; using math::zero;
+	    using ::mtl::two_norm; using math::zero; using mtl::size;
 	    typedef typename mtl::Collection<VVector>::size_type  Size;
 	    typedef typename mtl::Collection<VVector>::value_type Vector;
 	    typedef typename mtl::Collection<Vector>::value_type  Scalar;
@@ -128,8 +129,10 @@ inline orthogonalize_factors(Value& v)
     return impl::orthogonalize_factors(v, typename traits::category<Value>::type());
 }
 
+} // namespace vector
 
-
+using vector::orth;
+using vector::orthogonalize_factors;
 
 } // namespace mtl
 

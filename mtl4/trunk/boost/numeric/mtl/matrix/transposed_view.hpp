@@ -18,6 +18,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/property_map_impl.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
@@ -227,7 +228,7 @@ namespace mtl { namespace traits {
 	    typedef typename Matrix::key_type   key_type;
 	    typedef typename Matrix::size_type  size_type;
     	
-	    transposed_row(transposed_view<Matrix> const& transposed_matrix) 
+	    transposed_row(matrix::transposed_view<Matrix> const& transposed_matrix) 
 		: its_col(transposed_matrix.ref) {}
 
 	    size_type operator() (key_type const& key) const
@@ -246,7 +247,7 @@ namespace mtl { namespace traits {
 	    typedef typename Matrix::key_type   key_type;
 	    typedef typename Matrix::size_type  size_type;
     	
-	    transposed_col(transposed_view<Matrix> const& transposed_matrix) 
+	    transposed_col(matrix::transposed_view<Matrix> const& transposed_matrix) 
 		: its_row(transposed_matrix.ref) {}
 
 	    size_type operator() (key_type const& key) const
@@ -261,27 +262,27 @@ namespace mtl { namespace traits {
     } // namespace detail
         
     template <class Matrix> 
-    struct row<transposed_view<Matrix> >
+    struct row<matrix::transposed_view<Matrix> >
     {
 	typedef detail::transposed_row<Matrix>  type;
     };
 
     template <class Matrix> 
-    struct col<transposed_view<Matrix> >
+    struct col<matrix::transposed_view<Matrix> >
     {
 	typedef detail::transposed_col<Matrix>  type;
     };
 
     template <class Matrix> 
-    struct const_value<transposed_view<Matrix> >
+    struct const_value<matrix::transposed_view<Matrix> >
     {
-	typedef mtl::detail::const_value_from_other<transposed_view<Matrix> > type;
+	typedef mtl::detail::const_value_from_other<matrix::transposed_view<Matrix> > type;
     };
 
     template <class Matrix> 
-    struct value<transposed_view<Matrix> >
+    struct value<matrix::transposed_view<Matrix> >
     {
-	typedef mtl::detail::value_from_other<transposed_view<Matrix> > type;
+	typedef mtl::detail::value_from_other<matrix::transposed_view<Matrix> > type;
     };
 
 
@@ -298,11 +299,11 @@ namespace mtl { namespace traits {
 	    typedef typename generator::complexity   complexity;
 	    typedef typename generator::type         type;
 	    static int const                         level = generator::level;
-	    type begin(transposed_view<Matrix> const& m)
+	    type begin(matrix::transposed_view<Matrix> const& m)
 	    {
 		return generator().begin(m.ref);
 	    }
-	    type end(transposed_view<Matrix> const& m)
+	    type end(matrix::transposed_view<Matrix> const& m)
 	    {
 		return generator().end(m.ref);
 	    }
@@ -322,24 +323,24 @@ namespace mtl { namespace traits {
 
     // Row and column cursors are interchanged
     template <class Matrix>
-    struct range_generator<glas::tag::col, transposed_view<Matrix> >
+    struct range_generator<glas::tag::col, matrix::transposed_view<Matrix> >
 	: detail::range_transposer<glas::tag::row, Matrix>
     {};
 
     template <class Matrix>
-    struct range_generator<glas::tag::row, transposed_view<Matrix> >
+    struct range_generator<glas::tag::row, matrix::transposed_view<Matrix> >
 	: detail::range_transposer<glas::tag::col, Matrix>
     {};
 
     // To traverse the major dimension refer to the Matrix
     template <class Matrix>
-    struct range_generator<tag::major, transposed_view<Matrix> >
+    struct range_generator<tag::major, matrix::transposed_view<Matrix> >
 	: detail::range_transposer<tag::major, Matrix>
     {};
 
     // Other cursors are still use the same tag, e.g. elements
     template <class Tag, class Matrix>
-    struct range_generator<Tag, transposed_view<Matrix> >
+    struct range_generator<Tag, matrix::transposed_view<Matrix> >
 	: detail::range_transposer<Tag, Matrix>
     {};
 

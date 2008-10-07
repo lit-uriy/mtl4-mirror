@@ -17,21 +17,22 @@
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 
 template <typename Vector>
 void one_d_iteration(char const* name, Vector & vector, size_t check_index, typename Vector::value_type check)
 {
+    namespace traits = mtl::traits;
     typename traits::index<Vector>::type                               index(vector);
     typename traits::value<Vector>::type                               value(vector); 
-    typedef  glas::tag::nz                                             tag;
+    typedef  mtl::tag::nz                                              tag;
     typedef typename traits::range_generator<tag, Vector>::type        cursor_type;
     typedef typename traits::range_generator<tag, Vector>::complexity  complexity;
 
     cout << name << "\nElements: " << complexity() << '\n';
-    for (cursor_type cursor = begin<tag>(vector), cend = end<tag>(vector); cursor != cend; ++cursor) {
+    for (cursor_type cursor = mtl::begin<tag>(vector), cend = mtl::end<tag>(vector); cursor != cend; ++cursor) {
 	// cout << "vector[" << index(*cursor) << "] = " << value(*cursor) << '\n';
 	if (index(*cursor) == check_index && value(*cursor) != check) 
 	    throw "wrong check value";
@@ -101,7 +102,7 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     if (u[0] != 503.0) throw "u wrong";
 
     std::cout << name << "  --- u+= dot<12>(v, w) * w;:\n"; std::cout.flush();
-    u+= dot<12>(v, w) * w;
+    u+= mtl::dot<12>(v, w) * w;
     cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
     if (u[0] != 1003.0) throw "u wrong";
 }
@@ -110,6 +111,7 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 int test_main(int argc, char* argv[])
 {
     using mtl::vector::parameters;
+    using namespace mtl;
 
     dense_vector<float>   u(5), v(5), w(5);
     dense_vector<double>  x(5), y(5), z(5);

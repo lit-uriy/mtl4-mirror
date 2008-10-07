@@ -17,7 +17,8 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
+
 
 namespace sfunctor {
 
@@ -70,7 +71,6 @@ inline trans(Value& v)
 
 
 
-
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_TRANS_INCLUDE

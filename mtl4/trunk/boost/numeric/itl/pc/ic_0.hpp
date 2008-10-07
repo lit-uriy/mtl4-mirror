@@ -51,7 +51,7 @@ class ic_0
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
-	return mtl::inverse_upper_trisolve(U, mtl::inverse_lower_trisolve(adjoint(U), x));
+	return inverse_upper_trisolve(U, inverse_lower_trisolve(adjoint(U), x));
     }
 
     // solve x = (LU)^T y --> y= L^{-T} U^{-T} x

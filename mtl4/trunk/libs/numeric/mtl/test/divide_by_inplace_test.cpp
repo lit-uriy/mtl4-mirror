@@ -18,7 +18,7 @@
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/divide_by_inplace.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 template <typename MatrixA, typename MatrixB>
@@ -38,7 +38,7 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     if (size <= max_print_size)
 		cout << "A= \n\n" << a << "\n";
 	
-    typename Collection<MatrixA>::value_type eight(8.0);
+    typename mtl::Collection<MatrixA>::value_type eight(8.0);
     if (a[0][0] != eight)
 		throw "Scaling with scalar wrong";
 	
@@ -55,22 +55,22 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     //     2 -8  2
     //        1    
     if (dim1 == 5 && dim2 == 5) {
-		typename Collection<MatrixA>::value_type twenty(20.0), two(2.0), one(1.0), 
-		zero(0.0), minus_eight(-8.0);
-		if (a[12][12] != twenty)
-			throw "wrong diagonal";
-		if (a[12][13] != minus_eight)
-			throw "wrong east neighbor";
-		if (a[12][14] != one)
-			throw "wrong east east neighbor";
-		if (a[12][15] != zero)
-			throw "wrong zero-element";
-		if (a[12][17] != minus_eight)
-			throw "wrong south neighbor";
-		if (a[12][18] != two)
-			throw "wrong south east neighbor";
-		if (a[12][22] != one)
-			throw "wrong south south neighbor";
+	typename mtl::Collection<MatrixA>::value_type twenty(20.0), two(2.0), one(1.0), 
+	                                              zero(0.0), minus_eight(-8.0);
+	if (a[12][12] != twenty)
+	    throw "wrong diagonal";
+	if (a[12][13] != minus_eight)
+	    throw "wrong east neighbor";
+	if (a[12][14] != one)
+	    throw "wrong east east neighbor";
+	if (a[12][15] != zero)
+	    throw "wrong zero-element";
+	if (a[12][17] != minus_eight)
+	    throw "wrong south neighbor";
+	if (a[12][18] != two)
+	    throw "wrong south east neighbor";
+	if (a[12][22] != one)
+	    throw "wrong south south neighbor";
     }
 }
 
@@ -78,6 +78,7 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     unsigned dim1= 5, dim2= 5;
 	
     if (argc > 2) {

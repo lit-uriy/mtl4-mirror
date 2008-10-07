@@ -15,22 +15,22 @@
 
 
 using namespace std;
-using namespace mtl;
+
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename Collection<Matrix>::value_type   value_type;
+    typedef typename mtl::Collection<Matrix>::value_type   value_type;
     A.change_dim(5, 5); A= 0.0;
     {
-	matrix::inserter<Matrix>   ins(A);
+	mtl::matrix::inserter<Matrix>   ins(A);
 	ins[0][0] << 7; ins[1][1] << 8; ins[1][3] << 2; ins[1][4] << 3;
 	ins[2][2] << 2; ins[3][3] << 4; ins[4][4] << 9;
     }
     Matrix B(trans(A));
     
     double xa[] = {1, 2, 3, 4, 5};
-    dense_vector<double> x(xa), b;
+    mtl::dense_vector<double> x(xa), b;
     
     b= A * x;
     x= 0.0;
@@ -39,7 +39,7 @@ void test(Matrix& A, const char* name)
 
     invert_diagonal(A);
     
-    x= upper_trisolve(A, b, tag::inverse_diagonal());
+    x= upper_trisolve(A, b, mtl::tag::inverse_diagonal());
     cout << "x = upper_trisolve(A, b) ==" << x << "\n\n";
     if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in upper_trisolve!";
 
@@ -53,7 +53,7 @@ void test(Matrix& A, const char* name)
 	
     invert_diagonal(B);
 
-    x= lower_trisolve(B, b, tag::inverse_diagonal());
+    x= lower_trisolve(B, b, mtl::tag::inverse_diagonal());
     cout << "x = lower_trisolve(B, b) ==" << x << "\n\n";
     if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in lower_trisolve!";
 
@@ -62,6 +62,7 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
 
     dense2D<double>                                      dr;
     dense2D<double, matrix::parameters<col_major> >      dc;

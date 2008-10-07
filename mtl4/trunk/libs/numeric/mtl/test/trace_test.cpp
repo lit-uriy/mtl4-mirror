@@ -24,14 +24,14 @@
 #include <boost/numeric/mtl/operation/trace.hpp>
 
 
-using namespace mtl;
+
 using namespace std;  
 
 
 template <typename MatrixA>
 void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 {
-    matrix::laplacian_setup(a, dim1, dim2);
+    laplacian_setup(a, dim1, dim2);
 
     std::cout << "\n" << name << " a = \n" << a << "\n"
 	      << "trace(a) = " << trace(a) << "\n"; std::cout.flush();
@@ -43,6 +43,7 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     unsigned dim1= 3, dim2= 2;
 
     if (argc > 2) {

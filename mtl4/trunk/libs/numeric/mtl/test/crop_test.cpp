@@ -15,19 +15,15 @@
 
 
 using namespace std;
-using namespace mtl;
-
-
-
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename Collection<Matrix>::value_type   value_type;
-
+    typedef typename mtl::Collection<Matrix>::value_type   value_type;
+    
     A.change_dim(6, 5);
     {
-	matrix::inserter<Matrix>   ins(A);
+	mtl::matrix::inserter<Matrix>   ins(A);
 	for (int i= 0; i < num_rows(A); i++)
 	    for (int j= 0; j < num_cols(A); j++)
 		ins[i][j]= value_type(j - i + 0);
@@ -37,13 +33,13 @@ void test(Matrix& A, const char* name)
     cout << "Number of non-zeros: " << A.nnz() << '\n';
     crop(A);
     cout << "Number of non-zeros after crop: " << A.nnz() << '\n';
-
 }
 
 
 int test_main(int argc, char* argv[])
 {
-    
+    using namespace mtl;
+
     dense2D<double>                                      dr;
     dense2D<double, matrix::parameters<col_major> >      dc;
     morton_dense<double, recursion::morton_z_mask>       mzd;

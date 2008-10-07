@@ -18,13 +18,15 @@
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 
 template <typename VectorU, typename VectorV, typename VectorW>
 void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 {
+    using mtl::dot;
+
 	// test right scale
     u= 3.0; v= 4.0; w= 5.0;
 	
@@ -69,7 +71,7 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 
 int test_main(int argc, char* argv[])
 {
-    using mtl::vector::parameters;
+    using mtl::vector::parameters; using mtl::vector::dense_vector;
 	
     dense_vector<float>   u(5), v(5), w(5);
     dense_vector<double>  x(5), y(5), z(5);
@@ -86,7 +88,7 @@ int test_main(int argc, char* argv[])
     test(x, yc, zc, "test complex<double>, double mixed");
 #endif
 	
-    dense_vector<float, parameters<row_major> >   ur(5), vr(5), wr(5);
+    dense_vector<float, parameters<mtl::row_major> >   ur(5), vr(5), wr(5);
     test(ur, vr, wr, "test float in row vector");
     
     // test(ur, v, wr, "test float in mixed vector (shouldn't work)"); 

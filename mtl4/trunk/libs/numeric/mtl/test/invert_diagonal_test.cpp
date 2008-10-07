@@ -15,15 +15,16 @@
 
 
 using namespace std;
-using namespace mtl;
+
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
+    using mtl::Collection;
     typedef typename Collection<Matrix>::value_type   value_type;
     A.change_dim(5, 5); A= 0.0;
     {
-	matrix::inserter<Matrix>   ins(A);
+	mtl::matrix::inserter<Matrix>   ins(A);
 	ins[0][0] << 7; ins[1][1] << 8; ins[1][3] << 2; ins[1][4] << 3;
 	ins[2][2] << 2; ins[3][3] << 4; ins[4][4] << 9;
      }
@@ -39,13 +40,12 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
-
-    dense2D<double>                                      dr;
-    dense2D<double, matrix::parameters<col_major> >      dc;
-    morton_dense<double, recursion::morton_z_mask>       mzd;
-    morton_dense<double, recursion::doppled_2_row_mask>  d2r;
-    compressed2D<double>                                 cr;
-    compressed2D<double, matrix::parameters<col_major> > cc;
+    mtl::dense2D<double>                                                dr;
+    mtl::dense2D<double, mtl::matrix::parameters<mtl::col_major> >      dc;
+    mtl::morton_dense<double, mtl::recursion::morton_z_mask>            mzd;
+    mtl::morton_dense<double, mtl::recursion::doppled_2_row_mask>       d2r;
+    mtl::compressed2D<double>                                           cr;
+    mtl::compressed2D<double, mtl::matrix::parameters<mtl::col_major> > cc;
 
     test(dr, "Dense row major");
     test(dc, "Dense column major");

@@ -14,6 +14,7 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/concept/magnitude.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -24,6 +25,68 @@
 
 
 namespace mtl {
+
+    namespace vector {
+
+	template <unsigned long Unroll, typename Vector>
+	typename traits::enable_if_vector<Vector, typename RealMagnitude<typename Collection<Vector>::value_type>::type>::type
+	inline infinity_norm(const Vector& vector)
+	{
+	    typedef typename RealMagnitude<typename Collection<Vector>::value_type>::type result_type;
+	    return vector::reduction<Unroll, vector::infinity_norm_functor, result_type>::apply(vector);
+	}
+
+	/*! Infinity-norm for vectors: infinity_norm(x) \f$\rightarrow |x|_\infty\f$.
+	    \retval The magnitude type of the respective value type, see Magnitude.
+
+	    The norms are defined as \f$|v|_\infty=\max_i |v_i|\f$.
+
+	    Vector norms are unrolled 8-fold by default. 
+	    An n-fold unrolling can be generated with infinity_norm<n>(x).
+	    The maximum for n is 8 (it might be increased later).
+	**/
+	template <typename Vector>
+	typename traits::enable_if_vector<Vector, typename RealMagnitude<typename Collection<Vector>::value_type>::type>::type
+	inline infinity_norm(const Vector& vector)
+	{
+	    return infinity_norm<8>(vector);
+	}
+    }
+
+    namespace matrix {
+	
+	// Ignore unrolling for matrices 
+	template <unsigned long Unroll, typename Matrix>
+	typename traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
+	inline infinity_norm(const Matrix& matrix)
+	{
+	    using mtl::impl::max_of_sums;
+	    typename traits::row<Matrix>::type                             row(matrix); 
+	    return max_of_sums(matrix, traits::is_row_major<typename OrientedCollection<Matrix>::orientation>(), 
+			       row, num_rows(matrix));
+	}
+
+	/*! Infinity-norm for vectors and matrices: infinity_norm(x) \f$\rightarrow |x|_\infty\f$.
+	    \retval The magnitude type of the respective value type, see Magnitude.
+
+	    The norms are defined as \f$|A|_\infty=\max_i\{\sum_j(|A_{ij}|)\}\f$.
+	    Matrix norms are not (yet) optimized by unrolling.
+	**/
+	template <typename Matrix>
+	typename traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
+	inline infinity_norm(const Matrix& matrix)
+	{
+	    return infinity_norm<8>(matrix);
+	}
+    }
+
+    using vector::infinity_norm;
+    using matrix::infinity_norm;
+
+
+
+
+#if 0
 
     namespace impl {
 
@@ -46,7 +109,6 @@ namespace mtl {
 	}
 	
     } // namespace impl
-
 
 template <unsigned long Unroll, typename Value> 
 typename RealMagnitude<typename Collection<Value>::value_type>::type
@@ -74,6 +136,8 @@ inline infinity_norm(const Value& value)
 {
     return infinity_norm<8>(value);
 }
+
+#endif
 
 } // namespace mtl
 

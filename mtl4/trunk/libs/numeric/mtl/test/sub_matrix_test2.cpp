@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 
@@ -27,7 +27,7 @@ void test(Matrix& A, const char* name)
     A[0][0]= 1.0; 
     hessian_setup(A, 1.0);
 
-    matrix::recursator<Matrix> rec(A), nw= north_west(rec);
+    mtl::matrix::recursator<Matrix> rec(A), nw= north_west(rec);
 
     std::cout << "\n" << name << "\n";
     std::cout << "north_west:\n" << *nw << '\n';    
@@ -53,6 +53,7 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     const unsigned size= 5; 
 
     dense2D<double> dc(size, size-2);

@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
-namespace mtl {
+namespace mtl { namespace vector {
 
 template <typename Vector>
 std::ostream& print_vector(Vector const& vector, std::ostream& out= std::cout, int width= 0, int precision= 0)
@@ -36,6 +36,6 @@ std::ostream& print_vector(Vector const& vector, std::ostream& out= std::cout, i
     return out;
 }
 
-} // namespace mtl
+}} // namespace mtl::vector
 
 #endif // MTL_PRINT_VECTOR_INCLUDE

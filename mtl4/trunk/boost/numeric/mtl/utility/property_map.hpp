@@ -24,7 +24,7 @@ template <class Matrix> struct value {};
 template <class Matrix> struct offset {};
 
 // For vectors
-template <class Matrix> struct index {};
+template <class Vector> struct index {};
 
 // ===========
 // For dense2D

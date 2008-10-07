@@ -20,7 +20,7 @@
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 template <typename MatrixA, typename MatrixB>
@@ -32,7 +32,7 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     laplacian_setup(b, dim1, dim2);
 
     unsigned size= dim1 * dim2;
-    dense2D<double>  c(size, size);
+    mtl::dense2D<double>  c(size, size);
     c= a * b;
 
     if (size <= max_print_size)
@@ -45,8 +45,8 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     //     2 -8  2
     //        1    
     if (dim1 == 5 && dim2 == 5) {
-	typename Collection<MatrixA>::value_type twenty(20.0), two(2.0), one(1.0), 
-	                                         zero(0.0), minus_eight(-8.0);
+	typename mtl::Collection<MatrixA>::value_type twenty(20.0), two(2.0), one(1.0), 
+	                                              zero(0.0), minus_eight(-8.0);
 	if (c[12][12] != twenty)
 	    throw "wrong diagonal";
 	if (c[12][13] != minus_eight)
@@ -70,7 +70,7 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
 
     // Check for stencil, must be doubled now
     if (dim1 == 5 && dim2 == 5) {
-	typename Collection<MatrixA>::value_type forty(40.0), four(4.0);
+	typename mtl::Collection<MatrixA>::value_type forty(40.0), four(4.0);
 	if (c[12][12] != forty)
 	    throw "wrong diagonal";
 	if (c[12][18] != four)
@@ -84,7 +84,7 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
 
     // Check for stencil, must be A*B now
     if (dim1 == 5 && dim2 == 5) {
-	typename Collection<MatrixA>::value_type twenty(20.0), two(2.0);
+	typename mtl::Collection<MatrixA>::value_type twenty(20.0), two(2.0);
 	if (c[12][12] != twenty)
 	    throw "wrong diagonal";
 	if (c[12][18] != two)
@@ -96,6 +96,8 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     unsigned dim1= 5, dim2= 5;
 
     if (argc > 2) {

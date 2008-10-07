@@ -15,13 +15,13 @@
 
 
 using namespace std;
-using namespace mtl;
+
 
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename Collection<Matrix>::value_type   value_type;
+    typedef typename mtl::Collection<Matrix>::value_type   value_type;
     cout << "\n" << name << "\n" << "A =\n" << A;
 
     cout << "Pointer to major (row) index array is " << A.address_major() 
@@ -32,7 +32,7 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
-    compressed2D<double>                                 cr(2, 2);
+    mtl::compressed2D<double>                                 cr(2, 2);
     cr= 2.0;
 
     test(cr, "Compressed row major");

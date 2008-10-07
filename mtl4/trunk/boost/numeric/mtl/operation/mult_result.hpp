@@ -21,10 +21,13 @@
 namespace mtl { namespace traits {
 
 template <typename Op1, typename Op2, typename MultOp> struct mult_result_aux;
-template <typename Op1, typename Op2, typename MultOp1, typename MultOp2> struct mult_result_if_equal_aux;
+template <typename Op1, typename Op2, typename MultOp> struct vec_mult_result_aux;
+    //template <typename Op1, typename Op2, typename MultOp1, typename MultOp2> struct mult_result_if_equal_aux;
 
 /// Result type for multiplying arguments of types Op1 and Op2
-/** Can be used in enable-if-style as type is only defined when appropriate **/
+/** Can be used in enable-if-style as type is only defined when appropriate. 
+    This one is used if at least one argument is a matrix.
+**/
 template <typename Op1, typename Op2>
 struct mult_result 
     : public mult_result_aux<Op1, Op2, typename ashape::mult_op<typename ashape::ashape<Op1>::type, 
@@ -32,6 +35,18 @@ struct mult_result
 {}; 
 
 
+/// Result type for multiplying arguments of types Op1 and Op2
+/** Can be used in enable-if-style as type is only defined when appropriate. 
+    This one is used if at least one argument is a vector and none is a matrix.
+**/
+template <typename Op1, typename Op2>
+struct vec_mult_result 
+    : public vec_mult_result_aux<Op1, Op2, typename ashape::mult_op<typename ashape::ashape<Op1>::type, 
+								    typename ashape::ashape<Op2>::type >::type>
+{}; 
+
+ // to be deleted
+#if 0
 /// Result type for multiplying arguments of types Op1 and Op2 if operation is classified as MultOp
 /** Can be used in enable-if-style as type is only defined when appropriate **/
 template <typename Op1, typename Op2, typename MultOp>
@@ -49,7 +64,7 @@ struct mult_result_if_equal_aux<Op1, Op2, MultOp, MultOp>
     : public mult_result_aux<Op1, Op2, typename ashape::mult_op<typename ashape::ashape<Op1>::type, 
 								typename ashape::ashape<Op2>::type >::type>
 {};
-
+#endif 
 
 /// Result type for multiplying arguments of types Op1 and Op2
 /** MultOp according to the algebraic shapes **/
@@ -63,14 +78,13 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_mat_mult>
     typedef matrix::scaled_view<Op1, Op2> type;
 };
 
-//#if 1 // enabled by Hui Li
+
 /// Scale matrix from right needs functor for scaling from right
 template <typename Op1, typename Op2>
 struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_scal_mult> 
 {
     typedef matrix::rscaled_view<Op1, Op2> type;
 };
-//#endif
 
 /// Multiply matrices
 template <typename Op1, typename Op2>
@@ -87,16 +101,24 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_cvec_mult>
 };
 
 
+/// Result type for multiplying arguments of types Op1 and Op2
+/** MultOp according to the algebraic shapes **/
+template <typename Op1, typename Op2, typename MultOp>
+struct vec_mult_result_aux {};
+
 /// Scale row vector from left
 template <typename Op1, typename Op2>
-struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_rvec_mult> 
+struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::scal_rvec_mult> 
 {
     typedef vector::scaled_view<Op1, Op2> type;
 };
 
+
+
+
 /// Scale column vector from left
 template <typename Op1, typename Op2>
-struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_cvec_mult> 
+struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::scal_cvec_mult> 
 {
     typedef vector::scaled_view<Op1, Op2> type;
 };
@@ -104,17 +126,17 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_cvec_mult>
 /// Scale row vector from right
 // added by Hui Li
 template <typename Op1, typename Op2>
-struct mult_result_aux<Op1, Op2, ::mtl::ashape::rvec_scal_mult> 
+struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::rvec_scal_mult> 
 {
-	typedef vector::rscaled_view<Op1, Op2> type;
+    typedef vector::rscaled_view<Op1, Op2> type;
 };
 
 /// Scale column vector from right
 // added by Hui Li
 template <typename Op1, typename Op2>
-struct mult_result_aux<Op1, Op2, ::mtl::ashape::cvec_scal_mult> 
+struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::cvec_scal_mult> 
 {
-	typedef vector::rscaled_view<Op1, Op2> type;
+    typedef vector::rscaled_view<Op1, Op2> type;
 };
 	
 

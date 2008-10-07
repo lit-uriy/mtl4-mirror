@@ -22,6 +22,51 @@
 
 namespace mtl {
 
+    namespace impl {
+
+	template <typename Factor, typename Collection>
+	inline Collection& left_scale_inplace(const Factor& alpha, tag::scalar, Collection& c)
+	{
+	    assign_each_nonzero(c, alpha * boost::lambda::_1);
+	    return c;
+	}
+
+	template <typename Factor, typename Collection>
+	inline Collection& left_scale_inplace(const Factor& alpha, tag::matrix, Collection& c)
+	{
+	    Collection tmp(alpha * c);
+	    swap(tmp, c);
+	    return c;
+	}
+    }
+    
+    namespace matrix {
+	
+	/// Scale matrix \p c from left with scalar or matrix factor \p alpha; \p c is altered
+	template <typename Factor, typename Matrix>
+	typename traits::enable_if_matrix<Matrix, Matrix&>::type
+	inline left_scale_inplace(const Factor& alpha, Matrix& A)
+	{
+	    return mtl::impl::left_scale_inplace(alpha, typename traits::category<Factor>::type(), A);
+	}
+    }
+
+    namespace vector {
+	
+	/// Scale vector \p c from left with scalar or matrix factor \p alpha; \p c is altered
+	template <typename Factor, typename Vector>
+	typename traits::enable_if_vector<Vector, Vector&>::type
+	inline left_scale_inplace(const Factor& alpha, Vector& v)
+	{
+	    return mtl::impl::left_scale_inplace(alpha, typename traits::category<Factor>::type(), v);
+	}
+    }
+
+    using vector::left_scale_inplace;
+    using matrix::left_scale_inplace;
+
+
+#if 0
 
 /// Scale collection \p c from left with scalar factor \p alpha; \p c is altered
 template <typename Factor, typename Collection>
@@ -67,7 +112,7 @@ void left_scale_inplace(const Factor& alpha, Collection& c)
 }
 
 
-
+#endif
 
 } // namespace mtl
 

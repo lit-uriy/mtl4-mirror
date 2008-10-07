@@ -15,12 +15,12 @@
 
 
 using namespace std;
-using namespace mtl;
+
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename Collection<Matrix>::value_type   value_type;
+    typedef typename mtl::Collection<Matrix>::value_type   value_type;
     
     value_type array[][3]= {{3, 7.2, 0}, {2, 4.444, 5}};
     A= array;
@@ -45,7 +45,7 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
-    
+    using namespace mtl;
     dense2D<double>                                      dr;
     dense2D<double, matrix::parameters<col_major> >      dc;
     morton_dense<double, recursion::morton_z_mask>       mzd;

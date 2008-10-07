@@ -6,9 +6,9 @@
 
 int main(int argc, char* argv[])
 {
-    using namespace mtl;
+    using mtl::max;
 
-    dense_vector<double>         v(100);
+    mtl::dense_vector<double>         v(100);
 
     for (int i= 0; i < size(v); i++)
 	v[i]= double(i+1) * pow(-1.0, i);

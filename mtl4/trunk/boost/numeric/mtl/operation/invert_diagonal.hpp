@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/linear_algebra/inverse.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 template <typename Matrix>
 inline void invert_diagonal(Matrix& matrix)
@@ -38,6 +38,6 @@ inline void invert_diagonal(Matrix& matrix)
 }
 
 
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_INVERT_DIAGONAL_INCLUDE

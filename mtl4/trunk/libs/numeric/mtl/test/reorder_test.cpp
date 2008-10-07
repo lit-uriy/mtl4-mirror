@@ -15,12 +15,12 @@
 
 
 using namespace std;
-using namespace mtl;
+
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename Collection<Matrix>::value_type   value_type;
+    typedef typename mtl::Collection<Matrix>::value_type   value_type;
     
     value_type array[][3]= {{1., 2., 3.}, {4., 5., 6.}, {7., 8., 9.}};
     A= array;
@@ -28,7 +28,7 @@ void test(Matrix& A, const char* name)
     cout << "\n" << name << "\n" << "A =\n" << A;
 
     int reordering[]= {2, 1};
-    matrix::traits::reorder<>::type  R= matrix::reorder(reordering);
+    mtl::matrix::traits::reorder<>::type  R= mtl::matrix::reorder(reordering);
     cout << "\nR =\n" << R;    
 
     Matrix B(R * A);
@@ -45,7 +45,7 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
-    
+    using namespace mtl;
     dense2D<double>                                      dr;
     dense2D<double, matrix::parameters<col_major> >      dc;
     morton_dense<double, recursion::morton_z_mask>       mzd;

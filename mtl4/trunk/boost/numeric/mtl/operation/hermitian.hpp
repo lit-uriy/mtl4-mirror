@@ -13,15 +13,23 @@
 #define MTL_HERMITIAN_INCLUDE
 
 #include <boost/numeric/mtl/matrix/hermitian_view.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 
 namespace mtl { 
 
-template <typename Matrix>
-matrix::hermitian_view<Matrix> inline hermitian(const Matrix& matrix)
-{
-    return matrix::hermitian_view<Matrix>(matrix);
-}
+    // vector version to be done
 
+    namespace matrix {
+
+	template <typename Matrix>
+	typename traits::enable_if_matrix<Matrix, hermitian_view<Matrix> >::type
+	inline hermitian(const Matrix& matrix)
+	{
+	    return hermitian_view<Matrix>(matrix);
+	}
+    }
+
+    using matrix::hermitian;
 
 } // namespace mtl
 

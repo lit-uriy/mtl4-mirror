@@ -50,14 +50,14 @@ class ilu_0
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
-	return mtl::inverse_upper_trisolve(U, mtl::unit_lower_trisolve(L, x));
+	return inverse_upper_trisolve(U, unit_lower_trisolve(L, x));
     }
 
     // Solve (LU)^T x = b --> x= L^{-T} U^{-T} b
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
-	return mtl::unit_upper_trisolve(adjoint(L), mtl::inverse_lower_trisolve(adjoint(U), x));
+	return unit_upper_trisolve(adjoint(L), inverse_lower_trisolve(adjoint(U), x));
     }
 
 

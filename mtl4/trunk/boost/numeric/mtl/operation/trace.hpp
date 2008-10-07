@@ -18,7 +18,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 template <typename Matrix>
 typename Collection<Matrix>::value_type
@@ -42,8 +42,6 @@ inline trace(const Matrix& matrix)
 }
 
 
-
-
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_TRACE_INCLUDE

@@ -22,11 +22,12 @@
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
 
 
-namespace mtl {
+namespace mtl { namespace vector {
 
     namespace impl {
 
 	// Do we really need this for matrices?
+	// Then we need a different dispatching
 	
 	template <unsigned long Unroll, typename Vector>
 	typename Collection<Vector>::value_type
@@ -53,6 +54,10 @@ inline max(const Value& value)
     return max<8>(value);
 }
 
-} // namespace mtl
+} // namespace vector
+
+using vector::max;
+
+} // namespace mtl::vector
 
 #endif // MTL_MAX_INCLUDE

@@ -16,7 +16,7 @@
 
 #include <boost/numeric/mtl/detail/dilated_int.hpp>
 
-using namespace mtl;
+
 using namespace std;
 
 struct morton_exception {};
@@ -81,6 +81,8 @@ void test_dilated(string s, T dil, typename T::value_type exp_increment)
 
 int test_main(int argc, char* argv[])
 {    
+    using namespace mtl;
+
     dilated_int<unsigned, dilated::odd_bits<unsigned>::value, true>     dil1;
     test_dilated( "Odd normalized", dil1, 2);
 

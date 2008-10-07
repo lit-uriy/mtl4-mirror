@@ -16,7 +16,7 @@
 
 
 using namespace std;
-// using namespace mtl;
+// 
 
 template <typename Vector>
 void test(Vector& v, const char* name)

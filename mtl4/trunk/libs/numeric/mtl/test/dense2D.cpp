@@ -24,7 +24,7 @@
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
  
-using namespace mtl;
+
 using namespace std;
 
 struct test_dense2D_exception {};
@@ -46,6 +46,7 @@ struct test_dense2D
     template <typename Matrix, typename Tag, typename ExpComplexity>
     void two_d_iteration(char const* outer, Matrix & matrix, Tag, ExpComplexity)
     {
+	namespace traits = mtl::traits;
 	typename traits::row<Matrix>::type                                 row(matrix); 
 	typename traits::col<Matrix>::type                                 col(matrix); 
 	typename traits::const_value<Matrix>::type                         value(matrix); 
@@ -54,10 +55,10 @@ struct test_dense2D
 
 	cout << outer << complexity() << '\n';
 	check_same_type(complexity(), ExpComplexity());
-	for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
-	    typedef glas::tag::all     inner_tag;
+	for (cursor_type cursor = mtl::begin<Tag>(matrix), cend = mtl::end<Tag>(matrix); cursor != cend; ++cursor) {
+	    typedef mtl::tag::all     inner_tag;
 	    typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
-	    for (icursor_type icursor = begin<inner_tag>(cursor), icend = end<inner_tag>(cursor); icursor != icend; ++icursor)
+	    for (icursor_type icursor = mtl::begin<inner_tag>(cursor), icend = mtl::end<inner_tag>(cursor); icursor != icend; ++icursor)
 		cout << "matrix[" << row(*icursor) << ", " << col(*icursor) << "] = " << value(*icursor) << '\n';
 	}
     } 
@@ -65,6 +66,7 @@ struct test_dense2D
     template <typename Matrix, typename Tag, typename ExpComplexity>
     void two_d_iterator_iteration(char const* outer, Matrix & matrix, Tag, ExpComplexity)
     {
+	namespace traits = mtl::traits;
 	typename traits::row<Matrix>::type                                 row(matrix); 
 	typename traits::col<Matrix>::type                                 col(matrix); 
 	typename traits::const_value<Matrix>::type                         value(matrix); 
@@ -74,10 +76,10 @@ struct test_dense2D
 	cout // << "Matrix traversal with iterators" 
 	     << outer << complexity() << '\n';
 	check_same_type(complexity(), ExpComplexity());
-	for (cursor_type cursor = begin<Tag>(matrix), cend = end<Tag>(matrix); cursor != cend; ++cursor) {
-	    typedef tag::iter::all     inner_tag;
+	for (cursor_type cursor = mtl::begin<Tag>(matrix), cend = mtl::end<Tag>(matrix); cursor != cend; ++cursor) {
+	    typedef mtl::tag::iter::all     inner_tag;
 	    typedef typename traits::range_generator<inner_tag, cursor_type>::type iter_type;
-	    for (iter_type iter = begin<inner_tag>(cursor), i_end = end<inner_tag>(cursor); iter != i_end; ++iter)
+	    for (iter_type iter = mtl::begin<inner_tag>(cursor), i_end = mtl::end<inner_tag>(cursor); iter != i_end; ++iter)
 		cout << *iter << '\n';
 	}
     }
@@ -86,15 +88,16 @@ struct test_dense2D
     template <typename Matrix>
     void one_d_iteration(char const* name, Matrix & matrix, size_t check_row, size_t check_col, double check)
     {
+	namespace traits = mtl::traits;
 	typename traits::row<Matrix>::type                                 row(matrix);
 	typename traits::col<Matrix>::type                                 col(matrix);
 	typename traits::value<Matrix>::type                               value(matrix); 
-	typedef  glas::tag::nz                                          tag;
+	typedef  mtl::tag::nz                                          tag;
 	typedef typename traits::range_generator<tag, Matrix>::type        cursor_type;
 	typedef typename traits::range_generator<tag, Matrix>::complexity  complexity;
 
 	cout << name << "\nElements: " << complexity() << '\n';
-	for (cursor_type cursor = begin<tag>(matrix), cend = end<tag>(matrix); cursor != cend; ++cursor) {
+	for (cursor_type cursor = mtl::begin<tag>(matrix), cend = mtl::end<tag>(matrix); cursor != cend; ++cursor) {
 	    cout << "matrix[" << row(*cursor) << ", " << col(*cursor) << "] = " << value(*cursor) << '\n';
 	    if (row(*cursor) == check_row && col(*cursor) == check_col && value(*cursor) != check) throw test_dense2D_exception();
 	}
@@ -102,23 +105,23 @@ struct test_dense2D
     
     void operator() (double element_1_2)
     {
-	typedef dense2D<double, Parameters> matrix_type;
+	typedef mtl::dense2D<double, Parameters> matrix_type;
 	matrix_type   matrix;
 	double        val[] = {1., 2., 3., 4., 5., 6.};
-	raw_copy(val, val+6, matrix);
+	mtl::raw_copy(val, val+6, matrix);
  
 	one_d_iteration("\nMatrix", matrix, 1, 2, element_1_2);
-	two_d_iteration("\nRows: ", matrix, glas::tag::row(), ExpRowComplexity());
-	two_d_iteration("\nColumns: ", matrix, glas::tag::col(), ExpColComplexity());
-	two_d_iterator_iteration("\nRows (iterator): ", matrix, glas::tag::row(), ExpRowComplexity());
-	two_d_iterator_iteration("\nColumns (iterator): ", matrix, glas::tag::col(), ExpColComplexity());
+	two_d_iteration("\nRows: ", matrix, mtl::tag::row(), ExpRowComplexity());
+	two_d_iteration("\nColumns: ", matrix, mtl::tag::col(), ExpColComplexity());
+	two_d_iterator_iteration("\nRows (iterator): ", matrix, mtl::tag::row(), ExpRowComplexity());
+	two_d_iterator_iteration("\nColumns (iterator): ", matrix, mtl::tag::col(), ExpColComplexity());
 
-	transposed_view<matrix_type> trans_matrix(matrix); 
+	mtl::transposed_view<matrix_type> trans_matrix(matrix); 
 	one_d_iteration("\nTransposed matrix", trans_matrix, 2, 1, element_1_2);
-	two_d_iteration("\nRows: ", trans_matrix, glas::tag::row(), ExpColComplexity());
-	two_d_iteration("\nColumns: ", trans_matrix, glas::tag::col(), ExpRowComplexity());
-	two_d_iterator_iteration("\nRows (iterator): ", trans_matrix, glas::tag::row(), ExpColComplexity());
-	two_d_iterator_iteration("\nColumns (iterator): ", trans_matrix, glas::tag::col(), ExpRowComplexity());
+	two_d_iteration("\nRows: ", trans_matrix, mtl::tag::row(), ExpColComplexity());
+	two_d_iteration("\nColumns: ", trans_matrix, mtl::tag::col(), ExpRowComplexity());
+	two_d_iterator_iteration("\nRows (iterator): ", trans_matrix, mtl::tag::row(), ExpColComplexity());
+	two_d_iterator_iteration("\nColumns (iterator): ", trans_matrix, mtl::tag::col(), ExpRowComplexity());
 
 	cout << "\nmatrix[1][2] = " << matrix[1][2] << "\n";
 	matrix[1][2]= 18.0;
@@ -126,7 +129,7 @@ struct test_dense2D
 	cout << "trans_matrix[2][1] = " << trans_matrix[2][1] << "\n"; 
        
 
-	matrix::inserter<matrix_type>  i(matrix);
+	mtl::matrix::inserter<matrix_type>  i(matrix);
 	i(1, 2) << 17.0;
 	cout << "matrix[1, 2] = " << matrix(1, 2) << "\n";	 
     }
@@ -134,6 +137,8 @@ struct test_dense2D
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     typedef matrix::parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters1;
     test_dense2D<parameters1, complexity_classes::linear_cached, complexity_classes::linear>()(6.0);
 

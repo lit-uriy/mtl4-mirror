@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/recursion/base_case_cast.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 namespace with_bracket {
 
@@ -573,9 +573,9 @@ void fill_matrix_for_cholesky(Matrix& matrix)
 }
 
 
+}} // namespace mtl::matrix
 
 
 
-} // namespace mtl
 
 #endif // MTL_CHOLESKY_INCLUDE
