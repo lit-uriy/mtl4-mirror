@@ -22,9 +22,9 @@
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
 #include <boost/numeric/mtl/operation/cholesky.hpp>
 
-using namespace mtl;
-using namespace std;  
 
+using namespace std;  
+using mtl::generate_mask; using mtl::row_major; using mtl::col_major;
 
     // Bitmasks: 
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
@@ -71,6 +71,12 @@ void print_matrix(Matrix& matrix)
 template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
+    namespace with_bracket = mtl::matrix::with_bracket;
+    namespace with_iterator = mtl::matrix::with_iterator;
+
+    using mtl::matrix::recursive_cholesky_visitor_t;
+    using mtl::matrix::detail::mult_schur_update_t;
+
     std::cout << "Test " << name << "\n-----\n\n";
     fill_matrix_for_cholesky(matrix);
 
@@ -89,7 +95,7 @@ void test(Matrix& matrix, const char* name)
 
     fill_matrix_for_cholesky(matrix);
 
-    recursive_cholesky_visitor_t<recursion::bound_test_static<2>, with_bracket::cholesky_base_t, with_bracket::tri_solve_base_t, 
+    recursive_cholesky_visitor_t<mtl::recursion::bound_test_static<2>, with_bracket::cholesky_base_t, with_bracket::tri_solve_base_t, 
                                  with_bracket::tri_schur_base_t, with_bracket::schur_update_base_t>   
         iter_vis2; 
     recursive_cholesky(matrix, iter_vis2);
@@ -99,7 +105,7 @@ void test(Matrix& matrix, const char* name)
 
     fill_matrix_for_cholesky(matrix);
 
-    recursive_cholesky_visitor_t<recursion::bound_test_static<2>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
+    recursive_cholesky_visitor_t<mtl::recursion::bound_test_static<2>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
                                  with_iterator::tri_schur_base_t, with_iterator::schur_update_base_t>   
         iter_vis3;
 
@@ -111,8 +117,8 @@ void test(Matrix& matrix, const char* name)
 
     fill_matrix_for_cholesky(matrix);
 
-    typedef detail::mult_schur_update_t<gen_tiling_22_dmat_dmat_mult_t<assign::minus_sum> > schur_update_22_t;
-    recursive_cholesky_visitor_t<recursion::bound_test_static<2>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
+    typedef mult_schur_update_t<mtl::gen_tiling_22_dmat_dmat_mult_t<mtl::assign::minus_sum> > schur_update_22_t;
+    recursive_cholesky_visitor_t<mtl::recursion::bound_test_static<2>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
                                  with_iterator::tri_schur_base_t, schur_update_22_t>   
         iter_vis4;
 
@@ -132,7 +138,7 @@ void test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
- 
+    using namespace mtl;
     unsigned size= 13; 
     if (argc > 1) size= atoi(argv[1]); 
 

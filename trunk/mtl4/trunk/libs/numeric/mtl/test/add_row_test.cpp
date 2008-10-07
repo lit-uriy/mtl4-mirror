@@ -15,12 +15,12 @@
 
 
 using namespace std;
-using namespace mtl;
+
 
 
 
 template <typename Matrix>
-void add_row(Matrix& A, typename Collection<Matrix>::size_type n= 1)
+void add_row(Matrix& A, typename mtl::Collection<Matrix>::size_type n= 1)
 {
     Matrix A_tmp(num_rows(A) + n, num_cols(A));
     sub_matrix(A_tmp, 0, num_rows(A), 0, num_cols(A))= A;
@@ -30,11 +30,11 @@ void add_row(Matrix& A, typename Collection<Matrix>::size_type n= 1)
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename Collection<Matrix>::value_type   value_type;
+    typedef typename mtl::Collection<Matrix>::value_type   value_type;
 
     A.change_dim(3, 3);
     {
-	matrix::inserter<Matrix>   ins(A);
+	mtl::matrix::inserter<Matrix>   ins(A);
 	for (int i= 0; i < num_rows(A); i++)
 	    for (int j= 0; j < num_cols(A); j++)
 		ins[i][j]= value_type(j - i + 0);
@@ -63,6 +63,7 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     
     dense2D<double>                                      dr;
     dense2D<double, matrix::parameters<col_major> >      dc;

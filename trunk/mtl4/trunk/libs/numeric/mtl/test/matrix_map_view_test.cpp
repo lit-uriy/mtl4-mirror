@@ -29,7 +29,7 @@
 #include <boost/numeric/mtl/operation/mult_result.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 typedef complex<double> ct;
@@ -87,7 +87,7 @@ void test(Matrix& matrix, const char* name)
     typename Matrix::value_type ref(0);
 
     {
-	matrix::inserter<Matrix>  ins(matrix);
+	mtl::matrix::inserter<Matrix>  ins(matrix);
 	ins(2, 3) << value(ref);
 	ins(4, 3) << value(ref) + 1.0;
 	ins(2, 5) << value(ref) + 2.0;
@@ -111,7 +111,7 @@ void test(Matrix& matrix, const char* name)
 
 
 
-    matrix::scaled_view<double, Matrix>  scaled_matrix(2.0, matrix);
+    mtl::matrix::scaled_view<double, Matrix>  scaled_matrix(2.0, matrix);
     cout << "matrix  scaled with 2.0\n" << scaled_matrix << "\n";
     if (scaled_matrix(2, 3) != svalue(ref)) 
 	throw "scaling wrong";
@@ -121,17 +121,17 @@ void test(Matrix& matrix, const char* name)
 	throw "scaling wrong";
 
  
-    matrix::conj_view<Matrix>  conj_matrix(matrix);
+    mtl::matrix::conj_view<Matrix>  conj_matrix(matrix);
     cout << "conjugated matrix\n" << conj_matrix << "\n";
     if (conj_matrix(2, 3) != cvalue(ref)) 
 	throw " wrong";
 
-    matrix::scaled_view<ct, Matrix>  cscaled_matrix(ct(0.0, 1.0), matrix);
+    mtl::matrix::scaled_view<ct, Matrix>  cscaled_matrix(ct(0.0, 1.0), matrix);
     cout << "matrix scaled with i (complex(0, 1))\n" << cscaled_matrix << "\n";
     if (cscaled_matrix(2, 3) != csvalue(ref)) 
 	throw "complex scaling wrong";
 
-    matrix::hermitian_view<Matrix>  hermitian_matrix(matrix);
+    mtl::matrix::hermitian_view<Matrix>  hermitian_matrix(matrix);
     cout << "Hermitian matrix (conjugate transposed)\n" << hermitian_matrix << "\n";
     if (hermitian_matrix(3, 2) != cvalue(ref)) 
 	throw "conjugate transposing  wrong";
@@ -139,6 +139,8 @@ void test(Matrix& matrix, const char* name)
     cout << "matrix  scaled with 2.0 (free function)\n" << scale(2.0, matrix) << "\n";
     if (scale(2.0, matrix)(2, 3) != svalue(ref)) 
 	throw "scaling wrong";
+
+    cout << "matrix  scaled with 2.0 (free function as mtl::scale)\n" << mtl::scale(2.0, matrix) << "\n";
 
     cout << "conjugated matrix (free function) \n" << conj(matrix) << "\n";
     if (conj(matrix)(2, 3) != cvalue(ref)) 
@@ -157,6 +159,7 @@ void test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     unsigned size= 7; 
     if (argc > 1) size= atoi(argv[1]); 
 

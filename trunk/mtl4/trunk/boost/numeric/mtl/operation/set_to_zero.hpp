@@ -20,7 +20,7 @@
 
 namespace mtl {
 
-    template <typename Coll> void set_to_zero(Coll& collection);
+    // template <typename Coll> void set_to_zero(Coll& collection);
 
     namespace impl {
 
@@ -56,7 +56,7 @@ namespace mtl {
 	void set_to_zero(Coll& collection, tag::contiguous_dense, tag::collection)
 	{
 	    for (typename Collection<Coll>::size_type i= 0; i < collection.used_memory(); ++i)
-		mtl::set_to_zero(collection.value_n(i));
+		set_to_zero(collection.value_n(i));
 	}
 
 
@@ -70,17 +70,29 @@ namespace mtl {
     }
 
 
+namespace matrix {
 
-
-// Sets all values of a collection to 0
-// More spefically the defined multiplicative identity element
-template <typename Coll>
-void set_to_zero(Coll& collection)
-{
-    impl::set_to_zero(collection, typename traits::category<Coll>::type(),
-		      typename traits::category<typename Collection<Coll>::value_type>::type());
-}
+    // Sets all values of a collection to 0
+    // More spefically the defined multiplicative identity element
+    template <typename Coll>
+    void set_to_zero(Coll& collection)
+    {
+	mtl::impl::set_to_zero(collection, typename traits::category<Coll>::type(),
+			       typename traits::category<typename Collection<Coll>::value_type>::type());
+    }
     
+}
+
+namespace vector {
+
+    template <typename Coll>
+    void set_to_zero(Coll& collection)
+    {
+	mtl::impl::set_to_zero(collection, typename traits::category<Coll>::type(),
+			       typename traits::category<typename Collection<Coll>::value_type>::type());
+    }
+
+}
 
 } // namespace mtl
 

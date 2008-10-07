@@ -13,6 +13,7 @@
 #define MTL_ONE_NORM_INCLUDE
 
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
@@ -22,7 +23,65 @@
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
 
 
-namespace mtl {
+namespace mtl { 
+
+    namespace vector {
+
+	template <unsigned long Unroll, typename Vector>
+	typename traits::enable_if_vector<Vector, typename RealMagnitude<typename Collection<Vector>::value_type>::type>::type
+	inline one_norm(const Vector& vector)
+	{
+	    typedef typename RealMagnitude<typename Collection<Vector>::value_type>::type result_type;
+	    return reduction<Unroll, one_norm_functor, result_type>::apply(vector);
+	}
+
+	/*! One-norm for vectors: one_norm(x) \f$\rightarrow |x|_1\f$.
+	    \retval The magnitude type of the respective value type, see Magnitude.
+
+	    The norms are defined as \f$|v|_1=\sum_i |v_i|\f$.
+	    Vector norms are unrolled 8-fold by default. 
+	    An n-fold unrolling can be generated with one_norm<n>(x).
+	    The maximum for n is 8 (it might be increased later).
+	**/
+	template <typename Vector>
+	typename traits::enable_if_vector<Vector, typename RealMagnitude<typename Collection<Vector>::value_type>::type>::type
+	inline one_norm(const Vector& vector)
+	{
+	    return one_norm<8>(vector);
+	}
+    }
+
+    namespace matrix {
+
+	// Ignore unrolling for matrices 
+	template <unsigned long Unroll, typename Matrix>
+	typename traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
+	inline one_norm(const Matrix& matrix)
+	{
+	    using mtl::impl::max_of_sums;
+	    typename traits::col<Matrix>::type                             col(matrix); 
+	    return max_of_sums(matrix, !traits::is_row_major<typename OrientedCollection<Matrix>::orientation>(), 
+			       col, num_cols(matrix));
+	}
+	
+	/*! One-norm for matrices: one_norm(x) \f$\rightarrow |x|_1\f$.
+	    \retval The magnitude type of the respective value type, see Magnitude.
+	  
+	    The norms are defined as \f$|A|_1=\max_j\{\sum_i(|A_{ij}|)\}\f$.
+	    Matrix norms are not optimized by unrolling (yet).
+	**/
+	template <typename Matrix>
+	typename traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
+	inline one_norm(const Matrix& matrix)
+	{
+	    return one_norm<8>(matrix);
+	}
+    }
+
+    using vector::one_norm;
+    using matrix::one_norm;
+
+#if 0
 
     namespace impl {
 
@@ -72,6 +131,8 @@ inline one_norm(const Value& value)
 {
     return one_norm<8>(value);
 }
+
+#endif
 
 } // namespace mtl
 

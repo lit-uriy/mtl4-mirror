@@ -25,7 +25,7 @@
 #include <boost/numeric/mtl/recursion/for_each.hpp>
 
 
-using namespace mtl;
+
 using namespace std;  
 
 
@@ -91,13 +91,14 @@ struct print_functor
 template <typename Matrix>
 void test_sub_matrix(Matrix& matrix)
 {
-    using recursion::for_each;
+    using mtl::recursion::for_each; using mtl::recursion::max_dim_test; 
+    using mtl::matrix::recursator; using mtl::transposed_view;
 
     print_matrix_row_cursor(matrix);
     
-    recursion::max_dim_test              is_base(2);
-    matrix::recursator<Matrix> recursator(matrix);
-    recursive_print_checked(recursator, "", is_base);
+    max_dim_test              is_base(2);
+    recursator<Matrix>        rec(matrix);
+    recursive_print_checked(rec, "", is_base);
 	 
     cout << "\n====================\n"
 	 <<   "Same with transposed\n"
@@ -106,7 +107,7 @@ void test_sub_matrix(Matrix& matrix)
     transposed_view<Matrix> trans_matrix(matrix);
 
     print_matrix_row_cursor(trans_matrix); 
-    matrix::recursator< transposed_view<Matrix> > trans_recursator(trans_matrix);
+    recursator< transposed_view<Matrix> > trans_recursator(trans_matrix);
     // print_depth_first(trans_recursator, "");
     recursive_print_checked(trans_recursator, "", is_base);
 	 
@@ -114,13 +115,16 @@ void test_sub_matrix(Matrix& matrix)
 	 <<   "Again with recursive for_each\n"
 	 <<   "=============================\n\n";
 
-    recursion::for_each(trans_recursator, print_functor(), is_base);
+    for_each(trans_recursator, print_functor(), is_base);
 }
 
 
 template <typename Matrix>
 void fill_matrix(Matrix& matrix)
 {
+    namespace traits = mtl::traits;
+    using mtl::begin; using mtl::end;
+
     typename traits::row<Matrix>::type                                 row(matrix);
     typename traits::col<Matrix>::type                                 col(matrix);
     typename traits::value<Matrix>::type                               value(matrix);
@@ -138,6 +142,7 @@ void fill_matrix(Matrix& matrix)
  
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
 
     cout << "=====================\n"
 	 << "Morton-ordered matrix\n"

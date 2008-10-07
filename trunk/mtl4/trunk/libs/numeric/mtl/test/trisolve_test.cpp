@@ -15,21 +15,21 @@
 
 
 using namespace std;
-using namespace mtl;
+
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename Collection<Matrix>::value_type   value_type;
+    typedef typename mtl::Collection<Matrix>::value_type   value_type;
     A.change_dim(5, 5); A= 0.0;
     {
-	matrix::inserter<Matrix>   ins(A);
+	mtl::matrix::inserter<Matrix>   ins(A);
 	ins[0][0] << 7; ins[1][1] << 8; ins[1][3] << 2; ins[1][4] << 3;
 	ins[2][2] << 2; ins[3][3] << 4; ins[4][4] << 9;
     }
     
     double xa[] = {1, 2, 3, 4, 5};
-    dense_vector<double> x(xa), b;
+    mtl::dense_vector<double> x(xa), b;
     
     b= A * x;
     x= 0.0;
@@ -57,7 +57,7 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
-
+    using namespace mtl;
     dense2D<double>                                      dr;
     dense2D<double, matrix::parameters<col_major> >      dc;
     morton_dense<double, recursion::morton_z_mask>       mzd;

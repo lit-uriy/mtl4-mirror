@@ -21,7 +21,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 /// Frobenius norm, i.e. square root of sum of squares of all entries sqrt(sum_i sum_j(|a[i][j]|^2))
 template <typename Matrix>
@@ -47,6 +47,6 @@ inline frobenius_norm(const Matrix& matrix)
     return sqrt(sum);
 }
 
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_FROBENIUS_NORM_INCLUDE

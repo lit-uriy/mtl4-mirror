@@ -176,7 +176,9 @@ namespace mtl {
 	template <typename Collection> struct const_value;
 	template <typename Collection> struct row;
 	template <typename Collection> struct col;
+	template <class Matrix> struct offset;
 
+	template <class Vector> struct index;
 	template <typename Tag, typename Collection>  struct range_generator;
     }
 
@@ -244,6 +246,7 @@ namespace mtl {
     namespace detail {
 	template <typename Value, bool OnStack, unsigned Size= 0> struct contiguous_memory_block;
 	template <typename Matrix, typename Updater> struct trivial_inserter;
+	template <typename Collection> struct with_format_t;
     }
 
     /// Free function defined for all matrix and vector types

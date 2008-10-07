@@ -13,6 +13,7 @@
 #define MTL_CONJ_INCLUDE
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
@@ -93,13 +94,46 @@ namespace sfunctor {
 
 } // namespace sfunctor
     
+    namespace vector {
 
-template <typename Value>
-typename sfunctor::conj<Value, typename traits::algebraic_category<Value>::type>::result_type 
-inline conj(const Value& v)
-{
-    return sfunctor::conj<Value, typename traits::algebraic_category<Value>::type>::apply(v);
-};
+	template <typename Vector>
+	typename traits::enable_if_vector<Vector, conj_view<Vector> >::type
+	inline conj(const Vector& v)
+	{
+	    return conj_view<Vector>(v);
+	}
+    } 
+
+    namespace matrix {
+
+	template <typename Matrix>
+	typename traits::enable_if_matrix<Matrix, conj_view<Matrix> >::type
+	inline conj(const Matrix& v)
+	{
+	    return conj_view<Matrix>(v);
+	}
+    } 
+
+    namespace scalar {
+
+	// Only scalar values remain here
+	template <typename Value>
+	typename traits::enable_if_scalar<
+	    Value
+	  , typename sfunctor::conj<
+	        Value
+	      , typename traits::algebraic_category<Value>::type
+	    >::result_type
+	>::type
+	inline conj(const Value& v)
+	{
+	    return sfunctor::conj<Value, typename traits::algebraic_category<Value>::type>::apply(v);
+	};
+    }
+
+    using vector::conj;
+    using matrix::conj;
+    using scalar::conj;
 
 
 namespace sfunctor {

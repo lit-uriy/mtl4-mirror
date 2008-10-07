@@ -23,7 +23,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/linear_algebra/inverse.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 
 namespace detail {
@@ -46,7 +46,7 @@ namespace detail {
     template <typename Matrix, typename Vector>
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::row_major, tag::unit_diagonal)
     {
-	using namespace tag; using traits::range_generator; using math::one;
+	using namespace tag; using traits::range_generator; using math::one; using mtl::detail::adjust_cursor;
 
 	typedef typename Collection<Matrix>::value_type           value_type;
 	typedef typename range_generator<row, Matrix>::type       a_cur_type;    
@@ -77,7 +77,7 @@ namespace detail {
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::row_major,
 				 DiaTag)
     {
-	using namespace tag; using traits::range_generator; using math::one;
+	using namespace tag; using traits::range_generator; using math::one; using mtl::detail::adjust_cursor;
 
 	typedef typename Collection<Matrix>::value_type           value_type;
 	typedef typename range_generator<row, Matrix>::type       a_cur_type;    
@@ -109,7 +109,7 @@ namespace detail {
     template <typename Matrix, typename Vector>
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::col_major, tag::unit_diagonal)
     {
-	using namespace tag; using traits::range_generator; 
+	using namespace tag; using traits::range_generator; using mtl::detail::adjust_cursor;
 
 	typedef typename range_generator<col, Matrix>::type       a_cur_type;    
 	typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
@@ -136,7 +136,7 @@ namespace detail {
     template <typename Matrix, typename Vector, typename DiaTag>
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::col_major, DiaTag)
     {
-	using namespace tag; using traits::range_generator; 
+	using namespace tag; using traits::range_generator; using mtl::detail::adjust_cursor;
 
 	typedef typename range_generator<col, Matrix>::type       a_cur_type;    
 	typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
@@ -192,6 +192,6 @@ Vector inline lower_trisolve(const Matrix& A, const Vector& v, DiaTag)
 
 
 
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_LOWER_TRISOLVE_INCLUDE

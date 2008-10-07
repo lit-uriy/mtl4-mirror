@@ -17,7 +17,7 @@
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
-using namespace mtl;
+
 
 const unsigned sz= 5;
 
@@ -33,7 +33,9 @@ inline std::complex<double> f(std::complex<double> x)
 template <typename Vector, typename T>
 void test(Vector& v, const T& x, const char* name, bool is_cmp= false)
 {
-    using std::abs; using std::cout;
+    using std::abs; using std::cout; using mtl::size; 
+    using mtl::orth; using mtl::orthogonalize_factors;
+
     std::cout << "\n" << name << "\n";
     for (unsigned i= 0, c= 1; i < size(v); ++i)
 	for (unsigned j= 0; j < size(v[i]); ++j, c++)
@@ -88,6 +90,7 @@ void test(Vector& v, const T& x, const char* name, bool is_cmp= false)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     dense_vector<float>                                                 cf(sz, 1.0);
     dense_vector<double>                                                cd(sz, 1.0);
     dense_vector<std::complex<double> >                                 cc(sz, 1.0);

@@ -19,19 +19,21 @@
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 template <typename MatrixA, typename MatrixB>
 void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name)
 {
+    using mtl::Collection;
+
     const unsigned max_print_size= 25;
     cout << "\n" << name << "\n";
     laplacian_setup(a, dim1, dim2);
     laplacian_setup(b, dim1, dim2);
 
     unsigned size= dim1 * dim2;
-    compressed2D<double>  c(size, size);
+    mtl::compressed2D<double>  c(size, size);
     c= a * b;
 
     if (size <= max_print_size)
@@ -95,6 +97,8 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     unsigned dim1= 5, dim2= 5;
 
     if (argc > 2) {

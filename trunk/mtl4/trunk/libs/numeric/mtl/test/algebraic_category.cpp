@@ -25,23 +25,23 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 
 
-using namespace mtl;
+
 using namespace std;  
 
 template <typename T>
-void dispatch(const T& x, tag::scalar, const char* name)
+void dispatch(const T& x, mtl::tag::scalar, const char* name)
 {
     cout << "dispatch " << name << " to scalar\n";
 }
 
 template <typename T>
-void dispatch(const T& x, tag::vector, const char* name)
+void dispatch(const T& x, mtl::tag::vector, const char* name)
 {
     cout << "dispatch " << name << " to vector\n";
 }
 
 template <typename T>
-void dispatch(const T& x, tag::matrix, const char* name)
+void dispatch(const T& x, mtl::tag::matrix, const char* name)
 { 
     cout << "dispatch " << name << " to matrix\n";
 }
@@ -50,13 +50,14 @@ void dispatch(const T& x, tag::matrix, const char* name)
 template <typename T>
 void test(const T& x, const char* name)
 {
-    dispatch(x, typename traits::algebraic_category<T>::type(), name);
+    dispatch(x, typename mtl::traits::algebraic_category<T>::type(), name);
 }
 
 struct none {};
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     const int size= 5;
     double d;
     int    i;

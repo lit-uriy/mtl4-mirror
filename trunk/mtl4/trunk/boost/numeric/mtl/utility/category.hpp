@@ -19,7 +19,6 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
-#include <boost/numeric/mtl/operation/conj.hpp>
 
 
 namespace mtl { namespace traits {
@@ -188,7 +187,20 @@ struct category< mtl::matrix::banded_view<Matrix> >
     : public detail::simple_matrix_view_category<Matrix>
 {};
 
+template <typename T>
+struct is_matrix 
+  : boost::is_base_of<tag::matrix, typename category<T>::type> 
+{};
 
+template <typename T>
+struct is_vector 
+  : boost::is_base_of<tag::vector, typename category<T>::type> 
+{};
+
+template <typename T>
+struct is_scalar 
+  : boost::mpl::bool_< !is_vector<T>::value && !is_matrix<T>::value >
+{};
 
 /// Meta-function for categorizing types into tag::scalar, tag::vector, and tag::matrix
 /** Automatically derived from category 
@@ -196,6 +208,18 @@ struct category< mtl::matrix::banded_view<Matrix> >
 */
 template <typename T>
 struct algebraic_category
+  : boost::mpl::if_<
+	is_matrix<T>
+      , tag::matrix
+      , typename boost::mpl::if_<
+       	    is_vector<T>
+	  , tag::vector
+	  , tag::scalar
+	>::type
+    >
+{};
+
+#if 0
 {
     typedef typename boost::mpl::if_<
 	boost::is_base_of<tag::matrix, typename category<T>::type>
@@ -207,6 +231,7 @@ struct algebraic_category
 	>::type
     >::type type;
 };
+#endif
 
 
 }} // namespace mtl::traits 

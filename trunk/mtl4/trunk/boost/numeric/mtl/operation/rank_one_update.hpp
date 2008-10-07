@@ -18,8 +18,9 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
+#include <boost/numeric/mtl/operation/conj.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 
 /// Rank-one update: rank_one_update(A, x, y) computes A+= x * conj(y)^T
@@ -28,6 +29,7 @@ namespace mtl {
 template <typename Matrix, typename VectorX, typename VectorY>
 inline void rank_one_update(Matrix& matrix, const VectorX& x, const VectorY& y)
 {
+    using mtl::conj;
     MTL_THROW_IF(num_rows(matrix) != size(x) || num_cols(matrix) != size(y), incompatible_size());
 
     typedef typename traits::range_generator<tag::nz, VectorX>::type x_cursor;
@@ -46,6 +48,6 @@ inline void rank_one_update(Matrix& matrix, const VectorX& x, const VectorY& y)
 }
 
 
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_RANK_ONE_UPDATE_INCLUDE

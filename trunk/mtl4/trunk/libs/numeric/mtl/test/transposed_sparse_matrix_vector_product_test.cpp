@@ -18,16 +18,16 @@
 int test_main(int argc, char* argv[])
 {
     using namespace std;
-    using namespace mtl;
     
-    compressed2D<double> m(3, 3);
+    
+    mtl::compressed2D<double> m(3, 3);
     {
-	matrix::inserter<compressed2D<double> > ins(m);
+	mtl::matrix::inserter<mtl::compressed2D<double> > ins(m);
 	ins(0, 1) << 2.0; ins(1, 0) << 1.0;
 	ins(1, 1) << 4.0; ins(2, 2) << 5.0;
     }
 
-    dense_vector<double> x(3), y(3);
+    mtl::dense_vector<double> x(3), y(3);
     for (int i= 0; i < size(x); i++) x[i]= double(i+1);
 
     y = trans(m) * x;

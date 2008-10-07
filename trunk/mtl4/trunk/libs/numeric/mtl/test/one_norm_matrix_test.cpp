@@ -23,7 +23,7 @@
 #include <boost/numeric/mtl/operation/one_norm.hpp>
 
 
-using namespace mtl;
+
 using namespace std;  
 
 
@@ -32,7 +32,7 @@ void test(MatrixA& a, const char* name)
 {
 	a= 0.0;
     {
-	matrix::inserter<MatrixA>  ins(a);
+	mtl::matrix::inserter<MatrixA>  ins(a);
 	                  ins(0, 1) << 1.0; ins(0, 2) << 4.0;
 	ins(1, 0) << 1.0; ins(1, 1) << 3.0; ins(1, 2) << 4.0; ins(1, 3) << 4.0; 
 	                  ins(2, 1) << 9.0; ins(2, 2) << 4.0; ins(2, 3) << 2.0; 
@@ -49,6 +49,7 @@ void test(MatrixA& a, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     unsigned size= 4;
 
     dense2D<double>                                      dr(size, size);

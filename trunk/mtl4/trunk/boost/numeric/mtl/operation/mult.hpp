@@ -23,17 +23,30 @@
 #include <boost/numeric/mtl/operation/mult_specialize.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/mpl/if.hpp>
 
-namespace mtl {
+
+
+
+namespace mtl { namespace vector {
+
+    // Row vector times matrix will be defined here
+
+}} // mtl::vector
+
+
+
+namespace mtl { namespace matrix {
 
 
 /// Multiplication: mult(a, b, c) computes c= a * b; 
 /** The 3 types must be compatible, e.g. all three matrices or b and c are column vectors and a is a matrix.
     The dimensions are checked at compile time. **/
 template <typename A, typename B, typename C>
-inline void mult(const A& a, const B& b, C& c)
+typename traits::enable_if_matrix<A>::type
+inline mult(const A& a, const B& b, C& c)
 {
 #if 1
     MTL_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
@@ -50,7 +63,8 @@ inline void mult(const A& a, const B& b, C& c)
 /** The 3 types must be compatible, e.g. all three matrices or b and c are column vectors and a is a matrix.
     The dimensions are checked at compile time. **/
 template <typename A, typename B, typename C>
-inline void mult_add(const A& a, const B& b, C& c)
+typename traits::enable_if_matrix<A>::type
+inline mult_add(const A& a, const B& b, C& c)
 {
     // dispatch between matrices, vectors, and scalars
     using traits::category;
@@ -264,6 +278,6 @@ inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, t
 
 
 
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_MULT_INCLUDE

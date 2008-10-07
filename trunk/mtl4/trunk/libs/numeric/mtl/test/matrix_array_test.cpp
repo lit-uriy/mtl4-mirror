@@ -16,7 +16,7 @@
 int test_main(int argc, char* argv[])
 {
     using namespace std;
-    using namespace mtl;
+    using mtl::dense2D; using mtl::dense_vector;
 	
     dense2D<double> *A;
     A = new dense2D<double>[2];

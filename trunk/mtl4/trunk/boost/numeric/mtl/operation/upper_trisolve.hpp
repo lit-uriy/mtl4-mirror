@@ -22,7 +22,7 @@
 
 #include <boost/numeric/linear_algebra/identity.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 
 namespace detail {
@@ -51,6 +51,7 @@ namespace detail {
 	template <typename Cursor>
 	void row_init(int r, Cursor& aic, Cursor& aiend, value_type& dia, tag::universe_diagonal)
 	{
+	    using mtl::detail::adjust_cursor;
 	    adjust_cursor(r, aic, my_category());
 	    MTL_DEBUG_THROW_IF(aic == aiend || col_a(*aic) != r, missing_diagonal());
 	    dia= value_a(*aic); ++aic;
@@ -59,6 +60,7 @@ namespace detail {
 	template <typename Cursor>
 	void row_init(int r, Cursor& aic, Cursor&, value_type&, tag::unit_diagonal)
 	{
+	    using mtl::detail::adjust_cursor;
 	    adjust_cursor(r + 1, aic, my_category());
 	}
 
@@ -128,6 +130,7 @@ namespace detail {
 	template <typename Cursor>
 	void col_init(int r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::regular_diagonal)
 	{
+	    using mtl::detail::adjust_cursor;
 	    adjust_cursor(r - num_rows(A) + 1, aiend, my_category());
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
@@ -138,6 +141,7 @@ namespace detail {
 	template <typename Cursor>
 	void col_init(int r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::inverse_diagonal)
 	{
+	    using mtl::detail::adjust_cursor;
 	    adjust_cursor(r - num_rows(A) + 1, aiend, my_category());
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
@@ -148,6 +152,7 @@ namespace detail {
 	template <typename Cursor>
 	void col_init(int r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::unit_diagonal)
 	{
+	    using mtl::detail::adjust_cursor;
 	    adjust_cursor(r - num_rows(A), aiend, my_category());
 	    rr= res;
 	}
@@ -185,6 +190,6 @@ Vector inline upper_trisolve(const Matrix& A, const Vector& v, DiaTag)
     return detail::upper_trisolve_t<Matrix, DiaTag>(A)(v);
 }
 
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_UPPER_TRISOLVE_INCLUDE

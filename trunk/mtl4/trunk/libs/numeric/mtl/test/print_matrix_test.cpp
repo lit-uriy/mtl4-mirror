@@ -18,9 +18,6 @@
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 
-
-using namespace mtl;
-using namespace mtl::recursion;
 using namespace std;  
 
 template <typename Matrix>
@@ -41,7 +38,7 @@ template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
     {
-	matrix::inserter<Matrix> ins(matrix);
+	mtl::matrix::inserter<Matrix> ins(matrix);
 	for (int i= 0; i < matrix.num_rows(); i++)
 	    for (int j= 0; j < matrix.num_cols(); j++)
 		if ((i + j) & 1)
@@ -49,22 +46,22 @@ void test(Matrix& matrix, const char* name)
     }
 
     std::cout << "\n" << name << "\n";
-    mtl::print_matrix(matrix);
+    print_matrix(matrix);
 
-    transposed_view<Matrix> trans(matrix);
+    mtl::matrix::transposed_view<Matrix> trans(matrix);
     std::cout << "Transposed" << "\n";
-    mtl::print_matrix(trans);
+    print_matrix(trans);
 
     std::cout << "with <<" << "\n"
 	      << trans << "\n";
 
     std::cout << "with << and formatted" << "\n"
-	      << mtl::with_format(trans, 7, 4) << "\n";
+	      << with_format(trans, 7, 4) << "\n";
 
     Matrix square(5, 5);
     square= matrix * trans;
 
-    std::cout << "squared before:\n" << mtl::with_format(trans, 4, 2)
+    std::cout << "squared before:\n" << with_format(trans, 4, 2)
 	      << "squared in place:\n" << matrix * trans << "\n";
 
     // Comparison with FP!!!! :-! Make something better eventually
@@ -74,6 +71,8 @@ void test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     dense2D<double>                                dr(5, 7);
     dense2D<double, matrix::parameters<col_major> > dc(5, 7);
     morton_dense<double,  morton_mask>             md(5, 7);

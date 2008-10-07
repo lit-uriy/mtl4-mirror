@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 
-using namespace mtl;
+
 using std::cout; using std::complex;  
 
 typedef complex<double> ct;
@@ -25,6 +25,8 @@ typedef complex<double> ct;
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
 {
+    using mtl::matrix::inserter;
+
     MatrixA A(3, 4); 
     MatrixB B1(4, 5), B2(5, 6); 
     MatrixC C(3, 6);
@@ -32,13 +34,13 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     A= 0.0; B1= 0.0; B2= 0.0;
 
     {
-	matrix::inserter<MatrixA>  A_ins(A);
+	inserter<MatrixA>  A_ins(A);
 	A_ins(0, 1) << 1.0;
 
-	matrix::inserter<MatrixB>  B1_ins(B1);
+	inserter<MatrixB>  B1_ins(B1);
 	B1_ins(1, 2) << 1.0;
 
-	matrix::inserter<MatrixB>  B2_ins(B2);
+	inserter<MatrixB>  B2_ins(B2);
 	B2_ins(2, 3) << 1.0;
     }
 
@@ -99,6 +101,8 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     unsigned size= 7; 
     if (argc > 1) size= atoi(argv[1]); 
 

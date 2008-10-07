@@ -12,15 +12,34 @@
 #ifndef MTL_CROP_INCLUDE
 #define MTL_CROP_INCLUDE
 
+#include <boost/numeric/mtl/utility/enable_if.hpp>
+
 namespace mtl {
 
-/// Remove all zero entries from a collection
-/** Does nothing for dense collections **/
-template <typename T>
-void crop(T& x)
-{
-    x.crop();
-}
+    namespace vector {
+
+	/// Remove all zero entries from a collection
+	/** Does nothing for dense collections **/
+	template <typename T>
+	typename traits::enable_if_vector<T>::type inline crop(T& x)
+	{
+	    x.crop();
+	}
+    }
+
+    namespace matrix {
+
+	/// Remove all zero entries from a collection
+	/** Does nothing for dense collections **/
+	template <typename T>
+	typename traits::enable_if_matrix<T>::type inline crop(T& x)
+	{
+	    x.crop();
+	}
+    }
+    
+    using vector::crop;
+    using matrix::crop;
 
 } // namespace mtl
 

@@ -18,42 +18,66 @@
 #include <boost/numeric/mtl/operation/mult_result.hpp>
 #include <boost/numeric/mtl/operation/div_result.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 
 
-namespace mtl {
+namespace mtl { 
 
-/// Multiplication for all supported types of operations
-/** Enable-if-like technique make sure that only called when properly defined **/
-template <typename Op1, typename Op2>
-typename traits::mult_result<Op1, Op2>::type
-inline operator*(const Op1& op1, const Op2& op2)
-{
-    return typename traits::mult_result<Op1, Op2>::type(op1, op2);
-}
+namespace matrix {
+
+    /// Multiplication for all supported types of operations
+    /** Enable-if-like technique make sure that only called when properly defined **/
+    template <typename Op1, typename Op2>
+    // typename enable_if_matrix<Op1, typename traits::mult_result<Op1, Op2>::type>::type
+    typename traits::mult_result<Op1, Op2>::type
+    inline operator*(const Op1& op1, const Op2& op2)
+    {
+        return typename traits::mult_result<Op1, Op2>::type(op1, op2);
+    }
 
 
 
-#if 0
-// If we implement operator* in a different way for each type of operation it would like the following
+    /// Division of matrices and vectors by salars
+    /** Enable-if-like technique make sure that only called when properly defined **/
+    // added by Hui Li
+    template < typename Op1, typename Op2 >
+    // typename enable_if_matrix<Op1, typename traits::div_result<Op1,Op2>::type>::type
+    typename traits::div_result<Op1,Op2>::type
+    inline operator/(const Op1& op1, const Op2& op2)
+    {
+        return typename traits::div_result<Op1,Op2>::type(op1,op2);
+    }
+	
+} // namespace matrix
 
-// Scale matrix from left
-template <typename Op1, typename Op2>
-typename traits::mult_result_if_equal<Op1, Op2, ashape::scal_mat_mult>::type
-inline operator*(const Op1& op1, const Op2& op2)
-{
-    return typename traits::mult_result_if_equal<Op1, Op2, ashape::scal_mat_mult>::type(op1, op2);
-}
-#endif
 
-/// Division of matrices and vectors by salars
-/** Enable-if-like technique make sure that only called when properly defined **/
-// added by Hui Li
-template < typename Op1, typename Op2 >
-typename traits::div_result<Op1,Op2>::type
-inline operator/(const Op1& op1, const Op2& op2)
-{
-	return typename traits::div_result<Op1,Op2>::type(op1,op2);
-}
+namespace vector {
+
+    /// Multiplication for all supported types of operations
+    /** Enable-if-like technique make sure that only called when properly defined **/
+    template <typename Op1, typename Op2>
+    // typename enable_if_vector<Op1, typename traits::mult_result<Op1, Op2>::type>::type
+    typename traits::vec_mult_result<Op1, Op2>::type
+    inline operator*(const Op1& op1, const Op2& op2)
+    {
+        return typename traits::vec_mult_result<Op1, Op2>::type(op1, op2);
+    }
+
+
+
+    /// Division of matrices and vectors by salars
+    /** Enable-if-like technique make sure that only called when properly defined **/
+    // added by Hui Li
+    template < typename Op1, typename Op2 >
+    // typename enable_if_vector<Op1, typename traits::div_result<Op1,Op2>::type>::type
+    typename traits::div_result<Op1,Op2>::type
+    inline operator/(const Op1& op1, const Op2& op2)
+    {
+        return typename traits::div_result<Op1,Op2>::type(op1,op2);
+    }
+	
+} // namespace vector
+
 
 } // namespace mtl
 

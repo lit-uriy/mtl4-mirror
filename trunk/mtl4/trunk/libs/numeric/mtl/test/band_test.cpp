@@ -15,13 +15,13 @@
 
 
 using namespace std;
-using namespace mtl;
+
 
 
 template <typename Matrix>
 void check(const Matrix& A, int begin, int end)
 {
-    typedef typename Collection<Matrix>::value_type   value_type;
+    typedef typename mtl::Collection<Matrix>::value_type   value_type;
 
     for (int i= 0; i < num_rows(A); i++)
 	for (int j= 0; j < num_cols(A); j++) {
@@ -42,11 +42,13 @@ void check(const Matrix& A, int begin, int end)
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
+    using mtl::matrix::inserter; using mtl::Collection;
+
     typedef typename Collection<Matrix>::value_type   value_type;
 
     A.change_dim(6, 5);
     {
-	matrix::inserter<Matrix>   ins(A);
+	inserter<Matrix>   ins(A);
 	for (int i= 0; i < num_rows(A); i++)
 	    for (int j= 0; j < num_cols(A); j++)
 		ins[i][j]= value_type(j - i + 0);
@@ -105,7 +107,8 @@ void test(Matrix& A, const char* name)
 
 int test_main(int argc, char* argv[])
 {
-    
+    using namespace mtl;
+
     dense2D<double>                                      dr;
     dense2D<double, matrix::parameters<col_major> >      dc;
     morton_dense<double, recursion::morton_z_mask>       mzd;

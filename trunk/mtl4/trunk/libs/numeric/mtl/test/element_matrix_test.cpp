@@ -23,7 +23,7 @@
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 template <typename Matrix>
@@ -31,10 +31,10 @@ void test(Matrix& matrix, const char* name)
 {
     cout << "\n" << name << "\n";
 
-    using matrix::inserter;
-    typedef typename Collection<Matrix>::value_type value_type;
+    using mtl::matrix::inserter; using mtl::element_array;
+    typedef typename mtl::Collection<Matrix>::value_type value_type;
 
-    dense2D<double>       m1(2, 2);
+    mtl::dense2D<double>       m1(2, 2);
     m1[0][0]= 1.0; m1[0][1]= 2.0; 
     m1[1][0]= 3.0; m1[1][1]= 4.0; 
     std::vector<int>           row1, col1;
@@ -52,7 +52,7 @@ void test(Matrix& matrix, const char* name)
     set_to_zero(matrix); // dense matrices are not automatically set to zero
 
     {
-	inserter<Matrix, operations::update_plus<value_type> > ins(matrix);
+	inserter<Matrix, mtl::operations::update_plus<value_type> > ins(matrix);
 
 	ins << element_matrix(m1, row1, col1)
 	    << element_array(a2, ind2);
@@ -75,6 +75,7 @@ void test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     unsigned size= 5;
 
     dense2D<double>                                      dr(size, size);

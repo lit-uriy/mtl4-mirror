@@ -24,7 +24,7 @@
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 #endif
 
-using namespace mtl;
+
 using std::cout;  using std::complex;
 
 typedef complex<double> ct;
@@ -96,23 +96,23 @@ void test(Vector& vector, const char* name)
     cout << "Original vector:\n" << vector << "\n";
 
 
-    vector::scaled_view<double, Vector>  scaled_vector(2.0, vector);
+    mtl::vector::scaled_view<double, Vector>  scaled_vector(2.0, vector);
     cout << "vector  scaled with 2.0\n" << scaled_vector << "\n";
     if (scaled_vector(2) != svalue(ref)) 
 	throw "scaling wrong";
     
-    vector::conj_view<Vector>  conj_vector(vector);
+    mtl::vector::conj_view<Vector>  conj_vector(vector);
     cout << "conjugated vector\n" << conj_vector << "\n";
     if (conj_vector(2) != cvalue(ref)) 
 	throw " wrong";
 
-    vector::scaled_view<ct, Vector>  cscaled_vector(ct(0.0, 1.0), vector);
+    mtl::vector::scaled_view<ct, Vector>  cscaled_vector(ct(0.0, 1.0), vector);
     cout << "vector scaled with i (complex(0, 1))\n" << cscaled_vector << "\n";
     if (cscaled_vector(2) != csvalue(ref)) 
 	throw "complex scaling wrong";
 
 #if 0 // transposition of vector is not an issue (yet)
-    vector::hermitian_view<Vector>  hermitian_vector(vector);
+    mtl::vector::hermitian_view<Vector>  hermitian_vector(vector);
     cout << "Hermitian vector (conjugate transposed)\n" << hermitian_vector << "\n";
     if (hermitian_vector(3, 2) != cvalue(ref)) 
 	throw "conjugate transposing  wrong";
@@ -147,8 +147,8 @@ int test_main(int argc, char* argv[])
     unsigned size= 7; 
     if (argc > 1) size= atoi(argv[1]); 
 
-    dense_vector<double>                                 dv(size);
-    dense_vector<complex<double> >                       drc(size);
+    mtl::dense_vector<double>                                 dv(size);
+    mtl::dense_vector<complex<double> >                       drc(size);
 
     test(dv, "Dense double vector");
     test(drc, "Dense complex vector");

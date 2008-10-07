@@ -17,7 +17,7 @@
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
-using namespace mtl;
+
 
 const unsigned sz= 5;
 
@@ -33,8 +33,10 @@ inline std::complex<double> f(std::complex<double> x)
 template <typename Vector>
 void test(Vector& v, const char* name)
 {
-    typedef typename Collection<Vector>::value_type T;
     using std::abs; using std::cout;
+    using mtl::irange; using mtl::imax;
+
+    typedef typename mtl::Collection<Vector>::value_type T;
     std::cout << "\n" << name << "\n";
 
     for (unsigned i= 0; i < size(v); ++i)
@@ -64,6 +66,7 @@ void test(Vector& v, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     dense_vector<float>                                                 cf(sz, 1.0);
     dense_vector<double>                                                cd(sz, 1.0);
     dense_vector<std::complex<double> >                                 cc(sz, 1.0);

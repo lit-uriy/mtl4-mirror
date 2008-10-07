@@ -25,7 +25,7 @@
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 #endif
 
-using namespace mtl;
+
 using std::cout;  using std::complex;
 
 typedef complex<double> ct;
@@ -87,12 +87,12 @@ void test(Vector& vector, const char* name)
     cout << "Original vector:\n" << vector << "\n";
 	
 	// test rscaled_view
-    vector::rscaled_view<Vector,double>  rscaled_vector(vector,2.0);
+    mtl::vector::rscaled_view<Vector,double>  rscaled_vector(vector,2.0);
     cout << "vector right scaled with 2.0\n" << rscaled_vector << "\n";
     if (rscaled_vector(2) != rsvalue(ref)) 
 		throw "right scaling wrong";
     
-    vector::rscaled_view<Vector,ct>  crscaled_vector(vector,ct(0.0, 1.0));
+    mtl::vector::rscaled_view<Vector,ct>  crscaled_vector(vector,ct(0.0, 1.0));
     cout << "vector right scaled with i (complex(0, 1))\n" << crscaled_vector << "\n";
     if (crscaled_vector(2) != crsvalue(ref)) 
 		throw "complex right scaling wrong";
@@ -106,12 +106,12 @@ void test(Vector& vector, const char* name)
 		throw "complex right scaling wrong";
 	
 	// test divide_by_view
-    vector::divide_by_view<Vector,double>  div_vector(vector,0.5);
+    mtl::vector::divide_by_view<Vector,double>  div_vector(vector,0.5);
     cout << "vector divide by 0.5\n" << div_vector << "\n";
     if (div_vector(2) != rsvalue(ref)) 
 		throw "divide_by wrong";
     
-    vector::divide_by_view<Vector,ct>  cdiv_vector(vector,ct(0.0, -1.0));
+    mtl::vector::divide_by_view<Vector,ct>  cdiv_vector(vector,ct(0.0, -1.0));
     cout << "vector divide by -i (complex(0, -1))\n" << cdiv_vector << "\n";
     if (cdiv_vector(2) != crsvalue(ref)) 
 		throw "complex divide_by wrong";
@@ -133,8 +133,8 @@ int test_main(int argc, char* argv[])
     unsigned size= 7; 
     if (argc > 1) size= atoi(argv[1]); 
 	
-    dense_vector<double>                                 dv(size);
-    dense_vector<complex<double> >                       drc(size);
+    mtl::dense_vector<double>                                 dv(size);
+    mtl::dense_vector<complex<double> >                       drc(size);
 	
     test(dv, "Dense double vector");
     test(drc, "Dense complex vector");

@@ -23,7 +23,7 @@
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 inline double value(double)
@@ -60,10 +60,10 @@ void test(Matrix& matrix, const char* name)
     cout << "\n" << name << "\n";
     set_to_zero(matrix);
 
-    typename Collection<Matrix>::size_type          nr= num_rows(matrix), nc= num_cols(matrix);
-    typedef typename Collection<Matrix>::value_type value_type;
-    value_type                                      zero(0.0);
-    dense_vector<value_type>                        x(nr, zero), y(nc, zero);
+    typename mtl::Collection<Matrix>::size_type          nr= num_rows(matrix), nc= num_cols(matrix);
+    typedef typename mtl::Collection<Matrix>::value_type value_type;
+    value_type                                           zero(0.0);
+    mtl::dense_vector<value_type>                        x(nr, zero), y(nc, zero);
 
     x[1]= 1.0; x[2]= 2.0;
     value_type ref(0), v= value(ref);
@@ -82,6 +82,7 @@ void test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     unsigned size= 7;
     if (argc > 1) size= atoi(argv[1]); 
     

@@ -34,12 +34,13 @@
 #include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 
 
 namespace mtl { namespace vector {
 
-template <class Value, typename Parameters = mtl::vector::parameters<> >
+template <class Value, typename Parameters = parameters<> >
 class dense_vector
     : public vec_expr<dense_vector<Value, Parameters> >,
       public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >,

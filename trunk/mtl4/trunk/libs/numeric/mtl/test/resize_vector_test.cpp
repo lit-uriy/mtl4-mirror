@@ -16,13 +16,13 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 
-using namespace mtl;
+
 using namespace std;  
  
 
 int test_main(int argc, char* argv[])
 {
-    dense_vector<float>    x;
+    mtl::dense_vector<float>    x;
 
     if (size(x) != 0) throw "vector should be empty";
 

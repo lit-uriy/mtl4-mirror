@@ -22,7 +22,7 @@
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 
@@ -30,7 +30,7 @@ template <typename Matrix>
 void test2(Matrix& matrix, unsigned dim1, unsigned dim2)
 {
     Matrix tmp;
-    matrix::laplacian_setup(tmp, dim1, dim2);
+    laplacian_setup(tmp, dim1, dim2);
     swap(matrix, tmp);
 }
 
@@ -50,7 +50,7 @@ void test(Matrix& matrix, unsigned dim1, unsigned dim2, const char* name)
 	if (num_cols(matrix) != size)
 	    throw "wrong number of columns";
 
-	typename Collection<Matrix>::value_type four(4.0), minus_one(-1.0), zero(0.0);
+	typename mtl::Collection<Matrix>::value_type four(4.0), minus_one(-1.0), zero(0.0);
 	if (matrix[0][0] != four)
 	    throw "wrong diagonal";
 	if (matrix[0][1] != minus_one)
@@ -91,7 +91,7 @@ void vtest(Vector& vector, unsigned dim1, unsigned dim2, const char* name)
 	if (size(vector) != dim1*dim2)
 	    throw "wrong number of elements";
 
-	typename Collection<Vector>::value_type four(4.0), minus_one(-1.0), zero(0.0);
+	typename mtl::Collection<Vector>::value_type four(4.0), minus_one(-1.0), zero(0.0);
 	if (vector[2] != four)
 	    throw "wrong value in vector";
     }
@@ -102,6 +102,8 @@ void vtest(Vector& vector, unsigned dim1, unsigned dim2, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     unsigned dim1= 3, dim2= 4;
 
     if (argc > 2) {

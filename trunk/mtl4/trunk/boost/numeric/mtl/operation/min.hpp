@@ -22,11 +22,12 @@
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
 
 
-namespace mtl {
+namespace mtl { namespace vector {
 
     namespace impl {
 
 	// Do we really need this for matrices?
+	// Then we need a different dispatching
 	
 	template <unsigned long Unroll, typename Vector>
 	typename Collection<Vector>::value_type
@@ -53,6 +54,10 @@ inline min(const Value& value)
     return min<8>(value);
 }
 
+} // namespace vector
+
+using vector::min;
+    
 } // namespace mtl
 
 #endif // MTL_MIN_INCLUDE

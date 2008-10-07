@@ -15,11 +15,11 @@
 
 int test_main(int argc, char* argv[])
 {
-    using namespace mtl; using namespace mtl::matrix;
+    using namespace mtl::matrix;
     
     const unsigned n= 100;
     dense2D<double>                            A(n, n);
-    morton_dense<double, doppled_64_row_mask>  C(n, n);
+    morton_dense<double, mtl::doppled_64_row_mask>  C(n, n);
 
     A[0][0]= 71.; C[0][0]= 72.;
 

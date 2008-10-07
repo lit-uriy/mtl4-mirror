@@ -30,7 +30,7 @@
 #include <boost/numeric/mtl/operation/mult_result.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 typedef complex<double> ct;
@@ -75,7 +75,7 @@ void test(Matrix& matrix, const char* name)
     typename Matrix::value_type ref(0);
 	
     {
-		matrix::inserter<Matrix>  ins(matrix);
+		mtl::matrix::inserter<Matrix>  ins(matrix);
 		ins(2, 3) << value(ref);
 		ins(4, 3) << value(ref) + 1.0;
 		ins(2, 5) << value(ref) + 2.0;
@@ -99,7 +99,7 @@ void test(Matrix& matrix, const char* name)
 	
 	
 	// test rscaled_view
-    matrix::rscaled_view<Matrix, double>  rscaled_matrix(matrix, 2.0);
+    mtl::matrix::rscaled_view<Matrix, double>  rscaled_matrix(matrix, 2.0);
     cout << "matrix  right scaled with 2.0\n" << rscaled_matrix << "\n";
     if (rscaled_matrix(2, 3) != rsvalue(ref)) 
 		throw "right scaling wrong";
@@ -109,7 +109,7 @@ void test(Matrix& matrix, const char* name)
 		throw "right scaling wrong";
 	
 	
-    matrix::rscaled_view<Matrix, ct>  crscaled_matrix(matrix, ct(0.0, 1.0));
+    mtl::matrix::rscaled_view<Matrix, ct>  crscaled_matrix(matrix, ct(0.0, 1.0));
     cout << "matrix right scaled with i (complex(0, 1))\n" << crscaled_matrix << "\n";
     if (crscaled_matrix(2, 3) != crsvalue(ref)) 
 		throw "complex right scaling wrong";
@@ -123,7 +123,7 @@ void test(Matrix& matrix, const char* name)
 		throw "complex right scaling wrong";
 	
 	// test divide_by_view
-    matrix::divide_by_view<Matrix, double>  div_matrix(matrix, 0.5);
+    mtl::matrix::divide_by_view<Matrix, double>  div_matrix(matrix, 0.5);
     cout << "matrix divide by 0.5\n" << div_matrix << "\n";
     if (div_matrix(2, 3) != rsvalue(ref)) 
 		throw "divide_by wrong";
@@ -133,7 +133,7 @@ void test(Matrix& matrix, const char* name)
 		throw "divide_by wrong";
 	
 	
-    matrix::divide_by_view<Matrix, ct>  cdiv_matrix(matrix, ct(0.0, -1.0));
+    mtl::matrix::divide_by_view<Matrix, ct>  cdiv_matrix(matrix, ct(0.0, -1.0));
     cout << "matrix divide by -i (complex(0, -1))\n" << cdiv_matrix << "\n";
     if (cdiv_matrix(2, 3) != crsvalue(ref)) 
 		throw "complex divide_by wrong";
@@ -152,6 +152,7 @@ void test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     unsigned size= 7; 
     if (argc > 1) size= atoi(argv[1]); 
 	

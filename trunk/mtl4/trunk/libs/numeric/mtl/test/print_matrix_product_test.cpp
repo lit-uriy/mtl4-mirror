@@ -16,9 +16,9 @@
 int test_main(int argc, char* argv[])
 {
     using namespace std;
-    using namespace mtl;
+    
 	
-    dense2D<double> A(2,2), B(2,2);
+    mtl::dense2D<double> A(2,2), B(2,2);
     set_to_zero(B);
     A(0,0) = 1; A(0,1) = 2; A(1,0) = 3; A(1,1) = 4;
     B = A*A;

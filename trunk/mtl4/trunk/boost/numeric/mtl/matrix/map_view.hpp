@@ -39,7 +39,7 @@ struct map_view
     public mat_expr< map_view<Functor, Matrix> >
 {
     typedef map_view                                   self;
-    typedef mat_expr< self >                   expr_base;
+    typedef mat_expr< self >                           expr_base;
     typedef Matrix                                     other;
     typedef typename Matrix::orientation               orientation;
     typedef typename Matrix::index_type                index_type;

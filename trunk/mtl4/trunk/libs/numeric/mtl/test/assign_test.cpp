@@ -25,7 +25,7 @@
 #include <boost/numeric/mtl/operation/copy.hpp>
 
 
-using namespace mtl;
+
 using namespace mtl::recursion;
 using namespace std;  
 
@@ -34,7 +34,7 @@ template <typename Matrix>
 void init_matrix(Matrix& matrix, int offset= 0)
 {
     set_to_zero(matrix);
-    matrix::inserter<Matrix> ins(matrix);
+    mtl::matrix::inserter<Matrix> ins(matrix);
     for (unsigned i= 0; i < matrix.num_rows(); i++)
 	for (unsigned j= 0; j < matrix.num_cols(); j++)
 	    if ((i + j + offset) & 1)
@@ -73,6 +73,8 @@ void test(MatrixSrc& src, const char* name_src,
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     dense2D<double>                                dr(5, 7);
     dense2D<double, matrix::parameters<col_major> > dc(5, 7);
     dense2D<std::complex<double> >                 cdr(5, 7);

@@ -26,7 +26,7 @@
 #include <boost/numeric/mtl/operation/scale.hpp>
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 
-using namespace mtl;
+
 using std::cout; using std::complex;  
 
 typedef complex<double> ct;
@@ -85,7 +85,7 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     set_to_zero(a); 
     {
 	typename MatrixA::value_type ref(0);
-	matrix::inserter<MatrixA>  ins(a);
+	mtl::matrix::inserter<MatrixA>  ins(a);
 	ins(2, 3) << value(ref);
 	ins(4, 3) << value(ref) + 1.0;
 	ins(2, 5) << value(ref) + 2.0;
@@ -96,7 +96,7 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     set_to_zero(b);
     {
 	typename MatrixB::value_type ref(0);
-	matrix::inserter<MatrixB>  ins(b);
+	mtl::matrix::inserter<MatrixB>  ins(b);
 	ins(2, 2) << value(ref) + 3.0;
 	ins(4, 3) << value(ref) + 4.0;
     }
@@ -148,6 +148,7 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
     unsigned size= 7; 
     if (argc > 1) size= atoi(argv[1]); 
 

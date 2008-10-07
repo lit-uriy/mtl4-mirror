@@ -20,59 +20,73 @@ namespace mtl { namespace tfunctor {
     template <typename Value1, typename Value2, typename AlgebraicCategory>
     struct divide_by
     {
-		typedef typename Multiplicable<Value1, Value2>::result_type result_type;
-		
-		explicit divide_by(const Value2& v2) : v2(v2) {}
-		
-		result_type operator() (const Value1& v1) const
-		{
-			return v1 / v2;
-		}
-	private:
-		Value2 v2; 
+	typedef typename Multiplicable<Value1, Value2>::result_type result_type;
+	
+	explicit divide_by(const Value2& v2) : v2(v2) {}
+	
+	result_type operator() (const Value1& v1) const
+	{
+	    return v1 / v2;
+	}
+    private:
+	Value2 v2; 
     };
 	
 	
     template <typename Matrix, typename Value2>
     struct divide_by<Matrix, Value2, tag::matrix>
     {
-		typedef matrix::divide_by_view<Matrix,Value2> result_type;
-		
-		explicit divide_by(const Value2& v2) : v2(v2) {}
-		
-		result_type operator() (const Matrix& matrix) const
-		{
-			return result_type(matrix, v2);
-		}
-	private:
-		Value2 v2;
+	typedef matrix::divide_by_view<Matrix,Value2> result_type;
+	
+	explicit divide_by(const Value2& v2) : v2(v2) {}
+	
+	result_type operator() (const Matrix& matrix) const
+	{
+	    return result_type(matrix, v2);
+	}
+    private:
+	Value2 v2;
     };
 	
 
     template <typename Vector, typename Value2>
     struct divide_by<Vector, Value2, tag::vector>
     {
-		typedef vector::divide_by_view<Vector, Value2> result_type;
-		
-		explicit divide_by(const Value2& v2) : v2(v2) {}
-		
-		result_type operator() (const Vector& vector) const
-		{
-			return result_type(vector, v2);
-		}
-	private:
-		Value2 v2;
+	typedef vector::divide_by_view<Vector, Value2> result_type;
+	
+	explicit divide_by(const Value2& v2) : v2(v2) {}
+	
+	result_type operator() (const Vector& vector) const
+	{
+	    return result_type(vector, v2);
+	}
+    private:
+	Value2 v2;
     };
 
 	
 } // namespace tfunctor
 	
-	template <typename Value1, typename Value2>
-	typename tfunctor::divide_by<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
-	inline divide_by(const Value1& value1, const Value2& value2)
-	{
-		return tfunctor::divide_by<Value1, Value2, typename traits::algebraic_category<Value1>::type>(value2)(value1);
-	}
+
+namespace matrix {
+
+    template <typename Value1, typename Value2>
+    typename tfunctor::divide_by<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
+    inline divide_by(const Value1& value1, const Value2& value2)
+    {
+	return tfunctor::divide_by<Value1, Value2, typename traits::algebraic_category<Value1>::type>(value2)(value1);
+    }
+}
+
+namespace vector {
+
+    template <typename Value1, typename Value2>
+    typename tfunctor::divide_by<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
+    inline divide_by(const Value1& value1, const Value2& value2)
+    {
+	return tfunctor::divide_by<Value1, Value2, typename traits::algebraic_category<Value1>::type>(value2)(value1);
+    }
+}
 	
 } // namespace mtl
 

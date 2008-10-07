@@ -21,7 +21,7 @@
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 
-using namespace mtl;
+
 using namespace std;  
 
 template <typename MatrixA>
@@ -32,13 +32,13 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
     laplacian_setup(a, dim1, dim2);
 
     unsigned size= dim1 * dim2;
-    dense_vector<double> v(size);
+    mtl::dense_vector<double> v(size);
     for (unsigned i= 0; i < num_cols(a); i++)
 	v[i]= a[12][i];
 
     // Resulting vector has same value type as matrix
-    typedef typename Collection<MatrixA>::value_type rvalue_type;
-    dense_vector<rvalue_type> w(size);
+    typedef typename mtl::Collection<MatrixA>::value_type rvalue_type;
+    mtl::dense_vector<rvalue_type> w(size);
 
     w= a * v;
     //mult(a, v, w);
@@ -104,6 +104,8 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    using namespace mtl;
+
     unsigned dim1= 5, dim2= 5;
 
     if (argc > 2) {
