@@ -96,21 +96,6 @@ void test(Matrix& matrix, const char* name)
     cout << "\n\n" << name << "\n";
     cout << "Original matrix:\n" << matrix << "\n";
 
-#if 0
-    std::cout << "ashape double: " << typeid(typename ashape::ashape<double>::type).name() << "\n";
-    std::cout << "ashape matrix: " << typeid(typename ashape::ashape<Matrix>::type).name() << "\n";
-    typedef typename ashape::ashape<double>::type   dshape;
-    typedef typename ashape::ashape<Matrix>::type   mshape;
-
-    std::cout << "ashape mult_op: " << typeid(typename ashape::mult_op<dshape, mshape>::type()).name() << "\n";
-    typedef typename ashape::mult_op<dshape, mshape>::type rshape;
-
-    
-    std::cout << "result type: " << typeid(typename traits::mult_result_aux<double, Matrix, rshape>::type).name() << "\n";
-#endif
-
-
-
     mtl::matrix::scaled_view<double, Matrix>  scaled_matrix(2.0, matrix);
     cout << "matrix  scaled with 2.0\n" << scaled_matrix << "\n";
     if (scaled_matrix(2, 3) != svalue(ref)) 

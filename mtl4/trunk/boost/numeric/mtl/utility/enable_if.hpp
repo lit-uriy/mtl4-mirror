@@ -26,18 +26,6 @@ struct enable_if_matrix
     : boost::enable_if<is_matrix<Value>, Type>
 {};
 
-
-
-#if 0
-    :   boost::enable_if<typename boost::is_base_of<
-	     mtl::tag::matrix
-	   , typename traits::category<Value>::type
-	>::type
-      , Type
-    >
-{};
-#endif
-
 template <typename Value, typename Type = void>
 struct enable_if_vector
   : boost::enable_if<is_vector<Value>, Type>

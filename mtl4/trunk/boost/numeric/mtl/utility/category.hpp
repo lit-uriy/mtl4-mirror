@@ -219,20 +219,6 @@ struct algebraic_category
     >
 {};
 
-#if 0
-{
-    typedef typename boost::mpl::if_<
-	boost::is_base_of<tag::matrix, typename category<T>::type>
-      , tag::matrix
-      , typename boost::mpl::if_<
-       	    boost::is_base_of<tag::vector, typename category<T>::type>
-	  , tag::vector
-	  , tag::scalar
-	>::type
-    >::type type;
-};
-#endif
-
 
 }} // namespace mtl::traits 
 
