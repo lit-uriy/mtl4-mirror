@@ -82,7 +82,11 @@ namespace itl {
 
     inline void operator++() { ++i; }
   
+    inline void operator+=(int n) { i+= n; }
+  
     inline bool first() { return i == 0; }
+
+    virtual operator int() { return error; }
   
     virtual int error_code() { return error; }
   

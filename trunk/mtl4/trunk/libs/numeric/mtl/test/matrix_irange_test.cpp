@@ -75,7 +75,7 @@ void test(Matrix& A, const char* name)
 template <typename Matrix>
 void test2(Matrix& A, const char* name)
 {
-    using mtl::irange; using mtl::imax;
+    using mtl::irange; using mtl::imax; using mtl::iall;
 
     A= 0.0;
     A[1][1]= 1.0; 
@@ -95,6 +95,11 @@ void test2(Matrix& A, const char* name)
     std::cout << "\n" << name << "\nA[irange(4, imax)][irange(0, imax)] == \n" << C;
     if (C[0][1] != 5.0) throw "Wrong value in C";
 
+    Matrix D(A[irange(4, imax)][iall]);
+    std::cout << "\n" << name << "\nA[irange(4, imax)][iall] == \n" << C;
+    if (D[0][1] != 5.0) throw "Wrong value in D";
+
+    
 }
 
 
