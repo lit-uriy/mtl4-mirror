@@ -15,38 +15,44 @@
 #include <limits>
 
 
-namespace mtl {
+namespace mtl { 
 
-/// Class to define a half open index ranges 
-class irange
-{
-    irange() {} // no default constructor
+    /// Maximal index
+    const std::size_t imax= std::numeric_limits<std::size_t>::max();
 
-  public:
+    /// Class to define a half open index ranges 
+    class irange
+    {
+      public:
 
-    typedef std::size_t size_type;
+        typedef std::size_t size_type;
 
-    /// Create an index range of [start, finish)
-    explicit irange(size_type start, size_type finish) : my_start(start), my_finish(finish) {}
+        /// Create an index range of [start, finish)
+        explicit irange(size_type start, size_type finish) : my_start(start), my_finish(finish) {}
 
-    /// Create an index range of [0, finish)
-    explicit irange(size_type finish) : my_start(0), my_finish(finish) {}
+        /// Create an index range of [0, finish)
+        explicit irange(size_type finish) : my_start(0), my_finish(finish) {}
 
-    /// First index in range
-    size_type start() { return my_start; } 
-    /// Past-end index in range
-    size_type finish() { return my_finish; }
-    /// Number of indices
-    size_type size() { return my_finish - my_start; }
+        /// Create an index range of [0, imax), i.e. all indices
+        irange() : my_start(0), my_finish(imax) {}
 
-  private:
+        /// First index in range
+        size_type start() { return my_start; } 
+        /// Past-end index in range
+        size_type finish() { return my_finish; }
+        /// Number of indices
+        size_type size() { return my_finish - my_start; }
 
-    size_type my_start, my_finish;
-};
+      private:
 
-///
-const std::size_t imax= std::numeric_limits<std::size_t>::max();
+        size_type my_start, my_finish;
+    };
 
+    namespace {
+	irange iall;
+    }
 } // namespace mtl
+
+
 
 #endif // MTL_IRANGE_INCLUDE
