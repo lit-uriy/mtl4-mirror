@@ -92,18 +92,6 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	for (Size j= 1; j <= l; ++j) 
 	    gamma_a[j]= dot(r_hat[j], r_hat[0]) / tau[j][j];
 
-#if 0
-	// mod GS (MR part)
-	for (Size j= 1; j <= l; ++j) {
-	    for (Size i= 1; i < j; ++i) {
-		tau[i][j]= dot(r_hat[i], r_hat[j]) / sigma[i];
-		r_hat[j]-= tau[i][j] * r_hat[i];
-	    }
-	    sigma[j]= dot(r_hat[j], r_hat[j]); 
-	    gamma_a[j]= dot(r_hat[j], r_hat[0]) / sigma[j];
-	}
-#endif
-
 	gamma[l]= gamma_a[l]; omega= gamma[l];
 	if (omega == zero)
 	    return iter.fail(3, "bicg breakdown #2");
@@ -117,17 +105,6 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	}
 
 	gamma_aa[irange(1, l)]= strict_upper(tau[irange(1, l)][irange(1, l)]) * gamma[irange(2, l+1)] + gamma[irange(2, l+1)];
-	// or when diag(tau) == identity then
-	// gamma_aa[irange(1, l)]= upper(tau[irange(1, l)][irange(1, l)]) * gamma[irange(2, l+1)];
-
-#if 0
-	for (Size j = 1; j < l; ++j) {
-	    Scalar sum= zero;
-	    for (Size i= j+1; i < l; ++i)
-		sum+= tau[j][i] * gamma[i+1];
-	    gamma_aa[j] = gamma[j+1] + sum;
-	}
-#endif
 
 	x+= gamma[1] * r_hat[0];
 	r_hat[0]-= gamma_a[l] * r_hat[l];
