@@ -67,7 +67,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	for (size_t k= 0; k < s+1; k++) {
 	    c= solve(M, m);  // TBD: dense solver
 	    q= -(dR * c);    // TBD: vec<vec> * vec
-	    v= r + 1;
+	    v= r + q;
 	    if (k == 0) {
 		t= A * v;
 		omega= dot(t, v) / dot(t, t);
