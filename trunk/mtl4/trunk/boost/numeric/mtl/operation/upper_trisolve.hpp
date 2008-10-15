@@ -33,7 +33,7 @@ namespace detail {
     {
 	typedef typename Collection<Matrix>::value_type           value_type;
 	typedef typename OrientedCollection<Matrix>::orientation  my_orientation;
-	typedef typename traits::category<Matrix>::type           my_category;
+	typedef typename mtl::traits::category<Matrix>::type      my_category;
 
 	upper_trisolve_t(const Matrix& A) : A(A), value_a(A), col_a(A), row_a(A)
 	{     
@@ -83,7 +83,7 @@ namespace detail {
 	template <typename Vector>
 	Vector inline apply(const Vector& v, tag::row_major)
 	{
-	    using namespace tag; using traits::range_generator; using math::one;
+	    using namespace tag; using mtl::traits::range_generator; using math::one;
 	    typedef typename range_generator<row, Matrix>::type       ra_cur_type;    
 	    typedef typename range_generator<nz, ra_cur_type>::type   ra_icur_type;            
 
@@ -107,7 +107,7 @@ namespace detail {
 	template <typename Vector>
 	Vector apply(const Vector& v, tag::col_major)
 	{
-	    using namespace tag; using traits::range_generator; using math::one;
+	    using namespace tag; using mtl::traits::range_generator; using math::one;
 	    typedef typename range_generator<col, Matrix>::type       ca_cur_type;    
 	    typedef typename range_generator<nz, ca_cur_type>::type   ca_icur_type;            
 
@@ -159,9 +159,9 @@ namespace detail {
 
 
 	const Matrix& A;
-	typename traits::const_value<Matrix>::type  value_a; 
-	typename traits::col<Matrix>::type          col_a; 
-	typename traits::row<Matrix>::type          row_a;
+	typename mtl::traits::const_value<Matrix>::type  value_a; 
+	typename mtl::traits::col<Matrix>::type          col_a; 
+	typename mtl::traits::row<Matrix>::type          row_a;
     };
 
 }

@@ -55,12 +55,12 @@ namespace mtl {
 
 	// Ignore unrolling for matrices 
 	template <unsigned long Unroll, typename Matrix>
-	typename traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
+	typename mtl::traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
 	inline one_norm(const Matrix& matrix)
 	{
 	    using mtl::impl::max_of_sums;
-	    typename traits::col<Matrix>::type                             col(matrix); 
-	    return max_of_sums(matrix, !traits::is_row_major<typename OrientedCollection<Matrix>::orientation>(), 
+	    typename mtl::traits::col<Matrix>::type                             col(matrix); 
+	    return max_of_sums(matrix, !mtl::traits::is_row_major<typename OrientedCollection<Matrix>::orientation>(), 
 			       col, num_cols(matrix));
 	}
 	
@@ -71,7 +71,7 @@ namespace mtl {
 	    Matrix norms are not optimized by unrolling (yet).
 	**/
 	template <typename Matrix>
-	typename traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
+	typename mtl::traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
 	inline one_norm(const Matrix& matrix)
 	{
 	    return one_norm<8>(matrix);

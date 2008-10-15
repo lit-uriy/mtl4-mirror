@@ -29,10 +29,10 @@ namespace matrix {
     /** Enable-if-like technique make sure that only called when properly defined **/
     template <typename Op1, typename Op2>
     // typename enable_if_matrix<Op1, typename traits::mult_result<Op1, Op2>::type>::type
-    typename traits::mult_result<Op1, Op2>::type
+    typename mtl::traits::mult_result<Op1, Op2>::type
     inline operator*(const Op1& op1, const Op2& op2)
     {
-        return typename traits::mult_result<Op1, Op2>::type(op1, op2);
+        return typename mtl::traits::mult_result<Op1, Op2>::type(op1, op2);
     }
 
 
@@ -42,10 +42,10 @@ namespace matrix {
     // added by Hui Li
     template < typename Op1, typename Op2 >
     // typename enable_if_matrix<Op1, typename traits::div_result<Op1,Op2>::type>::type
-    typename traits::div_result<Op1,Op2>::type
+    typename mtl::traits::div_result<Op1,Op2>::type
     inline operator/(const Op1& op1, const Op2& op2)
     {
-        return typename traits::div_result<Op1,Op2>::type(op1,op2);
+        return typename mtl::traits::div_result<Op1,Op2>::type(op1,op2);
     }
 	
 } // namespace matrix
@@ -57,10 +57,10 @@ namespace vector {
     /** Enable-if-like technique make sure that only called when properly defined **/
     template <typename Op1, typename Op2>
     // typename enable_if_vector<Op1, typename traits::mult_result<Op1, Op2>::type>::type
-    typename traits::vec_mult_result<Op1, Op2>::type
+    typename mtl::traits::vec_mult_result<Op1, Op2>::type
     inline operator*(const Op1& op1, const Op2& op2)
     {
-        return typename traits::vec_mult_result<Op1, Op2>::type(op1, op2);
+        return typename mtl::traits::vec_mult_result<Op1, Op2>::type(op1, op2);
     }
 
 
