@@ -305,6 +305,9 @@ class dense2D : public base_sub_matrix<Value, Parameters>,
 
     void change_dim(size_type r, size_type c)
     {
+	if (r == this->num_rows() && c == this->num_cols())
+	    return;
+
 	memory_base::realloc(r * c);
 	super::change_dim(r, c);
 	init();

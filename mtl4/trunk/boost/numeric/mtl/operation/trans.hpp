@@ -56,17 +56,17 @@ namespace sfunctor {
 
 
 template <typename Value>
-typename sfunctor::const_trans<Value, typename traits::algebraic_category<Value>::type>::result_type 
+typename sfunctor::const_trans<Value, typename mtl::traits::algebraic_category<Value>::type>::result_type 
 inline trans(const Value& v)
 {
-    return sfunctor::const_trans<const Value, typename traits::algebraic_category<Value>::type>::apply(v);
+    return sfunctor::const_trans<const Value, typename mtl::traits::algebraic_category<Value>::type>::apply(v);
 };
 
 template <typename Value>
-typename sfunctor::trans<Value, typename traits::algebraic_category<Value>::type>::result_type 
+typename sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type>::result_type 
 inline trans(Value& v)
 {
-    return sfunctor::trans<Value, typename traits::algebraic_category<Value>::type>::apply(v);
+    return sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type>::apply(v);
 };
 
 

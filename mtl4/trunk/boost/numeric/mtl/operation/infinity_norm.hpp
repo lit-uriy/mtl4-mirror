@@ -46,7 +46,7 @@ namespace mtl {
 	    The maximum for n is 8 (it might be increased later).
 	**/
 	template <typename Vector>
-	typename traits::enable_if_vector<Vector, typename RealMagnitude<typename Collection<Vector>::value_type>::type>::type
+	typename mtl::traits::enable_if_vector<Vector, typename RealMagnitude<typename Collection<Vector>::value_type>::type>::type
 	inline infinity_norm(const Vector& vector)
 	{
 	    return infinity_norm<8>(vector);
@@ -57,12 +57,12 @@ namespace mtl {
 	
 	// Ignore unrolling for matrices 
 	template <unsigned long Unroll, typename Matrix>
-	typename traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
+	typename mtl::traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
 	inline infinity_norm(const Matrix& matrix)
 	{
 	    using mtl::impl::max_of_sums;
-	    typename traits::row<Matrix>::type                             row(matrix); 
-	    return max_of_sums(matrix, traits::is_row_major<typename OrientedCollection<Matrix>::orientation>(), 
+	    typename mtl::traits::row<Matrix>::type                             row(matrix); 
+	    return max_of_sums(matrix, mtl::traits::is_row_major<typename OrientedCollection<Matrix>::orientation>(), 
 			       row, num_rows(matrix));
 	}
 
@@ -73,7 +73,7 @@ namespace mtl {
 	    Matrix norms are not (yet) optimized by unrolling.
 	**/
 	template <typename Matrix>
-	typename traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
+	typename mtl::traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
 	inline infinity_norm(const Matrix& matrix)
 	{
 	    return infinity_norm<8>(matrix);
