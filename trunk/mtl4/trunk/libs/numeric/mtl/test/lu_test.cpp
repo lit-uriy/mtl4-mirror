@@ -17,7 +17,8 @@
 using namespace std;
 
 
-
+double f(double) { cout << "double\n"; return 1.0; } 
+complex<double> f(complex<double>) { cout << "complex\n"; return complex<double>(1.0, -1.0); }
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
@@ -30,10 +31,13 @@ void test(Matrix& A, const char* name)
     unsigned size= num_cols(A);
     Matrix L(size, size), U(size, size);
 
+    Scalar c= f(Scalar(1));   
+    cout << "c is: " << c << "\n";
+
     for (unsigned i= 0; i < size; i++)
 	for(unsigned j= 0; j < size; j++) {
-	    U[i][j]= i <= j ? Scalar(i+j+2) : Scalar(0);
-	    L[i][j]= i > j ? Scalar(i+j+1) : (i == j ? Scalar(1) : Scalar(0));
+	    U[i][j]= i <= j ? c * Scalar(i+j+2) : Scalar(0);
+	    L[i][j]= i > j ? c * Scalar(i+j+1) : (i == j ? Scalar(1) : Scalar(0));
 	}
     
     cout << "L is:\n" << L << "U is:\n" << U;
@@ -75,27 +79,14 @@ void test(Matrix& A, const char* name)
 int test_main(int argc, char* argv[])
 {
     using namespace mtl;
-    unsigned size= 5;
+    unsigned size= 4;
     
-#if 0
-    // Might be added for sparse matrices later
-    compressed2D<double>                                 cr(size, size);
-    compressed2D<double, matrix::parameters<col_major> > cc(size, size);
-    compressed2D<complex<double> >                       cz(size, size);
-#endif
-
     dense2D<double>                                      dr(size, size);
     dense2D<complex<double> >                            dz(size, size);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
 
-#if 0
-    test(cr, "Row-major sparse");
-    test(cc, "Column-major sparse");
-    test(cz, "Row-major complex sparse");
-#endif
-
     test(dr, "Row-major dense");
-    test(dr, "Row-major dense with complex numbers");
+    test(dz, "Row-major dense with complex numbers");
     test(dc, "Column-major dense");
 
     return 0;

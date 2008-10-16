@@ -23,7 +23,6 @@
 
 namespace mtl { namespace matrix {
 
-
 /// LU factorization in place (without pivoting and optimization so far)
 template <typename Matrix>
 void inline lu(Matrix& LU)
@@ -36,6 +35,29 @@ void inline lu(Matrix& LU)
 	LU[r][r]-= LU[r][kr] * LU[kr][r];
     }
 }
+
+#if 0
+// For illustration purposes
+template <typename Matrix>
+void inline lu(Matrix& LU)
+{
+    MTL_THROW_IF(num_rows(LU) != num_cols(LU), matrix_not_square());
+
+    typedef typename Collection<Matrix>::value_type   value_type;
+    typedef typename Collection<Matrix>::size_type    size_type;
+
+    size_type n= num_rows(LU);
+    for (size_type k= 0; k < num_rows(LU); k++) {
+	value_type pivot= LU[k][k];
+	for (size_type j= k+1; j < n; j++) {
+	    value_type alpha= LU[j][k]/= pivot;
+	    for (size_type i= k+1; i < n; i++)
+		LU[j][i]-= alpha * LU[k][i];
+	}
+    }
+}
+#endif
+
 
 /// LU factorization that returns the matrix
 template <typename Matrix>
