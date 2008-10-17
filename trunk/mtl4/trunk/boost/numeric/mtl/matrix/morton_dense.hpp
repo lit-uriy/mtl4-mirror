@@ -434,8 +434,9 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
     explicit morton_dense(const self& m, clone_ctor) 
 	    : memory_base(m, clone_ctor())
     {
-	set_ranges(m.num_rows(), m.num_cols());
-	// std::cout << "In copy constructor:\n"; print_matrix(*this);
+	init(m.num_rows(), m.num_cols());
+	*this= src;
+	// std::cout << "In clone constructor:\n" << *this;
     }
 
 
