@@ -253,8 +253,8 @@ class dense2D : public base_sub_matrix<Value, Parameters>,
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
 	  memory_base(m, clone_ctor())
     {
-	// In case of sub-matrices we need m's ldim -> init doesn't work
-	this->my_nnz= m.my_nnz; ldim= m.ldim;
+	init(); 
+	*this= m;
     }
 
     template <typename MatrixSrc>
