@@ -435,7 +435,7 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 	    : memory_base(m, clone_ctor())
     {
 	init(m.num_rows(), m.num_cols());
-	*this= src;
+	*this= m;
 	// std::cout << "In clone constructor:\n" << *this;
     }
 
