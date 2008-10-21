@@ -13,6 +13,7 @@
 #define MTL_MATRIX_BANDED_VIEW_INCLUDE
 
 #include <boost/shared_ptr.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
@@ -63,11 +64,11 @@ struct banded_view
     typedef long int                                   bsize_type;
 
     banded_view(const other& ref, bsize_type begin, bsize_type end) 
-	: base(dim_type(num_rows(ref), num_cols(ref))), ref(ref), begin(begin), end(end) 
+		: base(dim_type(mtl::matrix::num_rows(ref), mtl::matrix::num_cols(ref))), ref(ref), begin(begin), end(end) 
     {}
 
     banded_view(boost::shared_ptr<Matrix> p, bsize_type begin, bsize_type end) 
-	: base(dim_type(num_rows(*p), num_cols(*p))), my_copy(p), ref(*p), begin(begin), end(end) 
+	: base(dim_type(mtl::matrix::num_rows(*p), mtl::matrix::num_cols(*p))), my_copy(p), ref(*p), begin(begin), end(end) 
     {}
 
     value_type operator() (size_type r, size_type c) const
@@ -88,6 +89,20 @@ struct banded_view
     template <typename, typename> friend struct detail::map_value;
     //template <typename> friend struct ::mtl::sub_matrix_t<self>;
 
+	friend size_type inline num_rows(const self& A) 
+	{ 
+		using mtl::matrix::num_rows; return num_rows(A.ref); 
+	}
+	friend size_type inline num_cols(const self& A) 
+	{ 
+		using mtl::matrix::num_cols; return num_cols(A.ref); 
+	}
+	friend size_type inline size(const self& A) 
+	{ 
+		using mtl::matrix::num_rows; using mtl::matrix::num_cols;
+		return num_rows(A.ref) * num_rows(A.ref); 
+	}
+
   protected:
     boost::shared_ptr<Matrix>           my_copy;
   public:
@@ -95,31 +110,6 @@ struct banded_view
     bsize_type        begin, end;
 };
 
-
-// ================
-// Free functions
-// ================
-
-template <typename Matrix>
-typename banded_view<Matrix>::size_type
-inline num_rows(const banded_view<Matrix>& matrix)
-{
-    return matrix.num_rows();
-}
-
-template <typename Matrix>
-typename banded_view<Matrix>::size_type
-inline num_cols(const banded_view<Matrix>& matrix)
-{
-    return matrix.num_cols();
-}
-
-template <typename Matrix>
-typename banded_view<Matrix>::size_type
-inline size(const banded_view<Matrix>& matrix)
-{
-    return matrix.num_cols() * matrix.num_rows();
-}
 
 // ==========
 // Sub matrix

@@ -78,7 +78,7 @@ namespace sfunctor {
     template <typename Vector>
     struct conj<Vector, tag::vector>
     {
-	typedef vector::conj_view<Vector> result_type;
+		typedef mtl::vector::conj_view<Vector> result_type;
 
 	static inline result_type apply(const Vector& vector)
 	{
@@ -97,7 +97,7 @@ namespace sfunctor {
     namespace vector {
 
 	template <typename Vector>
-	typename traits::enable_if_vector<Vector, conj_view<Vector> >::type
+	typename mtl::traits::enable_if_vector<Vector, conj_view<Vector> >::type
 	inline conj(const Vector& v)
 	{
 	    return conj_view<Vector>(v);
@@ -107,7 +107,7 @@ namespace sfunctor {
     namespace matrix {
 
 	template <typename Matrix>
-	typename traits::enable_if_matrix<Matrix, conj_view<Matrix> >::type
+	typename mtl::traits::enable_if_matrix<Matrix, conj_view<Matrix> >::type
 	inline conj(const Matrix& v)
 	{
 	    return conj_view<Matrix>(v);
@@ -118,16 +118,16 @@ namespace sfunctor {
 
 	// Only scalar values remain here
 	template <typename Value>
-	typename traits::enable_if_scalar<
+	typename mtl::traits::enable_if_scalar<
 	    Value
 	  , typename sfunctor::conj<
 	        Value
-	      , typename traits::algebraic_category<Value>::type
+			, typename mtl::traits::algebraic_category<Value>::type
 	    >::result_type
 	>::type
 	inline conj(const Value& v)
 	{
-	    return sfunctor::conj<Value, typename traits::algebraic_category<Value>::type>::apply(v);
+		return mtl::sfunctor::conj<Value, typename traits::algebraic_category<Value>::type>::apply(v);
 	};
     }
 
@@ -164,7 +164,7 @@ namespace sfunctor {
 template <typename Value>
 inline typename sfunctor::real<Value>::result_type real(const Value& v)
 {
-    return sfunctor::real<Value>::apply(v);
+	return sfunctor::real<Value>::apply(v);
 };
 
 

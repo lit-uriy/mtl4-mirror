@@ -35,7 +35,7 @@ struct map_view
   : public vec_expr< map_view<Functor, Vector> >
 {
     typedef map_view                                   self;
-    typedef vector::vec_expr< self >                   expr_base;
+    typedef vec_expr< self >                           expr_base;
     typedef Vector                                     other;
 
     typedef typename Functor::result_type              value_type;
@@ -216,9 +216,9 @@ struct divide_by_view
 
 template <typename Vector>
 struct conj_view
-    : public map_view<sfunctor::conj<typename Vector::value_type>, Vector>
+	: public map_view<mtl::sfunctor::conj<typename Vector::value_type>, Vector>
 {
-    typedef sfunctor::conj<typename Vector::value_type>            functor_type;
+	typedef mtl::sfunctor::conj<typename Vector::value_type>            functor_type;
     typedef map_view<functor_type, Vector>                         base;
 
     conj_view(const Vector& vector)

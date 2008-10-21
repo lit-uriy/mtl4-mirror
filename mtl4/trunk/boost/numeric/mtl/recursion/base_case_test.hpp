@@ -64,9 +64,7 @@ struct max_dim_test
     template <typename Recursator>
     bool operator() (Recursator const& recursator) const
     {
-	return std::max(recursator.get_value().num_rows(), 
-			recursator.get_value().num_cols()) 
-	       <= comp;
+		return std::max(num_rows(*recursator), num_cols(*recursator)) <= comp;
     }
 
 private:

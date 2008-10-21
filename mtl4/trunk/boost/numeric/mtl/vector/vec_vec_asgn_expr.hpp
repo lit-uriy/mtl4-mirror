@@ -26,9 +26,9 @@ namespace mtl { namespace vector {
 // Model of VectorExpression
 template <class E1, class E2>
 struct vec_vec_asgn_expr 
-    : public vec_vec_aop_expr< E1, E2, sfunctor::assign<typename E1::value_type, typename E2::value_type> >
+	: public vec_vec_aop_expr< E1, E2, mtl::sfunctor::assign<typename E1::value_type, typename E2::value_type> >
 {
-    typedef vec_vec_aop_expr< E1, E2, sfunctor::assign<typename E1::value_type, typename E2::value_type> > base;
+	typedef vec_vec_aop_expr< E1, E2, mtl::sfunctor::assign<typename E1::value_type, typename E2::value_type> > base;
     vec_vec_asgn_expr( E1& v1, E2 const& v2 )
 	: base( v1, v2 )
     {}

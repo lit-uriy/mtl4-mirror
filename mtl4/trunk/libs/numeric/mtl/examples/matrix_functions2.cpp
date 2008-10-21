@@ -16,11 +16,11 @@ int main(int argc, char* argv[])
 
     std::cout << "trace(A) is " << trace(A) << "\n\n";
 
-    std::cout << "conj(A) is\n" << with_format(conj(A), 7, 1) << "\n";
+	std::cout << "conj(A) is\n" << with_format(conj(A), 7, 1) << "\n";
 
-    std::cout << "trans(A) is\n" << with_format(trans(A), 7, 1) << "\n";
+	std::cout << "trans(A) is\n" << with_format(trans(A), 7, 1) << "\n";
 
-    std::cout << "hermitian(A) is\n" << with_format(hermitian(A), 7, 1) << "\n";
+	std::cout << "hermitian(A) is\n" << with_format(hermitian(A), 7, 1) << "\n";
 
     return 0;
 }

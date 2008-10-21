@@ -114,11 +114,15 @@ struct update_proxy
     explicit update_proxy(Inserter& ins, SizeType row, SizeType col) 
 	: ins(ins), row(row), col(col) {}
     
+	struct nonsense {};
+
     template <typename Value>
     self& operator<< (Value const& val)
     {
-	return lshift(val, typename ashape::ashape<Value>::type());
+		return lshift(val, typename ashape::ashape<Value>::type());
     }
+
+	void f(typename mtl::ashape::ashape<typename Inserter::matrix_type>::type) {}
 
     template <typename Value>
     self& operator= (Value const& val)
@@ -136,20 +140,26 @@ struct update_proxy
 
   private:
 
+	typedef typename Inserter::matrix_type                               matrix_type;
+	typedef typename mtl::ashape::ashape<matrix_type>::type              matrix_shape;
+	typedef typename mtl::ashape::ashape<typename matrix_type::value_type>::type value_shape;
+
+
     // Update scalar value as before
     template <typename Value>
-    self& lshift (Value const& val, ashape::scal)
+	self& lshift (Value const& val, value_shape)
     {
-	ins.update (row, col, val);
-	return *this;
+		ins.update (row, col, val);
+		return *this;
     }
-    
-    typedef typename ashape::ashape<typename Inserter::matrix_type>::type shape_type;
+
+	
 
     // Update an entire matrix considered as block
     template <typename MatrixSrc>
-    self& lshift (const MatrixSrc& src, shape_type)
+    self& lshift (const MatrixSrc& src, matrix_shape)
     {
+		namespace traits = mtl::traits;
 	typename traits::row<MatrixSrc>::type             row(src); 
 	typename traits::col<MatrixSrc>::type             col(src); 
 	typename traits::const_value<MatrixSrc>::type     value(src); 

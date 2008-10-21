@@ -24,8 +24,8 @@ template <typename Matrix>
 void print_matrix(Matrix& matrix)
 { 
     using std::cout;
-    for (int i=0 ; i<matrix.num_rows(); i++ ){
-	for(int j=0; j<matrix.num_cols();  j++ ){
+    for (int i=0 ; i<num_rows(matrix); i++ ){
+	for(int j=0; j<num_cols(matrix);  j++ ){
 	    cout.fill (' '); cout.width (8); cout.precision (5); cout.flags (ios_base::left);
 	    cout << showpoint <<  matrix[i][j] <<"  ";
 	}

@@ -23,6 +23,7 @@ template <typename Matrix>
 inline void invert_diagonal(Matrix& matrix)
 {
     using math::reciprocal;
+	namespace traits = mtl::traits;
 
     typename traits::row<Matrix>::type       row(matrix); 
     typename traits::col<Matrix>::type       col(matrix); 
