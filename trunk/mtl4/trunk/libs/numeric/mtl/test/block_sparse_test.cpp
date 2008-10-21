@@ -29,11 +29,11 @@ int test_main(int argc, char* argv[])
 #endif
 
     // Define a 6x6 sparse matrix in a 3x3 block-sparse
-    typedef dense2D<double>    m_t;
-    typedef compressed2D<m_t>  matrix_t;
-    matrix_t                   A(3, 3);
+	typedef mtl::dense2D<double>    m_t;
+	typedef mtl::compressed2D<m_t>  matrix_t;
+    matrix_t                        A(3, 3);
     {
-	matrix::inserter<matrix_t> ins(A);
+		mtl::matrix::inserter<matrix_t> ins(A);
 
 	// First block
 	m_t  B(2, 2);
@@ -73,8 +73,8 @@ int test_main(int argc, char* argv[])
     cout << "In block A[1][0], the element [0][1] is " << A[1][0][0][1] << endl << endl;
 
 
-    typedef dense_vector<double> v_t;
-    typedef dense_vector<v_t>    vector_t;
+	typedef mtl::dense_vector<double> v_t;
+	typedef mtl::dense_vector<v_t>    vector_t;
     vector_t                     x(3);
 
     // x= [[1, 2], [3, 4], [4, 6]]^T

@@ -29,10 +29,10 @@ template <class E1, class E2>
 struct vec_vec_plus_expr 
     : vec_expr< vec_vec_plus_expr<E1, E2> >
 {
-    typedef typename operation::compute_summand<E1>::type    first_argument_type;
-    typedef typename operation::compute_summand<E2>::type    second_argument_type;
+	typedef typename mtl::operation::compute_summand<E1>::type    first_argument_type;
+	typedef typename mtl::operation::compute_summand<E2>::type    second_argument_type;
 
-    typedef typename sfunctor::plus<typename first_argument_type::value_type, 
+	typedef typename mtl::sfunctor::plus<typename first_argument_type::value_type, 
 				    typename second_argument_type::value_type>::result_type 
 	const_dereference_type;
     typedef const_dereference_type                           value_type;
@@ -41,7 +41,7 @@ struct vec_vec_plus_expr
 
 
     typedef vec_vec_op_expr< first_argument_type, second_argument_type,
-			     sfunctor::plus<typename E1::value_type, typename E2::value_type> > base;
+		mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> > base;
 
     vec_vec_plus_expr( E1 const& v1, E2 const& v2 )
 	: first(v1), second(v2)

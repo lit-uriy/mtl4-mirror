@@ -329,8 +329,8 @@ private:
 	typedef typename MatrixC::value_type                                         value_type;
 	const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
 
-	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
-	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
+	size_type i_max= num_rows(c), i_block= Tiling1 * (i_max / Tiling1),
+	          k_max= num_cols(c), k_block= Tiling2 * (k_max / Tiling2);
 	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
 	    
@@ -341,7 +341,7 @@ private:
 		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
                            tmp05= z, tmp06= z, tmp07= z, tmp08= z, tmp09= z,
  		           tmp10= z, tmp11= z, tmp12= z, tmp13= z, tmp14= z, tmp15= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + num_cols(a) * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -357,7 +357,7 @@ private:
 	for (size_type i= 0; i < i_block; i++)
 	    for (int k = k_block; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + num_cols(a) * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -369,7 +369,7 @@ private:
 	for (size_type i= i_block; i < i_max; i++)
 	    for (int k = 0; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + num_cols(a) * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -436,8 +436,8 @@ private:
 	const size_type  Tiling1= 4, Tiling2= 4;
 	const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
 
-	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
-	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
+	size_type i_max= num_rows(c), i_block= Tiling1 * (i_max / Tiling1),
+	          k_max= num_cols(c), k_block= Tiling2 * (k_max / Tiling2);
 	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
 
@@ -448,7 +448,7 @@ private:
 		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
                            tmp05= z, tmp06= z, tmp07= z, tmp08= z, tmp09= z,
  		           tmp10= z, tmp11= z, tmp12= z, tmp13= z, tmp14= z, tmp15= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + num_cols(a) * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri) {
@@ -491,7 +491,7 @@ private:
 	for (size_type i= 0; i < i_block; i++)
 	    for (int k = k_block; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + num_cols(a) * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -503,7 +503,7 @@ private:
 	for (size_type i= i_block; i < i_max; i++)
 	    for (int k = 0; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + num_cols(a) * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -569,8 +569,8 @@ private:
 	const size_type  Tiling1= 2, Tiling2= 2;
 	const value_type z= math::zero(c[0][0]);    // if this are matrices we need their size
 
-	size_type i_max= c.num_rows(), i_block= Tiling1 * (i_max / Tiling1),
-	          k_max= c.num_cols(), k_block= Tiling2 * (k_max / Tiling2);
+	size_type i_max= num_rows(c), i_block= Tiling1 * (i_max / Tiling1),
+	          k_max= num_cols(c), k_block= Tiling2 * (k_max / Tiling2);
 	size_t ari= &a(1, 0) - &a(0, 0), // how much is the offset of A's entry increased by incrementing row
 	       aci= &a(0, 1) - &a(0, 0), bri= &b(1, 0) - &b(0, 0), bci= &b(0, 1) - &b(0, 0);
 
@@ -579,7 +579,7 @@ private:
 	    for (size_type k= 0; k < k_block; k+= Tiling2) {
 
 		value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + num_cols(a) * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri) {
@@ -598,7 +598,7 @@ private:
 	for (size_type i= 0; i < i_block; i++)
 	    for (int k = k_block; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + num_cols(a) * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)
@@ -610,7 +610,7 @@ private:
 	for (size_type i= i_block; i < i_max; i++)
 	    for (int k = 0; k < k_max; k++) {
 		value_type tmp00= z;
-		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + a.num_cols() * aci;
+		const typename MatrixA::value_type *begin_a= &a(i, 0), *end_a= begin_a + num_cols(a) * aci;
 		const typename MatrixB::value_type *begin_b= &b(0, k);
 
 		for (; begin_a != end_a; begin_a+= aci, begin_b+= bri)

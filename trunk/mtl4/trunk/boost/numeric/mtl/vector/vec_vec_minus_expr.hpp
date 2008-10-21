@@ -31,7 +31,7 @@ struct vec_vec_minus_expr
     typedef typename operation::compute_summand<E1>::type    first_argument_type;
     typedef typename operation::compute_summand<E2>::type    second_argument_type;
 
-    typedef typename sfunctor::minus<typename first_argument_type::value_type, 
+	typedef typename mtl::sfunctor::minus<typename first_argument_type::value_type, 
 				     typename second_argument_type::value_type>::result_type 
 	const_dereference_type;
     typedef const_dereference_type                           value_type;
@@ -39,7 +39,7 @@ struct vec_vec_minus_expr
     typedef typename first_argument_type::size_type          size_type;
 
     typedef vec_vec_op_expr< first_argument_type, second_argument_type,
-			     sfunctor::minus<typename E1::value_type, typename E2::value_type> > base;
+		mtl::sfunctor::minus<typename E1::value_type, typename E2::value_type> > base;
 
     vec_vec_minus_expr( E1 const& v1, E2 const& v2 )
 	: first(v1), second(v2)

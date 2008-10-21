@@ -114,12 +114,7 @@ struct transposed_view
 	return ref.end_col();
     }
 
-    size_type num_rows() const
-    {
-	return ref.num_cols();
-    }
-
-    size_type begin_col() const
+	size_type begin_col() const
     {
 	return ref.begin_row();
     }
@@ -129,16 +124,26 @@ struct transposed_view
 	return ref.end_row();
     }
 
-    size_type num_cols() const
-    {
-	return ref.num_rows();
-    }
-
     size_type nnz() const
     {
 	return ref.nnz();
     }
-    
+
+	friend size_type inline num_rows(const self& A) 
+	{ 
+		using mtl::matrix::num_cols; return num_cols(A.ref); 
+	}
+	friend size_type inline num_cols(const self& A) 
+	{ 
+		using mtl::matrix::num_rows; return num_rows(A.ref); 
+	}
+	friend size_type inline size(const self& A) 
+	{ 
+		using mtl::matrix::num_rows; using mtl::matrix::num_cols;
+		return num_rows(A.ref) * num_rows(A.ref); 
+	}
+
+
 protected:
     boost::shared_ptr<Matrix>           my_copy;
 public:
@@ -146,30 +151,6 @@ public:
 };
   
 
-// ================
-// Free functions
-// ================
-
-template <typename Matrix>
-typename transposed_view<Matrix>::size_type
-inline num_rows(const transposed_view<Matrix>& A)
-{
-    return A.num_rows();
-}
-
-template <typename Matrix>
-typename transposed_view<Matrix>::size_type
-inline num_cols(const transposed_view<Matrix>& A)
-{
-    return A.num_cols();
-}
-
-template <typename Matrix>
-typename transposed_view<Matrix>::size_type
-inline size(const transposed_view<Matrix>& A)
-{
-    return A.num_cols() * A.num_rows();
-}
 
 // ==========
 // Sub matrix
@@ -228,7 +209,7 @@ namespace mtl { namespace traits {
 	    typedef typename Matrix::key_type   key_type;
 	    typedef typename Matrix::size_type  size_type;
     	
-	    transposed_row(matrix::transposed_view<Matrix> const& transposed_matrix) 
+		transposed_row(mtl::matrix::transposed_view<Matrix> const& transposed_matrix) 
 		: its_col(transposed_matrix.ref) {}
 
 	    size_type operator() (key_type const& key) const
@@ -274,15 +255,15 @@ namespace mtl { namespace traits {
     };
 
     template <class Matrix> 
-    struct const_value<matrix::transposed_view<Matrix> >
+	struct const_value<mtl::matrix::transposed_view<Matrix> >
     {
-	typedef mtl::detail::const_value_from_other<matrix::transposed_view<Matrix> > type;
+		typedef mtl::detail::const_value_from_other<mtl::matrix::transposed_view<Matrix> > type;
     };
 
     template <class Matrix> 
-    struct value<matrix::transposed_view<Matrix> >
+	struct value<mtl::matrix::transposed_view<Matrix> >
     {
-	typedef mtl::detail::value_from_other<matrix::transposed_view<Matrix> > type;
+		typedef mtl::detail::value_from_other<mtl::matrix::transposed_view<Matrix> > type;
     };
 
 
@@ -299,11 +280,11 @@ namespace mtl { namespace traits {
 	    typedef typename generator::complexity   complexity;
 	    typedef typename generator::type         type;
 	    static int const                         level = generator::level;
-	    type begin(matrix::transposed_view<Matrix> const& m)
+		type begin(mtl::matrix::transposed_view<Matrix> const& m)
 	    {
 		return generator().begin(m.ref);
 	    }
-	    type end(matrix::transposed_view<Matrix> const& m)
+		type end(mtl::matrix::transposed_view<Matrix> const& m)
 	    {
 		return generator().end(m.ref);
 	    }

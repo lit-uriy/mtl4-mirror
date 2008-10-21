@@ -19,10 +19,10 @@ namespace mtl { namespace matrix {
 
 template <typename E1, typename E2>
 struct mat_mat_plus_expr 
-    : public mat_mat_op_expr< E1, E2, sfunctor::plus<typename E1::value_type, typename E2::value_type> >,
+    : public mat_mat_op_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> >,
       public mat_expr< mat_mat_plus_expr<E1, E2> >
 {
-    typedef mat_mat_op_expr< E1, E2, sfunctor::plus<typename E1::value_type, typename E2::value_type> > op_base;
+    typedef mat_mat_op_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> > op_base;
     typedef mat_expr< mat_mat_plus_expr<E1, E2> >                                                       crtp_base;
     typedef E1                                   first_argument_type ;
     typedef E2                                   second_argument_type ;
@@ -39,9 +39,9 @@ struct mat_mat_plus_expr
 // Future versions will probably provide more efficient implementations for it
 template <typename E1, typename E2>
 struct dmat_dmat_plus_expr 
-    : public mat_mat_op_expr< E1, E2, sfunctor::plus<typename E1::value_type, typename E2::value_type> >
+    : public mat_mat_op_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> >
 {
-    typedef mat_mat_op_expr< E1, E2, sfunctor::plus<typename E1::value_type, typename E2::value_type> > base;
+    typedef mat_mat_op_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> > base;
     dmat_dmat_plus_expr( E1 const& v1, E2 const& v2 )
 	: base( v1, v2 )
     {}

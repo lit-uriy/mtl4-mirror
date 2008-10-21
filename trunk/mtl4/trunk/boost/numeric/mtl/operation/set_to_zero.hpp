@@ -77,8 +77,8 @@ namespace matrix {
     template <typename Coll>
     void set_to_zero(Coll& collection)
     {
-	mtl::impl::set_to_zero(collection, typename traits::category<Coll>::type(),
-			       typename traits::category<typename Collection<Coll>::value_type>::type());
+		mtl::impl::set_to_zero(collection, typename mtl::traits::category<Coll>::type(),
+			typename mtl::traits::category<typename Collection<Coll>::value_type>::type());
     }
     
 }

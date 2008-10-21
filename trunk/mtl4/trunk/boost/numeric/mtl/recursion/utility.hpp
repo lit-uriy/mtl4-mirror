@@ -40,7 +40,7 @@ std::size_t inline second_part(std::size_t n)
 template <typename Matrix>
 std::size_t inline outer_bound(Matrix const& matrix)
 {
-  std::size_t max_dim=std::max(matrix.num_rows(), matrix.num_cols()), bound= 1;
+  std::size_t max_dim=std::max(num_rows(matrix), num_cols(matrix)), bound= 1;
   for (; bound < max_dim;) bound<<= 1;
   return bound;
 }

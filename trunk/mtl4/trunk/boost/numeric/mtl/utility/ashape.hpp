@@ -149,11 +149,22 @@ struct ashape< vector::vec_const_ref_expr<Vector> >
 // Matrices
 // ========
 
-
+#if 0
 template <typename Value, typename Parameters>
 struct ashape<compressed2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
+};
+#endif
+
+template <typename Value, typename Parameters> struct ashape<dense2D<Value, Parameters> >;
+
+template <typename Value, typename Parameters>
+struct ashape<mtl::matrix::compressed2D<Value, Parameters> >
+{
+	typedef Value value_type;
+	typedef typename ashape<Value>::type  tmp_type;
+    typedef mat<tmp_type> type;
 };
    
 template <typename Value, typename Parameters>

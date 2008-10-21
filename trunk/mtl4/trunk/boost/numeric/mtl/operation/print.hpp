@@ -19,15 +19,34 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 
 
-
-
 namespace mtl { 
 
+namespace detail {
+
+    template <typename Collection>
+    struct with_format_t
+    {
+	explicit with_format_t(const Collection& collection, int width, int precision) 
+	    : collection(collection), width(width), precision(precision)
+	{}
+	
+	const Collection& collection;
+	int width, precision;
+    };
+
+    template <typename Collection>
+    inline std::ostream& operator<< (std::ostream& out, with_format_t<Collection> const& value) 
+    {
+	return print(value.collection, out, value.width, value.precision);
+    }
+    
+
+} // namespace detail
 
 namespace matrix {
 
     template <typename Matrix>
-    inline std::ostream& operator<< (std::ostream& out, const mat_expr<Matrix>& expr)
+	inline std::ostream& operator<< (std::ostream& out, const mat_expr<Matrix>& expr)
     {
 	return print_matrix(static_cast<const Matrix&>(expr), out, 3, 2);
     }
@@ -44,9 +63,7 @@ namespace matrix {
     {
 	return mtl::detail::with_format_t<Collection>(collection, width, precision);
     }  
-  
 } // namespace matrix
-
 
 namespace vector {
 
@@ -74,29 +91,7 @@ namespace vector {
 } // namespace vector
 
 
-namespace detail {
-
-    template <typename Collection>
-    struct with_format_t
-    {
-	explicit with_format_t(const Collection& collection, int width, int precision) 
-	    : collection(collection), width(width), precision(precision)
-	{}
-	
-	const Collection& collection;
-	int width, precision;
-    };
-
-    template <typename Collection>
-    inline std::ostream& operator<< (std::ostream& out, with_format_t<Collection> const& value) 
-    {
-	return print(value.collection, out, value.width, value.precision);
-    }
-    
-} // detail
-
-
-} // namespace mtl 
+} // mtl
 
 
 #endif // MTL_PRINT_INCLUDE

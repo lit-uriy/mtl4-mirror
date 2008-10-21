@@ -22,7 +22,7 @@ namespace mtl {
     namespace matrix {
 
 	template <typename Matrix>
-	typename traits::enable_if_matrix<Matrix, hermitian_view<Matrix> >::type
+	typename mtl::traits::enable_if_matrix<Matrix, hermitian_view<Matrix> >::type
 	inline hermitian(const Matrix& matrix)
 	{
 	    return hermitian_view<Matrix>(matrix);

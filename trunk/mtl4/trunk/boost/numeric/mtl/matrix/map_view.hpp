@@ -88,11 +88,6 @@ struct map_view
 	return ref.end_row();
     }
 
-    size_type num_rows() const
-    {
-	return ref.num_rows();
-    }
-
     size_type begin_col() const
     {
 	return ref.begin_col();
@@ -102,17 +97,26 @@ struct map_view
     {
 	return ref.end_col();
     }
-
-    size_type num_cols() const
-    {
-	return ref.num_cols();
-    }
     
     size_type nnz() const
     {
 	return ref.nnz();
     }
     
+	friend size_type inline num_rows(const self& A) 
+	{ 
+		using mtl::matrix::num_rows; return num_rows(A.ref); 
+	}
+	friend size_type inline num_cols(const self& A) 
+	{ 
+		using mtl::matrix::num_cols; return num_cols(A.ref); 
+	}
+	friend size_type inline size(const self& A) 
+	{ 
+		using mtl::matrix::num_rows; using mtl::matrix::num_cols;
+		return num_rows(A.ref) * num_rows(A.ref); 
+	}
+
     template <typename, typename> friend struct detail::map_value;
 
   protected:
@@ -122,32 +126,6 @@ struct map_view
     const other&      ref;
 };
    
-
-// ================
-// Free functions
-// ================
-
-template <typename Functor, typename Matrix>
-typename map_view<Functor, Matrix>::size_type
-inline num_rows(const map_view<Functor, Matrix>& matrix)
-{
-    return matrix.num_rows();
-}
-
-template <typename Functor, typename Matrix>
-typename map_view<Functor, Matrix>::size_type
-inline num_cols(const map_view<Functor, Matrix>& matrix)
-{
-    return matrix.num_cols();
-}
-
-template <typename Functor, typename Matrix>
-typename map_view<Functor, Matrix>::size_type
-inline size(const map_view<Functor, Matrix>& matrix)
-{
-    return matrix.num_cols() * matrix.num_rows();
-}
-
 
 // ==========
 // Sub matrix
@@ -341,9 +319,9 @@ struct divide_by_view
 
 template <typename Matrix>
 struct conj_view
-    : public map_view<sfunctor::conj<typename Matrix::value_type>, Matrix>
+	: public map_view<mtl::sfunctor::conj<typename Matrix::value_type>, Matrix>
 {
-    typedef sfunctor::conj<typename Matrix::value_type>            functor_type;
+	typedef mtl::sfunctor::conj<typename Matrix::value_type>            functor_type;
     typedef map_view<functor_type, Matrix>                         base;
 
     conj_view(const Matrix& matrix)

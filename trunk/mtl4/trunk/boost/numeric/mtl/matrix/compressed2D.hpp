@@ -359,7 +359,7 @@ class compressed2D
 
     /// Copy constructor
     compressed2D(const self& src)
-      : super(non_fixed::dimensions(num_rows(src), num_cols(src))), inserting(false)
+      : super(non_fixed::dimensions(src.num_rows(), src.num_cols())), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	matrix_copy(src, *this);
@@ -566,8 +566,6 @@ struct compressed2D_inserter
     void update(size_type row, size_type col, value_type val)
     {
 	using math::zero;
-	// Might cause problems for weird updaters (will deal with it if necessary)
-	if (val == zero(val)) return;
 	modify<Updater>(row, col, val);
     }
 

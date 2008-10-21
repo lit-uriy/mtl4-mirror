@@ -23,10 +23,10 @@ namespace mtl { namespace matrix {
 
 template <typename E1, typename E2>
 struct mat_mat_times_expr 
-    : public mat_mat_op_expr< E1, E2, sfunctor::times<typename E1::value_type, typename E2::value_type> >,
+	: public mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> >,
       public mat_expr< mat_mat_times_expr<E1, E2> >
 {
-    typedef mat_mat_op_expr< E1, E2, sfunctor::times<typename E1::value_type, typename E2::value_type> > op_base;
+	typedef mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> > op_base;
     typedef mat_expr< mat_mat_times_expr<E1, E2> >                                                       crtp_base;
     typedef mat_mat_times_expr                   self;
     typedef E1                                   first_argument_type ;

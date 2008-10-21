@@ -132,6 +132,7 @@ struct crtp_assign<io::matrix_file<IFStream, OFStream>, Matrix>
     {
 	IFStream stream(file.file_name().c_str());
 	stream >> matrix;
+	return matrix;
     }
 };
 	

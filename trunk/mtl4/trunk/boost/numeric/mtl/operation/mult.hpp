@@ -45,7 +45,7 @@ namespace mtl { namespace matrix {
 /** The 3 types must be compatible, e.g. all three matrices or b and c are column vectors and a is a matrix.
     The dimensions are checked at compile time. **/
 template <typename A, typename B, typename C>
-typename traits::enable_if_matrix<A>::type
+typename mtl::traits::enable_if_matrix<A>::type
 inline mult(const A& a, const B& b, C& c)
 {
 #if 1
@@ -53,7 +53,7 @@ inline mult(const A& a, const B& b, C& c)
 #endif
 
     // dispatch between matrices, vectors, and scalars
-    using traits::category;
+	using mtl::traits::category;
     gen_mult(a, b, c, assign::assign_sum(), typename category<A>::type(), 
 	     typename category<B>::type(), typename category<C>::type());
 }
@@ -63,11 +63,11 @@ inline mult(const A& a, const B& b, C& c)
 /** The 3 types must be compatible, e.g. all three matrices or b and c are column vectors and a is a matrix.
     The dimensions are checked at compile time. **/
 template <typename A, typename B, typename C>
-typename traits::enable_if_matrix<A>::type
+typename mtl::traits::enable_if_matrix<A>::type
 inline mult_add(const A& a, const B& b, C& c)
 {
     // dispatch between matrices, vectors, and scalars
-    using traits::category;
+    using mtl::traits::category;
     gen_mult(a, b, c, assign::plus_sum(), typename category<A>::type(), 
 	     typename category<B>::type(), typename category<C>::type());
 }
@@ -102,7 +102,7 @@ inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag
     MTL_THROW_IF(num_rows(a) != num_rows(c) || num_cols(a) != num_rows(b) || num_cols(b) != num_cols(c),
 		 incompatible_size());
     // dispatch between dense and sparse
-    using traits::category;
+    using mtl::traits::category;
     mat_mat_mult(a, b, c, Assign(), typename category<MatrixA>::type(), 
 		 typename category<MatrixB>::type(), typename category<MatrixC>::type());
 }
@@ -272,7 +272,7 @@ inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, t
     MTL_THROW_IF(num_rows(a) != size(w) || num_cols(a) != size(v), incompatible_size());
 
     // dispatch between dense and sparse matrices
-    using traits::category;
+	using mtl::traits::category;
     mat_cvec_mult(a, v, w, Assign(), typename category<Matrix>::type()); 
 }
 

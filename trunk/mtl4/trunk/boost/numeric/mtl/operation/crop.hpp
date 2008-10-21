@@ -21,7 +21,7 @@ namespace mtl {
 	/// Remove all zero entries from a collection
 	/** Does nothing for dense collections **/
 	template <typename T>
-	typename traits::enable_if_vector<T, T&>::type inline crop(T& x)
+	typename mtl::traits::enable_if_vector<T, T&>::type inline crop(T& x)
 	{
 	    x.crop(); return x;
 	}
@@ -32,7 +32,7 @@ namespace mtl {
 	/// Remove all zero entries from a collection
 	/** Does nothing for dense collections **/
 	template <typename T>
-	typename traits::enable_if_matrix<T, T&>::type inline crop(T& x)
+	typename mtl::traits::enable_if_matrix<T, T&>::type inline crop(T& x)
 	{
 	    x.crop(); return x;
 	}
