@@ -19,7 +19,7 @@ using namespace itl;
 int main()
 {
     // For a more realistic example set sz to 1000 or larger
-    const int size = 100, N = size * size; 
+    const int size = 10, N = size * size; 
 
     typedef compressed2D<double>  matrix_type;
     compressed2D<double>          A(N, N), dia(N, N);

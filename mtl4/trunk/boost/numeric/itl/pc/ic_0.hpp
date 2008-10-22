@@ -82,7 +82,7 @@ class ic_0
         typedef typename range_generator<nz, cur_type>::type      icur_type;            
 
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
-	U= upper(A);
+	U= upper(A); crop(U);
 	U_type L(lower(A)); // needed to find non-zeros in column
 
         typename mtl::traits::col<U_type>::type                   col(U), col_l(L);

@@ -294,8 +294,10 @@ class dense2D : public base_sub_matrix<Value, Parameters>,
 	if (this->category == memory_base::view || src.category == memory_base::view)
 	    matrix_copy(src, *this);
 	else {
+	    if (this->num_rows() != src.num_rows() || this->num_cols() != src.num_cols()) {
 		super::change_dim(src.num_rows(), src.num_cols());
 		init();
+	    }
 	    memory_base::move_assignment(src);
 	}
 	// std::cout << "End of move assignment: this* = \n" << *this;
