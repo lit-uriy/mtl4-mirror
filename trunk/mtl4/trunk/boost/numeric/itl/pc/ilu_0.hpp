@@ -103,8 +103,8 @@ class ilu_0
 	    inv_dia[i]= reciprocal(LU[i][i]);
 	}
 
-	U= upper(LU); invert_diagonal(U);
-	L= strict_lower(LU); 
+	U= upper(LU); crop(U); invert_diagonal(U);
+	L= strict_lower(LU); crop(L);
     }
     
     L_type                       L;
