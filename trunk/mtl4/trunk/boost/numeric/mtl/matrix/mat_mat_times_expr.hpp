@@ -13,6 +13,7 @@
 #define MTL_MAT_MAT_TIMES_EXPR_INCLUDE
 
 #include <boost/shared_ptr.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/matrix/mat_mat_op_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
@@ -26,11 +27,15 @@ struct mat_mat_times_expr
 	: public mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> >,
       public mat_expr< mat_mat_times_expr<E1, E2> >
 {
-	typedef mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> > op_base;
+    typedef mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> > op_base;
     typedef mat_expr< mat_mat_times_expr<E1, E2> >                                                       crtp_base;
     typedef mat_mat_times_expr                   self;
     typedef E1                                   first_argument_type ;
     typedef E2                                   second_argument_type ;
+    typedef typename E1::orientation             orientation;
+    typedef mtl::non_fixed::dimensions           dim_type;
+    typedef typename E1::key_type                key_type;
+
     
     mat_mat_times_expr( E1 const& v1, E2 const& v2 )
 	: op_base( v1, v2 ), crtp_base(*this), first(v1), second(v2)
