@@ -35,7 +35,8 @@ namespace itl {
     basic_iteration(Real nb, int max_iter_, Real t, Real a = Real(0))
       : error(0), i(0), normb_(nb), max_iter(max_iter_), rtol_(t), atol_(a) {}
 
-  
+    virtual ~basic_iteration() {}
+
     template <class Vector>
     bool finished(const Vector& r) {
       Real normr_ = std::abs(two_norm(r)); 
