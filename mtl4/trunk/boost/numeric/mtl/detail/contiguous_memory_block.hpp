@@ -280,7 +280,7 @@ struct contiguous_memory_block
     contiguous_memory_block() : category(own), data(0) {}
 
     explicit contiguous_memory_block(Value *data, std::size_t size, bool is_view= false) 
-	: category(is_view ? view : external), size_base(size), data(data)
+	: size_base(size), category(is_view ? view : external), data(data)
     {}    
 
     explicit contiguous_memory_block(std::size_t size) : category(own)
