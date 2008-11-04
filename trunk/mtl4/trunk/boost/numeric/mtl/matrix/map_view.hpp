@@ -136,9 +136,9 @@ struct sub_matrix_t< mtl::matrix::map_view<Functor, Matrix> >
     typedef mtl::matrix::map_view<Functor, Matrix>                                     view_type;
 
     // Mapping of sub-matrix type
-    typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type                  ref_sub_type;
+    typedef typename sub_matrix_t<Matrix>::const_sub_matrix_type                       ref_sub_type;
     typedef mtl::matrix::map_view<Functor, ref_sub_type>                               const_sub_matrix_type;
-    typedef typename view_type::size_type                                         size_type;
+    typedef typename view_type::size_type                                              size_type;
 
     const_sub_matrix_type operator()(view_type const& view, size_type begin_r, size_type end_r, 
 				     size_type begin_c, size_type end_c)
