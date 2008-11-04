@@ -12,6 +12,7 @@
 #ifndef MTL_HERMITIAN_VIEW_INCLUDE
 #define MTL_HERMITIAN_VIEW_INCLUDE
 
+#include <boost/shared_ptr.hpp>
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
