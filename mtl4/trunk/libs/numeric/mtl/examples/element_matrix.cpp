@@ -56,9 +56,9 @@ int main(int argc, char* argv[])
 
     // Fill the matrices generically
     fill(A); fill(B); fill(C);
-    std::cout << "A is \n" << with_format(A, 4, 1) 
-	      << "\nB is \n" << with_format(B, 4, 1)
-	      << "\nC is \n" << with_format(C, 4, 1);
+    std::cout << "A is \n" << with_format(A, 4, 3) 
+	      << "\nB is \n" << with_format(B, 4, 3)
+	      << "\nC is \n" << with_format(C, 4, 3);
 
     return 0;
 }
