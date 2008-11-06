@@ -12,8 +12,9 @@
 #ifndef ITL_BICG_INCLUDE
 #define ITL_BICG_INCLUDE
 
-#include <complex>
+#include <cmath>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/itl/itl_fwd.hpp>
 
 namespace itl {
 
