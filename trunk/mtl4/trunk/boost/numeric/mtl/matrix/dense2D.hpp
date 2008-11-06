@@ -308,14 +308,29 @@ class dense2D : public base_sub_matrix<Value, Parameters>,
     // import operators from CRTP base class
     using assign_base::operator=;
 
-    void change_dim(size_type r, size_type c)
+    void change_dim(size_type r, size_type c, bool keep_data = false)
     {
 	if (r == this->num_rows() && c == this->num_cols())
 	    return;
 
-	memory_base::realloc(r * c);
+	self temp;
+	if(keep_data){
+		temp.super::change_dim(this->num_rows(), this->num_cols());
+		temp.init();
+		temp.memory_base::move_assignment(*this);
+	}
+	memory_base::realloc(r*c);
 	super::change_dim(r, c);
 	init();
+	if(keep_data){
+		if (r > temp.num_rows() || c > temp.num_cols()){
+			set_to_zero(*this);
+			sub_matrix(*this,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()))
+				= sub_matrix(temp,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()));
+		}else{
+			*this = sub_matrix(temp,0,r,0,c);
+		}
+	}
     }
 
 
