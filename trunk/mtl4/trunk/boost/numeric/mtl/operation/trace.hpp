@@ -24,7 +24,7 @@ template <typename Matrix>
 typename Collection<Matrix>::value_type
 inline trace(const Matrix& matrix)
 {
-    using math::one;
+    using math::zero;
     typedef typename Collection<Matrix>::value_type value_type;
 
     MTL_THROW_IF(num_rows(matrix) != num_cols(matrix), matrix_not_square());
@@ -32,12 +32,12 @@ inline trace(const Matrix& matrix)
     // If matrix is empty then the result is the identity from the default-constructed value
     if (num_rows(matrix) == 0) {
 	value_type ref;
-	return one(ref);
+	return zero(ref);
     }
 
     value_type value= matrix[0][0];
     for (unsigned i= 1; i < num_rows(matrix); i++)
-	value*= matrix[i][i];	
+	value+= matrix[i][i];	
     return value;
 }
 

@@ -22,9 +22,20 @@ namespace itl {
     namespace pc {
 
 	template <typename Matrix> class identity;
+	template <typename Matrix, typename Vector> Vector solve(const identity<Matrix>&, const Vector& x);	
+	template <typename Matrix, typename Vector> Vector adjoint_solve(const identity<Matrix>&, const Vector& x);
+
 	template <typename Matrix> class diagonal;
+	template <typename Matrix, typename Vector> Vector solve(const diagonal<Matrix>& P, const Vector& x);
+	template <typename Matrix, typename Vector> Vector adjoint_solve(const diagonal<Matrix>& P, const Vector& x);
+
 	template <typename Matrix> class ilu_0;
+	template <typename Matrix, typename Vector> Vector solve(const ilu_0<Matrix>& P, const Vector& x);
+	template <typename Matrix, typename Vector> Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& x);
+
 	template <typename Matrix> class ic_0;
+	template <typename Matrix, typename Vector> Vector solve(const ic_0<Matrix>& P, const Vector& x);
+	template <typename Matrix, typename Vector> Vector adjoint_solve(const ic_0<Matrix>& P, const Vector& x);
 
     } //  namespace pc
 

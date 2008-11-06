@@ -13,7 +13,7 @@
 #define ITL_CG_INCLUDE
 
 #include <boost/numeric/mtl/concept/collection.hpp>
-
+#include <boost/numeric/itl/itl_fwd.hpp>
 
 namespace itl {
 
