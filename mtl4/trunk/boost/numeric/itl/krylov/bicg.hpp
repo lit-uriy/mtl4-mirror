@@ -12,6 +12,7 @@
 #ifndef ITL_BICG_INCLUDE
 #define ITL_BICG_INCLUDE
 
+#include <complex>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace itl {
@@ -22,6 +23,7 @@ template < typename LinearOperator, typename Vector,
 int bicg(const LinearOperator &A, Vector &x, const Vector &b,
 	 const Preconditioner &M, Iteration& iter)
 {
+    using std::conj; 
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     Scalar     rho_1(0), rho_2(0), alpha(0), beta(0);
     Vector     r(b - A * x), z(size(x)), p(size(x)), q(size(x)),
