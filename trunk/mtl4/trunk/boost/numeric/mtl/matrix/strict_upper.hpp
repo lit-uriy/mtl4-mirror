@@ -12,6 +12,8 @@
 #ifndef MTL_MATRIX_STRICT_UPPER_INCLUDE
 #define MTL_MATRIX_STRICT_UPPER_INCLUDE
 
+#include <boost/numeric/mtl/matrix/bands.hpp>
+
 namespace mtl { namespace matrix {
 
 namespace traits {
@@ -19,7 +21,7 @@ namespace traits {
     template <typename Matrix>
     struct strict_upper
     {
-	typedef typename traits::bands<Matrix>::type type;
+	typedef typename bands<Matrix>::type type;
     };
 }
 

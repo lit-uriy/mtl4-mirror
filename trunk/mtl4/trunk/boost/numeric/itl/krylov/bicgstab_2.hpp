@@ -13,6 +13,7 @@
 #define ITL_BICGSTAB_2_INCLUDE
 
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace itl {
