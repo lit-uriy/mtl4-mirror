@@ -17,6 +17,7 @@
 
 namespace itl {
 
+/// Conjugate Gradients
 template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpaceB, 
 	   typename Preconditioner, typename Iteration >
 int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
@@ -50,9 +51,19 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
       
       ++iter;
   }
-  return iter.error_code();
+  return iter;
 }
 
+
+
+/// Conjugate Gradients with ignored right preconditioner to unify interface
+template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpaceB, 
+	   typename Preconditioner, typename RightPreconditioner, typename Iteration >
+int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
+       const Preconditioner& M, const RightPreconditioner&, Iteration& iter)
+{
+    return cg(A, x, b, M, iter);
+}
 
 } // namespace itl
 

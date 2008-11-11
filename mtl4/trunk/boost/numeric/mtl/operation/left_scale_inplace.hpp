@@ -13,9 +13,12 @@
 #define MTL_LEFT_SCALE_INPLACE_INCLUDE
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/operation/assign_each_nonzero.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
+#include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 
 #include <boost/lambda/lambda.hpp>
 
@@ -44,10 +47,10 @@ namespace mtl {
 	
 	/// Scale matrix \p c from left with scalar or matrix factor \p alpha; \p c is altered
 	template <typename Factor, typename Matrix>
-	typename traits::enable_if_matrix<Matrix, Matrix&>::type
+	typename mtl::traits::enable_if_matrix<Matrix, Matrix&>::type
 	inline left_scale_inplace(const Factor& alpha, Matrix& A)
 	{
-	    return mtl::impl::left_scale_inplace(alpha, typename traits::category<Factor>::type(), A);
+	    return mtl::impl::left_scale_inplace(alpha, typename mtl::traits::category<Factor>::type(), A);
 	}
     }
 
@@ -58,7 +61,7 @@ namespace mtl {
 	typename traits::enable_if_vector<Vector, Vector&>::type
 	inline left_scale_inplace(const Factor& alpha, Vector& v)
 	{
-	    return mtl::impl::left_scale_inplace(alpha, typename traits::category<Factor>::type(), v);
+	    return mtl::impl::left_scale_inplace(alpha, typename mtl::traits::category<Factor>::type(), v);
 	}
     }
 

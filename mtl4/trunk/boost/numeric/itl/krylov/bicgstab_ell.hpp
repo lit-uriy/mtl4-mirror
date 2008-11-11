@@ -17,6 +17,7 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/matrix/strict_upper.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace itl {
