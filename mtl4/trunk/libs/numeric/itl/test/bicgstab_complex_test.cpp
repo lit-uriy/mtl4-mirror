@@ -14,16 +14,13 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
-using namespace mtl;
-using namespace itl;
-
 template <typename Matrix>
 void fill(Matrix& m)
 {
   double s=19, u=21, p=16, e=5, r=18, l =12;
 
   std::complex<double> delta(2,1);
-  matrix::inserter<Matrix> sm(m);
+  mtl::matrix::inserter<Matrix> sm(m);
   // set diagonal
   sm(0,0) << s;
   sm(1,1) << u;
@@ -47,16 +44,16 @@ int main()
   // For a more realistic example set size to 1000 or larger
   const int N = 5;
 
-  typedef compressed2D<std::complex<double> > matrix_type;
+  typedef mtl::compressed2D<std::complex<double> > matrix_type;
   matrix_type                   A(N, N);
 
-  pc::identity<matrix_type>     P(A);
-  dense_vector<std::complex<double> > b(N, std::complex<double>(1,1)), x(N);
+  itl::pc::identity<matrix_type>     P(A);
+  mtl::dense_vector<std::complex<double> > b(N, std::complex<double>(1,1)), x(N);
 
   fill(A);
   x= 0;
 
-  noisy_iteration<double> iter(b, N, 1.e-6);
+  itl::noisy_iteration<double> iter(b, N, 1.e-6);
   bicgstab(A, x, b, P, iter);
  
   return 0;

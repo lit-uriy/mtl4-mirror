@@ -129,6 +129,10 @@ namespace sfunctor {
 	{
 		return mtl::sfunctor::conj<Value, typename traits::algebraic_category<Value>::type>::apply(v);
 	};
+
+	float inline conj(float v) { return v; }
+	double inline conj(double v) { return v; }
+	long double inline conj(long double v) { return v; }
     }
 
     using vector::conj;
