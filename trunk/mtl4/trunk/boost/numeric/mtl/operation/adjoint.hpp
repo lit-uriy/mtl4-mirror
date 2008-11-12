@@ -14,14 +14,14 @@
 
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 namespace traits {
 
     template <typename LinOp>
     struct adjoint
     {
-		typedef mtl::matrix::hermitian_view<LinOp>  type;
+	typedef mtl::matrix::hermitian_view<LinOp>  type;
 	type operator()(const LinOp& A)
 	{
 	    return hermitian(A);
@@ -37,6 +37,6 @@ inline adjoint(const LinOp& A)
     return traits::adjoint<LinOp>()(A);
 }
 
-} // namespace mtl
+}} // namespace mtl::matrix
 
 #endif // MTL_ADJOINT_INCLUDE

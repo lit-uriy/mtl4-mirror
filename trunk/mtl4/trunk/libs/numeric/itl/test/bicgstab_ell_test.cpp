@@ -18,9 +18,6 @@
 #include <boost/numeric/itl/itl.hpp>
 #include <boost/numeric/itl/krylov/bicgstab_ell.hpp>
 
-using namespace mtl;
-using namespace itl;
-
 
 struct Random
 {
@@ -37,7 +34,7 @@ template <typename Matrix>
 void test1(Matrix& m, double tau)
 {
   Random m_rand;
-  matrix::inserter<Matrix> ins(m);
+  mtl::matrix::inserter<Matrix> ins(m);
   size_t nrows=num_rows(m);
   std::complex<double> val;
   for (size_t r=0;r<nrows;++r)
@@ -61,6 +58,9 @@ int test_main(int argc, char* argv[])
     const int N = 100; // Original from Jan had 2000 
   const int Niter = 3*N;
 
+  using mtl::compressed2D; using mtl::dense_vector;
+  using itl::noisy_iteration; using itl::pc::identity; using itl::pc::ilu_0;
+
   typedef compressed2D<std::complex<double> > matrix_type;
   //typedef compressed2D<std::complex<double> ,matrix::parameters<tag::col_major> > matrix_type;
   matrix_type                   A(N, N);
@@ -68,7 +68,7 @@ int test_main(int argc, char* argv[])
 
   test1(A,0.194);
   std::cout << "A has " << A.nnz() << " non-zero entries" << std::endl;
-  pc::identity<matrix_type>     Ident(A);
+  identity<matrix_type>     Ident(A);
 
   std::cout << "Non- preconditioned bicgstab" << std::endl;
   std::cout << "Won't convergence (for large examples)!" << std::endl;
@@ -97,7 +97,7 @@ int test_main(int argc, char* argv[])
   noisy_iteration<double> iter_8b(b, Niter, 1.e-8);
   bicgstab_ell(A, x, b, Ident, Ident, iter_8b,8);
 
-  pc::ilu_0<matrix_type>        P(A);
+  ilu_0<matrix_type>        P(A);
   
   std::cout << "Right ilu(0) preconditioned bicgstab(1)" << std::endl;
   x= 0.5;

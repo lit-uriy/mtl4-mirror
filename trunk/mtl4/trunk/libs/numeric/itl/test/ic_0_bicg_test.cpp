@@ -12,26 +12,23 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
-using namespace mtl;
-using namespace itl;
-
 
 int main()
 {
     // For a more realistic example set sz to 1000 or larger
     const int size = 10, N = size * size; 
 
-    typedef compressed2D<double>  matrix_type;
-    compressed2D<double>          A(N, N), dia(N, N);
-    matrix::laplacian_setup(A, size, size);
+    typedef mtl::compressed2D<double>  matrix_type;
+    mtl::compressed2D<double>          A(N, N), dia(N, N);
+    laplacian_setup(A, size, size);
    
-    pc::ic_0<matrix_type>         P(A);
-    dense_vector<double>          x(N, 1.0), b(N);
+    itl::pc::ic_0<matrix_type>         P(A);
+    mtl::dense_vector<double>          x(N, 1.0), b(N);
     
     b= A * x;
     x= 0;
     
-    noisy_iteration<double> iter(b, N, 1.e-6);
+    itl::noisy_iteration<double> iter(b, N, 1.e-6);
     bicg(A, x, b, P, iter);
     
     return 0;
