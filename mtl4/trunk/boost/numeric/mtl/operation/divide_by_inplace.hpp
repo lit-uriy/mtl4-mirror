@@ -23,8 +23,7 @@ namespace mtl {
 	template <typename Factor, typename Collection>
 	void divide_by_inplace(Collection& c, const Factor& alpha, tag::scalar)
 	{
-		using namespace boost::lambda;
-		assign_each_nonzero(c, _1 / alpha);
+		assign_each_nonzero(c, boost::lambda::_1 / alpha);
 	}
 	
 	/// Divide collection \p c (from right) by factor \p alpha; \p c is altered
