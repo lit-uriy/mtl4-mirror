@@ -23,6 +23,19 @@ namespace itl {
   template <class Real>
   class noisy_iteration : public basic_iteration<Real> {
     typedef basic_iteration<Real> super;
+
+    void print_resid()
+    {
+      using std::cout; using std::endl;
+#     ifndef ITL_NO_RESIDUUM_LOGGING
+#       ifdef ITL_COMPLETE_RESIDUUM_LOGGING
+          cout << "iteration " << this->i << ": resid " << this->resid() << endl;
+#       else
+	  if (this->i % 100 == 0)
+	    std::cout << "iteration " << this->i << ": resid " << this->resid() << endl;
+#       endif
+#     endif
+    }
   public:
   
     template <class Vector>
@@ -32,9 +45,6 @@ namespace itl {
 
     template <class Vector>
     bool finished(const Vector& r) {
-      using std::cout;
-      using std::endl;
-
       Real normr_ = std::abs(two_norm(r)); 
       bool ret;
       if (this->converged(normr_))
@@ -45,9 +55,7 @@ namespace itl {
 	this->error = 1;
 	ret = true;
       }
-      cout << "iteration " << this->i << ": resid " 
-           << this->resid()
-	   << endl;
+      print_resid();
       return ret;
     }
 
@@ -65,9 +73,7 @@ namespace itl {
 	this->error = 1;
 	ret = true;
       }
-      cout << "iteration " << this->i  << ": resid " 
-           << this->resid()
-	   << endl;
+      print_resid();
       return ret;
     }
 
@@ -85,22 +91,25 @@ namespace itl {
 	this->error = 1;
 	ret = true;
       }
-     cout << "iteration " << this->i << ": resid " 
-           << this->resid() << endl;
+      print_resid();
       return ret;
     }
   
+    operator int() { return error_code(); }
+
     int error_code() {
       using std::cout;
       using std::endl;
 
-      cout << "finished! error code = " << this->error << endl;
-      cout << this->iterations() << " iterations" << endl;
-      cout << this->resid() << " is actual final residual. " << endl
-	   << this->resid()/this->normb() << " is actual relative tolerance achieved. "
-	   << endl;
-      cout << "Relative tol: " << this->rtol_ << "  Absolute tol: " << this->atol_ << endl;
-      cout << "Convergence:  " << pow(this->rtol_, 1.0 / double(this->iterations())) << endl;
+#     ifndef ITL_NO_RESIDUUM_LOGGING
+        cout << "finished! error code = " << this->error << endl;
+	cout << this->iterations() << " iterations" << endl;
+	cout << this->resid() << " is actual final residual. " << endl
+	     << this->resid()/this->normb() << " is actual relative tolerance achieved. "
+	     << endl;
+	cout << "Relative tol: " << this->rtol_ << "  Absolute tol: " << this->atol_ << endl;
+	cout << "Convergence:  " << pow(this->rtol_, 1.0 / double(this->iterations())) << endl;
+#     endif
       return this->error;
     }
 
