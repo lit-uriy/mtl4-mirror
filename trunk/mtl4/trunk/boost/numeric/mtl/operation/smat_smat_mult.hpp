@@ -28,7 +28,8 @@ inline void smat_smat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assig
     if (Assign::init_to_zero) set_to_zero(c);
     
     // Average numbers of non-zeros per row
-    double ava= double(a.nnz()) / num_rows(a), avb= double(b.nnz()) / num_rows(b); 
+    double ava= num_rows(a) ? double(a.nnz()) / num_rows(a) : 0, 
+	   avb= num_rows(b) ? double(b.nnz()) / num_rows(b) : 0; 
 
     // Define Updater type corresponding to assign mode
     typedef typename Collection<MatrixC>::value_type                            c_value_type;
