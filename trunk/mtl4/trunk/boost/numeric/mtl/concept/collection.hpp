@@ -323,7 +323,7 @@ namespace mtl {
     concept_map Collection<compressed2D<Value, Parameters> >
     {
 	typedef Value            value_type;
-	typedef const Value&     const_reference;
+	typedef Value            const_reference;
 	typedef typename compressed2D<Value, Parameters>::size_type size_type;
     };
 #else
@@ -333,6 +333,26 @@ namespace mtl {
 	typedef Value            value_type;
 	typedef Value            const_reference;
 	typedef typename compressed2D<Value, Parameters>::size_type size_type;
+    };
+
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Vector>
+    concept_map Collection<multi_vector<Vector> >
+    {
+	typedef typename multi_vector<Vector>::value_type   value_type;
+	typedef typename multi_vector<Vector>::value_type   const_reference;
+	typedef typename multi_vector<Vector>::size_type    size_type;
+    };
+#else
+    template <typename Vector>
+    struct Collection<multi_vector<Vector> >
+    {
+	typedef typename multi_vector<Vector>::value_type   value_type;
+	typedef typename multi_vector<Vector>::value_type   const_reference;
+	typedef typename multi_vector<Vector>::size_type    size_type;
     };
 
 #endif
@@ -718,6 +738,26 @@ namespace mtl {
 	: public Collection<mtl::vector::dense_vector<Value, Parameters> >
     {
 	typedef typename mtl::vector::dense_vector<Value, Parameters>::orientation   orientation;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value>
+    concept_map OrientedCollection<std::vector<Value> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef typename std::vector<Value>::size_type size_type;
+
+	typedef mtl::tag::col_major   orientation;
+    };
+#else
+    template <typename Value>
+    struct OrientedCollection<std::vector<Value> >
+	: public Collection<std::vector<Value> >
+    {
+	typedef mtl::tag::col_major   orientation;
     };
 #endif
 

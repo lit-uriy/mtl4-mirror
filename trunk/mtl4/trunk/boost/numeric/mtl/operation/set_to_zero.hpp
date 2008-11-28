@@ -13,6 +13,7 @@
 #define MTL_SET_TO_0_INCLUDE
 
 #include <algorithm>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
@@ -20,7 +21,17 @@
 
 namespace mtl {
 
-    // template <typename Coll> void set_to_zero(Coll& collection);
+    // Forward declarations
+    namespace matrix { 
+	template <typename Coll> 
+	typename mtl::traits::enable_if_matrix<Coll>::type 
+	set_to_zero(Coll& collection); 
+    }
+    namespace vector { 
+	template <typename Coll> 
+	typename mtl::traits::enable_if_vector<Coll>::type
+	set_to_zero(Coll& collection); 
+    }
 
     namespace impl {
 
@@ -31,6 +42,15 @@ namespace mtl {
 	    typename Collection<Coll>::value_type  ref, my_zero(zero(ref));
 
 	    std::fill(collection.elements(), collection.elements()+collection.used_memory(), my_zero);
+	}
+
+	template <typename Coll>
+	void set_to_zero(Coll& collection, tag::std_vector, tag::scalar)
+	{
+	    using math::zero;
+	    typename Collection<Coll>::value_type  ref, my_zero(zero(ref));
+
+	    std::fill(collection.begin(), collection.end(), my_zero);
 	}
 
 	template <typename Matrix>
@@ -67,6 +87,15 @@ namespace mtl {
 	    collection.make_empty();
 	}
 	
+	// Is approbriate for all sparse matrices and vectors (including collections as value_type)
+	template <typename Coll>
+	void set_to_zero(Coll& collection, tag::multi_vector, tag::universe)
+	{
+	    using mtl::vector::set_to_zero;
+	    for (typename Collection<Coll>::size_type i= 0; i < num_cols(collection); ++i)
+		set_to_zero(collection.vector(i));
+	}
+	
     }
 
 
@@ -75,10 +104,12 @@ namespace matrix {
     // Sets all values of a collection to 0
     // More spefically the defined multiplicative identity element
     template <typename Coll>
-    void set_to_zero(Coll& collection)
+    typename mtl::traits::enable_if_matrix<Coll>::type
+    set_to_zero(Coll& collection)
     {
-		mtl::impl::set_to_zero(collection, typename mtl::traits::category<Coll>::type(),
-			typename mtl::traits::category<typename Collection<Coll>::value_type>::type());
+	using mtl::traits::category;
+	typedef typename Collection<Coll>::value_type value_type;
+	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename category<value_type>::type());
     }
     
 }
@@ -86,10 +117,12 @@ namespace matrix {
 namespace vector {
 
     template <typename Coll>
-    void set_to_zero(Coll& collection)
+    typename mtl::traits::enable_if_vector<Coll>::type
+    set_to_zero(Coll& collection)
     {
-	mtl::impl::set_to_zero(collection, typename traits::category<Coll>::type(),
-			       typename traits::category<typename Collection<Coll>::value_type>::type());
+	using mtl::traits::category;
+	typedef typename Collection<Coll>::value_type value_type;
+	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename category<value_type>::type());
     }
 
 }

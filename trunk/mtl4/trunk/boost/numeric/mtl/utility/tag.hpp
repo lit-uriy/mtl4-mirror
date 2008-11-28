@@ -158,11 +158,30 @@ struct compressed2D
   : virtual compressed2D_view, virtual has_iterator
 {};
 
+/// Tag for multi_vector
+// Maybe splitting later into sparse and dense form
+struct multi_vector
+  : virtual matrix, virtual dense
+{};
+
+/// Tag for transposed multi_vector
+// Maybe splitting later into sparse and dense form
+struct transposed_multi_vector
+  : virtual matrix, virtual dense
+{};
+
+/// Tag for transposed multi_vector
+// Maybe splitting later into sparse and dense form
+struct hermitian_multi_vector
+  : virtual matrix, virtual dense
+{};
+
 /// Tag for bottom of the category lattice
 /** Only for completeness; probably not needed in practice. */
 struct bottom
-    : virtual compressed2D, virtual morton_dense, virtual dense2D, 
-      virtual dense_col_vector, virtual dense_row_vector, virtual unknown
+  : virtual compressed2D, virtual morton_dense, virtual dense2D, 
+    virtual dense_col_vector, virtual dense_row_vector, virtual unknown,
+    virtual multi_vector
 {};
 
 // =====================

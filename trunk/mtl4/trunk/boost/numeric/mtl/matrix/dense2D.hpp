@@ -137,11 +137,12 @@ namespace detail
   
 // Dense 2D matrix type
 template <typename Value, typename Parameters = parameters<> >
-class dense2D : public base_sub_matrix<Value, Parameters>, 
-		public mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, 
-							     detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
-                public crtp_base_matrix< dense2D<Value, Parameters>, Value, std::size_t >,
-		public mat_expr< dense2D<Value, Parameters> >
+class dense2D 
+  : public base_sub_matrix<Value, Parameters>, 
+    public mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, 
+						 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
+    public crtp_base_matrix< dense2D<Value, Parameters>, Value, std::size_t >,
+    public mat_expr< dense2D<Value, Parameters> >
 {
     typedef dense2D                                           self;
     typedef base_sub_matrix<Value, Parameters>                super;

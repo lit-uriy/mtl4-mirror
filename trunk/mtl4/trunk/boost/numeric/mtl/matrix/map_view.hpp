@@ -41,6 +41,7 @@ struct map_view
     typedef map_view                                   self;
     typedef mat_expr< self >                           expr_base;
     typedef Matrix                                     other;
+    typedef const Matrix&                              const_ref_type;
     typedef typename Matrix::orientation               orientation;
  
     typedef typename Functor::result_type              value_type;

@@ -22,10 +22,10 @@ namespace mtl { namespace matrix {
 
 template <class Matrix> 
 struct hermitian_view 
-	: public map_view<mtl::sfunctor::conj<typename Matrix::value_type>, 
-		      transposed_view<Matrix> >
+  : public map_view<mtl::sfunctor::conj<typename Matrix::value_type>, 
+		    transposed_view<Matrix> >
 {
-	typedef mtl::sfunctor::conj<typename Matrix::value_type>       functor_type;
+    typedef mtl::sfunctor::conj<typename Matrix::value_type>       functor_type;
     typedef map_view<functor_type, transposed_view<Matrix> >       base;
 
     hermitian_view(const Matrix& matrix)
@@ -53,8 +53,8 @@ namespace mtl { namespace traits {
 
 template <typename Matrix>
 struct row< mtl::matrix::hermitian_view<Matrix> >
-    : public row< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-				   transposed_view<Matrix> > >
+  : public row< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+				      transposed_view<Matrix> > >
 {};
 
 template <typename Matrix>
