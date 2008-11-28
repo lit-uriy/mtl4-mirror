@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 
@@ -46,6 +47,36 @@ inline void mat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assi
     }
 }
 
+// Multi-vector vector multiplication (tag::multi_vector is derived from dense)
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::multi_vector)
+{
+    if (Assign::init_to_zero) set_to_zero(w);
+    for (unsigned i= 0; i < num_cols(A); i++)
+	Assign::update(w, A.vector(i) * v[i]);
+}
+
+// Transposed multi-vector vector multiplication (tag::transposed_multi_vector is derived from dense)
+template <typename TransposedMatrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void mat_cvec_mult(const TransposedMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::transposed_multi_vector)
+{
+    typename TransposedMatrix::const_ref_type B= A.ref; // Referred matrix
+
+    if (Assign::init_to_zero) set_to_zero(w);
+    for (unsigned i= 0; i < num_cols(B); i++)
+	Assign::update(w[i], dot_real(B.vector(i), v));
+}
+
+// Hermitian multi-vector vector multiplication (tag::hermitian_multi_vector is derived from dense)
+template <typename HermitianMatrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void mat_cvec_mult(const HermitianMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::hermitian_multi_vector)
+{
+    typename HermitianMatrix::other::const_ref_type B= A.ref.ref; // Referred matrix
+
+    if (Assign::init_to_zero) set_to_zero(w);
+    for (unsigned i= 0; i < num_cols(B); i++)
+	Assign::update(w[i], dot(B.vector(i), v));
+}
 
 
 // Sparse matrix vector multiplication

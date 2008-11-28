@@ -74,6 +74,7 @@ struct transposed_view
 				     const Matrix&,
 				     Matrix&
 				    >::type                  ref_type;
+    typedef const Matrix&                                    const_ref_type;
 
 
     transposed_view (ref_type ref) : /* expr_base(*this), */ ref(ref) {}
@@ -195,11 +196,6 @@ struct sub_matrix_t< transposed_view<Matrix> >
 
 namespace mtl { namespace traits {
 
-    template <class Matrix> 
-    struct category<transposed_view<Matrix> >
-    {
-	typedef typename category<Matrix>::type type;
-    };
 
     namespace detail {
 

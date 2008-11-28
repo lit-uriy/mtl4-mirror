@@ -52,6 +52,11 @@ struct category<compressed2D<Elt, Parameters> >
     typedef tag::compressed2D type;
 };
 
+template <typename Vector>
+struct category<multi_vector<Vector> > 
+{
+    typedef tag::multi_vector type;
+};
 
 template <typename T, typename Parameters>
 struct category< dense_vector<T, Parameters> > 
@@ -171,6 +176,19 @@ struct category< mtl::matrix::divide_by_view<Matrix,Divisor> >
 					Matrix> >
 {};
 
+
+template <typename Matrix> 
+struct category<transposed_view<Matrix> >
+  : public category<Matrix>
+{};
+
+// Specialize on transposed multi-vectors
+template <typename Vector>
+struct category< transposed_view< multi_vector<Vector> > >
+{
+    typedef tag::transposed_multi_vector type;
+};
+
 template <typename Matrix>
 struct category< matrix::conj_view<Matrix> >
     : public category< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
@@ -179,8 +197,16 @@ struct category< matrix::conj_view<Matrix> >
 template <typename Matrix>
 struct category< matrix::hermitian_view<Matrix> >
 	: public category< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-					transposed_view<Matrix> > >
+						 transposed_view<Matrix> > >
 {};
+
+// Specialize on Hermiatians of multi-vectors
+template <typename Vector>
+struct category< matrix::hermitian_view<multi_vector<Vector> > >
+{
+    typedef tag::hermitian_multi_vector type;
+};
+
 
 template <typename Matrix>
 struct category< mtl::matrix::banded_view<Matrix> >

@@ -18,6 +18,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl { 
 
@@ -149,24 +150,12 @@ struct ashape< vector::vec_const_ref_expr<Vector> >
 // Matrices
 // ========
 
-#if 0
 template <typename Value, typename Parameters>
 struct ashape<compressed2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
-#endif
 
-template <typename Value, typename Parameters> struct ashape<dense2D<Value, Parameters> >;
-
-template <typename Value, typename Parameters>
-struct ashape<mtl::matrix::compressed2D<Value, Parameters> >
-{
-	typedef Value value_type;
-	typedef typename ashape<Value>::type  tmp_type;
-    typedef mat<tmp_type> type;
-};
-   
 template <typename Value, typename Parameters>
 struct ashape<dense2D<Value, Parameters> >
 {
@@ -179,6 +168,12 @@ struct ashape<morton_dense<Value, Mask, Parameters> >
     typedef mat<typename ashape<Value>::type> type;
 };
 
+template <typename Vector>
+struct ashape<multi_vector<Vector> >
+{
+    typedef mat<typename ashape<typename mtl::Collection<multi_vector<Vector> >::value_type>::type> type;
+};
+   
 template <typename E1, typename E2>
 struct ashape< matrix::mat_mat_plus_expr<E1, E2> >
 {

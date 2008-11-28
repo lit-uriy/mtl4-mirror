@@ -80,8 +80,9 @@ namespace mtl {
         template <typename Value, typename Parameters> 
         typename compressed2D<Value, Parameters>::size_type size(const compressed2D<Value, Parameters>& matrix);
 
-
         template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
+
+	template <typename Vector> class multi_vector;
 
         template <typename Matrix> struct transposed_orientation;
         template <typename Matrix> struct transposed_view;
@@ -107,6 +108,7 @@ namespace mtl {
     using matrix::dense2D;
     using matrix::morton_dense;
     using matrix::compressed2D;
+    using matrix::multi_vector;
     using matrix::transposed_orientation;
     using matrix::transposed_view;
     
@@ -211,7 +213,8 @@ namespace mtl {
 
     /// Namespace for functors with static function apply and fully typed paramaters
     namespace sfunctor {
-	template <typename Value, typename AlgebraicCategory = tag::scalar> struct conj;
+	template <typename Value, typename AlgebraicCategory = tag::scalar> struct conj_aux;
+	template <typename Value> struct conj;
     }
 
     // Namespace documentations

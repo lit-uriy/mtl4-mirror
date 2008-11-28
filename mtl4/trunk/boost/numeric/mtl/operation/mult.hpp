@@ -268,11 +268,11 @@ inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, t
     }
 #endif
 
-    //MTL_THROW_IF(num_rows(a) != num_rows(w) || num_cols(a) != num_rows(v), incompatible_size());
     MTL_THROW_IF(num_rows(a) != size(w) || num_cols(a) != size(v), incompatible_size());
 
-    // dispatch between dense and sparse matrices
-	using mtl::traits::category;
+    // dispatch between dense and sparse matrices and multi-vectors (and others)
+    using mtl::traits::category;
+    // std::cout << "category A is " << typeid(typename category<Matrix>::type).name() << "\n";
     mat_cvec_mult(a, v, w, Assign(), typename category<Matrix>::type()); 
 }
 
