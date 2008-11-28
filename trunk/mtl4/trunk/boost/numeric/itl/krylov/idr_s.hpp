@@ -37,7 +37,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
     const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
     Scalar                      omega;
     Vector                      x0(x), y(n), v(n), t(n);
-    mtl::dense_vector<Vector>   dR(s, Vector(n, zero)), dX(s, Vector(n, zero)),
+    mtl::multi_vector<Vector>   dR(s, Vector(n, zero)), dX(s, Vector(n, zero)),
 	                        P(s, Vector(n, zero));
 
     r= b - A * x;
@@ -55,18 +55,18 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	r+= dR[k];
 	if (iter.finished(r))
 	    return iter;
-	M[iall][k]= trans(P) * dR[k]; // TBD: column of matrix, trans(vec<vec>) * vec 
+	M[iall][k]= trans(P) * dR[k]; 
     }
 
     int oldest= 1;
     iter+= s;
-    mtl::dense_vector<Scalar> m(trans(P) * r), c(s), dm(s); // TBD: trans(vec<vec>) * vec 
+    Vector m(trans(P) * r), c(s), dm(s); 
 
     while (! iter.finished(r)) {
        
 	for (size_t k= 0; k < s+1; k++) {
 	    c= solve(M, m);  // TBD: dense solver
-	    q= -(dR * c);    // TBD: vec<vec> * vec
+	    q= -(dR * c);    
 	    v= r + q;
 	    if (k == 0) {
 		t= A * v;
@@ -88,7 +88,6 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	    m+= dm;
 	    oldest= (oldest + 1) % s;
 	}
-
     }
 #endif
     return iter;
