@@ -42,6 +42,5 @@ int test_main(int argc, char* argv[])
     dense_vector<cmp>    v;
     test(v, "dense_vector<double>");
 
-
     return 0;
 }

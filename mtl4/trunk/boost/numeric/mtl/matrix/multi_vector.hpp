@@ -55,17 +55,17 @@ class multi_vector
     /// Constructor by number of rows and columns
     multi_vector(size_type num_rows, size_type num_cols)
 	: super(non_fixed::dimensions(num_rows, num_cols)), 
-	  data(num_rows, Vector(num_cols))
+	  data(num_cols, Vector(num_rows))
     {
 	this->my_nnz= num_rows * num_cols;
     }
 
     /// Constructor by number of rows and column vector for initialization
-    multi_vector(size_type num_rows, const Vector& v)
-	: super(non_fixed::dimensions(num_rows, size(v))),
-	  data(num_rows, v)
+    multi_vector(size_type num_cols, const Vector& v)
+	: super(non_fixed::dimensions(num_cols, size(v))),
+	  data(num_cols, v)
     {
-	this->my_nnz= num_rows * size(v);
+	this->my_nnz= num_cols * size(v);
     }
 
     /// Consuming assignment operator
