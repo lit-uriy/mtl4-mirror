@@ -67,6 +67,13 @@ inline begin(Collection const& c)
   return traits::range_generator<Tag, Collection>().begin(c);
 }
 
+template <class Tag, class Collection>
+typename traits::range_generator<Tag, Collection>::type 
+inline begin(Collection& c)
+{
+  return traits::range_generator<Tag, Collection>().begin(c);
+}
+
 // Corresponding end cursor
 template <class Tag, class Collection>
 typename traits::range_generator<Tag, Collection>::type 
@@ -75,6 +82,12 @@ inline end(Collection const& c)
   return traits::range_generator<Tag, Collection>().end(c);
 }
 
+template <class Tag, class Collection>
+typename traits::range_generator<Tag, Collection>::type 
+inline end(Collection& c)
+{
+  return traits::range_generator<Tag, Collection>().end(c);
+}
 
 
 namespace traits {
