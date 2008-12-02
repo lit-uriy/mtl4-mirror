@@ -334,11 +334,11 @@ namespace mtl { namespace traits {
 	static int const                          level = 1;
 	typedef typename collection_t::pointer    type;
 
-	type begin(collection_t& collection) const
+	type begin(collection_t& collection)
 	{
 	    return collection.begin();
 	}
-	type end(collection_t& collection) const
+	type end(collection_t& collection)
 	{
 	    return collection.begin();
 	}
