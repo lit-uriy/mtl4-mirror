@@ -68,7 +68,7 @@ class matrix_market_ifstream
 		my_stream >> r >> c;
 		insert_value(ins, r-1, c-1, Value());
 	    }
-	else // dense
+	else // dense 
 	    for (int r= 0; r < nrows; r++)
 		for (int c= 0; c < ncols; c++) 
 		    insert_value(ins, r, c, Value());
