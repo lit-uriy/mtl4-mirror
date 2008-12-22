@@ -25,10 +25,10 @@ namespace mtl {
     If the string is not found then a runtime_error is thrown.
 **/
 template <typename EnumType, typename Array>
-EnumType inline string_to_enum(std::string s, const Array& l, EnumType)
+EnumType inline string_to_enum(const std::string& s, const Array& l, EnumType)
 {
     std::size_t i;
-    for (i= 0; i < size(l) || std::string(l[i]) != s; i++) ;
+    for (i= 0; i < size(l) && std::string(l[i]) != s; i++) ;
     MTL_THROW_IF(i == size(l), runtime_error("Search string not found"));
     return EnumType(i);
 }
