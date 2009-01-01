@@ -99,7 +99,7 @@ inline std::ostream& operator<< (std::ostream& stream, const std::vector<T>& v)
 }
 
 
-void inline wait() { char c; }
+// void inline wait() { char c; std::cin >> c; }
 
 
 void solve(const char* file_name)
