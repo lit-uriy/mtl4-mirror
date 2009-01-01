@@ -27,7 +27,7 @@ int test_main(int argc, char* argv[])
     A = 5;
     B = A;
     // C = hermitian(B) * A;
-#warning "Test temporarily disabled."    
+    // #warning "Test temporarily disabled."    
 
     return 0;
 }
