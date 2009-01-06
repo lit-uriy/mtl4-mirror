@@ -190,6 +190,13 @@ struct ashape< matrix::mat_mat_minus_expr<E1, E2> >
     typedef typename ashape<E1>::type type;
 };
 
+template <typename E1, typename E2>
+struct ashape< matrix::mat_mat_ele_times_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
 
 
 // =====

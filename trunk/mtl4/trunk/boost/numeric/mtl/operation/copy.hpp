@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
+#include <boost/numeric/mtl/operation/crop.hpp>
 
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
@@ -48,8 +49,6 @@ namespace mtl {
     template <typename Updater, typename MatrixSrc, typename MatrixDest>
     inline void gen_matrix_copy(const MatrixSrc& src, MatrixDest& dest, bool with_reset)
     {
-	// Deprecated, will  be removed
-	// dest.change_dim(num_rows(src), num_cols(src));
 	MTL_THROW_IF(num_rows(src) != num_rows(dest) || num_cols(src) != num_cols(dest), incompatible_size());
 
 	if (with_reset)
@@ -95,6 +94,13 @@ namespace mtl {
 	gen_matrix_copy< operations::update_minus<typename MatrixDest::value_type> >(src, dest, false);
     }
 	
+    /// Multiply matrix \p src element-wise with matrix \p dest in copy-like style
+    template <typename MatrixSrc, typename MatrixDest>
+    inline void matrix_copy_ele_times(const MatrixSrc& src, MatrixDest& dest)
+    {
+	gen_matrix_copy< operations::update_times<typename MatrixDest::value_type> >(src, dest, false);
+	crop(dest);
+    }
 
        
     template <typename MatrixSrc, typename MatrixDest>

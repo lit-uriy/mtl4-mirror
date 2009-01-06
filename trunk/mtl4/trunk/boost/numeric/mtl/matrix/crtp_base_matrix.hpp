@@ -73,8 +73,7 @@ struct crtp_assign<mat_mat_plus_expr<E1, E2>, Matrix>
     {
 		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix= src.first;
-		matrix+= src.second;
-		return matrix;
+		return matrix+= src.second;
     }
 };
 
@@ -88,8 +87,7 @@ struct crtp_assign<mat_mat_minus_expr<E1, E2>, Matrix>
     {
 		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 		matrix= src.first;
-		matrix-= src.second;
-		return matrix;
+		return matrix-= src.second;
     }
 };
 
@@ -106,22 +104,38 @@ struct crtp_assign<mat_mat_times_expr<E1, E2>, Matrix>
     }
 }; 
 
+
+/// Assign element-wise product 
+template <typename E1, typename E2, typename Matrix>
+struct crtp_assign<mat_mat_ele_times_expr<E1, E2>, Matrix> 
+{
+    Matrix& operator()(const mat_mat_ele_times_expr<E1, E2>& src, Matrix& matrix)
+    {
+	operation::compute_factors<Matrix, mat_mat_ele_times_expr<E1, E2> > factors(src);
+	matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.first));
+	matrix= factors.first;
+	return matrix.ele_rscale(factors.second);
+    }
+}; 
+
+
+
 /// Assign c-style 2D-array, because it's easier to initialize.
 template <typename Value, unsigned Rows, unsigned Cols, typename Matrix>
 struct crtp_assign<Value[Rows][Cols], Matrix>
 {
     Matrix& operator()(const Value src[Rows][Cols], Matrix& matrix)
     {
-		typedef typename Collection<Matrix>::size_type size_type;
+	typedef typename Collection<Matrix>::size_type size_type;
 
-		matrix.checked_change_dim(Rows, Cols);
-		inserter<Matrix>  ins(matrix);
-
-		for (size_type r= 0; r < Rows; ++r)
-			for (size_type c= 0; c < Cols; ++c)
-				ins(r, c) << src[r][c];
-		return matrix;
-	}
+	matrix.checked_change_dim(Rows, Cols);
+	inserter<Matrix>  ins(matrix);
+	
+	for (size_type r= 0; r < Rows; ++r)
+	    for (size_type c= 0; c < Cols; ++c)
+		ins(r, c) << src[r][c];
+	return matrix;
+    }
 };
 
 /// Assign content of a file to the matrix
@@ -142,14 +156,14 @@ struct crtp_plus_assign
 {
     Matrix& operator()(const Source& source, Matrix& matrix)
     {
-		return assign(source, matrix, typename ashape::ashape<Source>::type());
+	return assign(source, matrix, typename ashape::ashape<Source>::type());
     }
   private:
     Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
     {
-		matrix.checked_change_dim(num_rows(source), num_cols(source));
-		matrix_copy_plus(source, matrix);
-		return matrix;
+	matrix.checked_change_dim(num_rows(source), num_cols(source));
+	matrix_copy_plus(source, matrix);
+	return matrix;
     }
 };
 
@@ -162,10 +176,9 @@ struct crtp_plus_assign<mat_mat_plus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
-		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
-		matrix+= src.first;
-		matrix+= src.second;
-		return matrix;
+	matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
+	matrix+= src.first;
+	return matrix+= src.second;
     }
 };
 
@@ -174,10 +187,19 @@ struct crtp_plus_assign<mat_mat_minus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
-		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
-		matrix+= src.first;
-		matrix-= src.second;
-		return matrix;
+	matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
+	matrix+= src.first;
+	return matrix-= src.second;
+    }
+};
+
+template <typename E1, typename E2, typename Matrix>
+struct crtp_plus_assign<mat_mat_ele_times_expr<E1, E2>, Matrix> 
+{
+    Matrix& operator()(const mat_mat_ele_times_expr<E1, E2>& src, Matrix& matrix)
+    {
+	Matrix Prod(ele_prod(src.first, src.second));
+	return matrix+= Prod;
     }
 };
 
@@ -186,10 +208,10 @@ struct crtp_plus_assign<mat_mat_times_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
-		operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
-		matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
-		gen_mult(factors.first, factors.second, matrix, assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
-		return matrix;
+	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
+	matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
+	gen_mult(factors.first, factors.second, matrix, assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
+	return matrix;
     }
 };
 
@@ -200,14 +222,14 @@ struct crtp_minus_assign
 {
     Matrix& operator()(const Source& source, Matrix& matrix)
     {
-		return assign(source, matrix, typename ashape::ashape<Source>::type());
+	return assign(source, matrix, typename ashape::ashape<Source>::type());
     }
 private:
     Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
     {
-		matrix.checked_change_dim(num_rows(source), num_cols(source));
-		matrix_copy_minus(source, matrix);
-		return matrix;
+	matrix.checked_change_dim(num_rows(source), num_cols(source));
+	matrix_copy_minus(source, matrix);
+	return matrix;
     }
 };
 
@@ -220,10 +242,9 @@ struct crtp_minus_assign<mat_mat_plus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
-		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
-		matrix-= src.first;
-		matrix-= src.second;
-		return matrix;
+	matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
+	matrix-= src.first;
+	return matrix-= src.second;
     }
 };
 
@@ -236,10 +257,19 @@ struct crtp_minus_assign<mat_mat_minus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
-		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
-		matrix-= src.first;
-		matrix+= src.second;
-		return matrix;
+	matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
+	matrix-= src.first;
+	return matrix+= src.second;
+    }
+};
+
+template <typename E1, typename E2, typename Matrix>
+struct crtp_minus_assign<mat_mat_ele_times_expr<E1, E2>, Matrix> 
+{
+    Matrix& operator()(const mat_mat_ele_times_expr<E1, E2>& src, Matrix& matrix)
+    {
+	Matrix Prod(ele_prod(src.first, src.second));
+	return matrix-= Prod;
     }
 };
 
@@ -250,10 +280,10 @@ struct crtp_minus_assign<mat_mat_times_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
-		operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
-		matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
-		gen_mult(factors.first, factors.second, matrix, assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
-		return matrix;
+	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
+	matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
+	gen_mult(factors.first, factors.second, matrix, assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
+	return matrix;
     }
 };
 
@@ -266,9 +296,9 @@ struct crtp_matrix_assign
     /// Check whether matrix sizes are compatible or if matrix is 0 by 0 change it to r by c.
     void checked_change_dim(SizeType r, SizeType c)
     {
-		Matrix& matrix= static_cast<Matrix&>(*this);
-		matrix.check_dim(r, c);
-		matrix.change_dim(r, c);
+	Matrix& matrix= static_cast<Matrix&>(*this);
+	matrix.check_dim(r, c);
+	matrix.change_dim(r, c);
     }
 
     /// Templated assignment implemented by functor to allow for partial specialization
@@ -278,36 +308,44 @@ struct crtp_matrix_assign
 			       Matrix&>::type
     operator=(const Source& src)
     {
-		return crtp_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+	return crtp_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
     }
 
     template <typename Source>
     Matrix& operator+=(const Source& src)
     {
-		return crtp_plus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+	return crtp_plus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
     }
     
     template <typename Source>
     Matrix& operator-=(const Source& src)
     {
-		return crtp_minus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+	return crtp_minus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
     }
     
     /// Scale matrix (in place) with scalar value or other matrix
     template <typename Factor>
     Matrix& operator*=(const Factor& alpha)
     {
-		right_scale_inplace(static_cast<Matrix&>(*this), alpha);
-		return static_cast<Matrix&>(*this);
+	right_scale_inplace(static_cast<Matrix&>(*this), alpha);
+	return static_cast<Matrix&>(*this);
     }
-    
+
+    // Element-wise scaling from right (i.e. like *= as elementwise)
+    template <typename Factor>
+    Matrix& ele_rscale(const Factor& alpha)
+    {
+	matrix_copy_ele_times(alpha, static_cast<Matrix&>(*this));
+	return static_cast<Matrix&>(*this);
+    }
+
     /// Divide matrix (in place) by scalar value
     // added by Hui Li
     template <typename Factor>
     Matrix& operator/=(const Factor& alpha)
     {
-		divide_by_inplace(static_cast<Matrix&>(*this), alpha);
-		return static_cast<Matrix&>(*this);
+	divide_by_inplace(static_cast<Matrix&>(*this), alpha);
+	return static_cast<Matrix&>(*this);
     }
 };
 
