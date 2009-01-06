@@ -161,7 +161,6 @@ struct crtp_plus_assign
   private:
     Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
     {
-	matrix.checked_change_dim(num_rows(source), num_cols(source));
 	matrix_copy_plus(source, matrix);
 	return matrix;
     }
@@ -176,7 +175,6 @@ struct crtp_plus_assign<mat_mat_plus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
-	matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix+= src.first;
 	return matrix+= src.second;
     }
@@ -187,7 +185,6 @@ struct crtp_plus_assign<mat_mat_minus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
-	matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix+= src.first;
 	return matrix-= src.second;
     }
@@ -209,7 +206,6 @@ struct crtp_plus_assign<mat_mat_times_expr<E1, E2>, Matrix>
     Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
 	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
-	matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
 	gen_mult(factors.first, factors.second, matrix, assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 	return matrix;
     }
@@ -227,7 +223,6 @@ struct crtp_minus_assign
 private:
     Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
     {
-	matrix.checked_change_dim(num_rows(source), num_cols(source));
 	matrix_copy_minus(source, matrix);
 	return matrix;
     }
@@ -242,7 +237,6 @@ struct crtp_minus_assign<mat_mat_plus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
-	matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix-= src.first;
 	return matrix-= src.second;
     }
@@ -257,7 +251,6 @@ struct crtp_minus_assign<mat_mat_minus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
-	matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix-= src.first;
 	return matrix+= src.second;
     }
@@ -281,7 +274,6 @@ struct crtp_minus_assign<mat_mat_times_expr<E1, E2>, Matrix>
     Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
 	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
-	matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
 	gen_mult(factors.first, factors.second, matrix, assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 	return matrix;
     }
