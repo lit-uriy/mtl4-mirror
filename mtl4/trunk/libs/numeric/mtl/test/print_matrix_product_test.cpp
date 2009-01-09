@@ -17,10 +17,9 @@ int test_main(int argc, char* argv[])
 {
     using namespace std;
     
-	
-    mtl::dense2D<double> A(2,2), B(2,2);
-    set_to_zero(B);
-    A(0,0) = 1; A(0,1) = 2; A(1,0) = 3; A(1,1) = 4;
+    double aa[2][2]= {{1., 2.},
+		      {3., 4.}};
+    mtl::dense2D<double> A(aa), B(2,2);
     B = A*A;
     
     cout << (A*A) << endl << B << endl;

@@ -95,6 +95,7 @@ namespace mtl {
 	template <typename M1, typename M2> struct mat_mat_minus_expr;
 	template <typename M1, typename M2> struct mat_mat_ele_times_expr;
 	template <typename M1, typename M2> struct mat_mat_times_expr;
+	template <typename M1, typename M2> struct mat_mat_asgn_expr;
 
 	template <typename Matrix> struct mat_expr;
 	template <typename Functor, typename Matrix> struct map_view;
@@ -183,6 +184,8 @@ namespace mtl {
 
 	template <class Vector> struct index;
 	template <typename Tag, typename Collection>  struct range_generator;
+
+	template <typename T> struct eval_dense;
     }
 
     template <class Tag, class Collection> typename traits::range_generator<Tag, Collection>::type 
