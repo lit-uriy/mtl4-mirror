@@ -13,10 +13,12 @@
 #define MTL_CRTP_BASE_MATRIX_INCLUDE
 
 #include <iostream>
+#include <boost/mpl/bool.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/matrix_bracket.hpp>
 #include <boost/numeric/mtl/operation/copy.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
@@ -27,6 +29,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/eval_dense.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
@@ -285,6 +288,114 @@ struct crtp_minus_assign<mat_mat_times_expr<E1, E2>, Matrix>
 template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_matrix_assign
 {
+private:
+
+    // For (compatible) dense matrices do a loop over all entries
+    template <typename Source>
+    Matrix& density_assign(const Source& src, boost::mpl::true_)
+    {
+	// typedef typename Collection<Source>::size_type size_type;
+	typedef unsigned size_type;
+
+	// std::cout << "Dense assignment\n";
+	checked_change_dim(num_rows(src), num_cols(src));
+
+	Matrix& matrix= static_cast<Matrix&>(*this);
+	for (size_type r= 0; r < num_rows(matrix); ++r)
+	    for (size_type c= 0; c < num_cols(matrix); ++c)
+		matrix[r][c]= src[r][c];
+	return matrix;
+    }
+
+    // If sparse matrices are involved evaluate step-wise (or assignment from scalar)
+    template <typename Source>
+    Matrix& density_assign(const Source& src, boost::mpl::false_)
+    {
+	// std::cout << "Sparse assignment\n";
+	return crtp_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+    }
+
+    
+    // For (compatible) dense matrices do a loop over all entries
+    template <typename Source>
+    Matrix& density_plus_assign(const Source& src, boost::mpl::true_)
+    {
+	// typedef typename Collection<Source>::size_type size_type;
+	typedef unsigned size_type;
+
+	// std::cout << "Dense assignment\n";
+	checked_change_dim(num_rows(src), num_cols(src));
+
+	Matrix& matrix= static_cast<Matrix&>(*this);
+	for (size_type r= 0; r < num_rows(matrix); ++r)
+	    for (size_type c= 0; c < num_cols(matrix); ++c)
+		matrix[r][c]+= src[r][c];
+	return matrix;
+    }
+
+    // If sparse matrices are involved evaluate step-wise (or assignment from scalar)
+    template <typename Source>
+    Matrix& density_plus_assign(const Source& src, boost::mpl::false_)
+    {
+	// std::cout << "Sparse assignment\n";
+	return crtp_plus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+    }
+
+    // For (compatible) dense matrices do a loop over all entries
+    template <typename Source>
+    Matrix& density_minus_assign(const Source& src, boost::mpl::true_)
+    {
+	// typedef typename Collection<Source>::size_type size_type;
+	typedef unsigned size_type;
+
+	// std::cout << "Dense assignment\n";
+	checked_change_dim(num_rows(src), num_cols(src));
+
+	Matrix& matrix= static_cast<Matrix&>(*this);
+	for (size_type r= 0; r < num_rows(matrix); ++r)
+	    for (size_type c= 0; c < num_cols(matrix); ++c)
+		matrix[r][c]-= src[r][c];
+	return matrix;
+    }
+
+    // If sparse matrices are involved evaluate step-wise (or assignment from scalar)
+    template <typename Source>
+    Matrix& density_minus_assign(const Source& src, boost::mpl::false_)
+    {
+	// std::cout << "Sparse assignment\n";
+	return crtp_minus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+    }
+
+    // For (compatible) dense matrices do a loop over all entries
+    template <typename Source>
+    Matrix& density_ele_rscale(const Source& src, boost::mpl::true_)
+    {
+	// typedef typename Collection<Source>::size_type size_type;
+	typedef unsigned size_type;
+
+	// std::cout << "Dense assignment\n";
+	checked_change_dim(num_rows(src), num_cols(src));
+
+	Matrix& matrix= static_cast<Matrix&>(*this);
+	for (size_type r= 0; r < num_rows(matrix); ++r)
+	    for (size_type c= 0; c < num_cols(matrix); ++c)
+		matrix[r][c]*= src[r][c];
+	return matrix;
+    }
+
+    // If sparse matrices are involved evaluate step-wise (or assignment from scalar)
+    template <typename Factor>
+    Matrix& density_ele_rscale(const Factor& alpha, boost::mpl::false_)
+    {
+	// std::cout << "Sparse assignment\n";
+	matrix_copy_ele_times(alpha, static_cast<Matrix&>(*this));
+	return static_cast<Matrix&>(*this);
+    }
+
+
+
+
+public:
     /// Check whether matrix sizes are compatible or if matrix is 0 by 0 change it to r by c.
     void checked_change_dim(SizeType r, SizeType c)
     {
@@ -294,25 +405,27 @@ struct crtp_matrix_assign
     }
 
     /// Templated assignment implemented by functor to allow for partial specialization
-    // Despite there is only an untemplated assignement and despite the disable_if MSVC whines about ambiguity :-!
+    // Despite there is only an untemplated assignment and despite the disable_if MSVC whines about ambiguity :-!
     template <typename Source>
     typename boost::disable_if<typename boost::is_same<Matrix, Source>,
 			       Matrix&>::type
     operator=(const Source& src)
     {
-	return crtp_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+	return density_assign(src, boost::mpl::bool_< boost::is_same<typename ashape::ashape<Matrix>::type, 
+			                                             typename ashape::ashape<Source>::type>::value 
+			                              && traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >::value >());
     }
 
     template <typename Source>
     Matrix& operator+=(const Source& src)
     {
-	return crtp_plus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+	return density_plus_assign(src, traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >());
     }
     
     template <typename Source>
     Matrix& operator-=(const Source& src)
     {
-	return crtp_minus_assign<Source, Matrix>()(src, static_cast<Matrix&>(*this));
+	return density_minus_assign(src, traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >());
     }
     
     /// Scale matrix (in place) with scalar value or other matrix
@@ -327,8 +440,7 @@ struct crtp_matrix_assign
     template <typename Factor>
     Matrix& ele_rscale(const Factor& alpha)
     {
-	matrix_copy_ele_times(alpha, static_cast<Matrix&>(*this));
-	return static_cast<Matrix&>(*this);
+	return density_ele_rscale(alpha, traits::eval_dense< mat_mat_asgn_expr<Matrix, Factor> >());
     }
 
     /// Divide matrix (in place) by scalar value
@@ -415,8 +527,8 @@ struct mutable_crtp_base_matrix
 template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_base_matrix 
     : boost::mpl::if_<boost::is_const<Matrix>,
-	                  const_crtp_base_matrix<Matrix, ValueType, SizeType>,
-		              mutable_crtp_base_matrix<Matrix, ValueType, SizeType>
+		      const_crtp_base_matrix<Matrix, ValueType, SizeType>,
+		      mutable_crtp_base_matrix<Matrix, ValueType, SizeType>
                      >::type
 {};
 

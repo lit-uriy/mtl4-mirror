@@ -58,6 +58,13 @@ struct mat_mat_times_expr
 	return sum;
     }
 
+    
+    typename E1::value_type
+    operator()(std::size_t r, std::size_t c)
+    {
+	return (*const_cast<const self*>(this))(r, c);
+    }
+
     first_argument_type const&  first ;
     second_argument_type const& second ;
 };
