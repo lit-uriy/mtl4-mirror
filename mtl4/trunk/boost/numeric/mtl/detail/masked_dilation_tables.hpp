@@ -94,10 +94,8 @@ private:
 	init();
 
 	// compute the mask table
-	for (int j = 0; j < n_valid_table; ++j) {
-	    T f_mask = get_f_mask(mask_size()[j]);
-	    T ii;
-	    int i;
+	for (T j = 0; j < n_valid_table; ++j) {
+	    T f_mask = get_f_mask(mask_size()[j]), i, ii;
 	    for (i = 0, ii = 0; i < 256; ++i, ii = inc(ii, mask_piece()[j])) {
 		mask_lut()[j][i] =  (ii & f_mask) << mask_shift_table()[j]; // need to shift 
 	    }
@@ -105,11 +103,9 @@ private:
 
 	// compute the unmask table
 	T f_mask = get_f_mask(8);
-	for (int j = 0; j < sizeof(T); ++j) {
+	for (T j = 0; j < sizeof(T); ++j) {
 	    
-	    T t_mask = (Mask >> (8*j)) & f_mask;
-	    T ii;
-	    int i;
+	    T t_mask = (Mask >> (8*j)) & f_mask, i, ii;
 	    for(i = 0, ii = 0; ii < t_mask; ii = inc(ii, t_mask), ++i) {
 		unmask_lut()[j][ii] =  i << unmask_shift_table()[j];
 	    }
