@@ -16,138 +16,76 @@
 
 namespace mtl { namespace operation {
 
+// Default is to just refer to the expression
+template <typename Result, typename Expr>
+struct compute_one_factor 
+{
+    typedef const Expr&           type;
+    typedef const Expr&           const_reference;
 
-// Only defined for matrix::mat_mat_times_expr
+    compute_one_factor(type src) : value(src) {}
+
+    type value;
+};
+
+template <typename Result, typename E1, typename E2>
+struct compute_one_factor<Result, matrix::mat_mat_times_expr<E1, E2> > 
+{
+    typedef Result                type;
+    typedef const Result&         const_reference;
+
+    compute_one_factor(const matrix::mat_mat_times_expr<E1, E2>& src) 
+	: value(src.first * src.second) {}
+
+    type value;
+};
+
+template <typename Result, typename E1, typename E2>
+struct compute_one_factor<Result, matrix::mat_mat_ele_times_expr<E1, E2> > 
+{
+    typedef Result                type;
+    typedef const Result&         const_reference;
+
+    compute_one_factor(const matrix::mat_mat_ele_times_expr<E1, E2>& src) 
+	: value(ele_prod(src.first, src.second)) {}
+
+    type value;
+};
+
+
+// Only defined for matrix::mat_mat_times_expr and matrix::mat_mat_ele_times_expr
 template <typename Result, typename Expr>
 struct compute_factors {};
 
-
-// If the two expressions are not products themselves, just refer to the values
 template <typename Result, typename E1, typename E2>
 struct compute_factors<Result, matrix::mat_mat_times_expr<E1, E2> >
 {
-    compute_factors(const matrix::mat_mat_times_expr<E1, E2>& src)
-	: first(src.first), second(src.second) {}
+    compute_factors(const matrix::mat_mat_times_expr<E1, E2>& src) 
+	: first_factor(src.first), second_factor(src.second),
+	  first(first_factor.value), second(second_factor.value)
+    {}
 
-    const E1& first;
-    const E2& second;
+    compute_one_factor<Result, E1> first_factor;
+    compute_one_factor<Result, E2> second_factor;
+
+    typename compute_one_factor<Result, E1>::const_reference first;
+    typename compute_one_factor<Result, E2>::const_reference second;
 };
 
-
-// First factor is a product itself
-// Compute E11 * E12 and store the result in a temporary of type Result
-template <typename Result, typename E11, typename E12, typename E2>
-struct compute_factors<Result, 
-		       matrix::mat_mat_times_expr<matrix::mat_mat_times_expr<E11, E12>, E2> >
-{
-    compute_factors(const matrix::mat_mat_times_expr<matrix::mat_mat_times_expr<E11, E12>, E2>& src)
-	: m11(src.first.first), m12(src.first.second),
-	  first(num_rows(m11), num_cols(m12)), second(src.second)
-    {
-	first= m11 * m12;
-    }
-    
-  private:
-    const E11& m11;
-    const E12& m12;
-  public:
-    Result first;
-    const E2& second;
-};
-
-
-// Second factor is a product itself
-// Compute E21 * E22 and store the result in a temporary of type Result
-template <typename Result, typename E1, typename E21, typename E22>
-struct compute_factors<Result, 
-		       matrix::mat_mat_times_expr<E1, matrix::mat_mat_times_expr<E21, E22> > >
-{
-    compute_factors(const matrix::mat_mat_times_expr<E1, matrix::mat_mat_times_expr<E21, E22> >& src)
-	: first(src.first), m21(src.second.first), m22(src.second.second),
-	  second(num_rows(m21), num_cols(m22))
-    {
-	second= m21 * m22;
-    }
-
-    const E1& first;
-  private:
-    const E21& m21;
-    const E22& m22;
-  public:
-    Result second;
-};
-
-
-// Both factors are products themselves
-// Compute E11 * E12 and E21 * E22 and store the results in temporaries of type Result
-template <typename Result, typename E11, typename E12, typename E21, typename E22>
-struct compute_factors<Result, 
-		       matrix::mat_mat_times_expr<matrix::mat_mat_times_expr<E11, E12>,
-						  matrix::mat_mat_times_expr<E21, E22> > >
-{
-    typedef matrix::mat_mat_times_expr<matrix::mat_mat_times_expr<E11, E12>,
-				       matrix::mat_mat_times_expr<E21, E22> >    Expr;
-    compute_factors(const Expr& src)
-	: m11(src.first.first), m12(src.first.second),
-	  m21(src.second.first), m22(src.second.second),
-	  first(num_rows(m11), num_cols(m12)), 
-	  second(num_rows(m21), num_cols(m22))
-    {
-	first= m11 * m12;
-	second= m21 * m22;
-    }
-
-  private:
-    const E11& m11;
-    const E12& m12;
-    const E21& m21;
-    const E22& m22;
-  public:
-    Result first, second;
-};
-
-
-// =============================================
-// Now the same for element-wise products
-// What happens with mixed products? :-!
-// =============================================
-
-
-// If the two expressions are not products themselves, just refer to the values
+// First factor is handled implicitly in the evaluation
 template <typename Result, typename E1, typename E2>
 struct compute_factors<Result, matrix::mat_mat_ele_times_expr<E1, E2> >
 {
-    compute_factors(const matrix::mat_mat_ele_times_expr<E1, E2>& src)
-	: first(src.first), second(src.second) {}
+    compute_factors(const matrix::mat_mat_ele_times_expr<E1, E2>& src) 
+	: first(src.first), second_factor(src.second),
+	  second(second_factor.value)
+    {}
 
-    const E1& first;
-    const E2& second;
+    compute_one_factor<Result, E2> second_factor;
+
+    const E1&                                                first;
+    typename compute_one_factor<Result, E2>::const_reference second;
 };
-
-
-// Second factor is a product itself
-// Compute E21 * E22 and store the result in a temporary of type Result
-template <typename Result, typename E1, typename E21, typename E22>
-struct compute_factors<Result, 
-		       matrix::mat_mat_ele_times_expr<E1, matrix::mat_mat_ele_times_expr<E21, E22> > >
-{
-    compute_factors(const matrix::mat_mat_ele_times_expr<E1, matrix::mat_mat_ele_times_expr<E21, E22> >& src)
-	: first(src.first), m21(src.second.first), m22(src.second.second),
-	  second(num_rows(m21), num_cols(m22))
-    {
-	second= ele_prod(m21, m22);
-    }
-
-    const E1& first;
-  private:
-    const E21& m21;
-    const E22& m22;
-  public:
-    Result second;
-};
-
-// It seems that we do not need to dispatch for cases where the first factor is a product itself.
-// This is already handled implicitly.
 
 }} // namespace mtl::operation
 
