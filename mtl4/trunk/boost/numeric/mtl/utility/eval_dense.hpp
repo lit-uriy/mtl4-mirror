@@ -23,14 +23,6 @@ struct eval_dense
     : boost::mpl::false_
 {};
 
-#if 0
-// Lets try to evaluate C arrays densely
-template <typename Value, unsigned Rows>
-struct eval_dense<Value[Rows]>
-    : boost::mpl::false_
-{};
-#endif
-
 template <typename Value, typename Parameter>
 struct eval_dense< mtl::vector::dense_vector<Value, Parameter> >
     : boost::mpl::true_
@@ -45,14 +37,6 @@ template <typename Value, long unsigned Mask, typename Parameter>
 struct eval_dense< mtl::matrix::morton_dense<Value, Mask, Parameter> >
     : boost::mpl::true_
 {};
-
-#if 0
-template <typename Value, typename Parameter>
-struct eval_dense< mtl::matrix::compressed2D<Value, Parameter> >
-    : boost::mpl::false_
-{};
-#endif
-
 
 
 
@@ -87,13 +71,6 @@ template <typename E1, typename E2>
 struct eval_dense< mtl::matrix::mat_mat_ele_times_expr<E1, E2> > 
     : boost::mpl::bool_< eval_dense<E1>::value && eval_dense<E2>::value >
 {};
-
-#if 0
-template <typename E1, typename E2>
-struct eval_dense< mtl::matrix::mat_mat_times_expr<E1, E2> > 
-    : boost::mpl::false_
-{};
-#endif
 
 template <typename Value1, typename Matrix>
 struct eval_dense< mtl::matrix::scaled_view<Value1, Matrix> > 
