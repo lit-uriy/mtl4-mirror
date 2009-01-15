@@ -284,7 +284,8 @@ class compressed2D
   : public base_matrix<Elt, Parameters>,
     public const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >,
     public crtp_matrix_assign< compressed2D<Elt, Parameters>, Elt, std::size_t >,
-    public mat_expr< compressed2D<Elt, Parameters> >
+    public mat_expr< compressed2D<Elt, Parameters> >,
+    public parallel::communication_base<Parameters, is_distributed<Parameters>::value>
 {
     typedef std::size_t                              size_t;
     typedef base_matrix<Elt, Parameters>             super;
@@ -336,7 +337,7 @@ class compressed2D
 
     // if compile time matrix size, we can set the start vector
     /// Default constructor
-    explicit compressed2D () 
+    compressed2D () 
 	: super(), inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
