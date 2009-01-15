@@ -1,0 +1,2 @@
+srun: error: odin013: task0: Exited with exit code 2
+slurmstepd: [80766.0]: error: execve(): matrix_product_timing.cpp: No such file or directory
