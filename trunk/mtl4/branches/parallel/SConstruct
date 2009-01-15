@@ -282,6 +282,11 @@ if int(ARGUMENTS.get('with_concepts', 0)):
     env['CXX'] = '~/bin/conceptg++'
     env.Append(CCFLAGS = macro_flag(env, 'CONCEPTS_WITHOUT_OVERLOADED_REQUIREMENTS'))
     
+if 1 or int(ARGUMENTS.get('with_mpi', 0)):
+    env['CXX'] = 'mpiCC'
+    env.Append(CCFLAGS = macro_flag(env, 'MTL_HAS_MPI'))
+    env.Append(LIBS=['boost_mpi-gcc43-mt.a', 'boost_serialization-gcc43-mt-1_37.a'])
+    env.Append(LIBPATH=['/usr/local/lib'])
 
 # add user-defined CC flags 
 add_ccflag = ARGUMENTS.get('add_ccflag', '')
