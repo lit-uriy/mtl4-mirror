@@ -16,7 +16,6 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
-#include <boost/numeric/mtl/parallel/distribution.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -24,15 +23,13 @@ namespace mtl { namespace matrix {
 template <typename Orientation= row_major, 
 	  typename Index= index::c_index,
 	  typename Dimensions= mtl::non_fixed::dimensions,
-	  bool OnStack= false,
-	  typename Distribution= tag::auto_distributed>
+	  bool OnStack= false>
 struct parameters 
 {
     typedef Orientation orientation;
     typedef Index       index;
     typedef Dimensions  dimensions;
     static bool const   on_stack= OnStack;
-    typedef Distribution distribution;
 
     // Matrix dimensions must be known at compile time to be on the stack
     BOOST_STATIC_ASSERT(( !on_stack || dimensions::is_static ));

@@ -27,7 +27,8 @@ int test_main(int argc, char* argv[])
   mpi::communicator world;
 
   if (world.rank() == 0) {
-    world.send(1, 0, std::string("Hello"));
+    for (int i= 1; i < world.size(); i++)
+	world.send(i, 0, std::string("Hello"));
     std::string msg;
     world.recv(1, 1, msg);
     std::cout << msg << "!" << std::endl;
@@ -36,7 +37,8 @@ int test_main(int argc, char* argv[])
     world.recv(0, 0, msg);
     std::cout << msg << ", ";
     std::cout.flush();
-    world.send(0, 1, std::string("world"));
+    if (world.rank() == 1)
+	world.send(0, 1, std::string("world"));
   }
 
   return 0;

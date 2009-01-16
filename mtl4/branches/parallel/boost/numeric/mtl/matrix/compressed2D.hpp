@@ -80,8 +80,7 @@ struct compressed_key
 	return !(*this == other);
     }
 
-    size_t       major;
-    size_t       offset;
+    size_t       major, offset;
 };
 
 
@@ -284,8 +283,7 @@ class compressed2D
   : public base_matrix<Elt, Parameters>,
     public const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >,
     public crtp_matrix_assign< compressed2D<Elt, Parameters>, Elt, std::size_t >,
-    public mat_expr< compressed2D<Elt, Parameters> >,
-    public parallel::communication_base<Parameters, is_distributed<Parameters>::value>
+    public mat_expr< compressed2D<Elt, Parameters> >
 {
     typedef std::size_t                              size_t;
     typedef base_matrix<Elt, Parameters>             super;
