@@ -53,11 +53,10 @@ namespace mtl {
 	struct row_distribution : public distribution {};
 
 	/// Block row distribution
-	struct block_row_distribution 
-	    : public row_distribution
+	struct block_row_distribution : public row_distribution
 	{
-	    explicit block_row_distribution(std::size_t n, const mpi::communicator& comm= mpi::communicator())
-		: comm(comm), starts(comm.size()+1)
+	private:
+	    void init(std::size_t n)
 	    {
 		std::size_t procs= comm.size(), inc= n / procs, mod= n % procs;
 		starts[0]= 0;
@@ -66,7 +65,20 @@ namespace mtl {
 		assert(starts[procs] == n);
 	    }
 
-	    explicit block_row_distribution(const  std::vector<std::size_t>& starts, const mpi::communicator& comm= mpi::communicator())
+	public:
+	    /// Distribution for n (global) rows
+	    explicit block_row_distribution(std::size_t n, const mpi::communicator& comm= mpi::communicator())
+		: comm(comm), starts(comm.size()+1)
+	    { init(n); }
+
+	    /// For genericity construct from # of global rows and columns
+	    explicit block_row_distribution(std::size_t grows, std::size_t gcols, const mpi::communicator& comm= mpi::communicator())
+		: comm(comm), starts(comm.size()+1)
+	    { init(grows); }
+	    
+
+	    /// Distribution vector
+	    explicit block_row_distribution(const std::vector<std::size_t>& starts, const mpi::communicator& comm= mpi::communicator())
 		: comm(comm), starts(starts)
 	    {}
 
