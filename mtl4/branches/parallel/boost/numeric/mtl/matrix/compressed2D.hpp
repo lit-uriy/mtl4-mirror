@@ -520,6 +520,7 @@ struct compressed2D_inserter
     // stretch matrix rows or columns to slot size (or leave it if equal or greater)
     void stretch();
 
+#if 0
     struct bracket_proxy
     {
 	bracket_proxy(self& ref, size_type row) : ref(ref), row(row) {}
@@ -532,6 +533,7 @@ struct compressed2D_inserter
 	self&      ref;
 	size_type  row;
     };
+#endif
 
   public:
     explicit compressed2D_inserter(matrix_type& matrix, size_type slot_size = 5)
@@ -550,9 +552,9 @@ struct compressed2D_inserter
 	matrix.inserting = false;
     }
 	
-    bracket_proxy operator[] (size_type row)
+    operations::update_bracket_proxy<self, size_type> operator[] (size_type row)
     {
-	return bracket_proxy(*this, row);
+	return operations::update_bracket_proxy<self, size_type>(*this, row);
     }
 
     proxy_type operator() (size_type row, size_type col)
@@ -565,7 +567,6 @@ struct compressed2D_inserter
 
     void update(size_type row, size_type col, value_type val)
     {
-	using math::zero;
 	modify<Updater>(row, col, val);
     }
 

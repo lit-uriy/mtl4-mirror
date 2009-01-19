@@ -281,6 +281,25 @@ namespace mtl {
 #endif
 
 
+#ifdef __GXX_CONCEPTS__
+    concept DistributedCollection<typename T>
+      : Collection<T>
+    {
+	typename concentrated;
+
+    };
+#else
+    /// Concept DistributedCollection
+    template <typename T>
+    struct DistributedCollection
+	: public Collection<T>
+    {
+	/// Associated type for the non-distributed type; by default identical with member type
+	typedef typename T::concentrated concentrated ;
+    };
+#endif
+
+
 
 
 
@@ -314,6 +333,19 @@ namespace mtl {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
 	typedef typename morton_dense<Value, Mask, Parameters>::size_type size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    // see DistributedCollection
+#else
+    template <typename Matrix, typename Distribution>
+    struct Collection< matrix::distributed<Matrix, Distribution> >
+    {
+	typedef typename Collection<Matrix>::value_type      value_type;
+	typedef typename Collection<Matrix>::size_type       size_type;
+	typedef typename Collection<Matrix>::const_reference const_reference;
     };
 #endif
 
@@ -937,6 +969,25 @@ namespace mtl {
 	: public Collection<matrix::hermitian_view<Coll> >
     {
 	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
+    };
+#endif
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Matrix, typename Distribution>
+    concept_map DistributedCollection< matrix::distributed<Matrix, Distribution> >
+    {
+	typedef typename Collection<Matrix>::value_type      value_type;
+	typedef typename Collection<Matrix>::size_type       size_type;
+	typedef typename Collection<Matrix>::const_reference const_reference;
+
+	typedef Matrix                                       concentrated;
+    };
+#else
+    template <typename Matrix, typename Distribution>
+    struct DistributedCollection< matrix::distributed<Matrix, Distribution> >
+	: public Collection< matrix::distributed<Matrix, Distribution> >
+    {
+	typedef Matrix                                       concentrated;
     };
 #endif
 
