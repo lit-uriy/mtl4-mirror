@@ -37,59 +37,93 @@ namespace mtl {
 	namespace mpi = boost::mpi;
 
 	/// Base class for all distributions
-	struct distribution
+	class distribution
 	{
+	public:
+	    typedef std::size_t     size_type;
+	    
+	    explicit distribution (const mpi::communicator& comm= mpi::communicator()) 
+		: comm(comm), my_rank(comm.rank()), my_size(comm.size()) {}
+	    
 	    /// Distributions not specified further or of different types are considered different
 	    bool operator==(const distribution&) const { return false; }
-	    virtual bool operator!=(const distribution& d) const { return !(*this == d); }
+	    /// Distributions not specified further or of different types are considered different
+	    bool operator!=(const distribution& d) const { return true; }
 
+	    /// Current communicator
 	    mpi::communicator communicator() const { return comm; }
 	protected:
 	    mpi::communicator comm;
+	    int               my_rank, my_size;
 	};
 
 	
 	/// Base class for all row distributions
-	struct row_distribution : public distribution {};
+	class row_distribution : public distribution 
+	{
+	public:
+	    explicit row_distribution(const mpi::communicator& comm= mpi::communicator()) : distribution(comm) {}
+	};
 
 	/// Block row distribution
-	struct block_row_distribution : public row_distribution
+	class block_row_distribution : public row_distribution
 	{
-	private:
-	    void init(std::size_t n)
+	    void init(size_type n)
 	    {
-		std::size_t procs= comm.size(), inc= n / procs, mod= n % procs;
+		size_type procs= comm.size(), inc= n / procs, mod= n % procs;
 		starts[0]= 0;
-		for (std::size_t i= 0; i < procs; ++i)
+		for (size_type i= 0; i < procs; ++i)
 		    starts[i+1]= starts[i] + inc + (i < mod);
 		assert(starts[procs] == n);
 	    }
 
 	public:
 	    /// Distribution for n (global) rows
-	    explicit block_row_distribution(std::size_t n, const mpi::communicator& comm= mpi::communicator())
-		: comm(comm), starts(comm.size()+1)
+	    explicit block_row_distribution(size_type n, 
+					    const mpi::communicator& comm= mpi::communicator())
+		: row_distribution(comm), starts(comm.size()+1)
 	    { init(n); }
 
 	    /// For genericity construct from # of global rows and columns
-	    explicit block_row_distribution(std::size_t grows, std::size_t gcols, const mpi::communicator& comm= mpi::communicator())
-		: comm(comm), starts(comm.size()+1)
+	    explicit block_row_distribution(size_type grows, size_type gcols, 
+					    const mpi::communicator& comm= mpi::communicator())
+		: row_distribution(comm), starts(comm.size()+1)
 	    { init(grows); }
 	    
 
 	    /// Distribution vector
-	    explicit block_row_distribution(const std::vector<std::size_t>& starts, const mpi::communicator& comm= mpi::communicator())
-		: comm(comm), starts(starts)
+	    explicit block_row_distribution(const std::vector<size_type>& starts, 
+					    const mpi::communicator& comm= mpi::communicator())
+		: row_distribution(comm), starts(starts)
 	    {}
 
 	    bool operator==(const block_row_distribution& dist) const { return starts == dist.starts; }
+
+	    size_type local_num_rows(size_type gr) const
+	    { 
+		return std::max(std::min(gr, starts[my_rank+1]), starts[my_rank]) - starts[my_rank]; 
+	    }
+	    
+	    size_type local_num_cols(size_type gc) const { return gc; }
+
+	    bool is_local(size_type gr, size_type gc) const { return gr >= starts[my_rank] && gr < starts[my_rank+1]; }
+
+	    template <typename Size>
+	    Size local_row(Size gr) const
+	    {
+		MTL_DEBUG_THROW_IF(gr < starts[my_rank] || gr >= starts[my_rank+1], range_error);
+		return gr - starts[my_rank];
+	    }
+
+	    template <typename Size>
+	    Size local_col(Size gc) const { return gc; }
 
 	private:
 	    /// No default constructor
 	    block_row_distribution() {}
 
 	    /// Lowest global index of each block and total size
-	    std::vector<std::size_t> starts;
+	    std::vector<size_type> starts;
 	};
 
     }

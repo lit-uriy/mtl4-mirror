@@ -222,23 +222,20 @@ if int(with_blas):
 ######################
 
 
-my_cpppath = []
+
 if os.environ.has_key('MTL_BOOST_ROOT') :
     mtlp = os.environ['MTL_BOOST_ROOT']
-    my_cpppath.append(mtlp)
-if os.environ.has_key('BOOST_ROOT') :
-    my_cpppath.append(os.environ['BOOST_ROOT'])
-
-# In branches, the current directory is prepended
 pwd = os.getcwd()
+
+# In branches, the current directory is prepended (or if I don't know better)
 if not os.environ.has_key('MTL_BOOST_ROOT') \
 or not hasattr(os.path, 'samefile') or not os.path.samefile(pwd, mtlp):
-     my_cpppath = [pwd] + my_cpppath
+    my_cpppath = [pwd]
+else:
+    my_cpppath = [os.environ['MTL_BOOST_ROOT']]
 
-# Add directory of extern libraries if exist
-# Not needed currently
-#if os.path.exists('extern'):
-#    my_cpppath.append(os.path.abspath('extern'))
+if os.environ.has_key('BOOST_ROOT') :
+    my_cpppath.append(os.environ['BOOST_ROOT'])
 
 env.Append(CPPPATH = my_cpppath)
 

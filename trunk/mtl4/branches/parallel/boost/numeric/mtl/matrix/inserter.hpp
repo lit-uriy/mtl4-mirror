@@ -15,6 +15,8 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/detail/trivial_inserter.hpp>
+#include <boost/numeric/mtl/matrix/distributed.hpp>
+#include <boost/numeric/mtl/matrix/compressed2D.hpp>
 
 
 
@@ -34,11 +36,23 @@ struct inserter
 
 template <typename Elt, typename Parameters, typename Updater>
 struct inserter<compressed2D<Elt, Parameters>, Updater>
-  : compressed2D_inserter<Elt, Parameters, Updater>
+  : public compressed2D_inserter<Elt, Parameters, Updater>
 {
     typedef compressed2D<Elt, Parameters>     matrix_type;
     typedef typename matrix_type::size_type   size_type;
     typedef compressed2D_inserter<Elt, Parameters, Updater > base;
+
+    explicit inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix, slot_size) {}
+};
+
+
+template <typename Matrix, typename Distribution, typename Updater>
+struct inserter<distributed<Matrix, Distribution>, Updater>
+    : public distributed_inserter<distributed<Matrix, Distribution>, Updater>
+{
+    typedef distributed<Matrix, Distribution>                                  matrix_type;
+    typedef typename Collection<matrix_type>::size_type                        size_type;
+    typedef distributed_inserter<distributed<Matrix, Distribution>, Updater>   base;
 
     explicit inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix, slot_size) {}
 };

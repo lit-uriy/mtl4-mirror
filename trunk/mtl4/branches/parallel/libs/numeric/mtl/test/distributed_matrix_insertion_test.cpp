@@ -14,10 +14,11 @@
 #include <iostream>
 #include <boost/serialization/string.hpp>
 #include <boost/test/minimal.hpp>
+#include <boost/numeric/mtl/mtl.hpp>
 
 namespace mpi = boost::mpi;
 
-inline wait_for_previous(const mpi::communicator& comm)
+inline void wait_for_previous(const mpi::communicator& comm)
 {
     if (comm.rank() > 0) {
 	int xx;
@@ -25,7 +26,7 @@ inline wait_for_previous(const mpi::communicator& comm)
     }
 }
 
-inline start_next(const mpi::communicator& comm)
+inline void start_next(const mpi::communicator& comm)
 {
     if (comm.rank() < comm.size() - 1)
 	comm.send(comm.rank() + 1, 787, 787);
@@ -38,7 +39,7 @@ void test(Matrix& A,  const char* name)
 {
     mpi::communicator comm(A.communicator());
 
-    A= 0.0; // for dense matrices
+    // A= 0.0; // for dense matrices
     {
 	mtl::matrix::inserter<Matrix> ins(A);
 	if (comm.rank() == 0) {
@@ -55,7 +56,7 @@ void test(Matrix& A,  const char* name)
 
     // Serialized output
     wait_for_previous(comm);
-    std::cout << "Raw local matrix on proc << " << comm.rank() << " is:\n" << A.raw_local << std::endl;
+    std::cout << "Raw local matrix on proc << " << comm.rank() << " is:\n" << A.local_matrix << std::endl;
     start_next(comm);
 }
 
@@ -68,7 +69,7 @@ int test_main(int argc, char* argv[])
     mpi::communicator world;
     
     if (world.size() != 2) {
-	cerr << "Example works only for 2 processors!\n";
+	std::cerr << "Example works only for 2 processors!\n";
 	env.abort(87);
     }
 
