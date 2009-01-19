@@ -12,6 +12,9 @@
 #ifndef MTL_DISTRIBUTION_INCLUDE
 #define MTL_DISTRIBUTION_INCLUDE
 
+#include <vector>
+#include <algorithm>
+
 #include <boost/mpl/bool.hpp>
 #include <boost/mpi/communicator.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
@@ -52,6 +55,9 @@ namespace mtl {
 
 	    /// Current communicator
 	    mpi::communicator communicator() const { return comm; }
+
+	    int rank() const { return my_rank; }
+	    int size() const { return my_size; }
 	protected:
 	    mpi::communicator comm;
 	    int               my_rank, my_size;
@@ -118,6 +124,14 @@ namespace mtl {
 	    template <typename Size>
 	    Size local_col(Size gc) const { return gc; }
 
+	    int on_rank(size_type gr, size_type gc) const 
+	    { 
+		MTL_DEBUG_THROW_IF(gr < starts[0] || gr >= starts[my_size], range_error);
+		std::vector<size_type>::const_iterator lbound( std::lower_bound(starts.begin(), starts.end(), gr));
+		//const size_type *lbound;
+		//lbound= std::lower_bound(starts.begin(), starts.end(), gr);
+		return lbound - starts.begin() - int(*lbound != gr);
+	    }
 	private:
 	    /// No default constructor
 	    block_row_distribution() {}
