@@ -12,6 +12,10 @@
 #ifndef MTL_MATRIX_DISTRIBUTED_INCLUDE
 #define MTL_MATRIX_DISTRIBUTED_INCLUDE
 
+#include <boost/mpi.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/utility.hpp>
+
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
@@ -46,13 +50,17 @@ public:
 
     Distribution      dist;
     Matrix            local_matrix;
+    Matrix*           remote_matrices;
 };
 
 template <typename DistributedMatrix, 
 	  typename Updater = mtl::operations::update_store<typename Collection<DistributedMatrix>::value_type> >
 class distributed_inserter
 {
-    
+    typename DistributedMatrix::distribution_type const& dist() const { return distributed_matrix.dist; }
+    int rank() const { return dist().rank(); }
+    int size() const { return dist().size(); }
+
 public:
     typedef distributed_inserter                           self;
     typedef DistributedMatrix                                     distributed_matrix_type;
@@ -62,10 +70,23 @@ public:
     typedef local_matrix_type                                     matrix_type; // needed in functors
     typedef inserter<local_matrix_type, Updater>                  local_inserter_type;
     typedef operations::update_proxy<self, size_type>             proxy_type;
+    typedef std::pair< std::pair<size_type, size_type>, value_type > entry_type;
     
     explicit distributed_inserter(DistributedMatrix& distributed_matrix, size_type slot_size = 5)
-	: distributed_matrix(distributed_matrix), 
-	  local_inserter(distributed_matrix.local_matrix, slot_size) {}
+	: distributed_matrix(distributed_matrix), local_inserter(distributed_matrix.local_matrix, slot_size), 
+	  send_buffers(distributed_matrix.dist.size()), recv_buffers(distributed_matrix.dist.size())
+    {}
+
+    ~distributed_inserter()
+    {
+	boost::mpi::all_to_all(dist().communicator(), send_buffers, recv_buffers);
+	for (unsigned p= 0; p < size(); p++) {
+	    const std::vector<entry_type>& my_buffer= recv_buffers[p];
+	    for (unsigned i= 0; i < my_buffer.size(); i++) {
+		const entry_type& entry= my_buffer[i];
+		update(entry.first.first, entry.first.second, entry.second);
+	    }}
+    }
 
     operations::update_bracket_proxy<self, size_type> operator[] (size_type row)
     {
@@ -104,8 +125,9 @@ public:
     }
 
 private:
-    DistributedMatrix&  distributed_matrix;
-    local_inserter_type local_inserter;
+    DistributedMatrix&                     distributed_matrix;
+    local_inserter_type                    local_inserter;
+    std::vector<std::vector<entry_type> >  send_buffers, recv_buffers;
 };
 
 template <typename DistributedMatrix, typename Updater>
@@ -116,7 +138,8 @@ inline void distributed_inserter<DistributedMatrix, Updater>::modify(size_type r
     if (dist.is_local(row, col)) {
 	size_type local_row= dist.local_row(row), local_col= dist.local_col(col);
 	local_inserter.modify<Modifier>(local_row, local_col, value);
-    } // else fill buffer and such
+    } else
+	send_buffers[dist.on_rank(row, col)].push_back(std::make_pair(std::make_pair(row, col), value));
 }
 
 }} // namespace mtl::matrix
