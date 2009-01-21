@@ -18,20 +18,6 @@
 
 namespace mpi = boost::mpi;
 
-inline void wait_for_previous(const mpi::communicator& comm)
-{
-    if (comm.rank() > 0) {
-	int xx;
-	comm.recv(comm.rank() - 1, 787, xx);
-    }
-}
-
-inline void start_next(const mpi::communicator& comm)
-{
-    if (comm.rank() < comm.size() - 1)
-	comm.send(comm.rank() + 1, 787, 787);
-}
-
 
 
 template <typename Matrix>
@@ -54,10 +40,17 @@ void test(Matrix& A,  const char* name)
 	}
     }
 
+#if 0
     // Serialized output
     wait_for_previous(comm);
-    std::cout << "Raw local matrix on proc << " << comm.rank() << " is:\n" << A.local_matrix << std::endl;
+    std::cout << "Raw local matrix on proc " << comm.rank() << " is:\n" << A.local_matrix << std::endl;
     start_next(comm);
+    std::cout << std::endl;
+    comm.barrier();
+#endif
+
+    if (!comm.rank()) std::cout << "Matrix is:" << std::endl;
+    std::cout << A;
 }
 
 
@@ -68,12 +61,17 @@ int test_main(int argc, char* argv[])
     mpi::environment env(argc, argv);
     mpi::communicator world;
     
-    if (world.size() != 2) {
-	std::cerr << "Example works only for 2 processors!\n";
+    if (world.size() != 3) {
+	std::cerr << "Example works only for 3 processors!\n";
 	env.abort(87);
     }
 
-    matrix::distributed<matrix::compressed2D<double> > A(7, 7);
+    std::vector<std::size_t> row_block, col_block;
+    row_block.push_back(0); row_block.push_back(4); row_block.push_back(6); row_block.push_back(7); 
+    col_block.push_back(0); col_block.push_back(5); col_block.push_back(7); col_block.push_back(7); 
+
+    mtl::par::block_distribution row_dist(row_block), col_dist(col_block);
+    matrix::distributed<matrix::compressed2D<double> > A(7, 7, row_dist, col_dist);
 
     test(A, "compressed2D<double>");
     

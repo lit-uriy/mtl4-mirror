@@ -340,8 +340,8 @@ namespace mtl {
 #ifdef __GXX_CONCEPTS__
     // see DistributedCollection
 #else
-    template <typename Matrix, typename Distribution>
-    struct Collection< matrix::distributed<Matrix, Distribution> >
+    template <typename Matrix, typename Distribution, typename DistributionFrom>
+    struct Collection< matrix::distributed<Matrix, Distribution, DistributionFrom> >
     {
 	typedef typename Collection<Matrix>::value_type      value_type;
 	typedef typename Collection<Matrix>::size_type       size_type;
@@ -973,21 +973,27 @@ namespace mtl {
 #endif
 
 #ifdef __GXX_CONCEPTS__
-    template <typename Matrix, typename Distribution>
-    concept_map DistributedCollection< matrix::distributed<Matrix, Distribution> >
+    template <typename Matrix, typename Distribution, typename DistributionFrom>
+    concept_map DistributedCollection< matrix::distributed<Matrix, Distribution, DistributionFrom> >
     {
+	typedef matrix::distributed<Matrix, Distribution, DistributionFrom> ref_type;
+
 	typedef typename Collection<Matrix>::value_type      value_type;
 	typedef typename Collection<Matrix>::size_type       size_type;
 	typedef typename Collection<Matrix>::const_reference const_reference;
 
-	typedef Matrix                                       concentrated;
+	typedef typename ref_type::local_type      local_type;
+	typedef typename ref_type::remote_type     remote_type;
     };
 #else
-    template <typename Matrix, typename Distribution>
-    struct DistributedCollection< matrix::distributed<Matrix, Distribution> >
-	: public Collection< matrix::distributed<Matrix, Distribution> >
+    template <typename Matrix, typename Distribution, typename DistributionFrom>
+    struct DistributedCollection< matrix::distributed<Matrix, Distribution, DistributionFrom> >
+	: public Collection< matrix::distributed<Matrix, Distribution, DistributionFrom> >
     {
-	typedef Matrix                                       concentrated;
+	typedef matrix::distributed<Matrix, Distribution, DistributionFrom> ref_type;
+
+	typedef typename ref_type::local_type      local_type;
+	typedef typename ref_type::remote_type     remote_type;
     };
 #endif
 
