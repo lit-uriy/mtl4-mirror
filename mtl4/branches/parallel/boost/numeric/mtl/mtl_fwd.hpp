@@ -82,7 +82,7 @@ namespace mtl {
 
         template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
-	template <typename Matrix, typename Distribution> class distributed;
+	template <typename Matrix, typename Distribution, typename DistributionFrom> class distributed;
 	template <typename DistMatrix, typename Updater> class distributed_inserter;
 
 	template <typename Vector> class multi_vector;

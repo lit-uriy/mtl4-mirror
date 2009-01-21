@@ -28,9 +28,7 @@ namespace mtl {
 
 	struct block_distributed : distributed {};
 	
-	struct row_block_distributed : block_distributed {};
-
-	struct non_distributed {};
+	struct concentrated {};
 
     } // namespace tag
 
@@ -64,15 +62,8 @@ namespace mtl {
 	};
 
 	
-	/// Base class for all row distributions
-	class row_distribution : public distribution 
-	{
-	public:
-	    explicit row_distribution(const mpi::communicator& comm= mpi::communicator()) : distribution(comm) {}
-	};
-
 	/// Block row distribution
-	class block_row_distribution : public row_distribution
+	class block_distribution : public distribution
 	{
 	    void init(size_type n)
 	    {
@@ -85,56 +76,77 @@ namespace mtl {
 
 	public:
 	    /// Distribution for n (global) rows
-	    explicit block_row_distribution(size_type n, 
-					    const mpi::communicator& comm= mpi::communicator())
-		: row_distribution(comm), starts(comm.size()+1)
+	    explicit block_distribution(size_type n, const mpi::communicator& comm= mpi::communicator())
+		: distribution(comm), starts(comm.size()+1)
 	    { init(n); }
 
 	    /// For genericity construct from # of global rows and columns
-	    explicit block_row_distribution(size_type grows, size_type gcols, 
-					    const mpi::communicator& comm= mpi::communicator())
-		: row_distribution(comm), starts(comm.size()+1)
+	    explicit block_distribution(size_type grows, size_type gcols, 
+					const mpi::communicator& comm= mpi::communicator())
+		: distribution(comm), starts(comm.size()+1)
 	    { init(grows); }
 	    
 
 	    /// Distribution vector
-	    explicit block_row_distribution(const std::vector<size_type>& starts, 
-					    const mpi::communicator& comm= mpi::communicator())
-		: row_distribution(comm), starts(starts)
+	    explicit block_distribution(const std::vector<size_type>& starts, 
+					const mpi::communicator& comm= mpi::communicator())
+		: distribution(comm), starts(starts)
 	    {}
 
-	    bool operator==(const block_row_distribution& dist) const { return starts == dist.starts; }
+	    bool operator==(const block_distribution& dist) const { return starts == dist.starts; }
+	    bool operator!=(const block_distribution& dist) const { return starts != dist.starts; }
 
-	    size_type local_num_rows(size_type gr) const
+	    /// For n global entries, how many are on processor p?
+	    template <typename Size>
+	    Size num_local(Size n, int p) const
 	    { 
-		return std::max(std::min(gr, starts[my_rank+1]), starts[my_rank]) - starts[my_rank]; 
+		return std::max(std::min(n, starts[p+1]), starts[p]) - starts[p]; 
 	    }
 	    
-	    size_type local_num_cols(size_type gc) const { return gc; }
-
-	    bool is_local(size_type gr, size_type gc) const { return gr >= starts[my_rank] && gr < starts[my_rank+1]; }
-
+	    /// For n global entries, how many are on my processor?
 	    template <typename Size>
-	    Size local_row(Size gr) const
+	    Size num_local(Size n) const { return num_local(n, my_rank); }
+
+
+	    bool is_local(size_type n) const { return n >= starts[my_rank] && n < starts[my_rank+1]; }
+
+	    /// Global index of local index \p n on rank \p p
+	    template <typename Size>
+	    Size local_to_global(Size n, int p) const
 	    {
-		MTL_DEBUG_THROW_IF(gr < starts[my_rank] || gr >= starts[my_rank+1], range_error);
-		return gr - starts[my_rank];
+		MTL_DEBUG_THROW_IF(n >= starts[p+1] - starts[p], range_error);
+		return n + starts[p];
 	    }
 
+	    /// Global index of local index \p n on my processor
 	    template <typename Size>
-	    Size local_col(Size gc) const { return gc; }
+	    Size local_to_global(Size n) const { return local_to_global(n, my_rank); }
 
-	    int on_rank(size_type gr, size_type gc) const 
-	    { 
-		MTL_DEBUG_THROW_IF(gr < starts[0] || gr >= starts[my_size], range_error);
-		std::vector<size_type>::const_iterator lbound( std::lower_bound(starts.begin(), starts.end(), gr));
-		//const size_type *lbound;
-		//lbound= std::lower_bound(starts.begin(), starts.end(), gr);
-		return lbound - starts.begin() - int(*lbound != gr);
+	    /// Local index of \p n under the condition it is on rank \p p
+	    template <typename Size>
+	    Size global_to_local(Size n, int p) const
+	    {
+		MTL_DEBUG_THROW_IF(n < starts[p] || n >= starts[p+1], range_error);
+		return n - starts[p];
 	    }
+
+	    /// Local index of \p n under the condition it is on my processor
+	    template <typename Size>
+	    Size global_to_local(Size n) const { return global_to_local(n, my_rank); }
+
+	    /// On which rank is global index n?
+	    int on_rank(size_type n) const 
+	    { 
+		if (n < starts[0] || n >= starts[my_size])
+		    std::cerr << "out of range with n == " << n << "max == " << starts[my_size] << std::endl;
+		MTL_DEBUG_THROW_IF(n < starts[0] || n >= starts[my_size], range_error);
+		std::vector<size_type>::const_iterator lbound( std::lower_bound(starts.begin(), starts.end(), n));
+		return lbound - starts.begin() - int(*lbound != n);
+	    }
+
 	private:
 	    /// No default constructor
-	    block_row_distribution() {}
+	    block_distribution() {}
 
 	    /// Lowest global index of each block and total size
 	    std::vector<size_type> starts;
@@ -143,14 +155,13 @@ namespace mtl {
     }
 
 
-
     namespace traits {
 
 	template <typename T>
 	struct is_distributed : boost::mpl::false_ {}; 
 
-	template <typename Matrix, typename Distribution>
-	struct is_distributed<mtl::matrix::distributed<Matrix, Distribution> > : boost::mpl::true_ {};
+	template <typename Matrix, typename Distribution, typename DistributionFrom>
+	struct is_distributed<mtl::matrix::distributed<Matrix, Distribution, DistributionFrom> > : boost::mpl::true_ {};
 
 	template <typename Vector, typename Distribution>
 	struct is_distributed<mtl::vector::distributed<Vector, Distribution> > : boost::mpl::true_ {};
