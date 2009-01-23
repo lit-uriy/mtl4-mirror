@@ -40,7 +40,7 @@
 
 namespace mtl { namespace vector {
 
-template <class Value, typename Parameters = parameters<> >
+template <class Value, typename Parameters>
 class dense_vector
     : public vec_expr<dense_vector<Value, Parameters> >,
       public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >,

@@ -31,9 +31,9 @@ std::ostream& print_vector(Vector const& vector, std::ostream& out= std::cout, i
 	// out.flags (std::ios_base::right);
 	if (precision)
 	    out.precision(precision); 
-	out << vector[r] << (r < size(vector) - 1 ? "," : "]");
+	out << vector[r] << (r < size(vector) - 1 ? "," : "");
     }
-    return out;
+    return out << "]";
 }
 
 }} // namespace mtl::vector

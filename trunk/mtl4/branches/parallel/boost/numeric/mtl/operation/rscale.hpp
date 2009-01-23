@@ -71,20 +71,20 @@ namespace mtl { namespace tfunctor {
 namespace matrix {
 
     template <typename Value1, typename Value2>
-    typename tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
+    typename tfunctor::rscale<Value1, Value2, typename mtl::traits::algebraic_category<Value1>::type>::result_type
     inline rscale(const Value1& value1, const Value2& value2)
     {
-	return tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>(value2)(value1);
+	return tfunctor::rscale<Value1, Value2, typename mtl::traits::algebraic_category<Value1>::type>(value2)(value1);
     }
 }
 
 namespace vector {
 
     template <typename Value1, typename Value2>
-    typename tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
+    typename tfunctor::rscale<Value1, Value2, typename mtl::traits::algebraic_category<Value1>::type>::result_type
     inline rscale(const Value1& value1, const Value2& value2)
     {
-	return tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>(value2)(value1);
+	return tfunctor::rscale<Value1, Value2, typename mtl::traits::algebraic_category<Value1>::type>(value2)(value1);
     }
 }
 

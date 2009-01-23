@@ -48,6 +48,13 @@ namespace mtl {
 	struct dimensions;
     }
 
+    /// Namespace for parallelization
+    namespace par {
+	class distribution;
+	class block_distribution;
+    }
+    
+
     /// Namespace for matrices and views and operations exclusively on matrices
     namespace matrix {
 
@@ -82,12 +89,11 @@ namespace mtl {
 
         template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
-	template <typename Matrix, typename Distribution, typename DistributionFrom> class distributed;
+	template <typename Matrix, typename RowDistribution = par::block_distribution, 
+		  typename ColDistribution = RowDistribution> class distributed;
 	template <typename DistMatrix, typename Updater> class distributed_inserter;
 
 	template <typename Vector> class multi_vector;
-
-	template <typename Matrix, typename Updater> class inserter;
 
         template <typename Matrix> struct transposed_orientation;
         template <typename Matrix> struct transposed_view;
@@ -122,7 +128,17 @@ namespace mtl {
 
     /// Namespace for vectors and views and %operations exclusively on vectors
     namespace vector {
-	template <typename Value, typename Parameters> class dense_vector;
+	namespace fixed {
+	    template <std::size_t Size> struct dimension;
+	}
+	namespace non_fixed {
+	    struct dimension;
+	}
+
+	template <typename Orientation= col_major, typename Dimension= non_fixed::dimension, 
+		  bool OnStack= false, bool RValue= false> struct parameters; 
+
+	template <typename Value, typename Parameters = parameters<> > class dense_vector;
 	template <typename Functor, typename Vector> struct map_view;
 	template <typename Vector>  struct conj_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
@@ -237,7 +253,9 @@ namespace mtl {
     namespace complexity_classes {}
 
     /// Namespace for %operations (if not defined in mtl)
-    namespace operations {}
+    namespace operations {
+	template <typename T> struct update_store;
+    }
 
     /// Namespace for recursive operations and types with recursive memory layout
     namespace recursion {}
@@ -249,6 +267,9 @@ namespace mtl {
     namespace wrec {}
 
     namespace matrix {
+	template <typename Matrix, typename Updater = mtl::operations::update_store<typename Matrix::value_type> > 
+	class inserter;
+
 	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_matrix_assign;
 	template <typename Matrix, typename ValueType, typename SizeType> struct const_crtp_matrix_bracket;
 	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_matrix_bracket;
@@ -284,12 +305,6 @@ namespace mtl {
 
     }
 
-    /// Namespace for parallelization
-    namespace par {
-	class distribution;
-	class row_distribution;
-	class block_row_distribution;
-    }
 
 } // namespace mtl
 

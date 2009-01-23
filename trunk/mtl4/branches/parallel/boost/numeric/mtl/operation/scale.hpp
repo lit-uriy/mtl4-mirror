@@ -23,7 +23,7 @@ namespace mtl {
     namespace vector {
 	
 	template <typename Value1, typename Vector>
-	typename traits::enable_if_vector<Vector, scaled_view<Value1, Vector> >::type
+	typename mtl::traits::enable_if_vector<Vector, scaled_view<Value1, Vector> >::type
 	inline scale(const Value1& value1, const Vector& vector)
 	{
 	    return scaled_view<Value1, Vector>(value1, vector);
@@ -33,7 +33,7 @@ namespace mtl {
     namespace matrix {
 
 	template <typename Value1, typename Matrix>
-	typename traits::enable_if_matrix<Matrix, scaled_view<Value1, Matrix> >::type
+	typename mtl::traits::enable_if_matrix<Matrix, scaled_view<Value1, Matrix> >::type
 	inline scale(const Value1& value1, const Matrix& matrix)
 	{
 	    return scaled_view<Value1, Matrix> (value1, matrix);

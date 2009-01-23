@@ -13,16 +13,17 @@
 #define MTL_VECTOR_PARAMETERS_INCLUDE
 
 #include <boost/mpl/bool.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/vector/dimension.hpp>
 
 namespace mtl { namespace vector {
 
 // This type exist only for bundling template parameters (to reduce typing)
-template <typename Orientation= col_major, 
-	  typename Dimension= non_fixed::dimension,
-	  bool OnStack= false,
-	  bool RValue= false>
+template <typename Orientation, 
+	  typename Dimension,
+	  bool OnStack,
+	  bool RValue>
 struct parameters 
 {
     typedef Orientation orientation;
