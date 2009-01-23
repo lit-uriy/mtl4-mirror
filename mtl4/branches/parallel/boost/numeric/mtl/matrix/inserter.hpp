@@ -15,15 +15,15 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/detail/trivial_inserter.hpp>
-#include <boost/numeric/mtl/matrix/distributed.hpp>
-#include <boost/numeric/mtl/matrix/compressed2D.hpp>
+//#include <boost/numeric/mtl/matrix/distributed.hpp>
+//#include <boost/numeric/mtl/matrix/compressed2D.hpp>
 
 
 
 namespace mtl { namespace matrix {
 
 template <typename Matrix, 
-	  typename Updater = mtl::operations::update_store<typename Matrix::value_type> >
+	  typename Updater>
 struct inserter 
   : public mtl::detail::trivial_inserter<Matrix, Updater>
 {

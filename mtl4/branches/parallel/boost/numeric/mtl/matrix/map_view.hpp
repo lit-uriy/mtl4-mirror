@@ -335,24 +335,24 @@ struct conj_view
 
 template <typename Scaling, typename Matrix>
 struct sub_matrix_t< mtl::matrix::scaled_view<Scaling, Matrix> >
-    : public sub_matrix_t< mtl::matrix::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
+    : public sub_matrix_t< mtl::matrix::map_view<mtl::tfunctor::scale<Scaling, typename Matrix::value_type>, 
 					    Matrix> >
 {};
 
 template <typename Matrix>
 struct sub_matrix_t< mtl::matrix::conj_view<Matrix> >
-    : public sub_matrix_t< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
+    : public sub_matrix_t< mtl::matrix::map_view<mtl::sfunctor::conj<typename Matrix::value_type>, Matrix> >
 {};
 
 template <typename Matrix, typename RScaling>
 struct sub_matrix_t< mtl::matrix::rscaled_view<Matrix, RScaling> >
-    : public sub_matrix_t< mtl::matrix::map_view<tfunctor::rscale<typename Matrix::value_type, RScaling>, 
+    : public sub_matrix_t< mtl::matrix::map_view<mtl::tfunctor::rscale<typename Matrix::value_type, RScaling>, 
 					    Matrix> >
 {};
 
 template <typename Matrix, typename Divisor>
 struct sub_matrix_t< mtl::matrix::divide_by_view<Matrix, Divisor> >
-    : public sub_matrix_t< mtl::matrix::map_view<tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
+    : public sub_matrix_t< mtl::matrix::map_view<mtl::tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
 					    Matrix> >
 {};
 
@@ -365,48 +365,48 @@ namespace mtl { namespace traits {
 
 template <typename Scaling, typename Matrix>
 struct row< mtl::matrix::scaled_view<Scaling, Matrix> >
-    : public row< mtl::matrix::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
+    : public row< mtl::matrix::map_view<mtl::tfunctor::scale<Scaling, typename Matrix::value_type>, 
 				   Matrix> >
 {};
 
 template <typename Matrix>
 struct row< mtl::matrix::conj_view<Matrix> >
-    : public row< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
+    : public row< mtl::matrix::map_view<mtl::sfunctor::conj<typename Matrix::value_type>, Matrix> >
 {};
 
 template <typename Matrix, typename RScaling>
 struct row< mtl::matrix::rscaled_view<Matrix, RScaling> >
-    : public row< mtl::matrix::map_view<tfunctor::rscale<typename Matrix::value_type, RScaling>, 
+    : public row< mtl::matrix::map_view<mtl::tfunctor::rscale<typename Matrix::value_type, RScaling>, 
 				   Matrix> >
 {};
 
 template <typename Matrix, typename Divisor>
 struct row< mtl::matrix::divide_by_view<Matrix, Divisor> >
-    : public row< mtl::matrix::map_view<tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
+    : public row< mtl::matrix::map_view<mtl::tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
 				   Matrix> >
 {};
 
 
 template <typename Scaling, typename Matrix>
 struct col< mtl::matrix::scaled_view<Scaling, Matrix> >
-    : public col< mtl::matrix::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
+    : public col< mtl::matrix::map_view<mtl::tfunctor::scale<Scaling, typename Matrix::value_type>, 
 				   Matrix> >
 {};
 
 template <typename Matrix>
 struct col< mtl::matrix::conj_view<Matrix> >
-    : public col< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
+    : public col< mtl::matrix::map_view<mtl::sfunctor::conj<typename Matrix::value_type>, Matrix> >
 {};
 
 template <typename Matrix, typename RScaling>
 struct col< mtl::matrix::rscaled_view<Matrix, RScaling> >
-    : public col< mtl::matrix::map_view<tfunctor::rscale<typename Matrix::value_type, RScaling>, 
+    : public col< mtl::matrix::map_view<mtl::tfunctor::rscale<typename Matrix::value_type, RScaling>, 
 				   Matrix> >
 {};
 
 template <typename Matrix, typename Divisor>
 struct col< mtl::matrix::divide_by_view<Matrix, Divisor> >
-    : public col< mtl::matrix::map_view<tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
+    : public col< mtl::matrix::map_view<mtl::tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
 				   Matrix> >
 {};
 
@@ -416,24 +416,24 @@ struct col< mtl::matrix::divide_by_view<Matrix, Divisor> >
 
 template <typename Scaling, typename Matrix>
 struct const_value< mtl::matrix::scaled_view<Scaling, Matrix> >
-    : public const_value< mtl::matrix::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
+    : public const_value< mtl::matrix::map_view<mtl::tfunctor::scale<Scaling, typename Matrix::value_type>, 
 					   Matrix> >
 {};
 
 template <typename Matrix>
 struct const_value< mtl::matrix::conj_view<Matrix> >
-    : public const_value< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
+    : public const_value< mtl::matrix::map_view<mtl::sfunctor::conj<typename Matrix::value_type>, Matrix> >
 {};
 
 template <typename Matrix, typename RScaling>
 struct const_value< mtl::matrix::rscaled_view<Matrix, RScaling> >
-    : public const_value< mtl::matrix::map_view<tfunctor::rscale<typename Matrix::value_type, RScaling>, 
+    : public const_value< mtl::matrix::map_view<mtl::tfunctor::rscale<typename Matrix::value_type, RScaling>, 
 					   Matrix> >
 {};
 
 template <typename Matrix, typename Divisor>
 struct const_value< mtl::matrix::divide_by_view<Matrix, Divisor> >
-    : public const_value< mtl::matrix::map_view<tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
+    : public const_value< mtl::matrix::map_view<mtl::tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
 					   Matrix> >
 {};
 
@@ -443,24 +443,24 @@ struct const_value< mtl::matrix::divide_by_view<Matrix, Divisor> >
 
 template <typename Tag, typename Scaling, typename Matrix>
 struct range_generator< Tag, mtl::matrix::scaled_view<Scaling, Matrix> >
-    : public range_generator< Tag, mtl::matrix::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
+    : public range_generator< Tag, mtl::matrix::map_view<mtl::tfunctor::scale<Scaling, typename Matrix::value_type>, 
 						    Matrix> >
 {};
 
 template <typename Tag, typename Matrix>
 struct range_generator< Tag, mtl::matrix::conj_view<Matrix> >
-    : public range_generator< Tag, mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
+    : public range_generator< Tag, mtl::matrix::map_view<mtl::sfunctor::conj<typename Matrix::value_type>, Matrix> >
 {};
 
 template <typename Tag, typename Matrix, typename RScaling>
 struct range_generator< Tag, mtl::matrix::rscaled_view<Matrix, RScaling> >
-    : public range_generator< Tag, mtl::matrix::map_view<tfunctor::rscale<typename Matrix::value_type, RScaling>, 
+    : public range_generator< Tag, mtl::matrix::map_view<mtl::tfunctor::rscale<typename Matrix::value_type, RScaling>, 
 						    Matrix> >
 {};
 
 template <typename Tag, typename Matrix, typename Divisor>
 struct range_generator< Tag, mtl::matrix::divide_by_view<Matrix, Divisor> >
-    : public range_generator< Tag, mtl::matrix::map_view<tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
+    : public range_generator< Tag, mtl::matrix::map_view<mtl::tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
 						    Matrix> >
 {};
 
@@ -468,24 +468,24 @@ struct range_generator< Tag, mtl::matrix::divide_by_view<Matrix, Divisor> >
 
 template <typename Scaling, typename Matrix>
 struct range_generator< tag::major, mtl::matrix::scaled_view<Scaling, Matrix> >
-    : public range_generator< tag::major, mtl::matrix::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
+    : public range_generator< tag::major, mtl::matrix::map_view<mtl::tfunctor::scale<Scaling, typename Matrix::value_type>, 
 						    Matrix> >
 {};
 
 template <typename Matrix>
 struct range_generator< tag::major, mtl::matrix::conj_view<Matrix> >
-    : public range_generator< tag::major, mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
+    : public range_generator< tag::major, mtl::matrix::map_view<mtl::sfunctor::conj<typename Matrix::value_type>, Matrix> >
 {};
 
 template <typename Matrix, typename RScaling>
 struct range_generator< tag::major, mtl::matrix::rscaled_view<Matrix, RScaling> >
-    : public range_generator< tag::major, mtl::matrix::map_view<tfunctor::rscale<typename Matrix::value_type, RScaling>, 
+    : public range_generator< tag::major, mtl::matrix::map_view<mtl::tfunctor::rscale<typename Matrix::value_type, RScaling>, 
 						    Matrix> >
 {};
 
 template <typename Matrix, typename Divisor>
 struct range_generator< tag::major, mtl::matrix::divide_by_view<Matrix, Divisor> >
-    : public range_generator< tag::major, mtl::matrix::map_view<tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
+    : public range_generator< tag::major, mtl::matrix::map_view<mtl::tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
 						    Matrix> >
 {};
 

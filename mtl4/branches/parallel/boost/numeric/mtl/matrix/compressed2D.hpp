@@ -126,6 +126,11 @@ struct compressed_el_cursor
 	return *this;
     }
 
+    const base& operator* () const
+    {
+	return *this;
+    }
+
     compressed2D<Elt, Parameters> const& matrix;
 };
 
@@ -182,6 +187,11 @@ struct compressed_minor_cursor
     }
 
     base& operator* ()
+    {
+	return *this;
+    }
+
+    const base& operator* () const
     {
 	return *this;
     }

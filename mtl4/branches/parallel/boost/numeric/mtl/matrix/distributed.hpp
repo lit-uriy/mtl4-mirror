@@ -26,13 +26,16 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
+#include <boost/numeric/mtl/matrix/reorder.hpp>
+#include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/operation/parallel_utilities.hpp>
+#include <boost/numeric/mtl/operation/for_each_nonzero.hpp>
+#include <boost/numeric/mtl/operation/trans.hpp>
 
 namespace mtl { namespace matrix {
 
 
-template <typename Matrix, typename RowDistribution = par::block_distribution,
-	  typename ColDistribution = RowDistribution>
+template <typename Matrix, typename RowDistribution, typename ColDistribution>
 class distributed
 {
 public:
@@ -115,24 +118,29 @@ public:
 	for (unsigned r= 0; r < num_rows(B); r++) {
 	    for (int p= 0; p < A.col_dist.size(); p++) {
 		out << '[';
-		if (A.col_dist.num_local(num_cols(A), p) == 0) {
-		    out << ']'; continue; }
 		if (p == A.col_dist.rank())
 		    for (unsigned c= 0; c < num_cols(B); c++)
-			out << B[r][c] << (c < num_cols(B) - 1 ? " " : "]");
+			out << B[r][c] << (c < num_cols(B) - 1 ? " " : "");
 		else {
 		    remote_map_const_iterator it(A.remote_matrices.find(p));
 		    if (it != A.remote_matrices.end()) {
 			const remote_type& C= it->second; 
 			for (unsigned c= 0; c < num_cols(C); c++)
-			    out << C[r][c] << (c < num_cols(C) - 1 ? " " : "]");
+			    out << C[r][c] << (c < num_cols(C) - 1 ? " " : "");
 		    } else
 			for (unsigned c= 0, nc= A.col_dist.num_local(num_cols(A), p); c < nc; c++)
-			    out << '*' << (c < nc - 1 ? " " : "]");
+			    out << '*' << (c < nc - 1 ? " " : "");
 		}
+		out << ']';
 	    }
 	    out << std::endl;
 	}
+#if 0 // only to print buffer organization (if activated add \n before stars)
+	for (int p= 0; p < A.col_dist.size(); p++) {
+	    typename std::map<int, dense_vector<size_type> >::const_iterator it(A.send_indices.find(p));
+	    out << (it != A.send_indices.end() ? it->second : dense_vector<size_type>());
+	}
+#endif
 	if (A.row_dist.rank() < A.row_dist.size()-1) 
 	    out << "********" << std::endl;
 	start_next(A.row_dist);
@@ -146,6 +154,8 @@ public:
     
     local_type                 local_matrix;
     remote_map_type            remote_matrices;
+    std::map<int, int>         recv_sizes;                // how many values I get from p
+    std::map<int, dense_vector<size_type> > send_indices; // local indices which are sent to p
 };
 
 
@@ -182,6 +192,19 @@ public:
 	  send_buffers(row_size()), recv_buffers(row_size())
     {}
 
+    struct col_marker
+    {
+	typedef typename DistributedMatrix::remote_type remote_type;
+	explicit col_marker(const remote_type& A) : A(A), col(A), used_col(num_cols(A), false) {}
+	
+	template <typename Cursor>
+	void operator() (const Cursor& cursor) { used_col[col(*cursor)]= true;	}
+
+	const remote_type&                            A;
+	typename mtl::traits::col<remote_type>::type  col;
+	std::vector<bool>                             used_col;
+    };
+
     ~distributed_inserter()
     {
 	boost::mpi::all_to_all(col_dist().communicator(), send_buffers, recv_buffers);
@@ -192,13 +215,27 @@ public:
 		update(entry.first.first, entry.first.second, entry.second);
 	    }}
 	// Finalize insertion
+	std::vector< dense_vector<size_type> > index_comp(col_size()), send_indices(col_size()); // compression of column indices
+
 	for (unsigned p= 0; p < col_size(); p++)
 	    if (remote_inserters[p]) {
 		delete remote_inserters[p];
-		//
-		dist_matrix.remote_matrices.insert(std::make_pair(int(p), *full_remote_matrices[p]));
+		typename DistributedMatrix::remote_type& A= *full_remote_matrices[p];
+		col_marker marker(A);
+		for_each_nonzero(A, marker);
+		index_comp[p].change_dim(count(marker.used_col.begin(), marker.used_col.end(), true));
+		for (size_type i= 0, pos= 0; i < marker.used_col.size(); i++)
+		    if (marker.used_col[i])
+			index_comp[p][pos++]= i;
+		typename traits::reorder<>::type R(reorder(index_comp[p], num_cols(A)));
+		dist_matrix.remote_matrices.insert(std::make_pair(int(p), A * trans(R)));
+		delete full_remote_matrices[p];
 	    }
 
+	boost::mpi::all_to_all(col_dist().communicator(), index_comp, send_indices);
+	for (unsigned p= 0; p < col_size(); p++)
+	    if (size(send_indices[p]) > 0)
+		dist_matrix.send_indices.insert(std::make_pair(p, send_indices[p]));
     }
 
     operations::update_bracket_proxy<self, size_type> operator[] (size_type row)
