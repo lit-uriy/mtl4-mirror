@@ -209,7 +209,15 @@ public:
 
     using assign_base::operator=;
 
- 
+    template <typename Archive>
+    void serialize(Archive& ar, const unsigned version)
+    {
+	size_type s= size();
+	ar & s;
+	change_dim(s); // dummy for sending
+	for (size_type i= 0; i < s; ++i)
+	    ar & this->value_n(i);
+    }
  
     template <typename Value2> friend void fill(self&, const Value2&);
 
