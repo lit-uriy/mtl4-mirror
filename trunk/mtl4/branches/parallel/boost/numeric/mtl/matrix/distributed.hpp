@@ -195,6 +195,9 @@ public:
 	for (unsigned p= 0; p < col_size(); p++)
 	    if (remote_inserters[p])
 		delete remote_inserters[p];
+
+
+
     }
 
     operations::update_bracket_proxy<self, size_type> operator[] (size_type row)
