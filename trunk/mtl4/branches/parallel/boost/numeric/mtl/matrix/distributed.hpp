@@ -13,6 +13,9 @@
 #define MTL_MATRIX_DISTRIBUTED_INCLUDE
 
 #include <iostream>
+#include <utility>
+#include <vector>
+#include <map>
 #include <boost/mpi.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/bool.hpp>
@@ -33,21 +36,22 @@ template <typename Matrix, typename RowDistribution = par::block_distribution,
 class distributed
 {
 public:
-    typedef distributed                             self;
-    typedef typename Collection<Matrix>::size_type  size_type;
-    typedef typename Collection<Matrix>::value_type value_type;
-    typedef RowDistribution                         row_distribution_type;
-    typedef ColDistribution                         col_distribution_type;
+    typedef distributed                              self;
+    typedef typename Collection<Matrix>::size_type   size_type;
+    typedef typename Collection<Matrix>::value_type  value_type;
+    typedef RowDistribution                          row_distribution_type;
+    typedef ColDistribution                          col_distribution_type;
     
-    typedef Matrix                                  local_type;
-    typedef Matrix                                  remote_type; // Needs specialization
+    typedef Matrix                                   local_type;
+    typedef Matrix                                   remote_type; // Needs specialization
+    typedef std::map<int, remote_type>               remote_map_type;
+    typedef typename remote_map_type::const_iterator remote_map_const_iterator;
 
     /// Constructor for matrix with global size grows x gcols and default distribution.
     /** RowDistribution and ColDistribution must have same type. **/
     explicit distributed(size_type grows, size_type gcols) 
 	: grows(grows), gcols(gcols), row_dist(grows), cdp(&this->row_dist), col_dist(*cdp),
-	  local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols)),
-	  remote_matrices(col_dist.size(), (remote_type*)0)
+	  local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
     {}
 
     /// Constructor for matrix with global size grows x gcols and with given distribution.
@@ -55,27 +59,20 @@ public:
     explicit distributed(size_type grows, size_type gcols, 
 			 const RowDistribution& row_dist) 
 	: grows(grows), gcols(gcols), row_dist(row_dist), cdp(&this->row_dist), col_dist(*cdp), 
-	  local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols)),
-	  remote_matrices(col_dist.size(), (remote_type*)0)
+	  local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
     {}
 
     /// Constructor for matrix with global size grows x gcols and with different distributions for rows and columns.
     explicit distributed(size_type grows, size_type gcols, 
 			 const RowDistribution& row_dist, const ColDistribution& col_dist) 
 	: grows(grows), gcols(gcols), row_dist(row_dist), cdp(new ColDistribution(col_dist)), col_dist(*cdp), 
-	  local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols)),
-	  remote_matrices(col_dist.size(), (remote_type*)0)
+	  local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
     {}
 
     ~distributed() { clean_cdp(); clean_remote_matrices(); }
 
     void clean_cdp() { if (cdp && cdp != &row_dist) delete cdp; }
-    void clean_remote_matrices() 
-    { 
-	for (unsigned i= 0; i < remote_matrices.size(); i++) 
-	    if (remote_matrices[i]) 
-		delete remote_matrices[i], remote_matrices[i]= 0; 
-    }
+    void clean_remote_matrices() { remote_matrices.clear(); }
 
     self& operator=(const self& src)
     {
@@ -123,14 +120,16 @@ public:
 		if (p == A.col_dist.rank())
 		    for (unsigned c= 0; c < num_cols(B); c++)
 			out << B[r][c] << (c < num_cols(B) - 1 ? " " : "]");
-		else 
-		    if (A.remote_matrices[p]) {
-			const remote_type& C= *A.remote_matrices[p];
+		else {
+		    remote_map_const_iterator it(A.remote_matrices.find(p));
+		    if (it != A.remote_matrices.end()) {
+			const remote_type& C= it->second; 
 			for (unsigned c= 0; c < num_cols(C); c++)
 			    out << C[r][c] << (c < num_cols(C) - 1 ? " " : "]");
 		    } else
 			for (unsigned c= 0, nc= A.col_dist.num_local(num_cols(A), p); c < nc; c++)
 			    out << '*' << (c < nc - 1 ? " " : "]");
+		}
 	    }
 	    out << std::endl;
 	}
@@ -146,7 +145,7 @@ public:
     ColDistribution            *cdp, &col_dist;
     
     local_type                 local_matrix;
-    std::vector<remote_type*>  remote_matrices;
+    remote_map_type            remote_matrices;
 };
 
 
@@ -178,6 +177,7 @@ public:
     explicit distributed_inserter(DistributedMatrix& dist_matrix, size_type slot_size = 5)
 	: dist_matrix(dist_matrix), slot_size(slot_size),
 	  local_inserter(dist_matrix.local_matrix, slot_size), 
+	  full_remote_matrices(col_size(), (remote_type*) 0),
 	  remote_inserters(col_size(), (remote_inserter_type*) 0),
 	  send_buffers(row_size()), recv_buffers(row_size())
     {}
@@ -193,10 +193,11 @@ public:
 	    }}
 	// Finalize insertion
 	for (unsigned p= 0; p < col_size(); p++)
-	    if (remote_inserters[p])
+	    if (remote_inserters[p]) {
 		delete remote_inserters[p];
-
-
+		//
+		dist_matrix.remote_matrices.insert(std::make_pair(int(p), *full_remote_matrices[p]));
+	    }
 
     }
 
@@ -240,6 +241,7 @@ private:
     DistributedMatrix&                     dist_matrix;
     size_type                              slot_size;
     local_inserter_type                    local_inserter;
+    std::vector<remote_type*>              full_remote_matrices; // Remote matrices before compressing columns
     std::vector<remote_inserter_type*>     remote_inserters;
     std::vector<std::vector<entry_type> >  send_buffers, recv_buffers;
 };
@@ -263,9 +265,9 @@ inline void distributed_inserter<DistributedMatrix, Updater>::modify(size_type r
 	    if (!remote_inserters[proc]) { // first insertion for this processor
 		// Create matrix and then inserter
 		typedef typename DistributedMatrix::remote_type remote_type;
-		dist_matrix.remote_matrices[proc]= new remote_type(row_dist.num_local(num_rows(dist_matrix)),
-								   col_dist.num_local(num_cols(dist_matrix), proc));
-		remote_inserters[proc]= new remote_inserter_type(*dist_matrix.remote_matrices[proc], slot_size);
+		full_remote_matrices[proc]= new remote_type(row_dist.num_local(num_rows(dist_matrix)),
+							    col_dist.num_local(num_cols(dist_matrix), proc));
+		remote_inserters[proc]= new remote_inserter_type(*full_remote_matrices[proc], slot_size);
 	    }
 	    size_type local_col= col_dist.global_to_local(col, proc);
 	    remote_inserters[proc]->modify<Modifier>(local_row, local_col, value);

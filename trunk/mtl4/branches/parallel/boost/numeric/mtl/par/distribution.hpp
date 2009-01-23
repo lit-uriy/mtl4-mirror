@@ -80,21 +80,15 @@ namespace mtl {
 		: distribution(comm), starts(comm.size()+1)
 	    { init(n); }
 
-#if 0
-	    /// For genericity construct from # of global rows and columns
-	    explicit block_distribution(size_type grows, size_type gcols, 
-					const mpi::communicator& comm= mpi::communicator())
-		: distribution(comm), starts(comm.size()+1)
-	    { init(grows); }
-#endif
-
 	    /// Distribution vector
 	    explicit block_distribution(const std::vector<size_type>& starts, 
 					const mpi::communicator& comm= mpi::communicator())
 		: distribution(comm), starts(starts)
 	    {}
 
+	    /// Two block distributions are equal if they have the same blocks
 	    bool operator==(const block_distribution& dist) const { return starts == dist.starts; }
+	    /// Two block distributions are different if they have the different blocks
 	    bool operator!=(const block_distribution& dist) const { return starts != dist.starts; }
 
 	    /// For n global entries, how many are on processor p?
@@ -108,7 +102,7 @@ namespace mtl {
 	    template <typename Size>
 	    Size num_local(Size n) const { return num_local(n, my_rank); }
 
-
+	    /// Is the global index \p n on my processor
 	    bool is_local(size_type n) const { return n >= starts[my_rank] && n < starts[my_rank+1]; }
 
 	    /// Global index of local index \p n on rank \p p
