@@ -80,12 +80,13 @@ namespace mtl {
 		: distribution(comm), starts(comm.size()+1)
 	    { init(n); }
 
+#if 0
 	    /// For genericity construct from # of global rows and columns
 	    explicit block_distribution(size_type grows, size_type gcols, 
 					const mpi::communicator& comm= mpi::communicator())
 		: distribution(comm), starts(comm.size()+1)
 	    { init(grows); }
-	    
+#endif
 
 	    /// Distribution vector
 	    explicit block_distribution(const std::vector<size_type>& starts, 
