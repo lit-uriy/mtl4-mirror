@@ -37,6 +37,7 @@
 namespace mtl { namespace matrix {
 
 
+/// Distributed matrices
 template <typename Matrix, typename RowDistribution, typename ColDistribution>
 class distributed
 {

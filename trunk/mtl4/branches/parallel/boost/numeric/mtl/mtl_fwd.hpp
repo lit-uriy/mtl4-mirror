@@ -184,6 +184,11 @@ namespace mtl {
     using vector::num_rows;
     using vector::num_cols;
 
+    /// Namespace for %operations (if not defined in mtl)
+    namespace operations {
+	template <typename T> struct update_store;
+    }
+
 
     namespace vector {
 	template <typename Vector> struct vec_expr;
@@ -191,6 +196,11 @@ namespace mtl {
 	template <typename E1, typename E2> struct vec_vec_minus_expr;
 
 	template <typename Vector, typename Distribution> class distributed;
+	template <typename DistributedVector, typename Updater> class distributed_inserter;
+
+	template <typename Vector, typename Updater = mtl::operations::update_store<typename Vector::value_type> > 
+	struct inserter;
+	template <typename Vector, typename Size> struct update_proxy;
     }
 
     template <typename E1, typename E2> struct mat_cvec_times_expr;
@@ -253,11 +263,6 @@ namespace mtl {
 
     /// Namespace for complexity classes
     namespace complexity_classes {}
-
-    /// Namespace for %operations (if not defined in mtl)
-    namespace operations {
-	template <typename T> struct update_store;
-    }
 
     /// Namespace for recursive operations and types with recursive memory layout
     namespace recursion {}
