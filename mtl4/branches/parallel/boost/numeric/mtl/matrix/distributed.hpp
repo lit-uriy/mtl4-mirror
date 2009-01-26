@@ -12,6 +12,8 @@
 #ifndef MTL_MATRIX_DISTRIBUTED_INCLUDE
 #define MTL_MATRIX_DISTRIBUTED_INCLUDE
 
+#ifdef MTL_HAS_MPI
+
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -314,5 +316,7 @@ inline void distributed_inserter<DistributedMatrix, Updater>::modify(size_type r
 }
 
 }} // namespace mtl::matrix
+
+#endif // MTL_HAS_MPI
 
 #endif // MTL_MATRIX_DISTRIBUTED_INCLUDE

@@ -12,8 +12,9 @@
 #ifndef MTL_PAR_PARALLEL_UTILITIES_INCLUDE
 #define MTL_PAR_PARALLEL_UTILITIES_INCLUDE
 
-#include <boost/mpi/communicator.hpp>
+#ifdef MTL_HAS_MPI
 
+#include <boost/mpi/communicator.hpp>
 
 namespace boost { namespace mpi {
 
@@ -48,5 +49,7 @@ inline void start_next(const distribution& dist)
 
 
 }} // namespace mtl::par
+
+#endif // MTL_HAS_MPI
 
 #endif // MTL_PAR_PARALLEL_UTILITIES_INCLUDE

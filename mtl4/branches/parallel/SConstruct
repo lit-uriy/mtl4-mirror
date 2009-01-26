@@ -279,7 +279,7 @@ if int(ARGUMENTS.get('with_concepts', 0)):
     env['CXX'] = '~/bin/conceptg++'
     env.Append(CCFLAGS = macro_flag(env, 'CONCEPTS_WITHOUT_OVERLOADED_REQUIREMENTS'))
     
-if 1 or int(ARGUMENTS.get('with_mpi', 0)):
+if int(ARGUMENTS.get('with_mpi', 0)):
     env['CXX'] = 'mpiCC'
     env.Append(CCFLAGS = macro_flag(env, 'MTL_HAS_MPI'))
     env.Append(LIBS=['boost_mpi-gcc43-mt.a', 'boost_serialization-gcc43-mt-1_37.a'])
@@ -308,6 +308,11 @@ if int(debug):
     add_debug(env)
 add_debug(debug_env)
 
+mpi_debug_env = debug_env.Clone()
+mpi_debug_env['CXX'] = 'mpiCC'
+mpi_debug_env.Append(CCFLAGS = macro_flag(env, 'MTL_HAS_MPI'))
+mpi_debug_env.Append(LIBS=['boost_mpi-gcc43-mt.a', 'boost_serialization-gcc43-mt-1_37.a'])
+mpi_debug_env.Append(LIBPATH=['/usr/local/lib'])
 
 # add optimization flags to appropriate environment
 opt = ARGUMENTS.get('opt', 0)
@@ -333,7 +338,7 @@ check = ARGUMENTS.get('check', 0)
 # Sub-directories
 #####################
 
-Export('env debug_env opt_env high_opt_env check')
+Export('env debug_env mpi_debug_env opt_env high_opt_env check')
 
 SConscript(['libs/numeric/mtl/build/SConscript', 
             'libs/numeric/mtl/test/SConscript', 
