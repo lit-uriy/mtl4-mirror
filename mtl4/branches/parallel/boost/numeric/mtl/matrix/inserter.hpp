@@ -43,13 +43,13 @@ struct inserter<compressed2D<Elt, Parameters>, Updater>
 };
 
 
-template <typename Matrix, typename Distribution, typename Updater>
-struct inserter<distributed<Matrix, Distribution>, Updater>
-    : public distributed_inserter<distributed<Matrix, Distribution>, Updater>
+template <typename Matrix, typename RowDistribution, typename ColDistribution, typename Updater>
+struct inserter<distributed<Matrix, RowDistribution, ColDistribution>, Updater>
+    : public distributed_inserter<distributed<Matrix, RowDistribution, ColDistribution>, Updater>
 {
-    typedef distributed<Matrix, Distribution>                                  matrix_type;
-    typedef typename Collection<matrix_type>::size_type                        size_type;
-    typedef distributed_inserter<distributed<Matrix, Distribution>, Updater>   base;
+    typedef distributed<Matrix, RowDistribution, ColDistribution>                                  matrix_type;
+    typedef typename Collection<matrix_type>::size_type                                            size_type;
+    typedef distributed_inserter<distributed<Matrix, RowDistribution, ColDistribution>, Updater>   base;
 
     explicit inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix, slot_size) {}
 };

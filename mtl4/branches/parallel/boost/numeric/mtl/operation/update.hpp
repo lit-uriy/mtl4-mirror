@@ -104,7 +104,7 @@ struct update_adapter
     }
 };
 
-
+// Should be in namespace matrix!!!
 template <typename Inserter, typename SizeType = std::size_t>
 struct update_proxy
 {
@@ -216,6 +216,7 @@ using operations::update_store;
 using operations::update_plus;
 using operations::update_minus;
 using operations::update_times;
+
 
 } // namespace mtl
 
