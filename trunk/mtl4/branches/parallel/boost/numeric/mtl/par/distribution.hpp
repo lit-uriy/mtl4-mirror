@@ -12,6 +12,8 @@
 #ifndef MTL_DISTRIBUTION_INCLUDE
 #define MTL_DISTRIBUTION_INCLUDE
 
+#ifdef MTL_HAS_MPI
+
 #include <vector>
 #include <algorithm>
 
@@ -62,7 +64,7 @@ namespace mtl {
 	};
 
 	
-	/// Block row distribution
+	/// Block distribution
 	class block_distribution : public distribution
 	{
 	    void init(size_type n)
@@ -75,7 +77,7 @@ namespace mtl {
 	    }
 
 	public:
-	    /// Distribution for n (global) rows
+	    /// Distribution for n (global) entries
 	    explicit block_distribution(size_type n, const mpi::communicator& comm= mpi::communicator())
 		: distribution(comm), starts(comm.size()+1)
 	    { init(n); }
@@ -86,10 +88,10 @@ namespace mtl {
 		: distribution(comm), starts(starts)
 	    {}
 
-	    /// Two block distributions are equal if they have the same blocks
-	    bool operator==(const block_distribution& dist) const { return starts == dist.starts; }
-	    /// Two block distributions are different if they have the different blocks
-	    bool operator!=(const block_distribution& dist) const { return starts != dist.starts; }
+	    /// Two block distributions are equal if they have the same blocks and same communicator
+	    bool operator==(const block_distribution& dist) const { return comm == dist.comm && starts == dist.starts; }
+	    /// Two block distributions are different if they have the different blocks or communicators
+	    bool operator!=(const block_distribution& dist) const { return !(*this == dist); }
 
 	    /// For n global entries, how many are on processor p?
 	    template <typename Size>
@@ -147,6 +149,117 @@ namespace mtl {
 	    std::vector<size_type> starts;
 	};
 
+
+	/// Cyclic distribution
+	// Not tested yet
+	class cyclic_distribution : public distribution
+	{
+	public:
+	    /// Construction of cyclic distribution 
+	    explicit cyclic_distribution(const mpi::communicator& comm= mpi::communicator()) 
+		: distribution(comm) {}
+
+	    /// Two cyclic distributions are equal if they have the same communicator
+	    bool operator==(const cyclic_distribution& dist) const { return comm == dist.comm; }
+	    /// Two cyclic distributions are different if they have the different communicators
+	    bool operator!=(const cyclic_distribution& dist) const { return !(*this == dist); }
+
+	    /// For n global entries, how many are on processor p?
+	    template <typename Size>
+	    Size num_local(Size n, int p) const
+	    { 
+		return n / my_size + (my_rank < n % my_size);
+	    }
+	    
+	    /// For n global entries, how many are on my processor?
+	    template <typename Size>
+	    Size num_local(Size n) const { return num_local(n, my_rank); }
+
+	    /// Is the global index \p n on my processor
+	    bool is_local(size_type n) const { return n % my_size == my_rank; }
+
+	    /// Global index of local index \p n on rank \p p
+	    template <typename Size>
+	    Size local_to_global(Size n, int p) const {	return n * my_size + p; }
+
+	    /// Global index of local index \p n on my processor
+	    template <typename Size>
+	    Size local_to_global(Size n) const { return local_to_global(n, my_rank); }
+
+	    /// Local index of \p n under the condition it is on rank \p p
+	    template <typename Size>
+	    Size global_to_local(Size n, int p) const
+	    {
+		MTL_DEBUG_THROW_IF(n % my_size != p, range_error);
+		return n / my_size;
+	    }
+
+	    /// Local index of \p n under the condition it is on my processor
+	    template <typename Size>
+	    Size global_to_local(Size n) const { return global_to_local(n, my_rank); }
+
+	    /// On which rank is global index n?
+	    int on_rank(size_type n) const { return n % my_size; }
+	};
+
+	/// Block cyclic distribution
+	// Not tested yet
+	class block_cyclic_distribution : public distribution
+	{
+	public:
+	    /// Construction of block cyclic distribution 
+	    explicit block_cyclic_distribution(size_type bsize, const mpi::communicator& comm= mpi::communicator()) 
+		: distribution(comm), bsize(bsize), sb(bsize * my_size) {}
+
+	    /// Two block cyclic distributions are equal if they have the same communicator
+	    bool operator==(const block_cyclic_distribution& dist) const { return comm == dist.comm && bsize == dist.bsize; }
+	    /// Two block cyclic distributions are different if they have the different communicators
+	    bool operator!=(const block_cyclic_distribution& dist) const { return !(*this == dist); }
+
+	    /// For n global entries, how many are on processor p?
+	    template <typename Size>
+	    Size num_local(Size n, int p) const
+	    { 
+		Size full_blocks(n / sb), in_full_blocks(n % sb), my_block(my_size * bsize);
+		return full_blocks * bsize + std::max(0, std::min(in_full_blocks - my_block, bsize-1));
+	    }
+	    
+	    /// For n global entries, how many are on my processor?
+	    template <typename Size>
+	    Size num_local(Size n) const { return num_local(n, my_rank); }
+
+	    /// Is the global index \p n on my processor
+	    bool is_local(size_type n) const { return on_rank(n) == my_rank; }
+
+	    /// Global index of local index \p n on rank \p p
+	    template <typename Size>
+	    Size local_to_global(Size n, int p) const 
+	    {	
+		return (n / bsize) * bsize * my_size + my_rank * bsize + (n % bsize);
+	    }
+
+	    /// Global index of local index \p n on my processor
+	    template <typename Size>
+	    Size local_to_global(Size n) const { return local_to_global(n, my_rank); }
+
+	    /// Local index of \p n under the condition it is on rank \p p
+	    template <typename Size>
+	    Size global_to_local(Size n, int p) const
+	    {
+		MTL_DEBUG_THROW_IF(n % my_size != p, range_error);
+		return n / my_size;
+	    }
+
+	    /// Local index of \p n under the condition it is on my processor
+	    template <typename Size>
+	    Size global_to_local(Size n) const { return global_to_local(n, my_rank); }
+
+	    /// On which rank is global index n?
+	    int on_rank(size_type n) const { return (n % sb) / bsize; }
+	private:
+	    size_type bsize, sb;
+	};
+
     }
 
 
@@ -165,5 +278,7 @@ namespace mtl {
 
 
 } // namespace mtl
+
+#endif // MTL_HAS_MPI
 
 #endif // MTL_DISTRIBUTION_INCLUDE
