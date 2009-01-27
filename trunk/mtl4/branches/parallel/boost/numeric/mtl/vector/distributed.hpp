@@ -40,6 +40,12 @@ public:
     explicit distributed(size_type gsize, const Distribution& dist) 
 	: gsize(gsize), dist(dist), local_vector(dist.num_local(gsize))  {}
 
+    value_type& operator() (size_type n) { return local_vector(dist.global_to_local(n)); }
+    const value_type& operator() (size_type n) const { return local_vector(dist.global_to_local(n)); }
+
+    value_type& operator[] (size_type n) { return local_vector[dist.global_to_local(n)]; }
+    const value_type& operator[] (size_type n) const { return local_vector[dist.global_to_local(n)]; }
+
     friend inline std::ostream& operator<< (std::ostream& out, const self& v) 
     {
 	wait_for_previous(v.dist);
@@ -50,14 +56,24 @@ public:
 	start_next(v.dist);
     }
 
-    boost::mpi::communicator communicator() const { return dist.communicator(); }
+    const distribution_type& distribution() const { return dist; }
+    const boost::mpi::communicator& communicator() const { return dist.communicator(); }
 			  
     template <typename, typename> friend class distributed_inserter;
+
+    // Enlarge send buffer so that at least n entries can be sent
+    void enlarge_send_buffer(size_type n) { send_buffer.resize(std::max(send_buffer.size(), n)); }
+    // Enlarge receive buffer so that at least n entries can be received
+    void enlarge_recv_buffer(size_type n) { send_buffer.resize(std::max(recv_buffer.size(), n)); }
+
+    void release_send_buffer(size_type n) { send_buffer.resize(0); }
+    void release_recv_buffer(size_type n) { send_buffer.resize(0); }
 
 protected:
     size_type           gsize;
     distribution_type   dist;
     local_type          local_vector;
+    std::vector<value_type> send_buffer, recv_buffer;
 };
 
 template <typename DistributedVector, 

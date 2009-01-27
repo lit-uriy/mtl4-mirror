@@ -54,7 +54,7 @@ namespace mtl {
 	    bool operator!=(const distribution& d) const { return true; }
 
 	    /// Current communicator
-	    mpi::communicator communicator() const { return comm; }
+	    const mpi::communicator& communicator() const { return comm; }
 
 	    int rank() const { return my_rank; }
 	    int size() const { return my_size; }
