@@ -285,7 +285,7 @@ namespace mtl {
     concept DistributedCollection<typename T>
       : Collection<T>
     {
-	typename concentrated;
+	typename local_type;
 
     };
 #else
@@ -295,7 +295,7 @@ namespace mtl {
 	: public Collection<T>
     {
 	/// Associated type for the non-distributed type; by default identical with member type
-	typedef typename T::concentrated concentrated ;
+	typedef typename T::local_type local_type;
     };
 #endif
 
@@ -591,6 +591,19 @@ namespace mtl {
 	typedef typename mtl::vector::dense_vector<Value, Parameters>::size_type size_type;
     };
 #endif
+
+#ifdef __GXX_CONCEPTS__
+    // see DistributedCollection
+#else
+    template <typename Vector, typename Distribution>
+    struct Collection< vector::distributed<Vector, Distribution> >
+    {
+	typedef typename Collection<Vector>::value_type      value_type;
+	typedef typename Collection<Vector>::size_type       size_type;
+	typedef typename Collection<Vector>::const_reference const_reference;
+    };
+#endif
+
 
 
 #ifdef __GXX_CONCEPTS__

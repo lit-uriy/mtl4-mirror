@@ -195,7 +195,7 @@ namespace mtl {
 	template <typename E1, typename E2> struct vec_vec_add_expr;
 	template <typename E1, typename E2> struct vec_vec_minus_expr;
 
-	template <typename Vector, typename Distribution> class distributed;
+	template <typename Vector, typename Distribution = mtl::par::block_distribution> class distributed;
 	template <typename DistributedVector, typename Updater> class distributed_inserter;
 
 	template <typename Vector, typename Updater = mtl::operations::update_store<typename Vector::value_type> > 
