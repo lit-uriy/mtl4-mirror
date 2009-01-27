@@ -51,6 +51,12 @@ struct row_vector : virtual vector {};
 /// Tag for any MTL matrix (and user-declared MTL matrices)
 struct matrix : virtual collection {};
 
+/// Opposite to distributed
+struct concentrated : virtual universe {};
+
+/// Distributed containers in the sense of MPI
+struct distributed : virtual universe {};
+
 /// Tag for any dense collection
 struct dense : virtual universe {};
     
@@ -107,18 +113,31 @@ struct sub_dividable : virtual qsub_dividable {};
 /// Tag for dense row vector in the category lattice
 struct dense_row_vector
   : virtual row_vector, virtual contiguous_dense, 
-    virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout
+    virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout,
+    virtual concentrated
 {};
 
 /// Tag for dense column vector in the category lattice
 struct dense_col_vector
   : virtual col_vector, virtual contiguous_dense, 
-    virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout
+    virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout,
+    virtual concentrated
 {};
 
 /// Tag to handle std::vector in the category lattice
 struct std_vector
-  : virtual vector, virtual contiguous_dense, virtual has_1D_layout
+  : virtual vector, virtual contiguous_dense, virtual has_1D_layout,
+    virtual concentrated
+{};
+
+/// Tag for distributed column vector in the category lattice
+struct distributed_col_vector
+  : virtual col_vector, virtual distributed
+{};
+
+/// Tag for distributed row vector in the category lattice
+struct distributed_row_vector
+  : virtual row_vector, virtual distributed
 {};
 
 /// Tag for a view on a (regular) dense matrix in the category lattice
@@ -131,7 +150,8 @@ struct dense2D_view
 
 /// Tag for (regular) dense matrix in the category lattice
 struct dense2D 
-  : virtual dense2D_view, virtual has_fast_ra_iterator, virtual has_2D_layout
+  : virtual dense2D_view, virtual has_fast_ra_iterator, virtual has_2D_layout,
+    virtual concentrated
 {};
 
 /// Tag for a view on a Morton-order matrix in the category lattice
@@ -144,7 +164,8 @@ struct morton_view
 
 /// Tag for Morton-order matrix in the category lattice
 struct morton_dense 
-  : virtual morton_view, virtual has_ra_iterator
+  : virtual morton_view, virtual has_ra_iterator,
+    virtual concentrated
  {};
 
 /// Tag for a view on a compressed matrix in the category lattice
@@ -155,13 +176,20 @@ struct compressed2D_view
 
 /// Tag for compressed matrix in the category lattice
 struct compressed2D 
-  : virtual compressed2D_view, virtual has_iterator
+  : virtual compressed2D_view, virtual has_iterator,
+    virtual concentrated
 {};
 
 /// Tag for multi_vector
 // Maybe splitting later into sparse and dense form
 struct multi_vector
-  : virtual matrix, virtual dense
+  : virtual matrix, virtual dense,
+    virtual concentrated
+{};
+
+/// Tag for distributed matrix in the category lattice
+struct distributed_matrix
+  : virtual matrix, virtual distributed
 {};
 
 /// Tag for transposed multi_vector
@@ -181,6 +209,8 @@ struct hermitian_multi_vector
 struct bottom
   : virtual compressed2D, virtual morton_dense, virtual dense2D, 
     virtual dense_col_vector, virtual dense_row_vector, virtual unknown,
+    virtual distributed_col_vector, virtual distributed_row_vector, 
+    virtual distributed_matrix,
     virtual multi_vector
 {};
 
@@ -209,9 +239,6 @@ struct unit_diagonal : universe_diagonal {};
     By the time of this writing it is experimental and only used
     in upper_trisolve and lower_trisolve. **/
 struct inverse_diagonal : universe_diagonal {};
-
-
-
 
 /*@}*/ // end of group Tags
 

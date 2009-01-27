@@ -106,8 +106,9 @@ public:
     }
 
 
-    boost::mpi::communicator communicator() const { return row_dist.communicator(); }
+    const boost::mpi::communicator& communicator() const { return row_dist.communicator(); }
 			  
+    
     template <typename DistMatrix, typename Updater> friend class distributed_inserter;
 
     friend inline size_type num_rows(const self& A) { return A.grows; }
