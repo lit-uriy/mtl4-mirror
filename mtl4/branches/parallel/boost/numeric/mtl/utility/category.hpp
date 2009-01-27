@@ -58,6 +58,12 @@ struct category<multi_vector<Vector> >
     typedef tag::multi_vector type;
 };
 
+template <typename Matrix, typename Distribution>
+struct category< matrix::distributed<Matrix, Distribution> > 
+{
+    typedef tag::distributed_matrix type;
+};
+
 template <typename T, typename Parameters>
 struct category< dense_vector<T, Parameters> > 
 {
@@ -65,6 +71,16 @@ struct category< dense_vector<T, Parameters> >
 	boost::is_same<typename Parameters::orientation, row_major>
       , tag::dense_row_vector 
       , tag::dense_col_vector 
+    >::type type;
+} ;
+
+template <typename Vector, typename Distribution>
+struct category< vector::distributed<Vector, Distribution> > 
+{
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename OrientedCollection<Vector>::orientation, row_major>
+      , tag::distributed_row_vector 
+      , tag::distributed_col_vector 
     >::type type;
 } ;
 
