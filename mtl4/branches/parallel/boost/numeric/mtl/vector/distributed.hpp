@@ -50,6 +50,8 @@ public:
 	start_next(v.dist);
     }
 
+    boost::mpi::communicator communicator() const { return dist.communicator(); }
+			  
     template <typename, typename> friend class distributed_inserter;
 
 protected:
@@ -73,6 +75,7 @@ public:
     typedef typename Collection<DistributedVector>::size_type     size_type;
     typedef typename Collection<DistributedVector>::value_type    value_type;
     typedef std::pair< size_type, value_type >                    entry_type;
+    typedef update_proxy<self, size_type>                         proxy_type;
 
 
     explicit distributed_inserter(DistributedVector& dist_vector)
@@ -89,6 +92,9 @@ public:
 		update(my_buffer[i].first, my_buffer[i].second);
 	}
     }
+
+    proxy_type operator() (size_type n) { return proxy_type(*this, n); }
+    proxy_type operator[] (size_type n) { return proxy_type(*this, n); }
 
     template <typename Modifier>
     void modify(size_type n, value_type value)
