@@ -32,7 +32,6 @@ inline void start_next(const communicator& comm)
 	comm.send(comm.rank() + 1, 787, 787);
 }
 
-
 }} // boost::mpi
 
 namespace mtl { namespace par {
@@ -46,6 +45,7 @@ inline void start_next(const base_distribution& dist)
 {
     start_next(communicator(dist));
 }
+
 
 
 }} // namespace mtl::par

@@ -19,4 +19,7 @@
 
 #include <boost/numeric/mtl/io/matrix_market.hpp>
 
+#include <boost/numeric/mtl/par/single_ostream.hpp>
+
+
 #endif // MTL_TYPES_INCLUDE

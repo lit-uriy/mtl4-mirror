@@ -42,7 +42,7 @@ namespace mtl {
 	    bool operator!=(const base_distribution& d) const { return true; }
 
 	    /// Current communicator
-	    friend inline const mpi::communicator& communicator(const base_distribution& d) { return d.comm; }
+	    friend inline const mpi::communicator& communicator(const base_distribution& d);
 
 	    int rank() const { return my_rank; }
 	    int size() const { return my_size; }
@@ -51,6 +51,7 @@ namespace mtl {
 	    int               my_rank, my_size;
 	};
 
+        inline const mpi::communicator& communicator(const base_distribution& d) { return d.comm; }
 	
 	/// Block distribution
 	class block_distribution : public base_distribution
