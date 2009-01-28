@@ -15,8 +15,14 @@
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/meta_math/loop1.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+
+#ifdef MTL_HAS_MPI
+#  include <boost/mpi/collectives/all_reduce.hpp>
+#endif
 
 namespace mtl { 
 
@@ -50,6 +56,15 @@ namespace mtl {
 		}
 	    };
 	}
+
+	// Forward declaration
+	template <unsigned long Unroll, typename Vector1, typename Vector2>
+	typename detail::dot_result<Vector1, Vector2>::type
+	inline dot(const Vector1& v1, const Vector2& v2);
+
+	template <unsigned long Unroll, typename Vector1, typename Vector2>
+	typename detail::dot_result<Vector1, Vector2>::type
+	inline dot_real(const Vector1& v1, const Vector2& v2);
 
 	namespace sfunctor {
 	    
@@ -114,21 +129,74 @@ namespace mtl {
 	    };
 	}
 
+	// Local dot product 
+	template <unsigned long Unroll, typename Vector1, typename Vector2>
+	typename detail::dot_result<Vector1, Vector2>::type
+	inline dot_impl(const Vector1& v1, const Vector2& v2, mtl::tag::concentrated)
+	{
+	    return sfunctor::dot<Unroll>::apply(v1, v2, detail::with_conj());
+	}
+
+	// Local dot product without conjugate 
+	template <unsigned long Unroll, typename Vector1, typename Vector2>
+	typename detail::dot_result<Vector1, Vector2>::type
+	inline dot_real_impl(const Vector1& v1, const Vector2& v2, mtl::tag::concentrated)
+	{
+	    return sfunctor::dot<Unroll>::apply(v1, v2, detail::without_conj());
+	}
+
+	
+#ifdef MTL_HAS_MPI
+
+	// Distributed dot product 
+	template <unsigned long Unroll, typename Vector1, typename Vector2>
+	typename detail::dot_result<Vector1, Vector2>::type
+	inline dot_impl(const Vector1& v1, const Vector2& v2, mtl::tag::distributed)
+	{
+	    MTL_DEBUG_THROW_IF(distribution(v1) != distribution(v2), incompatible_distribution());
+	    typedef typename detail::dot_result<Vector1, Vector2>::type scalar_type;
+	    scalar_type local_dot(dot<Unroll>(local(v1), local(v2)));
+	    return boost::mpi::all_reduce(communicator(v1), local_dot, std::plus<scalar_type>());
+	}
+
+	// Distributed dot product without conjugate 
+	template <unsigned long Unroll, typename Vector1, typename Vector2>
+	typename detail::dot_result<Vector1, Vector2>::type
+	inline dot_real_impl(const Vector1& v1, const Vector2& v2, mtl::tag::distributed)
+	{
+	    MTL_DEBUG_THROW_IF(distribution(v1) != distribution(v2), incompatible_distribution());
+	    typedef typename detail::dot_result<Vector1, Vector2>::type scalar_type;
+	    scalar_type local_dot(dot_real<Unroll>(local(v1), local(v2)));
+	    return boost::mpi::all_reduce(communicator(v1), local_dot, std::plus<scalar_type>());
+	}
+
+#endif
+
+	/// Dot product with user-specified unrolling defined as hermitian(v) * w
+	//  Dispatch only for distributedness of first argument; second argument must be appropriate
+	template <unsigned long Unroll, typename Vector1, typename Vector2>
+	typename detail::dot_result<Vector1, Vector2>::type
+	inline dot(const Vector1& v1, const Vector2& v2)
+	{
+	    return dot_impl<Unroll>(v1, v2, typename mtl::traits::category<Vector1>::type());
+	}
+
 	/// Dot product defined as hermitian(v) * w
 	/** Unrolled eight times by default **/
 	template <typename Vector1, typename Vector2>
 	typename detail::dot_result<Vector1, Vector2>::type
 	inline dot(const Vector1& v1, const Vector2& v2)
 	{
-	    return sfunctor::dot<8>::apply(v1, v2, detail::with_conj());
+	    return dot<8>(v1, v2);
 	}
 
-	/// Dot product with user-specified unrolling defined as hermitian(v) * w
+	/// Dot product without conjugate with user-specified unrolling defined as trans(v) * w
+	//  Dispatch only for distributedness of first argument; second argument must be appropriate
 	template <unsigned long Unroll, typename Vector1, typename Vector2>
 	typename detail::dot_result<Vector1, Vector2>::type
-	inline dot(const Vector1& v1, const Vector2& v2)
+	inline dot_real(const Vector1& v1, const Vector2& v2)
 	{
-	    return sfunctor::dot<Unroll>::apply(v1, v2, detail::with_conj());
+	    return dot_real_impl<Unroll>(v1, v2, typename mtl::traits::category<Vector1>::type());
 	}
 
 	/// Dot product without conjugate defined as trans(v) * w
@@ -137,17 +205,9 @@ namespace mtl {
 	typename detail::dot_result<Vector1, Vector2>::type
 	inline dot_real(const Vector1& v1, const Vector2& v2)
 	{
-	    return sfunctor::dot<8>::apply(v1, v2, detail::without_conj());
+	    return dot_real<8>(v1, v2);
 	}
-
-	/// Dot product without conjugate with user-specified unrolling defined as trans(v) * w
-	template <unsigned long Unroll, typename Vector1, typename Vector2>
-	typename detail::dot_result<Vector1, Vector2>::type
-	inline dot_real(const Vector1& v1, const Vector2& v2)
-	{
-	    return sfunctor::dot<Unroll>::apply(v1, v2, detail::without_conj());
-	}
-
+      
 
     } // namespace vector
     

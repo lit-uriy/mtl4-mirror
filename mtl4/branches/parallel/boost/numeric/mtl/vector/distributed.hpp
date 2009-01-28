@@ -56,8 +56,8 @@ public:
 	start_next(v.dist);
     }
 
-    const distribution_type& distribution() const { return dist; }
-    const boost::mpi::communicator& communicator() const { return dist.communicator(); }
+    friend inline const distribution_type& distribution(const self& d) { return d.dist; }
+    friend inline const boost::mpi::communicator& communicator(const self& d) { return communicator(d.dist); }
 			  
     template <typename, typename> friend class distributed_inserter;
 
@@ -68,6 +68,10 @@ public:
 
     void release_send_buffer(size_type n) { send_buffer.resize(0); }
     void release_recv_buffer(size_type n) { send_buffer.resize(0); }
+
+    friend inline local_type& local(self& d) { return d.local_vector; }
+    friend inline const local_type& local(const self& d) { return d.local_vector; }
+
 
 protected:
     size_type           gsize;
@@ -101,7 +105,7 @@ public:
 
     ~distributed_inserter()
     {
-	boost::mpi::all_to_all(dist().communicator(), send_buffers, recv_buffers);
+	boost::mpi::all_to_all(communicator(dist()), send_buffers, recv_buffers);
 	for (unsigned p= 0; p < dist_size(); p++) {
 	    const std::vector<entry_type>& my_buffer= recv_buffers[p];
 	    for (unsigned i= 0; i < my_buffer.size(); i++)

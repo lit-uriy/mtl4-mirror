@@ -23,38 +23,26 @@
 
 namespace mtl { 
 
-    namespace tag {
-
-	
-	struct distributed {};
-
-	struct block_distributed : distributed {};
-	
-	struct concentrated {};
-
-    } // namespace tag
-
-
-    namespace par {
+   namespace par {
 
 	namespace mpi = boost::mpi;
 
 	/// Base class for all distributions
-	class distribution
+	class base_distribution
 	{
 	public:
 	    typedef std::size_t     size_type;
 	    
-	    explicit distribution (const mpi::communicator& comm= mpi::communicator()) 
+	    explicit base_distribution (const mpi::communicator& comm= mpi::communicator()) 
 		: comm(comm), my_rank(comm.rank()), my_size(comm.size()) {}
 	    
 	    /// Distributions not specified further or of different types are considered different
-	    bool operator==(const distribution&) const { return false; }
+	    bool operator==(const base_distribution&) const { return false; }
 	    /// Distributions not specified further or of different types are considered different
-	    bool operator!=(const distribution& d) const { return true; }
+	    bool operator!=(const base_distribution& d) const { return true; }
 
 	    /// Current communicator
-	    const mpi::communicator& communicator() const { return comm; }
+	    friend inline const mpi::communicator& communicator(const base_distribution& d) { return d.comm; }
 
 	    int rank() const { return my_rank; }
 	    int size() const { return my_size; }
@@ -65,7 +53,7 @@ namespace mtl {
 
 	
 	/// Block distribution
-	class block_distribution : public distribution
+	class block_distribution : public base_distribution
 	{
 	    void init(size_type n)
 	    {
@@ -79,13 +67,13 @@ namespace mtl {
 	public:
 	    /// Distribution for n (global) entries
 	    explicit block_distribution(size_type n, const mpi::communicator& comm= mpi::communicator())
-		: distribution(comm), starts(comm.size()+1)
+		: base_distribution(comm), starts(comm.size()+1)
 	    { init(n); }
 
 	    /// Distribution vector
 	    explicit block_distribution(const std::vector<size_type>& starts, 
 					const mpi::communicator& comm= mpi::communicator())
-		: distribution(comm), starts(starts)
+		: base_distribution(comm), starts(starts)
 	    {}
 
 	    /// Two block distributions are equal if they have the same blocks and same communicator
@@ -152,12 +140,12 @@ namespace mtl {
 
 	/// Cyclic distribution
 	// Not tested yet
-	class cyclic_distribution : public distribution
+	class cyclic_distribution : public base_distribution
 	{
 	public:
 	    /// Construction of cyclic distribution 
 	    explicit cyclic_distribution(const mpi::communicator& comm= mpi::communicator()) 
-		: distribution(comm) {}
+		: base_distribution(comm) {}
 
 	    /// Two cyclic distributions are equal if they have the same communicator
 	    bool operator==(const cyclic_distribution& dist) const { return comm == dist.comm; }
@@ -204,12 +192,12 @@ namespace mtl {
 
 	/// Block cyclic distribution
 	// Not tested yet
-	class block_cyclic_distribution : public distribution
+	class block_cyclic_distribution : public base_distribution
 	{
 	public:
 	    /// Construction of block cyclic distribution 
 	    explicit block_cyclic_distribution(size_type bsize, const mpi::communicator& comm= mpi::communicator()) 
-		: distribution(comm), bsize(bsize), sb(bsize * my_size) {}
+		: base_distribution(comm), bsize(bsize), sb(bsize * my_size) {}
 
 	    /// Two block cyclic distributions are equal if they have the same communicator
 	    bool operator==(const block_cyclic_distribution& dist) const { return comm == dist.comm && bsize == dist.bsize; }

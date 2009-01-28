@@ -23,7 +23,7 @@ namespace mpi = boost::mpi;
 template <typename Matrix>
 void test(Matrix& A,  const char* name)
 {
-    mpi::communicator comm(A.communicator());
+    mpi::communicator comm(communicator(A));
 
     // A= 0.0; // for dense matrices
     {

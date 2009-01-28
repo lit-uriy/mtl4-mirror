@@ -23,7 +23,7 @@ namespace mpi = boost::mpi;
 template <typename Matrix>
 void test(Matrix& A,  const char* name)
 {
-    mpi::communicator comm(A.communicator());
+    mpi::communicator comm(communicator(A));
 
     // A= 0.0; // for dense matrices
     {
@@ -39,15 +39,6 @@ void test(Matrix& A,  const char* name)
 	    ins[5][4] << 8.0;
 	}
     }
-
-#if 0
-    // Serialized output
-    wait_for_previous(comm);
-    std::cout << "Raw local matrix on proc " << comm.rank() << " is:\n" << A.local_matrix << std::endl;
-    start_next(comm);
-    std::cout << std::endl;
-    comm.barrier();
-#endif
 
     if (!comm.rank()) std::cout << "Matrix is:" << std::endl;
     std::cout << A;

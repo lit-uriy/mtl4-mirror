@@ -10,15 +10,13 @@
 // See also license.mtl.txt in the distribution.
 
 
+#include <boost/test/minimal.hpp>
 #include <boost/mpi.hpp>
 #include <iostream>
-#include <boost/serialization/string.hpp>
-#include <boost/test/minimal.hpp>
+#include <cstdlib>
 #include <boost/numeric/mtl/mtl.hpp>
 
 namespace mpi = boost::mpi;
-
-
 
 template <typename Vector>
 void test(Vector& v,  const char* name)
@@ -41,7 +39,13 @@ void test(Vector& v,  const char* name)
 
     if (!comm.rank()) std::cout << "Vector is: ";
     std::cout << v;
-    if (comm.rank() == 0 && v[2] != 5.0) throw "v[2] should be 5.";
+
+    double d= dot(v, v);
+
+    if (comm.rank() == 0) 
+	std::cout << "dot(v, v) is: " << d << std::endl;
+    if (std::abs(d - 155.0) > 0.001)
+	throw "dot(v, v) should be 155!";
 }
 
 
@@ -65,17 +69,5 @@ int test_main(int argc, char* argv[])
 }
 
  
-
-
-
-
-
-
-
-
-
-
-
-
 
 

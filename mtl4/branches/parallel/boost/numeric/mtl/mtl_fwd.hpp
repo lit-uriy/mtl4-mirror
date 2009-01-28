@@ -50,7 +50,7 @@ namespace mtl {
 
     /// Namespace for parallelization
     namespace par {
-	class distribution;
+	class base_distribution;
 	class block_distribution;
 	class cyclic_distribution;
 	class block_cyclic_distribution;
