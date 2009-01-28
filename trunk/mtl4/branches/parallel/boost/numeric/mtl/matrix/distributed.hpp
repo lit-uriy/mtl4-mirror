@@ -106,7 +106,7 @@ public:
     }
 
 
-    const boost::mpi::communicator& communicator() const { return row_dist.communicator(); }
+    friend inline const boost::mpi::communicator& communicator(const self& d) { return communicator(d.row_dist); }
 			  
     
     template <typename DistMatrix, typename Updater> friend class distributed_inserter;
@@ -211,7 +211,7 @@ public:
 
     ~distributed_inserter()
     {
-	boost::mpi::all_to_all(col_dist().communicator(), send_buffers, recv_buffers);
+	boost::mpi::all_to_all(communicator(col_dist()), send_buffers, recv_buffers);
 	for (unsigned p= 0; p < col_size(); p++) {
 	    const std::vector<entry_type>& my_buffer= recv_buffers[p];
 	    for (unsigned i= 0; i < my_buffer.size(); i++) {
@@ -236,7 +236,7 @@ public:
 		delete full_remote_matrices[p];
 	    }
 
-	boost::mpi::all_to_all(col_dist().communicator(), index_comp, send_indices);
+	boost::mpi::all_to_all(communicator(col_dist()), index_comp, send_indices);
 	for (unsigned p= 0; p < col_size(); p++)
 	    if (size(send_indices[p]) > 0)
 		dist_matrix.send_indices.insert(std::make_pair(p, send_indices[p]));

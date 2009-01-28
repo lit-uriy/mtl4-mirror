@@ -37,14 +37,14 @@ inline void start_next(const communicator& comm)
 
 namespace mtl { namespace par {
 
-inline void wait_for_previous(const distribution& dist)
+inline void wait_for_previous(const base_distribution& dist)
 {
-    wait_for_previous(dist.communicator());
+    wait_for_previous(communicator(dist));
 }
 
-inline void start_next(const distribution& dist)
+inline void start_next(const base_distribution& dist)
 {
-    start_next(dist.communicator());
+    start_next(communicator(dist));
 }
 
 
