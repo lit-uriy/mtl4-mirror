@@ -16,11 +16,15 @@
 
 #include <iostream>
 
+#include <boost/mpi/communicator.hpp>
+#include <boost/mpi/collectives/all_to_all.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
 
 namespace mtl { namespace vector {
+
+namespace mpi = boost::mpi;
 
 template <typename Vector, typename Distribution>
 class distributed
@@ -54,6 +58,7 @@ public:
 	out << v.local_vector;
 	out.flush();
 	start_next(v.dist);
+	communicator(v.dist).barrier();
     }
 
     friend inline const distribution_type& distribution(const self& d) { return d.dist; }
