@@ -13,7 +13,12 @@
 #define MTL_REDUCTION_FUNCTORS_INCLUDE
 
 #include <cmath>
+#include <functional>
 #include <boost/numeric/linear_algebra/identity.hpp>
+
+#ifdef MTL_HAS_MPI
+#  include <boost/mpi/operations.hpp>
+#endif
 
 namespace mtl { namespace vector {
 
@@ -38,6 +43,14 @@ struct one_norm_functor
     {
 	value+= value2;
     }
+
+#ifdef MTL_HAS_MPI
+    template <typename Value>
+    static inline std::plus<Value> par_reduce(Value) 
+    {
+	return std::plus<Value>();
+    }
+#endif
 };
 
 
@@ -63,6 +76,14 @@ struct two_norm_functor
     {
 	value+= value2;
     }
+
+#ifdef MTL_HAS_MPI
+    template <typename Value>
+    static inline std::plus<Value> par_reduce(Value) 
+    {
+	return std::plus<Value>();
+    }
+#endif
 };
 
 
@@ -88,6 +109,14 @@ struct infinity_norm_functor
 	using std::abs; using std::max;
 	value= max(value, abs(value2));
     }
+
+#ifdef MTL_HAS_MPI
+    template <typename Value>
+    static inline boost::mpi::maximum<Value> par_reduce(Value) 
+    {
+	return boost::mpi::maximum<Value>();
+    }
+#endif
 };
 
 
@@ -111,6 +140,14 @@ struct sum_functor
     {
 	value+= value2;
     }
+
+#ifdef MTL_HAS_MPI
+    template <typename Value>
+    static inline std::plus<Value> par_reduce(Value) 
+    {
+	return std::plus<Value>();
+    }
+#endif
 };
 
 
@@ -134,6 +171,14 @@ struct product_functor
     {
 	value*= value2;
     }
+
+#ifdef MTL_HAS_MPI
+    template <typename Value>
+    static inline std::multiplies<Value> par_reduce(Value) 
+    {
+	return std::multiplies<Value>();
+    }
+#endif
 };
 
 
@@ -157,6 +202,14 @@ struct max_functor
     {
 	value= math::max<Value>()(value, value2);
     }
+
+#ifdef MTL_HAS_MPI
+    template <typename Value>
+    static inline boost::mpi::maximum<Value> par_reduce(Value) 
+    {
+	return boost::mpi::maximum<Value>();
+    }
+#endif
 };
 
 
@@ -180,6 +233,14 @@ struct min_functor
     {
 	value= math::min<Value>()(value, value2);
     }
+
+#ifdef MTL_HAS_MPI
+    template <typename Value>
+    static inline boost::mpi::minimum<Value> par_reduce(Value) 
+    {
+	return boost::mpi::minimum<Value>();
+    }
+#endif
 };
 
 

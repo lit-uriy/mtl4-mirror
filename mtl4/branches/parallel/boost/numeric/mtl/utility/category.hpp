@@ -244,6 +244,11 @@ struct is_scalar
   : boost::mpl::bool_< !is_vector<T>::value && !is_matrix<T>::value >
 {};
 
+template <typename T>
+struct is_disttibuted 
+  : boost::is_base_of<tag::distributed, typename category<T>::type> 
+{};
+
 /// Meta-function for categorizing types into tag::scalar, tag::vector, and tag::matrix
 /** Automatically derived from category 
     @ingroup Tags

@@ -18,6 +18,8 @@
 
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives/all_to_all.hpp>
+#include <boost/mpi/collectives/all_gather.hpp>
+#include <boost/mpi/collectives/gather.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
@@ -52,13 +54,14 @@ public:
 
     friend inline std::ostream& operator<< (std::ostream& out, const self& v) 
     {
-	wait_for_previous(v.dist);
-	if (v.dist.rank() > 0)
-	    out << "||";
-	out << v.local_vector;
-	out.flush();
-	start_next(v.dist);
-	communicator(v.dist).barrier();
+	std::vector<local_type> all_vectors;
+	gather(communicator(v), local(v), all_vectors, 0);
+	if (communicator(v).rank() == 0)
+	    for (unsigned i= 0; i < all_vectors.size(); i++) {
+		if (i) out << "||";
+		out << all_vectors[i];
+	    }
+	return out;
     }
 
     friend inline const distribution_type& distribution(const self& d) { return d.dist; }
