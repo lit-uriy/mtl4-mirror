@@ -22,13 +22,17 @@
 
 namespace mtl { namespace par {
 
-
+/// ostream that writes only on first processor; by default on std::cout w.r.t. MPI_WORLD
 struct single_ostream
 {
+    /// Constructor for out or std::cout and MPI_WORLD
     single_ostream(std::ostream& out = std::cout) : out(out), comm(boost::mpi::communicator()) {} 
+    /// Constructor for out and given communicator
     single_ostream(std::ostream& out, const boost::mpi::communicator& comm) : out(out), comm(comm) {} 
+    /// Constructor for out and dist's communicator
     single_ostream(std::ostream& out, const base_distribution& dist) : out(out), comm(communicator(dist)) {} 
 
+    /// The output command
     template <typename T>
     single_ostream& operator<<(const T& v)
     {
@@ -37,8 +41,9 @@ struct single_ostream
 	return *this;
     }
 
+    /// Flush output
     void flush() { if (comm.rank() == 0) out.flush(); }
-
+private:
     std::ostream&            out;
     boost::mpi::communicator comm;
 };
