@@ -85,13 +85,22 @@ struct reduction
     template <typename Vector>
     Result static inline apply(const Vector& v)
     {
-	return apply(v, typename traits::category<Vector>::type());
+	typedef typename traits::category<Vector>::type cat;
+	return apply(v, cat(), cat());
     }
 
-
 private:
+
+#ifdef MTL_HAS_MPI
     template <typename Vector>
-    Result static inline apply(const Vector& v, tag::sparse)
+    Result static inline apply(const Vector& v, tag::distributed, tag::universe)
+    {
+	return all_reduce(communicator(v), apply(local(v)), Functor::par_reduce(Result()));
+    }
+#endif
+
+    template <typename Vector>
+    Result static inline apply(const Vector& v, tag::concentrated, tag::sparse)
     {
 	Result tmp00;
 	Functor::init(tmp00);
@@ -105,7 +114,7 @@ private:
     }
 
     template <typename Vector>
-    Result static inline apply(const Vector& v, tag::dense)
+    Result static inline apply(const Vector& v, tag::concentrated, tag::dense)
     {
 	BOOST_STATIC_ASSERT((Unroll >= 1));
 	BOOST_STATIC_ASSERT((Unroll <= 8)); // Might be relaxed in future versions
@@ -118,7 +127,7 @@ private:
 
 	for (size_type i= 0; i < i_block; i+= Unroll)
 	    impl::reduction<1, Unroll, Functor>::update(tmp00, tmp01, tmp02, tmp03, 
-							     tmp04, tmp05, tmp06, tmp07, v, i);
+							tmp04, tmp05, tmp06, tmp07, v, i);
 
 	for (size_type i= i_block; i < i_max; i++) 
 	    Functor::update(tmp00, v[i]);

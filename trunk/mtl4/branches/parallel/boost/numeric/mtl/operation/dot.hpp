@@ -12,6 +12,7 @@
 #ifndef MTL_DOT_INCLUDE
 #define MTL_DOT_INCLUDE
 
+#include <functional>
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
@@ -156,7 +157,7 @@ namespace mtl {
 	    MTL_DEBUG_THROW_IF(distribution(v1) != distribution(v2), incompatible_distribution());
 	    typedef typename detail::dot_result<Vector1, Vector2>::type scalar_type;
 	    scalar_type local_dot(dot<Unroll>(local(v1), local(v2)));
-	    return boost::mpi::all_reduce(communicator(v1), local_dot, std::plus<scalar_type>());
+	    return all_reduce(communicator(v1), local_dot, std::plus<scalar_type>());
 	}
 
 	// Distributed dot product without conjugate 
@@ -167,7 +168,7 @@ namespace mtl {
 	    MTL_DEBUG_THROW_IF(distribution(v1) != distribution(v2), incompatible_distribution());
 	    typedef typename detail::dot_result<Vector1, Vector2>::type scalar_type;
 	    scalar_type local_dot(dot_real<Unroll>(local(v1), local(v2)));
-	    return boost::mpi::all_reduce(communicator(v1), local_dot, std::plus<scalar_type>());
+	    return all_reduce(communicator(v1), local_dot, std::plus<scalar_type>());
 	}
 
 #endif

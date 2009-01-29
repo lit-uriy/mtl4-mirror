@@ -18,7 +18,9 @@
 #include <utility>
 #include <vector>
 #include <map>
-#include <boost/mpi.hpp>
+
+#include <boost/mpi/communicator.hpp>
+#include <boost/mpi/collectives/all_to_all.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/serialization/vector.hpp>
@@ -211,7 +213,7 @@ public:
 
     ~distributed_inserter()
     {
-	boost::mpi::all_to_all(communicator(col_dist()), send_buffers, recv_buffers);
+	all_to_all(communicator(col_dist()), send_buffers, recv_buffers);
 	for (unsigned p= 0; p < col_size(); p++) {
 	    const std::vector<entry_type>& my_buffer= recv_buffers[p];
 	    for (unsigned i= 0; i < my_buffer.size(); i++) {
@@ -236,7 +238,7 @@ public:
 		delete full_remote_matrices[p];
 	    }
 
-	boost::mpi::all_to_all(communicator(col_dist()), index_comp, send_indices);
+	all_to_all(communicator(col_dist()), index_comp, send_indices);
 	for (unsigned p= 0; p < col_size(); p++)
 	    if (size(send_indices[p]) > 0)
 		dist_matrix.send_indices.insert(std::make_pair(p, send_indices[p]));

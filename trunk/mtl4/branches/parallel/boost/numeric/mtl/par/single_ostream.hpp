@@ -14,9 +14,11 @@
 
 #ifdef MTL_HAS_MPI
 
-#include <boost/mpi/communicator.hpp>
 #include <iostream>
 #include <string>
+
+#include <boost/mpi/communicator.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 
 namespace mtl { namespace par {
 
@@ -30,15 +32,12 @@ struct single_ostream
     template <typename T>
     single_ostream& operator<<(const T& v)
     {
-	comm.barrier();
-	if (comm.rank() == comm.size()-1) {
+	if(traits::is_distributed<T>::value || comm.rank() == 0)
 	    out << v;
-	    out.flush();
-	}
-	comm.barrier();
 	return *this;
     }
 
+    void flush() { if (comm.rank() == 0) out.flush(); }
 
     std::ostream&            out;
     boost::mpi::communicator comm;
