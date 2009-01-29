@@ -48,16 +48,24 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
 	}
     }
 
+    mtl::par::single_ostream sout;
+    sout << "Matrix is:\n" << A; sout.flush();
+    sout << "\nv is: " << v << "\n";
+
+#if 0
     if (!comm.rank()) std::cout << "Matrix is:" << std::endl;
     std::cout << A;
     if (!comm.rank()) std::cout << "v is: ";
     std::cout << v;
+#endif
+
 #if 0
     w= A * v;
 
     if (!comm.rank()) std::cout << "\nw= A * v is: ";
     std::cout << w;
-    if (comm.rank() == 0 && w[2] != 20.0) throw "w[2] should be 20.";
+    if (local(w)[1] != 6 + 10 * comm.rank()) throw "wrong value.";
+
 #endif
 }
 
