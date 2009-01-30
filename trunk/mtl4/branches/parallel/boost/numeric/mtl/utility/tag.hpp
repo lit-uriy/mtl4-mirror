@@ -206,13 +206,39 @@ struct hermitian_multi_vector
 
 /// Tag for bottom of the category lattice
 /** Only for completeness; probably not needed in practice. */
-struct bottom
+struct bottom_collection
   : virtual compressed2D, virtual morton_dense, virtual dense2D, 
     virtual dense_col_vector, virtual dense_row_vector, virtual unknown,
     virtual distributed_col_vector, virtual distributed_row_vector, 
     virtual distributed_matrix,
     virtual multi_vector
 {};
+
+// =======================
+// Types for communication
+// =======================
+
+
+/// Tag for all communication forms
+struct comm_universe {};
+
+/// Tag for blocking communication
+struct comm_blocking : virtual comm_universe {};
+
+/// Tag for non-blocking communication
+struct comm_non_blocking : virtual comm_universe {};
+
+/// Tag for point-to-point communication
+struct comm_p2p : virtual comm_universe {};
+
+/// Tag for collective communication
+struct comm_collective : virtual comm_universe {};
+
+/// Tag for buffered communication
+struct comm_buffer : virtual comm_universe {};
+
+/// Tag for communication by creating new mpi_type
+struct comm_data_type : virtual comm_universe {};
 
 // =====================
 // Types for orientation
