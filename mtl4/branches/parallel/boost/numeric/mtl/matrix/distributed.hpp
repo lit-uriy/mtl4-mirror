@@ -183,11 +183,6 @@ public:
     remote_map_type                remote_matrices;
     std::map<int, recv_structure>  recv_info;
     std::map<int, send_structure>  send_info;
-
-#if 0
-    std::map<int, int>         recv_sizes;                // how many values I get from p
-    std::map<int, dense_vector<size_type> > send_indices; // local indices which are sent to p
-#endif
 };
 
 
