@@ -61,6 +61,10 @@ struct ashape<dense_vector<Value, Parameters> >
 };
 
    
+template <typename Vector, typename Distribution>
+struct ashape< vector::distributed<Vector, Distribution> > : ashape<Vector> {};
+
+   
 template <typename E1, typename E2>
 struct ashape< vector::vec_vec_plus_expr<E1, E2> >
 {
@@ -173,7 +177,11 @@ struct ashape<multi_vector<Vector> >
 {
     typedef mat<typename ashape<typename mtl::Collection<multi_vector<Vector> >::value_type>::type> type;
 };
-   
+  
+template <typename Matrix, typename RowDistribution, typename ColDistribution>
+struct ashape< matrix::distributed<Matrix, RowDistribution, ColDistribution> > : ashape<Matrix> {};
+
+ 
 template <typename E1, typename E2>
 struct ashape< matrix::mat_mat_plus_expr<E1, E2> >
 {

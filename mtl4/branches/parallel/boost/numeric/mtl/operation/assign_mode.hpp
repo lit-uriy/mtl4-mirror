@@ -65,6 +65,19 @@ struct minus_sum
 };
 
 
+/// Type trait for repeated assignments, i.e. zeroing only the first time
+template <typename Assign>
+struct repeated_assign
+{
+    typedef Assign type;
+};
+
+template <>
+struct repeated_assign<assign_sum>
+{
+    typedef plus_sum type;
+};
+
 }} // namespace mtl::assign
 
 #endif // MTL_ASSIGN_MODE_INCLUDE

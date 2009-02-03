@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
+#include <boost/numeric/mtl/par/dist_mat_cvec_mult.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 
@@ -25,6 +26,15 @@
 #include <iostream>
 
 namespace mtl { namespace matrix {
+
+#ifdef MTL_HAS_MPI
+// Dense matrix vector multiplication
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void mat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::distributed)
+{
+    dist_mat_cvec_mult(a, v, w, Assign());
+}
+#endif
 
 // Dense matrix vector multiplication
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
@@ -137,6 +147,13 @@ inline void smat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Ass
 		Assign::update(w[row_a(*aic)], value_a(*aic) * vv);
 	}
 }
+
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void mat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign as)
+{
+    mat_cvec_mult(a, v, w, as, typename traits::category<Matrix>::type());
+}
+
 
 
 }} // namespace mtl::matrix

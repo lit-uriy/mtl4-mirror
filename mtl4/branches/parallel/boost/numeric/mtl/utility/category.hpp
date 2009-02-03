@@ -245,7 +245,7 @@ struct is_scalar
 {};
 
 template <typename T>
-struct is_disttibuted 
+struct is_distributed 
   : boost::is_base_of<tag::distributed, typename category<T>::type> 
 {};
 
