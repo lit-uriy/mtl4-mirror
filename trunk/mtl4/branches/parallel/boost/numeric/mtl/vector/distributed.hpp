@@ -22,6 +22,8 @@
 #include <boost/mpi/collectives/gather.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/utility/is_row_major.hpp>
 
 
 namespace mtl { namespace vector {
@@ -38,6 +40,7 @@ public:
     typedef Distribution                             distribution_type;
 
     typedef Vector                                   local_type;
+    typedef dense_vector<value_type>                 buffer_type;
 
     /// Constructor for vector with global size \p gsize
     explicit distributed(size_type gsize) : gsize(gsize), dist(gsize), local_vector(dist.num_local(gsize)) {}
@@ -69,23 +72,33 @@ public:
 			  
     template <typename, typename> friend class distributed_inserter;
 
-    // Enlarge send buffer so that at least n entries can be sent
-    void enlarge_send_buffer(size_type n) { send_buffer.resize(std::max(send_buffer.size(), n)); }
-    // Enlarge receive buffer so that at least n entries can be received
-    void enlarge_recv_buffer(size_type n) { send_buffer.resize(std::max(recv_buffer.size(), n)); }
+    friend inline size_type num_rows(const self& v) { return mtl::traits::is_row_major<self>::value ? 1 : v.gsize; }
+    friend inline size_type num_cols(const self& v) { return mtl::traits::is_row_major<self>::value ? v.gsize : 1; }
+    friend inline size_type size(const self& v) { return v.gsize; }
 
-    void release_send_buffer(size_type n) { send_buffer.resize(0); }
-    void release_recv_buffer(size_type n) { send_buffer.resize(0); }
+    // Enlarge send buffer so that at least n entries can be sent
+    void enlarge_send_buffer(size_type n) const { send_buffer.change_dim(std::max(send_buffer.size(), n)); }
+    // Enlarge receive buffer so that at least n entries can be received
+    void enlarge_recv_buffer(size_type n) const { recv_buffer.change_dim(std::max(recv_buffer.size(), n)); }
+
+    void release_send_buffer(size_type n) const { send_buffer.change_dim(0); }
+    void release_recv_buffer(size_type n) const { recv_buffer.change_dim(0); }
+
+    void set_send_buffer(size_type i, value_type v) { send_buffer[i]= v; }
+    value_type get_recv_buffer(size_type i) { return recv_buffer[i]; }
 
     friend inline local_type& local(self& d) { return d.local_vector; }
     friend inline const local_type& local(const self& d) { return d.local_vector; }
 
+    friend inline buffer_type& send_buffer(const self& d) { return d.send_buffer; }
+    friend inline buffer_type& recv_buffer(const self& d) { return d.recv_buffer; }
+    // friend inline const buffer_type& recv_buffer(const self& d) { return d.recv_buffer; }
 
 protected:
     size_type           gsize;
     distribution_type   dist;
     local_type          local_vector;
-    std::vector<value_type> send_buffer, recv_buffer;
+    mutable dense_vector<value_type> send_buffer, recv_buffer;
 };
 
 template <typename DistributedVector, 

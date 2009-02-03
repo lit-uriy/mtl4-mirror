@@ -107,6 +107,7 @@ public:
 	return *this;
     }
 
+private:
     void col_dist_assign(const self& src, boost::mpl::true_)
     {
 	// if dist and col_dist are the same object at source then col_dist is only a ref to dist
@@ -130,6 +131,9 @@ public:
     friend inline size_type num_rows(const self& A) { return A.grows; }
     friend inline size_type num_cols(const self& A) { return A.gcols; }
     friend inline size_type size(const self& A) { return A.rows * A.gcols; }
+
+    friend inline const local_type& local(const self& A) { return A.local_matrix; }
+    friend inline local_type& local(self& A) { return A.local_matrix; }
 
     friend inline std::ostream& operator<< (std::ostream& out, const self& A) 
     {
@@ -174,12 +178,14 @@ public:
 	return out;
     }
 
-
+public:
     size_type                      grows, gcols, total_send_size, total_recv_size;
     RowDistribution                row_dist;
     ColDistribution                *cdp, &col_dist;
     
+protected:
     local_type                     local_matrix;
+public:
     remote_map_type                remote_matrices;
     std::map<int, recv_structure>  recv_info;
     std::map<int, send_structure>  send_info;
@@ -245,9 +251,9 @@ public:
 		update(entry.first.first, entry.first.second, entry.second);
 	    }}
 	// Finalize insertion
-	std::vector< dense_vector<size_type> > index_comp(col_size()), send_indices(col_size()); // compression of column indices
-
+	std::vector< dense_vector<size_type> > index_comp(col_size()), send_indices(col_size()); // compression of column indices	
 	dist_matrix.total_recv_size= 0;
+	// size_type& ts(dist_matrix.total_recv_size= 0);
 	for (unsigned p= 0; p < col_size(); p++)
 	    if (remote_inserters[p]) {
 		delete remote_inserters[p];

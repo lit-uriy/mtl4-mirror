@@ -251,7 +251,7 @@ namespace mtl {
 
     }
 
-
+#if 0
     namespace traits {
 
 	template <typename T>
@@ -264,7 +264,7 @@ namespace mtl {
 	struct is_distributed<mtl::vector::distributed<Vector, Distribution> > : boost::mpl::true_ {};
 
     }
-
+#endif
 
 } // namespace mtl
 

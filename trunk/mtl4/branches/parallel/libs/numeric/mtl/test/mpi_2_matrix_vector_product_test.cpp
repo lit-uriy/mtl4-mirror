@@ -52,21 +52,13 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
     sout << "Matrix is:\n" << A; sout.flush();
     sout << "\nv is: " << v << "\n";
 
-#if 0
-    if (!comm.rank()) std::cout << "Matrix is:" << std::endl;
-    std::cout << A;
-    if (!comm.rank()) std::cout << "v is: ";
-    std::cout << v;
-#endif
+    //w= A * v;
+    mult(A, v, w);
 
-#if 0
-    w= A * v;
 
     if (!comm.rank()) std::cout << "\nw= A * v is: ";
     std::cout << w;
-    if (local(w)[1] != 6 + 10 * comm.rank()) throw "wrong value.";
-
-#endif
+    if (local(w)[1] != double(18 - 2 * comm.rank())) throw "wrong value.";
 }
 
 
