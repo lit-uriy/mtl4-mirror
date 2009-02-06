@@ -24,7 +24,7 @@ using namespace std;
 template <typename Matrix>
 void test_file(Matrix& A, const char* file_name, const char* comment)
 {
-    mtl::io::matrix_market_ifstream ms(file_name);
+    mtl::io::matrix_market_istream ms(file_name);
     ms >> A;
     std::cout << "Read from " << file_name << " (" << comment << ") is " 
 	      << num_rows(A) << "x" << num_cols(A) << "\n";

@@ -105,7 +105,7 @@ inline std::ostream& operator<< (std::ostream& stream, const std::vector<T>& v)
 void solve(const char* file_name)
 {
     mtl::dense2D<int> A;
-    mtl::io::matrix_market_ifstream(file_name) >> A;
+    mtl::io::matrix_market_istream(file_name) >> A;
     cout << "Read from " << file_name <<  " is \n"  << A;
 
     std::vector<entry> to_fill;
