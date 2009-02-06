@@ -258,25 +258,15 @@ private:
 	my_stream.unsetf(std::ios::scientific); 
     }
 
-    // Overloaded output, will need special treatment for types with symmetries
-    template <typename Value, typename Parameters>
-    std::string symmetry(const dense2D<Value, Parameters>&) const { return std::string("general\n"); }
+    // Will be generalized via traits::is_symmetric and alike
+    template <typename Matrix>
+    std::string symmetry(const Matrix&) const { return std::string("general\n"); }
 
-    template <typename Value, typename Parameters>
-    std::string symmetry(const compressed2D<Value, Parameters>&) const { return std::string("general\n"); }
-
-    template <typename Value, unsigned long Mask, typename Parameters>
-    std::string symmetry(const morton_dense<Value, Mask, Parameters>&) const { return std::string("general\n"); }
-
-    // Overloaded output
-    template <typename Value, typename Parameters>
-    std::string sparsity(const dense2D<Value, Parameters>&) const { return std::string("array "); }
-
-    template <typename Value, typename Parameters>
-    std::string sparsity(const compressed2D<Value, Parameters>&) const { return std::string("coordinate "); }
-
-    template <typename Value, unsigned long Mask, typename Parameters>
-    std::string sparsity(const morton_dense<Value, Mask, Parameters>&) const { return std::string("array "); }
+    template <typename Matrix>
+    std::string sparsity(const Matrix&) const 
+    {
+	return std::string( traits::is_sparse<Matrix>::value ? "coordinate " : "array " );
+    }
 
     template <typename Value>
     typename boost::enable_if<boost::is_integral<Value>, std::string>::type
@@ -294,7 +284,6 @@ private:
     {
 	typedef typename Collection<Matrix>::value_type value_type;
 	std::string st(std::string("%%MatrixMarket  matrix ") + sparsity(A) + value(value_type()) + symmetry(A));
-	//std::cout << st;
 	my_stream << st;
     }
 
