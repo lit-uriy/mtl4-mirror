@@ -24,6 +24,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
+#include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
 
 
 namespace mtl { namespace vector {
@@ -32,12 +33,17 @@ namespace mpi = boost::mpi;
 
 template <typename Vector, typename Distribution>
 class distributed
+  : public vec_expr< distributed<Vector, Distribution> >,
+    public crtp_base_vector< distributed<Vector, Distribution>,
+			     typename Collection<Vector>::value_type,
+			     typename Collection<Vector>::size_type>
 {
 public:
     typedef distributed                              self;
     typedef typename Collection<Vector>::size_type   size_type;
     typedef typename Collection<Vector>::value_type  value_type;
     typedef Distribution                             distribution_type;
+    typedef crtp_vector_assign< self, value_type, size_type >          assign_base;
 
     typedef Vector                                   local_type;
     typedef dense_vector<value_type>                 buffer_type;
@@ -49,12 +55,31 @@ public:
     explicit distributed(size_type gsize, const Distribution& dist) 
 	: gsize(gsize), dist(dist), local_vector(dist.num_local(gsize))  {}
 
+    self& operator=(self src)
+    {
+	assert(this != &src);
+	MTL_DEBUG_THROW_IF( gsize != src.gsize, incompatible_size());
+	MTL_DEBUG_THROW_IF( dist != src.dist, incompatible_distribution());
+	// If variable assigned then src is already a copy, no need to deep copy members
+	swap(local_vector, src.local_vector);
+	return *this;
+    }	
+
+    using assign_base::operator=;
+
     value_type& operator() (size_type n) { return local_vector(dist.global_to_local(n)); }
     const value_type& operator() (size_type n) const { return local_vector(dist.global_to_local(n)); }
 
     value_type& operator[] (size_type n) { return local_vector[dist.global_to_local(n)]; }
     const value_type& operator[] (size_type n) const { return local_vector[dist.global_to_local(n)]; }
 
+    void check_dim( size_type s ) const
+    {
+	MTL_DEBUG_THROW_IF( gsize != 0 && gsize != s, incompatible_size());
+    }
+
+    void change_dim(size_type n) { local_vector.change_dim(dist.num_local(n)); }
+    
     friend inline std::ostream& operator<< (std::ostream& out, const self& v) 
     {
 	std::vector<local_type> all_vectors;
