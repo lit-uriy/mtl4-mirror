@@ -52,8 +52,8 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
     sout << "Matrix is:\n" << A; sout.flush();
     sout << "\nv is: " << v << "\n";
 
-    //w= A * v;
-    mult(A, v, w);
+    w= A * v;
+    //mult(A, v, w);
 
 
     if (!comm.rank()) std::cout << "\nw= A * v is: ";

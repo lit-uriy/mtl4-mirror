@@ -53,12 +53,13 @@ class dense_vector
     typedef crtp_vector_assign< self, Value, std::size_t >                           assign_base;
     typedef vec_expr<dense_vector<Value, Parameters> >                               expr_base;
 public:
-    typedef Value             value_type ; 
-    typedef std::size_t       size_type ;
-    typedef value_type&       reference ;
-    typedef value_type const& const_reference ;
-    typedef Value*            pointer ;
-    typedef Value const*      const_pointer ;
+    typedef Value             value_type; 
+    typedef Parameters        parameters;
+    typedef std::size_t       size_type;
+    typedef value_type&       reference;
+    typedef value_type const& const_reference;
+    typedef Value*            pointer;
+    typedef Value const*      const_pointer;
     typedef typename Parameters::orientation  orientation;
 
     typedef const_pointer     key_type;
@@ -67,14 +68,6 @@ public:
     {
 	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), index_out_of_range());
     }
-
-#if 0
-    template <typename Vector>
-    void check_dim( const Vector& v ) const
-    {
-	MTL_DEBUG_THROW_IF( v.size() == 0 && v.size() != size(), incompatible_size());
-    }
-#endif
 
     void check_dim( size_type s ) const
     {
@@ -135,30 +128,30 @@ public:
     }
 #endif
 
-    size_type size() const { return this->used_memory() ; }
+    size_type size() const { return this->used_memory(); }
     
-    size_type stride() const { return 1 ; }
+    size_type stride() const { return 1; }
 
     reference operator()( size_type i ) 
     {
         check_index(i);
-        return this->value_n( i ) ;
+        return this->value_n( i );
     }
 
     const_reference operator()( size_type i ) const 
     {
         check_index(i);
-        return this->value_n( i ) ;
+        return this->value_n( i );
     }
 
     reference operator[]( size_type i ) 
     {
-	return (*this)( i ) ;
+	return (*this)( i );
     }
 
     const_reference operator[]( size_type i ) const 
     {
-	return (*this)( i ) ;
+	return (*this)( i );
     }
 
     self operator[]( irange r )
@@ -174,11 +167,11 @@ public:
 
     void delay_assign() const {}
 
-    const_pointer begin() const { return this->elements() ; }
-    const_pointer end() const { return this->elements() + size() ; }
+    const_pointer begin() const { return this->elements(); }
+    const_pointer end() const { return this->elements() + size(); }
     
-    pointer begin() { return this->elements() ; }
-    pointer end() { return this->elements() + size() ; }
+    pointer begin() { return this->elements(); }
+    pointer end() { return this->elements() + size(); }
 
     /// Address of first data entry; to be used with care.
     value_type* address_data() { return begin(); }
@@ -198,12 +191,12 @@ public:
 
     self& operator=(self src)
     {
-		// Self-copy would be an indication of an error
-		assert(this != &src);
-
-		check_dim(src.size());
-		memory_base::move_assignment(src);
-		return *this;
+	// Self-copy would be an indication of an error
+	assert(this != &src);
+	
+	check_dim(src.size());
+	memory_base::move_assignment(src);
+	return *this;
     }
 
 
@@ -230,7 +223,7 @@ public:
     
     void crop() {} // Only dummy here
 
-} ; // dense_vector
+}; // dense_vector
 
 
 // ================

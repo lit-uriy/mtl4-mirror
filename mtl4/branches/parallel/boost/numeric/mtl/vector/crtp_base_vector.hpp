@@ -29,30 +29,30 @@ namespace mtl { namespace vector {
 
 namespace detail {
 
-	template <typename Vector, typename Source, typename SCat, typename VCat>
-	struct crtp_assign {};	
+    template <typename Vector, typename Source, typename SCat, typename VCat>
+    struct crtp_assign {};	
 
     /// Assign scalar to a vector by setting all values to the scalar
-	template <typename Vector, typename Source, typename VCat>
-	struct crtp_assign<Vector, Source, VCat, ashape::scal>
+    template <typename Vector, typename Source, typename VCat>
+    struct crtp_assign<Vector, Source, VCat, ashape::scal>
+    {
+	typedef vec_scal_asgn_expr<Vector, Source> type;
+	type operator()(Vector& vector, const Source& src)
 	{
-		typedef vec_scal_asgn_expr<Vector, Source> type;
-		type operator()(Vector& vector, const Source& src)
-		{
-			return type(vector, src);
-		}
-	};	
+	    return type(vector, src);
+	}
+    };	
 
     /// Assign vector to a vector
-	template <typename Vector, typename Source, typename Cat>
-	struct crtp_assign<Vector, Source, Cat, Cat>
+    template <typename Vector, typename Source, typename Cat>
+    struct crtp_assign<Vector, Source, Cat, Cat>
+    {
+	typedef vec_vec_asgn_expr<Vector, Source> type;
+	type operator()(Vector& vector, const Source& src)
 	{
-		typedef vec_vec_asgn_expr<Vector, Source> type;
-		type operator()(Vector& vector, const Source& src)
-		{
-			return type(vector, src);
-		}
-	};	
+	    return type(vector, src);
+	}
+    };	
 } // namespace detail
 
 template <typename Vector, typename Source>
@@ -79,35 +79,35 @@ struct crtp_assign<Vector, mat_cvec_times_expr<E1, E2> >
 template <typename Vector, typename Value, unsigned Rows>
 struct crtp_assign<Vector, Value[Rows]>
 {
-	typedef Vector& type;
+    typedef Vector& type;
     type operator()(Vector& vector, const Value src[Rows])
     {
-		typedef typename Collection<Vector>::size_type size_type;
-
-		vector.checked_change_dim(Rows);
-
-		for (size_type r= 0; r < Rows; ++r)
-			vector[r]= src[r];
-		return vector;
-	}
+	typedef typename Collection<Vector>::size_type size_type;
+	
+	vector.checked_change_dim(Rows);
+	
+	for (size_type r= 0; r < Rows; ++r)
+	    vector[r]= src[r];
+	return vector;
+    }
 };
 
 
 namespace detail {
 
-	template <typename Vector, typename Source, typename SCat, typename VCat>
-	struct crtp_plus_assign {};	
+    template <typename Vector, typename Source, typename SCat, typename VCat>
+    struct crtp_plus_assign {};	
 
     /// Assign-add vector to a vector
-	template <typename Vector, typename Source, typename Cat>
-	struct crtp_plus_assign<Vector, Source, Cat, Cat>
+    template <typename Vector, typename Source, typename Cat>
+    struct crtp_plus_assign<Vector, Source, Cat, Cat>
+    {
+	typedef vec_vec_plus_asgn_expr<Vector, Source> type;
+	type operator()(Vector& vector, const Source& src)
 	{
-		typedef vec_vec_plus_asgn_expr<Vector, Source> type;
-		type operator()(Vector& vector, const Source& src)
-		{
-			return type( vector, src );
-		}
-	};	
+	    return type( vector, src );
+	}
+    };	
 } // namespace detail
 
 template <typename Vector, typename Source>
@@ -121,13 +121,13 @@ struct crtp_plus_assign
 template <typename Vector, typename E1, typename E2>
 struct crtp_plus_assign<Vector, mat_cvec_times_expr<E1, E2> >
 {
-	typedef Vector& type;
-	type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
+    typedef Vector& type;
+    type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
     {
-		gen_mult(src.first, src.second, vector,
-		         assign::plus_sum(), tag::matrix(), tag::vector(), tag::vector());
-		return vector;
-	}
+	gen_mult(src.first, src.second, vector,
+		 assign::plus_sum(), tag::matrix(), tag::vector(), tag::vector());
+	return vector;
+    }
 };
 
 
