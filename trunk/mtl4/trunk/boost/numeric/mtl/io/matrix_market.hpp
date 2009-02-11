@@ -48,7 +48,7 @@ class matrix_market_istream
     template <typename Coll>
     self& operator>>(Coll& c) 
     { 
-	return read(c, typename traits::category<Coll>::type());
+	return read(c, typename mtl::traits::category<Coll>::type());
     }
 
     /// Close only my own file, i.e. if filename and not stream is passed in constructor
@@ -194,7 +194,7 @@ public:
     template <typename Coll>
     self& operator<<(const Coll& c) 
     { 
-	return write(c, typename traits::category<Coll>::type());
+	return write(c, typename mtl::traits::category<Coll>::type());
     }
 
     /// Close only my own file, i.e. if filename and not stream is passed in constructor
@@ -214,11 +214,11 @@ private:
     {
 	my_stream << num_rows(A) << " " << num_cols(A) << " " << A.nnz() << "\n";
 	
-	typename traits::row<Matrix>::type             row(A); 
-	typename traits::col<Matrix>::type             col(A); 
-	typename traits::const_value<Matrix>::type     value(A); 
-	typedef typename traits::range_generator<tag::major, Matrix>::type  cursor_type;
-	typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
+	typename mtl::traits::row<Matrix>::type             row(A); 
+	typename mtl::traits::col<Matrix>::type             col(A); 
+	typename mtl::traits::const_value<Matrix>::type     value(A); 
+	typedef typename mtl::traits::range_generator<tag::major, Matrix>::type  cursor_type;
+	typedef typename mtl::traits::range_generator<tag::nz, cursor_type>::type icursor_type;
 
 	for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor)
 	    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
@@ -265,7 +265,7 @@ private:
     template <typename Matrix>
     std::string sparsity(const Matrix&) const 
     {
-	return std::string( traits::is_sparse<Matrix>::value ? "coordinate " : "array " );
+	return std::string( mtl::traits::is_sparse<Matrix>::value ? "coordinate " : "array " );
     }
 
     template <typename Value>
