@@ -393,15 +393,19 @@ class dense2D
   public:
 
     indexer_type  indexer;
+#if !defined(_MSC_VER) || _MSC_VER != 1400
   protected:
-    // Leading dimension is minor dimension in original matrix 
+#endif
+	  // Leading dimension is minor dimension in original matrix 
     // Opposed to other dims doesn't change in sub-matrices
     size_type     ldim; 
 
     friend class dense2D_indexer;
+#if !defined(_MSC_VER) || _MSC_VER != 1400
     template <typename> friend struct sub_matrix_t;
     template <typename, typename> friend struct mtl::traits::range_generator;
     template <typename, typename, bool> friend struct mtl::traits::detail::dense2D_iterator_range_generator;
+#endif
 }; // dense2D
 
 
