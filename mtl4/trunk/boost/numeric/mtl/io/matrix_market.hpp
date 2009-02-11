@@ -19,6 +19,7 @@
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 #include <boost/numeric/mtl/io/matrix_file.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
@@ -111,13 +112,12 @@ class matrix_market_istream
     }
 
     // Which value to be inserted? Itself if exist and 0 for pattern; complex are 
-    template <typename Value, typename MValue> MValue which_value(Value v, MValue) { return v; }
-    template <typename MValue> MValue which_value(pattern_type, MValue) { return 0.0; }
-    template <typename MValue> MValue which_value(std::complex<double> v, MValue) { using std::abs; return abs(v); }
-    std::complex<long double> which_value(std::complex<double> v, std::complex<long double>) { return v; }
+    template <typename Value, typename MValue> MValue which_value(Value v, MValue) { return boost::numeric_cast<MValue>(v); }
+	template <typename MValue> MValue which_value(pattern_type, MValue) { return boost::numeric_cast<MValue>(0.0); }
+    template <typename MValue> MValue which_value(std::complex<double> v, MValue) { using std::abs; return boost::numeric_cast<MValue>(abs(v)); }
+    std::complex<long double> which_value(std::complex<double> v, std::complex<long double>) { return boost::numeric_cast<std::complex<long double> >(v); }
     std::complex<double> which_value(std::complex<double> v, std::complex<double>) { return v; }
-    std::complex<float> which_value(std::complex<double> v, std::complex<float>) { return std::complex<float>(real(v), imag(v)); }
-
+	std::complex<float> which_value(std::complex<double> v, std::complex<float>) { return std::complex<float>(float(real(v)), float(imag(v))); }
 
     std::ifstream      *new_stream;
     std::istream       &my_stream;
