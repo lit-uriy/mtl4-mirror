@@ -305,10 +305,6 @@ inline sub_vector(const dense_vector<Value, Parameters>& v,
 
 namespace mtl { namespace traits {
 
-    template <typename Value, typename Parameters>
-    struct is_row_major<dense_vector<Value, Parameters> >
-	: public  is_row_major<Parameters>
-    {};
 
 // ================
 // Range generators

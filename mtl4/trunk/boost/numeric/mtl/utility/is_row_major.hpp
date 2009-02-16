@@ -62,11 +62,6 @@ namespace mtl { namespace traits {
 	: is_row_major<Parameters>
     {};
 
-    template <typename Vector, typename Distribution>
-    struct is_row_major<vector::distributed<Vector, Distribution> >
-	: is_row_major<Vector>
-    {};
-
     template <typename Value, typename Parameters>
     struct is_row_major<compressed2D<Value, Parameters> >
 	: is_row_major<Parameters>
