@@ -13,6 +13,7 @@
 #define MTL_IS_ROW_MAJOR_INCLUDE
 
 #include <boost/mpl/bool.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
@@ -28,32 +29,57 @@ namespace mtl { namespace traits {
 
     template <>
     struct is_row_major<row_major>
-	: public boost::mpl::true_
+	: boost::mpl::true_
     {};
 
     template <>
     struct is_row_major<col_major>
-	: public boost::mpl::false_
-    {};
-
-    template <typename Index, typename Dimension, bool OnStack>
-    struct is_row_major<matrix::parameters<row_major, Index, Dimension, OnStack> >
-	: public boost::mpl::true_
-    {};
-
-    template <typename Index, typename Dimension, bool OnStack>
-    struct is_row_major<matrix::parameters<col_major, Index, Dimension, OnStack> >
-	: public boost::mpl::false_
+	: boost::mpl::false_
     {};
 
     template <typename Dimension, bool OnStack>
     struct is_row_major<vector::parameters<row_major, Dimension, OnStack> >
-	: public boost::mpl::true_
+	: boost::mpl::true_
     {};
 
     template <typename Dimension, bool OnStack>
     struct is_row_major<vector::parameters<col_major, Dimension, OnStack> >
-	: public boost::mpl::false_
+	: boost::mpl::false_
+    {};
+
+    template <typename Index, typename Dimension, bool OnStack>
+    struct is_row_major<matrix::parameters<row_major, Index, Dimension, OnStack> >
+	: boost::mpl::true_
+    {};
+
+    template <typename Index, typename Dimension, bool OnStack>
+    struct is_row_major<matrix::parameters<col_major, Index, Dimension, OnStack> >
+	: boost::mpl::false_
+    {};
+
+    template <typename Value, typename Parameters>
+    struct is_row_major<vector::dense_vector<Value, Parameters> >
+	: is_row_major<Parameters>
+    {};
+
+    template <typename Vector, typename Distribution>
+    struct is_row_major<vector::distributed<Vector, Distribution> >
+	: is_row_major<Vector>
+    {};
+
+    template <typename Value, typename Parameters>
+    struct is_row_major<compressed2D<Value, Parameters> >
+	: is_row_major<Parameters>
+    {};
+
+    template <typename Value, typename Parameters>
+    struct is_row_major<dense2D<Value, Parameters> >
+	: is_row_major<Parameters>
+    {};
+
+    template <typename Value, unsigned long Mask, typename Parameters>
+    struct is_row_major<morton_dense<Value, Mask, Parameters> >
+	: is_row_major<Parameters>
     {};
 
 
