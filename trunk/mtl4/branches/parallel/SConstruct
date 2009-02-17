@@ -202,8 +202,9 @@ def check_for_blas(env):
 
 
 
+SourceSignatures('timestamp')
 env = Environment()
-env.Decider('timestamp-newer')
+# env.Decider('timestamp-newer')
 
 conf = Configure(env)
 check_no_long_double(conf)
@@ -347,5 +348,6 @@ SConscript(['libs/numeric/mtl/build/SConscript',
             'libs/numeric/mtl/experimental/SConscript',
             'libs/numeric/mtl/timing/SConscript', 
             'libs/numeric/linear_algebra/test/SConscript', 
-            'libs/numeric/itl/test/SConscript'])
+            'libs/numeric/itl/test/SConscript',
+            'libs/numeric/complex/test/SConscript'])
 
