@@ -23,11 +23,13 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 ######################## DevStudio funkyness   ################################
 # to quiet DevStudio secure code warnings
 
-# add_definitions(/D_SCL_SECURE_NO_WARNINGS)
-# add_definitions(/D_CRT_SECURE_NO_WARNINGS)
-# add_definitions(/DMTL_ASSERT_FOR_THROW /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" /D"_SECURE_SCL=0" )
+# .NET 2005 and .NET 2008
+if (MSVC80 OR MSVC90)
+	 add_definitions(/D_SCL_SECURE_NO_WARNINGS)
+	 add_definitions(/D_CRT_SECURE_NO_WARNINGS)
+	 add_definitions(/DMTL_ASSERT_FOR_THROW /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" /D"_SECURE_SCL=0" )
+#endif (MSVC80 OR MSVC90)
 
-# .NET 2005
 #if (MSVC80)
 	# specialty flags such as the C++ language exception model etc. come from the init flags determined by CMAKE
 	# you may override them, but I have not found it necessary
@@ -39,9 +41,10 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 #if (MSVC90)
 	# specialty flags such as the C++ language exception model etc. come from the init flags determined by CMAKE
 	# you may override them, but I have not found it necessary
-#    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-#    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
 #endif (MSVC90)
+endif (MSVC80 OR MSVC90)
 
 # enable test generation
 enable_testing()
@@ -62,8 +65,3 @@ get_cmake_property(VARS VARIABLES)
 foreach (var ${VARS})
     file (APPEND ${CMAKE_CURRENT_BINARY_DIR}/AllVariables.txt "${var} \"${${var}}\"\n")
 endforeach (var ${VARS})
-
-
-
-
-
