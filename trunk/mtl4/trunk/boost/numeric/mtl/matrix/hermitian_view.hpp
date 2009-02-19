@@ -28,9 +28,7 @@ struct hermitian_view
     typedef mtl::sfunctor::conj<typename Matrix::value_type>       functor_type;
     typedef map_view<functor_type, transposed_view<Matrix> >       base;
 
-    hermitian_view(const Matrix& matrix)
-	: trans_view(const_cast<Matrix&>(matrix)), base(functor_type(), trans_view)
-    {}
+    hermitian_view(const Matrix& matrix) : trans_view(const_cast<Matrix&>(matrix)), base(functor_type(), trans_view) {}
     
 #if 0
     hermitian_view(boost::shared_ptr<Matrix> p)

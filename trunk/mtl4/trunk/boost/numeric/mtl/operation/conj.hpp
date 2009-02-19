@@ -130,7 +130,7 @@ namespace sfunctor {
 	inline conj(const Value& v)
 	{
 	    return mtl::sfunctor::conj<Value>::apply(v);
-	};
+	}
 
 	float inline conj(float v) { return v; }
 	double inline conj(double v) { return v; }
@@ -171,7 +171,7 @@ template <typename Value>
 inline typename sfunctor::real<Value>::result_type real(const Value& v)
 {
 	return sfunctor::real<Value>::apply(v);
-};
+}
 
 
 namespace sfunctor {
@@ -205,7 +205,7 @@ template <typename Value>
 inline typename sfunctor::imag<Value>::result_type imag(const Value& v)
 {
     return sfunctor::imag<Value>::apply(v);
-};
+}
 
 
 } // namespace mtl
