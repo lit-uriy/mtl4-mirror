@@ -1,3 +1,5 @@
+cmake_minimum_required (VERSION 2.4)
+
 project (boost_mtl4)
 
 # DERIVED VARIABLES
@@ -19,35 +21,27 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 # include_directories(${Boost_INCLUDE_DIR})
 
 ######################## DevStudio funkyness   ################################
-# .NET 2003
-if (MSVC71)
-    add_definitions(/DMTL_ASSERT_FOR_THROW /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" )
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
-endif (MSVC71)
+# to quiet DevStudio secure code warnings
+
+# add_definitions(/D_SCL_SECURE_NO_WARNINGS)
+# add_definitions(/D_CRT_SECURE_NO_WARNINGS)
+# add_definitions(/DMTL_ASSERT_FOR_THROW /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" /D"_SECURE_SCL=0" )
+
 # .NET 2005
-if (MSVC80)
-	# to quiet DevStudio 2005 secure code warnings
-    add_definitions(/D_SCL_SECURE_NO_WARNINGS)
-    add_definitions(/D_CRT_SECURE_NO_WARNINGS)
-    add_definitions(/DMTL_ASSERT_FOR_THROW /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" /D"_SECURE_SCL=0" )
+#if (MSVC80)
 	# specialty flags such as the C++ language exception model etc. come from the init flags determined by CMAKE
 	# you may override them, but I have not found it necessary
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-endif (MSVC80)
+#    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
+#    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
+#endif (MSVC80)
 
 # .NET 2008
-if (MSVC90)
-	# to quiet DevStudio 2005 secure code warnings
-    add_definitions(/D_SCL_SECURE_NO_WARNINGS)
-    add_definitions(/D_CRT_SECURE_NO_WARNINGS)
-    add_definitions(/DMTL_ASSERT_FOR_THROW /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" /D"_SECURE_SCL=0" )
+#if (MSVC90)
 	# specialty flags such as the C++ language exception model etc. come from the init flags determined by CMAKE
 	# you may override them, but I have not found it necessary
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-endif (MSVC90)
+#    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
+#    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
+#endif (MSVC90)
 
 # enable test generation
 enable_testing()
