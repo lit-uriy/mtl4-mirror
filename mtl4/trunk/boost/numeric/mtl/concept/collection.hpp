@@ -484,7 +484,7 @@ namespace mtl {
     template <typename Functor, typename Coll>
     struct Collection< vector::map_view<Functor, Coll> >
     {
-	typedef typename vector::map_view<Functor, Coll>::value_type        value_type;;
+	typedef typename vector::map_view<Functor, Coll>::value_type        value_type;
 	typedef typename vector::map_view<Functor, Coll>::const_reference   const_reference;
 	typedef typename vector::map_view<Functor, Coll>::size_type         size_type;
     };
