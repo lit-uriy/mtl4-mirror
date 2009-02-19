@@ -29,7 +29,7 @@ void test(X& x, const char* xname)
     long double             ld;
     newstd::complex<long double> lz;
 
-    //    test2(x, xname, f, "float");
+    test2(x, xname, f, "float");
     test2(x, xname, c, "complex<float>");
     test2(x, xname, d, "double");
     test2(x, xname, z, "complex<double>");

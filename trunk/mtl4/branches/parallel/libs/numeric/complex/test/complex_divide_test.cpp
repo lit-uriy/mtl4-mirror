@@ -11,12 +11,12 @@ using namespace std;
 template <typename X, typename Y> 
 void test2(X& x, const char* xname, Y& y, const char* yname)
 {
-    cout << xname << " - " << yname << "\n";
-    x= 2.0; y= 3.0;
-    cout << "Result is: " << x - y << " (typeid == " << typeid(x-y).name() << ")\n";
+    cout << xname << " / " << yname << "\n";
+    x= 6.0; y= 3.0;
+    cout << "Result is: " << x / y << " (typeid == " << typeid(x/y).name() << ")\n";
 
     typedef typename std::HasMinus<X, Y>::result_type R; // Need this type because float cannot be compared with long double
-    if (x - y != R(-1.)) throw "Result should be -1!";
+    if (newstd::norm(x / y - 2.) > 0.001) throw "Result should be 2!";
 }
 
 template <typename X> 
@@ -47,11 +47,11 @@ int test_main(int argc, char* argv[])
     long double             ld;
     newstd::complex<long double> lz;
 
-    test(f, "float");
+    // test(f, "float");
     test(c, "complex<float>");
-    test(d, "double");
+    // test(d, "double");
     test(z, "complex<double>");
-    test(ld, "long double");
+    // test(ld, "long double");
     test(lz, "complex<long double>");
 
     return 0;
