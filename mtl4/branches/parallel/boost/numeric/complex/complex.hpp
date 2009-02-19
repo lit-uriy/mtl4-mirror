@@ -11,12 +11,15 @@
 #include <boost/utility/enable_if.hpp>
 #include <boost/mpl/bool.hpp>
 
-// For clean defition of identity elements (instead of default constructor)
-#include <boost/numeric/linear_algebra/identity.hpp>
-// #include <boost/numeric/linear_algebra/new_concepts.hpp>
-
 // enable_if is used here due to problems with constraining member functions
 // conceptg++ also fails to constrain classes
+// some constrained functions caused infinite loops in the ConceptGCC
+
+// ====
+
+// For clean defition of identity elements (instead of default constructor)
+// #include <boost/numeric/linear_algebra/identity.hpp>
+// #include <boost/numeric/linear_algebra/new_concepts.hpp>
 
 namespace newstd {
 
@@ -360,15 +363,12 @@ public:
 	return complex<std::HasMinus<T, U>::result_type>(real(x) - y, -imag(x));
     }
 
-
     template <typename T, typename U>
     requires std::HasMinus<T, U>
     complex<std::HasMinus<T, U>::result_type> inline operator-(const complex<T>& x, const complex<U>& y)
     {
 	return complex<std::HasMinus<T, U>::result_type>(real(x) - real(y), imag(x) - imag(y));
     }
-
-
 
     /// Multiply scalar @a x with complex @a y
     template <typename T, typename U>
@@ -399,6 +399,25 @@ public:
 							    real(x) * imag(y) + imag(x) * real(y));
     }
 
+#if 0 //  yields infinite loop in compiler
+    /// Divide scalar @a x by complex @a y
+    template <typename T, typename U>
+    requires std::HasDivide<complex<T>, complex<U> > && !IsComplex<T> 
+          && std::CopyConstructible<std::HasDivide<complex<T>, complex<U> >::result_type>
+    std::HasDivide<complex<T>, complex<U> >::result_type inline operator/(const T& x, const complex<U>& y)
+    {
+	return complex<T>(x) / y;
+    }
+#endif
+
+    /// Divide complex @a x by scalar @a y
+    template <typename T, typename U>
+    requires std::HasDivide<T, U> && !IsComplex<U> 
+    complex<std::HasDivide<T, U>::result_type> inline operator/(const complex<T>& x, const U& y)
+    {
+	return complex<std::HasDivide<T, U>::result_type>(real(x) / y, imag(x) / y);
+    }
+
     /// Divide complex @a x by complex @a y
     template <typename T, typename U>
     requires std::HasMultiply<T, U> && std::HasPlus<std::HasMultiply<T, U>::result_type>
@@ -416,10 +435,16 @@ public:
 	std::HasPlus<std::HasMultiply<T, U>::result_type>::result_type r(real(x) * real(y) + imag(x) * imag(y)),
 	                                                               i(imag(x) * real(y) - real(x) * imag(y));
 	U n(norm(y));
-	// return ret_type(r / n, i / n);
+	// return ret_type(r / n, i / n); 
 	typedef typename std::HasDivide<std::HasPlus<std::HasMultiply<T, U>::result_type>::result_type, U>::result_type div_type;
 	div_type rn(r / n), in(i / n);
 	return complex<div_type>(rn, in);
+    }
+
+    template <typename T>
+    inline complex<T> conj(const complex<T>& x)
+    {
+	return complex<T>(real(x), -imag(x));
     }
 
     template <typename T>
@@ -434,7 +459,6 @@ public:
 	T r(real(z)), i(imag(z));
 	return abs(r * r + i * i);
     }
-
 
     ///  Insertion operator for complex values.
     template<typename _Tp, typename _CharT, class _Traits>
