@@ -64,4 +64,4 @@ int main()
     cg(A, x, b, P, iter);
     
     return 0;
-} 
+}

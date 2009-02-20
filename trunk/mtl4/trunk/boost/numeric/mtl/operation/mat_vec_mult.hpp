@@ -71,7 +71,7 @@ inline void mat_cvec_mult(const TransposedMatrix& A, const VectorIn& v, VectorOu
 template <typename HermitianMatrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void mat_cvec_mult(const HermitianMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::hermitian_multi_vector)
 {
-    typename HermitianMatrix::other::const_ref_type B= A.ref.ref; // Referred matrix
+    typename HermitianMatrix::const_ref_type B= A.const_ref(); // Referred matrix
 
     if (Assign::init_to_zero) set_to_zero(w);
     for (unsigned i= 0; i < num_cols(B); i++)

@@ -20,7 +20,7 @@ using namespace std;
 template <unsigned long Mask>
 void test()
 {
-    printf("Mask %x, 32x32 base is row-major %i, is column-major %i, shark 2 row-major %i"
+    printf("Mask %lx, 32x32 base is row-major %i, is column-major %i, shark 2 row-major %i"
 	   ", 4x4 row-major %i, column-major %i\n",
 	   Mask, mtl::is_32_base_case_row_major<Mask>::value,
 	   mtl::is_k_power_base_case_col_major<5, Mask>::value,
@@ -32,10 +32,11 @@ void test()
 template <unsigned long Mask1, unsigned long Mask2>
 void check_same_mask()
 {
-    printf("Mask1 %x, Mask2 %x\n", Mask1, Mask2);
+    printf("Mask1 %lx, Mask2 %lx\n", Mask1, Mask2);
     if (Mask1 != Mask2) throw "Different masks\n";
 }
 
+#if 0 // Do I use this???
 template <bool is_4, unsigned long long s, unsigned long long l>
 struct mm
 {
@@ -54,7 +55,7 @@ struct mask
 {
     static const unsigned long value= mm<sizeof(unsigned long) == 4, s, l>::value;
 };
-
+#endif
 
 
 int test_main(int argc, char* argv[])
