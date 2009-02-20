@@ -161,8 +161,7 @@ void test_compressed2D(char const* name)
     two_d_iteration("Transposed row-wise", trans_matrix, mtl::tag::row());
     two_d_iteration("Transposed Column-wise", trans_matrix, mtl::tag::col());
     two_d_iteration("Transposed On Major", trans_matrix, mtl::tag::major());
-
-};
+}
 
 int test_main(int argc, char* argv[])
 {
