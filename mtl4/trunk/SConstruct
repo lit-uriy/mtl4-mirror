@@ -87,7 +87,7 @@ def add_opt(env, opt):
 def check_no_long_double(conf):
     cc = conf.env['CC']
     if cc == 'gcc':
-        # conf.env.Append(CCFLAGS = '-pedantic -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings')
+        # conf.env.Append(CCFLAGS = '-Wreorder -pedantic -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings')
 	output = os.popen(cc + " --version").read()
 	st = output.split('\n')[0]
 	tmatch = re.search(".* \(GCC\) (\d\.\d)", st)

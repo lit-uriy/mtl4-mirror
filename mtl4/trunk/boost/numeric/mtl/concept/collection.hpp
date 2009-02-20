@@ -514,17 +514,17 @@ namespace mtl {
     template <typename Matrix>
     concept_map Collection<matrix::hermitian_view<Matrix> >
     {
-	typedef typename matrix::hermitian_view<Matrix>::value_type        value_type;
-	typedef typename matrix::hermitian_view<Matrix>::const_reference   const_reference;
-	typedef typename matrix::hermitian_view<Matrix>::size_type         size_type;
+	typedef typename Collection<Matrix>::value_type        value_type;
+	typedef typename Collection<Matrix>::const_reference   const_reference;
+	typedef typename Collection<Matrix>::size_type         size_type;
     };
 #else
     template <typename Matrix>
     struct Collection<matrix::hermitian_view<Matrix> >
     {
-	typedef typename matrix::hermitian_view<Matrix>::value_type        value_type;
-	typedef typename matrix::hermitian_view<Matrix>::const_reference   const_reference;
-	typedef typename matrix::hermitian_view<Matrix>::size_type         size_type;
+	typedef typename Collection<Matrix>::value_type        value_type;
+	typedef typename Collection<Matrix>::const_reference   const_reference;
+	typedef typename Collection<Matrix>::size_type         size_type;
     };
 #endif
 

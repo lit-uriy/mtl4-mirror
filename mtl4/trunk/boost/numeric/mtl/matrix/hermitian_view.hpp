@@ -22,22 +22,24 @@ namespace mtl { namespace matrix {
 
 template <class Matrix> 
 struct hermitian_view 
-  : public map_view<mtl::sfunctor::conj<typename Matrix::value_type>, 
+  : private transposed_view<Matrix>,
+    public map_view<mtl::sfunctor::conj<typename Matrix::value_type>, 
 		    transposed_view<Matrix> >
 {
+    typedef transposed_view<Matrix>                                trans_base;
     typedef mtl::sfunctor::conj<typename Matrix::value_type>       functor_type;
     typedef map_view<functor_type, transposed_view<Matrix> >       base;
 
-    hermitian_view(const Matrix& matrix) : trans_view(const_cast<Matrix&>(matrix)), base(functor_type(), trans_view) {}
+    hermitian_view(const Matrix& matrix) 
+      : trans_base(const_cast<Matrix&>(matrix)), 
+	base(functor_type(), static_cast<trans_base&>(*this)) 
+    {}
     
 #if 0
     hermitian_view(boost::shared_ptr<Matrix> p)
-	: trans_view(p), base(functor_type(), trans_view)
+	: trans_base(p), base(functor_type(), static_cast<trans_base&>(*this))
     {}
 #endif
-
-  private:
-    transposed_view<Matrix>  trans_view;
 };
 
 // TBD submatrix of Hermitian (not trivial)
