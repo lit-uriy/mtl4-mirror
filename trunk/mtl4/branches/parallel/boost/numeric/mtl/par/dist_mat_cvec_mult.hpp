@@ -27,7 +27,9 @@
 namespace mtl { namespace matrix {
 
 
-struct dist_mat_cvec_mult_handle {}; // dummy (so far)
+struct dist_mat_cvec_mult_handle {
+  std::vector<boost::mpi::request> reqs; // send and receive requests
+}; 
 
 
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
@@ -37,6 +39,36 @@ dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
 { 
     MTL_THROW(logical_error("This communication form is not implemented yet"));
     return dist_mat_cvec_mult_handle();
+}
+
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+dist_mat_cvec_mult_handle inline 
+dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, 
+			 tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
+{ 
+    std::cerr << "[nonblocking] initialization" << std::endl;
+    typedef typename Matrix::send_structure        send_structure;
+    typedef typename Matrix::recv_structure        recv_structure;
+    struct dist_mat_cvec_mult_handle handle;
+
+    dist_mat_cvec_mult_fill_send_buffer(A, v);
+    typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
+    for (; s_it != s_end; ++s_it) {
+	const send_structure&   s= s_it->second;
+	handle.reqs.push_back(communicator(v).isend(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices))); // pointer and size
+    }
+
+    std::cerr << "[nonblocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << std::endl;
+    
+    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
+
+    for (; r_it != r_end; ++r_it) {
+	const recv_structure&   s= r_it->second;
+	int p= r_it->first;
+	handle.reqs.push_back(communicator(v).irecv(p, 999, &recv_buffer(v)[s.offset], s.size)); // pointer and size
+    }
+
+    return handle;
 }
 
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
@@ -57,7 +89,7 @@ dist_mat_cvec_mult_handle inline dist_mat_cvec_mult_start(const Matrix& A, const
 
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 boost::mpi::status inline 
-dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, const dist_mat_cvec_mult_handle& h,
+dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_mult_handle& h,
 			tag::universe, tag::universe, tag::universe)
 { 
     MTL_THROW(logical_error("This communication form is not implemented yet"));
@@ -83,10 +115,46 @@ void inline dist_mat_cvec_mult_fill_send_buffer(const Matrix& A, Vector& v)
     }
 }
 
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+boost::mpi::status inline 
+dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_mult_handle& h,
+			tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
+{ 
+    typedef typename Collection<Matrix>::size_type size_type;
+    // Avoid repeated zeroing of w (= -> +=)
+    typedef typename mtl::assign::repeated_assign<Assign>::type assign_mode;
+    typedef typename Matrix::recv_structure recv_structure;
+
+    std::pair<boost::mpi::status,std::vector<boost::mpi::request>::iterator /* TODO: how do I get a generic iterator here, not bound to a vector */> res;
+    
+    while(h.reqs.size()) {
+      res = boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
+      
+      int p=res.first.source();
+      if(p == communicator(v).rank()) { // TODO: this is dangerous (not guaranteed by MPI!!!) - talk about other options
+        // we have a send request
+        h.reqs.erase(res.second);
+        std::cerr << "[nonblocking] finished sending my data" << std::endl;
+      } else { 
+        // we have a receive request 
+        h.reqs.erase(res.second);
+
+        const recv_structure s = (*A.recv_info.find(p)).second;
+
+        std::cerr << "[nonblocking] received data from rank " << p << " of size " << s.size << std::endl;
+	mat_cvec_mult(const_cast<Matrix&>(A).remote_matrices[p], // Scheiss std::map!!!
+		      recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w), assign_mode());
+      }
+    }
+
+    boost::mpi::status st;
+    return st; // return status of last recv (is there something better?) TODO: bogus, we should return an own status 
+}
+
 	
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 boost::mpi::status inline 
-dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, const dist_mat_cvec_mult_handle& h,
+dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_mult_handle& h,
 			tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
     typedef typename Collection<Matrix>::size_type size_type;
@@ -100,9 +168,9 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
 	communicator(v).send(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices)); // pointer and size
-    }    
+    }
     boost::mpi::status st;
-    std::cerr << "Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << std::endl;
+    std::cerr << "[blocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << std::endl;
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
@@ -118,7 +186,7 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
 
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 boost::mpi::status inline 
-dist_mat_cvec_mult_wait(const Matrix& A, VectorIn& v, VectorOut& w, Assign as, const dist_mat_cvec_mult_handle& h)
+dist_mat_cvec_mult_wait(const Matrix& A, VectorIn& v, VectorOut& w, Assign as, dist_mat_cvec_mult_handle& h)
 {
     return dist_mat_cvec_mult_wait(A, v, w, as, h, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
 }
