@@ -27,8 +27,11 @@
 namespace mtl { namespace matrix {
 
 
-struct dist_mat_cvec_mult_handle {
-  std::vector<boost::mpi::request> reqs; // send and receive requests
+struct dist_mat_cvec_mult_handle 
+{
+    typedef boost::mpi::request req_type;
+
+    std::vector<req_type> reqs; // send and receive requests
 }; 
 
 
@@ -125,13 +128,16 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
     typedef typename mtl::assign::repeated_assign<Assign>::type assign_mode;
     typedef typename Matrix::recv_structure recv_structure;
 
-    std::pair<boost::mpi::status,std::vector<boost::mpi::request>::iterator /* TODO: how do I get a generic iterator here, not bound to a vector */> res;
+    // std::pair<boost::mpi::status,std::vector<boost::mpi::request>::iterator /* TODO: how do I get a generic iterator here, not bound to a vector */> res;
+    // Do you mean this with generic iterator?
+    std::pair<boost::mpi::status, std::vector<dist_mat_cvec_mult_handle::req_type>::iterator> res;
     
     while(h.reqs.size()) {
       res = boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
       
       int p=res.first.source();
-      if(p == communicator(v).rank()) { // TODO: this is dangerous (not guaranteed by MPI!!!) - talk about other options
+      if(p == communicator(v).rank()) { // TODO: this is dangerous (not guaranteed by MPI!!!) - talk about other options 
+	  // -> How about 2 sets of request and wait only for the receive requests one by one and do waitall on the sends at the (should be finished anyway)
         // we have a send request
         h.reqs.erase(res.second);
         std::cerr << "[nonblocking] finished sending my data" << std::endl;
@@ -149,6 +155,7 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
 
     boost::mpi::status st;
     return st; // return status of last recv (is there something better?) TODO: bogus, we should return an own status 
+    // sounds better but which status, BTW do we need to return at status at all?
 }
 
 	
