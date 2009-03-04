@@ -129,7 +129,8 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
     typedef typename Matrix::recv_structure recv_structure;
 
     // std::pair<boost::mpi::status,std::vector<boost::mpi::request>::iterator /* TODO: how do I get a generic iterator here, not bound to a vector */> res;
-    // Do you mean this with generic iterator?
+    // Do you mean this with generic iterator? 
+    // htor: nope, this is still a vector (what if I want to replace the vector with a list? I have to change this here -> not generic
     std::pair<boost::mpi::status, std::vector<dist_mat_cvec_mult_handle::req_type>::iterator> res;
     
     while(h.reqs.size()) {
@@ -137,7 +138,8 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
       
       int p=res.first.source();
       if(p == communicator(v).rank()) { // TODO: this is dangerous (not guaranteed by MPI!!!) - talk about other options 
-	  // -> How about 2 sets of request and wait only for the receive requests one by one and do waitall on the sends at the (should be finished anyway)
+	      // -> How about 2 sets of request and wait only for the receive requests one by one and do waitall on the sends at the (should be finished anyway)
+        // htor: this impacts performance significantly ... not good, but I don't know a good alternative (maybe a hash map that translates requests to send or receive reqs.
         // we have a send request
         h.reqs.erase(res.second);
         std::cerr << "[nonblocking] finished sending my data" << std::endl;
@@ -148,7 +150,7 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
         const recv_structure s = (*A.recv_info.find(p)).second;
 
         std::cerr << "[nonblocking] received data from rank " << p << " of size " << s.size << std::endl;
-	mat_cvec_mult(const_cast<Matrix&>(A).remote_matrices[p], // Scheiss std::map!!!
+          mat_cvec_mult(const_cast<Matrix&>(A).remote_matrices[p], // Scheiss std::map!!!
 		      recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w), assign_mode());
       }
     }
@@ -156,6 +158,7 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
     boost::mpi::status st;
     return st; // return status of last recv (is there something better?) TODO: bogus, we should return an own status 
     // sounds better but which status, BTW do we need to return at status at all?
+    // htor: actually ... I don't think that we need this, if we handle all errors with exceptions
 }
 
 	
