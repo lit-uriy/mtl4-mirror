@@ -685,7 +685,7 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Value>
-    concept_map MutableCollection<<std::vector<Value> >
+    concept_map MutableCollection<std::vector<Value> >
     {
 	typedef typename std::vector<Value>::value_type      value_type;
 	typedef typename std::vector<Value>::const_reference const_reference;
