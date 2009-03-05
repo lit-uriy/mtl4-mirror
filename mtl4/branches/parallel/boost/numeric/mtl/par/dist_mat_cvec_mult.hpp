@@ -29,9 +29,8 @@ namespace mtl { namespace matrix {
 
 struct dist_mat_cvec_mult_handle 
 {
-    typedef boost::mpi::request req_type;
-
-    std::vector<req_type> reqs; // send and receive requests
+    typedef std::vector<boost::mpi::request> req_type;
+    req_type                                 reqs; // send and receive requests
 }; 
 
 
@@ -131,7 +130,8 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
     // std::pair<boost::mpi::status,std::vector<boost::mpi::request>::iterator /* TODO: how do I get a generic iterator here, not bound to a vector */> res;
     // Do you mean this with generic iterator? 
     // htor: nope, this is still a vector (what if I want to replace the vector with a list? I have to change this here -> not generic
-    std::pair<boost::mpi::status, std::vector<dist_mat_cvec_mult_handle::req_type>::iterator> res;
+    // pg: how about this (req_type redefined in dist_mat_cvec_mult_handle)
+    std::pair<boost::mpi::status, dist_mat_cvec_mult_handle::req_type::iterator> res;
     
     while(h.reqs.size()) {
       res = boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
@@ -140,6 +140,9 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
       if(p == communicator(v).rank()) { // TODO: this is dangerous (not guaranteed by MPI!!!) - talk about other options 
 	      // -> How about 2 sets of request and wait only for the receive requests one by one and do waitall on the sends at the (should be finished anyway)
         // htor: this impacts performance significantly ... not good, but I don't know a good alternative (maybe a hash map that translates requests to send or receive reqs.
+	// pg: why a hash map? if the requests are stored in a random access iterator we can use a vector<bool> or bit_vector to define is_send_request 
+	//     we then just ask if (is_send_request[distance(h.reqs.begin(), res.first)]) ... 
+	//     this works also for a list but distance has linear complexity then
         // we have a send request
         h.reqs.erase(res.second);
         std::cerr << "[nonblocking] finished sending my data" << std::endl;
@@ -159,6 +162,7 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
     return st; // return status of last recv (is there something better?) TODO: bogus, we should return an own status 
     // sounds better but which status, BTW do we need to return at status at all?
     // htor: actually ... I don't think that we need this, if we handle all errors with exceptions
+    // pg:   right, we check the status immediately and throw an exception --> I'll do the modifications
 }
 
 	
