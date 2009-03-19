@@ -29,6 +29,7 @@
 #include <boost/numeric/mtl/operation/orth.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/product.hpp>
+#include <boost/numeric/mtl/operation/random.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/rank_two_update.hpp>
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
