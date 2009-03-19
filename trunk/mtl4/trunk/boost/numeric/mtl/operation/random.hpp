@@ -39,7 +39,7 @@ namespace matrix {
     template <typename Matrix, typename Seed>
     void inline random(Matrix& A, Seed& s) 
     {
-	inserter<Matrix> ins(A);
+	inserter<Matrix> ins(A, A.dim2());
 	for (int r= 0; r < num_rows(A); r++)
 	    for (int c= 0; c < num_cols(A); c++)
 		ins[r][c] << rand();
