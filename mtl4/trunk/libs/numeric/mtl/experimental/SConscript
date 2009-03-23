@@ -1,18 +1,7 @@
 Import('debug_env')
+import glob
 
-sources = Split("""iterator_adapter.cpp 
-	           unroll.cpp 
-		   unroll_rec.cpp 
-		   strassen_odd.cpp 
-		   strassen_tmp.cpp 
-		   mat_vec_mult_timing.cpp 
-		   unroll_matrix_mult.cpp 
-		   insertion_timing.cpp 
-		   algebraic_category.cpp
-		   vector_recursator.cpp
-		   gmp_test.cpp
-		   empty.cpp
-""")
+sources = glob.glob("*.cpp")
 
 for p in sources:
     debug_env.Program(p)

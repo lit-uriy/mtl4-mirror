@@ -494,8 +494,8 @@ class compressed2D
     indexer_type            indexer;
     std::vector<value_type> data; 
   protected:
-    std::vector<size_t>     starts;
-    std::vector<size_t>     indices;
+    std::vector<size_type>  starts;
+    std::vector<size_type>  indices;
     bool                    inserting;
 };
 
@@ -616,6 +616,13 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
 	    slot_ends[i]= starts[i]= s;
 	size_type new_total= starts[matrix.dim1()];
 	elements.resize(new_total); indices.resize(new_total);
+	return;
+    }
+
+    // If there are enough existing entries then skip the stretching (expensive)
+    if (elements.size() + matrix.dim1()/2 > slot_size * matrix.dim1()) {
+	// Use start of next row/col as slot_ends
+	copy(starts.begin() + 1, starts.end(), slot_ends.begin());
 	return;
     }
 
