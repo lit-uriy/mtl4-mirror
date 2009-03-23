@@ -22,6 +22,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
@@ -220,7 +221,7 @@ struct compressed2D_indexer
 	    return result_type(first - &ma.indices[0], false);
 
 	const size_t *index= first;
-	if (last - index < 10)
+	if (last - index <= compressed_linear_search_limit)
 	    while (index != last && *index < minor) ++index;
 	else
 	    index = std::lower_bound(first, last, minor);
