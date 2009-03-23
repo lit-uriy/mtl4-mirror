@@ -380,6 +380,8 @@ public:
 
 template <typename Value, unsigned Size>
 struct contiguous_memory_block<Value, true, Size>
+    : public alignment_helper<Value>,
+      public memory_crtp<Value, true, Size>
 {
     typedef Value                             value_type;
     typedef contiguous_memory_block                     self;
