@@ -731,6 +731,25 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
     std::vector<size_type>  new_starts(dim1 + 1);
     new_starts[0] = 0;
 
+    if (spare.empty()) {
+	// Check if everything is already in place
+	if (slot_ends[dim1-1] == matrix.my_nnz) {
+	    starts[dim1]= slot_ends[dim1-1];
+	    return;
+	}
+	size_type pos= 0;
+	for (size_type i= 0; i < dim1; ++i) {
+	    new_starts[i]= pos;
+	    for (size_type j= starts[i], je= slot_ends[i]; j < je; ++j, ++pos) {
+		elements[pos]= elements[j];
+		indices[pos]= indices[j];
+	    }
+	}
+	new_starts[dim1]= pos;
+	swap(new_starts, starts);
+	return;
+    }
+
     typename map_type::iterator it = spare.begin();
     for (size_type i = 0; i < dim1; i++) {
 	size_type entries = slot_ends[i] - starts[i];
