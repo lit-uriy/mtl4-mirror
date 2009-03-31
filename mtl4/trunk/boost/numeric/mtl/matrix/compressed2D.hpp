@@ -221,7 +221,7 @@ struct compressed2D_indexer
 	    return result_type(first - &ma.indices[0], false);
 
 	const size_t *index= first;
-	if (last - index <= compressed_linear_search_limit)
+	if (last - index <= int(compressed_linear_search_limit))
 	    while (index != last && *index < minor) ++index;
 	else
 	    index = std::lower_bound(first, last, minor);
