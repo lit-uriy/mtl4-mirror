@@ -18,6 +18,16 @@ endif(NOT Boost_INCLUDE_DIR)
 # to pick up the MTL4 include files
 set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root directory")
 
+set (MTL_HAS_UMF $ENV{UMF_ROOT})
+message(STATUS ${MTL_HAS_UMF})
+find_path(DIR_UMF UMFPACK/Source/umf_version.h PATHS "${UMF_ROOT}")
+if(NOT DIR_UMF)
+  message(STATUS "UMFPack wasn't found, please set UMF_ROOT as Environment Variable if it is installed.")
+  set (MTL_HAS_UMF "NOPATH")
+endif(NOT DIR_UMF)
+
+
+
 # include_directories(${Boost_INCLUDE_DIR})
 
 ######################## DevStudio funkyness   ################################
@@ -28,8 +38,7 @@ if (MSVC80 OR MSVC90)
 	 add_definitions(/D_SCL_SECURE_NO_WARNINGS)
 	 add_definitions(/D_CRT_SECURE_NO_WARNINGS)
 	 add_definitions(/DMTL_ASSERT_FOR_THROW /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX /D_CONSOLE /D"_SECURE_SCL=0" )
-endif (MSVC80 OR MSVC90)
-
+endif (MSVC80 OR MSVC90)
 
 # .NET 2005
 if (MSVC80)
