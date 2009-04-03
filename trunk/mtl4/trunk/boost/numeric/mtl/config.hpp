@@ -24,6 +24,13 @@ namespace mtl {
 	const unsigned compressed_linear_search_limit= 10;
 #endif
 
+#ifdef MTL_SORTED_BLOCK_INSERTION_LIMIT
+	/// Maximal number of entries that is searched linearly; above this std::lower_bound is used.
+	const unsigned sorted_block_insertion_limit= MTL_SORTED_BLOCK_INSERTION_LIMIT
+#else
+	const unsigned sorted_block_insertion_limit= 3;
+#endif
+
     }
 
 

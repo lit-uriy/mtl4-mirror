@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <vector>
 #include <map>
+#include <cmath>
 #include <boost/tuple/tuple.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
@@ -32,7 +33,9 @@
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/element_matrix.hpp> 
 #include <boost/numeric/mtl/matrix/element_array.hpp> 
+#include <boost/numeric/mtl/vector/dense_vector.hpp> 
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
+#include <boost/numeric/mtl/operation/size.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -570,23 +573,37 @@ struct compressed2D_inserter
 	using math::zero;
 	modify<Updater>(row, col, val);
     }
-
+    
     template <typename Matrix, typename Rows, typename Cols>
-    self& operator<< (const matrix::element_matrix_t<Matrix, Rows, Cols>& elements)
+    self& sorted_block_insertion(const element_matrix_t<Matrix, Rows, Cols>& elements);
+    
+    template <typename Matrix, typename Rows, typename Cols>
+    self& operator<< (const element_matrix_t<Matrix, Rows, Cols>& elements)
     {
-	for (unsigned ri= 0; ri < elements.rows.size(); ri++)
-	    for (unsigned ci= 0; ci < elements.cols.size(); ci++)
-		update (elements.rows[ri], elements.cols[ci], elements.matrix(ri, ci));
+	using mtl::size;
+#if 0 // unfortunately slower
+	if (size(elements.cols) > sorted_block_insertion_limit
+	    && boost::is_same<typename Parameters::orientation, row_major>::value)
+	    return sorted_block_insertion(elements);
+#endif
+
+	for (unsigned ri= 0; ri < size(elements.rows); ri++)
+	    for (unsigned ci= 0; ci < size(elements.cols); ci++)
+		update (elements.rows[ri], elements.cols[ci], elements.matrix[ri][ci]);
 	return *this;
     }
 
+    // Redundant
     template <typename Matrix, typename Rows, typename Cols>
-    self& operator<< (const matrix::element_array_t<Matrix, Rows, Cols>& elements)
+    self& operator<< (const element_array_t<Matrix, Rows, Cols>& elements)
     {
+	return *this << element_matrix_t<Matrix, Rows, Cols>(elements.array, elements.rows, elements.cols);
+#if 0
 	for (unsigned ri= 0; ri < elements.rows.size(); ri++)
 	    for (unsigned ci= 0; ci < elements.cols.size(); ci++)
 		update (elements.rows[ri], elements.cols[ci], elements.array[ri][ci]);
 	return *this;
+#endif
     }
 
   private:
@@ -720,6 +737,108 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type ro
     // std::cout << "inserter update: " << matrix.my_nnz << " non-zero elements, new value is " << elements[pos] << "\n";
 }  
 
+namespace detail {
+    
+    struct cmp_first
+    {
+	template <typename F, typename S>
+	bool operator()(const std::pair<F, S>& x, const std::pair<F, S>& y) const
+	{
+	    return x.first < y.first;
+	}
+    };
+}
+
+template <typename Elt, typename Parameters, typename Updater>
+template <typename Matrix, typename Rows, typename Cols>
+compressed2D_inserter<Elt, Parameters, Updater>& 
+compressed2D_inserter<Elt, Parameters, Updater>::sorted_block_insertion(const element_matrix_t<Matrix, Rows, Cols>& elements)
+{
+    using mtl::size;
+    size_type m= size(elements.rows), n= size(elements.cols);
+    MTL_THROW_IF(m != num_rows(elements.matrix) || n != num_cols(elements.matrix), incompatible_size());
+
+    typedef dense_vector<value_type, vector::parameters<> > v_type;
+    typedef std::pair<size_type, v_type>                    entry_type;
+    typedef dense_vector<entry_type, vector::parameters<> > block_type;
+
+    block_type block(n, entry_type(elements.cols[0], v_type(m)));
+
+    for (size_type j= 0; j < n; j++) {
+	block[j].first= elements.cols[j];
+	for (size_type i= 0; i < m; i++)
+	    block[j].second[i]= elements.matrix[i][j];
+    }
+
+    std::sort(&block[0], &block[0]+n, detail::cmp_first());
+
+    Updater updater;
+    // Blocked reduction step
+    size_type tgt= 0;
+    for (size_type src= 1; src < n;) {
+	// Reduce as long as possible
+	while (src < n && block[tgt].first == block[src].first) {
+	    for (size_type i= 0; i < m; i++)
+		updater(block[tgt].second[i], block[src].second[i]);
+	    ++src;
+	}
+	++tgt;
+	if (tgt == src)
+	    ++src;
+	else if (src < n && block[tgt].first != block[src].first) { // Copy if necessary
+	    block[tgt]= block[src];
+	    ++src;
+	    if (src >= n) ++tgt; // correction to not remain on the last entry
+	}       
+    }	
+    n= tgt;
+
+    // for (size_type j= 0; j < n; j++) 
+	// std::cout << '(' << block[j].first << ", " << block[j].second << ")\n";
+    // std::cout << std::endl;
+
+    for (size_type i= 0; i < m; ++i) {
+	size_type r= elements.rows[i];
+	// Merge with existing entries
+	if (slot_ends[r] != starts[r]) {
+	    size_type p_old= starts[r], e_old= slot_ends[r], p_block= 0, p_new= 0;
+	    v_type                        merged_v(n + e_old - p_old);
+	    dense_vector<size_type, vector::parameters<> >       merged_col(n + e_old - p_old);
+	    while (p_old < e_old || p_block < n) {
+		if (p_block >= n || p_old < e_old && indices[p_old] < block[p_block].first) {
+		    merged_v[p_new]= this->elements[p_old];
+		    merged_col[p_new++]= indices[p_old++];
+		} else if (p_old >= e_old || p_block < n && block[p_block].first < indices[p_old]) {
+		    merged_v[p_new]= block[p_block].second[i];
+		    merged_col[p_new++]= block[p_block++].first;
+		} else { // equal values -> reduce
+		    assert(block[p_block].first == indices[p_old]);
+		    merged_v[p_new]= this->elements[p_old];
+		    updater(merged_v[p_new], block[p_block++].second[i]);
+		    merged_col[p_new++]= indices[p_old++];
+		}
+	    }
+	    size_type to_copy= std::min(starts[r+1] - starts[r], p_new);
+	    std::copy(&merged_v[0], &merged_v[0]+to_copy, &this->elements[starts[r]]);
+	    std::copy(&merged_col[0], &merged_col[0]+to_copy, &indices[starts[r]]);
+	    matrix.my_nnz+= slot_ends[r] - starts[r] + to_copy;
+	    slot_ends[r]= starts[r] + to_copy;
+	    for (size_type j= to_copy; j < p_new; ++j) 
+		update(r, merged_col[j], merged_v[j]);
+	} else { // slot still empty
+	    size_type to_copy= std::min(starts[r+1] - starts[r], n);
+	    for (size_type j= 0, p= starts[r]; j < to_copy; ++p, ++j) {
+		indices[p]= block[j].first;
+		this->elements[p]= block[j].second[i];
+	    }
+	    slot_ends[r]= starts[r] + to_copy;
+	    matrix.my_nnz+= to_copy;
+	    for (size_type j= to_copy; j < n; ++j) 
+		update(r, block[j].first, block[j].second[i]);
+	}
+    }
+    return *this;
+}
 
 
 template <typename Elt, typename Parameters, typename Updater>
