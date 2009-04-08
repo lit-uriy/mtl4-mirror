@@ -29,7 +29,7 @@ void test(int n, int m, int order)
     case 1: for (int i= 0; i < m; i++) columns[i]= m-i-1; break;
     case 2: for (int i= 0; i < m; i++) columns[i]= (m/2+i)%m; break;
     }
-    //columns[3]= columns[1]; columns[2]= columns[0];
+    columns[3]= columns[1]; columns[2]= columns[0];
 
     for (int i= 0; i < m; i++) {
 	block[0][i]= 10+i;
@@ -42,12 +42,13 @@ void test(int n, int m, int order)
         mtl::matrix::inserter<mtl::compressed2D<double>, mtl::update_plus<double> > ins(A, 5);
 	for (unsigned r= 0; r < num_rows(A); r+= 3) {
 	    ins << element_matrix(block, rows, columns);
+	    ins << element_matrix(block, rows, columns);
 	    for (int i= 0; i < 3; i++) rows[i]+= 3;
 	    for (int i= 0; i < m; i++) ++columns[i];
 	}
     }
-    if (n < 11) cout << "A is \n" << A;
-    switch(order) {
+    if (n < 11) cout << "A is \n" << with_format(A, 4, 3);
+    switch(order+10) {
     case 0:
 	if (A[1][2] != 22) throw "Wrong value";
 	if (A[4][2] != 21) throw "Wrong value";	break;
