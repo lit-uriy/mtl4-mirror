@@ -811,7 +811,6 @@ compressed2D_inserter<Elt, Parameters, Updater>::sorted_block_insertion(const el
 	    copy(&iblock.matrix[i][0], &iblock.matrix[i][0]+to_copy, &value_max0);
 	    slot_ends[rmax]= starts[rmax] + to_copy;
 	    std::sort(it_type(&index_max0, &value_max0, 0), it_type(&index_max0, &value_max0, to_copy), less_0());
-	    // display(rmax);		 
 	    size_type tgt= starts[r], tend= slot_ends[r], later= starts[rmax], src= later, end= slot_ends[rmax];
 	    for (; src < end; ) {
 		// search for next equal entry in slot r
@@ -833,89 +832,6 @@ compressed2D_inserter<Elt, Parameters, Updater>::sorted_block_insertion(const el
 		update(r, indices[j], elements[j]);
 	}
     }
-    
-
-#if 0
-    typedef dense_vector<value_type, vector::parameters<> > v_type;
-    typedef std::pair<size_type, v_type>                    entry_type;
-    typedef dense_vector<entry_type, vector::parameters<> > block_type;
-
-    block_type block(n, entry_type(iblock.cols[0], v_type(m)));
-
-    for (size_type j= 0; j < n; j++) {
-	block[j].first= iblock.cols[j];
-	for (size_type i= 0; i < m; i++)
-	    block[j].second[i]= iblock.matrix[i][j];
-    }
-
-    std::sort(&block[0], &block[0]+n, detail::cmp_first());
-
-    Updater updater;
-    // Blocked reduction step
-    size_type tgt= 0;
-    for (size_type src= 1; src < n;) {
-	// Reduce as long as possible
-	while (src < n && block[tgt].first == block[src].first) {
-	    for (size_type i= 0; i < m; i++)
-		updater(block[tgt].second[i], block[src].second[i]);
-	    ++src;
-	}
-	++tgt;
-	if (tgt == src)
-	    ++src;
-	else if (src < n && block[tgt].first != block[src].first) { // Copy if necessary
-	    block[tgt]= block[src];
-	    ++src;
-	    if (src >= n) ++tgt; // correction to not remain on the last entry
-	}       
-    }	
-    n= tgt;
-
-    // for (size_type j= 0; j < n; j++) 
-	// std::cout << '(' << block[j].first << ", " << block[j].second << ")\n";
-    // std::cout << std::endl;
-
-    for (size_type i= 0; i < m; ++i) {
-	size_type r= iblock.rows[i];
-	// Merge with existing entries
-	if (slot_ends[r] != starts[r]) {
-	    size_type p_old= starts[r], e_old= slot_ends[r], p_block= 0, p_new= 0;
-	    v_type                        merged_v(n + e_old - p_old);
-	    dense_vector<size_type, vector::parameters<> >       merged_col(n + e_old - p_old);
-	    while (p_old < e_old || p_block < n) {
-		if (p_block >= n || p_old < e_old && indices[p_old] < block[p_block].first) {
-		    merged_v[p_new]= this->elements[p_old];
-		    merged_col[p_new++]= indices[p_old++];
-		} else if (p_old >= e_old || p_block < n && block[p_block].first < indices[p_old]) {
-		    merged_v[p_new]= block[p_block].second[i];
-		    merged_col[p_new++]= block[p_block++].first;
-		} else { // equal values -> reduce
-		    assert(block[p_block].first == indices[p_old]);
-		    merged_v[p_new]= this->elements[p_old];
-		    updater(merged_v[p_new], block[p_block++].second[i]);
-		    merged_col[p_new++]= indices[p_old++];
-		}
-	    }
-	    size_type to_copy= std::min(starts[r+1] - starts[r], p_new);
-	    std::copy(&merged_v[0], &merged_v[0]+to_copy, &this->elements[starts[r]]);
-	    std::copy(&merged_col[0], &merged_col[0]+to_copy, &indices[starts[r]]);
-	    matrix.my_nnz+= slot_ends[r] - starts[r] + to_copy;
-	    slot_ends[r]= starts[r] + to_copy;
-	    for (size_type j= to_copy; j < p_new; ++j) 
-		update(r, merged_col[j], merged_v[j]);
-	} else { // slot still empty
-	    size_type to_copy= std::min(starts[r+1] - starts[r], n);
-	    for (size_type j= 0, p= starts[r]; j < to_copy; ++p, ++j) {
-		indices[p]= block[j].first;
-		this->elements[p]= block[j].second[i];
-	    }
-	    slot_ends[r]= starts[r] + to_copy;
-	    matrix.my_nnz+= to_copy;
-	    for (size_type j= to_copy; j < n; ++j) 
-		update(r, block[j].first, block[j].second[i]);
-	}
-    }
-#endif
     return *this;
 }
 
