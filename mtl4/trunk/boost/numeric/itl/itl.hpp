@@ -14,6 +14,7 @@
 
 
 #include <boost/numeric/itl/iteration/basic_iteration.hpp>
+#include <boost/numeric/itl/iteration/cyclic_iteration.hpp>
 #include <boost/numeric/itl/iteration/noisy_iteration.hpp>
 
 #include <boost/numeric/itl/krylov/cg.hpp>

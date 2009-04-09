@@ -39,7 +39,7 @@ namespace itl {
 
     template <class Vector>
     bool finished(const Vector& r) {
-      Real normr_ = std::abs(two_norm(r)); 
+      Real normr_ = two_norm(r); 
       if (converged(normr_))
 	return true;
       else if (i < max_iter)
@@ -51,7 +51,8 @@ namespace itl {
     }
 
   
-    bool finished(const Real& r) {
+    bool finished(const Real& r) 
+    {
       if (converged(r))
 	return true;
       else if (i < max_iter)
