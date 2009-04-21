@@ -851,6 +851,9 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
 	// Check if everything is already in place
 	if (slot_ends[dim1-1] == matrix.my_nnz) {
 	    starts[dim1]= slot_ends[dim1-1];
+	    if (matrix.my_nnz < elements.size()) 
+		elements.resize(matrix.my_nnz), 
+		    indices.resize(matrix.my_nnz);
 	    return;
 	}
 	size_type pos= 0;
@@ -863,6 +866,9 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
 	}
 	new_starts[dim1]= pos;
 	swap(new_starts, starts);
+	if (matrix.my_nnz < elements.size()) 
+	    elements.resize(matrix.my_nnz), 
+		indices.resize(matrix.my_nnz);
 	return;
     }
 
@@ -882,7 +888,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
     operations::shift_blocks(dim1, starts, new_starts, slot_ends, elements);
     operations::shift_blocks(dim1, starts, new_starts, slot_ends, indices);
 
-    if (new_total < old_total) {
+    if (new_total < elements.size()) {
 	elements.resize(new_total);
 	indices.resize(new_total); }
  
