@@ -96,15 +96,24 @@ namespace mtl { namespace matrix {
 	{
 	    typedef double                    value_type;
 	    typedef parameters<col_major>     Parameters;
-	public:
-	    explicit solver(const compressed2D<double, parameters<col_major> >& A) 
-		: A(A), n(num_rows(A)), Ap(reinterpret_cast<const int*>(A.address_major())), 
-		  Ai(reinterpret_cast<const int*>(A.address_minor())), Ax(A.address_data())
+
+	    void assign_pointers()
+	    {
+		Ap= reinterpret_cast<const int*>(A.address_major());
+		Ai= reinterpret_cast<const int*>(A.address_minor());
+		Ax= A.address_data();
+	    }
+
+	    void init()
 	    {
 		MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
+		n= num_rows(A);
+		assign_pointers();
 		check(umfpack_di_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info), "Error in di_symbolic");
 		check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_numeric");
 	    }
+	public:
+	    explicit solver(const compressed2D<double, parameters<col_major> >& A) : A(A) { init(); }
 
 	    ~solver()
 	    {
@@ -115,6 +124,7 @@ namespace mtl { namespace matrix {
 	    /// Update numeric part, for matrices that kept the sparsity and changed the values
 	    void update_numeric()
 	    {
+		assign_pointers();
 		umfpack_di_free_numeric(&Numeric);
 		check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_numeric");
 	    }
@@ -122,9 +132,9 @@ namespace mtl { namespace matrix {
 	    /// Update symbolic and numeric part
 	    void update()
 	    {
+		umfpack_di_free_numeric(&Numeric);
 		umfpack_di_free_symbolic(&Symbolic);
-		check(umfpack_di_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info), "Error in di_symbolic");
-		update_numeric();
+		init();
 	    }
 
 	    /// Solve double system
@@ -140,7 +150,8 @@ namespace mtl { namespace matrix {
 
 	private:
 	    const compressed2D<double, parameters<col_major> >& A;
-	    const int      n, *Ap, *Ai;
+	    int            n;
+	    const int      *Ap, *Ai;
 	    const double   *Ax;
 	    double         Control[UMFPACK_CONTROL], Info[UMFPACK_INFO];
 	    void           *Symbolic, *Numeric;
@@ -151,15 +162,27 @@ namespace mtl { namespace matrix {
 	{
 	    typedef std::complex<double>                    value_type;
 	    typedef parameters<col_major>                   Parameters;
-	public:
-	    explicit solver(const compressed2D<value_type, Parameters>& A) 
-		: A(A), n(num_rows(A)), Ap(reinterpret_cast<const int*>(A.address_major())), 
-		  Ai(reinterpret_cast<const int*>(A.address_minor()))
+
+	    void assign_pointers()
+	    {
+		Ap= reinterpret_cast<const int*>(A.address_major());
+		Ai= reinterpret_cast<const int*>(A.address_minor());
+		split_complex_vector(A.data, Ax, Az);
+	    }
+
+	    void initialize()
 	    {
 		MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
-		split_complex_vector(A.data, Ax, Az);
+		n= num_rows(A);
+		assign_pointers();
 		check(umfpack_zi_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in zi_symbolic");
 		check(umfpack_zi_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in zi_numeric");
+	    }
+	public:
+	    explicit solver(const compressed2D<value_type, Parameters>& A) 
+		: A(A)
+	    {
+		initialize();
 	    }
 
 	    ~solver()
@@ -171,6 +194,7 @@ namespace mtl { namespace matrix {
 	    /// Update numeric part, for matrices that kept the sparsity and changed the values
 	    void update_numeric()
 	    {
+		assign_pointers();
 		umfpack_zi_free_numeric(&Numeric);
 		check(umfpack_zi_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in zi_numeric");
 	    }
@@ -178,8 +202,10 @@ namespace mtl { namespace matrix {
 	    /// Update symbolic and numeric part
 	    void update()
 	    {
+		Ax.change_dim(0); Az.change_dim(0);
+		umfpack_zi_free_numeric(&Numeric);
 		umfpack_zi_free_symbolic(&Symbolic);
-		check(umfpack_zi_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in zi_symbolic");
+		initialize();
 	    }
 
 	    /// Solve complex system
@@ -197,10 +223,11 @@ namespace mtl { namespace matrix {
 
 	private:
 	    const compressed2D<value_type, Parameters>& A;
-	    const int      n, *Ap, *Ai;
+	    int                  n; 
+	    const int            *Ap, *Ai;
 	    dense_vector<double> Ax, Az;
-	    double         Control[UMFPACK_CONTROL], Info[UMFPACK_INFO];
-	    void           *Symbolic, *Numeric;
+	    double               Control[UMFPACK_CONTROL], Info[UMFPACK_INFO];
+	    void                 *Symbolic, *Numeric;
 	};
 
 	template <typename Value, typename Parameters>
@@ -212,8 +239,22 @@ namespace mtl { namespace matrix {
 	    typedef solver<typename matrix_copy<compressed2D<Value, Parameters>, Value, typename Parameters::orientation>::matrix_type > solver_type;
 	public:
 	    explicit solver(const compressed2D<Value, Parameters>& A) 
-		: copy_type(A), solver_type(copy_type::matrix)
+		: copy_type(A), solver_type(copy_type::matrix), A(A)
 	    {}
+
+	    void update()
+	    {
+		copy_type::matrix= A;
+		solver_type::update();
+	    }
+
+	    void update_numeric()
+	    {
+		copy_type::matrix= A;
+		solver_type::update_numeric();
+	    }
+	private:
+	    const compressed2D<Value, Parameters>& A;
 	};
     } // umfpack
 

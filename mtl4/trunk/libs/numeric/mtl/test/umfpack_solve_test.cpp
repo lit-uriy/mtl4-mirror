@@ -37,17 +37,49 @@ void test(const Matrix&, const char* name)
     if (A.nnz() != 12) 
 	throw "Matrix should have 12 non-zeros!";
 
-    value_type                       b_array[5]= {8., 45., -3., 3., 19.};
+    value_type                      b_array[5]= {8., 45., -3., 3., 19.};
     mtl::dense_vector<value_type>   x(5), b(b_array);
 
     cout << name << "\nA = \n" << A << "b = " << b << "\n";
 
-    int status= umfpack_solve(A, x, b);
+    mtl::matrix::umfpack::solver<Matrix> solver(A);
+    int status= solver(x, b);
+    // int status= umfpack_solve(A, x, b); // creates solver on the fly
     cout << "A \\ b = " << x << "\n\n";
 
     for (int i= 0; i < 5; i++) 
 	if (std::abs(x[i] - value_type(i+1)) > 0.01)
 	    throw "Wrong result!";
+
+    {
+	mtl::matrix::inserter<Matrix> ins(A);
+	ins[1][2] << 5.;
+    }
+    b[1]= 48.;
+    cout << "\nA = \n" << A << "b = " << b << "\n";
+    solver.update_numeric();
+
+    status= solver(x, b);
+    cout << "A \\ b = " << x << "\n\n";
+
+    for (int i= 0; i < 5; i++) 
+	if (std::abs(x[i] - value_type(i+1)) > 0.01)
+	    throw "Wrong result after update_numeric!";
+
+    {
+	mtl::matrix::inserter<Matrix> ins(A);
+	ins[3][4] << 2.;
+    }
+    b[3]= 13.;
+    cout << "\nA = \n" << A << "b = " << b << "\n";
+    solver.update();
+
+    status= solver(x, b);
+    cout << "A \\ b = " << x << "\n\n";
+
+    for (int i= 0; i < 5; i++) 
+	if (std::abs(x[i] - value_type(i+1)) > 0.01)
+	    throw "Wrong result after update!";
 }
 
 
@@ -58,11 +90,11 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
     typedef matrix::parameters<col_major>           col_para;
 
-    test(compressed2D<complex<double> >(),          "complex<double> row-major");
-    test(compressed2D<complex<double>, col_para>(), "complex<double> column-major");
+    //test(compressed2D<complex<double> >(),          "complex<double> row-major");
+    //test(compressed2D<complex<double>, col_para>(), "complex<double> column-major");
 
-    test(compressed2D<complex<float> >(),           "complex<float> row-major");
-    test(compressed2D<complex<float>, col_para>(),  "complex<float> column-major");
+    //test(compressed2D<complex<float> >(),           "complex<float> row-major");
+    //test(compressed2D<complex<float>, col_para>(),  "complex<float> column-major");
 
     test(compressed2D<double>(),                    "double row-major");
     test(compressed2D<double, col_para>(),          "double column-major");
