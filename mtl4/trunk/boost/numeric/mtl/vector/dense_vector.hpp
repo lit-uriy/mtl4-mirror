@@ -92,7 +92,6 @@ public:
     }
 
 
-
     dense_vector( ) : memory_base( Parameters::dimension::value ) {}
     
     explicit dense_vector( size_type n )
@@ -116,12 +115,12 @@ public:
 		copy(src.begin(), src.end(), begin());
     }
 
-	template <typename VectorSrc>
-	explicit dense_vector(const VectorSrc& src,
-		typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
-	{
-		*this= src;
-	}
+    template <typename VectorSrc>
+    explicit dense_vector(const VectorSrc& src,
+			  typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
+    {
+	*this= src;
+    }
 
 #if 0
     // Might be generalized to arbitrary vectors later
@@ -209,8 +208,6 @@ public:
 
     using assign_base::operator=;
 
- 
- 
     template <typename Value2> friend void fill(self&, const Value2&);
 
     friend void swap(self& vector1, self& vector2)
@@ -219,6 +216,7 @@ public:
     }
 
     void change_dim(size_type n) { this->realloc(n); }
+    void checked_change_dim(size_type n) { check_dim(n); change_dim(n); }
     
     void crop() {} // Only dummy here
 

@@ -121,7 +121,7 @@ def check_for_blas(env):
  # extra linker flags for blas
  blas_ldflags = ARGUMENTS.get('blas_ldflags', '')
  if blas_ldflags:
-   env.Prepend(_LIBFLAGS=blas_ldflags.split())
+   env.Append(_LIBFLAGS=blas_ldflags.split())
 
  # get command line blas lib
  blas_lib = ARGUMENTS.get('blas_lib', '')
@@ -131,10 +131,9 @@ def check_for_blas(env):
    # check supplied lib
    print "Checking for lib " + blas_lib + "..."
    if conf.CheckLib(blas_lib, symname):
+     myenv = conf.Finish()
      detected_blas(myenv)
-     found_blas = 1
-   myenv = conf.Finish()
-   if(found_blas == 1):
+     myenv.Append(LIBS=[blas_lib])
      return myenv
  else:
    print "Autodetecting BLAS support. See config.log for details!"
@@ -194,7 +193,51 @@ def check_for_blas(env):
 
  return env
  
+
  
+###################################
+# Add UMFPACK (extremely simplistic)
+###################################
+
+def detected_umfpack(env): # umfpack library found
+   env.Append(CPPDEFINES = 'MTL_HAS_UMFPACK')
+
+def check_for_umfpack(env):
+ ufconfig_path = ARGUMENTS.get('ufconfig_path', '')
+ if ufconfig_path:
+   env.Prepend(CPPPATH = [ ufconfig_path ])
+ else:
+   print "UMFPACK only works with the UFconfig library."
+   print "Provide ufconfig_path."
+   print "Building continued without UMFPACK."
+   return env
+
+ amd_path = ARGUMENTS.get('amd_path', '')
+ if amd_path:
+   # print 'adding ' + amd_path + '/Lib to LIBPATH.'
+   env.Append(LIBPATH = [ amd_path + '/Lib' ])
+   #print 'adding ' + amd_path + '/Include to CPPPATH.'
+   env.Prepend(CPPPATH = [ amd_path + '/Include' ])
+   env.Prepend(LIBS=['amd'])
+   # print "nachher: ", env['CPPPATH']
+ else:
+   print "UMFPACK only works with the AMD library."
+   print "Provide amd_path."
+   print "Building continued without UMFPACK."
+   return env
+
+ # get command line umfpack path
+ umfpack_path = ARGUMENTS.get('umfpack_path', '')
+ if umfpack_path:
+   # print 'adding ' + umfpack_path + '/Lib to LIBPATH.'
+   env.Prepend(LIBPATH = [ umfpack_path + '/Lib' ])
+   env.Prepend(LIBS=['umfpack'])
+   # print 'adding ' + umfpack_path + '/Include to CPPPATH.'
+   env.Append(CPPPATH = [ umfpack_path + '/Include' ])
+   detected_umfpack(env)
+   return env
+ 
+
 
 
 ######################
@@ -215,7 +258,12 @@ with_blas = ARGUMENTS.get('with_blas', 0)
 if int(with_blas):
     env = check_for_blas(env)
 
-# env = check_for_blas(env)
+# Search only for UMFPACK when explicitly asked for
+with_umfpack = ARGUMENTS.get('with_umfpack', 0)
+if int(with_umfpack):
+    env = check_for_umfpack(env)
+
+
 
 
 ######################
@@ -269,6 +317,14 @@ opts.Add('with_blas', 'Link with BLAS (have to given each time :-( until we can 
 opts.Add('blas_path', 'Add path of blas library', '')
 opts.Add('blas_lib', 'Add name of blas library', '')
 opts.Add('blas_ldflags', 'Add LDFLAGS for blas library', '')
+
+############
+# UMFPACK flags
+############
+opts.Add('with_umfpack', 'Use UMFPACK. Needs umfpack_path and amd_path.', 0)
+opts.Add('umfpack_path', 'Add path of UMFPACK library', '')
+opts.Add('amd_path', 'Add path of AMD library', '')
+opts.Add('ufconfig_path', 'Add path of AMD library', '')
 
 
 Help(opts.GenerateHelpText(env))
