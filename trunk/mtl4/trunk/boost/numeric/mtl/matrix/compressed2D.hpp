@@ -542,7 +542,7 @@ struct compressed2D_inserter
   public:
     explicit compressed2D_inserter(matrix_type& matrix, size_type slot_size = 5)
 	: matrix(matrix), elements(matrix.data), starts(matrix.starts), indices(matrix.indices), 
-	  slot_size(slot_size), slot_ends(matrix.dim1()+1) 
+	  slot_size(std::min(slot_size, matrix.dim2())), slot_ends(matrix.dim1()+1) 
     {
 	MTL_THROW_IF(matrix.inserting, runtime_error("Two inserters on same matrix"));
 	matrix.inserting = true;
@@ -678,21 +678,23 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
 	new_starts[i+1] = new_starts[i] + std::max(entries, slot_size);
     }
     // Add an additional slot for temporaries
-    size_type new_total= (slot_ends[matrix.dim1()]= starts[matrix.dim1()]) + slot_size;
+    size_type new_total= (slot_ends[matrix.dim1()]= new_starts[matrix.dim1()]) + slot_size;
     elements.resize(new_total);
     indices.resize(new_total);
-	
+    // for (int i= 0; i < matrix.dim1()+1; i++) std::cout << "Slot " << i << " is [" << new_starts[i] << ", " << slot_ends[i] << ")\n";
    
     // copy normally if not overlapping and backward if overlapping
     // i goes down to 1 (not to 0) because i >= 0 never stops for unsigned ;-)
 	// &v[i] is replaced by &v[0]+i to enable past-end addresses for STL copy
     for (size_type i = matrix.dim1(); i > 0; i--)
 	if (starts[i] <= new_starts[i-1]) {
+	    // std::cout << "Kopiere vorwaerts von " << starts[i-1] << " bis " << starts[i] << " nach " << new_starts[i-1] << "\n";
 	    copy(&elements[0] + starts[i-1], &elements[0] + starts[i], &elements[0] + new_starts[i-1]);
 	    copy(&indices[0] + starts[i-1], &indices[0] + starts[i], &indices[0] + new_starts[i-1]);
 	} else {
-		copy_backward(&elements[0] + starts[i-1], &elements[0] + starts[i], &elements[0] + slot_ends[i-1]);
-		copy_backward(&indices[0] + starts[i-1], &indices[0] + starts[i], &indices[0] + slot_ends[i-1]);
+	    // std::cout << "Kopiere rueckwaerts von " << starts[i-1] << " bis " << starts[i] << " nach " << slot_ends[i-1] << "\n";
+	    copy_backward(&elements[0] + starts[i-1], &elements[0] + starts[i], &elements[0] + slot_ends[i-1]);
+	    copy_backward(&indices[0] + starts[i-1], &indices[0] + starts[i], &indices[0] + slot_ends[i-1]);
 	}
     swap(starts, new_starts);		    
 }
