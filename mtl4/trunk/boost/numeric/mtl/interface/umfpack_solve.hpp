@@ -86,25 +86,24 @@ namespace mtl { namespace matrix {
 	    MTL_THROW_IF(res != UMFPACK_OK, error(s, res));
 	}
 
-#if 0
 	/// Class for repeated Umfpack solutions
 	/** Keeps symbolic and numeric preprocessing. Numeric part can be updated. 
 	    Only defined for compressed matrices. **/
 	template <typename T> class solver {};
 
 	template <>
-	class solver<compressed2D<double, parameters<col_major> >
+	class solver<compressed2D<double, parameters<col_major> > >
 	{
 	    typedef double                    value_type;
-	    solver() {}
+	    typedef parameters<col_major>     Parameters;
 	public:
-	    explicit solver(const compressed2D<double, Parameters>& A) 
+	    explicit solver(const compressed2D<double, parameters<col_major> >& A) 
 		: A(A), n(num_rows(A)), Ap(reinterpret_cast<const int*>(A.address_major())), 
 		  Ai(reinterpret_cast<const int*>(A.address_minor())), Ax(A.address_data())
 	    {
 		MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
 		check(umfpack_di_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info), "Error in di_symbolic");
-		check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_symbolic");
+		check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_numeric");
 	    }
 
 	    ~solver()
@@ -117,12 +116,20 @@ namespace mtl { namespace matrix {
 	    void update_numeric()
 	    {
 		umfpack_di_free_numeric(&Numeric);
-		check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_symbolic");
+		check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_numeric");
+	    }
+
+	    /// Update symbolic and numeric part
+	    void update()
+	    {
+		umfpack_di_free_symbolic(&Symbolic);
+		check(umfpack_di_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info), "Error in di_symbolic");
+		update_numeric();
 	    }
 
 	    /// Solve double system
 	    template <typename VectorX, typename VectorB>
-	    int operator(VectorX& x, const VectorB& b)
+	    int operator()(VectorX& x, const VectorB& b)
 	    {
 		MTL_THROW_IF(num_rows(A) != size(x) || num_rows(A) != size(b), incompatible_size());
 		make_in_out_copy_or_reference<dense_vector<value_type>, VectorX> xx(x);
@@ -132,19 +139,18 @@ namespace mtl { namespace matrix {
 	    }
 
 	private:
-	    const compressed2D<double, Parameters>& A;
+	    const compressed2D<double, parameters<col_major> >& A;
 	    const int      n, *Ap, *Ai;
 	    const double   *Ax;
 	    double         Control[UMFPACK_CONTROL], Info[UMFPACK_INFO];
 	    void           *Symbolic, *Numeric;
 	};
 
-
 	template <>
-	class solver<compressed2D<std::complex<double>, mtl::matrix::parameter<col_major> >
+	class solver<compressed2D<std::complex<double>, parameters<col_major> > >
 	{
 	    typedef std::complex<double>                    value_type;
-	    solver() {}
+	    typedef parameters<col_major>                   Parameters;
 	public:
 	    explicit solver(const compressed2D<value_type, Parameters>& A) 
 		: A(A), n(num_rows(A)), Ap(reinterpret_cast<const int*>(A.address_major())), 
@@ -152,8 +158,8 @@ namespace mtl { namespace matrix {
 	    {
 		MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
 		split_complex_vector(A.data, Ax, Az);
-		check(umfpack_zi_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in di_symbolic");
-		check(umfpack_zi_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in di_symbolic");
+		check(umfpack_zi_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in zi_symbolic");
+		check(umfpack_zi_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in zi_numeric");
 	    }
 
 	    ~solver()
@@ -166,18 +172,25 @@ namespace mtl { namespace matrix {
 	    void update_numeric()
 	    {
 		umfpack_zi_free_numeric(&Numeric);
-		check(umfpack_di_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in di_symbolic");
+		check(umfpack_zi_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in zi_numeric");
+	    }
+
+	    /// Update symbolic and numeric part
+	    void update()
+	    {
+		umfpack_zi_free_symbolic(&Symbolic);
+		check(umfpack_zi_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in zi_symbolic");
 	    }
 
 	    /// Solve complex system
 	    template <typename VectorX, typename VectorB>
-	    int operator(VectorX& x, const VectorB& b)
+	    int operator()(VectorX& x, const VectorB& b)
 	    {
 		MTL_THROW_IF(num_rows(A) != size(x) || num_rows(A) != size(b), incompatible_size());
 		dense_vector<double> Xx(size(x)), Xz(size(x)), Bx, Bz;
 		split_complex_vector(b, Bx, Bz);
 		check(umfpack_zi_solve(UMFPACK_A, Ap, Ai, &Ax[0], &Az[0], &Xx[0], &Xz[0], &Bx[0], &Bz[0], Numeric, Control, Info), 
-		      "Error in zi_numeric");
+		      "Error in zi_solve");
 		merge_complex_vector(Xx, Xz, x);
 		return UMFPACK_OK;
 	    }
@@ -189,87 +202,27 @@ namespace mtl { namespace matrix {
 	    double         Control[UMFPACK_CONTROL], Info[UMFPACK_INFO];
 	    void           *Symbolic, *Numeric;
 	};
-#endif
 
-
-
-	// Solve double system
-	template <typename Parameters, typename VectorX, typename VectorB>
-	int inline solve(int sys, const compressed2D<double, Parameters>& A, VectorX& x, const VectorB& b)
+	template <typename Value, typename Parameters>
+	class solver<compressed2D<Value, Parameters> >
+	  : matrix_copy<compressed2D<Value, Parameters>, Value, typename Parameters::orientation>,
+	    public solver<typename matrix_copy<compressed2D<Value, Parameters>, Value, typename Parameters::orientation>::matrix_type >
 	{
-	    BOOST_STATIC_ASSERT((boost::is_same<typename Collection<VectorX>::value_type, double>::value));
-	    BOOST_STATIC_ASSERT((boost::is_same<typename Collection<VectorB>::value_type, double>::value));
-
-	    void           *Symbolic, *Numeric;
-	    double         Control[UMFPACK_CONTROL], Info[UMFPACK_INFO];
-	    int            n= num_rows(A);
-	    const int      *Ap= reinterpret_cast<const int*>(A.address_major()), *Ai= reinterpret_cast<const int*>(A.address_minor());
-	    const double   *Ax= A.address_data();
-
-	    check(umfpack_di_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info), "Error in di_symbolic");
-	    check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_symbolic");
-	    check(umfpack_di_solve(sys, Ap, Ai, Ax, &x[0], &b[0], Numeric, Control, Info), "Error in di_numeric");
-
-	    umfpack_di_free_symbolic(&Symbolic);
-	    umfpack_di_free_numeric(&Numeric);
-	    return UMFPACK_OK;
-	}
-
-	// Solve complex system
-	template <typename Parameters, typename VectorX, typename VectorB>
-	int inline solve(int sys, const compressed2D<std::complex<double>, Parameters>& A, VectorX& x, const VectorB& b)
-	{
-	    BOOST_STATIC_ASSERT((boost::is_same<typename Collection<VectorX>::value_type, std::complex<double> >::value));
-	    BOOST_STATIC_ASSERT((boost::is_same<typename Collection<VectorB>::value_type, std::complex<double> >::value));
-
-	    void           *Symbolic, *Numeric;
-	    double         Control[UMFPACK_CONTROL], Info[UMFPACK_INFO];
-	    int            n= num_rows(A);
-	    const int      *Ap= reinterpret_cast<const int*>(A.address_major()), *Ai= reinterpret_cast<const int*>(A.address_minor());
-
-	    dense_vector<double> Ax, Az, Xx(size(x)), Xz(size(x)), Bx, Bz;
-	    split_complex_vector(A.data, Ax, Az);
-	    split_complex_vector(b, Bx, Bz);
-
-	    check(umfpack_zi_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in zi_symbolic");
-	    check(umfpack_zi_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in zi_symbolic");
-	    check(umfpack_zi_solve(sys, Ap, Ai, &Ax[0], &Az[0], &Xx[0], &Xz[0], &Bx[0], &Bz[0], Numeric, Control, Info), 
-		  "Error in zi_numeric");
-	    merge_complex_vector(Xx, Xz, x);
-
-	    umfpack_zi_free_symbolic(&Symbolic);
-	    umfpack_zi_free_numeric(&Numeric);
-	    return UMFPACK_OK;
-	}
-
-
-
-
-
+	    typedef matrix_copy<compressed2D<Value, Parameters>, Value, typename Parameters::orientation> copy_type;
+	    typedef solver<typename matrix_copy<compressed2D<Value, Parameters>, Value, typename Parameters::orientation>::matrix_type > solver_type;
+	public:
+	    explicit solver(const compressed2D<Value, Parameters>& A) 
+		: copy_type(A), solver_type(copy_type::matrix)
+	    {}
+	};
     } // umfpack
 
 
 template <typename Value, typename Parameters, typename VectorX, typename VectorB>
 int umfpack_solve(const compressed2D<Value, Parameters>& A, VectorX& x, const VectorB& b)
 {
-    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
-    MTL_THROW_IF(num_rows(A) != size(x) || num_rows(A) != size(b), incompatible_size());
-
-    typedef umfpack::matrix_copy<compressed2D<Value, Parameters>, Value, typename Parameters::orientation> copy_type;
-    typedef typename Collection<typename copy_type::matrix_type>::value_type                               value_type;
-    assert(sizeof(int) == sizeof(typename Collection<typename copy_type::matrix_type>::size_type));
-
-    copy_type copy(A);
-    // Copy x and b if types require otherwise create a reference (respectively)
-    make_in_out_copy_or_reference<dense_vector<value_type>, VectorX> xx(x);
-    make_in_copy_or_reference<dense_vector<value_type>, VectorB> bb(b);
-
-    return umfpack::solve(UMFPACK_A, copy.matrix, xx.value, bb.value);
-
-#if 0
     umfpack::solver<compressed2D<Value, Parameters> > solver(A);
     return solver(x, b);
-#endif
 }
 
 }} // namespace mtl::matrix
