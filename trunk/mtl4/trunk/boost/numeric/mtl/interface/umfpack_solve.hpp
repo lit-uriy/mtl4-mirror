@@ -23,7 +23,10 @@
 #include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
 #include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/split_complex_vector.hpp>
-#include <umfpack.h>
+
+extern "C" {
+#  include <umfpack.h>
+}
 
 namespace mtl { namespace matrix {
 
@@ -113,7 +116,13 @@ namespace mtl { namespace matrix {
 		check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_numeric");
 	    }
 	public:
-	    explicit solver(const compressed2D<double, parameters<col_major> >& A) : A(A) { init(); }
+	    explicit solver(const compressed2D<double, parameters<col_major> >& A) 
+		: A(A), Symbolic(0), Numeric(0) 
+	    {
+		// Use default setings.
+		umfpack_di_defaults(Control);
+		init(); 
+	    }
 
 	    ~solver()
 	    {
@@ -182,6 +191,8 @@ namespace mtl { namespace matrix {
 	    explicit solver(const compressed2D<value_type, Parameters>& A) 
 		: A(A)
 	    {
+		// Use default setings.
+		umfpack_zi_defaults(Control);
 		initialize();
 	    }
 

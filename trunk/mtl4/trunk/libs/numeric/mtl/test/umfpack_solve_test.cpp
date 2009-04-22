@@ -9,7 +9,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-// Example build call: scons -D check=1 with_blas=1 blas_ldflags=-lblas with_umfpack=1 umfpack_path=/u/pgottsch/Software/UMFPACK amd_path=/u/pgottsch/Software/AMD ufconfig_path=/u/pgottsch/Software/UFconfig umfpack_solve_test
+// Example build call: scons -D check=1 with_blas=1 blas_ldflags=-lblas with_umfpack=1 umfpack_path=/u/pgottsch/Software/UMFPACK-5.3.0 amd_path=/u/pgottsch/Software/AMD ufconfig_path=/u/pgottsch/Software/UFconfig umfpack_solve_test
 
 #include <iostream>
 #include <cmath>
@@ -90,11 +90,11 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
     typedef matrix::parameters<col_major>           col_para;
 
-    //test(compressed2D<complex<double> >(),          "complex<double> row-major");
-    //test(compressed2D<complex<double>, col_para>(), "complex<double> column-major");
+    test(compressed2D<complex<double> >(),          "complex<double> row-major");
+    test(compressed2D<complex<double>, col_para>(), "complex<double> column-major");
 
-    //test(compressed2D<complex<float> >(),           "complex<float> row-major");
-    //test(compressed2D<complex<float>, col_para>(),  "complex<float> column-major");
+    test(compressed2D<complex<float> >(),           "complex<float> row-major");
+    test(compressed2D<complex<float>, col_para>(),  "complex<float> column-major");
 
     test(compressed2D<double>(),                    "double row-major");
     test(compressed2D<double, col_para>(),          "double column-major");
