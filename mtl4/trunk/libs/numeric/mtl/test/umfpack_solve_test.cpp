@@ -80,6 +80,22 @@ void test(const Matrix&, const char* name)
     for (int i= 0; i < 5; i++) 
 	if (std::abs(x[i] - value_type(i+1)) > 0.01)
 	    throw "Wrong result after update!";
+
+    {
+	mtl::matrix::inserter<Matrix> ins(A);
+	ins[3][4] << 3.;
+    }
+    b[3]= 18.;
+    cout << "\nA = \n" << A << "b = " << b << "\n";
+
+    // creates solver on the fly
+    status= umfpack_solve(A, x, b);
+    cout << "A \\ b = " << x << "\n\n";
+
+    for (int i= 0; i < 5; i++) 
+	if (std::abs(x[i] - value_type(i+1)) > 0.01)
+	    throw "Wrong result after update!";
+
 }
 
 
