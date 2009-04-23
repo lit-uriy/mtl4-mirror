@@ -54,30 +54,6 @@ namespace mtl { namespace matrix {
 	    matrix_type matrix;
 	};
 
-	// CCS matrices with right value_type and size_type are not copied:
-
-	template <typename Parameters>
-	struct matrix_copy<compressed2D<double, Parameters>, double, col_major>
-	{
-	    typedef double                              value_type;
-	    typedef compressed2D<double, Parameters>    matrix_type;
-	    
-	    matrix_copy(const matrix_type& A) : matrix(A) {}
-
-	    const matrix_type& matrix;
-	};
-
-	template <typename Parameters>
-	struct matrix_copy<compressed2D<std::complex<double>, Parameters>, std::complex<double>, col_major>
-	{
-	    typedef std::complex<double>                              value_type;
-	    typedef compressed2D<std::complex<double>, Parameters>    matrix_type;
-	    
-	    matrix_copy(const matrix_type& A) : matrix(A) {}
-
-	    const matrix_type& matrix;
-	};
-
 	struct error : public domain_error
 	{
 	    error(const char *s, int code) : domain_error(s), code(code) {}
