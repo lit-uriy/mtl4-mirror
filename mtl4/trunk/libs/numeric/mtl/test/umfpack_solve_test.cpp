@@ -20,6 +20,11 @@
 
 using namespace std;  
 
+inline void add_imag(float& v, double inc) {}
+inline void add_imag(double& v, double inc) {}
+inline void add_imag(complex<float>& v, double inc) { v+= complex<float>(0, inc); }
+inline void add_imag(complex<double>& v, double inc) { v+= complex<double>(0, inc); }
+
 template <typename Matrix>
 void test(const Matrix&, const char* name)
 {
@@ -53,9 +58,10 @@ void test(const Matrix&, const char* name)
 
     {
 	mtl::matrix::inserter<Matrix> ins(A);
-	ins[1][2] << 5.;
+	value_type v(5); add_imag(v, 1.); // set to 5 or 5+i depending on type
+	ins[1][2] << v;
     }
-    b[1]= 48.;
+    b[1]= 48.; add_imag(b[1], 3.); // set to 48 or 48+3i depending on type
     cout << "\nA = \n" << A << "b = " << b << "\n";
     solver.update_numeric();
 
