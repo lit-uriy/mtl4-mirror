@@ -70,11 +70,11 @@ namespace mtl { namespace matrix {
 	    Only defined for compressed matrices. **/
 	template <typename T> class solver {};
 
-	template <>
-	class solver<compressed2D<double, parameters<col_major> > >
+	template <typename Parameters>
+	class solver<compressed2D<double, Parameters> >
 	{
 	    typedef double                    value_type;
-	    typedef parameters<col_major>     Parameters;
+	    // typedef parameters<col_major>     Parameters;
 
 	    void assign_pointers()
 	    {
@@ -92,7 +92,7 @@ namespace mtl { namespace matrix {
 		check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_numeric");
 	    }
 	public:
-	    explicit solver(const compressed2D<double, parameters<col_major> >& A) 
+	    explicit solver(const compressed2D<double, Parameters>& A) 
 		: A(A), Symbolic(0), Numeric(0) 
 	    {
 		// Use default setings.
@@ -129,12 +129,13 @@ namespace mtl { namespace matrix {
 		MTL_THROW_IF(num_rows(A) != size(x) || num_rows(A) != size(b), incompatible_size());
 		make_in_out_copy_or_reference<dense_vector<value_type>, VectorX> xx(x);
 		make_in_copy_or_reference<dense_vector<value_type>, VectorB> bb(b);
-		check(umfpack_di_solve(UMFPACK_A, Ap, Ai, Ax, &xx.value[0], &bb.value[0], Numeric, Control, Info), "Error in di_numeric");
+		int sys= mtl::traits::is_row_major<Parameters>::value ? UMFPACK_At : UMFPACK_A;
+		check(umfpack_di_solve(sys, Ap, Ai, Ax, &xx.value[0], &bb.value[0], Numeric, Control, Info), "Error in di_numeric");
 		return UMFPACK_OK;
 	    }
 
 	private:
-	    const compressed2D<double, parameters<col_major> >& A;
+	    const compressed2D<double, Parameters>& A;
 	    int            n;
 	    const int      *Ap, *Ai;
 	    const double   *Ax;
@@ -142,11 +143,11 @@ namespace mtl { namespace matrix {
 	    void           *Symbolic, *Numeric;
 	};
 
-	template <>
-	class solver<compressed2D<std::complex<double>, parameters<col_major> > >
+	template <typename Parameters>
+	class solver<compressed2D<std::complex<double>, Parameters> >
 	{
 	    typedef std::complex<double>                    value_type;
-	    typedef parameters<col_major>                   Parameters;
+	    // typedef parameters<col_major>                   Parameters;
 
 	    void assign_pointers()
 	    {
@@ -202,7 +203,8 @@ namespace mtl { namespace matrix {
 		MTL_THROW_IF(num_rows(A) != size(x) || num_rows(A) != size(b), incompatible_size());
 		dense_vector<double> Xx(size(x)), Xz(size(x)), Bx, Bz;
 		split_complex_vector(b, Bx, Bz);
-		check(umfpack_zi_solve(UMFPACK_A, Ap, Ai, &Ax[0], &Az[0], &Xx[0], &Xz[0], &Bx[0], &Bz[0], Numeric, Control, Info), 
+		int sys= mtl::traits::is_row_major<Parameters>::value ? UMFPACK_Aat : UMFPACK_A;
+		check(umfpack_zi_solve(sys, Ap, Ai, &Ax[0], &Az[0], &Xx[0], &Xz[0], &Bx[0], &Bz[0], Numeric, Control, Info), 
 		      "Error in zi_solve");
 		merge_complex_vector(Xx, Xz, x);
 		return UMFPACK_OK;
