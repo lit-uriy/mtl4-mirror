@@ -45,6 +45,7 @@ struct size_helper
 {
     typedef size_helper self;
 
+    size_helper() {}
     explicit size_helper(std::size_t size)
     {
 	set_size(size);
