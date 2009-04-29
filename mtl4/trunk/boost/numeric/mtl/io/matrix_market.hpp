@@ -166,8 +166,8 @@ matrix_market_istream& matrix_market_istream::read(Matrix& A, tag::matrix)
     A.change_dim(nrows, ncols);
     set_to_zero(A);
 
-    // Create enough space in sparse matrices; assumes row-major or square
-    matrix::inserter<Matrix> ins(A, int(double(nnz) / double(nrows) * 1.3));
+    // Create enough space in sparse matrices
+    matrix::inserter<Matrix> ins(A, int(double(nnz) / double(A.dim1()) * 1.3));
 
     if (value_format == std::string("real"))
 	read_matrix(ins, double());
