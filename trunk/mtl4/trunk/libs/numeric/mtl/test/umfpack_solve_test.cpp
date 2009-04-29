@@ -25,6 +25,7 @@ inline void add_imag(double& v, double inc) {}
 inline void add_imag(complex<float>& v, double inc) { v+= complex<float>(0, inc); }
 inline void add_imag(complex<double>& v, double inc) { v+= complex<double>(0, inc); }
 
+#ifdef MTL_HAS_UMFPACK
 template <typename Matrix>
 void test(const Matrix&, const char* name)
 {
@@ -103,7 +104,7 @@ void test(const Matrix&, const char* name)
 	    throw "Wrong result after update!";
 
 }
-
+#endif
 
 
 int test_main(int argc, char* argv[])
