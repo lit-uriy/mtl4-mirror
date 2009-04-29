@@ -18,8 +18,6 @@
 
 namespace mpi = boost::mpi;
 
-
-
 template <typename Matrix>
 void test(Matrix& A,  const char* name)
 {
