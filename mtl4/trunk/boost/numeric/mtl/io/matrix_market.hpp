@@ -22,6 +22,7 @@
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <boost/numeric/mtl/io/matrix_file.hpp>
+#include <boost/numeric/mtl/io/read_filter.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
@@ -75,27 +76,29 @@ class matrix_market_istream
     template <typename Inserter, typename Value>
     void read_matrix(Inserter& ins, Value)
     {
+	read_filter<Inserter> filter(ins);
 	if (my_sparsity == coordinate) // sparse
 	    while (my_stream) {
 		int r, c;
 		my_stream >> r >> c;
-		insert_value(ins, r-1, c-1, Value());
+		insert_value(ins, r-1, c-1, filter, Value());
 	    }
 	else // dense 
 	    for (int r= 0; r < nrows; r++)
 		for (int c= 0; c < ncols; c++) 
-		    insert_value(ins, r, c, Value());
+		    insert_value(ins, r, c, filter, Value());
     }
 
-    template <typename Inserter, typename Value>
-    void insert_value(Inserter& ins, int r, int c, Value) 
+    template <typename Inserter, typename Filter, typename Value>
+    void insert_value(Inserter& ins, int r, int c, const Filter& filter, Value) 
     {
 	typedef typename Collection<typename Inserter::matrix_type>::value_type mvt;
 	Value v;
 	read_value(v);
 	// std::cout << "Going to insert at [" << r << "][" << c << "] value " << which_value(v, mvt()) << "\n";
-	ins[r][c] << which_value(v, mvt());
-	if (r != c) 
+	if (filter(r, c))
+	    ins[r][c] << which_value(v, mvt());
+	if (r != c && filter(c, r)) 
 	    switch(my_symmetry) {
 	      case symmetric:      ins[c][r] << which_value(v, mvt()); break;
 	      case skew:           ins[c][r] << -which_value(v, mvt()); break;
