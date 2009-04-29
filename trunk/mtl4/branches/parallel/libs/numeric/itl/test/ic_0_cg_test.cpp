@@ -27,7 +27,7 @@ void dense_ic_0(const At& As, const Ut& Us)
 		if (U[j][i] != 0.0)
 		    U[j][i] -= d * U[k][j];
 	}
-    }
+    } 
 
     std::cout << "Factorizing A = \n" << As << "-> U = \n" << with_format(U, 6, 2)
 	      << "trans(U) * U = \n" << with_format(mtl::dense2D<double>(trans(U) * U), 6, 2);

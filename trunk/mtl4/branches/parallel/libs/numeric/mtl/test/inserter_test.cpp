@@ -44,7 +44,7 @@ void test(Matrix& A, const char* name)
 	throw "Wrong value after +=";
 
     {
-	inserter<Matrix, update_plus<value_type> > ins(A);
+	inserter<Matrix, update_plus<value_type> > ins(A, 0);
 	ins(1, 2)= 4;
 	ins[1][2]= 4;
 	//ins[1, 2]= 4;

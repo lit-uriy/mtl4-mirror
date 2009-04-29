@@ -33,7 +33,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 
   while (! iter.finished(r)) {
     
-    rho_1 = dot(rtilde, r); // switched back
+    rho_1 = dot(rtilde, r);
     if (rho_1 == Scalar(0.)) {
       iter.fail(2, "bicg breakdown #1");
       break;
@@ -52,7 +52,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
     phat = solve(M, p);
     v = A * phat;
 
-    alpha = rho_1 / dot(rtilde, v); // switched 
+    alpha = rho_1 / dot(rtilde, v);
     s = r - alpha * v;
     
     if (iter.finished(s)) {
@@ -61,7 +61,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
     }
     shat = solve(M, s);
     t = A * shat;
-    omega = dot(t, s) / dot(t, t); // switched back
+    omega = dot(t, s) / dot(t, t);
     
     x += omega * shat + alpha * phat;
     r = s - omega * t;

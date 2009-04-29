@@ -26,7 +26,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 {
     using math::zero; using math::one;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
-    Scalar     rho_0(0), rho_1(0), rho_2(0), alpha(0), beta(0), gamma(0), 
+    Scalar     rho_0(0), rho_1(0), alpha(0), beta(0), gamma(0), 
 	       mu(0), nu(0), tau(0), omega_1(0), omega_2(0);
     Vector     r(b - A * x), r_0(r), r_i(r), x_i(x), 
                s(size(x)), t(size(x)), u(size(x)), v(size(x)), w(size(x));

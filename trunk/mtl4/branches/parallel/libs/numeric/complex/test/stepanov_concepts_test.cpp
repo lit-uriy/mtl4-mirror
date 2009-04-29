@@ -80,7 +80,7 @@ Callable2<Op, X, X>::result_type square(const X& x, Op op)
 auto concept RegularUnaryFunction<typename Op, typename X> // p 76
   : FunctionalProcedure1<Op, X>
 {
-    requires SameType<X, FunctionalProcedure1<Op, X>::result_type>;
+    requires Regular<FunctionalProcedure1<Op, X>::result_type>;
  
     // Normally, concepts with axioms must not be auto because the semantics can not be deduced from the syntax
     // However, this is a diffent case because the semantics is implied by the required and derived concepts

@@ -81,9 +81,8 @@ struct compute_factors<Result, matrix::mat_mat_ele_times_expr<E1, E2> >
 	  second(second_factor.value)
     {}
 
-    compute_one_factor<Result, E2> second_factor;
-
     const E1&                                                first;
+    compute_one_factor<Result, E2>                           second_factor;
     typename compute_one_factor<Result, E2>::const_reference second;
 };
 

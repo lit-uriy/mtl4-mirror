@@ -40,15 +40,6 @@ void test(Matrix& A,  const char* name)
 	}
     }
 
-#if 0
-    // Serialized output
-    wait_for_previous(comm);
-    std::cout << "Raw local matrix on proc " << comm.rank() << " is:\n" << A.local_matrix << std::endl;
-    start_next(comm);
-    std::cout << std::endl;
-    comm.barrier();
-#endif
-
     if (!comm.rank()) std::cout << "Matrix is:" << std::endl;
     std::cout << A;
 }

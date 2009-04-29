@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <vector>
 #include <map>
+#include <cmath>
 #include <boost/tuple/tuple.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
@@ -22,8 +23,10 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
+#include <boost/numeric/mtl/utility/zipped_sort.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/shift_block.hpp>
@@ -31,7 +34,9 @@
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/element_matrix.hpp> 
 #include <boost/numeric/mtl/matrix/element_array.hpp> 
+#include <boost/numeric/mtl/vector/dense_vector.hpp> 
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
+#include <boost/numeric/mtl/operation/size.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -229,7 +234,7 @@ struct compressed2D_indexer
 	    return result_type(first - &ma.indices[0], false);
 
 	const size_t *index= first;
-	if (last - index < 10)
+	if (last - index <= int(compressed_linear_search_limit))
 	    while (index != last && *index < minor) ++index;
 	else
 	    index = std::lower_bound(first, last, minor);
@@ -503,8 +508,8 @@ class compressed2D
     indexer_type            indexer;
     std::vector<value_type> data; 
   protected:
-    std::vector<size_t>     starts;
-    std::vector<size_t>     indices;
+    std::vector<size_type>  starts;
+    std::vector<size_type>  indices;
     bool                    inserting;
 };
 
@@ -548,7 +553,7 @@ struct compressed2D_inserter
   public:
     explicit compressed2D_inserter(matrix_type& matrix, size_type slot_size = 5)
 	: matrix(matrix), elements(matrix.data), starts(matrix.starts), indices(matrix.indices), 
-	  slot_size(slot_size), slot_ends(matrix.dim1()+1) 
+	  slot_size(std::min(slot_size, matrix.dim2())), slot_ends(matrix.dim1()+1) 
     {
 	MTL_THROW_IF(matrix.inserting, runtime_error("Two inserters on same matrix"));
 	matrix.inserting = true;
@@ -579,29 +584,67 @@ struct compressed2D_inserter
     {
 	modify<Updater>(row, col, val);
     }
-
+    
     template <typename Matrix, typename Rows, typename Cols>
-    self& operator<< (const matrix::element_matrix_t<Matrix, Rows, Cols>& elements)
+    self& sorted_block_insertion(const element_matrix_t<Matrix, Rows, Cols>& elements);
+    
+    template <typename Matrix, typename Rows, typename Cols>
+    self& operator<< (const element_matrix_t<Matrix, Rows, Cols>& elements)
     {
-	for (unsigned ri= 0; ri < elements.rows.size(); ri++)
-	    for (unsigned ci= 0; ci < elements.cols.size(); ci++)
-		update (elements.rows[ri], elements.cols[ci], elements.matrix(ri, ci));
+	using mtl::size;
+#if 0 // unfortunately slower
+	if (size(elements.cols) > sorted_block_insertion_limit
+	    && boost::is_same<typename Parameters::orientation, row_major>::value)
+	    return sorted_block_insertion(elements);
+#endif
+
+	for (unsigned ri= 0; ri < size(elements.rows); ri++)
+	    for (unsigned ci= 0; ci < size(elements.cols); ci++)
+		update (elements.rows[ri], elements.cols[ci], elements.matrix[ri][ci]);
 	return *this;
     }
 
+    // Redundant
     template <typename Matrix, typename Rows, typename Cols>
-    self& operator<< (const matrix::element_array_t<Matrix, Rows, Cols>& elements)
+    self& operator<< (const element_array_t<Matrix, Rows, Cols>& elements)
     {
-	for (unsigned ri= 0; ri < elements.rows.size(); ri++)
-	    for (unsigned ci= 0; ci < elements.cols.size(); ci++)
-		update (elements.rows[ri], elements.cols[ci], elements.array[ri][ci]);
-	return *this;
+	return *this << element_matrix_t<Matrix, Rows, Cols>(elements.array, elements.rows, elements.cols);
     }
 
   private:
     utilities::maybe<typename self::size_type> matrix_offset(size_pair);
     void final_place();
     void insert_spare();
+    
+    // Show ith row/column
+    void display(size_type i)
+    {
+	std::cout << "slot " << i << " is [";
+	for (size_type j= starts[i]; j < slot_ends[i]; ++j)
+	    std::cout << '(' << indices[j] << ": " <<  elements[j] << ")"
+		      << (j < slot_ends[i] - 1 ? ", " : "");
+	std::cout << "]\n";
+    }
+
+    // eliminate double entries in a slot by using the updater
+    // indices are supposed to be sorted
+    void reduce_slot(size_type i)
+    {
+	size_type tgt= starts[i], src= tgt + 1, end= slot_ends[i];
+	for (; src < end;) {
+	    while (src < end && indices[tgt] == indices[src])
+		Updater()(elements[tgt], elements[src++]);
+	    ++tgt;
+	    if (tgt == src)
+		++src;
+	    else if (src < end && indices[tgt] != indices[src]) {
+		indices[tgt]= indices[src];
+		elements[tgt]= elements[src++];
+		if (src >= end) ++tgt; // correction to not remain on the last entry
+	    }       
+	}
+	slot_ends[i]= tgt;
+    }
 
   protected:
     compressed2D<Elt, Parameters>&      matrix;
@@ -624,8 +667,16 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
     if (elements.empty()) {
 	for (size_type i= 0, s= 0; i <= matrix.dim1(); i++, s+= slot_size)
 	    slot_ends[i]= starts[i]= s;
-	size_type new_total= starts[matrix.dim1()];
+	size_type new_total= (slot_ends[matrix.dim1()]= starts[matrix.dim1()]) + slot_size;
 	elements.resize(new_total); indices.resize(new_total);
+	return;
+    }
+
+    // If there are enough existing entries then skip the stretching (expensive)
+    if (elements.size() + matrix.dim1()/2 > slot_size * matrix.dim1()) {
+	// Use start of next row/col as slot_ends
+	copy(starts.begin() + 1, starts.end(), slot_ends.begin());
+	slot_ends[matrix.dim1()]= starts[matrix.dim1()];
 	return;
     }
 
@@ -636,22 +687,24 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
 	slot_ends[i] = new_starts[i] + entries; 
 	new_starts[i+1] = new_starts[i] + std::max(entries, slot_size);
     }
-
-    size_type new_total = new_starts[matrix.dim1()];
+    // Add an additional slot for temporaries
+    size_type new_total= (slot_ends[matrix.dim1()]= new_starts[matrix.dim1()]) + slot_size;
     elements.resize(new_total);
     indices.resize(new_total);
-	
+    // for (int i= 0; i < matrix.dim1()+1; i++) std::cout << "Slot " << i << " is [" << new_starts[i] << ", " << slot_ends[i] << ")\n";
    
     // copy normally if not overlapping and backward if overlapping
     // i goes down to 1 (not to 0) because i >= 0 never stops for unsigned ;-)
 	// &v[i] is replaced by &v[0]+i to enable past-end addresses for STL copy
     for (size_type i = matrix.dim1(); i > 0; i--)
 	if (starts[i] <= new_starts[i-1]) {
+	    // std::cout << "Kopiere vorwaerts von " << starts[i-1] << " bis " << starts[i] << " nach " << new_starts[i-1] << "\n";
 	    copy(&elements[0] + starts[i-1], &elements[0] + starts[i], &elements[0] + new_starts[i-1]);
 	    copy(&indices[0] + starts[i-1], &indices[0] + starts[i], &indices[0] + new_starts[i-1]);
 	} else {
-		copy_backward(&elements[0] + starts[i-1], &elements[0] + starts[i], &elements[0] + slot_ends[i-1]);
-		copy_backward(&indices[0] + starts[i-1], &indices[0] + starts[i], &indices[0] + slot_ends[i-1]);
+	    // std::cout << "Kopiere rueckwaerts von " << starts[i-1] << " bis " << starts[i] << " nach " << slot_ends[i-1] << "\n";
+	    copy_backward(&elements[0] + starts[i-1], &elements[0] + starts[i], &elements[0] + slot_ends[i-1]);
+	    copy_backward(&indices[0] + starts[i-1], &indices[0] + starts[i], &indices[0] + slot_ends[i-1]);
 	}
     swap(starts, new_starts);		    
 }
@@ -722,6 +775,77 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type ro
     // std::cout << "inserter update: " << matrix.my_nnz << " non-zero elements, new value is " << elements[pos] << "\n";
 }  
 
+namespace detail {
+    
+    struct cmp_first
+    {
+	template <typename F, typename S>
+	bool operator()(const std::pair<F, S>& x, const std::pair<F, S>& y) const
+	{
+	    return x.first < y.first;
+	}
+    };
+}
+
+template <typename Elt, typename Parameters, typename Updater>
+template <typename Matrix, typename Rows, typename Cols>
+compressed2D_inserter<Elt, Parameters, Updater>& 
+compressed2D_inserter<Elt, Parameters, Updater>::sorted_block_insertion(const element_matrix_t<Matrix, Rows, Cols>& iblock)
+{
+    using std::copy; using std::copy_backward; using std::min;
+    using mtl::size;
+    using namespace mtl::utility;
+    typedef zip_it<size_type, value_type> it_type;
+
+    size_type m= size(iblock.rows), n= size(iblock.cols);
+    MTL_THROW_IF(m != num_rows(iblock.matrix) || n != num_cols(iblock.matrix), incompatible_size());
+    MTL_THROW_IF(&iblock.matrix[0][1] - &iblock.matrix[0][0] != 1, logic_error("Rows must be consecutive"));
+
+    size_type rmax= matrix.dim1(), &index_max0= indices[starts[rmax]];
+    value_type& value_max0= elements[starts[rmax]];
+    for (size_type i= 0; i < m; i++) {
+	size_type r= iblock.rows[i], &index_0= indices[starts[r]];
+	value_type& value_0= elements[starts[r]];
+	if (slot_ends[r] == starts[r]) {
+	    size_type to_copy= min(starts[r+1] - starts[r], n);
+	    copy(&iblock.cols[0], &iblock.cols[0]+to_copy, &index_0);
+	    copy(&iblock.matrix[i][0], &iblock.matrix[i][0]+to_copy, &value_0);
+	    slot_ends[r]= starts[r] + to_copy;
+	    std::sort(it_type(&index_0, &value_0, 0), it_type(&index_0, &value_0, to_copy), less_0());
+	    reduce_slot(r);
+	    // display(r);		 
+	    matrix.my_nnz+= slot_ends[r] - starts[r];
+	    for (size_type j= to_copy; j < n; ++j)
+		update(r, iblock.cols[j], iblock.matrix[i][j]);
+	} else {
+	    size_type to_copy= min(slot_size, n);
+	    copy(&iblock.cols[0], &iblock.cols[0]+to_copy, &index_max0);
+	    copy(&iblock.matrix[i][0], &iblock.matrix[i][0]+to_copy, &value_max0);
+	    slot_ends[rmax]= starts[rmax] + to_copy;
+	    std::sort(it_type(&index_max0, &value_max0, 0), it_type(&index_max0, &value_max0, to_copy), less_0());
+	    size_type tgt= starts[r], tend= slot_ends[r], later= starts[rmax], src= later, end= slot_ends[rmax];
+	    for (; src < end; ) {
+		// search for next equal entry in slot r
+		while (tgt < tend && indices[src] > indices[tgt]) ++tgt;
+		// reduce equal entries (they are consecutive)
+		if (tgt < tend)
+		    while (src < end && indices[src] == indices[tgt])
+			Updater()(elements[tgt], elements[src++]);		    
+		// collect indices not found in r to deal with later    
+		while (src < end && indices[src] < indices[tgt]) {
+		    if (later != src) {
+			indices[later]= indices[src]; 
+			elements[later]= elements[src];
+		    }
+		    ++src; ++later;
+		}
+	    }
+	    for (size_type j= starts[rmax]; j < later; ++j)
+		update(r, indices[j], elements[j]);
+	}
+    }
+    return *this;
+}
 
 
 template <typename Elt, typename Parameters, typename Updater>
@@ -732,6 +856,31 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
     size_type          dim1 = matrix.dim1();
     std::vector<size_type>  new_starts(dim1 + 1);
     new_starts[0] = 0;
+
+    if (spare.empty()) {
+	// Check if everything is already in place
+	if (slot_ends[dim1-1] == matrix.my_nnz) {
+	    starts[dim1]= slot_ends[dim1-1];
+	    if (matrix.my_nnz < elements.size()) 
+		elements.resize(matrix.my_nnz), 
+		    indices.resize(matrix.my_nnz);
+	    return;
+	}
+	size_type pos= 0;
+	for (size_type i= 0; i < dim1; ++i) {
+	    new_starts[i]= pos;
+	    for (size_type j= starts[i], je= slot_ends[i]; j < je; ++j, ++pos) {
+		elements[pos]= elements[j];
+		indices[pos]= indices[j];
+	    }
+	}
+	new_starts[dim1]= pos;
+	swap(new_starts, starts);
+	if (matrix.my_nnz < elements.size()) 
+	    elements.resize(matrix.my_nnz), 
+		indices.resize(matrix.my_nnz);
+	return;
+    }
 
     typename map_type::iterator it = spare.begin();
     for (size_type i = 0; i < dim1; i++) {
@@ -749,7 +898,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
     operations::shift_blocks(dim1, starts, new_starts, slot_ends, elements);
     operations::shift_blocks(dim1, starts, new_starts, slot_ends, indices);
 
-    if (new_total < old_total) {
+    if (new_total < elements.size()) {
 	elements.resize(new_total);
 	indices.resize(new_total); }
  

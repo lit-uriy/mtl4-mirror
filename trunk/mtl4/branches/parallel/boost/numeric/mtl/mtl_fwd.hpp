@@ -304,11 +304,11 @@ namespace mtl {
 
     /// Namespace for I/O operations
     namespace io {
-	class matrix_market_ifstream;
-	class matrix_market_ofstream;
+	class matrix_market_istream;
+	class matrix_market_ostream;
 
-	template <typename MatrixIFStream, typename MatrixOFStream> class matrix_file;
-	typedef matrix_file<matrix_market_ifstream, matrix_market_ofstream> matrix_market;
+	template <typename MatrixIStream, typename MatrixOStream> class matrix_file;
+	typedef matrix_file<matrix_market_istream, matrix_market_ostream> matrix_market;
 
     }
 

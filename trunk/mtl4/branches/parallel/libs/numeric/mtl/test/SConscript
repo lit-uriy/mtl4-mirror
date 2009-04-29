@@ -2,6 +2,8 @@ import glob, re
 
 Import('debug_env mpi_debug_env check')
 
+# print "SConscript: debug_env[CXX] = ", debug_env['CXX']
+
 sources = glob.glob("*.cpp")
 
 # Works only with MTL_DEEP_COPY_CONSTRUCTOR
