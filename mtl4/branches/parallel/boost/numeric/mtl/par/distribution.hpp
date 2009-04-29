@@ -77,6 +77,9 @@ namespace mtl {
 		: base_distribution(comm), starts(starts)
 	    {}
 
+	    /// Change number of global entries to n
+	    void resize(size_type n) { init(n); }
+
 	    /// Two block distributions are equal if they have the same blocks and same communicator
 	    bool operator==(const block_distribution& dist) const { return comm == dist.comm && starts == dist.starts; }
 	    /// Two block distributions are different if they have the different blocks or communicators
@@ -130,7 +133,7 @@ namespace mtl {
 		return lbound - starts.begin() - int(*lbound != n);
 	    }
 
-	private:
+	    //private:
 	    /// No default constructor
 	    block_distribution() {}
 
@@ -147,6 +150,9 @@ namespace mtl {
 	    /// Construction of cyclic distribution 
 	    explicit cyclic_distribution(const mpi::communicator& comm= mpi::communicator()) 
 		: base_distribution(comm) {}
+
+	    /// Change number of global entries to n (only dummy)
+	    void resize(size_type) {}
 
 	    /// Two cyclic distributions are equal if they have the same communicator
 	    bool operator==(const cyclic_distribution& dist) const { return comm == dist.comm; }
@@ -200,6 +206,9 @@ namespace mtl {
 	    explicit block_cyclic_distribution(size_type bsize, const mpi::communicator& comm= mpi::communicator()) 
 		: base_distribution(comm), bsize(bsize), sb(bsize * my_size) {}
 
+	    /// Change number of global entries to n (only dummy)
+	    void resize(size_type) {}
+
 	    /// Two block cyclic distributions are equal if they have the same communicator
 	    bool operator==(const block_cyclic_distribution& dist) const { return comm == dist.comm && bsize == dist.bsize; }
 	    /// Two block cyclic distributions are different if they have the different communicators
@@ -250,21 +259,6 @@ namespace mtl {
 	};
 
     }
-
-#if 0
-    namespace traits {
-
-	template <typename T>
-	struct is_distributed : boost::mpl::false_ {}; 
-
-	template <typename Matrix, typename Distribution, typename DistributionFrom>
-	struct is_distributed<mtl::matrix::distributed<Matrix, Distribution, DistributionFrom> > : boost::mpl::true_ {};
-
-	template <typename Vector, typename Distribution>
-	struct is_distributed<mtl::vector::distributed<Vector, Distribution> > : boost::mpl::true_ {};
-
-    }
-#endif
 
 } // namespace mtl
 

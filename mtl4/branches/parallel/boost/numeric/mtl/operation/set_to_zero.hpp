@@ -96,6 +96,12 @@ namespace mtl {
 		set_to_zero(collection.vector(i));
 	}
 	
+	// Distributed collections are zeroed by zeroing the local part
+	template <typename Coll>
+	void set_to_zero(Coll& collection, tag::distributed, tag::universe)
+	{
+	    set_to_zero(local(collection));
+	}
     }
 
 

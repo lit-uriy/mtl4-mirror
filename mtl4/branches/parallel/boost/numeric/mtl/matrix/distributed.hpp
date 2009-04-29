@@ -29,6 +29,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
+#include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/matrix/reorder.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
@@ -42,9 +43,14 @@ namespace mtl { namespace matrix {
 /// Distributed matrices
 template <typename Matrix, typename RowDistribution, typename ColDistribution>
 class distributed
+  : public crtp_matrix_assign< distributed<Matrix, RowDistribution, ColDistribution>, 
+			       typename Collection<distributed<Matrix, RowDistribution, ColDistribution> >::value_type,
+			       typename Collection<distributed<Matrix, RowDistribution, ColDistribution> >::size_type >
 {
-
-public:
+    typedef crtp_matrix_assign< distributed<Matrix, RowDistribution, ColDistribution>, 
+				typename Collection<distributed<Matrix, RowDistribution, ColDistribution> >::value_type,
+				typename Collection<distributed<Matrix, RowDistribution, ColDistribution> >::size_type > assign_base;
+  public:
     typedef distributed                              self;
     typedef typename Collection<Matrix>::size_type   size_type;
     typedef typename Collection<Matrix>::value_type  value_type;
@@ -59,26 +65,45 @@ public:
     /// Constructor for matrix with global size grows x gcols and default distribution.
     /** RowDistribution and ColDistribution must have same type. **/
     explicit distributed(size_type grows, size_type gcols) 
-	: grows(grows), gcols(gcols), row_dist(grows), cdp(&this->row_dist), col_dist(*cdp),
-	  local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
+      : grows(grows), gcols(gcols), row_dist(grows), cdp(&this->row_dist), col_dist(*cdp),
+	local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
     {}
 
     /// Constructor for matrix with global size grows x gcols and with given distribution.
     /** RowDistribution and ColDistribution must have same type. **/
     explicit distributed(size_type grows, size_type gcols, 
 			 const RowDistribution& row_dist) 
-	: grows(grows), gcols(gcols), row_dist(row_dist), cdp(&this->row_dist), col_dist(*cdp), 
-	  local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
+      : grows(grows), gcols(gcols), row_dist(row_dist), cdp(&this->row_dist), col_dist(*cdp), 
+	local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
     {}
 
     /// Constructor for matrix with global size grows x gcols and with different distributions for rows and columns.
     explicit distributed(size_type grows, size_type gcols, 
 			 const RowDistribution& row_dist, const ColDistribution& col_dist) 
-	: grows(grows), gcols(gcols), row_dist(row_dist), cdp(new ColDistribution(col_dist)), col_dist(*cdp), 
-	  local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
+      : grows(grows), gcols(gcols), row_dist(row_dist), cdp(new ColDistribution(col_dist)), col_dist(*cdp), 
+	local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
     {}
 
+    /// Copy from other types (including expressions)
+    template <typename MatrixSrc>
+    explicit distributed(const MatrixSrc& src)
+      : row_dist(0), cdp(new ColDistribution(0)), col_dist(*cdp)
+    {
+	*this= src;
+    }
+
     ~distributed() { clean_cdp(); clean_remote_matrices(); }
+
+    using assign_base::operator=;
+
+    /// Change dimension \p grows global rows times \p gcols global columns 
+    /** Potentially changes parametrization of distributions **/
+    void change_dim(size_type grows, size_type gcols)
+    {
+	this->grows= grows; this->gcols= gcols;
+	row_dist.resize(grows); col_dist.resize(gcols);
+	local_matrix.change_dim(row_dist.num_local(grows), col_dist.num_local(gcols));
+    }
 
     void clean_cdp() { if (cdp && cdp != &row_dist) delete cdp; }
     void clean_remote_matrices() { remote_matrices.clear(); }
@@ -107,7 +132,7 @@ public:
 	return *this;
     }
 
-private:
+  private:
     void col_dist_assign(const self& src, boost::mpl::true_)
     {
 	// if dist and col_dist are the same object at source then col_dist is only a ref to dist
@@ -124,8 +149,7 @@ private:
 
 
     friend inline const boost::mpi::communicator& communicator(const self& d) { return communicator(d.row_dist); }
-			  
-    
+			      
     template <typename DistMatrix, typename Updater> friend class distributed_inserter;
 
     friend inline size_type num_rows(const self& A) { return A.grows; }
@@ -159,7 +183,7 @@ private:
 	    }
 	    out << std::endl;
 	}
-#if 1 // only to print buffer organization (if activated add \n before stars)
+#if 0 // only to print buffer organization (if activated add \n before stars)
 	for (int p= 0; p < A.col_dist.size(); p++) {
 	    typename std::map<int, send_structure >::const_iterator it(A.send_info.find(p));
 	    if (it != A.send_info.end())
@@ -178,14 +202,14 @@ private:
 	return out;
     }
 
-public:
+  public:
     size_type                      grows, gcols, total_send_size, total_recv_size;
     RowDistribution                row_dist;
     ColDistribution                *cdp, &col_dist;
     
-protected:
+  protected:
     local_type                     local_matrix;
-public:
+  public:
     remote_map_type                remote_matrices;
     std::map<int, recv_structure>  recv_info;
     std::map<int, send_structure>  send_info;
