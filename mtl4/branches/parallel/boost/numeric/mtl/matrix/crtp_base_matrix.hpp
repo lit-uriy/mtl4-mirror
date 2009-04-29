@@ -413,19 +413,19 @@ public:
     {
 	return density_assign(src, boost::mpl::bool_< boost::is_same<typename ashape::ashape<Matrix>::type, 
 			                                             typename ashape::ashape<Source>::type>::value 
-			                              && traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >::value >());
+														 && mtl::traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >::value >());
     }
 
     template <typename Source>
     Matrix& operator+=(const Source& src)
     {
-	return density_plus_assign(src, traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >());
+		return density_plus_assign(src, mtl::traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >());
     }
     
     template <typename Source>
     Matrix& operator-=(const Source& src)
     {
-	return density_minus_assign(src, traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >());
+	return density_minus_assign(src, mtl::traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >());
     }
     
     /// Scale matrix (in place) with scalar value or other matrix
@@ -440,7 +440,7 @@ public:
     template <typename Factor>
     Matrix& ele_rscale(const Factor& alpha)
     {
-	return density_ele_rscale(alpha, traits::eval_dense< mat_mat_asgn_expr<Matrix, Factor> >());
+	return density_ele_rscale(alpha, mtl::traits::eval_dense< mat_mat_asgn_expr<Matrix, Factor> >());
     }
 
     /// Divide matrix (in place) by scalar value

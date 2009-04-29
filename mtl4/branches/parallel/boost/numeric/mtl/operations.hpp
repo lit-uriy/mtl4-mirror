@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>
+#include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/norms.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
@@ -30,11 +31,13 @@
 #include <boost/numeric/mtl/operation/parallel_utilities.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/product.hpp>
+#include <boost/numeric/mtl/operation/random.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/rank_two_update.hpp>
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/scale.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/mtl/operation/split_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/sum.hpp>
 #include <boost/numeric/mtl/operation/min.hpp>
@@ -55,6 +58,8 @@
 #include <boost/numeric/mtl/matrix/strict_lower.hpp>
 
 #include <boost/numeric/mtl/utility/string_to_enum.hpp>
+#include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
 
+#include <boost/numeric/mtl/interface/umfpack_solve.hpp>
 
 #endif // MTL_OPERATIONS_INCLUDE

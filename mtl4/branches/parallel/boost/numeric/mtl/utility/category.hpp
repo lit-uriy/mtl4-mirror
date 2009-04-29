@@ -16,9 +16,11 @@
 
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
+#include <boost/mpl/bool.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 
 namespace mtl { namespace traits {
@@ -266,6 +268,16 @@ struct algebraic_category
     >
 {};
 
+template <typename T>
+struct is_sparse 
+  : boost::is_base_of<tag::sparse, typename category<T>::type> 
+{};
+
+// So far nothing is symmetric on the type level
+template <typename T>
+struct is_symmetric
+    : boost::mpl::false_
+{};
 
 }} // namespace mtl::traits 
 

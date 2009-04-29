@@ -2,33 +2,34 @@ import glob, os
 
 Import('debug_env check')
 
-sources = []
-if not os.environ.has_key('CONCEPTCXX'):
-    print "CONCEPTCXX not found"
-else:
-    debug_env['CXX']= os.environ['CONCEPTCXX']
-    # print "CXX set to: ", debug_env['CXX']
-    conf= Configure(debug_env)
-
-    text = "#include <concepts>\nconcept C1<typename T> {};\nint main() { return 0; }"
-    # print text
-    if 1: # conf.TryCompile(text, '.cpp'):
-        sources = glob.glob("*.cpp")
-    else:
-        print "test didn't compile."
-    print conf.lastTarget
-
-if sources == []:
-    print "Cannot compile programs with concepts. This directory is skipped."
-    print "Check wether conceptg++ is properly installed."
-
 programs = []
-for p in sources:
-    programs.append(debug_env.Program(p))
+
+# sources = []
+# if not os.environ.has_key('CONCEPTCXX'):
+#     print "CONCEPTCXX not found"
+# else:
+#     debug_env['CXX']= os.environ['CONCEPTCXX']
+#     # print "CXX set to: ", debug_env['CXX']
+#     conf= Configure(debug_env)
+
+#     text = "#include <concepts>\nconcept C1<typename T> {};\nint main() { return 0; }"
+#     # print text
+#     if 1: # conf.TryCompile(text, '.cpp'):
+#         sources = glob.glob("*.cpp")
+#     else:
+#         print "test didn't compile."
+#     print conf.lastTarget
+
+# if sources == []:
+#     print "Cannot compile programs with concepts. This directory is skipped."
+#     print "Check wether conceptg++ is properly installed."
+
+# for p in sources:
+#     programs.append(debug_env.Program(p))
 
 
-if int(check):
-    for p in programs:
-        debug_env.AddPostAction(p, p[0].abspath)
+# if int(check):
+#     for p in programs:
+#         debug_env.AddPostAction(p, p[0].abspath)
 
 Default(programs)

@@ -16,103 +16,19 @@
 #include <complex>
 #include <string>
 
-#include <boost/numeric/itl/iteration/basic_iteration.hpp>
+#include <boost/numeric/itl/iteration/cyclic_iteration.hpp>
 
 namespace itl {
 
   template <class Real>
-  class noisy_iteration : public basic_iteration<Real> {
-    typedef basic_iteration<Real> super;
-
-    void print_resid()
-    {
-      using std::cout; using std::endl;
-#     ifndef ITL_NO_RESIDUUM_LOGGING
-#       ifdef ITL_COMPLETE_RESIDUUM_LOGGING
-          cout << "iteration " << this->i << ": resid " << this->resid() << endl;
-#       else
-	  if (this->i % 100 == 0)
-	    std::cout << "iteration " << this->i << ": resid " << this->resid() << endl;
-#       endif
-#     endif
-    }
+  class noisy_iteration : public cyclic_iteration<Real> 
+  {
   public:
-  
     template <class Vector>
     noisy_iteration(const Vector& b, int max_iter_, 
 		    Real tol_, Real atol_ = Real(0))
-      : super(b, max_iter_, tol_, atol_) { }
-
-    template <class Vector>
-    bool finished(const Vector& r) {
-      Real normr_ = std::abs(two_norm(r)); 
-      bool ret;
-      if (this->converged(normr_))
-	ret = true;
-      else if (this->i < this->max_iter)
-	ret = false;
-      else {
-	this->error = 1;
-	ret = true;
-      }
-      print_resid();
-      return ret;
-    }
-
-  
-    bool finished(const Real& r) {
-      using std::cout;
-      using std::endl;
-
-      bool ret;
-      if (this->converged(r))
-	ret = true;
-      else if (this->i < this->max_iter)
-	ret = false;
-      else {
-	this->error = 1;
-	ret = true;
-      }
-      print_resid();
-      return ret;
-    }
-
-    template <typename T>
-    bool finished(const std::complex<T>& r) { //for the case of complex
-      using std::cout;
-      using std::endl;
-
-      bool ret;
-      if (this->converged(std::abs(r)))
-	ret = true;
-      else if (this->ii < this->imax_iter)
-	ret = false;
-      else {
-	this->error = 1;
-	ret = true;
-      }
-      print_resid();
-      return ret;
-    }
-  
-    operator int() { return error_code(); }
-
-    int error_code() {
-      using std::cout;
-      using std::endl;
-
-#     ifndef ITL_NO_RESIDUUM_LOGGING
-        cout << "finished! error code = " << this->error << endl;
-	cout << this->iterations() << " iterations" << endl;
-	cout << this->resid() << " is actual final residual. " << endl
-	     << this->resid()/this->normb() << " is actual relative tolerance achieved. "
-	     << endl;
-	cout << "Relative tol: " << this->rtol_ << "  Absolute tol: " << this->atol_ << endl;
-	cout << "Convergence:  " << pow(this->rtol_, 1.0 / double(this->iterations())) << endl;
-#     endif
-      return this->error;
-    }
-
+	: cyclic_iteration<Real>(b, max_iter_, tol_, atol_, 1)
+    {}
   };
 
 
