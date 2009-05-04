@@ -51,7 +51,6 @@ int test_main(int argc, char* argv[])
     bsp1=lu_f(bsp1);
 
     mtl::dense_vector<int> P;
-#if 0
     lu(bsp, P);
     std::cout << "LU(bsp) with pivoting \n" << bsp << "Permutation is " << P << "\n";
     std::cout << "LU_f(bsp) \n" << bsp1 << "\n";
@@ -59,8 +58,6 @@ int test_main(int argc, char* argv[])
     std::cout << "A is \n" << A << "\n";
     A=lu_f(A);
     std::cout << "LU_f(A) is \n" << A << "\n";
-#endif
-    std::cout << "B original\n" << B;
     lu(B, P);
     std::cout << "LU with pivoting is \n" << with_format(B, 5, 2) << "Permutation is " << P << "\n";
 
