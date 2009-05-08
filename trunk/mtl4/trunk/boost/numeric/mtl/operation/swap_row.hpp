@@ -59,6 +59,7 @@ namespace matrix {
     inline swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
 		    typename Collection<Matrix>::size_type j)
     {
+	if (i == j) return;
 	detail::swap_row(A, i, j, typename mtl::traits::category<Matrix>::type(), 
 			 mtl::traits::is_row_major<Matrix>());
     }
@@ -74,6 +75,7 @@ namespace vector {
 		    typename Collection<Vector>::size_type j)
     {
 	using std::swap;
+	if (i == j) return;
 	swap(v[i], v[j]);
     }
 
