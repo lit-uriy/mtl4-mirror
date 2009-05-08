@@ -58,15 +58,13 @@ void inline lu(Matrix& A, PermuationVector& P)
     for (size_type i= 0; i < nrows; i++)
         P[i]= i;
 
-    for(size_type i= 0; i < nrows; i++){
+    for (size_type i= 0; i < nrows; i++){
 
 	irange r(i+1, imax), ir(i, i+1); // Intervals [i+1, n-1], [i, i]
 	size_type rmax= max_abs_pos(A[irange(i, imax)][ir]).first + i;
-
-	if (i < rmax) {
-	    swap_row(A, i, rmax);
-	    swap_row(P, i, rmax);
-	}
+	swap_row(A, i, rmax); 
+	swap_row(P, i, rmax);
+	
 
 	MTL_THROW_IF(A[i][i] == zero(A[i][i]), runtime_error("Singular matrix (0 in pivot column)"));
         // Scale column i
