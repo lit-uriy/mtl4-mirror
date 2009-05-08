@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/matrix/upper.hpp>
 #include <boost/numeric/mtl/matrix/lower.hpp>
+#include <boost/numeric/mtl/matrix/permutation.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 #include <boost/numeric/mtl/operation/max_pos.hpp>
@@ -49,34 +50,32 @@ void inline lu(Matrix& A, PermuationVector& P)
     using math::zero;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
-    size_type col = num_cols(A), row = num_rows(A);
+    size_type ncols = num_cols(A), nrows = num_rows(A);
 
-    MTL_THROW_IF(col != row , matrix_not_square());
-    P.change_dim(row);
+    MTL_THROW_IF(ncols != nrows , matrix_not_square());
+    P.change_dim(nrows);
 
-    for (size_type i= 0; i < row; i++)
+    for (size_type i= 0; i < nrows; i++)
         P[i]= i;
 
-    for(size_type i= 0; i < row; i++){
+    for(size_type i= 0; i < nrows; i++){
 
 	irange r(i+1, imax), ir(i, i+1); // Intervals [i+1, n-1], [i, i]
-	size_type rmax, cmax;
-	value_type max = max_abs_pos(A[irange(i, imax)][ir], rmax, cmax);
-	rmax+= i;
+	size_type rmax= max_abs_pos(A[irange(i, imax)][ir]).first + i;
 
 	if (i < rmax) {
 	    swap_row(A, i, rmax);
 	    swap_row(P, i, rmax);
 	}
 
-	MTL_THROW_IF(zero(max), runtime_error("Singular matrix (0 in pivot column)"));
+	MTL_THROW_IF(A[i][i] == zero(A[i][i]), runtime_error("Singular matrix (0 in pivot column)"));
         // Scale column i
-	A[r][ir]/= max;
+	A[r][ir]/= A[i][i];
 	// Decrease bottom right block of matrix
 	A[r][r]-= A[r][ir] * A[ir][r];
 	// std::cout << "After exchanging " << i << " and " << rmax << ", A is \n" << A;
     }
-    //std::cout << "permuation \n" << P << "\n";
+    // std::cout << "permuation \n" << P << "\n";
 }
 
 
@@ -119,6 +118,38 @@ Vector inline lu_solve(const Matrix& A, const Vector& v)
     lu(LU);
     return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), v));
 }
+
+
+template <typename Matrix, typename Vector>
+Vector inline lu_solve_new(const Matrix& A, const Vector& v)
+{
+    typedef typename Collection<Matrix>::size_type    size_type;
+    size_type ncols = num_cols(A), nrows = num_rows(A);
+    MTL_THROW_IF(nrows != ncols , matrix_not_square());
+
+    dense_vector<std::size_t> P(nrows);
+    Matrix                    LU(A);
+
+    lu(LU, P);
+    
+    Vector                    b(nrows);
+    for (size_type i= 0; i < nrows; i++)
+        b[i] = v[P[i]];
+
+#if 0
+    Matrix AP(permutation(P) * A);
+    std::cout << "A is\n" << A << "A permuted is\n" << AP;
+
+    Matrix id(nrows, nrows); id= 1.0;
+    Matrix L(strict_lower(LU)); L+= id;
+    std::cout << "AP reconstructed\n" << L * upper(LU);
+#endif
+
+    // std::cout << "v is " << v << "b is " << b << "\n";
+    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), b));
+}
+
+
 
 
 }} // namespace mtl::matrix 
