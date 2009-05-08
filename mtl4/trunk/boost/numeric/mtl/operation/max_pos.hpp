@@ -13,6 +13,7 @@
 #define MTL_MATRIX_MAX_POS
 
 #include <cmath>
+#include <utility>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
@@ -24,16 +25,15 @@ namespace mtl {
 namespace matrix {
 
     template <typename Matrix>
-    typename Collection<Matrix>::value_type
-    inline max_pos(const Matrix& A, typename Collection<Matrix>::size_type& r,
-		   typename Collection<Matrix>::size_type c)
+    std::pair<typename Collection<Matrix>::size_type, typename Collection<Matrix>::size_type>
+    inline max_pos(const Matrix& A)
     {
 	namespace traits = mtl::traits;
 	typedef typename Collection<Matrix>::value_type   value_type;
 	typedef typename Collection<Matrix>::size_type    size_type;
 
 	value_type max(A[0][0]);
-	r= 0; c= 0;
+	size_type r= 0, c= 0;
 
 	typename traits::row<Matrix>::type             row(A); 
 	typename traits::col<Matrix>::type             col(A); 
@@ -50,7 +50,7 @@ namespace matrix {
 		}
 	}
 	
-	return max;
+	return std::make_pair(r, c);
 }
 
 } // namespace matrix
@@ -58,13 +58,13 @@ namespace matrix {
 namespace vector {
 
     template <typename Vector>
-    typename Collection<Vector>::value_type
-    inline max_pos(const Vector& v, typename Collection<Vector>::size_type& i)
+    typename Collection<Vector>::size_type
+    inline max_pos(const Vector& v)
     {
 	typedef typename Collection<Vector>::size_type    size_type;
 	typedef typename Collection<Vector>::value_type   value_type;
 
-	i= 0;
+	size_type i= 0;
 	
 	size_type max_col= size(v);
 	value_type max(v[0]);
@@ -74,7 +74,7 @@ namespace vector {
 		max = v[j];
 		i= j;
 	    }
-	return max;
+	return i;
     }
 
 } // namespace vector

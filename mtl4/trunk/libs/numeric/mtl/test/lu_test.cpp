@@ -72,6 +72,10 @@ void test(Matrix& A, const char* name)
 
     Vector v3( lu_solve(A, w) );
     if (abs(v[1] - v3[1]) > 0.1) throw "Error in solve";
+
+    Vector v4( lu_solve_new(A, w) );
+    cout << "v4 is " << v4 << "\n";
+    if (abs(v[1] - v4[1]) > 0.1) throw "Error in solve";
 }
 
 
