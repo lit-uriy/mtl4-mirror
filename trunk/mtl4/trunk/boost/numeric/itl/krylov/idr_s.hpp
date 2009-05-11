@@ -9,6 +9,9 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+// Peter Sonneveld and Martin B. van Gijzen, IDR(s): a family of simple and fast algorithms for solving large nonsymmetric linear systems. 
+// SIAM J. Sci. Comput. Vol. 31, No. 2, pp. 1035-1062 (2008). (copyright SIAM)
+
 #ifndef ITL_IDR_S_INCLUDE
 #define ITL_IDR_S_INCLUDE
 
