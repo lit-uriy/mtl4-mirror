@@ -173,6 +173,7 @@ namespace mtl {
 	template <typename Value, typename Parameters>
 	typename dense_vector<Value, Parameters>::size_type
 	inline num_cols(const dense_vector<Value, Parameters>& vector);
+
     }
 
     using vector::dense_vector;

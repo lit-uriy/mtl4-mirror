@@ -46,6 +46,7 @@ public:
     typedef crtp_vector_assign< self, value_type, size_type >          assign_base;
 
     typedef Vector                                   local_type;
+    typedef Vector                                   remote_type; // Do we need this (except for DistributedCollection?)
     typedef dense_vector<value_type>                 buffer_type;
 
     /// Constructor for vector with global size \p gsize
@@ -54,6 +55,13 @@ public:
     /// Constructor for vector with global size \p gsize and distribution \p dist
     explicit distributed(size_type gsize, const Distribution& dist) 
 	: gsize(gsize), dist(dist), local_vector(dist.num_local(gsize))  {}
+
+    /// Constructor for vector with global size \p gsize and distribution \p dist
+    /** Uses default distribution **/
+    explicit distributed(size_type gsize, value_type value) 
+      : gsize(gsize), dist(gsize), local_vector(dist.num_local(gsize), value) 
+    {}
+    
 
     self& operator=(self src)
     {
@@ -100,6 +108,11 @@ public:
     friend inline size_type num_rows(const self& v) { return mtl::traits::is_row_major<self>::value ? 1 : v.gsize; }
     friend inline size_type num_cols(const self& v) { return mtl::traits::is_row_major<self>::value ? v.gsize : 1; }
     friend inline size_type size(const self& v) { return v.gsize; }
+
+    // Also as member functions because it is used in MTL4 all over the place (needs refactoring some day)
+    size_type size() const { return gsize; }
+
+    void delay_assign() const {}
 
     // Enlarge send buffer so that at least n entries can be sent
     void enlarge_send_buffer(size_type n) const { send_buffer.change_dim(std::max(send_buffer.size(), n)); }

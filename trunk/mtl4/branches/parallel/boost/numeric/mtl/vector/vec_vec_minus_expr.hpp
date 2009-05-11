@@ -82,7 +82,6 @@ operator- (const vec_expr<E1>& e1, const vec_expr<E2>& e2)
     return vec_vec_minus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 
-
 } } // Namespace mtl::vector
 
 
