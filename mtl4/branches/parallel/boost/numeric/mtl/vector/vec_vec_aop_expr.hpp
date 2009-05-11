@@ -18,15 +18,19 @@
 
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
+#include <boost/numeric/mtl/operation/local.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl { namespace vector {
 
 // Generic assign operation expression template for vectors
 // Model of VectorExpression
-template <class E1, class E2, typename SFunctor>
+template <typename E1, typename E2, typename SFunctor>
 struct vec_vec_aop_expr 
-    : public vec_expr< vec_vec_aop_expr<E1, E2, SFunctor> >
+  : public vec_expr< vec_vec_aop_expr<E1, E2, SFunctor> >
 {
     typedef vec_expr< vec_vec_aop_expr<E1, E2, SFunctor> >  expr_base;
     typedef typename E1::value_type              value_type;
@@ -41,12 +45,14 @@ struct vec_vec_aop_expr
     typedef E2 second_argument_type ;
     
     vec_vec_aop_expr( first_argument_type& v1, second_argument_type const& v2 )
-	: expr_base( *this ), first( v1 ), second( v2 ), delayed_assign( false )
+      : expr_base( *this ), first( v1 ), second( v2 ), delayed_assign( false )
     {
 	second.delay_assign();
     }
 
-    ~vec_vec_aop_expr()
+  private:
+    // Non-distributed version
+    void destroy(tag::universe)
     {
 	if (!delayed_assign) {
 	    // If target is constructed by default it takes size of source
@@ -60,6 +66,18 @@ struct vec_vec_aop_expr
 		SFunctor::apply( first(i), second(i) );
 	}
     }
+
+    // Distributed version
+    void destroy(tag::distributed)
+    {
+	typedef typename DistributedCollection<E1>::local_type LocalE1;
+	typedef typename DistributedCollection<E2>::local_type LocalE2;
+	// Create and destroy local expression so that local operation is performed here
+	vec_vec_aop_expr<LocalE1, LocalE2, SFunctor>(local(first), local(second));
+    }
+
+  public:
+    ~vec_vec_aop_expr() { destroy(typename mtl::traits::category<E1>::type()); }
     
     void delay_assign() const { delayed_assign= true; }
 

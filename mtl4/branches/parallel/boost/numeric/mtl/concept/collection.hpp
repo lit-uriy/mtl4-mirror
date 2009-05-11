@@ -946,6 +946,24 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map OrientedCollection<vector::distributed<Coll> >
+    {
+	typedef typename vector::distributed<Coll>::value_type        value_type;
+	typedef typename vector::distributed<Coll>::const_reference   const_reference;
+	typedef typename vector::distributed<Coll>::size_type         size_type;
+
+	typedef typename OrientedCollection<Coll>::orientation        orientation;
+    };
+#else
+    template <typename Coll>
+    struct OrientedCollection<vector::distributed<Coll> >
+	: public Collection<vector::distributed<Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation        orientation;
+    };
+#endif
 
 #ifdef __GXX_CONCEPTS__
     template <typename Coll>
@@ -986,6 +1004,90 @@ namespace mtl {
 #endif
 
 #ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map OrientedCollection<matrix::distributed<Coll> >
+    {
+	typedef typename matrix::distributed<Coll>::value_type        value_type;
+	typedef typename matrix::distributed<Coll>::const_reference   const_reference;
+	typedef typename matrix::distributed<Coll>::size_type         size_type;
+
+	typedef typename OrientedCollection<Coll>::orientation        orientation;
+    };
+#else
+    template <typename Coll>
+    struct OrientedCollection<matrix::distributed<Coll> >
+	: public Collection<matrix::distributed<Coll> >
+    {
+	typedef typename OrientedCollection<Coll>::orientation        orientation;
+    };
+#endif
+
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Vector, typename Distribution>
+    concept_map DistributedCollection< vector::distributed<Vector, Distribution> >
+    {
+	typedef vector::distributed<Vector, Distribution> ref_type;
+
+	typedef typename Collection<Vector>::value_type      value_type;
+	typedef typename Collection<Vector>::size_type       size_type;
+	typedef typename Collection<Vector>::const_reference const_reference;
+
+	typedef typename ref_type::local_type      local_type;
+	//typedef typename ref_type::remote_type     remote_type;
+    };
+#else
+    template <typename Vector, typename Distribution>
+    struct DistributedCollection< vector::distributed<Vector, Distribution> >
+	: public Collection< vector::distributed<Vector, Distribution> >
+    {
+	typedef vector::distributed<Vector, Distribution> ref_type;
+
+	typedef typename ref_type::local_type      local_type;
+	//typedef typename ref_type::remote_type     remote_type;
+    };
+#endif
+
+
+// Concept versions will be added later
+#ifdef __GXX_CONCEPTS__
+#else
+    template <typename E1, typename E2, typename SFunctor> 
+    struct DistributedCollection< vector::vec_vec_aop_expr<E1, E2, SFunctor> >
+    {
+	typedef typename DistributedCollection<E1>::local_type LocalE1;
+	typedef typename DistributedCollection<E2>::local_type LocalE2;
+	typedef typename vector::vec_vec_aop_expr<LocalE1, LocalE2, SFunctor> local_type;
+    };
+
+    template <typename E1, typename E2, typename SFunctor> 
+    struct DistributedCollection< vector::vec_vec_op_expr<E1, E2, SFunctor> >
+    {
+	typedef typename DistributedCollection<E1>::local_type LocalE1;
+	typedef typename DistributedCollection<E2>::local_type LocalE2;
+	typedef typename vector::vec_vec_op_expr<LocalE1, LocalE2, SFunctor> local_type;
+    };
+
+    template <typename E1, typename E2>
+    struct DistributedCollection< vector::vec_vec_plus_expr<E1, E2> >
+    {
+	typedef typename DistributedCollection<E1>::local_type LocalE1;
+	typedef typename DistributedCollection<E2>::local_type LocalE2;
+	typedef typename vector::vec_vec_plus_expr<LocalE1, LocalE2> local_type;
+    };
+
+    template <typename E1, typename E2>
+    struct DistributedCollection< vector::vec_vec_minus_expr<E1, E2> >
+    {
+	typedef typename DistributedCollection<E1>::local_type LocalE1;
+	typedef typename DistributedCollection<E2>::local_type LocalE2;
+	typedef typename vector::vec_vec_minus_expr<LocalE1, LocalE2> local_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
     template <typename Matrix, typename Distribution, typename DistributionFrom>
     concept_map DistributedCollection< matrix::distributed<Matrix, Distribution, DistributionFrom> >
     {
@@ -996,7 +1098,7 @@ namespace mtl {
 	typedef typename Collection<Matrix>::const_reference const_reference;
 
 	typedef typename ref_type::local_type      local_type;
-	typedef typename ref_type::remote_type     remote_type;
+	typedef typename ref_type::remote_type     remote_type; // needed?
     };
 #else
     template <typename Matrix, typename Distribution, typename DistributionFrom>
@@ -1006,7 +1108,7 @@ namespace mtl {
 	typedef matrix::distributed<Matrix, Distribution, DistributionFrom> ref_type;
 
 	typedef typename ref_type::local_type      local_type;
-	typedef typename ref_type::remote_type     remote_type;
+	typedef typename ref_type::remote_type     remote_type; // needed?
     };
 #endif
 

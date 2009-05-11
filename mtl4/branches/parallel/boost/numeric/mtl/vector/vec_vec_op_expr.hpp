@@ -77,8 +77,6 @@ public:
     second_argument_type const& second ;
 } ; // vec_vec_op_expr
 
-    
-    
 } } // Namespace mtl::vector
 
 

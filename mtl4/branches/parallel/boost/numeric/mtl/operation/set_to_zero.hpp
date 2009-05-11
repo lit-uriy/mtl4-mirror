@@ -115,7 +115,7 @@ namespace matrix {
     {
 	using mtl::traits::category;
 	typedef typename Collection<Coll>::value_type value_type;
-	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename category<value_type>::type());
+	mtl::impl::set_to_zero(collection, typename category<Coll>::type(), typename category<value_type>::type());
     }
     
 }
@@ -128,7 +128,7 @@ namespace vector {
     {
 	using mtl::traits::category;
 	typedef typename Collection<Coll>::value_type value_type;
-	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename category<value_type>::type());
+	mtl::impl::set_to_zero(collection, typename category<Coll>::type(), typename category<value_type>::type());
     }
 
 }
