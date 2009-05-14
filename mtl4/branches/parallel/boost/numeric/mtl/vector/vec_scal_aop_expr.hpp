@@ -14,6 +14,10 @@
 
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
+#include <boost/numeric/mtl/operation/local.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 
 namespace mtl { namespace vector {
@@ -40,12 +44,24 @@ struct vec_scal_aop_expr
 	  : first( v1 ), second( v2 ), delayed_assign( false )
     {}
 
-    ~vec_scal_aop_expr()
+  private:
+    // Non-distributed version
+    void destroy(tag::universe)
     {
-	if (!delayed_assign)
-	    for (size_type i= 0; i < first.size(); ++i)
-		SFunctor::apply( first(i), second );
+	for (size_type i= 0; i < first.size(); ++i)
+	    SFunctor::apply( first(i), second );
     }
+
+    // Distributed version
+    void destroy(tag::distributed)
+    {
+	typedef typename DistributedCollection<E1>::local_type LocalE1;
+	// Create and destroy local expression so that local operation is performed here
+	vec_scal_aop_expr<LocalE1, E2, SFunctor>(local(first), second);
+    }
+
+  public:
+    ~vec_scal_aop_expr() { if (!delayed_assign) destroy(typename mtl::traits::category<E1>::type()); }
     
     void delay_assign() const { delayed_assign= true; }
 

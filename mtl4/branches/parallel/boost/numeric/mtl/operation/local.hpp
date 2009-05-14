@@ -44,7 +44,7 @@ namespace vector {
     typename DistributedCollection< vec_vec_minus_expr<E1, E2> >::local_type
     inline local(const vec_vec_minus_expr<E1, E2>& expr)
     {
-        return typename DistributedCollection< vec_vec_minus_expr<E1, E2> >::local_type(local(expr.first), local(expr.second));
+        return typename DistributedCollection< vec_vec_minus_expr<E1, E2> >::local_type(local(expr.first.value), local(expr.second.value));
     }
 
     /// Return local part of binary expression
@@ -53,7 +53,8 @@ namespace vector {
     typename DistributedCollection< vec_vec_plus_expr<E1, E2> >::local_type
     inline local(const vec_vec_plus_expr<E1, E2>& expr)
     {
-        return typename DistributedCollection< vec_vec_plus_expr<E1, E2> >::local_type(local(expr.first), local(expr.second));
+	std::cout << "In local(vec_vec_plus_expr)" << std::endl;
+        return typename DistributedCollection< vec_vec_plus_expr<E1, E2> >::local_type(local(expr.first.value), local(expr.second.value));
     }
          
 } // namespace vector

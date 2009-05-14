@@ -52,7 +52,8 @@ struct vec_vec_plus_expr
 
     size_type size() const
     {
-	// std::cerr << "vec_vec_plus_expr.size() " << first.value.size() << "  " << second.value.size() << "\n";
+	std::cerr << "vec_vec_plus_expr.size() " << first.value.size() << "  " << second.value.size() << std::endl;
+	//std::cerr << "vec_vec_plus_expr.size() " << first.value << "  " << second.value << std::endl;
 	assert( first.value.size() == second.value.size() ) ;
 	return first.value.size() ;
     }
