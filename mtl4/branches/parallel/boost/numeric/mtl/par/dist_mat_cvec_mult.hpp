@@ -205,7 +205,25 @@ dist_mat_cvec_mult_wait(const Matrix& A, VectorIn& v, VectorOut& w, Assign as, d
     return dist_mat_cvec_mult_wait(A, v, w, as, h, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
 }
 
+#if 0 // Explicit communication scheme per call
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign
+	  typename Blocking, typename Coll, typename Buffering>
+void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as, Blocking, Coll, Buffering)
+{
+    // All three arguments must be distributed
+    BOOST_STATIC_ASSERT((mtl::traits::is_distributed<Matrix>::value));
+    BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorIn>::value));
+    BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorOut>::value));
 
+    dist_mat_cvec_mult_handle h(dist_mat_cvec_mult_start(A, v, w, as));
+
+    mat_cvec_mult(local(A), local(v), local(w), as, Blocking, Coll, Buffering);
+
+    dist_mat_cvec_mult_wait(A, v, w, as, h, Blocking, Coll, Buffering);
+}
+#endif 
+
+  // Use Communication scheme from whole build
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as)
 {
@@ -217,7 +235,13 @@ void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w,
     dist_mat_cvec_mult_handle h(dist_mat_cvec_mult_start(A, v, w, as));
     mat_cvec_mult(local(A), local(v), local(w), as);
     dist_mat_cvec_mult_wait(A, v, w, as, h);
+
+#if 0
+    dist_mat_cvec_mult(A, v, w, as, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
+#endif
 }
+
+
 
 }} // namespace mtl::matrix
 
