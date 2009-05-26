@@ -51,9 +51,21 @@ struct compute_summand< mat_cvec_times_expr<Matrix, CVector> >
     CVector value;
 };
 	
-
-
-
+template <typename Expr>
+struct copy_summand
+{
+    typedef Expr type;
+    copy_summand(const Expr& expr) : value(expr) {}
+    Expr value;
+};
+    
+template <class E1, class E2, typename SFunctor>
+struct compute_summand< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
+{
+    typedef vector::vec_vec_pmop_expr<E1, E2, SFunctor> type;
+    compute_summand(const type& expr) : value(expr) {}
+    type value;
+};
 
 }} // namespace mtl::operation
 
