@@ -45,7 +45,10 @@ struct vec_vec_aop_expr
     typedef E2 second_argument_type ;
     
     vec_vec_aop_expr( first_argument_type& v1, second_argument_type const& v2 )
-      : expr_base( *this ), first( v1 ), second( v2 ), delayed_assign( false )
+      : expr_base(),
+	first( v1 ), 
+	second( v2 ), 
+	delayed_assign( false )
     {
 	second.delay_assign();
     }
@@ -58,7 +61,7 @@ struct vec_vec_aop_expr
 	if (first.size() == 0) first.change_dim(second.size());
 
 	// If sizes are different for any other reason, it's an error
-	std::cout << "~vec_vec_aop_expr() " << first.size() << "  " << second.size() << std::endl;
+	// std::cout << "~vec_vec_aop_expr() " << first.size() << "  " << second.size() << std::endl;
 	MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
 	
 	for (size_type i= 0; i < first.size(); ++i)
@@ -73,9 +76,11 @@ struct vec_vec_aop_expr
 	typedef typename DistributedCollection<E1>::local_type LocalE1;
 	typedef typename DistributedCollection<E2>::local_type LocalE2;
 	// Create and destroy local expression so that local operation is performed here
-	std::cout << "local(first) is " << local(first) << ", local(second).size() is " << local(second).size() << std::endl;
+	// std::cout << "local(first) is " << local(first) << ", local(second).size() is " << local(second).size() << std::endl;
 
-	vec_vec_aop_expr<LocalE1, LocalE2, SFunctor>(local(first), local(second));
+	LocalE2 local_second(local(second));
+	vec_vec_aop_expr<LocalE1, LocalE2, SFunctor> local_tmp(local(first), local_second);
+	int dummy= 4;
     }
 
   public:

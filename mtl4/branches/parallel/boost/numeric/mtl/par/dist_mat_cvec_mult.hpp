@@ -14,6 +14,7 @@
 
 #ifdef MTL_HAS_MPI
 
+#include <boost/static_assert.hpp>
 #include <boost/mpi/status.hpp>
 #include <boost/mpi/communicator.hpp>
 
