@@ -33,16 +33,18 @@ void test(Vector& v, const char* name)
 	local(v)[i]= value_type(double(j+1) * pow(-1.0, j)); 
 
     mtl::par::single_ostream sout;
-    sout << name << "\nv is: " << v << '\n';
+    // sout << name << "\nv is: " << v << '\n';
 
-    u= v; 
+#if 0
+    // u= v; 
     sout << "u is: " << u << '\n';
 
     u= value_type(0.0);
-    sout << "u is: " << u << '\n';
+    // sout << "u is: " << u << '\n';
 
     u= v + w;
-    sout << "u is: " << u << '\n';
+    // sout << "u is: " << u << '\n';
+#endif 
 
     u= v + w + x;
     sout << "u= v + w + x is " << u << "\n";

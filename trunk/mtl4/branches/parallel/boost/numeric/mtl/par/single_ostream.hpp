@@ -22,7 +22,7 @@
 
 namespace mtl { namespace par {
 
-/// ostream that writes only on first processor; by default on std::cout w.r.t. MPI_WORLD
+/// ostream that writes only on first processor; by default on std::cout using MPI_WORLD
 struct single_ostream
 {
     /// Constructor for out or std::cout and MPI_WORLD
