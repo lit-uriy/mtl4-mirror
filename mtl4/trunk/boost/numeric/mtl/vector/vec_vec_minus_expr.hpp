@@ -17,7 +17,7 @@
 
 #include <boost/static_assert.hpp>
 
-#include <boost/numeric/mtl/vector/vec_vec_op_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_pmop_expr.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 
@@ -26,49 +26,11 @@ namespace mtl { namespace vector {
 // Model of VectorExpression
 template <class E1, class E2>
 struct vec_vec_minus_expr 
-    : vec_expr< vec_vec_minus_expr<E1, E2> >
+  : vec_vec_pmop_expr< E1, E2, mtl::sfunctor::minus<typename E1::value_type, typename E2::value_type> >
 {
-    typedef typename operation::compute_summand<E1>::type    first_argument_type;
-    typedef typename operation::compute_summand<E2>::type    second_argument_type;
+    typedef vec_vec_pmop_expr< E1, E2, mtl::sfunctor::minus<typename E1::value_type, typename E2::value_type> > base;
 
-	typedef typename mtl::sfunctor::minus<typename first_argument_type::value_type, 
-				     typename second_argument_type::value_type>::result_type 
-	const_dereference_type;
-    typedef const_dereference_type                           value_type;
-
-    typedef typename first_argument_type::size_type          size_type;
-
-    typedef vec_vec_op_expr< first_argument_type, second_argument_type,
-		mtl::sfunctor::minus<typename E1::value_type, typename E2::value_type> > base;
-
-    vec_vec_minus_expr( E1 const& v1, E2 const& v2 )
-	: first(v1), second(v2)
-    {
-	first.value.delay_assign(); second.value.delay_assign();
-    }
-
-    void delay_assign() const {}
-
-    size_type size() const
-    {
-	// std::cerr << "vec_vec_minus_expr.size() " << first.value.size() << "  " << second.value.size() << "\n";
-	assert( first.value.size() == second.value.size() ) ;
-	return first.value.size() ;
-    }
-
-    const_dereference_type operator() (size_type i) const
-    {
-        return first.value(i) - second.value(i);
-    }
-
-    const_dereference_type operator[] (size_type i) const
-    {
-        return first.value[i] - second.value[i];
-    }
-
-  private:
-    operation::compute_summand<E1> first;
-    operation::compute_summand<E2> second;
+    vec_vec_minus_expr( E1 const& v1, E2 const& v2 ) : base(v1, v2) {}
 };
 
     
@@ -76,17 +38,13 @@ template <typename E1, typename E2>
 inline vec_vec_minus_expr<E1, E2>
 operator- (const vec_expr<E1>& e1, const vec_expr<E2>& e2)
 {
-    // do not minus row and column vectors (or inconsistent value types)
+    // do not subtract row and column vectors (or inconsistent value types)
     BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
 			                typename ashape::ashape<E1>::type>::value));
     return vec_vec_minus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 
-
 } } // Namespace mtl::vector
-
-
-
 
 #endif
 

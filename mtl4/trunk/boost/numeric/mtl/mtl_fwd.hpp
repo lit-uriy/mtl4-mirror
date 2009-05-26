@@ -124,6 +124,7 @@ namespace mtl {
 	template <typename Vector, typename RScaling> struct rscaled_view; // added by Hui Li
 	template <typename Vector, typename Divisor> struct divide_by_view; // added by Hui Li
 	template <class E1, class E2, typename SFunctor> struct vec_vec_op_expr;
+	template <class E1, class E2, typename SFunctor> struct vec_vec_pmop_expr;
 	template <class E1, class E2> struct vec_vec_plus_expr;
 	template <class E1, class E2> struct vec_vec_minus_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_vec_aop_expr;
