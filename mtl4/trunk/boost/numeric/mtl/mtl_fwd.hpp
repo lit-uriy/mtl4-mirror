@@ -117,6 +117,7 @@ namespace mtl {
 
     /// Namespace for vectors and views and %operations exclusively on vectors
     namespace vector {
+	template <typename Vector> struct vec_expr;
 	template <typename Value, typename Parameters> class dense_vector;
 	template <typename Functor, typename Vector> struct map_view;
 	template <typename Vector>  struct conj_view;
@@ -125,8 +126,6 @@ namespace mtl {
 	template <typename Vector, typename Divisor> struct divide_by_view; // added by Hui Li
 	template <class E1, class E2, typename SFunctor> struct vec_vec_op_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_vec_pmop_expr;
-	template <class E1, class E2> struct vec_vec_plus_expr;
-	template <class E1, class E2> struct vec_vec_minus_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_vec_aop_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_scal_aop_expr;
 	template <class E1, class E2> struct vec_vec_plus_asgn_expr;
@@ -161,13 +160,6 @@ namespace mtl {
     using vector::size;
     using vector::num_rows;
     using vector::num_cols;
-
-
-    namespace vector {
-	template <typename Vector> struct vec_expr;
-	template <typename E1, typename E2> struct vec_vec_add_expr;
-	template <typename E1, typename E2> struct vec_vec_minus_expr;
-    }
 
     template <typename E1, typename E2> struct mat_cvec_times_expr;
 

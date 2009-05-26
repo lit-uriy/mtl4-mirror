@@ -71,19 +71,11 @@ struct category< dense_vector<T, Parameters> >
 
 
 
-template <class E1, class E2>
-struct category< vector::vec_vec_add_expr<E1,E2> >
+template <class E1, class E2, class SFunctor>
+struct category< vector::vec_vec_pmop_expr<E1,E2, SFunctor> >
 {
     typedef category<E1> type;
 };
-
-
-template <class E1, class E2>
-struct category< vector::vec_vec_minus_expr<E1,E2> >
-{
-    typedef category<E1> type;
-};
-
 
 template <typename Functor, typename Vector> 
 struct category<vector::map_view<Functor, Vector> >
