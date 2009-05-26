@@ -69,22 +69,6 @@ struct ashape< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
     typedef typename ashape<E1>::type type;
 };
 
-template <typename E1, typename E2>
-struct ashape< vector::vec_vec_plus_expr<E1, E2> >
-{
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
-			                typename ashape<E2>::type>::value));
-    typedef typename ashape<E1>::type type;
-};
-
-template <typename E1, typename E2>
-struct ashape< vector::vec_vec_minus_expr<E1, E2> >
-{
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
-			                typename ashape<E2>::type>::value));
-    typedef typename ashape<E1>::type type;
-};
-
 template <typename E1, typename E2, typename SFunctor>
 struct ashape< vector::vec_vec_op_expr<E1, E2, SFunctor> >
 {
