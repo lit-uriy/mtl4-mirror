@@ -61,6 +61,14 @@ struct ashape<dense_vector<Value, Parameters> >
 };
 
    
+template <typename E1, typename E2, typename SFunctor>
+struct ashape< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
 template <typename E1, typename E2>
 struct ashape< vector::vec_vec_plus_expr<E1, E2> >
 {
