@@ -375,7 +375,13 @@ struct compose_binary
 /// Templatized example of composition, computes l_2 norm in 2D, i.e. sqrt(abs(x*x + y*y))
 template <typename T>
 struct l_2_2D
-  : public compose_binary<sqrt<typename abs<T>::result_type>, compose_binary<abs<T>, compose_both<plus<T, T>, square<T>, square<T> > > >
+  : public compose_binary<sqrt<typename abs<T>::result_type>, 
+			  compose_binary<abs<T>, 
+					 compose_both<plus<T, T>, 
+						      square<T>, 
+						      square<T>  > 
+                                        > 
+                         >
 {};
 
 }} // namespace mtl::sfunctor
