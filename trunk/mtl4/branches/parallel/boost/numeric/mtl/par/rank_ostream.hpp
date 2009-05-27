@@ -12,9 +12,12 @@
 #ifndef MTL_PAR_RANK_OSTREAM_INCLUDE
 #define MTL_PAR_RANK_OSTREAM_INCLUDE
 
+#ifdef MTL_HAS_MPI
+
 #include <boost/static_assert.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/mpl/bool.hpp>
+#include <boost/mpi.hpp>
 
 #include <boost/numeric/mtl/operation/parallel_utilities.hpp>
 
@@ -118,5 +121,7 @@ typedef multiple_ostream<true, false, false> nosync_rank_ostream;
 
 
 }} // namespace mtl::par
+
+#endif // MTL_HAS_MPI
 
 #endif // MTL_PAR_RANK_OSTREAM_INCLUDE

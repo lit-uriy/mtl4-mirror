@@ -380,10 +380,10 @@ class compressed2D
 	matrix_copy(src, *this);
     }
 
-    /// Copy from other times
+    /// Copy from other types
     template <typename MatrixSrc>
     explicit compressed2D (const MatrixSrc& src) 
-	  : super(), inserting(false)
+      : super(), inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
 	*this= src;

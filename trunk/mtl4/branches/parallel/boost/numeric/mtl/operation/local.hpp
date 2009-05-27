@@ -33,33 +33,14 @@ namespace vector {
     /// Return local part of binary expression
     /*  Should be only defined for distributed expressions (like enable_if) **/
     template <typename E1, typename E2, typename SFunctor> 
-    typename DistributedCollection< vec_vec_op_expr<E1, E2, SFunctor> >::local_type
-    inline local(const vec_vec_op_expr<E1, E2, SFunctor>& expr)
-    {
-        return typename DistributedCollection< vec_vec_op_expr<E1, E2, SFunctor> >::local_type(local(expr.first), local(expr.second));
-    }
-        
-    /// Return local part of binary expression
-    /*  Should be only defined for distributed expressions (like enable_if) **/
-    template <typename E1, typename E2> 
-    typename DistributedCollection< vec_vec_minus_expr<E1, E2> >::local_type
-    inline local(const vec_vec_minus_expr<E1, E2>& expr)
-    {
-        return typename DistributedCollection< vec_vec_minus_expr<E1, E2> >::local_type(local(expr.first.value), local(expr.second.value));
-    }
-
-    /// Return local part of binary expression
-    /*  Should be only defined for distributed expressions (like enable_if) **/
-    template <typename E1, typename E2> 
-    typename DistributedCollection< vec_vec_plus_expr<E1, E2> >::local_type
-    inline local(const vec_vec_plus_expr<E1, E2>& expr)
+    typename DistributedCollection< vec_vec_pmop_expr<E1, E2, SFunctor> >::local_type
+    inline local(const vec_vec_pmop_expr<E1, E2, SFunctor>& expr)
     {
 	//mtl::par::rank_ostream rout;
 	//rout << "In local(vec_vec_plus_expr): local(second) is " << local(expr.second.value) << "\n";
-        // return typename DistributedCollection< vec_vec_plus_expr<E1, E2> >::local_type(local(expr.first.value), local(expr.second.value));
-	return local(expr.first.value) + local(expr.second.value);
+        return typename DistributedCollection< vec_vec_pmop_expr<E1, E2, SFunctor> >::local_type(local(expr.first.value), local(expr.second.value));
     }
-         
+
 } // namespace vector
 
 

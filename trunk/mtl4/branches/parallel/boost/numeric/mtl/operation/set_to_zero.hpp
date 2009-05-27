@@ -87,7 +87,7 @@ namespace mtl {
 	    collection.make_empty();
 	}
 	
-	// Is approbriate for all sparse matrices and vectors (including collections as value_type)
+	// Special treatment for multi_vector
 	template <typename Coll>
 	void set_to_zero(Coll& collection, tag::multi_vector, tag::universe)
 	{

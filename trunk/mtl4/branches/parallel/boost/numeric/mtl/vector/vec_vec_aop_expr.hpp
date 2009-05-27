@@ -45,10 +45,7 @@ struct vec_vec_aop_expr
     typedef E2 second_argument_type ;
     
     vec_vec_aop_expr( first_argument_type& v1, second_argument_type const& v2 )
-      : expr_base(),
-	first( v1 ), 
-	second( v2 ), 
-	delayed_assign( false )
+      : first( v1 ), second( v2 ), delayed_assign( false )
     {
 	second.delay_assign();
     }

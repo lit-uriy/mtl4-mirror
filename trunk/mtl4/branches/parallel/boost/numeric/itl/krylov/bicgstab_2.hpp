@@ -60,7 +60,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	omega_2= dot(r, t); tau-= nu * nu / mu; omega_2= (omega_2 - nu * omega_1 / mu) / tau;
 	omega_1= (omega_1 - nu * omega_2) / mu;
 	x_i= x + omega_1 * r + omega_2 * s + alpha * u;
-	r_i= r - omega_1 * s + omega_2 * t;
+	r_i= r - omega_1 * s - omega_2 * t;
 	u-= omega_1 * v + omega_2 * w;
 
 	++iter;

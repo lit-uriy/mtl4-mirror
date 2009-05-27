@@ -141,14 +141,14 @@ namespace mtl {
 		  bool OnStack= false, bool RValue= false> struct parameters; 
 
 	template <typename Value, typename Parameters = parameters<> > class dense_vector;
+	template <typename Vector> struct vec_expr;
 	template <typename Functor, typename Vector> struct map_view;
 	template <typename Vector>  struct conj_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
 	template <typename Vector, typename RScaling> struct rscaled_view; // added by Hui Li
 	template <typename Vector, typename Divisor> struct divide_by_view; // added by Hui Li
 	template <class E1, class E2, typename SFunctor> struct vec_vec_op_expr;
-	template <class E1, class E2> struct vec_vec_plus_expr;
-	template <class E1, class E2> struct vec_vec_minus_expr;
+	template <class E1, class E2, typename SFunctor> struct vec_vec_pmop_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_vec_aop_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_scal_aop_expr;
 	template <class E1, class E2> struct vec_vec_plus_asgn_expr;
