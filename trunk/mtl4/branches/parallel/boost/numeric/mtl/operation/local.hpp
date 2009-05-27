@@ -30,7 +30,7 @@ namespace vector {
 	return typename DistributedCollection< vec_vec_aop_expr<E1, E2, SFunctor> >::local_type(local(expr.first), local(expr.second));
     }
 
-    /// Return local part of binary expression
+    /// Return local part of binary plus/minus expression
     /*  Should be only defined for distributed expressions (like enable_if) **/
     template <typename E1, typename E2, typename SFunctor> 
     typename DistributedCollection< vec_vec_pmop_expr<E1, E2, SFunctor> >::local_type
@@ -39,6 +39,14 @@ namespace vector {
 	//mtl::par::rank_ostream rout;
 	//rout << "In local(vec_vec_plus_expr): local(second) is " << local(expr.second.value) << "\n";
         return typename DistributedCollection< vec_vec_pmop_expr<E1, E2, SFunctor> >::local_type(local(expr.first.value), local(expr.second.value));
+    }
+
+    /// Return local part of mapped view
+    template <typename Functor, typename Coll>
+    typename DistributedCollection<map_view<Functor, Coll> >::local_type
+    inline local(const map_view<Functor, Coll>& expr)
+    {
+	return typename DistributedCollection<map_view<Functor, Coll> >::local_type(expr.functor, local(expr.ref));
     }
 
 } // namespace vector
