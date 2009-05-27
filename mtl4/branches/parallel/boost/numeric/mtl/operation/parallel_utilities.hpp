@@ -15,6 +15,8 @@
 #ifdef MTL_HAS_MPI
 
 #include <boost/mpi/communicator.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/par/distribution.hpp>
 
 namespace boost { namespace mpi {
 

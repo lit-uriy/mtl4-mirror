@@ -35,7 +35,6 @@ void test(Vector& v, const char* name)
     mtl::par::single_ostream sout;
     // sout << name << "\nv is: " << v << '\n';
 
-#if 0
     // u= v; 
     sout << "u is: " << u << '\n';
 
@@ -44,7 +43,6 @@ void test(Vector& v, const char* name)
 
     u= v + w;
     // sout << "u is: " << u << '\n';
-#endif 
 
     u= v + w + x;
     sout << "u= v + w + x is " << u << "\n";
@@ -52,18 +50,16 @@ void test(Vector& v, const char* name)
 	if (std::abs(value_type(double(j+1) * pow(-1.0, j) + 5.0) - u[j]) > 0.001)
 	    throw "wrong value in addition";
 
-#if 0
-    u-= /* 3.0 * */ w;
+    u-= 3.0 * w;
     sout << "u-= 3 * w is " << u << "\n";
     for (int i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
 	if (std::abs(value_type(double(j+1) * pow(-1.0, j) - 1.0) - u[j]) > 0.001)
 	    throw "wrong value in subtraction";
 
-    u+= /* dot(v, w) * */ w + /* 4.0 * */ v + /* 2.0 * */ w;
+    u+= dot(v, w) * w + 4.0 * v + 2.0 * w;
     sout << "u+= dot(v, w) * w + 4.0 * v + 2 * w is " << u << "\n";
 
     sout << "i * v is " << complex_type(0, 1) * v << "\n";
-#endif
 }
 
 
@@ -81,11 +77,8 @@ int test_main(int argc, char* argv[])
 
 
     test(u, "test float");
-#if 0
     test(xc, "test complex<double>");
     test(x, "test double");
-
-#endif
 
     return 0;
 }

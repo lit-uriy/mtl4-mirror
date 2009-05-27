@@ -1058,7 +1058,7 @@ namespace mtl {
     {
 	typedef typename DistributedCollection<E1>::local_type LocalE1;
 	typedef typename DistributedCollection<E2>::local_type LocalE2;
-	typedef typename vector::vec_vec_aop_expr<LocalE1, LocalE2, SFunctor> local_type;
+	typedef vector::vec_vec_aop_expr<LocalE1, LocalE2, SFunctor> local_type;
     };
 
     template <typename E1, typename E2, typename SFunctor> 
@@ -1066,8 +1066,45 @@ namespace mtl {
     {
 	typedef typename DistributedCollection<E1>::local_type LocalE1;
 	typedef typename DistributedCollection<E2>::local_type LocalE2;
-	typedef typename vector::vec_vec_pmop_expr<LocalE1, LocalE2, SFunctor> local_type;
+	typedef vector::vec_vec_pmop_expr<LocalE1, LocalE2, SFunctor> local_type;
     };
+
+#if 0
+    template <typename Scaling, typename Coll>
+    struct DistributedCollection<vector::scaled_view<Scaling, Coll> >
+    {
+	typedef typename DistributedCollection<Coll>::local_type LocalColl;
+	typedef vector::scaled_view<Scaling, LocalColl>               local_type;
+    };
+#endif
+
+    template <typename Functor, typename Coll>
+    struct DistributedCollection<vector::map_view<Functor, Coll> >
+    {
+	typedef typename DistributedCollection<Coll>::local_type      LocalColl;
+	typedef vector::map_view<Functor, LocalColl>                  local_type;
+    };
+
+    template <typename Scaling, typename Vector>
+    struct DistributedCollection<vector::scaled_view<Scaling, Vector> >
+      : DistributedCollection<vector::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, Vector> >
+    {};
+
+    template <typename Vector, typename RScaling>
+    struct DistributedCollection<vector::rscaled_view<Vector, RScaling> >
+      : DistributedCollection<vector::map_view<tfunctor::rscale<typename Vector::value_type, RScaling>, Vector> >
+    {};
+
+    template <typename Vector, typename Divisor>
+    struct DistributedCollection<vector::divide_by_view<Vector, Divisor> >
+      : DistributedCollection<vector::map_view<tfunctor::divide_by<typename Vector::value_type, Divisor>, Vector> >
+    {};
+
+    template <typename Vector>
+    struct DistributedCollection<vector::conj_view<Vector> >
+      : DistributedCollection<vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
+    {};
+
 #endif
 
 

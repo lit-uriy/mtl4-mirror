@@ -15,11 +15,20 @@
 #include <iostream>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/operation/local.hpp>
+#include <boost/numeric/mtl/operation/communicator.hpp>
+#include <boost/numeric/mtl/operation/parallel_utilities.hpp>
+
+#ifdef MTL_HAS_MPI
+#  include <boost/mpi.hpp>
+#endif
 
 namespace mtl { namespace vector {
 
 template <typename Vector>
-std::ostream& print_vector(Vector const& vector, std::ostream& out= std::cout, int width= 0, int precision= 0)
+std::ostream& print_vector(Vector const& vector, std::ostream& out, int width, int precision, tag::universe)
 {
     out << '{' << size(vector) 
 	<< (traits::is_row_major< typename OrientedCollection<Vector>::orientation >::value ? "R" : "C") 
@@ -35,6 +44,29 @@ std::ostream& print_vector(Vector const& vector, std::ostream& out= std::cout, i
     }
     return out << "]";
 }
+
+#ifdef MTL_HAS_MPI
+template <typename Vector>
+inline std::ostream& print_vector(Vector const& vector, std::ostream& out, int width, int precision, tag::distributed)
+{
+    const boost::mpi::communicator& comm(communicator(vector));
+    wait_for_previous(comm);
+    if (comm.rank()) out << "||";
+    print_vector(local(vector), out, width, precision);
+    out.flush();
+    start_next(comm);
+}
+#endif
+
+template <typename Vector>
+inline std::ostream& print_vector(Vector const& vector, std::ostream& out= std::cout, int width= 0, int precision= 0)
+{
+    return print_vector(vector, out, width, precision, typename mtl::traits::category<Vector>::type());
+}
+
+
+
+
 
 }} // namespace mtl::vector
 

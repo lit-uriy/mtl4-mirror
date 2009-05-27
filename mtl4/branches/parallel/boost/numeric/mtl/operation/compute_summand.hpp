@@ -57,6 +57,14 @@ struct compute_summand< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
     type value;
 };
 
+template <typename Functor, typename Vector>
+struct compute_summand< vector::map_view<Functor, Vector> >
+{
+    typedef vector::map_view<Functor, Vector> type;
+    compute_summand(const type& expr) : value(expr) {}
+    type value;
+};
+
 }} // namespace mtl::operation
 
 #endif // MTL__OPERATION_COMPUTE_SUMMAND_INCLUDE
