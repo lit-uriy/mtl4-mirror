@@ -1062,27 +1062,11 @@ namespace mtl {
     };
 
     template <typename E1, typename E2, typename SFunctor> 
-    struct DistributedCollection< vector::vec_vec_op_expr<E1, E2, SFunctor> >
+    struct DistributedCollection< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
     {
 	typedef typename DistributedCollection<E1>::local_type LocalE1;
 	typedef typename DistributedCollection<E2>::local_type LocalE2;
-	typedef typename vector::vec_vec_op_expr<LocalE1, LocalE2, SFunctor> local_type;
-    };
-
-    template <typename E1, typename E2>
-    struct DistributedCollection< vector::vec_vec_plus_expr<E1, E2> >
-    {
-	typedef typename DistributedCollection<E1>::local_type LocalE1;
-	typedef typename DistributedCollection<E2>::local_type LocalE2;
-	typedef typename vector::vec_vec_plus_expr<LocalE1, LocalE2> local_type;
-    };
-
-    template <typename E1, typename E2>
-    struct DistributedCollection< vector::vec_vec_minus_expr<E1, E2> >
-    {
-	typedef typename DistributedCollection<E1>::local_type LocalE1;
-	typedef typename DistributedCollection<E2>::local_type LocalE2;
-	typedef typename vector::vec_vec_minus_expr<LocalE1, LocalE2> local_type;
+	typedef typename vector::vec_vec_pmop_expr<LocalE1, LocalE2, SFunctor> local_type;
     };
 #endif
 

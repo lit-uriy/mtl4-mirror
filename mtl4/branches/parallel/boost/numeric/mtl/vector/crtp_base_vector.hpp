@@ -57,8 +57,8 @@ namespace detail {
 
 template <typename Vector, typename Source>
 struct crtp_assign 
-	: public detail::crtp_assign<Vector, Source, typename ashape::ashape<Vector>::type,
-	                             typename ashape::ashape<Source>::type>
+  : public detail::crtp_assign<Vector, Source, typename ashape::ashape<Vector>::type,
+			       typename ashape::ashape<Source>::type>
 {};
 
 /// Assign matrix vector product by calling mult
@@ -135,25 +135,25 @@ struct crtp_plus_assign<Vector, mat_cvec_times_expr<E1, E2> >
 
 namespace detail {
 
-	template <typename Vector, typename Source, typename VCat, typename SCat>
-	struct crtp_minus_assign {};	
+    template <typename Vector, typename Source, typename VCat, typename SCat>
+    struct crtp_minus_assign {};	
 
     /// Assign-add vector to a vector
-	template <typename Vector, typename Source, typename Cat>
-	struct crtp_minus_assign<Vector, Source, Cat, Cat>
+    template <typename Vector, typename Source, typename Cat>
+    struct crtp_minus_assign<Vector, Source, Cat, Cat>
+    {
+	typedef vec_vec_minus_asgn_expr<Vector, Source> type;
+	type operator()(Vector& vector, const Source& src)
 	{
-		typedef vec_vec_minus_asgn_expr<Vector, Source> type;
-		type operator()(Vector& vector, const Source& src)
-		{
-			return type(vector, src);
-		}
-	};	
+	    return type(vector, src);
+	}
+    };	
 } // namespace detail
 
 template <typename Vector, typename Source>
 struct crtp_minus_assign 
-	: public detail::crtp_minus_assign<Vector, Source, typename ashape::ashape<Vector>::type,
-	                                  typename ashape::ashape<Source>::type>
+  : public detail::crtp_minus_assign<Vector, Source, typename ashape::ashape<Vector>::type,
+				     typename ashape::ashape<Source>::type>
 {};
 
 /// Assign-add matrix vector product by calling mult
@@ -161,13 +161,13 @@ struct crtp_minus_assign
 template <typename Vector, typename E1, typename E2>
 struct crtp_minus_assign<Vector, mat_cvec_times_expr<E1, E2> >
 {
-	typedef Vector& type;
-	type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
+    typedef Vector& type;
+    type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
     {
-		gen_mult(src.first, src.second, vector,
-		         assign::minus_sum(), tag::matrix(), tag::vector(), tag::vector());
-		return vector;
-	}
+	gen_mult(src.first, src.second, vector,
+		 assign::minus_sum(), tag::matrix(), tag::vector(), tag::vector());
+	return vector;
+    }
 };
 
 
@@ -181,24 +181,24 @@ struct crtp_vector_assign
     /// Templated assignment implemented by functor to allow for partial specialization
     template <typename E>
     typename boost::disable_if<boost::is_same<Vector, E>, 
-		                       typename crtp_assign<Vector, E>::type>::type
-	operator=(const E& e)
+			       typename crtp_assign<Vector, E>::type>::type
+    operator=(const E& e)
     {
-		return crtp_assign<Vector, E>()(static_cast<Vector&>(*this), e);
+	return crtp_assign<Vector, E>()(static_cast<Vector&>(*this), e);
     }
 
     /// Assign-add vector expression
     template <class E>
-	typename crtp_plus_assign<Vector, E>::type operator+=(const E& e)
+    typename crtp_plus_assign<Vector, E>::type operator+=(const E& e)
     {
-		return crtp_plus_assign<Vector, E>()(static_cast<Vector&>(*this), e);
+	return crtp_plus_assign<Vector, E>()(static_cast<Vector&>(*this), e);
     }
 
     /// Assign-subtract vector expression
     template <class E>
-	typename crtp_minus_assign<Vector, E>::type operator-=(const E& e)
+    typename crtp_minus_assign<Vector, E>::type operator-=(const E& e)
     {
-		return crtp_minus_assign<Vector, E>()(static_cast<Vector&>(*this), e);
+	return crtp_minus_assign<Vector, E>()(static_cast<Vector&>(*this), e);
     }
 
     /// Scale vector (in place) with scalar value 
@@ -206,7 +206,7 @@ struct crtp_vector_assign
     template <typename Factor>
     vec_scal_times_asgn_expr<Vector, Factor> operator*=(const Factor& alpha)
     {
-		return vec_scal_times_asgn_expr<Vector, Factor>( static_cast<Vector&>(*this), alpha );
+	return vec_scal_times_asgn_expr<Vector, Factor>( static_cast<Vector&>(*this), alpha );
     }	
 
     /// Devide vector (in place) by a scalar value
@@ -214,15 +214,15 @@ struct crtp_vector_assign
     template <typename Factor>
     vec_scal_div_asgn_expr<Vector, Factor> operator/=(const Factor& alpha)
     {
-		return vec_scal_div_asgn_expr<Vector, Factor>( static_cast<Vector&>(*this), alpha );
+	return vec_scal_div_asgn_expr<Vector, Factor>( static_cast<Vector&>(*this), alpha );
     }	
 
     /// Check whether vector size is compatible or if vector is 0 change it s.
     void checked_change_dim(SizeType s)
     {
-		Vector& vector= static_cast<Vector&>(*this);
-		vector.check_dim(s);
-		vector.change_dim(s);
+	Vector& vector= static_cast<Vector&>(*this);
+	vector.check_dim(s);
+	vector.change_dim(s);
     }
 };
 
@@ -233,17 +233,17 @@ struct const_crtp_base_vector
 
 template <typename Vector, typename ValueType, typename SizeType>
 struct mutable_crtp_base_vector 
-	: public crtp_vector_assign<Vector, ValueType, SizeType>
+  : public crtp_vector_assign<Vector, ValueType, SizeType>
 {};
 
 
 
 template <typename Vector, typename ValueType, typename SizeType>
 struct crtp_base_vector 
-    : boost::mpl::if_<boost::is_const<Vector>,
-	                  const_crtp_base_vector<Vector, ValueType, SizeType>,
-		              mutable_crtp_base_vector<Vector, ValueType, SizeType>
-                     >::type
+  : boost::mpl::if_<boost::is_const<Vector>,
+		    const_crtp_base_vector<Vector, ValueType, SizeType>,
+		    mutable_crtp_base_vector<Vector, ValueType, SizeType>
+                   >::type
 {};
 
 
