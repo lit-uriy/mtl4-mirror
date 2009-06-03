@@ -17,6 +17,7 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/operation/random.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace itl {
@@ -45,7 +46,8 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 
     r= b - A * x;
 
-    rand(P); // to be done !!!
+    seed<Scalar> s;
+    random(P, s); // to be done !!!
     P[0]= r;
     orth(P);
 
