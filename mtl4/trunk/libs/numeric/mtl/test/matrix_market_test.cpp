@@ -20,11 +20,13 @@
 
 using namespace std;  
 
+std::string program_dir; // Ugly global variable !!!
 
 template <typename Matrix>
-void test_file(Matrix& A, const char* file_name, const char* comment)
+void inline test_file(Matrix& A, const char* file_name, const char* comment)
 {
-    mtl::io::matrix_market_istream ms(file_name);
+    cout << "Filename is " << mtl::io::join(program_dir, file_name) << "\n";
+    mtl::io::matrix_market_istream ms(mtl::io::join(program_dir, file_name));
     ms >> A;
     std::cout << "Read from " << file_name << " (" << comment << ") is " 
 	      << num_rows(A) << "x" << num_cols(A) << "\n";
@@ -41,7 +43,7 @@ void test_file(Matrix& A, const char* file_name, const char* comment)
 
 
 template <typename Matrix>
-void test(Matrix& A, const char* name)
+void inline test(Matrix& A, const char* name)
 {
     std::cout << "\n" << name << "\n";
 
@@ -50,10 +52,10 @@ void test(Matrix& A, const char* name)
     // test_file(A, "matrix_market/plskz362.mtx", "Skew-symmetric"); // has only 0s in A[:9][:9]
     test_file(A, "matrix_market/bcsstk01.mtx", "Real symmetric");
 
-    Matrix B(mtl::io::matrix_market("matrix_market/jgl009.mtx")), C;
+    Matrix B(mtl::io::matrix_market(mtl::io::join(program_dir, "matrix_market/jgl009.mtx"))), C;
     std::cout << "Matrix market file read in constructor:\n" << B;
 
-    C= mtl::io::matrix_market("matrix_market/jgl009.mtx");
+    C= mtl::io::matrix_market(mtl::io::join(program_dir, "matrix_market/jgl009.mtx"));
     std::cout << "Matrix market file assigned:\n" << B;
     
 }
@@ -73,12 +75,7 @@ int test_main(int argc, char* argv[])
     morton_dense<double,  morton_mask>               mdc;
     morton_dense<double, doppled_32_col_mask>        mcc;
 
-    // This is an ugly test to be removed
-    if (strlen(argv[0]) > strlen("matrix_market_test")+4) {
-	std::cerr << "For simplicity this test works only in the test directory\n"
-		  << "Please cd there and rerun the test.";
-	return 0;
-    }
+    program_dir= mtl::io::directory_name(argv[0]);
 
     test(cdc, "compressed2D");
     test(ccc, "compressed2D complex");
