@@ -13,6 +13,8 @@
 #define ITL_BICGSTAB_INCLUDE
 
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/itl/utility/exception.hpp>
 
 namespace itl {
 
@@ -24,7 +26,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
   typedef HilbertSpaceX                                       Vector;
 
-  Scalar     rho_1(0), rho_2(0), alpha(0), beta(0), omega(0);
+  Scalar     rho_1(0), rho_2(0), alpha(0), beta(0), gamma, omega(0);
   Vector     p(size(x)), phat(size(x)), s(size(x)), shat(size(x)), 
              t(size(x)), v(size(x)), r(size(x)), rtilde(size(x));
 
@@ -34,25 +36,22 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   while (! iter.finished(r)) {
     
     rho_1 = dot(rtilde, r);
-    if (rho_1 == Scalar(0.)) {
-      iter.fail(2, "bicg breakdown #1");
-      break;
-    }
-    
+    MTL_THROW_IF(rho_1 == 0.0, unexpected_orthogonality());
+
     if (iter.first())
       p = r;
     else {
-      if (omega == Scalar(0.)) {
-	iter.fail(3, "bicg breakdown #2");
-	break;
-      }
+      MTL_THROW_IF(omega == 0.0, unexpected_orthogonality());
       beta = (rho_1 / rho_2) * (alpha / omega);
       p = r + beta * (p - omega * v);
     }
     phat = solve(M, p);
     v = A * phat;
 
-    alpha = rho_1 / dot(rtilde, v);
+    gamma = dot(rtilde, v);
+    MTL_THROW_IF(gamma == 0.0, unexpected_orthogonality());
+
+    alpha = rho_1 / gamma;
     s = r - alpha * v;
     
     if (iter.finished(s)) {
@@ -66,12 +65,10 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
     x += omega * shat + alpha * phat;
     r = s - omega * t;
     
-    rho_2 = rho_1;
-    
+    rho_2 = rho_1;    
     ++iter;
   }
-
-  return iter.error_code();
+  return iter;
 }
 
 
