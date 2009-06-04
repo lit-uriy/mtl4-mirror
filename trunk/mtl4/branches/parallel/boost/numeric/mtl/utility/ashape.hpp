@@ -64,7 +64,6 @@ struct ashape<dense_vector<Value, Parameters> >
 template <typename Vector, typename Distribution>
 struct ashape< vector::distributed<Vector, Distribution> > : ashape<Vector> {};
 
-
 template <typename E1, typename E2, typename SFunctor>
 struct ashape< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
 {

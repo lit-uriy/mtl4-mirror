@@ -20,7 +20,6 @@
 #include <boost/numeric/mtl/vector/vec_vec_pmop_expr.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
-#include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl { namespace vector {
 

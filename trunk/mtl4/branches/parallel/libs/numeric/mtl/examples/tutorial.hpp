@@ -271,12 +271,17 @@ It has been tested (and passed) with the following compilers and architectures:
   - g++ 4.0.1
   - g++ 4.1.1
   - g++ 4.1.2
+  - g++ 4.2.0
+  - g++ 4.2.1
+  - g++ 4.2.2
+  - g++ 4.3.2
   - icc 9.0
 - Macintosh
   - g++ 4.0.1
 - Windows
-  - VC 8.0 from Visual Studio 2005
+  - VC 8.0 from Visual Studio 2005 (Some friend and private declarations needed to be hidden to cope for a compiler error.)
   - VC 9.0 from Visual Studio 2008
+
 
 More compilers will be tested in the future.
 
@@ -413,9 +418,8 @@ P.S.: The description how to use Eclipse is contributed by Michael Schmid
 
 /*! \page tutorial Tutorial
 
-MTL4 is still in an early state of development and it is possible that
-some details may change during further implementation.
-However, we will do our best that applications are minimally affected.
+MTL4 is becoming rather stable and changes in the interface will be extremely rare.
+It goes without saying that we will do our best that applications are minimally affected.
 In particular, the topics in the tutorial are not subject to modifications.
 This, of course, does not exclude backward-compatible extensions.
 
