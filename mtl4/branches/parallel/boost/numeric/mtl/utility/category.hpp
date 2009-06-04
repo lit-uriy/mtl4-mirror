@@ -86,7 +86,6 @@ struct category< vector::distributed<Vector, Distribution> >
     >::type type;
 } ;
 
-
 template <class E1, class E2, class SFunctor>
 struct category< vector::vec_vec_pmop_expr<E1,E2, SFunctor> >
 {

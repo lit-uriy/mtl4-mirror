@@ -36,6 +36,7 @@
 #include <boost/numeric/mtl/operation/parallel_utilities.hpp>
 #include <boost/numeric/mtl/operation/for_each_nonzero.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/utility/is_row_major.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -131,6 +132,9 @@ class distributed
 
 	return *this;
     }
+
+    size_type dim1() { return mtl::traits::is_row_major<self>::value ? grows : gcols; }
+    size_type dim2() { return mtl::traits::is_row_major<self>::value ? gcols : grows; }
 
   private:
     void col_dist_assign(const self& src, boost::mpl::true_)

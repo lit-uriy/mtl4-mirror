@@ -85,7 +85,7 @@ struct crtp_assign<Vector, Value[Rows]>
 	typedef typename Collection<Vector>::size_type size_type;
 	
 	vector.checked_change_dim(Rows);
-	
+
 	for (size_type r= 0; r < Rows; ++r)
 	    vector[r]= src[r];
 	return vector;

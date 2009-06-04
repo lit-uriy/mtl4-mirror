@@ -31,6 +31,12 @@ namespace vector {
 	    v[i]= rand();
     }
 
+    template <typename Vector>
+    void inline random(Vector& v)
+    {
+	random(v, seed<typename Collection<Vector>::value_type>());
+    }
+
 
 } // namespace vector
 

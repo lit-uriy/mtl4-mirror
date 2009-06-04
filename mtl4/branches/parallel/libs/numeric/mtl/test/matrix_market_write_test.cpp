@@ -20,6 +20,7 @@
 
 using namespace std;  
 
+std::string program_dir; // Ugly global variable !!!
 
 template <typename Matrix>
 void test(Matrix& A, const char* name)
@@ -33,7 +34,7 @@ void test(Matrix& A, const char* name)
     }
 
     std::cout << "\n" << name << "\n";
-    string fname( string("matrix_market/write_test_1_") + string(name) + string(".mtx") );
+    string fname( mtl::io::join( program_dir, string("matrix_market/write_test_1_") + string(name) + string(".mtx") ) );
     cout << "File name is " << fname << "\nA is\n" << A;
     
     mtl::io::matrix_market_ostream oms(fname);
@@ -76,12 +77,7 @@ int test_main(int argc, char* argv[])
     morton_dense<double,  morton_mask>               mdc(4, 3);
     morton_dense<double, doppled_32_col_mask>        mcc(4, 3);
 
-    // This is an ugly test to be removed
-    if (strlen(argv[0]) > strlen("matrix_market_write_test")+4) {
-	std::cerr << "For simplicity this test works only in the test directory\n"
-		  << "Please cd there and rerun the test.";
-	return 0;
-    }
+    program_dir= mtl::io::directory_name(argv[0]);
 
     test(cdr, "compressed2D_double");
     test(cir, "compressed2D_int");
