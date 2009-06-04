@@ -129,6 +129,7 @@ class distributed
 	col_dist_assign(src, boost::is_same<RowDistribution, ColDistribution>());
 	local_matrix= src.local_matrix;
 	// copy remote parts and such
+	throw "Implementation not finished yet!";
 
 	return *this;
     }
@@ -162,6 +163,9 @@ class distributed
 
     friend inline const local_type& local(const self& A) { return A.local_matrix; }
     friend inline local_type& local(self& A) { return A.local_matrix; }
+
+    friend inline const RowDistribution& row_distribution(const self& A) { return A.row_dist; }
+    friend inline const ColDistribution& col_distribution(const self& A) { return A.col_dist; }
 
     friend inline std::ostream& operator<< (std::ostream& out, const self& A) 
     {
@@ -232,7 +236,7 @@ class distributed_inserter
     int row_size() const { return row_dist().size(); }
     int col_size() const { return col_dist().size(); }
 
-public:
+  public:
     typedef distributed_inserter                                  self;
     typedef DistributedMatrix                                     dist_matrix_type;
     typedef typename Collection<DistributedMatrix>::size_type     size_type;
@@ -246,11 +250,11 @@ public:
     typedef std::pair< std::pair<size_type, size_type>, value_type > entry_type;
     
     explicit distributed_inserter(DistributedMatrix& dist_matrix, size_type slot_size = 5)
-	: dist_matrix(dist_matrix), slot_size(slot_size),
-	  local_inserter(dist_matrix.local_matrix, slot_size), 
-	  full_remote_matrices(col_size(), (remote_type*) 0),
-	  remote_inserters(col_size(), (remote_inserter_type*) 0),
-	  send_buffers(row_size()), recv_buffers(row_size())
+      : dist_matrix(dist_matrix), slot_size(slot_size),
+	local_inserter(dist_matrix.local_matrix, slot_size), 
+	full_remote_matrices(col_size(), (remote_type*) 0),
+	remote_inserters(col_size(), (remote_inserter_type*) 0),
+	send_buffers(row_size()), recv_buffers(row_size())
     {}
 
     struct col_marker
@@ -345,6 +349,8 @@ public:
 	return *this;
     }
 
+    friend inline const DistributedMatrix& reference(const self& I) { return I.dist_matrix; }
+
 private:
     DistributedMatrix&                     dist_matrix;
     size_type                              slot_size;
@@ -375,6 +381,7 @@ inline void distributed_inserter<DistributedMatrix, Updater>::modify(size_type r
 		typedef typename DistributedMatrix::remote_type remote_type;
 		full_remote_matrices[proc]= new remote_type(row_dist.num_local(num_rows(dist_matrix)),
 							    col_dist.num_local(num_cols(dist_matrix), proc));
+		set_to_zero(*full_remote_matrices[proc]);
 		remote_inserters[proc]= new remote_inserter_type(*full_remote_matrices[proc], slot_size);
 	    }
 	    size_type local_col= col_dist.global_to_local(col, proc);
