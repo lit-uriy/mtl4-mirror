@@ -5,7 +5,7 @@
 // All rights reserved.
 // Authors: Peter Gottschling and Andrew Lumsdaine
 // 
-// This file is part of the Matrix Template Library
+// This file is part of the Matrix Template Library2
 // 
 // See also license.mtl.txt in the distribution.
 
@@ -17,7 +17,7 @@
 
 namespace itl {
 
-  template <class Real>
+  template <class Real, class OStream = std::ostream>
   class cyclic_iteration : public basic_iteration<Real> 
   {
       typedef basic_iteration<Real> super;
@@ -35,7 +35,7 @@ namespace itl {
   
       template <class Vector>
       cyclic_iteration(const Vector& b, int max_iter_, Real tol_, Real atol_ = Real(0), int cycle_ = 100,
-		       std::ostream& out = std::cout)
+		       OStream& out = std::cout)
 	: super(b, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), out(out)
       {}
 
@@ -61,8 +61,8 @@ namespace itl {
 	  return this->error;
       }
     protected:
-      int cycle, last_print;
-      std::ostream& out;
+      int        cycle, last_print;
+      OStream&   out;
   };
 
 
