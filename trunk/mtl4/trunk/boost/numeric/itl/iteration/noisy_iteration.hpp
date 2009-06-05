@@ -17,18 +17,16 @@
 
 namespace itl {
 
-  template <class Real>
-  class noisy_iteration : public cyclic_iteration<Real> 
+  template <class Real, class OStream = std::ostream>
+  class noisy_iteration : public cyclic_iteration<Real, OStream> 
   {
-  public:
-    template <class Vector>
-    noisy_iteration(const Vector& b, int max_iter_, Real tol_, Real atol_ = Real(0),
-		    std::ostream& out = std::cout)
-      : cyclic_iteration<Real>(b, max_iter_, tol_, atol_, 1, out)
-    {}
+    public:
+      template <class Vector>
+      noisy_iteration(const Vector& b, int max_iter_, Real tol_, Real atol_ = Real(0),
+		      OStream& out = std::cout)
+	: cyclic_iteration<Real>(b, max_iter_, tol_, atol_, 1, out)
+      {}
   };
-
-
 
 } // namespace itl
 
