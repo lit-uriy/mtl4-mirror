@@ -32,22 +32,24 @@ struct single_ostream
     /// Constructor for out and dist's communicator
     single_ostream(std::ostream& out, const base_distribution& dist) : out(out), comm(communicator(dist)) {} 
 
-    /// The output command
-    template <typename T>
-    single_ostream& operator<<(const T& v)
-    {
-	if(traits::is_distributed<T>::value || comm.rank() == 0)
-	    out << v;
-	return *this;
-    }
+    template <typename T> friend single_ostream& operator<<(single_ostream& os, const T& v);
 
     /// Flush output
     void flush() { if (comm.rank() == 0) out.flush(); }
-private:
+  private:
     std::ostream&            out;
     boost::mpi::communicator comm;
 };
 
+
+/// The output command
+template <typename T>
+inline single_ostream& operator<<(single_ostream& os, const T& v)
+{
+    if(traits::is_distributed<T>::value || os.comm.rank() == 0)
+	os.out << v;
+    return os;
+}
 
 
 }} // namespace mtl::par

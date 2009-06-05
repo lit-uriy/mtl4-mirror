@@ -14,8 +14,9 @@
 
 namespace itl {
 
-    template <class Real> class basic_iteration;
-    template <class Real> class noisy_iteration;
+    template <class Real>                class basic_iteration;
+    template <class Real, class OStream> class cyclic_iteration;
+    template <class Real, class OStream> class noisy_iteration;
 
     template <typename Solver, typename VectorIn, bool trans> class solver_proxy;
 
