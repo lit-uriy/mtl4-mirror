@@ -32,7 +32,7 @@ class diagonal
     typedef diagonal                                      self;
 
     /// Constructor takes matrix reference
-    diagonal(const Matrix& A) : inv_diag(num_rows(A))
+    explicit diagonal(const Matrix& A) : inv_diag(num_rows(A))
     {
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 	using math::reciprocal;
@@ -112,7 +112,7 @@ class diagonal<mtl::matrix::distributed<Matrix> >
     }
     
   private:
-    mtl::dense_vector<value_type>                 inv_diag;
+    mtl::dense_vector<value_type>                      inv_diag;
     typename matrix_type::col_distribution_type const& col_dist;
 };
 #endif
@@ -130,7 +130,6 @@ Vector adjoint_solve(const diagonal<Matrix>& P, const Vector& x)
 {
     return P.adjoint_solve(x);
 }
-
 
 
 }} // namespace itl::pc

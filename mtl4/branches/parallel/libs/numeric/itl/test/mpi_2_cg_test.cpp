@@ -34,7 +34,8 @@ int test_main(int argc, char* argv[])
   b = A * x;
   x= 0;
 
-  itl::cyclic_iteration<double> iter(b, 500, 1.e-6, 0.0, 5);
+  mtl::par::single_ostream sos;
+  itl::cyclic_iteration<double, mtl::par::single_ostream> iter(b, 500, 1.e-6, 0.0, 5, sos);
   cg(A, x, b, P, iter);
 
   return 0;
