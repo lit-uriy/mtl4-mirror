@@ -22,6 +22,7 @@
 
 namespace itl { namespace pc {
 
+/// Diagonal Preconditioner
 template <typename Matrix>
 class diagonal
 {
@@ -30,6 +31,7 @@ class diagonal
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef diagonal                                      self;
 
+    /// Constructor takes matrix reference
     diagonal(const Matrix& A) : inv_diag(num_rows(A))
     {
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
@@ -39,6 +41,7 @@ class diagonal
 	    inv_diag[i]= reciprocal(A[i][i]);
     }
 
+    /// Member function solve, better use free function solve
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
@@ -50,6 +53,7 @@ class diagonal
 	return y;
     }
 
+    /// Member function for solving adjoint problem, better use free function adjoint_solve
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
@@ -60,13 +64,67 @@ class diagonal
     mtl::dense_vector<value_type>    inv_diag;
 }; 
 
+#ifdef MTL_HAS_MPI
+/// Diagonal Preconditioner for distributed matrices
+template <typename Matrix>
+class diagonal<mtl::matrix::distributed<Matrix> >
+{
+  public:
+    typedef mtl::matrix::distributed<Matrix>                   matrix_type;
+    typedef typename mtl::Collection<matrix_type>::value_type  value_type;
+    typedef typename mtl::Collection<matrix_type>::size_type   size_type;
+    typedef diagonal                                           self;
 
+    /// Constructor takes matrix reference
+    explicit diagonal(const matrix_type& A) 
+      : inv_diag(num_rows(local(A))), col_dist(col_distribution(A))
+    {
+	using math::reciprocal;
+
+	MTL_THROW_IF(row_distribution(A) != col_dist, incompatible_distribution());
+	Matrix const& L= local(A);
+	MTL_THROW_IF(num_rows(L) != num_cols(L), mtl::matrix_not_square()); // local matrix must be square
+
+	for (size_type i= 0; i < num_rows(L); ++i)
+	    inv_diag[i]= reciprocal(L[i][i]);
+    }
+
+    /// Member function solve, better use free function solve
+    template <typename Vector>
+    Vector solve(const Vector& dist_x) const
+    {
+	MTL_DEBUG_THROW_IF(col_dist != distribution(dist_x), incompatible_distribution());
+	MTL_THROW_IF(size(local(dist_x)) != size(inv_diag), mtl::incompatible_size());
+	Vector dist_y(dist_x); // copies distribution as well
+	typename mtl::DistributedCollection<Vector>::local_type const& x= local(dist_x);
+	typename mtl::DistributedCollection<Vector>::local_type&       y= local(dist_y);
+	
+	for (size_type i= 0; i < size(inv_diag); ++i)
+	    y[i]= inv_diag[i] * x[i];
+	return dist_y;
+    }
+
+    /// Member function for solving adjoint problem, better use free function adjoint_solve
+    template <typename Vector>
+    Vector adjoint_solve(const Vector& x) const
+    {
+	return solve(x);
+    }
+    
+  private:
+    mtl::dense_vector<value_type>                 inv_diag;
+    typename matrix_type::col_distribution_type const& col_dist;
+};
+#endif
+
+/// Solve approximately a sparse system in terms of inverse diagonal
 template <typename Matrix, typename Vector>
 Vector solve(const diagonal<Matrix>& P, const Vector& x)
 {
     return P.solve(x);
 }
 
+/// Solve approximately the adjoint of a sparse system in terms of inverse diagonal
 template <typename Matrix, typename Vector>
 Vector adjoint_solve(const diagonal<Matrix>& P, const Vector& x)
 {

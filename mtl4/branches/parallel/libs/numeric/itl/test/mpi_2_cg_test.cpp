@@ -26,8 +26,8 @@ int test_main(int argc, char* argv[])
   matrix_type          A(N, N);
   laplacian_setup(A, size, size);
 
-  //itl::pc::diagonal<matrix_type>     P(A);
-  itl::pc::identity<matrix_type>     P(A);
+  itl::pc::diagonal<matrix_type>     P(A);
+  //itl::pc::identity<matrix_type>     P(A);
 
   mtl::vector::distributed<mtl::dense_vector<double> > x(N, 1.0), b(N);
 
