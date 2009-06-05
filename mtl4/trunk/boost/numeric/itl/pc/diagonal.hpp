@@ -56,40 +56,6 @@ class diagonal
 	return solve(x);
     }
 
-
-
-#if 0
-    // This is more flexible but less generic as the vector type must support the proxy actively
-    // Otherwise it only needs move semantics
-    template <typename VectorIn>
-    solver_proxy<self, VectorIn> solve(const VectorIn& x) const
-    {
-	return solver_proxy<self, VectorIn>(*this, x);
-    }
-
-    template <typename VectorIn>
-    solver_proxy<self, VectorIn, false> adjoint_solve(const VectorIn& x) const
-    {
-	return solver_proxy<self, VectorIn, false>(*this, x);
-    }
-
-    template <typename VectorIn, typename VectorOut>
-    void solve(const VectorIn& x, VectorOut& y) const
-    {
-	MTL_THROW_IF(size(x) != size(y), mtl::incompatible_size());	
-	MTL_THROW_IF(size(x) != size(inv_diag), mtl::incompatible_size());	
-
-	for (size_type i= 0; i < size(inv_diag); ++i)
-	    y[i]= inv_diag[i] * x[i];
-    }
-
-    template <typename VectorIn, typename VectorOut>
-    void adjoint_solve(const VectorIn& x, VectorOut& y) const
-    {
-	solve(x, y);
-    }
-#endif
-
   protected:
     mtl::dense_vector<value_type>    inv_diag;
 }; 
