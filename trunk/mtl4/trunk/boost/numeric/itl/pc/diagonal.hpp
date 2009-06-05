@@ -22,6 +22,7 @@
 
 namespace itl { namespace pc {
 
+/// Diagonal Preconditioner
 template <typename Matrix>
 class diagonal
 {
@@ -30,7 +31,8 @@ class diagonal
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef diagonal                                      self;
 
-    diagonal(const Matrix& A) : inv_diag(num_rows(A))
+    /// Constructor takes matrix reference
+    explicit diagonal(const Matrix& A) : inv_diag(num_rows(A))
     {
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 	using math::reciprocal;
@@ -39,6 +41,7 @@ class diagonal
 	    inv_diag[i]= reciprocal(A[i][i]);
     }
 
+    /// Member function solve, better use free function solve
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
@@ -50,6 +53,7 @@ class diagonal
 	return y;
     }
 
+    /// Member function for solving adjoint problem, better use free function adjoint_solve
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
@@ -61,18 +65,19 @@ class diagonal
 }; 
 
 
+/// Solve approximately a sparse system in terms of inverse diagonal
 template <typename Matrix, typename Vector>
 Vector solve(const diagonal<Matrix>& P, const Vector& x)
 {
     return P.solve(x);
 }
 
+/// Solve approximately the adjoint of a sparse system in terms of inverse diagonal
 template <typename Matrix, typename Vector>
 Vector adjoint_solve(const diagonal<Matrix>& P, const Vector& x)
 {
     return P.adjoint_solve(x);
 }
-
 
 
 }} // namespace itl::pc

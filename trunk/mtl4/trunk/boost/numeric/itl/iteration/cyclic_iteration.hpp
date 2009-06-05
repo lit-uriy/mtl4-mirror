@@ -13,9 +13,6 @@
 #define ITL_CYCLIC_ITERATION_INCLUDE
 
 #include <iostream>
-#include <complex>
-#include <string>
-
 #include <boost/numeric/itl/iteration/basic_iteration.hpp>
 
 namespace itl {
@@ -29,7 +26,7 @@ namespace itl {
       {
 	  if (this->i % cycle == 0)
 	      if (this->i != last_print) { // Avoid multiple print-outs in same iteration
-		  std::cout << "iteration " << this->i << ": resid " << this->resid() << std::endl;
+		  out << "iteration " << this->i << ": resid " << this->resid() << std::endl;
 		  last_print= this->i;
 	      }
       }
@@ -37,8 +34,9 @@ namespace itl {
     public:
   
       template <class Vector>
-      cyclic_iteration(const Vector& b, int max_iter_, Real tol_, Real atol_ = Real(0), int cycle_ = 100)
-	: super(b, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1) 
+      cyclic_iteration(const Vector& b, int max_iter_, Real tol_, Real atol_ = Real(0), int cycle_ = 100,
+		       std::ostream& out = std::cout)
+	: super(b, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), out(out)
       {}
 
 
@@ -52,19 +50,19 @@ namespace itl {
 
       operator int() { return error_code(); }
 
-      int error_code() {
-	  using std::cout; using std::endl;
-
-	  cout << "finished! error code = " << this->error << '\n';
-	  cout << this->iterations() << " iterations\n";
-	  cout << this->resid() << " is actual final residual. \n"
-	       << this->resid()/this->normb() << " is actual relative tolerance achieved. \n";
-	  cout << "Relative tol: " << this->rtol_ << "  Absolute tol: " << this->atol_ << '\n';
-	  cout << "Convergence:  " << pow(this->resid()/this->normb(), 1.0 / double(this->iterations())) << endl;
+      int error_code() 
+      {
+	  out << "finished! error code = " << this->error << '\n'
+	      << this->iterations() << " iterations\n"
+	      << this->resid() << " is actual final residual. \n"
+	      << this->resid()/this->normb() << " is actual relative tolerance achieved. \n"
+	      << "Relative tol: " << this->rtol_ << "  Absolute tol: " << this->atol_ << '\n'
+	      << "Convergence:  " << pow(this->resid()/this->normb(), 1.0 / double(this->iterations())) << std::endl;
 	  return this->error;
       }
     protected:
       int cycle, last_print;
+      std::ostream& out;
   };
 
 
