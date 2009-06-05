@@ -30,9 +30,7 @@ std::ostream& print_matrix(Matrix const& matrix, std::ostream& out= std::cout, i
 	    out.fill (' '); out.width (width); out.precision (precision); // out.flags (std::ios_base::right);
 	    if (precision)
 		out.precision(precision); 
-	    typename Matrix::value_type v= matrix(r, c);
-	    out << matrix(r, c) 
-		<< (c < num_cols(matrix) - 1 ? " " : "]\n");
+	    out << matrix(r, c) << (c < num_cols(matrix) - 1 ? " " : "]\n");
 	}
     }
     return out;
