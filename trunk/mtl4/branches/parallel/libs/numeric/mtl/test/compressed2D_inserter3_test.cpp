@@ -59,6 +59,16 @@ void test(int n, int m, int order)
 	if (A[1][2] != 20) throw "Wrong value";
 	if (A[4][2] != 24) throw "Wrong value";	break;
     }
+
+    double array[4]= {1.0, -.4, -0.5, 2.0};
+    int v0[]= {6, 7}, v1[]= {7, 8};
+    {
+        mtl::matrix::inserter<mtl::compressed2D<double>, mtl::update_plus<double> > inserter(A, 5);
+	inserter << mtl::element_array(mtl::dense2D<double>(mtl::size(v0), mtl::size(v1), array), v0, v1);
+    }
+    if (n < 11) cout << "A is \n" << with_format(A, 4, 3);
+    if (A[7][7] != -0.5) throw "Wrong value";
+
 }
 
  
