@@ -9,6 +9,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+#include <iostream>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
