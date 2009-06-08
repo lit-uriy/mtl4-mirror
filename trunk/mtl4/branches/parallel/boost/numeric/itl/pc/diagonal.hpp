@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 
 #include <boost/numeric/itl/utility/solver_proxy.hpp>
+#include <boost/numeric/itl/pc/block.hpp>
 
 namespace itl { namespace pc {
 
@@ -65,7 +66,22 @@ class diagonal
 }; 
 
 #ifdef MTL_HAS_MPI
+
 /// Diagonal Preconditioner for distributed matrices
+template <typename Matrix>
+class diagonal<mtl::matrix::distributed<Matrix> >
+  : public block<mtl::matrix::distributed<Matrix>, diagonal<Matrix> >
+{
+    typedef mtl::matrix::distributed<Matrix>      matrix_type;
+    typedef block<matrix_type, diagonal<Matrix> > base;
+  public:
+    /// Constructor takes matrix reference
+    explicit diagonal(const matrix_type& A) : base(A) {}
+};
+
+
+
+#if 0 // Just keep it for educational purposes
 template <typename Matrix>
 class diagonal<mtl::matrix::distributed<Matrix> >
 {
@@ -115,7 +131,9 @@ class diagonal<mtl::matrix::distributed<Matrix> >
     mtl::dense_vector<value_type>                      inv_diag;
     typename matrix_type::col_distribution_type const& col_dist;
 };
-#endif
+#endif // 0
+
+#endif // MTL_HAS_MPI
 
 /// Solve approximately a sparse system in terms of inverse diagonal
 template <typename Matrix, typename Vector>
