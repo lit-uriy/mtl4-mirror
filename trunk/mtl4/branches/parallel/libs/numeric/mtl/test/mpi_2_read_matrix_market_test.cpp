@@ -25,18 +25,12 @@ int test_main(int argc, char* argv[])
 
     mpi::environment env(argc, argv);
     
-    // This is an ugly test to be removed
-    if (strlen(argv[0]) > strlen("mpi_2_read_matrix_market_test")+4) {
-	std::cerr << "For simplicity this test works only in the test directory\n"
-		  << "Please cd there and rerun the test.";
-	return 0;
-    }
-
-    matrix::distributed<matrix::compressed2D<double> > A(mtl::io::matrix_market("matrix_market/laplace_3x4.mtx"));
+    std::string program_dir= mtl::io::directory_name(argv[0]);
+    matrix::distributed<matrix::compressed2D<double> > A(mtl::io::matrix_market(mtl::io::join(program_dir, "matrix_market/laplace_3x4.mtx")));
     mtl::par::single_ostream() << "Matrix A is\n " << A << '\n';
 
     // Test not very elegant (and not very complete)
-    if (A.row_dist.is_local(7)) {
+    if (row_distribution(A).is_local(7)) {
 	int r= A.row_dist.global_to_local(7);
 	// if (local(A)[r][6] != -1.0) throw "Should be -1.";
 	if (local(A)[r][A.col_dist.global_to_local(7)] != 4.0) throw "Diagonal should be 4.";
