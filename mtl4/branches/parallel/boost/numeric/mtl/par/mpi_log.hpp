@@ -19,7 +19,7 @@
 namespace mtl { namespace par {
 
 
-/// Helper stream for logging MPI activities, only active if MTL_WITH_MPI_LOG
+/// Helper stream type for logging MPI activities, only active if MTL_WITH_MPI_LOG
 struct mpi_log_t
 {
     template <typename T>
@@ -30,7 +30,9 @@ struct mpi_log_t
 #     endif
 	return *this;
     }
-} mpi_log;
+} 
+/// Helper stream for logging MPI activities, only active if MTL_WITH_MPI_LOG
+mpi_log;
 
 }} // namespace mtl::par
 
