@@ -127,6 +127,23 @@ class ic_0
 }; 
 
 
+#ifdef MTL_HAS_MPI
+
+/// Diagonal Preconditioner for distributed matrices
+template <typename Matrix>
+class ic_0<mtl::matrix::distributed<Matrix> >
+  : public block<mtl::matrix::distributed<Matrix>, ic_0<Matrix> >
+{
+    typedef mtl::matrix::distributed<Matrix>      matrix_type;
+    typedef block<matrix_type, ic_0<Matrix> >     base;
+  public:
+    /// Constructor takes matrix reference
+    explicit ic_0(const matrix_type& A) : base(A) {}
+};
+
+#endif // MTL_HAS_MPI
+
+
 template <typename Matrix, typename Vector>
 Vector solve(const ic_0<Matrix>& P, const Vector& x)
 {
