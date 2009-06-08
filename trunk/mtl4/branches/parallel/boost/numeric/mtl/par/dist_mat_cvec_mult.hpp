@@ -20,6 +20,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/par/comm_scheme.hpp>
+#include <boost/numeric/mtl/par/mpi_log.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
@@ -49,7 +50,7 @@ dist_mat_cvec_mult_handle inline
 dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, 
 			 tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
-    std::cerr << "[nonblocking] initialization" << std::endl;
+    mtl::par::mpi_log << "[nonblocking] initialization" << '\n';
     typedef typename Matrix::send_structure        send_structure;
     typedef typename Matrix::recv_structure        recv_structure;
     struct dist_mat_cvec_mult_handle handle;
@@ -61,7 +62,7 @@ dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
 	handle.reqs.push_back(communicator(v).isend(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices))); // pointer and size
     }
 
-    std::cerr << "[nonblocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << std::endl;
+    mtl::par::mpi_log << "[nonblocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << '\n';
     
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
 
@@ -146,14 +147,14 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
 	//     this works also for a list but distance has linear complexity then
         // we have a send request
         h.reqs.erase(res.second);
-        std::cerr << "[nonblocking] finished sending my data" << std::endl;
+        mtl::par::mpi_log << "[nonblocking] finished sending my data" << '\n';
       } else { 
         // we have a receive request 
         h.reqs.erase(res.second);
 
         const recv_structure s = (*A.recv_info.find(p)).second;
 
-        std::cerr << "[nonblocking] received data from rank " << p << " of size " << s.size << std::endl;
+        mtl::par::mpi_log << "[nonblocking] received data from rank " << p << " of size " << s.size << '\n';
           mat_cvec_mult(const_cast<Matrix&>(A).remote_matrices[p], // Scheiss std::map!!!
 		      recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w), assign_mode());
       }
@@ -185,7 +186,7 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
 	communicator(v).send(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices)); // pointer and size
     }
     boost::mpi::status st;
-    std::cerr << "[blocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << std::endl;
+    mtl::par::mpi_log << "[blocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << '\n';
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
