@@ -19,11 +19,14 @@
 
 #include <boost/mpi/communicator.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/par/distribution.hpp>
 
 namespace mtl { namespace par {
 
 /// ostream that writes only on first processor; by default on std::cout using MPI_WORLD
-struct single_ostream
+/** Doesn't work with std::endl yet!!! **/
+struct single_ostream 
+  : public std::ostream 
 {
     /// Constructor for out or std::cout and MPI_WORLD
     single_ostream(std::ostream& out = std::cout) : out(out), comm(boost::mpi::communicator()) {} 
@@ -32,7 +35,13 @@ struct single_ostream
     /// Constructor for out and dist's communicator
     single_ostream(std::ostream& out, const base_distribution& dist) : out(out), comm(communicator(dist)) {} 
 
-    template <typename T> friend single_ostream& operator<<(single_ostream& os, const T& v);
+    template <typename T>
+    single_ostream& operator<<(const T& v)
+    {
+	if(traits::is_distributed<T>::value || comm.rank() == 0)
+	    out << v;
+	return *this;
+    }
 
     /// Flush output
     void flush() { if (comm.rank() == 0) out.flush(); }
@@ -41,16 +50,10 @@ struct single_ostream
     boost::mpi::communicator comm;
 };
 
-
-/// The output command
-template <typename T>
-inline single_ostream& operator<<(single_ostream& os, const T& v)
+single_ostream& endl(single_ostream& os)
 {
-    if(traits::is_distributed<T>::value || os.comm.rank() == 0)
-	os.out << v;
-    return os;
+    os << "\n"; os.flush(); return os;
 }
-
 
 }} // namespace mtl::par
 

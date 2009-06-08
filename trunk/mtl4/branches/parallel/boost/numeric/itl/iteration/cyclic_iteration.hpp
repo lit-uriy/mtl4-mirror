@@ -13,6 +13,7 @@
 #define ITL_CYCLIC_ITERATION_INCLUDE
 
 #include <iostream>
+#include <boost/numeric/mtl/mtl_fwd.hpp> // Shouldn't be needed
 #include <boost/numeric/itl/iteration/basic_iteration.hpp>
 
 namespace itl {
@@ -26,9 +27,7 @@ namespace itl {
       {
 	  if (this->i % cycle == 0)
 	      if (this->i != last_print) { // Avoid multiple print-outs in same iteration
-		  // out
-		  std::cout
-		      << "iteration " << this->i << ": resid " << this->resid() << std::endl;
+		  out << "iteration " << this->i << ": resid " << this->resid() << "\n";
 		  last_print= this->i;
 	      }
       }
@@ -54,14 +53,13 @@ namespace itl {
 
       int error_code() 
       {
-	  // out 
-	  std::cout  
-	      << "finished! error code = " << this->error << '\n'
+	  // out  << std::endl; // endl is insanely implemented, doesnt work with my classes
+	  out << "finished! error code = " << this->error << '\n'
 	      << this->iterations() << " iterations\n"
 	      << this->resid() << " is actual final residual. \n"
 	      << this->resid()/this->normb() << " is actual relative tolerance achieved. \n"
 	      << "Relative tol: " << this->rtol_ << "  Absolute tol: " << this->atol_ << '\n'
-	      << "Convergence:  " << pow(this->resid()/this->normb(), 1.0 / double(this->iterations())) << std::endl;
+	      << "Convergence:  " << pow(this->resid()/this->normb(), 1.0 / double(this->iterations())) << "\n";
 	  return this->error;
       }
     protected:
