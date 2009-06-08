@@ -25,6 +25,11 @@ int test_main(int argc, char* argv[])
 
     mpi::environment env(argc, argv);
     
+#if 0 // What's wrong with that????
+    std::string fname= mtl::io::join(mtl::io::directory_name(argv[0]), "matrix_market/laplace_3x4.mtx");
+    matrix::distributed<matrix::compressed2D<double> > A(mtl::io::matrix_market(fname));
+#endif
+
     std::string program_dir= mtl::io::directory_name(argv[0]);
     matrix::distributed<matrix::compressed2D<double> > A(mtl::io::matrix_market(mtl::io::join(program_dir, "matrix_market/laplace_3x4.mtx")));
     mtl::par::single_ostream() << "Matrix A is\n " << A << '\n';
