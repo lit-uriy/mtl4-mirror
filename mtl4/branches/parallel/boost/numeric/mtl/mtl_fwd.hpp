@@ -56,7 +56,6 @@ namespace mtl {
 	class block_cyclic_distribution;
 
 	struct single_ostream;
-	template <typename T> single_ostream& operator<<(single_ostream& os, const T& v);
     }
     
 
