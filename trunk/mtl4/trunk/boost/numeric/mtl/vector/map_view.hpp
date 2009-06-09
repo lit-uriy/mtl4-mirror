@@ -42,10 +42,6 @@ struct map_view
     typedef typename Functor::result_type              const_reference;
     typedef typename Vector::size_type                 size_type;
 
-    // Deprecated: concept map defined in collection.hpp
-    // typedef typename Vector::orientation               orientation;
-    
-
     map_view (const Functor& functor, const other& ref) 
 	: expr_base(*this), functor(functor), ref(ref) 
     {
@@ -58,26 +54,10 @@ struct map_view
 	ref.delay_assign();
     }
 
-    size_type size() const 
-    { 
-	return ref.size(); 
-    }
-    
-    size_type stride() const 
-    { 
-	return ref.stride(); 
-    }
-
-    const_reference operator() (size_type i) const
-    { 
-        return functor(ref(i));
-    }
-
-    const_reference operator[] (size_type i) const
-    { 
-        return functor(ref[i]);
-    }
-    
+    size_type size() const { return ref.size(); }
+    size_type stride() const { 	return ref.stride(); }
+    const_reference operator() (size_type i) const { return functor(ref(i)); }
+    const_reference operator[] (size_type i) const { return functor(ref[i]); }
     void delay_assign() const {}
     
     template <typename, typename> friend struct detail::map_value;
@@ -86,7 +66,6 @@ struct map_view
     boost::shared_ptr<Vector>           my_copy;
   public:
     Functor           functor;
-    // const other&      ref;
     // ref is a const& if Vector is a true vector and a copy if it is an expression
     typename mtl::traits::copy_expression_const_ref_container<Vector>::type ref;
 };
