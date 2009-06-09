@@ -51,49 +51,6 @@ struct compute_summand< mat_cvec_times_expr<Matrix, CVector> >
     CVector value;
 };
 	
-#if 0
-template <class E1, class E2, typename SFunctor>
-struct compute_summand< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
-{
-    typedef vector::vec_vec_pmop_expr<E1, E2, SFunctor> type;
-    compute_summand(const type& expr) : value(expr) {}
-    type value;
-};
-
-template <typename Scaling, typename Vector>
-struct compute_summand< vector::scaled_view<Scaling, Vector> >
-{
-    typedef vector::scaled_view<Scaling, Vector> type;
-    compute_summand(const type& expr) : value(expr) {}
-    type value;
-};
-
-
-template <typename Vector, typename RScaling>
-struct compute_summand< vector::rscaled_view<Vector, RScaling> >
-{
-    typedef vector::rscaled_view<Vector, RScaling> type;
-    compute_summand(const type& expr) : value(expr) {}
-    type value;
-};
-
-template <typename Vector, typename Divisor>
-struct compute_summand< vector::divide_by_view<Vector, Divisor> >
-{
-    typedef vector::divide_by_view<Vector, Divisor> type;
-    compute_summand(const type& expr) : value(expr) {}
-    type value;
-};
-
-template <typename Vector>
-struct compute_summand< vector::conj_view<Vector> >
-{
-    typedef vector::conj_view<Vector> type;
-    compute_summand(const type& expr) : value(expr) {}
-    type value;
-};
-#endif
-
 }} // namespace mtl::operation
 
 #endif // MTL__OPERATION_COMPUTE_SUMMAND_INCLUDE
