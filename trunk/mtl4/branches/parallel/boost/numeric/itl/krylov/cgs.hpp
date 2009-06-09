@@ -23,8 +23,10 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     Scalar     rho_1(0), rho_2(0), alpha(0), beta(0);
     Vector     p(size(x)), phat(size(x)), q(size(x)), qhat(size(x)), vhat(size(x)),
-	       u(size(x)), uhat(size(x)), r(b - A * x), rtilde= r;
-
+	       u(size(x)), uhat(size(x)), r(size(x)), rtilde(size(x));
+    
+    r= b - A * x;
+    rtilde= r;
 
     while (! iter.finished(r)) {
 	rho_1= dot(rtilde, r);

@@ -90,15 +90,28 @@ struct vec_vec_aop_expr
 	return first.size() ;
     }
 
-     value_type& operator() ( size_type i ) const {
+    value_type& operator() ( size_type i ) const 
+    {
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
-     }
+    }
 
-     value_type& operator[] ( size_type i ) const{
+    value_type& operator[] ( size_type i ) const
+    {
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
-     }
+    }
+    
+    // Might need refactoring
+    template <typename EE1, typename EE2, typename SSFunctor> 
+    friend typename DistributedVector< vec_vec_aop_expr<EE1, EE2, SSFunctor> >::distribution_type
+    distribution(const vec_vec_aop_expr<EE1, EE2, SSFunctor>& expr);
+#if 0
+    {
+	MTL_DEBUG_THROW_IF(distribution(expr.first) != distribution(expr.second), incompatible_distribution());
+	return distribution(expr.first);
+    }
+#endif
 
   private:
      mutable first_argument_type&        first ;

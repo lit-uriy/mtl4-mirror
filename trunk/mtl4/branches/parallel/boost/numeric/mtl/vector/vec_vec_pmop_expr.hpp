@@ -14,6 +14,7 @@
 
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/compute_summand.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl { namespace vector {
 
@@ -59,6 +60,17 @@ struct vec_vec_pmop_expr
     template <typename EE1, typename EE2, typename SSFunctor> 
     friend typename DistributedCollection< vec_vec_pmop_expr<EE1, EE2, SSFunctor> >::local_type
     local(const vec_vec_pmop_expr<EE1, EE2, SSFunctor>& expr);
+
+    // Might need refactoring
+    template <typename EE1, typename EE2, typename SSFunctor> 
+    friend typename DistributedVector< vector::vec_vec_pmop_expr<EE1, EE2, SSFunctor> >::distribution_type
+    distribution(const vec_vec_pmop_expr<EE1, EE2, SSFunctor>& expr);
+#if 0
+    {
+	MTL_DEBUG_THROW_IF(distribution(expr.first.value) != distribution(expr.second.value), incompatible_distribution());
+	return distribution(expr.first.value);
+    }
+#endif
 
   private:
     operation::compute_summand<E1> first;

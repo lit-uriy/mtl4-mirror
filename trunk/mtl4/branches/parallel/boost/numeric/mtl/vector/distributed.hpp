@@ -25,6 +25,8 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
+#include <boost/numeric/mtl/operation/local.hpp>
+#include <boost/numeric/mtl/operation/distribution.hpp>
 
 
 namespace mtl { namespace vector {
@@ -54,7 +56,7 @@ public:
 
     /// Constructor for vector with global size \p gsize and distribution \p dist
     explicit distributed(size_type gsize, const Distribution& dist) 
-	: gsize(gsize), dist(dist), local_vector(dist.num_local(gsize))  {}
+      : gsize(gsize), dist(dist), local_vector(dist.num_local(gsize))  {}
 
     /// Constructor for vector with global size \p gsize and distribution \p dist
     /** Uses default distribution **/
@@ -62,6 +64,15 @@ public:
       : gsize(gsize), dist(gsize), local_vector(dist.num_local(gsize), value) 
     {}
     
+#if 0
+    template <typename VectorSrc>
+    explicit distributed(const VectorSrc& src,
+			 typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
+      : gsize(size(src)), dist(distribution(src)), local_vector(dist.num_local(gsize))
+    {
+	*this= src;
+    }
+#endif
 
     self& operator=(self src)
     {
@@ -100,6 +111,7 @@ public:
 	return out;
     }
 
+    //template <typename, typename> friend const distribution_type& distribution(const & d);
     friend inline const distribution_type& distribution(const self& d) { return d.dist; }
     friend inline const boost::mpi::communicator& communicator(const self& d) { return communicator(d.dist); }
 			  
