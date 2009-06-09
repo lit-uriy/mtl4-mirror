@@ -13,6 +13,7 @@
 #define MTL__OPERATION_COMPUTE_SUMMAND_INCLUDE
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/utility/copy_expression_const_ref_container.hpp>
 
 namespace mtl { namespace operation {
 
@@ -30,7 +31,8 @@ struct compute_summand
 {
     typedef Expr type;
     compute_summand(const Expr& expr) : value(expr) {}
-    const Expr& value;
+    // value is a const& if Expr is a true vector and a copy if it is an expression
+    typename mtl::traits::copy_expression_const_ref_container<Expr>::type value;
 };
 
 
@@ -41,7 +43,7 @@ struct compute_summand< mat_cvec_times_expr<Matrix, CVector> >
     typedef CVector    type;
 
     compute_summand(const mat_cvec_times_expr<Matrix, CVector>& expr) 
-	: value(num_rows(expr.first))
+      : value(num_rows(expr.first))
     {
 	value= expr.first * expr.second;
     }
@@ -49,6 +51,7 @@ struct compute_summand< mat_cvec_times_expr<Matrix, CVector> >
     CVector value;
 };
 	
+#if 0
 template <class E1, class E2, typename SFunctor>
 struct compute_summand< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
 {
@@ -89,6 +92,7 @@ struct compute_summand< vector::conj_view<Vector> >
     compute_summand(const type& expr) : value(expr) {}
     type value;
 };
+#endif
 
 }} // namespace mtl::operation
 

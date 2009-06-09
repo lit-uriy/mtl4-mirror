@@ -86,8 +86,9 @@ struct map_view
     boost::shared_ptr<Vector>           my_copy;
   public:
     Functor           functor;
-    const other&      ref;
-
+    // const other&      ref;
+    // ref is a const& if Vector is a true vector and a copy if it is an expression
+    typename mtl::traits::copy_expression_const_ref_container<Vector>::type ref;
 };
 
 // ================
