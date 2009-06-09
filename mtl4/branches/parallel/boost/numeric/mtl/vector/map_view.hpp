@@ -81,7 +81,11 @@ struct map_view
     void delay_assign() const {}
     
     template <typename, typename> friend struct detail::map_value;
-    template <typename F, typename C> friend typename DistributedCollection<vector::map_view<F, C> >::local_type local(const map_view<F, C>&);    
+    template <typename F, typename C> friend typename DistributedCollection< map_view<F, C> >::local_type local(const map_view<F, C>&);    
+
+    template <typename F, typename C> 
+    friend typename DistributedVector< map_view<F, C> >::distribution_type
+    distribution(const map_view<F, C>& expr);
 
   protected:
     boost::shared_ptr<Vector>           my_copy;

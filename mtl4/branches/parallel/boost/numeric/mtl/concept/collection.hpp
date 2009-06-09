@@ -12,6 +12,8 @@
 #ifndef MTL_COLLECTION_INCLUDE
 #define MTL_COLLECTION_INCLUDE
 
+#include <boost/type_traits/is_same.hpp>
+#include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <vector>
 
@@ -1125,7 +1127,66 @@ namespace mtl {
     };
 #endif
 
+// Concept versions will be added later
+#ifdef __GXX_CONCEPTS__
+#else
+    template <typename Vector>
+    struct DistributedVector {};
 
+    template <typename Vector, typename Distribution>
+    struct DistributedVector< vector::distributed<Vector, Distribution> >
+    {
+	typedef const Distribution& distribution_type;
+    };
+
+    template <typename E1, typename E2, typename SFunctor> 
+    struct DistributedVector< vector::vec_vec_aop_expr<E1, E2, SFunctor> >
+    {
+	typedef typename DistributedVector<E1>::distribution_type   expr1;
+	typedef typename DistributedVector<E2>::distribution_type   expr2;
+	// Both expressions must have the same distribution type
+	BOOST_STATIC_ASSERT((boost::is_same<expr1, expr2>::value));
+	typedef expr1 distribution_type;
+    };
+
+    template <typename E1, typename E2, typename SFunctor> 
+    struct DistributedVector< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
+    {
+	typedef vector::vec_vec_pmop_expr<E1, E2, SFunctor> expr;
+	typedef typename DistributedVector<typename expr::first_argument_type>::distribution_type   expr1;
+	typedef typename DistributedVector<typename expr::second_argument_type>::distribution_type  expr2;
+	// Both expressions must have the same distribution type
+	BOOST_STATIC_ASSERT((boost::is_same<expr1, expr2>::value));
+	typedef expr1 distribution_type;
+    };
+
+    template <typename Functor, typename Coll>
+    struct DistributedVector<vector::map_view<Functor, Coll> >
+    {
+	typedef typename DistributedVector<Coll>::distribution_type   distribution_type;
+    };
+
+    template <typename Scaling, typename Vector>
+    struct DistributedVector<vector::scaled_view<Scaling, Vector> >
+      : DistributedVector<vector::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, Vector> >
+    {};
+
+    template <typename Vector, typename RScaling>
+    struct DistributedVector<vector::rscaled_view<Vector, RScaling> >
+      : DistributedVector<vector::map_view<tfunctor::rscale<typename Vector::value_type, RScaling>, Vector> >
+    {};
+
+    template <typename Vector, typename Divisor>
+    struct DistributedVector<vector::divide_by_view<Vector, Divisor> >
+      : DistributedVector<vector::map_view<tfunctor::divide_by<typename Vector::value_type, Divisor>, Vector> >
+    {};
+
+    template <typename Vector>
+    struct DistributedVector<vector::conj_view<Vector> >
+      : DistributedVector<vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
+    {};
+
+#endif
 
 /*@}*/ // end of group Concepts
 
