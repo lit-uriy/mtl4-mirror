@@ -37,6 +37,8 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp> 
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
+#include <boost/numeric/mtl/operation/num_rows.hpp>
+#include <boost/numeric/mtl/operation/num_cols.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -783,7 +785,7 @@ compressed2D_inserter<Elt, Parameters, Updater>&
 compressed2D_inserter<Elt, Parameters, Updater>::sorted_block_insertion(const element_matrix_t<Matrix, Rows, Cols>& iblock)
 {
     using std::copy; using std::copy_backward; using std::min;
-    using mtl::size;
+    using mtl::size; using mtl::num_rows; using mtl::num_cols;
     using namespace mtl::utility;
     typedef zip_it<size_type, value_type> it_type;
 
