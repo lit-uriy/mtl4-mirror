@@ -27,8 +27,10 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
     using mtl::conj;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     Scalar     rho_1(0), rho_2(0), alpha(0), beta(0);
-    Vector     r(b - A * x), z(size(x)), p(size(x)), q(size(x)),
- 	       r_tilde(r), z_tilde(size(x)), p_tilde(size(x)), q_tilde(size(x));
+    Vector     r(size(x)), z(size(x)), p(size(x)), q(size(x)),
+ 	       r_tilde(size(x)), z_tilde(size(x)), p_tilde(size(x)), q_tilde(size(x));
+
+    r= b - A * x; r_tilde= x; // Constructors need fixing
 
     while (! iter.finished(r)) {
 	z= solve(M, r);
