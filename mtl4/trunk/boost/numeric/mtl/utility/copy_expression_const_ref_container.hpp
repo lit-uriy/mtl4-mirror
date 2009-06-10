@@ -38,6 +38,18 @@ struct copy_expression_const_ref_container< vector::vec_vec_aop_expr<E1, E2, SFu
     typedef vector::vec_vec_aop_expr<E1, E2, SFunctor> type;
 };
 
+template <typename Functor, typename Vector> 
+struct copy_expression_const_ref_container< vector::map_view<Functor, Vector> >
+{
+    typedef vector::map_view<Functor, Vector> type;
+};
+
+template <typename Scaling, typename Vector>
+struct copy_expression_const_ref_container< vector::scaled_view<Scaling, Vector> >
+{
+    typedef vector::scaled_view<Scaling, Vector> type;
+};
+
 template <typename Vector, typename RScaling>
 struct copy_expression_const_ref_container< vector::rscaled_view<Vector, RScaling> >
 {
