@@ -25,10 +25,10 @@ namespace mtl {
 #endif
 
 #ifdef MTL_SORTED_BLOCK_INSERTION_LIMIT
-	/// Maximal number of entries that is searched linearly; above this std::lower_bound is used.
-	const unsigned sorted_block_insertion_limit= MTL_SORTED_BLOCK_INSERTION_LIMIT
+	/// Maximal number of columns in block that is inserted separately; above this the block is presorted (only row-major sparse matrices).
+	const unsigned sorted_block_insertion_limit= MTL_SORTED_BLOCK_INSERTION_LIMIT;
 #else
-	const unsigned sorted_block_insertion_limit= 3;
+	const unsigned sorted_block_insertion_limit= 5;
 #endif
 
     }
