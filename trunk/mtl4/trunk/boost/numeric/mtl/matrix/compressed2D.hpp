@@ -582,7 +582,7 @@ struct compressed2D_inserter
     self& operator<< (const element_matrix_t<Matrix, Rows, Cols>& elements)
     {
 	using mtl::size;
-#if 0 // unfortunately slower
+#if 1 // shouldn't be slower slower
 	if (size(elements.cols) > sorted_block_insertion_limit
 	    && boost::is_same<typename Parameters::orientation, row_major>::value)
 	    return sorted_block_insertion(elements);
@@ -820,7 +820,18 @@ compressed2D_inserter<Elt, Parameters, Updater>::sorted_block_insertion(const el
 		// reduce equal entries (they are consecutive)
 		if (tgt < tend)
 		    while (src < end && indices[src] == indices[tgt])
-			Updater()(elements[tgt], elements[src++]);		    
+			Updater()(elements[tgt], elements[src++]);
+		else { // all new entries are larger than the largest existing
+		    for (; src < end && tgt < starts[r+1]; ++src) { // copy at the end of slot
+			indices[tgt]= indices[src];
+			elements[tgt]= elements[src];
+			slot_ends[r]= ++tgt;
+			++matrix.my_nnz;
+		    }
+		    for (; src < end; ++src) // remainder goes into spare
+			update(r, indices[src], elements[src]);
+		    later= starts[rmax]; // we're done, avoid postponed loop
+		}
 		// collect indices not found in r to deal with later    
 		while (src < end && indices[src] < indices[tgt]) {
 		    if (later != src) {
