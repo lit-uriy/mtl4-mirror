@@ -150,6 +150,16 @@ namespace mtl {
 	template <typename Value, typename Parameters>
 	typename dense_vector<Value, Parameters>::size_type
 	inline num_cols(const dense_vector<Value, Parameters>& vector);
+
+	/// Namespace for fixed vector dimension types
+	namespace fixed {
+	    template <std::size_t Size> struct dimension;
+	}
+	/// Namespace for non-fixed vector dimension types, i.e. size dynamically determined at run-time
+	namespace non_fixed {
+	    struct dimension;
+	}
+	    
     }
 
     using vector::dense_vector;
