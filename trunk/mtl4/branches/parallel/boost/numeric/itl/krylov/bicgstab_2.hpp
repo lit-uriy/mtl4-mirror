@@ -26,14 +26,18 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 {
     using math::zero; using math::one;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
-    Scalar     rho_0(0), rho_1(0), alpha(0), beta(0), gamma(0), 
-	       mu(0), nu(0), tau(0), omega_1(0), omega_2(0);
-    Vector     r(b - A * x), r_0(r), r_i(r), x_i(x), 
-               s(size(x)), t(size(x)), u(size(x)), v(size(x)), w(size(x));
+    Scalar     rho_0(1), rho_1(0), alpha(0), beta(0), gamma(0), 
+	       mu(0), nu(0), tau(0), omega_1(0), omega_2(1);
+    Vector     // r(b - A * x), r_0(r),  r_i(r), x_i(x), // Constructors need fixing! 
+	       r(size(x)), r_0(size(x)), r_i(size(x)), x_i(size(x)), 
+	       s(size(x)), t(size(x)), u(size(x), Scalar(0)), v(size(x)), w(size(x));
+
+    x_i= x;       // Doesn't work yet in constructor
+    r= b - A * x; // Doesn't work yet in constructor
+    r_0= r; r_i= r;
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
-    alpha= zero(b[0]); u= alpha; rho_0= omega_2= one(b[0]);
     while (! iter.finished(r)) {
 	rho_0= -omega_2 * rho_0;
 	// z= solve(M, r); z_tilde= solve(M, r_tilde); ???
