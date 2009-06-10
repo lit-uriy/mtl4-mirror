@@ -15,13 +15,14 @@
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/vector/dimension.hpp>
+#include <boost/numeric/mtl/utility/is_static.hpp>
 
 namespace mtl { namespace vector {
 
 // This type exist only for bundling template parameters (to reduce typing)
 template <typename Orientation= col_major, 
 	  typename Dimension= non_fixed::dimension,
-	  bool OnStack= false,
+	  bool OnStack= mtl::traits::is_static<Dimension>::value,
 	  bool RValue= false>
 struct parameters 
 {
