@@ -62,10 +62,7 @@ struct compressed_key
 	major= matrix.indexer.major_minor_c(matrix, r, c).first;
     }
 
-    compressed_key(compressed_key const& other) 
-    {
-	offset= other.offset; major= other.major;
-    }
+    compressed_key(compressed_key const& other) { offset= other.offset; major= other.major; }
 
     self& operator= (self const& other)
     {
@@ -82,10 +79,7 @@ struct compressed_key
 	return offset == other.offset;
     }
 
-    bool operator!= (compressed_key const& other)
-    {
-	return !(*this == other);
-    }
+    bool operator!= (compressed_key const& other) { return !(*this == other); }
 
     size_t       major;
     size_t       offset;
@@ -103,22 +97,15 @@ struct compressed_el_cursor
     typedef std::size_t                   size_t;
 
     explicit compressed_el_cursor(compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
-	: base(matrix, r, c), matrix(matrix)
-    {}
+	: base(matrix, r, c), matrix(matrix)    {}
 
     explicit compressed_el_cursor(compressed2D<Elt, Parameters> const& matrix, size_t offset) 
-	: base(matrix, offset), matrix(matrix)
-    {}
+	: base(matrix, offset), matrix(matrix)    {}
 
     compressed_el_cursor(const compressed_el_cursor<Elt, Parameters>& other) 
-	: base(other), matrix(other.matrix) 
-    {}
+	: base(other), matrix(other.matrix)     {}
 
-    self& operator= (self const& other)
-    {
-	base::operator=(other);
-	return *this;
-    }
+    self& operator= (self const& other) { base::operator=(other); return *this; }
 
     self& operator++ ()
     {
@@ -129,10 +116,7 @@ struct compressed_el_cursor
 	return *this;
     }
 
-    base& operator* ()
-    {
-	return *this;
-    }
+    base& operator* () { return *this; }
 
     compressed2D<Elt, Parameters> const& matrix;
 };
@@ -159,40 +143,14 @@ struct compressed_minor_cursor
     compressed_minor_cursor(self const& other) : base(other), matrix(other.matrix) {}
 
     self& operator= (self const& other)
-    {
-	base::operator=(other);
-	return *this;
-    }
+    {	base::operator=(other);	return *this; }
 
-    self& operator++()
-    {
-	++offset;
-	return *this;
-    }
+    self& operator++() { ++offset; return *this;  }
+    self& operator+=(size_t inc) { offset+= inc; return *this; }
+    self operator+(size_t inc) const  {	self tmp(*this); tmp+= inc; return tmp; }
 
-    self& operator+=(size_t inc)
-    {
-	offset+= inc;
-	return *this;
-    }
-
-    self operator+(size_t inc) const
-    {
-	self tmp(*this);
-	tmp+= inc;
-	return tmp;
-    }
-
-    self& operator--()
-    {
-	--offset;
-	return *this;
-    }
-
-    base& operator* ()
-    {
-	return *this;
-    }
+    self& operator--() { --offset; return *this; }
+    base& operator* () { return *this; }
 
     mtl::compressed2D<Elt, Parameters> const& matrix;
 };
@@ -299,6 +257,16 @@ class compressed2D
     typedef mat_expr< compressed2D<Elt, Parameters> >          expr_base;
     typedef crtp_matrix_assign< self, Elt, std::size_t >       assign_base;
 
+    // Only allocation of new data, doesn't copy if already existent
+    void allocate(size_t new_nnz)
+    {
+	if (new_nnz) {
+	    this->my_nnz = new_nnz;
+	    data.resize(this->my_nnz);
+	    indices.resize(this->my_nnz, 0);
+	}
+    }
+
   public:
     typedef Parameters                               parameters;
     typedef typename Parameters::orientation         orientation;
@@ -312,19 +280,12 @@ class compressed2D
     typedef size_t                                   size_type;
     typedef compressed2D_indexer                     indexer_type;
 
-    // Only allocation of new data, doesn't copy if already existent
-    void allocate(size_t new_nnz)
-    {
-	if (new_nnz) {
-	    this->my_nnz = new_nnz;
-	    data.resize(this->my_nnz);
-	    indices.resize(this->my_nnz, 0);
-	}
-    }
+    void check() const { MTL_DEBUG_THROW_IF(inserting, access_during_insertion()); }
 
     /// Removes all values; e.g. for set_to_zero
     void make_empty()
     {
+	check();
 	this->my_nnz = 0;
 	data.resize(0);
 	indices.resize(0);
@@ -334,6 +295,7 @@ class compressed2D
     /// Change dimension of the matrix; data get lost.
     void change_dim(size_type r, size_type c)
     {
+	check();
 	if (this->num_rows() != r || this->num_cols() != c) {
 	    super::change_dim(mtl::non_fixed::dimensions(r, c));
 	    starts.resize(this->dim1()+1);
@@ -343,15 +305,13 @@ class compressed2D
 
     // if compile time matrix size, we can set the start vector
     /// Default constructor
-    explicit compressed2D () 
-	: super(), inserting(false)
+    explicit compressed2D () : super(), inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
 
     /// Setting dimension and allocate starting vector
-    explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
-      : super(d), inserting(false)
+    explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) : super(d), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);
@@ -366,8 +326,7 @@ class compressed2D
     }
 
     /// Copy constructor
-    compressed2D(const self& src)
-      : super(non_fixed::dimensions(src.num_rows(), src.num_cols())), inserting(false)
+    compressed2D(const self& src) : super(non_fixed::dimensions(src.num_rows(), src.num_cols())), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	matrix_copy(src, *this);
@@ -375,8 +334,7 @@ class compressed2D
 
     /// Copy from other types
     template <typename MatrixSrc>
-    explicit compressed2D (const MatrixSrc& src) 
-      : super(), inserting(false)
+    explicit compressed2D (const MatrixSrc& src) : super(), inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
 	*this= src;
@@ -386,10 +344,9 @@ class compressed2D
     /// Consuming assignment operator
     self& operator=(self src)
     {
-	// Self-copy would be an indication of an error
-	assert(this != &src);
+	assert(this != &src);  // Self-copy would be an indication of an error
 	
-	check_dim(src.num_rows(), src.num_cols());
+	check(); check_dim(src.num_rows(), src.num_cols());
 	swap(*this, src);
 	return *this;
     }
@@ -418,8 +375,7 @@ class compressed2D
     const_reference operator() (size_type row, size_type col) const
     {
 	using math::zero;
-        MTL_DEBUG_THROW_IF(inserting, logic_error("Reading data during insertion has undefined behavior"));
-	MTL_DEBUG_THROW_IF(row < 0 || row >= this->num_rows() || col < 0 || col >= this->num_cols(), index_out_of_range());
+	check(); MTL_DEBUG_THROW_IF(row < 0 || row >= this->num_rows() || col < 0 || col >= this->num_cols(), index_out_of_range());
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
 	return pos ? data[pos] : zero(value_type()); 
     }
@@ -429,20 +385,20 @@ class compressed2D
     value_type& lvalue(size_type row, size_type col)
     {
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
-	MTL_DEBUG_THROW_IF(!pos, logic_error("This entry does not exist in the matrix"));
+	check(); MTL_DEBUG_THROW_IF(!pos, logic_error("This entry does not exist in the matrix"));
 	return data[pos];
     }
 
     // For internal use
     const value_type& value_from_offset(size_type offset) const
     {
-	MTL_DEBUG_THROW_IF(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
+	check(); MTL_DEBUG_THROW_IF(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
 	return data[offset];
     }
 
     value_type& value_from_offset(size_type offset)
     {
-	MTL_DEBUG_THROW_IF(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
+	check(); MTL_DEBUG_THROW_IF(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
 	return data[offset];
     }
 
@@ -461,6 +417,7 @@ class compressed2D
     /// Remove zero entries
     void crop()
     {
+	check(); 
 	if (data.empty()) return;
 
 	using math::zero;
@@ -484,14 +441,14 @@ class compressed2D
     
 
     /// Address of first major index; to be used with care.
-    size_type* address_major() { return &starts[0]; }
-    const size_type* address_major() const { return &starts[0]; }
+    size_type* address_major() { check(); return &starts[0]; }
+    const size_type* address_major() const { check(); return &starts[0]; }
     /// Address of first minor index; to be used with care.
-    size_type* address_minor() { return &indices[0]; }
-    const size_type* address_minor() const { return &indices[0]; }
+    size_type* address_minor() { check(); return &indices[0]; }
+    const size_type* address_minor() const { check(); return &indices[0]; }
     /// Address of first data entry; to be used with care.
-    value_type* address_data() { return &data[0]; }
-    const value_type* address_data() const { return &data[0]; }
+    value_type* address_data() { check(); return &data[0]; }
+    const value_type* address_data() const { check(); return &data[0]; }
 
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
@@ -532,10 +489,7 @@ struct compressed2D_inserter
     {
 	bracket_proxy(self& ref, size_type row) : ref(ref), row(row) {}
 	
-	proxy_type operator[](size_type col)
-	{
-	    return proxy_type(ref, row, col);
-	}
+	proxy_type operator[](size_type col) { return proxy_type(ref, row, col); }
 
 	self&      ref;
 	size_type  row;
@@ -955,6 +909,7 @@ inline size(const compressed2D<Value, Parameters>& matrix)
     return matrix.num_cols() * matrix.num_rows();
 }
 
+
 }} // namespace mtl::matrix
 
 
@@ -1094,7 +1049,7 @@ namespace mtl { namespace traits {
 	typedef compressed2D<Elt, Parameters>                                         matrix_type;
 	typedef typename matrix_type::size_type                                       size_type;
 	typedef typename matrix_type::value_type                                      value_type;
-	typedef detail::sub_matrix_cursor<matrix_type, glas::tag::col, 2>          cursor;
+	typedef detail::sub_matrix_cursor<matrix_type, glas::tag::col, 2>             cursor;
 	
 	typedef complexity_classes::linear_cached                                     complexity;
 	static int const                                                              level = 1;
