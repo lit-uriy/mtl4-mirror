@@ -79,34 +79,28 @@ bad_typeid
 #endif
 
 /// Exception for indices out of range
-struct index_out_of_range
-    : public std::out_of_range
+struct index_out_of_range : public std::out_of_range
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit index_out_of_range(const char *s= "Index out of range") 
-	: std::out_of_range(s) {}
+    explicit index_out_of_range(const char *s= "Index out of range") : std::out_of_range(s) {}
 };
 
 /// Exception for invalid range definitions, esp. in constructors
-struct range_error
-    : public std::range_error
+struct range_error : public std::range_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit range_error(const char *s= "Invalid range") : std::range_error(s) {}
 };
 
 /// Domain errors in MTL4
-struct domain_error
-    : public std::domain_error
+struct domain_error : public std::domain_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit domain_error(const char *s= "MTL4 domain error.")
-	: std::domain_error(s) {}
+    explicit domain_error(const char *s= "MTL4 domain error.") : std::domain_error(s) {}
 };
 
 /// Exception for arguments with incompatible sizes
-struct incompatible_size
-    : public domain_error
+struct incompatible_size : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit incompatible_size(const char *s= "Arguments have incompatible size.")
@@ -114,8 +108,7 @@ struct incompatible_size
 };
 
 /// Exception for trying to change a fixed size (to another value)
-struct change_static_size
-    : public domain_error
+struct change_static_size : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit change_static_size(const char *s= "You try to change a fixed size (to another value).")
@@ -123,8 +116,7 @@ struct change_static_size
 };
 
 /// Exception for arguments with incompatible shapes, e.g. adding matrices and vectors
-struct argument_result_conflict
-    : public domain_error
+struct argument_result_conflict : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit argument_result_conflict(const char *s= "Used same object illegally as argument and result.")
@@ -132,8 +124,7 @@ struct argument_result_conflict
 };
 
 /// Exception for arguments with incompatible shapes, e.g. adding matrices and vectors
-struct incompatible_shape
-    : public domain_error
+struct incompatible_shape : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit incompatible_shape(const char *s= "Arguments have incompatible shape.")
@@ -141,8 +132,7 @@ struct incompatible_shape
 };
 
 /// Exception for arguments with incompatible sizes
-struct matrix_not_square
-    : public domain_error
+struct matrix_not_square : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit matrix_not_square(const char *s= "Matrix must be square for this operation.")
@@ -150,17 +140,23 @@ struct matrix_not_square
 };
 
 /// Exception for arguments with incompatible sizes
-struct missing_diagonal
-    : public domain_error
+struct missing_diagonal : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit missing_diagonal(const char *s= "Diagonal entry missing or not where it belongs to.")
 	: domain_error(s) {}
 };
 
+/// Accessing (illegally) matrix or vector during insertion phase (dense non-distributed can be accessed always)
+struct access_during_insertion : public domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit access_during_insertion(const char *s= "Diagonal entry missing or not where it belongs to.")
+	: domain_error(s) {}
+};
+
 /// Exception for a result that is not what it should be
-struct unexpected_result
-    : public domain_error
+struct unexpected_result : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit unexpected_result(const char *s= "The result of an operation is not the expected one.")
@@ -168,21 +164,17 @@ struct unexpected_result
 };
 
 /// Exception for run-time errors that doesn't fit into specific categories
-struct runtime_error
-    : public std::runtime_error
+struct runtime_error : public std::runtime_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit runtime_error(const char *s= "Run-time error")
-	: std::runtime_error(s) {}
+    explicit runtime_error(const char *s= "Run-time error") : std::runtime_error(s) {}
 };
 
 /// Exception for logic errors that doesn't fit into specific categories
-struct logic_error
-    : public std::logic_error
+struct logic_error : public std::logic_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit logic_error(const char *s= "Logic error")
-	: std::logic_error(s) {}
+    explicit logic_error(const char *s= "Logic error") : std::logic_error(s) {}
 };
 
 } // namespace mtl
