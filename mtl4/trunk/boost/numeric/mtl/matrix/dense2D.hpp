@@ -526,6 +526,10 @@ namespace mtl { namespace traits {
 	{
 	    return dispatch(c, c.ref.end_col(), typename matrix::orientation());
 	}	
+	type lower_bound(cursor const& c, unsigned position)
+	{
+	    return dispatch(c, std::min(c.ref.end_col(), position), typename matrix::orientation());
+	}
     };
 
     template <typename Value, typename Parameters>
@@ -580,6 +584,10 @@ namespace mtl { namespace traits {
 	type end(cursor const& c)
 	{
 	    return dispatch(c, c.ref.end_row(), typename matrix::orientation());
+	}
+	type lower_bound(cursor const& c, unsigned position)
+	{
+	    return dispatch(c, std::min(c.ref.end_row(), position), typename matrix::orientation());
 	}	
     };
 

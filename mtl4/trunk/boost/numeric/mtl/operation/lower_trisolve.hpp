@@ -57,10 +57,14 @@ namespace detail {
 
 	Vector result(v);
 
-	a_cur_type ac= begin<row>(A), aend= end<row>(A); 
-	for (int r= 0; ac != aend; ++r, ++ac) {
+	a_cur_type ac= begin<row>(A), aend= end<row>(A);
+	++ac;
+	for (int r= 1; ac != aend; ++r, ++ac) {
 	    a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac);
+
 	    adjust_cursor(r - num_rows(A), aiend, typename traits::category<Matrix>::type());
+	    // this is linear search --> needs improvement!!!
+	    // while(col_a(*aiend) > r) --aiend;
 
 	    typename Collection<Vector>::value_type rr= result[r];
 
