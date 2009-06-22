@@ -61,12 +61,6 @@ namespace detail {
 	++ac;
 	for (int r= 1; ac != aend; ++r, ++ac) {
 	    a_icur_type aic= begin<nz>(ac), aiend= lower_bound<nz>(ac, r);
-
-	    // adjust_cursor(r - num_rows(A), aiend, typename traits::category<Matrix>::type());
-	    // this is linear search --> needs improvement!!!
-	    // while(col_a(*aiend) > r) --aiend;
-      
-
 	    typename Collection<Vector>::value_type rr= result[r];
 
 	    for (; aic != aiend; ++aic) {
@@ -97,9 +91,7 @@ namespace detail {
 	a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	for (int r= 0; ac != aend; ++r, ++ac) {
 	    a_icur_type aic= begin<nz>(ac), aiend= lower_bound<nz>(ac, r+1);
-	    //adjust_cursor(r - num_rows(A) + 1, aiend, typename traits::category<Matrix>::type());
 	    MTL_THROW_IF(aic == aiend || col_a(*--aiend) != r, missing_diagonal());
-	    //MTL_THROW_IF(aic == aiend || col_a(*aiend) != r, missing_diagonal());
 
 	    value_type dia= value_a(*aiend);
 	    typename Collection<Vector>::value_type rr= result[r];
@@ -129,8 +121,6 @@ namespace detail {
 	a_cur_type ac= begin<col>(A), aend= end<col>(A); 
 	for (int r= 0; ac != aend; ++r, ++ac) {
 	    a_icur_type aic= lower_bound<nz>(ac, r+1), aiend= end<nz>(ac);
-	    //adjust_cursor(r + 1, aic, typename mtl::traits::category<Matrix>::type());
-
 	    typename Collection<Vector>::value_type rr= result[r];
 
 	    for (; aic != aiend; ++aic) {
@@ -156,8 +146,6 @@ namespace detail {
 	a_cur_type ac= begin<col>(A), aend= end<col>(A); 
 	for (int r= 0; ac != aend; ++r, ++ac) {
 	    a_icur_type aic= lower_bound<nz>(ac, r), aiend= end<nz>(ac);
-	    // adjust_cursor(r, aic, typename mtl::traits::category<Matrix>::type());
-
 	    MTL_DEBUG_THROW_IF(aic == aiend || row_a(*aic) != r, missing_diagonal());
 	    typename Collection<Vector>::value_type rr= result[r]*= lower_trisolve_diavalue(value_a(*aic), DiaTag());
 
