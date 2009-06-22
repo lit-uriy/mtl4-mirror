@@ -74,8 +74,8 @@ struct compressed_key
     {
 	//if (offset == other.offset && major != other.major) 
 	//    std::cout << offset << " " << other.offset << " " << major << " " << other.major << '\n';
-	MTL_DEBUG_THROW_IF(offset == other.offset && major != other.major,
-			      logic_error("equal offsets imply equal major"));
+	// The following tests doesn't hold everywhere (anymore)
+	// MTL_DEBUG_THROW_IF(offset == other.offset && major != other.major, logic_error("equal offsets imply equal major"));
 	return offset == other.offset;
     }
 
