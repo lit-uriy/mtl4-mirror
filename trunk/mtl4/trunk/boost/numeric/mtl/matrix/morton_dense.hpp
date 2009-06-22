@@ -636,13 +636,17 @@ namespace mtl { namespace traits {
 	static int const                                                 level = 1;
 	typedef morton_dense_col_cursor<BitMask>                         type;
 	
-	type begin(cursor const& c)
+	type begin(cursor const& c) const
 	{
 	    return type(c.key, c.ref.begin_col());
 	}
-	type end(cursor const& c)
+	type end(cursor const& c) const
 	{
 	    return type(c.key, c.ref.end_col());
+	}
+	type lower_bound(cursor const& c, unsigned position) const
+	{
+	    return type(c.key, std::min(c.ref.end_col(), position));
 	}
     };
 
@@ -676,6 +680,10 @@ namespace mtl { namespace traits {
 	type end(cursor const& c)
 	{
 	    return type(c.ref.end_row(), c.key);
+	}
+	type lower_bound(cursor const& c, unsigned position) const
+	{
+	    return type(std::min(c.ref.end_row(), position), c.key);
 	}
     };
 

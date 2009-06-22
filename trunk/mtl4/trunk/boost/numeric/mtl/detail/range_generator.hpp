@@ -106,6 +106,10 @@ namespace mtl { namespace traits { namespace detail {
 	{
 	    return type(c.end_row(), c);
 	}
+	type lower_bound(Matrix const& c, unsigned position)
+	{
+	    return type(std::min(c.end_row(), position), c);
+	}
     };
 
 
@@ -123,6 +127,10 @@ namespace mtl { namespace traits { namespace detail {
 	type end(Matrix const& c)
 	{
 	    return type(c.end_col(), c);
+	}
+	type lower_bound(Matrix const& c, unsigned position)
+	{
+	    return type(std::min(c.end_col(), position), c);
 	}
     };
 
@@ -142,6 +150,10 @@ namespace mtl { namespace traits { namespace detail {
 	type end(const Collection& c)
 	{
 	    return RangeGenerator().end(c.ref);
+	}
+	type lower_bound(const Collection& c, unsigned position)
+	{
+	    return RangeGenerator().lower_bound(c.ref, position);
 	}
     };
 

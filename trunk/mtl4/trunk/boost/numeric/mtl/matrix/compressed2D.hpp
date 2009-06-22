@@ -117,6 +117,7 @@ struct compressed_el_cursor
     }
 
     base& operator* () { return *this; }
+    const base& operator* () const { return *this; }
 
     compressed2D<Elt, Parameters> const& matrix;
 };
@@ -151,6 +152,7 @@ struct compressed_minor_cursor
 
     self& operator--() { --offset; return *this; }
     base& operator* () { return *this; }
+    const base& operator* () const { return *this; }
 
     mtl::compressed2D<Elt, Parameters> const& matrix;
 };
@@ -965,6 +967,11 @@ namespace mtl { namespace traits {
 	{
 	    return type(cursor.ref, cursor.key, cursor.ref.end_col());
 	}
+	type lower_bound(cursor_type const& cursor, unsigned position) const
+	{
+	    std::size_t offset= cursor.ref.indexer(cursor.ref, cursor.key, position);
+	    return type(cursor.ref, offset);
+	}
     };
 
     // Cursor over all columns
@@ -994,6 +1001,11 @@ namespace mtl { namespace traits {
 	type end(cursor_type const& cursor) const
 	{
 	    return type(cursor.ref, cursor.ref.end_row(), cursor.key);
+	}
+	type lower_bound(cursor_type const& cursor, unsigned position) const
+	{
+	    std::size_t offset= cursor.ref.indexer(cursor.ref, position, cursor.key);
+	    return type(cursor.ref, offset);
 	}
     };
 

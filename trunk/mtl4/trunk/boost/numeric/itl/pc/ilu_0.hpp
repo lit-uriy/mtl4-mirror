@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 
+#include <boost/timer.hpp>
 
 namespace itl { namespace pc {
 
@@ -37,7 +38,9 @@ class ilu_0
     typedef ilu_0                                         self;
 
     typedef mtl::compressed2D<value_type, mtl::matrix::parameters<mtl::tag::col_major> > L_type;
+    // typedef mtl::compressed2D<value_type>                                                L_type;
     typedef mtl::compressed2D<value_type>                                                U_type;
+    typedef mtl::compressed2D<value_type>                     LU_type;
 
 
     // Factorization adapted from Saad
@@ -50,6 +53,7 @@ class ilu_0
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
+	// return inverse_upper_trisolve(LU, unit_lower_trisolve(LU, x));
 	return inverse_upper_trisolve(U, unit_lower_trisolve(L, x));
     }
 
@@ -75,16 +79,16 @@ class ilu_0
     {
         using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
 	using math::reciprocal; 
-
+      boost::timer init;
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 
-	typedef mtl::compressed2D<value_type>                     LU_type;
+	LU= A;
+
         typedef typename range_generator<row, LU_type>::type      cur_type;    
         typedef typename range_generator<nz, cur_type>::type      icur_type;            
-	LU_type                                                   LU= A;
         typename mtl::traits::col<LU_type>::type                  col(LU);
         typename mtl::traits::value<LU_type>::type                value(LU); 
-
+      std::cout << "Init took " << init.elapsed() << "s\n";  boost::timer fac;
 	mtl::dense_vector<value_type>                             inv_dia(num_rows(A));
 	cur_type ic= begin<row>(LU), iend= end<row>(LU);
 	for (size_type i= 0; ic != iend; ++ic, ++i) {
@@ -102,11 +106,15 @@ class ilu_0
 	    }
 	    inv_dia[i]= reciprocal(LU[i][i]);
 	}
-
-	U= upper(LU); crop(U); invert_diagonal(U);
+    std::cout << "Factorization took " << fac.elapsed() << "s\n";  boost::timer split;
+	invert_diagonal(LU); U= upper(LU); crop(U);
 	L= strict_lower(LU); crop(L);
+    std::cout << "spliting took " << split.elapsed() << "s\n";
     }
     
+
+
+    LU_type                      LU;
     L_type                       L;
     U_type                       U;
 }; 
