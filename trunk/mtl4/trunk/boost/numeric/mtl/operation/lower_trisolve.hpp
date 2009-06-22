@@ -39,9 +39,7 @@ namespace detail {
     Value inline lower_trisolve_diavalue(const Value& v, tag::inverse_diagonal)
     {
 	return v;
-    }
-
-    
+    }    
 
     template <typename Matrix, typename Vector>
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::row_major, tag::unit_diagonal)
