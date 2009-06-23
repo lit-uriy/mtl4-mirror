@@ -32,15 +32,15 @@ struct check_position_aux
 	typename traits::col<Matrix>::type           col(A); 
 	std::cout << ", cursor is pointing at [" << row(*cursor) << "][" << col(*cursor) << "]\n";
 
-	typename traits::range_generator<mtl::tag::nz, Coll>::type ref= mtl::begin<mtl::tag::nz>(c);
+	typename traits::range_generator<mtl::tag::nz, Coll>::type bref= mtl::begin<mtl::tag::nz>(c), eref= mtl::end<mtl::tag::nz>(c);
 
 	if (check_row) {
-	    // same column and row at value (or beyond) or next column 
-	    if ( !(col(*cursor) == col(*ref) && row(*cursor) >= 2 || col(*cursor) == col(*ref)+1) )
+	    // same column and row at value (or beyond) or end cursor 
+	    if ( !(col(*cursor) == col(*bref) && row(*cursor) >= 2 || cursor == eref ) )
 		throw "Cursor's row must be 2 (or larger)";
 	} else
-	    // same row and column at value (or beyond) or next row 
-	    if ( !(row(*cursor) == row(*ref) && col(*cursor) >= 2 || row(*cursor) == row(*ref)+1) )
+	    // same row and column at value (or beyond) or end cursor
+	    if ( !(row(*cursor) == row(*bref) && col(*cursor) >= 2 || cursor == eref ) ) 
 		throw "Cursor's column must be 2 (or larger)";
     }
 };
