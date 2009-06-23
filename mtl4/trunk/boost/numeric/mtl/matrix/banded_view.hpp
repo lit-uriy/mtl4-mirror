@@ -214,7 +214,7 @@ namespace mtl { namespace traits {
 	: public detail::referred_range_generator<banded_view<Matrix>, range_generator<Tag, Matrix> >
     {};
 
-    // To disambigue
+    // To disambiguate
     template <typename Matrix> 
     struct range_generator<tag::major, banded_view<Matrix> >
 	: public detail::referred_range_generator<banded_view<Matrix>, range_generator<tag::major, Matrix> >

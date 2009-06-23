@@ -115,8 +115,6 @@ namespace detail {
 	template <typename Cursor>
 	void col_init(int r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::regular_diagonal)
 	{
-	    //using mtl::detail::adjust_cursor;
-	    //adjust_cursor(r - num_rows(A) + 1, aiend, my_category());
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
 	    MTL_DEBUG_THROW_IF(row_a(*aiend) != r, missing_diagonal());
@@ -126,8 +124,6 @@ namespace detail {
 	template <typename Cursor>
 	void col_init(int r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::inverse_diagonal)
 	{
-	    //using mtl::detail::adjust_cursor;
-	    //adjust_cursor(r - num_rows(A) + 1, aiend, my_category());
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
 	    MTL_DEBUG_THROW_IF(row_a(*aiend) != r, missing_diagonal());
@@ -137,8 +133,6 @@ namespace detail {
 	template <typename Cursor>
 	void col_init(int r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::unit_diagonal)
 	{
-	    //using mtl::detail::adjust_cursor;
-	    //adjust_cursor(r - num_rows(A), aiend, my_category());
 	    rr= res;
 	}
 
