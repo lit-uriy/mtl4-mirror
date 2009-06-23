@@ -70,7 +70,7 @@ struct compressed_key
 	return *this;
     }
 
-    bool operator== (compressed_key const& other)
+    bool operator== (compressed_key const& other) const
     {
 	//if (offset == other.offset && major != other.major) 
 	//    std::cout << offset << " " << other.offset << " " << major << " " << other.major << '\n';
@@ -79,7 +79,7 @@ struct compressed_key
 	return offset == other.offset;
     }
 
-    bool operator!= (compressed_key const& other) { return !(*this == other); }
+    bool operator!= (compressed_key const& other) const { return !(*this == other); }
 
     size_t       major;
     size_t       offset;
@@ -969,8 +969,9 @@ namespace mtl { namespace traits {
 	}
 	type lower_bound(cursor_type const& cursor, unsigned position) const
 	{
-	    std::size_t offset= cursor.ref.indexer(cursor.ref, cursor.key, position);
-	    return type(cursor.ref, offset);
+	    return type(cursor.ref, cursor.key, std::min(position, cursor.ref.end_col()));
+	    //std::size_t offset= cursor.ref.indexer(cursor.ref, cursor.key, position);
+	    //return type(cursor.ref, offset);
 	}
     };
 
@@ -1004,8 +1005,9 @@ namespace mtl { namespace traits {
 	}
 	type lower_bound(cursor_type const& cursor, unsigned position) const
 	{
-	    std::size_t offset= cursor.ref.indexer(cursor.ref, position, cursor.key);
-	    return type(cursor.ref, offset);
+	    return type(cursor.ref, std::min(position, cursor.ref.end_row()), cursor.key);
+	    //std::size_t offset= cursor.ref.indexer(cursor.ref, position, cursor.key);
+	    //return type(cursor.ref, offset);
 	}
     };
 
