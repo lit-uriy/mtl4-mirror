@@ -27,7 +27,6 @@ void test(Matrix& A, const char* name)
 	ins[0][0] << 7; ins[1][1] << 8; ins[1][3] << 2; ins[1][4] << 3;
 	ins[2][2] << 2; ins[3][3] << 4; ins[4][4] << 9;
     }
-    Matrix B(trans(A));
     
     double xa[] = {1, 2, 3, 4, 5};
     mtl::dense_vector<double> x(xa), b;
@@ -35,6 +34,13 @@ void test(Matrix& A, const char* name)
     b= A * x;
     x= 0.0;
     
+    // Check whether entries on the lower triangle are ignored for solving
+    Matrix U(A); // Copy of the upper triangular
+    {
+	mtl::matrix::inserter<Matrix>   ins(A);
+	ins[4][1] << 7; ins[3][2] << 6;
+    }
+
     cout << name << "\nA = \n" << A << "b = " << b << "\n";
 
     invert_diagonal(A);
@@ -43,15 +49,16 @@ void test(Matrix& A, const char* name)
     cout << "x = upper_trisolve(A, b) ==" << x << "\n\n";
     if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in upper_trisolve!";
 
+    Matrix B(trans(A)); // Diagonal already inverted
 
     x= xa;
     
-    b= B * x;
+    b= trans(U) * x;    // Take transposed of original matrix
     x= 0.0;
     
     cout << "B = \n" << B << "b = " << b << "\n";
 	
-    invert_diagonal(B);
+    // invert_diagonal(B);
 
     x= lower_trisolve(B, b, mtl::tag::inverse_diagonal());
     cout << "x = lower_trisolve(B, b) ==" << x << "\n\n";

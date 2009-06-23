@@ -33,24 +33,33 @@ void test(Matrix& A, const char* name)
     b= A * x + x;
     x= 0.0;
     
+    Matrix U(A); // Copy of the upper triangular
+    // Check whether entries on the lower triangle are ignored for solving
+    {
+	mtl::matrix::inserter<Matrix>   ins(A);
+	ins[4][1] << 7; ins[3][2] << 6;
+    }
+
+
     cout << name << "\nA = \n" << A << "b = " << b << "\n";
     
     x= upper_trisolve(A, b, mtl::tag::unit_diagonal());
     cout << "x = upper_trisolve(A, b) ==" << x << "\n\n";
-    if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in upper_trisolve!";
+    for (int i= 0; i < 5; i++)	
+	if (std::abs(x[i] - double(i+1)) > 0.0001) throw "Wrong result in upper_trisolve!";
 
     x= xa;
     Matrix B(trans(A));
     
-    b= B * x + x;
+    b= trans(U) * x + x;
     x= 0.0;
     
     cout << "B = \n" << B << "b = " << b << "\n";
 	
     x= lower_trisolve(B, b, mtl::tag::unit_diagonal());
     cout << "x = lower_trisolve(B, b) ==" << x << "\n\n";
-    if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in lower_trisolve!";
-
+    for (int i= 0; i < 5; i++)	
+	if (std::abs(x[i] - double(i+1)) > 0.0001) throw "Wrong result in lower_trisolve!";
 }
 
 int test_main(int argc, char* argv[])
