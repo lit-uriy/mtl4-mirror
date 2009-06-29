@@ -13,6 +13,7 @@
 #define MTL_DETAIL_RANGE_GENERATOR_INCLUDE
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/mpl/less.hpp>
@@ -69,7 +70,7 @@ namespace mtl { namespace traits { namespace detail {
     // If this cursor refers to a block then a range can iterate over the rows in this block.
     // The level of a generated cursor must be of course at least one level less
     // The tag serves to dispatching between row and column cursors
-    template <typename Matrix, typename Tag, int Level = 2>
+    template <typename Matrix, typename Tag, int Level>
     struct sub_matrix_cursor
 	: mtl::detail::base_cursor<int>
     {
@@ -84,19 +85,19 @@ namespace mtl { namespace traits { namespace detail {
 	self operator+(int offset) const
 	{
 	    return self(key + offset, ref);
-	    // return base::operator+(offset);
 	}
 	
 	Matrix const& ref;
     };
 
 
-    template <typename Matrix, typename Complexity, int Level = 2>
+    template <typename Matrix, typename Complexity, int Level>
     struct all_rows_range_generator
     {
 	typedef Complexity          complexity;
 	static int const            level = Level;
 	typedef sub_matrix_cursor<Matrix, glas::tag::row, Level> type;
+	typedef typename Collection<Matrix>::size_type           size_type;
 
 	type begin(Matrix const& c)
 	{
@@ -106,19 +107,20 @@ namespace mtl { namespace traits { namespace detail {
 	{
 	    return type(c.end_row(), c);
 	}
-	type lower_bound(Matrix const& c, unsigned position)
+	type lower_bound(Matrix const& c, size_type position)
 	{
 	    return type(std::min(c.end_row(), position), c);
 	}
     };
 
 
-    template <typename Matrix, typename Complexity, int Level = 2>
+    template <typename Matrix, typename Complexity, int Level>
     struct all_cols_range_generator
     {
 	typedef Complexity          complexity;
 	static int const            level = Level;
 	typedef sub_matrix_cursor<Matrix, glas::tag::col, Level> type;
+	typedef typename Collection<Matrix>::size_type           size_type;
 
 	type begin(Matrix const& c)
 	{
@@ -128,30 +130,31 @@ namespace mtl { namespace traits { namespace detail {
 	{
 	    return type(c.end_col(), c);
 	}
-	type lower_bound(Matrix const& c, unsigned position)
+	type lower_bound(Matrix const& c, size_type position)
 	{
 	    return type(std::min(c.end_col(), position), c);
 	}
     };
 
     // Use RangeGenerator for Collection by applying to .ref
-    template <typename Collection, typename RangeGenerator>
+    template <typename Coll, typename RangeGenerator>
     struct referred_range_generator
     {
 	typedef typename RangeGenerator::complexity complexity;
 	static int const                            level = RangeGenerator::level;
 	typedef typename RangeGenerator::type       type;
+	typedef typename Collection<Coll>::size_type  size_type;
 	
-	type begin(const Collection& c)
+	type begin(const Coll& c)
 	{
 	    return RangeGenerator().begin(c.ref);
 	}
 
-	type end(const Collection& c)
+	type end(const Coll& c)
 	{
 	    return RangeGenerator().end(c.ref);
 	}
-	type lower_bound(const Collection& c, unsigned position)
+	type lower_bound(const Coll& c, size_type position)
 	{
 	    return RangeGenerator().lower_bound(c.ref, position);
 	}

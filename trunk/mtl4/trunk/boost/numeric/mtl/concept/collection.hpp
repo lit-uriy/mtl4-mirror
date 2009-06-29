@@ -546,6 +546,17 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+
+#else
+    template <typename Matrix, typename Tag, int level>
+    struct Collection<traits::detail::sub_matrix_cursor<Matrix, Tag, level> >
+    {
+	typedef typename Collection<Matrix>::value_type               value_type;
+	typedef typename Collection<Matrix>::const_reference          const_reference;
+	typedef typename Collection<Matrix>::size_type                size_type;
+    };
+#endif
 
 
 #ifdef __GXX_CONCEPTS__
