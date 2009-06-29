@@ -189,7 +189,19 @@ namespace mtl {
 	template <typename Tag, typename Collection>  struct range_generator;
 
 	template <typename T> struct eval_dense;
+
+	// for internal implementations
+	namespace detail {
+	    // needed collection.hpp (at least)
+	    template <typename Collection, typename Cursor, typename Complexity> struct dense_element_range_generator;
+	    template <typename Matrix, typename Cursor, typename Complexity> struct all_offsets_range_generator;
+	    template <typename Matrix, typename Tag, int Level = 2> struct sub_matrix_cursor;
+	    template <typename Matrix, typename Complexity, int Level = 2>  struct all_rows_range_generator;
+	    template <typename Matrix, typename Complexity, int Level = 2>  struct all_cols_range_generator;
+	    template <typename Collection, typename RangeGenerator>  struct referred_range_generator;
+	}
     }
+
 
     template <class Tag, class Collection> typename traits::range_generator<Tag, Collection>::type 
     begin(Collection const& c);

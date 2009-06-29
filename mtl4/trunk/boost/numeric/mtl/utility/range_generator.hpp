@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/detail/range_generator.hpp>
 #include <boost/numeric/mtl/utility/complexity.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 
@@ -104,18 +105,18 @@ inline end(Collection& c)
     If the searched index could not be found in the one-dimensional collection the returned cursor will be 
     identical to the one returned by the end function.
 **/
-template <class Tag, class Collection>
-typename traits::range_generator<Tag, Collection>::type 
-inline lower_bound(Collection const& c, unsigned position)
+template <class Tag, class Coll>
+typename traits::range_generator<Tag, Coll>::type 
+inline lower_bound(Coll const& c, typename Collection<Coll>::size_type position)
 {
-    return traits::range_generator<Tag, Collection>().lower_bound(c, position);
+    return traits::range_generator<Tag, Coll>().lower_bound(c, position);
 }
 
-template <class Tag, class Collection>
-typename traits::range_generator<Tag, Collection>::type 
-inline lower_bound(Collection& c, unsigned position)
+template <class Tag, class Coll>
+typename traits::range_generator<Tag, Coll>::type 
+inline lower_bound(Coll& c, typename Collection<Coll>::size_type position)
 {
-    return traits::range_generator<Tag, Collection>().lower_bound(c, position);
+    return traits::range_generator<Tag, Coll>().lower_bound(c, position);
 }
 
 

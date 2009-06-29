@@ -954,6 +954,7 @@ namespace mtl { namespace traits {
     struct range_generator<glas::tag::nz, 
 			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tag::row, 2> >
     {
+	typedef typename Collection<compressed2D<Elt, Parameters> >::size_type  size_type;
 	typedef detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tag::row, 2> cursor_type;
 	typedef complexity_classes::linear_cached         complexity;
 	typedef compressed_minor_cursor<Elt, Parameters>  type;
@@ -967,11 +968,9 @@ namespace mtl { namespace traits {
 	{
 	    return type(cursor.ref, cursor.key, cursor.ref.end_col());
 	}
-	type lower_bound(cursor_type const& cursor, unsigned position) const
+	type lower_bound(cursor_type const& cursor, size_type position) const
 	{
 	    return type(cursor.ref, cursor.key, std::min(position, cursor.ref.end_col()));
-	    //std::size_t offset= cursor.ref.indexer(cursor.ref, cursor.key, position);
-	    //return type(cursor.ref, offset);
 	}
     };
 
@@ -990,6 +989,7 @@ namespace mtl { namespace traits {
     struct range_generator<glas::tag::nz, 
 			   detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tag::col, 2> >
     {
+	typedef typename Collection<compressed2D<Elt, Parameters> >::size_type  size_type;
 	typedef detail::sub_matrix_cursor<compressed2D<Elt, Parameters>, glas::tag::col, 2> cursor_type;
 	typedef complexity_classes::linear_cached         complexity;
 	typedef compressed_minor_cursor<Elt, Parameters>  type;
@@ -1003,11 +1003,9 @@ namespace mtl { namespace traits {
 	{
 	    return type(cursor.ref, cursor.ref.end_row(), cursor.key);
 	}
-	type lower_bound(cursor_type const& cursor, unsigned position) const
+	type lower_bound(cursor_type const& cursor, size_type position) const
 	{
 	    return type(cursor.ref, std::min(position, cursor.ref.end_row()), cursor.key);
-	    //std::size_t offset= cursor.ref.indexer(cursor.ref, position, cursor.key);
-	    //return type(cursor.ref, offset);
 	}
     };
 

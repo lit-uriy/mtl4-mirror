@@ -631,7 +631,8 @@ namespace mtl { namespace traits {
 			   detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tag::row, 2> >
     {
 	typedef morton_dense<Elt, BitMask, Parameters>                   matrix;
-	typedef detail::sub_matrix_cursor<matrix, glas::tag::row, 2>  cursor;
+	typedef typename Collection<matrix>::size_type                   size_type;
+	typedef detail::sub_matrix_cursor<matrix, glas::tag::row, 2>     cursor;
 	typedef complexity_classes::linear_cached                        complexity;
 	static int const                                                 level = 1;
 	typedef morton_dense_col_cursor<BitMask>                         type;
@@ -644,7 +645,7 @@ namespace mtl { namespace traits {
 	{
 	    return type(c.key, c.ref.end_col());
 	}
-	type lower_bound(cursor const& c, unsigned position) const
+	type lower_bound(cursor const& c, size_type position) const
 	{
 	    return type(c.key, std::min(c.ref.end_col(), position));
 	}
@@ -668,7 +669,8 @@ namespace mtl { namespace traits {
 			   detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tag::col, 2> >
     {
 	typedef morton_dense<Elt, BitMask, Parameters>                   matrix;
-	typedef detail::sub_matrix_cursor<matrix, glas::tag::col, 2>  cursor;
+	typedef typename Collection<matrix>::size_type                   size_type;
+	typedef detail::sub_matrix_cursor<matrix, glas::tag::col, 2>     cursor;
 	typedef complexity_classes::linear_cached                        complexity;
 	static int const                                                 level = 1;
 	typedef morton_dense_row_cursor<BitMask>                         type;
@@ -681,7 +683,7 @@ namespace mtl { namespace traits {
 	{
 	    return type(c.ref.end_row(), c.key);
 	}
-	type lower_bound(cursor const& c, unsigned position) const
+	type lower_bound(cursor const& c, size_type position) const
 	{
 	    return type(std::min(c.ref.end_row(), position), c.key);
 	}
