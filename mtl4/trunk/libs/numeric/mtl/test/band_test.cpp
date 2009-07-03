@@ -16,11 +16,29 @@
 
 using namespace std;
 
+template <typename Matrix>
+void list_entries(const Matrix& A, int begin, int end)
+{
+    using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
+    typedef typename range_generator<major, Matrix>::type     cur_type;    
+    typedef typename range_generator<nz, cur_type>::type      icur_type; 
+    typename mtl::traits::col<Matrix>::type                   col(A);
+    typename mtl::traits::row<Matrix>::type                   row(A);
+    typename mtl::traits::const_value<Matrix>::type           value(A);
 
+    for(cur_type c= mtl::begin<major>(A), cend= mtl::end<major>(A); c != cend; ++c)
+	for(icur_type kc= mtl::begin<nz>(c), kend= mtl::end<nz>(c); kc != kend; ++kc) {
+	    std::cout << "A[" << row(*kc) << "][" << col(*kc) << "] = " << value(*kc) << "\n";
+	    int band= col(*kc) - row(*kc);
+	    if (band < begin) std::cout << "outside on the left!\n";
+	    if (band >= end) std::cout << "outside on the right!\n";
+	}
+}
 
 template <typename Matrix>
 void check(const Matrix& A, int begin, int end)
 {
+    //list_entries(A, begin, end);
     typedef typename mtl::Collection<Matrix>::value_type   value_type;
 
     for (int i= 0; i < num_rows(A); i++)

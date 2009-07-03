@@ -214,11 +214,37 @@ namespace mtl { namespace traits {
 	: public detail::referred_range_generator<banded_view<Matrix>, range_generator<Tag, Matrix> >
     {};
 
+#if 0 // It is more complicated than this because referred_range_generator returns Matrix's cursor and we 
+      // cannot dispatch on this anymore
+    template <typename Matrix> 
+    struct range_generator<glas::tag::nz, 
+			   typename detail::referred_range_generator<banded_view<Matrix>, range_generator<Tag, Matrix> >::type> 
+
+			   detail::sub_matrix_cursor<banded_view<Matrix>, glas::tag::row, 2> >
+    {
+	typedef range_generator<glas::tag::row, banded_view<Matrix> >                    collection_type;
+	typedef range_generator<glas::tag::nz, range_generator<glas::tag::row, Matrix> > other_generator;
+	static int const                            level = other_generator::level;
+	typedef typename other_generator::type       type;
+
+	type begin(const collection_type& c)
+	{
+	    return 
+
+	// 
+	typedef typename range_generator<glas::tag::nz, detail::sub_matrix_cursor<Matrix>, glas::tag::row, 2>::type type;
+#endif
+
+
     // To disambiguate
     template <typename Matrix> 
     struct range_generator<tag::major, banded_view<Matrix> >
 	: public detail::referred_range_generator<banded_view<Matrix>, range_generator<tag::major, Matrix> >
     {};
+
+
+
+
 
 
 }} // mtl::traits
