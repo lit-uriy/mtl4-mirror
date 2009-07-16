@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
+#include <boost/utility/enable_if.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
@@ -26,6 +27,7 @@
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
+#include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
@@ -132,6 +134,19 @@ namespace detail
 	static std::size_t const value= dimensions::Num_Rows * dimensions::Num_Cols;
     };
 
+    // return const-ref if matrix on stack and type itself if on heap 
+    template <typename Matrix, bool on_stack>
+    struct ref_on_stack
+    {
+	typedef Matrix type;
+    };
+
+    template <typename Matrix>
+    struct ref_on_stack<Matrix, true>
+    {
+	typedef const Matrix& type;
+    };
+
 } // namespace detail
 
   
@@ -172,25 +187,10 @@ class dense2D
 
   protected:
     // Obviously, the next 3 functions must be called after setting dimensions
-    void set_nnz()
-    {
-	this->my_nnz = this->num_rows() * this->num_cols();
-    }
-
-    void set_ldim(row_major)
-    {
-	ldim= this->num_cols();
-    }
-
-    void set_ldim(col_major)
-    {
-	ldim= this->num_rows();
-    }
-
-    void set_ldim()
-    {
-	set_ldim(orientation());
-    }
+    void set_nnz() { this->my_nnz = this->num_rows() * this->num_cols(); }
+    void set_ldim(row_major) { ldim= this->num_cols(); }
+    void set_ldim(col_major) { ldim= this->num_rows(); }
+    void set_ldim() { set_ldim(orientation()); }
 
     void init()
     {
@@ -267,10 +267,19 @@ class dense2D
     }
 
 
-    explicit dense2D(self& matrix, dense2D_sub_ctor, 
-		     size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-	: super(mtl::non_fixed::dimensions(matrix.num_rows(), matrix.num_cols())),
-	  memory_base(matrix.data, (end_r - begin_r) * (end_c - begin_c), true) // View constructor
+    template <typename MatrixSrc>
+    dense2D(MatrixSrc& matrix, dense2D_sub_ctor, 
+	    size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+      : super(mtl::non_fixed::dimensions(matrix.num_rows(), matrix.num_cols())),
+        memory_base(matrix.data, (end_r - begin_r) * (end_c - begin_c), true)
+    {
+	sub_matrix_constructor(matrix, begin_r, end_r, begin_c, end_c, boost::mpl::bool_<memory_base::on_stack>());
+    }
+
+  private:
+    template <typename MatrixSrc>
+    void sub_matrix_constructor(MatrixSrc& matrix, size_type begin_r, size_type end_r, 
+				size_type begin_c, size_type end_c, boost::mpl::false_)
     {
 	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
 	
@@ -284,8 +293,22 @@ class dense2D
 	this->my_nnz= matrix.my_nnz; ldim= matrix.ldim;
     }
 
+    template <typename MatrixSrc>
+    void sub_matrix_constructor(MatrixSrc& matrix, size_type begin_r, size_type end_r, 
+				size_type begin_c, size_type end_c, boost::mpl::true_)
+    {
+	MTL_THROW(logic_error("Matrices cannot be used as sub-matrices!"));
+    }
 
-    self& operator=(self src)
+  public:
+    self& operator=(typename detail::ref_on_stack<self, memory_base::on_stack>::type src)
+    {
+	return self_assign(src, boost::mpl::bool_<memory_base::on_stack>());
+    }
+
+  private:
+    // Already copied for lvalues -> data can be stolen (need non-const ref)  
+    self& self_assign(self& src, boost::mpl::false_)
     {
 	// Self-copy would be an indication of an error
 	assert(this != &src);
@@ -305,36 +328,60 @@ class dense2D
 	return *this;
     }
 
+    // For statically sized matrices
+    self& self_assign(const self& src, boost::mpl::true_)
+    {
+	if (this != &src) {
+	    check_dim(src.num_rows(), src.num_cols());
+	    matrix_copy(src, *this);
+	}
+	return *this;
+    }
+  public:
 
     // import operators from CRTP base class
     using assign_base::operator=;
 
     void change_dim(size_type r, size_type c, bool keep_data = false)
     {
+	change_dim(r, c, keep_data, traits::is_static<self>());
+    }
+
+  private:
+    void change_dim(size_type r, size_type c, bool keep_data, boost::mpl::false_)
+    {
 	if (r == this->num_rows() && c == this->num_cols())
 	    return;
 
 	self temp;
-	if(keep_data){
-		temp.super::change_dim(this->num_rows(), this->num_cols());
-		temp.init();
-		temp.memory_base::move_assignment(*this);
+	if (keep_data) {
+	    temp.super::change_dim(this->num_rows(), this->num_cols());
+	    temp.init();
+	    temp.memory_base::move_assignment(*this);
 	}
 	memory_base::realloc(r*c);
 	super::change_dim(r, c);
 	init();
-	if(keep_data){
-		if (r > temp.num_rows() || c > temp.num_cols()){
-			set_to_zero(*this);
-			sub_matrix(*this,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()))
-				= sub_matrix(temp,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()));
-		}else{
-			*this = sub_matrix(temp,0,r,0,c);
-		}
+	if (keep_data) {
+	    if (r > temp.num_rows() || c > temp.num_cols()){
+		set_to_zero(*this);
+#if 0
+		irange rr(0, std::min(r,temp.num_rows())), cr(0, std::min(c,temp.num_cols()));
+		*this[rr][cr]= temp[rr][cr];
+#endif
+		sub_matrix(*this,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()))
+		    = sub_matrix(temp,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()));
+	    } else
+		*this = temp[irange(0, r)][irange(0, c)];
 	}
     }
 
+    void change_dim(size_type r, size_type c, bool, boost::mpl::true_)
+    {
+	assert(r == this->num_rows() && c == this->num_cols());
+    }
 
+ public:
     bool check_indices(size_t r, size_t c) const
     {
 	return r >= this->begin_row() && r < this->end_row() && c >= this->begin_col() && c < this->end_col();
@@ -745,21 +792,24 @@ namespace mtl { namespace matrix {
     struct sub_matrix_t<dense2D<Value, Parameters> >
     {
         typedef dense2D<Value, Parameters>      matrix_type;
-        typedef matrix_type                     sub_matrix_type;
-        typedef matrix_type const               const_sub_matrix_type;
+	// copy orientation, ignore index, set dimension to non-fixed and on_stack to false
+	typedef parameters<typename Parameters::orientation> para_type; 
+
+        typedef dense2D<Value, para_type>       sub_matrix_type;
+        typedef sub_matrix_type const           const_sub_matrix_type;
         typedef typename matrix_type::size_type size_type;
         
         sub_matrix_type operator()(matrix_type& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
         {
-    	return sub_matrix_type(matrix, dense2D_sub_ctor(), begin_r, end_r, begin_c, end_c);
+	    return sub_matrix_type(matrix, dense2D_sub_ctor(), begin_r, end_r, begin_c, end_c);
         }
 
         const_sub_matrix_type
         operator()(matrix_type const& matrix, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
         {
-    	// To minimize code duplication, we use the non-const version
-    	sub_matrix_type tmp((*this)(const_cast<matrix_type&>(matrix), begin_r, end_r, begin_c, end_c));
-    	return tmp;
+	    // To minimize code duplication, we use the non-const version
+	    sub_matrix_type tmp((*this)(const_cast<matrix_type&>(matrix), begin_r, end_r, begin_c, end_c));
+	    return tmp;
         }	
     };
         

@@ -7,7 +7,7 @@ sources = glob.glob('*.cpp')
 # For testing only, the rest doesn't work yet
 # sources = ["power_test.cpp"]
 
-concept_env = debug_env.Copy()
+concept_env = debug_env.Clone()
 
 # Check if conceptg++ is in path (return code != 0)
 # Turn off for now

@@ -299,7 +299,7 @@ class compressed2D
     {
 	check();
 	if (this->num_rows() != r || this->num_cols() != c) {
-	    super::change_dim(mtl::non_fixed::dimensions(r, c));
+	    super::change_dim(r, c);
 	    starts.resize(this->dim1()+1);
 	    make_empty();
 	}

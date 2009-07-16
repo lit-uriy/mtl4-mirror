@@ -13,8 +13,10 @@
 using namespace mtl;
 using namespace mtl::matrix;
 using namespace mtl::vector;
-typedef dense_vector<double, vector::parameters<tag::col_major, vector::fixed::dimension<3>, true> > vec;
-typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
+//typedef dense_vector<double, vector::parameters<tag::col_major, vector::fixed::dimension<3>, true> > vec;
+//typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
+typedef dense_vector<double> vec;
+typedef matrix::parameters<> mat_para;
 typedef dense2D<double, mat_para> mat;
 using namespace std;
 
@@ -22,22 +24,22 @@ int main()
 {
 
 
-    vec X; X[0]=21; X[1]=2;  X[2]=31;
+    vec X(3); X[0]=21; X[1]=2;  X[2]=31;
 
-    vec F1; F1[0]=21.; F1[1]=2.;  F1[2]=31.;
-    vec F2; F2[0]=31.; F2[1]=0.;  F2[2]=32.;
-    vec F3; F3[0]=41.; F3[1]=42.; F3[2]=33.;
-    vec F4; F4[0]=21.; F4[1]=24.; F4[2]=43.;
+    vec F1(3); F1[0]=21.; F1[1]=2.;  F1[2]=31.;
+    vec F2(3); F2[0]=31.; F2[1]=0.;  F2[2]=32.;
+    vec F3(3); F3[0]=41.; F3[1]=42.; F3[2]=33.;
+    vec F4(3); F4[0]=21.; F4[1]=24.; F4[2]=43.;
 
-    vec A1; A1[0]=11.; A1[1]=25.; A1[2]=6.;
-    vec A2; A2[0]=12.; A2[1]=26.; A2[2]=7.;
-    vec A3; A3[0]=13.; A3[1]=27.; A3[2]=8.;
-    vec A4; A4[0]=14.; A4[1]=28.; A4[2]=9.;
+    vec A1(3); A1[0]=11.; A1[1]=25.; A1[2]=6.;
+    vec A2(3); A2[0]=12.; A2[1]=26.; A2[2]=7.;
+    vec A3(3); A3[0]=13.; A3[1]=27.; A3[2]=8.;
+    vec A4(3); A4[0]=14.; A4[1]=28.; A4[2]=9.;
 
-    vec U1; U1[0]=11.; U1[1]=25.; U1[2]=6.;
-    vec U2; U2[0]=12.; U2[1]=26.; U2[2]=7.;
-    vec U3; U3[0]=13.; U3[1]=27.; U3[2]=8.;
-    vec U4; U4[0]=14.; U4[1]=28.; U4[2]=9.;
+    vec U1(3); U1[0]=11.; U1[1]=25.; U1[2]=6.;
+    vec U2(3); U2[0]=12.; U2[1]=26.; U2[2]=7.;
+    vec U3(3); U3[0]=13.; U3[1]=27.; U3[2]=8.;
+    vec U4(3); U4[0]=14.; U4[1]=28.; U4[2]=9.;
 
     Variations<mat,vec> vars;  // solo qua
 
