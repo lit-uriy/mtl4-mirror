@@ -46,6 +46,9 @@
 #include <boost/numeric/mtl/operation/num_cols.hpp>
 #include <boost/numeric/mtl/operation/num_rows.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
+#include <boost/numeric/mtl/operation/static_num_cols.hpp>
+#include <boost/numeric/mtl/operation/static_num_rows.hpp>
+#include <boost/numeric/mtl/operation/static_size.hpp>
 #include <boost/numeric/mtl/operation/swap_row.hpp>
 #include <boost/numeric/mtl/operation/trace.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>

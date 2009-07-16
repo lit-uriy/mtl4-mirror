@@ -100,10 +100,11 @@ struct crtp_assign<mat_mat_times_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
-		operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
-		matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
-		mult(factors.first, factors.second, matrix);
-		return matrix;
+	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
+	//std::cout << "Assign matrix product: factors.first =\n" << factors.first << "factors.second =\n" << factors.second;
+	matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
+	mult(factors.first, factors.second, matrix);
+	return matrix;
     }
 }; 
 
@@ -413,13 +414,13 @@ public:
     {
 	return density_assign(src, boost::mpl::bool_< boost::is_same<typename ashape::ashape<Matrix>::type, 
 			                                             typename ashape::ashape<Source>::type>::value 
-														 && mtl::traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >::value >());
+			                              && mtl::traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >::value >());
     }
 
     template <typename Source>
     Matrix& operator+=(const Source& src)
     {
-		return density_plus_assign(src, mtl::traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >());
+	return density_plus_assign(src, mtl::traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >());
     }
     
     template <typename Source>

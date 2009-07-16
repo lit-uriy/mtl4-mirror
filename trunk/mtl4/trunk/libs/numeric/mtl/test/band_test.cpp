@@ -9,6 +9,8 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+// #define MTL_DEBUG_DMAT_DMAT_MULT // For debugging evidently
+
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
@@ -71,6 +73,7 @@ void test(Matrix& A, const char* name)
 	    for (int j= 0; j < num_cols(A); j++)
 		ins[i][j]= value_type(j - i + 0);
     }
+    cout << "\n" << name << "\n";  
     cout << "\n" << name << "\n" << "A =\n" << A;
     Matrix B( bands(A, 2, 4) );
     cout << "\nbands(A, 2, 4) = \n" << B;
@@ -91,11 +94,14 @@ void test(Matrix& A, const char* name)
     Matrix SL( strict_lower(A) );
     cout << "\nstrict_lower(A) = \n" << SL;
     check(SL, -10000, 0);
-    
-    Matrix P( trans(A) * upper(A) ), P_cmp( trans(A) * U ), P_cmp2( trans(A) * A );
+ 
+    Matrix P( trans(A) * upper(A) );
+    cout << " trans(A) * upper(A) = \n" << with_format(P, 4, 3);
+    Matrix P_cmp( trans(A) * U );
+    Matrix P_cmp2( trans(A) * A );
     cout << "\ntrans(A) * upper(A) = \n" << with_format(P, 4, 3);
-    // cout << " for comparison trans(A) * U = \n" << with_format(P_cmp, 4, 3);
-    // cout << " for comparison trans(A) * A = \n" << with_format(P_cmp2, 4, 3);
+    cout << " for comparison trans(A) * U = \n" << with_format(P_cmp, 4, 3);
+    cout << " for comparison trans(A) * A = \n" << with_format(P_cmp2, 4, 3);
     if (abs(P[1][1] - P_cmp[1][1]) > .00001) throw "Multiplication wrong";
 
 #if 0

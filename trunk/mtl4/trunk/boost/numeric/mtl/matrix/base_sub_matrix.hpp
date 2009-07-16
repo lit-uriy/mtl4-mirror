@@ -80,15 +80,13 @@ struct base_sub_matrix
     }
 
 protected:
-    void change_dim(non_fixed::dimensions d)
-    {
-	constructor_helper(d);
-    }    
+    void change_dim(non_fixed::dimensions d) { constructor_helper(d); }    
+    template <std::size_t Rows, std::size_t Cols>
+    void change_dim(fixed::dimensions<Rows, Cols> d) { check_dim(d.num_rows(), d.num_cols()); } 
 
-    void change_dim(size_type r, size_type c)
-    {
-	change_dim(non_fixed::dimensions(r, c));
-    }    
+
+   
+    void change_dim(size_type r, size_type c) {	change_dim(dim_type(r, c));  }    
 
     void set_ranges(size_type br, size_type er, size_type bc, size_type ec)
     {

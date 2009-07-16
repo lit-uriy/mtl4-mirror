@@ -14,6 +14,7 @@
 
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
+#include <boost/numeric/mtl/operation/no_op.hpp>
 
 namespace mtl { namespace assign {
 
@@ -52,16 +53,24 @@ struct mult_assign_mode<gen_dmat_dmat_mult_ft<MatrixA, MatrixB, MatrixC, OldAssi
 #endif
 
 
+template <typename Assign>
+struct mult_assign_mode<no_op, Assign>
+{
+    typedef no_op type;
+};
+
 template <typename OldAssign, typename Backup, typename Assign> 
 struct mult_assign_mode<gen_dmat_dmat_mult_t<OldAssign, Backup>, Assign>
 {
-    typedef gen_dmat_dmat_mult_t<Assign, Backup> type;
+    typedef typename mult_assign_mode<Backup, Assign>::type                      backup_type;
+    typedef gen_dmat_dmat_mult_t<Assign, backup_type> type;
 };
 
 template <typename OldAssign, typename Backup, typename Assign> 
 struct mult_assign_mode<gen_cursor_dmat_dmat_mult_t<OldAssign, Backup>, Assign>
 {
-    typedef gen_cursor_dmat_dmat_mult_t<Assign, Backup> type;
+    typedef typename mult_assign_mode<Backup, Assign>::type                      backup_type;
+    typedef gen_cursor_dmat_dmat_mult_t<Assign, backup_type> type;
 };
 
 template <unsigned long Tiling1, unsigned long Tiling2, typename OldAssign, typename Backup, typename Assign> 
@@ -109,6 +118,28 @@ struct mult_assign_mode<gen_blas_dmat_dmat_mult_t<OldAssign, Backup>, Assign>
 {
     typedef typename mult_assign_mode<Backup, Assign>::type                      backup_type;
     typedef gen_blas_dmat_dmat_mult_t<Assign, backup_type>                       type;
+};
+
+template <std::size_t SizeLimit, typename FunctorSmall, typename FunctorLarge, typename Assign>
+struct mult_assign_mode<size_switch_dmat_dmat_mult_t<SizeLimit, FunctorSmall, FunctorLarge>, Assign>
+{
+    typedef typename mult_assign_mode<FunctorSmall, Assign>::type                small_type;
+    typedef typename mult_assign_mode<FunctorLarge, Assign>::type                large_type;
+    typedef size_switch_dmat_dmat_mult_t<SizeLimit, small_type, large_type>      type;
+};
+
+template <bool IsStatic, typename FunctorStatic, typename FunctorDynamic, typename Assign>
+struct mult_assign_mode<static_switch_dmat_dmat_mult_t<IsStatic, FunctorStatic, FunctorDynamic>, Assign>
+{
+    typedef typename mult_assign_mode<FunctorStatic, Assign>::type               static_type;
+    typedef typename mult_assign_mode<FunctorDynamic, Assign>::type              dynamic_type;
+    typedef static_switch_dmat_dmat_mult_t<IsStatic, static_type, dynamic_type>  type;
+};
+
+template <typename OldAssign, typename Backup, typename Assign>
+struct mult_assign_mode<fully_unroll_fixes_size_dmat_dmat_mult_t<OldAssign, Backup>, Assign>
+{
+    typedef fully_unroll_fixes_size_dmat_dmat_mult_t<Assign, Backup>             type;
 };
 
 }} // namespace mtl::assign

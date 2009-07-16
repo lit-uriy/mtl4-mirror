@@ -53,7 +53,7 @@ inline mult(const A& a, const B& b, C& c)
 #endif
 
     // dispatch between matrices, vectors, and scalars
-	using mtl::traits::category;
+    using mtl::traits::category;
     gen_mult(a, b, c, assign::assign_sum(), typename category<A>::type(), 
 	     typename category<B>::type(), typename category<C>::type());
 }
@@ -131,7 +131,15 @@ inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign,
 
     typedef gen_platform_dmat_dmat_mult_t<plus_sum, tiling_mult_t>     platform_mult_t;
     typedef gen_recursive_dmat_dmat_mult_t<platform_mult_t>            recursive_mult_t;
-    typedef gen_blas_dmat_dmat_mult_t<assign_sum, recursive_mult_t>    default_functor_t;
+    typedef gen_blas_dmat_dmat_mult_t<assign_sum, recursive_mult_t>    blas_mult_t;
+    typedef size_switch_dmat_dmat_mult_t<straight_dmat_dmat_mult_limit, tiling_mult_t, blas_mult_t>   variable_size_t;
+
+    typedef fully_unroll_fixes_size_dmat_dmat_mult_t<Assign>           fully_unroll_t;
+    typedef size_switch_dmat_dmat_mult_t<fully_unroll_dmat_dmat_mult_limit, fully_unroll_t, tiling_mult_t> fixes_size_t;
+
+    static const bool all_static= traits::is_static<MatrixA>::value && traits::is_static<MatrixB>::value 
+	                          && traits::is_static<MatrixC>::value;
+    typedef static_switch_dmat_dmat_mult_t<all_static, fixes_size_t, variable_size_t>  default_functor_t;
 
     /// Use user-defined functor if provided (assign mode can be arbitrary)
     typedef typename boost::mpl::if_<
