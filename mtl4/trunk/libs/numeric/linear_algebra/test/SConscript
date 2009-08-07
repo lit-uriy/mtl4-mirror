@@ -11,7 +11,7 @@ concept_env = debug_env.Clone()
 
 # Check if conceptg++ is in path (return code != 0)
 # Turn off for now
-if 1: #os.system('conceptg++ -v'):
+if 0: #os.system('conceptg++ -v'):
     sources = []
 else:
     # TBD: check whether options are okay
