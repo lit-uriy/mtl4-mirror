@@ -389,7 +389,7 @@ private:
 
 	// C_ne += A_n * B_e
 	for (size_type i= 0; i < i_block; i++)
-	    for (int k = k_block; k < k_max; k++) {
+	    for (size_type k = k_block; k < k_max; k++) {
 		value_type tmp00= z;
 		const typename MatrixA::value_type *begin_a= &A(i, 0), *end_a= begin_a + num_cols(A) * aci;
 		const typename MatrixB::value_type *begin_b= &B(0, k);
@@ -401,7 +401,7 @@ private:
 
 	// C_s += A_s * B
 	for (size_type i= i_block; i < i_max; i++)
-	    for (int k = 0; k < k_max; k++) {
+	    for (size_type k = 0; k < k_max; k++) {
 		value_type tmp00= z;
 		const typename MatrixA::value_type *begin_a= &A(i, 0), *end_a= begin_a + num_cols(A) * aci;
 		const typename MatrixB::value_type *begin_b= &B(0, k);
@@ -523,7 +523,7 @@ private:
 
 	// C_ne += A_n * B_e
 	for (size_type i= 0; i < i_block; i++)
-	    for (int k = k_block; k < k_max; k++) {
+	    for (size_type k = k_block; k < k_max; k++) {
 		value_type tmp00= z;
 		const typename MatrixA::value_type *begin_a= &A(i, 0), *end_a= begin_a + num_cols(A) * aci;
 		const typename MatrixB::value_type *begin_b= &B(0, k);
@@ -535,7 +535,7 @@ private:
 
 	// C_s += A_s * B
 	for (size_type i= i_block; i < i_max; i++)
-	    for (int k = 0; k < k_max; k++) {
+	    for (size_type k = 0; k < k_max; k++) {
 		value_type tmp00= z;
 		const typename MatrixA::value_type *begin_a= &A(i, 0), *end_a= begin_a + num_cols(A) * aci;
 		const typename MatrixB::value_type *begin_b= &B(0, k);
@@ -630,7 +630,7 @@ private:
 
 	// C_ne += A_n * B_e
 	for (size_type i= 0; i < i_block; i++)
-	    for (int k = k_block; k < k_max; k++) {
+	    for (size_type k = k_block; k < k_max; k++) {
 		value_type tmp00= z;
 		const typename MatrixA::value_type *begin_a= &A(i, 0), *end_a= begin_a + num_cols(A) * aci;
 		const typename MatrixB::value_type *begin_b= &B(0, k);
@@ -642,7 +642,7 @@ private:
 
 	// C_s += A_s * B
 	for (size_type i= i_block; i < i_max; i++)
-	    for (int k = 0; k < k_max; k++) {
+	    for (size_type k = 0; k < k_max; k++) {
 		value_type tmp00= z;
 		const typename MatrixA::value_type *begin_a= &A(i, 0), *end_a= begin_a + num_cols(A) * aci;
 		const typename MatrixB::value_type *begin_b= &B(0, k);
