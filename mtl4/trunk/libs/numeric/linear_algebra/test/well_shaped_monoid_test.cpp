@@ -14,24 +14,26 @@ struct vec
     int s;
 };
 
-bool inline same_shape(vec v, vec w) {return v.s == w.s;}
+// Just to have another type
+template <typename Value>
+struct svec
+{
+    vec (int s) : s(s), p(new Value[s]) {}
+    ~vec() { delete[](p); }
+    int s;
+  private:
+    Value* p;
+};
+
+
+
+
+
+
 
 struct add {};
 
 vec inline identity(add, vec v) { return v; }
-
-concept EquivalenceRelation<typename F, typename T> : std::BinaryPredicate<F, T, T> 
-{
-    axiom Reflexivity(F f, T a) { f(a, a) == true; }
-    axiom Symmetry(F f, T a, T b) {
-	if (f(a, b))
-	    f(b, a) == true;
-    }
-    axiom Transitivity(F f, T a, T b, T c) {
-	if (f(a, b) && f(b, c))
-	    f(a, c) == true;
-    }
-}
 
 concept WellShapedType<typename T>
 {
