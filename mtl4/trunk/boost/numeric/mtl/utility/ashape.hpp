@@ -60,6 +60,19 @@ struct ashape<dense_vector<Value, Parameters> >
     >::type type;
 };
 
+/// One-dimensional arrays have rvec ashape; 2D arrays are matrices see below
+template <typename Value, unsigned Rows>
+struct ashape<Value[Rows]>
+{
+    typedef rvec<typename ashape<Value>::type> type;
+};
+   
+/// One-dimensional arrays have rvec ashape; 2D arrays are matrices see below
+template <typename Value>
+struct ashape<Value*>
+{
+    typedef rvec<typename ashape<Value>::type> type;
+};
    
 template <typename E1, typename E2, typename SFunctor>
 struct ashape< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
@@ -156,6 +169,20 @@ struct ashape<dense2D<Value, Parameters> >
    
 template <typename Value, unsigned long Mask, typename Parameters>
 struct ashape<morton_dense<Value, Mask, Parameters> >
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+
+/// Two-dimensional arrays have mat ashape; 1D arrays are vectors see above
+template <typename Value, unsigned Rows, unsigned Cols>
+struct ashape<Value[Rows][Cols]>
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+
+/// Two-dimensional arrays have mat ashape; 1D arrays are vectors see above
+template <typename Value, unsigned Cols>
+struct ashape<Value (*)[Cols]>
 {
     typedef mat<typename ashape<Value>::type> type;
 };
@@ -278,6 +305,13 @@ struct ashape<matrix::banded_view<Matrix> >
     typedef typename ashape<Matrix>::type type;
 };
 
+
+// Rule out other types as algebraic shape
+template <typename IFStream, typename OFStream>
+struct ashape<io::matrix_file<IFStream, OFStream> > 
+{
+    typedef ndef type;
+};
 
 
 // =====================
