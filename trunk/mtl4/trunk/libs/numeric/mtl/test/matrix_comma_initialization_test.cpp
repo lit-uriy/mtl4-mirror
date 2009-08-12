@@ -21,32 +21,13 @@ template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
     typedef typename mtl::Collection<Matrix>::value_type   value_type;
-    
-#if 0 // for debuggin type infos
-    typedef value_type a_type[2][3];
-    typedef typename mtl::ashape::ashape<a_type>::type s_type;
-    std::cout << typeid(s_type).name() << "\n";
 
-    std::cout << boost::is_same<s_type, mtl::ashape::scal>::value  << "\n";
-#endif
-
-    value_type array[][3]= {{3, 7.2, 0}, {2, 4.444, 5}};
-    A= array;
+    A= 3, 7.2, 0,
+       2, 4.444, 5;
 
     std::cout << "\n" << name << ", assignment: A = \n" << A << "\n";
 
-    if (num_rows(A) != 2 || num_cols(A) != 3)
-	throw "Wrong matrix size";
     if (A[1][0] != value_type(2))
-	throw "Wrong value inserted";
-
-    Matrix B(array);
-
-    std::cout << "\n" << name << ", construction: B = \n" << B << "\n";
-
-    if (num_rows(B) != 2 || num_cols(B) != 3)
-	throw "Wrong matrix size";
-    if (B[1][0] != value_type(2))
 	throw "Wrong value inserted";
 }
 
@@ -54,15 +35,15 @@ void test(Matrix& A, const char* name)
 int test_main(int argc, char* argv[])
 {
     using namespace mtl;
-    dense2D<double>                                      dr;
-    dense2D<double, matrix::parameters<col_major> >      dc;
-    morton_dense<double, recursion::morton_z_mask>       mzd;
-    morton_dense<double, recursion::doppled_2_row_mask>  d2r;
-    compressed2D<double>                                 cr;
-    compressed2D<double, matrix::parameters<col_major> > cc;
+    dense2D<double>                                      dr(2, 3);
+    dense2D<double, matrix::parameters<col_major> >      dc(2, 3);
+    morton_dense<double, recursion::morton_z_mask>       mzd(2, 3);
+    morton_dense<double, recursion::doppled_2_row_mask>  d2r(2, 3);
+    compressed2D<double>                                 cr(2, 3);
+    compressed2D<double, matrix::parameters<col_major> > cc(2, 3);
 
-    dense2D<complex<double> >                            drc;
-    compressed2D<complex<double> >                       crc;
+    dense2D<complex<double> >                            drc(2, 3);
+    compressed2D<complex<double> >                       crc(2, 3);
 
     test(dr, "Dense row major");
     test(dc, "Dense column major");

@@ -26,6 +26,7 @@
 #include <boost/numeric/mtl/operation/divide_by_inplace.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/diagonal_setup.hpp>
+#include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
@@ -41,7 +42,7 @@ struct crtp_assign
 {
     Matrix& operator()(const Source& source, Matrix& matrix)
     {
-		return assign(source, matrix, typename ashape::ashape<Source>::type());
+	return assign(source, matrix, typename ashape::ashape<Source>::type());
     }
 private:
     /// Assign scalar to a matrix by setting the matrix to a multiple of unity matrix
@@ -57,10 +58,10 @@ private:
     /// Assign matrix expressions by copying except for some special expressions
     Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
     {
-		// Self-assignment between different types shouldn't happen.	
-		matrix.checked_change_dim(num_rows(source), num_cols(source));
-		matrix_copy(source, matrix);
-		return matrix;
+	// Self-assignment between different types shouldn't happen.	
+	matrix.checked_change_dim(num_rows(source), num_cols(source));
+	matrix_copy(source, matrix);
+	return matrix;
     }
 };
 
@@ -74,9 +75,9 @@ struct crtp_assign<mat_mat_plus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
-		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
-		matrix= src.first;
-		return matrix+= src.second;
+	matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
+	matrix= src.first;
+	return matrix+= src.second;
     }
 };
 
@@ -407,14 +408,72 @@ public:
 
     /// Templated assignment implemented by functor to allow for partial specialization
     // Despite there is only an untemplated assignment and despite the disable_if MSVC whines about ambiguity :-!
+    // Scalar assignment is also taking out because it has another return type
     template <typename Source>
-    typename boost::disable_if<typename boost::is_same<Matrix, Source>,
-			       Matrix&>::type
+    typename boost::disable_if_c<boost::is_same<Matrix, Source>::value 
+                                   || boost::is_same<typename ashape::ashape<Source>::type, ashape::scal>::value,
+				 Matrix&>::type
     operator=(const Source& src)
     {
 	return density_assign(src, boost::mpl::bool_< boost::is_same<typename ashape::ashape<Matrix>::type, 
 			                                             typename ashape::ashape<Source>::type>::value 
 			                              && mtl::traits::eval_dense< mat_mat_asgn_expr<Matrix, Source> >::value >());
+    }
+
+    // Helper type for assigning scalars to handle both A= a; and A= a, b, c;
+    template <typename Source>
+    struct scalar_assign 
+    {
+	scalar_assign(Source src, Matrix& matrix) 
+	  : src(src), with_comma(false), r(0), c(0), matrix(matrix), ins(matrix) {}
+
+	~scalar_assign()
+	{
+	    if (with_comma) {
+		MTL_DEBUG_THROW_IF(r != num_rows(matrix), incompatible_size("Not all matrix entries initialized!"));
+	    } else {
+		if (src == math::zero(src)) // it is already set to zero
+		    return;
+		// Otherwise set diagonal (if square)
+		MTL_THROW_IF(num_rows(matrix) != num_cols(matrix), matrix_not_square());
+		for (SizeType i= 0; i < num_rows(matrix); i++)
+		    ins[i][i] << src;
+	    }
+	}
+
+	template <typename ValueSource>
+	scalar_assign& operator, (ValueSource val)
+	{
+	    if (!with_comma) {
+		with_comma= true;
+		assert(r == 0 && c == 0);
+		ins[r][c++] << src; // We haven't set v[0] yet
+		if (c == num_cols(matrix)) 
+		    c= 0, r++;
+	    }
+	    ins[r][c++] << val;
+	    if (c == num_cols(matrix)) 
+		c= 0, r++;
+	    return *this;
+	}
+
+	Source         src;
+	bool           with_comma;
+	SizeType       r, c;
+	Matrix&        matrix;
+	inserter<Matrix> ins;
+    };
+
+    template <typename Source>
+    typename boost::enable_if<boost::is_same<typename ashape::ashape<Source>::type, ashape::scal>, 
+			      scalar_assign<Source> >::type
+    operator=(Source src)
+    {
+	Matrix& matrix= static_cast<Matrix&>(*this);
+	MTL_DEBUG_THROW_IF(num_rows(matrix) * num_cols(matrix) == 0, 
+			   range_error("Trying to initialize a 0 by 0 matrix with a value"));
+	set_to_zero(matrix);
+	return scalar_assign<Source>(src, static_cast<Matrix&>(*this));
     }
 
     template <typename Source>
