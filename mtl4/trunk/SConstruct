@@ -245,10 +245,10 @@ def check_for_umfpack(env):
 ######################
 
 
-#SourceSignatures('timestamp')
+SourceSignatures('timestamp')
 
 env = Environment()
-env.Decider('timestamp-newer')
+# env.Decider('timestamp-newer')
 
 conf = Configure(env)
 check_no_long_double(conf)
@@ -354,9 +354,9 @@ if add_cxxflag:
 add_platform_flags(env)
 
 #create alternative environments
-debug_env = env.Clone()
-opt_env = env.Clone()
-high_opt_env = env.Clone()
+debug_env = env.Copy()
+opt_env = env.Copy()
+high_opt_env = env.Copy()
 
 # add debugging flags to appropriate environment
 debug = ARGUMENTS.get('debug', 0)
