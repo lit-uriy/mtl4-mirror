@@ -33,12 +33,14 @@ mtl::dense2D<ct> inv2 ( const mtl::dense2D<ct> & M )
 
 int test_main(int argc, char* argv[])
 {
-    typedef float ct;
+    typedef double ct;
     mtl::dense2D<ct> tmp(2, 2);
     tmp= 3, 5,
 	 8, 9;
 
-    mtl::dense2D<ct> tmp1 = inv2(tmp);
-	
+    mtl::dense2D<ct> tmp1 = inv2(tmp), P(tmp * tmp1);
+    cout << "tmp1 is\n" << tmp1 << "\ntmp * tmp1 is:\n" << P;
+    
+
     return 0;
 }
