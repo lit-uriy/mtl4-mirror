@@ -9,6 +9,7 @@
   First run: 170us dynamic types (220us old value)
               52us static types (r6809)
 	      56us static types with unrolled by hand (r6810)
+	      93us without my unroll matrix product
 */
 
 using namespace mtl;
