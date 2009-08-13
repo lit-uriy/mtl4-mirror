@@ -6,40 +6,48 @@
 #include "ScalarVariations.hpp"
 
 /*
-  First run: 220us
-
+  First run: 170us dynamic types (220us old value)
+              52us static types (r6809)
 */
 
 using namespace mtl;
 using namespace mtl::matrix;
 using namespace mtl::vector;
-//typedef dense_vector<double, vector::parameters<tag::col_major, vector::fixed::dimension<3>, true> > vec;
-//typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
-typedef dense_vector<double> vec;
-typedef matrix::parameters<> mat_para;
-typedef dense2D<double, mat_para> mat;
+
+#define STATIC_TYPES
+
+#ifdef STATIC_TYPES
+   typedef dense_vector<double, vector::parameters<tag::col_major, vector::fixed::dimension<3>, true> > vec;
+   typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
+   #define VEC_ARG
+#else
+   typedef dense_vector<double> vec;
+   typedef matrix::parameters<> mat_para;
+   #define VEC_ARG (3)
+#endif
+   typedef dense2D<double, mat_para> mat;
 using namespace std;
 
 int main()
 {
 
 
-    vec X(3); X[0]=21; X[1]=2;  X[2]=31;
+    vec X VEC_ARG; X[0]=21; X[1]=2;  X[2]=31;
 
-    vec F1(3); F1[0]=21.; F1[1]=2.;  F1[2]=31.;
-    vec F2(3); F2[0]=31.; F2[1]=0.;  F2[2]=32.;
-    vec F3(3); F3[0]=41.; F3[1]=42.; F3[2]=33.;
-    vec F4(3); F4[0]=21.; F4[1]=24.; F4[2]=43.;
+    vec F1 VEC_ARG; F1[0]=21.; F1[1]=2.;  F1[2]=31.;
+    vec F2 VEC_ARG; F2[0]=31.; F2[1]=0.;  F2[2]=32.;
+    vec F3 VEC_ARG; F3[0]=41.; F3[1]=42.; F3[2]=33.;
+    vec F4 VEC_ARG; F4[0]=21.; F4[1]=24.; F4[2]=43.;
 
-    vec A1(3); A1[0]=11.; A1[1]=25.; A1[2]=6.;
-    vec A2(3); A2[0]=12.; A2[1]=26.; A2[2]=7.;
-    vec A3(3); A3[0]=13.; A3[1]=27.; A3[2]=8.;
-    vec A4(3); A4[0]=14.; A4[1]=28.; A4[2]=9.;
+    vec A1 VEC_ARG; A1[0]=11.; A1[1]=25.; A1[2]=6.;
+    vec A2 VEC_ARG; A2[0]=12.; A2[1]=26.; A2[2]=7.;
+    vec A3 VEC_ARG; A3[0]=13.; A3[1]=27.; A3[2]=8.;
+    vec A4 VEC_ARG; A4[0]=14.; A4[1]=28.; A4[2]=9.;
 
-    vec U1(3); U1[0]=11.; U1[1]=25.; U1[2]=6.;
-    vec U2(3); U2[0]=12.; U2[1]=26.; U2[2]=7.;
-    vec U3(3); U3[0]=13.; U3[1]=27.; U3[2]=8.;
-    vec U4(3); U4[0]=14.; U4[1]=28.; U4[2]=9.;
+    vec U1 VEC_ARG; U1[0]=11.; U1[1]=25.; U1[2]=6.;
+    vec U2 VEC_ARG; U2[0]=12.; U2[1]=26.; U2[2]=7.;
+    vec U3 VEC_ARG; U3[0]=13.; U3[1]=27.; U3[2]=8.;
+    vec U4 VEC_ARG; U4[0]=14.; U4[1]=28.; U4[2]=9.;
 
     Variations<mat,vec> vars;  // solo qua
 
@@ -98,7 +106,7 @@ int main()
     vec _u123 = vars.u3(X, A1, U1, A2, U2, A3, U3);
     std::cout << "u3=" << _u123 << std::endl;
 
-    const int rep= 10000;
+    const int rep= 100000;
     boost::timer time;
     for(int i=0; i< rep; i++) {
 	vec _u1234 = vars.u4(X, A1, U1, A2, U2, A3, U3, A4, U4);
