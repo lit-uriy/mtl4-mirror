@@ -16,11 +16,40 @@
 #ifndef MTL_VEC_VEC_AOP_EXPR_INCLUDE
 #define MTL_VEC_VEC_AOP_EXPR_INCLUDE
 
+#include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
+#include <boost/numeric/mtl/operation/static_size.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/is_static.hpp>
 
 namespace mtl { namespace vector {
+
+    namespace impl {
+
+	template <unsigned long Index, unsigned long Max, typename SFunctor>
+	struct assign
+	{
+	    typedef assign<Index+1, Max, SFunctor>     next;
+
+	    template <class E1, class E2>
+	    static inline void apply(E1& first, const E2& second)
+	    {
+		SFunctor::apply( first(Index), second(Index) );
+		next::apply( first, second );
+	    }
+	};
+
+	template <unsigned long Max, typename SFunctor>
+	struct assign<Max, Max, SFunctor>
+	{
+	    template <class E1, class E2>
+	    static inline void apply(E1& first, const E2& second)
+	    {
+		SFunctor::apply( first(Max), second(Max) );
+	    }
+	};
+    }
 
 // Generic assign operation expression template for vectors
 // Model of VectorExpression
@@ -46,6 +75,27 @@ struct vec_vec_aop_expr
 	second.delay_assign();
     }
 
+
+    void assign(boost::mpl::false_)
+    {
+	// If target is constructed by default it takes size of source
+	if (first.size() == 0) first.change_dim(second.size());
+
+	// If sizes are different for any other reason, it's an error
+	// std::cerr << "~vec_vec_aop_expr() " << first.size() << "  " << second.size() << "\n";
+	MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
+
+	for (size_type i= 0; i < first.size(); ++i)
+	    SFunctor::apply( first(i), second(i) );
+    }
+
+    void assign(boost::mpl::true_)
+    {
+	// We cannot resize, only check
+	MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
+	impl::assign<1, static_size<E1>::value, SFunctor>::apply(first, second);
+    }
+
     ~vec_vec_aop_expr()
     {
 	if (!delayed_assign) {
@@ -53,11 +103,13 @@ struct vec_vec_aop_expr
 	    if (first.size() == 0) first.change_dim(second.size());
 
 	    // If sizes are different for any other reason, it's an error
-	    // std::cerr << "~vec_vec_aop_expr() " << first.size() << "  " << second.size() << "\n";
 	    MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
 
 	    for (size_type i= 0; i < first.size(); ++i)
 		SFunctor::apply( first(i), second(i) );
+
+	    // Slower, at least on gcc
+	    // assign(traits::is_static<E1>());
 	}
     }
     

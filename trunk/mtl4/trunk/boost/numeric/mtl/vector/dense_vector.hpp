@@ -84,7 +84,7 @@ public:
 
     void static_check( size_type s) const
     {
-	assert(!is_static<self>::value || s == Parameters::dimension().size());
+	assert(!traits::is_static<self>::value || s == (typename Parameters::dimension()).size());
     }
 
     template <class E>

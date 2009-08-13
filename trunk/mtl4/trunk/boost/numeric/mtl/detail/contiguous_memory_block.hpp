@@ -397,7 +397,7 @@ struct contiguous_memory_block<Value, true, Size>
     // Move-semantics ignored for arrays on stack
     contiguous_memory_block(const self& other)
     {
-	std::cout << "Copied in copy constructor (same type).\n";
+	// std::cout << "Copied in copy constructor (same type).\n";
 	std::copy(other.data, other.data+Size, data);
     }
 
