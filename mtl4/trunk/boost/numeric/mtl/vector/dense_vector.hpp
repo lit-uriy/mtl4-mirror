@@ -36,6 +36,7 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/utility/is_static.hpp>
 
 
 namespace mtl { namespace vector {
@@ -81,6 +82,11 @@ public:
 	MTL_DEBUG_THROW_IF( size() != 0 && size() != s, incompatible_size());
     }
 
+    void static_check( size_type s) const
+    {
+	assert(!is_static<self>::value || s == Parameters::dimension().size());
+    }
+
     template <class E>
     void check_consistent_shape( vec_expr<E> const& e ) const
     {
@@ -94,25 +100,24 @@ public:
 
     dense_vector( ) : memory_base( Parameters::dimension::value ) {}
     
-    explicit dense_vector( size_type n )
-	  : memory_base( n ) 
-    {}
+    explicit dense_vector( size_type n ) : memory_base( n ) { static_check( n ); }
     
     explicit dense_vector( size_type n, value_type value )
-	  : memory_base( n ) 
+      : memory_base( n ) 
     {
-		std::fill(begin(), end(), value);
+	static_check( n );
+	std::fill(begin(), end(), value);
     }
 
     explicit dense_vector( size_type n, value_type *address )
-	  : memory_base( address, n ) 
-    {}
+      : memory_base( address, n ) 
+    { static_check( n ); }
 
     dense_vector( const self& src )
-	  : memory_base( src.size() ) 
+      : memory_base( src.size() ) 
     {
-		using std::copy;
-		copy(src.begin(), src.end(), begin());
+	using std::copy;
+	copy(src.begin(), src.end(), begin());
     }
 
     template <typename VectorSrc>

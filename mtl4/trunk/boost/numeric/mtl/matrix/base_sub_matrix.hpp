@@ -39,7 +39,7 @@ struct base_sub_matrix
                                     my_begin_row, my_end_row,
                                     my_begin_col, my_end_col;
 
-    void constructor_helper(dim_type dim)
+    void constructor_helper(const dim_type& dim)
     {
 	my_begin_row= index::change_to(index_type(), 0);
 	my_end_row=   index::change_to(index_type(), dim.num_rows());
@@ -57,7 +57,8 @@ struct base_sub_matrix
 	constructor_helper(dim_type());
     }
 
-    explicit base_sub_matrix(mtl::non_fixed::dimensions d) 
+    explicit base_sub_matrix(const dim_type& d) 
+    //explicit base_sub_matrix(mtl::non_fixed::dimensions d) 
     {
 	constructor_helper(d);
     }

@@ -212,7 +212,7 @@ class dense2D
     }
 
     explicit dense2D(size_type num_rows, size_type num_cols) 
-	: super(mtl::non_fixed::dimensions(num_rows, num_cols)), 
+	: super(dim_type(num_rows, num_cols)), 
 	  memory_base(num_rows * num_cols)
     { 
 	init(); 
@@ -243,7 +243,7 @@ class dense2D
 
     // Old remark: Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
     dense2D(const self& m) 
-	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
+	: super(dim_type(m.num_rows(), m.num_cols())), 
 	  memory_base(m)
     {
 	// In case of sub-matrices we need m's ldim -> init doesn't work
