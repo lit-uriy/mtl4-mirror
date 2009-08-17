@@ -9,7 +9,8 @@
   First run: 170us dynamic types (220us old value)
               52us static types (r6809)
 	      56us static types with unrolled by hand (r6810)
-	      93us without my unroll matrix product
+	      93us without my unrolled matrix product
+	      55us with my unrolled matrix vector product (r6813)
 */
 
 using namespace mtl;
@@ -111,7 +112,7 @@ int main()
     const int rep= 100000;
     boost::timer time;
     for(int i=0; i< rep; i++) {
-	vec _u1234 = vars.u4(X, A1, U1, A2, U2, A3, U3, A4, U4);
+	vec _u1234(vars.u4(X, A1, U1, A2, U2, A3, U3, A4, U4));
 	//       std::cout << "u4=" << _u1234 << std::endl;
     }
     std::cout << "Compute time = " << 1000000.*time.elapsed() / rep << "us" << std::endl;
