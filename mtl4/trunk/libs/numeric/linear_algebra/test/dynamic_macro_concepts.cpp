@@ -1,20 +1,3 @@
-
-#if 0
-
-#include <iostream>
-#include <cmath>
-#include <set>
-
-
-#ifdef __GXX_CONCEPTS__
-#  include <concepts>
-#  include <boost/numeric/linear_algebra/new_concepts.hpp>
-#else 
-#  include <boost/numeric/linear_algebra/pseudo_concept.hpp>
-#endif
-
-#endif
-
 #define DYNAMIC_CONCEPT(SCONCEPT)		\
     std::set<const void*> table_ ## SCONCEPT;   \
                                                 \
@@ -56,23 +39,17 @@ concept_map Symmetric<smat> {}
 
 template <typename Matrix>
 void spd_solver(const Matrix& A)
-{
-    std::cout << "spd_solver (Symmetric positiv-definit)\n";
-}
+{  std::cout << "spd_solver (Symmetric and positiv-definit)\n"; }
 
 template <typename Matrix>
 void symmetric_solver(const Matrix& A)
-{
-    std::cout << "symmetric_solver\n";
-}
-
+{ std::cout << "symmetric_solver\n"; }
 
 template <typename Matrix>
 void solver(const Matrix& x)
 {
     SELECT2(PositiveDefinit, Symmetric, spd_solver);
     SELECT(Symmetric,                   symmetric_solver);
-
     std::cout << "Default_solver\n";
 }
 
@@ -91,3 +68,18 @@ int main(int, char* [])
 
     return 0;
 }
+
+
+
+
+
+
+
+#if 0 // The output (as expected):
+
+Default_solver
+symmetric_solver
+symmetric_solver
+spd_solver (Symmetric positiv-definit)
+
+#endif
