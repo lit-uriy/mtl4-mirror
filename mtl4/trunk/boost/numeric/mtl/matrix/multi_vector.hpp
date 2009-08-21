@@ -43,7 +43,8 @@ class multi_vector
 			                tag::col_major>::value));
   public:
     typedef multi_vector                             self;
-    typedef mtl::matrix::parameters<>                parameters;
+    typedef mtl::matrix::parameters<row_major>       tmp_type; // to not change the meaning of parameters<> 
+    typedef tmp_type                                 parameters;
     typedef tag::col_major                           orientation;
     typedef typename Collection<Vector>::value_type  value_type;
     typedef typename Collection<Vector>::size_type   size_type;
