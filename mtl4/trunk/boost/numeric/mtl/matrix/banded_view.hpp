@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/utility/parameters.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
@@ -43,16 +44,19 @@ struct banded_view
   : public const_crtp_base_matrix< banded_view<Matrix>, 
 				   typename Matrix::value_type, typename Matrix::size_type >,
     public mat_expr< banded_view<Matrix> >,
-    public base_matrix<typename Matrix::value_type, typename Matrix::parameters>
+    public base_matrix<typename Matrix::value_type, 
+		       typename mtl::traits::parameters<Matrix>::type>
 {
     typedef banded_view                                self;
     typedef mat_expr< self >                           expr_base;
-    typedef base_matrix<typename Matrix::value_type, typename Matrix::parameters> base;
+    typedef typename mtl::traits::parameters<Matrix>::type parameters;
+
+    typedef base_matrix<typename Matrix::value_type, parameters> base;
     
     typedef Matrix                                     other;
     typedef typename Matrix::orientation               orientation;
     typedef typename Matrix::index_type                index_type;
-    typedef typename Matrix::parameters                parameters;
+    // typedef typename Matrix::parameters                parameters;
 
     typedef typename Matrix::value_type                value_type;
     typedef typename Matrix::const_reference           const_reference;
