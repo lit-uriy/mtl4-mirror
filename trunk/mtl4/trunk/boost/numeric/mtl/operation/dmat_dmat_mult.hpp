@@ -1033,21 +1033,15 @@ struct fully_unroll_fixes_size_dmat_dmat_mult_t
 	typedef typename static_num_rows<MatrixC>::type size_type;
 	static const size_type rows_c= static_num_rows<MatrixC>::value, cols_c= static_num_cols<MatrixC>::value, 
 	  	               cols_a= static_num_cols<MatrixA>::value;
-#if 1
 	// corresponds to C= A[all][0] * B[0][all];
 	fully_unroll_dmat_dmat_mult_init_block<1, rows_c, 1, cols_c, Assign>::apply(A, B, C); 
-	//#else
+
 	// corresponds to C+= A[all][1:] * B[1:][all]; if necessary
 	typedef fully_unroll_dmat_dmat_mult_block<1, rows_c, 1, cols_c, 2, cols_a, Assign>  f2;
 	typedef typename boost::mpl::if_c<(cols_a > 1), f2, noop>::type                     f3;
 	f3::apply(A, B, C);
-#endif
     }
 };    
-
-
-
-
 
 
 } // namespace mtl

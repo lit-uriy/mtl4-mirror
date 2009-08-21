@@ -107,6 +107,11 @@ struct category< vector::conj_view<Vector> >
     : public category< vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
 {};
 
+template <typename Vector>
+struct category< vector::negate_view<Vector> >
+    : public category< vector::map_view<sfunctor::negate<typename Vector::value_type>, Vector> >
+{};
+
 // To handle std::vector in algorithms
 template <typename T>
 struct category< std::vector<T> >

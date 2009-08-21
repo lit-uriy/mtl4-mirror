@@ -540,7 +540,7 @@ struct compressed2D_inserter
     self& operator<< (const element_matrix_t<Matrix, Rows, Cols>& elements)
     {
 	using mtl::size;
-#if 1 // shouldn't be slower now
+#if 0 // shouldn't be slower now
 	if (size(elements.cols) > sorted_block_insertion_limit
 	    && boost::is_same<typename Parameters::orientation, row_major>::value)
 	    return sorted_block_insertion(elements);

@@ -23,45 +23,50 @@ concept_map Symmetric<smat> {}
 std::set<const void*> table_Symmetric;
 
 template <typename Matrix>
-bool is_Symmetric(const Matrix& A) 
+void inline map_Symmetric(const Matrix& A) 
+{ table_Symmetric.insert(&A); }
+
+template <Symmetric Matrix>
+void inline map_Symmetric(const Matrix&) {}
+
+template <typename Matrix>
+void inline unmap_Symmetric(const Matrix& A) 
+{ table_Symmetric.erase(&A); }
+
+template <Symmetric Matrix>
+void inline unmap_Symmetric(const Matrix&) {}
+
+template <typename Matrix>
+bool inline is_Symmetric(const Matrix& A) 
 { return table_Symmetric.find(&A) != table_Symmetric.end(); }
 
 template <Symmetric Matrix>
-bool is_Symmetric(const Matrix& A) 
+bool inline is_Symmetric(const Matrix&) 
 { return true; }
 
-template <typename Matrix>
-void map_Symmetric(const Matrix& A) 
-{ table_Symmetric.insert(&A); }
-
-
-template <typename Matrix>
-void unmap_Symmetric(const Matrix& A) 
-{ table_Symmetric.erase(&A); }
 
 
 
+concept PositiveDefinite<typename Matrix>{ /* axioms */ }
 
-concept PositiveDefinit<typename Matrix>{ /* axioms */ }
-
-std::set<const void*> table_PositiveDefinit;
+std::set<const void*> table_PositiveDefinite;
 
 template <typename Matrix>
-bool is_PositiveDefinit(const Matrix& A) 
-{ return table_PositiveDefinit.find(&A) != table_PositiveDefinit.end(); }
+void inline map_PositiveDefinite(const Matrix& A) 
+{ table_PositiveDefinite.insert(&A); }
 
-template <PositiveDefinit Matrix>
-bool is_PositiveDefinit(const Matrix& A) 
+
+template <typename Matrix>
+void inline unmap_PositiveDefinite(const Matrix& A) 
+{ table_PositiveDefinite.erase(&A); }
+
+template <typename Matrix>
+bool inline is_PositiveDefinite(const Matrix& A) 
+{ return table_PositiveDefinite.find(&A) != table_PositiveDefinite.end(); }
+
+template <PositiveDefinite Matrix>
+bool inline is_PositiveDefinite(const Matrix&) 
 { return true; }
-
-template <typename Matrix>
-void map_PositiveDefinit(const Matrix& A) 
-{ table_PositiveDefinit.insert(&A); }
-
-
-template <typename Matrix>
-void unmap_PositiveDefinit(const Matrix& A) 
-{ table_PositiveDefinit.erase(&A); }
 
 
 
@@ -90,7 +95,7 @@ template <typename Matrix>
 void solver(const Matrix& A)
 {
     if (is_Symmetric(A)) {
-	if (is_PositiveDefinit(A))
+	if (is_PositiveDefinite(A))
 	    spd_solver(A);
 	else
 	    symmetric_solver(A);
@@ -106,7 +111,7 @@ int main(int, char* [])
     smat C, D;
 
     map_Symmetric(B);
-    map_PositiveDefinit(D);
+    map_PositiveDefinite(D);
 
     solver(A);
     solver(B);

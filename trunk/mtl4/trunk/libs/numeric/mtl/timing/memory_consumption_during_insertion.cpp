@@ -20,10 +20,11 @@ long bw(long w)
 
 int main()
 {
-    const int s= 1000000, n= 32, z= 90, t= 15;
+    const int s= 1000000, n= 32, z= 32, t= 15;
     long w= 100, r;
 
 
+#if 0
     std::vector<double> v(10000000);
     std::cout << "Vector 10M created. Capacity == " << v.capacity() << endl;
     r= bw(w);
@@ -37,15 +38,15 @@ int main()
     r= bw(w);
 
     {
-	std::vector<double> w(5000000);
+	std::vector<double> w(v.begin(), v.end());
 	swap(v, w);
     }
     std::cout << "Mit 5M geswappt. Capacity == " << v.capacity() << endl;
     r= bw(w);
+#endif
 
     
 
-#if 0
     mtl::compressed2D<double> A(s, s);
     std::cout << "Matrix created." << endl;
     r= bw(w);
@@ -64,6 +65,5 @@ int main()
     }
     std::cout << "Instructor destroyed." << endl;
     r= bw(w);
-#endif
     return 0;
 }

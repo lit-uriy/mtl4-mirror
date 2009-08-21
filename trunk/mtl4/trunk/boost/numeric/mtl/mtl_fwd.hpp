@@ -121,6 +121,7 @@ namespace mtl {
 	template <typename Value, typename Parameters> class dense_vector;
 	template <typename Functor, typename Vector> struct map_view;
 	template <typename Vector>  struct conj_view;
+	template <typename Vector>  struct negate_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
 	template <typename Vector, typename RScaling> struct rscaled_view; // added by Hui Li
 	template <typename Vector, typename Divisor> struct divide_by_view; // added by Hui Li
@@ -234,6 +235,7 @@ namespace mtl {
     namespace sfunctor {
 	template <typename Value, typename AlgebraicCategory = tag::scalar> struct conj_aux;
 	template <typename Value> struct conj;
+	template <typename Value> struct negate;
     }
 
     // Namespace documentations

@@ -16,11 +16,11 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/utility/copy_expression_const_ref_container.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/tfunctor.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
-
 
 
 namespace mtl { namespace vector { namespace detail {
@@ -54,7 +54,9 @@ struct map_view
 	ref.delay_assign();
     }
 
-    size_type size() const { return ref.size(); }
+    // size_type size() const { return ref.size(); }
+    friend size_type inline size(const self& v) { return size(v.ref); }
+
     size_type stride() const { 	return ref.stride(); }
     const_reference operator() (size_type i) const { return functor(ref(i)); }
     const_reference operator[] (size_type i) const { return functor(ref[i]); }
@@ -74,13 +76,14 @@ struct map_view
 // Free functions
 // ================
 
+#if 0
 template <typename Functor, typename Vector>
 typename map_view<Functor, Vector>::size_type
 inline size(const map_view<Functor, Vector>& view)
 {
     return size(view.ref);
 }
-
+#endif
 
     namespace detail {
 
@@ -209,6 +212,24 @@ struct conj_view
 	: base(functor_type(), p)
     {}
 };
+
+template <typename Vector>
+struct negate_view
+  : public map_view<mtl::sfunctor::negate<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::negate<typename Vector::value_type>            functor_type;
+    typedef map_view<functor_type, Vector>                         base;
+
+    negate_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    negate_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+};
+
+
 
 }} // namespace mtl::vector
 
