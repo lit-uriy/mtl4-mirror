@@ -43,7 +43,7 @@ class multi_vector
 			                tag::col_major>::value));
   public:
     typedef multi_vector                             self;
-    // typedef mtl::matrix::parameters<>                parameters;
+    typedef mtl::matrix::parameters<>                parameters;
     typedef tag::col_major                           orientation;
     typedef typename Collection<Vector>::value_type  value_type;
     typedef typename Collection<Vector>::size_type   size_type;
@@ -62,8 +62,8 @@ class multi_vector
 
     /// Constructor by number of rows and column vector for initialization
     multi_vector(size_type num_cols, const Vector& v)
-	: super(non_fixed::dimensions(num_cols, size(v))),
-	  data(num_cols, v)
+      : super(non_fixed::dimensions(size(v), num_cols)),
+	data(num_cols, v)
     {
 	this->my_nnz= num_cols * size(v);
     }
@@ -87,6 +87,7 @@ class multi_vector
     Vector& vector(size_type i) { return data[i]; }
     const Vector& vector(size_type i) const { return data[i]; }
 
+    // size_type size() const { return this->num_rows() * this->num_cols(); } // Hack!!! try to remove
 
     /// Number of rows
     friend size_type num_rows(const self& A) { return A.num_rows(); }

@@ -17,6 +17,8 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
+#include <boost/numeric/mtl/operation/size1D.hpp>
+#include <boost/numeric/mtl/operation/entry1D.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/two_norm.hpp>
 
@@ -27,24 +29,23 @@ namespace mtl { namespace vector {
 	template <typename VVector>
 	inline void orth(VVector& v, typename mtl::Collection<VVector>::size_type j, tag::vector)
 	{
-	    using mtl::two_norm; using mtl::size;
-	    MTL_DEBUG_THROW_IF(j < 0 || j >= size(v), index_out_of_range());
+	    using mtl::two_norm; using mtl::size1D;
+	    MTL_DEBUG_THROW_IF(j < 0 || j >= size1D(v), index_out_of_range());
 
 	    typedef typename mtl::Collection<VVector>::size_type  Size;
 	    for (Size i= 0; i < j; ++i)
-		v[j]-= dot(v[i], v[j]) * v[i];
-	    v[j]/= two_norm(v[j]);
+		entry1D(v, j)-= dot(entry1D(v, i), entry1D(v, j)) * entry1D(v, i);
+	    entry1D(v, j)/= two_norm(entry1D(v, j));
 	}
 
 	template <typename VVector>
 	inline void orth(VVector& v, tag::vector)
 	{
 	    typedef typename mtl::Collection<VVector>::size_type  Size;
-	    using mtl::size;
-	    for (Size j= 0; j < size(v); ++j)
+	    using mtl::size1D;
+	    for (Size j= 0; j < size1D(v); ++j)
 		orth(v, j, tag::vector());
 	}
-
 
 
 	template <typename VVector>
@@ -53,21 +54,21 @@ namespace mtl { namespace vector {
 		   >::value_type >
 	inline orthogonalize_factors(VVector& v, tag::vector)
 	{
-	    using ::mtl::two_norm; using math::zero; using mtl::size;
+	    using ::mtl::two_norm; using math::zero; using mtl::size1D;
 	    typedef typename mtl::Collection<VVector>::size_type  Size;
 	    typedef typename mtl::Collection<VVector>::value_type Vector;
 	    typedef typename mtl::Collection<Vector>::value_type  Scalar;
 
-	    dense2D<Scalar> tau(size(v), size(v));
+	    dense2D<Scalar> tau(size1D(v), size1D(v));
 	    tau= zero(Scalar());
 
-	    for (Size j= 0; j < size(v); ++j) {
+	    for (Size j= 0; j < size1D(v); ++j) {
 		for (Size i= 0; i < j; ++i) {
-		    Scalar t= dot(v[i], v[j]) / tau[i][i];
+		    Scalar t= dot(entry1D(v, i), entry1D(v, j)) / tau[i][i];
 		    tau[i][j]= t;
-		    v[j]-= t * v[i];
+		    entry1D(v, j)-= t * entry1D(v, i);
 		}
-		tau[j][j]= dot(v[j], v[j]);
+		tau[j][j]= dot(entry1D(v, j), entry1D(v, j));
 	    }
 	    return tau;
 	}
@@ -88,7 +89,7 @@ namespace mtl { namespace vector {
 template <typename Value>
 inline void orth(Value& value)
 {
-    return impl::orth(value, typename traits::category<Value>::type());
+    impl::orth(value, typename traits::category<Value>::type());
 }
 
 /*! Orthonormalize the i-th entry of a vector of vectors.
@@ -105,7 +106,7 @@ inline void orth(Value& value)
 template <typename Value>
 inline void orth(Value& value, typename mtl::Collection<Value>::size_type i)
 {
-    return impl::orth(value, i, typename traits::category<Value>::type());
+    impl::orth(value, i, typename traits::category<Value>::type());
 }
 
 
@@ -130,6 +131,16 @@ inline orthogonalize_factors(Value& v)
 }
 
 } // namespace vector
+
+namespace matrix {
+
+    // If other matrix types will be supported within a template function, it needs reimplementation!!!
+    template <typename Vector>
+    inline void orth(multi_vector<Vector>& A)
+    {
+	mtl::vector::impl::orth(A, mtl::tag::vector());
+    }
+}
 
 using vector::orth;
 using vector::orthogonalize_factors;

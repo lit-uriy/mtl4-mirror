@@ -15,14 +15,10 @@
 template <concept C>
 class dynamic_concept
 {
-    static std::set<void*> table;
-    
+    static std::set<void*> table;    
   public:
     template <typename T>
-    bool is(const T& x) 
-    { 
-	return table.find(&x) != table.end();
-    }
+    bool is(const T& x) { return table.find(&x) != table.end(); }
 
     template <C T>
     bool is(const T& x) { return true; }
@@ -30,9 +26,12 @@ class dynamic_concept
     template <typename T>
     void map(const T& x) { table.insert(&x); }
     
+    template <C T> void map(const T& x) {}
+    
     template <typename T>
     void un_map(const T& x) { table.erase(&x); }
 	
+    template <C T> void unmap(const T& x) {}
 };
 
 

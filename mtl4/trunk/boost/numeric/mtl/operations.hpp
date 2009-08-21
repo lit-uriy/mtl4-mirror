@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/crop.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
+#include <boost/numeric/mtl/operation/entry1D.hpp>
 #include <boost/numeric/mtl/operation/fill.hpp>
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 #include <boost/numeric/mtl/operation/invert_diagonal.hpp>
@@ -46,6 +47,7 @@
 #include <boost/numeric/mtl/operation/num_cols.hpp>
 #include <boost/numeric/mtl/operation/num_rows.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
+#include <boost/numeric/mtl/operation/size1D.hpp>
 #include <boost/numeric/mtl/operation/static_num_cols.hpp>
 #include <boost/numeric/mtl/operation/static_num_rows.hpp>
 #include <boost/numeric/mtl/operation/static_size.hpp>

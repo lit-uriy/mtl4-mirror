@@ -2,56 +2,81 @@
     std::set<const void*> table_ ## SCONCEPT;   \
                                                 \
     template <typename T>                       \
-    bool is_ ## SCONCEPT(const T& x)            \
-    { return table_ ## SCONCEPT.find(&x) != table_ ## SCONCEPT.end(); } \
-                                                \
-    template <typename T>                       \
-      requires SCONCEPT<T>                      \
-    bool is_ ## SCONCEPT(const T& x)            \
-    { return true; }                            \
-                                                \
-    template <typename T>                       \
-    void map_ ## SCONCEPT(const T& x)           \
+    void inline map_ ## SCONCEPT(const T& x)    \
     { table_ ## SCONCEPT.insert(&x); }          \
                                                 \
+    template <SCONCEPT T>                       \
+    void inline map_ ## SCONCEPT(const T& x) {}	\
+                                                \
     template <typename T>                       \
-    void unmap_ ## SCONCEPT(const T& x)         \
-    { table_ ## SCONCEPT.erase(&x); }          
+    void inline unmap_ ## SCONCEPT(const T& x)  \
+    { table_ ## SCONCEPT.erase(&x); }           \
+                                                \
+    template <SCONCEPT T>                       \
+    void inline unmap_ ## SCONCEPT(const T& x) {}	\
+                                                \
+    template <typename T>                       \
+    bool inline is_ ## SCONCEPT(const T& x)     \
+    { return table_ ## SCONCEPT.find(&x) != table_ ## SCONCEPT.end(); } \
+                                                \
+    template <SCONCEPT T>                       \
+    bool inline is_ ## SCONCEPT(const T&)       \
+    { return true; }                            
 
-#define SELECT(CONDITION, F)                    \
-    if (is_ ## CONDITION(x)) { F(x); return; }
 
-#define SELECT2(C1, C2, F)				\
-    if (is_ ## C1(x) && is_ ## C2(x)) { F(x); return; }
-
-struct mat {};                 // Matrix type
-struct smat : public mat {};   // Symmetric matrix type
+class mat {};                 // Matrix type
+class smat : public mat {};   // Symmetric matrix type
 
 
 concept Symmetric<typename Matrix> { /* axioms */ }
-concept PositiveDefinit<typename Matrix>{ /* axioms */ }
+concept PositiveDefinite<typename Matrix>{ /* axioms */ }
 
 DYNAMIC_CONCEPT(Symmetric)
-DYNAMIC_CONCEPT(PositiveDefinit)
+DYNAMIC_CONCEPT(PositiveDefinite)
 
 concept_map Symmetric<smat> {}
 
 
 template <typename Matrix>
 void spd_solver(const Matrix& A)
-{  std::cout << "spd_solver (Symmetric and positiv-definit)\n"; }
+{  std::cout << "SPD_solver (Symmetric and positiv-definite)\n"; }
 
 template <typename Matrix>
 void symmetric_solver(const Matrix& A)
-{ std::cout << "symmetric_solver\n"; }
+{ std::cout << "Symmetric_solver\n"; }
+
+template <typename Matrix>
+void solver(const Matrix& A)
+{
+    if (is_PositiveDefinite(A) && is_Symmetric(A)) { spd_solver(A); return; }
+    if (is_Symmetric(A)) { symmetric_solver(A); return; }
+
+    std::cout << "Default_solver\n";
+}
+
+
+
+#if 0 // What I'm emulating here:
+      // This can be sorted in the concept lattice
+      // and it can deal with different arities and return types
 
 template <typename Matrix>
 void solver(const Matrix& x)
-{
-    SELECT2(PositiveDefinit, Symmetric, spd_solver);
-    SELECT(Symmetric,                   symmetric_solver);
-    std::cout << "Default_solver\n";
-}
+{    std::cout << "Default_solver\n"; }
+
+template <typename Matrix>
+void solver(const Matrix& A)
+    requires Symmetric(A);
+{ std::cout << "Symmetric_solver\n"; }
+
+template <typename Matrix>
+void solver(const Matrix& A)
+    requires Symmetric(A) 
+          && PositiveDefinite(A);
+{  std::cout << "SPD_solver (Symmetric and positiv-definit)\n"; }
+
+#endif 
+
 
 int main(int, char* [])  
 {
@@ -59,7 +84,7 @@ int main(int, char* [])
     smat C, D;
 
     map_Symmetric(B);
-    map_PositiveDefinit(D);
+    map_PositiveDefinite(D);
 
     solver(A);
     solver(B);
@@ -78,8 +103,8 @@ int main(int, char* [])
 #if 0 // The output (as expected):
 
 Default_solver
-symmetric_solver
-symmetric_solver
-spd_solver (Symmetric positiv-definit)
+Symmetric_solver
+Symmetric_solver
+SPD_solver (Symmetric positiv-definite)
 
 #endif

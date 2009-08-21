@@ -1,0 +1,38 @@
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. 
+//               2008 Dresden University of Technology and the Trustees of Indiana University. 
+// All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
+
+#ifndef MTL_ENTRY1D_INCLUDE
+#define MTL_ENTRY1D_INCLUDE
+
+namespace mtl {
+
+    namespace vector {
+
+	template <typename Vector>
+	inline typename Collection<Vector>::value_type 
+	entry1D(const Vector& v, typename Collection<Vector>::size_type i)
+	{
+	    return v[i];
+	}
+    }
+
+    namespace matrix {
+
+	template <typename Vector>
+	inline Vector entry1D(multi_vector<Vector>& A, typename Collection<Vector>::size_type i)
+	{
+	    return A.vector(i);
+	}	
+    }
+
+} // namespace mtl
+
+#endif // MTL_ENTRY1D_INCLUDE

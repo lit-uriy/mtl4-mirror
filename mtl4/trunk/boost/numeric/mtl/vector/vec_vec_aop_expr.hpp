@@ -58,6 +58,7 @@ struct vec_vec_aop_expr
   :  public vec_expr< vec_vec_aop_expr<E1, E2, SFunctor> >
 {
     typedef vec_expr< vec_vec_aop_expr<E1, E2, SFunctor> >  expr_base;
+    typedef vec_vec_aop_expr<E1, E2, SFunctor>   self;
     typedef typename E1::value_type              value_type;
     
     // temporary solution
@@ -100,12 +101,12 @@ struct vec_vec_aop_expr
     {
 	if (!delayed_assign) {
 	    // If target is constructed by default it takes size of source
-	    if (first.size() == 0) first.change_dim(second.size());
+	    if (size(first) == 0) first.change_dim(size(second));
 
 	    // If sizes are different for any other reason, it's an error
-	    MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
+	    MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
 
-	    for (size_type i= 0; i < first.size(); ++i)
+	    for (size_type i= 0; i < size(first); ++i)
 		SFunctor::apply( first(i), second(i) );
 
 	    // Slower, at least on gcc
@@ -115,10 +116,18 @@ struct vec_vec_aop_expr
     
     void delay_assign() const { delayed_assign= true; }
 
+    friend size_type inline size(const self& x)
+    {
+	assert( size(x.first) == 0 || size(x.first) == size(x.second) );
+	return size(x.first);
+    }
+
+#if 0
     size_type size() const {
 	assert( first.size() == 0 || first.size() == second.size() ) ;
 	return first.size() ;
     }
+#endif
 
      value_type& operator() ( size_type i ) const {
 	assert( delayed_assign );

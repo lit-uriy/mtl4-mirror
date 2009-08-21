@@ -150,6 +150,12 @@ struct ashape< vector::vec_const_ref_expr<Vector> >
     typedef typename ashape<Vector>::type type;
 };
 
+template <typename E1>
+struct ashape< vector::negate_view<E1> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
 
 // ========
 // Matrices

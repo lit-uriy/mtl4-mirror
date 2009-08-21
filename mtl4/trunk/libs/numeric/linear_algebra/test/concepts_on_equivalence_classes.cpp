@@ -60,21 +60,40 @@ auto concept ConstructibleFromConstRef<typename T, typename U>
     T::T(const U&);
 }
 
-// Concept for monoid on equivalence classes
+// Concept for semigroup on equivalence classes
 // =========================================
 
-concept InMonoidClass<typename Operation, typename Element1, typename Element2>
+concept InSemiGroupClass<typename Operation, typename Element1, typename Element2>
 {
-    requires math::Monoid<Operation, Element1>;
-    requires math::Monoid<Operation, Element2>;
+    requires math::SemiGroup<Operation, Element1>;
+    requires math::SemiGroup<Operation, Element2>;
 
     requires std::Callable2<Operation, Element1, Element2>;
 
     typename result_type= std::Callable2<Operation, Element1, Element2>::result_type;
 
     // I shouldn't need this! 
-    // result_type::result_type(const std::Callable2<Operation, Element1, Element2>::result_type&);
     requires ConstructibleFromConstRef<result_type, std::Callable2<Operation, Element1, Element2>::result_type>;
+
+    requires math::SemiGroup<Operation, result_type>;
+
+    axiom Associativity1(Operation op, Element1 x, Element1 y, Element2 z) {
+	op(op(x, y), z) == op(x, op(y, z));
+    }
+
+    axiom Associativity2(Operation op, Element1 x, Element2 y, Element2 z) {
+	op(op(x, y), z) == op(x, op(y, z));
+    }
+}
+
+// Concept for monoid on equivalence classes
+// =========================================
+
+concept InMonoidClass<typename Operation, typename Element1, typename Element2>
+  : InSemiGroupClass<Operation, Element1, Element2>
+{
+    requires math::Monoid<Operation, Element1>;
+    requires math::Monoid<Operation, Element2>;
 
     requires math::Monoid<Operation, result_type>;
 }
@@ -83,12 +102,15 @@ concept InMonoidClass<typename Operation, typename Element1, typename Element2>
 // Concept and map for equivalence class of real-valued vectors
 // ============================================================
 
+concept     RealValue<typename Value> {}
+concept_map RealValue<float> {}
+
 concept RealVectorClass<typename Vector> {}
 
 
 concept_map RealVectorClass<vec> {}
 
-template <typename Value> 
+template <RealValue Value> 
 concept_map RealVectorClass<svec<Value> > {}
 
 template <RealVectorClass V1, RealVectorClass V2>
@@ -107,7 +129,8 @@ namespace math {
 
     concept_map Monoid< ::add, vec> {}
 
-    template <typename Value> 
+    template <RealValue Value> 
+    //template <typename Value> 
     concept_map Monoid< ::add, svec<Value> > 
     {
 	typedef vec_add_expr<svec<Value>, svec<Value> > result_type;
@@ -179,9 +202,45 @@ int main(int, char* [])
     typedef vec_add_expr<s1_type, s1_type>  s2_type;
     s2_type                                 s2(s1, s1);
 
+    typedef vec_add_expr<s2_type, s2_type>  s3_type;
+    s3_type                                 s3(s2, s2);
+
+    typedef vec_add_expr<s3_type, s1_type>  s31_type;
+    s31_type                                s31(s3, s1);
+
     f(s2, "s2");
     g(add(), s1, s2);
-    h(s2);
+    g(add(), s3, s2);
+    g(add(), s3, s1);
+    g(add(), s31, s2);
+
+    /*
+    vec_add_expr<vec_add_expr<vec_add_expr<vec_add_expr<vec, svec<float> >, vec_add_expr<vec, svec<float> > >,
+	                      vec_add_expr<vec_add_expr<vec, svec<float> >, vec_add_expr<vec, svec<float> > > >,
+	         vec_add_expr<vec_add_expr<vec, svec<float> >, vec_add_expr<vec, svec<float> > >
+    + svec<float>
+     g(add(), (((u + w) + (u + w)) + ((u + w) + (u + w))) + (u + w), w);
+    */ 
+    g(add(), s31, w); 
+
+    // h(s2);
 
     return 0;
 }
+
+
+#if 0 
+
+
+template <RealMatrixClass Matrix1, RealMatrixClass Matrix2>
+  requires InMonoidClass<add, Matrix1, Matrix2>
+template (add a, Matrix1 A1, Matrix2 A2)
+  requires Hermitian(A1)
+        && Hermitian(A2)
+dynamic_map InHermitianMonoidClass(a, A1, A2) {}
+
+
+
+
+
+#endif

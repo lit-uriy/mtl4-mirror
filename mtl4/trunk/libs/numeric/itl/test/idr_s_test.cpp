@@ -52,7 +52,6 @@ void test1(Matrix& m, double tau)
 
 int test_main(int argc, char* argv[])
 {
-#if 0
   const int N = 100; // Original from Jan had 2000 
   const int Niter = 3*N;
 
@@ -76,7 +75,7 @@ int test_main(int argc, char* argv[])
   x= 0.5;
   itl::cyclic_iteration<double> iter_1(b, Niter, 1.e-8, 0.0, 5);
   idr_s(A, x, b, Ident, Ident, iter_1,1);
- 
+
   std::cout << "Non-preconditioned bicgstab(2)" << std::endl;
   x= 0.5;
   itl::cyclic_iteration<double> iter_2b(b, Niter, 1.e-8, 0.0, 5);
@@ -92,7 +91,7 @@ int test_main(int argc, char* argv[])
   itl::cyclic_iteration<double> iter_8b(b, Niter, 1.e-8, 0.0, 5);
   idr_s(A, x, b, Ident, Ident, iter_8b,8);
 
-  pc::ilu_0<matrix_type>        P(A);
+  itl::pc::ilu_0<matrix_type>        P(A);
   
   std::cout << "Right ilu(0) preconditioned bicgstab(1)" << std::endl;
   x= 0.5;
@@ -118,7 +117,6 @@ int test_main(int argc, char* argv[])
   x= 0.5;
   itl::cyclic_iteration<double> iter_8r(b, Niter, 1.e-8, 0.0, 5);
   idr_s(A, x, b, Ident, P, iter_8r,8);
-#endif
 
   return 0;
 }

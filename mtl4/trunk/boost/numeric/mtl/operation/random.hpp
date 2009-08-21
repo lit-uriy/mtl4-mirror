@@ -17,6 +17,7 @@
 
 #include <cstdlib>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 
 namespace mtl {
 
@@ -25,14 +26,16 @@ template <typename T> struct seed {}; // Dummy right now
 namespace vector {
 
     template <typename Vector, typename Seed>
-    void inline random(Vector& v, Seed& s) 
+    typename mtl::traits::enable_if_vector<Vector>::type
+    inline random(Vector& v, Seed& s) 
     {
 	for (int i= 0; i < size(v); i++)
 	    v[i]= rand();
     }
 
     template <typename Vector>
-    void inline random(Vector& v)
+    typename mtl::traits::enable_if_vector<Vector>::type
+    inline random(Vector& v)
     {
 	random(v, seed<typename Collection<Vector>::value_type>());
     }
@@ -43,7 +46,8 @@ namespace vector {
 namespace matrix {
 
     template <typename Matrix, typename Seed>
-    void inline random(Matrix& A, Seed& s) 
+    typename mtl::traits::enable_if_matrix<Matrix>::type
+    inline random(Matrix& A, Seed& s) 
     {
 	inserter<Matrix> ins(A, A.dim2());
 	for (int r= 0; r < num_rows(A); r++)
