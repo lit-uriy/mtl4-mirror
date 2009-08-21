@@ -46,9 +46,9 @@ struct vec_scal_aop_expr
     {
 	if (!delayed_assign)
 	    if (with_comma) {
-		MTL_DEBUG_THROW_IF(index != size(), incompatible_size("Not all vector entries initialized!"));
+		MTL_DEBUG_THROW_IF(index != size(first), incompatible_size("Not all vector entries initialized!"));
 	    } else
-		for (size_type i= 0; i < first.size(); ++i)
+		for (size_type i= 0; i < size(first); ++i)
 		    SFunctor::apply( first(i), second );
     }
     
@@ -58,10 +58,14 @@ struct vec_scal_aop_expr
 	delayed_assign= true; 
     }
 
+    friend size_type inline size(const self& v) { return size(v.first); }
+
+#if 0
     size_type size() const 
     {
 	return first.size() ;
     }
+#endif
 
     value_type& operator() ( size_type i ) const 
     {
@@ -84,7 +88,7 @@ struct vec_scal_aop_expr
 	    assert(index == 0);
 	    SFunctor::apply( first(index++), second); // We haven't set v[0] yet
 	}
-	MTL_DEBUG_THROW_IF(index >= size(), range_error());
+	MTL_DEBUG_THROW_IF(index >= size(first), range_error());
 	SFunctor::apply( first(index++), val);
 	return *this;
     }
