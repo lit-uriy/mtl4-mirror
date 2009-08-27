@@ -25,73 +25,53 @@ template < typename Matrix, typename Vector, typename Iteration >
 int tfqmr(const Matrix &A, Vector &x, const Vector &b,
                  Iteration& iter)
 {
-    using mtl::irange; using mtl::imax; using mtl::matrix::strict_upper;
+    using mtl::irange; using mtl::imax; using math::reciprocal;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
-    const Scalar                zero= math::zero(b[0]);
-    Scalar                      theta(0), eta(0), tau, rho, rhon, sigma,
-                        alpha, beta, c, m, tol;
-    Size                        k, n(size(x));
-    Vector                      r(n), u1(n), u2(n), y1(n), y2(n), w(n), d(n), v(n);
+    const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
+    Scalar                      theta(zero), eta(zero), tau, rho, rhon, sigma,
+                                alpha, beta, c, m, tol;
+    Size                        k(0), n(size(x));
+    Vector                      r(b - A*x), u1(n), u2(n), y1(n), y2(n), w(n), d(n, zero), v(n);
 
-    d=0;
-    k= 0;
-    r= b - A*x;
-        if (iter.finished(r))
-                return iter.error_code();
-    w= r;
-    y1= r;
-    v= A*y1;
-    u1= v;
+    if (iter.finished(r))
+	return iter;
+    y1= w= r;
+    u1= v= A * y1;
     tau= two_norm(r);
     rho= tau*tau;
 
-
-
-// TFQMR iteration
+    // TFQMR iteration
     while(! iter.finished(tau)){
-            sigma= dot(r,v);
-        if (sigma == zero){
-                return iter.fail(1, "tfgmr breakdown, sigma=0 #1");
-            break;
-        }
-        alpha= rho/sigma;
+	sigma= dot(r,v);
+        if (sigma == zero)
+	    return iter.fail(1, "tfgmr breakdown, sigma=0 #1");
+        alpha= rho / sigma;
 
         //inner loop
-        for(int j=1;j<3;j++){
-            if(j==2){
-                y2= y1 - alpha*v;
-                u2= A*y2;
+        for(int j=1; j < 3; j++) {
+            m= 2 * k - 2 + j;
+            if (j == 1) {
+                w-= alpha * u1;
+                d= y1+ (theta * theta * eta / alpha) * d;
+	    } else {
+                y2= y1 - alpha * v;
+                u2= A * y2;
+                w-= alpha * u2;
+                d= y2 + (theta * theta * eta / alpha) * d;
             }
-            m= 2*k-2+j;
-            if(j==1){
-                w= w - alpha*u1;
-                d= y1+ (theta*theta*eta/alpha)*d;
-              }
-            else{
-                w= w - alpha*u2;
-                d= y2+ (theta*theta*eta/alpha)*d;
-            }
-            theta= two_norm(w)/tau;
-            c= 1/(sqrt(1+theta*theta));
-            tau= tau*theta*c;
-            eta= c*c*alpha;
-            x= x + eta*d;
-
-            //try to terminate the iteration
-            tol= tau*sqrt(m+1);
-            //if(iter.finished(tol)){  //test is actually negligible
-            //    return iter.error_code();
-            //    break;
-            //}
-        }//end inner loop
-        if (rho == zero){
+            theta= two_norm(w) / tau;
+            c= reciprocal(sqrt(one + theta*theta));
+            tau*= theta * c;
+            eta= c * c * alpha;
+            x+= eta * d;
+            tol= tau*sqrt(m + one);
+        } //end inner loop
+        if (rho == zero)
             return iter.fail(1, "tfgmr breakdown, rho=0 #2");
-            break;
-        }
         rhon= dot(r,w);
         beta= rhon/rho;
         rho= rhon;
@@ -100,9 +80,8 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b,
         v= u1 + beta*(u2 + beta*v);
 
         ++iter;
-         }
-
-   return iter;
+    }
+    return iter;
 }
 } // namespace itl
 
