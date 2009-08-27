@@ -77,6 +77,7 @@ concept InSemiGroupClass<typename Operation, typename Element1, typename Element
 
     requires math::SemiGroup<Operation, result_type>;
 
+    // Wouldn't we need 3 element types and different (isomorphic) Operation types in general?
     axiom Associativity1(Operation op, Element1 x, Element1 y, Element2 z) {
 	op(op(x, y), z) == op(x, op(y, z));
     }
@@ -127,6 +128,7 @@ namespace math {
     concept_map Monoid< ::add, V> {}
 #endif
 
+#if 1
     concept_map Monoid< ::add, vec> {}
 
     template <RealValue Value> 
@@ -143,6 +145,7 @@ namespace math {
 	typedef vec_add_expr<vec_add_expr<V1, V2>, vec_add_expr<V1, V2> > result_type;
 	typedef vec_add_expr<V1, V2>                                      identity_result_type;
     }
+#endif
         
 }
 
@@ -193,14 +196,17 @@ void h(const T& x) {}
 
 int main(int, char* [])  
 {
-    vec           u(3), v(identity(add(), u));
-    svec<float>   w(3);
+    vec                                     u(3), v(identity(add(), u));
+    svec<float>                             w(3);
 
     typedef vec_add_expr<vec, svec<float> > s1_type;
     s1_type                                 s1(u, w);
 
     typedef vec_add_expr<s1_type, s1_type>  s2_type;
     s2_type                                 s2(s1, s1);
+
+    typedef vec_add_expr<s2_type, s1_type>  s21_type;
+    s21_type                                s21(s2, s1);
 
     typedef vec_add_expr<s2_type, s2_type>  s3_type;
     s3_type                                 s3(s2, s2);
@@ -215,9 +221,20 @@ int main(int, char* [])
     g(add(), s31, s2);
 
     /*
-    vec_add_expr<vec_add_expr<vec_add_expr<vec_add_expr<vec, svec<float> >, vec_add_expr<vec, svec<float> > >,
-	                      vec_add_expr<vec_add_expr<vec, svec<float> >, vec_add_expr<vec, svec<float> > > >,
-	         vec_add_expr<vec_add_expr<vec, svec<float> >, vec_add_expr<vec, svec<float> > >
+    vec_add_expr<vec_add_expr<vec_add_expr<vec, svec<float> >, 
+                              vec_add_expr<vec, svec<float> > >,
+	         vec_add_expr<vec, svec<float> > >
+    + svec<float>
+     g(add(), ((u + w) + (u + w)) + (u + w), w);
+    */ 
+    g(add(), s21, w); 
+
+    /*
+    vec_add_expr<vec_add_expr<vec_add_expr<vec_add_expr<vec, svec<float> >, 
+                                           vec_add_expr<vec, svec<float> > >,
+	                      vec_add_expr<vec_add_expr<vec, svec<float> >, 
+                                           vec_add_expr<vec, svec<float> > > >,
+	         vec_add_expr<vec, svec<float> > >
     + svec<float>
      g(add(), (((u + w) + (u + w)) + ((u + w) + (u + w))) + (u + w), w);
     */ 

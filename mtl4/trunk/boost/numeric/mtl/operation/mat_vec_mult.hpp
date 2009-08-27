@@ -108,10 +108,10 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::dense)
 {
-# ifdef MTL_UNROLL_FSIZE_MAT_VEC_MULT
-    traits::is_static<Matrix> selector;
-# else
+# ifdef MTL_NOT_UNROLL_FSIZE_MAT_VEC_MULT
     boost::mpl::false_        selector;
+# else
+    traits::is_static<Matrix> selector;
 # endif
     dense_mat_cvec_mult(A, v, w, Assign(), selector);
 }
