@@ -17,8 +17,15 @@ namespace mtl {
     namespace vector {
 
 	template <typename Vector>
-	inline typename Collection<Vector>::value_type 
+	inline typename Collection<Vector>::value_type const&
 	entry1D(const Vector& v, typename Collection<Vector>::size_type i)
+	{
+	    return v[i];
+	}
+
+	template <typename Vector>
+	inline typename Collection<Vector>::value_type& 
+	entry1D(Vector& v, typename Collection<Vector>::size_type i)
 	{
 	    return v[i];
 	}
@@ -27,7 +34,13 @@ namespace mtl {
     namespace matrix {
 
 	template <typename Vector>
-	inline Vector entry1D(multi_vector<Vector>& A, typename Collection<Vector>::size_type i)
+	inline Vector& entry1D(multi_vector<Vector>& A, typename Collection<Vector>::size_type i)
+	{
+	    return A.vector(i);
+	}	
+
+	template <typename Vector>
+	inline Vector const& entry1D(multi_vector<Vector>& A, typename Collection<Vector>::size_type i)
 	{
 	    return A.vector(i);
 	}	
