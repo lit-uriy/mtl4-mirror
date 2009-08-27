@@ -20,7 +20,7 @@ concept_map C1<T> {}
 
 concept_map C1<int> {}
 concept_map C2<short> {}
-concept_map C2<char> {}
+concept_map C3<char> {}
 
 
 template <C1 T> 
