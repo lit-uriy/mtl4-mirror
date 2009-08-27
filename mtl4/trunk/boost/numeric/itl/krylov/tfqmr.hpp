@@ -33,7 +33,7 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b,
 
     const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
     Scalar                      theta(zero), eta(zero), tau, rho, rhon, sigma,
-                                alpha, beta, c, m, tol;
+                                alpha, beta, c, m;
     Size                        k(0), n(size(x));
     Vector                      r(b - A*x), u1(n), u2(n), y1(n), y2(n), w(n), d(n, zero), v(n);
 
@@ -68,7 +68,6 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b,
             tau*= theta * c;
             eta= c * c * alpha;
             x+= eta * d;
-            tol= tau*sqrt(m + one);
         } //end inner loop
         if (rho == zero)
             return iter.fail(1, "tfgmr breakdown, rho=0 #2");
@@ -76,7 +75,7 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b,
         beta= rhon/rho;
         rho= rhon;
         y1= w + beta*y2;
-        u1= A*y1;
+        u1= A * y1;
         v= u1 + beta*(u2 + beta*v);
 
         ++iter;
