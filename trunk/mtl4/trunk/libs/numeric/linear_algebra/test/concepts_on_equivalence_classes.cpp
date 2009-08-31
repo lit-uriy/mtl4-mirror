@@ -18,6 +18,11 @@ struct vec
     int s;
 };
 
+std::ostream& operator<<(std::ostream& os, const vec& v)
+{
+    return os << "vec";
+}
+
 // Just to have another type
 template <typename Value>
 struct svec
@@ -29,6 +34,11 @@ struct svec
     Value* p;
 };
 
+template <typename Value>
+std::ostream& operator<<(std::ostream& os, const svec<Value>& v)
+{
+    return os << "svec<>";
+}
 
 template <typename E1, typename E2>
 struct vec_add_expr
@@ -38,8 +48,17 @@ struct vec_add_expr
   private:
     const E1& e1;
     const E2& e2;
+
+    template <typename EE1, typename EE2>
+    friend std::ostream& operator<<(std::ostream& os, const vec_add_expr<EE1, EE2>& v);
+
 };
 
+template <typename EE1, typename EE2>
+std::ostream& operator<<(std::ostream& os, const vec_add_expr<EE1, EE2>& v)
+{
+    return os << "vec_add_expr< " << v.e1 << ", " << v.e2 << " >";
+}
 
 
 struct add 
@@ -154,29 +173,25 @@ concept_map InMonoidClass<add, V1, V2> {}
 
 
 
-
-
-
-
-
-template <typename T>
-bool is_monoid(const T& x)
-{
-    return false;
+auto concept Streamable<typename T> {
+  std::ostream& operator<<(std::ostream &, const T&);
 }
 
-template <typename T>
-  requires math::Monoid<add, T>
-bool is_monoid(const T& x)
-{
-    return true;
-}
 
 template <typename T>
 void f(const T& x, const char* name)
 {
-    std::cout << name << (is_monoid(x) ? " is" : " isn't") << " an additive monoid\n";
+    std::cout << name << " isn't an additive monoid\n";
 }
+
+template <typename T>
+  requires math::Monoid<add, T> && Streamable<T>
+void f(const T& x, const char* name)
+{
+    std::cout << name << " " << x << " is an additive monoid\n";
+}
+
+
 
 template <typename Op, typename T, typename U>
   requires InMonoidClass<Op, T, U>
