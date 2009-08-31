@@ -37,7 +37,7 @@ struct svec
 template <typename Value>
 std::ostream& operator<<(std::ostream& os, const svec<Value>& v)
 {
-    return os << "svec<>";
+    return os << "svec<float>";
 }
 
 template <typename E1, typename E2>
@@ -229,7 +229,7 @@ int main(int, char* [])
     typedef vec_add_expr<s3_type, s1_type>  s31_type;
     s31_type                                s31(s3, s1);
 
-    f(s2, "s2");
+    f(s31, "s31");
     g(add(), s1, s2);
     g(add(), s3, s2);
     g(add(), s3, s1);
