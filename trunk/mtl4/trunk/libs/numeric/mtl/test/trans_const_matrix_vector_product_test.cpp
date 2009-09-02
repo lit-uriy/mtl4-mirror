@@ -9,6 +9,8 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+// Test only compilability
+
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
@@ -31,35 +33,26 @@ void test(Matrix& A, const char* name)
     double xa[] = {1, 2, 3, 4, 5};
     mtl::dense_vector<double> x(xa), b;
     
-    b= A * x;
-    x= 0.0;
-    
-    Matrix U(A); // Copy of the upper triangular
-    // Check whether entries on the lower triangle are ignored for solving
-    {
-	mtl::matrix::inserter<Matrix>   ins(A);
-	ins[4][1] << 7; ins[3][2] << 6;
-    }
+    const Matrix B(A);
 
-    cout << name << "\nA = \n" << A << "b = " << b << "\n";
-    
-    x= upper_trisolve(A, b);
-    cout << "x = upper_trisolve(A, b) ==" << x << "\n\n";
-    for (int i= 0; i < 5; i++)	
-	if (std::abs(x[i] - double(i+1)) > 0.0001) throw "Wrong result in upper_trisolve!";
-	
-    x= xa;
-    Matrix B(trans(A));
-    
-    b= trans(const_cast<Matrix const&>(U)) * x; // we don't want B's entries in the upper triangle
-    x= 0.0;
-    
-    cout << "B = \n" << B << "b = " << b << "\n";
-	
-    x= lower_trisolve(B, b);
-    cout << "x = lower_trisolve(B, b) ==" << x << "\n\n";
-    for (int i= 0; i < 5; i++)	
-	if (std::abs(x[i] - double(i+1)) > 0.0001) throw "Wrong result in lower_trisolve!";
+    b= trans(A) * x;
+
+    typedef mtl::transposed_view<Matrix>       trans_type;
+    typedef mtl::transposed_view<const Matrix> ctrans_type;
+
+#if 0
+    cout << "Type of A" << typeid(typename mtl::ashape::ashape<Matrix>::type).name() << "\n";
+    cout << "Type of B" << typeid(typename mtl::ashape::ashape<const Matrix>::type).name() << "\n";
+
+    cout << "Type of trans(A)" << typeid(typename mtl::ashape::ashape<mtl::transposed_view<Matrix> >::type).name() << "\n";
+    cout << "Type of trans(B)" << typeid(typename mtl::ashape::ashape<mtl::transposed_view<const Matrix> >::type).name() << "\n";
+#endif
+
+    cout << "Type of enable_if_matrix<trans(A)> " << typeid(typename mtl::traits::enable_if_matrix<trans_type>::type).name() << "\n";
+    cout << "Type of enable_if_matrix<trans(B)> " << typeid(typename mtl::traits::enable_if_matrix<ctrans_type>::type).name() << "\n";
+
+    b= B * x;
+    b= trans(B) * x;
 }
 
 int test_main(int argc, char* argv[])
@@ -71,14 +64,14 @@ int test_main(int argc, char* argv[])
     morton_dense<double, recursion::doppled_2_row_mask>  d2r;
     compressed2D<double>                                 cr;
     compressed2D<double, matrix::parameters<col_major> > cc;
-
-    test(dr, "Dense row major");
 #if 0
+    test(dr, "Dense row major");
     test(dc, "Dense column major");
     test(mzd, "Morton Z-order");
     test(d2r, "Hybrid 2 row-major");
+#endif
     test(cr, "Compressed row major");
     test(cc, "Compressed column major");
-#endif
+
     return 0;
 }

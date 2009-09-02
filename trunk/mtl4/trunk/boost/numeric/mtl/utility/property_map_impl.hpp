@@ -115,9 +115,10 @@ private:
     const collection_type& coll;
 };
 
-template <typename Matrix>
+template <typename Matrix> // , typename Ref= typename Matrix::other>
 struct const_value_from_other
 {
+    // typedef Ref                        other; // dunno which is better
     typedef typename Matrix::other     other;
     typedef typename other::key_type   key_type;
     typedef typename other::value_type value_type;
@@ -131,7 +132,7 @@ struct const_value_from_other
     }
 
   protected:
-    typename traits::const_value<other>::type  its_const_value;
+    typename traits::const_value<typename boost::remove_const<other>::type>::type  its_const_value;
 };
 
 

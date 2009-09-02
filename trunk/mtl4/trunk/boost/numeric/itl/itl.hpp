@@ -26,6 +26,7 @@
 #include <boost/numeric/itl/krylov/idr_s.hpp>
 #include <boost/numeric/itl/krylov/gmres.hpp>
 #include <boost/numeric/itl/krylov/tfqmr.hpp>
+#include <boost/numeric/itl/krylov/qmr.hpp>
 
 #include <boost/numeric/itl/pc/identity.hpp>
 #include <boost/numeric/itl/pc/diagonal.hpp>
