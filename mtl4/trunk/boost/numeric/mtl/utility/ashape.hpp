@@ -49,6 +49,15 @@ struct ashape
     typedef scal type;
 };
 
+
+// Const types have the same ashape as their non-const counterpart
+template <typename T>
+struct ashape<const T>
+{
+    typedef typename ashape<T>::type type;
+};
+
+
 /// Vectors must be distinguished between row and column vectors
 template <typename Value, typename Parameters>
 struct ashape<dense_vector<Value, Parameters> >

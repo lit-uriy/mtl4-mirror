@@ -199,14 +199,14 @@ namespace mtl { namespace traits {
 
     namespace detail {
 
-	template <class Matrix> 
+	template <class Matrix, class Ref> 
 	struct transposed_row
 	{
 	    typedef typename Matrix::key_type   key_type;
 	    typedef typename Matrix::size_type  size_type;
     	
-		transposed_row(mtl::matrix::transposed_view<Matrix> const& transposed_matrix) 
-		: its_col(transposed_matrix.ref) {}
+	    transposed_row(mtl::matrix::transposed_view<Ref> const& transposed_matrix) 
+	      : its_col(transposed_matrix.ref) {}
 
 	    size_type operator() (key_type const& key) const
 	    {
@@ -214,17 +214,17 @@ namespace mtl { namespace traits {
 	    }
 
 	  protected:
-	    typename col<Matrix>::type  its_col;
+	    typename col<typename boost::remove_const<Matrix>::type>::type  its_col;
         };
 
 
-        template <class Matrix> 
+        template <class Matrix, class Ref> 
         struct transposed_col
         {
 	    typedef typename Matrix::key_type   key_type;
 	    typedef typename Matrix::size_type  size_type;
     	
-	    transposed_col(matrix::transposed_view<Matrix> const& transposed_matrix) 
+	    transposed_col(matrix::transposed_view<Ref> const& transposed_matrix) 
 		: its_row(transposed_matrix.ref) {}
 
 	    size_type operator() (key_type const& key) const
@@ -233,7 +233,7 @@ namespace mtl { namespace traits {
 	    }
 
           protected:
-	    typename row<Matrix>::type  its_row;
+	    typename row<typename boost::remove_const<Matrix>::type>::type  its_row;
         };
 	
     } // namespace detail
@@ -241,25 +241,49 @@ namespace mtl { namespace traits {
     template <class Matrix> 
     struct row<matrix::transposed_view<Matrix> >
     {
-	typedef detail::transposed_row<Matrix>  type;
+	typedef detail::transposed_row<Matrix, Matrix>  type;
     };
+
+#if 0
+    template <class Matrix> 
+    struct row<matrix::transposed_view<const Matrix> >
+    {
+	typedef detail::transposed_row<Matrix, const Matrix>  type;
+    };
+#endif
 
     template <class Matrix> 
     struct col<matrix::transposed_view<Matrix> >
     {
-	typedef detail::transposed_col<Matrix>  type;
+	typedef detail::transposed_col<Matrix, Matrix>  type;
     };
 
+#if 0
     template <class Matrix> 
-	struct const_value<mtl::matrix::transposed_view<Matrix> >
+    struct col<matrix::transposed_view<const Matrix> >
     {
-		typedef mtl::detail::const_value_from_other<mtl::matrix::transposed_view<Matrix> > type;
+	typedef detail::transposed_col<Matrix, const Matrix>  type;
     };
+#endif
 
     template <class Matrix> 
-	struct value<mtl::matrix::transposed_view<Matrix> >
+    struct const_value<mtl::matrix::transposed_view<Matrix> >
     {
-		typedef mtl::detail::value_from_other<mtl::matrix::transposed_view<Matrix> > type;
+	typedef mtl::detail::const_value_from_other<mtl::matrix::transposed_view<Matrix> > type;
+    };
+
+#if 0
+    template <class Matrix> 
+    struct const_value<matrix::transposed_view<const Matrix> >
+    {
+	typedef mtl::detail::const_value_from_other<mtl::matrix::transposed_view<const Matrix>, Matrix > type;
+    };
+#endif
+
+    template <class Matrix> 
+    struct value<mtl::matrix::transposed_view<Matrix> >
+    {
+	typedef mtl::detail::value_from_other<mtl::matrix::transposed_view<Matrix> > type;
     };
 
 
@@ -272,7 +296,8 @@ namespace mtl { namespace traits {
 	template <class UseTag, class Matrix>
 	struct range_transposer_impl
 	{
-	    typedef range_generator<UseTag, Matrix>  generator;
+	    typedef range_generator<UseTag, typename boost::remove_const<Matrix>::type>  generator;
+	    // typedef range_generator<UseTag, Matrix>  generator;
 	    typedef typename generator::complexity   complexity;
 	    typedef typename generator::type         type;
 	    static int const                         level = generator::level;
@@ -292,7 +317,7 @@ namespace mtl { namespace traits {
 	template <class UseTag, class Matrix>
 	struct range_transposer
 	    : boost::mpl::if_<
-	          boost::is_same<typename range_generator<UseTag, Matrix>::complexity, complexity_classes::infinite>
+	          boost::is_same<typename range_generator<UseTag, typename boost::remove_const<Matrix>::type>::complexity, complexity_classes::infinite>
 	        , range_generator<tag::unsupported, Matrix>
 	        , range_transposer_impl<UseTag, Matrix>
 	      >::type {};
@@ -301,26 +326,47 @@ namespace mtl { namespace traits {
     // Row and column cursors are interchanged
     template <class Matrix>
     struct range_generator<glas::tag::col, matrix::transposed_view<Matrix> >
-	: detail::range_transposer<glas::tag::row, Matrix>
+      : detail::range_transposer<glas::tag::row, Matrix>
     {};
 
     template <class Matrix>
     struct range_generator<glas::tag::row, matrix::transposed_view<Matrix> >
-	: detail::range_transposer<glas::tag::col, Matrix>
+      : detail::range_transposer<glas::tag::col, Matrix>
     {};
+
+#if 0
+    template <class Matrix>
+    struct range_generator<glas::tag::row, matrix::transposed_view<const Matrix> >
+      : detail::range_transposer<glas::tag::col, const Matrix>
+    {};
+#endif
 
     // To traverse the major dimension refer to the Matrix
     template <class Matrix>
     struct range_generator<tag::major, matrix::transposed_view<Matrix> >
-	: detail::range_transposer<tag::major, Matrix>
+      : detail::range_transposer<tag::major, Matrix>
     {};
 
-    // Other cursors are still use the same tag, e.g. elements
+#if 0
+    template <class Matrix>
+    struct range_generator<tag::major, matrix::transposed_view<const Matrix> >
+      : detail::range_transposer<tag::major, const Matrix>
+    {};
+#endif
+
+    // Other cursors still use the same tag, e.g. elements
     template <class Tag, class Matrix>
     struct range_generator<Tag, matrix::transposed_view<Matrix> >
-	: detail::range_transposer<Tag, Matrix>
+      : detail::range_transposer<Tag, Matrix>
     {};
 
+#if 0
+    template <class Tag, class Matrix>
+    struct range_generator<Tag, matrix::transposed_view<const Matrix> >
+      : detail::range_transposer<Tag, const Matrix>
+    {};
+#endif
+    
 
 }} // namespace mtl::traits
 

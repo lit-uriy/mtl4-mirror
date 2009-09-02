@@ -34,6 +34,12 @@ template <typename Collection> struct category
     typedef tag::unknown type;
 };
 
+// Const types have the same category as their non-const counterpart
+template <typename T>
+struct category<const T>
+{
+    typedef typename category<T>::type type;
+};
 
 template <typename Value, typename Parameters>
 struct category<dense2D<Value, Parameters> > 
