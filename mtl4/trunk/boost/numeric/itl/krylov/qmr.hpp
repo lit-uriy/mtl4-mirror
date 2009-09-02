@@ -35,24 +35,16 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
     const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
-    Scalar                      rho, rho_1, xi, gamma(one), gamma_1, theta(zero), theta_1,
+    Scalar                      rho_1, gamma(one), gamma_1, theta(zero), theta_1,
 	                        eta(-one), delta, ep, beta;
     Size                        n(size(x));
-    Vector                      r(n), v_tld(n), y(n), w_tld(n), z(n), v(n),
+    Vector                      r(b - A * x), v_tld(r), y(solve(L, v_tld)), w_tld(r), z(adjoint_solve(R,w_tld)), v(n),
                                 w(n), y_tld(n), z_tld, p, q, p_tld, d, s;
-    bool                        first(true);
 
-    r = b - A * x;
     if (iter.finished(r))
 	return iter;
 
-    v_tld = r;
-    y = solve(L, v_tld);
-    rho = two_norm(y);
-
-    w_tld = r;
-    z= adjoint_solve(R,w_tld); // z= solve(adjoint(R), w_tld);
-    xi = two_norm(z);
+    Scalar rho = two_norm(y), xi = two_norm(z);
 
     while(! iter.finished(rho)) {
 
@@ -63,7 +55,6 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
 
         v= v_tld / rho;
         y/= rho;
-
         w= w_tld / xi;
         z/= xi;
 
@@ -74,7 +65,7 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
         y_tld = solve(R,y);
         z_tld = adjoint_solve(L,z); 
 
-	if (first) {
+	if (iter.first()) {
             p = y_tld;
             q = z_tld;
 	} else {
@@ -91,8 +82,7 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
             return iter.fail(5, "qmr breakdown beta=0 #5");
         v_tld = p_tld - beta * v;
         y = solve(L,v_tld);
-        rho_1 = rho;
-        rho = two_norm(y);
+        rho_1 = rho = two_norm(y);
         w_tld= trans(A)*q  - beta*w; 
         z = adjoint_solve(R, w_tld);  
         xi = two_norm(z);
@@ -105,10 +95,9 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
             return iter.fail(6, "qmr breakdown gamma=0 #6");
 
         eta= -eta * rho_1 * gamma * gamma / (beta * gamma_1 * gamma_1);
-	if (first) {
+	if (iter.first()) {
            d= eta * p;
 	   s= eta * p_tld;
-	   first= false;
 	} else {
             d= eta * p + (theta_1 * theta_1 * gamma * gamma) * d;
             s= eta * p_tld + (theta_1 * theta_1 * gamma * gamma) * s;

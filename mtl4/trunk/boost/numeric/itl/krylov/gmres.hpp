@@ -37,11 +37,10 @@ int gmres(const Matrix &A, Vector &x, const Vector &b,
     Scalar                      rho, w1, w2, nu;
     Size                        k, n(size(x)), kmax(std::min(size(x), kmax_in));
 
-    Vector                      r(n),r0(n),s(kmax+1), c(kmax+1), g(kmax+1), vi(n), va(n);
+    Vector                      r(n), r0(b - A * x),s(kmax+1), c(kmax+1), g(kmax+1), va(n);
     mtl::multi_vector<Vector>   v(kmax+1, Vector(n, zero)), h(kmax, Vector(kmax+1, zero));
     irange                      range_n(0, n);
 
-    r0= b - A * x;
     if (iter.finished(r0))
 	return iter;
 
@@ -55,19 +54,18 @@ int gmres(const Matrix &A, Vector &x, const Vector &b,
 
         // modified Gram Schmidt method
         for (Size j= 0; j < k+1; j++) {
-	    vi= v.vector(j);
+	    Vector& vi= v.vector(j);
             h[j][k]= dot(vi, va);
 	    v.vector(k+1)-= h[j][k] * vi;
         }
 
-	vi= v.vector(k+1); 
+	Vector& vi= v.vector(k+1); 
         h[k+1][k]= two_norm(vi);
 
         //reorthogonalize
         for(Size j=0; j < k+1;j++) {
-            Scalar hr= dot(vi, v.vector(j));
-            h[j][k]+= hr;
-            vi-=  hr * v.vector(j);
+            h[j][k]+= dot(vi, v.vector(j));
+            vi-= h[j][k] * v.vector(j);
         }
         h[k+1][k]= two_norm(vi);
 

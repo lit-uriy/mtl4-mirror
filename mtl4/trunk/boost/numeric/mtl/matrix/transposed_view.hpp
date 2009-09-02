@@ -244,27 +244,11 @@ namespace mtl { namespace traits {
 	typedef detail::transposed_row<Matrix, Matrix>  type;
     };
 
-#if 0
-    template <class Matrix> 
-    struct row<matrix::transposed_view<const Matrix> >
-    {
-	typedef detail::transposed_row<Matrix, const Matrix>  type;
-    };
-#endif
-
     template <class Matrix> 
     struct col<matrix::transposed_view<Matrix> >
     {
 	typedef detail::transposed_col<Matrix, Matrix>  type;
     };
-
-#if 0
-    template <class Matrix> 
-    struct col<matrix::transposed_view<const Matrix> >
-    {
-	typedef detail::transposed_col<Matrix, const Matrix>  type;
-    };
-#endif
 
     template <class Matrix> 
     struct const_value<mtl::matrix::transposed_view<Matrix> >
@@ -272,13 +256,6 @@ namespace mtl { namespace traits {
 	typedef mtl::detail::const_value_from_other<mtl::matrix::transposed_view<Matrix> > type;
     };
 
-#if 0
-    template <class Matrix> 
-    struct const_value<matrix::transposed_view<const Matrix> >
-    {
-	typedef mtl::detail::const_value_from_other<mtl::matrix::transposed_view<const Matrix>, Matrix > type;
-    };
-#endif
 
     template <class Matrix> 
     struct value<mtl::matrix::transposed_view<Matrix> >
@@ -334,12 +311,6 @@ namespace mtl { namespace traits {
       : detail::range_transposer<glas::tag::col, Matrix>
     {};
 
-#if 0
-    template <class Matrix>
-    struct range_generator<glas::tag::row, matrix::transposed_view<const Matrix> >
-      : detail::range_transposer<glas::tag::col, const Matrix>
-    {};
-#endif
 
     // To traverse the major dimension refer to the Matrix
     template <class Matrix>
@@ -347,12 +318,6 @@ namespace mtl { namespace traits {
       : detail::range_transposer<tag::major, Matrix>
     {};
 
-#if 0
-    template <class Matrix>
-    struct range_generator<tag::major, matrix::transposed_view<const Matrix> >
-      : detail::range_transposer<tag::major, const Matrix>
-    {};
-#endif
 
     // Other cursors still use the same tag, e.g. elements
     template <class Tag, class Matrix>
@@ -360,12 +325,6 @@ namespace mtl { namespace traits {
       : detail::range_transposer<Tag, Matrix>
     {};
 
-#if 0
-    template <class Tag, class Matrix>
-    struct range_generator<Tag, matrix::transposed_view<const Matrix> >
-      : detail::range_transposer<Tag, const Matrix>
-    {};
-#endif
     
 
 }} // namespace mtl::traits
