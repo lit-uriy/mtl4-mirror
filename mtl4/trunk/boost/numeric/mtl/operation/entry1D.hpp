@@ -12,6 +12,9 @@
 #ifndef MTL_ENTRY1D_INCLUDE
 #define MTL_ENTRY1D_INCLUDE
 
+#include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/matrix/multi_vector.hpp>
+
 namespace mtl {
 
     namespace vector {
@@ -40,7 +43,7 @@ namespace mtl {
 	}	
 
 	template <typename Vector>
-	inline Vector const& entry1D(multi_vector<Vector>& A, typename Collection<Vector>::size_type i)
+	inline Vector const& entry1D(const multi_vector<Vector>& A, typename Collection<Vector>::size_type i)
 	{
 	    return A.vector(i);
 	}	
