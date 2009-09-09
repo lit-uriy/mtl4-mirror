@@ -23,11 +23,20 @@ namespace traits {
     };
 }
 
+///  Strict lower triangular matrix
 template <typename Matrix> 
 typename traits::strict_lower<Matrix>::type
 inline strict_lower(const Matrix& A)
 {
     return bands(A, std::numeric_limits<long>::min(), 0);
+}
+
+/// Triangle-lower starting at off-diagonoal \p d (for compatibility with matlib)
+template <typename Matrix> 
+typename traits::strict_lower<Matrix>::type
+inline tril(const Matrix& A, long d= 0)
+{
+    return bands(A, std::numeric_limits<long>::min(), d+1);
 }
 
 

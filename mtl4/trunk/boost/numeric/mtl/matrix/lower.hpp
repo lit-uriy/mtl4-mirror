@@ -23,6 +23,7 @@ namespace traits {
     };
 }
 
+/// Lower triangular matrix
 template <typename Matrix> 
 typename traits::lower<Matrix>::type
 inline lower(const Matrix& A)

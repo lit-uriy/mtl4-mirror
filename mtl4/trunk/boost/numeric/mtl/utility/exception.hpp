@@ -139,6 +139,14 @@ struct matrix_not_square : public domain_error
 	: domain_error(s) {}
 };
 
+/// Exception for matrices too small for certain algorithms
+struct matrix_too_small : public domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit matrix_too_small(const char *s= "Matrix is too small for certain algorithms.")
+	: domain_error(s) {}
+};
+
 /// Exception for arguments with incompatible sizes
 struct missing_diagonal : public domain_error
 {
