@@ -16,10 +16,15 @@
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/crop.hpp>
+#include <boost/numeric/mtl/operation/diagonal.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
+#include <boost/numeric/mtl/operation/eigenvalue.hpp>
 #include <boost/numeric/mtl/operation/entry1D.hpp>
 #include <boost/numeric/mtl/operation/fill.hpp>
+#include <boost/numeric/mtl/operation/givens.hpp>
 #include <boost/numeric/mtl/operation/hermitian.hpp>
+#include <boost/numeric/mtl/operation/hessenberg.hpp>
+#include <boost/numeric/mtl/operation/householder.hpp>
 #include <boost/numeric/mtl/operation/invert_diagonal.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
@@ -31,6 +36,7 @@
 #include <boost/numeric/mtl/operation/orth.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/product.hpp>
+#include <boost/numeric/mtl/operation/qr.hpp>
 #include <boost/numeric/mtl/operation/random.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/rank_two_update.hpp>

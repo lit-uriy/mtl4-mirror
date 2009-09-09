@@ -130,24 +130,23 @@ struct transposed_view
 	return ref.nnz();
     }
 
-	friend size_type inline num_rows(const self& A) 
-	{ 
-		using mtl::matrix::num_cols; return num_cols(A.ref); 
-	}
-	friend size_type inline num_cols(const self& A) 
-	{ 
-		using mtl::matrix::num_rows; return num_rows(A.ref); 
-	}
-	friend size_type inline size(const self& A) 
-	{ 
-		using mtl::matrix::num_rows; using mtl::matrix::num_cols;
-		return num_rows(A.ref) * num_rows(A.ref); 
-	}
+    friend size_type inline num_rows(const self& A) 
+    { 
+	using mtl::matrix::num_cols; return num_cols(A.ref); 
+    }
+    friend size_type inline num_cols(const self& A) 
+    { 
+	using mtl::matrix::num_rows; return num_rows(A.ref); 
+    }
+    friend size_type inline size(const self& A) 
+    { 
+	using mtl::matrix::num_rows; using mtl::matrix::num_cols;
+	return num_rows(A.ref) * num_rows(A.ref); 
+    }
 
-
-protected:
+  protected:
     boost::shared_ptr<Matrix>           my_copy;
-public:
+  public:
     ref_type                            ref;
 };
   
@@ -161,10 +160,11 @@ template <typename Matrix>
 struct sub_matrix_t< transposed_view<Matrix> >
 {
     typedef transposed_view<Matrix>                                               matrix_type;
+    typedef typename boost::remove_const<Matrix>::type                            tmp_type;
 
     // Transposed of submatrix type
-    typedef transposed_view<typename sub_matrix_t<Matrix>::sub_matrix_type>       sub_matrix_type;
-    typedef transposed_view<typename sub_matrix_t<Matrix>::const_sub_matrix_type> const_sub_matrix_type;
+    typedef transposed_view<typename sub_matrix_t<tmp_type>::sub_matrix_type>       sub_matrix_type;
+    typedef transposed_view<typename sub_matrix_t<tmp_type>::const_sub_matrix_type> const_sub_matrix_type;
     typedef typename matrix_type::size_type                                       size_type;
     
     sub_matrix_type operator()(matrix_type& A, size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
@@ -294,7 +294,8 @@ namespace mtl { namespace traits {
 	template <class UseTag, class Matrix>
 	struct range_transposer
 	    : boost::mpl::if_<
-	          boost::is_same<typename range_generator<UseTag, typename boost::remove_const<Matrix>::type>::complexity, complexity_classes::infinite>
+	          boost::is_same<typename range_generator<UseTag, typename boost::remove_const<Matrix>::type>::complexity, 
+				 complexity_classes::infinite>
 	        , range_generator<tag::unsupported, Matrix>
 	        , range_transposer_impl<UseTag, Matrix>
 	      >::type {};

@@ -101,6 +101,7 @@ namespace sfunctor {
     
     namespace vector {
 
+	/// Conjugate of an vector
 	template <typename Vector>
 	typename mtl::traits::enable_if_vector<Vector, conj_view<Vector> >::type
 	inline conj(const Vector& v)
@@ -111,6 +112,7 @@ namespace sfunctor {
 
     namespace matrix {
 
+	/// Conjugate of a matrix
 	template <typename Matrix>
 	typename mtl::traits::enable_if_matrix<Matrix, conj_view<Matrix> >::type
 	inline conj(const Matrix& v)
@@ -137,6 +139,7 @@ namespace sfunctor {
 	long double inline conj(long double v) { return v; }
     }
 
+    /// Conjugate of vector, matrix, or scalar
     using vector::conj;
     using matrix::conj;
     using scalar::conj;
@@ -167,10 +170,11 @@ namespace sfunctor {
     };
 }
 
+/// real part of scalars (including non-complex)
 template <typename Value>
 inline typename sfunctor::real<Value>::result_type real(const Value& v)
 {
-	return sfunctor::real<Value>::apply(v);
+    return sfunctor::real<Value>::apply(v);
 }
 
 
@@ -201,10 +205,46 @@ namespace sfunctor {
 
 }
 
+/// imaginary part of scalars (including non-complex)
 template <typename Value>
 inline typename sfunctor::imag<Value>::result_type imag(const Value& v)
 {
     return sfunctor::imag<Value>::apply(v);
+}
+
+
+namespace sfunctor {
+
+    template <typename Value>
+    struct signum
+    {
+	typedef Value result_type;
+
+	static inline Value apply(const Value& v)
+	{
+	    using math::zero; using math::one;
+	    return v == zero(v) ? zero(v) : ( v < zero(v) ? -one(v) : one(v) );
+	}
+    };
+
+    template <typename Value>
+    struct signum<std::complex<Value> >
+    {
+	typedef Value result_type;
+
+	static inline Value apply(const std::complex<Value>& v)
+	{
+	    return signum<Value>::apply(mtl::real(v));
+	}
+    };
+
+}
+
+/// sign of scalars; for complex numbers sign of real part
+template <typename Value>
+inline typename sfunctor::signum<Value>::result_type signum(const Value& v)
+{
+    return sfunctor::signum<Value>::apply(v);
 }
 
 
