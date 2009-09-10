@@ -39,13 +39,13 @@ namespace mtl {
         /// Set the index range to [start, finish)
 	irange& set(size_type start, size_type finish) 
 	{
-	    my_start= start; my_finish= finish;
+	    my_start= start; my_finish= finish; return *this;
 	}
 
         /// Set the index range of [0, finish)
 	irange& set(size_type finish) 
 	{
-	    my_start= 0; my_finish= finish;
+	    my_start= 0; my_finish= finish; return *this;
 	}
 
         /// First index in range

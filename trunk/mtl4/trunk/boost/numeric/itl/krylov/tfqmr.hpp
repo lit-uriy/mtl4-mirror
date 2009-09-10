@@ -22,8 +22,7 @@ namespace itl {
 
 
 template < typename Matrix, typename Vector, typename Iteration >
-int tfqmr(const Matrix &A, Vector &x, const Vector &b,
-                 Iteration& iter)
+int tfqmr(const Matrix &A, Vector &x, const Vector &b, Iteration& iter)
 {
     using mtl::irange; using mtl::imax; using math::reciprocal;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
