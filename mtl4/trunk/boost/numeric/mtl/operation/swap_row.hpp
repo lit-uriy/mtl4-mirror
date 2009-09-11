@@ -26,9 +26,8 @@ namespace matrix {
     namespace detail {
 
 	template <typename Matrix, typename Orientation>
-	typename Collection<Matrix>::value_type
-	inline swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
-			typename Collection<Matrix>::size_type j, tag::dense, Orientation)
+	inline void swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
+			     typename Collection<Matrix>::size_type j, tag::dense, Orientation)
 	{
 	    // swap(A[irange(i,i+1)][iall], A[irange(j,j+1)][iall];
 	    using std::swap;
@@ -37,17 +36,15 @@ namespace matrix {
 	}
 	
 	template <typename Matrix>
-	typename Collection<Matrix>::value_type
-	inline swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
-			typename Collection<Matrix>::size_type j, tag::sparse, boost::mpl::true_)
+	inline void swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
+			     typename Collection<Matrix>::size_type j, tag::sparse, boost::mpl::true_)
 	{
 	    MTL_THROW(logic_error("This is not implemented yet."));
 	}
 
 	template <typename Matrix>
-	typename Collection<Matrix>::value_type
-	inline swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
-			typename Collection<Matrix>::size_type j, tag::sparse, boost::mpl::false_)
+	inline void swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
+			     typename Collection<Matrix>::size_type j, tag::sparse, boost::mpl::false_)
 	{
 	    MTL_THROW(logic_error("This is an ugly operation and not implemented yet."));
 	}
