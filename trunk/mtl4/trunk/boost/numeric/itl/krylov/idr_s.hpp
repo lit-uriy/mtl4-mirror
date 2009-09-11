@@ -38,8 +38,8 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
     if (s < 1) s= 1;
 
     Size                        n= size(x);
-    const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
-    Scalar                      omega;
+    const Scalar                zero= math::zero(b[0]);
+    Scalar                      omega(zero);
     Vector                      x0(x), y(n), v(n), t(n), q(n);
     mtl::multi_vector<Vector>   dR(s, Vector(n, zero)), dX(s, Vector(n, zero)),	P(s, Vector(n, zero)), M(s, s);
     mtl::dense2D<Scalar>        M2(s, s);
