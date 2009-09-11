@@ -27,3 +27,5 @@ if int(check):
         mpi_debug_env.AddPostAction(p, 'mpirun -np ' + tmatch.group(1) + ' ' + p[0].abspath)
 
 Default(programs + mpi_programs)
+
+# To run only mpi programs: scons -D check=1 `ls mpi*.cpp | sed s/\.cpp//g`  
