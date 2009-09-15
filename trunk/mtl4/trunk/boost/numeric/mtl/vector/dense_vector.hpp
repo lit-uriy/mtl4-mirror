@@ -37,15 +37,16 @@
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
+#include <boost/numeric/mtl/utility/is_row_major.hpp>
 
 
 namespace mtl { namespace vector {
 
 template <class Value, typename Parameters = parameters<> >
 class dense_vector
-    : public vec_expr<dense_vector<Value, Parameters> >,
-      public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >,
-      public crtp_base_vector< dense_vector<Value, Parameters>, Value, std::size_t >
+  : public vec_expr<dense_vector<Value, Parameters> >,
+    public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >,
+    public crtp_base_vector< dense_vector<Value, Parameters>, Value, std::size_t >
 {
     typedef dense_vector                                                             self;
     typedef ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, 
@@ -53,7 +54,7 @@ class dense_vector
     typedef crtp_base_vector< self, Value, std::size_t >                             crtp_base;
     typedef crtp_vector_assign< self, Value, std::size_t >                           assign_base;
     typedef vec_expr<dense_vector<Value, Parameters> >                               expr_base;
-public:
+  public:
     typedef Value             value_type ; 
     typedef std::size_t       size_type ;
     typedef value_type&       reference ;
@@ -155,27 +156,12 @@ public:
         return this->value_n( i ) ;
     }
 
-    reference operator[]( size_type i ) 
-    {
-	return (*this)( i ) ;
-    }
+    reference operator[]( size_type i ) { return (*this)( i ) ; }
+    const_reference operator[]( size_type i ) const { return (*this)( i ) ;  }
 
-    const_reference operator[]( size_type i ) const 
-    {
-	return (*this)( i ) ;
-    }
-
-    self operator[]( irange r )
-    {
-	return sub_vector(*this, r.start(), r.finish());
-    }
-
-    const self  operator[]( irange r ) const
-    {
-	return sub_vector(*this, r.start(), r.finish());
-    }
+    self operator[]( irange r ) { return sub_vector(*this, r.start(), r.finish()); }
+    const self  operator[]( irange r ) const { return sub_vector(*this, r.start(), r.finish());  }
     
-
     void delay_assign() const {}
 
     const_pointer begin() const { return this->elements() ; }
@@ -188,7 +174,10 @@ public:
     value_type* address_data() { return begin(); }
     const value_type* address_data() const { return begin(); }
     
+    friend size_type inline num_rows(const self& v) { return traits::is_row_major<self>::value ? 1 : v.size(); }
+    friend size_type inline num_cols(const self& v) { return traits::is_row_major<self>::value ? v.size() : 1; }
 
+    
 #if 0
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
     // For confusion with other vector assignments
@@ -202,12 +191,12 @@ public:
 
     self& operator=(self src)
     {
-		// Self-copy would be an indication of an error
-		assert(this != &src);
+	// Self-copy would be an indication of an error
+	assert(this != &src);
 
-		check_dim(src.size());
-		memory_base::move_assignment(src);
-		return *this;
+	check_dim(src.size());
+	memory_base::move_assignment(src);
+	return *this;
     }
 
 
@@ -246,7 +235,7 @@ inline size(const dense_vector<Value, Parameters>& vector)
     return vector.size();
 }
 
-
+#if 0
 template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
 inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::row_major)
@@ -276,6 +265,7 @@ inline num_cols(const dense_vector<Value, Parameters>& vector)
 {
     return num_rows_aux(vector, typename transposed_orientation<typename Parameters::orientation>::type());
 }
+#endif
 
 template <typename Value, typename Parameters>
 dense_vector<Value, Parameters>
