@@ -23,6 +23,8 @@ namespace mtl { namespace operations {
     {
 	typedef typename Matrix::value_type   value_type;
 	typedef typename Matrix::size_type    size_type;
+	// typedef typename Matrix::row_vector_type vector_type;
+	typedef dense_vector<value_type, mtl::vector::parameters<mtl::col_major> > vector_type;
 
 	explicit bracket_proxy(Ref matrix, size_type row) : matrix(matrix), row(row) {}
 
@@ -30,6 +32,13 @@ namespace mtl { namespace operations {
 	{
 	    return matrix(row, col);
 	}
+
+#if 0
+	typename Matrix::row_vector_type operator[] (const irange& col_range)
+	{
+	    return matrix.sub_vector(row, col_range);
+	}
+#endif
 
 #if 0
 	const ValueRef operator[] (size_type col) const
@@ -49,15 +58,20 @@ namespace mtl { namespace operations {
     {
 	explicit range_bracket_proxy(Ref matrix, irange row_range) : matrix(matrix), row_range(row_range) {}
 
-	ValueRef operator[] (irange col_range)
+	ValueRef operator[] (const irange& col_range)
 	{
 	    return sub_matrix(matrix, row_range.start(), row_range.finish(),
 			      col_range.start(), col_range.finish());
 	}
-
+#if 0
+	typename Matrix::col_vector_type operator[] (size_type col)
+	{
+	    return matrix.sub_vector(row_range, col);
+	}
+#endif
       protected:
 	Ref         matrix;
-	irange row_range;
+	irange      row_range;
     };
 
 

@@ -49,14 +49,13 @@ namespace mtl {
 	}
 
         /// First index in range
-        size_type start() { return my_start; } 
+        size_type start() const { return my_start; } 
         /// Past-end index in range
-        size_type finish() { return my_finish; }
+        size_type finish() const { return my_finish; }
         /// Number of indices
-        size_type size() { return my_finish - my_start; }
+        size_type size() const { return my_finish - my_start; }
 
       private:
-
         size_type my_start, my_finish;
     };
 
