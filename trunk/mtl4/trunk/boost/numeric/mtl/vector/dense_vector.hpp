@@ -70,14 +70,6 @@ class dense_vector
 	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), index_out_of_range());
     }
 
-#if 0
-    template <typename Vector>
-    void check_dim( const Vector& v ) const
-    {
-	MTL_DEBUG_THROW_IF( v.size() == 0 && v.size() != size(), incompatible_size());
-    }
-#endif
-
     void check_dim( size_type s ) const
     {
 	MTL_DEBUG_THROW_IF( size() != 0 && size() != s, incompatible_size());
@@ -234,38 +226,6 @@ inline size(const dense_vector<Value, Parameters>& vector)
 {
     return vector.size();
 }
-
-#if 0
-template <typename Value, typename Parameters>
-typename dense_vector<Value, Parameters>::size_type
-inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::row_major)
-{
-    return 1;
-}
-
-template <typename Value, typename Parameters>
-typename dense_vector<Value, Parameters>::size_type
-inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::col_major)
-{
-    return vector.size();
-}
-
-
-template <typename Value, typename Parameters>
-typename dense_vector<Value, Parameters>::size_type
-inline num_rows(const dense_vector<Value, Parameters>& vector)
-{
-    return num_rows_aux(vector, typename Parameters::orientation());
-}
-
-
-template <typename Value, typename Parameters>
-typename dense_vector<Value, Parameters>::size_type
-inline num_cols(const dense_vector<Value, Parameters>& vector)
-{
-    return num_rows_aux(vector, typename transposed_orientation<typename Parameters::orientation>::type());
-}
-#endif
 
 template <typename Value, typename Parameters>
 dense_vector<Value, Parameters>
