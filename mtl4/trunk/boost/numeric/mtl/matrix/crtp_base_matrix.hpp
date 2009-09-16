@@ -13,6 +13,7 @@
 #define MTL_CRTP_BASE_MATRIX_INCLUDE
 
 #include <iostream>
+#include <algorithm>
 #include <boost/mpl/bool.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
@@ -451,11 +452,11 @@ public:
 	    if (with_comma) {
 		MTL_DEBUG_THROW_IF(r != num_rows(matrix), incompatible_size("Not all matrix entries initialized!"));
 	    } else {
+		using std::min;
 		if (src == math::zero(src)) // it is already set to zero
 		    return;
 		// Otherwise set diagonal (if square)
-		MTL_THROW_IF(num_rows(matrix) != num_cols(matrix), matrix_not_square());
-		for (SizeType i= 0; i < num_rows(matrix); i++)
+		for (SizeType i= 0, n= min(num_rows(matrix), num_cols(matrix)); i < n; i++)
 		    ins[i][i] << src;
 	    }
 	}
