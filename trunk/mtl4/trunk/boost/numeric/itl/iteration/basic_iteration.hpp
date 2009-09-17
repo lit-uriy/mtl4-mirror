@@ -20,17 +20,16 @@ namespace itl {
 
 
   template <class Real>
-  class basic_iteration {
+  class basic_iteration 
+  {
   public:
-
   
     typedef Real real;
 
-  
     template <class Vector>
     basic_iteration(const Vector& b, int max_iter_, Real t, Real a = Real(0))
       : error(0), i(0), normb_(std::abs(two_norm(b))), 
-	       max_iter(max_iter_), rtol_(t), atol_(a) { }
+	max_iter(max_iter_), rtol_(t), atol_(a) { }
   
     basic_iteration(Real nb, int max_iter_, Real t, Real a = Real(0))
       : error(0), i(0), normb_(nb), max_iter(max_iter_), rtol_(t), atol_(a) {}

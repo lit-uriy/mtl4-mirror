@@ -110,7 +110,7 @@ class ilu_0
     LU_type                      LU;
 }; 
 
-#if 0
+#if 1
 template <typename Value>
 class ilu_0<mtl::dense2D<Value> >
 {
@@ -121,18 +121,15 @@ class ilu_0<mtl::dense2D<Value> >
     typedef ilu_0                                         self;
     typedef Matrix                                        LU_type;
 
-    ilu_0(const Matrix& A) : LU(A) { lu(LU, P); }
-
+    ilu_0(const Matrix& A) : LU(A) { lu(LU, P); std::cout << "LU is\n" << LU << "P is " << P << "\n"; }
 
     // Solve  P^{-1}LU x = b --> x= U^{-1} L^{-1} P b
     template <typename Vector>
-    Vector solve(const Vector& b) const
-    {
-	return lu_apply(LU, P, b)
-    }
+    Vector solve(const Vector& b) const { return lu_apply(LU, P, b); }
 
     // Solve (P^{-1}LU)^H x = b --> x= P^{-1}L^{-H} U^{-H} b // P^{-1}^{-1}^H = P^{-1})
-
+    template <typename Vector>
+    Vector adjoint_solve(const Vector& b) const { return lu_adjoint_apply(LU, P, b); }
 
   private:
     LU_type                        LU;

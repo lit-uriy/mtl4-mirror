@@ -532,7 +532,30 @@ struct compressed2D_inserter
 	using math::zero;
 	modify<Updater>(row, col, val);
     }
+
+    // For debugging only; print entries in all slots; ignores entries in spare map
+    void print() const
+    {
+	for (size_type j= 0; j < matrix.dim1(); j++)
+	    print(j);
+    }
+
+    // For debugging only; print entries in slot; ignores entries in spare map
+    void print(size_type i) const
+    {
+	std::cout << "in slot " << i << ": ";
+	for (size_type j= starts[i]; j < slot_ends[i]; ++j)
+	    std::cout << "[" << indices[j] << ": " << elements[j] << "]";
+	std::cout << "\n";
+    }
     
+    // Empties slot i (row or column according to orientation); for experts only
+    // Does not work if entries are in spare map !!!!
+    void make_empty(size_type i)
+    {
+	slot_ends[i]= starts[i];
+    }
+
     template <typename Matrix, typename Rows, typename Cols>
     self& sorted_block_insertion(const element_matrix_t<Matrix, Rows, Cols>& elements);
     

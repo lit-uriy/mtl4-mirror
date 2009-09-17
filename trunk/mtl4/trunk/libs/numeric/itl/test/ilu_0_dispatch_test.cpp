@@ -54,90 +54,38 @@ void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
 
 int test_main(int argc, char* argv[])
 {
-#if 0
     // For a more realistic example set sz to 1000 or larger
-    const int N = 3;
+    const int N = 5;
 
-    typedef mtl::compressed2D<double>  matrix_type;
+    typedef mtl::dense2D<double>       matrix_type;
     typedef mtl::dense_vector<double>  vector_type;
-    mtl::compressed2D<double>          A(N, N);
+    matrix_type                        A(N, N);
     setup(A);
        
     itl::pc::ilu_0<matrix_type>        P(A);
     
-    if(N < 11)
-	dense_ilu_0(A, P.get_L(), P.get_U());
+    mtl::dense_vector<double> x(N), x2(N), Px(N), x3(N), x4(N), x5(N);
 
-    mtl::dense_vector<double> x(N, 3.0), x2(N), Px(N), x3(N), x4(N), x5(N);
+    for (unsigned i= 0; i < num_rows(x); i++)
+	x[i]= i+1;
 
+    std::cout << "A is\n" << A;
     x2= A * x;
-    std::cout << "x2= A * x = " << A * x << "\n";
+    std::cout << "x2= A * x = " << x2 << "\n";
 
     x3= solve(P, x2);
-    std::cout << "solve(P, x2) = " << x3 << " (should be a vector of 3s)\n";
-    if (one_norm(x - x3) > 0.00001)
+    std::cout << "solve(P, x2) = " << x3 << " (should be [1,2,..,N])\n";
+    if (two_norm(vector_type(x - x3)) > 0.00001)
 	throw "Wrong result";
-    // Now test adjoint solve
-    x4= adjoint(A) * x;
-    std::cout << "x2= adjoint(A * x = " << x4 << "\n";
-
-    x5= solve(P, x4);
-    std::cout << "adjoint_solve(P, x4) = " << x5 << " (should be a vector of 3s)\n";
-    if (one_norm(x - x3) > 0.00001)
-	throw "Wrong result";
-#endif
-
-
-#if 0
-    matrix_type L(P.get_L()), U(P.get_U()), UT(trans(U));
-
-    std::cout << "L is\n" << L << "U is \n" << U;
-
-    x2= strict_upper(U) * x;
-    for (int i= 0; i < N; i++)
-	x2[i]+= 1. / U[i][i] * x[i];
-    std::cout << "U*x = " << x2 << "\n";
-
-    Px= L * x2 + x2;
-    std::cout << "P*x = (L+I)*U*x = " << Px << "\n";
-
-    x4= unit_lower_trisolve(L, Px);
-    std::cout << "L^{-1} * Px = " << x4 << "\n";
-
-    if (two_norm(vector_type(x4 - x2)) > 0.01) throw "Error in unit_lower_trisolve.";
-
-    x5= inverse_upper_trisolve(U, x4);
-    std::cout << "U^{-1} * L^{-1} * Px = " << x5 << "\n";
-
-    if (two_norm(vector_type(x5 - x)) > 0.01) throw "Error in inverse_upper_trisolve.";
-
-    x3= solve(P, Px);
-    std::cout << "solve(P, Px) = " << x3 << "\n";
-    if (two_norm(vector_type(x3 - x)) > 0.01) throw "Error in solve.";
-
 
     // Now test adjoint solve
-    x2= trans(L) * x + x;
-    std::cout << "\n\nNow test adjoint solve\n(L+I)^T*x = " << x2 << "\n";
+    x4= trans(A) * x;
+    std::cout << "x4= adjoint(A) * x = " << x4 << "\n";
 
-    //Px= trans(strict_upper(U)) * x2;
-    Px= strict_lower(UT) * x2;
-    for (int i= 0; i < N; i++)
-	Px[i]+= 1. / U[i][i] * x2[i];
-    std::cout << "P^T*x = ((L+I)*U)^T*x = " << Px << "\n";
+    x5= adjoint_solve(P, x4);
+    std::cout << "adjoint_solve(P, x4) = " << x5 << " (should be [1,2,..,N])\n";
+    if (two_norm(vector_type(x - x5)) > 0.00001)
+	throw "Wrong result";
 
-    x4= inverse_lower_trisolve(adjoint(U), Px);
-    std::cout << "U^{-T} * Px = " << x4 << "\n";
-
-    if (two_norm(vector_type(x4 - x2)) > 0.01) throw "Error in inverse_lower_trisolve.";
-
-    x5= unit_upper_trisolve(adjoint(L), x4);
-    std::cout << "L^{-T} * U^{-T} * Px = " << x5 << "\n";
-    if (two_norm(vector_type(x5 - x)) > 0.01) throw "Error in unit_upper_trisolve.";
-
-    x3= adjoint_solve(P, Px);
-    std::cout << "adjoint_solve(P, Px) = " << x3 << "\n";
-    if (two_norm(vector_type(x3 - x)) > 0.01) throw "Error in adjoint_solve.";
-#endif 
     return 0;
 }
