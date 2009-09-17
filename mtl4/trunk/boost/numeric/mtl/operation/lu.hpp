@@ -100,7 +100,7 @@ void inline lu(Matrix& LU)
 #endif
 
 
-/// LU factorization that returns the matrix
+/// LU factorization without factorization that returns the matrix
 template <typename Matrix>
 Matrix inline lu_f(const Matrix& A)
 {
@@ -109,17 +109,19 @@ Matrix inline lu_f(const Matrix& A)
     return LU;
 }
 
+/// Solve Ax = b by LU factorization without pivoting; vector x is returned
 template <typename Matrix, typename Vector>
-Vector inline lu_solve(const Matrix& A, const Vector& v)
+Vector inline lu_solve_straight(const Matrix& A, const Vector& b)
 {
     Matrix LU(A);
     lu(LU);
-    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), v));
+    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), b));
 }
 
 
+/// Solve Ax = b by LU factorization with column pivoting; vector x is returned
 template <typename Matrix, typename Vector>
-Vector inline lu_solve_new(const Matrix& A, const Vector& v)
+Vector inline lu_solve(const Matrix& A, const Vector& b)
 {
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type ncols = num_cols(A), nrows = num_rows(A);
@@ -130,9 +132,9 @@ Vector inline lu_solve_new(const Matrix& A, const Vector& v)
 
     lu(LU, P);
     
-    Vector                    b(nrows);
+    Vector                    bp(nrows);
     for (size_type i= 0; i < nrows; i++)
-        b[i] = v[P[i]];
+        bp[i] = b[P[i]];
 
 #if 0
     Matrix AP(permutation(P) * A);
@@ -143,8 +145,8 @@ Vector inline lu_solve_new(const Matrix& A, const Vector& v)
     std::cout << "AP reconstructed\n" << L * upper(LU);
 #endif
 
-    // std::cout << "v is " << v << "b is " << b << "\n";
-    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), b));
+    // std::cout << "b is " << b << "b permuted is " << bp << "\n";
+    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), bp));
 }
 
 

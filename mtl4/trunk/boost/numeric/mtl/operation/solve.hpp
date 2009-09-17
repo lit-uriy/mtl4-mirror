@@ -24,17 +24,17 @@ namespace mtl { namespace matrix {
     namespace detail {
 
 	template <typename Matrix, typename Vector>
-	Vector inline solve(const Matrix& A, const Vector& v, tag::dense)
+	Vector inline solve(const Matrix& A, const Vector& b, tag::dense)
 	{
-	    return lu_solve(A, v);
+	    return lu_solve(A, b);
 	}
 
 #     ifdef MTL_HAS_UMFPACK
 	template <typename Value, typename Parameters, typename Vector>
-	Vector inline solve(const Matrix& A, const Vector& v, tag::compressed2D)
+	Vector inline solve(const Matrix& A, const Vector& b, tag::compressed2D)
 	{
 	    Vector x(num_cols(A));
-	    umfpack_solve(A, x, v);
+	    umfpack_solve(A, x, b);
 	    return x;
 	}
 #     endif
@@ -42,9 +42,9 @@ namespace mtl { namespace matrix {
 
 
 template <typename Matrix, typename Vector>
-Vector inline solve(const Matrix& A, const Vector& v)
+Vector inline solve(const Matrix& A, const Vector& b)
 {
-    return detail::solve(A, v, typename category<Coll>::type());
+    return detail::solve(A, b, typename category<Coll>::type());
 }
 
 }} // namespace mtl::matrix

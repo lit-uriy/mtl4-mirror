@@ -72,7 +72,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	for (size_t k= 0; k < s; k++) {
 	    //c= solve(M, m);  // TBD: dense solver
 	    M2= M;
-	    c= lu_solve_new(M2, m);  // TBD: dispatch solve to lu_solve(_new); check parallelization
+	    c= lu_solve(M2, m);  // TBD: dispatch solve to lu_solve(_new); check parallelization
 	    q= dR * -c;    
 	    v= r + q;
 	    if (k == 0) {
