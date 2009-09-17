@@ -108,7 +108,7 @@ int gmres(const Matrix &A, Vector &x, const Vector &b,
 	for(Size i = 0; i < n ;i++)
             v_a[i][j]=v[i][j];
     }	
-    Vector                  g_a(g[range_k]), y(lu_solve_new(h_a, g_a));
+    Vector                  g_a(g[range_k]), y(lu_solve(h_a, g_a));
 
     // solve
     x+= v_a * y;
