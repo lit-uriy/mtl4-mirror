@@ -23,9 +23,11 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
+#include <boost/numeric/mtl/operation/lu.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/vector/dense_vector.hpp>
 
-#include <boost/timer.hpp>
 
 namespace itl { namespace pc {
 
@@ -50,16 +52,16 @@ class ilu_0
 
     // Solve  LU x = b --> x= U^{-1} L^{-1} b
     template <typename Vector>
-    Vector solve(const Vector& x) const
+    Vector solve(const Vector& b) const
     {
-	return inverse_upper_trisolve(LU, unit_lower_trisolve(LU, x));
+	return inverse_upper_trisolve(LU, unit_lower_trisolve(LU, b));
     }
 
-    // Solve (LU)^T x = b --> x= L^{-T} U^{-T} b
+    // Solve (LU)^H x = b --> x= L^{-H} U^{-H} b
     template <typename Vector>
-    Vector adjoint_solve(const Vector& x) const
+    Vector adjoint_solve(const Vector& b) const
     {
-	return unit_upper_trisolve(adjoint(LU), inverse_lower_trisolve(adjoint(LU), x));
+	return unit_upper_trisolve(adjoint(LU), inverse_lower_trisolve(adjoint(LU), b));
     }
 
 
@@ -103,25 +105,53 @@ class ilu_0
 	    inv_dia[i]= reciprocal(LU[i][i]);
 	}
 	invert_diagonal(LU); 
-    }
-    
-
-
+    }  
+  private:
     LU_type                      LU;
 }; 
 
+#if 0
+template <typename Value>
+class ilu_0<mtl::dense2D<Value> >
+{
+  public:
+    typedef mtl::dense2D<Value>                           Matrix;
+    typedef typename mtl::Collection<Matrix>::value_type  value_type;
+    typedef typename mtl::Collection<Matrix>::size_type   size_type;
+    typedef ilu_0                                         self;
+    typedef Matrix                                        LU_type;
+
+    ilu_0(const Matrix& A) : LU(A) { lu(LU, P); }
+
+
+    // Solve  P^{-1}LU x = b --> x= U^{-1} L^{-1} P b
+    template <typename Vector>
+    Vector solve(const Vector& b) const
+    {
+	return lu_apply(LU, P, b)
+    }
+
+    // Solve (P^{-1}LU)^H x = b --> x= P^{-1}L^{-H} U^{-H} b // P^{-1}^{-1}^H = P^{-1})
+
+
+  private:
+    LU_type                        LU;
+    mtl::dense_vector<size_type>   P;
+};
+#endif
+
 /// Solve LU x = b --> x= U^{-1} L^{-1} b
 template <typename Matrix, typename Vector>
-Vector solve(const ilu_0<Matrix>& P, const Vector& x)
+Vector solve(const ilu_0<Matrix>& P, const Vector& b)
 {
-    return P.solve(x);
+    return P.solve(b);
 }
 
-/// Solve (LU)^T x = b --> x= L^{-T} U^{-T} b
+/// Solve (LU)^H x = b --> x= L^{-H} U^{-H} b
 template <typename Matrix, typename Vector>
-Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& x)
+Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& b)
 {
-    return P.adjoint_solve(x);
+    return P.adjoint_solve(b);
 }
 
 

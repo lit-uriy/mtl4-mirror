@@ -118,35 +118,32 @@ Vector inline lu_solve_straight(const Matrix& A, const Vector& b)
     return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), b));
 }
 
+/// Apply the factorization L*U with permutation P on vector b
+template <typename Matrix, typename PermVector, typename Vector>
+Vector inline lu_apply(const Matrix& LU, const PermVector& P, const Vector& b)
+{
+    typedef typename Collection<Matrix>::size_type    size_type;
+    size_type ncols = num_cols(LU), nrows = num_rows(LU);
+    MTL_THROW_IF(nrows != ncols , matrix_not_square());
+
+    Vector                    bp(nrows);
+    for (size_type i= 0; i < nrows; i++)
+        bp[i] = b[P[i]];
+
+    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), bp));
+}
+
 
 /// Solve Ax = b by LU factorization with column pivoting; vector x is returned
 template <typename Matrix, typename Vector>
 Vector inline lu_solve(const Matrix& A, const Vector& b)
 {
     typedef typename Collection<Matrix>::size_type    size_type;
-    size_type ncols = num_cols(A), nrows = num_rows(A);
-    MTL_THROW_IF(nrows != ncols , matrix_not_square());
-
-    dense_vector<std::size_t> P(nrows);
+    dense_vector<std::size_t> P(num_rows(A));
     Matrix                    LU(A);
 
     lu(LU, P);
-    
-    Vector                    bp(nrows);
-    for (size_type i= 0; i < nrows; i++)
-        bp[i] = b[P[i]];
-
-#if 0
-    Matrix AP(permutation(P) * A);
-    std::cout << "A is\n" << A << "A permuted is\n" << AP;
-
-    Matrix id(nrows, nrows); id= 1.0;
-    Matrix L(strict_lower(LU)); L+= id;
-    std::cout << "AP reconstructed\n" << L * upper(LU);
-#endif
-
-    // std::cout << "b is " << b << "b permuted is " << bp << "\n";
-    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), bp));
+    return lu_apply(LU, P, b);
 }
 
 
