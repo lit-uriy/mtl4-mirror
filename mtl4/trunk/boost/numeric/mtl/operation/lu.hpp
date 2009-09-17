@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/matrix/upper.hpp>
 #include <boost/numeric/mtl/matrix/lower.hpp>
 #include <boost/numeric/mtl/matrix/permutation.hpp>
+#include <boost/numeric/mtl/operation/adjoint.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 #include <boost/numeric/mtl/operation/max_pos.hpp>
@@ -65,15 +66,11 @@ void inline lu(Matrix& A, PermuationVector& P)
 	swap_row(A, i, rmax); 
 	swap_row(P, i, rmax);
 	
-
 	MTL_THROW_IF(A[i][i] == zero(A[i][i]), runtime_error("Singular matrix (0 in pivot column)"));
-        // Scale column i
-	A[r][ir]/= A[i][i];
-	// Decrease bottom right block of matrix
-	A[r][r]-= A[r][ir] * A[ir][r];
-	// std::cout << "After exchanging " << i << " and " << rmax << ", A is \n" << A;
+       
+	A[r][ir]/= A[i][i];              // Scale column i
+	A[r][r]-= A[r][ir] * A[ir][r]; 	 // Decrease bottom right block of matrix
     }
-    // std::cout << "permuation \n" << P << "\n";
 }
 
 
@@ -118,10 +115,12 @@ Vector inline lu_solve_straight(const Matrix& A, const Vector& b)
     return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), b));
 }
 
-/// Apply the factorization L*U with permutation P on vector b
+/// Apply the factorization L*U with permutation P on vector b to solve Ax = b
 template <typename Matrix, typename PermVector, typename Vector>
 Vector inline lu_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 {
+    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), Vector(matrix::permutation(P) * b)));
+#if 0
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type ncols = num_cols(LU), nrows = num_rows(LU);
     MTL_THROW_IF(nrows != ncols , matrix_not_square());
@@ -131,6 +130,7 @@ Vector inline lu_apply(const Matrix& LU, const PermVector& P, const Vector& b)
         bp[i] = b[P[i]];
 
     return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), bp));
+#endif
 }
 
 
@@ -146,6 +146,38 @@ Vector inline lu_solve(const Matrix& A, const Vector& b)
     return lu_apply(LU, P, b);
 }
 
+
+/// Apply the factorization L*U with permutation P on vector b to solve adjoint(A)x = b
+/** That is P^{-1}LU)^H x = b --> x= P^{-1}L^{-H} U^{-H} b where P^{-1}^{-1}^H = P^{-1} **/
+template <typename Matrix, typename PermVector, typename Vector>
+Vector inline lu_adjoint_apply(const Matrix& LU, const PermVector& P, const Vector& b)
+{
+    return Vector(trans(matrix::permutation(P)) * unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b)));
+
+#if 0
+    typedef typename Collection<Matrix>::size_type    size_type;
+    size_type ncols = num_cols(LU), nrows = num_rows(LU);
+    MTL_THROW_IF(nrows != ncols , matrix_not_square());
+
+    Vector xp(unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b))), x(nrows);
+    for (size_type i= 0; i < nrows; i++)
+	x[P[i]]= xp[i];
+    return x;
+#endif
+}
+
+
+/// Solve adjoint(A)x = b by LU factorization with column pivoting; vector x is returned
+template <typename Matrix, typename Vector>
+Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b)
+{
+    typedef typename Collection<Matrix>::size_type    size_type;
+    dense_vector<std::size_t> P(num_rows(A));
+    Matrix                    LU(A);
+
+    lu(LU, P);
+    return lu_adjoint_apply(LU, P, b);
+}
 
 
 
