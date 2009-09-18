@@ -10,6 +10,7 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
+#include <algorithm>
 #include <cmath>
 #include <string>
 #include <boost/test/minimal.hpp>
@@ -50,7 +51,8 @@ void assemble_poisson2D(m_type& A, int n)
 // LinearSolver: BinaryFunction
 // EigenVector: GLAS dense vector
 template <class LinearSolver, class EigenVector>
-double inverse_iteration( LinearSolver& solver, EigenVector& x, int m ) {
+double inverse_iteration( LinearSolver& solver, EigenVector& x, int m ) 
+{
   EigenVector y( size(x) ) ;
   double lambda ;
   x /= two_norm(x) ;
@@ -60,6 +62,24 @@ double inverse_iteration( LinearSolver& solver, EigenVector& x, int m ) {
     x = y / two_norm(y) ;
   }
   return lambda ;
+}
+
+//
+// Inverse iteration: is almost a literal copy from algorithm 9.1.2
+//
+// LinearSolver: BinaryFunction
+// EigenVector: GLAS dense vector
+template <class LinearSolver, class Matrix, class EigenVector>
+double condition( LinearSolver& solver, const Matrix& A, EigenVector& x, int m ) {
+  EigenVector y( size(x) ) ;
+  double lambda ;
+  x/= two_norm(x);
+  for (int i=0; i<m; ++i) {
+      y= A * x; 
+      lambda = mtl::sum(y) / mtl::sum(x) ;
+      x = y / two_norm(y) ;
+  }
+  return std::abs(lambda / inverse_iteration(solver, x, m));
 }
 
 template <typename Matrix>
@@ -72,7 +92,7 @@ public:
     void operator() (const VectorIn& v_in, VectorOut& v_out)
     {
 	itl::pc::diagonal<Matrix>     P(A);
-	itl::noisy_iteration<double>  iter(v_in, 500, 1.e-6);
+	itl::cyclic_iteration<double>  iter(v_in, 500, 1.e-6);
 
 	cg(A, v_out, v_in, P, iter);
     }
@@ -84,7 +104,7 @@ private:
 int test_main(int argc, char* argv[])
 {
     m_type A;
-    assemble_poisson2D(A, 50);
+    assemble_poisson2D(A, 70);
 
     mtl::dense_vector<double>   x(num_rows(A));
     mtl::seed<double>           seed;
@@ -93,6 +113,9 @@ int test_main(int argc, char* argv[])
     cg_solver<m_type> sol(A);
     double lambda= inverse_iteration(sol, x, 10);
     cout << "lambda is " << lambda << '\n';
+
+    double cond= condition(sol, A, x, 10);
+    cout << "cond is " << cond << '\n';
 
     return 0;
 }
