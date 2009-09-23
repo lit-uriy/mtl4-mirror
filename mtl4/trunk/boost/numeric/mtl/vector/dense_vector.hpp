@@ -70,6 +70,14 @@ class dense_vector
 	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), index_out_of_range());
     }
 
+#if 0
+    template <typename Vector>
+    void check_dim( const Vector& v ) const
+    {
+	MTL_DEBUG_THROW_IF( v.size() == 0 && v.size() != size(), incompatible_size());
+    }
+#endif
+
     void check_dim( size_type s ) const
     {
 	MTL_DEBUG_THROW_IF( size() != 0 && size() != s, incompatible_size());
@@ -166,9 +174,10 @@ class dense_vector
     value_type* address_data() { return begin(); }
     const value_type* address_data() const { return begin(); }
     
+#if 0 // Cannot be called with mtl::num_rows(x);
     friend size_type inline num_rows(const self& v) { return traits::is_row_major<self>::value ? 1 : v.size(); }
     friend size_type inline num_cols(const self& v) { return traits::is_row_major<self>::value ? v.size() : 1; }
-
+#endif 
     
 #if 0
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
@@ -225,6 +234,36 @@ typename dense_vector<Value, Parameters>::size_type
 inline size(const dense_vector<Value, Parameters>& vector)
 {
     return vector.size();
+}
+
+template <typename Value, typename Parameters>
+typename dense_vector<Value, Parameters>::size_type
+inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::row_major)
+{
+    return 1;
+}
+
+template <typename Value, typename Parameters>
+typename dense_vector<Value, Parameters>::size_type
+inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::col_major)
+{
+    return vector.size();
+}
+
+
+template <typename Value, typename Parameters>
+typename dense_vector<Value, Parameters>::size_type
+inline num_rows(const dense_vector<Value, Parameters>& vector)
+{
+    return num_rows_aux(vector, typename Parameters::orientation());
+}
+
+
+template <typename Value, typename Parameters>
+typename dense_vector<Value, Parameters>::size_type
+inline num_cols(const dense_vector<Value, Parameters>& vector)
+{
+    return num_rows_aux(vector, typename transposed_orientation<typename Parameters::orientation>::type());
 }
 
 template <typename Value, typename Parameters>
