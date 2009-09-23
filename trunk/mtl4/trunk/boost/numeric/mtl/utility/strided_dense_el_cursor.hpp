@@ -21,10 +21,10 @@ namespace mtl {
 template <typename Value> 
 struct strided_dense_el_cursor : public detail::strided_base_cursor<const Value*> 
 {
-    typedef Value                           value_type;
-    typedef const value_type*             const_pointer_type;
-    typedef detail::strided_base_cursor<const Value*> super;
-    typedef strided_dense_el_cursor       self;
+    typedef Value                                        value_type;
+    typedef const value_type*                            const_pointer_type;
+    typedef detail::strided_base_cursor<const Value*>    super;
+    typedef strided_dense_el_cursor                      self;
 
     //  strided_dense_el_cursor () {} 
     strided_dense_el_cursor (const_pointer_type me, size_t stride) : super(me, stride) {}

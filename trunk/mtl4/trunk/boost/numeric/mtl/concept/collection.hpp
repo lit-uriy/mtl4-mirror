@@ -12,6 +12,7 @@
 #ifndef MTL_COLLECTION_INCLUDE
 #define MTL_COLLECTION_INCLUDE
 
+#include <boost/type_traits.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <vector>
 
@@ -571,6 +572,19 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+
+#else
+    template <typename Value, typename Parameters>
+	struct Collection<mtl::vector::strided_vector_ref<Value, Parameters> >
+    {
+	typedef typename boost::remove_const<Value>::type            value_type;
+	typedef const Value&                                         const_reference;
+	typedef typename mtl::vector::strided_vector_ref<Value, Parameters>::size_type size_type;
+    };
+#endif
+
+
 
 #ifdef __GXX_CONCEPTS__
 
@@ -630,18 +644,18 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Value, typename Parameters>
-    concept_map MutableCollection<mtl::vector::dense_vector<Value, Parameters> >
+    concept_map MutableCollection<mtl::vector::strided_vector_ref<Value, Parameters> >
     {
-	typedef Value            value_type;
+	typedef typename boost::remove_const<Value>::type            value_type;
 	typedef const Value&     const_reference;
-	typedef typename mtl::vector::dense_vector<Value, Parameters>::size_type size_type;
+	typedef typename mtl::vector::strided_vector_ref<Value, Parameters>::size_type size_type;
 
 	typedef Value&           reference;
     };
 #else
     template <typename Value, typename Parameters>
-    struct MutableCollection<mtl::vector::dense_vector<Value, Parameters> >
-	: public Collection<mtl::vector::dense_vector<Value, Parameters> >
+    struct MutableCollection<mtl::vector::strided_vector_ref<Value, Parameters> >
+	: public Collection<mtl::vector::strided_vector_ref<Value, Parameters> >
     {
 	typedef Value&           reference;
     };
@@ -751,6 +765,26 @@ namespace mtl {
 	typedef typename mtl::vector::dense_vector<Value, Parameters>::orientation   orientation;
     };
 #endif
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value, typename Parameters>
+    concept_map OrientedCollection<mtl::vector::strided_vector_ref<Value, Parameters> >
+    {
+	typedef typename boost::remove_const<Value>::type            value_type;
+	typedef const Value&     const_reference;
+	typedef typename mtl::vector::strided_vector_ref<Value, Parameters>::size_type size_type;
+
+	typedef typename mtl::vector::strided_vector_ref<Value, Parameters>::orientation   orientation;
+    };
+#else
+    template <typename Value, typename Parameters>
+    struct OrientedCollection<mtl::vector::strided_vector_ref<Value, Parameters> >
+	: public Collection<mtl::vector::strided_vector_ref<Value, Parameters> >
+    {
+	typedef typename mtl::vector::strided_vector_ref<Value, Parameters>::orientation   orientation;
+    };
+#endif
+
 
 
 #ifdef __GXX_CONCEPTS__

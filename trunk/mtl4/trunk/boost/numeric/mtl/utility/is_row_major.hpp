@@ -29,53 +29,47 @@ namespace mtl { namespace traits {
 
     template <>
     struct is_row_major<row_major>
-	: boost::mpl::true_
-    {};
+      : boost::mpl::true_ {};
 
     template <>
     struct is_row_major<col_major>
-	: boost::mpl::false_
-    {};
+      : boost::mpl::false_ {};
 
     template <typename Dimension, bool OnStack>
     struct is_row_major<vector::parameters<row_major, Dimension, OnStack> >
-	: boost::mpl::true_
-    {};
+      : boost::mpl::true_ {};
 
     template <typename Dimension, bool OnStack>
     struct is_row_major<vector::parameters<col_major, Dimension, OnStack> >
-	: boost::mpl::false_
-    {};
+      : boost::mpl::false_ {};
 
     template <typename Index, typename Dimension, bool OnStack>
     struct is_row_major<matrix::parameters<row_major, Index, Dimension, OnStack> >
-	: boost::mpl::true_
-    {};
+      : boost::mpl::true_ {};
 
     template <typename Index, typename Dimension, bool OnStack>
     struct is_row_major<matrix::parameters<col_major, Index, Dimension, OnStack> >
-	: boost::mpl::false_
-    {};
+      : boost::mpl::false_ {};
 
     template <typename Value, typename Parameters>
     struct is_row_major<vector::dense_vector<Value, Parameters> >
-	: is_row_major<Parameters>
-    {};
+      : is_row_major<Parameters> {};
+
+    template <typename Value, typename Parameters>
+    struct is_row_major<vector::strided_vector_ref<Value, Parameters> >
+      : is_row_major<Parameters> {};
 
     template <typename Value, typename Parameters>
     struct is_row_major<compressed2D<Value, Parameters> >
-	: is_row_major<Parameters>
-    {};
+      : is_row_major<Parameters> {};
 
     template <typename Value, typename Parameters>
     struct is_row_major<dense2D<Value, Parameters> >
-	: is_row_major<Parameters>
-    {};
+      : is_row_major<Parameters> {};
 
     template <typename Value, unsigned long Mask, typename Parameters>
     struct is_row_major<morton_dense<Value, Mask, Parameters> >
-	: is_row_major<Parameters>
-    {};
+      : is_row_major<Parameters> {};
 
 
 }} // namespace mtl::traits

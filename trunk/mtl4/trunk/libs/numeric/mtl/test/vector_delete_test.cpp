@@ -11,24 +11,24 @@ mtlVec testFunc( mtlVec A,double Scale);
 
 int main(int argc, char* argv[])
 {
-	mtlVec u(3);
-	u(0)=1.1;
-	u(1)=2.2;
-	u(2)=3.3;
-	mtlVec myVec(3);
-	myVec=testFunc(u,55.5);
-	print_vector(myVec);
+    mtlVec u(3);
+    u(0)=1.1;
+    u(1)=2.2;
+    u(2)=3.3;
+    mtlVec myVec(3);
+    myVec=testFunc(u,55.5);
+    print_vector(myVec);
 
-	return 0;
+    return 0;
 }
 
 
 mtlVec testFunc(mtlVec A ,double Scale)
 {
-	const int testSize=A.size();
-	mtlVec testVec(testSize);
-	testVec=Scale*A;
-	print_vector(testVec);
+    const int testSize=A.size();
+    mtlVec testVec(testSize);
+    testVec=Scale*A;
+    print_vector(testVec);
 
-	return testVec;
+    return testVec;
 }
