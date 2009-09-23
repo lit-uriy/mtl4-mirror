@@ -69,6 +69,11 @@ struct ashape<dense_vector<Value, Parameters> >
     >::type type;
 };
 
+/// Same as dense vector
+template <typename Value, typename Parameters>
+struct ashape<vector::strided_vector_ref<Value, Parameters> >
+  : ashape<dense_vector<Value, Parameters> > {};
+
 /// One-dimensional arrays have rvec ashape; 2D arrays are matrices see below
 template <typename Value, unsigned Rows>
 struct ashape<Value[Rows]>

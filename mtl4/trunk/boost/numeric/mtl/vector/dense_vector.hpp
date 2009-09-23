@@ -328,7 +328,7 @@ namespace mtl { namespace traits {
 	}
 	type end(collection_t& collection)
 	{
-	    return collection.begin();
+	    return collection.end();
 	}
     };
 
@@ -351,7 +351,7 @@ namespace mtl { namespace traits {
 	}
 	type end(const collection_t& collection) const
 	{
-	    return collection.begin();
+	    return collection.end();
 	}
     };
 

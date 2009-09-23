@@ -75,6 +75,16 @@ struct category< dense_vector<T, Parameters> >
     >::type type;
 } ;
 
+template <typename T, typename Parameters>
+struct category< vector::strided_vector_ref<T, Parameters> > 
+{
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename Parameters::orientation, row_major>
+      , tag::strided_row_vector 
+      , tag::strided_col_vector 
+    >::type type;
+} ;
+
 
 
 template <class E1, class E2, class SFunctor>
@@ -133,7 +143,7 @@ namespace detail {
     {
       private:
         typedef typename boost::mpl::if_<
-    	    boost::is_same<typename category<Matrix>::type, tag::dense2D>
+	    boost::is_same<typename category<Matrix>::type, tag::dense2D>
           , tag::dense2D_view
           , typename category<Matrix>::type
 	>::type tmp1;

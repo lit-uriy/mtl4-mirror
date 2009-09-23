@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
+#include <boost/numeric/mtl/utility/complexity.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/mpl/less.hpp>
 
@@ -38,6 +39,24 @@ namespace mtl { namespace traits { namespace detail {
 	type end(Collection const& collection)
 	{
 	    return collection.elements() + collection.used_memory();
+	}
+    };
+
+    /// Range generator that traverses all elements of some collection stored in strides
+    template <typename Collection, typename Ref, typename Traversor>
+    struct strided_element_range_generator
+    {
+	typedef complexity_classes::linear  complexity;
+	typedef Traversor                   type;
+	static int const                    level = 1;
+
+	type begin(Ref& c)
+	{
+	    return type(c.address_data(), c.stride());
+	}
+	type end(Ref& c)
+	{
+	    return type(c.address_data() + size(c) + c.stride(), c.stride());
 	}
     };
 

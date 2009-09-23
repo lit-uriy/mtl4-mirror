@@ -119,6 +119,7 @@ namespace mtl {
     namespace vector {
 	template <typename Vector> struct vec_expr;
 	template <typename Value, typename Parameters> class dense_vector;
+	template <typename Value, typename Parameters> class strided_vector_ref;
 	template <typename Functor, typename Vector> struct map_view;
 	template <typename Vector>  struct conj_view;
 	template <typename Vector>  struct negate_view;
