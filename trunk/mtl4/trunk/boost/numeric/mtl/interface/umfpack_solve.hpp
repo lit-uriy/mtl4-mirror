@@ -134,15 +134,6 @@ namespace mtl { namespace matrix {
 		n= num_rows(A);
 		assign_pointers();
 		init_aux(blong());
-#if 0
-		if (long_indices) {
-		    check(umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info), "Error in dl_symbolic");
-		    check(umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in dl_numeric");
-		} else {
-		    check(umfpack_di_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info), "Error in di_symbolic");
-		    check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_numeric");
-		}
-#endif
 	    }
 
 
@@ -168,7 +159,7 @@ namespace mtl { namespace matrix {
 		    umfpack_di_free_numeric(&Numeric);
 		    umfpack_di_free_symbolic(&Symbolic);
 		}
-		if (Apc) { delete[] Apc; std::cout << "delete.\n"; }
+		if (Apc) delete[] Apc; 
 		if (Aic) delete[] Aic;
 	    }
 
@@ -189,15 +180,6 @@ namespace mtl { namespace matrix {
 	    {
 		assign_pointers();
 		update_numeric_aux(blong());
-#if 0
-		if (long_indices) {
-		    umfpack_dl_free_numeric(&Numeric);
-		    check(umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in dl_numeric");
-		} else {
-		    umfpack_di_free_numeric(&Numeric);
-		    check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_numeric");
-		}
-#endif
 	    }
 
 	    /// Update symbolic and numeric part
@@ -234,12 +216,6 @@ namespace mtl { namespace matrix {
 		make_in_copy_or_reference<dense_vector<value_type>, VectorB>     bb(b);
 		int sys= mtl::traits::is_row_major<Parameters>::value ? UMFPACK_At : UMFPACK_A;
 		solve_aux(sys, xx, bb, blong());
-#if 0
-		if (long_indices) 
-		    check(umfpack_dl_solve(sys, Ap, Ai, Ax, &xx.value[0], &bb.value[0], Numeric, Control, Info), "Error in dl_numeric");
-		else
-		    check(umfpack_di_solve(sys, Ap, Ai, Ax, &xx.value[0], &bb.value[0], Numeric, Control, Info), "Error in di_numeric");
-#endif
 		return UMFPACK_OK;
 	    }
 
@@ -303,25 +279,10 @@ namespace mtl { namespace matrix {
 		n= num_rows(A);
 		assign_pointers();
 		init_aux(blong());
-#if 0
-		check(umfpack_zi_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in zi_symbolic");
-		check(umfpack_zi_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in zi_numeric");
-#endif
 	    }
 	public:
 	    explicit solver(const compressed2D<value_type, Parameters>& A) : A(A), Apc(0), Aic(0)
 	    {
-#if 0
-		std::cout << "index_type is " << typeid(index_type).name() << " size is " << sizeof(index_type) << "\n";
-		std::cout << "size_type is " << typeid(size_type).name() << " size is " << sizeof(size_type) << "\n";
-		std::cout << "long is " << typeid(long).name() << " size is " << sizeof(long) << "\n";
-		std::cout << "int is " << typeid(int).name() << " size is " << sizeof(int) << "\n";
-		std::cout << "std::size_t is " << typeid(std::size_t).name() << " size is " << sizeof(std::size_t) << "\n";
-			       
-		std::cout << "long_indices is " << long_indices << "\n";
-		std::cout << "sizeof(std::size_t) > sizeof(int) is " << (sizeof(std::size_t) > sizeof(int)) << "\n";
-#endif
-		
 		// Use default setings.
 		if (long_indices)
 		    umfpack_zl_defaults(Control);
@@ -342,10 +303,6 @@ namespace mtl { namespace matrix {
 		}
 		if (Apc) delete[] Apc; 
 		if (Aic) delete[] Aic;
-#if 0
-		umfpack_zi_free_numeric(&Numeric);
-		umfpack_zi_free_symbolic(&Symbolic);
-#endif
 	    }
 
 	    void update_numeric_aux(true_)
@@ -365,20 +322,12 @@ namespace mtl { namespace matrix {
 	    {
 		assign_pointers();
 		update_numeric_aux(blong());
-#if 0
-		umfpack_zi_free_numeric(&Numeric);
-		check(umfpack_zi_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in zi_numeric");
-#endif
 	    }
 
 	    /// Update symbolic and numeric part
 	    void update()
 	    {
 		Ax.change_dim(0); Az.change_dim(0);
-#if 0
-		umfpack_zi_free_numeric(&Numeric);
-		umfpack_zi_free_symbolic(&Symbolic);
-#endif
 		if (long_indices) {
 		    umfpack_zl_free_numeric(&Numeric);
 		    umfpack_zl_free_symbolic(&Symbolic);
@@ -412,10 +361,6 @@ namespace mtl { namespace matrix {
 		split_complex_vector(b, Bx, Bz);
 		int sys= mtl::traits::is_row_major<Parameters>::value ? UMFPACK_Aat : UMFPACK_A;
 		solve_aux(sys, Xx, Xz, Bx, Bz, blong());
-#if 0
-		check(umfpack_zi_solve(sys, Ap, Ai, &Ax[0], &Az[0], &Xx[0], &Xz[0], &Bx[0], &Bz[0], Numeric, Control, Info), 
-		      "Error in zi_solve");
-#endif
 		merge_complex_vector(Xx, Xz, x);
 		return UMFPACK_OK;
 	    }
