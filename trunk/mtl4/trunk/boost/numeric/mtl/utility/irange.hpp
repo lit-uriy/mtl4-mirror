@@ -53,7 +53,7 @@ namespace mtl {
         /// Past-end index in range
         size_type finish() const { return my_finish; }
         /// Number of indices
-        size_type size() const { return my_finish - my_start; }
+        size_type size() const { return my_finish > my_start ? my_finish - my_start : 0; }
 
       private:
         size_type my_start, my_finish;

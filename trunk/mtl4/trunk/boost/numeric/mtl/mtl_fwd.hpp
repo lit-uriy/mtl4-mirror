@@ -204,6 +204,11 @@ namespace mtl {
 	}
     }
 
+    /// Namespace for concepts
+    namespace concept {
+	template <typename Matrix> struct ColumnInMatrix;
+	template <typename Matrix> struct RowInMatrix;
+    }
 
     template <class Tag, class Collection> typename traits::range_generator<Tag, Collection>::type 
     begin(Collection const& c);
@@ -219,17 +224,17 @@ namespace mtl {
     }
 
     /// Namespace for functors with application operator and fully typed paramaters
-	// added by Hui Li
+    // added by Hui Li
     namespace tfunctor {
 	/// Functor for scaling matrices, vectors and ordinary scalars
 	template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct rscale;
     }
 	
     /// Namespace for functors with application operator and fully typed paramaters
-	// added by Hui Li
+    // added by Hui Li
     namespace tfunctor {
-		/// Functor for scaling matrices, vectors and ordinary scalars
-		template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct divide_by;
+	/// Functor for scaling matrices, vectors and ordinary scalars
+	template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct divide_by;
     }
 
     /// Namespace for functors with static function apply and fully typed paramaters

@@ -29,13 +29,14 @@ void one_d_iteration(char const* name, const Vector & vector, size_t check_index
 
     cout << name << "\nElements: " << complexity() << '\n';
     for (cursor_type cursor = mtl::begin<tag>(vector), cend = mtl::end<tag>(vector); cursor != cend; ++cursor) {
-	cout << "vector[" << index(*cursor) << "] = " << const_value(*cursor) << '\n';
-	if (index(*cursor) == check_index && const_value(*cursor) != check) 
+	cout << "vector[" << index(*cursor) << "] = " 
+	     << const_value(*cursor) << '\n';
+	if (index(*cursor) == check_index 
+	    && const_value(*cursor) != check) 
 	    throw "wrong check value";
     }
 }
     
-
 
 template <typename Vector>
 void test(Vector& v, const char* name)
