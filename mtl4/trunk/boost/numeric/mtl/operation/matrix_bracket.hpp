@@ -19,8 +19,8 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
-#include <boost/numeric/mtl/concept/column_in_matrix.hpp>
-#include <boost/numeric/mtl/concept/row_in_matrix.hpp>
+#include <boost/numeric/mtl/operation/column_in_matrix.hpp>
+#include <boost/numeric/mtl/operation/row_in_matrix.hpp>
 
 namespace mtl { namespace operations {
 

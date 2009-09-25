@@ -19,7 +19,5 @@
 
 #include <boost/numeric/mtl/io/matrix_market.hpp>
 
-#include <boost/numeric/mtl/concept/column_in_matrix.hpp>
-#include <boost/numeric/mtl/concept/row_in_matrix.hpp>
 
 #endif // MTL_TYPES_INCLUDE

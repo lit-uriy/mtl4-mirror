@@ -14,6 +14,7 @@
 
 #include <boost/numeric/mtl/operation/adjoint.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
+#include <boost/numeric/mtl/operation/column_in_matrix.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/crop.hpp>
 #include <boost/numeric/mtl/operation/diagonal.hpp>
@@ -52,6 +53,7 @@
 #include <boost/numeric/mtl/operation/max_abs_pos.hpp>
 #include <boost/numeric/mtl/operation/num_cols.hpp>
 #include <boost/numeric/mtl/operation/num_rows.hpp>
+#include <boost/numeric/mtl/operation/row_in_matrix.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
 #include <boost/numeric/mtl/operation/size1D.hpp>
 #include <boost/numeric/mtl/operation/static_num_cols.hpp>
