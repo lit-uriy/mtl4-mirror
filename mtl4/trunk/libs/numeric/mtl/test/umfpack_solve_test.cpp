@@ -11,6 +11,8 @@
 
 // Example build call: scons -D check=1 with_blas=1 blas_ldflags=-lblas with_umfpack=1 umfpack_path=/u/pgottsch/Software/UMFPACK-5.3.0 amd_path=/u/pgottsch/Software/AMD ufconfig_path=/u/pgottsch/Software/UFconfig umfpack_solve_test
 
+// Example build call: scons -D check=1 with_blas=1 blas_path=/usr/lib64 blas_ldflags=-lblas with_umfpack=1 umfpack_path=/home/wr2/pgottsch/64bit/projects/amdis/AMDiS/lib/UMFPACK amd_path=/home/wr2/pgottsch/64bit/projects/amdis/AMDiS/lib/AMD ufconfig_path=/home/wr2/pgottsch/64bit/projects/amdis/AMDiS/lib/UFconfig umfpack_solve_test
+
 #include <iostream>
 #include <cmath>
 #include <complex>
