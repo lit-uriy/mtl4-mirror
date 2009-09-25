@@ -18,9 +18,6 @@
 #include <boost/numeric/itl/itl.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 
-
-
-
 template <typename Matrix>
 void test1(Matrix& m, double tau)
 {
@@ -64,10 +61,8 @@ int test_main(int argc, char* argv[])
   std::cout << "Non-preconditioned tfqmr" << std::endl;
   std::cout << "Won't convergence (for large examples)!" << std::endl;
   x= 0.5;
-  itl::cyclic_iteration<double> iter_1(b, Niter, 1.e-8);
-  itl::cyclic_iteration<double> iter_2(b, Niter, 1.e-8);
-  itl::cyclic_iteration<double> iter_3(b, Niter, 1.e-8);
-  itl::cyclic_iteration<double> iter_4(b, Niter, 1.e-8);
+  itl::cyclic_iteration<double> iter_1(b, Niter, 1.e-8), iter_2(b, Niter, 1.e-8), iter_3(b, Niter, 1.e-8), iter_4(b, Niter, 1.e-8);
+
   std::cout<< "--------no preconditioning------------" << std::endl;
   tfqmr(A, x, b, Ident, Ident, iter_1);
   r= A*x-b;
