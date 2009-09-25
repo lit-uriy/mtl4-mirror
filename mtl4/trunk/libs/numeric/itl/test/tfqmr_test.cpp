@@ -1,4 +1,3 @@
-
 // Software License for MTL
 //
 // Copyright (c) 2007 The Trustees of Indiana University.
@@ -25,60 +24,77 @@
 template <typename Matrix>
 void test1(Matrix& m, double tau)
 {
-  mtl::matrix::inserter<Matrix> ins(m);
-  size_t nrows=num_rows(m);
-  double val;
-  for (size_t r=0;r<nrows;++r)
-  {
-    for (size_t c=0;c<nrows;++c)
-    {
-      if(r==c)
-        ins(r,c) << 1.;
-      else
-      {
-        val=2.*(static_cast<double>(rand())/RAND_MAX - 0.5);
-        if (val<tau)
-          ins(r,c) << val;
-      }
-    }
-  }
+    mtl::matrix::inserter<Matrix> ins(m);
+    size_t nrows=num_rows(m);
+    double val;
+    for (size_t r= 0; r < nrows; ++r) 
+	for (size_t c= 0; c < nrows; ++c) 
+	    if (r == c)
+		ins(r,c) << 1.;
+	    else {
+		val= 2.*(static_cast<double>(rand())/RAND_MAX - 0.5);
+		if (val < tau)
+		    ins(r,c) << val;
+	    }			
 }
 
 
 int test_main(int argc, char* argv[])
 {
 
-  const int N = 200; // Original from Jan had 2000
-  const int Niter = 5*N;
+  const int N = 40; // Original from Jan had 2000
+  const int Niter = 100*N;
 
-using itl::pc::identity;using itl::pc::ilu_0;
-  typedef mtl::dense2D<double> matrix_type;
+  using itl::pc::identity; using itl::pc::ilu_0; using itl::pc::ic_0; using itl::pc::diagonal;
+  //typedef mtl::dense2D<double> matrix_type;
+  typedef mtl::compressed2D<double> matrix_type;
   matrix_type                   A(N, N);
-  mtl::dense_vector<double> b(N, 1), x(N);
-  identity<matrix_type>     Ident(A);
+  mtl::dense_vector<double>     b(N*N, 1), x(N*N), r(x);
+  laplacian_setup(A, N, N);
+  identity<matrix_type>         Ident(A);
+  ic_0<matrix_type>             ic(A);
+  ilu_0<matrix_type>            ilu(A);
+  diagonal<matrix_type>         diag(A);
 
-
-  test1(A,0.194);
-  std::cout << "A has " << A.nnz() << " non-zero entries" << std::endl;
+  //test1(A,0.194);
+  //std::cout<< "A=" << A << "\n";
+  //std::cout << "A has " << A.nnz() << " non-zero entries" << std::endl;
 
 
   std::cout << "Non-preconditioned tfqmr" << std::endl;
   std::cout << "Won't convergence (for large examples)!" << std::endl;
   x= 0.5;
-  itl::noisy_iteration<double> iter_2(b, Niter, 1.e-8);
-  tfqmr(A, x, b,iter_2);
-  //std::cout << "x=" <<x<<"\n";
-
-  //ilu_0<matrix_type>        P(A);
-  //std::cout << "Non-preconditioned qmr" << std::endl;
-  //std::cout << "Won't convergence (for large examples)!" << std::endl;
-  //x= 0.5;
-  //itl::noisy_iteration<double> iter_3(b, Niter, 1.e-8);
-  //qmr(A, x, b,Ident,Ident,iter_3);
-
+  itl::cyclic_iteration<double> iter_1(b, Niter, 1.e-8);
+  itl::cyclic_iteration<double> iter_2(b, Niter, 1.e-8);
+  itl::cyclic_iteration<double> iter_3(b, Niter, 1.e-8);
+  itl::cyclic_iteration<double> iter_4(b, Niter, 1.e-8);
+  std::cout<< "--------no preconditioning------------" << std::endl;
+  tfqmr(A, x, b, Ident, Ident, iter_1);
+  r= A*x-b;
+  //std::cout << "A*x-b=" << r << "\n";
+  if (two_norm(r) > 0.000001) throw "tfqmr don't converges";
+  x=0.5;
+  std::cout<< "--------ilu preconditioning------------" << std::endl;
+  tfqmr(A, x, b, ilu, ilu, iter_2);
+  r= A*x-b;
+  //std::cout << "A*x-b=" << r << "\n";
+  if (two_norm(r) > 0.000001) throw "tfqmr don't converges with ilu preconditioning";
+  x=0.5;
+  std::cout<< "--------ic_0 preconditioning------------" << std::endl;
+  tfqmr(A, x, b, ic, ic, iter_3);
+  r= A*x-b;
+  //std::cout << "A*x-b=" << r << "\n";
+  if (two_norm(r) > 0.000001) throw "tfqmr don't converges with ic_0 preconditioning";
+  x=10.5;
+  std::cout<< "--------diag preconditioning------------" << std::endl;
+  tfqmr(A, x, b, diag, diag, iter_4);
+  r= A*x-b;
+  //std::cout << "A*x-b=" << r << "\n";
+  if (two_norm(r) > 0.000001) throw "tfqmr don't converges with diagonal preconditioner";
 
   return 0;
 }
+
 
 
 

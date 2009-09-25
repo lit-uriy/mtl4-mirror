@@ -21,8 +21,9 @@
 namespace itl {
 
 
-template < typename Matrix, typename Vector, typename Iteration >
-int tfqmr(const Matrix &A, Vector &x, const Vector &b, Iteration& iter)
+template < typename Matrix, typename Vector,
+typename LeftPreconditioner, typename RightPreconditioner, typename Iteration >
+int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner &L, const RightPreconditioner &R, Iteration& iter)
 {
     using mtl::irange; using mtl::imax; using math::reciprocal;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
@@ -34,20 +35,23 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, Iteration& iter)
     Scalar                      theta(zero), eta(zero), tau, rho, rhon, sigma,
                                 alpha, beta, c, m;
     Size                        k(0), n(size(x));
-    Vector                      r(b - A*x), u1(n), u2(n), y1(n), y2(n), w(n), d(n, zero), v(n);
+    //shift x= R*x
+    Vector                      rt(b - A*solve(R,x)), r(solve(L,rt)),
+                                u1(n), u2(n), y1(n), y2(n), w(n), d(n, zero), v(n);
 
-    if (iter.finished(r))
-	return iter;
+    if (iter.finished(rt))
+    return iter;
     y1= w= r;
-    u1= v= A * y1;
+    rt= A * solve(R, y1);
+    u1= v= solve(L,rt);
     tau= two_norm(r);
     rho= tau*tau;
 
     // TFQMR iteration
     while(! iter.finished(tau)){
-	sigma= dot(r,v);
+    sigma= dot(r,v);
         if (sigma == zero)
-	    return iter.fail(1, "tfgmr breakdown, sigma=0 #1");
+        return iter.fail(1, "tfgmr breakdown, sigma=0 #1");
         alpha= rho / sigma;
 
         //inner loop
@@ -58,7 +62,8 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, Iteration& iter)
                 d= y1+ (theta * theta * eta / alpha) * d;
 	    } else {
                 y2= y1 - alpha * v;
-                u2= A * y2;
+                rt= A * solve(R, y2);
+                u2= solve(L, rt);
                 w-= alpha * u2;
                 d= y2 + (theta * theta * eta / alpha) * d;
             }
@@ -74,13 +79,18 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, Iteration& iter)
         beta= rhon/rho;
         rho= rhon;
         y1= w + beta*y2;
-        u1= A * y1;
+        rt= A * solve(R, y1);
+        u1= solve(L, rt);
         v= u1 + beta*(u2 + beta*v);
+        rt= A*x-b;
 
         ++iter;
     }
+    //shift back
+    x= solve(R, x);
     return iter;
 }
+
 } // namespace itl
 
-#endif // ITL_TFQMR_INCLUDE 
+#endif // ITL_TFQMR_INCLUDE
