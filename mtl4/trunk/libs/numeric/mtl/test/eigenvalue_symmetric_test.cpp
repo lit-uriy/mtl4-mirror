@@ -24,7 +24,6 @@ complex<double>(1.0, -1.0); }
 
 int test_main(int argc, char* argv[])
 {
-#if 0
     using namespace mtl;
     unsigned size= 5;
 
@@ -72,7 +71,7 @@ int test_main(int argc, char* argv[])
     // for(int i= 0; i < size; i++)
     //     vecz[i]= Qz[i][i];
     // std::cout<<"eigenvalues  ="<< vecz <<"\n";
-#endif
+
     return 0;
 }
 
