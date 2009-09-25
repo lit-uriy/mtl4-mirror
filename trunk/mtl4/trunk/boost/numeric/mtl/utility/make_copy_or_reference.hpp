@@ -24,6 +24,7 @@ namespace mtl {
 template <typename Target, typename Source>
 struct make_in_copy_or_reference
 {
+    typedef Target             type;
     explicit make_in_copy_or_reference(const Source& src) : value(src) {}
     Target value;
 };
@@ -31,6 +32,7 @@ struct make_in_copy_or_reference
 template <typename Target>
 struct make_in_copy_or_reference<Target, Target>
 {
+    typedef const Target&      type;
     explicit make_in_copy_or_reference(const Target& src) : value(src) {}
     const Target& value;
 };
