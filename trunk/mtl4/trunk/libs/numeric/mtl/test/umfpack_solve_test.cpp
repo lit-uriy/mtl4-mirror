@@ -9,7 +9,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-// Example build call: scons -D check=1 with_blas=1 blas_ldflags=-lblas with_umfpack=1 umfpack_path=/u/pgottsch/Software/UMFPACK-5.3.0 amd_path=/u/pgottsch/Software/AMD ufconfig_path=/u/pgottsch/Software/UFconfig umfpack_solve_test
+// Example build call: scons -D check=1 with_blas=1 blas_path=/usr/lib blas_ldflags=-lblas with_umfpack=1 umfpack_path=/u/pgottsch/Software/UMFPACK-5.3.0 amd_path=/u/pgottsch/Software/AMD ufconfig_path=/u/pgottsch/Software/UFconfig umfpack_solve_test
 
 // Example build call: scons -D check=1 with_blas=1 blas_path=/usr/lib64 blas_ldflags=-lblas with_umfpack=1 umfpack_path=/home/wr2/pgottsch/64bit/projects/amdis/AMDiS/lib/UMFPACK amd_path=/home/wr2/pgottsch/64bit/projects/amdis/AMDiS/lib/AMD ufconfig_path=/home/wr2/pgottsch/64bit/projects/amdis/AMDiS/lib/UFconfig umfpack_solve_test
 
@@ -104,7 +104,6 @@ void test(const Matrix&, const char* name)
     for (int i= 0; i < 5; i++) 
 	if (std::abs(x[i] - value_type(i+1)) > 0.01)
 	    throw "Wrong result after update!";
-
 }
 #endif
 
@@ -126,7 +125,6 @@ int test_main(int argc, char* argv[])
 
     test(compressed2D<float>(),                     "float row-major");
     test(compressed2D<float, col_para>(),           "float column-major");
-
 #else
     std::cout << "Test is ignored when MTL_HAS_UMFPACK is not defined\n";
 #endif
