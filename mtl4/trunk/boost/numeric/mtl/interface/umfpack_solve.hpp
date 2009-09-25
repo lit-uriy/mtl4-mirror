@@ -14,6 +14,9 @@
 
 #ifdef MTL_HAS_UMFPACK
 
+#include <iostream>
+
+
 #include <cassert>
 #include <algorithm>
 #include <boost/type_traits.hpp>
@@ -89,7 +92,7 @@ namespace mtl { namespace matrix {
 	    typedef typename index<size_type>::type           index_type;
 
 	    static const bool copy_indices= sizeof(index_type) != sizeof(size_type),
-		              long_indices= use_long<value_type>::value;
+		              long_indices= use_long<size_type>::value;
 	    typedef boost::mpl::bool_<long_indices>           blong;
 	    typedef boost::mpl::true_                         true_;
 	    typedef boost::mpl::false_                        false_;
@@ -259,7 +262,7 @@ namespace mtl { namespace matrix {
 	    typedef typename index<size_type>::type           index_type;
 
 	    static const bool copy_indices= sizeof(index_type) != sizeof(size_type),
-		              long_indices= use_long<value_type>::value;
+		              long_indices= use_long<size_type>::value;
 
 	    typedef boost::mpl::bool_<long_indices>           blong;
 	    typedef boost::mpl::true_                         true_;
@@ -308,6 +311,17 @@ namespace mtl { namespace matrix {
 	public:
 	    explicit solver(const compressed2D<value_type, Parameters>& A) : A(A), Apc(0), Aic(0)
 	    {
+#if 0
+		std::cout << "index_type is " << typeid(index_type).name() << " size is " << sizeof(index_type) << "\n";
+		std::cout << "size_type is " << typeid(size_type).name() << " size is " << sizeof(size_type) << "\n";
+		std::cout << "long is " << typeid(long).name() << " size is " << sizeof(long) << "\n";
+		std::cout << "int is " << typeid(int).name() << " size is " << sizeof(int) << "\n";
+		std::cout << "std::size_t is " << typeid(std::size_t).name() << " size is " << sizeof(std::size_t) << "\n";
+			       
+		std::cout << "long_indices is " << long_indices << "\n";
+		std::cout << "sizeof(std::size_t) > sizeof(int) is " << (sizeof(std::size_t) > sizeof(int)) << "\n";
+#endif
+		
 		// Use default setings.
 		if (long_indices)
 		    umfpack_zl_defaults(Control);
