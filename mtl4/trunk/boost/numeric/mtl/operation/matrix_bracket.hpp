@@ -42,47 +42,6 @@ namespace mtl { namespace operations {
 	    return row_traits::apply(matrix, row, col_range); 
 	}
 
-#if 0
-      private:
-
-	size_type vector_size(const irange& col_range)
-	{
-	    using std::min;
-	    size_type finish= min(col_range.finish(), num_cols(matrix));
-	    return col_range.start() < finish ? finish - col_range.start() : 0;
-	}
-
-	vector_type dispatch(const irange& col_range, boost::mpl::true_)
-	{
-	    return vector_type(vector_size(col_range), &matrix[row][col_range.start()]);
-	}
-
-	vector_type dispatch(const irange& col_range, boost::mpl::false_)
-	{
-	    return vector_type(vector_size(col_range), &matrix[row][col_range.start()], );
-	}	
-
-      public:
-	vector_type operator[] (const irange& col_range)
-	{
-	    return matrix.sub_vector(row, col_range);
-	}
-
-	//boost::mpl::bool_<RowInMatrix<Ref>::contiguous>
-
-
-	typename Matrix::row_vector_type operator[] (const irange& col_range)
-	{
-	    return matrix.sub_vector(row, col_range);
-	}
-
-
-	const ValueRef operator[] (size_type col) const
-	{
-	    return matrix(row, col);
-	}
-#endif
-
       protected:
 	Ref         matrix;
 	size_type   row;
@@ -105,14 +64,8 @@ namespace mtl { namespace operations {
 
 	template <typename T>
 	typename boost::lazy_enable_if_c<boost::is_same<T, size_type>::value && col_traits::exists, col_traits>::type	 
-	operator[] (size_type col)  { return col_traits::apply(matrix, row_range, col); }
+	operator[] (T col)  { return col_traits::apply(matrix, row_range, col); }
 
-#if 0
-	typename Matrix::col_vector_type operator[] (size_type col)
-	{
-	    return matrix.sub_vector(row_range, col);
-	}
-#endif
       protected:
 	Ref         matrix;
 	irange      row_range;
