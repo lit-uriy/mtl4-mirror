@@ -420,6 +420,20 @@ class dense2D
 
     void crop() {} // only dummy here
 
+#if 0
+  private:
+    // remaining entries, i.e. intersection between column or row range and matrix
+    size_type vector_size(const irange& range, size_type maximum)
+    {
+	using std::min;
+	size_type finish= min(range.finish(), maximum);
+	return range.start() < finish ? finish - range.start() : 0;
+    }
+
+  public:
+    typename RowInMatrix<Ref>::type sub_vector(size_type row, const irange& col_range)
+#endif   
+
   protected:
     
     // Set ranges from begin_r to end_r and begin_c to end_c
@@ -436,23 +450,24 @@ class dense2D
 		   this->begin_col(), this->begin_col() + num_cols);
     }
     
-
   public:
 
     indexer_type  indexer;
-#if !defined(_MSC_VER) || _MSC_VER != 1400
-  protected:
-#endif
-	  // Leading dimension is minor dimension in original matrix 
-    // Opposed to other dims doesn't change in sub-matrices
-    size_type     ldim; 
 
     friend class dense2D_indexer;
-#if !defined(_MSC_VER) || _MSC_VER != 1400
+
+#if !defined(_MSC_VER) || _MSC_VER != 1400 // Bug in MSVC 2005
     template <typename> friend struct sub_matrix_t;
     template <typename, typename> friend struct mtl::traits::range_generator;
     template <typename, typename, bool> friend struct mtl::traits::detail::dense2D_iterator_range_generator;
+
+  protected:
 #endif
+
+    // Leading dimension is minor dimension in original matrix 
+    // Opposed to other dims doesn't change in sub-matrices
+    size_type     ldim; 
+
 }; // dense2D
 
 
@@ -480,6 +495,7 @@ inline size(const dense2D<Value, Parameters>& matrix)
 {
     return matrix.num_cols() * matrix.num_rows();
 }
+
 
 }} // namespace mtl::matrix
 

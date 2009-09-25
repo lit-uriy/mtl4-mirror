@@ -25,4 +25,6 @@ int test_main(int argc, char* argv[])
     unsigned int size1 = num_rows(x);
     unsigned int size2 = mtl::num_rows(x);              // does not compile with friend definition
     unsigned int size3 = mtl::vector::num_rows(x);      // does not compile with friend definition either
+
+    return 0; 
 }

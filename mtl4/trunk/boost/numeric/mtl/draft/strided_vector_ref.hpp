@@ -41,26 +41,25 @@ namespace mtl { namespace vector {
 
 
 /// Class for referring vectors stored in strides, e.g. columns in a row-major matrix
-template <class Value, typename Parameters = parameters<> >
+/** ValueRef is a const-qualified type, not a reference. **/
+template <class ValueRef, typename Parameters = parameters<> >
 class strided_vector_ref
-  : public vec_expr<strided_vector_ref<Value, Parameters> >,
-    public crtp_base_vector< strided_vector_ref<Value, Parameters>, Value, std::size_t >
+  : public vec_expr<strided_vector_ref<ValueRef, Parameters> >,
+    public crtp_base_vector< strided_vector_ref<ValueRef, Parameters>, ValueRef, std::size_t >
 {
     typedef strided_vector_ref                                                       self;
-    typedef crtp_base_vector< self, Value, std::size_t >                             crtp_base;
-    typedef crtp_vector_assign< self, Value, std::size_t >                           assign_base;
-    typedef vec_expr<strided_vector_ref<Value, Parameters> >                         expr_base;
+    typedef crtp_base_vector< self, ValueRef, std::size_t >                          crtp_base;
+    typedef crtp_vector_assign< self, ValueRef, std::size_t >                        assign_base;
+    typedef vec_expr<strided_vector_ref<ValueRef, Parameters> >                      expr_base;
   public:
-    typedef typename boost::remove_const<Value>::type                                value_type ; 
+    typedef typename boost::remove_const<ValueRef>::type                             value_type ; 
     typedef std::size_t                                                              size_type ;
-    typedef Value&                                                                   reference ;
-    typedef Value const&                                                             const_reference ;
-    typedef Value*                                                                   pointer ;
-    typedef Value const*                                                             const_pointer ;
-    typedef const_pointer                                                            key_type;
-    typedef mtl::strided_dense_el_cursor<Value>                                      cursor_type;
-    typedef mtl::strided_dense_el_const_iterator<Value>                              const_iterator;
-    typedef mtl::strided_dense_el_iterator<Value>                                    iterator;
+    typedef ValueRef&                                                                reference ;
+    typedef ValueRef*                                                                pointer ;
+    typedef const pointer                                                            key_type;
+    typedef mtl::strided_dense_el_cursor<value_type>                                 cursor_type;
+    typedef mtl::strided_dense_el_const_iterator<value_type>                         const_iterator;
+    typedef mtl::strided_dense_el_iterator<value_type>                               iterator;
     typedef typename Parameters::orientation                                         orientation;
     
     void check_index( size_type i ) const
@@ -117,10 +116,10 @@ class strided_vector_ref
 
     /// Address of first data entry; to be used with care.
     pointer address_data() { return data; }
-    const_pointer address_data() const { return data; }
+    const pointer address_data() const { return data; }
 
     // from pointer to index
-    size_type offset(const_pointer p) const 
+    size_type offset(pointer const p) const 
     { 
 	size_type o= p - data, i= o / my_stride;
 	MTL_DEBUG_THROW_IF(o % my_stride, logic_error("Address not consistent with stride."));
@@ -163,14 +162,14 @@ class strided_vector_ref
 
 
 
-template <typename Value, typename Parameters>
-strided_vector_ref<Value, Parameters>
-inline sub_vector(strided_vector_ref<Value, Parameters>& v, 
-		  typename strided_vector_ref<Value, Parameters>::size_type start,
-		  typename strided_vector_ref<Value, Parameters>::size_type finish)
+template <typename ValueRef, typename Parameters>
+strided_vector_ref<ValueRef, Parameters>
+inline sub_vector(strided_vector_ref<ValueRef, Parameters>& v, 
+		  typename strided_vector_ref<ValueRef, Parameters>::size_type start,
+		  typename strided_vector_ref<ValueRef, Parameters>::size_type finish)
 {
     using std::min;
-    typedef strided_vector_ref<Value, Parameters>    Vector;
+    typedef strided_vector_ref<ValueRef, Parameters>    Vector;
     typedef typename Vector::size_type               size_type;
 
     MTL_DEBUG_THROW_IF( start < 0 || finish < 0, index_out_of_range());
@@ -179,13 +178,13 @@ inline sub_vector(strided_vector_ref<Value, Parameters>& v,
     return Vector(start <= finish ? finish - start : size_type(0), &v[start], v.stride());
 }
 
-template <typename Value, typename Parameters>
-const strided_vector_ref<Value, Parameters>
-inline sub_vector(const strided_vector_ref<Value, Parameters>& v, 
-		  typename strided_vector_ref<Value, Parameters>::size_type start,
-		  typename strided_vector_ref<Value, Parameters>::size_type finish)
+template <typename ValueRef, typename Parameters>
+const strided_vector_ref<ValueRef, Parameters>
+inline sub_vector(const strided_vector_ref<ValueRef, Parameters>& v, 
+		  typename strided_vector_ref<ValueRef, Parameters>::size_type start,
+		  typename strided_vector_ref<ValueRef, Parameters>::size_type finish)
 {
-    typedef strided_vector_ref<Value, Parameters>    Vector;
+    typedef strided_vector_ref<ValueRef, Parameters>    Vector;
     return sub_vector(const_cast<Vector&>(v), start, finish);
 }
 
@@ -201,41 +200,41 @@ namespace mtl { namespace traits {
 // For cursors
 // ================
 
-    template <typename Value, class Parameters>
-    struct range_generator<tag::all, vector::strided_vector_ref<Value, Parameters> >
+    template <typename ValueRef, class Parameters>
+    struct range_generator<tag::all, vector::strided_vector_ref<ValueRef, Parameters> >
       : public detail::strided_element_range_generator<
-	  vector::strided_vector_ref<Value, Parameters>,
-	  const vector::strided_vector_ref<Value, Parameters>,
-	  mtl::strided_dense_el_cursor<Value>
+	  vector::strided_vector_ref<ValueRef, Parameters>,
+	  const vector::strided_vector_ref<ValueRef, Parameters>,
+	  mtl::strided_dense_el_cursor<ValueRef>
 	> {};
 
-    template <typename Value, class Parameters>
-    struct range_generator<tag::nz, vector::strided_vector_ref<Value, Parameters> >
-      : public range_generator<tag::all, vector::strided_vector_ref<Value, Parameters> > {};
+    template <typename ValueRef, class Parameters>
+    struct range_generator<tag::nz, vector::strided_vector_ref<ValueRef, Parameters> >
+      : public range_generator<tag::all, vector::strided_vector_ref<ValueRef, Parameters> > {};
 
-    template <typename Value, class Parameters>
-    struct range_generator<tag::iter::all, vector::strided_vector_ref<Value, Parameters> >
+    template <typename ValueRef, class Parameters>
+    struct range_generator<tag::iter::all, vector::strided_vector_ref<ValueRef, Parameters> >
       : public detail::strided_element_range_generator<
-	  vector::strided_vector_ref<Value, Parameters>,
-	  vector::strided_vector_ref<Value, Parameters>,
-	  mtl::strided_dense_el_iterator<Value>
+	  vector::strided_vector_ref<ValueRef, Parameters>,
+	  vector::strided_vector_ref<ValueRef, Parameters>,
+	  mtl::strided_dense_el_iterator<ValueRef>
 	> {};
 
-    template <typename Value, class Parameters>
-    struct range_generator<tag::iter::nz, vector::strided_vector_ref<Value, Parameters> >
-      : public range_generator<tag::iter::all, vector::strided_vector_ref<Value, Parameters> > {};
+    template <typename ValueRef, class Parameters>
+    struct range_generator<tag::iter::nz, vector::strided_vector_ref<ValueRef, Parameters> >
+      : public range_generator<tag::iter::all, vector::strided_vector_ref<ValueRef, Parameters> > {};
 
-    template <typename Value, class Parameters>
-    struct range_generator<tag::const_iter::all, vector::strided_vector_ref<Value, Parameters> >
+    template <typename ValueRef, class Parameters>
+    struct range_generator<tag::const_iter::all, vector::strided_vector_ref<ValueRef, Parameters> >
       : public detail::strided_element_range_generator<
-	  vector::strided_vector_ref<Value, Parameters>,
-	  const vector::strided_vector_ref<Value, Parameters>,
-	  mtl::strided_dense_el_const_iterator<Value>
+	  vector::strided_vector_ref<ValueRef, Parameters>,
+	  const vector::strided_vector_ref<ValueRef, Parameters>,
+	  mtl::strided_dense_el_const_iterator<ValueRef>
 	> {};
 
-    template <typename Value, class Parameters>
-    struct range_generator<tag::const_iter::nz, vector::strided_vector_ref<Value, Parameters> >
-	: public range_generator<tag::const_iter::all, vector::strided_vector_ref<Value, Parameters> >
+    template <typename ValueRef, class Parameters>
+    struct range_generator<tag::const_iter::nz, vector::strided_vector_ref<ValueRef, Parameters> >
+	: public range_generator<tag::const_iter::all, vector::strided_vector_ref<ValueRef, Parameters> >
     {};
 
 	

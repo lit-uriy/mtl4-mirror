@@ -125,7 +125,7 @@ struct const_value_from_other
     explicit const_value_from_other(Matrix const& matrix) 
 	: its_const_value(matrix.ref) {}
 
-    value_type operator() (key_type const& key) const
+    const value_type operator() (key_type const& key) const
     {
 	return its_const_value(key);
     }
@@ -147,7 +147,7 @@ struct value_from_other
     explicit value_from_other(Matrix const& matrix) 
 	: its_value(matrix.ref) {}
 
-    value_type operator() (key_type const& key) const
+    const value_type operator() (key_type const& key) const
     {
 	return its_value(key);
     }
@@ -166,7 +166,7 @@ struct value_from_other
 template <class Matrix> struct direct_const_value
 {
     direct_const_value(const Matrix&) {} // for compatibility
-    typename Matrix::value_type operator() (typename Matrix::key_type key) const
+    typename Matrix::value_type const operator() (const typename Matrix::key_type key) const
     {
 	return *key;
     }
