@@ -136,7 +136,8 @@ struct category< std::vector<T> >
 };
 
 namespace detail {
-    
+   
+#if 0 
     // Helper to remove unsupported techniques in views
     template <typename Matrix>
     struct simple_matrix_view_category
@@ -161,13 +162,26 @@ namespace detail {
           , tmp2
 	>::type type;
     };
+#else
+
+    template <typename Cat>  struct view_category       { typedef Cat                     type; };
+
+    template <> struct view_category<tag::dense2D>      { typedef tag::dense2D_view       type; };
+    template <> struct view_category<tag::morton_dense> { typedef tag::morton_view        type; };
+    template <> struct view_category<tag::compressed2D> { typedef tag::compressed2D_view  type; };
+
+    template <typename Matrix>
+    struct simple_matrix_view_category
+      : view_category<typename category<Matrix>::type>
+    {};
+#endif
 
 } // detail
 
 
 template <typename Functor, typename Matrix> 
 struct category<mtl::matrix::map_view<Functor, Matrix> >
-    : public detail::simple_matrix_view_category<Matrix>
+  : public detail::simple_matrix_view_category<Matrix>
 {};
 
 template <typename Scaling, typename Matrix>
