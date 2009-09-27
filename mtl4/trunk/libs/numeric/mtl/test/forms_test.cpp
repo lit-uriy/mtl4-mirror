@@ -18,9 +18,8 @@
 template <typename ResMatrix, typename ArgMatrix>
 void test(const ResMatrix&, const ArgMatrix& B)
 {
-    ResMatrix C;
+    ResMatrix C(B * B);
 
-    C+= B * B;
     C+= trans(B) * B;
     C+= trans(B) * B * B;
     C+= trans(B) * 3.5 * B * B;
