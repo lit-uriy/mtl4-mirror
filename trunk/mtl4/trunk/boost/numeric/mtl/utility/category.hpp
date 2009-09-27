@@ -137,33 +137,6 @@ struct category< std::vector<T> >
 
 namespace detail {
    
-#if 0 
-    // Helper to remove unsupported techniques in views
-    template <typename Matrix>
-    struct simple_matrix_view_category
-    {
-      private:
-        typedef typename boost::mpl::if_<
-	    boost::is_same<typename category<Matrix>::type, tag::dense2D>
-          , tag::dense2D_view
-          , typename category<Matrix>::type
-	>::type tmp1;
-
-        typedef typename boost::mpl::if_<
-    	    boost::is_same<typename category<Matrix>::type, tag::morton_dense>
-          , tag::morton_view
-          , tmp1
-	>::type tmp2;
-
-      public:
-        typedef typename boost::mpl::if_<
-    	    boost::is_same<typename category<Matrix>::type, tag::compressed2D>
-          , tag::compressed2D_view
-          , tmp2
-	>::type type;
-    };
-#else
-
     template <typename Cat>  struct view_category       { typedef Cat                     type; };
 
     template <> struct view_category<tag::dense2D>      { typedef tag::dense2D_view       type; };
@@ -174,7 +147,6 @@ namespace detail {
     struct simple_matrix_view_category
       : view_category<typename category<Matrix>::type>
     {};
-#endif
 
 } // detail
 
