@@ -15,13 +15,15 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 
-template <typename DynMatrix, typename StMatrix>
-void test(const DynMatrix&, const StMatrix& B)
+template <typename ResMatrix, typename ArgMatrix>
+void test(const ResMatrix&, const ArgMatrix& B)
 {
-    DynMatrix C;
+    ResMatrix C;
 
-    // C+= trans(B) * 3.5 * B * B;
-    C= trans(B) * B * B;
+    C+= B * B;
+    C+= trans(B) * B;
+    C+= trans(B) * B * B;
+    C+= trans(B) * 3.5 * B * B;
 }
 
 
@@ -38,6 +40,7 @@ int test_main(int argc, char* argv[])
     dense_vector<float>              v_dyn(va);
     dense_vector<float, fvec_para>   v_stat(va);
 
+    test(A_dyn, A_dyn);
     test(A_dyn, A_stat);
 
     return 0;

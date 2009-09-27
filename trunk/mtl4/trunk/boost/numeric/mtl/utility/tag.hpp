@@ -137,8 +137,8 @@ struct std_vector
 /** The map perform address computation and has therefore no 2D-layout.
     It is also not (yet) assumed that the view provides iterators. */
 struct dense2D_view 
-  : virtual matrix, virtual contiguous_dense, virtual has_fast_ra_cursor, 
-    virtual sub_dividable
+  : virtual matrix, virtual contiguous_dense, virtual has_fast_ra_cursor 
+    // , virtual sub_dividable // is currently not sub-dividable
 {};
 
 /// Tag for (regular) dense matrix in the category lattice
@@ -150,7 +150,7 @@ struct dense2D
 /** It is not (yet) assumed that the view provides iterators. */
 struct morton_view 
   : virtual matrix, virtual contiguous_dense,  
-    virtual has_ra_cursor, virtual qsub_dividable
+    virtual has_ra_cursor // , virtual qsub_dividable // is currently not sub-dividable
  {};
 
 
