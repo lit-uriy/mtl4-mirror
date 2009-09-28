@@ -33,14 +33,14 @@ namespace fixed
         static size_type const Num_Rows= Rows;
         static size_type const Num_Cols= Cols;
 
-	size_type num_rows() const 
+	// To have the same interface as fixed
+	explicit dimensions(size_type r= Rows, size_type c= Cols) 
 	{
-	    return Rows;
+	    assert(r == Rows); assert(c == Cols); 
 	}
-	size_type num_cols() const 
-	{
-	    return Cols;
-	}
+
+	size_type num_rows() const { return Rows; }
+	size_type num_cols() const { return Cols; }
 
 	// to check whether it is static
 	static bool const is_static= true;
@@ -67,21 +67,15 @@ namespace non_fixed
 	typedef std::size_t  size_type;
 
 	// some simple constructors
-	dimensions() : r(0), c(0) {}
-	dimensions(size_type r, size_type c) : r(r), c(c) {}
-	dimensions(const dimensions& x) : r(x.r), c(x.c) {}
+	dimensions(size_type r= 0, size_type c= 0) : r(r), c(c) {}
+	
 
 	dimensions& operator=(const dimensions& x) 
 	{
 	    r= x.r; c= x.c; return *this; 
 	}
-	size_type num_rows() const 
-	{
-	    return r;
-	}
-	size_type num_cols() const {
-	    return c;
-	}
+	size_type num_rows() const { return r; }
+	size_type num_cols() const { return c; }
 
 	typedef dimensions transposed_type;
 	transposed_type transpose() 

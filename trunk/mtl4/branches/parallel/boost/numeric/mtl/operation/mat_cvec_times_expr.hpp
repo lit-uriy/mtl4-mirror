@@ -22,7 +22,8 @@ struct mat_cvec_times_expr
   : public bin_op_expr< E1, E2 >,
     public mtl::vector::vec_expr< mat_cvec_times_expr<E1, E2> >
 {
-    typedef bin_op_expr< E1, E2 >   base;
+    typedef bin_op_expr< E1, E2 >         base;
+    typedef mat_cvec_times_expr<E1, E2>   self;
 
     // This is only a temporary solution, it is wrong when the matrix
     // is complex and the vector real -> otherwise more complicated
@@ -32,6 +33,8 @@ struct mat_cvec_times_expr
     mat_cvec_times_expr( E1 const& matrix, E2 const& vector )
 	: base(matrix, vector)
     {}
+
+    friend size_type inline size(const self& x) { return num_rows(x.first); }
 };
 
 } // namespace mtl

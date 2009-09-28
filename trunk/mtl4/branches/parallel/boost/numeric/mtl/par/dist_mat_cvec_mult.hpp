@@ -25,6 +25,8 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/vector/parameter.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -113,7 +115,7 @@ void inline dist_mat_cvec_mult_fill_send_buffer(const Matrix& A, Vector& v)
     for (; s_it != s_end; ++s_it) {
 	int p= s_it->first;
 	const typename Matrix::send_structure&   s= s_it->second;
-	const dense_vector<size_type>&  indices= s.indices;
+	const dense_vector<size_type, mtl::vector::parameters<> >&  indices= s.indices; // parameters shouldn't be needed here!
 	for (size_type tgt= s.offset, src= 0; src < size(indices); ++tgt, ++src)
 	    send_buffer(v)[tgt]= local(v)[indices[src]];
     }

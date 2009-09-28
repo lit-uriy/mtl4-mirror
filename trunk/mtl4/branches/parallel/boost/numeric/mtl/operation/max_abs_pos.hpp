@@ -25,7 +25,7 @@ namespace mtl {
 namespace matrix {
 
     template <typename Matrix>
-    std::pair<typename Collection<Matrix>::size_type, typename Collection<Matrix>::size_type>
+    typename mtl::traits::enable_if_matrix<Matrix, std::pair<typename Collection<Matrix>::size_type, typename Collection<Matrix>::size_type> >::type
     inline max_abs_pos(const Matrix& A)
     {
 	namespace traits = mtl::traits;
@@ -52,14 +52,14 @@ namespace matrix {
 	}
 	
 	return std::make_pair(r, c);
-}
+    }
 
 } // namespace matrix
 
 namespace vector {
 
     template <typename Vector>
-    typename Collection<Vector>::size_type
+    typename mtl::traits::enable_if_vector<Vector, typename Collection<Vector>::size_type>::type
     inline max_abs_pos(const Vector& v)
     {
 	using std::abs;

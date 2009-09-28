@@ -12,6 +12,7 @@
 #ifndef MTL_VEC_SCAL_AOP_EXPR_INCLUDE
 #define MTL_VEC_SCAL_AOP_EXPR_INCLUDE
 
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/local.hpp>
@@ -29,6 +30,7 @@ struct vec_scal_aop_expr
     : public vec_expr< vec_scal_aop_expr<E1, E2, SFunctor> >
 {
     typedef vec_expr< vec_scal_aop_expr<E1, E2, SFunctor> >  expr_base;
+    typedef vec_scal_aop_expr                                self;
     typedef typename E1::value_type              value_type;
     
     // temporary solution
@@ -41,15 +43,20 @@ struct vec_scal_aop_expr
     typedef E2 second_argument_type ;
     
     vec_scal_aop_expr( first_argument_type& v1, second_argument_type const& v2 )
-	  : first( v1 ), second( v2 ), delayed_assign( false )
+      : first( v1 ), second( v2 ), delayed_assign( false ), with_comma( false ), index(0)
     {}
 
   private:
     // Non-distributed version
     void destroy(tag::universe)
     {
-	for (size_type i= 0; i < first.size(); ++i)
-	    SFunctor::apply( first(i), second );
+	if (!delayed_assign) {
+	    if (with_comma) {
+		MTL_DEBUG_THROW_IF(index != size(first), incompatible_size("Not all vector entries initialized!"));
+	    } else
+		for (size_type i= 0; i < size(first); ++i)
+		    SFunctor::apply( first(i), second );
+	}
     }
 
     // Distributed version
@@ -63,16 +70,24 @@ struct vec_scal_aop_expr
   public:
     ~vec_scal_aop_expr() { if (!delayed_assign) destroy(typename mtl::traits::category<E1>::type()); }
     
-    void delay_assign() const { delayed_assign= true; }
+    void delay_assign() const 
+    { 
+	MTL_DEBUG_THROW_IF(with_comma, logic_error("Comma notation conflicts with rich expression templates."));
+	delayed_assign= true; 
+    }
 
+    friend size_type inline size(const self& v) { return size(v.first); }
+
+#if 0
     size_type size() const 
     {
 	return first.size() ;
     }
+#endif
 
     value_type& operator() ( size_type i ) const 
     {
-	assert( delayed_assign );
+	assert( delayed_assign && !with_comma);
 	return SFunctor::apply( first(i), second );
     }
 
@@ -82,11 +97,26 @@ struct vec_scal_aop_expr
 	return SFunctor::apply( first(i), second );
     }
 
+    template <typename Source>
+    self& operator, (Source val)
+    {
+	//std::cout << "vec_scal_aop_expr::operator,\n";
+	if (!with_comma) {
+	    with_comma= true;
+	    assert(index == 0);
+	    SFunctor::apply( first(index++), second); // We haven't set v[0] yet
+	}
+	MTL_DEBUG_THROW_IF(index >= size(first), range_error());
+	SFunctor::apply( first(index++), val);
+	return *this;
+    }
+
   private:
-     mutable first_argument_type&        first ;
-     second_argument_type const&         second ;
-     mutable bool                        delayed_assign;
-  } ; // vec_scal_aop_expr
+    mutable first_argument_type&        first ;
+    second_argument_type const&         second ;
+    mutable bool                        delayed_assign, with_comma;
+    size_type                    index;
+} ; // vec_scal_aop_expr
 
 } } // Namespace mtl::vector
 

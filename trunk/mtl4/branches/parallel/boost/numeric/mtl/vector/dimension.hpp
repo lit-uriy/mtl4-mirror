@@ -42,8 +42,7 @@ namespace non_fixed {
 	
 	static size_type const value= 0; // for compatibility
 
-	dimension() : my_size(0) {}
-	dimension(size_type v) : my_size(v) {}
+	dimension(size_type v= 0) : my_size(v) {}
 
 	size_type size() const
 	{

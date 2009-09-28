@@ -43,6 +43,31 @@ namespace mtl {
 	template <typename MatrixDest>
 	inline void zero_with_sparse_src(MatrixDest& dest, tag::universe) {} 
 
+	// Adapt inserter size to operation
+	template <typename Updater> struct copy_inserter_size {};
+	
+	// Specialization for store
+	template <typename Value>
+	struct copy_inserter_size< operations::update_store<Value> >
+	{
+	    template <typename MatrixSrc, typename MatrixDest>
+	    static inline int apply(const MatrixSrc& src, const MatrixDest& dest)
+	    {
+		return int(src.nnz() * 1.2 / dest.dim1());
+	    }
+	};
+
+	struct sum_of_sizes
+	{
+	    template <typename MatrixSrc, typename MatrixDest>
+	    static inline int apply(const MatrixSrc& src, const MatrixDest& dest)
+	    {	return int((src.nnz() + dest.nnz()) * 1.2 / dest.dim1()); }
+	};
+	    	
+	// Specialization for plus and minus
+	template <typename Value> struct copy_inserter_size< operations::update_plus<Value> > : sum_of_sizes {};
+	template <typename Value> struct copy_inserter_size< operations::update_minus<Value> > : sum_of_sizes {};
+
     } // namespace detail
 
 
@@ -59,7 +84,8 @@ namespace mtl {
 	typename traits::const_value<MatrixSrc>::type     value(src); 
 	typedef typename traits::range_generator<tag::major, MatrixSrc>::type  cursor_type;
 	
-	matrix::inserter<MatrixDest, Updater>   ins(dest);
+	//std::cout << "Slot size is " << detail::copy_inserter_size<Updater>::apply(src, dest) << "\n";
+	matrix::inserter<MatrixDest, Updater>   ins(dest, detail::copy_inserter_size<Updater>::apply(src, dest));
 	for (cursor_type cursor = begin<tag::major>(src), cend = end<tag::major>(src); 
 	     cursor != cend; ++cursor) {
 	    // std::cout << dest << '\n';
@@ -98,7 +124,20 @@ namespace mtl {
     template <typename MatrixSrc, typename MatrixDest>
     inline void matrix_copy_ele_times(const MatrixSrc& src, MatrixDest& dest)
     {
+	MTL_THROW_IF(num_rows(src) != num_rows(dest) || num_cols(src) != num_cols(dest), incompatible_size());
+
+	typename traits::row<MatrixDest>::type             row(dest); 
+	typename traits::col<MatrixDest>::type             col(dest); 
+	typename traits::value<MatrixDest>::type           value(dest); 
+	typedef typename traits::range_generator<tag::major, MatrixDest>::type  cursor_type;
+	typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
+	
+	for (cursor_type cursor = begin<tag::major>(dest), cend = end<tag::major>(dest); cursor != cend; ++cursor)
+	    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
+		value(*icursor, value(*icursor) * src[row(*icursor)][col(*icursor)]);
+#if 0   // copy would result in a*0 = a and 0*b = b!!!!
 	gen_matrix_copy< operations::update_times<typename MatrixDest::value_type> >(src, dest, false);
+#endif
 	crop(dest);
     }
 

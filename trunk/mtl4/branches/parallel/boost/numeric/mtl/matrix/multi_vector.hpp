@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
+#include <boost/numeric/mtl/vector/dense_vector.hpp>
 
 
 // Under development (to be used with caution)
@@ -62,8 +63,8 @@ class multi_vector
 
     /// Constructor by number of rows and column vector for initialization
     multi_vector(size_type num_cols, const Vector& v)
-	: super(non_fixed::dimensions(num_cols, size(v))),
-	  data(num_cols, v)
+      : super(non_fixed::dimensions(size(v), num_cols)),
+	data(num_cols, v)
     {
 	this->my_nnz= num_cols * size(v);
     }
@@ -87,6 +88,7 @@ class multi_vector
     Vector& vector(size_type i) { return data[i]; }
     const Vector& vector(size_type i) const { return data[i]; }
 
+    // size_type size() const { return this->num_rows() * this->num_cols(); } // Hack!!! try to remove
 
     /// Number of rows
     friend size_type num_rows(const self& A) { return A.num_rows(); }

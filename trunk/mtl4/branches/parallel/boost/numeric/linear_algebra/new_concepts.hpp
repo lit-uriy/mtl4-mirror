@@ -20,6 +20,7 @@
 namespace math {
 
 concept Commutative<typename Operation, typename Element>
+  : std::Callable2<Operation, Element, Element>
 {
     axiom Commutativity(Operation op, Element x, Element y)
     {
@@ -29,6 +30,7 @@ concept Commutative<typename Operation, typename Element>
 
 
 concept SemiGroup<typename Operation, typename Element>
+  : std::Callable2<Operation, Element, Element>
 {
     axiom Associativity(Operation op, Element x, Element y, Element z)
     {
@@ -153,6 +155,7 @@ auto concept AdditiveSemiGroup<typename Element>
 {}
 
     
+#ifdef COMPILER_WITHOUT_OVERLOAD_ERROR  // Uncompilable due to error in compiler
 concept AdditiveMonoid<typename Element>
   : AdditiveSemiGroup<Element>,
     Monoid< add<Element>, Element >
@@ -169,7 +172,6 @@ concept AdditiveMonoid<typename Element>
     }
 };
 
-#if 0  // Uncompilable due to error in compiler
 concept AdditivePIMonoid<typename Element>
   : std::HasMinus<Element>, AdditiveMonoid<Element>, 
     PIMonoid< add<Element>, Element >
@@ -257,6 +259,7 @@ auto concept MultiplicativeSemiGroup<typename Element>
 {}
 
 
+#ifdef COMPILER_WITHOUT_OVERLOAD_ERROR  // Uncompilable due to error in compiler
 concept MultiplicativeMonoid<typename Element>
   : MultiplicativeSemiGroup<Element>,
     Monoid< mult<Element>, Element >
@@ -273,7 +276,6 @@ concept MultiplicativeMonoid<typename Element>
     }
 };
 
-#if 0  // Uncompilable due to error in compiler
 concept MultiplicativePIMonoid<typename Element>
   : std::HasDivide<Element>, MultiplicativeMonoid<Element>,
     PIMonoid< mult<Element>, Element >

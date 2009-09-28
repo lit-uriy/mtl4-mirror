@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
+#include <boost/numeric/mtl/utility/is_static.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -23,7 +24,7 @@ namespace mtl { namespace matrix {
 template <typename Orientation= row_major, 
 	  typename Index= index::c_index,
 	  typename Dimensions= mtl::non_fixed::dimensions,
-	  bool OnStack= false>
+	  bool OnStack= mtl::traits::is_static<Dimensions>::value>
 struct parameters 
 {
     typedef Orientation orientation;

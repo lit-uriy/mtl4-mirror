@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/detail/range_generator.hpp>
 #include <boost/numeric/mtl/utility/complexity.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 
@@ -57,9 +58,9 @@ namespace traits
 
 
 
-// Returns begin cursor over the Collection or a subset of the Collection
-// Form of traversal depends on Tag, cf utility/glas_tag.hpp
-// On nested traversals, cursors of level > 1 must provide at least one range generator
+/// Returns begin cursor over the Collection or a subset of the Collection
+/** Form of traversal depends on Tag, cf utility/glas_tag.hpp
+    On nested traversals, cursors of level > 1 must provide at least one range generator **/
 template <class Tag, class Collection>
 typename traits::range_generator<Tag, Collection>::type 
 inline begin(Collection const& c)
@@ -74,7 +75,7 @@ inline begin(Collection& c)
   return traits::range_generator<Tag, Collection>().begin(c);
 }
 
-// Corresponding end cursor
+/// Corresponding end cursor
 template <class Tag, class Collection>
 typename traits::range_generator<Tag, Collection>::type 
 inline end(Collection const& c)
@@ -87,6 +88,35 @@ typename traits::range_generator<Tag, Collection>::type
 inline end(Collection& c)
 {
   return traits::range_generator<Tag, Collection>().end(c);
+}
+
+/// Cursor to an element with index equal or larger than \p position in a one-dimensional traversion.
+/** This function is only defined where Tag represents an obvious one-dimensional traversion
+    of Collection allowing for an interpretation of position. 
+    Examples are tag::row for a dense matrix or row-major compressed matrix.
+    tag::all regarding an entire matrix (i.e. going over all entries of a matrix)
+    does not characterize a one-dimensional traversion
+    so that \p position has no unique meaning.
+    Traversing all entries of a matrix row is one-dimensional and \p position is understood as looking for
+    a column index, i.e. lower_bound<tag::all>(row_cursor, 7) returns a cursor to a matrix element whose row
+    is the one of row_cursor and whose column is 7.
+    Likewise traversing all non-zeros of a row will return a cursor that points to an entry with according
+    row index and column index at least 7.
+    If the searched index could not be found in the one-dimensional collection the returned cursor will be 
+    identical to the one returned by the end function.
+**/
+template <class Tag, class Coll>
+typename traits::range_generator<Tag, Coll>::type 
+inline lower_bound(Coll const& c, typename Collection<Coll>::size_type position)
+{
+    return traits::range_generator<Tag, Coll>().lower_bound(c, position);
+}
+
+template <class Tag, class Coll>
+typename traits::range_generator<Tag, Coll>::type 
+inline lower_bound(Coll& c, typename Collection<Coll>::size_type position)
+{
+    return traits::range_generator<Tag, Coll>().lower_bound(c, position);
 }
 
 

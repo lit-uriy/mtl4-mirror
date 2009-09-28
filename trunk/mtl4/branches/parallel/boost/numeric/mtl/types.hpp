@@ -22,5 +22,4 @@
 #include <boost/numeric/mtl/par/single_ostream.hpp>
 #include <boost/numeric/mtl/par/rank_ostream.hpp>
 
-
 #endif // MTL_TYPES_INCLUDE

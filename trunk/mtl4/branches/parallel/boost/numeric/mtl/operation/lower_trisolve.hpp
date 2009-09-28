@@ -39,17 +39,16 @@ namespace detail {
     Value inline lower_trisolve_diavalue(const Value& v, tag::inverse_diagonal)
     {
 	return v;
-    }
-
-    
+    }    
 
     template <typename Matrix, typename Vector>
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::row_major, tag::unit_diagonal)
     {
-		namespace traits = mtl::traits;
+	namespace traits = mtl::traits;
 	using namespace tag; using traits::range_generator; using math::one; using mtl::detail::adjust_cursor;
 
 	typedef typename Collection<Matrix>::value_type           value_type;
+	typedef typename Collection<Matrix>::size_type            size_type;
 	typedef typename range_generator<row, Matrix>::type       a_cur_type;    
 	typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
 	typename traits::col<Matrix>::type                        col_a(A); 
@@ -57,11 +56,10 @@ namespace detail {
 
 	Vector result(v);
 
-	a_cur_type ac= begin<row>(A), aend= end<row>(A); 
-	for (int r= 0; ac != aend; ++r, ++ac) {
-	    a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac);
-	    adjust_cursor(r - num_rows(A), aiend, typename traits::category<Matrix>::type());
-
+	a_cur_type ac= begin<row>(A), aend= end<row>(A);
+	++ac;
+	for (size_type r= 1; ac != aend; ++r, ++ac) {
+	    a_icur_type aic= begin<nz>(ac), aiend= lower_bound<nz>(ac, r);
 	    typename Collection<Vector>::value_type rr= result[r];
 
 	    for (; aic != aiend; ++aic) {
@@ -78,7 +76,7 @@ namespace detail {
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::row_major,
 				 DiaTag)
     {
-		namespace traits = mtl::traits;
+	namespace traits = mtl::traits;
 	using namespace tag; using traits::range_generator; using math::one; using mtl::detail::adjust_cursor;
 
 	typedef typename Collection<Matrix>::value_type           value_type;
@@ -90,9 +88,8 @@ namespace detail {
 	Vector result(v);
 
 	a_cur_type ac= begin<row>(A), aend= end<row>(A); 
-	for (int r= 0; ac != aend; ++r, ++ac) {
-	    a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac);
-	    adjust_cursor(r - num_rows(A) + 1, aiend, typename traits::category<Matrix>::type());
+	for (typename Collection<Matrix>::size_type r= 0; ac != aend; ++r, ++ac) {
+	    a_icur_type aic= begin<nz>(ac), aiend= lower_bound<nz>(ac, r+1);
 	    MTL_THROW_IF(aic == aiend || col_a(*--aiend) != r, missing_diagonal());
 
 	    value_type dia= value_a(*aiend);
@@ -121,10 +118,8 @@ namespace detail {
 	Vector result(v);
 
 	a_cur_type ac= begin<col>(A), aend= end<col>(A); 
-	for (int r= 0; ac != aend; ++r, ++ac) {
-	    a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac);
-		adjust_cursor(r + 1, aic, typename mtl::traits::category<Matrix>::type());
-
+	for (typename Collection<Matrix>::size_type r= 0; ac != aend; ++r, ++ac) {
+	    a_icur_type aic= lower_bound<nz>(ac, r+1), aiend= end<nz>(ac);
 	    typename Collection<Vector>::value_type rr= result[r];
 
 	    for (; aic != aiend; ++aic) {
@@ -148,10 +143,8 @@ namespace detail {
 	Vector result(v);
 
 	a_cur_type ac= begin<col>(A), aend= end<col>(A); 
-	for (int r= 0; ac != aend; ++r, ++ac) {
-	    a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac);
-		adjust_cursor(r, aic, typename mtl::traits::category<Matrix>::type());
-
+	for (typename Collection<Matrix>::size_type r= 0; ac != aend; ++r, ++ac) {
+	    a_icur_type aic= lower_bound<nz>(ac, r), aiend= end<nz>(ac);
 	    MTL_DEBUG_THROW_IF(aic == aiend || row_a(*aic) != r, missing_diagonal());
 	    typename Collection<Vector>::value_type rr= result[r]*= lower_trisolve_diavalue(value_a(*aic), DiaTag());
 

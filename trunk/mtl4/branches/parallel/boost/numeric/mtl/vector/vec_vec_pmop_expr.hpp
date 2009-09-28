@@ -23,6 +23,7 @@ template <class E1, class E2, typename SFunctor>
 struct vec_vec_pmop_expr
   : vec_expr< vec_vec_pmop_expr<E1, E2, SFunctor> >
 {
+    typedef vec_vec_pmop_expr<E1, E2, SFunctor>                   self;
     typedef typename mtl::operation::compute_summand<E1>::type    first_argument_type;
     typedef typename mtl::operation::compute_summand<E2>::type    second_argument_type;
     typedef SFunctor                                              functor_type;
@@ -40,12 +41,20 @@ struct vec_vec_pmop_expr
 
     void delay_assign() const {}
 
+    friend size_type inline size(const self& x)
+    {
+	assert( size(x.first.value) == 0 || size(x.first.value) == size(x.second.value) );
+	return size(x.first.value);
+    }
+
+#if 0
     size_type size() const
     {
 	// std::cerr << "vec_vec_pmop_expr.size() " << first.value.size() << "  " << second.value.size() << "\n";
 	assert( first.value.size() == second.value.size() ) ;
 	return first.value.size() ;
     }
+#endif
 
     const_dereference_type operator() (size_type i) const
     {

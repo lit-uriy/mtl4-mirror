@@ -26,6 +26,7 @@ namespace traits {
     };
 }
 
+/// Upper triangular matrix
 template <typename Matrix> 
 typename traits::upper<Matrix>::type
 inline upper(const Matrix& A)

@@ -36,15 +36,17 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/utility/is_static.hpp>
+#include <boost/numeric/mtl/utility/is_row_major.hpp>
 
 
 namespace mtl { namespace vector {
 
-template <class Value, typename Parameters>
+template <class Value, typename Parameters= parameters<> >
 class dense_vector
-    : public vec_expr<dense_vector<Value, Parameters> >,
-      public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >,
-      public crtp_base_vector< dense_vector<Value, Parameters>, Value, std::size_t >
+  : public vec_expr<dense_vector<Value, Parameters> >,
+    public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >,
+    public crtp_base_vector< dense_vector<Value, Parameters>, Value, std::size_t >
 {
     typedef dense_vector                                                             self;
     typedef ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, 
@@ -52,7 +54,7 @@ class dense_vector
     typedef crtp_base_vector< self, Value, std::size_t >                             crtp_base;
     typedef crtp_vector_assign< self, Value, std::size_t >                           assign_base;
     typedef vec_expr<dense_vector<Value, Parameters> >                               expr_base;
-public:
+  public:
     typedef Value             value_type; 
     typedef Parameters        parameters;
     typedef std::size_t       size_type;
@@ -74,6 +76,11 @@ public:
 	MTL_DEBUG_THROW_IF( size() != 0 && size() != s, incompatible_size());
     }
 
+    void static_check( size_type s) const
+    {
+	assert(!traits::is_static<self>::value || s == (typename Parameters::dimension()).size());
+    }
+
     template <class E>
     void check_consistent_shape( vec_expr<E> const& e ) const
     {
@@ -87,25 +94,24 @@ public:
 
     dense_vector( ) : memory_base( Parameters::dimension::value ) {}
     
-    explicit dense_vector( size_type n )
-	  : memory_base( n ) 
-    {}
+    explicit dense_vector( size_type n ) : memory_base( n ) { static_check( n ); }
     
     explicit dense_vector( size_type n, value_type value )
-	  : memory_base( n ) 
+      : memory_base( n ) 
     {
-		std::fill(begin(), end(), value);
+	static_check( n );
+	std::fill(begin(), end(), value);
     }
 
     explicit dense_vector( size_type n, value_type *address )
-	  : memory_base( address, n ) 
-    {}
+      : memory_base( address, n ) 
+    { static_check( n ); }
 
     dense_vector( const self& src )
-	  : memory_base( src.size() ) 
+      : memory_base( src.size() ) 
     {
-		using std::copy;
-		copy(src.begin(), src.end(), begin());
+	using std::copy;
+	copy(src.begin(), src.end(), begin());
     }
 
     template <typename VectorSrc>
@@ -143,27 +149,12 @@ public:
         return this->value_n( i );
     }
 
-    reference operator[]( size_type i ) 
-    {
-	return (*this)( i );
-    }
+    reference operator[]( size_type i ) { return (*this)( i ) ; }
+    const_reference operator[]( size_type i ) const { return (*this)( i ) ;  }
 
-    const_reference operator[]( size_type i ) const 
-    {
-	return (*this)( i );
-    }
-
-    self operator[]( irange r )
-    {
-	return sub_vector(*this, r.start(), r.finish());
-    }
-
-    const self  operator[]( irange r ) const
-    {
-	return sub_vector(*this, r.start(), r.finish());
-    }
+    self operator[]( irange r ) { return sub_vector(*this, r.start(), r.finish()); }
+    const self  operator[]( irange r ) const { return sub_vector(*this, r.start(), r.finish());  }
     
-
     void delay_assign() const {}
 
     const_pointer begin() const { return this->elements(); }
@@ -176,7 +167,11 @@ public:
     value_type* address_data() { return begin(); }
     const value_type* address_data() const { return begin(); }
     
-
+#if 0 // Cannot be called with mtl::num_rows(x);
+    friend size_type inline num_rows(const self& v) { return traits::is_row_major<self>::value ? 1 : v.size(); }
+    friend size_type inline num_cols(const self& v) { return traits::is_row_major<self>::value ? v.size() : 1; }
+#endif 
+    
 #if 0
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
     // For confusion with other vector assignments
@@ -243,7 +238,6 @@ inline size(const dense_vector<Value, Parameters>& vector)
 {
     return vector.size();
 }
-
 
 template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
@@ -336,7 +330,7 @@ namespace mtl { namespace traits {
 	}
 	type end(collection_t& collection)
 	{
-	    return collection.begin();
+	    return collection.end();
 	}
     };
 
@@ -359,7 +353,7 @@ namespace mtl { namespace traits {
 	}
 	type end(const collection_t& collection) const
 	{
-	    return collection.begin();
+	    return collection.end();
 	}
     };
 

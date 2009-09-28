@@ -194,7 +194,7 @@ struct identity
 	return v;
     }
 
-    result_type operator() (const Value& v)
+    result_type operator() (const Value& v) const
     {
 	return v;
     }
@@ -207,15 +207,8 @@ struct negate
     typedef const Value&                                  argument_type;
     typedef Value                                         result_type;
 
-    static inline result_type apply(const Value& v)
-    {
-	return -v;
-    }
-
-    result_type operator() (const Value& v)
-    {
-	return -v;
-    }
+    static inline result_type apply(const Value& v) { return -v;  }
+    result_type operator() (const Value& v) const { return -v; }
 };
 
 

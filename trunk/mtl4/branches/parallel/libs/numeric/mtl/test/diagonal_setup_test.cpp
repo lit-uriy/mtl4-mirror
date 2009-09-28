@@ -13,39 +13,35 @@
 #include <cmath>
 #include <complex>
 #include <boost/test/minimal.hpp>
-#include <boost/numeric/mtl/concept/collection.hpp>
-#include <boost/numeric/mtl/matrix/dense2D.hpp>
-#include <boost/numeric/mtl/matrix/morton_dense.hpp> 
-#include <boost/numeric/mtl/matrix/compressed2D.hpp> 
-#include <boost/numeric/mtl/matrix/diagonal_setup.hpp> 
-#include <boost/numeric/mtl/recursion/predefined_masks.hpp>
-#include <boost/numeric/mtl/operation/print.hpp>
-
+#include <boost/numeric/mtl/mtl.hpp>
 
 
 using namespace std;  
 
 template <typename Matrix>
-void test(Matrix& matrix, const char* name)
+void test(Matrix& A, const char* name)
 {
+    typedef typename mtl::Collection<Matrix>::size_type     size_type;
     cout << "\n" << name << "\n";
     typename mtl::Collection<Matrix>::value_type four(4.0), one(1.0), zero(0.0);
 
-    diagonal_setup(matrix, 1.0);
-    if (matrix[0][0] != one)
-	throw "wrong diagonal";
-    if (matrix[0][1] != zero)
-	throw "wrong off-diagonal";
+    diagonal_setup(A, 1.0);
+    cout << "Diagonal matrix:\n" << A << "\n";
+    for (size_type r= 0; r < num_rows(A); ++r)
+	for (size_type c= 0; c < num_cols(A); ++c)
+	    if (r == c && A[r][c] != one) {
+		throw "wrong diagonal";
+	    } else if (r != c && A[0][1] != zero)
+		throw "wrong off-diagonal";
 
-    cout << "Diagonal matrix:\n" << matrix << "\n";
-
-    matrix= 4.0;
-    if (matrix[0][0] != four)
-	throw "wrong diagonal";
-    if (matrix[0][1] != zero)
-	throw "wrong off-diagonal";
-
-    cout << "Diagonal matrix:\n" << matrix << "\n";
+    A= 4.0;
+    cout << "Diagonal matrix:\n" << A << "\n";
+    for (size_type r= 0; r < num_rows(A); ++r)
+	for (size_type c= 0; c < num_cols(A); ++c)
+	    if (r == c && A[r][c] != four) {
+		throw "wrong diagonal";
+	    } else if (r != c && A[0][1] != zero)
+		throw "wrong off-diagonal";
 }
 
 
@@ -55,7 +51,7 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
     unsigned size= 7; 
 
-    dense2D<double>                                      dr(size, size);
+    dense2D<double>                                      dr(size, size), dr2(size, size+1), dr3(size+1, size);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
     morton_dense<double, recursion::morton_z_mask>       mzd(size, size);
     morton_dense<double, recursion::doppled_2_row_mask>  d2r(size, size);
@@ -66,6 +62,8 @@ int test_main(int argc, char* argv[])
     compressed2D<complex<double> >                       crc(size, size);
 
     test(dr, "Dense row major");
+    test(dr2, "Dense row major (one column more)");
+    test(dr3, "Dense row major (one row more)");
     test(dc, "Dense column major");
     test(mzd, "Morton Z-order");
     test(d2r, "Hybrid 2 row-major");

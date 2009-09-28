@@ -14,10 +14,12 @@
 
 #include <algorithm>
 #include <boost/static_assert.hpp>
+#include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/is_static.hpp>
 
 namespace mtl { namespace matrix {
   
@@ -35,6 +37,7 @@ struct base_matrix
   protected:
     dim_type                        dim;       ///< # of rows and columns
     size_type                       my_nnz;    ///< # of non-zeros, to be set by derived matrix
+    typedef traits::is_static<dim_type>       static_bool;
     
   public:
     base_matrix() :  my_nnz(0) {}
@@ -62,16 +65,18 @@ struct base_matrix
     }
 
 protected:
+#if 0
     /** Will fail for fixed::dimension **/
-    void change_dim(mtl::non_fixed::dimensions d)
-    {
-	dim= d;
-    }
-   
-    void change_dim(size_type r, size_type c)
-    {
-	change_dim(non_fixed::dimensions(r, c));
-    }    
+    void change_dim(mtl::non_fixed::dimensions d) { dim= d; }
+
+    template <std::size_t Rows, std::size_t Cols> 
+    void change_dim(mtl::fixed::dimensions<Rows, Cols> d) {}
+#endif
+
+    void change_dim(size_type r, size_type c, boost::mpl::false_) { dim= dim_type(r, c); }    
+    void change_dim(size_type r, size_type c, boost::mpl::true_) { check_dim(r, c); }    
+
+    void change_dim(size_type r, size_type c) {	change_dim(r, c, static_bool()); }    
 
 public:
     // Number of rows
