@@ -110,7 +110,6 @@ class ilu_0
     LU_type                      LU;
 }; 
 
-#if 1
 template <typename Value>
 class ilu_0<mtl::dense2D<Value> >
 {
@@ -135,7 +134,6 @@ class ilu_0<mtl::dense2D<Value> >
     LU_type                        LU;
     mtl::dense_vector<size_type>   P;
 };
-#endif
 
 /// Solve LU x = b --> x= U^{-1} L^{-1} b
 template <typename Matrix, typename Vector>
