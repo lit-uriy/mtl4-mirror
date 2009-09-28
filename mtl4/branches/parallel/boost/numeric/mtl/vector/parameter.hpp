@@ -21,17 +21,10 @@
 namespace mtl { namespace vector {
 
 // This type exist only for bundling template parameters (to reduce typing)
-#if 1
 template <typename Orientation= col_major, 
 	  typename Dimension= non_fixed::dimension,
 	  bool OnStack= mtl::traits::is_static<Dimension>::value,
 	  bool RValue= false>
-#else
-template <typename Orientation, 
-	  typename Dimension,
-	  bool OnStack,
-	  bool RValue>
-#endif
 struct parameters 
 {
     typedef Orientation orientation;
