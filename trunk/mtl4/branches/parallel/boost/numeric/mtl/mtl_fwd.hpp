@@ -140,14 +140,8 @@ namespace mtl {
 	    struct dimension;
 	}
 
-#if 0
-	template <typename Orientation= col_major, typename Dimension= non_fixed::dimension, 
-		  bool OnStack= mtl::traits::is_static<Dimension>::value, bool RValue= false> struct parameters; 
-	template <typename Value, typename Parameters = parameters<> > class dense_vector;
-#else 
 	// template <typename Orientation, typename Dimension, bool OnStack, bool RValue> struct parameters; 
 	template <typename Value, typename Parameters> class dense_vector;
-#endif
 	template <typename Vector> struct vec_expr;
 	template <typename Value, typename Parameters> class strided_vector_ref;
 	template <typename Functor, typename Vector> struct map_view;
