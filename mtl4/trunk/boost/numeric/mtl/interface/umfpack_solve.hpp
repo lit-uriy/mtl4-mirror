@@ -101,9 +101,9 @@ namespace mtl { namespace matrix {
 
 	    void assign_pointers()
 	    {
-		std::cout << "in assign_pointers\n";
 		if (copy_indices) {
-		    if (Apc == 0) { Apc= new index_type[n + 1]; std::cout << "allocate.\n"; }
+		    if (Apc == 0) Apc= new index_type[n + 1]; 
+		    if (my_nnz != A.nnz() && Aic) { delete[] Aic; Aic= 0; }
 		    if (Aic == 0) Aic= new index_type[A.nnz()];
 		    std::copy(A.address_major(), A.address_major() + n + 1, Apc);
 		    std::copy(A.address_minor(), A.address_minor() + A.nnz(), Aic);
@@ -140,7 +140,7 @@ namespace mtl { namespace matrix {
 
 	  public:
 	    explicit solver(const matrix_type& A) 
-	      : A(A), Apc(0), Aic(0), Symbolic(0), Numeric(0) 
+	      : A(A), Apc(0), Aic(0), my_nnz(0), Symbolic(0), Numeric(0) 
 	    {
 		// Use default setings.
 		if (long_indices)
@@ -224,6 +224,7 @@ namespace mtl { namespace matrix {
 	    int                 n;
 	    const index_type    *Ap, *Ai;
 	    index_type          *Apc, *Aic;
+	    size_type           my_nnz;
 	    const double        *Ax;
 	    double              Control[UMFPACK_CONTROL], Info[UMFPACK_INFO];
 	    void                *Symbolic, *Numeric;
