@@ -151,6 +151,28 @@ struct value<dense_vector<Value, Parameters> >
 {
     typedef mtl::detail::direct_value<dense_vector<Value, Parameters> > type;
 };
+// ================
+// For vector::strided_vector_ref
+// ================
+
+template <class Elt, class Parameters>
+struct index<vector::strided_vector_ref<Elt, Parameters> >
+{
+    typedef mtl::detail::index_from_offset< vector::strided_vector_ref<Elt, Parameters> > type;
+};
+
+template <typename Value, class Parameters>
+struct const_value<vector::strided_vector_ref<Value, Parameters> >
+{
+    typedef mtl::detail::direct_const_value<vector::strided_vector_ref<Value, Parameters> > type;
+};
+
+template <typename Value, class Parameters>
+struct value<vector::strided_vector_ref<Value, Parameters> >
+{
+    typedef mtl::detail::direct_value<vector::strided_vector_ref<Value, Parameters> > type;
+};
+
 
 
 

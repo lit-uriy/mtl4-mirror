@@ -251,6 +251,7 @@ SourceSignatures('timestamp')
 env = Environment(ENV = {'PATH' : os.environ['PATH'], 'LD_LIBRARY_PATH' : os.environ['LD_LIBRARY_PATH']})
 
 # env.Decider('timestamp-newer')
+# env.Decider('timestamp-newer')
 
 conf = Configure(env)
 check_no_long_double(conf)
@@ -303,6 +304,7 @@ opts.Add('opt', 'Set to 1 for normal optimization, 2 for high optimization', 0)
 opts.Add('debug', 'Set to 1 for debugging', 0)
 opts.Add('check', 'Set to 1 if test programs shall be ran', 0)
 # opts.Add('with_concepts', 'Set to 1 if test programs shall be compiled with conceptg++ (must be in ~/bin)', 0)
+opts.Add('full_warnings', 'Set to 1 to turn on all possible warnings and transform into errors (currently only gcc)', 0)
 
 
 opts.Add('add_ccflag', 'Add extra CC compiler flags that aren\'t automatically set', '')
@@ -348,6 +350,13 @@ Help(opts.GenerateHelpText(env))
 #     # env.Append(LIBS=['boost_mpi-gcc43-mt.a', 'boost_serialization-gcc43-mt-1_37.a']) # on 17" laptop
 #     env.Append(LIBS=['boost_mpi-gcc41-mt.a', 'boost_serialization-gcc41-mt.a']) # at IWR
 #     env.Append(LIBPATH=['/usr/local/lib'])
+
+
+# Full warnings and treat as errors
+if int(ARGUMENTS.get('full_warnings', 0)):
+    if env['CXX'] == 'g++':
+        env.Append(CXXFLAGS = '-Werror -Wall -Wreorder -pedantic -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings')
+
 
 # add user-defined CC flags 
 add_ccflag = ARGUMENTS.get('add_ccflag', '')

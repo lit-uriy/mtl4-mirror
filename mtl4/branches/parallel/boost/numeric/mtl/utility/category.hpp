@@ -35,6 +35,12 @@ template <typename Collection> struct category
     typedef tag::unknown type;
 };
 
+// Const types have the same category as their non-const counterpart
+template <typename T>
+struct category<const T>
+{
+    typedef typename category<T>::type type;
+};
 
 template <typename Value, typename Parameters>
 struct category<dense2D<Value, Parameters> > 
@@ -76,6 +82,7 @@ struct category< dense_vector<T, Parameters> >
     >::type type;
 } ;
 
+
 template <typename Vector, typename Distribution>
 struct category< vector::distributed<Vector, Distribution> > 
 {
@@ -85,6 +92,18 @@ struct category< vector::distributed<Vector, Distribution> >
       , tag::distributed_col_vector 
     >::type type;
 } ;
+
+template <typename T, typename Parameters>
+struct category< vector::strided_vector_ref<T, Parameters> > 
+{
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename Parameters::orientation, row_major>
+      , tag::strided_row_vector 
+      , tag::strided_col_vector 
+    >::type type;
+} ;
+
+
 
 template <class E1, class E2, class SFunctor>
 struct category< vector::vec_vec_pmop_expr<E1,E2, SFunctor> >
@@ -122,6 +141,11 @@ struct category< vector::conj_view<Vector> >
     : public category< vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
 {};
 
+template <typename Vector>
+struct category< vector::negate_view<Vector> >
+    : public category< vector::map_view<sfunctor::negate<typename Vector::value_type>, Vector> >
+{};
+
 // To handle std::vector in algorithms
 template <typename T>
 struct category< std::vector<T> >
@@ -130,38 +154,24 @@ struct category< std::vector<T> >
 };
 
 namespace detail {
-    
-    // Helper to remove unsupported techniques in views
+   
+    template <typename Cat>  struct view_category       { typedef Cat                     type; };
+
+    template <> struct view_category<tag::dense2D>      { typedef tag::dense2D_view       type; };
+    template <> struct view_category<tag::morton_dense> { typedef tag::morton_view        type; };
+    template <> struct view_category<tag::compressed2D> { typedef tag::compressed2D_view  type; };
+
     template <typename Matrix>
     struct simple_matrix_view_category
-    {
-      private:
-        typedef typename boost::mpl::if_<
-    	    boost::is_same<typename category<Matrix>::type, tag::dense2D>
-          , tag::dense2D_view
-          , typename category<Matrix>::type
-	>::type tmp1;
-
-        typedef typename boost::mpl::if_<
-    	    boost::is_same<typename category<Matrix>::type, tag::morton_dense>
-          , tag::morton_view
-          , tmp1
-	>::type tmp2;
-
-      public:
-        typedef typename boost::mpl::if_<
-    	    boost::is_same<typename category<Matrix>::type, tag::compressed2D>
-          , tag::compressed2D_view
-          , tmp2
-	>::type type;
-    };
+      : view_category<typename category<Matrix>::type>
+    {};
 
 } // detail
 
 
 template <typename Functor, typename Matrix> 
 struct category<mtl::matrix::map_view<Functor, Matrix> >
-    : public detail::simple_matrix_view_category<Matrix>
+  : public detail::simple_matrix_view_category<Matrix>
 {};
 
 template <typename Scaling, typename Matrix>

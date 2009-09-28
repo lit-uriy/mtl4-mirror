@@ -23,13 +23,20 @@ using namespace std;
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
+    using mtl::irange;
     A= 0.0;
     A[0][0]= 1.0; 
     hessian_setup(A, 1.0);
 
-    mtl::matrix::recursator<Matrix> rec(A), nw= north_west(rec);
+    A[irange(0, 8)][irange(0, 8)];
+    mtl::matrix::recursator<Matrix> rec(A);
 
     std::cout << "\n" << name << "\n";
+    std::cout << "A:\n" << A << '\n';    
+    std::cout << "A[irange(0, 8)][irange(0, 8)]:\n" << A[irange(0, 8)][irange(0, 8)] << '\n';    
+    std::cout << "*rec:\n" << *rec << '\n';    
+
+    mtl::matrix::recursator<Matrix> nw= north_west(rec);
     std::cout << "north_west:\n" << *nw << '\n';    
 
     std::cout << "north_west of north_west:\n" << *north_west(nw) << '\n';

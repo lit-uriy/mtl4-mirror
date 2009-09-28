@@ -32,6 +32,7 @@ namespace detail {
     struct upper_trisolve_t
     {
 	typedef typename Collection<Matrix>::value_type           value_type;
+	typedef typename Collection<Matrix>::size_type            size_type;
 	typedef typename OrientedCollection<Matrix>::orientation  my_orientation;
 	typedef typename mtl::traits::category<Matrix>::type      my_category;
 
@@ -49,36 +50,21 @@ namespace detail {
     private:
 	// Initialization for regular and inverse diagonal is the same
 	template <typename Cursor>
-	void row_init(int r, Cursor& aic, Cursor& aiend, value_type& dia, tag::universe_diagonal)
+	void row_init(size_type r, Cursor& aic, Cursor& aiend, value_type& dia, tag::universe_diagonal)
 	{
-	    using mtl::detail::adjust_cursor;
-	    adjust_cursor(r, aic, my_category());
 	    MTL_DEBUG_THROW_IF(aic == aiend || col_a(*aic) != r, missing_diagonal());
 	    dia= value_a(*aic); ++aic;
 	}
 
 	template <typename Cursor>
-	void row_init(int r, Cursor& aic, Cursor&, value_type&, tag::unit_diagonal)
-	{
-	    using mtl::detail::adjust_cursor;
-	    adjust_cursor(r + 1, aic, my_category());
-	}
+	void row_init(size_type r, Cursor& aic, Cursor&, value_type&, tag::unit_diagonal) {}
 
-	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::regular_diagonal)
-	{
-	    res= rr / dia;
-	}
+	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::regular_diagonal) { res= rr / dia; }
+	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::inverse_diagonal) { res= rr * dia;	}
+	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::unit_diagonal)    { res= rr; }
 
-	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::inverse_diagonal)
-	{
-	    res= rr * dia;
-	}
-
-	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::unit_diagonal)
-	{
-	    res= rr;
-	}
-
+	template <typename Tag> int dia_inc(Tag) { return 0; }
+	int dia_inc(tag::unit_diagonal) { return 1; }
 
 	template <typename Vector>
 	Vector inline apply(const Vector& v, tag::row_major)
@@ -90,8 +76,8 @@ namespace detail {
 	    Vector result(v);
 
 	    ra_cur_type ac= begin<row>(A), aend= end<row>(A); 
-	    for (int r= num_rows(A) - 1; ac != aend--; --r) {
-		ra_icur_type aic= begin<nz>(aend), aiend= end<nz>(aend);
+	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
+		ra_icur_type aic= lower_bound<nz>(aend, r + dia_inc(DiaTag())), aiend= end<nz>(aend);
 		value_type rr= result[r], dia;
 		row_init(r, aic, aiend, dia, DiaTag());
 		for (; aic != aiend; ++aic) {
@@ -114,8 +100,8 @@ namespace detail {
 	    Vector result(v);
 
 	    ca_cur_type ac= begin<col>(A), aend= end<col>(A); 
-	    for (int r= num_rows(A) - 1; ac != aend--; --r) {
-		ca_icur_type aic= begin<nz>(aend), aiend= end<nz>(aend);
+	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
+		ca_icur_type aic= begin<nz>(aend), aiend= lower_bound<nz>(aend, r + 1 - dia_inc(DiaTag()));
 		value_type rr;
 		col_init(r, aic, aiend, rr, result[r], DiaTag());
 
@@ -128,10 +114,8 @@ namespace detail {
 	}
 
 	template <typename Cursor>
-	void col_init(int r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::regular_diagonal)
+	void col_init(size_type r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::regular_diagonal)
 	{
-	    using mtl::detail::adjust_cursor;
-	    adjust_cursor(r - num_rows(A) + 1, aiend, my_category());
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
 	    MTL_DEBUG_THROW_IF(row_a(*aiend) != r, missing_diagonal());
@@ -139,10 +123,8 @@ namespace detail {
 	}
 	
 	template <typename Cursor>
-	void col_init(int r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::inverse_diagonal)
+	void col_init(size_type r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::inverse_diagonal)
 	{
-	    using mtl::detail::adjust_cursor;
-	    adjust_cursor(r - num_rows(A) + 1, aiend, my_category());
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
 	    MTL_DEBUG_THROW_IF(row_a(*aiend) != r, missing_diagonal());
@@ -150,10 +132,8 @@ namespace detail {
 	}
 
 	template <typename Cursor>
-	void col_init(int r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::unit_diagonal)
+	void col_init(size_type r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::unit_diagonal)
 	{
-	    using mtl::detail::adjust_cursor;
-	    adjust_cursor(r - num_rows(A), aiend, my_category());
 	    rr= res;
 	}
 

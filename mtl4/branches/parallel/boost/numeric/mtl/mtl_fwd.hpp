@@ -140,13 +140,19 @@ namespace mtl {
 	    struct dimension;
 	}
 
+#if 0
 	template <typename Orientation= col_major, typename Dimension= non_fixed::dimension, 
-		  bool OnStack= false, bool RValue= false> struct parameters; 
-
+		  bool OnStack= mtl::traits::is_static<Dimension>::value, bool RValue= false> struct parameters; 
 	template <typename Value, typename Parameters = parameters<> > class dense_vector;
+#else 
+	// template <typename Orientation, typename Dimension, bool OnStack, bool RValue> struct parameters; 
+	template <typename Value, typename Parameters> class dense_vector;
+#endif
 	template <typename Vector> struct vec_expr;
+	template <typename Value, typename Parameters> class strided_vector_ref;
 	template <typename Functor, typename Vector> struct map_view;
 	template <typename Vector>  struct conj_view;
+	template <typename Vector>  struct negate_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
 	template <typename Vector, typename RScaling> struct rscaled_view; // added by Hui Li
 	template <typename Vector, typename Divisor> struct divide_by_view; // added by Hui Li
@@ -177,6 +183,14 @@ namespace mtl {
 	typename dense_vector<Value, Parameters>::size_type
 	inline num_cols(const dense_vector<Value, Parameters>& vector);
 
+	/// Namespace for fixed vector dimension types
+	namespace fixed {
+	    template <std::size_t Size> struct dimension;
+	}
+	/// Namespace for non-fixed vector dimension types, i.e. size dynamically determined at run-time
+	namespace non_fixed {
+	    struct dimension;
+	}
     }
 
     using vector::dense_vector;
@@ -220,6 +234,23 @@ namespace mtl {
 	template <typename Tag, typename Collection>  struct range_generator;
 
 	template <typename T> struct eval_dense;
+
+	// for internal implementations
+	namespace detail {
+	    // needed collection.hpp (at least)
+	    template <typename Collection, typename Cursor, typename Complexity> struct dense_element_range_generator;
+	    template <typename Matrix, typename Cursor, typename Complexity> struct all_offsets_range_generator;
+	    template <typename Matrix, typename Tag, int Level = 2> struct sub_matrix_cursor;
+	    template <typename Matrix, typename Complexity, int Level = 2>  struct all_rows_range_generator;
+	    template <typename Matrix, typename Complexity, int Level = 2>  struct all_cols_range_generator;
+	    template <typename Collection, typename RangeGenerator>  struct referred_range_generator;
+	}
+    }
+
+    /// Namespace for concepts
+    namespace concept {
+	template <typename Matrix> struct ColumnInMatrix;
+	template <typename Matrix> struct RowInMatrix;
     }
 
     template <class Tag, class Collection> typename traits::range_generator<Tag, Collection>::type 
@@ -236,23 +267,24 @@ namespace mtl {
     }
 
     /// Namespace for functors with application operator and fully typed paramaters
-	// added by Hui Li
+    // added by Hui Li
     namespace tfunctor {
 	/// Functor for scaling matrices, vectors and ordinary scalars
 	template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct rscale;
     }
 	
     /// Namespace for functors with application operator and fully typed paramaters
-	// added by Hui Li
+    // added by Hui Li
     namespace tfunctor {
-		/// Functor for scaling matrices, vectors and ordinary scalars
-		template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct divide_by;
+	/// Functor for scaling matrices, vectors and ordinary scalars
+	template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct divide_by;
     }
 
     /// Namespace for functors with static function apply and fully typed paramaters
     namespace sfunctor {
 	template <typename Value, typename AlgebraicCategory = tag::scalar> struct conj_aux;
 	template <typename Value> struct conj;
+	template <typename Value> struct negate;
     }
 
     // Namespace documentations

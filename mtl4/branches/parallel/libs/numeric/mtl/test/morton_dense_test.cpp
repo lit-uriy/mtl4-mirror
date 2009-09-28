@@ -153,16 +153,4 @@ int test_main(int argc, char* argv[])
     test_morton_dense()(matrix2);
 
     return 0;
-
-    typedef morton_dense<double,  0x55555555, matrix::parameters<> > matrix_type;    
-    matrix_type matrix(non_fixed::dimensions(2, 3));
-   
-    mtl::traits::value<matrix_type>::type                       value(matrix);
- 
-    mtl::matrix::morton_dense_el_cursor<0x55555555>   cursor(0, 0, 3), cursor_end(2, 0, 3);
-    for (double x= 7.3; cursor != cursor_end; ++cursor, x+= 1.0)
-	value(cursor, x);
-
-    test_morton_dense()(matrix);
-    return 0;
 }

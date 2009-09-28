@@ -36,15 +36,26 @@ namespace mtl {
         /// Create an index range of [0, imax), i.e. all indices
         irange() : my_start(0), my_finish(imax) {}
 
+        /// Set the index range to [start, finish)
+	irange& set(size_type start, size_type finish) 
+	{
+	    my_start= start; my_finish= finish; return *this;
+	}
+
+        /// Set the index range of [0, finish)
+	irange& set(size_type finish) 
+	{
+	    my_start= 0; my_finish= finish; return *this;
+	}
+
         /// First index in range
-        size_type start() { return my_start; } 
+        size_type start() const { return my_start; } 
         /// Past-end index in range
-        size_type finish() { return my_finish; }
+        size_type finish() const { return my_finish; }
         /// Number of indices
-        size_type size() { return my_finish - my_start; }
+        size_type size() const { return my_finish > my_start ? my_finish - my_start : 0; }
 
       private:
-
         size_type my_start, my_finish;
     };
 

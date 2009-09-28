@@ -16,17 +16,17 @@
 
 namespace meta_math {
 
-template <unsigned long Index0, unsigned long Max0>
+template <std::size_t Index0, std::size_t Max0>
 struct loop1
 {
-    static unsigned long const index0= Index0 - 1, next_index0= Index0 + 1;
+    static std::size_t const index0= Index0 - 1, next_index0= Index0 + 1;
 };
 
 
-template <unsigned long Max0>
+template <std::size_t Max0>
 struct loop1<Max0, Max0>
 {
-    static unsigned long const index0= Max0 - 1;
+    static std::size_t const index0= Max0 - 1;
 };
 
 

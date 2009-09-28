@@ -25,11 +25,20 @@ namespace traits {
     };
 }
 
+///  Strict upper triangle matrix
 template <typename Matrix> 
 typename traits::strict_upper<Matrix>::type
 inline strict_upper(const Matrix& A)
 {
     return bands(A, 1, std::numeric_limits<long>::max());
+}
+
+/// Triangle-upper starting at off-diagonoal \p d (for compatibility with matlib)
+template <typename Matrix> 
+typename traits::strict_upper<Matrix>::type
+inline triu(const Matrix& A, long d= 0)
+{
+    return bands(A, d, std::numeric_limits<long>::max());
 }
 
 

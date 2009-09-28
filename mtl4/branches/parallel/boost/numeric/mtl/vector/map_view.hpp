@@ -16,11 +16,11 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/utility/copy_expression_const_ref_container.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/tfunctor.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
-
 
 
 namespace mtl { namespace vector { namespace detail {
@@ -43,18 +43,22 @@ struct map_view
     typedef typename Vector::size_type                 size_type;
 
     map_view (const Functor& functor, const other& ref) 
-	: expr_base(*this), functor(functor), ref(ref) 
+      : expr_base(*this), functor(functor), ref(ref) 
     {
 	ref.delay_assign();
     }
     
     map_view (const Functor& functor, boost::shared_ptr<Vector> p) 
-	: expr_base(*this), functor(functor), my_copy(p), ref(*p)
+      : expr_base(*this), functor(functor), my_copy(p), ref(*p)
     {
 	ref.delay_assign();
     }
 
-    size_type size() const { return ref.size(); }
+    // size_type size() const { return ref.size(); }
+    friend size_type inline size(const self& v) { return size(v.ref); }
+    friend size_type inline num_rows(const self& v) { return num_rows(v.ref); }
+    friend size_type inline num_cols(const self& v) { return num_cols(v.ref); }
+
     size_type stride() const { 	return ref.stride(); }
     const_reference operator() (size_type i) const { return functor(ref(i)); }
     const_reference operator[] (size_type i) const { return functor(ref[i]); }
@@ -78,13 +82,6 @@ struct map_view
 // ================
 // Free functions
 // ================
-
-template <typename Functor, typename Vector>
-typename map_view<Functor, Vector>::size_type
-inline size(const map_view<Functor, Vector>& view)
-{
-    return size(view.ref);
-}
 
 
     namespace detail {
@@ -155,65 +152,83 @@ struct scaled_view
     typedef map_view<functor_type, Vector>                         base;
 
     scaled_view(const Scaling& scaling, const Vector& vector)
-	: base(functor_type(scaling), vector)
+      : base(functor_type(scaling), vector)
     {}
     
     scaled_view(const Scaling& scaling, boost::shared_ptr<Vector> p)
-	: base(functor_type(scaling), p)
+      : base(functor_type(scaling), p)
     {}
 };
 
 // added by Hui Li
 template <typename Vector, typename RScaling>
 struct rscaled_view
-	: public map_view<tfunctor::rscale<typename Vector::value_type, RScaling>, Vector>
+  : public map_view<tfunctor::rscale<typename Vector::value_type, RScaling>, Vector>
 {
-	typedef tfunctor::rscale<typename Vector::value_type, RScaling>  functor_type;
-	typedef map_view<functor_type, Vector>                          base;
+    typedef tfunctor::rscale<typename Vector::value_type, RScaling>  functor_type;
+    typedef map_view<functor_type, Vector>                          base;
 	
-	rscaled_view(const Vector& vector, const RScaling& rscaling)
-	: base(functor_type(rscaling), vector)
-	{}
+    rscaled_view(const Vector& vector, const RScaling& rscaling)
+      : base(functor_type(rscaling), vector)
+    {}
 	
-	rscaled_view(boost::shared_ptr<Vector> p, const RScaling& rscaling)
-	: base(functor_type(rscaling), p)
-	{}
+    rscaled_view(boost::shared_ptr<Vector> p, const RScaling& rscaling)
+      : base(functor_type(rscaling), p)
+    {}
 };
 	
 
 // added by Hui Li
 template <typename Vector, typename Divisor>
 struct divide_by_view
-: public map_view<tfunctor::divide_by<typename Vector::value_type, Divisor>, Vector>
+  : public map_view<tfunctor::divide_by<typename Vector::value_type, Divisor>, Vector>
 {
-	typedef tfunctor::divide_by<typename Vector::value_type, Divisor>  functor_type;
-	typedef map_view<functor_type, Vector>                             base;
+    typedef tfunctor::divide_by<typename Vector::value_type, Divisor>  functor_type;
+    typedef map_view<functor_type, Vector>                             base;
 	
-	divide_by_view(const Vector& vector, const Divisor& div)
-	: base(functor_type(div), vector)
-	{}
+    divide_by_view(const Vector& vector, const Divisor& div)
+      : base(functor_type(div), vector)
+    {}
 	
-	divide_by_view(boost::shared_ptr<Vector> p, const Divisor& div)
-	: base(functor_type(div), p)
-	{}
+    divide_by_view(boost::shared_ptr<Vector> p, const Divisor& div)
+      : base(functor_type(div), p)
+    {}
 };
 	
 
 template <typename Vector>
 struct conj_view
-	: public map_view<mtl::sfunctor::conj<typename Vector::value_type>, Vector>
+  : public map_view<mtl::sfunctor::conj<typename Vector::value_type>, Vector>
 {
-	typedef mtl::sfunctor::conj<typename Vector::value_type>            functor_type;
+    typedef mtl::sfunctor::conj<typename Vector::value_type>            functor_type;
     typedef map_view<functor_type, Vector>                         base;
 
     conj_view(const Vector& vector)
-	: base(functor_type(), vector)
+      : base(functor_type(), vector)
     {}
     
     conj_view(boost::shared_ptr<Vector> p)
-	: base(functor_type(), p)
+      : base(functor_type(), p)
     {}
 };
+
+template <typename Vector>
+struct negate_view
+  : public map_view<mtl::sfunctor::negate<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::negate<typename Vector::value_type>            functor_type;
+    typedef map_view<functor_type, Vector>                         base;
+
+    negate_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    negate_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+};
+
+
 
 }} // namespace mtl::vector
 

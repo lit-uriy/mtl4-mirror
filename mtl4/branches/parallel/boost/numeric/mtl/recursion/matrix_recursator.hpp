@@ -13,6 +13,7 @@
 #define MTL_MATRIX_RECURATOR_INCLUDE
 
 #include <cmath>
+#include <boost/type_traits.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
@@ -67,7 +68,8 @@ private:
     template <typename MatrixType>
     sub_matrix_type constructor_helper(transposed_view<MatrixType> const& view)
     {
-	typedef typename sub_matrix_t<MatrixType>::sub_matrix_type   ref_sub_type;
+	typedef typename boost::remove_const<MatrixType>::type   tmp_type;
+	typedef typename sub_matrix_t<tmp_type>::sub_matrix_type ref_sub_type;
 	typedef boost::shared_ptr<ref_sub_type>                  pointer_type;
 	typedef typename transposed_view<MatrixType>::other      ref_type;
 

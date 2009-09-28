@@ -45,26 +45,6 @@ struct vec_mult_result
 								    typename ashape::ashape<Op2>::type >::type>
 {}; 
 
- // to be deleted
-#if 0
-/// Result type for multiplying arguments of types Op1 and Op2 if operation is classified as MultOp
-/** Can be used in enable-if-style as type is only defined when appropriate **/
-template <typename Op1, typename Op2, typename MultOp>
-struct mult_result_if_equal 
-    : public mult_result_if_equal_aux<Op1, Op2, typename ashape::mult_op<typename ashape::ashape<Op1>::type, 
-									 typename ashape::ashape<Op2>::type>::type,
-				      MultOp>
-{};
-
-template <typename Op1, typename Op2, typename MultOp1, typename MultOp2>
-struct mult_result_if_equal_aux {};
-
-template <typename Op1, typename Op2, typename MultOp>
-struct mult_result_if_equal_aux<Op1, Op2, MultOp, MultOp>
-    : public mult_result_aux<Op1, Op2, typename ashape::mult_op<typename ashape::ashape<Op1>::type, 
-								typename ashape::ashape<Op2>::type >::type>
-{};
-#endif 
 
 /// Result type for multiplying arguments of types Op1 and Op2
 /** MultOp according to the algebraic shapes **/

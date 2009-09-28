@@ -49,7 +49,7 @@ std::size_t inline outer_bound(Matrix const& matrix)
 template <typename Integral>
 Integral inline least_significant_one_bit(Integral x)
 {
-  return ((x ^ x-1) + 1) >> 1;
+    return ((x ^ (x-1)) + 1) >> 1;
 }
 
 

@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/utility/parameters.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
@@ -43,16 +44,19 @@ struct banded_view
   : public const_crtp_base_matrix< banded_view<Matrix>, 
 				   typename Matrix::value_type, typename Matrix::size_type >,
     public mat_expr< banded_view<Matrix> >,
-    public base_matrix<typename Matrix::value_type, typename Matrix::parameters>
+    public base_matrix<typename Matrix::value_type, 
+		       typename mtl::traits::parameters<Matrix>::type>
 {
     typedef banded_view                                self;
     typedef mat_expr< self >                           expr_base;
-    typedef base_matrix<typename Matrix::value_type, typename Matrix::parameters> base;
+    typedef typename mtl::traits::parameters<Matrix>::type parameters;
+
+    typedef base_matrix<typename Matrix::value_type, parameters> base;
     
     typedef Matrix                                     other;
     typedef typename Matrix::orientation               orientation;
     typedef typename Matrix::index_type                index_type;
-    typedef typename Matrix::parameters                parameters;
+    // typedef typename Matrix::parameters                parameters;
 
     typedef typename Matrix::value_type                value_type;
     typedef typename Matrix::const_reference           const_reference;
@@ -214,11 +218,37 @@ namespace mtl { namespace traits {
 	: public detail::referred_range_generator<banded_view<Matrix>, range_generator<Tag, Matrix> >
     {};
 
-    // To disambigue
+#if 0 // It is more complicated than this because referred_range_generator returns Matrix's cursor and we 
+      // cannot dispatch on this anymore
+    template <typename Matrix> 
+    struct range_generator<glas::tag::nz, 
+			   typename detail::referred_range_generator<banded_view<Matrix>, range_generator<Tag, Matrix> >::type> 
+
+			   detail::sub_matrix_cursor<banded_view<Matrix>, glas::tag::row, 2> >
+    {
+	typedef range_generator<glas::tag::row, banded_view<Matrix> >                    collection_type;
+	typedef range_generator<glas::tag::nz, range_generator<glas::tag::row, Matrix> > other_generator;
+	static int const                            level = other_generator::level;
+	typedef typename other_generator::type       type;
+
+	type begin(const collection_type& c)
+	{
+	    return 
+
+	// 
+	typedef typename range_generator<glas::tag::nz, detail::sub_matrix_cursor<Matrix>, glas::tag::row, 2>::type type;
+#endif
+
+
+    // To disambiguate
     template <typename Matrix> 
     struct range_generator<tag::major, banded_view<Matrix> >
 	: public detail::referred_range_generator<banded_view<Matrix>, range_generator<tag::major, Matrix> >
     {};
+
+
+
+
 
 
 }} // mtl::traits

@@ -124,6 +124,20 @@ struct dense_col_vector
     virtual concentrated
 {};
 
+/// Tag for strided row vector in the category lattice
+struct strided_row_vector
+  : virtual row_vector, 
+    virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout,
+    virtual concentrated
+{};
+
+/// Tag for strided column vector in the category lattice
+struct strided_col_vector
+  : virtual col_vector, 
+    virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout,
+    virtual concentrated
+{};
+
 /// Tag to handle std::vector in the category lattice
 struct std_vector
   : virtual vector, virtual contiguous_dense, virtual has_1D_layout,
@@ -144,8 +158,8 @@ struct distributed_row_vector
 /** The map perform address computation and has therefore no 2D-layout.
     It is also not (yet) assumed that the view provides iterators. */
 struct dense2D_view 
-  : virtual matrix, virtual contiguous_dense, virtual has_fast_ra_cursor, 
-    virtual sub_dividable
+  : virtual matrix, virtual contiguous_dense, virtual has_fast_ra_cursor 
+    // , virtual sub_dividable // is currently not sub-dividable
 {};
 
 /// Tag for (regular) dense matrix in the category lattice
@@ -158,7 +172,7 @@ struct dense2D
 /** It is not (yet) assumed that the view provides iterators. */
 struct morton_view 
   : virtual matrix, virtual contiguous_dense,  
-    virtual has_ra_cursor, virtual qsub_dividable
+    virtual has_ra_cursor // , virtual qsub_dividable // is currently not sub-dividable
  {};
 
 

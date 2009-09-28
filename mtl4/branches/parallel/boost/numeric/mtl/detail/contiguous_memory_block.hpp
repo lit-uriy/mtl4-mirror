@@ -385,7 +385,8 @@ struct contiguous_memory_block<Value, true, Size>
       public memory_crtp<Value, true, Size>
 {
     typedef Value                             value_type;
-    typedef contiguous_memory_block                     self;
+    typedef contiguous_memory_block           self;
+    //static bool const                         on_stack= true;
 
     Value    data[Size];
     explicit contiguous_memory_block(std::size_t size= Size) 
@@ -396,7 +397,7 @@ struct contiguous_memory_block<Value, true, Size>
     // Move-semantics ignored for arrays on stack
     contiguous_memory_block(const self& other)
     {
-	std::cout << "Copied in copy constructor (same type).\n";
+	// std::cout << "Copied in copy constructor (same type).\n";
 	std::copy(other.data, other.data+Size, data);
     }
 
@@ -434,9 +435,10 @@ public:
     }
 
 
-    void realloc(std::size_t) 
+    void realloc(std::size_t s) 
     {
-	assert(false); // Arrays on stack cannot be reallocated
+	// Arrays on stack cannot be reallocated but if the size isn't changed we are fine
+	assert(s == Size); 
     }
 
     std::size_t used_memory() const

@@ -22,6 +22,14 @@ void test(Matrix& A, const char* name)
 {
     typedef typename mtl::Collection<Matrix>::value_type   value_type;
     
+#if 0 // for debuggin type infos
+    typedef value_type a_type[2][3];
+    typedef typename mtl::ashape::ashape<a_type>::type s_type;
+    std::cout << typeid(s_type).name() << "\n";
+
+    std::cout << boost::is_same<s_type, mtl::ashape::scal>::value  << "\n";
+#endif
+
     value_type array[][3]= {{3, 7.2, 0}, {2, 4.444, 5}};
     A= array;
 

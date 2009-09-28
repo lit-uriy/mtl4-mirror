@@ -533,6 +533,34 @@ value is assignable to the type of the elements.
 Scalar types are in MTL4 all types that are not explicitly defined
 by type %traits as vectors or matrices, thus almost all types.
 
+All vectors have free functions for the number of rows and columns
+and the  size.
+
+To find out the number of rows use
+\code
+  unsigned r= num_rows(v);
+\endcode
+It returns an unsigned integer (more precisely the size_type of the %vector type).
+The result is the number of elements for a column %vector and 1 for 
+a row %vector.
+
+Likewise the number of columns is given
+\code
+  unsigned c= num_cols(v);
+\endcode
+The result is the number of elements for a row %vector and 1 for 
+a column %vector.
+The size is given by the function size
+\code
+  unsigned s= size(v);
+  assert (s == r * c);
+\endcode
+and is the number of elements.
+This is equal to the product of the numbers of rows and columns.  
+These definitions are consistent with the according functions for matrices (\ref matrix_types).
+
+
+
 \if Navigation \endif
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref matrix_types 
 
@@ -633,6 +661,27 @@ given it is square as in the example.
 Which orientation is favorable dependents on the performed
 %operations and might require some experimentation.
 All %operations are provided in the same way for both formats
+
+All matrices have free functions for the number of rows and columns
+and the %matrix size, which is understood as the product of the former
+and not the number of non-zeros.
+
+To find out the number of rows use
+\code
+  unsigned r= num_rows(A);
+\endcode
+It returns an unsigned integer (more precisely the size_type of the %matrix type).
+Likewise the number of columns is given
+\code
+  unsigned c= num_cols(A);
+\endcode
+The %matrix size is given by
+\code
+  unsigned s= size(A);
+  assert (s == r * c);
+\endcode
+and is defined as product of the numbers of rows and columns.  
+These definitions are consistent with the according functions for vectors (\ref vector_def).
 
 How to fill  sparse matrices is shown in the following chapter.
 
