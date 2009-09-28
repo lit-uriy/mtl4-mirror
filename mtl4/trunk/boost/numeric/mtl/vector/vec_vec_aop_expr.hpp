@@ -122,22 +122,16 @@ struct vec_vec_aop_expr
 	return size(x.first);
     }
 
-#if 0
-    size_type size() const {
-	assert( first.size() == 0 || first.size() == second.size() ) ;
-	return first.size() ;
+
+    value_type& operator() ( size_type i ) const {
+	assert( delayed_assign );
+	return SFunctor::apply( first(i), second(i) );
     }
-#endif
 
-     value_type& operator() ( size_type i ) const {
+    value_type& operator[] ( size_type i ) const{
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
-     }
-
-     value_type& operator[] ( size_type i ) const{
-	assert( delayed_assign );
-	return SFunctor::apply( first(i), second(i) );
-     }
+    }
 
   private:
      mutable first_argument_type&        first ;
