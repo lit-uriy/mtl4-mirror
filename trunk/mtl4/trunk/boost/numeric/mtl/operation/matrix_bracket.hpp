@@ -64,7 +64,6 @@ namespace mtl { namespace operations {
 
 	template <typename T>
 	typename boost::lazy_enable_if_c<boost::is_integral<T>::value && col_traits::exists, col_traits>::type	 
-	// typename boost::lazy_enable_if_c<boost::is_same<T, size_type>::value && col_traits::exists, col_traits>::type	 
 	operator[] (T col)  { return col_traits::apply(matrix, row_range, col); }
 
       protected:
