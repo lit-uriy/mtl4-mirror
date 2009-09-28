@@ -564,7 +564,7 @@ namespace mtl {
 
 #else
     template <typename Value, typename Parameters>
-	struct Collection<mtl::vector::dense_vector<Value, Parameters> >
+    struct Collection<mtl::vector::dense_vector<Value, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
@@ -576,7 +576,7 @@ namespace mtl {
 
 #else
     template <typename Value, typename Parameters>
-	struct Collection<mtl::vector::strided_vector_ref<Value, Parameters> >
+    struct Collection<mtl::vector::strided_vector_ref<Value, Parameters> >
     {
 	typedef typename boost::remove_const<Value>::type            value_type;
 	typedef const Value&                                         const_reference;
@@ -584,6 +584,15 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+
+#else
+    // Dunno if this is really a good idea
+    template <typename T>
+    struct Collection<T const>
+      : Collection<T>
+    {};
+#endif
 
 
 #ifdef __GXX_CONCEPTS__
