@@ -361,41 +361,53 @@ if add_cxxflag:
 
 add_platform_flags(env)
 
+###############################
+# Set up MPI Options
+###############################
+
+mpi_env = env.Clone()
+
+mpi_env['CXX'] = 'mpiCC'
+mpi_env.Append(CCFLAGS = macro_flag(env, 'MTL_HAS_MPI'))
+
+if os.environ.has_key('BOOST_MPI_LIB') :
+    mpi_env.Append(LIBS=[os.environ['BOOST_MPI_LIB']])
+else :
+    # mpi_env.Append(LIBS=['boost_mpi-gcc43-mt.a']) # on 17" laptop
+    # mpi_env.Append(LIBS=['boost_mpi-gcc41-mt.a']) # at IWR
+    mpi_env.Append(LIBS=['boost_mpi.a'])          # with boost 1.40, e.g. Deimos
+
+if os.environ.has_key('BOOST_SERIALIZATION_LIB') :
+    mpi_env.Append(LIBS=[os.environ['BOOST_SERIALIZATION_LIB']])
+else :
+    # mpi_env.Append(LIBS=['boost_serialization-gcc43-mt-1_37.a']) # on 17" laptop
+    # mpi_env.Append(LIBS=['boost_serialization-gcc41-mt.a'])      # at IWR
+    mpi_env.Append(LIBS=['boost_serialization.a'])                 # with boost 1.40, e.g. Deimos
+
+if os.environ.has_key('BOOST_LIB') :
+    mpi_env.Append(LIBPATH=[os.environ['BOOST_LIB']])
+else: 
+    mpi_env.Append(LIBPATH=['/usr/local/lib']) # e.g. at IWR
+
+
+###############################
+# Set up Debugging and Optimization Options
+###############################
+
 #create alternative environments
 debug_env = env.Clone()
 opt_env = env.Clone()
 high_opt_env = env.Clone()
+
+mpi_debug_env = mpi_env.Clone()
+mpi_high_opt_env = mpi_env.Clone()
 
 # add debugging flags to appropriate environment
 debug = ARGUMENTS.get('debug', 0)
 if int(debug):
     add_debug(env)
 add_debug(debug_env)
-
-mpi_debug_env = debug_env.Clone()
-mpi_debug_env['CXX'] = 'mpiCC'
-mpi_debug_env.Append(CCFLAGS = macro_flag(env, 'MTL_HAS_MPI'))
-
-
-if os.environ.has_key('BOOST_MPI_LIB') :
-    mpi_debug_env.Append(LIBS=[os.environ['BOOST_MPI_LIB']])
-else :
-    # mpi_debug_env.Append(LIBS=['boost_mpi-gcc43-mt.a']) # on 17" laptop
-    # mpi_debug_env.Append(LIBS=['boost_mpi-gcc41-mt.a']) # at IWR
-    mpi_debug_env.Append(LIBS=['boost_mpi.a'])          # with boost 1.40, e.g. Deimos
-
-if os.environ.has_key('BOOST_SERIALIZATION_LIB') :
-    mpi_debug_env.Append(LIBS=[os.environ['BOOST_SERIALIZATION_LIB']])
-else :
-    # mpi_debug_env.Append(LIBS=['boost_serialization-gcc43-mt-1_37.a']) # on 17" laptop
-    # mpi_debug_env.Append(LIBS=['boost_serialization-gcc41-mt.a'])      # at IWR
-    mpi_debug_env.Append(LIBS=['boost_serialization.a'])                 # with boost 1.40, e.g. Deimos
-
-if os.environ.has_key('BOOST_LIB') :
-    mpi_debug_env.Append(LIBPATH=[os.environ['BOOST_LIB']])
-else: 
-    mpi_debug_env.Append(LIBPATH=['/usr/local/lib']) # e.g. at IWR
-
+add_debug(mpi_debug_env)
 
 
 # add optimization flags to appropriate environment
@@ -406,6 +418,7 @@ add_opt(debug_env, 0)
 add_opt(env, int(opt))
 add_opt(opt_env, 1)
 add_opt(high_opt_env, 2)
+add_opt(mpi_high_opt_env, 2)
 
 # add user-defined optimization flags 
 add_optflag = ARGUMENTS.get('add_optflag', '')
@@ -424,7 +437,7 @@ check = ARGUMENTS.get('check', 0)
 
 # print "SConstruct: debug_env[CXX] = ", debug_env['CXX']
 
-Export('env debug_env mpi_debug_env opt_env high_opt_env check')
+Export('env debug_env mpi_debug_env opt_env high_opt_env mpi_high_opt_env check')
 
 SConscript(['libs/numeric/mtl/build/SConscript', 
             'libs/numeric/mtl/test/SConscript', 
@@ -434,5 +447,6 @@ SConscript(['libs/numeric/mtl/build/SConscript',
             'libs/numeric/mtl/timing/SConscript', 
             'libs/numeric/linear_algebra/test/SConscript', 
             'libs/numeric/itl/test/SConscript',
+            'libs/numeric/itl/timing/SConscript', 
             'libs/numeric/complex/test/SConscript'])
 

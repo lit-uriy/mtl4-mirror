@@ -1,0 +1,16 @@
+import glob
+
+Import('high_opt_env mpi_high_opt_env')
+
+sources = glob.glob("*.cpp")
+
+programs, mpi_programs = [], []
+for p in sources:
+    if 'mpi_' == p[0:4]:
+        mpi_programs.append(mpi_high_opt_env.Program(p))
+    else:
+        programs.append(high_opt_env.Program(p))
+
+Default(high_opt_env.Program('empty.cpp'))
+
+# need target everything or something like that
