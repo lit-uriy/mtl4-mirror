@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/par/comm_scheme.hpp>
 #include <boost/numeric/mtl/par/mpi_log.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
@@ -43,7 +44,7 @@ dist_mat_cvec_mult_handle inline
 dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, 
 			 tag::universe, tag::universe, tag::universe)
 { 
-    MTL_THROW(logical_error("This communication form is not implemented yet"));
+    MTL_THROW(logic_error("This communication form is not implemented yet"));
     return dist_mat_cvec_mult_handle();
 }
 
@@ -98,7 +99,7 @@ boost::mpi::status inline
 dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_mult_handle& h,
 			tag::universe, tag::universe, tag::universe)
 { 
-    MTL_THROW(logical_error("This communication form is not implemented yet"));
+    MTL_THROW(logic_error("This communication form is not implemented yet"));
     return boost::mpi::status();
 }
 

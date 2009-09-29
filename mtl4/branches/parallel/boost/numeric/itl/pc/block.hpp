@@ -33,7 +33,7 @@ class block
     explicit block(const matrix_type& A) 
       : local_pc(local(A)), col_dist(col_distribution(A))
     {
-	MTL_THROW_IF(row_distribution(A) != col_dist, incompatible_distribution());
+	MTL_THROW_IF(row_distribution(A) != col_dist, mtl::incompatible_distribution());
     }
 
     /// Member function solve, better use free function solve

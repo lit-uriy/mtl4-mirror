@@ -78,6 +78,23 @@ bad_typeid
 
 #endif
 
+
+/// Domain errors in MTL4
+struct domain_error : public std::domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit domain_error(const char *s= "MTL4 domain error.") : std::domain_error(s) {}
+};
+
+/// Exception for arguments with incompatible distributions, e.g. block and cyclic distribution or different cycles
+/** Only used in supercomputing edition. **/
+struct incompatible_distribution : public domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit incompatible_distribution(const char *s= "Arguments have incompatible distribution.")
+	: domain_error(s) {}
+};
+
 /// Exception for indices out of range
 struct index_out_of_range : public std::out_of_range
 {
@@ -90,13 +107,6 @@ struct range_error : public std::range_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit range_error(const char *s= "Invalid range") : std::range_error(s) {}
-};
-
-/// Domain errors in MTL4
-struct domain_error : public std::domain_error
-{
-    /// Error can be specified more precisely in constructor if desired
-    explicit domain_error(const char *s= "MTL4 domain error.") : std::domain_error(s) {}
 };
 
 /// Exception for arguments with incompatible sizes
