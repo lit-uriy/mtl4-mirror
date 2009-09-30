@@ -87,6 +87,9 @@ class multi_vector
     Vector& vector(size_type i) { return data[i]; }
     const Vector& vector(size_type i) const { return data[i]; }
 
+    // multi_vector_range<Vector> vector(irange const& r) { return multi_vector_range<Vector>(*this, r); }
+    // Const version pending
+
     // size_type size() const { return this->num_rows() * this->num_cols(); } // Hack!!! try to remove
 
     /// Number of rows

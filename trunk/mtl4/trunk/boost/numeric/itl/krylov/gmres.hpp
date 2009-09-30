@@ -38,7 +38,8 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     Size                        k, n(size(x)), kmax(std::min(size(x), kmax_in));
     Vector                      r0(b - A *x), r(solve(L,r0)), s(kmax+1),
                                 c(kmax+1), g(kmax+1), va(n), va0(n), va00(n);
-    mtl::multi_vector<Vector>   v(kmax+1, Vector(n, zero)), h(kmax, Vector(kmax+1, zero));
+    mtl::multi_vector<Vector>   v(kmax+1, Vector(n, zero)); 
+    mtl::dense2D<Scalar>        h(kmax+1, kmax);
     irange                      range_n(0, n);
 
     rho= g[0]= two_norm(r);
@@ -48,7 +49,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     v.vector(0)= r / rho;
 
     // GMRES iteration
-    for (k= 0; !iter.finished(rho) && k < kmax; k++, ++iter) {
+    for (k= 0; rho >= iter.atol() && k < kmax; k++, ++iter) {
         va0= A * solve(R, v.vector(k));
         v.vector(k+1)= va= solve(L,va0);
 	// orth(v, v[k+1], false); 
@@ -94,21 +95,27 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     // iteration is finished -> compute x: solve H*y=g
     irange                  range_k(0, k);
     // mtl::dense2D<Scalar>    h_a(h[range_k][range_k]), v_a(v[iall][range_k]);
-    mtl::dense2D<Scalar>   h_a(k, k), v_a(n, k);
+    mtl::dense2D<Scalar>    v_a(n, k);
 
     for(Size j = 0 ; j < k; j++) {
-	for (Size i = 0; i < k; i++)
-            h_a[i][j]= h[i][j];
 	for(Size i = 0; i < n; i++)
             v_a[i][j]= v[i][j];
     }
-    Vector                  g_a(g[range_k]), y(lu_solve(h_a, g_a)), y1(v_a*y);
-    // solve  x+= v_a * y;
-    x+= solve(R,y1);
+
+    Vector                  g_a(g[range_k]), y;
+    try {
+	y= lu_solve(h[range_k][range_k], g_a);
+    } catch (mtl::matrix_singular e) {
+	return iter.fail(2, "GMRES sub-system singular");
+    }
+
+    // x+= solve(R, Vector(v.vector(range_k)*y));
+    x+= solve(R, Vector(v_a*y));
+
     r= b - A*x;
-    if (two_norm(r0) < two_norm(r))
+    if (!iter.finished(r))
         return iter.fail(2, "GMRES does not converge");
-    return iter;
+    return iter.error_code();
 }
 
 
@@ -118,8 +125,10 @@ int gmres(const Matrix &A, Vector &x, const Vector &b,
           LeftPreconditioner &L, RightPreconditioner &R,
 	  Iteration& iter, typename mtl::Collection<Vector>::size_type restart)
 {
+    iter.set_quite(true);
     while (!iter.finished()) 
 	gmres_full(A, x, b, L, R, iter, restart);
+    iter.set_quite(false);
     return iter;
 }
 

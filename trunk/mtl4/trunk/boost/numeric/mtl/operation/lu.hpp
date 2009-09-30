@@ -65,7 +65,8 @@ void inline lu(Matrix& A, PermuationVector& P)
 	swap_row(A, i, rmax); 
 	swap_row(P, i, rmax);
 	
-	MTL_THROW_IF(A[i][i] == zero(A[i][i]), runtime_error("Singular matrix (0 in pivot column)"));
+	if(A[i][i] == zero(A[i][i])) throw matrix_singular(); // other gmres test doesn't work
+	// MTL_THROW_IF(A[i][i] == zero(A[i][i]), matrix_singular());
        
 	A[r][ir]/= A[i][i];              // Scale column i
 	A[r][r]-= A[r][ir] * A[ir][r]; 	 // Decrease bottom right block of matrix

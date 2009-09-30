@@ -275,7 +275,10 @@ inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, t
 	return;
     }
 #endif
-
+    w.checked_change_dim(num_rows(a));
+    if(num_rows(a) != size(w) || num_cols(a) != size(v))
+	std::cout << "num_rows(a) is " << num_rows(a) << ", size(w) is " << size(w) 
+		  << ", num_cols(a) is " << num_cols(a) << ", size(v) is " << size(v) << "\n";
     MTL_THROW_IF(num_rows(a) != size(w) || num_cols(a) != size(v), incompatible_size());
 
     // dispatch between dense and sparse matrices and multi-vectors (and others)

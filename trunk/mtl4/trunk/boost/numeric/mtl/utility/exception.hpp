@@ -147,6 +147,14 @@ struct matrix_too_small : public domain_error
 	: domain_error(s) {}
 };
 
+/// Exception for singular matrices in solvers
+struct matrix_singular : public domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit matrix_singular(const char *s= "Matrix singular in solver.")
+	: domain_error(s) {}
+};
+
 /// Exception for arguments with incompatible sizes
 struct missing_diagonal : public domain_error
 {
