@@ -196,6 +196,7 @@ class dense_vector
 
     using assign_base::operator=;
 
+#if 0
     template <typename Archive>
     void serialize(Archive& ar, const unsigned version)
     {
@@ -204,6 +205,75 @@ class dense_vector
 	change_dim(s); // dummy for sending
 	for (size_type i= 0; i < s; ++i)
 	    ar & this->value_n(i);
+    }
+#endif
+
+    
+    // the default versions
+    template <typename Archive>
+    void save(Archive& ar, const unsigned version, boost::mpl::false_) const
+    {
+	// std::cout << "Slow serialization.\n";
+	size_type s= size();
+	ar << s;
+	for (size_type i= 0; i < size(); ++i)
+	    ar & this->value_n(i);
+    }
+    
+    template <typename Archive>
+    void load(Archive& ar, const unsigned version, boost::mpl::false_)
+    {
+	size_type s;
+	ar >> s;
+	change_dim(s); 
+	for (size_type i= 0; i < s; ++i)
+	    ar >> this->value_n(i);
+    }
+
+    // the optimized versions
+    template <typename Archive>
+    void save(Archive& ar, const unsigned version, boost::mpl::true_) const
+    {
+	// std::cout << "Fast serialization.\n";
+	using namespace boost::serialization;
+	collection_size_type s(size());
+	ar << s;
+	if (size() > 0)
+	    ar << make_array(address_data(), size());
+    }
+
+    template <typename Archive>
+    void load(Archive& ar, const unsigned version, boost::mpl::true_)
+    {
+	using namespace boost::serialization;
+	collection_size_type count(size());
+	ar >> count;
+	change_dim(count);
+	if (size() > 0)
+	    ar >> make_array(address_data(), size());
+    }
+
+    // dispatch to either default or optimized versions
+
+    template <typename Archive> struct fast_serialization
+      : boost::serialization::use_array_optimization<Archive>::template apply<value_type> {};
+
+    template <typename Archive>
+    void save(Archive & ar, const unsigned version) const
+    {
+	save(ar, version, typename fast_serialization<Archive>::type());
+    }   
+    
+    template <typename Archive>
+    void load(Archive & ar, const unsigned version)
+    {
+	load(ar, version, typename fast_serialization<Archive>::type());
+    }   
+    
+    template <typename Archive>
+    void serialize(Archive& ar, const unsigned version)
+    {
+	boost::serialization::split_member(ar, *this, version);
     }
  
     template <typename Value2> friend void fill(self&, const Value2&);
