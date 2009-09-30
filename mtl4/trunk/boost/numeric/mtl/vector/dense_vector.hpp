@@ -272,13 +272,17 @@ inline sub_vector(dense_vector<Value, Parameters>& v,
 		  typename dense_vector<Value, Parameters>::size_type start,
 		  typename dense_vector<Value, Parameters>::size_type finish)
 {
-    using std::min;
     typedef dense_vector<Value, Parameters>    Vector;
 
     MTL_DEBUG_THROW_IF( start < 0 || finish < 0, index_out_of_range());
+    irange r= intersection(irange(start, finish), irange(0, size(v)));
+    return r.empty() ? Vector() : Vector(r.size(), &v[r.start()]);
+
+#if 0
     finish= min(finish, size(v));
     start= min(start, finish); // implies min(start, size(v))
     return start < finish ? Vector(finish - start, &v[start]) : Vector();
+#endif
 }
 
 template <typename Value, typename Parameters>

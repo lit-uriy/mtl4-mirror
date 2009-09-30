@@ -301,6 +301,19 @@ namespace mtl {
     }
 
 
+    // Multiplication functors
+    template <typename Assign, typename Backup> struct gen_cursor_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct gen_dmat_dmat_mult_t;
+    template <unsigned long Tiling1, unsigned long Tiling2, typename Assign, typename Backup> struct gen_tiling_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct gen_tiling_44_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct gen_tiling_22_dmat_dmat_mult_t;
+    template <typename BaseMult, typename BaseTest, typename Assign, typename Backup> struct gen_recursive_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct gen_platform_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct gen_blas_dmat_dmat_mult_t;
+    template <std::size_t SizeLimit, typename FunctorSmall, typename FunctorLarge> struct size_switch_dmat_dmat_mult_t;
+    template <bool IsStatic, typename FunctorStatic, typename FunctorDynamic> struct static_switch_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct fully_unroll_fixes_size_dmat_dmat_mult_t;
+
 } // namespace mtl
 
 #endif // MTL_MTL_FWD_INCLUDE

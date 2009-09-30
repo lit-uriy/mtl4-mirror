@@ -19,9 +19,9 @@
 namespace itl {
 
 
-  template <class Real>
-  class basic_iteration
-  {
+template <class Real>
+class basic_iteration
+{
   public:
 
     typedef Real real;
@@ -29,64 +29,66 @@ namespace itl {
     template <class Vector>
     basic_iteration(const Vector& b, int max_iter_, Real t, Real a = Real(0))
       : error(0), i(0), normb_(std::abs(two_norm(b))),
-    max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false) { }
+	max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false), my_quite(false) { }
 
     basic_iteration(Real nb, int max_iter_, Real t, Real a = Real(0))
-      : error(0), i(0), normb_(nb), max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false) {}
+      : error(0), i(0), normb_(nb), max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false), my_quite(false) {}
 
     virtual ~basic_iteration() {}
 
     template <class Vector>
     bool finished(const Vector& r) {
-      Real normr_ = two_norm(r);
-      if (converged(normr_)) {
-    is_finished= true;
-    return true;
-      } else if (i < max_iter)
-    return false;
-      else {
-    is_finished= true;
-    error = 1;
-    return true;
-      }
+	Real normr_ = two_norm(r);
+	if (converged(normr_)) {
+	    is_finished= true;
+	    return true;
+	} else if (i < max_iter)
+	    return false;
+	else {
+	    is_finished= true;
+	    error = 1;
+	    return true;
+	}
     }
 
 
     bool finished(const Real& r)
     {
-      if (converged(r)) {
-    is_finished= true;
-    return true;
-      } else if (i < max_iter)
-    return false;
-      else {
-    is_finished= true;
-    error = 1;
-    return true;
-      }
+	if (converged(r)) {
+	    is_finished= true;
+	    return true;
+	} else if (i < max_iter)
+	    return false;
+	else {
+	    is_finished= true;
+	    error = 1;
+	    return true;
+	}
     }
 
     template <typename T>
-    bool finished(const std::complex<T>& r) {
-      if (converged(std::abs(r))) {
-    is_finished= true;
-    return true;
-      } else if (i < max_iter)
-    return false;
-      else {
-    is_finished= true;
-    error = 1;
-    return true;
-      }
+    bool finished(const std::complex<T>& r) 
+    {
+	if (converged(std::abs(r))) {
+	    is_finished= true;
+	    return true;
+	} else if (i < max_iter)
+	    return false;
+	else {
+	    is_finished= true;
+	    error = 1;
+	    return true;
+	}
     }
 
     bool finished() { return is_finished; }
 
-    inline bool converged(const Real& r) {
-      if (normb_ == 0)
-    return r < atol_;  // ignore relative tolerance if |b| is zero
-      resid_ = r / normb_;
-      return (resid_ <= rtol_ || r < atol_); // relative or absolute tolerance.
+    inline bool converged(const Real& r) 
+    {
+	if (normb_ == 0)
+	    return r < atol_;  // ignore relative tolerance if |b| is zero
+	resid_ = r / normb_;
+	return (resid_ <= rtol_ || r < atol_); // relative or absolute tolerance.
     }
 
     inline void operator++() { ++i; }
@@ -115,17 +117,18 @@ namespace itl {
 
     inline void set(Real v) { normb_ = v; }
 
+    void set_quite(bool q) { my_quite= q; }
+
+    bool is_quite() const { return my_quite; }
+
   protected:
-    int error;
-    int i;
-    const Real normb_;
-    int max_iter;
-    Real rtol_;
-    Real atol_;
-    Real resid_;
-    std::string err_msg;
-    bool is_finished;
-  };
+    int          error, i;
+    const Real   normb_;
+    int          max_iter;
+    Real         rtol_, atol_, resid_;
+    std::string  err_msg;
+    bool         is_finished, my_quite;
+};
 
 
 } // namespace itl
