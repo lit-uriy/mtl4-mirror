@@ -368,7 +368,7 @@ add_platform_flags(env)
 mpi_env = env.Clone()
 
 mpi_env['CXX'] = 'mpiCC'
-mpi_env.Append(CCFLAGS = macro_flag(env, 'MTL_HAS_MPI'))
+mpi_env.Append(CCFLAGS = [macro_flag(env, 'MTL_HAS_MPI'), macro_flag(env, 'BOOST_MPI_HOMOGENEOUS')])
 
 if os.environ.has_key('BOOST_MPI_LIB') :
     mpi_env.Append(LIBS=[os.environ['BOOST_MPI_LIB']])

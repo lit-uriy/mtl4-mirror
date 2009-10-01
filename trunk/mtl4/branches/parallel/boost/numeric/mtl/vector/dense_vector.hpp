@@ -23,6 +23,9 @@
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/utility/enable_if.hpp>
+#include <boost/serialization/array.hpp>
+#include <boost/serialization/collection_size_type.hpp>
+
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
