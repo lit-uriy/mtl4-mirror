@@ -154,6 +154,7 @@ class strided_vector_ref
 	    swap(vector1[i], vector2[i]);
     }
 
+    void change_dim(size_type n) { MTL_DEBUG_THROW_IF(my_size != n, incompatible_size()); }
     void crop() {} // Only dummy here
 
   private:

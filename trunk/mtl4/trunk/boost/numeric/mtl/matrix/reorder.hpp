@@ -71,4 +71,11 @@ inline reorder(const ReorderVector& v, std::size_t cols= 0)
 
 }} // namespace mtl::matrix
 
+namespace mtl { namespace vector {
+
+    /// Import into vector namespace; see \ref mtl::matrix::reorder
+    using mtl::matrix::reorder;
+
+}} // namespace mtl::vector
+
 #endif // MTL_MATRIX_REORDER_INCLUDE
