@@ -26,6 +26,7 @@
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 #include <boost/numeric/mtl/operation/hessenberg.hpp>
 #include <boost/numeric/mtl/operation/householder.hpp>
+#include <boost/numeric/mtl/operation/inv.hpp>
 #include <boost/numeric/mtl/operation/invert_diagonal.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
@@ -64,13 +65,14 @@
 #include <boost/numeric/mtl/operation/trans.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 
-#include <boost/numeric/mtl/matrix/reorder.hpp>
-#include <boost/numeric/mtl/matrix/permutation.hpp>
 #include <boost/numeric/mtl/matrix/bands.hpp>
-#include <boost/numeric/mtl/matrix/upper.hpp>
-#include <boost/numeric/mtl/matrix/strict_upper.hpp>
+#include <boost/numeric/mtl/matrix/identity.hpp>
 #include <boost/numeric/mtl/matrix/lower.hpp>
+#include <boost/numeric/mtl/matrix/permutation.hpp>
+#include <boost/numeric/mtl/matrix/reorder.hpp>
+#include <boost/numeric/mtl/matrix/strict_upper.hpp>
 #include <boost/numeric/mtl/matrix/strict_lower.hpp>
+#include <boost/numeric/mtl/matrix/upper.hpp>
 
 #include <boost/numeric/mtl/io/path.hpp>
 
