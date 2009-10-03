@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/vector/unit_vector.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -35,19 +36,6 @@ namespace traits {
     };
 	
 } // traits
-
-namespace detail {
-
-    template <typename Value>
-    dense_vector<Value> inline last_unit_vector(std::size_t n)
-    {
-	using math::zero; using math::one;
-	dense_vector<Value> v(n, zero(Value()));
-	v[n - 1]= one(Value());
-	return v;
-    }
-}
-
 
 /// Invert upper triangular matrix
 template <typename Matrix>
@@ -65,7 +53,7 @@ inline inv_upper(Matrix const& A)
 
     for (size_type k= 0; k < N; ++k) {
 	irange r(k+1);
-	Inv[r][k]= upper_trisolve(A[r][r], detail::last_unit_vector<value_type>(k+1));
+	Inv[r][k]= upper_trisolve(A[r][r], vector::unit_vector<value_type>(k, k+1));
     }
     return Inv;
 }
@@ -89,17 +77,17 @@ inline inv(Matrix const& A)
 {
     typedef typename Collection<Matrix>::size_type     size_type;
     typedef typename Collection<Matrix>::value_type    value_type;
-    typedef typename traits::inv<Matrix>::type         rt;
+    typedef typename traits::inv<Matrix>::type         result_type;
 
     MTL_THROW_IF(num_cols(A) != num_cols(A), matrix_not_square());
 
-    rt                             PLU(A);
+    result_type                    PLU(A);
     mtl::dense_vector<size_type>   Pv(num_rows(A));
 
     lu(PLU, Pv);
-    rt  PU(upper(PLU)), PL(strict_lower(PLU) + identity<value_type>(num_rows(A), num_cols(A)));
+    result_type  PU(upper(PLU)), PL(strict_lower(PLU) + identity<value_type>(num_rows(A), num_cols(A)));
 
-    return rt(inv_upper(PU) * inv_lower(PL) * permutation(Pv));
+    return result_type(inv_upper(PU) * inv_lower(PL) * permutation(Pv));
 }
 
 
