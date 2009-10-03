@@ -128,8 +128,8 @@ class strided_vector_ref
 	return i;
     }
     
-    friend size_type inline num_rows(const self& v) { return traits::is_row_major<self>::value ? 1 : v.size(); }
-    friend size_type inline num_cols(const self& v) { return traits::is_row_major<self>::value ? v.size() : 1; }
+    friend size_type inline num_rows(const self& v) { return mtl::traits::is_row_major<self>::value ? 1 : v.size(); }
+    friend size_type inline num_cols(const self& v) { return mtl::traits::is_row_major<self>::value ? v.size() : 1; }
     friend size_type inline size(const self& v) { return v.size(); }
     
     vec_vec_asgn_expr<self, self> operator=( self const& e ) 

@@ -28,7 +28,7 @@ void test(const ResMatrix&, const ArgMatrix& B)
     C= 3.5 * ArgMatrix(B * B);
 
     //C+= 3.5 * (B * B);
-    C= 3.5 * (B * B);
+    //C= 3.5 * (B * B);
 }
 
 

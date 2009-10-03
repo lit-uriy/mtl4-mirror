@@ -85,7 +85,7 @@ struct reduction
     template <typename Vector>
     Result static inline apply(const Vector& v)
     {
-	return apply(v, typename traits::category<Vector>::type());
+	return apply(v, typename mtl::traits::category<Vector>::type());
     }
 
 
@@ -96,8 +96,8 @@ private:
 	Result tmp00;
 	Functor::init(tmp00);
 
-	typename traits::const_value<Vector>::type                        value(v); 
-	typedef typename traits::range_generator<tag::nz, Vector>::type   cursor_type;
+	typename mtl::traits::const_value<Vector>::type                        value(v); 
+	typedef typename mtl::traits::range_generator<tag::nz, Vector>::type   cursor_type;
 
 	for (cursor_type cursor = begin<tag::nz>(v), cend = end<tag::nz>(v); cursor != cend; ++cursor)
 	    Functor::update(tmp00, value(*cursor));

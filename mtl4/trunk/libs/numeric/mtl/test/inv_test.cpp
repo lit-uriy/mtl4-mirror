@@ -81,7 +81,6 @@ void test(Matrix& A, const char* name)
     if (one_norm(Matrix(PLI * PL - I)) > 0.1)
 	throw "Error in lower inversion.";
 
-#if 1
     Matrix AI(PUI * PLI * P);
     cout << "inv(A) [inv(U) * inv(L) * P] is \n" << AI << "A * AI is\n" << Matrix(AI * A);
     if (one_norm(Matrix(AI * A - I)) > 0.1)
@@ -91,8 +90,6 @@ void test(Matrix& A, const char* name)
     cout << "inv(A) is \n" << A_inv << "A * AI is\n" << Matrix(A_inv * A);
     if (one_norm(Matrix(A_inv * A - I)) > 0.1)
 	throw "Error in inversion.";
-
-#endif
 }
 
 
