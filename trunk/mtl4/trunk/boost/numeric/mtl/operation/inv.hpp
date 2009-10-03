@@ -39,13 +39,13 @@ namespace traits {
 
 /// Invert upper triangular matrix
 template <typename Matrix>
-typename traits::inv<Matrix>::type
-inline inv_upper(Matrix const& A)
+typename traits::inv<Matrix>::type 
+inv_upper(Matrix const& A)
 {
     typedef typename Collection<Matrix>::value_type    value_type;
     typedef typename Collection<Matrix>::size_type     size_type;
    
-    size_type N= num_rows(A);
+    const size_type N= num_rows(A);
     MTL_THROW_IF(num_cols(A) != N, matrix_not_square());
 
     typename traits::inv<Matrix>::type Inv(N, N);
