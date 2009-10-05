@@ -120,6 +120,16 @@ struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::cvec_scal_mult>
 };
 	
 
+/// Enabler if operation is rvec_cvec_mult
+template <typename Op1, typename Op2, typename Result>
+struct enable_if_rvec_cvec_mult 
+  : boost::enable_if<boost::is_same<typename ashape::mult_op<typename ashape::ashape<Op1>::type, 
+							     typename ashape::ashape<Op2>::type >::type,
+				    ashape::rvec_cvec_mult>,
+		     Result>
+{};
+
+
 }} // namespace mtl::traits
 
 #endif // MTL_MULT_RESULT_INCLUDE

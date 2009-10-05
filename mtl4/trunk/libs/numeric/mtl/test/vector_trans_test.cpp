@@ -18,17 +18,6 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 
-
-const unsigned sz= 5;
-
-inline float f(float x) { return x; }
-inline double f(double x) { return x; }
-
-inline std::complex<double> f(std::complex<double> x) 
-{ 
-    return std::complex<double>(real(x), real(x)+1.0); 
-}
-
 template <typename Vector>
 void test(const char* name, Vector& v)
 {
