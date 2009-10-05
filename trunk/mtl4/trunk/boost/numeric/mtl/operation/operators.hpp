@@ -63,7 +63,7 @@ namespace vector {
 
     /// Multiply row vector with column vector; result is scalar
     template <typename Op1, typename Op2>
-    typename traits::enable_if_rvec_cvec_mult<Op1, Op2, typename detail::dot_result<Op1, Op2>::type>::type
+    typename traits::lazy_enable_if_rvec_cvec_mult<Op1, Op2, detail::dot_result<Op1, Op2> >::type
     inline operator*(const Op1& op1, const Op2& op2)
     {
 	return dot_real(op1, op2);
