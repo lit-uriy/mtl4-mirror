@@ -13,7 +13,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 #undef VERSION
-#define VERSION 2
+#define VERSION 3
 
 using namespace std;
 using namespace mtl;
