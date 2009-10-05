@@ -109,7 +109,7 @@ namespace vector {
     }
 
     template <typename Vector>
-    typename transposed_vector<Vector>::type const
+    typename transposed_vector<Vector>::type
     inline trans(Vector& v)
     {
 	typedef typename transposed_vector<Vector>::type  type;
