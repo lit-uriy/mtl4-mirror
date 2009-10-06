@@ -521,10 +521,6 @@ struct compressed2D_inserter
 	final_place();
 	insert_spare();
 	matrix.inserting = false;
-
-	std::cout << "Starts: size = " << starts.size() << ", capacity = " << starts.capacity() << "\n";
-	std::cout << "Elements: size = " << elements.size() << ", capacity = " << elements.capacity() << "\n";
-	std::cout << "Indices: size = " << indices.size() << ", capacity = " << indices.capacity() << "\n";
     }
 	
     bracket_proxy operator[] (size_type row)
