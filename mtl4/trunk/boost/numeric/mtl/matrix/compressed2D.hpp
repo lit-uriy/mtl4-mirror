@@ -27,6 +27,7 @@
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
 #include <boost/numeric/mtl/utility/zipped_sort.hpp>
+#include <boost/numeric/mtl/utility/shrink_stl_vector.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/shift_block.hpp>
@@ -452,6 +453,14 @@ class compressed2D
     value_type* address_data() { check(); return &data[0]; }
     const value_type* address_data() const { check(); return &data[0]; }
 
+    /// Release unused space in STL vectors
+    void shrink() 
+    {
+	shrink_stl_vector(data);
+	shrink_stl_vector(starts);
+	shrink_stl_vector(indices);
+    }
+
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
     template <typename, typename> friend struct compressed_el_cursor;
@@ -512,6 +521,10 @@ struct compressed2D_inserter
 	final_place();
 	insert_spare();
 	matrix.inserting = false;
+
+	std::cout << "Starts: size = " << starts.size() << ", capacity = " << starts.capacity() << "\n";
+	std::cout << "Elements: size = " << elements.size() << ", capacity = " << elements.capacity() << "\n";
+	std::cout << "Indices: size = " << indices.size() << ", capacity = " << indices.capacity() << "\n";
     }
 	
     bracket_proxy operator[] (size_type row)
