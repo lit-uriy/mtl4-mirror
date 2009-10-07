@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
 
     Matrix UI(inverse_upper(U));
     cout << "inverse(U) [permuted] is:\n" << UI << "UI * U is:\n" << Matrix(UI * U);
-    assert(one_norm(Matrix(LI * L - I)) < 0.1);
+    assert(one_norm(Matrix(UI * U - I)) < 0.1);
 
     Matrix LI(inverse_lower(L));
     cout << "inverse(L) [permuted] is:\n" << LI << "LI * L is:\n" << Matrix(LI * L);
