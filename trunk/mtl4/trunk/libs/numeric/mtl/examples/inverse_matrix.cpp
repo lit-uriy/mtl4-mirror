@@ -86,6 +86,26 @@ dense2D<double> inverse_upper(dense2D<double> const& A)
     assert(num_cols(A) == N); // Matrix must be square
 
     dense2D<double> Inv(N, N);
+
+    for (unsigned k= 0; k < N; ++k) {
+	dense_vector<double> e_k(N);
+	for (unsigned i= 0; i < N; ++i)
+	    e_k[i]= i == k;
+
+	for (unsigned i= 0; i < N; ++i)
+	    Inv[i][k]= upper_trisolve(A, e_k)[i];
+    }
+    return Inv;
+}
+
+#elif VERSION == 4
+
+dense2D<double> inverse_upper(dense2D<double> const& A)
+{
+    const unsigned N= num_rows(A);
+    assert(num_cols(A) == N); // Matrix must be square
+
+    dense2D<double> Inv(N, N);
     Inv= 0;
 
     for (unsigned k= 0; k < N; ++k) {
