@@ -13,7 +13,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 #undef VERSION
-#define VERSION 3
+#define VERSION 5
 
 using namespace std;
 using namespace mtl;
@@ -92,8 +92,7 @@ dense2D<double> inverse_upper(dense2D<double> const& A)
 	for (unsigned i= 0; i < N; ++i)
 	    e_k[i]= i == k;
 
-	for (unsigned i= 0; i < N; ++i)
-	    Inv[i][k]= upper_trisolve(A, e_k)[i];
+	Inv[iall][k]= upper_trisolve(A, e_k);
     }
     return Inv;
 }
@@ -106,10 +105,26 @@ dense2D<double> inverse_upper(dense2D<double> const& A)
     assert(num_cols(A) == N); // Matrix must be square
 
     dense2D<double> Inv(N, N);
+
+    Inv= 0;
+    for (unsigned k= 0; k < N; ++k) 
+	Inv[irange(0, k+1)][k]= upper_trisolve(A[irange(0, k+1)][irange(0, k+1)], unit_vector(k, k+1));
+    
+    return Inv;
+}
+
+#elif VERSION == 5
+
+dense2D<double> inverse_upper(dense2D<double> const& A)
+{
+    const unsigned N= num_rows(A);
+    assert(num_cols(A) == N); // Matrix must be square
+
+    dense2D<double> Inv(N, N);
     Inv= 0;
 
     for (unsigned k= 0; k < N; ++k) {
-	irange r(0, k+1);
+	const irange r(0, k+1);
 	Inv[r][k]= upper_trisolve(A[r][r], unit_vector(k, k+1));
     }
     return Inv;
@@ -123,15 +138,23 @@ dense2D<double> inline inverse_lower(dense2D<double> const& A)
     return dense2D<double>(trans(inverse_upper(T)));
 }
 
+#if 0 // does not work yet (but some day)
+dense2D<double> inline inverse_lower(dense2D<double> const& A)
+{
+    return trans(inverse_upper(trans(T)));
+}
+#endif
+
 dense2D<double> inline inverse(dense2D<double> const& A)
 {
-    assert(num_cols(A) == num_rows(A)); // Matrix must be square
+    const unsigned N= num_rows(A);
+    assert(num_cols(A) == N); // Matrix must be square
 
     dense2D<double>          PLU(A);
-    dense_vector<unsigned>   Pv(num_rows(A));
+    dense_vector<unsigned>   Pv(N);
 
     lu(PLU, Pv);
-    dense2D<double>  PU(upper(PLU)), PL(strict_lower(PLU) + matrix::identity(num_rows(A), num_cols(A)));
+    dense2D<double>  PU(upper(PLU)), PL(strict_lower(PLU) + matrix::identity(N, N));
 
     return dense2D<double>(inverse_upper(PU) * inverse_lower(PL) * permutation(Pv));
 }
