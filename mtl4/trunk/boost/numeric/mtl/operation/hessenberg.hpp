@@ -46,6 +46,7 @@ Matrix inline hessenberg_factors(const Matrix& A)
         dense_vector<value_type>  v(nrows-i-1), w(nrows-i);
         for (size_type j = 0; j < size(v); j++)
             v[j]= B[j+i+1][i];
+
         beta= householder(v).second;
         v= householder(v).first;
 	if( beta != zero){
@@ -83,14 +84,14 @@ Matrix inline hessenberg_factors(const Matrix& A)
 template <typename Matrix>
 Matrix inline extract_householder_hessenberg(const Matrix& H)
 {
-    return tril(H, -2);
+    return Matrix(tril(H, -2));
 }
 
 /// Compute Householder vectors from Hessenberg factorization of A
 template <typename Matrix>
 Matrix inline householder_hessenberg(const Matrix& A)
 {
-    return tril(hessenberg_factors(A), -2);
+    return Matrix(tril(hessenberg_factors(A), -2));
 }
 
 
@@ -98,7 +99,7 @@ Matrix inline householder_hessenberg(const Matrix& A)
 template <typename Matrix>
 Matrix inline extract_hessenberg(const Matrix& H)
 {
-    return triu(H, -1);
+    return Matrix(triu(H, -1));
 }
 
 /// Hessenberg form of A
@@ -117,7 +118,6 @@ Matrix inline hessenberg(const Matrix& A)
     Matrix           H(nrows,ncols);
 
     MTL_THROW_IF(num_rows(A) < 3, matrix_too_small());
-
     H= hessenberg_factors(A);
     // H= bands(hessenberg_factors(A), -nrows, -1);
     // set (doubly) strict lower triangle to zero

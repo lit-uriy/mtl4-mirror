@@ -137,8 +137,8 @@ inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign,
     typedef fully_unroll_fixes_size_dmat_dmat_mult_t<Assign>           fully_unroll_t;
     typedef size_switch_dmat_dmat_mult_t<fully_unroll_dmat_dmat_mult_limit, fully_unroll_t, tiling_mult_t> fixes_size_t;
 
-    static const bool all_static= traits::is_static<MatrixA>::value && traits::is_static<MatrixB>::value 
-	                          && traits::is_static<MatrixC>::value;
+    static const bool all_static= mtl::traits::is_static<MatrixA>::value && mtl::traits::is_static<MatrixB>::value 
+	                          && mtl::traits::is_static<MatrixC>::value;
     typedef static_switch_dmat_dmat_mult_t<all_static, fixes_size_t, variable_size_t>  default_functor_t;
 
     /// Use user-defined functor if provided (assign mode can be arbitrary)
