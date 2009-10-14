@@ -61,11 +61,9 @@ private:
 		for (a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac); aic != aiend; ++aic) {
 
 		    typename Collection<MatrixA>::size_type     ca= col_a(*aic);   // column of non-zero
-		    typename Collection<MatrixA>::value_type    va= value_a(*aic); // value of non-zero
 
 		    b_icur_type bic= begin<all>(bc);
 		    bic+= ca;
-		    typename Collection<MatrixB>::value_type    vb= value_b(*bic); // value in dense matrix
 		    Assign::update(c_tmp, value_a(*aic) * value_b(*bic));
 		}
 		*cic= c_tmp;
