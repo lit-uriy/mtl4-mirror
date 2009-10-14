@@ -24,10 +24,10 @@ struct masked_dilation_tables
     typedef T                          value_type;
     const static T                     mask= Mask;
 
-    static const unsigned n_bytes= sizeof(T);           // number of bytes of the unmasked value of this type
+    static const T n_bytes= sizeof(T);           // number of bytes of the unmasked value of this type
     typedef T                          lookup_type[n_bytes][256];
     typedef T                          mp_type[n_bytes];
-    typedef int                        it_type[n_bytes];  // int table type
+    typedef T                          it_type[n_bytes];  // why int ??? switch to T
 
 protected:
     static lookup_type*                my_mask_lut;
@@ -36,7 +36,7 @@ protected:
     static it_type*                    my_mask_size;
     static it_type*                    my_mask_shift_table;
     static it_type*                    my_unmask_shift_table;
-    static int                         n_valid_table;
+    static T                           n_valid_table;
    
 public:
     lookup_type& mask_lut()
@@ -171,10 +171,8 @@ private:
     {
 	// set the unmask shift table
 	unmask_shift_table()[0] = 0;
-	T t_mask = Mask;
-	T tmp;
-	int count;
-	for (int i = 1; i < n_bytes; ++i) {
+	T t_mask = Mask, tmp, count;
+	for (T i = 1; i < n_bytes; ++i) {
 	    tmp = t_mask & get_f_mask(8);
 	    count = count_n_ones(tmp);
 	    unmask_shift_table()[i] = count + unmask_shift_table()[i - 1];
@@ -191,14 +189,11 @@ private:
 	}
 
 	t_mask = Mask;
-	for (int i = 0; i < n_valid_table - 1; ++i) {
-	    int n_bits = 0;
-	    int n_ones = 0;
-	    T tmp = t_mask;
-	    while (n_ones < 8) {
+	for (T i = 0; i < n_valid_table - 1; ++i) {
+	    T n_bits = 0, tmp = t_mask;
+	    for (T n_ones= 0; n_ones < 8; ++n_bits) {
 		if ((t_mask & 0x01) == 1) ++n_ones;
 		t_mask = t_mask >>1;
-		++n_bits;
 	    } 
 	    // set the ith piece of mask, which must contains 8 1's
 	    mask_piece()[i] = get_f_mask(n_bits) & tmp;
@@ -229,7 +224,7 @@ public:
     {
 	check();
 	T result = 0;
-	for (int i = 0; i < n_valid_table; ++i)
+	for (T i = 0; i < n_valid_table; ++i)
 	    result += mask_lut()[i][0xff & (x >> (8*i)) ];
 	return result;
     }
@@ -269,7 +264,7 @@ template <class T, T Mask>
 typename masked_dilation_tables<T, Mask>::it_type* masked_dilation_tables<T, Mask>::my_unmask_shift_table= 0;
 
 template <class T, T Mask>
-int masked_dilation_tables<T, Mask>::n_valid_table= 0;
+T masked_dilation_tables<T, Mask>::n_valid_table= 0;
 
 
 // Masking: syntax e.g. mask<0x55555555>(7);
