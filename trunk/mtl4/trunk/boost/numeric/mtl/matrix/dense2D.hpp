@@ -344,7 +344,7 @@ class dense2D
 
     void change_dim(size_type r, size_type c, bool keep_data = false)
     {
-	change_dim(r, c, keep_data, traits::is_static<self>());
+	change_dim(r, c, keep_data, mtl::traits::is_static<self>());
     }
 
   private:

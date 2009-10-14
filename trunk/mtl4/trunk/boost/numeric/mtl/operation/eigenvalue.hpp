@@ -85,7 +85,7 @@ inline qr_sym_imp(const Matrix& A)
 }
 
 
-// Evaluation of eigenvalues with QR-Algorithm of matrix A
+/// Evaluation of eigenvalues with QR-Algorithm of matrix A
 // Return Diagonalmatrix with eigenvalues as diag(A)
 template <typename Matrix>
 dense_vector<typename Collection<Matrix>::value_type>

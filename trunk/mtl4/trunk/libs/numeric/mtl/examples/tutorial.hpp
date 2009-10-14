@@ -53,6 +53,7 @@ But it should give you enough information to get started.
 - \subpage install 
 - \subpage IDE
 - \subpage tutorial  
+- \subpage overview_ops  
 
 
 
@@ -428,6 +429,7 @@ This, of course, does not exclude backward-compatible extensions.
 -# %Vector and %Matrix Types
    -# \subpage vector_def
    -# \subpage matrix_types
+   -# \subpage multivector
    .
 -# Generic Insertion
    -# \subpage vector_insertion
@@ -473,12 +475,13 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage function_nesting
    .
 -# Discussion
+   -# \subpage namespace_qualification
    -# \subpage copying
    -# \subpage shallow_copy_problems 
    -# \subpage peak_addiction
 -# Performance
    -# \subpage performance_athlon
-
+-# \ref overview_ops
 
 */
 
@@ -686,9 +689,73 @@ These definitions are consistent with the according functions for vectors (\ref 
 How to fill  sparse matrices is shown in the following chapter.
 
 \if Navigation \endif
-  Return to \ref vector_def &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref vector_insertion 
+  Return to \ref vector_def &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref multivector 
 
 */
+
+//-----------------------------------------------------------
+
+/*! \page multivector Type Multivector
+
+There are another useful class in MTL4: the multi_vector.
+A multi-vector is a kind of matrix that is composed of coluum vectors.
+This type is very helpful if you want to store many vectors of the same length.
+To initialize a multi-vector, there are 2 different types:
+1.Constructor by number of rows and columns
+\code
+	mtl::multi_vector<Vector> 	A(2, 3);
+\endcode
+
+2.Constructor by number of rows and column vector for initialization
+\code
+	mtl::multi_vector<Vector>	A(Vector(3), 2);
+\endcode
+
+In the first method, you get a matrix which has 2 rows and 3 columns (see matrix initialization). In the 2nd method, you get a matrix with 2 rows and 3 columns.
+
+To find out the number of rows use
+\code
+  unsigned r= num_rows(A);
+\endcode
+It returns an unsigned integer (more precisely the size_type of the %vector type).
+Likewise the number of columns is given
+\code
+  unsigned c= num_cols(A);
+\endcode
+
+To edit individual entries of the multi-vector, there are several possibilities. You can write a vector (same length) in the k-th column of the multi-vector, and turned around.
+\code
+	mtl::multi_vector<Vector> 	A(2, 3);
+	Vector				v(2), w(2);
+	A.vector(k)= v;
+	v=  A.vector(k);
+\endcode
+You can also specify the row and column of the entry to be changed.
+\code
+	A[1][1]= 3.5;
+\endcode
+
+operations with multi-vectors
+On the one hand we can consider a multi-vector as separate vectors, but also as a matrix. Thus, there are many multi-vector operations.
+\code
+	Matrix				B(2,2), C(3,2), D(3,3);
+	B= A * C;			//Matrix= multi_vector * Matrix
+	D= C * A;			//Matrix= Matrix * multi_vector
+	v= B * A.vector(1);		//vector= Matrix * vector 
+	A.vector(0)= B* A.vector(1);	//vector= Matrix * vector
+\endcode
+
+The multi-vector is a kind of %matrix, therefore the following matixoperations are defined: trace(A), conj(A), trans(A), hermitian(A).
+
+
+
+
+
+\if Navigation \endif
+  Return to \ref matrix_types &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref vector_insertion 
+
+*/
+
 
 //-----------------------------------------------------------
 
@@ -2092,7 +2159,73 @@ When the compiler instantiate our functor for a given type combination it takes
 the first product implementation in our list that is admissible.
 
 \if Navigation \endif
-  Return to \ref rec_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref copying 
+  Return to \ref rec_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref namespace_qualification 
+
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page namespace_qualification Namespace qualification
+
+All classes and functions are defined in %namespace mtl or sub-namespaces thereof.
+Matrix-related functions and types are defined in mtl::matrix and vector material likewise
+in mtl::vector.
+To make applications shorter, often used types like compressed2D and dense_vector are imported into
+the namespace mtl.
+As a consequence, you can write mtl::compressed2D<..> or mtl::matrix::compressed2D<..>.
+
+Functions are defined as much as possible in the namespaces mtl::matrix and mtl::vector.
+Therefore, Argument-Dependent Lookup (ADL) finds these functions without namespace qualification.
+For instance, if we call trans(x) the mtl::matrix::trans() is called if x is a %matrix, i.e.
+the type of x is defined in mtl::matrix.
+Likewise if x is a %vector.
+If the type of x is not defined in MTL4, you must qualify the function because ADL does not apply.
+Alternatively, you can import your type into the appropriate namespace:
+\code
+namespace mtl { namespace matrix {
+    using my_namespace::my_matrix_type;
+}}
+\endcode
+In both cases you would also need a handful of type traits (the documentation of integrating external types
+into MTL4 is pending).
+
+To avoid all namespace qualifications, you can use 
+\code
+using namespace mtl;
+\endcode
+in your program before you use the first MTL4 item.
+For small programs this is probably the easiest solution.
+
+If you work at a larger project, it is better not importing the entire namespace.
+Instead you have to qualify all types and NOT qualify the functions.
+If you call mtl::trans it will not find it because it is defined in sub-namespaces.
+In general, you should avoid explicit qualification as mtl::f(...).
+
+Functions with
+a special behavior are those which are defined upon MTL4 types and non-MTL4 types at the same type.
+An example is size(). Like trans it is defined in  mtl::matrix and mtl::vector.
+It also works for std::vector and for arrays.
+The definitions of these functions are in namespace mtl (we did not like defining it in std:: or the global namespace).
+The best way using such functions is
+\code
+using mtl::size;
+unsigned n= size(x);
+\endcode
+This works for all supported types of x.
+If x is a matrix then mtl::matrix::size is called and if x is a std::vector mtl::size is called (which is
+implemented with partially specialized functor but this is another topic).
+
+As a rule of thumb. If you call an unqualified function for an MTL4 type ADL will find it (otherwise it is sloppily implemented
+and must be fixed).
+If you call an MTL4 function for a non-MTL4 type write using mtl::f before calling f.
+For generic functions that handle both MTL4 and non-MTL4 types also write using mtl::f.
+If it still not compile, the function is probably not implemented yet.
+
+
+
+\if Navigation \endif
+ Return to \ref function_nesting &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref copying 
 
 
 */
@@ -2175,7 +2308,7 @@ compressed2D<double> A(B * C * D + E);
 
 
 \if Navigation \endif
-  Return to \ref function_nesting &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref shallow_copy_problems 
+  Return to \ref namespace_qualification &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref shallow_copy_problems 
 
 
 */
@@ -2411,15 +2544,1814 @@ written in unrolled/tiled form.
 
 
 \if Navigation \endif
-  Return to \ref peak_addiction &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  Return to \ref peak_addiction &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref overview_ops
 
 
 */
 
 //-----------------------------------------------------------
+/*! \page overview_ops Overview
+
+-# %Matrix Operations
+   - \subpage mat_vec_expr
+   - \subpage adjoint
+   - \subpage change_dim
+   - \subpage conj
+   - \subpage crop
+   - \subpage diagonal_setup
+   - \subpage eigenvalue_symmetric
+   - \subpage extract_hessenberg
+   - \subpage extract_householder_hessenberg
+   - \subpage frobenius_norm
+   - \subpage hermitian
+   - \subpage hessenberg
+   - \subpage hessenberg_factors
+   - \subpage hessenberg_q
+   - \subpage hessian_setup
+   - \subpage householder_hessenberg
+   - \subpage infinity_norm
+   - \subpage inv
+   - \subpage inv_lower
+   - \subpage inv_upper
+   - \subpage invert_diagonal
+   - \subpage laplacian_setup
+   - \subpage lower
+   - \subpage lu
+   - \subpage lu_p
+   - \subpage lu_adjoint_apply
+   - \subpage lu_adjoint_solve
+   - \subpage lu_apply
+   - \subpage lu_f
+   - \subpage lu_solve
+   - \subpage lu_solve_straight
+   - \subpage max_abs_pos
+   - \subpage max_pos
+   - \subpage num_cols
+   - \subpage num_rows
+   - \subpage one_norm
+   - \subpage op_matrix_equal
+   - \subpage op_matrix_add_equal
+   - \subpage op_matrix_add
+   - \subpage op_matrix_min_equal
+   - \subpage op_matrix_min
+   - \subpage op_matrix_mult_equal
+   - \subpage op_matrix_mult
+   - \subpage qr_algo
+   - \subpage qr_sym_imp
+   - \subpage RowInMatrix
+   - \subpage set_to_zero
+   - \subpage strict_lower
+   - \subpage strict_upper
+   - \subpage sub_matrix
+   - \subpage trace
+   - \subpage trans
+   - \subpage tril
+   - \subpage triu
+   - \subpage upper
+   .
+-# %Vector Operations
+   - \subpage dot_v
+   - \subpage infinity_norm_v
+   - \subpage max_v
+   - \subpage min_v
+   - \subpage one_norm_v
+   - \subpage op_vector_add_equal
+   - \subpage op_vector_add
+   - \subpage op_vector_min_equal
+   - \subpage op_vector_min
+   - \subpage orth_v
+   - \subpage orth_vi
+   - \subpage orthogonalize_factors_v
+   - \subpage product_v
+   - \subpage size_v
+   - \subpage sum_v
+   - \subpage trans_v
+   - \subpage two_norm_v
+   .
+-# %Matrix - %Vector Operations
+   - \subpage inverse_lower_trisolve
+   - \subpage inverse_upper_trisolve
+   - \subpage matrix_vector
+   - \subpage lower_trisolve
+   - \subpage permutation_av
+   - \subpage reorder_av
+   - \subpage upper_trisolve
+   - \subpage unit_lower_trisolve
+   - \subpage unit_upper_trisolve
+-# %Scalar - %Vector Operations
+   - \subpage scalar_vector_mult_equal
+   - \subpage scalar_vector_div_equal
+-# miscellaneous
+   - \subpage iall
+   - \subpage imax
+   - \subpage irange
+
+\if Navigation \endif
+  Return to \ref performance_athlon &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page mat_vec_expr  A[range1][range2]
+
+returns a submatrix of %matrix A with rows in range1 and cols in range2.
+
+For example, if range1 is a number, the returntype is a row-vector.
+\code
+using mtl::iall;
+dense_vector<cdouble, vector::parameters<tag::row_major> > v_r(A[0][iall]);
+\endcode
+
+If the range2 is a number, the returntype is a col-vector.
+\code
+using mtl::iall;
+dense_vector<cdouble>   v_r= dense_vector<cdouble>(A[iall][0]);
+\endcode
+
+If range1 and range2 are numbers, the returntype is a scalar.
+\code
+cdouble C= A[0][0];
+\endcode
+
+If range1 and range2 are regions, the resulttype is a %matrix.
+\code
+irange row(2, 4), col(1, 7);
+dense2D<cdouble> B= A[row][col];
+\endcode
+
+\include matrix_functions3.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
 
 
 
+//-----------------------------------------------------------
+/*! \page adjoint  adjoint(A)
+
+Adjoint matrix of an m-by-n matrix A with complex entries is the n-by-m matrix A* obtained from A by taking the transpose and then taking the complex conjugate of each entry (i.e. negating their imaginary parts but not their real parts).
+
+
+\code
+B= adjoint(A);
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page change_dim  change_dim(A)
+
+Ecplicity change of the %matrix dimension.
+
+\code
+A.change_dim(num_cols(B), num_rows(B));
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page conj  conj(A)
+
+The conjugate of a %matrix is computed by: 
+\code
+conj(A);
+\endcode
+The %matrix A is not altered but a immutable view is returned.
+
+Details: mtl::matrix::conj
+
+\include matrix_functions2.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page crop  crop(A)
+
+Remove all zero entries from a collection. 
+
+Details: mtl::matrix::crop
+
+\code
+crop(A);
+\endcode
+
+Only for sparse matrices useful.
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page diagonal  diagonal(A)
+
+Returns the %vector with the diagonal of the %matrix A. 
+
+Details: mtl::matrix::diagonal
+
+\code
+diagonal(A);
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page diagonal_setup  diagonal_setup(A, value)
+
+Setup a %matrix to a multiple of the unity %matrix. (works for all %matrix types in mtl4)
+
+Details: mtl::matrix::diagonal_setup
+
+\code
+diagonal_setup(A,2.0);
+\endcode
+
+\include setups_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page eigenvalue_symmetric  eigenvalue_symmetric(A)
+
+Returns eigenvalues of symmetric %matrix A.
+
+Currently there are 2 algorithms that compute the eigenvalues of a symmetric %matrix.
+1. qr_algo(A, iterations)
+2. qr_sym_imp(A) (with Wilkinson shift) 
+
+Details: mtl::matrix::eigenvalue_symmetric
+
+For example:
+
+\include eigenvalue_symmetric_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page extract_hessenberg  extract_hessenberg(A)
+
+Returns Extracted Hessenberg form from factorization H of some A.
+
+Details: mtl::matrix::extract_hessenberg
+
+\code
+E= extract_hessenberg(A);
+\endcode
+
+For example:
+
+\include hessenberg_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page extract_householder_hessenberg  extract_householder_hessenberg(A)
+
+Returns the Householder %vectors from Hessenberg factorization H of some A which are stored in tril(A,-2).
+
+Details: mtl::matrix::extract_householder_hessenberg
+
+\code
+B= hessenberg_factors(A);
+C= extract_householder_hessenberg(B);
+\endcode
+
+For example:
+
+\include hessenberg_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page frobenius_norm  frobenius_norm(A)
+
+return Frobenius-Norm of Matrix A.
+
+Details: mtl::matrix::frobenius_norm
+
+For example:
+
+\include matrix_norms.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page hermitian  hermitian(A)
+
+The hermitian of a %matrix is computed by: 
+\code
+hermitian(A);
+\endcode
+
+Details: mtl::matrix::hermitian
+
+\include matrix_functions2.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page hessenberg  hessenberg(A)
+
+Returns Hessenberg-Form of %matrix A. (triu(A,-2)).
+Hessenberg-Form: upper triangle-matrix and first diagonal under the main-diagonal.
+
+Details: mtl::matrix::hessenberg
+
+\code
+B= hessenberg(A);
+\endcode
+
+For example:
+
+\include hessenberg_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page hessenberg_factors  hessenberg_factors(A)
+
+Returns Hessenberg-Form of %matrix A with Householder-vectors in the lower triangle(tril(A,-1)).
+The triu(result,-2) is the Hessenberg-Form of %matrix A.
+
+Details: mtl::matrix::hessenberg_factors
+
+\code
+B= hessenberg_factors(A);
+\endcode
+
+For example:
+
+\include hessenberg_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page hessenberg_q  hessenberg_q(A)
+
+Returns Q where Q'*A*Q == hessenberg(A).
+
+Details: mtl::matrix::hessenberg_q
+
+For example:
+
+\code
+F= hessenberg_q(A);
+\endcode
+
+\include hessenberg_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page hessian_setup  hessian_setup(A, value)
+
+Fills a matrix A with a_ij = factor * (i + j).
+Works only for Morton Z-order and Hybrid 2 row-major matrices.
+
+Details: mtl::matrix::hessian_setup
+
+\code
+hessian_setup(A,2.0);
+\endcode
+
+\include setups_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+//-----------------------------------------------------------
+/*! \page householder_hessenberg  householder_hessenberg(A)
+
+Returns the Householder %vectors from Hessenberg factorization H of some A which are stored in tril(A,-2).
+
+Details: mtl::matrix::householder_hessenberg
+
+\code
+D= householder_hessenberg(A);
+\endcode
+same as:
+\code
+B= hessenberg_factors(A);
+C= extract_householder_hessenberg(B);
+\endcode
+
+For example:
+
+\include hessenberg_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page infinity_norm  infinity_norm(A)
+
+Returns infinity norm of %matrix A.
+
+Details: mtl::matrix::infinity_norm
+
+For example:
+
+\include matrix_norms.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page inv inv(A)
+
+Returns inverse of %matrix A.
+
+Details: mtl::matrix::inv
+
+\include inv_matrix.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page inv_lower inv_lower(A)
+
+Invert lower triangular %matrix A.
+Returns invert %matrix.
+
+Details: mtl::matrix::inv_lower
+
+\include inv_matrix.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page inv_upper inv_upper(A)
+
+Invert upper triangular %matrix A.
+Returns invert %matrix.
+
+Details: mtl::matrix::inv_upper
+
+\include inv_matrix.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page invert_diagonal  invert_diagonal(A)
+
+Returns %matrix A with invert diagonal.
+
+Details: mtl::matrix::invert_diagonal
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page laplacian_setup  laplacian_setup(A, dim1, dim2)
+
+return n by n-Laplace %matrix with n= dim1 * dim2. (5 Point stencil)
+
+Details: mtl::matrix::laplacian_setup
+
+For example:
+
+\include setups_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page lower  lower(A)
+
+returns lower triangular %matrix.
+
+Details: mtl::matrix::lower
+
+\code
+B= lower(A);
+\endcode
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page lu lu(A)
+
+without pivoting
+return LU-Form of %matrix A and saves in %matrix A. With U as the upper triangular %matrix and L as the lower triangular %matrix. Attention without optimization and pivoting.
+
+Details: mtl::matrix::lu
+
+\code
+lu(A);
+L= strict_lower(A);  U= upper(A);
+\endcode
+
+For example:
+
+\include lu_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page lu_p lu(A,Permutation)
+
+with pivoting
+return LU-Form of %matrix A and saves in %matrix A. With U as the upper triangular %matrix and L as the lower triangular %matrix.
+
+Details: mtl::matrix::lu
+
+\code
+lu(A,Permutation);
+L= strict_lower(A);  U= upper(A);
+\endcode
+
+For example:
+
+\include lu_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page lu_adjoint_apply lu_adjoint_apply(A, Permutation, b)
+
+
+Apply the factorization L*U with permutation P on vector b to solve adjoint(A)x = b
+That is P^{-1}LU)^H x = b --> x= P^{-1}L^{-H} U^{-H} b where P^{-1}^{-1}^H = P^{-1} 
+
+Details: mtl::matrix::lu_adjoint_apply
+
+\code
+x= lu_adjoint_apply(A, PermVector, b);
+\endcode
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page lu_adjoint_solve lu_adjoint_solve(A, b)
+
+
+Solve adjoint(A)x = b by LU factorization with column pivoting; %vector x is returned.
+
+Details: mtl::matrix::lu_adjoint_solve
+
+\code
+x= lu_adjoint_solve(A, b);
+\endcode
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page lu_apply lu_apply(A, Permutation, b)
+
+
+Apply the factorization L*U with permutation P on %vector b to solve Ax = b.
+
+Details: mtl::matrix::lu_apply
+
+\code
+x= lu_apply(A, PermVector, b);
+\endcode
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page lu_f lu_f(A)
+
+
+return LU-Form of matrix A. With U as the upper triangular matrix and L as the lower triangular matrix.
+
+Details: mtl::matrix::lu_f
+
+\code
+B= lu_f(A);
+L= strict_lower(B);  U= upper(B);
+\endcode
+
+For example:
+
+\include lu_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page lu_solve lu_solve(A, b)
+
+Solve Ax = b by LU factorization with column pivoting; %vector x is returned
+
+Details: mtl::matrix::lu_solve
+
+\code
+x= lu_solve(A, b);
+\endcode
+
+For example:
+
+\include lu_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+//-----------------------------------------------------------
+/*! \page lu_solve_straight lu_solve_straight(A, b)
+
+Solve Ax = b by LU factorization without pivoting; %vector x is returned.
+
+Details: mtl::matrix::lu_solve_straight
+
+\code
+x= lu_solve_straight(A, b);
+\endcode
+
+For example:
+
+\include lu_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page max_abs_pos max_abs_pos(A)
+
+returns pair(row,col) of maximal absolut entry of %matrix A.
+
+Details: mtl::matrix::max_abs_pos
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+
+//-----------------------------------------------------------
+/*! \page max_pos max_pos(A)
+
+returns pair(row,col) of maximal entry of %matrix A.
+
+Details: mtl::matrix::max_pos
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+
+//-----------------------------------------------------------
+/*! \page num_cols num_cols(A)
+
+returns number of columns of %matrix A.
+
+Details: mtl::traits::num_cols
+
+For example:
+\code
+int col=  num_cols(A);
+int col2= A.num_cols();
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page num_rows num_rows(A)
+
+returns number of rows of %matrix A.
+
+Details: mtl::traits::num_rows
+
+For example:
+\code
+int row=  num_rows(A);
+int row2= A.num_rows();
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page one_norm one_norm(A)
+
+returns one-Norm of %matrix A.
+
+Details: mtl::matrix::one_norm
+
+For example:
+
+\include matrix_norms.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page op_matrix_equal OP=
+
+returns A= B. The dimensions are checked at compile time.
+is only correct when A and B have the same number of rows and columns.
+
+\code
+A= B;
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page op_matrix_add_equal OP+=
+
+returns A= A + B. The dimensions are checked at compile time. (A+= B)
+
+Details: mtl::matrix::add
+
+For example:
+
+\include matrix_operations.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page op_matrix_add OP+
+
+returns A= B + C. The dimensions are checked at compile time.
+
+Details: mtl::matrix::add
+
+For example:
+
+\include matrix_operations.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page op_matrix_min_equal OP-=
+
+returns A= A - B. The dimensions are checked at compile time. (A-= B)
+
+Details: mtl::matrix::min
+
+For example:
+
+\include matrix_operations.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page op_matrix_min OP-
+
+returns A= B - C. The dimensions are checked at compile time.
+
+Details: mtl::matrix::min
+
+For example:
+
+\include matrix_operations.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page op_matrix_mult_equal OP*=
+
+returns A= A * B. The dimensions are checked at compile time. (A*= B)
+
+Details: mtl::matrix::mult
+
+For example:
+
+\include matrix_operations.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page op_matrix_mult OP*
+
+returns A= B * C. The dimensions are checked at compile time. num_cols(B) == num_rows(C).
+The dimension of A is num_rows(B) by num_cols(C).
+
+Details: mtl::matrix::mult
+
+For example:
+
+\include matrix_operations.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page qr_algo qr_algo(A,iter)
+
+returns eigenvalues of symmetric %matrix A with qr-algorithm in iter steps.
+
+Deatils: mtl::matrix::qr_algo
+
+For example:
+
+\include eigenvalue_symmetric_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page qr_sym_imp qr_sym_imp(A)
+
+returns eigenvalues of symmetric %matrix A with symmetric implizit qr-algorithm and Wilkinson shift.
+
+Details: mtl::matrix::qr_sym_imp
+
+For example:
+
+\include eigenvalue_symmetric_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page RowInMatrix RowInMatrix<A>
+
+returns row %vector in %matrix A.
+
+Details: mtl::RowInMatrix
+
+\code
+RowInMatrix<dense2D<cdouble> >::type v_r2(A[0][iall]);
+\endcode
+
+For example:
+
+\include matrix_functions3.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page set_to_zero  set_to_zero(A)
+
+Initializes the entire matrix with zero:
+\code
+set_to_zero(A);
+\endcode
+%Matrices are not initialized by default.
+Or:
+\code
+A= 0.0;
+\endcode
+
+
+\include matrix_functions2.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page strict_lower  strict_lower(A)
+
+Returns strict-lower triangle %matrix.
+
+Details: mtl::matrix::strict_lower
+
+\code
+strict_lower(A);
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page strict_upper strict_upper(A)
+
+Returns strict-upper triangle %matrix.
+
+Details: mtl::matrix::strict_upper
+
+\code
+strict_upper(A);
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page sub_matrix  sub_matrix(A, row1, row2, col1, col2)
+
+returns submatrix from row1 to row 2 and from col1 to col2 of %matrix A:
+\code
+sub_matrix(A, 2, 4, 1, 7);
+\endcode
+
+Sub-matrices also preserve the const attribute of the referred matrices or sub-matrices:
+
+\include matrix_functions3.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page trace  trace(A)
+
+Returns the trace of a %matrix: 
+\code
+trace(A);
+\endcode
+
+Details: mtl::matrix::trace
+
+\include matrix_functions2.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page trans  trans(A)
+
+The transposed of a %matrix is computed by: 
+\code
+trans(A);
+\endcode
+The %matrix A is not altered but a immutable view is returned.
+
+Details: mtl::matrix::trans
+
+\include matrix_functions2.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page tril  tril(A, i)
+
+Returns lower triangle starting at off-diagonoal i (for compatibility with matlib). 
+
+Details: mtl::matrix::tril
+
+\code
+tril(A, i);
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page triu  triu(A, i)
+
+Returns upper triangle starting at off-diagonoal i (for compatibility with matlib). 
+
+Details: mtl::matrix::triu
+
+\code
+triu(A, i);
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page upper  upper(A)
+
+Returns upper triangle %matrix
+
+Details: mtl::matrix::upper
+
+\code
+upper(A, i);
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+
+//---------------------Vector Ooperations
+
+
+//-----------------------------------------------------------
+/*! \page dot_v dot(v,w)
+
+returns scalar-product of %vector v and w.
+
+Details: mtl::vector::dot
+
+For example:
+
+\include dot_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page infinity_norm_v infinity_norm(v)
+
+returns infinity-norm of %vector v.
+
+Details: mtl::vector::infinity_norm
+
+For example:
+
+\include vector_norm.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page max_v max(v)
+
+returns maximal entry of %vector v.
+
+Details: mtl::vector::max
+
+For example:
+
+\include vector_min_max.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page min_v min(v)
+
+returns smallest entry of %vector v.
+
+Details: mtl::vector::min
+
+For example:
+
+\include vector_min_max.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page one_norm_v one_norm(v)
+
+returns one-norm of %vector v.
+
+Details: mtl::vector::one_norm
+
+For example:
+
+\include vector_norm.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page op_vector_add_equal OP+=
+
+returns v+= w  (v= v + w).
+Dimensions must agree, otherwise there is a runtime error.
+
+Details: mtl::vector::add
+
+For example:
+
+\include vector_expr.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page op_vector_min_equal OP-=
+
+returns v-= w  (v= v - w).
+Dimensions must agree, otherwise there is a runtime error.
+
+For example:
+
+\include vector_expr.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page op_vector_add OP+
+
+returns v= u + w .
+Dimensions must agree, otherwise there is a runtime error.
+
+For example:
+
+\include vector_expr.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page op_vector_min OP-
+
+returns v= u - w .
+Dimensions must agree, otherwise there is a runtime error.
+
+For example:
+
+\include vector_expr.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+//-----------------------------------------------------------
+/*! \page orth_v orth(v)
+
+returns orthogonal and normalized all vectors of %vector v.
+
+Details: mtl::vector::orth
+
+For example:
+
+\include orth_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page orth_vi orth(v, i)
+
+Orthogonalized and normalized vector i from the vector of vectors v.
+returns %vector v with orthogonalized i-th entry.
+
+Details: mtl::vector::orth
+
+For example:
+
+\include orth_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page orthogonalize_factors_v orthogonalize_factors(v)
+
+Opposed to orth the vectors are not normalized. 
+An upper matrix with the factors used in the orthogonalization is returned.
+
+Details: mtl::vector::orthogonalize_factors
+
+For example:
+
+\include orth_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page product_v product(v)
+
+Returns produkt of all %vector entries.
+
+Details: mtl::vector::product
+
+For example:
+
+\include vector_reduction.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page size_v size(v)
+
+return size of %vector v.
+
+Details: mtl::traits::size
+
+\code
+unsigned int len= size(v)
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page sum_v sum(v)
+
+Returns sum of all %vector entries.
+
+Details: mtl::vector::sum
+
+For example:
+
+\include vector_reduction.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page trans_v trans(v)
+
+return transposed view of %vector v
+
+\code
+w= trans(v)
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page two_norm_v two_norm(v)
+
+return two-norm of %vector v.
+
+Details: mtl::vector::two_norm
+
+For example:
+
+\include vector_norm.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//------Matrix-Vector-Operations-------------------
+
+//-----------------------------------------------------------
+/*! \page inverse_lower_trisolve inverse_lower_trisolve(A, b)
+
+returns %vector x as solution of A * x= b.
+The %matrix A must be triangular %matrix otherwise the function can throw an exception.
+On matrices with non-unit diagonals, the divisions can be circumvented by inverting the diagonal once with invert_diagonal(A) and then using: 
+
+\code
+x= inverse_lower_trisolve(A, b)
+\endcode
+
+Details: mtl::matrix::inverse_lower_trisolve
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page inverse_upper_trisolve inverse_upper_trisolve(A, b)
+
+returns %vector x as solution of A * x= b.
+The %matrix A must be triangular %matrix otherwise the function can throw an exception.
+On matrices with non-unit diagonals, the divisions can be circumvented by inverting the diagonal once with invert_diagonal(A) and then using: 
+
+\code
+x= inverse_upper_trisolve(A, b)
+\endcode
+
+Details: mtl::matrix::inverse_upper_trisolve
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page matrix_vector OP*
+
+returns %vector w= A * v. Same as mult(A, v, w).
+
+Details: mtl::matrix::mult
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page lower_trisolve lower_trisolve(A, b)
+
+returns %vector x as solution of A * x= b.
+The %matrix A must be triangular %matrix otherwise the function can throw an exception.
+
+Details: mtl::matrix::lower_trisolve
+
+\code
+x= lower_trisolve(A, b);
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page permutation_av permutation(v)
+
+returns permutation %matrix from corresponding %vector.
+
+Details: mtl::matrix::permutation
+
+\code
+P= permutation(v);
+\endcode
+
+For example:
+
+\include permutation.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page reorder_av reorder(v)
+
+returns reorder %matrix from corresponding %vector.
+
+Details: mtl::matrix::reorder
+
+\code
+P= reorder(v);
+\endcode
+
+For example:
+
+\include reorder.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+//-----------------------------------------------------------
+/*! \page upper_trisolve upper_trisolve(A, b)
+
+returns %vector x as solution of A * x= b.
+The %matrix A must be triangular %matrix otherwise the function can throw an exception.
+
+Details: mtl::matrix::upper_trisolve
+
+\code
+x= upper_trisolve(A, b)
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page unit_lower_trisolve unit_lower_trisolve(A, b)
+
+returns %vector x as solution of A * x= b.
+Details: mtl::matrix::unit_lower_trisolve
+
+The %matrix A must be triangular %matrix otherwise the function can throw an exception.
+If A has a unit diagonal, the diagonal entries can and must be omitted if the system is solved by:
+
+\code
+x= unit_lower_trisolve(A, b)
+\endcode
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page unit_upper_trisolve unit_upper_trisolve(A, b)
+
+returns %vector x as solution of A * x= b.
+Details: mtl::matrix::unit_upper_trisolve
+
+The %matrix A must be triangular %matrix otherwise the function can throw an exception.
+If A has a unit diagonal, the diagonal entries can and must be omitted if the system is solved by:
+
+\code
+x= unit_lower_trisolve(A, b)
+\endcode
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+
+//-------------Scalar-Vector-Operations---------------------
+
+
+//-----------------------------------------------------------
+/*! \page scalar_vector_mult_equal OP*=
+
+returns %vector w*= scalar. Same as w= scalar * w.
+
+Details: mtl::traits::vec_mult_result
+
+\code
+w*= 2;
+//w= w*2; //throws an exeption.
+\endcode
+
+For example:
+
+\include vector_expr.cpp
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+//-----------------------------------------------------------
+/*! \page scalar_vector_div_equal OP/=
+
+returns %vector w/= scalar. All %vector entries are divided by the scalar.
+
+Details: mtl::traits::div_result
+
+\code
+w/= 2;
+//w= w/2; //throws an exeption.
+\endcode
+
+Details: mtl::vector::div
+
+For example:
+
+\include vector_expr.cpp
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+//-------------miscellaneous---------------------
+
+//-----------------------------------------------------------
+/*! \page iall iall
+
+returns all possible subscripts.
+
+Details: mtl::iall
+
+\code
+using mtl::iall;
+\endcode
+
+Copy of a col-vector from %matrix with iall:
+
+\code
+dense_vector<double>   v(A[iall][0]);
+\endcode
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page imax imax
+
+returns the maximum possible index.
+
+Details: mtl::imax
+
+\code
+using mtl::imax;
+\endcode
+
+\code
+dense2D<double>   A(4,4), B(6,6);
+A[irange(0,imax)][irange(i,imax)] 
+B[irange(0,imax)][irange(i,imax)]
+\endcode
+
+Imax has been declared for both matrices. For A imax= 3 and for B is imax= 5.
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page irange irange(start, end)
+
+returns an index from start to end.
+
+Details: mtl::irange
+
+\code
+using mtl::irange;
+irange row(2, 4), col(1, 7);
+\endcode
+
+Copy of a submatrix with irange:
+
+\code
+dense2D<cdouble> B= A[row][col];
+\endcode
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+
+//-----------------------------------------
 
 // xxxxxxxxxxxxx
 

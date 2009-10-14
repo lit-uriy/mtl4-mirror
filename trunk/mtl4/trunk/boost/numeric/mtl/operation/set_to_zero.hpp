@@ -101,8 +101,8 @@ namespace mtl {
 
 namespace matrix {
 
-    // Sets all values of a collection to 0
-    // More spefically the defined multiplicative identity element
+    /// Sets all values of a collection to 0
+    /// More spefically the defined multiplicative identity element
     template <typename Coll>
     typename mtl::traits::enable_if_matrix<Coll>::type
     set_to_zero(Coll& collection)
@@ -116,6 +116,8 @@ namespace matrix {
 
 namespace vector {
 
+    /// Sets all values of a collection to 0
+    /// More spefically the defined multiplicative identity element
     template <typename Coll>
     typename mtl::traits::enable_if_vector<Coll>::type
     set_to_zero(Coll& collection)

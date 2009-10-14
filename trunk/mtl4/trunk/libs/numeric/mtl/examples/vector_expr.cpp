@@ -20,6 +20,12 @@ int main(int argc, char* argv[])
     u-= 3 * w;
     std::cout << "u is " << u << "\n";
 
+    u*= 6 ;
+    std::cout << "u is " << u << "\n";
+
+    u/= 2;
+    std::cout << "u is " << u << "\n";
+
     u+= dot(v, w) * w + 4.0 * v + 2 * w;
     std::cout << "u is " << u << "\n";
 

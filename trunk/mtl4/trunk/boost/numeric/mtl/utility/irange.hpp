@@ -60,7 +60,7 @@ namespace mtl {
       private:
         size_type my_start, my_finish;
     };
-
+    /// All index in range
     namespace {
 	irange iall;
     }

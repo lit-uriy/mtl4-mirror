@@ -13,7 +13,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 #undef VERSION
-#define VERSION 5
+#define VERSION 3
 
 using namespace std;
 using namespace mtl;
@@ -86,45 +86,10 @@ dense2D<double> inverse_upper(dense2D<double> const& A)
     assert(num_cols(A) == N); // Matrix must be square
 
     dense2D<double> Inv(N, N);
-
-    for (unsigned k= 0; k < N; ++k) {
-	dense_vector<double> e_k(N);
-	for (unsigned i= 0; i < N; ++i)
-	    e_k[i]= i == k;
-
-	Inv[iall][k]= upper_trisolve(A, e_k);
-    }
-    return Inv;
-}
-
-#elif VERSION == 4
-
-dense2D<double> inverse_upper(dense2D<double> const& A)
-{
-    const unsigned N= num_rows(A);
-    assert(num_cols(A) == N); // Matrix must be square
-
-    dense2D<double> Inv(N, N);
-
-    Inv= 0;
-    for (unsigned k= 0; k < N; ++k) 
-	Inv[irange(0, k+1)][k]= upper_trisolve(A[irange(0, k+1)][irange(0, k+1)], unit_vector(k, k+1));
-    
-    return Inv;
-}
-
-#elif VERSION == 5
-
-dense2D<double> inverse_upper(dense2D<double> const& A)
-{
-    const unsigned N= num_rows(A);
-    assert(num_cols(A) == N); // Matrix must be square
-
-    dense2D<double> Inv(N, N);
     Inv= 0;
 
     for (unsigned k= 0; k < N; ++k) {
-	const irange r(0, k+1);
+	irange r(0, k+1);
 	Inv[r][k]= upper_trisolve(A[r][r], unit_vector(k, k+1));
     }
     return Inv;
@@ -138,23 +103,15 @@ dense2D<double> inline inverse_lower(dense2D<double> const& A)
     return dense2D<double>(trans(inverse_upper(T)));
 }
 
-#if 0 // does not work yet (but some day)
-dense2D<double> inline inverse_lower(dense2D<double> const& A)
-{
-    return trans(inverse_upper(trans(T)));
-}
-#endif
-
 dense2D<double> inline inverse(dense2D<double> const& A)
 {
-    const unsigned N= num_rows(A);
-    assert(num_cols(A) == N); // Matrix must be square
+    assert(num_cols(A) == num_rows(A)); // Matrix must be square
 
     dense2D<double>          PLU(A);
-    dense_vector<unsigned>   Pv(N);
+    dense_vector<unsigned>   Pv(num_rows(A));
 
     lu(PLU, Pv);
-    dense2D<double>  PU(upper(PLU)), PL(strict_lower(PLU) + matrix::identity(N, N));
+    dense2D<double>  PU(upper(PLU)), PL(strict_lower(PLU) + matrix::identity(num_rows(A), num_cols(A)));
 
     return dense2D<double>(inverse_upper(PU) * inverse_lower(PL) * permutation(Pv));
 }
@@ -199,5 +156,8 @@ int main(int argc, char* argv[])
     cout << "inverse(A) is \n" << A_inverse << "A * AI is\n" << Matrix(A_inverse * A);
     assert(one_norm(Matrix(A_inverse * A - I)) < 0.1);
 
+   Matrix A_e(inv(A));
+   cout << "inv(A) is \n" << A_e << "\n";
+    
     return 0;
 }
