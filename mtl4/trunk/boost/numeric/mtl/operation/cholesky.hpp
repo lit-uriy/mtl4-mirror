@@ -12,6 +12,7 @@
 #ifndef MTL_CHOLESKY_INCLUDE
 #define MTL_CHOLESKY_INCLUDE
 
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
@@ -30,14 +31,15 @@ namespace with_bracket {
     template < typename Matrix > 
     void cholesky_base (Matrix & matrix)
     {
-	for (int k = 0; k < matrix.num_cols(); k++) {
+	typedef typename  Collection<Matrix>::size_type    size_type;
+	for (size_type k = 0; k < matrix.num_cols(); k++) {
 	    matrix[k][k] = sqrt (matrix[k][k]);
 	    
-		for (int i = k + 1; i < matrix.num_rows(); i++) {
+		for (size_type i = k + 1; i < matrix.num_rows(); i++) {
 		    matrix[i][k] /= matrix[k][k];
-		    typename Matrix::value_type d = matrix[i][k];
+		    typename Collection<Matrix>::value_type d = matrix[i][k];
 
-		    for (int j = k + 1; j <= i; j++)
+		    for (size_type j = k + 1; j <= i; j++)
 			matrix[i][j] -= d * matrix[j][k];
 		}
 	}
@@ -47,13 +49,14 @@ namespace with_bracket {
     template < typename MatrixSW, typename MatrixNW > 
     void tri_solve_base(MatrixSW & SW, const MatrixNW & NW)
     {
-	for (int k = 0; k < NW.num_rows (); k++) {
+	typedef typename  Collection<MatrixSW>::size_type    size_type;
+	for (size_type k = 0; k < NW.num_rows (); k++) {
 	    
-	    for (int i = 0; i < SW.num_rows (); i++) {
+	    for (size_type i = 0; i < SW.num_rows (); i++) {
 		SW[i][k] /= NW[k][k];
 		typename MatrixSW::value_type d = SW[i][k];
 		
-		for (int j = k + 1; j < SW.num_cols (); j++)
+		for (size_type j = k + 1; j < SW.num_cols (); j++)
 		    SW[i][j] -= d * NW[j][k];
 	    }
 	}
@@ -64,11 +67,12 @@ namespace with_bracket {
     template < typename MatrixSE, typename MatrixSW > 
     void tri_schur_base(MatrixSE & SE, const MatrixSW & SW)
     {
-	for (int k = 0; k < SW.num_cols (); k++)
+	typedef typename  Collection<MatrixSE>::size_type    size_type;
+	for (size_type k = 0; k < SW.num_cols (); k++)
 	    
-	    for (int i = 0; i < SE.num_rows (); i++) {
+	    for (size_type i = 0; i < SE.num_rows (); i++) {
 		    typename MatrixSW::value_type d = SW[i][k];
-		    for (int j = 0; j <= i; j++)
+		    for (size_type j = 0; j <= i; j++)
 			SE[i][j] -= d * SW[j][k];
 	    }
     }
@@ -77,10 +81,11 @@ namespace with_bracket {
     template < typename MatrixNE, typename MatrixNW, typename MatrixSW >
     void schur_update_base(MatrixNE & NE, const MatrixNW & NW, const MatrixSW & SW)
     {
-	for (int k = 0; k < NW.num_cols (); k++) 
-	    for (int i = 0; i < NE.num_rows (); i++) {
+	typedef typename  Collection<MatrixNE>::size_type    size_type;
+	for (size_type k = 0; k < NW.num_cols (); k++) 
+	    for (size_type i = 0; i < NE.num_rows (); i++) {
 		typename MatrixNW::value_type d = NW[i][k];
-		for (int j = 0; j < NE.num_cols (); j++)
+		for (size_type j = 0; j < NE.num_cols (); j++)
 		    NE[i][j] -= d * SW[j][k];
 	    }
     }
@@ -139,17 +144,19 @@ namespace with_iterator {
     template < typename Matrix > 
     void cholesky_base (Matrix& matrix)
     {
+	typedef typename  Collection<Matrix>::size_type    size_type;
+
 	using namespace glas::tag; using traits::range_generator;
 	typedef tag::iter::all    all_it;
 
-        typedef typename Matrix::value_type                         value_type;
+        typedef typename Collection<Matrix>::value_type                         value_type;
         typedef typename range_generator<col, Matrix>::type       cur_type;             
         typedef typename range_generator<all_it, cur_type>::type    iter_type;            
 
 	typedef typename range_generator<row, Matrix>::type       rcur_type;
 	typedef typename range_generator<all_it, rcur_type>::type   riter_type;   
 	
-	typename Matrix::size_type k= 0;
+	size_type k= 0;
 	for (cur_type kb= begin<col>(matrix), kend= end<col>(matrix); kb != kend; ++kb, ++k) {
 
 	    iter_type ib= begin<all_it>(kb), iend= end<all_it>(kb); 
@@ -160,9 +167,9 @@ namespace with_iterator {
 
 	    ++ib; // points now to matrix[k+1][k]
 	    rcur_type rb= begin<row>(matrix); rb+= k+1; // to row k+1
-	    for (int i= k + 1; ib != iend; ++ib, ++rb, ++i) {
+	    for (size_type i= k + 1; ib != iend; ++ib, ++rb, ++i) {
 		*ib = *ib / root;
-		typename Matrix::value_type d = *ib;
+		typename Collection<Matrix>::value_type d = *ib;
 		riter_type it1= begin<all_it>(rb);    it1+= k+1;      // matrix[i][k+1]
 		riter_type it1end= begin<all_it>(rb); it1end+= i+1;   // matrix[i][i+1]
 		iter_type it2= begin<all_it>(kb);     it2+= k+1;      // matrix[k+1][k]
@@ -176,6 +183,8 @@ namespace with_iterator {
     template < typename MatrixSW, typename MatrixNW > 
     void tri_solve_base(MatrixSW & SW, const MatrixNW & NW)
     {
+	typedef typename  Collection<MatrixSW>::size_type    size_type;
+
 	using namespace glas::tag; using traits::range_generator;
 	typedef tag::iter::all        all_it;
 	typedef tag::const_iter::all  all_cit;
@@ -186,8 +195,8 @@ namespace with_iterator {
 	typedef typename range_generator<row, MatrixSW>::type       rcur_type;
 	typedef typename range_generator<all_it, rcur_type>::type     riter_type;   
 
-	for (int k = 0; k < NW.num_rows (); k++) 
-	    for (int i = 0; i < SW.num_rows (); i++) {
+	for (size_type k = 0; k < NW.num_rows (); k++) 
+	    for (size_type i = 0; i < SW.num_rows (); i++) {
 
 		typename MatrixSW::value_type d = SW[i][k] /= NW[k][k];
 
@@ -208,6 +217,8 @@ namespace with_iterator {
     template < typename MatrixSE, typename MatrixSW > 
     void tri_schur_base(MatrixSE & SE, const MatrixSW & SW)
     {
+	typedef typename  Collection<MatrixSE>::size_type    size_type;
+
 	using namespace glas::tag; using traits::range_generator;
 	typedef tag::iter::all        all_it;
 	typedef tag::const_iter::all  all_cit;
@@ -218,8 +229,8 @@ namespace with_iterator {
 	typedef typename range_generator<row, MatrixSE>::type       rcur_type;
 	typedef typename range_generator<all_it, rcur_type>::type     riter_type;   
 
-	for (int k = 0; k < SW.num_cols (); k++)
-	    for (int i = 0; i < SE.num_rows (); i++) {
+	for (size_type k = 0; k < SW.num_cols (); k++)
+	    for (size_type i = 0; i < SE.num_rows (); i++) {
 		typename MatrixSW::value_type d = SW[i][k];
 
 		rcur_type se_i= begin<row>(SE);       se_i+= i;      // row i
@@ -238,6 +249,8 @@ namespace with_iterator {
     template < typename MatrixNE, typename MatrixNW, typename MatrixSW >
     void schur_update_base(MatrixNE & NE, const MatrixNW & NW, const MatrixSW & SW)
     {
+	typedef typename  Collection<MatrixNE>::size_type    size_type;
+
 	using namespace glas::tag; using traits::range_generator;
 	typedef tag::iter::all        all_it;
 	typedef tag::const_iter::all  all_cit;
@@ -248,8 +261,8 @@ namespace with_iterator {
 	typedef typename range_generator<row, MatrixNE>::type       rcur_type;
 	typedef typename range_generator<all_it, rcur_type>::type     riter_type;   
 
-	for (int k = 0; k < NW.num_cols (); k++) 
-	    for (int i = 0; i < NE.num_rows (); i++) {
+	for (size_type k = 0; k < NW.num_cols (); k++) 
+	    for (size_type i = 0; i < NE.num_rows (); i++) {
 		typename MatrixNW::value_type d = NW[i][k];
 
 		rcur_type ne_i= begin<row>(NE);       ne_i+= i;      // row i
@@ -259,7 +272,7 @@ namespace with_iterator {
 		ccur_type sw_k= begin<col>(SW);     sw_k+= k;        // column k
 		citer_type it2= begin<all_cit>(sw_k);                  // SW[0][k]
 
-		for (int j = 0; j < NE.num_cols (); j++)
+		for (size_type j = 0; j < NE.num_cols (); j++)
 		    NE[i][j] -= d * SW[j][k];
 	    }
     }
@@ -553,22 +566,23 @@ inline void recursive_cholesky(Matrix& matrix)
 template <typename Matrix>
 void fill_matrix_for_cholesky(Matrix& matrix)
 {
-    typename Matrix::value_type   x= 1.0; 
+    typedef typename Collection<Matrix>::size_type   size_type;
+    typedef typename Collection<Matrix>::value_type  value_type;
 
-    for (int i=0; i<matrix.num_rows(); i++) 
-       for (int j=0; j<=i; j++)
+    value_type   x= 1.0; 
+    for (size_type i= 0; i < num_rows(matrix); i++) 
+       for (size_type j= 0; j <= i; j++)
 	   if (i != j) {
 	       matrix[i][j]= x; matrix[j][i]= x; 
-	       x=x+1.0; 
+	       x+= 1.0; 
 	   }
   
-    typename Matrix::value_type    rowsum;
-    for (int i=0; i < matrix.num_rows(); i++) {
-	rowsum= 0.0;
-	for (int j=0; j<matrix.num_cols(); j++)
-	    if (i!=j)
+    for (size_type i= 0; i < num_rows(matrix); i++) {
+	value_type rowsum= 0.0;
+	for (size_type j=0; j<matrix.num_cols(); j++)
+	    if (i != j)
 		rowsum += matrix[i][j]; 
-	matrix[i][i]=rowsum*2;
+	matrix[i][i]= rowsum * 2;
     }       
 }
 

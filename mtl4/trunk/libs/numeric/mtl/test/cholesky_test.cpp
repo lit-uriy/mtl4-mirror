@@ -13,6 +13,7 @@
 #include <cmath>
 #include <boost/test/minimal.hpp>
 
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/matrix/morton_dense.hpp> 
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
@@ -57,8 +58,9 @@ template <typename Matrix>
 void print_matrix(Matrix& matrix)
 { 
     using std::cout;
-    for (int i=0 ; i<matrix.num_rows(); i++ ){
-	for(int j=0; j<matrix.num_cols();  j++ ){
+    typedef typename mtl::Collection<Matrix>::size_type size_type;
+    for (size_type i= 0 ; i < num_rows(matrix); i++ ){
+	for(size_type j=0; j < num_cols(matrix);  j++ ){
 	    cout.fill (' '); cout.width (8); cout.precision (5); cout.flags (ios_base::left);
 	    cout << showpoint <<  matrix[i][j] <<"  ";
 	}
