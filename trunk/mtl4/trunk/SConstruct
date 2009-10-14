@@ -343,7 +343,7 @@ if int(ARGUMENTS.get('with_concepts', 0)):
 
 
 # Full warnings and treat as errors
-if int(ARGUMENTS.get('full_warnings', 1)):
+if int(ARGUMENTS.get('full_warnings', 0)):
     if env['CXX'] == 'g++':
         env.Append(CXXFLAGS = '-Werror -Wall -Wreorder -pedantic -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings')
 

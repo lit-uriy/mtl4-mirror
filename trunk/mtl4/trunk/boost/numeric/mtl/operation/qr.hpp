@@ -36,7 +36,7 @@ Matrix inline qr(const Matrix& A)
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A), mini;
-    value_type       zero= math::zero(A[0][0]), one= math::one(A[0][0]);
+    value_type       zero= math::zero(A[0][0]);
     Matrix           B(A);
 
     if ( nrows < ncols ) throw mtl::logic_error("underdetermined system, use trans(A) instead of A");
