@@ -76,21 +76,23 @@ class matrix_market_istream
     template <typename Inserter, typename Value>
     void read_matrix(Inserter& ins, Value)
     {
+	typedef typename Collection<typename Inserter::matrix_type>::size_type size_type;
 	read_filter<Inserter> filter(ins);
 	if (my_sparsity == coordinate) // sparse
-	    while (my_stream) {
-		int r, c;
+	    // while (my_stream) { // sometimes does an extra erroneous loop
+	    for (std::size_t i= 0; i < nnz; i++) {
+		size_type r, c;
 		my_stream >> r >> c;
 		insert_value(ins, r-1, c-1, filter, Value());
 	    }
 	else // dense 
-	    for (int r= 0; r < nrows; r++)
-		for (int c= 0; c < ncols; c++) 
+	    for (size_type r= 0; r < nrows; r++)
+		for (size_type c= 0; c < ncols; c++) 
 		    insert_value(ins, r, c, filter, Value());
     }
 
     template <typename Inserter, typename Filter, typename Value>
-    void insert_value(Inserter& ins, int r, int c, const Filter& filter, Value) 
+    void insert_value(Inserter& ins, std::size_t r, std::size_t c, const Filter& filter, Value) 
     {
 	typedef typename Collection<typename Inserter::matrix_type>::value_type mvt;
 	Value v;
@@ -103,6 +105,7 @@ class matrix_market_istream
 	      case symmetric:      ins[c][r] << which_value(v, mvt()); break;
 	      case skew:           ins[c][r] << -which_value(v, mvt()); break;
 	      case Hermitian:      ins[c][r] << conj(which_value(v, mvt())); break;
+	      default:             ; // do nothing
 	    }
     }
 

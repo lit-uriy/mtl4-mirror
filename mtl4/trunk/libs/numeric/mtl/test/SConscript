@@ -7,6 +7,7 @@ sources = glob.glob("*.cpp")
 # Works only with MTL_DEEP_COPY_CONSTRUCTOR
 #	     block_sparse_test.cpp
 #	     variable_size_block_sparse_test.cpp
+sources.remove('lower_bound_cursor_test.cpp')
 sources.remove('block_sparse_test.cpp')
 sources.remove('variable_size_block_sparse_test.cpp')
 

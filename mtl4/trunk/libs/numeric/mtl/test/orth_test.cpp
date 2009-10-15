@@ -44,13 +44,13 @@ void test(Vector& v, const T& x, const char* name, bool is_cmp= false)
 
     cout << "w initially\n";
     Vector w(v);
-    for (unsigned i= 0, c= 0; i < size(w); ++i)
+    for (unsigned i= 0; i < size(w); ++i)
 	std::cout << w[i] << "\n";
     std::cout << "\n";
 
     orth(w);
 
-    for (unsigned i= 0, c= 0; i < size(w); ++i)
+    for (unsigned i= 0; i < size(w); ++i)
 	std::cout << w[i] << "\n";
     std::cout << "\n";
 
@@ -64,13 +64,13 @@ void test(Vector& v, const T& x, const char* name, bool is_cmp= false)
     if (abs(dot(w[4], w[4]) - T(1)) > 0.000001) throw "Vector 4 is not normal!";
 
     cout << "\nv initially\n";
-    for (unsigned i= 0, c= 0; i < size(v); ++i)
+    for (unsigned i= 0; i < size(v); ++i)
 	std::cout << v[i] << "\n";
     std::cout << "\n";
 
     std::cout << "The according factors are: \n" << orthogonalize_factors(v) << '\n';
 
-    for (unsigned i= 0, c= 0; i < size(v); ++i)
+    for (unsigned i= 0; i < size(v); ++i)
 	std::cout << v[i] << "\n";
     std::cout << "\n";
 

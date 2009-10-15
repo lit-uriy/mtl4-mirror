@@ -24,8 +24,8 @@ template <typename VectorU, typename VectorV>
 void test(VectorU& u, VectorV& v, const char* name)
 {
     //using mtl::vector::dot;
-
-    for (int i= 0; i < size(v); i++)
+    typedef typename mtl::Collection<VectorU>::size_type  size_type;
+    for (size_type i= 0; i < size(v); i++)
 	u[i]= i+1, v[i]= i+1;
 
     std::cout << name << "\n dot(u, v) = " << dot(u, v) << "\n"; std::cout.flush();

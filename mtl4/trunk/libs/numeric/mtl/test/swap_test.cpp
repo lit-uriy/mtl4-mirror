@@ -91,7 +91,7 @@ void vtest(Vector& vector, unsigned dim1, unsigned dim2, const char* name)
 	if (size(vector) != dim1*dim2)
 	    throw "wrong number of elements";
 
-	typename mtl::Collection<Vector>::value_type four(4.0), minus_one(-1.0), zero(0.0);
+	typename mtl::Collection<Vector>::value_type four(4.0);
 	if (vector[2] != four)
 	    throw "wrong value in vector";
     }

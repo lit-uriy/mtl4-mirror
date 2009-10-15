@@ -123,7 +123,7 @@ void dynamic_test(dblock& block, e_t e, const char* name)
     cout << "dblock A(block)\n";
     print(A, &block.data[0]);
 
-    if (e == view_e ^ &block.data[0] == &A.data[0])
+    if ((e == view_e) ^ (&block.data[0] == &A.data[0]))
 	throw "Only views have shallow semantics.\n";
 
 
@@ -133,7 +133,7 @@ void dynamic_test(dblock& block, e_t e, const char* name)
     block= f(A, p);
     print(block, p);
 
-    if (e == own_e ^ &block.data[0] == p)
+    if ((e == own_e) ^ (&block.data[0] == p))
 	throw "Only blocks with their own data can move results.\n";
 
     cout << "dblock B(clone(block));\n";

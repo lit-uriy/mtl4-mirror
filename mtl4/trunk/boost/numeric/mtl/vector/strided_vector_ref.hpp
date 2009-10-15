@@ -91,7 +91,7 @@ class strided_vector_ref
 
     /// Constructor take address, length and stride
     strided_vector_ref( size_type length, pointer start_address, size_type stride= 1)
-      : my_size(length), data(start_address), my_stride(stride) {}
+      : data(start_address), my_size(length), my_stride(stride) {}
 
     // Default copy constructor refers to same vector which is okay
 

@@ -35,8 +35,8 @@ Matrix inline hessenberg_factors(const Matrix& A)
     using mtl::imax;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
-    size_type        ncols = num_cols(A), nrows = num_rows(A), mini;
-    value_type       zero= math::zero(A[0][0]), one= math::one(A[0][0]), beta;
+    size_type        ncols = num_cols(A), nrows = num_rows(A);
+    value_type       zero= math::zero(A[0][0]), beta;
     Matrix           B(A);
 
     MTL_THROW_IF(num_rows(A) < 3, matrix_too_small());
@@ -112,9 +112,8 @@ Matrix inline hessenberg(const Matrix& A)
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i
     typedef typename Collection<Matrix>::size_type    size_type;
-    size_type        ncols = num_cols(A), nrows = num_rows(A), mini;
-    value_type       zero= math::zero(A[0][0]), one= math::one(A[0][0]);
-    const magnitude_type two(2);
+    size_type        ncols = num_cols(A), nrows = num_rows(A);
+    value_type       zero= math::zero(A[0][0]);
     Matrix           H(nrows,ncols);
 
     MTL_THROW_IF(num_rows(A) < 3, matrix_too_small());

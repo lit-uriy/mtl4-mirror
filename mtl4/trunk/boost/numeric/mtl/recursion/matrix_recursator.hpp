@@ -499,7 +499,6 @@ bool inline is_empty(const recursator<Matrix>& rec)
 template <typename Matrix>
 bool inline is_full(const recursator<Matrix>& rec)
 {
-    int nr= num_rows(rec), nc= num_cols(rec), b= rec.bound();
     return num_rows(rec) == rec.bound() && num_cols(rec) == rec.bound();
 }
 

@@ -1,10 +1,8 @@
-Import('opt_env check')
+Import('opt_env check full_warnings')
 
-sources = Split("""             
-             move_memory_block_test.cpp
-             move_test.cpp
-             move_vector_test.cpp
-""")
+sources = []
+if not full_warnings :
+    sources = Glob("*.cpp")
 
 programs = []
 for p in sources:

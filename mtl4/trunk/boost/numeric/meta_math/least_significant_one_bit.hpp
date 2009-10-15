@@ -17,7 +17,7 @@ namespace meta_math {
 template <unsigned long X>
 struct least_significant_one_bit
 {
-  static const unsigned long value= (X ^ X-1) + 1 >> 1;
+    static const unsigned long value= ((X ^ (X-1)) + 1) >> 1;
 };
 
 

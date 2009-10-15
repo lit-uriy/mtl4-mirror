@@ -236,7 +236,7 @@ public:
 	check();
 	T result = 0;
 	x &= Mask;
-	for (int i = 0; i < n_bytes; ++i) {
+	for (T i = 0; i < n_bytes; ++i) {
 	    // std::cout << "unmasking: x = " << std::hex << x  << ", i = " << i << ", index = " << (0xff & (x >> (8*i)))
 	    //           << ", return from table = " << unmask_lut()[i][0xff & (x >> (8*i)) ] << std::endl;
 	    result += unmask_lut()[i][0xff & (x >> (8*i)) ];
