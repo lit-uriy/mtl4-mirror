@@ -321,7 +321,6 @@ int test_main(int argc, char* argv[])
 
     // Bitmasks:
     const unsigned long morton_mask= generate_mask<true, 0, row_major, 0>::value,
-	morton_z_mask= generate_mask<false, 0, row_major, 0>::value,
 	doppled_32_row_mask_no_shark= generate_mask<true, 5, row_major, 0>::value,
 	doppled_32_col_mask_no_shark= generate_mask<true, 5, col_major, 0>::value,
 	doppled_32_row_mask= generate_mask<true, 5, row_major, 1>::value,

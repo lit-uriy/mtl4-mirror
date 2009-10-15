@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
     A= 3.0;
 
     dense_vector<cdouble>         v(n), w(n);
-    for (int i= 0; i < size(v); i++)
+    for (unsigned i= 0; i < size(v); i++)
 	v[i]= cdouble(i+1, n-i), w[i]= cdouble(i+n);
 
     rank_one_update(A, v, w);

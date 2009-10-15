@@ -65,8 +65,6 @@ int test_main(int argc, char* argv[])
 {
     using namespace mtl;
 
-    const unsigned size= 5; 
-
     compressed2D<double>                             cdc;
     compressed2D<std::complex<double> >              ccc;
     dense2D<double>                                  dc;

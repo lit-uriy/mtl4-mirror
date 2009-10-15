@@ -6,11 +6,9 @@ int main(int argc, char* argv[])
     using namespace mtl;
     
     typedef std::complex<double>      cdouble;
-    const unsigned                    xd= 2, yd= 5, n= xd * yd;
 
     double array[2][3] = {{8, 9, 11},
 			  {2, 6, 17}};
-
     dense2D<double>      A(array);
 
     trans(A)[1][0]= 7;    // Modify A[0][1]

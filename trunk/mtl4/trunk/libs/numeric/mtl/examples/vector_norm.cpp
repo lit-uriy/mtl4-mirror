@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
     dense_vector<cdouble>         v(10000);
 
     // Initialize vector
-    for (int i= 0; i < size(v); i++)
+    for (unsigned i= 0; i < size(v); i++)
 	v[i]= cdouble(i+1, 10000-i);
 
     std::cout << "one_norm(v) is " << one_norm(v)<< "\n";

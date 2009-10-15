@@ -19,7 +19,6 @@ int test_main(int argc, char* argv[])
 {
     using namespace std;
     
-    
     mtl::compressed2D<double> m(3, 3);
     {
 	mtl::matrix::inserter<mtl::compressed2D<double> > ins(m);
@@ -28,7 +27,7 @@ int test_main(int argc, char* argv[])
     }
 
     mtl::dense_vector<double> x(3), y(3);
-    for (int i= 0; i < size(x); i++) x[i]= double(i+1);
+    for (unsigned i= 0; i < size(x); i++) x[i]= double(i+1);
 
     y = trans(m) * x;
     cout << y << '\n';

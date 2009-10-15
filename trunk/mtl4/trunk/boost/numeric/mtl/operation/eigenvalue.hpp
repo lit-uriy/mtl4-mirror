@@ -44,8 +44,7 @@ inline qr_sym_imp(const Matrix& A)
     typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A), N;
-    value_type       zero= math::zero(A[0][0]), one= math::one(A[0][0]),
-          	     h00, h10, h11, beta, mu, a, b, c, d, tol;
+    value_type       zero= math::zero(A[0][0]), h00, h10, h11, beta, mu, a, b, tol;
     const magnitude_type two(2);
     Matrix           Q(nrows,ncols), H(nrows,ncols),  G(2,2);
 

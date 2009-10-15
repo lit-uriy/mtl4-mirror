@@ -23,12 +23,12 @@ int test_main(int argc, char* argv[])
 
     A[0][0]= 71.; C[0][0]= 72.;
 
-    double *ap= &A[0][0], *cp= &C[0][0];
+    double *ap= &A[0][0];
     std::cout << *ap << '\n';
     if (*ap != 71) throw "wrong value";
 
     // the direct access of the first element should only be used when absolutely necessary 
-    double *ap2= A.elements(), *cp2= C.elements();
+    double *ap2= A.elements();
     std::cout << *ap2 << '\n';
     if (*ap2 != 71) throw "wrong value";
 

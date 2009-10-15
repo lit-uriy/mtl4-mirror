@@ -32,10 +32,11 @@ using namespace std;
 template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
+    typedef typename mtl::Collection<Matrix>::size_type   size_type;
     {
 	mtl::matrix::inserter<Matrix> ins(matrix);
-	for (int i= 0; i < matrix.num_rows(); i++)
-	    for (int j= 0; j < matrix.num_cols(); j++)
+	for (size_type i= 0; i < matrix.num_rows(); i++)
+	    for (size_type j= 0; j < matrix.num_cols(); j++)
 		if ((i + j) & 1)
 		    ins(i, j) << i + 2*j;
     }
