@@ -49,7 +49,7 @@ struct sub_matrix_t
 
     } // namespace impl
 
-
+///Returns sub-matrix B with begin_row, end_row, begin_col, end_col from %matrix A
 template <typename Matrix>
 inline typename sub_matrix_t<Matrix>::sub_matrix_type 
 sub_matrix(Matrix& matrix, 

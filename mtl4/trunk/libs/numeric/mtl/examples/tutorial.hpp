@@ -2598,11 +2598,14 @@ written in unrolled/tiled form.
    - \subpage op_matrix_mult
    - \subpage qr_algo
    - \subpage qr_sym_imp
+   - \subpage rank_one_update
+   - \subpage rank_two_update
    - \subpage RowInMatrix
    - \subpage set_to_zero
    - \subpage strict_lower
    - \subpage strict_upper
    - \subpage sub_matrix
+   - \subpage swap_row
    - \subpage trace
    - \subpage trans
    - \subpage tril
@@ -2611,6 +2614,7 @@ written in unrolled/tiled form.
    .
 -# %Vector Operations
    - \subpage dot_v
+   - \subpage dot_real_v
    - \subpage infinity_norm_v
    - \subpage max_v
    - \subpage min_v
@@ -2625,6 +2629,7 @@ written in unrolled/tiled form.
    - \subpage product_v
    - \subpage size_v
    - \subpage sum_v
+   - \subpage swap_row_v
    - \subpage trans_v
    - \subpage two_norm_v
    .
@@ -2699,6 +2704,8 @@ Adjoint matrix of an m-by-n matrix A with complex entries is the n-by-m matrix A
 \code
 B= adjoint(A);
 \endcode
+
+Details:: mtl::matrix::adjoint
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -3552,6 +3559,44 @@ For example:
 */
 
 //-----------------------------------------------------------
+/*! \page rank_one_update rank_one_update(A, v, w)
+
+returns A= A + v * w.
+With %matrix A and %vector v and w of matching dimension.
+
+Details: mtl::matrix::rank_one_update
+
+For example:
+
+\include rank_two_update.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page rank_two_update rank_two_update(A, v, w)
+
+Suppose %matrix A have 2 triangle parts. L is the lower triangle and U the upper triangle part of A.
+
+L -> L + lower(v*w' + w*v')
+U -> U + upper(v*w' + w*v')
+
+Details: mtl::matrix::rank_two_update
+
+For example:
+
+\include rank_two_update.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
 /*! \page RowInMatrix RowInMatrix<A>
 
 returns row %vector in %matrix A.
@@ -3584,6 +3629,8 @@ Or:
 \code
 A= 0.0;
 \endcode
+
+Details: mtl::matrix::set_to_zero
 
 
 \include matrix_functions2.cpp
@@ -3637,9 +3684,30 @@ returns submatrix from row1 to row 2 and from col1 to col2 of %matrix A:
 sub_matrix(A, 2, 4, 1, 7);
 \endcode
 
+Details: mtl::matrix::sub_matrix
+
 Sub-matrices also preserve the const attribute of the referred matrices or sub-matrices:
 
 \include matrix_functions3.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page swap_row  swap_row(A, row1, row2)
+
+returns %matrix A swapped with rows row1 and row2.
+
+Details: mtl::matrix::swap_row
+
+\code
+swap_row(A, 2, 4);
+\endcode
+
+
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -3675,7 +3743,6 @@ trans(A);
 \endcode
 The %matrix A is not altered but a immutable view is returned.
 
-Details: mtl::matrix::trans
 
 \include matrix_functions2.cpp
 
@@ -3745,9 +3812,29 @@ upper(A, i);
 //-----------------------------------------------------------
 /*! \page dot_v dot(v,w)
 
-returns scalar-product of %vector v and w.
+return's scalar-product of %vector v and w.
+Dot product with user-specified unrolling defined as hermitian(v) * w.
 
 Details: mtl::vector::dot
+
+For example:
+
+\include dot_test.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
+/*! \page dot_real_v dot_real(v,w)
+
+return's scalar-product of %vector v and w.
+Dot product without conjugate with user-specified unrolling defined as trans(v) * w
+
+Details: mtl::vector::dot_real
 
 For example:
 
@@ -3956,7 +4043,7 @@ For example:
 
 Returns produkt of all %vector entries.
 
-Details: mtl::vector::product
+Details: mtl::product
 
 For example:
 
@@ -3988,13 +4075,30 @@ unsigned int len= size(v)
 //-----------------------------------------------------------
 /*! \page sum_v sum(v)
 
-Returns sum of all %vector entries.
+Returns sum of all collection entries (%vector-entries)
 
-Details: mtl::vector::sum
+Details: mtl::sum
 
 For example:
 
 \include vector_reduction.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page swap_row_v swap_row(v, row1, row2)
+
+Returns %vector v with v[row1]= v[row2] and v[row2]= v[row1].
+
+Details: mtl::vector::swap_row
+
+\code
+swap_row(v, 2, 4);
+\endcode
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -4011,6 +4115,8 @@ return transposed view of %vector v
 \code
 w= trans(v)
 \endcode
+
+Details: mtl::vector::trans
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -4278,7 +4384,7 @@ For example:
 
 returns all possible subscripts.
 
-Details: mtl::iall
+Details: mtl::irange
 
 \code
 using mtl::iall;

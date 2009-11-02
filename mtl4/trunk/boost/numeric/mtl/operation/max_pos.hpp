@@ -23,7 +23,7 @@
 namespace mtl { 
 
 namespace matrix {
-
+///Returns pair (row, col) from maximal entry of %matrix A
     template <typename Matrix>
     std::pair<typename Collection<Matrix>::size_type, typename Collection<Matrix>::size_type>
     inline max_pos(const Matrix& A)
@@ -56,7 +56,7 @@ namespace matrix {
 } // namespace matrix
 
 namespace vector {
-
+///Returns position from maximal entry of %vector v
     template <typename Vector>
     typename Collection<Vector>::size_type
     inline max_pos(const Vector& v)

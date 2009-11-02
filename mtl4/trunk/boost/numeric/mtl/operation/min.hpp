@@ -28,7 +28,7 @@ namespace mtl { namespace vector {
 
 	// Do we really need this for matrices?
 	// Then we need a different dispatching
-	
+
 	template <unsigned long Unroll, typename Vector>
 	typename Collection<Vector>::value_type
 	inline min(const Vector& vector, tag::vector)
@@ -39,7 +39,7 @@ namespace mtl { namespace vector {
 	
     } // namespace impl
 
-
+///Returns minimal value of %vector v	
 template <unsigned long Unroll, typename Value>
 typename Collection<Value>::value_type
 inline min(const Value& value)

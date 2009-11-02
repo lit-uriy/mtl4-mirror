@@ -23,7 +23,7 @@
 namespace mtl { 
 
 namespace matrix {
-
+///Returns pair (row, col) from absolut maximal entry of %matrix A
     template <typename Matrix>
     typename mtl::traits::enable_if_matrix<Matrix, std::pair<typename Collection<Matrix>::size_type, typename Collection<Matrix>::size_type> >::type
     inline max_abs_pos(const Matrix& A)
@@ -57,7 +57,7 @@ namespace matrix {
 } // namespace matrix
 
 namespace vector {
-
+///Returns position from absolut maximal entry of %vector v
     template <typename Vector>
     typename mtl::traits::enable_if_vector<Vector, typename Collection<Vector>::size_type>::type
     inline max_abs_pos(const Vector& v)
