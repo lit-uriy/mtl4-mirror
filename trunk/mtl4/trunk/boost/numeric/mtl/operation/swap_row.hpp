@@ -22,9 +22,9 @@
 namespace mtl { 
 
 namespace matrix {
-
+    
     namespace detail {
-
+	
 	template <typename Matrix, typename Orientation>
 	inline void swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
 			     typename Collection<Matrix>::size_type j, tag::dense, Orientation)
@@ -50,7 +50,7 @@ namespace matrix {
 	}
 
     }
-
+    ///Row i and j are swapped in %matrix A 
     template <typename Matrix>
     typename mtl::traits::enable_if_matrix<Matrix>::type
     inline swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
@@ -65,7 +65,7 @@ namespace matrix {
 
 
 namespace vector {
-
+    ///Entry i and j are swapped in %vector v 
     template <typename Vector>
     typename mtl::traits::enable_if_vector<Vector>::type
     inline swap_row(Vector& v, typename Collection<Vector>::size_type i,

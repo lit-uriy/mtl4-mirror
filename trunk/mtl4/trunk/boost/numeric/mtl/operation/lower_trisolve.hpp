@@ -160,19 +160,19 @@ namespace detail {
 }  // detail
 
 
-
+///Solves the lower triangular matrix A  with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline lower_trisolve(const Matrix& A, const Vector& v)
 {
     return detail::lower_trisolve(A, v, typename OrientedCollection<Matrix>::orientation(), tag::regular_diagonal());
 }
-
+///Solves the lower triangular matrix A (only one's in the diagonal) with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline unit_lower_trisolve(const Matrix& A, const Vector& v)
 {
     return detail::lower_trisolve(A, v, typename OrientedCollection<Matrix>::orientation(), tag::unit_diagonal());
 }
-
+///Solves the lower triangular matrix A (inverse the diagonal) with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline inverse_lower_trisolve(const Matrix& A, const Vector& v)
 {

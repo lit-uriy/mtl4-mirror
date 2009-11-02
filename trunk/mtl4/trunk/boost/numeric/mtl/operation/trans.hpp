@@ -74,7 +74,6 @@ namespace matrix {
 } // namespace mtl::matrix
 
 
-
 namespace vector {
 
     template <typename Vector>
@@ -99,7 +98,7 @@ namespace vector {
 	typedef strided_vector_ref<Value, typename transposed_parameters<Parameters>::type>     type;
     };
 
-    
+///Returns tranposed view of %vector v
     template <typename Vector>
     typename transposed_vector<Vector>::type const
     inline trans(const Vector& v)

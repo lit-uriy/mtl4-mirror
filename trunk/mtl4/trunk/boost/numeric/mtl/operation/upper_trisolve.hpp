@@ -146,24 +146,25 @@ namespace detail {
 
 }
 
+///Solves the upper triangular matrix A  with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v)
 {
     return detail::upper_trisolve_t<Matrix, tag::regular_diagonal>(A)(v);
 }
-
+///Solves the upper triangular matrix A (only one's in the diagonal) with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline unit_upper_trisolve(const Matrix& A, const Vector& v)
 {
     return detail::upper_trisolve_t<Matrix, tag::unit_diagonal>(A)(v);
 }
-
+///Solves the upper triangular matrix A  (inverse the diagonal) with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline inverse_upper_trisolve(const Matrix& A, const Vector& v)
 {
     return detail::upper_trisolve_t<Matrix, tag::inverse_diagonal>(A)(v);
 }
-
+///Solves the upper triangular matrix A  with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector, typename DiaTag>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v, DiaTag)
 {

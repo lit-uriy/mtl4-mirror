@@ -38,7 +38,7 @@ namespace mtl {
 	
     } // namespace impl
 
-
+///Returns product of all collection-entries (%vector-entries)
 template <unsigned long Unroll, typename Value>
 typename Collection<Value>::value_type
 inline product(const Value& value)
