@@ -1,8 +1,10 @@
+import glob
+
 Import('opt_env check full_warnings')
 
 sources = []
 if not full_warnings :
-    sources = Glob("*.cpp")
+    sources = glob.glob("*.cpp") # Glob("*.cpp") still have old scons on some machines
 
 programs = []
 for p in sources:
