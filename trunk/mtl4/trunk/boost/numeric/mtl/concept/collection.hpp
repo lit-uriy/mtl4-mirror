@@ -310,11 +310,11 @@ namespace mtl {
 
 #else
     template <typename Value, unsigned long Mask, typename Parameters>
-    struct Collection<morton_dense<Value, Mask, Parameters> >
+    struct Collection<mtl::matrix::morton_dense<Value, Mask, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
-	typedef typename morton_dense<Value, Mask, Parameters>::size_type size_type;
+	typedef typename mtl::matrix::morton_dense<Value, Mask, Parameters>::size_type size_type;
     };
 #endif
 

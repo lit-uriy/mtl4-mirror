@@ -99,10 +99,10 @@ class strided_vector_ref
     size_type stride() const { return my_stride ; }
 
     reference operator()( size_type i ) { check_index(i); return data[i * my_stride]; }
-    const reference operator()( size_type i ) const { check_index(i); return data[i * my_stride]; }
+    const_reference operator()( size_type i ) const { check_index(i); return data[i * my_stride]; }
 
     reference operator[]( size_type i ) { return (*this)( i ) ; }
-    const reference operator[]( size_type i ) const { return (*this)( i ) ;  }
+    const_reference operator[]( size_type i ) const { return (*this)( i ) ;  }
 
     self operator[]( irange r ) { return sub_vector(*this, r.start(), r.finish()); }
     const self  operator[]( irange r ) const { return sub_vector(*this, r.start(), r.finish());  }

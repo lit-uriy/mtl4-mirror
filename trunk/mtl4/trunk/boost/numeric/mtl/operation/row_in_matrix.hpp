@@ -27,20 +27,20 @@ struct RowInMatrix
 };
 
 template <typename Value, typename Parameters>
-struct RowInMatrix<dense2D<Value, Parameters> > 
+struct RowInMatrix<mtl::matrix::dense2D<Value, Parameters> > 
 {
-    typedef dense2D<Value, Parameters>         ref_type;
+	typedef mtl::matrix::dense2D<Value, Parameters> ref_type;
     typedef typename ref_type::size_type       size_type;
     typedef typename ref_type::value_type      value_type;
-    typedef vector::parameters<row_major>      vec_para;
+	typedef mtl::vector::parameters<row_major> vec_para;
 
     static const bool aligned= boost::is_same<typename Parameters::orientation, row_major>::value;
     static const bool exists= true;
 
     typedef typename boost::mpl::if_c<
 	aligned
-      , vector::dense_vector<Value, vec_para> 
-      , vector::strided_vector_ref<Value, vec_para> 
+      , mtl::vector::dense_vector<Value, vec_para> 
+      , mtl::vector::strided_vector_ref<Value, vec_para> 
     >::type type;
 
     static inline type apply(ref_type& A, size_type row, const irange& col_range)

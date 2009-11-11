@@ -111,7 +111,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 # ifdef MTL_NOT_UNROLL_FSIZE_MAT_VEC_MULT
     boost::mpl::false_        selector;
 # else
-    traits::is_static<Matrix> selector;
+	mtl::traits::is_static<Matrix> selector;
 # endif
     dense_mat_cvec_mult(A, v, w, Assign(), selector);
 }

@@ -224,7 +224,7 @@ namespace mtl { namespace traits {
 	    typedef typename Matrix::key_type   key_type;
 	    typedef typename Matrix::size_type  size_type;
     	
-	    transposed_col(matrix::transposed_view<Ref> const& transposed_matrix) 
+		transposed_col(mtl::matrix::transposed_view<Ref> const& transposed_matrix) 
 	      : its_row(transposed_matrix.ref) {}
 
 	    size_type operator() (key_type const& key) const
