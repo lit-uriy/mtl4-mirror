@@ -14,7 +14,7 @@ CXXFLAGS = ${INCLUDE_DIRS}
 # CXXFLAGS += -fast
 
 # Intel Compiler
-CXX= icc
+CXX= icpc
 
 # Intel optimization
 #CXXFLAGS += -DNDEBUG -O3 

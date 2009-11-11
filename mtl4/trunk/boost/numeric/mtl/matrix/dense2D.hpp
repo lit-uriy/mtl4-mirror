@@ -28,6 +28,7 @@
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
@@ -371,8 +372,15 @@ class dense2D
 #endif
 		sub_matrix(*this,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()))
 		    = sub_matrix(temp,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()));
-	    } else
+	    } else {
+#if 0
+		irange rr(0, r);
+		irange rc(0, c);
+		// *this = temp[rr][rc];
+		*this = sub_matrix(temp, 0, r, 0, c);
+#endif
 		*this = temp[irange(0, r)][irange(0, c)];
+	    }
 	}
     }
 
