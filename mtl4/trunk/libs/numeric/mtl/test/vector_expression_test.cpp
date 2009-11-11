@@ -33,7 +33,7 @@ void test(Vector& v, const char* name)
     using mtl::sum; using mtl::product; using mtl::one_norm;
 
     for (size_type i= 0; i < size(v); i++)
-	v[i]= value_type(double(i+1) * pow(-1.0, i)); 
+	v[i]= value_type(double(i+1) * pow(-1.0, int(i))); // Amb. in MSVC
 
     std::cout << "\n" << name << "  --- v = " << v; std::cout.flush();
 

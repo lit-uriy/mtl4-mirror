@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 
     A= 3.0;
 
-    dense_vector<double>         v(n), w(n);
+    dense_vector<cdouble>         v(n), w(n);
     for (unsigned i= 0; i < size(v); i++)
 	v[i]= cdouble(i+1, n-i), w[i]= cdouble(i+n);
 

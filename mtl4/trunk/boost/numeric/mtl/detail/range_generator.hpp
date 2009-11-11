@@ -56,6 +56,7 @@ namespace mtl { namespace traits { namespace detail {
 	}
 	type end(Ref& c)
 	{
+		using mtl::size;
 	    return type(c.address_data() + size(c) + c.stride(), c.stride());
 	}
     };
