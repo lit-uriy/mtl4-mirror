@@ -47,7 +47,52 @@ namespace mtl { namespace operations {
 	size_type   row;
     };
 
+#if 0 // Doesn't compile either -> to be deleted soon
+    template <typename T, bool ok, typename Ref, typename ValueRef> struct range_bracket_proxy_impl {};
 
+    template <bool ok, typename Ref, typename ValueRef>
+    struct range_bracket_proxy_impl<irange, ok, Ref, ValueRef>
+    {
+	typedef ValueRef     type;
+	type static inline apply(Ref matrix, const irange& row_range, const irange& col_range)
+	{
+	    return sub_matrix(matrix, row_range.start(), row_range.finish(),
+			      col_range.start(), col_range.finish());
+	}
+    };
+
+    template <typename T, typename Ref, typename ValueRef>
+    struct range_bracket_proxy_impl<T, true, Ref, ValueRef>
+    {
+	typedef ColumnInMatrix<typename boost::remove_reference<Ref>::type> col_traits;
+	typedef typename col_traits::type                                   type;
+
+	type static inline apply(Ref matrix, const irange& row_range, const T& col)
+	{
+	    return col_traits::apply(matrix, row_range, col);
+	}
+    };
+
+    template <typename Matrix, typename Ref, typename ValueRef>
+    struct range_bracket_proxy
+    {
+	typedef typename Matrix::size_type       size_type;
+	typedef ColumnInMatrix<typename boost::remove_reference<Ref>::type> col_traits;
+
+	explicit range_bracket_proxy(Ref matrix, const irange& row_range) : matrix(matrix), row_range(row_range) {}
+
+	template <typename T> 
+	typename range_bracket_proxy_impl<T, boost::is_integral<T>::value && col_traits::exists, Ref, ValueRef>::type operator[] (const T& col) 
+	{ return range_bracket_proxy_impl<T, boost::is_integral<T>::value && col_traits::exists, Ref, ValueRef>::apply(matrix, row_range, col); }
+
+      protected:
+	Ref         matrix;
+	irange      row_range;
+    };
+#endif
+
+
+#if 1 // Doesn't compile on Intel!!!
     template <typename Matrix, typename Ref, typename ValueRef>
     struct range_bracket_proxy
     {
@@ -70,7 +115,7 @@ namespace mtl { namespace operations {
 	Ref         matrix;
 	irange      row_range;
     };
-
+#endif
 
 
 
