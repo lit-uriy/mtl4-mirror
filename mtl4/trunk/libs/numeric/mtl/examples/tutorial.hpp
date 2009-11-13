@@ -1431,7 +1431,31 @@ appear multiple times in the resulting %matrix/%vector:
 
 \include reorder2.cpp
  
+Reordering matrices can also be used to compress matrices as in the following example:
 
+\include reorder3.cpp
+
+The multiplication from right allows for eliminating empty rows
+and from left with the transposed for removing empty columns.
+The transposed of the compression matrices enable the decompression to
+yield the original matrices.
+If memory is an issue, one can also keep the compression vectors and the size of the original %matrix and
+create the compression %matrix on the fly.
+
+\code
+    dense2D<double>  C1(trans(matrix::reorder(non_zero_rows, 4)) * B3),
+                     C2(C1 * matrix::reorder(non_zero_columns, 3));
+\endcode
+
+
+For the definition of the row compression %matrix we needed the explicit specification of the number of columns
+because the reorder %matrix has by default the maximal entry plus one as column number
+(i.e. the minimum that is necessary).
+The number of columns of any reorder %matrix -- not only compression -- must be equal the number of rows
+of the original %matrix when multiplied from left and equal the original number of columns when multiplied
+from right as transposed.
+This is implicitly given when the last row or column is part of the resulting %matrix.
+If you are not sure about this fact or the compression %vector is calculated specify the reorder %matrix' columnn number explicitly.
 
 
 \if Navigation \endif
@@ -4221,7 +4245,7 @@ x= lower_trisolve(A, b);
 
 returns permutation %matrix from corresponding %vector.
 
-Details: mtl::matrix::permutation
+See: mtl::matrix::permutation
 
 \code
 P= permutation(v);
@@ -4230,6 +4254,8 @@ P= permutation(v);
 For example:
 
 \include permutation.cpp
+
+For a more detailed explanation see \ref permutation.
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -4240,9 +4266,9 @@ For example:
 //-----------------------------------------------------------
 /*! \page reorder_av reorder(v)
 
-returns reorder %matrix from corresponding %vector.
+Returns reorder %matrix from corresponding %vector.
 
-Details: mtl::matrix::reorder
+See: mtl::matrix::permutation
 
 \code
 P= reorder(v);
@@ -4251,6 +4277,8 @@ P= reorder(v);
 For example:
 
 \include reorder.cpp
+
+For a more detailed explanation see \ref permutation.
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
