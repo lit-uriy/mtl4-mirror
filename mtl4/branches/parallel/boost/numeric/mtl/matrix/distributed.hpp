@@ -74,29 +74,29 @@ class distributed
     /// Constructor for matrix with global size grows x gcols and default distribution.
     /** RowDistribution and ColDistribution must have same type. **/
     explicit distributed(size_type grows, size_type gcols) 
-      : grows(grows), gcols(gcols), row_dist(grows), cdp(&this->row_dist), col_dist(*cdp),
-	local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
+      : grows(grows), gcols(gcols), row_dist(grows), cdp(&this->row_dist),
+	local_matrix(row_dist.num_local(grows), cdp->num_local(gcols))
     {}
 
     /// Constructor for matrix with global size grows x gcols and with given distribution.
     /** RowDistribution and ColDistribution must have same type. **/
     explicit distributed(size_type grows, size_type gcols, 
 			 const RowDistribution& row_dist) 
-      : grows(grows), gcols(gcols), row_dist(row_dist), cdp(&this->row_dist), col_dist(*cdp), 
-	local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
+      : grows(grows), gcols(gcols), row_dist(row_dist), cdp(&this->row_dist),
+	local_matrix(row_dist.num_local(grows), cdp->num_local(gcols))
     {}
 
     /// Constructor for matrix with global size grows x gcols and with different distributions for rows and columns.
     explicit distributed(size_type grows, size_type gcols, 
 			 const RowDistribution& row_dist, const ColDistribution& col_dist) 
-      : grows(grows), gcols(gcols), row_dist(row_dist), cdp(new ColDistribution(col_dist)), col_dist(*cdp), 
-	local_matrix(row_dist.num_local(grows), col_dist.num_local(gcols))
+      : grows(grows), gcols(gcols), row_dist(row_dist), cdp(new ColDistribution(col_dist)), 
+	local_matrix(row_dist.num_local(grows), cdp->num_local(gcols))
     {}
 
     /// Copy from other types (including expressions)
     template <typename MatrixSrc>
     explicit distributed(const MatrixSrc& src)
-      : row_dist(0), cdp(new ColDistribution(0)), col_dist(*cdp)
+      : row_dist(0), cdp(new ColDistribution(0))
     {	*this= src;    }
 
     ~distributed() { clean_cdp(); clean_remote_matrices(); }
@@ -108,8 +108,8 @@ class distributed
     void change_dim(size_type grows, size_type gcols)
     {
 	this->grows= grows; this->gcols= gcols;
-	row_dist.resize(grows); col_dist.resize(gcols);
-	local_matrix.change_dim(row_dist.num_local(grows), col_dist.num_local(gcols));
+	row_dist.resize(grows); cdp->resize(gcols);
+	local_matrix.change_dim(row_dist.num_local(grows), cdp->num_local(gcols));
     }
 
     void clean_cdp() { if (cdp && cdp != &row_dist) delete cdp; }
@@ -175,12 +175,13 @@ class distributed
 
     friend inline std::ostream& operator<< (std::ostream& out, const self& A) 
     {
+	const ColDistribution  &col_dist(*A.cdp);
 	wait_for_previous(A.row_dist);
 	const local_type& B= A.local_matrix;
 	for (unsigned r= 0; r < num_rows(B); r++) {
-	    for (int p= 0; p < A.col_dist.size(); p++) {
+	    for (int p= 0; p < col_dist.size(); p++) {
 		out << '[';
-		if (p == A.col_dist.rank())
+		if (p == col_dist.rank())
 		    for (unsigned c= 0; c < num_cols(B); c++)
 			out << B[r][c] << (c < num_cols(B) - 1 ? " " : "");
 		else {
@@ -190,7 +191,7 @@ class distributed
 			for (unsigned c= 0; c < num_cols(C); c++)
 			    out << C[r][c] << (c < num_cols(C) - 1 ? " " : "");
 		    } else
-			for (unsigned c= 0, nc= A.col_dist.num_local(num_cols(A), p); c < nc; c++)
+			for (unsigned c= 0, nc= col_dist.num_local(num_cols(A), p); c < nc; c++)
 			    out << '*' << (c < nc - 1 ? " " : "");
 		}
 		out << ']';
@@ -198,7 +199,7 @@ class distributed
 	    out << std::endl;
 	}
 #if 1 // only to print buffer organization
-	for (int p= 0; p < A.col_dist.size(); p++) {
+	for (int p= 0; p < col_dist.size(); p++) {
 	    typename std::map<int, send_structure >::const_iterator it(A.send_info.find(p));
 	    if (it != A.send_info.end())
 		out << it->second.indices << "@" << it->second.offset;
@@ -219,7 +220,7 @@ class distributed
   public:
     size_type                      grows, gcols, total_send_size, total_recv_size;
     RowDistribution                row_dist;
-    ColDistribution                *cdp, &col_dist;
+    ColDistribution                *cdp;
     
   protected:
     local_type                     local_matrix;
@@ -236,7 +237,7 @@ template <typename DistributedMatrix,
 class distributed_inserter
 {
     typename DistributedMatrix::row_distribution_type const& row_dist() const { return dist_matrix.row_dist; }
-    typename DistributedMatrix::col_distribution_type const& col_dist() const { return dist_matrix.col_dist; }
+    typename DistributedMatrix::col_distribution_type const& col_dist() const { return *dist_matrix.cdp; }
     int row_rank() const { return row_dist().rank(); }
     int col_rank() const { return col_dist().rank(); }
     int row_size() const { return row_dist().size(); }
@@ -368,7 +369,7 @@ template <typename Modifier>
 inline void distributed_inserter<DistributedMatrix, Updater>::modify(size_type row, size_type col, value_type value)
 {
     typename DistributedMatrix::row_distribution_type const& row_dist= dist_matrix.row_dist;
-    typename DistributedMatrix::col_distribution_type const& col_dist= dist_matrix.col_dist;
+    typename DistributedMatrix::col_distribution_type const& col_dist= *dist_matrix.cdp;
 
     // Somewhere on my proc
     if (row_dist.is_local(row)) {
