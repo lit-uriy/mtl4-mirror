@@ -185,13 +185,16 @@ class distributed
 		    for (unsigned c= 0; c < num_cols(B); c++)
 			out << B[r][c] << (c < num_cols(B) - 1 ? " " : "");
 		else {
+		    // Pretty inefficient because redone for every row (refactor when necessary)
+		    const unsigned nc= col_dist.num_local(num_cols(A), p);
 		    remote_map_const_iterator it(A.remote_matrices.find(p));
 		    if (it != A.remote_matrices.end()) {
-			const remote_type& C= it->second; 
+			const remote_type& C0= it->second; 
+			remote_type C(C0 * reorder(A.index_comp.find(p)->second, nc));
 			for (unsigned c= 0; c < num_cols(C); c++)
 			    out << C[r][c] << (c < num_cols(C) - 1 ? " " : "");
 		    } else
-			for (unsigned c= 0, nc= col_dist.num_local(num_cols(A), p); c < nc; c++)
+			for (unsigned c= 0; c < nc; c++)
 			    out << '*' << (c < nc - 1 ? " " : "");
 		}
 		out << ']';
@@ -228,6 +231,7 @@ class distributed
     remote_map_type                remote_matrices;
     std::map<int, recv_structure>  recv_info;
     std::map<int, send_structure>  send_info;
+    std::map<int, dense_vector<size_type> >     index_comp; // compression of columns in receive buffer
 };
 
 
@@ -306,6 +310,7 @@ class distributed_inserter
 			index_comp[p][pos++]= i;
 		dist_matrix.recv_info.insert(std::make_pair(int(p), recv_structure(ncols, dist_matrix.total_recv_size)));
 		dist_matrix.total_recv_size+= ncols;
+		dist_matrix.index_comp.insert(std::make_pair(int(p), index_comp[p]));
 		typename traits::reorder<>::type R(reorder(index_comp[p], num_cols(A)));
 		dist_matrix.remote_matrices.insert(std::make_pair(int(p), A * trans(R)));
 		delete full_remote_matrices[p];
@@ -323,14 +328,12 @@ class distributed_inserter
     operations::update_bracket_proxy<self, size_type> operator[] (size_type row)
     {	return operations::update_bracket_proxy<self, size_type>(*this, row);    }
 
-    proxy_type operator() (size_type row, size_type col)
-    {	return proxy_type(*this, row, col);    }
+    proxy_type operator() (size_type row, size_type col) { return proxy_type(*this, row, col); }
 
     template <typename Modifier>
     void modify(size_type row, size_type col, value_type val);
 
-    void update(size_type row, size_type col, value_type val)
-    {	modify<Updater>(row, col, val);    }
+    void update(size_type row, size_type col, value_type val) {	modify<Updater>(row, col, val); }
 
     template <typename Matrix, typename Rows, typename Cols>
     self& operator<< (const matrix::element_matrix_t<Matrix, Rows, Cols>& elements)
@@ -343,15 +346,7 @@ class distributed_inserter
 
     template <typename Matrix, typename Rows, typename Cols>
     self& operator<< (const matrix::element_array_t<Matrix, Rows, Cols>& elements)
-    {
-	return *this << element_matrix_t<Matrix, Rows, Cols>(elements.array, elements.rows, elements.cols);
-# if 0
-	for (unsigned ri= 0; ri < elements.rows.size(); ri++)
-	    for (unsigned ci= 0; ci < elements.cols.size(); ci++)
-		update (elements.rows[ri], elements.cols[ci], elements.array[ri][ci]);
-	return *this;
-# endif
-    }
+    {	return *this << element_matrix_t<Matrix, Rows, Cols>(elements.array, elements.rows, elements.cols);    }
 
     friend inline const DistributedMatrix& reference(const self& I) { return I.dist_matrix; }
 
