@@ -38,7 +38,7 @@ int test_main(int argc, char* argv[])
     if (row_distribution(A).is_local(7)) {
 	int r= A.row_dist.global_to_local(7);
 	// if (local(A)[r][6] != -1.0) throw "Should be -1.";
-	if (local(A)[r][A.col_dist.global_to_local(7)] != 4.0) throw "Diagonal should be 4.";
+	if (local(A)[r][A.cdp->global_to_local(7)] != 4.0) throw "Diagonal should be 4.";
 	//if (local(A)[r][8] != 0.0) throw "Should be 0.";
     }
 

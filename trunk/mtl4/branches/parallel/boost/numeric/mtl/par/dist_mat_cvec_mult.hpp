@@ -108,7 +108,7 @@ void inline dist_mat_cvec_mult_fill_send_buffer(const Matrix& A, Vector& v)
 {
     typedef typename Collection<Matrix>::size_type size_type;
 
-    MTL_DEBUG_THROW_IF(A.col_dist != distribution(v), incompatible_distribution());
+    MTL_DEBUG_THROW_IF(*A.cdp != distribution(v), incompatible_distribution());
     v.enlarge_send_buffer(A.total_send_size);
     v.enlarge_recv_buffer(A.total_recv_size);
 
