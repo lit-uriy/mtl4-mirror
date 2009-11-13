@@ -97,13 +97,11 @@ class distributed
     template <typename MatrixSrc>
     explicit distributed(const MatrixSrc& src)
       : row_dist(0), cdp(new ColDistribution(0)), col_dist(*cdp)
-    {
-	*this= src;
-    }
+    {	*this= src;    }
 
     ~distributed() { clean_cdp(); clean_remote_matrices(); }
 
-    using assign_base::operator=;
+    using assign_base::operator=; // still need 
 
     /// Change dimension \p grows global rows times \p gcols global columns 
     /** Potentially changes parametrization of distributions **/
@@ -199,7 +197,7 @@ class distributed
 	    }
 	    out << std::endl;
 	}
-#if 0 // only to print buffer organization (if activated add \n before stars)
+#if 1 // only to print buffer organization
 	for (int p= 0; p < A.col_dist.size(); p++) {
 	    typename std::map<int, send_structure >::const_iterator it(A.send_info.find(p));
 	    if (it != A.send_info.end())
@@ -322,22 +320,16 @@ class distributed_inserter
     }
 
     operations::update_bracket_proxy<self, size_type> operator[] (size_type row)
-    {
-	return operations::update_bracket_proxy<self, size_type>(*this, row);
-    }
+    {	return operations::update_bracket_proxy<self, size_type>(*this, row);    }
 
     proxy_type operator() (size_type row, size_type col)
-    {
-	return proxy_type(*this, row, col);
-    }
+    {	return proxy_type(*this, row, col);    }
 
     template <typename Modifier>
     void modify(size_type row, size_type col, value_type val);
 
     void update(size_type row, size_type col, value_type val)
-    {
-	modify<Updater>(row, col, val);
-    }
+    {	modify<Updater>(row, col, val);    }
 
     template <typename Matrix, typename Rows, typename Cols>
     self& operator<< (const matrix::element_matrix_t<Matrix, Rows, Cols>& elements)
@@ -351,10 +343,13 @@ class distributed_inserter
     template <typename Matrix, typename Rows, typename Cols>
     self& operator<< (const matrix::element_array_t<Matrix, Rows, Cols>& elements)
     {
+	return *this << element_matrix_t<Matrix, Rows, Cols>(elements.array, elements.rows, elements.cols);
+# if 0
 	for (unsigned ri= 0; ri < elements.rows.size(); ri++)
 	    for (unsigned ci= 0; ci < elements.cols.size(); ci++)
 		update (elements.rows[ri], elements.cols[ci], elements.array[ri][ci]);
 	return *this;
+# endif
     }
 
     friend inline const DistributedMatrix& reference(const self& I) { return I.dist_matrix; }

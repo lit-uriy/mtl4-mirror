@@ -24,7 +24,7 @@ if int(check):
         debug_env.AddPostAction(p, p[0].abspath)
     for p in mpi_programs:
         tmatch = re.search('mpi_(\d*).*', str(p))
-        mpi_debug_env.AddPostAction(p, 'mpirun -np ' + tmatch.group(1) + ' ' + p[0].abspath)
+        mpi_debug_env.AddPostAction(p, 'mpirun -mca btl tcp,self -np ' + tmatch.group(1) + ' ' + p[0].abspath)
 
 Default(programs + mpi_programs)
 
