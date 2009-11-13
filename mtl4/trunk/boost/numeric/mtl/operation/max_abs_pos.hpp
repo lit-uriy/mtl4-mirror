@@ -70,7 +70,7 @@ namespace vector {
 	size_type max_col= size(v);
 	value_type max(abs(v[0]));
 	
-	for(size_type j= 1;i < max_col; j++)
+	for(size_type j= 1; j < max_col; j++)
 	    if(abs(v[j]) > max) {
 		max = v[j];
 		i= j;
