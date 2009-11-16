@@ -171,7 +171,7 @@ class distributed
     friend inline local_type& local(self& A) { return A.local_matrix; }
 
     friend inline const RowDistribution& row_distribution(const self& A) { return A.row_dist; }
-    friend inline const ColDistribution& col_distribution(const self& A) { return A.col_dist; }
+    friend inline const ColDistribution& col_distribution(const self& A) { return *A.cdp; }
 
     friend inline std::ostream& operator<< (std::ostream& out, const self& A) 
     {
@@ -219,6 +219,8 @@ class distributed
 	communicator(A.row_dist).barrier();
 	return out;
     }
+
+    template <typename DistMatrix> friend struct global_non_zeros_aux;
 
   public:
     size_type                      grows, gcols, total_send_size, total_recv_size;

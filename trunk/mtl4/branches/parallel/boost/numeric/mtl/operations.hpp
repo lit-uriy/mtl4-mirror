@@ -35,7 +35,6 @@
 #include <boost/numeric/mtl/operation/norms.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/orth.hpp>
-#include <boost/numeric/mtl/operation/parallel_utilities.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/product.hpp>
 #include <boost/numeric/mtl/operation/qr.hpp>
@@ -79,5 +78,8 @@
 #include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
 
 #include <boost/numeric/mtl/interface/umfpack_solve.hpp>
+
+// Nach trunk !!!
+#include <boost/numeric/mtl/operation/std_output_operator.hpp>
 
 #endif // MTL_OPERATIONS_INCLUDE

@@ -100,6 +100,7 @@ namespace mtl {
 	    bool is_local(size_type n) const { return n >= starts[my_rank] && n < starts[my_rank+1]; }
 
 	    /// Global index of local index \p n on rank \p p
+	    /** Fails with empty partitions, consider start_index. **/
 	    template <typename Size>
 	    Size local_to_global(Size n, int p) const
 	    {
@@ -108,6 +109,7 @@ namespace mtl {
 	    }
 
 	    /// Global index of local index \p n on my processor
+	    /** Fails with empty partitions, consider start_index. **/
 	    template <typename Size>
 	    Size local_to_global(Size n) const { return local_to_global(n, my_rank); }
 
