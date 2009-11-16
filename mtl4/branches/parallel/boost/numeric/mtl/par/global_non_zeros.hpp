@@ -79,11 +79,11 @@ struct global_non_zeros_aux
 		non_zeros.push_back(std::make_pair(non_zeros[i].second, non_zeros[i].first));
 	    // Exchange and remove duplicates
 	    exchange(non_zeros);
-	    mout << "Local and remote non-zeros (after exchange) " << non_zeros << '\n';
+	    // mout << "Local and remote non-zeros (after exchange) " << non_zeros << '\n';
 	    sort(non_zeros.begin(), non_zeros.end());
 	    typename vec_type::iterator new_end = unique(non_zeros.begin(), non_zeros.end());
 	    non_zeros.erase(new_end, non_zeros.end());
-	    mout << "Local and remote non-zeros (uniquely)" << non_zeros << '\n';
+	    // mout << "Local and remote non-zeros (uniquely)" << non_zeros << '\n';
 	}
     }
 
@@ -127,10 +127,10 @@ struct global_non_zeros_aux
 	    if (is_remote(nz)) 
 		send_buffers[row_dist.on_rank(nz.first)].push_back(nz);
 	}
-	mout << "Send buffers " << send_buffers << '\n';
+	// mout << "Send buffers " << send_buffers << '\n';
 
 	all_to_all(communicator(row_dist), send_buffers, recv_buffers);
-	mout << "Receive buffers " << recv_buffers << '\n';
+	// mout << "Receive buffers " << recv_buffers << '\n';
 	
 	typename vec_type::iterator new_end = remove_if(non_zeros.begin(), non_zeros.end(), is_remote);
 	non_zeros.erase(new_end, non_zeros.end());
@@ -150,7 +150,7 @@ struct global_non_zeros_aux
     rd_type const&  row_dist;
     cd_type const&  col_dist;
     int             my_rank;
-    mtl::par::multiple_ostream<> mout;
+    // mtl::par::multiple_ostream<> mout;
 };
 
 
