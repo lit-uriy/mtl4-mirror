@@ -26,4 +26,6 @@
 #include <boost/numeric/mtl/par/global_non_zeros.hpp>
 #include <boost/numeric/mtl/par/dist_mat_cvec_mult.hpp>
 
+#include <boost/numeric/mtl/interface/parmetis.hpp>
+
 #endif // MTL_PARALLEL_INCLUDE

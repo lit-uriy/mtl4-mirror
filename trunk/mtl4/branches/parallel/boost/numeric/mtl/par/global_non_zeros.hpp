@@ -30,10 +30,11 @@ template <typename DistMatrix>
 void global_non_zeros(const DistMatrix& A,
 		      std::vector<std::pair<typename Collection<DistMatrix>::size_type,
 		                            typename Collection<DistMatrix>::size_type> >& non_zeros,
-		      bool symmetric= false)
+		      bool symmetric= false,
+		      bool with_diagonal= true)
 {
     global_non_zeros_aux<DistMatrix> g(A);
-    g(non_zeros, symmetric);
+    g(non_zeros, symmetric, with_diagonal);
 }
 
 template <typename DistMatrix> 
@@ -49,7 +50,11 @@ struct global_non_zeros_aux
       : A(A), row_dist(row_distribution(A)), col_dist(col_distribution(A)), my_rank(row_dist.rank())
     {}
 
-    void operator()(vec_type& non_zeros, bool symmetric)
+    struct is_reflexive_t {
+	bool operator()(const entry_type& nz) { return nz.first == nz.second; }
+    };
+
+    void operator()(vec_type& non_zeros, bool symmetric, bool with_diagonal)
     {
 	// Non-zeros from local matrix
 	vec_type tmp;
@@ -72,6 +77,11 @@ struct global_non_zeros_aux
 	    }
 	    local_to_global(tmp, p); 
 	    eat(non_zeros, tmp);
+	}
+
+	if (!with_diagonal) {
+	    typename vec_type::iterator new_end = remove_if(non_zeros.begin(), non_zeros.end(), is_reflexive_t());
+	    non_zeros.erase(new_end, non_zeros.end());
 	}
 
 	if (symmetric) {
@@ -116,6 +126,7 @@ struct global_non_zeros_aux
 	bool operator()(const entry_type& nz) { return !row_dist.is_local(nz.first);	}
 	rd_type const&  row_dist;
     };
+
 
     void exchange(vec_type& non_zeros)
     {

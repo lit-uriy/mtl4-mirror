@@ -259,8 +259,15 @@ namespace mtl {
 	private:
 	    size_type bsize, sb;
 	};
+   } // namespace par
 
-    }
+    namespace traits {
+
+	/// Type trait to check for block distribution
+	template <typename Dist> struct is_block_distribution : boost::mpl::false_ {};
+	template <> struct is_block_distribution<mtl::par::block_distribution> : boost::mpl::true_ {};
+
+    }// traits
 
 } // namespace mtl
 
