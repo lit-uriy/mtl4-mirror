@@ -389,6 +389,17 @@ if os.environ.has_key('BOOST_LIB') :
 else: 
     mpi_env.Append(LIBPATH=['/usr/local/lib']) # e.g. at IWR
 
+###############################
+# Set up ParMetis in MPI Options
+###############################
+
+if os.environ.has_key('PARMETIS_DIR'):
+    mpi_env.Append(LIBPATH=[os.environ['PARMETIS_DIR']])
+    mpi_env.Append(CPPPATH=[os.environ['PARMETIS_DIR']])
+    mpi_env.Append(LIBS=[os.environ.get('PARMETIS_LIB', 'parmetis.a')])
+    mpi_env.Append(LIBS=[os.environ.get('METIS_LIB', 'metis.a')])
+    mpi_env.Append(CCFLAGS = [macro_flag(env, 'MTL_HAS_PARMETIS')])
+
 
 ###############################
 # Set up Debugging and Optimization Options
