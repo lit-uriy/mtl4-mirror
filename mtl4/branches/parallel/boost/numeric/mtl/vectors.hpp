@@ -13,7 +13,6 @@
 #define MTL_VECTORS_INCLUDE
 
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
-#include <boost/numeric/mtl/vector/distributed.hpp>
 #include <boost/numeric/mtl/vector/inserter.hpp>
 #include <boost/numeric/mtl/vector/strided_vector_ref.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
