@@ -24,46 +24,40 @@
 
 namespace mpi = boost::mpi;
 
-template <typename Vector>
+template <typename Inserter>
 struct ins
 {
-    typedef typename Vector::value_type      entry_type;
-    typedef typename entry_type::first_type  size_type;
-
-    ins(Vector& v) : v(v) {}
-    void operator()(size_type r, size_type c)
-    {
-	v.push_back(entry_type(r, c));
-    }
-
-    Vector& v;
+    typedef typename Inserter::size_type  size_type;
+    ins(Inserter& i) : i(i) {}
+    void operator()(size_type r, size_type c) {	i[r][c] << 1.0;  }
+    Inserter& i;
 };
 
 template <typename Matrix>
-void test(Matrix& A,  const char* name)
+void test(Matrix& A,  const char* name, int version)
 {
     typedef typename mtl::Collection<Matrix>::size_type size_type;
     typedef std::pair<size_type, size_type>             entry_type;
     typedef std::vector<entry_type>                     vec_type;
 
     mpi::communicator comm(communicator(A));
-
-    // A= 0.0; // for dense matrices
     {
-	mtl::matrix::inserter<Matrix> ins(A);
-	if (comm.rank() == 0) {
-	    ins[0][0] << 1.0;
-	    ins[1][3] << 3.0;
-	    ins[3][1] << 3.5; // a[j][i] is present
-	    ins[2][5] << 7.0;
-	    ins[4][1] << 2.0; // remote
-	    ins[6][5] << 4.0; // remote
-	} else {
-	    ins[2][6] << 5.0; // remote
-	    ins[3][2] << 6.0; // remote
-	    ins[5][4] << 8.0;
-	    ins[6][4] << 9.0;
-	}
+	mtl::matrix::inserter<Matrix> mins(A);
+	ins<mtl::matrix::inserter<Matrix> > i(mins);
+        switch (version) {
+          case 1: 
+	    switch (comm.rank()) {
+	      case 0: i(0, 1); i(0, 2); i(1, 2); i(1, 3); i(2, 3); i(2, 5); break;
+    	      case 1: i(3, 4); i(3, 5); i(4, 5); i(4, 6); break;
+    	      case 2: i(5, 6); i(6, 4); i(6, 5);
+    	    }; break;
+          case 2: 
+    	    switch (comm.rank()) {
+    	      case 0: i(0, 1); i(1, 2); i(2, 3); break;
+    	      case 1: i(3, 4); i(4, 5); break;
+    	      case 2: i(5, 6); i(6, 0);
+    	  }; break;
+        }
     }
 
     if (!comm.rank()) std::cout << "Matrix is:" << std::endl;
@@ -86,14 +80,10 @@ int test_main(int argc, char* argv[])
 	env.abort(87);
     }
 
-    std::vector<std::size_t> row_block, col_block;
-    row_block.push_back(0); row_block.push_back(5); row_block.push_back(7); row_block.push_back(7); 
-    col_block.push_back(0); col_block.push_back(4); col_block.push_back(6); col_block.push_back(7); 
+    matrix::distributed<matrix::compressed2D<double> > A(7, 7);
 
-    mtl::par::block_distribution row_dist(row_block), col_dist(col_block);
-    matrix::distributed<matrix::compressed2D<double> > A(7, 7, row_dist, col_dist);
-
-    test(A, "compressed2D<double>");
+    test(A, "compressed2D<double>", 1);
+    test(A, "compressed2D<double>", 2);
 #else
     std::cout << "Test requires the definition of MTL_HAS_PARMETIS (and of course"
 	      << " the presence of ParMetis).\n";

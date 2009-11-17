@@ -35,7 +35,7 @@ namespace mtl { namespace matrix {
 	global_non_zeros(A, non_zeros, true, false);
 
 	mtl::par::multiple_ostream<> mout;
-	mout << "Symmetric non-zero entries are " << non_zeros << '\n'; mout.flush();
+	//mout << "Symmetric non-zero entries are " << non_zeros << '\n'; mout.flush();
 
 	rd_type const&  row_dist= row_distribution(A);
 	std::vector<idxtype>    xadj(num_rows(local(A))+1), adjncy(std::max(non_zeros.size(), std::size_t(1))), vtxdist(row_dist.size()+1);
@@ -52,15 +52,19 @@ namespace mtl { namespace matrix {
 	    adjncy[i]= entry.second;
 	}
 	while (xp < xadj.size()) xadj[xp++]= i;
-	//mout << "vtxdist = " << vtxdist << ", xadj = "    << xadj << ", adjncy = "  << adjncy << '\n';
+	mout << "vtxdist = " << vtxdist << ", xadj = "    << xadj << ", adjncy = "  << adjncy << '\n';
 
-	int                   wgtflag= 0, numflag= 0, ncon= 1, parts= row_dist.size(), options[]= {0, 0, 0}, edgecut;
-	std::vector<float>    tpwgts(parts, 1.f / float(parts));
-	float                 ubvec[]= {1.05};
-	std::vector<idxtype>  part(adjncy.size());  
+	int                   wgtflag= 0, numflag= 0, ncon= 0, nparts= row_dist.size(), options[]= {0, 0, 0}, edgecut;
+	idxtype               *vwgt= 0, *adjwgt= 0;
+	float                 *tpwgts= 0, *ubvec= 0;
+	// std::vector<float>    tpwgts(parts, 1.f / float(parts)); // ignored right now
+	// float                 ubvec[]= {1.05};                   // ignored right now
+	std::vector<idxtype>  part(xadj.size());  // part(adjncy.size());  
 	MPI_Comm              comm(communicator(row_dist)); // 
-	ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &vtxdist[0], 0, 0, &wgtflag, &numflag, &ncon, 
-			     &parts, &tpwgts[0], ubvec, options, &edgecut, &part[0], &comm);
+
+	ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0], vwgt, adjwgt, &wgtflag, &numflag, &ncon, 
+			     &nparts, tpwgts, ubvec, options, &edgecut, &part[0], &comm);
+	part.pop_back(); // to avoid empty vector part has extra entry
 	mout << "Edge cut = " << edgecut << ", partition = " << part << '\n';
     }
 }} // namespace mtl::matrix
