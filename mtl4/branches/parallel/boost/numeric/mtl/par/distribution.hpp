@@ -80,6 +80,15 @@ namespace mtl {
 	    /// Change number of global entries to n
 	    void resize(size_type n) { init(n); }
 
+	    /// Set up from a vector with the size of each partition (performs partial sum)
+	    void setup_from_local_sizes(const std::vector<size_type>& lsizes)
+	    {
+		starts.resize(lsizes.size() + 1);
+		starts[0]= 0;
+		for (std::size_t i= 0; i < lsizes.size(); i++)
+		    starts[i+1]= starts[i] + lsizes[i];
+	    }
+
 	    /// Two block distributions are equal if they have the same blocks and same communicator
 	    bool operator==(const block_distribution& dist) const { return comm == dist.comm && starts == dist.starts; }
 	    /// Two block distributions are different if they have the different blocks or communicators
@@ -136,7 +145,7 @@ namespace mtl {
 	    }
 
 	    //private:
-	    /// No default constructor
+	    // No default constructor
 	    block_distribution() {}
 
 	    /// Lowest global index of each block and total size

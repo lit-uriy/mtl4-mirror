@@ -17,6 +17,7 @@
 
 #include <boost/numeric/mtl/par/comm_scheme.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
+#include <boost/numeric/mtl/par/migration.hpp>
 #include <boost/numeric/mtl/par/mpi_log.hpp>
 #include <boost/numeric/mtl/par/rank_ostream.hpp>
 #include <boost/numeric/mtl/par/single_ostream.hpp>

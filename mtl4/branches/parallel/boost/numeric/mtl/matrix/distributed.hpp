@@ -201,7 +201,7 @@ class distributed
 	    }
 	    out << std::endl;
 	}
-#if 1 // only to print buffer organization
+#if 0 // only to print buffer organization
 	for (int p= 0; p < col_dist.size(); p++) {
 	    typename std::map<int, send_structure >::const_iterator it(A.send_info.find(p));
 	    if (it != A.send_info.end())

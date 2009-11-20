@@ -11,16 +11,23 @@
 
 
 #include <iostream>
+#include <boost/test/minimal.hpp>
+
+
+
+#if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
+
 #include <utility>
 #include <vector>
 #include <algorithm>
 
-#include <boost/mpi.hpp>
-#include <boost/serialization/string.hpp>
-#include <boost/test/minimal.hpp>
 
 #define MTL_HAS_STD_OUTPUT_OPERATOR // to print std::vector and std::pair
 #include <boost/numeric/mtl/mtl.hpp>
+
+#include <parmetis.h>
+#include <boost/mpi.hpp>
+#include <boost/serialization/string.hpp>
 
 namespace mpi = boost::mpi;
 
@@ -40,6 +47,9 @@ void test(Matrix& A,  const char* name, int version)
     typedef std::pair<size_type, size_type>             entry_type;
     typedef std::vector<entry_type>                     vec_type;
 
+    mtl::par::single_ostream sout;
+    mtl::par::multiple_ostream<> mout;
+
     mpi::communicator comm(communicator(A));
     {
 	mtl::matrix::inserter<Matrix> mins(A);
@@ -47,23 +57,25 @@ void test(Matrix& A,  const char* name, int version)
         switch (version) {
           case 1: 
 	    switch (comm.rank()) {
-	      case 0: i(0, 1); i(0, 2); i(1, 2); i(1, 3); i(2, 3); i(2, 5); break;
+	      case 0: i(0, 1); i(0, 2); i(1, 2); i(1, 3); i(2, 3); i(2, 5); std::cout << "version 1\n"; break;
     	      case 1: i(3, 4); i(3, 5); i(4, 5); i(4, 6); break;
     	      case 2: i(5, 6); i(6, 4); i(6, 5);
     	    }; break;
           case 2: 
     	    switch (comm.rank()) {
-    	      case 0: i(0, 1); i(1, 2); i(2, 3); break;
+	      case 0: i(0, 1); i(1, 2); i(2, 3); std::cout << "version 2\n"; break;
     	      case 1: i(3, 4); i(4, 5); break;
     	      case 2: i(5, 6); i(6, 0);
     	  }; break;
         }
     }
 
-    if (!comm.rank()) std::cout << "Matrix is:" << std::endl;
-    std::cout << A; std::cout.flush();
+    sout << "Matrix is:" << '\n' << A;
 
-    partition_k_way(A);
+    std::vector<idxtype> part;
+    int edge_cut= partition_k_way(A, part);
+
+    mout << "Edge cut = " << edge_cut << ", partition = " << part << '\n';
 }
 
 
@@ -71,7 +83,6 @@ int test_main(int argc, char* argv[])
 {
     using namespace mtl;
 
-#ifdef MTL_HAS_PARMETIS
     mpi::environment env(argc, argv);
     mpi::communicator world;
     
@@ -80,21 +91,25 @@ int test_main(int argc, char* argv[])
 	env.abort(87);
     }
 
-    matrix::distributed<matrix::compressed2D<double> > A(7, 7);
+    matrix::distributed<matrix::compressed2D<double> > A(7, 7), B(7, 7);
 
     test(A, "compressed2D<double>", 1);
-    test(A, "compressed2D<double>", 2);
-#else
-    std::cout << "Test requires the definition of MTL_HAS_PARMETIS (and of course"
-	      << " the presence of ParMetis).\n";
-#endif
+    test(B, "compressed2D<double>", 2);
 
     return 0;
 }
 
  
+#else 
 
+int test_main(int argc, char* argv[]) 
+{
+    std::cout << "Test requires the definition of MTL_HAS_PARMETIS (and of course"
+	      << " the presence of ParMetis).\n";
+    return 0;
+}
 
+#endif
 
 
 

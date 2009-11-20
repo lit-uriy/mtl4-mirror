@@ -15,59 +15,123 @@
 #if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
 
 #include <cmath>
+#include <cassert>
 #include <vector>
 #include <algorithm>
 #include <parmetis.h>
 #include <boost/static_assert.hpp>
 
+#include <boost/numeric/mtl/par/distribution.hpp>
+#include <boost/numeric/mtl/par/migration.hpp>
 #include <boost/numeric/mtl/par/global_non_zeros.hpp>
 #include <boost/numeric/mtl/par/rank_ostream.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace par {
 
-    template <typename DistMatrix>
-    void partition_k_way(const DistMatrix& A)
-    {
-	typedef typename DistMatrix::row_distribution_type rd_type;
-	typedef typename global_non_zeros_aux<DistMatrix>::vec_type vec_type;
+
+typedef std::vector<idxtype> parmetis_index_vector;
+
+template <typename DistMatrix>
+int partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
+{
+    typedef typename DistMatrix::row_distribution_type rd_type;
+    typedef typename mtl::matrix::global_non_zeros_aux<DistMatrix>::vec_type vec_type;
 	
-	vec_type non_zeros;
-	global_non_zeros(A, non_zeros, true, false);
+    vec_type non_zeros;
+    global_non_zeros(A, non_zeros, true, false);
 
-	mtl::par::multiple_ostream<> mout;
-	//mout << "Symmetric non-zero entries are " << non_zeros << '\n'; mout.flush();
+    // mtl::par::multiple_ostream<> mout;
+    // mout << "Symmetric non-zero entries are " << non_zeros << '\n'; mout.flush();
 
-	rd_type const&  row_dist= row_distribution(A);
-	std::vector<idxtype>    xadj(num_rows(local(A))+1), adjncy(std::max(non_zeros.size(), std::size_t(1))), vtxdist(row_dist.size()+1);
+    rd_type const&  row_dist= row_distribution(A);
+    parmetis_index_vector    xadj(num_rows(local(A))+1), adjncy(std::max(non_zeros.size(), std::size_t(1))), vtxdist(row_dist.size()+1);
 
-	BOOST_STATIC_ASSERT((mtl::traits::is_block_distribution<rd_type>::value));
-	std::copy(row_dist.starts.begin(), row_dist.starts.end(), vtxdist.begin());
+    BOOST_STATIC_ASSERT((mtl::traits::is_block_distribution<rd_type>::value));
+    std::copy(row_dist.starts.begin(), row_dist.starts.end(), vtxdist.begin());
 	
-	int my_rank= row_dist.rank();
-	unsigned xp= 0, i= 0; // position in xadj
-	for (; i < non_zeros.size(); i++) {  
-	    typename vec_type::value_type entry= non_zeros[i];
-	    unsigned lr= row_dist.global_to_local(entry.first);
-	    while (xp <= lr) xadj[xp++]= i; 
-	    adjncy[i]= entry.second;
-	}
-	while (xp < xadj.size()) xadj[xp++]= i;
-	mout << "vtxdist = " << vtxdist << ", xadj = "    << xadj << ", adjncy = "  << adjncy << '\n';
-
-	int                   wgtflag= 0, numflag= 0, ncon= 0, nparts= row_dist.size(), options[]= {0, 0, 0}, edgecut;
-	idxtype               *vwgt= 0, *adjwgt= 0;
-	float                 *tpwgts= 0, *ubvec= 0;
-	// std::vector<float>    tpwgts(parts, 1.f / float(parts)); // ignored right now
-	// float                 ubvec[]= {1.05};                   // ignored right now
-	std::vector<idxtype>  part(xadj.size());  // part(adjncy.size());  
-	MPI_Comm              comm(communicator(row_dist)); // 
-
-	ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0], vwgt, adjwgt, &wgtflag, &numflag, &ncon, 
-			     &nparts, tpwgts, ubvec, options, &edgecut, &part[0], &comm);
-	part.pop_back(); // to avoid empty vector part has extra entry
-	mout << "Edge cut = " << edgecut << ", partition = " << part << '\n';
+    int my_rank= row_dist.rank();
+    unsigned i= 0, xp= 0; // position in xadj
+    for (; i < non_zeros.size(); i++) {  
+	typename vec_type::value_type entry= non_zeros[i];
+	unsigned lr= row_dist.global_to_local(entry.first);
+	while (xp <= lr) xadj[xp++]= i; 
+	adjncy[i]= entry.second;
     }
-}} // namespace mtl::matrix
+    while (xp < xadj.size()) xadj[xp++]= i;
+    // mout << "vtxdist = " << vtxdist << ", xadj = "    << xadj << ", adjncy = "  << adjncy << '\n';
+
+    int                   wgtflag= 0, numflag= 0, ncon= 0, nparts= row_dist.size(), options[]= {0, 0, 0}, edgecut;
+    idxtype               *vwgt= 0, *adjwgt= 0;
+    float                 *tpwgts= 0, *ubvec= 0;
+    // std::vector<float>    tpwgts(parts, 1.f / float(parts)); // ignored right now
+    // float                 ubvec[]= {1.05};                   // ignored right now
+    MPI_Comm              comm(communicator(row_dist)); // 
+
+    part.resize(xadj.size()); 
+    ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0], vwgt, adjwgt, &wgtflag, &numflag, &ncon, 
+			 &nparts, tpwgts, ubvec, options, &edgecut, &part[0], &comm);
+    part.pop_back(); // to avoid empty vector part has extra entry
+    // mout << "Edge cut = " << edgecut << ", partition = " << part << '\n';
+    return edgecut;
+}
+
+
+// Maybe pre-compile
+void parmetis_distribution(const block_distribution& old_dist, const parmetis_index_vector& part, 
+			   block_distribution& new_dist, block_migration& migration)
+{
+    using std::size_t;
+    mtl::par::multiple_ostream<> mout;
+
+    // Telling new owner which global indices I'll give him
+    std::vector<std::vector<size_t> > send_glob(old_dist.size()), recv_glob;
+    for (unsigned i= 0; i < part.size(); i++) 
+	send_glob[part[i]].push_back(old_dist.local_to_global(i));
+    boost::mpi::communicator comm(communicator(old_dist));
+    all_to_all(comm, send_glob, recv_glob);
+    // mout << "Sended " << send_glob << "\nReceived " << recv_glob << '\n';
+    { std::vector<std::vector<size_t> > tmp(comm.size()); swap(tmp, send_glob); } // release memory
+
+
+    // Which global indices in the old dist are my local indices in the new distribution
+    for (size_t p= 0; p < recv_glob.size(); p++) {
+	const std::vector<size_t>& from_p= recv_glob[p];
+	for (size_t i= 0; i < from_p.size(); i++)
+	    migration.add_old_global(from_p[i]);
+    }
+    // mout << "new_to_old is " << migration.new_to_old << '\n';
+    { std::vector<std::vector<size_t> > tmp; swap(tmp, recv_glob); } // release memory
+    
+    // Build new distribution
+    size_t              my_size= migration.new_local_size();
+    std::vector<size_t> all_sizes;
+    all_gather(comm, my_size, all_sizes);
+    new_dist.setup_from_local_sizes(all_sizes);
+    // mout << "New distribution is " << new_dist.starts << '\n';
+
+    // Send the new global indices back to the owner in the old distribution (to perform migration)
+    for (size_t i= 0; i < my_size; i++)
+	send_glob[old_dist.on_rank(migration.old_global(i))].push_back(new_dist.local_to_global(i));
+    all_to_all(comm, send_glob, recv_glob);
+    mout << "Sended " << send_glob << "\nReceived " << recv_glob << '\n';
+    { std::vector<std::vector<size_t> > tmp(comm.size()); swap(tmp, send_glob); } // release memory
+    
+    // Build old to new mapping; relies on keeping relative orders of indices
+    std::vector<size_t> counters(comm.size(), 0);
+    for (size_t i= 0; i < part.size(); i++) {
+	size_t p= part[i];
+	migration.add_new_global(recv_glob[p][counters[p]++]);
+    }
+    mout << "old_to_new is " << migration.old_to_new << '\n';
+
+
+}
+
+
+ 
+
+
+}} // namespace mtl::par
 
 #endif
 
