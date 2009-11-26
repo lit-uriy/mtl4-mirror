@@ -24,6 +24,7 @@
 
 #include <boost/numeric/mtl/operation/parallel_utilities.hpp>
 
+#include <boost/numeric/mtl/par/global_columns.hpp>
 #include <boost/numeric/mtl/par/global_non_zeros.hpp>
 #include <boost/numeric/mtl/par/dist_mat_cvec_mult.hpp>
 

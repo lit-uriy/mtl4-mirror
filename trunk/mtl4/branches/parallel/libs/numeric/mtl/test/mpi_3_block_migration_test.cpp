@@ -61,9 +61,8 @@ void test()
     }
 
     mtl::par::block_distribution old_dist(7), new_dist(old_dist);
-    mtl::par::block_migration    migration;
+    mtl::par::block_migration    migration(old_dist, new_dist);
     parmetis_distribution(old_dist, part, new_dist, migration);
-    return;
 
     switch (comm.rank()) {
       case 0: cn(0, 3, migration); cn(1, 0, migration); cn(2, 4, migration); break;
@@ -76,6 +75,7 @@ void test()
       case 1: co(0, 0, migration); co(1, 2, migration); break;
       case 2: co(0, 5, migration); co(1, 6, migration); break;
     }
+
 }
 
 int test_main(int argc, char* argv[]) 

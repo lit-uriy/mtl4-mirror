@@ -13,6 +13,7 @@
 #define MTL_PAR_MIGRATION_INCLUDE
 
 #include <vector>
+#include <boost/numeric/mtl/par/distribution.hpp>
 
 namespace mtl { namespace par {
 
@@ -26,6 +27,11 @@ class block_migration
     typedef std::size_t     size_type;
 
   public:
+
+    /// Constructor refers establishes references to old and new distribution
+    block_migration(const block_distribution& old_dist, const block_distribution& new_dist) 
+      : old_dist(old_dist), new_dist(new_dist) {}
+
     /// Compute the global index in the new distribution from the local index in the old one
     /** Other indices are not known. It has to be computed by the according process **/
     size_type new_global(size_type old_local) const { return old_to_new[old_local]; }
@@ -48,6 +54,7 @@ class block_migration
 
     //private:
     std::vector<size_type> old_to_new, new_to_old;
+    const block_distribution &old_dist, &new_dist;
 };
 
 

@@ -221,6 +221,7 @@ class distributed
     }
 
     template <typename DistMatrix> friend struct global_non_zeros_aux;
+    template <typename DistMatrix> friend struct global_columns_aux;
 
   public:
     size_type                      grows, gcols, total_send_size, total_recv_size;

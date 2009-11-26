@@ -23,18 +23,18 @@
 
 namespace mtl { 
 
-   namespace par {
+    namespace par {
 
 	namespace mpi = boost::mpi;
-
+	
 	/// Base class for all distributions
 	class base_distribution
 	{
-	public:
+	  public:
 	    typedef std::size_t     size_type;
 	    
 	    explicit base_distribution (const mpi::communicator& comm= mpi::communicator()) 
-		: comm(comm), my_rank(comm.rank()), my_size(comm.size()) {}
+	      : comm(comm), my_rank(comm.rank()), my_size(comm.size()) {}
 	    
 	    /// Distributions not specified further or of different types are considered different
 	    bool operator==(const base_distribution&) const { return false; }
@@ -46,7 +46,7 @@ namespace mtl {
 
 	    int rank() const { return my_rank; }
 	    int size() const { return my_size; }
-	protected:
+	  protected:
 	    mpi::communicator comm;
 	    int               my_rank, my_size;
 	};
@@ -65,16 +65,16 @@ namespace mtl {
 		assert(starts[procs] == n);
 	    }
 
-	public:
+	  public:
 	    /// Distribution for n (global) entries
 	    explicit block_distribution(size_type n, const mpi::communicator& comm= mpi::communicator())
-		: base_distribution(comm), starts(comm.size()+1)
+	      : base_distribution(comm), starts(comm.size()+1)
 	    { init(n); }
 
 	    /// Distribution vector
 	    explicit block_distribution(const std::vector<size_type>& starts, 
 					const mpi::communicator& comm= mpi::communicator())
-		: base_distribution(comm), starts(starts)
+	      : base_distribution(comm), starts(starts)
 	    {}
 
 	    /// Change number of global entries to n
@@ -157,10 +157,10 @@ namespace mtl {
 	// Not tested yet
 	class cyclic_distribution : public base_distribution
 	{
-	public:
+	  public:
 	    /// Construction of cyclic distribution 
 	    explicit cyclic_distribution(const mpi::communicator& comm= mpi::communicator()) 
-		: base_distribution(comm) {}
+	      : base_distribution(comm) {}
 
 	    /// Change number of global entries to n (only dummy)
 	    void resize(size_type) {}
@@ -212,11 +212,11 @@ namespace mtl {
 	// Not tested yet
 	class block_cyclic_distribution : public base_distribution
 	{
-	public:
+	  public:
 	    /// Construction of block cyclic distribution 
 	    explicit block_cyclic_distribution(size_type bsize, const mpi::communicator& comm= mpi::communicator()) 
 		: base_distribution(comm), bsize(bsize), sb(bsize * my_size) {}
-
+	    
 	    /// Change number of global entries to n (only dummy)
 	    void resize(size_type) {}
 
@@ -265,10 +265,19 @@ namespace mtl {
 
 	    /// On which rank is global index n?
 	    int on_rank(size_type n) const { return (n % sb) / bsize; }
-	private:
+	  private:
 	    size_type bsize, sb;
 	};
-   } // namespace par
+
+	/// Vectorized version of local_to_global with respect to \p dist
+	template <typename Dist>
+	void inline local_to_global(const Dist& dist, std::vector<base_distribution::size_type>& indices, int p)
+	{
+	    for (std::size_t i= 0; i < indices.size(); i++)
+		indices[i]= dist.local_to_global(indices[i]);
+	}
+
+    } // namespace par
 
     namespace traits {
 
