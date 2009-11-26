@@ -113,7 +113,7 @@ void parmetis_distribution(const block_distribution& old_dist, const parmetis_in
     for (size_t i= 0; i < my_size; i++)
 	send_glob[old_dist.on_rank(migration.old_global(i))].push_back(new_dist.local_to_global(i));
     all_to_all(comm, send_glob, recv_glob);
-    mout << "Sended " << send_glob << "\nReceived " << recv_glob << '\n';
+    // mout << "Sended " << send_glob << "\nReceived " << recv_glob << '\n';
     { std::vector<std::vector<size_t> > tmp(comm.size()); swap(tmp, send_glob); } // release memory
     
     // Build old to new mapping; relies on keeping relative orders of indices
@@ -122,7 +122,7 @@ void parmetis_distribution(const block_distribution& old_dist, const parmetis_in
 	size_t p= part[i];
 	migration.add_new_global(recv_glob[p][counters[p]++]);
     }
-    mout << "old_to_new is " << migration.old_to_new << '\n';
+    // mout << "old_to_new is " << migration.old_to_new << '\n';
 }
 
 

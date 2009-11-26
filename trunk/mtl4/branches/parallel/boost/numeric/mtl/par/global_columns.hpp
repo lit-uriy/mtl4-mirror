@@ -36,6 +36,7 @@ void global_columns(const DistMatrix& D,
 {
     global_columns_visitor<DistMatrix> vis(D, columns);
     traverse_distributed(D, vis);
+    sort(columns.begin(), columns.end());
 }
 
 
@@ -60,8 +61,12 @@ struct global_columns_visitor
 	for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor)
 	    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
 		tmp.push_back(D.decompress_column(col(*icursor), p));
+	// std::cout << "On " << col_dist.rank() << ": columns (local indices) are " << tmp << " w.r.t. processor " << p << std::endl;
 	local_to_global(col_dist, tmp, p); 
+	only_unique(tmp);
+	// std::cout << "On " << col_dist.rank() << ": columns (global indices) are " << tmp << std::endl;
 	consume(columns, tmp);
+	// std::cout << "On " << col_dist.rank() << ": all columns (global indices) are " << columns << std::endl;
     }
 
     const DistMatrix& D;

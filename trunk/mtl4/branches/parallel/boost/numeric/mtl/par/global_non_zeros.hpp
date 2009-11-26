@@ -63,7 +63,6 @@ struct global_non_zeros_aux
 	matrix_visitor vis(A, non_zeros);
 	traverse_distributed(A, vis);
 	
-
 	if (!with_diagonal) {
 	    typename vec_type::iterator new_end = remove_if(non_zeros.begin(), non_zeros.end(), is_reflexive_t());
 	    non_zeros.erase(new_end, non_zeros.end());
@@ -123,14 +122,12 @@ struct global_non_zeros_aux
 	vec_type& non_zeros;
     };
 
-
     struct is_remote_t
     {
 	is_remote_t(const rd_type& rd) : row_dist(rd) {}
 	bool operator()(const entry_type& nz) { return !row_dist.is_local(nz.first);	}
 	rd_type const&  row_dist;
     };
-
 
     void exchange(vec_type& non_zeros)
     {
