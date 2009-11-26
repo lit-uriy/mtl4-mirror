@@ -12,18 +12,12 @@
 #ifndef MTL_MATRIX_GLOBAL_COLUMNS_INCLUDE
 #define MTL_MATRIX_GLOBAL_COLUMNS_INCLUDE
 
-#include <utility>
 #include <vector>
 #include <algorithm>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/stl_extension.hpp>
 #include <boost/numeric/mtl/matrix/traverse_distributed.hpp>
-
-#include <boost/numeric/mtl/operation/std_output_operator.hpp>
-#include <boost/numeric/mtl/par/rank_ostream.hpp>
-#include <boost/numeric/mtl/par/single_ostream.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
-
 
 namespace mtl { namespace matrix {
 
@@ -61,12 +55,9 @@ struct global_columns_visitor
 	for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor)
 	    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
 		tmp.push_back(D.decompress_column(col(*icursor), p));
-	// std::cout << "On " << col_dist.rank() << ": columns (local indices) are " << tmp << " w.r.t. processor " << p << std::endl;
 	local_to_global(col_dist, tmp, p); 
 	only_unique(tmp);
-	// std::cout << "On " << col_dist.rank() << ": columns (global indices) are " << tmp << std::endl;
 	consume(columns, tmp);
-	// std::cout << "On " << col_dist.rank() << ": all columns (global indices) are " << columns << std::endl;
     }
 
     const DistMatrix& D;
