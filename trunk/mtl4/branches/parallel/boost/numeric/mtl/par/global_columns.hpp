@@ -16,6 +16,8 @@
 #include <vector>
 #include <algorithm>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/stl_extension.hpp>
+#include <boost/numeric/mtl/matrix/traverse_distributed.hpp>
 
 #include <boost/numeric/mtl/operation/std_output_operator.hpp>
 #include <boost/numeric/mtl/par/rank_ostream.hpp>
@@ -42,12 +44,9 @@ struct global_columns_aux
     typedef typename Collection<DistMatrix>::size_type size_type;
     typedef std::vector<size_type>                     vec_type;
 
-    // typedef size_type entry_type;
+    explicit global_columns_aux(const DistMatrix& D) : D(D) {}
 
-    explicit global_columns_aux(const DistMatrix& A) 
-      : A(A), col_dist(col_distribution(A)), my_rank(row_distribution(A).rank())
-    {}
-
+#if 0
     void operator()(vec_type& columns)
     {
 	// Non-zeros from local matrix
@@ -92,11 +91,48 @@ struct global_columns_aux
 	vec_type tmp;
 	swap(eaten, tmp);
     }
+#endif
+
+    struct matrix_visitor
+    {	
+	explicit matrix_visitor(const DistMatrix& D, vec_type& columns) 
+	  : D(D), col_dist(col_distribution(D)), columns(columns) {}
+
+	template <typename Matrix>
+	void operator()(const Matrix& A, int p)
+	{
+	    vec_type tmp;
+	    extract(A, tmp, p);
+	    local_to_global(col_dist, tmp, p); 
+	    consume(columns, tmp);
+	}
+
+	template <typename Matrix>
+	void extract(const Matrix& A, vec_type& v, int p)
+	{
+	    namespace traits= mtl::traits;
+	    typename traits::col<Matrix>::type             col(A); 
+	    typedef typename traits::range_generator<tag::major, Matrix>::type  cursor_type;
+	    typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
+	
+	    for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor)
+		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
+		    v.push_back(D.decompress_column(col(*icursor), p));
+	}
+
+	const DistMatrix& D;
+	typename DistMatrix::col_distribution_type const&  col_dist;
+	vec_type& columns;
+    };
+
+    void operator()(vec_type& columns)
+    {
+	matrix_visitor vis(D, columns);
+	traverse_distributed(D, vis);
+    }
 
   private:
-    const DistMatrix& A;
-    typename DistMatrix::col_distribution_type const&  col_dist;
-    int             my_rank;
+    const DistMatrix& D;
     // mtl::par::multiple_ostream<> mout;
 };
 
