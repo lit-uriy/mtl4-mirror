@@ -52,8 +52,9 @@ class block_migration
     /** Needed to set up a new block distribution. **/
     size_type new_local_size() const { return new_to_old.size(); }
 
-    //private:
+  private:
     std::vector<size_type> old_to_new, new_to_old;
+  public:
     const block_distribution &old_dist, &new_dist;
 };
 

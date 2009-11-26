@@ -15,6 +15,7 @@
 #ifdef MTL_HAS_STD_OUTPUT_OPERATOR
 
 #include <iostream>
+#include <map>
 #include <utility>
 #include <vector>
 
@@ -23,13 +24,27 @@ namespace std {
     /// Print standard vector
     /** Only available when compiled with macro flag MTL_HAS_STD_OUTPUT_OPERATOR
 	to avoid (reduce) conflicts with other libraries. **/
-    template <typename T>
-    inline ostream& operator<< (ostream& os, vector<T> const&  v)
+    template <typename T, typename Alloc>
+    inline ostream& operator<< (ostream& os, vector<T, Alloc> const&  v)
     {
 	os << '[';
 	for (size_t r = 0; r < v.size(); ++r)
 	    os << v[r] << (r < v.size() - 1 ? "," : "");
 	return os << ']';
+    }
+
+    /// Print standard map
+    /** Only available when compiled with macro flag MTL_HAS_STD_OUTPUT_OPERATOR
+	to avoid (reduce) conflicts with other libraries. **/
+    template <typename Key, typename Data, typename Compare, typename Alloc>
+    inline ostream& operator<< (ostream& os, map<Key, Data, Compare, Alloc> const&  m)
+    {
+	if (m.empty()) return os << "{}";
+	typedef typename map<Key, Data, Compare, Alloc>::const_iterator iter_type;
+	os << '{';
+	for (iter_type it= m.begin(), end= m.end(); it != end; ++it)
+	    os << it->first << ": " << it->second << ", ";
+	return os << "\b\b} ";
     }
 
     /// Print standard pair
@@ -40,6 +55,7 @@ namespace std {
     {
 	return os << '(' << p.first << ',' << p.second << ')';
     }
+
 } // namespace mtl
 
 #endif // MTL_HAS_STD_OUTPUT_OPERATOR

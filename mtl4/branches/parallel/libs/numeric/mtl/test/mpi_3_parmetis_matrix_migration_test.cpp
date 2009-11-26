@@ -17,6 +17,7 @@
 
 #if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
 
+#include <map>
 #include <utility>
 #include <vector>
 #include <algorithm>
@@ -84,6 +85,11 @@ void test(Matrix& A,  const char* name, int version)
     std::vector<size_type> columns;
     global_columns(A, columns);
     mout << "Global columns = " << columns << '\n';
+
+    std::map<size_type, size_type> new_global;
+    new_global_map(migration, columns, new_global);
+    mout << "Mapping of columns " << new_global << '\n';
+    
 }
 
 
