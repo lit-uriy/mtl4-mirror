@@ -274,7 +274,7 @@ namespace mtl {
 	void inline local_to_global(const Dist& dist, std::vector<base_distribution::size_type>& indices, int p)
 	{
 	    for (std::size_t i= 0; i < indices.size(); i++)
-		indices[i]= dist.local_to_global(indices[i]);
+		indices[i]= dist.local_to_global(indices[i], p);
 	}
 
     } // namespace par
