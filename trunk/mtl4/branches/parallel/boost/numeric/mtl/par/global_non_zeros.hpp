@@ -64,31 +64,6 @@ struct global_non_zeros_aux
 	traverse_distributed(A, vis);
 	
 
-#if 0
-	// Non-zeros from local matrix
-	vec_type tmp;
-	extract(A.local_matrix, tmp);
-	local_to_global(tmp, my_rank); 
-	consume(non_zeros, tmp);
-
-	// Non-zeros from remote matrices
-	typedef typename DistMatrix::remote_map_type rmt;
-	const rmt& remote_map(A.remote_matrices); 
-	for (typename rmt::const_iterator it= remote_map.begin(), end= remote_map.end(); it != end; ++it) {
-	    extract(it->second, tmp);
-	    int p= it->first;
-
-	    // decompress columns
-	    const dense_vector<size_type>& index_comp= A.index_comp.find(p)->second;
-	    for (unsigned i= 0, end= tmp.size(); i < end; i++) {
-		size_type& c= tmp[i].second;
-		c= index_comp[c];
-	    }
-	    local_to_global(tmp, p); 
-	    consume(non_zeros, tmp);
-	}
-#endif
-
 	if (!with_diagonal) {
 	    typename vec_type::iterator new_end = remove_if(non_zeros.begin(), non_zeros.end(), is_reflexive_t());
 	    non_zeros.erase(new_end, non_zeros.end());
@@ -104,31 +79,6 @@ struct global_non_zeros_aux
 	    // mout << "Local and remote non-zeros (uniquely)" << non_zeros << '\n';
 	}
     }
-
-#if 0
-    template <typename Matrix>
-    void extract(const Matrix& A, vec_type& v)
-    {
-	namespace traits= mtl::traits;
-	typename traits::row<Matrix>::type             row(A); 
-	typename traits::col<Matrix>::type             col(A); 
-	typedef typename traits::range_generator<tag::major, Matrix>::type  cursor_type;
-	typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
-	
-	for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor)
-	    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
-		v.push_back(std::make_pair(row(*icursor), col(*icursor)));
-    }
-
-    void local_to_global(vec_type& non_zeros, int p)
-    {
-	for (unsigned i= 0; i < non_zeros.size(); i++) {
-	    entry_type& nz= non_zeros[i];
-	    nz.first=  row_dist.local_to_global(nz.first); 
-	    nz.second= col_dist.local_to_global(nz.second, p);
-	}
-    }
-#endif
 
     struct matrix_visitor
     {	
