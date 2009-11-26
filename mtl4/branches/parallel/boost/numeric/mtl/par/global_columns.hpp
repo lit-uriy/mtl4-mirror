@@ -28,118 +28,47 @@
 namespace mtl { namespace matrix {
 
 
-template <typename DistMatrix> struct global_columns_aux;
+template <typename DistMatrix> struct global_columns_visitor;
 
 template <typename DistMatrix>
-void global_columns(const DistMatrix& A,
+void global_columns(const DistMatrix& D,
 		    std::vector<typename Collection<DistMatrix>::size_type>& columns)
 {
-    global_columns_aux<DistMatrix> g(A);
-    g(columns);
+    global_columns_visitor<DistMatrix> vis(D, columns);
+    traverse_distributed(D, vis);
 }
 
+
 template <typename DistMatrix> 
-struct global_columns_aux
-{
+struct global_columns_visitor
+{	
     typedef typename Collection<DistMatrix>::size_type size_type;
     typedef std::vector<size_type>                     vec_type;
 
-    explicit global_columns_aux(const DistMatrix& D) : D(D) {}
-
-#if 0
-    void operator()(vec_type& columns)
-    {
-	// Non-zeros from local matrix
-	vec_type tmp;
-	extract(A.local_matrix, tmp);
-	local_to_global(col_dist, tmp, my_rank); 
-	eat(columns, tmp);
-
-	// Non-zeros from remote matrices
-	typedef typename DistMatrix::remote_map_type rmt;
-	const rmt& remote_map(A.remote_matrices); 
-	for (typename rmt::const_iterator it= remote_map.begin(), end= remote_map.end(); it != end; ++it) {
-	    extract(it->second, tmp);
-	    int p= it->first;
-
-	    // decompress columns
-	    const dense_vector<size_type>& index_comp= A.index_comp.find(p)->second;
-	    for (unsigned i= 0, end= tmp.size(); i < end; i++)
-		tmp[i]= index_comp[tmp[i]];
-	    local_to_global(col_dist, tmp, p); 
-	    eat(columns, tmp);
-	}
-    }
-
+    explicit global_columns_visitor(const DistMatrix& D, vec_type& columns) 
+      : D(D), col_dist(col_distribution(D)), columns(columns) {}
 
     template <typename Matrix>
-    void extract(const Matrix& A, vec_type& v)
+    void operator()(const Matrix& A, int p)
     {
 	namespace traits= mtl::traits;
 	typename traits::col<Matrix>::type             col(A); 
 	typedef typename traits::range_generator<tag::major, Matrix>::type  cursor_type;
 	typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
 	
+	vec_type tmp;
 	for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor)
 	    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
-		v.push_back(col(*icursor));
+		tmp.push_back(D.decompress_column(col(*icursor), p));
+	local_to_global(col_dist, tmp, p); 
+	consume(columns, tmp);
     }
 
-    void eat(vec_type& columns, vec_type& eaten)
-    {
-	columns.insert(columns.end(), eaten.begin(), eaten.end());
-	vec_type tmp;
-	swap(eaten, tmp);
-    }
-#endif
-
-    struct matrix_visitor
-    {	
-	explicit matrix_visitor(const DistMatrix& D, vec_type& columns) 
-	  : D(D), col_dist(col_distribution(D)), columns(columns) {}
-
-	template <typename Matrix>
-	void operator()(const Matrix& A, int p)
-	{
-	    vec_type tmp;
-	    extract(A, tmp, p);
-	    local_to_global(col_dist, tmp, p); 
-	    consume(columns, tmp);
-	}
-
-	template <typename Matrix>
-	void extract(const Matrix& A, vec_type& v, int p)
-	{
-	    namespace traits= mtl::traits;
-	    typename traits::col<Matrix>::type             col(A); 
-	    typedef typename traits::range_generator<tag::major, Matrix>::type  cursor_type;
-	    typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
-	
-	    for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor)
-		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
-		    v.push_back(D.decompress_column(col(*icursor), p));
-	}
-
-	const DistMatrix& D;
-	typename DistMatrix::col_distribution_type const&  col_dist;
-	vec_type& columns;
-    };
-
-    void operator()(vec_type& columns)
-    {
-	matrix_visitor vis(D, columns);
-	traverse_distributed(D, vis);
-    }
-
-  private:
     const DistMatrix& D;
-    // mtl::par::multiple_ostream<> mout;
+    typename DistMatrix::col_distribution_type const&  col_dist;
+    vec_type& columns;
 };
-
-
-
-
-
+    
 }} // namespace mtl::matrix
 
 #endif // MTL_MATRIX_GLOBAL_COLUMNS_INCLUDE
