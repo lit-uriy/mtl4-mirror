@@ -140,8 +140,14 @@ class distributed
 	return *this;
     }
 
+    /// Leading dimension
     size_type dim1() { return mtl::traits::is_row_major<self>::value ? grows : gcols; }
+    /// Non-leading dimension
     size_type dim2() { return mtl::traits::is_row_major<self>::value ? gcols : grows; }
+
+    // Decompress column index from buffer index to entire sub-vector range; for internal use only
+    size_type decompress_column(size_type col, int p) const
+    { return p == cdp->rank() ? col : index_comp.find(p)->second[col];  }
 
   private:
     void col_dist_assign(const self& src, boost::mpl::true_)
@@ -158,15 +164,19 @@ class distributed
 	cdp= new ColDistribution(src.col_dist);	
     }
 
-
+    /// Communicator (of row distribution)
     friend inline const boost::mpi::communicator& communicator(const self& d) { return communicator(d.row_dist); }
 			      
     template <typename DistMatrix, typename Updater> friend class distributed_inserter;
 
+    /// Number of global rows
     friend inline size_type num_rows(const self& A) { return A.grows; }
+    /// Number of global columns
     friend inline size_type num_cols(const self& A) { return A.gcols; }
+    /// Global size
     friend inline size_type size(const self& A) { return A.rows * A.gcols; }
 
+    /// Reference to local matrix
     friend inline const local_type& local(const self& A) { return A.local_matrix; }
     friend inline local_type& local(self& A) { return A.local_matrix; }
 
@@ -222,6 +232,7 @@ class distributed
 
     template <typename DistMatrix> friend struct global_non_zeros_aux;
     template <typename DistMatrix> friend struct global_columns_aux;
+    template <typename DistMatrix, typename Visitor> friend void traverse_distributed(const DistMatrix& A, Visitor& vis);
 
   public:
     size_type                      grows, gcols, total_send_size, total_recv_size;

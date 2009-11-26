@@ -16,6 +16,8 @@
 #include <vector>
 #include <algorithm>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/stl_extension.hpp>
+#include <boost/numeric/mtl/matrix/traverse_distributed.hpp>
 
 #include <boost/numeric/mtl/operation/std_output_operator.hpp>
 #include <boost/numeric/mtl/par/rank_ostream.hpp>
@@ -54,13 +56,20 @@ struct global_non_zeros_aux
 	bool operator()(const entry_type& nz) { return nz.first == nz.second; }
     };
 
+    struct matrix_visitor;
+
     void operator()(vec_type& non_zeros, bool symmetric, bool with_diagonal)
     {
+	matrix_visitor vis(A, non_zeros);
+	traverse_distributed(A, vis);
+	
+
+#if 0
 	// Non-zeros from local matrix
 	vec_type tmp;
 	extract(A.local_matrix, tmp);
 	local_to_global(tmp, my_rank); 
-	eat(non_zeros, tmp);
+	consume(non_zeros, tmp);
 
 	// Non-zeros from remote matrices
 	typedef typename DistMatrix::remote_map_type rmt;
@@ -76,8 +85,9 @@ struct global_non_zeros_aux
 		c= index_comp[c];
 	    }
 	    local_to_global(tmp, p); 
-	    eat(non_zeros, tmp);
+	    consume(non_zeros, tmp);
 	}
+#endif
 
 	if (!with_diagonal) {
 	    typename vec_type::iterator new_end = remove_if(non_zeros.begin(), non_zeros.end(), is_reflexive_t());
@@ -90,13 +100,12 @@ struct global_non_zeros_aux
 	    // Exchange and remove duplicates
 	    exchange(non_zeros);
 	    // mout << "Local and remote non-zeros (after exchange) " << non_zeros << '\n';
-	    sort(non_zeros.begin(), non_zeros.end());
-	    typename vec_type::iterator new_end = unique(non_zeros.begin(), non_zeros.end());
-	    non_zeros.erase(new_end, non_zeros.end());
+	    only_unique(non_zeros);
 	    // mout << "Local and remote non-zeros (uniquely)" << non_zeros << '\n';
 	}
     }
 
+#if 0
     template <typename Matrix>
     void extract(const Matrix& A, vec_type& v)
     {
@@ -119,6 +128,51 @@ struct global_non_zeros_aux
 	    nz.second= col_dist.local_to_global(nz.second, p);
 	}
     }
+#endif
+
+    struct matrix_visitor
+    {	
+	explicit matrix_visitor(const DistMatrix& D, vec_type& non_zeros) 
+	  : D(D), non_zeros(non_zeros) {}
+
+	template <typename Matrix>
+	void operator()(const Matrix& A, int p)
+	{
+	    vec_type tmp;
+	    extract(A, tmp, p);
+	    local_to_global(tmp, p);
+	    consume(non_zeros, tmp);
+	}
+
+	template <typename Matrix>
+	void extract(const Matrix& A, vec_type& v, int p)
+	{
+	    namespace traits= mtl::traits;
+	    typename traits::row<Matrix>::type             row(A); 
+	    typename traits::col<Matrix>::type             col(A); 
+	    typedef typename traits::range_generator<tag::major, Matrix>::type  cursor_type;
+	    typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
+	
+	    for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor)
+		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
+		    v.push_back(std::make_pair(row(*icursor), D.decompress_column(col(*icursor), p)));
+	}
+
+	void local_to_global(vec_type& non_zeros, int p)
+	{
+	    typename DistMatrix::row_distribution_type const& row_dist(row_distribution(D));
+	    typename DistMatrix::row_distribution_type const& col_dist(col_distribution(D));
+	    for (unsigned i= 0; i < non_zeros.size(); i++) {
+		entry_type& nz= non_zeros[i];
+		nz.first=  row_dist.local_to_global(nz.first); 
+		nz.second= col_dist.local_to_global(nz.second, p);
+	    }
+	}
+
+	const DistMatrix& D;
+	vec_type& non_zeros;
+    };
+
 
     struct is_remote_t
     {
@@ -146,14 +200,7 @@ struct global_non_zeros_aux
 	typename vec_type::iterator new_end = remove_if(non_zeros.begin(), non_zeros.end(), is_remote);
 	non_zeros.erase(new_end, non_zeros.end());
 	for (unsigned p= 0; p < row_dist.size(); p++)
-	    eat(non_zeros, recv_buffers[p]);
-    }
-
-    void eat(vec_type& non_zeros, vec_type& eaten)
-    {
-	non_zeros.insert(non_zeros.end(), eaten.begin(), eaten.end());
-	vec_type tmp;
-	swap(eaten, tmp);
+	    consume(non_zeros, recv_buffers[p]);
     }
 
   private:
