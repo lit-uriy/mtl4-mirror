@@ -123,8 +123,6 @@ void parmetis_distribution(const block_distribution& old_dist, const parmetis_in
 	migration.add_new_global(recv_glob[p][counters[p]++]);
     }
     mout << "old_to_new is " << migration.old_to_new << '\n';
-
-
 }
 
 
