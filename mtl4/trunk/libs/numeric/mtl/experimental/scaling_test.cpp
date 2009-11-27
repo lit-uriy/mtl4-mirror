@@ -3,7 +3,8 @@
 
 using namespace std;
 
-template <int Scale> struct scaling {};
+template <int Scale> struct scaling 
+{    template <typename T> T operator*(T x) const { return Scale * x; }  };
 
 template <> struct scaling<-1> 
 {    template <typename T> T operator*(T x) const { return -x; }   };
@@ -20,11 +21,11 @@ typedef mtl::dense_vector<float, mtl::vector::parameters<mtl::col_major, mtl::ve
 
 template <typename S, typename V> struct scaled_product2;
 
-template <typename S0, typename S1>
+template <int S0, int S1>
 struct scaling_vector2 : public fveci2_type
 {
-    typedef S0                      s0;
-    typedef S1                      s1;
+    typedef scaling<S0>             s0;
+    typedef scaling<S1>             s1;
     typedef scaling_vector2<S0, S1> self;
 
     template <typename Vector>
@@ -46,6 +47,8 @@ struct scaled_product2 : public fvecf2_type
     {
 	return i == 0 ? typename S::s0() * v[0] : typename S::s1() * v[1];
     }
+    
+    // template <int I> value_type at() { return S::at<I>::type() * v[I]; }
 
     const V& v;
 };
@@ -70,8 +73,8 @@ int main(int argc, char** argv)
     w= 2.0, 7.5;
     std::cout << "v = " << v << ", w = " << w << '\n';
 #if 0
-    scaling_vector2<scaling<-1>, scaling<1> > s0;
-    scaling_vector2<scaling< 1>, scaling<0> > s1;
+    scaling_vector2<-1, 1> s0;
+    scaling_vector2< 1, 0> s1;
 
     z= s0 * v; // + s1 * w;
     std::cout << "z = " << z << '\n';
