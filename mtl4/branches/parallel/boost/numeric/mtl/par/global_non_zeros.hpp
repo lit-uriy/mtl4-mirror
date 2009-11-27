@@ -15,9 +15,11 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
+#include <boost/mpi/collectives/all_to_all.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/stl_extension.hpp>
 #include <boost/numeric/mtl/matrix/traverse_distributed.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
 
 #include <boost/numeric/mtl/operation/std_output_operator.hpp>
 #include <boost/numeric/mtl/par/rank_ostream.hpp>

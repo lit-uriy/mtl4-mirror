@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/utility/stl_extension.hpp>
 #include <boost/numeric/mtl/matrix/traverse_distributed.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
 
 namespace mtl { namespace matrix {
 

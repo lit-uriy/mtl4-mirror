@@ -36,9 +36,10 @@ template <typename Inserter>
 struct ins
 {
     typedef typename Inserter::size_type  size_type;
-    ins(Inserter& i) : i(i) {}
-    void operator()(size_type r, size_type c) {	i[r][c] << 1.0;  }
+    ins(Inserter& i, int start) : i(i), v(start) {}
+    void operator()(size_type r, size_type c) {	i[r][c] << double(v++);  }
     Inserter& i;
+    int       v;
 };
 
 template <typename Matrix>
@@ -54,7 +55,7 @@ void test(Matrix& A,  const char* name, int version)
     mpi::communicator comm(communicator(A));
     {
 	mtl::matrix::inserter<Matrix> mins(A);
-	ins<mtl::matrix::inserter<Matrix> > i(mins);
+	ins<mtl::matrix::inserter<Matrix> > i(mins, 10*(comm.rank()+1));
         switch (version) {
           case 1: 
 	    switch (comm.rank()) {
@@ -64,7 +65,7 @@ void test(Matrix& A,  const char* name, int version)
     	    }; break;
           case 2: 
     	    switch (comm.rank()) {
-	      case 0: i(0, 1); i(1, 2); i(2, 3); std::cout << "version 2\n"; break;
+	      case 0: i(0, 1); i(1, 2); i(2, 3); std::cout << "\n\nversion 2\n"; break;
     	      case 1: i(3, 4); i(4, 5); break;
     	      case 2: i(5, 6); i(6, 0);
     	  }; break;
@@ -90,7 +91,10 @@ void test(Matrix& A,  const char* name, int version)
     new_global_map(migration, columns, new_global);
     mout << "Mapping of columns " << new_global << '\n';
     
-    
+    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > B(7, 7, new_dist);
+    migrate_matrix(A, B, migration, new_global);
+
+    sout << "Migrated matrix is:" << '\n' << B;
 
 }
 
