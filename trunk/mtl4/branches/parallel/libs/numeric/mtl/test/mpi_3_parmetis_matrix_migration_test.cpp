@@ -90,6 +90,8 @@ void test(Matrix& A,  const char* name, int version)
     new_global_map(migration, columns, new_global);
     mout << "Mapping of columns " << new_global << '\n';
     
+    
+
 }
 
 
