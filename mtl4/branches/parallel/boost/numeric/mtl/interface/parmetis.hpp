@@ -77,11 +77,12 @@ int partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
 
 
 // Maybe pre-compile
-void parmetis_distribution(const block_distribution& old_dist, const parmetis_index_vector& part, 
-			   block_distribution& new_dist, block_migration& migration)
+block_migration inline parmetis_migration(const block_distribution& old_dist, const parmetis_index_vector& part)
 {
     using std::size_t;
     mtl::par::multiple_ostream<> mout;
+
+    block_migration migration(old_dist);
 
     // Telling new owner which global indices I'll give him
     std::vector<std::vector<size_t> > send_glob(old_dist.size()), recv_glob;
@@ -106,12 +107,13 @@ void parmetis_distribution(const block_distribution& old_dist, const parmetis_in
     size_t              my_size= migration.new_local_size();
     std::vector<size_t> all_sizes;
     all_gather(comm, my_size, all_sizes);
-    new_dist.setup_from_local_sizes(all_sizes);
+
+    migration.new_dist.setup_from_local_sizes(all_sizes);
     // mout << "New distribution is " << new_dist.starts << '\n';
 
     // Send the new global indices back to the owner in the old distribution (to perform migration)
     for (size_t i= 0; i < my_size; i++)
-	send_glob[old_dist.on_rank(migration.old_global(i))].push_back(new_dist.local_to_global(i));
+	send_glob[old_dist.on_rank(migration.old_global(i))].push_back(migration.new_dist.local_to_global(i));
     all_to_all(comm, send_glob, recv_glob);
     // mout << "Sended " << send_glob << "\nReceived " << recv_glob << '\n';
     { std::vector<std::vector<size_t> > tmp(comm.size()); swap(tmp, send_glob); } // release memory
@@ -123,11 +125,19 @@ void parmetis_distribution(const block_distribution& old_dist, const parmetis_in
 	migration.add_new_global(recv_glob[p][counters[p]++]);
     }
     // mout << "old_to_new is " << migration.old_to_new << '\n';
+
+    return migration;
 }
 
+/// Compute a new partitioning from a matrix and create a migration upon it
+template <typename DistMatrix>
+block_migration inline parmetis_migration(const DistMatrix& A)
+{
+    std::vector<idxtype> part;
+    partition_k_way(A, part);
 
- 
-
+    return parmetis_migration(row_distribution(A), part);
+}
 
 }} // namespace mtl::par
 
