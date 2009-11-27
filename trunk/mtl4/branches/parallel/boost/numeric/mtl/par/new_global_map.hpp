@@ -15,11 +15,8 @@
 #include <map>
 #include <utility>
 #include <vector>
+#include <boost/mpi/collectives/all_to_all.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
-
-#include <boost/numeric/mtl/operation/std_output_operator.hpp>
-#include <boost/numeric/mtl/par/rank_ostream.hpp>
-#include <boost/numeric/mtl/par/single_ostream.hpp>
 
 namespace mtl { namespace par {
 
