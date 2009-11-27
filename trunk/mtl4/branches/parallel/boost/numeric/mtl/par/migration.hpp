@@ -15,6 +15,10 @@
 #include <vector>
 #include <boost/numeric/mtl/par/distribution.hpp>
 
+#ifdef MTL_HAS_PARMETIS
+#  include <parmetis.h>
+#endif
+
 namespace mtl { namespace par {
 
 // More general implementation (between arbitrary distributions) will follow
@@ -23,12 +27,15 @@ template <typename OldDist, typename NewDist> class migration {};
 /// Class for handling the migration from one block distribution to another
 class block_migration 
 {
+  public:
     /// Size type
     typedef std::size_t     size_type;
 
-  public:
+    /// Constructor refers establishes references to old distribution (new distribution remains empty so far)
+    block_migration(const block_distribution& old_dist) 
+      : old_dist(old_dist), new_dist(old_dist.size(), communicator(old_dist)) {}
 
-    /// Constructor refers establishes references to old and new distribution
+    /// Constructor refers establishes references to old distribution and copies new one
     block_migration(const block_distribution& old_dist, const block_distribution& new_dist) 
       : old_dist(old_dist), new_dist(new_dist) {}
 
@@ -52,10 +59,18 @@ class block_migration
     /** Needed to set up a new block distribution. **/
     size_type new_local_size() const { return new_to_old.size(); }
 
+    /// Reference to new distribution
+    const block_distribution& new_distribution() const { return new_dist; }
+
+# ifdef MTL_HAS_PARMETIS
+    friend block_migration parmetis_migration(const block_distribution&, const std::vector<idxtype>&);
+# endif
+
   private:
     std::vector<size_type> old_to_new, new_to_old;
   public:
-    const block_distribution &old_dist, &new_dist;
+    const block_distribution &old_dist;
+    block_distribution       new_dist;
 };
 
 

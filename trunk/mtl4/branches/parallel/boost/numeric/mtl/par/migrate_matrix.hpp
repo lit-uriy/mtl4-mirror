@@ -21,11 +21,19 @@ namespace mtl { namespace par {
     
 template <typename DistMatrixA, typename DistMatrixB, typename Map> struct migrate_matrix_visitor;
 
-/// Migrate %matrix \p A to %matrix \p B using the \p migration object and the column mapping \p new_global
-template <typename DistMatrixA, typename DistMatrixB, typename Map>
-void migrate_matrix(const DistMatrixA& A, DistMatrixB& B, 
-		    const block_migration& migration, const Map& new_global)
+/// Migrate %matrix \p A to %matrix \p B using the \p migration object 
+template <typename DistMatrixA, typename DistMatrixB>
+void migrate_matrix(const DistMatrixA& A, DistMatrixB& B, const block_migration& migration)
 {
+    typedef typename Collection<DistMatrixA>::size_type size_type;
+
+    std::vector<size_type> columns;
+    global_columns(A, columns);
+
+    typedef std::map<size_type, size_type> Map;
+    Map new_global;
+    new_global_map(migration, columns, new_global);
+
     migrate_matrix_visitor<DistMatrixA, DistMatrixB, Map> vis(A, B, migration, new_global);
     traverse_distributed(A, vis);
 }
@@ -66,9 +74,6 @@ struct migrate_matrix_visitor
     const block_migration&                              migration;
     const Map&                                          new_global;
 };
-
-
-
 
 
 }} // namespace mtl::par

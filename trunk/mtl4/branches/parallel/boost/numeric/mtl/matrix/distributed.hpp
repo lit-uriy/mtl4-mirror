@@ -29,6 +29,8 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
+#include <boost/numeric/mtl/par/migration.hpp>
+#include <boost/numeric/mtl/par/migrate_matrix.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/matrix/reorder.hpp>
@@ -98,6 +100,15 @@ class distributed
     explicit distributed(const MatrixSrc& src)
       : row_dist(0), cdp(new ColDistribution(0))
     {	*this= src;    }
+
+    /// Migrating copy
+    template <typename MatrixSrc>
+    explicit distributed(const MatrixSrc& src, const par::block_migration& migration)
+      : grows(num_rows(src)), gcols(num_cols(src)), row_dist(migration.new_distribution()),
+	cdp(&this->row_dist), local_matrix(row_dist.num_local(grows), cdp->num_local(gcols))
+    {
+	migrate_matrix(src, *this, migration);
+    }
 
     ~distributed() { clean_cdp(); clean_remote_matrices(); }
 

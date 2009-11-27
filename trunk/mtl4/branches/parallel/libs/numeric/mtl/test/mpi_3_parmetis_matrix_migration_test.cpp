@@ -74,28 +74,14 @@ void test(Matrix& A,  const char* name, int version)
 
     sout << "Matrix is:" << '\n' << A;
 
-    std::vector<idxtype> part;
-    int edge_cut= partition_k_way(A, part);
+    mtl::par::block_migration migration= parmetis_migration(A);
+    Matrix B(7, 7, migration.new_distribution());
+    migrate_matrix(A, B, migration);
 
-    // mout << "Edge cut = " << edge_cut << ", partition = " << part << '\n';
+    sout << "Migrated matrix is:\n" << B;
 
-    mtl::par::block_distribution old_dist(row_distribution(A)), new_dist(old_dist);
-    mtl::par::block_migration    migration(old_dist, new_dist);
-    parmetis_distribution(old_dist, part, new_dist, migration);
-
-    std::vector<size_type> columns;
-    global_columns(A, columns);
-    mout << "Global columns = " << columns << '\n';
-
-    std::map<size_type, size_type> new_global;
-    new_global_map(migration, columns, new_global);
-    mout << "Mapping of columns " << new_global << '\n';
-    
-    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > B(7, 7, new_dist);
-    migrate_matrix(A, B, migration, new_global);
-
-    sout << "Migrated matrix is:" << '\n' << B;
-
+    Matrix C(A, parmetis_migration(A)); 
+    sout << "Migrated matrix (in constructor) is:\n" << C;
 }
 
 
@@ -111,7 +97,7 @@ int test_main(int argc, char* argv[])
 	env.abort(87);
     }
 
-    matrix::distributed<matrix::compressed2D<double> > A(7, 7), B(7, 7);
+    mtl::matrix::distributed<mtl::matrix::compressed2D<double> >  A(7, 7), B(7, 7);
 
     test(A, "compressed2D<double>", 1);
     test(B, "compressed2D<double>", 2);

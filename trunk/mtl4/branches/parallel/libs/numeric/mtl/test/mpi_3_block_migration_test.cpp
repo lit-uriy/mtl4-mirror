@@ -60,9 +60,8 @@ void test()
       case 2: part.push_back(2); part.push_back(2); break;
     }
 
-    mtl::par::block_distribution old_dist(7), new_dist(old_dist);
-    mtl::par::block_migration    migration(old_dist, new_dist);
-    parmetis_distribution(old_dist, part, new_dist, migration);
+    mtl::par::block_distribution old_dist(7);
+    mtl::par::block_migration    migration= parmetis_migration(old_dist, part);
 
     switch (comm.rank()) {
       case 0: cn(0, 3, migration); cn(1, 0, migration); cn(2, 4, migration); break;
