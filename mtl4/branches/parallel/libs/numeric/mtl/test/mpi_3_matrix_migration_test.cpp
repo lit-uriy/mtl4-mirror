@@ -88,7 +88,7 @@ void test(Matrix& A,  const char* name, int version)
     sout << "Matrix is:\n" << A;
 
     mtl::par::block_migration    migration= parmetis_migration(row_distribution(A), part);
-    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > B(7, 7, migration.new_distribution());
+    Matrix B(7, 7, migration.new_distribution());
     migrate_matrix(A, B, migration);
 
     sout << "Migrated matrix is:\n" << B;
@@ -108,6 +108,12 @@ void test(Matrix& A,  const char* name, int version)
 	 case 2: cv(B, 5, 6, 21.); cv(B, 6, 1, 30.);
        }; break;
     }
+
+    mtl::par::block_migration    rev= reverse(migration);
+    Matrix C(B, rev);
+
+    sout << "Back-migrated matrix is (should be the original one (not automatically tested yet)):\n" << C;
+
 }
 
 

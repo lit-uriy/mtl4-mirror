@@ -85,13 +85,13 @@ void test(Vector& v,  const char* name, int version)
         }
     }
 
-    sout << "Vector is:" << v << '\n';
+    sout << "Vector is: " << v << '\n';
 
     mtl::par::block_migration    migration= parmetis_migration(distribution(v), part);
     Vector w(size(v), migration.new_distribution());
     migrate_vector(v, w, migration);
 
-    sout << "Migrated vector is:" << w << '\n';
+    sout << "Migrated vector is: " << w << '\n';
 
     switch (version) {
       case 1: 
@@ -108,13 +108,15 @@ void test(Vector& v,  const char* name, int version)
        }; break;
     }
 
-#if 0
     Vector u(v, migration);
-    sout << "Migrated vector (in constructor) is:" << u << '\n';
+    sout << "Migrated vector (in constructor) is: " << u << '\n';
 
     Vector z(u, reverse(migration));
-    sout << "Back-migrated vector (in constructor) is:" << z << '\n';
-#endif    
+    sout << "Back-migrated vector (in constructor) is: " << z << '\n';
+    Vector diff(size(u));
+    diff= v - z;
+    if (one_norm(diff) != 0.0)
+	throw "Wrong back-migration.";
 }
 
 

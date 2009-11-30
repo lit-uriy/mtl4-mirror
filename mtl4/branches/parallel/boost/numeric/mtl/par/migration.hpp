@@ -62,16 +62,32 @@ class block_migration
     /// Reference to new distribution
     const block_distribution& new_distribution() const { return new_dist; }
 
+    /// Reference to old distribution
+    const block_distribution& old_distribution() const { return old_dist; }
+
 # ifdef MTL_HAS_PARMETIS
     friend block_migration parmetis_migration(const block_distribution&, const std::vector<idxtype>&);
 # endif
+    friend block_migration inline reverse(const block_migration& src);
+    template <typename Indices, typename Map> friend void new_global_map(const block_migration&, const Indices&, Map&);
 
   private:
     std::vector<size_type> old_to_new, new_to_old;
-  public:
     const block_distribution &old_dist;
     block_distribution       new_dist;
 };
+
+/// Reverse migration: roles of old and new distribution are interchanged
+/** A view would be more efficient but would take more meta-programming.
+    Extension to migrations between arbitrary distributions on demand. **/
+block_migration inline reverse(const block_migration& src)
+{
+    block_migration rev(src.new_distribution(), src.old_distribution());
+    rev.old_to_new= src.new_to_old;
+    rev.new_to_old= src.old_to_new;
+    return rev;
+}
+
 
 
 }} // namespace mtl::par
