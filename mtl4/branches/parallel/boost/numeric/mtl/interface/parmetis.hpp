@@ -12,7 +12,9 @@
 #ifndef MTL_PARMETIS_INCLUDE
 #define MTL_PARMETIS_INCLUDE
 
-#if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
+#if defined(MTL_HAS_MPI)
+
+#if defined(MTL_HAS_PARMETIS)
 
 #include <cmath>
 #include <cassert>
@@ -141,6 +143,13 @@ block_migration inline parmetis_migration(const DistMatrix& A)
 
 }} // namespace mtl::par
 
-#endif
+#else // MTL_HAS_PARMETIS
+
+// To make more tests parmetis-independent
+typedef long int idxtype;
+
+#endif // MTL_HAS_PARMETIS
+
+#endif // MTL_HAS_MPI
 
 #endif // MTL_PARMETIS_INCLUDE
