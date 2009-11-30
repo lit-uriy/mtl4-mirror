@@ -1,0 +1,13 @@
+#/bin/bash -x 
+
+mpicxx mpi_3_parmetis_matrix_migration_test.cpp -DMTL_HAS_PARMETIS \
+  -o metis -DMTL_HAS_MPI -I../../../.. \
+  -I/u/htor/projekte/topomap/MPIParMETIS/ParMetis-3.1.1 \
+  -I/u/htor/projekte/topomap/MPIParMETIS/ \
+  -I/u/htor/projekte/topomap/ \
+  -L/u/htor/bgl-soft/lib -lboost_mpi-mt -lboost_serialization-mt \
+  /u/htor/projekte/topomap/MPIParMETIS/libmpiparmetis.a \
+  /u/htor/projekte/topomap/libtopomap.a \
+  /u/htor/projekte/topomap/virt_graph_scal.o \
+  /u/htor/projekte/topomap/MPIParMETIS/ParMetis-3.1.1/libparmetis.a \
+  /u/htor/projekte/topomap/MPIParMETIS/ParMetis-3.1.1/libmetis.a 
