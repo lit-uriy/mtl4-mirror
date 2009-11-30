@@ -241,8 +241,6 @@ class distributed
 	return out;
     }
 
-    template <typename DistMatrix> friend struct global_non_zeros_aux;
-    template <typename DistMatrix> friend struct global_columns_aux;
     template <typename DistMatrix, typename Visitor> friend void traverse_distributed(const DistMatrix& A, Visitor& vis);
 
   public:
