@@ -27,6 +27,8 @@
 #include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
 #include <boost/numeric/mtl/operation/local.hpp>
 #include <boost/numeric/mtl/operation/distribution.hpp>
+#include <boost/numeric/mtl/par/migration.hpp>
+#include <boost/numeric/mtl/par/migrate_vector.hpp>
 
 
 namespace mtl { namespace vector {
@@ -64,11 +66,18 @@ public:
       : gsize(gsize), dist(gsize), local_vector(dist.num_local(gsize), value) 
     {}
     
+    template <typename VectorSrc>
+    distributed(const VectorSrc& src, const par::block_migration& migration)
+      : gsize(src.size()), dist(migration.new_distribution()), local_vector(dist.num_local(gsize))
+    {
+	migrate_vector(src, *this, migration);
+    }
+
 #if 0
     template <typename VectorSrc>
     explicit distributed(const VectorSrc& src,
 			 typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
-      : gsize(size(src)), dist(distribution(src)), local_vector(dist.num_local(gsize))
+      : gsize(src.size()), dist(distribution(src)), local_vector(dist.num_local(gsize))
     {
 	*this= src;
     }
