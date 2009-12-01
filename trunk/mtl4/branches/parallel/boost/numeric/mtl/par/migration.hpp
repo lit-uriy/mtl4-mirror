@@ -29,7 +29,7 @@ class block_migration
 {
   public:
     /// Size type
-    typedef std::size_t     size_type;
+    typedef base_distribution::size_type     size_type;
 
     /// Constructor refers establishes references to old distribution (new distribution remains empty so far)
     block_migration(const block_distribution& old_dist) 
@@ -88,7 +88,24 @@ block_migration inline reverse(const block_migration& src)
     return rev;
 }
 
+/// Migration object that agglomerates everything on rank 0
+block_migration inline agglomerated_migration(const block_distribution& src)
+{
+    typedef block_migration::size_type size_type;
+    size_type n= src.max_global(), nl= src.num_local(n);
+    std::vector<size_type> vec(src.size()+1, n);
+    vec[0]= 0;
+    block_migration migr(src, block_distribution(vec, communicator(src)));
 
+    // Global indices do not change
+    if (src.rank() == 0)
+	for (size_type i= 0; i < n; i++)
+	    migr.add_old_global(i);
+    for (size_type i= 0; i < nl; i++)
+	migr.add_new_global(src.local_to_global(i));
+    
+    return migr;
+}
 
 }} // namespace mtl::par
 
