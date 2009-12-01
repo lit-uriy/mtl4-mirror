@@ -92,15 +92,8 @@ int test_main(int argc, char* argv[])
     mpi::environment env(argc, argv);
     mpi::communicator world;
     
-    if (world.size() != 3) {
-	std::cerr << "Example works only for 3 processors!\n";
-	env.abort(87);
-    }
-
-    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > A(7, 7), B(7, 7);
-
-    test(A, "compressed2D<double>", 1);
-    test(B, "compressed2D<double>", 2);
+    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > C(mtl::io::matrix_market("matrix.mtx"));
+    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > D(C, parmetis_migration(C));
 
     return 0;
 }
