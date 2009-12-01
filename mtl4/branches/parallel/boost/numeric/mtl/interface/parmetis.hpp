@@ -12,9 +12,7 @@
 #ifndef MTL_PARMETIS_INCLUDE
 #define MTL_PARMETIS_INCLUDE
 
-#if defined(MTL_HAS_MPI)
-
-#if defined(MTL_HAS_PARMETIS)
+#if defined(MTL_HAS_MPI) && defined(MTL_HAS_PARMETIS)
 
 #include <cmath>
 #include <cassert>
@@ -28,10 +26,25 @@
 #include <boost/numeric/mtl/par/global_non_zeros.hpp>
 #include <boost/numeric/mtl/par/rank_ostream.hpp>
 
+# ifdef MTL_HAS_TOPOMAP
+#   include <>
+# endif
+
+
 namespace mtl { namespace par {
 
-
 typedef std::vector<idxtype> parmetis_index_vector;
+
+# ifdef MTL_HAS_TOPOMAP
+
+    void inline topology_mapping(parmetis_index_vector& part)
+    {
+
+
+    }
+
+# endif
+
 
 template <typename DistMatrix>
 int partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
@@ -73,6 +86,11 @@ int partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
     ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0], vwgt, adjwgt, &wgtflag, &numflag, &ncon, 
 			 &nparts, tpwgts, ubvec, options, &edgecut, &part[0], &comm);
     part.pop_back(); // to avoid empty vector part has extra entry
+
+# ifdef MTL_HAS_TOPOMAP
+    topology_mapping(part);
+# endif
+
     // mout << "Edge cut = " << edgecut << ", partition = " << part << '\n';
     return edgecut;
 }
@@ -143,13 +161,6 @@ block_migration inline parmetis_migration(const DistMatrix& A)
 
 }} // namespace mtl::par
 
-#else // MTL_HAS_PARMETIS
-
-// To make more tests parmetis-independent
-typedef long int idxtype;
-
-#endif // MTL_HAS_PARMETIS
-
-#endif // MTL_HAS_MPI
+#endif // MTL_HAS_PARMETI && MTL_HAS_MPI
 
 #endif // MTL_PARMETIS_INCLUDE
