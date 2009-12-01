@@ -58,7 +58,7 @@ namespace mtl {
 	{
 	    void init(size_type n)
 	    {
-		size_type procs= comm.size(), inc= n / procs, mod= n % procs;
+		size_type procs= my_size, inc= n / procs, mod= n % procs;
 		starts[0]= 0;
 		for (size_type i= 0; i < procs; ++i)
 		    starts[i+1]= starts[i] + inc + (i < mod);
@@ -104,6 +104,10 @@ namespace mtl {
 	    /// For n global entries, how many are on my processor?
 	    template <typename Size>
 	    Size num_local(Size n) const { return num_local(n, my_rank); }
+
+	    /// The maximal number of global entries 
+	    /** Function does not exist for cyclic and block-cyclic distribution. **/
+	    size_type max_global() const { return starts[my_size]; }
 
 	    /// Is the global index \p n on my processor
 	    bool is_local(size_type n) const { return n >= starts[my_rank] && n < starts[my_rank+1]; }
@@ -276,7 +280,7 @@ namespace mtl {
 	    for (std::size_t i= 0; i < indices.size(); i++)
 		indices[i]= dist.local_to_global(indices[i], p);
 	}
-
+	
     } // namespace par
 
     namespace traits {
