@@ -25,10 +25,10 @@ namespace boost { namespace mpi {
     Hoefler, Siebert, and Lumsdaine: "Scalable Communication Protocols
     for Dynamic Sparse Data Exchange". 
 **/
-template <typename T>
+template <typename Vector>
 void inline all_to_all_sparse(const communicator& comm, 
-			      const std::vector<std::vector<T> >& in_values,
-			      std::vector<std::vector<T> >& out_values)
+			      const std::vector<Vector>& in_values,
+			      std::vector<Vector>& out_values)
 {
     all_to_all_pcx(comm, in_values, out_values);
 }

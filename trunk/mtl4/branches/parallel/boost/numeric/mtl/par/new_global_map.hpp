@@ -15,7 +15,7 @@
 #include <map>
 #include <utility>
 #include <vector>
-#include <boost/mpi/collectives/all_to_all.hpp>
+#include <boost/mpi/collectives/all_to_all_sparse.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
 
 namespace mtl { namespace par {
@@ -47,14 +47,14 @@ void new_global_map(const block_migration& migration, const Indices& indices, Ma
 	else
 	    send_buffers[old_dist.on_rank(ind)].push_back(ind);
     }
-    all_to_all(communicator(old_dist), send_buffers, recv_buffers);
+    all_to_all_sparse(communicator(old_dist), send_buffers, recv_buffers);
 
     // tell asking processor where are all indices gone
     new_buffer_type new_send_buffers(old_dist.size()), new_recv_buffers;
     for (size_t p= 0; p < recv_buffers.size(); p++)
 	for (iter_type it= recv_buffers[p].begin(), end= recv_buffers[p].end(); it != end; ++it)
 	    new_send_buffers[p].push_back(std::make_pair(*it, migration.new_global(old_dist.global_to_local(*it))));
-    all_to_all(communicator(old_dist), new_send_buffers, new_recv_buffers);
+    all_to_all_sparse(communicator(old_dist), new_send_buffers, new_recv_buffers);
 
     // put index mapping I got from others into map
     for (size_t p= 0; p < new_recv_buffers.size(); p++)

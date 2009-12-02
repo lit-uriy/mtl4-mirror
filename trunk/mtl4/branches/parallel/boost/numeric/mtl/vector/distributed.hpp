@@ -17,7 +17,7 @@
 #include <iostream>
 
 #include <boost/mpi/communicator.hpp>
-#include <boost/mpi/collectives/all_to_all.hpp>
+#include <boost/mpi/collectives/all_to_all_sparse.hpp>
 #include <boost/mpi/collectives/all_gather.hpp>
 #include <boost/mpi/collectives/gather.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
@@ -185,7 +185,7 @@ public:
 
     ~distributed_inserter()
     {
-	boost::mpi::all_to_all(communicator(dist()), send_buffers, recv_buffers);
+	boost::mpi::all_to_all_sparse(communicator(dist()), send_buffers, recv_buffers);
 	for (unsigned p= 0; p < dist_size(); p++) {
 	    const std::vector<entry_type>& my_buffer= recv_buffers[p];
 	    for (unsigned i= 0; i < my_buffer.size(); i++)
