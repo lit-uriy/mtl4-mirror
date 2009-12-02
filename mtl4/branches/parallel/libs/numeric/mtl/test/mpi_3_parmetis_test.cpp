@@ -13,8 +13,6 @@
 #include <iostream>
 #include <boost/test/minimal.hpp>
 
-
-
 #if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
 
 #include <utility>

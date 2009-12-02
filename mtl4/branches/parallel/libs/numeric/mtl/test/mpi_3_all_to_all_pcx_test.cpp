@@ -13,7 +13,9 @@
 #include <iostream>
 #include <boost/test/minimal.hpp>
 
-#if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
+
+
+#if defined(MTL_HAS_MPI)
 
 #include <utility>
 #include <vector>
@@ -23,9 +25,10 @@
 #define MTL_HAS_STD_OUTPUT_OPERATOR // to print std::vector and std::pair
 #include <boost/numeric/mtl/mtl.hpp>
 
-#include <parmetis.h>
 #include <boost/mpi.hpp>
 #include <boost/serialization/string.hpp>
+
+#include <boost/mpi/collectives/all_to_all_pcx.hpp>
 
 namespace mpi = boost::mpi;
 using namespace std;
@@ -50,29 +53,24 @@ void test()
     mtl::par::single_ostream sout;
     mtl::par::multiple_ostream<> mout;
 
-    mtl::par::parmetis_index_vector part;
+    std::vector<std::vector<unsigned> > sb(3), recv_buffer1, recv_buffer2; 
+    
     mpi::communicator comm;
     switch (comm.rank()) {
-      case 0: part.push_back(1); part.push_back(0); part.push_back(1); break;
-      case 1: part.push_back(0); part.push_back(0); break;
-      case 2: part.push_back(2); part.push_back(2); break;
+      case 0: sb[1].push_back(3); sb[2].push_back(5); break;
+      case 1: sb[0].push_back(2); sb[2].push_back(5); sb[2].push_back(6); break;
+      case 2: sb[1].push_back(4); break;
     }
 
-    mtl::par::block_distribution old_dist(7);
-    mtl::par::block_migration    migration= parmetis_migration(old_dist, part);
+    all_to_all(comm, sb, recv_buffer1);
+    mout << "Send vector   = " << sb << '\n';
+    mout << "Recv vector 1 = " << recv_buffer1 << '\n';
 
-    switch (comm.rank()) {
-      case 0: cn(0, 3, migration); cn(1, 0, migration); cn(2, 4, migration); break;
-      case 1: cn(0, 1, migration); cn(1, 2, migration); break;
-      case 2: cn(0, 5, migration); cn(1, 6, migration); break;
-    }
     
-    switch (comm.rank()) {
-      case 0: co(0, 1, migration); co(1, 3, migration); co(2, 4, migration); break;
-      case 1: co(0, 0, migration); co(1, 2, migration); break;
-      case 2: co(0, 5, migration); co(1, 6, migration); break;
-    }
-
+    all_to_all_pcx(comm, sb, recv_buffer2);
+    mout << "Recv vector 2 = " << recv_buffer2 << '\n';
+    if (recv_buffer1 != recv_buffer2)
+	std::cout << comm.rank() << ": different\n"; //throw "Received wrong values.";
 }
 
 int test_main(int argc, char* argv[]) 
@@ -96,8 +94,7 @@ int test_main(int argc, char* argv[])
 
 int test_main(int argc, char* argv[]) 
 {
-    std::cout << "Test requires the definition of MTL_HAS_PARMETIS (and of course"
-	      << " the presence of ParMetis).\n";
+    std::cout << "Test requires the definition of MTL_HAS_MPI.\n";
     return 0;
 }
 
