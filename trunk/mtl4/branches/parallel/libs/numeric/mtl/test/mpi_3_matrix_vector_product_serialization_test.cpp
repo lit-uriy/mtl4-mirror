@@ -9,6 +9,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+// Works for arbitrary processor numbers, even larger then number of matrix rows
 
 #include <iostream>
 #include <cstdlib>
@@ -19,8 +20,6 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 namespace mpi = boost::mpi;
-
-
 
 template <typename Matrix, typename Vector>
 void test(Matrix& A, Vector& v, Vector& w, const char* name)
