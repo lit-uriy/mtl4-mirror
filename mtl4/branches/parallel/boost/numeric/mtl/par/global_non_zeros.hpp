@@ -15,7 +15,7 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
-#include <boost/mpi/collectives/all_to_all.hpp>
+#include <boost/mpi/collectives/all_to_all_sparse.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/stl_extension.hpp>
 #include <boost/numeric/mtl/matrix/traverse_distributed.hpp>
@@ -143,7 +143,7 @@ struct global_non_zeros_aux
 	}
 	// mout << "Send buffers " << send_buffers << '\n';
 
-	all_to_all(communicator(row_dist), send_buffers, recv_buffers);
+	all_to_all_sparse(communicator(row_dist), send_buffers, recv_buffers);
 	// mout << "Receive buffers " << recv_buffers << '\n';
 	
 	typename vec_type::iterator new_end = remove_if(non_zeros.begin(), non_zeros.end(), is_remote);

@@ -21,6 +21,10 @@
 #include <parmetis.h>
 #include <boost/static_assert.hpp>
 
+#include <boost/mpi/communicator.hpp>
+#include <boost/mpi/collectives/all_to_all_sparse.hpp>
+#include <boost/mpi/collectives/all_gather.hpp>
+
 #include <boost/numeric/mtl/par/distribution.hpp>
 #include <boost/numeric/mtl/par/migration.hpp>
 #include <boost/numeric/mtl/par/global_non_zeros.hpp>
@@ -109,7 +113,7 @@ block_migration inline parmetis_migration(const block_distribution& old_dist, co
     for (unsigned i= 0; i < part.size(); i++) 
 	send_glob[part[i]].push_back(old_dist.local_to_global(i));
     boost::mpi::communicator comm(communicator(old_dist));
-    all_to_all(comm, send_glob, recv_glob);
+    all_to_all_sparse(comm, send_glob, recv_glob);
     // mout << "Sended " << send_glob << "\nReceived " << recv_glob << '\n';
     { std::vector<std::vector<size_t> > tmp(comm.size()); swap(tmp, send_glob); } // release memory
 
@@ -134,7 +138,7 @@ block_migration inline parmetis_migration(const block_distribution& old_dist, co
     // Send the new global indices back to the owner in the old distribution (to perform migration)
     for (size_t i= 0; i < my_size; i++)
 	send_glob[old_dist.on_rank(migration.old_global(i))].push_back(migration.new_dist.local_to_global(i));
-    all_to_all(comm, send_glob, recv_glob);
+    all_to_all_sparse(comm, send_glob, recv_glob);
     // mout << "Sended " << send_glob << "\nReceived " << recv_glob << '\n';
     { std::vector<std::vector<size_t> > tmp(comm.size()); swap(tmp, send_glob); } // release memory
     

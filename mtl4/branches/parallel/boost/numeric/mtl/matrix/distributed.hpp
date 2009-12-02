@@ -20,7 +20,7 @@
 #include <map>
 
 #include <boost/mpi/communicator.hpp>
-#include <boost/mpi/collectives/all_to_all.hpp>
+#include <boost/mpi/collectives/all_to_all_sparse.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/serialization/vector.hpp>
@@ -309,7 +309,7 @@ class distributed_inserter
 	typedef typename dist_matrix_type::recv_structure recv_structure;
 	typedef typename dist_matrix_type::send_structure send_structure;
 
-	all_to_all(communicator(col_dist()), send_buffers, recv_buffers);
+	all_to_all_sparse(communicator(col_dist()), send_buffers, recv_buffers);
 	for (unsigned p= 0; p < col_size(); p++) {
 	    const std::vector<entry_type>& my_buffer= recv_buffers[p];
 	    for (unsigned i= 0; i < my_buffer.size(); i++) {
@@ -340,7 +340,7 @@ class distributed_inserter
 	    }
 
 	dist_matrix.total_send_size= 0;
-	all_to_all(communicator(col_dist()), index_comp, send_indices);
+	all_to_all_sparse(communicator(col_dist()), index_comp, send_indices);
 	for (unsigned p= 0; p < col_size(); p++)
 	    if (size(send_indices[p]) > 0) {
 		dist_matrix.send_info.insert(std::make_pair(p, send_structure(send_indices[p], dist_matrix.total_send_size)));
