@@ -400,6 +400,16 @@ if os.environ.has_key('PARMETIS_DIR'):
     mpi_env.Append(LIBS=[os.environ.get('METIS_LIB', 'metis.a')])
     mpi_env.Append(CCFLAGS = [macro_flag(env, 'MTL_HAS_PARMETIS')])
 
+###############################
+# Set up TopoMap in MPI Options
+###############################
+
+if os.environ.has_key('TOPOMAP_DIR'):
+    mpi_env.Append(LIBPATH=[os.environ['TOPOMAP_DIR']])
+    mpi_env.Append(CPPPATH=[os.environ['TOPOMAP_DIR']])
+    mpi_env.Append(LIBS=['topomap'])
+    mpi_env.Append(CCFLAGS = [macro_flag(env, 'MTL_HAS_TOPOMAP')])
+
 
 ###############################
 # Set up Debugging and Optimization Options

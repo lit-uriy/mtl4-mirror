@@ -31,7 +31,7 @@
 #include <boost/numeric/mtl/par/rank_ostream.hpp>
 
 # ifdef MTL_HAS_TOPOMAP
-#   include <>
+#   include <libtopomap.hpp>
 # endif
 
 
@@ -51,7 +51,7 @@ typedef std::vector<idxtype> parmetis_index_vector;
 
 
 template <typename DistMatrix>
-int partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
+int parmetis_partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
 {
     typedef typename DistMatrix::row_distribution_type rd_type;
     typedef typename mtl::matrix::global_non_zeros_aux<DistMatrix>::vec_type vec_type;
@@ -90,12 +90,20 @@ int partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
     ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0], vwgt, adjwgt, &wgtflag, &numflag, &ncon, 
 			 &nparts, tpwgts, ubvec, options, &edgecut, &part[0], &comm);
     part.pop_back(); // to avoid empty vector part has extra entry
+    // mout << "Edge cut = " << edgecut << ", partition = " << part << '\n';
+    return edgecut;
+}
+
+
+template <typename DistMatrix>
+int partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
+{
+    int edgecut= parmetis_partition_k_way(A, part);
 
 # ifdef MTL_HAS_TOPOMAP
     topology_mapping(part);
 # endif
 
-    // mout << "Edge cut = " << edgecut << ", partition = " << part << '\n';
     return edgecut;
 }
 
@@ -157,7 +165,7 @@ block_migration inline parmetis_migration(const block_distribution& old_dist, co
 template <typename DistMatrix>
 block_migration inline parmetis_migration(const DistMatrix& A)
 {
-    std::vector<idxtype> part;
+    parmetis_index_vector part;
     partition_k_way(A, part);
 
     return parmetis_migration(row_distribution(A), part);

@@ -33,8 +33,6 @@
 
 namespace mtl { namespace vector {
 
-namespace mpi = boost::mpi;
-
 template <typename Vector, typename Distribution>
 class distributed
   : public vec_expr< distributed<Vector, Distribution> >,
