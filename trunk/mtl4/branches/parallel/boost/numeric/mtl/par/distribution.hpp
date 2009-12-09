@@ -14,26 +14,26 @@
 
 #ifdef MTL_HAS_MPI
 
+#include <iostream>
 #include <vector>
 #include <algorithm>
 
 #include <boost/mpl/bool.hpp>
 #include <boost/mpi/communicator.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/operation/std_output_operator.hpp>
 
 namespace mtl { 
 
     namespace par {
 
-	namespace mpi = boost::mpi;
-	
 	/// Base class for all distributions
 	class base_distribution
 	{
 	  public:
 	    typedef std::size_t     size_type;
 	    
-	    explicit base_distribution (const mpi::communicator& comm= mpi::communicator()) 
+	    explicit base_distribution (const boost::mpi::communicator& comm= boost::mpi::communicator()) 
 	      : comm(comm), my_rank(comm.rank()), my_size(comm.size()) {}
 	    
 	    /// Distributions not specified further or of different types are considered different
@@ -42,16 +42,16 @@ namespace mtl {
 	    bool operator!=(const base_distribution& d) const { return true; }
 
 	    /// Current communicator
-	    friend inline const mpi::communicator& communicator(const base_distribution& d);
+	    friend inline const boost::mpi::communicator& communicator(const base_distribution& d);
 
 	    int rank() const { return my_rank; }
 	    int size() const { return my_size; }
 	  protected:
-	    mpi::communicator comm;
+	    boost::mpi::communicator comm;
 	    int               my_rank, my_size;
 	};
 
-        inline const mpi::communicator& communicator(const base_distribution& d) { return d.comm; }
+        inline const boost::mpi::communicator& communicator(const base_distribution& d) { return d.comm; }
 	
 	/// Block distribution
 	class block_distribution : public base_distribution
@@ -67,13 +67,13 @@ namespace mtl {
 
 	  public:
 	    /// Distribution for n (global) entries
-	    explicit block_distribution(size_type n, const mpi::communicator& comm= mpi::communicator())
+	    explicit block_distribution(size_type n, const boost::mpi::communicator& comm= boost::mpi::communicator())
 	      : base_distribution(comm), starts(comm.size()+1)
 	    { init(n); }
 
 	    /// Distribution vector
 	    explicit block_distribution(const std::vector<size_type>& starts, 
-					const mpi::communicator& comm= mpi::communicator())
+					const boost::mpi::communicator& comm= boost::mpi::communicator())
 	      : base_distribution(comm), starts(starts)
 	    {}
 
@@ -148,6 +148,15 @@ namespace mtl {
 		return lbound - starts.begin() - int(*lbound != n);
 	    }
 
+	    friend inline std::ostream& operator<< (std::ostream& out, const block_distribution& d)
+	    {
+#             ifdef MTL_HAS_STD_OUTPUT_OPERATOR
+		return out << d.starts; 
+#             else
+		return out;
+#             endif
+	    }
+
 	    //private:
 	    // No default constructor
 	    block_distribution() {}
@@ -156,14 +165,13 @@ namespace mtl {
 	    std::vector<size_type> starts;
 	};
 
-
 	/// Cyclic distribution
 	// Not tested yet
 	class cyclic_distribution : public base_distribution
 	{
 	  public:
 	    /// Construction of cyclic distribution 
-	    explicit cyclic_distribution(const mpi::communicator& comm= mpi::communicator()) 
+	    explicit cyclic_distribution(const boost::mpi::communicator& comm= boost::mpi::communicator()) 
 	      : base_distribution(comm) {}
 
 	    /// Change number of global entries to n (only dummy)
@@ -218,7 +226,7 @@ namespace mtl {
 	{
 	  public:
 	    /// Construction of block cyclic distribution 
-	    explicit block_cyclic_distribution(size_type bsize, const mpi::communicator& comm= mpi::communicator()) 
+	    explicit block_cyclic_distribution(size_type bsize, const boost::mpi::communicator& comm= boost::mpi::communicator()) 
 		: base_distribution(comm), bsize(bsize), sb(bsize * my_size) {}
 	    
 	    /// Change number of global entries to n (only dummy)
