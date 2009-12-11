@@ -11,7 +11,9 @@
 
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
+//#include <boost/test/minimal.hpp>
+
+
 
 #if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
 
@@ -83,22 +85,31 @@ void test(Matrix& A,  const char* name, int version)
 }
 
 
-int test_main(int argc, char* argv[]) 
+int main(int argc, char* argv[]) 
 {
     using namespace mtl;
 
     mpi::environment env(argc, argv);
     mpi::communicator world;
     
-    if (world.size() != 3) {
+    /*if (world.size() != 3) {
 	std::cerr << "Example works only for 3 processors!\n";
 	env.abort(87);
-    }
+    }*/
 
-    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > A(7, 7), B(7, 7);
+    //mtl::matrix::distributed<mtl::matrix::compressed2D<double> > A(7, 7), B(7, 7);
 
-    test(A, "compressed2D<double>", 1);
-    test(B, "compressed2D<double>", 2);
+
+    //test(A, "compressed2D<double>", 1);
+    //test(B, "compressed2D<double>", 2);
+
+//    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > C(mtl::io::matrix_market("matrix_market/mhd1280b.mtx"));
+    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > C(mtl::io::matrix_market("matrix.mtx"));
+
+    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > D(C, parmetis_migration(C));
+
+    mtl::par::single_ostream sout;
+	  //sout << "C is:\n" << C;
 
     return 0;
 }
@@ -106,7 +117,7 @@ int test_main(int argc, char* argv[])
  
 #else 
 
-int test_main(int argc, char* argv[]) 
+int main(int argc, char* argv[]) 
 {
     std::cout << "Test requires the definition of MTL_HAS_PARMETIS (and of course"
 	      << " the presence of ParMetis).\n";
