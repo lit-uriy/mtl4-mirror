@@ -34,6 +34,7 @@ class gauss_seidel
     typedef typename mtl::Collection<Matrix>::value_type Scalar;
     typedef typename mtl::Collection<Matrix>::size_type  size_type;
   public:
+    /// Construct with constant references to matrix and RHS vector
     gauss_seidel(const Matrix& A, const RHSVector& b) : A(A), b(b), dia_inv(num_rows(A)) 
     {
 	BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Matrix>::value)); // No CCS
