@@ -1,6 +1,6 @@
 #/bin/bash -x 
 
-mpicxx mpi_3_parmetis_matrix_migration_test.cpp -DMTL_HAS_PARMETIS \
+mpicxx mpi_3_parmetis_matrix_migration_test.cpp -DMTL_HAS_PARMETIS -DMTL_HAS_TOPOMAP \
   -o metis -DMTL_HAS_MPI -I../../../.. \
   -I/u/htor/projekte/topomap/MPIParMETIS/ParMetis-3.1.1 \
   -I/u/htor/projekte/topomap/MPIParMETIS/ \
