@@ -167,7 +167,7 @@ struct missing_diagonal : public domain_error
 struct access_during_insertion : public domain_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit access_during_insertion(const char *s= "Diagonal entry missing or not where it belongs to.")
+    explicit access_during_insertion(const char *s= "Diagonal entry missing.")
 	: domain_error(s) {}
 };
 

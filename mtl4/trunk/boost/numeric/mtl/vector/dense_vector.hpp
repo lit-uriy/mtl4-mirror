@@ -156,11 +156,13 @@ class dense_vector
     
     void delay_assign() const {}
 
+    // Compatibility with STL
     const_pointer begin() const { return this->elements() ; }
-    const_pointer end() const { return this->elements() + size() ; }
-    
+    const_pointer end() const { return this->elements() + size() ; }    
     pointer begin() { return this->elements() ; }
     pointer end() { return this->elements() + size() ; }
+    bool empty() const { return size() == 0; }
+
 
     /// Address of first data entry; to be used with care.
     value_type* address_data() { return begin(); }

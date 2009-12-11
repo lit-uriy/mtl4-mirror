@@ -13,6 +13,9 @@
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
+template <typename ArgMatrix>
+void inline f(const ArgMatrix& A) {}
+
 
 template <typename ResMatrix, typename ArgMatrix>
 void test(const ResMatrix&, const ArgMatrix& B)
@@ -21,6 +24,13 @@ void test(const ResMatrix&, const ArgMatrix& B)
 
     std::cout << "trans(B) is \n" << trans(B);
     std::cout << "trace(B) is " << trace(B) << "\n";
+
+#if 0 // Can't convert so far
+    ResMatrix D= B;
+    std::cout << "D(B) is \n" << D;
+    
+    f<ResMatrix>(B);
+#endif
 }
 
 
@@ -37,6 +47,7 @@ int test_main(int argc, char* argv[])
     test(A_dyn, A_dyn);
     test(A_dyn, A_stat);
     test(A_stat, A_stat);
+    test(A_stat, A_dyn);
 
     return 0;
 }
