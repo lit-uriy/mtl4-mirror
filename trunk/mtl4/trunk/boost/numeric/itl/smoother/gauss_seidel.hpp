@@ -41,7 +41,7 @@ class gauss_seidel
 	assert(num_cols(A) == size(b));     // Incompatible sizes
 	for (size_type i= 0; i < num_rows(A); ++i) {
 	    Scalar a= A[i][i];
-	    MTL_THROW_IF(a == 0, missing_diagonal());
+	    MTL_THROW_IF(a == 0, mtl::missing_diagonal());
 	    dia_inv[i]= 1.0 / a;
 	}
     }
