@@ -1,0 +1,46 @@
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University. 
+//               2008 Dresden University of Technology and the Trustees of Indiana University. 
+// All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
+
+#include <iostream>
+#include <boost/test/minimal.hpp>
+#include <boost/numeric/mtl/mtl.hpp>
+
+
+using namespace std;
+
+typedef std::complex<double> cmp;
+
+template <typename Vector>
+void test(const Vector& v, const char* name)
+{
+    mtl::multi_vector<Vector> A(5, 5);
+    A= 3.0;
+    A[3][2]= cmp(0, 1);
+    cout << "A after initialization is \n" << A << "\n";
+
+    mtl::dense_vector<cmp>  b(5, 4.0), x;
+    x= trans(A) * b;
+
+    cout << "x = " << x << "\n";
+    if (x[1] != 12.0) throw "Wrong value";
+    if (x[2] != cmp(12.0, 4.0)) throw "Wrong value";
+}
+
+
+int test_main(int argc, char* argv[])
+{
+    using namespace mtl;
+
+    dense_vector<cmp>    v;
+    test(v, "dense_vector<double>");
+
+    return 0;
+}
