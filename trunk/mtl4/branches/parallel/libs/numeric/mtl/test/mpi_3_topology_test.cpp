@@ -99,12 +99,12 @@ int test_main(int argc, char* argv[])
     // Migrate matrix as parmetis says
     matrix_type B(A, parmetis_migration(row_distribution(A), part));
     solve(B, "Matrix migrated by Parmetis");
-
+#if 0
     // Migrate as Torsten says
     topology_mapping(part);
     matrix_type C(A, parmetis_migration(row_distribution(A), part));
-    solve(C, "Matrix migrated by Parmetis");
-    
+    solve(C, "Matrix migrated by Parmetis and topology mapping");
+#endif    
     // It could have been so easy if we wouldn't compare the two mappings ;-) 
     // matrix_type D(C, parmetis_migration(C));
 
