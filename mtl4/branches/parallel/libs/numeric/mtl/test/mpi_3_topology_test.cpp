@@ -85,8 +85,7 @@ int test_main(int argc, char* argv[])
     io::matrix_market file(file_name);
     matrix_type A(file);
     assert(num_rows(A) == num_cols(A)); // check symmetry
-    sout << "A is\n" << A;
-
+    
     //matrix_type C(io::matrix_market("matrix.mtx")); // The file is not there!!!
     solve(A, "Matrix with naive block distribution");
 
