@@ -51,6 +51,22 @@ struct compute_summand< mat_cvec_times_expr<Matrix, CVector> >
     CVector value;
 };
 	
+/// Further specialization for distributed matrix vector products
+template <typename Matrix, typename CVector>
+struct compute_summand< mat_cvec_times_expr<mtl::matrix::distributed<Matrix>, mtl::vector::distributed<CVector> > >
+{
+    typedef mtl::vector::distributed<CVector>                              type;
+    typedef mat_cvec_times_expr<mtl::matrix::distributed<Matrix>, type> expr_type;
+
+    compute_summand(const expr_type& expr) 
+      : value(num_rows(expr.first), row_distribution(expr.first))
+    {
+	value= expr.first * expr.second;
+    }
+
+    type value;
+};
+	
 }} // namespace mtl::operation
 
 #endif // MTL__OPERATION_COMPUTE_SUMMAND_INCLUDE

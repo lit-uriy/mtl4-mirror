@@ -81,6 +81,7 @@ class matrix_market_istream
 	    while (my_stream) {
 		int r, c;
 		my_stream >> r >> c;
+		if (!my_stream) break; // in case while(my_stream) caught an empty line at the end
 		insert_value(ins, r-1, c-1, filter, Value());
 	    }
 	else // dense 
