@@ -13,7 +13,7 @@
 #include <iostream>
 #include <boost/test/minimal.hpp>
 
-#if defined(MTL_HAS_TOPOMAP) && defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
+#if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI) // && defined(MTL_HAS_TOPOMAP)
 
 #define MTL_HAS_STD_OUTPUT_OPERATOR // to print std::vector
 #include <boost/numeric/mtl/operation/std_output_operator.hpp>
@@ -54,7 +54,7 @@ void solve(const Matrix& A, const char* name)
     itl::pc::ic_0<Matrix>     P(A);
     
     // Solve with CG
-    itl::cyclic_iteration<double, so_type> iter(b, 500 /* max iter */, 1.e-8 /* rel. error red. */, 
+    itl::cyclic_iteration<double, so_type> iter(b, 50 /* max iter */, 1.e-8 /* rel. error red. */, 
 						0.0, 30 /* how often logged */, sout);
     boost::timer time;
     cg(A, x, b, P, iter);
@@ -74,6 +74,9 @@ int test_main(int argc, char* argv[])
     mpi::environment env(argc, argv);
     mpi::communicator world;
     
+    mtl::par::single_ostream     sout;
+    mtl::par::multiple_ostream<> mout;
+
     // Set file name (consider program being started from other directory)
     std::string program_dir= io::directory_name(argv[0]), 
 	file_name= io::join(program_dir, "matrix_market/bcsstk01.mtx"); // symm. (hopefully pos. def.)
@@ -82,16 +85,15 @@ int test_main(int argc, char* argv[])
     io::matrix_market file(file_name);
     matrix_type A(file);
     assert(num_rows(A) == num_cols(A)); // check symmetry
+    sout << "A is\n" << A;
+
     //matrix_type C(io::matrix_market("matrix.mtx")); // The file is not there!!!
     solve(A, "Matrix with naive block distribution");
-
-    mtl::par::single_ostream sout;
-    mtl::par::multiple_ostream<> mout;
 
     // Get partition from Parmetis (explicitly without topomap)
     parmetis_index_vector part;
     parmetis_partition_k_way(A, part);
-    mout << "Metis partition is " << part << '\n';
+    mout << "Metis partition is " << part << '\n'; 
 
     mtl::par::block_migration pmigr= parmetis_migration(row_distribution(A), part);
     mout << "New distribution is " << pmigr.new_distribution() << '\n';

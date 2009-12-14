@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     mpi::environment env(argc, argv);
     mpi::communicator world;
 
-    const bool strong= true;
+    const bool strong= false;
     int size1= strong ? 1000 : 1000 * world.size(), size2= 1000, N= size1 * size2;
 
     boost::timer time;
