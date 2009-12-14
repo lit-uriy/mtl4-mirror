@@ -83,6 +83,7 @@ class matrix_market_istream
 	    for (std::size_t i= 0; i < nnz; i++) {
 		size_type r, c;
 		my_stream >> r >> c;
+		if (!my_stream) break; // in case while(my_stream) caught an empty line at the end
 		insert_value(ins, r-1, c-1, filter, Value());
 	    }
 	else // dense 
