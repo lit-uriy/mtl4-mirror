@@ -45,17 +45,31 @@ typedef std::vector<idxtype> parmetis_index_vector;
 
 # ifdef MTL_HAS_TOPOMAP
 
-    void inline topology_mapping(parmetis_index_vector& part)
+    void inline topology_mapping(MPI_Comm comm, parmetis_index_vector& xadj, parmetis_index_vector& adjncy, 
+				 parmetis_index_vector& vtxdist, parmetis_index_vector& part)
     {
+	int      numflag= 0;
+	MPI_Comm newcomm;
+	MPIX_Graph_create_parmetis_unweighted(&vtxdist[0], &xadj[0], &adjncy[0], &numflag, &part[0], &comm, &newcomm);
 
+	// all those filenames should somehow come from a config file (or command line)
+	TPM_Fake_names_file = "./5x5x5.fake";
+	TPM_Write_graph_comm(newcomm, "./ltg.dot");
+	TPM_Write_phystopo(newcomm, "./ptg.dot", "./5x5x5.graph");
 
+	int newrank;
+	TPM_Topomap_greedy(newcomm, "./5x5x5.graph", 0, &newrank);
+	TPM_Topomap_greedy(newcomm, "./5x5x5_2.graph", 0, &newrank);
+	TPM_Topomap_multicore_greedy(newcomm, "./5x5x5_mc.graph", 0, &newrank);
+	TPM_Topomap_multicore_greedy(newcomm, "./5x5x5_mc_2.graph", 0, &newrank);
     }
 
 # endif
 
 
 template <typename DistMatrix>
-int parmetis_partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
+int parmetis_partition_k_way(const DistMatrix& A, parmetis_index_vector& xadj, parmetis_index_vector& adjncy, 
+			     parmetis_index_vector& vtxdist, parmetis_index_vector& part)
 {
     typedef typename DistMatrix::row_distribution_type rd_type;
     typedef typename mtl::matrix::global_non_zeros_aux<DistMatrix>::vec_type vec_type;
@@ -67,7 +81,9 @@ int parmetis_partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
     // mout << "Symmetric non-zero entries are " << non_zeros << '\n'; mout.flush();
 
     rd_type const&  row_dist= row_distribution(A);
-    parmetis_index_vector    xadj(num_rows(local(A))+1), adjncy(std::max(non_zeros.size(), std::size_t(1))), vtxdist(row_dist.size()+1);
+    xadj.resize(num_rows(local(A))+1);
+    adjncy.resize(std::max(non_zeros.size(), std::size_t(1)));
+    vtxdist.resize(row_dist.size()+1);
 
     BOOST_STATIC_ASSERT((mtl::traits::is_block_distribution<rd_type>::value));
     std::copy(row_dist.starts.begin(), row_dist.starts.end(), vtxdist.begin());
@@ -102,24 +118,12 @@ int parmetis_partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
 template <typename DistMatrix>
 int partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
 {
-    int edgecut= parmetis_partition_k_way(A, part);
+    parmetis_index_vector    xadj, adjncy, vtxdist;
+    int edgecut= parmetis_partition_k_way(A, xadj, adjncy, vtxdist, part);
 
 # ifdef MTL_HAS_TOPOMAP
-    topology_mapping(part);
+    topology_mapping(communicator(row_distribution(A)), xadj, adjncy, vtxdist, part);
 # endif
-
-    
-    MPI_Comm newcomm;
-    MPIX_Graph_create_parmetis_unweighted(&vtxdist[0], &xadj[0], &adjncy[0], &numflag, &part[0], &comm, &newcomm);
-
-    // all those filenames should somehow come from a config file (or command line)
-    TPM_Fake_names_file = "./5x5x5.fake";
-    TPM_Write_graph_comm(newcomm, "./ltg.dot");
-    TPM_Write_phystopo(newcomm, "./ptg.dot", "./5x5x5.graph");
-
-    int newrank;
-    TPM_Topomap_greedy(newcomm, "./5x5x5.graph", 0, &newrank);
-    TPM_Topomap_multicore_greedy(newcomm, "./5x5x5.graph", 0, &newrank);
     
     return edgecut;
 }

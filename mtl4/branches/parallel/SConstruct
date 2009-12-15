@@ -406,8 +406,11 @@ if os.environ.has_key('PARMETIS_DIR'):
 
 if os.environ.has_key('TOPOMAP_DIR'):
     mpi_env.Append(LIBPATH=[os.environ['TOPOMAP_DIR']])
-    mpi_env.Append(CPPPATH=[os.environ['TOPOMAP_DIR']])
     mpi_env.Append(LIBS=['topomap'])
+    mpi_env.Append(LIBPATH=[os.environ['TOPOMAP_DIR']+'/MPIParMETIS'])
+    mpi_env.Append(LIBS=['mpiparmetis'])
+    mpi_env.Append(CPPPATH=[os.environ['TOPOMAP_DIR']])
+    mpi_env.Append(CPPPATH=[os.environ['TOPOMAP_DIR']+'/MPIParMETIS'])
     mpi_env.Append(CCFLAGS = [macro_flag(env, 'MTL_HAS_TOPOMAP')])
 
 

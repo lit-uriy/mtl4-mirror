@@ -11,3 +11,4 @@ mpicxx mpi_3_parmetis_matrix_migration_test.cpp -DMTL_HAS_PARMETIS -DMTL_HAS_TOP
   /u/htor/projekte/topomap/virt_graph_scal.o \
   /u/htor/projekte/topomap/MPIParMETIS/ParMetis-3.1.1/libparmetis.a \
   /u/htor/projekte/topomap/MPIParMETIS/ParMetis-3.1.1/libmetis.a 
+
