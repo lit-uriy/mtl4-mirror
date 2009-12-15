@@ -17,8 +17,12 @@
 #include <cmath>
 #include <cassert>
 #include <vector>
+#include <map>
+#include <numeric>
 #include <algorithm>
 #include <parmetis.h>
+#include <mpiparmetis.h>
+#include <libtopomap.hpp>
 #include <boost/static_assert.hpp>
 
 #include <boost/mpi/communicator.hpp>
@@ -104,6 +108,19 @@ int partition_k_way(const DistMatrix& A, parmetis_index_vector& part)
     topology_mapping(part);
 # endif
 
+    
+    MPI_Comm newcomm;
+    MPIX_Graph_create_parmetis_unweighted(&vtxdist[0], &xadj[0], &adjncy[0], &numflag, &part[0], &comm, &newcomm);
+
+    // all those filenames should somehow come from a config file (or command line)
+    TPM_Fake_names_file = "./5x5x5.fake";
+    TPM_Write_graph_comm(newcomm, "./ltg.dot");
+    TPM_Write_phystopo(newcomm, "./ptg.dot", "./5x5x5.graph");
+
+    int newrank;
+    TPM_Topomap_greedy(newcomm, "./5x5x5.graph", 0, &newrank);
+    TPM_Topomap_multicore_greedy(newcomm, "./5x5x5.graph", 0, &newrank);
+    
     return edgecut;
 }
 
