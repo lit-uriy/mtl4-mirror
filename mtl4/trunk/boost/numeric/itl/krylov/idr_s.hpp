@@ -41,7 +41,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
     const Scalar                zero= math::zero(b[0]);
     Scalar                      omega(zero);
     Vector                      x0(x), y(n), v(n), t(n), q(n);
-    mtl::multi_vector<Vector>   dR(s, Vector(n, zero)), dX(s, Vector(n, zero)),	P(s, Vector(n, zero)), M(s, s);
+    mtl::multi_vector<Vector>   dR(Vector(n, zero), s), dX(Vector(n, zero), s), P(Vector(n, zero), s), M(s, s);
     mtl::dense2D<Scalar>        M2(s, s);
 
     Vector r(b - A * x);

@@ -8,20 +8,21 @@ int main(int argc, char* argv[])
     using namespace mtl;
 
     // CRS matrix
-    compressed2D<double>   a(12, 12);
+    compressed2D<double>   A(12, 12);
 
     // Laplace operator discretized on a 3x4 grid
-    matrix::laplacian_setup(a, 3, 4);
-    std::cout << "a is \n" << a;
+    matrix::laplacian_setup(A, 3, 4);
+    std::cout << "A is \n" << A;
     
     // Element access is allowed for reading
-    std::cout << "a[3][2] is " << a[3][2] << "\n\n";
+    std::cout << "A[3][2] is " << A[3][2] << "\n\n";
     
     // CCS matrix
-    compressed2D<float, matrix::parameters<tag::col_major> > b(10, 10);
-    // Assign a three times the identity to b
-    b= 3;
-    std::cout << "b is \n" << b << "\n";
+    compressed2D<float, matrix::parameters<tag::col_major> > B(10, 10);
+
+    // Assign the identity matrix times 3 to B
+    B= 3;
+    std::cout << "B is \n" << B << "\n";
 
     return 0;
 }
