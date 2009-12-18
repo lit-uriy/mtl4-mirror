@@ -572,12 +572,13 @@ These definitions are consistent with the according functions for matrices (\ref
 
 //-----------------------------------------------------------
 
-/*! \page matrix_types Matrix Types
+/*! \page matrix_types %Matrix Types
 
-Right now, MTL4 provides three %matrix types:
+Right now, MTL4 provides four %matrix types:
 - \ref dense2D;
-- \ref morton_dense; and
-- \ref compressed.
+- \ref morton_dense; 
+- \ref compressed; and
+- multi_vector, see \ref multivector.
 
 The type \ref dense2D defines regular 
 row-major and column-major matrices:
@@ -606,7 +607,8 @@ For a generic way to modify matrices see \ref matrix_insertion.
 Assigning a scalar value to a %matrix stores a multiple of
 the identity %matrix, i.e. the scalar is assigned to all
 diagonal elements and all off-diagonal elements are 0.
-If the %matrix is not square this assignment throws an exception.
+Diagonal elements are %matrix entries with identical row and column index.
+Therefore scalars can also be assigned to non-square matrices.
 This operation is generic (i.e. applicable to
 all %matrix types including sparse).
 
@@ -618,7 +620,7 @@ For instance, consider the multiplication of %vector x with the scalar alpha:
 \code
     y= alpha * x;
 \endcode
-where y is a %vector too.
+where y is a %vector, too.
 This %operation is equivalent to assigning alpha to the %matrix A and multiplying x with 
 A:
 \code
@@ -627,13 +629,17 @@ A:
 \endcode
 In other words, the %matrix A has the same impact on x as the scalar alpha itself.
 
-Assigning the %scalar value to the diagonal requires of course that the %matrix is 
-square.
-In the special case that the %scalar value is 0 (more precisely the multiplicative
-identity element of the %matrix's value_type) the %matrix can be non-square.
-This is consistent with the linear operator characteristic: applying the zero operator
-on some %vector results in the zero %vector with the dimension of the operators image.
-From a more pragmatic prospective 
+If the %matrix is not square, i.e. the linear operator's domain and image have different
+dimensions, the equivalence with the scalar multiplication applies accordingly.
+In case that the image has a lower dimension, say m, then only the first m entries of the
+vector from the domain are scaled with alpha and the others are ignored.
+If the image has an higher dimension then the last m-n entries are zero with
+n the dimension of the domain.
+When you rely on this behavior please check the revision of your MTL4 library:
+old versions, i.e. before revision 6843, considered it erroneous to store
+ a non-zero scalar to a non-square %matrix.
+
+From a more pragmatic prospective:
 \code
     A= 0; 
 \endcode
@@ -644,7 +650,20 @@ can be defined with the type \ref morton_dense:
 
 \include morton_dense.cpp
 
-A detailed description will be added soon.
+In the pure Morton order format 2 by 2 sub-matrices are stored contiguously in memory.
+4 by 4 matrices constitute of 4 2-by-2-matrices and use consecutive memory.
+The continuation of this recursive scheme provides square sub-matrices with power of two
+sizes that are in contiguous memory and allow for cache-efficient recursive algorithms.
+On the other hand, algorithms that are implemented fully recursively create considerable
+overhead for function calls.
+We therefore recommend using mixed schemes of %recursion and iteration. 
+Particularly efficient are algorithms that operate on mid-size blocks, e.g. 64 by 64,
+with regular row-major or column-major layout.
+MTL4 provides a virtually infinite number of memory layouts for dense matrices
+that are specified by a bitmask.
+A detailed description and discussion of recursive matrices and algorithm is
+provided in 
+<a href="http://www.osl.iu.edu/~pgottsch/ics07.pdf">this conference paper</a>.
 
 Sparse matrices are defined with the type \ref compressed2D:
 
@@ -686,7 +705,7 @@ The %matrix size is given by
 and is defined as product of the numbers of rows and columns.  
 These definitions are consistent with the according functions for vectors (\ref vector_def).
 
-How to fill  sparse matrices is shown in the following chapter.
+How to fill  sparse matrices is shown in section \ref matrix_insertion.
 
 \if Navigation \endif
   Return to \ref vector_def &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref multivector 
@@ -697,21 +716,30 @@ How to fill  sparse matrices is shown in the following chapter.
 
 /*! \page multivector Type Multivector
 
-There are another useful class in MTL4: the multi_vector.
-A multi-vector is a kind of matrix that is composed of coluum vectors.
-This type is very helpful if you want to store many vectors of the same length.
-To initialize a multi-vector, there are 2 different types:
-1.Constructor by number of rows and columns
+
+A multi-vector is an abstraction that is very useful in Krylov subspace methods, esp.
+when they are implemented generically.
+It is a %matrix that composed of column vectors.
+The simplest use case is to just store multiple vectors of the same length.
+Especially the %matrix %vector product including its transposed form allow for well-readable
+implementations of algorithms like GMRES and for straight-forward extension to distributed
+vectors.
+
+To create a multi-vector, there are two ways:
+-# Constructor by number of rows and columns: 
 \code
 	mtl::multi_vector<Vector> 	A(2, 3);
 \endcode
-
-2.Constructor by number of rows and column vector for initialization
+-# Constructor by number of rows and column %vector for initialization
 \code
 	mtl::multi_vector<Vector>	A(Vector(3), 2);
 \endcode
+In the first method, you get a %matrix which has 2 rows and 3 columns.
+This constructor with number of rows and columns exist for all %matrix types and is important for 
+generic creation.
 
-In the first method, you get a matrix which has 2 rows and 3 columns (see matrix initialization). In the 2nd method, you get a matrix with 2 rows and 3 columns.
+In the 2nd method, you get a %matrix with 2 rows and 3 columns.
+Remark: in older versions, before revision 6957, the arguments were reversed.
 
 To find out the number of rows use
 \code
@@ -723,31 +751,29 @@ Likewise the number of columns is given
   unsigned c= num_cols(A);
 \endcode
 
-To edit individual entries of the multi-vector, there are several possibilities. You can write a vector (same length) in the k-th column of the multi-vector, and turned around.
+To modify individual entries of the multi-vector, there are several possibilities. 
+You can write a %vector (same length) in the k-th column of the multi-vector, and vice versa.
 \code
 	mtl::multi_vector<Vector> 	A(2, 3);
 	Vector				v(2), w(2);
 	A.vector(k)= v;
-	v=  A.vector(k);
+	v= A.vector(k);
 \endcode
 You can also specify the row and column of the entry to be changed.
 \code
 	A[1][1]= 3.5;
 \endcode
 
-operations with multi-vectors
-On the one hand we can consider a multi-vector as separate vectors, but also as a matrix. Thus, there are many multi-vector operations.
-\code
-	Matrix				B(2,2), C(3,2), D(3,3);
-	B= A * C;			//Matrix= multi_vector * Matrix
-	D= C * A;			//Matrix= Matrix * multi_vector
-	v= B * A.vector(1);		//vector= Matrix * vector 
-	A.vector(0)= B* A.vector(1);	//vector= Matrix * vector
-\endcode
+\section ops_multi_vector Operations with multi-vectors
 
-The multi-vector is a kind of %matrix, therefore the following matixoperations are defined: trace(A), conj(A), trans(A), hermitian(A).
+On the one hand we can consider a multi-vector as a collection of vectors, on the other hand as a %matrix.
+Thus, there are many multi-vector %operations.
+\include multi_vector.cpp
 
-
+The multi-vector is a %matrix, therefore the following %matrix 
+%operations are defined: trace(A), conj(A), trans(A), hermitian(A).
+The interface is nevertheless minimalistic and not the same functionality as for other %matrix types is provided.
+More functions will be implemented when needed.
 
 
 

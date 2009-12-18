@@ -38,7 +38,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     Size                        k, n(size(x)), kmax(std::min(size(x), kmax_in));
     Vector                      r0(b - A *x), r(solve(L,r0)), s(kmax+1),
                                 c(kmax+1), g(kmax+1), va(n), va0(n), va00(n);
-    mtl::multi_vector<Vector>   v(kmax+1, Vector(n, zero)); 
+    mtl::multi_vector<Vector>   v(Vector(n, zero), kmax+1); 
     mtl::dense2D<Scalar>        h(kmax+1, kmax);
     irange                      range_n(0, n);
 
