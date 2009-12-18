@@ -572,7 +572,7 @@ These definitions are consistent with the according functions for matrices (\ref
 
 //-----------------------------------------------------------
 
-/*! \page matrix_types %Matrix Types
+/*! \page matrix_types Matrix Types
 
 Right now, MTL4 provides four %matrix types:
 - \ref dense2D;
