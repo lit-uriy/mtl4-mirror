@@ -49,19 +49,41 @@ typedef std::vector<idxtype> parmetis_index_vector;
 				 parmetis_index_vector& vtxdist, parmetis_index_vector& part)
     {
 	int      numflag= 0;
+
+        /* create communicator from Parmetis output arrays. The
+         * MPIParMETIS library creates a graph communicator that
+         * reflects the process neighborhoods. The Parmetis graph may
+         * contain more vertices than there are ranks in the
+         * communicator and depending on the mapping, there could be
+         * multiple "edges" between processors. The library creates an
+         * MPI topology (multi-)graph with all (multiple) edges in it.
+         * This information could be used as weights */
 	MPI_Comm newcomm;
 	MPIX_Graph_create_parmetis_unweighted(&vtxdist[0], &xadj[0], &adjncy[0], &numflag, &part[0], &comm, &newcomm);
 
+        /* this is all debug stuff (plots pretty cool graphs ;-)) */
 	// all those filenames should somehow come from a config file (or command line)
-	TPM_Fake_names_file = "./5x5x5.fake";
+	TPM_Fake_names_file = (char*)"./3x3x2.fake";
 	TPM_Write_graph_comm(newcomm, "./ltg.dot");
-	TPM_Write_phystopo(newcomm, "./ptg.dot", "./5x5x5.graph");
+	TPM_Write_phystopo(newcomm, "./ptg.dot", "./3x3x2.graph");
 
+        /* call into libToPoMap to get new permutation of ranks from
+         * Parmetis output. Double edges are interpreted as weights of
+         * the graph. MPI Edge weights are ignored. */
 	int newrank;
-	TPM_Topomap_greedy(newcomm, "./5x5x5.graph", 0, &newrank);
-	TPM_Topomap_greedy(newcomm, "./5x5x5_2.graph", 0, &newrank);
-	TPM_Topomap_multicore_greedy(newcomm, "./5x5x5_mc.graph", 0, &newrank);
-	TPM_Topomap_multicore_greedy(newcomm, "./5x5x5_mc_2.graph", 0, &newrank);
+	//TPM_Topomap_greedy(newcomm, "./3x3x2.graph", 0, &newrank);
+	TPM_Topomap_multicore_greedy(newcomm, "./3x3x2.graph", 0, &newrank);
+
+        /* Peter: der folgende Block dient nur der Veranschaulichung.
+         * Die Permutation bitte dann auf die ranks (0,1,2, ... ,p) die
+         * im Parmetis rauskommen anwenden */
+        {
+          int p; MPI_Comm_size(newcomm, &p);
+          int r; MPI_Comm_rank(newcomm, &r);
+          std::vector<int> permutation(p);
+          MPI_Allgather(&newrank, 1, MPI_INT, &permutation[0], 1, MPI_INT, newcomm);
+          if(!r) { printf("rank permutation: "); for(int i=0; i<p; ++i) printf("%i ", permutation[i]); printf("\n"); }
+        }
     }
 
 # endif
