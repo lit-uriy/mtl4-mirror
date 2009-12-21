@@ -34,6 +34,7 @@
 #include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/norms.hpp>
+#include <boost/numeric/mtl/operation/ones.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/orth.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>

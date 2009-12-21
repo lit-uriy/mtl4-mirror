@@ -47,6 +47,29 @@ struct category<dense2D<Value, Parameters> >
     typedef tag::dense2D type;
 };
 
+
+template <typename Functor>
+struct category<mtl::matrix::implicit_dense<Functor> >
+{
+    typedef tag::implicit_dense type;
+};
+
+template <typename Value>
+struct category<mtl::matrix::ones_matrix<Value> >
+  : public category<mtl::matrix::implicit_dense<mtl::matrix::ones_functor<Value> > > 
+{};
+
+template <typename Value>
+struct category<mtl::matrix::hilbert_matrix<Value> >
+  : public category<mtl::matrix::implicit_dense<mtl::matrix::hilbert_functor<Value> > > 
+{};
+
+template <typename Vector1, typename Vector2>
+struct category<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
+  : public category<mtl::matrix::implicit_dense<mtl::matrix::outer_product_functor<Vector1, Vector2> > > 
+{};
+
+
 template <typename Elt, unsigned long BitMask, typename Parameters>
 struct category<morton_dense<Elt, BitMask, Parameters> >
 {
@@ -95,37 +118,37 @@ struct category< vector::vec_vec_pmop_expr<E1,E2, SFunctor> >
 
 template <typename Functor, typename Vector> 
 struct category<vector::map_view<Functor, Vector> >
-    : public category<Vector>
+  : public category<Vector>
 {};
 
 template <typename Scaling, typename Vector>
 struct category< vector::scaled_view<Scaling, Vector> >
-    : public category< vector::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, 
-					Vector> >
+  : public category< vector::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, 
+				      Vector> >
 {};
-
+    
 // added by Hui Li
 template <typename Vector,typename RScaling>
 struct category< vector::rscaled_view<Vector,RScaling> >
-    : public category< vector::map_view<tfunctor::rscale<typename Vector::value_type,RScaling>, 
-					Vector> >
+  : public category< vector::map_view<tfunctor::rscale<typename Vector::value_type,RScaling>, 
+				      Vector> >
 {};
 
 // added by Hui Li
 template <typename Vector,typename Divisor>
 struct category< vector::divide_by_view<Vector,Divisor> >
-    : public category< vector::map_view<tfunctor::divide_by<typename Vector::value_type,Divisor>, 
-					Vector> >
+  : public category< vector::map_view<tfunctor::divide_by<typename Vector::value_type,Divisor>, 
+				      Vector> >
 {};
 
 template <typename Vector>
 struct category< vector::conj_view<Vector> >
-    : public category< vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
+  : public category< vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
 {};
 
 template <typename Vector>
 struct category< vector::negate_view<Vector> >
-    : public category< vector::map_view<sfunctor::negate<typename Vector::value_type>, Vector> >
+  : public category< vector::map_view<sfunctor::negate<typename Vector::value_type>, Vector> >
 {};
 
 // To handle std::vector in algorithms

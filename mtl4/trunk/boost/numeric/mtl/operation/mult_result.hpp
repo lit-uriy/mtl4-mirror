@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/matrix/mat_mat_times_expr.hpp>
+#include <boost/numeric/mtl/matrix/implicit_dense.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
 #include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
 
@@ -30,8 +31,8 @@ template <typename Op1, typename Op2, typename MultOp> struct vec_mult_result_au
 **/
 template <typename Op1, typename Op2>
 struct mult_result 
-    : public mult_result_aux<Op1, Op2, typename ashape::mult_op<typename ashape::ashape<Op1>::type, 
-								typename ashape::ashape<Op2>::type >::type>
+  : public mult_result_aux<Op1, Op2, typename ashape::mult_op<typename ashape::ashape<Op1>::type, 
+							      typename ashape::ashape<Op2>::type >::type>
 {}; 
 
 
@@ -41,8 +42,8 @@ struct mult_result
 **/
 template <typename Op1, typename Op2>
 struct vec_mult_result 
-    : public vec_mult_result_aux<Op1, Op2, typename ashape::mult_op<typename ashape::ashape<Op1>::type, 
-								    typename ashape::ashape<Op2>::type >::type>
+  : public vec_mult_result_aux<Op1, Op2, typename ashape::mult_op<typename ashape::ashape<Op1>::type, 
+								  typename ashape::ashape<Op2>::type >::type>
 {}; 
 
 
@@ -80,6 +81,12 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_cvec_mult>
     typedef mat_cvec_times_expr<Op1, Op2> type;
 };
 
+/// Multiply column with row vector and return implicit matrix
+template <typename Op1, typename Op2>
+struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::cvec_rvec_mult> 
+{
+    typedef mtl::matrix::outer_product_matrix<Op1, Op2> type;
+};
 
 /// Result type for multiplying arguments of types Op1 and Op2
 /** MultOp according to the algebraic shapes **/
