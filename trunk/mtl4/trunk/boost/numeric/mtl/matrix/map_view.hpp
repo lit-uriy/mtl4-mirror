@@ -51,71 +51,40 @@ struct map_view
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type                  dim_type;
 
-    map_view (const Functor& functor, const other& ref) 
-	: expr_base(*this), functor(functor), ref(ref) 
-    {}
+    map_view (const Functor& functor, const other& ref) : functor(functor), ref(ref) {}
     
     map_view (const Functor& functor, boost::shared_ptr<Matrix> p) 
-	: expr_base(*this), functor(functor), my_copy(p), ref(*p)
-    {}
+      : functor(functor), my_copy(p), ref(*p) {}
     
     value_type operator() (size_type r, size_type c) const
     { 
         return functor(ref(r, c));
     }
 
-    size_type dim1() const 
+    size_type dim1() const { return ref.dim1(); }
+    size_type dim2() const { return ref.dim2(); }
+    dim_type dimensions() const { return ref.dimensions(); }
+
+    size_type begin_row() const { return ref.begin_row(); }
+    size_type end_row() const { return ref.end_row(); }
+    size_type begin_col() const { return ref.begin_col(); }
+    size_type end_col() const {	return ref.end_col(); }
+    
+    size_type nnz() const { return ref.nnz(); }
+
+    friend size_type inline num_rows(const self& A) 
     { 
-        return ref.dim1(); 
+	using mtl::matrix::num_rows; return num_rows(A.ref); 
     }
-    size_type dim2() const 
+    friend size_type inline num_cols(const self& A) 
     { 
-        return ref.dim2(); 
+	using mtl::matrix::num_cols; return num_cols(A.ref); 
     }
-    
-    dim_type dimensions() const 
-    {
-        return ref.dimensions();
+    friend size_type inline size(const self& A) 
+    { 
+	using mtl::matrix::num_rows; using mtl::matrix::num_cols;
+	return num_rows(A.ref) * num_rows(A.ref); 
     }
-
-    size_type begin_row() const
-    {
-	return ref.begin_row();
-    }
-
-    size_type end_row() const
-    {
-	return ref.end_row();
-    }
-
-    size_type begin_col() const
-    {
-	return ref.begin_col();
-    }
-
-    size_type end_col() const
-    {
-	return ref.end_col();
-    }
-    
-    size_type nnz() const
-    {
-	return ref.nnz();
-    }
-    
-	friend size_type inline num_rows(const self& A) 
-	{ 
-		using mtl::matrix::num_rows; return num_rows(A.ref); 
-	}
-	friend size_type inline num_cols(const self& A) 
-	{ 
-		using mtl::matrix::num_cols; return num_cols(A.ref); 
-	}
-	friend size_type inline size(const self& A) 
-	{ 
-		using mtl::matrix::num_rows; using mtl::matrix::num_cols;
-		return num_rows(A.ref) * num_rows(A.ref); 
-	}
 
     template <typename, typename> friend struct detail::map_value;
 

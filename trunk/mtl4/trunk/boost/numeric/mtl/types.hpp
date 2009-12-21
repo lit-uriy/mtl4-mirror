@@ -16,6 +16,8 @@
 #include <boost/numeric/mtl/matrices.hpp>
 
 #include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
 
 #include <boost/numeric/mtl/io/matrix_market.hpp>
 

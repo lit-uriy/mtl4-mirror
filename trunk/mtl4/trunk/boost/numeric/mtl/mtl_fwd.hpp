@@ -83,6 +83,13 @@ namespace mtl {
         template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
 	template <typename Vector> class multi_vector;
+	template <typename Functor> class implicit_dense;	
+	template <typename Value> class ones_functor;
+	template <typename Value> class ones_matrix;
+	template <typename Value> class hilbert_functor;
+	template <typename Value> class hilbert_matrix;
+	template <typename Vector1, typename Vector2> class outer_product_functor;
+	template <typename Vector1, typename Vector2> class outer_product_matrix;
 
         template <typename Matrix> struct transposed_orientation;
         template <typename Matrix> struct transposed_view;
@@ -196,11 +203,15 @@ namespace mtl {
 	namespace detail {
 	    // needed collection.hpp (at least)
 	    template <typename Collection, typename Cursor, typename Complexity> struct dense_element_range_generator;
-	    template <typename Matrix, typename Cursor, typename Complexity> struct all_offsets_range_generator;
-	    template <typename Matrix, typename Tag, int Level = 2> struct sub_matrix_cursor;
-	    template <typename Matrix, typename Complexity, int Level = 2>  struct all_rows_range_generator;
-	    template <typename Matrix, typename Complexity, int Level = 2>  struct all_cols_range_generator;
-	    template <typename Collection, typename RangeGenerator>  struct referred_range_generator;
+	    template <typename Matrix, typename Cursor, typename Complexity>     struct all_offsets_range_generator;
+	    template <typename Matrix, typename Tag, int Level = 2>              struct sub_matrix_cursor;
+	    template <typename Matrix>                                           struct matrix_element_key;
+	    template <typename Matrix, int pos>                                  struct matrix_element_cursor;
+	    template <typename Matrix, typename Complexity, int Level = 2>       struct all_rows_range_generator;
+	    template <typename Cursor>                                           struct all_cols_in_row_range_generator;
+	    template <typename Matrix, typename Complexity, int Level = 2>       struct all_cols_range_generator;
+	    template <typename Cursor>                                           struct all_rows_in_col_range_generator;
+	    template <typename Collection, typename RangeGenerator>              struct referred_range_generator;
 	}
     }
 

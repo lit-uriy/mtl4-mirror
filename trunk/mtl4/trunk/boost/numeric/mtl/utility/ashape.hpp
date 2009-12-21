@@ -193,6 +193,28 @@ struct ashape<morton_dense<Value, Mask, Parameters> >
     typedef mat<typename ashape<Value>::type> type;
 };
 
+template <typename Functor>
+struct ashape<mtl::matrix::implicit_dense<Functor> >
+{
+    typedef mat<typename ashape<typename Functor::result_type>::type> type;
+};
+
+template <typename Value>
+struct ashape<mtl::matrix::ones_matrix<Value> >
+  : public ashape<mtl::matrix::implicit_dense<mtl::matrix::ones_functor<Value> > > 
+{};
+
+template <typename Value>
+struct ashape<mtl::matrix::hilbert_matrix<Value> >
+  : public ashape<mtl::matrix::implicit_dense<mtl::matrix::hilbert_functor<Value> > > 
+{};
+
+template <typename Vector1, typename Vector2>
+struct ashape<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
+  : public ashape<mtl::matrix::implicit_dense<mtl::matrix::outer_product_functor<Vector1, Vector2> > > 
+{};
+
+
 /// Two-dimensional arrays have mat ashape; 1D arrays are vectors see above
 template <typename Value, unsigned Rows, unsigned Cols>
 struct ashape<Value[Rows][Cols]>
@@ -265,14 +287,14 @@ struct ashape<matrix::scaled_view<Scaling, Coll> >
 template <typename Coll, typename RScaling>
 struct ashape<matrix::rscaled_view<Coll,RScaling> >
 {
-	typedef typename ashape<Coll>::type type;
+    typedef typename ashape<Coll>::type type;
 };
 
 // added by Hui Li
 template <typename Coll, typename Divisor>
 struct ashape<matrix::divide_by_view<Coll,Divisor> >
 {
-	typedef typename ashape<Coll>::type type;
+    typedef typename ashape<Coll>::type type;
 };
 	
 template <typename Scaling, typename Coll>
@@ -285,14 +307,14 @@ struct ashape<vector::scaled_view<Scaling, Coll> >
 template <typename Coll, typename RScaling>
 struct ashape<vector::rscaled_view<Coll,RScaling> >
 {
-	typedef typename ashape<Coll>::type type;
+    typedef typename ashape<Coll>::type type;
 };
 
 // added by Hui Li
 template <typename Coll, typename Divisor>
 struct ashape<vector::divide_by_view<Coll,Divisor> >
 {
-	typedef typename ashape<Coll>::type type;
+    typedef typename ashape<Coll>::type type;
 };
 
 template <typename Coll>
@@ -411,7 +433,7 @@ struct emult_op<scal, scal>
     typedef scal_scal_mult type;
 };
 
-// Row times column vector, i.e. outer product
+// Column times row vector, i.e. outer product
 template <typename Value1, typename Value2>
 struct emult_shape<cvec<Value1>, rvec<Value2> >
 {

@@ -576,7 +576,7 @@ namespace mtl { namespace traits {
 	  , strided_dense_el_cursor<Value>
 	>::type type;  
 
-    private:
+      private:
 
 	type dispatch(cursor const& c, size_type col, row_major)
 	{
@@ -587,7 +587,7 @@ namespace mtl { namespace traits {
 	    return type(c.ref, c.key, col, c.ref.ldim);
 	}
 
-    public:
+      public:
 
 	type begin(cursor const& c)
 	{
@@ -634,9 +634,7 @@ namespace mtl { namespace traits {
 	  , strided_dense_el_cursor<Value>
 	>::type type;  
 
-
-    private:
-
+      private:
 	type dispatch(cursor const& c, size_type row, col_major)
 	{
 	    return type(c.ref, row, c.key);
@@ -646,8 +644,7 @@ namespace mtl { namespace traits {
 	    return type(c.ref, row, c.key, c.ref.ldim);
 	}
 
-    public:
-
+      public:
 	type begin(cursor const& c)
 	{
 	    return dispatch(c, c.ref.begin_row(), typename matrix::orientation());
