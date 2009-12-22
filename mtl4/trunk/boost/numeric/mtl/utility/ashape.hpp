@@ -18,6 +18,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/root.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl { 
@@ -25,6 +26,8 @@ namespace mtl {
 /// Namespace for algebraic shapes; used for sophisticated dispatching between operations
 namespace ashape {
 
+// forward declaration
+template <typename T> struct ashape_aux;
 
 // Types (tags)
 /// Scalar algebraic shape
@@ -42,14 +45,326 @@ struct ndef {};
 /** Unknown types are treated like scalars. ashape of collections are template
     parameterized with ashape of their elements, e.g., ashape< matrix < vector < double > > >::type is
     mat< rvec < scal > > >. 
+    Implemented with ashape_aux after type is cleaned up with mtl::traits::root.
 **/
 template <typename T>
 struct ashape
+  : ashape_aux<typename mtl::traits::root<T>::type> {};
+
+template <typename T>
+struct ashape_aux
 {
     typedef scal type;
 };
 
+/// Vectors must be distinguished between row and column vectors
+template <typename Value, typename Parameters>
+struct ashape_aux<dense_vector<Value, Parameters> >
+{
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename Parameters::orientation, row_major>
+      , rvec<typename ashape<Value>::type>
+      , cvec<typename ashape<Value>::type>
+    >::type type;
+};
 
+/// Same as dense vector
+template <typename Value, typename Parameters>
+struct ashape_aux<vector::strided_vector_ref<Value, Parameters> >
+  : ashape<dense_vector<Value, Parameters> > {};
+
+/// One-dimensional arrays have rvec ashape; 2D arrays are matrices see below
+template <typename Value, unsigned Rows>
+struct ashape_aux<Value[Rows]>
+{
+    typedef rvec<typename ashape<Value>::type> type;
+};
+   
+/// One-dimensional arrays have rvec ashape; 2D arrays are matrices see below
+template <typename Value>
+struct ashape_aux<Value*>
+{
+    typedef rvec<typename ashape<Value>::type> type;
+};
+   
+template <typename E1, typename E2, typename SFunctor>
+struct ashape_aux< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2, typename SFunctor>
+struct ashape_aux< vector::vec_vec_op_expr<E1, E2, SFunctor> >
+{
+#if 0 // not sure if this is true in all operations
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+#endif
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape_aux< vector::vec_vec_plus_asgn_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape_aux< vector::vec_vec_minus_asgn_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+
+template <typename E1, typename E2>
+struct ashape_aux< vector::vec_vec_times_asgn_expr<E1, E2> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2, typename SFunctor>
+struct ashape_aux< vector::vec_vec_aop_expr<E1, E2, SFunctor> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2, typename SFunctor>
+struct ashape_aux< vector::vec_scal_aop_expr<E1, E2, SFunctor> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape_aux< vector::vec_scal_asgn_expr<E1, E2> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape_aux< vector::vec_scal_times_asgn_expr<E1, E2> >
+{
+    typedef typename ashape<E1>::type type;
+};
+	
+template <typename E1, typename E2> // added by Hui Li
+struct ashape_aux< vector::vec_scal_div_asgn_expr<E1, E2> >
+{
+	typedef typename ashape<E1>::type type;
+};
+
+template <typename Vector>
+struct ashape_aux< vector::vec_const_ref_expr<Vector> >
+{
+    typedef typename ashape<Vector>::type type;
+};
+
+template <typename E1>
+struct ashape_aux< vector::negate_view<E1> >
+{
+    typedef typename ashape<E1>::type type;
+};
+
+
+// ========
+// Matrices
+// ========
+
+template <typename Value, typename Parameters>
+struct ashape_aux<compressed2D<Value, Parameters> >
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+
+template <typename Value, typename Parameters>
+struct ashape_aux<dense2D<Value, Parameters> >
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+   
+template <typename Value, unsigned long Mask, typename Parameters>
+struct ashape_aux<morton_dense<Value, Mask, Parameters> >
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+
+template <typename Functor>
+struct ashape_aux<mtl::matrix::implicit_dense<Functor> >
+{
+    typedef mat<typename ashape<typename Functor::result_type>::type> type;
+};
+
+#if 0 // by root
+template <typename Value>
+struct ashape_aux<mtl::matrix::ones_matrix<Value> >
+  : public ashape<mtl::matrix::implicit_dense<mtl::matrix::ones_functor<Value> > > 
+{};
+
+template <typename Value>
+struct ashape_aux<mtl::matrix::hilbert_matrix<Value> >
+  : public ashape<mtl::matrix::implicit_dense<mtl::matrix::hilbert_functor<Value> > > 
+{};
+
+template <typename Vector1, typename Vector2>
+struct ashape_aux<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
+  : public ashape<mtl::matrix::implicit_dense<mtl::matrix::outer_product_functor<Vector1, Vector2> > > 
+{};
+#endif
+
+/// Two-dimensional arrays have mat ashape; 1D arrays are vectors see above
+template <typename Value, unsigned Rows, unsigned Cols>
+struct ashape_aux<Value[Rows][Cols]>
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+
+/// Two-dimensional arrays have mat ashape; 1D arrays are vectors see above
+template <typename Value, unsigned Cols>
+struct ashape_aux<Value (*)[Cols]>
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+
+template <typename Vector>
+struct ashape_aux<multi_vector<Vector> >
+{
+    typedef mat<typename ashape<typename mtl::Collection<multi_vector<Vector> >::value_type>::type> type;
+};
+   
+template <typename E1, typename E2>
+struct ashape_aux< matrix::mat_mat_plus_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape_aux< matrix::mat_mat_minus_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+template <typename E1, typename E2>
+struct ashape_aux< matrix::mat_mat_ele_times_expr<E1, E2> >
+{
+    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value));
+    typedef typename ashape<E1>::type type;
+};
+
+
+// =====
+// Views
+// =====
+
+
+template <typename Functor, typename Coll>
+struct ashape_aux<matrix::map_view<Functor, Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Functor, typename Coll>
+struct ashape_aux<vector::map_view<Functor, Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+#if 0 // by root
+template <typename Scaling, typename Coll>
+struct ashape_aux<matrix::scaled_view<Scaling, Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+// added by Hui Li
+template <typename Coll, typename RScaling>
+struct ashape_aux<matrix::rscaled_view<Coll,RScaling> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+// added by Hui Li
+template <typename Coll, typename Divisor>
+struct ashape_aux<matrix::divide_by_view<Coll,Divisor> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+#endif
+	
+template <typename Scaling, typename Coll>
+struct ashape_aux<vector::scaled_view<Scaling, Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+// added by Hui Li
+template <typename Coll, typename RScaling>
+struct ashape_aux<vector::rscaled_view<Coll,RScaling> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+// added by Hui Li
+template <typename Coll, typename Divisor>
+struct ashape_aux<vector::divide_by_view<Coll,Divisor> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+#if 0 // by root
+template <typename Coll>
+struct ashape_aux<matrix::conj_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+#endif
+
+template <typename Coll>
+struct ashape_aux<vector::conj_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Matrix>
+struct ashape_aux<transposed_view<Matrix> >
+{
+    typedef typename ashape<Matrix>::type type;
+};
+
+template <typename Matrix>
+struct ashape_aux<matrix::hermitian_view<Matrix> >
+{
+    typedef typename ashape<Matrix>::type type;
+};
+
+template <typename Matrix>
+struct ashape_aux<matrix::banded_view<Matrix> >
+{
+    typedef typename ashape<Matrix>::type type;
+};
+
+
+// Rule out other types as algebraic shape
+template <typename IFStream, typename OFStream>
+struct ashape_aux<io::matrix_file<IFStream, OFStream> > 
+{
+    typedef ndef type;
+};
+
+
+
+
+
+#if 0
 // Const types have the same ashape as their non-const counterpart
 template <typename T>
 struct ashape<const T>
@@ -354,6 +669,8 @@ struct ashape<io::matrix_file<IFStream, OFStream> >
 {
     typedef ndef type;
 };
+
+#endif // switch from ashape to ashape_aux
 
 
 // =====================
