@@ -11,7 +11,7 @@
 
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
+//#include <boost/test/minimal.hpp>
 
 #if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
 
@@ -138,7 +138,7 @@ int test_main(int argc, char* argv[])
  
 #else 
 
-int test_main(int argc, char* argv[]) 
+int main(int argc, char* argv[]) 
 {
     std::cout << "Test requires the definition of MTL_HAS_PARMETIS (and of course"
 	      << " the presence of ParMetis).\n";
