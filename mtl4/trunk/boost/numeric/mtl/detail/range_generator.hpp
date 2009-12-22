@@ -180,10 +180,12 @@ namespace mtl { namespace traits { namespace detail {
 	}
 	type end(Matrix const& c) const
 	{
+		using mtl::num_rows;
 	    return type(num_rows(c), c); //return type(c.end_row(), c);
 	}
 	type lower_bound(Matrix const& c, size_type position) const
 	{
+		using mtl::num_rows;
 	    return type(std::min(num_rows(c), position), c);
 	}
     };
@@ -200,9 +202,10 @@ namespace mtl { namespace traits { namespace detail {
 	typedef matrix_element_cursor<ref_type, 1> type;
 
 	type begin(Cursor const& c) const { return type(c.ref, *c, 0); }
-	type end(Cursor const& c) const { return type(c.ref, *c, num_cols(c.ref)); }
+	type end(Cursor const& c) const { using mtl::num_cols; return type(c.ref, *c, num_cols(c.ref)); }
 	type lower_bound(Cursor const& c, size_type position) const
 	{
+		using mtl::num_cols;
 	    return type(c.ref, *c, std::min(num_cols(c.ref), position));
 	}
     };
@@ -222,10 +225,12 @@ namespace mtl { namespace traits { namespace detail {
 	}
 	type end(Matrix const& c) const
 	{
+		using mtl::num_cols;
 	    return type(num_cols(c), c); // return type(c.end_col(), c);
 	}
 	type lower_bound(Matrix const& c, size_type position) const
 	{
+		using mtl::num_cols;
 	    return type(std::min(num_cols(c), position), c);
 	}
     };
@@ -242,9 +247,10 @@ namespace mtl { namespace traits { namespace detail {
 	typedef matrix_element_cursor<ref_type, 0> type;
 
 	type begin(Cursor const& c) const { return type(c.ref, 0, *c); }
-	type end(Cursor const& c) const { return type(c.ref, num_rows(c.ref), *c); }
+	type end(Cursor const& c) const { using mtl::num_rows; return type(c.ref, num_rows(c.ref), *c); }
 	type lower_bound(Cursor const& c, size_type position) const
 	{
+		using mtl::num_rows;
 	    return type(c.ref, std::min(num_rows(c.ref), position), *c);
 	}
     };
