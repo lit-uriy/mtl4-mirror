@@ -251,8 +251,26 @@ namespace mtl {
     /// Namespace for functors with static function apply and fully typed paramaters
     namespace sfunctor {
 	template <typename Value, typename AlgebraicCategory = tag::scalar> struct conj_aux;
-	template <typename Value> struct conj;
-	template <typename Value> struct negate;
+	template <typename Value>                   struct conj;
+	template <typename Value>                   struct negate;
+	template <typename Value1, typename Value2> struct plus;
+	template <typename Value1, typename Value2> struct minus;
+	template <typename Value1, typename Value2> struct times;
+	template <typename Value1, typename Value2> struct divide;
+	template <typename Value1, typename Value2> struct assign;
+	template <typename Value1, typename Value2> struct plus_assign;
+	template <typename Value1, typename Value2> struct minus_assign;
+	template <typename Value1, typename Value2> struct times_assign;
+	template <typename Value1, typename Value2> struct divide_assign;
+	template <typename Value>                   struct identity;
+	template <typename Value>                   struct abs;
+	template <typename Value>                   struct sqrt;
+	template <typename Value>                   struct square;
+	template <typename F, typename G>           struct compose;
+	template <typename F, typename G>           struct compose_first;
+	template <typename F, typename G>           struct compose_second;
+	template <typename F, typename G, typename H> struct compose_both;
+	template <typename F, typename G>           struct compose_binary;
     }
 
     // Namespace documentations
