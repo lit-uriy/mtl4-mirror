@@ -40,7 +40,7 @@ class block
     template <typename DistVector>
     DistVector solve(const DistVector& dist_x) const
     {
-	MTL_DEBUG_THROW_IF(col_dist != distribution(dist_x), incompatible_distribution());
+	MTL_DEBUG_THROW_IF(col_dist != distribution(dist_x), mtl::incompatible_distribution());
 	DistVector dist_y(dist_x); // copies distribution as well
 	
 	local(dist_y)= local_pc.solve(local(dist_x));
@@ -51,7 +51,7 @@ class block
     template <typename DistVector>
     DistVector adjoint_solve(const DistVector& dist_x) const
     {
-	MTL_DEBUG_THROW_IF(col_dist != distribution(dist_x), incompatible_distribution());
+	MTL_DEBUG_THROW_IF(col_dist != distribution(dist_x), mtl::incompatible_distribution());
 	DistVector dist_y(dist_x); // copies distribution as well
 	
 	local(dist_y)= local_pc.adjoint_solve(local(dist_x));
