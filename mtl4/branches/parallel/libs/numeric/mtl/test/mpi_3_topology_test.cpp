@@ -11,7 +11,7 @@
 
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
+//#include <boost/test/minimal.hpp>
 
 #if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI) // && defined(MTL_HAS_TOPOMAP)
 
@@ -56,16 +56,17 @@ void solve(const Matrix& A, const char* name)
     // Solve with CG
     itl::cyclic_iteration<double, so_type> iter(b, 50 /* max iter */, 1.e-8 /* rel. error red. */, 
 						0.0, 30 /* how often logged */, sout);
-    boost::timer time;
+
+    double t = -MPI_Wtime();
     cg(A, x, b, P, iter);
-    sout << "Solution took " << time.elapsed() << "s.\n";
+    sout << "Solution took " << t+MPI_Wtime() << "s.\n";
     if (n < 50)
 	sout << "Solution is:\n" << x << "\nShould be Vector of 1s\n";
 }
 
 
 
-int test_main(int argc, char* argv[]) 
+int main(int argc, char* argv[]) 
 {
     using namespace mtl; using namespace mtl::par;
 
@@ -77,9 +78,13 @@ int test_main(int argc, char* argv[])
     mtl::par::single_ostream     sout;
     mtl::par::multiple_ostream<> mout;
 
+    if(argc < 2) {
+      printf("usage: %s <matrix file>", argv[0]);
+      MPI_Abort(MPI_COMM_WORLD, 1);
+    }
     // Set file name (consider program being started from other directory)
     std::string program_dir= io::directory_name(argv[0]), 
-	file_name= io::join(program_dir, "matrix_market/bcsstk01.mtx"); // symm. (hopefully pos. def.)
+	file_name= io::join(program_dir, argv[1]); // symm. (hopefully pos. def.)
 
     // Read file into distributed matrix
     io::matrix_market file(file_name);
@@ -93,21 +98,21 @@ int test_main(int argc, char* argv[])
     parmetis_index_vector    xadj, adjncy, vtxdist;
     parmetis_index_vector part;
     int edgecut= parmetis_partition_k_way(A, xadj, adjncy, vtxdist, part);
-    mout << "Metis partition is " << part << '\n'; 
+    //mout << "Metis partition is " << part << '\n'; 
 
     mtl::par::block_migration pmigr= parmetis_migration(row_distribution(A), part);
-    mout << "New distribution is " << pmigr.new_distribution() << '\n';
+    //mout << "New distribution is " << pmigr.new_distribution() << '\n';
     
     // Migrate matrix as parmetis says
     matrix_type B(A, parmetis_migration(row_distribution(A), part));
     solve(B, "Matrix migrated by Parmetis");
-#if 0
+
     // Migrate as Torsten says
     topology_mapping(communicator(row_distribution(A)), xadj, adjncy, vtxdist, part);
 
     matrix_type C(A, parmetis_migration(row_distribution(A), part));
     solve(C, "Matrix migrated by Parmetis and topology mapping");
-#endif    
+    
     // It could have been so easy if we wouldn't compare the two mappings ;-) 
     // matrix_type D(C, parmetis_migration(C));
 
