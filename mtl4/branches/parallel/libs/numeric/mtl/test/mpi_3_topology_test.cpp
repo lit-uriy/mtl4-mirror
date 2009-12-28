@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
     // Read file into distributed matrix
     io::matrix_market file(file_name);
     //matrix_type A(file);
-	matrix_type A; laplacian_setup(A, 1000, 1000); // one mio rows
+	int size= 1000; matrix_type A(size*size, size*size); laplacian_setup(A, size, size); // one mio rows
     assert(num_rows(A) == num_cols(A)); // check symmetry
     
     //matrix_type C(io::matrix_market("matrix.mtx")); // The file is not there!!!
