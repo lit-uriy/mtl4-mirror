@@ -104,8 +104,53 @@ struct root< vector::vec_vec_minus_asgn_expr<E1, E2> >
     typedef vector::vec_vec_aop_expr< E1, E2, mtl::sfunctor::minus_assign<typename E1::value_type, typename E2::value_type> > type;
 };
 
+template <typename E1, typename E2>
+struct root< vector::vec_scal_asgn_expr<E1, E2> >
+{
+    typedef vector::vec_scal_aop_expr< E1, E2, mtl::sfunctor::assign<typename E1::value_type, E2> > type;
+};
 
+template <typename E1, typename E2>
+struct root< vector::vec_scal_times_asgn_expr<E1, E2> >
+{
+    typedef vector::vec_scal_aop_expr< E1, E2, mtl::sfunctor::times_assign<typename E1::value_type, E2> > type;
+};
 
+template <typename E1, typename E2>
+struct root< vector::vec_scal_div_asgn_expr<E1, E2> >
+{
+    typedef vector::vec_scal_aop_expr< E1, E2, mtl::sfunctor::divide_assign<typename E1::value_type, E2> > type;
+};
+
+template <typename Scaling, typename Vector>
+struct root< vector::scaled_view<Scaling, Vector> >
+{
+    typedef vector::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, Vector> type;
+};
+
+template <typename Vector, typename RScaling>
+struct root< vector::rscaled_view<Vector, RScaling> >
+{
+    typedef vector::map_view<tfunctor::rscale<typename Vector::value_type, RScaling>, Vector> type;
+};
+
+template <typename Vector, typename Divisor>
+struct root< vector::divide_by_view<Vector, Divisor> >
+{
+    typedef vector::map_view<tfunctor::divide_by<typename Vector::value_type, Divisor>, Vector> type;
+};
+
+template <typename Vector>
+struct root< vector::conj_view<Vector> >
+{
+    typedef vector::map_view<mtl::sfunctor::conj<typename Vector::value_type>, Vector> type;
+};
+
+template <typename Vector>
+struct root< vector::negate_view<Vector> >
+{
+    typedef vector::map_view<mtl::sfunctor::negate<typename Vector::value_type>, Vector> type;
+};
 
 #if 0 // template
 struct root
