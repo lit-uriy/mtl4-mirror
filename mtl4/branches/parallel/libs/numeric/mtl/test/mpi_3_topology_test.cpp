@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
     assert(num_rows(A) == num_cols(A)); // check symmetry
     
     //matrix_type C(io::matrix_market("matrix.mtx")); // The file is not there!!!
-    solve(A, "Matrix with naive block distribution");
+    solve(A, "**** Matrix with naive block distribution");
 
     // Get partition from Parmetis (explicitly without topomap)
     parmetis_index_vector    xadj, adjncy, vtxdist;
@@ -106,13 +106,13 @@ int main(int argc, char* argv[])
     
     // Migrate matrix as parmetis says
     matrix_type B(A, parmetis_migration(row_distribution(A), part));
-    solve(B, "Matrix migrated by Parmetis");
+    solve(B, "**** Matrix migrated by Parmetis");
 
     // Migrate as Torsten says
     topology_mapping(communicator(row_distribution(A)), xadj, adjncy, vtxdist, part);
 
     matrix_type C(A, parmetis_migration(row_distribution(A), part));
-    solve(C, "Matrix migrated by Parmetis and topology mapping");
+    solve(C, "**** Matrix migrated by Parmetis and topology mapping");
     
     // It could have been so easy if we wouldn't compare the two mappings ;-) 
     // matrix_type D(C, parmetis_migration(C));
