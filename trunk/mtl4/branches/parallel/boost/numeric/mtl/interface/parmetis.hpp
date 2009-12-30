@@ -77,13 +77,12 @@ typedef std::vector<idxtype> parmetis_index_vector;
         /* Peter: der folgende Block dient nur der Veranschaulichung.
          * Die Permutation bitte dann auf die ranks (0,1,2, ... ,p) die
          * im Parmetis rauskommen anwenden */
-        {
-          int p; MPI_Comm_size(newcomm, &p);
-          int r; MPI_Comm_rank(newcomm, &r);
-          std::vector<int> permutation(p);
-          MPI_Allgather(&newrank, 1, MPI_INT, &permutation[0], 1, MPI_INT, newcomm);
-          if(!r) { printf("rank permutation: "); for(int i=0; i<p; ++i) printf("%i ", permutation[i]); printf("\n"); }
-        }
+        int p; MPI_Comm_size(newcomm, &p); // TODO: this should go away!
+        int r; MPI_Comm_rank(newcomm, &r);
+        std::vector<int> permutation(p);
+        MPI_Allgather(&newrank, 1, MPI_INT, &permutation[0], 1, MPI_INT, newcomm);
+        if(!r) { printf("rank permutation: "); for(int i=0; i<p; ++i) printf("%i ", permutation[i]); printf("\n"); }
+        for(int i=0; i<part.size(); ++i) part[i] = permutation[part[i]];
     }
 
 # endif
