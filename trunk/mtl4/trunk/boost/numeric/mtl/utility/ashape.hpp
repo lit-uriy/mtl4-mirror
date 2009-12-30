@@ -104,7 +104,7 @@ struct ashape_aux< vector::vec_vec_op_expr<E1, E2, SFunctor> >
 #endif
     typedef typename ashape<E1>::type type;
 };
-
+#if 0
 template <typename E1, typename E2>
 struct ashape_aux< vector::vec_vec_plus_asgn_expr<E1, E2> >
 {
@@ -120,14 +120,14 @@ struct ashape_aux< vector::vec_vec_minus_asgn_expr<E1, E2> >
 			                typename ashape<E2>::type>::value));
     typedef typename ashape<E1>::type type;
 };
-
-
+#endif
+#if 0
 template <typename E1, typename E2>
 struct ashape_aux< vector::vec_vec_times_asgn_expr<E1, E2> >
 {
     typedef typename ashape<E1>::type type;
 };
-
+#endif
 template <typename E1, typename E2, typename SFunctor>
 struct ashape_aux< vector::vec_vec_aop_expr<E1, E2, SFunctor> >
 {
@@ -140,6 +140,7 @@ struct ashape_aux< vector::vec_scal_aop_expr<E1, E2, SFunctor> >
     typedef typename ashape<E1>::type type;
 };
 
+#if 0
 template <typename E1, typename E2>
 struct ashape_aux< vector::vec_scal_asgn_expr<E1, E2> >
 {
@@ -157,6 +158,7 @@ struct ashape_aux< vector::vec_scal_div_asgn_expr<E1, E2> >
 {
 	typedef typename ashape<E1>::type type;
 };
+#endif
 
 template <typename Vector>
 struct ashape_aux< vector::vec_const_ref_expr<Vector> >
@@ -164,11 +166,14 @@ struct ashape_aux< vector::vec_const_ref_expr<Vector> >
     typedef typename ashape<Vector>::type type;
 };
 
+#if 0
 template <typename E1>
 struct ashape_aux< vector::negate_view<E1> >
 {
     typedef typename ashape<E1>::type type;
 };
+#endif
+
 
 
 // ========
