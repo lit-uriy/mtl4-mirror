@@ -78,6 +78,12 @@ struct root< mtl::matrix::conj_view<Matrix> >
     typedef mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> type;
 };
 
+template <typename Matrix>
+struct root< mtl::matrix::hermitian_view<Matrix> >
+{
+    typedef mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, transposed_view<Matrix> > type;
+};
+
 template <typename Matrix, typename RScaling>
 struct root< mtl::matrix::rscaled_view<Matrix, RScaling> >
 {
