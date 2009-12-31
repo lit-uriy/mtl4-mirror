@@ -15,6 +15,7 @@
 #include <boost/mpl/bool.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/type_traits/is_complex.hpp>
+#include <boost/type_traits/is_scalar.hpp>
 
 
 namespace mtl { namespace traits {
@@ -22,7 +23,8 @@ namespace mtl { namespace traits {
 /// Type trait for different non-complex scalars, i.e. pairs of scalars whose complex equivalents are not supported in binary operations
 template <typename T, typename U>
 struct different_non_complex
-  : boost::mpl::bool_< !boost::is_same<T, U>::value && !boost::is_complex<T>::value && !boost::is_complex<U>::value >
+  : boost::mpl::bool_< !boost::is_same<T, U>::value && !boost::is_complex<T>::value && !boost::is_complex<U>::value 
+                       && boost::is_scalar<T>::value &&  boost::is_scalar<U>::value>
 {};
 
 
