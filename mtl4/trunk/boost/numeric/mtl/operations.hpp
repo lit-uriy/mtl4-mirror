@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/eigenvalue.hpp>
 #include <boost/numeric/mtl/operation/entry1D.hpp>
+#include <boost/numeric/mtl/operation/extended_complex.hpp>
 #include <boost/numeric/mtl/operation/fill.hpp>
 #include <boost/numeric/mtl/operation/givens.hpp>
 #include <boost/numeric/mtl/operation/hermitian.hpp>
