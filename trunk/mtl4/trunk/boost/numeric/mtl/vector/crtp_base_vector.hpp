@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 
 #include <boost/numeric/itl/itl_fwd.hpp>
 

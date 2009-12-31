@@ -22,6 +22,12 @@ void test(const ResMatrix&, const ArgMatrix& B)
 
     C+= trans(B) * B;
     C+= trans(B) * B * B;
+#if 0
+	std::cout << typeid(typename mtl::traits::category<mtl::matrix::mat_mat_times_expr<ArgMatrix, ArgMatrix> >::type).name() << '\n';
+	std::cout << typeid(typename mtl::traits::category<mtl::matrix::rscaled_view<ArgMatrix, double> >::type).name() << '\n';
+	char c; std::cin >> c; 
+#endif
+	C+= B * 3.5 * B * B;
     C+= trans(B) * 3.5 * B * B;
 
     C+= 3.5 * ArgMatrix(B * B);
@@ -43,7 +49,7 @@ int test_main(int argc, char* argv[])
     dense2D<float, fmat_para>        A_stat(ma);
 
     test(A_dyn, A_dyn);
-    test(A_dyn, A_stat);
+    //test(A_dyn, A_stat);
 
     return 0;
 }
