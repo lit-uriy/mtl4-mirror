@@ -63,16 +63,21 @@ typedef std::vector<idxtype> parmetis_index_vector;
 
         /* this is all debug stuff (plots pretty cool graphs ;-)) */
 	// all those filenames should somehow come from a config file (or command line)
-	TPM_Fake_names_file = (char*)"./3x3x2.fake";
-	TPM_Write_graph_comm(newcomm, "./ltg.dot");
-	TPM_Write_phystopo(newcomm, "./ptg.dot", "./3x3x2.graph");
+	//TPM_Fake_names_file = (char*)"./3x3x2.fake";
+	TPM_Fake_names_file = getenv("TPM_FAKE_NAMES_FILE");
+        const char *ltg_output = getenv("TPM_LTG_OUTFILE");
+	if(ltg_output != NULL) TPM_Write_graph_comm(newcomm, ltg_output);
+        const char *ptg_output = getenv("TPM_PTG_OUTFILE");
+        const char *ptg_input = getenv("TPM_PTG_INFILE");
+	if(ptg_output!= NULL) TPM_Write_phystopo(newcomm, ptg_output, ptg_input);
 
         /* call into libToPoMap to get new permutation of ranks from
          * Parmetis output. Double edges are interpreted as weights of
          * the graph. MPI Edge weights are ignored. */
 	int newrank;
 	//TPM_Topomap_greedy(newcomm, "./3x3x2.graph", 0, &newrank);
-	TPM_Topomap_multicore_greedy(newcomm, "./3x3x2.graph", 0, &newrank);
+        if(ptg_input == NULL) printf("MUST supply topology input file for maping (export TPM_PTG_INFILE=\"topo-file\")\n");
+	TPM_Topomap(newcomm, ptg_input, 0, &newrank);
 
         /* Peter: der folgende Block dient nur der Veranschaulichung.
          * Die Permutation bitte dann auf die ranks (0,1,2, ... ,p) die
