@@ -51,14 +51,23 @@ void solve(const Matrix& A, const char* name)
 	sout << "Matrix is:\n" << A << "\nb is: " << b << "\n";
 
     // Incomplete Cholesky for A
-    itl::pc::ic_0<Matrix>     P(A);
+    //itl::pc::ic_0<Matrix>     P(A);
     
     // Solve with CG
-    itl::cyclic_iteration<double, so_type> iter(b, 50 /* max iter */, 1.e-8 /* rel. error red. */, 
-						0.0, 30 /* how often logged */, sout);
+    //itl::cyclic_iteration<double, so_type> iter(b, 50 /* max iter */, 1.e-8 /* rel. error red. */, 
+	  //			0.0, 30 /* how often logged */, sout);
 
+    // warmup
+    for(int i=0; i<3; ++i) { b = A * x; x = b+x; }
+    // just to be sure to remove coarse imbalance before measurement
+    MPI_Barrier(MPI_COMM_WORLD);
     double t = -MPI_Wtime();
-    cg(A, x, b, P, iter);
+    MPI_Aint w; 
+    MPI_Get_address((void*)0, &w);
+    //cg(A, x, b, P, iter);
+    for(int i=0; i<100; ++i) { b = A * x; x = b+x; }
+    MPI_Get_address((void*)1, &w);
+    MPI_Barrier(MPI_COMM_WORLD);
     sout << "Solution took " << t+MPI_Wtime() << "s.\n";
     if (n < 50)
 	sout << "Solution is:\n" << x << "\nShould be Vector of 1s\n";
@@ -84,34 +93,38 @@ int main(int argc, char* argv[])
     }
     // Set file name (consider program being started from other directory)
     std::string program_dir= io::directory_name(argv[0]), 
-	file_name= io::join(program_dir, argv[1]); // symm. (hopefully pos. def.)
+	  file_name= io::join(program_dir, argv[1]); // symm. (hopefully pos. def.)
 
     // Read file into distributed matrix
     io::matrix_market file(file_name);
-    //matrix_type A(file);
-	int size= 1000; matrix_type A(size*size, size*size); laplacian_setup(A, size, size); // one mio rows
+    matrix_type A(file);
+	  
+    //int size= 1000; matrix_type A(size*size, size*size); laplacian_setup(A, size, size); // one mio rows
     assert(num_rows(A) == num_cols(A)); // check symmetry
     
     //matrix_type C(io::matrix_market("matrix.mtx")); // The file is not there!!!
     solve(A, "**** Matrix with naive block distribution");
 
     // Get partition from Parmetis (explicitly without topomap)
-    parmetis_index_vector    xadj, adjncy, vtxdist;
-    parmetis_index_vector part;
+    parmetis_index_vector xadj, adjncy, vtxdist;
+    parmetis_index_vector part, topopart;
     int edgecut= parmetis_partition_k_way(A, xadj, adjncy, vtxdist, part);
+
+    topopart.resize(part.size());
+    std::copy(part.begin(), part.end(), topopart.begin());
+    
+    // apply topology mapping
+    topology_mapping(communicator(row_distribution(A)), xadj, adjncy, vtxdist, topopart);
     //mout << "Metis partition is " << part << '\n'; 
 
-    mtl::par::block_migration pmigr= parmetis_migration(row_distribution(A), part);
+    //mtl::par::block_migration pmigr= parmetis_migration(row_distribution(A), part);
     //mout << "New distribution is " << pmigr.new_distribution() << '\n';
-    
+
     // Migrate matrix as parmetis says
     matrix_type B(A, parmetis_migration(row_distribution(A), part));
     solve(B, "**** Matrix migrated by Parmetis");
 
-    // Migrate as Torsten says
-    topology_mapping(communicator(row_distribution(A)), xadj, adjncy, vtxdist, part);
-
-    matrix_type C(A, parmetis_migration(row_distribution(A), part));
+    matrix_type C(A, parmetis_migration(row_distribution(A), topopart));
     solve(C, "**** Matrix migrated by Parmetis and topology mapping");
     
     // It could have been so easy if we wouldn't compare the two mappings ;-) 
