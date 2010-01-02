@@ -21,7 +21,7 @@
 #include <numeric>
 #include <algorithm>
 #include <parmetis.h>
-#include <mpiparmetis.h>
+#include <mpiparmetis.hpp>
 #include <libtopomap.hpp>
 #include <boost/static_assert.hpp>
 
