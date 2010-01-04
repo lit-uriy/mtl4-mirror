@@ -72,29 +72,32 @@ typedef std::vector<idxtype> parmetis_index_vector;
 	  if (ptg_output!= NULL) TPM_Write_phystopo(newcomm, ptg_output, ptg_input);
 #       endif
 
-        /* call into libToPoMap to get new permutation of ranks from
+        /* call into libtopomap to get new permutation of ranks from
          * Parmetis output. Double edges are interpreted as weights of
          * the graph. MPI Edge weights are ignored. */
 	int newrank;
-	//TPM_Topomap_greedy(newcomm, "./3x3x2.graph", 0, &newrank);
         if(ptg_input == NULL) printf("MUST supply topology input file for maping (export TPM_PTG_INFILE=\"topo-file\")\n");
 	TPM_Topomap(newcomm, ptg_input, 0, &newrank);
-
-        /* Peter: der folgende Block dient nur der Veranschaulichung.
-         * Die Permutation bitte dann auf die ranks (0,1,2, ... ,p) die
-         * im Parmetis rauskommen anwenden */
 
         int p; MPI_Comm_size(newcomm, &p); // TODO: this should go away!
         std::vector<int> permutation(p);
         MPI_Allgather(&newrank, 1, MPI_INT, &permutation[0], 1, MPI_INT, newcomm);
 
 #       ifndef NDEBUG 
-          int r; MPI_Comm_rank(newcomm, &r);
-	  if(!r) { printf("rank permutation: "); for(int i=0; i<p; ++i) printf("%i ", permutation[i]); printf("\n"); }
+        int r; MPI_Comm_rank(newcomm, &r);
+        if(!r) { printf("rank permutation: "); for(int i=0; i<p; ++i) printf("%i ", permutation[i]); printf("\n"); }
 #       endif
 
-        for (int i= 0; i < part.size(); ++i) 
-	    part[i] = permutation[part[i]];
+        //std::vector<int> rperm(p); // reverse permutation
+        //for(int i=0; i<p; ++i) rperm[permutation[i]] = i;
+
+        // rank r should behave like it was rank permutation[r]!
+        for(int i=0; i<part.size(); ++i) part[i] = permutation[part[i]];
+
+        // benchmark topology with simple data transmission!
+        double t1,t2;
+        TPM_Benchmark_graphtopo(newcomm, newrank, 1024 /*dsize*/, &t1, &t2);
+        if(!r) printf("topo benchmark: %f s -> %f s\n", t1, t2);
     }
 
 # endif
