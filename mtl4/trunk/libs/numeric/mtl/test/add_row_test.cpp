@@ -58,7 +58,7 @@ void test(Matrix& A, const char* name)
 	throw "Wrong value in A[2][1] after adding two rows";
 }
 
- 
+
 int test_main(int argc, char* argv[])
 {
     using namespace mtl;
