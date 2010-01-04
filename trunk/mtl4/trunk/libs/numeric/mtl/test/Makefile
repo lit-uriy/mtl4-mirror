@@ -5,7 +5,7 @@ CXXFLAGS = ${INCLUDE_DIRS}
 #CXXFLAGS += -Wno-long-double 
 
 # Debugging
-#CXXFLAGS += -g
+CXXFLAGS += -g -O0
 
 # g++ optimization
 #CXXFLAGS += -DNDEBUG -O3 -ffast-math 
