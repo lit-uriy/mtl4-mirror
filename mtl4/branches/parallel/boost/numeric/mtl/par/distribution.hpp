@@ -117,7 +117,7 @@ namespace mtl {
 	    template <typename Size>
 	    Size local_to_global(Size n, int p) const
 	    {
-		MTL_DEBUG_THROW_IF(n >= starts[p+1] - starts[p], range_error);
+		//MTL_DEBUG_THROW_IF(n >= starts[p+1] - starts[p], range_error);
 		return n + starts[p];
 	    }
 
@@ -130,7 +130,7 @@ namespace mtl {
 	    template <typename Size>
 	    Size global_to_local(Size n, int p) const
 	    {
-		MTL_DEBUG_THROW_IF(n < starts[p] || n >= starts[p+1], range_error);
+		//MTL_DEBUG_THROW_IF(n < starts[p] || n >= starts[p+1], range_error);
 		return n - starts[p];
 	    }
 
@@ -143,7 +143,7 @@ namespace mtl {
 	    { 
 		if (n < starts[0] || n >= starts[my_size])
 		    std::cerr << "out of range with n == " << n << "max == " << starts[my_size] << std::endl;
-		MTL_DEBUG_THROW_IF(n < starts[0] || n >= starts[my_size], range_error);
+		//MTL_DEBUG_THROW_IF(n < starts[0] || n >= starts[my_size], range_error);
 		std::vector<size_type>::const_iterator lbound( std::lower_bound(starts.begin(), starts.end(), n));
 		return lbound - starts.begin() - int(*lbound != n);
 	    }
@@ -208,7 +208,7 @@ namespace mtl {
 	    template <typename Size>
 	    Size global_to_local(Size n, int p) const
 	    {
-		MTL_DEBUG_THROW_IF(n % my_size != p, range_error);
+		//MTL_DEBUG_THROW_IF(n % my_size != p, range_error);
 		return n / my_size;
 	    }
 
@@ -267,7 +267,7 @@ namespace mtl {
 	    template <typename Size>
 	    Size global_to_local(Size n, int p) const
 	    {
-		MTL_DEBUG_THROW_IF(n % my_size != p, range_error);
+		//MTL_DEBUG_THROW_IF(n % my_size != p, range_error);
 		return n / my_size;
 	    }
 
