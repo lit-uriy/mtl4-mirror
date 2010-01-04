@@ -61,15 +61,16 @@ typedef std::vector<idxtype> parmetis_index_vector;
 	MPI_Comm newcomm;
 	MPIX_Graph_create_parmetis_unweighted(&vtxdist[0], &xadj[0], &adjncy[0], &numflag, &part[0], &comm, &newcomm);
 
-        /* this is all debug stuff (plots pretty cool graphs ;-)) */
-	// all those filenames should somehow come from a config file (or command line)
-	//TPM_Fake_names_file = (char*)"./3x3x2.fake";
-	TPM_Fake_names_file = getenv("TPM_FAKE_NAMES_FILE");
-        const char *ltg_output = getenv("TPM_LTG_OUTFILE");
-	if(ltg_output != NULL) TPM_Write_graph_comm(newcomm, ltg_output);
-        const char *ptg_output = getenv("TPM_PTG_OUTFILE");
-        const char *ptg_input = getenv("TPM_PTG_INFILE");
-	if(ptg_output!= NULL) TPM_Write_phystopo(newcomm, ptg_output, ptg_input);
+#       ifndef NDEBUG // oder #ifdef TMP_PLOT_GRAPHS
+          /* this is all debug stuff (plots pretty cool graphs ;-)) */
+	  // all those filenames should somehow come from a config file (or command line)
+  	  //TPM_Fake_names_file = (char*)"./3x3x2.fake";
+	  TPM_Fake_names_file = getenv("TPM_FAKE_NAMES_FILE"); // Wo kommt das her??? Globale Variable im globalem Namensraum?
+	  const char *ltg_output = getenv("TPM_LTG_OUTFILE"), *ptg_output = getenv("TPM_PTG_OUTFILE"),
+	             *ptg_input = getenv("TPM_PTG_INFILE");
+	  if (ltg_output != NULL) TPM_Write_graph_comm(newcomm, ltg_output); // den Nulltest kannst Du auch in der Funktion machen (einmal)
+	  if (ptg_output!= NULL) TPM_Write_phystopo(newcomm, ptg_output, ptg_input);
+#       endif
 
         /* call into libToPoMap to get new permutation of ranks from
          * Parmetis output. Double edges are interpreted as weights of
@@ -82,12 +83,18 @@ typedef std::vector<idxtype> parmetis_index_vector;
         /* Peter: der folgende Block dient nur der Veranschaulichung.
          * Die Permutation bitte dann auf die ranks (0,1,2, ... ,p) die
          * im Parmetis rauskommen anwenden */
+
         int p; MPI_Comm_size(newcomm, &p); // TODO: this should go away!
-        int r; MPI_Comm_rank(newcomm, &r);
         std::vector<int> permutation(p);
         MPI_Allgather(&newrank, 1, MPI_INT, &permutation[0], 1, MPI_INT, newcomm);
-        if(!r) { printf("rank permutation: "); for(int i=0; i<p; ++i) printf("%i ", permutation[i]); printf("\n"); }
-        for(int i=0; i<part.size(); ++i) part[i] = permutation[part[i]];
+
+#       ifndef NDEBUG 
+          int r; MPI_Comm_rank(newcomm, &r);
+	  if(!r) { printf("rank permutation: "); for(int i=0; i<p; ++i) printf("%i ", permutation[i]); printf("\n"); }
+#       endif
+
+        for (int i= 0; i < part.size(); ++i) 
+	    part[i] = permutation[part[i]];
     }
 
 # endif
