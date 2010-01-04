@@ -34,7 +34,7 @@ void inline test3(string type1, T x, string type2, U y)
     cout << x << " * " << y << " = " << x * y << '\n';
     if (x * y != 12) throw "Result of subtraction must be 12.";
 
-    cout << x << " * " << y << " = " << x / y << '\n';
+    cout << x << " / " << y << " = " << x / y << '\n';
     if (x / y != 3) throw "Result of subtraction must be 3.";
 
     cout << '\n';

@@ -126,8 +126,7 @@ typename mtl::traits::extended_complex<T, U>::type // implicit enable_if
 inline operator/(const complex<T>& x, const U& y)
 {
     typedef typename mtl::traits::extended_complex<T, U>::type type;
-    type r(real(x), imag(x));
-    return r/= type(y);    
+    return type(real(x) / y, imag(x) / y);
 }
 
 template <typename T, typename U>
