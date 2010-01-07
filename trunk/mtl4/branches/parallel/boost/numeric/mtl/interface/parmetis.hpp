@@ -21,7 +21,6 @@
 #include <numeric>
 #include <algorithm>
 #include <parmetis.h>
-#include <mpiparmetis.hpp>
 #include <libtopomap.hpp>
 #include <boost/static_assert.hpp>
 
@@ -35,6 +34,7 @@
 #include <boost/numeric/mtl/par/rank_ostream.hpp>
 
 # ifdef MTL_HAS_TOPOMAP
+#   include <mpiparmetis.hpp>
 #   include <libtopomap.hpp>
 # endif
 

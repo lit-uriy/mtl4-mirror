@@ -17,7 +17,9 @@
 #include <boost/mpl/bool.hpp>
 
 #include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
@@ -113,7 +115,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 # ifdef MTL_NOT_UNROLL_FSIZE_MAT_VEC_MULT
     boost::mpl::false_        selector;
 # else
-    traits::is_static<Matrix> selector;
+	mtl::traits::is_static<Matrix> selector;
 # endif
     dense_mat_cvec_mult(A, v, w, Assign(), selector);
 }
@@ -179,8 +181,8 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
 
     typedef typename range_generator<row, Matrix>::type       a_cur_type;    
     typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
-	typename mtl::traits::col<Matrix>::type                        col_a(A); 
-	typename mtl::traits::const_value<Matrix>::type                value_a(A); 
+    typename mtl::traits::col<Matrix>::type                   col_a(A); 
+    typename mtl::traits::const_value<Matrix>::type           value_a(A); 
 
     if (Assign::init_to_zero) set_to_zero(w);
 

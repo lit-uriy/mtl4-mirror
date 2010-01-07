@@ -12,6 +12,8 @@
 #ifndef MTL_PAR_MIGRATE_VECTOR_INCLUDE
 #define MTL_PAR_MIGRATE_VECTOR_INCLUDE
 
+#ifdef MTL_HAS_MPI
+
 #include <boost/numeric/mtl/concept/collection.hpp> 
 #include <boost/numeric/mtl/vector/inserter.hpp> 
 #include <boost/numeric/mtl/operation/local.hpp> 
@@ -33,7 +35,9 @@ void migrate_vector(const DistVectorV& v, DistVectorW& w, const block_migration&
 	ins[migration.new_global(i)] << l[i];
 }
 
-
 }} // namespace mtl::par
+
+#endif // MTL_HAS_MPI
+
 
 #endif // MTL_PAR_MIGRATE_VECTOR_INCLUDE

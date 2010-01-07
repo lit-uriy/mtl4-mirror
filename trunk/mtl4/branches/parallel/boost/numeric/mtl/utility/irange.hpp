@@ -55,13 +55,22 @@ namespace mtl {
         /// Number of indices
         size_type size() const { return my_finish > my_start ? my_finish - my_start : 0; }
 
+        bool empty() const { return my_finish <= my_start; }
+
       private:
         size_type my_start, my_finish;
     };
-
+    /// All index in range
     namespace {
 	irange iall;
     }
+
+    irange inline intersection(irange const& r1, irange const& r2)
+    {
+	return irange(std::max(r1.start(), r2.start()), std::min(r1.finish(), r2.finish()));
+    }
+
+
 } // namespace mtl
 
 

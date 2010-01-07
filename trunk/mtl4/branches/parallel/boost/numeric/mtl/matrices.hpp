@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/matrix/compressed2D.hpp> 
 #include <boost/numeric/mtl/matrix/multi_vector.hpp> 
 #include <boost/numeric/mtl/matrix/element_matrix.hpp> 
+#include <boost/numeric/mtl/matrix/implicit_dense.hpp> 
 
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>

@@ -39,7 +39,7 @@ namespace mtl { namespace vector {
 	
     } // namespace impl
 
-
+///Returns maximal entry of %vector v
 template <unsigned long Unroll, typename Value>
 typename Collection<Value>::value_type
 inline max(const Value& value)

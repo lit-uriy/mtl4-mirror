@@ -27,6 +27,7 @@
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
 #include <boost/numeric/mtl/utility/zipped_sort.hpp>
+#include <boost/numeric/mtl/utility/shrink_stl_vector.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/shift_block.hpp>
@@ -450,6 +451,14 @@ class compressed2D
     /// Address of first data entry; to be used with care.
     value_type* address_data() { check(); return &data[0]; }
     const value_type* address_data() const { check(); return &data[0]; }
+
+    /// Release unused space in STL vectors
+    void shrink() 
+    {
+	shrink_stl_vector(data);
+	shrink_stl_vector(starts);
+	shrink_stl_vector(indices);
+    }
 
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;

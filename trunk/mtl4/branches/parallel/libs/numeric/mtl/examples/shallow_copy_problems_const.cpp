@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
     A= 4.0;
 
     double alpha= f(A); // A is changed now!
+    std::cout << alpha << "\n";
 
     return 0;
 }

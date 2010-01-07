@@ -91,7 +91,7 @@ class strided_vector_ref
 
     /// Constructor take address, length and stride
     strided_vector_ref( size_type length, pointer start_address, size_type stride= 1)
-      : my_size(length), data(start_address), my_stride(stride) {}
+      : data(start_address), my_size(length), my_stride(stride) {}
 
     // Default copy constructor refers to same vector which is okay
 
@@ -99,10 +99,10 @@ class strided_vector_ref
     size_type stride() const { return my_stride ; }
 
     reference operator()( size_type i ) { check_index(i); return data[i * my_stride]; }
-    const reference operator()( size_type i ) const { check_index(i); return data[i * my_stride]; }
+    const_reference operator()( size_type i ) const { check_index(i); return data[i * my_stride]; }
 
     reference operator[]( size_type i ) { return (*this)( i ) ; }
-    const reference operator[]( size_type i ) const { return (*this)( i ) ;  }
+    const_reference operator[]( size_type i ) const { return (*this)( i ) ;  }
 
     self operator[]( irange r ) { return sub_vector(*this, r.start(), r.finish()); }
     const self  operator[]( irange r ) const { return sub_vector(*this, r.start(), r.finish());  }
@@ -128,8 +128,8 @@ class strided_vector_ref
 	return i;
     }
     
-    friend size_type inline num_rows(const self& v) { return traits::is_row_major<self>::value ? 1 : v.size(); }
-    friend size_type inline num_cols(const self& v) { return traits::is_row_major<self>::value ? v.size() : 1; }
+    friend size_type inline num_rows(const self& v) { return mtl::traits::is_row_major<self>::value ? 1 : v.size(); }
+    friend size_type inline num_cols(const self& v) { return mtl::traits::is_row_major<self>::value ? v.size() : 1; }
     friend size_type inline size(const self& v) { return v.size(); }
     
     vec_vec_asgn_expr<self, self> operator=( self const& e ) 
@@ -149,11 +149,12 @@ class strided_vector_ref
     /// Swapping not efficient since elements have to be swapped for not owning the data
     friend void swap(self& vector1, self& vector2)
     {
-	vector1.check_dim(size(vector2));
-	for (size_type i= 0; i < size(vector1); ++i)
+	vector1.check_dim(vector2.size()); // size(vector2) doesn't compiled with ICC 10.1
+	for (size_type i= 0; i < vector1.size(); ++i)
 	    swap(vector1[i], vector2[i]);
     }
 
+    void change_dim(size_type n) { MTL_DEBUG_THROW_IF(my_size != n, incompatible_size()); }
     void crop() {} // Only dummy here
 
   private:

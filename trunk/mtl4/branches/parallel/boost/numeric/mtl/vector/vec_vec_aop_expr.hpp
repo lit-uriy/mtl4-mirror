@@ -144,18 +144,14 @@ struct vec_vec_aop_expr
 	return size(x.first);
     }
 
-#if 0
-    size_type size() const {
-	assert( first.size() == 0 || first.size() == second.size() ) ;
-	return first.size() ;
-    }
-#endif
 
     value_type& operator() ( size_type i ) const 
     {
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
     }
+
+
 
     value_type& operator[] ( size_type i ) const
     {

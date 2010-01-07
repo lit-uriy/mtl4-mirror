@@ -87,7 +87,7 @@ def add_opt(env, opt):
 def check_no_long_double(conf):
     cc = conf.env['CC']
     if cc == 'gcc':
-        # conf.env.Append(CXXFLAGS = '-Werror -Wreorder -pedantic -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings')
+        # conf.env.Append(CXXFLAGS = '-Werror -Wreorder -pedantic -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings')
 	# conf.env.Append(CXXFLAGS = '-Wreorder -pedantic -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings')
 	output = os.popen(cc + " --version").read()
 	st = output.split('\n')[0]
@@ -347,6 +347,7 @@ Help(opts.GenerateHelpText(env))
 if int(ARGUMENTS.get('full_warnings', 0)):
     if env['CXX'] == 'g++':
         env.Append(CXXFLAGS = '-Werror -Wall -Wreorder -pedantic -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings')
+full_warnings = ARGUMENTS.get('full_warnings', 0)
 
 
 # add user-defined CC flags 
@@ -454,14 +455,12 @@ if add_optflag:
 # whether test programs should be ran
 check = ARGUMENTS.get('check', 0)
 
-
 #####################
 # Sub-directories
 #####################
 
 # print "SConstruct: debug_env[CXX] = ", debug_env['CXX']
-
-Export('env debug_env mpi_debug_env opt_env high_opt_env mpi_high_opt_env check')
+Export('env debug_env mpi_debug_env opt_env high_opt_env mpi_high_opt_env check full_warnings')
 
 SConscript(['libs/numeric/mtl/build/SConscript', 
             'libs/numeric/mtl/test/SConscript', 

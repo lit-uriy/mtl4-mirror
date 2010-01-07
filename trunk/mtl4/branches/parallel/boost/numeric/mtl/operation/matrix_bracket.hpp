@@ -35,17 +35,19 @@ namespace mtl { namespace operations {
 
 	ValueRef operator[] (size_type col) { return matrix(row, col);	}
 
+	template <typename T> struct my_traits { static const bool value= boost::is_same<T, mtl::irange>::value && row_traits::exists; };
+
 	template <typename T>
-	typename boost::lazy_enable_if_c<boost::is_same<T, mtl::irange>::value && row_traits::exists, row_traits>::type	 
+	typename boost::lazy_enable_if_c<my_traits<T>::value, row_traits>::type	 
 	operator[] (const T& col_range) 
 	{ 
 	    return row_traits::apply(matrix, row, col_range); 
 	}
-
       protected:
 	Ref         matrix;
 	size_type   row;
     };
+
 
 
     template <typename Matrix, typename Ref, typename ValueRef>
@@ -62,17 +64,16 @@ namespace mtl { namespace operations {
 			      col_range.start(), col_range.finish());
 	}
 
+	template <typename T> struct my_traits { static const bool value = boost::is_integral<T>::value && col_traits::exists; };
+
 	template <typename T>
-	typename boost::lazy_enable_if_c<boost::is_integral<T>::value && col_traits::exists, col_traits>::type	 
+	typename boost::lazy_enable_if_c<my_traits<T>::value, col_traits>::type	 
 	operator[] (T col)  { return col_traits::apply(matrix, row_range, col); }
 
       protected:
 	Ref         matrix;
 	irange      row_range;
     };
-
-
-
 
 
 } // namespace operations

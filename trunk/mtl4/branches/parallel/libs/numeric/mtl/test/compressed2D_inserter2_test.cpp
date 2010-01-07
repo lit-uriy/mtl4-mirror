@@ -41,7 +41,7 @@ void test(int n)
 	}
     }
     if (n < 9) cout << "A is \n" << A;
-    if (A.nnz() != 5*n*n - 4*n)
+    if (A.nnz() != unsigned(5*n*n - 4*n))
 	throw "Wrong number of non-zeros.";
     for (int i= 0, ns= n*n; i < ns; i++) {
 	if (A[i][i] != 4.0) throw "Wrong value";

@@ -18,7 +18,7 @@
 #include <boost/numeric/linear_algebra/inverse.hpp>
 
 namespace mtl { namespace matrix {
-
+///Returns %matrix with invert diagonal
 template <typename Matrix>
 inline void invert_diagonal(Matrix& matrix)
 {

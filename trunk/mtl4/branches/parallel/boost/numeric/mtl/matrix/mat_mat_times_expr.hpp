@@ -12,20 +12,31 @@
 #ifndef MTL_MAT_MAT_TIMES_EXPR_INCLUDE
 #define MTL_MAT_MAT_TIMES_EXPR_INCLUDE
 
+#include <boost/mpl/if.hpp>
+#include <boost/mpl/and.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/type_traits.hpp>
+
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/matrix/mat_mat_op_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/matrix/compressed2D.hpp>
+#include <boost/numeric/mtl/concept/std_concept.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
 
 
 namespace mtl { namespace matrix {
 
 template <typename E1, typename E2>
 struct mat_mat_times_expr 
-	: public mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> >,
-      public mat_expr< mat_mat_times_expr<E1, E2> >
+  : public mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> >,
+    public mat_expr< mat_mat_times_expr<E1, E2> >
 {
     typedef mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> > op_base;
     typedef mat_expr< mat_mat_times_expr<E1, E2> >                                                       crtp_base;
@@ -36,9 +47,35 @@ struct mat_mat_times_expr
     typedef mtl::non_fixed::dimensions           dim_type;
     typedef typename E1::key_type                key_type;
 
+#if 0 // TODO: Doesn't find first_argument_type due to some const qualification or alike
+    typedef typename Collection<E1>::value_type  first_value_type;
+    typedef typename Collection<E2>::value_type  second_value_type;
+#else
+    typedef typename E1::value_type              first_value_type;
+    typedef typename E2::value_type              second_value_type;
+#endif
+    typedef typename Multiplicable<first_value_type, second_value_type>::result_type result_value_type;
     
+#if 0 // Just an idea
+    typedef typename boost::mpl::if_<
+                boost::mpl::and_<
+	            boost::is_base_of<tag::sparse, typename traits::category<E1>::type>
+	          , boost::is_base_of<tag::sparse, typename traits::category<E2>::type>
+		> 
+	      , compressed2D<result_value_type>
+	      , dense2D<result_value_type, parameters<> >
+            >::type                                       evaluated_result_type;
+    
+    // Convert into matrix
+
+    operator evaluated_result_type() const
+    {
+	return evaluated_result_type(first * second);
+    }
+#endif
+
     mat_mat_times_expr( E1 const& v1, E2 const& v2 )
-	: op_base( v1, v2 ), crtp_base(*this), first(v1), second(v2)
+      : op_base( v1, v2 ), crtp_base(*this), first(v1), second(v2)
     {}
 
     // To prevent that cout << A * B prints the element-wise product, suggestion by Hui Li
@@ -46,20 +83,20 @@ struct mat_mat_times_expr
     //    or sparse matrices. 
     // Better compute your product first and print it then when compute time is an issue,
     // this is ONLY for convenience.
-    typename E1::value_type
+    result_value_type
     operator()(std::size_t r, std::size_t c) const
     {
 	using math::zero;
 	MTL_THROW_IF(num_cols(first) != num_rows(second), incompatible_size());
 
-	typename E1::value_type ref, sum(zero(ref));
+	result_value_type ref, sum(zero(ref));
 	for (std::size_t i= 0; i < num_cols(first); i++)
 	    sum+= first(r, i) * second(i, c);
 	return sum;
     }
 
     
-    typename E1::value_type
+    result_value_type
     operator()(std::size_t r, std::size_t c)
     {
 	return (*const_cast<const self*>(this))(r, c);

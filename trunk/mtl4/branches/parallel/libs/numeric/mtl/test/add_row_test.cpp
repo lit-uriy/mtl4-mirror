@@ -16,9 +16,6 @@
 
 using namespace std;
 
-
-
-
 template <typename Matrix>
 void add_row(Matrix& A, typename mtl::Collection<Matrix>::size_type n= 1)
 {
@@ -31,13 +28,14 @@ template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
     typedef typename mtl::Collection<Matrix>::value_type   value_type;
+    typedef typename mtl::Collection<Matrix>::size_type    size_type;
 
     A.change_dim(3, 3);
     {
 	mtl::matrix::inserter<Matrix>   ins(A);
-	for (int i= 0; i < num_rows(A); i++)
-	    for (int j= 0; j < num_cols(A); j++)
-		ins[i][j]= value_type(j - i + 0);
+	for (size_type i= 0; i < num_rows(A); i++)
+	    for (size_type j= 0; j < num_cols(A); j++)
+		ins[i][j]= value_type(j) - value_type(i);
     }
     cout << "\n" << name << "\n" << "A =\n" << A;
 

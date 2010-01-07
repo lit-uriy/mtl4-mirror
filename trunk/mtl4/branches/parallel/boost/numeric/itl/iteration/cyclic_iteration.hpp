@@ -25,7 +25,7 @@ namespace itl {
 
       void print_resid()
       {
-	  if (this->i % cycle == 0)
+	  if (!this->my_quite && this->i % cycle == 0)
 	      if (this->i != last_print) { // Avoid multiple print-outs in same iteration
 		  out << "iteration " << this->i << ": resid " << this->resid() << "\n";
 		  last_print= this->i;
@@ -40,6 +40,7 @@ namespace itl {
 	: super(b, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), out(out)
       {}
 
+      bool finished() { return super::finished(); };
 
       template <typename T>
       bool finished(const T& r) 
@@ -53,13 +54,13 @@ namespace itl {
 
       int error_code() 
       {
-	  // out  << std::endl; // endl is insanely implemented, doesnt work with my classes
-	  out << "finished! error code = " << this->error << '\n'
-	      << this->iterations() << " iterations\n"
-	      << this->resid() << " is actual final residual. \n"
-	      << this->resid()/this->normb() << " is actual relative tolerance achieved. \n"
-	      << "Relative tol: " << this->rtol_ << "  Absolute tol: " << this->atol_ << '\n'
-	      << "Convergence:  " << pow(this->resid()/this->normb(), 1.0 / double(this->iterations())) << "\n";
+	  if (!this->my_quite)
+	      out << "finished! error code = " << this->error << '\n'
+		  << this->iterations() << " iterations\n"
+		  << this->resid() << " is actual final residual. \n"
+		  << this->resid()/this->normb() << " is actual relative tolerance achieved. \n"
+		  << "Relative tol: " << this->rtol_ << "  Absolute tol: " << this->atol_ << '\n'
+		  << "Convergence:  " << pow(this->resid()/this->normb(), 1.0 / double(this->iterations())) << std::endl;
 	  return this->error;
       }
     protected:

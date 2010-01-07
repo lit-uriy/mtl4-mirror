@@ -46,64 +46,87 @@ void test1(Matrix& m, double tau)
 int test_main(int argc, char* argv[])
 {
 
-  const int N = 10; // Original from Jan had 2000
-  const int Niter = 3*N;
+#if 0
 
-  typedef mtl::dense2D<double> matrix_type;
+  const int N = 2; // Original from Jan had 2000
+  const int Niter = 5000;
+  using itl::pc::identity; using itl::pc::ilu_0; using itl::pc::ic_0; using itl::pc::diagonal;
+  //typedef mtl::dense2D<double> matrix_type;
   //typedef compressed2D<std::complex<double>matrix::parameters<tag::col_major> > matrix_type;
+  typedef mtl::compressed2D<double> matrix_type;
   matrix_type                   A(N, N);
-  //laplacian_setup(A, N, N);
-  mtl::dense_vector<double> b(N, 1), x(N);
+  laplacian_setup(A, N, N);
+  mtl::dense_vector<double> b(N*N, 1), x(N*N),r(N*N);
+  identity<matrix_type>         Ident(A);
+  //ic_0<matrix_type>             ic(A);
+  //ilu_0<matrix_type>            ilu(A);
+  //diagonal<matrix_type>         diag(A);
 
-  test1(A,0.194);
+  //test1(A,0.194);
   std::cout << "A has " << A.nnz() << " non-zero entries" << std::endl;
-  itl::pc::identity<matrix_type>     Ident(A);
+  std::cout << "A =\n"  << A << " \n";
 
-  std::cout << "Non- preconditioned bicgstab" << std::endl;
-  std::cout << "Won't convergence (for large examples)!" << std::endl;
-  x= 0.5;
-  itl::noisy_iteration<double> iter_0(b, Niter, 1.e-8);
+  std::cout << "Non- preconditioned bicgstab  Won't convergence (for large examples)!" << std::endl;
+  x= 2.0;
+  itl::basic_iteration<double> iter_0(b, Niter, 1.e-8);
 
   bicgstab(A, x, b, Ident, iter_0);
-  std::cout << "x= " << x << " \n\n" ;
-  //std::cout << "\n Non-preconditioned gmres(1)" << std::endl;
-  //std::cout << "Won't convergence (for large examples)!" << std::endl;
-  x= 0.5;
-  itl::noisy_iteration<double> iter_1(b, Niter, 1.e-8);
-  gmres(A, x, b,iter_1,1);
-  std::cout << "x= " << x << " \n" ;
+  r= A*x-b;
 
-  //std::cout << "\n Non-preconditioned gmres(2)" << std::endl;
-  //std::cout << "Won't convergence (for large examples)!" << std::endl;
-  x= 0.5;
-  itl::noisy_iteration<double> iter_2(b, Niter, 1.e-8);
-  gmres(A, x, b,iter_2,2);
+  std::cout << "START GMRES  Won't convergence (for large examples)!" << std::endl;
+  std::cout << "\n Non-preconditioned gmres(1)" << std::endl;
+  x= 2.0;
+  itl::basic_iteration<double> iter_1(b, 1, 1.e-8);
+  gmres(A, x, b, Ident, Ident, iter_1, 1);
+  r= A*x-b;
+  if (two_norm(r) > 0.00005) throw "gmres doesn't converge";
 
-  //std::cout << "\n Non-preconditioned gmres(4)" << std::endl;
-  //std::cout << "Won't convergence (for large examples)!" << std::endl;
-  x= 0.5;
-  itl::noisy_iteration<double> iter_4(b, Niter, 1.e-8);
-  gmres(A, x, b,iter_4,4);
-
-  //std::cout << "\n Non-preconditioned gmres(8)" << std::endl;
-  //std::cout << "Won't convergence (for large examples)!" << std::endl;
-  x= 0.5;
-  itl::noisy_iteration<double> iter_8(b, Niter, 1.e-8);
-  gmres(A, x, b,iter_1,8);
+  std::cout << "\n Non-preconditioned gmres(2) (doesn't converge even for the test)" << std::endl;
+  x= 2.0;
+  itl::basic_iteration<double> iter_2(b, 8, 1.e-8);
+  gmres(A, x, b, Ident, Ident, iter_2, 2);
+  r= A*x-b;
+  // if (two_norm(r) > 0.00005) throw "gmres(2) doesn't converge";
+  if (two_norm(r) > 0.00005) 
+      std::cout << "GMRES(2) didn't converge after 8 titerations.\n";
 
 
-  //std::cout << "\n Non-preconditioned gmres(16)" << std::endl;
-  //std::cout << "Won't convergence (for large examples)!" << std::endl;
-  x= 0.5;
-  itl::noisy_iteration<double> iter_16(b, Niter, 1.e-8);
-  gmres(A, x, b,iter_16,16);
+  std::cout << "\n Non-preconditioned gmres(4)" << std::endl;
+  x= 2.5;
+  itl::basic_iteration<double> iter_4(b, 16, 1.e-8);
+  gmres(A, x, b, Ident, Ident,  iter_4, 4);
+  r= A*x-b;
+  // if (two_norm(r) > 0.000001) throw "gmres(4) doesn't converge even with more iterations and restarts";
+  if (two_norm(r) > 0.00005) 
+      std::cout << "GMRES(4) didn't converge after 16 titerations.\n";
 
-  //std::cout << "\n Non-preconditioned gmres(32)" << std::endl;
-  //std::cout << "Won't convergence (for large examples)!" << std::endl;
-  x= 0.5;
-  itl::noisy_iteration<double> iter_32(b, Niter, 1.e-8);
-  gmres(A, x, b,iter_32,32);
+  std::cout << "\n Non-preconditioned gmres(4) more iterations " << std::endl;
+  x= 2.5;
+  itl::basic_iteration<double> iter_5(b, 32, 1.e-8);
+  gmres(A, x, b, Ident, Ident,  iter_5, 4);
+  r= A*x-b;
+  // if (two_norm(r) > 0.00005) throw "gmres(4) doesn't converge";
 
-//
+  std::cout << "\n Non-preconditioned gmres(8)" << std::endl;
+  x= 2.5;
+  itl::basic_iteration<double> iter_8(b, 8, 1.e-8);
+  gmres(A, x, b, Ident, Ident, iter_8, 8);
+  r= A*x-b;
+  if (two_norm(r) > 0.00005) throw "gmres(8) doesn't converge";
+
+  std::cout << "\n Non-preconditioned gmres(16)" << std::endl;
+  x= 2.5;
+  itl::basic_iteration<double> iter_16(b, 32, 1.e-8);
+  gmres(A, x, b, Ident, Ident, iter_16, 16);
+  r= A*x-b;
+  if (two_norm(r) > 0.00005) throw "gmres(16) doesn't converge";
+
+  std::cout << "\n Non-preconditioned gmres(32)" << std::endl;
+  x= 2.5;
+  itl::basic_iteration<double> iter_32(b, 32, 1.e-8);
+  gmres(A, x, b, Ident, Ident, iter_32, 32);
+  r= A*x-b;
+  if (two_norm(r) > 0.00005) throw "gmres(32) doesn't converge";
+#endif
   return 0;
 }

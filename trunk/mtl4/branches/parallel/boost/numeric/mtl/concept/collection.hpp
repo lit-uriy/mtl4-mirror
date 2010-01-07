@@ -330,11 +330,11 @@ namespace mtl {
 
 #else
     template <typename Value, unsigned long Mask, typename Parameters>
-    struct Collection<morton_dense<Value, Mask, Parameters> >
+    struct Collection<mtl::matrix::morton_dense<Value, Mask, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
-	typedef typename morton_dense<Value, Mask, Parameters>::size_type size_type;
+	typedef typename mtl::matrix::morton_dense<Value, Mask, Parameters>::size_type size_type;
     };
 #endif
 
@@ -488,6 +488,82 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
+    template <typename Functor>
+    concept_map Collection<matrix::implicit_dense<Functor> >
+    {
+	typedef typename matrix::implicit_dense<Functor>::value_type        value_type;
+	typedef typename matrix::implicit_dense<Functor>::const_reference   const_reference;
+	typedef typename matrix::implicit_dense<Functor>::size_type         size_type;
+    };
+#else
+    template <typename Functor>
+    struct Collection<matrix::implicit_dense<Functor> >
+    {
+	typedef typename matrix::implicit_dense<Functor>::value_type        value_type;
+	typedef typename matrix::implicit_dense<Functor>::const_reference   const_reference;
+	typedef typename matrix::implicit_dense<Functor>::size_type         size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value>
+    concept_map Collection<matrix::ones_matrix<Value> >
+    {
+	typedef typename matrix::ones_matrix<Value>::value_type        value_type;
+	typedef typename matrix::ones_matrix<Value>::const_reference   const_reference;
+	typedef typename matrix::ones_matrix<Value>::size_type         size_type;
+    };
+#else
+    template <typename Value>
+    struct Collection<matrix::ones_matrix<Value> >
+    {
+	typedef typename matrix::ones_matrix<Value>::value_type        value_type;
+	typedef typename matrix::ones_matrix<Value>::const_reference   const_reference;
+	typedef typename matrix::ones_matrix<Value>::size_type         size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Value>
+    concept_map Collection<matrix::hilbert_matrix<Value> >
+    {
+	typedef typename matrix::hilbert_matrix<Value>::value_type        value_type;
+	typedef typename matrix::hilbert_matrix<Value>::const_reference   const_reference;
+	typedef typename matrix::hilbert_matrix<Value>::size_type         size_type;
+    };
+#else
+    template <typename Value>
+    struct Collection<matrix::hilbert_matrix<Value> >
+    {
+	typedef typename matrix::hilbert_matrix<Value>::value_type        value_type;
+	typedef typename matrix::hilbert_matrix<Value>::const_reference   const_reference;
+	typedef typename matrix::hilbert_matrix<Value>::size_type         size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Vector1, typename Vector2>
+    concept_map Collection<matrix::outer_product_matrix<Vector1, Vector2> >
+    {
+	typedef typename matrix::outer_product_matrix<Vector1, Vector2>::value_type        value_type;
+	typedef typename matrix::outer_product_matrix<Vector1, Vector2>::const_reference   const_reference;
+	typedef typename matrix::outer_product_matrix<Vector1, Vector2>::size_type         size_type;
+    };
+#else
+    template <typename Vector1, typename Vector2>
+    struct Collection<matrix::outer_product_matrix<Vector1, Vector2> >
+    {
+	typedef typename matrix::outer_product_matrix<Vector1, Vector2>::value_type        value_type;
+	typedef typename matrix::outer_product_matrix<Vector1, Vector2>::const_reference   const_reference;
+	typedef typename matrix::outer_product_matrix<Vector1, Vector2>::size_type         size_type;
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
     template <typename Coll>
     concept_map Collection<vector::conj_view<Coll> >
     {
@@ -580,6 +656,7 @@ namespace mtl {
     };
 #endif
 
+
 #ifdef __GXX_CONCEPTS__
 
 #else
@@ -597,7 +674,7 @@ namespace mtl {
 
 #else
     template <typename Value, typename Parameters>
-	struct Collection<mtl::vector::dense_vector<Value, Parameters> >
+    struct Collection<mtl::vector::dense_vector<Value, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
@@ -621,7 +698,7 @@ namespace mtl {
 
 #else
     template <typename Value, typename Parameters>
-	struct Collection<mtl::vector::strided_vector_ref<Value, Parameters> >
+    struct Collection<mtl::vector::strided_vector_ref<Value, Parameters> >
     {
 	typedef typename boost::remove_const<Value>::type            value_type;
 	typedef const Value&                                         const_reference;
@@ -629,6 +706,15 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+
+#else
+    // Dunno if this is really a good idea
+    template <typename T>
+    struct Collection<T const>
+      : Collection<T>
+    {};
+#endif
 
 #ifdef __GXX_CONCEPTS__
 

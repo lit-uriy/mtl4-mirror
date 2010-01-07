@@ -28,6 +28,7 @@
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
@@ -344,7 +345,7 @@ class dense2D
 
     void change_dim(size_type r, size_type c, bool keep_data = false)
     {
-	change_dim(r, c, keep_data, traits::is_static<self>());
+	change_dim(r, c, keep_data, mtl::traits::is_static<self>());
     }
 
   private:
@@ -371,8 +372,15 @@ class dense2D
 #endif
 		sub_matrix(*this,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()))
 		    = sub_matrix(temp,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()));
-	    } else
+	    } else {
+#if 0
+		irange rr(0, r);
+		irange rc(0, c);
+		// *this = temp[rr][rc];
+		*this = sub_matrix(temp, 0, r, 0, c);
+#endif
 		*this = temp[irange(0, r)][irange(0, c)];
+	    }
 	}
     }
 
@@ -568,7 +576,7 @@ namespace mtl { namespace traits {
 	  , strided_dense_el_cursor<Value>
 	>::type type;  
 
-    private:
+      private:
 
 	type dispatch(cursor const& c, size_type col, row_major)
 	{
@@ -579,7 +587,7 @@ namespace mtl { namespace traits {
 	    return type(c.ref, c.key, col, c.ref.ldim);
 	}
 
-    public:
+      public:
 
 	type begin(cursor const& c)
 	{
@@ -626,9 +634,7 @@ namespace mtl { namespace traits {
 	  , strided_dense_el_cursor<Value>
 	>::type type;  
 
-
-    private:
-
+      private:
 	type dispatch(cursor const& c, size_type row, col_major)
 	{
 	    return type(c.ref, row, c.key);
@@ -638,8 +644,7 @@ namespace mtl { namespace traits {
 	    return type(c.ref, row, c.key, c.ref.ldim);
 	}
 
-    public:
-
+      public:
 	type begin(cursor const& c)
 	{
 	    return dispatch(c, c.ref.begin_row(), typename matrix::orientation());

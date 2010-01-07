@@ -51,11 +51,11 @@ reorder(const ReorderVector& v, std::size_t cols= 0)
 	MTL_THROW_IF(my_max > cols, range_error("Too large value in reorder vector"));
 
     matrix_type                matrix(s, cols);
-    inserter<matrix_type>      ins(matrix, 1);
-
-    for (std::size_t i= 0; i < s; i++)
-	ins[i][v[i]] << one(Value());
-
+    {
+	inserter<matrix_type>      ins(matrix, 1);
+	for (std::size_t i= 0; i < s; i++)
+	    ins[i][v[i]] << one(Value());
+    }
     return matrix;
 }
 
@@ -70,5 +70,12 @@ inline reorder(const ReorderVector& v, std::size_t cols= 0)
 
 
 }} // namespace mtl::matrix
+
+namespace mtl { namespace vector {
+
+    /// Import into vector namespace; see \ref mtl::matrix::reorder
+    using mtl::matrix::reorder;
+
+}} // namespace mtl::vector
 
 #endif // MTL_MATRIX_REORDER_INCLUDE

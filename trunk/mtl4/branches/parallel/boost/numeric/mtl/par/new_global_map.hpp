@@ -12,6 +12,8 @@
 #ifndef MTL_PAR_NEW_GLOBAL_MAP_INCLUDE
 #define MTL_PAR_NEW_GLOBAL_MAP_INCLUDE
 
+#ifdef MTL_HAS_MPI
+
 #include <map>
 #include <utility>
 #include <vector>
@@ -62,7 +64,8 @@ void new_global_map(const block_migration& migration, const Indices& indices, Ma
 	    map[it->first]= it->second;
 }
 
-
 }} // namespace mtl::par
+
+#endif // MTL_HAS_MPI
 
 #endif // MTL_PAR_NEW_GLOBAL_MAP_INCLUDE

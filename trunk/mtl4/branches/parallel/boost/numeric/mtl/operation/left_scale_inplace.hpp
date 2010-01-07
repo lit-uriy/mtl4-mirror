@@ -58,7 +58,7 @@ namespace mtl {
 	
 	/// Scale vector \p c from left with scalar or matrix factor \p alpha; \p c is altered
 	template <typename Factor, typename Vector>
-	typename traits::enable_if_vector<Vector, Vector&>::type
+	typename mtl::traits::enable_if_vector<Vector, Vector&>::type
 	inline left_scale_inplace(const Factor& alpha, Vector& v)
 	{
 	    return mtl::impl::left_scale_inplace(alpha, typename mtl::traits::category<Factor>::type(), v);

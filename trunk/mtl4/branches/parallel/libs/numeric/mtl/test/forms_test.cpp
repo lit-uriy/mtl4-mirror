@@ -22,25 +22,34 @@ void test(const ResMatrix&, const ArgMatrix& B)
 
     C+= trans(B) * B;
     C+= trans(B) * B * B;
+#if 0
+	std::cout << typeid(typename mtl::traits::category<mtl::matrix::mat_mat_times_expr<ArgMatrix, ArgMatrix> >::type).name() << '\n';
+	std::cout << typeid(typename mtl::traits::category<mtl::matrix::rscaled_view<ArgMatrix, double> >::type).name() << '\n';
+	char c; std::cin >> c; 
+#endif
+	C+= B * 3.5 * B * B;
     C+= trans(B) * 3.5 * B * B;
+
+    C+= 3.5 * ArgMatrix(B * B);
+    C= 3.5 * ArgMatrix(B * B);
+
+    //C+= 3.5 * (B * B);
+    //C= 3.5 * (B * B);
 }
 
 
 int test_main(int argc, char* argv[])
 {
     using namespace mtl;
-    typedef vector::parameters<tag::col_major, vector::fixed::dimension<2>, true> fvec_para;
     typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2>, true> fmat_para;
 
-    float ma[2][2]= {{2., 3.}, {4., 5.}}, va[2]= {3., 4.};
+    float ma[2][2]= {{2., 3.}, {4., 5.}};
     
     dense2D<float>                   A_dyn(ma);
     dense2D<float, fmat_para>        A_stat(ma);
-    dense_vector<float>              v_dyn(va);
-    dense_vector<float, fvec_para>   v_stat(va);
 
     test(A_dyn, A_dyn);
-    test(A_dyn, A_stat);
+    //test(A_dyn, A_stat);
 
     return 0;
 }

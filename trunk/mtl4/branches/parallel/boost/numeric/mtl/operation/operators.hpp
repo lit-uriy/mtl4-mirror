@@ -17,6 +17,7 @@
 //#include <boost/numeric/mtl/vector/operators.hpp>
 #include <boost/numeric/mtl/operation/mult_result.hpp>
 #include <boost/numeric/mtl/operation/div_result.hpp>
+#include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 
@@ -28,8 +29,7 @@ namespace matrix {
     /// Multiplication for all supported types of operations
     /** Enable-if-like technique make sure that only called when properly defined **/
     template <typename Op1, typename Op2>
-    // typename enable_if_matrix<Op1, typename traits::mult_result<Op1, Op2>::type>::type
-    typename mtl::traits::mult_result<Op1, Op2>::type
+     typename mtl::traits::mult_result<Op1, Op2>::type
     inline operator*(const Op1& op1, const Op2& op2)
     {
         return typename mtl::traits::mult_result<Op1, Op2>::type(op1, op2);
@@ -41,7 +41,6 @@ namespace matrix {
     /** Enable-if-like technique make sure that only called when properly defined **/
     // added by Hui Li
     template < typename Op1, typename Op2 >
-    // typename enable_if_matrix<Op1, typename traits::div_result<Op1,Op2>::type>::type
     typename mtl::traits::div_result<Op1,Op2>::type
     inline operator/(const Op1& op1, const Op2& op2)
     {
@@ -56,20 +55,24 @@ namespace vector {
     /// Multiplication for all supported types of operations
     /** Enable-if-like technique make sure that only called when properly defined **/
     template <typename Op1, typename Op2>
-    // typename enable_if_vector<Op1, typename traits::mult_result<Op1, Op2>::type>::type
     typename mtl::traits::vec_mult_result<Op1, Op2>::type
     inline operator*(const Op1& op1, const Op2& op2)
     {
         return typename mtl::traits::vec_mult_result<Op1, Op2>::type(op1, op2);
     }
 
-
+    /// Multiply row vector with column vector; result is scalar
+    template <typename Op1, typename Op2>
+    typename traits::lazy_enable_if_rvec_cvec_mult<Op1, Op2, detail::dot_result<Op1, Op2> >::type
+    inline operator*(const Op1& op1, const Op2& op2)
+    {
+	return dot_real(op1, op2);
+    }
 
     /// Division of matrices and vectors by salars
     /** Enable-if-like technique make sure that only called when properly defined **/
     // added by Hui Li
     template < typename Op1, typename Op2 >
-    // typename enable_if_vector<Op1, typename traits::div_result<Op1,Op2>::type>::type
     typename traits::div_result<Op1,Op2>::type
     inline operator/(const Op1& op1, const Op2& op2)
     {

@@ -48,4 +48,11 @@ inline permutation(const PermutationVector& v)
 
 }} // namespace mtl::matrix
 
+namespace mtl { namespace vector {
+
+    /// Import into vector namespace; see \ref mtl::matrix::permutation
+    using mtl::matrix::permutation;
+
+}} // namespace mtl::vector
+
 #endif // MTL_MATRIX_PERMUTATION_INCLUDE

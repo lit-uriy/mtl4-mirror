@@ -8,10 +8,11 @@ int main(int argc, char* argv[])
     
     const unsigned n= 8;
     dense2D<cdouble>              A(n, n);
+
     A= 3.0;
 
     dense_vector<cdouble>         v(n), w(n);
-    for (int i= 0; i < size(v); i++)
+    for (unsigned i= 0; i < size(v); i++)
 	v[i]= cdouble(i+1, n-i), w[i]= cdouble(i+n);
 
     rank_one_update(A, v, w);
@@ -22,6 +23,6 @@ int main(int argc, char* argv[])
     rank_two_update(A, v, w);
     std::cout << "A after rank-two update is \n"
 	      << with_format(A, 9, 3) << "\n";
-    
+
     return 0;
 }

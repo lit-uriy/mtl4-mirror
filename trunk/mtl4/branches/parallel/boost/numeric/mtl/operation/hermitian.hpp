@@ -20,7 +20,7 @@ namespace mtl {
     // vector version to be done
 
     namespace matrix {
-
+	///Returns hermitian view of matrix A
 	template <typename Matrix>
 	typename mtl::traits::enable_if_matrix<Matrix, hermitian_view<Matrix> >::type
 	inline hermitian(const Matrix& matrix)

@@ -98,9 +98,9 @@ set MDTAR=`md5sum $TARNAME | cut -b 1-32`
 set MDZIP=`md5sum $ZIPNAME | cut -b 1-32`
 
 echo "For download file:"
-echo "\$t->addFile("\""Alpha-2 [x]"\"","
+echo '$t->addFile('\""Beta-1 [x]"\"","
 echo "           "\"$TARNAME\"", "\"$MDTAR\"");"
-echo "\$t->addFile("\""Alpha-2 [x]"\"","
+echo '$t->addFile('\""Beta-1 [x]"\"","
 echo "           "\"$ZIPNAME\"", "\"$MDZIP\"");"
 
 
