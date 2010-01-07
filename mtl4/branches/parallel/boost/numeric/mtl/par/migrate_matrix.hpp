@@ -12,6 +12,8 @@
 #ifndef MTL_PAR_MIGRATE_MATRIX_INCLUDE
 #define MTL_PAR_MIGRATE_MATRIX_INCLUDE
 
+#ifdef MTL_HAS_MPI
+
 #include <boost/numeric/mtl/matrix/inserter.hpp> 
 #include <boost/numeric/mtl/matrix/traverse_distributed.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
@@ -78,5 +80,7 @@ struct migrate_matrix_visitor
 
 
 }} // namespace mtl::par
+
+#endif
 
 #endif // MTL_PAR_MIGRATE_MATRIX_INCLUDE

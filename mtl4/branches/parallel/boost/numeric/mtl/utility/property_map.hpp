@@ -130,6 +130,89 @@ struct offset<mtl::compressed2D<Elt, Parameters> >
 };
   
   
+// ==================
+// For implicit_dense
+// ==================
+
+template <typename Functor>
+struct row<mtl::matrix::implicit_dense<Functor> >
+{
+    typedef mtl::detail::row_in_element_key<mtl::matrix::implicit_dense<Functor> > type;
+};
+
+template <typename Functor>
+struct col<mtl::matrix::implicit_dense<Functor> >
+{
+    typedef mtl::detail::col_in_element_key<mtl::matrix::implicit_dense<Functor> > type;
+};
+
+template <typename Functor>
+struct const_value<mtl::matrix::implicit_dense<Functor> >
+{
+    typedef mtl::detail::const_value_in_element_key<mtl::matrix::implicit_dense<Functor> > type;
+};
+
+
+// ===============
+// For ones_matrix
+// ===============
+
+template <typename Value>
+struct row<mtl::matrix::ones_matrix<Value> >
+  : public row<mtl::matrix::implicit_dense<mtl::matrix::ones_functor<Value> > > 
+{};
+
+template <typename Value>
+struct col<mtl::matrix::ones_matrix<Value> >
+  : public col<mtl::matrix::implicit_dense<mtl::matrix::ones_functor<Value> > > 
+{};
+
+template <typename Value>
+struct const_value<mtl::matrix::ones_matrix<Value> >
+  : public const_value<mtl::matrix::implicit_dense<mtl::matrix::ones_functor<Value> > > 
+{};
+
+
+// ===============
+// For hilbert_matrix
+// ===============
+
+template <typename Value>
+struct row<mtl::matrix::hilbert_matrix<Value> >
+  : public row<mtl::matrix::implicit_dense<mtl::matrix::hilbert_functor<Value> > > 
+{};
+
+template <typename Value>
+struct col<mtl::matrix::hilbert_matrix<Value> >
+  : public col<mtl::matrix::implicit_dense<mtl::matrix::hilbert_functor<Value> > > 
+{};
+
+template <typename Value>
+struct const_value<mtl::matrix::hilbert_matrix<Value> >
+  : public const_value<mtl::matrix::implicit_dense<mtl::matrix::hilbert_functor<Value> > > 
+{};
+
+
+// ========================
+// For outer_product_matrix
+// ========================
+
+template <typename Vector1, typename Vector2>
+struct row<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
+  : public row<mtl::matrix::implicit_dense<mtl::matrix::outer_product_functor<Vector1, Vector2> > > 
+{};
+
+template <typename Vector1, typename Vector2>
+struct col<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
+  : public col<mtl::matrix::implicit_dense<mtl::matrix::outer_product_functor<Vector1, Vector2> > > 
+{};
+
+template <typename Vector1, typename Vector2>
+struct const_value<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
+  : public const_value<mtl::matrix::implicit_dense<mtl::matrix::outer_product_functor<Vector1, Vector2> > > 
+{};
+
+
 // ================
 // For dense_vector
 // ================

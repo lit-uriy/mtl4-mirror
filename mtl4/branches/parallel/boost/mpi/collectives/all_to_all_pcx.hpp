@@ -12,6 +12,8 @@
 #ifndef BOOST_MPI_ALL_TO_ALL_PCX_INCLUDE
 #define BOOST_MPI_ALL_TO_ALL_PCX_INCLUDE
 
+#ifdef MTL_HAS_MPI
+
 #include <mpi.h>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/exception.hpp>
@@ -66,5 +68,7 @@ void inline all_to_all_pcx(const communicator& comm,
 }
 
 }} // namespace boost::mpi
+
+#endif // MTL_HAS_MPI
 
 #endif // BOOST_MPI_ALL_TO_ALL_PCX_INCLUDE

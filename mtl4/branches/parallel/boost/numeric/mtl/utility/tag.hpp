@@ -168,6 +168,10 @@ struct dense2D
     virtual concentrated
 {};
 
+struct implicit_dense
+  : virtual matrix, virtual dense, virtual has_fast_ra_cursor
+{};
+
 /// Tag for a view on a Morton-order matrix in the category lattice
 /** It is not (yet) assumed that the view provides iterators. */
 struct morton_view 
@@ -217,6 +221,9 @@ struct transposed_multi_vector
 struct hermitian_multi_vector
   : virtual matrix, virtual dense
 {};
+
+/// Tag for implicit dense matrices
+
 
 /// Tag for bottom of the category lattice
 /** Only for completeness; probably not needed in practice. */

@@ -37,7 +37,7 @@ struct base_matrix
   protected:
     dim_type                        dim;       ///< # of rows and columns
     size_type                       my_nnz;    ///< # of non-zeros, to be set by derived matrix
-    typedef traits::is_static<dim_type>       static_bool;
+    typedef mtl::traits::is_static<dim_type>       static_bool;
     
   public:
     base_matrix() :  my_nnz(0) {}

@@ -42,10 +42,11 @@ void check(const Matrix& A, int begin, int end)
 {
     //list_entries(A, begin, end);
     typedef typename mtl::Collection<Matrix>::value_type   value_type;
+    typedef typename mtl::Collection<Matrix>::size_type    size_type;
 
-    for (int i= 0; i < num_rows(A); i++)
-	for (int j= 0; j < num_cols(A); j++) {
-	    int band= j - i;
+    for (size_type i= 0; i < num_rows(A); i++)
+	for (size_type j= 0; j < num_cols(A); j++) {
+	    long band= long(j) - long(i);
 	    if (band < begin) {
 		if (A[i][j] != value_type(0))
 		    throw "Value must be zero left of the bands";
@@ -69,9 +70,9 @@ void test(Matrix& A, const char* name)
     A.change_dim(6, 5);
     {
 	inserter<Matrix>   ins(A);
-	for (int i= 0; i < num_rows(A); i++)
-	    for (int j= 0; j < num_cols(A); j++)
-		ins[i][j]= value_type(j - i + 0);
+	for (unsigned i= 0; i < num_rows(A); i++)
+	    for (unsigned j= 0; j < num_cols(A); j++)
+		ins[i][j]= value_type(j) - value_type(i);
     }
     cout << "\n" << name << "\n";  
     cout << "\n" << name << "\n" << "A =\n" << A;

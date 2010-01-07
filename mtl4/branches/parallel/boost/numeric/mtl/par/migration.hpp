@@ -12,6 +12,8 @@
 #ifndef MTL_PAR_MIGRATION_INCLUDE
 #define MTL_PAR_MIGRATION_INCLUDE
 
+#ifdef MTL_HAS_MPI
+
 #include <vector>
 #include <boost/numeric/mtl/par/distribution.hpp>
 
@@ -108,5 +110,7 @@ block_migration inline agglomerated_migration(const block_distribution& src)
 }
 
 }} // namespace mtl::par
+
+#endif // MTL_HAS_MPI
 
 #endif // MTL_PAR_MIGRATION_INCLUDE

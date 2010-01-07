@@ -20,7 +20,7 @@ long bw(long w)
 
 int main()
 {
-    const int s= 1000000, n= 32, z= 32, t= 15;
+    const int s= 1000000, n= 4, z= 32, t= 15;
     long w= 100, r;
 
 
@@ -65,5 +65,10 @@ int main()
     }
     std::cout << "Instructor destroyed." << endl;
     r= bw(w);
+
+    A.shrink();
+    std::cout << "After A.shrink()." << endl;
+    r= bw(w);
+
     return 0;
 }

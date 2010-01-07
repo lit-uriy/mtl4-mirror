@@ -12,6 +12,8 @@
 #ifndef BOOST_MPI_ALL_TO_ALL_SPARSE_INCLUDE
 #define BOOST_MPI_ALL_TO_ALL_SPARSE_INCLUDE
 
+#ifdef MTL_HAS_MPI
+
 #include <boost/mpi/collectives/all_to_all_pcx.hpp>
 
 namespace boost { namespace mpi {
@@ -34,5 +36,7 @@ void inline all_to_all_sparse(const communicator& comm,
 }
 
 }} // namespace boost::mpi
+
+#endif
 
 #endif // BOOST_MPI_ALL_TO_ALL_SPARSE_INCLUDE

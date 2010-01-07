@@ -18,7 +18,13 @@ using namespace std;
 
 int test_main(int argc, char* argv[])
 {
-    mtl::dense_vector<uint> vec(5, 0u);
+# ifdef _MSC_VER
+	typedef unsigned it; // MSVC dox about uint types pretty confusing
+# else
+	typedef uint     it;
+# endif
+
+    mtl::dense_vector<it> vec(5, 0u);
     return 0;
 }
 

@@ -922,9 +922,9 @@ struct size_switch_dmat_dmat_mult_t
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, boost::mpl::true_)
     {
-	const bool small= mtl::static_size<MatrixA>::value <= SizeLimit || mtl::static_size<MatrixB>::value <= SizeLimit 
+	const bool is_small= mtl::static_size<MatrixA>::value <= SizeLimit || mtl::static_size<MatrixB>::value <= SizeLimit 
 	    || mtl::static_size<MatrixC>::value <= SizeLimit;
-	typename boost::mpl::if_c<small, FunctorSmall, FunctorLarge>::type()(A, B, C);
+	typename boost::mpl::if_c<is_small, FunctorSmall, FunctorLarge>::type()(A, B, C);
     }
 };
 

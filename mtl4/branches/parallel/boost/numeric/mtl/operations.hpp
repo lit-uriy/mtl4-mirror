@@ -21,11 +21,13 @@
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/eigenvalue.hpp>
 #include <boost/numeric/mtl/operation/entry1D.hpp>
+#include <boost/numeric/mtl/operation/extended_complex.hpp>
 #include <boost/numeric/mtl/operation/fill.hpp>
 #include <boost/numeric/mtl/operation/givens.hpp>
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 #include <boost/numeric/mtl/operation/hessenberg.hpp>
 #include <boost/numeric/mtl/operation/householder.hpp>
+#include <boost/numeric/mtl/operation/inv.hpp>
 #include <boost/numeric/mtl/operation/invert_diagonal.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
@@ -33,6 +35,7 @@
 #include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/norms.hpp>
+#include <boost/numeric/mtl/operation/ones.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/orth.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
@@ -64,13 +67,14 @@
 #include <boost/numeric/mtl/operation/trans.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 
-#include <boost/numeric/mtl/matrix/reorder.hpp>
-#include <boost/numeric/mtl/matrix/permutation.hpp>
 #include <boost/numeric/mtl/matrix/bands.hpp>
-#include <boost/numeric/mtl/matrix/upper.hpp>
-#include <boost/numeric/mtl/matrix/strict_upper.hpp>
+#include <boost/numeric/mtl/matrix/identity.hpp>
 #include <boost/numeric/mtl/matrix/lower.hpp>
+#include <boost/numeric/mtl/matrix/permutation.hpp>
+#include <boost/numeric/mtl/matrix/reorder.hpp>
+#include <boost/numeric/mtl/matrix/strict_upper.hpp>
 #include <boost/numeric/mtl/matrix/strict_lower.hpp>
+#include <boost/numeric/mtl/matrix/upper.hpp>
 
 #include <boost/numeric/mtl/io/path.hpp>
 

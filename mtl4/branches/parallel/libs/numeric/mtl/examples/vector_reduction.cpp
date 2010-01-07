@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
     typedef std::complex<double>  cdouble;
     dense_vector<cdouble>         v(100);
 
-    for (int i= 0; i < size(v); i++)
+    for (unsigned i= 0; i < size(v); i++)
 	v[i]= cdouble(i+1, 100-i);
 
     std::cout << "sum(v) is " << sum(v)<< "\n";

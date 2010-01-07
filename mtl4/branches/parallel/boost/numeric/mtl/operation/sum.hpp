@@ -38,7 +38,7 @@ namespace mtl {
 	
     } // namespace impl
 
-
+///Return sum of all %vector-entries
 template <unsigned long Unroll, typename Value>
 typename Collection<Value>::value_type
 inline sum(const Value& value)

@@ -50,12 +50,14 @@ namespace mtl {
 
     /// Namespace for parallelization
     namespace par {
+
 	class base_distribution;
 	class block_distribution;
 	class cyclic_distribution;
 	class block_cyclic_distribution;
 
 	struct single_ostream;
+
     }
     
 
@@ -93,11 +95,20 @@ namespace mtl {
 
         template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
+
 	template <typename Matrix, typename RowDistribution = par::block_distribution, 
 		  typename ColDistribution = RowDistribution> class distributed;
 	template <typename DistMatrix, typename Updater> class distributed_inserter;
 
+
 	template <typename Vector> class multi_vector;
+	template <typename Functor> class implicit_dense;	
+	template <typename Value> class ones_functor;
+	template <typename Value> class ones_matrix;
+	template <typename Value> class hilbert_functor;
+	template <typename Value> class hilbert_matrix;
+	template <typename Vector1, typename Vector2> class outer_product_functor;
+	template <typename Vector1, typename Vector2> class outer_product_matrix;
 
         template <typename Matrix> struct transposed_orientation;
         template <typename Matrix> struct transposed_view;
@@ -156,7 +167,7 @@ namespace mtl {
 	template <class E1, class E2, typename SFunctor> struct vec_scal_aop_expr;
 	template <class E1, class E2> struct vec_vec_plus_asgn_expr;
 	template <class E1, class E2> struct vec_vec_minus_asgn_expr;
-	template <class E1, class E2> struct vec_vec_times_asgn_expr;
+	// template <class E1, class E2> struct vec_vec_times_asgn_expr; // is this really used???
 	template <class E1, class E2> struct vec_scal_times_asgn_expr;
 	template <class E1, class E2> struct vec_scal_div_asgn_expr; // added by Hui Li
 	template <class E1, class E2> struct vec_scal_asgn_expr;
@@ -203,6 +214,7 @@ namespace mtl {
 
 
     namespace vector {
+
 	template <typename Vector, typename Distribution = mtl::par::block_distribution> class distributed;
 	template <typename DistributedVector, typename Updater> class distributed_inserter;
 
@@ -233,11 +245,15 @@ namespace mtl {
 	namespace detail {
 	    // needed collection.hpp (at least)
 	    template <typename Collection, typename Cursor, typename Complexity> struct dense_element_range_generator;
-	    template <typename Matrix, typename Cursor, typename Complexity> struct all_offsets_range_generator;
-	    template <typename Matrix, typename Tag, int Level = 2> struct sub_matrix_cursor;
-	    template <typename Matrix, typename Complexity, int Level = 2>  struct all_rows_range_generator;
-	    template <typename Matrix, typename Complexity, int Level = 2>  struct all_cols_range_generator;
-	    template <typename Collection, typename RangeGenerator>  struct referred_range_generator;
+	    template <typename Matrix, typename Cursor, typename Complexity>     struct all_offsets_range_generator;
+	    template <typename Matrix, typename Tag, int Level = 2>              struct sub_matrix_cursor;
+	    template <typename Matrix>                                           struct matrix_element_key;
+	    template <typename Matrix, int pos>                                  struct matrix_element_cursor;
+	    template <typename Matrix, typename Complexity, int Level = 2>       struct all_rows_range_generator;
+	    template <typename Cursor>                                           struct all_cols_in_row_range_generator;
+	    template <typename Matrix, typename Complexity, int Level = 2>       struct all_cols_range_generator;
+	    template <typename Cursor>                                           struct all_rows_in_col_range_generator;
+	    template <typename Collection, typename RangeGenerator>              struct referred_range_generator;
 	}
     }
 
@@ -277,8 +293,26 @@ namespace mtl {
     /// Namespace for functors with static function apply and fully typed paramaters
     namespace sfunctor {
 	template <typename Value, typename AlgebraicCategory = tag::scalar> struct conj_aux;
-	template <typename Value> struct conj;
-	template <typename Value> struct negate;
+	template <typename Value>                   struct conj;
+	template <typename Value>                   struct negate;
+	template <typename Value1, typename Value2> struct plus;
+	template <typename Value1, typename Value2> struct minus;
+	template <typename Value1, typename Value2> struct times;
+	template <typename Value1, typename Value2> struct divide;
+	template <typename Value1, typename Value2> struct assign;
+	template <typename Value1, typename Value2> struct plus_assign;
+	template <typename Value1, typename Value2> struct minus_assign;
+	template <typename Value1, typename Value2> struct times_assign;
+	template <typename Value1, typename Value2> struct divide_assign;
+	template <typename Value>                   struct identity;
+	template <typename Value>                   struct abs;
+	template <typename Value>                   struct sqrt;
+	template <typename Value>                   struct square;
+	template <typename F, typename G>           struct compose;
+	template <typename F, typename G>           struct compose_first;
+	template <typename F, typename G>           struct compose_second;
+	template <typename F, typename G, typename H> struct compose_both;
+	template <typename F, typename G>           struct compose_binary;
     }
 
     // Namespace documentations
@@ -337,6 +371,19 @@ namespace mtl {
 
     }
 
+
+    // Multiplication functors
+    template <typename Assign, typename Backup> struct gen_cursor_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct gen_dmat_dmat_mult_t;
+    template <unsigned long Tiling1, unsigned long Tiling2, typename Assign, typename Backup> struct gen_tiling_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct gen_tiling_44_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct gen_tiling_22_dmat_dmat_mult_t;
+    template <typename BaseMult, typename BaseTest, typename Assign, typename Backup> struct gen_recursive_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct gen_platform_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct gen_blas_dmat_dmat_mult_t;
+    template <std::size_t SizeLimit, typename FunctorSmall, typename FunctorLarge> struct size_switch_dmat_dmat_mult_t;
+    template <bool IsStatic, typename FunctorStatic, typename FunctorDynamic> struct static_switch_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct fully_unroll_fixes_size_dmat_dmat_mult_t;
 
 } // namespace mtl
 

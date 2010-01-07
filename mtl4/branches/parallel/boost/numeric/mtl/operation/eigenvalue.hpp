@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/concept/magnitude.hpp>
+#include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/householder.hpp>
 #include <boost/numeric/mtl/operation/diagonal.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
@@ -38,13 +39,12 @@ template <typename Matrix>
 dense_vector<typename Collection<Matrix>::value_type>
 inline qr_sym_imp(const Matrix& A)
 {
-    using std::abs; using mtl::signum;
+    using std::abs; using mtl::signum; using mtl::real;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A), N;
-    value_type       zero= math::zero(A[0][0]), one= math::one(A[0][0]),
-          	     h00, h10, h11, beta, mu, a, b, c, d, tol;
+    value_type       zero= math::zero(A[0][0]), h00, h10, h11, beta, mu, a, b, tol;
     const magnitude_type two(2);
     Matrix           Q(nrows,ncols), H(nrows,ncols),  G(2,2);
 
@@ -63,43 +63,28 @@ inline qr_sym_imp(const Matrix& A)
 	h11= H[N-1][N-1];
 
 	//reduction, residum and watch for breakdown
-	if(abs(h10) < tol * abs(h11 + h00))         //abs für komplexen Datentyp???????
+	if(abs(h10) < tol * abs(h11 + h00)) 
 	    N--;	
 	if (N < 2) 
 	    break;
 	
 	// Wilkinson_shift
-	beta= (h00 - h11) / two;     // /2 für Komplexen Datentyp???
+	beta= (h00 - h11) / two;   
 	mu = h11 + (beta != zero ? beta - signum(beta) * sqrt(beta * beta + h10 * h10) : -h10);
-#if 0
-	if(beta != zero)
-	    mu= h11 + beta - signum(beta) * sqrt(beta * beta + h10 * h10);
-	else
-	    mu= h11 - h10;
-#endif
-	a= H[0][0] - mu;
-	b= H[1][0];
+	a= H[0][0] - mu, b= H[1][0];
 
 	//implizit QR-step
 	for (size_type k = 0; k < N - 1; k++) {
-	    // Given's parameter and transformation
-	    // boost::tie(c, d)= givens_param(H, a, b);
-	    // H= givens_trafo(H, c, d, k);
-
-	    givens<Matrix> g(H, a, b);
-	    g.trafo(k);
-
-	    if( k < N - 2) {
-		a= H[k+1][k];
-		b= H[k+2][k];
-	    }
+	    givens<Matrix>(H, a, b).trafo(k);
+	    if (k < N - 2)
+		a= H[k+1][k], b= H[k+2][k];	    
 	}
     }
     return diagonal(H);
 }
 
 
-// Evaluation of eigenvalues with QR-Algorithm of matrix A
+/// Evaluation of eigenvalues with QR-Algorithm of matrix A
 // Return Diagonalmatrix with eigenvalues as diag(A)
 template <typename Matrix>
 dense_vector<typename Collection<Matrix>::value_type>

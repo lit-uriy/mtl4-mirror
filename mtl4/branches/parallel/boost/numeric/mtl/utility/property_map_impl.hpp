@@ -43,6 +43,19 @@ template <class Matrix> struct row_in_key
     }
 };
 
+// functor to access rows using the key itself
+template <class Matrix> struct row_in_element_key
+{
+    typedef Matrix                        matrix_type;
+    row_in_element_key(const matrix_type&) {} 
+    
+    template <typename Key>
+    typename Matrix::size_type operator() (Key const& key) const
+    {
+	return key.indices[0];
+    }
+};
+
 
 // functor access the major dimension in key itself
 template <class Matrix> struct major_in_key
@@ -57,6 +70,18 @@ template <class Matrix> struct major_in_key
     }
 };
 
+// functor to access rows using the key itself
+template <class Matrix> struct major_in_element_key
+{
+    typedef Matrix                      matrix_type;
+    major_in_element_key(const matrix_type&) {} 
+    
+    template <typename Key>
+    typename Matrix::size_type operator() (Key const& key) const
+    {
+	return key.indices[0];
+    }
+};
 
 template <class Matrix> struct indexer_minor_ref
 {
@@ -95,6 +120,19 @@ template <class Matrix> struct col_in_key
     typename Matrix::size_type operator() (key_type const& key) const
     {
 	return key.col();
+    }
+};
+
+// functor to access columns using the key itself
+template <class Matrix> struct col_in_element_key
+{
+    typedef Matrix                      matrix_type;
+    col_in_element_key(const matrix_type&) {} 
+    
+    template <typename Key>
+    typename Matrix::size_type operator() (Key const& key) const
+    {
+	return key.indices[1];
     }
 };
 
@@ -281,6 +319,18 @@ template <class Matrix> struct offset_from_key
     }
 };
 
+// functor to access columns using the key itself
+template <class Matrix> struct const_value_in_element_key
+{
+    typedef Matrix                      matrix_type;
+    const_value_in_element_key(const matrix_type&) {} 
+    
+    template <typename Key>
+    typename Matrix::value_type operator() (Key const& key) const
+    {
+	return key.ref[key.indices[0]][key.indices[1]];
+    }
+};
 
 }} // namespace mtl::detail
 

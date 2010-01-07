@@ -46,6 +46,7 @@ void test(Matrix& A, const char* name)
     cout << "\nRead back (after <<) results in\n" << B;
     if (num_rows(B) != 4 || num_cols(B) != 3) throw "B has wrong dimension.";
     if (B[0][2] != vt(0)) throw "B[0][2] should be 0!";
+    assert (B[0][1] == vt(2));
     if (B[0][1] != vt(2)) throw "B[0][1] should be 2!";
 
 #if 0
@@ -78,7 +79,6 @@ int test_main(int argc, char* argv[])
     morton_dense<double, doppled_32_col_mask>        mcc(4, 3);
 
     program_dir= mtl::io::directory_name(argv[0]);
-
     test(cdr, "compressed2D_double");
     test(cir, "compressed2D_int");
     test(ccr, "compressed2D_complex");

@@ -66,7 +66,7 @@ double inline
 error_fun(const vector_t& phreeqc_para, const vector_t& min3p_para, const vector_t& data)
 {
     double sum= 0.0;
-    for (int i= 0; i < size(data); i++)
+    for (unsigned i= 0; i < size(data); i++)
 	sum+= square(phreeqc_analytic(phreeqc_para, data[i]) - min3p_bunsen(min3p_para, data[i]));
     return sqrt(sum);
 }
@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
     o2m[0]= -58.3877, o2m[1]= 85.8079, o2m[2]= 23.8439;
 
     vector_t temps(201); // Temperatures from 0 to 200 C
-    for (int i= 0; i < size(temps); i++)
+    for (unsigned i= 0; i < size(temps); i++)
 	temps[i]= 273.15 + double(i);
 
 #if 0

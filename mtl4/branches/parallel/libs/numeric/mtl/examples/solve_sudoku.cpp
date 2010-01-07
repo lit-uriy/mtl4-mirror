@@ -42,8 +42,8 @@ matrix_type inline my_block(int i, int j, matrix_type& A)
 int inline nzero(const matrix_type& A)
 {
     int n= 0;
-    for (int i= 0; i < num_rows(A); i++)
-	for (int j= 0; j < num_cols(A); j++)
+    for (unsigned i= 0; i < num_rows(A); i++)
+	for (unsigned j= 0; j < num_cols(A); j++)
 	    if (A[i][j]) n++;
     return n;
 }
@@ -61,8 +61,8 @@ struct my_sub_t
 
 bool inline conflict(int v, const matrix_type& A)
 {
-    for (int i= 0; i < num_rows(A); i++)
-	for (int j= 0; j < num_cols(A); j++)
+    for (unsigned i= 0; i < num_rows(A); i++)
+	for (unsigned j= 0; j < num_cols(A); j++)
 	    if (A[i][j] == v) return true;
     return false;
 }
@@ -81,7 +81,7 @@ struct entry
 
     friend inline std::ostream& operator<< (std::ostream& stream, const entry& e) 
     {
-	stream << "[" << e.i << ", " << e.j << " = " << e.nnz << "]";
+	return stream << "[" << e.i << ", " << e.j << " = " << e.nnz << "]";
     }
 
     bool operator<(const entry& other) const { return nnz > other.nnz; } // to sort 

@@ -30,7 +30,6 @@ inline householder(Vector& y)
 {
     typedef typename  Collection<Vector>::value_type   value_type;
     typedef typename  Collection<Vector>::size_type    size_type;
-    size_type         n = size(y);
     const value_type  zero= math::zero(y[0]), one= math::one(y[0]);
 
     Vector            v(y);

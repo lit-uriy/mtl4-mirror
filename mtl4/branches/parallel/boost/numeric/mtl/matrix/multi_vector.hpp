@@ -61,8 +61,8 @@ class multi_vector
 	this->my_nnz= num_rows * num_cols;
     }
 
-    /// Constructor by number of rows and column vector for initialization
-    multi_vector(size_type num_cols, const Vector& v)
+    /// Constructor column vector and number of columns (for easier initialization)
+    multi_vector(const Vector& v, size_type num_cols)
       : super(non_fixed::dimensions(size(v), num_cols)),
 	data(num_cols, v)
     {
@@ -88,6 +88,9 @@ class multi_vector
     Vector& vector(size_type i) { return data[i]; }
     const Vector& vector(size_type i) const { return data[i]; }
 
+    // multi_vector_range<Vector> vector(irange const& r) { return multi_vector_range<Vector>(*this, r); }
+    // Const version pending
+
     // size_type size() const { return this->num_rows() * this->num_cols(); } // Hack!!! try to remove
 
     /// Number of rows
@@ -95,11 +98,17 @@ class multi_vector
 
     /// Number of columns
     friend size_type num_cols(const self& A) { return A.num_cols(); }
+
+    /// Size as defined by number of rows times columns
+    friend size_type size(const self& A) { return num_rows(A) * num_cols(A); }
+
+
   protected:
   
     dense_vector<Vector>          data;
   
 };
+
 
 
 }} // namespace mtl::matrix

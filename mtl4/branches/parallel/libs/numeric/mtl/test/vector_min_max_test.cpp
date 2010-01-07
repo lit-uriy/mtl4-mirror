@@ -30,8 +30,8 @@ void test(Vector& v, const char* name)
     typedef typename mtl::Collection<Vector>::value_type value_type;
     using mtl::vector::min; using mtl::vector::max; 
 
-    for (int i= 0; i < size(v); i++)
-	v[i]= value_type(double(i+1) * pow(-1.0, i)); 
+    for (unsigned i= 0; i < size(v); i++)
+	v[i]= value_type(double(i+1) * pow(-1.0, int(i))); // Amb. in MSVC 
 
     std::cout << "\n" << name << "  --- v = " << v; std::cout.flush();
 

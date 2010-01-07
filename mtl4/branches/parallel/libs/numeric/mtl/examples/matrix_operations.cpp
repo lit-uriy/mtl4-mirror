@@ -21,6 +21,7 @@ int main(int argc, char* argv[])
     d*= 7.0;
 
     d+= c - b;
+    d-= b;
 
     return 0;
 }

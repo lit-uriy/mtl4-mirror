@@ -1,10 +1,10 @@
-Import('opt_env check')
+import glob
 
-sources = Split("""             
-             move_memory_block_test.cpp
-             move_test.cpp
-             move_vector_test.cpp
-""")
+Import('opt_env check full_warnings')
+
+sources = []
+if not full_warnings :
+    sources = glob.glob("*.cpp") # Glob("*.cpp") still have old scons on some machines
 
 programs = []
 for p in sources:

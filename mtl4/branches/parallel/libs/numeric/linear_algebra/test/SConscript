@@ -6,8 +6,9 @@ programs = []
 
 # sources = glob.glob('*.cpp')
 
-# # For testing only, the rest doesn't work yet
-# # sources = ["power_test.cpp"]
+
+concept_env = debug_env.Clone()
+# concept_env = debug_env.Copy() # on older scons
 
 # concept_env = debug_env.Clone()
 

@@ -16,61 +16,107 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
+#include <boost/numeric/mtl/vector/parameter.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { 
 
+namespace matrix {
 
-namespace sfunctor {
+    namespace sfunctor {
 
-    // General case is not defined
-    template <typename Value, typename AlgebraicCategory>
-    struct trans {};
+	// General case is not defined
+	template <typename Value, typename AlgebraicCategory>
+	struct trans {};
 
-    template <typename Matrix>
-    struct trans<Matrix, tag::matrix>
-    {
-	typedef transposed_view<Matrix>               result_type;
-	
-	static inline result_type apply(Matrix& matrix)
+	template <typename Matrix>
+	struct trans<Matrix, tag::matrix>
 	{
-	    return result_type(matrix);
-	}
+	    typedef transposed_view<Matrix>               result_type;
+	
+	    static inline result_type apply(Matrix& matrix)
+	    {
+		return result_type(matrix);
+	    }
+	};
+
+	// General case is not defined
+	template <typename Value, typename AlgebraicCategory>
+	struct const_trans {};
+
+	template <typename Matrix>
+	struct const_trans<Matrix, tag::matrix>
+	{
+	    typedef const transposed_view<const Matrix>   result_type;
+	
+	    static inline result_type apply(const Matrix& matrix)
+	    {
+		return result_type(matrix);
+	    }
+	};
+
+    } // namespace sfunctor
+
+
+    template <typename Value>
+    typename sfunctor::const_trans<Value, typename mtl::traits::algebraic_category<Value>::type>::result_type 
+    inline trans(const Value& v)
+    {
+	return sfunctor::const_trans<const Value, typename mtl::traits::algebraic_category<Value>::type>::apply(v);
+    }
+
+    template <typename Value>
+    typename sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type>::result_type 
+    inline trans(Value& v)
+    {
+	return sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type>::apply(v);
+    }
+
+} // namespace mtl::matrix
+
+
+namespace vector {
+
+    template <typename Vector>
+    struct transposed_vector {};
+
+    template <typename Parameters>
+    struct transposed_parameters
+    {
+	typedef typename matrix::transposed_orientation<typename Parameters::orientation>::type orientation; // switch
+	typedef parameters<orientation, typename Parameters::dimension, false, false>           type;        // not on stack!!!
     };
 
-    // General case is not defined
-    template <typename Value, typename AlgebraicCategory>
-    struct const_trans {};
-
-    template <typename Matrix>
-    struct const_trans<Matrix, tag::matrix>
+    template <typename Value, typename Parameters>
+    struct transposed_vector<dense_vector<Value, Parameters> >
     {
-	typedef const transposed_view<const Matrix>   result_type;
-	
-	static inline result_type apply(const Matrix& matrix)
-	{
-	    return result_type(matrix);
-	}
+	typedef dense_vector<Value, typename transposed_parameters<Parameters>::type>           type;
     };
 
-} // namespace sfunctor
+    template <typename Value, typename Parameters>
+    struct transposed_vector<strided_vector_ref<Value, Parameters> >
+    {
+	typedef strided_vector_ref<Value, typename transposed_parameters<Parameters>::type>     type;
+    };
 
+///Returns tranposed view of %vector v
+    template <typename Vector>
+    typename transposed_vector<Vector>::type const
+    inline trans(const Vector& v)
+    {
+	typedef typename transposed_vector<Vector>::type  type;
+	return type(size(v), &const_cast<Vector&>(v)[0]);
+    }
 
-template <typename Value>
-typename sfunctor::const_trans<Value, typename mtl::traits::algebraic_category<Value>::type>::result_type 
-inline trans(const Value& v)
-{
-    return sfunctor::const_trans<const Value, typename mtl::traits::algebraic_category<Value>::type>::apply(v);
+    template <typename Vector>
+    typename transposed_vector<Vector>::type
+    inline trans(Vector& v)
+    {
+	typedef typename transposed_vector<Vector>::type  type;
+	return type(size(v), &v[0]);
+    }
 }
 
-template <typename Value>
-typename sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type>::result_type 
-inline trans(Value& v)
-{
-    return sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type>::apply(v);
-}
+} // mtl
 
-
-
-}} // namespace mtl::matrix
 
 #endif // MTL_TRANS_INCLUDE

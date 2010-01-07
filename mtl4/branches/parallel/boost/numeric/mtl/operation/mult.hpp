@@ -137,8 +137,8 @@ inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign,
     typedef fully_unroll_fixes_size_dmat_dmat_mult_t<Assign>           fully_unroll_t;
     typedef size_switch_dmat_dmat_mult_t<fully_unroll_dmat_dmat_mult_limit, fully_unroll_t, tiling_mult_t> fixes_size_t;
 
-    static const bool all_static= traits::is_static<MatrixA>::value && traits::is_static<MatrixB>::value 
-	                          && traits::is_static<MatrixC>::value;
+    static const bool all_static= mtl::traits::is_static<MatrixA>::value && mtl::traits::is_static<MatrixB>::value 
+	                          && mtl::traits::is_static<MatrixC>::value;
     typedef static_switch_dmat_dmat_mult_t<all_static, fixes_size_t, variable_size_t>  default_functor_t;
 
     /// Use user-defined functor if provided (assign mode can be arbitrary)
@@ -275,7 +275,10 @@ inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, t
 	return;
     }
 #endif
-
+    w.checked_change_dim(num_rows(a));
+    if(num_rows(a) != size(w) || num_cols(a) != size(v))
+	std::cout << "num_rows(a) is " << num_rows(a) << ", size(w) is " << size(w) 
+		  << ", num_cols(a) is " << num_cols(a) << ", size(v) is " << size(v) << "\n";
     MTL_THROW_IF(num_rows(a) != size(w) || num_cols(a) != size(v), incompatible_size());
 
     // dispatch between dense and sparse matrices and multi-vectors (and others)

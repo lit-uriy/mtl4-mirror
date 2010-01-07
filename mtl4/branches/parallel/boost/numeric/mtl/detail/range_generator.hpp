@@ -56,6 +56,7 @@ namespace mtl { namespace traits { namespace detail {
 	}
 	type end(Ref& c)
 	{
+		using mtl::size;
 	    return type(c.address_data() + size(c) + c.stride(), c.stride());
 	}
     };
@@ -91,10 +92,11 @@ namespace mtl { namespace traits { namespace detail {
     // The tag serves to dispatching between row and column cursors
     template <typename Matrix, typename Tag, int Level>
     struct sub_matrix_cursor
-	: mtl::detail::base_cursor<int>
+      : mtl::detail::base_cursor<int>
     {
 	typedef sub_matrix_cursor                self;
 	typedef mtl::detail::base_cursor<int>    base;
+	typedef Matrix                           ref_type;
 	static int const            level = Level;
 
 	sub_matrix_cursor(int i, Matrix const& c)
@@ -109,6 +111,60 @@ namespace mtl { namespace traits { namespace detail {
 	Matrix const& ref;
     };
 
+    // Key for canonically referring to its elements with row and column index
+    template <typename Matrix>
+    struct matrix_element_key
+    {
+	typedef typename Collection<Matrix>::size_type           size_type;
+	typedef matrix_element_key                               self;
+
+	matrix_element_key(Matrix const& ref, size_type r, size_type c) : ref(ref)
+	{
+	    indices[0]= r; indices[1]= c;
+	}
+
+	bool operator==(const self& cc) const { return &ref == &cc.ref && indices[0] == cc.indices[0] && indices[1] == cc.indices[1]; }
+	bool operator!=(const self& cc) const { return !(*this == cc); }
+
+	size_type indices[2];
+	Matrix const& ref;
+    };
+
+    // Cursor for canonically referring to its elements with row and column index
+    // Increments row for pos==0 and column for pos==1
+    // Referring operator returns matrix_element_key
+    template <typename Matrix, int pos>
+    struct matrix_element_cursor
+    {
+	typedef typename Collection<Matrix>::size_type           size_type;
+	typedef matrix_element_cursor                            self;
+	typedef matrix_element_key<Matrix>                       key_type;
+	static int const            level = 2;
+	
+	matrix_element_cursor(Matrix const& ref, size_type r, size_type c) : ref(ref)
+	{
+	    indices[0]= r; indices[1]= c;
+	}
+	
+	key_type operator*() const { return key_type(ref, indices[0], indices[1]); }
+
+	self& operator++() { ++indices[pos]; return *this; }
+	self operator++(int) { self tmp(*this); ++indices[pos]; return tmp; }
+	self& operator+=(int n) { indices[pos]+= n; return *this; }
+	self& operator+(int n) const { self tmp = *this; tmp+= n; return tmp; }
+
+	self& operator--() { indices[pos]--; return *this; }
+	self operator--(int) { self tmp(*this); indices[pos]--; return tmp; }
+	self& operator-=(int n) { indices[pos]-= n; return *this; }
+	self& operator-(int n) const { self tmp = *this; tmp-= n; return tmp; }
+
+	bool operator==(const self& cc) const { return &ref == &cc.ref && indices[0] == cc.indices[0] && indices[1] == cc.indices[1]; }
+	bool operator!=(const self& cc) const { return !(*this == cc); }
+
+	size_type indices[2];
+	Matrix const& ref;
+    };
+
 
     template <typename Matrix, typename Complexity, int Level>
     struct all_rows_range_generator
@@ -118,17 +174,39 @@ namespace mtl { namespace traits { namespace detail {
 	typedef sub_matrix_cursor<Matrix, glas::tag::row, Level> type;
 	typedef typename Collection<Matrix>::size_type           size_type;
 
-	type begin(Matrix const& c)
+	type begin(Matrix const& c) const
 	{
-	    return type(c.begin_row(), c);
+	    return type(0, c); // return type(c.begin_row(), c); get rid of obsolete stuff
 	}
-	type end(Matrix const& c)
+	type end(Matrix const& c) const
 	{
-	    return type(c.end_row(), c);
+		using mtl::num_rows;
+	    return type(num_rows(c), c); //return type(c.end_row(), c);
 	}
-	type lower_bound(Matrix const& c, size_type position)
+	type lower_bound(Matrix const& c, size_type position) const
 	{
-	    return type(std::min(c.end_row(), position), c);
+		using mtl::num_rows;
+	    return type(std::min(num_rows(c), position), c);
+	}
+    };
+
+    template <typename Cursor>
+    struct all_cols_in_row_range_generator
+    {
+	typedef complexity_classes::linear                       complexity;
+	static int const            level = 1;
+	typedef typename Cursor::ref_type                        ref_type;
+	typedef typename Collection<ref_type>::size_type         size_type;
+
+
+	typedef matrix_element_cursor<ref_type, 1> type;
+
+	type begin(Cursor const& c) const { return type(c.ref, *c, 0); }
+	type end(Cursor const& c) const { using mtl::num_cols; return type(c.ref, *c, num_cols(c.ref)); }
+	type lower_bound(Cursor const& c, size_type position) const
+	{
+		using mtl::num_cols;
+	    return type(c.ref, *c, std::min(num_cols(c.ref), position));
 	}
     };
 
@@ -141,19 +219,42 @@ namespace mtl { namespace traits { namespace detail {
 	typedef sub_matrix_cursor<Matrix, glas::tag::col, Level> type;
 	typedef typename Collection<Matrix>::size_type           size_type;
 
-	type begin(Matrix const& c)
+	type begin(Matrix const& c) const
 	{
-	    return type(c.begin_col(), c);
+	    return type(0, c); // return type(c.begin_col(), c);
 	}
-	type end(Matrix const& c)
+	type end(Matrix const& c) const
 	{
-	    return type(c.end_col(), c);
+		using mtl::num_cols;
+	    return type(num_cols(c), c); // return type(c.end_col(), c);
 	}
-	type lower_bound(Matrix const& c, size_type position)
+	type lower_bound(Matrix const& c, size_type position) const
 	{
-	    return type(std::min(c.end_col(), position), c);
+		using mtl::num_cols;
+	    return type(std::min(num_cols(c), position), c);
 	}
     };
+
+    template <typename Cursor>
+    struct all_rows_in_col_range_generator
+    {
+	typedef complexity_classes::linear                       complexity;
+	static int const            level = 1;
+	typedef typename Cursor::ref_type                        ref_type;
+	typedef typename Collection<ref_type>::size_type         size_type;
+
+
+	typedef matrix_element_cursor<ref_type, 0> type;
+
+	type begin(Cursor const& c) const { return type(c.ref, 0, *c); }
+	type end(Cursor const& c) const { using mtl::num_rows; return type(c.ref, num_rows(c.ref), *c); }
+	type lower_bound(Cursor const& c, size_type position) const
+	{
+		using mtl::num_rows;
+	    return type(c.ref, std::min(num_rows(c.ref), position), *c);
+	}
+    };
+
 
     // Use RangeGenerator for Collection by applying to .ref
     template <typename Coll, typename RangeGenerator>
