@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/operation/column_in_matrix.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/crop.hpp>
+#include <boost/numeric/mtl/operation/cross.hpp>
 #include <boost/numeric/mtl/operation/diagonal.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/eigenvalue.hpp>
