@@ -10,3 +10,6 @@ HPPFILES = $(CUDAFILES:%.cu=%.hpp)
 
 
 all: $(HPPFILES)
+
+clean:
+	rm -f $(HPPFILES) $(CUHPPFILES)

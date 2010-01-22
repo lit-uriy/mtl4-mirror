@@ -25,12 +25,20 @@ guard_name= cu_lines[guard_no][8:]
 
 # Copy license part
 end_license= find_first_line(cu_lines, "include")
+end_includes= find_first_line(cu_lines, "namespace")
+
+if end_license == None:
+  print "No include found"
+  end_license= end_includes
+
 hpp.writelines(cu_lines[:end_license])
 
 # Cuda includes
 hpp.writelines(["// Here come Cuda includes ...\n\n"])
+hpp.writelines(["#include <cuda/cuda.h>\n\n"])
 
-end_includes= find_first_line(cu_lines, "namespace")
+for j in range(end_includes):
+  cu_lines[j]= cu_lines[j].replace(".cu>", ".hpp>")
 hpp.writelines(cu_lines[end_license:end_includes])
 
 # Copying relevant part of generated code
