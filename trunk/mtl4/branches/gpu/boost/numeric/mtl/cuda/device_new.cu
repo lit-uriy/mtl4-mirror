@@ -13,7 +13,7 @@
 #define MTL_CUDA_DEVICE_NEW_INCLUDE
 
 
-namespace mtl { namespace cuda {
+namespace mtl { namespace cuda { 
 
 template <typename T>
 T* device_new()

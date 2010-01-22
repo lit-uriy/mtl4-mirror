@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+import sys, re, string, os, os.path
+
+if len(sys.argv) != 2:
+  print "syntax:", sys.argv[0], "source target"
+  sys.exit(1)
+
+def find_first_line(lines, pattern):
+  for i in xrange(len(lines)):
+    if lines[i].count(pattern):
+      return i
+  
+
+cuhpp= open(sys.argv[1], "r")
+cu_name= sys.argv[1].replace(".cuhpp", ".cu")
+cu=    open(cu_name, "r")
+hpp=   open(sys.argv[1].replace(".cuhpp", ".hpp"), "w")
+
+# Copying first part of header (license + includes)
+cu_lines= cu.readlines()
+
+# Guard name
+guard_no= find_first_line(cu_lines, "#ifndef")
+guard_name= cu_lines[guard_no][8:]
+
+# Copy license part
+end_license= find_first_line(cu_lines, "include")
+hpp.writelines(cu_lines[:end_license])
+
+# Cuda includes
+hpp.writelines(["// Here come Cuda includes ...\n\n"])
+
+end_includes= find_first_line(cu_lines, "namespace")
+hpp.writelines(cu_lines[end_license:end_includes])
+
+# Copying relevant part of generated code
+cuhpp_lines= cuhpp.readlines()
+
+# First line of our code
+start_gen= pos= 0
+while 1:
+  start_gen= find_first_line(cuhpp_lines[pos:], '"' + cu_name + '"')
+  # print "Found ", cu_name, " in line ", start_gen, ", pos = ", pos
+  if cuhpp_lines[pos+start_gen+1].count("namespace mtl"):
+    start_gen= pos+start_gen+1
+    break
+  pos+= start_gen+1
+
+# First line of foreign code
+end_gen= find_first_line(cuhpp_lines[start_gen:], "# ") + start_gen
+
+hpp.writelines(cuhpp_lines[start_gen:end_gen])
+hpp.writelines(["\n#endif // " + guard_name + "\n\n"])
+

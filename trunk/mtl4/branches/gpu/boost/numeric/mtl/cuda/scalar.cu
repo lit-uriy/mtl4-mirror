@@ -49,7 +49,7 @@ class scalar
 	}
     }
 
-    operator T() const { to_host(); return hvalue; }
+    operator T() { to_host(); return hvalue; }
 
   private:
     T  hvalue; // Value on host

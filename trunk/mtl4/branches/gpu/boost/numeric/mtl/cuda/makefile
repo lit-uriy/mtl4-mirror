@@ -1,10 +1,12 @@
-%.hpp:	%.cu
-	nvcc -I$(BOOST_ROOT) -I$(GMTL) --cuda $< -o $(<:%.cu=%.hpp)
+%.cuhpp:	%.cu
+	nvcc -I$(BOOST_ROOT) -I$(GMTL) --cuda $< -o $(<:%.cu=%.cuhpp)
+
+%.hpp:	%.cuhpp
+	 cuhpp2hpp $< 
 
 CUDAFILES = $(shell ls *.cu)
+CUHPPFILES = $(CUDAFILES:%.cu=%.cuhpp)
 HPPFILES = $(CUDAFILES:%.cu=%.hpp)
 
-CXXFLAGS+= -I$(BOOST_ROOT) -I$(GMTL)
-INCLUDES+= -I$(BOOST_ROOT) -I$(GMTL)
 
 all: $(HPPFILES)
