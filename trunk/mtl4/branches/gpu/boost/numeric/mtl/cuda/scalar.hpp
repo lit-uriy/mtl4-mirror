@@ -12,7 +12,7 @@
 #ifndef MTL_CUDA_SCALAR_INCLUDE
 #define MTL_CUDA_SCALAR_INCLUDE
 
-// Here come Cuda includes ...
+// Here come Cuda includes ..   .
 
 #include <cuda/cuda.h>
 
