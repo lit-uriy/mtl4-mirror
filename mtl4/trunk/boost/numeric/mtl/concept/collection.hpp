@@ -274,7 +274,7 @@ namespace mtl {
     */
     template <typename T>
     struct OrientedCollection
-	: public Collection<T>
+      : public Collection<T>
     {
 	/// Associated type for orientation; by default identical with member type
 	typedef typename T::orientation orientation;
@@ -1065,7 +1065,7 @@ namespace mtl {
 #else
     template <typename Coll>
     struct OrientedCollection<matrix::hermitian_view<Coll> >
-	: public Collection<matrix::hermitian_view<Coll> >
+      : public Collection<matrix::hermitian_view<Coll> >
     {
 	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
     };
