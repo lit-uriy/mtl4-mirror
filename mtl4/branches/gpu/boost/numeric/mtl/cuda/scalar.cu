@@ -20,16 +20,34 @@ namespace mtl { namespace cuda {
 template <typename T>
 class scalar
 {
+    typedef scalar<T>                self;
   public:
     typedef T                        value_type;
 
     /// Constructor from type T
     /** Be aware that the constructor is implicit. **/
     scalar(const T& value= T()) 
-      : hvalue(value), dvalue(*device_new(value)), on_host(true) {}
+      : hvalue(value), dptr(device_new(value)), on_host(true) {}
 
     ~scalar() { cudaFree(&dvalue); }
 
+    self& operator=(const scalar& that)
+    {
+	on_host= that.on_host;
+	if (on_host)
+	    hvalue= that.hvalue;
+	else
+	    cudaMemcpy(&hvalue, &dvalue, sizeof(T), cudaMemcpyDeviceToHost);  //richtige Richtung??
+	return *this;
+    }
+
+    self& operator=(const value_type& src)
+    {
+	on_host= true;
+	hvalue= src;
+	return *this;
+    }
+	
     bool valid_host() const { return on_host; }
     bool valid_device() const { return !on_host; }
 
@@ -49,11 +67,12 @@ class scalar
 	}
     }
 
-    operator T() { to_host(); return hvalue; }
+    operator T&() { to_host(); return hvalue; }
+    operator T const&() const { const_cast<self*>(this)->to_host(); return hvalue; }
 
   private:
     T  hvalue; // Value on host
-    T& dvalue; // Value on device (allocated as pointer whose content is referred)
+    T* dptr; // Value on device (allocated as pointer whose content is referred)
     bool on_host;
 };
 
