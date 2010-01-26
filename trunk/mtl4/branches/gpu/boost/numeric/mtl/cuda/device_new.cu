@@ -15,6 +15,7 @@
 
 namespace mtl { namespace cuda { 
 
+
 template <typename T>
 T* device_new()
 {
@@ -30,7 +31,6 @@ T* device_new(const T& value)
     *pointer= value; 
     return pointer;
 }
-
 
 
 }} // namespace mtl::cuda

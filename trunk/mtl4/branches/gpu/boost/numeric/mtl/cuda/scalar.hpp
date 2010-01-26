@@ -12,9 +12,11 @@
 #ifndef MTL_CUDA_SCALAR_INCLUDE
 #define MTL_CUDA_SCALAR_INCLUDE
 
-// Here come Cuda includes ..   .
+// Here come Cuda includes ...
 
 #include <cuda/cuda.h>
+
+#include <boost/numeric/mtl/cuda/ugly_macro_replacements.hpp>
 
 #include <boost/numeric/mtl/cuda/device_new.hpp>
 
