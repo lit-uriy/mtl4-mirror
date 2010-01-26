@@ -17,7 +17,10 @@
 
 #include <cuda/cuda.h>
 
+#include <boost/numeric/mtl/cuda/ugly_macro_replacements.hpp>
+
 namespace mtl { namespace cuda {
+
 
 template<class T> T *
 device_new()
@@ -34,7 +37,6 @@ auto T *pointer = (device_new< T> ());
 (*pointer) = value;
 return pointer;
 }
-
 
 
 }}
