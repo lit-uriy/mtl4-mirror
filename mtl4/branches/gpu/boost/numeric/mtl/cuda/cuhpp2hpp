@@ -35,6 +35,7 @@ hpp.writelines(cu_lines[:end_license])
 
 # Cuda includes
 hpp.writelines(["// Here come Cuda includes ...\n\n"])
+hpp.writelines(["//testing...\n\n"])
 hpp.writelines(["#include </usr/local/cuda/include/__cudaFatFormat.h>\n",
                "#include </usr/local/cuda/include/host_defines.h>\n",
 #               "#include </usr/local/cuda/include/cudaGL.h>\n",
