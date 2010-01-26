@@ -35,8 +35,43 @@ hpp.writelines(cu_lines[:end_license])
 
 # Cuda includes
 hpp.writelines(["// Here come Cuda includes ...\n\n"])
-hpp.writelines(["#include <cuda/cuda.h>\n\n", 
-                "#include <boost/numeric/mtl/cuda/ugly_macro_replacements.hpp>\n\n"])
+hpp.writelines(["#include </usr/local/cuda/include/__cudaFatFormat.h>\n",
+               "#include </usr/local/cuda/include/host_defines.h>\n",
+#               "#include </usr/local/cuda/include/cudaGL.h>\n",
+               "#include </usr/local/cuda/include/cuda_runtime.h>\n",
+               "#include </usr/local/cuda/include/cufft.h>\n",
+               "#include </usr/local/cuda/include/cuda_runtime_api.h>\n",
+#               "#include </usr/local/cuda/include/common_functions.h>\n",
+#               "#include </usr/local/cuda/include/texture_types.h>\n",
+#               "#include </usr/local/cuda/include/sm_13_double_functions.h>\n",
+               "#include </usr/local/cuda/include/device_launch_parameters.h>\n",
+#               "#include </usr/local/cuda/include/cublas.h>\n",
+               "#include </usr/local/cuda/include/cuda.h>\n",
+#               "#include </usr/local/cuda/include/sm_11_atomic_functions.h>\n",
+               "#include </usr/local/cuda/include/driver_types.h>\n",
+#               "#include </usr/local/cuda/include/cuda_gl_interop.h>\n",
+               "#include </usr/local/cuda/include/common_types.h>\n",
+#               "#include </usr/local/cuda/include/sm_12_atomic_functions.h>\n",
+#               "#include </usr/local/cuda/include/device_functions.h>\n",
+               "#include </usr/local/cuda/include/device_types.h>\n",
+#               "#include </usr/local/cuda/include/texture_fetch_functions.h>\n",
+#               "#include </usr/local/cuda/include/math_functions.h>\n",
+#               "#include </usr/local/cuda/include/builtin_types.h>\n",
+#               "#include </usr/local/cuda/include/vector_types.h>\n",
+#               "#include </usr/local/cuda/include/math_constants.h>\n",
+#               "#include </usr/local/cuda/include/math_functions_dbl_ptx3.h>\n",
+#               "#include </usr/local/cuda/include/cuComplex.h>\n",
+               "#include </usr/local/cuda/include/host_config.h>\n",
+#               "#include </usr/local/cuda/include/driver_functions.h>\n",
+#               "#include </usr/local/cuda/include/vector_functions.h>\n",
+#               "#include </usr/local/cuda/include/channel_descriptor.h>\n",
+#               "#include </usr/local/cuda/include/math_functions_dbl_ptx1.h>\n",
+#               "#include </usr/local/cuda/include/cuda_texture_types.h>\n",
+#               "#include </usr/local/cuda/include/crt/storage_class.h>\n",
+#               "#include </usr/local/cuda/include/crt/func_macro.h>\n",
+#               "#include </usr/local/cuda/include/crt/host_runtime.h>\n",
+#               "#include </usr/local/cuda/include/crt/device_runtime.h>\n"
+])
 
 for j in range(end_includes):
   cu_lines[j]= cu_lines[j].replace(".cu>", ".hpp>")

@@ -14,10 +14,17 @@
 
 // Here come Cuda includes ...
 
-#include <cuda/cuda.h>
-
-#include <boost/numeric/mtl/cuda/ugly_macro_replacements.hpp>
-
+#include </usr/local/cuda/include/__cudaFatFormat.h>
+#include </usr/local/cuda/include/host_defines.h>
+#include </usr/local/cuda/include/cuda_runtime.h>
+#include </usr/local/cuda/include/cufft.h>
+#include </usr/local/cuda/include/cuda_runtime_api.h>
+#include </usr/local/cuda/include/device_launch_parameters.h>
+#include </usr/local/cuda/include/cuda.h>
+#include </usr/local/cuda/include/driver_types.h>
+#include </usr/local/cuda/include/common_types.h>
+#include </usr/local/cuda/include/device_types.h>
+#include </usr/local/cuda/include/host_config.h>
 #include <boost/numeric/mtl/cuda/device_new.hpp>
 
 namespace mtl { namespace cuda {
