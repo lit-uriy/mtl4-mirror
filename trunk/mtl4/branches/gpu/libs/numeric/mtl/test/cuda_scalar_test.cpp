@@ -38,8 +38,10 @@ void test(const char* name)
     std::cout << name << '\n';
     
     mtl::cuda::scalar<T>  x, y;
+    std::cout << "Scalars constructed.\n";
 
     x= 3;
+    std::cout << "Scalars assigned.\n";
     print(x);
 
     x.to_device();
@@ -75,7 +77,7 @@ void test(const char* name)
     print(x);
     if (x != T(10))
 	throw "Error computing  device.";
-#endif
+#endif 
 }
 
 
@@ -84,12 +86,13 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
 
     test<int>("int");
+#if 0
     test<short>("short");
     test<char>("char");
     test<float>("float");
     test<double>("double");
     test<std::complex<float> >("std::complex<float>");
     test<std::complex<double> >("std::complex<double>");
-
+#endif
     return 0;
 }

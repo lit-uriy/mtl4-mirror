@@ -14,6 +14,8 @@
 
 // Here come Cuda includes ...
 
+//testing...
+
 #include </usr/local/cuda/include/__cudaFatFormat.h>
 #include </usr/local/cuda/include/host_defines.h>
 #include </usr/local/cuda/include/cuda_runtime.h>
@@ -33,6 +35,7 @@ namespace mtl { namespace cuda {
 template<class T>
 class scalar {
 
+typedef cuda::scalar< T> self;
 
 public: typedef T value_type;
 
@@ -42,6 +45,16 @@ scalar(const T &value = T()) : hvalue(value), dvalue((*(device_new(value)))), on
 { }
 
 ~scalar() { cudaFree(&(this->dvalue)); }
+
+self &operator=(const cuda::scalar< T> &that)
+{
+(this->on_host) = that.on_host;
+if (this->on_host) {
+(this->hvalue) = (that.hvalue); } else {
+
+(this->dvalue) = (that.dvalue); }
+return *this;
+}
 
 bool valid_host() const { return this->on_host; }
 bool valid_device() const { return !(this->on_host); }
@@ -62,7 +75,8 @@ cudaMemcpy(&(this->dvalue), &(this->hvalue), sizeof(T), cudaMemcpyHostToDevice);
 }
 }
 
-operator T() { this->to_host(); return this->hvalue; }
+operator T &() { this->to_host(); return this->hvalue; }
+operator const T &() const { (*(const_cast< self *>(this))).to_host(); return this->hvalue; }
 
 
 private: T hvalue;
