@@ -27,12 +27,12 @@ class basic_iteration
     typedef Real real;
 
     template <class Vector>
-    basic_iteration(const Vector& b, int max_iter_, Real t, Real a = Real(0))
-      : error(0), i(0), normb_(std::abs(two_norm(b))),
+    basic_iteration(const Vector& r0, int max_iter_, Real t, Real a = Real(0))
+      : error(0), i(0), norm_r0(std::abs(two_norm(r0))),
 	max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false), my_quite(false) { }
 
     basic_iteration(Real nb, int max_iter_, Real t, Real a = Real(0))
-      : error(0), i(0), normb_(nb), max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false), my_quite(false) {}
+      : error(0), i(0), norm_r0(nb), max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false), my_quite(false) {}
 
     virtual ~basic_iteration() {}
 
@@ -85,9 +85,9 @@ class basic_iteration
 
     inline bool converged(const Real& r) 
     {
-	if (normb_ == 0)
-	    return r < atol_;  // ignore relative tolerance if |b| is zero
-	resid_ = r / normb_;
+	if (norm_r0 == 0)
+	    return r < atol_;  // ignore relative tolerance if |r0| is zero
+	resid_ = r / norm_r0;
 	return (resid_ <= rtol_ || r < atol_); // relative or absolute tolerance.
     }
 
@@ -103,9 +103,9 @@ class basic_iteration
 
     inline int iterations() { return i + 1; }
 
-    inline Real resid() { return resid_ * normb_; }
+    inline Real resid() { return resid_ * norm_r0; }
 
-    inline Real normb() const { return normb_; }
+    inline Real normb() const { return norm_r0; }
 
     inline Real tol() { return rtol_; }
     inline Real atol() { return atol_; }
@@ -115,7 +115,7 @@ class basic_iteration
     inline int fail(int err_code, const std::string& msg)
     { error = err_code; err_msg = msg; return error_code(); }
 
-    inline void set(Real v) { normb_ = v; }
+    inline void set(Real v) { norm_r0 = v; }
 
     void set_quite(bool q) { my_quite= q; }
 
@@ -123,7 +123,7 @@ class basic_iteration
 
   protected:
     int          error, i;
-    const Real   normb_;
+    const Real   norm_r0;
     int          max_iter;
     Real         rtol_, atol_, resid_;
     std::string  err_msg;

@@ -22,8 +22,9 @@ namespace itl {
 
 
 template < typename Matrix, typename Vector,
-typename LeftPreconditioner, typename RightPreconditioner, typename Iteration >
-int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner &L, const RightPreconditioner &R, Iteration& iter)
+	   typename LeftPreconditioner, typename RightPreconditioner, typename Iteration >
+int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner &L, 
+	  const RightPreconditioner &R, Iteration& iter)
 {
     using mtl::irange; using mtl::imax; using math::reciprocal;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
