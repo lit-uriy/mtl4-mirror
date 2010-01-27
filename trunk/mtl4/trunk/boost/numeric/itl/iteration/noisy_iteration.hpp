@@ -22,9 +22,9 @@ namespace itl {
   {
     public:
       template <class Vector>
-      noisy_iteration(const Vector& b, int max_iter_, Real tol_, Real atol_ = Real(0),
+      noisy_iteration(const Vector& r0, int max_iter_, Real tol_, Real atol_ = Real(0),
 		      OStream& out = std::cout)
-	: cyclic_iteration<Real>(b, max_iter_, tol_, atol_, 1, out)
+	: cyclic_iteration<Real, OStream>(r0, max_iter_, tol_, atol_, 1, out)
       {}
   };
 
