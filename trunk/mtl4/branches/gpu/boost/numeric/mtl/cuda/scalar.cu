@@ -12,6 +12,7 @@
 #ifndef MTL_CUDA_SCALAR_INCLUDE
 #define MTL_CUDA_SCALAR_INCLUDE
 
+#include <iostream>
 #include <boost/numeric/mtl/cuda/device_new.cu>
 
 namespace mtl { namespace cuda {
@@ -26,10 +27,10 @@ class scalar
 
     /// Constructor from type T
     /** Be aware that the constructor is implicit. **/
-    scalar(const T& value= T()) 
-      : hvalue(value), dptr(device_new(value)), on_host(true) {}
+    scalar(const T& value= T(), bool on_host= true) 
+      : hvalue(value), dptr(on_host ? device_new<T>() : device_new(value)), on_host(on_host) {}
 
-    ~scalar() { cudaFree(&dvalue); }
+    ~scalar() { cudaFree(dptr); }
 
     self& operator=(const scalar& that)
     {
@@ -37,14 +38,16 @@ class scalar
 	if (on_host)
 	    hvalue= that.hvalue;
 	else
-	    cudaMemcpy(&hvalue, &dvalue, sizeof(T), cudaMemcpyDeviceToHost);  //richtige Richtung??
+	    cudaMemcpy(dptr, that.dptr, sizeof(T), cudaMemcpyDeviceToDevice);
 	return *this;
     }
 
     self& operator=(const value_type& src)
     {
-	on_host= true;
-	hvalue= src;
+	if (on_host)
+	    hvalue= src;
+	else
+	    cudaMemcpy(dptr, &src, sizeof(T), cudaMemcpyHostToDevice);
 	return *this;
     }
 	
@@ -54,7 +57,7 @@ class scalar
     void to_host()
     {
 	if (!on_host) {
-	    cudaMemcpy(&hvalue, &dvalue, sizeof(T), cudaMemcpyDeviceToHost);
+	    cudaMemcpy(&hvalue, dptr, sizeof(T), cudaMemcpyDeviceToHost);
 	    on_host= true;
 	}
     }
@@ -62,13 +65,28 @@ class scalar
     void to_device()
     {
 	if (on_host) {
-	    cudaMemcpy(&dvalue, &hvalue, sizeof(T), cudaMemcpyHostToDevice);
+	    cudaMemcpy(dptr, &hvalue, sizeof(T), cudaMemcpyHostToDevice);
 	    on_host= false;
 	}
     }
 
-    operator T&() { to_host(); return hvalue; }
-    operator T const&() const { const_cast<self*>(this)->to_host(); return hvalue; }
+    T& value() { to_host(); return hvalue; }
+    T const& value() const { const_cast<self*>(this)->to_host(); return hvalue; }
+
+    operator T&() { return value(); }
+    operator T const&() const { return value(); }
+    
+    friend std::ostream& operator<<(std::ostream& os, const self& x)
+    {
+	if (x.on_host)
+	    os << x.hvalue;
+	else {
+	    T copy; 
+	    cudaMemcpy(&copy, x.dptr, sizeof(T), cudaMemcpyDeviceToHost);
+	    os << copy;
+	}
+	return os;
+    }
 
   private:
     T  hvalue; // Value on host
