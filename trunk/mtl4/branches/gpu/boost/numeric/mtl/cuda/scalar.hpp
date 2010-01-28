@@ -51,37 +51,50 @@ self &operator=(const cuda::scalar< T> &that)
 {
 (this->on_host) = that.on_host;
 if (this->on_host) {
-(this->hvalue) = (that.hvalue); } else {
-
-cudaMemcpy(this->dptr, that.dptr, sizeof(T), cudaMemcpyDeviceToDevice); }
+(std::cout << ("Scalar HOST TEST\n"));
+(this->hvalue) = (that.hvalue);
+} else
+{
+(std::cout << ("Scalar Device TEST\n"));
+cudaMemcpy(this->dptr, that.dptr, sizeof(T), cudaMemcpyDeviceToDevice);
+}
 return *this;
 }
 
 self &operator=(const value_type &src)
 {
 if (this->on_host) {
-(this->hvalue) = src; } else {
-
-cudaMemcpy(this->dptr, &src, sizeof(T), cudaMemcpyHostToDevice); }
+(std::cout << ("HOST TEST\n"));
+(this->hvalue) = src;
+} else
+{
+(std::cout << ("Device TEST\n"));
+cudaMemcpy(this->dptr, &src, sizeof(T), cudaMemcpyHostToDevice);
+}
 return *this;
 }
 
 
 self &operator*=(value_type &src)
-{ (this->on_host) = false;
-if (this->on_host)
+{
+
+if (this->valid_host())
 {
 (this->hvalue) = (this->hvalue) * src;
 
 } else
-
 {
-auto value_type tmp;
-tmp = (*(this->dptr)) * src;
-cudaMemcpy(this->dptr, &tmp, sizeof(T), cudaMemcpyDeviceToDevice);
+auto value_type tmp = 0;
+cudaMemcpy(&(this->hvalue), this->dptr, sizeof(T), cudaMemcpyDeviceToHost);
+tmp = 0;
+cudaMemcpy(this->dptr, &tmp, sizeof(T), cudaMemcpyHostToDevice);
 }
+
 return *this;
 }
+
+
+
 
 bool valid_host() const { return this->on_host; }
 bool valid_device() const { return !(this->on_host); }
@@ -102,7 +115,14 @@ cudaMemcpy(this->dptr, &(this->hvalue), sizeof(T), cudaMemcpyHostToDevice);
 }
 }
 
-T &value() { this->to_host(); return this->hvalue; }
+T &value() {
+if (!this->valid_host())
+{
+cudaMemcpy(&(this->hvalue), this->dptr, sizeof(T), cudaMemcpyDeviceToHost);
+}
+return this->hvalue;
+}
+
 const T &value() const { (*(const_cast< self *>(this))).to_host(); return this->hvalue; }
 
 operator T &() { return this->value(); }
@@ -121,7 +141,7 @@ return os;
 }
 
 
-private: T hvalue;
+T hvalue;
 T *dptr;
 bool on_host;
 };

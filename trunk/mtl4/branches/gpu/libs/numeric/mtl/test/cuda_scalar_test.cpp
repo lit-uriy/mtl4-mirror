@@ -42,10 +42,14 @@ void test(const char* name)
     std::cout << "Scalars constructed.\n";
 
     x= 3;
+   
+    print(x);
+    x.to_device();
+    x= 4;
     std::cout << "Scalars assigned.\n";
     print(x);
 
-    x.to_device();
+    // x.to_device();
     print_position(x);
     if (!x.valid_device())
 	throw "No valid copy on device.";
@@ -56,10 +60,10 @@ void test(const char* name)
 	throw "No valid copy on host.";
 
     x.to_device();
-    x= 4;           // Setting on device
+    x= 7;           // Setting on device
     print(x);
-    if (x.value() != T(4))
-	throw "Error setting scalar on device.";
+    if (x.value() != T(7))
+    	throw "Error setting scalar on device.";
 
     x= 5;
     x.to_device();
@@ -72,9 +76,17 @@ void test(const char* name)
 	throw "No valid copy on device.";
     print(x);
 
+    std::cout<< "------------------------\n";
+    x.to_device();   
+
 #if 1 
-    std::cout << "x_loc-vor=" << x.valid_host() << "\n";
-    x*= 2;             // Computing on device
+    // std::cout << "x.h=" << x.hvalue << "\n";
+    //std::cout << "x.d=" << *x.dptr << "\n";
+    //std::cout << "x_on_host==" << x.on_host << "\n";
+    x*= 2;   // Computing on device
+    //std::cout << "_x.h=" << x.hvalue << "\n";
+    //std::cout << "_x.d=" <<*x.dptr << "\n";
+    //std::cout << "_x_on_host==" << x.on_host << "\n";
     print(x);
     std::cout << "x_loc-nach=" << x.valid_host() << "\n";
     if (!x.valid_device())
