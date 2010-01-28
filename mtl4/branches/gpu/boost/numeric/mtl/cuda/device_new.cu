@@ -29,7 +29,7 @@ template <typename T>
 T* device_new(const T& value)
 {
     T* pointer= device_new<T>();
-    *pointer= value; 
+    cudaMemcpy(pointer, &value, sizeof(T), cudaMemcpyHostToDevice);
     return pointer;
 }
 

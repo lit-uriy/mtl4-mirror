@@ -20,7 +20,8 @@
 template <typename T>
 void inline print_position(const T& x)
 {
-    std::cout << "x.valid_device() == " << x.valid_device() << "x.valid_host() == " << x.valid_host();
+    std::cout << "x.valid_device() == " << x.valid_device() 
+	      << " x.valid_host() == " << x.valid_host() << '\n';
     if (x.valid_device() == x.valid_host())
 	throw "valid_device() and valid_host() must be different.";
 }
@@ -49,16 +50,15 @@ void test(const char* name)
     if (!x.valid_device())
 	throw "No valid copy on device.";
 
-    x.to_device();
+    x.to_host();
     print_position(x);
     if (!x.valid_host())
 	throw "No valid copy on host.";
 
-#if 0 
     x.to_device();
     x= 4;           // Setting on device
     print(x);
-    if (x != T(4))
+    if (x.value() != T(4))
 	throw "Error setting scalar on device.";
 
     x= 5;
@@ -66,11 +66,12 @@ void test(const char* name)
 
     y= x;           // Copy on device
     print(y);
-    if (y != T(5))
+    if (y.value() != T(5))
 	throw "Error copying scalar on device.";
-
     if (!x.valid_device())
 	throw "No valid copy on device.";
+
+#if 0 
     x*= 2;                                   // Computing on device
     if (!x.valid_device())
 	throw "No valid copy on device.";
@@ -86,7 +87,7 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
 
     test<int>("int");
-#if 0
+#if 1
     test<short>("short");
     test<char>("char");
     test<float>("float");

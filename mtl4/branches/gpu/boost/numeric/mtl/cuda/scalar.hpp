@@ -27,6 +27,7 @@
 #include </usr/local/cuda/include/common_types.h>
 #include </usr/local/cuda/include/device_types.h>
 #include </usr/local/cuda/include/host_config.h>
+#include <iostream>
 #include <boost/numeric/mtl/cuda/device_new.hpp>
 
 namespace mtl { namespace cuda {
@@ -41,10 +42,10 @@ public: typedef T value_type;
 
 
 
-scalar(const T &value = T()) : hvalue(value), dvalue((*(device_new(value)))), on_host(true)
+scalar(const T &value = T(), bool on_host = true) : hvalue(value), dptr((on_host ? (device_new< T> ()) : (device_new(value)))), on_host(on_host)
 { }
 
-~scalar() { cudaFree(&(this->dvalue)); }
+~scalar() { cudaFree(this->dptr); }
 
 self &operator=(const cuda::scalar< T> &that)
 {
@@ -52,7 +53,16 @@ self &operator=(const cuda::scalar< T> &that)
 if (this->on_host) {
 (this->hvalue) = (that.hvalue); } else {
 
-(this->dvalue) = (that.dvalue); }
+cudaMemcpy(this->dptr, that.dptr, sizeof(T), cudaMemcpyDeviceToDevice); }
+return *this;
+}
+
+self &operator=(const value_type &src)
+{
+if (this->on_host) {
+(this->hvalue) = src; } else {
+
+cudaMemcpy(this->dptr, &src, sizeof(T), cudaMemcpyHostToDevice); }
 return *this;
 }
 
@@ -62,7 +72,7 @@ bool valid_device() const { return !(this->on_host); }
 void to_host()
 {
 if (!(this->on_host)) {
-cudaMemcpy(&(this->hvalue), &(this->dvalue), sizeof(T), cudaMemcpyDeviceToHost);
+cudaMemcpy(&(this->hvalue), this->dptr, sizeof(T), cudaMemcpyDeviceToHost);
 (this->on_host) = true;
 }
 }
@@ -70,17 +80,32 @@ cudaMemcpy(&(this->hvalue), &(this->dvalue), sizeof(T), cudaMemcpyDeviceToHost);
 void to_device()
 {
 if (this->on_host) {
-cudaMemcpy(&(this->dvalue), &(this->hvalue), sizeof(T), cudaMemcpyHostToDevice);
+cudaMemcpy(this->dptr, &(this->hvalue), sizeof(T), cudaMemcpyHostToDevice);
 (this->on_host) = false;
 }
 }
 
-operator T &() { this->to_host(); return this->hvalue; }
-operator const T &() const { (*(const_cast< self *>(this))).to_host(); return this->hvalue; }
+T &value() { this->to_host(); return this->hvalue; }
+const T &value() const { (*(const_cast< self *>(this))).to_host(); return this->hvalue; }
+
+operator T &() { return this->value(); }
+operator const T &() const { return this->value(); }
+
+friend inline std::ostream &operator<<(std::ostream &os, const self &x)
+{
+if (x.on_host) {
+os << (x.hvalue); } else
+{
+auto T copy;
+cudaMemcpy(&copy, x.dptr, sizeof(T), cudaMemcpyDeviceToHost);
+os << copy;
+}
+return os;
+}
 
 
 private: T hvalue;
-T &dvalue;
+T *dptr;
 bool on_host;
 };
 
