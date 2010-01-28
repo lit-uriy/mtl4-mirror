@@ -66,6 +66,23 @@ cudaMemcpy(this->dptr, &src, sizeof(T), cudaMemcpyHostToDevice); }
 return *this;
 }
 
+
+self &operator*=(value_type &src)
+{ (this->on_host) = false;
+if (this->on_host)
+{
+(this->hvalue) = (this->hvalue) * src;
+
+} else
+
+{
+auto value_type tmp;
+tmp = (*(this->dptr)) * src;
+cudaMemcpy(this->dptr, &tmp, sizeof(T), cudaMemcpyDeviceToDevice);
+}
+return *this;
+}
+
 bool valid_host() const { return this->on_host; }
 bool valid_device() const { return !(this->on_host); }
 

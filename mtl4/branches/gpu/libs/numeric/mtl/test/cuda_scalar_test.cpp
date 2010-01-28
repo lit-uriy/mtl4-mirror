@@ -70,13 +70,17 @@ void test(const char* name)
 	throw "Error copying scalar on device.";
     if (!x.valid_device())
 	throw "No valid copy on device.";
+    print(x);
 
-#if 0 
-    x*= 2;                                   // Computing on device
+#if 1 
+    std::cout << "x_loc-vor=" << x.valid_host() << "\n";
+    x*= 2;             // Computing on device
+    print(x);
+    std::cout << "x_loc-nach=" << x.valid_host() << "\n";
     if (!x.valid_device())
 	throw "No valid copy on device.";
     print(x);
-    if (x != T(10))
+    if (x.value() != T(10))
 	throw "Error computing  device.";
 #endif 
 }
@@ -87,8 +91,8 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
 
     test<int>("int");
-#if 1
     test<short>("short");
+#if 0
     test<char>("char");
     test<float>("float");
     test<double>("double");

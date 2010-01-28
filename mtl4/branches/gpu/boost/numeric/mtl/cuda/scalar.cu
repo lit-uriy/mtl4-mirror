@@ -50,7 +50,24 @@ class scalar
 	    cudaMemcpy(dptr, &src, sizeof(T), cudaMemcpyHostToDevice);
 	return *this;
     }
-	
+
+    
+    self& operator*=( value_type& src)
+    { on_host=false;
+	if (on_host)
+             {
+               hvalue= hvalue*src;
+    
+	     }
+
+	else{
+	    value_type tmp;
+	    tmp= *dptr*src;
+	    cudaMemcpy(dptr, &tmp, sizeof(T), cudaMemcpyDeviceToDevice);
+	}
+	return *this;
+    }	
+
     bool valid_host() const { return on_host; }
     bool valid_device() const { return !on_host; }
 
