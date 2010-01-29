@@ -375,6 +375,20 @@ cuda_scalar_test/fast:
 .PHONY : cuda_scalar_test/fast
 
 # Convenience name for target.
+libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/rule:
+	cd /home/pgottschling/projects/mtl4-gpu && $(MAKE) -f CMakeFiles/Makefile2 libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/rule
+.PHONY : libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/rule
+
+# Convenience name for target.
+cuda_vector_test: libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/rule
+.PHONY : cuda_vector_test
+
+# fast build rule for target.
+cuda_vector_test/fast:
+	cd /home/pgottschling/projects/mtl4-gpu && $(MAKE) -f libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/build.make libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/build
+.PHONY : cuda_vector_test/fast
+
+# Convenience name for target.
 libs/numeric/mtl/test/CMakeFiles/dense2D_test.dir/rule:
 	cd /home/pgottschling/projects/mtl4-gpu && $(MAKE) -f CMakeFiles/Makefile2 libs/numeric/mtl/test/CMakeFiles/dense2D_test.dir/rule
 .PHONY : libs/numeric/mtl/test/CMakeFiles/dense2D_test.dir/rule
@@ -2369,6 +2383,30 @@ cuda_scalar_test.s: cuda_scalar_test.cpp.s
 cuda_scalar_test.cpp.s:
 	cd /home/pgottschling/projects/mtl4-gpu && $(MAKE) -f libs/numeric/mtl/test/CMakeFiles/cuda_scalar_test.dir/build.make libs/numeric/mtl/test/CMakeFiles/cuda_scalar_test.dir/cuda_scalar_test.cpp.s
 .PHONY : cuda_scalar_test.cpp.s
+
+cuda_vector_test.o: cuda_vector_test.cpp.o
+.PHONY : cuda_vector_test.o
+
+# target to build an object file
+cuda_vector_test.cpp.o:
+	cd /home/pgottschling/projects/mtl4-gpu && $(MAKE) -f libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/build.make libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/cuda_vector_test.cpp.o
+.PHONY : cuda_vector_test.cpp.o
+
+cuda_vector_test.i: cuda_vector_test.cpp.i
+.PHONY : cuda_vector_test.i
+
+# target to preprocess a source file
+cuda_vector_test.cpp.i:
+	cd /home/pgottschling/projects/mtl4-gpu && $(MAKE) -f libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/build.make libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/cuda_vector_test.cpp.i
+.PHONY : cuda_vector_test.cpp.i
+
+cuda_vector_test.s: cuda_vector_test.cpp.s
+.PHONY : cuda_vector_test.s
+
+# target to generate assembly for a file
+cuda_vector_test.cpp.s:
+	cd /home/pgottschling/projects/mtl4-gpu && $(MAKE) -f libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/build.make libs/numeric/mtl/test/CMakeFiles/cuda_vector_test.dir/cuda_vector_test.cpp.s
+.PHONY : cuda_vector_test.cpp.s
 
 dense2D_test.o: dense2D_test.cpp.o
 .PHONY : dense2D_test.o
@@ -5035,6 +5073,7 @@ help:
 	@echo "... conj_mult_test"
 	@echo "... crop_test"
 	@echo "... cuda_scalar_test"
+	@echo "... cuda_vector_test"
 	@echo "... dense2D_test"
 	@echo "... dense_lu_test"
 	@echo "... dense_vector_iterator_test"
@@ -5205,6 +5244,9 @@ help:
 	@echo "... cuda_scalar_test.o"
 	@echo "... cuda_scalar_test.i"
 	@echo "... cuda_scalar_test.s"
+	@echo "... cuda_vector_test.o"
+	@echo "... cuda_vector_test.i"
+	@echo "... cuda_vector_test.s"
 	@echo "... dense2D_test.o"
 	@echo "... dense2D_test.i"
 	@echo "... dense2D_test.s"
