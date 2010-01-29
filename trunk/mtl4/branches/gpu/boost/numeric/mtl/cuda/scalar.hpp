@@ -74,20 +74,23 @@ cudaMemcpy(this->dptr, &src, sizeof(T), cudaMemcpyHostToDevice);
 return *this;
 }
 
-
-self &operator*=(value_type &src)
+template<class Src> self &
+operator*=(const Src &src)
 {
 
 if (this->valid_host())
 {
-(this->hvalue) = (this->hvalue) * src;
+(this->hvalue) *= src;
 
 } else
 {
-auto value_type tmp = 0;
-cudaMemcpy(&(this->hvalue), this->dptr, sizeof(T), cudaMemcpyDeviceToHost);
-tmp = 0;
-cudaMemcpy(this->dptr, &tmp, sizeof(T), cudaMemcpyHostToDevice);
+auto value_type copy;
+
+cudaMemcpy(&copy, this->dptr, sizeof(T), cudaMemcpyDeviceToHost);
+((std::cout << ("devise_copy_befor=")) << copy) << "\n";
+copy *= src; ;
+((std::cout << ("devise_copy_after")) << copy) << "\n";
+cudaMemcpy(this->dptr, &copy, sizeof(T), cudaMemcpyHostToDevice);
 }
 
 return *this;
@@ -125,8 +128,8 @@ return this->hvalue;
 
 const T &value() const { (*(const_cast< self *>(this))).to_host(); return this->hvalue; }
 
-operator T &() { return this->value(); }
-operator const T &() const { return this->value(); }
+
+
 
 friend inline std::ostream &operator<<(std::ostream &os, const self &x)
 {

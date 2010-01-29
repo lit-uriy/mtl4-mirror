@@ -79,14 +79,7 @@ void test(const char* name)
     std::cout<< "------------------------\n";
     x.to_device();   
 
-#if 1 
-    // std::cout << "x.h=" << x.hvalue << "\n";
-    //std::cout << "x.d=" << *x.dptr << "\n";
-    //std::cout << "x_on_host==" << x.on_host << "\n";
     x*= 2;   // Computing on device
-    //std::cout << "_x.h=" << x.hvalue << "\n";
-    //std::cout << "_x.d=" <<*x.dptr << "\n";
-    //std::cout << "_x_on_host==" << x.on_host << "\n";
     print(x);
     std::cout << "x_loc-nach=" << x.valid_host() << "\n";
     if (!x.valid_device())
@@ -94,7 +87,6 @@ void test(const char* name)
     print(x);
     if (x.value() != T(10))
 	throw "Error computing  device.";
-#endif 
 }
 
 

@@ -59,20 +59,23 @@ class scalar
 	return *this;
     }
 
-    
-    self& operator*=( value_type& src)
+    template <typename Src>
+    self& operator*=(const Src& src)
     { 
 	
 	if (valid_host())
         {
-               hvalue= hvalue * src;
-	       //   cudaMemcpy(dptr, &hvalue, sizeof(T), cudaMemcpyHostToDevice);
+	    hvalue*= src;
+	    //   cudaMemcpy(dptr, &hvalue, sizeof(T), cudaMemcpyHostToDevice);
 	}
 	else{
-	    value_type tmp=0;
-	    cudaMemcpy(&hvalue, dptr, sizeof(T), cudaMemcpyDeviceToHost);
-	    tmp=0;
-            cudaMemcpy(dptr, &tmp, sizeof(T), cudaMemcpyHostToDevice);
+	    value_type copy;
+	    
+	    cudaMemcpy(&copy, dptr, sizeof(T), cudaMemcpyDeviceToHost);
+	    std::cout<< "devise_copy_befor=" << copy << "\n";
+	    copy*= src;;
+	    std::cout<< "devise_copy_after"<< copy << "\n";
+	    cudaMemcpy(dptr, &copy, sizeof(T), cudaMemcpyHostToDevice);
 	}
 
 	return *this;
@@ -110,9 +113,9 @@ class scalar
 
     T const& value() const { const_cast<self*>(this)->to_host(); return hvalue; }
 
-    operator T&() { return value(); }
-    operator T const&() const { return value(); }
-    
+//     operator T&() { return value(); }
+//     operator T const&() const { return value(); }
+
     friend std::ostream& operator<<(std::ostream& os, const self& x)
     {
 	if (x.on_host)
