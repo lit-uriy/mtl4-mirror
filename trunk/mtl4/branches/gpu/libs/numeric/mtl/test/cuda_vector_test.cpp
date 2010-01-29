@@ -15,7 +15,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 #include <boost/numeric/mtl/cuda/device_new.hpp>
-#include <boost/numeric/mtl/cuda/scalar.hpp>
+#include <boost/numeric/mtl/cuda/vector_cuda.hpp>
 
 template <typename T>
 void inline print(char n, const T& x)
@@ -26,16 +26,20 @@ void inline print(char n, const T& x)
 template <typename T>
 void test(const char* name)
 {
-    std::cout << name << '\n';
+    std::cout << name << "Vector Test\n";
     
-    mtl::cuda::scalar<T>  x, y(2);
-    std::cout << "Scalars constructed.\n";
+    mtl::cuda::vector<T>  x(2), y(2);
+    std::cout << "Vector constructed.\n";
 
     x= 4;
-    std::cout << "Scalars assigned.\n";
+    std::cout << "whole vector assigned on host.\n";
     print('x', x);
+    x.to_device();
+    x= 5;
+    std::cout << "whole vector assigned on devise.\n";
 
     y= x;           // Copy on device
+    std::cout << "Vector copyed on device.\n";
     print('y', y);
     if (y.value() != T(4))
 	throw "Error copying scalar on device.";
@@ -43,13 +47,14 @@ void test(const char* name)
 
 #if 0
     x*= 2;   // Computing on device
-    print(x);
-    std::cout << "x_loc-nach=" << x.valid_host() << "\n";
+    print('x', x);
     if (!x.valid_device())
 	throw "No valid copy on device.";
-    print(x);
+    print('x', x);
     if (x.value() != T(10))
 	throw "Error computing  device.";
+     x[1]= 100;
+    std::cout << "component of vector assigned.\n";
 #endif
 }
 

@@ -42,111 +42,53 @@ public: typedef T value_type;
 
 
 
-scalar(const T &value = T(), bool on_host = true) : hvalue(value), dptr((on_host ? (device_new< T> ()) : (device_new(value)))), on_host(on_host)
-{ }
+scalar(const T &value = T()) : dptr((device_new(value))) { }
 
 ~scalar() { cudaFree(this->dptr); }
 
 self &operator=(const cuda::scalar< T> &that)
 {
-(this->on_host) = that.on_host;
-if (this->on_host) {
-(std::cout << ("Scalar HOST TEST\n"));
-(this->hvalue) = (that.hvalue);
-} else
-{
-(std::cout << ("Scalar Device TEST\n"));
 cudaMemcpy(this->dptr, that.dptr, sizeof(T), cudaMemcpyDeviceToDevice);
-}
 return *this;
 }
 
 self &operator=(const value_type &src)
 {
-if (this->on_host) {
-(std::cout << ("HOST TEST\n"));
-(this->hvalue) = src;
-} else
-{
-(std::cout << ("Device TEST\n"));
 cudaMemcpy(this->dptr, &src, sizeof(T), cudaMemcpyHostToDevice);
-}
 return *this;
 }
 
 template<class Src> self &
 operator*=(const Src &src)
 {
-
-if (this->valid_host())
-{
-(this->hvalue) *= src;
-
-} else
-{
-auto value_type copy;
-
-cudaMemcpy(&copy, this->dptr, sizeof(T), cudaMemcpyDeviceToHost);
-((std::cout << ("devise_copy_befor=")) << copy) << "\n";
-copy *= src; ;
-((std::cout << ("devise_copy_after")) << copy) << "\n";
-cudaMemcpy(this->dptr, &copy, sizeof(T), cudaMemcpyHostToDevice);
-}
-
 return *this;
 }
 
 
 
 
-bool valid_host() const { return this->on_host; }
-bool valid_device() const { return !(this->on_host); }
+bool valid_host() const { return false; }
+bool valid_device() const { return true; }
 
-void to_host()
+void to_host() { }
+void to_device() { }
+
+T value() const
 {
-if (!(this->on_host)) {
-cudaMemcpy(&(this->hvalue), this->dptr, sizeof(T), cudaMemcpyDeviceToHost);
-(this->on_host) = true;
+auto T copy;
+cudaMemcpy(&copy, this->dptr, sizeof(T), cudaMemcpyDeviceToHost);
+return copy;
 }
-}
-
-void to_device()
-{
-if (this->on_host) {
-cudaMemcpy(this->dptr, &(this->hvalue), sizeof(T), cudaMemcpyHostToDevice);
-(this->on_host) = false;
-}
-}
-
-T &value() {
-if (!this->valid_host())
-{
-cudaMemcpy(&(this->hvalue), this->dptr, sizeof(T), cudaMemcpyDeviceToHost);
-}
-return this->hvalue;
-}
-
-const T &value() const { (*(const_cast< self *>(this))).to_host(); return this->hvalue; }
-
 
 
 
 friend inline std::ostream &operator<<(std::ostream &os, const self &x)
 {
-if (x.on_host) {
-os << (x.hvalue); } else
-{
-auto T copy;
-cudaMemcpy(&copy, x.dptr, sizeof(T), cudaMemcpyDeviceToHost);
-os << copy;
-}
-return os;
+return os << x.value();
 }
 
 
-T hvalue;
 T *dptr;
-bool on_host;
 };
 
 }}
