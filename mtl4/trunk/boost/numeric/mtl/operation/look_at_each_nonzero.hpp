@@ -24,7 +24,7 @@ namespace mtl {
 	template <typename Vector, typename Functor>
 	inline void look_at_each_nonzero(const Vector& v, Functor& f)
 	{
-	    typedef typename traits::range_generator<tag::iter::nz, Vector>::type iterator;
+	    typedef typename traits::range_generator<tag::const_iter::nz, Vector>::type iterator;
 	    for (iterator i= begin<tag::iter::nz>(v), iend= end<tag::iter::nz>(v); i != iend; ++i)
 		f(*i);
 	}
@@ -37,7 +37,7 @@ namespace mtl {
 	template <typename Matrix, typename Functor>
 	inline void look_at_each_nonzero(const Matrix& A, Functor& f)
 	{
-	    typename traits::value<Matrix>::type     value(A); 
+	    typename traits::const_value<Matrix>::type     value(A); 
 
 	    typedef typename traits::range_generator<tag::major, Matrix>::type     cursor_type;
 	    typedef typename traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
