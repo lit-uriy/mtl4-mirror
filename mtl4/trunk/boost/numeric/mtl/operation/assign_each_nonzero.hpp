@@ -18,7 +18,44 @@
 
 namespace mtl {
 
+    namespace vector {
 
+	template <typename Vector, typename Functor>
+	inline void assign_each_nonzero(Vector& v, const Functor& f)
+	{
+	    typedef typename traits::range_generator<tag::iter::nz, Vector>::type iterator;
+	    for (iterator i= begin<tag::iter::nz>(v), iend= end<tag::iter::nz>(v); i != iend; ++i)
+		*i= f(*i);
+	}
+
+    } // namespace vector
+
+    namespace matrix {
+
+	template <typename Matrix, typename Functor>
+	inline void assign_each_nonzero(Matrix& m, const Functor& f)
+	{
+	    typename traits::value<Matrix>::type     value(m); 
+
+	    typedef typename traits::range_generator<tag::major, Matrix>::type     cursor_type;
+	    typedef typename traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
+
+	    for (cursor_type cursor = begin<tag::major>(m), cend = end<tag::major>(m); cursor != cend; ++cursor) 
+		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); 
+		     icursor != icend; ++icursor)
+		    {
+			// lambda expressions need reference and property map returns only const values
+			// awfully inefficient
+			typename Collection<Matrix>::value_type tmp= value(*icursor);
+			value(*icursor, f(tmp));
+		    }
+	}
+
+    } // namespace matrix
+
+
+
+#if 0
 template <typename Vector, typename Functor>
 inline void assign_each_nonzero(Vector& v, const Functor& f, tag::vector)
 {
@@ -45,17 +82,6 @@ inline void assign_each_nonzero(Matrix& m, const Functor& f, tag::matrix)
 	    typename Collection<Matrix>::value_type tmp= value(*icursor);
 	    value(*icursor, f(tmp));
 	}
-
-#if 0
-    // Iterators are only defined for dense matrices
-    // It is not sure if iterators will also be defined for sparse matrices.
-    typedef typename traits::range_generator<tag::major, Matrix>::type  cursor_type;
-    typedef typename traits::range_generator<tag::iter::nz, cursor_type>::type iterator;
-
-    for (cursor_type cursor = begin<tag::major>(m), cend = end<tag::major>(m); cursor != cend; ++cursor) 
-	for (iterator i= begin<tag::iter::nz>(cursor), iend= end<tag::iter::nz>(cursor); i != iend; ++i)
-	    *i= f(*i);    
-#endif
 }
 
 
@@ -65,6 +91,8 @@ inline void assign_each_nonzero(Collection& c, const Functor& f)
 {
     assign_each_nonzero(c, f, typename traits::category<Collection>::type());
 }
+
+#endif
 
 } // namespace mtl
 
