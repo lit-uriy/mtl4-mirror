@@ -27,7 +27,7 @@ std::ostream& print_matrix(Matrix const& matrix, std::ostream& out= std::cout, i
     for (size_t r = 0; r < num_rows(matrix); ++r) {
 	out << '[';
 	for (size_t c = 0; c < num_cols(matrix); ++c) {
-	    out.fill (' '); out.width (width); out.precision (precision); // out.flags (std::ios_base::right);
+	    out.fill (' '); out.width (width); // out.precision (precision); // out.flags (std::ios_base::right);
 	    if (precision)
 		out.precision(precision); 
 	    out << matrix(r, c) << (c < num_cols(matrix) - 1 ? " " : "]\n");
