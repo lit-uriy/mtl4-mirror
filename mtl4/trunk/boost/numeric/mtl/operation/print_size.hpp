@@ -44,7 +44,6 @@ namespace mtl {
 	    look_at_each_nonzero(A, p);
 	    return p.max;
 	}
-
     }
 
 } // namespace mtl
