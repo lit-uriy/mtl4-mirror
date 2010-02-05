@@ -36,6 +36,7 @@ std::ostream& print_matrix(Matrix const& matrix, std::ostream& out= std::cout, i
     return out;
 }
 
+#if 0
 // Deprecated 
 template <typename Matrix>
 void print_matrix_row_cursor(Matrix const& matrix, std::ostream& out= std::cout)
@@ -55,6 +56,7 @@ void print_matrix_row_cursor(Matrix const& matrix, std::ostream& out= std::cout)
 	}
     }
 }
+#endif
 
 }} // namespace mtl::matrix
 
