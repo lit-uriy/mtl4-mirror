@@ -15,6 +15,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <limits>
 
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits.hpp>
@@ -120,11 +121,11 @@ class matrix_market_istream
 
     // Which value to be inserted? Itself if exist and 0 for pattern; complex are 
     template <typename Value, typename MValue> MValue which_value(Value v, MValue) { return boost::numeric_cast<MValue>(v); }
-	template <typename MValue> MValue which_value(pattern_type, MValue) { return boost::numeric_cast<MValue>(0.0); }
-    template <typename MValue> MValue which_value(std::complex<double> v, MValue) { using std::abs; return boost::numeric_cast<MValue>(abs(v)); }
+    template <typename MValue> MValue which_value(pattern_type, MValue) { return boost::numeric_cast<MValue>(0.0); }
+    template <typename MValue> MValue which_value(std::complex<double> v, MValue) { MTL_THROW(runtime_error("Cannot convert complex value in real\n")); }
     std::complex<long double> which_value(std::complex<double> v, std::complex<long double>) { return boost::numeric_cast<std::complex<long double> >(v); }
     std::complex<double> which_value(std::complex<double> v, std::complex<double>) { return v; }
-	std::complex<float> which_value(std::complex<double> v, std::complex<float>) { return std::complex<float>(float(real(v)), float(imag(v))); }
+    std::complex<float> which_value(std::complex<double> v, std::complex<float>) { return std::complex<float>(float(real(v)), float(imag(v))); }
 
     std::ifstream      *new_stream;
     std::istream       &my_stream;
@@ -252,6 +253,7 @@ private:
     typename boost::enable_if<boost::is_floating_point<Value> >::type
     write_value(const Value& v) 
     { 
+	my_stream.precision(std::numeric_limits<Value>::digits10 + 1);
 	my_stream.setf(std::ios::scientific); 
 	my_stream << v; 
 	my_stream.unsetf(std::ios::scientific); 
@@ -260,6 +262,7 @@ private:
     template <typename Value>
     void write_value(const std::complex<Value>& v) 
     { 
+	my_stream.precision(std::numeric_limits<Value>::digits10 + 1);
 	my_stream.setf(std::ios::scientific); 
 	my_stream << real(v) << " " << imag(v); 
 	my_stream.unsetf(std::ios::scientific); 

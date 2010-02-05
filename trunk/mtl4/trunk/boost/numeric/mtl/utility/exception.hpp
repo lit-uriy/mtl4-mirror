@@ -193,6 +193,23 @@ struct logic_error : public std::logic_error
     explicit logic_error(const char *s= "Logic error") : std::logic_error(s) {}
 };
 
+/// Exception for I/O errors in general
+struct io_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit io_error(const char *s= "I/O error") {}
+};
+
+/// File not found
+struct file_not_found : public io_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit file_not_found(const char *s= "File not found") : io_error(s) {}
+};
+
+
+
+
 } // namespace mtl
 
 #endif // MTL_MTL_EXCEPTION_INCLUDE
