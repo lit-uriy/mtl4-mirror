@@ -41,17 +41,20 @@ class matrix_market_istream
 {
     class pattern_type {};
     typedef matrix_market_istream        self;
-    void check_stream() const 
+    void check_stream(const std::string& file_name= std::string()) const 
     {
 	if (!my_stream.good()) {
-	    std::cerr << "matrix_market_istream: Error in input stream! Probably file not found.\n";
-	    throw(file_not_found("matrix_market_istream: Error in input stream, probably file not found"));
+	    std::string message("matrix_market_istream: Error in input stream!\n");
+	    if (file_name != std::string())
+		message+= "Probably file " + file_name + " not found.\n";
+	    std::cerr << message;
+	    throw(file_not_found(message.c_str()));
 	}
     }
 
   public:
-    explicit matrix_market_istream(const char* p) : new_stream(new std::ifstream(p)), my_stream(*new_stream) { check_stream(); }
-    explicit matrix_market_istream(const std::string& s) : new_stream(new std::ifstream(s.c_str())), my_stream(*new_stream) { check_stream(); }
+    explicit matrix_market_istream(const char* p) : new_stream(new std::ifstream(p)), my_stream(*new_stream) { check_stream(p); }
+    explicit matrix_market_istream(const std::string& s) : new_stream(new std::ifstream(s.c_str())), my_stream(*new_stream) { check_stream(s); }
     explicit matrix_market_istream(std::istream& s= std::cin) : new_stream(0), my_stream(s) { check_stream(); }
 
     ~matrix_market_istream() { if (new_stream) delete new_stream; }
