@@ -210,13 +210,23 @@ struct distributed_matrix
   : virtual matrix, virtual distributed
 {};
 
+/// Tag for transposed of a distributed matrix in the category lattice
+struct transposed_distributed_matrix
+  : virtual matrix, virtual distributed
+{};
+
+/// Tag for Hermitian of a distributed matrix in the category lattice
+struct hermitian_distributed_matrix
+  : virtual matrix, virtual distributed
+{};
+
 /// Tag for transposed multi_vector
 // Maybe splitting later into sparse and dense form
 struct transposed_multi_vector
   : virtual matrix, virtual dense
 {};
 
-/// Tag for transposed multi_vector
+/// Tag for Hermitian multi_vector
 // Maybe splitting later into sparse and dense form
 struct hermitian_multi_vector
   : virtual matrix, virtual dense

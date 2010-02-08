@@ -230,15 +230,22 @@ struct category< transposed_view< multi_vector<Vector> > >
     typedef tag::transposed_multi_vector type;
 };
 
+template <typename Matrix, typename RowDistribution, typename ColDistribution>
+struct category< matrix::transposed_view<matrix::distributed<Matrix, RowDistribution, ColDistribution> > >
+{
+    typedef tag::transposed_distributed_matrix type;
+};
+
+
 template <typename Matrix>
 struct category< matrix::conj_view<Matrix> >
-    : public category< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
+  : public category< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
 {};
 
 template <typename Matrix>
 struct category< matrix::hermitian_view<Matrix> >
-	: public category< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-						 transposed_view<Matrix> > >
+  : public category< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+					   transposed_view<Matrix> > >
 {};
 
 // Specialize on Hermiatians of multi-vectors
@@ -248,10 +255,16 @@ struct category< matrix::hermitian_view<multi_vector<Vector> > >
     typedef tag::hermitian_multi_vector type;
 };
 
+template <typename Matrix, typename RowDistribution, typename ColDistribution>
+struct category< matrix::hermitian_view<matrix::distributed<Matrix, RowDistribution, ColDistribution> > >
+{
+    typedef tag::hermitian_distributed_matrix type;
+};
+
 
 template <typename Matrix>
 struct category< mtl::matrix::banded_view<Matrix> >
-    : public detail::simple_matrix_view_category<Matrix>
+  : public detail::simple_matrix_view_category<Matrix>
 {};
 
 template <typename T>
