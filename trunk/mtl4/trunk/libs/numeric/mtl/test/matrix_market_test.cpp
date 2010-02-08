@@ -65,12 +65,12 @@ void inline test(Matrix& A, const char* name)
  }
 
 template <typename Matrix>
-void inline test_failure(Matrix& A)
+void inline failure_test(Matrix& A)
 {
     try {
 	A= mtl::io::matrix_market("File_not_exist_test.mtx");
-    } catch (mtl::file_not_found) {
-	std::cout << "Successfully caught exception for inexistant file.";
+    } catch (mtl::file_not_found& e) {
+	std::cerr << "Successfully caught exception for inexistant file. Error message is:\n" << e.what();
 	return;
     }
     throw "No exception thrown for inexistant file.";
@@ -98,7 +98,7 @@ int test_main(int argc, char* argv[])
     test(mdc, "pure Morton");
     test(mcc, "Hybrid col-major");
 
-    test_failure(cdc);
+    failure_test(cdc);
 
     return 0;
 }

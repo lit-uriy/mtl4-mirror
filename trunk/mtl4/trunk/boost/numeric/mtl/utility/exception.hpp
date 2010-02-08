@@ -194,10 +194,10 @@ struct logic_error : public std::logic_error
 };
 
 /// Exception for I/O errors in general
-struct io_error
+struct io_error : public std::runtime_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit io_error(const char *s= "I/O error") {}
+    explicit io_error(const char *s= "I/O error") : std::runtime_error(s) {}
 };
 
 /// File not found
