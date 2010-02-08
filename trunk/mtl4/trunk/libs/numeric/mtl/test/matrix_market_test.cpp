@@ -69,7 +69,7 @@ void inline failure_test(Matrix& A)
 {
     try {
 	A= mtl::io::matrix_market("File_not_exist_test.mtx");
-    } catch (mtl::file_not_found& e) {
+    } catch (const mtl::file_not_found& e) {
 	std::cerr << "Successfully caught exception for inexistant file. Error message is:\n" << e.what();
 	return;
     }
