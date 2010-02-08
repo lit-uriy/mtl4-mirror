@@ -21,26 +21,24 @@ namespace itl {
 template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpaceB, 
 	   typename Preconditioner, typename Iteration >
 int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
-       const Preconditioner& M, Iteration& iter)
+       const Preconditioner& L, Iteration& iter)
 {
   typedef HilbertSpaceX Vector;
   typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
 
-  Scalar rho(0), rho_1(0), alpha(0), beta(0);
+  Scalar rho(0), rho_1(0), alpha(0);
   Vector p(size(x)), q(size(x)), r(size(x)), z(size(x));
   
   r = b - A*x;
 
   while (! iter.finished(r)) {
-      z = solve(M, r);
+      z = solve(L, r);
       rho = dot(r, z);
     
       if (iter.first())
 	  p = z;
-      else {
-	  beta = rho / rho_1;
-	  p = z + beta * p;
-      }
+      else 
+	  p = z + (rho / rho_1) * p;
       
       q = A * p;
       alpha = rho / dot(p, q);
@@ -60,9 +58,9 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpaceB, 
 	   typename Preconditioner, typename RightPreconditioner, typename Iteration >
 int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
-       const Preconditioner& M, const RightPreconditioner&, Iteration& iter)
+       const Preconditioner& L, const RightPreconditioner&, Iteration& iter)
 {
-    return cg(A, x, b, M, iter);
+    return cg(A, x, b, L, iter);
 }
 
 } // namespace itl
