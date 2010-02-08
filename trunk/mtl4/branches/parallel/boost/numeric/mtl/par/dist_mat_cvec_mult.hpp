@@ -31,6 +31,20 @@
 
 namespace mtl { namespace matrix {
 
+    /* Linear operations like y= A * x are performed in the following 5 steps:
+       - Scatter x to send buffers x_si
+       - Start x_s -> x_r
+       - local operation, e.g. local(y)= local(A) * local(x)
+       - Finish  x_s -> x_r and wait
+       - Reduce local(y) and remote results, e.g. y+= A_i * x_ri
+       Transposed operations like w= A^T * v are performed in the following 5 steps:
+       - Scatter A^T * v to w_ri (this is no error)
+       - Start w_r -> w_s
+       - local operation, e.g. local(w)= trans(local(A)) * local(v)
+       - Finish w_r -> w_s and wait
+       - Reduce local(w) and w_s, e.g. w+= w_si
+       The steps of the two kinds of operations are reversed in order and direction.
+    */
 
 struct dist_mat_cvec_mult_handle 
 {
@@ -58,7 +72,7 @@ dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
     typedef typename Matrix::recv_structure        recv_structure;
     struct dist_mat_cvec_mult_handle handle;
 
-    dist_mat_cvec_mult_fill_send_buffer(A, v);
+    linear_buffer_fill(A, v);
     typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
@@ -103,14 +117,24 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
     return boost::mpi::status();
 }
 
-template <typename Matrix, typename Vector>
-void inline dist_mat_cvec_mult_fill_send_buffer(const Matrix& A, Vector& v)
-{
-    typedef typename Collection<Matrix>::size_type size_type;
 
+/// Enlarge send and receive buffers for linear operator application (or its transposed)
+template <typename Matrix, typename Vector>
+void inline enlarge_buffer(const Matrix& A, Vector& v)
+{
     MTL_DEBUG_THROW_IF(*A.cdp != distribution(v), incompatible_distribution());
     v.enlarge_send_buffer(A.total_send_size);
     v.enlarge_recv_buffer(A.total_recv_size);
+}
+
+
+/// Enlarge and fill send buffers for linear operator application like matrix vector product
+template <typename Matrix, typename Vector>
+void inline linear_buffer_fill(const Matrix& A, Vector& v)
+{
+    typedef typename Collection<Matrix>::size_type size_type;
+
+    enlarge_buffer(A, v);
 
     typename std::map<int, typename Matrix::send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
     for (; s_it != s_end; ++s_it) {
@@ -139,28 +163,28 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
     std::pair<boost::mpi::status, dist_mat_cvec_mult_handle::req_type::iterator> res;
     
     while(h.reqs.size()) {
-      res = boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
+	res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
       
-      int p=res.first.source();
-      if(p == communicator(v).rank()) { // TODO: this is dangerous (not guaranteed by MPI!!!) - talk about other options 
-	      // -> How about 2 sets of request and wait only for the receive requests one by one and do waitall on the sends at the (should be finished anyway)
-        // htor: this impacts performance significantly ... not good, but I don't know a good alternative (maybe a hash map that translates requests to send or receive reqs.
-	// pg: why a hash map? if the requests are stored in a random access iterator we can use a vector<bool> or bit_vector to define is_send_request 
-	//     we then just ask if (is_send_request[distance(h.reqs.begin(), res.first)]) ... 
-	//     this works also for a list but distance has linear complexity then
-        // we have a send request
-        h.reqs.erase(res.second);
-        mtl::par::mpi_log << "[nonblocking] finished sending my data" << '\n';
-      } else { 
-        // we have a receive request 
-        h.reqs.erase(res.second);
+	int p= res.first.source();
+	if(p == communicator(v).rank()) { // TODO: this is dangerous (not guaranteed by MPI!!!) - talk about other options 
+	    // -> How about 2 sets of request and wait only for the receive requests one by one and do waitall on the sends at the (should be finished anyway)
+	    // htor: this impacts performance significantly ... not good, but I don't know a good alternative (maybe a hash map that translates requests to send or receive reqs.
+	    // pg: why a hash map? if the requests are stored in a random access iterator we can use a vector<bool> or bit_vector to define is_send_request 
+	    //     we then just ask if (is_send_request[distance(h.reqs.begin(), res.first)]) ... 
+	    //     this works also for a list but distance has linear complexity then
+	    // we have a send request
+	    h.reqs.erase(res.second);
+	    mtl::par::mpi_log << "[nonblocking] finished sending my data" << '\n';
+	} else { 
+	    // we have a receive request 
+	    h.reqs.erase(res.second);
 
-        const recv_structure s = (*A.recv_info.find(p)).second;
+	    const recv_structure s = (*A.recv_info.find(p)).second;
 
-        mtl::par::mpi_log << "[nonblocking] received data from rank " << p << " of size " << s.size << '\n';
-          mat_cvec_mult(const_cast<Matrix&>(A).remote_matrices[p], // Scheiss std::map!!!
-		      recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w), assign_mode());
-      }
+	    mtl::par::mpi_log << "[nonblocking] received data from rank " << p << " of size " << s.size << '\n';
+	    mat_cvec_mult(const_cast<Matrix&>(A).remote_matrices[p], // Scheiss std::map!!!
+			  recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w), assign_mode());
+	}
     }
 
     boost::mpi::status st;
@@ -182,7 +206,7 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
     // Avoid repeated zeroing of w (= -> +=)
     typedef typename mtl::assign::repeated_assign<Assign>::type assign_mode;
 
-    dist_mat_cvec_mult_fill_send_buffer(A, v);
+    linear_buffer_fill(A, v);
     typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
@@ -228,7 +252,7 @@ void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w,
 }
 #endif 
 
-  // Use Communication scheme from whole build
+// Use Communication scheme from whole build
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as)
 {
@@ -246,6 +270,17 @@ void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w,
 #endif
 }
 
+// Use Communication scheme from whole build
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+void inline trans_dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as)
+{
+    // All three arguments must be distributed
+    BOOST_STATIC_ASSERT((mtl::traits::is_distributed<Matrix>::value));
+    BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorIn>::value));
+    BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorOut>::value));
+
+    std::cout << "In trans_dist_mat_cvec_mult\n";
+}
 
 
 }} // namespace mtl::matrix

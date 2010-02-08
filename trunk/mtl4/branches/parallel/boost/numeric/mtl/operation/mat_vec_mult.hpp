@@ -166,6 +166,13 @@ inline void mat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assi
 {
     dist_mat_cvec_mult(a, v, w, Assign());
 }
+
+// Transposed distributed matrix vector multiplication
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void mat_cvec_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::transposed_distributed_matrix)
+{
+    trans_dist_mat_cvec_mult(a, v, w, Assign());
+}
 #endif
 
 

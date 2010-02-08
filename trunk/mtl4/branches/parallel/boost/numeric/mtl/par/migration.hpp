@@ -34,7 +34,7 @@ class block_migration
     typedef base_distribution::size_type     size_type;
 
     /// Constructor refers establishes references to old distribution (new distribution remains empty so far)
-    block_migration(const block_distribution& old_dist) 
+    explicit block_migration(const block_distribution& old_dist) 
       : old_dist(old_dist), new_dist(old_dist.size(), communicator(old_dist)) {}
 
     /// Constructor refers establishes references to old distribution and copies new one

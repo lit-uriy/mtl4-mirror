@@ -24,7 +24,7 @@ template <typename Matrix, typename VectorIn, typename VectorOut>
 void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
 {
     mpi::communicator comm(communicator(A));
-#if 0
+
     // A= 0.0; // for dense matrices
     {
 	mtl::matrix::inserter<Matrix> ins(A);
@@ -51,15 +51,14 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
     mtl::par::single_ostream sout;
     sout << "Matrix is:\n" << A; sout.flush();
     sout << "\nv is: " << v << "\n";
-#endif
-    w= A * v;
+
+    w= trans(A) * v;
     //mult(A, v, w);
 
-#if 0
+    return;
     if (!comm.rank()) std::cout << "\nw= A * v is: ";
     std::cout << w;
-    if (local(w)[1] != double(18 - 2 * comm.rank())) throw "wrong value.";
-#endif
+    // if (std::abs(local(w)[1] - (comm.rank() ? 16.0 : 4.0)) > 0.01) throw "wrong value.";
 }
 
 
@@ -69,14 +68,20 @@ int test_main(int argc, char* argv[])
 
     mpi::environment env(argc, argv);
     mpi::communicator world;
-#if 0
+    
     if (world.size() != 2) {
 	std::cerr << "Example works only for 2 processors!\n";
 	env.abort(87);
     }
-#endif
-    matrix::distributed<matrix::compressed2D<double> > A(7, 7);
-    vector::distributed<dense_vector<double> >         v(7), w(7);
+
+    std::vector<std::size_t> row_block, col_block;
+    row_block.push_back(0); row_block.push_back(5); row_block.push_back(7); 
+    col_block.push_back(0); col_block.push_back(4); col_block.push_back(7); 
+
+    mtl::par::block_distribution row_dist(row_block), col_dist(col_block);
+
+    matrix::distributed<matrix::compressed2D<double> > A(7, 7, row_dist, col_dist);
+    vector::distributed<dense_vector<double> >         v(7, row_dist), w(7, col_dist);
 
     test(A, v, w, "compressed2D<double> * dense_vector<double>");
     
