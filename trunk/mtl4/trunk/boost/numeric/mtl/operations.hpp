@@ -52,6 +52,7 @@
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/sum.hpp>
 #include <boost/numeric/mtl/operation/min.hpp>
+#include <boost/numeric/mtl/operation/min_pos.hpp>
 #include <boost/numeric/mtl/operation/max.hpp>
 #include <boost/numeric/mtl/operation/max_pos.hpp>
 #include <boost/numeric/mtl/operation/max_abs_pos.hpp>

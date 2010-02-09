@@ -12,15 +12,19 @@
 #ifndef MTL_FOR_EACH_NONZERO_INCLUDE
 #define MTL_FOR_EACH_NONZERO_INCLUDE
 
+#include <utility>
+
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/property_map.hpp>
 
 
 namespace mtl {
 
     namespace vector {
 
-	/// Perform \p f(i) on each non-zero i in constant vector \p v; thus the must keep the result in its state 
+	/// Perform \p f(v[i]) on each non-zero i in constant vector \p v; thus the must keep the result in its state 
 	template <typename Vector, typename Functor>
 	inline void look_at_each_nonzero(const Vector& v, Functor& f)
 	{
@@ -29,11 +33,24 @@ namespace mtl {
 		f(*i);
 	}
 
+	/// Perform \p f(v[i], i) on each non-zero i in constant vector \p v; thus the must keep the result in its state 
+	template <typename Vector, typename Functor>
+	typename mtl::traits::enable_if_vector<Vector>::type // to be called for vectors only 
+	inline look_at_each_nonzero_pos(const Vector& v, Functor& f)
+	{
+	    typename traits::index<Vector>::type           index(v); 
+	    typename traits::const_value<Vector>::type     value(v); 
+
+	    typedef typename traits::range_generator<tag::nz, Vector>::type iterator;
+	    for (iterator i= begin<tag::nz>(v), iend= end<tag::nz>(v); i != iend; ++i)
+		f(value(*i), index(*i));
+	}
+
     } // namespace vector
 
     namespace matrix {
 
-	/// Perform a potentially mutating \p f(i) on each non-zero i in matrix \p A 
+	/// Perform a potentially mutating \p f(A[i][j]) on each non-zero entry in matrix \p A 
 	template <typename Matrix, typename Functor>
 	inline void look_at_each_nonzero(const Matrix& A, Functor& f)
 	{
@@ -46,6 +63,24 @@ namespace mtl {
 		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); 
 		     icursor != icend; ++icursor)
 		    f(value(*icursor));
+	}
+
+	/// Perform a potentially mutating \p f(A[i][j], make_pair(i, j)) on each non-zero entry in matrix \p A 
+	template <typename Matrix, typename Functor>
+	typename mtl::traits::enable_if_matrix<Matrix>::type // to be called for matrices only
+	inline look_at_each_nonzero_pos(const Matrix& A, Functor& f)
+	{
+	    typename traits::row<Matrix>::type             row(A); 
+	    typename traits::col<Matrix>::type             col(A); 
+	    typename traits::const_value<Matrix>::type     value(A); 
+
+	    typedef typename traits::range_generator<tag::major, Matrix>::type     cursor_type;
+	    typedef typename traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
+
+	    for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor) 
+		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); 
+		     icursor != icend; ++icursor)
+		    f(value(*icursor), std::make_pair(row(*icursor), col(*icursor)));
 	}
 
     } // namespace matrix

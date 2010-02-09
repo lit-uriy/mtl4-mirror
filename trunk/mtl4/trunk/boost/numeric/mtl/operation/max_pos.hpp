@@ -16,12 +16,67 @@
 #include <utility>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/pos_type.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/operation/look_at_each_nonzero.hpp>
+
+#if 0
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
+#endif
+
+
 
 namespace mtl { 
 
+    namespace vector {
+	
+	template <typename Vector>
+	struct max_pos_functor
+	{
+	    typedef typename Collection<Vector>::value_type       value_type;
+	    typedef typename mtl::traits::pos_type<Vector>::type  pos_type;
+	    typedef std::pair<value_type, pos_type>               result_type;
+
+	    // initialize with max value and max position
+	    max_pos_functor() 
+	    {
+		value.first= identity(math::max<value_type>(), value_type()); // minimal value for comparison
+		value.second= identity(math::min<pos_type>(), pos_type());    // maximal position to check if changed
+	    }
+
+	    void operator()(const value_type& x, const pos_type& p)
+	    {
+		if (x > value.first)
+		    value= std::make_pair(x, p);
+	    }
+
+	    bool unchanged() const { return value.second == identity(math::min<pos_type>(), pos_type()); }
+
+	    result_type  value;
+	};
+
+	template <typename Vector>
+	typename max_pos_functor<Vector>::pos_type
+	inline max_pos(const Vector& v)
+	{
+	    max_pos_functor<Vector> f;
+	    look_at_each_nonzero_pos(v, f);
+
+	    MTL_DEBUG_THROW_IF(f.unchanged(), runtime_error("max_pos cannot be applied on empty container"));
+	    return f.value.second;
+	}
+
+    } // namespace vector
+
+    namespace matrix {
+
+	using mtl::vector::max_pos;
+    }
+
+
+#if 0
 namespace matrix {
 ///Returns pair (row, col) from maximal entry of %matrix A
     template <typename Matrix>
@@ -78,6 +133,9 @@ namespace vector {
     }
 
 } // namespace vector
+
+#endif
+
 
 } // namespace mtl
 

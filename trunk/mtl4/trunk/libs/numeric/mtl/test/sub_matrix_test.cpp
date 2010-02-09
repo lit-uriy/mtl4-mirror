@@ -34,8 +34,8 @@ void print_depth_first(Recursator const& recursator, string str)
 {
     if (recursator.is_empty())
 	return;
-    cout << "\nRecursion: " << str << endl;
-    print_matrix_row_cursor(*recursator);
+    cout << "\nRecursion: " << str << endl << *recursator;
+
   
     // for full recursion remove the string length limitation
     if (!recursator.is_leaf()) { 
@@ -50,10 +50,9 @@ void print_depth_first(Recursator const& recursator, string str)
 template <typename Recursator, typename BaseCaseTest>
 void recursive_print(Recursator const& recursator, string str, BaseCaseTest const& is_base)
 {
-    if (is_base(recursator)) {
-	cout << "\nBase case: " << str << endl;
-	print_matrix_row_cursor(recursator.get_value());
-    } else {
+    if (is_base(recursator))
+	cout << "\nBase case: " << str << endl << *recursator;
+    else {
 	recursive_print(recursator.north_west(), string("north west of ") + str, is_base);
 	recursive_print(recursator.south_west(), string("south west of ") + str, is_base);
 	recursive_print(recursator.north_east(), string("north east of ") + str, is_base);
@@ -68,8 +67,7 @@ void recursive_print_checked(Recursator const& recursator, string str, BaseCaseT
     if (recursator.is_empty())
 	return;
     if (is_base(recursator)) {
-	cout << "\nBase case: " << str << endl;
-	print_matrix_row_cursor(*recursator);
+	cout << "\nBase case: " << str << endl << *recursator;
     } else {
 	recursive_print_checked(recursator.north_west(), string("north west of ") + str, is_base);
 	recursive_print_checked(recursator.south_west(), string("south west of ") + str, is_base);
@@ -83,8 +81,7 @@ struct print_functor
     template <typename Matrix>
     void operator() (Matrix const& matrix) const
     {
-	print_matrix_row_cursor(matrix);
-	cout << endl;
+	cout << matrix << endl;
     }
 };
 
@@ -94,7 +91,7 @@ void test_sub_matrix(Matrix& matrix)
     using mtl::recursion::for_each; using mtl::recursion::max_dim_test; 
     using mtl::matrix::recursator; using mtl::transposed_view;
 
-    print_matrix_row_cursor(matrix);
+    cout << matrix << endl;    
     
     max_dim_test              is_base(2);
     recursator<Matrix>        rec(matrix);
@@ -106,7 +103,7 @@ void test_sub_matrix(Matrix& matrix)
 
     transposed_view<Matrix> trans_matrix(matrix);
 
-    print_matrix_row_cursor(trans_matrix); 
+    cout << trans_matrix; 
     recursator< transposed_view<Matrix> > trans_recursator(trans_matrix);
     // print_depth_first(trans_recursator, "");
     recursive_print_checked(trans_recursator, "", is_base);
