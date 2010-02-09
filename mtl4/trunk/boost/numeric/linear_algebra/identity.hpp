@@ -116,6 +116,19 @@ struct identity_t< bitwise_or<Element>, Element >
     }
 };
 
+#if 0 // ambiguous specialization
+template <template <typename> class Operation, typename First, typename Second>
+struct identity_t< Operation<std::pair<First, Second> >, std::pair<First, Second> >
+{
+    typedef std::pair<First, Second> pt;
+
+    pt operator()(const Operation<pt>&, const pt& ref) const
+    {
+	return std::make_pair(identity(Operation<First>(), ref.first), identity(Operation<Second>(), ref.second));
+    }
+};
+#endif
+
 // Function is shorter than typetrait-like functor
 template <typename Operation, typename Element>
 inline Element identity(const Operation& op, const Element& v)
@@ -123,6 +136,14 @@ inline Element identity(const Operation& op, const Element& v)
     return identity_t<Operation, Element>() (op, v);
 }
 
+#if 1
+// I shouldn't do this (but as functor I'd need too many specializations)
+template <template <typename> class Operation, typename First, typename Second>
+inline std::pair<First, Second> identity(const Operation<std::pair<First, Second> >& op, const std::pair<First, Second>& v)
+{
+    return std::pair<First, Second>(identity(Operation<First>(), v.first), identity(Operation<Second>(), v.second));
+}
+#endif
 
 // Short-cut for additive identity
 template <typename Element>

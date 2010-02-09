@@ -247,9 +247,6 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     if (a.num_cols() <= 10) 
 	std::cout << a << "\n" << b << "\n" << with_format(c, 4, 4) << "\n";
 
-    if (0) {
-	print_matrix_row_cursor(a); std::cout << "\n"; print_matrix_row_cursor(b); std::cout << "\n"; 
-	print_matrix_row_cursor(c); std::cout << "\n"; } 
 }
  
 
@@ -262,18 +259,18 @@ void single_test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     using mtl::recursion::bound_test_static;
 
     std::cout << "\n\n before matrix multiplication:\n";
-    std::cout << "A:\n"; print_matrix_row_cursor(a); 
-    std::cout << "B:\n"; print_matrix_row_cursor(b); 
-    std::cout << "C:\n"; print_matrix_row_cursor(c); std::cout << "\n"; 
+    std::cout << "A:\n" << a;
+    std::cout << "B:\n" << b;
+    std::cout << "C:\n" << c << '\n';
 
     typedef mtl::gen_tiling_dmat_dmat_mult_t<2, 2, plus_sum>  tiling_add_mult_t;
     tiling_add_mult_t tiling_add_mult;
     tiling_add_mult(a, b, c); 
     
     std::cout << "\n\n after matrix multiplication:\n";
-    std::cout << "A:\n"; print_matrix_row_cursor(a); 
-    std::cout << "B:\n"; print_matrix_row_cursor(b); 
-    std::cout << "C:\n"; print_matrix_row_cursor(c); std::cout << "\n"; 
+    std::cout << "A:\n" << a;
+    std::cout << "B:\n" << b;
+    std::cout << "C:\n" << c << '\n';
 }
 
 #ifdef MTL_HAS_BLAS
@@ -308,7 +305,7 @@ void test_blas()
     hessian_setup(b, 2.0);
     dgemm_t()(a, b, c);
 
-    print_matrix_row_cursor(c);
+    std::cout << c; 
     check_hessian_matrix_product(c, a.num_cols());
     
 }

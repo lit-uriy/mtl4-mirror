@@ -41,7 +41,10 @@ namespace mtl {
 	int inline print_size(const Matrix& A)
 	{
 	    print_size_max p;
-	    look_at_each_nonzero(A, p);
+	    // look_at_each_nonzero(A, p); // Doesn't work on all expressions yet
+	    for (size_t r = 0; r < num_rows(A); ++r)
+		for (size_t c = 0; c < num_cols(A); ++c) 
+		    p(A(r, c));
 	    return p.max;
 	}
     }
