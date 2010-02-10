@@ -11,11 +11,9 @@
 
 #include <iostream>
 #include <complex>
-#include <boost/test/minimal.hpp>
-#include <boost/numeric/mtl/mtl.hpp>
 
-#include <boost/numeric/mtl/cuda/device_new.hpp>
-#include <boost/numeric/mtl/cuda/vector_cuda.hpp>
+#include <boost/numeric/mtl/cuda/device_new.cu>
+#include <boost/numeric/mtl/cuda/vector_cuda.cu>
 
 template <typename T>
 void test(const char* name)
@@ -78,7 +76,7 @@ void test(const char* name)
 }
 
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     using namespace mtl;
 

@@ -22,9 +22,10 @@ void print(int arr[])
     std::cout << '\n';
 }
 
+template <typename T>
 struct scale_functor
 {
-    explicit scale_functor(int s, int* p) : s(s), p(p) {}
+    explicit scale_functor(T s, T* p) : s(s), p(p) {}
 
     __device__ void operator()()
     {
@@ -32,8 +33,8 @@ struct scale_functor
 	p[idx]*= s;
     }
     
-    int  s;
-    int* p;
+    T  s;
+    T* p;
 };
 
 template<typename NullaryFunction>
@@ -62,7 +63,7 @@ int main(int argc, char* argv[])
     dim3 dimGrid(1), dimBlock(5); 
     dings_bums<<<dimGrid, dimBlock>>>(dptr);
 
-    scale_functor sc(3, dptr);
+    scale_functor<int> sc(3, dptr);
     launch_function<<<dimGrid, dimBlock>>>(sc);
 
     cudaMemcpy(arr, dptr, sizeof(arr), cudaMemcpyDeviceToHost);

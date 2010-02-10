@@ -18,7 +18,7 @@ namespace mtl { namespace cuda {
 template <typename Scalar>
 struct vec_rscale_asgn
 {
-    explicit vec_rscale_asgn(const Scalar& s, Scalar* vec) 
+    explicit vec_rscale_asgn(const Scalar& s= 0, Scalar* vec= 0) 
       : s(s), vec(vec) {}
 
     __device__ void operator()()
