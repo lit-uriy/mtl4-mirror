@@ -16,9 +16,12 @@
 
 
 #include <iostream>
-#include <assert.h>
+#include <cassert>
+
+#include <boost/numeric/mtl/cuda/config.hpp>
+#include <boost/numeric/mtl/cuda/get_device_value.cu>
 #include <boost/numeric/mtl/cuda/device_vector_new.cu>
-//#include <boost/numeric/mtl/cuda/mult_vector_kernel.cu>
+#include <boost/numeric/mtl/cuda/vector_kernel.cu>
 
 namespace mtl { namespace cuda {
 
@@ -29,9 +32,8 @@ class vector
     typedef vector<T>                self;
   public:
     typedef T                        value_type;
-    //static const int dim;
-    /// Constructor from type T
- 
+
+    /// Constructor from type T 
     vector(int n=1, const T& value= T(), bool on_host=true ) 
       : dim(n), start(new T[n]), dptr(device_vector_new<T>(n)), on_host(on_host) 
     { *this= value; } 
@@ -39,22 +41,6 @@ class vector
     ~vector() {
 	 delete [] start; 
 	 cudaFree(dptr);
-    }
-
-    T& operator[](int index) {
-	assert(index >= 0 && index < dim);
-	to_host();
-	return start[index];
-    }
-
-    const T& operator[](int i) const {
-        assert(i >= 0 && i < dim);
-	if (!on_host) {
-	    for (int j= 0; j < dim; j++) 
-		start[j]= 77;
-	    std::cout << "const access mit copy: start[i] = " << start[i]<< '\n';
-	    cudaMemcpy(const_cast<self*>(this)->start + i, dptr + i, sizeof(T), cudaMemcpyDeviceToHost); }
-        return start[i];
     }
 
 
@@ -110,23 +96,36 @@ class vector
 	return *this;
     }
 
-    // template <typename T>
-    self& operator*=(const value_type src)
+    template <typename U>
+    self& operator*=(const U& src)
     {
-        std::cout<< "x*=wert zuweisung\n";
-   	for (int i= 0; i < dim; i++) {
-       		 start[i]*= src;
-       	}
-       	cudaMemcpy(dptr, start, sizeof(T)*dim, cudaMemcpyHostToDevice);
-       	on_host= false;
-	dim3 dimGrid(1);
-	dim3 dimBlock(dim);
-        //mult_vector_kernel<<< (dimGrid, dimBlock)>>>(dptr, src); 
- 	cudaMemcpy(start, dptr, sizeof(T)*dim, cudaMemcpyDeviceToHost);
+        std::cout<< "x*= wert zuweisung\n";
+	if (on_host && dim < host_limit) {
+	    std::cout<< "on host\n";
+	    for (int i= 0; i < dim; i++) 
+		start[i]*= src;
+	} else {
+	    std::cout<< "on device\n";
+	    to_device(); // if not yet there
+	    dim3 dimGrid(1), dimBlock(dim); 
+	    vec_rscale_asgn<value_type> sc(src, dptr);
+	    launch_function<<<dimGrid, dimBlock>>>(sc);
+	}
         return *this;
     }
- //    void test (value_type f) {std::cout << "tmp=" << f << "\n"; }
- 
+
+    T& operator[](int index) {
+	assert(index >= 0 && index < dim);
+	to_host();
+	return start[index];
+    }
+
+    T operator[](int i) const 
+    {
+        assert(i >= 0 && i < dim);
+	return on_host ? start[i] : get_device_value(dptr + i);
+    }
+
     bool valid_host() const { return on_host; }
     bool valid_device() const { return !on_host; }
     int  size() const { return dim; }
