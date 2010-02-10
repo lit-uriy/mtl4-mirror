@@ -30,7 +30,7 @@ struct vec_rscale_asgn
     Scalar s;
     Scalar* vec;
 };
-
+ 
 
 template<typename NullaryFunction>
 __global__
