@@ -21,7 +21,7 @@ struct vec_rscale_asgn
     explicit vec_rscale_asgn(const Scalar& s, Scalar* vec) 
       : s(s), vec(vec) {}
 
-    __host__ __device__ void operator()()
+    __device__ void operator()()
     {
 	int idx = blockIdx.x*blockDim.x + threadIdx.x;
 	vec[idx]*= s;
