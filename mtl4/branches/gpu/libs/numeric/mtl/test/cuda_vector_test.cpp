@@ -20,18 +20,21 @@
 template <typename T>
 void test(const char* name)
 {
+    typedef mtl::cuda::vector<T>   vt;
+
     std::cout << name << "Vector Test\n"; 
-    mtl::cuda::vector<T>  x(3,33,1), y(3,10,1);//, z(3,0), a(3,0);
-    x.init(0);
-    y.init(0);
+    mtl::cuda::vector<T>  x(3, 33), y(3, 10, false);//, z(3,0), a(3,0);
+    std::cout << "Vector constructed.\n" << "x=" << x << "\n";
+    std::cout << "Vector constructed.\n" << "y=" << y << "\n";
+
     x.to_host();
     x.to_device();
-    x= 4;
-    std::cout << "Vector constructed.\n";
-    std::cout<< "x=" << x << "\n";
-    x[1]=1999;
- std::cout<< "x=" << x << "\n";
 
+    x= 4.0;
+    x.to_device();
+    std::cout << "Vector assigned.\n" << "x=" << x << "\n";
+
+    std::cout << "const x[1] == " << x[1] << '\n';
 
     x.to_device();
     std::cout<< "x=" << x << "\n";
@@ -42,6 +45,7 @@ void test(const char* name)
     y= x;           // Copy on device
 
     std::cout<< "y=" << y << "\n";
+    x.to_device();
     x*= 2;
     std::cout<< "x=" << x << "\n";
 #if 0 
