@@ -19,7 +19,7 @@ namespace mtl { namespace cuda {
 
 
 template <typename T>
-T* device_vector_new(const int n)
+T* device_vector_new(int n)
 {
     T* pointer;
     cudaMalloc(reinterpret_cast<void **>(&pointer), sizeof(T)*n);
@@ -27,7 +27,7 @@ T* device_vector_new(const int n)
 }
 
 template <typename T>
-T* device_vector_new(const T& value, const int n)
+T* device_vector_new(const T& value, int n)
 {
     T* pointer= device_vector_new<T>(n);
 
