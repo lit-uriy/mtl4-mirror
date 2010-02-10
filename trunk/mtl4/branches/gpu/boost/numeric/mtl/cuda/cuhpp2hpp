@@ -95,11 +95,10 @@ while 1:
 pos= start_gen
 while 1:
   end_gen= find_first_line(cuhpp_lines[pos:], "# ") 
+  hpp.writelines(cuhpp_lines[pos:pos+end_gen])    
   if cuhpp_lines[pos+end_gen].count('"' + cu_name + '"'):
-    hpp.writelines(cuhpp_lines[pos:pos+end_gen])    
     pos+= end_gen+1
   else:
-    end_gen+= pos
     break
 
 hpp.writelines(["\n#endif // " + guard_name + "\n\n"])
