@@ -32,23 +32,29 @@ class vector
     //static const int dim;
     /// Constructor from type T
  
-   vector(int n=1, const T& value= T(), bool on_host=true ) 
-  	: dim(n), start(new T[n]), dptr(device_vector_new(value, n)), on_host(on_host) {} 
-//  : hvalue(value), dptr(on_host ? device_new<T>()[dim] : device_new(value)), dim(n) , on_host(on_host) {}
+    vector(int n=1, const T& value= T(), bool on_host=true ) 
+      : dim(n), start(new T[n]), dptr(device_vector_new<T>(n)), on_host(on_host) 
+    { *this= value; } 
 
     ~vector() {
 	 delete [] start; 
 	 cudaFree(dptr);
-   }
+    }
 
     T& operator[](int index) {
 	assert(index >= 0 && index < dim);
+	to_host();
 	return start[index];
     }
 
-    const T& operator[](int index) const {
-        assert(index >= 0 && index < dim);
-        return start[index];
+    const T& operator[](int i) const {
+        assert(i >= 0 && i < dim);
+	if (!on_host) {
+	    for (int j= 0; j < dim; j++) 
+		start[j]= 77;
+	    std::cout << "const access mit copy: start[i] = " << start[i]<< '\n';
+	    cudaMemcpy(const_cast<self*>(this)->start + i, dptr + i, sizeof(T), cudaMemcpyDeviceToHost); }
+        return start[i];
     }
 
 
@@ -100,7 +106,7 @@ class vector
 	std::cout<< "x=wert zuweisung\n";
         for (int i= 0; i < dim; i++) 
             start[i]= src;
-	to_device();
+	if (!on_host) { on_host= true; to_device(); }
 	return *this;
     }
 
@@ -145,20 +151,9 @@ class vector
 	    cudaMemcpy(dptr, start, sizeof(T)*dim, cudaMemcpyHostToDevice);
 	    on_host= false;
 	}
+	for (int i= 0; i < dim; i++) 
+            start[i]= 77;
     }
-
-//     T value() { 
-// 	if (!valid_host())
-// 	{
-// 		cudaMemcpy(start, dptr, sizeof(T)*dim, cudaMemcpyDeviceToHost);
-// 	}
-// 	return *start;
-//     }
-
-//     T const& value() const { const_cast<self*>(this)->to_host(); return start; }
-
-//     operator T&() { return value(); }
-//     operator T const&() const { return value(); }
     
     friend std::ostream& operator<<(std::ostream& os, self& x)
     {
@@ -166,28 +161,10 @@ class vector
 	os << "{" << x.size() << (x.valid_host() ? ",host}(" : ",device}(");
 	for (int i= 0; i < x.size(); i++)
 	    os << x.start[i] << (i < x.dim - 1 ? ", " : ")");
-
-// 	if (x.valid_host()){
-// 	    os << "{" << x.size() << ",host}(";
-// 	    for (int i= 0; i < x.size()-1; i++){
-// 		os << " " << x[i] << ", ";
-// 	    }
-// 	    os << x[x.size()-1];
-// 	    os << ")\n";
-//         } else { 
-// 	    cudaMemcpy(x.start, x.dptr, sizeof(T)*x.dim, cudaMemcpyDeviceToHost);
-// 	    os << "{" << x.size() << ",device}(";
-//             for (int i= 0; i < x.size()-1; i++){
-//                 os << " " << x[i] << ", ";
-//             }
-//             os << x[x.size()-1];
-//             os << ")\n";
-
-// 	}
 	return os;
     }
 
-  protected:
+  
     int  dim;
     T*   start; // Value on host //TODO    malloc sizeof(T)*dim
     T*   dptr;   // Value on device (allocated as pointer whose content is referred)
