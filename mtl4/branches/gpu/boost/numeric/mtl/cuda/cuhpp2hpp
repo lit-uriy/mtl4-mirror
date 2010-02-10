@@ -96,13 +96,11 @@ pos= start_gen
 while 1:
   end_gen= find_first_line(cuhpp_lines[pos:], "# ") 
   if cuhpp_lines[pos+end_gen].count('"' + cu_name + '"'):
-    # print "In Zeile ", pos+end_gen, "steht: ", cuhpp_lines[pos+end_gen]
+    hpp.writelines(cuhpp_lines[pos:pos+end_gen])    
     pos+= end_gen+1
   else:
-    # print "Zeile ", pos+end_gen, "ist das Ende unserer Suche: ", cuhpp_lines[pos+end_gen]
     end_gen+= pos
     break
 
-hpp.writelines(cuhpp_lines[start_gen:end_gen])
 hpp.writelines(["\n#endif // " + guard_name + "\n\n"])
 
