@@ -18,34 +18,49 @@
 #include <boost/numeric/mtl/cuda/vector_cuda.hpp>
 
 template <typename T>
-void inline print(char n, const T& x)
-{
-    std::cout << n << " is " << x << "\n";
-}
-
-template <typename T>
 void test(const char* name)
 {
-    std::cout << name << "Vector Test\n";
-    
-    mtl::cuda::vector<T>  x(2), y(2);
-    std::cout << "Vector constructed.\n";
-
-    x= 4;
-    std::cout << "whole vector assigned on host.\n";
-    print('x', x);
+    std::cout << name << "Vector Test\n"; 
+    mtl::cuda::vector<T>  x(3,33,1), y(3,10,1);//, z(3,0), a(3,0);
+    x.init(0);
+    y.init(0);
+    x.to_host();
     x.to_device();
-    x= 5;
-    std::cout << "whole vector assigned on devise.\n";
+    x= 4;
+    std::cout << "Vector constructed.\n";
+    std::cout<< "x=" << x << "\n";
+    x[1]=1999;
+ std::cout<< "x=" << x << "\n";
 
+
+    x.to_device();
+    std::cout<< "x=" << x << "\n";
+   
+    std::cout << "whole vector assigned on device.\n"; 
+
+    std::cout<< "vorher y=" << y << "\n";
     y= x;           // Copy on device
-    std::cout << "Vector copyed on device.\n";
-    print('y', y);
+
+    std::cout<< "y=" << y << "\n";
+    x*= 2;
+    std::cout<< "x=" << x << "\n";
+#if 0 
+   x.init(23);
+    x.to_device();
+    y= x;
+    std::cout<< "y=" << y << "\n";
+    x.init(12);
+    x.to_host();   
+    std::cout<< "z=" << z << "\n";
+    z= x;
+    std::cout<< "z=" << z << "\n";  
+
+
     if (y.value() != T(4))
 	throw "Error copying scalar on device.";
     print('x', x);
 
-#if 0
+
     x*= 2;   // Computing on device
     print('x', x);
     if (!x.valid_device())
@@ -64,8 +79,9 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
 
     test<int>("int");
-    test<short>("short");
 #if 0
+    test<short>("short");
+
     test<char>("char");
     test<float>("float");
     test<double>("double");
