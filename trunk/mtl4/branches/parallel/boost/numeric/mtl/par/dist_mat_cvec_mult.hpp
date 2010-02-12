@@ -225,13 +225,10 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 template <typename Assign>
 struct mat_cvec_mult_functor
 {
-    // Avoid repeated zeroing of w (= -> +=)
-    typedef typename mtl::assign::repeated_assign<Assign>::type assign_mode;
-
     template <typename Matrix, typename VectorIn, typename VectorOut>
     void operator()(const Matrix& A, const VectorIn& v, VectorOut& w) const
     {
-	mat_cvec_mult(A, v, w, assign_mode());
+	mat_cvec_mult(A, v, w, Assign());
     }
 };
 
