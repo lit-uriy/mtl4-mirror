@@ -248,8 +248,8 @@ struct remote_mat_cvec_mult_functor
 };
 
 
-#if 0 // Explicit communication scheme per call
-template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign
+// Explicit communication scheme per call
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign,
 	  typename Blocking, typename Coll, typename Buffering>
 void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as, Blocking, Coll, Buffering)
 {
@@ -258,30 +258,17 @@ void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w,
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorIn>::value));
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorOut>::value));
 
-    dist_mat_cvec_handle h(dist_mat_cvec_start(A, v));
-
-    mat_cvec_mult(local(A), local(v), local(w), as, Blocking, Coll, Buffering);
-
-    dist_mat_cvec_wait(A, v, w, remote_mat_cvec_mult_functor<Assign>(), h, Blocking, Coll, Buffering);
+    dist_mat_cvec_handle h(dist_mat_cvec_start(A, v, Blocking(), Coll(), Buffering()));
+    mat_cvec_mult(local(A), local(v), local(w), as);
+    dist_mat_cvec_wait(A, v, w, remote_mat_cvec_mult_functor<Assign>(), h, Blocking(), Coll(), Buffering());
 }
-#endif 
+
 
 // Use Communication scheme from whole build
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as)
 {
-    // All three arguments must be distributed
-    BOOST_STATIC_ASSERT((mtl::traits::is_distributed<Matrix>::value));
-    BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorIn>::value));
-    BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorOut>::value));
-
-    dist_mat_cvec_handle h(dist_mat_cvec_start(A, v));
-    mat_cvec_mult(local(A), local(v), local(w), as);
-    dist_mat_cvec_wait(A, v, w, remote_mat_cvec_mult_functor<Assign>(), h);
-
-#if 0
-    dist_mat_cvec_mult(A, v, w, remote_mat_cvec_mult_functor<Assign>(), par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
-#endif
+    dist_mat_cvec_mult(A, v, w, as, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
 }
 
 // Use Communication scheme from whole build
