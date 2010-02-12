@@ -11,9 +11,8 @@
 
 
 #include <iostream>
-//#include <boost/test/minimal.hpp>
 
-#if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI) // && defined(MTL_HAS_TOPOMAP)
+#if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI) && defined(MTL_HAS_TOPOMAP)
 
 #define MTL_HAS_STD_OUTPUT_OPERATOR // to print std::vector
 #include <boost/numeric/mtl/operation/std_output_operator.hpp>
@@ -130,15 +129,16 @@ int main(int argc, char* argv[])
     // It could have been so easy if we wouldn't compare the two mappings ;-) 
     // matrix_type D(C, parmetis_migration(C));
 
+    std::cout << "\n**** no errors detected\n";    
     return 0;
 }
 
  
 #else 
 
-int test_main(int argc, char* argv[]) 
+int main(int argc, char* argv[]) 
 {
-    std::cout << "Test requires the definition of MTL_HAS_TOPOMAP and MTL_HAS_PARMETIS(and of course"
+    std::cout << "Test requires the definition of MTL_HAS_TOPOMAP, MTL_HAS_MPI and MTL_HAS_PARMETIS (and of course"
 	      << " the presence of Topology Mapping and ParMetis).\n";
     return 0;
 }

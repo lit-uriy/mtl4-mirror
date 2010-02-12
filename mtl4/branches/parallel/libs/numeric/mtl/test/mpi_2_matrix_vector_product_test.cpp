@@ -13,7 +13,6 @@
 #include <boost/mpi.hpp>
 #include <iostream>
 #include <boost/serialization/string.hpp>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 namespace mpi = boost::mpi;
@@ -24,7 +23,7 @@ template <typename Matrix, typename VectorIn, typename VectorOut>
 void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
 {
     mpi::communicator comm(communicator(A));
-#if 0
+
     // A= 0.0; // for dense matrices
     {
 	mtl::matrix::inserter<Matrix> ins(A);
@@ -51,35 +50,36 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
     mtl::par::single_ostream sout;
     sout << "Matrix is:\n" << A; sout.flush();
     sout << "\nv is: " << v << "\n";
-#endif
+
     w= A * v;
     //mult(A, v, w);
 
-#if 0
+
     if (!comm.rank()) std::cout << "\nw= A * v is: ";
     std::cout << w;
     if (local(w)[1] != double(18 - 2 * comm.rank())) throw "wrong value.";
-#endif
+
 }
 
 
-int test_main(int argc, char* argv[]) 
+int main(int argc, char* argv[]) 
 {
     using namespace mtl;
 
     mpi::environment env(argc, argv);
     mpi::communicator world;
-#if 0
+
     if (world.size() != 2) {
 	std::cerr << "Example works only for 2 processors!\n";
 	env.abort(87);
     }
-#endif
+
     matrix::distributed<matrix::compressed2D<double> > A(7, 7);
     vector::distributed<dense_vector<double> >         v(7), w(7);
 
     test(A, v, w, "compressed2D<double> * dense_vector<double>");
-    
+    std::cout << "\n**** no errors detected\n";
+
     return 0;
 }
 
