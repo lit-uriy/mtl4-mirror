@@ -194,6 +194,7 @@ struct runtime_error : public std::runtime_error
 {
     /// Error can be specified more precisely in constructor if desired
     explicit runtime_error(const char *s= "Run-time error") : std::runtime_error(s) {}
+    virtual ~runtime_error() throw() {}
 };
 
 /// Exception for logic errors that doesn't fit into specific categories

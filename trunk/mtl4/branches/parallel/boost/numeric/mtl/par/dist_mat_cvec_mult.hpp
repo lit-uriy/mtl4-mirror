@@ -17,8 +17,10 @@
 #include <boost/static_assert.hpp>
 #include <boost/mpi/status.hpp>
 #include <boost/mpi/communicator.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/par/exception.hpp>
 #include <boost/numeric/mtl/par/comm_scheme.hpp>
 #include <boost/numeric/mtl/par/mpi_log.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
@@ -149,10 +151,6 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
     typedef typename Collection<Matrix>::size_type size_type;
     typedef typename Matrix::recv_structure        recv_structure;
 
-    // std::pair<boost::mpi::status,std::vector<boost::mpi::request>::iterator /* TODO: how do I get a generic iterator here, not bound to a vector */> res;
-    // Do you mean this with generic iterator? 
-    // htor: nope, this is still a vector (what if I want to replace the vector with a list? I have to change this here -> not generic
-    // pg: how about this (req_type redefined in dist_mat_cvec_handle)
     std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res;
     
     while(h.reqs.size()) {
@@ -175,8 +173,7 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 	    const recv_structure s = (*A.recv_info.find(p)).second;
 
 	    mtl::par::mpi_log << "[nonblocking] received data from rank " << p << " of size " << s.size << '\n';
-	    op(const_cast<Matrix&>(A).remote_matrices[p], // Scheiss std::map!!!
-	       recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
+	    op(const_cast<Matrix&>(A).remote_matrices[p] /* Scheiss std::map */, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
 	}
     }
 
@@ -208,11 +205,10 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
-	int p= r_it->first;
-	st= communicator(v).recv(p, 999, &recv_buffer(v)[s.offset], s.size); // pointer and size
-	
-	op(const_cast<Matrix&>(A).remote_matrices[p], // Scheiss std::map!!!
-	   recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
+	int                     p= r_it->first;
+	boost::mpi::status st= communicator(v).recv(p, 999, &recv_buffer(v)[s.offset], s.size); // pointer and size
+	MTL_THROW_IF(st.error() != MPI_SUCCESS, mpi_error(st.error()));
+	op(const_cast<Matrix&>(A).remote_matrices[p] /* Scheiss std::map */, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
     }
 
     return st; // return status of last recv (is there something better?)
