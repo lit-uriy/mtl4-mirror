@@ -46,31 +46,37 @@ namespace mtl { namespace matrix {
        The steps of the two kinds of operations are reversed in order and direction.
     */
 
-struct dist_mat_cvec_mult_handle 
+struct dist_mat_cvec_handle 
 {
     typedef std::vector<boost::mpi::request> req_type;
     req_type                                 reqs; // send and receive requests
 }; 
 
 
-template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-dist_mat_cvec_mult_handle inline 
-dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, 
+template <typename Matrix, typename VectorIn>
+dist_mat_cvec_handle inline 
+dist_mat_cvec_start(const Matrix& A, const VectorIn& v, 
 			 tag::universe, tag::universe, tag::universe)
 { 
     MTL_THROW(logic_error("This communication form is not implemented yet"));
-    return dist_mat_cvec_mult_handle();
+    return dist_mat_cvec_handle();
 }
 
-template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-dist_mat_cvec_mult_handle inline 
-dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, 
-			 tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
+
+
+
+
+
+
+
+template <typename Matrix, typename VectorIn>
+dist_mat_cvec_handle inline 
+dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
     mtl::par::mpi_log << "[nonblocking] initialization" << '\n';
     typedef typename Matrix::send_structure        send_structure;
     typedef typename Matrix::recv_structure        recv_structure;
-    struct dist_mat_cvec_mult_handle handle;
+    struct dist_mat_cvec_handle handle;
 
     linear_buffer_fill(A, v);
     typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
@@ -92,25 +98,24 @@ dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
     return handle;
 }
 
-template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-dist_mat_cvec_mult_handle inline 
-dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, 
-			 tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
+template <typename Matrix, typename VectorIn>
+dist_mat_cvec_handle inline 
+dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
-    return dist_mat_cvec_mult_handle();
+    return dist_mat_cvec_handle();
 }
 
 // Other implementations ....
 
-template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-dist_mat_cvec_mult_handle inline dist_mat_cvec_mult_start(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as)
+template <typename Matrix, typename VectorIn>
+dist_mat_cvec_handle inline dist_mat_cvec_start(const Matrix& A, const VectorIn& v)
 {
-    return dist_mat_cvec_mult_start(A, v, w, as, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
+    return dist_mat_cvec_start(A, v, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
 }
 
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 boost::mpi::status inline 
-dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_mult_handle& h,
+dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_handle& h,
 			tag::universe, tag::universe, tag::universe)
 { 
     MTL_THROW(logic_error("This communication form is not implemented yet"));
@@ -148,7 +153,7 @@ void inline linear_buffer_fill(const Matrix& A, Vector& v)
 
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 boost::mpi::status inline 
-dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_mult_handle& h,
+dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_handle& h,
 			tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
     typedef typename Collection<Matrix>::size_type size_type;
@@ -159,8 +164,8 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
     // std::pair<boost::mpi::status,std::vector<boost::mpi::request>::iterator /* TODO: how do I get a generic iterator here, not bound to a vector */> res;
     // Do you mean this with generic iterator? 
     // htor: nope, this is still a vector (what if I want to replace the vector with a list? I have to change this here -> not generic
-    // pg: how about this (req_type redefined in dist_mat_cvec_mult_handle)
-    std::pair<boost::mpi::status, dist_mat_cvec_mult_handle::req_type::iterator> res;
+    // pg: how about this (req_type redefined in dist_mat_cvec_handle)
+    std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res;
     
     while(h.reqs.size()) {
 	res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
@@ -197,7 +202,7 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
 	
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 boost::mpi::status inline 
-dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_mult_handle& h,
+dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_handle& h,
 			tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
     typedef typename Collection<Matrix>::size_type size_type;
@@ -229,7 +234,7 @@ dist_mat_cvec_mult_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign
 
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 boost::mpi::status inline 
-dist_mat_cvec_mult_wait(const Matrix& A, VectorIn& v, VectorOut& w, Assign as, dist_mat_cvec_mult_handle& h)
+dist_mat_cvec_mult_wait(const Matrix& A, VectorIn& v, VectorOut& w, Assign as, dist_mat_cvec_handle& h)
 {
     return dist_mat_cvec_mult_wait(A, v, w, as, h, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
 }
@@ -244,7 +249,7 @@ void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w,
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorIn>::value));
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorOut>::value));
 
-    dist_mat_cvec_mult_handle h(dist_mat_cvec_mult_start(A, v, w, as));
+    dist_mat_cvec_handle h(dist_mat_cvec_start(A, v));
 
     mat_cvec_mult(local(A), local(v), local(w), as, Blocking, Coll, Buffering);
 
@@ -261,7 +266,7 @@ void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w,
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorIn>::value));
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorOut>::value));
 
-    dist_mat_cvec_mult_handle h(dist_mat_cvec_mult_start(A, v, w, as));
+    dist_mat_cvec_handle h(dist_mat_cvec_start(A, v));
     mat_cvec_mult(local(A), local(v), local(w), as);
     dist_mat_cvec_mult_wait(A, v, w, as, h);
 
