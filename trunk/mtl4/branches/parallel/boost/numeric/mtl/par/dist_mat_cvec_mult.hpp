@@ -223,7 +223,7 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 
 
 template <typename Assign>
-struct remote_mat_cvec_mult_functor
+struct mat_cvec_mult_functor
 {
     // Avoid repeated zeroing of w (= -> +=)
     typedef typename mtl::assign::repeated_assign<Assign>::type assign_mode;
@@ -237,9 +237,10 @@ struct remote_mat_cvec_mult_functor
 
 
 // Explicit communication scheme per call
-template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign,
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Local, typename Remote,
 	  typename Blocking, typename Coll, typename Buffering>
-void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as, Blocking, Coll, Buffering)
+void inline dist_mat_cvec_op(const Matrix& A, const VectorIn& v, VectorOut& w, const Local& local_op, const Remote& remote_op,
+			     Blocking, Coll, Buffering)
 {
     // All three arguments must be distributed
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<Matrix>::value));
@@ -247,8 +248,8 @@ void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w,
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorOut>::value));
 
     dist_mat_cvec_handle h(dist_mat_cvec_start(A, v, Blocking(), Coll(), Buffering()));
-    mat_cvec_mult(local(A), local(v), local(w), as);
-    dist_mat_cvec_wait(A, v, w, remote_mat_cvec_mult_functor<Assign>(), h, Blocking(), Coll(), Buffering());
+    local_op(local(A), local(v), local(w));
+    dist_mat_cvec_wait(A, v, w, remote_op, h, Blocking(), Coll(), Buffering());
 }
 
 
@@ -256,7 +257,14 @@ void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w,
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as)
 {
-    dist_mat_cvec_mult(A, v, w, as, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
+    // Avoid repeated zeroing of w with repeated matrix vector product (= -> +=)
+    typedef typename mtl::assign::repeated_assign<Assign>::type remote_assign;
+
+    typedef mat_cvec_mult_functor<Assign>        local_functor;
+    typedef mat_cvec_mult_functor<remote_assign> remote_functor;
+
+    dist_mat_cvec_op(A, v, w, local_functor(), remote_functor(),
+		     par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
 }
 
 // Use Communication scheme from whole build
