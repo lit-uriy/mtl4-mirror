@@ -11,9 +11,6 @@
 
 
 #include <iostream>
-//#include <boost/test/minimal.hpp>
-
-
 
 #if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
 
@@ -90,30 +87,23 @@ int main(int argc, char* argv[])
     using namespace mtl;
 
     mpi::environment env(argc, argv);
-    mpi::communicator world;
+
     
-    /*if (world.size() != 3) {
-	std::cerr << "Example works only for 3 processors!\n";
-	env.abort(87);
-    }*/
+#if 0
+    std::string    program_dir= mtl::io::directory_name(argv[0]), fname(argc > 1 ? argv[1] : "matrix_market/mhd1280b.mtx");
+    matrix::distributed<matrix::compressed2D<double> >             C(mtl::io::matrix_market(mtl::io::join(program_dir, fname)));
+#endif     
 
-    //mtl::matrix::distributed<mtl::matrix::compressed2D<double> > A(7, 7), B(7, 7);
+    matrix::distributed<matrix::compressed2D<double> >  A(7, 7);
 
-
-    //test(A, "compressed2D<double>", 1);
-    //test(B, "compressed2D<double>", 2);
-
-//    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > C(mtl::io::matrix_market("matrix_market/mhd1280b.mtx"));
-    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > C(mtl::io::matrix_market("matrix.mtx"));
-
-    mtl::matrix::distributed<mtl::matrix::compressed2D<double> > D(C, parmetis_migration(C));
+    test(A, "distributed<compressed>", 1); 
+    test(A, "distributed<compressed>", 2); 
 
     mtl::par::single_ostream sout;
-	  //sout << "C is:\n" << C;
 
+    std::cout << "\n**** no errors detected\n";
     return 0;
 }
-
  
 #else 
 

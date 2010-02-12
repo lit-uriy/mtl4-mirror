@@ -20,7 +20,7 @@ programs, mpi_programs = [], []
 for p in sources:
     if 'mpi_' == p[0:4]:
         if 'mpi_3_parmetis_matrix_migration_test.cpp' == p:
-	    mpi_programs.append(mpi_debug_env.Program([p, '../../../../../../Software/topomap/virt_graph_scal.o']))
+	    mpi_programs.append(mpi_debug_env.Program([p, '../../../../../../../../Software/topomap/virt_graph_scal.o']))
 	else:
  	    mpi_programs.append(mpi_debug_env.Program(p))
     else:

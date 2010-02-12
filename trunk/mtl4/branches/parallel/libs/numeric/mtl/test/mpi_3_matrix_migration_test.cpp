@@ -11,7 +11,7 @@
 
 
 #include <iostream>
-//#include <boost/test/minimal.hpp>
+
 
 #if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
 
@@ -115,7 +115,7 @@ void test(Matrix& A,  const char* name, int version)
 }
 
 
-int test_main(int argc, char* argv[]) 
+int main(int argc, char* argv[]) 
 {
     using namespace mtl;
 
@@ -132,6 +132,7 @@ int test_main(int argc, char* argv[])
     test(A, "compressed2D<double>", 1);
     test(B, "compressed2D<double>", 2);
 
+    std::cout << "\n**** no errors detected\n";
     return 0;
 }
 
