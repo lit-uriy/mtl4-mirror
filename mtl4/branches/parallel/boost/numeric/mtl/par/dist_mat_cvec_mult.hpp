@@ -101,12 +101,6 @@ dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_blocking, tag:
 
 // Other implementations ....
 
-template <typename Matrix, typename VectorIn>
-dist_mat_cvec_handle inline dist_mat_cvec_start(const Matrix& A, const VectorIn& v)
-{
-    return dist_mat_cvec_start(A, v, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
-}
-
 /// Enlarge send and receive buffers for linear operator application (or its transposed)
 template <typename Matrix, typename Vector>
 void inline enlarge_buffer(const Matrix& A, Vector& v)
@@ -224,12 +218,6 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
     return st; // return status of last recv (is there something better?)
 }
 
-template <typename Matrix, typename VectorIn, typename VectorOut, typename Functor>
-boost::mpi::status inline 
-dist_mat_cvec_wait(const Matrix& A, VectorIn& v, VectorOut& w, const Functor& op, dist_mat_cvec_handle& h)
-{
-    return dist_mat_cvec_wait(A, v, w, op, h, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
-}
 
 
 
