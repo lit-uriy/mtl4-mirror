@@ -12,6 +12,9 @@
 #ifndef MTL_PAR_EXCEPTION_INCLUDE
 #define MTL_PAR_EXCEPTION_INCLUDE
 
+#include <sstream>
+
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/par/mpi_helpers.hpp>
 #include <boost/lexical_cast.hpp>
@@ -23,19 +26,24 @@ namespace mtl { namespace par {
 struct mpi_error : public runtime_error
 {
     /// Error can be specified more precisely in constructor if desired
-    explicit mpi_error(const char *s= "MPI error", int error_code= 0) : runtime_error(s), error_code(error_code) {}
-    explicit mpi_error(int error_code) : runtime_error(message(error_code)), error_code(error_code) {}
+    explicit mpi_error(const char *s= "MPI error", int ec= 0) : runtime_error(s), ec(ec) {}
+    /// Error message according to code
+    explicit mpi_error(int ec) : m(message(ec)), runtime_error("MPI error"), ec(ec) {}
 
     ~mpi_error() throw() {}
+    /// Long error message
+    virtual const char* what() const throw() { return m.c_str(); }
+    /// MPI error code
+    int error_code() const { return ec; }
 
-    const char* message(int error_code)
+  private:
+    std::string message(int ec)
     {
-	m= "MPI error " + boost::lexical_cast<std::string>(error_code) + ": " + mpi_error_string(error_code);
-	return m.c_str();
+	return std::string("MPI error ") + boost::lexical_cast<std::string>(ec) + ": " + mpi_error_string(ec);
     }
 
     std::string m;
-    int error_code;
+    int ec;
 };
 
 

@@ -16,6 +16,8 @@
 
 #include <string>
 #include <boost/mpi/status.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/par/exception.hpp>
 
 namespace mtl { namespace par {
 
@@ -26,6 +28,18 @@ std::string inline mpi_error_string(int errorcode)
     int  len;
     MPI_Error_string(errorcode, arr, &len);
     return std::string(arr, len);
+}
+
+/// Check MPI error code and throw exception if last operation was not successful
+void inline check_mpi(int errorcode)
+{
+	MTL_THROW_IF(errorcode != MPI_SUCCESS, mpi_error(errorcode));    
+}
+
+/// Check MPI error code and throw exception if last operation was not successful
+void inline check_mpi(const boost::mpi::status& st)
+{
+    check_mpi(st.error());
 }
 
 
