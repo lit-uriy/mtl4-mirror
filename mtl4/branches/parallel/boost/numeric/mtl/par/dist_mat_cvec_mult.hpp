@@ -20,8 +20,8 @@
 #include <boost/lexical_cast.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
-#include <boost/numeric/mtl/par/exception.hpp>
 #include <boost/numeric/mtl/par/comm_scheme.hpp>
+#include <boost/numeric/mtl/par/mpi_helpers.hpp>
 #include <boost/numeric/mtl/par/mpi_log.hpp>
 #include <boost/numeric/mtl/par/distribution.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
@@ -153,35 +153,24 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 
     std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res;
     
-    while(h.reqs.size()) {
+    while(h.reqs.size()) { // see (1) at file end
 	res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
-      
+	mtl::par::check_mpi(res.first); // check success
 	int p= res.first.source();
-	if(p == communicator(v).rank()) { // TODO: this is dangerous (not guaranteed by MPI!!!) - talk about other options 
-	    // -> How about 2 sets of request and wait only for the receive requests one by one and do waitall on the sends at the (should be finished anyway)
-	    // htor: this impacts performance significantly ... not good, but I don't know a good alternative (maybe a hash map that translates requests to send or receive reqs.
-	    // pg: why a hash map? if the requests are stored in a random access iterator we can use a vector<bool> or bit_vector to define is_send_request 
-	    //     we then just ask if (is_send_request[distance(h.reqs.begin(), res.first)]) ... 
-	    //     this works also for a list but distance has linear complexity then
-	    // we have a send request
+	if(p == communicator(v).rank()) { 
 	    h.reqs.erase(res.second);
 	    mtl::par::mpi_log << "[nonblocking] finished sending my data" << '\n';
 	} else { 
 	    // we have a receive request 
 	    h.reqs.erase(res.second);
-
 	    const recv_structure s = (*A.recv_info.find(p)).second;
-
 	    mtl::par::mpi_log << "[nonblocking] received data from rank " << p << " of size " << s.size << '\n';
 	    op(const_cast<Matrix&>(A).remote_matrices[p] /* Scheiss std::map */, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
 	}
     }
 
     boost::mpi::status st;
-    return st; // return status of last recv (is there something better?) TODO: bogus, we should return an own status 
-    // sounds better but which status, BTW do we need to return at status at all?
-    // htor: actually ... I don't think that we need this, if we handle all errors with exceptions
-    // pg:   right, we check the status immediately and throw an exception --> I'll do the modifications
+    return st; 
 }
 
 	
@@ -198,7 +187,7 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
     typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
-	communicator(v).send(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices)); // pointer and size
+	mtl::par::check_mpi( communicator(v).send(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices)) ); 
     }
     boost::mpi::status st;
     mtl::par::mpi_log << "[blocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << '\n';
@@ -206,8 +195,11 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
 	int                     p= r_it->first;
-	boost::mpi::status st= communicator(v).recv(p, 999, &recv_buffer(v)[s.offset], s.size); // pointer and size
+	mtl::par::check_mpi( communicator(v).recv(p, 999, &recv_buffer(v)[s.offset], s.size) );
+#if 0
+	boost::mpi::status st= communicator(v).recv(p, 999, &recv_buffer(v)[s.offset], s.size); 
 	MTL_THROW_IF(st.error() != MPI_SUCCESS, mpi_error(st.error()));
+#endif
 	op(const_cast<Matrix&>(A).remote_matrices[p] /* Scheiss std::map */, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
     }
 
@@ -278,3 +270,14 @@ void inline trans_dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorO
 #endif // MTL_HAS_MPI
 
 #endif // MTL_MATRIX_DIST_MAT_CVEC_MULT_INCLUDE
+
+
+
+
+// (1): this is dangerous (not guaranteed by MPI!!!) - talk about other options 
+// -> How about 2 sets of request and wait only for the receive requests one by one and do waitall on the sends at the (should be finished anyway)
+// htor: this impacts performance significantly ... not good, but I don't know a good alternative (maybe a hash map that translates requests to send or receive reqs.
+// pg: why a hash map? if the requests are stored in a random access iterator we can use a vector<bool> or bit_vector to define is_send_request 
+//     we then just ask if (is_send_request[distance(h.reqs.begin(), res.first)]) ... 
+//     this works also for a list but distance has linear complexity then
+// we have a send request

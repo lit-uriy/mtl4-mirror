@@ -58,6 +58,9 @@ namespace mtl {
 
 	struct single_ostream;
 
+	struct mpi_error;
+	
+	std::string inline mpi_error_string(int errorcode);
     }
     
 
