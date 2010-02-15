@@ -144,7 +144,7 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 
 
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Functor>
-boost::mpi::status inline 
+void inline 
 dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Functor& op, dist_mat_cvec_handle& h,
 			tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
@@ -168,14 +168,11 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 	    op(const_cast<Matrix&>(A).remote_matrices[p] /* Scheiss std::map */, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
 	}
     }
-
-    boost::mpi::status st;
-    return st; 
 }
 
 	
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Functor>
-boost::mpi::status inline 
+void inline 
 dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Functor& op, dist_mat_cvec_handle& h,
 			tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
@@ -202,8 +199,6 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 #endif
 	op(const_cast<Matrix&>(A).remote_matrices[p] /* Scheiss std::map */, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
     }
-
-    return st; // return status of last recv (is there something better?)
 }
 
 
