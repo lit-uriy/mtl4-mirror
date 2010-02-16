@@ -44,8 +44,7 @@ class vector
     }
 
 
-    //template<typename T>
-    vector<T>(const vector<T> &that){   //that Konstruktor
+    vector(const self& that){   //that Konstruktor
 	dim= that.dim;
 	start= new T[dim];
 	on_host= that.on_host;
@@ -56,7 +55,6 @@ class vector
 	    cudaMemcpy(dptr, that.dptr, dim*sizeof(T), cudaMemcpyDeviceToDevice);
     }
 
-    //template<typename T>
     self& operator=(const self& that)
     {
 	std::cout<< "x= y zuweisung\n";
