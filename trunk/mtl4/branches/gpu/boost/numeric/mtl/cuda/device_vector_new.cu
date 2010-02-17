@@ -13,7 +13,7 @@
 #ifndef MTL_CUDA_DEVICE_VECTOR_NEW_INCLUDE
 #define MTL_CUDA_DEVICE_VECTOR_NEW_INCLUDE
 
-#include <stdio.h>
+#include <cstdio>
 
 namespace mtl { namespace cuda {
 

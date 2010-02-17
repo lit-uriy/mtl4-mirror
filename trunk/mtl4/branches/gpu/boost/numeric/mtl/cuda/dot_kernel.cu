@@ -12,6 +12,7 @@
 #ifndef MTL_CUDA_DOT_KERNEL_INCLUDE
 #define MTL_CUDA_DOT_KERNEL_INCLUDE
 
+#include <boost/numeric/mtl/cuda/cuda_dot_kernel.h>
 
 namespace mtl { namespace cuda {
 
@@ -108,7 +109,6 @@ __global__ void dot_kernel(T* out, T* v1, T* v2, unsigned n)
 	sdata[id]+= v1[nn + id] * v2[nn + id];
 
 }
-
 
 
 

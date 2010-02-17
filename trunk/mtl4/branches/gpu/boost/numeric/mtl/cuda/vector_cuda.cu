@@ -23,6 +23,10 @@
 #include <boost/numeric/mtl/cuda/device_vector_new.cu>
 #include <boost/numeric/mtl/cuda/vector_kernel.cu>
 
+//#include </usr/local/cuda/include/cuda_runtime_api.h>
+
+
+
 namespace mtl { namespace cuda {
 
 /// Class for replicating vectors on host and device
@@ -106,6 +110,7 @@ class vector
 	    std::cout<< "on device\n";
 	    to_device(); // if not yet there
 	    dim3 dimGrid(1), dimBlock(dim); 
+
 	    vec_rscale_asgn<value_type> sc(src, dptr);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
@@ -166,6 +171,7 @@ class vector
     T*   start; // Value on host //TODO    malloc sizeof(T)*dim
     T*   dptr;   // Value on device (allocated as pointer whose content is referred)
     bool on_host;
+    
 };
 
 }} // namespace mtl::cuda
