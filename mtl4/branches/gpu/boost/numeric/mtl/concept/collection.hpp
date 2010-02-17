@@ -12,7 +12,15 @@
 #ifndef MTL_COLLECTION_INCLUDE
 #define MTL_COLLECTION_INCLUDE
 
-#include <boost/type_traits.hpp>
+// #include <boost/type_traits/remove_const.hpp>
+
+namespace boost {
+  template <typename T>  struct remove_const  {    typedef T type;  };
+  template <typename T>  struct remove_const<const T>  {    typedef T type;  };
+}
+  
+
+
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <vector>
 
@@ -991,6 +999,18 @@ namespace mtl {
 	: public Collection<matrix::hermitian_view<Coll> >
     {
 	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
+    };
+#endif
+
+#ifdef __GXX_CONCEPTS__
+
+#else
+    template <typename Value>
+    struct Collection<mtl::cuda::vector<Value> >
+    {
+	typedef Value            value_type;
+	typedef const Value&     const_reference;
+	typedef int              size_type;
     };
 #endif
 

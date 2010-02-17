@@ -14,7 +14,7 @@
 #include <cmath>
 
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
-#include <boost/numeric/mtl/cuda/cuda_dot.hpp>
+#include <boost/numeric/mtl/cuda/dot.cu>
 
 
 template <typename T>
@@ -47,15 +47,17 @@ int main( int argc, char** argv)
 {
     const int size= 9;
 
-    mtl::cuda::vector_cuda<int>     i(size), j(size);
-    mtl::cuda::vector_cuda<float>   u(size), v(size), w(size);
-    mtl::cuda::vector_cuda<double>  x(size), y(size), z(size);
-    mtl::cuda::vector_cuda<std::complex<double> >  xc(size), yc(size), zc(size);
+    mtl::cuda::vector<int>     i(size), j(size);
+    mtl::cuda::vector<float>   u(size), v(size), w(size);
+    mtl::cuda::vector<double>  x(size), y(size), z(size);
+    mtl::cuda::vector<std::complex<double> >  xc(size), yc(size), zc(size);
 
-    test(i, j, "test int");
+    // test(i, j, "test int");
+
     test(u, v, "test float");
-    test(x, y, "test double");
-    test(xc, yc, "test complex<double>");
+    // test(x, y, "test double");
+    // test(xc, yc, "test complex<double>");
+
 
 //     mtl::cuda::vector_cuda<float, parameters<mtl::row_major> >   ur(size), vr(size), wr(size);
 //     test(ur, vr, "test float in row vector");

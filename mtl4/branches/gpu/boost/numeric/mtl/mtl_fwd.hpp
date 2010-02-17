@@ -300,6 +300,10 @@ namespace mtl {
 
     }
 
+    /// Namespace for CUDA
+    namespace cuda {
+	template <typename T> class vector;
+    }
 
     // Multiplication functors
     template <typename Assign, typename Backup> struct gen_cursor_dmat_dmat_mult_t;
