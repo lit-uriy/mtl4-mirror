@@ -25,13 +25,13 @@ typename mtl::Collection<Vector>::value_type dot(const Vector& v1, const Vector&
 {
     assert(size(v1) == size(v2));
     typedef typename mtl::Collection<Vector>::value_type value_type; 
-    // __device__ typename mtl::Collection<Vector>::value_type out;
+
+    v1.to_device(); v2.to_device();
 
     dim3 dim_grid(1), dim_block(size(v1));
     vector<value_type> out(dim_block.x, value_type(0), false);
 
-    dot_kernel<<< dim_grid, dim_block >>>(out.get_device_pointer(), v1.get_device_pointer(), v2.get_device_pointer(), size(v1));
-
+    dot_kernel<<< dim_grid, dim_block, dim_block.x * sizeof(value_type) >>>(out.get_device_pointer(), v1.get_device_pointer(), v2.get_device_pointer(), size(v1));
     return out.read(0);
 }
 
