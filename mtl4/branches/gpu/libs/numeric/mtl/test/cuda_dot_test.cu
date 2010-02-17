@@ -17,17 +17,6 @@
 #include <boost/numeric/mtl/cuda/dot.cu>
 
 
-template <typename T>
-inline T dot_cpu(T a, T b, int n)
-{
-  T tmp= 0;
-  for(int i= 0; i < n; i++) {
-    tmp+= a.start[i]*b.start[i];
-  }
-  return tmp;
-}
-
-
 template <typename VectorU>
 void test(VectorU& u, VectorU& v, const char* name)
 {
@@ -52,10 +41,9 @@ int main( int argc, char** argv)
     mtl::cuda::vector<double>  x(size), y(size), z(size);
     mtl::cuda::vector<std::complex<double> >  xc(size), yc(size), zc(size);
 
-    // test(i, j, "test int");
-
+    test(i, j, "test int");
     test(u, v, "test float");
-    // test(x, y, "test double");
+    test(x, y, "test double");
     // test(xc, yc, "test complex<double>");
 
 

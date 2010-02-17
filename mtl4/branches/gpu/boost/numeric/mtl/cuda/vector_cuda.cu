@@ -91,7 +91,7 @@ class vector
     template <typename U>
     self& operator=(const U& src)
     {	
-	std::cout<< "x=wert zuweisung\n";
+	//std::cout<< "x=wert zuweisung\n";
         for (int i= 0; i < dim; i++) 
             start[i]= src;
 	if (!on_host) { on_host= true; to_device(); }
@@ -101,13 +101,13 @@ class vector
     template <typename U>
     self& operator*=(const U& src)
     {
-        std::cout<< "x*= wert zuweisung\n";
+        //std::cout<< "x*= wert zuweisung\n";
 	if (on_host && dim < host_limit) {
-	    std::cout<< "on host\n";
+	    //std::cout<< "on host\n";
 	    for (int i= 0; i < dim; i++) 
 		start[i]*= src;
 	} else {
-	    std::cout<< "on device\n";
+	    //std::cout<< "on device\n";
 	    to_device(); // if not yet there
 	    dim3 dimGrid(1), dimBlock(dim); 
 
@@ -135,11 +135,11 @@ class vector
     bool valid_device() const { return !on_host; }
     friend int  size(const self& x) { return x.dim; }
 
-    void to_host()
+    void to_host() const
     {
 	if (!on_host) {
-	    cudaMemcpy(start, dptr, sizeof(T)*dim, cudaMemcpyDeviceToHost);
-	    on_host= true;
+	    cudaMemcpy(const_cast<self*>(this)->start, dptr, sizeof(T)*dim, cudaMemcpyDeviceToHost);
+	    const_cast<self*>(this)->on_host= true;
 	}
     }
 
@@ -149,14 +149,12 @@ class vector
 	    cudaMemcpy(const_cast<self*>(this)->start, dptr, sizeof(T)*dim, cudaMemcpyDeviceToHost);
     }
 
-    void to_device()
+    void to_device() const
     {
 	if (on_host) {
-	    cudaMemcpy(dptr, start, sizeof(T)*dim, cudaMemcpyHostToDevice);
-	    on_host= false;
+	    cudaMemcpy(const_cast<self*>(this)->dptr, start, sizeof(T)*dim, cudaMemcpyHostToDevice);
+	    const_cast<self*>(this)->on_host= false;
 	}
-	for (int i= 0; i < dim; i++) 
-            start[i]= 77;
     }
     
     T* get_device_pointer() { return dptr; }

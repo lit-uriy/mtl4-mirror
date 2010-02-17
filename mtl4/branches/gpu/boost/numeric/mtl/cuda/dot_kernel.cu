@@ -85,7 +85,7 @@ __device__ void reduce_kernel(T* out, T* in, unsigned int n)
 
 
 
-// out must have at least gridDim.x entries
+// out must have at least gridDim.x*blockDim.x entries
 template <typename T>
 __global__ void dot_kernel(T* out, const T* v1, const T* v2, int n)
 {
@@ -98,26 +98,24 @@ __global__ void dot_kernel(T* out, const T* v1, const T* v2, int n)
     
     T reg(0);
 
-    // Reduce to one value per thread
     for (int j= id; j < nn; j+= step)
 	reg+= v1[j] * v2[j];
 
     if (nn + id < n)
 	reg+= v1[nn + id] * v2[nn + id];
     
-    sdata[tid]= reg;
+    out[id]= reg;
     __syncthreads();
 
     if (tid == 0) {
 	for (int i= 1; i < blockDim.x; i++)
-	    sdata[0]+= sdata[i];
-	out[blockIdx.x]= sdata[0];
+	    out[id]+= out[id+i];
     }
     __syncthreads();
     
     if (id == 0)
 	for (int i= 1; i < gridDim.x; i++)
-	    out[0]+= out[i];
+	    out[0]+= out[i*blockDim.x];
 }
 
 
