@@ -12,7 +12,6 @@
 #ifndef MTL_CUDA_VECTOR_KERNEL_INCLUDE
 #define MTL_CUDA_VECTOR_KERNEL_INCLUDE
 
-
 namespace mtl { namespace cuda {
 
 template <typename Scalar>
@@ -23,13 +22,13 @@ struct vec_rscale_asgn
 
     __device__ void operator()(void)
     {
-        const int grid_size = blockDim.x * gridDim.x;
-	int i = blockIdx.x * blockDim.x + threadIdx.x;
+        const unsigned grid_size = blockDim.x * gridDim.x, id= blockIdx.x * blockDim.x + threadIdx.x,
+	               blocks= n / grid_size,  nn= blocks * grid_size;
 
-	while(i < n) {
+	for (int i = id; i < nn; i+= grid_size)
 	    vec[i]*= s;
-	    i+= grid_size;
-	}
+	if (nn + id < n)
+	    vec[nn + id]*= s;
     }
 
     Scalar s;
