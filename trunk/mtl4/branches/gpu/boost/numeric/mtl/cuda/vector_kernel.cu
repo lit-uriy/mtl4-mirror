@@ -15,10 +15,31 @@
 namespace mtl { namespace cuda {
 
 template <typename Scalar>
+struct vec_rscale_asgn_functor
+{
+    explicit vec_rscale_asgn_functor(const Scalar& s= 0, Scalar* vec= 0)
+      : s(s), vec(vec) {}
+
+    __device__ __host__ void operator()(int i)
+    {
+	vec[i]*= s;
+    }
+
+    __device__ __host__ void operator[](int i)
+    {
+	vec[i]*= s;
+    }
+
+    Scalar s;
+    Scalar* vec;
+};
+
+
+template <typename Scalar>
 struct vec_rscale_asgn
 {
     explicit vec_rscale_asgn(const Scalar& s= 0, Scalar* vec= 0, int n= 0)
-      : s(s), vec(vec), n(n) {}
+	: f(s, vec), n(n) {}
 
     __device__ void operator()(void)
     {
@@ -26,13 +47,12 @@ struct vec_rscale_asgn
 	               blocks= n / grid_size,  nn= blocks * grid_size;
 
 	for (int i = id; i < nn; i+= grid_size)
-	    vec[i]*= s;
+	    f[i];
 	if (nn + id < n)
-	    vec[nn + id]*= s;
+	    f[nn + id];
     }
 
-    Scalar s;
-    Scalar* vec;
+    vec_rscale_asgn_functor<Scalar> f;
     int     n;
 };
 

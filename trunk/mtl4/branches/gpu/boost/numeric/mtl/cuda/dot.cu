@@ -12,26 +12,30 @@
 #ifndef MTL_CUDA_DOT_INCLUDE
 #define MTL_CUDA_DOT_INCLUDE
 
-
-
-#include <boost/numeric/mtl/cuda/cuda_dot_kernel.h>
+#include <cassert>
+#include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/cuda/dot_kernel.cu>
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
 
 namespace mtl { namespace cuda {
 
-//entrance into dot_kernel  (like "main in .cu")
+
 template <typename Vector>
-typename mtl::Collection<Vector>::value_type dot(Vector v1, Vector v2)
+typename mtl::Collection<Vector>::value_type dot(const Vector& v1, const Vector& v2)
 {
-//    typedef typename mtl::Collection<Vector>::value_type value_type; 
-	dot(v1,v2),
+    assert(size(v1) == size(v2));
+    typedef typename mtl::Collection<Vector>::value_type value_type; 
+    // __device__ typename mtl::Collection<Vector>::value_type out;
 
-	std::cout<< "Hallo\n";
-       // dot_kernel<<< dimGrid, dimBlock >>>(out, v1.dptr, v2.dptr, v1.dim);
+    dim3 dim_grid(1), dim_block(size(v1));
+    vector<value_type> out(dim_block.x, value_type(0), false);
 
-	return 0;
+    dot_kernel<<< dim_grid, dim_block >>>(out.get_device_pointer(), v1.get_device_pointer(), v2.get_device_pointer(), size(v1));
+
+    return out.read(0);
 }
 
 
 }} // namespace mtl::cuda
 #endif // MTL_CUDA_DOT_INCLUDE
+

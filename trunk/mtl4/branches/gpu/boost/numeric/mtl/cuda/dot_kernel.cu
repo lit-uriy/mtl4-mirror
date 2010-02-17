@@ -12,8 +12,6 @@
 #ifndef MTL_CUDA_DOT_KERNEL_INCLUDE
 #define MTL_CUDA_DOT_KERNEL_INCLUDE
 
-#include <boost/numeric/mtl/cuda/cuda_dot_kernel.h>
-
 namespace mtl { namespace cuda {
 
 template <typename T, unsigned blocksize>
@@ -59,7 +57,7 @@ __global__ void reduce_kernel_kompliziert(T* out, T* in, unsigned int n)
 }
 
 template <typename T>
-__global__ void reduce_kernel(T* out, T* in, unsigned int n)
+__device__ void reduce_kernel(T* out, T* in, unsigned int n)
 {
     extern __shared__ T sdata[];
     unsigned int id= threadIdx.x,i= blockDim.x * gridDim.x + id;
@@ -83,31 +81,43 @@ __global__ void reduce_kernel(T* out, T* in, unsigned int n)
 
     //write result of block to global memory
     if (id == 0) out[blockIdx.x]= sdata[0];
-
 }
 
+
+
+// out must have at least gridDim.x entries
 template <typename T>
-__global__ void dot_kernel(T* out, T* v1, T* v2, unsigned n)
+__global__ void dot_kernel(T* out, const T* v1, const T* v2, int n)
 {
     extern __shared__ T sdata[];
 
     //all threads load one element to shared memory
-    unsigned int id= threadIdx.x,
-	         i = blockIdx.x * gridDim.x + id,
-	         step= blockIdx.x * gridDim.x;
+    const unsigned tid= threadIdx.x, id= blockIdx.x * gridDim.x + tid,
+                   step= blockDim.x * gridDim.x,
+                   blocks= n / step, nn= blocks * step;
     
-    sdata[id]= 0;
+    T reg(0);
 
-    //do multiplication parallel on gpu not on cpu
-    // divide into blocks of n/step
-
-    unsigned blocks= n / step, nn= blocks * step, rem= n - nn;
-    for (int j= id; j < nn; j+= steps)
-	sdata[id]+= v1[j] * v2[j];
+    // Reduce to one value per thread
+    for (int j= id; j < nn; j+= step)
+	reg+= v1[j] * v2[j];
 
     if (nn + id < n)
-	sdata[id]+= v1[nn + id] * v2[nn + id];
+	reg+= v1[nn + id] * v2[nn + id];
+    
+    sdata[tid]= reg;
+    __syncthreads();
 
+    if (tid == 0) {
+	for (int i= 1; i < blockDim.x; i++)
+	    sdata[0]+= sdata[i];
+	out[blockIdx.x]= sdata[0];
+    }
+    __syncthreads();
+    
+    if (id == 0)
+	for (int i= 1; i < gridDim.x; i++)
+	    out[0]+= out[i];
 }
 
 

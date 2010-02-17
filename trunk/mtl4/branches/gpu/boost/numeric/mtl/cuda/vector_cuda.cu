@@ -123,15 +123,17 @@ class vector
 	return start[index];
     }
 
-    T operator[](int i) const 
+    T read(int i) const 
     {
         assert(i >= 0 && i < dim);
 	return on_host ? start[i] : get_device_value(dptr + i);
     }
 
+    T operator[](int i) const { return read(i); }
+
     bool valid_host() const { return on_host; }
     bool valid_device() const { return !on_host; }
-    int  size() const { return dim; }
+    friend int  size(const self& x) { return x.dim; }
 
     void to_host()
     {
@@ -157,11 +159,14 @@ class vector
             start[i]= 77;
     }
     
-    friend std::ostream& operator<<(std::ostream& os, self& x)
+    T* get_device_pointer() { return dptr; }
+    const T* get_device_pointer() const { return dptr; }
+
+    friend std::ostream& operator<<(std::ostream& os, const self& x)
     {
 	x.replicate_on_host();
-	os << "{" << x.size() << (x.valid_host() ? ",host}(" : ",device}(");
-	for (int i= 0; i < x.size(); i++)
+	os << "{" << size(x) << (x.valid_host() ? ",host}(" : ",device}(");
+	for (int i= 0; i < size(x); i++)
 	    os << x.start[i] << (i < x.dim - 1 ? ", " : ")");
 	return os;
     }
