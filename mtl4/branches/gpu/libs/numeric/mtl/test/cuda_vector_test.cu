@@ -11,18 +11,17 @@
 
 #include <iostream>
 #include <complex>
-#include <boost/test/minimal.hpp>
-#include <boost/numeric/mtl/mtl.hpp>
+//#include <boost/test/minimal.hpp>
+//#include <boost/numeric/mtl/mtl.hpp>
 
-#include <boost/numeric/mtl/cuda/device_new.hpp>
-#include <boost/numeric/mtl/cuda/vector_cuda.hpp>
+#include <boost/numeric/mtl/cuda/vector_cuda.cu>
 
 template <typename T>
 void test(const char* name)
 {
     typedef mtl::cuda::vector<T>   vt;
 
-    std::cout << name << "Vector Test\n"; 
+    std::cout << name << "-- Vector Test\n"; 
     mtl::cuda::vector<T>  x(3, 33), y(3, 10, false);//, z(3,0), a(3,0);
     std::cout << "Vector constructed.\n" << "x=" << x << "\n";
     std::cout << "Vector constructed.\n" << "y=" << y << "\n";
@@ -47,50 +46,26 @@ void test(const char* name)
     std::cout<< "y=" << y << "\n";
     x.to_device();
     x*= 7;
-    std::cout<< "x=" << x << "\n";
-#if 0 
-   x.init(23);
-    x.to_device();
-    y= x;
-    std::cout<< "y=" << y << "\n";
-    x.init(12);
-    x.to_host();   
-    std::cout<< "z=" << z << "\n";
-    z= x;
-    std::cout<< "z=" << z << "\n";  
+    std::cout<< "x=" << x << "\n\n\n";
 
-
-    if (y.value() != T(4))
-	throw "Error copying scalar on device.";
-    print('x', x);
-
-
-    x*= 7;   // Computing on device
-    print('x', x);
-    if (!x.valid_device())
-	throw "No valid copy on device.";
-    print('x', x);
-    if (x.value() != T(10))
-	throw "Error computing  device.";
-     x[1]= 100;
-    std::cout << "component of vector assigned.\n";
-#endif
 }
 
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     using namespace mtl;
 
     test<int>("int");
-#if 0
     test<short>("short");
 
-    test<char>("char");
+    //test<char>("char"); // works but annoying print outs :-/
     test<float>("float");
     test<double>("double");
+
+#if 0 // CUDA is too dumb for complex
     test<std::complex<float> >("std::complex<float>");
     test<std::complex<double> >("std::complex<double>");
 #endif
+
     return 0;
 }

@@ -12,34 +12,42 @@
 #ifndef MTL_CUDA_VECTOR_KERNEL_INCLUDE
 #define MTL_CUDA_VECTOR_KERNEL_INCLUDE
 
-namespace mtl { namespace cuda {
 
+namespace mtl { namespace cuda {
 
 template <typename Scalar>
 struct vec_rscale_asgn
 {
-    explicit vec_rscale_asgn(const Scalar& s= 0, Scalar* vec= 0) 
-      : s(s), vec(vec) {}
+    explicit vec_rscale_asgn(const Scalar& s= 0, Scalar* vec= 0, int n= 0)
+      : s(s), vec(vec), n(n) {}
 
-    __device__ void operator()()
+    __device__ void operator()(void)
     {
-	int idx = blockIdx.x*blockDim.x + threadIdx.x;
-	vec[idx]*= s;
+        const int grid_size = blockDim.x * gridDim.x;
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	while(i < n) {
+	    vec[i]*= s;
+	    i+= grid_size;
+	}
     }
 
     Scalar s;
     Scalar* vec;
+    int     n;
 };
- 
 
-template<typename NullaryFunction>
+
+template <typename NullaryFunction>
 __global__
 void launch_function(NullaryFunction f)
 {
   f();
 }
 
-
 }} // namespace mtl::cuda
 
 #endif // MTL_CUDA_VECTOR_KERNEL_INCLUDE
+
+
+
