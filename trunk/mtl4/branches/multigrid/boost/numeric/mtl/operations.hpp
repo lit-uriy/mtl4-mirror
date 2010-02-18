@@ -13,6 +13,7 @@
 #define MTL_OPERATIONS_INCLUDE
 
 #include <boost/numeric/mtl/operation/adjoint.hpp>
+#include <boost/numeric/mtl/operation/amg_op.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/operation/column_in_matrix.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
@@ -33,6 +34,7 @@
 #include <boost/numeric/mtl/operation/lu.hpp>
 #include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
+#include <boost/numeric/mtl/operation/multigrid.hpp>
 #include <boost/numeric/mtl/operation/norms.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/orth.hpp>
