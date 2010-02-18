@@ -104,20 +104,20 @@ __global__ void dot_kernel(T* out, const T* v1, const T* v2, int n)
     if (nn + id < n)
 	reg+= v1[nn + id] * v2[nn + id];
     
-    out[id]= reg;
+    sdata[tid]= reg;
     __syncthreads();
 
     if (tid == 0) {
 	for (int i= 1; i < blockDim.x; i++)
-	    out[id]+= out[id+i];
+	   sdata[0]+= sdata[i];
+	out[blockIdx.x]= sdata[0];
     }
     __syncthreads();
     
     if (id == 0)
 	for (int i= 1; i < gridDim.x; i++)
-	    out[0]+= out[i*blockDim.x];
+	     out[0]= out[i];
 }
-
 
 
 }} // namespace mtl::cuda
