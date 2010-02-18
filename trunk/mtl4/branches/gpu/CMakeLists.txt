@@ -1,6 +1,6 @@
-project (boost_mtl4)
+project (boost_mtl4-gpu)
 
-cmake_minimum_required(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 # DERIVED VARIABLES
 # no derived variables, this makefile is the toplevel makefile for boost mtl4
@@ -16,6 +16,12 @@ cmake_minimum_required(VERSION 2.6)
 #endif(NOT Boost_INCLUDE_DIR)
 
 set (BOOST_ROOT ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
+
+
+#adding FindCuda
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/share/cmake-2.8/Modules/FindCUDA")
+FIND_PACKAGE(CUDA REQUIRED)
+
 
 
 # set the local BOOST MTL4 include directory
@@ -75,8 +81,3 @@ get_cmake_property(VARS VARIABLES)
 foreach (var ${VARS})
     file (APPEND ${CMAKE_CURRENT_BINARY_DIR}/AllVariables.txt "${var} \"${${var}}\"\n")
 endforeach (var ${VARS})
-
-
-
-
-
