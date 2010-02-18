@@ -1,16 +1,32 @@
-project (boost_mtl4_tests)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+#cmake_minimum_required(VERSION 2.8)
+
+project (mtl4-gpu_tests)
 
 # DERIVED variables
 # none in this CMakeLists.txt
 
 # collect the source files
 file (GLOB SOURCES *.cpp)
+#file (GLOB SOURCES *.cu)
+
 # collect the include files
 file (GLOB INCLUDES ${MTL_BOOST_ROOT}/boost/numeric/mtl/*.hpp)
 
 #define the include directories this library depends on
 include_directories("${BOOST_ROOT}")
 include_directories("${MTL_BOOST_ROOT}")
+include_directories("${CMAKE_SOURCE_DIR}")
+
+#Adding FindCUDA
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/share/cmake-2.8/Modules/FindCUDA")
+FIND_PACKAGE(CUDA REQUIRED)
+
+INCLUDE_DIRECTORIES(
+  ${CUDA_TOOLKIT_INCLUDE}
+#  ${CUDA_CUT_INCLUDE_DIR}
+  )
+
 
 # .NET 2003
 if (MSVC71)
