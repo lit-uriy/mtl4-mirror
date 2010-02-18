@@ -32,6 +32,7 @@ typename mtl::Collection<Vector>::value_type dot(const Vector& v1, const Vector&
     vector<value_type> out(dim_block.x, value_type(0), false);
 
     dot_kernel<<< dim_grid, dim_block, dim_block.x * sizeof(value_type) >>>(out.get_device_pointer(), v1.get_device_pointer(), v2.get_device_pointer(), size(v1));
+
     return out.read(0);
 }
 
