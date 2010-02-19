@@ -14,7 +14,7 @@
 
 namespace mtl { namespace par {
 
-//#define MTL_COMM_BLOCKING
+#define MTL_COMM_BLOCKING
 
 /// Communication scheme
 /** Can be choosen by defining macros. If no macros are set then 

@@ -34,11 +34,11 @@
 namespace mtl { namespace matrix {
 
     /* Linear operations like y= A * x are performed in the following 5 steps:
-       - Scatter x to send buffers x_si
-       - Start x_s -> x_r
-       - local operation, e.g. local(y)= local(A) * local(x)
-       - Finish  x_s -> x_r and wait
-       - Reduce local(y) and remote results, e.g. y+= A_i * x_ri
+       - Scatter x to send buffers x_si                                     linear_buffer_fill called in dist_mat_cvec_start(nb)/dist_mat_cvec_wait(bl)
+       - Start x_s -> x_r                                                   dist_mat_cvec_start(nb)/dist_mat_cvec_wait(bl)
+       - local operation, e.g. local(y)= local(A) * local(x)                dist_mat_cvec_op
+       - Finish  x_s -> x_r and wait                                        dist_mat_cvec_wait
+       - Reduce local(y) and remote results, e.g. y+= A_i * x_ri            dist_mat_cvec_wait
        Transposed operations like w= A^T * v are performed in the following 5 steps:
        - Scatter A^T * v to w_ri (this is no error)
        - Start w_r -> w_s
@@ -57,46 +57,58 @@ struct dist_mat_cvec_handle
 
 template <typename Matrix, typename VectorIn>
 dist_mat_cvec_handle inline 
-dist_mat_cvec_start(const Matrix& A, const VectorIn& v, 
-			 tag::universe, tag::universe, tag::universe)
+dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::universe, tag::universe, tag::universe)
 { 
     MTL_THROW(logic_error("This communication form is not implemented yet"));
     return dist_mat_cvec_handle();
 }
 
-
 template <typename Matrix, typename VectorIn>
-dist_mat_cvec_handle inline 
-dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
-{ 
+inline dist_mat_cvec_handle
+dist_mat_cvec_send_start(const Matrix& A, const VectorIn& v, tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
+{
     mtl::par::mpi_log << "[nonblocking] initialization" << '\n';
     typedef typename Matrix::send_structure        send_structure;
-    typedef typename Matrix::recv_structure        recv_structure;
-    struct dist_mat_cvec_handle handle;
+    dist_mat_cvec_handle handle;
 
-    linear_buffer_fill(A, v);
     typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
 	handle.reqs.push_back(communicator(v).isend(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices))); // pointer and size
     }
+    return handle;
+}
 
-    mtl::par::mpi_log << "[nonblocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << '\n';
-    
+template <typename Matrix, typename VectorIn>
+inline void
+dist_mat_cvec_recv_start(const Matrix& A, const VectorIn& v, dist_mat_cvec_handle& handle, tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
+{
+    typedef typename Matrix::recv_structure        recv_structure;
+
+    mtl::par::mpi_log << "[nonblocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << '\n';    
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
-
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
 	int p= r_it->first;
 	handle.reqs.push_back(communicator(v).irecv(p, 999, &recv_buffer(v)[s.offset], s.size)); // pointer and size
     }
-
-    return handle;
 }
 
 template <typename Matrix, typename VectorIn>
 dist_mat_cvec_handle inline 
+dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
+{ 
+    linear_buffer_fill(A, v);
+    dist_mat_cvec_handle handle= dist_mat_cvec_send_start(A, v, tag::comm_non_blocking(), tag::comm_p2p(), tag::comm_buffer());
+    dist_mat_cvec_recv_start(A, v, handle, tag::comm_non_blocking(), tag::comm_p2p(), tag::comm_buffer());
+    return handle;
+}
+
+// Do nothing for all blocking schemes
+template <typename Matrix, typename VectorIn>
+dist_mat_cvec_handle inline 
 dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
+//dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_blocking, tag::universe, tag::universe) // doesn't work
 { 
     return dist_mat_cvec_handle();
 }
@@ -132,14 +144,12 @@ void inline linear_buffer_fill(const Matrix& A, Vector& v)
 }
 
 
-
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Functor>
-boost::mpi::status inline 
+void inline 
 dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Functor& op, dist_mat_cvec_handle& h,
 			tag::universe, tag::universe, tag::universe)
 { 
     MTL_THROW(logic_error("This communication form is not implemented yet"));
-    return boost::mpi::status();
 }
 
 
@@ -151,22 +161,20 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
     typedef typename Collection<Matrix>::size_type size_type;
     typedef typename Matrix::recv_structure        recv_structure;
 
-    std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res;
-    
     while(h.reqs.size()) { // see (1) at file end
-	res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
-	mtl::par::check_mpi(res.first); // check success
+	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
+	// mtl::par::check_mpi(res.first); // error code is non-sense !!!, besides boost::mpi checks already
+
 	int p= res.first.source();
-	if(p == communicator(v).rank()) { 
-	    h.reqs.erase(res.second);
+	if(p == communicator(v).rank()) 
 	    mtl::par::mpi_log << "[nonblocking] finished sending my data" << '\n';
-	} else { 
+	else { 
 	    // we have a receive request 
-	    h.reqs.erase(res.second);
-	    const recv_structure s = (*A.recv_info.find(p)).second;
+	    const recv_structure& s = (*A.recv_info.find(p)).second;
 	    mtl::par::mpi_log << "[nonblocking] received data from rank " << p << " of size " << s.size << '\n';
 	    op(const_cast<Matrix&>(A).remote_matrices[p] /* Scheiss std::map */, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
 	}
+	h.reqs.erase(res.second);
     }
 }
 
@@ -184,25 +192,18 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
     typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
-	mtl::par::check_mpi( communicator(v).send(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices)) ); 
+	communicator(v).send(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices)); 
     }
-    boost::mpi::status st;
+
     mtl::par::mpi_log << "[blocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << '\n';
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
 	int                     p= r_it->first;
 	mtl::par::check_mpi( communicator(v).recv(p, 999, &recv_buffer(v)[s.offset], s.size) );
-#if 0
-	boost::mpi::status st= communicator(v).recv(p, 999, &recv_buffer(v)[s.offset], s.size); 
-	MTL_THROW_IF(st.error() != MPI_SUCCESS, mpi_error(st.error()));
-#endif
 	op(const_cast<Matrix&>(A).remote_matrices[p] /* Scheiss std::map */, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
     }
 }
-
-
-
 
 
 template <typename Assign>
@@ -212,6 +213,16 @@ struct mat_cvec_mult_functor
     void operator()(const Matrix& A, const VectorIn& v, VectorOut& w) const
     {
 	mat_cvec_mult(A, v, w, Assign());
+    }
+};
+
+template <typename Assign>
+struct trans_mat_cvec_mult_functor
+{
+    template <typename Matrix, typename VectorIn, typename VectorOut>
+    void operator()(const Matrix& A, const VectorIn& v, VectorOut& w) const
+    {
+	mat_cvec_mult(trans(A), v, w, Assign());
     }
 };
 
@@ -247,16 +258,75 @@ void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w,
 		     par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
 }
 
-// Use Communication scheme from whole build
-template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-void inline trans_dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as)
+template <typename Matrix, typename VectorIn, typename VectorOut>
+dist_mat_cvec_handle inline 
+trans_dist_mat_cvec_start(const Matrix& A, const VectorIn& v, VectorOut& w, tag::universe, tag::universe, tag::universe)
+{ 
+    MTL_THROW(logic_error("This communication form is not implemented yet"));
+    return dist_mat_cvec_handle();
+}
+
+template <typename Matrix, typename VectorOut>
+dist_mat_cvec_handle inline 
+trans_dist_mat_cvec_start(const Matrix& A, VectorOut& w, tag::universe, tag::universe, tag::universe)
+{ 
+    MTL_THROW(logic_error("This communication form is not implemented yet"));
+    return dist_mat_cvec_handle();
+}
+
+// Do nothing for all blocking schemes
+template <typename Matrix, typename VectorOut>
+dist_mat_cvec_handle inline 
+trans_dist_mat_cvec_start(const Matrix& A, VectorOut& w, tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
+{ 
+    return dist_mat_cvec_handle();
+}
+
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Functor>
+void inline trans_compute_send_buffer(const Matrix& A, const VectorIn& v, VectorOut& w, Functor op)
+{
+    enlarge_buffer(A, w);
+    typename Matrix::remote_map_const_iterator A_it= A.remote_matrices.begin(), A_end= A.remote_matrices.end();
+    for (; A_it != A_end; ++A_it) {
+	const typename Matrix::recv_structure& r= A.recv_info.find(A_it->first)->second;
+	typename DistributedCollection<VectorOut>::local_type w_sub(recv_buffer(w)[irange(r.offset, r.offset + r.size)]); // might need to handle sub-matrix with type trait 
+	// std::cout << "trans_compute_send_buffer on " << A.row_dist.rank() << " recv_buffer is " << recv_buffer(w) << ", w_sub is " << w_sub << std::endl;
+	op(A_it->second, local(v), w_sub);
+	// std::cout << "trans_compute_send_buffer on " << A.row_dist.rank() << " for proc " << A_it->first << ": A is \n"
+	// 	  << A_it->second << "local(v) is " << local(v) << ", trans(A)*v is " << recv_buffer(w)[irange(r.offset, r.offset + r.size)] << std::endl;
+    }
+}
+
+// A is matrix itself not transposed_view< ... >
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Local, typename Remote,
+	  typename Blocking, typename Coll, typename Buffering>
+void inline trans_dist_mat_cvec_op(const Matrix& A, const VectorIn& v, VectorOut& w, const Local& local_op, const Remote& remote_op,
+				   Blocking, Coll, Buffering)
 {
     // All three arguments must be distributed
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<Matrix>::value));
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorIn>::value));
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorOut>::value));
+    
+    trans_compute_send_buffer(A, v, w, remote_op);
+    dist_mat_cvec_handle h(trans_dist_mat_cvec_start(A, w, Blocking(), Coll(), Buffering()));
 
-    std::cout << "In trans_dist_mat_cvec_mult\n";
+    std::cout << "In trans_dist_mat_cvec_op\n";
+}
+
+
+// Use Communication scheme from whole build, A is transposed_view< ... >
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+void inline trans_dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as)
+{
+    // Avoid repeated zeroing of w with repeated matrix vector product (= -> +=)
+    typedef typename mtl::assign::repeated_assign<Assign>::type remote_assign;
+
+    typedef trans_mat_cvec_mult_functor<Assign>        local_functor;
+    typedef trans_mat_cvec_mult_functor<remote_assign> remote_functor;
+
+    trans_dist_mat_cvec_op(A.ref, v, w, local_functor(), remote_functor(), 
+			   par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
 }
 
 
