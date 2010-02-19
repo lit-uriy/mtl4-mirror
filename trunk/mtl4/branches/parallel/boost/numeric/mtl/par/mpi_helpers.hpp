@@ -33,7 +33,12 @@ std::string inline mpi_error_string(int errorcode)
 /// Check MPI error code and throw exception if last operation was not successful
 void inline check_mpi(int errorcode)
 {
-	MTL_THROW_IF(errorcode != MPI_SUCCESS, mpi_error(errorcode));    
+#if 0
+    boost::mpi::communicator world;
+    std::cerr << "check_mpi on rank " << world.rank() << ": errorcode is " << errorcode 
+	      << " (MPI_SUCCESS is " << MPI_SUCCESS << ")" << std::endl;
+#endif
+    // MTL_THROW_IF(errorcode != MPI_SUCCESS, mpi_error(errorcode));    
 }
 
 /// Check MPI error code and throw exception if last operation was not successful

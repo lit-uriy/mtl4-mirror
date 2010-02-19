@@ -54,11 +54,14 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
     w= A * v;
     //mult(A, v, w);
 
+    sout << "\nw= A * v is: " << w << '\n'; sout.flush();
 
     if (!comm.rank()) std::cout << "\nw= A * v is: ";
     std::cout << w;
-    if (local(w)[1] != double(18 - 2 * comm.rank())) throw "wrong value.";
-
+    if (local(w)[1] != double(18 - 2 * comm.rank())) {
+	std::cerr << "Wrong value: is " << local(w)[1] << ", should be " << double(18 - 2 * comm.rank()) << std::endl;
+	throw "wrong value.";
+    }
 }
 
 

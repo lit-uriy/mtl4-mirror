@@ -147,9 +147,8 @@ public:
     friend inline local_type& local(self& d) { return d.local_vector; }
     friend inline const local_type& local(const self& d) { return d.local_vector; }
 
-    friend inline buffer_type& send_buffer(const self& d) { return d.send_buffer; }
-    friend inline buffer_type& recv_buffer(const self& d) { return d.recv_buffer; }
-    // friend inline const buffer_type& recv_buffer(const self& d) { return d.recv_buffer; }
+    friend inline buffer_type& send_buffer(const self& d) { return d.send_buffer; } // buffer is mutable
+    friend inline buffer_type& recv_buffer(const self& d) { return d.recv_buffer; } // buffer is mutable
 
 protected:
     size_type           gsize;
