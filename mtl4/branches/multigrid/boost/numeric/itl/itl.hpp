@@ -29,7 +29,7 @@
 #include <boost/numeric/itl/krylov/qmr.hpp>
 
 #include <boost/numeric/itl/smoother/gauss_seidel.hpp>
-
+#include <boost/numeric/itl/smoother/jacobi.hpp>
 #include <boost/numeric/itl/pc/identity.hpp>
 #include <boost/numeric/itl/pc/diagonal.hpp>
 #include <boost/numeric/itl/pc/ilu_0.hpp>

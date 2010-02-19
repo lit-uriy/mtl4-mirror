@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 
     // Set element 7 to 3.0.
     v[7]= 3.0;
-     std::cout << "sum(v) is " << sum(v) << "\n";
+
     std::cout << "v is " << v << "\n";
     return 0;
 }
