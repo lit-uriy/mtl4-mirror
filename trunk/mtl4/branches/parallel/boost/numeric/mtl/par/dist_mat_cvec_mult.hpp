@@ -182,7 +182,7 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Functor>
 void inline 
 dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Functor& op, dist_mat_cvec_handle& h,
-			tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
+		   tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
     typedef typename Collection<Matrix>::size_type size_type;
     typedef typename Matrix::send_structure        send_structure;
@@ -297,21 +297,60 @@ void inline trans_compute_send_buffer(const Matrix& A, const VectorIn& v, Vector
     }
 }
 
+template <typename Matrix, typename VectorIn, typename VectorOut, typename >
+void inline 
+trans_dist_mat_cvec_wait(const Matrix&, const VectorIn&, VectorOut&, Assign, dist_mat_cvec_handle&,
+			tag::universe, tag::universe, tag::universe)
+{ 
+    MTL_THROW(logic_error("This communication form is not implemented yet"));
+}
+
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+void inline 
+trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_handle& h,
+			 tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
+{ 
+    typedef typename Collection<Matrix>::size_type size_type;
+    typedef typename Matrix::send_structure        send_structure;
+    typedef typename Matrix::recv_structure        recv_structure;
+
+    // Roles of send and receive buffers are interchanged in transposed operations
+    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
+    for (; r_it != r_end; ++r_it) {
+	const recv_structure&   s= r_it->second;
+	int                     p= r_it->first;
+	communicator(v).send(p, 999, &recv_buffer(w)[s.offset], s.size);
+    }
+
+    linear_buffer_fill(A, v);
+    typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
+    for (; s_it != s_end; ++s_it) {
+	const send_structure&   s= s_it->second;
+	mtl::par::check_mpi( communicator(w).recv(s_it->first, 999, &send_buffer(w)[s.offset], size(s.indices)));
+
+	// Increment w from w_i
+    }
+}
+
+
 // A is matrix itself not transposed_view< ... >
-template <typename Matrix, typename VectorIn, typename VectorOut, typename Local, typename Remote,
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign, 
 	  typename Blocking, typename Coll, typename Buffering>
-void inline trans_dist_mat_cvec_op(const Matrix& A, const VectorIn& v, VectorOut& w, const Local& local_op, const Remote& remote_op,
-				   Blocking, Coll, Buffering)
+void inline trans_dist_mat_cvec_op(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as, Blocking, Coll, Buffering)
 {
     // All three arguments must be distributed
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<Matrix>::value));
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorIn>::value));
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorOut>::value));
     
+    typedef trans_mat_cvec_mult_functor<Assign>               local_functor;
+    typedef trans_mat_cvec_mult_functor<assign::assign_sum>   remote_functor; // buffer must be initialized
+    typedef typename mtl::assign::repeated_assign<Assign>::type result_assign; // how to incorporate remote results
+
     trans_compute_send_buffer(A, v, w, remote_op);
     dist_mat_cvec_handle h(trans_dist_mat_cvec_start(A, w, Blocking(), Coll(), Buffering()));
-
-    std::cout << "In trans_dist_mat_cvec_op\n";
+    local_op(local(A), local(v), local(w));
+    trans_dist_mat_cvec_wait(A, v, w, result_assign(), h, Blocking(), Coll(), Buffering());
 }
 
 
@@ -319,14 +358,7 @@ void inline trans_dist_mat_cvec_op(const Matrix& A, const VectorIn& v, VectorOut
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 void inline trans_dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as)
 {
-    // Avoid repeated zeroing of w with repeated matrix vector product (= -> +=)
-    typedef typename mtl::assign::repeated_assign<Assign>::type remote_assign;
-
-    typedef trans_mat_cvec_mult_functor<Assign>        local_functor;
-    typedef trans_mat_cvec_mult_functor<remote_assign> remote_functor;
-
-    trans_dist_mat_cvec_op(A.ref, v, w, local_functor(), remote_functor(), 
-			   par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
+    trans_dist_mat_cvec_op(A.ref, v, w, as, par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
 }
 
 
