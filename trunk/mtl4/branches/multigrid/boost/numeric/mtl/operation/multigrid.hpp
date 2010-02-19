@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/operation/trans.hpp>
 #include <boost/numeric/mtl/operation/sum.hpp>
 #include <boost/numeric/itl/smoother/gauss_seidel.hpp>
+#include <boost/numeric/itl/smoother/jacobi.hpp>
 #include <boost/numeric/itl/krylov/cg.hpp>
 #include <time.h>
 #include <string>
@@ -44,10 +45,11 @@ struct MGLEVEL
 };
 
 
+using namespace std;
 
 
 template < typename Matrix, typename Vector, typename Iteration>
-int inline multigrid_algo(const Matrix& A, Vector& x, Vector& b, Iteration& iter, int maxLevel, char* coarse, char *prolongate, char *restriction, int ny, int ny_pre, int ny_post, char *pre_smooth, char *post_smooth, double omega, double coarse_beta, char *coarse_op) //setup
+int inline multigrid_algo(const Matrix& A, Vector& x, Vector& b, Iteration& iter, int maxLevel, string coarse, string prolongate, string restriction, int ny, int ny_pre, int ny_post, string pre_smooth, string post_smooth, double omega, double coarse_beta, string coarse_op) //setup
 {
 	Vector r(b-A*x);
 	long int old_time = 0, new_time = 0;
@@ -90,7 +92,7 @@ int inline multigrid_algo(const Matrix& A, Vector& x, Vector& b, Iteration& iter
 
 ///v-cycle and w-cycle
 template < typename Matrix, typename Vector >
-Vector inline multigrid_vw_cycle(std::vector<MGLEVEL<Matrix, Vector> >& list, int level, int ny, int ny_pre, int ny_post, char *coarse_op)
+Vector inline multigrid_vw_cycle(std::vector<MGLEVEL<Matrix, Vector> >& list, int level, int ny, int ny_pre, int ny_post, string coarse_op)
 {
 	typedef typename mtl::Collection<Matrix>::size_type  Size;
 	typedef typename mtl::Collection<Matrix>::value_type Scalar;
@@ -101,8 +103,9 @@ Vector inline multigrid_vw_cycle(std::vector<MGLEVEL<Matrix, Vector> >& list, in
 	Vector&       x= mg.x;
 	const Vector& b= mg.b;
 	Matrix&       A= mg.A; 
-        itl::gauss_seidel<Matrix, Vector> gs(A, b);	
-	
+        itl::gauss_seidel<Matrix, Vector> gs(A, b);	 //TODO entweder oder Auswahl
+	itl::jacobi<Matrix, Vector> jacob(A, b);	
+
 	//v_cycle algo
 	if (level == maxLevel-1) {
 		x= A * b;	
@@ -129,7 +132,7 @@ Vector inline multigrid_vw_cycle(std::vector<MGLEVEL<Matrix, Vector> >& list, in
 
 ///full multigrid cycle without smoothing
 template < typename Matrix, typename Vector >
-Vector inline multigrid_full_cycle(std::vector<MGLEVEL<Matrix, Vector> > list, int level, int ny, int ny_pre, int ny_post, char *coarse_op)
+Vector inline multigrid_full_cycle(std::vector<MGLEVEL<Matrix, Vector> > list, int level, int ny, int ny_pre, int ny_post, string coarse_op)
 {
 	typedef typename mtl::Collection<Matrix>::size_type  Size;
 	Size maxLevel(list.size());
@@ -162,8 +165,8 @@ Vector inline multigrid_full_cycle(std::vector<MGLEVEL<Matrix, Vector> > list, i
 
 ///multigrid setup phase. Init restiction and prolongation operator and %matix on all level
 template < typename Matrix, typename Vector >
-std::vector<MGLEVEL<Matrix, Vector> > inline multigrid_setup(const Matrix& A, Vector& x, Vector& b, int maxLevel, char *coarse, char *prolongate, char *restriction,
-char *pre_smooth, char *post_smooth, double omega, double coarse_beta, char *coarse_op)   ////setup
+std::vector<MGLEVEL<Matrix, Vector> > inline multigrid_setup(const Matrix& A, Vector& x, Vector& b, int maxLevel, string coarse, string prolongate, string restriction,
+string pre_smooth, string post_smooth, double omega, double coarse_beta, string coarse_op)   ////setup
 {
 
 	typedef typename mtl::Collection<Matrix>::size_type  Size;

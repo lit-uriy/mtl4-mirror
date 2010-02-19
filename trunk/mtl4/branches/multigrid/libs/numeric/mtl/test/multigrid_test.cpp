@@ -15,7 +15,7 @@
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
-
+#include <string>
 
 using namespace std;
 
@@ -36,6 +36,8 @@ int test_main(int argc, char* argv[])
 //    dense2D<double>                                     A(n, n), dr(size, size), Q(size, size), R(size, size);
     dense2D<double, matrix::parameters<row_major> >      A(n, n), R(8, 16), B(n,n), C(n,n);;
     //compressed2D<double>      				A(n, n), R(8, 16), B(n,n), C(n,n);;
+std::string s("blabla");
+	std::cout<< s << "\n";
 
 	//setup problem
 	//laplacian_setup(A,size,size);
@@ -52,8 +54,8 @@ int test_main(int argc, char* argv[])
 
 	x=0; c=1;
 	b=1.0;
-	itl::cyclic_iteration<double> Iter(b, 200, 1.e-3, 0.0, 5);
-	int ny_pre(2), ny_post(2), ny(1);
+	itl::cyclic_iteration<double> Iter(b, 1600, 1.e-3, 0.0, 5);
+	int ny_pre(10), ny_post(10), ny(1);
 	double omega(0.25), coarse_beta(0.125);
 
 #if 0
