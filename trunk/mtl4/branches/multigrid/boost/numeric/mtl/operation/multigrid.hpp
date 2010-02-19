@@ -21,9 +21,11 @@
 #include <boost/numeric/mtl/operation/householder.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/operation/sum.hpp>
 #include <boost/numeric/itl/smoother/gauss_seidel.hpp>
 #include <boost/numeric/itl/krylov/cg.hpp>
 #include <time.h>
+#include <string>
 
 
 namespace mtl { namespace matrix {
@@ -41,14 +43,17 @@ struct MGLEVEL
 	Matrix S_post; //post-smooth operator
 };
 
+
+
+
 template < typename Matrix, typename Vector, typename Iteration>
-int inline multigrid_algo(const Matrix& A, Vector& x, Vector& b, Iteration& iter, int maxLevel, char *coarse, char *prolongate, char *restrict, int ny, int ny_pre, int ny_post, char *pre_smooth, char *post_smooth, double omega, double coarse_beta, char *coarse_op) //setup
+int inline multigrid_algo(const Matrix& A, Vector& x, Vector& b, Iteration& iter, int maxLevel, char* coarse, char *prolongate, char *restriction, int ny, int ny_pre, int ny_post, char *pre_smooth, char *post_smooth, double omega, double coarse_beta, char *coarse_op) //setup
 {
 	Vector r(b-A*x);
 	long int old_time = 0, new_time = 0;
 	//std::cout<< "------------START------multigrid_algo--------" << std::endl;
 	old_time= clock();
-	std::vector<MGLEVEL<Matrix, Vector> > list(multigrid_setup(A, x, b, maxLevel, coarse, prolongate, restrict, pre_smooth, post_smooth, omega, coarse_beta, coarse_op)); //init all MG levels
+	std::vector<MGLEVEL<Matrix, Vector> > list(multigrid_setup(A, x, b, maxLevel, coarse, prolongate, restriction, pre_smooth, post_smooth, omega, coarse_beta, coarse_op)); //init all MG levels
 	new_time= clock();
 	
 	std::cout<< "setup finished in " << (float)(new_time-old_time)/CLOCKS_PER_SEC << "sec.\n";
@@ -157,7 +162,7 @@ Vector inline multigrid_full_cycle(std::vector<MGLEVEL<Matrix, Vector> > list, i
 
 ///multigrid setup phase. Init restiction and prolongation operator and %matix on all level
 template < typename Matrix, typename Vector >
-std::vector<MGLEVEL<Matrix, Vector> > inline multigrid_setup(const Matrix& A, Vector& x, Vector& b, int maxLevel, char *coarse, char *prolongate, char *restrict,
+std::vector<MGLEVEL<Matrix, Vector> > inline multigrid_setup(const Matrix& A, Vector& x, Vector& b, int maxLevel, char *coarse, char *prolongate, char *restriction,
 char *pre_smooth, char *post_smooth, double omega, double coarse_beta, char *coarse_op)   ////setup
 {
 
@@ -195,6 +200,7 @@ char *pre_smooth, char *post_smooth, double omega, double coarse_beta, char *coa
 		} else {
 			std::cout<< "Wrong coarsening method. Try: rs, notay, simple, default." << std::endl;
 		}
+
 		k= sum(c);
 		if ( k == size(c) ) {
 			std::cout<< "stagnation while coarsening.. try other methode or other beta." << std::endl;
@@ -210,23 +216,22 @@ char *pre_smooth, char *post_smooth, double omega, double coarse_beta, char *coa
 		}
 // 		std::cout<< "c=" << c << "\n";
 // 		std::cout<< "dim=" << k << std::endl;
-// 		std::cout<< "dimA=" << num_cols(A_i) << std::endl;
 		//prolongation operator P and restriction operator R
 		Matrix		R(k, num_cols(A_i)), P(num_rows(A_i), k);
 
-		if (prolongate == "trans" && restrict == "trans") {
+		if (prolongate == "trans" && restriction == "trans") {
 			std::cout<< "Select at least one methode of restiction or prolongation" << std::endl;
 			break;
 		} 
 	//	std::cout<< "runtimtest 1" << std::endl;		
 		//restiction operator R				///TODO   Randbedingungen???
-		if (restrict == "simple") {
+		if (restriction == "simple") {
 			R=amg_restict_simple(A_i,c);
-		} else if (restrict == "avg") {
+		} else if (restriction == "avg") {
 // 			std::cout<< "start restrict avg" << std::endl;
 			R=amg_restict_average(A_i, c);
 // 			std::cout<< "end restrict avg" << std::endl;
-	//	} else if (restrict == "trans") {
+	//	} else if (restriction == "trans") {
 	//		R=trans(P);
 		} else {
 			std::cout<< "Wrong restriction method. Try: simple or avg." << std::endl;

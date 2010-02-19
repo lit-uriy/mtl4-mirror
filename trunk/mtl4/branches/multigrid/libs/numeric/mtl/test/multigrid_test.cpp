@@ -33,8 +33,8 @@ int test_main(int argc, char* argv[])
     
     dense_vector<double>					 c(size*size);
     dense_vector<double>                    		b(size*size), x(size*size),  b2(size*size), b3(size*size), r(size*size);
-    //dense2D<double>                                      dr(size, size), Q(size, size), R(size, size);
-    dense2D<double, matrix::parameters<col_major> >      A(n, n), R(8, 16), B(n,n), C(n,n);;
+//    dense2D<double>                                     A(n, n), dr(size, size), Q(size, size), R(size, size);
+    dense2D<double, matrix::parameters<row_major> >      A(n, n), R(8, 16), B(n,n), C(n,n);;
     //compressed2D<double>      				A(n, n), R(8, 16), B(n,n), C(n,n);;
 
 	//setup problem
@@ -63,17 +63,17 @@ int test_main(int argc, char* argv[])
 	mg_iteration(mgh, gsh, ny_pre, gsh, ny_post);
 
 #endif
-	multigrid_algo(A, x, b, Iter, 4, "notay", "trans", "avg", "w", 2, ny_pre, ny_post, "gauss_seidel", "gauss_seidel", omega, coarse_beta);
+	multigrid_algo(A, x, b, Iter, 4, "notay", "trans", "avg", 2, ny_pre, ny_post, "gauss_seidel", "gauss_seidel", omega, coarse_beta, "inv");
   
 	if (size < 11)
 		std::cout<< "x=" << x << "\n";
 	r=b-A*x;
 	std::cout<< "two_norm=" << two_norm(r) << std::endl;
-	itl::pc::diagonal<dense2D<double, matrix::parameters<col_major> > >     P(A);
-	x=0;
-	bicgstab_2(A, x, b, P, Iter);
-	if (size < 11)
-		std::cout<< "x=" << x << "\n";
+//	itl::pc::diagonal<dense2D<double, matrix::parameters<col_major> > >     P(A);
+//	x=0;
+//	bicgstab_2(A, x, b, P, Iter);
+//	if (size < 11)
+//		std::cout<< "x=" << x << "\n";
 	
     return 0;
 }
