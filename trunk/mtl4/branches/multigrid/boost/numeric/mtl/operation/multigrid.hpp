@@ -24,6 +24,7 @@
 #include <boost/numeric/mtl/operation/sum.hpp>
 #include <boost/numeric/itl/smoother/gauss_seidel.hpp>
 #include <boost/numeric/itl/smoother/jacobi.hpp>
+#include <boost/numeric/itl/smoother/sor.hpp>
 #include <boost/numeric/itl/krylov/cg.hpp>
 #include <time.h>
 #include <string>
@@ -104,7 +105,8 @@ Vector inline multigrid_vw_cycle(std::vector<MGLEVEL<Matrix, Vector> >& list, in
 	const Vector& b= mg.b;
 	Matrix&       A= mg.A; 
         itl::gauss_seidel<Matrix, Vector> gs(A, b);	 //TODO entweder oder Auswahl
-	itl::jacobi<Matrix, Vector> jacob(A, b);	
+	itl::jacobi<Matrix, Vector> jacob(A, b);
+	itl::sor<Matrix, Vector> sor(A, b, 0.5);	
 
 	//v_cycle algo
 	if (level == maxLevel-1) {
@@ -112,7 +114,7 @@ Vector inline multigrid_vw_cycle(std::vector<MGLEVEL<Matrix, Vector> >& list, in
 	} else {
 		//pre smoothing
 		for (int i = 0; i < ny_pre; i++) 
-			gs(x);  //x+= mg.S_pre * (b - A*x);	
+			sor(x);  //x+= mg.S_pre * (b - A*x);	
 	
 		Vector  r(b - A*x);
 		list[level+1].b= mg.R * r;
@@ -123,7 +125,7 @@ Vector inline multigrid_vw_cycle(std::vector<MGLEVEL<Matrix, Vector> >& list, in
 
 		//post smoothing
 		for (int i = 0; i < ny_post; i++) 			
-			gs(x);   //x+=mg.S_post * (b - A * x); 
+			sor(x);   //x+=mg.S_post * (b - A * x); 
 	}
 	
 	//std::cout<< "END-------vw_cycle on level=" << level << "\n";
