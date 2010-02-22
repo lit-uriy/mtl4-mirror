@@ -323,7 +323,6 @@ void inline
 trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as, dist_mat_cvec_handle& h,
 			 tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
-    typedef typename Collection<Matrix>::size_type size_type;
     typedef typename Matrix::send_structure        send_structure;
     typedef typename Matrix::recv_structure        recv_structure;
 
@@ -337,11 +336,8 @@ trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
     typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
-	mtl::par::check_mpi( communicator(w).recv(s_it->first, 999, &send_buffer(w)[s.offset], size(s.indices)));
-
-	const dense_vector<size_type, mtl::vector::parameters<> >&  indices= s.indices; // parameters shouldn't be needed here!
-	for (size_type tgt= s.offset, src= 0; src < size(indices); ++tgt, ++src)
-	    as.update(local(w)[indices[src]], send_buffer(w)[tgt]);
+	mtl::par::check_mpi(communicator(w).recv(s_it->first, 999, &send_buffer(w)[s.offset], size(s.indices)));
+	trans_dist_update_vector(s, w, as);
     }
 }
 
