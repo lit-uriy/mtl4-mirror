@@ -117,9 +117,10 @@ dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_blocking, tag:
 
 /// Enlarge send and receive buffers for linear operator application (or its transposed)
 template <typename Matrix, typename Vector>
-void inline enlarge_buffer(const Matrix& A, Vector& v)
-{
-    MTL_DEBUG_THROW_IF(*A.cdp != distribution(v), incompatible_distribution());
+void inline enlarge_buffer(const Matrix& A, const Vector& v)
+{    
+    // std::cerr << "col(A) = " << col_distribution(A) << ", dist(v) = " << distribution(v) << std::endl;
+    MTL_DEBUG_THROW_IF(col_distribution(A) != distribution(v), incompatible_distribution());
     v.enlarge_send_buffer(A.total_send_size);
     v.enlarge_recv_buffer(A.total_recv_size);
 }
@@ -135,7 +136,7 @@ void inline linear_buffer_fill(const Matrix& A, Vector& v)
 
     typename std::map<int, typename Matrix::send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
     for (; s_it != s_end; ++s_it) {
-	int p= s_it->first;
+	//int p= s_it->first;
 	const typename Matrix::send_structure&   s= s_it->second;
 	const dense_vector<size_type, mtl::vector::parameters<> >&  indices= s.indices; // parameters shouldn't be needed here!
 	for (size_type tgt= s.offset, src= 0; src < size(indices); ++tgt, ++src)
@@ -297,7 +298,7 @@ void inline trans_compute_send_buffer(const Matrix& A, const VectorIn& v, Vector
     }
 }
 
-template <typename Matrix, typename VectorIn, typename VectorOut, typename >
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 void inline 
 trans_dist_mat_cvec_wait(const Matrix&, const VectorIn&, VectorOut&, Assign, dist_mat_cvec_handle&,
 			tag::universe, tag::universe, tag::universe)
@@ -307,7 +308,7 @@ trans_dist_mat_cvec_wait(const Matrix&, const VectorIn&, VectorOut&, Assign, dis
 
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 void inline 
-trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, dist_mat_cvec_handle& h,
+trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as, dist_mat_cvec_handle& h,
 			 tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
     typedef typename Collection<Matrix>::size_type size_type;
@@ -318,17 +319,18 @@ trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
-	int                     p= r_it->first;
-	communicator(v).send(p, 999, &recv_buffer(w)[s.offset], s.size);
+	//int                     p= r_it->first;
+	communicator(v).send(r_it->first, 999, &recv_buffer(w)[s.offset], s.size);
     }
 
-    linear_buffer_fill(A, v);
     typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
 	mtl::par::check_mpi( communicator(w).recv(s_it->first, 999, &send_buffer(w)[s.offset], size(s.indices)));
 
-	// Increment w from w_i
+	const dense_vector<size_type, mtl::vector::parameters<> >&  indices= s.indices; // parameters shouldn't be needed here!
+	for (size_type tgt= s.offset, src= 0; src < size(indices); ++tgt, ++src)
+	    as.update(local(w)[indices[src]], send_buffer(w)[tgt]);
     }
 }
 
@@ -343,14 +345,14 @@ void inline trans_dist_mat_cvec_op(const Matrix& A, const VectorIn& v, VectorOut
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorIn>::value));
     BOOST_STATIC_ASSERT((mtl::traits::is_distributed<VectorOut>::value));
     
-    typedef trans_mat_cvec_mult_functor<Assign>               local_functor;
-    typedef trans_mat_cvec_mult_functor<assign::assign_sum>   remote_functor; // buffer must be initialized
-    typedef typename mtl::assign::repeated_assign<Assign>::type result_assign; // how to incorporate remote results
+    trans_mat_cvec_mult_functor<Assign>                         local_op;
+    trans_mat_cvec_mult_functor<assign::assign_sum>             remote_op; // assign because buffer must be initialized
+    typename mtl::assign::repeated_assign<Assign>::type         assign;    // how to incorporate remote results
 
     trans_compute_send_buffer(A, v, w, remote_op);
     dist_mat_cvec_handle h(trans_dist_mat_cvec_start(A, w, Blocking(), Coll(), Buffering()));
     local_op(local(A), local(v), local(w));
-    trans_dist_mat_cvec_wait(A, v, w, result_assign(), h, Blocking(), Coll(), Buffering());
+    trans_dist_mat_cvec_wait(A, v, w, assign, h, Blocking(), Coll(), Buffering());
 }
 
 

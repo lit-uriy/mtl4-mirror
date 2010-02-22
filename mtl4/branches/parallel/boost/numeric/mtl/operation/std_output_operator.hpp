@@ -12,7 +12,7 @@
 #ifndef MTL_STD_OUTPUT_OPERATOR_INCLUDE
 #define MTL_STD_OUTPUT_OPERATOR_INCLUDE
 
-#ifdef MTL_HAS_STD_OUTPUT_OPERATOR
+#ifndef MTL_DISABLE_STD_OUTPUT_OPERATOR
 
 #include <iostream>
 #include <map>
@@ -58,6 +58,6 @@ namespace std {
 
 } // namespace mtl
 
-#endif // MTL_HAS_STD_OUTPUT_OPERATOR
+#endif // MTL_DISABLE_STD_OUTPUT_OPERATOR
 
 #endif // MTL_STD_OUTPUT_OPERATOR_INCLUDE
