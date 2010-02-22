@@ -51,15 +51,11 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
 
     mtl::par::single_ostream sout;
     sout << "Matrix is:\n" << A; sout.flush();
-    sout << "\nv is: " << v << "\n";
+    sout << "v is: " << v << "\n";
 
     w= trans(A) * v;
-    //mult(A, v, w);
-
-    return;
-    if (!comm.rank()) std::cout << "\nw= A * v is: ";
-    std::cout << w;
-    // if (std::abs(local(w)[1] - (comm.rank() ? 16.0 : 4.0)) > 0.01) throw "wrong value.";
+    sout << "\nw= A * v is: " << w << '\n';
+    if (std::abs(local(w)[1] - (comm.rank() ? 16.0 : 4.0)) > 0.01) throw "wrong value.";
 }
 
 

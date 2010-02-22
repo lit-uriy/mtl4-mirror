@@ -46,6 +46,12 @@ namespace mtl {
 
 	    int rank() const { return my_rank; }
 	    int size() const { return my_size; }
+
+	    friend inline std::ostream& operator<< (std::ostream& out, const base_distribution& d)
+	    {
+		return out << "Basic distribution of size " << d.my_size; 
+	    }
+
 	  protected:
 	    boost::mpi::communicator comm;
 	    int               my_rank, my_size;
@@ -141,20 +147,19 @@ namespace mtl {
 	    /// On which rank is global index n?
 	    int on_rank(size_type n) const 
 	    { 
-		if (n < starts[0] || n >= starts[my_size])
-		    std::cerr << "out of range with n == " << n << "max == " << starts[my_size] << std::endl;
-		//MTL_DEBUG_THROW_IF(n < starts[0] || n >= starts[my_size], range_error);
+		// if (n < starts[0] || n >= starts[my_size]) std::cerr << "out of range with n == " << n << "max == " << starts[my_size] << std::endl;
+		MTL_DEBUG_THROW_IF(n < starts[0] || n >= starts[my_size], range_error);
 		std::vector<size_type>::const_iterator lbound( std::lower_bound(starts.begin(), starts.end(), n));
 		return lbound - starts.begin() - int(*lbound != n);
 	    }
 
 	    friend inline std::ostream& operator<< (std::ostream& out, const block_distribution& d)
 	    {
-#             ifdef MTL_HAS_STD_OUTPUT_OPERATOR
-		return out << d.starts; 
-#             else
-		return out;
+		out << "Block distribution: ";
+#             ifndef MTL_DISABLE_STD_OUTPUT_OPERATOR
+		out << d.starts; 
 #             endif
+		return out;
 	    }
 
 	    //private:
@@ -218,6 +223,11 @@ namespace mtl {
 
 	    /// On which rank is global index n?
 	    int on_rank(size_type n) const { return n % my_size; }
+
+	    friend inline std::ostream& operator<< (std::ostream& out, const cyclic_distribution& d)
+	    {
+		return out << "Cyclic distribution with cycle size " << d.my_size; 
+	    }
 	};
 
 	/// Block cyclic distribution
@@ -227,7 +237,7 @@ namespace mtl {
 	  public:
 	    /// Construction of block cyclic distribution 
 	    explicit block_cyclic_distribution(size_type bsize, const boost::mpi::communicator& comm= boost::mpi::communicator()) 
-		: base_distribution(comm), bsize(bsize), sb(bsize * my_size) {}
+	      : base_distribution(comm), bsize(bsize), sb(bsize * my_size) {}
 	    
 	    /// Change number of global entries to n (only dummy)
 	    void resize(size_type) {}
@@ -241,8 +251,8 @@ namespace mtl {
 	    template <typename Size>
 	    Size num_local(Size n, int p) const
 	    { 
-		Size full_blocks(n / sb), in_full_blocks(n % sb), my_block(my_size * bsize);
-		return full_blocks * bsize + std::max(0, std::min(in_full_blocks - my_block, bsize-1));
+		Size full_blocks(n / sb), in_full_blocks(n % sb), my_block(p * bsize);
+		return full_blocks * bsize + std::max(0, std::min(in_full_blocks - my_block, bsize));
 	    }
 	    
 	    /// For n global entries, how many are on my processor?
@@ -267,8 +277,8 @@ namespace mtl {
 	    template <typename Size>
 	    Size global_to_local(Size n, int p) const
 	    {
-		//MTL_DEBUG_THROW_IF(n % my_size != p, range_error);
-		return n / my_size;
+		MTL_DEBUG_THROW_IF(on_rank(n) != p, range_error);
+		return num_local(n, p);
 	    }
 
 	    /// Local index of \p n under the condition it is on my processor
@@ -277,6 +287,12 @@ namespace mtl {
 
 	    /// On which rank is global index n?
 	    int on_rank(size_type n) const { return (n % sb) / bsize; }
+
+	    friend inline std::ostream& operator<< (std::ostream& out, const block_cyclic_distribution& d)
+	    {
+		return out << "Cyclic distribution with cycle size " << d.my_size << " and block size " << d.bsize; 
+	    }
+
 	  private:
 	    size_type bsize, sb;
 	};
