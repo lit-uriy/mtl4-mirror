@@ -89,8 +89,7 @@ dist_mat_cvec_recv_start(const Matrix& A, const VectorIn& v, dist_mat_cvec_handl
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
-	int p= r_it->first;
-	handle.reqs.push_back(communicator(v).irecv(p, 999, &recv_buffer(v)[s.offset], s.size)); // pointer and size
+	handle.reqs.push_back(communicator(v).irecv(r_it->first, 999, &recv_buffer(v)[s.offset], s.size)); // pointer and size
     }
 }
 
@@ -108,7 +107,6 @@ dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_non_blocking, 
 template <typename Matrix, typename VectorIn>
 dist_mat_cvec_handle inline 
 dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_blocking, tag::comm_p2p, tag::comm_buffer)
-//dist_mat_cvec_start(const Matrix& A, const VectorIn& v, tag::comm_blocking, tag::universe, tag::universe) // doesn't work
 { 
     return dist_mat_cvec_handle();
 }
@@ -136,7 +134,6 @@ void inline linear_buffer_fill(const Matrix& A, Vector& v)
 
     typename std::map<int, typename Matrix::send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
     for (; s_it != s_end; ++s_it) {
-	//int p= s_it->first;
 	const typename Matrix::send_structure&   s= s_it->second;
 	const dense_vector<size_type, mtl::vector::parameters<> >&  indices= s.indices; // parameters shouldn't be needed here!
 	for (size_type tgt= s.offset, src= 0; src < size(indices); ++tgt, ++src)
@@ -259,14 +256,6 @@ void inline dist_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w,
 		     par::comm_scheme(), par::comm_scheme(), par::comm_scheme());
 }
 
-template <typename Matrix, typename VectorIn, typename VectorOut>
-dist_mat_cvec_handle inline 
-trans_dist_mat_cvec_start(const Matrix& A, const VectorIn& v, VectorOut& w, tag::universe, tag::universe, tag::universe)
-{ 
-    MTL_THROW(logic_error("This communication form is not implemented yet"));
-    return dist_mat_cvec_handle();
-}
-
 template <typename Matrix, typename VectorOut>
 dist_mat_cvec_handle inline 
 trans_dist_mat_cvec_start(const Matrix& A, VectorOut& w, tag::universe, tag::universe, tag::universe)
@@ -291,10 +280,7 @@ void inline trans_compute_send_buffer(const Matrix& A, const VectorIn& v, Vector
     for (; A_it != A_end; ++A_it) {
 	const typename Matrix::recv_structure& r= A.recv_info.find(A_it->first)->second;
 	typename DistributedCollection<VectorOut>::local_type w_sub(recv_buffer(w)[irange(r.offset, r.offset + r.size)]); // might need to handle sub-matrix with type trait 
-	// std::cout << "trans_compute_send_buffer on " << A.row_dist.rank() << " recv_buffer is " << recv_buffer(w) << ", w_sub is " << w_sub << std::endl;
 	op(A_it->second, local(v), w_sub);
-	// std::cout << "trans_compute_send_buffer on " << A.row_dist.rank() << " for proc " << A_it->first << ": A is \n"
-	// 	  << A_it->second << "local(v) is " << local(v) << ", trans(A)*v is " << recv_buffer(w)[irange(r.offset, r.offset + r.size)] << std::endl;
     }
 }
 
@@ -319,7 +305,6 @@ trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
-	//int                     p= r_it->first;
 	communicator(v).send(r_it->first, 999, &recv_buffer(w)[s.offset], s.size);
     }
 
