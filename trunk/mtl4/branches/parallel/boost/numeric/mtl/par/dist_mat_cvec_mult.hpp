@@ -272,6 +272,22 @@ trans_dist_mat_cvec_start(const Matrix& A, VectorOut& w, tag::comm_blocking, tag
     return dist_mat_cvec_handle();
 }
 
+template <typename Matrix, typename VectorOut>
+dist_mat_cvec_handle inline 
+trans_dist_mat_cvec_start(const Matrix& A, VectorOut& w, tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
+{ 
+    dist_mat_cvec_handle handle;
+    
+    // Roles of send and receive buffers are interchanged in transposed operations
+    typedef typename Matrix::recv_structure        recv_structure;
+    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
+    for (; r_it != r_end; ++r_it) {
+	const recv_structure&   s= r_it->second;
+	handle.reqs.push_back(communicator(w).isend(r_it->first, 999, &recv_buffer(w)[s.offset], s.size));
+    }
+    return handle;
+}
+
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Functor>
 void inline trans_compute_send_buffer(const Matrix& A, const VectorIn& v, VectorOut& w, Functor op)
 {
@@ -291,6 +307,16 @@ trans_dist_mat_cvec_wait(const Matrix&, const VectorIn&, VectorOut&, Assign, dis
 { 
     MTL_THROW(logic_error("This communication form is not implemented yet"));
 }
+
+template <typename Recv, typename Vector, typename Assign>
+void inline trans_dist_update_vector(const Recv& r, Vector& w, Assign as)
+{
+    typedef typename Collection<Vector>::size_type size_type;
+    const dense_vector<size_type, mtl::vector::parameters<> >&  indices= r.indices; // parameters shouldn't be needed here!
+    for (size_type tgt= r.offset, src= 0; src < size(indices); ++tgt, ++src)
+	as.update(local(w)[indices[src]], send_buffer(w)[tgt]);
+}
+
 
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 void inline 
@@ -316,6 +342,26 @@ trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
 	const dense_vector<size_type, mtl::vector::parameters<> >&  indices= s.indices; // parameters shouldn't be needed here!
 	for (size_type tgt= s.offset, src= 0; src < size(indices); ++tgt, ++src)
 	    as.update(local(w)[indices[src]], send_buffer(w)[tgt]);
+    }
+}
+
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+void inline 
+trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as, dist_mat_cvec_handle& h,
+			 tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
+{ 
+    typedef typename Collection<Matrix>::size_type size_type;
+    typedef typename Matrix::send_structure        send_structure; // Roles of send and receive buffers are interchanged in transposed operations
+    while(h.reqs.size()) { // see (1) at file end
+	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
+	int p= res.first.source();
+	if (p != communicator(v).rank()) { // only receive requests need work
+	    const send_structure& s = (*A.send_info.find(p)).second;
+	    const dense_vector<size_type, mtl::vector::parameters<> >&  indices= s.indices; // parameters shouldn't be needed here!
+	    for (size_type tgt= s.offset, src= 0; src < size(indices); ++tgt, ++src)
+		as.update(local(w)[indices[src]], send_buffer(w)[tgt]);
+	}
+	h.reqs.erase(res.second);
     }
 }
 
