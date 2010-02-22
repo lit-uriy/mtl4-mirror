@@ -350,17 +350,11 @@ void inline
 trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as, dist_mat_cvec_handle& h,
 			 tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
-    typedef typename Collection<Matrix>::size_type size_type;
-    typedef typename Matrix::send_structure        send_structure; // Roles of send and receive buffers are interchanged in transposed operations
     while(h.reqs.size()) { // see (1) at file end
 	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
 	int p= res.first.source();
-	if (p != communicator(v).rank()) { // only receive requests need work
-	    const send_structure& s = (*A.send_info.find(p)).second;
-	    const dense_vector<size_type, mtl::vector::parameters<> >&  indices= s.indices; // parameters shouldn't be needed here!
-	    for (size_type tgt= s.offset, src= 0; src < size(indices); ++tgt, ++src)
-		as.update(local(w)[indices[src]], send_buffer(w)[tgt]);
-	}
+	if (p != communicator(v).rank())  // only receive requests need work
+	    trans_dist_update_vector(A.send_info.find(p)->second, w, as);
 	h.reqs.erase(res.second);
     }
 }
