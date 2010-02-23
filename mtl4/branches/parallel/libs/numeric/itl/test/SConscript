@@ -5,7 +5,7 @@ Import('debug_env mpi_debug_env check')
 sources = glob.glob("*.cpp")
 
 # Have to work on this
-# sources.remove('xyz.cpp')
+sources.remove('mpi_2_ilu_0_bicg_test.cpp')
 
 
 programs, mpi_programs = [], []

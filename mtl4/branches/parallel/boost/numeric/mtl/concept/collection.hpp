@@ -605,17 +605,17 @@ namespace mtl {
     template <typename Matrix>
     concept_map Collection<transposed_view<Matrix> >
     {
-	typedef typename transposed_view<Matrix>::value_type        value_type;
-	typedef typename transposed_view<Matrix>::const_reference   const_reference;
-	typedef typename transposed_view<Matrix>::size_type         size_type;
+	typedef typename Collection<Matrix>::value_type        value_type;
+	typedef typename Collection<Matrix>::const_reference   const_reference;
+	typedef typename Collection<Matrix>::size_type         size_type;
     };
 #else
     template <typename Matrix>
     struct Collection<transposed_view<Matrix> >
     {
-	typedef typename transposed_view<Matrix>::value_type        value_type;
-	typedef typename transposed_view<Matrix>::const_reference   const_reference;
-	typedef typename transposed_view<Matrix>::size_type         size_type;
+	typedef typename Collection<Matrix>::value_type        value_type;
+	typedef typename Collection<Matrix>::const_reference   const_reference;
+	typedef typename Collection<Matrix>::size_type         size_type;
     };
 #endif
 
@@ -1099,9 +1099,9 @@ namespace mtl {
     template <typename Coll>
     concept_map OrientedCollection<transposed_view<Coll> >
     {
-	typedef typename transposed_view<Coll>::value_type        value_type;
-	typedef typename transposed_view<Coll>::const_reference   const_reference;
-	typedef typename transposed_view<Coll>::size_type         size_type;
+	typedef typename Collection<Coll>::value_type        value_type;
+	typedef typename Collection<Coll>::const_reference   const_reference;
+	typedef typename Collection<Coll>::size_type         size_type;
 
 	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
     };
@@ -1134,8 +1134,8 @@ namespace mtl {
 #endif
 
 #ifdef __GXX_CONCEPTS__
-    template <typename Coll>
-    concept_map OrientedCollection<matrix::distributed<Coll> >
+    template <typename Coll, typename RowDist, typename ColDist>
+    concept_map OrientedCollection<matrix::distributed<Coll, RowDist, ColDist> >
     {
 	typedef typename matrix::distributed<Coll>::value_type        value_type;
 	typedef typename matrix::distributed<Coll>::const_reference   const_reference;
@@ -1144,9 +1144,9 @@ namespace mtl {
 	typedef typename OrientedCollection<Coll>::orientation        orientation;
     };
 #else
-    template <typename Coll>
-    struct OrientedCollection<matrix::distributed<Coll> >
-	: public Collection<matrix::distributed<Coll> >
+    template <typename Coll, typename RowDist, typename ColDist>
+    struct OrientedCollection<matrix::distributed<Coll, RowDist, ColDist> >
+	: public Collection<matrix::distributed<Coll, RowDist, ColDist> >
     {
 	typedef typename OrientedCollection<Coll>::orientation        orientation;
     };

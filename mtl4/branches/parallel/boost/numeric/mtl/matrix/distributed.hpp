@@ -57,6 +57,9 @@ class distributed
     typedef distributed                              self;
     typedef typename Collection<Matrix>::size_type   size_type;
     typedef typename Collection<Matrix>::value_type  value_type;
+    typedef typename Collection<Matrix>::const_reference     const_reference;
+    typedef typename OrientedCollection<Matrix>::orientation orientation;
+
     typedef RowDistribution                          row_distribution_type;
     typedef ColDistribution                          col_distribution_type;
     
@@ -65,12 +68,10 @@ class distributed
     typedef std::map<int, remote_type>               remote_map_type;
     typedef typename remote_map_type::const_iterator remote_map_const_iterator;
 
-#if 0
-    typedef typename Matrix::dim_type                dim_type; // Shouldn't be needed -> refactor transposed_view!!!         
-    typedef typename Matrix::const_reference         const_reference; // Shouldn't be needed -> refactor transposed_view!!!         
+#if 1
+    typedef typename Matrix::dim_type                dim_type;   // Shouldn't be needed -> refactor transposed_view!!!         
     typedef typename Matrix::index_type              index_type; // Shouldn't be needed -> refactor transposed_view!!!         
-    typedef typename Matrix::orientation             orientation; // Shouldn't be needed -> refactor transposed_view!!!         
-    typedef typename Matrix::key_type                key_type; // Wrong -> key type should be taken from local matrix not the distributed
+    typedef typename Matrix::key_type                key_type;   // Wrong -> key type should be taken from local matrix not the distributed
 #endif
 
     /// Constructor for matrix with global size grows x gcols and default distribution.

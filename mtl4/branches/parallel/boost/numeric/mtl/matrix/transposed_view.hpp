@@ -56,12 +56,13 @@ struct transposed_view
     typedef mat_expr< self >              expr_base;
     typedef Matrix                        other;
 
-    typedef typename transposed_orientation<typename Matrix::orientation>::type orientation;
+    typedef typename Collection<Matrix>::size_type   size_type;
+    typedef typename Collection<Matrix>::value_type  value_type;
+    typedef typename Collection<Matrix>::const_reference     const_reference;
+    typedef typename transposed_orientation<typename OrientedCollection<Matrix>::orientation>::type orientation;
+
     typedef typename Matrix::index_type                index_type;
-    typedef typename Matrix::value_type                value_type;
-    typedef typename Matrix::const_reference           const_reference;
     typedef typename Matrix::key_type                  key_type;
-    typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
     typedef matrix::parameters<orientation, index_type, dim_type> parameters;
 
