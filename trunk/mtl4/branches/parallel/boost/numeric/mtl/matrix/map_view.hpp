@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/operation/tfunctor.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
 
 
 
@@ -42,13 +43,13 @@ struct map_view
     typedef mat_expr< self >                           expr_base;
     typedef Matrix                                     other;
     typedef const Matrix&                              const_ref_type;
-    typedef typename Matrix::orientation               orientation;
  
+    typedef typename Collection<Matrix>::size_type   size_type;
     typedef typename Functor::result_type              value_type;
     typedef typename Functor::result_type              const_reference;
+    typedef typename OrientedCollection<Matrix>::orientation orientation;
 
     typedef typename Matrix::key_type                  key_type;
-    typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type                  dim_type;
 
     map_view (const Functor& functor, const other& ref) : functor(functor), ref(ref) {}
