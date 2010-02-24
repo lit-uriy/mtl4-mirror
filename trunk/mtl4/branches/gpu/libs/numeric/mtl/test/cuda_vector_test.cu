@@ -22,7 +22,7 @@ void test(const char* name)
     typedef mtl::cuda::vector<T>   vt;
 
     std::cout << name << "-- Vector Test\n"; 
-    mtl::cuda::vector<T>  x(3, 33), y(3, 10, false);//, z(3,0), a(3,0);
+    mtl::cuda::vector<T>  x(3, 33), y(3, 10, false), z(3, 1), a(3,0);
     std::cout << "Vector constructed.\n" << "x=" << x << "\n";
     std::cout << "Vector constructed.\n" << "y=" << y << "\n";
 
@@ -46,8 +46,19 @@ void test(const char* name)
     std::cout<< "y=" << y << "\n";
     x.to_device();
     x*= 7;
-    std::cout<< "x=" << x << "\n\n\n";
-
+    std::cout<< "x=" << x << "\n";
+    x+= 2;
+    std::cout<< "x=" << x << "\n";
+    x-= 10;
+    std::cout<< "x=" << x << "\n";
+    x/= 10;
+    std::cout<< "x=" << x << "\n";
+    std::cout<< "y=" << y << "\n";
+     x.to_device(); y.to_device(); z.to_device();
+    x= y+z;
+    std::cout<< "Hello\n";
+    std::cout<< "x=" << x << "\n";
+   // std::cout<< "y=" << y << "\n";
 }
 
 
@@ -56,11 +67,11 @@ int main(int argc, char* argv[])
     using namespace mtl;
 
     test<int>("int");
-    test<short>("short");
+//    test<short>("short");
 
     //test<char>("char"); // works but annoying print outs :-/
-    test<float>("float");
-    test<double>("double");
+//    test<float>("float");
+//    test<double>("double");
 
 #if 0 // CUDA is too dumb for complex
     test<std::complex<float> >("std::complex<float>");
