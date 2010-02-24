@@ -39,7 +39,7 @@ int main( int argc, char** argv)
     mtl::cuda::vector<int>     i(size), j(size);
     mtl::cuda::vector<float>   u(size), v(size), w(size);
     mtl::cuda::vector<double>  x(size), y(size), z(size);
-    mtl::cuda::vector<std::complex<double> >  xc(size), yc(size), zc(size);
+  //  mtl::cuda::vector<std::complex<double> >  xc(size), yc(size), zc(size);
 
     test(i, j, "test int");
     test(u, v, "test float");
