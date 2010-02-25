@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/matrix/traverse_distributed.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/par/migration.hpp>
+#include <boost/numeric/mtl/operation/set_to_zero.hpp>
 
 namespace mtl { namespace par {
 
@@ -29,6 +30,8 @@ template <typename DistMatrixA, typename DistMatrixB>
 void migrate_matrix(const DistMatrixA& A, DistMatrixB& B, const block_migration& migration)
 {
     typedef typename Collection<DistMatrixA>::size_type size_type;
+
+    set_to_zero(local(B)); // for dense matrices 
 
     std::vector<size_type> columns;
     global_columns(A, columns);
