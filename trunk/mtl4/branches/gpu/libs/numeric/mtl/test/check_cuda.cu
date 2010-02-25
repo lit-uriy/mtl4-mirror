@@ -13,7 +13,7 @@
 
 int main( int argc, char** argv) 
 {
-    printf("CUDA Device Query (Runtime API) version (CUDART static linking)\n");
+    printf("CUDA Device Query\n");
 
     int deviceCount;
 

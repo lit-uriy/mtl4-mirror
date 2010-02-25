@@ -22,7 +22,7 @@ void test(const char* name)
     typedef mtl::cuda::vector<T>   vt;
 
     std::cout << name << "-- Vector Test\n"; 
-    mtl::cuda::vector<T>  x(3, 33), y(3, 10, false), z(3, 1), a(3,0);
+    mtl::cuda::vector<T>  x(3, 33), y(3, 10, false), z(3, 2), a(3,0);
     std::cout << "Vector constructed.\n" << "x=" << x << "\n";
     std::cout << "Vector constructed.\n" << "y=" << y << "\n";
 
@@ -50,15 +50,46 @@ void test(const char* name)
     x+= 2;
     std::cout<< "x=" << x << "\n";
     x-= 10;
-    std::cout<< "x=" << x << "\n";
+    std::cout<< "x=" << x << "\n\n\n";
     x/= 10;
     std::cout<< "x=" << x << "\n";
-    std::cout<< "y=" << y << "\n";
-     x.to_device(); y.to_device(); z.to_device();
+
+//    x.to_host(); y.to_host(); z.to_host();
+    x.to_device(); y.to_device(); z.to_device();
+
+
+    std::cout<< "Y=" << y << "\n";
+    std::cout<< "Z=" << z << "\n";
+    
     x= y+z;
-    std::cout<< "Hello\n";
-    std::cout<< "x=" << x << "\n";
-   // std::cout<< "y=" << y << "\n";
+    std::cout<< "\n\n>>>>>>>X= Y+ Z <<<<<<\n\nX=" << x << "\n";
+    std::cout<< "Y=" << y << "\n";
+    std::cout<< "Z=" << z << "\n";  
+ 
+    
+    x= y-z;
+   
+   
+    std::cout<< "\n\n>>>>>>>X= Y- Z <<<<<<\n\nX=" << x << "\n";
+    std::cout<< "Y=" << y << "\n";
+    std::cout<< "Z=" << z << "\n";
+    
+    x= y*z;
+   
+   
+    std::cout<< "\n\n>>>>>>>X= Y* Z <<<<<<\n\nX=" << x << "\n";
+    std::cout<< "Y=" << y << "\n";
+    std::cout<< "Z=" << z << "\n";   
+    
+    x= y/z;
+   
+   
+    std::cout<< "\n\n>>>>>>>X= Y/ Z <<<<<<\n\nX=" << x << "\n";
+    std::cout<< "Y=" << y << "\n";
+    std::cout<< "Z=" << z << "\n";   
+    
+    
+    
 }
 
 

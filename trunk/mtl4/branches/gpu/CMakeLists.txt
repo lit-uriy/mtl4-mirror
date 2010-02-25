@@ -19,7 +19,7 @@ set (BOOST_ROOT ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
 
 
 #adding FindCuda
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/share/cmake-2.8/Modules/FindCUDA")
+SET(CMAKE_MODULE_PATH "usr/share/cmake-2.6/Modules/cuda")
 FIND_PACKAGE(CUDA REQUIRED)
 
 
