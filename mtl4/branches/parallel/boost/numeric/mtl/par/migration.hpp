@@ -67,9 +67,7 @@ class block_migration
     /// Reference to old distribution
     const block_distribution& old_distribution() const { return old_dist; }
 
-# ifdef MTL_HAS_PARMETIS
-    friend block_migration parmetis_migration(const block_distribution&, const std::vector<idxtype>&);
-# endif
+    template <typename Partitioning> friend block_migration parmetis_migration(const block_distribution&, const Partitioning&);
     friend block_migration inline reverse(const block_migration& src);
     template <typename Indices, typename Map> friend void new_global_map(const block_migration&, const Indices&, Map&);
 
