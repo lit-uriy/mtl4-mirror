@@ -10,10 +10,12 @@
 // See also license.mtl.txt in the distribution.
 
 #include <stdio.h>
+#include <iostream>
+
 
 int main( int argc, char** argv) 
 {
-    printf("CUDA Device Query\n");
+    std::cout<<"CUDA Device Query\n";
 
     int deviceCount;
 
@@ -21,7 +23,7 @@ int main( int argc, char** argv)
 
     // This function call returns 0 if there are no CUDA capable devices.
     if (deviceCount == 0)
-        printf("There is no device supporting CUDA\n");
+        std::cout<<"There is no device supporting CUDA\n";
     int dev;
     for (dev = 0; dev < deviceCount; ++dev) {
         cudaDeviceProp deviceProp;
@@ -30,64 +32,53 @@ int main( int argc, char** argv)
         if (dev == 0) {
 		// This function call returns 9999 for both major & minor fields, if no CUDA capable devices are present
 	        if (deviceProp.major == 9999 && deviceProp.minor == 9999)
-                printf("There is no device supporting CUDA.\n");
+                std::cout<<"There is no device supporting CUDA.\n";
             else if (deviceCount == 1)
-                printf("There is 1 device supporting CUDA\n");
+                std::cout<<"There is 1 device supporting CUDA\n";
             else
-                printf("There are %d devices supporting CUDA\n", deviceCount);
+                std::cout<<"There are "<<deviceCount<<" devices supporting CUDA\n";
         }
-        printf("\nDevice %d: \"%s\"\n", dev, deviceProp.name);
+        std::cout<<"\nDevice "<< dev <<": \""<<deviceProp.name <<"\"\n";
     #if CUDART_VERSION >= 2020
 		int driverVersion = 0, runtimeVersion = 0;
 		cudaDriverGetVersion(&driverVersion);
-		printf("  CUDA Driver Version:                           %d.%d\n", driverVersion/1000, driverVersion%100);
+		std::cout<<"  CUDA Driver Version:                           "<< driverVersion/1000<< driverVersion%100<<"\n";
 		cudaRuntimeGetVersion(&runtimeVersion);
-		printf("  CUDA Runtime Version:                          %d.%d\n", runtimeVersion/1000, runtimeVersion%100);
+		std::cout<<"  CUDA Runtime Version:                          "<< runtimeVersion/1000 << runtimeVersion%100<<"\n";
     #endif
 
-        printf("  CUDA Capability Major revision number:         %d\n", deviceProp.major);
-        printf("  CUDA Capability Minor revision number:         %d\n", deviceProp.minor);
+        std::cout<<"  CUDA Capability Major revision number:         "<<deviceProp.major<<"\n";
+        std::cout<<"  CUDA Capability Minor revision number:         "<<deviceProp.minor<<"\n";
 
-		printf("  Total amount of global memory:                 %lu bytes\n", deviceProp.totalGlobalMem);
+		std::cout<<"  Total amount of global memory:                 "<< deviceProp.totalGlobalMem<<" bytes\n";
     #if CUDART_VERSION >= 2000
-        printf("  Number of multiprocessors:                     %d\n", deviceProp.multiProcessorCount);
-        printf("  Number of cores:                               %d\n", 8 * deviceProp.multiProcessorCount);
+        std::cout<<"  Number of multiprocessors:                     "<<deviceProp.multiProcessorCount<<"\n";
+        std::cout<<"  Number of cores:                               "<<8 * deviceProp.multiProcessorCount<<"\n";
     #endif
-        printf("  Total amount of constant memory:               %lu bytes\n", deviceProp.totalConstMem); 
-        printf("  Total amount of shared memory per block:       %lu bytes\n", deviceProp.sharedMemPerBlock);
-        printf("  Total number of registers available per block: %d\n", deviceProp.regsPerBlock);
-        printf("  Warp size:                                     %d\n", deviceProp.warpSize);
-        printf("  Maximum number of threads per block:           %d\n", deviceProp.maxThreadsPerBlock);
-        printf("  Maximum sizes of each dimension of a block:    %d x %d x %d\n",
-               deviceProp.maxThreadsDim[0],
-               deviceProp.maxThreadsDim[1],
-               deviceProp.maxThreadsDim[2]);
-        printf("  Maximum sizes of each dimension of a grid:     %d x %d x %d\n",
-               deviceProp.maxGridSize[0],
-               deviceProp.maxGridSize[1],
-               deviceProp.maxGridSize[2]);
-        printf("  Maximum memory pitch:                          %lu bytes\n", deviceProp.memPitch);
-        printf("  Texture alignment:                             %lu bytes\n", deviceProp.textureAlignment);
-        printf("  Clock rate:                                    %.2f GHz\n", deviceProp.clockRate * 1e-6f);
+        std::cout<<"  Total amount of constant memory:               "<<deviceProp.totalConstMem<<" bytes\n"; 
+        std::cout<<"  Total amount of shared memory per block:       "<<deviceProp.sharedMemPerBlock<<" bytes\n";
+        std::cout<<"  Total number of registers available per block: "<<deviceProp.regsPerBlock<<"\n";
+        std::cout<<"  Warp size:                                     "<<deviceProp.warpSize<<"\n";
+        std::cout<<"  Maximum number of threads per block:           "<<deviceProp.maxThreadsPerBlock<<"\n";
+        std::cout<<"  Maximum sizes of each dimension of a block:    "<<deviceProp.maxThreadsDim[0]<<" x "<<deviceProp.maxThreadsDim[1]<<" x "<<deviceProp.maxThreadsDim[2]<<"\n";
+        std::cout<<"  Maximum sizes of each dimension of a grid:     "<<deviceProp.maxGridSize[0]<<" x "<<deviceProp.maxGridSize[1]<<" x "<<deviceProp.maxGridSize[2]<<"\n";
+        std::cout<<"  Maximum memory pitch:                          "<<deviceProp.memPitch<<" bytes\n";
+        std::cout<<"  Texture alignment:                             "<<deviceProp.textureAlignment<<" bytes\n";
+        std::cout<<"  Clock rate:                                    "<<deviceProp.clockRate * 1e-6f<<" GHz\n";
     #if CUDART_VERSION >= 2000
-        printf("  Concurrent copy and execution:                 %s\n", deviceProp.deviceOverlap ? "Yes" : "No");
+        std::cout<<"  Concurrent copy and execution:                 "<<(deviceProp.deviceOverlap ? "Yes\n" : "No\n");
     #endif
     #if CUDART_VERSION >= 2020
-        printf("  Run time limit on kernels:                     %s\n", deviceProp.kernelExecTimeoutEnabled ? "Yes" : "No");
-        printf("  Integrated:                                    %s\n", deviceProp.integrated ? "Yes" : "No");
-        printf("  Support host page-locked memory mapping:       %s\n", deviceProp.canMapHostMemory ? "Yes" : "No");
-        printf("  Compute mode:                                  %s\n", deviceProp.computeMode == cudaComputeModeDefault ?
-			                                                            "Default (multiple host threads can use this device simultaneously)" :
-		                                                                deviceProp.computeMode == cudaComputeModeExclusive ?
-																		"Exclusive (only one host thread at a time can use this device)" :
-		                                                                deviceProp.computeMode == cudaComputeModeProhibited ?
-																		"Prohibited (no host thread can use this device)" :
-																		"Unknown");
+        std::cout<<"  Run time limit on kernels:                     "<<(deviceProp.kernelExecTimeoutEnabled ? "Yes\n" : "No\n");
+        std::cout<<"  Integrated:                                    "<<(deviceProp.integrated ? "Yes\n" : "No\n");
+        std::cout<<"  Support host page-locked memory mapping:       "<<(deviceProp.canMapHostMemory ? "Yes\n" : "No\n");
+        std::cout<<"  Compute mode:                                  "<<(deviceProp.computeMode == cudaComputeModeDefault ? "Default (multiple host threads can use this device simultaneously)\n" : deviceProp.computeMode == cudaComputeModeExclusive ? "Exclusive (only one host thread at a time can use this device)\n" :deviceProp.computeMode == cudaComputeModeProhibited ? "Prohibited (no host thread can use this device)\n" :  "Unknown\n");
+	
+	
     #endif
 }
-    printf("\nTest PASSED\n");
+    std::cout<<"\n\n";
 
-   // CUT_EXIT(argc, argv);
    return 0;
 }
 
