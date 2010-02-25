@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 
 
@@ -96,6 +97,74 @@ struct map_view
     const other&      ref;
 };
    
+
+// Specialization for distributed matrices
+template <typename Functor, typename LocalMatrix, typename RowDistribution, typename ColDistribution> 
+struct map_view<Functor, distributed<LocalMatrix, RowDistribution, ColDistribution> >
+  : public const_crtp_base_matrix< map_view<Functor, distributed<LocalMatrix, RowDistribution, ColDistribution> >, 
+				   typename Functor::result_type, typename LocalMatrix::size_type >,
+    public mat_expr< map_view<Functor, distributed<LocalMatrix, RowDistribution, ColDistribution> > >
+{
+    typedef map_view                                                    self;
+    typedef mat_expr< self >                                            expr_base;
+    typedef distributed<LocalMatrix, RowDistribution, ColDistribution>  other;
+    typedef const other&                                                const_ref_type;
+    typedef typename Collection<other>::size_type                       size_type;
+    typedef typename Functor::result_type                               value_type;
+    typedef typename Functor::result_type                               const_reference; // shouldn't be needed
+    // typedef typename Collection<other>::value_type                      value_type;
+    // typedef typename Collection<other>::const_reference                 const_reference; // shouldn't be needed
+ 
+    typedef map_view<Functor, LocalMatrix>                              local_type;
+    typedef map_view<Functor, typename other::remote_type>              remote_type;
+    typedef std::map<int, remote_type>                                  remote_map_type;
+    typedef typename remote_map_type::const_iterator                    remote_map_const_iterator;
+    
+    typedef RowDistribution                                             row_distribution_type;
+    typedef ColDistribution                                             col_distribution_type;
+    
+    map_view (const Functor& functor, const other& ref) 
+      : functor(functor), ref(ref), local_matrix(functor, local(ref)),
+	recv_info(ref.recv_info), send_info(ref.send_info)
+    {
+	for (typename other::remote_map_const_iterator it= ref.remote_matrices.begin(), end= ref.remote_matrices.end(); it != end; ++it)
+	    remote_matrices.insert(std::make_pair(it->first, remote_type(functor, it->second)));
+    }
+
+    friend size_type inline num_rows(const self& A) 
+    { 
+	using mtl::matrix::num_rows; return num_rows(A.ref); 
+    }
+    friend size_type inline num_cols(const self& A) 
+    { 
+	using mtl::matrix::num_cols; return num_cols(A.ref); 
+    }
+    friend size_type inline size(const self& A) 
+    { 
+	using mtl::matrix::num_rows; using mtl::matrix::num_cols;
+	return num_rows(A.ref) * num_rows(A.ref); 
+    }
+
+    friend inline const local_type& local(const self& A) { return A.local_matrix; }
+    friend inline const RowDistribution& row_distribution(const self& A) { return row_distribution(A.ref); }
+    friend inline const ColDistribution& col_distribution(const self& A) { return col_distribution(A.ref); }
+    friend inline const boost::mpi::communicator& communicator(const self& A) { return communicator(A.ref); }
+			      
+    template <typename DistMatrix, typename Visitor> friend void traverse_distributed(const DistMatrix& A, Visitor& vis);
+
+    size_type decompress_column(size_type col, int p) const { return ref.decompress_column(col, p); }
+
+  public:
+    Functor                        functor;
+    const other&                   ref;
+  protected:
+    local_type                     local_matrix;
+    remote_map_type                remote_matrices;
+    std::map<int, typename other::recv_structure> const& recv_info;
+    std::map<int, typename other::send_structure> const& send_info;
+};
+
+
 
 // ==========
 // Sub matrix
@@ -272,7 +341,7 @@ struct rscaled_view
 // divide_by_view -- added by Hui Li
 template <typename Matrix, typename Divisor>
 struct divide_by_view
-  : public map_view<tfunctor::divide_by<typename Matrix::value_type,Divisor>, Matrix>
+  : public map_view<tfunctor::divide_by<typename Matrix::value_type, Divisor>, Matrix>
 {
     typedef tfunctor::divide_by<typename Matrix::value_type, Divisor>  functor_type;
     typedef map_view<functor_type, Matrix>                             base;

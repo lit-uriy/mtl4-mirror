@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/par/migration.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl { namespace par {
 

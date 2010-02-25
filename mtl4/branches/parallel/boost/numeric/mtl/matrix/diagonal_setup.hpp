@@ -32,6 +32,12 @@ namespace mtl { namespace matrix {
 template <typename Matrix, typename Value>
 inline void diagonal_setup(Matrix& matrix, const Value& value)
 {
+    diagonal_setup(matrix, value, typename traits::category<Matrix>::type());
+}
+
+template <typename Matrix, typename Value>
+inline void diagonal_setup(Matrix& matrix, const Value& value, tag::universe)
+{
     using std::min;
     if (num_rows(matrix) == 0 || num_cols(matrix) == 0) 
 	return;
@@ -40,6 +46,12 @@ inline void diagonal_setup(Matrix& matrix, const Value& value)
     inserter<Matrix>      ins(matrix, 1);
     for (typename Collection<Matrix>::size_type i= 0, n= min(num_rows(matrix), num_cols(matrix)); i < n; ++i)
 	ins[i][i] << value;
+}
+
+template <typename Matrix, typename Value>
+inline void diagonal_setup(Matrix& matrix, const Value& value, tag::distributed)
+{
+    throw "to be implemented.";
 }
 
 }} // namespace mtl::matrix
