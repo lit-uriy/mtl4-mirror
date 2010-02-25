@@ -54,8 +54,8 @@ void test(const char* name)
     x/= 10;
     std::cout<< "x=" << x << "\n";
 
-//    x.to_host(); y.to_host(); z.to_host();
-    x.to_device(); y.to_device(); z.to_device();
+    x.to_host(); y.to_host(); z.to_host();
+//    x.to_device(); y.to_device(); z.to_device();
 
 
     std::cout<< "Y=" << y << "\n";
@@ -67,21 +67,21 @@ void test(const char* name)
     std::cout<< "Z=" << z << "\n";  
  
     
-    x= y-z;
+ //   x= y-z;
    
    
     std::cout<< "\n\n>>>>>>>X= Y- Z <<<<<<\n\nX=" << x << "\n";
     std::cout<< "Y=" << y << "\n";
     std::cout<< "Z=" << z << "\n";
     
-    x= y*z;
+//    x= y*z;
    
    
     std::cout<< "\n\n>>>>>>>X= Y* Z <<<<<<\n\nX=" << x << "\n";
     std::cout<< "Y=" << y << "\n";
     std::cout<< "Z=" << z << "\n";   
     
-    x= y/z;
+ //   x= y/z;
    
    
     std::cout<< "\n\n>>>>>>>X= Y/ Z <<<<<<\n\nX=" << x << "\n";

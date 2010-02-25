@@ -90,8 +90,18 @@ class vector
 	 } else  {
 	    to_device(); // if not yet there
 	    dim3 dimGrid(1), dimBlock(dim); 
-            vector_vector_rplus<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
-
+            
+    
+	    vector_vector_rplus<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
+ 	    
+	 
+// 	    vec_rmult_asgn<value_type> sc(src, dptr, dim);
+// 	    launch_function<<<dimGrid, dimBlock>>>(sc);	    
+// 	    
+	    
+	    
+	    
+	    
 	 }
 	 return temp;
     }
