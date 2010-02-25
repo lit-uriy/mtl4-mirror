@@ -72,7 +72,7 @@ namespace mtl {
 
 
     template <typename Updater, typename MatrixSrc, typename MatrixDest>
-    inline void gen_matrix_copy(const MatrixSrc& src, MatrixDest& dest, bool with_reset)
+    inline void gen_matrix_copy(const MatrixSrc& src, MatrixDest& dest, bool with_reset, tag::universe)
     {
 	MTL_THROW_IF(num_rows(src) != num_rows(dest) || num_cols(src) != num_cols(dest), incompatible_size());
 
@@ -98,6 +98,18 @@ namespace mtl {
 	}
     }
 	    
+    template <typename Updater, typename MatrixSrc, typename MatrixDest>
+    inline void gen_matrix_copy(const MatrixSrc& src, MatrixDest& dest, bool with_reset, tag::distributed)
+    {
+	throw "to be implemented.";
+    }
+
+    template <typename Updater, typename MatrixSrc, typename MatrixDest>
+    inline void gen_matrix_copy(const MatrixSrc& src, MatrixDest& dest, bool with_reset)
+    {
+	gen_matrix_copy<Updater>(src, dest, with_reset, typename traits::category<MatrixDest>::type());
+    }
+
     /// Copy matrix \p src into matrix \p dest
     template <typename MatrixSrc, typename MatrixDest>
     inline void matrix_copy(const MatrixSrc& src, MatrixDest& dest)

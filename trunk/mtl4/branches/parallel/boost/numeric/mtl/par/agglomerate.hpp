@@ -14,20 +14,34 @@
 
 #ifdef MTL_HAS_MPI // needs MPI but not necessarily ParMetis
 
+#include <vector>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/interface/parmetis_migration.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
+
 namespace mtl {
 
     namespace matrix {
 
-	/// Agglomerate distributed matrix \p A on \p rank (default is 0)
-	/** Type is local type of \p A. Other processors return empty matrix. **/
-	template <typename Matrix>
+	/// Agglomerate distributed matrix \p A on \p rank (default is 0) by migrating into matrix of type \p Matrix.
+	/** Result type is local type of \p Matrix. Other processors return empty matrix. **/
+	template <typename Matrix, typename Src>
 	typename mtl::DistributedCollection<Matrix>::local_type
-	inline agglomerate(const Matrix& A, std::size_t rank= 0)
+	inline agglomerate(const Src& A, std::size_t rank= 0)
 	{
 	    typedef typename mtl::DistributedCollection<Matrix>::local_type local_type;
 	    std::vector<std::size_t> part(num_rows(local(A)), rank);
-	    Matrix B(A, parmetis_migration(row_distribution(A), part));
+	    Matrix B(A, par::parmetis_migration(row_distribution(A), part));
 	    return communicator(A).rank() == rank ? local(B) : local_type();
+	}
+
+	/// Agglomerate distributed matrix \p A on \p rank (default is 0) by migration.
+	/** Result type is local type of \p A. Other processors return empty matrix. **/
+	template <typename Src>
+	typename mtl::DistributedCollection<Src>::local_type
+	inline agglomerate(const Src& A, std::size_t rank= 0)
+	{
+	    return agglomerate<Src, Src>(A, rank);
 	}
     }
 
@@ -40,7 +54,7 @@ namespace mtl {
 	inline agglomerate(const Vector& v, std::size_t rank= 0)
 	{
 	    typedef typename mtl::DistributedCollection<Vector>::local_type local_type;
-	    std::vector<std::size_t> part(num_rows(local(A)), rank);
+	    std::vector<std::size_t> part(num_rows(local(v)), rank);
 	    Vector w(v, parmetis_migration(row_distribution(v), part));
 	    return communicator(v).rank() == rank ? local(w) : local_type();
 	}

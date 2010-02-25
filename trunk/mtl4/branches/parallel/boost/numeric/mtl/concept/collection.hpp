@@ -429,6 +429,24 @@ namespace mtl {
     };
 #endif
 	
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll, typename Divisor>
+    concept_map Collection<matrix::divide_by_view<Coll, Divisor> >
+    {
+	typedef typename matrix::divide_by_view<Coll, Divisor>::value_type        value_type;
+	typedef typename matrix::divide_by_view<Coll, Divisor>::const_reference   const_reference;
+	typedef typename matrix::divide_by_view<Coll, Divisor>::size_type         size_type;
+    };
+#else
+    template <typename Coll, typename Divisor>
+    struct Collection<matrix::divide_by_view<Coll, Divisor> >
+    {
+	typedef typename matrix::divide_by_view<Coll, Divisor>::value_type        value_type;
+	typedef typename matrix::divide_by_view<Coll, Divisor>::const_reference   const_reference;
+	typedef typename matrix::divide_by_view<Coll, Divisor>::size_type         size_type;
+    };
+#endif
+	
 	
 #ifdef __GXX_CONCEPTS__
     template <typename Scaling, typename Coll>
@@ -466,6 +484,25 @@ namespace mtl {
 	typedef typename vector::rscaled_view<Coll,RScaling>::size_type         size_type;
     };
 #endif
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll, typename Divisor>
+    concept_map Collection<vector::divide_by_view<Coll,Divisor> >
+    {
+	typedef typename vector::divide_by_view<Coll,Divisor>::value_type        value_type;
+	typedef typename vector::divide_by_view<Coll,Divisor>::const_reference   const_reference;
+	typedef typename vector::divide_by_view<Coll,Divisor>::size_type         size_type;
+    };
+#else
+    template <typename Coll, typename Divisor>
+    struct Collection<vector::divide_by_view<Coll,Divisor> >
+    {
+	typedef typename vector::divide_by_view<Coll,Divisor>::value_type        value_type;
+	typedef typename vector::divide_by_view<Coll,Divisor>::const_reference   const_reference;
+	typedef typename vector::divide_by_view<Coll,Divisor>::size_type         size_type;
+    };
+#endif
+
 
 
 #ifdef __GXX_CONCEPTS__

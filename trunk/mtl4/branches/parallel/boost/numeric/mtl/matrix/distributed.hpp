@@ -39,6 +39,7 @@
 #include <boost/numeric/mtl/operation/for_each_nonzero.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -124,6 +125,12 @@ class distributed
 	local_matrix.change_dim(row_dist.num_local(grows), cdp->num_local(gcols));
     }
 
+    void check_dim(size_type grows, size_type gcols) const
+    {
+        MTL_DEBUG_THROW_IF(this->grows * this->gcols != 0 && (this->grows != grows || this->gcols != gcols),
+                           incompatible_size());
+    }
+
     void clean_cdp() { if (cdp && cdp != &row_dist) delete cdp; }
     void clean_remote_matrices() { remote_matrices.clear(); }
 
@@ -151,6 +158,7 @@ class distributed
 
 	return *this;
     }
+
 
     /// Leading dimension
     size_type dim1() { return mtl::traits::is_row_major<self>::value ? grows : gcols; }
@@ -243,15 +251,16 @@ class distributed
     }
 
     template <typename DistMatrix, typename Visitor> friend void traverse_distributed(const DistMatrix& A, Visitor& vis);
+    template <typename Functor, typename M> friend struct map_view;
 
-  public:
+  protected:
+//  public:
     size_type                      grows, gcols, total_send_size, total_recv_size;
     RowDistribution                row_dist;
     ColDistribution                *cdp;
     
-  protected:
     local_type                     local_matrix;
-  public:
+// public:
     remote_map_type                remote_matrices;
     std::map<int, recv_structure>  recv_info;
     std::map<int, send_structure>  send_info;
