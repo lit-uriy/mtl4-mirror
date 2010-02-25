@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/vector/inserter.hpp> 
 #include <boost/numeric/mtl/operation/local.hpp> 
 #include <boost/numeric/mtl/par/migration.hpp>
+#include <boost/numeric/mtl/operation/set_to_zero.hpp>
 
 namespace mtl { namespace par {
 
@@ -28,6 +29,7 @@ void migrate_vector(const DistVectorV& v, DistVectorW& w, const block_migration&
     typedef typename DistributedCollection<DistVectorV>::local_type local_type;
     typedef typename Collection<local_type>::size_type              size_type;
     
+    set_to_zero(local(w)); // to avoid undefined entries
     vector::inserter<DistVectorW> ins(w);
 
     const local_type& l= local(v);
