@@ -71,7 +71,7 @@ dist_mat_cvec_send_start(const Matrix& A, const VectorIn& v, tag::comm_non_block
     typedef typename Matrix::send_structure        send_structure;
     dist_mat_cvec_handle handle;
 
-    typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
+    typename std::map<int, send_structure>::const_iterator s_it(A.send_info().begin()), s_end(A.send_info().end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
 	handle.reqs.push_back(communicator(v).isend(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices))); // pointer and size
@@ -86,7 +86,7 @@ dist_mat_cvec_recv_start(const Matrix& A, const VectorIn& v, dist_mat_cvec_handl
     typedef typename Matrix::recv_structure        recv_structure;
 
     mtl::par::mpi_log << "[nonblocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << '\n';    
-    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
+    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info().begin()), r_end(A.recv_info().end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
 	handle.reqs.push_back(communicator(v).irecv(r_it->first, 999, &recv_buffer(v)[s.offset], s.size)); // pointer and size
@@ -132,7 +132,7 @@ void inline linear_buffer_fill(const Matrix& A, Vector& v)
 
     enlarge_buffer(A, v);
 
-    typename std::map<int, typename Matrix::send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
+    typename std::map<int, typename Matrix::send_structure>::const_iterator s_it(A.send_info().begin()), s_end(A.send_info().end());
     for (; s_it != s_end; ++s_it) {
 	const typename Matrix::send_structure&   s= s_it->second;
 	const dense_vector<size_type, mtl::vector::parameters<> >&  indices= s.indices; // parameters shouldn't be needed here!
@@ -168,9 +168,9 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 	    mtl::par::mpi_log << "[nonblocking] finished sending my data" << '\n';
 	else { 
 	    // we have a receive request 
-	    const recv_structure& s = (*A.recv_info.find(p)).second;
+	    const recv_structure& s = A.recv_info().find(p)->second;
 	    mtl::par::mpi_log << "[nonblocking] received data from rank " << p << " of size " << s.size << '\n';
-	    op(const_cast<Matrix&>(A).remote_matrices[p] /* Scheiss std::map */, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
+	    op(remote(A).find(p)->second, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
 	}
 	h.reqs.erase(res.second);
     }
@@ -187,19 +187,19 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
     typedef typename Matrix::recv_structure        recv_structure;
 
     linear_buffer_fill(A, v);
-    typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
+    typename std::map<int, send_structure>::const_iterator s_it(A.send_info().begin()), s_end(A.send_info().end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
 	communicator(v).send(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices)); 
     }
 
     mtl::par::mpi_log << "[blocking] Size receive buffer on rank " << communicator(v).rank() << " is " << size(recv_buffer(v)) << '\n';
-    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
+    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info().begin()), r_end(A.recv_info().end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
 	int                     p= r_it->first;
 	mtl::par::check_mpi( communicator(v).recv(p, 999, &recv_buffer(v)[s.offset], s.size) );
-	op(const_cast<Matrix&>(A).remote_matrices[p] /* Scheiss std::map */, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
+	op(remotes(A).find(p)->second, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
     }
 }
 
@@ -280,7 +280,7 @@ trans_dist_mat_cvec_start(const Matrix& A, VectorOut& w, tag::comm_non_blocking,
     
     // Roles of send and receive buffers are interchanged in transposed operations
     typedef typename Matrix::recv_structure        recv_structure;
-    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
+    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info().begin()), r_end(A.recv_info().end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
 	handle.reqs.push_back(communicator(w).isend(r_it->first, 999, &recv_buffer(w)[s.offset], s.size));
@@ -294,7 +294,7 @@ void inline trans_compute_send_buffer(const Matrix& A, const VectorIn& v, Vector
     enlarge_buffer(A, w);
     typename Matrix::remote_map_const_iterator A_it= remote(A).begin(), A_end= remote(A).end();
     for (; A_it != A_end; ++A_it) {
-	const typename Matrix::recv_structure& r= A.recv_info.find(A_it->first)->second;
+	const typename Matrix::recv_structure& r= A.recv_info().find(A_it->first)->second;
 	typename DistributedCollection<VectorOut>::local_type w_sub(recv_buffer(w)[irange(r.offset, r.offset + r.size)]); // might need to handle sub-matrix with type trait 
 	op(A_it->second, local(v), w_sub);
     }
@@ -327,13 +327,13 @@ trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
     typedef typename Matrix::recv_structure        recv_structure;
 
     // Roles of send and receive buffers are interchanged in transposed operations
-    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info.begin()), r_end(A.recv_info.end());
+    typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info().begin()), r_end(A.recv_info().end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
 	communicator(v).send(r_it->first, 999, &recv_buffer(w)[s.offset], s.size);
     }
 
-    typename std::map<int, send_structure>::const_iterator s_it(A.send_info.begin()), s_end(A.send_info.end());
+    typename std::map<int, send_structure>::const_iterator s_it(A.send_info().begin()), s_end(A.send_info().end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
 	mtl::par::check_mpi(communicator(w).recv(s_it->first, 999, &send_buffer(w)[s.offset], size(s.indices)));
@@ -350,7 +350,7 @@ trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
 	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
 	int p= res.first.source();
 	if (p != communicator(v).rank())  // only receive requests need work
-	    trans_dist_update_vector(A.send_info.find(p)->second, w, as);
+	    trans_dist_update_vector(A.send_info().find(p)->second, w, as);
 	h.reqs.erase(res.second);
     }
 }

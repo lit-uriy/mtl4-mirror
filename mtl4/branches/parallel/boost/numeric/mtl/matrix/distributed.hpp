@@ -148,7 +148,7 @@ class distributed
     }
 
     void clear_cdp() { if (cdp && cdp != &row_dist) delete cdp; }
-    void clear_remote_matrices() { remote_matrices.clear(); recv_info.clear(); send_info.clear(); }
+    void clear_remote_matrices() { remote_matrices.clear(); my_recv_info.clear(); my_send_info.clear(); }
 
     struct send_structure
     {
@@ -190,6 +190,10 @@ class distributed
 
     size_type total_send_size() const { return my_total_send_size; }
     size_type total_recv_size() const { return my_total_recv_size; }
+
+    const std::map<int, recv_structure>& recv_info() const { return my_recv_info; }
+    const std::map<int, send_structure>& send_info() const { return my_send_info; }
+
 
   private:
     void col_dist_assign(const self& src, boost::mpl::true_)
@@ -259,8 +263,8 @@ class distributed
 	}
 #if 0 // only to print buffer organization
 	for (int p= 0; p < col_dist.size(); p++) {
-	    typename std::map<int, send_structure >::const_iterator it(A.send_info.find(p));
-	    if (it != A.send_info.end())
+	    typename std::map<int, send_structure >::const_iterator it(A.my_send_info.find(p));
+	    if (it != A.my_send_info.end())
 		out << it->second.indices << "@" << it->second.offset;
 	    else
 		out << "[]";
@@ -278,22 +282,16 @@ class distributed
 
     template <typename DistMatrix, typename Visitor> friend void traverse_distributed(const DistMatrix& A, Visitor& vis);
     template <typename Functor, typename M> friend struct map_view;
-    template <typename M, typename VI, typename VO, typename F> friend void trans_compute_send_buffer(const M&, const VI&, VO&, F);
-    template <typename M, typename VO> friend dist_mat_cvec_handle trans_dist_mat_cvec_start(const M&, VO&, tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer);
-    template <typename M, typename VI, typename VO, typename A> 
-    friend void trans_dist_mat_cvec_wait(const M&, const VI&, VO&, A, dist_mat_cvec_handle& h, tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer);
 
   protected:
-//  public:
     size_type                      grows, gcols, my_total_send_size, my_total_recv_size;
     RowDistribution                row_dist;
     ColDistribution                *cdp;
     
     local_type                     local_matrix;
-// public:
     remote_map_type                remote_matrices;
-    std::map<int, recv_structure>  recv_info;
-    std::map<int, send_structure>  send_info;
+    std::map<int, recv_structure>  my_recv_info;
+    std::map<int, send_structure>  my_send_info;
     std::map<int, dense_vector<size_type> >     index_comp; // compression of columns in receive buffer
 };
 
@@ -371,7 +369,7 @@ class distributed_inserter
 		for (size_type i= 0, pos= 0; i < marker.used_col.size(); i++)
 		    if (marker.used_col[i])
 			index_comp[p][pos++]= i;
-		dist_matrix.recv_info.insert(std::make_pair(int(p), recv_structure(ncols, dist_matrix.my_total_recv_size)));
+		dist_matrix.my_recv_info.insert(std::make_pair(int(p), recv_structure(ncols, dist_matrix.my_total_recv_size)));
 		dist_matrix.my_total_recv_size+= ncols;
 		dist_matrix.index_comp.insert(std::make_pair(int(p), index_comp[p]));
 		typename traits::reorder<>::type R(reorder(index_comp[p], num_cols(A)));
@@ -383,7 +381,7 @@ class distributed_inserter
 	all_to_all_sparse(communicator(col_dist()), index_comp, send_indices);
 	for (unsigned p= 0; p < col_size(); p++)
 	    if (size(send_indices[p]) > 0) {
-		dist_matrix.send_info.insert(std::make_pair(p, send_structure(send_indices[p], dist_matrix.my_total_send_size)));
+		dist_matrix.my_send_info.insert(std::make_pair(p, send_structure(send_indices[p], dist_matrix.my_total_send_size)));
 		dist_matrix.my_total_send_size+= send_indices[p].size();
 	    }
     }
