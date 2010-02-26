@@ -24,7 +24,6 @@
 #define MTL_HAS_STD_OUTPUT_OPERATOR // to print std::vector and std::pair
 #include <boost/numeric/mtl/mtl.hpp>
 
-#include <parmetis.h>
 #include <boost/mpi.hpp>
 #include <boost/serialization/string.hpp>
 
@@ -41,38 +40,22 @@ struct ins
 };
 
 template <typename Matrix>
-inline void cv(const Matrix& A, unsigned r, unsigned c, double v)
-{
-    //if (A[r][c] != v) throw "Wrong value;";
-}
-
-template <typename Matrix>
 void test(Matrix& A,  const char* name)
 {
-    typedef typename mtl::Collection<Matrix>::size_type size_type;
-    typedef std::pair<size_type, size_type>             entry_type;
-    typedef std::vector<entry_type>                     vec_type;
-
     mtl::par::single_ostream sout;
-    mtl::par::multiple_ostream<> mout;
-
-    std::vector<idxtype> part;
     mpi::communicator comm(communicator(A));
     A= 0;
     {
 	mtl::matrix::inserter<Matrix> mins(A);
 	ins<mtl::matrix::inserter<Matrix> > i(mins, 10*(comm.rank()+1));
 	switch (comm.rank()) {
-	  case 0: i(0, 1); i(0, 2); i(1, 2); i(1, 3); i(2, 3); i(2, 5); 
-	      part.push_back(1); part.push_back(0); part.push_back(1); break;
-	  case 1: i(3, 4); i(3, 5); i(4, 5); i(4, 6); 
-	      part.push_back(0); part.push_back(0); break;
+	  case 0: i(0, 1); i(0, 2); i(1, 2); i(1, 3); i(2, 3); i(2, 5); break;
+	  case 1: i(3, 4); i(3, 5); i(4, 5); i(4, 6); break;
 	  case 2: i(5, 6); i(6, 4); i(6, 5);
-	      part.push_back(2); part.push_back(2);
 	}; 
     }
 
-    sout << "Matrix is:\n" << A;
+    sout << name << ": matrix is:\n" << A;
     sout << "Agglomerated matrix is:\n" << agglomerate(A);
 
     typedef typename mtl::DistributedCollection<Matrix>::local_type local_type;
