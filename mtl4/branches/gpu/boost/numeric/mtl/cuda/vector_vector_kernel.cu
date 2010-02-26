@@ -20,7 +20,7 @@ namespace mtl { namespace cuda {
 
 
 template <typename Vector>
-__global__ void vector_vector_rplus (Vector *v1, Vector *v2, Vector dim)
+__global__ void vector_vector_rplus (Vector *v1, Vector *v2, int dim)
 {
  int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -31,7 +31,7 @@ __global__ void vector_vector_rplus (Vector *v1, Vector *v2, Vector dim)
 }
 
 template <typename Vector>
-__global__ void vector_vector_rminus (Vector *v1, Vector *v2, Vector dim)
+__global__ void vector_vector_rminus (Vector *v1, Vector *v2, int dim)
 {
  int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -42,9 +42,10 @@ __global__ void vector_vector_rminus (Vector *v1, Vector *v2, Vector dim)
 }
 
 
+#if 0 // I don't think that we need this
 
 template <typename Vector>
-__global__ void vector_vector_rmult (Vector *v1, Vector *v2, Vector dim)
+__global__ void vector_vector_rmult (Vector *v1, Vector *v2, int dim)
 {
  int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -57,7 +58,7 @@ __global__ void vector_vector_rmult (Vector *v1, Vector *v2, Vector dim)
 
 
 template <typename Vector>
-__global__ void vector_vector_rdivide (Vector *v1, Vector *v2, Vector dim)
+__global__ void vector_vector_rdivide (Vector *v1, Vector *v2, int dim)
 {
  int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -67,7 +68,7 @@ __global__ void vector_vector_rdivide (Vector *v1, Vector *v2, Vector dim)
 
 }
 
-
+#endif
 
 }} // namespace mtl::cuda
 
