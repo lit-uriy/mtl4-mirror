@@ -31,6 +31,7 @@
 #include <boost/numeric/mtl/par/dist_mat_cvec_mult.hpp>
 #include <boost/numeric/mtl/par/migrate_matrix.hpp>
 #include <boost/numeric/mtl/par/migrate_vector.hpp>
+#include <boost/numeric/mtl/par/migrating_copy.hpp>
 
 #include <boost/numeric/mtl/interface/parmetis_migration.hpp>
 #include <boost/numeric/mtl/interface/parmetis.hpp>

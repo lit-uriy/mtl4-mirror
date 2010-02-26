@@ -30,28 +30,42 @@ namespace mtl { namespace matrix {
     a non-zero scalar to a non-square matrix).
  **/
 template <typename Matrix, typename Value>
-inline void diagonal_setup(Matrix& matrix, const Value& value)
+inline void diagonal_setup(Matrix& A, const Value& value)
 {
-    diagonal_setup(matrix, value, typename traits::category<Matrix>::type());
+    using math::zero;
+    if (num_rows(A) == 0 || num_cols(A) == 0) 
+	return;
+
+    set_to_zero(A);
+
+    typename Collection<Matrix>::value_type  ref, my_zero(zero(ref));
+    if (value == my_zero)
+	return;
+
+    diagonal_setup_finish(A, value, typename traits::category<Matrix>::type());
 }
 
 template <typename Matrix, typename Value>
-inline void diagonal_setup(Matrix& matrix, const Value& value, tag::universe)
+inline void diagonal_setup_finish(Matrix& A, const Value& value, tag::universe)
 {
-    using std::min;
-    if (num_rows(matrix) == 0 || num_cols(matrix) == 0) 
-	return;
-
-    set_to_zero(matrix);
-    inserter<Matrix>      ins(matrix, 1);
-    for (typename Collection<Matrix>::size_type i= 0, n= min(num_rows(matrix), num_cols(matrix)); i < n; ++i)
+    using std::min; 
+    inserter<Matrix>      ins(A, 1);
+    for (typename Collection<Matrix>::size_type i= 0, n= min(num_rows(A), num_cols(A)); i < n; ++i)
 	ins[i][i] << value;
 }
 
 template <typename Matrix, typename Value>
-inline void diagonal_setup(Matrix& matrix, const Value& value, tag::distributed)
+inline void diagonal_setup_finish(Matrix& A, const Value& value, tag::distributed)
 {
-    throw "to be implemented.";
+    typedef typename Collection<Matrix>::size_type size_type;
+    typename Matrix::row_distribution_type row_dist(row_distribution(A));
+    inserter<Matrix>      ins(A, 1);
+
+    for (size_type i= 0, end= num_rows(local(A)); i < end; ++i) {
+	size_type grow= row_dist.local_to_global(i);
+	if (grow < num_cols(A))
+	    ins[grow][grow] << value;
+    }
 }
 
 }} // namespace mtl::matrix

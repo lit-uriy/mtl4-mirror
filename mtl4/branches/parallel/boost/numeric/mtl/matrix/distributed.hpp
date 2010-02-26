@@ -103,16 +103,30 @@ class distributed
       : row_dist(0), cdp(new ColDistribution(0))
     {	*this= src;    }
 
+    // In case new row distribution is to small for global number of columns
+    // gcols and row_dist must be set before function is called
+    // Row and column distribution must be of same type.
+    ColDistribution*
+    adapt_col_distribution()
+    {
+	if (row_dist.max_global() >= gcols) // large enough
+	    return &row_dist;
+	ColDistribution* new_coll_dist= new ColDistribution(row_dist); // copy constructor
+	new_coll_dist->stretch(gcols);
+	return new_coll_dist;
+    }
+
+
     /// Migrating copy
     template <typename MatrixSrc>
     explicit distributed(const MatrixSrc& src, const par::block_migration& migration)
       : grows(num_rows(src)), gcols(num_cols(src)), row_dist(migration.new_distribution()),
-	cdp(&this->row_dist), local_matrix(row_dist.num_local(grows), cdp->num_local(gcols))
+	cdp(adapt_col_distribution()), local_matrix(row_dist.num_local(grows), cdp->num_local(gcols))
     {
 	migrate_matrix(src, *this, migration);
     }
 
-    ~distributed() { clean_cdp(); clean_remote_matrices(); }
+    ~distributed() { clear_cdp(); }
 
     using assign_base::operator=; // still need 
 
@@ -131,8 +145,8 @@ class distributed
                            incompatible_size());
     }
 
-    void clean_cdp() { if (cdp && cdp != &row_dist) delete cdp; }
-    void clean_remote_matrices() { remote_matrices.clear(); }
+    void clear_cdp() { if (cdp && cdp != &row_dist) delete cdp; }
+    void clear_remote_matrices() { remote_matrices.clear(); recv_info.clear(); send_info.clear(); }
 
     struct send_structure
     {
@@ -150,7 +164,7 @@ class distributed
     self& operator=(const self& src)
     {
 	row_dist= src.row_dist;
-	clean_cdp();
+	clear_cdp();
 	col_dist_assign(src, boost::is_same<RowDistribution, ColDistribution>());
 	local_matrix= src.local_matrix;
 	// copy remote parts and such

@@ -17,6 +17,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <limits>
 
 #include <boost/mpl/bool.hpp>
 #include <boost/mpi/communicator.hpp>
@@ -86,6 +87,21 @@ namespace mtl {
 	    /// Change number of global entries to n
 	    void resize(size_type n) { init(n); }
 
+	    /// Change number of global entries to n
+	    /** If all entries are in first partition (e.g. agglomeration) this one is enlarged
+		otherwise the last partition. **/
+	    void stretch(size_type n) 
+	    { 
+		assert(my_size > 0);
+		if (n <= starts[my_size])  // large enough
+		    return;
+		if (my_size > 1 && starts[1] == starts[my_size])
+		    for (size_type i= 1; i < my_size; ++i)
+			starts[i]= n;
+		else
+		    starts[my_size]= n;
+	    }
+
 	    /// Set up from a vector with the size of each partition (performs partial sum)
 	    void setup_from_local_sizes(const std::vector<size_type>& lsizes)
 	    {
@@ -112,7 +128,6 @@ namespace mtl {
 	    Size num_local(Size n) const { return num_local(n, my_rank); }
 
 	    /// The maximal number of global entries 
-	    /** Function does not exist for cyclic and block-cyclic distribution. **/
 	    size_type max_global() const { return starts[my_size]; }
 
 	    /// Is the global index \p n on my processor
@@ -147,7 +162,7 @@ namespace mtl {
 	    /// On which rank is global index n?
 	    int on_rank(size_type n) const 
 	    { 
-		// if (n < starts[0] || n >= starts[my_size]) std::cerr << "out of range with n == " << n << "max == " << starts[my_size] << std::endl;
+		if (n < starts[0] || n >= starts[my_size]) std::cerr << "out of range with n == " << n << " and starts == " << starts << std::endl;
 		MTL_DEBUG_THROW_IF(n < starts[0] || n >= starts[my_size], range_error);
 		std::vector<size_type>::const_iterator lbound( std::lower_bound(starts.begin(), starts.end(), n));
 		return lbound - starts.begin() - int(*lbound != n);
@@ -181,6 +196,8 @@ namespace mtl {
 
 	    /// Change number of global entries to n (only dummy)
 	    void resize(size_type) {}
+	    /// Change number of global entries to n (only dummy)
+	    void stretch(size_type) {}
 
 	    /// Two cyclic distributions are equal if they have the same communicator
 	    bool operator==(const cyclic_distribution& dist) const { return comm == dist.comm; }
@@ -197,6 +214,9 @@ namespace mtl {
 	    /// For n global entries, how many are on my processor?
 	    template <typename Size>
 	    Size num_local(Size n) const { return num_local(n, my_rank); }
+
+	    /// The maximal number of global entries (unlimited for cyclic)
+	    size_type max_global() const { return std::numeric_limits<size_type>::max(); }
 
 	    /// Is the global index \p n on my processor
 	    bool is_local(size_type n) const { return n % my_size == my_rank; }
@@ -241,6 +261,8 @@ namespace mtl {
 	    
 	    /// Change number of global entries to n (only dummy)
 	    void resize(size_type) {}
+	    /// Change number of global entries to n (only dummy)
+	    void stretch(size_type) {}
 
 	    /// Two block cyclic distributions are equal if they have the same communicator
 	    bool operator==(const block_cyclic_distribution& dist) const { return comm == dist.comm && bsize == dist.bsize; }
@@ -258,6 +280,9 @@ namespace mtl {
 	    /// For n global entries, how many are on my processor?
 	    template <typename Size>
 	    Size num_local(Size n) const { return num_local(n, my_rank); }
+
+	    /// The maximal number of global entries (unlimited for block cyclic)
+	    size_type max_global() const { return std::numeric_limits<size_type>::max(); }
 
 	    /// Is the global index \p n on my processor
 	    bool is_local(size_type n) const { return on_rank(n) == my_rank; }

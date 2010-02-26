@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/matrix/inserter.hpp> 
 #include <boost/numeric/mtl/matrix/traverse_distributed.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/par/migration.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
