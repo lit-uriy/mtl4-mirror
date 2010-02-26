@@ -175,9 +175,12 @@ class distributed
 
 
     /// Leading dimension
-    size_type dim1() { return mtl::traits::is_row_major<self>::value ? grows : gcols; }
+    size_type dim1() const { return mtl::traits::is_row_major<self>::value ? grows : gcols; }
     /// Non-leading dimension
-    size_type dim2() { return mtl::traits::is_row_major<self>::value ? gcols : grows; }
+    size_type dim2() const { return mtl::traits::is_row_major<self>::value ? gcols : grows; }
+
+    /// Number of non-zeros is only an estimation (for sake of performance), complete nonsense on dense matrices
+    size_type nnz() const { return size_type(local_matrix.nnz() * 1.3 * grows / num_rows(local_matrix)); }
 
     // Decompress column index from buffer index to entire sub-vector range; for internal use only
     size_type decompress_column(size_type col, int p) const

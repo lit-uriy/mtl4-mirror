@@ -22,6 +22,8 @@ namespace mtl { namespace operations {
 template <typename Element>
 struct update_store
 {
+    static const bool init_to_zero= true;
+
     template <typename Value>
     Element& operator() (Element& x, Value const& y)
     {
@@ -39,6 +41,8 @@ struct update_store
 template <typename Element>
 struct update_plus
 {
+    static const bool init_to_zero= false;
+
     template <typename Value>
     Element& operator() (Element& x, Value const& y)
     {
@@ -56,6 +60,8 @@ struct update_plus
 template <typename Element>
 struct update_minus
 {
+    static const bool init_to_zero= false;
+
     template <typename Value>
     Element& operator() (Element& x, Value const& y)
     {
@@ -73,6 +79,8 @@ struct update_minus
 template <typename Element>
 struct update_times
 {
+    static const bool init_to_zero= false;
+
     template <typename Value>
     Element& operator() (Element& x, Value const& y)
     {
@@ -90,6 +98,8 @@ struct update_times
 template <typename Element, typename MonoidOp>
 struct update_adapter
 {
+    static const bool init_to_zero= false;
+
     template <typename Value>
     Element& operator() (Element& x, Value const& y)
     {
