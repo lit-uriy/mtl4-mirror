@@ -127,7 +127,7 @@ class vector
 
 
 
-
+#if 0
     self operator * (const self &v1) 
     {   
 	self temp(dim,0);
@@ -166,7 +166,7 @@ class vector
 	 return temp;
     }
  
-
+#endif
 
 
 

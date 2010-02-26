@@ -31,65 +31,43 @@ void test(const char* name)
 
     x= 4.0;
     x.to_device();
-    std::cout << "Vector assigned.\n" << "x=" << x << "\n";
-
+    if (x[0] != T(4))
+	std::cout<< "Error assign vector on device.";
+    
     std::cout << "const x[1] == " << x[1] << '\n';
-
+    x[1]= 22;
     x.to_device();
     std::cout<< "x=" << x << "\n";
-   
-    std::cout << "whole vector assigned on device.\n"; 
-
-    std::cout<< "vorher y=" << y << "\n";
+  
     y= x;           // Copy on device
-
+    if (y[1] != T(22))
+	std::cout<< "Error copy vector on device.";
     std::cout<< "y=" << y << "\n";
+    
     x.to_device();
     x*= 7;
     std::cout<< "x=" << x << "\n";
+    if (x[0] != T(28))
+	std::cout<< "Error multipliying vector with scalar on device.";
+    
+    x.to_device();
     x+= 2;
     std::cout<< "x=" << x << "\n";
+    if (x[0] != T(30))
+	std::cout<< "Error adding vector with scalar on device.";
+    
+    x.to_device();
     x-= 10;
-    std::cout<< "x=" << x << "\n\n\n";
+    std::cout<< "x=" << x << "\n";
+    if (x[0] != T(20))
+	std::cout<< "Error subtract vector with scalar on device.";
+    
+    x.to_device();
     x/= 10;
     std::cout<< "x=" << x << "\n";
+    if (x[0] != T(2))
+	std::cout<< "Error divide vector with scalar on device.";
 
-    x.to_host(); y.to_host(); z.to_host();
-//    x.to_device(); y.to_device(); z.to_device();
-
-
-    std::cout<< "Y=" << y << "\n";
-    std::cout<< "Z=" << z << "\n";
-    
-    x= y+z;
-    std::cout<< "\n\n>>>>>>>X= Y+ Z <<<<<<\n\nX=" << x << "\n";
-    std::cout<< "Y=" << y << "\n";
-    std::cout<< "Z=" << z << "\n";  
- 
-    
- //   x= y-z;
-   
-   
-    std::cout<< "\n\n>>>>>>>X= Y- Z <<<<<<\n\nX=" << x << "\n";
-    std::cout<< "Y=" << y << "\n";
-    std::cout<< "Z=" << z << "\n";
-    
-//    x= y*z;
-   
-   
-    std::cout<< "\n\n>>>>>>>X= Y* Z <<<<<<\n\nX=" << x << "\n";
-    std::cout<< "Y=" << y << "\n";
-    std::cout<< "Z=" << z << "\n";   
-    
- //   x= y/z;
-   
-   
-    std::cout<< "\n\n>>>>>>>X= Y/ Z <<<<<<\n\nX=" << x << "\n";
-    std::cout<< "Y=" << y << "\n";
-    std::cout<< "Z=" << z << "\n";   
-    
-    
-    
 }
 
 
@@ -98,11 +76,11 @@ int main(int argc, char* argv[])
     using namespace mtl;
 
     test<int>("int");
-//    test<short>("short");
+    test<short>("short");
 
     //test<char>("char"); // works but annoying print outs :-/
-//    test<float>("float");
-//    test<double>("double");
+    test<float>("float");
+    test<double>("double");
 
 #if 0 // CUDA is too dumb for complex
     test<std::complex<float> >("std::complex<float>");
