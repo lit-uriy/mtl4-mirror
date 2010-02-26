@@ -100,7 +100,9 @@ class distributed
     /// Copy from other types (including expressions)
     template <typename MatrixSrc>
     explicit distributed(const MatrixSrc& src)
-      : row_dist(0), cdp(new ColDistribution(0))
+      : grows(num_rows(src)), gcols(num_cols(src)), row_dist(row_distribution(src)),
+	cdp(&row_distribution(src) == &col_distribution(src) ? &row_dist : new ColDistribution(col_distribution(src))), // refer to row_dist or copy from source
+	local_matrix(row_dist.num_local(grows), cdp->num_local(gcols))
     {	*this= src;    }
 
     // In case new row distribution is to small for global number of columns
