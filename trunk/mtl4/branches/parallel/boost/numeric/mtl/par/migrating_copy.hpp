@@ -18,18 +18,20 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/operation/copy_inserter_size.hpp>
 
 namespace mtl {
 
     namespace matrix {
 
-	template <typename DistMatrixA, typename DistMatrixB> 
+	template <typename Updater, typename DistMatrixA, typename DistMatrixB> 
 	struct migrating_copy_visitor
 	{
 	    typedef typename Collection<DistMatrixA>::size_type size_type;
 
 	    migrating_copy_visitor(const DistMatrixA& A, DistMatrixB& B) 
-	      : A(A), row_dist(row_distribution(A)), col_dist(col_distribution(A)), ins(B) 
+	      : A(A), row_dist(row_distribution(A)), col_dist(col_distribution(A)), 
+		ins(B, mtl::detail::copy_inserter_size<Updater>::apply(A, B))
 	    {}
 
 	    template <typename Matrix>
@@ -54,16 +56,25 @@ namespace mtl {
 	    const DistMatrixA&                                  A;
 	    typename DistMatrixA::row_distribution_type const&  row_dist;
 	    typename DistMatrixA::col_distribution_type const&  col_dist;
-	    mtl::matrix::inserter<DistMatrixB>                  ins;
+	    mtl::matrix::inserter<DistMatrixB, Updater>         ins;
 	};
+
+	/// Copy matrix \p A into matrix \p B where \p A and \p B might have different distributions but same global indexing.
+	template <typename Updater, typename DistMatrixA, typename DistMatrixB>
+	inline void migrating_copy(const DistMatrixA& A, DistMatrixB& B)
+	{
+	    if (Updater::init_to_zero)
+		set_to_zero(B);
+	    migrating_copy_visitor<Updater, DistMatrixA, DistMatrixB> vis(A, B);
+	    traverse_distributed(A, vis);
+	}	
 
 	/// Copy matrix \p A into matrix \p B where \p A and \p B might have different distributions but same global indexing.
 	template <typename DistMatrixA, typename DistMatrixB>
 	inline void migrating_copy(const DistMatrixA& A, DistMatrixB& B)
 	{
-	    set_to_zero(B);
-	    migrating_copy_visitor<DistMatrixA, DistMatrixB> vis(A, B);
-	    traverse_distributed(A, vis);
+	    typedef operations::update_store<typename Collection<DistMatrixB>::value_type> Updater;
+	    migrating_copy<Updater, DistMatrixA, DistMatrixB>(A, B);
 	}	
     }
 

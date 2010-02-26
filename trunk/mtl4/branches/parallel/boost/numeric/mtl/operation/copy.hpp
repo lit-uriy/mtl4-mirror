@@ -23,6 +23,8 @@
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/crop.hpp>
+#include <boost/numeric/mtl/operation/copy_inserter_size.hpp>
+#include <boost/numeric/mtl/par/migrating_copy.hpp>
 
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
@@ -42,31 +44,6 @@ namespace mtl {
 	
 	template <typename MatrixDest>
 	inline void zero_with_sparse_src(MatrixDest& dest, tag::universe) {} 
-
-	// Adapt inserter size to operation
-	template <typename Updater> struct copy_inserter_size {};
-	
-	// Specialization for store
-	template <typename Value>
-	struct copy_inserter_size< operations::update_store<Value> >
-	{
-	    template <typename MatrixSrc, typename MatrixDest>
-	    static inline int apply(const MatrixSrc& src, const MatrixDest& dest)
-	    {
-		return int(src.nnz() * 1.2 / dest.dim1());
-	    }
-	};
-
-	struct sum_of_sizes
-	{
-	    template <typename MatrixSrc, typename MatrixDest>
-	    static inline int apply(const MatrixSrc& src, const MatrixDest& dest)
-	    {	return int((src.nnz() + dest.nnz()) * 1.2 / dest.dim1()); }
-	};
-	    	
-	// Specialization for plus and minus
-	template <typename Value> struct copy_inserter_size< operations::update_plus<Value> > : sum_of_sizes {};
-	template <typename Value> struct copy_inserter_size< operations::update_minus<Value> > : sum_of_sizes {};
 
     } // namespace detail
 
@@ -99,9 +76,9 @@ namespace mtl {
     }
 	    
     template <typename Updater, typename MatrixSrc, typename MatrixDest>
-    inline void gen_matrix_copy(const MatrixSrc& src, MatrixDest& dest, bool with_reset, tag::distributed)
+    inline void gen_matrix_copy(const MatrixSrc& src, MatrixDest& dest, bool, tag::distributed)
     {
-	throw "to be implemented.";
+	mtl::matrix::migrating_copy<Updater>(src, dest);
     }
 
     template <typename Updater, typename MatrixSrc, typename MatrixDest>
