@@ -24,7 +24,7 @@ namespace mtl {
 
     namespace matrix {
 
-	template <typename Updater, typename DistMatrixA, typename DistMatrixB> 
+	template <typename Updater, typename DistMatrixA, typename DistMatrixB, bool Transposed= false> 
 	struct migrating_copy_visitor
 	{
 	    typedef typename Collection<DistMatrixA>::size_type size_type;
@@ -48,7 +48,10 @@ namespace mtl {
 		    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor) {
 			size_type grow= row_dist.local_to_global(row(*icursor)), 
 			          gcol= col_dist.local_to_global(A.decompress_column(col(*icursor), p), p);
-			ins[grow][gcol] << value(*icursor);
+			if (Transposed)
+			    ins[gcol][grow] << value(*icursor);
+			else
+			    ins[grow][gcol] << value(*icursor);
 		    }
 	    }
 
@@ -75,6 +78,24 @@ namespace mtl {
 	{
 	    typedef operations::update_store<typename Collection<DistMatrixB>::value_type> Updater;
 	    migrating_copy<Updater, DistMatrixA, DistMatrixB>(A, B);
+	}
+	
+	/// Copy transposed view \p A into matrix \p B where \p A and \p B might have different distributions but same global indexing.
+	template <typename Updater, typename DistMatrixA, typename DistMatrixB>
+	inline void transposed_migrating_copy(const DistMatrixA& A, DistMatrixB& B)
+	{
+	    if (Updater::init_to_zero)
+		set_to_zero(B);
+	    migrating_copy_visitor<Updater, typename DistMatrixA::other, DistMatrixB, true> vis(A.ref, B);
+	    traverse_distributed(A.ref, vis);
+	}	
+
+	/// Copy transposed view  \p A into matrix \p B where \p A and \p B might have different distributions but same global indexing.
+	template <typename DistMatrixA, typename DistMatrixB>
+	inline void transposed_migrating_copy(const DistMatrixA& A, DistMatrixB& B)
+	{
+	    typedef operations::update_store<typename Collection<DistMatrixB>::value_type> Updater;
+	    transposed_migrating_copy<Updater, DistMatrixA, DistMatrixB>(A, B);
 	}	
     }
 

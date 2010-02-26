@@ -119,8 +119,8 @@ void inline enlarge_buffer(const Matrix& A, const Vector& v)
 {    
     // std::cerr << "col(A) = " << col_distribution(A) << ", dist(v) = " << distribution(v) << std::endl;
     MTL_DEBUG_THROW_IF(col_distribution(A) != distribution(v), incompatible_distribution());
-    v.enlarge_send_buffer(A.total_send_size);
-    v.enlarge_recv_buffer(A.total_recv_size);
+    v.enlarge_send_buffer(A.total_send_size());
+    v.enlarge_recv_buffer(A.total_recv_size());
 }
 
 
@@ -292,7 +292,7 @@ template <typename Matrix, typename VectorIn, typename VectorOut, typename Funct
 void inline trans_compute_send_buffer(const Matrix& A, const VectorIn& v, VectorOut& w, Functor op)
 {
     enlarge_buffer(A, w);
-    typename Matrix::remote_map_const_iterator A_it= A.remote_matrices.begin(), A_end= A.remote_matrices.end();
+    typename Matrix::remote_map_const_iterator A_it= remote(A).begin(), A_end= remote(A).end();
     for (; A_it != A_end; ++A_it) {
 	const typename Matrix::recv_structure& r= A.recv_info.find(A_it->first)->second;
 	typename DistributedCollection<VectorOut>::local_type w_sub(recv_buffer(w)[irange(r.offset, r.offset + r.size)]); // might need to handle sub-matrix with type trait 
