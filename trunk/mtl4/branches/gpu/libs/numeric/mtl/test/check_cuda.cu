@@ -42,9 +42,9 @@ int main( int argc, char** argv)
     #if CUDART_VERSION >= 2020
 		int driverVersion = 0, runtimeVersion = 0;
 		cudaDriverGetVersion(&driverVersion);
-		std::cout<<"  CUDA Driver Version:                           "<< driverVersion/1000<< driverVersion%100<<"\n";
+		std::cout<<"  CUDA Driver Version:                           "<< driverVersion/1000<< "." << driverVersion%100<<"\n";
 		cudaRuntimeGetVersion(&runtimeVersion);
-		std::cout<<"  CUDA Runtime Version:                          "<< runtimeVersion/1000 << runtimeVersion%100<<"\n";
+		std::cout<<"  CUDA Runtime Version:                          "<< runtimeVersion/1000<< "." << runtimeVersion%100<<"\n";
     #endif
 
         std::cout<<"  CUDA Capability Major revision number:         "<<deviceProp.major<<"\n";

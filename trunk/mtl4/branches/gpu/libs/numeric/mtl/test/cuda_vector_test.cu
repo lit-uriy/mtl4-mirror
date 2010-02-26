@@ -67,7 +67,7 @@ void test(const char* name)
     std::cout<< "x=" << x << "\n";
     if (x[0] != T(2))
 	std::cout<< "Error divide vector with scalar on device.";
-
+    
 }
 
 
