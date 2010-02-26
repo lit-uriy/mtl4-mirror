@@ -145,6 +145,8 @@ struct map_view<Functor, distributed<LocalMatrix, RowDistribution, ColDistributi
 	return num_rows(A.ref) * num_rows(A.ref); 
     }
 
+    size_type nnz() const { return ref.nnz(); }
+
     friend inline const local_type& local(const self& A) { return A.local_matrix; }
     friend inline const RowDistribution& row_distribution(const self& A) { return row_distribution(A.ref); }
     friend inline const ColDistribution& col_distribution(const self& A) { return col_distribution(A.ref); }

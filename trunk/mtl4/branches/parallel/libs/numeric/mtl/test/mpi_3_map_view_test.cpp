@@ -40,8 +40,8 @@ double svalue(double v) { return 22.0; }
 ct svalue(ct v) { return ct(22.0, 2.0); }
 
 // conjugated value
-double cvalue(double) { return 22.0; }
-ct cvalue(ct) { return ct(22.0, -2.0); }
+double cvalue(double) { return 11.0; }
+ct cvalue(ct) { return ct(11.0, -1.0); }
 
 // complex scaled value
 ct csvalue(double) { return ct(0.0, 11.0); }
@@ -55,7 +55,7 @@ struct ins
     typedef typename Inserter::value_type value_type;
 
     ins(Inserter& i, int start) : i(i), v(start) {}
-    void operator()(size_type r, size_type c) {	i[r][c] << value_type(v++);  }
+    void operator()(size_type r, size_type c) {	i[r][c] << value(value_type(v++));  }
     Inserter& i;
     int       v;
 };
@@ -87,7 +87,7 @@ void test(Matrix& A,  const char* name)
 	}; 
     }
 
-    sout << "Matrix is:\n" << A;
+    sout << name << ", matrix is:\n" << A;
 
     mtl::matrix::scaled_view<double, Matrix>  scaled_matrix(2.0, A);
     Matrix scaled_matrix_copy(scaled_matrix);
@@ -150,10 +150,8 @@ int main(int argc, char* argv[])
     matrix::distributed<matrix::dense2D<double> >      C(7, 7);
 
     test(A, "compressed2D<double>");
-#if 0
     test(B, "compressed2D<complex<double> >");
     test(C, "dense2D<double>");
-#endif
 
     std::cout << "\n**** no errors detected\n";
     return 0;
