@@ -161,6 +161,9 @@ struct transposed_view<distributed<Matrix, RowDistribution, ColDistribution> >
     typedef mat_expr< self >              expr_base;
     typedef distributed<Matrix, RowDistribution, ColDistribution>           other;
 
+    typedef RowDistribution               col_distribution_type;
+    typedef ColDistribution               row_distribution_type;
+
     typedef typename boost::mpl::if_<boost::is_const<other>,
 				     const other&,
 				     other&
@@ -183,6 +186,9 @@ struct transposed_view<distributed<Matrix, RowDistribution, ColDistribution> >
 	using mtl::matrix::num_rows; using mtl::matrix::num_cols;
 	return num_rows(A.ref) * num_rows(A.ref); 
     }
+
+    friend inline const row_distribution_type& row_distribution(const self& A) { return col_distribution(A.ref); }
+    friend inline const col_distribution_type& col_distribution(const self& A) { return row_distribution(A.ref); }
 
     ref_type                            ref;
 };

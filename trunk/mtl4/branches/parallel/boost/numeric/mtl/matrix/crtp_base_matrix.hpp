@@ -176,41 +176,6 @@ struct crtp_assign<io::matrix_file<IFStream, OFStream>, Matrix>
     }
 };
 	
-#if 0
-template <typename Source, typename LocalMatrix, typename RowDistribution, typename ColDistribution>
-struct crtp_assign<Source, distributed<LocalMatrix, RowDistribution, ColDistribution> >
-{
-    typedef distributed<LocalMatrix, RowDistribution, ColDistribution> result_type;
-    
-    result_type& operator()(const Source& source, result_type& matrix)
-    {
-	return assign(source, matrix, typename ashape::ashape<Source>::type());
-    }
-
-private:
-    /// Assign scalar to a matrix by setting the matrix to a multiple of unity matrix
-    /** Uses internally \sa diagonal_setup, for details see there. **/
-    Matrix& assign(const Source& source, Matrix& matrix, ashape::scal)
-    {
-	MTL_DEBUG_THROW_IF(num_rows(matrix) * num_cols(matrix) == 0, 
-			   range_error("Trying to initialize a 0 by 0 matrix with a value"));
-	diagonal_setup(matrix, source);
-	return matrix;
-    }
-
-    /// Assign matrix expressions by copying except for some special expressions
-    Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
-    {
-	// Self-assignment between different types shouldn't happen.	
-	matrix.checked_change_dim(num_rows(source), num_cols(source));
-	dist_matrix_copy(source, matrix);
-	return matrix;
-    }
-};
-
-#endif
-
-
 
 /// Assign-add matrix expressions by incrementally copying except for some special expressions
 template <typename Source, typename Matrix>

@@ -60,6 +60,13 @@ struct distributed : virtual universe {};
 /// Tag for any dense collection
 struct dense : virtual universe {};
     
+/// Tag for transposed views
+struct transposed : virtual universe {};
+    
+/// Tag for transposed views of distributed (need quite special treatment)
+struct transposed_distributed : virtual transposed, virtual distributed {};
+
+
 /// Tag for vectors with one-dimensional memory addressing
 /** offet v_i is x*i for some x */
 struct has_1D_layout : virtual dense {};
@@ -212,24 +219,24 @@ struct distributed_matrix
 
 /// Tag for transposed of a distributed matrix in the category lattice
 struct transposed_distributed_matrix
-  : virtual matrix, virtual distributed
+  : virtual transposed_distributed, virtual matrix
 {};
 
 /// Tag for Hermitian of a distributed matrix in the category lattice
 struct hermitian_distributed_matrix
-  : virtual matrix, virtual distributed
+  : virtual transposed_distributed, virtual matrix
 {};
 
 /// Tag for transposed multi_vector
 // Maybe splitting later into sparse and dense form
 struct transposed_multi_vector
-  : virtual matrix, virtual dense
+  : virtual transposed, virtual matrix, virtual dense
 {};
 
 /// Tag for Hermitian multi_vector
 // Maybe splitting later into sparse and dense form
 struct hermitian_multi_vector
-  : virtual matrix, virtual dense
+  : virtual transposed, virtual matrix, virtual dense
 {};
 
 /// Tag for implicit dense matrices
