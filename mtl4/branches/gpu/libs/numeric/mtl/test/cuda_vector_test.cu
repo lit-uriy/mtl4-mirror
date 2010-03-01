@@ -22,7 +22,7 @@ void test(const char* name)
     typedef mtl::cuda::vector<T>   vt;
 
     std::cout << name << "-- Vector Test\n"; 
-    mtl::cuda::vector<T>  x(3, 33), y(3, 10, false), z(3, 2), a(3,0);
+    mtl::cuda::vector<T>  x(513, 33), y(513, 10, false), z(513, 2), a(3,0);
     std::cout << "Vector constructed.\n" << "x=" << x << "\n";
     std::cout << "Vector constructed.\n" << "y=" << y << "\n";
 
@@ -32,7 +32,7 @@ void test(const char* name)
     x= 4.0;
     x.to_device();
     if (x[0] != T(4))
-	std::cout<< "Error assign vector on device.";
+	std::cout<< "Error assign vector on device.\n";
     
     std::cout << "const x[1] == " << x[1] << '\n';
     x[1]= 22;
@@ -41,33 +41,33 @@ void test(const char* name)
   
     y= x;           // Copy on device
     if (y[1] != T(22))
-	std::cout<< "Error copy vector on device.";
+	std::cout<< "Error copy vector on device.\n";
     std::cout<< "y=" << y << "\n";
     
     x.to_device();
     x*= 7;
     std::cout<< "x=" << x << "\n";
     if (x[0] != T(28))
-	std::cout<< "Error multipliying vector with scalar on device.";
+	std::cout<< "Error multipliying vector with scalar on device.\n";
     
     x.to_device();
     x+= 2;
     std::cout<< "x=" << x << "\n";
     if (x[0] != T(30))
-	std::cout<< "Error adding vector with scalar on device.";
+	std::cout<< "Error adding vector with scalar on device.\n";
     
     x.to_device();
     x-= 10;
     std::cout<< "x=" << x << "\n";
     if (x[0] != T(20))
-	std::cout<< "Error subtract vector with scalar on device.";
+	std::cout<< "Error subtract vector with scalar on device.\n";
     
     x.to_device();
     x/= 10;
     std::cout<< "x=" << x << "\n";
     if (x[0] != T(2))
-	std::cout<< "Error divide vector with scalar on device.";
-    
+	std::cout<< "Error divide vector with scalar on device.\n";
+
 }
 
 
@@ -76,11 +76,11 @@ int main(int argc, char* argv[])
     using namespace mtl;
 
     test<int>("int");
-    test<short>("short");
+ //   test<short>("short");
 
     //test<char>("char"); // works but annoying print outs :-/
-    test<float>("float");
-    test<double>("double");
+   // test<float>("float");
+   // test<double>("double");
 
 #if 0 // CUDA is too dumb for complex
     test<std::complex<float> >("std::complex<float>");
