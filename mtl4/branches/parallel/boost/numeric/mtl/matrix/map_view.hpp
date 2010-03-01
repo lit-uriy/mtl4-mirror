@@ -25,7 +25,9 @@
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
-
+#ifdef MTL_HAS_MPI
+#  include <boost/mpi/communicator.hpp>
+#endif
 
 namespace mtl { namespace matrix { namespace detail {
     // Forward declaration for friend declaration
@@ -97,6 +99,7 @@ struct map_view
     const other&      ref;
 };
    
+#ifdef MTL_HAS_MPI
 
 // Specialization for distributed matrices
 template <typename Functor, typename LocalMatrix, typename RowDistribution, typename ColDistribution> 
@@ -119,13 +122,15 @@ struct map_view<Functor, distributed<LocalMatrix, RowDistribution, ColDistributi
     typedef map_view<Functor, typename other::remote_type>              remote_type;
     typedef std::map<int, remote_type>                                  remote_map_type;
     typedef typename remote_map_type::const_iterator                    remote_map_const_iterator;
+
+    typedef typename other::recv_structure                              recv_structure;
+    typedef typename other::send_structure                              send_structure;
     
     typedef RowDistribution                                             row_distribution_type;
     typedef ColDistribution                                             col_distribution_type;
     
     map_view (const Functor& functor, const other& ref) 
-      : functor(functor), ref(ref), local_matrix(functor, local(ref)),
-	recv_info(ref.recv_info), send_info(ref.send_info)
+      : functor(functor), ref(ref), local_matrix(functor, local(ref))
     {
 	for (typename other::remote_map_const_iterator it= ref.remote_matrices.begin(), end= ref.remote_matrices.end(); it != end; ++it)
 	    remote_matrices.insert(std::make_pair(it->first, remote_type(functor, it->second)));
@@ -147,6 +152,12 @@ struct map_view<Functor, distributed<LocalMatrix, RowDistribution, ColDistributi
 
     size_type nnz() const { return ref.nnz(); }
 
+    size_type total_send_size() const { return ref.my_total_send_size; }
+    size_type total_recv_size() const { return ref.my_total_recv_size; }
+
+    const std::map<int, recv_structure>& recv_info() const { return ref.my_recv_info; }
+    const std::map<int, send_structure>& send_info() const { return ref.my_send_info; }
+
     friend inline const local_type& local(const self& A) { return A.local_matrix; }
     friend inline const RowDistribution& row_distribution(const self& A) { return row_distribution(A.ref); }
     friend inline const ColDistribution& col_distribution(const self& A) { return col_distribution(A.ref); }
@@ -162,10 +173,9 @@ struct map_view<Functor, distributed<LocalMatrix, RowDistribution, ColDistributi
   protected:
     local_type                     local_matrix;
     remote_map_type                remote_matrices;
-    std::map<int, typename other::recv_structure> const& recv_info;
-    std::map<int, typename other::send_structure> const& send_info;
 };
 
+#endif // MTL_HAS_MPI
 
 
 // ==========

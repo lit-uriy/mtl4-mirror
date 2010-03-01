@@ -63,13 +63,13 @@ struct hermitian_view
 // Not FEniCS-suitable, member initialized before base class -> warning with -Wall
 template <class Matrix, typename RowDistribution, typename ColDistribution>
 struct hermitian_view<distributed<Matrix, RowDistribution, ColDistribution> >
-  : public transposed_view< map_view<mtl::sfunctor::conj<typename Matrix::value_type>,
-				     distributed<Matrix, RowDistribution, ColDistribution> > >
+  : public distributed_transposed_view< map_view<mtl::sfunctor::conj<typename Matrix::value_type>,
+						 distributed<Matrix, RowDistribution, ColDistribution> > >
 {
     typedef mtl::sfunctor::conj<typename Matrix::value_type>         functor_type;
     typedef distributed<Matrix, RowDistribution, ColDistribution>    dist_type;
     typedef map_view<functor_type, dist_type>                        map_type;
-    typedef transposed_view<map_type>                                base;
+    typedef distributed_transposed_view<map_type>                    base;
 
     explicit hermitian_view(const dist_type& A) : conj_view(functor_type(), A), base(conj_view) {}
 

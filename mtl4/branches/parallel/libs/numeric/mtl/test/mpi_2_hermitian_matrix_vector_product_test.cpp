@@ -52,7 +52,7 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
     sout << "Matrix is:\n" << A; sout.flush();
     sout << "v is: " << v << "\n";
 
-    w= trans(A) * v;
+    w= hermitian(A) * v;
     sout << "\nw= A * v is: " << w << '\n';
     if (std::abs(local(w)[1] - (comm.rank() ? ct(16.0, -4.0) : ct(4.0, -2.0))) > 0.01) throw "wrong value.";
     
