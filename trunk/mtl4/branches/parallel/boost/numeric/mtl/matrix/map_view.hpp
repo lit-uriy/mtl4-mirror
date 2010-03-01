@@ -158,7 +158,12 @@ struct map_view<Functor, distributed<LocalMatrix, RowDistribution, ColDistributi
     const std::map<int, recv_structure>& recv_info() const { return ref.my_recv_info; }
     const std::map<int, send_structure>& send_info() const { return ref.my_send_info; }
 
+    /// Reference to local matrix
     friend inline const local_type& local(const self& A) { return A.local_matrix; }
+
+    /// Reference to remote matrices
+    friend inline const remote_map_type& remote(const self& A) { return A.remote_matrices; }
+
     friend inline const RowDistribution& row_distribution(const self& A) { return row_distribution(A.ref); }
     friend inline const ColDistribution& col_distribution(const self& A) { return col_distribution(A.ref); }
     friend inline const boost::mpi::communicator& communicator(const self& A) { return communicator(A.ref); }

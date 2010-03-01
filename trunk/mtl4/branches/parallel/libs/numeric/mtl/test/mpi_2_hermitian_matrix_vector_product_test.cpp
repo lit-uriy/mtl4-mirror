@@ -13,12 +13,20 @@
 #include <boost/mpi.hpp>
 #include <iostream>
 #include <complex>
+#include <typeinfo>
 #include <boost/serialization/complex.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 namespace mpi = boost::mpi;
 
 typedef std::complex<double> ct;
+
+template <typename Matrix>
+void f(Matrix&, mtl::tag::universe) { std::cout << "Universe.\n"; }
+template <typename Matrix>
+void f(Matrix&, mtl::tag::distributed) { std::cout << "Distributed.\n"; }
+template <typename Matrix>
+void f(Matrix&, mtl::tag::transposed_distributed) { std::cout << "Transposed Distributed.\n"; }
 
 template <typename Matrix, typename VectorIn, typename VectorOut>
 void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
@@ -52,12 +60,21 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
     sout << "Matrix is:\n" << A; sout.flush();
     sout << "v is: " << v << "\n";
 
+#if 0 // looking at types ...
+    typedef mtl::matrix::hermitian_view<Matrix> ht;
+    std::cout << "Category of hermitian(A) is " << typeid(typename mtl::traits::category<ht>::type).name() << '\n';
+    f(A, typename mtl::traits::category<ht>::type());
+#endif
+
+
     w= hermitian(A) * v;
     sout << "\nw= A * v is: " << w << '\n';
     if (std::abs(local(w)[1] - (comm.rank() ? ct(16.0, -4.0) : ct(4.0, -2.0))) > 0.01) throw "wrong value.";
-    
-    Matrix B(trans(A));
-    sout << "B = trans(A) is:\n" << B; sout.flush();
+
+#if 0    
+    Matrix B(hermitian(A));
+    sout << "B = hermitian(A) is:\n" << B; sout.flush();
+#endif
 }
 
 
