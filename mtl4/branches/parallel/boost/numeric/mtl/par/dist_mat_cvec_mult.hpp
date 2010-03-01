@@ -359,14 +359,14 @@ void inline
 trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as, dist_mat_cvec_handle& h,
 			 tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
-    par::multiple_ostream<true, false> rout;
-    if (h.reqs.empty()) rout << " trans_dist_mat_cvec_wait: no requests.\n";
+    // par::multiple_ostream<true, false> rout;
+    // if (h.reqs.empty()) rout << " trans_dist_mat_cvec_wait: no requests.\n";
     while(h.reqs.size()) { // see (1) at file end
 	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
 	int p= res.first.source();
-	rout << " trans_dist_mat_cvec_wait: source of request is " << p << ".\n";
+	// rout << " trans_dist_mat_cvec_wait: source of request is " << p << ".\n";
 	if (p != communicator(v).rank())  // only receive requests need work
-	    rout << " trans_dist_mat_cvec_wait: call update_vector for data from " << p << ".\n",
+	    // rout << " trans_dist_mat_cvec_wait: call update_vector for data from " << p << ".\n",
 	    trans_dist_update_vector(A.send_info().find(p)->second, w, as);
 	h.reqs.erase(res.second);
     }

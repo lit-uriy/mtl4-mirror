@@ -258,7 +258,7 @@ struct category< matrix::hermitian_view<multi_vector<Vector> > >
 template <typename Matrix, typename RowDistribution, typename ColDistribution>
 struct category< matrix::hermitian_view<matrix::distributed<Matrix, RowDistribution, ColDistribution> > >
 {
-    typedef tag::hermitian_distributed_matrix type;
+    typedef tag::hermitian_distributed_matrix type; 
 };
 
 

@@ -200,45 +200,6 @@ struct transposed_view<distributed<Matrix, RowDistribution, ColDistribution> >
     explicit transposed_view (typename base::ref_type A) : base(A) {}
 };
 
-#if 0
-  : public matrix::mat_expr< transposed_view<distributed<Matrix, RowDistribution, ColDistribution> > >
-{
-    typedef transposed_view               self;
-    typedef mat_expr< self >              expr_base;
-    typedef distributed<Matrix, RowDistribution, ColDistribution>           other;
-
-    typedef RowDistribution               col_distribution_type;
-    typedef ColDistribution               row_distribution_type;
-
-    typedef typename boost::mpl::if_<boost::is_const<other>,
-				     const other&,
-				     other&
-				    >::type                  ref_type;
-
-    typedef typename Matrix::size_type                 size_type;
-
-    explicit transposed_view (ref_type ref) : ref(ref) {}
-
-    friend size_type inline num_rows(const self& A) 
-    { 
-	using mtl::matrix::num_cols; return num_cols(A.ref); 
-    }
-    friend size_type inline num_cols(const self& A) 
-    { 
-	using mtl::matrix::num_rows; return num_rows(A.ref); 
-    }
-    friend size_type inline size(const self& A) 
-    { 
-	using mtl::matrix::num_rows; using mtl::matrix::num_cols;
-	return num_rows(A.ref) * num_rows(A.ref); 
-    }
-
-    friend inline const row_distribution_type& row_distribution(const self& A) { return col_distribution(A.ref); }
-    friend inline const col_distribution_type& col_distribution(const self& A) { return row_distribution(A.ref); }
-
-    ref_type                            ref;
-};
-#endif
 
 // ==========
 // Sub matrix
