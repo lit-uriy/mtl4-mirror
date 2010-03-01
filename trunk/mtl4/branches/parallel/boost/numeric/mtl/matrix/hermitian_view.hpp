@@ -36,7 +36,7 @@ struct hermitian_view
     typedef typename Collection<Matrix>::size_type                 size_type;
     typedef typename Collection<Matrix>::value_type                value_type;
 
-    hermitian_view(const Matrix& matrix) 
+    explicit hermitian_view(const Matrix& matrix) 
       : trans_base(const_cast<Matrix&>(matrix)), 
 	base(functor_type(), static_cast<trans_base&>(*this)) 
     {}
@@ -60,6 +60,22 @@ struct hermitian_view
 
 // TBD submatrix of Hermitian (not trivial)
 
+// Not FEniCS-suitable, member initialized before base class -> warning with -Wall
+template <class Matrix, typename RowDistribution, typename ColDistribution>
+struct hermitian_view<distributed<Matrix, RowDistribution, ColDistribution> >
+  : public transposed_view< map_view<mtl::sfunctor::conj<typename Matrix::value_type>,
+				     distributed<Matrix, RowDistribution, ColDistribution> > >
+{
+    typedef mtl::sfunctor::conj<typename Matrix::value_type>         functor_type;
+    typedef distributed<Matrix, RowDistribution, ColDistribution>    dist_type;
+    typedef map_view<functor_type, dist_type>                        map_type;
+    typedef transposed_view<map_type>                                base;
+
+    explicit hermitian_view(const dist_type& A) : conj_view(functor_type(), A), base(conj_view) {}
+
+  private:
+    map_type conj_view;
+};
 
 
 }} // namespace mtl::matrix
