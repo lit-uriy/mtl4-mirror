@@ -80,31 +80,6 @@ struct multiple_ostream
 	return shift(v, boost::mpl::bool_<Temporary>());
     }
 
-#if 0    
-    // Output on temporary returns a reference (not an object)
-    template <typename T>
-    boost::enable_if_c<Temporary, multiple_ostream&>
-    operator<<(const T& v)
-    {
-	out << v;
-	return *this;
-    }
-
-    /// The output command
-    template <typename T>
-    boost::disable_if_c<Temporary, multiple_ostream<false, Serialize, true> >
-    operator<<(const T& v)
-    {
-	BOOST_STATIC_ASSERT((!traits::is_distributed<T>::value));
-	if (Serialize)
-	    wait_for_previous(comm);
-	if (PrintRank)
-	    out << comm.rank() << ": ";
-	out << v;
-	return multiple_ostream<false, Serialize, false>(out, comm);
-    }
-#endif
-
     /// Flush output
     void flush() { out.flush(); }
 private:
