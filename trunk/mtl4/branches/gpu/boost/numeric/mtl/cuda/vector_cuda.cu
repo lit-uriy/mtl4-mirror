@@ -14,7 +14,6 @@
 //for testing only
 
 
-
 #include <iostream>
 #include <cassert>
 
@@ -26,6 +25,7 @@
 
 //#include </usr/local/cuda/include/cuda_runtime_api.h>
 
+#define BLOCK_SIZE 512
 
 
 namespace mtl { namespace cuda {
@@ -89,19 +89,8 @@ class vector
 		 temp[i]+= v1.start[i];
 	 } else  {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(1), dimBlock(dim); 
-            
-    
+	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE); 
 	    vector_vector_rplus<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
- 	    
-	 
-// 	    vec_rmult_asgn<value_type> sc(src, dptr, dim);
-// 	    launch_function<<<dimGrid, dimBlock>>>(sc);	    
-// 	    
-	    
-	    
-	    
-	    
 	 }
 	 return temp;
     }
@@ -118,7 +107,7 @@ class vector
 		 temp[i]-= v1.start[i];
 	 } else  {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(1), dimBlock(dim); 
+	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE); 
             vector_vector_rminus<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
 
 	 }
@@ -205,12 +194,15 @@ class vector
 		start[i]*= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(1), dimBlock(dim); 
+	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE); 
 	    vec_rmult_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
         return *this;
     }
+// dim3 grid(size_x / BLOCK_DIM, size_y / BLOCK_DIM, 1);
+//     dim3 threads(BLOCK_DIM, BLOCK_DIM, 1);
+
 
     template <typename U>
     self& operator/=(const U& src)
@@ -222,7 +214,7 @@ class vector
 		start[i]/= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(1), dimBlock(dim); 
+	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE);
 	    vec_rdivide_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
@@ -239,7 +231,7 @@ class vector
 		start[i]+= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(1), dimBlock(dim); 
+	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE);
 	    vec_rplus_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
@@ -255,7 +247,7 @@ class vector
 		start[i]-= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(1), dimBlock(dim); 
+	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE);
 	    vec_rminus_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}

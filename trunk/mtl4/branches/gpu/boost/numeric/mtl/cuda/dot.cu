@@ -17,6 +17,8 @@
 #include <boost/numeric/mtl/cuda/dot_kernel.cu>
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
 
+#define BLOCK_SIZE 512
+
 namespace mtl { namespace cuda {
 
 
@@ -27,13 +29,17 @@ typename mtl::Collection<Vector>::value_type dot(const Vector& v1, const Vector&
     typedef typename mtl::Collection<Vector>::value_type value_type; 
 
     v1.to_device(); v2.to_device();
+    
+    dim3 dimGrid( size(v1) / BLOCK_SIZE ), dimBlock( BLOCK_SIZE );
+    vector<value_type> out(dimBlock.x * dimGrid.x, value_type(0), false);
 
-    dim3 dim_grid(1), dim_block(size(v1));
-    vector<value_type> out(dim_block.x, value_type(0), false);
-
-    dot_kernel<<< dim_grid, dim_block, dim_block.x * sizeof(value_type) >>>(out.get_device_pointer(), v1.get_device_pointer(), v2.get_device_pointer(), size(v1));
-
-    return out.read(0);
+    dot_kernel<<< dimGrid, dimBlock, dimBlock.x * sizeof(value_type) >>>(out.get_device_pointer(), v1.get_device_pointer(), v2.get_device_pointer(), size(v1));
+   
+    value_type temp= 0;
+    for (int i= 0; i < dimGrid.x; i++)
+      temp+= out[i];
+    
+    return temp;
 }
 
 
