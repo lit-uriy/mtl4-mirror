@@ -226,7 +226,7 @@ class distributed
     friend inline const local_type& local(const self& A) { return A.local_matrix; }
     friend inline local_type& local(self& A) { return A.local_matrix; }
 
-    /// Reference to local matrix
+    /// Reference to remote matrices
     friend inline const remote_map_type& remote(const self& A) { return A.remote_matrices; }
     friend inline remote_map_type& remote(self& A) { return A.remote_matrices; }
 

@@ -277,13 +277,23 @@ dist_mat_cvec_handle inline
 trans_dist_mat_cvec_start(const Matrix& A, VectorOut& w, tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
     dist_mat_cvec_handle handle;
-    
+    // par::multiple_ostream<true, false> rout;
+
     // Roles of send and receive buffers are interchanged in transposed operations
     typedef typename Matrix::recv_structure        recv_structure;
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info().begin()), r_end(A.recv_info().end());
+    // if (r_it == r_end) rout << " trans_dist_mat_cvec_start: remote map is empty.\n";
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
 	handle.reqs.push_back(communicator(w).isend(r_it->first, 999, &recv_buffer(w)[s.offset], s.size));
+	// rout << " trans_dist_mat_cvec_start: message of size " << s.size << " sent to proc " << r_it->first << "\n";
+    }
+
+    typedef typename Matrix::send_structure        send_structure;
+    typename std::map<int, send_structure>::const_iterator s_it(A.send_info().begin()), s_end(A.send_info().end());
+    for (; s_it != s_end; ++s_it) {
+	const send_structure&   s= s_it->second;
+    	handle.reqs.push_back(communicator(w).irecv(s_it->first, 999, &send_buffer(w)[s.offset], size(s.indices)));
     }
     return handle;
 }
@@ -291,12 +301,15 @@ trans_dist_mat_cvec_start(const Matrix& A, VectorOut& w, tag::comm_non_blocking,
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Functor>
 void inline trans_compute_send_buffer(const Matrix& A, const VectorIn& v, VectorOut& w, Functor op)
 {
+    // par::multiple_ostream<true, false> rout;
     enlarge_buffer(A, w);
     typename Matrix::remote_map_const_iterator A_it= remote(A).begin(), A_end= remote(A).end();
+    // if (A_it == A_end) rout << " trans_compute_send_buffer: remote map is empty.\n";
     for (; A_it != A_end; ++A_it) {
 	const typename Matrix::recv_structure& r= A.recv_info().find(A_it->first)->second;
 	typename DistributedCollection<VectorOut>::local_type w_sub(recv_buffer(w)[irange(r.offset, r.offset + r.size)]); // might need to handle sub-matrix with type trait 
 	op(A_it->second, local(v), w_sub);
+	// rout << "trans_compute_send_buffer: w_sub = " << w_sub << ", recv_buffer(w) = " << recv_buffer(w) << ", for proc " << A_it->first << '\n';
     }
 }
 
@@ -346,10 +359,14 @@ void inline
 trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assign as, dist_mat_cvec_handle& h,
 			 tag::comm_non_blocking, tag::comm_p2p, tag::comm_buffer)
 { 
+    par::multiple_ostream<true, false> rout;
+    if (h.reqs.empty()) rout << " trans_dist_mat_cvec_wait: no requests.\n";
     while(h.reqs.size()) { // see (1) at file end
 	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
 	int p= res.first.source();
+	rout << " trans_dist_mat_cvec_wait: source of request is " << p << ".\n";
 	if (p != communicator(v).rank())  // only receive requests need work
+	    rout << " trans_dist_mat_cvec_wait: call update_vector for data from " << p << ".\n",
 	    trans_dist_update_vector(A.send_info().find(p)->second, w, as);
 	h.reqs.erase(res.second);
     }
