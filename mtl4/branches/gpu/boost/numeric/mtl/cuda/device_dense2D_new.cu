@@ -10,8 +10,8 @@
 // See also license.mtl.txt in the distribution.
 
 
-#ifndef MTL_CUDA_DEVICE_VECTOR_NEW_INCLUDE
-#define MTL_CUDA_DEVICE_VECTOR_NEW_INCLUDE
+#ifndef MTL_CUDA_DEVICE_DENSE2D_NEW_INCLUDE
+#define MTL_CUDA_DEVICE_DENSE2D_NEW_INCLUDE
 
 #include <cstdio>
 
@@ -19,28 +19,34 @@ namespace mtl { namespace cuda {
 
 
 template <typename T>
-T* device_vector_new(int n)
+T* device_dense2D_new(int num_cols, int num_rows)
 {
     T* pointer;
-    cudaMalloc(reinterpret_cast<void **>(&pointer), sizeof(T)*n);
+    cudaMalloc(reinterpret_cast<void **>(&pointer), sizeof(T) * num_cols * num_rows);
     return pointer;
 }
 
 template <typename T>
-T* device_vector_new(const T& value, int n)
+T* device_dense2D_new(const T& value, int num_cols, int num_rows)
 {
-    T* pointer= device_vector_new<T>(n);
+    T* pointer= device_dense2D_new<T>(num_cols, num_rows);
 
     // copy value to first entry and replicate it
     cudaMemcpy(pointer, &value, sizeof(T), cudaMemcpyHostToDevice);
-    for (int i = 1; i < n; i++)
-	cudaMemcpy(pointer + i, pointer, sizeof(T), cudaMemcpyDeviceToDevice);
+//    int temp=1;
+    for (int i = 1; i < num_rows*num_cols; i++){
+//	for (int j = 0; j < num_cols; j++){
+	    cudaMemcpy(pointer + i, pointer, sizeof(T), cudaMemcpyDeviceToDevice);
+//	    temp++;
+//	}
+//	if (i=num_rows-1)
+//	  temp-= 1;
+    }
 
     return pointer;
 }
 
-
 }} // namespace mtl::cuda
 
-#endif // MTL_CUDA_DEVICE_VECTOR_NEW_INCLUDE
+#endif // MTL_CUDA_DEVICE_DENSE2D_NEW_INCLUDE
 
