@@ -292,6 +292,8 @@ or not hasattr(os.path, 'samefile') or not os.path.samefile(pwd, mtlp):
 
 env.Append(CPPPATH = my_cpppath)
 
+# Hack to select compiler explicitly
+# env['CXX'] = 'g++-4.1'
 
 
 ######################

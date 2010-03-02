@@ -36,6 +36,8 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
+#include <boost/numeric/mtl/operation/column_in_matrix.hpp>
+#include <boost/numeric/mtl/operation/row_in_matrix.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -539,15 +541,17 @@ public:
 template <typename Matrix, typename ValueType, typename SizeType>
 struct const_crtp_matrix_bracket
 {    
-    operations::bracket_proxy<Matrix, const Matrix&, ValueType>
-    operator[] (SizeType row) const
+    template <typename T>
+    typename boost::disable_if<boost::is_same<T, mtl::irange>, operations::bracket_proxy<Matrix, const Matrix&, ValueType> >::type
+    operator[] (const T& row) const
     {
 	return operations::bracket_proxy<Matrix, const Matrix&, ValueType>(static_cast<const Matrix&>(*this), row);
     }
 
-    // Compiler error (later) if no sub_matrix function available
-    operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>
-    operator[] (irange row_range) const
+    // Compiler error (later) if no sub_matrix function (or row vector resp.) available
+    template <typename T>
+    typename boost::enable_if<boost::is_same<T, mtl::irange>, operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix> >::type
+    operator[] (const T& row_range) const
     {
 	return operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>(static_cast<const Matrix&>(*this), row_range);
     }
@@ -563,25 +567,30 @@ struct crtp_matrix_bracket
         return operations::bracket_proxy<Matrix, const Matrix&, const ValueType&>(static_cast<const Matrix&>(*this), row);
     }
 
-    operations::bracket_proxy<Matrix, Matrix&, ValueType&>
-    operator[] (SizeType row)
+    template <typename T>
+    typename boost::disable_if<boost::is_same<T, mtl::irange>, operations::bracket_proxy<Matrix, Matrix&, ValueType&> >::type
+    // operations::bracket_proxy<Matrix, Matrix&, ValueType&>
+    operator[] (const T& row)
     {
         return operations::bracket_proxy<Matrix, Matrix&, ValueType&>(static_cast<Matrix&>(*this), row);
     }
 
     // Compiler error (later) if no sub_matrix function available
     operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>
-    operator[] (irange row_range) const
+    operator[] (const irange& row_range) const
     {
 	return operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>(static_cast<const Matrix&>(*this), row_range);
     }
 
     // Compiler error (later) if no sub_matrix function available
-    operations::range_bracket_proxy<Matrix, Matrix&, Matrix>
-    operator[] (irange row_range)
+    template <typename T>
+    typename boost::enable_if<boost::is_same<T, mtl::irange>, operations::range_bracket_proxy<Matrix, Matrix&, Matrix> >::type
+    // operations::range_bracket_proxy<Matrix, Matrix&, Matrix>
+    operator[] (const T& row_range)
     {
 	return operations::range_bracket_proxy<Matrix, Matrix&, Matrix>(static_cast<Matrix&>(*this), row_range);
     }
+
 };
 
 template <typename Matrix, typename ValueType, typename SizeType>
@@ -596,21 +605,21 @@ struct crtp_matrix_lvalue
 
 template <typename Matrix, typename ValueType, typename SizeType>
 struct const_crtp_base_matrix
-    : public const_crtp_matrix_bracket<Matrix, ValueType, SizeType>
+  : public const_crtp_matrix_bracket<Matrix, ValueType, SizeType>
 {};
 
 template <typename Matrix, typename ValueType, typename SizeType>
 struct mutable_crtp_base_matrix 
-    : public crtp_matrix_bracket<Matrix, ValueType, SizeType>,
-      public crtp_matrix_assign<Matrix, ValueType, SizeType>
+  : public crtp_matrix_bracket<Matrix, ValueType, SizeType>,
+    public crtp_matrix_assign<Matrix, ValueType, SizeType>
 {};
 
 template <typename Matrix, typename ValueType, typename SizeType>
 struct crtp_base_matrix 
-    : boost::mpl::if_<boost::is_const<Matrix>,
-		      const_crtp_base_matrix<Matrix, ValueType, SizeType>,
-		      mutable_crtp_base_matrix<Matrix, ValueType, SizeType>
-                     >::type
+  : boost::mpl::if_<boost::is_const<Matrix>,
+		    const_crtp_base_matrix<Matrix, ValueType, SizeType>,
+		    mutable_crtp_base_matrix<Matrix, ValueType, SizeType>
+                   >::type
 {};
 
 

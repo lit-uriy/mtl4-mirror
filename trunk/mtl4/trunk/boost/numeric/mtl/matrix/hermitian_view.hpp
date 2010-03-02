@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/matrix_bracket.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
 
@@ -50,6 +51,12 @@ struct hermitian_view
 #endif	
 
     typename base::value_type operator()(size_type r, size_type c) const { return base::operator()(r, c); }
+
+    operations::bracket_proxy<self, const self&, value_type> 
+    operator[] (size_type r) const
+    {
+	return operations::bracket_proxy<self, const self&, value_type>(*this, r);
+    }
 
     friend size_type inline num_rows(const self& A) { return num_rows((const base&)(A)); }
     friend size_type inline num_cols(const self& A) { return num_cols((const base&)(A)); }
