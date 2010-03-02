@@ -38,6 +38,15 @@ void test(const Matrix&, const char* name)
 
     C= A * hermitian(B);
     cout << "A * hermitian(B) is\n" << C;
+
+    typedef typename mtl::Collection<Matrix>::value_type value_type;
+    mtl::dense_vector<value_type> v(3), w(3, 1.0);
+
+    A[1][1];
+    //hermitian(A)[1][1];
+
+    v= hermitian(A) * w;
+
 #endif
 }
 
