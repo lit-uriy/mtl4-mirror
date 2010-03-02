@@ -23,7 +23,9 @@ void test_type(Matrix)
 {
     
     cout << "Type " << typeid(Matrix).name() 
-	 << " has ashape " << typeid(typename mtl::ashape::ashape<Matrix>::type).name() << '\n';
+	 << "\n     has ashape " << typeid(typename mtl::ashape::ashape<Matrix>::type).name() << '\n';
+    cout << "Type " << typeid(const Matrix).name() 
+	 << "\n     has ashape " << typeid(typename mtl::ashape::ashape<const Matrix>::type).name() << '\n';
 }
 
 template <typename Matrix>
@@ -52,15 +54,18 @@ void test(const Matrix&, const char* name)
     typedef typename mtl::Collection<Matrix>::value_type value_type;
     mtl::dense_vector<value_type> v(3), w(3, 1.0);
 
-    test_type(A);
-    test_type(trans(A));
-    test_type(conj(A));
-    test_type(conj(trans(A)));
-    test_type(trans(conj(A)));
+#if 0 // understanding ashape of const views
+    const Matrix K(A);
+    test_type(K);
+    test_type(trans(K));
+    test_type(conj(K));
+    test_type(conj(trans(K)));
+    test_type(trans(conj(K)));
+#endif
 
     v= hermitian(A) * w;
     v= conj(trans(A)) * w;
-    // v= trans(conj(A)) * w;
+    v= trans(conj(A)) * w;
     v= trans(A) * w;
 }
 
