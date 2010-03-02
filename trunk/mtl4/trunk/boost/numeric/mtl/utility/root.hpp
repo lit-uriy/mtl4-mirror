@@ -30,15 +30,11 @@ struct root
 
 template <typename T>
 struct root<T&>
-{
-    typedef T        type;
-};
+  : public root<T> {};
 
 template <typename T>
 struct root<const T>
-{
-    typedef T        type;
-};
+  : public root<T> {};
 
 // ============
 // Base classes
