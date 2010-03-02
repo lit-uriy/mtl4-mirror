@@ -10,6 +10,7 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
+#include <typeinfo>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
@@ -17,12 +18,21 @@
 
 using namespace std;
 
+template <typename Matrix>
+void test_type(Matrix)
+{
+    
+    cout << "Type " << typeid(Matrix).name() 
+	 << " has ashape " << typeid(typename mtl::ashape::ashape<Matrix>::type).name() << '\n';
+}
 
 template <typename Matrix>
 void test(const Matrix&, const char* name)
 {
-    cout << name << " ... " << typeid(typename mtl::OrientedCollection<mtl::matrix::hermitian_view<Matrix> >::orientation).name() << '\n';
-#if 1
+    cout << name 
+	    // << " ... " << typeid(typename mtl::OrientedCollection<mtl::matrix::hermitian_view<Matrix> >::orientation).name() 
+	 << '\n';
+
     cout << name << '\n';
     Matrix A(3, 3), B(3, 3), C(3, 3);
     // Stupid test with real values --> use complex
@@ -42,12 +52,16 @@ void test(const Matrix&, const char* name)
     typedef typename mtl::Collection<Matrix>::value_type value_type;
     mtl::dense_vector<value_type> v(3), w(3, 1.0);
 
-    A[1][1];
-    //hermitian(A)[1][1];
+    test_type(A);
+    test_type(trans(A));
+    test_type(conj(A));
+    test_type(conj(trans(A)));
+    test_type(trans(conj(A)));
 
     v= hermitian(A) * w;
-
-#endif
+    v= conj(trans(A)) * w;
+    // v= trans(conj(A)) * w;
+    v= trans(A) * w;
 }
 
 
@@ -65,6 +79,7 @@ int test_main(int argc, char* argv[])
     compressed2D<complex<double> >                       crc;
 
     test(dr, "Dense row major");
+#if 0
     test(dc, "Dense column major");
     test(mzd, "Morton Z-order");
     test(d2r, "Hybrid 2 row-major");
@@ -73,6 +88,6 @@ int test_main(int argc, char* argv[])
 
     // For better readability I don't want finish with a complex
     test(cc, "Compressed column major");
-
+#endif
     return 0;
 }

@@ -219,8 +219,17 @@ struct ashape_aux<vector::conj_view<Coll> >
     typedef typename ashape<Coll>::type type;
 };
 
+#if 0
+// shouldn't be needed 
+template <typename Coll>
+struct ashape_aux<transposed_view<matrix::conj_view<Coll> > >
+{
+    typedef typename ashape<Coll>::type type;
+};
+#endif
+
 template <typename Matrix>
-struct ashape_aux<transposed_view<Matrix> >
+struct ashape_aux<matrix::transposed_view<Matrix> >
 {
     typedef typename ashape<Matrix>::type type;
 };
