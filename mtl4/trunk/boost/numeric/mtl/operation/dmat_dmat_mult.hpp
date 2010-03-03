@@ -957,7 +957,8 @@ struct fully_unroll_dmat_dmat_mult_init_block
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     static inline void apply(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
-	Assign::first_update(C[base::index0][base::index1], A[base::index0][0] * B[0][base::index1]);
+	// Assign::first_update(C[base::index0][base::index1], A[base::index0][0] * B[0][base::index1]);
+	Assign::first_update(C(base::index0, base::index1), A(base::index0, 0) * B(0, base::index1));
 	next_t::apply(A, B, C);
     }
 };
@@ -971,7 +972,8 @@ struct fully_unroll_dmat_dmat_mult_init_block<Max0, Max0, Max1, Max1, Assign>
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     static inline void apply(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
-	Assign::first_update(C[base::index0][base::index1], A[base::index0][0] * B[0][base::index1]);
+	// Assign::first_update(C[base::index0][base::index1], A[base::index0][0] * B[0][base::index1]);
+	Assign::first_update(C(base::index0, base::index1), A(base::index0, 0) * B(0, base::index1));
     }
 };
 
@@ -987,7 +989,8 @@ struct fully_unroll_dmat_dmat_mult_block
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     static inline void apply(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
- 	Assign::update(C[base::index0][base::index1], A[base::index0][base::index2] * B[base::index2][base::index1]);
+ 	// Assign::update(C[base::index0][base::index1], A[base::index0][base::index2] * B[base::index2][base::index1]);
+ 	Assign::update(C(base::index0, base::index1), A(base::index0, base::index2) * B(base::index2, base::index1));
 	next_t::apply(A, B, C);
     }   
 };
@@ -1001,7 +1004,8 @@ struct fully_unroll_dmat_dmat_mult_block<Max0, Max0, Max1, Max1, Max2, Max2, Ass
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     static inline void apply(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
- 	Assign::update(C[base::index0][base::index1], A[base::index0][base::index2] * B[base::index2][base::index1]);
+ 	// Assign::update(C[base::index0][base::index1], A[base::index0][base::index2] * B[base::index2][base::index1]);
+ 	Assign::update(C(base::index0, base::index1), A(base::index0, base::index2) * B(base::index2, base::index1));
     }   
 };
 
