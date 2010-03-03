@@ -64,7 +64,8 @@ class distributed
 
     typedef RowDistribution                          row_distribution_type;
     typedef ColDistribution                          col_distribution_type;
-    
+    typedef boost::is_same<RowDistribution, ColDistribution> same_dist;
+
     typedef Matrix                                   local_type;
     typedef Matrix                                   remote_type; // Needs specialization
     typedef std::map<int, remote_type>               remote_map_type;
@@ -76,18 +77,32 @@ class distributed
     typedef typename Matrix::key_type                key_type;   // Wrong -> key type should be taken from local matrix not the distributed
 #endif
 
+  private:
+    // If the types are different, cdp must be allocated
+    template <typename Arg>
+    ColDistribution* set_cdp(const Arg& arg, boost::mpl::false_, bool)
+    {
+	return new ColDistribution(arg);
+    }
+
+    // If distribution types are equal it depends on the source 
+    template <typename Arg>
+    ColDistribution* set_cdp(const Arg& arg, boost::mpl::true_, bool equal_source)
+    {
+	return equal_source ? &row_dist : new ColDistribution(arg);
+    }
+
+  public:
     /// Constructor for matrix with global size grows x gcols and default distribution.
-    /** RowDistribution and ColDistribution must have same type. **/
     explicit distributed(size_type grows, size_type gcols) 
-      : grows(grows), gcols(gcols), row_dist(grows), cdp(&this->row_dist),
+      : grows(grows), gcols(gcols), row_dist(grows), cdp(set_cdp(gcols, same_dist(), gcols <= grows)),
 	local_matrix(row_dist.num_local(grows), cdp->num_local(gcols))
     {}
 
     /// Constructor for matrix with global size grows x gcols and with given distribution.
-    /** RowDistribution and ColDistribution must have same type. **/
     explicit distributed(size_type grows, size_type gcols, 
 			 const RowDistribution& row_dist) 
-      : grows(grows), gcols(gcols), row_dist(row_dist), cdp(&this->row_dist),
+      : grows(grows), gcols(gcols), row_dist(row_dist), cdp(set_cdp(gcols, same_dist(), gcols <= grows)),
 	local_matrix(row_dist.num_local(grows), cdp->num_local(gcols))
     {}
 
@@ -102,24 +117,23 @@ class distributed
     template <typename MatrixSrc>
     explicit distributed(const MatrixSrc& src)
       : grows(num_rows(src)), gcols(num_cols(src)), row_dist(row_distribution(src)),
-	// cdp(new ColDistribution(col_distribution(src))),
-	cdp(referred_distribution(src) ? &row_dist : new ColDistribution(col_distribution(src))), // refer to row_dist or copy from source
+	cdp(set_cdp(col_distribution(src), same_dist(), referred_distribution(src))), // refer to row_dist or copy from source
 	local_matrix(row_dist.num_local(grows), row_dist.num_local(gcols))
     {	*this= src;    }
 
     // In case new row distribution is to small for global number of columns
     // gcols and row_dist must be set before function is called
-    // Row and column distribution must be of same type.
-    ColDistribution*
-    adapt_col_distribution()
+    // Row and column distribution can be of different type
+    ColDistribution* adapt_col_distribution()
     {
-	if (row_dist.max_global() >= gcols) // large enough
-	    return &row_dist;
-	ColDistribution* new_coll_dist= new ColDistribution(row_dist); // copy constructor
+	// if distribution is different just create one of the right size
+	if (!same_dist::value) 
+	    return new ColDistribution(gcols);
+
+	ColDistribution* new_coll_dist= set_cdp(row_dist, same_dist(), row_dist.max_global() >= gcols);
 	new_coll_dist->stretch(gcols);
 	return new_coll_dist;
     }
-
 
     /// Migrating copy
     template <typename MatrixSrc>
