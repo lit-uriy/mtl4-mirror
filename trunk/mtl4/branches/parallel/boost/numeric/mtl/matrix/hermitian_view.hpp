@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/matrix_bracket.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
 
@@ -35,6 +36,7 @@ struct hermitian_view
     typedef const Matrix&                                          const_ref_type;
     typedef typename Collection<Matrix>::size_type                 size_type;
     typedef typename Collection<Matrix>::value_type                value_type;
+    typedef typename OrientedCollection<trans_base>::orientation   orientation; // Should not be needed because defined in Collection (bug in g++???)
 
     explicit hermitian_view(const Matrix& matrix) 
       : trans_base(const_cast<Matrix&>(matrix)), 
@@ -49,11 +51,18 @@ struct hermitian_view
 
     typename base::value_type operator()(size_type r, size_type c) const { return base::operator()(r, c); }
 
+    operations::bracket_proxy<self, const self&, value_type> 
+    operator[] (size_type r) const
+    {
+	return operations::bracket_proxy<self, const self&, value_type>(*this, r);
+    }
+
     friend size_type inline num_rows(const self& A) { return num_rows((const base&)(A)); }
     friend size_type inline num_cols(const self& A) { return num_cols((const base&)(A)); }
     friend size_type inline size(const self& A) { return size((const base&)(A)); }
 
-    const_ref_type inline const_ref() const { return base::ref.ref; }
+    const_ref_type const_ref() const { return base::ref.ref; }
+    size_type nnz() const { return base::nnz(); }
 
     friend inline std::ostream& operator<<(std::ostream& os, const self& A) { return os << (const base&)(A); }
 };

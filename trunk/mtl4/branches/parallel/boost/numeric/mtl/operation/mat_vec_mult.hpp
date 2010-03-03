@@ -99,10 +99,11 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
     if (Assign::init_to_zero) set_to_zero(w);
 
     typedef typename Collection<VectorOut>::value_type value_type;
+    typedef typename Collection<Matrix>::size_type     size_type;
 
-    for (unsigned i= 0; i < num_rows(A); i++) {
+    for (size_type i= 0; i < num_rows(A); i++) {
 	value_type tmp= zero(w[i]);
-	for (unsigned j= 0; j < num_cols(A); j++) 
+	for (size_type j= 0; j < num_cols(A); j++) 
 	    tmp+= A[i][j] * v[j];
 	Assign::update(w[i], tmp);
     }

@@ -1681,14 +1681,25 @@ The following program illustrates how to solve a linear system:
 
 \include ilu_0_bicgstab.cpp
 
-Currently two solvers are available:
-- Conjugate gradient: itl::cg(A, x, b, P, iter); 
-- Bi-Conjugate gradient: itl::bicg(A, x, b, P, iter); 
-- Conjugate gradient squared: itl::cgs(A, x, b, P, iter); and
-- BiCGStab: itl::bicgstab(A, x, b, P, iter);
-- BiCGStab(2): itl::bicgstab_2(A, x, b, P, iter);  (Preconditioning still missing)
+Currently the folling solvers (in alphabetical order) are available:
+- Bi-Conjugate Gradient: itl::bicg(A, x, b, L, iter); 
+- Bi-Conjugate Gradient Stabilized: itl::bicgstab(A, x, b, L, iter);
+- Bi-Conjugate Gradient Stabilized(2): itl::bicgstab_2(A, x, b, L, iter); 
+- Bi-Conjugate Gradient Stabilized(ell): itl::bicgstab_ell(A, x, b, L, R, iter); 
+- Conjugate Gradient: itl::cg(A, x, b, L, iter); 
+- Conjugate Gradient Squared: itl::cgs(A, x, b, L, iter); and
+- Generalized Minimal Residual method (without restart): itl::gmres_full(A, x, b, L, R, iter); 
+- Generalized Minimal Residual method with restart: itl::gmres(A, x, b, L, R, iter, restart); 
+- Induced Dimension Reduction on s dimensions (IDR(s)): itl::idr_s(A, x, b, L, R, iter, s); 
+- Quasi-minimal residual: itl::qmr(A, x, b, L, R, iter); and
+- Transposed-free Quasi-minimal residual: itl::tfqmr(A, x, b, L, R, iter).
 .
-More solvers will follow.
+All Krylov sub-space methods solve the linear system Ax = b as in the example above.
+A left preconditioner  L is used in all methods and some methods also 
+incorporate a right preconditioner  R.
+The iteration object controls the termination of the iteration, see below.
+Some algorithms take an additional argument specifying the dimension of the 
+%vector space regarding to which new search directions are orthogonalized.
 
 As preconditioners we provide at the moment:
 - Diagonal inversion: itl::pc::diagonal<Matrix>;
@@ -1696,7 +1707,24 @@ As preconditioners we provide at the moment:
 - Incomplete Cholesky factorization without fill-in: itl::pc::ic_0<Matrix>;
 .
 
-
+The iteration object can be chosen between:
+- Basic iteration does not generate output: basic_iteration(r0, m, r, a= 0);
+- Cyclic iteration prints residual information every  c iteration: cyclic_iteration(r0, m, r, a= 0, c= 100, out= std::cout); and
+- Noisy iteration prints residual in each iteration: noisy_iteration(r0, m, r, a= 0, out= std::cout).
+.
+Mandatory arguments for the iteration objects' constructors are the initial residuum  r0 (which is of course  b if one starts
+with  x = 0), the maximal number of iteration and the relative error reduction (more precisely residuum reduction).
+Optionally, the absolute residuum  a (fourth argument) can be given as termination criterion.
+Thus the iterative methods are terminated when either:
+- The maximum number of iterations is reached (failure);
+- The relative residuum reduction was achieved; or
+- The absolute residuum is below  a if specified.
+.
+In the cyclic iteration, the user can specify after how many iterations the residual informations are printed,
+default is 100. 
+For cyclic and noisy iterations, one can declare on which ostream the information is printed.
+This enables printing it into log files or for parallel computing printing only on one processor.
+By default the output is printed into std::out.
 
 
 

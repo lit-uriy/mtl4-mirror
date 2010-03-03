@@ -19,7 +19,7 @@ namespace meta_math {
 template <std::size_t Index0, std::size_t Max0, std::size_t Index1, std::size_t Max1>
 struct loop2
 {
-    static std::size_t const index0= Index0 - 1, next_index0= Index0,
+    static const std::size_t index0= Index0 - 1, next_index0= Index0,
             	             index1= Index1 - 1, next_index1= Index1 + 1;
 };
 
@@ -27,7 +27,7 @@ struct loop2
 template <std::size_t Index0, std::size_t Max0, std::size_t Max1>
 struct loop2<Index0, Max0, Max1, Max1>
 {
-    static std::size_t const index0= Index0 - 1, next_index0= Index0 + 1,
+    static const std::size_t index0= Index0 - 1, next_index0= Index0 + 1,
             	             index1= Max1 - 1, next_index1= 1;
 };
 
@@ -35,7 +35,7 @@ struct loop2<Index0, Max0, Max1, Max1>
 template <std::size_t Max0, std::size_t Max1>
 struct loop2<Max0, Max0, Max1, Max1>
 {
-    static std::size_t const index0= Max0 - 1,
+    static const std::size_t index0= Max0 - 1,
             	             index1= Max1 - 1;
 };
 

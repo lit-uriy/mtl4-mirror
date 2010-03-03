@@ -127,7 +127,7 @@ namespace traits {
     struct range_generator<tag::major, Matrix>
 	: public range_generator<
 	    typename boost::mpl::if_<
-	       boost::is_same<typename Matrix::orientation, row_major>
+	       boost::is_same<typename OrientedCollection<Matrix>::orientation, row_major>
 	     , ::mtl::tag::row
              , ::mtl::tag::col
             >::type, 
@@ -139,7 +139,7 @@ namespace traits {
     struct range_generator<tag::minor, Matrix>
 	: public range_generator<
 	    typename boost::mpl::if_<
-	       boost::is_same<typename Matrix::orientation, row_major>
+	       boost::is_same<typename OrientedCollection<Matrix>::orientation, row_major>
              , ::mtl::tag::col
 	     , ::mtl::tag::row
             >::type, 

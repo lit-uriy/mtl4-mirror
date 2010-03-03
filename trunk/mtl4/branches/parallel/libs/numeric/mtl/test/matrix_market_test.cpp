@@ -13,6 +13,7 @@
 #include <cmath>
 #include <string>
 #include <boost/test/minimal.hpp>
+#include <boost/type_traits/is_complex.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
@@ -36,10 +37,11 @@ void inline test_file(Matrix& A, const char* file_name, const char* comment)
 	mtl::matrix::traits::reorder<>::type  R= mtl::matrix::reorder(reordering, num_cols(A)),
 	                                      R2= mtl::matrix::reorder(reordering, num_rows(A));
 	Matrix B0(R * A), B(B0 * trans(R2));
-	std::cout << "A[0:9][0:9] is:\n" << with_format(B, 8, 3);
+	std::cout << "A[0:9][0:9] is:\n" << B;
     } else
-	std::cout << "A is:\n" << with_format(A, 8, 3);
+	std::cout << "A is:\n" << A;
 }
+
 
 
 template <typename Matrix>
@@ -47,8 +49,11 @@ void inline test(Matrix& A, const char* name)
 {
     std::cout << "\n" << name << "\n";
 
-    test_file(A, "matrix_market/jgl009.mtx", "general pattern"); 
-    test_file(A, "matrix_market/mhd1280b.mtx", "Hermitian"); 
+    typedef typename mtl::Collection<Matrix>::value_type vt;
+
+    test_file(A, "matrix_market/jgl009.mtx", "general pattern");
+    if (boost::is_complex<vt>::value)
+	test_file(A, "matrix_market/mhd1280b.mtx", "Hermitian"); 
     // test_file(A, "matrix_market/plskz362.mtx", "Skew-symmetric"); // has only 0s in A[:9][:9]
     test_file(A, "matrix_market/bcsstk01.mtx", "Real symmetric");
 
@@ -57,7 +62,18 @@ void inline test(Matrix& A, const char* name)
 
     C= mtl::io::matrix_market(mtl::io::join(program_dir, "matrix_market/jgl009.mtx"));
     std::cout << "Matrix market file assigned:\n" << B;
-    
+ }
+
+template <typename Matrix>
+void inline failure_test(Matrix& A)
+{
+    try {
+	A= mtl::io::matrix_market("File_not_exist_test.mtx");
+    } catch (const mtl::file_not_found& e) {
+	std::cerr << "Successfully caught exception for inexistant file. Error message is:\n" << e.what();
+	return;
+    }
+    throw "No exception thrown for inexistant file.";
 }
 
 
@@ -81,6 +97,8 @@ int test_main(int argc, char* argv[])
     test(dcc, "dense2D col-major");
     test(mdc, "pure Morton");
     test(mcc, "Hybrid col-major");
+
+    failure_test(cdc);
 
     return 0;
 }

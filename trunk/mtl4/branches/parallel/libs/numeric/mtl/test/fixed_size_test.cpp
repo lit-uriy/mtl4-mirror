@@ -14,7 +14,7 @@
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
-
+ 
 template <typename Matrix, typename Vector>
 void test(const char* A_string, const char* v_string, const Matrix& A, const Vector&x)
 {

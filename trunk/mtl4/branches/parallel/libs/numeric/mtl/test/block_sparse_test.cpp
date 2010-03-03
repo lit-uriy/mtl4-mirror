@@ -50,7 +50,7 @@ int test_main(int argc, char* argv[])
 	B[1][0]= 6.0; B[1][1]= 4.0;
 	ins(2, 1) << B;
     }
-    cout << "A is " << A << endl; // works but is completely unreadable
+    // cout << "A is " << A << endl; // doesn't works and before it was completely unreadable anyway
 
     /* Should be something like this:
 

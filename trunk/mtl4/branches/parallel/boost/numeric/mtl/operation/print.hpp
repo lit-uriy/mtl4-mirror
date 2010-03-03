@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/operation/print_size.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
 #include <boost/numeric/mtl/operation/print_vector.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -46,9 +47,10 @@ namespace detail {
 namespace matrix {
 
     template <typename Matrix>
-	inline std::ostream& operator<< (std::ostream& out, const mat_expr<Matrix>& expr)
+    inline std::ostream& operator<< (std::ostream& out, const mat_expr<Matrix>& expr)
     {
-	return print_matrix(static_cast<const Matrix&>(expr), out, 3, 2);
+	const Matrix& A= static_cast<const Matrix&>(expr);
+	return print_matrix(A, out, print_size(A), 0);
     }
 
     template <typename Value>
