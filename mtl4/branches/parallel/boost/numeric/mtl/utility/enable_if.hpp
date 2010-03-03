@@ -23,7 +23,7 @@ namespace mtl { namespace traits {
 
 template <typename Value, typename Type = void>
 struct enable_if_matrix
-    : boost::enable_if<is_matrix<Value>, Type>
+  : boost::enable_if<is_matrix<Value>, Type>
 {};
 
 template <typename Value, typename Type = void>

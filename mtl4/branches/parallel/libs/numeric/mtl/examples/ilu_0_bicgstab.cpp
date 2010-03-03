@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     // Termination criterion: r < 1e-6 * b or N iterations
     noisy_iteration<double>       iter(b, 500, 1.e-6);
     
-    // Solve Ax == b with preconditioner P
+    // Solve Ax == b with left preconditioner P
     bicgstab(A, x, b, P, iter);
 
     return 0;

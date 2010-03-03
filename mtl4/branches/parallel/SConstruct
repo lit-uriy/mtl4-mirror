@@ -292,6 +292,8 @@ if os.environ.has_key('BOOST_ROOT') :
 
 env.Append(CPPPATH = my_cpppath)
 
+# Hack to select compiler explicitly
+# env['CXX'] = 'g++-4.1'
 
 
 ######################

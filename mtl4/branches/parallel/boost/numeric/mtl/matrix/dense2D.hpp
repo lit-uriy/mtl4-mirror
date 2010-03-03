@@ -372,15 +372,8 @@ class dense2D
 #endif
 		sub_matrix(*this,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()))
 		    = sub_matrix(temp,0,std::min(r,temp.num_rows()),0,std::min(c,temp.num_cols()));
-	    } else {
-#if 0
-		irange rr(0, r);
-		irange rc(0, c);
-		// *this = temp[rr][rc];
-		*this = sub_matrix(temp, 0, r, 0, c);
-#endif
+	    } else 
 		*this = temp[irange(0, r)][irange(0, c)];
-	    }
 	}
     }
 
@@ -428,20 +421,10 @@ class dense2D
 
     void crop() {} // only dummy here
 
-#if 0
-  private:
-    // remaining entries, i.e. intersection between column or row range and matrix
-    size_type vector_size(const irange& range, size_type maximum)
-    {
-	using std::min;
-	size_type finish= min(range.finish(), maximum);
-	return range.start() < finish ? finish - range.start() : 0;
-    }
-
-  public:
-    typename RowInMatrix<Ref>::type sub_vector(size_type row, const irange& col_range)
-#endif   
-
+    /// Address of first data entry; to be used with care.
+    value_type* address_data() { return this->data; }
+    const value_type* address_data() const { return this->data; }
+    
   protected:
     
     // Set ranges from begin_r to end_r and begin_c to end_c

@@ -22,19 +22,27 @@
 
 namespace mtl {
 
-template <typename T> struct seed {}; // Dummy right now
+template <typename T> 
+struct seed 
+{
+    T operator()() const { return rand(); }
+};
 
 namespace vector {
 
-    template <typename Vector, typename Seed>
+    /// Fill vector with random values; generator must be a nullary function.
+    template <typename Vector, typename Generator>
     typename mtl::traits::enable_if_vector<Vector>::type
-    inline random(Vector& v, Seed& s) 
+    inline random(Vector& v, Generator& generator) 
     {
 	typedef typename Collection<Vector>::size_type size_type;
 	for (size_type i= 0; i < size(v); i++)
-	    v[i]= rand();
+	    v[i]= generator();
     }
 
+    /// Fill vector with random values.
+    /** Currently done with rand(). Will be improved one day. You can provide
+	your own generator as second argument. **/
     template <typename Vector>
     typename mtl::traits::enable_if_vector<Vector>::type
     inline random(Vector& v)
@@ -47,15 +55,26 @@ namespace vector {
 
 namespace matrix {
 
-    template <typename Matrix, typename Seed>
+    /// Fill matrix with random values; generator must be a nullary function.
+    template <typename Matrix, typename Generator>
     typename mtl::traits::enable_if_matrix<Matrix>::type
-    inline random(Matrix& A, Seed& s) 
+    inline random(Matrix& A, Generator& generator) 
     {
 	typedef typename Collection<Matrix>::size_type size_type;
 	inserter<Matrix> ins(A, A.dim2());
 	for (size_type r= 0; r < num_rows(A); r++)
 	    for (size_type c= 0; c < num_cols(A); c++)
-		ins[r][c] << rand();
+		ins[r][c] << generator();
+    }
+
+    /// Fill matrix with random values.
+    /** Currently done with rand(). Will be improved one day. You can provide
+	your own generator as second argument. **/
+    template <typename Matrix>
+    typename mtl::traits::enable_if_matrix<Matrix>::type
+    inline random(Matrix& A) 
+    {
+	random(A, seed<typename Collection<Matrix>::value_type>());
     }
 
 } // namespace matrix

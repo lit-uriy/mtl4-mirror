@@ -53,6 +53,7 @@ struct map_view
     typedef typename OrientedCollection<Matrix>::orientation orientation;
 
     typedef typename Matrix::key_type                  key_type;
+    typedef typename Matrix::index_type                index_type;
     typedef typename Matrix::dim_type                  dim_type;
 
     map_view (const Functor& functor, const other& ref) : functor(functor), ref(ref) {}

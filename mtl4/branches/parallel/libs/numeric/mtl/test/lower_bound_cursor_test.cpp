@@ -36,11 +36,12 @@ struct check_position_aux
 
 	if (check_row) {
 	    // same column and row at value (or beyond) or end cursor 
-	    if ( (!(col(*cursor) == col(*bref) && row(*cursor) >= 2) || cursor == eref ) )
+	    // if ( (!(col(*cursor) == col(*bref) && row(*cursor) >= 2) || cursor == eref ) )
+	    if (col(*cursor) != col(*bref) || !(cursor == eref || row(*cursor) >= 2))
 		throw "Cursor's row must be 2 (or larger)";
 	} else
 	    // same row and column at value (or beyond) or end cursor
-	    if ( (!(row(*cursor) == row(*bref) && col(*cursor) >= 2) || cursor == eref ) ) 
+	    if (row(*cursor) != row(*bref) || !(cursor == eref || col(*cursor) >= 2)) 
 		throw "Cursor's column must be 2 (or larger)";
     }
 };
