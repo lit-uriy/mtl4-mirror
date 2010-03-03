@@ -23,9 +23,7 @@
 
 #include <boost/numeric/mtl/mtl.hpp>
 
-#include <parmetis.h>
 #include <boost/mpi.hpp>
-#include <boost/serialization/string.hpp>
 #include <boost/serialization/complex.hpp>
 
 namespace mpi = boost::mpi;
