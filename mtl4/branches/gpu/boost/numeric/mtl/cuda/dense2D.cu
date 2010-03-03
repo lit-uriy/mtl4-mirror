@@ -47,7 +47,7 @@ class dense2D
 	  start[i] = new T [num_cols];
 	//	start[i] = (T *)malloc(num_cols*sizeof(T));
 //    set_to_zero();  //evtl sparen  ?????
-     
+         
     } 
 
     ~dense2D() {
