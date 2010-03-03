@@ -38,13 +38,16 @@ class dense2D
     dense2D(int num_rows=1, int num_cols=1, const T& value= T() , bool on_host=true ) 
       : num_rows(num_rows),
       num_cols(num_cols), 
-      start(new T* [num_rows]), 
+      start(new T* [num_rows]),
+//      start((T **)malloc(num_rows*sizeof(T*))),
       dptr(device_dense2D_new<T>(num_rows, num_cols)),
       on_host(on_host) 
     {  // Allocation
-      for(int i=0; i  < num_rows; i++)
+      for(int i= 0; i < num_rows; i++)
 	  start[i] = new T [num_cols];
-  //    set_to_zero();  //evtl sparen  ?????
+	//	start[i] = (T *)malloc(num_cols*sizeof(T));
+//    set_to_zero();  //evtl sparen  ?????
+     
     } 
 
     ~dense2D() {
@@ -93,7 +96,11 @@ class dense2D
 		    }
 		}	
 	    } else {
-		cudaMemcpy(dptr, that.dptr, num_cols*num_rows*sizeof(T), cudaMemcpyDeviceToDevice);
+		  std::cout<< "x= y zuweisung device\n";
+		    for(int i=0; i < num_cols*num_rows; i++)
+		    cudaMemcpy(dptr +i, that.dptr +i , sizeof(T), cudaMemcpyDeviceToDevice);
+		    
+		    std::cout<< "x= y zuweisung device ready\n";
 	    }
 	}
 	return *this;
@@ -226,11 +233,30 @@ class dense2D
     }
 
 #endif
-
+    self& operator()(T scr, int num_row, int num_col) 
+    {   
+	std::cout<< "test new="<<scr<<"i j ="<<num_row<<" "<<num_col<<"\n";
+	assert(num_row >= 0 && num_row < num_rows && num_col >= 0 && num_col < num_cols);
+	start[num_row][num_col]= scr;
+	
+	on_host=true;
+	
+// 	int temp=0;
+// 	for (int i= 0; i < num_rows; i++){
+// 	    for (int j= 0; j < num_cols; j++){
+// 		cudaMemcpy(dptr + temp, &start[i][j], sizeof(T), cudaMemcpyHostToDevice);
+// 		temp++;
+// 	    }
+// 	}
+	
+	
+	
+	return *this;
+    }
 
 
     T& operator()(int num_row, int num_col) {
-	assert(num_row >= 0 && num_row <= num_rows && num_col >= 0 && num_col <= num_cols);	
+	assert(num_row >= 0 && num_row < num_rows && num_col >= 0 && num_col < num_cols);	
 	to_host();
 	return start[num_row][num_col];
     }
@@ -251,36 +277,84 @@ class dense2D
 
     void set_to_zero() 
     {
+	std::cout<< "test set to zero\n";
 	for (int i= 0; i < num_rows; i++){
 	    for (int j= 0; j < num_cols; j++){
 		start[i][j]= T(0);
 	    }
 	}
-	cudaMemcpy(dptr, start, sizeof(T)*num_cols*num_rows, cudaMemcpyHostToDevice);
+	std::cout<< "produkt=" << sizeof(T)*num_cols*num_rows << "\n";
+	std::cout<< "start=" << sizeof(start) << "\n";
+	std::cout<< "dptr=" << sizeof(dptr) << "\n";
+	
 	on_host= false;
+	std::cout<< "test set to zero222\n";
+	int temp= 0;
+	for (int i= 0; i < num_rows; i++){
+	    for (int j= 0; j < num_cols; j++){
+		cudaMemcpy(dptr + temp, &start[i][j], sizeof(T), cudaMemcpyHostToDevice);
+		temp++;
+	    }
+	}
     }
 
     void to_host() const
     {
+// 	std::cout<< "on host\n"; 
 	if (!on_host) {
-	    cudaMemcpy(const_cast<self*>(this)->start, dptr, sizeof(T)*num_cols*num_rows, cudaMemcpyDeviceToHost);
-	    const_cast<self*>(this)->on_host= true;
+	    int temp= 0;
+	    for (int i= 0; i < num_rows; i++){
+		for (int j= 0; j < num_cols; j++){
+// 		    std::cout<< "i=" << i << "  ,j=" << j << "\n";
+		    cudaMemcpy(&(const_cast<self*>(this)->start[i][j]), (dptr + temp), sizeof(T), cudaMemcpyDeviceToHost);
+		    temp++;
+		}
+	    }
+	  //  cudaMemcpy(const_cast<self*>(this)->start, dptr, sizeof(T)*num_cols*num_rows, cudaMemcpyDeviceToHost);
+	  //  const_cast<self*>(this)->on_host= true;
 	}
     }
 
     void replicate_on_host() const
     {
+// 	std::cout<< "replicate on host\n";
 	if (!on_host) {
-	    cudaMemcpy(const_cast<self*>(this)->start, dptr, sizeof(T)*num_cols*num_rows, cudaMemcpyDeviceToHost);
+	    int temp= 0;
+	    T aux;
+	    for (int i= 0; i < num_rows; i++){
+		for (int j= 0; j < num_cols; j++){
+		  //  std::cout<< "i=" << i << "  ,j=" << j << "\n";
+// 		    std::cout<< "dptr=" << dptr + temp << "\n";
+		    cudaMemcpy(&aux, (dptr + temp), sizeof(T), cudaMemcpyDeviceToHost);
+// 		     std::cout<< "dptr wert=" << aux << "\n";
+		
+		    //cudaMemcpy(&(const_cast<self*>(this)->start[i][j]), &dptr[i][j], sizeof(T), cudaMemcpyDeviceToHost);
+		    cudaMemcpy(&start[i][j], (dptr + temp), sizeof(T), cudaMemcpyDeviceToHost);
+// 		    std::cout<< "start[i][j]=" << start[i][j] << "\n";
+		    temp++;
+		}
+	    }
+	//    cudaMemcpy(const_cast<self*>(this)->start, dptr, sizeof(T)*num_cols*num_rows, cudaMemcpyDeviceToHost);
 	}
+// 	std::cout<< "replicate on host readz\n";
     }
 
     void to_device() const
     {
+// 	std::cout<< "to device\n";
 	if (on_host) {
-	    cudaMemcpy(const_cast<self*>(this)->dptr, start, sizeof(T)*num_cols*num_rows, cudaMemcpyHostToDevice);
+	    int temp= 0;
+	    for (int i= 0; i < num_rows; i++){
+		for (int j= 0; j < num_cols; j++){
+		    cudaMemcpy((const_cast<self*>(this)->dptr + temp), &start[i][j], sizeof(T), cudaMemcpyHostToDevice);
+		    temp++;
+		}
+	    }
+	  
+	 //   cudaMemcpy(const_cast<self*>(this)->dptr, start, sizeof(T)*num_cols*num_rows, cudaMemcpyHostToDevice);
 	    const_cast<self*>(this)->on_host= false;
 	}
+// 	std::cout<< "to device ready\n";
     }
     
     T* get_device_pointer() { return dptr; }

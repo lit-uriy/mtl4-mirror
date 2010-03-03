@@ -32,15 +32,13 @@ T* device_dense2D_new(const T& value, int num_cols, int num_rows)
     T* pointer= device_dense2D_new<T>(num_cols, num_rows);
 
     // copy value to first entry and replicate it
-    cudaMemcpy(pointer, &value, sizeof(T), cudaMemcpyHostToDevice);
-//    int temp=1;
-    for (int i = 1; i < num_rows*num_cols; i++){
-//	for (int j = 0; j < num_cols; j++){
-	    cudaMemcpy(pointer + i, pointer, sizeof(T), cudaMemcpyDeviceToDevice);
-//	    temp++;
-//	}
-//	if (i=num_rows-1)
-//	  temp-= 1;
+    cudaMemcpy(pointer, &value, sizeof(T), cudaMemcpyHostToDevice);\
+    int temp= 0;
+    for (int i = 0; i < num_rows; i++){
+	for (int j = 0; j < num_cols; j++){
+	    cudaMemcpy(pointer + temp, pointer, sizeof(T), cudaMemcpyDeviceToDevice);
+	    temp++;
+	}
     }
 
     return pointer;

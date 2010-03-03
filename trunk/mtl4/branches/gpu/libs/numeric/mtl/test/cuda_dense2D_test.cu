@@ -22,39 +22,35 @@ void test(const char* name)
   
     std::cout << name << "000 Matrix Test\n"; 
     typedef mtl::cuda::dense2D<T>   dense;
-
+    int size= 3;
     std::cout << name << "-- Matrix Test\n"; 
-    mtl::cuda::dense2D<T>  x(3, 3), y(3, 3), z(3, 3), a(3,3);
+    mtl::cuda::dense2D<T>  x(size, size), y(size, size);//, z(3, 3), a(3,3);
+     
+    x.set_to_zero();
+ 
     std::cout << "Matrix constructed.\n" << "x=" << x << "\n";
 
-    x.to_host();
-    x.to_device();
-    x.set_to_zero();
-    std::cout << "Matrix set to zero.\n" << "x=" << x << "\n";
-
-       
+            
     std::cout << "const x(0,0) == " << x(0,0) << '\n';
-    x(0,0)= 22;
-    x(2,2)= 11;
-    x.to_device();
-    y.to_device();
+    x.to_host();
+    for (int i= 0; i < size; i++){
+      std::cout<< "i="  << x(i,i) << "\n";
+      x=x(2,i,i);
+    }
+    std::cout << "const x(1,1) == " << x(1,1) << '\n';
     std::cout<< "x=" << x << "\n";
-     
-    
     y= x;           // Copy on device
-    std::cout<< "x=" << x << "\n";
-    if (y(0,0) != T(22))
-	std::cout<< "Error copy matrix on device.\n";
+    y.to_host();
+    //if (y(0,0) != T(22))
+//	std::cout<< "Error copy matrix on device.\n";
     
-    
-    y(1,0)= 77;
-    y.to_device();
+   // y.to_device();
     std::cout<< "y=" << y << "\n";
      std::cout<< "Hallo\n";
+  
+    #if 0  
     
-    
-    
-#if 0  
+
     x.to_device();
     x*= 7;
     std::cout<< "x=" << x << "\n";
