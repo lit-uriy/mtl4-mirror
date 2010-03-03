@@ -12,11 +12,16 @@
 #ifndef MTL_IO_MATRIX_FILE_INCLUDE
 #define MTL_IO_MATRIX_FILE_INCLUDE
 
+#ifdef MTL_HAS_MPI
+#   include <boost/numeric/mtl/par/distribution.hpp> 
+#endif
+
 namespace mtl { namespace io {
 
 template <typename MatrixIFStream, typename MatrixOFStream>
 class matrix_file
 {
+    typedef matrix_file self;
   public:
     explicit matrix_file(const std::string& fname) : fname(fname) {}
     explicit matrix_file(const char* fname) : fname(fname) {}
@@ -30,6 +35,15 @@ class matrix_file
 	stream << c;
 	return *this;
     }
+
+#ifdef MTL_HAS_MPI
+    // Not really elagant, should be refactored some day
+    friend inline std::size_t num_rows(const self&) { return 0; }
+    friend inline std::size_t num_cols(const self&) { return 0; }
+    friend inline par::block_distribution row_distribution(const self&) { return par::block_distribution(0); }
+    friend inline par::block_distribution col_distribution(const self&) { return par::block_distribution(0); }
+    friend inline bool referred_distribution(const self&) { return false; }
+#endif
 
   protected:
     std::string fname;

@@ -17,7 +17,7 @@
 
 
 using namespace std;  
-
+#if 0 // already defined
 namespace std {
 
    template <typename T, typename U>
@@ -26,6 +26,7 @@ namespace std {
         return os << '(' << p.first << ',' << p.second << ')';
     }
 }
+#endif
     
 template <typename Matrix>
 void init(Matrix& A)
