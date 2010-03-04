@@ -18,11 +18,14 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/matrix/strict_upper.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace itl {
 
-
+/// Bi-Conjugate Gradient Stabilized(ell) 
 template < typename LinearOperator, typename Vector, 
 	   typename LeftPreconditioner, typename RightPreconditioner, 
 	   typename Iteration >

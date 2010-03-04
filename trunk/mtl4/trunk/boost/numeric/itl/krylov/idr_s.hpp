@@ -18,11 +18,15 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/operation/random.hpp>
+#include <boost/numeric/mtl/operation/orth.hpp>
+#include <boost/numeric/mtl/matrix/strict_upper.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace itl {
 
-
+/// Induced Dimension Reduction on s dimensions (IDR(s)) 
 template < typename LinearOperator, typename Vector, 
 	   typename LeftPreconditioner, typename RightPreconditioner, 
 	   typename Iteration >

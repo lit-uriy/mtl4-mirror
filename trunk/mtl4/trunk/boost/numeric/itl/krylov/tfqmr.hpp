@@ -16,11 +16,14 @@
 #define ITL_TFQMR_INCLUDE
 
 #include <boost/numeric/mtl/concept/collection.hpp>
-
+#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/linear_algebra/inverse.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
 
 namespace itl {
 
-
+/// Transposed-free Quasi-minimal residual
 template < typename Matrix, typename Vector,
 	   typename LeftPreconditioner, typename RightPreconditioner, typename Iteration >
 int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner &L, 
@@ -41,7 +44,7 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
                                 u1(n), u2(n), y1(n), y2(n), w(n), d(n, zero), v(n);
 
     if (iter.finished(rt))
-    return iter;
+	return iter;
     y1= w= r;
     rt= A * solve(R, y1);
     u1= v= solve(L,rt);
@@ -49,10 +52,10 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
     rho= tau*tau;
 
     // TFQMR iteration
-    while(! iter.finished(tau)){
-    sigma= dot(r,v);
+    while(! iter.finished(tau)) {
+	sigma= dot(r,v);
         if (sigma == zero)
-        return iter.fail(1, "tfgmr breakdown, sigma=0 #1");
+	    return iter.fail(1, "tfgmr breakdown, sigma=0 #1");
         alpha= rho / sigma;
 
         //inner loop

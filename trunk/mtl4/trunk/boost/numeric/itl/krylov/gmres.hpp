@@ -19,15 +19,23 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/matrix/multi_vector.hpp>
+#include <boost/numeric/mtl/matrix/strict_upper.hpp>
+#include <boost/numeric/mtl/operation/two_norm.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
 
 namespace itl {
 
+/// Generalized Minimal Residual method (without restart)
+/** It computes at most kmax_in iterations (or size(x) depending on what is smaller) 
+    regardless on whether the termination criterion is reached or not.   **/
 template < typename Matrix, typename Vector, typename LeftPreconditioner, typename RightPreconditioner, typename Iteration >
 int gmres_full(const Matrix &A, Vector &x, const Vector &b,
                LeftPreconditioner &L, RightPreconditioner &R,
                Iteration& iter, typename mtl::Collection<Vector>::size_type kmax_in)
 {
-    using mtl::irange; using mtl::iall; using mtl::matrix::strict_upper; using std::abs;
+    using mtl::irange; using mtl::iall; using mtl::matrix::strict_upper; using std::abs; using std::sqrt;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -118,7 +126,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     return iter.error_code();
 }
 
-
+/// Generalized Minimal Residual method with restart
 template < typename Matrix, typename Vector, typename LeftPreconditioner,
            typename RightPreconditioner, typename Iteration >
 int gmres(const Matrix &A, Vector &x, const Vector &b,
