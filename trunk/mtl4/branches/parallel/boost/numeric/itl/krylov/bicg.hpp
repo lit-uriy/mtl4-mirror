@@ -13,12 +13,13 @@
 #define ITL_BICG_INCLUDE
 
 #include <complex>
-#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/operation/conj.hpp>
 
 namespace itl {
 
-
+/// Bi-Conjugate Gradient
 template < typename LinearOperator, typename Vector, 
 	   typename Preconditioner, typename Iteration >
 int bicg(const LinearOperator &A, Vector &x, const Vector &b,
