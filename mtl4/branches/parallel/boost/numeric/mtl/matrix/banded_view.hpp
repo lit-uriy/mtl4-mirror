@@ -93,19 +93,19 @@ struct banded_view
     template <typename, typename> friend struct detail::map_value;
     //template <typename> friend struct ::mtl::sub_matrix_t<self>;
 
-	friend size_type inline num_rows(const self& A) 
-	{ 
-		using mtl::matrix::num_rows; return num_rows(A.ref); 
-	}
-	friend size_type inline num_cols(const self& A) 
-	{ 
-		using mtl::matrix::num_cols; return num_cols(A.ref); 
-	}
-	friend size_type inline size(const self& A) 
-	{ 
-		using mtl::matrix::num_rows; using mtl::matrix::num_cols;
-		return num_rows(A.ref) * num_rows(A.ref); 
-	}
+    friend size_type inline num_rows(const self& A) 
+    { 
+	using mtl::matrix::num_rows; return num_rows(A.ref); 
+    }
+    friend size_type inline num_cols(const self& A) 
+    { 
+	using mtl::matrix::num_cols; return num_cols(A.ref); 
+    }
+    friend size_type inline size(const self& A) 
+    { 
+	using mtl::matrix::num_rows; using mtl::matrix::num_cols;
+	return num_rows(A.ref) * num_rows(A.ref); 
+    }
 
   protected:
     boost::shared_ptr<Matrix>           my_copy;

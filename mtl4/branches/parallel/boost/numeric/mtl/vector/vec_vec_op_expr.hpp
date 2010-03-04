@@ -53,23 +53,30 @@ public:
     
     void delay_assign() const {}
 
+#if 0
     size_type size() const
     {
 	std::cerr << "vec_vec_op_expr.size() " << first.size() << "  " << second.size() << "\n";
 	assert( first.size() == second.size() ) ;
 	return first.size() ;
     }
+#endif
+
+    friend size_type size(const self& v) 
+    {
+	// std::cerr << "vec_vec_op_expr.size() " << first.size() << "  " << second.size() << "\n";
+	assert( size(v.first) == size(v.second) ) ;
+	return size(v.first) ;
+    }
 
     const_dereference_type operator() ( size_type i ) const
     {
         return SFunctor::apply( first( i ), second( i ) ) ;
-        // return first( i ) + second( i ) ;
     }
 
     const_dereference_type operator[] ( size_type i ) const
     {
         return SFunctor::apply( first( i ), second( i ) ) ;
-        // return first( i ) + second( i ) ;
     }
 
   private:

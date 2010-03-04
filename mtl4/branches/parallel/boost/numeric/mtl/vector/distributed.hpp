@@ -52,7 +52,7 @@ public:
     typedef dense_vector<value_type>                 buffer_type;
 
     /// Constructor for vector with global size \p gsize
-    explicit distributed(size_type gsize) : gsize(gsize), dist(gsize), local_vector(dist.num_local(gsize)) {}
+    explicit distributed(size_type gsize= 0) : gsize(gsize), dist(gsize), local_vector(dist.num_local(gsize)) {}
 
     /// Constructor for vector with global size \p gsize and distribution \p dist
     explicit distributed(size_type gsize, const Distribution& dist) 
@@ -66,20 +66,20 @@ public:
     
     template <typename VectorSrc>
     distributed(const VectorSrc& src, const par::block_migration& migration)
-      : gsize(src.size()), dist(migration.new_distribution()), local_vector(dist.num_local(gsize))
+      : gsize(size(src)), dist(migration.new_distribution()), local_vector(dist.num_local(gsize))
     {
 	migrate_vector(src, *this, migration);
     }
 
-#if 0
     template <typename VectorSrc>
     explicit distributed(const VectorSrc& src,
 			 typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
-      : gsize(src.size()), dist(distribution(src)), local_vector(dist.num_local(gsize))
+      : gsize(size(src)), 
+	dist(distribution(src)), 
+	local_vector(dist.num_local(gsize))
     {
 	*this= src;
     }
-#endif
 
     self& operator=(self src)
     {
@@ -128,15 +128,13 @@ public:
     friend inline size_type num_cols(const self& v) { return mtl::traits::is_row_major<self>::value ? v.gsize : 1; }
     friend inline size_type size(const self& v) { return v.gsize; }
 
-    // Also as member functions because it is used in MTL4 all over the place (needs refactoring some day)
-    size_type size() const { return gsize; }
-
     void delay_assign() const {}
+    void clear_remote_part() const {}
 
     // Enlarge send buffer so that at least n entries can be sent
-    void enlarge_send_buffer(size_type n) const { send_buffer.change_dim(std::max(send_buffer.size(), n)); }
+    void enlarge_send_buffer(size_type n) const { send_buffer.change_dim(std::max(size(send_buffer), n)); }
     // Enlarge receive buffer so that at least n entries can be received
-    void enlarge_recv_buffer(size_type n) const { recv_buffer.change_dim(std::max(recv_buffer.size(), n)); }
+    void enlarge_recv_buffer(size_type n) const { recv_buffer.change_dim(std::max(size(recv_buffer), n)); }
 
     void release_send_buffer(size_type n) const { send_buffer.change_dim(0); }
     void release_recv_buffer(size_type n) const { recv_buffer.change_dim(0); }

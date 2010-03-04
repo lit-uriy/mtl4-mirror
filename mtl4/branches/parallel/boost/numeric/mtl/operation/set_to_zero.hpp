@@ -101,7 +101,7 @@ namespace mtl {
 	void set_to_zero(Coll& collection, tag::distributed, tag::universe)
 	{
 	    set_to_zero(local(collection));
-	    collection.clear_remote_matrices();
+	    collection.clear_remote_part();
 	}
     }
 
