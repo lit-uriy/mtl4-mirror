@@ -65,12 +65,12 @@ class strided_vector_ref
     
     void check_index( size_type i ) const
     {
-	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), index_out_of_range());
+	MTL_DEBUG_THROW_IF( i < 0 || i >= size(*this), index_out_of_range());
     }
 
     void check_dim( size_type s ) const
     {
-	MTL_DEBUG_THROW_IF( size() != 0 && size() != s, incompatible_size());
+	MTL_DEBUG_THROW_IF( size(*this) != 0 && size(*this) != s, incompatible_size());
     }
 
     template <class E>
@@ -95,7 +95,7 @@ class strided_vector_ref
 
     // Default copy constructor refers to same vector which is okay
 
-    size_type size() const { return my_size ; }
+    friend size_type inline size(const self& v) { return v.my_size; }
     size_type stride() const { return my_stride ; }
 
     reference operator()( size_type i ) { check_index(i); return data[i * my_stride]; }
@@ -128,9 +128,8 @@ class strided_vector_ref
 	return i;
     }
     
-    friend size_type inline num_rows(const self& v) { return mtl::traits::is_row_major<self>::value ? 1 : v.size(); }
-    friend size_type inline num_cols(const self& v) { return mtl::traits::is_row_major<self>::value ? v.size() : 1; }
-    friend size_type inline size(const self& v) { return v.size(); }
+    friend size_type inline num_rows(const self& v) { return mtl::traits::is_row_major<self>::value ? 1 : size(v); }
+    friend size_type inline num_cols(const self& v) { return mtl::traits::is_row_major<self>::value ? size(v) : 1; }
     
     vec_vec_asgn_expr<self, self> operator=( self const& e ) 
     {

@@ -53,7 +53,6 @@ namespace mtl { namespace vector {
 	    }
 	};
 
-
 	template <unsigned long Max0, typename Functor>
 	struct reduction<Max0, Max0, Functor>
 	{
@@ -72,7 +71,6 @@ namespace mtl { namespace vector {
 
 	    template <typename Value>
 	    static inline void finish(Value& tmp00, Value&, Value&, Value&, Value&, Value&, Value&, Value&) {}
-
 	};
 
     } // namespace impl
@@ -88,8 +86,7 @@ struct reduction
 	return apply(v, typename mtl::traits::category<Vector>::type());
     }
 
-
-private:
+  private:
     template <typename Vector>
     Result static inline apply(const Vector& v, tag::sparse)
     {
@@ -127,13 +124,6 @@ private:
 	return tmp00;
     } 
 };
-
-
-
-
-
-
-
 
 }} // namespace mtl
 

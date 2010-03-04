@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
 mtlVec testFunc(mtlVec A ,double Scale)
 {
-    const int testSize=A.size();
+    const int testSize=size(A);
     mtlVec testVec(testSize);
     testVec=Scale*A;
     print_vector(testVec);
