@@ -20,9 +20,7 @@
 
 namespace itl {
 
-//qmr.h solves the unsymmetric linear system Ax = b using the
-//Quasi-Minimal Residual method
-
+/// Quasi-Minimal Residual method
 template < typename Matrix, typename Vector,typename LeftPreconditioner,
 	   typename RightPreconditioner, typename Iteration >
 int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L, 
