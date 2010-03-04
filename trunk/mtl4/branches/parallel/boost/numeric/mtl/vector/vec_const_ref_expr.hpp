@@ -18,7 +18,7 @@ namespace mtl { namespace vector {
 /// Class for providing interface for a vector given as reference
 template <typename Vector>
 struct vec_const_ref_expr
-    : vec_expr< vec_const_ref_expr<Vector> >
+  : vec_expr< vec_const_ref_expr<Vector> >
 {
     typedef vec_const_ref_expr                   self;
     typedef typename Vector::size_type           size_type;
@@ -26,27 +26,12 @@ struct vec_const_ref_expr
     typedef value_type                           const_dereference_type ;
 
     vec_const_ref_expr(const Vector& ref) : ref(ref) {}
-
     void delay_assign() const {}
+    const_dereference_type operator() ( size_type i ) const { return ref(i); }
+    const_dereference_type operator[] ( size_type i ) const { return ref[i]; }
 
-    size_type size() const
-    {
-	return ref.size();
-    }
-
-    const_dereference_type operator() ( size_type i ) const
-    {
-        return ref(i);
-    }
-
-    const_dereference_type operator[] ( size_type i ) const
-    {
-        return ref[i];
-    }
-
-    
-
-private:
+    friend inline size_type size(const self& v) { return size(v.ref); }
+  private:
     const Vector& ref;
 };
 

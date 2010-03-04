@@ -44,15 +44,15 @@ public:
     ~vec_vec_asgn_expr()
     {
 	if (!delayed_assign)
-	    for (size_type i= 0; i < first.size(); ++i)
+	    for (size_type i= 0; i < size(first); ++i)
 		first( i )= second( i );
     }
     
     void delay_assign() { delayed_assign= true; }
 
     size_type size() const {
-	assert( first.size() == second_.size() ) ;
-	return first.size() ;
+	assert( size(first) == second_.size() ) ;
+	return size(first) ;
     }
 
      const_dereference_type operator() ( size_type i ) const {

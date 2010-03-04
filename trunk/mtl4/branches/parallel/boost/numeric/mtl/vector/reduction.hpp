@@ -53,7 +53,6 @@ namespace mtl { namespace vector {
 	    }
 	};
 
-
 	template <unsigned long Max0, typename Functor>
 	struct reduction<Max0, Max0, Functor>
 	{
@@ -72,7 +71,6 @@ namespace mtl { namespace vector {
 
 	    template <typename Value>
 	    static inline void finish(Value& tmp00, Value&, Value&, Value&, Value&, Value&, Value&, Value&) {}
-
 	};
 
     } // namespace impl
@@ -89,7 +87,7 @@ struct reduction
 	return apply(v, cat(), cat());
     }
 
-private:
+  private:
 
 #ifdef MTL_HAS_MPI
     template <typename Vector>
@@ -136,13 +134,6 @@ private:
 	return tmp00;
     } 
 };
-
-
-
-
-
-
-
 
 }} // namespace mtl
 

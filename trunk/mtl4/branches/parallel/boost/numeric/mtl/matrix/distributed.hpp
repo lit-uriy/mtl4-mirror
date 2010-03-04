@@ -164,7 +164,7 @@ class distributed
     }
 
     void clear_cdp() { if (cdp && cdp != &row_dist) delete cdp; }
-    void clear_remote_matrices() { remote_matrices.clear(); my_recv_info.clear(); my_send_info.clear(); }
+    void clear_remote_part() { remote_matrices.clear(); my_recv_info.clear(); my_send_info.clear(); }
 
     struct send_structure
     {
@@ -398,7 +398,7 @@ class distributed_inserter
 	for (unsigned p= 0; p < col_size(); p++)
 	    if (size(send_indices[p]) > 0) {
 		dist_matrix.my_send_info.insert(std::make_pair(p, send_structure(send_indices[p], dist_matrix.my_total_send_size)));
-		dist_matrix.my_total_send_size+= send_indices[p].size();
+		dist_matrix.my_total_send_size+= size(send_indices[p]);
 	    }
     }
 

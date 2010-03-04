@@ -71,17 +71,17 @@ class dense_vector
     
     void check_index( size_type i ) const
     {
-	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), index_out_of_range());
+	MTL_DEBUG_THROW_IF( i < 0 || i >= size(*this), index_out_of_range());
     }
 
     void check_dim( size_type s ) const
     {
-	MTL_DEBUG_THROW_IF( size() != 0 && size() != s, incompatible_size());
+	MTL_DEBUG_THROW_IF( size(*this) != 0 && size(*this) != s, incompatible_size());
     }
 
     void static_check( size_type s) const
     {
-	assert(!traits::is_static<self>::value || s == (typename Parameters::dimension()).size());
+	assert(!traits::is_static<self>::value || s == size(typename Parameters::dimension()));
     }
 
     template <class E>
@@ -111,7 +111,7 @@ class dense_vector
     { static_check( n ); }
 
     dense_vector( const self& src )
-      : memory_base( src.size() ) 
+      : memory_base( size(src) ) 
     {
 	using std::copy;
 	copy(src.begin(), src.end(), begin());
@@ -128,7 +128,7 @@ class dense_vector
     // Might be generalized to arbitrary vectors later
     template <class Value2, typename Parameters2>
     explicit dense_vector( const dense_vector<Value2, Parameters2>& src )
-	: memory_base( src.size() ) 
+	: memory_base( size(src) ) 
     {
 	using std::copy;
 	check_consistent_shape(src);
@@ -136,8 +136,7 @@ class dense_vector
     }
 #endif
 
-    size_type size() const { return this->used_memory(); }
-    
+    friend inline size_type size(const self& v)  { return v.used_memory() ; }
     size_type stride() const { return 1; }
 
     reference operator()( size_type i ) 
@@ -162,19 +161,15 @@ class dense_vector
 
     // Compatibility with STL
     const_pointer begin() const { return this->elements() ; }
-    const_pointer end() const { return this->elements() + size() ; }    
+    const_pointer end() const { return this->elements() + size(*this) ; }    
     pointer begin() { return this->elements() ; }
-    pointer end() { return this->elements() + size() ; }
-    bool empty() const { return size() == 0; }
+    pointer end() { return this->elements() + size(*this) ; }
+    bool empty() const { return size(*this) == 0; }
 
     /// Address of first data entry; to be used with care.
     value_type* address_data() { return begin(); }
     const value_type* address_data() const { return begin(); }
     
-#if 0 // Cannot be called with mtl::num_rows(x);
-    friend size_type inline num_rows(const self& v) { return traits::is_row_major<self>::value ? 1 : v.size(); }
-    friend size_type inline num_cols(const self& v) { return traits::is_row_major<self>::value ? v.size() : 1; }
-#endif 
     
 #if 0
     // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
@@ -192,7 +187,7 @@ class dense_vector
 	// Self-copy would be an indication of an error
 	assert(this != &src);
 	
-	check_dim(src.size());
+	check_dim(size(src));
 	memory_base::move_assignment(src);
 	return *this;
     }
@@ -200,27 +195,14 @@ class dense_vector
 
     using assign_base::operator=;
 
-#if 0
-    template <typename Archive>
-    void serialize(Archive& ar, const unsigned version)
-    {
-	size_type s= size();
-	ar & s;
-	change_dim(s); // dummy for sending
-	for (size_type i= 0; i < s; ++i)
-	    ar & this->value_n(i);
-    }
-#endif
-
-    
-    // the default versions
+   // the default versions
     template <typename Archive>
     void save(Archive& ar, const unsigned version, boost::mpl::false_) const
     {
 	// std::cout << "Slow serialization.\n";
-	size_type s= size();
+	size_type s= size(*this);
 	ar << s;
-	for (size_type i= 0; i < size(); ++i)
+	for (size_type i= 0; i < s; ++i)
 	    ar & this->value_n(i);
     }
     
@@ -240,21 +222,21 @@ class dense_vector
     {
 	// std::cout << "Fast serialization.\n";
 	using namespace boost::serialization;
-	collection_size_type s(size());
+	collection_size_type s(size(*this));
 	ar << s;
-	if (size() > 0)
-	    ar << make_array(address_data(), size());
+	if (s > 0)
+	    ar << make_array(address_data(), s);
     }
 
     template <typename Archive>
     void load(Archive& ar, const unsigned version, boost::mpl::true_)
     {
 	using namespace boost::serialization;
-	collection_size_type count(size());
+	collection_size_type count;
 	ar >> count;
 	change_dim(count);
-	if (size() > 0)
-	    ar >> make_array(address_data(), size());
+	if (count > 0)
+	    ar >> make_array(address_data(), count);
     }
 
     // dispatch to either default or optimized versions
@@ -308,13 +290,6 @@ inline void fill(dense_vector<Value, Parameters>& vector, const Value2& value)
 
 template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
-inline size(const dense_vector<Value, Parameters>& vector)
-{
-    return vector.size();
-}
-
-template <typename Value, typename Parameters>
-typename dense_vector<Value, Parameters>::size_type
 inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::row_major)
 {
     return 1;
@@ -324,7 +299,7 @@ template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
 inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::col_major)
 {
-    return vector.size();
+    return size(vector);
 }
 
 

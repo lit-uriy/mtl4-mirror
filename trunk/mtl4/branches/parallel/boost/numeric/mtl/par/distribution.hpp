@@ -61,7 +61,8 @@ namespace mtl {
         inline const boost::mpi::communicator& communicator(const base_distribution& d) { return d.comm; }
 	
 	/// Block distribution
-	class block_distribution : public base_distribution
+	class block_distribution 
+	  : public base_distribution
 	{
 	    void init(size_type n)
 	    {
@@ -83,6 +84,8 @@ namespace mtl {
 					const boost::mpi::communicator& comm= boost::mpi::communicator())
 	      : base_distribution(comm), starts(starts)
 	    {}
+
+	    block_distribution(const block_distribution& src) : base_distribution(src), starts(src.starts) {}
 
 	    /// Change number of global entries to n
 	    void resize(size_type n) { init(n); }

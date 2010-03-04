@@ -84,20 +84,20 @@ struct vec_vec_aop_expr
     void assign(boost::mpl::false_)
     {
 	// If target is constructed by default it takes size of source
-	if (first.size() == 0) first.change_dim(second.size());
+	if (size(first) == 0) first.change_dim(size(second));
 
 	// If sizes are different for any other reason, it's an error
 	// std::cerr << "~vec_vec_aop_expr() " << first.size() << "  " << second.size() << "\n";
-	MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
+	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
 
-	for (size_type i= 0; i < first.size(); ++i)
+	for (size_type i= 0; i < size(first); ++i)
 	    SFunctor::apply( first(i), second(i) );
     }
 
     void assign(boost::mpl::true_)
     {
 	// We cannot resize, only check
-	MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
+	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
 	impl::assign<1, static_size<E1>::value, SFunctor>::apply(first, second);
     }
 

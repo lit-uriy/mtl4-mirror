@@ -21,13 +21,8 @@ namespace fixed {
     struct dimension
     {
 	typedef std::size_t  size_type;
-	
 	static size_type const value= Size;
-
-	size_type size() const
-	{
-	    return value;
-	}
+	friend inline size_type size(const dimension&) { return dimension::value; }
 
 	// to check whether it is static
 	static bool const is_static= true;
@@ -41,17 +36,12 @@ namespace non_fixed {
 	typedef std::size_t  size_type;
 	
 	static size_type const value= 0; // for compatibility
-
 	dimension(size_type v= 0) : my_size(v) {}
-
-	size_type size() const
-	{
-	    return my_size;
-	}
+	friend inline size_type size(const dimension& d) { return d.my_size; }
 
 	// to check whether it is static
 	static bool const is_static= false;
-    protected:
+      protected:
 	size_type my_size;
     };
 }
