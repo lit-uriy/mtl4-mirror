@@ -1685,10 +1685,10 @@ Currently the folling solvers (in alphabetical order) are available:
 - Bi-Conjugate Gradient: itl::bicg(A, x, b, L, iter); 
 - Bi-Conjugate Gradient Stabilized: itl::bicgstab(A, x, b, L, iter);
 - Bi-Conjugate Gradient Stabilized(2): itl::bicgstab_2(A, x, b, L, iter); 
-- Bi-Conjugate Gradient Stabilized(ell): itl::bicgstab_ell(A, x, b, L, R, iter); 
+- Bi-Conjugate Gradient Stabilized(ell): itl::bicgstab_ell(A, x, b, L, R, iter, ell); 
 - Conjugate Gradient: itl::cg(A, x, b, L, iter); 
-- Conjugate Gradient Squared: itl::cgs(A, x, b, L, iter); and
-- Generalized Minimal Residual method (without restart): itl::gmres_full(A, x, b, L, R, iter); 
+- Conjugate Gradient Squared: itl::cgs(A, x, b, L, iter); 
+- Generalized Minimal Residual method (without restart): itl::gmres_full(A, x, b, L, R, iter, kmax_in); 
 - Generalized Minimal Residual method with restart: itl::gmres(A, x, b, L, R, iter, restart); 
 - Induced Dimension Reduction on s dimensions (IDR(s)): itl::idr_s(A, x, b, L, R, iter, s); 
 - Quasi-minimal residual: itl::qmr(A, x, b, L, R, iter); and
@@ -1698,8 +1698,12 @@ All Krylov sub-space methods solve the linear system Ax = b as in the example ab
 A left preconditioner  L is used in all methods and some methods also 
 incorporate a right preconditioner  R.
 The iteration object controls the termination of the iteration, see below.
-Some algorithms take an additional argument specifying the dimension of the 
+Some algorithms take an additional argument (ell, kmax_in, restart, s) specifying the dimension of the 
 %vector space regarding to which new search directions are orthogonalized.
+The difference between gmres and gmres_full is that continues until one criterion in iter holds.
+gmres_full computes at most kmax_in iterations (or size(x) depending on what is smaller) 
+regardless on whether the termination criterion is reached or not.
+Needless to say that gmres is implemented by means of gmres_full.
 
 As preconditioners we provide at the moment:
 - Diagonal inversion: itl::pc::diagonal<Matrix>;

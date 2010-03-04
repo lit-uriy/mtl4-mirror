@@ -18,6 +18,7 @@
 
 namespace itl {
 
+///  Bi-Conjugate Gradient Stabilized
 template < class LinearOperator, class HilbertSpaceX, class HilbertSpaceB, 
 	   class Preconditioner, class Iteration >
 int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 

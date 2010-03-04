@@ -14,7 +14,7 @@
 
 namespace itl {
 
-
+/// Conjugate Gradient Squared
 template < typename LinearOperator, typename Vector, 
 	   typename Preconditioner, typename Iteration >
 int cgs(const LinearOperator &A, Vector &x, const Vector &b,
