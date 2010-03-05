@@ -47,15 +47,6 @@ struct vec_vec_pmop_expr
 	return size(x.first.value);
     }
 
-#if 0
-    size_type size() const
-    {
-	// std::cerr << "vec_vec_pmop_expr.size() " << first.value.size() << "  " << second.value.size() << "\n";
-	assert( first.value.size() == second.value.size() ) ;
-	return first.value.size() ;
-    }
-#endif
-
     const_dereference_type operator() (size_type i) const
     {
         return SFunctor::apply(first.value(i), second.value(i));
@@ -69,17 +60,22 @@ struct vec_vec_pmop_expr
     template <typename EE1, typename EE2, typename SSFunctor> 
     friend typename DistributedCollection< vec_vec_pmop_expr<EE1, EE2, SSFunctor> >::local_type
     local(const vec_vec_pmop_expr<EE1, EE2, SSFunctor>& expr);
+#if 0 // defined in local
+    {
+	typedef typename DistributedCollection< vec_vec_pmop_expr<EE1, EE2, SSFunctor> >::local_type result_type;
+	return result_type(local(expr.first.value), local(expr.second.value)); // .value can be reference or object but this shouldn't matter here
+    }
+#endif
 
-    // Might need refactoring
+#if 0
+    // might need refactoring
     template <typename EE1, typename EE2, typename SSFunctor> 
     friend typename DistributedVector< vector::vec_vec_pmop_expr<EE1, EE2, SSFunctor> >::distribution_type
     distribution(const vec_vec_pmop_expr<EE1, EE2, SSFunctor>& expr);
-#if 0
-    {
-	MTL_DEBUG_THROW_IF(distribution(expr.first.value) != distribution(expr.second.value), incompatible_distribution());
-	return distribution(expr.first.value);
-    }
 #endif
+
+    const E1& reference_first()  const { return first.value; }
+    const E1& reference_second() const { return first.value; }
 
   private:
     operation::compute_summand<E1> first;

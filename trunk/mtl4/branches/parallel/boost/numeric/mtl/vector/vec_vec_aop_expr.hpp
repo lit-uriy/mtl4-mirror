@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+// #include <boost/numeric/mtl/utility/distribution.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl { namespace vector {
@@ -144,14 +145,11 @@ struct vec_vec_aop_expr
 	return size(x.first);
     }
 
-
     value_type& operator() ( size_type i ) const 
     {
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
     }
-
-
 
     value_type& operator[] ( size_type i ) const
     {
@@ -159,22 +157,33 @@ struct vec_vec_aop_expr
 	return SFunctor::apply( first(i), second(i) );
     }
     
+#if 0
     // Might need refactoring
     template <typename EE1, typename EE2, typename SSFunctor> 
     friend typename DistributedVector< vec_vec_aop_expr<EE1, EE2, SSFunctor> >::distribution_type
     distribution(const vec_vec_aop_expr<EE1, EE2, SSFunctor>& expr);
-#if 0
     {
 	MTL_DEBUG_THROW_IF(distribution(expr.first) != distribution(expr.second), incompatible_distribution());
 	return distribution(expr.first);
     }
 #endif
 
-  private:
+  public:
      mutable first_argument_type&        first ;
      second_argument_type const&         second ;
+  private:
      mutable bool                        delayed_assign;
-  } ; // vec_vec_aop_expr
+}; // vec_vec_aop_expr
+
+#if 0
+template <typename E1, typename E2, typename Functor>
+typename mtl::traits::distribution<vec_vec_aop_expr<E1, E2, Functor> >::type
+inline distribution(const vec_vec_aop_expr<E1, E2, Functor>& v)
+{
+    MTL_DEBUG_THROW_IF(distribution(v.first) != distribution(v.second), incompatible_distribution());
+    return distribution(v.reference_first());
+}
+#endif
 
 } } // Namespace mtl::vector
 

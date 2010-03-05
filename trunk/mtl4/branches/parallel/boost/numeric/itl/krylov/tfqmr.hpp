@@ -35,7 +35,7 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
-    const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
+    const Scalar                zero= math::zero(Scalar()), one= math::one(Scalar()); // zero= math::zero(b[0]), one= math::one(b[0]);
     Scalar                      theta(zero), eta(zero), tau, rho, rhon, sigma,
                                 alpha, beta, c, m;
     Size                        k(0), n(size(x));
