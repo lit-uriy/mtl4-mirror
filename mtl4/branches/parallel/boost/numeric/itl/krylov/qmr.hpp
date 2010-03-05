@@ -81,8 +81,7 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
         v_tld = p_tld - beta * v;
         y = solve(L,v_tld);
         rho_1 = rho = two_norm(y);
-        // w_tld= trans(A)*q  - beta*w; 
-	w_tld= trans(A)*q; w_tld-= beta*w; 
+        w_tld= trans(A)*q  - beta*w; 
         z = adjoint_solve(R, w_tld);  
         xi = two_norm(z);
         gamma_1 = gamma;
