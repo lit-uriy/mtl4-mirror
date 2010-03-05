@@ -32,7 +32,7 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
-    const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
+    const Scalar                zero= math::zero(Scalar()), one= math::one(Scalar()); // zero= math::zero(b[0]), one= math::one(b[0]);
     Scalar                      rho_1, gamma(one), gamma_1, theta(zero), theta_1,
 	                        eta(-one), delta, ep(one), beta;
     Size                        n(size(x));
@@ -81,7 +81,8 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
         v_tld = p_tld - beta * v;
         y = solve(L,v_tld);
         rho_1 = rho = two_norm(y);
-        w_tld= trans(A)*q  - beta*w; 
+        // w_tld= trans(A)*q  - beta*w; 
+	w_tld= trans(A)*q; w_tld-= beta*w; 
         z = adjoint_solve(R, w_tld);  
         xi = two_norm(z);
         gamma_1 = gamma;

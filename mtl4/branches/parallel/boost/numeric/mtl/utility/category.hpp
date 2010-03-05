@@ -236,6 +236,10 @@ struct category< matrix::transposed_view<matrix::distributed<Matrix, RowDistribu
     typedef tag::transposed_distributed_matrix type;
 };
 
+template <typename Matrix, typename RowDistribution, typename ColDistribution>
+struct category< matrix::transposed_view<const matrix::distributed<Matrix, RowDistribution, ColDistribution> > >
+  : category< matrix::transposed_view<matrix::distributed<Matrix, RowDistribution, ColDistribution> > >
+{};
 
 template <typename Matrix>
 struct category< matrix::conj_view<Matrix> >

@@ -57,7 +57,7 @@ int test_main(int argc, char* argv[])
     // start(sos, x, "Generalized Minimal Residual method (without restart)"); gmres_full(A, x, b, L, R, iter, size);
     // start(sos, x, "Generalized Minimal Residual method with restart");      gmres(A, x, b, L, R, iter, restart);
     // start(sos, x, "Induced Dimension Reduction on s dimensions (IDR(s))");  idr_s(A, x, b, L, R, iter, s); // residual in constructor
-    // start(sos, x, "Quasi-minimal residual");                                qmr(A, x, b, L, R, iter);  // residual in constructor
+    start(sos, x, "Quasi-minimal residual");                                qmr(A, x, b, L, R, iter);  // residual in constructor
     start(sos, x, "Transposed-free Quasi-minimal residual");                tfqmr(A, x, b, L, R, iter); // residual in constructor
 
     return 0;

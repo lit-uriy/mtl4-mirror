@@ -19,7 +19,15 @@
 
 namespace mpi = boost::mpi;
 
-
+template <typename Matrix, typename VectorIn, typename VectorOut>
+void const_test(const Matrix& A,  VectorIn& v, VectorOut& w)
+{
+    typedef mtl::matrix::transposed_view<Matrix> tvt;
+    std::cout << "Category of trans(A) for mutable A is " << typeid(typename mtl::traits::category<tvt>::type).name() << '\n';
+    typedef mtl::matrix::transposed_view<const Matrix> ctvt;
+    std::cout << "Category of trans(A) for constant A is " << typeid(typename mtl::traits::category<ctvt>::type).name() << '\n';
+    w= trans(A) * v;
+}
 
 template <typename Matrix, typename VectorIn, typename VectorOut>
 void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
@@ -59,6 +67,8 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
     
     Matrix B(trans(A));
     sout << "B = trans(A) is:\n" << B; sout.flush();
+
+    const_test(A, v, w);
 }
 
 
