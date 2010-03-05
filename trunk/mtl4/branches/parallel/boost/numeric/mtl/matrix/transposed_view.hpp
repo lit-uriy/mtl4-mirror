@@ -151,12 +151,12 @@ struct transposed_view
 };
   
 
-template <typename Matrix>
+template <typename DistMatrix>
 struct distributed_transposed_view
-  : public matrix::mat_expr< distributed_transposed_view<Matrix> >
+  : public matrix::mat_expr< distributed_transposed_view<DistMatrix> >
 {
     typedef distributed_transposed_view   self;
-    typedef Matrix                        other;
+    typedef DistMatrix                        other;
 
     typedef typename other::row_distribution_type     col_distribution_type;
     typedef typename other::col_distribution_type     row_distribution_type;
@@ -166,7 +166,7 @@ struct distributed_transposed_view
 				     other&
 				    >::type                  ref_type;
 
-    typedef typename Matrix::size_type                 size_type;
+    typedef typename DistMatrix::size_type                 size_type;
 
     explicit distributed_transposed_view (ref_type ref) : ref(ref) {}
 
@@ -192,11 +192,20 @@ struct distributed_transposed_view
 
 
 /// Specialize for distributed matrices
-template <typename Matrix, typename RowDistribution, typename ColDistribution>
-struct transposed_view<distributed<Matrix, RowDistribution, ColDistribution> > 
-  : distributed_transposed_view<distributed<Matrix, RowDistribution, ColDistribution> >
+template <typename LocalMatrix, typename RowDistribution, typename ColDistribution>
+struct transposed_view<distributed<LocalMatrix, RowDistribution, ColDistribution> > 
+  : public distributed_transposed_view<distributed<LocalMatrix, RowDistribution, ColDistribution> >
 {
-    typedef distributed_transposed_view<distributed<Matrix, RowDistribution, ColDistribution> > base; 
+    typedef distributed_transposed_view<distributed<LocalMatrix, RowDistribution, ColDistribution> > base; 
+    explicit transposed_view (typename base::ref_type A) : base(A) {}
+};
+
+// And their constant
+template <typename LocalMatrix, typename RowDistribution, typename ColDistribution>
+struct transposed_view<const distributed<LocalMatrix, RowDistribution, ColDistribution> > 
+  : public distributed_transposed_view<const distributed<LocalMatrix, RowDistribution, ColDistribution> >
+{
+    typedef distributed_transposed_view<const distributed<LocalMatrix, RowDistribution, ColDistribution> > base; 
     explicit transposed_view (typename base::ref_type A) : base(A) {}
 };
 
