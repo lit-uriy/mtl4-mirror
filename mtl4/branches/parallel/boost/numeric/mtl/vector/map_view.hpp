@@ -13,10 +13,12 @@
 #define MTL_VECTOR_MAP_VIEW_INCLUDE
 
 #include <boost/shared_ptr.hpp>
+#include <boost/type_traits.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/copy_expression_const_ref_container.hpp>
+// #include <boost/numeric/mtl/utility/distribution.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/tfunctor.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
@@ -37,6 +39,7 @@ struct map_view
     typedef map_view                                   self;
     typedef vec_expr< self >                           expr_base;
     typedef Vector                                     other;
+    typedef typename mtl::traits::copy_expression_const_ref_container<Vector>::type ref_type;
 
     typedef typename Functor::result_type              value_type;
     typedef typename Functor::result_type              const_reference;
@@ -67,21 +70,34 @@ struct map_view
     template <typename, typename> friend struct detail::map_value;
     template <typename F, typename C> friend typename DistributedCollection< map_view<F, C> >::local_type local(const map_view<F, C>&);    
 
+#if 0
     template <typename F, typename C> 
     friend typename DistributedVector< map_view<F, C> >::distribution_type
     distribution(const map_view<F, C>& expr);
+#endif
+
+    const ref_type& reference() const { return ref; }
 
   protected:
     boost::shared_ptr<Vector>           my_copy;
   public:
     Functor           functor;
     // ref is a const& if Vector is a true vector and a copy if it is an expression
-    typename mtl::traits::copy_expression_const_ref_container<Vector>::type ref;
+    ref_type           ref;
 };
 
 // ================
 // Free functions
 // ================
+
+#if 0
+template <typename Functor, typename Vector>
+typename boost::add_reference<typename mtl::traits::distribution<map_view<Functor, Vector> >::type const>::type 
+inline distribution(const map_view<Functor, Vector>& v)
+{
+    return distribution(v.reference());
+}
+#endif
 
 
     namespace detail {

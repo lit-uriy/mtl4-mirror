@@ -9,56 +9,52 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-#ifndef MTL_DISTRIBUTION_INCLUDE
-#define MTL_DISTRIBUTION_INCLUDE
+#ifndef MTL_OPERATION_DISTRIBUTION_INCLUDE
+#define MTL_OPERATION_DISTRIBUTION_INCLUDE
 
-#include <boost/numeric/mtl/mtl_fwd.hpp>
-#include <boost/numeric/mtl/concept/collection.hpp>
-#include <boost/numeric/mtl/operation/compute_summand.hpp>
-#include <boost/numeric/mtl/utility/exception.hpp>
-
-namespace mtl {
-
-namespace vector {
+#include <boost/type_traits/add_reference.hpp>
+#include <boost/numeric/mtl/utility/distribution.hpp>
+#include <boost/numeric/mtl/vector/map_view.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_aop_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_pmop_expr.hpp>
 
 
+namespace mtl { 
 
-    template <typename EE1, typename EE2, typename SSFunctor> 
-    typename DistributedVector< vec_vec_aop_expr<EE1, EE2, SSFunctor> >::distribution_type
-    inline distribution(const vec_vec_aop_expr<EE1, EE2, SSFunctor>& expr)
+    namespace vector {
+
+	template <typename Functor, typename Vector>
+	typename boost::add_reference<typename mtl::traits::distribution<map_view<Functor, Vector> >::type const>::type 
+	inline distribution(const map_view<Functor, Vector>& v)
+	{
+	    return distribution(v.reference());
+	}
+
+	template <typename E1, typename E2, typename Functor>
+	typename boost::add_reference<typename mtl::traits::distribution<vec_vec_aop_expr<E1, E2, Functor> >::type const>::type
+	inline distribution(const vec_vec_aop_expr<E1, E2, Functor>& v)
+	{
+	    MTL_DEBUG_THROW_IF(distribution(v.first) != distribution(v.second), incompatible_distribution());
+	    return distribution(v.first);
+	}
+
+	template <typename E1, typename E2, typename Functor>
+	typename boost::add_reference<typename mtl::traits::distribution<vec_vec_pmop_expr<E1, E2, Functor> >::type const>::type
+	inline distribution(const vec_vec_pmop_expr<E1, E2, Functor>& v)
+	{
+	    MTL_DEBUG_THROW_IF(distribution(v.reference_first()) != distribution(v.reference_second()), incompatible_distribution());
+	    return distribution(v.reference_first());
+	}
+
+    } // namespace vector
+
+    template <typename Matrix, typename CVector>
+    typename boost::add_reference<typename mtl::traits::distribution<mtl::mat_cvec_times_expr<Matrix, CVector> >::type const>::type
+    inline distribution(const mtl::mat_cvec_times_expr<Matrix, CVector>& expr)
     {
-	MTL_DEBUG_THROW_IF(distribution(expr.first) != distribution(expr.second), incompatible_distribution());
-	return distribution(expr.first);
+	return row_distribution(expr.first);
     }
-
-    template <typename EE1, typename EE2, typename SSFunctor> 
-    typename DistributedVector< vector::vec_vec_pmop_expr<EE1, EE2, SSFunctor> >::distribution_type
-    inline distribution(const vec_vec_pmop_expr<EE1, EE2, SSFunctor>& expr)
-    {
-	MTL_DEBUG_THROW_IF(distribution(expr.first.value) != distribution(expr.second.value), incompatible_distribution());
-	return distribution(expr.first.value);
-    }
-
-    template <typename F, typename C> 
-    typename DistributedVector< map_view<F, C> >::distribution_type
-    inline distribution(const map_view<F, C>& expr)
-    {
-	return distribution(expr.ref);
-    }
-
-} // vector
-
-namespace operation {
-
-    template <typename Expr>
-    typename DistributedVector< typename compute_summand<Expr>::type >::distribution_type
-    inline distribution(const compute_summand<Expr>& s)
-    {
-	return distribution(s.value);
-    }
-
-}
 
 } // namespace mtl
 
-#endif // MTL_DISTRIBUTION_INCLUDE
+#endif // MTL_OPERATION_DISTRIBUTION_INCLUDE
