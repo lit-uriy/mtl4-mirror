@@ -51,7 +51,7 @@ int test_main(int argc, char* argv[])
     start(sos, x, "Bi-Conjugate Gradient");                                 bicg(A, x, b, L, iter);
     start(sos, x, "Bi-Conjugate Gradient Stabilized");                      bicgstab(A, x, b, L, iter);
     start(sos, x, "Bi-Conjugate Gradient Stabilized(2)");                   bicgstab_2(A, x, b, L, iter);
-    // start(sos, x, "Bi-Conjugate Gradient Stabilized(ell)");                 bicgstab_ell(A, x, b, L, R, iter, ell); // refactor with multi_vector?
+    start(sos, x, "Bi-Conjugate Gradient Stabilized(ell)");                 bicgstab_ell(A, x, b, L, R, iter, ell); // refactor with multi_vector?
     start(sos, x, "Conjugate Gradient");                                    cg(A, x, b, L, iter);
     start(sos, x, "Conjugate Gradient Squared");                            cgs(A, x, b, L, iter); 
     // start(sos, x, "Generalized Minimal Residual method (without restart)"); gmres_full(A, x, b, L, R, iter, size);
