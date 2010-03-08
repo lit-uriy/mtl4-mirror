@@ -16,9 +16,10 @@
 #include <cassert>
 
 #include <boost/numeric/mtl/cuda/config.hpp>
-#include <boost/numeric/mtl/cuda/get_device_value.cu>
 #include <boost/numeric/mtl/cuda/device_dense2D_new.cu>
-
+#include <boost/numeric/mtl/cuda/dense2D_kernel.cu>
+#include <boost/numeric/mtl/cuda/get_device_value.cu>
+#include <boost/numeric/mtl/cuda/vector_cuda.cu>
 
 #define BLOCK_SIZE 512
 
@@ -81,7 +82,7 @@ class dense2D
 	}
     }
 #endif
-
+#if 0
     self& operator=(const self& that)
     {
 	std::cout<< "x= y zuweisung\n";
@@ -105,7 +106,7 @@ class dense2D
 	}
 	return *this;
     }
-#if 0
+
     self operator + (const self &v1) 
     {   
 	self temp(dim,0);
@@ -235,20 +236,11 @@ class dense2D
 #endif
     self& operator()(T scr, int num_row, int num_col) 
     {   
-	std::cout<< "test new="<<scr<<"i j ="<<num_row<<" "<<num_col<<"\n";
+// 	std::cout<< "test new="<<scr<<"i j ="<<num_row<<" "<<num_col<<"\n";
 	assert(num_row >= 0 && num_row < num_rows && num_col >= 0 && num_col < num_cols);
 	start[num_row][num_col]= scr;
 	
 	on_host=true;
-	
-// 	int temp=0;
-// 	for (int i= 0; i < num_rows; i++){
-// 	    for (int j= 0; j < num_cols; j++){
-// 		cudaMemcpy(dptr + temp, &start[i][j], sizeof(T), cudaMemcpyHostToDevice);
-// 		temp++;
-// 	    }
-// 	}
-	
 	
 	
 	return *this;
@@ -275,20 +267,45 @@ class dense2D
     friend int  num_rows(const self& x) { return x.num_rows; }
     friend int  size(const self& x) { return x.num_rows * x.num_cols; }
 
+    template<typename Vector>
+    Vector operator * (const Vector& x)
+    {	
+	assert(num_rows >= 0 && num_rows == size(x));
+	Vector temp(size(x), 0);
+ 	temp.on_host= !(x.valid_device() && (*this).valid_device());
+// 	std::cout<< "temp.on_host=" << temp.on_host << "\n";
+// 	std::cout<< "x.valid_device()=" << x.valid_device() << "\n";
+// 	std::cout<< "(*this).valid_device()=" << (*this).valid_device() << "\n";
+	if (temp.on_host){
+	    for (int i= 0; i < size(x); i++){
+		for (int j= 0; j < size(x); j++){
+		    temp[i]+= start[i][j]*x[j];
+		}
+	    }
+	} else {
+// 	    std::cout<< "mat_vec_mult auf device\n";
+	    temp.to_device(); // if not yet there
+	    dim3 dimGrid(num_cols/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
+// 	    std::cout<< "num_cols/BLOCK_SIZE=" << num_cols/BLOCK_SIZE+1 << "\n";
+	    mat_vec_mult<value_type, value_type><<<dimGrid, dimBlock>>>(temp.dptr, dptr, x.dptr, num_rows, num_cols);
+	}
+	return temp;
+    }
+
     void set_to_zero() 
     {
-	std::cout<< "test set to zero\n";
+// 	std::cout<< "test set to zero\n";
 	for (int i= 0; i < num_rows; i++){
 	    for (int j= 0; j < num_cols; j++){
 		start[i][j]= T(0);
 	    }
 	}
-	std::cout<< "produkt=" << sizeof(T)*num_cols*num_rows << "\n";
-	std::cout<< "start=" << sizeof(start) << "\n";
-	std::cout<< "dptr=" << sizeof(dptr) << "\n";
-	
+// 	std::cout<< "produkt=" << sizeof(T)*num_cols*num_rows << "\n";
+// 	std::cout<< "start=" << sizeof(start) << "\n";
+// 	std::cout<< "dptr=" << sizeof(dptr) << "\n";
+// 	
 	on_host= false;
-	std::cout<< "test set to zero222\n";
+// 	std::cout<< "test set to zero222\n";
 	int temp= 0;
 	for (int i= 0; i < num_rows; i++){
 	    for (int j= 0; j < num_cols; j++){

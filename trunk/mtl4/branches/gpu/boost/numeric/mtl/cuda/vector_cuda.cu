@@ -89,7 +89,7 @@ class vector
 		 temp[i]+= v1.start[i];
 	 } else  {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE); 
+	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE); 
 	    vector_vector_rplus<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
 	 }
 	 return temp;
@@ -107,7 +107,7 @@ class vector
 		 temp[i]-= v1.start[i];
 	 } else  {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE); 
+	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE); 
             vector_vector_rminus<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
 
 	 }
@@ -194,7 +194,7 @@ class vector
 		start[i]*= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE); 
+	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE); 
 	    vec_rmult_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
@@ -214,7 +214,7 @@ class vector
 		start[i]/= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE);
+	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
 	    vec_rdivide_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
@@ -231,7 +231,7 @@ class vector
 		start[i]+= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE);
+	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
 	    vec_rplus_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
@@ -247,7 +247,7 @@ class vector
 		start[i]-= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE), dimBlock(BLOCK_SIZE);
+	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
 	    vec_rminus_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}

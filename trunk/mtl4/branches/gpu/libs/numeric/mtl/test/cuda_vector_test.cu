@@ -22,7 +22,8 @@ void test(const char* name)
     typedef mtl::cuda::vector<T>   vt;
 
     std::cout << name << "-- Vector Test\n"; 
-    mtl::cuda::vector<T>  x(513, 33), y(513, 10, false), z(513, 2), a(3,0);
+    mtl::cuda::vector<T>  x(13, 33), y(13, 10, false), z(513, 2), a(3,0);
+    mtl::cuda::scalar<T>  c(7);
     std::cout << "Vector constructed.\n" << "x=" << x << "\n";
     std::cout << "Vector constructed.\n" << "y=" << y << "\n";
 
@@ -45,7 +46,7 @@ void test(const char* name)
     std::cout<< "y=" << y << "\n";
     
     x.to_device();
-    x*= 7;
+    x*= c.value();;
     std::cout<< "x=" << x << "\n";
     if (x[0] != T(28))
 	std::cout<< "Error multipliying vector with scalar on device.\n";

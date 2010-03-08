@@ -15,66 +15,47 @@
 //#include <boost/numeric/mtl/mtl.hpp>
 
 #include <boost/numeric/mtl/cuda/dense2D.cu>
+#include <boost/numeric/mtl/cuda/vector_cuda.cu>
+
+
 
 template <typename T>
 void test(const char* name)
 {
   
-    std::cout << name << "000 Matrix Test\n"; 
     typedef mtl::cuda::dense2D<T>   dense;
-    int size= 3;
+    int size= 10;
     std::cout << name << "-- Matrix Test\n"; 
-    mtl::cuda::dense2D<T>  x(size, size), y(size, size);//, z(3, 3), a(3,3);
+    mtl::cuda::dense2D<T>  A(size, size);
+    mtl::cuda::vector<T>  x(size, 1.0), b(size, 0.0); 
      
-    x.set_to_zero();
+    A.set_to_zero();
  
-    std::cout << "Matrix constructed.\n" << "x=" << x << "\n";
-
+    //std::cout << "Matrix constructed.\n" << "A=" << A << "\n";
+std::cout << "Matrix constructed.\n";
             
-    std::cout << "const x(0,0) == " << x(0,0) << '\n';
-    x.to_host();
+    std::cout << "const A(0,0) == " << A(0,0) << '\n';
+    A.to_host();
     for (int i= 0; i < size; i++){
-      std::cout<< "i="  << x(i,i) << "\n";
-      x=x(2,i,i);
+//       std::cout<< "i="  << A(i,i) << "\n";
+      A(2,i,i);
     }
-    std::cout << "const x(1,1) == " << x(1,1) << '\n';
-    std::cout<< "x=" << x << "\n";
-    y= x;           // Copy on device
-    y.to_host();
-    //if (y(0,0) != T(22))
-//	std::cout<< "Error copy matrix on device.\n";
-    
-   // y.to_device();
-    std::cout<< "y=" << y << "\n";
-     std::cout<< "Hallo\n";
+    A(2,0,size-1);
+    A(2,size-1,0);
+    std::cout << "const A(1,1) == " << A(1,1) << '\n';
+//     std::cout<< "A=" << A << "\n";
+     A.to_device();
+     x.to_device();
+      std::cout<< "A=" << A << "\n";
+//      std::cout<< "x=" << x << "\n";
+//      std::cout<< "b=" << b << "\n";
+     b= A * x;
+     std::cout<< "b=" << b << "\n";
+     if (b[0] != T(4))
+	std::cout<< "Error Matrix vector multiplication on device.\n";
+     
   
-    #if 0  
-    
-
-    x.to_device();
-    x*= 7;
-    std::cout<< "x=" << x << "\n";
-    if (x[0] != T(28))
-	std::cout<< "Error multipliying matrix with scalar on device.\n";
-    
-    x.to_device();
-    x+= 2;
-    std::cout<< "x=" << x << "\n";
-    if (x[0] != T(30))
-	std::cout<< "Error adding matrix with scalar on device.\n";
-    
-    x.to_device();
-    x-= 10;
-    std::cout<< "x=" << x << "\n";
-    if (x[0] != T(20))
-	std::cout<< "Error subtract matrix with scalar on device.\n";
-    
-    x.to_device();
-    x/= 10;
-    std::cout<< "x=" << x << "\n";
-    if (x[0] != T(2))
-	std::cout<< "Error divide matrix with scalar on device.\n";
-#endif
+ 
 }
 
 
