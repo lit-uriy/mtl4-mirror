@@ -184,6 +184,7 @@ class vector
 	return *this;
     }
 
+
     template <typename U>
     self& operator*=(const U& src)
     {
