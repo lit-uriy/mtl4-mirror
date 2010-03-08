@@ -30,11 +30,9 @@ typename mtl::Collection<Vector>::value_type dot(const Vector& v1, const Vector&
 
     v1.to_device(); v2.to_device();
     
-    dim3 dimGrid( size(v1) / BLOCK_SIZE ), dimBlock( BLOCK_SIZE );
+    dim3 dimGrid( size(v1) / BLOCK_SIZE +1), dimBlock( BLOCK_SIZE );
     vector<value_type> out(dimBlock.x * dimGrid.x, value_type(0), false);
-
     dot_kernel<<< dimGrid, dimBlock, dimBlock.x * sizeof(value_type) >>>(out.get_device_pointer(), v1.get_device_pointer(), v2.get_device_pointer(), size(v1));
-   
     value_type temp= 0;
     for (int i= 0; i < dimGrid.x; i++)
       temp+= out[i];

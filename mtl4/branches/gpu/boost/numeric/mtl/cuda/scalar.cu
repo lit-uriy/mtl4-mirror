@@ -46,6 +46,41 @@ class scalar
     template <typename Src>
     self& operator*=(const Src& src)
     { 
+      
+        Src temp;	
+	cudaMemcpy(&temp, dptr, sizeof(T), cudaMemcpyDeviceToHost);
+	temp*=src;
+	cudaMemcpy(dptr, &temp, sizeof(T), cudaMemcpyHostToDevice);
+	return *this;
+    }	
+    
+    template <typename Src>
+    self& operator/=(const Src& src)
+    { 
+	Src temp;	
+	cudaMemcpy(&temp, dptr, sizeof(T), cudaMemcpyDeviceToHost);
+	temp/=src;
+	cudaMemcpy(dptr, &temp, sizeof(T), cudaMemcpyHostToDevice);
+	return *this;
+    }	
+    
+    template <typename Src>
+    self& operator+=(const Src& src)
+    { 
+	Src temp;	
+	cudaMemcpy(&temp, dptr, sizeof(T), cudaMemcpyDeviceToHost);
+	temp+=src;
+	cudaMemcpy(dptr, &temp, sizeof(T), cudaMemcpyHostToDevice);
+	return *this;
+    }	
+    
+    template <typename Src>
+    self& operator-=(const Src& src)
+    { 
+	Src temp;	
+	cudaMemcpy(&temp, dptr, sizeof(T), cudaMemcpyDeviceToHost);
+	temp-=src;
+	cudaMemcpy(dptr, &temp, sizeof(T), cudaMemcpyHostToDevice);
 	return *this;
     }	
 
