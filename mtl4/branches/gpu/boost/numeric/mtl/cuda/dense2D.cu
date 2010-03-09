@@ -238,11 +238,13 @@ class dense2D
     {   
 // 	std::cout<< "test new="<<scr<<"i j ="<<num_row<<" "<<num_col<<"\n";
 	assert(num_row >= 0 && num_row < num_rows && num_col >= 0 && num_col < num_cols);
-	start[num_row][num_col]= scr;
+	start[num_row][num_col]= scr;  //set on host
 	
-	on_host=true;
+	int temp(num_row*num_rows + num_col);
+	cudaMemcpy(dptr+ temp , &scr, sizeof(T), cudaMemcpyHostToDevice);  //set on device
 	
-	
+	on_host= false;
+		
 	return *this;
     }
 
@@ -273,9 +275,6 @@ class dense2D
 	assert(num_rows >= 0 && num_rows == size(x));
 	Vector temp(size(x), 0);
  	temp.on_host= !(x.valid_device() && (*this).valid_device());
-// 	std::cout<< "temp.on_host=" << temp.on_host << "\n";
-// 	std::cout<< "x.valid_device()=" << x.valid_device() << "\n";
-// 	std::cout<< "(*this).valid_device()=" << (*this).valid_device() << "\n";
 	if (temp.on_host){
 	    for (int i= 0; i < size(x); i++){
 		for (int j= 0; j < size(x); j++){
@@ -305,14 +304,23 @@ class dense2D
 // 	std::cout<< "dptr=" << sizeof(dptr) << "\n";
 // 	
 	on_host= false;
-// 	std::cout<< "test set to zero222\n";
-	int temp= 0;
-	for (int i= 0; i < num_rows; i++){
-	    for (int j= 0; j < num_cols; j++){
-		cudaMemcpy(dptr + temp, &start[i][j], sizeof(T), cudaMemcpyHostToDevice);
-		temp++;
-	    }
+      //wesentlich schneller 
+	cudaMemcpy(dptr , &start[0][0], sizeof(T), cudaMemcpyHostToDevice);
+	for (int i= 1; i < num_cols; i++){
+	    cudaMemcpy(dptr + i, dptr, sizeof(T), cudaMemcpyDeviceToDevice);
+	} //first Line is zero
+	for (int i= 1; i < num_rows; i++){
+	      cudaMemcpy(dptr + num_cols*i, dptr, sizeof(T)*num_cols, cudaMemcpyDeviceToDevice);
+//  	          std::cout<< "Zeile i=" << i << "\n";
 	}
+	
+// 	for (int i= 0; i < num_rows; i++){
+// 	    for (int j= 0; j < num_cols; j++){
+// 		cudaMemcpy(dptr + temp, dptr, sizeof(T), cudaMemcpyDeviceToDevice);
+// 		temp++;
+// 	    }
+// 	    std::cout<< "Zeile i=" << i << "\n";
+// 	}
     }
 
     void to_host() const
@@ -358,7 +366,7 @@ class dense2D
 
     void to_device() const
     {
-// 	std::cout<< "to device\n";
+ 	std::cout<< "to device\n";
 	if (on_host) {
 	    int temp= 0;
 	    for (int i= 0; i < num_rows; i++){
@@ -368,7 +376,7 @@ class dense2D
 		}
 	    }
 	  
-	 //   cudaMemcpy(const_cast<self*>(this)->dptr, start, sizeof(T)*num_cols*num_rows, cudaMemcpyHostToDevice);
+	    //cudaMemcpy(const_cast<self*>(this)->dptr, start, sizeof(T)*num_cols*num_rows, cudaMemcpyHostToDevice);
 	    const_cast<self*>(this)->on_host= false;
 	}
 // 	std::cout<< "to device ready\n";

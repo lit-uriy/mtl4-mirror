@@ -42,7 +42,7 @@ __global__ void vector_vector_rminus (Vector *v1, Vector *v2, int dim)
 }
 
 
-#if 0 // I don't think that we need this
+ // I don't think that we need this
 
 template <typename Vector>
 __global__ void vector_vector_rmult (Vector *v1, Vector *v2, int dim)
@@ -55,7 +55,7 @@ __global__ void vector_vector_rmult (Vector *v1, Vector *v2, int dim)
 
 }
 
-
+#if 0
 
 template <typename Vector>
 __global__ void vector_vector_rdivide (Vector *v1, Vector *v2, int dim)

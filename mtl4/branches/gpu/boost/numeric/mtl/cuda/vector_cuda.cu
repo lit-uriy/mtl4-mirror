@@ -116,7 +116,7 @@ class vector
 
 
 
-#if 0
+
     self operator * (const self &v1) 
     {   
 	self temp(dim,0);
@@ -128,14 +128,14 @@ class vector
 		 temp[i]*= v1.start[i];
 	 } else  {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(1), dimBlock(dim); 
+	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);  
             vector_vector_rmult<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
 
 	 }
 	 return temp;
     }
  
- 
+ #if 0
  
      self operator / (const self &v1) 
     {   

@@ -42,12 +42,13 @@ void test(const char* name)
     std::cout<< "Z=" << z << "\n";
     if (x[0] != T(9))
 	std::cout<< "Error subtract vector and vector on device.";
-    
-#if 0  //we don't need this at the moment
+    z*= 2;
+ //we don't need this at the moment
     x= y*z;   
     std::cout<< "\n\n>>>>>>>X= Y* Z <<<<<<\n\nX=" << x << "\n";
     std::cout<< "Y=" << y << "\n";
     std::cout<< "Z=" << z << "\n";   
+#if 0 
     x= y/z;
     std::cout<< "\n\n>>>>>>>X= Y/ Z <<<<<<\n\nX=" << x << "\n";
     std::cout<< "Y=" << y << "\n";
