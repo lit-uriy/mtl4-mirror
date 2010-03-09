@@ -23,10 +23,10 @@ void test(VectorU& u, VectorU& v, const char* name)
     //using mtl::vector::dot;
     typedef typename mtl::Collection<VectorU>::size_type  size_type;
     for (size_type i= 0; i < size(v); i++)
-	u[i]= 1, v[i]= 1;
+	u[i]= 3, v[i]= 3;
 
     std::cout << name << "\n dot(u, v) = " << dot(u, v) << "\n"; std::cout.flush();
-    if (std::abs(dot(u, v) - size(v)) > 0.01) throw "dot product wrong";
+    if (std::abs(dot(u, v) - 9*size(v)) > 0.01) throw "dot product wrong";
 }
  
 
@@ -34,7 +34,7 @@ void test(VectorU& u, VectorU& v, const char* name)
 
 int main( int argc, char** argv)
 {
-    const int size= 1028;
+    const int size= 12;
 
     mtl::cuda::vector<int>     i(size), j(size);
     mtl::cuda::vector<float>   u(size), v(size), w(size);
