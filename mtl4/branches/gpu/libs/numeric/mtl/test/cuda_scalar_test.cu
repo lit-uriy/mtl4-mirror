@@ -12,6 +12,8 @@
 #include <iostream>
 #include <complex>
 
+
+#include <boost/numeric/mtl/cuda/config.cu>
 #include <boost/numeric/mtl/cuda/device_new.cu>
 #include <boost/numeric/mtl/cuda/scalar.cu>
 
@@ -24,9 +26,10 @@ void inline print(char n, const T& x)
 template <typename T>
 void test(const char* name)
 {
+   
     std::cout << name << '\n';
     
-    mtl::cuda::scalar<T>  x, y(2);
+    mtl::cuda::scalar<T>  x, y(2), z(0);
     std::cout << "Scalars constructed.\n";
 
     x= 4;
@@ -45,19 +48,20 @@ void test(const char* name)
     if (x.value() != T(8))
 	throw "Error computing *= on device.";
 
-    x/= 4;   // Computing on device
+//    x/= z;   // Computing on device
+    x/= 0;
     print('x', x);
-    if (x.value() != T(2))
+    if (x.value() != T(8))
 	throw "Error computing *= on device.";
 
     x+= 4;   // Computing on device
     print('x', x);
-    if (x.value() != T(6))
+    if (x.value() != T(12))
 	throw "Error computing *= on device.";
 
     x-= 5;   // Computing on device
     print('x', x);
-    if (x.value() != T(1))
+    if (x.value() != T(7))
 	throw "Error computing *= on device.";
 
     
@@ -67,7 +71,11 @@ void test(const char* name)
 int main(int argc, char* argv[])
 {
     using namespace mtl;
-
+ 
+    cuda::activate_best_gpu();
+//    cuda::activate_gpu(1);    
+    
+    std::cout<<"CUDA Scalar Test\n";
     test<int>("int");
   //  test<short>("short");
 #if 0

@@ -43,6 +43,18 @@ class scalar
 	return *this;
     }
 
+
+    template <typename Src>
+    bool operator!=(const Src& src)
+    {  bool r;
+	
+        if(this==src) r=true;
+        else          r=false;
+	return r;
+    }
+
+
+
     template <typename Src>
     self& operator*=(const Src& src)
     { 
@@ -54,15 +66,33 @@ class scalar
 	return *this;
     }	
     
+    //prueba
     template <typename Src>
     self& operator/=(const Src& src)
     { 
-	Src temp;	
+	if(src!=T(0)){
+        Src temp;	
 	cudaMemcpy(&temp, dptr, sizeof(T), cudaMemcpyDeviceToHost);
 	temp/=src;
 	cudaMemcpy(dptr, &temp, sizeof(T), cudaMemcpyHostToDevice);
+	}else std::cout<<"\n<Normal number>Division by zero, undefined\n";
 	return *this;
-    }	
+    }		
+    
+    
+    
+//     template <typename Src>
+//     self& operator/=(const Src& src)
+//     { 
+//         Src zero(0);
+// 	if(src.value()!=zero.value()){
+//         Src temp;	
+// 	cudaMemcpy(&temp, dptr, sizeof(T), cudaMemcpyDeviceToHost);
+// 	temp/=src;
+// 	cudaMemcpy(dptr, &temp, sizeof(T), cudaMemcpyHostToDevice);
+// 	}else std::cout<<"\n<Scalar Class>Division by zero, undefined\n";
+// 	return *this;
+//     }	
     
     template <typename Src>
     self& operator+=(const Src& src)

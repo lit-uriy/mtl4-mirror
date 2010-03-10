@@ -46,8 +46,8 @@ void test(const char* name)
     std::cout<< "y=" << y << "\n";
     
     x.to_device();
-    x*= c.value();;
-    std::cout<< "x=" << x << "\n";
+    x*= 7;
+    std::cout<<"\n\nc= "<<c<< "\nx=" << x << "\n";
     if (x[0] != T(28))
 	std::cout<< "Error multipliying vector with scalar on device.\n";
     
