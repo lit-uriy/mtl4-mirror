@@ -60,10 +60,10 @@ int cg(LinearOperator& A, VectorX& x, const VectorB& b, int iter, double tol)
 // 	  std::cout<< "p="<< p << "\n";
 	  p= r+p;
       }
-//         std::cout<< "2.i="<< i << "\n";
+//          std::cout<< "2.i="<< i << "\n";
       
       q = A * p;
-//       std::cout<< "A="<< A << "\n";
+//        std::cout<< "A="<< i << "\n";
 //       std::cout<< "p="<< p << "\n";
 //       std::cout<< "q="<< q << "\n";
       temp = dot(p, q);
