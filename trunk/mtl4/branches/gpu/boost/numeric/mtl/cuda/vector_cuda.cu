@@ -17,7 +17,7 @@
 #include <iostream>
 #include <cassert>
 
-#include <boost/numeric/mtl/cuda/config.hpp>
+#include <boost/numeric/mtl/cuda/config.cu>
 #include <boost/numeric/mtl/cuda/get_device_value.cu>
 #include <boost/numeric/mtl/cuda/device_vector_new.cu>
 #include <boost/numeric/mtl/cuda/vector_kernel.cu>
@@ -52,6 +52,8 @@ class vector
 
 //Vector-Vector Operations
     vector(const self& that){   //that Konstruktor
+    
+//     std::cout<< "Konstruktor\n";
 	dim= that.dim;
 	start= new T[dim];
 	on_host= that.on_host;
@@ -64,7 +66,7 @@ class vector
 
     self& operator=(const self& that)
     {
-//	std::cout<< "x= y zuweisung\n";
+//	std::cout<< "x= y zuweisung Vector-Vector\n";
 	assert(dim == that.dim);
 	if (this != &that) {  //unnoetige Zuweisung vermeiden
 	    on_host= that.on_host;
@@ -165,7 +167,8 @@ class vector
     // Expensive !!!
     template <typename U>
     self& operator=(const vector<U>& that)
-    {
+    {  
+ //       std::cout<<"Vector<U>-Vector Operator =\n";
 	that.replicate_on_host();
 	on_host= true;
 	for (int i= 0; i < dim; i++)
@@ -177,7 +180,7 @@ class vector
     template <typename U>
     self& operator=(const U& src)
     {	
-	//std::cout<< "x=wert zuweisung\n";
+//	std::cout<< "x=wert zuweisung\n";
         for (int i= 0; i < dim; i++) 
             start[i]= src;
 	if (!on_host) { on_host= true; to_device(); }
@@ -188,7 +191,7 @@ class vector
     template <typename U>
     self& operator*=(const U& src)
     {
-        //std::cout<< "x*= wert zuweisung\n";
+ //       std::cout<< "x*= wert zuweisung\n";
 	if (on_host && dim < host_limit) {
 	    //std::cout<< "on host\n";
 	    for (int i= 0; i < dim; i++) 
@@ -202,13 +205,13 @@ class vector
         return *this;
     }
 // dim3 grid(size_x / BLOCK_DIM, size_y / BLOCK_DIM, 1);
-//     dim3 threads(BLOCK_DIM, BLOCK_DIM, 1);
+// dim3 threads(BLOCK_DIM, BLOCK_DIM, 1);
 
 
     template <typename U>
     self& operator/=(const U& src)
     {
-        //std::cout<< "x*= wert zuweisung\n";
+ //       std::cout<< "x/= wert zuweisung\n";
 	if (on_host && dim < host_limit) {
 	    //std::cout<< "on host\n";
 	    for (int i= 0; i < dim; i++) 
@@ -226,7 +229,7 @@ class vector
     template <typename U>
     self& operator+=(const U& src)
     {
-        //std::cout<< "x*= wert zuweisung\n";
+ //       std::cout<< "x+= wert zuweisung\n";
 	if (on_host && dim < host_limit) {
 	    for (int i= 0; i < dim; i++) 
 		start[i]+= src;
@@ -242,7 +245,7 @@ class vector
     template <typename U>
     self& operator-=(const U& src)
     {
-        //std::cout<< "x*= wert zuweisung\n";
+ //      std::cout<< "x-= wert zuweisung\n";
 	if (on_host && dim < host_limit) {
 	    for (int i= 0; i < dim; i++) 
 		start[i]-= src;
@@ -257,10 +260,12 @@ class vector
 
 
     T& operator[](int index) {
-	assert(index >= 0 && index < dim);
+//	std::cout<<"klammer function 1\n\n";
+        assert(index >= 0 && index < dim);
 	to_host();
 	return start[index];
     }
+
 
     T read(int i) const 
     {
@@ -268,7 +273,10 @@ class vector
 	return on_host ? start[i] : get_device_value(dptr + i);
     }
 
-    T operator[](int i) const { return read(i); }
+    T operator[](int i) const { 
+ //     std::cout<<"klammer function 2\n\n"; 
+      return read(i); 
+    }
 
     bool valid_host() const { return on_host; }
     bool valid_device() const { return !on_host; }

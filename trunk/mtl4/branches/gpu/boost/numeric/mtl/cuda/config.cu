@@ -24,7 +24,6 @@ namespace mtl { namespace cuda {
 
 void activate_best_gpu(void)
 {
-  system("clear");
   cudaDeviceProp device_properties;
   int max_cores = 0, 
       best_gpu = 0,  
@@ -44,7 +43,7 @@ void activate_best_gpu(void)
       cudaGetDeviceProperties(&device_properties, best_gpu);
     }
 
-   std::cout<< "\t\t===Running on device " <<  best_gpu << ": " << device_properties.name << "===\n\t\tNumber of Multiprocessors: "<<device_properties.multiProcessorCount<<"\n\n\n";
+   std::cout<< "\n\t\t===Running on device " <<  best_gpu << ": " << device_properties.name << "===\n\t\tNumber of Multiprocessors: "<<device_properties.multiProcessorCount<<"\n\n\n";
 
 }
 
@@ -53,7 +52,6 @@ void activate_best_gpu(void)
 //  Activate a specific GPU
 void activate_gpu(int currentDevice)
 {
-  system("clear");
   cudaError_t error;
    error=cudaSetDevice(currentDevice);
    if(error!=0){ 
@@ -62,7 +60,7 @@ void activate_gpu(int currentDevice)
    }else{   
     cudaDeviceProp deviceProp;
     cudaGetDeviceProperties(&deviceProp, currentDevice);
-    std::cout<< "\t\t==Running on device " <<  currentDevice << ": " << deviceProp.name << "===\n\t\tNumber of Multiprocessors: "<<deviceProp.multiProcessorCount<<"\n\n\n";
+    std::cout<< "\n\t\t==Running on device " <<  currentDevice << ": " << deviceProp.name << "===\n\t\tNumber of Multiprocessors: "<<deviceProp.multiProcessorCount<<"\n\n\n";
    }
 
 }

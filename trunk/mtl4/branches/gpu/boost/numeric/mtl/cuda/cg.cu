@@ -33,11 +33,13 @@ int cg(LinearOperator& A, VectorX& x, const VectorB& b, int iter, double tol)
   
    r.to_device(); x.to_device(); b.to_device();
   //A.to_device();
- // std::cout<< "A=" << A << "\n";
-  
+  std::cout<< "x=" << x[0] << "\n";
+  std::cout<< "b=" << b[0] << "\n";
+  std::cout<< "r=" << r[0] << "\n";
   r = A*x;
+  std::cout<< "rho=" << rho << "\n";
   r= r - b;
-//   std::cout<< "r="<< r << "\n"; 
+   std::cout<< "r="<< r << "\n"; 
   norm= sqrt(dot(r,r));
   int i(0);
   std::cout<< "dot(r,r)="<< dot(r,r) << "\n";
