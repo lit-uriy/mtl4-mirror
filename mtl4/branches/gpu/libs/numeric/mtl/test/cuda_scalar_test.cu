@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
     using namespace mtl;
  
     cuda::activate_best_gpu();
-//    cuda::activate_gpu(1);    
+ //   cuda::activate_gpu(1);    
     
     std::cout<<"CUDA Scalar Test\n";
     test<int>("int");

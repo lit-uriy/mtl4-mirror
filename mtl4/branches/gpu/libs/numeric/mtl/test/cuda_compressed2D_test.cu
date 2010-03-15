@@ -14,6 +14,7 @@
 //#include <boost/test/minimal.hpp>
 //#include <boost/numeric/mtl/mtl.hpp>
 
+#include <boost/numeric/mtl/cuda/compressed2D.cu>
 #include <boost/numeric/mtl/cuda/dense2D.cu>
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
 
@@ -24,11 +25,15 @@ void test(const char* name)
 {
   
   
-    typedef mtl::cuda::dense2D<T>   dense;
+    typedef mtl::cuda::dense2D<T>   	dense2D;
+    typedef mtl::cuda::compressed2D<T>   	compressed2D;
+    typedef mtl::cuda::vector<T>  	vector;
+    
     int size= 10;
     std::cout << name << "-- Matrix Test\n"; 
-    mtl::cuda::dense2D<T>  A(size, size);
-    mtl::cuda::vector<T>  x(size, 1.0), b(size, 0.0); 
+    dense2D  A(size, size);
+    vector  x(size, 1.0), b(size, 0.0); 
+    compressed2D mc;
      
     A.set_to_zero();
  
@@ -36,12 +41,8 @@ void test(const char* name)
     std::cout << "A.num_cols= "<< num_cols(A)<<"\nA.num_rows= " <<num_rows(A)<<"\nA.elements= " <<elements(A)<<"\n";
 //  std::cout << "Matrix constructed.\n" << "A=" << A << "\n";
 
-            
-//    std::cout << "const A(0,0) == " << size << '\n';
-//     A.to_host();
 
     for (int i= 0; i < size; i++){
-//       std::cout<< "i="  << A(i,i) << "\n";
       A(2,i,i);
     }
     A(2,0,size-1);
@@ -52,21 +53,13 @@ void test(const char* name)
     A.to_device();
     x.to_device();
     std::cout<< "A=" << A<<"\nA.elements= " <<elements(A)<<"\n";
- //     std::cout<< "x[1]=" << x[1] << "\n";
- //      std::cout<< "x=" << x << "\n";
-//      std::cout<< "b=" << b << "\n";
-     b= A * x;
+    
+//    std::cout<< "MC=" << mc<<"\nMC.elements= " <<elements(mc)<<"\n";
+    
+    
+//    mc.compressed_matrix(A);
+    mc.prueba(A);    
 
-
-
-     std::cout<< "x[7]=" << x[7] << "\n";
-//     std::cout<< "b=" << b << "\n";
-     std::cout<< "b[0]=" << b[0] << "\n";
-     std::cout<< "b[1]=" << b[1] << "\n";
-     if (b[0] != T(4) || b[1]!=T(2))
-	std::cout<< "Error Matrix vector multiplication on device.\n";
-     
-  
  
 }
 
