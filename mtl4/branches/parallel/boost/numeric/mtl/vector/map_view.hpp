@@ -76,7 +76,7 @@ struct map_view
     distribution(const map_view<F, C>& expr);
 #endif
 
-    const ref_type& reference() const { return ref; }
+    typename boost::add_reference<const ref_type>::type reference() const { return ref; }
 
   protected:
     boost::shared_ptr<Vector>           my_copy;
@@ -162,7 +162,7 @@ namespace mtl { namespace vector {
 
 template <typename Scaling, typename Vector>
 struct scaled_view
-    : public map_view<tfunctor::scale<Scaling, typename Vector::value_type>, Vector>
+  : public map_view<tfunctor::scale<Scaling, typename Vector::value_type>, Vector>
 {
     typedef tfunctor::scale<Scaling, typename Vector::value_type>  functor_type;
     typedef map_view<functor_type, Vector>                         base;
@@ -243,8 +243,6 @@ struct negate_view
       : base(functor_type(), p)
     {}
 };
-
-
 
 }} // namespace mtl::vector
 
