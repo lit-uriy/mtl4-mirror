@@ -51,7 +51,8 @@ void test(const char* name)
     std::cout<< "y[1]=" << y[1] << "\n";
     
     x.to_device();
-    x*= 7;
+    T c= 7;    //without testing
+    x*= c;
 
     std::cout<<"\n\nc= "<<c<< "\nx=" << x << "\n";
     if (x[0] != T(28))
