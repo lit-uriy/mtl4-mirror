@@ -19,49 +19,42 @@
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
 
 
-
 template <typename T>
 void test(const char* name)
 {
-  
-  
-    typedef mtl::cuda::dense2D<T>   	dense2D;
-    typedef mtl::cuda::compressed2D<T>   	compressed2D;
-    typedef mtl::cuda::vector<T>  	vector;
-    
-    int size= 10;
-    std::cout << name << "-- Matrix Test\n"; 
-    dense2D  A(size, size);
-    vector  x(size, 1.0), b(size, 0.0); 
-    compressed2D mc;
-     
+    int size= 4;
+    std::cout << name << "-- Matrix Test\n";
+    mtl::cuda::compressed2D<T>  A(size, size);
+    mtl::cuda::vector<T>  x(size, 1.0), b(size, 0.0);
+    std::cout << "start to zero.\n" ;
     A.set_to_zero();
- 
-    std::cout << "Matrix constructed.\n";
-    std::cout << "A.num_cols= "<< num_cols(A)<<"\nA.num_rows= " <<num_rows(A)<<"\nA.elements= " <<elements(A)<<"\n";
-//  std::cout << "Matrix constructed.\n" << "A=" << A << "\n";
-
-
-    for (int i= 0; i < size; i++){
-      A(2,i,i);
-    }
-    A(2,0,size-1);
-    A(2,size-1,0);
-    
-//    A(0,0,3); for testing "elemenst(A)"
-
-    A.to_device();
-    x.to_device();
-    std::cout<< "A=" << A<<"\nA.elements= " <<elements(A)<<"\n";
-    
-//    std::cout<< "MC=" << mc<<"\nMC.elements= " <<elements(mc)<<"\n";
+    std::cout << "end to zero.\n";
     
     
-//    mc.compressed_matrix(A);
-    mc.prueba(A);    
+    std::cout << "Matrix constructed.\n" << "A=" << A << "\n";
 
- 
+    std::cout << "const A(0,0) == " << A(0,0) << '\n';
+    A.simpel_laplacian_setup(size);
+    A.to_host();
+     std::cout<< "A=" << A << "\n";
+      A.to_device();
+      x[1]=2; x[2]= 3; x[3]= 4;
+      x.to_device();
+       b.to_device();
+      std::cout<< "x=" << x << "\n";
+       std::cout<< "A=" << A << "\n";
+     std::cout<< "b=" << b << "\n";
+
+    
+     b= A * x;
+     std::cout<< "b=" << b << "\n";
+     if (b[0] != T(2))
+        std::cout<< "Error Matrix vector multiplication on device.\n";
+
+
+
 }
+
 
 
 int main(int argc, char* argv[])
