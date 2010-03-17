@@ -21,7 +21,8 @@
 
 namespace mtl { namespace cuda {
 
-/// Conjugate Gradients without preconditioner
+// Conjugate Gradients without preconditioner
+
 template < typename LinearOperator, typename VectorX, typename VectorB >
 int cg(LinearOperator& A, VectorX& x, const VectorB& b, int iter, double tol)
 {
@@ -29,14 +30,18 @@ int cg(LinearOperator& A, VectorX& x, const VectorB& b, int iter, double tol)
   typedef typename mtl::Collection<VectorX>::value_type  Scalar;
   scalar<Scalar> rho(0), rho_1(0), alpha(0), beta(0), temp(0);
   VectorX p(size(x)), q(size(x)), r(size(x)), z(size(x)), s(size(x)), t(size(x));
+
   double norm(1);
   
    r.to_device(); x.to_device(); b.to_device();
-  //A.to_device();
-  //std::cout<< "x=" << x[0] << "\n";
+
+//   A.to_device();
+//   std::cout<< "x=" << x[0] << "\n";
 //   std::cout<< "b=" << b[0] << "\n";
 //   std::cout<< "r=" << r[0] << "\n";
-  r = A*x;
+
+   r = A*x;
+   
 //   std::cout<< "rho=" << rho << "\n";
   r= r - b;
 //    std::cout<< "r="<< r << "\n"; 
@@ -88,6 +93,7 @@ int cg(LinearOperator& A, VectorX& x, const VectorB& b, int iter, double tol)
       norm= sqrt(dot(r,r));
       std::cout<< "iteration "<< i <<": norm residum=" << norm << "\n";
   }
+  std::cout<< "\n\nAll without problems\n";
   return iter;
 }
 

@@ -22,7 +22,7 @@ template <typename Matrix, typename Vector>
 __global__ void sparse_mat_vec_mult( const  unsigned num_rows ,
                                      const  unsigned * ptr ,
                                      const  unsigned * indices ,
-                                     const  Matrix    * data ,
+                                     const  Matrix   * data ,
                                      const  Vector * x ,
                                             Vector * y )
 {

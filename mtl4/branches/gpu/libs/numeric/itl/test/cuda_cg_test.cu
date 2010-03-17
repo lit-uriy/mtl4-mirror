@@ -32,21 +32,15 @@ int main(int argc, char* argv[])
   A.set_to_zero();
  // std::cout<< "A=" << A << "\n";
   std::cout<< "Ende Matrix set_to_zero\n Start init Laplacian setup";
+
   //Laplacian Setup
- /* for(int i=  1; i < N; i++) {
-      A(4, i, i);
-      A(-1,i-1,i);
-      A(-1, i, i-1);
-  }
-  A(4,0,0); A(4, N-1, N-1);
-  std::cout<< "Ende Matrix Laplacian\n";
- */ //std::cout<< "A=" << A << "\n";
- A.simpel_laplacian_setup(size);
+  A.simpel_laplacian_setup(size+2*(size-1), 4);
   mtl::cuda::vector<double> x(N, 1), b(N, 2);
   x.to_device();
+  
 //    std::cout<< "A=\n" << A << "\n";
 
-//  b = A * x;
+b = A * x;
 //    std::cout<< "b=" << b << "\n";
 //   std::cout<< "x=" << x << "\n";
   x= 0;
