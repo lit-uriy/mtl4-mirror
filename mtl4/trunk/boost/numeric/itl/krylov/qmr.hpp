@@ -17,6 +17,7 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 namespace itl {
 
@@ -35,9 +36,8 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
     const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
     Scalar                      rho_1, gamma(one), gamma_1, theta(zero), theta_1,
 	                        eta(-one), delta, ep(one), beta;
-    Size                        n(size(x));
-    Vector                      r(b - A * x), v_tld(r), y(solve(L, v_tld)), w_tld(r), z(adjoint_solve(R,w_tld)), v(n),
-                                w(n), y_tld(n), z_tld, p, q, p_tld, d, s;
+    Vector                      r(b - A * x), v_tld(r), y(solve(L, v_tld)), w_tld(r), z(adjoint_solve(R,w_tld)), v(resource(x)),
+                                w(resource(x)), y_tld(resource(x)), z_tld, p, q, p_tld, d, s;
 
     if (iter.finished(r))
 	return iter;

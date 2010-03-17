@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 namespace itl {
 
@@ -29,7 +30,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
     Scalar     rho_0(0), rho_1(0), alpha(0), beta(0), gamma(0), 
 	       mu(0), nu(0), tau(0), omega_1(0), omega_2(0);
     Vector     r(b - A * x), r_0(r), r_i(r), x_i(x), 
-               s(size(x)), t(size(x)), u(size(x)), v(size(x)), w(size(x));
+               s(resource(x)), t(resource(x)), u(resource(x)), v(resource(x)), w(resource(x));
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 

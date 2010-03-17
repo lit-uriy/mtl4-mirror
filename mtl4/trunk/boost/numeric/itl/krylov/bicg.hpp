@@ -16,6 +16,7 @@
 #include <boost/numeric/itl/itl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 namespace itl {
 
@@ -28,8 +29,8 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
     using mtl::conj;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     Scalar     rho_1(0), rho_2(0), alpha(0), beta(0);
-    Vector     r(b - A * x), z(size(x)), p(size(x)), q(size(x)),
- 	       r_tilde(r), z_tilde(size(x)), p_tilde(size(x)), q_tilde(size(x));
+    Vector     r(b - A * x), z(resource(x)), p(resource(x)), q(resource(x)),
+ 	       r_tilde(r), z_tilde(resource(x)), p_tilde(resource(x)), q_tilde(resource(x));
 
     while (! iter.finished(r)) {
 	z= solve(M, r);

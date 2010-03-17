@@ -45,15 +45,14 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     Scalar                      rho, w1, w2, nu, hr;
     Size                        k, n(size(x)), kmax(std::min(size(x), kmax_in));
     Vector                      r0(b - A *x), r(solve(L,r0)), s(kmax+1),
-                                c(kmax+1), g(kmax+1), va(n), va0(n), va00(n);
-    mtl::multi_vector<Vector>   v(Vector(n, zero), kmax+1); 
+                                c(kmax+1), g(kmax+1), va(resource(x)), va0(resource(x)), va00(resource(x));
+    mtl::multi_vector<Vector>   v(Vector(resource(x), zero), kmax+1); 
     mtl::dense2D<Scalar>        h(kmax+1, kmax);
     irange                      range_n(0, n);
 
     rho= g[0]= two_norm(r);
-    if (iter.finished(rho)){
+    if (iter.finished(rho))
 	return iter;
-    }
     v.vector(0)= r / rho;
 
     // GMRES iteration
