@@ -12,6 +12,10 @@
 #ifndef ITL_CGS_INCLUDE
 #define ITL_CGS_INCLUDE
 
+#include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/operation/dot.hpp>
+
 namespace itl {
 
 /// Conjugate Gradient Squared
@@ -22,8 +26,8 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
 {
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     Scalar     rho_1(0), rho_2(0), alpha(0), beta(0);
-    Vector     p(size(x)), phat(size(x)), q(size(x)), qhat(size(x)), vhat(size(x)),
-	       u(size(x)), uhat(size(x)), r(b - A * x), rtilde= r;
+    Vector     p(resource(x)), phat(resource(x)), q(resource(x)), qhat(resource(x)), vhat(resource(x)),
+	       u(resource(x)), uhat(resource(x)), r(b - A * x), rtilde= r;
 
 
     while (! iter.finished(r)) {

@@ -20,6 +20,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/linear_algebra/inverse.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 namespace itl {
 
@@ -36,12 +37,11 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
     const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
-    Scalar                      theta(zero), eta(zero), tau, rho, rhon, sigma,
-                                alpha, beta, c, m;
-    Size                        k(0), n(size(x));
-    //shift x= R*x
-    Vector                      rt(b - A*solve(R,x)), r(solve(L,rt)),
-                                u1(n), u2(n), y1(n), y2(n), w(n), d(n, zero), v(n);
+    Scalar                      theta(zero), eta(zero), tau, rho, rhon, sigma, alpha, beta, c, m;
+    Size                        k(0); // really needed?
+    // shift x= R*x
+    Vector                      rt(b - A*solve(R, x)), r(solve(L, rt)), u1(resource(x)), u2(resource(x)), 
+                                y1(resource(x)), y2(resource(x)), w(resource(x)), d(resource(x), zero), v(resource(x));
 
     if (iter.finished(rt))
 	return iter;
@@ -60,7 +60,7 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
 
         //inner loop
         for(int j=1; j < 3; j++) {
-            m= 2 * k - 2 + j;
+            m= 2 * k - 2 + j; // k is set to zero and never changed, -> m= -2 + j
             if (j == 1) {
                 w-= alpha * u1;
                 d= y1+ (theta * theta * eta / alpha) * d;
