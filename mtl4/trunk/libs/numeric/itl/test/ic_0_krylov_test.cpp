@@ -21,7 +21,7 @@
 	std::cout << "\n\n" << name << "\n";				\
 	xs= 0.01;							\
         int codes;							\
-        itl::cyclic_iteration<double> iters(bs, N, 1.e-4, 0.0, 10);   \
+        itl::cyclic_iteration<double> iters(bs, N, 1.e-4, 0.0, 10);     \
         try {								\
 	    codes= solver args;						\
 	} catch (const itl::unexpected_orthogonality&) {		\
