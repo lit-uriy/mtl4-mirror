@@ -58,6 +58,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 
     // GMRES iteration
     for (k= 0; rho >= iter.atol() && k < kmax; k++, ++iter) {
+	// std::cout << "GMRES full: k == " << k << ", rho == " << rho << ", x == " << x << '\n';
         va0= A * solve(R, v.vector(k));
         v.vector(k+1)= va= solve(L,va0);
 	// orth(v, v[k+1], false); 
