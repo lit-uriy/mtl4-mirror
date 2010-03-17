@@ -23,6 +23,7 @@
 #include <boost/mpi/communicator.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/operation/std_output_operator.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { 
 
@@ -166,7 +167,7 @@ namespace mtl {
 	    int on_rank(size_type n) const 
 	    { 
 		if (n < starts[0] || n >= starts[my_size]) std::cerr << "out of range with n == " << n << " and starts == " << starts << std::endl;
-		MTL_DEBUG_THROW_IF(n < starts[0] || n >= starts[my_size], range_error);
+		MTL_DEBUG_THROW_IF(n < starts[0] || n >= starts[my_size], range_error());
 		std::vector<size_type>::const_iterator lbound( std::lower_bound(starts.begin(), starts.end(), n));
 		return lbound - starts.begin() - int(*lbound != n);
 	    }
@@ -305,7 +306,7 @@ namespace mtl {
 	    template <typename Size>
 	    Size global_to_local(Size n, int p) const
 	    {
-		MTL_DEBUG_THROW_IF(on_rank(n) != p, range_error);
+		MTL_DEBUG_THROW_IF(on_rank(n) != p, range_error());
 		return num_local(n, p);
 	    }
 
