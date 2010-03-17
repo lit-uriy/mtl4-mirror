@@ -29,10 +29,8 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
     while (! iter.finished(r)) {
 	rho_1= dot(rtilde, r);
 
-	if (rho_1 == 0.) {
+	if (rho_1 == 0.)
 	    iter.fail(2, "cgs breakdown");
-	    break;
-	}
 
 	if (iter.first())
 	    p= u= r;
@@ -53,11 +51,10 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
 	qhat= A * uhat;
 	r-= alpha * qhat;
 
-	rho_2 = rho_1;
-
+	rho_2= rho_1;
 	++iter;
     }
-    return iter.error_code();
+    return iter;
 }
 
 } // namespace itl

@@ -121,7 +121,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	++iter;
     }
     x= solve(R, x) + x0; // convert to real solution and undo shift
-    return iter.error_code();
+    return iter;
 }
 
 

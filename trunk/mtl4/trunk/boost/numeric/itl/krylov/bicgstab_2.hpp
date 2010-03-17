@@ -65,7 +65,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 
 	++iter;
     }
-    return iter.error_code();
+    return iter;
 }
 
 } // namespace itl
