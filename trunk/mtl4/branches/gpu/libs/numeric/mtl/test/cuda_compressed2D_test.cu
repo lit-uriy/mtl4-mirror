@@ -22,7 +22,7 @@
 template <typename T>
 void test(const char* name)
 {
-    int size= 4;
+    int size= 100000;
     std::cout << name << "-- Matrix Test\n";
     mtl::cuda::compressed2D<T>  A(size, size);
     mtl::cuda::vector<T>  x(size, 1.0), b(size, 0.0);
@@ -31,27 +31,25 @@ void test(const char* name)
     std::cout << "end to zero.\n";
     
     
-    std::cout << "Matrix constructed.\n" << "A=" << A << "\n";
+    std::cout << "Matrix constructed.\n";
+//    std::cout << "A=" << A << "\n";
+    A.simpel_laplacian_setup(size, 4);
+  
+    x[1]=2; x[2]= 3; x[3]= 4;
 
-    std::cout << "const A(0,0) == " << A(0,0) << '\n';
-    A.simpel_laplacian_setup(size);
-    A.to_host();
-     std::cout<< "A=" << A << "\n";
-      A.to_device();
-      x[1]=2; x[2]= 3; x[3]= 4;
-      x.to_device();
-       b.to_device();
-      std::cout<< "x=" << x << "\n";
-       std::cout<< "A=" << A << "\n";
-     std::cout<< "b=" << b << "\n";
+//    A.to_host();   x.to_host();   b.to_host();
+    A.to_device(); x.to_device(); b.to_device();
 
+    b= A * x;
     
-     b= A * x;
-     std::cout<< "b=" << b << "\n";
-     if (b[0] != T(2))
-        std::cout<< "Error Matrix vector multiplication on device.\n";
+//    std::cout<< "A=" << A << "\n";
+//    std::cout<< "x=" << x << "\n";
+//    std::cout<< "b=" << b << "\n";
+    
+    if (b[0] != T(2))
+       std::cout<< "Error Matrix vector multiplication.\n";
 
-
+    else std::cout<< "\nMatrix vector multiplication was Correct!!!.\n";  
 
 }
 
