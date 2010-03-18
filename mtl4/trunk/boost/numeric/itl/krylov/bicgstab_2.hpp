@@ -25,18 +25,15 @@ template < typename LinearOperator, typename Vector,
 int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	       const Preconditioner &M, Iteration& iter)
 {
-    using math::zero; using math::one;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
-    Scalar     rho_0(0), rho_1(0), alpha(0), beta(0), gamma(0), 
-	       mu(0), nu(0), tau(0), omega_1(0), omega_2(0);
+    const Scalar zero= math::zero(Scalar()), one= math::one(Scalar());
+    Scalar     alpha(zero), beta, gamma, mu, nu, rho_0(one), rho_1, tau, omega_1, omega_2(one);
     Vector     r(b - A * x), r_0(r), r_i(r), x_i(x), 
-               s(resource(x)), t(resource(x)), u(resource(x)), v(resource(x)), w(resource(x));
+	       s(resource(x)), t(resource(x)), u(resource(x), zero), v(resource(x)), w(resource(x));
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
-
-    alpha= zero(b[0]); u= alpha; rho_0= omega_2= one(b[0]);
     while (! iter.finished(r)) {
-	rho_0= -omega_2 * rho_0;
+	rho_0*= -omega_2;
 	// z= solve(M, r); z_tilde= solve(M, r_tilde); ???
 
 	rho_1= dot(r_0, r_i);       // or rho_1= dot(z, r_tilde) ???
