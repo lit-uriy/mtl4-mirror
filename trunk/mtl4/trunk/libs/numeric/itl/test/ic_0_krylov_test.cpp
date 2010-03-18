@@ -31,7 +31,7 @@
 	    std::cerr << "Solver doesn't converge!!!\n";		\
 	    failed++;							\
         } else								\
-	      succeed++;						\
+	    succeed++;							\
     }
     
 

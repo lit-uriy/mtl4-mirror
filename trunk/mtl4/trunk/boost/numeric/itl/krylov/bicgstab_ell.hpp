@@ -40,7 +40,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
-    const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
+    const Scalar                zero= math::zero(Scalar()), one= math::one(Scalar());
     Vector                      x0(resource(x)), y(resource(x));
     mtl::dense_vector<Vector>   r_hat(l+1,Vector(resource(x))), u_hat(l+1,Vector(resource(x)));
 
@@ -58,7 +58,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
     r_hat[0]= y;
     u_hat[0]= zero;
 
-    Scalar     rho_0(one), rho_1(zero), alpha(zero), Gamma(zero), beta(zero), omega(one); 
+    Scalar                      rho_0(one), rho_1(zero), alpha(zero), Gamma(zero), beta(zero), omega(one); 
     mtl::dense2D<Scalar>        tau(l+1, l+1);
     mtl::dense_vector<Scalar>   sigma(l+1), gamma(l+1), gamma_a(l+1), gamma_aa(l+1);
 

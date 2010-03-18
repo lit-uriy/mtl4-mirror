@@ -41,7 +41,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
-    const Scalar                zero= math::zero(b[0]);
+    const Scalar                zero= math::zero(Scalar());
     Scalar                      rho, w1, w2, nu, hr;
     Size                        k, n(size(x)), kmax(std::min(size(x), kmax_in));
     Vector                      r0(b - A *x), r(solve(L,r0)), s(kmax+1),

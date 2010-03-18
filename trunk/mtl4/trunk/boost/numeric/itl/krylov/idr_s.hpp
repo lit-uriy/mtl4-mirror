@@ -42,8 +42,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
     if (s < 1) s= 1;
 
-    // Size                        n= size(x);
-    const Scalar                zero= math::zero(b[0]);
+    const Scalar                zero= math::zero(Scalar());
     Scalar                      omega(zero);
     Vector                      x0(x), y(resource(x)), v(resource(x)), t(resource(x)), q(resource(x));
     mtl::multi_vector<Vector>   dR(Vector(resource(x), zero), s), dX(Vector(resource(x), zero), s), P(Vector(resource(x), zero), s), M(s, s);
