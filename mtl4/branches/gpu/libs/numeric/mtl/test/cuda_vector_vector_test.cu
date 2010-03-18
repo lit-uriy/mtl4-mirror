@@ -19,35 +19,37 @@ void test(const char* name)
 {
     typedef mtl::cuda::vector<T>   vt;
 
+    int size= 10270000;
     std::cout << name << "-- Vector Test\n"; 
-    mtl::cuda::vector<T>  x(3, 33), y(3, 10, false), z(3, 1);
+    mtl::cuda::vector<T>  x(size, 33), y(size, 10, false), z(size, 1);
    
     y[1]= 12.0;
 //    x.to_host(); y.to_host(); z.to_host();
     x.to_device(); y.to_device(); z.to_device();
-    std::cout<< "X=" << x << "\n";
-    std::cout<< "Y=" << y << "\n";
-    std::cout<< "Z=" << z << "\n";
-    
+    std::cout<< "X=" << x[1] << "\n";
+    std::cout<< "Y=" << y[1] << "\n";
+    std::cout<< "Z=" << z[1] << "\n";
+    x.to_device(); y.to_device(); z.to_device();
     x= y+z;
-    std::cout<< "\n>>>>>>>X= Y+ Z <<<<<<\nX=" << x << "\n";
-    std::cout<< "Y=" << y << "\n";
-    std::cout<< "Z=" << z << "\n";  
+    std::cout<< "\n>>>>>>>X= Y+ Z <<<<<<\nX=" << x[1] << "\n";
+    std::cout<< "Y=" << y[1] << "\n";
+    std::cout<< "Z=" << z[1] << "\n";  
     if (x[0] != T(11))
 	std::cout<< "Error adding vector and vector on device.";
-    
+    x.to_device(); y.to_device(); z.to_device();
     x= y-z;    
-    std::cout<< "\n>>>>>>>X= Y- Z <<<<<<\nX=" << x << "\n";
-    std::cout<< "Y=" << y << "\n";
-    std::cout<< "Z=" << z << "\n";
+    std::cout<< "\n>>>>>>>X= Y- Z <<<<<<\nX=" << x[1] << "\n";
+    std::cout<< "Y=" << y[1] << "\n";
+    std::cout<< "Z=" << z[1] << "\n";
     if (x[0] != T(9))
 	std::cout<< "Error subtract vector and vector on device.";
     z*= 2;
  //we don't need this at the moment
+ x.to_device(); y.to_device(); z.to_device();
     x= y*z;   
-    std::cout<< "\n\n>>>>>>>X= Y* Z <<<<<<\n\nX=" << x << "\n";
-    std::cout<< "Y=" << y << "\n";
-    std::cout<< "Z=" << z << "\n";   
+    std::cout<< "\n\n>>>>>>>X= Y* Z <<<<<<\n\nX=" << x[1] << "\n";
+    std::cout<< "Y=" << y[1] << "\n";
+    std::cout<< "Z=" << z[1] << "\n";   
 #if 0 
     x= y/z;
     std::cout<< "\n\n>>>>>>>X= Y/ Z <<<<<<\n\nX=" << x << "\n";

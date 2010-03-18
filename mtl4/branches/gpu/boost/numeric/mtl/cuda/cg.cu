@@ -12,6 +12,7 @@
 #ifndef MTL_CUDA_CG_INCLUDE
 #define MTL_CUDA_CG_INCLUDE
 
+#include <boost/numeric/mtl/cuda/compressed2D.cu>
 #include <boost/numeric/mtl/cuda/dense2D.cu>
 #include <boost/numeric/mtl/cuda/dot.cu>
 #include <boost/numeric/mtl/cuda/scalar.cu>
@@ -21,10 +22,21 @@
 
 namespace mtl { namespace cuda {
 
+template < typename Vector>
+void short_print2(const Vector& v)
+{
+   std::cout << "[";
+   for (int i= 0; i < 10 && i < size(v); i++)
+     std::cout << v[i] << ", ";
+   std::cout << "\b\b] \n";
+}
+  
+#define short_print(v) std::cout << #v << ' '; short_print2(v);
+  
 // Conjugate Gradients without preconditioner
 
 template < typename LinearOperator, typename VectorX, typename VectorB >
-int cg(LinearOperator& A, VectorX& x, const VectorB& b, int iter, double tol)
+int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
 {
   std::cout<< "CG START\n"; 
   typedef typename mtl::Collection<VectorX>::value_type  Scalar;
@@ -32,19 +44,23 @@ int cg(LinearOperator& A, VectorX& x, const VectorB& b, int iter, double tol)
   VectorX p(size(x)), q(size(x)), r(size(x)), z(size(x)), s(size(x)), t(size(x));
 
   double norm(1);
-  
-   r.to_device(); x.to_device(); b.to_device();
+//  short_print(b);  
+   
 
 //   A.to_device();
-//   std::cout<< "x=" << x[0] << "\n";
-//   std::cout<< "b=" << b[0] << "\n";
-//   std::cout<< "r=" << r[0] << "\n";
+r.to_device(); x.to_device(); b.to_device(), p.to_device(), A.to_device();
 
-   r = A*x;
-   
-//   std::cout<< "rho=" << rho << "\n";
-  r= r - b;
-//    std::cout<< "r="<< r << "\n"; 
+  p= A*x;
+//   short_print(p);
+//    std::cout<< "rho=" << rho << "\n";
+/* std::cout<< "nach mat vec p=" << p << "\n";
+ std::cout<< "b=" << b << "\n";
+ std::cout<< "r=" << r << "\n";*/
+    r= b - p;	
+    std::cout<< "r="<< r << "\n"; 
+//     short_print(r);
+    r.to_device();
+//     std::cout<< "r="<< r << "\n"; 
   norm= sqrt(dot(r,r));
   int i(0);
   std::cout<< "dot(r,r)="<< dot(r,r) << "\n";
@@ -52,7 +68,7 @@ int cg(LinearOperator& A, VectorX& x, const VectorB& b, int iter, double tol)
   while ((norm > tol) && (i < iter)) {
 //       z = solve(M, r);
       rho = dot(r, r);
-//      	  std::cout<< "i="<< i << "\n";
+      	std::cout<< "rho="<< rho << "      ";
       if (i == 0){
 	  p = r;
       } else {

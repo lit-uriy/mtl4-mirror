@@ -35,11 +35,18 @@ class compressed2D
 
     /// Constructor from type T 
     compressed2D(unsigned num_rows=1, unsigned num_cols=1, const T& value= T() , bool on_host=true )
-      : num_rows(num_rows),
+      : nnz(0),
+	num_rows(num_rows),
         num_cols(num_cols),
+	h_ptr(new unsigned[num_rows+1]), 
+	h_indices(0), 
+	h_data(0),
+	d_ptr(device_vector_new<unsigned>(0, num_rows+1)),
+	d_indices(device_vector_new<unsigned>(0, 0)),
+	d_data(device_vector_new<T>(T(0), 0)),
         on_host(on_host)
     {
-      
+      for (unsigned i= 0; i <= num_rows; i++) h_ptr[i]= 0;
     }
 
     ~compressed2D() {
@@ -104,46 +111,79 @@ class compressed2D
 	
  	temp.on_host= !(x.valid_device() && (*this).valid_device());
 	if (temp.on_host){
-	   std::cout<< "Mat_vec_mult auf Host\n";
-   
+// 	   std::cout<< "Mat_vec_mult auf Host\n";
 	   for (unsigned i= 0; i < size(x)+2*(size(x)-1); i++){
 	     temp.start[aux] += h_data [ i ] * x [h_indices [ i ]];
-
 	     if( h_ptr[aux+1]-(i+1)==0 ){
-	     aux++;
+		aux++;
 	     } 
-   
 	   }
 	   
 	} else {
- 	    std::cout<< "mat_vec_mult auf device\n";
+ //	    std::cout<< "mat_vec_mult auf device\n";
 	    temp.to_device(); // if not yet there
 	    dim3 dimGrid(num_cols/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
- 	    std::cout<< "num_cols/BLOCK_SIZE=" << num_cols/BLOCK_SIZE+1 << "\n";
 	    sparse_mat_vec_mult<<<dimGrid, dimBlock>>>(num_rows, d_ptr, d_indices, d_data, x.dptr, temp.dptr);
 	}
 	return temp;
     }
 
-    void change_dim(unsigned n)
+    void change_nnz(unsigned n)
     {
-        dim= n;
-        h_ptr= new unsigned [num_rows+1];
+        nnz= n;
+	if (h_indices) delete[] h_indices;
         h_indices= new unsigned [n];
+	if (h_data) delete[] h_data;
         h_data= new T [n];
 
         d_ptr= device_vector_new<unsigned>(0, num_rows+1);
+	if (d_indices) cudaFree(d_indices);
         d_indices= device_vector_new<unsigned>(0, n);
+	if (d_data) cudaFree(d_data);
         d_data= device_vector_new<T>(T(0), n);
-        //set_to_zero();  // not necessary
     }
+
+    void laplacian_setup(unsigned m, unsigned n)
+    {
+	assert(m*n == num_rows); assert(num_cols == num_rows);
+	change_nnz(5*m*n - 2*m - 2*n);
+	
+	unsigned pos= 0;
+	for (unsigned i= 0; i < m; i++)
+	      for (unsigned j= 0; j < n; j++) {
+		  unsigned row= i * n + j;
+		  h_ptr[row]= pos;
+		  if (i > 0) {
+		     h_indices[pos]= row-n;
+		     h_data[pos++]= -1;
+		  }
+		  if (j > 0) {
+		     h_indices[pos]= row-1;
+		     h_data[pos++]= -1;
+		  }
+		  h_indices[pos]= row;
+		  h_data[pos++]= 4;
+		  if (j < n-1)  {
+		     h_indices[pos]= row+1;
+		     h_data[pos++]= -1;
+		  } 
+		  if (i < m-1) {
+		     h_indices[pos]= row+n;
+		     h_data[pos++]= -1;
+		  }
+	      }
+        assert(pos == 5*m*n - 2*m - 2*n);
+	h_ptr[num_rows]= pos;
+	on_host= true;
+    }
+
 
     void simpel_laplacian_setup(unsigned n, int d)
     {
         unsigned num=n+2*(n-1), temp=0;
-        change_dim(num);
-	
-        std::cout<< "simpel_laplacian_setup\n";
+        change_nnz(num);
+// 	std::cout<< "n=" << n << " laplace elemente=" << num << "\n";
+//         std::cout<< "simpel_laplacian_setup\n";
         h_ptr[0]= 0; 
 	h_ptr[1]= 2; 
 	h_indices[0]= 0; 
@@ -159,9 +199,12 @@ class compressed2D
 	  h_data[i+1]= T(d); 
 	  h_data[i+2]= T(-1);
           temp++;
-          h_ptr[temp+1]=h_ptr[temp]+3;
+     //     h_ptr[temp+1]=h_ptr[temp]+3;
         }
-        
+	for (unsigned i= 2; i < num_rows+1; i++) {
+// 	  std::cout << "i=" << i << "\n";
+	  h_ptr[i]=h_ptr[i-1]+3;
+	}
 	h_ptr[num_rows]= h_ptr[num_rows-1]+2; 
 	h_indices[num-2]= n-2; 
 	h_indices[num-1]= n-1;
@@ -172,9 +215,12 @@ class compressed2D
         cudaMemcpy(d_ptr, h_ptr, sizeof(unsigned)*(num_rows+1), cudaMemcpyHostToDevice);
         cudaMemcpy(d_indices, h_indices, sizeof(unsigned)*(num), cudaMemcpyHostToDevice);
         cudaMemcpy(d_data, h_data, sizeof(T)*(num), cudaMemcpyHostToDevice);
-
-        on_host= false;
-
+// for (unsigned i= 0; i < num_rows+1; i++)
+//         std::cout<< "i=" << i << "h_ptr[i]=" << h_ptr[i] << "\n";
+// 
+// for (unsigned i= 0; i < num; i++){
+//         std::cout<< "i=" << i << "  h_data[i]=" << h_data[i] <<  "  i=" << i << "h_indives[i]=" << h_indices[i] << "\n";
+// }
 	
 // 	 std::cout<< "\nData:[ ";
 // 	for (unsigned i= 0; i < num; i++) {
@@ -194,17 +240,17 @@ class compressed2D
  
     void set_to_zero()
     {
-	change_dim(1);
+	change_nnz(1);
 	std::cout<< " num_rows=" << num_rows << "\n";
         for (unsigned i= 0; i < num_rows+1; i++){       //initializing on host 
             h_ptr[i]= 0;				//sparse rows pointer
         }
-	std::cout<< " dim=" << dim << "\n";
-        for (unsigned i= 0; i < dim; i++){	       
+	std::cout<< " nnz=" << nnz << "\n";
+        for (unsigned i= 0; i < nnz; i++){	       
             h_data[i]= 0;				//initializing data
             h_indices[i]= T(0);				//initializing cols
         }
-	std::cout<< " dim2=" << dim << "\n";
+	std::cout<< " dim2=" << nnz << "\n";
         on_host= false;
    
 	//wesentlich schneller                          //initializing on device
@@ -214,7 +260,7 @@ class compressed2D
         }
         cudaMemcpy(d_indices , &h_indices[0], sizeof(unsigned), cudaMemcpyHostToDevice);
         cudaMemcpy(d_data , &h_data[0], sizeof(T), cudaMemcpyHostToDevice);
-        for (int i= 1; i < dim; i++){
+        for (int i= 1; i < nnz; i++){
             cudaMemcpy(d_indices + i, d_indices, sizeof(unsigned), cudaMemcpyDeviceToDevice);
             cudaMemcpy(d_data + i, d_data, sizeof(T), cudaMemcpyDeviceToDevice);
         }
@@ -225,8 +271,8 @@ class compressed2D
     {
         if (!on_host) {
             cudaMemcpy(h_ptr, d_ptr, sizeof(unsigned)*(num_rows+1), cudaMemcpyDeviceToHost);
-            cudaMemcpy(h_indices, d_indices, sizeof(unsigned)*(dim), cudaMemcpyDeviceToHost);
-            cudaMemcpy(h_data, d_data, sizeof(T)*(dim), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_indices, d_indices, sizeof(unsigned)*(nnz), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_data, d_data, sizeof(T)*(nnz), cudaMemcpyDeviceToHost);
             const_cast<self*>(this)->on_host= true;
         }
     }
@@ -235,8 +281,8 @@ class compressed2D
     {
         if (!on_host) {
            cudaMemcpy(h_ptr, d_ptr, sizeof(unsigned)*(num_rows+1), cudaMemcpyDeviceToHost);
-           cudaMemcpy(h_indices, d_indices, sizeof(unsigned)*(dim), cudaMemcpyDeviceToHost);
-           cudaMemcpy(h_data, d_data, sizeof(T)*(dim), cudaMemcpyDeviceToHost);
+           cudaMemcpy(h_indices, d_indices, sizeof(unsigned)*(nnz), cudaMemcpyDeviceToHost);
+           cudaMemcpy(h_data, d_data, sizeof(T)*(nnz), cudaMemcpyDeviceToHost);
         }
     }
  
@@ -244,8 +290,8 @@ class compressed2D
     {
         if (on_host) {
            cudaMemcpy(d_ptr, h_ptr, sizeof(unsigned)*(num_rows+1), cudaMemcpyHostToDevice);
-           cudaMemcpy(d_indices, h_indices, sizeof(unsigned)*(dim), cudaMemcpyHostToDevice);
-           cudaMemcpy(d_data, h_data, sizeof(T)*(dim), cudaMemcpyHostToDevice);
+           cudaMemcpy(d_indices, h_indices, sizeof(unsigned)*(nnz), cudaMemcpyHostToDevice);
+           cudaMemcpy(d_data, h_data, sizeof(T)*(nnz), cudaMemcpyHostToDevice);
            const_cast<self*>(this)->on_host= false;
         }
     }
@@ -285,7 +331,7 @@ class compressed2D
         return os;
     }
 
-    unsigned    dim;
+    unsigned    nnz;
     unsigned    num_cols, num_rows;
     unsigned*   h_ptr;	   // sparse_rows on host
     unsigned*   d_ptr;	   // sparse_rows on device

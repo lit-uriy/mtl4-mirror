@@ -22,11 +22,21 @@ void test(VectorU& u, VectorU& v, const char* name)
 {
     //using mtl::vector::dot;
     typedef typename mtl::Collection<VectorU>::size_type  size_type;
+    typedef typename mtl::Collection<VectorU>::value_type value_type;
+    
     for (size_type i= 0; i < size(v); i++)
-	u[i]= 3, v[i]= 3;
-
-    std::cout << name << "\n dot(u, v) = " << dot(u, v) << "\n"; std::cout.flush();
-    if (std::abs(dot(u, v) - 9*size(v)) > 0.01) throw "dot product wrong";
+	u[i]= i, v[i]= size(v)-i;
+    value_type temp(0), temp2(0);
+    u.to_host(); v.to_host(); 
+    for (size_type i= 0; i < size(v); i++)
+	temp+= u[i] * v[i];
+    for (int i= size(v)-1; i >= 0; i--)
+ 	temp2+= u[i] * v[i];
+   
+    std::cout << name << " size = " << size(v) << "\n dot(u, v) = " << dot(u, v) << "\n"; std::cout.flush();
+    std::cout << "temp == " << temp << ", temp2 == " << temp2 << "\n";
+    std::cout << std::abs(dot(u, v) - temp) << "\n";
+    if (std::abs(dot(u, v) - temp) > 0.1 * abs(temp)) throw "dot product wrong";
 }
  
 
@@ -34,15 +44,20 @@ void test(VectorU& u, VectorU& v, const char* name)
 
 int main( int argc, char** argv)
 {
-    const int size= 12;
+    const int size= 1029;
 
     mtl::cuda::vector<int>     i(size), j(size);
     mtl::cuda::vector<float>   u(size), v(size), w(size);
     mtl::cuda::vector<double>  x(size), y(size), z(size);
   //  mtl::cuda::vector<std::complex<double> >  xc(size), yc(size), zc(size);
 
+  /*
     test(i, j, "test int");
-    test(u, v, "test float");
+    test(u, v, "test float"); */
+    for (int k= 10; k < 30000000; k*= 3) {
+        mtl::cuda::vector<double>     v(k), w(k);
+	test(v, w, "test sizes");
+    }
 //    test(x, y, "test double");
     // test(xc, yc, "test complex<double>");
 
