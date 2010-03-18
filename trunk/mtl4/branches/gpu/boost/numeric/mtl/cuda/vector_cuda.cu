@@ -103,7 +103,7 @@ class vector
 	self temp(dim,0);
 	temp=*this;
 	assert(temp.dim == v1.dim);
-	on_host= v1.on_host;
+	on_host= v1.on_host || this->on_host;
 	 if (on_host) {
 	     for (int i= 0; i < v1.dim; i++)
 		 temp[i]-= v1.start[i];

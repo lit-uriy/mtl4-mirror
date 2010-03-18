@@ -22,7 +22,7 @@
 template <typename T>
 void test(const char* name)
 {
-    int size= 100000;
+    int size= 100;
     std::cout << name << "-- Matrix Test\n";
     mtl::cuda::compressed2D<T>  A(size, size);
     mtl::cuda::vector<T>  x(size, 1.0), b(size, 0.0);
@@ -33,9 +33,9 @@ void test(const char* name)
     
     std::cout << "Matrix constructed.\n";
 //    std::cout << "A=" << A << "\n";
-    A.simpel_laplacian_setup(size, 4);
+    A.laplacian_setup(10, 10);
   
-    x[1]=2; x[2]= 3; x[3]= 4;
+//     x[1]=2; x[2]= 3; x[3]= 4;
 
 //    A.to_host();   x.to_host();   b.to_host();
     A.to_device(); x.to_device(); b.to_device();
@@ -44,7 +44,7 @@ void test(const char* name)
     
 //    std::cout<< "A=" << A << "\n";
 //    std::cout<< "x=" << x << "\n";
-//    std::cout<< "b=" << b << "\n";
+    std::cout<< "b=" << b << "\n";
     
     if (b[0] != T(2))
        std::cout<< "Error Matrix vector multiplication.\n";

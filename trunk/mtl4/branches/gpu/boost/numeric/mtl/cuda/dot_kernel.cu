@@ -93,7 +93,7 @@ __global__ void dot_kernel(T* out, const T* v1, const T* v2, int n)
 
     //all threads load one element to shared memory
     const unsigned tid= threadIdx.x, id= blockIdx.x * gridDim.x + tid,
-                   step= blockDim.x * gridDim.x,  
+                   step= blockDim.x, // * gridDim.x,  
 		   blocks= n / step, nn= blocks * step;
     
     T reg(0);
