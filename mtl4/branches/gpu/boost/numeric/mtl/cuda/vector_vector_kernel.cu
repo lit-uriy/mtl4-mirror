@@ -31,6 +31,14 @@ __global__ void vector_vector_rplus (Vector *v1, Vector *v2, int dim)
 }
 
 template <typename Vector>
+__global__ void vector_vector_assign_plus (Vector *vout, Vector *v1, Vector *v2, int dim)
+{
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < dim)
+       vout[idx]= v1[idx] + v2[idx];
+}
+
+template <typename Vector>
 __global__ void vector_vector_rminus (Vector *v1, Vector *v2, int dim)
 {
  int idx = blockIdx.x * blockDim.x + threadIdx.x;

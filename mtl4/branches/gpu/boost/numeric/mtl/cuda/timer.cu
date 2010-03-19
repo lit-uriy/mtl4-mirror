@@ -12,35 +12,35 @@
 #ifndef MTL_CUDA_TIMER_CU_INCLUDE
 #define MTL_CUDA_TIMER_CU_INCLUDE
 
+#include <sys/time.h>
+
 namespace mtl { namespace cuda {
 
+/// Measure elapsed time
 class timer
 {
   public:
-    timer()
-    {
-	cudaEventCreate( &start );
-	cudaEventCreate( &stop );
-	cudaEventRecord( start, 0 );	
-    }
+    /// Default constructor
+    timer() { restart(); }
     
-    float elapsed() const
+    /// Restart
+    void restart() {  gettimeofday(&start, NULL); }
+    
+    /// Elapsed time in seconds
+    double elapsed() const
     {
-	cudaEventRecord( stop, 0 );
-	float elapsedTimeInMs= 0.0f;
-	cudaEventElapsedTime( &elapsedTimeInMs, start, stop );
-	return elapsedTimeInMs;
-    }
-   
-    void restart()
-    {
-	cudaEventRecord( start, 0 );		
+        timeval stop;
+	gettimeofday(&stop, NULL);
+	double t1= start.tv_sec + start.tv_usec / 1000000.0, 
+	       t2= stop.tv_sec + stop.tv_usec / 1000000.0;
+	return t2 - t1;
     }
   private:
-    mutable cudaEvent_t start, stop;
+     timeval start;
 };
 
 
 }} // namespace mtl::cuda
 
 #endif // MTL_CUDA_TIMER_CU_INCLUDE
+
