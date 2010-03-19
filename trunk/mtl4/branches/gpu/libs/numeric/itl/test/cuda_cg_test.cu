@@ -29,13 +29,8 @@ int main(int argc, char* argv[])
   typedef mtl::cuda::compressed2D<double>  matrix_type;
   
   matrix_type         A(N, N);
-  std::cout<< "Start Matrix("<< N <<"x"<< N<<") set_to_zero\n";
-  A.set_to_zero();
- // std::cout<< "A=" << A << "\n";
-  std::cout<< "Ende Matrix set_to_zero\n Start init Laplacian setup";
+  A.laplacian_setup(size, size); A.to_device();
 
-  //Laplacian Setup
-  A.laplacian_setup(size, size);
   mtl::cuda::vector<double> x(N, 1), b(N), r(N);
   x.to_device();
   

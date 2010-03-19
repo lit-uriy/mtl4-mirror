@@ -156,7 +156,6 @@ class compressed2D
 	for (unsigned i= 0; i < m; i++)
 	      for (unsigned j= 0; j < n; j++) {
 		  unsigned row= i * n + j;
-		  if (row % 100000 == 0) std::cout << "Laplacian: row " << row << "\n";
 		  h_ptr[row]= pos;
 		  if (i > 0) {
 		     h_indices[pos]= row-n;

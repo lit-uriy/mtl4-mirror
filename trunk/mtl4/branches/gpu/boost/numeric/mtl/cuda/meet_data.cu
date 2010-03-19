@@ -46,7 +46,9 @@ bool inline meet_data(const T& x, const U& y, const V& z)
 	assert(x.valid_host() && y.valid_host() && z.valid_host());
 	return true;
     }
-    x.to_device(); y.to_device(); z.to_device();
+    x.to_device(); 
+    y.to_device(); 
+    z.to_device();
     return false;
 }
 
