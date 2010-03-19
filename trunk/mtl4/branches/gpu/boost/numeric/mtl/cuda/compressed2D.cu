@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/cuda/compressed2D_kernel.cu>
 #include <boost/numeric/mtl/cuda/get_device_value.cu>
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
+#include <boost/numeric/mtl/cuda/meet_data.cu>
 
 #define BLOCK_SIZE 512
 
@@ -32,6 +33,7 @@ class compressed2D
 
   public:
     typedef T                        value_type;
+    typedef unsigned                 size_type;
 
     /// Constructor from type T 
     compressed2D(unsigned num_rows=1, unsigned num_cols=1, const T& value= T() , bool on_host=true )
@@ -103,29 +105,23 @@ class compressed2D
     friend int  size(const self& x) { return x.num_rows * x.num_cols; }
 
     template<typename Vector>
-    Vector operator * (const Vector& x)
+    Vector operator* (const Vector& x)
     {	
-	assert(num_rows == size(x));
-	Vector temp(size(x), 0);
-	unsigned aux=0;
+	assert(num_cols == size(x));
+	Vector tmp(num_rows, 0);
 	
- 	temp.on_host= !(x.valid_device() && (*this).valid_device());
-	if (temp.on_host){
-// 	   std::cout<< "Mat_vec_mult auf Host\n";
-	   for (unsigned i= 0; i < size(x)+2*(size(x)-1); i++){
-	     temp.start[aux] += h_data [ i ] * x [h_indices [ i ]];
-	     if( h_ptr[aux+1]-(i+1)==0 ){
-		aux++;
-	     } 
+	if (meet_data(*this, x, tmp)) {
+	   for (size_type row= 0; row < num_rows; ++row) {
+	       value_type sum(0);
+	       for (size_type start= h_ptr[row], end= h_ptr[row+1]; start != end; ++start)
+		   sum+= h_data[start] * x[h_indices[start]];
+	       tmp[row]= sum;
 	   }
-	   
 	} else {
- //	    std::cout<< "mat_vec_mult auf device\n";
-	    temp.to_device(); // if not yet there
 	    dim3 dimGrid(num_cols/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
-	    sparse_mat_vec_mult<<<dimGrid, dimBlock>>>(num_rows, d_ptr, d_indices, d_data, x.dptr, temp.dptr);
+	    sparse_mat_vec_mult<<<dimGrid, dimBlock>>>(num_rows, d_ptr, d_indices, d_data, x.dptr, tmp.dptr);	    
 	}
-	return temp;
+	return tmp;
     }
 
     void change_nnz(unsigned n)
