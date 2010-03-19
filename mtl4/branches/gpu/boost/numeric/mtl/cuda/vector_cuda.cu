@@ -40,9 +40,9 @@ class vector
     typedef T                        value_type;
 
     /// Constructor from type T 
-    vector(int n=1, const T& value= T(), bool on_host= false ) 
-      : dim(n), start(new T[n]), dptr(device_vector_new<T>(value, n)), on_host(on_host) 
-    {} 
+    vector(int n=1, const T& value= T(), bool on_host=false ) 
+      : dim(n), start(new T[n]), dptr(device_vector_new<T>(n)), on_host(on_host) 
+    { *this= value; } 
 
     ~vector() {
 	 delete [] start; 
@@ -50,8 +50,8 @@ class vector
     }
 
 
-    /// Copy constructor
-    vector(const self& that) { 
+//Vector-Vector Operations
+    vector(const self& that){   //that Konstruktor
     
 //     std::cout<< "Konstruktor\n";
 	dim= that.dim;
@@ -64,18 +64,18 @@ class vector
 	    cudaMemcpy(dptr, that.dptr, dim*sizeof(T), cudaMemcpyDeviceToDevice);
     }
 
-    /// Copy assignment
     self& operator=(const self& that)
     {
 //	std::cout<< "x= y zuweisung Vector-Vector\n";
 	assert(dim == that.dim);
 	if (this != &that) {  //unnoetige Zuweisung vermeiden
 	    on_host= that.on_host;
-	    if (on_host) 
+	    if (on_host) {
 		for (int i= 0; i < dim; i++)
 		    start[i]= that.start[i];
-	    else 
+	    } else {
 		cudaMemcpy(dptr, that.dptr, dim*sizeof(T), cudaMemcpyDeviceToDevice);
+	    }
 	}
 	return *this;
     }
@@ -180,16 +180,13 @@ class vector
     template <typename U>
     self& operator=(const U& src)
     {	
-	//	std::cout<< "x=wert zuweisung\n";
-	if (on_host)
-	    for (int i= 0; i < dim; i++) 
-		start[i]= src;
-	else {
-	    cudaMemcpy(dptr, &src, sizeof(value_type), cudaMemcpyHostToDevice);
-	    cudaMemcpy(dptr + 1, dptr, (dim-1) * sizeof(value_type), cudaMemcpyDeviceToDevice);	    	    
-	}
+//	std::cout<< "x=wert zuweisung\n";
+        for (int i= 0; i < dim; i++) 
+            start[i]= src;
+	if (!on_host) { on_host= true; to_device(); }
 	return *this;
     }
+
 
     template <typename U>
     self& operator*=(const U& src)
@@ -303,7 +300,6 @@ class vector
     void to_device() const
     {
 	if (on_host) {
-	    std::cout << "Copy vector really to device\n";
 	    cudaMemcpy(const_cast<self*>(this)->dptr, start, sizeof(T)*dim, cudaMemcpyHostToDevice);
 	    const_cast<self*>(this)->on_host= false;
 	}
