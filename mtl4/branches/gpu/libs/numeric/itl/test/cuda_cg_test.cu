@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
   using namespace mtl;
 
   // For a more realistic example set size to 1000 or larger
-  const int size = 10, N = size * size;
+  const int size = 1000, N = size * size;
   mtl::cuda::activate_best_gpu();
   typedef mtl::cuda::compressed2D<double>  matrix_type;
   
@@ -39,12 +39,11 @@ int main(int argc, char* argv[])
   mtl::cuda::vector<double> x(N, 1), b(N), r(N);
   x.to_device();
   
-  A.to_device();
   b = A * x;
   x= 0;
 
   double toleranz=   0.0000001;
-  int	 iterations= 1000;
+  int	 iterations= 100;
   
    cg(A, x, b, iterations, toleranz);
 //    std::cout<< "x=" << x << "\n";
