@@ -28,7 +28,13 @@ void short_print2(const Vector& v)
    std::cout << "[";
    for (int i= 0; i < 10 && i < size(v); i++)
      std::cout << v[i] << ", ";
+   if(size(v)> 20) {
+       std::cout << " ... ";
+       for (int i= size(v)-10; i < size(v); i++)
+	   std::cout << v[i] << ", ";
+   }
    std::cout << "\b\b] \n";
+   v.to_device();
 }
   
 #define short_print(v) std::cout << #v << ' '; short_print2(v);
@@ -44,31 +50,26 @@ int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
   VectorX p(size(x)), q(size(x)), r(size(x)), z(size(x)), s(size(x)), t(size(x));
 
   double norm(1);
-//  short_print(b);  
+  short_print(b);  
    
 
-//   A.to_device();
-r.to_device(); x.to_device(); b.to_device(), p.to_device(), A.to_device();
-
   p= A*x;
-//   short_print(p);
+  short_print(p);
 //    std::cout<< "rho=" << rho << "\n";
 /* std::cout<< "nach mat vec p=" << p << "\n";
  std::cout<< "b=" << b << "\n";
  std::cout<< "r=" << r << "\n";*/
     r= b - p;	
-    std::cout<< "r="<< r << "\n"; 
-//     short_print(r);
-    r.to_device();
+    // std::cout<< "r="<< r << "\n"; 
+    short_print(r);
 //     std::cout<< "r="<< r << "\n"; 
   norm= sqrt(dot(r,r));
   int i(0);
   std::cout<< "dot(r,r)="<< dot(r,r) << "\n";
-  std::cout<< "norm="<< norm << "\n";
   while ((norm > tol) && (i < iter)) {
 //       z = solve(M, r);
       rho = dot(r, r);
-      	std::cout<< "rho="<< rho << "      ";
+      // std::cout<< "rho="<< rho << "      ";
       if (i == 0){
 	  p = r;
       } else {
@@ -107,7 +108,8 @@ r.to_device(); x.to_device(); b.to_device(), p.to_device(), A.to_device();
       ++i;
      // std::cout<< "dot(r,r)="<< dot(r,r) << "\n";
       norm= sqrt(dot(r,r));
-      std::cout<< "iteration "<< i <<": norm residum=" << norm << "\n";
+      if (i % 20 == 0)
+	    std::cout<< "iteration "<< i <<": norm residum=" << norm << "\n";
   }
   std::cout<< "\n\nAll without problems\n";
   return iter;

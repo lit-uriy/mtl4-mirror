@@ -33,8 +33,7 @@ T* device_vector_new(const T& value, int n)
 
     // copy value to first entry and replicate it
     cudaMemcpy(pointer, &value, sizeof(T), cudaMemcpyHostToDevice);
-    for (int i = 1; i < n; i++)
-	cudaMemcpy(pointer + i, pointer, sizeof(T), cudaMemcpyDeviceToDevice);
+    cudaMemcpy(pointer + 1, pointer, (n-1) * sizeof(T), cudaMemcpyDeviceToDevice);
 
     return pointer;
 }
