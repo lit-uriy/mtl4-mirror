@@ -18,8 +18,9 @@
 #include <cassert>
 
 #include <boost/numeric/mtl/cuda/config.cu>
-#include <boost/numeric/mtl/cuda/get_device_value.cu>
 #include <boost/numeric/mtl/cuda/device_vector_new.cu>
+#include <boost/numeric/mtl/cuda/get_device_value.cu>
+#include <boost/numeric/mtl/cuda/meet_data.cu>
 #include <boost/numeric/mtl/cuda/vector_kernel.cu>
 #include <boost/numeric/mtl/cuda/vector_vector_kernel.cu>
 
@@ -97,6 +98,18 @@ class vector
 	 return temp;
     }
 
+    void plus(const self& v_in, self& v_out)
+    {
+	assert(v_in.dim == dim && v_out.dim == dim);
+	if (meet_data(*this, v_in, v_out)) {
+	    for (int i= 0; i < dim; i++)
+		 v_out[i]= start[i] + v_in.start[i];
+	 } else  {
+	     v_out.to_device();
+	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE); 
+	    vector_vector_assign_plus<<<dimGrid, dimBlock>>>(v_out.dptr, dptr, v_in.dptr, dim);
+	 }	
+    }
 
     self operator - (const self &v1) 
     {   
