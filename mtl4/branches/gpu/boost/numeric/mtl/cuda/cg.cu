@@ -49,70 +49,41 @@ int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
   scalar<Scalar> rho(0), rho_1(0), alpha(0), beta(0), temp(0);
   VectorX p(size(x)), q(size(x)), r(size(x)), z(size(x)), s(size(x)), t(size(x));
 
-  double norm(1);
-  short_print(b);  
-   
-
-  p= A*x;
-  short_print(p);
-//    std::cout<< "rho=" << rho << "\n";
-/* std::cout<< "nach mat vec p=" << p << "\n";
- std::cout<< "b=" << b << "\n";
- std::cout<< "r=" << r << "\n";*/
+    double norm(1);
+    p= A*x;
     r= b - p;	
-    // std::cout<< "r="<< r << "\n"; 
-    short_print(r);
-//     std::cout<< "r="<< r << "\n"; 
-  norm= sqrt(dot(r,r));
-  int i(0);
-  std::cout<< "dot(r,r)="<< dot(r,r) << "\n";
-  while ((norm > tol) && (i < iter)) {
-//       z = solve(M, r);
-      rho = dot(r, r);
-      // std::cout<< "rho="<< rho << "      ";
-      if (i == 0){
-	  p = r;
-      } else {
-//  	  std::cout<< "rho="<< rho << "\n";
-//  	  std::cout<< "rho_1="<< rho_1 << "\n";
-	  beta = rho.value();
-//  	  std::cout<< "beta="<< beta << "\n";
-	  beta/= rho_1.value();
-//  	  std::cout<< "beta="<< beta << "\n";
-// 	  p = z + beta * p;
-	  p*= beta.value();
-// 	  std::cout<< "p="<< p << "\n";
-	  p= r+p;
-      }
-//          std::cout<< "2.i="<< i << "\n";
+    norm= sqrt(dot(r,r));
+    int i(0);
+    while ((norm > tol) && (i < iter)) {
+	//       z = solve(M, r);
+	rho = dot(r, r);
+	if (i == 0)
+	    p= r;
+	else {
+	    beta = rho.value() / rho_1.value();
+	    p*= beta.value();
+	    p= r+p;
+	}	
+	q = A * p;
+	// temp = dot(p, q);
+	alpha = rho.value() / dot(p, q);
+	s= p;
+	t= q;
       
-      q = A * p;
-//        std::cout<< "A="<< i << "\n";
-//       std::cout<< "p="<< p << "\n";
-//       std::cout<< "q="<< q << "\n";
-      temp = dot(p, q);
-      alpha = rho;
-      alpha/= temp.value();
-      
-      s= p;
-      t= q;
-      
-      s*=  alpha.value();
-      t*=  alpha.value();
-      //x += alpha * p;
-      //r -= alpha * q;
-      x= x + s;
-      r= r - t;
-      rho_1 = rho;
-      
-      ++i;
-     // std::cout<< "dot(r,r)="<< dot(r,r) << "\n";
-      norm= sqrt(dot(r,r));
-      if (i % 20 == 0)
+	s*=  alpha.value();
+	t*=  alpha.value();
+	//x += alpha * p;
+	//r -= alpha * q;
+	x= x + s;
+	r= r - t;
+	rho_1 = rho;      
+	++i;
+	norm= sqrt(dot(r,r));
+	if (i % 20 == 0)
 	    std::cout<< "iteration "<< i <<": norm residum=" << norm << "\n";
-  }
-  std::cout<< "\n\nAll without problems\n";
-  return iter;
+    }
+    std::cout<< "\n\nAll without problems\n";
+    return iter;
 }
 
 }} // namespace mtl 
