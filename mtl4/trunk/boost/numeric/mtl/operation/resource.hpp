@@ -16,6 +16,16 @@
 
 namespace mtl {
 
+    namespace traits {
+
+	template <typename Vector>
+	struct vector_resource
+	{
+	    typedef typename Collection<Vector>::size_type type;
+	    type inline static apply(const Vector& v) { using mtl::vector::size; return size(v); }
+	};
+    }
+
     namespace vector {
 
 	/// Describes the resources need for a certain vector.
@@ -23,9 +33,10 @@ namespace mtl {
 	    Normally, this is just the size of the vector.
 	    For distributed vector we also need its distribution. **/
 	template <typename Vector>
-	typename Collection<Vector>::size_type inline resource(const Vector& v)
+	typename mtl::traits::vector_resource<Vector>::type
+	inline resource(const Vector& v)
 	{
-	    return size(v);
+	    return mtl::traits::vector_resource<Vector>::apply(v);
 	}
 
     } // namespace vector
