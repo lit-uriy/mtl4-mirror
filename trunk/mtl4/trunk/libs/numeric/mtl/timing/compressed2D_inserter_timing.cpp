@@ -48,12 +48,14 @@ void test(int n)
 	
 }
 
+// create d by d matrix with nnz non-zeros
 void test2(int d, int nnz)
 {
     mtl::compressed2D<double> A(d, d);
     boost::timer start;
     {
 	mtl::matrix::inserter<mtl::compressed2D<double> > ins(A, int(1.2 * nnz / double(d)));
+	std::cout << "Slot size is " << int(1.2 * nnz / double(d)) << '\n';
 	for (int i= 0; i < nnz; i++) {
 	    int r= rand(), c= rand();
 	    assert(r % d >= 0); assert(c % d >= 0);
