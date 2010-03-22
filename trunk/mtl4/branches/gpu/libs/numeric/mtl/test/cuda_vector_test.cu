@@ -16,68 +16,122 @@
 #include <boost/numeric/mtl/cuda/config.cu>
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
 
+
+
+#define print(v) std::cout << #v << ' '; short_print2(v);
+template < typename Vector>
+void short_print2(const Vector& v)
+{
+   std::cout <<(v.valid_host()==true ? "is on Host " : "is on Device " )<< "[";
+   for (int i= 0; i < 10 && i < size(v); i++)
+     std::cout << v[i] << ", ";
+   if(size(v)> 20) {
+       std::cout << "... ,";
+       for (int i= size(v)-10; i < size(v); i++)
+	   std::cout << v[i] << ", ";
+   }
+   std::cout << "\b\b] \n";
+   v.to_device();
+}
+
+
+
+
 template <typename T>
 void test(const char* name)
 {
     typedef mtl::cuda::vector<T>   vt;
 
-    int gross=10;
+    int gross=33000000;
     
+    ///creating variables
     std::cout << name << "-- Vector Test\n"; 
-    mtl::cuda::vector<T>  x(gross, 33), y(gross, 10, false), z(gross, 2);
+    mtl::cuda::vector<T>  x(gross, 33), y(gross, 10, false), z(gross, 0);
     mtl::cuda::scalar<T>  c(7);
-    std::cout << "Vector constructed.\n" << "x=" << x << "\n";
-    std::cout << "Vector constructed.\n" << "y=" << y << "\n";
 
-    x.to_host();
-    x.to_device();
+   std::cout << "\n\nVector Size= " << size(x)<<"\n\n";    
+    std::cout << "Vector constructed.\n"; 
+    print(x);
+    std::cout << "Vector constructed.\n";
+    print(y);
 
-   std::cout << "\n\nx.size= " << size(x)<<"\n\n";
+
     
     
     x= 4.0;
     x.to_device();
     if (x[0] != T(4))
-	std::cout<< "Error assign vector on device.\n";
+	std::cout<< "\nError assign vector on device.\n";
     
-    std::cout << "const x[1] == " << x[1] << "  Naechste zeile kommt X[1]=22\n";
+//    std::cout << "const x[1] == " << x[1] << "  Naechste zeile kommt X[1]=22\n";
     x[1]=22;
     x.to_device();
-    std::cout<< "x=" << x << "\n";
+    print(x);
+//  std::cout<< "x=" << x << "\n";
   
     y= x;           // Copy on device
     if (y[1] != T(22))
-	std::cout<< "Error copy vector on device.\n";
-    std::cout<< "y[1]=" << y[1] << "\n";
+	std::cout<< "\nError copy vector on device.\n";
+    print(y);
+//    std::cout<< "y[1]=" << y[1] << "\n";
     
     x.to_device();
-    T c= 7;    //without testing
-    x*= c;
+    x*= 7;
 
-    std::cout<<"\n\nc= "<<c<< "\nx=" << x << "\n";
+//    std::cout<<"\n\nc= "<<c<< "\nx=" << x << "\n";
     if (x[0] != T(28))
-	std::cout<< "Error multipliying vector with scalar on device. x[0]="<<x[0]<<"\n";
+	std::cout<< "\nError multipliying vector with scalar on device.\n";
     
     x.to_device();
     x+= 2;
 
-    std::cout<< "x=" << x << "\n";
+//    std::cout<< "x=" << x << "\n";    
+    print(x);
     if (x[0] != T(30))
-	std::cout<< "Error adding vector with scalar on device. x[0]="<<x[0]<<"\n";
+	std::cout<< "\nError adding vector with scalar on device.\n";
     
     x.to_device();
     x-= 10;
 
-    std::cout<< "x=" << x << "\n";
-    if (x[0] != T(20))
-	std::cout<< "Error subtract vector with scalar on device. x[0]="<<x[0]<<"\n";
+    print(x);
+    std::cout<< "\n   start plus updated\n";
+    x=1;
+    y=1;
+    print(x);
+    print(y);
+    x.plus_updated(y,z);
+    z.to_host();
+    print(z);
+    unsigned elements=0;
+    for(unsigned i=0; i<size(z); i++){
+	
+	if(z[i]!=0) elements ++;
+    
+	
+    }
+
+    
+    std::cout<< "   end plus updated nr elements= "<<elements<<"\n\n";
+    
+    
+    
+    
+    
+    
+    
+    
+//    std::cout<< "x=" << x << "\n";
+    print(x);
+    if (x[0] != T(1))
+	std::cout<< "\nError subtract vector with scalar on device.\n";
     
     x.to_device();
     x/= 10;
 
-    std::cout<< "x=" << x << "\n";
-    if (x[0] != T(2))
-	std::cout<< "Error divide vector with scalar on device. x[0]="<<x[0]<<"\n";
+//    std::cout<< "x=" << x << "\n";
+    print(x);    
+    if (x[0] != T(0))
+	std::cout<< "\nError divide vector with scalar on device.\n";
 
 }
 

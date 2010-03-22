@@ -111,6 +111,27 @@ class vector
 	 }	
     }
 
+
+///plus updated
+    void plus_updated(const self& v_in, self& v_out)
+    {
+	assert(v_in.dim == dim && v_out.dim == dim);
+	if (meet_data(*this, v_in, v_out)) {
+	    for (int i= 0; i < dim; i++)
+		 v_out[i]= start[i] + v_in.start[i];
+	 } else  {
+	     v_out.to_device();
+	    dim3 dimGrid(60000,100,1), dimBlock(BLOCK_SIZE);
+//	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE); 
+	    std::cout<<"  dimGrid.x= "<< dimGrid.x <<"\n  dimGrid.y= "<< dimGrid.y <<"\n  dimBlock.x "<< dimBlock.x <<"\n  dimBlock.y= "<< dimBlock.y <<"\n  dimBlock.z= "<< dimBlock.z <<"\n";
+	    vector_vector_assign_plus_updated<<<dimGrid, dimBlock>>>(v_out.dptr, dptr, v_in.dptr, dim);
+	 }	
+    }
+
+
+
+
+
     self operator - (const self &v1) 
     {   
 	self temp(dim,0);
