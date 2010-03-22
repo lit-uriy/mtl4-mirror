@@ -30,7 +30,7 @@ template < typename Matrix, typename Vector,
 int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner &L, 
 	  const RightPreconditioner &R, Iteration& iter)
 {
-    using mtl::irange; using mtl::imax; using math::reciprocal;
+    using math::reciprocal;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
