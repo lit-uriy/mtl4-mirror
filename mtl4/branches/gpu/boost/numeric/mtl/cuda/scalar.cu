@@ -66,7 +66,7 @@ class scalar
 	return *this;
     }	
     
-    //prueba
+    
     template <typename Src>
     self& operator/=(const Src& src)
     { 
@@ -79,20 +79,6 @@ class scalar
 	return *this;
     }		
     
-    
-    
-//     template <typename Src>
-//     self& operator/=(const Src& src)
-//     { 
-//         Src zero(0);
-// 	if(src.value()!=zero.value()){
-//         Src temp;	
-// 	cudaMemcpy(&temp, dptr, sizeof(T), cudaMemcpyDeviceToHost);
-// 	temp/=src;
-// 	cudaMemcpy(dptr, &temp, sizeof(T), cudaMemcpyHostToDevice);
-// 	}else std::cout<<"\n<Scalar Class>Division by zero, undefined\n";
-// 	return *this;
-//     }	
     
     template <typename Src>
     self& operator+=(const Src& src)
@@ -114,8 +100,6 @@ class scalar
 	return *this;
     }	
 
-   
-    //  void test (value_type f) {std::cout << "tmp=" << f << "\n"; }
  
     bool valid_host() const { return false; }
     bool valid_device() const { return true; }

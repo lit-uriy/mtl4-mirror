@@ -16,6 +16,9 @@
 
 namespace mtl { namespace cuda {
 
+    
+    
+///Vector-Scalar Function
 template <typename Scalar>
 struct vec_rmult_asgn_functor
 {
@@ -23,8 +26,7 @@ struct vec_rmult_asgn_functor
       : s(s), vec(vec)  {}
 
     __device__ __host__ void operator[](int i)
-    {	//s.to_device();
-        
+    {	       
 	  vec[i]*= s;
     }
 
