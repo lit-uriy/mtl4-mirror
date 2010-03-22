@@ -48,8 +48,8 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     Vector                      r0(b - A *x), r(solve(L,r0)), s(kmax+1),
                                 c(kmax+1), g(kmax+1), va(resource(x)), va0(resource(x)), va00(resource(x));
 #else // can't be used in distributed mode, will be removed as soon as other works
-    Vector                      r0(b - A *x), r(solve(L,r0)), s(kmax+1),
-                                c(kmax+1), g(kmax+1), va(resource(x)), va0(resource(x)), va00(resource(x));
+    Vector                      r0(b - A *x), r(solve(L,r0)), s(kmax+1, zero),
+	c(kmax+1, zero), g(kmax+1, zero), va(resource(x)), va0(resource(x)), va00(resource(x));
 #endif
     mtl::multi_vector<Vector>   v(Vector(resource(x), zero), kmax+1); 
     mtl::dense2D<Scalar>        h(kmax+1, kmax);
