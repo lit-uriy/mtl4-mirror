@@ -44,8 +44,13 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     const Scalar                zero= math::zero(Scalar());
     Scalar                      rho, w1, w2, nu, hr;
     Size                        k, n(size(x)), kmax(std::min(size(x), kmax_in));
+#if 0 // disabled for the moment
     Vector                      r0(b - A *x), r(solve(L,r0)), s(kmax+1),
                                 c(kmax+1), g(kmax+1), va(resource(x)), va0(resource(x)), va00(resource(x));
+#else // can't be used in distributed mode, will be removed as soon as other works
+    Vector                      r0(b - A *x), r(solve(L,r0)), s(kmax+1),
+                                c(kmax+1), g(kmax+1), va(resource(x)), va0(resource(x)), va00(resource(x));
+#endif
     mtl::multi_vector<Vector>   v(Vector(resource(x), zero), kmax+1); 
     mtl::dense2D<Scalar>        h(kmax+1, kmax);
     irange                      range_n(0, n);
@@ -110,9 +115,9 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
             v_a[i][j]= v[i][j];
     }
 
-    Vector                  g_a(g[range_k]), y;
+    Vector                  y;
     try {
-	y= lu_solve(h[range_k][range_k], g_a);
+	y= lu_solve(h[range_k][range_k], g[range_k]); // g_a
     } catch (mtl::matrix_singular e) {
 	return iter.fail(2, "GMRES sub-system singular");
     }
@@ -123,7 +128,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     r= b - A*x;
     if (!iter.finished(r))
         return iter.fail(2, "GMRES does not converge");
-    return iter.error_code();
+    return iter;
 }
 
 /// Generalized Minimal Residual method with restart
