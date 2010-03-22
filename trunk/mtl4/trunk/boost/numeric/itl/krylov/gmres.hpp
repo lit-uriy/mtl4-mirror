@@ -46,52 +46,52 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     Size                        k, n(size(x)), kmax(std::min(size(x), kmax_in));
     Vector                      r0(b - A *x), r(solve(L,r0)), va(resource(x)), va0(resource(x)), va00(resource(x));
     mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y(kmax);  // replicated in distributed solvers 
-    mtl::multi_vector<Vector>   v(Vector(resource(x), zero), kmax+1); 
-    mtl::dense2D<Scalar>        h(kmax+1, kmax);                                             // replicated in distributed solvers 
+    mtl::multi_vector<Vector>   V(Vector(resource(x), zero), kmax+1); 
+    mtl::dense2D<Scalar>        H(kmax+1, kmax);                                             // replicated in distributed solvers 
     irange                      range_n(0, n);
 
     rho= g[0]= two_norm(r);
     if (iter.finished(rho))
 	return iter;
-    v.vector(0)= r / rho;
+    V.vector(0)= r / rho;
 
     // GMRES iteration
     for (k= 0; rho >= iter.atol() && k < kmax; k++, ++iter) {
 	// std::cout << "GMRES full: k == " << k << ", rho == " << rho << ", x == " << x << '\n';
-        va0= A * solve(R, v.vector(k));
-        v.vector(k+1)= va= solve(L,va0);
-	// orth(v, v[k+1], false); 
+        va0= A * solve(R, V.vector(k));
+        V.vector(k+1)= va= solve(L,va0);
+	// orth(V, V[k+1], false); 
         // modified Gram Schmidt method
         for (Size j= 0; j < k+1; j++) {
-	    h[j][k]= dot(v.vector(j), v.vector(k+1));
-	    v.vector(k+1)-= h[j][k] * v.vector(j);
+	    H[j][k]= dot(V.vector(j), V.vector(k+1));
+	    V.vector(k+1)-= H[j][k] * V.vector(j);
         }
 
-        h[k+1][k]= two_norm(v.vector(k+1));
+        H[k+1][k]= two_norm(V.vector(k+1));
         //reorthogonalize
         for(Size j= 0; j < k+1; j++) {
-	    hr= dot(v.vector(k+1), v.vector(j));
-            h[j][k]+= hr;
-            v.vector(k+1)-= hr * v.vector(j);
+	    hr= dot(V.vector(k+1), V.vector(j));
+            H[j][k]+= hr;
+            V.vector(k+1)-= hr * V.vector(j);
         }
-        h[k+1][k]= two_norm(v.vector(k+1));
+        H[k+1][k]= two_norm(V.vector(k+1));
         //watch for breakdown
-        if (h[k+1][k] != zero)
-            v.vector(k+1)*= 1. / h[k+1][k];
+        if (H[k+1][k] != zero)
+            V.vector(k+1)*= 1. / H[k+1][k];
 
         //k givensrotationen
 	for(Size i= 0; i < k; i++) {
-	    w1= c[i]*h[i][k]-s[i]*h[i+1][k];
-	    w2= s[i]*h[i][k]+c[i]*h[i+1][k];
-	    h[i][k]= w1;
-	    h[i+1][k]= w2;
+	    w1= c[i]*H[i][k]-s[i]*H[i+1][k];
+	    w2= s[i]*H[i][k]+c[i]*H[i+1][k];
+	    H[i][k]= w1;
+	    H[i+1][k]= w2;
 	}
-        nu= sqrt(h[k][k]*h[k][k]+h[k+1][k]*h[k+1][k]);
+        nu= sqrt(H[k][k]*H[k][k]+H[k+1][k]*H[k+1][k]);
         if(nu != zero){
-            c[k]=  h[k][k]/nu;
-            s[k]= -h[k+1][k]/nu;
-            h[k][k]=c[k]*h[k][k]-s[k]*h[k+1][k];
-            h[k+1][k]=0;
+            c[k]=  H[k][k]/nu;
+            s[k]= -H[k+1][k]/nu;
+            H[k][k]=c[k]*H[k][k]-s[k]*H[k+1][k];
+            H[k+1][k]=0;
 	    w1= c[k]*g[k]-s[k]*g[k+1];//givensrotation on solutionparameters
             w2= s[k]*g[k]+c[k]*g[k+1];//givensrotation on solutionparameters
             g[k]= w1;
@@ -104,9 +104,9 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     irange                  range(k);
     for (bool solved= false; !solved && !range.empty(); --range) {
 	try {
-	    y[range]= lu_solve(h[range][range], g[range]); 
+	    y[range]= lu_solve(H[range][range], g[range]); 
 	} catch (mtl::matrix_singular e) {
-	    continue; // if singular reduce rank and try again
+	    continue; // if singular then try again with smaller sub-matrix
 	}
 	solved= true;
     }
@@ -114,7 +114,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     if (range.finish() < k)
 	std::cerr << "GMRES orhogonalized with " << k << " vectors but matrix singular, can only use " << range.finish() << " vectors!\n";
 
-    x+= solve(R, Vector(v.vector(range)*y[range]));
+    x+= solve(R, Vector(V.vector(range)*y[range]));
 
     r= b - A*x;
     if (!iter.finished(r))
