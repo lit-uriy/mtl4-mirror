@@ -88,6 +88,12 @@ struct category<multi_vector<Vector> >
     typedef tag::multi_vector type;
 };
 
+template <typename Vector>
+struct category<mtl::matrix::multi_vector_range<Vector> > 
+{
+    typedef tag::multi_vector type;
+};
+
 template <typename T, typename Parameters>
 struct category< dense_vector<T, Parameters> > 
 {

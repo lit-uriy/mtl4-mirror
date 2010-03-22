@@ -172,6 +172,12 @@ struct ashape_aux<multi_vector<Vector> >
     typedef mat<typename ashape<typename mtl::Collection<multi_vector<Vector> >::value_type>::type> type;
 };
    
+template <typename Vector>
+struct ashape_aux<matrix::multi_vector_range<Vector> >
+{
+    typedef mat<typename ashape<typename mtl::Collection<matrix::multi_vector_range<Vector> >::value_type>::type> type;
+};
+   
 template <typename E1, typename E2>
 struct ashape_aux< matrix::mat_mat_plus_expr<E1, E2> >
 {
