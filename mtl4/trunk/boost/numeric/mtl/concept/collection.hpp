@@ -343,20 +343,40 @@ namespace mtl {
     template <typename Vector>
     concept_map Collection<multi_vector<Vector> >
     {
-	typedef typename multi_vector<Vector>::value_type   value_type;
-	typedef typename multi_vector<Vector>::value_type   const_reference;
-	typedef typename multi_vector<Vector>::size_type    size_type;
+	typedef typename multi_vector<Vector>::value_type       value_type;
+	typedef typename multi_vector<Vector>::const_reference  const_reference;
+	typedef typename multi_vector<Vector>::size_type        size_type;
     };
 #else
     template <typename Vector>
     struct Collection<multi_vector<Vector> >
     {
-	typedef typename multi_vector<Vector>::value_type   value_type;
-	typedef typename multi_vector<Vector>::value_type   const_reference;
-	typedef typename multi_vector<Vector>::size_type    size_type;
+	typedef typename multi_vector<Vector>::value_type       value_type;
+	typedef typename multi_vector<Vector>::const_reference  const_reference;
+	typedef typename multi_vector<Vector>::size_type        size_type;
     };
 
 #endif
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Vector>
+    concept_map Collection<matrix::multi_vector_range<Vector> >
+    {
+	typedef typename matrix::multi_vector_range<Vector>::value_type       value_type;
+	typedef typename matrix::multi_vector_range<Vector>::const_reference  const_reference;
+	typedef typename matrix::multi_vector_range<Vector>::size_type        size_type;
+    };
+#else
+    template <typename Vector>
+    struct Collection<matrix::multi_vector_range<Vector> >
+    {
+	typedef typename matrix::multi_vector_range<Vector>::value_type       value_type;
+	typedef typename matrix::multi_vector_range<Vector>::const_reference  const_reference;
+	typedef typename matrix::multi_vector_range<Vector>::size_type        size_type;
+    };
+
+#endif
+
 
 
 #ifdef __GXX_CONCEPTS__

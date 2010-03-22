@@ -83,6 +83,7 @@ namespace mtl {
         template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
 	template <typename Vector> class multi_vector;
+	template <typename Vector> class multi_vector_range;
 	template <typename Functor> class implicit_dense;	
 	template <typename Value> class ones_functor;
 	template <typename Value> class ones_matrix;

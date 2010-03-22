@@ -49,7 +49,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
                                 c(kmax+1), g(kmax+1), va(resource(x)), va0(resource(x)), va00(resource(x));
 #else // can't be used in distributed mode, will be removed as soon as other works
     Vector                      r0(b - A *x), r(solve(L,r0)), va(resource(x)), va0(resource(x)), va00(resource(x));
-    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero);
+    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y;
 #endif
     mtl::multi_vector<Vector>   v(Vector(resource(x), zero), kmax+1); 
     mtl::dense2D<Scalar>        h(kmax+1, kmax);
@@ -115,15 +115,14 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
             v_a[i][j]= v[i][j];
     }
 
-    Vector                  y;
     try {
-	y= lu_solve(h[range_k][range_k], g[range_k]); // g_a
+	y= lu_solve(h[range_k][range_k], g[range_k]); 
     } catch (mtl::matrix_singular e) {
 	return iter.fail(2, "GMRES sub-system singular");
     }
 
-    // x+= solve(R, Vector(v.vector(range_k)*y));
-    x+= solve(R, Vector(v_a*y));
+    x+= solve(R, Vector(v.vector(range_k)*y));
+    // x+= solve(R, Vector(v_a*y));
 
     r= b - A*x;
     if (!iter.finished(r))
