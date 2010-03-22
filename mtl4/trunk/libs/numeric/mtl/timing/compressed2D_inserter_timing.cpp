@@ -10,6 +10,7 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
+#include <cstdlib>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/timer.hpp>
@@ -47,10 +48,26 @@ void test(int n)
 	
 }
 
+void test2(int d, int nnz)
+{
+    mtl::compressed2D<double> A(d, d);
+    boost::timer start;
+    {
+	mtl::matrix::inserter<mtl::compressed2D<double> > ins(A, int(1.2 * nnz / double(d)));
+	for (int i= 0; i < nnz; i++) {
+	    int r= rand(), c= rand();
+	    assert(r % d >= 0); assert(c % d >= 0);
+	    ins[r % d][c % d] << 2.3;
+	}
+    }
+    cout << "Insertion took " << start.elapsed() << '\n';
+}
+
  
 int test_main(int argc, char* argv[])
 {
-    test(atoi(argv[1]));
+    // test(atoi(argv[1]));
+    test2(atoi(argv[1]), atoi(argv[2]));
 
     return 0;
 }
