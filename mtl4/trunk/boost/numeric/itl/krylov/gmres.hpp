@@ -75,13 +75,12 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
             V.vector(k+1)-= hr * V.vector(j);
         }
         H[k+1][k]= two_norm(V.vector(k+1));
-        //watch for breakdown
-        if (H[k+1][k] != zero)
+	if (H[k+1][k] != zero)                // watch for breakdown    
             V.vector(k+1)*= 1. / H[k+1][k];
 
         //k givensrotationen
 	for(Size i= 0; i < k; i++) {
-	    w1= c[i]*H[i][k]-s[i]*H[i+1][k];
+	    w1= c[i]*H[i][k]-s[i]*H[i+1][k];  // shouldn't c and s depend on H?
 	    w2= s[i]*H[i][k]+c[i]*H[i+1][k];
 	    H[i][k]= w1;
 	    H[i+1][k]= w2;
@@ -92,22 +91,20 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
             s[k]= -H[k+1][k]/nu;
             H[k][k]=c[k]*H[k][k]-s[k]*H[k+1][k];
             H[k+1][k]=0;
-	    w1= c[k]*g[k]-s[k]*g[k+1];//givensrotation on solutionparameters
-            w2= s[k]*g[k]+c[k]*g[k+1];//givensrotation on solutionparameters
+	    w1= c[k]*g[k]-s[k]*g[k+1]; //given's rotation on solution
+            w2= s[k]*g[k]+c[k]*g[k+1];
             g[k]= w1;
             g[k+1]= w2;
         }
 	rho= abs(g[k+1]);
     }
 
-    // iteration is finished -> compute x: solve H*y=g as much as rank of H allows
+    // iteration is finished -> compute x: solve H*y=g as far as rank of H allows
     irange                  range(k);
     for (bool solved= false; !solved && !range.empty(); --range) {
 	try {
 	    y[range]= lu_solve(H[range][range], g[range]); 
-	} catch (mtl::matrix_singular e) {
-	    continue; // if singular then try again with smaller sub-matrix
-	}
+	} catch (mtl::matrix_singular) { continue; } // if singular then try with sub-matrix
 	solved= true;
     }
     assert(!range.empty()); // Can H[0][0] be zero???
