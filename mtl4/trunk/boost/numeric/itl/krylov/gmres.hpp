@@ -45,9 +45,9 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     Scalar                      rho, w1, w2, nu, hr;
     Size                        k, n(size(x)), kmax(std::min(size(x), kmax_in));
     Vector                      r0(b - A *x), r(solve(L,r0)), va(resource(x)), va0(resource(x)), va00(resource(x));
-    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y;
+    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y(kmax);  // replicated in distributed solvers 
     mtl::multi_vector<Vector>   v(Vector(resource(x), zero), kmax+1); 
-    mtl::dense2D<Scalar>        h(kmax+1, kmax);
+    mtl::dense2D<Scalar>        h(kmax+1, kmax);                                             // replicated in distributed solvers 
     irange                      range_n(0, n);
 
     rho= g[0]= two_norm(r);
@@ -100,14 +100,21 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 	rho= abs(g[k+1]);
     }
 
-    // iteration is finished -> compute x: solve H*y=g
-    irange                  range_k(0, k);
-    try {
-	y= lu_solve(h[range_k][range_k], g[range_k]); 
-    } catch (mtl::matrix_singular e) {
-	return iter.fail(2, "GMRES sub-system singular");
+    // iteration is finished -> compute x: solve H*y=g as much as rank of H allows
+    irange                  range(k);
+    for (bool solved= false; !solved && !range.empty(); --range) {
+	try {
+	    y[range]= lu_solve(h[range][range], g[range]); 
+	} catch (mtl::matrix_singular e) {
+	    continue; // if singular reduce rank and try again
+	}
+	solved= true;
     }
-    x+= solve(R, Vector(v.vector(range_k)*y));
+    assert(!range.empty()); // Can H[0][0] be zero???
+    if (range.finish() < k)
+	std::cerr << "GMRES orhogonalized with " << k << " vectors but matrix singular, can only use " << range.finish() << " vectors!\n";
+
+    x+= solve(R, Vector(v.vector(range)*y[range]));
 
     r= b - A*x;
     if (!iter.finished(r))

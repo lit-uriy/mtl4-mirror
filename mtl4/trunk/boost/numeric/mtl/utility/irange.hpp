@@ -49,6 +49,12 @@ namespace mtl {
 	    my_start= 0; my_finish= finish; return *this;
 	}
 
+        /// Decrease finish, i.e. [start, finish) -> [start, finish-1)
+	irange& operator--() 
+	{
+	    --my_finish; return *this;
+	}
+	
         /// First index in range
         size_type start() const { return my_start; } 
         /// Past-end index in range
