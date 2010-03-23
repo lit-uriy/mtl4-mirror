@@ -92,7 +92,7 @@ class vector
 		 temp[i]+= v1.start[i];
 	 } else  {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE); 
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
 	    vector_vector_rplus<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
 	 }
 	 return temp;
@@ -106,7 +106,7 @@ class vector
 		 v_out[i]= start[i] + v_in.start[i];
 	 } else  {
 	     v_out.to_device();
-	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE); 
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
 	    vector_vector_assign_plus<<<dimGrid, dimBlock>>>(v_out.dptr, dptr, v_in.dptr, dim);
 	 }	
     }
@@ -121,14 +121,13 @@ class vector
 		 v_out[i]= start[i] + v_in.start[i];
 	 } else  {
 	     v_out.to_device();
-	    dim3 dimGrid(65535,100,1), dimBlock(BLOCK_SIZE);
-//	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE); 
-	    std::cout<<"  dimGrid.x= "<< dimGrid.x <<"\n  dimGrid.y= "<< dimGrid.y <<"\n  dimBlock.x "<< dimBlock.x <<"\n  dimBlock.y= "<< dimBlock.y <<"\n  dimBlock.z= "<< dimBlock.z <<"\n";
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);
+	    std::cout<<"  dim/BLOCK_SIZE+1= "<<dim/BLOCK_SIZE+1<<"\n  dimGrid.x= "<< dimGrid.x <<"\n  dimGrid.y= "<< dimGrid.y <<"\n  dimBlock.x "<< dimBlock.x <<"\n  dimBlock.y= "<< dimBlock.y <<"\n  dimBlock.z= "<< dimBlock.z <<"\n";
 	    vector_vector_assign_plus_updated<<<dimGrid, dimBlock>>>(v_out.dptr, dptr, v_in.dptr, dim);
 	 }	
     }
 
-
+//
 
 
 
@@ -143,7 +142,7 @@ class vector
 		 temp[i]-= v1.start[i];
 	 } else  {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE); 
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
             vector_vector_rminus<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
 
 	 }
@@ -164,7 +163,7 @@ class vector
 		 temp[i]*= v1.start[i];
 	 } else  {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);  
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);  
             vector_vector_rmult<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
 
 	 }
@@ -232,7 +231,7 @@ class vector
 		start[i]*= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE); 
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
 	    vec_rmult_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
@@ -252,7 +251,7 @@ class vector
 		start[i]/= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);
 	    vec_rdivide_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
@@ -269,7 +268,7 @@ class vector
 		start[i]+= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);
 	    vec_rplus_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
@@ -285,7 +284,7 @@ class vector
 		start[i]-= src;
 	} else {
 	    to_device(); // if not yet there
-	    dim3 dimGrid(dim/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);
 	    vec_rminus_asgn<value_type> sc(src, dptr, dim);
 	    launch_function<<<dimGrid, dimBlock>>>(sc);
 	}
@@ -338,7 +337,18 @@ class vector
 	    const_cast<self*>(this)->on_host= false;
 	}
     }
-    
+
+
+
+   int gridDimx(int dim){
+       int gridDimx= (dim/BLOCK_SIZE+1);
+       
+       if(gridDimx<65535) return gridDimx;
+       else return 65535;
+   
+   }
+   
+
     T* get_device_pointer() { return dptr; }
     const T* get_device_pointer() const { return dptr; }
 

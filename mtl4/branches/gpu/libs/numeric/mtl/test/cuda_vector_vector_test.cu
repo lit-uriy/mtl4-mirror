@@ -43,14 +43,14 @@ void test(const char* name)
 {
     typedef mtl::cuda::vector<T>   vt;
 
-    int gross= 99999999;
+    int critic_point=33553919, gross= 53553919;//critic_point+1;
     
     std::cout << name << "-- Vector Test\n"; 
     mtl::cuda::vector<T>  x(gross, 33), y(gross, 10, false), z(gross, 3);
 
     std::cout << "Vector Size= " << size(x) <<"\n\n";
     
-    y[1]= 12;
+    y[8]= 12;
 //    x.to_host(); y.to_host(); z.to_host();
     x.to_device(); y.to_device(); z.to_device();
     
@@ -65,7 +65,7 @@ void test(const char* name)
     print(y);
     print(z);
     print(x);
-    if (x[0] != T(13))
+    if (x[critic_point] != T(13))
 	std::cout<< "Error adding vector and vector on device.";
     
     x= y-z;    
@@ -73,7 +73,7 @@ void test(const char* name)
     print(y);
     print(z);
     print(x);
-    if (x[0] != T(7))
+    if (x[critic_point] != T(7))
 	std::cout<< "Error subtract vector and vector on device.";
 
     //z*= 2;
@@ -82,11 +82,13 @@ void test(const char* name)
     print(y);
     print(z);
     print(x);
-    if (x[0] != T(30))
+    if (x[critic_point] != T(30))
 	std::cout<< "Error subtract vector and vector on device.";
 
+ 
+/*    
     
-    x[5]=0;
+    x=0;
     std::cout<< "\n   start plus updated\n";
     print(y);
     print(z);
@@ -95,10 +97,10 @@ void test(const char* name)
     unsigned elements=0;
     for(unsigned i=0; i<size(x); i++){
 	if(x[i]!=0) elements ++;
-	else std::cout<< "x["<<i<<"]= "<<x[i]<<"\n";
+//	else std::cout<< "x["<<i<<"]= "<<x[i]<<"\n";
     }
     std::cout<< "   end plus updated nr elements of vector x= "<<elements<<"\n\nx[1]="<<x[1]<<"\n\n";
-    
+    */
     
     
     
