@@ -107,7 +107,7 @@ namespace mtl {
 	}	
 	// Distributed collections are zeroed by zeroing the local part
 	template <typename Coll>
-	void set_to_zero(Coll& collection, tag::distributed, tag::universe)
+	void set_to_zero(Coll& collection, tag::distributed, ashape::universe)
 	{
 	    set_to_zero(local(collection));
 	    collection.clear_remote_part();
@@ -125,7 +125,7 @@ namespace matrix {
     {
 	using mtl::traits::category;
 	typedef typename Collection<Coll>::value_type value_type;
-	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename ashape::ashape<value_type>::type()); // 2. ashape ???
+	mtl::impl::set_to_zero(collection, typename category<Coll>::type(), typename ashape::ashape<value_type>::type()); // 2. ashape ???
     }   
 }
 
@@ -139,7 +139,7 @@ namespace vector {
     {
 	using mtl::traits::category;
 	typedef typename Collection<Coll>::value_type value_type;
-	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename ashape::ashape<value_type>::type());
+	mtl::impl::set_to_zero(collection, typename category<Coll>::type(), typename ashape::ashape<value_type>::type());
     }
 
 }

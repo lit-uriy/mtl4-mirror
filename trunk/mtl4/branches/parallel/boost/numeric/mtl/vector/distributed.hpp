@@ -20,6 +20,7 @@
 #include <boost/mpi/collectives/all_to_all_sparse.hpp>
 #include <boost/mpi/collectives/all_gather.hpp>
 #include <boost/mpi/collectives/gather.hpp>
+
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
@@ -27,6 +28,7 @@
 #include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
 #include <boost/numeric/mtl/operation/local.hpp>
 #include <boost/numeric/mtl/operation/distribution.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/par/migration.hpp>
 #include <boost/numeric/mtl/par/migrate_vector.hpp>
 
@@ -50,42 +52,51 @@ public:
     typedef Vector                                   local_type;
     typedef Vector                                   remote_type; // Do we need this (except for DistributedCollection?)
     typedef dense_vector<value_type>                 buffer_type;
+    typedef typename traits::vector_resource<self>::type resource_type;
 
     /// Constructor for vector with global size \p gsize
-    explicit distributed(size_type gsize= 0) : gsize(gsize), dist(gsize), local_vector(dist.num_local(gsize)) {}
+    explicit distributed(size_type gsize= 0) 
+      : gsize(gsize), dist(gsize), local_vector(dist.num_local(gsize)) {}
 
     /// Constructor for vector with global size \p gsize and distribution \p dist
     explicit distributed(size_type gsize, const Distribution& dist) 
-      : gsize(gsize), dist(dist), local_vector(dist.num_local(gsize))  {}
+      : gsize(gsize), dist(dist), local_vector(dist.num_local(gsize)) {}
 
-    /// Constructor for vector with global size \p gsize and distribution \p dist
+    /// Constructor for vector with global size \p gsize and initial value \p value
     /** Uses default distribution **/
     explicit distributed(size_type gsize, value_type value) 
-      : gsize(gsize), dist(gsize), local_vector(dist.num_local(gsize), value) 
-    {}
+      : gsize(gsize), dist(gsize), local_vector(dist.num_local(gsize), value)  {}
     
+    /// Constructor for vector with global size \p gsize, distribution \p dist and initial value \p value
+    explicit distributed(size_type gsize, const Distribution& dist, value_type value) 
+      : gsize(gsize), dist(dist), local_vector(dist.num_local(gsize), value)  {}
+
+    explicit distributed(const resource_type& resource)
+      : gsize(resource.first), dist(resource.second), local_vector(dist.num_local(gsize))  {}
+
+    explicit distributed(const resource_type& resource, value_type value)
+      : gsize(resource.first), dist(resource.second), local_vector(dist.num_local(gsize), value)  {}
+
     template <typename VectorSrc>
     distributed(const VectorSrc& src, const par::block_migration& migration)
       : gsize(size(src)), dist(migration.new_distribution()), local_vector(dist.num_local(gsize))
-    {
-	migrate_vector(src, *this, migration);
-    }
+    { migrate_vector(src, *this, migration);  }
 
     template <typename VectorSrc>
-    explicit distributed(const VectorSrc& src,
-			 typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
-      : gsize(size(src)), 
-	dist(distribution(src)), 
-	local_vector(dist.num_local(gsize))
-    {
-	*this= src;
-    }
+    explicit distributed(const VectorSrc& src, typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
+      : gsize(size(src)), dist(distribution(src)), local_vector(dist.num_local(gsize))    
+    { *this= src; }
 
     self& operator=(self src)
     {
 	assert(this != &src);
-	MTL_DEBUG_THROW_IF( gsize != src.gsize, incompatible_size());
-	MTL_DEBUG_THROW_IF( dist != src.dist, incompatible_distribution());
+	if (gsize == 0) {
+	    gsize= src.gsize;
+	    dist= src.dist;
+	} else {	    
+	    MTL_DEBUG_THROW_IF( gsize != src.gsize, incompatible_size());
+	    MTL_DEBUG_THROW_IF( dist != src.dist, incompatible_distribution());
+	}
 	// If variable assigned then src is already a copy, no need to deep copy members
 	swap(local_vector, src.local_vector);
 	return *this;

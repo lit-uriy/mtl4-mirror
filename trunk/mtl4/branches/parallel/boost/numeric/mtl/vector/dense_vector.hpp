@@ -99,7 +99,7 @@ class dense_vector
     
     explicit dense_vector( size_type n ) : memory_base( n ) { static_check( n ); }
     
-    explicit dense_vector( size_type n, value_type value )
+    explicit dense_vector( size_type n, const value_type& value )
       : memory_base( n ) 
     {
 	static_check( n );

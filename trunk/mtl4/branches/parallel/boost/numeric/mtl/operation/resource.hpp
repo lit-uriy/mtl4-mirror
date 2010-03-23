@@ -12,7 +12,14 @@
 #ifndef MTL_RESOURCE_INCLUDE
 #define MTL_RESOURCE_INCLUDE
 
+#include <utility>
+
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+
+#ifdef MTL_HAS_MPI
+#  include <boost/numeric/mtl/vector/distributed.hpp>
+#endif 
 
 namespace mtl {
 
@@ -24,6 +31,21 @@ namespace mtl {
 	    typedef typename Collection<Vector>::size_type type;
 	    type inline static apply(const Vector& v) { using mtl::vector::size; return size(v); }
 	};
+
+#     ifdef MTL_HAS_MPI
+	template <typename Vector, typename Distribution>
+	struct vector_resource< vector::distributed<Vector, Distribution> >
+	{
+	    typedef vector::distributed<Vector, Distribution> arg_type;
+	    typedef typename Collection<arg_type>::size_type  size_type;
+	    typedef std::pair<size_type, Distribution>        type;
+	    type inline static apply(const arg_type& v)
+	    {
+		using mtl::vector::size; using mtl::vector::distribution;
+		return std::make_pair(size(v), distribution(v));
+	    }
+	};
+#     endif
     }
 
     namespace vector {
