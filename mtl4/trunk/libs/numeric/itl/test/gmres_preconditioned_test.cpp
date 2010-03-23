@@ -76,8 +76,8 @@ int test_main(int argc, char* argv[])
     itl::pc::diagonal<matrix_type>         diag(A);
 
     std::cout << "A has " << A.nnz() << " non-zero entries" << std::endl;
-    std::cout << "A =\n " << A << " \n";
-#if 1
+    std::cout << "A =\n" << A << " \n";
+
     test("Non-preconditioned GMRES(1)", "\nWon't convergence (for large examples,without restarts)!",
 	 A, x, b, Ident, Ident, 1, false);
     test("Non-preconditioned GMRES(4)", "", A, x, b, Ident, Ident, 4);
@@ -92,7 +92,6 @@ int test_main(int argc, char* argv[])
     test("Left ILU(0) Right ILU(0) GMRES(4)", "", A, x, b, ilu, ilu, 4);
     test("Left ILU(0) Right IC(0) GMRES(4)", "", A, x, b, ilu, ic, 4);
     test("Left ILU(0) Right diag GMRES(4)", "", A, x, b, ilu, diag, 4);
-#endif
 
     return 0;
 }

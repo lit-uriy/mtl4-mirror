@@ -107,10 +107,11 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 	} catch (mtl::matrix_singular) { continue; } // if singular then try with sub-matrix
 	solved= true;
     }
-    assert(!range.empty()); // Can H[0][0] be zero???
     if (range.finish() < k)
 	std::cerr << "GMRES orhogonalized with " << k << " vectors but matrix singular, can only use " << range.finish() << " vectors!\n";
-
+    if (range.finish() < 0)
+        return iter.fail(1, "GMRES did not find any direction to correct x");
+	
     x+= solve(R, Vector(V.vector(range)*y[range]));
 
     r= b - A*x;
