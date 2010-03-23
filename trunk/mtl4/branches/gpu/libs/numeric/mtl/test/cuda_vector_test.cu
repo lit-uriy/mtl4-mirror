@@ -42,7 +42,7 @@ void test(const char* name)
 {
     typedef mtl::cuda::vector<T>   vt;
 
-    int gross=33000000;
+    int gross=40000000;
     
     ///creating variables
     std::cout << name << "-- Vector Test\n"; 
@@ -55,9 +55,6 @@ void test(const char* name)
     std::cout << "Vector constructed.\n";
     print(y);
 
-
-    
-    
     x= 4.0;
     x.to_device();
     if (x[0] != T(4))
@@ -100,23 +97,13 @@ void test(const char* name)
     print(x);
     print(y);
     x.plus_updated(y,z);
-    z.to_host();
     print(z);
     unsigned elements=0;
     for(unsigned i=0; i<size(z); i++){
-	
-	if(z[i]!=0) elements ++;
-    
-	
+	if(z[i]==2) elements ++;
+//	else std::cout<<"z["<<i<<"]= "<<z[i]<<"\n";
     }
-
-    
     std::cout<< "   end plus updated nr elements= "<<elements<<"\n\n";
-    
-    
-    
-    
-    
     
     
     
