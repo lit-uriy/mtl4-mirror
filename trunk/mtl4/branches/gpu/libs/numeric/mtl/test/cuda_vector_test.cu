@@ -42,7 +42,7 @@ void test(const char* name)
 {
     typedef mtl::cuda::vector<T>   vt;
 
-    int gross=40000000;
+    int gross=33553919;
     
     ///creating variables
     std::cout << name << "-- Vector Test\n"; 
@@ -90,26 +90,10 @@ void test(const char* name)
     x.to_device();
     x-= 10;
 
-    print(x);
-    std::cout<< "\n   start plus updated\n";
-    x=1;
-    y=1;
-    print(x);
-    print(y);
-    x.plus_updated(y,z);
-    print(z);
-    unsigned elements=0;
-    for(unsigned i=0; i<size(z); i++){
-	if(z[i]==2) elements ++;
-//	else std::cout<<"z["<<i<<"]= "<<z[i]<<"\n";
-    }
-    std::cout<< "   end plus updated nr elements= "<<elements<<"\n\n";
-    
-    
     
 //    std::cout<< "x=" << x << "\n";
     print(x);
-    if (x[0] != T(1))
+    if (x[0] != T(20))
 	std::cout<< "\nError subtract vector with scalar on device.\n";
     
     x.to_device();
@@ -117,7 +101,7 @@ void test(const char* name)
 
 //    std::cout<< "x=" << x << "\n";
     print(x);    
-    if (x[0] != T(0))
+    if (x[0] != T(2))
 	std::cout<< "\nError divide vector with scalar on device.\n";
 
 }
