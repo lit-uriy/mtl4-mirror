@@ -12,44 +12,96 @@
 #include <iostream>
 #include <complex>
 
+#include <boost/numeric/mtl/cuda/config.cu>
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
+
+
+/* print function*/
+#define print(v) std::cout << #v << ' '; short_print2(v);
+template < typename Vector>
+void short_print2(const Vector& v)
+{
+   std::cout <<(v.valid_host()==true ? "is on Host " : "is on Device " )<< "[";
+   for (int i= 0; i < 10 && i < size(v); i++)
+     std::cout << v[i] << ", ";
+   if(size(v)> 20) {
+       std::cout << "... ,";
+       for (int i= size(v)-10; i < size(v); i++)
+	   std::cout << v[i] << ", ";
+   }
+   std::cout << "\b\b] \n";
+   v.to_device();
+}
+
+
+
+
+
 
 template <typename T>
 void test(const char* name)
 {
     typedef mtl::cuda::vector<T>   vt;
 
-    int size= 10270000;
+    int gross= 99999999;
+    
     std::cout << name << "-- Vector Test\n"; 
-    mtl::cuda::vector<T>  x(size, 33), y(size, 10, false), z(size, 1);
-   
-    y[1]= 12.0;
+    mtl::cuda::vector<T>  x(gross, 33), y(gross, 10, false), z(gross, 3);
+
+    std::cout << "Vector Size= " << size(x) <<"\n\n";
+    
+    y[1]= 12;
 //    x.to_host(); y.to_host(); z.to_host();
     x.to_device(); y.to_device(); z.to_device();
-    std::cout<< "X=" << x[1] << "\n";
-    std::cout<< "Y=" << y[1] << "\n";
-    std::cout<< "Z=" << z[1] << "\n";
-    x.to_device(); y.to_device(); z.to_device();
+    
+    std::cout<< "\n>>>>>>>Vectors Contructed <<<<<<\n";
+    print(y);
+    print(z);
+    print(x);
+    
+    
     x= y+z;
-    std::cout<< "\n>>>>>>>X= Y+ Z <<<<<<\nX=" << x[1] << "\n";
-    std::cout<< "Y=" << y[1] << "\n";
-    std::cout<< "Z=" << z[1] << "\n";  
-    if (x[0] != T(11))
+    std::cout<< "\n>>>>>>>X= Y+ Z <<<<<<\n";
+    print(y);
+    print(z);
+    print(x);
+    if (x[0] != T(13))
 	std::cout<< "Error adding vector and vector on device.";
-    x.to_device(); y.to_device(); z.to_device();
+    
     x= y-z;    
-    std::cout<< "\n>>>>>>>X= Y- Z <<<<<<\nX=" << x[1] << "\n";
-    std::cout<< "Y=" << y[1] << "\n";
-    std::cout<< "Z=" << z[1] << "\n";
-    if (x[0] != T(9))
+    std::cout<< "\n>>>>>>>X= Y- Z <<<<<<\n";
+    print(y);
+    print(z);
+    print(x);
+    if (x[0] != T(7))
 	std::cout<< "Error subtract vector and vector on device.";
-    z*= 2;
- //we don't need this at the moment
- x.to_device(); y.to_device(); z.to_device();
+
+    //z*= 2;
     x= y*z;   
-    std::cout<< "\n\n>>>>>>>X= Y* Z <<<<<<\n\nX=" << x[1] << "\n";
-    std::cout<< "Y=" << y[1] << "\n";
-    std::cout<< "Z=" << z[1] << "\n";   
+    std::cout<< "\n\n>>>>>>>X= Y* Z <<<<<<\n";
+    print(y);
+    print(z);
+    print(x);
+    if (x[0] != T(30))
+	std::cout<< "Error subtract vector and vector on device.";
+
+    
+    x[5]=0;
+    std::cout<< "\n   start plus updated\n";
+    print(y);
+    print(z);
+    z.plus_updated(y,x);
+    print(x);
+    unsigned elements=0;
+    for(unsigned i=0; i<size(x); i++){
+	if(x[i]!=0) elements ++;
+	else std::cout<< "x["<<i<<"]= "<<x[i]<<"\n";
+    }
+    std::cout<< "   end plus updated nr elements of vector x= "<<elements<<"\n\nx[1]="<<x[1]<<"\n\n";
+    
+    
+    
+    
 #if 0 
     x= y/z;
     std::cout<< "\n\n>>>>>>>X= Y/ Z <<<<<<\n\nX=" << x << "\n";
@@ -64,6 +116,8 @@ int main(int argc, char* argv[])
 {
     using namespace mtl;
 
+    cuda::activate_best_gpu();
+    
     test<int>("int");
   //  test<short>("short");
 
