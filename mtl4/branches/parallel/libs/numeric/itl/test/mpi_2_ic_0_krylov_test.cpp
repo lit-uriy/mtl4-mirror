@@ -9,7 +9,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-#undef MTL_ASSERT_FOR_THROW // Don't wont to abort program when one solver fail
+// #undef MTL_ASSERT_FOR_THROW // Don't wont to abort program when one solver fail
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
@@ -63,7 +63,7 @@ int test_main(int argc, char* argv[])
     typedef mtl::matrix::distributed<mtl::compressed2D<double> > matrix_type;
     matrix_type          A(N, N);
     laplacian_setup(A, size, size);
-    
+
     itl::pc::ilu_0<matrix_type>     ILU(A);
     itl::pc::ic_0<matrix_type>      IC(A);
     itl::pc::identity<matrix_type>  I(A);

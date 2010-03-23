@@ -259,6 +259,8 @@ namespace mtl {
 	    template <typename Cursor>                                           struct all_rows_in_col_range_generator;
 	    template <typename Collection, typename RangeGenerator>              struct referred_range_generator;
 	}
+
+	template <typename Vector> struct vector_resource;
     }
 
     /// Namespace for concepts
