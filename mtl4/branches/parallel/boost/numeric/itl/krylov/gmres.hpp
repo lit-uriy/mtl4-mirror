@@ -108,7 +108,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     }
     if (range.finish() < k)
 	std::cerr << "GMRES orhogonalized with " << k << " vectors but matrix singular, can only use " << range.finish() << " vectors!\n";
-    if (range.finish() < 0)
+    if (range.empty())
         return iter.fail(1, "GMRES did not find any direction to correct x");
 	
     x+= solve(R, Vector(V.vector(range)*y[range]));
