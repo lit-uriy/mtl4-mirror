@@ -43,12 +43,11 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 
     const Scalar                zero= math::zero(Scalar());
     Scalar                      rho, w1, w2, nu, hr;
-    Size                        k, n(size(x)), kmax(std::min(size(x), kmax_in));
+    Size                        k, kmax(std::min(size(x), kmax_in));
     Vector                      r0(b - A *x), r(solve(L,r0)), va(resource(x)), va0(resource(x)), va00(resource(x));
-    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y(kmax);  // replicated in distributed solvers 
     mtl::multi_vector<Vector>   V(Vector(resource(x), zero), kmax+1); 
-    mtl::dense2D<Scalar>        H(kmax+1, kmax);                                             // replicated in distributed solvers 
-    irange                      range_n(0, n);
+    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y(kmax);  // replicated in distributed solvers 
+    mtl::dense2D<Scalar>        H(kmax+1, kmax);                                             // dito
 
     rho= g[0]= two_norm(r);
     if (iter.finished(rho))
