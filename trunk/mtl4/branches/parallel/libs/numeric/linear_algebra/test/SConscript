@@ -7,8 +7,8 @@ programs = []
 # sources = glob.glob('*.cpp')
 
 
-concept_env = debug_env.Clone()
-# concept_env = debug_env.Copy() # on older scons
+# concept_env = debug_env.Clone()
+concept_env = debug_env.Copy() # on older scons
 
 # concept_env = debug_env.Clone()
 

@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/matrix/multi_vector_range.hpp>
 
 
 // Under development (to be used with caution)
@@ -88,10 +89,7 @@ class multi_vector
     Vector& vector(size_type i) { return data[i]; }
     const Vector& vector(size_type i) const { return data[i]; }
 
-    // multi_vector_range<Vector> vector(irange const& r) { return multi_vector_range<Vector>(*this, r); }
-    // Const version pending
-
-    // size_type size() const { return this->num_rows() * this->num_cols(); } // Hack!!! try to remove
+    multi_vector_range<Vector> vector(irange const& r) const { return multi_vector_range<Vector>(*this, r); }
 
     /// Number of rows
     friend size_type num_rows(const self& A) { return A.num_rows(); }
@@ -102,13 +100,9 @@ class multi_vector
     /// Size as defined by number of rows times columns
     friend size_type size(const self& A) { return num_rows(A) * num_cols(A); }
 
-
-  protected:
-  
+  protected:  
     dense_vector<Vector>          data;
-  
 };
-
 
 
 }} // namespace mtl::matrix

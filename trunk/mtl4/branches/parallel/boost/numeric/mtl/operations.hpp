@@ -45,6 +45,7 @@
 #include <boost/numeric/mtl/operation/random.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/rank_two_update.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/scale.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>

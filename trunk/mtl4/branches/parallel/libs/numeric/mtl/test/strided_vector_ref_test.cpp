@@ -108,6 +108,24 @@ void test(Vector& v, const char* name)
     
 }
  
+template <typename Vector>
+void test2(Vector& v)
+{
+#if 0
+    typedef typename mtl::traits::category<Vector>::type cat;
+    typedef typename mtl::traits::is_vector<Vector>::type isv;
+    typedef typename mtl::Collection<Vector>::value_type value_type;
+    typedef typename mtl::traits::category<value_type>::type vcat;
+    typedef typename mtl::ashape::ashape<value_type>::type ashape;
+
+    std::cout << "Category of v is " << typeid(cat).name() << '\n';
+    std::cout << "is vector " << typeid(isv).name() << '\n';
+    std::cout << "value type is " << typeid(value_type).name() << '\n';
+    std::cout << "Category of value is " << typeid(vcat).name() << '\n';
+    std::cout << "ashape of value is " << typeid(ashape).name() << '\n';
+#endif
+    set_to_zero(v);
+}
 
 int test_main(int argc, char* argv[])
 {
@@ -122,6 +140,10 @@ int test_main(int argc, char* argv[])
        4, 5, 6, 
        7, 8, 9;
     
+    mtl::vector::strided_vector_ref<float> stref(A[mtl::iall][2]);
+    test2(v); 
+    test2(stref); 
+
     mtl::vector::strided_vector_ref<float> x(3, &A[0][1], 3);
 
     const mtl::dense2D<float> B(A);

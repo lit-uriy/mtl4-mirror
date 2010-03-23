@@ -47,7 +47,8 @@ namespace vector {
     typename mtl::traits::enable_if_vector<Vector>::type
     inline random(Vector& v)
     {
-	random(v, seed<typename Collection<Vector>::value_type>());
+	seed<typename Collection<Vector>::value_type> s;
+	random(v, s);
     }
 
 
@@ -74,7 +75,8 @@ namespace matrix {
     typename mtl::traits::enable_if_matrix<Matrix>::type
     inline random(Matrix& A) 
     {
-	random(A, seed<typename Collection<Matrix>::value_type>());
+	seed<typename Collection<Matrix>::value_type> s;
+	random(A, s);
     }
 
 } // namespace matrix

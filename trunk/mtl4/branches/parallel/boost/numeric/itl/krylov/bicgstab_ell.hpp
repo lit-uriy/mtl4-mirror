@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 namespace itl {
 
@@ -39,9 +40,9 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
-    const Scalar                zero= math::zero(b[0]), one= math::one(b[0]);
-    Vector                      x0(size(x)), y(size(x));
-    mtl::dense_vector<Vector>   r_hat(l+1,Vector(size(x))), u_hat(l+1,Vector(size(x)));
+    const Scalar                zero= math::zero(Scalar()), one= math::one(Scalar());
+    Vector                      x0(resource(x)), y(resource(x));
+    mtl::dense_vector<Vector>   r_hat(l+1,Vector(resource(x))), u_hat(l+1,Vector(resource(x)));
 
     // shift problem 
     x0= zero;
@@ -57,7 +58,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
     r_hat[0]= y;
     u_hat[0]= zero;
 
-    Scalar     rho_0(one), rho_1(zero), alpha(zero), Gamma(zero), beta(zero), omega(one); 
+    Scalar                      rho_0(one), rho_1(zero), alpha(zero), Gamma(zero), beta(zero), omega(one); 
     mtl::dense2D<Scalar>        tau(l+1, l+1);
     mtl::dense_vector<Scalar>   sigma(l+1), gamma(l+1), gamma_a(l+1), gamma_aa(l+1);
 
@@ -81,7 +82,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
       
 	    if (iter.finished(r_hat[j])) {
 		x= solve(R, x) + x0;
-		return iter.error_code();
+		return iter;
 	    }
 
 	    r_hat[j+1]= solve(R, r_hat[j]);
@@ -121,7 +122,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	++iter;
     }
     x= solve(R, x) + x0; // convert to real solution and undo shift
-    return iter.error_code();
+    return iter;
 }
 
 

@@ -12,41 +12,39 @@
 #ifndef MTL_MATRIX_MULTI_VECTOR_RANGE_INCLUDE
 #define MTL_MATRIX_MULTI_VECTOR_RANGE_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/matrix/multi_vector.hpp>
 
 namespace mtl { namespace matrix {
 
-
-
+// So far only const, might be refactored for mutability later
 template <typename Vector>
 class multi_vector_range
 {
-    typedef multi_vector<Vector>                     ref_type;
+  public:
     typedef multi_vector_range                       self;
     typedef typename Collection<Vector>::size_type   size_type;
+    typedef typename Collection<Vector>::value_type  value_type;
+    typedef const value_type&                        const_reference;
 
-  public:
-    
-    multi_vector_range(ref_type& ref, irange const& r) 
-      : ref(ref), range(intersection(r, irange(0, num_cols(ref)))) {} {}
-    
+    multi_vector_range(const multi_vector<Vector>& ref, const irange& r) : ref(ref), r(r) {}
+
+    const_reference operator() (size_type i, size_type j) const { return ref[r.to_range(j)][i]; }
+    const Vector& vector(size_type i) const { return ref.vector(r.to_range(i)); }
+
+    /// Number of rows
+    friend size_type num_rows(const self& A) { return num_rows(A.ref); }
 
     /// Number of columns
-    friend size_type num_cols(const self& A) { return range.size(); }
-    /// Number of rows
-    friend size_type num_rows(const self& A) { return num_rows(ref); }
+    friend size_type num_cols(const self& A) { return A.r.size(); }
 
-    const_reference operator() (size_type i, size_type j) const { return data[j][i+range.start()]; }
-    reference operator() (size_type i, size_type j) { return data[j][i+range.start()]; }
+    /// Size as defined by number of rows times columns
+    friend size_type size(const self& A) { return num_rows(A) * num_cols(A); }
 
-    Vector& vector(size_type i) { return data[i+range.start()]; }
-    const Vector& vector(size_type i) const { return data[i+range.start()]; }
-
-  private:
-    ref_type& ref;
-    irange    range;
+  protected:  
+    const multi_vector<Vector>& ref;
+    const irange                r;
 };
-
 
 
 }} // namespace mtl::matrix

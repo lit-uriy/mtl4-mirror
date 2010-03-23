@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/operation/random.hpp>
 #include <boost/numeric/mtl/operation/orth.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/matrix/strict_upper.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
@@ -34,24 +35,21 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	  const LeftPreconditioner &L, const RightPreconditioner &R, 
 	  Iteration& iter, size_t s)
 {
-    using mtl::irange; using mtl::imax; using mtl::iall; using mtl::matrix::strict_upper;
+    using mtl::iall; using mtl::matrix::strict_upper;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
     if (s < 1) s= 1;
 
-    Size                        n= size(x);
-    const Scalar                zero= math::zero(b[0]);
+    const Scalar                zero= math::zero(Scalar());
     Scalar                      omega(zero);
-    Vector                      x0(x), y(n), v(n), t(n), q(n);
-    mtl::multi_vector<Vector>   dR(Vector(n, zero), s), dX(Vector(n, zero), s), P(Vector(n, zero), s), M(s, s);
-    mtl::dense2D<Scalar>        M2(s, s);
+    Vector                      x0(x), y(resource(x)), v(resource(x)), t(resource(x)), q(resource(x)), r(b - A * x);
+    mtl::multi_vector<Vector>   dR(Vector(resource(x), zero), s), dX(Vector(resource(x), zero), s), P(Vector(resource(x), zero), s);
+    mtl::dense_vector<Scalar>   m(s), c(s), dm(s);   // replicated in distributed solvers 
+    mtl::dense2D<Scalar>        M(s, s);             // dito
 
-    Vector r(b - A * x);
-
-    mtl::seed<Scalar> seed;
-    random(P, seed); 
+    random(P); 
     P.vector(0)= r;
     orth(P);
 
@@ -64,19 +62,17 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	r+= dR.vector(k);
 	if (iter.finished(r))
 	    return iter;
-	M.vector(k)= trans(P) * dR.vector(k); 
+	M[iall][k]= trans(P) * dR.vector(k); 
     }
 
     Size oldest= 0;
     iter+= s;
-    Vector m(trans(P) * r), c(s), dm(s); 
+    m= trans(P) * r;
 
     while (! iter.finished(r)) {
        
 	for (size_t k= 0; k < s; k++) {
-	    //c= solve(M, m);  // TBD: dense solver
-	    M2= M;
-	    c= lu_solve(M2, m);  // TBD: dispatch solve to lu_solve(_new); check parallelization
+	    c= lu_solve(M, m);
 	    q= dR * -c;    
 	    v= r + q;
 	    if (k == 0) {
@@ -96,7 +92,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 		return iter;
 
 	    dm= trans(P) * dR.vector(oldest);
-	    M.vector(oldest)= dm;
+	    M[iall][oldest]= dm;
 	    m+= dm;
 	    oldest= (oldest + 1) % s;
 	}

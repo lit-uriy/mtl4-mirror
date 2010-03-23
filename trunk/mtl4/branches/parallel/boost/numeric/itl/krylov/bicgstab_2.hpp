@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 namespace itl {
 
@@ -24,22 +25,19 @@ template < typename LinearOperator, typename Vector,
 int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	       const Preconditioner &M, Iteration& iter)
 {
-    using math::zero; using math::one;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
-    Scalar     rho_0(1), rho_1(0), alpha(0), beta(0), gamma(0), 
-	       mu(0), nu(0), tau(0), omega_1(0), omega_2(1);
-    Vector     // r(b - A * x), r_0(r),  r_i(r), x_i(x), // Constructors need fixing! 
-	       r(size(x)), r_0(size(x)), r_i(size(x)), x_i(size(x)), 
-	       s(size(x)), t(size(x)), u(size(x), Scalar(0)), v(size(x)), w(size(x));
+    const Scalar zero= math::zero(Scalar()), one= math::one(Scalar());
+    Scalar     alpha(zero), beta, gamma, mu, nu, rho_0(one), rho_1, tau, omega_1, omega_2(one);
+    Vector     r(b - A * x), r_0(r), r_i(r), x_i(x), 
+	       s(resource(x)), t(resource(x)), u(resource(x), zero), v(resource(x)), w(resource(x));
 
-    x_i= x;       // Doesn't work yet in constructor
-    r= b - A * x; // Doesn't work yet in constructor
+    x_i= x;       
+    r= b - A * x; 
     r_0= r; r_i= r;
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
-
     while (! iter.finished(r)) {
-	rho_0= -omega_2 * rho_0;
+	rho_0*= -omega_2;
 	// z= solve(M, r); z_tilde= solve(M, r_tilde); ???
 
 	rho_1= dot(r_0, r_i);       // or rho_1= dot(z, r_tilde) ???
@@ -69,7 +67,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 
 	++iter;
     }
-    return iter.error_code();
+    return iter;
 }
 
 } // namespace itl
