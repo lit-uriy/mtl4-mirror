@@ -45,8 +45,10 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
     const Scalar                zero= math::zero(Scalar());
     Scalar                      omega(zero);
     Vector                      x0(x), y(resource(x)), v(resource(x)), t(resource(x)), q(resource(x));
-    mtl::multi_vector<Vector>   dR(Vector(resource(x), zero), s), dX(Vector(resource(x), zero), s), P(Vector(resource(x), zero), s), M(s, s);
-    mtl::dense2D<Scalar>        M2(s, s);
+    mtl::multi_vector<Vector>   dR(Vector(resource(x), zero), s), dX(Vector(resource(x), zero), s), P(Vector(resource(x), zero), s);
+    mtl::dense_vector<Scalar>   m, c(s), dm(s);   // replicated in distributed solvers 
+    mtl::dense2D<Scalar>        M(s, s);          // replicated in distributed solvers 
+
 
     Vector r(b - A * x);
 
@@ -64,19 +66,20 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	r+= dR.vector(k);
 	if (iter.finished(r))
 	    return iter;
-	M.vector(k)= trans(P) * dR.vector(k); 
+	// M.vector(k)= trans(P) * dR.vector(k); 
+	M[iall][k]= trans(P) * dR.vector(k); 
     }
 
     Size oldest= 0;
     iter+= s;
-    Vector m(trans(P) * r), c(s), dm(s); 
+    m= trans(P) * r;
 
     while (! iter.finished(r)) {
        
 	for (size_t k= 0; k < s; k++) {
 	    //c= solve(M, m);  // TBD: dense solver
-	    M2= M;
-	    c= lu_solve(M2, m);  // TBD: dispatch solve to lu_solve(_new); check parallelization
+	    // M2= M;
+	    c= lu_solve(M, m);  // TBD: dispatch solve to lu_solve(_new); check parallelization
 	    q= dR * -c;    
 	    v= r + q;
 	    if (k == 0) {
@@ -96,7 +99,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 		return iter;
 
 	    dm= trans(P) * dR.vector(oldest);
-	    M.vector(oldest)= dm;
+	    M[iall][oldest]= dm;
 	    m+= dm;
 	    oldest= (oldest + 1) % s;
 	}

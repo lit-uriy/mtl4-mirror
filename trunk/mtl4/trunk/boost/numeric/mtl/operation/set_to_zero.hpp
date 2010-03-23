@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
+#include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
@@ -36,7 +37,16 @@ namespace mtl {
     namespace impl {
 
 	template <typename Coll>
-	void set_to_zero(Coll& collection, tag::contiguous_dense, tag::scalar)
+	void set_to_zero(Coll& collection, tag::vector_ref, ashape::scal)
+	{
+	    using math::zero;
+	    typename Collection<Coll>::value_type  ref, my_zero(zero(ref));
+	    for (typename Collection<Coll>::size_type i= 0; i < size(collection); ++i)
+		collection[i]= my_zero;
+	}
+
+	template <typename Coll>
+	void set_to_zero(Coll& collection, tag::contiguous_dense, ashape::scal)
 	{
 	    using math::zero;
 	    typename Collection<Coll>::value_type  ref, my_zero(zero(ref));
@@ -45,7 +55,7 @@ namespace mtl {
 	}
 
 	template <typename Coll>
-	void set_to_zero(Coll& collection, tag::std_vector, tag::scalar)
+	void set_to_zero(Coll& collection, tag::std_vector, ashape::scal)
 	{
 	    using math::zero;
 	    typename Collection<Coll>::value_type  ref, my_zero(zero(ref));
@@ -54,7 +64,7 @@ namespace mtl {
 	}
 
 	template <typename Matrix>
-	void set_to_zero(Matrix& matrix, tag::morton_dense, tag::scalar)
+	void set_to_zero(Matrix& matrix, tag::morton_dense, ashape::scal)
 	{
 	    using math::zero;
 	    typename Collection<Matrix>::value_type  ref, my_zero(zero(ref));
@@ -73,7 +83,7 @@ namespace mtl {
 	// For nested collection, we must consider the dimensions of the elements
 	// (Morton-order is included in contiguous_dense)
 	template <typename Coll>
-	void set_to_zero(Coll& collection, tag::contiguous_dense, tag::collection)
+	void set_to_zero(Coll& collection, tag::contiguous_dense, ashape::nonscal)
 	{
 	    for (typename Collection<Coll>::size_type i= 0; i < collection.used_memory(); ++i)
 		set_to_zero(collection.value_n(i));
@@ -82,20 +92,19 @@ namespace mtl {
 
 	// Is approbriate for all sparse matrices and vectors (including collections as value_type)
 	template <typename Coll>
-	void set_to_zero(Coll& collection, tag::sparse, tag::universe)
+	void set_to_zero(Coll& collection, tag::sparse, ashape::universe)
 	{
 	    collection.make_empty();
 	}
 	
 	// Special treatment for multi_vector
 	template <typename Coll>
-	void set_to_zero(Coll& collection, tag::multi_vector, tag::universe)
+	void set_to_zero(Coll& collection, tag::multi_vector, ashape::universe)
 	{
 	    using mtl::vector::set_to_zero;
 	    for (typename Collection<Coll>::size_type i= 0; i < num_cols(collection); ++i)
 		set_to_zero(collection.vector(i));
-	}
-	
+	}	
     }
 
 
@@ -109,9 +118,8 @@ namespace matrix {
     {
 	using mtl::traits::category;
 	typedef typename Collection<Coll>::value_type value_type;
-	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename category<value_type>::type());
-    }
-    
+	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename ashape::ashape<value_type>::type()); // 2. ashape ???
+    }   
 }
 
 namespace vector {
@@ -124,7 +132,7 @@ namespace vector {
     {
 	using mtl::traits::category;
 	typedef typename Collection<Coll>::value_type value_type;
-	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename category<value_type>::type());
+	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename ashape::ashape<value_type>::type());
     }
 
 }

@@ -42,6 +42,10 @@ struct collection : virtual universe {};
 /// Tag for any MTL vector (and user-declared MTL vectors)
 struct vector : virtual collection {};
 
+/// Tag for references to vector
+/** For instance to not access memory directly but use functions, e.g. in set_to_zero. **/ 
+struct vector_ref : virtual vector {};
+
 /// Tag for any MTL column vector (and user-declared MTL vectors)
 struct col_vector : virtual vector {};
 
@@ -118,13 +122,13 @@ struct dense_col_vector
 
 /// Tag for strided row vector in the category lattice
 struct strided_row_vector
-  : virtual row_vector, 
+  : virtual row_vector, virtual vector_ref,
     virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout
 {};
 
 /// Tag for strided column vector in the category lattice
 struct strided_col_vector
-  : virtual col_vector, 
+  : virtual col_vector, virtual vector_ref, 
     virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout
 {};
 

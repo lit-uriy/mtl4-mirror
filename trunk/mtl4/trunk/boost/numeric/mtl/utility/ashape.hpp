@@ -29,15 +29,21 @@ namespace ashape {
 // forward declaration
 template <typename T> struct ashape_aux;
 
+/// Tag for arbitrary algebraic shape
+struct universe {};
+
 // Types (tags)
 /// Scalar algebraic shape
-struct scal {};
+struct scal : universe {};
+
+/// Non-scalar algebraic shape
+struct nonscal : universe {};
 /// Row vector as algebraic shape
-template <typename Value> struct rvec {};
+template <typename Value> struct rvec : nonscal {};
 /// Column vector as algebraic shape
-template <typename Value> struct cvec {};
+template <typename Value> struct cvec : nonscal {};
 /// Matrix as algebraic shape
-template <typename Value> struct mat {};
+template <typename Value> struct mat : nonscal {};
 /// Undefined shape, e.g., for undefined results of operations
 struct ndef {};
 
