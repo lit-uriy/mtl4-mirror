@@ -17,6 +17,7 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 namespace itl {
 
@@ -26,30 +27,25 @@ template < typename Matrix, typename Vector,typename LeftPreconditioner,
 int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L, 
 	const RightPreconditioner& R, Iteration& iter)
 {
-
     typedef typename mtl::Collection<Vector>::value_type Scalar;
-    typedef typename mtl::Collection<Vector>::size_type  Size;
-
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
-    const Scalar                zero= math::zero(Scalar()), one= math::one(Scalar()); // zero= math::zero(b[0]), one= math::one(b[0]);
-    Scalar                      rho_1, gamma(one), gamma_1, theta(zero), theta_1,
-	                        eta(-one), delta, ep(one), beta;
-    Size                        n(size(x));
-    Vector                      r(b - A * x), v_tld(r), y(solve(L, v_tld)), w_tld(r), z(adjoint_solve(R,w_tld)), v(n),
-                                w(n), y_tld(n), z_tld, p, q, p_tld, d, s;
+    const Scalar         zero= math::zero(Scalar()), one= math::one(Scalar());
+    Scalar               beta, gamma(one), gamma_1, delta, eta(-one), ep(one), rho_1, theta(zero), theta_1;
+    Vector               r(b - A * x), v_tld(r), y(solve(L, v_tld)), w_tld(r), z(adjoint_solve(R,w_tld)), v(resource(x)), w(resource(x)), 
+                         y_tld(resource(x)), z_tld(resource(x)), p(resource(x)), q(resource(x)), p_tld(resource(x)), d(resource(x)), s(resource(x));
 
     if (iter.finished(r))
 	return iter;
 
     Scalar rho = two_norm(y), xi = two_norm(z);
 
-    while(! iter.finished(rho)) {
+    while (!iter.finished(rho)) {
 
         if (rho == zero)
-	    return iter.fail(1, "qmr breakdown, rho=0 #1");
+	    return iter.fail(1, "qmr breakdown #1, rho=0");
         if (xi == zero)
-            return iter.fail(2, "qmr breakdown, xi=0 #2");
+            return iter.fail(2, "qmr breakdown #2, xi=0");
 
         v= v_tld / rho;
         y/= rho;

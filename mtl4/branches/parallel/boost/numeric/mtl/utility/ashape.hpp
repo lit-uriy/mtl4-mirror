@@ -29,15 +29,21 @@ namespace ashape {
 // forward declaration
 template <typename T> struct ashape_aux;
 
+/// Tag for arbitrary algebraic shape
+struct universe {};
+
 // Types (tags)
 /// Scalar algebraic shape
-struct scal {};
+struct scal : universe {};
+
+/// Non-scalar algebraic shape
+struct nonscal : universe {};
 /// Row vector as algebraic shape
-template <typename Value> struct rvec {};
+template <typename Value> struct rvec : nonscal {};
 /// Column vector as algebraic shape
-template <typename Value> struct cvec {};
+template <typename Value> struct cvec : nonscal {};
 /// Matrix as algebraic shape
-template <typename Value> struct mat {};
+template <typename Value> struct mat : nonscal {};
 /// Undefined shape, e.g., for undefined results of operations
 struct ndef {};
 
@@ -179,6 +185,12 @@ template <typename Matrix, typename RowDistribution, typename ColDistribution>
 struct ashape< matrix::distributed<Matrix, RowDistribution, ColDistribution> > : ashape<Matrix> {};
 
  
+template <typename Vector>
+struct ashape_aux<matrix::multi_vector_range<Vector> >
+{
+    typedef mat<typename ashape<typename mtl::Collection<matrix::multi_vector_range<Vector> >::value_type>::type> type;
+};
+   
 template <typename E1, typename E2>
 struct ashape_aux< matrix::mat_mat_plus_expr<E1, E2> >
 {

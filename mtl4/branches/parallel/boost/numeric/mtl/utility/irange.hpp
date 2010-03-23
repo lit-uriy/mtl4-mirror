@@ -13,6 +13,7 @@
 #define MTL_IRANGE_INCLUDE
 
 #include <limits>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 
 namespace mtl { 
@@ -48,6 +49,12 @@ namespace mtl {
 	    my_start= 0; my_finish= finish; return *this;
 	}
 
+        /// Decrease finish, i.e. [start, finish) -> [start, finish-1)
+	irange& operator--() 
+	{
+	    --my_finish; return *this;
+	}
+	
         /// First index in range
         size_type start() const { return my_start; } 
         /// Past-end index in range
@@ -55,7 +62,24 @@ namespace mtl {
         /// Number of indices
         size_type size() const { return my_finish > my_start ? my_finish - my_start : 0; }
 
+	/// Whether the range is empty
         bool empty() const { return my_finish <= my_start; }
+
+	/// Maps integers [0, size()) to [start(), finish())
+	/** Checks index in debug mode. Inverse of from_range. **/
+	size_type to_range(size_type i) const
+	{
+	    MTL_DEBUG_THROW_IF(i < 0 || i >= size(), index_out_of_range());
+	    return my_start + i;
+	}
+
+	/// Maps integers [start(), finish()) to [0, size())
+	/** Checks index in debug mode. **/
+	size_type from_range(size_type i) const
+	{
+	    MTL_DEBUG_THROW_IF(i < my_start || i >= my_finish, index_out_of_range());
+	    return i - my_start;
+	}
 
       private:
         size_type my_start, my_finish;

@@ -14,6 +14,7 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 namespace itl {
 
@@ -27,8 +28,7 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
 
   Scalar rho(0), rho_1(0), alpha(0);
-  // Vector p(size(x)), q(size(x)), r(size(x)), z(size(x));
-  Vector p(x), q(x), r(x), z(x);
+  Vector p(resource(x)), q(resource(x)), r(resource(x)), z(resource(x));
   
   r = b - A*x;
 

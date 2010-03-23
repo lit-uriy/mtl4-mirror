@@ -368,7 +368,8 @@ add_platform_flags(env)
 # Set up MPI Options
 ###############################
 
-mpi_env = env.Clone()
+# mpi_env = env.Clone()
+mpi_env = env.Copy()
 
 mpi_env['CXX'] = 'mpiCC'
 mpi_env.Append(CCFLAGS = [macro_flag(env, 'MTL_HAS_MPI'), macro_flag(env, 'BOOST_MPI_HOMOGENEOUS')])
@@ -422,12 +423,19 @@ if os.environ.has_key('TOPOMAP_DIR'):
 ###############################
 
 #create alternative environments
-debug_env = env.Clone()
-opt_env = env.Clone()
-high_opt_env = env.Clone()
+# debug_env = env.Clone()
+# opt_env = env.Clone()
+# high_opt_env = env.Clone()
 
-mpi_debug_env = mpi_env.Clone()
-mpi_high_opt_env = mpi_env.Clone()
+# mpi_debug_env = mpi_env.Clone()
+# mpi_high_opt_env = mpi_env.Clone()
+
+debug_env = env.Copy()
+opt_env = env.Copy()
+high_opt_env = env.Copy()
+
+mpi_debug_env = mpi_env.Copy()
+mpi_high_opt_env = mpi_env.Copy()
 
 # add debugging flags to appropriate environment
 debug = ARGUMENTS.get('debug', 0)

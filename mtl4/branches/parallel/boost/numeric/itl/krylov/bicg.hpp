@@ -16,6 +16,7 @@
 #include <boost/numeric/itl/itl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 namespace itl {
 
@@ -28,20 +29,18 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
     using mtl::conj;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     Scalar     rho_1(0), rho_2(0), alpha(0), beta(0);
-    Vector     r(size(x)), z(size(x)), p(size(x)), q(size(x)),
- 	       r_tilde(size(x)), z_tilde(size(x)), p_tilde(size(x)), q_tilde(size(x));
+    Vector     r(b - A * x), z(resource(x)), p(resource(x)), q(resource(x)),
+ 	       r_tilde(r), z_tilde(resource(x)), p_tilde(resource(x)), q_tilde(resource(x));
 
-    r= b - A * x; r_tilde= x; // Constructors need fixing
+    r= b - A * x; r_tilde= x; 
 
     while (! iter.finished(r)) {
 	z= solve(M, r);
 	z_tilde= adjoint_solve(M, r_tilde);
 	rho_1= dot(z_tilde, z);
 
-	if (rho_1 == 0.) {
-	    iter.fail(2, "bicg breakdown");
-	    break;
-	}
+	if (rho_1 == 0.)
+	    return iter.fail(2, "bicg breakdown");
 	if (iter.first()) {
 	    p= z;
 	    p_tilde= z_tilde;
@@ -60,10 +59,9 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
 	r_tilde-= conj(alpha) * q_tilde;
 
 	rho_2= rho_1;
-
 	++iter;
     }
-    return iter.error_code();
+    return iter;
 }
 
 } // namespace itl

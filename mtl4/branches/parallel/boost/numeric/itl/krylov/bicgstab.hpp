@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/itl/utility/exception.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 namespace itl {
 
@@ -28,8 +29,8 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   typedef HilbertSpaceX                                       Vector;
 
   Scalar     rho_1(0), rho_2(0), alpha(0), beta(0), gamma, omega(0);
-  Vector     p(size(x)), phat(size(x)), s(size(x)), shat(size(x)), 
-             t(size(x)), v(size(x)), r(size(x)), rtilde(size(x));
+  Vector     p(resource(x)), phat(resource(x)), s(resource(x)), shat(resource(x)), 
+             t(resource(x)), v(resource(x)), r(resource(x)), rtilde(resource(x));
 
   r = b - A * x;
   rtilde = r;
