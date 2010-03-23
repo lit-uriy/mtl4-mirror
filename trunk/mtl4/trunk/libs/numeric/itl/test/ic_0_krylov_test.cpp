@@ -58,11 +58,11 @@ int test_main(int argc, char* argv[])
     MTL_RUN_SOLVER("Bi-Conjugate Gradient Stabilized(ell)", bicgstab_ell, (As, xs, bs, ILU, I, iters, ell));
     MTL_RUN_SOLVER("Conjugate Gradient", cg, (As, xs, bs, IC, iters));
     MTL_RUN_SOLVER("Conjugate Gradient Squared", cgs, (As, xs, bs, ILU, iters));
-#endif
     MTL_RUN_SOLVER("Generalized Minimal Residual method (without restart)", gmres_full, (As, xs, bs, I, I, iters, size));
     MTL_RUN_SOLVER("Generalized Minimal Residual method with restart", gmres, (As, xs, bs, I, I, iters, restart));
-#if 0
+#endif
     MTL_RUN_SOLVER("Induced Dimension Reduction on s dimensions (IDR(s))", idr_s, (As, xs, bs, ILU, I, iters, s));
+#if 0
     MTL_RUN_SOLVER("Quasi-minimal residual", qmr, (As, xs, bs, ILU, I, iters));
     MTL_RUN_SOLVER("Transposed-free Quasi-minimal residual", tfqmr, (As, xs, bs, ILU, I, iters));
 #endif
