@@ -46,7 +46,7 @@ void test1(Matrix& m, double tau)
 int test_main(int argc, char* argv[])
 {
 
-#if 0
+
 
   const int N = 2; // Original from Jan had 2000
   const int Niter = 5000;
@@ -75,7 +75,7 @@ int test_main(int argc, char* argv[])
 
   std::cout << "START GMRES  Won't convergence (for large examples)!" << std::endl;
   std::cout << "\n Non-preconditioned gmres(1)" << std::endl;
-  x= 2.0;
+  x= 5.0;
   itl::basic_iteration<double> iter_1(b, 1, 1.e-8);
   gmres(A, x, b, Ident, Ident, iter_1, 1);
   r= A*x-b;
@@ -90,7 +90,7 @@ int test_main(int argc, char* argv[])
   if (two_norm(r) > 0.00005) 
       std::cout << "GMRES(2) didn't converge after 8 titerations.\n";
 
-
+#if 1
   std::cout << "\n Non-preconditioned gmres(4)" << std::endl;
   x= 2.5;
   itl::basic_iteration<double> iter_4(b, 16, 1.e-8);
