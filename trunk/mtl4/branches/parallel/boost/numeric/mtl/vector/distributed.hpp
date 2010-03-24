@@ -47,6 +47,7 @@ public:
     typedef typename Collection<Vector>::size_type   size_type;
     typedef typename Collection<Vector>::value_type  value_type;
     typedef Distribution                             distribution_type;
+    typedef const Distribution                       const_distribution_type;
     typedef crtp_vector_assign< self, value_type, size_type >          assign_base;
 
     typedef Vector                                   local_type;
@@ -129,8 +130,7 @@ public:
 	return out;
     }
 
-    //template <typename, typename> friend const distribution_type& distribution(const & d);
-    friend inline const distribution_type& distribution(const self& d) { return d.dist; }
+    friend inline const_distribution_type& distribution(const self& d) { return d.dist; }
     friend inline const boost::mpi::communicator& communicator(const self& d) { return communicator(d.dist); }
 			  
     template <typename, typename> friend class distributed_inserter;

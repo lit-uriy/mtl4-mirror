@@ -55,6 +55,7 @@ namespace mtl {
 	class block_distribution;
 	class cyclic_distribution;
 	class block_cyclic_distribution;
+	class replication;
 
 	struct single_ostream;
 

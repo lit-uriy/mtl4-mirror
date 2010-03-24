@@ -13,6 +13,7 @@
 #define MTL_OPERATION_DISTRIBUTION_INCLUDE
 
 #include <boost/type_traits/add_reference.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/distribution.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
 #include <boost/numeric/mtl/vector/vec_vec_aop_expr.hpp>
@@ -46,12 +47,48 @@ namespace mtl {
 	    return distribution(v.reference_first());
 	}
 
+	template <class Value, typename Parameters>
+	inline par::replication distribution(const dense_vector<Value, Parameters>&) { return par::replication(); }
+	
+
     } // namespace vector
+
+    namespace matrix {
+
+        template <typename Value, typename Parameters> 
+	inline par::replication row_distribution(const dense2D<Value, Parameters>&) { return par::replication(); }
+	
+        template <typename Value, typename Parameters> 
+	inline par::replication col_distribution(const dense2D<Value, Parameters>&) { return par::replication(); }
+	
+	// doesn't work for empty vectors
+	template <typename Vector> 
+	typename boost::add_reference<typename mtl::traits::distribution<Vector>::type const>::type
+	inline row_distribution(const multi_vector<Vector>& A)
+	{
+	    // typedef typename mtl::traits::distribution<Vector>::type dist_type;
+	    assert (num_cols(A) > 0);
+	    return distribution(A.vector(0)); 
+	    //return num_cols(A) > 0 ? distribution(A.vector(0)) : dist_type(num_rows(A)); 
+	}
+
+	template <typename Vector> 
+	inline par::replication col_distribution(const multi_vector<Vector>&) { return par::replication(); }
+	
+	template <typename Vector> 
+	typename boost::add_reference<typename mtl::traits::distribution<Vector>::type const>::type
+	inline row_distribution(const multi_vector_range<Vector>& A) { return row_distribution(A.ref); }
+
+	template <typename Vector> 
+	inline par::replication col_distribution(const multi_vector_range<Vector>&) { return par::replication(); }
+    }
+
 
     template <typename Matrix, typename CVector>
     typename boost::add_reference<typename mtl::traits::distribution<mtl::mat_cvec_times_expr<Matrix, CVector> >::type const>::type
     inline distribution(const mtl::mat_cvec_times_expr<Matrix, CVector>& expr)
     {
+	// MTL_DEBUG_THROW_IF(col_distribution(expr.first) != distribution(expr.second), incompatible_distribution());
 	return row_distribution(expr.first);
     }
 

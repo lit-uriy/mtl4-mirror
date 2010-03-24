@@ -25,6 +25,8 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 
+#include <boost/numeric/mtl/operation/distribution.hpp>
+
 namespace itl {
 
 /// Generalized Minimal Residual method (without restart)
@@ -111,7 +113,17 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     if (range.empty())
         return iter.fail(1, "GMRES did not find any direction to correct x");
 	
-    x+= solve(R, Vector(V.vector(range)*y[range]));
+
+    Vector xyz(x);
+    std::cout << "Distribution V[0] " << distribution(V.vector(0)) << "\n";
+    std::cout << "Row Distribution V " << row_distribution(V) << "\n";
+#if 0
+    std::cout << "Col Distribution V " << col_distribution(V) << "\n";
+    std::cout << "Distribution y " << distribution(y) << "\n";
+    std::cout << "Distribution " << distribution(V * y) << "\n";
+    //x+= solve(R, Vector(V.vector(range)*y[range]));
+    xyz= V.vector(range)*y[range];
+#endif
 
     r= b - A*x;
     if (!iter.finished(r))
