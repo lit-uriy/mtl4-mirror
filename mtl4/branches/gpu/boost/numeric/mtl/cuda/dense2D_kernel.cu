@@ -32,6 +32,38 @@ __global__ void mat_vec_mult (Vector *b, Matrix *A, Vector *x, int num_rows, int
 
 }
 
+
+template <typename Matrix, typename T>
+__global__ void laplacian (Matrix *A, T d, int num_rows)
+{
+ int idx = blockIdx.x * blockDim.x + threadIdx.x,
+     index=idx;
+
+ if (idx < num_rows){
+	
+        if(idx==0){ 
+	    A[0]=d;
+	    A[1]=-1;
+	}
+     
+        if(idx>0 && idx<num_rows-1){ 
+	    A[index + index*num_rows-1]=-1;
+	    A[index + index*num_rows]=d;
+	    A[index + index*num_rows+1]=-1;
+	}
+     
+        if(idx==num_rows -1){ 
+	    A[index + index*num_rows-1]=-1;
+	    A[index + index*num_rows]=d;
+	}
+     
+ 	
+ }
+
+}
+
+
+
 }} // namespace mtl::cuda
 
 #endif // MTL_CUDA_DENSE2D_KERNEL_INCLUDE

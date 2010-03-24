@@ -241,8 +241,6 @@ class dense2D
 	assert(num_row >= 0 && num_row < num_rows && num_col >= 0 && num_col < num_cols);
 	start[num_row][num_col]= scr;  //set on host
 
-	if(scr!=0) elements++;
-
 	int temp(num_row*num_rows + num_col);
 	cudaMemcpy(dptr+ temp , &scr, sizeof(T), cudaMemcpyHostToDevice);  //set on device
 	
@@ -271,7 +269,6 @@ class dense2D
     bool valid_device() const { return !on_host; }
     friend int  num_cols(const self& x) { return x.num_cols; }
     friend int  num_rows(const self& x) { return x.num_rows; }
-    friend double  elements(const self& x) { return x.elements; }    
     friend int  size(const self& x) { return x.num_rows * x.num_cols; }
 
     template<typename Vector>
@@ -312,7 +309,70 @@ class dense2D
 	
     }
 
-    void to_host() const
+   
+
+   /// laplacian setup on host
+   void laplacian_setup_host(T d)
+   {
+	bool tmp=valid_device();
+	
+        if(tmp){
+	    to_host(); 
+	    on_host=true;
+	}
+        
+//	set_to_zero():  //i'm not sure, if we need this 
+
+	for(int i=0; i<num_rows; i++){
+	    
+            if(i==0){
+		 start[i][i]=d;
+		 start[i][i+1]=-1;
+	    }
+	    
+	    if(i>0 && i<num_rows-1){
+		start[i][i-1]=-1;
+		start[i][i]=d;
+		start[i][i+1]=-1;
+	    }
+	    
+	    if(i==num_rows-1){
+		start[i][i-1]=-1;
+		start[i][i]=d;
+		
+	    }
+	    
+	}
+	
+    if(tmp) to_device(); 
+	
+   }
+   
+
+  /// laplacian setup on device
+   void laplacian_setup_device(T d)
+   {
+       
+     bool tmp=valid_host();  
+     
+     if(tmp){
+	    //	set_to_zero():  //i'm not sure, if we need this 
+	    to_device(); 
+	    on_host=false;
+	}
+       
+     dim3 dimGrid(num_cols/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
+     laplacian<value_type, value_type><<<dimGrid, dimBlock>>>(dptr, d, num_rows);
+     
+     if(tmp) to_host();
+     
+   } 
+   
+   
+   
+   
+   
+   void to_host() const
     {
 	if (!on_host) {
 	    int temp= 0;
@@ -322,6 +382,7 @@ class dense2D
 		    temp++;
 		}
 	    }
+	 const_cast<self*>(this)->on_host= true;   
 	}
     }
 
@@ -364,7 +425,7 @@ class dense2D
 	for (int i= 0; i < x.num_rows; i++){
 	os << "[ ";  
 	  for (int j= 0; j < x.num_cols; j++){
-	     os <<  x.start[i][j] << (j== x.num_cols-1 ? " ]\n" : "\t");	  
+	     os <<  x.start[i][j] << (j== x.num_cols-1 ? " ]\n" : " ");	  
 	  }
 	}
 	 os << "\n"; 
@@ -372,7 +433,6 @@ class dense2D
 	return os;
     }
 
-    double elements;
     int  num_cols, num_rows;
     T**   start; 
     T*   dptr;   // Value on device (allocated as pointer whose content is referred)
