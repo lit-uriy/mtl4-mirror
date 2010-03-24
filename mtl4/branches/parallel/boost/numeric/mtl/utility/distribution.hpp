@@ -14,6 +14,7 @@
 
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
+
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/root.hpp>
 
@@ -35,6 +36,12 @@ template <typename Vector, typename Distribution>
 struct distribution_aux<mtl::vector::distributed<Vector, Distribution> >
 {
     typedef Distribution type;
+};
+
+template <typename Value, typename Parameters> 
+struct distribution_aux<mtl::vector::dense_vector<Value, Parameters> >
+{
+    typedef par::replication type;
 };
 
 template <typename Functor, typename Vector>

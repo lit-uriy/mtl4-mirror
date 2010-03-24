@@ -86,17 +86,21 @@ int test_main(int argc, char* argv[])
     itl::pc::ic_0<matrix_s_type>                            ICs(As);
     itl::pc::identity<matrix_s_type>                        Is(As);
 
+#if 0
     MTL_RUN_SOLVER("Bi-Conjugate Gradient", bicg, (A, x, b, I, iter), (As, xs, bs, Is, iters));
     MTL_RUN_SOLVER("Bi-Conjugate Gradient Stabilized", bicgstab, (A, x, b, ILU, iter), (As, xs, bs, ILUs, iters));
     MTL_RUN_SOLVER("Bi-Conjugate Gradient Stabilized(2)", bicgstab_2, (A, x, b, ILU, iter), (As, xs, bs, ILUs, iters));
     MTL_RUN_SOLVER("Bi-Conjugate Gradient Stabilized(ell)", bicgstab_ell, (A, x, b, ILU, I, iter, ell), (As, xs, bs, ILUs, Is, iters, ell));
     MTL_RUN_SOLVER("Conjugate Gradient", cg, (A, x, b, IC, iter), (As, xs, bs, ICs, iters));
     MTL_RUN_SOLVER("Conjugate Gradient Squared", cgs, (A, x, b, ILU, iter), (As, xs, bs, ILUs, iters));
-    // MTL_RUN_SOLVER("Generalized Minimal Residual method (without restart)", gmres_full, (A, x, b, I, I, iter, size), (As, xs, bs, Is, Is, iters, size));
+#endif
+    MTL_RUN_SOLVER("Generalized Minimal Residual method (without restart)", gmres_full, (A, x, b, I, I, iter, size), (As, xs, bs, Is, Is, iters, size));
     // MTL_RUN_SOLVER("Generalized Minimal Residual method with restart", gmres, (A, x, b, I, I, iter, restart), (As, xs, bs, Is, Is, iters, restart));
     // MTL_RUN_SOLVER("Induced Dimension Reduction on s dimensions (IDR(s))", idr_s, (A, x, b, ILU, I, iter, s), (As, xs, bs, ILUs, Is, iters, s));
+#if 0
     MTL_RUN_SOLVER("Quasi-minimal residual", qmr, (A, x, b, ILU, I, iter), (As, xs, bs, ILUs, Is, iters));
     MTL_RUN_SOLVER("Transposed-free Quasi-minimal residual", tfqmr, (A, x, b, ILU, I, iter), (As, xs, bs, ILUs, Is, iters));
+#endif
     sos << succeed << " solvers succeeded and " << failed << " solvers failed.\n";
 
     return 0;

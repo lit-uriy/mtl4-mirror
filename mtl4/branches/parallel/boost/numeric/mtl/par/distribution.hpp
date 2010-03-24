@@ -86,7 +86,8 @@ namespace mtl {
 	      : base_distribution(comm), starts(starts)
 	    {}
 
-	    block_distribution(const block_distribution& src) : base_distribution(src), starts(src.starts) {}
+	    // should be generated
+	    // block_distribution(const block_distribution& src) : base_distribution(src), starts(src.starts) {}
 
 	    /// Change number of global entries to n
 	    void resize(size_type n) { init(n); }
@@ -198,14 +199,19 @@ namespace mtl {
 	    explicit cyclic_distribution(const boost::mpi::communicator& comm= boost::mpi::communicator()) 
 	      : base_distribution(comm) {}
 
+	    /// Construction of cyclic distribution of size \p n with communicator \p comm
+	    /** Size \p n is ignored and the constructor only exist for compatibility with other distributions. **/
+	    explicit cyclic_distribution(size_type, const boost::mpi::communicator& comm= boost::mpi::communicator()) 
+	      : base_distribution(comm) {}
+
 	    /// Change number of global entries to n (only dummy)
 	    void resize(size_type) {}
 	    /// Change number of global entries to n (only dummy)
 	    void stretch(size_type) {}
 
-	    /// Two cyclic distributions are equal if they have the same communicator
-	    bool operator==(const cyclic_distribution& dist) const { return comm == dist.comm; }
-	    /// Two cyclic distributions are different if they have the different communicators
+	    /// Two cyclic distributions are equal if they have the same communicator size
+	    bool operator==(const cyclic_distribution& dist) const { return size() == dist.size(); }
+	    /// Two cyclic distributions are different if they have the different communicator sizes
 	    bool operator!=(const cyclic_distribution& dist) const { return !(*this == dist); }
 
 	    /// For n global entries, how many are on processor p?
@@ -260,6 +266,7 @@ namespace mtl {
 	{
 	  public:
 	    /// Construction of block cyclic distribution 
+	    /** Interface is not consistent with other distribution where first size parameter specifies the size of the collection **/
 	    explicit block_cyclic_distribution(size_type bsize, const boost::mpi::communicator& comm= boost::mpi::communicator()) 
 	      : base_distribution(comm), bsize(bsize), sb(bsize * my_size) {}
 	    
@@ -269,7 +276,7 @@ namespace mtl {
 	    void stretch(size_type) {}
 
 	    /// Two block cyclic distributions are equal if they have the same communicator
-	    bool operator==(const block_cyclic_distribution& dist) const { return comm == dist.comm && bsize == dist.bsize; }
+	    bool operator==(const block_cyclic_distribution& dist) const { return size() == dist.size() && bsize == dist.bsize; }
 	    /// Two block cyclic distributions are different if they have the different communicators
 	    bool operator!=(const block_cyclic_distribution& dist) const { return !(*this == dist); }
 
@@ -325,6 +332,70 @@ namespace mtl {
 	  private:
 	    size_type bsize, sb;
 	};
+
+	/// Replicated storage of data where every proc has a copy of the considered object and is supposed to the same operations on it.
+	class replication
+	  : public base_distribution
+	{
+	  public:
+	    /// Replicated distribution with communicator \p comm
+	    replication(const boost::mpi::communicator& comm= boost::mpi::communicator())
+	      : base_distribution(comm) {}
+
+	    /// Replicated distribution of size \p n with communicator \p comm
+	    /** Size \p n is ignored and the constructor only exist for compatibility with other distributions. **/
+	    replication(size_type, const boost::mpi::communicator& comm= boost::mpi::communicator())
+	      : base_distribution(comm) {}
+
+	    /// Change number of global entries to n (only dummy)
+	    void resize(size_type) {}
+	    /// Change number of global entries to n (only dummy)
+	    void stretch(size_type) {}
+
+	    /// Two replications are equal if they have the same communicator size
+	    bool operator==(const cyclic_distribution& dist) const { return size() == dist.size(); }
+	    /// Two replications are different if they have the different communicator sizes
+	    bool operator!=(const cyclic_distribution& dist) const { return !(*this == dist); }
+
+	    /// For \p n global entries, how many are on processor \p p? The answer is n.
+	    template <typename Size>
+	    Size num_local(Size n, int) const { return n; }
+
+	    /// For n global entries, how many are on my processor? The answer is n.
+	    template <typename Size>
+	    Size num_local(Size n) const { return n; }
+
+	    /// The maximal number of global entries (unlimited for replications)
+	    size_type max_global() const { return std::numeric_limits<size_type>::max(); }
+
+	    /// Is the global index \p n on my processor? The answer is always yes.
+	    bool is_local(size_type n) const { return true; }
+
+	    /// Global index of local index \p n on rank \p p
+	    template <typename Size>
+	    Size local_to_global(Size n, int p) const {	return n; }
+
+	    /// Global index of local index \p n on my processor
+	    template <typename Size>
+	    Size local_to_global(Size n) const { return n; }
+
+	    /// Local index of \p n under the condition it is on rank \p p
+	    template <typename Size>
+	    Size global_to_local(Size n, int p) const { return n; }
+
+	    /// Local index of \p n under the condition it is on my processor
+	    template <typename Size>
+	    Size global_to_local(Size n) const { return n; }
+
+	    /// On which rank is global index n? Returns own rank on each processor.
+	    int on_rank(size_type n) const { return my_rank; }
+
+	    friend inline std::ostream& operator<< (std::ostream& out, const replication& d)
+	    {
+		return out << "Replication";
+	    }
+	};
+
 
 	/// Vectorized version of local_to_global with respect to \p dist
 	template <typename Dist>
