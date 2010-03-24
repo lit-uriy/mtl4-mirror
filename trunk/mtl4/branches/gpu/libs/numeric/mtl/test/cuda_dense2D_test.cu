@@ -19,13 +19,62 @@
 
 
 
+///print matrix short
+
+#define print(m) std::cout<<"\n\n"<< #m << ' '; short_print2(m);
+template < typename Matrix>
+void short_print2(const Matrix& m)
+{
+   std::cout <<(m.valid_host()==true ? "is on Host " : "is on Device " )<< "\n";
+
+   if (num_rows(m)< 30 && num_cols(m)<30) std::cout<<m<< "\n";
+   else {
+        
+        for(int i=0; i<15; i++) {
+	    std::cout<<"[";    
+	    for(int j=0; j<15; j++) std::cout<<m(i,j)<< " ";
+	    std::cout<<". . . . . ";
+	    for(int j=num_cols(m)-15; j<num_cols(m); j++) std::cout<<m(i,j)<< " ";
+	    std::cout<<"]\n";
+       }
+        
+        
+	for(int i=0; i<5; i++) {
+	    std::cout<<"[";
+	    for(int j=0; j<35; j++) std::cout<<". ";
+	    std::cout<<"]\n";
+       }
+	
+        
+	for(int i=num_rows(m)-15; i<num_rows(m); i++) {
+	    std::cout<<"[";
+	    for(int j=0; j<15; j++) std::cout<<m(i,j)<< " ";
+	    std::cout<< ". . . . . ";
+	    for(int j=num_cols(m)-15; j<num_cols(m); j++) std::cout<<m(i,j)<< " ";
+	    std::cout<<"]\n";
+       }	
+	
+	   
+
+   }
+}
+
+
+
+
+
+
+
+
+
+
 template <typename T>
 void test(const char* name)
 {
   
   
     typedef mtl::cuda::dense2D<T>   dense;
-    int size= 10;
+    int size= 200;
     std::cout << name << "-- Matrix Test\n"; 
     mtl::cuda::dense2D<T>  A(size, size);
     mtl::cuda::vector<T>  x(size, 1.0), b(size, 0.0); 
@@ -33,7 +82,7 @@ void test(const char* name)
     A.set_to_zero();
  
     std::cout << "Matrix constructed.\n";
-    std::cout << "A.num_cols= "<< num_cols(A)<<"\nA.num_rows= " <<num_rows(A)<<"\nA.elements= " <<elements(A)<<"\n";
+//    std::cout << "A.num_cols= "<< num_cols(A)<<"\nA.num_rows= " <<num_rows(A)<<"\n";
 //  std::cout << "Matrix constructed.\n" << "A=" << A << "\n";
 
             
@@ -51,7 +100,7 @@ void test(const char* name)
 
     A.to_device();
     x.to_device();
-    std::cout<< "A=" << A<<"\nA.elements= " <<elements(A)<<"\n";
+//    std::cout<< "A=" << A<<"\n";
  //     std::cout<< "x[1]=" << x[1] << "\n";
  //      std::cout<< "x=" << x << "\n";
 //      std::cout<< "b=" << b << "\n";
@@ -66,16 +115,24 @@ void test(const char* name)
      if (b[0] != T(4) || b[1]!=T(2))
 	std::cout<< "Error Matrix vector multiplication on device.\n";
      
+//      A.to_host();
+      print(A);    
+
+//     A.laplacian_setup_host(7);
+     A.laplacian_setup_device(5);
+
+//     std::cout<< "\n\nA=" << A<<"\n";
+     print(A);
+   
   
- 
 }
 
 
 int main(int argc, char* argv[])
 {
     using namespace mtl;
-
     cuda::activate_best_gpu();
+    
     test<int>("int");
  //   test<short>("short");
 
