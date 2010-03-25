@@ -20,7 +20,7 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/matrix/multi_vector.hpp>
-#include <boost/numeric/mtl/matrix/strict_upper.hpp>
+#include <boost/numeric/mtl/operation/givens.hpp>
 #include <boost/numeric/mtl/operation/two_norm.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
@@ -35,7 +35,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
                LeftPreconditioner &L, RightPreconditioner &R,
                Iteration& iter, typename mtl::Collection<Vector>::size_type kmax_in)
 {
-    using mtl::irange; using mtl::iall; using mtl::matrix::strict_upper; using std::abs; using std::sqrt;
+    using mtl::irange; using mtl::iall; using std::abs; using std::sqrt;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -80,24 +80,26 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 
         //k givensrotationen
 	for(Size i= 0; i < k; i++) {
-	    w1= c[i]*H[i][k]-s[i]*H[i+1][k];  // shouldn't c and s depend on H?
-	    w2= s[i]*H[i][k]+c[i]*H[i+1][k];
-	    H[i][k]= w1;
-	    H[i+1][k]= w2;
+	    mtl::matrix::givens<mtl::dense2D<Scalar> >(H, H[i][k-1], H[i+1][k-1]).trafo(i);
+// 	    w1= c[i]*H[i][k]-s[i]*H[i+1][k];  // shouldn't c and s depend on H?
+// 	    w2= s[i]*H[i][k]+c[i]*H[i+1][k];
+// 	    H[i][k]= w1;
+// 	    H[i+1][k]= w2;
 	}
-        nu= sqrt(H[k][k]*H[k][k]+H[k+1][k]*H[k+1][k]);
-        if(nu != zero){
+	
+       nu= sqrt(H[k][k]*H[k][k]+H[k+1][k]*H[k+1][k]);
+       if(nu != zero){
             c[k]=  H[k][k]/nu;
             s[k]= -H[k+1][k]/nu;
             H[k][k]=c[k]*H[k][k]-s[k]*H[k+1][k];
             H[k+1][k]=0;
-	    w1= c[k]*g[k]-s[k]*g[k+1]; //given's rotation on solution
-            w2= s[k]*g[k]+c[k]*g[k+1];
-            g[k]= w1;
-            g[k+1]= w2;
+	    mtl::vector::givens<mtl::dense_vector<Scalar> >(g, c[k], s[k]).trafo(k);
+// 	    w1= c[k]*g[k]-s[k]*g[k+1]; //given's rotation on solution
+//          w2= s[k]*g[k]+c[k]*g[k+1]; //rotation on vector
+//          g[k]= w1;
+//          g[k+1]= w2;
         }
 	rho= abs(g[k+1]);
-	std::cout<< "internes k=" << k << "\n";
     }
 
     //reduce k, to get regular matrix
