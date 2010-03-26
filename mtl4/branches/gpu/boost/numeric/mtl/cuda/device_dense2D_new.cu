@@ -20,7 +20,7 @@ namespace mtl { namespace cuda {
 
 template <typename T>
 T* device_dense2D_new(int num_cols, int num_rows)
-{
+{   
     T* pointer;
     cudaMalloc(reinterpret_cast<void **>(&pointer), sizeof(T) * num_cols * num_rows);
     return pointer;
@@ -28,7 +28,7 @@ T* device_dense2D_new(int num_cols, int num_rows)
 
 template <typename T>
 T* device_dense2D_new(const T& value, int num_cols, int num_rows)
-{
+{   
     T* pointer= device_dense2D_new<T>(num_cols, num_rows);
 
     // copy value to first entry and replicate it
