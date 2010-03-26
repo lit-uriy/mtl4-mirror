@@ -31,48 +31,69 @@ namespace mtl { namespace matrix {
 // QR-Factorization of matrix A
 // Return A  with R=triu(A) and L=tril(A,-1) L in form of Householder-vectors
 template <typename Matrix>
-Matrix inline qr(const Matrix& A)
+std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
+	  typename mtl::dense2D<typename Collection<Matrix>::value_type> >
+	inline qr(const Matrix& A)
 {
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A), mini;
     value_type       zero= math::zero(A[0][0]);
-    Matrix           B(A);
+    Matrix           R(A), Q(ncols,ncols);
 
+    Q= 1;
+    std::cout<< "Q=\n" << Q << "\n";
     if ( nrows < ncols ) throw mtl::logic_error("underdetermined system, use trans(A) instead of A");
-    mini= nrows;
+    if(ncols == nrows)
+	mini= nrows - 1;
+    else
+	mini= nrows;
 
-    for (size_type i = 0; i < min(ncols, nrows); i++) {
+    for (size_type i = 0; i < mini; i++) {
 	irange r(i, imax); // Intervals [i, n-1]
-	dense_vector<value_type>     v(nrows-i, zero), w(nrows-i, zero);
+	dense_vector<value_type>     v(nrows-i, zero), tmp(nrows-i, zero), qtmp(nrows, zero), w(nrows-i, zero);
 
 	for (size_type j = 0; j < size(w); j++)
-	    w[j]= B[j+i][i];
-        value_type beta= householder(w).second;
-        v= householder(w).first;
-	std::cout<< "beta=" << beta << "\n";
+	    w[j]= R[j+i][i];
+        v= householder_s(w);
 	std::cout<< "v=" << v << "\n";
-        if ( beta != zero ){
-	    //w= beta*trans(v)*A[r][r];//  trans(Vector)*Matrix=Vector?
-	    for(size_type k = 0; k < ncols-i; k++){
-		w[k]= zero;
-		for(size_type j = 0; j < nrows-i; j++){
-		    w[k] += beta * v[j] * B[j+i][k+i];
-		}
-	    }
-	    //rank_one_update(A[r][r], -v, w);  zu tun
-	    for(size_type row = i; row < nrows; row++){
-		for(size_type col = i; col < ncols; col++){
-		    B[row][col] -= v[row-i] * w[col-i];
-		}
-	    }
-	    //columm i+1
-	    // B[irange(i+1, nrows)][i]= v[irange(1, nrows-1)];
-	    for (size_type k = i+1; k < nrows; k++)
-		B[k][i]= v[k-i];
+
+
+	//work for monday  do rectangel matrix
+	for (size_type a= 0; a < nrows-i; a++){
+		for (size_type b= 0; b < ncols-i; b++){
+			tmp[a]-= v[b]*R[b+i][a+i];   //chaNGE 	a and b
+		}	
 	}
+	std::cout<< "tmp=" << tmp << "\n";
+	for (size_type a= 0; a < ncols-i; a++){
+		for (size_type b= 0; b < nrows-i; b++){
+			R[a+i][b+i]= R[a+i][b+i] + 2 * v[a]*tmp[b]; 
+		}
+	}
+	
+	std::cout<< "vor update Q\n";
+	//update Q
+	for (size_type a= 0; a < nrows; a++){
+		for (size_type b= i; b < ncols; b++){
+// 			std::cout<< "Q["<< a << "][" << b << "]=" << Q[a][b] << "\n";
+			qtmp[a]+= v[b-i]*Q[a][b]; 
+		}	
+	}
+	std::cout<< "qtemp= " << qtmp << "\n";
+	
+	for (size_type a= 0; a < nrows; a++){
+		for (size_type b= i; b < ncols; b++){
+//   			std::cout<< "Q["<< a << "][" << b << "]=" << Q[a][b] << "\n";
+			Q[a][b]=Q[a][b]- 2* qtmp[a] * v[b-i]; 
+		}	
+	}
+	std::cout << "Q=\n" << Q << "\n";
+	std::cout << "R=\n" << R << "\n";
+
+      
     }
-    return B;
+    return std::make_pair(Q,R);
 }
 
 

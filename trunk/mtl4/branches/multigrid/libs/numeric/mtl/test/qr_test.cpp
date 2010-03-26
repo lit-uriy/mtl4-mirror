@@ -48,6 +48,7 @@ int test_main(int argc, char* argv[])
     dr[2][1]=-2;
     dr[2][2]=1;
     dr[3][3]=-10;
+
     //dr[4][3]=4;
     //dr[2][3]=3;
     std::cout<<"MAtrix=\n"<< dr <<"\n";
@@ -55,12 +56,12 @@ int test_main(int argc, char* argv[])
     std::cout<<"START--------------\n";
 
    
-R= qr(dr);
+    boost::tie(Q, R)= qr(dr);
     std::cout<<"MAtrix  R=\n"<< R <<"\n";
-    boost::tie(Q, R)= qr_factors(dr);
-    std::cout<<"MAtrix  R=\n"<< R <<"\n";
-     std::cout<<"MAtrix  Q=\n"<< Q <<"\n";
-    std::cout<<"MAtrix  A=Q*R--outside\n"<< Q*R <<"\n";
+    std::cout<<"MAtrix  Q=\n"<< Q <<"\n";
+    std::cout<<"MAtrix  Q*R=\n"<< Q*R <<"\n";
+//     boost::tie(Q, R)= qr_factors(dr);
+ 
 #if 0
     dz[0][0]=complex<double>(1.0, 0.0);
     dz[0][1]=complex<double>(1.0, 0.0);
