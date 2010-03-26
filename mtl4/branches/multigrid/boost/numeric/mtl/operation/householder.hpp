@@ -45,11 +45,37 @@ std::cout<< "h_s=" << s << "\n";
         b= zero;
     else {
 	value_type mu= sqrt(y[0] * y[0] + s);
-	v0= v[0]= y[0] < zero ? y[0] - mu : -s / (y[0] + mu); // komplex < zero????
+	v0= v[0]= y[0] <= zero ? y[0] - mu : -s / (y[0] + mu); // komplex < zero????
 	b= 2 * v0 * v0 / (s + v0 * v0);                       // 2* komplex???????
 	v/= v0;                                               // normalization of the first entry
     }
+    std::cout<< "v= " << v << "\n";
+
     return std::make_pair(v,b);
+}
+
+template <typename Vector>
+typename mtl::dense_vector<typename Collection<Vector>::value_type>
+inline householder_s(Vector& y)
+{
+    typedef typename  Collection<Vector>::value_type   value_type;
+    typedef typename  Collection<Vector>::size_type    size_type;
+    const value_type  zero= math::zero(y[0]);
+
+    Vector            u(y);
+    value_type        nu(sqrt( dot(u, u) )), s;
+
+    if (nu != zero){
+	if(u[0] < 0){
+		s= -1;
+	} else {
+		s= 1; 
+	}
+	u[0]= u[0] + s * nu;
+	u/= sqrt( dot(u, u) );
+    }
+std::cout<< "u=" << u << "\n";
+    return u;
 }
 
 
