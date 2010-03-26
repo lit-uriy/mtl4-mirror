@@ -43,7 +43,7 @@ void test(const char* name)
 {
     typedef mtl::cuda::vector<T>   vt;
 
-    int critic_point=33553919, gross= 53553919;//critic_point+1;
+    int critic_point=33553919, gross=53553919;
     
     std::cout << name << "-- Vector Test\n"; 
     mtl::cuda::vector<T>  x(gross, 33), y(gross, 10, false), z(gross, 3);

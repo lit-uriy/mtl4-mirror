@@ -31,7 +31,6 @@ template <typename T>
 class dense2D
 {
     typedef dense2D<T>                self;
-    //friend self & operator+(const self & , const self & );
   public:
     typedef T                        value_type;
 
@@ -244,8 +243,6 @@ class dense2D
 	int temp(num_row*num_rows + num_col);
 	cudaMemcpy(dptr+ temp , &scr, sizeof(T), cudaMemcpyHostToDevice);  //set on device
 	
-	on_host= false;
-		
 	return *this;
     }
 
@@ -293,12 +290,18 @@ class dense2D
 	return temp;
     }
 
-    void set_to_zero() 
+    void set_to_zero(bool set_on_host= false) 
     {
 	start[0][0]= T(0);
 	
-	on_host= false;
+	//memset(start,0,sizeof(T)*num_cols*num_rows)
+	
+	on_host= set_on_host;
        
+	
+	
+	
+	
 	cudaMemcpy(dptr , &start[0][0], sizeof(T), cudaMemcpyHostToDevice);
 	for (int i= 1; i < num_cols; i++){
 	    cudaMemcpy(dptr + i, dptr, sizeof(T), cudaMemcpyDeviceToDevice);
@@ -374,6 +377,7 @@ class dense2D
    
    void to_host() const
     {
+	    std::cout<< "start to host\n";
 	if (!on_host) {
 	    int temp= 0;
 	    for (int i= 0; i < num_rows; i++){
@@ -384,6 +388,7 @@ class dense2D
 	    }
 	 const_cast<self*>(this)->on_host= true;   
 	}
+	std::cout<< "ende to host\n";
     }
 
     void replicate_on_host() const
