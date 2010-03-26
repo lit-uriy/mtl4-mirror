@@ -42,15 +42,16 @@ Matrix inline qr(const Matrix& A)
     if ( nrows < ncols ) throw mtl::logic_error("underdetermined system, use trans(A) instead of A");
     mini= nrows;
 
-    for (size_type i = 0; i < mini; i++) {
+    for (size_type i = 0; i < min(ncols, nrows); i++) {
 	irange r(i, imax); // Intervals [i, n-1]
-	dense_vector<value_type>     v(nrows-i), w(nrows-i);
+	dense_vector<value_type>     v(nrows-i, zero), w(nrows-i, zero);
 
 	for (size_type j = 0; j < size(w); j++)
 	    w[j]= B[j+i][i];
         value_type beta= householder(w).second;
         v= householder(w).first;
-
+	std::cout<< "beta=" << beta << "\n";
+	std::cout<< "v=" << v << "\n";
         if ( beta != zero ){
 	    //w= beta*trans(v)*A[r][r];//  trans(Vector)*Matrix=Vector?
 	    for(size_type k = 0; k < ncols-i; k++){

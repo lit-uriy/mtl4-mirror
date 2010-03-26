@@ -34,9 +34,11 @@ inline householder(Vector& y)
 
     Vector            v(y);
     v[0]= one;
-
+std::cout<< "h_v=" << v << "\n";
+std::cout<< "h_y=" << y << "\n";    
     irange            tail(1, imax); 
     value_type        s( dot(v[tail], v[tail]) ), b, v0;
+std::cout<< "h_s=" << s << "\n";    
 
     //evaluation of v and b
     if (s == zero)
