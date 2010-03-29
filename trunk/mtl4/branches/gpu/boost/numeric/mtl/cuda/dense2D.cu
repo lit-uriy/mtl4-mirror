@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <string.h>
 
 #include <boost/numeric/mtl/cuda/config.cu>
 #include <boost/numeric/mtl/cuda/device_dense2D_new.cu>
@@ -43,10 +44,15 @@ class dense2D
 //      start((T **)malloc(num_rows*sizeof(T*))),
       dptr(device_dense2D_new<T>(num_rows, num_cols)),
       on_host(on_host) 
-    {  // Allocation
-      for(int i= 0; i < num_rows; i++)
-	  start[i] = new T [num_cols];
-	//	start[i] = (T *)malloc(num_cols*sizeof(T));
+    {  //T *tmp = (T*)malloc(sizeof(T) * (num_rows* num_cols));
+       //memset(tmp, 0x0, sizeof(T) * (num_rows* num_cols));
+       
+	// Allocation
+      for(int i= 0; i < num_rows; i++){
+	start[i] =  new T [num_cols];  // start[i] =  tmp + i * num_cols;
+	memset(start[i], 0x0, sizeof(T) * num_cols);
+      }
+//    start[i] = (T *)malloc(num_cols*sizeof(T));
 //    set_to_zero();  //evtl sparen  ?????
       
     } 
@@ -246,8 +252,6 @@ class dense2D
 	return *this;
     }
 
-
-
     T& operator()(int num_row, int num_col) {
 	assert(num_row >= 0 && num_row < num_rows && num_col >= 0 && num_col < num_cols);	
 	to_host();
@@ -272,34 +276,40 @@ class dense2D
     Vector operator * (const Vector& x)
     {	
 	assert(num_rows >= 0 && num_rows == size(x));
-	Vector temp(size(x), 0);
- 	temp.on_host= !(x.valid_device() && (*this).valid_device());
-	if (temp.on_host){
+	Vector tmp(size(x), 0);
+ 	tmp.on_host= !(x.valid_device() && (*this).valid_device());
+	if (tmp.on_host){
+	    std::cout << "Multiplication on host.\n";
 	    for (int i= 0; i < size(x); i++){
 		for (int j= 0; j < size(x); j++){
-		    temp[i]+= start[i][j]* x[j];
+		    tmp[i]+= start[i][j]* x[j];
 		}
+//		std::cout << "Tmp["<<i<<"]="<<tmp[i]<<"\n";
 	    }
 	} else {
 // 	    std::cout<< "mat_vec_mult auf device\n";
-	    temp.to_device(); // if not yet there
+	    tmp.to_device(); // if not yet there
 	    dim3 dimGrid(num_cols/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
 // 	    std::cout<< "num_cols/BLOCK_SIZE=" << num_cols/BLOCK_SIZE+1 << "\n";
-	    mat_vec_mult<value_type, value_type><<<dimGrid, dimBlock>>>(temp.dptr, dptr, x.dptr, num_rows, num_cols);
+	    mat_vec_mult<value_type, value_type><<<dimGrid, dimBlock>>>(tmp.dptr, dptr, x.dptr, num_rows, num_cols);
 	}
-	return temp;
+	return tmp;
     }
 
     void set_to_zero(bool set_on_host= false) 
-    {
+    {  
+	on_host= set_on_host;
+	std::cout<< "set to zero\n";
 	start[0][0]= T(0);
 	
-	//memset(start,0,sizeof(T)*num_cols*num_rows)
+//	if(on_host == true) memset(*start,0x0,sizeof(T)*num_cols*num_rows); // #include <string.h>
 	
-	on_host= set_on_host;
-       
+
 	
-	
+	if(on_host == false){
+	// copy value to first entry and replicate it
+//	cudaMemcpy(dptr, &start[0][0], sizeof(T), cudaMemcpyHostToDevice);
+//	cudaMemcpy(dptr + 1, dptr, (num_cols*num_rows-1) * sizeof(T), cudaMemcpyDeviceToDevice);
 	
 	
 	cudaMemcpy(dptr , &start[0][0], sizeof(T), cudaMemcpyHostToDevice);
@@ -308,6 +318,9 @@ class dense2D
 	} //first Line is zero
 	for (int i= 1; i < num_rows; i++){
 	      cudaMemcpy(dptr + num_cols*i, dptr, sizeof(T)*num_cols, cudaMemcpyDeviceToDevice);
+	}
+
+	
 	}
 	
     }
@@ -371,13 +384,9 @@ class dense2D
      
    } 
    
-   
-   
-   
-   
+     
    void to_host() const
     {
-	    std::cout<< "start to host\n";
 	if (!on_host) {
 	    int temp= 0;
 	    for (int i= 0; i < num_rows; i++){
@@ -388,7 +397,6 @@ class dense2D
 	    }
 	 const_cast<self*>(this)->on_host= true;   
 	}
-	std::cout<< "ende to host\n";
     }
 
     void replicate_on_host() const
