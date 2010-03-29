@@ -65,23 +65,25 @@ void test(const char* name)
   
   
     typedef mtl::cuda::dense2D<T>   dense;
-    int size= 30000;  //32532 =  limit
+    int size= 10000;  //32532 =  limit
     std::cout << name << "-- Matrix Test\n"; 
     mtl::cuda::dense2D<T>  A(size, size);
     mtl::cuda::vector<T>  x(size, 1.0), b(size, 0.0); 
      
     A.set_to_zero(true);
+//  print(A); 
  
     std::cout << "Matrix constructed.\n";
     std::cout << "Matrix Dimension. "<<size<<"x"<<size<<"\n";
-    std::cout << "Matrix Elements= "<<size*size<<"\n\n";
+    std::cout << "Matrix Elements= "<<size*size<<"\n";
+    std::cout << "Matrix on host= "<< (A.valid_host()==true ?  "Yes\n\n" : "No\n\n");
     
 //    std::cout << "A.num_cols= "<< num_cols(A)<<"\nA.num_rows= " <<num_rows(A)<<"\n";
 //  std::cout << "Matrix constructed.\n" << "A=" << A << "\n";
 
             
 //    std::cout << "const A(0,0) == " << size << '\n';
-     A.to_host();
+//     A.to_host();
 
     for (int i= 0; i < size; i++){
 //       std::cout<< "i="  << A(i,i) << "\n";
@@ -89,6 +91,7 @@ void test(const char* name)
     }
     A(2,0,size-1);
     A(2,size-1,0);
+
     
 //    A(0,0,3); for testing "elemenst(A)"
 
@@ -110,7 +113,7 @@ std::cout<< "start multiplication\n";
       if (b[0] != T(4) || b[1]!=T(2))
  	std::cout<< "Error Matrix vector multiplication on device.\n";
       else
-	std::cout<< "Without problems.\n";  
+	std::cout<< "Multiplication Without problems.\n";  
 ///End Vector = Matrix x Vector
 
 
