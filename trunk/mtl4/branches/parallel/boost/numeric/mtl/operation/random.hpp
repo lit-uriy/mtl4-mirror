@@ -92,14 +92,8 @@ namespace vector {
     typename mtl::traits::enable_if_vector<Vector>::type
     inline random(Vector& v, Generator& generator) 
     {
-#if 1
 	typename traits::category<Vector>::type cat;
 	mtl::impl::random(v, generator, cat, cat);
-#else
-	typedef typename Collection<Vector>::size_type size_type;
-	for (size_type i= 0; i < size(v); i++)
-	    v[i]= generator();
-#endif
     }
 
     /// Fill vector with random values.
@@ -123,16 +117,8 @@ namespace matrix {
     typename mtl::traits::enable_if_matrix<Matrix>::type
     inline random(Matrix& A, Generator& generator) 
     {
-#if 1
 	typename mtl::traits::category<Matrix>::type cat;
 	mtl::impl::random(A, generator, cat, cat);
-#else
-	typedef typename Collection<Matrix>::size_type size_type;
-	inserter<Matrix> ins(A, A.dim2());
-	for (size_type r= 0; r < num_rows(A); r++)
-	    for (size_type c= 0; c < num_cols(A); c++)
-		ins[r][c] << generator();
-#endif
     }
 
     /// Fill matrix with random values.

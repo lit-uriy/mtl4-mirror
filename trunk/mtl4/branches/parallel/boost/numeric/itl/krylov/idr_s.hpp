@@ -59,14 +59,12 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	dX.vector(k)= omega * r;
 	dR.vector(k)= -omega * v;
 	x+= dX.vector(k); 
-	// iter.out << "x is " << x << '\n';
 	r+= dR.vector(k);
 	++iter;
 	if (iter.finished(r))
 	    return iter;
 	M[iall][k]= trans(P) * dR.vector(k); 
     }
-    iter.out << "M is\n" << M;
 
     Size oldest= 0;
     m= trans(P) * r;
@@ -75,11 +73,8 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
     while (! iter.finished(r)) {
 	for (size_t k= 0; k < s; k++) {
 	    c= lu_solve(M, m);
-	    iter.out << "c is " << c << '\n';
 	    q= dR * -c;    
-	    iter.out << "q is " << q << '\n';
 	    v= r + q;
-	    iter.out << "v is " << v << '\n';
 	    if (k == 0) {
 		t= A * v;
 		omega= dot(t, v) / dot(t, t);
@@ -96,7 +91,6 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	    }
 	    r+= dR.vector(oldest);
 	    x+= dX.vector(oldest);
-	    iter.out << "x is " << x << '\n';
 
 	    ++iter;
 	    if (iter.finished(r))
