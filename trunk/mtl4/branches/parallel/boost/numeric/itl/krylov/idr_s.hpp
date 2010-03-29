@@ -59,33 +59,44 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	dX.vector(k)= omega * r;
 	dR.vector(k)= -omega * v;
 	x+= dX.vector(k); 
+	// iter.out << "x is " << x << '\n';
 	r+= dR.vector(k);
+	++iter;
 	if (iter.finished(r))
 	    return iter;
 	M[iall][k]= trans(P) * dR.vector(k); 
     }
+    iter.out << "M is\n" << M;
 
     Size oldest= 0;
-    iter+= s;
     m= trans(P) * r;
 
+    Vector                      vzero(resource(x), zero); // to do: only emergency solution
     while (! iter.finished(r)) {
-       
 	for (size_t k= 0; k < s; k++) {
 	    c= lu_solve(M, m);
+	    iter.out << "c is " << c << '\n';
 	    q= dR * -c;    
+	    iter.out << "q is " << q << '\n';
 	    v= r + q;
+	    iter.out << "v is " << v << '\n';
 	    if (k == 0) {
 		t= A * v;
 		omega= dot(t, v) / dot(t, t);
 		dR.vector(oldest)= q - omega * t;
-		dX.vector(oldest)= omega * v - dX * c;
+		// dX.vector(oldest)= omega * v - dX * c;
+		dX.vector(oldest)= omega * v;
+		dX.vector(oldest)-= dX * c;
 	    } else {
-		dX.vector(oldest)= omega * v - dX * c;
-		dR.vector(oldest)= A * -dX.vector(oldest);
+		// dX.vector(oldest)= omega * v - dX * c;
+		dX.vector(oldest)= omega * v;
+		dX.vector(oldest)-= dX * c;
+		// dR.vector(oldest)= A * -dX.vector(oldest);
+		dR.vector(oldest)= vzero - A * dX.vector(oldest); // to do: only emergency solution
 	    }
 	    r+= dR.vector(oldest);
 	    x+= dX.vector(oldest);
+	    iter.out << "x is " << x << '\n';
 
 	    ++iter;
 	    if (iter.finished(r))
@@ -97,6 +108,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	    oldest= (oldest + 1) % s;
 	}
     }
+
     return iter;
 }
 

@@ -64,7 +64,7 @@ namespace itl {
 		  out.flush();	  
 	  return this->error;
       }
-    protected:
+      //protected:
       int        cycle, last_print;
       OStream&   out;
   };

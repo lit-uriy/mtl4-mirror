@@ -1284,6 +1284,11 @@ namespace mtl {
       : DistributedCollection<vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
     {};
 
+    template <typename Vector>
+    struct DistributedCollection<vector::negate_view<Vector> >
+      : DistributedCollection<vector::map_view<sfunctor::negate<typename Vector::value_type>, Vector> >
+    {};
+
 #endif
 
 
