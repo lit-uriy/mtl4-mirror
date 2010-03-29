@@ -54,6 +54,7 @@ std::cout<< "h_s=" << s << "\n";
     return std::make_pair(v,b);
 }
 
+//stabilere Householder transformation, auch für nicht-quadratische Matrizen
 template <typename Vector>
 typename mtl::dense_vector<typename Collection<Vector>::value_type>
 inline householder_s(Vector& y)
@@ -74,7 +75,6 @@ inline householder_s(Vector& y)
 	u[0]= u[0] + s * nu;
 	u/= sqrt( dot(u, u) );
     }
-std::cout<< "u=" << u << "\n";
     return u;
 }
 

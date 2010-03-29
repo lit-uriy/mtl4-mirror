@@ -28,6 +28,7 @@
 
 namespace mtl { namespace matrix {
 
+//TODO docu need to be changed
 // QR-Factorization of matrix A
 // Return A  with R=triu(A) and L=tril(A,-1) L in form of Householder-vectors
 template <typename Matrix>
@@ -39,59 +40,49 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A), mini;
     value_type       zero= math::zero(A[0][0]);
-    Matrix           R(A), Q(ncols,ncols);
+    Matrix           R(A), Q(nrows,nrows);
 
     Q= 1;
-    std::cout<< "Q=\n" << Q << "\n";
-    if ( nrows < ncols ) throw mtl::logic_error("underdetermined system, use trans(A) instead of A");
+   if ( nrows < ncols ) throw mtl::logic_error("underdetermined system, use trans(A) instead of A");
     if(ncols == nrows)
-	mini= nrows - 1;
+	mini= ncols - 1;
     else
-	mini= nrows;
+	mini= ncols;
 
     for (size_type i = 0; i < mini; i++) {
 	irange r(i, imax); // Intervals [i, n-1]
-	dense_vector<value_type>     v(nrows-i, zero), tmp(nrows-i, zero), qtmp(nrows, zero), w(nrows-i, zero);
-
+	dense_vector<value_type>     v(nrows-i, zero), tmp(ncols-i, zero), qtmp(nrows, zero), w(nrows-i, zero);
+	
 	for (size_type j = 0; j < size(w); j++)
 	    w[j]= R[j+i][i];
+
         v= householder_s(w);
-	std::cout<< "v=" << v << "\n";
 
-
-	//work for monday  do rectangel matrix
 	for (size_type a= 0; a < nrows-i; a++){
 		for (size_type b= 0; b < ncols-i; b++){
-			tmp[a]-= v[b]*R[b+i][a+i];   //chaNGE 	a and b
+			tmp[b]-= v[a]*R[a+i][b+i];
 		}	
 	}
-	std::cout<< "tmp=" << tmp << "\n";
-	for (size_type a= 0; a < ncols-i; a++){
-		for (size_type b= 0; b < nrows-i; b++){
+
+	for (size_type a= 0; a < nrows-i; a++){
+		for (size_type b= 0; b < ncols-i; b++){
 			R[a+i][b+i]= R[a+i][b+i] + 2 * v[a]*tmp[b]; 
 		}
 	}
-	
-	std::cout<< "vor update Q\n";
+
 	//update Q
 	for (size_type a= 0; a < nrows; a++){
-		for (size_type b= i; b < ncols; b++){
-// 			std::cout<< "Q["<< a << "][" << b << "]=" << Q[a][b] << "\n";
+		for (size_type b= i; b < nrows; b++){
 			qtmp[a]+= v[b-i]*Q[a][b]; 
 		}	
 	}
-	std::cout<< "qtemp= " << qtmp << "\n";
-	
+
 	for (size_type a= 0; a < nrows; a++){
-		for (size_type b= i; b < ncols; b++){
-//   			std::cout<< "Q["<< a << "][" << b << "]=" << Q[a][b] << "\n";
+		for (size_type b= i; b < nrows; b++){
 			Q[a][b]=Q[a][b]- 2* qtmp[a] * v[b-i]; 
 		}	
 	}
-	std::cout << "Q=\n" << Q << "\n";
-	std::cout << "R=\n" << R << "\n";
-
-      
+     
     }
     return std::make_pair(Q,R);
 }
@@ -113,14 +104,16 @@ inline qr_factors(const Matrix& A)
     value_type       zero= math::zero(A[0][0]), one= math::one(A[0][0]);
 
     //evaluation of Q
-    Matrix  Q(nrows, ncols), Qk(ncols, ncols), HEL(nrows, ncols), R(ncols, ncols), B(nrows, ncols);
+    Matrix  Q(nrows, nrows), Qk(nrows, nrows), HEL(nrows, ncols), R(nrows, ncols), R_tmp(nrows, ncols);
     Q= one; R= zero; HEL= zero;
 
-    B= qr(A);
+    boost::tie(Q, R_tmp)= qr(A);
+    R= upper(R_tmp);
+   
 
 //     for(size_type i = 0; i < ncols; i++)
 //         Q[i][i] = one;
-    
+ #if 0   
     for(size_type i = 0; i < nrows-1; i++){
         dense_vector<value_type>     z(nrows-i);
 	// z[irange(1, nrows-i-1)]= B[irange(i+1, nrows-1)][i];
@@ -129,12 +122,12 @@ inline qr_factors(const Matrix& A)
         }
         z[0]= one;
 	Qk= one;
-#if 0
+
         Qk= zero;
         for(size_type k = 0; k < ncols; k++){
             Qk[k][k]= one;
         }
-#endif
+
 	magnitude_type factor= magnitude_type(2) / abs(dot(z, z)); // abs: x+0i -> x
 	// Qk[irange(i, nrows)][irange(i, ncols)]-= factor * z[irange(0, nrows-i)] * trans(z[irange(0, ncols-i)]);
         for(size_type row = i; row < nrows; row++){
@@ -153,6 +146,7 @@ inline qr_factors(const Matrix& A)
             R[row][col]= B[row][col];
         }
     }
+#endif
     return std::make_pair(Q,R);
 }
 
