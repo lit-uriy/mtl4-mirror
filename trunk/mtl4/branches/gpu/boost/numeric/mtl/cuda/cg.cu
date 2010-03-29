@@ -44,11 +44,15 @@ void short_print2(const Vector& v)
 template < typename LinearOperator, typename VectorX, typename VectorB >
 int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
 {
-  std::cout<< "CG START\n"; 
+  std::cout<< "CUDA CG START\n"; 
   typedef typename mtl::Collection<VectorX>::value_type  Scalar;
-  scalar<Scalar> rho(0), rho_1(0), alpha(0), beta(0), temp(0);
+  scalar<Scalar> rho(0), rho_1(0), alpha(0), beta(0), tmp(0);
   VectorX p(size(x)), q(size(x)), r(size(x)), z(size(x)), s(size(x)), t(size(x));
-
+//  mtl::cuda::vector<VectorX> p(size(x)), q(size(x)), r(size(x)), z(size(x)), s(size(x)), t(size(x));
+  
+  
+//  p.to_device; //q.to_device; r.to_device; z.to_device; s.to_device; t.to_device; 
+  
     double norm(1);
     p= A*x;
     r= b - p;	
@@ -65,24 +69,26 @@ int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
 	    p= r+p;
 	}	
 	q = A * p;
-	// temp = dot(p, q);
+	// tmp = dot(p, q);
 	alpha = rho.value() / dot(p, q);
 	s= p;
 	t= q;
       
 	s*=  alpha.value();
 	t*=  alpha.value();
-	//x += alpha * p;
-	//r -= alpha * q;
+
+//	x += p* alpha.value();
+//	r -= q* alpha.value();
+
 	x= x + s;
 	r= r - t;
 	rho_1 = rho;      
 	++i;
 	norm= sqrt(dot(r,r));
-	if (i % 20 == 0)
+	if (!(i % 20))
 	    std::cout<< "iteration "<< i <<": norm residum=" << norm << "\n";
     }
-    std::cout<< "\n\nAll without problems\n";
+    std::cout<< "\n\nAll done without problems\n";
     return iter;
 }
 
