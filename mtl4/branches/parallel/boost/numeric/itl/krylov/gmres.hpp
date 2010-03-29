@@ -55,6 +55,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     if (iter.finished(rho))
 	return iter;
     V.vector(0)= r / rho;
+    H= zero;
 
     // GMRES iteration
     for (k= 0; rho >= iter.atol() && k < kmax; k++, ++iter) {
@@ -113,17 +114,10 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     if (range.empty())
         return iter.fail(1, "GMRES did not find any direction to correct x");
 	
-
-    Vector xyz(x);
-    std::cout << "Distribution V[0] " << distribution(V.vector(0)) << "\n";
-    std::cout << "Row Distribution V " << row_distribution(V) << "\n";
-#if 0
-    std::cout << "Col Distribution V " << col_distribution(V) << "\n";
-    std::cout << "Distribution y " << distribution(y) << "\n";
-    std::cout << "Distribution " << distribution(V * y) << "\n";
-    //x+= solve(R, Vector(V.vector(range)*y[range]));
-    xyz= V.vector(range)*y[range];
-#endif
+    // x+= solve(R, Vector(V.vector(range)*y[range])); // doesn't work as one expression in parallel yet
+    Vector Vy(resource(x));
+    Vy= V.vector(range)*y[range];
+    x+= solve(R, Vy);
 
     r= b - A*x;
     if (!iter.finished(r))
