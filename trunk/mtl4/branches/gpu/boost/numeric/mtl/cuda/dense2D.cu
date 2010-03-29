@@ -41,20 +41,14 @@ class dense2D
       num_rows(num_rows),
       num_cols(num_cols), 
       start(new T* [num_rows]),
-//      start((T **)malloc(num_rows*sizeof(T*))),
       dptr(device_dense2D_new<T>(num_rows, num_cols)),
       on_host(on_host) 
-    {  //T *tmp = (T*)malloc(sizeof(T) * (num_rows* num_cols));
-       //memset(tmp, 0x0, sizeof(T) * (num_rows* num_cols));
-       
-	// Allocation
+    { // Matrix Allocation
       for(int i= 0; i < num_rows; i++){
 	start[i] =  new T [num_cols];  // start[i] =  tmp + i * num_cols;
 	memset(start[i], 0x0, sizeof(T) * num_cols);
       }
-//    start[i] = (T *)malloc(num_cols*sizeof(T));
-//    set_to_zero();  //evtl sparen  ?????
-      
+
     } 
 
     ~dense2D() {
@@ -245,9 +239,10 @@ class dense2D
     {   
 	assert(num_row >= 0 && num_row < num_rows && num_col >= 0 && num_col < num_cols);
 	start[num_row][num_col]= scr;  //set on host
+	
+	int tmp=num_row*num_rows + num_col;
 
-	int temp(num_row*num_rows + num_col);
-	cudaMemcpy(dptr+ temp , &scr, sizeof(T), cudaMemcpyHostToDevice);  //set on device
+	cudaMemcpy(dptr+ tmp , &scr, sizeof(T), cudaMemcpyHostToDevice);  //set on device
 	
 	return *this;
     }
@@ -279,18 +274,15 @@ class dense2D
 	Vector tmp(size(x), 0);
  	tmp.on_host= !(x.valid_device() && (*this).valid_device());
 	if (tmp.on_host){
-	    std::cout << "Multiplication on host.\n";
 	    for (int i= 0; i < size(x); i++){
 		for (int j= 0; j < size(x); j++){
 		    tmp[i]+= start[i][j]* x[j];
 		}
-//		std::cout << "Tmp["<<i<<"]="<<tmp[i]<<"\n";
 	    }
+	    
 	} else {
-// 	    std::cout<< "mat_vec_mult auf device\n";
 	    tmp.to_device(); // if not yet there
 	    dim3 dimGrid(num_cols/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
-// 	    std::cout<< "num_cols/BLOCK_SIZE=" << num_cols/BLOCK_SIZE+1 << "\n";
 	    mat_vec_mult<value_type, value_type><<<dimGrid, dimBlock>>>(tmp.dptr, dptr, x.dptr, num_rows, num_cols);
 	}
 	return tmp;
@@ -299,19 +291,20 @@ class dense2D
     void set_to_zero(bool set_on_host= false) 
     {  
 	on_host= set_on_host;
-	std::cout<< "set to zero\n";
 	start[0][0]= T(0);
 	
-//	if(on_host == true) memset(*start,0x0,sizeof(T)*num_cols*num_rows); // #include <string.h>
-	
-
+	if(on_host == true)
+	    for(int i= 0; i < num_rows; i++)
+		memset(start[i], 0x0, sizeof(T) * num_cols);
+	    
 	
 	if(on_host == false){
-	// copy value to first entry and replicate it
+
+// 	copy value to first entry and replicate it
 //	cudaMemcpy(dptr, &start[0][0], sizeof(T), cudaMemcpyHostToDevice);
 //	cudaMemcpy(dptr + 1, dptr, (num_cols*num_rows-1) * sizeof(T), cudaMemcpyDeviceToDevice);
-	
-	
+
+
 	cudaMemcpy(dptr , &start[0][0], sizeof(T), cudaMemcpyHostToDevice);
 	for (int i= 1; i < num_cols; i++){
 	    cudaMemcpy(dptr + i, dptr, sizeof(T), cudaMemcpyDeviceToDevice);
