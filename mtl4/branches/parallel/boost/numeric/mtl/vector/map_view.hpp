@@ -66,14 +66,28 @@ struct map_view
     const_reference operator() (size_type i) const { return functor(ref(i)); }
     const_reference operator[] (size_type i) const { return functor(ref[i]); }
     void delay_assign() const {}
+
+    // might need refactoring (e.g. with sub_vector traits/concept)
+    self operator[] (irange r) { return self(functor, ref[r]); }
     
     template <typename, typename> friend struct detail::map_value;
     template <typename F, typename C> friend typename DistributedCollection< map_view<F, C> >::local_type local(const map_view<F, C>&);    
 
+    template <typename F, typename C> friend map_view<F, typename C::buffer_type> inline send_buffer(const map_view<F, C>& v);
+    template <typename F, typename C> friend map_view<F, typename C::buffer_type> inline recv_buffer(const map_view<F, C>& v);
+
 #if 0
     template <typename F, typename C> 
-    friend typename DistributedVector< map_view<F, C> >::distribution_type
-    distribution(const map_view<F, C>& expr);
+    friend map_view<F, typename C::buffer_type> inline send_buffer(const map_view<F, C>& v) 
+    { 
+	return map_view<F, typename C::buffer_type>(v.functor, send_buffer(v.ref)); 
+    }
+
+    template <typename F, typename C> 
+    friend map_view<F, typename C::buffer_type> inline recv_buffer(const map_view<F, C>& v) 
+    { 
+	return map_view<F, typename C::buffer_type>(v.functor, recv_buffer(v.ref)); 
+    }
 #endif
 
     typename boost::add_reference<const ref_type>::type reference() const { return ref; }
@@ -90,15 +104,17 @@ struct map_view
 // Free functions
 // ================
 
-#if 0
-template <typename Functor, typename Vector>
-typename boost::add_reference<typename mtl::traits::distribution<map_view<Functor, Vector> >::type const>::type 
-inline distribution(const map_view<Functor, Vector>& v)
-{
-    return distribution(v.reference());
-}
-#endif
+    template <typename F, typename C> 
+    map_view<F, typename C::buffer_type> inline recv_buffer(const map_view<F, C>& v) 
+    { 
+	return map_view<F, typename C::buffer_type>(v.functor, recv_buffer(v.ref)); 
+    }
 
+    template <typename F, typename C> 
+    map_view<F, typename C::buffer_type> inline send_buffer(const map_view<F, C>& v) 
+    { 
+	return map_view<F, typename C::buffer_type>(v.functor, send_buffer(v.ref)); 
+    }
 
     namespace detail {
 

@@ -19,14 +19,71 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+
+#ifdef MTL_HAS_MPI
+#  include <boost/mpi/communicator.hpp>
+#endif
 
 namespace mtl {
 
 template <typename T> 
 struct seed 
 {
+
+#ifdef MTL_HAS_MPI
+    seed() { boost::mpi::communicator comm; srand(17 * ++counter + 123 * comm.rank()); }
+#else
+    seed() { srand(17 * ++counter); }
+#endif
+
     T operator()() const { return rand(); }
+
+    static int counter;
 };
+
+template <typename T> 
+int seed<T>::counter= 0;
+
+
+namespace impl {
+
+    // all distributed collections, multi-vectors of dist. vectors are considered concentrated
+    template <typename Coll, typename Generator>
+    void inline random(Coll& c, Generator& generator, tag::distributed, tag::universe)
+    {
+	random(local(c), generator);
+    }
+
+    // all non-distributed matrices except multi-vectors
+    template <typename Coll, typename Generator>
+    void inline random(Coll& A, Generator& generator, tag::concentrated, tag::matrix)
+    {
+	typedef typename Collection<Coll>::size_type size_type;
+	matrix::inserter<Coll> ins(A, A.dim2());
+	for (size_type r= 0; r < num_rows(A); r++)
+	    for (size_type c= 0; c < num_cols(A); c++)
+		ins[r][c] << generator();
+    }
+    
+    template <typename Coll, typename Generator>
+    void inline random(Coll& A, Generator& generator, tag::concentrated, tag::multi_vector)
+    {
+	for (typename Collection<Coll>::size_type i= 0; i < num_cols(A); ++i)
+	    random(A.vector(i));
+    }	
+
+    // all non-distributed vectors
+    template <typename Coll, typename Generator>
+    void inline random(Coll& v, Generator& generator, tag::concentrated, tag::vector)
+    {
+	for (typename Collection<Coll>::size_type i= 0; i < size(v); i++)
+	    v[i]= generator();
+    }
+
+} // namespace impl
+
 
 namespace vector {
 
@@ -35,9 +92,14 @@ namespace vector {
     typename mtl::traits::enable_if_vector<Vector>::type
     inline random(Vector& v, Generator& generator) 
     {
+#if 1
+	typename traits::category<Vector>::type cat;
+	mtl::impl::random(v, generator, cat, cat);
+#else
 	typedef typename Collection<Vector>::size_type size_type;
 	for (size_type i= 0; i < size(v); i++)
 	    v[i]= generator();
+#endif
     }
 
     /// Fill vector with random values.
@@ -61,11 +123,16 @@ namespace matrix {
     typename mtl::traits::enable_if_matrix<Matrix>::type
     inline random(Matrix& A, Generator& generator) 
     {
+#if 1
+	typename mtl::traits::category<Matrix>::type cat;
+	mtl::impl::random(A, generator, cat, cat);
+#else
 	typedef typename Collection<Matrix>::size_type size_type;
 	inserter<Matrix> ins(A, A.dim2());
 	for (size_type r= 0; r < num_rows(A); r++)
 	    for (size_type c= 0; c < num_cols(A); c++)
 		ins[r][c] << generator();
+#endif
     }
 
     /// Fill matrix with random values.

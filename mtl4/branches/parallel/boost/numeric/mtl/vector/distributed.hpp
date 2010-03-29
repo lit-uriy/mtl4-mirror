@@ -163,7 +163,7 @@ protected:
     size_type           gsize;
     distribution_type   dist;
     local_type          local_vector;
-    mutable dense_vector<value_type> send_buffer, recv_buffer;
+    mutable buffer_type send_buffer, recv_buffer;
 };
 
 template <typename DistributedVector, 

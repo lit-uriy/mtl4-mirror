@@ -23,7 +23,7 @@ namespace mpi = boost::mpi;
     {									\
 	sos << "\n\n" << name << "\n";					\
 	x= 0.01;							\
-	itl::cyclic_iteration<double, mtl::par::single_ostream> iter(b, N, 1.e-4, 0.0, 5, sos); \
+	itl::cyclic_iteration<double, mtl::par::single_ostream> iter(b, 13, 1.e-4, 0.0, 1, sos); \
 	int codep, codes;						\
         try {								\
 	    codep= solver argp;						\
@@ -33,7 +33,7 @@ namespace mpi = boost::mpi;
 	}								\
 									\
 	xs= 0.01;							\
-        itl::cyclic_iteration<double, mtl::par::single_ostream> iters(bs, N, 1.e-4, 0.0, 10, sos); \
+        itl::cyclic_iteration<double, mtl::par::single_ostream> iters(bs, N, 1.e-4, 0.0, 1, sos); \
         try {								\
 	    codes= solver args;						\
 	} catch (...) {							\
@@ -93,10 +93,10 @@ int test_main(int argc, char* argv[])
     MTL_RUN_SOLVER("Bi-Conjugate Gradient Stabilized(ell)", bicgstab_ell, (A, x, b, ILU, I, iter, ell), (As, xs, bs, ILUs, Is, iters, ell));
     MTL_RUN_SOLVER("Conjugate Gradient", cg, (A, x, b, IC, iter), (As, xs, bs, ICs, iters));
     MTL_RUN_SOLVER("Conjugate Gradient Squared", cgs, (A, x, b, ILU, iter), (As, xs, bs, ILUs, iters));
-#endif
     MTL_RUN_SOLVER("Generalized Minimal Residual method (without restart)", gmres_full, (A, x, b, I, I, iter, size), (As, xs, bs, Is, Is, iters, size));
     MTL_RUN_SOLVER("Generalized Minimal Residual method with restart", gmres, (A, x, b, I, I, iter, restart), (As, xs, bs, Is, Is, iters, restart));
-    // MTL_RUN_SOLVER("Induced Dimension Reduction on s dimensions (IDR(s))", idr_s, (A, x, b, ILU, I, iter, s), (As, xs, bs, ILUs, Is, iters, s));
+#endif
+    MTL_RUN_SOLVER("Induced Dimension Reduction on s dimensions (IDR(s))", idr_s, (A, x, b, ILU, I, iter, s), (As, xs, bs, ILUs, Is, iters, s));
 #if 0
     MTL_RUN_SOLVER("Quasi-minimal residual", qmr, (A, x, b, ILU, I, iter), (As, xs, bs, ILUs, Is, iters));
     MTL_RUN_SOLVER("Transposed-free Quasi-minimal residual", tfqmr, (A, x, b, ILU, I, iter), (As, xs, bs, ILUs, Is, iters));
