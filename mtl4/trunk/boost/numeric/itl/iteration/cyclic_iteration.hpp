@@ -21,6 +21,7 @@ namespace itl {
   class cyclic_iteration : public basic_iteration<Real> 
   {
       typedef basic_iteration<Real> super;
+      typedef cyclic_iteration self;
 
       void print_resid()
       {
@@ -48,6 +49,10 @@ namespace itl {
 	  print_resid();
 	  return ret;
       }
+
+      inline self& operator++() { ++this->i; return *this; }
+      
+      inline self& operator+=(int n) { this->i+= n; return *this; }
 
       operator int() { return error_code(); }
 

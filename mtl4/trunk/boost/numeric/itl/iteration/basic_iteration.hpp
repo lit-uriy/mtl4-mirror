@@ -23,8 +23,8 @@ template <class Real>
 class basic_iteration
 {
   public:
-
-    typedef Real real;
+    typedef basic_iteration self;
+    typedef Real            real;
 
     template <class Vector>
     basic_iteration(const Vector& r0, int max_iter_, Real t, Real a = Real(0))
@@ -91,9 +91,9 @@ class basic_iteration
 	return (resid_ <= rtol_ || r < atol_); // relative or absolute tolerance.
     }
 
-    inline void operator++() { ++i; }
+    inline self& operator++() { ++i; return *this; }
 
-    inline void operator+=(int n) { i+= n; }
+    inline self& operator+=(int n) { i+= n; return *this; }
 
     inline bool first() { return i == 0; }
 
