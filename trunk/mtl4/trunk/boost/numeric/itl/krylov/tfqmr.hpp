@@ -49,7 +49,7 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
     rho= tau * tau;
 
     // TFQMR iteration
-    while(! iter.finished(tau)) {
+    for (; ! iter.finished(tau); ++iter) {
 	sigma= dot(r,v);
         if (sigma == zero)
 	    return iter.fail(1, "tfgmr breakdown, sigma=0 #1");
@@ -83,8 +83,6 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
         u1= solve(L, rt);
         v= u1 + beta*(u2 + beta*v);
         rt= A * x - b;
-
-        ++iter;
     }
     //shift back
     x= solve(R, x);

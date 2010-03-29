@@ -32,7 +32,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	       s(resource(x)), t(resource(x)), u(resource(x), zero), v(resource(x)), w(resource(x));
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
-    while (! iter.finished(r)) {
+    for (; ! iter.finished(r); ++iter) {
 	rho_0*= -omega_2;
 	// z= solve(M, r); z_tilde= solve(M, r_tilde); ???
 
@@ -60,8 +60,6 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	x_i= x + omega_1 * r + omega_2 * s + alpha * u;
 	r_i= r - omega_1 * s - omega_2 * t;
 	u-= omega_1 * v + omega_2 * w;
-
-	++iter;
     }
     return iter;
 }

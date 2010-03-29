@@ -60,13 +60,12 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	dR.vector(k)= -omega * v;
 	x+= dX.vector(k); 
 	r+= dR.vector(k);
-	if (iter.finished(r))
+	if ((++iter).finished(r))
 	    return iter;
 	M[iall][k]= trans(P) * dR.vector(k); 
     }
 
     Size oldest= 0;
-    iter+= s;
     m= trans(P) * r;
 
     while (! iter.finished(r)) {
@@ -87,8 +86,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	    r+= dR.vector(oldest);
 	    x+= dX.vector(oldest);
 
-	    ++iter;
-	    if (iter.finished(r))
+	    if ((++iter).finished(r))
 		return iter;
 
 	    dm= trans(P) * dR.vector(oldest);

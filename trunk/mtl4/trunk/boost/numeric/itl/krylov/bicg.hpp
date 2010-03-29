@@ -32,7 +32,7 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
     Vector     r(b - A * x), z(resource(x)), p(resource(x)), q(resource(x)),
  	       r_tilde(r), z_tilde(resource(x)), p_tilde(resource(x)), q_tilde(resource(x));
 
-    while (! iter.finished(r)) {
+    for (; ! iter.finished(r); ++iter) {
 	z= solve(M, r);
 	z_tilde= adjoint_solve(M, r_tilde);
 	rho_1= dot(z_tilde, z);
@@ -57,7 +57,6 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
 	r_tilde-= conj(alpha) * q_tilde;
 
 	rho_2= rho_1;
-	++iter;
     }
     return iter;
 }
