@@ -53,6 +53,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     if (iter.finished(rho))
 	return iter;
     V.vector(0)= r / rho;
+    H= zero;
 
     // GMRES iteration
     for (k= 0; rho >= iter.atol() && k < kmax; k++, ++iter) {
