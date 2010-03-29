@@ -130,6 +130,7 @@ class compressed2D
 	    return;
 	
         nnz= n;
+	
 	// delete existing pointers
 	if (h_indices) delete[] h_indices;
 	if (h_data)    delete[] h_data;
@@ -150,6 +151,7 @@ class compressed2D
     void laplacian_setup(unsigned m, unsigned n)
     {
 	assert(m*n == num_rows); assert(num_cols == num_rows);
+	
 	change_nnz(5*m*n - 2*m - 2*n);
 	
 	unsigned pos= 0;
@@ -184,7 +186,7 @@ class compressed2D
 
     void simpel_laplacian_setup(unsigned n, int d)
     {
-        unsigned num=n+2*(n-1), temp=0;
+        unsigned num=n+2*(n-1), tmp=0;
         change_nnz(num);
 // 	std::cout<< "n=" << n << " laplace elemente=" << num << "\n";
 //         std::cout<< "simpel_laplacian_setup\n";
@@ -196,13 +198,13 @@ class compressed2D
 	h_data[1] = T(-1);
 	
         for (unsigned i= 2; i < num-4; i+=3) {
-          h_indices[i]=  temp; 
-	  h_indices[i+1]= temp+1; 
-	  h_indices[i+2]= temp+2;
+          h_indices[i]=  tmp; 
+	  h_indices[i+1]= tmp+1; 
+	  h_indices[i+2]= tmp+2;
           h_data[i]=   T(-1); 
 	  h_data[i+1]= T(d); 
 	  h_data[i+2]= T(-1);
-          temp++;
+          tmp++;
      //     h_ptr[temp+1]=h_ptr[temp]+3;
         }
 	for (unsigned i= 2; i < num_rows+1; i++) {
@@ -219,26 +221,30 @@ class compressed2D
         cudaMemcpy(d_ptr, h_ptr, sizeof(unsigned)*(num_rows+1), cudaMemcpyHostToDevice);
         cudaMemcpy(d_indices, h_indices, sizeof(unsigned)*(num), cudaMemcpyHostToDevice);
         cudaMemcpy(d_data, h_data, sizeof(T)*(num), cudaMemcpyHostToDevice);
-// for (unsigned i= 0; i < num_rows+1; i++)
-//         std::cout<< "i=" << i << "h_ptr[i]=" << h_ptr[i] << "\n";
-// 
-// for (unsigned i= 0; i < num; i++){
-//         std::cout<< "i=" << i << "  h_data[i]=" << h_data[i] <<  "  i=" << i << "h_indives[i]=" << h_indices[i] << "\n";
-// }
+
+/*	
+for (unsigned i= 0; i < num_rows+1; i++)
+        std::cout<< "i=" << i << "h_ptr[i]=" << h_ptr[i] << "\n";
+
+for (unsigned i= 0; i < num; i++){
+        std::cout<< "i=" << i << "  h_data[i]=" << h_data[i] <<  "  i=" << i << "h_indives[i]=" << h_indices[i] << "\n";
+}
 	
-// 	 std::cout<< "\nData:[ ";
-// 	for (unsigned i= 0; i < num; i++) {
-//                std::cout<<  h_data[i] << (i==num-1 ? " " : ", ");
-//         }
-// 	std::cout<< "]\nCols:[ ";
-// 	for (unsigned i= 0; i < num; i++) {
-//                std::cout<< h_indices[i] << (i==num-1 ? " " : ", ");
-//         }	
-//         std::cout<< "]\nptr :[ ";
-// 	for (unsigned i= 0; i < num_rows+1; i++) {
-//                std::cout<< h_ptr[i] << (i==num-1 ? " " : ", ");
-//         }
-//         std::cout<< "]\n\n";
+	 std::cout<< "\nData:[ ";
+	for (unsigned i= 0; i < num; i++) {
+               std::cout<<  h_data[i] << (i==num-1 ? " " : ", ");
+        }
+	std::cout<< "]\nCols:[ ";
+	for (unsigned i= 0; i < num; i++) {
+               std::cout<< h_indices[i] << (i==num-1 ? " " : ", ");
+        }	
+        std::cout<< "]\nptr :[ ";
+	for (unsigned i= 0; i < num_rows+1; i++) {
+               std::cout<< h_ptr[i] << (i==num-1 ? " " : ", ");
+        }
+        std::cout<< "]\n\n";
+*/
+
 
     }
  
@@ -267,7 +273,6 @@ class compressed2D
     {
 	// std::cout << "Start to_device\n";
         if (on_host) {
-	    std::cout << "Copy really to device\n";
            cudaMemcpy(d_ptr, h_ptr, sizeof(unsigned)*(num_rows+1), cudaMemcpyHostToDevice);
            cudaMemcpy(d_indices, h_indices, sizeof(unsigned)*(nnz), cudaMemcpyHostToDevice);
            cudaMemcpy(d_data, h_data, sizeof(T)*(nnz), cudaMemcpyHostToDevice);

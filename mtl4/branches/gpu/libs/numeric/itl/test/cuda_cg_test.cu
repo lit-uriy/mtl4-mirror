@@ -25,6 +25,7 @@ int main(int argc, char* argv[])
 
   // For a more realistic example set size to 1000 or larger
   const int size = 1000, N = size * size;
+  int iter=0;
   mtl::cuda::activate_best_gpu();
   typedef mtl::cuda::compressed2D<double>  matrix_type;
   
@@ -38,12 +39,13 @@ int main(int argc, char* argv[])
   x= 0;
 
   double toleranz=   0.0000001;
-  int	 iterations= 100;
+  int	 iterations= 1000;
   
-   cg(A, x, b, iterations, toleranz);
+  iter=cg(A, x, b, iterations, toleranz);
 //    std::cout<< "x=" << x << "\n";
    r=b- A*x;
 //       std::cout<< "r=" << r << "\n";
+    std::cout <<(iter==iterations ? "Total  Iterations: " : "problem solved in the iteration: ")<<iter<<"\n";
     std::cout << "dot(r,r)=" << dot(r,r) << "\n";
   
   

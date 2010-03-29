@@ -22,7 +22,8 @@
 template <typename T>
 void test(const char* name)
 {
-    int size= 100;
+    int m=182,n=182;
+    int size= n*m;
     std::cout << name << "-- Matrix Test\n";
     mtl::cuda::compressed2D<T>  A(size, size);
     mtl::cuda::vector<T>  x(size, 1.0), b(size, 0.0);
@@ -33,7 +34,7 @@ void test(const char* name)
     
     std::cout << "Matrix constructed.\n";
 //    std::cout << "A=" << A << "\n";
-    A.laplacian_setup(10, 10);
+    A.laplacian_setup(m, n);
   
 //     x[1]=2; x[2]= 3; x[3]= 4;
 

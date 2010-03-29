@@ -74,15 +74,8 @@ void test(const char* name)
     std::cout << "Matrix Elements= "<<size*size<<"\n";
     std::cout << "Matrix on host= "<< (A.valid_host()==true ?  "Yes\n\n" : "No\n\n");
     
-    A.set_to_zero();
-    
-    //    std::cout << "A.num_cols= "<< num_cols(A)<<"\nA.num_rows= " <<num_rows(A)<<"\n";
-//  std::cout << "Matrix constructed.\n" << "A=" << A << "\n";
 
-            
-//    std::cout << "const A(0,0) == " << size << '\n';
-//     A.to_host();
-
+    A.set_to_zero();    
     for (int i= 0; i < size; i++){
 //       std::cout<< "i="  << A(i,i) << "\n";
       A(2,i,i);
@@ -102,32 +95,35 @@ void test(const char* name)
  //      std::cout<< "x=" << x << "\n";
 //      std::cout<< "b=" << b << "\n";
 
-std::cout<< "start multiplication\n";
+
+
 ///Start Vector = Matrix x Vector
-     b= A * x;
-     std::cout<< "ende multiplication\n";
-      std::cout<< "x[7]=" << x[7] << "\n";
-//     std::cout<< "b=" << b << "\n";
-      std::cout<< "b[0]=" << b[0] << "\n";
-      std::cout<< "b[1]=" << b[1] << "\n";
-//      std::cout<< "b[32532]=" << b[32532] << "\n";
+    std::cout<< "start multiplication\n";
+    b= A * x;
+    std::cout<< "ende multiplication\n";
+    std::cout<< "x[7]=" << x[7] << "\n";
+    std::cout<< "b[0]=" << b[0] << "\n";
+    std::cout<< "b[1]=" << b[1] << "\n";
+
       if (b[0] != T(4) || b[1]!=T(2))
  	std::cout<< "Error Matrix vector multiplication on device.\n";
       else
 	std::cout<< "Multiplication Without problems.\n";  
-///End Vector = Matrix x Vector
-
-
-      
       print(A);
+///End Vector = Matrix x Vector
+      
+      
+//    A.set_to_zero(true);   //  on host
+//    A.laplacian_setup_host(7);
 
-//     A.laplacian_setup_host(7);
-//     A.laplacian_setup_device(5);
+//    A.set_to_zero();       // on device
+//    A.laplacian_setup_device(5);
 
 //     std::cout<< "\n\nA=" << A<<"\n";
-//     print(A);
+     print(A);
    
-  
+
+
 }
 
 
