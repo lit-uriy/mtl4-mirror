@@ -130,7 +130,7 @@ public:
 	return out;
     }
 
-    friend inline const_distribution_type& distribution(const self& d) { return d.dist; }
+    friend inline distribution_type distribution(const self& d) { return d.dist; }
     friend inline const boost::mpi::communicator& communicator(const self& d) { return communicator(d.dist); }
 			  
     template <typename, typename> friend class distributed_inserter;

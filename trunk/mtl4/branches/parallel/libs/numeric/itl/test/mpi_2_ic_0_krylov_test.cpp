@@ -95,7 +95,7 @@ int test_main(int argc, char* argv[])
     MTL_RUN_SOLVER("Conjugate Gradient Squared", cgs, (A, x, b, ILU, iter), (As, xs, bs, ILUs, iters));
 #endif
     MTL_RUN_SOLVER("Generalized Minimal Residual method (without restart)", gmres_full, (A, x, b, I, I, iter, size), (As, xs, bs, Is, Is, iters, size));
-    // MTL_RUN_SOLVER("Generalized Minimal Residual method with restart", gmres, (A, x, b, I, I, iter, restart), (As, xs, bs, Is, Is, iters, restart));
+    MTL_RUN_SOLVER("Generalized Minimal Residual method with restart", gmres, (A, x, b, I, I, iter, restart), (As, xs, bs, Is, Is, iters, restart));
     // MTL_RUN_SOLVER("Induced Dimension Reduction on s dimensions (IDR(s))", idr_s, (A, x, b, ILU, I, iter, s), (As, xs, bs, ILUs, Is, iters, s));
 #if 0
     MTL_RUN_SOLVER("Quasi-minimal residual", qmr, (A, x, b, ILU, I, iter), (As, xs, bs, ILUs, Is, iters));
