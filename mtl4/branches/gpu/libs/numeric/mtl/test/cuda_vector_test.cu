@@ -18,25 +18,6 @@
 
 
 
-#define print(v) std::cout << #v << ' '; short_print2(v);
-template < typename Vector>
-void short_print2(const Vector& v)
-{
-   std::cout <<(v.valid_host()==true ? "is on Host " : "is on Device " )<< "[";
-   for (int i= 0; i < 10 && i < size(v); i++)
-     std::cout << v[i] << ", ";
-   if(size(v)> 20) {
-       std::cout << "... ,";
-       for (int i= size(v)-10; i < size(v); i++)
-	   std::cout << v[i] << ", ";
-   }
-   std::cout << "\b\b] \n";
-   v.to_device();
-}
-
-
-
-
 template <typename T>
 void test(const char* name)
 {
@@ -49,27 +30,27 @@ void test(const char* name)
     mtl::cuda::vector<T>  x(gross, 33), y(gross, 10, false), z(gross, 0);
     mtl::cuda::scalar<T>  c(7);
 
-   std::cout << "\n\nVector Size= " << size(x)<<"\n\n";    
+    std::cout << "\n\nVector Size= " << size(x)<<"\n\n";    
     std::cout << "Vector constructed.\n"; 
-    print(x);
-    std::cout << "Vector constructed.\n";
-    print(y);
+    std::cout<<"X= "<<x;
+    std::cout<<"Y: "<<y;
 
     x= 4.0;
     x.to_device();
+    
     if (x[0] != T(4))
 	std::cout<< "\nError assign vector on device.\n";
     
 //    std::cout << "const x[1] == " << x[1] << "  Naechste zeile kommt X[1]=22\n";
+
     x[1]=22;
     x.to_device();
-    print(x);
-//  std::cout<< "x=" << x << "\n";
+    std::cout<< "x= "<< x;
   
     y= x;           // Copy on device
     if (y[1] != T(22))
 	std::cout<< "\nError copy vector on device.\n";
-    print(y);
+    std::cout<< "y= "<< y;
 //    std::cout<< "y[1]=" << y[1] << "\n";
     
     x.to_device();
@@ -83,7 +64,7 @@ void test(const char* name)
     x+= 2;
 
 //    std::cout<< "x=" << x << "\n";    
-    print(x);
+    std::cout<< "x= "<< x;
     if (x[0] != T(30))
 	std::cout<< "\nError adding vector with scalar on device.\n";
     
@@ -92,7 +73,7 @@ void test(const char* name)
 
     
 //    std::cout<< "x=" << x << "\n";
-    print(x);
+    std::cout<< "x= "<< x;
     if (x[0] != T(20))
 	std::cout<< "\nError subtract vector with scalar on device.\n";
     
@@ -100,7 +81,7 @@ void test(const char* name)
     x/= 10;
 
 //    std::cout<< "x=" << x << "\n";
-    print(x);    
+    std::cout<< "x= "<< x;   
     if (x[0] != T(2))
 	std::cout<< "\nError divide vector with scalar on device.\n";
 

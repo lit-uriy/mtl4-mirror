@@ -112,24 +112,6 @@ class vector
     }
 
 
-///plus updated
-    void plus_updated(const self& v_in, self& v_out)
-    {
-	assert(v_in.dim == dim && v_out.dim == dim);
-	if (meet_data(*this, v_in, v_out)) {
-	    for (int i= 0; i < dim; i++)
-		 v_out[i]= start[i] + v_in.start[i];
-	 } else  {
-	     v_out.to_device();
-	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);
-	    std::cout<<"  dim/BLOCK_SIZE+1= "<<dim/BLOCK_SIZE+1<<"\n  dimGrid.x= "<< dimGrid.x <<"\n  dimGrid.y= "<< dimGrid.y <<"\n  dimBlock.x "<< dimBlock.x <<"\n  dimBlock.y= "<< dimBlock.y <<"\n  dimBlock.z= "<< dimBlock.z <<"\n";
-	    vector_vector_assign_plus_updated<<<dimGrid, dimBlock>>>(v_out.dptr, dptr, v_in.dptr, dim);
-	 }	
-    }
-
-//
-
-
 
     self operator - (const self &v1) 
     {   
@@ -237,9 +219,6 @@ class vector
 	}
         return *this;
     }
-// dim3 grid(size_x / BLOCK_DIM, size_y / BLOCK_DIM, 1);
-// dim3 threads(BLOCK_DIM, BLOCK_DIM, 1);
-
 
     template <typename U>
     self& operator/=(const U& src)
@@ -354,16 +333,30 @@ class vector
 
     friend std::ostream& operator<<(std::ostream& os, const self& x)
     {
+	
 	x.replicate_on_host();
-	os << "{" << size(x) << (x.valid_host() ? ",host}(" : ",device}(");
-	for (int i= 0; i < size(x); i++)
-	    os << x.start[i] << (i < x.dim - 1 ? ", " : ")");
+	os << "{" << size(x) << (x.valid_host() ? ",host}[" : ",device}[");
+
+	if(size(x)<21)
+	    for (int i= 0; i < size(x); i++)
+		os << x.start[i] << (i < x.dim - 1 ? ", " : "]");
+	
+	else {
+	    for (int i= 0; i < 10; i++)
+		os << x.start[i] << ", ";
+	    if(size(x)> 20) {
+		os << "... ,";
+		for (int i= size(x)-10; i < size(x); i++)
+		    os << x.start[i] << (i < x.dim - 1 ? ", " : "]");
+	    }
+	}
+	os << "\n";
 	return os;
     }
 
   
     int  dim;
-    T*   start; // Value on host //TODO    malloc sizeof(T)*dim
+    T*   start; // Value on host //TO DO    malloc sizeof(T)*dim
     T*   dptr;   // Value on device (allocated as pointer whose content is referred)
     bool on_host;
     

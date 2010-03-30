@@ -16,28 +16,6 @@
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
 
 
-/* print function*/
-#define print(v) std::cout << #v << ' '; short_print2(v);
-template < typename Vector>
-void short_print2(const Vector& v)
-{
-   std::cout <<(v.valid_host()==true ? "is on Host " : "is on Device " )<< "[";
-   for (int i= 0; i < 10 && i < size(v); i++)
-     std::cout << v[i] << ", ";
-   if(size(v)> 20) {
-       std::cout << "... ,";
-       for (int i= size(v)-10; i < size(v); i++)
-	   std::cout << v[i] << ", ";
-   }
-   std::cout << "\b\b] \n";
-   v.to_device();
-}
-
-
-
-
-
-
 template <typename T>
 void test(const char* name)
 {
@@ -55,55 +33,37 @@ void test(const char* name)
     x.to_device(); y.to_device(); z.to_device();
     
     std::cout<< "\n>>>>>>>Vectors Contructed <<<<<<\n";
-    print(y);
-    print(z);
-    print(x);
+    std::cout<< "Y= "<< y;
+    std::cout<< "Z= "<< z;
+    std::cout<< "X= "<< x;
     
     
     x= y+z;
     std::cout<< "\n>>>>>>>X= Y+ Z <<<<<<\n";
-    print(y);
-    print(z);
-    print(x);
+    std::cout<< "Y= "<< y;
+    std::cout<< "Z= "<< z;
+    std::cout<< "X= "<< x;
     if (x[critic_point] != T(13))
 	std::cout<< "Error adding vector and vector on device.";
     
     x= y-z;    
     std::cout<< "\n>>>>>>>X= Y- Z <<<<<<\n";
-    print(y);
-    print(z);
-    print(x);
+    std::cout<< "Y= "<< y;
+    std::cout<< "Z= "<< z;
+    std::cout<< "X= "<< x;
     if (x[critic_point] != T(7))
 	std::cout<< "Error subtract vector and vector on device.";
 
     //z*= 2;
     x= y*z;   
     std::cout<< "\n\n>>>>>>>X= Y* Z <<<<<<\n";
-    print(y);
-    print(z);
-    print(x);
+    std::cout<< "Y= "<< y;
+    std::cout<< "Z= "<< z;
+    std::cout<< "X= "<< x;
     if (x[critic_point] != T(30))
 	std::cout<< "Error subtract vector and vector on device.";
 
  
-/*    
-    
-    x=0;
-    std::cout<< "\n   start plus updated\n";
-    print(y);
-    print(z);
-    z.plus_updated(y,x);
-    print(x);
-    unsigned elements=0;
-    for(unsigned i=0; i<size(x); i++){
-	if(x[i]!=0) elements ++;
-//	else std::cout<< "x["<<i<<"]= "<<x[i]<<"\n";
-    }
-    std::cout<< "   end plus updated nr elements of vector x= "<<elements<<"\n\nx[1]="<<x[1]<<"\n\n";
-    */
-    
-    
-    
 #if 0 
     x= y/z;
     std::cout<< "\n\n>>>>>>>X= Y/ Z <<<<<<\n\nX=" << x << "\n";
@@ -119,6 +79,7 @@ int main(int argc, char* argv[])
     using namespace mtl;
 
     cuda::activate_best_gpu();
+//    cuda::activate_gpu(0);
     
     test<int>("int");
   //  test<short>("short");
