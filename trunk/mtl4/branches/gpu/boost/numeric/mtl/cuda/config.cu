@@ -39,11 +39,20 @@ void activate_best_gpu(void)
 	best_gpu = device_number;
       }
     }
-      cudaSetDevice(best_gpu);
-      cudaGetDeviceProperties(&device_properties, best_gpu);
+    
+    
+    cudaError_t error;
+    error=cudaSetDevice(best_gpu);
+    if(error!=0){ 
+	std::cout<<"\n==Error selecting GPU==\n"<<cudaGetErrorString(error) <<"\n\n";
+	exit(1);
+    } 
+    else{
+	cudaSetDevice(best_gpu);
+	cudaGetDeviceProperties(&device_properties, best_gpu);
+	std::cout<< "\n\t\t===Running on device " <<  best_gpu << ": " << device_properties.name << "===\n\t\tNumber of Multiprocessors: "<<device_properties.multiProcessorCount<<"\n\n\n";
     }
-
-   std::cout<< "\n\t\t===Running on device " <<  best_gpu << ": " << device_properties.name << "===\n\t\tNumber of Multiprocessors: "<<device_properties.multiProcessorCount<<"\n\n\n";
+    }
 
 }
 
@@ -52,10 +61,10 @@ void activate_best_gpu(void)
 //  Activate a specific GPU
 void activate_gpu(int currentDevice)
 {
-  cudaError_t error;
+   cudaError_t error;
    error=cudaSetDevice(currentDevice);
    if(error!=0){ 
-    std::cout<<"==Error selecting GPU==\nYou has selected a "<<cudaGetErrorString(error) <<" to activate GPU\n\n";
+    std::cout<<"\n==Error selecting GPU==\n"<<cudaGetErrorString(error) <<"\n\n";
     exit(1);
    }else{   
     cudaDeviceProp deviceProp;

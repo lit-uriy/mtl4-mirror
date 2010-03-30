@@ -9,7 +9,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <iostream>
 
 
