@@ -29,6 +29,8 @@ void activate_best_gpu(void)
       best_gpu = 0,  
       number_of_devices, 
       device_number;
+
+  cudaError_t error;
       
   cudaGetDeviceCount(&number_of_devices);
   if (number_of_devices > 1) {
@@ -39,20 +41,19 @@ void activate_best_gpu(void)
 	best_gpu = device_number;
       }
     }
-    
-    
-    cudaError_t error;
+   
+   }
+
     error=cudaSetDevice(best_gpu);
     if(error!=0){ 
 	std::cout<<"\n==Error selecting GPU==\n"<<cudaGetErrorString(error) <<"\n\n";
 	exit(1);
     } 
+
     else{
-	cudaSetDevice(best_gpu);
 	cudaGetDeviceProperties(&device_properties, best_gpu);
 	std::cout<< "\n\t\t===Running on device " <<  best_gpu << ": " << device_properties.name << "===\n\t\tNumber of Multiprocessors: "<<device_properties.multiProcessorCount<<"\n\n\n";
-    }
-    }
+    } 
 
 }
 
