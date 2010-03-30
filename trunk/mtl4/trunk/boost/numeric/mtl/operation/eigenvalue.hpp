@@ -18,15 +18,16 @@
 #include <boost/utility.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
-#include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/concept/magnitude.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
-#include <boost/numeric/mtl/operation/householder.hpp>
 #include <boost/numeric/mtl/operation/diagonal.hpp>
+#include <boost/numeric/mtl/operation/givens.hpp>
+#include <boost/numeric/mtl/operation/householder.hpp>
+#include <boost/numeric/mtl/operation/qr.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
-#include <boost/numeric/mtl/operation/givens.hpp>
+
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 
 

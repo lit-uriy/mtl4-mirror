@@ -30,15 +30,14 @@ complex<double> f(complex<double>)
 int test_main(int argc, char* argv[])
 {
     using namespace mtl;
-    unsigned size= 4;
+    unsigned size=4, row= size+1, col=size;
 
     double b;
     dense_vector<double>                    vec(size), vec1(size);
-    dense2D<double>                                      dr(size, size), Q(size, size), R(size, size);
+    dense2D<double>                                      dr(row, col), dr_t(row, col), Q(row, row), R(row, col);
     dense2D<complex<double> >                            dz(size, size), Qz(size, size), Rz(size, size);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
 
-    
     dr[0][0]=1;
     dr[0][1]=1;
     dr[0][2]=1;
@@ -49,21 +48,32 @@ int test_main(int argc, char* argv[])
     dr[2][1]=-2;
     dr[2][2]=1;
     dr[3][3]=-10;
-    //dr[4][3]=4;
-    //dr[2][3]=3;
+    dr[4][0]=4;
+    dr[4][2]=3;
     std::cout<<"MAtrix=\n"<< dr <<"\n";
     //std::cout<<"Vector="<< vec <<"\n";
+    std::cout<<"START--------------\n";
 
-    boost::tie(vec1, b) = householder(vec);
-
-    std::cout<<"START--------------"<< dr[0][0] << "\n";
-
-    boost::tie(Q, R)= qr_factors(dr);
-
+  
+    boost::tie(Q, R)= qr(dr);
     std::cout<<"MAtrix  R=\n"<< R <<"\n";
     std::cout<<"MAtrix  Q=\n"<< Q <<"\n";
-    std::cout<<"MAtrix  A=Q*R--outside\n"<< Q*R <<"\n";
+//    std::cout<<"MAtrix  A=\n"<< dr <<"\n";
+	dr_t= Q*R-dr;
+    std::cout<<"MAtrix  Q*R=\n"<< dr <<"\n";
+	double norm(0.0);
+	for(int i=0; i<row;i++){
+		for(int j=0; j<col;j++){
+			norm+=abs(dr_t[i][j]);
+		}	
+	}	
+	std::cout<< "norm(Q*R-A)=" << norm << "\n";	
 
+   //  boost::tie(Q, R)= qr_factors(dr);
+
+	 
+
+#if 0
     dz[0][0]=complex<double>(1.0, 0.0);
     dz[0][1]=complex<double>(1.0, 0.0);
     dz[0][2]=complex<double>(1,0);
@@ -83,7 +93,7 @@ int test_main(int argc, char* argv[])
     // std::cout<<"MAtrix  R="<< Rz <<"\n";
     // std::cout<<"MAtrix  Q="<< Qz <<"\n";
     // std::cout<<"MAtrix  A=Q*R--outside"<< Qz*Rz <<"\n";
-
+#endif
     return 0;
 }
 
