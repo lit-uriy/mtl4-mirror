@@ -22,8 +22,6 @@
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 
-#include <boost/numeric/itl/itl_fwd.hpp>
-
 namespace mtl { namespace vector {
 
 
@@ -169,9 +167,6 @@ struct crtp_minus_assign<Vector, mat_cvec_times_expr<E1, E2> >
 	return vector;
     }
 };
-
-
-
 
 
 /// Base class to provide vector assignment operators generically 

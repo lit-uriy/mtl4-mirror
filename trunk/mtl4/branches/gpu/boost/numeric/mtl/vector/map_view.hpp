@@ -13,6 +13,7 @@
 #define MTL_VECTOR_MAP_VIEW_INCLUDE
 
 #include <boost/shared_ptr.hpp>
+#include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
@@ -60,8 +61,8 @@ struct map_view
     friend size_type inline num_cols(const self& v) { return num_cols(v.ref); }
 
     size_type stride() const { 	return ref.stride(); }
-    const_reference operator() (size_type i) const { return functor(ref(i)); }
-    const_reference operator[] (size_type i) const { return functor(ref[i]); }
+    MTL_PU const_reference operator() (size_type i) const { return functor(ref(i)); }
+    MTL_PU const_reference operator[] (size_type i) const { return functor(ref[i]); }
     void delay_assign() const {}
     
     template <typename, typename> friend struct detail::map_value;
@@ -91,7 +92,7 @@ struct map_view
 		: map_vector(map_vector), its_value(map_vector.ref) 
 	    {}
 
-	    value_type operator() (key_type const& key) const
+	    MTL_PU value_type operator() (key_type const& key) const
 	    {
 		return map_vector.functor(its_value(key));
 	    }

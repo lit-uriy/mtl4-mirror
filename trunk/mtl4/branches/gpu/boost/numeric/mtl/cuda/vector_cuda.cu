@@ -24,6 +24,10 @@
 #include <boost/numeric/mtl/cuda/vector_kernel.cu>
 #include <boost/numeric/mtl/cuda/vector_vector_kernel.cu>
 
+#include <boost/numeric/mtl/vector/vec_expr.hpp>
+#include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
+
+
 //#include </usr/local/cuda/include/cuda_runtime_api.h>
 
 #define BLOCK_SIZE 512
@@ -34,11 +38,14 @@ namespace mtl { namespace cuda {
 /// Class for replicating vectors on host and device
 template <typename T>
 class vector
+  : public mtl::vector::vec_expr<vector<T> >,
+    public mtl::vector::crtp_base_vector< vector<T>, T, std::size_t >
 {
     typedef vector<T>                self;
-    //friend self & operator+(const self & , const self & );
   public:
     typedef T                        value_type;
+    typedef std::size_t              size_type;
+    typedef mtl::vector::crtp_vector_assign< self, T, size_type >  assign_base;
 
     /// Constructor from type T 
     vector(int n=1, const T& value= T(), bool on_host=false ) 
@@ -50,6 +57,7 @@ class vector
 	 cudaFree(dptr);
     }
 
+    void delay_assign() const {} // dummy
 
 //Vector-Vector Operations
     vector(const self& that){   //that Konstruktor
@@ -81,6 +89,11 @@ class vector
 	return *this;
     }
 
+    using assign_base::operator=;
+
+    void change_dim(size_type n) { throw "Not implemented yet! \n"; }
+
+#if 0
     self operator + (const self &v1) 
     {   
 	self temp(dim,0);
@@ -269,7 +282,7 @@ class vector
 	}
         return *this;
     }
-
+#endif
 
     T& operator[](int index) {
 //	std::cout<<"klammer function 1\n\n";
@@ -290,9 +303,15 @@ class vector
       return read(i); 
     }
 
+    T operator()(int i) const { return this->operator[](i); }
+    T& operator()(int i) { return this->operator[](i); }
+
+    __device__ T dat(int i) const { return dptr[i]; }
+    __device__ T* dadd(int i) { return dptr + i; }
+
     bool valid_host() const { return on_host; }
     bool valid_device() const { return !on_host; }
-    friend int  size(const self& x) { return x.dim; }
+    friend size_type size(const self& x) { return x.dim; }
 
     void to_host() const
     {
@@ -337,10 +356,15 @@ class vector
 	x.replicate_on_host();
 	os << "{" << size(x) << (x.valid_host() ? ",host}[" : ",device}[");
 
-	if(size(x)<21)
+#if MTL_SHORT_PRINT
+	bool complete= size(x) <= 20;
+#else
+	bool complete= true;
+#endif
+
+	if(complete)
 	    for (int i= 0; i < size(x); i++)
 		os << x.start[i] << (i < x.dim - 1 ? ", " : "]");
-	
 	else {
 	    for (int i= 0; i < 10; i++)
 		os << x.start[i] << ", ";

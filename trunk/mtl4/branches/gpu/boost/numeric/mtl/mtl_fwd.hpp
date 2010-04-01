@@ -130,6 +130,7 @@ namespace mtl {
 	template <class E1, class E2, typename SFunctor> struct vec_vec_pmop_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_vec_aop_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_scal_aop_expr;
+	template <class E1, class E2> struct vec_vec_asgn_expr;
 	template <class E1, class E2> struct vec_vec_plus_asgn_expr;
 	template <class E1, class E2> struct vec_vec_minus_asgn_expr;
 	template <class E1, class E2> struct vec_vec_times_asgn_expr;
@@ -137,6 +138,8 @@ namespace mtl {
 	template <class E1, class E2> struct vec_scal_div_asgn_expr; // added by Hui Li
 	template <class E1, class E2> struct vec_scal_asgn_expr;
 	template <typename Vector> struct vec_const_ref_expr;
+	template <typename, typename, typename> struct crtp_base_vector;
+	template <typename, typename, typename>	struct crtp_vector_assign;
 	
 	template <typename Value, typename Parameters, typename Value2>
 	inline void fill(dense_vector<Value, Parameters>& vector, const Value2& value);

@@ -13,9 +13,10 @@
 #define MTL_MEET_DATA_INCLUDE
 
 #include <cassert>
+#include <boost/numeric/mtl/cuda/config.cu>
 
 namespace mtl {
-
+    
 /// Move all data to consistent location, preferrably the device memory
 /** If data of both arguments is on host and data is not too large
     leave it on the host. In all other cases move it to the device.
@@ -25,7 +26,9 @@ namespace mtl {
 template <typename T, typename U>
 bool inline meet_data(const T& x, const U& y)
 {
-    if (!x.valid_device() && !y.valid_device()) { // add further tests for size 
+    if (false && !x.valid_device() && !y.valid_device()
+	&& cuda::in_limit(x) && cuda::in_limit(y)) 
+    { 
 	assert(x.valid_host() && y.valid_host());
 	return true;
     }
@@ -42,7 +45,9 @@ bool inline meet_data(const T& x, const U& y)
 template <typename T, typename U, typename V>
 bool inline meet_data(const T& x, const U& y, const V& z)
 {
-    if (!x.valid_device() && !y.valid_device() && !z.valid_device()) { // add further tests for size 
+    if (false && !x.valid_device() && !y.valid_device() && !z.valid_device()
+	&& cuda::in_limit(x) && cuda::in_limit(y) && cuda::in_limit(z)) 
+    {
 	assert(x.valid_host() && y.valid_host() && z.valid_host());
 	return true;
     }

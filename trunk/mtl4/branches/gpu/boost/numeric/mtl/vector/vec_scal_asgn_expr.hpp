@@ -13,8 +13,6 @@
 #ifndef MTL_VEC_SCAL_ASGN_EXPR_INCLUDE
 #define MTL_VEC_SCAL_ASGN_EXPR_INCLUDE
 
-#include <boost/static_assert.hpp>
-
 #include <boost/numeric/mtl/vector/vec_scal_aop_expr.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>

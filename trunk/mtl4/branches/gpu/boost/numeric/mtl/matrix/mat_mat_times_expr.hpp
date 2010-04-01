@@ -15,7 +15,8 @@
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/and.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/type_traits.hpp>
+// #include <boost/type_traits.hpp>
+#include <boost/type_traits/is_base_of.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/matrix/mat_mat_op_expr.hpp>

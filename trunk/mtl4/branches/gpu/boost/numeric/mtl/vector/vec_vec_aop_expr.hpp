@@ -10,18 +10,20 @@
 // See also license.mtl.txt in the distribution.
 
 
-// Adapted from GLAS implementation by Karl Meerbergen and Toon Knappen
-
-
 #ifndef MTL_VEC_VEC_AOP_EXPR_INCLUDE
 #define MTL_VEC_VEC_AOP_EXPR_INCLUDE
 
 #include <boost/mpl/bool.hpp>
+#include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/static_size.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
+#include <boost/numeric/mtl/operation/check.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
+#include <boost/numeric/mtl/cuda/launch_function.hpp>
+
+#define BL_SIZE 256
 
 namespace mtl { namespace vector {
 
@@ -76,7 +78,7 @@ struct vec_vec_aop_expr
 	second.delay_assign();
     }
 
-
+#if 0
     void assign(boost::mpl::false_)
     {
 	// If target is constructed by default it takes size of source
@@ -96,21 +98,67 @@ struct vec_vec_aop_expr
 	MTL_DEBUG_THROW_IF(first.size() != second.size(), incompatible_size());
 	impl::assign<1, static_size<E1>::value, SFunctor>::apply(first, second);
     }
+#endif
 
-    ~vec_vec_aop_expr()
+    void to_device() const { first.to_device(); second.to_device(); }
+    void to_host() const { first.to_host(); second.to_host(); }
+    bool valid_device() const { return first.valid_device() && second.valid_device(); }
+    bool valid_host() const { return first.valid_host() && second.valid_host(); }
+
+    int gridDimx(int dim) { return std::min(65535, (dim+BL_SIZE-1)/BL_SIZE); }
+   
+   void compute_on_host()
+   {
+       for (size_type i= 0; i < size(first); ++i)
+	   SFunctor::apply( const_cast<first_argument_type&>(first)(i), second(i) );
+       // Slower, at least on gcc
+       // assign(traits::is_static<E1>());       
+   }
+   
+#ifdef MTL_HAS_CUDA
+    struct kernel
+    {
+	kernel(E1& first, const E2& second) : first(first), second(second), n(size(first)) {}
+	
+	__device__ void operator()()
+	{
+	    const size_type grid_size = blockDim.x * gridDim.x, id= blockIdx.x * blockDim.x + threadIdx.x,
+			    blocks= n / grid_size,  nn= blocks * grid_size;
+
+	    for (size_type i= id; i < nn; i+= grid_size)
+		SFunctor::papply(  first.dadd(i), second.dat(i) );
+	        // first.dadd(i)= second.first.dadd(i) + second.second.dadd(i);
+	    if (nn + id < n)
+		SFunctor::papply( first.dadd(nn + id), second.dat(nn + id) );	    
+	}
+	
+	E1&               first ;
+	E2 const&         second ;
+	size_type         n;
+    };
+
+#endif   
+   
+   ~vec_vec_aop_expr()
     {
 	if (!delayed_assign) {
 	    // If target is constructed by default it takes size of source
-	    if (size(first) == 0) first.change_dim(size(second));
+	    //if (size(first) == 0) first.change_dim(size(second));
 
 	    // If sizes are different for any other reason, it's an error
 	    MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
 
-	    for (size_type i= 0; i < size(first); ++i)
-		SFunctor::apply( first(i), second(i) );
-
-	    // Slower, at least on gcc
-	    // assign(traits::is_static<E1>());
+#ifdef MTL_HAS_CUDA
+	    if (meet_data(first, second))
+		compute_on_host();
+	    else {
+		dim3 dimGrid(gridDimx(size(first))), dimBlock(BL_SIZE); // temporary sol.
+		kernel k(const_cast<first_argument_type&>(first), second);
+		cuda::launch_function<<<dimGrid, dimBlock>>>(k);
+	    }
+#else
+	    compute_on_host();
+#endif
 	}
     }
     
@@ -123,18 +171,18 @@ struct vec_vec_aop_expr
     }
 
 
-    value_type& operator() ( size_type i ) const {
-	assert( delayed_assign );
+    MTL_PU value_type& operator() ( size_type i ) const {
+	check( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
     }
 
-    value_type& operator[] ( size_type i ) const{
-	assert( delayed_assign );
+    MTL_PU value_type& operator[] ( size_type i ) const{
+	check( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
     }
 
   private:
-     mutable first_argument_type&        first ;
+     first_argument_type const&          first ;
      second_argument_type const&         second ;
      mutable bool                        delayed_assign;
   } ; // vec_vec_aop_expr

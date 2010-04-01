@@ -12,6 +12,7 @@
 #ifndef MTL_CUDA_CONFIG_INCLUDE
 #define MTL_CUDA_CONFIG_INCLUDE
 
+
 namespace mtl { namespace cuda {
 
 #ifdef MTL_CUDA_HOST_LIMIT
@@ -19,6 +20,10 @@ namespace mtl { namespace cuda {
 #else
     const unsigned host_limit= 1024;
 #endif
+
+template <typename T>
+bool inline in_limit(const T& x) { return size(x) <= cuda::host_limit; }
+
 
 // It takes the GPU with the highest number of cores as the best GPU. 
 

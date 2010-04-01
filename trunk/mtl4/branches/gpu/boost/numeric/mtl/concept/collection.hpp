@@ -12,14 +12,14 @@
 #ifndef MTL_COLLECTION_INCLUDE
 #define MTL_COLLECTION_INCLUDE
 
-// #include <boost/type_traits/remove_const.hpp>
+#include <boost/type_traits/remove_const.hpp>
 
+#if 0
 namespace boost {
   template <typename T>  struct remove_const  {    typedef T type;  };
   template <typename T>  struct remove_const<const T>  {    typedef T type;  };
 }
-  
-
+#endif  
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <vector>

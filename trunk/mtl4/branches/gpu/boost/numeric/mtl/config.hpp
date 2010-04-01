@@ -12,8 +12,18 @@
 #ifndef MTL_CONFIG_INCLUDE
 #define MTL_CONFIG_INCLUDE
 
-namespace mtl {
+// processing unit
+#ifdef MTL_PU
+#  undef MTL_PU
+#endif
 
+#ifdef MTL_HAS_CUDA
+#  define MTL_PU __device__ __host__
+#else
+#  define MTL_PU 
+#endif
+
+namespace mtl {
 
     namespace matrix {
 

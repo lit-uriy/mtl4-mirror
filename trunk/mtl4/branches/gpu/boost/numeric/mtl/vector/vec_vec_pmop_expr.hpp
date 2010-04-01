@@ -12,8 +12,10 @@
 #ifndef MTL_VECTOR_VEC_VEC_PMOP_EXPR_INCLUDE
 #define MTL_VECTOR_VEC_VEC_PMOP_EXPR_INCLUDE
 
+#include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/compute_summand.hpp>
+#include <boost/numeric/mtl/operation/check.hpp>
 
 namespace mtl { namespace vector {
 
@@ -40,9 +42,21 @@ struct vec_vec_pmop_expr
 
     void delay_assign() const {}
 
+    bool valid_device() const { return first.value.valid_device() && second.value.valid_device(); }
+    bool valid_host() const { return first.value.valid_host() && second.value.valid_host(); }
+    void to_device() const { first.value.to_device(); second.value.to_device(); }
+    void to_host() const { first.value.to_host(); second.value.to_host(); }
+
+#ifdef MTL_HAS_CUDA
+    __device__ value_type dat(size_type i) const 
+    {
+        return SFunctor::apply(first.value(i), second.value(i));
+    }
+#endif   
+
     friend size_type inline size(const self& x)
     {
-	assert( size(x.first.value) == 0 || size(x.first.value) == size(x.second.value) );
+	check( size(x.first.value) == 0 || size(x.first.value) == size(x.second.value) );
 	return size(x.first.value);
     }
 
@@ -55,12 +69,12 @@ struct vec_vec_pmop_expr
     }
 #endif
 
-    const_dereference_type operator() (size_type i) const
+    MTL_PU const_dereference_type operator() (size_type i) const
     {
         return SFunctor::apply(first.value(i), second.value(i));
     }
 
-    const_dereference_type operator[] (size_type i) const
+    MTL_PU const_dereference_type operator[] (size_type i) const
     {
         return SFunctor::apply(first.value(i), second.value(i));
     }
