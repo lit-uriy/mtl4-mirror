@@ -69,6 +69,12 @@ struct ashape<dense_vector<Value, Parameters> >
     >::type type;
 };
 
+template <typename Value>
+struct ashape< cuda::vector<Value> > 
+{
+    typedef cvec<typename ashape<Value>::type> type;
+};
+
 /// Same as dense vector
 template <typename Value, typename Parameters>
 struct ashape<vector::strided_vector_ref<Value, Parameters> >

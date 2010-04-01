@@ -34,34 +34,27 @@ unsigned id= blockIdx.x * blockDim.x +  threadIdx.x,
 	 index = (blockDim.x * gridDim.x -1) + step*(blockIdx.y);
 
 
-    /// when the vector dimention is smaller than the conbination of blockDim and gridDim
+    // when the vector dimention is smaller than the conbination of blockDim and gridDim
     if(dim<gridDim.x*blockDim.x){	
-	/// Stop condition, because, we must stop the calculation, when is equal to  the vector dimention
+	// Stop condition, because, we must stop the calculation, when is equal to  the vector dimention
 	if (id<dim) 
 	    v1[id]+= v2[id]; 
-    } 
+    } else {  // when the vector dimention is bigger than the conbination of blockDim and gridDim
     
-    
-    /// when the vector dimention is bigger than the conbination of blockDim and gridDim
-    else{ 
-    
-    ///  first part of the calculation to achieve the combination of blockDim and gridDim
-    if (id < gridDim.x*blockDim.x -1)
-       v1[id]+= v2[id];
-
-    /// second we calculate step in each thread, but this part is the step+rest
-    if(id == gridDim.x*blockDim.x -1)
-	for(unsigned i=0; i<=step+rest; i++)
-	    v1[index+i]+= v2[index+i];   
-
-    /// third we calculate just step in each thread
-    if(id > gridDim.x*blockDim.x -1)
-	for(unsigned i=0; i<=step; i++)
-	    v1[index+i]+= v2[index+i]; 
+	//  first part of the calculation to achieve the combination of blockDim and gridDim
+	if (id < gridDim.x*blockDim.x -1)
+	    v1[id]+= v2[id];
 	
-    } 
- 
+	// second we calculate step in each thread, but this part is the step+rest
+	if (id == gridDim.x*blockDim.x -1)
+	    for(unsigned i=0; i<=step+rest; i++)
+		v1[index+i]+= v2[index+i];   
 
+	// third we calculate just step in each thread
+	if(id > gridDim.x*blockDim.x -1)
+	    for(unsigned i=0; i<=step; i++)
+		v1[index+i]+= v2[index+i]; 	
+    } 
  
 }
 

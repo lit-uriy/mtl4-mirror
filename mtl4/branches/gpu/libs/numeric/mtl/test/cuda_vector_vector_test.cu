@@ -78,8 +78,8 @@ int main(int argc, char* argv[])
 {
     using namespace mtl;
 
-    //    cuda::activate_best_gpu();
-    cuda::activate_gpu(0);
+    cuda::activate_best_gpu();
+//    cuda::activate_gpu(0);
     
     test<int>("int");
   //  test<short>("short");

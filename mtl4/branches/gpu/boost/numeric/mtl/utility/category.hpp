@@ -75,6 +75,12 @@ struct category< dense_vector<T, Parameters> >
     >::type type;
 } ;
 
+template <typename T>
+struct category< cuda::vector<T> > 
+{
+    typedef tag::col_vector type;
+} ;
+
 template <typename T, typename Parameters>
 struct category< vector::strided_vector_ref<T, Parameters> > 
 {

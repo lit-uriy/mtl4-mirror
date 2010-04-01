@@ -12,12 +12,16 @@
 #ifndef MTL_STD_CONCEPT_INCLUDE
 #define MTL_STD_CONCEPT_INCLUDE
 
+#include <boost/numeric/mtl/config.hpp>
+
 #ifdef __GXX_CONCEPTS__
 #  include <concepts>
 #else
-// Use Joel de Guzman's return type deduction
-#  include <boost/numeric/ublas/detail/returntype_deduction.hpp>
-#  include <boost/mpl/at.hpp>
+#  ifndef MTL_HAS_CUDA
+     // Use Joel de Guzman's return type deduction
+#    include <boost/numeric/ublas/detail/returntype_deduction.hpp>
+#    include <boost/mpl/at.hpp>
+#  endif
 #  include <boost/numeric/linear_algebra/pseudo_concept.hpp>
 #endif
 
@@ -50,6 +54,9 @@ namespace mtl {
 #endif
 
 #else // without concepts
+
+
+#  ifndef MTL_HAS_CUDA // Type deduction is disabled with CUDA
 
     // Use Joel de Guzman's return type deduction
     // Adapted from uBLAS
@@ -150,6 +157,22 @@ namespace mtl {
         typedef typename id::type result_type;
     };
         
+#  else // with CUDA (and without return type deduction)
+
+    template<class X, class Y> class Addable {};
+    template<class X>
+    class Addable<X, X>
+    {
+      public:
+	typedef X result_type;
+    };
+
+    template<class X, class Y> class Subtractable  : public Addable<X, Y> {};
+    template<class X, class Y> class Multiplicable : public Addable<X, Y> {};
+    template<class X, class Y> class Divisible     : public Addable<X, Y> {};
+    
+#  endif // CUDA
+
 #endif
 
 

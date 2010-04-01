@@ -13,6 +13,7 @@
 #define MTL_SFUNCTOR_INCLUDE
 
 #include <cmath>
+#include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 #include <boost/numeric/mtl/concept/magnitude.hpp>
 #include <boost/numeric/mtl/concept/static_functor.hpp>
@@ -26,12 +27,12 @@ struct plus
     typedef const Value2&                                 second_argument_type;
     typedef typename Addable<Value1, Value2>::result_type result_type;
 
-    static inline result_type apply(const Value1& v1, const Value2& v2)
+    MTL_PU static inline result_type apply(const Value1& v1, const Value2& v2)
     {
 	return v1 + v2;
     }
 
-    result_type operator() (const Value1& v1, const Value2& v2) const
+    MTL_PU result_type operator() (const Value1& v1, const Value2& v2) const
     {
 	return v1 + v2;
     }
@@ -44,12 +45,12 @@ struct minus
     typedef const Value2&                                 second_argument_type;
     typedef typename Subtractable<Value1, Value2>::result_type result_type;
 
-    static inline result_type apply(const Value1& v1, const Value2& v2)
+    MTL_PU static inline result_type apply(const Value1& v1, const Value2& v2)
     {
 	return v1 - v2;
     }
 
-    result_type operator() (const Value1& v1, const Value2& v2) const
+    MTL_PU result_type operator() (const Value1& v1, const Value2& v2) const
     {
 	return v1 - v2;
     }
@@ -62,12 +63,12 @@ struct times
     typedef const Value2&                                 second_argument_type;
     typedef typename Multiplicable<Value1, Value2>::result_type result_type;
 
-    static inline result_type apply(const Value1& v1, const Value2& v2)
+    MTL_PU static inline result_type apply(const Value1& v1, const Value2& v2)
     {
 	return v1 * v2;
     }
 
-    result_type operator() (const Value1& v1, const Value2& v2) const
+    MTL_PU result_type operator() (const Value1& v1, const Value2& v2) const
     {
 	return v1 * v2;
     }
@@ -80,12 +81,12 @@ struct divide
     typedef const Value2&                                 second_argument_type;
     typedef typename Divisible<Value1, Value2>::result_type result_type;
 
-    static inline result_type apply(const Value1& v1, const Value2& v2)
+    MTL_PU static inline result_type apply(const Value1& v1, const Value2& v2)
     {
 	return v1 / v2;
     }
 
-    result_type operator() (const Value1& v1, const Value2& v2) const
+    MTL_PU result_type operator() (const Value1& v1, const Value2& v2) const
     {
 	return v1 / v2;
     }
@@ -98,14 +99,19 @@ struct assign
     typedef const Value2&                                 second_argument_type;
     typedef Value1&                                       result_type;
 
-    static inline result_type apply(Value1& v1, const Value2& v2)
+    static MTL_PU inline result_type apply(Value1& v1, const Value2& v2)
     {
 	return v1= v2;
     }
 
-    result_type operator() (Value1& v1, const Value2& v2) const
+    MTL_PU result_type operator() (Value1& v1, const Value2& v2) const
     {
 	return v1= v2;
+    }
+
+    MTL_PU static inline result_type papply(Value1* v1, Value2 v2)
+    {
+	return *v1= v2;
     }
 };
     
@@ -116,14 +122,19 @@ struct plus_assign
     typedef const Value2&                                 second_argument_type;
     typedef Value1&                                       result_type;
 
-    static inline result_type apply(Value1& v1, const Value2& v2)
+    MTL_PU static inline result_type apply(Value1& v1, const Value2& v2)
     {
 	return v1+= v2;
     }
 
-    result_type operator() (Value1& v1, const Value2& v2) const
+    MTL_PU result_type operator() (Value1& v1, const Value2& v2) const
     {
 	return v1+= v2;
+    }
+
+    MTL_PU static inline result_type papply(Value1* v1, Value2 v2)
+    {
+	return *v1+= v2;
     }
 };
     
@@ -134,14 +145,19 @@ struct minus_assign
     typedef const Value2&                                 second_argument_type;
     typedef Value1&                                       result_type;
 
-    static inline result_type apply(Value1& v1, const Value2& v2)
+    MTL_PU static inline result_type apply(Value1& v1, const Value2& v2)
     {
 	return v1-= v2;
     }
 
-    result_type operator() (Value1& v1, const Value2& v2) const
+    MTL_PU result_type operator() (Value1& v1, const Value2& v2) const
     {
 	return v1-= v2;
+    }
+
+    MTL_PU static inline result_type papply(Value1* v1, Value2 v2)
+    {
+	return *v1-= v2;
     }
 };
 
@@ -152,14 +168,19 @@ struct times_assign
     typedef const Value2&                                 second_argument_type;
     typedef Value1&                                       result_type;
 
-    static inline result_type apply(Value1& v1, const Value2& v2)
+    MTL_PU static inline result_type apply(Value1& v1, const Value2& v2)
     {
 	return v1*= v2;
     }
 
-    result_type operator() (Value1& v1, const Value2& v2) const
+    MTL_PU result_type operator() (Value1& v1, const Value2& v2) const
     {
 	return v1*= v2;
+    }
+
+    MTL_PU static inline result_type papply(Value1* v1, Value2 v2)
+    {
+	return *v1*= v2;
     }
 };
 
@@ -170,14 +191,19 @@ struct divide_assign
     typedef const Value2&                                 second_argument_type;
     typedef Value1&                                       result_type;
 
-    static inline result_type apply(Value1& v1, const Value2& v2)
+    MTL_PU static inline result_type apply(Value1& v1, const Value2& v2)
     {
 	return v1/= v2;
     }
 
-    result_type operator() (Value1& v1, const Value2& v2) const
+    MTL_PU result_type operator() (Value1& v1, const Value2& v2) const
     {
 	return v1/= v2;
+    }
+
+    MTL_PU static inline result_type papply(Value1* v1, Value2 v2)
+    {
+	return *v1/= v2;
     }
 };
 
@@ -189,12 +215,12 @@ struct identity
     typedef const Value&                                  argument_type;
     typedef Value                                         result_type;
 
-    static inline result_type apply(const Value& v)
+    MTL_PU static inline result_type apply(const Value& v)
     {
 	return v;
     }
 
-    result_type operator() (const Value& v) const
+    MTL_PU result_type operator() (const Value& v) const
     {
 	return v;
     }
@@ -207,8 +233,8 @@ struct negate
     typedef const Value&                                  argument_type;
     typedef Value                                         result_type;
 
-    static inline result_type apply(const Value& v) { return -v;  }
-    result_type operator() (const Value& v) const { return -v; }
+    MTL_PU static inline result_type apply(const Value& v) { return -v;  }
+    MTL_PU result_type operator() (const Value& v) const { return -v; }
 };
 
 
@@ -218,13 +244,13 @@ struct abs
     typedef const Value&                                  argument_type;
     typedef typename Magnitude<Value>::type               result_type;
 
-    static inline result_type apply(const Value& v)
+    MTL_PU static inline result_type apply(const Value& v)
     {						
 	using std::abs;
 	return abs(v);
     }
 
-    result_type operator() (const Value& v) { return apply(v); }
+    MTL_PU result_type operator() (const Value& v) { return apply(v); }
 };
 
 template <typename Value>
@@ -233,13 +259,13 @@ struct sqrt
     typedef const Value&                                  argument_type;
     typedef Value                                         result_type;
 
-    static inline result_type apply(const Value& v)
+    MTL_PU static inline result_type apply(const Value& v)
     {						
 	using std::sqrt;
 	return sqrt(v);
     }
 
-    result_type operator() (const Value& v) { return apply(v); }
+    MTL_PU result_type operator() (const Value& v) { return apply(v); }
 };
 
 template <typename Value>
@@ -248,12 +274,12 @@ struct square
     typedef const Value&                                  argument_type;
     typedef Value                                         result_type;
 
-    static inline result_type apply(const Value& v)
+    MTL_PU static inline result_type apply(const Value& v)
     {						
 	return v * v;
     }
 
-    result_type operator() (const Value& v) { return apply(v); }
+    MTL_PU result_type operator() (const Value& v) { return apply(v); }
 };
 
 /// Compose functors \p F and \p G, i.e. compute f(g(x)).
@@ -268,12 +294,12 @@ struct compose
     typedef typename StaticUnaryFunctor<G>::argument_type argument_type;
     typedef typename StaticUnaryFunctor<F>::result_type   result_type;
     
-    static inline result_type apply(argument_type x)
+    MTL_PU static inline result_type apply(argument_type x)
     {
 	return F::apply(G::apply(x));
     }
 
-    result_type operator()(argument_type x) { return apply(x); }
+    MTL_PU result_type operator()(argument_type x) { return apply(x); }
 };
 
 
@@ -290,12 +316,12 @@ struct compose_first
     typedef typename StaticBinaryFunctor<F>::second_argument_type second_argument_type;
     typedef typename StaticBinaryFunctor<F>::result_type          result_type;
     
-    static inline result_type apply(first_argument_type x, second_argument_type y)
+    MTL_PU static inline result_type apply(first_argument_type x, second_argument_type y)
     {
 	return F::apply(G::apply(x), y);
     }
 
-    result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
+    MTL_PU result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
 };
 
 
@@ -312,12 +338,12 @@ struct compose_second
     typedef typename StaticUnaryFunctor<G>::argument_type         second_argument_type;
     typedef typename StaticBinaryFunctor<F>::result_type          result_type;
     
-    static inline result_type apply(first_argument_type x, second_argument_type y)
+    MTL_PU static inline result_type apply(first_argument_type x, second_argument_type y)
     {
 	return F::apply(x, G::apply(y));
     }
 
-    result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
+    MTL_PU result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
 };
 
 /// Compose functors \p F, \p G, and \p H with G/H in F's first/second argument, i.e. compute f(g(x), h(y)).
@@ -335,12 +361,12 @@ struct compose_both
     typedef typename StaticUnaryFunctor<H>::argument_type         second_argument_type;
     typedef typename StaticBinaryFunctor<F>::result_type          result_type;
     
-    static inline result_type apply(first_argument_type x, second_argument_type y)
+    MTL_PU static inline result_type apply(first_argument_type x, second_argument_type y)
     {
 	return F::apply(G::apply(x), H::apply(y));
     }
 
-    result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
+    MTL_PU result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
 };
 
 /// Compose unary functor \p F with binary functor \p G, i.e. compute f(g(x, y)).
@@ -356,12 +382,12 @@ struct compose_binary
     typedef typename StaticBinaryFunctor<G>::second_argument_type second_argument_type;
     typedef typename StaticUnaryFunctor<F>::result_type           result_type;
     
-    static inline result_type apply(first_argument_type x, second_argument_type y)
+    MTL_PU static inline result_type apply(first_argument_type x, second_argument_type y)
     {
 	return F::apply(G::apply(x, y));
     }
 
-    result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
+	MTL_PU result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
 };
 
 

@@ -12,6 +12,7 @@
 #ifndef MTL_SCALE_INCLUDE
 #define MTL_SCALE_INCLUDE
 
+#include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 #include <boost/numeric/mtl/matrix/map_view.hpp>
@@ -53,7 +54,7 @@ namespace mtl {
 	    typedef typename Multiplicable<Value1, Value2>::result_type result_type;	    
 	    explicit scale(const Value1& v1) : v1(v1) {}
 	    
-	    result_type operator() (const Value2& v2) const
+	    MTL_PU result_type operator() (const Value2& v2) const
 	    {
 		return v1 * v2;
 	    }
@@ -68,7 +69,7 @@ namespace mtl {
 	    typedef matrix::scaled_view<Value1, Matrix> result_type;	    
 	    explicit scale(const Value1& v1) : v1(v1) {}
 	
-	    result_type operator() (const Matrix& matrix) const
+	    MTL_PU result_type operator() (const Matrix& matrix) const
 	    {
 		return result_type(v1, matrix);
 	    }
@@ -83,7 +84,7 @@ namespace mtl {
 	    typedef vector::scaled_view<Value1, Vector> result_type;
 	    explicit scale(const Value1& v1) : v1(v1) {}
 	
-	    result_type operator() (const Vector& vector) const
+	    MTL_PU result_type operator() (const Vector& vector) const
 	    {
 		return result_type(v1, vector);
 	    }
