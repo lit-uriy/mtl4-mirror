@@ -1,4 +1,3 @@
-
 // Software License for MTL
 //
 // Copyright (c) 2007 The Trustees of Indiana University.
@@ -37,6 +36,7 @@ int test_main(int argc, char* argv[])
     dense2D<double>                                      dr(row, col), dr_t(row, col), Q(row, row), R(row, col);
     dense2D<complex<double> >                            dz(size, size), Qz(size, size), Rz(size, size);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dr= 0;
 
     dr[0][0]=1;
     dr[0][1]=1;

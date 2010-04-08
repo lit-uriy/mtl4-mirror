@@ -43,11 +43,8 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
     Matrix           R(A), Q(nrows,nrows);
 
     Q= 1;
-   if ( nrows < ncols ) throw mtl::logic_error("underdetermined system, use trans(A) instead of A");
-    if(ncols == nrows)
-	mini= ncols - 1;
-    else
-	mini= ncols;
+    if ( nrows < ncols ) throw mtl::logic_error("underdetermined system, use trans(A) instead of A");
+    mini= (ncols == nrows) ? ncols - 1 : ncols;
 
     for (size_type i = 0; i < mini; i++) {
 	irange r(i, imax); // Intervals [i, n-1]
