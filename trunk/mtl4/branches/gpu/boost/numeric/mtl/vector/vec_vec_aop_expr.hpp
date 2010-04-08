@@ -124,12 +124,16 @@ struct vec_vec_aop_expr
 	{
 	    const size_type grid_size = blockDim.x * gridDim.x, id= blockIdx.x * blockDim.x + threadIdx.x,
 			    blocks= n / grid_size,  nn= blocks * grid_size;
+	    value_type tmp;
 
-	    for (size_type i= id; i < nn; i+= grid_size)
-		SFunctor::papply(  first.dadd(i), second.dat(i) );
-	        // first.dadd(i)= second.first.dadd(i) + second.second.dadd(i);
-	    if (nn + id < n)
-		SFunctor::papply( first.dadd(nn + id), second.dat(nn + id) );	    
+	    for (size_type i= id; i < nn; i+= grid_size) {
+		tmp= second.dat(i);   
+		SFunctor::papply(first.dadd(i), tmp);
+	    }
+	    if (nn + id < n) {
+		tmp= second.dat(nn + id);
+		SFunctor::papply(first.dadd(nn + id), tmp);
+	    }	    
 	}
 	
 	E1&               first ;
