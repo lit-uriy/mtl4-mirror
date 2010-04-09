@@ -81,6 +81,8 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
 	}
      
     }
+    std::cout<< "Q=\n" << Q << "\n";
+    std::cout<< "R=\n" << R << "\n";
     return std::make_pair(Q,R);
 }
 
