@@ -28,13 +28,13 @@
 
 namespace mtl { namespace matrix {
 
-//TODO docu need to be changed
-// QR-Factorization of matrix A
-// Return A  with R=triu(A) and L=tril(A,-1) L in form of Householder-vectors
+
+// QR-Factorization of matrix A(m x n) with m >= n
+// Return pair R upper triangel matrix and Q= orthogonal matrix
 template <typename Matrix>
 std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
 	  typename mtl::dense2D<typename Collection<Matrix>::value_type> >
-	inline qr(const Matrix& A)
+	inline qr_row(const Matrix& A)
 {
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
@@ -84,6 +84,45 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
     std::cout<< "Q=\n" << Q << "\n";
     std::cout<< "R=\n" << R << "\n";
     return std::make_pair(Q,R);
+}
+
+//TODO
+// QR-Factorization of matrix A(m x n) with  m < n
+// Return pair R upper triangel matrix and Q= orthogonal matrix
+template <typename Matrix>
+std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
+	  typename mtl::dense2D<typename Collection<Matrix>::value_type> >
+	inline qr_col(const Matrix& A)
+{
+    typedef typename Collection<Matrix>::value_type   value_type;
+    typedef typename Collection<Matrix>::size_type    size_type;
+    size_type        ncols = num_cols(A), nrows = num_rows(A), mini;
+    value_type       zero= math::zero(A[0][0]);
+    Matrix           R(nrows,ncols), Q(ncols,ncols);
+
+
+
+    std::cout<< "qr_col inline ok\n";
+    return std::make_pair(Q,R);
+}
+
+template <typename Matrix>
+std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
+	  typename mtl::dense2D<typename Collection<Matrix>::value_type> >
+	inline qr(const Matrix& A)
+{
+    if (num_cols(A) <= num_rows(A)){
+	Matrix   R(num_rows(A),num_cols(A)), Q(num_rows(A),num_rows(A));
+	boost::tie(Q, R)= qr_row(A);
+	std::cout<< "qr_row ok\n";
+	return std::make_pair(Q,R);
+    } else {
+	Matrix   R(num_rows(A),num_cols(A)), Q(num_cols(A),num_cols(A));
+	boost::tie(Q, R)= qr_col(A);
+	std::cout<< "qr_col ok\n";
+	return std::make_pair(Q,R);
+    }
+	
 }
 
 
