@@ -62,7 +62,7 @@ inline svd(const Matrix& A, double tol)
     loops= 100* std::max(nrows,ncols);
     S= one; D= one; QT= zero; R= zero; E= zero;
     /// loops at the moment ==3
-    while (err > tol && i < loops ) {
+    while (err > tol && i < 3 ) {
 	std::cout<< "LOOP=" << i << "\n";
 	if ( nrows >= ncols ) { ///quadratic part is ok TODO check for row > col
 	    std::cout<< "normal\n";
