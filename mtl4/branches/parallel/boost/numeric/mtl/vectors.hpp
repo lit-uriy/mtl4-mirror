@@ -18,4 +18,6 @@
 #include <boost/numeric/mtl/vector/strided_vector_ref.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 
+#include <boost/numeric/mtl/vector/distributed.hpp> // with #ifdef MTL_HAS_MPI
+
 #endif // MTL_VECTORS_INCLUDE

@@ -29,6 +29,8 @@
 #include <boost/numeric/mtl/matrix/laplacian_setup.hpp> 
 #include <boost/numeric/mtl/matrix/hessian_setup.hpp> 
 
+#include <boost/numeric/mtl/matrix/distributed.hpp> // with #ifdef MTL_HAS_MPI
+
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 
 #endif // MTL_MATRICES_INCLUDE
