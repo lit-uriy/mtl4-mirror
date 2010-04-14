@@ -20,9 +20,10 @@
 
 
 ///print matrix short
-#define printm(m) std::cout<<"\n\n"<< #m << ' '; short_printm(m);
+
+#define print(m) std::cout<<"\n\n"<< #m << ' '; short_print2(m);
 template < typename Matrix>
-void short_printm(const Matrix& m)
+void short_print2(const Matrix& m)
 {
    if (num_rows(m)< 30 && num_cols(m)<30) std::cout<<m<< "\n";
    else {
@@ -67,21 +68,36 @@ void test(const char* name)
     mtl::cuda::dense2D<T>  A(size, size);
     mtl::cuda::vector<T>  x(size, 1.0), b(size, 0.0); 
  
+  
+    A.set_to_zero();   
+    
+
     std::cout << "Matrix constructed.\n";
     std::cout << "Matrix Dimension. "<<size<<"x"<<size<<"\n";
     std::cout << "Matrix Elements= "<<size*size<<"\n";
-
-    A.set_to_zero();
     std::cout << "Matrix on host= "<< (A.valid_host()==true ?  "Yes\n\n" : "No\n\n");
     
-
-    for (int i= 0; i < size; i++)
+   
+    for (int i= 0; i < size; i++){
+//       std::cout<< "i="  << A(i,i) << "\n";
       A(2,i,i);
-    
+    }
     A(2,0,size-1);
     A(2,size-1,0);
     
- //   A.to_device();
+    
+
+    
+//    A(0,0,3); for testing "elemenst(A)"
+
+//    A.to_device();
+//    x.to_device();
+//    std::cout<< "A=" << A<<"\n";
+ //     std::cout<< "x[1]=" << x[1] << "\n";
+ //      std::cout<< "x=" << x << "\n";
+//      std::cout<< "b=" << b << "\n";
+
+
 
 ///Start Vector = Matrix x Vector
     std::cout<< "start multiplication\n";
@@ -95,8 +111,7 @@ void test(const char* name)
  	std::cout<< "Error Matrix vector multiplication on device.\n";
       else
 	std::cout<< "Multiplication Without problems.\n";  
-      std::cout<< "A= "<<A;
-      //printm(A);
+      print(A);
 ///End Vector = Matrix x Vector
       
       
@@ -107,8 +122,7 @@ void test(const char* name)
 //    A.laplacian_setup_device(5);
 
 //     std::cout<< "\n\nA=" << A<<"\n";
-     std::cout<< "A= "<<A;
-     //printm(A);
+     print(A);
    
 
 

@@ -21,6 +21,11 @@ namespace mtl { namespace cuda {
     const unsigned host_limit= 1024;
 #endif
 
+int actual_device=-1;
+
+
+
+
 template <typename T>
 bool inline in_limit(const T& x) { return size(x) <= cuda::host_limit; }
 
@@ -58,6 +63,7 @@ void activate_best_gpu(void)
     else{
 	cudaGetDeviceProperties(&device_properties, best_gpu);
 	std::cout<< "\n\t\t===Running on device " <<  best_gpu << ": " << device_properties.name << "===\n\t\tNumber of Multiprocessors: "<<device_properties.multiProcessorCount<<"\n\n\n";
+	actual_device=best_gpu;
     } 
 
 }
@@ -76,9 +82,14 @@ void activate_gpu(int currentDevice)
     cudaDeviceProp deviceProp;
     cudaGetDeviceProperties(&deviceProp, currentDevice);
     std::cout<< "\n\t\t==Running on device " <<  currentDevice << ": " << deviceProp.name << "===\n\t\tNumber of Multiprocessors: "<<deviceProp.multiProcessorCount<<"\n\n\n";
+    actual_device=currentDevice;
    }
 
 }
+
+
+int active_device(){return actual_device;}
+
 
 
 
