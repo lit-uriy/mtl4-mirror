@@ -91,7 +91,7 @@ void test(const char* name)
 int main(int argc, char* argv[])
 {
     using namespace mtl;
-cuda::activate_best_gpu();
+    cuda::activate_best_gpu();
     test<int>("int");
  //   test<short>("short");
 

@@ -13,7 +13,6 @@
 #define MTL_CUDA_VECTOR_KERNEL_INCLUDE
 
 #include <boost/numeric/mtl/cuda/scalar.cu>
-#include <boost/numeric/mtl/cuda/launch_function.hpp>
 
 namespace mtl { namespace cuda {
 
@@ -197,6 +196,13 @@ struct vec_rminus_asgn
 };
 
 
+
+template <typename NullaryFunction>
+__global__
+void launch_function(NullaryFunction f)
+{
+  f();
+}
 
 }} // namespace mtl::cuda
 

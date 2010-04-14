@@ -28,7 +28,7 @@ __global__ void vector_vector_rplus (Vector *v1, Vector *v2, int dim)
        v1[idx]+=v2[idx];*/
 
 unsigned id= blockIdx.x * blockDim.x +  threadIdx.x,
-	 left = dim - gridDim.x*blockDim.x,
+	 left = dim - (gridDim.x*blockDim.x),
 	 step = left/(gridDim.y),
 	 rest = left%(gridDim.y),
 	 index = (blockDim.x * gridDim.x -1) + step*(blockIdx.y);
@@ -39,27 +39,34 @@ unsigned id= blockIdx.x * blockDim.x +  threadIdx.x,
 	// Stop condition, because, we must stop the calculation, when is equal to  the vector dimention
 	if (id<dim) 
 	    v1[id]+= v2[id]; 
-    } else {  // when the vector dimention is bigger than the conbination of blockDim and gridDim
-    
-	//  first part of the calculation to achieve the combination of blockDim and gridDim
-	if (id < gridDim.x*blockDim.x -1)
-	    v1[id]+= v2[id];
-	
-	// second we calculate step in each thread, but this part is the step+rest
-	if (id == gridDim.x*blockDim.x -1)
-	    for(unsigned i=0; i<=step+rest; i++)
-		v1[index+i]+= v2[index+i];   
-
-	// third we calculate just step in each thread
-	if(id > gridDim.x*blockDim.x -1)
-	    for(unsigned i=0; i<=step; i++)
-		v1[index+i]+= v2[index+i]; 	
     } 
+    
+    
+    // when the vector dimention is bigger than the conbination of blockDim and gridDim
+    else{ 
+    
+    //  first part of the calculation to achieve the combination of blockDim and gridDim
+    if (id < gridDim.x*blockDim.x -1)
+       v1[id]+= v2[id];
+
+    // second we calculate step in each thread, but this part is the step+rest
+    if(id == gridDim.x*blockDim.x -1)
+	for(unsigned i=0; i<=step+rest; i++)
+	    v1[index+i]+= v2[index+i];   
+
+    // third we calculate just step in each thread
+    if(id > gridDim.x*blockDim.x -1)
+	for(unsigned i=0; i<=step; i++)
+	    v1[index+i]+= v2[index+i]; 
+	
+    } 
+ 
+
  
 }
 
 
-///testing without copy
+//testing without copy
 template <typename Vector>
 __global__ void vector_vector_assign_plus (Vector *vout, Vector *v1, Vector *v2, int dim)
 {
@@ -86,27 +93,27 @@ unsigned id= blockIdx.x * blockDim.x +  threadIdx.x,
 	 index = (blockDim.x * gridDim.x -1) + step*(blockIdx.y);
 
 
-    /// when the vector dimention is smaller than the conbination of blockDim and gridDim
+    // when the vector dimention is smaller than the conbination of blockDim and gridDim
     if(dim<gridDim.x*blockDim.x){	
-	/// Stop condition, because, we must stop the calculation, when is equal to  the vector dimention
+	// Stop condition, because, we must stop the calculation, when is equal to  the vector dimention
 	if (id<dim) 
 	    v1[id]-= v2[id]; 
     } 
     
     
-    /// when the vector dimention is bigger than the conbination of blockDim and gridDim
+    // when the vector dimention is bigger than the conbination of blockDim and gridDim
     else{ 
     
-    ///  first part of the calculation to achieve the combination of blockDim and gridDim
+    //  first part of the calculation to achieve the combination of blockDim and gridDim
     if (id < gridDim.x*blockDim.x -1)
        v1[id]-= v2[id];
 
-    /// second we calculate step in each thread, but this part is the step+rest
+    // second we calculate step in each thread, but this part is the step+rest
     if(id == gridDim.x*blockDim.x -1)
 	for(unsigned i=0; i<=step+rest; i++)
 	    v1[index+i]-= v2[index+i];   
 
-    /// third we calculate just step in each thread
+    // third we calculate just step in each thread
     if(id > gridDim.x*blockDim.x -1)
 	for(unsigned i=0; i<=step; i++)
 	    v1[index+i]-= v2[index+i]; 
@@ -119,7 +126,6 @@ unsigned id= blockIdx.x * blockDim.x +  threadIdx.x,
 }
 
 
- // I don't think that we need this
 template <typename Vector>
 __global__ void vector_vector_rmult (Vector *v1, Vector *v2, int dim)
 {
@@ -132,33 +138,33 @@ __global__ void vector_vector_rmult (Vector *v1, Vector *v2, int dim)
 */
 
 unsigned id= blockIdx.x * blockDim.x +  threadIdx.x,
-	 left = dim - gridDim.x*blockDim.x,
+	 left = dim - (gridDim.x*blockDim.x),
 	 step = left/(gridDim.y),
 	 rest = left%(gridDim.y),
 	 index = (blockDim.x * gridDim.x -1) + step*(blockIdx.y);
 
 
-    /// when the vector dimention is smaller than the conbination of blockDim and gridDim
+    // when the vector dimention is smaller than the conbination of blockDim and gridDim
     if(dim<gridDim.x*blockDim.x){	
-	/// Stop condition, because, we must stop the calculation, when is equal to  the vector dimention
+	// Stop condition, because, we must stop the calculation, when is equal to  the vector dimention
 	if (id<dim) 
 	    v1[id]*= v2[id]; 
     } 
     
     
-    /// when the vector dimention is bigger than the conbination of blockDim and gridDim
+    // when the vector dimention is bigger than the conbination of blockDim and gridDim
     else{ 
     
-    ///  first part of the calculation to achieve the combination of blockDim and gridDim
+    //  first part of the calculation to achieve the combination of blockDim and gridDim
     if (id < gridDim.x*blockDim.x -1)
        v1[id]*= v2[id];
 
-    /// second we calculate step in each thread, but this part is the step+rest
+    // second we calculate step in each thread, but this part is the step+rest
     if(id == gridDim.x*blockDim.x -1)
 	for(unsigned i=0; i<=step+rest; i++)
 	    v1[index+i]*= v2[index+i];   
 
-    /// third we calculate just step in each thread
+    // third we calculate just step in each thread
     if(id > gridDim.x*blockDim.x -1)
 	for(unsigned i=0; i<=step; i++)
 	    v1[index+i]*= v2[index+i]; 
@@ -172,45 +178,96 @@ unsigned id= blockIdx.x * blockDim.x +  threadIdx.x,
 
 
 
-///kernel plus, for vectors larger than 33 millionen
+//kernel plus, for vectors larger than 33 millionen
 template <typename T>
 __global__ void vector_vector_assign_plus_updated (T *vout, T *v1, T *v2, int dim)
 {
 unsigned id= blockIdx.x * blockDim.x +  threadIdx.x,
-	 left = dim - gridDim.x*blockDim.x,
-	 step = left/(gridDim.y),
-	 rest = left%(gridDim.y),
-	 index = (blockDim.x * gridDim.x -1) + step*(blockIdx.y);
+	 elem_thread = dim / (gridDim.x * blockDim.x),
+	 left = dim % (gridDim.x * blockDim.x);
 
 
-    /// when the vector dimention is smaller than the conbination of blockDim and gridDim
+//      if(dim<gridDim.x*blockDim.x){   
+// 
+// /*	
+// 	    if(elem_thread!=0) {
+// 	elem_thread=elem_thread+1;
+// 	left=dim-elem_thread*gridDim.x*blockDim.x;
+//     
+//     }*/
+// 	
+// 	
+// 	
+     if(id<gridDim.x*blockDim.x -1){
+ 	for(unsigned i=0; i<elem_thread; i++)
+ 	   vout[id*elem_thread+i]= v1[id*elem_thread+i] + v2[id*elem_thread+i];
+     }
+
+    else
+      for(unsigned i=0; i<=left; i++)
+ 	   vout[id*elem_thread+i]= v1[id*elem_thread+i] + v2[id*elem_thread+i];
+// 
+//     
+//     
+//     
+//     vout[0]=1;
+//     vout[1]=left;
+//     vout[2]=id;
+//     
+//      } 
+//     
+
+//  vout[0]=dim;
+//  vout[1]=elem_thread;
+//  vout[2]=left;
+//  vout[3]=0;//dim - gridDim.x * blockDim.x;
+//  vout[4]=0;
+//  vout[5]=0;
+//  vout[6]=0;
+ 
+ 
+ /*    
+     
+
+    // when the vector dimention is smaller than the conbination of blockDim and gridDim
     if(dim<gridDim.x*blockDim.x){	
-	/// Stop condition, because, we must stop the calculation, when is equal to  the vector dimention
+	// Stop condition, because, we must stop the calculation, when is equal to  the vector dimention
 	if (id<dim) 
 	    vout[id]= v1[id] + v2[id]; 
+    
+    
+    
+    
+    
+    
+    
+    
     } 
     
     
-    /// when the vector dimention is bigger than the conbination of blockDim and gridDim
+    // when the vector dimention is bigger than the conbination of blockDim and gridDim
     else{ 
     
-    ///  first part of the calculation to achieve the combination of blockDim and gridDim
+    //  first part of the calculation to achieve the combination of blockDim and gridDim
     if (id < gridDim.x*blockDim.x -1)
        vout[id]= v1[id] + v2[id];
 
-    /// second we calculate step in each thread, but this part is the step+rest
+    // second we calculate step in each thread, but this part is the step+rest
     if(id == gridDim.x*blockDim.x -1)
 	for(unsigned i=0; i<=step+rest; i++)
 	    vout[index+i]= v1[index+i] + v2[index+i];   
 
-    /// third we calculate just step in each thread
+    // third we calculate just step in each thread
     if(id > gridDim.x*blockDim.x -1)
 	for(unsigned i=0; i<=step; i++)
 	    vout[index+i]= v1[index+i] + v2[index+i]; 
 	
     }
+    
+ */   
+    
 }
-///end updated function
+//end updated function
 
 
 

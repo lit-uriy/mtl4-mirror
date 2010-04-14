@@ -424,54 +424,16 @@ class dense2D
 
     friend std::ostream& operator<<(std::ostream& os, const self& x)
     {
-	//x.replicate_on_host();
-
-	if (x.num_rows< 30 && x.num_cols<30){
-	
-	    os << "{" << x.num_rows << "," << x.num_cols << (x.valid_host() ? ",host}=\n" : ",device}=\n");
-	    for (int i= 0; i < x.num_rows; i++){
-		os << "[ ";  
-		for (int j= 0; j < x.num_cols; j++){
-		    os <<  x.start[i][j] << (j== x.num_cols-1 ? " ]\n" : " ");	  
-		}
-	    }
-	
-	
+//	x.replicate_on_host();
+	os << "{" << x.num_rows << "," << x.num_cols << (x.valid_host() ? ",host}=\n" : ",device}=\n");
+	for (int i= 0; i < x.num_rows; i++){
+	os << "[ ";  
+	  for (int j= 0; j < x.num_cols; j++){
+	     os <<  x.start[i][j] << (j== x.num_cols-1 ? " ]\n" : " ");	  
+	  }
 	}
-	
-	else {
-	    os << "{" << x.num_rows << "," << x.num_cols << (x.valid_host() ? ",host}=\n" : ",device}=\n");
-	    for(int i=0; i<15; i++) {
-		os<<"[";    
-		for(int j=0; j<15; j++) os <<  x.start[i][j]<< " ";
-		os<<". . . . . ";
-		for(int j=x.num_cols-15; j<x.num_cols; j++) os <<  x.start[i][j]<< " ";
-		os<<"]\n";
-	    }
-       
-        
-	    for(int i=0; i<5; i++) {
-		os<<"[";
-		for(int j=0; j<35; j++) os<<". ";
-		os<<"]\n";
-	    }
-	
-        
-	    for(int i=x.num_rows-15; i<x.num_rows; i++) {
-		os<<"[";
-		for(int j=0; j<15; j++) os <<  x.start[i][j]<< " ";
-		os<< ". . . . . ";
-		for(int j=x.num_cols-15; j<x.num_cols; j++) os <<  x.start[i][j]<< " ";
-		os<<"]\n";
-	    }	
-	
+	 os << "\n"; 
 	   
-
-	} 
-	 
- 
-	 
-	os << "\n";
 	return os;
     }
 
