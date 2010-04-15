@@ -189,7 +189,22 @@ class vector
 
 
 
+//plus updated for testing 
+    void plus_updated(const self& v_in, self& v_out) 
+    { 
+	assert(v_in.dim == dim && v_out.dim == dim); 
+	if (meet_data(*this, v_in, v_out)) { 
+	    for (int i= 0; i < dim; i++) 
+		v_out[i]= start[i] + v_in.start[i]; 
+	} else  { 
+	    v_out.to_device(); 
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
+	    std::cout<<"  dim/BLOCK_SIZE+1= "<<dim/BLOCK_SIZE+1<<"\n  dimGrid.x= "<< dimGrid.x <<"\n  dimGrid.y= "<< dimGrid.y <<"\n  dimBlock.x "<< dimBlock.x <<"\n  dimBlock.y= "<< dimBlock.y <<"\n  dimBlock.z= "<< dimBlock.z <<"\n"; 
+	    vector_vector_assign_plus_updated<<<dimGrid, dimBlock>>>(v_out.dptr, dptr, v_in.dptr, dim); 
+	 }       
+} 
 
+//end plus updated 
 
     //Scalar operations with vector
     // Expensive !!!
@@ -308,6 +323,7 @@ class vector
 
     __device__ T dat(int i) const { return dptr[i]; }
     __device__ T* dadd(int i) { return dptr + i; }
+    // __device__ const T* dadd(int i) const { return dptr + i; }
 
     bool valid_host() const { return on_host; }
     bool valid_device() const { return !on_host; }
@@ -340,9 +356,20 @@ class vector
 
    int gridDimx(int dim){
        int gridDimx= (dim/BLOCK_SIZE+1);
+<<<<<<< .mine
 
-       if(gridDimx<65535) return gridDimx;
-       else return 65535;
+       int deviceCount; 
+       cudaGetDeviceCount(&deviceCount); 
+       cudaDeviceProp deviceProp; 
+       cudaGetDeviceProperties(&deviceProp, active_device()); 
+       
+=======
+
+>>>>>>> .r7177
+       //      std::cout<<"device actual "<<active_device()<<": "<< deviceProp.name<<" grid max: "<< deviceProp.maxGridSize[0]<<"\n"; 
+
+       if(gridDimx<deviceProp.maxGridSize[0]) return gridDimx; 
+       else return deviceProp.maxGridSize[0]; 
    
    }
    

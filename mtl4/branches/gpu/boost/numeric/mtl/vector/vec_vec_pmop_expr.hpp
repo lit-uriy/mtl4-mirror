@@ -79,7 +79,7 @@ struct vec_vec_pmop_expr
         return SFunctor::apply(first.value(i), second.value(i));
     }
 
-  private:
+    //private:
     operation::compute_summand<E1> first;
     operation::compute_summand<E2> second;
 };

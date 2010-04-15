@@ -17,7 +17,6 @@
 #include <boost/numeric/mtl/cuda/dot.cu>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 
-
 template <typename T>
 void test(const char* name)
 {
@@ -29,14 +28,14 @@ void test(const char* name)
     std::cout << name << "-- Vector Test\n"; 
     mtl::cuda::vector<T>  x(gross, 33), y(gross, 10, false), z(gross, 3);
 
-    std::cout << "Vector Size= " << size(x) <<"\n\n";
-    
-    y[8]= 12;
-    
+    std::cout << "Vector Size= " << size(x) <<"\n\n"; 
+   
+    y[8]= 12; 
+   
     std::cout<< "\n>>>>>>>Vectors Contructed <<<<<<\n";
     std::cout<< "Y= "<< y;
     std::cout<< "Z= "<< z;
-    std::cout<< "X= "<< x;
+    std::cout<< "X= "<< x; 
     
     x= y+z;
     std::cout<< "\n>>>>>>>X= Y + Z <<<<<<\n";
@@ -46,7 +45,6 @@ void test(const char* name)
     if (x[critic_point] != T(13))
 	std::cout<< "Error adding vector and vector on device.";
  
-#if 0	
     x= y-z;    
     std::cout<< "\n>>>>>>>X= Y - Z <<<<<<\n";
     std::cout<< "Y= "<< y;
@@ -67,6 +65,7 @@ void test(const char* name)
     if (x[critic_point] != T(7))
 	std::cout<< "Error in x-= y+z on device.";
    
+#if 0	
     x= 2 * y + z + 3 * z;
     std::cout<< "\n>>>>>>> x= 2 * y + z + 3 * z <<<<<<\n";
     std::cout<< "X= "<< x;
