@@ -7,7 +7,7 @@
 // 
 // This file is part of the Matrix Template Library
 // 
-// See also license.mtl.txt in the distribution.
+// See also license.mtl.txt in the distribution.f
 
 #ifndef MTL_CUDA_VECTOR_INCLUDE
 #define MTL_CUDA_VECTOR_INCLUDE
@@ -340,7 +340,7 @@ class vector
 
    int gridDimx(int dim){
        int gridDimx= (dim/BLOCK_SIZE+1);
-       
+
        if(gridDimx<65535) return gridDimx;
        else return 65535;
    
