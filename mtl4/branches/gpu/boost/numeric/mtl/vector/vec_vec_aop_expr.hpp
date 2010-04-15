@@ -118,7 +118,7 @@ struct vec_vec_aop_expr
 #ifdef MTL_HAS_CUDA
     struct kernel
     {
-	kernel(E1& first, const E2& second) : first(first), second(second), n(size(first)) {}
+	kernel(E1& first, const E2& second) : first(first), second(second), n(size(first)) {std::cout<< "n=" << n << "\n";}
 	
 	__device__ void operator()()
 	{
@@ -128,6 +128,7 @@ struct vec_vec_aop_expr
 
 	    for (size_type i= id; i < nn; i+= grid_size) {
 		tmp= second.dat(i);   
+		//first.dadd(i)= 11;//second.dat(i) + second.dat(i);
 		SFunctor::papply(first.dadd(i), tmp);
 	    }
 	    if (nn + id < n) {
@@ -153,9 +154,13 @@ struct vec_vec_aop_expr
 	    MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
 
 #ifdef MTL_HAS_CUDA
-	    if (meet_data(first, second))
+	    if (meet_data(first, second)){
+		std::cout<<"on host\n";
 		compute_on_host();
-	    else {
+	    } else {
+		std::cout<<"on device\n";
+		std::cout<<"first="<< first <<"\n";
+		//std::cout<<"second="<< second <<"\n";
 		dim3 dimGrid(gridDimx(size(first))), dimBlock(BL_SIZE); // temporary sol.
 		kernel k(const_cast<first_argument_type&>(first), second);
 		cuda::launch_function<<<dimGrid, dimBlock>>>(k);
