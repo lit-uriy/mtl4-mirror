@@ -11,8 +11,8 @@
 
 #ifndef MTL_CUDA_VECTOR_INCLUDE
 #define MTL_CUDA_VECTOR_INCLUDE
-//for testing only
 
+//for testing only
 
 #include <iostream>
 #include <cassert>
@@ -24,6 +24,10 @@
 #include <boost/numeric/mtl/cuda/vector_kernel.cu>
 #include <boost/numeric/mtl/cuda/vector_vector_kernel.cu>
 
+#include <boost/numeric/mtl/vector/vec_expr.hpp>
+#include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
+
+
 //#include </usr/local/cuda/include/cuda_runtime_api.h>
 
 #define BLOCK_SIZE 512
@@ -34,11 +38,14 @@ namespace mtl { namespace cuda {
 /// Class for replicating vectors on host and device
 template <typename T>
 class vector
+  : public mtl::vector::vec_expr<vector<T> >,
+    public mtl::vector::crtp_base_vector< vector<T>, T, std::size_t >
 {
     typedef vector<T>                self;
-    //friend self & operator+(const self & , const self & );
   public:
     typedef T                        value_type;
+    typedef std::size_t              size_type;
+    typedef mtl::vector::crtp_vector_assign< self, T, size_type >  assign_base;
 
     /// Constructor from type T 
     vector(int n=1, const T& value= T(), bool on_host=false ) 
@@ -50,6 +57,7 @@ class vector
 	 cudaFree(dptr);
     }
 
+    void delay_assign() const {} // dummy
 
 //Vector-Vector Operations
     vector(const self& that){   //that Konstruktor
@@ -81,6 +89,11 @@ class vector
 	return *this;
     }
 
+    using assign_base::operator=;
+
+    void change_dim(size_type n) { throw "Not implemented yet! \n"; }
+
+#if 0
     self operator + (const self &v1) 
     {   
 	self temp(dim,0);
@@ -110,24 +123,6 @@ class vector
 	    vector_vector_assign_plus<<<dimGrid, dimBlock>>>(v_out.dptr, dptr, v_in.dptr, dim);
 	 }	
     }
-
-
-///plus updated for testing
-    void plus_updated(const self& v_in, self& v_out)
-    {
-	assert(v_in.dim == dim && v_out.dim == dim);
-	if (meet_data(*this, v_in, v_out)) {
-	    for (int i= 0; i < dim; i++)
-		 v_out[i]= start[i] + v_in.start[i];
-	 } else  {
-	     v_out.to_device();
-	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);
-	    std::cout<<"  dim/BLOCK_SIZE+1= "<<dim/BLOCK_SIZE+1<<"\n  dimGrid.x= "<< dimGrid.x <<"\n  dimGrid.y= "<< dimGrid.y <<"\n  dimBlock.x "<< dimBlock.x <<"\n  dimBlock.y= "<< dimBlock.y <<"\n  dimBlock.z= "<< dimBlock.z <<"\n";
-	    vector_vector_assign_plus_updated<<<dimGrid, dimBlock>>>(v_out.dptr, dptr, v_in.dptr, dim);
-	 }	
-    }
-
-///end plus updated
 
 
 
@@ -237,9 +232,6 @@ class vector
 	}
         return *this;
     }
-// dim3 grid(size_x / BLOCK_DIM, size_y / BLOCK_DIM, 1);
-// dim3 threads(BLOCK_DIM, BLOCK_DIM, 1);
-
 
     template <typename U>
     self& operator/=(const U& src)
@@ -290,7 +282,7 @@ class vector
 	}
         return *this;
     }
-
+#endif
 
     T& operator[](int index) {
 //	std::cout<<"klammer function 1\n\n";
@@ -311,9 +303,15 @@ class vector
       return read(i); 
     }
 
+    T operator()(int i) const { return this->operator[](i); }
+    T& operator()(int i) { return this->operator[](i); }
+
+    __device__ T dat(int i) const { return dptr[i]; }
+    __device__ T* dadd(int i) { return dptr + i; }
+
     bool valid_host() const { return on_host; }
     bool valid_device() const { return !on_host; }
-    friend int  size(const self& x) { return x.dim; }
+    friend size_type size(const self& x) { return x.dim; }
 
     void to_host() const
     {
@@ -341,19 +339,10 @@ class vector
 
 
    int gridDimx(int dim){
-       int gridDimx= (dim/BLOCK_SIZE+1),
-	   deviceCount;
-
-	cudaGetDeviceCount(&deviceCount);
+       int gridDimx= (dim/BLOCK_SIZE+1);
        
-	cudaDeviceProp deviceProp;
-        cudaGetDeviceProperties(&deviceProp, active_device());
-	
-//	std::cout<<"device actual "<<active_device()<<": "<< deviceProp.name<<" grid max: "<< deviceProp.maxGridSize[0]<<"\n";
-	
-       
-       if(gridDimx<deviceProp.maxGridSize[0]) return gridDimx;
-       else return deviceProp.maxGridSize[0];
+       if(gridDimx<65535) return gridDimx;
+       else return 65535;
    
    }
    
@@ -363,16 +352,35 @@ class vector
 
     friend std::ostream& operator<<(std::ostream& os, const self& x)
     {
+	
 	x.replicate_on_host();
-	os << "{" << size(x) << (x.valid_host() ? ",host}(" : ",device}(");
-	for (int i= 0; i < size(x); i++)
-	    os << x.start[i] << (i < x.dim - 1 ? ", " : ")");
+	os << "{" << size(x) << (x.valid_host() ? ",host}[" : ",device}[");
+
+#if MTL_SHORT_PRINT
+	bool complete= size(x) <= 20;
+#else
+	bool complete= true;
+#endif
+
+	if(complete)
+	    for (int i= 0; i < size(x); i++)
+		os << x.start[i] << (i < x.dim - 1 ? ", " : "]");
+	else {
+	    for (int i= 0; i < 10; i++)
+		os << x.start[i] << ", ";
+	    if(size(x)> 20) {
+		os << "... ,";
+		for (int i= size(x)-10; i < size(x); i++)
+		    os << x.start[i] << (i < x.dim - 1 ? ", " : "]");
+	    }
+	}
+	os << "\n";
 	return os;
     }
 
   
     int  dim;
-    T*   start; // Value on host //TODO    malloc sizeof(T)*dim
+    T*   start; // Value on host //TO DO    malloc sizeof(T)*dim
     T*   dptr;   // Value on device (allocated as pointer whose content is referred)
     bool on_host;
     
