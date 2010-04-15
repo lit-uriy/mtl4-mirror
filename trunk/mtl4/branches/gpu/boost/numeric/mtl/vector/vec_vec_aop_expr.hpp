@@ -16,6 +16,7 @@
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
+#include <boost/numeric/mtl/vector/device_expr.hpp>
 #include <boost/numeric/mtl/operation/static_size.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/check.hpp>
@@ -120,12 +121,35 @@ struct vec_vec_aop_expr
     {
 	kernel(E1& first, const E2& second) : first(first), second(second), n(size(first)) {std::cout<< "n=" << n << "\n";}
 	
+	__device__ void assign(value_type& f, value_type s) { f= s; }
+
+	__device__ void dings(value_type& f) {}
+	__device__ void bums(value_type s) {}
+
 	__device__ void operator()()
 	{
-	    const size_type grid_size = blockDim.x * gridDim.x, id= blockIdx.x * blockDim.x + threadIdx.x,
+	    const size_type grid_size = blockDim.x * gridDim.x, 
+		            id= blockIdx.x * blockDim.x + threadIdx.x,
 			    blocks= n / grid_size,  nn= blocks * grid_size;
-	    value_type tmp;
+	    SFunctor sf;
 
+	    for (size_type i= id; i < nn; i+= grid_size) {
+		value_type& f= first.dptr[i];
+		value_type  s= second[i];
+		// SFunctor::papply(first.dptr + i, s);
+		dings(first.dptr[i]);
+		bums(second[i]);
+		f= s;
+		first.dptr[i]= s;
+		assign(f, s);
+		assign(first.dptr[i], s);
+		sf(f, s);
+		// SFunctor::apply(first.dptr[i], second[i]);
+	    }
+	    if (nn + id < n) 
+		SFunctor::apply(first.dptr[nn + id], second[nn + id]);
+
+#if 0
 	    for (size_type i= id; i < nn; i+= grid_size) {
 		tmp= second.dat(i);   
 		//first.dadd(i)= 11;//second.dat(i) + second.dat(i);
@@ -135,10 +159,12 @@ struct vec_vec_aop_expr
 		tmp= second.dat(nn + id);
 		SFunctor::papply(first.dadd(nn + id), tmp);
 	    }	    
+#endif
 	}
 	
-	E1&               first ;
-	E2 const&         second ;
+	E1&               first;
+	//	E2 const&         second_ref;
+	device_expr<E2>   second;
 	size_type         n;
     };
 

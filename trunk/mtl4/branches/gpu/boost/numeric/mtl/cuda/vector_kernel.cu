@@ -196,13 +196,14 @@ struct vec_rminus_asgn
 };
 
 
-
+#if 0
 template <typename NullaryFunction>
 __global__
 void launch_function(NullaryFunction f)
 {
   f();
 }
+#endif
 
 }} // namespace mtl::cuda
 
