@@ -356,16 +356,12 @@ class vector
 
    int gridDimx(int dim){
        int gridDimx= (dim/BLOCK_SIZE+1);
-<<<<<<< .mine
 
        int deviceCount; 
        cudaGetDeviceCount(&deviceCount); 
        cudaDeviceProp deviceProp; 
        cudaGetDeviceProperties(&deviceProp, active_device()); 
        
-=======
-
->>>>>>> .r7177
        //      std::cout<<"device actual "<<active_device()<<": "<< deviceProp.name<<" grid max: "<< deviceProp.maxGridSize[0]<<"\n"; 
 
        if(gridDimx<deviceProp.maxGridSize[0]) return gridDimx; 
