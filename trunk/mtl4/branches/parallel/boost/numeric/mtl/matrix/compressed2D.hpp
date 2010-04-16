@@ -19,6 +19,8 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/split_member.hpp>
 
 #include <boost/numeric/linear_algebra/identity.hpp>
 
@@ -460,6 +462,35 @@ class compressed2D
 	shrink_stl_vector(indices);
     }
 
+    template <typename Archive>
+    void save(Archive & ar, const unsigned version) const
+    {
+	using boost::serialization::save;
+	size_type r= num_rows(*this), c= num_cols(*this), s= r * c;
+	ar << r << c << this->my_nnz;
+	save(ar, data, version);
+	save(ar, starts, version);
+	save(ar, indices, version);
+    }   
+    
+    template <typename Archive>
+    void load(Archive & ar, const unsigned version)
+    {
+	using boost::serialization::load;
+	size_type r, c;
+	ar >> r >> c >> this->my_nnz;
+	change_dim(r, c);
+	load(ar, data, version);
+	load(ar, starts, version);
+	load(ar, indices, version);
+    }   
+    
+    template <typename Archive>
+    void serialize(Archive& ar, const unsigned version)
+    {
+	boost::serialization::split_member(ar, *this, version);
+    }
+
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
     template <typename, typename> friend struct compressed_el_cursor;
@@ -590,6 +621,7 @@ struct compressed2D_inserter
     {
 	return *this << element_matrix_t<Matrix, Rows, Cols>(elements.array, elements.rows, elements.cols);
     }
+
 
   private:
     utilities::maybe<typename self::size_type> matrix_offset(size_pair);

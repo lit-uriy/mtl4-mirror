@@ -90,19 +90,13 @@ int test_main(int argc, char* argv[])
     typedef mtl::matrix::parameters<mtl::tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3> > mparams3x3;
     typedef mtl::dense2D<double, mparams3x3>                                                                 matrix3x3;
 
-#if 0
-    mtl::vector::distributed<mtl::dense_vector<double> >         v(5);
-    mtl::vector::distributed<vector8>                            X;
-
-    mtl::matrix::distributed<mtl::matrix::dense2D<double>  >     a(2, 2);
-    mtl::matrix::distributed<matrix3x3  >                        b(2, 2);
-#endif
-
     mtl::dense_vector<double>         v(5);
     vector8                           X;
 
     mtl::matrix::dense2D<double>      a(2, 2);
     matrix3x3                         b(3, 3);
+
+    mtl::compressed2D<double>         C(7, 7);
 
     if (world.rank() == 0) {
 
@@ -113,23 +107,24 @@ int test_main(int argc, char* argv[])
 	a[0][0]=0.1;a[0][1]=0.2;a[1][0]=0.3; a[1][1]=0.4;
 
 	b[0][0]=21.;b[0][1]=22.; b[0][2]=23.;b[1][0]=24.; b[1][1]=25.;b[1][2]=26.; b[2][0]=27.; b[2][1]=28.; b[2][2]=29.;
+
+	mtl::matrix::inserter<mtl::compressed2D<double> > ins(C);
+	ins[0][5] << 4; ins[2][3] << 4; ins[6][3] << 5; ins[6][6] << 2;
     };
 
 
     boost::mpi::broadcast(world, X, 0);
     boost::mpi::broadcast(world, v, 0);
-#if 1
     boost::mpi::broadcast(world, a, 0);
     boost::mpi::broadcast(world, b, 0);
-#endif
+    boost::mpi::broadcast(world, C, 0);
 
 
     std::cout << "Process #" << world.rank() << " has X " << X << std::endl;
     std::cout << "Process #" << world.rank() << " has v " << v << std::endl;
-#if 1
     std::cout << "Process #" << world.rank() << " has matrix a \n" << a << std::endl;
     std::cout << "Process #" << world.rank() << " has matrix b \n" << b << std::endl;
-#endif
+    std::cout << "Process #" << world.rank() << " has matrix C \n" << C << std::endl;
 
     return 0;
 }
