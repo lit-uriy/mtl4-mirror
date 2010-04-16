@@ -425,6 +425,77 @@ class dense2D
     value_type* address_data() { return this->data; }
     const value_type* address_data() const { return this->data; }
     
+
+   // the default versions
+    template <typename Archive>
+    void save(Archive& ar, const unsigned version, boost::mpl::false_) const
+    {
+	// std::cout << "Slow serialization.\n";
+	size_type r= num_rows(*this), c= num_cols(*this), s= r * c;
+	ar << r << c;
+	for (size_type i= 0; i < s; ++i)
+	    ar & this->value_n(i);
+    }
+    
+    template <typename Archive>
+    void load(Archive& ar, const unsigned version, boost::mpl::false_)
+    {
+	size_type r, c;
+	ar >> r >> c;
+	change_dim(r, c); 
+	for (size_type i= 0, s= r * c; i < s; ++i)
+	    ar >> this->value_n(i);
+    }
+
+    // the optimized versions
+    template <typename Archive>
+    void save(Archive& ar, const unsigned version, boost::mpl::true_) const
+    {
+	// std::cout << "Fast serialization.\n";
+	using namespace boost::serialization;
+	collection_size_type s(size(*this));
+	ar << s;
+	if (s > 0)
+	    ar << make_array(address_data(), s);
+    }
+
+    template <typename Archive>
+    void load(Archive& ar, const unsigned version, boost::mpl::true_)
+    {
+	using namespace boost::serialization;
+	collection_size_type count;
+	ar >> count;
+	change_dim(count);
+	if (count > 0)
+	    ar >> make_array(address_data(), count);
+    }
+
+    // dispatch to either default or optimized versions
+    template <typename Archive> struct fast_serialization
+      : boost::mpl::false_ {};
+    //: boost::serialization::use_array_optimization<Archive>::template apply<value_type> {};
+
+    template <typename Archive>
+    void save(Archive & ar, const unsigned version) const
+    {
+	save(ar, version, typename fast_serialization<Archive>::type());
+    }   
+    
+    template <typename Archive>
+    void load(Archive & ar, const unsigned version)
+    {
+	load(ar, version, typename fast_serialization<Archive>::type());
+    }   
+    
+    template <typename Archive>
+    void serialize(Archive& ar, const unsigned version)
+    {
+	boost::serialization::split_member(ar, *this, version);
+    }
+ 
+
+
+
   protected:
     
     // Set ranges from begin_r to end_r and begin_c to end_c

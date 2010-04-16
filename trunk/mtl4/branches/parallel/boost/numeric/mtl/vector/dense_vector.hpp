@@ -240,7 +240,6 @@ class dense_vector
     }
 
     // dispatch to either default or optimized versions
-
     template <typename Archive> struct fast_serialization
       : boost::serialization::use_array_optimization<Archive>::template apply<value_type> {};
 
