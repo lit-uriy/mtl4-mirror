@@ -101,7 +101,7 @@ namespace mtl {
 		if (n <= starts[my_size])  // large enough
 		    return;
 		if (my_size > 1 && starts[1] == starts[my_size])
-		    for (size_type i= 1; i < my_size; ++i)
+		    for (size_type i= 1; i < size_type(my_size); ++i)
 			starts[i]= n;
 		else
 		    starts[my_size]= n;
@@ -229,7 +229,7 @@ namespace mtl {
 	    size_type max_global() const { return std::numeric_limits<size_type>::max(); }
 
 	    /// Is the global index \p n on my processor
-	    bool is_local(size_type n) const { return n % my_size == my_rank; }
+	    bool is_local(size_type n) const { return n % my_size == size_type(my_rank); }
 
 	    /// Global index of local index \p n on rank \p p
 	    template <typename Size>

@@ -28,7 +28,7 @@ struct mpi_error : public runtime_error
     /// Error can be specified more precisely in constructor if desired
     explicit mpi_error(const char *s= "MPI error", int ec= 0) : runtime_error(s), ec(ec) {}
     /// Error message according to code
-    explicit mpi_error(int ec) : m(message(ec)), runtime_error("MPI error"), ec(ec) {}
+    explicit mpi_error(int ec) : runtime_error("MPI error"), m(message(ec)), ec(ec) {}
 
     ~mpi_error() throw() {}
     /// Long error message

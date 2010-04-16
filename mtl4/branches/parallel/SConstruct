@@ -88,7 +88,7 @@ def check_no_long_double(conf):
     cc = conf.env['CC']
     if cc == 'gcc':
         # conf.env.Append(CXXFLAGS = '-Werror -Wreorder -pedantic -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings')
-	# conf.env.Append(CXXFLAGS = '-Wreorder -pedantic -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings')
+	# conf.env.Append(CXXFLAGS = '-Wall -Wreorder -pedantic -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings')
 	output = os.popen(cc + " --version").read()
 	st = output.split('\n')[0]
 	tmatch = re.search(".* \(GCC\) (\d\.\d)", st)
