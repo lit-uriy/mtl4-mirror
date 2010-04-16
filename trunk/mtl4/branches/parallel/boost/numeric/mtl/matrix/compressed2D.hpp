@@ -466,7 +466,7 @@ class compressed2D
     void save(Archive & ar, const unsigned version) const
     {
 	using boost::serialization::save;
-	size_type r= num_rows(*this), c= num_cols(*this), s= r * c;
+	size_type r= num_rows(*this), c= num_cols(*this);
 	ar << r << c << this->my_nnz;
 	save(ar, data, version);
 	save(ar, starts, version);

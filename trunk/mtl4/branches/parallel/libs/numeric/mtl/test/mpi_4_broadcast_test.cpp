@@ -118,7 +118,7 @@ int test_main(int argc, char* argv[])
     boost::mpi::broadcast(world, a, 0);
     boost::mpi::broadcast(world, b, 0);
     boost::mpi::broadcast(world, C, 0);
-
+ 
 
     std::cout << "Process #" << world.rank() << " has X " << X << std::endl;
     std::cout << "Process #" << world.rank() << " has v " << v << std::endl;
@@ -126,7 +126,6 @@ int test_main(int argc, char* argv[])
     std::cout << "Process #" << world.rank() << " has matrix b \n" << b << std::endl;
     std::cout << "Process #" << world.rank() << " has matrix C \n" << C << std::endl;
 
-    return 0;
+    return 0; 
 }
  
-

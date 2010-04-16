@@ -55,6 +55,7 @@ inline std::ostream& print_vector(Vector const& vector, std::ostream& out, int w
     print_vector(local(vector), out, width, precision);
     out.flush();
     start_next(comm);
+    return out;
 }
 #endif
 
