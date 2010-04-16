@@ -16,6 +16,8 @@
 #include <boost/type_traits.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/utility/enable_if.hpp>
+#include <boost/serialization/array.hpp>
+#include <boost/serialization/collection_size_type.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
@@ -453,8 +455,8 @@ class dense2D
     {
 	// std::cout << "Fast serialization.\n";
 	using namespace boost::serialization;
-	collection_size_type s(size(*this));
-	ar << s;
+	collection_size_type r(num_rows(*this)), c(num_cols(*this)), s(r*c);
+	ar << r << c;
 	if (s > 0)
 	    ar << make_array(address_data(), s);
     }
@@ -463,17 +465,17 @@ class dense2D
     void load(Archive& ar, const unsigned version, boost::mpl::true_)
     {
 	using namespace boost::serialization;
-	collection_size_type count;
-	ar >> count;
-	change_dim(count);
+	collection_size_type r, c;
+	ar >> r >> c;
+	change_dim(r, c);
+	collection_size_type count(r * c);
 	if (count > 0)
 	    ar >> make_array(address_data(), count);
     }
 
     // dispatch to either default or optimized versions
     template <typename Archive> struct fast_serialization
-      : boost::mpl::false_ {};
-    //: boost::serialization::use_array_optimization<Archive>::template apply<value_type> {};
+      : boost::serialization::use_array_optimization<Archive>::template apply<value_type> {};
 
     template <typename Archive>
     void save(Archive & ar, const unsigned version) const
