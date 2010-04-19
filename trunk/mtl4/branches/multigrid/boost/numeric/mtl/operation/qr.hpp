@@ -48,7 +48,7 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
 
     for (size_type i = 0; i < mini; i++) {
 	irange r(i, imax); // Intervals [i, n-1]
-	dense_vector<value_type>     v(nrows-i, zero), tmp(ncols-i, zero), qtmp(nrows, zero), w(nrows-i, zero);
+	dense_vector<value_type>     v(nrows-i, zero), w(nrows-i, zero), tmp(ncols-i, zero), qtmp(nrows, zero);
 	
 	for (size_type j = 0; j < size(w); j++)
 	    w[j]= R[j+i][i];
@@ -81,12 +81,10 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
 	}
      
     }
-    std::cout<< "Q=\n" << Q << "\n";
-    std::cout<< "R=\n" << R << "\n";
     return std::make_pair(Q,R);
 }
 
-//TODO
+//TODO   qrhous.m
 // QR-Factorization of matrix A(m x n) with  m < n
 // Return pair R upper triangel matrix and Q= orthogonal matrix
 template <typename Matrix>
@@ -96,10 +94,59 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
 {
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
-    size_type        ncols = num_cols(A), nrows = num_rows(A), mini;
+    size_type        ncols = num_cols(A), nrows = num_rows(A), k;
     value_type       zero= math::zero(A[0][0]);
-    Matrix           R(nrows,ncols), Q(ncols,ncols);
+    Matrix           R(A), Q(nrows,nrows);
 
+    Q= 1;
+    if ( nrows >= ncols ) throw mtl::logic_error("overdetermined system, use trans(A) instead of A");
+    k= (ncols == nrows) ? nrows - 1 : nrows;
+    
+    std::cout<< "qr col start \n";
+    for(size_type i= 0; i < k; i++) {
+// 	std::cout<< "i=" << i << "von " << k << "\n";
+	dense_vector<value_type> v(nrows-i, zero), w(nrows-i, zero), tmp(ncols-i, zero),  qtmp(ncols, zero);
+	for(size_type j= 0; j < nrows-i; j++)
+	    w[j]= R[j+i][i];
+	v= householder_s(w);
+	std::cout<< "v=" << v << "\n";
+	std::cout<< "w=" << w << "\n";
+	
+	//houseop
+	for (size_type a= 0; a < nrows-i; a++){
+		for (size_type b= 0; b < ncols-i; b++){
+// 			std::cout<< "a=" << a << "    b= " << b << "\n";
+			tmp[b]-= v[a]*R[a+i][b+i];
+// 			std::cout<< "tmp[b-i]=tmp[" << b-i << "]=" << tmp[b-i] << "\n";
+		}	
+	}
+	std::cout<< "tmp=" << tmp << "\n";
+	//update R
+	for (size_type a= 0; a < nrows-i; a++){
+		for (size_type b= 0; b < ncols-i; b++){
+			R[a+i][b+i]= R[a+i][b+i] + 2 * v[a]*tmp[b]; 
+		}
+	}
+	std::cout<< "R= \n" << R << "\n";
+	//update Q
+	for (size_type a= 0; a < nrows; a++){
+		for (size_type b= i; b < nrows; b++){
+			qtmp[a]+= v[b-i]*Q[a][b]; 
+		}	
+	}
+	std::cout<< "qtmp= " << qtmp << "\n";
+
+	for (size_type a= 0; a < nrows; a++){
+		for (size_type b= i; b < nrows; b++){
+			Q[a][b]=Q[a][b]- 2* qtmp[a] * v[b-i]; 
+		}	
+	}
+	std::cout<< "Q= \n" << Q << "\n";
+
+    }
+    
+    
+    
 
 
     std::cout<< "qr_col inline ok\n";
@@ -111,18 +158,14 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
 	  typename mtl::dense2D<typename Collection<Matrix>::value_type> >
 	inline qr(const Matrix& A)
 {
-    if (num_cols(A) <= num_rows(A)){
-	Matrix   R(num_rows(A),num_cols(A)), Q(num_rows(A),num_rows(A));
+    Matrix   R(num_rows(A),num_cols(A)), Q(num_rows(A),num_rows(A));
+    
+    if (num_cols(A) <= num_rows(A))	
 	boost::tie(Q, R)= qr_row(A);
-	std::cout<< "qr_row ok\n";
-	return std::make_pair(Q,R);
-    } else {
-	Matrix   R(num_rows(A),num_cols(A)), Q(num_cols(A),num_cols(A));
+    else
 	boost::tie(Q, R)= qr_col(A);
-	std::cout<< "qr_col ok\n";
-	return std::make_pair(Q,R);
-    }
-	
+
+    return std::make_pair(Q,R);	
 }
 
 

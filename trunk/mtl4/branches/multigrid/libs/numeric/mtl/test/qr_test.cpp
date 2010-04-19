@@ -31,9 +31,10 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
     unsigned size=4, row= size+1, col=size;
 
-    double b;
+    double b, tol(0.00001);
     dense_vector<double>                    vec(size), vec1(size);
-    dense2D<double>                                      dr(row, col), dr_t(row, col), Q(row, row), R(row, col);
+    dense2D<double>                     dr(row, col),   Q(row, row),   R(row, col),   dr_test(row, col),
+					dr_t(col, row), Q_t(col, col), R_t(col, row), dr_t_test(col, row);
     dense2D<complex<double> >                            dz(size, size), Qz(size, size), Rz(size, size);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
     dr= 0;
@@ -50,28 +51,46 @@ int test_main(int argc, char* argv[])
     dr[3][3]=-10;
     dr[4][0]=4;
     dr[4][2]=3;
-    std::cout<<"MAtrix=\n"<< dr <<"\n";
-    //std::cout<<"Vector="<< vec <<"\n";
-    std::cout<<"START--------------\n";
+//     std::cout<<"MAtrix=\n"<< dr <<"\n";
+    std::cout<<"START--------------row > col\n";
 
   
-    boost::tie(Q, R)= qr(dr);
-    std::cout<<"MAtrix  R=\n"<< R <<"\n";
-    std::cout<<"MAtrix  Q=\n"<< Q <<"\n";
-//    std::cout<<"MAtrix  A=\n"<< dr <<"\n";
-	dr_t= Q*R-dr;
-    std::cout<<"MAtrix  Q*R=\n"<< dr <<"\n";
+	boost::tie(Q, R)= qr(dr);
+// 	std::cout<<"MAtrix  R=\n"<< R <<"\n";
+// 	std::cout<<"MAtrix  Q=\n"<< Q <<"\n";
+	dr_test= Q*R-dr;
+	std::cout<<"MAtrix  Q*R=\n"<< Q*R <<"\n";
 	double norm(0.0);
-	for(int i=0; i<row;i++){
-		for(int j=0; j<col;j++){
-			norm+=abs(dr_t[i][j]);
+	for(int i= 0; i < row; i++){
+		for(int j= 0; j < col; j++){
+			norm+=abs(dr_test[i][j]);
 		}	
 	}	
-	std::cout<< "norm(Q*R-A)=" << norm << "\n";	
+	std::cout<< "norm(Q*R-A)=" << norm << "\n";
+	if (norm > tol) throw mtl::logic_error("wrong QR decomposition of matrix A");
+	
+	std::cout<<"START-------------row < col\n";
 
-   //  boost::tie(Q, R)= qr_factors(dr);
-
-	 
+	dr_t= trans(dr);
+	std::cout<< "A'=\n" << dr_t << "\n";
+	boost::tie(Q_t, R_t)= qr(dr_t);
+	std::cout<<"MAtrix  R_t=\n"<< R_t <<"\n";
+	std::cout<<"MAtrix  Q_t=\n"<< Q_t <<"\n";
+	
+	dr_t_test= Q_t*R_t-dr_t;
+	std::cout<<"MAtrix  Q_t*R_t=\n"<< Q_t*R_t <<"\n";
+	std::cout<<"MAtrix  A_original=\n"<< dr_t <<"\n";
+	
+	norm= 0;
+	for(int i= 0; i < col; i++){
+		for(int j= 0; j < row; j++){
+			norm+=abs(dr_t_test[i][j]);
+		}	
+	}	
+	std::cout<< "norm(Q*R-A)=" << norm << "\n";
+	if (norm > tol) throw mtl::logic_error("wrong QR decomposition of matrix trans(A)");
+	
+ 	 
 
 #if 0
     dz[0][0]=complex<double>(1.0, 0.0);
