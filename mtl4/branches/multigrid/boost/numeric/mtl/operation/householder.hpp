@@ -67,11 +67,7 @@ inline householder_s(Vector& y)
     value_type        nu(sqrt( dot(u, u) )), s;
 
     if (nu != zero){
-	if(u[0] < 0){
-		s= -1;
-	} else {
-		s= 1; 
-	}
+	s= (u[0] < 0) ? -1 : 1;     // komplex < zero????
 	u[0]= u[0] + s * nu;
 	u/= sqrt( dot(u, u) );
     }
