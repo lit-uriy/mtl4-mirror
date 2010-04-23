@@ -39,10 +39,9 @@ class givens
 	using std::abs;
 	value_type zero= math::zero(a), one= math::one(b), t;
 
-	if ( b == zero )
-	    std::make_pair(one, zero);
-
-	if ( abs(b) > abs(a) ) {
+	if ( b == zero ) {
+	    c= one; d= zero;
+	} else if ( abs(b) > abs(a) ) {
 	    t= -a/b;
 	    d= one/sqrt(one + t*t);
 	    c= d*t;
@@ -51,22 +50,20 @@ class givens
 	    c= one/sqrt(one + t*t);
 	    d= c*t;
 	}
-    }
+  }
 
     /// Given's transformation of \p H with \p G regarding column \p k
     Matrix& trafo(const Matrix& G, size_type k)
     {
-	irange r(k,k+2);
+	    irange r(k,k+2);
+	    // trans(H[r][ind])*= G; H[ind][r]*= G; // most compact form but does not work yet
+	    
+	    Matrix col_block(H[r][iall]), col_perm(trans(G) * col_block);
+	    H[r][iall]= col_perm; 
+	    Matrix row_perm(H[iall][r] * G);
+	    H[iall][r]= row_perm;
 
-	// trans(H[r][ind])*= G; H[ind][r]*= G; // most compact form but does not work yet
-
-	Matrix col_block(H[r][iall]), col_perm(trans(G) * col_block);
-	H[r][iall]= col_perm; 
-
-	Matrix row_perm(H[iall][r] * G);
-	H[iall][r]= row_perm;
-
-        return H;
+	    return H;
     }
 
     /// Given's transformation of \p H regarding column \p k
@@ -83,6 +80,44 @@ class givens
     value_type c, d;
 };
 
-}} // namespace mtl::matrix
+}// namespace matrix
+
+
+namespace vector {
+
+/// Given's transformator on %vector (swap a*line(k) with b*line(k+1) )
+template <typename Vector>
+class givens
+{
+    typedef typename Collection<Vector>::value_type   value_type;
+    typedef typename Collection<Vector>::size_type    size_type;
+
+  public:
+    /// Constructor takes %vector \p H to be transformed and the rotation parameters \p a and \p b
+    givens(Vector& H, value_type a, value_type b) : H(H), a(a), b(b)
+    {  }
+
+    /// Given's transformation of \p H with \p G regarding column \p k
+    Vector& trafo(size_type k)
+    {
+	    value_type w1(0), w2(0);
+	    w1= a*H[k]-b*H[k+1]; //given's rotation on solution
+            w2= b*H[k]+a*H[k+1]; //rotation on vector
+            H[k]= w1;
+            H[k+1]= w2;
+
+	    return H;
+    }
+
+  private:
+    Vector&    H;
+    value_type a, b;
+};
+
+}// namespace vector
+
+
+
+} // namespace mtl
 
 #endif // MTL_MATRIX_GIVENS_INCLUDE

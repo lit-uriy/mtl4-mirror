@@ -17,13 +17,13 @@
 int main()
 {
   // For a more realistic example set size to 1000 or larger
-  const int size = 10, N = size * size;
+  const int size = 1000, N = size * size;
 
   typedef mtl::compressed2D<double>  matrix_type;
   mtl::compressed2D<double>          A(N, N);
   laplacian_setup(A, size, size);
 
-  itl::pc::diagonal<matrix_type>     P(A);
+  itl::pc::identity<matrix_type>     P(A);
 
   mtl::dense_vector<double> x(N, 1.0), b(N);
 
