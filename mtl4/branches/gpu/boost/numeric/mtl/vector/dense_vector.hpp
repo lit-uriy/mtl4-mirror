@@ -40,6 +40,7 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
 
 
 namespace mtl { namespace vector {
@@ -69,7 +70,7 @@ class dense_vector
     
     void check_index( size_type i ) const
     {
-	MTL_DEBUG_THROW_IF( i < 0 || i >= size(), index_out_of_range());
+	MTL_DEBUG_THROW_IF( is_negative(i) || i >= size(), index_out_of_range());
     }
 
     void check_dim( size_type s ) const

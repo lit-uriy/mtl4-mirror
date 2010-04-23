@@ -28,6 +28,7 @@
 #include <boost/numeric/mtl/operation/householder.hpp>
 #include <boost/numeric/mtl/operation/inv.hpp>
 #include <boost/numeric/mtl/operation/invert_diagonal.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>

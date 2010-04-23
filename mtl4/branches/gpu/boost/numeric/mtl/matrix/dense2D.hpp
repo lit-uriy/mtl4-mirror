@@ -26,6 +26,7 @@
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
@@ -398,13 +399,13 @@ class dense2D
     
     const_reference operator() (size_t r, size_t c) const 
     {
-	MTL_DEBUG_THROW_IF(r < 0 || r >= this->num_rows() || c < 0 || c >= this->num_cols(), index_out_of_range());
+	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() || is_negative(c) || c >= this->num_cols(), index_out_of_range());
         return this->data[indexer(*this, r, c)];
     }
 
     value_type& operator() (size_t r, size_t c)
     {
-	MTL_DEBUG_THROW_IF(r < 0 || r >= this->num_rows() || c < 0 || c >= this->num_cols(), index_out_of_range());
+	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() || is_negative(c) || c >= this->num_cols(), index_out_of_range());
 	return this->data[indexer(*this, r, c)]; 
     }    
 
