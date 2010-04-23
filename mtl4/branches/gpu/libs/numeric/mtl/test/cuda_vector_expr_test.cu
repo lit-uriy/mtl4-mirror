@@ -36,7 +36,7 @@ void test(const char* name)
     std::cout<< "Y= "<< y;
     std::cout<< "Z= "<< z;
     std::cout<< "X= "<< x; 
-    
+      
     x= y+z;
     std::cout<< "\n>>>>>>>X= Y + Z <<<<<<\n";
     std::cout<< "Y= "<< y;
@@ -44,7 +44,7 @@ void test(const char* name)
     std::cout<< "X= "<< x;
     if (x[critic_point] != T(13))
 	std::cout<< "Error adding vector and vector on device.";
- 
+   
     x= y-z;    
     std::cout<< "\n>>>>>>>X= Y - Z <<<<<<\n";
     std::cout<< "Y= "<< y;
