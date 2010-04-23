@@ -13,6 +13,7 @@
 #define MTL_DIMENSIONS_INCLUDE
 
 #include <iostream>
+#include <cassert>
 #include <boost/mpl/if.hpp>
 #include <boost/utility/enable_if.hpp>
 

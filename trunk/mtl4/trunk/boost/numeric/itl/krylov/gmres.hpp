@@ -20,7 +20,7 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/matrix/multi_vector.hpp>
-#include <boost/numeric/mtl/matrix/strict_upper.hpp>
+#include <boost/numeric/mtl/operation/givens.hpp>
 #include <boost/numeric/mtl/operation/two_norm.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
@@ -35,7 +35,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
                LeftPreconditioner &L, RightPreconditioner &R,
                Iteration& iter, typename mtl::Collection<Vector>::size_type kmax_in)
 {
-    using mtl::irange; using mtl::iall; using mtl::matrix::strict_upper; using std::abs; using std::sqrt;
+    using mtl::irange; using mtl::iall; using std::abs; using std::sqrt;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -46,8 +46,9 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     Size                        k, kmax(std::min(size(x), kmax_in));
     Vector                      r0(b - A *x), r(solve(L,r0)), va(resource(x)), va0(resource(x)), va00(resource(x));
     mtl::multi_vector<Vector>   V(Vector(resource(x), zero), kmax+1); 
-    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y(kmax);  // replicated in distributed solvers 
+    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y(kmax, zero);  // replicated in distributed solvers 
     mtl::dense2D<Scalar>        H(kmax+1, kmax);                                             // dito
+    H= 0;
 
     rho= g[0]= two_norm(r);
     if (iter.finished(rho))
@@ -56,7 +57,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     H= zero;
 
     // GMRES iteration
-    for (k= 0; rho >= iter.atol() && k < kmax; k++, ++iter) {
+    for (k= 0; rho >= iter.atol() && k < kmax; ++k, ++iter) {
 	// std::cout << "GMRES full: k == " << k << ", rho == " << rho << ", x == " << x << '\n';
         va0= A * solve(R, V.vector(k));
         V.vector(k+1)= va= solve(L,va0);
@@ -80,40 +81,59 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 
         //k givensrotationen
 	for(Size i= 0; i < k; i++) {
-	    w1= c[i]*H[i][k]-s[i]*H[i+1][k];  // shouldn't c and s depend on H?
-	    w2= s[i]*H[i][k]+c[i]*H[i+1][k];
-	    H[i][k]= w1;
-	    H[i+1][k]= w2;
+	    mtl::matrix::givens<mtl::dense2D<Scalar> >(H, H[i][k-1], H[i+1][k-1]).trafo(i);
+// 	    w1= c[i]*H[i][k]-s[i]*H[i+1][k];  // shouldn't c and s depend on H?
+// 	    w2= s[i]*H[i][k]+c[i]*H[i+1][k];
+// 	    H[i][k]= w1;
+// 	    H[i+1][k]= w2;
 	}
-        nu= sqrt(H[k][k]*H[k][k]+H[k+1][k]*H[k+1][k]);
-        if(nu != zero){
+	
+       nu= sqrt(H[k][k]*H[k][k]+H[k+1][k]*H[k+1][k]);
+       if(nu != zero){
             c[k]=  H[k][k]/nu;
             s[k]= -H[k+1][k]/nu;
             H[k][k]=c[k]*H[k][k]-s[k]*H[k+1][k];
             H[k+1][k]=0;
-	    w1= c[k]*g[k]-s[k]*g[k+1]; //given's rotation on solution
-            w2= s[k]*g[k]+c[k]*g[k+1];
-            g[k]= w1;
-            g[k+1]= w2;
+	    mtl::vector::givens<mtl::dense_vector<Scalar> >(g, c[k], s[k]).trafo(k);
+// 	    w1= c[k]*g[k]-s[k]*g[k+1]; //given's rotation on solution
+//          w2= s[k]*g[k]+c[k]*g[k+1]; //rotation on vector
+//          g[k]= w1;
+//          g[k+1]= w2;
         }
 	rho= abs(g[k+1]);
     }
 
+    //reduce k, to get regular matrix
+    for (int i=k; i>=0 ; --i)
+	if (abs(g[k-1]== 0))
+ 		k--;
+
     // iteration is finished -> compute x: solve H*y=g as far as rank of H allows
     irange                  range(k);
+
     for (bool solved= false; !solved && !range.empty(); --range) {
+	if (k==1){  //for 1 dimension we can simple divide
+		y[0]= g[0] / H[0][0];
+		--range;
+		solved= true;
+	} else {
 	try {
-	    y[range]= lu_solve(H[range][range], g[range]); 
+	    	y[range]= lu_solve(H[range][range], g[range]); 
 	} catch (mtl::matrix_singular) { continue; } // if singular then try with sub-matrix
-	solved= true;
+		solved= true;
+        }
     }
     if (range.finish() < k)
 	std::cerr << "GMRES orhogonalized with " << k << " vectors but matrix singular, can only use " << range.finish() << " vectors!\n";
     if (range.empty())
         return iter.fail(1, "GMRES did not find any direction to correct x");
-	
-    x+= solve(R, Vector(V.vector(range)*y[range]));
 
+    if (k==1){
+	Vector tmp(V.vector(0)*y[0]);
+	x+= solve(R, tmp);
+    }else {	
+        x+= solve(R, Vector(V.vector(range)*y[range]));
+    }
     r= b - A*x;
     if (!iter.finished(r))
         return iter.fail(2, "GMRES does not converge");
@@ -139,4 +159,5 @@ int gmres(const Matrix &A, Vector &x, const Vector &b,
 } // namespace itl
 
 #endif // ITL_GMRES_INCLUDE
+
 
