@@ -64,7 +64,7 @@ void test(const char* name)
     std::cout<< "X= "<< x;
     if (x[critic_point] != T(7))
 	std::cout<< "Error in x-= y+z on device.";
-   
+    
 #if 0	
     x= 2 * y + z + 3 * z;
     std::cout<< "\n>>>>>>> x= 2 * y + z + 3 * z <<<<<<\n";
