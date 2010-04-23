@@ -30,6 +30,7 @@
 #include <boost/numeric/mtl/utility/zipped_sort.hpp>
 #include <boost/numeric/mtl/utility/shrink_stl_vector.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/shift_block.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
@@ -379,7 +380,7 @@ class compressed2D
     const_reference operator() (size_type row, size_type col) const
     {
 	using math::zero;
-	check(); MTL_DEBUG_THROW_IF(row < 0 || row >= this->num_rows() || col < 0 || col >= this->num_cols(), index_out_of_range());
+	check(); MTL_DEBUG_THROW_IF(is_negative(row) || row >= this->num_rows() || is_negative(col) || col >= this->num_cols(), index_out_of_range());
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
 	return pos ? data[pos] : zero(value_type()); 
     }
