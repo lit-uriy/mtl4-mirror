@@ -27,6 +27,7 @@
 #include <boost/numeric/itl/krylov/gmres.hpp>
 #include <boost/numeric/itl/krylov/tfqmr.hpp>
 #include <boost/numeric/itl/krylov/qmr.hpp>
+#include <boost/numeric/itl/krylov/lanczos.hpp>
 
 #include <boost/numeric/itl/smoother/gauss_seidel.hpp>
 #include <boost/numeric/itl/smoother/jacobi.hpp>
