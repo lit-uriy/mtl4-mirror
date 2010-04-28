@@ -17,17 +17,18 @@
 #include <boost/numeric/itl/iteration/cyclic_iteration.hpp>
 #include <boost/numeric/itl/iteration/noisy_iteration.hpp>
 
-#include <boost/numeric/itl/krylov/cg.hpp>
-#include <boost/numeric/itl/krylov/cgs.hpp>
 #include <boost/numeric/itl/krylov/bicg.hpp>
 #include <boost/numeric/itl/krylov/bicgstab.hpp>
 #include <boost/numeric/itl/krylov/bicgstab_2.hpp>
 #include <boost/numeric/itl/krylov/bicgstab_ell.hpp>
-#include <boost/numeric/itl/krylov/idr_s.hpp>
+#include <boost/numeric/itl/krylov/cg.hpp>
+#include <boost/numeric/itl/krylov/cgs.hpp>
 #include <boost/numeric/itl/krylov/gmres.hpp>
-#include <boost/numeric/itl/krylov/tfqmr.hpp>
-#include <boost/numeric/itl/krylov/qmr.hpp>
+#include <boost/numeric/itl/krylov/idr_s.hpp>
 #include <boost/numeric/itl/krylov/lanczos.hpp>
+#include <boost/numeric/itl/krylov/qmr.hpp>
+#include <boost/numeric/itl/krylov/tfqmr.hpp>
+#include <boost/numeric/itl/krylov/thomas.hpp>
 
 #include <boost/numeric/itl/smoother/gauss_seidel.hpp>
 #include <boost/numeric/itl/smoother/jacobi.hpp>
