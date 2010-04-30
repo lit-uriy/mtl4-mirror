@@ -55,20 +55,40 @@ int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
   
     double norm(1);
     p= A*x;
-    r= b - p;	
+    r= b - p;
+//     std::cout<< "b=" << b << "\n";
+//     std::cout<< "dot r=" << dot(r,r) << "\n";
     norm= sqrt(dot(r,r));
+//     std::cout<< "norm=" << norm << "\n";
     int i(0);
     while ((norm > tol) && (i < iter)) {
 	//       z = solve(M, r);
+
+	alpha = rho.value() / dot(p, q);
+	A.mult(p, q);
+	if (i == 0)
+	    p= r;
+	else {
+	    beta = rho.value() / rho_1.value();
+	}
+	alpha = rho.value() / dot(p, q);
+	s= p;
+	t= q;
+      
+
+#if 0
 	rho = dot(r, r);
+
+//  	std::cout<< "i=" << i << "\n";
 	if (i == 0)
 	    p= r;
 	else {
 	    beta = rho.value() / rho_1.value();
 	    p*= beta.value();
 	    p= r+p;
-	}	
-	q = A * p;
+	}
+	A.mult(p, q);
+	// q = A * p;
 	// tmp = dot(p, q);
 	alpha = rho.value() / dot(p, q);
 	s= p;
@@ -83,10 +103,10 @@ int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
 	x= x + s;
 	r= r - t;
 	rho_1 = rho;      
-	++i;
 	norm= sqrt(dot(r,r));
-	if (!(i % 20))
-	    std::cout<< "iteration "<< i <<": norm residum=" << norm << "\n";
+#endif
+	++i;
+	std::cout<< "iteration "<< i <<": norm residum=" << norm << "\n";
     }
     std::cout<< "\n\nAll done without problems\n";
     return iter;

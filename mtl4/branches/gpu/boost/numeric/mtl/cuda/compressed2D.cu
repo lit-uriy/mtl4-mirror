@@ -105,7 +105,7 @@ class compressed2D
     friend int  size(const self& x) { return x.num_rows * x.num_cols; }
 
     template<typename Vector>
-    Vector operator* (const Vector& x)
+    Vector operator* (const Vector& x) const
     {	
 	assert(num_cols == size(x));
 	Vector tmp(num_rows, 0);
@@ -123,6 +123,30 @@ class compressed2D
 	}
 	return tmp;
     }
+
+    template<typename Vector>
+    void mult(const Vector& x, Vector& y) const
+    {	
+	assert(num_cols == size(x));
+	assert(num_rows == size(y));
+	
+	if (meet_data(*this, x, y)) {
+	   for (size_type row= 0; row < num_rows; ++row) {
+	       value_type sum(0);
+	       for (size_type start= h_ptr[row], end= h_ptr[row+1]; start != end; ++start)
+		   sum+= h_data[start] * x[h_indices[start]];
+	       y[row]= sum;
+	   }
+	} else {
+	    dim3 dimGrid(num_cols/BLOCK_SIZE+1), dimBlock(BLOCK_SIZE);
+	    sparse_mat_vec_mult<<<dimGrid, dimBlock>>>(num_rows, d_ptr, d_indices, d_data, x.dptr, y.dptr);	    
+	}
+    }
+
+
+
+
+
 
     void change_nnz(unsigned n)
     {

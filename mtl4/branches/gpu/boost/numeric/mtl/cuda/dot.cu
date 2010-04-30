@@ -28,18 +28,15 @@ typename mtl::Collection<Vector>::value_type dot( const Vector& v1, const Vector
     assert(size(v1) == size(v2));
     typedef typename mtl::Collection<Vector>::value_type value_type;
     
-    dim3 dimGrid( ceil(double(size(v1)) / double(BLOCK_SIZE)) ), dimBlock( BLOCK_SIZE );
+    // dim3 dimGrid( ceil(double(size(v1)) / double(BLOCK_SIZE)) ), dimBlock( BLOCK_SIZE );
+    dim3 dimGrid( 1 ), dimBlock( BLOCK_SIZE );
     vector<value_type> out(dimBlock.x * dimGrid.x, value_type(0), false);
-  //  std::cout<< "dimGrid.x=" << ceil(double(size(v1)) / double(BLOCK_SIZE)) << "\n";
- //   std::cout<< "Produkt=" << dimBlock.x * dimGrid.x << "\n";
-    v1.to_device(); v2.to_device();
-    dot_kernel<<< dimGrid, dimBlock, dimBlock.x * sizeof(value_type) >>>(out.get_device_pointer(), v1.get_device_pointer(), v2.get_device_pointer(), size(v1));
-  //  reduce_kernel_kompliziert<<<dimGrid, dimBlock, dimBlock.x * sizeof(value_type)>>>(out.get_device_pointer(), v1.get_device_pointer(), size(v1), BLOCK_SIZE);
-//     value_type temp= 0;
- //   std::cout<< "out=" << out << "\n";
- /*   for (int i= 0; i < dimGrid.x; i++)
-      temp+= out[i];
- */   
+
+    v1.to_device(); v2.to_device(); out.to_device();
+
+    unsigned shmem_size=  dimBlock.x * sizeof(value_type); 
+    dot_kernel<<< dimGrid, dimBlock, shmem_size>>>(out.get_device_pointer(), v1.get_device_pointer(), v2.get_device_pointer(), size(v1));
+ 
     return out[0];
 }
 

@@ -119,7 +119,7 @@ struct vec_vec_aop_expr
 #ifdef MTL_HAS_CUDA
     struct kernel
     {
-	kernel(E1& first, const E2& second) : first(first), second(second), n(size(first)) {std::cout<< "n=" << n << "\n";}
+	kernel(E1& first, const E2& second) : first(first), second(second), n(size(first)) { }
 	
 	__device__ void operator()()
 	{
