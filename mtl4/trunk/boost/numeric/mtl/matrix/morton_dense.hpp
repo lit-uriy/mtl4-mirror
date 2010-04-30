@@ -12,7 +12,7 @@
 #ifndef MTL_MORTON_DENSE_INCLUDE
 #define MTL_MORTON_DENSE_INCLUDE
 
-#include <boost/type_traits.hpp>
+#include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/if.hpp>
 
 #include <boost/numeric/mtl/utility/common_include.hpp>

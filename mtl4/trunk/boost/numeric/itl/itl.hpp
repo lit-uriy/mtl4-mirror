@@ -24,7 +24,6 @@
 #include <boost/numeric/itl/krylov/bicgstab_2.hpp>
 #include <boost/numeric/itl/krylov/bicgstab_ell.hpp>
 #include <boost/numeric/itl/krylov/idr_s.hpp>
-// #include <boost/numeric/itl/krylov/lanczos.hpp> // not ready yet
 #include <boost/numeric/itl/krylov/gmres.hpp>
 #include <boost/numeric/itl/krylov/tfqmr.hpp>
 #include <boost/numeric/itl/krylov/qmr.hpp>
