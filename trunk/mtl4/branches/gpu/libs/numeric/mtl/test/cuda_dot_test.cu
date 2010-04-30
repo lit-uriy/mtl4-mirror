@@ -54,7 +54,7 @@ int main( int argc, char** argv)
   /*
     test(i, j, "test int");
     test(u, v, "test float"); */
-    for (int k= 10; k < 30000000; k*= 3) {
+    for (int k= 10; k < 3000; k*= 3) {
         mtl::cuda::vector<double>     v(k), w(k);
 	test(v, w, "test sizes");
     }

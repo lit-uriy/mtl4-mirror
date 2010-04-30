@@ -92,36 +92,24 @@ __global__ void dot_kernel(T* out, const T* v1, const T* v2, int n)
     extern __shared__ T sdata[];
 
     //all threads load one element to shared memory
-    const unsigned tid= threadIdx.x, id= blockIdx.x * gridDim.x + tid,
-                   step= blockDim.x, // * gridDim.x,  
-		   blocks= n / step, nn= blocks * step;
+    const unsigned id= threadIdx.x, step= blockDim.x, blocks= n / step, nn= blocks * step;
     
     T reg(0);
 
-     for (int j= id; j < nn; j+= step)
+    for (int j= id; j < nn; j+= step)
  	reg+= v1[j] * v2[j];
 
     if (nn + id < n)
 	reg+= v1[nn + id] * v2[nn + id];
     
-    sdata[tid]= reg;
+     sdata[id]= reg;
     __syncthreads();
       
-    if (tid == 0) {
+    if (id == 0) {
 	for (int i= 1; i < blockDim.x; i++)
-	   sdata[0]+= sdata[i];
-	out[blockIdx.x]= sdata[0];
+	    reg+= sdata[i];
+	out[0]= reg;
     }
-    __syncthreads();
-   #if 0   
-    if (id == 0)
-	for (int i= 1; i < gridDim.x; i++)
-	     out[0]= out[i];    
-    #endif	
-    out[5]=blockDim.x;
-    out[6]=gridDim.x;
-    out[7]=step;
-
 }
 
 

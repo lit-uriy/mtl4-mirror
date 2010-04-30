@@ -31,7 +31,7 @@ void test(const char* name)
     std::cout << "Vector Size= " << size(x) <<"\n\n"; 
    
     y[8]= 12; 
-    
+     
     std::cout<< "\n>>>>>>>Vectors Contructed <<<<<<\n";
     std::cout<< "Y= "<< y;
     std::cout<< "Z= "<< z;
