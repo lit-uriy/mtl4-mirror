@@ -12,7 +12,7 @@
 #ifndef MTL_COLLECTION_INCLUDE
 #define MTL_COLLECTION_INCLUDE
 
-#include <boost/type_traits.hpp>
+#include <boost/type_traits/remove_const.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <vector>
 

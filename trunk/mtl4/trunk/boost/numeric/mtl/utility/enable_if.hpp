@@ -12,12 +12,8 @@
 #ifndef MTL_ENABLE_IF_INCLUDE
 #define MTL_ENABLE_IF_INCLUDE
 
-#include <boost/mpl/if.hpp>
-#include <boost/type_traits.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
-
 
 namespace mtl { namespace traits {
 
@@ -35,10 +31,6 @@ template <typename Value, typename Type = void>
 struct enable_if_scalar
   : boost::enable_if<is_scalar<Value>, Type>
 {};
-
-
-// Remark: although documented differently is_base_of<T, T> evaluated to false when I tested it!!!
-
 
 }} // namespace mtl
 

@@ -19,7 +19,6 @@
 
 #include <cassert>
 #include <algorithm>
-#include <boost/type_traits.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/parameter.hpp>

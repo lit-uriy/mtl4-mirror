@@ -12,7 +12,7 @@
 #ifndef MTL_BIT_MASKING_INCLUDE
 #define MTL_BIT_MASKING_INCLUDE
 
-#include <boost/type_traits.hpp>
+#include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/if.hpp>
 
 #include <boost/numeric/mtl/utility/tag.hpp>

@@ -13,7 +13,8 @@
 #define MTL_DENSE2D_INCLUDE
 
 #include <algorithm>
-#include <boost/type_traits.hpp>
+#include <boost/mpl/bool.hpp>
+#include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/utility/enable_if.hpp>
 
