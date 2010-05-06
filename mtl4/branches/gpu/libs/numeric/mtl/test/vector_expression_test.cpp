@@ -37,6 +37,8 @@ void test(Vector& v, const char* name)
 
     std::cout << "\n" << name << "  --- v = " << v; std::cout.flush();
 
+    Vector x( 2.0 * v);
+    
     Vector w(v + v), u;
     std::cout << "w= v + v = " << w << "\n"; 
 

@@ -136,21 +136,6 @@ class vector
         return *this;
     }
 
-    template <typename U>  // Vector*Scalar
-    self& operator*(const U& src)
-    {
-	if (on_host && dim < host_limit) {
-	    //std::cout<< "on host\n";
-	    for (int i= 0; i < dim; i++) 
-		start[i]*= src;
-	} else {
-	    to_device(); // if not yet there
-	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
-	    vec_rmult_asgn<value_type> sc(src, dptr, dim);
-	    launch_function<<<dimGrid, dimBlock>>>(sc);
-	}
-        return *this;
-    }
 
     template <typename U>
     self& operator/=(const U& src)
@@ -169,7 +154,7 @@ class vector
         return *this;
     }
 
-
+#if 0 // in ET
     template <typename U>
     self& operator+=(const U& src)
     {
@@ -205,7 +190,7 @@ class vector
     {
 	if (on_host && dim < host_limit) {
 	    for (int i= 0; i < dim; i++) 
-		start[i]+= src.start[i];
+		start[i]-= src.start[i];
 	} else {
 	    to_device(); // if not yet there
 	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);
@@ -230,6 +215,7 @@ class vector
 	}
         return *this;
     }
+#endif
 
     T& operator[](int index) {
 //	std::cout<<"klammer function 1\n\n";

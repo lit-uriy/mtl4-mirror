@@ -38,6 +38,7 @@ struct map_view
     typedef map_view                                   self;
     typedef vec_expr< self >                           expr_base;
     typedef Vector                                     other;
+    typedef const Vector&                              vec_ref;
 
     typedef typename Functor::result_type              value_type;
     typedef typename Functor::result_type              const_reference;
@@ -64,7 +65,12 @@ struct map_view
     MTL_PU const_reference operator() (size_type i) const { return functor(ref(i)); }
     MTL_PU const_reference operator[] (size_type i) const { return functor(ref[i]); }
     void delay_assign() const {}
-    
+
+    bool valid_device() const { vec_ref r(ref); return r.valid_device(); }
+    bool valid_host() const { vec_ref r(ref); return r.valid_host(); }
+    void to_device() const { vec_ref r(ref); r.to_device(); }
+    void to_host() const { vec_ref r(ref); r.to_host(); }
+
     template <typename, typename> friend struct detail::map_value;
 
   protected:
@@ -72,7 +78,7 @@ struct map_view
   public:
     Functor           functor;
     // ref is a const& if Vector is a true vector and a copy if it is an expression
-    typename mtl::traits::copy_expression_const_ref_container<Vector>::type ref;
+    typename mtl::traits::copy_expression_const_ref_container<Vector>::type          ref;
 };
 
 // ================

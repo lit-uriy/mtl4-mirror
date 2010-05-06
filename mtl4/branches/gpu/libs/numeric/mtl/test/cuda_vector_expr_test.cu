@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
 #include <boost/numeric/mtl/cuda/dot.cu>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
+#include <boost/numeric/mtl/operation/operators.hpp>
 
 template <typename T>
 void test(const char* name)
@@ -36,6 +37,10 @@ void test(const char* name)
     std::cout<< "Y= "<< y;
     std::cout<< "Z= "<< z;
     std::cout<< "X= "<< x; 
+    
+    x= 2 * y;
+    // typename mtl::traits::vec_mult_result<int, vt>::type a= 5;
+    
       
     x= y+z;
     std::cout<< "\n>>>>>>>X= Y + Z <<<<<<\n";
@@ -63,15 +68,13 @@ void test(const char* name)
     std::cout<< "\n>>>>>>>X-= Y + Z <<<<<<\n";
     std::cout<< "X= "<< x;
     if (x[critic_point] != T(7))
-	std::cout<< "Error in x-= y+z on device.";
+	std::cout<< "Error in x-= y+z on device."; 
     
-#if 0	
     x= 2 * y + z + 3 * z;
     std::cout<< "\n>>>>>>> x= 2 * y + z + 3 * z <<<<<<\n";
     std::cout<< "X= "<< x;
     if (x[critic_point] != T(32))
 	std::cout<< "Error in x= 2 * y + z + 3 * z on device.";
-   
     x+= y + z + dot(y, z) * z;
     std::cout<< "\n>>>>>>> x+= y + z + dot(y, z) * z <<<<<<\n";
     std::cout<< "X= "<< x;
@@ -82,6 +85,7 @@ void test(const char* name)
     if (x[critic_point] != T(-3))
 	std::cout<< "Error in x= -z on device.";
     
+#if 1
     x= y + -z;
     std::cout<< "\n>>>>>>> x= y + -z <<<<<<\n";
     std::cout<< "X= "<< x;
