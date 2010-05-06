@@ -14,27 +14,28 @@
 
 #include <cmath>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/config.hpp>
 
 namespace mtl { namespace vector {
 
 struct one_norm_functor
 {
     template <typename Value>
-    static inline void init(Value& value)
+    MTL_PU static inline void init(Value& value)
     {
 	using math::zero;
 	value= zero(value);
     }
 
     template <typename Value, typename Element>
-    static inline void update(Value& value, const Element& x)
+    MTL_PU static inline void update(Value& value, const Element& x)
     {    
 	using std::abs;
 	value+= abs(x);
     }
 
     template <typename Value>
-    static inline void finish(Value& value, const Value& value2)
+    MTL_PU static inline void finish(Value& value, const Value& value2)
     {
 	value+= value2;
     }
@@ -45,21 +46,21 @@ struct one_norm_functor
 struct two_norm_functor
 {
     template <typename Value>
-    static inline void init(Value& value)
+    MTL_PU static inline void init(Value& value)
     {
 	using math::zero;
 	value= zero(value);
     }
 
     template <typename Value, typename Element>
-    static inline void update(Value& value, const Element& x)
+    MTL_PU static inline void update(Value& value, const Element& x)
     {    
 	using std::abs;
 	value+= abs(x) * abs(x);
     }
 
     template <typename Value>
-    static inline void finish(Value& value, const Value& value2)
+    MTL_PU static inline void finish(Value& value, const Value& value2)
     {
 	value+= value2;
     }
@@ -69,21 +70,21 @@ struct two_norm_functor
 struct infinity_norm_functor
 {
     template <typename Value>
-    static inline void init(Value& value)
+    MTL_PU static inline void init(Value& value)
     {
 	using math::zero;
 	value= zero(value);
     }
 
     template <typename Value, typename Element>
-    static inline void update(Value& value, const Element& x)
+    MTL_PU static inline void update(Value& value, const Element& x)
     {    
 	using std::abs; using std::max;
 	value= max(value, abs(x));
     }
 
     template <typename Value>
-    static inline void finish(Value& value, const Value& value2)
+    MTL_PU static inline void finish(Value& value, const Value& value2)
     {
 	using std::abs; using std::max;
 	value= max(value, abs(value2));
@@ -94,20 +95,20 @@ struct infinity_norm_functor
 struct sum_functor
 {
     template <typename Value>
-    static inline void init(Value& value)
+    MTL_PU static inline void init(Value& value)
     {
 	using math::zero;
 	value= zero(value);
     }
 
     template <typename Value, typename Element>
-    static inline void update(Value& value, const Element& x)
+    MTL_PU static inline void update(Value& value, const Element& x)
     {    
 	value+= x;
     }
 
     template <typename Value>
-    static inline void finish(Value& value, const Value& value2)
+    MTL_PU static inline void finish(Value& value, const Value& value2)
     {
 	value+= value2;
     }
@@ -117,20 +118,20 @@ struct sum_functor
 struct product_functor
 {
     template <typename Value>
-    static inline void init(Value& value)
+    MTL_PU static inline void init(Value& value)
     {
 	using math::one;
 	value= one(value);
     }
 
     template <typename Value, typename Element>
-    static inline void update(Value& value, const Element& x)
+    MTL_PU static inline void update(Value& value, const Element& x)
     {    
 	value*= x;
     }
 
     template <typename Value>
-    static inline void finish(Value& value, const Value& value2)
+    MTL_PU static inline void finish(Value& value, const Value& value2)
     {
 	value*= value2;
     }
@@ -140,20 +141,20 @@ struct product_functor
 struct max_functor
 {
     template <typename Value>
-    static inline void init(Value& value)
+    MTL_PU static inline void init(Value& value)
     {
 	using math::identity; 
 	value= identity(math::max<Value>(), value);
     }
 
     template <typename Value, typename Element>
-    static inline void update(Value& value, const Element& x)
+    MTL_PU static inline void update(Value& value, const Element& x)
     {    
 	value= math::max<Value>()(value, x);
     }
 
     template <typename Value>
-    static inline void finish(Value& value, const Value& value2)
+    MTL_PU static inline void finish(Value& value, const Value& value2)
     {
 	value= math::max<Value>()(value, value2);
     }
@@ -163,20 +164,20 @@ struct max_functor
 struct min_functor
 {
     template <typename Value>
-    static inline void init(Value& value)
+    MTL_PU static inline void init(Value& value)
     {
 	using math::identity; 
 	value= identity(math::min<Value>(), value);
     }
 
     template <typename Value, typename Element>
-    static inline void update(Value& value, const Element& x)
+    MTL_PU static inline void update(Value& value, const Element& x)
     {    
 	value= math::min<Value>()(value, x);
     }
 
     template <typename Value>
-    static inline void finish(Value& value, const Value& value2)
+    MTL_PU static inline void finish(Value& value, const Value& value2)
     {
 	value= math::min<Value>()(value, value2);
     }

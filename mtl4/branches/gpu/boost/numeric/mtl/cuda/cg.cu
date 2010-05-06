@@ -18,6 +18,8 @@
 #include <boost/numeric/mtl/cuda/dot.cu>
 #include <boost/numeric/mtl/cuda/scalar.cu>
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
+#include <boost/numeric/mtl/operation/operators.hpp>
+#include <boost/numeric/mtl/operation/two_norm.hpp>
 #include <cmath>
 
 
@@ -47,38 +49,44 @@ int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
 {
   typedef typename mtl::Collection<VectorX>::value_type  Scalar;
   
-  Scalar rho(0), rho_1(0), alpha(0), beta(0);
+  Scalar rho(0), rrho(0), rho_1(0), alpha(0), beta(0);
   VectorX p(size(x)), q(size(x)), r(size(x));  //z(size(x))
   
-    x += p* alpha;
+  //x += alpha*p; 
   
-  #if 0
-    r = b - A*x;
-    rho= dot(r,r);
-    int i(0);
-    while ((sqrt(rho) > tol) && (i < iter)) {
-	//       z = solve(M, r);
-	if (i == 0)
-	    p= r;
-	else {
-	    beta = rho / rho_1;
- 	    p*= beta;
-	    p= r+p;
-	}
-	A.mult(p, q);  // q = A * p;
+  // r = b - A*x;
+  A.mult(x, q);
+  r = b - q;
+
+  rho= (dot(r,r)); rrho= sqrt(rho);
+  //rrho=  mtl::vector::two_norm(r); rho= rrho * rrho;
+  int i(0);
+  while (rrho > tol && (i < iter)) {
+
+      //       z = solve(M, r);
+      if (i == 0)
+	  p= r;
+      else {
+	  beta = rho / rho_1;
+	  p*= beta;
+	  p= r+p;
+      }
+      A.mult(p, q);  // q = A * p;
 	
-	alpha = rho / dot(p, q);
+      alpha = rho / dot(p, q);
 
- 	x += p* alpha;
-	r -= q* alpha;
+      x += p* alpha;
+      r -= q* alpha;
 
-	rho_1 = rho;      
-	rho= (dot(r,r));
-	++i;
-	if (i%25 == 0) std::cout<< "iteration "<< i <<": norm residum=" << sqrt(rho) << "\n";
-    }
-    std::cout<< "\n\nAll done without problems\n";
-   #endif	
+      rho_1 = rho;      
+      rho= (dot(r,r)); rrho= sqrt(rho);
+      //rrho= mtl::vector::two_norm(r); rho= rrho * rrho;
+
+      ++i;
+      if (i%25 == 0) std::cout<< "iteration "<< i <<": norm residum=" << rrho << "\n";
+  }
+  std::cout<< "\n\nAll done without problems\n";
+
     return iter;
 }
 
