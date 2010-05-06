@@ -29,8 +29,8 @@ typename mtl::Collection<Vector>::value_type dot( const Vector& v1, const Vector
     typedef typename mtl::Collection<Vector>::value_type value_type;
     
     // dim3 dimGrid( ceil(double(size(v1)) / double(BLOCK_SIZE)) ), dimBlock( BLOCK_SIZE );
-    dim3 dimGrid( 1 ), dimBlock( BLOCK_SIZE );
-    vector<value_type> out(dimBlock.x * dimGrid.x, value_type(0), false);
+    dim3 dimGrid( 1 ), dimBlock( 512 );
+    vector<value_type> out(dimBlock.x * dimGrid.x, value_type(0));
 
     v1.to_device(); v2.to_device(); out.to_device();
 

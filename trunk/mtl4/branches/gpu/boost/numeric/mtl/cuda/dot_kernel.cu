@@ -95,16 +95,15 @@ __global__ void dot_kernel(T* out, const T* v1, const T* v2, int n)
     const unsigned id= threadIdx.x, step= blockDim.x, blocks= n / step, nn= blocks * step;
     
     T reg(0);
-
     for (int j= id; j < nn; j+= step)
  	reg+= v1[j] * v2[j];
 
     if (nn + id < n)
 	reg+= v1[nn + id] * v2[nn + id];
-    
+
      sdata[id]= reg;
-    __syncthreads();
-      
+     __syncthreads();
+     
     if (id == 0) {
 	for (int i= 1; i < blockDim.x; i++)
 	    reg+= sdata[i];

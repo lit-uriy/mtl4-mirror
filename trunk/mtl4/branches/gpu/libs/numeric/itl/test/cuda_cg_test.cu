@@ -17,13 +17,14 @@
 #include <boost/numeric/mtl/cuda/compressed2D.cu>
 #include <boost/numeric/mtl/cuda/scalar.cu>
 #include <boost/numeric/mtl/cuda/vector_cuda.cu>
+#include <boost/numeric/mtl/operation/operators.hpp>
 
 
 int main(int argc, char* argv[])
 {
   using namespace mtl;
 
-  // For a more realistic example set size to 1000 or larger
+ // For a more realistic example set size to 1000 or larger
   const int size = 1000, N = size * size;
   int iter=0;
   mtl::cuda::activate_best_gpu(); 
@@ -34,8 +35,9 @@ int main(int argc, char* argv[])
 
   mtl::cuda::vector<double> x(N, 1), b(N), r(N);
   x.to_device();
-   
-  b = A * x;
+    
+  A.mult(x, b);
+  // b= A * x;
   x= 0;
 
   double toleranz=   0.0000001;
@@ -47,7 +49,6 @@ int main(int argc, char* argv[])
   //r=b- A*x;
 //       std::cout<< "r=" << r << "\n";
     std::cout <<(iter==iterations ? "Total  Iterations: " : "problem solved in the iteration: ")<<iter<<"\n";
-  
   
 
   return 0;

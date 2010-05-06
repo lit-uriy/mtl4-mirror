@@ -82,12 +82,67 @@ namespace mtl { namespace vector {
 template <unsigned long Unroll, typename Functor, typename Result>
 struct reduction
 {
+#ifdef MTL_HAS_CUDA
+    template <typename Vector>
+    Result static inline apply(const Vector& v)
+    {
+	typedef typename Collection<Vector>::value_type              value_type;
+	dim3 dimGrid( 1 ), dimBlock( 512 );
+	cuda::vector<value_type> out(dimBlock.x, value_type(0));
+	v.to_device();
+
+	unsigned shmem_size=  dimBlock.x * sizeof(value_type); 
+	kernel<value_type> k(out.get_device_pointer(), v.get_device_pointer(), size(v));
+
+	cuda::launch_function<<< dimGrid, dimBlock, shmem_size>>>(k);
+ 
+	return out[0];
+    }
+#else
     template <typename Vector>
     Result static inline apply(const Vector& v)
     {
 	return apply(v, typename mtl::traits::category<Vector>::type());
     }
+#endif
 
+#ifdef MTL_HAS_CUDA
+    template <typename T>
+    struct kernel
+    {
+	kernel(T* out, const T* v, int n) : out(out), v(v), n(n) {}
+	
+	__device__ void operator()()
+	{
+	    extern __shared__ T sdata[];
+	    const unsigned grid_size = blockDim.x * gridDim.x, 
+		            id= blockIdx.x * blockDim.x + threadIdx.x,
+			    blocks= n / grid_size,  nn= blocks * grid_size;
+	    const T* p= v;
+	    T reg(0);
+	    Functor::init(reg);
+
+	    for (unsigned i= id; i < nn; i+= grid_size) 
+		Functor::update(reg, p[i]);
+	    if (nn + id < n) 
+		Functor::update(reg, p[nn + id]);
+
+	    out[id]= reg;
+	    __syncthreads();
+     
+	    if (id == 0) {
+		for (int i= 1; i < blockDim.x; i++)
+		    Functor::finish(reg, out[i]);
+		out[0]= reg;
+	    }
+	}
+      private:
+	T*       out;
+	const T* v;
+	int      n;
+    };
+
+#endif // MTL_HAS_CUDA
 
 private:
     template <typename Vector>

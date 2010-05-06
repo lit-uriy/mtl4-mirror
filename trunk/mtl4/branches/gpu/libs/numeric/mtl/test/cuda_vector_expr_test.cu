@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/cuda/dot.cu>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
+#include <boost/numeric/mtl/operation/norms.hpp>
 
 template <typename T>
 void test(const char* name)
@@ -90,7 +91,7 @@ void test(const char* name)
     x= y / 2 + z;
     std::cout<< "\n>>>>>>> x= y / 2 + z <<<<<<\n";
     std::cout<< "X= "<< x;
-    if (x[critic_point] != T(8))
+    if (x[critic_point] != T(8)) 
 	std::cout<< "Error in x= y / 2 + z on device.";
     
     x= 5; 
@@ -111,6 +112,13 @@ void test(const char* name)
     std::cout<< "X= "<< x;
     if (x[critic_point] != T(5))
 	std::cout<< "Error in x/= 5 on device.";
+
+    using mtl::vector::one_norm;
+    using mtl::vector::two_norm;
+    using mtl::vector::infinity_norm;
+    std::cout << " one_norm(x) = " << one_norm(x) << "\n";
+    std::cout << " two_norm(x) = " << two_norm(x) << "\n";
+    //std::cout << " infinity_norm(x) = " << infinity_norm(x) << "\n";
 }
 
 
