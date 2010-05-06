@@ -50,7 +50,9 @@ int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
   Scalar rho(0), rho_1(0), alpha(0), beta(0);
   VectorX p(size(x)), q(size(x)), r(size(x));  //z(size(x))
   
-
+    x += p* alpha;
+  
+  #if 0
     r = b - A*x;
     rho= dot(r,r);
     int i(0);
@@ -67,15 +69,16 @@ int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
 	
 	alpha = rho / dot(p, q);
 
- 	x += (p* alpha);
-	r -= (q* alpha);
+ 	x += p* alpha;
+	r -= q* alpha;
 
 	rho_1 = rho;      
 	rho= (dot(r,r));
 	++i;
-	if (i%5 == 0) std::cout<< "iteration "<< i <<": norm residum=" << sqrt(rho) << "\n";
+	if (i%25 == 0) std::cout<< "iteration "<< i <<": norm residum=" << sqrt(rho) << "\n";
     }
     std::cout<< "\n\nAll done without problems\n";
+   #endif	
     return iter;
 }
 
