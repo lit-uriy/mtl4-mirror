@@ -23,8 +23,12 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/cuda/launch_function.hpp>
+#include <boost/numeric/mtl/cuda/meet_data.cu>
+#include <boost/numeric/mtl/cuda/vector_cuda.cu>
 
-#define BL_SIZE 256
+#ifndef BL_SIZE
+#  define BL_SIZE 256
+#endif
 
 namespace mtl { namespace vector {
 

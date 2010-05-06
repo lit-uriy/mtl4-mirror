@@ -37,11 +37,7 @@ void test(const char* name)
     std::cout<< "Y= "<< y;
     std::cout<< "Z= "<< z;
     std::cout<< "X= "<< x; 
-    
-    x= 2 * y;
-    // typename mtl::traits::vec_mult_result<int, vt>::type a= 5;
-    
-      
+          
     x= y+z;
     std::cout<< "\n>>>>>>>X= Y + Z <<<<<<\n";
     std::cout<< "Y= "<< y;
@@ -85,7 +81,6 @@ void test(const char* name)
     if (x[critic_point] != T(-3))
 	std::cout<< "Error in x= -z on device.";
     
-#if 1
     x= y + -z;
     std::cout<< "\n>>>>>>> x= y + -z <<<<<<\n";
     std::cout<< "X= "<< x;
@@ -98,16 +93,17 @@ void test(const char* name)
     if (x[critic_point] != T(8))
 	std::cout<< "Error in x= y / 2 + z on device.";
     
-    x= 5;
+    x= 5; 
     std::cout<< "\n>>>>>>> x= 5 <<<<<<\n";
     std::cout<< "X= "<< x;
     if (x[critic_point] != T(5))
 	std::cout<< "Error in x= 5 on device.";
-      
+    x.to_device();
+  
     x*= 5;
-    std::cout<< "\n>>>>>>> x*= 5 <<<<<<\n";
+    std::cout<< "\n>>>>>>> x*= 5 <<<<<<\n"; 
     std::cout<< "X= "<< x;
-    if (x[critic_point] != T(25))
+    if (x[critic_point] != T(25)) 
 	std::cout<< "Error in x*= 5 on device.";
       
     x/= 5;
@@ -115,7 +111,6 @@ void test(const char* name)
     std::cout<< "X= "<< x;
     if (x[critic_point] != T(5))
 	std::cout<< "Error in x/= 5 on device.";
-#endif
 }
 
 

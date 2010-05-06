@@ -18,7 +18,12 @@
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/check.hpp>
+#include <boost/numeric/mtl/cuda/launch_function.hpp>
+#include <boost/numeric/mtl/cuda/meet_data.cu>
 
+#ifndef BL_SIZE
+#  define BL_SIZE 256
+#endif
 
 namespace mtl { namespace vector {
 
@@ -45,22 +50,62 @@ struct vec_scal_aop_expr
       : first( v1 ), second( v2 ), delayed_assign( false ), with_comma( false ), index(0)
     {}
 
+   void compute_on_host()
+   {
+#    if 0
+       if (with_comma) {
+	   MTL_DEBUG_THROW_IF(index != size(first), incompatible_size("Not all vector entries initialized!"));
+       } else
+	   for (size_type i= 0; i < size(first); ++i)
+	       SFunctor::apply( first(i), second );
+#   endif
+       for (size_type i= 0; i < size(first); ++i)
+	   SFunctor::apply( first(i), second );
+   }
+
+
+#ifdef MTL_HAS_CUDA
+    struct kernel
+    {
+	kernel(E1& first, const E2& second) : first(first), second(second), n(size(first)) { }
+	
+	__device__ void operator()()
+	{
+	    const size_type grid_size = blockDim.x * gridDim.x, 
+		            id= blockIdx.x * blockDim.x + threadIdx.x,
+			    blocks= n / grid_size,  nn= blocks * grid_size;
+	    value_type* p= const_cast<value_type*>(first.dptr);
+	    E2          second= this->second;
+	    
+	    for (size_type i= id; i < nn; i+= grid_size) 
+		SFunctor::apply(p[i], second);
+	    if (nn + id < n) 
+		SFunctor::apply(p[nn + id], second);
+	}
+      private:
+	device_expr<E1>   first;
+	E2                second;
+	size_type         n;
+    };
+
+#endif // MTL_HAS_CUDA
+
+
     ~vec_scal_aop_expr()
     {
-#if 0
-	if (!delayed_assign) {
-	    if (with_comma) {
-		MTL_DEBUG_THROW_IF(index != size(first), incompatible_size("Not all vector entries initialized!"));
-	    } else
-		for (size_type i= 0; i < size(first); ++i)
-		    SFunctor::apply( first(i), second );
-	}
-#endif
 	if (!delayed_assign) 
-	    for (size_type i= 0; i < size(first); ++i)
-		//SFunctor::apply( first(i), second );
-		SFunctor::apply( first(i), second );
-   }
+#ifdef MTL_HAS_CUDA
+	    if (meet_data(first))
+		compute_on_host();
+	    else {
+		dim3 dimGrid(1), dimBlock(BL_SIZE); // temporary sol.
+		kernel k(const_cast<first_argument_type&>(first), second);
+		cuda::launch_function<<<dimGrid, dimBlock>>>(k);
+	    }
+#else
+	    compute_on_host();
+#endif
+    }
     
     void delay_assign() const 
     { 
