@@ -39,7 +39,8 @@ int main(int argc, char* argv[])
   x= 0;
 
   double toleranz=   0.0000001;
-  int	 iterations= 1000;
+  int	 iterations= 500;
+  
   
   iter=cg(A, x, b, iterations, toleranz);
 //      std::cout<< "x=" << x << "\n";

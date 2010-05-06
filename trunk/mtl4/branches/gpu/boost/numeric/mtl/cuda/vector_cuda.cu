@@ -75,7 +75,7 @@ class vector
 
     self& operator=(const self& that)
     {
-//	std::cout<< "x= y zuweisung Vector-Vector\n";
+	// std::cout<< "x= y zuweisung Vector-Vector\n";
 	assert(dim == that.dim);
 	if (this != &that) {  //unnoetige Zuweisung vermeiden
 	    on_host= that.on_host;
@@ -92,126 +92,14 @@ class vector
     using assign_base::operator=;
 
     void change_dim(size_type n) { throw "Not implemented yet! \n"; }
-
-#if 0
-    self operator + (const self &v1) 
-    {   
-	self temp(dim,0);
-	temp=*this;
-	assert(temp.dim == v1.dim);
-	on_host= v1.on_host;
-	 if (on_host) {
-	     for (int i= 0; i < v1.dim; i++)
-		 temp[i]+= v1.start[i];
-	 } else  {
-	    to_device(); // if not yet there
-	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
-	    vector_vector_rplus<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
-	 }
-	 return temp;
-    }
-
-    void plus(const self& v_in, self& v_out)
-    {
-	assert(v_in.dim == dim && v_out.dim == dim);
-	if (meet_data(*this, v_in, v_out)) {
-	    for (int i= 0; i < dim; i++)
-		 v_out[i]= start[i] + v_in.start[i];
-	 } else  {
-	     v_out.to_device();
-	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
-	    vector_vector_assign_plus<<<dimGrid, dimBlock>>>(v_out.dptr, dptr, v_in.dptr, dim);
-	 }	
-    }
-
-
-
-    self operator - (const self &v1) 
-    {   
-	self temp(dim,0);
-	temp=*this;
-	assert(temp.dim == v1.dim);
-	on_host= v1.on_host || this->on_host;
-	 if (on_host) {
-	     for (int i= 0; i < v1.dim; i++)
-		 temp[i]-= v1.start[i];
-	 } else  {
-	    to_device(); // if not yet there
-	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
-            vector_vector_rminus<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
-
-	 }
-	 return temp;
-    }
-
-
-
-
-    self operator * (const self &v1) 
-    {   
-	self temp(dim,0);
-	temp=*this;
-	assert(temp.dim == v1.dim);
-	on_host= v1.on_host;
-	 if (on_host) {
-	     for (int i= 0; i < v1.dim; i++)
-		 temp[i]*= v1.start[i];
-	 } else  {
-	    to_device(); // if not yet there
-	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);  
-            vector_vector_rmult<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
-
-	 }
-	 return temp;
-    }
  
  #if 0
- 
-     self operator / (const self &v1) 
-    {   
-	self temp(dim,0);
-	temp=*this;
-	assert(temp.dim == v1.dim);
-	on_host= v1.on_host;
-	 if (on_host) {
-	     for (int i= 0; i < v1.dim; i++)
-		 temp[i]-= v1.start[i];
-	 } else  {
-	    to_device(); // if not yet there
-	    dim3 dimGrid(1), dimBlock(dim); 
-            vector_vector_rdivide<<<dimGrid, dimBlock>>>(temp.dptr, v1.dptr, dim);
-
-	 }
-	 return temp;
-    }
- 
-#endif
-
-
-
-//plus updated for testing 
-    void plus_updated(const self& v_in, self& v_out) 
-    { 
-	assert(v_in.dim == dim && v_out.dim == dim); 
-	if (meet_data(*this, v_in, v_out)) { 
-	    for (int i= 0; i < dim; i++) 
-		v_out[i]= start[i] + v_in.start[i]; 
-	} else  { 
-	    v_out.to_device(); 
-	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
-	    std::cout<<"  dim/BLOCK_SIZE+1= "<<dim/BLOCK_SIZE+1<<"\n  dimGrid.x= "<< dimGrid.x <<"\n  dimGrid.y= "<< dimGrid.y <<"\n  dimBlock.x "<< dimBlock.x <<"\n  dimBlock.y= "<< dimBlock.y <<"\n  dimBlock.z= "<< dimBlock.z <<"\n"; 
-	    vector_vector_assign_plus_updated<<<dimGrid, dimBlock>>>(v_out.dptr, dptr, v_in.dptr, dim); 
-	 }       
-} 
-
-//end plus updated 
-
     //Scalar operations with vector
     // Expensive !!!
     template <typename U>
     self& operator=(const vector<U>& that)
     {  
- //       std::cout<<"Vector<U>-Vector Operator =\n";
+	//       std::cout<<"Vector<U>-Vector Operator =\n";
 	that.replicate_on_host();
 	on_host= true;
 	for (int i= 0; i < dim; i++)
@@ -221,20 +109,36 @@ class vector
 
 
     template <typename U>
-    self& operator=(const U& src)
+    self& operator*(const U& src)
     {	
-//	std::cout<< "x=wert zuweisung\n";
+	//	std::cout<< "x=wert zuweisung\n";
         for (int i= 0; i < dim; i++) 
             start[i]= src;
 	if (!on_host) { on_host= true; to_device(); }
 	return *this;
     }
-
+#endif
 
     template <typename U>
     self& operator*=(const U& src)
     {
- //       std::cout<< "x*= wert zuweisung\n";
+	//       std::cout<< "x*= wert zuweisung\n";
+	if (on_host && dim < host_limit) {
+	    //std::cout<< "on host\n";
+	    for (int i= 0; i < dim; i++) 
+		start[i]*= src;
+	} else {
+	    to_device(); // if not yet there
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE); 
+	    vec_rmult_asgn<value_type> sc(src, dptr, dim);
+	    launch_function<<<dimGrid, dimBlock>>>(sc);
+	}
+        return *this;
+    }
+
+    template <typename U>  // Vector*Scalar
+    self& operator*(const U& src)
+    {
 	if (on_host && dim < host_limit) {
 	    //std::cout<< "on host\n";
 	    for (int i= 0; i < dim; i++) 
@@ -251,7 +155,7 @@ class vector
     template <typename U>
     self& operator/=(const U& src)
     {
- //       std::cout<< "x/= wert zuweisung\n";
+//        std::cout<< "x/= wert zuweisung\n";
 	if (on_host && dim < host_limit) {
 	    //std::cout<< "on host\n";
 	    for (int i= 0; i < dim; i++) 
@@ -281,6 +185,35 @@ class vector
 	}
         return *this;
     }
+    
+    self& operator+=(const self& src)  //vec+vec
+    {
+	if (on_host && dim < host_limit) {
+	    for (int i= 0; i < dim; i++) 
+		start[i]+= src.start[i];
+	} else {
+	    to_device(); // if not yet there
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);
+//	    vector_vector_rplus<value_type> sc(dptr, src.dptr, dim);
+ 	    vector_vector_rplus<value_type><<<dimGrid, dimBlock>>>(dptr, src.dptr, dim);
+	}
+        return *this;
+    }
+
+
+    self& operator-=(const self& src) //vec-vec
+    {
+	if (on_host && dim < host_limit) {
+	    for (int i= 0; i < dim; i++) 
+		start[i]+= src.start[i];
+	} else {
+	    to_device(); // if not yet there
+	    dim3 dimGrid(gridDimx(dim)), dimBlock(BLOCK_SIZE);
+//	    vector_vector_rplus<value_type> sc(dptr, src.dptr, dim);
+ 	    vector_vector_rminus<value_type><<<dimGrid, dimBlock>>>(dptr, src.dptr, dim);
+	}
+        return *this;
+    }
 
     template <typename U>
     self& operator-=(const U& src)
@@ -297,7 +230,6 @@ class vector
 	}
         return *this;
     }
-#endif
 
     T& operator[](int index) {
 //	std::cout<<"klammer function 1\n\n";
