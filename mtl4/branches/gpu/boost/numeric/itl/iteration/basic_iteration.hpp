@@ -15,6 +15,7 @@
 #include <iostream>
 #include <complex>
 #include <string>
+#include<boost/numeric/mtl/operation/two_norm.hpp>
 
 namespace itl {
 

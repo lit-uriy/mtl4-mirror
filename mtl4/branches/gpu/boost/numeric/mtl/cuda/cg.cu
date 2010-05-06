@@ -12,6 +12,7 @@
 #ifndef MTL_CUDA_CG_INCLUDE
 #define MTL_CUDA_CG_INCLUDE
 
+//#include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/cuda/compressed2D.cu>
 #include <boost/numeric/mtl/cuda/dense2D.cu>
 #include <boost/numeric/mtl/cuda/dot.cu>
@@ -44,69 +45,35 @@ void short_print2(const Vector& v)
 template < typename LinearOperator, typename VectorX, typename VectorB >
 int cg(LinearOperator& A, VectorX& x, VectorB& b, int iter, double tol)
 {
-  std::cout<< "CUDA CG START\n"; 
   typedef typename mtl::Collection<VectorX>::value_type  Scalar;
-  scalar<Scalar> rho(0), rho_1(0), alpha(0), beta(0), tmp(0);
-  VectorX p(size(x)), q(size(x)), r(size(x)), z(size(x)), s(size(x)), t(size(x));
-//  mtl::cuda::vector<VectorX> p(size(x)), q(size(x)), r(size(x)), z(size(x)), s(size(x)), t(size(x));
   
+  Scalar rho(0), rho_1(0), alpha(0), beta(0);
+  VectorX p(size(x)), q(size(x)), r(size(x));  //z(size(x))
   
-//  p.to_device; //q.to_device; r.to_device; z.to_device; s.to_device; t.to_device; 
-  
-    double norm(1);
-    p= A*x;
-    r= b - p;
-//     std::cout<< "b=" << b << "\n";
-//     std::cout<< "dot r=" << dot(r,r) << "\n";
-    norm= sqrt(dot(r,r));
-//     std::cout<< "norm=" << norm << "\n";
+
+    r = b - A*x;
+    rho= dot(r,r);
     int i(0);
-    while ((norm > tol) && (i < iter)) {
+    while ((sqrt(rho) > tol) && (i < iter)) {
 	//       z = solve(M, r);
-
-	alpha = rho.value() / dot(p, q);
-	A.mult(p, q);
 	if (i == 0)
 	    p= r;
 	else {
-	    beta = rho.value() / rho_1.value();
-	}
-	alpha = rho.value() / dot(p, q);
-	s= p;
-	t= q;
-      
-
-#if 0
-	rho = dot(r, r);
-
-//  	std::cout<< "i=" << i << "\n";
-	if (i == 0)
-	    p= r;
-	else {
-	    beta = rho.value() / rho_1.value();
-	    p*= beta.value();
+	    beta = rho / rho_1;
+ 	    p*= beta;
 	    p= r+p;
 	}
-	A.mult(p, q);
-	// q = A * p;
-	// tmp = dot(p, q);
-	alpha = rho.value() / dot(p, q);
-	s= p;
-	t= q;
-      
-	s*=  alpha.value();
-	t*=  alpha.value();
+	A.mult(p, q);  // q = A * p;
+	
+	alpha = rho / dot(p, q);
 
-//	x += p* alpha.value();
-//	r -= q* alpha.value();
+ 	x += (p* alpha);
+	r -= (q* alpha);
 
-	x= x + s;
-	r= r - t;
 	rho_1 = rho;      
-	norm= sqrt(dot(r,r));
-#endif
+	rho= (dot(r,r));
 	++i;
-	std::cout<< "iteration "<< i <<": norm residum=" << norm << "\n";
+	if (i%5 == 0) std::cout<< "iteration "<< i <<": norm residum=" << sqrt(rho) << "\n";
     }
     std::cout<< "\n\nAll done without problems\n";
     return iter;
