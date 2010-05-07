@@ -40,112 +40,64 @@ inline svd(const Matrix& A, double tol)
     
     double 	     err(10000), e, f;
  
-    std::cout<< "vor start svd\n";
-//     std::cout<< "nrows="<< nrows << "\n";
-//     std::cout<< "ncols="<< ncols << "\n";
-    //if ( nrows > ncols ) throw mtl::logic_error("underdetermined system, use trans(A) instead of A"); //should work for every dimension
+//     if ( nrows > ncols ) throw mtl::logic_error("underdetermined system, use trans(A) instead of A"); //should work for every dimension
     if ( nrows < ncols ) {
 	col= nrows; row= ncols;
     } else {
 	col= ncols; row= nrows;
     }
      Matrix Q(row,row), R(row,col), V(col,row), VT(row,col), 
-	    Q0(col,col), E(row,col), ET(col,row),QT(row,row), RT(row,col),RTT(col,row), S(row,row),ST(col,col),D(row,row);
-    std::cout<< "A=\n"<< A << "\n";
-     std::cout<< "V=\n"<< V << "\n";
-    if ( nrows < ncols ) 
-	VT= trans(A);
-    else
-	V= A;
-    std::cout<< "row="<< row << "\n";
-    std::cout<< "col="<< col << "\n";
-
+	    E(row,col), QT(col,col), RT(col,row), S(row,row),ST(col,col),D(row,row);
+    std::cout<< "A=\n" << A << "\n"; std::cout<< "V=\n" << V << "\n";
+    V= A;
     //init
     loops= 100* std::max(nrows,ncols);
-    ST= one;S= one; D= one; QT= zero; R= zero; E= zero;
-    /// loops at the moment ==3
-    while (err > tol && i < 6 ) {
-	std::cout<< "LOOP=" << i << "\n";
-	if ( nrows >= ncols ) { ///quadratic part is ok TODO check for row > col
-	    std::cout<< "normal\n";
+    ST= one; S= one; D= one; E= zero;
+    while (err > tol && i < loops ) {
+	if ( nrows >= ncols ) { 
 	    boost::tie(Q, R)= qr((V));
  	    S*= Q;
 	    V= trans(R);
 	    boost::tie(Q, R)= qr((V));
-	    D*= Q;
-	    E= triu(R,1);
-	    V= trans(R);
 	} else {
-	    std::cout<< "trans\n";
-	    boost::tie(QT, RT)= qr((VT));
-	    Q0= sub_matrix(QT, 0, col, 0, col);
-	    ST*= Q0;
- 	    VT= RT;
-	    boost::tie(QT, RT)= qr((VT));
-	    D*= QT;
-	    V= trans(RT);
- 	    ET= triu(V,1);
-	    VT= RT;
+	    boost::tie(QT, RT)= qr((V));
+	    ST*= QT;
+	    VT= trans(RT);
+            boost::tie(Q, R)= qr((VT));
  	}
+        D*= Q;
+	E= triu(R,1);
+	V= trans(R);
+
 	//ready for exit when upper(R)=0
-// 	std::cout<< "V=\n" << V << "\n";
-// 	std::cout<< "QT=\n" << QT << "\n";
-	
-	if ( nrows >= ncols ){
-		f= two_norm(diagonal(R));
-		e= one_norm(E);
-	}
-	else {
-		f= two_norm(diagonal(RT));
-		e= one_norm(ET);
-	}
-// 	std::cout<< "diagonal(RT)" << diagonal(RT) << "\n";
+	f= two_norm(diagonal(R));
+	e= one_norm(E);
 	
 	if ( f== zero ) f= 1;
 	err= e/f;
 	i++;
-	std::cout<< "e=" << e << "  und f=" << f << "   ERROR= " << err << "\n";
+// 	std::cout<< "e=" << e << "  und f=" << f << "   ERROR= " << err << "\n";
     } //end while
-    
+ 
     //fix signs in V
     
-//     std::cout<< "V=\n" << V << "\n";
-//     std::cout<< "R=\n" << R << "\n";
-//     std::cout<< "S=\n" << S << "\n";
-    if ( nrows >= ncols ) {
-	V= 0;
-	for (size_type i= 0; i < col; i++) {
-	    V[i][i]= std::abs(R[i][i]);
-	    if (R[i][i] < zero) {
-		for (size_type j= 0; j < col; j++) {
+    V= 0;
+    for (size_type i= 0; i < col; i++) {
+	V[i][i]= std::abs(R[i][i]);
+	if (R[i][i] < zero) {
+	    for (size_type j= 0; j < col; j++) {
+		if ( nrows >= ncols ) {
 		    S[j][i]= -S[j][i];
-		}
-	    }
-	}
-    } else {
-	VT= 0;
-        for (size_type i= 0; i < col; i++) {
-	    VT[i][i]= std::abs(RT[i][i]);
-	    if (RT[i][i] < zero) {
-		for (size_type j= 0; j < col; j++) {
+		} else {
 		    ST[j][i]= -ST[j][i];
 		}
 	    }
 	}
     }
-    std::cout<< "ready inline svd\n";
-    std::cout<< "ST=\n" << ST << "\n";
-//     std::cout<< "V=\n" << V << "\n";
-    std::cout<< "VT=\n" << VT << "\n";
-    std::cout<< "D=\n" << D << "\n";
-     std::cout<< "A=\n" << ST*trans(VT)*trans(D) << "\n";
-    if ( nrows >= ncols ) {
-	std::cout<< "normal\n";
+    if ( nrows >= ncols )
 	return boost::make_tuple(S,V,D);
-    } else {
-	std::cout<< "trans\n";
-	return boost::make_tuple(ST,trans(VT),D);
-    } 
+    else 
+	return boost::make_tuple(ST,V,D);
 }
 
 }} // namespace mtl::matrix
