@@ -23,7 +23,8 @@ int test_main(int argc, char* argv[])
 
     double b, normA(0), tol(0.0000001);
     dense_vector<double>                    vec(size), vec1(size);
-    dense2D<double>                         A(row, col), A_t(row, col), S(row, row), V(row, col), D(col,col), norm(row, col);
+    dense2D<double>                         A(row, col), A_t(row, col), S(row, row), V(row, col), D(col,col), norm(row, col),
+					    AT(col,row), A_tT(col,row), ST(col, col), VT(col,row), DT(row,row), normT(col, row);
     A= 0;
 
     A[0][0]=1;    A[0][1]=1;    A[0][2]=1; 
@@ -31,6 +32,7 @@ int test_main(int argc, char* argv[])
     A[2][0]=9;    A[2][1]=3;    A[2][2]=2;
     A[2][3]=4;    A[0][3]=4;    A[1][3]=3;
     std::cout<<"A=\n"<< A <<"\n";
+    AT= trans(A);
     std::cout<<"START--------------\n";
 
     boost::tie(S, V, D)= svd(A, tol);
@@ -44,7 +46,19 @@ int test_main(int argc, char* argv[])
     normA= one_norm(norm);
     std::cout<< "norm(SVD-A)=" << normA << "\n";
 //     if (normA > size*size*tol) throw mtl::logic_error("wrong SVD decomposition of matrix A");
-    
+
+#if 0
+    boost::tie(ST, VT, DT)= svd(AT, tol);
+    std::cout<<"MAtrix  S=\n"<< ST <<"\n";
+    std::cout<<"MAtrix  V=\n"<< VT <<"\n";
+    std::cout<<"MAtrix  D=\n"<< DT <<"\n";
+    A_tT= ST*VT*trans(DT);
+    std::cout<<"MAtrix  AT=S*V*D'=\n"<< A_tT <<"\n";
+    std::cout<<"Original A==\n"<< AT <<"\n";
+    normT= A_tT - AT;
+    normA= one_norm(normT);
+    std::cout<< "norm(SVD-A)=" << normA << "\n";
+#endif
     return 0;
 }
 
