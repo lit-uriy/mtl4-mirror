@@ -34,9 +34,10 @@ int test_main(int argc, char* argv[])
     double b, tol(0.00001);
     dense_vector<double>                    vec(size), vec1(size);
     dense2D<double>                     A(row, col),   Q(row, row),   R(row, col),   A_test(row, col),
-					A_t(col, row), Q_t(col, col), R_t(col, row), A_t_test(col, row);
+					A_t(col, row), Q_t(col, col), R_t(col, row), A_t_test(col, row),   Qc(size, size),   Rc(size, size),   A_testc(size, size);
     dense2D<complex<double> >                            dz(row, col), Qz(row, row), Rz(row, col);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    compressed2D<double>                Ac(size, size);
     A= 0;
 
     A[0][0]=1;    A[0][1]=1;    A[0][2]=1;
@@ -44,9 +45,10 @@ int test_main(int argc, char* argv[])
     A[2][0]=1;    A[2][1]=7;    A[2][2]=1;
     A[3][3]=-10;  A[4][0]=4;    A[4][2]=3;
     std::cout<<"A=\n"<< A <<"\n";
+    laplacian_setup(Ac, 2,2);
 
     
-    std::cout<<"START--------------row > col\n";
+    std::cout<<"START-----dense2d---------row > col\n";
   
 	boost::tie(Q, R)= qr(A);
  	std::cout<<"R=\n"<< R <<"\n";
@@ -58,7 +60,7 @@ int test_main(int argc, char* argv[])
 	if (one_norm(A_test) > tol) throw mtl::logic_error("wrong QR decomposition of matrix A");
 
 	
-    std::cout<<"START-------------row < col\n";
+    std::cout<<"START------dense2d-------row < col\n";
 
 	A_t= trans(A);
 	boost::tie(Q_t, R_t)= qr(A_t);
@@ -70,7 +72,17 @@ int test_main(int argc, char* argv[])
 	std::cout<< "one_norm(Rest A')=" << one_norm(A_t_test) << "\n";
 	if (one_norm(A_t_test) > tol) throw mtl::logic_error("wrong QR decomposition of matrix trans(A)");
 	
- 	 
+    std::cout<<"START-------compressed2d-------row > col\n";
+  
+	boost::tie(Qc, Rc)= qr(Ac);
+ 	std::cout<<"R=\n"<< Rc <<"\n";
+ 	std::cout<<"Q=\n"<< Qc <<"\n";
+	A_testc= Qc*Rc-Ac;
+	std::cout<<"Q*R=\n"<< Qc*Rc <<"\n";
+	std::cout<<"A=\n"<< Ac <<"\n";
+	
+	std::cout<< "one_norm(Rest A)=" << one_norm(A_testc) << "\n";
+	if (one_norm(A_testc) > tol) throw mtl::logic_error("wrong QR decomposition of matrix A"); 
 
 #if 0
     dz[0][0]=complex<double>(1.0, 0.0);
