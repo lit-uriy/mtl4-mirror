@@ -30,7 +30,7 @@ namespace mtl { namespace matrix {
 
 
 // QR-Factorization of matrix A(m x n) with m >= n
-// Return pair R upper triangel matrix and Q= orthogonal matrix
+// Return pair R upper triangel matrix and Q= orthogonal matrix. R and Q are always dense2D
 template <typename Matrix>
 std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
 	  typename mtl::dense2D<typename Collection<Matrix>::value_type> >
@@ -41,7 +41,7 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
     typedef typename Magnitude<value_type>::type      magnitude_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A), mini;
     value_type       zero= math::zero(A[0][0]);
-    Matrix           R(A), Q(nrows,nrows), Q_test(nrows,nrows);
+    dense2D<value_type>  R(A), Q(nrows,nrows), Q_test(nrows,nrows);
     magnitude_type factor= magnitude_type(2);
 
     Q= 1;
@@ -66,7 +66,7 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
 	//R=R-2*v*tmp
 	for (size_type a= 0; a < nrows-i; a++){
 		for (size_type b= 0; b < ncols-i; b++){
-			R[a+i][b+i]= R[a+i][b+i] + factor * v[a]*tmp[b]; 
+			R[a+i][b+i]= R[a+i][b+i] + factor * v[a]*tmp[b]; //R is dense
 		}
 	}
 
@@ -80,7 +80,7 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
 
 	for (size_type a= 0; a < nrows; a++){
 		for (size_type b= i; b < nrows; b++){
-			Q[a][b]=Q[a][b]- factor* qtmp[a] * v[b-i]; 
+			Q[a][b]=Q[a][b]- factor* qtmp[a] * v[b-i]; //Q is dense
 		}	
 	}
 	
