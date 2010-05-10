@@ -41,14 +41,13 @@ inline svd(const Matrix& A, double tol)
     
     double 	     err(numeric_limits<double>::max()), e, f;
 
-    if ( nrows < ncols || nrows > ncols) {
+    if ( nrows < ncols || nrows > ncols) { // important for right dimension
 	col= nrows; row= ncols;
-    } else {
-	col= ncols; row= nrows;
-    }
+    } 
+
     //init
     Matrix Q(row,row),  R(row,col),  V(A), VT(row,col), E(row,col), 
-	   QT(col,col), RT(col,row), S(col,col), D(row,row);
+	   QT(col,col), RT(col,row), S(col,col), ST(col,col), D(row,row);
 
     loops= 100* std::max(nrows,ncols);
     S= one; D= one; E= zero;
@@ -69,23 +68,40 @@ inline svd(const Matrix& A, double tol)
 	err= e/f;
 	i++;
     } //end while
- 
-    if ( nrows > ncols ) {
- 	col= ncols; row= nrows;
+ std::cout<< "col="  << col << "   row="  << row << "\n";
+    if ( nrows < ncols ) { // important for right dimension
+	col= nrows; row= nrows;
+    } else if ( nrows > ncols ) {
+	col= ncols; row= ncols;
     }
 
+
+std::cout<< "col="  << col << "   row="  << row << "\n";
     //fix signs in V
-    V= 0;
+    V= 0;  ST=0;
+    matrix::inserter<Matrix>  ins_V(V);
+    matrix::inserter<Matrix>  ins_ST(ST);
+    std::cout<< "ST=\n" << ST << "\n";
+    std::cout<< "R=\n" << R << "\n";
     for (size_type i= 0; i < col; i++) {
-	V[i][i]= std::abs(R[i][i]);
+	std::cout<< "i=" << i << "\n";
+	ins_V[i][i] << std::abs(R[i][i]);                  //TODO   inserter
 	if (R[i][i] < zero) {
-	    for (size_type j= 0; j < row; j++) {
-		    S[j][i]= -S[j][i];
+	    for (size_type j= 0; j < nrows; j++) {     //TODO   inserter
+		std::cout<< "i=" << i << "  j=" << j << "\n";
+		    ins_ST[j][i] << -S[j][i];
+	    }
+	} else { 
+	    for (size_type j= 0; j < nrows; j++) {     //TODO   OK so?
+		std::cout<< "i=" << i << "  j=" << j << "\n";
+		    ins_ST[j][i] << S[j][i];
 	    }
 	}
     }
-    //std::cout<< "ready signs \n";
-    return boost::make_tuple(S,V,D);
+ std::cout<< "ST=\n" << ST << "\n";
+ std::cout<< "S=\n" << S << "\n";
+    std::cout<< "ready signs \n";
+    return boost::make_tuple(ST,V,D);
 }
 
 }} // namespace mtl::matrix
