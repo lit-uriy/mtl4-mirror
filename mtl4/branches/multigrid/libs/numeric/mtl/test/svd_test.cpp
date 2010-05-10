@@ -46,12 +46,12 @@ int test_main(int argc, char* argv[])
     normA= one_norm(norm);
     std::cout<< "norm(SVD-A)=" << normA << "\n";
 //     if (normA > size*size*tol) throw mtl::logic_error("wrong SVD decomposition of matrix A");
-
-#if 0
+    std::cout<<"START--------------\n";
+#if 1
     boost::tie(ST, VT, DT)= svd(AT, tol);
-    std::cout<<"MAtrix  S=\n"<< ST <<"\n";
-    std::cout<<"MAtrix  V=\n"<< VT <<"\n";
-    std::cout<<"MAtrix  D=\n"<< DT <<"\n";
+    std::cout<<"MAtrix  ST=\n"<< ST <<"\n";
+    std::cout<<"MAtrix  VT=\n"<< VT <<"\n";
+    std::cout<<"MAtrix  DT=\n"<< DT <<"\n";
     A_tT= ST*VT*trans(DT);
     std::cout<<"MAtrix  AT=S*V*D'=\n"<< A_tT <<"\n";
     std::cout<<"Original A==\n"<< AT <<"\n";
