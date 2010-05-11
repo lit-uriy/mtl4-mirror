@@ -29,29 +29,28 @@ namespace mtl { namespace matrix {
 /// QR-Factorization of matrix A
 /// Return A=S*V*D' at the moment only for quadratic matrix A
 template <typename Matrix>
-boost::tuple<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
-	     typename mtl::dense2D<typename Collection<Matrix>::value_type>,
-	     typename mtl::dense2D<typename Collection<Matrix>::value_type> >
+boost::tuple<Matrix, Matrix, Matrix >
 inline svd(const Matrix& A, double tol)
 {
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
-    size_type        ncols = num_cols(A), nrows = num_rows(A), loops, i(0),row,col;
+    size_type        ncols= num_cols(A), nrows= num_rows(A), loops, i(0), col, row;
     value_type       zero= math::zero(A[0][0]), one= math::one(A[0][0]);
     
     double 	     err(numeric_limits<double>::max()), e, f;
 
     if ( nrows < ncols || nrows > ncols) { // important for right dimension
 	col= nrows; row= ncols;
-    } 
+    } else {
+	col=  ncols;  row= nrows;
+    }
 
     //init
     Matrix Q(row,row),  R(row,col),  V(A), VT(row,col), E(row,col), 
-	   QT(col,col), RT(col,row), S(col,col), ST(col,col), D(row,row);
+ 	   QT(col,col), RT(col,row), S(col,col), ST(col,col), D(row,row);
 
     loops= 100* std::max(nrows,ncols);
     S= one; D= one; E= zero;
-
     while (err > tol && i < loops ) {
 	boost::tie(QT, RT)= qr((V));
  	S*= QT;
@@ -68,39 +67,33 @@ inline svd(const Matrix& A, double tol)
 	err= e/f;
 	i++;
     } //end while
- std::cout<< "col="  << col << "   row="  << row << "\n";
+
     if ( nrows < ncols ) { // important for right dimension
 	col= nrows; row= nrows;
     } else if ( nrows > ncols ) {
 	col= ncols; row= ncols;
     }
 
-
-std::cout<< "col="  << col << "   row="  << row << "\n";
     //fix signs in V
     V= 0;  ST=0;
-    matrix::inserter<Matrix>  ins_V(V);
-    matrix::inserter<Matrix>  ins_ST(ST);
-    std::cout<< "ST=\n" << ST << "\n";
-    std::cout<< "R=\n" << R << "\n";
-    for (size_type i= 0; i < col; i++) {
-	std::cout<< "i=" << i << "\n";
-	ins_V[i][i] << std::abs(R[i][i]);                  //TODO   inserter
+    {matrix::inserter<Matrix, update_plus<value_type> >  ins_V(V);
+     matrix::inserter<Matrix>  ins_ST(ST);
+     for (size_type i= 0; i < col; i++) {	
+ 	ins_V[i][i] << std::abs(R[i][i]);
 	if (R[i][i] < zero) {
-	    for (size_type j= 0; j < nrows; j++) {     //TODO   inserter
-		std::cout<< "i=" << i << "  j=" << j << "\n";
+	    for (size_type j= 0; j < nrows; j++) {
+//  		std::cout<< "00  i=" << i << "   j=" << j << "R[i][i]=" << R[i][i] <<" \n";
 		    ins_ST[j][i] << -S[j][i];
 	    }
 	} else { 
-	    for (size_type j= 0; j < nrows; j++) {     //TODO   OK so?
-		std::cout<< "i=" << i << "  j=" << j << "\n";
+	    for (size_type j= 0; j < nrows; j++) {     //TODO   OK so???   S is dense, but saved as commpressed?
+// 		std::cout<< "11  i=" << i << "   j=" << j << "R[i][i]=" << R[i][i] <<"\n";
 		    ins_ST[j][i] << S[j][i];
 	    }
 	}
     }
- std::cout<< "ST=\n" << ST << "\n";
- std::cout<< "S=\n" << S << "\n";
-    std::cout<< "ready signs \n";
+    }
+
     return boost::make_tuple(ST,V,D);
 }
 
