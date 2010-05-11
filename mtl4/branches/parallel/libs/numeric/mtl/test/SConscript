@@ -16,6 +16,8 @@ for p in sources:
     if 'mpi_' == p[0:4]:
         if 'mpi_3_parmetis_matrix_migration_test.cpp' == p and mpi_debug_env.Dictionary()['CCFLAGS'].count('-DMTL_HAS_TOPOMAP'):
 	    mpi_programs.append(mpi_debug_env.Program([p, '../../../../../../../../Software/topomap/virt_graph_scal.o']))
+        elif 'mpi_2_mpi_log_test.cpp' == p:
+            mpi_programs.append(mpi_debug_env.Program([p, 'mpi_2_test_mpi_log_test.cpp']))
 	else:
  	    mpi_programs.append(mpi_debug_env.Program(p))
     else:

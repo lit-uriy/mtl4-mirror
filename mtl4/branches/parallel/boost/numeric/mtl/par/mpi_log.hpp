@@ -20,7 +20,7 @@ namespace mtl { namespace par {
 
 
 /// Helper stream type for logging MPI activities, only active if MTL_WITH_MPI_LOG
-struct mpi_log_t
+static struct mpi_log_t
 {
     template <typename T>
     mpi_log_t& operator<<(const T& v)

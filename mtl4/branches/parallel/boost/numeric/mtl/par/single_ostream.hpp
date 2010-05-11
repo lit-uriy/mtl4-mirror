@@ -50,7 +50,7 @@ struct single_ostream
     boost::mpi::communicator comm;
 };
 
-single_ostream& endl(single_ostream& os)
+inline single_ostream& endl(single_ostream& os)
 {
     os << "\n"; os.flush(); return os;
 }
