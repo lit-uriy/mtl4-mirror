@@ -35,7 +35,7 @@ int thomas(const LinearOperator &A, Vector &x, const Vector &b, Iteration& iter)
 	c[0]= A[0][1]/A[0][0];
 	d[0]= b[0]/A[0][0];
     } else 
-	throw mtl::logic_error("no tridiagonal matrix");
+	throw mtl::logic_error("no tridiagonal matrix ");
          
     for (size_type i= 1; i < nrows-1; i++) {
 	tmp = A[i][i]-c[i-1]*A[i][i-1];
