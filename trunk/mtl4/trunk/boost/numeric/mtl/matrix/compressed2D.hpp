@@ -462,6 +462,13 @@ class compressed2D
 	shrink_stl_vector(indices);
     }
 
+    /// Number of non-zeros in row/column \p r_or_c when matrix is row-/column-major
+    size_type nnz_local(size_type r_or_c) const 
+    { 
+	MTL_DEBUG_THROW_IF(r_or_c >= this->dim1(), index_out_of_range());
+	return starts[r_or_c+1] - starts[r_or_c];
+    }
+
     friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
     template <typename, typename> friend struct compressed_el_cursor;
