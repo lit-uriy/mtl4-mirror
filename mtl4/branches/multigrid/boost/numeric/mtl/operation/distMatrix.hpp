@@ -44,14 +44,13 @@ Matrix inline distMatrix(const Matrix& A, const Matrix& B)
 		inputA[k][0]= A[k][i];
 	}
 	for (size_type k = 0; k < rowB; k++){
-		inputB[k][0]= A[k][i];
+		inputB[k][0]= B[k][i];
 	}
 	C= 0; D= 0;
 	C= matrep(inputA, 1, rowB);
 	D= matrep(inputB, 1, rowA);
 	T= C - trans(D);
   	S= S+quadMatrix(T);
-
     }
     S= sqrtMatrix(S);
     return S;
