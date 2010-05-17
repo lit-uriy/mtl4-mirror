@@ -77,18 +77,19 @@ inline svd(const Matrix& A, double tol)
     //fix signs in V
     V= 0;  ST=0;
     {matrix::inserter<Matrix, update_plus<value_type> >  ins_V(V);
-     matrix::inserter<Matrix>  ins_ST(ST);
-     for (size_type i= 0; i < col; i++) {	
+    matrix::inserter<Matrix>  ins_ST(ST);
+     for (size_type i= 0; i < col; i++) {
+		
  	ins_V[i][i] << std::abs(R[i][i]);
 	if (R[i][i] < zero) {
 	    for (size_type j= 0; j < nrows; j++) {
 //  		std::cout<< "00  i=" << i << "   j=" << j << "R[i][i]=" << R[i][i] <<" \n";
-		    ins_ST[j][i] << -S[j][i];
+ 		    ins_ST[j][i] << -S[j][i];
 	    }
 	} else { 
 	    for (size_type j= 0; j < nrows; j++) {     //TODO   OK so???   S is dense, but saved as commpressed?
 // 		std::cout<< "11  i=" << i << "   j=" << j << "R[i][i]=" << R[i][i] <<"\n";
-		    ins_ST[j][i] << S[j][i];
+ 		    ins_ST[j][i] << S[j][i];
 	    }
 	}
     }
