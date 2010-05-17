@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/crop.hpp>
 #include <boost/numeric/mtl/operation/diagonal.hpp>
+#include <boost/numeric/mtl/operation/distMatrix.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/eigenvalue.hpp>
 #include <boost/numeric/mtl/operation/entry1D.hpp>
@@ -32,6 +33,7 @@
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>
+#include <boost/numeric/mtl/operation/matrep.hpp>
 #include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/multigrid.hpp>
