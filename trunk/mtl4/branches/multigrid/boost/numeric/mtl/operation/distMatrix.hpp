@@ -48,6 +48,7 @@ Matrix inline distMatrix(const Matrix& A, const Matrix& B)
 	}
 	C= 0; D= 0;
 	C= matrep(inputA, 1, rowB);
+	std::cout<< "c=" << C << "\n";
 	D= matrep(inputB, 1, rowA);
 	T= C - trans(D);
   	S= S+quadMatrix(T);
