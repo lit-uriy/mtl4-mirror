@@ -62,7 +62,7 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
     sout << "v is: " << v << "\n";
 
     w= trans(A) * v;
-    sout << "\nw= A * v is: " << w << '\n';
+    sout << "\nw= trans(A) * v is: " << w << '\n';
     if (std::abs(local(w)[1] - (comm.rank() ? 16.0 : 4.0)) > 0.01) throw "wrong value.";
     
     Matrix B(trans(A));
