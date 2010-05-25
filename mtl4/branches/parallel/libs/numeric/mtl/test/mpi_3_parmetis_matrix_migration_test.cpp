@@ -15,6 +15,7 @@
 #if defined(MTL_HAS_PARMETIS) && defined(MTL_HAS_MPI)
 
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 #include <algorithm>
@@ -88,18 +89,17 @@ int main(int argc, char* argv[])
 
     mpi::environment env(argc, argv);
 
+    typedef mtl::matrix::distributed<compressed2D<double> > matrix_type;
     
-#if 0
-    std::string    program_dir= mtl::io::directory_name(argv[0]), fname(argc > 1 ? argv[1] : "matrix_market/mhd1280b.mtx");
-    matrix::distributed<matrix::compressed2D<double> >             C(mtl::io::matrix_market(mtl::io::join(program_dir, fname)));
-#endif     
-
     matrix::distributed<matrix::compressed2D<double> >  A(7, 7);
-
     test(A, "distributed<compressed>", 1); 
     test(A, "distributed<compressed>", 2); 
 
-    mtl::par::single_ostream sout;
+#if 0
+    std::string    program_dir= mtl::io::directory_name(argv[0]), fname(argc > 1 ? argv[1] : "matrix_market/mhd1280b.mtx");
+    matrix::distributed<matrix::compressed2D<double> >             C(mtl::io::matrix_market(mtl::io::join(program_dir, fname)));
+    matrix_type D(C, parmetis_migration(C));
+#endif     
 
     std::cout << "\n**** no errors detected\n";
     return 0;
