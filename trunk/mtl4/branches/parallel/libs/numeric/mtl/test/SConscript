@@ -5,6 +5,7 @@ Import('debug_env mpi_debug_env check full_warnings mpi_high_opt_env')
 # print "SConscript: debug_env[CXX] = ", debug_env['CXX']
 
 sources = glob.glob("*.cpp")
+sources.remove('mpi_2_test_mpi_log_test.cpp')
 
 if full_warnings:
     sources.remove('matrix_matrix_scalar_product_test.cpp') # int->double -> warning -> error 
@@ -28,8 +29,10 @@ if int(check):
         debug_env.AddPostAction(p, p[0].abspath)
     for p in mpi_programs:
         tmatch = re.search('mpi_(\d*).*', str(p))
-        mpi_debug_env.AddPostAction(p, 'mpirun -mca btl tcp,self -np ' + tmatch.group(1) + ' ' + p[0].abspath)
+        # mpi_debug_env.AddPostAction(p, 'mpirun -mca btl tcp,self -np ' + tmatch.group(1) + ' ' + p[0].abspath)
+        mpi_debug_env.AddPostAction(p, 'mpirun -np ' + tmatch.group(1) + ' ' + p[0].abspath)
 
 Default(programs + mpi_programs)
 
-# To run only mpi programs: scons -D check=1 `ls mpi*.cpp | sed s/\.cpp//g`  
+# To run only mpi programs: scons -D check=1 `ls mpi*.cpp | grep -v mpi_2_test_mpi_log_test.cpp | sed s/\.cpp//g`  
+# only run in tcsh foreach f ( `ls mpi* | grep -v '.*\..*'`) mpigo $f end ..

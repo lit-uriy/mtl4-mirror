@@ -14,6 +14,8 @@
 
 #ifdef MTL_HAS_MPI
 
+#include <cassert>
+
 #include <boost/static_assert.hpp>
 #include <boost/mpi/status.hpp>
 #include <boost/mpi/communicator.hpp>
@@ -164,6 +166,7 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 	// mtl::par::check_mpi(res.first); // error code is non-sense !!!, besides boost::mpi checks already
 
 	int p= res.first.source();
+	assert(p > 0 && p < communicator(v).size()); // check range of p
 	if(p == communicator(v).rank()) 
 	    mtl::par::mpi_log << "[nonblocking] finished sending my data" << '\n';
 	else { 
