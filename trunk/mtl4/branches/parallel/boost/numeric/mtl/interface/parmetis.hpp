@@ -61,7 +61,7 @@ typedef std::vector<idxtype> parmetis_index_vector;
 	MPI_Comm newcomm;
 	MPIX_Graph_create_parmetis_unweighted(&vtxdist[0], &xadj[0], &adjncy[0], &numflag, &part[0], &comm, &newcomm);
 
-#       ifndef NDEBUG // oder #ifdef TMP_PLOT_GRAPHS
+#       if 1 // ndef NDEBUG // oder #ifdef TMP_PLOT_GRAPHS
           /* this is all debug stuff (plots pretty cool graphs ;-)) */
 	  // all those filenames should somehow come from a config file (or command line)
   	  //TPM_Fake_names_file = (char*)"./3x3x2.fake";
@@ -83,7 +83,7 @@ typedef std::vector<idxtype> parmetis_index_vector;
         std::vector<int> permutation(p);
         MPI_Allgather(&newrank, 1, MPI_INT, &permutation[0], 1, MPI_INT, newcomm);
 
-#       ifndef NDEBUG 
+#       if 1 // ndef NDEBUG 
         int r; MPI_Comm_rank(newcomm, &r);
         if(!r) { printf("rank permutation: "); for(int i=0; i<p; ++i) printf("%i ", permutation[i]); printf("\n"); }
 #       endif

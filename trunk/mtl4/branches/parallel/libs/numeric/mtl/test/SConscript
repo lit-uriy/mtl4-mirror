@@ -1,6 +1,6 @@
 import glob, re
 
-Import('debug_env mpi_debug_env check full_warnings')
+Import('debug_env mpi_debug_env check full_warnings mpi_high_opt_env')
 
 # print "SConscript: debug_env[CXX] = ", debug_env['CXX']
 

@@ -64,7 +64,9 @@ void solve(const Matrix& A, const char* name)
     MPI_Aint w; 
     MPI_Get_address((void*)0, &w);
     //cg(A, x, b, P, iter);
-    for(int i=0; i<100; ++i) { b = A * x; x = b+x; }
+    for(int i=0; i<100; ++i)
+	b = A * x; 
+
     MPI_Get_address((void*)1, &w);
     MPI_Barrier(MPI_COMM_WORLD);
     sout << "Solution took " << t+MPI_Wtime() << "s.\n";
@@ -86,13 +88,9 @@ int main(int argc, char* argv[])
     mtl::par::single_ostream     sout;
     mtl::par::multiple_ostream<> mout;
 
-    if(argc < 2) {
-      printf("usage: %s <matrix file>", argv[0]);
-      MPI_Abort(MPI_COMM_WORLD, 1);
-    }
     // Set file name (consider program being started from other directory)
     std::string program_dir= io::directory_name(argv[0]), 
-	  file_name= io::join(program_dir, argv[1]); // symm. (hopefully pos. def.)
+                file_name= io::join(program_dir, argc < 2 ? "matrix_market/mhd1280b.mtx" : argv[1]); // symm. (hopefully pos. def.)
 
     // Read file into distributed matrix
     io::matrix_market file(file_name);
@@ -113,7 +111,7 @@ int main(int argc, char* argv[])
     std::copy(part.begin(), part.end(), topopart.begin());
     
     // apply topology mapping
-    topology_mapping(communicator(row_distribution(A)), xadj, adjncy, vtxdist, topopart);
+    topology_mapping(communicator(row_distribution(A)), xadj, adjncy, vtxdist, topopart); 
     //mout << "Metis partition is " << part << '\n'; 
 
     //mtl::par::block_migration pmigr= parmetis_migration(row_distribution(A), part);
