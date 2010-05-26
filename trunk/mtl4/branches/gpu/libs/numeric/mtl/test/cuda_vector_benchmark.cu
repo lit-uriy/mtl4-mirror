@@ -39,7 +39,7 @@ void test(const char* name, int size, int repetitions)
 {
     typedef mtl::cuda::vector<T>   vt;
 
-    std::cout << name << "-- Vector Test\n"; 
+    std::cout << name << "-- Vector benchmark Test (must be reviewed because expresion templates\n"; 
     mtl::cuda::vector<T>  x(size, 33), y(size, 10, false), z(size, 1), q(size, 3);
     
 #if 0
@@ -60,7 +60,7 @@ void test(const char* name, int size, int repetitions)
         
     mtl::cuda::timer without_copy;
     for (int r= 0; r < repetitions; r++) {
-	x.plus(y, z);
+//	x.plus(y, z);
  	cudaThreadSynchronize();
     }
    
@@ -69,8 +69,8 @@ void test(const char* name, int size, int repetitions)
 
     mtl::cuda::timer twice;
     for (int r= 0; r < repetitions; r++) {
-	x.plus(y, z);
-	y.plus(z, q);
+//	x.plus(y, z);           //that
+//	y.plus(z, q);           //and that 
  	cudaThreadSynchronize();
     }
    

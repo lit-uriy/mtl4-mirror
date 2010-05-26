@@ -22,9 +22,12 @@
 #include <boost/numeric/mtl/operation/check.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
-#include <boost/numeric/mtl/cuda/launch_function.hpp>
-#include <boost/numeric/mtl/cuda/meet_data.cu>
-#include <boost/numeric/mtl/cuda/vector_cuda.cu>
+
+#ifdef MTL_HAS_CUDA
+#  include <boost/numeric/mtl/cuda/launch_function.hpp>
+#  include <boost/numeric/mtl/cuda/meet_data.cu>
+#  include <boost/numeric/mtl/cuda/vector_cuda.cu>
+#endif
 
 #ifndef BL_SIZE
 #  define BL_SIZE 256
@@ -179,17 +182,16 @@ struct vec_vec_aop_expr
 
 
     MTL_PU value_type& operator() ( size_type i ) const {
-	check( delayed_assign );
-	return SFunctor::apply( first(i), second(i) );
+	return this->operator[](i);
     }
 
     MTL_PU value_type& operator[] ( size_type i ) const{
 	check( delayed_assign );
-	return SFunctor::apply( first(i), second(i) );
+	return SFunctor::apply( const_cast<first_argument_type&>(first)(i), second(i) ); // const_cast for nvcc
     }
 
   private:
-     first_argument_type const&          first ;
+    first_argument_type const&          first ; // const for nvcc
      second_argument_type const&         second ;
      mutable bool                        delayed_assign;
   } ; // vec_vec_aop_expr

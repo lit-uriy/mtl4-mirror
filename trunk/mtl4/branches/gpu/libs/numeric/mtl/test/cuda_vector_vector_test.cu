@@ -46,7 +46,7 @@ void test(const char* name)
     int //critic_point=33553919, 
 	gross=53553919;
     
-    std::cout << name << "-- Vector Test\n"; 
+    std::cout << name << "-- Vector-Vector Test (must be reviewed because expresion templates)\n"; 
     mtl::cuda::vector<T>  x(gross, 33), y(gross, 10, false), z(gross, 3);
 
     std::cout << "Vector Size= " << size(x) <<"\n\n";
@@ -91,7 +91,8 @@ void test(const char* name)
 */
  
     
-    
+/*
+//===========TESTING===================    
     x=0;
     std::cout<< "\n   start plus updated\n";
     print(y);
@@ -105,8 +106,9 @@ void test(const char* name)
     }
     std::cout<< "   end plus updated nr elements of vector x= "<<elements<<"\n\nx[1]="<<x[1]<<"\n\n";
 
+//=====================================
     
-
+*/
     
     
     

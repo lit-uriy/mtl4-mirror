@@ -1,6 +1,6 @@
-project (boost_mtl4-gpu)
+project (boost_mtl4)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+cmake_minimum_required(VERSION 2.6)
 
 # DERIVED VARIABLES
 # no derived variables, this makefile is the toplevel makefile for boost mtl4
@@ -18,12 +18,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 set (BOOST_ROOT ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
 
 
-#adding FindCuda
-SET(CMAKE_MODULE_PATH "usr/share/cmake-2.6/Modules/cuda")
-FIND_PACKAGE(CUDA REQUIRED)
-
-
-
 # set the local BOOST MTL4 include directory
 # to pick up the MTL4 include files
 set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root directory")
@@ -31,7 +25,30 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 # include_directories(${Boost_INCLUDE_DIR})
 include_directories($ENV{BOOST_ROOT} ${MTL_BOOST_ROOT})
 
+
+
+
+##############Cuda´s things ##############
+#adding FindCuda
+SET(CMAKE_MODULE_PATH $ENV{CMAKE_MODULE_PATH})
+SET(MTL4_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+
+#INCLUDE(${CMAKE_MODULE_PATH}/cuda/FindCuda.cmake)
+
+
+#End#######################################
+
+
+
+
+
+
+
+
+
+###############################################################################
 ######################## DevStudio funkyness   ################################
+###############################################################################
 # .NET 2003
 if (MSVC71)
     add_definitions(/DMTL_ASSERT_FOR_THROW /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" )
@@ -81,3 +98,8 @@ get_cmake_property(VARS VARIABLES)
 foreach (var ${VARS})
     file (APPEND ${CMAKE_CURRENT_BINARY_DIR}/AllVariables.txt "${var} \"${${var}}\"\n")
 endforeach (var ${VARS})
+
+
+
+
+

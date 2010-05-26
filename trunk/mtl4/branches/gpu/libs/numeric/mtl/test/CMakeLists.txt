@@ -1,14 +1,10 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-#cmake_minimum_required(VERSION 2.8)
-
-project (mtl4-gpu_tests)
+project (boost_mtl4_tests)
 
 # DERIVED variables
 # none in this CMakeLists.txt
 
 # collect the source files
 file (GLOB SOURCES *.cpp)
-#file (GLOB SOURCES *.cu)
 
 # collect the include files
 file (GLOB INCLUDES ${MTL_BOOST_ROOT}/boost/numeric/mtl/*.hpp)
@@ -16,18 +12,25 @@ file (GLOB INCLUDES ${MTL_BOOST_ROOT}/boost/numeric/mtl/*.hpp)
 #define the include directories this library depends on
 include_directories("${BOOST_ROOT}")
 include_directories("${MTL_BOOST_ROOT}")
-include_directories("${CMAKE_SOURCE_DIR}")
-
-#Adding FindCUDA
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/share/cmake-2.8/Modules/FindCUDA")
-FIND_PACKAGE(CUDA REQUIRED)
-
-INCLUDE_DIRECTORIES(
-  ${CUDA_TOOLKIT_INCLUDE}
-#  ${CUDA_CUT_INCLUDE_DIR}
-  )
 
 
+###############Cuda´s Things##############
+file (GLOB CUSOURCES *.cu)
+#file (GLOB INCLUDES ${MTL_BOOST_ROOT}/boost/numeric/mtl/cuda/*.cu)
+
+#INCLUDE(${CMAKE_MODULE_PATH}/cuda/FindCuda.cmake)  
+INCLUDE(${MTL4_ROOT_PATH}/FindCuda/FindCuda.cmake) #MTL4´s FindCuda 
+CUDA_INCLUDE_DIRECTORIES(
+  ${MTL4_ROOT_PATH}/
+)
+
+#End#######################################
+
+
+
+
+
+###################################### MTL4 CPP
 # .NET 2003
 if (MSVC71)
     add_definitions(/DMTL_ASSERT_FOR_THROW /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" )
@@ -42,10 +45,41 @@ endif (MSVC80)
 # cycle through the sources
 # The directory assumes that each cpp file is a separate test
 # so, create a executable target and an associated test target
+
 foreach (source ${SOURCES})
     get_filename_component (test ${source} NAME_WE)		# filename without extension
     add_executable (${test} ${source} ${INCLUDES})
     add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
 endforeach (source)
+
+
+########################################### END MTL4 CPP
+
+
+# ##############################    cccccc   UUU    UUU  DDDDDD      AA     #################
+# ##############################   ccc       UU      UU  DD    DD   A AA    #################
+# ##############################   ccc       UU      UU  DD    DD  AAAAAA   #################
+# ##############################    cccccc     UUUUUU    DDDDDD   AA    AA  #################
+
+
+
+#temporary solution
+foreach (source ${CUSOURCES})
+  get_filename_component (test ${source} NAME_WE) #NAME_WE without extention
+  get_filename_component (src ${source} NAME) 
+  CUDA_COMPILE(${test} ${src})
+endforeach (source)
+
+
+
+
+
+
+
+
+
+
+
+
 
 

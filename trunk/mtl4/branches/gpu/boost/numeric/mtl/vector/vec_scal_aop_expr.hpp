@@ -18,8 +18,11 @@
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/check.hpp>
-#include <boost/numeric/mtl/cuda/launch_function.hpp>
-#include <boost/numeric/mtl/cuda/meet_data.cu>
+
+#ifdef MTL_HAS_CUDA
+#  include <boost/numeric/mtl/cuda/launch_function.hpp>
+#  include <boost/numeric/mtl/cuda/meet_data.cu>
+#endif
 
 #ifndef BL_SIZE
 #  define BL_SIZE 256

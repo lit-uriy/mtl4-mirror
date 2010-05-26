@@ -45,7 +45,7 @@ void test(const char* name)
     
 //    std::cout<< "A=" << A << "\n";
 //    std::cout<< "x=" << x << "\n";
-    std::cout<< "b=" << b << "\n";
+//    std::cout<< "b=" << b << "\n";
     
     if (b[0] != T(2))
        std::cout<< "Error Matrix vector multiplication.\n";
