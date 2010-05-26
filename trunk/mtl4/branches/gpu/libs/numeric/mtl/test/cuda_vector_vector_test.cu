@@ -56,13 +56,15 @@ void test(const char* name)
     x.to_device(); y.to_device(); z.to_device();
     
 
-/*     
+     
     
     std::cout<< "\n>>>>>>>Vectors Contructed <<<<<<\n";
     print(y);
     print(z);
     print(x);
     
+
+/*
     
     x= y+z;
     std::cout<< "\n>>>>>>>X= Y+ Z <<<<<<\n";
@@ -72,7 +74,8 @@ void test(const char* name)
     if (x[critic_point] != T(13))
 	std::cout<< "Error adding vector and vector on device.";
     
-   x= y-z;    
+   
+  x= y-z;    
     std::cout<< "\n>>>>>>>X= Y- Z <<<<<<\n";
     print(y);
     print(z);
