@@ -39,7 +39,7 @@ __global__ void laplacian (Matrix *A, T d, int num_rows)
  int idx = blockIdx.x * blockDim.x + threadIdx.x,
      index=idx;
 
- if (idx < num_rows){
+ if (idx < num_rows){ 
 	
         if(idx==0){ 
 	    A[0]=d;
