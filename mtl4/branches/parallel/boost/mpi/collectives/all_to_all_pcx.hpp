@@ -35,7 +35,7 @@ void inline all_to_all_pcx(const communicator& comm,
     mtl::par::multiple_ostream<> mout;
 
     const int my_tag= 99;
-    int size = comm.size(), rank = comm.rank();
+    int size = comm.size();
     
     std::vector<int> is_target(size, 0),     // Whether data is sent to each process 
 	             recv_counts(size, 1),   // Array needed by MPI

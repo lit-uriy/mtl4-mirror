@@ -15,6 +15,8 @@
 #ifdef MTL_HAS_MPI
 
 #include <cassert>
+#include <vector>
+#include <iterator>
 
 #include <boost/static_assert.hpp>
 #include <boost/mpi/status.hpp>
@@ -50,10 +52,36 @@ namespace mtl { namespace matrix {
        The steps of the two kinds of operations are reversed in order and direction.
     */
 
-struct dist_mat_cvec_handle 
+class dist_mat_cvec_handle 
 {
     typedef std::vector<boost::mpi::request> req_type;
+  public:	
+    req_type::iterator begin() { return reqs.begin(); }
+    req_type::iterator end() { return reqs.end(); }
+
+    void push_back(const boost::mpi::request& r, bool to_send) 
+    { 
+	mtl::par::mpi_log << world.rank() << ": push_back " << reqs.size() << "th entry: as " << (to_send ? "send" : "receive") << " request\n";
+	reqs.push_back(r); sflags.push_back(to_send);
+    }
+
+    std::size_t size() const { assert(sflags.size() == reqs.size()); return reqs.size(); }
+    bool is_send(const req_type::iterator& r) const 
+    { 
+	mtl::par::mpi_log << world.rank() << ": " << r - reqs.begin() << "th entry is " << (sflags[r - reqs.begin()] ? "send" : "receive") << " request\n";
+	return sflags[r - reqs.begin()]; }
+    
+    void erase(const req_type::iterator& r)
+    {
+	mtl::par::mpi_log << world.rank() << ": erase " << r - reqs.begin() << "th entry\n";
+	assert(sflags.size() == reqs.size());
+	sflags.erase(sflags.begin() + (r - reqs.begin()));
+	reqs.erase(r);
+    }
+  private:
+boost::mpi::communicator world;
     req_type                                 reqs; // send and receive requests
+    std::vector<bool>                        sflags; // whether reqs[i] is a send request
 }; 
 
 
@@ -76,7 +104,7 @@ dist_mat_cvec_send_start(const Matrix& A, const VectorIn& v, tag::comm_non_block
     typename std::map<int, send_structure>::const_iterator s_it(A.send_info().begin()), s_end(A.send_info().end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
-	handle.reqs.push_back(communicator(v).isend(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices))); // pointer and size
+	handle.push_back(communicator(v).isend(s_it->first, 999, &send_buffer(v)[s.offset], size(s.indices)), true); // pointer and size
     }
     return handle;
 }
@@ -91,7 +119,7 @@ dist_mat_cvec_recv_start(const Matrix& A, const VectorIn& v, dist_mat_cvec_handl
     typename std::map<int, recv_structure>::const_iterator r_it(A.recv_info().begin()), r_end(A.recv_info().end());
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
-	handle.reqs.push_back(communicator(v).irecv(r_it->first, 999, &recv_buffer(v)[s.offset], s.size)); // pointer and size
+	handle.push_back(communicator(v).irecv(r_it->first, 999, &recv_buffer(v)[s.offset], s.size), false); // pointer and size
     }
 }
 
@@ -160,22 +188,22 @@ dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, const Funct
 { 
     typedef typename Collection<Matrix>::size_type size_type;
     typedef typename Matrix::recv_structure        recv_structure;
+boost::mpi::communicator world;
 
-    while(h.reqs.size()) { // see (1) at file end
-	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
-	// mtl::par::check_mpi(res.first); // error code is non-sense !!!, besides boost::mpi checks already
-
-	int p= res.first.source();
-	assert(p > 0 && p < communicator(v).size()); // check range of p
-	if(p == communicator(v).rank()) 
+    while(h.size()) { // see (1) at file end
+	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.begin(), h.end());
+	if(h.is_send(res.second))
 	    mtl::par::mpi_log << "[nonblocking] finished sending my data" << '\n';
-	else { 
-	    // we have a receive request 
+	else {  // we have a receive request 
+	    int p= res.first.source();
+	    mtl::par::mpi_log << world.rank() << ": receiving from " << p << '\n';
+	    assert(p >= 0 && p < communicator(v).size()); // check range of p
+	   
 	    const recv_structure& s = A.recv_info().find(p)->second;
 	    mtl::par::mpi_log << "[nonblocking] received data from rank " << p << " of size " << s.size << '\n';
 	    op(remote(A).find(p)->second, recv_buffer(v)[irange(s.offset, s.offset + s.size)], local(w));
 	}
-	h.reqs.erase(res.second);
+	h.erase(res.second); 
     }
 }
 
@@ -288,7 +316,7 @@ trans_dist_mat_cvec_start(const Matrix& A, VectorOut& w, tag::comm_non_blocking,
     // if (r_it == r_end) rout << " trans_dist_mat_cvec_start: remote map is empty.\n";
     for (; r_it != r_end; ++r_it) {
 	const recv_structure&   s= r_it->second;
-	handle.reqs.push_back(communicator(w).isend(r_it->first, 999, &recv_buffer(w)[s.offset], s.size));
+	handle.push_back(communicator(w).isend(r_it->first, 999, &recv_buffer(w)[s.offset], s.size), true);
 	// rout << " trans_dist_mat_cvec_start: message of size " << s.size << " sent to proc " << r_it->first << "\n";
     }
 
@@ -296,7 +324,7 @@ trans_dist_mat_cvec_start(const Matrix& A, VectorOut& w, tag::comm_non_blocking,
     typename std::map<int, send_structure>::const_iterator s_it(A.send_info().begin()), s_end(A.send_info().end());
     for (; s_it != s_end; ++s_it) {
 	const send_structure&   s= s_it->second;
-    	handle.reqs.push_back(communicator(w).irecv(s_it->first, 999, &send_buffer(w)[s.offset], size(s.indices)));
+    	handle.push_back(communicator(w).irecv(s_it->first, 999, &send_buffer(w)[s.offset], size(s.indices)), false);
     }
     return handle;
 }
@@ -364,14 +392,12 @@ trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
 { 
     // par::multiple_ostream<true, false> rout;
     // if (h.reqs.empty()) rout << " trans_dist_mat_cvec_wait: no requests.\n";
-    while(h.reqs.size()) { // see (1) at file end
+    while(h.size()) { // see (1) at file end
 	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
-	int p= res.first.source();
-	// rout << " trans_dist_mat_cvec_wait: source of request is " << p << ".\n";
-	if (p != communicator(v).rank())  // only receive requests need work
+	if(!h.is_send(res.second)) 
 	    // rout << " trans_dist_mat_cvec_wait: call update_vector for data from " << p << ".\n",
-	    trans_dist_update_vector(A.send_info().find(p)->second, w, as);
-	h.reqs.erase(res.second);
+	    trans_dist_update_vector(A.send_info().find(res.first.source())->second, w, as);
+	h.erase(res.second); 
     }
 }
 
