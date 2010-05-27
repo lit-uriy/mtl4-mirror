@@ -364,7 +364,7 @@ class distributed_inserter
 	typedef typename dist_matrix_type::send_structure send_structure;
 
 	all_to_all_sparse(communicator(col_dist()), send_buffers, recv_buffers);
-	for (unsigned p= 0; p < col_size(); p++) {
+	for (int p= 0; p < col_size(); p++) {
 	    const std::vector<entry_type>& my_buffer= recv_buffers[p];
 	    for (unsigned i= 0; i < my_buffer.size(); i++) {
 		const entry_type& entry= my_buffer[i];
@@ -374,7 +374,7 @@ class distributed_inserter
 	std::vector< dense_vector<size_type> > index_comp(col_size()), send_indices(col_size()); // compression of column indices	
 	dist_matrix.my_total_recv_size= 0;
 	// size_type& ts(dist_matrix.my_total_recv_size= 0);
-	for (unsigned p= 0; p < col_size(); p++)
+	for (int p= 0; p < col_size(); p++)
 	    if (remote_inserters[p]) {
 		delete remote_inserters[p];
 		typename DistributedMatrix::remote_type& A= *full_remote_matrices[p];
@@ -395,7 +395,7 @@ class distributed_inserter
 
 	dist_matrix.my_total_send_size= 0;
 	all_to_all_sparse(communicator(col_dist()), index_comp, send_indices);
-	for (unsigned p= 0; p < col_size(); p++)
+	for (int p= 0; p < col_size(); p++)
 	    if (size(send_indices[p]) > 0) {
 		dist_matrix.my_send_info.insert(std::make_pair(p, send_structure(send_indices[p], dist_matrix.my_total_send_size)));
 		dist_matrix.my_total_send_size+= size(send_indices[p]);

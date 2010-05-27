@@ -192,7 +192,7 @@ public:
     ~distributed_inserter()
     {
 	boost::mpi::all_to_all_sparse(communicator(dist()), send_buffers, recv_buffers);
-	for (unsigned p= 0; p < dist_size(); p++) {
+	for (int p= 0; p < dist_size(); p++) {
 	    const std::vector<entry_type>& my_buffer= recv_buffers[p];
 	    for (unsigned i= 0; i < my_buffer.size(); i++)
 		update(my_buffer[i].first, my_buffer[i].second);
