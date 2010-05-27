@@ -61,19 +61,14 @@ class dist_mat_cvec_handle
 
     void push_back(const boost::mpi::request& r, bool to_send) 
     { 
-	mtl::par::mpi_log << world.rank() << ": push_back " << reqs.size() << "th entry: as " << (to_send ? "send" : "receive") << " request\n";
 	reqs.push_back(r); sflags.push_back(to_send);
     }
 
     std::size_t size() const { assert(sflags.size() == reqs.size()); return reqs.size(); }
-    bool is_send(const req_type::iterator& r) const 
-    { 
-	mtl::par::mpi_log << world.rank() << ": " << r - reqs.begin() << "th entry is " << (sflags[r - reqs.begin()] ? "send" : "receive") << " request\n";
-	return sflags[r - reqs.begin()]; }
+    bool is_send(const req_type::iterator& r) const { return sflags[r - reqs.begin()]; }
     
     void erase(const req_type::iterator& r)
     {
-	mtl::par::mpi_log << world.rank() << ": erase " << r - reqs.begin() << "th entry\n";
 	assert(sflags.size() == reqs.size());
 	sflags.erase(sflags.begin() + (r - reqs.begin()));
 	reqs.erase(r);
@@ -196,7 +191,6 @@ boost::mpi::communicator world;
 	    mtl::par::mpi_log << "[nonblocking] finished sending my data" << '\n';
 	else {  // we have a receive request 
 	    int p= res.first.source();
-	    mtl::par::mpi_log << world.rank() << ": receiving from " << p << '\n';
 	    assert(p >= 0 && p < communicator(v).size()); // check range of p
 	   
 	    const recv_structure& s = A.recv_info().find(p)->second;
