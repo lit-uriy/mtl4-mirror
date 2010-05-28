@@ -14,6 +14,9 @@ include_directories("${BOOST_ROOT}")
 include_directories("${MTL_BOOST_ROOT}")
 
 
+message("CmakeList 2 Boost_root: "${BOOST_ROOT})
+message("CmakeList 2 Mtl_Boost_root: "${MTL_BOOST_ROOT})
+
 ###############Cuda´s Things##############
 file (GLOB CUSOURCES *.cu)
 #file (GLOB INCLUDES ${MTL_BOOST_ROOT}/boost/numeric/mtl/cuda/*.cu)
@@ -63,13 +66,15 @@ endforeach (source)
 
 
 
-#temporary solution
-foreach (source ${CUSOURCES})
-  get_filename_component (test ${source} NAME_WE) #NAME_WE without extention
-  get_filename_component (src ${source} NAME) 
-  CUDA_COMPILE(${test} ${src})
-endforeach (source)
 
+# 
+# #temporary solution
+# foreach (source ${CUSOURCES})
+#   get_filename_component (test ${source} NAME_WE) #NAME_WE without extention
+#   get_filename_component (src ${source} NAME) 
+#   CUDA_COMPILE(${test} ${src})
+# endforeach (source)
+# 
 
 
 
