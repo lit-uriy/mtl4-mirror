@@ -15,9 +15,11 @@ cmake_minimum_required(VERSION 2.6)
 #  message(FATAL_ERROR "boost wasn't found, please set BOOST_ROOT")
 #endif(NOT Boost_INCLUDE_DIR)
 
+#Path of Boost
+set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
 
-set (BOOST_ROOT $ENV{BOOST_ROOT})
 
+#Find the path of Boost
 if(NOT BOOST_ROOT)
   if(NOT IS_DIRECTORY /usr/include/boost)
     message("FATAL ERROR: Boost Not Found in /usr/include/boost, Please set BOOST_ROOT")
@@ -27,8 +29,7 @@ if(NOT BOOST_ROOT)
 endif(NOT BOOST_ROOT)
 
 
-# find_path(Boost_INCLUDE_DIR boost/version.hpp PATHS "${BOOST_ROOT}")
-# message("prueba: "${Boost_INCLUDE_DIR})
+
 
 
 # set the local BOOST MTL4 include directory
@@ -38,15 +39,15 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 # include_directories(${Boost_INCLUDE_DIR})
 
 
-message("CmakeList 1 Boost_root: "${BOOST_ROOT})
+message("\nCmakeList 1 Boost_root: "${BOOST_ROOT})
 message("CmakeList 1 Mtl_Boost_root: "${MTL_BOOST_ROOT})
 
 
-if (COMMAND g++)
+if (COMMAND ls)
 message ("g++ found")
-else (COMMAND g++)
-message("no funca")
-endif(COMMAND g++)
+else (COMMAND ls)
+message("g++ not found")
+endif(COMMAND ls)
 
 
 
