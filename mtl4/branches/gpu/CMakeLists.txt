@@ -15,18 +15,49 @@ cmake_minimum_required(VERSION 2.6)
 #  message(FATAL_ERROR "boost wasn't found, please set BOOST_ROOT")
 #endif(NOT Boost_INCLUDE_DIR)
 
+
+
+
 #Path of Boost
 set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
-
 
 #Find the path of Boost
 if(NOT BOOST_ROOT)
   if(NOT IS_DIRECTORY /usr/include/boost)
-    message("FATAL ERROR: Boost Not Found in /usr/include/boost, Please set BOOST_ROOT")
+    message("-- Detecting Boost: FATAL ERROR: Boost Not Found in /usr/include/boost, Please set BOOST_ROOT")
   else(NOT IS_DIRECTORY /usr/include/boost)
     set (BOOST_ROOT /usr/include/boost)
+    message("-- Detecting Boost: Found")
   endif(NOT IS_DIRECTORY /usr/include/boost)
 endif(NOT BOOST_ROOT)
+
+if(BOOST_ROOT)
+message("-- Detecting Boost: Found")
+endif(BOOST_ROOT)
+
+
+
+
+
+#Find NVCC
+Set (NVCC_PATH $ENV{CUDA_PATH} CACHE PATH "CUDA include directory")
+
+
+if(NVCC_PATH)
+set(NVCC_PATH ${NVCC_PATH}/bin)
+message("-- Detecting CUDA Compiler: CUDA Compiler Found")
+endif(NVCC_PATH)
+
+if(NOT NVCC_PATH)
+  if(NOT IS_DIRECTORY /usr/local/cuda)
+    message("-- Detecting CUDA Compiler: ERROR CUDA Compiler not Found in /usr/local/cuda, Please set CUDA_PATH, if you have a CUDA compiler")
+  else(NOT IS_DIRECTORY /usr/local/cuda)
+    set (NVCC_PATH /usr/local/cuda/bin)
+    message("-- Detecting CUDA Compiler: CUDA Compiler Found")
+  endif(NOT IS_DIRECTORY /usr/local/cuda)
+endif(NOT NVCC_PATH)
+message("")
+
 
 
 
@@ -39,21 +70,9 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 # include_directories(${Boost_INCLUDE_DIR})
 
 
-message("\nCmakeList 1 Boost_root: "${BOOST_ROOT})
-message("CmakeList 1 Mtl_Boost_root: "${MTL_BOOST_ROOT})
-
-
-if (COMMAND ls)
-message ("g++ found")
-else (COMMAND ls)
-message("g++ not found")
-endif(COMMAND ls)
-
-
-
-
-message("CmakeList 1 Boost_root: "${BOOST_ROOT})
-
+# message("\nCmakeList 1 Boost_root: "${BOOST_ROOT})
+# message("CmakeList 1 Mtl_Boost_root: "${MTL_BOOST_ROOT})
+# message("CmakeList 1 NVCC_path: "${NVCC_PATH})
 
 
 
