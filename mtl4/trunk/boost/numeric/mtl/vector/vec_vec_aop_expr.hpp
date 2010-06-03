@@ -22,6 +22,8 @@
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
+#include <boost/numeric/mtl/utility/unroll_size1.hpp>
+#include <boost/numeric/mtl/utility/with_unroll1.hpp>
 
 namespace mtl { namespace vector {
 
@@ -32,28 +34,28 @@ namespace mtl { namespace vector {
 	{
 	    typedef assign<Index+1, Max, SFunctor>     next;
 
-	    template <class E1, class E2>
-	    static inline void apply(E1& first, const E2& second)
+	    template <typename E1, typename E2, typename Size>
+	    static inline void apply(E1& first, const E2& second, Size i)
 	    {
-		SFunctor::apply( first(Index), second(Index) );
-		next::apply( first, second );
+		SFunctor::apply( first(i+Index), second(i+Index) );
+		next::apply( first, second, i );
 	    }
 	};
 
 	template <unsigned long Max, typename SFunctor>
 	struct assign<Max, Max, SFunctor>
 	{
-	    template <class E1, class E2>
-	    static inline void apply(E1& first, const E2& second)
+	    template <typename E1, typename E2, typename Size>
+	    static inline void apply(E1& first, const E2& second, Size i)
 	    {
-		SFunctor::apply( first(Max), second(Max) );
+		SFunctor::apply( first(i+Max), second(i+Max) );
 	    }
 	};
     }
 
 // Generic assign operation expression template for vectors
 // Model of VectorExpression
-template <class E1, class E2, typename SFunctor>
+template <typename E1, typename E2, typename SFunctor>
 struct vec_vec_aop_expr 
   :  public vec_expr< vec_vec_aop_expr<E1, E2, SFunctor> >
 {
@@ -75,6 +77,24 @@ struct vec_vec_aop_expr
     {
 	second.delay_assign();
     }
+    
+    void dynamic_assign(boost::mpl::false_) // Without unrolling
+    {
+	for (size_type i= 0; i < size(first); ++i)
+	    SFunctor::apply( first(i), second(i) );
+    }
+
+    void dynamic_assign(boost::mpl::true_) // With unrolling
+    {
+	const size_type BSize= traits::unroll_size1<E1>::value0;
+	size_type s= size(first), sb= s / BSize * BSize;
+
+	for (size_type i= 0; i < sb; i+= BSize)
+	    impl::assign<0, BSize-1, SFunctor>::apply(first, second, i);
+
+	for (size_type i= sb; i < s; i++) 
+	    SFunctor::apply( first(i), second(i) );
+    }    
 
 
     void assign(boost::mpl::false_)
@@ -86,20 +106,42 @@ struct vec_vec_aop_expr
 	// std::cerr << "~vec_vec_aop_expr() " << first.size() << "  " << second.size() << "\n";
 	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
 
+	// need to do more benchmarking before making unrolling default
+	dynamic_assign(traits::with_unroll1<E1>());
+
+#if 0  // need to do more benchmarking before making it default
+	const size_type BSize= traits::unroll_size1<E1>::value0;
+	size_type s= size(first), sb= s / BSize * BSize;
+
+	for (size_type i= 0; i < sb; i+= BSize)
+	    impl::assign<0, BSize-1, SFunctor>::apply(first, second, i);
+
+	for (size_type i= sb; i < s; i++) 
+	    SFunctor::apply( first(i), second(i) );
+
 	for (size_type i= 0; i < size(first); ++i)
 	    SFunctor::apply( first(i), second(i) );
+#endif
     }
 
     void assign(boost::mpl::true_)
     {
 	// We cannot resize, only check
 	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
-	impl::assign<1, static_size<E1>::value, SFunctor>::apply(first, second);
+
+	// Slower, at least on gcc
+	// impl::assign<0, static_size<E1>::value-1, SFunctor>::apply(first, second);
+
+	// Do an ordinary loop and hope for compiler optimization
+	for (size_type i= 0; i < size(first); ++i)
+	    SFunctor::apply( first(i), second(i) );
     }
 
     ~vec_vec_aop_expr()
     {
 	if (!delayed_assign) {
+	    assign(traits::is_static<E1>());
+#if 0
 	    // If target is constructed by default it takes size of source
 	    if (size(first) == 0) first.change_dim(size(second));
 
@@ -108,9 +150,9 @@ struct vec_vec_aop_expr
 
 	    for (size_type i= 0; i < size(first); ++i)
 		SFunctor::apply( first(i), second(i) );
-
 	    // Slower, at least on gcc
 	    // assign(traits::is_static<E1>());
+#endif
 	}
     }
     

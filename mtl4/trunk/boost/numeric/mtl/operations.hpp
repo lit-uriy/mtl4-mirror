@@ -69,6 +69,7 @@
 #include <boost/numeric/mtl/operation/swap_row.hpp>
 #include <boost/numeric/mtl/operation/trace.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/operation/unroll.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 
 #include <boost/numeric/mtl/matrix/bands.hpp>

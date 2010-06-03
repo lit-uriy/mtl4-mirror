@@ -145,7 +145,8 @@ namespace mtl {
 	template <class E1, class E2> struct vec_scal_div_asgn_expr; // added by Hui Li
 	template <class E1, class E2> struct vec_scal_asgn_expr;
 	template <typename Vector> struct vec_const_ref_expr;
-	
+	template <unsigned BSize, typename Vector> class unrolled1;	
+
 	template <typename Value, typename Parameters, typename Value2>
 	inline void fill(dense_vector<Value, Parameters>& vector, const Value2& value);
 	
