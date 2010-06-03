@@ -112,17 +112,17 @@ struct update_proxy
     typedef typename Inserter::value_type  value_type;
 
     explicit update_proxy(Inserter& ins, SizeType row, SizeType col) 
-	: ins(ins), row(row), col(col) {}
+      : ins(ins), row(row), col(col) {}
     
-	struct nonsense {};
+    struct nonsense {};
 
     template <typename Value>
     self& operator<< (Value const& val)
     {
-		return lshift(val, typename ashape::ashape<Value>::type());
+	return lshift(val, typename ashape::ashape<Value>::type());
     }
 
-	void f(typename mtl::ashape::ashape<typename Inserter::matrix_type>::type) {}
+    void f(typename mtl::ashape::ashape<typename Inserter::matrix_type>::type) {}
 
     template <typename Value>
     self& operator= (Value const& val)
@@ -140,26 +140,24 @@ struct update_proxy
 
   private:
 
-	typedef typename Inserter::matrix_type                               matrix_type;
-	typedef typename mtl::ashape::ashape<matrix_type>::type              matrix_shape;
-	typedef typename mtl::ashape::ashape<typename matrix_type::value_type>::type value_shape;
+    typedef typename Inserter::matrix_type                               matrix_type;
+    typedef typename mtl::ashape::ashape<matrix_type>::type              matrix_shape;
+    typedef typename mtl::ashape::ashape<typename matrix_type::value_type>::type value_shape;
 
 
     // Update scalar value as before
     template <typename Value>
-	self& lshift (Value const& val, value_shape)
+    self& lshift (Value const& val, value_shape)
     {
-		ins.update (row, col, val);
-		return *this;
-    }
-
-	
+	ins.update (row, col, val);
+	return *this;
+    }	
 
     // Update an entire matrix considered as block
     template <typename MatrixSrc>
     self& lshift (const MatrixSrc& src, matrix_shape)
     {
-		namespace traits = mtl::traits;
+	namespace traits = mtl::traits;
 	typename traits::row<MatrixSrc>::type             row(src); 
 	typename traits::col<MatrixSrc>::type             col(src); 
 	typename traits::const_value<MatrixSrc>::type     value(src); 
@@ -170,7 +168,6 @@ struct update_proxy
 	for (cursor_type cursor = begin<tag::major>(src), cend = end<tag::major>(src); cursor != cend; ++cursor) 	    
 	    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
 		ins.update(row(*icursor) + this->row, col(*icursor) + this->col, value(*icursor));
-
 	return *this;
     }
 
