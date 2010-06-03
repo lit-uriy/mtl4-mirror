@@ -10,7 +10,8 @@ file (GLOB SOURCES *.cpp)
 file (GLOB INCLUDES ${MTL_BOOST_ROOT}/boost/numeric/mtl/*.hpp)
 
 #define the include directories this library depends on
-include_directories("${BOOST_ROOT}")
+#headers for cpp's Files
+include_directories("${BOOST_ROOT}")           
 include_directories("${MTL_BOOST_ROOT}")
 
 
@@ -24,8 +25,11 @@ file (GLOB CUSOURCES *.cu)
 
 #INCLUDE(${CMAKE_MODULE_PATH}/cuda/FindCuda.cmake)  
 INCLUDE(${MTL4_ROOT_PATH}/FindCuda/FindCuda.cmake) #MTL4´s FindCuda 
+
+#headers for cuda's Files
 CUDA_INCLUDE_DIRECTORIES(
   ${MTL4_ROOT_PATH}/
+  ${BOOST_ROOT}/
 )
 
 #End#######################################

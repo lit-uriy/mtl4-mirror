@@ -22,6 +22,25 @@ file (GLOB INCLUDES ${MTL_BOOST_ROOT}/boost/numeric/itl/test/*.hpp)
 include_directories("${BOOST_ROOT}")
 include_directories("${MTL_BOOST_ROOT}")
 
+
+
+###############Cuda´s Things##############
+file (GLOB CUSOURCES *.cu)
+
+INCLUDE(${MTL4_ROOT_PATH}/FindCuda/FindCuda.cmake) #MTL4´s FindCuda 
+
+#headers for cuda's Files
+CUDA_INCLUDE_DIRECTORIES(
+  ${MTL4_ROOT_PATH}/
+  ${BOOST_ROOT}/
+)
+#End#######################################
+
+
+
+
+
+###################################### MTL4 CPP
 # .NET 2003
 if (MSVC71)
     add_definitions(/DMTL_ASSERT_FOR_THROW /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" )
@@ -52,5 +71,17 @@ foreach (source ${SOURCES})
     add_executable (${test} ${source} ${INCLUDES})
     add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
 endforeach (source)
+########################################### END MTL4 CPP
+
+
+
+# Cuda
+if(NVCC_PATH)
+foreach (source ${CUSOURCES})
+  get_filename_component (test ${source} NAME_WE) #NAME_WE without extention
+  get_filename_component (src ${source} NAME) 
+  CUDA_COMPILE(${test} ${src})
+endforeach (source)
+endif(NVCC_PATH)
 
 
