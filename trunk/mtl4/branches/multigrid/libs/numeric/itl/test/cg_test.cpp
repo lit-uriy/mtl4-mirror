@@ -17,7 +17,7 @@
 int main()
 {
   // For a more realistic example set size to 1000 or larger
-  const int size = 10, N = size * size;
+  const int size = 1000, N = size * size;
 
   typedef mtl::compressed2D<double>  matrix_type;
   mtl::compressed2D<double>          A(N, N);
@@ -30,7 +30,7 @@ int main()
   b = A * x;
   x= 0;
 
-  itl::cyclic_iteration<double> iter(b, 500, 1.e-6, 0.0, 5);
+  itl::cyclic_iteration<double> iter(b, 500, 1.e-6, 0.0, 1);
   cg(A, x, b, P, iter);
 
   return 0;

@@ -28,10 +28,11 @@ int test_main(int argc, char* argv[])
     A[1][0]=2;    A[1][1]=1;
     A[2][0]=4;    A[2][1]=3;
     A[3][0]=5;    A[3][1]=4;
-
-    int k=min_pos(A);
+long unsigned int k, i;
+    std::make_pair(i, k) =min_pos(A);
     std::cout<< "k=" << k << "\n";
-    
+    std::cout<< "i=" << i << "\n";
+  
     B= kmeanscluster(A, 2);
     std::cout<<"kmeanscluster(A,2)=\n"<< B <<"\n";
 

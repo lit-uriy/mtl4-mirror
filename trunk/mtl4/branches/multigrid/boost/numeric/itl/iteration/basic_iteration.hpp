@@ -120,6 +120,8 @@ class basic_iteration
     void set_quite(bool q) { my_quite= q; }
 
     bool is_quite() const { return my_quite; }
+    
+    inline size_t max() const { return max_iter; }
 
   protected:
     int          error, i;

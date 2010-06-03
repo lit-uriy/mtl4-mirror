@@ -27,28 +27,29 @@ namespace mtl {
 	// typename mtl::traits::enable_if_vector<Vector, compressed2D<typename Collection<Vector>::value_type> >::type
 	inline find(const Vector& v, const T tar)
 	{
-	    dense_vector<unsigned>                          find(size(v));
+	    dense_vector<unsigned>                          find(size(v)), found(size(v));
 	    find= 0;
 	    unsigned   tmp(0);
-	std::cout<< "v=" << v << "\n";
+	
 	    for (unsigned i= 0; i < size(v); ++i){
 		 if (v[i] == tar){
 			find[tmp]= i;
 			tmp++;
 		 }
 	    }
-		std::cout<< "find=" << find << "\n";
-	    if (tmp == 0)
+	    if (tmp == 0){
 		find[0]= -1;  // no matching
-	std::cout<< "find=" << find << "\n";
+	    }
 	  
 	    if (tmp <= size(v))
-		find.change_dim(tmp+1);	
-	std::cout<< "find=" << find << "\n";
-	  
-	    return find;
+		found.change_dim(tmp);	
+
+	    for (unsigned i= 0; i < size(found); ++i){
+		found[i]= find[i];
+	    } 
+	    return found;
 	}
     }
 } // namespace mtl
 
-#endif // MTL_DIAGONAL_INCLUDE
+#endif // MTL_FIND_INCLUDE
