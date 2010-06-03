@@ -43,7 +43,7 @@ set(CUDA_NVCC_COMMANDS
 ########################################################
 MACRO(CUDA_COMPILE TARGNAME)
 add_custom_command(OUTPUT ${TARGNAME}  DEPENDS ${ARGN}  COMMAND nvcc -o ${TARGNAME} ${ARGN} ARGS ${CUDA_NVCC_INCLUDE_ARGS} ${CUDA_NVCC_COMMANDS})
-add_custom_target(${TARGNAME}_helper ALL DEPENDS ${TARGNAME} )
+add_custom_target(${TARGNAME} ALL DEPENDS ${TARGNAME} )
 ENDMACRO(CUDA_COMPILE)
 
 
