@@ -13,80 +13,70 @@
 #define ITL_LANCZOS_INCLUDE
 
 #include <boost/numeric/mtl/concept/collection.hpp>
-#include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/operation/two_norm.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 
 namespace itl {
 
 /// LANCZOS   without preconditioning
-template < typename LinearOperator, typename Vector, 
-	   typename Preconditioner, typename Iteration >
-int lanczos(const LinearOperator &A, Vector &x, const Vector &b,
-	const Preconditioner &M, Iteration& iter)
+template < typename LinearOperator, typename Vector, typename Iteration >
+int lanczos(const LinearOperator &A, Vector &x, Iteration& iter)
 {
+    using std::min; using mtl::irange; using mtl::imax;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  size_type;
     Scalar     alpha(0), beta(0), delta(0), d(0), d_old(0), beta_0(0), zeta_old, zeta, delta_old, tol;
-    Vector     v(resource(x)), c_old(resource(x)), q(resource(x)), c(resource(x)), q_last(resource(x)),
-	       u(resource(x)), r(b - A * x), tmp(b-A*x);
-    mtl::dense2D<Scalar>  T(A), V(A), W(A);
+    Vector     a(resource(x)), b(size(x)-1), q_c(resource(x)),q_old(resource(x)), tmp(resource(x));  //a maindiagonal, b maindiagonal+-1
+    mtl::dense2D<Scalar>  Q(size(x), size(x));
+    
 	   
-    mtl::irange cols(0, num_cols(A)); // Intervals [0, n-1]
-    V= 0;
-    W= 0;
-    T= 0;
+   //TODO If A is tridiagonal
+   
+   const Scalar IM= sqrt(-1), zero= math::zero(x[0]);  // ????
+   size_type n= std::min(size(x), iter.max()), n_vec(0);//#vec for orthogonalization;
+   a= zero; b= zero;
+   Vector w_old(n, zero), w_c(n, zero);
+   irange r(0, imax);
+   Q= zero;
+//    std::cout<< "Q=\n" << Q << "\n";
+   
+//    std::cout<< "n=" << n << "\n";
     
-    q=0; c=0; c_old=0;
-    beta= beta_0= two_norm(r);
-    q= r/beta;
-    q_last=0;
-    
-    for (size_type i=0; i < num_cols(A); i++) {
-	//step2
-	u= A*q;
-	alpha= dot(q,u);
-	r= A*q-alpha*q-beta*q_last;
-	beta= two_norm(r);
-	q_last= q;
-	q= r/beta;
-	//step3
-	d= alpha- delta*delta*d_old;
-	if (iter.first())
-	    zeta_old= beta/d;
+   w_old[0]= 1;  // evtl one must tested
+   bool second(false);
+   
+   //starting vector
+   q_c= x/two_norm(x);
+   
+   Q[r][0]= q_c;
+   
+   for (size_type j= 0; j < n; j++) {
+        tmp= A*conj(q_c);
+	a[j]= dot(q_c,tmp);
+	if (j == 0)
+	    x= tmp - a[j] * q_c;
+	else
+	    x= tmp - a[j] * q_c - b[j-1] * q_old;
 	
-	delta_old= delta;
-	delta= beta/d;
-// 	std::cout<< "d=" << d << "\n";
-// 	std::cout<< "delta_old=" << delta_old << "\n";
-// 	std::cout<< "delta=" << delta << "\n";
-// 	std::cout<< "dzeta_old=" << zeta_old<< "\n";
-	//step4
-	zeta= -delta_old*zeta_old*delta/d;
-	if ( !iter.first())
-	    zeta_old= zeta;
-	c= q- delta* c_old;
-	c_old= c;
- 	std::cout<< "zeta=" << zeta << "\t\t";  //in secend step to small ???
- 	std::cout<< "c=" << c << "\n";
-// 	std::cout<< "x=" << x << "\n";
-	x+= zeta*c;
-	std::cout<< "x=" << x << "\n";
-	tol= abs(beta*zeta)/abs(beta_0);
-// 	std::cout<< "i=" << i << "\t";
-// 	std::cout<< "tol=" << tol << "\n";
-	tmp=A*x;
-// 	std::cout<< "A*x=" << tmp << "\n";
-	tmp= b-tmp;
-// 	std::cout<< "A*x-b=" << tmp << "\n";
+	if (j < n-1) {
+	    std::cout<< "j=" << j << "\n";
+	    b[j]= two_norm(x);
+	    if (j > 1) {  //compute orthogonality estimates
+		
+
+		
+	    } //endif(j>1)
+	} //endif (j<n-1)
+	
+	
 	
         ++iter;
-    }
-//     std::cout<< "V=\n" << V << "\n";
-//     std::cout<< "W=\n" << W << "\n";
-//     std::cout<< "T=\n" << T << "\n";
-//     std::cout<< "trans(W)*A*V=\n" << trans(W)*A*V << "\n";
+    } //endfor (j=0;...)
+
     return iter;
 }
 

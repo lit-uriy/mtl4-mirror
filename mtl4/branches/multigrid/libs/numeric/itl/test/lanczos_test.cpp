@@ -21,14 +21,13 @@ int main()
     mtl::compressed2D<double>          A(N, N), dia(N, N);
     laplacian_setup(A, size, size);
    
-    itl::pc::ic_0<matrix_type>         P(A);
     mtl::dense_vector<double>          x(N, 1.0), b(N);
     
     b= A * x;
-    x= 0;
+    x= 1;
      
-    itl::cyclic_iteration<double> iter(b, N, 1.e-6, 0.0, 5);
-    lanczos(A, x, b, P, iter);
+    itl::cyclic_iteration<double> iter(b, 1000, 1.e-6, 0.0, 5);
+    lanczos(A, x, iter);
     
     return 0;
 }

@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/operation/min_pos.hpp>
 #include <boost/numeric/mtl/operation/find.hpp>
+#include <boost/numeric/mtl/operation/mean.hpp>
 
 using namespace std;
 int test_main(int argc, char* argv[])
@@ -22,7 +23,7 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
     
     dense2D<double>                         A(4, 2), B(4, 3);
-    dense_vector<double>   v(10);
+    dense_vector<double>   v(10), ac(2), ar(4);
     A= 0; B= 0;
 
     A[0][0]=1;    A[0][1]=1; 
@@ -33,10 +34,21 @@ int test_main(int argc, char* argv[])
     for (int i=0; i<10;i++)
 	if (i/2==0)
 		v[i]=1;
+    v[5]= 1;  v[9]= 1;
     std::cout<<"v="<< v <<"\n";
     
     dense_vector<unsigned> f(find(v,1));
     std::cout<<"f="<< f <<"\n";
 
+    double avg=mean(v);
+    std::cout << "mean(v)=" << avg << "\n";
+
+    ac= mean(A);
+    std::cout<<"ac="<< ac <<"\n";
+    
+    ar= mean(A, 2);
+    std::cout<<"ar="<< ar <<"\n";
+  
+    
     return 0;
 }

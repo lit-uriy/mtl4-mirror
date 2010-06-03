@@ -16,7 +16,9 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/operation/matrep.hpp>
 #include <boost/numeric/mtl/operation/distMatrix.hpp>
-// #include <boost/numeric/mtl/operation/min_pos.hpp>
+#include <boost/numeric/mtl/operation/min_pos.hpp>
+#include <boost/numeric/mtl/operation/find.hpp>
+#include <boost/numeric/mtl/operation/mean.hpp>
 
 
 namespace mtl { namespace matrix {
@@ -48,16 +50,44 @@ Matrix inline kmeanscluster(const Matrix& A, const unsigned k)
     //clustering
     //while 1 {
     for(int i=0; i<3;i++){
+	std::cout<< "______SCHLEIFE __________- i=" << i << "\n";
 	D=distMatrix(A, C);
 	std::cout<< "D=\n" << D << "\n";
 	//[z,d]=min(d,[],2)   col_vector z is minimum in row d
 			//    col_vector d is position of minimum
 	for (size_type j= 0; j < row; j++){
 		z[j]= min(D[j][r]);
-//  		g[j]= min_pos(D[j][r]);
+  		g[j]= min_pos(D[j][r]);
 	}
 	std::cout<< "z=" << z << "\n";
 	std::cout<< "g=" << g << "\n";
+	//if (g == tmp) break; //stop iteration
+	//vector equal vector???
+	bool yes=true;
+	for (size_type j= 0; j < row; j++){
+	    if (g[j]==tmp[j]) {
+		yes= yes & true;
+	    } else {
+		yes= yes & false;
+	    }
+	}
+	
+	if (yes){
+	    break;
+	} else {
+	    tmp= g;
+	}
+	std::cout<< "yes=" << yes << "\n";
+	std::cout<< "tmp=" << tmp << "\n";
+	std::cout<< "g=" << g << "\n";
+	for (size_type j= 0; j < k; j++) {
+	    dense_vector<unsigned> f(find(g,j));
+	    std::cout<< "f=" << f << "\n";
+	    if (size(f) > 0) {
+		C[j][r]=   // c(i,:)=mean(m(find(g==i),:),1);
+	    }
+	}
+	
 	
     }
 
