@@ -154,6 +154,15 @@ struct root< vector::negate_view<Vector> >
     typedef vector::map_view<mtl::sfunctor::negate<typename Vector::value_type>, Vector> type;
 };
 
+template <unsigned BSize, typename Vector>
+struct root< vector::unrolled1<BSize, Vector> >
+{
+    typedef Vector type;
+};
+
+
+
+
 #if 0 // template
 struct root
 {
