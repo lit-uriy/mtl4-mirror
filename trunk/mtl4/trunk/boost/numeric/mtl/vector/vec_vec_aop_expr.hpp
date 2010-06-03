@@ -63,10 +63,7 @@ struct vec_vec_aop_expr
     typedef vec_vec_aop_expr<E1, E2, SFunctor>   self;
     typedef typename E1::value_type              value_type;
     
-    // temporary solution
     typedef typename E1::size_type               size_type;
-    //typedef typename utilities::smallest< typename E1::size_type, typename E2::size_type >::type                          size_type ;
-
     typedef value_type reference_type ;
 
     typedef E1 first_argument_type ;
@@ -101,59 +98,25 @@ struct vec_vec_aop_expr
     {
 	// If target is constructed by default it takes size of source
 	if (size(first) == 0) first.change_dim(size(second));
-
-	// If sizes are different for any other reason, it's an error
-	// std::cerr << "~vec_vec_aop_expr() " << first.size() << "  " << second.size() << "\n";
-	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
+	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size()); // otherwise error
 
 	// need to do more benchmarking before making unrolling default
 	dynamic_assign(traits::with_unroll1<E1>());
-
-#if 0  // need to do more benchmarking before making it default
-	const size_type BSize= traits::unroll_size1<E1>::value0;
-	size_type s= size(first), sb= s / BSize * BSize;
-
-	for (size_type i= 0; i < sb; i+= BSize)
-	    impl::assign<0, BSize-1, SFunctor>::apply(first, second, i);
-
-	for (size_type i= sb; i < s; i++) 
-	    SFunctor::apply( first(i), second(i) );
-
-	for (size_type i= 0; i < size(first); ++i)
-	    SFunctor::apply( first(i), second(i) );
-#endif
     }
 
     void assign(boost::mpl::true_)
     {
-	// We cannot resize, only check
-	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
-
-	// Slower, at least on gcc
-	// impl::assign<0, static_size<E1>::value-1, SFunctor>::apply(first, second);
-
-	// Do an ordinary loop and hope for compiler optimization
-	for (size_type i= 0; i < size(first); ++i)
+	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size()); // We cannot resize, only check
+	
+	// impl::assign<0, static_size<E1>::value-1, SFunctor>::apply(first, second); // Slower, at least on gcc
+	for (size_type i= 0; i < size(first); ++i) // Do an ordinary loop instead
 	    SFunctor::apply( first(i), second(i) );
     }
 
     ~vec_vec_aop_expr()
     {
-	if (!delayed_assign) {
+	if (!delayed_assign)
 	    assign(traits::is_static<E1>());
-#if 0
-	    // If target is constructed by default it takes size of source
-	    if (size(first) == 0) first.change_dim(size(second));
-
-	    // If sizes are different for any other reason, it's an error
-	    MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
-
-	    for (size_type i= 0; i < size(first); ++i)
-		SFunctor::apply( first(i), second(i) );
-	    // Slower, at least on gcc
-	    // assign(traits::is_static<E1>());
-#endif
-	}
     }
     
     void delay_assign() const { delayed_assign= true; }
@@ -161,19 +124,15 @@ struct vec_vec_aop_expr
     friend size_type inline size(const self& x)
     {
 	assert( size(x.first) == 0 || size(x.first) == size(x.second) );
-	return size(x.first);
+	return size(x.second);
     }
 
-
-    value_type& operator() ( size_type i ) const {
+    value_type& operator() ( size_type i ) const { 
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
     }
 
-    value_type& operator[] ( size_type i ) const{
-	assert( delayed_assign );
-	return SFunctor::apply( first(i), second(i) );
-    }
+    value_type& operator[] ( size_type i ) const { return (*this)(i); }
 
   private:
      mutable first_argument_type&        first ;
