@@ -9,8 +9,8 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-#ifndef MTL_MATRIX_QUADMATRIX_INCLUDE
-#define MTL_MATRIX_QUADMATRIX_INCLUDE
+#ifndef MTL_MATRIX_QUAD_MATRIX_INCLUDE
+#define MTL_MATRIX_QUAD_MATRIX_INCLUDE
 
 #include <algorithm>
 #include <boost/numeric/mtl/mtl.hpp>
@@ -19,7 +19,7 @@ namespace mtl { namespace matrix {
 
 ///Returns matrix with squared entrys
 template <typename Matrix>
-Matrix inline quadMatrix(const Matrix& A)
+Matrix inline quad_matrix(const Matrix& A)
 {
     typedef typename Collection<Matrix>::size_type size_type;
     Matrix 	S(num_rows(A), num_cols(A));
@@ -36,7 +36,7 @@ Matrix inline quadMatrix(const Matrix& A)
 
 ///Returns matrix with square roots of entrys
 template <typename Matrix>
-Matrix inline sqrtMatrix(const Matrix& A)
+Matrix inline sqrt_matrix(const Matrix& A)
 {
     typedef typename Collection<Matrix>::size_type size_type;
     Matrix 	S(num_rows(A), num_cols(A));
@@ -53,4 +53,4 @@ Matrix inline sqrtMatrix(const Matrix& A)
 }} // namespace mtl::matrix
 
 
-#endif // MTL_MATRIX_QUADMATRIX_INCLUDE
+#endif // MTL_MATRIX_QUAD_MATRIX_INCLUDE
