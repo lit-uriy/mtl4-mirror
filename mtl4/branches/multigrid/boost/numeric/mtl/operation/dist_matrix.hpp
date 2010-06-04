@@ -9,20 +9,20 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-#ifndef MTL_MATRIX_DISTMATRIX_INCLUDE
-#define MTL_MATRIX_DISTMATRIX_INCLUDE
+#ifndef MTL_MATRIX_DIST_MATRIX_INCLUDE
+#define MTL_MATRIX_DIST_MATRIX_INCLUDE
 
 #include <algorithm>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/operation/matrep.hpp>
-#include <boost/numeric/mtl/operation/quadMatrix.hpp>
+#include <boost/numeric/mtl/operation/quad_matrix.hpp>
 
 
 namespace mtl { namespace matrix {
 
 ///The resulting matrix contains the distances of points of matrix A and the associated point in matrix B
 template <typename Matrix>
-Matrix inline distMatrix(const Matrix& A, const Matrix& B)
+Matrix inline dist_matrix(const Matrix& A, const Matrix& B)
 {
     typedef typename Collection<Matrix>::size_type size_type;
     size_type      rowB, colB, rowA, colA;
@@ -48,15 +48,15 @@ Matrix inline distMatrix(const Matrix& A, const Matrix& B)
 	}
 	C= 0; D= 0;
 	C= matrep(inputA, 1, rowB);
-	std::cout<< "c=" << C << "\n";
+// 	std::cout<< "c=" << C << "\n";
 	D= matrep(inputB, 1, rowA);
 	T= C - trans(D);
-  	S= S+quadMatrix(T);
+  	S= S+quad_matrix(T);
     }
-    S= sqrtMatrix(S);
+    S= sqrt_matrix(S);
     return S;
 }
 }} // namespace mtl::matrix
 
 
-#endif // MTL_MATRIX_DISTMATRIX_INCLUDE
+#endif // MTL_MATRIX_DIST_MATRIX_INCLUDE
