@@ -29,7 +29,7 @@ namespace mtl { namespace matrix {
 
 /// Returns A=S*V*D' for matrix A as references
 template <typename Matrix>
-inline void svd(const Matrix& A, Matrix& ST, Matrix& V, Matrix& D, double tol= 10e-10)
+inline void svd(const Matrix& A, Matrix& S, Matrix& V, Matrix& D, double tol= 10e-10)
 {
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
@@ -42,7 +42,7 @@ inline void svd(const Matrix& A, Matrix& ST, Matrix& V, Matrix& D, double tol= 1
     
      //init
     Matrix Q(row,row),  R(row,col),  VT(row,col), E(row,col), 
- 	   QT(col,col), RT(col,row), S(col,col);
+ 	   QT(col,col), RT(col,row);
 
     loops= 100 * std::max(nrows,ncols);
     S= one; D= one; E= zero;
@@ -62,24 +62,14 @@ inline void svd(const Matrix& A, Matrix& ST, Matrix& V, Matrix& D, double tol= 1
 	err= e/f;
     } //end for
 
-    row= col= std::min(nrows, ncols);
-
-    //fix signs in V
-    V= 0;  ST=0;
-    {
-	matrix::inserter<Matrix, update_plus<value_type> >  ins_V(V);
-	matrix::inserter<Matrix>                            ins_ST(ST);
-	for (size_type i= 0; i < col; i++) {		
-	    ins_V[i][i] << std::abs(R[i][i]);
-	    if (R[i][i] < zero) 
-		for (size_type j= 0; j < nrows; j++) 
- 		    ins_ST[j][i] << -S[j][i];
-	    else 
-		for (size_type j= 0; j < nrows; j++)
-		    ins_ST[j][i] << S[j][i];
-	}
+    V= 0;  
+    for (size_type i= 0, end= std::min(nrows, ncols); i < end; i++) {
+	V[i][i]= std::abs(R[i][i]);
+	if (R[i][i] < zero) 	
+	    for (size_type j= 0; j < nrows; j++) 
+ 		S[j][i]= -S[j][i];
     }
-}
+ }
 
 /// Returns A=S*V*D' for matrix A as triplet
 template <typename Matrix>
