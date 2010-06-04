@@ -74,7 +74,8 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
             return iter.fail(5, "qmr breakdown beta=0 #5");
         v_tld = p_tld - beta * v;
         y = solve(L,v_tld);
-        rho_1 = rho = two_norm(y);
+        rho_1 = rho;
+	rho = two_norm(y);
         w_tld= trans(A)*q  - beta*w; 
         z = adjoint_solve(R, w_tld);  
         xi = two_norm(z);
