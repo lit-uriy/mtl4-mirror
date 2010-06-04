@@ -37,57 +37,36 @@ void qr(const Matrix& A, MatrixQ& Q, MatrixR& R)
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
     typedef typename Magnitude<value_type>::type      magnitude_type;
+    typedef dense_vector<value_type>                  vector_type;
     
-    size_type        ncols = num_cols(A), nrows = num_rows(A), mini;
+    size_type        ncols = num_cols(A), nrows = num_rows(A), 
+                     mini= ncols == nrows ? ncols - 1 : (nrows >= ncols ? ncols : nrows);
     value_type       ref, zero= math::zero(ref);
     magnitude_type   factor= magnitude_type(2);
 
     Q= 1;
-    if (nrows >= ncols)   // row-wise
-	mini= (ncols == nrows) ? ncols - 1 : ncols;
-    else                  // col-wise
-	mini= (ncols == nrows) ? nrows - 1 : nrows;
-
     for (size_type i = 0; i < mini; i++) {
 	irange r(i, imax); // Intervals [i, n-1]
-	dense_vector<value_type>     v(nrows-i, zero), w(nrows-i,zero), tmp(ncols-i, zero), qtmp(nrows, zero);
+	vector_type   w(R[r][i]), v(householder_s(w)); 
 
-	// dense_vector<value_type>   w(R[r][i])  //not for compressed2D
-	for (size_type j = 0; j < nrows-i; j++) 
-	    w[j]= R[j+i][i];
-        v= householder_s(w);
-
-	//tmp= -v'*R;
-	for (size_type a= 0; a < nrows-i; a++)
-	    for (size_type b= 0; b < ncols-i; b++)
-		tmp[b]-= v[a] * R[a+i][b+i];
-
-	//R+= 2*v*tmp -> R-= 2*v*(v'*R)
-	{	
-	    inserter<Matrix, update_plus<value_type> > ins_R(R);
-	    for (size_type a= 0; a < nrows-i; a++)
-		for (size_type b= 0; b < ncols-i; b++)
-		    ins_R[a+i][b+i] << factor * v[a] * tmp[b]; // R is same as input type
-	} // destroy ins_R
-
-	//update Q: Q-= 2*(v*Q)*v'
-	for (size_type a= 0; a < nrows; a++)
-	    for (size_type b= i; b < nrows; b++)
-		qtmp[a]+= v[b-i]*Q[a][b]; 
-
-	inserter<Matrix, update_minus<value_type> > ins_Q(Q);
-	for (size_type a= 0; a < nrows; a++)
-	    for (size_type b= i; b < nrows; b++)
-		ins_Q[a][b] << factor * qtmp[a] * v[b-i]; //Q is same as input type
+	// R-= 2*v*(v'*R)
+	MatrixR Rsub(R[r][r]);
+	vector_type tmp(-factor * trans(Rsub) * v);
+	rank_one_update(Rsub, v, tmp);
 	
+	//update Q: Q-= 2*(v*Q)*v'
+	MatrixQ Qsub(Q[iall][r]);
+	vector_type qtmp(-factor * Qsub * v);
+	rank_one_update(Qsub, qtmp, v);
     } //end for
 }
 
 template <typename Matrix>
-std::pair<Matrix, Matrix>
+std::pair<mtl::dense2D<typename Collection<Matrix>::value_type>,
+ 	  mtl::dense2D<typename Collection<Matrix>::value_type> > 
 inline qr(const Matrix& A)
 {
-    Matrix           R(A), Q(num_rows(A),num_rows(A));
+    mtl::dense2D<typename Collection<Matrix>::value_type>    R(A), Q(num_rows(A),num_rows(A));
     qr(A, Q, R);
     return std::make_pair(Q,R);
 }
