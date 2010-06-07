@@ -36,6 +36,38 @@ class basic_iteration
 
     virtual ~basic_iteration() {}
 
+    bool check_max()
+    {
+	if (i >= max_iter) 
+	    error= 1, is_finished= true, err_msg= "Too many iterations.";
+	return is_finished;
+    }
+
+    template <class Vector>
+    bool finished(const Vector& r, bool inc= false) 
+    {
+	if (converged(two_norm(r)))
+	    return i+= int(inc), is_finished= true;
+	return check_max();
+    }
+
+    bool finished(const Real& r, bool inc= false) 
+    {
+	if (converged(r))
+	    return i+= int(inc), is_finished= true;
+	return check_max();
+    }
+
+    template <typename T>
+    bool finished(const std::complex<T>& r, bool inc= false) 
+    {
+	if (converged(std::abs(r))) 
+	    return i+= int(inc), is_finished= true;
+	return check_max();
+    }
+
+
+#if 0
     template <class Vector>
     bool finished(const Vector& r) {
 	Real normr_ = two_norm(r);
@@ -80,6 +112,7 @@ class basic_iteration
 	    return true;
 	}
     }
+#endif
 
     bool finished() { return is_finished; }
 
