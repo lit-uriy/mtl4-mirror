@@ -33,9 +33,8 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
 	++iter;
 	rho_1= dot(rtilde, r);
 
-	if (rho_1 == 0.){
+	if (rho_1 == 0.)
 	    iter.fail(2, "cgs breakdown");
-	}
 
 	if (iter.first())
 	    p= u= r;
