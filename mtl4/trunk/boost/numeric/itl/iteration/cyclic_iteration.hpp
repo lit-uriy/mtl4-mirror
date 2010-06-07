@@ -43,9 +43,9 @@ namespace itl {
       bool finished() { return super::finished(); };
 
       template <typename T>
-      bool finished(const T& r) 
+      bool finished(const T& r, bool inc= false) 
       {
-	  bool ret= super::finished(r);
+	  bool ret= super::finished(r, inc);
 	  print_resid();
 	  return ret;
       }
