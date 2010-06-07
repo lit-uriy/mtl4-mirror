@@ -1730,6 +1730,11 @@ For cyclic and noisy iterations, one can declare on which ostream the informatio
 This enables printing it into log files or for parallel computing printing only on one processor.
 By default the output is printed into std::out.
 
+General assumptions of the iterators:
+- 0th iteration is the starting residue.
+- Once the input value (x) is changed you have made at least one iteration.
+- Fractions of iterations are counted as whole iterations.
+
 
 
 \if Navigation \endif
