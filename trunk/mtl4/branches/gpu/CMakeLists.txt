@@ -21,6 +21,11 @@ cmake_minimum_required(VERSION 2.6)
 #Path of Boost
 set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
 
+
+if(BOOST_ROOT)
+message("-- Detecting Boost: Found")
+endif(BOOST_ROOT)
+
 #Find the path of Boost
 if(NOT BOOST_ROOT)
   if(NOT IS_DIRECTORY /usr/include/boost)
@@ -30,12 +35,6 @@ if(NOT BOOST_ROOT)
     message("-- Detecting Boost: Found")
   endif(NOT IS_DIRECTORY /usr/include/boost)
 endif(NOT BOOST_ROOT)
-
-if(BOOST_ROOT)
-message("-- Detecting Boost: Found")
-endif(BOOST_ROOT)
-
-
 
 
 
@@ -92,7 +91,7 @@ SET(MTL4_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 #End#######################################
 
-
+# ENABLE_TESTING()
 
 
 
