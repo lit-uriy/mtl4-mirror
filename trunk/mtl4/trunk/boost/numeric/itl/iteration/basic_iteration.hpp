@@ -66,54 +66,6 @@ class basic_iteration
 	return check_max();
     }
 
-
-#if 0
-    template <class Vector>
-    bool finished(const Vector& r) {
-	Real normr_ = two_norm(r);
-	if (converged(normr_)) {
-	    is_finished= true;
-	    return true;
-	} else if (i < max_iter)
-	    return false;
-	else {
-	    is_finished= true;
-	    error = 1;
-	    return true;
-	}
-    }
-
-
-    bool finished(const Real& r)
-    {
-	if (converged(r)) {
-	    is_finished= true;
-	    return true;
-	} else if (i < max_iter)
-	    return false;
-	else {
-	    is_finished= true;
-	    error = 1;
-	    return true;
-	}
-    }
-
-    template <typename T>
-    bool finished(const std::complex<T>& r) 
-    {
-	if (converged(std::abs(r))) {
-	    is_finished= true;
-	    return true;
-	} else if (i < max_iter)
-	    return false;
-	else {
-	    is_finished= true;
-	    error = 1;
-	    return true;
-	}
-    }
-#endif
-
     bool finished() { return is_finished; }
 
     inline bool converged(const Real& r) 
