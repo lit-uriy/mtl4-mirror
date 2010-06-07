@@ -31,7 +31,8 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   Vector p(resource(x)), q(resource(x)), r(resource(x)), z(resource(x));
   
   r = b - A*x;
-  for (; ! iter.finished(r); ++iter) {
+  while (! iter.finished(r)) {
+      ++iter;
       z = solve(L, r);
       rho = dot(r, z);
     

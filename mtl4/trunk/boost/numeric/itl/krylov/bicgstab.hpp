@@ -35,7 +35,8 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   r = b - A * x;
   rtilde = r;
 
-  for (; ! iter.finished(r); ++iter) {
+  while (! iter.finished(r)) {
+    ++iter;
     rho_1 = dot(rtilde, r);
     MTL_THROW_IF(rho_1 == 0.0, unexpected_orthogonality());
 

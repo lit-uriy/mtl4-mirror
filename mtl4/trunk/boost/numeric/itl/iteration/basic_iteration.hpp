@@ -44,25 +44,25 @@ class basic_iteration
     }
 
     template <class Vector>
-    bool finished(const Vector& r, bool inc= false) 
+    bool finished(const Vector& r) 
     {
 	if (converged(two_norm(r)))
-	    return i+= int(inc), is_finished= true;
+	    return is_finished= true;
 	return check_max();
     }
 
-    bool finished(const Real& r, bool inc= false) 
+    bool finished(const Real& r) 
     {
 	if (converged(r))
-	    return i+= int(inc), is_finished= true;
+	    return is_finished= true;
 	return check_max();
     }
 
     template <typename T>
-    bool finished(const std::complex<T>& r, bool inc= false) 
+    bool finished(const std::complex<T>& r) 
     {
 	if (converged(std::abs(r))) 
-	    return i+= int(inc), is_finished= true;
+	    return is_finished= true;
 	return check_max();
     }
 
@@ -80,13 +80,13 @@ class basic_iteration
 
     inline self& operator+=(int n) { i+= n; return *this; }
 
-    inline bool first() { return i == 0; }
+    inline bool first() { return i <= 1; }
 
     virtual operator int() { return error; }
 
     virtual int error_code() { return error; }
 
-    inline int iterations() { return i + 1; }
+    inline int iterations() { return i; }
 
     inline Real resid() { return resid_ * norm_r0; }
 

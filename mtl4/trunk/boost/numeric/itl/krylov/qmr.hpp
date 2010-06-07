@@ -39,7 +39,8 @@ int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L,
 	return iter;
 
     Scalar rho = two_norm(y), xi = two_norm(z);
-    for (; ! iter.finished(rho); ++iter) {
+    while(! iter.finished(rho)) {
+	++iter;
         if (rho == zero)
 	    return iter.fail(1, "qmr breakdown #1, rho=0");
         if (xi == zero)
