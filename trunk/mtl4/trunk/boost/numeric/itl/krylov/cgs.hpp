@@ -29,11 +29,13 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
     Vector     p(resource(x)), phat(resource(x)), q(resource(x)), qhat(resource(x)), vhat(resource(x)),
 	       u(resource(x)), uhat(resource(x)), r(b - A * x), rtilde= r;
 
-    for (; ! iter.finished(r); ++iter) {
+    while (! iter.finished(r)) {
+	++iter;
 	rho_1= dot(rtilde, r);
 
-	if (rho_1 == 0.)
+	if (rho_1 == 0.){
 	    iter.fail(2, "cgs breakdown");
+	}
 
 	if (iter.first())
 	    p= u= r;

@@ -62,7 +62,8 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
     mtl::dense2D<Scalar>        tau(l+1, l+1);
     mtl::dense_vector<Scalar>   sigma(l+1), gamma(l+1), gamma_a(l+1), gamma_aa(l+1);
 
-    for (; ! iter.finished(r_hat[0]); ++iter) {
+    while (! iter.finished(r_hat[0])) {
+	++iter;
 	rho_0= -omega * rho_0;
 
 	for (Size j= 0; j < l; ++j) {
