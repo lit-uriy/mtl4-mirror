@@ -292,7 +292,7 @@ The whole test suite can be compiled and executed with few commands.
 We are currently in the process of transition from one build system to another one.
 - The test suite build with scons has currently a bit more functionality (e.g. enabling a higher 
 
-
+ 
 
 
 

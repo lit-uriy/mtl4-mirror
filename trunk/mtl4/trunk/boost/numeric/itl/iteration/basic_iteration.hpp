@@ -29,10 +29,11 @@ class basic_iteration
     template <class Vector>
     basic_iteration(const Vector& r0, int max_iter_, Real t, Real a = Real(0))
       : error(0), i(0), norm_r0(std::abs(two_norm(r0))),
-	max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false), my_quite(false) { }
+	max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false), my_quite(false), my_suppress(false) { }
 
     basic_iteration(Real nb, int max_iter_, Real t, Real a = Real(0))
-      : error(0), i(0), norm_r0(nb), max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false), my_quite(false) {}
+      : error(0), i(0), norm_r0(nb), max_iter(max_iter_), rtol_(t), atol_(a), is_finished(false), 
+	my_quite(false), my_suppress(false) {}
 
     virtual ~basic_iteration() {}
 
@@ -66,47 +67,71 @@ class basic_iteration
 	return check_max();
     }
 
-    bool finished() { return is_finished; }
+    bool finished() const { return is_finished; }
 
-    inline bool converged(const Real& r) 
-    {
+    template <class T>
+    int terminate(const T& r) { finished(r); return error; }
+
+    bool converged(const Real& r) { resid_= r; return converged(); }
+
+    bool converged() const 
+    { 
 	if (norm_r0 == 0)
-	    return r < atol_;  // ignore relative tolerance if |r0| is zero
-	resid_ = r / norm_r0;
-	return (resid_ <= rtol_ || r < atol_); // relative or absolute tolerance.
+	    return resid_ < atol_;  // ignore relative tolerance if |r0| is zero
+	return resid_ / norm_r0 <= rtol_ || resid_ < atol_;
     }
 
-    inline self& operator++() { ++i; return *this; }
+    self& operator++() { ++i; return *this; }
 
-    inline self& operator+=(int n) { i+= n; return *this; }
+    self& operator+=(int n) { i+= n; return *this; }
 
-    inline bool first() { return i <= 1; }
+    bool first() const { return i <= 1; }
 
-    virtual operator int() { return error; }
+    virtual operator int() const { return error; }
 
-    virtual int error_code() { return error; }
+    virtual int error_code() const { return error; }
 
-    inline int iterations() { return i; }
+    bool is_converged() const { return is_finished && error == 0; }
+
+    int iterations() const { return i; }
     
-    inline int max_iterations() { return max_iter; }
+    int max_iterations() const { return max_iter; }
 
-    inline Real resid() { return resid_ * norm_r0; }
+    void set_max_iterations(int m) { max_iter= m; }
 
-    inline Real normb() const { return norm_r0; }
+    Real resid() const { return resid_ * norm_r0; }
 
-    inline Real tol() { return rtol_; }
-    inline Real atol() { return atol_; }
+    Real normb() const { return norm_r0; }
 
-    inline int fail(int err_code) { error = err_code; return error_code(); }
+    Real tol() const { return rtol_; }
+    Real atol() const { return atol_; }
 
-    inline int fail(int err_code, const std::string& msg)
+    int fail(int err_code) { error = err_code; return error_code(); }
+
+    int fail(int err_code, const std::string& msg)
     { error = err_code; err_msg = msg; return error_code(); }
 
-    inline void set(Real v) { norm_r0 = v; }
+    void set(Real v) { norm_r0 = v; }
 
     void set_quite(bool q) { my_quite= q; }
 
     bool is_quite() const { return my_quite; }
+
+    void suppress_resume(bool s) { my_suppress= s; }
+
+    bool resume_suppressed() const { return my_suppress; }
+
+    void update_progress(const basic_iteration& that)
+    {
+	i= that.i;
+	resid_= that.resid_;
+	if (that.error > 1) { // copy error except too many iterations
+	    error= that.error;
+	    err_msg= that.err_msg;
+	    is_finished= true;
+	} else 
+	    finished(resid_);
+    }
 
   protected:
     int          error, i;
@@ -114,7 +139,7 @@ class basic_iteration
     int          max_iter;
     Real         rtol_, atol_, resid_;
     std::string  err_msg;
-    bool         is_finished, my_quite;
+    bool         is_finished, my_quite, my_suppress;
 };
 
 

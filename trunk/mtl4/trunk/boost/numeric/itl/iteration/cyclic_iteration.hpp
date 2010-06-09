@@ -54,11 +54,11 @@ namespace itl {
       
       inline self& operator+=(int n) { this->i+= n; return *this; }
 
-      operator int() { return error_code(); }
+      operator int() const { return error_code(); }
 
-      int error_code() 
+      int error_code() const 
       {
-	  if (!this->my_quite)
+	  if (!this->my_suppress)
 	      out << "finished! error code = " << this->error << '\n'
 		  << this->iterations() << " iterations\n"
 		  << this->resid() << " is actual final residual. \n"
