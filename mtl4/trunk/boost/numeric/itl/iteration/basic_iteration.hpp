@@ -87,6 +87,8 @@ class basic_iteration
     virtual int error_code() { return error; }
 
     inline int iterations() { return i; }
+    
+    inline int max_iterations() { return max_iter; }
 
     inline Real resid() { return resid_ * norm_r0; }
 
