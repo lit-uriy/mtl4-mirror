@@ -21,7 +21,7 @@
 	std::cout << "\n\n" << name << "\n";				\
 	xs= 0.01;							\
         int codes;							\
-        itl::cyclic_iteration<double> iters(bs, 600, 1.e-4, 0.0, 10);     \
+        itl::cyclic_iteration<double> iters(bs, 150, 1.e-4, 0.0, 10);     \
         try {								\
 	    codes= solver args;						\
 	} catch (const itl::unexpected_orthogonality&) {		\
@@ -62,7 +62,6 @@ int test_main(int argc, char* argv[])
     MTL_RUN_SOLVER("Induced Dimension Reduction on s dimensions (IDR(s))", idr_s, (As, xs, bs, ILU, I, iters, s));
     MTL_RUN_SOLVER("Quasi-minimal residual", qmr, (As, xs, bs, ILU, I, iters));
     MTL_RUN_SOLVER("Transposed-free Quasi-minimal residual", tfqmr, (As, xs, bs, ILU, I, iters));
-    
     std::cout << succeed << " solvers succeeded and " << failed << " solvers failed.\n";
   
     return 0;
