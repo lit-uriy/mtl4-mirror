@@ -187,22 +187,56 @@ Proceed to the \ref install "installation guide".
 
 MTL4 is a pure template library and only a download of the sources
 is required.
+The only mandatory requirement is the Boost library collection.
 
-The <a href="http://www.boost.org">Boost library</a>
-is used and must also be downloaded.
-We used in the development and testing version 33.1 but the programs
-would probably compile with earlier versions, too.
+\section quickstart Quick start
+
+To compile an MTL4 application you only need to
+-# Download and install Boost
+-# Download and install MTL4
+-# Include the libraries in the compile command when not installed in the include path, e.g.\n
+  <tt>g++ myapp.cpp -o myapp -I/usr/local/include/boost-1.38 -I/usr/local/include/mtl4</tt>
+.
+
+<b>Download and install Boost:</b>
+One can do this by hand: download it from the 
+<a href="http://www.boost.org">Boost web page</a>
+and unpack it in an appropriate directory.
+If you have administrator rights on the used computer you can put boost in a directory
+in the include path, e.g. /usr/local/include.
+Then you can omit the compiler flag for including from the boost directory. 
+If multiple versions shall be used on your computer you can only put one in the include path
+or you need extra tools like softenv or module to deal with your paths.
+More convenient is the installation of boost with a packet manager like synaptic.
+We use in the development and testing currently versions between 1.38 and 1.43.
+Some earlier versions might work as well but not 1.33 or earlier (e.g. type traits for
+std::complex are missing there).
  The parts of boost used in MTL4 do not need
-to be compiled but only included.
+to be compiled but only included (except for the Supercomputing Edition which is
+documented seperately).
 
-If you want to run the test programs, you need the build system
-<a href="http://www.scons.org">scons</a>.
-It is easy to install and takes only a few minutes.
-The scons-based build of MTL4 uses the environment variables 
-<tt>MTL_BOOST_ROOT</tt> to locate the MTL directory
-and <tt>BOOST_ROOT</tt> to locate the Boost directory.
 
-If you compile MTL4 with VS2005 or its free express version
+<b>Download and install MTL4:</b>
+The recommended form of downloading is to use subversion control (under Windows we recommend 
+<a href="http://tortoisesvn.tigris.org/">Tortoise</a>) and under Linux it is part of every
+recent distribution.
+Go to the directory where you like MTL4 to reside and type:\n
+<tt>svn checkout https://svn.osl.iu.edu/tlc/trunk/mtl4/trunk mtl4</tt>\n
+The adventage of version control is that you can update it easily with\n
+<tt>svn update</tt>\n
+when new features are added or a bug is fixed (fortunately not needed very often).
+If you prefer downloading an archive,
+go to the 
+<a href="http://osl.iu.edu/research/mtl/mtl4/download.php3">MTL4 download page</a>
+and download the latest archive.
+In principle, MTL4 can also be copied in a directory within the standard include
+path to omit the compiler flag for its inclusion.
+The MTL4 and the boost directory can be mixed in principle since their files are
+disjoint and people who tried this did not experience problems.
+However, this complicates the use of version control, especially when
+you install Boost with a packet manager (as far as we know nobody tried this so far).
+
+If you compile MTL4 with VS2005/08 or its free express version
 you need to install the SDK (some boost files access it).
 Please make sure that the compiler is in the path.
 Then scons will find it.
@@ -213,6 +247,61 @@ environment variables LIB and INCLUDE. For instance:\n
 <tt>INCLUDE=c:/Program Files/Microsoft Visual Studio 8/VC/include;c:/Program Files/Microsoft Visual Studio 8/VC/PlatformSDK/Include</tt>\n
 On some machines the compiler still did not find the files. For that reason the
 paths within these two variables are incorporated into the command line by our scons script.
+
+
+\section optionalinstall Optional Installations
+
+
+<b>Using BLAS:<\b>
+Dense matrix multiplication has an acceleration with BLAS (when the types of the matrix elements allow).
+More BLAS usage is currently under development.
+To use this acceleration install a well-tuned BLAS (the original Netlib BLAS was even slower than our
+implementation when benchmarked it), preferably with a packet manager
+and set the macro MTL_HAS_BLAS.
+Although one can set the macro somewhere in the program sources it is recommended for better porting
+to define it in the compiler, e.g.:\n
+<tt>g++ -DMTL_HAS_BLAS -lblas ...</tt>\n
+or\n
+<tt>cl /DMTL_HAS_BLAS ...</tt>\n
+Of course, the library must be linked as well.
+
+<b>Using LAPACK:<\b>
+LAPACK is currently not supported but will be soon.
+
+
+<b>Using UMFPACK:<\b>
+Programs that use UMFPACK must be compiled with MTL_HAS_UMFPACK
+and linked with the UMFPACK library plus the libraries UMFPACK
+depends on (AMD and UFConfig).
+
+<b>Using Doxygen:<\b>
+The MTL4 documentation is available online.
+If you like to create a copy on your computer, e.g. to read it when offline, you can create it yourself.
+Just run <tt>doxygen</tt> in the main directory and you will find the documentation in libs/numeric/mtl/doc.
+The HTML version is found in libs/numeric/mtl/doc/html and a PDF file in libs/numeric/mtl/doc/pdf
+(not available online).
+One can also 
+ generate of man pages by enabling it in the Doxyfile.
+Doxygen can be downloaded <a href="http://www.doxygen.org">here</a>.
+
+\section Testing
+
+To make sure that MTL4 is completely installed you can run the same tests as we use
+in our development.
+The whole test suite can be compiled and executed with few commands.
+We are currently in the process of transition from one build system to another one.
+- The test suite build with scons has currently a bit more functionality (e.g. enabling a higher 
+
+
+
+
+
+If you want to run the test programs, you need the build system
+<a href="http://www.scons.org">scons</a>.
+It is easy to install and takes only a few minutes.
+The scons-based build of MTL4 uses the environment variables 
+<tt>MTL_BOOST_ROOT</tt> to locate the MTL directory
+and <tt>BOOST_ROOT</tt> to locate the Boost directory.
 
 
 
@@ -251,10 +340,6 @@ flags, see\n
 <tt>scons -h</tt>\n
 for details.
 
-If you wish to generate the documentation locally on your system
-you need <a href="http://www.doxygen.org">doxygen</a>.
-When it is installed type <tt>doxygen</tt> in the main directory and
-the documentation will be written to libs/numeric/mtl/doc.
 
 Resuming, for MTL4 you need to:
 - Include the MTL path;
@@ -276,7 +361,9 @@ It has been tested (and passed) with the following compilers and architectures:
   - g++ 4.2.1
   - g++ 4.2.2
   - g++ 4.3.2
+  - g++ 4.3.4
   - icc 9.0
+  - icc 10.0
 - Macintosh
   - g++ 4.0.1
 - Windows
@@ -292,9 +379,24 @@ Compilers that are not standard-compliant (e.g. VC 6.0 from VS 2003) are not sub
 Proceed to the \ref IDE.  
 
 */
+//-----------------------------------------------------------
+
+//-----------------------------------------------------------
+/*! \page testing_scons Testing with scons
+
+
+
+*/
+//-----------------------------------------------------------
+
 
 
 //-----------------------------------------------------------
+/*! \page testing_cmake Testing with cmake
+
+*/
+//-----------------------------------------------------------
+
 
 
 //-----------------------------------------------------------
@@ -1730,7 +1832,7 @@ For cyclic and noisy iterations, one can declare on which ostream the informatio
 This enables printing it into log files or for parallel computing printing only on one processor.
 By default the output is printed into std::out.
 
-General assumptions of the iterators:
+General assumptions on solver iterations:
 - 0th iteration is the starting residue.
 - Once the input value (x) is changed you have made at least one iteration.
 - Fractions of iterations are counted as whole iterations.
