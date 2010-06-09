@@ -34,7 +34,7 @@ dense_vector<double> inline unit_vector(unsigned k, unsigned n)
 
 #if VERSION == 1
 
-dense2D<double> inverse_upper(dense2D<double> const& A)
+dense2D<double> inline inverse_upper(dense2D<double> const& A)
 {
     const unsigned N= num_rows(A);
     assert(num_cols(A) == N); // Matrix must be square
@@ -111,7 +111,8 @@ dense2D<double> inline inverse(dense2D<double> const& A)
     dense_vector<unsigned>   Pv(num_rows(A));
 
     lu(PLU, Pv);
-    dense2D<double>  PU(upper(PLU)), PL(strict_lower(PLU) + matrix::identity(num_rows(A), num_cols(A)));
+    dense2D<double>  PU(upper(PLU)), 
+        PL(strict_lower(PLU) + matrix::identity(num_rows(A), num_cols(A)));
 
     return dense2D<double>(inverse_upper(PU) * inverse_lower(PL) * permutation(Pv));
 }
@@ -143,10 +144,11 @@ int main(int argc, char* argv[])
     Matrix UI(inverse_upper(U));
     cout << "inverse(U) [permuted] is:\n" << UI << "UI * U is:\n" << Matrix(UI * U);
     assert(one_norm(Matrix(UI * U - I)) < 0.1);
-
+    
     Matrix LI(inverse_lower(L));
     cout << "inverse(L) [permuted] is:\n" << LI << "LI * L is:\n" << Matrix(LI * L);
     assert(one_norm(Matrix(LI * L - I)) < 0.1);
+
 
     Matrix AI(UI * LI * P);
     cout << "inverse(A) [UI * LI * P] is \n" << AI << "A * AI is\n" << Matrix(AI * A);
@@ -156,8 +158,8 @@ int main(int argc, char* argv[])
     cout << "inverse(A) is \n" << A_inverse << "A * AI is\n" << Matrix(A_inverse * A);
     assert(one_norm(Matrix(A_inverse * A - I)) < 0.1);
 
-   Matrix A_e(inv(A));
-   cout << "inv(A) is \n" << A_e << "\n";
+    Matrix A_e(inv(A));
+    cout << "inv(A) is \n" << A_e << "\n";
     
     return 0;
 }
