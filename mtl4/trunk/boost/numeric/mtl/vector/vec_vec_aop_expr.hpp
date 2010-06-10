@@ -22,6 +22,9 @@
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/unroll_size1.hpp>
 #include <boost/numeric/mtl/utility/with_unroll1.hpp>
 
@@ -75,6 +78,7 @@ struct vec_vec_aop_expr
 	second.delay_assign();
     }
     
+  private:
     void dynamic_assign(boost::mpl::false_) // Without unrolling
     {
 	for (size_type i= 0; i < size(first); ++i)
@@ -113,6 +117,7 @@ struct vec_vec_aop_expr
 	    SFunctor::apply( first(i), second(i) );
     }
 
+  public:
     ~vec_vec_aop_expr()
     {
 	if (!delayed_assign)
