@@ -4,7 +4,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = "MTL 4"
-PROJECT_NUMBER         = "alpha 1"
+PROJECT_NUMBER         = "Beta 1"
 OUTPUT_DIRECTORY       = libs/numeric/mtl/doc
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English

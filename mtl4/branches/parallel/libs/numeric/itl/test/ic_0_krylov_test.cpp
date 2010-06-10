@@ -21,7 +21,7 @@
 	std::cout << "\n\n" << name << "\n";				\
 	xs= 0.01;							\
         int codes;							\
-        itl::cyclic_iteration<double> iters(bs, N, 1.e-4, 0.0, 10);     \
+        itl::cyclic_iteration<double> iters(bs, 150, 1.e-4, 0.0, 10);     \
         try {								\
 	    codes= solver args;						\
 	} catch (const itl::unexpected_orthogonality&) {		\
@@ -34,7 +34,7 @@
 	    succeed++;							\
     }
     
-
+ 
 int test_main(int argc, char* argv[])
 {
     // For a more realistic example set size to 1000 or larger
@@ -58,7 +58,7 @@ int test_main(int argc, char* argv[])
     MTL_RUN_SOLVER("Bi-Conjugate Gradient Stabilized(ell)", bicgstab_ell, (As, xs, bs, ILU, I, iters, ell));
     MTL_RUN_SOLVER("Conjugate Gradient", cg, (As, xs, bs, IC, iters));
     MTL_RUN_SOLVER("Conjugate Gradient Squared", cgs, (As, xs, bs, ILU, iters));
-    MTL_RUN_SOLVER("Generalized Minimal Residual method (without restart)", gmres_full, (As, xs, bs, I, I, iters, size));
+//     MTL_RUN_SOLVER("Generalized Minimal Residual method (without restart)", gmres_full, (As, xs, bs, I, I, iters, size));  //only N iterations
     MTL_RUN_SOLVER("Generalized Minimal Residual method with restart", gmres, (As, xs, bs, I, I, iters, restart));
 #endif
     MTL_RUN_SOLVER("Induced Dimension Reduction on s dimensions (IDR(s))", idr_s, (As, xs, bs, ILU, I, iters, s));
@@ -67,6 +67,6 @@ int test_main(int argc, char* argv[])
     MTL_RUN_SOLVER("Transposed-free Quasi-minimal residual", tfqmr, (As, xs, bs, ILU, I, iters));
 #endif
     std::cout << succeed << " solvers succeeded and " << failed << " solvers failed.\n";
-
+  
     return 0;
 }

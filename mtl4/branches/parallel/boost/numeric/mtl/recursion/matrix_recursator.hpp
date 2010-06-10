@@ -13,7 +13,8 @@
 #define MTL_MATRIX_RECURATOR_INCLUDE
 
 #include <cmath>
-#include <boost/type_traits.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/type_traits/remove_const.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/print_matrix.hpp>

@@ -14,7 +14,9 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/type_traits.hpp>
+#include <boost/type_traits/is_const.hpp>
+#include <boost/type_traits/is_same.hpp>
+#include <boost/type_traits/remove_const.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>

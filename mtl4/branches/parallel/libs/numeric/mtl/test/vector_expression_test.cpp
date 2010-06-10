@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/operation/norms.hpp>
 #include <boost/numeric/mtl/operation/sum.hpp>
 #include <boost/numeric/mtl/operation/product.hpp>
+#include <boost/numeric/mtl/operation/unroll.hpp>
 
 
 using namespace std;  
@@ -30,12 +31,12 @@ void test(Vector& v, const char* name)
     typedef typename mtl::Collection<Vector>::value_type value_type;
     typedef typename mtl::Collection<Vector>::size_type  size_type;
 
-    using mtl::sum; using mtl::product; using mtl::one_norm;
+    using mtl::sum; using mtl::product; using mtl::one_norm; using mtl::unroll;
 
     for (size_type i= 0; i < size(v); i++)
 	v[i]= value_type(double(i+1) * pow(-1.0, int(i))); // Amb. in MSVC
 
-    std::cout << "\n" << name << "  --- v = " << v; std::cout.flush();
+    std::cout << "\n" << name << "  --- v = " << v << std::endl;
 
     Vector w(v + v), u;
     std::cout << "w= v + v = " << w << "\n"; 
@@ -46,6 +47,9 @@ void test(Vector& v, const char* name)
     u= -v;
     std::cout << "u= -v = " << u << "\n"; 
     
+    unroll<3>(u)= 4. * w - v;
+    std::cout << "unroll<3>(u)= 4. * w - v = " << u << "\n"; 
+
 }
  
 

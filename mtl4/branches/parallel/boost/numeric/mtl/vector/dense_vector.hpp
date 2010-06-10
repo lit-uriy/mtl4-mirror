@@ -21,7 +21,6 @@
 #include <vector>
 #include <algorithm>
 #include <boost/static_assert.hpp>
-#include <boost/type_traits.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/serialization/array.hpp>
 #include <boost/serialization/collection_size_type.hpp>
@@ -30,17 +29,16 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
-#include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
 #include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
-#include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
 
 
 namespace mtl { namespace vector {
@@ -71,7 +69,7 @@ class dense_vector
     
     void check_index( size_type i ) const
     {
-	MTL_DEBUG_THROW_IF( i < 0 || i >= size(*this), index_out_of_range());
+	MTL_DEBUG_THROW_IF( is_negative(i) ||  i >= size(*this), index_out_of_range());
     }
 
     void check_dim( size_type s ) const

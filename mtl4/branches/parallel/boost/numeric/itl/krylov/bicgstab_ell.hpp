@@ -63,6 +63,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
     mtl::dense_vector<Scalar>   sigma(l+1), gamma(l+1), gamma_a(l+1), gamma_aa(l+1);
 
     while (! iter.finished(r_hat[0])) {
+	++iter;
 	rho_0= -omega * rho_0;
 
 	for (Size j= 0; j < l; ++j) {
@@ -119,7 +120,6 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	    x+= gamma_aa[j] * r_hat[j];
 	    r_hat[0] -= gamma_a[j] * r_hat[j];
 	}
-	++iter;
     }
     x= solve(R, x) + x0; // convert to real solution and undo shift
     return iter;

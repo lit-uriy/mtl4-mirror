@@ -42,9 +42,11 @@ int main()
 
   itl::cyclic_iteration<double> iter(b, 500, 1.e-6, 0.0, 1);
   qmr(A, x, b, P, P, iter);
+  std::cout<< "x=" << x << "\n";
 
   itl::cyclic_iteration<double> iterb(bb, 500, 1.e-6, 0.0, 1);
   qmr(dr, xb, bb, Pb, Pb, iterb);
+  std::cout<< "xb=" << xb << "\n";
 
   return 0;
 }

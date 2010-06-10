@@ -27,7 +27,7 @@
 #include <boost/numeric/mtl/par/migrating_copy.hpp>
 
 #include <boost/static_assert.hpp>
-#include <boost/type_traits.hpp>
+#include <boost/type_traits/is_same.hpp>
 #include <iostream>
 
 namespace mtl {

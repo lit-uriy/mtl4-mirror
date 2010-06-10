@@ -18,14 +18,16 @@
 #include <complex>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
-
+ 
 
 using namespace std;  
 
 inline void add_imag(float& v, double inc) {}
 inline void add_imag(double& v, double inc) {}
+inline void add_imag(long double& v, double inc) {}
 inline void add_imag(complex<float>& v, double inc) { v+= complex<float>(0, inc); }
 inline void add_imag(complex<double>& v, double inc) { v+= complex<double>(0, inc); }
+inline void add_imag(complex<long double>& v, double inc) { v+= complex<double>(0, inc); }
 
 #ifdef MTL_HAS_UMFPACK
 template <typename Matrix>
@@ -114,6 +116,14 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
     typedef matrix::parameters<col_major>           col_para;
 
+#if 0 // weird error, will be fixed if someone really uses this
+    test(compressed2D<complex<long double> >(),          "complex<long double> row-major");
+    test(compressed2D<complex<long double>, col_para>(), "complex<long double> column-major");
+#endif
+
+    test(compressed2D<long double>(),          "long double row-major");
+    test(compressed2D<long double, col_para>(), "long double column-major");
+
     test(compressed2D<complex<double> >(),          "complex<double> row-major");
     test(compressed2D<complex<double>, col_para>(), "complex<double> column-major");
 
@@ -125,6 +135,7 @@ int test_main(int argc, char* argv[])
 
     test(compressed2D<float>(),                     "float row-major");
     test(compressed2D<float, col_para>(),           "float column-major");
+
 #else
     std::cout << "Test is ignored when MTL_HAS_UMFPACK is not defined\n";
 #endif

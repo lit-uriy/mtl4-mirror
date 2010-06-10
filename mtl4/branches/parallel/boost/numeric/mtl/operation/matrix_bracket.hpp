@@ -14,7 +14,9 @@
 
 #include <algorithm>
 #include <boost/utility/enable_if.hpp>
-#include <boost/type_traits.hpp>
+#include <boost/type_traits/is_integral.hpp>
+#include <boost/type_traits/is_same.hpp>
+#include <boost/type_traits/remove_reference.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
