@@ -16,8 +16,6 @@ cmake_minimum_required(VERSION 2.6)
 #endif(NOT Boost_INCLUDE_DIR)
 
 
-
-
 #Path of Boost
 set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
 
@@ -26,7 +24,7 @@ if(BOOST_ROOT)
 message("-- Detecting Boost: Found")
 endif(BOOST_ROOT)
 
-#Find the path of Boost
+#Find the path of Boost (On Linux)
 if(NOT BOOST_ROOT)
   if(NOT IS_DIRECTORY /usr/include/boost)
     message("-- Detecting Boost: FATAL ERROR: Boost Not Found in /usr/include/boost, Please set BOOST_ROOT")
@@ -38,15 +36,15 @@ endif(NOT BOOST_ROOT)
 
 
 
-#Find NVCC
+#Path of NVCC 
 Set (NVCC_PATH $ENV{CUDA_PATH} CACHE PATH "CUDA include directory")
-
-
 if(NVCC_PATH)
 set(NVCC_PATH ${NVCC_PATH}/bin)
 message("-- Detecting CUDA Compiler: CUDA Compiler Found")
 endif(NVCC_PATH)
 
+
+#Find NVCC(on Linux)
 if(NOT NVCC_PATH)
   if(NOT IS_DIRECTORY /usr/local/cuda)
     message("-- Detecting CUDA Compiler: ERROR CUDA Compiler not Found in /usr/local/cuda, Please set CUDA_PATH, if you have a CUDA compiler")
@@ -55,7 +53,7 @@ if(NOT NVCC_PATH)
     message("-- Detecting CUDA Compiler: CUDA Compiler Found")
   endif(NOT IS_DIRECTORY /usr/local/cuda)
 endif(NOT NVCC_PATH)
-message("")
+
 
 
 
@@ -81,7 +79,7 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 include_directories(${BOOST_ROOT} ${MTL_BOOST_ROOT})
 
 
-##############CudaÂ´s things ##############
+##############Cuda´s things ##############
 #adding FindCuda
 SET(CMAKE_MODULE_PATH $ENV{CMAKE_MODULE_PATH})
 SET(MTL4_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
@@ -104,12 +102,60 @@ SET(MTL4_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 ###############################################################################
 # .NET 2003
 if (MSVC71)
+
+    #Find the path of Boost (on Windows)
+    if(NOT BOOST_ROOT)
+      if(NOT IS_DIRECTORY c:/boost)
+        message("-- Detecting Boost: FATAL ERROR: Boost Not Found in c:/boost, Please set BOOST_ROOT")
+      else(NOT IS_DIRECTORY c:/boost)
+        set (BOOST_ROOT c:/boost)
+        message("-- Detecting Boost: Found")
+      endif(NOT IS_DIRECTORY c:/boost)
+    endif(NOT BOOST_ROOT)
+
+
+    #Find NVCC(on Windows)
+    if(NOT NVCC_PATH)
+      if(NOT IS_DIRECTORY /usr/local/cuda)
+        message("-- Detecting CUDA Compiler: ERROR CUDA Compiler not Found in /usr/local/cuda, Please set CUDA_PATH, if you have a CUDA compiler")
+      else(NOT IS_DIRECTORY /usr/local/cuda)
+        set (NVCC_PATH /usr/local/cuda/bin)
+        message("-- Detecting CUDA Compiler: CUDA Compiler Found")
+      endif(NOT IS_DIRECTORY /usr/local/cuda)
+    endif(NOT NVCC_PATH)
+    message("")
+
     add_definitions(/DMTL_ASSERT_FOR_THROW /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" )
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
 endif (MSVC71)
+
+
 # .NET 2005
 if (MSVC80)
+
+    #Find the path of Boost (on Windows)
+    if(NOT BOOST_ROOT)
+      if(NOT IS_DIRECTORY c:/boost)
+        message("-- Detecting Boost: FATAL ERROR: Boost Not Found in c:/boost, Please set BOOST_ROOT")
+      else(NOT IS_DIRECTORY c:/boost)
+        set (BOOST_ROOT c:/boost)
+        message("-- Detecting Boost: Found")
+      endif(NOT IS_DIRECTORY c:/boost)
+    endif(NOT BOOST_ROOT)
+
+    #Find NVCC(on Windows)
+    if(NOT NVCC_PATH)
+      if(NOT IS_DIRECTORY /usr/local/cuda)
+        message("-- Detecting CUDA Compiler: ERROR CUDA Compiler not Found in /usr/local/cuda, Please set CUDA_PATH, if you have a CUDA compiler")
+      else(NOT IS_DIRECTORY /usr/local/cuda)
+        set (NVCC_PATH /usr/local/cuda/bin)
+        message("-- Detecting CUDA Compiler: CUDA Compiler Found")
+      endif(NOT IS_DIRECTORY /usr/local/cuda)
+    endif(NOT NVCC_PATH)
+    message("")
+
+
 	# to quiet DevStudio 2005 secure code warnings
     add_definitions(/D_SCL_SECURE_NO_WARNINGS)
     add_definitions(/D_CRT_SECURE_NO_WARNINGS)
@@ -122,6 +168,29 @@ endif (MSVC80)
 
 # .NET 2008
 if (MSVC90)
+
+    #Find the path of Boost (on Windows)
+    if(NOT BOOST_ROOT)
+      if(NOT IS_DIRECTORY c:/boost)
+        message("-- Detecting Boost: FATAL ERROR: Boost Not Found in c:/boost, Please set BOOST_ROOT")
+      else(NOT IS_DIRECTORY c:/boost)
+        set (BOOST_ROOT c:/boost)
+        message("-- Detecting Boost: Found")
+      endif(NOT IS_DIRECTORY c:/boost)
+    endif(NOT BOOST_ROOT)
+
+    #Find NVCC(on Windows)
+    if(NOT NVCC_PATH)
+      if(NOT IS_DIRECTORY /usr/local/cuda)
+        message("-- Detecting CUDA Compiler: ERROR CUDA Compiler not Found in /usr/local/cuda, Please set CUDA_PATH, if you have a CUDA compiler")
+      else(NOT IS_DIRECTORY /usr/local/cuda)
+        set (NVCC_PATH /usr/local/cuda/bin)
+        message("-- Detecting CUDA Compiler: CUDA Compiler Found")
+      endif(NOT IS_DIRECTORY /usr/local/cuda)
+    endif(NOT NVCC_PATH)
+    message("")
+
+
 	# to quiet DevStudio 2005 secure code warnings
     add_definitions(/D_SCL_SECURE_NO_WARNINGS)
     add_definitions(/D_CRT_SECURE_NO_WARNINGS)
@@ -152,7 +221,7 @@ foreach (var ${VARS})
     file (APPEND ${CMAKE_CURRENT_BINARY_DIR}/AllVariables.txt "${var} \"${${var}}\"\n")
 endforeach (var ${VARS})
 
-
+message("")
 
 
 
