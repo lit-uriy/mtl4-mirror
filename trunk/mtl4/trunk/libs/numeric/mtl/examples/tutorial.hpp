@@ -253,7 +253,7 @@ paths within these two variables are incorporated into the command line by our s
 
 
 <b>Using BLAS:</b>
-Dense matrix multiplication has an acceleration with BLAS (when the types of the matrix elements allow).
+Dense %matrix multiplication has an acceleration with BLAS (when the types of the %matrix elements allow).
 More BLAS usage is currently under development.
 To use this acceleration install a well-tuned BLAS (the original Netlib BLAS was even slower than our
 implementation when benchmarked it), preferably with a packet manager
@@ -331,8 +331,8 @@ It has been tested (and passed) with the following compilers and architectures:
 More compilers will be tested in the future.
 
 Compilers that are not standard-compliant (e.g. VC 6.0) are not subject to support.
-Visual Studio is considered standard-compliant from VC 7.1 but we still had trouble to compile MTL4
-and still in VC 8.0 we needed a little work-around.
+Visual Studio is considered standard-compliant from VC 7.1 on but we still had trouble to compile MTL4
+and even in VC 8.0 we needed a little work-around.
 
 
 Proceed to the \ref IDE.  
