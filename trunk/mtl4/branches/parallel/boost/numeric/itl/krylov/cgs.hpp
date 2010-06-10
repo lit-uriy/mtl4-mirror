@@ -30,6 +30,7 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
 	       u(resource(x)), uhat(resource(x)), r(b - A * x), rtilde= r;
 
     while (! iter.finished(r)) {
+	++iter;
 	rho_1= dot(rtilde, r);
 
 	if (rho_1 == 0.)
@@ -55,7 +56,6 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
 	r-= alpha * qhat;
 
 	rho_2= rho_1;
-	++iter;
     }
     return iter;
 }

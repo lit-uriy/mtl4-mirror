@@ -28,50 +28,47 @@
 
 namespace mtl { namespace matrix {
 
-// QR-Factorization of matrix A
-// Return A  with R=triu(A) and L=tril(A,-1) L in form of Householder-vectors
-template <typename Matrix>
-Matrix inline qr(const Matrix& A)
+
+// QR-Factorization of matrix A(m x n)
+// Return pair R upper triangel matrix and Q= orthogonal matrix. R and Q are always dense2D
+template <typename Matrix, typename MatrixQ, typename MatrixR>
+void qr(const Matrix& A, MatrixQ& Q, MatrixR& R)
 {
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
-    size_type        ncols = num_cols(A), nrows = num_rows(A), mini;
-    value_type       zero= math::zero(A[0][0]);
-    Matrix           B(A);
+    typedef typename Magnitude<value_type>::type      magnitude_type;
+    typedef dense_vector<value_type>                  vector_type;
+    
+    size_type        ncols = num_cols(A), nrows = num_rows(A), 
+                     mini= ncols == nrows ? ncols - 1 : (nrows >= ncols ? ncols : nrows);
+    value_type       ref, zero= math::zero(ref);
+    magnitude_type   factor= magnitude_type(2);
 
-    if ( nrows < ncols ) throw mtl::logic_error("underdetermined system, use trans(A) instead of A");
-    mini= nrows;
-
+    Q= 1;
     for (size_type i = 0; i < mini; i++) {
 	irange r(i, imax); // Intervals [i, n-1]
-	dense_vector<value_type>     v(nrows-i), w(nrows-i);
+	vector_type   w(R[r][i]), v(householder_s(w)); 
 
-	for (size_type j = 0; j < size(w); j++)
-	    w[j]= B[j+i][i];
-        value_type beta= householder(w).second;
-        v= householder(w).first;
+	// R-= 2*v*(v'*R)
+	MatrixR Rsub(R[r][r]);
+	vector_type tmp(-factor * trans(Rsub) * v);
+	rank_one_update(Rsub, v, tmp);
+	
+	//update Q: Q-= 2*(v*Q)*v'
+	MatrixQ Qsub(Q[iall][r]);
+	vector_type qtmp(-factor * Qsub * v);
+	rank_one_update(Qsub, qtmp, v);
+    } //end for
+}
 
-        if ( beta != zero ){
-	    //w= beta*trans(v)*A[r][r];//  trans(Vector)*Matrix=Vector?
-	    for(size_type k = 0; k < ncols-i; k++){
-		w[k]= zero;
-		for(size_type j = 0; j < nrows-i; j++){
-		    w[k] += beta * v[j] * B[j+i][k+i];
-		}
-	    }
-	    //rank_one_update(A[r][r], -v, w);  zu tun
-	    for(size_type row = i; row < nrows; row++){
-		for(size_type col = i; col < ncols; col++){
-		    B[row][col] -= v[row-i] * w[col-i];
-		}
-	    }
-	    //columm i+1
-	    // B[irange(i+1, nrows)][i]= v[irange(1, nrows-1)];
-	    for (size_type k = i+1; k < nrows; k++)
-		B[k][i]= v[k-i];
-	}
-    }
-    return B;
+template <typename Matrix>
+std::pair<mtl::dense2D<typename Collection<Matrix>::value_type>,
+ 	  mtl::dense2D<typename Collection<Matrix>::value_type> > 
+inline qr(const Matrix& A)
+{
+    mtl::dense2D<typename Collection<Matrix>::value_type>    R(A), Q(num_rows(A),num_rows(A));
+    qr(A, Q, R);
+    return std::make_pair(Q,R);
 }
 
 
@@ -91,46 +88,12 @@ inline qr_factors(const Matrix& A)
     value_type       zero= math::zero(A[0][0]), one= math::one(A[0][0]);
 
     //evaluation of Q
-    Matrix  Q(nrows, ncols), Qk(ncols, ncols), HEL(nrows, ncols), R(ncols, ncols), B(nrows, ncols);
+    Matrix  Q(nrows, nrows), Qk(nrows, nrows), HEL(nrows, ncols), R(nrows, ncols), R_tmp(nrows, ncols);
     Q= one; R= zero; HEL= zero;
 
-    B= qr(A);
-
-//     for(size_type i = 0; i < ncols; i++)
-//         Q[i][i] = one;
-    
-    for(size_type i = 0; i < nrows-1; i++){
-        dense_vector<value_type>     z(nrows-i);
-	// z[irange(1, nrows-i-1)]= B[irange(i+1, nrows-1)][i];
-        for(size_type k = i+1; k < nrows-1; k++){
-            z[k-i]= B[k][i];
-        }
-        z[0]= one;
-	Qk= one;
-#if 0
-        Qk= zero;
-        for(size_type k = 0; k < ncols; k++){
-            Qk[k][k]= one;
-        }
-#endif
-	magnitude_type factor= magnitude_type(2) / abs(dot(z, z)); // abs: x+0i -> x
-	// Qk[irange(i, nrows)][irange(i, ncols)]-= factor * z[irange(0, nrows-i)] * trans(z[irange(0, ncols-i)]);
-        for(size_type row = i; row < nrows; row++){
-            for(size_type col = i; col < ncols; col++){
-                Qk[row][col]-= factor * z[row-i] * z[col-i]; 
-            }
-        }
-	// Q*= Qk;
-        HEL = Q * Qk;
-	Q = HEL;
-    }
-    // R= upper(B);
-    //evaluation of R
-    for(size_type row = 0; row < ncols; row++){
-        for(size_type col = row; col < ncols; col++){
-            R[row][col]= B[row][col];
-        }
-    }
+    boost::tie(Q, R_tmp)= qr(A);
+    R= upper(R_tmp);
+   
     return std::make_pair(Q,R);
 }
 

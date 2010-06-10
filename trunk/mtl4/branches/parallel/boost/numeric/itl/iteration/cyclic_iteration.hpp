@@ -22,6 +22,7 @@ namespace itl {
   class cyclic_iteration : public basic_iteration<Real> 
   {
       typedef basic_iteration<Real> super;
+      typedef cyclic_iteration self;
 
       void print_resid()
       {
@@ -50,11 +51,15 @@ namespace itl {
 	  return ret;
       }
 
-      operator int() { return error_code(); }
+      inline self& operator++() { ++this->i; return *this; }
+      
+      inline self& operator+=(int n) { this->i+= n; return *this; }
 
-      int error_code() 
+      operator int() const { return error_code(); }
+
+      int error_code() const 
       {
-	  if (!this->my_quite)
+	  if (!this->my_suppress)
 	      out << "finished! error code = " << this->error << '\n'
 		  << this->iterations() << " iterations\n"
 		  << this->resid() << " is actual final residual. \n"

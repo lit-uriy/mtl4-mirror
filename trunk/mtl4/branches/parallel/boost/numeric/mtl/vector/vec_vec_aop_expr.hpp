@@ -25,8 +25,9 @@
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
-// #include <boost/numeric/mtl/utility/distribution.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/unroll_size1.hpp>
+#include <boost/numeric/mtl/utility/with_unroll1.hpp>
 
 namespace mtl { namespace vector {
 
@@ -37,21 +38,21 @@ namespace mtl { namespace vector {
 	{
 	    typedef assign<Index+1, Max, SFunctor>     next;
 
-	    template <class E1, class E2>
-	    static inline void apply(E1& first, const E2& second)
+	    template <typename E1, typename E2, typename Size>
+	    static inline void apply(E1& first, const E2& second, Size i)
 	    {
-		SFunctor::apply( first(Index), second(Index) );
-		next::apply( first, second );
+		SFunctor::apply( first(i+Index), second(i+Index) );
+		next::apply( first, second, i );
 	    }
 	};
 
 	template <unsigned long Max, typename SFunctor>
 	struct assign<Max, Max, SFunctor>
 	{
-	    template <class E1, class E2>
-	    static inline void apply(E1& first, const E2& second)
+	    template <typename E1, typename E2, typename Size>
+	    static inline void apply(E1& first, const E2& second, Size i)
 	    {
-		SFunctor::apply( first(Max), second(Max) );
+		SFunctor::apply( first(i+Max), second(i+Max) );
 	    }
 	};
     }
@@ -66,10 +67,7 @@ struct vec_vec_aop_expr
     typedef vec_vec_aop_expr<E1, E2, SFunctor>   self;
     typedef typename E1::value_type              value_type;
     
-    // temporary solution
     typedef typename E1::size_type               size_type;
-    //typedef typename utilities::smallest< typename E1::size_type, typename E2::size_type >::type                          size_type ;
-
     typedef value_type reference_type ;
 
     typedef E1 first_argument_type ;
@@ -80,26 +78,44 @@ struct vec_vec_aop_expr
     {
 	second.delay_assign();
     }
-
+    
   private:
-    void assign(boost::mpl::false_)
+    void dynamic_assign(boost::mpl::false_) // Without unrolling
     {
-	// If target is constructed by default it takes size of source
-	if (size(first) == 0) first.change_dim(size(second));
-
-	// If sizes are different for any other reason, it's an error
-	// std::cerr << "~vec_vec_aop_expr() " << first.size() << "  " << second.size() << "\n";
-	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
-
 	for (size_type i= 0; i < size(first); ++i)
 	    SFunctor::apply( first(i), second(i) );
     }
 
+    void dynamic_assign(boost::mpl::true_) // With unrolling
+    {
+	const size_type BSize= traits::unroll_size1<E1>::value0;
+	size_type s= size(first), sb= s / BSize * BSize;
+
+	for (size_type i= 0; i < sb; i+= BSize)
+	    impl::assign<0, BSize-1, SFunctor>::apply(first, second, i);
+
+	for (size_type i= sb; i < s; i++) 
+	    SFunctor::apply( first(i), second(i) );
+    }    
+
+
+    void assign(boost::mpl::false_)
+    {
+	// If target is constructed by default it takes size of source
+	if (size(first) == 0) first.change_dim(size(second));
+	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size()); // otherwise error
+
+	// need to do more benchmarking before making unrolling default
+	dynamic_assign(traits::with_unroll1<E1>());
+    }
+
     void assign(boost::mpl::true_)
     {
-	// We cannot resize, only check
-	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size());
-	impl::assign<1, static_size<E1>::value, SFunctor>::apply(first, second);
+	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size()); // We cannot resize, only check
+	
+	// impl::assign<0, static_size<E1>::value-1, SFunctor>::apply(first, second); // Slower, at least on gcc
+	for (size_type i= 0; i < size(first); ++i) // Do an ordinary loop instead
+	    SFunctor::apply( first(i), second(i) );
     }
 
     // Non-distributed version
@@ -142,20 +158,16 @@ struct vec_vec_aop_expr
     friend size_type inline size(const self& x)
     {
 	assert( size(x.first) == 0 || size(x.first) == size(x.second) );
-	return size(x.first);
+	return size(x.second);
     }
 
-    value_type& operator() ( size_type i ) const 
+    value_type& operator() ( size_type i ) const
     {
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );
     }
 
-    value_type& operator[] ( size_type i ) const
-    {
-	assert( delayed_assign );
-	return SFunctor::apply( first(i), second(i) );
-    }
+    value_type& operator[] ( size_type i ) const { return (*this)(i); }
     
 #if 0
     // Might need refactoring

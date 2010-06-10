@@ -19,7 +19,6 @@
 
 #include <cassert>
 #include <algorithm>
-#include <boost/type_traits.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/parameter.hpp>
@@ -38,11 +37,13 @@ namespace mtl { namespace matrix {
     namespace umfpack {
 
 	// conversion for value_type needed if not double or complex<double> (where possible)
-	template <typename Value> struct value         {};
-	template<> struct value<double>                { typedef double               type; };
-	template<> struct value<float>                 { typedef double               type; };
-	template<> struct value<std::complex<double> > { typedef std::complex<double> type; };
-	template<> struct value<std::complex<float> >  { typedef std::complex<double> type; };
+	template <typename Value> struct value         	    {};
+	template<> struct value<long double>           	    { typedef double               type; };
+	template<> struct value<double>                	    { typedef double               type; };
+	template<> struct value<float>                 	    { typedef double               type; };
+	template<> struct value<std::complex<long double> > { typedef std::complex<double> type; };
+	template<> struct value<std::complex<double> > 	    { typedef std::complex<double> type; };
+	template<> struct value<std::complex<float> >  	    { typedef std::complex<double> type; };
 
 	template <typename Value> struct use_long { static const bool value= sizeof(Value) > sizeof(int); };
 

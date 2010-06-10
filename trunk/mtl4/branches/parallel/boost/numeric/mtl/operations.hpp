@@ -30,6 +30,7 @@
 #include <boost/numeric/mtl/operation/householder.hpp>
 #include <boost/numeric/mtl/operation/inv.hpp>
 #include <boost/numeric/mtl/operation/invert_diagonal.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>
@@ -65,9 +66,11 @@
 #include <boost/numeric/mtl/operation/static_num_cols.hpp>
 #include <boost/numeric/mtl/operation/static_num_rows.hpp>
 #include <boost/numeric/mtl/operation/static_size.hpp>
+#include <boost/numeric/mtl/operation/svd.hpp>
 #include <boost/numeric/mtl/operation/swap_row.hpp>
 #include <boost/numeric/mtl/operation/trace.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/operation/unroll.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 
 #include <boost/numeric/mtl/matrix/bands.hpp>

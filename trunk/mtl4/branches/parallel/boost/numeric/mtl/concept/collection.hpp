@@ -13,7 +13,8 @@
 #define MTL_COLLECTION_INCLUDE
 
 #include <boost/static_assert.hpp>
-#include <boost/type_traits.hpp>
+#include <boost/type_traits/remove_const.hpp>
+#include <boost/type_traits/is_same.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <vector>
 

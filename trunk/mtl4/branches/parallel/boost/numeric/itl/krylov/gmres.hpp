@@ -20,7 +20,7 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/matrix/multi_vector.hpp>
-#include <boost/numeric/mtl/matrix/strict_upper.hpp>
+#include <boost/numeric/mtl/operation/givens.hpp>
 #include <boost/numeric/mtl/operation/two_norm.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
@@ -34,10 +34,9 @@ namespace itl {
     regardless on whether the termination criterion is reached or not.   **/
 template < typename Matrix, typename Vector, typename LeftPreconditioner, typename RightPreconditioner, typename Iteration >
 int gmres_full(const Matrix &A, Vector &x, const Vector &b,
-               LeftPreconditioner &L, RightPreconditioner &R,
-               Iteration& iter, typename mtl::Collection<Vector>::size_type kmax_in)
+               LeftPreconditioner &L, RightPreconditioner &R, Iteration& iter)
 {
-    using mtl::irange; using mtl::iall; using mtl::matrix::strict_upper; using std::abs; using std::sqrt;
+    using mtl::irange; using mtl::iall; using std::abs; using std::sqrt;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -45,11 +44,12 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 
     const Scalar                zero= math::zero(Scalar());
     Scalar                      rho, w1, w2, nu, hr;
-    Size                        k, kmax(std::min(size(x), kmax_in));
+    Size                        k, kmax(std::min(size(x), Size(iter.max_iterations() - iter.iterations())));
     Vector                      r0(b - A *x), r(solve(L,r0)), va(resource(x)), va0(resource(x)), va00(resource(x));
     mtl::multi_vector<Vector>   V(Vector(resource(x), zero), kmax+1); 
-    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y(kmax);  // replicated in distributed solvers 
+    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y(kmax, zero);  // replicated in distributed solvers 
     mtl::dense2D<Scalar>        H(kmax+1, kmax);                                             // dito
+    H= 0;
 
     rho= g[0]= two_norm(r);
     if (iter.finished(rho))
@@ -58,8 +58,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     H= zero;
 
     // GMRES iteration
-    for (k= 0; rho >= iter.atol() && k < kmax; k++, ++iter) {
-	// std::cout << "GMRES full: k == " << k << ", rho == " << rho << ", x == " << x << '\n';
+    for (k= 0; k < kmax ; ++k, ++iter) {
         va0= A * solve(R, V.vector(k));
         V.vector(k+1)= va= solve(L,va0);
 	// orth(V, V[k+1], false); 
@@ -68,7 +67,6 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 	    H[j][k]= dot(V.vector(j), V.vector(k+1));
 	    V.vector(k+1)-= H[j][k] * V.vector(j);
         }
-
         H[k+1][k]= two_norm(V.vector(k+1));
         //reorthogonalize
         for(Size j= 0; j < k+1; j++) {
@@ -80,49 +78,45 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 	if (H[k+1][k] != zero)                // watch for breakdown    
             V.vector(k+1)*= 1. / H[k+1][k];
 
-        //k givensrotationen
-	for(Size i= 0; i < k; i++) {
-	    w1= c[i]*H[i][k]-s[i]*H[i+1][k];  // shouldn't c and s depend on H?
-	    w2= s[i]*H[i][k]+c[i]*H[i+1][k];
-	    H[i][k]= w1;
-	    H[i+1][k]= w2;
-	}
-        nu= sqrt(H[k][k]*H[k][k]+H[k+1][k]*H[k+1][k]);
-        if(nu != zero){
+        // k Given's rotations
+	for(Size i= 0; i < k; i++)
+	    mtl::matrix::givens<mtl::dense2D<Scalar> >(H, H[i][k-1], H[i+1][k-1]).trafo(i);
+	
+       nu= sqrt(H[k][k]*H[k][k]+H[k+1][k]*H[k+1][k]);
+       if(nu != zero){
             c[k]=  H[k][k]/nu;
             s[k]= -H[k+1][k]/nu;
             H[k][k]=c[k]*H[k][k]-s[k]*H[k+1][k];
             H[k+1][k]=0;
-	    w1= c[k]*g[k]-s[k]*g[k+1]; //given's rotation on solution
-            w2= s[k]*g[k]+c[k]*g[k+1];
-            g[k]= w1;
-            g[k+1]= w2;
+ 	    mtl::vector::givens<mtl::dense_vector<Scalar> >(g, c[k], s[k]).trafo(k);
         }
 	rho= abs(g[k+1]);
     }
+    
+    //reduce k, to get regular matrix
+    while (k > 0 && abs(g[k-1]<= iter.atol())) k--;
 
     // iteration is finished -> compute x: solve H*y=g as far as rank of H allows
     irange                  range(k);
-    for (bool solved= false; !solved && !range.empty(); --range) {
+    for (; !range.empty(); --range) {
 	try {
 	    y[range]= lu_solve(H[range][range], g[range]); 
 	} catch (mtl::matrix_singular) { continue; } // if singular then try with sub-matrix
-	solved= true;
+	break;
     }
+
     if (range.finish() < k)
-	std::cerr << "GMRES orhogonalized with " << k << " vectors but matrix singular, can only use " << range.finish() << " vectors!\n";
+  	std::cerr << "GMRES orhogonalized with " << k << " vectors but matrix singular, can only use " 
+		  << range.finish() << " vectors!\n";
     if (range.empty())
-        return iter.fail(1, "GMRES did not find any direction to correct x");
-	
+        return iter.fail(2, "GMRES did not find any direction to correct x");
     // x+= solve(R, Vector(V.vector(range)*y[range])); // doesn't work as one expression in parallel yet
     Vector Vy(resource(x));
     Vy= V.vector(range)*y[range];
     x+= solve(R, Vy);
-
+    
     r= b - A*x;
-    if (!iter.finished(r))
-        return iter.fail(2, "GMRES does not converge");
-    return iter;
+    return iter.terminate(r);
 }
 
 /// Generalized Minimal Residual method with restart
@@ -131,12 +125,16 @@ template < typename Matrix, typename Vector, typename LeftPreconditioner,
 int gmres(const Matrix &A, Vector &x, const Vector &b,
           LeftPreconditioner &L, RightPreconditioner &R,
 	  Iteration& iter, typename mtl::Collection<Vector>::size_type restart)
-{
-    iter.set_quite(true);
-    while (!iter.finished()) 
-	gmres_full(A, x, b, L, R, iter, restart);
-    iter.set_quite(false);
-    return iter;
+{   
+     do {
+	 Iteration inner(iter);
+	 inner.set_max_iterations(std::min(int(iter.iterations()+restart), iter.max_iterations()));
+	 inner.suppress_resume(true);
+	 gmres_full(A, x, b, L, R, inner);
+	 iter.update_progress(inner);
+     } while (!iter.finished());
+
+     return iter;
 }
 
 
@@ -144,4 +142,5 @@ int gmres(const Matrix &A, Vector &x, const Vector &b,
 } // namespace itl
 
 #endif // ITL_GMRES_INCLUDE
+
 

@@ -37,7 +37,7 @@ void inline lu(Matrix& LU)
 {
     MTL_THROW_IF(num_rows(LU) != num_cols(LU), matrix_not_square());
 
-    for (std::size_t k= 0; k < num_rows(LU); k++) {
+    for (std::size_t k= 0; k < num_rows(LU)-1; k++) {
 	irange r(k+1, imax), kr(k, k+1); // Intervals [k+1, n-1], [k, k]
 	LU[r][kr]/= LU[k][k];
 	LU[r][r]-= LU[r][kr] * LU[kr][r];
@@ -58,8 +58,7 @@ void inline lu(Matrix& A, PermuationVector& P)
     for (size_type i= 0; i < nrows; i++)
         P[i]= i;
 
-    for (size_type i= 0; i < nrows; i++) {
-
+    for (size_type i= 0; i < nrows-1; i++) {
 	irange r(i+1, imax), ir(i, i+1); // Intervals [i+1, n-1], [i, i]
 	size_type rmax= max_abs_pos(A[irange(i, imax)][ir]).first + i;
 	swap_row(A, i, rmax); 

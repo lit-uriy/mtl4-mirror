@@ -29,10 +29,10 @@ At least not computing fast.
 In the %Matrix Template Library 4 we aim for a natural mathematical 
 notation without sacrifying performance.
 You can write an expression like x = y * z and the library will
-perform the according operation: scaling a %vector, multiplying a
+perform the according %operation: scaling a %vector, multiplying a
 sparse %matrix with a dense %vector or two sparse matrices.
-Some operations like dense %matrix product use tuned BLAS implementation.
-In parallel, all described operations in this manual are also realized in C++
+Some %operations like dense %matrix product use tuned BLAS implementation.
+In parallel, all described %operations in this manual are also realized in C++
 so that the library can be used without BLAS and is not limited to types
 supported by BLAS.
 For short, general applicability is combined with maximal available performance.
@@ -41,7 +41,7 @@ We developed new techniques to allow for:
 - Combining multiple %vector assignments in a single statement 
   (and more importingly perform them in one single loop);
 - Storing matrices recursively in a never-before realized generality;
-- Performing operations on recursive and non-recursive matrices recursively;
+- Performing %operations on recursive and non-recursive matrices recursively;
 - Filling compressed sparse matrices efficiently;
 .
 and much more.
@@ -96,13 +96,13 @@ What do we want to do if there is none?
 
 
 Programmers working with BLAS libraries
-are forced to limit themselves to the operations and types provided by these
+are forced to limit themselves to the %operations and types provided by these
 packages.
 As an example, if one likes to use single-precision floats for preconditioner
 matrices--to save memory bandwidth--while the %vectors are double-valued, 
 one cannot use regular BLAS libraries.
 In contrast, any generic library that contains a %matrix %vector product
-can perform this operation.
+can perform this %operation.
 
 And what if somebody wants to build matrices and vectors of quaternions or intervals?
 Or rationals?
@@ -113,7 +113,7 @@ in Fortran or C (even more in an assembly language to squeaze out the last nano-
 
 
 Mathematica and Matlab are by far more elegant than C or Fortran libraries.
-And as long as one uses standard operations as %matrix products they are fast
+And as long as one uses standard %operations as %matrix products they are fast
 since they can use the tuned libraries.
 As soon as you start programming your own computations looping over elements
 of the matrices or vectors your performance won't be impressive, to say the least.
@@ -123,8 +123,8 @@ Otherwise it provides you an implementation in C++ that is also reasonably fast 
 reached 60 per cent peak).
 
 
-All this said, dense %matrix multiplication is certainly the most benchmarked operation
-on high performance computers but not really the operation that high performance computers
+All this said, dense %matrix multiplication is certainly the most benchmarked %operation
+on high performance computers but not really the %operation that high performance computers
 use the most in real applications.
 The dominant part of scientific computing in HPC are simulations that are mostly 
 handled with finite element methods (FEM), finite volume methods (FVM),
@@ -133,7 +133,7 @@ The numeric problems that arise from these methods are almost ever linear or non
 systems of equations in terms of very large sparse matrices and dense vectors.
 
 In contrast to most other libraries we paid strong attention to sparse matrices and their
-operations.
+%operations.
 To start with, we developed an efficient method to fill the matrices and compress them
 in-place, cf. \ref matrix_insertion.
 This allows for %matrix sizes that are close to the memory size.
@@ -163,7 +163,7 @@ sparse and dense matrices.
 The library will dispatch to the appropriate algorithm.
 Moreover, the expression could also represent a %matrix %vector product if A and C
 are column vectors (one would probably choose lower-case names though).
-In fact,  x = y * z can represent four different operations:
+In fact,  x = y * z can represent four different %operations:
 - %matrix product;
 - %matrix %vector product;
 - scalar times %matrix; or
@@ -187,22 +187,56 @@ Proceed to the \ref install "installation guide".
 
 MTL4 is a pure template library and only a download of the sources
 is required.
+The only mandatory requirement is the Boost library collection.
 
-The <a href="http://www.boost.org">Boost library</a>
-is used and must also be downloaded.
-We used in the development and testing version 33.1 but the programs
-would probably compile with earlier versions, too.
+\section quickstart Quick start
+
+To compile an MTL4 application you only need to
+-# Download and install Boost
+-# Download and install MTL4
+-# Include the libraries in the compile command when not installed in the include path, e.g.\n
+  <tt>g++ myapp.cpp -o myapp -I/usr/local/include/boost-1.38 -I/usr/local/include/mtl4</tt>
+.
+
+<b>Download and install Boost:</b>
+One can do this by hand: download it from the 
+<a href="http://www.boost.org">Boost web page</a>
+and unpack it in an appropriate directory.
+If you have administrator rights on the used computer you can put boost in a directory
+in the include path, e.g. /usr/local/include.
+Then you can omit the compiler flag for including from the boost directory. 
+If multiple versions shall be used on your computer you can only put one in the include path
+or you need extra tools like softenv or module to deal with your paths.
+More convenient is the installation of boost with a packet manager like synaptic.
+We use in the development and testing currently versions between 1.38 and 1.43.
+Some earlier versions might work as well but not 1.33 or earlier (e.g. type %traits for
+std::complex are missing there).
  The parts of boost used in MTL4 do not need
-to be compiled but only included.
+to be compiled but only included (except for the Supercomputing Edition which is
+documented seperately).
 
-If you want to run the test programs, you need the build system
-<a href="http://www.scons.org">scons</a>.
-It is easy to install and takes only a few minutes.
-The scons-based build of MTL4 uses the environment variables 
-<tt>MTL_BOOST_ROOT</tt> to locate the MTL directory
-and <tt>BOOST_ROOT</tt> to locate the Boost directory.
 
-If you compile MTL4 with VS2005 or its free express version
+<b>Download and install MTL4:</b>
+The recommended form of downloading is to use subversion control (under Windows we recommend 
+<a href="http://tortoisesvn.tigris.org/">Tortoise</a>) and under Linux it is part of every
+recent distribution.
+Go to the directory where you like MTL4 to reside and type:\n
+<tt>svn checkout https://svn.osl.iu.edu/tlc/trunk/mtl4/trunk mtl4</tt>\n
+The adventage of version control is that you can update it easily with\n
+<tt>svn update</tt>\n
+when new features are added or a bug is %fixed (fortunately not needed very often).
+If you prefer downloading an archive,
+go to the 
+<a href="http://osl.iu.edu/research/mtl/mtl4/download.php3">MTL4 download page</a>
+and download the latest archive.
+In principle, MTL4 can also be copied in a directory within the standard include
+path to omit the compiler flag for its inclusion.
+The MTL4 and the boost directory can be mixed in principle since their files are
+disjoint and people who tried this did not experience problems.
+However, this complicates the use of version control, especially when
+you install Boost with a packet manager (as far as we know nobody tried this so far).
+
+If you compile MTL4 with VS2005/08 or its free express version
 you need to install the SDK (some boost files access it).
 Please make sure that the compiler is in the path.
 Then scons will find it.
@@ -213,6 +247,112 @@ environment variables LIB and INCLUDE. For instance:\n
 <tt>INCLUDE=c:/Program Files/Microsoft Visual Studio 8/VC/include;c:/Program Files/Microsoft Visual Studio 8/VC/PlatformSDK/Include</tt>\n
 On some machines the compiler still did not find the files. For that reason the
 paths within these two variables are incorporated into the command line by our scons script.
+
+
+\section optionalinstall Optional Installations
+
+
+<b>Using BLAS:</b>
+Dense %matrix multiplication has an acceleration with BLAS (when the types of the %matrix elements allow).
+More BLAS usage is currently under development.
+To use this acceleration install a well-tuned BLAS (the original Netlib BLAS was even slower than our
+implementation when benchmarked it), preferably with a packet manager
+and set the macro MTL_HAS_BLAS.
+Although one can set the macro somewhere in the program sources it is recommended for better porting
+to define it in the compiler, e.g.:\n
+<tt>g++ -DMTL_HAS_BLAS -lblas ...</tt>\n
+or\n
+<tt>cl /DMTL_HAS_BLAS ...</tt>\n
+Of course, the library must be linked as well.
+
+<b>Using LAPACK:</b>
+LAPACK is currently not supported but will be soon.
+
+
+<b>Using UMFPACK:</b>
+Programs that use UMFPACK must be compiled with MTL_HAS_UMFPACK
+and linked with the UMFPACK library plus the libraries UMFPACK
+depends on (AMD and UFConfig).
+
+<b>Using Doxygen:</b>
+The MTL4 documentation is available online.
+If you like to create a copy on your computer, e.g. to read it when offline, you can create it yourself.
+Just run <tt>doxygen</tt> in the main directory and you will find the documentation in libs/numeric/mtl/doc.
+The HTML version is found in libs/numeric/mtl/doc/html and a PDF file in libs/numeric/mtl/doc/pdf
+(not available online).
+One can also 
+ generate of man pages by enabling it in the Doxyfile.
+Doxygen can be downloaded <a href="http://www.doxygen.org">here</a>.
+
+\section Testing
+
+To make sure that MTL4 is completely installed you can run the same tests as we use
+in our development.
+The whole test suite can be compiled and executed with few commands.
+We are currently in the process of transition from one build system to another one.
+- Running the tests with scons has currently a bit more functionality (e.g. enabling a higher warning level) but its maintenance will be terminate at some point in the future, see \subpage testing_scons.
+- Using cmake one can already build all tests but they need to be started manually. This will be changed soon in a way that cmake-based testing will be at least as powerful as with scons, see \subpage testing_cmake. 
+.
+Both build systems support Windows and one can use cmake to generate Visual Studion project folder containing all MTL4 tests and tutorial examples.
+ 
+\section install_nutshell In a nutshell
+
+
+Resuming, for MTL4 you need to:
+- Install Boost and include its directory in the compiler flags (unless already in the include path);
+- Install MTL4 and include its directory in the compiler flags (unless already in the include path);
+- Optionally install cmake or scons (or both);
+- Optionally install some or all of the libraries: BLAS, UMFPACK, and LAPACK; and
+- Optionally install doxygen.
+
+\section supported_compilers Supported compilers
+
+The %Matrix Template Library is written in compliance with the C++ standard
+and should be compilable with every compiler compliant with the standard.
+It has been tested (and passed) with the following compilers and architectures:
+- Linux
+  - g++ 4.0.1
+  - g++ 4.1.1
+  - g++ 4.1.2
+  - g++ 4.2.0
+  - g++ 4.2.1
+  - g++ 4.2.2
+  - g++ 4.3.2
+  - g++ 4.3.4
+  - icc 9.0
+  - icc 10.0
+- Macintosh
+  - g++ 4.0.1
+- Windows
+  - VC 8.0 from Visual Studio 2005 (Some friend and private declarations needed to be hidden to cope for a compiler error.)
+  - VC 9.0 from Visual Studio 2008
+
+
+More compilers will be tested in the future.
+
+Compilers that are not standard-compliant (e.g. VC 6.0) are not subject to support.
+Visual Studio is considered standard-compliant from VC 7.1 on but we still had trouble to compile MTL4
+and even in VC 8.0 we needed a little work-around.
+
+
+Proceed to the \ref IDE.  
+
+*/
+//-----------------------------------------------------------
+
+//-----------------------------------------------------------
+/*! \page testing_scons Testing with scons
+
+
+
+
+
+If you want to run the test programs, you need the build system
+<a href="http://www.scons.org">scons</a>.
+It is easy to install and takes only a few minutes.
+The scons-based build of MTL4 uses the environment variables 
+<tt>MTL_BOOST_ROOT</tt> to locate the MTL directory
+and <tt>BOOST_ROOT</tt> to locate the Boost directory.
 
 
 
@@ -251,50 +391,19 @@ flags, see\n
 <tt>scons -h</tt>\n
 for details.
 
-If you wish to generate the documentation locally on your system
-you need <a href="http://www.doxygen.org">doxygen</a>.
-When it is installed type <tt>doxygen</tt> in the main directory and
-the documentation will be written to libs/numeric/mtl/doc.
-
-Resuming, for MTL4 you need to:
-- Include the MTL path;
-- Include the boost path;
-- Optionally install scons;
-- Optionally install a BLAS library; and
-- Optionally install doxygen.
-
-\section supported_compilers Supported compilers
-
-The %Matrix Template Library is written in compliance with the C++ standard
-and should be compilable with every compiler compliant with the standard.
-It has been tested (and passed) with the following compilers and architectures:
-- Linux
-  - g++ 4.0.1
-  - g++ 4.1.1
-  - g++ 4.1.2
-  - g++ 4.2.0
-  - g++ 4.2.1
-  - g++ 4.2.2
-  - g++ 4.3.2
-  - icc 9.0
-- Macintosh
-  - g++ 4.0.1
-- Windows
-  - VC 8.0 from Visual Studio 2005 (Some friend and private declarations needed to be hidden to cope for a compiler error.)
-  - VC 9.0 from Visual Studio 2008
-
-
-More compilers will be tested in the future.
-
-Compilers that are not standard-compliant (e.g. VC 6.0 from VS 2003) are not subject to support.
-
-
-Proceed to the \ref IDE.  
-
 */
+//-----------------------------------------------------------
+
 
 
 //-----------------------------------------------------------
+/*! \page testing_cmake Testing with cmake
+
+In progress.
+
+*/
+//-----------------------------------------------------------
+
 
 
 //-----------------------------------------------------------
@@ -609,7 +718,7 @@ the identity %matrix, i.e. the scalar is assigned to all
 diagonal elements and all off-diagonal elements are 0.
 Diagonal elements are %matrix entries with identical row and column index.
 Therefore scalars can also be assigned to non-square matrices.
-This operation is generic (i.e. applicable to
+This %operation is generic (i.e. applicable to
 all %matrix types including sparse).
 
 Just in case you wonder why the %scalar value is only assigned to the diagonal
@@ -1730,6 +1839,11 @@ For cyclic and noisy iterations, one can declare on which ostream the informatio
 This enables printing it into log files or for parallel computing printing only on one processor.
 By default the output is printed into std::out.
 
+General assumptions on solver iterations:
+- 0th iteration is the starting residue.
+- Once the input value (x) is changed you have made at least one iteration.
+- Fractions of iterations are counted as whole iterations.
+
 
 
 \if Navigation \endif
@@ -1786,7 +1900,7 @@ The approach was proposed by David Abrahams in order to separate the
 form of traversal from the manner of access.
 A cursor is a tool that can be used to visit different objects of a collection.
 In an array it can be compared with a position rather than a pointer
-because it is not fixed how one accesses the values.
+because it is not %fixed how one accesses the values.
 The traversal is essential the same as with iterators, e.g.:
 \code
     for (Cursor cursor(begin(x)), cend(end(x)); cursor != cend; ++cursor)
@@ -1851,7 +1965,7 @@ Obviously only value can be changed. The syntax is the following:
 
 \section range_generator Range Generator
 
-The type traits traits::range_generator<Tag, Collection>
+The type %traits traits::range_generator<Tag, Collection>
 is used to determine the type of cursor:
 \code
     typedef typename traits::range_generator<tag::row, Matrix>::type c_type;
@@ -2269,7 +2383,7 @@ namespace mtl { namespace matrix {
     using my_namespace::my_matrix_type;
 }}
 \endcode
-In both cases you would also need a handful of type traits (the documentation of integrating external types
+In both cases you would also need a handful of type %traits (the documentation of integrating external types
 into MTL4 is pending).
 
 To avoid all namespace qualifications, you can use 
@@ -2299,7 +2413,7 @@ If x is a matrix then mtl::matrix::size is called and if x is a std::vector mtl:
 implemented with partially specialized functor but this is another topic).
 
 As a rule of thumb. If you call an unqualified function for an MTL4 type ADL will find it (otherwise it is sloppily implemented
-and must be fixed).
+and must be %fixed).
 If you call an MTL4 function for a non-MTL4 type write using mtl::f before calling f.
 For generic functions that handle both MTL4 and non-MTL4 types also write using mtl::f.
 If it still not compile, the function is probably not implemented yet.
