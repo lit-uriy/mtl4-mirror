@@ -209,7 +209,7 @@ If multiple versions shall be used on your computer you can only put one in the 
 or you need extra tools like softenv or module to deal with your paths.
 More convenient is the installation of boost with a packet manager like synaptic.
 We use in the development and testing currently versions between 1.38 and 1.43.
-Some earlier versions might work as well but not 1.33 or earlier (e.g. type traits for
+Some earlier versions might work as well but not 1.33 or earlier (e.g. type %traits for
 std::complex are missing there).
  The parts of boost used in MTL4 do not need
 to be compiled but only included (except for the Supercomputing Edition which is
@@ -224,7 +224,7 @@ Go to the directory where you like MTL4 to reside and type:\n
 <tt>svn checkout https://svn.osl.iu.edu/tlc/trunk/mtl4/trunk mtl4</tt>\n
 The adventage of version control is that you can update it easily with\n
 <tt>svn update</tt>\n
-when new features are added or a bug is fixed (fortunately not needed very often).
+when new features are added or a bug is %fixed (fortunately not needed very often).
 If you prefer downloading an archive,
 go to the 
 <a href="http://osl.iu.edu/research/mtl/mtl4/download.php3">MTL4 download page</a>
@@ -252,7 +252,7 @@ paths within these two variables are incorporated into the command line by our s
 \section optionalinstall Optional Installations
 
 
-<b>Using BLAS:<\b>
+<b>Using BLAS:</b>
 Dense matrix multiplication has an acceleration with BLAS (when the types of the matrix elements allow).
 More BLAS usage is currently under development.
 To use this acceleration install a well-tuned BLAS (the original Netlib BLAS was even slower than our
@@ -265,16 +265,16 @@ or\n
 <tt>cl /DMTL_HAS_BLAS ...</tt>\n
 Of course, the library must be linked as well.
 
-<b>Using LAPACK:<\b>
+<b>Using LAPACK:</b>
 LAPACK is currently not supported but will be soon.
 
 
-<b>Using UMFPACK:<\b>
+<b>Using UMFPACK:</b>
 Programs that use UMFPACK must be compiled with MTL_HAS_UMFPACK
 and linked with the UMFPACK library plus the libraries UMFPACK
 depends on (AMD and UFConfig).
 
-<b>Using Doxygen:<\b>
+<b>Using Doxygen:</b>
 The MTL4 documentation is available online.
 If you like to create a copy on your computer, e.g. to read it when offline, you can create it yourself.
 Just run <tt>doxygen</tt> in the main directory and you will find the documentation in libs/numeric/mtl/doc.
@@ -290,9 +290,60 @@ To make sure that MTL4 is completely installed you can run the same tests as we 
 in our development.
 The whole test suite can be compiled and executed with few commands.
 We are currently in the process of transition from one build system to another one.
-- The test suite build with scons has currently a bit more functionality (e.g. enabling a higher 
-
+- Running the tests with scons has currently a bit more functionality (e.g. enabling a higher warning level) but its maintenance will be terminate at some point in the future, see \subpage testing_scons.
+- Using cmake one can already build all tests but they need to be started manually. This will be changed soon in a way that cmake-based testing will be at least as powerful as with scons, see \subpage testing_cmake. 
+.
+Both build systems support Windows and one can use cmake to generate Visual Studion project folder containing all MTL4 tests and tutorial examples.
  
+\section install_nutshell In a nutshell
+
+
+Resuming, for MTL4 you need to:
+- Install Boost and include its directory in the compiler flags (unless already in the include path);
+- Install MTL4 and include its directory in the compiler flags (unless already in the include path);
+- Optionally install cmake or scons (or both);
+- Optionally install some or all of the libraries: BLAS, UMFPACK, and LAPACK; and
+- Optionally install doxygen.
+
+\section supported_compilers Supported compilers
+
+The %Matrix Template Library is written in compliance with the C++ standard
+and should be compilable with every compiler compliant with the standard.
+It has been tested (and passed) with the following compilers and architectures:
+- Linux
+  - g++ 4.0.1
+  - g++ 4.1.1
+  - g++ 4.1.2
+  - g++ 4.2.0
+  - g++ 4.2.1
+  - g++ 4.2.2
+  - g++ 4.3.2
+  - g++ 4.3.4
+  - icc 9.0
+  - icc 10.0
+- Macintosh
+  - g++ 4.0.1
+- Windows
+  - VC 8.0 from Visual Studio 2005 (Some friend and private declarations needed to be hidden to cope for a compiler error.)
+  - VC 9.0 from Visual Studio 2008
+
+
+More compilers will be tested in the future.
+
+Compilers that are not standard-compliant (e.g. VC 6.0) are not subject to support.
+Visual Studio is considered standard-compliant from VC 7.1 but we still had trouble to compile MTL4
+and still in VC 8.0 we needed a little work-around.
+
+
+Proceed to the \ref IDE.  
+
+*/
+//-----------------------------------------------------------
+
+//-----------------------------------------------------------
+/*! \page testing_scons Testing with scons
+
+
 
 
 
@@ -340,52 +391,6 @@ flags, see\n
 <tt>scons -h</tt>\n
 for details.
 
-
-Resuming, for MTL4 you need to:
-- Include the MTL path;
-- Include the boost path;
-- Optionally install scons;
-- Optionally install a BLAS library; and
-- Optionally install doxygen.
-
-\section supported_compilers Supported compilers
-
-The %Matrix Template Library is written in compliance with the C++ standard
-and should be compilable with every compiler compliant with the standard.
-It has been tested (and passed) with the following compilers and architectures:
-- Linux
-  - g++ 4.0.1
-  - g++ 4.1.1
-  - g++ 4.1.2
-  - g++ 4.2.0
-  - g++ 4.2.1
-  - g++ 4.2.2
-  - g++ 4.3.2
-  - g++ 4.3.4
-  - icc 9.0
-  - icc 10.0
-- Macintosh
-  - g++ 4.0.1
-- Windows
-  - VC 8.0 from Visual Studio 2005 (Some friend and private declarations needed to be hidden to cope for a compiler error.)
-  - VC 9.0 from Visual Studio 2008
-
-
-More compilers will be tested in the future.
-
-Compilers that are not standard-compliant (e.g. VC 6.0 from VS 2003) are not subject to support.
-
-
-Proceed to the \ref IDE.  
-
-*/
-//-----------------------------------------------------------
-
-//-----------------------------------------------------------
-/*! \page testing_scons Testing with scons
-
-
-
 */
 //-----------------------------------------------------------
 
@@ -393,6 +398,8 @@ Proceed to the \ref IDE.
 
 //-----------------------------------------------------------
 /*! \page testing_cmake Testing with cmake
+
+In progress.
 
 */
 //-----------------------------------------------------------
@@ -1893,7 +1900,7 @@ The approach was proposed by David Abrahams in order to separate the
 form of traversal from the manner of access.
 A cursor is a tool that can be used to visit different objects of a collection.
 In an array it can be compared with a position rather than a pointer
-because it is not fixed how one accesses the values.
+because it is not %fixed how one accesses the values.
 The traversal is essential the same as with iterators, e.g.:
 \code
     for (Cursor cursor(begin(x)), cend(end(x)); cursor != cend; ++cursor)
@@ -1958,7 +1965,7 @@ Obviously only value can be changed. The syntax is the following:
 
 \section range_generator Range Generator
 
-The type traits traits::range_generator<Tag, Collection>
+The type %traits traits::range_generator<Tag, Collection>
 is used to determine the type of cursor:
 \code
     typedef typename traits::range_generator<tag::row, Matrix>::type c_type;
@@ -2376,7 +2383,7 @@ namespace mtl { namespace matrix {
     using my_namespace::my_matrix_type;
 }}
 \endcode
-In both cases you would also need a handful of type traits (the documentation of integrating external types
+In both cases you would also need a handful of type %traits (the documentation of integrating external types
 into MTL4 is pending).
 
 To avoid all namespace qualifications, you can use 
@@ -2406,7 +2413,7 @@ If x is a matrix then mtl::matrix::size is called and if x is a std::vector mtl:
 implemented with partially specialized functor but this is another topic).
 
 As a rule of thumb. If you call an unqualified function for an MTL4 type ADL will find it (otherwise it is sloppily implemented
-and must be fixed).
+and must be %fixed).
 If you call an MTL4 function for a non-MTL4 type write using mtl::f before calling f.
 For generic functions that handle both MTL4 and non-MTL4 types also write using mtl::f.
 If it still not compile, the function is probably not implemented yet.
