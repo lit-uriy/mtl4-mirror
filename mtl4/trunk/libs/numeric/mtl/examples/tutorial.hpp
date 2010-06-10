@@ -29,10 +29,10 @@ At least not computing fast.
 In the %Matrix Template Library 4 we aim for a natural mathematical 
 notation without sacrifying performance.
 You can write an expression like x = y * z and the library will
-perform the according operation: scaling a %vector, multiplying a
+perform the according %operation: scaling a %vector, multiplying a
 sparse %matrix with a dense %vector or two sparse matrices.
-Some operations like dense %matrix product use tuned BLAS implementation.
-In parallel, all described operations in this manual are also realized in C++
+Some %operations like dense %matrix product use tuned BLAS implementation.
+In parallel, all described %operations in this manual are also realized in C++
 so that the library can be used without BLAS and is not limited to types
 supported by BLAS.
 For short, general applicability is combined with maximal available performance.
@@ -41,7 +41,7 @@ We developed new techniques to allow for:
 - Combining multiple %vector assignments in a single statement 
   (and more importingly perform them in one single loop);
 - Storing matrices recursively in a never-before realized generality;
-- Performing operations on recursive and non-recursive matrices recursively;
+- Performing %operations on recursive and non-recursive matrices recursively;
 - Filling compressed sparse matrices efficiently;
 .
 and much more.
@@ -96,13 +96,13 @@ What do we want to do if there is none?
 
 
 Programmers working with BLAS libraries
-are forced to limit themselves to the operations and types provided by these
+are forced to limit themselves to the %operations and types provided by these
 packages.
 As an example, if one likes to use single-precision floats for preconditioner
 matrices--to save memory bandwidth--while the %vectors are double-valued, 
 one cannot use regular BLAS libraries.
 In contrast, any generic library that contains a %matrix %vector product
-can perform this operation.
+can perform this %operation.
 
 And what if somebody wants to build matrices and vectors of quaternions or intervals?
 Or rationals?
@@ -113,7 +113,7 @@ in Fortran or C (even more in an assembly language to squeaze out the last nano-
 
 
 Mathematica and Matlab are by far more elegant than C or Fortran libraries.
-And as long as one uses standard operations as %matrix products they are fast
+And as long as one uses standard %operations as %matrix products they are fast
 since they can use the tuned libraries.
 As soon as you start programming your own computations looping over elements
 of the matrices or vectors your performance won't be impressive, to say the least.
@@ -123,8 +123,8 @@ Otherwise it provides you an implementation in C++ that is also reasonably fast 
 reached 60 per cent peak).
 
 
-All this said, dense %matrix multiplication is certainly the most benchmarked operation
-on high performance computers but not really the operation that high performance computers
+All this said, dense %matrix multiplication is certainly the most benchmarked %operation
+on high performance computers but not really the %operation that high performance computers
 use the most in real applications.
 The dominant part of scientific computing in HPC are simulations that are mostly 
 handled with finite element methods (FEM), finite volume methods (FVM),
@@ -133,7 +133,7 @@ The numeric problems that arise from these methods are almost ever linear or non
 systems of equations in terms of very large sparse matrices and dense vectors.
 
 In contrast to most other libraries we paid strong attention to sparse matrices and their
-operations.
+%operations.
 To start with, we developed an efficient method to fill the matrices and compress them
 in-place, cf. \ref matrix_insertion.
 This allows for %matrix sizes that are close to the memory size.
@@ -163,7 +163,7 @@ sparse and dense matrices.
 The library will dispatch to the appropriate algorithm.
 Moreover, the expression could also represent a %matrix %vector product if A and C
 are column vectors (one would probably choose lower-case names though).
-In fact,  x = y * z can represent four different operations:
+In fact,  x = y * z can represent four different %operations:
 - %matrix product;
 - %matrix %vector product;
 - scalar times %matrix; or
@@ -718,7 +718,7 @@ the identity %matrix, i.e. the scalar is assigned to all
 diagonal elements and all off-diagonal elements are 0.
 Diagonal elements are %matrix entries with identical row and column index.
 Therefore scalars can also be assigned to non-square matrices.
-This operation is generic (i.e. applicable to
+This %operation is generic (i.e. applicable to
 all %matrix types including sparse).
 
 Just in case you wonder why the %scalar value is only assigned to the diagonal
