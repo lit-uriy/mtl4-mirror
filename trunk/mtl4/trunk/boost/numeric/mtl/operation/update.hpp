@@ -114,15 +114,11 @@ struct update_proxy
     explicit update_proxy(Inserter& ins, SizeType row, SizeType col) 
       : ins(ins), row(row), col(col) {}
     
-    struct nonsense {};
-
     template <typename Value>
     self& operator<< (Value const& val)
     {
 	return lshift(val, typename ashape::ashape<Value>::type());
     }
-
-    void f(typename mtl::ashape::ashape<typename Inserter::matrix_type>::type) {}
 
     template <typename Value>
     self& operator= (Value const& val)
