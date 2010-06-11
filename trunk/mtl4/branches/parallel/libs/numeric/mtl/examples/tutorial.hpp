@@ -55,6 +55,15 @@ But it should give you enough information to get started.
 - \subpage tutorial  
 - \subpage overview_ops  
 
+\section parallel_mtl Parallel MTL4 (Supercomputing Edition)
+
+The parallel version of MTL4 is written in a manner that one can use it almost
+in the same way as the sequential version (Basic Edition).
+Of course, the fact that data structures over multiple nodes without 
+global memory space complicates matter a bit and one cannot access arbitry
+elements from arbitrary processors (MPI processes) freely.
+On the other hand, all vector and most most matrix operations are ported
+and can be used with the same interface.
 
 
 */
