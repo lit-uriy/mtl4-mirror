@@ -64,6 +64,12 @@ global memory space complicates matter a bit and one cannot access arbitry
 elements from arbitrary processors (MPI processes) freely.
 On the other hand, all vector and most most matrix operations are ported
 and can be used with the same interface.
+In the following we assume that the user is familiar with the sequential MTL4 and
+we only describe the differences.
+
+- \subpage parallel_install 
+- \subpage parallel_tutorial  
+- \subpage parallel_overview_ops  
 
 
 */
