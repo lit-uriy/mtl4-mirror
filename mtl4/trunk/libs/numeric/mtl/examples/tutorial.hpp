@@ -277,11 +277,13 @@ depends on (AMD and UFConfig).
 <b>Using Doxygen:</b>
 The MTL4 documentation is available online.
 If you like to create a copy on your computer, e.g. to read it when offline, you can create it yourself.
-Just run <tt>doxygen</tt> in the main directory and you will find the documentation in libs/numeric/mtl/doc.
-The HTML version is found in libs/numeric/mtl/doc/html and a PDF file in libs/numeric/mtl/doc/pdf
+Just run <tt>doxygen</tt> in the main directory and you will find the documentation in <tt>libs/numeric/mtl/doc</tt>.
+The HTML version is found in <tt>libs/numeric/mtl/doc/html</tt> and a PDF file in <tt>libs/numeric/mtl/doc/pdf</tt>
 (not available online).
+The revision number in the page footer is not automatically set.
+You can update it by going into directory <tt>libs/numeric/mtl/example</tt> and running <tt>update_footer</tt>.
 One can also 
- generate of man pages by enabling it in the Doxyfile.
+generate of man pages by enabling it in the Doxyfile (in MTL4's root directory).
 Doxygen can be downloaded <a href="http://www.doxygen.org">here</a>.
 
 \section Testing
