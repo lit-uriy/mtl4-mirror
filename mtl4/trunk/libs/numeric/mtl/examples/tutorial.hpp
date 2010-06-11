@@ -345,7 +345,8 @@ Proceed to the \ref IDE.
 //-----------------------------------------------------------
 
 //-----------------------------------------------------------
-/*! \page testing_scons Testing with scons
+/*! 
+\page testing_scons Testing with scons
 
 
 
@@ -401,7 +402,8 @@ for details.
 
 
 //-----------------------------------------------------------
-/*! \page testing_cmake Testing with cmake
+/*! 
+\page testing_cmake Testing with cmake
 
 In progress.
 
