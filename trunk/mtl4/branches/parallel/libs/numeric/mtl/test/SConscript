@@ -6,6 +6,7 @@ Import('debug_env mpi_debug_env check full_warnings mpi_high_opt_env')
 
 sources = glob.glob("*.cpp")
 sources.remove('mpi_2_test_mpi_log_test.cpp')
+sources.remove('mpi_3_vector_migration_test.cpp')
 
 if full_warnings:
     sources.remove('matrix_matrix_scalar_product_test.cpp') # int->double -> warning -> error 

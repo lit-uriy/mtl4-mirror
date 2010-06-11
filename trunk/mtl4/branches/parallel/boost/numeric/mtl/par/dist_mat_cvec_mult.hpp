@@ -74,7 +74,6 @@ class dist_mat_cvec_handle
 	reqs.erase(r);
     }
   private:
-boost::mpi::communicator world;
     req_type                                 reqs; // send and receive requests
     std::vector<bool>                        sflags; // whether reqs[i] is a send request
 }; 
@@ -387,7 +386,7 @@ trans_dist_mat_cvec_wait(const Matrix& A, const VectorIn& v, VectorOut& w, Assig
     // par::multiple_ostream<true, false> rout;
     // if (h.reqs.empty()) rout << " trans_dist_mat_cvec_wait: no requests.\n";
     while(h.size()) { // see (1) at file end
-	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.reqs.begin(), h.reqs.end());
+	std::pair<boost::mpi::status, dist_mat_cvec_handle::req_type::iterator> res= boost::mpi::wait_any(h.begin(), h.end());
 	if(!h.is_send(res.second)) 
 	    // rout << " trans_dist_mat_cvec_wait: call update_vector for data from " << p << ".\n",
 	    trans_dist_update_vector(A.send_info().find(res.first.source())->second, w, as);
