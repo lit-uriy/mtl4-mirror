@@ -288,7 +288,8 @@ Doxygen can be downloaded <a href="http://www.doxygen.org">here</a>.
 
 \section Testing
 
-To make sure that MTL4 is completely installed you can run the same tests as we use
+To make sure that MTL4 is completely installed and properly working on your platform,
+you can run the same tests as we use
 in our development.
 The whole test suite can be compiled and executed with few commands.
 We are currently in the process of transition from one build system to another one.
