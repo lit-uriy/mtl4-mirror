@@ -284,7 +284,7 @@ The revision number in the page footer is not automatically set.
 In the main directory is a script <tt>mtl_doxygen</tt> that updates the footer.
 Unfortunately, it does not work under Windows.
 One can also 
-generate of man pages by enabling it in the Doxyfile (in MTL4's root directory).
+generate man pages by enabling it in the Doxyfile (in MTL4's root directory).
 Doxygen can be downloaded <a href="http://www.doxygen.org">here</a>.
 
 \section Testing
