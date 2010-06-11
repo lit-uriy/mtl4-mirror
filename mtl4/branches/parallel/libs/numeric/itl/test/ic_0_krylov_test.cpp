@@ -51,21 +51,17 @@ int test_main(int argc, char* argv[])
     itl::pc::ilu_0<matrix_s_type>                           ILU(As);
     const unsigned                                          ell= 6, restart= 8, s= ell;
 
-#if 0
     MTL_RUN_SOLVER("Bi-Conjugate Gradient", bicg, (As, xs, bs, I, iters));
     MTL_RUN_SOLVER("Bi-Conjugate Gradient Stabilized", bicgstab, (As, xs, bs, ILU, iters));
     MTL_RUN_SOLVER("Bi-Conjugate Gradient Stabilized(2)", bicgstab_2, (As, xs, bs, ILU, iters));
     MTL_RUN_SOLVER("Bi-Conjugate Gradient Stabilized(ell)", bicgstab_ell, (As, xs, bs, ILU, I, iters, ell));
     MTL_RUN_SOLVER("Conjugate Gradient", cg, (As, xs, bs, IC, iters));
     MTL_RUN_SOLVER("Conjugate Gradient Squared", cgs, (As, xs, bs, ILU, iters));
-//     MTL_RUN_SOLVER("Generalized Minimal Residual method (without restart)", gmres_full, (As, xs, bs, I, I, iters, size));  //only N iterations
+    // MTL_RUN_SOLVER("Generalized Minimal Residual method (without restart)", gmres_full, (As, xs, bs, I, I, iters));  //only N iterations
     MTL_RUN_SOLVER("Generalized Minimal Residual method with restart", gmres, (As, xs, bs, I, I, iters, restart));
-#endif
     MTL_RUN_SOLVER("Induced Dimension Reduction on s dimensions (IDR(s))", idr_s, (As, xs, bs, ILU, I, iters, s));
-#if 0
     MTL_RUN_SOLVER("Quasi-minimal residual", qmr, (As, xs, bs, ILU, I, iters));
     MTL_RUN_SOLVER("Transposed-free Quasi-minimal residual", tfqmr, (As, xs, bs, ILU, I, iters));
-#endif
     std::cout << succeed << " solvers succeeded and " << failed << " solvers failed.\n";
   
     return 0;

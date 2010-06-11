@@ -277,16 +277,20 @@ depends on (AMD and UFConfig).
 <b>Using Doxygen:</b>
 The MTL4 documentation is available online.
 If you like to create a copy on your computer, e.g. to read it when offline, you can create it yourself.
-Just run <tt>doxygen</tt> in the main directory and you will find the documentation in libs/numeric/mtl/doc.
-The HTML version is found in libs/numeric/mtl/doc/html and a PDF file in libs/numeric/mtl/doc/pdf
+Just run <tt>doxygen</tt> in the main directory and you will find the documentation in <tt>libs/numeric/mtl/doc</tt>.
+The HTML version is found in <tt>libs/numeric/mtl/doc/html</tt> and a PDF file in <tt>libs/numeric/mtl/doc/pdf</tt>
 (not available online).
+The revision number in the page footer is not automatically set.
+In the main directory is a script <tt>mtl_doxygen</tt> that updates the footer.
+Unfortunately, it does not work under Windows.
 One can also 
- generate of man pages by enabling it in the Doxyfile.
+generate man pages by enabling it in the Doxyfile (in MTL4's root directory).
 Doxygen can be downloaded <a href="http://www.doxygen.org">here</a>.
 
 \section Testing
 
-To make sure that MTL4 is completely installed you can run the same tests as we use
+To make sure that MTL4 is completely installed and properly working on your platform,
+you can run the same tests as we use
 in our development.
 The whole test suite can be compiled and executed with few commands.
 We are currently in the process of transition from one build system to another one.
@@ -341,7 +345,8 @@ Proceed to the \ref IDE.
 //-----------------------------------------------------------
 
 //-----------------------------------------------------------
-/*! \page testing_scons Testing with scons
+/*! 
+\page testing_scons Testing with scons
 
 
 
@@ -397,7 +402,8 @@ for details.
 
 
 //-----------------------------------------------------------
-/*! \page testing_cmake Testing with cmake
+/*! 
+\page testing_cmake Testing with cmake
 
 In progress.
 
