@@ -54,18 +54,28 @@ endif (MSVC80)
 # The directory assumes that each cpp file is a separate test
 # so, create a executable target and an associated test target
 
+# set(EXECUTABLE_OUTPUT_PATH prueba)
+# message("aqui---> "${EXECUTABLE_OUTPUT_PATH})
 
 
 foreach (source ${SOURCES})
     get_filename_component (test ${source} NAME_WE)		# filename without extension
     add_executable (${test} ${source} ${INCLUDES})
-    add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
+    SET(LIST_OF_TEST ${LIST_OF_TEST} ${test})
+#    add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
 endforeach (source)
 
 
 
 
 
+# create_test_sourcelist(
+#           ${SOURCES} #sourceListName
+#           prueba_testing
+#           ${LIST_OF_TEST} ${test}
+# #          EXTRA_INCLUDE include.h
+# #          FUNCTION function
+# )
 
 
 
