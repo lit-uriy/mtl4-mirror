@@ -213,6 +213,7 @@ To compile an MTL4 application you only need to
   <tt>g++ myapp.cpp -o myapp -I/usr/local/include/boost-1.38 -I/usr/local/include/mtl4</tt>
 .
 
+\anchor install_boost
 <b>Download and install Boost:</b>
 One can do this by hand: download it from the 
 <a href="http://www.boost.org">Boost web page</a>
@@ -231,6 +232,7 @@ to be compiled but only included (except for the Supercomputing Edition which is
 documented seperately).
 
 
+\anchor install_mtl
 <b>Download and install MTL4:</b>
 The recommended form of downloading is to use subversion control (under Windows we recommend 
 <a href="http://tortoisesvn.tigris.org/">Tortoise</a>) and under Linux it is part of every
