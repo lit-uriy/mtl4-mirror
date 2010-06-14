@@ -61,8 +61,8 @@ endif (MSVC80)
 foreach (source ${SOURCES})
     get_filename_component (test ${source} NAME_WE)		# filename without extension
     add_executable (${test} ${source} ${INCLUDES})
-    SET(LIST_OF_TEST ${LIST_OF_TEST} ${test})
-#    add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
+#    SET(LIST_OF_TEST ${LIST_OF_TEST} ${test})
+    add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
 endforeach (source)
 
 
