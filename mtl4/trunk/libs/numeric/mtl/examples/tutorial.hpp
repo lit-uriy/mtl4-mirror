@@ -403,7 +403,7 @@ for details.
 
 //-----------------------------------------------------------
 /*! 
-\page testing_cmake Testing with cmake
+\page testing_cmake Testing with CMake
 
 
 If you want to run the test programs, you will need the the
@@ -418,7 +418,7 @@ CMake can compile all examples of MTL4 just typing\n\n
  in the directory with the examples, but if you want to doing that, you
 must generate the makefiles  first.
 
-\section cmake_steps Steps:
+\section cmake_preps Preparations:
 
 
 -# Cmake uses one environment variable and that is BOOST_ROOT to locate the Boost directory.
@@ -431,11 +431,14 @@ must generate the makefiles  first.
 -# You need a C++ compiler, e.g. g++. On most Linux distributions, this is installed 
    by default. If not you can install it easily with a package manager.
    
+\section cmake_run Running CMake
 
 Now you must go to the directory of MTL4 and write on the terminal:\n\n
 <tt>cmake .</tt> \n\n
 to create all automatic files to compile the examples of
 MTL4.
+
+\section cmake_test Building tests and examples
 
 After that, you can go to the directory "libs/numeric/mtl/examples",
 to write "make" and all examples will be compiled.
