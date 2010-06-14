@@ -28,6 +28,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
   if(Boost_FOUND)
    message(STATUS "Boost in " ${Boost_INCLUDE_DIR}) #directory of Boost
+   set (BOOST_ROOT ${Boost_INCLUDE_DIR})
   endif(Boost_FOUND)
 
   #Find Manualy the path of Boost
@@ -63,7 +64,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
 endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
-################ LINUX
+################ END LINUX
 
 
 
@@ -79,6 +80,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   
   if(Boost_FOUND)
    message(STATUS "Boost in " ${Boost_INCLUDE_DIR}) #directory of Boost
+   set (BOOST_ROOT ${Boost_INCLUDE_DIR})
   endif(Boost_FOUND)
 
     #Find Manualy the path of Boost
@@ -104,6 +106,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     endif(NOT NVCC_PATH)
 
 endif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+
+################ END WINDOWS
+
 message("")
 
 
