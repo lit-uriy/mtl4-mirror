@@ -159,7 +159,82 @@ Proceed to the \ref parallel_tutorial.
 /*! 
 \page parallel_testing_scons Parallel testing with scons
 
+General description of 
+testing with scons is provided \ref testing_scons "here".
 
+On this page we describe the extensions regarding the Supercomputing Edition.
+
+\section parallel_scons_compiler Compiler
+
+All parallel tests and examples are compiled with <tt>mpiCC</tt>.
+Make sure that <tt>mpiCC</tt> is found in your path.
+Parallel tests and examples start by convention with <tt>"mpi_"</tt>.
+All other sources are compiled with the regular C++ comiler.
+
+\section parallel_scons_linking Linking
+
+
+
+As mentioned \ref parallel_linking "before", the library names of 
+boost::mpi and boost::serialization can vary.
+Therefore, the build system can be guided by environment variables.
+For instance,\n
+<tt>export BOOST_SERIALIZATION_LIB=boost_serialization-gcc43-mt-1_37.a</tt>\n
+There are three environment variables one can set:
+- <b>BOOST_MPI_LIB</b>: the name of the boost::mpi library, by default <tt>boost_mpi.a</tt>
+- <b>BOOST_SERIALIZATION_LIB</b>: the name of the boost::serialization library, by default <tt>boost_serialization.a</tt>
+- <b>BOOST_LIBPATH</b>: the name of the directory with the two libraries, by default <tt>/usr/local/lib</tt>
+.
+
+\section parallel_scons_testing Testing
+
+As mentioned before, the parallel tests in libs/numeric/mtl/test start with
+'mpi_'.
+Then it follows the number of processes the test is written for, e.g.
+<tt>mpi_2_dot_test.cpp</tt>.
+This test shall be called with:\n
+<tt>mpirun -np 2 mpi_2_dot_test</tt>\n
+Of course, parallel MTL4 application can be written in a way that they
+work for any number of processes.
+It is just easier to check an expected behavior (certain distribution
+or given local values on a certain process) if the number of 
+processes is known.
+One can also use the 'check' flag from our SConstruct, i.e.
+build with:\n
+<tt>scons -D check=1 mpi_2_dot_test</tt>\n
+then the program is compiled, linked and finally started with
+<tt>mpirun</tt> on 2 processes.
+On a Unix machine you can build and run all MPI tests with\n
+<tt>scons -D check=1 `ls mpi*.cpp | grep -v mpi_2_test_mpi_log_test.cpp | sed s/\.cpp//g`</tt>\n
+To build and run all test, you type:\n
+<tt>scons -D check=1 .</tt>\n
+as in the non-parallel MTL4.
+
+\section parallel_scons_dynamic Dynamic linking
+
+If the boost::mpi and serialization libraries are shared libraries,
+you need to add their location to <tt>LD_LIBRARY_PATH</tt>, for instance:\n
+<tt>export LD_LIBRARY_PATH=/usr/local/lib</tt>\n
+You should put this line into an initialization file as <tt>.bashrc</tt>
+or <tt>.login</tt>.
+This is not only to avoid retyping it but it is important because
+<tt>mpirun</tt>  starts your program in another shell potiantially on another 
+node of your
+cluster or parallel computer and environment variables defined in
+the shell before starting <tt>mpirun</tt> are not necessarily available.
+
+\section parallel_scons_additional Additional parallel libraries
+
+MTL4 has an interface to <tt>ParMetis</tt>.
+To use <tt>ParMetis</tt>, you must define the environment variable
+'PARMETIS_DIR' with its location.
+You can additionally define 'PARMETIS_LIB'/'METIS_LIB' for the library name
+if it is different than 'libparmetis.a'/'libmetis.a'.
+
+
+
+Final remark: do not get used too much to it because future development
+will focus mainly on \ref parallel_testing_cmake "cmake".
 
 */
 //-----------------------------------------------------------
