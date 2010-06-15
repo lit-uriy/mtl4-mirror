@@ -29,10 +29,10 @@ At least not computing fast.
 In the %Matrix Template Library 4 we aim for a natural mathematical 
 notation without sacrifying performance.
 You can write an expression like x = y * z and the library will
-perform the according operation: scaling a %vector, multiplying a
+perform the according %operation: scaling a %vector, multiplying a
 sparse %matrix with a dense %vector or two sparse matrices.
-Some operations like dense %matrix product use tuned BLAS implementation.
-In parallel, all described operations in this manual are also realized in C++
+Some %operations like dense %matrix product use tuned BLAS implementation.
+In parallel, all described %operations in this manual are also realized in C++
 so that the library can be used without BLAS and is not limited to types
 supported by BLAS.
 For short, general applicability is combined with maximal available performance.
@@ -41,7 +41,7 @@ We developed new techniques to allow for:
 - Combining multiple %vector assignments in a single statement 
   (and more importingly perform them in one single loop);
 - Storing matrices recursively in a never-before realized generality;
-- Performing operations on recursive and non-recursive matrices recursively;
+- Performing %operations on recursive and non-recursive matrices recursively;
 - Filling compressed sparse matrices efficiently;
 .
 and much more.
@@ -96,13 +96,13 @@ What do we want to do if there is none?
 
 
 Programmers working with BLAS libraries
-are forced to limit themselves to the operations and types provided by these
+are forced to limit themselves to the %operations and types provided by these
 packages.
 As an example, if one likes to use single-precision floats for preconditioner
 matrices--to save memory bandwidth--while the %vectors are double-valued, 
 one cannot use regular BLAS libraries.
 In contrast, any generic library that contains a %matrix %vector product
-can perform this operation.
+can perform this %operation.
 
 And what if somebody wants to build matrices and vectors of quaternions or intervals?
 Or rationals?
@@ -113,7 +113,7 @@ in Fortran or C (even more in an assembly language to squeaze out the last nano-
 
 
 Mathematica and Matlab are by far more elegant than C or Fortran libraries.
-And as long as one uses standard operations as %matrix products they are fast
+And as long as one uses standard %operations as %matrix products they are fast
 since they can use the tuned libraries.
 As soon as you start programming your own computations looping over elements
 of the matrices or vectors your performance won't be impressive, to say the least.
@@ -123,8 +123,8 @@ Otherwise it provides you an implementation in C++ that is also reasonably fast 
 reached 60 per cent peak).
 
 
-All this said, dense %matrix multiplication is certainly the most benchmarked operation
-on high performance computers but not really the operation that high performance computers
+All this said, dense %matrix multiplication is certainly the most benchmarked %operation
+on high performance computers but not really the %operation that high performance computers
 use the most in real applications.
 The dominant part of scientific computing in HPC are simulations that are mostly 
 handled with finite element methods (FEM), finite volume methods (FVM),
@@ -133,7 +133,7 @@ The numeric problems that arise from these methods are almost ever linear or non
 systems of equations in terms of very large sparse matrices and dense vectors.
 
 In contrast to most other libraries we paid strong attention to sparse matrices and their
-operations.
+%operations.
 To start with, we developed an efficient method to fill the matrices and compress them
 in-place, cf. \ref matrix_insertion.
 This allows for %matrix sizes that are close to the memory size.
@@ -163,7 +163,7 @@ sparse and dense matrices.
 The library will dispatch to the appropriate algorithm.
 Moreover, the expression could also represent a %matrix %vector product if A and C
 are column vectors (one would probably choose lower-case names though).
-In fact,  x = y * z can represent four different operations:
+In fact,  x = y * z can represent four different %operations:
 - %matrix product;
 - %matrix %vector product;
 - scalar times %matrix; or
@@ -187,22 +187,56 @@ Proceed to the \ref install "installation guide".
 
 MTL4 is a pure template library and only a download of the sources
 is required.
+The only mandatory requirement is the Boost library collection.
 
-The <a href="http://www.boost.org">Boost library</a>
-is used and must also be downloaded.
-We used in the development and testing version 33.1 but the programs
-would probably compile with earlier versions, too.
+\section quickstart Quick start
+
+To compile an MTL4 application you only need to
+-# Download and install Boost
+-# Download and install MTL4
+-# Include the libraries in the compile command when not installed in the include path, e.g.\n
+  <tt>g++ myapp.cpp -o myapp -I/usr/local/include/boost-1.38 -I/usr/local/include/mtl4</tt>
+.
+
+<b>Download and install Boost:</b>
+One can do this by hand: download it from the 
+<a href="http://www.boost.org">Boost web page</a>
+and unpack it in an appropriate directory.
+If you have administrator rights on the used computer you can put boost in a directory
+in the include path, e.g. /usr/local/include.
+Then you can omit the compiler flag for including from the boost directory. 
+If multiple versions shall be used on your computer you can only put one in the include path
+or you need extra tools like softenv or module to deal with your paths.
+More convenient is the installation of boost with a packet manager like synaptic.
+We use in the development and testing currently versions between 1.38 and 1.43.
+Some earlier versions might work as well but not 1.33 or earlier (e.g. type %traits for
+std::complex are missing there).
  The parts of boost used in MTL4 do not need
-to be compiled but only included.
+to be compiled but only included (except for the Supercomputing Edition which is
+documented seperately).
 
-If you want to run the test programs, you need the build system
-<a href="http://www.scons.org">scons</a>.
-It is easy to install and takes only a few minutes.
-The scons-based build of MTL4 uses the environment variables 
-<tt>MTL_BOOST_ROOT</tt> to locate the MTL directory
-and <tt>BOOST_ROOT</tt> to locate the Boost directory.
 
-If you compile MTL4 with VS2005 or its free express version
+<b>Download and install MTL4:</b>
+The recommended form of downloading is to use subversion control (under Windows we recommend 
+<a href="http://tortoisesvn.tigris.org/">Tortoise</a>) and under Linux it is part of every
+recent distribution.
+Go to the directory where you like MTL4 to reside and type:\n
+<tt>svn checkout https://svn.osl.iu.edu/tlc/trunk/mtl4/trunk mtl4</tt>\n
+The adventage of version control is that you can update it easily with\n
+<tt>svn update</tt>\n
+when new features are added or a bug is %fixed (fortunately not needed very often).
+If you prefer downloading an archive,
+go to the 
+<a href="http://osl.iu.edu/research/mtl/mtl4/download.php3">MTL4 download page</a>
+and download the latest archive.
+In principle, MTL4 can also be copied in a directory within the standard include
+path to omit the compiler flag for its inclusion.
+The MTL4 and the boost directory can be mixed in principle since their files are
+disjoint and people who tried this did not experience problems.
+However, this complicates the use of version control, especially when
+you install Boost with a packet manager (as far as we know nobody tried this so far).
+
+If you compile MTL4 with VS2005/08 or its free express version
 you need to install the SDK (some boost files access it).
 Please make sure that the compiler is in the path.
 Then scons will find it.
@@ -213,6 +247,117 @@ environment variables LIB and INCLUDE. For instance:\n
 <tt>INCLUDE=c:/Program Files/Microsoft Visual Studio 8/VC/include;c:/Program Files/Microsoft Visual Studio 8/VC/PlatformSDK/Include</tt>\n
 On some machines the compiler still did not find the files. For that reason the
 paths within these two variables are incorporated into the command line by our scons script.
+
+
+\section optionalinstall Optional Installations
+
+
+<b>Using BLAS:</b>
+Dense %matrix multiplication has an acceleration with BLAS (when the types of the %matrix elements allow).
+More BLAS usage is currently under development.
+To use this acceleration install a well-tuned BLAS (the original Netlib BLAS was even slower than our
+implementation when benchmarked it), preferably with a packet manager
+and set the macro MTL_HAS_BLAS.
+Although one can set the macro somewhere in the program sources it is recommended for better porting
+to define it in the compiler, e.g.:\n
+<tt>g++ -DMTL_HAS_BLAS -lblas ...</tt>\n
+or\n
+<tt>cl /DMTL_HAS_BLAS ...</tt>\n
+Of course, the library must be linked as well.
+
+<b>Using LAPACK:</b>
+LAPACK is currently not supported but will be soon.
+
+
+<b>Using UMFPACK:</b>
+Programs that use UMFPACK must be compiled with MTL_HAS_UMFPACK
+and linked with the UMFPACK library plus the libraries UMFPACK
+depends on (AMD and UFConfig).
+
+<b>Using Doxygen:</b>
+The MTL4 documentation is available online.
+If you like to create a copy on your computer, e.g. to read it when offline, you can create it yourself.
+Just run <tt>doxygen</tt> in the main directory and you will find the documentation in <tt>libs/numeric/mtl/doc</tt>.
+The HTML version is found in <tt>libs/numeric/mtl/doc/html</tt> and a PDF file in <tt>libs/numeric/mtl/doc/pdf</tt>
+(not available online).
+The revision number in the page footer is not automatically set.
+In the main directory is a script <tt>mtl_doxygen</tt> that updates the footer.
+Unfortunately, it does not work under Windows.
+One can also 
+generate man pages by enabling it in the Doxyfile (in MTL4's root directory).
+Doxygen can be downloaded <a href="http://www.doxygen.org">here</a>.
+
+\section Testing
+
+To make sure that MTL4 is completely installed and properly working on your platform,
+you can run the same tests as we use
+in our development.
+The whole test suite can be compiled and executed with few commands.
+We are currently in the process of transition from one build system to another one.
+- Running the tests with scons has currently a bit more functionality (e.g. enabling a higher warning level) but its maintenance will be terminate at some point in the future, see \subpage testing_scons.
+- Using cmake one can already build all tests but they need to be started manually. This will be changed soon in a way that cmake-based testing will be at least as powerful as with scons, see \subpage testing_cmake. 
+.
+Both build systems support Windows and one can use cmake to generate Visual Studion project folder containing all MTL4 tests and tutorial examples.
+ 
+\section install_nutshell In a nutshell
+
+
+Resuming, for MTL4 you need to:
+- Install Boost and include its directory in the compiler flags (unless already in the include path);
+- Install MTL4 and include its directory in the compiler flags (unless already in the include path);
+- Optionally install cmake or scons (or both);
+- Optionally install some or all of the libraries: BLAS, UMFPACK, and LAPACK; and
+- Optionally install doxygen.
+
+\section supported_compilers Supported compilers
+
+The %Matrix Template Library is written in compliance with the C++ standard
+and should be compilable with every compiler compliant with the standard.
+It has been tested (and passed) with the following compilers and architectures:
+- Linux
+  - g++ 4.0.1
+  - g++ 4.1.1
+  - g++ 4.1.2
+  - g++ 4.2.0
+  - g++ 4.2.1
+  - g++ 4.2.2
+  - g++ 4.3.2
+  - g++ 4.3.4
+  - icc 9.0
+  - icc 10.0
+- Macintosh
+  - g++ 4.0.1
+- Windows
+  - VC 8.0 from Visual Studio 2005 (Some friend and private declarations needed to be hidden to cope for a compiler error.)
+  - VC 9.0 from Visual Studio 2008
+
+
+More compilers will be tested in the future.
+
+Compilers that are not standard-compliant (e.g. VC 6.0) are not subject to support.
+Visual Studio is considered standard-compliant from VC 7.1 on but we still had trouble to compile MTL4
+and even in VC 8.0 we needed a little work-around.
+
+
+Proceed to the \ref IDE.  
+
+*/
+//-----------------------------------------------------------
+
+//-----------------------------------------------------------
+/*! 
+\page testing_scons Testing with scons
+
+
+
+
+
+If you want to run the test programs, you need the build system
+<a href="http://www.scons.org">scons</a>.
+It is easy to install and takes only a few minutes.
+The scons-based build of MTL4 uses the environment variables 
+<tt>MTL_BOOST_ROOT</tt> to locate the MTL directory
+and <tt>BOOST_ROOT</tt> to locate the Boost directory.
 
 
 
@@ -251,50 +396,59 @@ flags, see\n
 <tt>scons -h</tt>\n
 for details.
 
-If you wish to generate the documentation locally on your system
-you need <a href="http://www.doxygen.org">doxygen</a>.
-When it is installed type <tt>doxygen</tt> in the main directory and
-the documentation will be written to libs/numeric/mtl/doc.
-
-Resuming, for MTL4 you need to:
-- Include the MTL path;
-- Include the boost path;
-- Optionally install scons;
-- Optionally install a BLAS library; and
-- Optionally install doxygen.
-
-\section supported_compilers Supported compilers
-
-The %Matrix Template Library is written in compliance with the C++ standard
-and should be compilable with every compiler compliant with the standard.
-It has been tested (and passed) with the following compilers and architectures:
-- Linux
-  - g++ 4.0.1
-  - g++ 4.1.1
-  - g++ 4.1.2
-  - g++ 4.2.0
-  - g++ 4.2.1
-  - g++ 4.2.2
-  - g++ 4.3.2
-  - icc 9.0
-- Macintosh
-  - g++ 4.0.1
-- Windows
-  - VC 8.0 from Visual Studio 2005 (Some friend and private declarations needed to be hidden to cope for a compiler error.)
-  - VC 9.0 from Visual Studio 2008
-
-
-More compilers will be tested in the future.
-
-Compilers that are not standard-compliant (e.g. VC 6.0 from VS 2003) are not subject to support.
-
-
-Proceed to the \ref IDE.  
-
 */
+//-----------------------------------------------------------
+
 
 
 //-----------------------------------------------------------
+/*! 
+\page testing_cmake Testing with CMake
+
+
+If you want to run the test programs, you will need the the
+cross-platform, open-source and build system <a href="http://www.cmake.org/">CMake</a>. This tool is easy
+to install, if you have Ubuntu, you can use the Synaptic Package
+Manager to install it, or well typing\n\n
+<tt>sudo apt-get install cmake</tt>\n\n
+on the terminal.
+
+CMake can compile all examples of MTL4 just typing\n\n
+<tt>make</tt>\n\n
+ in the directory with the examples, but if you want to doing that, you
+must generate the makefiles  first.
+
+\section cmake_preps Preparations:
+
+
+-# Cmake uses one environment variable and that is BOOST_ROOT to locate the Boost directory.
+   In bash for example, you can set it with the comand "export", e.g.:\n\n
+    <tt>export BOOST_ROOT=/usr/include/boost</tt>\n\n
+    Note: you can write that line in your file ~/.bashrc, to have it all the time.
+    With csh or tcsh you need accordingly:\n\n
+    <tt>setenv BOOST_ROOT/usr/include/boost</tt>\n\n
+    which can be put into ~/.cshrc as well.
+-# You need a C++ compiler, e.g. g++. On most Linux distributions, this is installed 
+   by default. If not you can install it easily with a package manager.
+   
+\section cmake_run Running CMake
+
+Now you must go to the directory of MTL4 and write on the terminal:\n\n
+<tt>cmake .</tt> \n\n
+to create all automatic files to compile the examples of
+MTL4.
+
+\section cmake_test Building tests and examples
+
+After that, you can go to the directory "libs/numeric/mtl/examples",
+to write "make" and all examples will be compiled.
+
+
+
+
+*/
+//-----------------------------------------------------------
+
 
 
 //-----------------------------------------------------------
@@ -574,10 +728,11 @@ These definitions are consistent with the according functions for matrices (\ref
 
 /*! \page matrix_types Matrix Types
 
-Right now, MTL4 provides three %matrix types:
+Right now, MTL4 provides four %matrix types:
 - \ref dense2D;
-- \ref morton_dense; and
-- \ref compressed.
+- \ref morton_dense; 
+- \ref compressed; and
+- multi_vector, see \ref multivector.
 
 The type \ref dense2D defines regular 
 row-major and column-major matrices:
@@ -606,8 +761,9 @@ For a generic way to modify matrices see \ref matrix_insertion.
 Assigning a scalar value to a %matrix stores a multiple of
 the identity %matrix, i.e. the scalar is assigned to all
 diagonal elements and all off-diagonal elements are 0.
-If the %matrix is not square this assignment throws an exception.
-This operation is generic (i.e. applicable to
+Diagonal elements are %matrix entries with identical row and column index.
+Therefore scalars can also be assigned to non-square matrices.
+This %operation is generic (i.e. applicable to
 all %matrix types including sparse).
 
 Just in case you wonder why the %scalar value is only assigned to the diagonal
@@ -618,7 +774,7 @@ For instance, consider the multiplication of %vector x with the scalar alpha:
 \code
     y= alpha * x;
 \endcode
-where y is a %vector too.
+where y is a %vector, too.
 This %operation is equivalent to assigning alpha to the %matrix A and multiplying x with 
 A:
 \code
@@ -627,13 +783,17 @@ A:
 \endcode
 In other words, the %matrix A has the same impact on x as the scalar alpha itself.
 
-Assigning the %scalar value to the diagonal requires of course that the %matrix is 
-square.
-In the special case that the %scalar value is 0 (more precisely the multiplicative
-identity element of the %matrix's value_type) the %matrix can be non-square.
-This is consistent with the linear operator characteristic: applying the zero operator
-on some %vector results in the zero %vector with the dimension of the operators image.
-From a more pragmatic prospective 
+If the %matrix is not square, i.e. the linear operator's domain and image have different
+dimensions, the equivalence with the scalar multiplication applies accordingly.
+In case that the image has a lower dimension, say m, then only the first m entries of the
+vector from the domain are scaled with alpha and the others are ignored.
+If the image has an higher dimension then the last m-n entries are zero with
+n the dimension of the domain.
+When you rely on this behavior please check the revision of your MTL4 library:
+old versions, i.e. before revision 6843, considered it erroneous to store
+ a non-zero scalar to a non-square %matrix.
+
+From a more pragmatic prospective:
 \code
     A= 0; 
 \endcode
@@ -644,7 +804,20 @@ can be defined with the type \ref morton_dense:
 
 \include morton_dense.cpp
 
-A detailed description will be added soon.
+In the pure Morton order format 2 by 2 sub-matrices are stored contiguously in memory.
+4 by 4 matrices constitute of 4 2-by-2-matrices and use consecutive memory.
+The continuation of this recursive scheme provides square sub-matrices with power of two
+sizes that are in contiguous memory and allow for cache-efficient recursive algorithms.
+On the other hand, algorithms that are implemented fully recursively create considerable
+overhead for function calls.
+We therefore recommend using mixed schemes of %recursion and iteration. 
+Particularly efficient are algorithms that operate on mid-size blocks, e.g. 64 by 64,
+with regular row-major or column-major layout.
+MTL4 provides a virtually infinite number of memory layouts for dense matrices
+that are specified by a bitmask.
+A detailed description and discussion of recursive matrices and algorithm is
+provided in 
+<a href="http://www.osl.iu.edu/~pgottsch/ics07.pdf">this conference paper</a>.
 
 Sparse matrices are defined with the type \ref compressed2D:
 
@@ -686,7 +859,7 @@ The %matrix size is given by
 and is defined as product of the numbers of rows and columns.  
 These definitions are consistent with the according functions for vectors (\ref vector_def).
 
-How to fill  sparse matrices is shown in the following chapter.
+How to fill  sparse matrices is shown in section \ref matrix_insertion.
 
 \if Navigation \endif
   Return to \ref vector_def &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref multivector 
@@ -697,21 +870,30 @@ How to fill  sparse matrices is shown in the following chapter.
 
 /*! \page multivector Type Multivector
 
-There are another useful class in MTL4: the multi_vector.
-A multi-vector is a kind of matrix that is composed of coluum vectors.
-This type is very helpful if you want to store many vectors of the same length.
-To initialize a multi-vector, there are 2 different types:
-1.Constructor by number of rows and columns
+
+A multi-vector is an abstraction that is very useful in Krylov subspace methods, esp.
+when they are implemented generically.
+It is a %matrix that composed of column vectors.
+The simplest use case is to just store multiple vectors of the same length.
+Especially the %matrix %vector product including its transposed form allow for well-readable
+implementations of algorithms like GMRES and for straight-forward extension to distributed
+vectors.
+
+To create a multi-vector, there are two ways:
+-# Constructor by number of rows and columns: 
 \code
 	mtl::multi_vector<Vector> 	A(2, 3);
 \endcode
-
-2.Constructor by number of rows and column vector for initialization
+-# Constructor by number of rows and column %vector for initialization
 \code
 	mtl::multi_vector<Vector>	A(Vector(3), 2);
 \endcode
+In the first method, you get a %matrix which has 2 rows and 3 columns.
+This constructor with number of rows and columns exist for all %matrix types and is important for 
+generic creation.
 
-In the first method, you get a matrix which has 2 rows and 3 columns (see matrix initialization). In the 2nd method, you get a matrix with 2 rows and 3 columns.
+In the 2nd method, you get a %matrix with 2 rows and 3 columns.
+Remark: in older versions, before revision 6957, the arguments were reversed.
 
 To find out the number of rows use
 \code
@@ -723,31 +905,29 @@ Likewise the number of columns is given
   unsigned c= num_cols(A);
 \endcode
 
-To edit individual entries of the multi-vector, there are several possibilities. You can write a vector (same length) in the k-th column of the multi-vector, and turned around.
+To modify individual entries of the multi-vector, there are several possibilities. 
+You can write a %vector (same length) in the k-th column of the multi-vector, and vice versa.
 \code
 	mtl::multi_vector<Vector> 	A(2, 3);
 	Vector				v(2), w(2);
 	A.vector(k)= v;
-	v=  A.vector(k);
+	v= A.vector(k);
 \endcode
 You can also specify the row and column of the entry to be changed.
 \code
 	A[1][1]= 3.5;
 \endcode
 
-operations with multi-vectors
-On the one hand we can consider a multi-vector as separate vectors, but also as a matrix. Thus, there are many multi-vector operations.
-\code
-	Matrix				B(2,2), C(3,2), D(3,3);
-	B= A * C;			//Matrix= multi_vector * Matrix
-	D= C * A;			//Matrix= Matrix * multi_vector
-	v= B * A.vector(1);		//vector= Matrix * vector 
-	A.vector(0)= B* A.vector(1);	//vector= Matrix * vector
-\endcode
+\section ops_multi_vector Operations with multi-vectors
 
-The multi-vector is a kind of %matrix, therefore the following matixoperations are defined: trace(A), conj(A), trans(A), hermitian(A).
+On the one hand we can consider a multi-vector as a collection of vectors, on the other hand as a %matrix.
+Thus, there are many multi-vector %operations.
+\include multi_vector.cpp
 
-
+The multi-vector is a %matrix, therefore the following %matrix 
+%operations are defined: trace(A), conj(A), trans(A), hermitian(A).
+The interface is nevertheless minimalistic and not the same functionality as for other %matrix types is provided.
+More functions will be implemented when needed.
 
 
 
@@ -1655,14 +1835,29 @@ The following program illustrates how to solve a linear system:
 
 \include ilu_0_bicgstab.cpp
 
-Currently two solvers are available:
-- Conjugate gradient: itl::cg(A, x, b, P, iter); 
-- Bi-Conjugate gradient: itl::bicg(A, x, b, P, iter); 
-- Conjugate gradient squared: itl::cgs(A, x, b, P, iter); and
-- BiCGStab: itl::bicgstab(A, x, b, P, iter);
-- BiCGStab(2): itl::bicgstab_2(A, x, b, P, iter);  (Preconditioning still missing)
+Currently the folling solvers (in alphabetical order) are available:
+- Bi-Conjugate Gradient: itl::bicg(A, x, b, L, iter); 
+- Bi-Conjugate Gradient Stabilized: itl::bicgstab(A, x, b, L, iter);
+- Bi-Conjugate Gradient Stabilized(2): itl::bicgstab_2(A, x, b, L, iter); 
+- Bi-Conjugate Gradient Stabilized(ell): itl::bicgstab_ell(A, x, b, L, R, iter, ell); 
+- Conjugate Gradient: itl::cg(A, x, b, L, iter); 
+- Conjugate Gradient Squared: itl::cgs(A, x, b, L, iter); 
+- Generalized Minimal Residual method (without restart): itl::gmres_full(A, x, b, L, R, iter, kmax_in); 
+- Generalized Minimal Residual method with restart: itl::gmres(A, x, b, L, R, iter, restart); 
+- Induced Dimension Reduction on s dimensions (IDR(s)): itl::idr_s(A, x, b, L, R, iter, s); 
+- Quasi-minimal residual: itl::qmr(A, x, b, L, R, iter); and
+- Transposed-free Quasi-minimal residual: itl::tfqmr(A, x, b, L, R, iter).
 .
-More solvers will follow.
+All Krylov sub-space methods solve the linear system Ax = b as in the example above.
+A left preconditioner  L is used in all methods and some methods also 
+incorporate a right preconditioner  R.
+The iteration object controls the termination of the iteration, see below.
+Some algorithms take an additional argument (ell, kmax_in, restart, s) specifying the dimension of the 
+%vector space regarding to which new search directions are orthogonalized.
+The difference between gmres and gmres_full is that continues until one criterion in iter holds.
+gmres_full computes at most kmax_in iterations (or size(x) depending on what is smaller) 
+regardless on whether the termination criterion is reached or not.
+Needless to say that gmres is implemented by means of gmres_full.
 
 As preconditioners we provide at the moment:
 - Diagonal inversion: itl::pc::diagonal<Matrix>;
@@ -1670,7 +1865,29 @@ As preconditioners we provide at the moment:
 - Incomplete Cholesky factorization without fill-in: itl::pc::ic_0<Matrix>;
 .
 
+The iteration object can be chosen between:
+- Basic iteration does not generate output: basic_iteration(r0, m, r, a= 0);
+- Cyclic iteration prints residual information every  c iteration: cyclic_iteration(r0, m, r, a= 0, c= 100, out= std::cout); and
+- Noisy iteration prints residual in each iteration: noisy_iteration(r0, m, r, a= 0, out= std::cout).
+.
+Mandatory arguments for the iteration objects' constructors are the initial residuum  r0 (which is of course  b if one starts
+with  x = 0), the maximal number of iteration and the relative error reduction (more precisely residuum reduction).
+Optionally, the absolute residuum  a (fourth argument) can be given as termination criterion.
+Thus the iterative methods are terminated when either:
+- The maximum number of iterations is reached (failure);
+- The relative residuum reduction was achieved; or
+- The absolute residuum is below  a if specified.
+.
+In the cyclic iteration, the user can specify after how many iterations the residual informations are printed,
+default is 100. 
+For cyclic and noisy iterations, one can declare on which ostream the information is printed.
+This enables printing it into log files or for parallel computing printing only on one processor.
+By default the output is printed into std::out.
 
+General assumptions on solver iterations:
+- 0th iteration is the starting residue.
+- Once the input value (x) is changed you have made at least one iteration.
+- Fractions of iterations are counted as whole iterations.
 
 
 
@@ -1728,7 +1945,7 @@ The approach was proposed by David Abrahams in order to separate the
 form of traversal from the manner of access.
 A cursor is a tool that can be used to visit different objects of a collection.
 In an array it can be compared with a position rather than a pointer
-because it is not fixed how one accesses the values.
+because it is not %fixed how one accesses the values.
 The traversal is essential the same as with iterators, e.g.:
 \code
     for (Cursor cursor(begin(x)), cend(end(x)); cursor != cend; ++cursor)
@@ -1793,7 +2010,7 @@ Obviously only value can be changed. The syntax is the following:
 
 \section range_generator Range Generator
 
-The type traits traits::range_generator<Tag, Collection>
+The type %traits traits::range_generator<Tag, Collection>
 is used to determine the type of cursor:
 \code
     typedef typename traits::range_generator<tag::row, Matrix>::type c_type;
@@ -2211,7 +2428,7 @@ namespace mtl { namespace matrix {
     using my_namespace::my_matrix_type;
 }}
 \endcode
-In both cases you would also need a handful of type traits (the documentation of integrating external types
+In both cases you would also need a handful of type %traits (the documentation of integrating external types
 into MTL4 is pending).
 
 To avoid all namespace qualifications, you can use 
@@ -2241,7 +2458,7 @@ If x is a matrix then mtl::matrix::size is called and if x is a std::vector mtl:
 implemented with partially specialized functor but this is another topic).
 
 As a rule of thumb. If you call an unqualified function for an MTL4 type ADL will find it (otherwise it is sloppily implemented
-and must be fixed).
+and must be %fixed).
 If you call an MTL4 function for a non-MTL4 type write using mtl::f before calling f.
 For generic functions that handle both MTL4 and non-MTL4 types also write using mtl::f.
 If it still not compile, the function is probably not implemented yet.
@@ -2819,7 +3036,7 @@ Details: mtl::matrix::diagonal_setup
 diagonal_setup(A,2.0);
 \endcode
 
-\include setups_test.cpp
+\include setups_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2863,7 +3080,7 @@ E= extract_hessenberg(A);
 
 For example:
 
-\include hessenberg_test.cpp
+\include hessenberg_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2886,7 +3103,7 @@ C= extract_householder_hessenberg(B);
 
 For example:
 
-\include hessenberg_test.cpp
+\include hessenberg_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2945,7 +3162,7 @@ B= hessenberg(A);
 
 For example:
 
-\include hessenberg_test.cpp
+\include hessenberg_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2967,7 +3184,7 @@ B= hessenberg_factors(A);
 
 For example:
 
-\include hessenberg_test.cpp
+\include hessenberg_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2988,7 +3205,7 @@ For example:
 F= hessenberg_q(A);
 \endcode
 
-\include hessenberg_test.cpp
+\include hessenberg_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -3008,7 +3225,7 @@ Details: mtl::matrix::hessian_setup
 hessian_setup(A,2.0);
 \endcode
 
-\include setups_test.cpp
+\include setups_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -3036,7 +3253,7 @@ C= extract_householder_hessenberg(B);
 
 For example:
 
-\include hessenberg_test.cpp
+\include hessenberg_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -3132,7 +3349,7 @@ Details: mtl::matrix::laplacian_setup
 
 For example:
 
-\include setups_test.cpp
+\include setups_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -4017,7 +4234,7 @@ Details: mtl::vector::orth
 
 For example:
 
-\include orth_test.cpp
+\include orth_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -4035,7 +4252,7 @@ Details: mtl::vector::orth
 
 For example:
 
-\include orth_test.cpp
+\include orth_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -4054,7 +4271,7 @@ Details: mtl::vector::orthogonalize_factors
 
 For example:
 
-\include orth_test.cpp
+\include orth_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
