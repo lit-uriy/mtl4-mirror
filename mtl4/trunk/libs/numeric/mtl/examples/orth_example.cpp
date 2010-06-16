@@ -15,7 +15,7 @@ int test_main(int argc, char* argv[])
 	    v[i][j]= double((i + j) % 5);
 
     std::cout << "w initially\n";
-    std::vector<dense_vector<double> > 				w(v);
+    std::vector<dense_vector<double> > 				w(v),x(v);
     for (unsigned i= 0; i < size(w); ++i)
 	std::cout << w[i] << "\n";
  
@@ -31,6 +31,12 @@ int test_main(int argc, char* argv[])
 	std::cout << "\n";
     }   
     std::cout << "\nThe according factors are: \n" << orthogonalize_factors(v) << '\n';
+    
+    orth(x,0); orth(x,1);
+    std::cout << "\nw(0), w(1) orthogonalized\n";
+    for (unsigned i= 0; i < size(w); ++i)
+	std::cout << x[i] << "\n";
+    
 
     return 0;
 }
