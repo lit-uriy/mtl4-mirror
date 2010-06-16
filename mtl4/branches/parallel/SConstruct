@@ -419,6 +419,7 @@ if os.environ.has_key('TOPOMAP_DIR'):
 # high_opt_env = env.Clone()
 
 # mpi_debug_env = mpi_env.Clone()
+# mpi_opt_env = mpi_env.Clone()
 # mpi_high_opt_env = mpi_env.Clone()
 
 debug_env = env.Copy()
@@ -426,6 +427,7 @@ opt_env = env.Copy()
 high_opt_env = env.Copy()
 
 mpi_debug_env = mpi_env.Copy()
+mpi_opt_env = mpi_env.Copy()
 mpi_high_opt_env = mpi_env.Copy()
 
 # add debugging flags to appropriate environment
@@ -444,6 +446,7 @@ add_opt(debug_env, 0)
 add_opt(env, int(opt))
 add_opt(opt_env, 1)
 add_opt(high_opt_env, 2)
+add_opt(mpi_opt_env, 1)
 add_opt(mpi_high_opt_env, 2)
 
 # add user-defined optimization flags 
@@ -452,6 +455,8 @@ if add_optflag:
      add_user_opt(env, add_optflag)
      add_user_opt(opt_env, add_optflag)
      add_user_opt(high_opt_env, add_optflag)
+     add_user_opt(mpi_opt_env, add_optflag)
+     add_user_opt(mpi_high_opt_env, add_optflag)
 
 # whether test programs should be ran
 check = ARGUMENTS.get('check', 0)
@@ -461,7 +466,7 @@ check = ARGUMENTS.get('check', 0)
 #####################
 
 # print "SConstruct: debug_env[CXX] = ", debug_env['CXX']
-Export('env debug_env mpi_debug_env opt_env high_opt_env mpi_high_opt_env check full_warnings')
+Export('env debug_env mpi_debug_env opt_env high_opt_env mpi_opt_env mpi_high_opt_env check full_warnings')
 
 SConscript(['libs/numeric/mtl/build/SConscript', 
             'libs/numeric/mtl/test/SConscript', 

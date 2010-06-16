@@ -255,6 +255,73 @@ Coming soon.
 
 /*! \page parallel_tutorial Parallel tutorial
 
+-# Warm up
+   -# \subpage parallel_hello_world 
+
+-# Advanced
+   -# \subpage boost_mpi_serialization
+*/
+
+
+//-----------------------------------------
+
+
+//-----------------------------------------------------------
+/*! \page parallel_hello_world Parallel MTL hello world
+
+
+The following hello world program is an MTL-ish variation of Boost MPI's
+hello world:
+
+\includelineno mpi_3_boost_mpi_example.cpp
+
+The program is almost self-explanatory.
+- <b>Line 4 and 5</b>: Here we included MTL4 and Boost MPI entirely without affecting compile time significantly.
+- <b>Line 9 and 10</b>: Define the MPI environment and a communicator for processes.
+  This is part of every application with Boost MPI and also needed here, see also
+  <a href="http://www.boost.org/doc/libs/1_43_0/doc/html/mpi/tutorial.html">Boost MPI tutorial</a>.
+  The most important is that the environment defined before the first communication happens
+  and lives until the last communication is finished.
+  The best is to define it as first object in the main function.
+- <b>Line 12</b>: A regular non-distributed type like \c dense_vector is replicated on all processes
+  and it is not guaranteed that all processes have the same value.
+- <b>Lines 14-16</b>: are only executed by process 0. After line 14, %vector \c v is set on rank 0 but
+  has still undefined values on the other processes.
+- <b>Line 16</b>: The communicator's \c send method allows for sending arbitrary serializable objects.
+  Actually, type %traits determine whether the object is really serialized or sent directly, more details 
+  \ref boost_mpi_serialization "here".
+- <b>Line 20</b>: The counter-part to \c send is \c recv. In the example, all processes receive from 
+  process 0, except itself.
+- <b>Line 21</b>: The %vector is printed after reception. As the Boost MPI tutorial also states, the 
+  order of output is not determined. Sometimes, the output from different processes get even mixed.
+  MTL4 provides special output streams for more convenient printing in MPI applications, see \ref parallel_streams.
+
+This was a quite simple example of  point-to-point communication.
+
+With a collective communication, the example is even simpler:
+
+\include mpi_3_broadcast_example.cpp
+
+We choose these examples to give a feeling of the generic interplay between Boost MPI and parallel MTL4.
+
+From our own experience, for instance with the linear solvers, most of the parallelism happens in
+distributed data.
+Operations on distributed matrices and vectors perform the communication transparently for the user.
+Some parallel linear solvers have replicated matrices (e.g. the orthogonalization factors in GMRES)
+but such matrices are not computed on one process and sent to the others but calculated simultaneously
+on each process.
+
+*/
+
+
+//-----------------------------------------
+
+
+//-----------------------------------------------------------
+/*! \page distributed_vector Distributed vector
+
+
+
 
 */
 
@@ -270,7 +337,24 @@ vectors can consist of every data type that is serializable,
 see <a href="http://www.boost.org/doc/libs/1_43_0/libs/serialization/doc/index.html>
 boost serialization tutorial</a>.
 Intrinsic data types and MTL4 containers of intrinsic data types 
+are serializable.
 
+Moreover, Boost MPI allows sending intrinsic types and arrays thereof directly
+without serialization, when the meta-function mpi::boost::is_mpi_datatype evaluate to true 
+(see <a href="http://www.boost.org/doc/libs/1_43_0/doc/html/mpi/tutorial.html#mpi.performance_optimizations">here</a>).
+We optimized PMTL4 such that  matrices and vectors of such MPI data types are also
+communicated without serialization.
+
+
+According to our experience, 
+most scientific applications run only on parallel computers or clusters with compatible processors (regarding the
+bit-wise representation of data).
+To avoid surplus MPI_Pack/MPI_Unpack compile your application (and your Boost MPI)
+with the macro <tt>BOOST_MPI_HOMOGENEOUS</tt>.
+
+Todo: serialization of user types
+
+Todo: user types as mpi datatype.
 
 */
 
