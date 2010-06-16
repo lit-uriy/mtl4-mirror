@@ -45,7 +45,7 @@ namespace mtl {
 
 	    result_type  value;
 	};
-
+	///Returns position of minimal entry of %vector v
 	template <typename Vector>
 	typename min_pos_functor<Vector>::pos_type
 	inline min_pos(const Vector& v)

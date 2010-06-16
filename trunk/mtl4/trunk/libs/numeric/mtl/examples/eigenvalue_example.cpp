@@ -17,7 +17,15 @@ int test_main(int argc, char* argv[])
 
     eig= eigenvalue_symmetric(A,22);
     std::cout<<"eigenvalues  ="<< eig <<"\n";
-
+    
+    eig= 0;
+    eig= qr_sym_imp(A);
+    std::cout<<"eigenvalues  ="<< eig <<"\n";
+    
+    eig= 0;
+    eig= qr_algo(A, 5);  // only 5 qr iterations (Q-R-changes)
+    std::cout<<"eigenvalues  ="<< eig <<"\n";
+ 
     return 0;
 }
 

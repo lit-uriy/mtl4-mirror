@@ -7,7 +7,7 @@ int test_main(int argc, char* argv[])
     typedef mtl::dense2D<double>       Matrix;
     typedef mtl::dense_vector<double>  Vector;
     
-    Matrix                             A(4, 4), L(4, 4), U(4, 4);
+    Matrix                             A(4, 4), L(4, 4), U(4, 4), AA(4, 4);
     Vector	       		       v(4);
     double 			       c=1.0;   
   
@@ -20,11 +20,12 @@ int test_main(int argc, char* argv[])
     std::cout << "L is:\n" << L << "U is:\n" << U;
     A= L * U;
     std::cout << "A is:\n" << A;
+    AA= adjoint(A);
    
     for (unsigned i= 0; i < 4; i++)
 	v[i]= double(i);
 
-    Vector b( A*v );
+    Vector b( A*v ), b2( adjoint(A)*v );
 
     Matrix LU(A);
     lu(LU);
@@ -45,9 +46,11 @@ int test_main(int argc, char* argv[])
     Vector v3( lu_apply(A, P, b) );
     std::cout << "v3 is " << v3 << "\n";
     
-    Vector v4(lu_adjoint_apply(A, P, b));
+    Vector v4(lu_adjoint_apply(A, P, b2));
     std::cout << "v4 is " << v4 << "\n";
-    
-     
+   
+    Vector v5(lu_adjoint_solve(AA, b));
+    std::cout << "v5 is " << v5 << "\n";
+       
     return 0;
 }

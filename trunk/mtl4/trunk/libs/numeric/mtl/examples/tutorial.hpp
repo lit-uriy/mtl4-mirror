@@ -2846,6 +2846,8 @@ written in unrolled/tiled form.
    - \subpage strict_lower
    - \subpage strict_upper
    - \subpage sub_matrix
+   - \subpage svd_tol
+   - \subpage svd
    - \subpage swap_row
    - \subpage trace
    - \subpage trans
@@ -2857,7 +2859,10 @@ written in unrolled/tiled form.
    - \subpage dot_v
    - \subpage dot_real_v
    - \subpage infinity_norm_v
+   - \subpage max_abs_pos_v
+   - \subpage max_pos_v
    - \subpage max_v
+   - \subpage min_pos_v
    - \subpage min_v
    - \subpage one_norm_v
    - \subpage op_vector_add_equal
@@ -3459,6 +3464,9 @@ Details: mtl::matrix::lu_adjoint_solve
 x= lu_adjoint_solve(A, b);
 \endcode
 
+For example:
+
+\include lu_example.cpp
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -3944,6 +3952,44 @@ Sub-matrices also preserve the const attribute of the referred matrices or sub-m
 */
 
 //-----------------------------------------------------------
+/*! \page svd_tol  svd(A, tol)
+
+returns singular-value-decomposition of %matrix A. 3 matrices S, V and D are returned,  with A= S*V*trans(D):
+\code
+boost::tie(S, V, D)= svd(A, 1.e-10)
+\endcode
+The second argument is optional (default value 1.e-10).
+
+Details: mtl::matrix::svd
+
+\include svd_example.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page svd  svd(A)
+
+returns singular-value-decomposition of %matrix A. 3 matrices S, V and D are returned,  with A= S*V*trans(D):
+\code
+boost::tie(S, V, D)= svd(A)
+\endcode
+
+Details: mtl::matrix::svd
+
+\include svd_example.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
 /*! \page swap_row  swap_row(A, row1, row2)
 
 returns %matrix A swapped with rows row1 and row2.
@@ -4003,6 +4049,19 @@ The %matrix A is not altered but a immutable view is returned.
 /*! \page tril  tril(A, i)
 
 Returns lower triangle starting at off-diagonoal i (for compatibility with matlib). 
+//-----------------------------------------------------------
+/*! \page max_pos_v max_pos(v)
+
+returns position of maximal entry of %vector v.
+
+Details: mtl::vector::max_pos
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
 
 Details: mtl::matrix::tril
 
@@ -4111,6 +4170,34 @@ For example:
 */
 
 //-----------------------------------------------------------
+/*! \page max_abs_pos_v max_abs_pos(v)
+
+returns position of maximal absolut entry of %vector v.
+
+Details: mtl::vector::max_abs_pos
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page max_pos_v max_pos(v)
+
+returns position of maximal entry of %vector v.
+
+Details: mtl::vector::max_pos
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
 /*! \page max_v max(v)
 
 returns maximal entry of %vector v.
@@ -4127,6 +4214,19 @@ For example:
 
 */
 
+//-----------------------------------------------------------
+/*! \page min_pos_v min_pos(v)
+
+returns position of minimal entry of %vector v.
+
+Details: mtl::vector::min_pos
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
 
 //-----------------------------------------------------------
 /*! \page min_v min(v)
