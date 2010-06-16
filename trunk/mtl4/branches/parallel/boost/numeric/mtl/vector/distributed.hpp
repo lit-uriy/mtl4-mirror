@@ -166,6 +166,8 @@ protected:
     mutable buffer_type send_buffer, recv_buffer;
 };
 
+
+/// Inserter for distributed vectors
 template <typename DistributedVector, 
 	  typename Updater = mtl::operations::update_store<typename Collection<DistributedVector>::value_type> >
 class distributed_inserter

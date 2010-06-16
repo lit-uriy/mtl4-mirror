@@ -17,6 +17,7 @@
 
 namespace mtl { namespace vector {
 
+/// Vector inserter
 template <typename Vector, typename Updater>
 struct inserter 
 {
