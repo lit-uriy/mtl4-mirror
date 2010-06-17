@@ -406,30 +406,45 @@ for details.
 \page testing_cmake Testing with CMake
 
 
+
 If you want to run the test programs, you will need the the
 cross-platform, open-source and build system <a href="http://www.cmake.org/">CMake</a>. This tool is easy
-to install, if you have Ubuntu, you can use the Synaptic Package
+to install as well as Linux or Windows, 
+
+If you have <b> Ubuntu or another Debian Distribution </b>, you can use the Synaptic Package
 Manager to install it, or well typing\n\n
 <tt>sudo apt-get install cmake</tt>\n\n
+
+or on <b>Red Hat, Fedora or another Red Hat Distribution</b>\n
+<tt>yum install cmake</tt>\n\n
+
 on the terminal.
 
-CMake can compile all examples of MTL4 just typing\n\n
-<tt>make</tt>\n\n
- in the directory with the examples, but if you want to doing that, you
-must generate the makefiles  first.
+CMake can compile all examples of MTL4, but if you want to doing that, you
+must generate the makefiles first.
 
-\section cmake_preps Preparations:
+\section cmake_preps Preparations:\n
+- <b>On Linux:</b>
 
-
--# Cmake uses one environment variable and that is BOOST_ROOT to locate the Boost directory.
+-# Cmake uses one environment variable and that is BOOST_ROOT to locate the Boost directory (it would be installed normally in /usr/include/boost)
+   If no exist BOOST_ROOT, CMake will search Boost by default in that directory..
    In bash for example, you can set it with the comand "export", e.g.:\n\n
     <tt>export BOOST_ROOT=/usr/include/boost</tt>\n\n
     Note: you can write that line in your file ~/.bashrc, to have it all the time.
     With csh or tcsh you need accordingly:\n\n
-    <tt>setenv BOOST_ROOT/usr/include/boost</tt>\n\n
-    which can be put into ~/.cshrc as well.
+    <tt>setenv BOOST_ROOT /usr/include/boost</tt>\n\n
+    which can be put into ~/.cshrc as well.\n
 -# You need a C++ compiler, e.g. g++. On most Linux distributions, this is installed 
-   by default. If not you can install it easily with a package manager.
+   by default. If not you can install it easily with a package manager.\n\n
+   
+- <b>On Windows:</b>   
+   
+   -# Cmake uses the environment variable BOOST_ROOT to locate the Boost directory
+   If no exist BOOST_ROOT, CMake will search Boost by default in c:\boost.
+   You can use MS-Dos to set this variable with the command "set" e.g.:\n\n
+   <tt>set BOOST_ROOT=c:/boost</tt>\n
+   -# You need a version of Visual Studio (2005, 2008 or 2010) 
+   
    
 \section cmake_run Running CMake
 
