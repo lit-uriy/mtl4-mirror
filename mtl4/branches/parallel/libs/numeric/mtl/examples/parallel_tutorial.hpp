@@ -257,6 +257,8 @@ Coming soon.
 
 -# Warm up
    -# \subpage parallel_hello_world 
+-# Distributed matrices and vectors
+   -# \subpage distributed_vector
 
 -# Advanced
    -# \subpage boost_mpi_serialization
@@ -311,8 +313,10 @@ Some parallel linear solvers have replicated matrices (e.g. the orthogonalizatio
 but such matrices are not computed on one process and sent to the others but calculated simultaneously
 on each process.
 
-*/
+\if Navigation \endif
 
+
+*/
 
 //-----------------------------------------
 
@@ -321,6 +325,67 @@ on each process.
 /*! \page distributed_vector Distributed vector
 
 
+The class vector::distributed is parametrized by a non-distributed vector class
+to be extensible for future vector classes (e.g. one with data on GPU memory) 
+and to applicable to third-part vector classes.
+
+The example below shows a simple set up for a distributed vector:
+
+\include mpi_3_distributed_vector.cpp
+
+The vector \c v has a global size of 8.
+In this example we do not specify how the vector is distributed but leave this decision to the library.
+Not that the <b>sub-vectors do not overlap</b> as in some other libraries.
+Each global entry has a unique location.
+(Maybe overlapping will be implemented some day but not in the near future.)
+
+An important difference to non-distributed vectors is the obligation of using 
+an inserter to set values.
+One can also use an inserter to set non-distributed vectors but this is not mandatory.
+Generic implementations that shall be used both on one and on multiple processors must
+use an inserter; implementations that always run on a single memory (we have not yet
+explicitly programmed for multi-threading and vector element access is not atomic)
+can be realized without inserter for the sake of simplicity and clearity.
+If you are not familiar with the inserter concept, you should read the
+page \ref matrix_insertion.
+There is a similar issue between sparse and dense matrices where dense matrices can be set
+directly whereas sparse matrices or generic implementations require inserters.
+
+
+In the example, we inserted all values on process 0.
+The distributed inserter sends remotely inserted values to the according process.
+If one omits the \c if, the insertion would be performed on all processes and
+each entry would be inserted \c p times on \p processes.
+In this case, the entry would be overwritten \c p times and the result would be the same.
+
+The insertion is implemented as follows.
+If an entry is  local then it is inserted directly.
+Remote entries are agglomerated in a buffer and during the destruction of the distributed inserter
+sent to the according process and inserted there.
+
+In simulation applications, the vector entries are computed usually by summation over partial contributions
+(from finite elements or cells).
+This summation can be easily performed with an inserter:
+
+\include mpi_3_distributed_vector_update.cpp
+
+The inserter is defined with an \c update_plus functor as second template argument.
+In this case, all contributions to a vector element are added.
+As one can see in the example, one can insert values in an arbitrary process and they
+are sent and accumulated transparently.
+Of course, it is important in large-scale applications that the majority of insertions
+is local to avoid excessive communication.
+In a simulation context that means that a vertex is located in one of the processes 
+of the containing elements or cells.
+Please note that dense data structures are not automatically initialized and that one
+must set the vector to 0 (e.g. in the constructor) before starting an additive insertion.
+
+The distributed vector class has two template arguments: the local vector class (as seen in the
+example) and a distribution type.
+The latter is by default block distribution.
+
+
+\if Navigation \endif
 
 
 */
