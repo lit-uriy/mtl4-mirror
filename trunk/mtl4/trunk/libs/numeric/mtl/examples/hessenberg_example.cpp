@@ -1,7 +1,7 @@
 #include <iostream>
 #include <boost/numeric/mtl/mtl.hpp>
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     using namespace mtl;
     dense2D<double>       A(5, 5), H(5, 5);  A= 0.0;  

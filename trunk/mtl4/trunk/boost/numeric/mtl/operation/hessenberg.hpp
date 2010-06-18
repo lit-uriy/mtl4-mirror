@@ -135,6 +135,7 @@ Matrix inline hessenberg(const Matrix& A)
 template <typename Matrix>
 Matrix inline hessenberg_q(const Matrix& A)
 {
+    using std::abs;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i
     typedef typename Collection<Matrix>::size_type    size_type;
