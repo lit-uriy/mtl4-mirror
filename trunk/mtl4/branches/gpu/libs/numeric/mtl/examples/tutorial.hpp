@@ -433,7 +433,7 @@ must generate the makefiles first.
     Note: you can write that line in your file ~/.bashrc, to have it all the time.
     With csh or tcsh you need accordingly:\n\n
     <tt>setenv BOOST_ROOT /usr/include/boost</tt>\n\n
-    which can be put into ~/.cshrc as well.\n
+    which can be put into ~/.cshrc as well.\n\n\n
 -# You need a C++ compiler, e.g. g++. On most Linux distributions, this is installed 
    by default. If not you can install it easily with a package manager.\n\n
    
@@ -442,22 +442,38 @@ must generate the makefiles first.
    -# Cmake uses the environment variable BOOST_ROOT to locate the Boost directory
    If no exist BOOST_ROOT, CMake will search Boost by default in c:\boost.
    You can use MS-Dos to set this variable with the command "set" e.g.:\n\n
-   <tt>set BOOST_ROOT=c:/boost</tt>\n
-   -# You need a version of Visual Studio (2005, 2008 or 2010) 
+   <tt>set BOOST_ROOT=c:/boost</tt>\n\n\n
+   -# You need a version of Visual Studio (2005, 2008 or 2010)\n\n\n 
    
    
 \section cmake_run Running CMake
+- <b>On Linux:</b>
 
-Now you must go to the directory of MTL4 and write on the terminal:\n\n
+
+-# Now you must go to the directory of MTL4 and write on the terminal:\n\n
 <tt>cmake .</tt> \n\n
-to create all automatic files to compile the examples of
-MTL4.
+to create all automatic files (makefiles) to compile the examples of MTL4.\n\n\n
+
+- <b>On Windows:</b>
+
+-# Now you must go to the directory of MTL4 and write on the terminal:\n\n
+<tt>cmake .</tt> \n\n
+to create all necesary files to compile the examples of MTL4 with Visual Studio.\n\n\n
+
 
 \section cmake_test Building tests and examples
+- <b>On Linux:</b>
 
-After that, you can go to the directory "libs/numeric/mtl/examples",
-to write "make" and all examples will be compiled.
+-# After that, you can go to the directory "libs/numeric/mtl/examples", "libs/numeric/itl/test" or "libs/numeric/mtl/test",and to write \n\n 
+<tt>make</tt> \n\n and all examples will be compiled leaving in an executable file with the same name as example.\n\n\n
 
+
+
+- <b>On Windows:</b>
+
+-# After that, you can go to the directory "libs/numeric/mtl/examples", "libs/numeric/itl/test" or "libs/numeric/mtl/test", and you will find a file with the name "mtl4_examples", "mtl4_tests" or "mtl4_itl" respectively, depending on where you are
+<tt></tt>\n\n
+-# You need to open that file with Visual Studio, and all examples of mtl4 will be loaded and ready to compile, 
 
 
 

@@ -1,4 +1,4 @@
-project (boost_mtl4_tests)
+project (mtl4_tests)
 
 # DERIVED variables
 # none in this CMakeLists.txt
