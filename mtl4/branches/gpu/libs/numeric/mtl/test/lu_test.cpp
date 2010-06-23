@@ -16,7 +16,6 @@
 
 using namespace std;
 
-
 double f(double) { cout << "double\n"; return 1.0; } 
 complex<double> f(complex<double>) { cout << "complex\n"; return complex<double>(1.0, -1.0); }
 

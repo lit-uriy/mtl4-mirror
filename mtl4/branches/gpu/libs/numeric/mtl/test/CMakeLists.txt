@@ -1,5 +1,5 @@
 project (mtl4_tests)
-
+#include(CTest)
 # DERIVED variables
 # none in this CMakeLists.txt
 
@@ -15,9 +15,6 @@ include_directories("${BOOST_ROOT}")
 include_directories("${MTL_BOOST_ROOT}")
 
 
-# message("CmakeList 2 Boost_root: "${BOOST_ROOT})
-# message("CmakeList 2 Mtl_Boost_root: "${MTL_BOOST_ROOT})
-# message("CmakeList 2 NVCC_path: "${NVCC_PATH})
 
 ###############Cuda´s Things##############
 file (GLOB CUSOURCES *.cu)
@@ -57,11 +54,10 @@ endif (MSVC80)
 # set(EXECUTABLE_OUTPUT_PATH prueba)
 # message("aqui---> "${EXECUTABLE_OUTPUT_PATH})
 
-
+#enable_testing()
 foreach (source ${SOURCES})
     get_filename_component (test ${source} NAME_WE)		# filename without extension
     add_executable (${test} ${source} ${INCLUDES})
-#    SET(LIST_OF_TEST ${LIST_OF_TEST} ${test})
     add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
 endforeach (source)
 
@@ -69,24 +65,13 @@ endforeach (source)
 
 
 
-# create_test_sourcelist(
-#           ${SOURCES} #sourceListName
-#           prueba_testing
-#           ${LIST_OF_TEST} ${test}
-# #          EXTRA_INCLUDE include.h
-# #          FUNCTION function
-# )
-
-
 
 
 ########################################### END MTL4 CPP
 
 
-# ##############################    cccccc   UUU    UUU  DDDDDD      AA     #################
-# ##############################   ccc       UU      UU  DD    DD   A AA    #################
-# ##############################   ccc       UU      UU  DD    DD  AAAAAA   #################
-# ##############################    cccccc     UUUUUU    DDDDDD   AA    AA  #################
+
+# ############################## CUDA #################
 
 
 
