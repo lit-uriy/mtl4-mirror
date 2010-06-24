@@ -9,13 +9,64 @@ cmake_minimum_required(VERSION 2.6)
 # so that we can pick up boost/test/minimal.hpp
 # set (BOOST_ROOT "please-set-boost-include-dir" CACHE STRING "BOOST include directory")
 
-#set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
-#find_path(Boost_INCLUDE_DIR boost/version.hpp PATHS "${BOOST_ROOT}")
-#if(NOT Boost_INCLUDE_DIR)
-#  message(FATAL_ERROR "boost wasn't found, please set BOOST_ROOT")
-#endif(NOT Boost_INCLUDE_DIR)
+################ LINUX
+#Find Boost  on Linux
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  message(STATUS "You use : "${CMAKE_SYSTEM_NAME})   #system name
+  
+  #Path of Boost
+  set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
+  find_package(Boost)
 
-set (BOOST_ROOT ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
+  if(Boost_FOUND)
+   message(STATUS "Boost in " ${Boost_INCLUDE_DIR}) #directory of Boost
+   set (BOOST_ROOT ${Boost_INCLUDE_DIR})
+  endif(Boost_FOUND)
+
+  #Find Manualy the path of Boost
+  if(NOT Boost_FOUND)
+    if(NOT IS_DIRECTORY /usr/include/boost)
+      message(FATAL_ERROR "Searching Manually Boost: FATAL ERROR: Boost Not Found in /usr/include/boost, Please set BOOST_ROOT")
+    else(NOT IS_DIRECTORY /usr/include/boost)
+      set (BOOST_ROOT /usr/include/boost/)
+      message(STATUS "Searching Manually Boost: Bost Found in /usr/include/boost/")
+      find_package(Boost)
+    endif(NOT IS_DIRECTORY /usr/include/boost)
+  endif(NOT Boost_FOUND)
+
+endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+
+################ END LINUX
+
+################ WINDOWS
+
+#Find Boost  on Windows
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+ message(STATUS ${CMAKE_SYSTEM_NAME})
+ 
+  #Path of Boost
+  set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
+  find_package(Boost)
+  
+  if(Boost_FOUND)
+   message(STATUS "Boost in " ${Boost_INCLUDE_DIR}) #directory of Boost
+   set (BOOST_ROOT ${Boost_INCLUDE_DIR})
+  endif(Boost_FOUND)
+
+    #Find Manualy the path of Boost
+    if(NOT Boost_FOUND)
+      if(NOT IS_DIRECTORY c:/boost)
+        message(FATAL_ERROR "Searching Manually Boost: FATAL ERROR : Boost Not Found in c:/boost, Please set BOOST_ROOT")
+      else(NOT IS_DIRECTORY c:/boost)
+        set (BOOST_ROOT c:/boost)
+        message(STATUS "Searching Manually Boost: Found in c:/boost")
+	find_package(Boost)
+      endif(NOT IS_DIRECTORY c:/boost)
+    endif(NOT Boost_FOUND)
+endif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+
+################ END WINDOWS
+
 
 
 # set the local BOOST MTL4 include directory
@@ -26,12 +77,6 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 include_directories($ENV{BOOST_ROOT} ${MTL_BOOST_ROOT})
 
 ######################## DevStudio funkyness   ################################
-# .NET 2003
-if (MSVC71)
-    add_definitions(/DMTL_ASSERT_FOR_THROW /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" )
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
-endif (MSVC71)
 # .NET 2005
 if (MSVC80)
 	# to quiet DevStudio 2005 secure code warnings
