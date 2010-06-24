@@ -39,7 +39,7 @@ void test1(Matrix& m, double tau)
 int test_main(int argc, char* argv[])
 {
 
-  const int N = 40; // Original from Jan had 2000
+  const int N = 10; // Original from Jan had 2000
   const int Niter = 100*N;
 
   using itl::pc::identity; using itl::pc::ilu_0; using itl::pc::ic_0; using itl::pc::diagonal;
