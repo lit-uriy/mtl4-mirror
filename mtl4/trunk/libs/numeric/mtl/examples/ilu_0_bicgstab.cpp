@@ -7,10 +7,10 @@ using namespace itl;
 
 int main(int argc, char* argv[])
 {
-    const int size = 100, N = size * size; 
+    const int size = 40, N = size * size; 
     typedef compressed2D<double>  matrix_type;
 
-    // Set up a matrix 10,000 x 10,000 with 5-point-stencil
+    // Set up a matrix 1,600 x 1,600 with 5-point-stencil
     matrix_type                   A(N, N);
     matrix::laplacian_setup(A, size, size);
 

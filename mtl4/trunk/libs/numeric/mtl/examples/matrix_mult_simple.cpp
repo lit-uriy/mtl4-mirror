@@ -4,7 +4,7 @@ int main(int argc, char* argv[])
 {
     using namespace mtl; using namespace mtl::matrix;
     
-    const unsigned n= 100;
+    const unsigned n= 20;
     dense2D<double>                            A(n, n), B(n, n);
     morton_dense<double, doppled_64_row_mask>  C(n, n);
 
