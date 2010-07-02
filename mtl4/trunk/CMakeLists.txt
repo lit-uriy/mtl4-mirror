@@ -103,6 +103,7 @@ endif (MSVC90)
 
 # enable test generation
 enable_testing()
+include(CTest)
 
 # Descent into the test program directory to build the test suite
 # MTL4 test programs
