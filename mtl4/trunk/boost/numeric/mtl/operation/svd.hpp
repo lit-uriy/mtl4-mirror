@@ -77,7 +77,7 @@ boost::tuple<Matrix, Matrix, Matrix >
 inline svd(const Matrix& A, double tol= 10e-10)
 {
     typedef typename Collection<Matrix>::size_type    size_type;
-    size_type    ncols= num_cols(A), nrows= num_rows(A), loops, col= ncols, row= nrows;
+    size_type    ncols= num_cols(A), nrows= num_rows(A), col= ncols, row= nrows;
     if (nrows != ncols) // important for right dimension
 	std::swap(row, col);
 

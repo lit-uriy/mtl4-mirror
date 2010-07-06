@@ -31,7 +31,7 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
     unsigned size=4, row= size+1, col=size;
 
-    double b, tol(0.00001);
+    double tol(0.00001);
     dense_vector<double>                    vec(size), vec1(size);
     dense2D<double>                     A(row, col),   Q(row, row),   R(row, col),   A_test(row, col),
 					A_t(col, row), Q_t(col, col), R_t(col, row), A_t_test(col, row);
