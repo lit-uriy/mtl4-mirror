@@ -37,10 +37,10 @@ namespace mtl {
 	template <typename Matrix, typename Functor>
 	inline void assign_each_nonzero(Matrix& m, const Functor& f)
 	{
-	    typename traits::value<Matrix>::type     value(m); 
+	    typename mtl::traits::value<Matrix>::type     value(m); 
 
-	    typedef typename traits::range_generator<tag::major, Matrix>::type     cursor_type;
-	    typedef typename traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
+	    typedef typename mtl::traits::range_generator<tag::major, Matrix>::type     cursor_type;
+	    typedef typename mtl::traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
 
 	    for (cursor_type cursor = begin<tag::major>(m), cend = end<tag::major>(m); cursor != cend; ++cursor) 
 		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); 
