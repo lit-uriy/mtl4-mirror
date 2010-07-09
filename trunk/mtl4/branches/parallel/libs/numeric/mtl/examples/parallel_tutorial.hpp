@@ -383,6 +383,18 @@ must set the vector to 0 (e.g. in the constructor) before starting an additive i
 The distributed vector class has two template arguments: the local vector class (as seen in the
 example) and a distribution type.
 The latter is by default block distribution.
+So far we left it to the library to decide how to distribute the vector.
+MTL4 distributes the entries almost uniformly over the processes with potentially one 
+more on first processes.
+As we have seen above, 8 entries on 3 processes are split into 3; 3; 2.
+One can also choose any other block distribution as long as it is large enough for the vector.
+A block distribution is defined by \c p+1 entries for the first global index 
+of each process and the maximal global size.
+
+
+
+
+
 
 
 \if Navigation \endif
