@@ -100,11 +100,11 @@ class dense_vector
     }
 
     explicit dense_vector( size_type n, value_type *address )
-      : memory_base( address, n ) 
+      : memory_base( address, n, true ) 
     { static_check( n ); }
 
     dense_vector( const self& src )
-      : memory_base( size(src) ) 
+      : memory_base( src ) 
     {
 	using std::copy;
 	copy(src.begin(), src.end(), begin());
