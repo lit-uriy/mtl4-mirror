@@ -44,7 +44,7 @@ void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
     std::cout << "Factorizing A = \n" << As << "-> LU = \n" << LU;
     // std::cout << "L = \n" << Ls << "\nU = \n" << Us;
 
-    if (std::abs(LU[1][2] - Ls[1][2]) > 0.001) 
+    if (std::abs(LU[2][1] - Ls[2][1]) > 0.001) 
 	throw "Wrong value in L for sparse ILU(0) factorization";
 
     if (std::abs(LU[2][2] - 1. / Us[2][2]) > 0.001)
