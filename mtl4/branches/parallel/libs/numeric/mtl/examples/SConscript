@@ -1,5 +1,5 @@
 Import('opt_env mpi_opt_env check full_warnings')
-import glob
+import glob, re
 
 sources = glob.glob("*.cpp")
 

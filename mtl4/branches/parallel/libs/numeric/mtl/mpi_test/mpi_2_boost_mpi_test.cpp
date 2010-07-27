@@ -41,7 +41,7 @@ int test_main(int argc, char* argv[])
 	world.send(0, 1, std::string("world"));
   }
 
-  return 0;
+  return 0; 
 }
 
  
