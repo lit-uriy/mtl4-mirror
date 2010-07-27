@@ -471,6 +471,7 @@ Export('env debug_env mpi_debug_env opt_env high_opt_env mpi_opt_env mpi_high_op
 SConscript(['libs/numeric/mtl/build/SConscript', 
             'libs/numeric/mtl/test/SConscript', 
             'libs/numeric/mtl/test_with_optimization/SConscript', 
+            'libs/numeric/mtl/mpi_test/SConscript', 
             'libs/numeric/mtl/examples/SConscript', 
             'libs/numeric/mtl/experimental/SConscript',
             'libs/numeric/mtl/timing/SConscript', 
