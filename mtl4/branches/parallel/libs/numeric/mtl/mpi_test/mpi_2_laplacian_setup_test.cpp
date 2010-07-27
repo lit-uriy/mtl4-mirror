@@ -28,18 +28,16 @@ void test(Matrix& matrix, unsigned dim1, unsigned dim2, const char* name)
     
     mpi::communicator comm(communicator(matrix));
 
-    if (comm.rank() == 0 && dim1 > 1 && dim2 > 1) {
+    if (comm.rank() == 0 && dim1 == 3 && dim2 == 4) {
 	typename mtl::Collection<Matrix>::value_type four(4.0), minus_one(-1.0), zero(0.0);
-#if 0
-	if (matrix[0][0] != four)
+	if (local(matrix)[0][0] != four)
 	    throw "wrong diagonal";
-	if (matrix[0][1] != minus_one)
+	if (local(matrix)[0][1] != minus_one)
 	    throw "wrong east neighbor";
-	if (matrix[0][dim2] != minus_one)
+	if (local(matrix)[0][dim2] != minus_one)
 	    throw "wrong south neighbor";
-	if (dim2 > 2 && matrix[0][2] != zero)
+	if (dim2 > 2 && local(matrix)[0][2] != zero)
 	    throw "wrong zero-element";
-#endif
     }
 }
 

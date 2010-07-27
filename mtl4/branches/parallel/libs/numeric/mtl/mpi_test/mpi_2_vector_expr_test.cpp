@@ -29,7 +29,7 @@ void test(Vector& v, const char* name)
     Vector u(5), w(5, value_type(2.0)), x(5, value_type(3.0));
 
 
-    for (int i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
+    for (unsigned i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
 	local(v)[i]= value_type(double(j+1) * pow(-1.0, j)); 
 
     mtl::par::single_ostream sout;
@@ -46,13 +46,13 @@ void test(Vector& v, const char* name)
 
     u= v + w + x;
     sout << "u= v + w + x is " << u << "\n";
-    for (int i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
+    for (unsigned i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
 	if (std::abs(value_type(double(j+1) * pow(-1.0, j) + 5.0) - u[j]) > 0.001)
 	    throw "wrong value in addition";
 
     u-= 3.0 * w;
     sout << "u-= 3 * w is " << u << "\n";
-    for (int i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
+    for (unsigned i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
 	if (std::abs(value_type(double(j+1) * pow(-1.0, j) - 1.0) - u[j]) > 0.001)
 	    throw "wrong value in subtraction";
 

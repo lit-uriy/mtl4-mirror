@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/par/rank_ostream.hpp>
 #include <boost/numeric/mtl/par/single_ostream.hpp>
 
+#include <boost/numeric/mtl/operation/local.hpp>
 #include <boost/numeric/mtl/operation/parallel_utilities.hpp>
 
 #include <boost/numeric/mtl/par/agglomerate.hpp>
