@@ -34,10 +34,10 @@ namespace mtl {
 	{
 	    typedef typename mtl::DistributedCollection<Matrix>::local_type local_type;
 
-	    int csize= communicator(A).size();
-	    assert(rank >= 0 && rank < csize);
+	    std::size_t csize= communicator(A).size();
+	    assert(rank >= 0u && rank < csize);
 
-	    std::vector<std::size_t> row_blocks(csize+1, 0), col_blocks(csize+1, 0);
+	    std::vector<std::size_t> row_blocks(csize+1, 0u), col_blocks(csize+1, 0u);
 	    for (std::size_t i= rank+1; i <= csize; i++) 
 		row_blocks[i]= num_rows(A), col_blocks[i]= num_cols(A);
 	    par::block_distribution row_dist(row_blocks), col_dist(col_blocks);
@@ -48,7 +48,7 @@ namespace mtl {
 	    std::vector<std::size_t> part(max(num_rows(local(A)), num_cols(local(A))), rank);
 	    Matrix B(A, par::parmetis_migration(row_distribution(A), part));
 #endif
-	    return communicator(A).rank() == rank ? local(B) : local_type();
+	    return std::size_t(communicator(A).rank()) == rank ? local(B) : local_type();
 	}
 
 	/// Agglomerate distributed matrix \p A on \p rank (default is 0) by migration.
