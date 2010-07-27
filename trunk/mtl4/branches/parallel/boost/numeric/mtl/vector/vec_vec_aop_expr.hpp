@@ -147,7 +147,7 @@ struct vec_vec_aop_expr
 
 	LocalE2 local_second(local(second));
 	vec_vec_aop_expr<LocalE1, LocalE2, SFunctor> local_tmp(local(first), local_second);
-	int dummy= 4;
+	// int dummy= 4; // for debugging
     }
 
   public:

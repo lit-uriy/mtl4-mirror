@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     mpi::communicator world;
 
     std::srand(time(0) + world.rank());
-    int my_number = std::rand();
+    // int my_number = std::rand();
 
     typedef mtl::dense_vector<double>      vector_type;
     typedef vector_plus<vector_type>       plus;

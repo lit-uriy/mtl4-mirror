@@ -148,7 +148,7 @@ struct global_non_zeros_aux
 	
 	typename vec_type::iterator new_end = remove_if(non_zeros.begin(), non_zeros.end(), is_remote);
 	non_zeros.erase(new_end, non_zeros.end());
-	for (unsigned p= 0; p < row_dist.size(); p++)
+	for (int p= 0; p < row_dist.size(); p++)
 	    consume(non_zeros, recv_buffers[p]);
     }
 
