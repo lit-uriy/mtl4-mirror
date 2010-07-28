@@ -109,7 +109,7 @@ void simulated_annealing(const vector_t& phreeqc_para, vector_t& min3p_para,
 
 int main(int argc, char* argv[])
 {
-    int max_iter= 10000; 
+    int max_iter= 100; 
     if (argc > 1) max_iter= atoi(argv[1]);
 
     vector_t n2p(5), n2m(3); // N2 parameters for Phreeqc and Min3p Henry coefficients
