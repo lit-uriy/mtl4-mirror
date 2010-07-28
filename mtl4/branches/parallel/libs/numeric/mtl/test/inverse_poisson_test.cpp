@@ -104,7 +104,7 @@ private:
 int test_main(int argc, char* argv[])
 {
     m_type A;
-    assemble_poisson2D(A, 70);
+    assemble_poisson2D(A, 10);
 
     mtl::dense_vector<double>   x(num_rows(A));
     mtl::seed<double>           seed;

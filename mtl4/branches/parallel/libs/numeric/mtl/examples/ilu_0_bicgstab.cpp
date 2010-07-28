@@ -7,10 +7,10 @@ using namespace itl;
 
 int main(int argc, char* argv[])
 {
-    const int size = 100, N = size * size; 
+    const int size = 10, N = size * size; 
     typedef compressed2D<double>  matrix_type;
 
-    // Set up a matrix 10,000 x 10,000 with 5-point-stencil
+    // Set up a matrix 100 x 100 with 5-point-stencil
     matrix_type                   A(N, N);
     matrix::laplacian_setup(A, size, size);
 
@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     b= A * x; x= 0;
     
     // Termination criterion: r < 1e-6 * b or N iterations
-    noisy_iteration<double>       iter(b, 500, 1.e-6);
+    noisy_iteration<double>       iter(b, N, 1.e-6);
     
     // Solve Ax == b with left preconditioner P
     bicgstab(A, x, b, P, iter);
