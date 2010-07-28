@@ -32,8 +32,9 @@ set (PMTL_LIB_FLAGS ${CMAKE_LIBRARY_PATH_FLAG} ${MY_BOOST_ROOT}/lib ${CMAKE_LINK
 set (PMTL_MACRO_FLAGS "-DMTL_HAS_MPI" "-DBOOST_MPI_HOMOGENEOUS" "-Wno-array-bounds") # todo: portable
 
 
+#################################################################################
 ######################## DevStudio funkyness   ################################
-# .NET 2005
+#################################################################################
 if (MSVC80 OR MSVC90)
 	# to quiet DevStudio 2005 secure code warnings
     add_definitions(/D_SCL_SECURE_NO_WARNINGS)
@@ -45,6 +46,34 @@ if (MSVC80 OR MSVC90)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
 endif (MSVC80 OR MSVC90)
 
+#################################################################################
+######################## Macros for sub-directories   ###########################
+#################################################################################
+
+macro (compile_all)
+    # cycle through the sources
+    # The directory assumes that each cpp file is a separate test
+    # so, create a executable target and an associated test target
+    foreach (source ${ARGV})
+        get_filename_component (test ${source} NAME_WE)		# filename without extension
+        add_executable (${test} ${source})
+        add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
+    endforeach (source)
+endmacro (compile_all)
+
+# same with MPI (boost::mpi)
+macro (mpi_compile_all)
+    foreach (source ${ARGV})
+        get_filename_component (test ${source} NAME_WE)		# filename without extension
+        add_custom_command(OUTPUT ${test} DEPENDS ${source} COMMAND ${MPI_COMPILER} ${PMTL_MACRO_FLAGS} ${PMTL_INC_FLAGS} ${source} -o ${test} ${PMTL_LIB_FLAGS})
+        add_custom_target(${test}_helper ALL DEPENDS ${test} )
+        set(test_name "${test}")
+        # message(STATUS "${test_name}")
+        string(REGEX REPLACE "mpi_([0-9]*)_.*" "\\1" nprocs "${test_name}")
+        add_test (${test} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${nprocs} ${EXECUTABLE_OUTPUT_PATH}/${test})
+    endforeach (source)
+endmacro (mpi_compile_all)
+
 
 # enable test generation
 enable_testing()
@@ -52,12 +81,15 @@ enable_testing()
 # Descent into the test program directory to build the test suite
 # MTL4 test programs
 add_subdirectory("libs/numeric/mtl/test")
-# MTL4 MPI test programs
 add_subdirectory("libs/numeric/mtl/mpi_test")
+
 # as well as the example programs
 add_subdirectory("libs/numeric/mtl/examples")
+add_subdirectory("libs/numeric/mtl/mpi_examples")
+
 # ITL test programs
 add_subdirectory("libs/numeric/itl/test")
+add_subdirectory("libs/numeric/itl/mpi_test")
 
 #################################################################################
 ## handy for learning CMAKE and debugging possible problems
