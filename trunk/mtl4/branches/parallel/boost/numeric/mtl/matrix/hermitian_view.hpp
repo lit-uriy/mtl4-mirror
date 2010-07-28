@@ -69,25 +69,29 @@ struct hermitian_view
 
 // TBD submatrix of Hermitian (not trivial)
 
-template <typename View, typename Functor, typename Ref>
-struct functor_view_helper
+template <typename View>
+struct view_helper
 {
-    functor_view_helper(const Functor& f, Ref& ref) : view_helper_member(f, ref) {}
+    template <typename T>
+    view_helper(T& x) : view_helper_member(x) {}
+
+    template <typename T, typename U>
+    view_helper(const T& x, const U& y) : view_helper_member(x, y) {}
+
     View view_helper_member; // ugly name avoid ambiguities in derived classes
 };
 
 
 template <class Matrix, typename RowDistribution, typename ColDistribution>
 struct hermitian_view<distributed<Matrix, RowDistribution, ColDistribution> >
-  : functor_view_helper<map_view<mtl::sfunctor::conj<typename Matrix::value_type>, distributed<Matrix, RowDistribution, ColDistribution> >, 
-			mtl::sfunctor::conj<typename Matrix::value_type>, const distributed<Matrix, RowDistribution, ColDistribution> >,
+  : view_helper<map_view<mtl::sfunctor::conj<typename Matrix::value_type>, distributed<Matrix, RowDistribution, ColDistribution> > >,
     distributed_transposed_view< map_view<mtl::sfunctor::conj<typename Matrix::value_type>,
 					  distributed<Matrix, RowDistribution, ColDistribution> > >
 {
     typedef mtl::sfunctor::conj<typename Matrix::value_type>         functor_type;
     typedef distributed<Matrix, RowDistribution, ColDistribution>    dist_type;
     typedef map_view<functor_type, dist_type>                        map_type;
-    typedef functor_view_helper<map_type, functor_type, const dist_type>           helper_base;
+    typedef view_helper<map_type>                                    helper_base;
     typedef distributed_transposed_view<map_type>                    base;
 
     explicit hermitian_view(const dist_type& A) : helper_base(functor_type(), A), base(helper_base::view_helper_member) {}
