@@ -9,13 +9,11 @@ cmake_minimum_required(VERSION 2.6)
 # so that we can pick up boost/test/minimal.hpp
 # set (BOOST_ROOT "please-set-boost-include-dir" CACHE STRING "BOOST include directory")
 
-#set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
-#find_path(Boost_INCLUDE_DIR boost/version.hpp PATHS "${BOOST_ROOT}")
-#if(NOT Boost_INCLUDE_DIR)
-#  message(FATAL_ERROR "boost wasn't found, please set BOOST_ROOT")
-#endif(NOT Boost_INCLUDE_DIR)
-
 set (MY_BOOST_ROOT "$ENV{BOOST_ROOT}" CACHE PATH "BOOST include directory") # CMake gets confused when same name in env and here
+find_path(Boost_INCLUDE_DIR boost/version.hpp PATHS "${MY_BOOST_ROOT}")
+if(NOT Boost_INCLUDE_DIR)
+  message(FATAL_ERROR "boost wasn't found, please set BOOST_ROOT")
+endif(NOT Boost_INCLUDE_DIR)
 
 find_package(Boost)
 
@@ -28,15 +26,15 @@ include_directories(${MY_BOOST_ROOT} ${MTL_BOOST_ROOT})
 
 find_package(MPI)
 
+## Extra definitions for Boost MPI (maybe write module FindBoostMPI
+set (PMTL_INC_FLAGS "-I${MTL_BOOST_ROOT}" "-I${MY_BOOST_ROOT}") # to do: portable
+set (PMTL_LIB_FLAGS ${CMAKE_LIBRARY_PATH_FLAG} ${MY_BOOST_ROOT}/lib ${CMAKE_LINK_LIBRARY_FLAG} boost_serialization ${CMAKE_LINK_LIBRARY_FLAG} boost_mpi) # todo find path automatically
+set (PMTL_MACRO_FLAGS "-DMTL_HAS_MPI" "-DBOOST_MPI_HOMOGENEOUS" "-Wno-array-bounds") # todo: portable
+
+
 ######################## DevStudio funkyness   ################################
-# .NET 2003
-if (MSVC71)
-    add_definitions(/DMTL_ASSERT_FOR_THROW /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" )
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
-endif (MSVC71)
 # .NET 2005
-if (MSVC80)
+if (MSVC80 OR MSVC90)
 	# to quiet DevStudio 2005 secure code warnings
     add_definitions(/D_SCL_SECURE_NO_WARNINGS)
     add_definitions(/D_CRT_SECURE_NO_WARNINGS)
@@ -45,19 +43,8 @@ if (MSVC80)
 	# you may override them, but I have not found it necessary
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-endif (MSVC80)
+endif (MSVC80 OR MSVC90)
 
-# .NET 2008
-if (MSVC90)
-	# to quiet DevStudio 2005 secure code warnings
-    add_definitions(/D_SCL_SECURE_NO_WARNINGS)
-    add_definitions(/D_CRT_SECURE_NO_WARNINGS)
-    add_definitions(/DMTL_ASSERT_FOR_THROW /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" /D"_SECURE_SCL=0" )
-	# specialty flags such as the C++ language exception model etc. come from the init flags determined by CMAKE
-	# you may override them, but I have not found it necessary
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-endif (MSVC90)
 
 # enable test generation
 enable_testing()
