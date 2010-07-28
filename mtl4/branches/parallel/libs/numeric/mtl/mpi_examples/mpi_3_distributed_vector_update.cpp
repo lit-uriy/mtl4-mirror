@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
     {
 	mtl::vector::inserter<vector_type, mtl::update_plus<float> > ins(v);
 	for (unsigned i= 0; i < size(v); ++i)
-	    if (i % world.size() == world.rank())
+	    if (int(i) % world.size() == world.rank())
 		ins[i] << float(world.rank());
 	    else
 		ins[i] << 0.1;
