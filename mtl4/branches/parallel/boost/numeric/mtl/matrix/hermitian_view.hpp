@@ -69,23 +69,29 @@ struct hermitian_view
 
 // TBD submatrix of Hermitian (not trivial)
 
-// Not FEniCS-suitable, member initialized before base class -> warning with -Wall
+template <typename View, typename Functor, typename Ref>
+struct functor_view_helper
+{
+    functor_view_helper(const Functor& f, Ref& ref) : view_helper_member(f, ref) {}
+    View view_helper_member; // ugly name avoid ambiguities in derived classes
+};
+
+
 template <class Matrix, typename RowDistribution, typename ColDistribution>
 struct hermitian_view<distributed<Matrix, RowDistribution, ColDistribution> >
-  : public distributed_transposed_view< map_view<mtl::sfunctor::conj<typename Matrix::value_type>,
-						 distributed<Matrix, RowDistribution, ColDistribution> > >
+  : functor_view_helper<map_view<mtl::sfunctor::conj<typename Matrix::value_type>, distributed<Matrix, RowDistribution, ColDistribution> >, 
+			mtl::sfunctor::conj<typename Matrix::value_type>, const distributed<Matrix, RowDistribution, ColDistribution> >,
+    distributed_transposed_view< map_view<mtl::sfunctor::conj<typename Matrix::value_type>,
+					  distributed<Matrix, RowDistribution, ColDistribution> > >
 {
     typedef mtl::sfunctor::conj<typename Matrix::value_type>         functor_type;
     typedef distributed<Matrix, RowDistribution, ColDistribution>    dist_type;
     typedef map_view<functor_type, dist_type>                        map_type;
+    typedef functor_view_helper<map_type, functor_type, const dist_type>           helper_base;
     typedef distributed_transposed_view<map_type>                    base;
 
-    explicit hermitian_view(const dist_type& A) : conj_view(functor_type(), A), base(conj_view) {}
-
-  private:
-    map_type conj_view;
+    explicit hermitian_view(const dist_type& A) : helper_base(functor_type(), A), base(helper_base::view_helper_member) {}
 };
-
 
 }} // namespace mtl::matrix
 
