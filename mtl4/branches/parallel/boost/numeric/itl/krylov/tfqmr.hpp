@@ -36,7 +36,7 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
 
     const Scalar                zero= math::zero(Scalar()), one= math::one(Scalar());
-    Scalar                      theta(zero), eta(zero), tau, rho, rhon, sigma, alpha, beta, c, m;
+    Scalar                      theta(zero), eta(zero), tau, rho, rhon, sigma, alpha, beta, c;
     Vector                      rt(b - A*solve(R, x)) /* shift x= R*x */, r(solve(L, rt)), u1(resource(x)), u2(resource(x)), 
                                 y1(resource(x)), y2(resource(x)), w(resource(x)), d(resource(x), zero), v(resource(x));
 
