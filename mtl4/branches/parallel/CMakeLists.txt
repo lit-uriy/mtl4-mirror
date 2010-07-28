@@ -15,15 +15,18 @@ cmake_minimum_required(VERSION 2.6)
 #  message(FATAL_ERROR "boost wasn't found, please set BOOST_ROOT")
 #endif(NOT Boost_INCLUDE_DIR)
 
-set (BOOST_ROOT ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
+set (MY_BOOST_ROOT "$ENV{BOOST_ROOT}" CACHE PATH "BOOST include directory") # CMake gets confused when same name in env and here
 
+find_package(Boost)
 
 # set the local BOOST MTL4 include directory
 # to pick up the MTL4 include files
 set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root directory")
 
 # include_directories(${Boost_INCLUDE_DIR})
-include_directories($ENV{BOOST_ROOT} ${MTL_BOOST_ROOT})
+include_directories(${MY_BOOST_ROOT} ${MTL_BOOST_ROOT})
+
+find_package(MPI)
 
 ######################## DevStudio funkyness   ################################
 # .NET 2003
@@ -62,6 +65,8 @@ enable_testing()
 # Descent into the test program directory to build the test suite
 # MTL4 test programs
 add_subdirectory("libs/numeric/mtl/test")
+# MTL4 MPI test programs
+add_subdirectory("libs/numeric/mtl/mpi_test")
 # as well as the example programs
 add_subdirectory("libs/numeric/mtl/examples")
 # ITL test programs
