@@ -5,12 +5,11 @@ Import('mpi_debug_env check full_warnings')
 sources = glob.glob("*test.cpp")
 sources.remove('mpi_3_vector_migration_test.cpp')
 
-mpi_programs = []
+mpi_programs = mpi_debug_env.Program(['mpi_2_mpi_log_first.cpp', 'mpi_2_mpi_log_second.cpp'])
+
 for p in sources:
 	if 'mpi_3_parmetis_matrix_migration_test.cpp' == p and mpi_debug_env.Dictionary()['CCFLAGS'].count('-DMTL_HAS_TOPOMAP'):
 		mpi_programs.append(mpi_debug_env.Program([p, '../../../../../../../../Software/topomap/virt_graph_scal.o']))
-	elif 'mpi_2_mpi_log_test.cpp' == p:
-		mpi_programs.append(mpi_debug_env.Program([p, 'mpi_2_mpi_log_second.cpp']))
 	else:
 		mpi_programs.append(mpi_debug_env.Program(p))
 
