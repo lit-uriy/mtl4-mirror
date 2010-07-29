@@ -34,6 +34,16 @@ inline void start_next(const communicator& comm)
 	comm.send(comm.rank() + 1, 787, 787);
 }
 
+inline void end_serialization(const communicator& comm)
+{
+    if (comm.rank() == comm.size() - 1)
+	comm.send(0, 788, 788);
+    if (comm.rank() == 0) {
+	int xx;
+	comm.recv(comm.size() - 1, 788, xx);
+    }
+}
+
 }} // boost::mpi
 
 namespace mtl { namespace par {
@@ -48,7 +58,10 @@ inline void start_next(const base_distribution& dist)
     start_next(communicator(dist));
 }
 
-
+inline void end_serialization(const base_distribution& dist)
+{
+    end_serialization(communicator(dist));
+}
 
 }} // namespace mtl::par
 
