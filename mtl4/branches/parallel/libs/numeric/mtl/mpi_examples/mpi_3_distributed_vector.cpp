@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 		ins[i] << float(i) + 0.1;
     }
 
-    std::cout << "I am proc. " << world.rank() << " and my local part of v is " << local(v) << '\n';
+    std::cout << "I am proc. " << world.rank() << " and my local part of v is " << local(v) << '\n'; 
 
     return 0;
 }
