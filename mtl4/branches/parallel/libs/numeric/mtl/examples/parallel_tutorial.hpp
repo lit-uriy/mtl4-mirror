@@ -314,7 +314,7 @@ but such matrices are not computed on one process and sent to the others but cal
 on each process.
 
 \if Navigation \endif
-
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref distributed_vector 
 
 */
 
@@ -327,7 +327,7 @@ on each process.
 
 The class vector::distributed is parametrized by a non-distributed vector class
 to be extensible for future vector classes (e.g. one with data on GPU memory) 
-and to applicable to third-part vector classes.
+and to be applicable to third-part vector classes.
 
 The example below shows a simple set up for a distributed vector:
 
@@ -335,7 +335,7 @@ The example below shows a simple set up for a distributed vector:
 
 The vector \c v has a global size of 8.
 In this example we do not specify how the vector is distributed but leave this decision to the library.
-Not that the <b>sub-vectors do not overlap</b> as in some other libraries.
+Note that the <b>local sub-vectors do not overlap</b> as in some other libraries.
 Each global entry has a unique location.
 (Maybe overlapping will be implemented some day but not in the near future.)
 
@@ -350,16 +350,17 @@ If you are not familiar with the inserter concept, you should read the
 page \ref matrix_insertion.
 There is a similar issue between sparse and dense matrices where dense matrices can be set
 directly whereas sparse matrices or generic implementations require inserters.
-
+Evidently, vectors use only one index where matrices use two of them but all other
+statements on inserters apply in the same manner (e.g. the use of update functors).
 
 In the example, we inserted all values on process 0.
 The distributed inserter sends remotely inserted values to the according process.
 If one omits the \c if, the insertion would be performed on all processes and
-each entry would be inserted \c p times on \p processes.
+each entry would be inserted \c p times on \p p processes.
 In this case, the entry would be overwritten \c p times and the result would be the same.
 
 The insertion is implemented as follows.
-If an entry is  local then it is inserted directly.
+If an entry is  local (i.e. it is inserted on the process where it resides) then it is inserted directly.
 Remote entries are agglomerated in a buffer and during the destruction of the distributed inserter
 sent to the according process and inserted there.
 
@@ -398,7 +399,7 @@ of each process and the maximal global size.
 
 
 \if Navigation \endif
-
+  Return to \ref parallel_hello_world &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref parallel_overview_ops 
 
 */
 
@@ -545,7 +546,7 @@ Todo: check which work in parallel
    - \subpage irange
 
 \if Navigation \endif
-
+  Return to \ref distributed_vector &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 
 */
 

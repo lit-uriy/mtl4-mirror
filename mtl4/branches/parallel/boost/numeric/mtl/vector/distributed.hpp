@@ -35,6 +35,10 @@
 
 namespace mtl { namespace vector {
 
+/// Class for distributed vectors
+/** \param Vector The non-distributed vector type for local data
+    \param Distribution The type of the distribution object, default is mtl::par::block_distribution
+**/
 template <typename Vector, typename Distribution>
 class distributed
   : public vec_expr< distributed<Vector, Distribution> >,
