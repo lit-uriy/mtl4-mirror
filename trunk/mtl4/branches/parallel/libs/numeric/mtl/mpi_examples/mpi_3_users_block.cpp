@@ -1,4 +1,4 @@
-// Filename: mpi_3_distributed_vector_update.cpp
+// Filename: mpi_3_users_block.cpp
 
 #include <iostream>
 #include <boost/mpi.hpp>
@@ -19,7 +19,6 @@ int main(int argc, char* argv[])
     {
 	mtl::vector::inserter<vector_type> ins(v);
 	
-
 	for (unsigned i= 0; i < size(v); ++i)
 	    if (int(i) % world.size() == world.rank())
 		ins[i] << float(world.rank());
