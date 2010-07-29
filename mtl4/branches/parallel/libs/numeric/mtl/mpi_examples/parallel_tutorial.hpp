@@ -116,7 +116,7 @@ The parallel MTL4 uses boost::mpi to pass messages generically.
 Boost::mpi in turn uses boost::serialization and both libraries are partially
 compiled and need to linked thus to a parallel MTL4 application,
 see \ref boost_mpi_serialization.
-Note that the library names can very from platform to platform and
+Note that the library names can vary from platform to platform and
 that some distributions of boost generate libraries where the name contains
 the compiler (for the before-mentioned link-compatibility) and whether
 it is ready for multi-threading.
@@ -257,6 +257,7 @@ Coming soon.
 
 -# Warm up
    -# \subpage parallel_hello_world 
+   -# \subpage parallel_ostreams
 -# Distributed matrices and vectors
    -# \subpage distributed_vector
    -# \subpage distributed_matrix
@@ -315,7 +316,87 @@ but such matrices are not computed on one process and sent to the others but cal
 on each process.
 
 \if Navigation \endif
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref parallel_tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref distributed_vector 
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref parallel_tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref parallel_ostreams 
+
+*/
+
+//-----------------------------------------
+
+
+//-----------------------------------------------------------
+/*! \page parallel_ostreams Convenient Output in Parallel Programs
+
+In the previous hello world example we have seen that output in parallel programs
+is somewhat cumbersome because we have to play with process IDs to avoid printing out 
+the same message over and over again (with many processors).
+MTL4 has for this purpose some  convenience features.
+
+\section single_output Single Output Stream
+
+The class \ref par::single_ostream serves for printing messages once without 
+filtering for a certain MPI rank.
+One application for this is to print iteration numbers as in the following
+example:
+
+\include mpi_3_single_ostream.cpp
+
+If we would write to std::cout the message would appear \p p times on \p p processes.
+Here the output looks normal:
+
+\include mpi_3_single_ostream.output
+
+as if no parallelism were present.
+
+An even bigger advantage of par::single_ostream is that it handles distributed data
+correctly.
+For instance, the distributed vector \p v is printed in the following line:
+\code
+sout << "Vector v is " << v << '\n';
+\endcode
+Then the complete distributed vector is written not only the local part of one
+process.
+For this purpose, distributed data are printed by cooperation of all processes
+while non-distributed data like strings are treated by one process.
+
+In addition to the default constructor, there are three constructors that accept:
+- A std::ostream;
+- A std::ostream and a boost::mpi::communicator; and
+- A std::ostream and a par::base_distribution.
+.
+Passing an ostream to allows writing conveniently to files, sockets and other streams.
+
+\section multi_output Multiple Output Streams
+
+Another frequent output scheme is writing from all processes indicating the process number.
+This can be easily done with the class par::rank_ostream as in the following example:
+
+\include mpi_3_multi_ostream.cpp
+
+This produces the output:
+
+\include mpi_3_multi_ostream.output
+
+Since messages are sent quite fast and terminal output is rather slow it can happen
+that the last output line is printed earlier despite the internal synchronization.
+
+Discussion: To improve the quality of output further, this class might be rewritten such that
+messages are first sent to one process and completely printed.
+Having only one process performing the printing requires more resources and might take more time
+so that the more expensive version might be added and not replacing this one.
+
+
+Remark: The classes currently do not work with std::endl (and other output manipulators). 
+Use '\n' as line end. If you want flushing your output you can use the class' member function,
+e.g.:
+\code
+sout.flush();
+\endcode
+
+
+
+
+\if Navigation \endif
+  Return to \ref parallel_hello_world &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref parallel_tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref distributed_vector 
 
 */
 
@@ -403,7 +484,7 @@ More information on distribution is found in section \ref distribution_objects.
 
 
 \if Navigation \endif
-  Return to \ref parallel_hello_world &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref parallel_tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref distributed_matrix 
+  Return to \ref parallel_ostreams &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref parallel_tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref distributed_matrix 
 
 */
 

@@ -50,6 +50,7 @@ struct multiple_ostream
     {
 	if (Serialize && Temporary) {
 	    out.flush(); start_next(comm);
+	    end_serialization(comm);
 	}
     }
 
