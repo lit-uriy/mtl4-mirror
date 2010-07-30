@@ -9,27 +9,52 @@ cmake_minimum_required(VERSION 2.6)
 # so that we can pick up boost/test/minimal.hpp
 # set (BOOST_ROOT "please-set-boost-include-dir" CACHE STRING "BOOST include directory")
 
-set (MY_BOOST_ROOT "$ENV{BOOST_ROOT}" CACHE PATH "BOOST include directory") # CMake gets confused when same name in env and here
-find_path(Boost_INCLUDE_DIR boost/version.hpp PATHS "${MY_BOOST_ROOT}")
-if(NOT Boost_INCLUDE_DIR)
-  message(FATAL_ERROR "boost wasn't found, please set BOOST_ROOT")
-endif(NOT Boost_INCLUDE_DIR)
+# set (MY_BOOST_ROOT "$ENV{BOOST_ROOT}" CACHE PATH "BOOST include directory") # CMake gets confused when same name in env and here
 
+
+
+# look for boost/version in
+# 1. environment variable BOOST_ROOT defined by user
+# 2. environment variable BOOST_INC defined on some data centers
+# 3. Boost_INCLUDE_DIR found by package
 find_package(Boost)
+find_path(MY_BOOST_INCLUDE boost/version.hpp "$ENV{BOOST_ROOT}" "$ENV{BOOST_INC}" "${Boost_INCLUDE_DIR}" NO_DEFAULT_PATH)
 
-# set the local BOOST MTL4 include directory
-# to pick up the MTL4 include files
+if(NOT MY_BOOST_INCLUDE)
+  message(FATAL_ERROR "boost wasn't found, please set BOOST_ROOT or BOOST_INC")
+endif()
+
+message(STATUS "Boost_INCLUDE_DIR is ${Boost_INCLUDE_DIR}")
+message(STATUS "MY_BOOST_INCLUDE is ${MY_BOOST_INCLUDE}")
+
+# set the local BOOST MTL4 include directory to pick up the MTL4 include files
 set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root directory")
 
-# include_directories(${Boost_INCLUDE_DIR})
-include_directories(${MY_BOOST_ROOT} ${MTL_BOOST_ROOT})
+include_directories(${MY_BOOST_INCLUDE} ${MTL_BOOST_ROOT})
 
 find_package(MPI)
 
 ## Extra definitions for Boost MPI (maybe write module FindBoostMPI
 set (PMTL_INC_FLAGS "-I${MTL_BOOST_ROOT}" "-I${MY_BOOST_ROOT}") # to do: portable
-set (PMTL_LIB_FLAGS ${CMAKE_LIBRARY_PATH_FLAG} ${MY_BOOST_ROOT}/lib ${CMAKE_LINK_LIBRARY_FLAG} boost_serialization ${CMAKE_LINK_LIBRARY_FLAG} boost_mpi) # todo find path automatically
 set (PMTL_MACRO_FLAGS "-DMTL_HAS_MPI" "-DBOOST_MPI_HOMOGENEOUS" "-Wno-array-bounds") # todo: portable
+
+find_library(BOOST_MPI_LIB_NAME boost_mpi PATHS ${MY_BOOST_ROOT}/lib $ENV{BOOST_LIB} )
+get_filename_component(BOOST_MPI_DIR ${BOOST_MPI_LIB_NAME} PATH)
+find_library(BOOST_SERIALIZATION_LIB_NAME boost_serialization ${BOOST_MPI_DIR})
+if(NOT BOOST_MPI_DIR OR NOT BOOST_SERIALIZATION_LIB_NAME)
+  message(FATAL_ERROR "boost::mpi and/or boost::serialization libraries wasn't found, please set BOOST_ROOT or BOOST_LIB")
+endif()
+
+# find_library(BOOST_LIB_FIND_LIBS NAMES boost_mpi boost_serialization PATHS ${MY_BOOST_ROOT}/lib $ENV{BOOST_LIB} )
+# get_filename_component(BOOST_LIB_DIR ${BOOST_LIB_FIND_LIBS} PATH)
+# message(STATUS "BOOST_LIB_DIR is ${BOOST_LIB_DIR}")
+# if(NOT BOOST_LIB_DIR)
+#   message(FATAL_ERROR "boost::mpi and/or boost::serialization libraries wasn't found, please set BOOST_ROOT or BOOST_LIB")
+# endif()
+
+
+set (PMTL_LIB_FLAGS ${CMAKE_LIBRARY_PATH_FLAG} ${BOOST_LIB_DIR} ${CMAKE_LINK_LIBRARY_FLAG} boost_serialization ${CMAKE_LINK_LIBRARY_FLAG} boost_mpi) # todo find path automatically
+
 
 
 #################################################################################
