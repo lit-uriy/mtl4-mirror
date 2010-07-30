@@ -35,8 +35,12 @@ include_directories(${MY_BOOST_INCLUDE} ${MTL_BOOST_ROOT})
 find_package(MPI)
 
 ## Extra definitions for Boost MPI (maybe write module FindBoostMPI
-set (PMTL_INC_FLAGS "-I${MTL_BOOST_ROOT}" "-I${MY_BOOST_ROOT}") # to do: portable
-set (PMTL_MACRO_FLAGS "-DMTL_HAS_MPI" "-DBOOST_MPI_HOMOGENEOUS" "-Wno-array-bounds") # todo: portable
+set (PMTL_INC_FLAGS "-I${MTL_BOOST_ROOT}" "-I${MY_BOOST_INCLUDE}") # to do: portable
+
+set (PMTL_MACRO_FLAGS "-DMTL_HAS_MPI" "-DBOOST_MPI_HOMOGENEOUS")
+if (false) # for MPI compilers basing on gcc 4.3 or higher
+  set (PMTL_MACRO_FLAGS ${PMTL_MACRO_FLAGS}  "-Wno-array-bounds")
+endif()
 
 find_library(BOOST_MPI_LIB_NAME boost_mpi PATHS ${MY_BOOST_ROOT}/lib $ENV{BOOST_LIB} )
 get_filename_component(BOOST_MPI_DIR ${BOOST_MPI_LIB_NAME} PATH)
@@ -53,7 +57,7 @@ endif()
 # endif()
 
 
-set (PMTL_LIB_FLAGS ${CMAKE_LIBRARY_PATH_FLAG} ${BOOST_LIB_DIR} ${CMAKE_LINK_LIBRARY_FLAG} boost_serialization ${CMAKE_LINK_LIBRARY_FLAG} boost_mpi) # todo find path automatically
+set (PMTL_LIB_FLAGS ${CMAKE_LIBRARY_PATH_FLAG} ${BOOST_MPI_DIR} ${CMAKE_LINK_LIBRARY_FLAG} boost_mpi ${CMAKE_LINK_LIBRARY_FLAG} boost_serialization) # todo find path automatically
 
 
 
