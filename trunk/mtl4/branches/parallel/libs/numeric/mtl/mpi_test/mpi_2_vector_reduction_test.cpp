@@ -26,7 +26,7 @@ void test(Vector& v, const char* name)
     using mtl::sum; using mtl::product; using mtl::one_norm;
 
     for (unsigned i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
-	local(v)[i]= value_type(double(j+1) * pow(-1.0, j)); 
+	local(v)[i]= value_type(double(j+1) * pow(-1.0, int(j))); 
 
     mtl::par::single_ostream sout;
     sout << "\nVector is: " << v << '\n';

@@ -23,6 +23,8 @@ namespace mpi = boost::mpi;
 template <typename Vector>
 void test(Vector& v, const char* name)
 {
+    using std::pow;
+
     typedef typename mtl::Collection<Vector>::value_type value_type;
     typedef std::complex<value_type>                     complex_type;
 
@@ -30,7 +32,7 @@ void test(Vector& v, const char* name)
 
 
     for (unsigned i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
-	local(v)[i]= value_type(double(j+1) * pow(-1.0, j)); 
+	local(v)[i]= value_type(double(j+1) * pow(-1.0, int(j))); 
 
     mtl::par::single_ostream sout;
     // sout << name << "\nv is: " << v << '\n';
@@ -47,13 +49,13 @@ void test(Vector& v, const char* name)
     u= v + w + x;
     sout << "u= v + w + x is " << u << "\n";
     for (unsigned i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
-	if (std::abs(value_type(double(j+1) * pow(-1.0, j) + 5.0) - u[j]) > 0.001)
+	if (std::abs(value_type(double(j+1) * pow(-1.0, int(j)) + 5.0) - u[j]) > 0.001)
 	    throw "wrong value in addition";
 
     u-= 3.0 * w;
     sout << "u-= 3 * w is " << u << "\n";
     for (unsigned i= 0, j= distribution(v).local_to_global(0); i < size(local(v)); i++, j++)
-	if (std::abs(value_type(double(j+1) * pow(-1.0, j) - 1.0) - u[j]) > 0.001)
+	if (std::abs(value_type(double(j+1) * pow(-1.0, int(j)) - 1.0) - u[j]) > 0.001)
 	    throw "wrong value in subtraction";
 
     u+= dot(v, w) * w + 4.0 * v + 2.0 * w;
