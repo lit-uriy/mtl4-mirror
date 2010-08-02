@@ -2,6 +2,7 @@ project (boost_mtl4)
 
 cmake_minimum_required(VERSION 2.6)
 
+#
 # DERIVED VARIABLES
 # no derived variables, this makefile is the toplevel makefile for boost mtl4
 
