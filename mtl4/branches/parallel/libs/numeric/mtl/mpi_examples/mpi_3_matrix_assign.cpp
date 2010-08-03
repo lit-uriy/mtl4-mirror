@@ -1,4 +1,4 @@
-// Filename: mpi_3_heterogeous_insertion.cpp
+// Filename: mpi_3_matrix_assign.cpp
 
 #include <iostream>
 #include <boost/mpi.hpp>
@@ -13,11 +13,14 @@ int main(int argc, char* argv[])
     mtl::par::block_distribution row_dist= ra,       col_dist= ca;
 
     typedef mtl::matrix::distributed<mtl::compressed2D<float> >  matrix_type;
-    matrix_type A(7, 7, row_dist, col_dist), B(7, 7, row_dist, col_dist);
+    matrix_type A(7, 7, row_dist, col_dist), B; 
 
     A= 6;
     B= A;
     mtl::par::sout << "The matrix B is\n" << B << "\n";
   
+    matrix_type C(7, 7);
+    // B= C; // error, C and B have different distribution
+
     return 0;
 }
