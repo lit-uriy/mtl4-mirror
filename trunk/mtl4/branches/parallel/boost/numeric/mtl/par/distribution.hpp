@@ -218,7 +218,7 @@ namespace mtl {
 	    template <typename Size>
 	    Size num_local(Size n, int p) const
 	    { 
-		return n / my_size + (my_rank < n % my_size);
+		return n / my_size + (my_rank < int(n) % my_size);
 	    }
 	    
 	    /// For n global entries, how many are on my processor?
@@ -285,7 +285,7 @@ namespace mtl {
 	    Size num_local(Size n, int p) const
 	    { 
 		Size full_blocks(n / sb), in_full_blocks(n % sb), my_block(p * bsize);
-		return full_blocks * bsize + std::max(0, std::min(in_full_blocks - my_block, bsize));
+		return full_blocks * bsize + std::max(0ul, std::min(in_full_blocks - my_block, bsize));
 	    }
 	    
 	    /// For n global entries, how many are on my processor?

@@ -55,6 +55,9 @@ inline single_ostream& endl(single_ostream& os)
     os << "\n"; os.flush(); return os;
 }
 
+/// Output stream for single output in parallel programs, object of class single_ostream
+static single_ostream sout;
+
 }} // namespace mtl::par
 
 #endif // MTL_HAS_MPI

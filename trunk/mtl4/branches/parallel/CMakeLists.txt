@@ -43,20 +43,21 @@ if (false) # for MPI compilers basing on gcc 4.3 or higher
   set (PMTL_MACRO_FLAGS ${PMTL_MACRO_FLAGS}  "-Wno-array-bounds")
 endif()
 
-find_library(BOOST_MPI_LIB_NAME boost_mpi PATHS ${MY_BOOST_ROOT}/lib $ENV{BOOST_LIB} )
+# try first without standard paths
+find_library(BOOST_MPI_LIB_NAME boost_mpi PATHS ${MY_BOOST_INCLUDE}/lib $ENV{BOOST_LIB} NO_DEFAULT_PATH)
+if(NOT BOOST_MPI_LIB_NAME)
+  message(STATUS "boost::mpi lib now searched in standard paths")
+  find_library(BOOST_MPI_LIB_NAME boost_mpi) # now in standard paths
+endif()
+
 get_filename_component(BOOST_MPI_DIR ${BOOST_MPI_LIB_NAME} PATH)
+message(STATUS "boost::mpi lib in ${BOOST_MPI_DIR}")
 find_library(BOOST_SERIALIZATION_LIB_NAME boost_serialization ${BOOST_MPI_DIR})
 if(NOT BOOST_MPI_DIR OR NOT BOOST_SERIALIZATION_LIB_NAME)
   message(FATAL_ERROR "boost::mpi and/or boost::serialization libraries wasn't found, please set BOOST_ROOT or BOOST_LIB")
 endif()
 
-# find_library(BOOST_LIB_FIND_LIBS NAMES boost_mpi boost_serialization PATHS ${MY_BOOST_ROOT}/lib $ENV{BOOST_LIB} )
-# get_filename_component(BOOST_LIB_DIR ${BOOST_LIB_FIND_LIBS} PATH)
-# message(STATUS "BOOST_LIB_DIR is ${BOOST_LIB_DIR}")
-# if(NOT BOOST_LIB_DIR)
-#   message(FATAL_ERROR "boost::mpi and/or boost::serialization libraries wasn't found, please set BOOST_ROOT or BOOST_LIB")
-# endif()
-
+# We need a test that the versions of compiled and included boost stuff have the same version!!!!!
 
 set (PMTL_LIB_FLAGS ${CMAKE_LIBRARY_PATH_FLAG} ${BOOST_MPI_DIR} ${CMAKE_LINK_LIBRARY_FLAG} boost_mpi ${CMAKE_LINK_LIBRARY_FLAG} boost_serialization) # todo find path automatically
 
@@ -80,13 +81,15 @@ endif (MSVC80 OR MSVC90)
 ######################## Macros for sub-directories   ###########################
 #################################################################################
 
+file (GLOB INCLUDES ${MTL_BOOST_ROOT}/boost/numeric/?tl/*/*.hpp)
+
 macro (compile_all)
     # cycle through the sources
     # The directory assumes that each cpp file is a separate test
     # so, create a executable target and an associated test target
     foreach (source ${ARGV})
         get_filename_component (test ${source} NAME_WE)		# filename without extension
-        add_executable (${test} ${source})
+        add_executable (${test} ${source} ${INCLUDES})
         add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
     endforeach (source)
 endmacro (compile_all)
@@ -96,7 +99,7 @@ macro (mpi_compile_all)
     foreach (source ${ARGV})
         get_filename_component (test ${source} NAME_WE)		# filename without extension
         add_custom_command(OUTPUT ${test} DEPENDS ${source} COMMAND ${MPI_COMPILER} ${PMTL_MACRO_FLAGS} ${PMTL_INC_FLAGS} ${source} -o ${test} ${PMTL_LIB_FLAGS})
-        add_custom_target(${test}_helper ALL DEPENDS ${test} )
+        add_custom_target(${test}_helper ALL DEPENDS ${test} ${INCLUDES} )
         set(test_name "${test}")
         # message(STATUS "${test_name}")
         string(REGEX REPLACE "mpi_([0-9]*)_.*" "\\1" nprocs "${test_name}")
