@@ -13,7 +13,6 @@
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
-
 using namespace std;
 
 template <typename Matrix>

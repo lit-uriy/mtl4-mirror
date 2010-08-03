@@ -1064,7 +1064,7 @@ as soon as it is generally available.
 //-----------------------------------------------------------
 
 
-/*! \page vector_assignment Vector Assignment
+/*! \page vector_assignment %Vector Assignment
 
 
 Vectors assignments are in most cases performed by expression templated 

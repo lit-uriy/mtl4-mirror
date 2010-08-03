@@ -6,15 +6,13 @@
 
 int main(int argc, char* argv[]) 
 {
-    boost::mpi::environment env(argc, argv);
-    boost::mpi::communicator world;
+    boost::mpi::environment      env(argc, argv);
+    boost::mpi::communicator     world;
+
+    std::size_t                  ra[]= {0, 4, 6, 7}, ca[]= {0, 5, 7, 7};
+    mtl::par::block_distribution row_dist= ra,       col_dist= ca;
 
     typedef mtl::matrix::distributed<mtl::compressed2D<float> >  matrix_type;
-    std::vector<std::size_t> rb, cb;
-    rb.push_back(0); rb.push_back(4); rb.push_back(6); rb.push_back(7); 
-    cb.push_back(0); cb.push_back(5); cb.push_back(7); cb.push_back(7); 
-
-    mtl::par::block_distribution row_dist(rb), col_dist(cb);
     matrix_type A(7, 7, row_dist, col_dist);
 
     {

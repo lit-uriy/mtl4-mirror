@@ -489,6 +489,50 @@ If we had a vector with global size 7 or less, the sub-vector on process 3 would
 If the global size would be 9 or higher, the construction of the distributed vector would fail.
 More information on distribution is found in section \ref distribution_objects.
 
+\section distributed_vector_temporaries Temporary Vectors
+
+
+If one needs a temporary vector in an algorithm it is not always correct
+to create one of the same size.
+The following code demonstrates the right and wrong way to construct temporaries.
+
+\include mpi_3_vector_temporary.cpp
+
+We do not want to bother the reader with the ugly output of uninitialized vectors.
+
+There are two vectors serving as reference objects:
+- u: a vector of size 8 distributed by default as 3 + 3 + 2 and initialized to the value 4.0;
+- v: a vector of size 10 with user distribution 2 + 5 + 3 and initialized to the value 5.0;
+
+The four temporary variables are defined as follows:
+- w: has the same size as u. Since no distribution is defined, the default distribution is
+  used like for u. Therefore, they are compatible. 
+- x: has the same global size as v. Since no distribution is defined the default distribution is
+  used which is 4 + 3 + 3. Thus, x and v are not compatible.
+- y: is a copy of v. It copies global size, distribution and values. It is evidently compatible
+  to v but copying its values is a surplus effort in many algorithms.
+- z: has the same size and distribution like v. In contrast to y, its entries are still not
+  set.
+
+\remark
+Vectors with the same global size and  default block distribution are always compatible.
+This applies also for the other distribution types in MTL4.
+Of course, we cannot give such guarantees for user-defined distribution types if
+they were undeterministic.
+Vectors with different distribution types are always considered incompatible
+although there are rare cases where they can be compatible.
+The copy constructor always yields vectors compatible to their sources but with extra
+copy effort.
+Constructing new vector with vector::resource is the generic manner to create temporaries without
+copying them.
+In the sequential MTL4, vector::resource was therefore introduced retroactively to provide
+a unified interface.
+Future MTL4 editions, e.g. for accelerators, will also support vector::resource to
+establish temporaries with compatible resources, e.g. GPU memory.
+For short, rely on vector::resource to provide sufficient information on an object to
+create a new object that is compatible to its reference object.
+A corresponding resource function will also be added for matrices to create temporaries
+generically.
 
 \if Navigation \endif
   Return to \ref parallel_ostreams &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref parallel_tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref distributed_matrix 
@@ -615,6 +659,19 @@ In our examples and tests we focus on block distribution because this is the
 distribution most frequently used in scientific applications.
 Other distributions - including user-defined - can be chosen for full flexibility.
 
+In the following example, we use a block-cyclic row distribution while the columns
+are spread cyclically into sub-matrices:
+
+\include mpi_3_flexible_insertion.cpp
+
+\remark
+Printing such matrices is currently not correct. 
+Sub-matrix blocks are treated as if their  global row and column indices would be contiguous.
+Thus, only matrices and vectors with block distributions are printed correctly
+at the moment.
+
+\todo
+The example crashes now with index out of range. Will be fixed quickly.
 
 
 
@@ -624,15 +681,31 @@ Other distributions - including user-defined - can be chosen for full flexibilit
 */
 
 
+//-----------------------------------------
 
 
-/*
-So far, we only showed one template parameter of distributed matrices.
-The other two parameters describe the 
+/*! \page distributed_vector_assignment Distributed %Vector Assignment
+
+
+Vectors assignments are in most cases performed by expression templated 
+(see \ref vector_expr) like in the non-distributed case.
+The only difference is that assigned vectors must not only be of the same
+size but also distributed equally.
+
+
+
+Functions that return vectors are subject to move semantics (see \ref copying
+and \ref move_semantics).
+
+
+
+\if Navigation \endif
+  Return to \ref matrix_insertion &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref matrix_assignment 
+
 */
 
 
-//-----------------------------------------
+
 
 
 //-----------------------------------------------------------
