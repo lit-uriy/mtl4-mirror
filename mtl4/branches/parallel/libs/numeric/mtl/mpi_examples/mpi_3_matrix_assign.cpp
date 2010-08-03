@@ -18,6 +18,6 @@ int main(int argc, char* argv[])
     A= 6;
     B= A;
     mtl::par::sout << "The matrix B is\n" << B << "\n";
- 
+  
     return 0;
 }
