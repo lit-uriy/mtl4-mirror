@@ -7,24 +7,11 @@
 int main(int argc, char* argv[]) 
 {
     boost::mpi::environment env(argc, argv);
-    boost::mpi::communicator world;
 
-    
+    typedef mtl::matrix::distributed<mtl::compressed2D<float> >  matrix_type;
+    matrix_type A(8, 8);
+    A= 3.0;
 
-
-
-
-    typedef mtl::vector::distributed<mtl::dense_vector<float> >  vector_type;
-    vector_type  v(8);
-    
-    {
-	mtl::vector::inserter<vector_type> ins(v);
-	if (world.rank() == 0)
-	    for (unsigned i= 0; i < size(v); ++i)
-		ins[i] << float(i) + 0.1;
-    }
-
-    std::cout << "I am proc. " << world.rank() << " and my local part of v is " << local(v) << '\n'; 
-
+    mtl::par::sout << "The matrix A is\n" << A << "\n";
     return 0;
 }

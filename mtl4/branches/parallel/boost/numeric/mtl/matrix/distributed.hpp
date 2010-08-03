@@ -144,7 +144,7 @@ class distributed
 	migrate_matrix(src, *this, migration);
     }
 
-    ~distributed() { clear_cdp(); }
+    ~distributed() { clear_cdp(cdp); }
 
     using assign_base::operator=; // still need 
 
@@ -163,7 +163,10 @@ class distributed
                            incompatible_size());
     }
 
-    void clear_cdp() { if (cdp && cdp != &row_dist) delete cdp; }
+    // Dispatch between equal and different distribution types
+    void clear_cdp(row_distribution_type*) { if (cdp && cdp != &row_dist) delete cdp; }
+    template <typename Dist> void clear_cdp(Dist*) { if (cdp) delete cdp; }
+
     void clear_remote_part() { remote_matrices.clear(); my_recv_info.clear(); my_send_info.clear(); }
 
     struct send_structure
@@ -182,7 +185,7 @@ class distributed
     self& operator=(const self& src)
     {
 	row_dist= src.row_dist;
-	clear_cdp();
+	clear_cdp(cdp);
 	col_dist_assign(src, boost::is_same<RowDistribution, ColDistribution>());
 	local_matrix= src.local_matrix;
 	// copy remote parts and such

@@ -298,7 +298,7 @@ The program is almost self-explanatory.
   process 0, except itself.
 - <b>Line 21</b>: The %vector is printed after reception. As the Boost MPI tutorial also states, the 
   order of output is not determined. Sometimes, the output from different processes get even mixed.
-  MTL4 provides special output streams for more convenient printing in MPI applications, see \ref parallel_streams.
+  MTL4 provides special output streams for more convenient printing in MPI applications, see \ref parallel_ostreams.
 
 This was a quite simple example of  point-to-point communication.
 
@@ -335,6 +335,7 @@ MTL4 has for this purpose some  convenience features.
 
 The class \ref par::single_ostream serves for printing messages once without 
 filtering for a certain MPI rank.
+For convenience, the output stream par::sout is defined (as static global object of single_ostream).
 One application for this is to print iteration numbers as in the following
 example:
 
@@ -357,6 +358,7 @@ Then the complete distributed vector is written not only the local part of one
 process.
 For this purpose, distributed data are printed by cooperation of all processes
 while non-distributed data like strings are treated by one process.
+We will use this capability often in the examples.
 
 In addition to the default constructor, there are three constructors that accept:
 - A std::ostream;
@@ -406,6 +408,7 @@ sout.flush();
 //-----------------------------------------------------------
 /*! \page distributed_vector Distributed Vectors
 
+\section distributed_vector_simple Simple Example
 
 The class vector::distributed is parametrized by a non-distributed vector class
 to be extensible for future vector classes (e.g. one with data on GPU memory) 
@@ -446,6 +449,8 @@ If an entry is  local (i.e. it is inserted on the process where it resides) then
 Remote entries are agglomerated in a buffer and during the destruction of the distributed inserter
 sent to the according process and inserted there.
 
+\section distributed_vector_update Additive Distributed Insertion
+
 In simulation applications, the vector entries are computed usually by summation over partial contributions
 (from finite elements or cells).
 This summation can be easily performed with an inserter:
@@ -472,6 +477,8 @@ more on first processes.
 As we have seen above, 8 entries on 3 processes are split into 3 + 3 + 2.
 One can also choose any other block distribution as long as it is large enough for the vector.
 
+\section distributed_vector_block Customized Distribution of a Vector
+
 A block distribution is defined by \c p+1 entries for the first global index 
 of each process and the maximal global size.
 
@@ -495,7 +502,118 @@ More information on distribution is found in section \ref distribution_objects.
 //-----------------------------------------------------------
 /*! \page distributed_matrix Distributed Matrices
 
+\section distributed_matrix_simple Simple Example
 
+If one do not want to customize every parameter, distributed matrices can be handled much like local ones, see example:
+
+\include mpi_3_distributed_matrix.cpp
+
+MTL4 will distribute the matrix for you and you can see the distribution in the output:
+
+\include mpi_3_distributed_matrix.output
+
+Matrices are distriubted row-wise, i.e. each row is owned entirely by one process.
+In our example we have the default distribution 3 + 3 + 2.
+
+The print-out of distributed matrices also shows local sub-matrices:
+On process 0, there are two 3 by 3 matrices and one 3 by 2 matrix.
+This sub-matrices have the type that is indicated by the first template argument of matrix::distributed.
+
+\remark
+In later versions, we will probably distinguish between diagonal and off-diagonal block matrices.
+Diagonal blocks will still have the type of the template argument while off-diagonal blocks might
+have a different type (determined from the template argument by a meta-function).
+The reason of this type distinction is that off-diagonal blocks are usually clearly sparser 
+and we are developing matrix types to cope with such sparsities.
+
+In distributed matrices,  some or most of the matrix blocks can be empty.
+Especially large sparse matrices on many processes originating from a domain decomposition have usually a small number of non-empty sub-matrix
+blocks and many empty ones.
+Such empty matrix blocks are not stored.
+When a distributed matrix is printed, they cannot be omitted as this would confuse the presentation of columns.
+Instead they are 
+printed as stars for distinction from non-empty blocks like
+ in the example.
+There, only the diagonal blocks exist and all off-diagonal blocks are empty (not surprising for a diagonal matrix).
+
+\section distributed_matrix_insertion Insertion
+
+Inserting values into a distributed matrix is not different from the insertion into a non-distributed.
+However, one should pay attention to avoid redundant insertion.
+A program that performs the same insertion operations on each process will
+insert every entry \p p times when the program runs with \p p processes.
+With an additive insertion this would result in having the values multiplied by \p p and
+in an overwriting insertion the matrix would be the same but a significant overhead
+would be created.
+
+In the following example, only two of the three processes insert values:
+
+\include mpi_3_distributed_matrix_insertion.cpp
+
+The resulting distributed matrix is:
+
+\include mpi_3_distributed_matrix_insertion.output
+
+In parallel MTL4 it does not matter where entries are inserted.
+However, for performance reasons, one should try to insert most values locally.
+In parallel simulation programs this can be achieved by distributing the unkowns (entries of matrices and vectors)
+similar to the cells or elements so that most results of the assembling are inserted locally and only on 
+between sub-domains some communication is necessary.
+
+Of course, the inserter of distributed matrices can be parametrized with an update functor as any other inserter, e.g.:
+\code
+  typedef mtl::matrix::distributed<mtl::compressed2D<float> >  matrix_type;
+  matrix_type A(7, 7);
+  mtl::matrix::inserter<matrix_type, mtl::operations::update_plus<float> > ins(A);
+\endcode
+
+
+
+\section distributed_matrix_custom User-Defined Distribution of Matrices
+
+We already mentioned that our matrices are distributed row-wise.
+This distribution can be defined by the user.
+The user can also define a column distribution.
+This affects how the matrix is constructed internally from sub-matrix blocks.
+It is also important to implement operations when not all  data
+structures are distributed equally, see \ref distributed_mvp.
+
+\subsection distributed_matrix_custom_homo Homogeneous Distribution
+
+ In the following example, we distribute the 7 rows as 4 + 2 + 1.
+This is done as for entering the partial sums into a std::vector and passing this to
+a block distribution object:
+
+\include mpi_3_matrix_homogeneous_insertion.cpp
+
+The resulting matrix is:
+
+\include mpi_3_matrix_homogeneous_insertion.output
+
+Note that the columns are split in the same manner into the blocks of sub-matrices.
+
+\subsection distributed_matrix_custom_hetero Heterogeneous Distribution
+
+The column-wise splitting does not need to be identical with the row distribution
+as in the next example:
+
+\include mpi_3_heterogeous_insertion.cpp
+
+The column are split as 5 + 2 + 0:
+
+\include mpi_3_heterogeous_insertion.output
+
+The fact that the last blocks of each process contain no column does not cause
+errors in MTL4.
+Likewise, empty ranges in the row distribution - such that certain processes have
+no part of the distributed matrix - does not cause problems in parallel programs.
+However, empty ranges in distributions most likely lead to sub-optimal parallel performance.
+
+\subsection distributed_matrix_custom_flexible Arbitrary Distribution
+
+In our examples and tests we focus on block distribution because this is the
+distribution most frequently used in scientific applications.
+Other distributions - including user-defined - can be chosen for full flexibility.
 
 
 
@@ -503,6 +621,14 @@ More information on distribution is found in section \ref distribution_objects.
 \if Navigation \endif
   Return to \ref distributed_vector &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref parallel_tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref distribution_objects 
 
+*/
+
+
+
+
+/*
+So far, we only showed one template parameter of distributed matrices.
+The other two parameters describe the 
 */
 
 

@@ -12,7 +12,6 @@
 
 #include <boost/mpi.hpp>
 #include <iostream>
-#include <boost/serialization/string.hpp>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
@@ -23,7 +22,7 @@ namespace mpi = boost::mpi;
 template <typename Matrix>
 void test(Matrix& A,  const char* name)
 {
-    mpi::communicator comm(communicator(A));
+    mpi::communicator comm= communicator(A);
 
     // A= 0.0; // for dense matrices
     {
@@ -33,7 +32,7 @@ void test(Matrix& A,  const char* name)
 	    ins[1][3] << 3.0;
 	    ins[4][1] << 2.0; // remote
 	    ins[6][5] << 4.0; // remote
-	} else {
+	} else if (comm.rank() == 2) {
 	    ins[2][6] << 5.0; // remote
 	    ins[3][2] << 6.0; // remote
 	    ins[5][4] << 8.0;

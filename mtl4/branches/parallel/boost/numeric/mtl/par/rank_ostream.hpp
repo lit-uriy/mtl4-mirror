@@ -95,6 +95,8 @@ typedef multiple_ostream<true, true, false> rank_ostream;
 /// Non-serialized ostream that prepends rank in each expression, for details see multiple_ostream.
 typedef multiple_ostream<true, false, false> nosync_rank_ostream;
 
+/// Output stream for each process (rank) of parallel programs, object of class rank_ostream
+static rank_ostream rout;
 
 }} // namespace mtl::par
 
