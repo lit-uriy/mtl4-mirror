@@ -18,6 +18,28 @@ namespace mtl {
 //-----------------------------------------------------------
 
 
+/*! \page parallel_tutorial Parallel tutorial
+
+-# Warm up
+   -# \subpage parallel_hello_world 
+   -# \subpage parallel_ostreams
+-# Distributed matrices and vectors
+   -# \subpage distributed_vector
+   -# \subpage distributed_matrix
+   -# \subpage distribution_objects
+-# Assignment
+   -# \subpage distributed_vector_assignment
+   -# \subpage distributed_matrix_assignment
+-# Advanced
+   -# \subpage boost_mpi_serialization
+*/
+
+
+//-----------------------------------------
+
+
+
+
 /*! \page parallel_install Parallel installation guide
 
 \section parallel_quickstart Quick start
@@ -249,25 +271,6 @@ Coming soon.
 
 */
 //-----------------------------------------------------------
-
-
-//-----------------------------------------------------------
-
-/*! \page parallel_tutorial Parallel tutorial
-
--# Warm up
-   -# \subpage parallel_hello_world 
-   -# \subpage parallel_ostreams
--# Distributed matrices and vectors
-   -# \subpage distributed_vector
-   -# \subpage distributed_matrix
-   -# \subpage distribution_objects
--# Advanced
-   -# \subpage boost_mpi_serialization
-*/
-
-
-//-----------------------------------------
 
 
 //-----------------------------------------------------------
@@ -688,11 +691,13 @@ The example crashes now with index out of range. Will be fixed quickly.
 
 
 Vectors assignments are in most cases performed by expression templated 
-(see \ref vector_expr) like in the non-distributed case.
-The only difference is that assigned vectors must not only be of the same
-size but also distributed equally.
+(see \ref vector_expr) like in the non-distributed case, as simply as:
+\code
+  v= 3 * w + u;
+\endcode
 
-
+The only difference is that not only the size must be compatible
+but also the distribution, see \ref distributed_vector_temporaries.
 
 Functions that return vectors are subject to move semantics (see \ref copying
 and \ref move_semantics).

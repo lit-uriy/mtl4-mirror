@@ -184,16 +184,27 @@ class distributed
 
     self& operator=(const self& src)
     {
-	row_dist= src.row_dist;
-	clear_cdp(cdp);
-	col_dist_assign(src, boost::is_same<RowDistribution, ColDistribution>());
-	local_matrix= src.local_matrix;
-	// copy remote parts and such
-	throw "Implementation not finished yet!";
+	if (grows == 0 && gcols == 0) { // I am still a stem cell
+	    grows= src.grows;
+	    gcols= src.gcols;
+	    row_dist= src.row_dist;
+	    clear_cdp(cdp);
+	    col_dist_assign(src, boost::is_same<RowDistribution, ColDistribution>());
+	} else {
+	    MTL_THROW_IF(grows != src.grows || gcols != src.gcols, incompatible_size());
+	    MTL_THROW_IF(row_dist != src.row_dist || *cdp != *src.cdp, incompatible_distribution());
+	}
+
+	local_matrix=       src.local_matrix;
+	my_total_send_size= src.my_total_send_size;
+	my_total_recv_size= src.my_total_recv_size;
+	remote_matrices=    src.remote_matrices;
+	my_recv_info=       src.my_recv_info;
+	my_send_info=       src.my_send_info;
+	index_comp=         src.index_comp;
 
 	return *this;
     }
-
 
     /// Leading dimension
     size_type dim1() const { return mtl::traits::is_row_major<self>::value ? grows : gcols; }
@@ -221,7 +232,7 @@ class distributed
 	if (&src.row_dist == src.cdp)
 	    cdp= &row_dist;
 	else
-	    cdp= new ColDistribution(src.col_dist);	
+	    cdp= new ColDistribution(*src.cdp);	
     }
 
     void col_dist_assign(const self& src, boost::mpl::false_)
