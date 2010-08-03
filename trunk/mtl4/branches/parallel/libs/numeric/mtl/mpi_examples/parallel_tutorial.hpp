@@ -710,7 +710,34 @@ and \ref move_semantics).
 */
 
 
+//-----------------------------------------
 
+
+/*! \page distributed_matrix_assignment Distributed %Matrix Assignment
+
+The following example illustrates the simplicity of distributed
+%matrix assignment:
+
+\include mpi_3_matrix_assign.cpp
+
+The matrix A has in this example a user-defined distribution while matrix B
+is default-constructed.
+The default constructor creates a matrix with global size 0 by 0.
+Such matrices are compatible to all matrices no matter what size and distribution,
+see \ref stem_cells.
+After the assignment, B has the same size and distribution as A.
+
+If we would assign C then, it would cause an error because the
+distributions are not compatible.
+
+The distributed matrix class uses \ref move_semantics like the sequential ones
+and of course the matrices are not shallowly copied, cf. \ref shallow_copy_problems.
+
+
+\if Navigation \endif
+  Return to \ref matrix_insertion &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref matrix_assignment 
+
+*/
 
 
 //-----------------------------------------------------------
@@ -732,7 +759,7 @@ and \ref move_semantics).
 
 Generic message passing means in this context that distributed matrices and
 vectors can consist of every data type that is serializable,
-see <a href="http://www.boost.org/doc/libs/1_43_0/libs/serialization/doc/index.html>
+see <a href="http://www.boost.org/doc/libs/1_43_0/libs/serialization/doc/index.html">
 boost serialization tutorial</a>.
 Intrinsic data types and MTL4 containers of intrinsic data types 
 are serializable.
@@ -750,9 +777,9 @@ bit-wise representation of data).
 To avoid surplus MPI_Pack/MPI_Unpack compile your application (and your Boost MPI)
 with the macro <tt>BOOST_MPI_HOMOGENEOUS</tt>.
 
-Todo: serialization of user types
+\todo serialization of user types
 
-Todo: user types as mpi datatype.
+\todo user types as mpi datatype.
 
 \if Navigation \endif
   Return to \ref distribution_objects &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref parallel_tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref parallel_overview_ops 

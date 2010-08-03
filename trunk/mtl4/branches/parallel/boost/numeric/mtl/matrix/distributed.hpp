@@ -93,6 +93,9 @@ class distributed
     }
 
   public:
+    /// Default constructor creates a 0 by 0 matrix that can be set later
+    distributed() : grows(0), gcols(0) {}
+
     /// Constructor for matrix with global size grows x gcols and default distribution.
     explicit distributed(size_type grows, size_type gcols) 
       : grows(grows), gcols(gcols), row_dist(grows), cdp(set_cdp(gcols, same_dist(), gcols <= grows)),
