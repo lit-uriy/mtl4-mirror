@@ -1,4 +1,4 @@
-// Filename: mpi_3_heterogeous_insertion.cpp
+// Filename: mpi_3_flexible_insertion.cpp
 
 #include <iostream>
 #include <boost/mpi.hpp>
@@ -31,6 +31,5 @@ int main(int argc, char* argv[])
 	}
     }
 
-    mtl::par::sout << "The matrix A is\n" << A << "\n";
     return 0;
 }

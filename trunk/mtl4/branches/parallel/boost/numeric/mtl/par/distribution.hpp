@@ -83,11 +83,15 @@ namespace mtl {
 	    /// Distribution vector
 	    explicit block_distribution(const std::vector<size_type>& starts, 
 					const boost::mpi::communicator& comm= boost::mpi::communicator())
-	      : base_distribution(comm), starts(starts)
-	    {}
+	      : base_distribution(comm), starts(starts) {}
 
 	    // should be generated
 	    // block_distribution(const block_distribution& src) : base_distribution(src), starts(src.starts) {}
+
+	    /// Construct from an array
+	    template <typename Value, long Size>
+	    block_distribution(const Value (&array)[Size], const boost::mpi::communicator& comm= boost::mpi::communicator())
+	      : base_distribution(comm), starts(array, array+Size) {}
 
 	    /// Change number of global entries to n
 	    void resize(size_type n) { init(n); }

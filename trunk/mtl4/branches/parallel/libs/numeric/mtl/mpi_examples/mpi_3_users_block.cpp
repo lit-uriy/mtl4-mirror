@@ -9,11 +9,10 @@ int main(int argc, char* argv[])
     boost::mpi::environment env(argc, argv);
     boost::mpi::communicator world;
 
-    typedef mtl::vector::distributed<mtl::dense_vector<float> >  vector_type;
-    std::vector<std::size_t> block;
-    block.push_back(0); block.push_back(2); block.push_back(7); block.push_back(8); 
+    std::size_t                  array[]= {0, 2, 7, 8};
+    mtl::par::block_distribution dist= array;
 
-    mtl::par::block_distribution dist(block);
+    typedef mtl::vector::distributed<mtl::dense_vector<float> >  vector_type;
     vector_type  v(8, dist);
     
     {

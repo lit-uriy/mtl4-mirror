@@ -31,9 +31,9 @@ x    mpi_2_vector_insertion_test.cpp
     mpi_2_vector_send_test.cpp
     mpi_3_all_to_all_pcx_test.cpp
     mpi_3_block_migration_test.cpp
-    mpi_3_heterogeneous_insertion_2_test.cpp
-    mpi_3_heterogeneous_insertion_test.cpp
-    mpi_3_insertion_test.cpp
+x    mpi_3_heterogeneous_insertion_2_test.cpp
+x    mpi_3_heterogeneous_insertion_test.cpp
+x    mpi_3_insertion_test.cpp
     mpi_3_map_view_test.cpp
     mpi_3_matrix_agglomerate_test.cpp
     mpi_3_matrix_migration_test.cpp
