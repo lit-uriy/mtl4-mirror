@@ -38,7 +38,7 @@ find_package(MPI)
 ## Extra definitions for Boost MPI (maybe write module FindBoostMPI
 set (PMTL_INC_FLAGS "-I${MTL_BOOST_ROOT}" "-I${MY_BOOST_INCLUDE}") # to do: portable
 
-set (PMTL_MACRO_FLAGS "-DMTL_HAS_MPI" "-DBOOST_MPI_HOMOGENEOUS")
+set (PMTL_MACRO_FLAGS "-DMTL_ASSERT_FOR_THROW" "-DMTL_HAS_MPI" "-DBOOST_MPI_HOMOGENEOUS")
 if (false) # for MPI compilers basing on gcc 4.3 or higher
   set (PMTL_MACRO_FLAGS ${PMTL_MACRO_FLAGS}  "-Wno-array-bounds")
 endif()
