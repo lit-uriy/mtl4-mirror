@@ -121,6 +121,15 @@ class distributed
 	local_matrix(row_dist.num_local(grows), row_dist.num_local(gcols))
     {	*this= src;    }
 
+    /// Copy constructor
+    distributed(const self& src)
+      : grows(src.grows), gcols(src.gcols), my_total_send_size(src.my_total_send_size), my_total_recv_size(src.my_total_recv_size),
+	row_dist(src.row_dist), local_matrix(src.local_matrix), remote_matrices(src.remote_matrices),
+	my_recv_info(src.my_recv_info), my_send_info(src.my_send_info), index_comp(src.index_comp)
+    {
+	col_dist_assign(src, boost::is_same<RowDistribution, ColDistribution>());
+    }
+
     // In case new row distribution is to small for global number of columns
     // gcols and row_dist must be set before function is called
     // Row and column distribution can be of different type
@@ -182,13 +191,38 @@ class distributed
 	size_type                   size, offset;
     };
 
+    self& operator=(self src)
+    {
+	using std::swap;
+	if (grows == 0 && gcols == 0) { // I am still a stem cell
+	    grows= src.grows;
+	    gcols= src.gcols;
+	    clear_cdp(cdp);
+	    swap(row_dist, src.row_dist);
+	    col_dist_assign(src, boost::is_same<RowDistribution, ColDistribution>());
+	} else {
+	    MTL_THROW_IF(grows != src.grows || gcols != src.gcols, incompatible_size());
+	    MTL_THROW_IF(row_dist != src.row_dist || *cdp != *src.cdp, incompatible_distribution());
+	}
+
+	swap(local_matrix,       src.local_matrix);
+	swap(my_total_send_size, src.my_total_send_size);
+	swap(my_total_recv_size, src.my_total_recv_size);
+	swap(remote_matrices,    src.remote_matrices);
+	swap(my_recv_info,       src.my_recv_info);
+	swap(my_send_info,       src.my_send_info);
+	swap(index_comp,         src.index_comp);
+
+	return *this;
+    }
+#if 0
     self& operator=(const self& src)
     {
 	if (grows == 0 && gcols == 0) { // I am still a stem cell
 	    grows= src.grows;
 	    gcols= src.gcols;
-	    row_dist= src.row_dist;
 	    clear_cdp(cdp);
+	    row_dist= src.row_dist;
 	    col_dist_assign(src, boost::is_same<RowDistribution, ColDistribution>());
 	} else {
 	    MTL_THROW_IF(grows != src.grows || gcols != src.gcols, incompatible_size());
@@ -205,7 +239,7 @@ class distributed
 
 	return *this;
     }
-
+#endif
     /// Leading dimension
     size_type dim1() const { return mtl::traits::is_row_major<self>::value ? grows : gcols; }
     /// Non-leading dimension
