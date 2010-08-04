@@ -35,6 +35,7 @@ namespace mtl {
 	  public:
 	    typedef std::size_t     size_type;
 	    
+	    /// Constructor
 	    explicit base_distribution (const boost::mpi::communicator& comm= boost::mpi::communicator()) 
 	      : comm(comm), my_rank(comm.rank()), my_size(comm.size()) {}
 	    
@@ -46,13 +47,14 @@ namespace mtl {
 	    /// Current communicator
 	    friend inline const boost::mpi::communicator& communicator(const base_distribution& d);
 
+	    /// Process ID
 	    int rank() const { return my_rank; }
+	    /// Number of processes
 	    int size() const { return my_size; }
 
+	    /// Output operator
 	    friend inline std::ostream& operator<< (std::ostream& out, const base_distribution& d)
-	    {
-		return out << "Basic distribution of size " << d.my_size; 
-	    }
+	    {	return out << "Basic distribution of size " << d.my_size;    }
 
 	  protected:
 	    boost::mpi::communicator comm;
@@ -177,6 +179,7 @@ namespace mtl {
 		return lbound - starts.begin() - int(*lbound != n);
 	    }
 
+	    /// Output operator
 	    friend inline std::ostream& operator<< (std::ostream& out, const block_distribution& d)
 	    {
 		out << "Block distribution: ";
@@ -222,7 +225,7 @@ namespace mtl {
 	    template <typename Size>
 	    Size num_local(Size n, int p) const
 	    { 
-		return n / my_size + (my_rank < int(n) % my_size);
+		return n / my_size + (my_rank < int(n) % my_size); 
 	    }
 	    
 	    /// For n global entries, how many are on my processor?
@@ -258,6 +261,7 @@ namespace mtl {
 	    /// On which rank is global index n?
 	    int on_rank(size_type n) const { return n % my_size; }
 
+	    /// Output operator
 	    friend inline std::ostream& operator<< (std::ostream& out, const cyclic_distribution& d)
 	    {
 		return out << "Cyclic distribution with cycle size " << d.my_size; 
@@ -328,6 +332,7 @@ namespace mtl {
 	    /// On which rank is global index n?
 	    int on_rank(size_type n) const { return (n % sb) / bsize; }
 
+	    /// Output operator
 	    friend inline std::ostream& operator<< (std::ostream& out, const block_cyclic_distribution& d)
 	    {
 		return out << "Cyclic distribution with cycle size " << d.my_size << " and block size " << d.bsize; 
@@ -394,6 +399,7 @@ namespace mtl {
 	    /// On which rank is global index n? Returns own rank on each processor.
 	    int on_rank(size_type n) const { return my_rank; }
 
+	    /// Output operator
 	    friend inline std::ostream& operator<< (std::ostream& out, const replication& d)
 	    {
 		return out << "Replication";

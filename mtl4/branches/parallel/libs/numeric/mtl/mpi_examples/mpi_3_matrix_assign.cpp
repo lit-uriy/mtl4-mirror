@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     matrix_type A(7, 7, row_dist, col_dist), B; 
 
     A= 6;
-    B= A;
+    B= A; 
     mtl::par::sout << "The matrix B is\n" << B << "\n";
   
     matrix_type C(7, 7);
