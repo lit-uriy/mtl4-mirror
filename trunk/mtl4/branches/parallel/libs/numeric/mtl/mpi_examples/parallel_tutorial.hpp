@@ -318,6 +318,14 @@ Some parallel linear solvers have replicated matrices (e.g. the orthogonalizatio
 but such matrices are not computed on one process and sent to the others but calculated simultaneously
 on each process.
 
+\remark
+In the tutorial and the tests we use the convention to name programs according the pattern
+"mpi_nn_xyz.cpp" where "nn" is a possible number of processes.
+That is one can start the program with "mpirun -np nn mpi_nn_xyz".
+Most examples work with arbitrary process numbers while others require a certain
+process number for instance when explicitly defined distributions are used.
+
+
 \if Navigation \endif
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref parallel_tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref parallel_ostreams 
 
@@ -391,7 +399,7 @@ so that the more expensive version might be added and not replacing this one.
 
 
 Remark: The classes currently do not work with std::endl (and other output manipulators). 
-Use '\n' as line end. If you want flushing your output you can use the class' member function,
+Use '\\n' as line end. If you want flushing your output you can use the class' member function,
 e.g.:
 \code
 sout.flush();
@@ -491,6 +499,19 @@ In this example, the vector of size 8 is distributed as 2 + 5 + 1.
 If we had a vector with global size 7 or less, the sub-vector on process 3 would be empty.
 If the global size would be 9 or higher, the construction of the distributed vector would fail.
 More information on distribution is found in section \ref distribution_objects.
+
+The output of the program is:
+
+\include mpi_3_users_block.output
+
+\remark
+Please not that this example does not run with more or less than 3 processes.
+If one takes one or two processes, the distribution does not allow to
+build a vector of size 8.
+When more than 3 processes are taken, the distribution is not defined
+by an array of size 4.
+Likewise, other examples with an explicit block distribution does not work 
+with arbitrary process numbers.
 
 \section distributed_vector_temporaries Temporary Vectors
 
@@ -604,8 +625,9 @@ The resulting distributed matrix is:
 In parallel MTL4 it does not matter where entries are inserted.
 However, for performance reasons, one should try to insert most values locally.
 In parallel simulation programs this can be achieved by distributing the unkowns (entries of matrices and vectors)
-similar to the cells or elements so that most results of the assembling are inserted locally and only on 
-between sub-domains some communication is necessary.
+similar to the cells or elements so that most results of the assembling are inserted locally.
+Only on grid points shared 
+between sub-domains some communication is necessary (as mentioned before we do not support overlapping yet).
 
 Of course, the inserter of distributed matrices can be parametrized with an update functor as any other inserter, e.g.:
 \code

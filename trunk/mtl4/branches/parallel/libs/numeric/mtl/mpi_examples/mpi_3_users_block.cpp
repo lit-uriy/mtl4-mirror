@@ -17,12 +17,9 @@ int main(int argc, char* argv[])
     
     {
 	mtl::vector::inserter<vector_type> ins(v);
-	
-	for (unsigned i= 0; i < size(v); ++i)
-	    if (int(i) % world.size() == world.rank())
-		ins[i] << float(world.rank());
-	    else
-		ins[i] << 0.1;
+	if (world.rank() == 0)
+	    for (unsigned i= 0; i < size(v); ++i)
+		ins[i] << i;
     }
 
     std::cout << "I am proc. " << world.rank() << " and my local part of v is " << local(v) << '\n';

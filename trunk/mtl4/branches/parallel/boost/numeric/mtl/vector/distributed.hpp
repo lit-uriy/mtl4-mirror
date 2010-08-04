@@ -76,22 +76,27 @@ public:
     explicit distributed(size_type gsize, const Distribution& dist, value_type value) 
       : gsize(gsize), dist(dist), local_vector(dist.num_local(gsize), value)  {}
 
+    /// Constructor from resource information
     explicit distributed(const resource_type& resource)
       : gsize(resource.first), dist(resource.second), local_vector(dist.num_local(gsize))  {}
 
+    /// Constructor from resource information and initial value
     explicit distributed(const resource_type& resource, value_type value)
       : gsize(resource.first), dist(resource.second), local_vector(dist.num_local(gsize), value)  {}
 
+    /// Construct from another distributed vector type and a migration object, i.e. migrate the source to get a new vector
     template <typename VectorSrc>
     distributed(const VectorSrc& src, const par::block_migration& migration)
       : gsize(size(src)), dist(migration.new_distribution()), local_vector(dist.num_local(gsize))
     { migrate_vector(src, *this, migration);  }
 
+    /// Construct from another distributed vector type or expression
     template <typename VectorSrc>
     explicit distributed(const VectorSrc& src, typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
       : gsize(size(src)), dist(distribution(src)), local_vector(dist.num_local(gsize))    
     { *this= src; }
 
+    /// Assignment with move semantics
     self& operator=(self src)
     {
 	assert(this != &src);
@@ -122,6 +127,7 @@ public:
 
     void change_dim(size_type n) { local_vector.change_dim(dist.num_local(n)); }
     
+    /// Output operator
     friend inline std::ostream& operator<< (std::ostream& out, const self& v) 
     {
 	std::vector<local_type> all_vectors;
@@ -134,33 +140,46 @@ public:
 	return out;
     }
 
+    /// Distribution of this vector
     friend inline distribution_type distribution(const self& d) { return d.dist; }
+    /// Communicator of this vector
     friend inline const boost::mpi::communicator& communicator(const self& d) { return communicator(d.dist); }
 			  
     template <typename, typename> friend class distributed_inserter;
 
+    /// Number of global rows
     friend inline size_type num_rows(const self& v) { return mtl::traits::is_row_major<self>::value ? 1 : v.gsize; }
+    /// Number of global columns
     friend inline size_type num_cols(const self& v) { return mtl::traits::is_row_major<self>::value ? v.gsize : 1; }
+    /// Global size of the vector 
     friend inline size_type size(const self& v) { return v.gsize; }
 
     void delay_assign() const {}
     void clear_remote_part() const {}
 
-    // Enlarge send buffer so that at least n entries can be sent
+    /// Enlarge send buffer so that at least n entries can be sent
     void enlarge_send_buffer(size_type n) const { send_buffer.change_dim(std::max(size(send_buffer), n)); }
-    // Enlarge receive buffer so that at least n entries can be received
+    /// Enlarge receive buffer so that at least n entries can be received
     void enlarge_recv_buffer(size_type n) const { recv_buffer.change_dim(std::max(size(recv_buffer), n)); }
 
+    /// Release send buffer
     void release_send_buffer(size_type n) const { send_buffer.change_dim(0); }
+    /// Release receive buffer
     void release_recv_buffer(size_type n) const { recv_buffer.change_dim(0); }
 
+    /// Set entry \p i of send buffer to \p v
     void set_send_buffer(size_type i, value_type v) { send_buffer[i]= v; }
+    /// Get entry \p i of send buffer
     value_type get_recv_buffer(size_type i) { return recv_buffer[i]; }
 
+    /// Return reference to local part of vector \p d
     friend inline local_type& local(self& d) { return d.local_vector; }
+    /// Return constant reference to local part of vector \p d
     friend inline const local_type& local(const self& d) { return d.local_vector; }
 
+    /// Return reference to send buffer of vector \p d
     friend inline buffer_type& send_buffer(const self& d) { return d.send_buffer; } // buffer is mutable
+    /// Return reference to receive buffer of vector \p d
     friend inline buffer_type& recv_buffer(const self& d) { return d.recv_buffer; } // buffer is mutable
 
 protected:

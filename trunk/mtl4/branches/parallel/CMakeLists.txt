@@ -98,7 +98,7 @@ endmacro (compile_all)
 macro (mpi_compile_all)
     foreach (source ${ARGV})
         get_filename_component (test ${source} NAME_WE)		# filename without extension
-        add_custom_command(OUTPUT ${test} DEPENDS ${source} COMMAND ${MPI_COMPILER} ${PMTL_MACRO_FLAGS} ${PMTL_INC_FLAGS} ${source} -o ${test} ${PMTL_LIB_FLAGS})
+        add_custom_command(OUTPUT ${test} DEPENDS ${source} ${INCLUDES} COMMAND ${MPI_COMPILER} ${PMTL_MACRO_FLAGS} ${PMTL_INC_FLAGS} ${source} -o ${test} ${PMTL_LIB_FLAGS})
         add_custom_target(${test}_helper ALL DEPENDS ${test} ${INCLUDES} )
         set(test_name "${test}")
         # message(STATUS "${test_name}")

@@ -94,7 +94,7 @@ class distributed
 
   public:
     /// Default constructor creates a 0 by 0 matrix that can be set later
-    distributed() : grows(0), gcols(0) {}
+    distributed() : grows(0), gcols(0), cdp(0) {}
 
     /// Constructor for matrix with global size grows x gcols and default distribution.
     explicit distributed(size_type grows, size_type gcols) 
@@ -232,11 +232,15 @@ class distributed
     size_type decompress_column(size_type col, int p) const
     { return p == cdp->rank() ? col : index_comp.find(p)->second[col];  }
 
+    /// Total number of sent entries (e.g. in matrix vector product)
     size_type total_send_size() const { return my_total_send_size; }
+    /// Total number of received entries (e.g. in matrix vector product)
     size_type total_recv_size() const { return my_total_recv_size; }
 
-    const std::map<int, recv_structure>& recv_info() const { return my_recv_info; }
+    /// Descriptor for message sending
     const std::map<int, send_structure>& send_info() const { return my_send_info; }
+    /// Descriptor for message receiving
+    const std::map<int, recv_structure>& recv_info() const { return my_recv_info; }
 
 
   private:
