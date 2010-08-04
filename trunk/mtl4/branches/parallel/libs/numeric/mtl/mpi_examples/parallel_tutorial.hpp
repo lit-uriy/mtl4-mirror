@@ -742,6 +742,8 @@ The following example illustrates the simplicity of distributed
 
 \include mpi_3_matrix_assign.cpp
 
+\todo Insert the entries only once for A= alpha when A is distributed
+
 The matrix A has in this example a user-defined distribution while matrix B
 is default-constructed.
 The default constructor creates a matrix with global size 0 by 0.
