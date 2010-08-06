@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 2.6)
 # DERIVED VARIABLES
 # no derived variables, this makefile is the toplevel makefile for boost mtl4
 
+
 # The BOOST_INCLUDE_DIR needs to point to the release BOOST tree
 # so that we can pick up boost/test/minimal.hpp
 # set (BOOST_ROOT "please-set-boost-include-dir" CACHE STRING "BOOST include directory")
