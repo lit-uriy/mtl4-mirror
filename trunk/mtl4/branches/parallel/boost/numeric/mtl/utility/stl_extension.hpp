@@ -16,7 +16,7 @@
 
 namespace std {
 
-/// Consume container \p consumed by appending its data to \consumer and emptying it
+/// Consume container \p consumed by appending its data to \p consumer and emptying it
 /** Works for std::vectors (general requirements pending). **/
 template <typename Container>
 void inline consume(Container& consumer, Container& consumed)

@@ -198,7 +198,7 @@ public:
     }
 
     /*! Set the bound of the recursator.
-	\param bound  The new virtual bound; must be a power of 2.
+	\param b  The new virtual bound; must be a power of 2.
 
         This function allows to declare a virtual bound smaller than the number of rows and/or columns.
 	It must be used with uttermost care.

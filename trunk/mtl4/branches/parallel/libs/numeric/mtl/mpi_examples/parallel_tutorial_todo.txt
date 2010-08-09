@@ -17,32 +17,42 @@ Tests considered in tutorial:
 
 x    mpi_2_boost_mpi_test.cpp
 x    mpi_2_diagonal_setup_test.cpp
-    mpi_2_dot_test.cpp                               -> vec fun
-    mpi_2_hermitian_matrix_vector_product_test.cpp   -> mv expr
 x    mpi_2_insertion_test.cpp
-    mpi_2_laplacian_setup_test.cpp                   -> mat fun
-    mpi_2_matrix_vector_product_test.cpp             -> mv expr
 x    mpi_2_rank_ostream_test.cpp
-    mpi_2_read_matrix_market_test.cpp                -> mat fun
-    mpi_2_transposed_matrix_vector_product_test.cpp  -> mv expr
-    mpi_2_vector_expr_test.cpp                       -> vec exp
+x    mpi_2_vector_expr_test.cpp                       -> vec exp
 x    mpi_2_vector_insertion_test.cpp
-    mpi_2_vector_reduction_test.cpp                  -> vec exp
-    mpi_2_vector_send_test.cpp                       -> MPI
-    mpi_3_all_to_all_pcx_test.cpp                    -> MPI
-    mpi_3_block_migration_test.cpp                   -> migration
+x    mpi_2_vector_reduction_test.cpp                  -> vec exp
 x    mpi_3_heterogeneous_insertion_2_test.cpp
 x    mpi_3_heterogeneous_insertion_test.cpp
 x    mpi_3_insertion_test.cpp
-    mpi_3_map_view_test.cpp                          -> mat fun
-    mpi_3_matrix_agglomerate_test.cpp                -> ???
-    mpi_3_matrix_migration_test.cpp                  -> migration
-    mpi_3_matrix_vector_product_serialization_test.cpp -> ???
-    mpi_3_parmetis_matrix_migration_test.cpp         -> migration
-    mpi_3_parmetis_test.cpp                          -> migration
-    mpi_3_symmetry_calculation_test.cpp              -> intern
-    mpi_3_topology_test.cpp                          -> very adv.
-    mpi_3_vector_migration_test.cpp                  -> migratio
-    mpi_3_vector_reduce_test.cpp                     -> vec fun
+x    mpi_3_matrix_vector_product_serialization_test.cpp -> ???
+x    mpi_3_symmetry_calculation_test.cpp              -> intern
 x    mpi_4_broadcast_test.cpp
 
+
+
+-# Distributed matrices and vectors
+-# Operators
+    mpi_2_matrix_vector_product_test.cpp             -> mv expr
+    mpi_2_transposed_matrix_vector_product_test.cpp  -> mv expr
+    mpi_2_hermitian_matrix_vector_product_test.cpp   -> mv expr
+-# Norms
+-# Reductions
+    mpi_3_vector_reduce_test.cpp                     -> vec fun
+    mpi_2_dot_test.cpp                               -> vec fun
+-# Other Functions
+    mpi_2_laplacian_setup_test.cpp                   -> mat fun
+    mpi_2_read_matrix_market_test.cpp                -> mat fun
+    mpi_3_map_view_test.cpp                          -> mat fun
+-# Solving Linear Systems
+-# Parallelization
+    mpi_2_vector_send_test.cpp                       -> MPI
+    mpi_3_all_to_all_pcx_test.cpp                    -> MPI
+    mpi_3_parmetis_matrix_migration_test.cpp         -> migration
+    mpi_3_parmetis_test.cpp                          -> migration
+    mpi_3_matrix_migration_test.cpp                  -> migration
+    mpi_3_block_migration_test.cpp                   -> migration
+    mpi_3_matrix_agglomerate_test.cpp                -> agglomeration
+    mpi_3_topology_test.cpp                          -> very adv.
+    mpi_3_vector_migration_test.cpp                  -> migratio
+ 

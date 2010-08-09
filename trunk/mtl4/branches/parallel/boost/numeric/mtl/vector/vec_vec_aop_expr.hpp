@@ -73,6 +73,10 @@ struct vec_vec_aop_expr
     typedef E1 first_argument_type ;
     typedef E2 second_argument_type ;
     
+#if 0 // def MTL_HAS_MPI
+    typedef typename DistributedCollection<E1>::local_type local_type;
+#endif
+
     vec_vec_aop_expr( first_argument_type& v1, second_argument_type const& v2 )
       : first( v1 ), second( v2 ), delayed_assign( false )
     {
@@ -138,7 +142,7 @@ struct vec_vec_aop_expr
     // Distributed version
     void destroy(tag::distributed)
     {
-	// Check distribution !!!
+	first.init_distribution(distribution(second), size(second)); // initializes or checks distribution and global size
 
 	typedef typename DistributedCollection<E1>::local_type LocalE1;
 	typedef typename DistributedCollection<E2>::local_type LocalE2;
@@ -169,7 +173,7 @@ struct vec_vec_aop_expr
 
     value_type& operator[] ( size_type i ) const { return (*this)(i); }
     
-#if 0
+#if 0 // def MTL_HAS_MPI
     // Might need refactoring
     template <typename EE1, typename EE2, typename SSFunctor> 
     friend typename DistributedVector< vec_vec_aop_expr<EE1, EE2, SSFunctor> >::distribution_type
