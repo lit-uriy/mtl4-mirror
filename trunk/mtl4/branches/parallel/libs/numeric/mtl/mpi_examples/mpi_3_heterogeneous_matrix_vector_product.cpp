@@ -9,25 +9,20 @@ int main(int argc, char* argv[])
     boost::mpi::environment      env(argc, argv);
     boost::mpi::communicator     world;
 
-    std::size_t                  ra[]= {0, 4, 6, 7}, ca[]= {0, 5, 7, 7};
+    std::size_t                  ra[]= {0, 4, 6, 7}, ca[]= {0, 5, 8, 8};
     mtl::par::block_distribution row_dist= ra,       col_dist= ca;
 
     typedef mtl::matrix::distributed<mtl::compressed2D<float> >  matrix_type;
-    matrix_type A(7, 7, row_dist, col_dist);
+    matrix_type A(7, 8, row_dist, col_dist);
 
-    {
-	mtl::matrix::inserter<matrix_type> ins(A);
-	if (world.rank() == 0) {
-	    ins[0][0] << 1.0;
-	    ins[1][3] << 3.0;
-	    ins[4][1] << 2.0; 
-	    ins[6][5] << 4.0; 
-	    ins[2][6] << 5.0; 
-	    ins[3][2] << 6.0; 
-	    ins[5][4] << 8.0; 
-	}
-    }
+    A= 4.0;
 
-    mtl::par::sout << "The matrix A is\n" << A << "\n";
+    mtl::vector::distributed<mtl::dense_vector<double> > u(7, row_dist), 
+	                                                 v(8, col_dist, 3.0);
+    
+    u= A * v;
+
+    mtl::par::sout << "The vector v is          " << v 
+		   << "\nand the product A * v is " << u << "\n";
     return 0;
 }

@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
     matrix_type A(7, 7);
     A= 4.0;
 
-    mtl::vector::distributed<mtl::dense_vector<float> > u, v(7, 3.0);
+    mtl::vector::distributed<mtl::dense_vector<double> > u, v(7, 3.0);
     
     u= A * v;
 
