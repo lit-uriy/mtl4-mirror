@@ -32,7 +32,6 @@
 #include <boost/numeric/mtl/par/migration.hpp>
 #include <boost/numeric/mtl/par/migrate_vector.hpp>
 
-
 namespace mtl { namespace vector {
 
 /// Class for distributed vectors
@@ -96,19 +95,34 @@ public:
       : gsize(size(src)), dist(distribution(src)), local_vector(dist.num_local(gsize))    
     { *this= src; }
 
+    /// Initialize distribution and global size
+    /** If vector still has global size 0 then initialize vector with parameters. 
+	Otherwise compare global size and distribution and throw exception if incompatible. **/
+    void init_distribution(const distribution_type& distribution, size_type global_size)
+    {
+	if (gsize == 0) {
+	    gsize= global_size;
+	    dist= distribution;
+	    local_vector.change_dim(dist.num_local(gsize));
+	} else {	    
+	    MTL_DEBUG_THROW_IF( gsize != global_size, incompatible_size());
+	    MTL_DEBUG_THROW_IF( dist != distribution, incompatible_distribution());
+	}
+    }
+    template <typename D> void init_distribution(const D&, size_type) // type error to run-time error
+    { MTL_THROW(logic_error("Source and target vectors must have the same distribution type!")); }
+
     /// Assignment with move semantics
     self& operator=(self src)
     {
 	assert(this != &src);
-	if (gsize == 0) {
-	    gsize= src.gsize;
-	    dist= src.dist;
-	} else {	    
-	    MTL_DEBUG_THROW_IF( gsize != src.gsize, incompatible_size());
-	    MTL_DEBUG_THROW_IF( dist != src.dist, incompatible_distribution());
-	}
+	init_distribution(src.dist, src.gsize);
+
 	// If variable assigned then src is already a copy, no need to deep copy members
 	swap(local_vector, src.local_vector);
+	send_buffer.change_dim(size(src.send_buffer));
+	recv_buffer.change_dim(size(src.recv_buffer));
+	
 	return *this;
     }	
 

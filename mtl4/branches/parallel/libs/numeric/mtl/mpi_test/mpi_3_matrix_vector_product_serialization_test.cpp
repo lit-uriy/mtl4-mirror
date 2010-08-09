@@ -9,6 +9,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+// Compares the parallel with the sequential computation
 // Works for arbitrary processor numbers, even larger then number of matrix rows
 
 #include <iostream>

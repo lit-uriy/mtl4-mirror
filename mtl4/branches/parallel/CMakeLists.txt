@@ -90,6 +90,7 @@ macro (compile_all)
     foreach (source ${ARGV})
         get_filename_component (test ${source} NAME_WE)		# filename without extension
         add_executable (${test} ${source} ${INCLUDES})
+	# message("output path ${EXECUTABLE_OUTPUT_PATH} // ${RUNTIME_OUTPUT_DIRECTOR}")
         add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
     endforeach (source)
 endmacro (compile_all)
@@ -98,18 +99,22 @@ endmacro (compile_all)
 macro (mpi_compile_all)
     foreach (source ${ARGV})
         get_filename_component (test ${source} NAME_WE)		# filename without extension
-        add_custom_command(OUTPUT ${test} DEPENDS ${source} ${INCLUDES} COMMAND ${MPI_COMPILER} ${PMTL_MACRO_FLAGS} ${PMTL_INC_FLAGS} ${source} -o ${test} ${PMTL_LIB_FLAGS})
+	get_filename_component (test_dir ${source} PATH)        # not portable !!
+        add_custom_command(OUTPUT ${test_dir}/${test} DEPENDS ${source} ${INCLUDES} COMMAND ${MPI_COMPILER} ${PMTL_MACRO_FLAGS} ${PMTL_INC_FLAGS} ${source} -o ${test_dir}/${test} ${PMTL_LIB_FLAGS})
         add_custom_target(${test}_helper ALL DEPENDS ${test} ${INCLUDES} )
         set(test_name "${test}")
         # message(STATUS "${test_name}")
         string(REGEX REPLACE "mpi_([0-9]*)_.*" "\\1" nprocs "${test_name}")
-        add_test (${test} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${nprocs} ${EXECUTABLE_OUTPUT_PATH}/${test})
+	# message("output path ${EXECUTABLE_OUTPUT_PATH} // ${RUNTIME_OUTPUT_DIRECTOR}")
+        add_test (${test}_helper ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${nprocs} ${test_dir}/${test})
     endforeach (source)
 endmacro (mpi_compile_all)
 
+	message("output path2 ${EXECUTABLE_OUTPUT_PATH} // ${RUNTIME_OUTPUT_DIRECTOR}")
 
 # enable test generation
 enable_testing()
+include(CTest)
 
 # Descent into the test program directory to build the test suite
 # MTL4 test programs
