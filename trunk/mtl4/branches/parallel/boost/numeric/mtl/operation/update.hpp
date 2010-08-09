@@ -12,6 +12,7 @@
 #ifndef MTL_UPDATE_INCLUDE
 #define MTL_UPDATE_INCLUDE
 
+#include <complex>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -156,6 +157,14 @@ struct update_proxy
 	ins.update (row, col, val);
 	return *this;
     }	
+
+    // Hack to insert complex<double> into complex<float> and such 
+    template <typename T>
+    self& lshift (const std::complex<T>& val, value_shape)
+    {
+	ins.update (row, col, value_type(real(val), imag(val)));
+	return *this;
+    }
 
     // Update an entire matrix considered as block
     template <typename MatrixSrc>

@@ -852,6 +852,8 @@ Under development.
 //-----------------------------------------------------------
 /*! \page distributed_matrix_vector_expr Parallel %Matrix %Vector Expressions
 
+\section distributed_matrix_vector_expr_straight Straight Forward
+
 The following example program illustrates that the parallel matrix vector product (MVP) can
 be easily programmed with the multiplication opeator:
 
@@ -860,6 +862,8 @@ be easily programmed with the multiplication opeator:
 In the code above the vector u had no global size and distribution.
 In this case, those parameters are set with the global row number and row distribution of the 
 matrix.
+
+\section distributed_matrix_vector_expr_hetero Mixed Distributions
 
 Next, we work with differently distributed vectors:
 
@@ -885,6 +889,14 @@ In the parallel context, the elements of those vector spaces are not only charac
 by their values but also by their distribution.
 To transform such vector space elements in general, we must be able to project
 from one distribution to another one.
+
+\section distributed_matrix_vector_expr_trans Multiplying Transposed and Hermitian Matrices
+
+Transposed and Hermitian (conjugate transposed) matrices can be multiplied with 
+distributed vectors:
+
+
+
 
 
 \if Navigation \endif
