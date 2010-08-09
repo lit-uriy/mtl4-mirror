@@ -665,7 +665,7 @@ This distribution can be defined by the user.
 The user can also define a column distribution.
 This affects how the matrix is constructed internally from sub-matrix blocks.
 It is also important to implement operations when not all  data
-structures are distributed equally, see \ref distributed_mvp.
+structures are distributed equally, see \ref distributed_matrix_vector_expr.
 
 \subsection distributed_matrix_custom_homo Homogeneous Distribution
 
@@ -852,7 +852,7 @@ Under development.
 //-----------------------------------------------------------
 /*! \page distributed_matrix_vector_expr Parallel %Matrix %Vector Expressions
 
-The following example program illustrates that the parallel matrix vector product can
+The following example program illustrates that the parallel matrix vector product (MVP) can
 be easily programmed with the multiplication opeator:
 
 \include mpi_3_matrix_vector_product.cpp
@@ -861,6 +861,30 @@ In the code above the vector u had no global size and distribution.
 In this case, those parameters are set with the global row number and row distribution of the 
 matrix.
 
+Next, we work with differently distributed vectors:
+
+\include mpi_3_heterogeneous_matrix_vector_product.cpp
+
+In a parallel MVP, the multiplied vector must be distributed in the same way as the
+matrix' column "distribution" (splitting).
+The resulting vector needs the same distribution as the matrix rows.
+Vectors with global size 0 set their distribution and global size to
+the (global) number of matrix rows and 
+ the matrix row distribution respectively.
+
+If these distribution requirements are violated, an exception (of type incompatible_distribution) 
+is thrown.
+
+\remark
+Using vector of different distributions in a matrix vector multiplication explains
+why matrices are equipped with two distributions: one for the operand vector and
+one for the result vector.
+Considered more formally, a matrix represents a projection from one finite-dimensional
+vector space to another.
+In the parallel context, the elements of those vector spaces are not only characterized
+by their values but also by their distribution.
+To transform such vector space elements in general, we must be able to project
+from one distribution to another one.
 
 
 \if Navigation \endif
