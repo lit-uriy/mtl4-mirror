@@ -70,9 +70,18 @@ struct crtp_assign<Vector, mat_cvec_times_expr<E1, E2> >
     typedef Vector& type;
     type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
     {
-	vector.checked_change_dim(num_rows(src.first));
+	init(vector, src, typename mtl::traits::category<Vector>::type());
 	mult(src.first, src.second, vector);
 	return vector;
+    }
+  private:
+    void init(Vector& vector, const mat_cvec_times_expr<E1, E2>& src, tag::universe)
+    {
+	vector.checked_change_dim(num_rows(src.first));
+    }
+    void init(Vector& vector, const mat_cvec_times_expr<E1, E2>& src, tag::distributed)
+    {
+	vector.init_distribution(row_distribution(src.first), num_rows(src.first));
     }
 };
 
