@@ -852,6 +852,14 @@ Under development.
 //-----------------------------------------------------------
 /*! \page distributed_matrix_vector_expr Parallel %Matrix %Vector Expressions
 
+The following example program illustrates that the parallel matrix vector product can
+be easily programmed with the multiplication opeator:
+
+\include mpi_3_matrix_vector_product.cpp
+
+In the code above the vector u had no global size and distribution.
+In this case, those parameters are set with the global row number and row distribution of the 
+matrix.
 
 
 
