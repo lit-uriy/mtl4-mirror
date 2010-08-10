@@ -454,11 +454,7 @@ private:
     /** For expressions like A= B + C, A can be set to the size of B and C if still is 0 by 0. **/
     template <typename Src>
     void checked_change_resource(const Src& src) 
-    {	checked_change_resource_aux(src, typename mtl::traits::category<Matrix>::type());    }
-
-    template <typename Src>
-    void checked_change_resource_aux(const Src& src, tag::universe) 
-    {   checked_change_dim(num_rows(src), num_cols(src));    }
+    {	checked_change_resource(src, src);   }
 
     /// Check wether source and target have compatible resources and adapt empty target
     /** For expressions like A= B + C, A can be set to the size of B and C if still is 0 by 0. **/
