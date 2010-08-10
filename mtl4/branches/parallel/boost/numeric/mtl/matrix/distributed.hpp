@@ -158,8 +158,23 @@ class distributed
 
     ~distributed() { clear_cdp(cdp); }
 
+    void init_distribution(const row_distribution_type& rd, const col_distribution_type& cd, size_type gr, size_type gc)
+    {
+	if (gr * gc == 0) {
+	    grows= gr; gcols= gc;
+	    row_dist= rd;
+	    cdp= new col_distribution_type(cd);
+	    local_matrix.change_dim(row_dist.num_local(grows), cdp->num_local(gcols));
+	} else {
+	    check_dim(gr, gc);
+	    MTL_DEBUG_THROW_IF( row_dist != rd, incompatible_distribution());
+	    MTL_DEBUG_THROW_IF( *cdp != cd, incompatible_distribution());
+	}
+    }
+
+
     /// Change dimension \p grows global rows times \p gcols global columns 
-    /** Potentially changes parametrization of distributions **/
+    /** Potentially changes parametrization of distributions, therefore to be used with utter care. **/
     void change_dim(size_type grows, size_type gcols)
     {
 	this->grows= grows; this->gcols= gcols;
@@ -246,8 +261,8 @@ class distributed
   private:
     void col_dist_assign(const self& src, boost::mpl::true_)
     {
-	// if dist and col_dist are the same object at source then col_dist is only a ref to dist
-	if (&src.row_dist == src.cdp)
+	// if my row_dist is equal to the source column dist, I can point to my row_dist
+	if (row_dist == *src.cdp)
 	    cdp= &row_dist;
 	else
 	    cdp= new ColDistribution(*src.cdp);	

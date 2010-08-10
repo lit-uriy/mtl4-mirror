@@ -28,7 +28,7 @@ namespace mtl {
 	template <typename Vector, typename Functor>
 	inline void look_at_each_nonzero(const Vector& v, Functor& f)
 	{
-	    typedef typename traits::range_generator<tag::const_iter::nz, Vector>::type iterator;
+	    typedef typename mtl::traits::range_generator<tag::const_iter::nz, Vector>::type iterator;
 	    for (iterator i= begin<tag::iter::nz>(v), iend= end<tag::iter::nz>(v); i != iend; ++i)
 		f(*i);
 	}
@@ -38,8 +38,8 @@ namespace mtl {
 	typename mtl::traits::enable_if_vector<Vector>::type // to be called for vectors only 
 	inline look_at_each_nonzero_pos(const Vector& v, Functor& f)
 	{
-	    typename traits::index<Vector>::type           index(v); 
-	    typename traits::const_value<Vector>::type     value(v); 
+	    typename mtl::traits::index<Vector>::type           index(v); 
+	    typename mtl::traits::const_value<Vector>::type     value(v); 
 
 	    typedef typename traits::range_generator<tag::nz, Vector>::type iterator;
 	    for (iterator i= begin<tag::nz>(v), iend= end<tag::nz>(v); i != iend; ++i)
@@ -54,10 +54,10 @@ namespace mtl {
 	template <typename Matrix, typename Functor>
 	inline void look_at_each_nonzero(const Matrix& A, Functor& f)
 	{
-	    typename traits::const_value<Matrix>::type     value(A); 
+	    typename mtl::traits::const_value<Matrix>::type     value(A); 
 
-	    typedef typename traits::range_generator<tag::major, Matrix>::type     cursor_type;
-	    typedef typename traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
+	    typedef typename mtl::traits::range_generator<tag::major, Matrix>::type     cursor_type;
+	    typedef typename mtl::traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
 
 	    for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor) 
 		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); 
@@ -70,12 +70,12 @@ namespace mtl {
 	typename mtl::traits::enable_if_matrix<Matrix>::type // to be called for matrices only
 	inline look_at_each_nonzero_pos(const Matrix& A, Functor& f)
 	{
-	    typename traits::row<Matrix>::type             row(A); 
-	    typename traits::col<Matrix>::type             col(A); 
-	    typename traits::const_value<Matrix>::type     value(A); 
+	    typename mtl::traits::row<Matrix>::type             row(A); 
+	    typename mtl::traits::col<Matrix>::type             col(A); 
+	    typename mtl::traits::const_value<Matrix>::type     value(A); 
 
-	    typedef typename traits::range_generator<tag::major, Matrix>::type     cursor_type;
-	    typedef typename traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
+	    typedef typename mtl::traits::range_generator<tag::major, Matrix>::type     cursor_type;
+	    typedef typename mtl::traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
 
 	    for (cursor_type cursor = begin<tag::major>(A), cend = end<tag::major>(A); cursor != cend; ++cursor) 
 		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); 

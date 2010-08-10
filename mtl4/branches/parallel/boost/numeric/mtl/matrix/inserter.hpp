@@ -19,7 +19,14 @@
 
 namespace mtl { namespace matrix {
 
-template <typename Matrix, 
+/// Matrix inserter
+/** The matrix inserter has two template arguments: the type of the target matrix and
+    an update functor.
+    The update functor determines how an existing entry is updated: overwritten, added,
+    subtracted...
+    The default is overwritten.
+**/
+template <typename Matrix,
 	  typename Updater>
 struct inserter 
   : public mtl::detail::trivial_inserter<Matrix, Updater>

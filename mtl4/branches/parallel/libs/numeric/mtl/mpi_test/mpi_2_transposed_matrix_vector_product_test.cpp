@@ -58,7 +58,7 @@ void test(Matrix& A,  VectorIn& v, VectorOut& w, const char* name)
     }
 
     mtl::par::single_ostream sout;
-    sout << "Matrix is:\n" << A; sout.flush();
+    // sout << "Matrix is:\n" << A; sout.flush();
     sout << "v is: " << v << "\n";
 
     w= trans(A) * v;

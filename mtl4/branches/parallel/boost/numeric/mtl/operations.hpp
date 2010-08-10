@@ -14,6 +14,7 @@
 
 #include <boost/numeric/mtl/operation/adjoint.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
+#include <boost/numeric/mtl/operation/cholesky.hpp>
 #include <boost/numeric/mtl/operation/column_in_matrix.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/crop.hpp>

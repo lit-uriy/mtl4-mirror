@@ -25,8 +25,8 @@ if(NOT MY_BOOST_INCLUDE)
   message(FATAL_ERROR "boost wasn't found, please set BOOST_ROOT or BOOST_INC")
 endif()
 
-message(STATUS "Boost_INCLUDE_DIR is ${Boost_INCLUDE_DIR}")
-message(STATUS "MY_BOOST_INCLUDE is ${MY_BOOST_INCLUDE}")
+# message(STATUS "Boost_INCLUDE_DIR is ${Boost_INCLUDE_DIR}")
+# message(STATUS "MY_BOOST_INCLUDE is ${MY_BOOST_INCLUDE}")
 
 # set the local BOOST MTL4 include directory to pick up the MTL4 include files
 set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root directory")
@@ -46,12 +46,12 @@ endif()
 # try first without standard paths
 find_library(BOOST_MPI_LIB_NAME boost_mpi PATHS ${MY_BOOST_INCLUDE}/lib $ENV{BOOST_LIB} NO_DEFAULT_PATH)
 if(NOT BOOST_MPI_LIB_NAME)
-  message(STATUS "boost::mpi lib now searched in standard paths")
+  # message(STATUS "boost::mpi lib now searched in standard paths")
   find_library(BOOST_MPI_LIB_NAME boost_mpi) # now in standard paths
 endif()
 
 get_filename_component(BOOST_MPI_DIR ${BOOST_MPI_LIB_NAME} PATH)
-message(STATUS "boost::mpi lib in ${BOOST_MPI_DIR}")
+# message(STATUS "boost::mpi lib in ${BOOST_MPI_DIR}")
 find_library(BOOST_SERIALIZATION_LIB_NAME boost_serialization ${BOOST_MPI_DIR})
 if(NOT BOOST_MPI_DIR OR NOT BOOST_SERIALIZATION_LIB_NAME)
   message(FATAL_ERROR "boost::mpi and/or boost::serialization libraries wasn't found, please set BOOST_ROOT or BOOST_LIB")
@@ -110,7 +110,7 @@ macro (mpi_compile_all)
     endforeach (source)
 endmacro (mpi_compile_all)
 
-	message("output path2 ${EXECUTABLE_OUTPUT_PATH} // ${RUNTIME_OUTPUT_DIRECTOR}")
+# message("output path2 ${EXECUTABLE_OUTPUT_PATH} // ${RUNTIME_OUTPUT_DIRECTOR}")
 
 # enable test generation
 enable_testing()
