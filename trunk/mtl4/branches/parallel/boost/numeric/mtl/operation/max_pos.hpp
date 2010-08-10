@@ -56,7 +56,7 @@ namespace mtl {
 
 	    result_type  value;
 	};
-
+	///Returns position of maximal entry of %vector v
 	template <typename Vector>
 	typename max_pos_functor<Vector>::pos_type
 	inline max_pos(const Vector& v)
@@ -71,7 +71,7 @@ namespace mtl {
     } // namespace vector
 
     namespace matrix {
-
+	///Returns pair (row, col) from maximal entry of %matrix A
 	using mtl::vector::max_pos;
     }
 

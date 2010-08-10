@@ -15,6 +15,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
+#include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
@@ -146,7 +147,7 @@ namespace with_iterator {
     {
 	typedef typename  Collection<Matrix>::size_type    size_type;
 
-	using namespace glas::tag; using traits::range_generator;
+	using namespace glas::tag; using mtl::traits::range_generator;
 	typedef tag::iter::all    all_it;
 
         typedef typename Collection<Matrix>::value_type                         value_type;
@@ -185,7 +186,7 @@ namespace with_iterator {
     {
 	typedef typename  Collection<MatrixSW>::size_type    size_type;
 
-	using namespace glas::tag; using traits::range_generator;
+	using namespace glas::tag; using mtl::traits::range_generator;
 	typedef tag::iter::all        all_it;
 	typedef tag::const_iter::all  all_cit;
 
@@ -219,7 +220,7 @@ namespace with_iterator {
     {
 	typedef typename  Collection<MatrixSE>::size_type    size_type;
 
-	using namespace glas::tag; using traits::range_generator;
+	using namespace glas::tag; using mtl::traits::range_generator;
 	typedef tag::iter::all        all_it;
 	typedef tag::const_iter::all  all_cit;
 
@@ -251,7 +252,7 @@ namespace with_iterator {
     {
 	typedef typename  Collection<MatrixNE>::size_type    size_type;
 
-	using namespace glas::tag; using traits::range_generator;
+	using namespace glas::tag; using mtl::traits::range_generator;
 	typedef tag::iter::all        all_it;
 	typedef tag::const_iter::all  all_cit;
 
@@ -526,7 +527,7 @@ struct recursive_cholesky_t
     template <typename Matrix, typename Visitor>
     void operator()(Matrix& matrix, Visitor vis)
     {
-	apply(matrix, vis, typename traits::category<Matrix>::type());
+	apply(matrix, vis, typename mtl::traits::category<Matrix>::type());
     }   
  
 private:

@@ -14,6 +14,7 @@
 
 #include <complex>
 #include <boost/utility/enable_if.hpp>
+#include <boost/type_traits/is_unsigned.hpp>
 #include <boost/numeric/mtl/utility/different_non_complex.hpp>
 #include <boost/numeric/mtl/utility/extended_complex.hpp>
 
@@ -53,12 +54,26 @@ inline operator+(const complex<T>& x, const complex<U>& y)
 // Subtraction
 // ===========
 
+namespace detail {
+    
+    // To avoid stupid warnings on unary - for unsigned int specialize it
+    template <typename T>
+    typename boost::disable_if<boost::is_unsigned<T>, T>::type
+    inline negate_helper(const T& x) 
+    { return -x; }
+
+    template <typename T>
+    typename boost::enable_if<boost::is_unsigned<T>, T>::type
+    inline negate_helper(const T& x) 
+    { return T(0) - x; }
+}
+
 template <typename T, typename U>
 typename mtl::traits::extended_complex<T, U>::type // implicit enable_if
 inline operator-(const T& x, const complex<U>& y)
 {
     typedef typename mtl::traits::extended_complex<T, U>::type type;
-    return type(x - real(y), -imag(y));
+    return type(x - real(y), detail::negate_helper(imag(y))); // see above for helper
 }
 
 template <typename T, typename U>

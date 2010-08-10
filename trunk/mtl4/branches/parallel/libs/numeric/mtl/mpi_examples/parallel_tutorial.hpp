@@ -889,6 +889,9 @@ from one distribution to another one.
 Transposed and Hermitian (conjugate transposed) matrices can be multiplied with 
 distributed vectors:
 
+\include mpi_3_transposed_matrix_vector_product.cpp
+
+\section distributed_matrix_vector_expr_impl Some General remarks on the implementation
 
 
 

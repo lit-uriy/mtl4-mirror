@@ -63,7 +63,8 @@ private:
     Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
     {
 	// Self-assignment between different types shouldn't happen.	
-	matrix.checked_change_dim(num_rows(source), num_cols(source));
+	matrix.checked_change_resource(source);
+	// del matrix.checked_change_dim(num_rows(source), num_cols(source));
 	matrix_copy(source, matrix);
 	return matrix;
     }
@@ -79,7 +80,8 @@ struct crtp_assign<mat_mat_plus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
-	matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
+	matrix.checked_change_resource(src.first);
+	// del checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix= src.first;
 	return matrix+= src.second;
     }
@@ -93,9 +95,10 @@ struct crtp_assign<mat_mat_minus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
-		matrix.checked_change_dim(num_rows(src.first), num_cols(src.first));
-		matrix= src.first;
-		return matrix-= src.second;
+	matrix.checked_change_resource(src.first);
+	// del checked_change_dim(num_rows(src.first), num_cols(src.first));
+	matrix= src.first;
+	return matrix-= src.second;
     }
 };
 
@@ -107,7 +110,8 @@ struct crtp_assign<mat_mat_times_expr<E1, E2>, Matrix>
     {
 	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
 	//std::cout << "Assign matrix product: factors.first =\n" << factors.first << "factors.second =\n" << factors.second;
-	matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.second));
+	matrix.checked_change_resource(factors.first, factors.second);
+	// del checked_change_dim(num_rows(factors.first), num_cols(factors.second));
 	mult(factors.first, factors.second, matrix);
 	return matrix;
     }
@@ -121,7 +125,8 @@ struct crtp_assign<mat_mat_ele_times_expr<E1, E2>, Matrix>
     Matrix& operator()(const mat_mat_ele_times_expr<E1, E2>& src, Matrix& matrix)
     {
 	operation::compute_factors<Matrix, mat_mat_ele_times_expr<E1, E2> > factors(src);
-	matrix.checked_change_dim(num_rows(factors.first), num_cols(factors.first));
+	matrix.checked_change_resource(factors.first);
+	// del checked_change_dim(num_rows(factors.first), num_cols(factors.first));
 	matrix= factors.first;
 	return matrix.ele_rscale(factors.second);
     }
@@ -155,7 +160,8 @@ struct crtp_assign<multi_vector<Vector>, Matrix>
     {
 	typedef typename Collection<Matrix>::size_type size_type;
 
-	matrix.checked_change_dim(num_rows(src), num_cols(src));
+	matrix.checked_change_resource(src);
+	// del checked_change_dim(num_rows(src), num_cols(src));
 	inserter<Matrix>  ins(matrix);
 	
 	for (size_type r= 0; r < num_rows(src); ++r)
@@ -324,7 +330,8 @@ private:
 	typedef unsigned size_type;
 
 	// std::cout << "Dense assignment\n";
-	checked_change_dim(num_rows(src), num_cols(src));
+	checked_change_resource(src);
+	// del checked_change_dim(num_rows(src), num_cols(src));
 
 	Matrix& matrix= static_cast<Matrix&>(*this);
 	for (size_type r= 0; r < num_rows(matrix); ++r)
@@ -350,7 +357,8 @@ private:
 	typedef unsigned size_type;
 
 	// std::cout << "Dense assignment\n";
-	checked_change_dim(num_rows(src), num_cols(src));
+	checked_change_resource(src);
+	// del checked_change_dim(num_rows(src), num_cols(src));
 
 	Matrix& matrix= static_cast<Matrix&>(*this);
 	for (size_type r= 0; r < num_rows(matrix); ++r)
@@ -375,7 +383,8 @@ private:
 	typedef unsigned size_type;
 
 	// std::cout << "Dense assignment\n";
-	checked_change_dim(num_rows(src), num_cols(src));
+	checked_change_resource(src);
+	// del checked_change_dim(num_rows(src), num_cols(src));
 
 	Matrix& matrix= static_cast<Matrix&>(*this);
 	for (size_type r= 0; r < num_rows(matrix); ++r)
@@ -400,7 +409,8 @@ private:
 	typedef unsigned size_type;
 
 	// std::cout << "Dense assignment\n";
-	checked_change_dim(num_rows(src), num_cols(src));
+	checked_change_resource(src);
+	// del checked_change_dim(num_rows(src), num_cols(src));
 
 	Matrix& matrix= static_cast<Matrix&>(*this);
 	for (size_type r= 0; r < num_rows(matrix); ++r)
@@ -418,11 +428,54 @@ private:
 	return static_cast<Matrix&>(*this);
     }
 
+  public:
 
+    /// Check wether source and target have compatible resources, generalization of check_dim
+    /** For expressions like A= B + C, A can be set to the size of B and C if still is 0 by 0. **/
+    template <typename Src>
+    void check_resource(const Src& src) const 
+    {	check_resource(src, typename mtl::traits::category<Matrix>::type());    }
 
+    // Default case just check_dim
+    template <typename Src>
+    void check_resource(const Src& src, tag::universe) const 
+    {	check_dim(num_rows(src), num_cols(src));    }
 
-public:
+    /// Check wether source and target have compatible resources and wether target has already resources
+    /** For expressions like A+= B + C, A must be already larger then 0 by 0 and compatible to B and C. **/
+    //  Generalization with 2 arguments might be needed (check rows from first and columns from second)
+    template <typename Src>
+    void check_ready_resource(const Src& src) const 
+    {
+	MTL_DEBUG_THROW_IF(num_rows(src) * num_cols(src) == 0, need_nonempty());
+	check_resource(src);
+    }
+
+    /// Check wether source and target have compatible resources and adapt empty target
+    /** For expressions like A= B + C, A can be set to the size of B and C if still is 0 by 0. **/
+    template <typename Src>
+    void checked_change_resource(const Src& src) 
+    {	checked_change_resource(src, src);   }
+
+    /// Check wether source and target have compatible resources and adapt empty target
+    /** For expressions like A= B + C, A can be set to the size of B and C if still is 0 by 0. **/
+    template <typename Src1, typename Src2>
+    void checked_change_resource(const Src1& src1, const Src2& src2)
+    {   checked_change_resource_aux(src1, src2, typename mtl::traits::category<Matrix>::type());    }
+
+    template <typename Src1, typename Src2>
+    void checked_change_resource_aux(const Src1& src1, const Src2& src2, tag::universe) 
+    {   checked_change_dim(num_rows(src1), num_cols(src2));  }
+
+    template <typename Src1, typename Src2>
+    void checked_change_resource_aux(const Src1& src1, const Src2& src2, tag::distributed) 
+    {   
+	Matrix& matrix= static_cast<Matrix&>(*this);
+	matrix.init_distribution(row_distribution(src1), col_distribution(src2), num_rows(src1), num_cols(src2));
+    }
+
     /// Check whether matrix sizes are compatible or if matrix is 0 by 0 change it to r by c.
+    /** Deprecated, superseded by checked_change_resource. **/ 
     void checked_change_dim(SizeType r, SizeType c)
     {
 	Matrix& matrix= static_cast<Matrix&>(*this);

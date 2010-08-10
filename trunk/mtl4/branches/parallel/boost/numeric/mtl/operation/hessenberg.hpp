@@ -43,31 +43,31 @@ Matrix inline hessenberg_factors(const Matrix& A)
 
     for(size_type i= 0; i < ncols-2; i++){
 	// dense_vector<value_type>  v(B[irange(i+1, imax)][i]);
-        dense_vector<value_type>  v(nrows-i-1), w(nrows-i);
+        dense_vector<value_type>  v(nrows-i-1), w(nrows);
         for (size_type j = 0; j < size(v); j++)
             v[j]= B[j+i+1][i];
-
         beta= householder(v).second;
         v= householder(v).first;
+;
 	if( beta != zero){
             w= beta * A[irange(0,imax)][irange(i+1,imax)] * v;
-            //rank_one_update(A[irange(0,imax)][irange(i+1,imax)],-w,v);
+	    //rank_one_update(A[irange(0,imax)][irange(i+1,imax)],-w,v);
             for(size_type row = 0; row < nrows; row++){
                 for(size_type col = i+1; col < ncols; col++){
-                    B[row][col] -= w[row] * v[col-1];
+                    B[row][col] -= w[row] * v[col-i-1];
                 }
             }
             //vector*Matrix
             for(size_type k=0; k < size(w); k++){
                 w[k]= zero;
                 for(size_type j = 0; j < size(v); j++){
-                    w[k] += beta * v[j] * B[j+i+1][k+i];
+                    w[k] += beta * v[j] * B[j+i+1][k];
                 }
             }
             //rank_one_update(A[irange(i+1,imax)][irange(0,imax)],-v,w);
             for(size_type row = i+1; row < nrows; row++){
                 for(size_type col = 0; col < ncols; col++){
-                    B[row][col] -= v[row-1] * w[col];
+                    B[row][col] -= v[row-i-1] * w[col];
                 }
             }
 	    // B[irange(i+2, imax)][i]= v[irange(1, nrows-i-1)];
@@ -118,6 +118,7 @@ Matrix inline hessenberg(const Matrix& A)
 
     MTL_THROW_IF(num_rows(A) < 3, matrix_too_small());
     H= hessenberg_factors(A);
+    
     // H= bands(hessenberg_factors(A), -nrows, -1);
     // set (doubly) strict lower triangle to zero
     for(size_type row = 2; row < nrows; row++){
@@ -134,6 +135,7 @@ Matrix inline hessenberg(const Matrix& A)
 template <typename Matrix>
 Matrix inline hessenberg_q(const Matrix& A)
 {
+    using std::abs;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i
     typedef typename Collection<Matrix>::size_type    size_type;
@@ -148,8 +150,10 @@ Matrix inline hessenberg_q(const Matrix& A)
 
     //Extract Q
     for(size_type i = 0; i < nrows-2; i++){
-        dense_vector<value_type>   v(nrows-i-1), w(nrows-i);
+        dense_vector<value_type>   v(nrows-1), w(nrows);
         v[0]= one;
+// 	std::cout<< "v=" << v << "\n";
+// 	std::cout<< "w=" << w << "\n";
         for(size_type k = 1; k < size(v); k++)
             v[k]= A[nrows-k][i];
         
@@ -158,15 +162,18 @@ Matrix inline hessenberg_q(const Matrix& A)
             //trans(Vector)*Matrix
             for(size_type k = 0; k < size(w); k++) {
                 w[k]= zero;
-                for(size_type j = 0; j < size(v); j++)
-                    w[k]+= beta * v[j] * Q[j+i+1][k+i];
+                for(size_type j = 0; j < size(v); j++){
+// 		     std::cout<< "k=" << k << "  j=" << j << "\n";
+                    w[k]+= beta * v[j] * Q[j+i+1][k];
+		}
             }
             //rank_one_update(Q[irange(i+1,imax)][irange(0,imax)],-v,w);
             for(size_type row = i+1; row < nrows; row++)
-                for(size_type col = 0; col < ncols; col++)
+                for(size_type col = 0; col < ncols; col++){
+// 		    std::cout<< "row=" << row << "  col=" << col << "\n";
                     Q[row][col] -= v[row-1] * w[col];
+		}
         }
-
     }
     return Q;
 }

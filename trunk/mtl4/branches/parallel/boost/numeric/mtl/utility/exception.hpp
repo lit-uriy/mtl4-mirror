@@ -117,6 +117,14 @@ struct incompatible_size : public domain_error
 	: domain_error(s) {}
 };
 
+/// Exception for arguments that shall not be empty 
+struct need_nonempty : public domain_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit need_nonempty(const char *s= "Argument must be non-empty.")
+	: domain_error(s) {}
+};
+
 /// Exception for trying to change a fixed size (to another value)
 struct change_static_size : public domain_error
 {

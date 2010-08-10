@@ -22,6 +22,7 @@ template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
     typedef typename mtl::Collection<Matrix>::value_type value_type;
+    typedef mtl::dense_vector<value_type>                vector_type;
     value_type  ar[][3] = {{3., 9., 0.},
 			   {1., 2., 7.},
 			   {9., 6., 8.}};
@@ -33,6 +34,15 @@ void test(Matrix& matrix, const char* name)
 
     if (trans(A)[0][1] != value_type(1.))
 	throw "constant transposing wrong";
+
+    vector_type v(3), vcomp(3), w(3);
+    w= 4, 7, 8;
+    vcomp= 91,98,113;
+
+    v= trans(A) * w;
+    // cout << "trans(A) * w = " << v << '\n';
+    if (one_norm(vector_type(v - vcomp)) > 0.01)
+	throw "Error in trans(A) * w";
 }
 
 
