@@ -117,6 +117,9 @@ endmacro (compile_all)
 enable_testing()
 include(CTest)
 
+add_definitions("-g")
+add_macro_flags("MTL_ASSERT_FOR_THROW")
+
 # Descent into the test program directory to build the test suite
 # MTL4 test programs
 add_subdirectory("libs/numeric/mtl/test")

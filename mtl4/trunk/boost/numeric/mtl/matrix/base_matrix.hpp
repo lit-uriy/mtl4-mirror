@@ -54,9 +54,9 @@ struct base_matrix
     }
 
     /// Either matrix to be changed is uninitialized (i.e. 0x0) or dimensions are equal
-	/** The matrices with dimension 0 x 0 are considered like stem cells: they can still
-		change into an arbitrary dimension and are compatible with any other matrix.  Once a matrix has a non-trivial dimension
-		it can be only changed explicitly and is only compatible with matrices of the same dimensionality. **/
+    /** The matrices with dimension 0 x 0 are considered like stem cells: they can still
+	change into an arbitrary dimension and are compatible with any other matrix.  Once a matrix has a non-trivial dimension
+	it can be only changed explicitly and is only compatible with matrices of the same dimensionality. **/
     void check_dim(size_type num_rows, size_type num_cols) const
     {
 	MTL_DEBUG_THROW_IF(this->num_rows() * this->num_cols() != 0
