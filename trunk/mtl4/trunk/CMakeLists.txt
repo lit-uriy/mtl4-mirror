@@ -77,9 +77,8 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 # include_directories(${Boost_INCLUDE_DIR})
 include_directories($ENV{BOOST_ROOT} ${MTL_BOOST_ROOT})
 
-######################## DevStudio funkyness   ################################
-# .NET 2005
-if (MSVC80)
+#################################################################################
+if (MSVC80 OR MSVC90)
 	# to quiet DevStudio 2005 secure code warnings
     add_definitions(/D_SCL_SECURE_NO_WARNINGS)
     add_definitions(/D_CRT_SECURE_NO_WARNINGS)
@@ -88,19 +87,31 @@ if (MSVC80)
 	# you may override them, but I have not found it necessary
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-endif (MSVC80)
+endif (MSVC80 OR MSVC90)
 
-# .NET 2008
-if (MSVC90)
-	# to quiet DevStudio 2005 secure code warnings
-    add_definitions(/D_SCL_SECURE_NO_WARNINGS)
-    add_definitions(/D_CRT_SECURE_NO_WARNINGS)
-    add_definitions(/DMTL_ASSERT_FOR_THROW /D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" /D"_SECURE_SCL=0" )
-	# specialty flags such as the C++ language exception model etc. come from the init flags determined by CMAKE
-	# you may override them, but I have not found it necessary
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /EHa /wd4554 /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-endif (MSVC90)
+#################################################################################
+
+macro (add_macro_flags)
+  foreach (flag ${ARGV})
+    if (win32)
+      add_definitions("/D${flag}")
+    else()
+      add_definitions("-D${flag}")
+    endif()
+  endforeach()
+endmacro (add_macro_flags)
+
+macro (compile_all)
+    # cycle through the sources
+    # The directory assumes that each cpp file is a separate test
+    # so, create a executable target and an associated test target
+    foreach (source ${ARGV})
+        get_filename_component (test ${source} NAME_WE)		# filename without extension
+        add_executable (${test} ${source} ${INCLUDES})
+        add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
+    endforeach (source)
+endmacro (compile_all)
+
 
 # enable test generation
 enable_testing()
