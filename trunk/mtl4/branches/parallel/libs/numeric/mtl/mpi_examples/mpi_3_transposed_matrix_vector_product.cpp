@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
     boost::mpi::communicator     world;
 
     // std::size_t                  ra[]= {0, 4, 6, 7}, ca[]= {0, 5, 8, 8};
-    std::size_t                  ra[]= {0, 7, 7, 7}, ca[]= {0, 8, 8, 8};
+    std::size_t                  ra[]= {0, 7, 7, 7}, ca[]= {0, 9, 9, 9};
     mtl::par::block_distribution row_dist= ra,       col_dist= ca;
 
     typedef mtl::matrix::distributed<mtl::compressed2D<float> >  matrix_type;
