@@ -49,8 +49,6 @@ namespace mtl {
    -# \subpage sparse_alltoall
    -# \subpage boost_mpi_serialization
 
-\todo matrix norms
-\todo matrix expressions
 
 */
 
@@ -715,8 +713,6 @@ Sub-matrix blocks are treated as if their  global row and column indices would b
 Thus, only matrices and vectors with block distributions are printed correctly
 at the moment.
 
-\todo
-The example crashes now with index out of range. Will be fixed quickly.
 
 
 
@@ -762,7 +758,6 @@ The following example illustrates the simplicity of distributed
 
 \include mpi_3_matrix_assign.cpp
 
-\todo Insert the entries only once for A= alpha when A is distributed
 
 The matrix A has in this example a user-defined distribution while matrix B
 is default-constructed.
@@ -826,7 +821,6 @@ object is a complex vector (actually a view that behaves like a vector).
 In the example, a complex double is multiplied with a float.
 Note that this does not work with standard C++ but is an extension of MTL4.
 
-\todo Talk of mixed complex operators in trunk tutorial.
 
 \if Navigation \endif
   Return to \ref distributed_matrix_assignment &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref parallel_tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref distributed_matrix_expr 
