@@ -43,6 +43,12 @@ if (false) # for MPI compilers basing on gcc 4.3 or higher
   set (PMTL_MACRO_FLAGS ${PMTL_MACRO_FLAGS}  "-Wno-array-bounds")
 endif()
 
+# for benchmarking
+# set (PMTL_MACRO_FLAGS ${PMTL_MACRO_FLAGS}  "-O3" "-ffast-math")
+
+# for testing
+set (PMTL_MACRO_FLAGS ${PMTL_MACRO_FLAGS}  "-O0" "-g")
+
 # try first without standard paths
 find_library(BOOST_MPI_LIB_NAME boost_mpi PATHS ${MY_BOOST_INCLUDE}/lib $ENV{BOOST_LIB} NO_DEFAULT_PATH)
 if(NOT BOOST_MPI_LIB_NAME)
@@ -61,6 +67,24 @@ endif()
 
 set (PMTL_LIB_FLAGS ${CMAKE_LIBRARY_PATH_FLAG} ${BOOST_MPI_DIR} ${CMAKE_LINK_LIBRARY_FLAG} boost_mpi ${CMAKE_LINK_LIBRARY_FLAG} boost_serialization) # todo find path automatically
 
+# Using ParMetis -> should be in a package
+find_library(PARMETIS_LIB parmetis PATHS $ENV{PARMETIS_DIR})
+find_library(METIS_LIB metis PATHS $ENV{METIS_DIR})
+if (PARMETIS_LIB AND METIS_LIB)
+  set (PMTL_MACRO_FLAGS ${PMTL_MACRO_FLAGS} "-DMTL_HAS_PARMETIS")
+
+  get_filename_component (PARMETIS_LIB1 ${PARMETIS_LIB} NAME_WE) # filename without extension
+  string(REPLACE "lib" "" PARMETIS_LIB_NAME ${PARMETIS_LIB1})
+  get_filename_component (PARMETIS_PATH ${PARMETIS_LIB} PATH)        # not portable !!
+
+  get_filename_component (METIS_LIB1 ${METIS_LIB} NAME_WE) # filename without extension
+  string(REPLACE "lib" "" METIS_LIB_NAME ${METIS_LIB1})
+  get_filename_component (METIS_PATH ${METIS_LIB} PATH)        # not portable !!
+
+  set (PMTL_LIB_FLAGS ${PMTL_LIB_FLAGS} ${CMAKE_LIBRARY_PATH_FLAG} ${PARMETIS_PATH} ${CMAKE_LINK_LIBRARY_FLAG} ${PARMETIS_LIB_NAME}  
+                                        ${CMAKE_LIBRARY_PATH_FLAG} ${METIS_PATH} ${CMAKE_LINK_LIBRARY_FLAG} ${METIS_LIB_NAME})
+  message (STATUS "Linker flags are ${PMTL_LIB_FLAGS}")
+endif()
 
 
 #################################################################################

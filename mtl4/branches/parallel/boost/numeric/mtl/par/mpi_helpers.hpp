@@ -15,6 +15,7 @@
 #ifdef MTL_HAS_MPI
 
 #include <string>
+#include <mpi.h>
 #include <boost/mpi/status.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/par/exception.hpp>
@@ -47,6 +48,24 @@ void inline check_mpi(const boost::mpi::status& st)
     check_mpi(st.error());
 }
 
+/// Timer class based on MPI_Wtime, interface like like boost::timer
+class timer
+{
+  public:
+    /// Default constructor starts timing
+    timer() : t(MPI_Wtime()) {}
+
+    /// Elapsed time since construction or last reset
+    double elapsed() const { return MPI_Wtime() - t; }
+
+    /// Reset timer
+    void reset() { t= MPI_Wtime(); }
+
+    /// Return minimum value for elapsed()
+    double elapsed_min() const {   return MPI_Wtick(); }
+  private:
+    double t;
+};
 
 
 }} // namespace mtl::par

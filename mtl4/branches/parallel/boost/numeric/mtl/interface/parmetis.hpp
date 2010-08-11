@@ -124,7 +124,6 @@ int parmetis_partition_k_way(const DistMatrix& A, parmetis_index_vector& xadj, p
     BOOST_STATIC_ASSERT((mtl::traits::is_block_distribution<rd_type>::value));
     std::copy(row_dist.starts.begin(), row_dist.starts.end(), vtxdist.begin());
 	
-    int my_rank= row_dist.rank();
     unsigned i= 0, xp= 0; // position in xadj
     for (; i < non_zeros.size(); i++) {  
 	typename vec_type::value_type entry= non_zeros[i];
