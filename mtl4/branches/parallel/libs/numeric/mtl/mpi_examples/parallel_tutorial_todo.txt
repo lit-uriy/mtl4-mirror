@@ -28,15 +28,11 @@ x    mpi_3_insertion_test.cpp
 x    mpi_3_matrix_vector_product_serialization_test.cpp -> ???
 x    mpi_3_symmetry_calculation_test.cpp              -> intern
 x    mpi_4_broadcast_test.cpp
+x   mpi_2_matrix_vector_product_test.cpp             -> mv expr
+x   mpi_2_transposed_matrix_vector_product_test.cpp  -> mv expr
+x   mpi_2_hermitian_matrix_vector_product_test.cpp   -> mv expr
 
 
-
--# Distributed matrices and vectors
--# Operators
-    mpi_2_matrix_vector_product_test.cpp             -> mv expr
-    mpi_2_transposed_matrix_vector_product_test.cpp  -> mv expr
-    mpi_2_hermitian_matrix_vector_product_test.cpp   -> mv expr
--# Norms
 -# Reductions
     mpi_3_vector_reduce_test.cpp                     -> vec fun
     mpi_2_dot_test.cpp                               -> vec fun
