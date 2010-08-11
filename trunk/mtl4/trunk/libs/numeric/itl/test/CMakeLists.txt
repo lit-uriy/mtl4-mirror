@@ -1,4 +1,4 @@
-project (boost_mtl4_itl)
+project (mtl4_itl)
 
 # collect the source files
 file (GLOB SOURCES *.cpp)
