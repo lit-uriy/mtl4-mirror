@@ -1,7 +1,0 @@
-project mtl4/libs/detail/test ;
-
-import testing ;
-import mtl4 ;
-
-run callable.cpp ;
-

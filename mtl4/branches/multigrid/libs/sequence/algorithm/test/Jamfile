@@ -1,8 +1,0 @@
-project mtl4/sequence/algorithm ;
-
-import testing ;
-import mtl4 ;
-
-run copy.cpp /boost/test//boost_test_exec_monitor ;
-run builtin_array.cpp /boost/test//boost_test_exec_monitor ;
-run odr.cpp  odr2.cpp /boost/test//boost_test_exec_monitor ;
