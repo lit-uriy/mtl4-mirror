@@ -20,6 +20,9 @@
 #include <boost/numeric/mtl/matrix/element_matrix.hpp> 
 #include <boost/numeric/mtl/matrix/implicit_dense.hpp> 
 
+#include <boost/numeric/mtl/matrix/inserter.hpp> 
+#include <boost/numeric/mtl/matrix/shifted_inserter.hpp> 
+
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/matrix/hermitian_view.hpp>
