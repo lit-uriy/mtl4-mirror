@@ -3200,7 +3200,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page hessenberg_q  hessenberg_q(A)
 
-Returns Q where Q'*A*Q == hessenberg(A).
+Returns Q where \f$ Q'*A*Q \f$ == hessenberg(A).
 
 Details: mtl::matrix::hessenberg_q
 
@@ -3221,7 +3221,7 @@ F= hessenberg_q(A);
 //-----------------------------------------------------------
 /*! \page hessian_setup  hessian_setup(A, value)
 
-Fills a matrix A with a_ij = factor * (i + j).
+Fills a matrix A with \f$ a_{ij} = factor * (i + j) \f$.
 Works only for Morton Z-order and Hybrid 2 row-major matrices.
 
 Details: mtl::matrix::hessian_setup
@@ -3348,7 +3348,7 @@ Details: mtl::matrix::invert_diagonal
 //-----------------------------------------------------------
 /*! \page laplacian_setup  laplacian_setup(A, dim1, dim2)
 
-return n by n-Laplace %matrix with n= dim1 * dim2. (5 Point stencil)
+return n by n-Laplace %matrix with \f$ n= dim1 * dim2 \f$. (5 Point stencil)
 
 Details: mtl::matrix::laplacian_setup
 
@@ -3432,8 +3432,9 @@ For example:
 /*! \page lu_adjoint_apply lu_adjoint_apply(A, Permutation, b)
 
 
-Apply the factorization L*U with permutation P on vector b to solve adjoint(A)x = b
-That is P^{-1}LU)^H x = b --> x= P^{-1}L^{-H} U^{-H} b where P^{-1}^{-1}^H = P^{-1} 
+Apply the factorization L*U with permutation P on vector b to solve adjoint(A)x = b.
+That is \f$ P^{-1}LU^H x = b \f$ --> \f$ x= P^{-1}L^{-H} U^{-H} b \f$ where \f$ {{P^{-1}}^{-1}}^H = P^{-1} \f$.
+
 
 Details: mtl::matrix::lu_adjoint_apply
 
@@ -3479,7 +3480,7 @@ For example:
 /*! \page lu_apply lu_apply(A, Permutation, b)
 
 
-Apply the factorization L*U with permutation P on %vector b to solve Ax = b.
+Apply the factorization \f$ L*U \f$ with permutation P on %vector b to solve \f$ Ax = b \f$.
 
 Details: mtl::matrix::lu_apply
 
@@ -3524,7 +3525,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page lu_solve lu_solve(A, b)
 
-Solve Ax = b by LU factorization with column pivoting; %vector x is returned
+Solve \f$ Ax = b \f$ by LU factorization with column pivoting; %vector x is returned
 
 Details: mtl::matrix::lu_solve
 
@@ -3547,7 +3548,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page lu_solve_straight lu_solve_straight(A, b)
 
-Solve Ax = b by LU factorization without pivoting; %vector x is returned.
+Solve \f$ Ax = b \f$ by LU factorization without pivoting; %vector x is returned.
 
 Details: mtl::matrix::lu_solve_straight
 
@@ -3677,7 +3678,7 @@ A= B;
 //-----------------------------------------------------------
 /*! \page op_matrix_add_equal OP+=
 
-returns A= A + B. The dimensions are checked at compile time. (A+= B)
+returns \f$ A= A + B \f$. The dimensions are checked at compile time. (\f$ A+= B \f$)
 
 Details: mtl::matrix::add
 
@@ -3695,7 +3696,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page op_matrix_add OP+
 
-returns A= B + C. The dimensions are checked at compile time.
+returns \f$ A= B + C \f$. The dimensions are checked at compile time.
 
 Details: mtl::matrix::add
 
@@ -3712,7 +3713,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page op_matrix_min_equal OP-=
 
-returns A= A - B. The dimensions are checked at compile time. (A-= B)
+returns \f$ A= A - B \f$. The dimensions are checked at compile time. (\f$ A-= B \f$)
 
 Details: mtl::matrix::min
 
@@ -3729,7 +3730,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page op_matrix_min OP-
 
-returns A= B - C. The dimensions are checked at compile time.
+returns \f$ A= B - C \f$. The dimensions are checked at compile time.
 
 Details: mtl::matrix::min
 
@@ -3746,7 +3747,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page op_matrix_mult_equal OP*=
 
-returns A= A * B. The dimensions are checked at compile time. (A*= B)
+returns \f$ A= A * B \f$. The dimensions are checked at compile time. (\f$ A*= B \f$)
 
 Details: mtl::matrix::mult
 
@@ -3763,7 +3764,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page op_matrix_mult OP*
 
-returns A= B * C. The dimensions are checked at compile time. num_cols(B) == num_rows(C).
+returns \f$ A= B * C \f$. The dimensions are checked at compile time. num_cols(B) == num_rows(C).
 The dimension of A is num_rows(B) by num_cols(C).
 
 Details: mtl::matrix::mult
@@ -3816,7 +3817,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page rank_one_update rank_one_update(A, v, w)
 
-returns A= A + v * w.
+returns \f$ A= A + v * w \f$.
 With %matrix A and %vector v and w of matching dimension.
 
 Details: mtl::matrix::rank_one_update
@@ -3836,8 +3837,8 @@ For example:
 
 Suppose %matrix A have 2 triangle parts. L is the lower triangle and U the upper triangle part of A.
 
-L -> L + lower(v*w' + w*v')
-U -> U + upper(v*w' + w*v')
+L -> \f$ L + lower(v*w' + w*v') \f$
+U -> \f$ U + upper(v*w' + w*v') \f$
 
 Details: mtl::matrix::rank_two_update
 
@@ -3954,7 +3955,7 @@ Sub-matrices also preserve the const attribute of the referred matrices or sub-m
 //-----------------------------------------------------------
 /*! \page svd_tol  svd(A, tol)
 
-returns singular-value-decomposition of %matrix A. 3 matrices S, V and D are returned,  with A= S*V*trans(D):
+returns singular-value-decomposition of %matrix A. 3 matrices S, V and D are returned,  with \f$ A= S*V*trans(D) \f$:
 \code
 boost::tie(S, V, D)= svd(A, 1.e-10)
 \endcode
@@ -3973,7 +3974,7 @@ Details: mtl::matrix::svd
 //-----------------------------------------------------------
 /*! \page svd  svd(A)
 
-returns singular-value-decomposition of %matrix A. 3 matrices S, V and D are returned,  with A= S*V*trans(D):
+returns singular-value-decomposition of %matrix A. 3 matrices S, V and D are returned,  with \f$ A= S*V*trans(D) \f$:
 \code
 boost::tie(S, V, D)= svd(A)
 \endcode
@@ -4048,20 +4049,7 @@ The %matrix A is not altered but a immutable view is returned.
 //-----------------------------------------------------------
 /*! \page tril  tril(A, i)
 
-Returns lower triangle starting at off-diagonoal i (for compatibility with matlib). 
-//-----------------------------------------------------------
-/*! \page max_pos_v max_pos(v)
-
-returns position of maximal entry of %vector v.
-
-Details: mtl::vector::max_pos
-
-
-\if Navigation \endif
-  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-
-*/
+Returns lower triangle starting at off-diagonoal i (for compatibility with matlab). 
 
 Details: mtl::matrix::tril
 
@@ -4078,7 +4066,7 @@ tril(A, i);
 //-----------------------------------------------------------
 /*! \page triu  triu(A, i)
 
-Returns upper triangle starting at off-diagonoal i (for compatibility with matlib). 
+Returns upper triangle starting at off-diagonoal i (for compatibility with matlab). 
 
 Details: mtl::matrix::triu
 
@@ -4265,7 +4253,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page op_vector_add_equal OP+=
 
-returns v+= w  (v= v + w).
+returns \f$ v+= w  (v= v + w)\f$.
 Dimensions must agree, otherwise there is a runtime error.
 
 Details: mtl::vector::add
@@ -4284,7 +4272,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page op_vector_min_equal OP-=
 
-returns v-= w  (v= v - w).
+returns \f$ v-= w  (v= v - w)\f$.
 Dimensions must agree, otherwise there is a runtime error.
 
 For example:
@@ -4300,7 +4288,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page op_vector_add OP+
 
-returns v= u + w .
+returns \f$ v= u + w \f$.
 Dimensions must agree, otherwise there is a runtime error.
 
 For example:
@@ -4316,7 +4304,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page op_vector_min OP-
 
-returns v= u - w .
+returns \f$ v= u - w \f$ .
 Dimensions must agree, otherwise there is a runtime error.
 
 For example:
@@ -4493,7 +4481,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page inverse_lower_trisolve inverse_lower_trisolve(A, b)
 
-returns %vector x as solution of A * x= b.
+returns %vector x as solution of \f$ A * x= b \f$.
 The %matrix A must be triangular %matrix otherwise the function can throw an exception.
 On matrices with non-unit diagonals, the divisions can be circumvented by inverting the diagonal once with invert_diagonal(A) and then using: 
 
@@ -4514,7 +4502,7 @@ Details: mtl::matrix::inverse_lower_trisolve
 //-----------------------------------------------------------
 /*! \page inverse_upper_trisolve inverse_upper_trisolve(A, b)
 
-returns %vector x as solution of A * x= b.
+returns %vector x as solution of \f$ A * x= b \f$.
 The %matrix A must be triangular %matrix otherwise the function can throw an exception.
 On matrices with non-unit diagonals, the divisions can be circumvented by inverting the diagonal once with invert_diagonal(A) and then using: 
 
@@ -4535,7 +4523,7 @@ Details: mtl::matrix::inverse_upper_trisolve
 //-----------------------------------------------------------
 /*! \page matrix_vector OP*
 
-returns %vector w= A * v. Same as mult(A, v, w).
+returns %vector \f$ w= A * v \f$. Same as mult(A, v, w).
 
 Details: mtl::matrix::mult
 
@@ -4548,7 +4536,7 @@ Details: mtl::matrix::mult
 //-----------------------------------------------------------
 /*! \page lower_trisolve lower_trisolve(A, b)
 
-returns %vector x as solution of A * x= b.
+returns %vector x as solution of \f$ A * x= b \f$.
 The %matrix A must be triangular %matrix otherwise the function can throw an exception.
 
 Details: mtl::matrix::lower_trisolve
@@ -4614,7 +4602,7 @@ For a more detailed explanation see \ref permutation.
 //-----------------------------------------------------------
 /*! \page upper_trisolve upper_trisolve(A, b)
 
-returns %vector x as solution of A * x= b.
+returns %vector x as solution of \f$ A * x= b \f$ .
 The %matrix A must be triangular %matrix otherwise the function can throw an exception.
 
 Details: mtl::matrix::upper_trisolve
@@ -4633,7 +4621,7 @@ x= upper_trisolve(A, b)
 //-----------------------------------------------------------
 /*! \page unit_lower_trisolve unit_lower_trisolve(A, b)
 
-returns %vector x as solution of A * x= b.
+returns %vector x as solution of \f$ A * x= b \f$.
 Details: mtl::matrix::unit_lower_trisolve
 
 The %matrix A must be triangular %matrix otherwise the function can throw an exception.
@@ -4653,7 +4641,7 @@ x= unit_lower_trisolve(A, b)
 //-----------------------------------------------------------
 /*! \page unit_upper_trisolve unit_upper_trisolve(A, b)
 
-returns %vector x as solution of A * x= b.
+returns %vector x as solution of \f$ A * x= b \f$.
 Details: mtl::matrix::unit_upper_trisolve
 
 The %matrix A must be triangular %matrix otherwise the function can throw an exception.
@@ -4679,7 +4667,7 @@ x= unit_lower_trisolve(A, b)
 //-----------------------------------------------------------
 /*! \page scalar_vector_mult_equal OP*=
 
-returns %vector w*= scalar. Same as w= scalar * w.
+returns %vector \f$ w*= scalar \f$. Same as \f$ w= scalar * w \f$.
 
 Details: mtl::traits::vec_mult_result
 
@@ -4704,7 +4692,7 @@ For example:
 //-----------------------------------------------------------
 /*! \page scalar_vector_div_equal OP/=
 
-returns %vector w/= scalar. All %vector entries are divided by the scalar.
+returns %vector \f$ w/= scalar \f$. All %vector entries are divided by the scalar.
 
 Details: mtl::traits::div_result
 
