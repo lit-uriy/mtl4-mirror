@@ -17,7 +17,7 @@ namespace mtl {
 
 // This file contains no source code but only documentation.
 
-/*! \mainpage MTL4 manual 
+/*! \mainpage MTL4 manual
 
 \author Peter Gottschling and Andrew Lumsdaine
 
