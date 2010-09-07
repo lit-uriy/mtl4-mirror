@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/operation/max_of_sums.hpp>
+#include <boost/numeric/mtl/operation/squared_abs.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 
@@ -40,10 +41,8 @@ inline frobenius_norm(const Matrix& matrix)
     typedef typename traits::range_generator<tag::nz, cursor_type>::type   icursor_type;
 
     for (cursor_type cursor = begin<tag::major>(matrix), cend = end<tag::major>(matrix); cursor != cend; ++cursor) 
-	for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor) {
-	    real_type tmp= abs(value(*icursor));
-	    sum+= tmp * tmp;
-	}
+	for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor) 
+	    sum+= squared_abs(value(*icursor));
     return sqrt(sum);
 }
 
