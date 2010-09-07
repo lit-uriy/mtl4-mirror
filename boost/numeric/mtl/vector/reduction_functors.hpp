@@ -14,6 +14,7 @@
 
 #include <cmath>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/operation/squared_abs.hpp>
 
 namespace mtl { namespace vector {
 
@@ -54,8 +55,8 @@ struct two_norm_functor
     template <typename Value, typename Element>
     static inline void update(Value& value, const Element& x)
     {    
-	using std::abs;
-	value+= abs(x) * abs(x);
+	using mtl::squared_abs;
+	value+= squared_abs(x);
     }
 
     template <typename Value>
