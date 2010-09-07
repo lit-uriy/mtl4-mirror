@@ -38,13 +38,5 @@ int main(int argc, char* argv[])
     cout << "Run time = " << rtime.elapsed() / rep * 1000 << "ms\n"
 	 << "Norm is " << n << "\n";
 
-#if 0
-    cout << "d is " << boost::is_floating_point<double>::value << '\n';
-    cout << "int is " << boost::is_floating_point<int>::value << '\n';
-    cout << "cd is " << boost::is_floating_point<cd_type>::value << '\n';
-
-    cout << "d(f||i) is " << boost::mpl::or_<boost::is_integral<double>, boost::is_floating_point<double> >::value << '\n';
-#endif
-
     return 0;
 }
