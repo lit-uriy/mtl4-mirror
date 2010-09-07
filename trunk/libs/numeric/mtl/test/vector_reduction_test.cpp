@@ -35,7 +35,7 @@ void test(Vector& v, const char* name)
 
     std::cout << "\n" << name << "  --- v = " << v; std::cout.flush();
 
-    std::cout << "one_norm(v) = " << one_norm(v) << "\n"; std::cout.flush();
+    std::cout << "\none_norm(v) = " << one_norm(v) << "\n"; std::cout.flush();
     if (one_norm(v) != 15.0) throw "one_norm wrong";
 
     std::cout << "one_norm<4>(v) = " << one_norm<4>(v) << "\n"; std::cout.flush();
