@@ -4,7 +4,7 @@
 
 source VERSION.INPUT
 
-set MTLREPOSITORY='https://svn.osl.iu.edu/tlc/trunk/mtl4/trunk'
+set MTLREPOSITORY='https://simunova.zih.tu-dresden.de/svn/mtl4/trunk'
 set MTLREVISION=`svn info ${MTLREPOSITORY}| grep Revision | sed 's/Revision: //'`
 
 set FULLNAME="mtl${MTLVERSION}-${MTLRELEASE}-r${MTLREVISION}"
