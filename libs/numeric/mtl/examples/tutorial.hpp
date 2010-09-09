@@ -221,7 +221,7 @@ The recommended form of downloading is to use subversion control (under Windows 
 <a href="http://tortoisesvn.tigris.org/">Tortoise</a>) and under Linux it is part of every
 recent distribution.
 Go to the directory where you like MTL4 to reside and type:\n
-<tt>svn checkout https://svn.osl.iu.edu/tlc/trunk/mtl4/trunk mtl4</tt>\n
+<tt>svn checkout https://simunova.zih.tu-dresden.de/svn/mtl4/trunk mtl4</tt>\n
 The adventage of version control is that you can update it easily with\n
 <tt>svn update</tt>\n
 when new features are added or a bug is %fixed (fortunately not needed very often).
