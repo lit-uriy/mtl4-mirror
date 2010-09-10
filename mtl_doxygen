@@ -1,6 +1,6 @@
 #!/bin/sh
 cd libs/numeric/mtl/examples
-update_footer
+./update_footer
 cd ../../../..
 
 doxygen
