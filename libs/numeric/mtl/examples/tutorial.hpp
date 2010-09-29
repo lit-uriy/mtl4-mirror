@@ -2699,7 +2699,7 @@ So, what do you have to loose except that your programs look nicer?
 
 
 
-/*! \page performance_athlon Performance on an AMD Athlon 2GHz
+/*! \page performance_athlon Performance on an AMD Opteron 2GHz
 
 
 The following measurements are performed with
