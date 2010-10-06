@@ -45,38 +45,30 @@ void test1(Matrix& m, double tau)
       {
         val=m_rand();
         if (abs(val)<tau)
-          ins(r,c) << val;
-      }
+          ins(r,c) << val;  
+      } 
     }
-  }
+  } 
 }
 
 int test_main(int argc, char* argv[])
 {
-  const int N = 100; // Original from Jan had 2000 
+  const int N = 12; // Original from Jan had 2000 
   const int Niter = 3*N;
 
-  typedef mtl::compressed2D<std::complex<double> > matrix_type;
+  typedef mtl::compressed2D<double> matrix_type;
   //typedef compressed2D<std::complex<double> ,matrix::parameters<tag::col_major> > matrix_type;
   matrix_type                   A(N, N);
-  mtl::dense_vector<std::complex<double> > b(N, std::complex<double>(1,0)), x(N);
+  laplacian_setup(A,3,4);
+  mtl::dense_vector<double> b(N), x(N, 1.0);
+  b=A*x;
 
-  test1(A,0.194);
-  std::cout << "A has " << A.nnz() << " non-zero entries" << std::endl;
   itl::pc::identity<matrix_type>     Ident(A);
-
-  std::cout << "Non- preconditioned bicgstab" << std::endl;
-  std::cout << "Won't convergence (for large examples)!" << std::endl;
-  x= 0.5;
-  itl::cyclic_iteration<double> iter_0(b, Niter, 1.e-8, 0.0, 5);
-  bicgstab(A, x, b, Ident, iter_0);
-
-  std::cout << "Non-preconditioned bicgstab(1)" << std::endl;
-  std::cout << "Won't convergence (for large examples)!" << std::endl;
-  x= 0.5;
-  itl::cyclic_iteration<double> iter_1(b, Niter, 1.e-8, 0.0, 5);
-  idr_s(A, x, b, Ident, Ident, iter_1,1);
-
+   
+   x= 5.0;
+  itl::cyclic_iteration<double> iter_1(b, Niter, 1.e-8, 0.0, 1);
+  idr_s(A, x, b, Ident, Ident, iter_1,4);
+#if 0
   std::cout << "Non-preconditioned bicgstab(2)" << std::endl;
   x= 0.5;
   itl::cyclic_iteration<double> iter_2b(b, Niter, 1.e-8, 0.0, 5);
@@ -118,6 +110,6 @@ int test_main(int argc, char* argv[])
   x= 0.5;
   itl::cyclic_iteration<double> iter_8r(b, Niter, 1.e-8, 0.0, 5);
   idr_s(A, x, b, Ident, P, iter_8r,8);
-
+#endif
   return 0;
 }

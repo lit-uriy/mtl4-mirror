@@ -30,7 +30,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
       message(FATAL_ERROR "Searching Manually Boost: FATAL ERROR: Boost Not Found in /usr/include/boost, Please set BOOST_ROOT")
     else(NOT IS_DIRECTORY /usr/include/boost)
       set (BOOST_ROOT /usr/include/boost/)
-      message(STATUS "Searching Manually Boost: Bost Found in /usr/include/boost/")
+      message(STATUS "Searching Manually Boost: Boost Found in /usr/include/boost/")
       find_package(Boost)
     endif(NOT IS_DIRECTORY /usr/include/boost)
   endif(NOT Boost_FOUND)
@@ -114,6 +114,7 @@ endmacro (compile_all)
 
 
 # enable test generation
+set(BUILDNAME "${TESTBUILDNAME}")
 enable_testing()
 include(CTest)
 
