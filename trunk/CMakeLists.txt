@@ -75,7 +75,7 @@ endif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root directory")
 
 # include_directories(${Boost_INCLUDE_DIR})
-include_directories($ENV{BOOST_ROOT} ${MTL_BOOST_ROOT})
+include_directories(${BOOST_ROOT} ${MTL_BOOST_ROOT})
 
 #################################################################################
 if (MSVC80 OR MSVC90)
