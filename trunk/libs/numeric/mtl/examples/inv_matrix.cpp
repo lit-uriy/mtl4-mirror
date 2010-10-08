@@ -15,7 +15,7 @@ int test_main(int argc, char* argv[])
     I= 1.0;
 
     Matrix LU(A);
-    dense_vector<double> v(4);
+    dense_vector<std::size_t> v(4);
     lu(LU, v);
     matrix::traits::permutation<>::type P(permutation(v));
     

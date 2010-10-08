@@ -50,13 +50,12 @@ int test_main(int argc, char* argv[])
 
     compressed2D<double>                             cdr(4, 3);
     compressed2D<float>                              cfr(4, 3);
-    compressed2D<int>                                cir(4, 3);
+    // compressed2D<int>                                cir(4, 3); // a Hilbert matrix as int is nonsense
     compressed2D<std::complex<double> >              ccr(4, 3);
 
     program_dir= mtl::io::directory_name(argv[0]);
     test(cdr, "compressed2D_double");
     test(cfr, "compressed2D_float");
-    test(cir, "compressed2D_int");
     test(ccr, "compressed2D_complex");
 
     return 0;

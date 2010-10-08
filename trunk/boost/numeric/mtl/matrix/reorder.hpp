@@ -27,7 +27,7 @@ namespace mtl { namespace matrix {
 namespace traits {
 
     /// Return type of mtl::matrix::reorder	
-    template <typename Value= double>
+    template <typename Value= short>
     struct reorder
     {
 	typedef ::mtl::compressed2D<Value>  type;
@@ -44,7 +44,7 @@ reorder(const ReorderVector& v, std::size_t cols= 0)
 
     // Find maximal entry (don't use mtl::max to allow for arrays and others)
     std::size_t  s= static_cast<std::size_t>(size(v)),
-                 my_max= *std::max_element(&v[0], &v[0] + s) + 1;
+	         my_max= std::size_t(*std::max_element(&v[0], &v[0] + s)) + 1;
 
     if (cols == 0) 
 	cols= my_max;
@@ -66,7 +66,7 @@ template <typename ReorderVector>
 typename traits::reorder<>::type
 inline reorder(const ReorderVector& v, std::size_t cols= 0)
 {
-    return reorder<double>(v, cols);
+    return reorder<short>(v, cols);
 }
 
 
