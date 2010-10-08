@@ -21,7 +21,7 @@ using namespace std;
 
 int test_main(int argc, char* argv[])
 {
-    mtl::dense2D<int> A(3, 3), B(3, 3), C(3, 3);
+    mtl::dense2D<double> A(3, 3), B(3, 3), C(3, 3);
     A= 2.0; B= 3.0;
 #if 0
     A= B * C * 8;

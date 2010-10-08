@@ -40,7 +40,7 @@ int test_main(int argc, char* argv[])
     Vector v2( lu_solve(A, b) );
     std::cout << "v2 is " << v2 << "\n";
     
-    Vector P;
+    mtl::dense_vector<unsigned> P;
     lu(A, P);
     std::cout << "LU with pivoting is \n" << with_format(A, 5, 2) << "Permutation is " << P << "\n";
     Vector v3( lu_apply(A, P, b) );

@@ -23,7 +23,7 @@ namespace traits {
 
     //\ Return type of mtl::matrix::permutation
     // Only for completeness	
-    template <typename Value= double>
+    template <typename Value= short>
     struct permutation
     {
 	typedef typename reorder<Value>::type  type;
@@ -43,7 +43,7 @@ template <typename PermutationVector>
 typename traits::permutation<>::type
 inline permutation(const PermutationVector& v)
 {
-    return permutation<double>(v);
+    return permutation<short>(v);
 }
 
 
