@@ -60,7 +60,9 @@ void inline test(const char* type1, T x)
 {
     test2(type1, x, "int", 2);
     test2(type1, x, "long", 2l);
+#ifndef _MSC_VER // causes warnings in visual studion
     test2(type1, x, "unsigned", 2u);
+#endif
     test2(type1, x, "float", 2.f);
     test2(type1, x, "double", 2.);
     test2(type1, x, "long double", 2.l);
@@ -73,7 +75,9 @@ int test_main(int argc, char* argv[])
 
     test("int", 6);
     test("long", 6l);
+#ifndef _MSC_VER // causes warnings in visual studion
     test("unsigned", 6u);
+#endif
     test("float", 6.f);
     test("double", 6.);
     test("long double", 6.l);
