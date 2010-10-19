@@ -346,9 +346,9 @@ Resuming, for MTL4 you need to:
 
 The %Matrix Template Library is written in compliance with the C++ standard
 and should be compilable with every compiler compliant with the standard.
-It is regularly tested - <a href="http://www.simunova.com/en/node/33">see here
+It is regularly tested - <a href="http://www.simunova.com/en/node/33" target="_top">see here
 for a list of compilers are tested nightly</a> and 
-<a href="http://www.simunova.com/en/node/182">here for the test results</a>.
+<a href="http://www.simunova.com/en/node/182" target="_top">here for the test results</a>.
 
 More compilers will be tested in the future.
 
