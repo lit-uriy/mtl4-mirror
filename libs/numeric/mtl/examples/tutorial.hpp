@@ -186,11 +186,43 @@ Proceed to the \ref install "installation guide".
 
 /*! \page install Installation guide
 
-MTL4 is a pure template library and only a download of the sources
+MTL4 is a pure template library and only the presence of the sources
 is required.
 The only mandatory requirement is the Boost library collection.
+There are two ways to install MTL4:
+- With a \ref installpackage "package manager" or
+- By  \ref installdownload "downloading".
+.
+We recommand you the first option if you have administrative rights on your computer.
+It is much easier and you will be provided with automatic updates.
+Furthermore, boost will be installed as prerequisite.
 
-\section quickstart Quick start
+\section installpackage Install with a Package Manager
+
+We split the MTL4 sources into 3 packages:
+- "mtl" contains the headers of MTL4. This package is the only mandatory one for developing scientific applications.
+- "mtl-examples" contains documentation of MTL4.
+- "mtl-tests" provides our test suite if you like to check whether the library is properly installed and if your platform is well supported.
+
+\subsection debian Installation under Debian, Ubuntu and other .deb-based Linux Distribution
+
+-# Open your package source manager (in Ubuntu you find this in the menu System -> Administration -> Software Sources).
+-# Go to tab "Other Sources", click on "Add" and insert the line:\n
+   <tt>deb http://www.simunova.com/debian main/</tt>\n
+   then save and close the package source manager. 
+-# Open the package manage (in Ubuntu you find this in the menu System -> Administration -> Synaptic Package Manager)
+   and click on "Reload".
+-# Click on "Quick search" and type "mtl".
+-# Mark the MTL4 packages you want and "Apply" for the installation. Accept all dependent packages.
+
+
+\subsection rpm  Installation under SuSE, Fedora and other .rpm-based Linux Distribution
+
+\subsection installwindows Installation under Windows
+
+This is under development and will be provided soon. For the time being please use \ref installdownload "an archive".
+
+\section installdownload Install a Downloaded Archive
 
 To compile an MTL4 application you only need to
 -# Download and install Boost
@@ -324,6 +356,7 @@ It has been tested (and passed) with the following compilers and architectures:
   - g++ 4.2.2
   - g++ 4.3.2
   - g++ 4.3.4
+  - g++ 4.4.3
   - icc 9.0
   - icc 10.0
 - Macintosh
