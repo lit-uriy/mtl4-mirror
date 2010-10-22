@@ -91,7 +91,9 @@ namespace detail {
 	a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	for (typename Collection<Matrix>::size_type r= 0; ac != aend; ++r, ++ac) {
 	    a_icur_type aic= begin<nz>(ac), aiend= lower_bound<nz>(ac, r+1);
-	    MTL_THROW_IF(aic == aiend || col_a(*--aiend) != r, missing_diagonal());
+	    MTL_THROW_IF(aic == aiend, missing_diagonal());
+	    --aiend;
+	    MTL_THROW_IF(col_a(*aiend) != r, missing_diagonal());
 
 	    value_type dia= value_a(*aiend);
 	    typename Collection<Vector>::value_type rr= result[r];
@@ -109,7 +111,7 @@ namespace detail {
     template <typename Matrix, typename Vector>
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::col_major, tag::unit_diagonal)
     {
-		using namespace tag; using mtl::traits::range_generator; using mtl::detail::adjust_cursor;
+	using namespace tag; using mtl::traits::range_generator; using mtl::detail::adjust_cursor;
 
 	typedef typename range_generator<col, Matrix>::type       a_cur_type;    
 	typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
