@@ -52,8 +52,6 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   return iter;
 }
 
-
-
 /// Conjugate Gradients with ignored right preconditioner to unify interface
 template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpaceB, 
 	   typename Preconditioner, typename RightPreconditioner, typename Iteration >
