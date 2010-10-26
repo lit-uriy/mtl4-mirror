@@ -78,7 +78,7 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 include_directories(${BOOST_ROOT} ${MTL_BOOST_ROOT})
 
 #################################################################################
-if (MSVC80 OR MSVC90)
+if (MSVC)
 	# to quiet DevStudio 2005 secure code warnings
     add_definitions(/D_SCL_SECURE_NO_WARNINGS)
     add_definitions(/D_CRT_SECURE_NO_WARNINGS)
@@ -87,7 +87,7 @@ if (MSVC80 OR MSVC90)
 	# you may override them, but I have not found it necessary
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /Z7")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-endif (MSVC80 OR MSVC90)
+endif (MSVC)
 
 #################################################################################
 
