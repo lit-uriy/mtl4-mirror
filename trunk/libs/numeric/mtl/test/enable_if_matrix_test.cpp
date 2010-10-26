@@ -78,15 +78,15 @@ int test_main(int argc, char* argv[])
 
     cout << "A " << is(is_matrix<m_t>::value) << "matrix, "
 	 << is(is_vector<m_t>::value) << "vector, "
-	 << is(is_scalar<m_t>::value) << "scalar.\n";
+	 << is(mtl::traits::is_scalar<m_t>::value) << "scalar.\n";
 
     cout << "v " << is(is_matrix<v_t>::value) << "matrix, "
 	 << is(is_vector<v_t>::value) << "vector, "
-	 << is(is_scalar<v_t>::value) << "scalar.\n";
+	 << is(mtl::traits::is_scalar<v_t>::value) << "scalar.\n";
 
     cout << "x " << is(is_matrix<int>::value) << "matrix, "
 	 << is(is_vector<int>::value) << "vector, "
-	 << is(is_scalar<int>::value) << "scalar.\n";
+	 << is(mtl::traits::is_scalar<int>::value) << "scalar.\n";
 
     f(A, A, "f(A, A)", mtag);
     f(A, v, "f(A, v)", mtag);
