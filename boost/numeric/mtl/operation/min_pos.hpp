@@ -34,7 +34,7 @@ namespace mtl {
 	    typedef std::pair<value_type, pos_type>               result_type;
 
 	    // initialize with max value and max position
-	    min_pos_functor() : value(identity(math::min<result_type>(), result_type())) {} 
+	    min_pos_functor() : value(math::identity(math::min<result_type>(), result_type())) {} 
 
 	    void operator()(const value_type& x, const pos_type& p)
 	    {
@@ -42,7 +42,7 @@ namespace mtl {
 		    value= std::make_pair(x, p);
  	    }
 
-	    bool unchanged() const { return value.second == identity(math::min<pos_type>(), pos_type()); }
+	    bool unchanged() const { return value.second == math::identity(math::min<pos_type>(), pos_type()); }
 
 	    result_type  value;
 	};

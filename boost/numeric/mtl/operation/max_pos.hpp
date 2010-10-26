@@ -43,8 +43,8 @@ namespace mtl {
 	    // initialize with max value and max position
 	    max_pos_functor() 
 	    {
-		value.first= identity(math::max<value_type>(), value_type()); // minimal value for comparison
-		value.second= identity(math::min<pos_type>(), pos_type());    // maximal position to check if changed
+		value.first= math::identity(math::max<value_type>(), value_type()); // minimal value for comparison
+		value.second= math::identity(math::min<pos_type>(), pos_type());    // maximal position to check if changed
 	    }
 
 	    void operator()(const value_type& x, const pos_type& p)
@@ -53,7 +53,7 @@ namespace mtl {
 		    value= std::make_pair(x, p);
 	    }
 
-	    bool unchanged() const { return value.second == identity(math::min<pos_type>(), pos_type()); }
+	    bool unchanged() const { return value.second == math::identity(math::min<pos_type>(), pos_type()); }
 
 	    result_type  value;
 	};
