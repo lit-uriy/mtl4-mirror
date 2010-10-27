@@ -78,7 +78,7 @@ void two_d_iteration_impl(char const* outer, Matrix & matrix, Tag, Complexity)
 
 
 template <typename Matrix, typename Tag>
-void two_d_iteration_impl(char const* name, Matrix & matrix, Tag, mtl::complexity_classes::infinite)
+void two_d_iteration_impl(char const* name, Matrix &, Tag, mtl::complexity_classes::infinite)
 {
     cout << name << ": Tag has no implementation\n";
 }
@@ -105,7 +105,7 @@ void two_d_iterator_iteration_impl(char const* outer, Matrix & matrix, Tag, Comp
 
 
 template <typename Matrix, typename Tag>
-void two_d_iterator_iteration_impl(char const* name, Matrix & matrix, Tag, mtl::complexity_classes::infinite)
+void two_d_iterator_iteration_impl(char const* name, Matrix &, Tag, mtl::complexity_classes::infinite)
 {
     cout << name << ": Tag has no implementation\n";
 }
@@ -164,7 +164,7 @@ void test_compressed2D(char const* name)
     two_d_iteration("Transposed On Major", trans_matrix, mtl::tag::major());
 }
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     test_compressed2D<mtl::row_major, mtl::index::c_index>("CRS");
     // test_compressed2D<row_major, mtl::index::f_index>("CRS Fortran"); deprecated

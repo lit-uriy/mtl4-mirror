@@ -15,6 +15,7 @@
 
 #include <cmath>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -39,11 +40,11 @@ struct sub_matrix_t
 					       typename sub_matrix_t<Matrix>::size_type& end_col)
 	{
 	    using std::min;
-	    MTL_DEBUG_THROW_IF( begin_row < 0 || end_row < 0, index_out_of_range());
+	    MTL_DEBUG_THROW_IF( is_negative(begin_row) || is_negative(end_row), index_out_of_range());
 	    end_row= min(end_row, num_rows(matrix));
 	    begin_row= min(begin_row, end_row); // implies min(begin_row, num_rows(matrix))
 	    
-	    MTL_DEBUG_THROW_IF( begin_col < 0 || end_col < 0, index_out_of_range());
+	    MTL_DEBUG_THROW_IF( is_negative(begin_col) || is_negative(end_col), index_out_of_range());
 	    end_col= min(end_col, num_cols(matrix));
 	    begin_col= min(begin_col, end_col); // implies likewise
 	}

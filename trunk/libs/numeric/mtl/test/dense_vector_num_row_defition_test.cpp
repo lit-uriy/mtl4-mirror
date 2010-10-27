@@ -20,7 +20,7 @@ namespace mtl {
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     mtl::dense_vector<double> x(10);
     unsigned int size1 = num_rows(x);

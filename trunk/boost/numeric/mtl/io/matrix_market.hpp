@@ -17,11 +17,12 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <locale>
 
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <boost/type_traits/is_integral.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
+// #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <boost/numeric/mtl/io/matrix_file.hpp>
@@ -73,16 +74,23 @@ class matrix_market_istream
   protected:
     template <typename Matrix> self& read(Matrix& A, tag::matrix);
 
+    void to_lower(std::string& s) const
+    {
+	using namespace std;
+	for (unsigned i= 0; i < s.size(); i++)
+	    s[i]= tolower(s[i]);
+    }
+
     void set_symmetry(std::string& symmetry_text)
     {
-	boost::to_lower(symmetry_text); 
+	to_lower(symmetry_text); 
 	const char* symmetry_options[]= {"general", "symmetric", "skew-symmetric", "hermitian"};
 	my_symmetry= string_to_enum(symmetry_text, symmetry_options, symmetry());
     }
 
     void set_sparsity(std::string& sparsity_text)
     {
-	boost::to_lower(sparsity_text); 
+	to_lower(sparsity_text); 
 	const char* sparsity_options[]= {"coordinate", "array"};
 	my_sparsity= string_to_enum(sparsity_text, sparsity_options, sparsity());
     }

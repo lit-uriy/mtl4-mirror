@@ -33,7 +33,7 @@ void test(const char* name, Matrix& A)
 }
 
  
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     mtl::compressed2D<double> A(4, 5);
     // mtl::compressed2D<double> A(4, 5);

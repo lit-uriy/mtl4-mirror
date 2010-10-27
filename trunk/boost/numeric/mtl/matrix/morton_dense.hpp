@@ -326,11 +326,11 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
                      public crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >,
 		     public mat_expr< morton_dense<Elt, BitMask, Parameters> >
 {
+    typedef morton_dense                                               self;
     typedef base_sub_matrix<Elt, Parameters>                           super;
     typedef mtl::detail::contiguous_memory_block<Elt, false>           memory_base;
-    typedef morton_dense                                               self;
-    typedef mat_expr< morton_dense<Elt, BitMask, Parameters> >         expr_base;
     typedef crtp_matrix_assign< self, Elt, std::size_t >               assign_base;
+    typedef mat_expr< morton_dense<Elt, BitMask, Parameters> >         expr_base;
 
   public:
 
@@ -425,25 +425,23 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 	set_ranges(dim_type().num_rows(), dim_type().num_cols());
     }
 
-    // Old remark: Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
-    morton_dense(const self& m) : memory_base(m)
+    morton_dense(const self& m) 
+      : super(m), memory_base(m)
     {
-		set_ranges(m.num_rows(), m.num_cols());
-		// std::cout << "In copy constructor:\n"; print_matrix(*this);
+	set_ranges(m.num_rows(), m.num_cols());
     }
 
     explicit morton_dense(const self& m, clone_ctor) 
-	    : memory_base(m, clone_ctor())
+      : memory_base(m, clone_ctor())
     {
 	init(m.num_rows(), m.num_cols());
 	*this= m;
-	// std::cout << "In clone constructor:\n" << *this;
     }
 
 
     template <typename MatrixSrc>
     explicit morton_dense(const MatrixSrc& src) 
-	: memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
+      : memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
     {
 	init(dim_type().num_rows(), dim_type().num_cols());
 	*this= src;
@@ -452,8 +450,8 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 
     // Construct a sub-matrix as a view
     explicit morton_dense(self& matrix, morton_dense_sub_ctor,
-		                  size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
-	  : memory_base(matrix.data, memory_need(end_r - begin_r, end_c - begin_c), true) // View constructor
+			  size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
+      : memory_base(matrix.data, memory_need(end_r - begin_r, end_c - begin_c), true) // View constructor
     {
 	matrix.check_ranges(begin_r, end_r, begin_c, end_c);
 	
@@ -514,13 +512,13 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 
     const_reference operator() (size_type row, size_type col) const
     {
-	MTL_DEBUG_THROW_IF(row < 0 || row >= this->num_rows() || col < 0 || col >= this->num_cols(), index_out_of_range());
+	MTL_DEBUG_THROW_IF(is_negative(row) || row >= this->num_rows() || is_negative(col) || col >= this->num_cols(), index_out_of_range());
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
 
     value_type& operator() (size_type row, size_type col)
     {
-	MTL_DEBUG_THROW_IF(row < 0 || row >= this->num_rows() || col < 0 || col >= this->num_cols(), index_out_of_range());
+	MTL_DEBUG_THROW_IF(is_negative(row) || row >= this->num_rows() || is_negative(col) || col >= this->num_cols(), index_out_of_range());
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
 

@@ -19,7 +19,7 @@ using namespace std;
     
 
 template <typename Vector>
-void test(Vector& v, const char* name)
+void test(Vector&, const char* name)
 {
     typedef typename mtl::Collection<Vector>::value_type value_type;
     typedef typename mtl::Collection<Vector>::size_type  size_type;
@@ -29,7 +29,7 @@ void test(Vector& v, const char* name)
     Vector a(3), b(3), res(3);
     a= 1, 2, 3; b= 4, 5, 6; res= -3, 6, -3;
     
-    std::cout << "cross(" << a << ", " << b << ") is " << cross(a, b) << '\n';
+    std::cout << name << ": cross(" << a << ", " << b << ") is " << cross(a, b) << '\n';
     
     if (one_norm(Vector(cross(a, b) - res)) > 0.0001)
 	throw "Wrong cross product with dimension 3!\n";
@@ -44,7 +44,7 @@ void test(Vector& v, const char* name)
 }
  
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
     using mtl::vector::parameters;

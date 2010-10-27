@@ -101,6 +101,10 @@ macro (add_macro_flags)
   endforeach()
 endmacro (add_macro_flags)
 
+#add_definitions("-g")
+add_macro_flags("MTL_ASSERT_FOR_THROW")
+# add_definitions("-Werror -pedantic -Wall -Wextra")
+
 macro (compile_all)
     # cycle through the sources
     # The directory assumes that each cpp file is a separate test
@@ -117,9 +121,6 @@ endmacro (compile_all)
 set(BUILDNAME "${TESTBUILDNAME}")
 enable_testing()
 include(CTest)
-
-#add_definitions("-g")
-add_macro_flags("MTL_ASSERT_FOR_THROW")
 
 # Descent into the test program directory to build the test suite
 # MTL4 test programs

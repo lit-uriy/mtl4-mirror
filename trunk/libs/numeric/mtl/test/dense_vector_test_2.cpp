@@ -69,7 +69,7 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 	
 }
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using mtl::vector::parameters; using mtl::vector::dense_vector;
 	

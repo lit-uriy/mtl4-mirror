@@ -71,7 +71,7 @@ namespace mtl { namespace vector {
 	    }
 
 	    template <typename Value>
-	    static inline void finish(Value& tmp00, Value&, Value&, Value&, Value&, Value&, Value&, Value&) {}
+	    static inline void finish(Value&, Value&, Value&, Value&, Value&, Value&, Value&, Value&) {}
 	};
 
     } // namespace impl

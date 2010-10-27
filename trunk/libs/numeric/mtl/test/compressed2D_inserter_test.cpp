@@ -77,7 +77,7 @@ void test_compressed2D_insertion()
     if (matrix(2, 2) != 28) throw "Error adding to existing value";
 }
  
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     test_compressed2D_insertion<mtl::row_major, mtl::index::c_index>();
     test_compressed2D_insertion<mtl::col_major, mtl::index::c_index>();

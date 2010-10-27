@@ -55,7 +55,7 @@ void test(int n)
 }
 
  
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     test(9);
 

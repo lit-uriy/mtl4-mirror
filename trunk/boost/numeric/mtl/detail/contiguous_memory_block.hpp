@@ -158,7 +158,7 @@ struct size_helper<0>
 			delete[] data;
 	}
 
-	friend void swap(self& x, self& y) {}
+	friend void swap(self&, self&) {}
     };
 
 # endif
@@ -219,9 +219,10 @@ struct contiguous_memory_block
       public memory_crtp<Value, OnStack, Size>
 {
     typedef Value                             value_type;
-    typedef contiguous_memory_block                     self;
+    typedef contiguous_memory_block           self;
     typedef size_helper<Size>                 size_base;
     typedef alignment_helper<Value>           alignment_base;
+    typedef memory_crtp<Value, OnStack, Size> crtp_base;
 
     /// Category of memory, determines behaviour
     enum c_t {own,         //< My own memory: allocate and free it
@@ -293,7 +294,7 @@ struct contiguous_memory_block
     }
 
     // Default copy constructor
-    contiguous_memory_block(const self& other)
+    contiguous_memory_block(const self& other) : size_base(other)
     {
 	// std::cout << "Copy constructor (same type).\n";	
 	if (other.category == view)

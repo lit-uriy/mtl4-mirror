@@ -69,7 +69,7 @@ template <typename X, typename Y> void write_mal(X, Y) {
 }
 
  
-int main (int argc, char** argv) {
+int main (int, char**) {
 
   write_less(quadratic(), infinite());
   write_less(quadratic(), linear());
