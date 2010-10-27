@@ -13,7 +13,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
-#include <string>
+#include <string.h>
 
 #include <boost/numeric/mtl/mtl.hpp> 
 
