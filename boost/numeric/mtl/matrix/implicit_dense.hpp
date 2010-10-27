@@ -157,7 +157,7 @@ class ones_functor
     friend size_type inline num_rows(const self& A) { return A.nr; }
     friend size_type inline num_cols(const self& A) { return A.nc; }
 
-    result_type operator()(size_type r, size_type c) const { return Value(1); }
+    result_type operator()(size_type, size_type) const { return Value(1); }
 
   private:
     size_type nr, nc;

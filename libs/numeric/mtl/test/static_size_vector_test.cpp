@@ -31,7 +31,7 @@ void test(const char* name, const Vector&)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
 

@@ -9,7 +9,7 @@ using namespace mtl;
 typedef mtl::dense_vector<double> mtlVec;
 mtlVec testFunc( mtlVec A,double Scale);
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
     mtlVec u(3);
     u(0)=1.1;

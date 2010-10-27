@@ -20,7 +20,7 @@ using namespace std;
 
 
 template <typename Vector>
-void test(const Vector& v, const char* name)
+void test(const Vector&, const char* name)
 {
     mtl::multi_vector<Vector> A(5, 5), B(2, 3);
     
@@ -28,7 +28,7 @@ void test(const Vector& v, const char* name)
     cout << "A[2][3] = " << A[2][3] << "\n";
 
     A= 3.0;
-    cout << "A after initialization is \n" << A;
+    cout << name << ":\n A after initialization is \n" << A;
 
     if (A[1][1] != 3.0) throw "Wrong value in diagonal";
     if (A[1][2] != 0.0) throw "Wrong value off diagonal";
@@ -37,7 +37,7 @@ void test(const Vector& v, const char* name)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
 

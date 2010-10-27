@@ -63,7 +63,7 @@ void test(Matrix& A, const char* name)
 	if (std::abs(x[i] - double(i+1)) > 0.0001) throw "Wrong result in lower_trisolve!";
 }
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
     dense2D<double>                                      dr;

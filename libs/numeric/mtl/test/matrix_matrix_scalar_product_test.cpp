@@ -19,7 +19,7 @@ using namespace std;
 
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     mtl::dense2D<double> A(3, 3), B(3, 3), C(3, 3);
     A= 2.0; B= 3.0;

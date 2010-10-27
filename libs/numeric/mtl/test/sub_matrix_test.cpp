@@ -138,7 +138,7 @@ void fill_matrix(Matrix& matrix)
 }
   
  
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
 

@@ -20,7 +20,7 @@
 using namespace std;  
 
 template <typename Matrix>
-void test(Matrix& matrix, const char* name)
+void test(Matrix& , const char* name)
 {
     typedef typename mtl::Collection<Matrix>::value_type value_type;
     typedef mtl::dense_vector<value_type>                vector_type;
@@ -31,7 +31,7 @@ void test(Matrix& matrix, const char* name)
     
     // trans(A)[0][1]= 11.0;
     
-    cout << "trans(A)[0][1]= " << trans(A)[0][1] << "\n";
+    cout << name << ":\n trans(A)[0][1]= " << trans(A)[0][1] << "\n";
 
     if (trans(A)[0][1] != value_type(1.))
 	throw "constant transposing wrong";
@@ -48,7 +48,7 @@ void test(Matrix& matrix, const char* name)
 
 
 template <typename Matrix>
-void mutable_test(Matrix& matrix, const char* name)
+void mutable_test(Matrix&, const char* name)
 {
     typedef typename mtl::Collection<Matrix>::value_type value_type;
     value_type  ar[][3] = {{3., 9., 0.},
@@ -58,7 +58,7 @@ void mutable_test(Matrix& matrix, const char* name)
     
     trans(A)[0][1]= 11.0;
     
-    cout << "trans(A)[0][1]= " << trans(A)[0][1] << "\n";
+    cout << name << ":\n trans(A)[0][1]= " << trans(A)[0][1] << "\n";
 
     if (trans(A)[0][1] != value_type(11.))
 	throw "transposing wrong";

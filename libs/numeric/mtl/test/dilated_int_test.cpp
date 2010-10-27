@@ -80,7 +80,7 @@ void test_dilated(string s, T dil, typename T::value_type exp_increment)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int , char**)
 {    
     using namespace mtl;
 

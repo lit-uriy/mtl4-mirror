@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 
-int test_main(int argc, char* argv[])
+int test_main(int , char**)
 {
     using namespace mtl;
     dense2D<double, matrix::parameters<tag::col_major> > A(5, 5);

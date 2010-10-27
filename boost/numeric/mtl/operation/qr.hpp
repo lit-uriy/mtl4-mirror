@@ -42,7 +42,6 @@ void qr(const Matrix& A, MatrixQ& Q, MatrixR& R)
     
     size_type        ncols = num_cols(A), nrows = num_rows(A), 
                      mini= ncols == nrows ? ncols - 1 : (nrows >= ncols ? ncols : nrows);
-    value_type       ref, zero= math::zero(ref);
     magnitude_type   factor= magnitude_type(2);
 
     Q= 1;

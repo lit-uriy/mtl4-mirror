@@ -13,7 +13,7 @@
 #include <iostream>
 
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
 # if defined(__INTEL_COMPILER)
     std::cout << "Intel compiler, version (intern) " << __INTEL_COMPILER << ", i.e. icc/icpc " 

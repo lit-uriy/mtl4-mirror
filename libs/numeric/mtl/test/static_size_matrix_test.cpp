@@ -31,7 +31,7 @@ void test(const char* A_string, const Matrix&)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
 

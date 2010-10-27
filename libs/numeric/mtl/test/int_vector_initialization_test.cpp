@@ -17,7 +17,7 @@
 
 using namespace std;
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
 # ifdef _MSC_VER
 	typedef unsigned it; // MSVC dox about uint types pretty confusing

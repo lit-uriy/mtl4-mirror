@@ -219,7 +219,7 @@ inline void fill(dense_vector<Value, Parameters>& vector, const Value2& value)
 
 template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
-inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::row_major)
+inline num_rows_aux(const dense_vector<Value, Parameters>& , tag::row_major)
 {
     return 1;
 }
@@ -255,7 +255,7 @@ inline sub_vector(dense_vector<Value, Parameters>& v,
 {
     typedef dense_vector<Value, Parameters>    Vector;
 
-    MTL_DEBUG_THROW_IF( start < 0 || finish < 0, index_out_of_range());
+    MTL_DEBUG_THROW_IF( is_negative(start) || is_negative(finish), index_out_of_range());
     irange r= intersection(irange(start, finish), irange(0, size(v)));
     return r.empty() ? Vector() : Vector(r.size(), &v[r.start()]);
 

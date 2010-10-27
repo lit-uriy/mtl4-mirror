@@ -143,7 +143,7 @@ class matrix_market_istream
     // Which value to be inserted? Itself if exist and 0 for pattern; complex are 
     template <typename Value, typename MValue> MValue which_value(Value v, MValue) { return boost::numeric_cast<MValue>(v); }
     template <typename MValue> MValue which_value(pattern_type, MValue) { return boost::numeric_cast<MValue>(0.0); }
-    template <typename MValue> MValue which_value(std::complex<double> v, MValue) { MTL_THROW(runtime_error("Cannot convert complex value in real\n")); return 1; }
+    template <typename MValue> MValue which_value(std::complex<double>, MValue) { MTL_THROW(runtime_error("Cannot convert complex value in real\n")); return 1; }
     std::complex<long double> which_value(std::complex<double> v, std::complex<long double>) { return boost::numeric_cast<std::complex<long double> >(v); }
     std::complex<double> which_value(std::complex<double> v, std::complex<double>) { return v; }
     std::complex<float> which_value(std::complex<double> v, std::complex<float>) { return std::complex<float>(float(real(v)), float(imag(v))); }

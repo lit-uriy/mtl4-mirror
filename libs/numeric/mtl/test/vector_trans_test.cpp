@@ -35,7 +35,7 @@ void test2(const char* name, const Vector& v)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
 
     typedef mtl::vector::fixed::dimension<3> fsize;

@@ -149,18 +149,18 @@ struct gen_tiling_smat_dmat_mult_block<Max0, Max0, Assign>
     typedef meta_math::loop1<Max0, Max0>                                    base;
 
     template <typename Value, typename ValueA, typename ValueB, typename Size>
-    static inline void apply(Value& tmp00, Value& tmp01, Value& tmp02, Value& tmp03, Value& tmp04, 
-			     Value& tmp05, Value& tmp06, Value& tmp07, Value& tmp08, Value& tmp09, 
-			     Value& tmp10, Value& tmp11, Value& tmp12, Value& tmp13, Value& tmp14, Value& tmp15, 
+    static inline void apply(Value& tmp00, Value&, Value&, Value&, Value&, 
+			     Value&, Value&, Value&, Value&, Value&, 
+			     Value&, Value&, Value&, Value&, Value&, Value&, 
 			     const ValueA& va, ValueB *begin_b, const Size& bci)
     {
 	tmp00+= va * *(begin_b + base::index0 * bci);
     }
 
     template <typename Value, typename MatrixC, typename SizeC>
-    static inline void update(Value& tmp00, Value& tmp01, Value& tmp02, Value& tmp03, Value& tmp04, 
-			      Value& tmp05, Value& tmp06, Value& tmp07, Value& tmp08, Value& tmp09, 
-			      Value& tmp10, Value& tmp11, Value& tmp12, Value& tmp13, Value& tmp14, Value& tmp15,
+    static inline void update(Value& tmp00, Value&, Value&, Value&, Value&, 
+			      Value&, Value&, Value&, Value&, Value&, 
+			      Value&, Value&, Value&, Value&, Value&, Value&,
 			      MatrixC& c, SizeC i, SizeC k)
     {
 	Assign::update(c(i, k + base::index0), tmp00);

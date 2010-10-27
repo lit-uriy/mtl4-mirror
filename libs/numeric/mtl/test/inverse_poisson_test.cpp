@@ -102,7 +102,7 @@ private:
     const Matrix& A;
 };
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     m_type A;
     assemble_poisson2D(A, 10);

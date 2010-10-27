@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/operation/entry1D.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/two_norm.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
 
 namespace mtl { namespace vector {
 
@@ -31,7 +32,7 @@ namespace mtl { namespace vector {
 	inline void orth(VVector& v, typename mtl::Collection<VVector>::size_type j, tag::vector)
 	{
 	    using mtl::two_norm; using mtl::size1D;
-	    MTL_DEBUG_THROW_IF(j < 0 || j >= size1D(v), index_out_of_range());
+	    MTL_DEBUG_THROW_IF(is_negative(j) || j >= size1D(v), index_out_of_range());
 
 	    typedef typename mtl::Collection<VVector>::size_type  Size;
 	    for (Size i= 0; i < j; ++i)

@@ -32,7 +32,7 @@ inline std::complex<double> f(std::complex<double> x)
 
 
 template <typename Vector, typename T>
-void test(Vector& v, const T& x, const char* name, bool is_cmp= false)
+void test(Vector& v, const T&, const char* name)
 {
     using std::abs; using std::cout; using mtl::size; 
     using mtl::orth; using mtl::orthogonalize_factors;
@@ -89,7 +89,7 @@ void test(Vector& v, const T& x, const char* name, bool is_cmp= false)
 
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
     dense_vector<float>                                                 cf(sz, 1.0);
@@ -107,7 +107,7 @@ int test_main(int argc, char* argv[])
 
     test(scf, cf[0], "std::vector<dense_vector<float> >");
     test(scd, cd[0], "std::vector<dense_vector<double> >");
-    test(scc, cc[0], "std::vector<dense_vector<std::complex<double> > >", true);
+    test(scc, cc[0], "std::vector<dense_vector<std::complex<double> > >");
     test(srf, rf[0], "std::vector<dense_vector<float, parameters<row_major> > >");
 
     test(ccf, cf[0], "dense_vector<dense_vector<float> >");

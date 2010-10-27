@@ -75,7 +75,7 @@ template <typename Element>
 struct identity_t< max<Element>, Element > 
   : public std::binary_function<max<Element>, Element, Element>
 { 
-    Element operator() (const max<Element>&, const Element& ref) const
+    Element operator() (const max<Element>&, const Element& ) const
     {
 	using std::numeric_limits;
 	return numeric_limits<Element>::min();
@@ -88,7 +88,7 @@ template <typename Element>
 struct identity_t< min<Element>, Element > 
   : public std::binary_function<min<Element>, Element, Element>
 { 
-    Element operator() (const min<Element>&, const Element& ref) const
+    Element operator() (const min<Element>&, const Element& ) const
     {
 	using std::numeric_limits;
 	return numeric_limits<Element>::max();
@@ -140,7 +140,7 @@ inline Element identity(const Operation& op, const Element& v)
 #if 1
 // I shouldn't do this (but as functor I'd need too many specializations)
 template <template <typename> class Operation, typename First, typename Second>
-inline std::pair<First, Second> identity(const Operation<std::pair<First, Second> >& op, const std::pair<First, Second>& v)
+inline std::pair<First, Second> identity(const Operation<std::pair<First, Second> >&, const std::pair<First, Second>& v)
 {
     return std::pair<First, Second>(identity(Operation<First>(), v.first), identity(Operation<Second>(), v.second));
 }

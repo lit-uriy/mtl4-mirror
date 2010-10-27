@@ -60,7 +60,7 @@ void inline test(const char* type1, T x)
 {
     test2(type1, x, "int", 2);
     test2(type1, x, "long", 2l);
-#ifndef _MSC_VER // causes warnings in visual studion
+#if 0 // causes warnings in visual studion and g++ with -pedantic
     test2(type1, x, "unsigned", 2u);
 #endif
     test2(type1, x, "float", 2.f);
@@ -69,13 +69,13 @@ void inline test(const char* type1, T x)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
 
     test("int", 6);
     test("long", 6l);
-#ifndef _MSC_VER // causes warnings in visual studion
+#if 0// causes warnings in visual studion and g++ with -pedantic
     test("unsigned", 6u);
 #endif
     test("float", 6.f);

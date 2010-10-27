@@ -39,7 +39,7 @@ void test(Matrix& A, const char* name)
 
 }
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     mtl::dense2D<double>                                                dr;
     mtl::dense2D<double, mtl::matrix::parameters<mtl::col_major> >      dc;

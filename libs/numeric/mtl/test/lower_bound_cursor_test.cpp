@@ -52,7 +52,7 @@ template <typename Matrix, typename Cursor, int Complexity>
 struct check_position_aux<mtl::traits::detail::sub_matrix_cursor<Matrix, Cursor, Complexity> >
 {
     template <typename Matrix2, typename Coll>
-    void operator()(const Matrix2& A, const Coll& c, const mtl::traits::detail::sub_matrix_cursor<Matrix, Cursor, Complexity>& cursor, bool check_row) const
+    void operator()(const Matrix2&, const Coll&, const mtl::traits::detail::sub_matrix_cursor<Matrix, Cursor, Complexity>& cursor, bool ) const
     {
 	std::cout << ", cursor is pointing at " << *cursor << "\n";
 	if (*cursor < 2) 
@@ -69,7 +69,7 @@ void check_position(const Matrix& A, const Coll& c, const Cursor& cursor, bool c
 
 
 template <typename Matrix, typename Coll, typename Tag>
-void test(char const* name, const Matrix& A, const Coll& c, Tag t, bool cr)
+void test(char const* name, const Matrix& A, const Coll& c, Tag, bool cr)
 {
     namespace traits= mtl::traits; using mtl::lower_bound;
 
@@ -133,7 +133,7 @@ void dense_matrix_test(char const* name, const Matrix& matrix)
 
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
     typedef matrix::parameters<col_major> col_para;

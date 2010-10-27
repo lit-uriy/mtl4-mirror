@@ -65,7 +65,7 @@ void test(T x, U y)
 
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     double              a= 3.0, b= -5.0;
     float               c= -9;

@@ -20,7 +20,7 @@ using namespace std;
 
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     typedef mtl::dense_vector<float>         v_type;
     typedef mtl::vector::scaled_view<float, v_type> s_type;

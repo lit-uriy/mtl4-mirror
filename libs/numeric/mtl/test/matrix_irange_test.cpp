@@ -104,7 +104,7 @@ void test2(Matrix& A, const char* name)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
     const unsigned size= 5; 
