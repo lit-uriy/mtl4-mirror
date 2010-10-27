@@ -1,6 +1,6 @@
 project(MTL-tests)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.6)
 #let cmake look for the svn-version
 find_package(Subversion)
 if(Subversion_FOUND)

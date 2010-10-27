@@ -1,6 +1,6 @@
 project(MTL_examples)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.6)
 #this subproject prepares the MTL_examples package for installing in /usr/share/mtl/examples
 
 #let cmake look for the svn-version
