@@ -31,7 +31,7 @@ void test(Matrix& A, const char* name)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     mtl::compressed2D<double>                                 cr(2, 2);
     cr= 2.0;

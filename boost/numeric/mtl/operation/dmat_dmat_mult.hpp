@@ -307,18 +307,18 @@ struct gen_tiling_dmat_dmat_mult_block<Max0, Max0, Max1, Max1, Assign>
     typedef meta_math::loop2<Max0, Max0, Max1, Max1>  base;
 
     template <typename Value, typename ValueA, typename SizeA, typename ValueB, typename SizeB>
-    static inline void apply(Value& tmp00, Value& tmp01, Value& tmp02, Value& tmp03, Value& tmp04, 
-			     Value& tmp05, Value& tmp06, Value& tmp07, Value& tmp08, Value& tmp09, 
-			     Value& tmp10, Value& tmp11, Value& tmp12, Value& tmp13, Value& tmp14, Value& tmp15, 
+    static inline void apply(Value& tmp00, Value&, Value&, Value&, Value&, 
+			     Value&, Value&, Value&, Value&, Value&, 
+			     Value&, Value&, Value&, Value&, Value&, Value&, 
 			     ValueA *begin_a, SizeA& ari, ValueB *begin_b, SizeB& bci)
     {
 	tmp00+= begin_a[ base::index0 * ari ] * begin_b[ base::index1 * bci ];
     }
 
     template <typename Value, typename MatrixC, typename SizeC>
-    static inline void update(Value& tmp00, Value& tmp01, Value& tmp02, Value& tmp03, Value& tmp04, 
-			      Value& tmp05, Value& tmp06, Value& tmp07, Value& tmp08, Value& tmp09, 
-			      Value& tmp10, Value& tmp11, Value& tmp12, Value& tmp13, Value& tmp14, Value& tmp15,
+    static inline void update(Value& tmp00, Value&, Value&, Value&, Value&, 
+			      Value&, Value&, Value&, Value&, Value&, 
+			      Value&, Value&, Value&, Value&, Value&, Value&,
 			      MatrixC& C, SizeC i, SizeC k)
     {
 	Assign::update(C(i + base::index0, k + base::index1), tmp00);

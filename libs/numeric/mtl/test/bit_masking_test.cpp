@@ -59,7 +59,7 @@ struct mask
 #endif
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using mtl::row_major; using mtl::col_major; using mtl::generate_mask;
 

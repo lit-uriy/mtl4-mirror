@@ -28,7 +28,7 @@ namespace impl {
     template <typename Matrix, typename BaseCaseMatrix, typename BaseCaseTest>
     struct simplify_base_case_matrix
     {
-	BaseCaseMatrix operator()(Matrix const& matrix, BaseCaseTest const test)
+	BaseCaseMatrix operator()(Matrix const& matrix, BaseCaseTest const)
 	{
 	    typename Matrix::size_type begin_row= matrix.begin_row(), begin_col= matrix.begin_col();
 
@@ -46,7 +46,7 @@ namespace impl {
     template <typename Matrix, typename BaseCaseTest>
     struct simplify_base_case_matrix<Matrix, Matrix, BaseCaseTest>
     {
-	Matrix operator()(Matrix const& matrix, BaseCaseTest const test)
+	Matrix operator()(Matrix const& matrix, BaseCaseTest const)
 	{
 	    return matrix;
 	}

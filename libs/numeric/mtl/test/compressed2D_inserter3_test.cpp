@@ -73,7 +73,7 @@ void test(int n, int m, int order)
 }
 
  
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     test(9, 5, 0);
     test(9, 5, 1);

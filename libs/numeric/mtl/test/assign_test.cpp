@@ -45,7 +45,7 @@ void init_matrix(Matrix& matrix, int offset= 0)
 
 template <typename MatrixSrc, typename MatrixDest>
 void test(MatrixSrc& src, const char* name_src, 
-	  MatrixDest& dest, const char* name_dest)
+	  MatrixDest&, const char* name_dest)
 {
     std::cout << "\nAssign " << name_src << " to " << name_dest << "\n";
 
@@ -72,7 +72,7 @@ void test(MatrixSrc& src, const char* name_src,
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
 

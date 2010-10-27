@@ -15,6 +15,7 @@
 
 #include <limits>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
 
 
 namespace mtl { 
@@ -70,7 +71,7 @@ namespace mtl {
 	/** Checks index in debug mode. Inverse of from_range. **/
 	size_type to_range(size_type i) const
 	{
-	    MTL_DEBUG_THROW_IF(i < 0 || i >= size(), index_out_of_range());
+	    MTL_DEBUG_THROW_IF(is_negative(i) || i >= size(), index_out_of_range());
 	    return my_start + i;
 	}
 

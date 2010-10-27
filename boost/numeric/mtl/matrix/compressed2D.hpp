@@ -39,9 +39,10 @@
 #include <boost/numeric/mtl/matrix/element_array.hpp> 
 #include <boost/numeric/mtl/vector/dense_vector.hpp> 
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
-#include <boost/numeric/mtl/operation/size.hpp>
 #include <boost/numeric/mtl/operation/num_rows.hpp>
 #include <boost/numeric/mtl/operation/num_cols.hpp>
+#include <boost/numeric/mtl/operation/size.hpp>
+
 
 namespace mtl { namespace matrix {
 
@@ -728,7 +729,7 @@ template <typename Modifier>
 inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type row, size_type col, value_type val)
 {
     using std::copy_backward;
-    MTL_DEBUG_THROW_IF(row < 0 || row >= num_rows(matrix) || col < 0 || col >= num_cols(matrix), index_out_of_range());
+    MTL_DEBUG_THROW_IF(is_negative(row) || row >= num_rows(matrix) || is_negative(col) || col >= num_cols(matrix), index_out_of_range());
 
     Modifier               modifier;  
     compressed2D_indexer   indexer;

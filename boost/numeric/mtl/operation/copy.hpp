@@ -42,7 +42,7 @@ namespace mtl {
 	}
 	
 	template <typename MatrixDest>
-	inline void zero_with_sparse_src(MatrixDest& dest, tag::universe) {} 
+	inline void zero_with_sparse_src(MatrixDest&, tag::universe) {} 
 
 	// Adapt inserter size to operation
 	template <typename Updater> struct copy_inserter_size {};

@@ -30,19 +30,19 @@
 using namespace std;  
 
 template <typename T>
-void dispatch(const T& x, mtl::tag::scalar, const char* name)
+void dispatch(const T&, mtl::tag::scalar, const char* name)
 {
     cout << "dispatch " << name << " to scalar\n";
 }
 
 template <typename T>
-void dispatch(const T& x, mtl::tag::vector, const char* name)
+void dispatch(const T&, mtl::tag::vector, const char* name)
 {
     cout << "dispatch " << name << " to vector\n";
 }
 
 template <typename T>
-void dispatch(const T& x, mtl::tag::matrix, const char* name)
+void dispatch(const T&, mtl::tag::matrix, const char* name)
 { 
     cout << "dispatch " << name << " to matrix\n";
 }
@@ -56,7 +56,7 @@ void test(const T& x, const char* name)
 
 struct none {};
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
     const int size= 5;
