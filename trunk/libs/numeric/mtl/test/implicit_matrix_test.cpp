@@ -78,7 +78,7 @@ void test(string name, const Matrix& A, Value check)
     cout << "3*A is\n" << B << "\n\n";
 }
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     typedef mtl::dense_vector<double> vt;
     typedef mtl::dense_vector<double, mtl::vector::parameters<mtl::row_major> >  vrt;

@@ -28,7 +28,7 @@ namespace traits {
     struct num_cols< std::vector<Value> > 
     {
 	typedef std::size_t   type;
-	type operator()(const std::vector<Value>& v) { return 1; }
+	type operator()(const std::vector<Value>& ) { return 1; }
     };
 
     /// num_cols implementation for (1D) arrays interpreted as vectors

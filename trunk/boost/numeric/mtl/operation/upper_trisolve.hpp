@@ -58,11 +58,11 @@ namespace detail {
 	}
 
 	template <typename Cursor>
-	void row_init(size_type r, Cursor& aic, Cursor&, value_type&, tag::unit_diagonal) {}
+	void row_init(size_type, Cursor&, Cursor&, value_type&, tag::unit_diagonal) {}
 
 	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::regular_diagonal) { res= rr / dia; }
 	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::inverse_diagonal) { res= rr * dia;	}
-	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::unit_diagonal)    { res= rr; }
+	void row_update(value_type& res, value_type& rr, const value_type&    , tag::unit_diagonal)    { res= rr; }
 
 	template <typename Tag> int dia_inc(Tag) { return 0; }
 	int dia_inc(tag::unit_diagonal) { return 1; }
@@ -133,7 +133,7 @@ namespace detail {
 	}
 
 	template <typename Cursor>
-	void col_init(size_type r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::unit_diagonal)
+	void col_init(size_type, Cursor&, Cursor&, value_type& rr, value_type& res, tag::unit_diagonal)
 	{
 	    rr= res;
 	}

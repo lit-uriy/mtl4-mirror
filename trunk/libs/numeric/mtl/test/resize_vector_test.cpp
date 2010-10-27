@@ -21,7 +21,7 @@
 using namespace std;  
  
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     mtl::dense_vector<float>    x;
 

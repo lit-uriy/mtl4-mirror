@@ -65,7 +65,7 @@ string inline is(bool b)
     return b ? string("is a ") : string("is not a ");
 }
 
-int test_main(int argc, char* argv[])
+int test_main(int , char**)
 {
     using namespace mtl; using namespace mtl::traits;
 

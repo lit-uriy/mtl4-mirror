@@ -62,7 +62,7 @@ void test(Vector& v, const char* name)
 }
  
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
     using mtl::vector::parameters;

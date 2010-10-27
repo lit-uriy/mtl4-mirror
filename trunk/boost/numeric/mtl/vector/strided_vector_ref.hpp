@@ -35,6 +35,7 @@
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_cursor.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
 
 
 namespace mtl { namespace vector {
@@ -65,7 +66,7 @@ class strided_vector_ref
     
     void check_index( size_type i ) const
     {
-	MTL_DEBUG_THROW_IF( i < 0 || i >= size(*this), index_out_of_range());
+	MTL_DEBUG_THROW_IF( is_negative(i) || i >= size(*this), index_out_of_range());
     }
 
     void check_dim( size_type s ) const
@@ -173,7 +174,7 @@ inline sub_vector(strided_vector_ref<Value, Parameters>& v,
     typedef strided_vector_ref<Value, Parameters>    Vector;
     typedef typename Vector::size_type               size_type;
 
-    MTL_DEBUG_THROW_IF( start < 0 || finish < 0, index_out_of_range());
+    MTL_DEBUG_THROW_IF( is_negative(start) || is_negative(finish), index_out_of_range());
     finish= min(finish, size(v));
     start= min(start, finish); // implies min(start, size(v))
     return Vector(start <= finish ? finish - start : size_type(0), &v[start], v.stride());

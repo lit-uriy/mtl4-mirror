@@ -32,7 +32,7 @@ mtl::dense2D<ct> inv2 ( const mtl::dense2D<ct> & M )
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     typedef double ct;
     mtl::dense2D<ct> tmp(2, 2);

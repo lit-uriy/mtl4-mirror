@@ -11,9 +11,10 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
+#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
-int main(int argc, char* argv[])
+int test_main(int , char**)
 {
     using namespace std;
     namespace tag= mtl::tag;

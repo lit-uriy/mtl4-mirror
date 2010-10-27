@@ -39,7 +39,7 @@ void test(const char* A_string, const char* v_string, const Matrix& A, const Vec
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int , char**)
 {
     using namespace mtl;
     typedef vector::parameters<tag::col_major, vector::fixed::dimension<2>, true> fvec_para;

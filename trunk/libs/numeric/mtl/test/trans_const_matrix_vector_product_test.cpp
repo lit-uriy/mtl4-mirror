@@ -49,14 +49,14 @@ void test(Matrix& A, const char* name)
     cout << "Type of trans(B)" << typeid(typename mtl::ashape::ashape<mtl::transposed_view<const Matrix> >::type).name() << "\n";
 #endif
 
-    cout << "Type of enable_if_matrix<trans(A)> " << typeid(typename mtl::traits::enable_if_matrix<trans_type>::type).name() << "\n";
+    cout << name <<":\n Type of enable_if_matrix<trans(A)> " << typeid(typename mtl::traits::enable_if_matrix<trans_type>::type).name() << "\n";
     cout << "Type of enable_if_matrix<trans(B)> " << typeid(typename mtl::traits::enable_if_matrix<ctrans_type>::type).name() << "\n";
 
     b= B * x;
     b= trans(B) * x;
 }
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
     dense2D<double>                                      dr;

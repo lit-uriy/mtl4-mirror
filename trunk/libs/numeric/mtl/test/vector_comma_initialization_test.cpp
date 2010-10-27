@@ -64,7 +64,7 @@ void test(Vector& v, const char* name)
 
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     mtl::dense_vector<float>                  v(3);
     mtl::dense_vector<std::complex<float> >   w(3);

@@ -27,7 +27,7 @@ complex<double> f(complex<double>)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
     unsigned size=4, row= size+1, col=size;

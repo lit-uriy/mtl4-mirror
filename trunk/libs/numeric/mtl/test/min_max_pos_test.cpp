@@ -58,7 +58,7 @@ void test(Coll& coll, const char* name, Pos exp_min, Pos exp_max)
 }
  
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
 

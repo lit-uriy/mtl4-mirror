@@ -32,7 +32,7 @@ inline std::complex<double> f(std::complex<double> x)
 
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
 
     typedef mtl::vector::fixed::dimension<5> fsize;

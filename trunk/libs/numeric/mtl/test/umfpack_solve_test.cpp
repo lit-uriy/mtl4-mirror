@@ -23,9 +23,9 @@
 
 using namespace std;  
 
-inline void add_imag(float& v, double inc) {}
-inline void add_imag(double& v, double inc) {}
-inline void add_imag(long double& v, double inc) {}
+inline void add_imag(float&, double) {}
+inline void add_imag(double&, double) {}
+inline void add_imag(long double&, double) {}
 inline void add_imag(complex<float>& v, double inc) { v+= complex<float>(0, inc); }
 inline void add_imag(complex<double>& v, double inc) { v+= complex<double>(0, inc); }
 inline void add_imag(complex<long double>& v, double inc) { v+= complex<double>(0, inc); }
@@ -111,7 +111,7 @@ void test(const Matrix&, const char* name)
 #endif
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
 #ifdef MTL_HAS_UMFPACK
     using namespace mtl;

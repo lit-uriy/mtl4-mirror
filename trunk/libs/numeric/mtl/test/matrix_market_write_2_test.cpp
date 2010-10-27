@@ -29,13 +29,13 @@ void test(Matrix& A, const char* name)
 {
     typedef typename mtl::Collection<Matrix>::value_type vt;
     laplacian_setup(A, 3, 4);
-    cout << "A is\n" << A;
+    cout << name << ":\n A is\n" << A;
     mtl::io::matrix_market_ostream oms(mtl::io::join(program_dir, "matrix_market/laplace_3x4.mtx"));
     oms << A;
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char* argv[])
 {
     using namespace mtl;
 

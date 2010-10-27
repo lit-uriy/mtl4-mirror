@@ -18,7 +18,7 @@
 using namespace std;
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     typedef mtl::dense2D<double> Matrix;
 

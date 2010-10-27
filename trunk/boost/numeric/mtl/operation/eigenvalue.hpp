@@ -115,6 +115,7 @@ inline eigenvalue_symmetric(const Matrix& A,
 # ifdef MTL_SYMMETRIC_EIGENVALUE_WITH_QR
     return qr_algo(A, itMax == 0 ? num_rows(A) : itMax);
 # else
+    itMax= 0;
     return qr_sym_imp(A);
 # endif
 }

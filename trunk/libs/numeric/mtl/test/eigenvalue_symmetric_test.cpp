@@ -22,7 +22,7 @@ double f(double) { cout << "double\n"; return 1.0; }
 complex<double> f(complex<double>) { cout << "complex\n"; return
 complex<double>(1.0, -1.0); }
 
-int test_main(int argc, char* argv[])
+int test_main(int , char**)
 {
     using namespace mtl;
 

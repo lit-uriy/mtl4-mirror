@@ -38,7 +38,7 @@ struct as<mtl::dense2D<V> >
 	typedef mtl::ashape::mat<typename as<V>::type>   type;
 };
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace std;
 

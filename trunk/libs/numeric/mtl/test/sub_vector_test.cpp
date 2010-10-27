@@ -80,7 +80,7 @@ void test(Vector& v, const char* name)
 
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     mtl::dense_vector<float>                                                 cf(sz, 1.0);
     mtl::dense_vector<double>                                                cd(sz, 1.0);

@@ -78,7 +78,7 @@ void inline failure_test(Matrix& A)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char* argv[])
 {
     using namespace mtl;
 

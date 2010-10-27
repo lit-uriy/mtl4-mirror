@@ -47,7 +47,7 @@ void test(Vector& v, const char* name)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     mtl::dense_vector<int>   mv(3, 3);
     std::vector<int>         sv(3, 3);
