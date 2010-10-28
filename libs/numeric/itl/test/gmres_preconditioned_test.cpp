@@ -62,7 +62,7 @@ void test(char const* name, char const* comment, Matrix const& A, Vector& x, Vec
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     const int N = 2;
     typedef mtl::compressed2D<double> matrix_type;

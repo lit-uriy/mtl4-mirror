@@ -43,7 +43,7 @@ void modify(Matrix& m)
     // Destructor of ins sets final state of m
 }
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
     // Matrices of different types
     compressed2D<double>              A(3, 3);

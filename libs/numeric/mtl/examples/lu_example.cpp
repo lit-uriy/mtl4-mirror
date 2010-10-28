@@ -2,7 +2,7 @@
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     typedef mtl::dense2D<double>       Matrix;
     typedef mtl::dense_vector<double>  Vector;

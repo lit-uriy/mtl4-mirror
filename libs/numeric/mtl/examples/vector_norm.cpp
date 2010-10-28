@@ -3,7 +3,7 @@
 #include <iostream>
 #include <boost/numeric/mtl/mtl.hpp>
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
     using namespace mtl;
 

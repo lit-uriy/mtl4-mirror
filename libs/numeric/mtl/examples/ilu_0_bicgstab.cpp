@@ -5,7 +5,7 @@
 using namespace mtl;
 using namespace itl;
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
     const int size = 40, N = size * size; 
     typedef compressed2D<double>  matrix_type;

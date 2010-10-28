@@ -33,7 +33,7 @@ template < typename LinearOperator, typename Vector,
 	   typename LeftPreconditioner, typename RightPreconditioner, 
 	   typename Iteration >
 int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
-	  const LeftPreconditioner &L, const RightPreconditioner &R, 
+	  const LeftPreconditioner &, const RightPreconditioner &, 
 	  Iteration& iter, size_t s)
 {
     using mtl::iall; using mtl::matrix::strict_upper;

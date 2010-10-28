@@ -4,7 +4,7 @@
 #include <cmath>
 #include <boost/numeric/mtl/mtl.hpp>
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
     using mtl::max;
 

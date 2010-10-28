@@ -44,7 +44,7 @@ void test1(Matrix& m, double tau)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
 
 

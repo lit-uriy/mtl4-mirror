@@ -54,7 +54,7 @@ void test1(Matrix& m, double tau)
   }
 }
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
   const int N = 100; // Original from Jan had 2000 
   const int Niter = 3*N;
