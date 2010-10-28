@@ -13,7 +13,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
-#include <string.h>
+#include <string>
 
 #include <boost/numeric/mtl/mtl.hpp> 
 
@@ -142,9 +142,9 @@ void solve(const char* file_name)
 
 int main(int argc, char* argv[])
 {
-
+    
     // This is an ugly test to be removed
-    if (strlen(argv[0]) > strlen("solve_sudoku_test")+4) {
+    if (std::string(argv[0]).size() > std::string("solve_sudoku").size()+4) {
 	std::cerr << "For simplicity this test works only in the test directory\n"
 		  << "Please cd there and rerun the test.";
 	return 0;
