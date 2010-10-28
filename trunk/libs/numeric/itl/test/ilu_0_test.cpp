@@ -53,7 +53,7 @@ void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
 }
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     // For a more realistic example set sz to 1000 or larger
     const int N = 3;

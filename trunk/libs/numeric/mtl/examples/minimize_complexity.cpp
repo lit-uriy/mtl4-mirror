@@ -34,7 +34,7 @@ void f(Matrix& m)
 }
 
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
     // Define a CRS matrix
     compressed2D<double>                                  A(3, 3);

@@ -4,7 +4,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
     using namespace mtl; using std::cout;
 

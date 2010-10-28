@@ -23,7 +23,7 @@ double f(const Matrix& A)
 }
 
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
     dense2D<double>     A(3, 3);
     A= 4.0;

@@ -36,7 +36,7 @@
     }
     
  
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     // For a more realistic example set size to 1000 or larger
     const int size = 4, N = size * size;

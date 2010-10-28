@@ -24,7 +24,7 @@ namespace itl {
 template < typename LinearOperator, typename Vector, 
 	   typename Preconditioner, typename Iteration >
 int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
-	       const Preconditioner &M, Iteration& iter)
+	       const Preconditioner &, Iteration& iter)
 {
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     const Scalar zero= math::zero(Scalar()), one= math::one(Scalar());

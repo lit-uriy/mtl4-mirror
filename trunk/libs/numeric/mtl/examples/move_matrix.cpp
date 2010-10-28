@@ -16,7 +16,7 @@ Matrix f(const Matrix&)
 }
 
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
     dense2D<double>     A(3, 3), B(3, 3);
     dense2D<float>      C(3, 3);

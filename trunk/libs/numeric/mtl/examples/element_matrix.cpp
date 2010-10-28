@@ -47,7 +47,7 @@ void fill(Matrix& m)
     ins << element_matrix(m2, v1, v2);
 }
 
-int main(int argc, char* argv[])
+int main(int, char**)
 {
     // Matrices of different types
     compressed2D<double>              A(5, 5);
