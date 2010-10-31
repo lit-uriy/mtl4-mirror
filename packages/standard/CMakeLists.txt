@@ -50,11 +50,12 @@ endforeach(curFile IN LISTS ALL_HPPS_LIST)
 configure_file(preinst.in preinst @ONLY)
 configure_file(postrm.in postrm @ONLY)
 
+SET(PACKAGE_TITLE "Matrix Template Library 4")
+SET(PACKAGE_DESCRIPTION "MTL4 is a generic C++ library for linear algebra including advanced Krylov sub-space solvers. This package contains all headers of the MTL. The headers are installed in /usr/includes/boost. For some more information consult the README in /usr/share/mtl/ or read http://www.simunova.com/en/node/144")
 SET(CPACK_PACKAGE_NAME "MTL")
 SET(CPACK_PACKAGE_VENDOR "Peter Gottschling & Andrew Lumsdaine")
 SET(CPACK_PACKAGE_VERSION "4.0.${CurrentRevision}")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Matrix Template Library 4")
-SET(CPACK_PACKAGE_DESCRIPTION "MTL4 is a generic C++ library for linear algebra including advanced Krylov sub-space solvers. This package contains all headers of the MTL. The headers are installed in /usr/includes/boost. For some more information consult the README in /usr/share/mtl/ or read http://www.simunova.com/en/node/144")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_TITLE} header files")
 SET(CPACK_PACKAGE_CONTACT "mtl@osl.iu.edu")
 SET(CPACK_RESOURCE_FILE_LICENSE "../../license.mtl.txt") #-> to usr/share/mtl/
 SET(CPACK_RESOURCE_FILE_README "../../README") #-> to usr/share/mtl
@@ -62,16 +63,17 @@ SET(CPACK_PACKAGING_INSTALL_PREFIX "/usr/")
 
 SET(CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/postrm")
 SET(CPACK_RPM_PACKAGE_ARCHITECTURE "noarch")
-SET(CPACK_RPM_PACKAGE_DESCRIPTION ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
+#DONT use empty lines. everything after an empty line is not displayed
+SET(CPACK_RPM_PACKAGE_DESCRIPTION "${PACKAGE_DESCRIPTION}")
 #TODO: rpm-boost dependence
 SET(CPACK_RPM_PACKAGE_REQUIRES "boost-devel >= 1.36")
 
 #the debian way..
 SET(CPACK_GENERATOR "DEB" "RPM" "TGZ" "TBZ2")
-SET(CPACK_BINARY_DEB true)
 SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "all")
 SET(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/preinst" "${CMAKE_CURRENT_SOURCE_DIR}/postrm")
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-dev (>= 1.36)")
+SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "${PACKAGE_TITLE}\n ${PACKAGE_DESCRIPTION}")
 #SET(CPACK_DEBIAN_PACKAGE_CONFLICTS "pmtl")
 INCLUDE(CPack)
 #################################################################################

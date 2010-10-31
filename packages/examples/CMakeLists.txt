@@ -31,10 +31,12 @@ add_custom_target(documentation ALL ./create_doc.sh)
 INSTALL(FILES documentation.tar.gz 
 	DESTINATION .
        )
+SET(PACKAGE_TITLE "Matrix Template Library 4 - examples")
+SET(PACKAGE_DESCRIPTION "This package contains examples and the documentation for the MTL. They are stored in /usr/share/mtl/examples. You can simply check the examples by copying the directory /usr/share/mtl/examples. If you are familiar with cmake, you can use the file CMakeLists.txt from the same directory.")
 SET(CPACK_PACKAGE_NAME "MTL-examples")
 SET(CPACK_PACKAGE_VENDOR "Peter Gottschling & Andrew Lumsdaine")
 SET(CPACK_PACKAGE_VERSION "4.0.${CurrentRevision}")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "This package contains examples and the documentation for the MTL. They are stored in /usr/share/mtl. You can simply check the examples by copying the directory /usr/share/mtl/examples ")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_TITLE}")
 SET(CPACK_PACKAGE_CONTACT "mtl@osl.iu.edu")
 SET(CPACK_RESOURCE_FILE_LICENSE "../../license.mtl.txt")
 SET(CPACK_RESOURCE_FILE_README "../../README")
@@ -42,7 +44,7 @@ SET(CPACK_PACKAGING_INSTALL_PREFIX "/usr/share/mtl/")
 
 SET(CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/postrm")
 SET(CPACK_RPM_PACKAGE_ARCHITECTURE "noarch")
-SET(CPACK_RPM_PACKAGE_DESCRIPTION ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
+SET(CPACK_RPM_PACKAGE_DESCRIPTION "${PACKAGE_DESCRIPTION}")
 SET(CPACK_RPM_PACKAGE_REQUIRES "mtl")
 
 #the debian way..
@@ -50,4 +52,6 @@ SET(CPACK_GENERATOR "DEB" "RPM" "TGZ" "TBZ2")
 SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "all")
 SET(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/preinst" "${CMAKE_CURRENT_SOURCE_DIR}/postinst" "${CMAKE_CURRENT_SOURCE_DIR}/postrm")
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "mtl")
+#DONT use empty lines. everything after an empty line is not displayed
+SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "${PACKAGE_TITLE}\n ${PACKAGE_DESCRIPTION}")
 INCLUDE(CPack)

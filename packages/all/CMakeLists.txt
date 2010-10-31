@@ -11,17 +11,19 @@ else(Subversion_FOUND)
 	set(CurrentRevision "0")
 endif(Subversion_FOUND)
 
+SET(PACKAGE_TITLE "Matrix Template Library 4 - all")
+SET(PACKAGE_DESCRIPTION "This is only a dummy package, which depends on MTL, MTL-examples and MTL-tests")
 SET(CPACK_PACKAGE_NAME "MTL-all")
 SET(CPACK_PACKAGE_VENDOR "Peter Gottschling & Andrew Lumsdaine")
 SET(CPACK_PACKAGE_VERSION "4.0.${CurrentRevision}")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "This package contains all headers of the MTL. The headers are installed in /usr/includes/boost. For some more information consult the README in /usr/share/mtl/")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_TITLE}")
 SET(CPACK_PACKAGE_CONTACT "mtl@osl.iu.edu")
 SET(CPACK_RESOURCE_FILE_LICENSE "../../license.mtl.txt") #-> to usr/share/mtl/
 SET(CPACK_RESOURCE_FILE_README "../../README") #-> to usr/share/mtl
 SET(CPACK_PACKAGING_INSTALL_PREFIX "/usr/")
 
 SET(CPACK_RPM_PACKAGE_ARCHITECTURE "noarch")
-SET(CPACK_RPM_PACKAGE_DESCRIPTION ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
+SET(CPACK_RPM_PACKAGE_DESCRIPTION "${PACKAGE_DESCRIPTION}")
 #TODO: rpm-boost dependence
 SET(CPACK_RPM_PACKAGE_REQUIRES "mtl, mtl-examples, mtl-tests")
 
@@ -29,5 +31,7 @@ SET(CPACK_RPM_PACKAGE_REQUIRES "mtl, mtl-examples, mtl-tests")
 SET(CPACK_GENERATOR "DEB" "RPM" "TGZ" "TBZ2")
 SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "all")
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "mtl, mtl-examples, mtl-tests")
+#DONT use empty lines. everything after an empty line is not displayed
+SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "${PACKAGE_TITLE}\n ${PACKAGE_DESCRIPTION}")
 #SET(CPACK_DEBIAN_PACKAGE_CONFLICTS "pmtl")
 INCLUDE(CPack)

@@ -1,3 +1,4 @@
+./cleanAll.sh
 cd standard
 rm -rf CMakeCache.txt
 cmake .
