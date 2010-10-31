@@ -31,10 +31,12 @@ INSTALL(DIRECTORY ../../libs/numeric/mtl/test
 	PATTERN "README"
        )	
 
+SET(PACKAGE_TITLE "Matrix Template Library - tests")
+SET(PACKAGE_DESCRIPTION "This package contains the MTL tests. They are stored in /usr/share/mtl/tests. You can simply check the tests by copying the directory /usr/share/mtl/tests. If you are familiar with cmake, you can use the file CMakeLists.txt from the same directory.")
 SET(CPACK_PACKAGE_NAME "MTL-tests")
 SET(CPACK_PACKAGE_VENDOR "Peter Gottschling & Andrew Lumsdaine")
 SET(CPACK_PACKAGE_VERSION "4.0.${CurrentRevision}")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "This package contains the MTL tests.")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_TITLE}")
 SET(CPACK_PACKAGE_CONTACT "mtl@osl.iu.edu")
 SET(CPACK_RESOURCE_FILE_LICENSE "../../license.mtl.txt")
 SET(CPACK_RESOURCE_FILE_README "../../README")
@@ -42,7 +44,7 @@ SET(CPACK_PACKAGING_INSTALL_PREFIX "/usr/share/mtl")
 
 SET(CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/postrm")
 SET(CPACK_RPM_PACKAGE_ARCHITECTURE "noarch")
-SET(CPACK_RPM_PACKAGE_DESCRIPTION ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
+SET(CPACK_RPM_PACKAGE_DESCRIPTION "${PACKAGE_DESCRIPTION}")
 SET(CPACK_RPM_PACKAGE_REQUIRES "mtl")
 
 #the debian way..
@@ -51,5 +53,7 @@ SET(CPACK_BINARY_DEB TRUE)
 SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "all")
 SET(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/preinst" "${CMAKE_CURRENT_SOURCE_DIR}/postrm")
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "mtl")
+#DONT use empty lines. everything after an empty line is not displayed
+SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "${PACKAGE_TITLE}\n ${PACKAGE_DESCRIPTION}")
 #SET(CPACK_DEBIAN_PACKAGE_CONFLICTS "pmtl")
 INCLUDE(CPack)
