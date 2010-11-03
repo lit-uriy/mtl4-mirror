@@ -38,7 +38,7 @@ inline f(Vector& x)
 
 template <typename Vector>
 typename mtl::Collection<Vector>::value_type 
-armijo(Vector& x, Vector& d)
+armijo(Vector& x, Vector& d) // f, grad
 {
     typedef typename mtl::Collection<Vector>::value_type value_type;
     value_type delta= 0.5, gamma= 0.5, beta1= 0.25, beta2= 0.5;  //feste Werte
@@ -70,7 +70,7 @@ void bfgs(Matrix& H, const Vector& y, const Vector& s)
 }
  
 template <typename Vector>
-Vector quasi_newton(Vector& x, double tol)
+Vector quasi_newton(Vector& x, double tol) // grad, step, update
 {    
     typedef typename mtl::Collection<Vector>::value_type value_type;
     Vector d_k, y_k, x_k, s_k;
