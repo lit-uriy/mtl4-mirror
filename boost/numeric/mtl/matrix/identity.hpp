@@ -37,11 +37,24 @@ inline identity(std::size_t nrows, std::size_t ncols)
     return I;
 }
 
+template <typename Value>
+typename traits::identity<Value>::type
+inline identity(std::size_t nrows)
+{
+    return identity<Value>(nrows, nrows);
+}
+
 
 traits::identity<double>::type
 inline identity(std::size_t nrows, std::size_t ncols)
 {
     return identity<double>(nrows, ncols);
+}
+
+traits::identity<double>::type
+inline identity(std::size_t nrows)
+{
+    return identity<double>(nrows, nrows);
 }
 
 }} // namespace mtl::matrix
