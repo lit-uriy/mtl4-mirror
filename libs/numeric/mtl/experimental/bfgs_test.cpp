@@ -29,14 +29,12 @@ Vector inline grad_f(Vector& x)
    return tmp;
 }
 
-
 template <typename Vector>
 typename mtl::Collection<Vector>::value_type 
 inline f(Vector& x)
 {
   return x[0]*x[0] + 2*x[1]*x[1] + 2*x[2]*x[2];
 }
-
 
 template <typename Vector>
 typename mtl::Collection<Vector>::value_type 
@@ -58,8 +56,6 @@ armijo(Vector& x, Vector& d)
     return alpha;
 } 
 
-
-
 template <typename Matrix, typename Vector>
 void bfgs(Matrix& H, const Vector& y, const Vector& s)
 {
@@ -73,7 +69,6 @@ void bfgs(Matrix& H, const Vector& y, const Vector& s)
     swap(H2, H);
 }
  
-
 template <typename Vector>
 Vector quasi_newton(Vector& x, double tol)
 {    
@@ -92,8 +87,6 @@ Vector quasi_newton(Vector& x, double tol)
     }
     return x;
 }
-
-
 
 int test_main(int, char**)
 {
