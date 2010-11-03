@@ -21,7 +21,7 @@ cd all/
 rm -rf CMakeCache.txt
 cmake .
 make package
-./createArchive.sh
+sh -x ./createArchive.sh
 cd ..
 
 ./createDebRepo.sh

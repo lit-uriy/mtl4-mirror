@@ -127,6 +127,10 @@ include(CTest)
 add_subdirectory("libs/numeric/mtl/test")
 # as well as the example programs
 add_subdirectory("libs/numeric/mtl/examples")
+# Experimental and timing are not compiled by default
+add_subdirectory("libs/numeric/mtl/experimental" EXCLUDE_FROM_ALL)
+add_subdirectory("libs/numeric/mtl/timing" EXCLUDE_FROM_ALL)
+
 # ITL test programs
 add_subdirectory("libs/numeric/itl/test")
 
