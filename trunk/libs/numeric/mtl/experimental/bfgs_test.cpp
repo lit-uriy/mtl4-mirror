@@ -20,7 +20,7 @@
 using namespace std;  
    
 template <typename Vector>
-Vector grad_f(Vector& x)
+Vector inline grad_f(Vector& x)
 {    
    Vector tmp(size(x));
    tmp[0]= 2 * x[0];
@@ -30,71 +30,67 @@ Vector grad_f(Vector& x)
 }
 
 
-template <typename value_type>
-value_type f(mtl::dense_vector<value_type>& x)
+template <typename Vector>
+typename mtl::Collection<Vector>::value_type 
+inline f(Vector& x)
 {
   return x[0]*x[0] + 2*x[1]*x[1] + 2*x[2]*x[2];
 }
 
-template <typename value_type>
-value_type armijo(mtl::dense_vector<value_type>& x, mtl::dense_vector<value_type>& d)
+
+template <typename Vector>
+typename mtl::Collection<Vector>::value_type 
+armijo(Vector& x, Vector& d)
 {
+    typedef typename mtl::Collection<Vector>::value_type value_type;
     value_type delta= 0.5, gamma= 0.5, beta1= 0.25, beta2= 0.5;  //feste Werte
 
     //Star_Schrittweite
     value_type alpha= -gamma * dot(grad_f(x), d) / dot(d, d);
-    mtl::dense_vector<value_type> tmp(x + alpha * d);
+    mtl::dense_vector<value_type> x_k(x + alpha * d);
 
-    while (f(tmp) > f(x) + (beta1 * alpha) * dot(grad_f(x), d) 
-	   && dot(grad_f(tmp), d) < beta2 * dot(grad_f(x), d)) {	
+    while (f(x_k) > f(x) + (beta1 * alpha) * dot(grad_f(x), d) 
+	   && dot(grad_f(x_k), d) < beta2 * dot(grad_f(x), d)) {	
 	alpha*= (beta1 + beta2) / 2;
-	tmp= x+ alpha * d;
+	x_k= x+ alpha * d;
 	std::cout<< "alpha_a=" << alpha << "\n";
     }
     return alpha;
 } 
 
+
+
 template <typename Matrix, typename Vector>
-Matrix bfgs(Matrix& H_old, Vector& y, Vector& s)
+void bfgs(Matrix& H, const Vector& y, const Vector& s)
 {
-  double gamma= 1/dot(y,s);
-  int r= num_rows(H_old), c= num_cols(H_old);
-  Matrix H(r,c), I(r,c), I2(r,c);
-  H= 0; I= 1; I2= 1; 
-  y*=-1*gamma;
-  rank_one_update(I, s, y); rank_one_update(I2, y, s);
-  rank_one_update(H, s, s);
-  H*= gamma;
-  H+= I * H_old * I2;
-  return H;
+    typedef typename mtl::Collection<Vector>::value_type value_type;
+    assert(num_rows(H) == num_cols(H));
+
+    value_type gamma= 1 / dot(y,s);
+    Matrix     I(mtl::matrix::identity<value_type>(num_rows(H))), 
+               T(I - gamma * y * trans(s)),
+	       H2(trans(T) * H * T + gamma * s * trans(s));
+    swap(H2, H);
 }
  
 
 template <typename Vector>
 Vector quasi_newton(Vector& x, double tol)
 {    
-   Vector d_k, y_k, x_k, s_k;
-   mtl::dense2D<double>  H(size(x),size(x));
-   H= 1;   //H0 ist Einheitsmatrix
+    typedef typename mtl::Collection<Vector>::value_type value_type;
+    Vector d_k, y_k, x_k, s_k;
+    mtl::dense2D<value_type>  H(mtl::matrix::identity<value_type>(size(x))); //H0 ist Einheitsmatrix
    
-   //while (two_norm(grad_f(x)) > tol) {
-   for(int i = 0; i < 5; i++){
-    // std::cout<< "grad_f = " << two_norm(grad_f(x)) << "\n";
-     d_k= -1*H*grad_f(x);
-     std::cout<< "d_k = " << d_k << "\n";
-     double alpha= armijo(x, d_k);
-     std::cout<< "alpha = " << alpha << "\n";
-     x_k= x + alpha * d_k;
-     s_k= alpha*d_k;
-     y_k= grad_f(x_k) - grad_f(x);
-     H= bfgs(H, y_k, s_k);
-     std::cout<< "H = \n" << H << "\n";
-     x= x_k;
-     std::cout<< "x = " << x << "\n";
-     std::cout<< "two_norm(grad_f(x)) = ____________________" << two_norm(grad_f(x)) << "\n";
-     std::cout<< "f(x)=" << f(x) << "\n";
-   }
-   return x;
+    while (two_norm(grad_f(x)) > tol) {
+	d_k= H * -grad_f(x);                                //   std::cout<< "d_k = " << d_k << "\n";
+	value_type alpha= armijo(x, d_k);                   //   std::cout<< "alpha = " << alpha << "\n";
+	x_k= x + alpha * d_k;
+	s_k= alpha * d_k;
+	y_k= grad_f(x_k) - grad_f(x);
+	bfgs(H, y_k, s_k);                                  //   std::cout<< "H = \n" << H << "\n";
+	x= x_k;
+    }
+    return x;
 }
 
 
