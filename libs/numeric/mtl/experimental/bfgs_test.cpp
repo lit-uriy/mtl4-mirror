@@ -23,9 +23,9 @@ template <typename Vector>
 Vector grad_f(Vector& x)
 {    
    Vector tmp(size(x));
-   tmp[0]=2*x[0];
-   tmp[1]=4*x[1];
-   tmp[2]=4*x[2];
+   tmp[0]= 2 * x[0];
+   tmp[1]= 4 * x[1];
+   tmp[2]= 4 * x[2];
    return tmp;
 }
 
@@ -39,19 +39,20 @@ value_type f(mtl::dense_vector<value_type>& x)
 template <typename value_type>
 value_type armijo(mtl::dense_vector<value_type>& x, mtl::dense_vector<value_type>& d)
 {
-  value_type delta= 0.5, gamma= 0.5, beta1= 0.25, beta2= 0.5;  //feste Werte
-  //Star_Schrittweite
-  value_type alpha= -gamma*dot(grad_f(x), d)/dot(d, d);
-  mtl::dense_vector<value_type> tmp(size(x));
-  tmp= x+alpha*d;
-  while ( (f(tmp) > (f(x) + beta1*alpha*dot(grad_f(x), d))) && (dot(grad_f(tmp),d) < beta2*dot(grad_f(x), d)) ) 
-  {
-    alpha= (beta1*alpha);//+beta2*alpha)/2;
-    tmp= x+alpha*d;
-    std::cout<< "alpha_a=" << alpha << "\n";
-  }
-  return alpha;
-}
+    value_type delta= 0.5, gamma= 0.5, beta1= 0.25, beta2= 0.5;  //feste Werte
+
+    //Star_Schrittweite
+    value_type alpha= -gamma * dot(grad_f(x), d) / dot(d, d);
+    mtl::dense_vector<value_type> tmp(x + alpha * d);
+
+    while (f(tmp) > f(x) + (beta1 * alpha) * dot(grad_f(x), d) 
+	   && dot(grad_f(tmp), d) < beta2 * dot(grad_f(x), d)) {	
+	alpha*= (beta1 + beta2) / 2;
+	tmp= x+ alpha * d;
+	std::cout<< "alpha_a=" << alpha << "\n";
+    }
+    return alpha;
+} 
 
 template <typename Matrix, typename Vector>
 Matrix bfgs(Matrix& H_old, Vector& y, Vector& s)
@@ -76,8 +77,8 @@ Vector quasi_newton(Vector& x, double tol)
    mtl::dense2D<double>  H(size(x),size(x));
    H= 1;   //H0 ist Einheitsmatrix
    
-   while (two_norm(grad_f(x)) > tol) {
-  // for(int i = 0; i < 5; i++){
+   //while (two_norm(grad_f(x)) > tol) {
+   for(int i = 0; i < 5; i++){
     // std::cout<< "grad_f = " << two_norm(grad_f(x)) << "\n";
      d_k= -1*H*grad_f(x);
      std::cout<< "d_k = " << d_k << "\n";
