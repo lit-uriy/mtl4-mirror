@@ -55,6 +55,7 @@ But it should give you enough information to get started.
 - \subpage IDE
 - \subpage tutorial  
 - \subpage overview_ops  
+- \subpage faq
 
 
 
@@ -654,6 +655,7 @@ This, of course, does not exclude backward-compatible extensions.
 -# Performance
    -# \subpage performance_athlon
 -# \ref overview_ops
+-# \ref faq
 
 */
 
@@ -1055,6 +1057,42 @@ However, dense inserters can be also very useful in the future for extending the
 library to parallel computations.
 Then the inserter can be used to write values into remote %matrix elements.
 
+\section destroy_inserter INSERTERS MUST BE DESTROYED
+
+A mistake that many people did with inserters was using the matrix before the inserter
+was destroyed, e.g.:
+\code
+using namespace mtl;
+typedef compressed2D<double> matrix_type;
+
+matrix_type A(5, 5);
+matrix::inserter<matrix_type> ins(A);
+ins[0][0] << 7.3; // .... more insertions
+
+do_something_with(A);  // TROUBLE!!!
+\endcode
+Then the matrix A is not ready and an exception is thrown (or an assertion fails depending on
+compile flags).
+
+The issue was apparently not sufficiently discussed in the tutorial and 
+we have to blamed not the users for doing this wrong.
+
+
+The insertion problem is circumvented by defining the inserter in a separate function
+as we did in the \ref element_insertion "previous section".
+If we accessed the matrix within the fill-in function 
+we would experience the same problem.
+
+If no separate function shall be defined for brevity, one can define the
+inserter in an extra block.
+The following program implements the function "fill" of the example insert.cpp
+with a compressed matrix:
+
+\include insert_scope.cpp
+
+Alternatively, one can handle the insertion destruction explicitly with pointer
+as will be explained \ref multiple_insertion "later".
+
 \section block_insertion Block-wise Insertion
 
 A more powerful method to fill sparse (and dense) matrices provide the two functions
@@ -1082,6 +1120,45 @@ number of rows/columns of the element %matrix.
 
 The %vector type must provide a member function size and a bracket operator.
 Thus, mtl::dense_vector and std::vector can used (are models).
+
+\section multiple_insertion Insertion in Multiple Function calls
+
+If a matrix is set up by means of multiple function calls as it happens often
+in finite element assembly.
+Say we have a class world_matrix that contains a compressed matrix which is
+set by calling add_entry several times.
+We can define an inserter in the function add_entry and the inserter will be
+destroyed after leaving the function:
+
+\include insert_class_expensive.cpp
+
+This works correctly but it is horribly slow because every value inserted need the 
+creation of an inserter which is extremely expensive.
+
+Defining an inserter as member of the class does not work at all because
+the inserter will live as long as the containing object and the matrix
+cannot be accessed during its life time.
+
+The solution is to define a <b>pointer to an inserter as member</b>.
+The pointer lives as long as the object and the life time of the referred inserter
+can be controlled manually with new and delete.
+This said, we need a function that allocates the pointer that must be called
+before starting the insertion.
+Accordingly, a function is required that deallocates the pointer so that
+the inserter is destroyed.
+This function must be called after terminating the insertion phase and before
+accessing the matrix:
+
+\include insert_class.cpp
+
+Note that "ins" must be dereferred in add_entry.
+We find this approach more error-prone than defining the inserter in an
+extra scope but im some situations this is the only feasible way.
+
+This approach is used in several software projects such as
+<a href="http://www.simunova.com/node/17" target="new">AMDiS</a>
+and
+<a href="http://www.fenicsproject.org/" target="new">FEniCS</a>.
 
 \section init_from_array Initializing Matrices with Arrays
 
@@ -4808,6 +4885,66 @@ dense2D<cdouble> B= A[row][col];
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------
+
+// xxxxxxxxxxxxx
+
+
+/*! \page faq Frequently Asked Questions
+
+
+-# \ref faq_not_inserting
+
+
+\section faq_not_inserting I always get the error "Assertion failed: !(inserting)" or an exception of type "access_during_insertion" is thrown.
+
+This is the single-most often occurring error people experience when starting with MTL4.
+
+The problem is that certain objects cannot be accessed during insertion, in particular
+sparse and distributed matrices.
+
+The following program fragment is wrong:
+\code
+using namespace mtl;
+typedef compressed2D<double> matrix_type;
+
+matrix_type A(5, 5);
+matrix::inserter<matrix_type> ins(A);
+ins[0][0] << 7.3; // .... more insertions
+
+do_something_with(A);  // TROUBLE!!!
+\endcode
+In this code, A is used before it is ready.
+
+The insertion is only finished when the inserter is destroyed.
+This can be achieved in two ways:
+- Defining it in an extra scope; and
+- Allocating it dynamically and deleting the pointer (like \ref multiple_insertion "this").
+
+An extra scope is implicitly used when the insertion is performed in a separate function,
+as done \ref element_insertion "here".
+
+The easiest way to destroy the inserter is to enclose the insertion in braces:
+\code
+using namespace mtl;
+typedef compressed2D<double> matrix_type;
+
+matrix_type A(5, 5);
+{
+    matrix::inserter<matrix_type> ins(A);
+    ins[0][0] << 7.3; 
+}                      // ins is destroyed here
+do_something_with(A);  // and A is ready to use
+\endcode
+For more information read \ref destroy_inserter "this".
+
+
+
+
 
 
 */
