@@ -4898,6 +4898,9 @@ dense2D<cdouble> B= A[row][col];
 
 
 -# \ref faq_not_inserting
+-# \ref mtl4_part_of_boost
+-# \ref mtl4_in_linux_distributions
+-# \ref traits_error
 
 
 \section faq_not_inserting I always get the error "Assertion failed: !(inserting)" or an exception of type "access_during_insertion" is thrown.
@@ -4942,10 +4945,30 @@ do_something_with(A);  // and A is ready to use
 \endcode
 For more information read \ref destroy_inserter "this".
 
+\section mtl4_part_of_boost Is MTL4 part of boost?
 
+No. But it has the same directory structure as boost with the intention
+of easier inclusion.
+Probably, we will apply for a boost revision with the open source edition some day.
 
+\section mtl4_in_linux_distributions Are there plans to become part of Linux distributions
 
+Yes. This is planned for the open source edition.
 
+\section traits_error "xyz" is not defined namespace mtl::matrix::traits
+
+This should not happen and we hope that we already eradicated this error. 
+In fact, there were no problems reported recently.
+
+The trouble comes from the fact that there are namespaces traits in mtl as well
+as in mtl::matrix.
+Within namespace mtl::matrix, the name traits::xyz is searched in mtl::matrix::traits
+not in mtl::traits.
+
+The quick solution is to replace traits::xyz by mtl::traits::xyz to nominate the namespace
+explicitly.
+
+The best solution is to send us (mtl4@osl.iu.edu) a bug report and we will fix it for everybody.
 
 */
 

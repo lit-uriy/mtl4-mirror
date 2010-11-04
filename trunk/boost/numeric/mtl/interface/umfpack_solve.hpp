@@ -82,8 +82,23 @@ namespace mtl { namespace matrix {
 
 	/// Class for repeated Umfpack solutions
 	/** Keeps symbolic and numeric preprocessing. Numeric part can be updated. 
-	    Only defined for compressed matrices. **/
-	template <typename T> class solver {};
+	    Only defined for compressed2D<double> and compressed2D<complex<double> >. **/
+	template <typename T> 
+	class solver {
+	  public:
+	    /// Constructor refers to matrix \p A; matrix is not altered.
+	    explicit solver(const T& A) {}
+
+	    /// Update numeric part, for matrices that kept the sparsity and changed the values
+	    void update_numeric() {}
+
+	    /// Update symbolic and numeric part
+	    void update() {}
+
+	    /// Solve system A*x == b with matrix passed in constructor
+	    template <typename VectorX, typename VectorB>
+	    int operator()(VectorX& x, const VectorB& b) {}
+	};
 
 	template <typename Parameters>
 	class solver<compressed2D<double, Parameters> >
@@ -406,7 +421,12 @@ namespace mtl { namespace matrix {
 	};
     } // umfpack
 
-
+/// Solve A*x == b with umfpack
+/** Only available when compiled with enabled macro MTL_HAS_UMFPACK.
+    Uses classes umfpack::solver internally.
+    If you want more control on single operations or to keep umfpack's
+    internal factorization, use this class.
+ **/
 template <typename Value, typename Parameters, typename VectorX, typename VectorB>
 int umfpack_solve(const compressed2D<Value, Parameters>& A, VectorX& x, const VectorB& b)
 {
