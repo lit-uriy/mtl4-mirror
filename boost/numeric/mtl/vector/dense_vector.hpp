@@ -40,6 +40,7 @@
 
 namespace mtl { namespace vector {
 
+/// Dense vector
 template <class Value, typename Parameters = parameters<> >
 class dense_vector
   : public vec_expr<dense_vector<Value, Parameters> >,
@@ -63,21 +64,28 @@ class dense_vector
 
     typedef const_pointer     key_type;
     
+    /// Check whether index is non-negative and less than size
     void check_index( size_type i ) const
     {
 	MTL_DEBUG_THROW_IF( is_negative(i) ||  i >= size(*this), index_out_of_range());
     }
 
+    /// Check for a given vector if the sizes are equal or this has size 0 (and can take the size of source)
     void check_dim( size_type s ) const
     {
 	MTL_DEBUG_THROW_IF( size(*this) != 0 && size(*this) != s, incompatible_size());
     }
 
+    /// Check at compile time for a given vector if the sizes are equal
     void static_check( size_type s) const
     {
 	assert(!traits::is_static<self>::value || s == size(typename Parameters::dimension()));
     }
 
+    /// Check if a given vector expression whether it has the same shape as the object
+    /** Both must be row vectors or column vectors. The elements must have the same
+	algebraic shape, e.g. a row vector of scalars is not compatible with a row
+	vector of matrices. **/
     template <class E>
     void check_consistent_shape( vec_expr<E> const& e ) const
     {
@@ -88,11 +96,13 @@ class dense_vector
 			   incompatible_shape());
     }
 
-
+    /// Default constructor
     dense_vector( ) : memory_base( Parameters::dimension::value ) {}
     
+    /// Constructor for size \p n
     explicit dense_vector( size_type n ) : memory_base( n ) { static_check( n ); }
     
+    /// Constructor for size \p n and value \p value that is set in all entries
     explicit dense_vector( size_type n, value_type value )
       : memory_base( n ) 
     {
@@ -100,10 +110,13 @@ class dense_vector
 	std::fill(begin(), end(), value);
     }
 
+    /// Constructor for size \p n and \p address
+    /** Can be used to handle vectors from other libraries, even in other languages like Fortran **/
     explicit dense_vector( size_type n, value_type *address )
       : memory_base( address, n, true ) 
     { static_check( n ); }
 
+    /// Copy constructor
     dense_vector( const self& src )
       : memory_base( src ) 
     {
@@ -111,6 +124,7 @@ class dense_vector
 	copy(src.begin(), src.end(), begin());
     }
 
+    /// Constructor from vector expressions
     template <typename VectorSrc>
     explicit dense_vector(const VectorSrc& src,
 			  typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
@@ -118,39 +132,31 @@ class dense_vector
 	*this= src;
     }
 
-#if 0
-    // Might be generalized to arbitrary vectors later
-    template <class Value2, typename Parameters2>
-    explicit dense_vector( const dense_vector<Value2, Parameters2>& src )
-	: memory_base( size(src) ) 
-    {
-	using std::copy;
-	check_consistent_shape(src);
-	copy(src.begin(), src.end(), begin());
-    }
-#endif
-
+    /// Size of v (like a free function)
     friend inline size_type size(const self& v)  { return v.used_memory() ; }
     
+    /// Stride is always 1 
     size_type stride() const { return 1 ; }
 
+    /// i-th entry
     reference operator()( size_type i ) 
     {
         check_index(i);
         return this->value_n( i ) ;
     }
 
+    /// i-th entry (constant)
     const_reference operator()( size_type i ) const 
     {
         check_index(i);
         return this->value_n( i ) ;
     }
 
-    reference operator[]( size_type i ) { return (*this)( i ) ; }
-    const_reference operator[]( size_type i ) const { return (*this)( i ) ;  }
+    reference operator[]( size_type i ) { return (*this)( i ) ; } ///< i-th entry
+    const_reference operator[]( size_type i ) const { return (*this)( i ) ;  } ///< i-th entry (constant)
 
-    self operator[]( irange r ) { return sub_vector(*this, r.start(), r.finish()); }
-    const self  operator[]( irange r ) const { return sub_vector(*this, r.start(), r.finish());  }
+    self operator[]( irange r ) { return sub_vector(*this, r.start(), r.finish()); } ///< sub-vector
+    const self  operator[]( irange r ) const { return sub_vector(*this, r.start(), r.finish());  } ///< sub-vector
     
     void delay_assign() const {}
 
@@ -178,6 +184,7 @@ class dense_vector
     }
 #endif
 
+    /// Move assignment
     self& operator=(self src)
     {
 	// Self-copy would be an indication of an error
@@ -193,6 +200,7 @@ class dense_vector
 
     template <typename Value2> friend void fill(self&, const Value2&);
 
+    /// swap two vectors
     friend void swap(self& vector1, self& vector2)
     {
 	swap(static_cast<memory_base&>(vector1), static_cast<memory_base&>(vector2));
@@ -231,7 +239,7 @@ inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::col_majo
     return size(vector);
 }
 
-
+/// Number of rows: is size for column vectors and 1 for row vectors
 template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
 inline num_rows(const dense_vector<Value, Parameters>& vector)
@@ -240,6 +248,7 @@ inline num_rows(const dense_vector<Value, Parameters>& vector)
 }
 
 
+/// Number of columns: is size for row vectors and 1 for column vectors
 template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
 inline num_cols(const dense_vector<Value, Parameters>& vector)
@@ -247,6 +256,7 @@ inline num_cols(const dense_vector<Value, Parameters>& vector)
     return num_rows_aux(vector, typename transposed_orientation<typename Parameters::orientation>::type());
 }
 
+/// Sub-vector function, more convenient with irange
 template <typename Value, typename Parameters>
 dense_vector<Value, Parameters>
 inline sub_vector(dense_vector<Value, Parameters>& v, 
