@@ -109,23 +109,21 @@ macro (compile_all testing)
     # cycle through the sources
     # The directory assumes that each cpp file is a separate test
     # so, create a executable target and an associated test target
-    message("testing: ${testing}")
-    message("argn: ${ARGN}")
     foreach (source ${ARGN})
         get_filename_component (test ${source} NAME_WE)		# filename without extension
         add_executable (${test} ${source} ${INCLUDES})
-	message("added executable ${test}")
+	# add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
 	if (${testing} STREQUAL "true")
-	  message("testing: ${testing} ${source}")
+	  # message("testing: ${testing} ${source}")
 	  add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
 	endif()
-	# message("source is ${source}")
-	# if (NOT ${source} MATCHES "libs/numeric/mtl/experimental" OR NOT ${source} MATCHES "libs/numeric/mtl/timing")
-        #     add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
-	#     message("added test for ${test}")
-	# endif()
     endforeach (source)
 endmacro (compile_all)
+
+# enable test generation
+set(BUILDNAME "${TESTBUILDNAME}")
+enable_testing()
+include(CTest)
 
 
 # Descent into the test program directory to build the test suite
@@ -139,11 +137,6 @@ add_subdirectory("libs/numeric/mtl/timing" EXCLUDE_FROM_ALL)
 
 # ITL test programs
 add_subdirectory("libs/numeric/itl/test")
-
-# enable test generation
-set(BUILDNAME "${TESTBUILDNAME}")
-enable_testing()
-include(CTest)
 
 
 #################################################################################
