@@ -218,6 +218,11 @@ We split the MTL4 sources into 3 packages:
 
 
 \subsection rpm  Installation under SuSE, Fedora and other .rpm-based Linux Distribution
+-# add the url repository \n
+   <tt> http://www.simunova.com/rpm </tt>\n
+   to your repository list and update.
+-# Search the package "mtl" in your package manager
+-# Mark the desired packages and accept all dependent packages.
 
 \subsection installwindows Installation under Windows
 
