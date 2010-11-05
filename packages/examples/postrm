@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "uninstalling the mtl";
+#echo "uninstalling the mtl";
 
 #TODO: remove other directories also? (needs to check if they are empty)
 

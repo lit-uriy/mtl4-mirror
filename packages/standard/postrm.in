@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "uninstalling the mtl";
+#echo "uninstalling the mtl";
 
 MTLBOOST_DIRS="@HPPDIRS_STR@"
 BASE_DIR=/usr/include/

@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "unpack documentation"
+#echo "unpack documentation"
 cd /usr/share/mtl/
 tar -xzf /usr/share/mtl/documentation.tar.gz 
 rm -f /usr/share/mtl/documentation.tar.gz
