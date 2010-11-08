@@ -19,31 +19,39 @@
 
 using namespace std;  
    
-template <typename Vector>
-Vector inline grad_f(Vector& x)
-{    
-   Vector tmp(size(x));
-   tmp[0]= 2 * x[0];
-   tmp[1]= 4 * x[1];
-   tmp[2]= 4 * x[2];
-   return tmp;
-}
 
-template <typename Vector>
-typename mtl::Collection<Vector>::value_type 
-inline f(Vector& x)
+struct grad_f_test
 {
-  return x[0]*x[0] + 2*x[1]*x[1] + 2*x[2]*x[2];
-}
+    template <typename Vector>
+    Vector operator() (const Vector& x) const
+    {    
+	Vector tmp(size(x));
+	tmp[0]= 2 * x[0];
+	tmp[1]= 4 * x[1];
+	tmp[2]= 4 * x[2];
+	return tmp;
+    }
+};
 
-template <typename Vector>
+struct f_test
+{
+    template <typename Vector>
+    typename mtl::Collection<Vector>::value_type 
+    operator() (const Vector& x) const
+    {
+	return x[0]*x[0] + 2*x[1]*x[1] + 2*x[2]*x[2];
+    }
+};
+
+
+template <typename Vector, typename F, typename G>
 typename mtl::Collection<Vector>::value_type 
-armijo(Vector& x, Vector& d) // f, grad
+armijo(const Vector& x, const Vector& d, F f, G grad_f) // f, grad
 {
     typedef typename mtl::Collection<Vector>::value_type value_type;
     value_type delta= 0.5, gamma= 0.5, beta1= 0.25, beta2= 0.5;  //feste Werte
 
-    //Star_Schrittweite
+    // Star's step size
     value_type alpha= -gamma * dot(grad_f(x), d) / dot(d, d);
     mtl::dense_vector<value_type> x_k(x + alpha * d);
 
@@ -69,8 +77,8 @@ void bfgs(Matrix& H, const Vector& y, const Vector& s)
     swap(H2, H);
 }
  
-template <typename Vector>
-Vector quasi_newton(Vector& x, double tol) // grad, step, update
+template <typename Vector, typename G>
+Vector quasi_newton(Vector& x, G grad_f, double tol) // grad, step, update
 {    
     typedef typename mtl::Collection<Vector>::value_type value_type;
     Vector d_k, y_k, x_k, s_k;
@@ -78,7 +86,7 @@ Vector quasi_newton(Vector& x, double tol) // grad, step, update
    
     while (two_norm(grad_f(x)) > tol) {
 	d_k= H * -grad_f(x);                                //   std::cout<< "d_k = " << d_k << "\n";
-	value_type alpha= armijo(x, d_k);                   //   std::cout<< "alpha = " << alpha << "\n";
+	value_type alpha= armijo(x, d_k, f_test(), grad_f);                   //   std::cout<< "alpha = " << alpha << "\n";
 	x_k= x + alpha * d_k;
 	s_k= alpha * d_k;
 	y_k= grad_f(x_k) - grad_f(x);
@@ -96,9 +104,9 @@ int test_main(int, char**)
     double tol= 1e-4;
     std::cout<< "x0= " << x0 << "\n";
     
-    quasi_newton(x0, tol);
+    quasi_newton(x0, grad_f_test(), tol);
     std::cout<< "x0= " << x0 << "\n";
-    std::cout<< "grad_f(x0)= " << grad_f(x0) << "\n";
+    std::cout<< "grad_f(x0)= " << grad_f_test()(x0) << "\n";
     
 
     return 0;
