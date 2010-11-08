@@ -74,8 +74,8 @@ struct bfgs
 	assert(num_rows(H) == num_cols(H));
 
 	value_type gamma= 1 / dot(y,s);
-	Matrix     A(math::one(H) - gamma * y * trans(s)),
-	           H2(trans(A) * H * A + gamma * s * trans(s));
+	Matrix     A(math::one(H) - gamma * s * trans(y)),
+	           H2(A * H * trans(A) + gamma * s * trans(s));
 	swap(H2, H); // faster than H= H2
     }
 }; 
@@ -84,16 +84,16 @@ template <typename Vector, typename F, typename Grad, typename Step, typename Up
 Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, double tol) 
 {    
     typedef typename mtl::Collection<Vector>::value_type value_type;
-    Vector                    d_k, y_k, x_k, s_k;
+    Vector                    d, y, x_k, s;
     mtl::dense2D<value_type>  H(mtl::matrix::identity<value_type>(size(x))); 
    
     while (two_norm(grad_f(x)) > tol) {
-	d_k= H * -grad_f(x);                               
-	value_type alpha= step(x, d_k, f, grad_f);
-	x_k= x + alpha * d_k;
-	s_k= alpha * d_k;
-	y_k= grad_f(x_k) - grad_f(x);
-	update(H, y_k, s_k);                               
+	d= H * -grad_f(x);                               
+	value_type alpha= step(x, d, f, grad_f);
+	x_k= x + alpha * d;
+	s= alpha * d;
+	y= grad_f(x_k) - grad_f(x);
+	update(H, y, s);                               
 	x= x_k;
     }
     return x;
@@ -103,14 +103,15 @@ int test_main(int, char**)
 {
     using namespace mtl;
 
-    mtl::dense_vector<double>       x0(3, 8);
+    mtl::dense_vector<double>       x(3, 8);
     double tol= 1e-4;
-    std::cout<< "x0= " << x0 << "\n";
+    std::cout<< "x= " << x << "\n";
     
-    quasi_newton(x0, f_test(), grad_f_test(), armijo(), bfgs(), tol);
-    std::cout<< "x0= " << x0 << "\n";
-    std::cout<< "grad_f(x0)= " << grad_f_test()(x0) << "\n";
-    
+    quasi_newton(x, f_test(), grad_f_test(), armijo(), bfgs(), tol);
+    std::cout<< "x= " << x << "\n";
+    std::cout<< "grad_f(x)= " << grad_f_test()(x) << "\n";
+    if (two_norm(x) > 10*tol)
+	throw "x should be 0.";
 
     return 0;
 }
