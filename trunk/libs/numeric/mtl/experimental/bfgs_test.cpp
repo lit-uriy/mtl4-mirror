@@ -19,6 +19,16 @@
 
 using namespace std;  
    
+struct f_test
+{
+    template <typename Vector>
+    typename mtl::Collection<Vector>::value_type 
+    operator() (const Vector& x) const
+    {
+	return x[0]*x[0] + 2*x[1]*x[1] + 2*x[2]*x[2];
+    }
+};
+
 struct grad_f_test
 {
     template <typename Vector>
@@ -32,25 +42,20 @@ struct grad_f_test
     }
 };
 
-struct f_test
+template <typename Value= double>
+class wolf
 {
-    template <typename Vector>
-    typename mtl::Collection<Vector>::value_type 
-    operator() (const Vector& x) const
-    {
-	return x[0]*x[0] + 2*x[1]*x[1] + 2*x[2]*x[2];
-    }
-};
+  public:
+    typedef Value   value_type;
 
-struct armijo
-{
+    // Defaults from Prof. Fischer's lecture
+    wolf(Value delta= 0.5, Value gamma= 0.5, Value beta1= 0.25, Value beta2= 0.5)
+      : delta(delta), gamma(gamma), beta1(beta1), beta2(beta2) {}
+
     template <typename Vector, typename F, typename Grad>
     typename mtl::Collection<Vector>::value_type 
     operator() (const Vector& x, const Vector& d, F f, Grad grad_f) 
     {
-	typedef typename mtl::Collection<Vector>::value_type value_type;
-	value_type delta= 0.5, gamma= 0.5, beta1= 0.25, beta2= 0.5;  //feste Werte
-
 	// Star's step size
 	value_type alpha= -gamma * dot(grad_f(x), d) / dot(d, d);
 	mtl::dense_vector<value_type> x_k(x + alpha * d);
@@ -62,7 +67,9 @@ struct armijo
 	    std::cout<< "alpha_a=" << alpha << "\n";
 	}
 	return alpha;
-    } 
+    }
+  private:
+    Value delta, gamma, beta1, beta2; 
 };
 
 struct bfgs
@@ -80,13 +87,14 @@ struct bfgs
     }
 }; 
 
-template <typename Vector, typename F, typename Grad, typename Step, typename Update>
+template <typename Matrix, typename Vector, typename F, typename Grad, typename Step, typename Update>
 Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, double tol) 
 {    
     typedef typename mtl::Collection<Vector>::value_type value_type;
-    Vector                    d, y, x_k, s;
-    mtl::dense2D<value_type>  H(mtl::matrix::identity<value_type>(size(x))); 
-   
+    Vector         d, y, x_k, s;
+    Matrix         H(size(x), size(x));
+    
+    H= 1;
     while (two_norm(grad_f(x)) > tol) {
 	d= H * -grad_f(x);                               
 	value_type alpha= step(x, d, f, grad_f);
@@ -99,6 +107,13 @@ Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, doubl
     return x;
 }
 
+template <typename Vector, typename F, typename Grad, typename Step, typename Update>
+Vector inline quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, double tol) 
+{
+    typedef typename mtl::Collection<Vector>::value_type value_type;
+    return quasi_newton<mtl::dense2D<value_type> >(x, f, grad_f, step, update, tol);
+}
+
 int test_main(int, char**)
 {
     using namespace mtl;
@@ -107,7 +122,7 @@ int test_main(int, char**)
     double tol= 1e-4;
     std::cout<< "x= " << x << "\n";
     
-    quasi_newton(x, f_test(), grad_f_test(), armijo(), bfgs(), tol);
+    quasi_newton(x, f_test(), grad_f_test(), wolf<>(), bfgs(), tol);
     std::cout<< "x= " << x << "\n";
     std::cout<< "grad_f(x)= " << grad_f_test()(x) << "\n";
     if (two_norm(x) > 10*tol)
