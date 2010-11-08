@@ -19,7 +19,6 @@
 
 using namespace std;  
    
-
 struct grad_f_test
 {
     template <typename Vector>
@@ -75,10 +74,9 @@ struct bfgs
 	assert(num_rows(H) == num_cols(H));
 
 	value_type gamma= 1 / dot(y,s);
-	Matrix     I(mtl::matrix::identity<value_type>(num_rows(H))), 
-	    T(I - gamma * y * trans(s)),
-	    H2(trans(T) * H * T + gamma * s * trans(s));
-	swap(H2, H);
+	Matrix     A(math::one(H) - gamma * y * trans(s)),
+	           H2(trans(A) * H * A + gamma * s * trans(s));
+	swap(H2, H); // faster than H= H2
     }
 }; 
 
@@ -86,8 +84,8 @@ template <typename Vector, typename F, typename Grad, typename Step, typename Up
 Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, double tol) 
 {    
     typedef typename mtl::Collection<Vector>::value_type value_type;
-    Vector d_k, y_k, x_k, s_k;
-    mtl::dense2D<value_type>  H(mtl::matrix::identity<value_type>(size(x))); //H0 ist Einheitsmatrix
+    Vector                    d_k, y_k, x_k, s_k;
+    mtl::dense2D<value_type>  H(mtl::matrix::identity<value_type>(size(x))); 
    
     while (two_norm(grad_f(x)) > tol) {
 	d_k= H * -grad_f(x);                               
