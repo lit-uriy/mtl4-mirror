@@ -846,7 +846,7 @@ namespace math {
         matrix_type operator() (const mult<matrix_type>&, const matrix_type& ref) const
         {
 	    matrix_type tmp(ref);
-	    tmp= zero(matrix_type::value_type());
+	    tmp= one(typename matrix_type::value_type());
 	    return tmp;
         }
     };
