@@ -43,26 +43,28 @@ struct f_test
     }
 };
 
-
-template <typename Vector, typename F, typename Grad>
-typename mtl::Collection<Vector>::value_type 
-armijo(const Vector& x, const Vector& d, F f, Grad grad_f) 
+struct armijo
 {
-    typedef typename mtl::Collection<Vector>::value_type value_type;
-    value_type delta= 0.5, gamma= 0.5, beta1= 0.25, beta2= 0.5;  //feste Werte
+    template <typename Vector, typename F, typename Grad>
+    typename mtl::Collection<Vector>::value_type 
+    operator() (const Vector& x, const Vector& d, F f, Grad grad_f) 
+    {
+	typedef typename mtl::Collection<Vector>::value_type value_type;
+	value_type delta= 0.5, gamma= 0.5, beta1= 0.25, beta2= 0.5;  //feste Werte
 
-    // Star's step size
-    value_type alpha= -gamma * dot(grad_f(x), d) / dot(d, d);
-    mtl::dense_vector<value_type> x_k(x + alpha * d);
+	// Star's step size
+	value_type alpha= -gamma * dot(grad_f(x), d) / dot(d, d);
+	mtl::dense_vector<value_type> x_k(x + alpha * d);
 
-    while (f(x_k) > f(x) + (beta1 * alpha) * dot(grad_f(x), d) 
-	   && dot(grad_f(x_k), d) < beta2 * dot(grad_f(x), d)) {	
-	alpha*= (beta1 + beta2) / 2;
-	x_k= x+ alpha * d;
-	std::cout<< "alpha_a=" << alpha << "\n";
-    }
-    return alpha;
-} 
+	while (f(x_k) > f(x) + (beta1 * alpha) * dot(grad_f(x), d) 
+	       && dot(grad_f(x_k), d) < beta2 * dot(grad_f(x), d)) {	
+	    alpha*= (beta1 + beta2) / 2;
+	    x_k= x+ alpha * d;
+	    std::cout<< "alpha_a=" << alpha << "\n";
+	}
+	return alpha;
+    } 
+};
 
 struct bfgs
 {
@@ -80,20 +82,20 @@ struct bfgs
     }
 }; 
 
-template <typename Vector, typename Grad, typename Update>
-Vector quasi_newton(Vector& x, Grad grad_f, Update update, double tol) // grad, step, update
+template <typename Vector, typename F, typename Grad, typename Step, typename Update>
+Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, double tol) 
 {    
     typedef typename mtl::Collection<Vector>::value_type value_type;
     Vector d_k, y_k, x_k, s_k;
     mtl::dense2D<value_type>  H(mtl::matrix::identity<value_type>(size(x))); //H0 ist Einheitsmatrix
    
     while (two_norm(grad_f(x)) > tol) {
-	d_k= H * -grad_f(x);                                //   std::cout<< "d_k = " << d_k << "\n";
-	value_type alpha= armijo(x, d_k, f_test(), grad_f);                   //   std::cout<< "alpha = " << alpha << "\n";
+	d_k= H * -grad_f(x);                               
+	value_type alpha= step(x, d_k, f, grad_f);
 	x_k= x + alpha * d_k;
 	s_k= alpha * d_k;
 	y_k= grad_f(x_k) - grad_f(x);
-	update(H, y_k, s_k);                                  //   std::cout<< "H = \n" << H << "\n";
+	update(H, y_k, s_k);                               
 	x= x_k;
     }
     return x;
@@ -107,7 +109,7 @@ int test_main(int, char**)
     double tol= 1e-4;
     std::cout<< "x0= " << x0 << "\n";
     
-    quasi_newton(x0, grad_f_test(), bfgs(), tol);
+    quasi_newton(x0, f_test(), grad_f_test(), armijo(), bfgs(), tol);
     std::cout<< "x0= " << x0 << "\n";
     std::cout<< "grad_f(x0)= " << grad_f_test()(x0) << "\n";
     
