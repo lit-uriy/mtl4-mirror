@@ -231,10 +231,10 @@ This is under development and will be provided soon. For the time being please u
 \section installdownload Install a Downloaded Archive
 
 To compile an MTL4 application you only need to
--# Download and install Boost
--# Download and install MTL4
+-# <a href="www.boost.org/users/download/">Download and install Boost.</a>
+-# <a href="www.simunova.com/en/node/145">Download and install MTL4.</a>
 -# Include the libraries in the compile command when not installed in the include path, e.g.\n
-  <tt>g++ myapp.cpp -o myapp -I/usr/local/include/boost-1.38 -I/usr/local/include/mtl4</tt>
+  <tt>g++ myapp.cpp -o myapp -I/usr/local/include/boost-1.44 -I/usr/local/include/mtl4</tt>
 .
 
 <b>Download and install Boost:</b>
@@ -247,7 +247,7 @@ Then you can omit the compiler flag for including from the boost directory.
 If multiple versions shall be used on your computer you can only put one in the include path
 or you need extra tools like softenv or module to deal with your paths.
 More convenient is the installation of boost with a packet manager like synaptic.
-We use in the development and testing currently versions between 1.38 and 1.43.
+We use in the development and testing currently versions between 1.38 and 1.44.
 Some earlier versions might work as well but not 1.33 or earlier (e.g. type %traits for
 std::complex are missing there).
  The parts of boost used in MTL4 do not need
