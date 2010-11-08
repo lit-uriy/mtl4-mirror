@@ -79,7 +79,7 @@ class basic_iteration
     { 
 	if (norm_r0 == 0)
 	    return resid_ < atol_;  // ignore relative tolerance if |r0| is zero
-	return resid_ / norm_r0 <= rtol_ || resid_ < atol_;
+	return resid_ <= rtol_ * norm_r0 || resid_ < atol_;
     }
 
     self& operator++() { ++i; return *this; }
