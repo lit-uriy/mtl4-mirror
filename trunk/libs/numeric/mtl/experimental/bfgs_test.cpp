@@ -44,9 +44,9 @@ struct f_test
 };
 
 
-template <typename Vector, typename F, typename G>
+template <typename Vector, typename F, typename Grad>
 typename mtl::Collection<Vector>::value_type 
-armijo(const Vector& x, const Vector& d, F f, G grad_f) // f, grad
+armijo(const Vector& x, const Vector& d, F f, Grad grad_f) 
 {
     typedef typename mtl::Collection<Vector>::value_type value_type;
     value_type delta= 0.5, gamma= 0.5, beta1= 0.25, beta2= 0.5;  //feste Werte
@@ -64,21 +64,24 @@ armijo(const Vector& x, const Vector& d, F f, G grad_f) // f, grad
     return alpha;
 } 
 
-template <typename Matrix, typename Vector>
-void bfgs(Matrix& H, const Vector& y, const Vector& s)
+struct bfgs
 {
-    typedef typename mtl::Collection<Vector>::value_type value_type;
-    assert(num_rows(H) == num_cols(H));
+    template <typename Matrix, typename Vector>
+    void operator() (Matrix& H, const Vector& y, const Vector& s)
+    {
+	typedef typename mtl::Collection<Vector>::value_type value_type;
+	assert(num_rows(H) == num_cols(H));
 
-    value_type gamma= 1 / dot(y,s);
-    Matrix     I(mtl::matrix::identity<value_type>(num_rows(H))), 
-               T(I - gamma * y * trans(s)),
-	       H2(trans(T) * H * T + gamma * s * trans(s));
-    swap(H2, H);
-}
- 
-template <typename Vector, typename G>
-Vector quasi_newton(Vector& x, G grad_f, double tol) // grad, step, update
+	value_type gamma= 1 / dot(y,s);
+	Matrix     I(mtl::matrix::identity<value_type>(num_rows(H))), 
+	    T(I - gamma * y * trans(s)),
+	    H2(trans(T) * H * T + gamma * s * trans(s));
+	swap(H2, H);
+    }
+}; 
+
+template <typename Vector, typename Grad, typename Update>
+Vector quasi_newton(Vector& x, Grad grad_f, Update update, double tol) // grad, step, update
 {    
     typedef typename mtl::Collection<Vector>::value_type value_type;
     Vector d_k, y_k, x_k, s_k;
@@ -90,7 +93,7 @@ Vector quasi_newton(Vector& x, G grad_f, double tol) // grad, step, update
 	x_k= x + alpha * d_k;
 	s_k= alpha * d_k;
 	y_k= grad_f(x_k) - grad_f(x);
-	bfgs(H, y_k, s_k);                                  //   std::cout<< "H = \n" << H << "\n";
+	update(H, y_k, s_k);                                  //   std::cout<< "H = \n" << H << "\n";
 	x= x_k;
     }
     return x;
@@ -104,7 +107,7 @@ int test_main(int, char**)
     double tol= 1e-4;
     std::cout<< "x0= " << x0 << "\n";
     
-    quasi_newton(x0, grad_f_test(), tol);
+    quasi_newton(x0, grad_f_test(), bfgs(), tol);
     std::cout<< "x0= " << x0 << "\n";
     std::cout<< "grad_f(x0)= " << grad_f_test()(x0) << "\n";
     
