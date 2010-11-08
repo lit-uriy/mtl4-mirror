@@ -29,6 +29,24 @@ struct f_test
     }
 };
 
+#if 0
+template <typename Vector>
+class func
+{
+    typedef typename mtl::Collection<Vector>::value_type  v_type;
+    v_type a, b, c;
+    Vector x;
+  public:
+    func(v_type a, v_type b, v_type c): a(a), b(b), c(c) {}
+    v_type operator()() const { return a*x[0]*x[0] + b*x[1]*x[1] + c*x[2]*x[2]; }
+};
+
+template <typename Vector>
+typename mtl::Collection<Vector>::value_type 
+inline f(Vector& x)
+#endif
+
+
 struct grad_f_test
 {
     template <typename Vector>
@@ -54,7 +72,7 @@ class wolf
 
     template <typename Vector, typename F, typename Grad>
     typename mtl::Collection<Vector>::value_type 
-    operator() (const Vector& x, const Vector& d, F f, Grad grad_f) 
+    operator() (const Vector& x, const Vector& d, F f, Grad grad_f) const
     {
 	// Star's step size
 	value_type alpha= -gamma * dot(grad_f(x), d) / dot(d, d);
@@ -96,7 +114,7 @@ Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, Iter&
     Matrix         H(size(x), size(x));
     
     H= 1;
-    while (!iter.finished(two_norm(grad_f(x)))) {
+    for (; !iter.finished(two_norm(grad_f(x))); ++iter) {
 	d= H * -grad_f(x);                               
 	value_type alpha= step(x, d, f, grad_f);
 	x_k= x + alpha * d;
@@ -121,7 +139,7 @@ int test_main(int, char**)
 
     mtl::dense_vector<double>       x(3, 8);
     std::cout<< "x= " << x << "\n";
-    
+        
     itl::cyclic_iteration<double> iter(0.0, 100, 0, 1e-4, 100);
     quasi_newton(x, f_test(), grad_f_test(), wolf<>(), bfgs(), iter);
 
