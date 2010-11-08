@@ -87,15 +87,16 @@ struct bfgs
     }
 }; 
 
-template <typename Matrix, typename Vector, typename F, typename Grad, typename Step, typename Update>
-Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, double tol) 
+template <typename Matrix, typename Vector, typename F, typename Grad, 
+	  typename Step, typename Update, typename Iter>
+Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, Iter& iter) 
 {    
     typedef typename mtl::Collection<Vector>::value_type value_type;
     Vector         d, y, x_k, s;
     Matrix         H(size(x), size(x));
     
     H= 1;
-    while (two_norm(grad_f(x)) > tol) {
+    while (!iter.finished(two_norm(grad_f(x)))) {
 	d= H * -grad_f(x);                               
 	value_type alpha= step(x, d, f, grad_f);
 	x_k= x + alpha * d;
@@ -107,11 +108,11 @@ Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, doubl
     return x;
 }
 
-template <typename Vector, typename F, typename Grad, typename Step, typename Update>
-Vector inline quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, double tol) 
+template <typename Vector, typename F, typename Grad, typename Step, typename Update, typename Iter>
+Vector inline quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, Iter& iter) 
 {
     typedef typename mtl::Collection<Vector>::value_type value_type;
-    return quasi_newton<mtl::dense2D<value_type> >(x, f, grad_f, step, update, tol);
+    return quasi_newton<mtl::dense2D<value_type> >(x, f, grad_f, step, update, iter);
 }
 
 int test_main(int, char**)
@@ -119,13 +120,14 @@ int test_main(int, char**)
     using namespace mtl;
 
     mtl::dense_vector<double>       x(3, 8);
-    double tol= 1e-4;
     std::cout<< "x= " << x << "\n";
     
-    quasi_newton(x, f_test(), grad_f_test(), wolf<>(), bfgs(), tol);
+    itl::cyclic_iteration<double> iter(0.0, 100, 0, 1e-4, 100);
+    quasi_newton(x, f_test(), grad_f_test(), wolf<>(), bfgs(), iter);
+
     std::cout<< "x= " << x << "\n";
     std::cout<< "grad_f(x)= " << grad_f_test()(x) << "\n";
-    if (two_norm(x) > 10*tol)
+    if (two_norm(x) > 10 * iter.atol())
 	throw "x should be 0.";
 
     return 0;

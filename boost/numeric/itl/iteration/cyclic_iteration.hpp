@@ -41,6 +41,12 @@ namespace itl {
 	: super(r0, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), out(out)
       {}
 
+      cyclic_iteration(Real r0, int max_iter_, Real tol_, Real atol_ = Real(0), int cycle_ = 100,
+		       OStream& out = std::cout)
+	: super(r0, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), out(out)
+      {}
+      
+
       bool finished() { return super::finished(); };
 
       template <typename T>
