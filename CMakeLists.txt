@@ -103,7 +103,9 @@ endmacro (add_macro_flags)
 
 #add_definitions("-g")
 add_macro_flags("MTL_ASSERT_FOR_THROW")
-#add_definitions("-Werror -pedantic -Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
+if(NOT MSVC)
+  add_definitions("-Werror -pedantic -Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
+endif()
 
 macro (compile_all testing)
     # cycle through the sources
