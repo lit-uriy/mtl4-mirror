@@ -112,7 +112,7 @@ class ic_0
 		// 2. Find nonzeros with col() in (k, i]
 		icur_type jc= begin<nz>(irow), jend= end<nz>(irow);
 		while (col_l(*jc) <= k) ++jc;
-		while (col_l(*--jend) > i);
+		while (col_l(*--jend) > i) ;
 		++jend; 
 		
 		for (; jc != jend; ++jc) {
