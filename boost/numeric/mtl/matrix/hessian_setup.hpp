@@ -16,6 +16,7 @@
 #include <cmath>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/matrix/inserter.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -23,13 +24,16 @@ namespace mtl { namespace matrix {
 /** Intended for dense matrices.
     Works on sparse matrices with inserter but is very expensive. **/
 template <typename Matrix, typename Value>
-void hessian_setup(Matrix& matrix, Value factor)
+void hessian_setup(Matrix& A, Value factor)
 {
-    typedef typename Matrix::value_type    value_type;
-    typedef typename Matrix::size_type     size_type;
-    for (size_type r= matrix.begin_row(); r < matrix.end_row(); r++)
-	for (size_type c= matrix.begin_col(); c < matrix.end_col(); c++)
-	    matrix[r][c]= factor * (value_type(r) + value_type(c));
+    typedef typename Collection<Matrix>::value_type    value_type;
+    typedef typename Collection<Matrix>::size_type     size_type;
+    
+    inserter<Matrix> ins(A, num_cols(A));
+    
+    for (size_type r= 0; r < num_rows(A); r++)
+	for (size_type c= 0; c < num_cols(A); c++)
+	    ins[r][c] << factor * (value_type(r) + value_type(c));
 }
 
 namespace impl {
