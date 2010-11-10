@@ -13,7 +13,7 @@ set(CTEST_DROP_LOCATION "/CDash/submit.php?project=mtl4")
 set(CTEST_DROP_SITE_CDASH TRUE)
 set(CTEST_CURL_OPTIONS "CURLOPT_SSL_VERIFYPEER_OFF")
 
-while (${CTEST_ELAPSED_TIME} LESS 3600)
+while (${CTEST_ELAPSED_TIME} LESS 36)
     set (START_TIME ${CTEST_ELAPSED_TIME})
   ctest_start (Continuous)
    ctest_sleep( ${START_TIME} 3 ${CTEST_ELAPSED_TIME})
