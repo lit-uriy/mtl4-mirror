@@ -14,13 +14,15 @@
 #define MTL_HESSIAN_MATRIX_UTILITIES_INCLUDE
 
 #include <cmath>
+#include <iostream>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
+#include <boost/numeric/mtl/operation/entry_similar.hpp>
 
 namespace mtl { namespace matrix {
 
-/// Fills a matrix A with a_ij = factor * (i + j)
+/// Fills a matrix A with A[i][j] = factor * (i + j)
 /** Intended for dense matrices.
     Works on sparse matrices with inserter but is very expensive. **/
 template <typename Matrix, typename Value>
@@ -58,57 +60,34 @@ namespace impl {
         using std::abs; using std::max;
         return abs(x - y) / max(abs(x), abs(y)) < 0.000001;
     }
+
+    template <typename Matrix>
+    void inline check_entry(Matrix const& C, unsigned long r, unsigned long c, 
+			    unsigned long reduced_dim, double factor)
+    {
+	if (!entry_similar(C, r, c, factor * hessian_product_i_j(r, c, reduced_dim), 0.00001)) {
+	    std::cerr << "Result in C[" << r << "][" << c << "] should be " 
+		      << factor * hessian_product_i_j(r, c, reduced_dim)
+		      << " but is " << C[r][c] << "\n";
+	    MTL_THROW(unexpected_result());
+	}
+    }
+
 } // impl       
 
 
-// Check if matrix c is a * b according to convention above
-// C has dimensions M x L and reduced_dim is N, see above
-// A, B, and C are supposed to have the same indices: either all starting  from 0 or all from 1
+/// Check if matrix C is A * B with A and B set by hessian_setup
+/** C has dimensions M x L and reduced_dim is N, see hessian_setup. **/
 template <typename Matrix>
-void check_hessian_matrix_product(Matrix const& c, typename Matrix::size_type reduced_dim, double factor= 1.0)
+void check_hessian_matrix_product(Matrix const& C, typename Matrix::size_type reduced_dim, double factor= 1.0)
 {
-    using impl::similar_values; using impl::hessian_product_i_j;
-    typedef typename Matrix::value_type    value_type;
-    typedef typename Matrix::size_type     size_type;
-    size_type  rb= c.begin_row(), rl= c.end_row() - 1,
-               cb= c.begin_col(), cl= c.end_col() - 1;
+    if (num_rows(C) * num_cols(C) == 0) return; // otherwise out of range
 
-    if (!similar_values(value_type(factor * hessian_product_i_j(rb, cb, reduced_dim)), c[rb][cb])) {
-	std::cout << "Result in c[" << rb << "][" << cb << "] should be " 
-		  << factor * hessian_product_i_j(rb, cb, reduced_dim)
-		  << " but is " << c[rb][cb] << "\n";
-	MTL_THROW(unexpected_result());
-    }
-
-    if (!similar_values(value_type(factor * hessian_product_i_j(rl, cb, reduced_dim)), c[rl][cb])) {
-	std::cout << "Result ixn c[" << rl << "][" << cb << "] should be " 
-		  << factor * hessian_product_i_j(rl, cb, reduced_dim)
-		  << " but is " << c[rl][cb] << "\n";
-	MTL_THROW(unexpected_result()); 
-    }
-
-    if (!similar_values(value_type(factor * hessian_product_i_j(rb, cl, reduced_dim)), c[rb][cl])) {
-	std::cout << "Result in c[" << rb << "][" << cb << "] should be " 
-		  << factor * hessian_product_i_j(rb, cl, reduced_dim)
-		  << " but is " << c[rb][cl] << "\n";
-	MTL_THROW(unexpected_result());
-    }
-
-    if (!similar_values(value_type(factor * hessian_product_i_j(rl, cl, reduced_dim)), c[rl][cl])) {
-	std::cout << "Result in c[" << rl << "][" << cb << "] should be " 
-		  << factor * hessian_product_i_j(rl, cl, reduced_dim)
-		  << " but is " << c[rl][cl] << "\n";
-	MTL_THROW(unexpected_result()); 
-    }
-
-    // In the center of the matrix
-    if (!similar_values(value_type(factor * hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)), 
-			c[(rb+rl)/2][(cb+cl)/2])) {
-	std::cout << "Result in c[" << (rb+rl)/2 << "][" << (cb+cl)/2 << "] should be " 
-		  << factor * hessian_product_i_j((rb+rl)/2, (cb+cl)/2, reduced_dim)
-		  << " but is " << c[(rb+rl)/2][(cb+cl)/2] << "\n";
-	MTL_THROW(unexpected_result()); 
-    }
+    impl::check_entry(C, 0, 0, reduced_dim, factor);
+    impl::check_entry(C, 0, num_cols(C)-1, reduced_dim, factor);
+    impl::check_entry(C, num_rows(C)-1, 0, reduced_dim, factor);
+    impl::check_entry(C, num_rows(C)-1, num_cols(C)-1, reduced_dim, factor);
+    impl::check_entry(C, num_rows(C)/2, num_cols(C)/2, reduced_dim, factor);
 }
 
 } // namespace matrix;
