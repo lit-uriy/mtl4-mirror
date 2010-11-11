@@ -3,7 +3,7 @@ project(@USER_PROJECT_NAME@)
 cmake_minimum_required(VERSION 2.8)
 
 find_package(MTL REQUIRED)
-file(GLOB SOURCES @USER_CUR_DIR@/*.cpp)
+file(GLOB SOURCES ${MTL_DIR}/test/*.cpp)
 
 foreach (source IN LISTS SOURCES)
 get_filename_component (test ${source} NAME_WE)		# filename without extension
