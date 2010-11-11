@@ -1,4 +1,4 @@
-SET(MTL_INCLUDE_DIRS "/usr/include")
+SET(MTL_INCLUDE_DIRS "${MTL_DIR}/../../include")
 find_package(Boost 1.36 REQUIRED)
 if(Boost_FOUND)
 	LIST(APPEND MTL_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
