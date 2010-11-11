@@ -103,7 +103,7 @@ endmacro (add_macro_flags)
 
 #add_definitions("-g")
 add_macro_flags("MTL_ASSERT_FOR_THROW")
-if(NOT MSVC)
+if(CMAKE_COMPILER_IS_GNUCXX)
   add_definitions("-Werror -pedantic -Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
 endif()
 
