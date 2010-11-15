@@ -206,7 +206,7 @@ We provide the MTL4 sources within 4 packages:
 - "mtl-tests" provides our test suite if you like to check whether the library is properly installed and if your platform is well supported.
 - "mtl-all" is a meta-package that install the entire MTL4 sources (i.e. the previous 3 packages).
 
-\subsection debian Installation under Debian, Ubuntu and other .deb-based Linux Distribution
+\subsection debian Installation under Debian, Ubuntu and other .deb-based Linux Distributions
 
 -# Open your package source manager (you find this in the menu System -> Administration -> Software Sources).
 -# Go to tab "Other Sources", click on "Add" and insert the line:\n
