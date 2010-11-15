@@ -200,27 +200,34 @@ Furthermore, boost will be installed as prerequisite.
 
 \section installpackage Install with a Package Manager
 
-We split the MTL4 sources into 3 packages:
+We provide the MTL4 sources within 4 packages:
 - "mtl" contains the headers of MTL4. This package is the only mandatory one for developing scientific applications.
 - "mtl-examples" contains documentation of MTL4.
 - "mtl-tests" provides our test suite if you like to check whether the library is properly installed and if your platform is well supported.
+- "mtl-all" is a meta-package that install the entire MTL4 sources (i.e. the previous 3 packages).
 
 \subsection debian Installation under Debian, Ubuntu and other .deb-based Linux Distribution
 
--# Open your package source manager (in Ubuntu you find this in the menu System -> Administration -> Software Sources).
+-# Open your package source manager (you find this in the menu System -> Administration -> Software Sources).
 -# Go to tab "Other Sources", click on "Add" and insert the line:\n
    <tt>deb http://www.simunova.com/debian main/</tt>\n
    then save and close the package source manager. 
--# Open the package manage (in Ubuntu you find this in the menu System -> Administration -> Synaptic Package Manager)
-   and click on "Reload".
+-# Open the package manage (you find this in the menu System -> Administration -> Synaptic Package Manager)
+   and "Reload".
 -# Click on "Quick search" and type "mtl".
 -# Mark the MTL4 packages you want and "Apply" for the installation. Accept all dependent packages.
 
+Your package will warn that you are going to install non-authorized packages.
+We will provide signatures later. For the time being please accept the installation as it is.
 
 \subsection rpm  Installation under SuSE, Fedora and other .rpm-based Linux Distribution
+
 -# add the url repository \n
    <tt> http://www.simunova.com/rpm </tt>\n
    to your repository list and update.
+   - There will be 2 error messages that come from missing signature.
+     Please ignore this warning for the moment.
+     Later we will add this signatures to avoid these errors.
 -# Search the package "mtl" in your package manager
 -# Mark the desired packages and accept all dependent packages.
 
@@ -255,7 +262,12 @@ to be compiled but only included (except for the Supercomputing Edition which is
 documented seperately).
 
 
-<b>Download and install MTL4:</b>
+<b>Download MTL4:</b>
+
+
+
+
+
 The recommended form of downloading is to use subversion control (under Windows we recommend 
 <a href="http://tortoisesvn.tigris.org/">Tortoise</a>) and under Linux it is part of every
 recent distribution.
@@ -264,19 +276,35 @@ Go to the directory where you like MTL4 to reside and type:\n
 The adventage of version control is that you can update it easily with\n
 <tt>svn update</tt>\n
 when new features are added or a bug is %fixed (fortunately not needed very often).
+
 If you prefer downloading an archive,
 go to the 
-<a href="http://osl.iu.edu/research/mtl/mtl4/download.php3">MTL4 download page</a>
+<a href="http://www.simunova.com/en/node/145">MTL4 download page</a>
 and download the latest archive.
 In principle, MTL4 can also be copied in a directory within the standard include
 path to omit the compiler flag for its inclusion.
-The MTL4 and the boost directory can be mixed in principle since their files are
-disjoint and people who tried this did not experience problems.
-However, this complicates the use of version control, especially when
-you install Boost with a packet manager (as far as we know nobody tried this so far).
 
-If you compile MTL4 with VS2005/08 or its free express version
-you need to install the SDK (some boost files access it).
+
+
+<b>Install MTL4 on Linux:</b>
+MTL4 does not need an installation.
+You can simply put the files into any directory you like.
+In this case you need to pass the directory as flag when you compile your applications, e.g.:\n
+<tt>g++ -I/home/joe/mtl4 ...</tt>\n
+After extracting, you will have extra prefixes in your file names.
+For instance, if you extract an MTL4 archive
+in <tt>/home/joe/download</tt> then you need to compile with\n
+<tt>g++ -I/home/joe/download/<archivename>/usr/include ...</tt>\n
+or you copy the content of <tt><archivename>/usr/include</tt>
+into a shorter path
+
+To avoid the -I flag altogether, you can copy the headers into <tt>/usr/include</tt>.
+The MTL4 and the boost directory can be mixed in principle since their files are
+disjoint (but not all directories).
+
+<b>On Windows:</b>
+If you compile MTL4 with VS2005/08/10 or its free express version
+you need to install the SDK (some boost files access to it).
 Please make sure that the compiler is in the path.
 Then scons will find it.
 Additionally, you have to tell the compiler where the header files and
@@ -284,8 +312,6 @@ the libraries of VC and the SDK are located, i.e. declare the
 environment variables LIB and INCLUDE. For instance:\n
 <tt>LIB=c:/Program Files/Microsoft Visual Studio 8/vc/lib;c:/Program Files/MicrosoftVisual Studio 8/vc/platformsdk/lib</tt>\n
 <tt>INCLUDE=c:/Program Files/Microsoft Visual Studio 8/VC/include;c:/Program Files/Microsoft Visual Studio 8/VC/PlatformSDK/Include</tt>\n
-On some machines the compiler still did not find the files. For that reason the
-paths within these two variables are incorporated into the command line by our scons script.
 
 
 \section optionalinstall Optional Installations
