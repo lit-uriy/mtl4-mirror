@@ -53,21 +53,21 @@ void test1(Matrix& m, double tau)
 
 int test_main(int, char**)
 {
-  const int N = 12; // Original from Jan had 2000 
+  const int size= 10, N = size * size; // Original from Jan had 2000 
   const int Niter = 3*N;
 
   typedef mtl::compressed2D<double> matrix_type;
   //typedef compressed2D<std::complex<double> ,matrix::parameters<tag::col_major> > matrix_type;
   matrix_type                   A(N, N);
-  laplacian_setup(A,3,4);
+  laplacian_setup(A, size, size);
   mtl::dense_vector<double> b(N), x(N, 1.0);
-  b=A*x;
+  b= A*x;
 
   itl::pc::identity<matrix_type>     Ident(A);
    
-   x= 5.0;
-  itl::cyclic_iteration<double> iter_1(b, Niter, 1.e-8, 0.0, 1);
-  idr_s(A, x, b, Ident, Ident, iter_1,4);
+  x= 0.0;
+  itl::cyclic_iteration<double> iter_1(b, Niter, 1.e-8, 0.0, 5);
+  idr_s(A, x, b, Ident, Ident, iter_1, 4);
 #if 0
   std::cout << "Non-preconditioned bicgstab(2)" << std::endl;
   x= 0.5;

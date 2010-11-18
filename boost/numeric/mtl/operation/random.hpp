@@ -26,8 +26,37 @@ namespace mtl {
 template <typename T> 
 struct seed 
 {
+    seed() { srand(17 * ++counter); }
     T operator()() const { return rand(); }
+
+    static int counter;
 };
+
+template <typename T> 
+int seed<T>::counter= 0;
+
+namespace impl {
+
+    // all non-distributed matrices except multi-vectors
+    template <typename Coll, typename Generator>
+    void inline random(Coll& A, Generator& generator, tag::universe, tag::matrix)
+    {
+	typedef typename Collection<Coll>::size_type size_type;
+	matrix::inserter<Coll> ins(A, A.dim2());
+	for (size_type r= 0; r < num_rows(A); r++)
+	    for (size_type c= 0; c < num_cols(A); c++)
+		ins[r][c] << generator();
+    }
+    
+    template <typename Coll, typename Generator>
+    void inline random(Coll& A, Generator&, tag::universe, tag::multi_vector)
+    {
+	for (typename Collection<Coll>::size_type i= 0; i < num_cols(A); ++i)
+	    random(A.vector(i));
+    }
+
+} // namespace impl
+
 
 namespace vector {
 
@@ -62,11 +91,8 @@ namespace matrix {
     typename mtl::traits::enable_if_matrix<Matrix>::type
     inline random(Matrix& A, Generator& generator) 
     {
-	typedef typename Collection<Matrix>::size_type size_type;
-	inserter<Matrix> ins(A, A.dim2());
-	for (size_type r= 0; r < num_rows(A); r++)
-	    for (size_type c= 0; c < num_cols(A); c++)
-		ins[r][c] << generator();
+	typename mtl::traits::category<Matrix>::type cat;
+	mtl::impl::random(A, generator, cat, cat);
     }
 
     /// Fill matrix with random values.
@@ -76,7 +102,7 @@ namespace matrix {
     typename mtl::traits::enable_if_matrix<Matrix>::type
     inline random(Matrix& A) 
     {
-	seed<typename Collection<Matrix>::value_type> s;
+	seed<typename Collection<Matrix>::value_type> s; 
 	random(A, s);
     }
 
