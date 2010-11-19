@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace mtl { namespace matrix {
@@ -38,11 +39,9 @@ void reorder_ref(const ReorderVector& v, Matrix& A, std::size_t cols= 0)
 	MTL_THROW_IF(my_max > cols, range_error("Too large value in reorder vector"));
 
     A.change_dim(s, cols);
-    {
-	inserter<Matrix>      ins(A, 1);
-	for (std::size_t i= 0; i < s; i++)
-	    ins[i][v[i]] << one(value_type());
-    }
+    inserter<Matrix>      ins(A, 1);
+    for (std::size_t i= 0; i < s; i++)
+	ins[i][v[i]] << one(value_type());
 }
 
 
