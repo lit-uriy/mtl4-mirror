@@ -13,6 +13,7 @@
 #ifndef MTL_MULT_INCLUDE
 #define MTL_MULT_INCLUDE
 
+#include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
