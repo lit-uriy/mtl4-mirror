@@ -81,6 +81,8 @@
 #include <boost/numeric/mtl/matrix/lower.hpp>
 #include <boost/numeric/mtl/matrix/permutation.hpp>
 #include <boost/numeric/mtl/matrix/reorder.hpp>
+#include <boost/numeric/mtl/matrix/reorder_ref.hpp>
+#include <boost/numeric/mtl/matrix/reorder_matrix_rows.hpp>
 #include <boost/numeric/mtl/matrix/strict_upper.hpp>
 #include <boost/numeric/mtl/matrix/strict_lower.hpp>
 #include <boost/numeric/mtl/matrix/upper.hpp>
