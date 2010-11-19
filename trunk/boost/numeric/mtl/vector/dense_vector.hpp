@@ -35,6 +35,7 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
+#include <boost/numeric/mtl/utility/transposed_orientation.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 
 
@@ -253,7 +254,7 @@ template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
 inline num_cols(const dense_vector<Value, Parameters>& vector)
 {
-    return num_rows_aux(vector, typename transposed_orientation<typename Parameters::orientation>::type());
+    return num_rows_aux(vector, typename mtl::traits::transposed_orientation<typename Parameters::orientation>::type());
 }
 
 /// Sub-vector function, more convenient with irange

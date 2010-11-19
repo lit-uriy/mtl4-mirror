@@ -20,6 +20,7 @@
 #include <boost/type_traits/remove_const.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/utility/transposed_orientation.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/property_map_impl.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
@@ -27,21 +28,6 @@
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 
 namespace mtl { namespace matrix {
-
-
-// Orientation type for transposed matrix
-template <class T> struct transposed_orientation {};
-
-template<> struct transposed_orientation<tag::row_major> 
-{
-    typedef tag::col_major type; 
-};
-
-template<> struct transposed_orientation<tag::col_major> 
-{
-    typedef tag::row_major type; 
-};
-
 
 
 template <class Matrix> 
@@ -59,7 +45,7 @@ struct transposed_view
     typedef mat_expr< self >              expr_base;
     typedef Matrix                        other;
 
-    typedef typename transposed_orientation<typename Matrix::orientation>::type orientation;
+    typedef typename mtl::traits::transposed_orientation<typename Matrix::orientation>::type orientation;
     typedef typename Matrix::index_type                index_type;
     typedef typename Matrix::value_type                value_type;
     typedef typename Matrix::const_reference           const_reference;
