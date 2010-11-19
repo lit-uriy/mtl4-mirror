@@ -35,6 +35,7 @@
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
+#include <boost/numeric/mtl/utility/transposed_orientation.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 // Forward declaration (for friend declaration)
@@ -533,7 +534,7 @@ namespace mtl { namespace traits {
 
 	// Complexity of column cursor is of course opposite
 	template <typename Orientation> struct dense2D_cc
-	    : dense2D_rc<typename transposed_orientation<Orientation>::type>
+	    : dense2D_rc<typename mtl::traits::transposed_orientation<Orientation>::type>
 	{};
     }
 

@@ -96,7 +96,6 @@ namespace mtl {
 	template <typename Vector1, typename Vector2> class outer_product_functor;
 	template <typename Vector1, typename Vector2> class outer_product_matrix;
 
-        template <typename Matrix> struct transposed_orientation;
         template <typename Matrix> struct transposed_view;
         
 	template <typename Matrix> struct mat_expr;
@@ -123,7 +122,6 @@ namespace mtl {
     using matrix::morton_dense;
     using matrix::compressed2D;
     using matrix::multi_vector;
-    using matrix::transposed_orientation;
     using matrix::transposed_view;
     
 
@@ -204,6 +202,8 @@ namespace mtl {
 	template <typename Tag, typename Collection>  struct range_generator;
 
 	template <typename T> struct eval_dense;
+
+        template <typename Matrix> struct transposed_orientation;
 
 	// for internal implementations
 	namespace detail {

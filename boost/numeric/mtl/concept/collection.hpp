@@ -23,6 +23,8 @@
 #  include <boost/numeric/linear_algebra/pseudo_concept.hpp>
 #endif
 
+#include <boost/numeric/mtl/utility/transposed_orientation.hpp>
+
 namespace mtl {
 
 /** @addtogroup Concepts
@@ -1062,14 +1064,14 @@ namespace mtl {
 	typedef typename transposed_view<Coll>::const_reference   const_reference;
 	typedef typename transposed_view<Coll>::size_type         size_type;
 
-	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
+	typedef typename mtl::traits::transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
     };
 #else
     template <typename Coll>
     struct OrientedCollection<transposed_view<Coll> >
 	: public Collection<transposed_view<Coll> >
     {
-	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
+	typedef typename mtl::traits::transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
     };
 #endif
 
@@ -1081,14 +1083,14 @@ namespace mtl {
 	typedef typename matrix::hermitian_view<Coll>::const_reference   const_reference;
 	typedef typename matrix::hermitian_view<Coll>::size_type         size_type;
 
-	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
+	typedef typename mtl::traits::transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
     };
 #else
     template <typename Coll>
     struct OrientedCollection<matrix::hermitian_view<Coll> >
       : public Collection<matrix::hermitian_view<Coll> >
     {
-	typedef typename transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
+	typedef typename mtl::traits::transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
     };
 #endif
 
