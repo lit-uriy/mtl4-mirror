@@ -17,9 +17,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
-#include <boost/numeric/mtl/operation/size.hpp>
-#include <boost/numeric/mtl/utility/exception.hpp>
-#include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/matrix/reorder_ref.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -39,25 +37,9 @@ template <typename Value, typename ReorderVector>
 typename traits::reorder<Value>::type
 reorder(const ReorderVector& v, std::size_t cols= 0)
 {
-    using math::one; using mtl::size;
-    typedef typename traits::reorder<Value>::type matrix_type;
-
-    // Find maximal entry (don't use mtl::max to allow for arrays and others)
-    std::size_t  s= static_cast<std::size_t>(size(v)),
-	         my_max= std::size_t(*std::max_element(&v[0], &v[0] + s)) + 1;
-
-    if (cols == 0) 
-	cols= my_max;
-    else
-	MTL_THROW_IF(my_max > cols, range_error("Too large value in reorder vector"));
-
-    matrix_type                matrix(s, cols);
-    {
-	inserter<matrix_type>      ins(matrix, 1);
-	for (std::size_t i= 0; i < s; i++)
-	    ins[i][v[i]] << one(Value());
-    }
-    return matrix;
+    typename traits::reorder<Value>::type A;
+    reorder_ref(v, A, cols);
+    return A;
 }
 
 
