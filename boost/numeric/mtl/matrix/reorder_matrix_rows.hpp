@@ -31,10 +31,11 @@ Matrix reorder_matrix_rows(const ReorderVector& v, const Matrix& A)
     typename mtl::traits::const_value<Matrix>::type                           value(A); 
     typedef typename mtl::traits::range_generator<tag::row, Matrix>::type     cursor_type;	
     typedef typename mtl::traits::range_generator<tag::nz, cursor_type>::type icursor_type;
-    typedef typename mtl::Collection<Matrix>::size_type  col_type;
+    typedef typename mtl::Collection<Matrix>::size_type                       size_type;
+    
     Matrix B(size(v), num_cols(A));
  
-    inserter<Matrix>      ins(B, col_type(B.nnz() / num_cols(B) * 1.2));
+    inserter<Matrix>      ins(B, size_type(B.nnz() / num_cols(B) * 1.2));
 	
     for (std::size_t i= 0; i < size(v); i++) {
 	cursor_type cursor(v[i], A);   // go to row given by reorder 
