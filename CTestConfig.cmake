@@ -5,7 +5,7 @@
 ##   ENABLE_TESTING()
 ##   INCLUDE(CTest)
 set(CTEST_PROJECT_NAME "mtl4")
-set(CTEST_NIGHTLY_START_TIME "00:00:00 EST")
+set(CTEST_NIGHTLY_START_TIME "00:00:00 CET")
 
 set(CTEST_DROP_METHOD "https")
 set(CTEST_DROP_SITE "simunova.zih.tu-dresden.de")
