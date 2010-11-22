@@ -13,6 +13,7 @@
 #ifndef MTL_MATRIX_REORDER_MATRIX_ROWS_INCLUDE
 #define MTL_MATRIX_REORDER_MATRIX_ROWS_INCLUDE
 
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
