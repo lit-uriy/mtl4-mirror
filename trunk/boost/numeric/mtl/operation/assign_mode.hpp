@@ -28,6 +28,13 @@ struct assign_sum
 	v= zero(v);
     }
 
+    // Sets x with y when empty or not initialized
+    template <typename T, typename U>
+    static void set_empty(T& x, const U& y)
+    {
+	x= y;
+    }
+
     // The first update sets the value and avoids the zeroing
     template <typename T, typename U>
     static void first_update(T& x, const U& y)
@@ -50,6 +57,13 @@ struct plus_sum
     template <typename T>
     static void init(T& v) {}
 
+    // Sets x with y when empty or not initialized
+    template <typename T, typename U>
+    static void set_empty(T& x, const U& y)
+    {
+	x= y;
+    }
+
     template <typename T, typename U>
     static void first_update(T& x, const U& y)
     {
@@ -70,6 +84,13 @@ struct minus_sum
 
     template <typename T>
     static void init(T& v) {}
+
+    // Sets x with y when empty or not initialized
+    template <typename T, typename U>
+    static void set_empty(T& x, const U& y)
+    {
+	x= -y;
+    }
 
     template <typename T, typename U>
     static void first_update(T& x, const U& y)
