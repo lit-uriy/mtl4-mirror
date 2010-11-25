@@ -97,7 +97,7 @@ namespace mtl { namespace matrix {
 
 	    /// Solve system A*x == b with matrix passed in constructor
 	    template <typename VectorX, typename VectorB>
-	    int operator()(VectorX& x, const VectorB& b) {}
+	    int operator()(VectorX& x, const VectorB& b) {return 0;}
 	};
 
 	template <typename Parameters>
@@ -156,7 +156,7 @@ namespace mtl { namespace matrix {
 
 
 	  public:
-	    explicit solver(const matrix_type& A) 
+	    explicit solver(const matrix_type& A, int strategy = UMFPACK_STRATEGY_AUTO) 
 	      : A(A), Apc(0), Aic(0), my_nnz(0), Symbolic(0), Numeric(0) 
 	    {
 		// Use default setings.
@@ -164,6 +164,8 @@ namespace mtl { namespace matrix {
 		    umfpack_dl_defaults(Control);
 		else
 		    umfpack_di_defaults(Control);
+
+		Control[UMFPACK_STRATEGY] = strategy;
 		init(); 
 	    }
 
