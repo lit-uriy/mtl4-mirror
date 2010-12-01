@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/matrix/operators.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/utility/gradient.hpp>
 
 namespace itl {
 
@@ -47,8 +48,9 @@ Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, Iter&
 template <typename Vector, typename F, typename Grad, typename Step, typename Update, typename Iter>
 Vector inline quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, Iter& iter) 
 {
-    typedef typename mtl::Collection<Vector>::value_type value_type;
-    return quasi_newton<mtl::dense2D<value_type> >(x, f, grad_f, step, update, iter);
+    typedef typename mtl::traits::gradient<Vector>::type hessian_type;
+    // typedef typename mtl::Collection<Vector>::value_type value_type;
+    return quasi_newton<hessian_type>(x, f, grad_f, step, update, iter);
 }
 
 
