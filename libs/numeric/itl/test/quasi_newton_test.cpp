@@ -15,43 +15,40 @@
 #include <cmath>
 #include <boost/test/minimal.hpp>
 
-
-// #include <boost/numeric/mtl/mtl.hpp>
-// #include <boost/numeric/itl/itl.hpp>
-
-#include <boost/numeric/mtl/vector/dense_vector.hpp>
-#include <boost/numeric/mtl/operation/two_norm.hpp>
-#include <boost/numeric/itl/iteration/cyclic_iteration.hpp>
-
-#include <boost/numeric/itl/minimization/quasi_newton.hpp>
-#include <boost/numeric/itl/stepper/wolf.hpp>
-#include <boost/numeric/itl/updater/bfgs.hpp>
-
+#include <boost/numeric/mtl/mtl.hpp>
+#include <boost/numeric/itl/itl.hpp>
 
 using namespace std;  
    
+template <typename Vector>
 struct f_test
 {
-    template <typename Vector>
+    f_test() : s(3)
+    {
+	mtl::vector::inserter<Vector> ins(s);
+	ins[0] << 1; ins[1] << 2; ins[2] << 2; 
+    }
+
     typename mtl::Collection<Vector>::value_type 
     operator() (const Vector& x) const
     {
-	return x[0]*x[0] + 2*x[1]*x[1] + 2*x[2]*x[2];
+	return dot(s, Vector(ele_prod(x, x)));
     }
+    Vector s;
 };
 
 
+template <typename Vector>
 struct grad_f_test
 {
-    template <typename Vector>
-    Vector operator() (const Vector& x) const
-    {    
-	Vector tmp(size(x));
-	tmp[0]= 2 * x[0];
-	tmp[1]= 4 * x[1];
-	tmp[2]= 4 * x[2];
-	return tmp;
+    grad_f_test() : s(3)
+    {
+	mtl::vector::inserter<Vector> ins(s);
+	ins[0] << 2; ins[1] << 4; ins[2] << 4; 
     }
+
+    Vector operator() (const Vector& x) const {  return Vector(ele_prod(s, x)); }
+    Vector s;
 };
 
 
@@ -61,13 +58,16 @@ int test_main(int, char**)
 
     mtl::dense_vector<double>       x(3, 8);
     std::cout<< "x= " << x << "\n";
+
+    grad_f_test<mtl::dense_vector<double> > grad_f;
+    f_test<mtl::dense_vector<double> >      f;
         
-    itl::cyclic_iteration<double> iter(grad_f_test()(x), 1000, 0, 1e-4, 100);
-    quasi_newton(x, f_test(), grad_f_test(), itl::wolf<>(), itl::bfgs(), iter);
+    itl::cyclic_iteration<double> iter(grad_f(x), 1000, 0, 1e-4, 100);
+    quasi_newton(x, f, grad_f, itl::wolf<>(), itl::bfgs(), iter);
     iter.error_code();    
 
     std::cout<< "x= " << x << "\n";
-    std::cout<< "grad_f(x)= " << grad_f_test()(x) << "\n";
+    std::cout<< "grad_f(x)= " << grad_f(x) << "\n";
     if (two_norm(x) > 10 * iter.atol())
 	throw "x should be 0.";
 
