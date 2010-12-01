@@ -21,6 +21,7 @@
 #  include <concepts>
 #else 
 #  include <boost/numeric/linear_algebra/pseudo_concept.hpp>
+#  include <boost/numeric/mtl/concept/std_concept.hpp>
 #endif
 
 #include <boost/numeric/mtl/utility/transposed_orientation.hpp>
@@ -683,6 +684,19 @@ namespace mtl {
 	typedef typename mtl::vector::strided_vector_ref<Value, Parameters>::size_type size_type;
     };
 #endif
+
+#ifdef __GXX_CONCEPTS__
+#else
+    template <class E1, class E2, typename SFunctor> 
+    struct Collection<mtl::vector::vec_vec_ele_prod_expr<E1, E2, SFunctor> >
+    {
+	typedef typename Multiplicable<typename Collection<E1>::value_type,
+				       typename Collection<E2>::value_type>::result_type value_type;
+	typedef const value_type&     const_reference;
+	typedef typename Collection<E1>::size_type  size_type;
+    };
+#endif
+
 
 #ifdef __GXX_CONCEPTS__
 
