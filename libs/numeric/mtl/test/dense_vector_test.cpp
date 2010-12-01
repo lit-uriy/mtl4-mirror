@@ -54,6 +54,18 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     cout << "u: " << u << "\n"; std::cout.flush();
     if (u[0] != 9.0) throw "wrong";
 
+    std::cout << name << "  --- u= ele_prod(v, w):\n"; std::cout.flush();
+    u= ele_prod(v, w);
+    cout << "u: " << u << "\n"; std::cout.flush();
+    if (u[0] != 20.0) throw "wrong";
+
+    std::cout << name << "  --- u= ele_prod(v, w) + w:\n"; std::cout.flush();
+    u= ele_prod(v, w) + w;
+    cout << "u: " << u << "\n"; std::cout.flush();
+    if (u[0] != 25.0) throw "wrong";
+
+
+
     std::cout << name << "  --- u= v + w + v + w:\n"; std::cout.flush();
     u= v + w + v + w;
     cout << "u: " << u << "\n"; std::cout.flush();

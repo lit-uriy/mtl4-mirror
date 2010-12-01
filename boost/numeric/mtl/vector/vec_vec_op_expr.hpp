@@ -46,8 +46,7 @@ public:
     vec_vec_op_expr( first_argument_type const& v1, second_argument_type const& v2 )
 	: first( v1 ), second( v2 )
     {
-	std::cerr << "vec_vec_op_expr.vec_vec_op_expr()  " << first.size() << "  " << second.size() << "\n";
-
+	// std::cerr << "vec_vec_op_expr.vec_vec_op_expr()  " << size(first) << "  " << size(second) << "\n";
 	first.delay_assign();
 	second.delay_assign();
     }

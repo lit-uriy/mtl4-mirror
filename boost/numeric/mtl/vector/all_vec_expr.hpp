@@ -15,6 +15,7 @@
 
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_negate_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_ele_prod_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_vec_plus_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_vec_minus_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_vec_asgn_expr.hpp>
