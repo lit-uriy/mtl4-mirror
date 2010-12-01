@@ -34,8 +34,8 @@ class wolf
     operator() (const Vector& x, const Vector& d, F f, Grad grad_f) const
     {
 	// Star's step size
-	value_type alpha= -gamma * dot(grad_f(x), d) / dot(d, d);
-	mtl::dense_vector<value_type> x_k(x + alpha * d);
+	typename mtl::Collection<Vector>::value_type alpha= -gamma * dot(grad_f(x), d) / dot(d, d);
+	Vector     x_k(x + alpha * d);
 
 	while (f(x_k) > f(x) + (beta1 * alpha) * dot(grad_f(x), d) 
 	       && dot(grad_f(x_k), d) < beta2 * dot(grad_f(x), d)) {	
