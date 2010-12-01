@@ -29,11 +29,17 @@
 #include <boost/numeric/itl/krylov/tfqmr.hpp>
 #include <boost/numeric/itl/krylov/qmr.hpp>
 
-#include <boost/numeric/itl/smoother/gauss_seidel.hpp>
+#include <boost/numeric/itl/minimization/quasi_newton.hpp>
 
 #include <boost/numeric/itl/pc/identity.hpp>
 #include <boost/numeric/itl/pc/diagonal.hpp>
 #include <boost/numeric/itl/pc/ilu_0.hpp>
 #include <boost/numeric/itl/pc/ic_0.hpp>
+
+#include <boost/numeric/itl/smoother/gauss_seidel.hpp>
+
+#include <boost/numeric/itl/stepper/wolf.hpp>
+
+#include <boost/numeric/itl/updater/bfgs.hpp>
 
 #endif // ITL_ITL_INCLUDE
