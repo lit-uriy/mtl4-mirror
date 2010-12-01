@@ -141,6 +141,7 @@ namespace mtl {
 	template <class E1, class E2, typename SFunctor> struct vec_vec_aop_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_vec_ele_prod_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_scal_aop_expr;
+	template <class E1, class E2> struct vec_vec_asgn_expr;
 	template <class E1, class E2> struct vec_vec_plus_asgn_expr;
 	template <class E1, class E2> struct vec_vec_minus_asgn_expr;
 	// template <class E1, class E2> struct vec_vec_times_asgn_expr; // is this really used???
