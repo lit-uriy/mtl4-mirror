@@ -96,6 +96,12 @@ struct root< mtl::matrix::divide_by_view<Matrix, Divisor> >
 // Vector assignment expressions
 
 template <typename E1, typename E2>
+struct root< vector::vec_vec_asgn_expr<E1, E2> >
+{
+    typedef vector::vec_vec_aop_expr< E1, E2, mtl::sfunctor::assign<typename E1::value_type, typename E2::value_type> > type;
+};
+
+template <typename E1, typename E2>
 struct root< vector::vec_vec_plus_asgn_expr<E1, E2> >
 {
     typedef vector::vec_vec_aop_expr< E1, E2, mtl::sfunctor::plus_assign<typename E1::value_type, typename E2::value_type> > type;
