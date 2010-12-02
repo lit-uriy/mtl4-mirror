@@ -88,11 +88,7 @@ class portfolio_optimizer
 	cout << "A is\n" << A << "\nb is " << b << '\n';
     }
 
-    Vector operator()() const
-    {
-	Vector  x(lu_solve(A, b));
-	return x[irange(s-2)];
-    }
+    Vector operator()() const {	return clone(lu_solve(A, b)[irange(s-2)]); }
 
   private:
 
