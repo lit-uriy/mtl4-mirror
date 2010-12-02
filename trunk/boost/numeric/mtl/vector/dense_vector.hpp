@@ -125,6 +125,9 @@ class dense_vector
 	copy(src.begin(), src.end(), begin());
     }
 
+    dense_vector( const self& src, clone_ctor )
+      : memory_base( src, clone_ctor()) {} 
+
     /// Constructor from vector expressions
     template <typename VectorSrc>
     explicit dense_vector(const VectorSrc& src,
@@ -290,6 +293,13 @@ inline sub_vector(const dense_vector<Value, Parameters>& v,
 
 }} // namespace mtl::vector
 
+namespace mtl {
+
+    // Enable cloning of dense matrices
+    template <typename Value, typename Parameters>
+    struct is_clonable< vector::dense_vector<Value, Parameters> > : boost::mpl::true_ {};
+        
+} // namespace mtl
 
 namespace mtl { namespace traits {
 
