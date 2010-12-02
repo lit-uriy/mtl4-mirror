@@ -15,11 +15,10 @@
 
 #include <boost/utility/enable_if.hpp>
 #include <boost/mpl/bool.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 
 namespace mtl {
-
-struct clone_ctor {};
 
 template<typename T>
 struct is_clonable : boost::mpl::false_

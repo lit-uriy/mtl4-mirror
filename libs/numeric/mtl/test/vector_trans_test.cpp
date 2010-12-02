@@ -32,6 +32,7 @@ void test2(const char* name, const Vector& v)
 {
     std::cout << name << ": v is " << v << ", typeid is " << typeid(v).name() << "\n";
     std::cout << "trans(v) is " << trans(v) << ", typeid is " << typeid(trans(v)).name() << "\n";
+    // trans(v)[0]= 2.3; // must not compile
 }
 
 

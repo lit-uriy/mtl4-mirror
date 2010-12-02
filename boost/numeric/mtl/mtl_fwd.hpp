@@ -337,7 +337,10 @@ namespace mtl {
     template<typename T> struct is_clonable;
 
     /// Helper type to define constructors that always copy
-    struct clone_ctor;
+    struct clone_ctor {};
+
+    /// Helper type to define constructors that refer to another object instead of copying it (e.g. transposed vectors)
+    struct refer_ctor {};
 
     class irange;
 
