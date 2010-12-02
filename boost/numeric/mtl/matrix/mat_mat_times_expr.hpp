@@ -36,10 +36,10 @@ namespace mtl { namespace matrix {
 
 template <typename E1, typename E2>
 struct mat_mat_times_expr 
-  : public mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> >,
+  : public mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename Collection<E1>::value_type, typename Collection<E2>::value_type> >,
     public mat_expr< mat_mat_times_expr<E1, E2> >
 {
-    typedef mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> > op_base;
+    typedef mat_mat_op_expr< E1, E2, mtl::sfunctor::times<typename Collection<E1>::value_type, typename Collection<E2>::value_type> > op_base;
     typedef mat_expr< mat_mat_times_expr<E1, E2> >                                                       crtp_base;
     typedef mat_mat_times_expr                   self;
     typedef E1                                   first_argument_type ;
@@ -48,13 +48,9 @@ struct mat_mat_times_expr
     typedef mtl::non_fixed::dimensions           dim_type;
     typedef typename E1::key_type                key_type;
 
-#if 0 // TODO: Doesn't find first_argument_type due to some const qualification or alike
+
     typedef typename Collection<E1>::value_type  first_value_type;
     typedef typename Collection<E2>::value_type  second_value_type;
-#else
-    typedef typename E1::value_type              first_value_type;
-    typedef typename E2::value_type              second_value_type;
-#endif
     typedef typename Multiplicable<first_value_type, second_value_type>::result_type result_value_type;
     
 #if 0 // Just an idea
