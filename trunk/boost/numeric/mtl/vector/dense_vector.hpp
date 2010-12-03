@@ -132,9 +132,7 @@ class dense_vector
     template <typename VectorSrc>
     explicit dense_vector(const VectorSrc& src,
 			  typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
-    {
-	*this= src;
-    }
+    {	*this= src;    }
 
     /// Size of v (like a free function)
     friend inline size_type size(const self& v)  { return v.used_memory() ; }
@@ -194,7 +192,7 @@ class dense_vector
 	// Self-copy would be an indication of an error
 	assert(this != &src);
 
-	check_dim(size(src));
+	checked_change_dim(size(src));
 	memory_base::move_assignment(src);
 	return *this;
     }
