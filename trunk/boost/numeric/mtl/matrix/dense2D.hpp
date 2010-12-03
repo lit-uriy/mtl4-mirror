@@ -155,7 +155,7 @@ namespace detail
 } // namespace detail
 
   
-// Dense 2D matrix type
+/// Dense matrix type
 template <typename Value, typename Parameters = parameters<> >
 class dense2D 
   : public base_sub_matrix<Value, Parameters>, 
@@ -203,42 +203,33 @@ class dense2D
     }
 
   public:
-    // if compile time matrix size allocate memory
+    /// Default constructor, if compile time matrix size allocate memory
     dense2D() : super(), memory_base(dim_type().num_rows() * dim_type().num_cols())
-    { 
-	init(); 
-    }
+    { 	init();     }
 
-    // only sets dimensions, only for run-time dimensions
+    /// Constructor that only sets dimensions, only for run-time dimensions
     explicit dense2D(mtl::non_fixed::dimensions d) 
 	: super(d), memory_base(d.num_rows() * d.num_cols())
-    { 
-	init(); 
-    }
+    { 	init();     }
 
+    /// Most common constructor from number of rows and columns
     explicit dense2D(size_type num_rows, size_type num_cols) 
 	: super(dim_type(num_rows, num_cols)), 
 	  memory_base(num_rows * num_cols)
-    { 
-	init(); 
-    }
+    { 	init();     }
 
-    // sets dimensions and pointer to external data
+    /// Constructor that sets dimensions and pointer to external data
     explicit dense2D(mtl::non_fixed::dimensions d, value_type* a) 
       : super(d), memory_base(a, d.num_rows() * d.num_cols())
-    { 
-	init(); 
-    }
+    { 	init();     }
 
-    // sets dimensions and pointer to external data
+    /// Constructor that sets dimensions and pointer to external data
     explicit dense2D(size_type num_rows, size_type num_cols, value_type* a) 
       : super(mtl::non_fixed::dimensions(num_rows, num_cols)), memory_base(a, num_rows * num_cols)
-    { 
-	init(); 
-    }
+    { 	init();     }
 
-    // same constructor for compile time matrix size
-    // sets dimensions and pointer to external data
+    /// Constructor for compile time matrix size
+    /** sets dimensions and pointer to external data **/
     explicit dense2D(value_type* a) 
 	: super(), memory_base(a, dim_type().num_rows() * dim_type().num_cols())
     { 
@@ -246,7 +237,7 @@ class dense2D
         init();
     }
 
-    // Old remark: Default copy constructor doesn't work because CRTP refers to copied matrix not to itself 
+    /// Default copy constructor
     dense2D(const self& m) 
 	: super(dim_type(m.num_rows(), m.num_cols())), 
 	  memory_base(m)
@@ -255,6 +246,7 @@ class dense2D
 	this->my_nnz= m.my_nnz; ldim= m.ldim;
     }
 
+    /// Clone constructor, copies every source including sub-matrices and other matrices with references
     explicit dense2D(const self& m, clone_ctor) 
 	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
 	  memory_base(m, clone_ctor())
@@ -263,6 +255,7 @@ class dense2D
 	*this= m;
     }
 
+    /// General copy constructor, uses functionality from CRTP base
     template <typename MatrixSrc>
     explicit dense2D(const MatrixSrc& src) 
 	: super(), memory_base(dim_type().num_rows() * dim_type().num_cols())
@@ -271,7 +264,7 @@ class dense2D
 	*this= src;
     }
 
-
+    /// Constructor for creating sub-matrices
     template <typename MatrixSrc>
     dense2D(MatrixSrc& matrix, dense2D_sub_ctor, 
 	    size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
@@ -306,6 +299,7 @@ class dense2D
     }
 
   public:
+    /// Assignment
     self& operator=(typename detail::ref_on_stack<self, memory_base::on_stack>::type src)
     {
 	return self_assign(src, boost::mpl::bool_<memory_base::on_stack>());
@@ -347,6 +341,7 @@ class dense2D
     // import operators from CRTP base class
     using assign_base::operator=;
 
+    /// Change dimension, can keep old data
     void change_dim(size_type r, size_type c, bool keep_data = false)
     {
 	change_dim(r, c, keep_data, mtl::traits::is_static<self>());
@@ -382,23 +377,21 @@ class dense2D
     }
 
     void change_dim(size_type r, size_type c, bool, boost::mpl::true_)
-    {
-	assert(r == this->num_rows() && c == this->num_cols());
-    }
+    {	assert(r == this->num_rows() && c == this->num_cols());    }
 
  public:
+    /// Check whether indices r and c are in range
     bool check_indices(size_t r, size_t c) const
-    {
-	return r >= this->begin_row() && r < this->end_row() && c >= this->begin_col() && c < this->end_col();
-    }
+    {	return r >= this->begin_row() && r < this->end_row() && c >= this->begin_col() && c < this->end_col();    }
 
-    
+    /// Constant access to element
     const_reference operator() (size_t r, size_t c) const 
     {
 	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() || is_negative(c) || c >= this->num_cols(), index_out_of_range());
         return this->data[indexer(*this, r, c)];
     }
 
+    /// Mutable access to element
     value_type& operator() (size_t r, size_t c)
     {
 	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() || is_negative(c) || c >= this->num_cols(), index_out_of_range());
@@ -407,15 +400,12 @@ class dense2D
 
     // offset regarding c-style indices
     size_t c_offset(size_t r, size_t c) const
-    {
-	return indexer.offset(ldim, r, c, orientation());
-    }
+    {	return indexer.offset(ldim, r, c, orientation());    }
 
     size_type get_ldim() const
-    {
-	return ldim;
-    }
+    {	return ldim;    }
 
+    /// Swap two matrices
     friend void swap(self& matrix1, self& matrix2)
     {
 	swap(static_cast<memory_base&>(matrix1), static_cast<memory_base&>(matrix2));
@@ -470,6 +460,8 @@ class dense2D
 // Free functions
 // ================
 
+
+/// Number of rows
 template <typename Value, typename Parameters>
 typename dense2D<Value, Parameters>::size_type
 inline num_rows(const dense2D<Value, Parameters>& matrix)
@@ -477,6 +469,7 @@ inline num_rows(const dense2D<Value, Parameters>& matrix)
     return matrix.num_rows();
 }
 
+/// Number of columns
 template <typename Value, typename Parameters>
 typename dense2D<Value, Parameters>::size_type
 inline num_cols(const dense2D<Value, Parameters>& matrix)
@@ -484,6 +477,7 @@ inline num_cols(const dense2D<Value, Parameters>& matrix)
     return matrix.num_cols();
 }
 
+/// Size of the matrix, i.e. the number of row times columns
 template <typename Value, typename Parameters>
 typename dense2D<Value, Parameters>::size_type
 inline size(const dense2D<Value, Parameters>& matrix)

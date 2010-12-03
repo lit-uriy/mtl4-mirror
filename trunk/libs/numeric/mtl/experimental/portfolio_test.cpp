@@ -107,15 +107,23 @@ int test_main(int, char**)
     rv= 1.03, 1.14, 1.05, 1.08;
 
     dense2D<double>            S(4, 4);
+#if 1
     S= 1.0, 0.1, 0.3, -0.2,
 	0.1, 1., -0.4, 0.7,
 	0.3, -0.4, 1., 0.4,
 	-0.2, 0.7, 0.4, 1.;
+#else
+    S= 1.0, 0.1, 0.3, 0.2,
+	0.1, 1., 0.4, 0.7,
+	0.3, 0.4, 1., 0.4,
+	0.2, 0.7, 0.4, 1.;
+#endif
 
-    f_ftor< dense_vector<double>, dense2D<double> >  f(rv, 1.09, 100.0, S);
+    const double lagrange= 10000.0;
+    f_ftor< dense_vector<double>, dense2D<double> >  f(rv, 1.09, lagrange, S);
     cout << "f(pi) is " << f(pi) << '\n';
 
-    grad_f_ftor< dense_vector<double>, dense2D<double> >  grad_f(rv, 1.09, 100.0, S);
+    grad_f_ftor< dense_vector<double>, dense2D<double> >  grad_f(rv, 1.09, lagrange, S);
     cout << "grad_f(pi) is " << grad_f(pi) << '\n';
     
     portfolio_optimizer< dense_vector<double>, dense2D<double> >  opt(rv, 1.09, S);
@@ -126,13 +134,13 @@ int test_main(int, char**)
     std::cout<< "Overall ROI is " << dot(pi_opt, rv) << "\n";
     std::cout<< "Variance is " << dot(pi_opt, dense_vector<double>(S * pi_opt)) << "\n";
 
-#if 0
+#if 1
     std::cout<< "Sum of pi is " << sum(pi) << "\n";
     std::cout<< "Overall ROI is " << dot(pi, rv) << "\n";
     std::cout<< "Variance is " << dot(pi, dense_vector<double>(S * pi)) << "\n";
 
-    itl::cyclic_iteration<double> iter(grad_f(pi), 100, 0, 1e-4, 10);
-    quasi_newton(pi, f, grad_f, itl::wolf<>(), itl::bfgs(), iter);
+    itl::cyclic_iteration<double> iter(grad_f(pi), 1000, 0, 1e-5, 10);
+    quasi_newton(pi, f, grad_f, itl::armijo<>(), itl::sr1(), iter);
     iter.error_code();    
 
     std::cout<< "pi= " << pi << "\n";

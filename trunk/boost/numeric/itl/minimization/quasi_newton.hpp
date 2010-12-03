@@ -20,6 +20,8 @@
 #include <boost/numeric/mtl/operation/trans.hpp>
 #include <boost/numeric/mtl/utility/gradient.hpp>
 
+// #include <iostream>
+
 namespace itl {
 
 /// Quasi-Newton method
@@ -33,13 +35,13 @@ Vector quasi_newton(Vector& x, F f, Grad grad_f, Step step, Update update, Iter&
     
     H= 1;
     for (; !iter.finished(two_norm(grad_f(x))); ++iter) {
-	d= H * -grad_f(x);                               
-	value_type alpha= step(x, d, f, grad_f);
-	x_k= x + alpha * d;
-	s= alpha * d;
+	d= H * -grad_f(x);                                                  // std::cout << "d is " << d << '\n'; 
+	value_type alpha= step(x, d, f, grad_f); assert(alpha == alpha);
+	x_k= x + alpha * d;                                                 // std::cout << "x_k is " << x_k << '\n';
+	s= alpha * d;                                                       // std::cout << "alpha is " << alpha << '\n';
 	y= grad_f(x_k) - grad_f(x);
 	update(H, y, s);                               
-	x= x_k;
+	x= x_k;                                                             
     }
     return x;
 }

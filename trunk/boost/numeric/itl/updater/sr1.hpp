@@ -25,13 +25,9 @@ struct sr1
     template <typename Matrix, typename Vector>
     void operator() (Matrix& H, const Vector& y, const Vector& s)
     {
-	typedef typename mtl::Collection<Vector>::value_type value_type;
 	assert(num_rows(H) == num_cols(H));
-
-	Vector d(s-H*y);
-	value_type gamma= 1 / dot(d,y);
-	Matrix     H2(H + gamma * d * trans(d));
-	swap(H2, H); // faster than H= H2
+	Vector     d(s - H * y);
+	H+= 1 / dot(d, y) * d * trans(d);
    }
 }; 
 
