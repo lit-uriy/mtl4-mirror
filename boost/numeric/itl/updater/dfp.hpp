@@ -30,7 +30,7 @@ struct dfp
 
 	Vector h(H*y);
 	value_type gamma= 1 / dot(y,s), alpha= 1 / dot(y,h);
-	Matrix     A(alpha*y*trans(y)),
+	Matrix     A(alpha * y * trans(y)),
 	           H2(H - H * A * H  + gamma * s * trans(s));
 	swap(H2, H); // faster than H= H2
    }

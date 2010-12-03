@@ -10,23 +10,23 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-#ifndef ITL_WOLF_INCLUDE
-#define ITL_WOLF_INCLUDE
+#ifndef ITL_ARMIJO_INCLUDE
+#define ITL_ARMIJO_INCLUDE
 
 namespace itl {
 
-/// Step size control by Wolf
+/// Step size control by Armijo
 /** 
  **/
 template <typename Value= double>
-class wolf
+class armijo
 {
   public:
     typedef Value   value_type;
 
     // Defaults from Prof. Fischer's lecture
-    wolf(Value delta= 0.5, Value gamma= 0.5, Value beta1= 0.25, Value beta2= 0.5)
-      : delta(delta), gamma(gamma), beta1(beta1), beta2(beta2) {}
+    armijo(Value delta= 0.5, Value gamma= 0.5, Value beta1= 0.25, Value beta2= 0.5)
+      : delta(delta), gamma(gamma), beta1(beta1), beta((beta1 + beta2) / 2.0) {}
 
     /// 
     template <typename Vector, typename F, typename Grad>
@@ -37,19 +37,17 @@ class wolf
 	typename mtl::Collection<Vector>::value_type alpha= -gamma * dot(grad_f(x), d) / dot(d, d);
 	Vector     x_k(x + alpha * d);
 
-	Value beta= (beta1 + beta2) / 2;
-	while (f(x_k) > f(x) + (beta1 * alpha) * dot(grad_f(x), d) 
-	       && dot(grad_f(x_k), d) < beta2 * dot(grad_f(x), d)) {	
+	while (f(x_k) > f(x) + (beta1 * alpha) * dot(grad_f(x), d)) {	
 	    alpha*= beta;
 	    x_k= x+ alpha * d;
 	}
 	return alpha;
     }
   private:
-    Value delta, gamma, beta1, beta2; 
+    Value delta, gamma, beta1, beta;
 };
 
 
 } // namespace itl
 
-#endif // ITL_WOLF_INCLUDE
+#endif // ITL_ARMIJO_INCLUDE

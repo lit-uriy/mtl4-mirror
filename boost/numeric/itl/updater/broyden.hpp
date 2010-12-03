@@ -28,9 +28,9 @@ struct broyden
 	typedef typename mtl::Collection<Vector>::value_type value_type;
 	assert(num_rows(H) == num_cols(H));
 
-	Vector h(H*y), d(s-h);
-	value_type gamma= 1 / dot(y,h);
-	Matrix     A(gamma*d*trans(y)),
+	Vector     h(H * y), d(s - h);
+	value_type gamma= 1 / dot(y, h);
+	Matrix     A(gamma * d * trans(y)),
 	           H2(H + A * H);
 	swap(H2, H); // faster than H= H2
    }

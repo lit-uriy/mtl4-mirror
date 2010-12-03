@@ -38,6 +38,7 @@
 
 #include <boost/numeric/itl/smoother/gauss_seidel.hpp>
 
+#include <boost/numeric/itl/stepper/armijo.hpp>
 #include <boost/numeric/itl/stepper/wolf.hpp>
 
 #include <boost/numeric/itl/updater/bfgs.hpp>
