@@ -13,12 +13,18 @@
 #ifndef MTL_MATRIX_IMPLICIT_DENSE_INCLUDE
 #define MTL_MATRIX_IMPLICIT_DENSE_INCLUDE
 
+#include <vector>
 #include <boost/numeric/linear_algebra/inverse.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 
+#ifdef MTL_HAS_MPI
+#   include <boost/numeric/mtl/matrix/distributed.hpp>
+#   include <boost/numeric/mtl/matrix/inserter.hpp>
+#   include <boost/mpi/collectives.hpp>
+#endif
 
 namespace mtl { namespace matrix {
 
@@ -40,19 +46,22 @@ class implicit_dense
     typedef mtl::traits::detail::matrix_element_key<self> key_type;
     typedef mtl::non_fixed::dimensions                 dim_type;
 
-    explicit implicit_dense (const Functor& functor) : functor(functor) {}
+    explicit implicit_dense (const Functor& functor) : my_functor(functor) {}
 
-    value_type operator() (size_type r, size_type c) const { return functor(r, c); }
+    value_type operator() (size_type r, size_type c) const { return my_functor(r, c); }
 
     size_type nnz() const { return dim1() * dim2(); }
-    size_type dim1() const { return num_rows(functor); }
-    size_type dim2() const { return num_cols(functor); }
+    size_type dim1() const { return num_rows(my_functor); }
+    size_type dim2() const { return num_cols(my_functor); }
 
-    friend size_type inline num_rows(const self& A) { return num_rows(A.functor); }
-    friend size_type inline num_cols(const self& A) { return num_cols(A.functor); }
-    
+    friend size_type inline num_rows(const self& A) { return num_rows(A.my_functor); }
+    friend size_type inline num_cols(const self& A) { return num_cols(A.my_functor); }
+
+    Functor& functor() { return my_functor; }
+    Functor const& functor() const { return my_functor; }
+
   private:
-    Functor           functor;    
+    Functor           my_functor;    
 };
 
 template <typename Functor>
@@ -196,16 +205,22 @@ class outer_product_functor
     typedef typename Multiplicable<typename Collection<Vector1>::value_type,
 				   typename Collection<Vector2>::value_type>::result_type   result_type;
 
-    outer_product_functor(const Vector1& v1, const Vector2& v2) : v1(v1), v2(v2) {}
+    outer_product_functor(const Vector1& v1, const Vector2& v2) : my_v1(v1), my_v2(v2) {}
+    outer_product_functor(size_type r, size_type c) : my_v1(r), my_v2(c) {}
 
-    friend size_type inline num_rows(const self& A) { return size(A.v1); }
-    friend size_type inline num_cols(const self& A) { return size(A.v2); }
+    friend size_type inline num_rows(const self& A) { return size(A.my_v1); }
+    friend size_type inline num_cols(const self& A) { return size(A.my_v2); }
 
-    result_type operator()(size_type r, size_type c) const { return v1[r] * v2[c]; }
+    result_type operator()(size_type r, size_type c) const { return my_v1[r] * my_v2[c]; }
+
+    Vector1&       v1()       { return my_v1; }
+    Vector1 const& v1() const { return my_v1; }
+    Vector2&       v2()       { return my_v2; }
+    Vector2 const& v2() const { return my_v2; }
 
   private:
-    Vector1  v1; // keeps copy
-    Vector2  v2;
+    Vector1  my_v1; // keeps copy
+    Vector2  my_v2;
 };
 
 // ======================
@@ -250,8 +265,13 @@ class outer_product_matrix
     typedef implicit_dense<functor_type>      base;
 
     outer_product_matrix(const Vector1& v1, const Vector2& v2) : base(functor_type(v1, v2)) {}
-};
+    outer_product_matrix(size_type r, size_type c) : base(functor_type(r, c)) {}
 
+    Vector1&       v1()       { return this->functor().v1(); }
+    Vector1 const& v1() const { return this->functor().v1(); }
+    Vector2&       v2()       { return this->functor().v2(); }
+    Vector2 const& v2() const { return this->functor().v2(); }
+};
 
 }} // namespace mtl::matrix
 
