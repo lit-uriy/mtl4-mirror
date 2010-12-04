@@ -44,6 +44,7 @@
 #include <boost/numeric/itl/updater/bfgs.hpp>
 #include <boost/numeric/itl/updater/broyden.hpp>
 #include <boost/numeric/itl/updater/dfp.hpp>
+#include <boost/numeric/itl/updater/psb.hpp>
 #include <boost/numeric/itl/updater/sr1.hpp>
 
 #endif // ITL_ITL_INCLUDE
