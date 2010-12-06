@@ -113,7 +113,7 @@ Vector inline lu_solve(const Matrix& A, const Vector& b)
 
 
 /// Apply the factorization L*U with permutation P on vector b to solve adjoint(A)x = b
-/** That is P^{-1}(LU)^H x = b --> x= P^{-1}L^{-H} U^{-H} b where P^{-1}^{-1}^H = P^{-1} **/
+/** That is \f$P^{-1}(LU)^H x = b\f$ --> \f$x= P^{-1}L^{-H} U^{-H} b\f$ where \f$P^{{-1}^{{-1}^H}} = P^{-1}\f$ **/
 template <typename Matrix, typename PermVector, typename Vector>
 Vector inline lu_adjoint_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 {
@@ -121,7 +121,7 @@ Vector inline lu_adjoint_apply(const Matrix& LU, const PermVector& P, const Vect
 }
 
 
-/// Solve adjoint(A)x = b by LU factorization with column pivoting; vector x is returned
+/// Solve \f$adjoint(A)x = b\f$ by LU factorization with column pivoting; vector x is returned
 template <typename Matrix, typename Vector>
 Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b)
 {
