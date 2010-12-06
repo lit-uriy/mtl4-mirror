@@ -221,6 +221,8 @@ namespace mtl {
 
         template <typename Matrix> struct transposed_orientation;
 
+	template <typename Collection> struct root;
+
 	// for internal implementations
 	namespace detail {
 	    // needed collection.hpp (at least)
@@ -263,7 +265,7 @@ namespace mtl {
 	template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct rscale;
     }
 	
-    /// Namespace for functors with application operator and fully typed paramaters
+    /// Namespace for functors with application operator and fully typed parameters
     // added by Hui Li
     namespace tfunctor {
 	/// Functor for scaling matrices, vectors and ordinary scalars

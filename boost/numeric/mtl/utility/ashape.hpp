@@ -193,6 +193,13 @@ struct ashape_aux< matrix::mat_mat_op_expr<E1, E2, SFunctor> >
     typedef typename ashape<E1>::type type;
 };
 
+template <typename Vector1, typename Vector2>
+struct ashape< matrix::outer_product_matrix<Vector1, Vector2> >
+{
+    // BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+    // 			                typename transposed_shape<typename ashape<E2>::type>::type>::value));    
+    typedef mat<typename ashape<typename mtl::Collection<Vector1>::value_type>::type> type;
+};
 
 // =====
 // Views
