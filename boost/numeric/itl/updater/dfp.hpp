@@ -14,14 +14,15 @@
 #define ITL_DFP_INCLUDE
 
 #include <boost/numeric/mtl/concept/collection.hpp>
-#include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/itl/utility/exception.hpp>
 
 namespace itl {
 
 /// Update of Hessian matrix for e.g. Quasi-Newton by Davidon, Fletcher and Powell formula
 struct dfp
 {
-    /// 
+    /// \f$ H_{k+1}=B_{k+1}^{-1}=H_k+\frac{s_k\cdot s_k^T}{y_k^T\cdot s_k}- \frac{H_k\cdot y_k\cdot y_k^T\cdot H_k^T}{y_k^TH_k\cdot y_k}\f$
     template <typename Matrix, typename Vector>
     void operator() (Matrix& H, const Vector& y, const Vector& s)
     {
@@ -30,6 +31,8 @@ struct dfp
 
 	Vector h(H*y);
 	value_type gamma= 1 / dot(y,s), alpha= 1 / dot(y,h);
+	MTL_THROW_IF(gamma == 0.0, unexpected_orthogonality());
+	MTL_THROW_IF(alpha == 0.0, unexpected_orthogonality());
 	Matrix     A(alpha * y * trans(y)),
 	           H2(H - H * A * H  + gamma * s * trans(s));
 	swap(H2, H); // faster than H= H2

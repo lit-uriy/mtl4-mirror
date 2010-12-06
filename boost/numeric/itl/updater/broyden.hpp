@@ -14,14 +14,15 @@
 #define ITL_BROYDEN_INCLUDE
 
 #include <boost/numeric/mtl/concept/collection.hpp>
-#include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/itl/utility/exception.hpp>
 
 namespace itl {
 
 /// Update of Hessian matrix for e.g. Quasi-Newton by Broyden formula
 struct broyden
 {
-    /// 
+    /// \f$ H_{k+1}=B_{k+1}^{-1}=H_k+\frac{(s_k-H_k\cdot y_k)\cdot y_k^T\cdot H_k}{y_k^T\cdot H_k\cdot s_k} \f$
     template <typename Matrix, typename Vector>
     void operator() (Matrix& H, const Vector& y, const Vector& s)
     {
@@ -30,6 +31,7 @@ struct broyden
 
 	Vector     h(H * y), d(s - h);
 	value_type gamma= 1 / dot(y, h);
+	MTL_THROW_IF(gamma == 0.0, unexpected_orthogonality());
 	Matrix     A(gamma * d * trans(y)),
 	           H2(H + A * H);
 	swap(H2, H); // faster than H= H2
