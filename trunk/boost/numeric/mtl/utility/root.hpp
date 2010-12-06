@@ -14,6 +14,7 @@
 #define MTL_TRAITS_ROOT_INCLUDE
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl { namespace traits {
 
@@ -92,6 +93,38 @@ struct root< mtl::matrix::divide_by_view<Matrix, Divisor> >
 {
     typedef mtl::matrix::map_view<tfunctor::divide_by<typename Matrix::value_type, Divisor>, Matrix> type;
 };
+
+#if 1
+// Matrix operations
+template <typename M1, typename M2> 
+struct root< mtl::matrix::mat_mat_plus_expr<M1, M2> >
+{
+    typedef mtl::sfunctor::plus<typename Collection<M1>::value_type, typename Collection<M2>::value_type> f_type;
+    typedef mtl::matrix::mat_mat_op_expr<M1, M2, f_type> type;
+};
+
+template <typename M1, typename M2> 
+struct root< mtl::matrix::mat_mat_minus_expr<M1, M2> >
+{
+    typedef mtl::sfunctor::minus<typename Collection<M1>::value_type, typename Collection<M2>::value_type> f_type;
+    typedef mtl::matrix::mat_mat_op_expr<M1, M2, f_type> type;
+};
+
+template <typename M1, typename M2> 
+struct root< mtl::matrix::mat_mat_times_expr<M1, M2> >
+{
+    typedef mtl::sfunctor::times<typename Collection<M1>::value_type, typename Collection<M2>::value_type> f_type;
+    typedef mtl::matrix::mat_mat_op_expr<M1, M2, f_type> type;
+};
+
+template <typename M1, typename M2> 
+struct root< mtl::matrix::mat_mat_ele_times_expr<M1, M2> >
+{
+    typedef mtl::sfunctor::times<typename Collection<M1>::value_type, typename Collection<M2>::value_type> f_type;
+    typedef mtl::matrix::mat_mat_op_expr<M1, M2, f_type> type;
+};
+#endif
+
 
 // Vector assignment expressions
 
