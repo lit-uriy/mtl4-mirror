@@ -572,6 +572,24 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map Collection<vector::negate_view<Coll> >
+    {
+	typedef typename vector::negate_view<Coll>::value_type        value_type;
+	typedef typename vector::negate_view<Coll>::const_reference   const_reference;
+	typedef typename vector::negate_view<Coll>::size_type         size_type;
+    };
+#else
+    template <typename Coll>
+    struct Collection<vector::negate_view<Coll> >
+    {
+	typedef typename vector::negate_view<Coll>::value_type        value_type;
+	typedef typename vector::negate_view<Coll>::const_reference   const_reference;
+	typedef typename vector::negate_view<Coll>::size_type         size_type;
+    };
+#endif
+
 
 #ifdef __GXX_CONCEPTS__
     template <typename Functor, typename Coll>
