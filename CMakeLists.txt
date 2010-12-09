@@ -91,6 +91,8 @@ endif (MSVC)
 
 #################################################################################
 
+set(CTEST_MEMORYCHECK_COMMAND "/licsoft/debuggers/valgrind/3.4.1/bin/valgrind")
+
 macro (add_macro_flags)
   foreach (flag ${ARGV})
     if (win32)
