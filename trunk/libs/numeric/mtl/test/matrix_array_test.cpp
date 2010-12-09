@@ -22,7 +22,10 @@ int test_main(int, char**)
     dense2D<double> *A;
     A = new dense2D<double>[2];
     A[0] = dense2D<double>(3,3);
+
     A[1] = dense2D<double>(4,4);
+    A[0]= 0;
+    A[1]= 0;
     cout << A[0] << endl;
     cout << A[1] << endl;
     
@@ -30,6 +33,8 @@ int test_main(int, char**)
     x = new dense_vector<double>[2];
     x[0] = dense_vector<double>(3);
     x[1] = dense_vector<double>(4);
+    x[0] = 0;
+    x[1] = 0;
     // x[1] = dense_vector<double>(5); // Must throw an exception because 
     cout << x[0] << endl;
     cout << x[1] << endl;
