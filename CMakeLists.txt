@@ -91,7 +91,10 @@ endif (MSVC)
 
 #################################################################################
 
-set(CTEST_MEMORYCHECK_COMMAND "valgrind")
+find_program(VALGRIND_COMMAND valgrind)
+if(VALGRIND_COMMAND)
+  set(CTEST_MEMORYCHECK_COMMAND ${VALGRIND_COMMAND})
+endif(VALGRIND_COMMAND)
 
 macro (add_macro_flags)
   foreach (flag ${ARGV})
