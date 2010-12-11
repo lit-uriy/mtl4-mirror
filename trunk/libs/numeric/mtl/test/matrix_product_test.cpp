@@ -138,6 +138,12 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     tiling_44_mult(a, b, c);
     check_hessian_matrix_product(c, a.num_cols()); 
 
+    MatrixA A9(9, 9); MatrixB B9(9, 9); MatrixC C9(9, 9); // to test all block in 4x4 blocking for better coverage
+    hessian_setup(A9, 1.0); hessian_setup(B9, 2.0);
+
+    tiling_44_mult(A9, B9, C9);
+    check_hessian_matrix_product(C9, num_cols(A9)); 
+
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
     typedef mtl::gen_tiling_44_dmat_dmat_mult_t<plus_sum>  tiling_44_add_mult_t;
     tiling_44_add_mult_t tiling_44_add_mult;

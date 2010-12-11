@@ -42,38 +42,6 @@ complex<double> value(complex<double>)
     return ct(7.0, 1.0);
 }
 
-// scaled value
-double svalue(double)
-{
-    return 14.0;
-}
-
-ct svalue(ct)
-{
-    return ct(14.0, 2.0);
-}
-
-// conjugated value
-double cvalue(double)
-{
-    return 7.0;
-}
-
-ct cvalue(ct)
-{
-    return ct(7.0, -1.0);
-}
-
-// complex scaled value
-ct csvalue(double)
-{
-    return ct(0.0, 7.0);
-}
-
-ct csvalue(ct)
-{
-    return ct(-1.0, 7.0);
-}
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
