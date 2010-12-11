@@ -30,16 +30,35 @@ struct masked_dilation_tables
     typedef T                          mp_type[n_bytes];
     typedef T                          it_type[n_bytes];  // why int ??? switch to T
 
-protected:
+  protected:
     static lookup_type*                my_mask_lut;
     static lookup_type*                my_unmask_lut;
     static mp_type*                    my_mask_piece;
     static it_type*                    my_mask_size;
     static it_type*                    my_mask_shift_table;
     static it_type*                    my_unmask_shift_table;
-    static T                           n_valid_table;
-   
-public:
+    static int                         n_valid_table;
+    static int                         instances;
+  public:
+    
+    masked_dilation_tables()
+    {
+	if (instances++ == 0)
+	    compute_tables();
+    }
+
+    ~masked_dilation_tables()
+    {
+	if (--instances == 0) {
+	    delete[] my_mask_lut;         
+	    delete[] my_unmask_lut;       
+	    delete[] my_mask_piece;        
+	    delete[] my_mask_size;         
+	    delete[] my_mask_shift_table;  
+	    delete[] my_unmask_shift_table;
+	}
+    }
+
     lookup_type& mask_lut()
     {
 	// if (my_mask_lut == 0) compute_tables();   should be handled by check()
@@ -79,15 +98,9 @@ public:
 private:
 
     // get mask of the style 0xfff...
-    static T get_f_mask(int n_bits) 
-    {
-	return (1 << n_bits) - 1;
-    }
+    static T get_f_mask(int n_bits) { return (1 << n_bits) - 1;   }
 
-    T inc(T i, T mask) 
-    {
-	return ((i - mask) & mask);
-    }
+    T inc(T i, T mask) { return ((i - mask) & mask);    }
 
     void compute_tables() 
     {
@@ -95,7 +108,7 @@ private:
 	init();
 
 	// compute the mask table
-	for (T j = 0; j < n_valid_table; ++j) {
+	for (int j = 0; j < n_valid_table; ++j) {
 	    T f_mask = get_f_mask(mask_size()[j]), i, ii;
 	    for (i = 0, ii = 0; i < 256; ++i, ii = inc(ii, mask_piece()[j])) {
 		mask_lut()[j][i] =  (ii & f_mask) << mask_shift_table()[j]; // need to shift 
@@ -118,11 +131,11 @@ private:
 
     void allocate()
     {
-	my_mask_lut=   new lookup_type[1];
-	my_unmask_lut= new lookup_type[1];
-	my_mask_piece= new mp_type[1];
-	my_mask_size=  new it_type[1];
-	my_mask_shift_table=  new it_type[1];
+	my_mask_lut=            new lookup_type[1];
+	my_unmask_lut=          new lookup_type[1];
+	my_mask_piece=          new mp_type[1];
+	my_mask_size=           new it_type[1];
+	my_mask_shift_table=    new it_type[1];
 	my_unmask_shift_table=  new it_type[1];
     }
 
@@ -190,7 +203,7 @@ private:
 	}
 
 	t_mask = Mask;
-	for (T i = 0; i < n_valid_table - 1; ++i) {
+	for (int i = 0; i < n_valid_table - 1; ++i) {
 	    T n_bits = 0, tmp = t_mask;
 	    for (T n_ones= 0; n_ones < 8; ++n_bits) {
 		if ((t_mask & 0x01) == 1) ++n_ones;
@@ -214,18 +227,20 @@ private:
 
 public:
     
+#if 0
     void check()
     {
 	if (n_valid_table == 0)
 	    compute_tables();
     }	
+#endif
 
     // convert to masked integer
     T to_masked(T x) 
     {
-	check();
+	// check();
 	T result = 0;
-	for (T i = 0; i < n_valid_table; ++i)
+	for (int i = 0; i < n_valid_table; ++i)
 	    result += mask_lut()[i][0xff & (x >> (8*i)) ];
 	return result;
     }
@@ -234,7 +249,7 @@ public:
     // convert to unmasked integer
     T to_unmasked(T x) 
     {
-	check();
+	// check();
 	T result = 0;
 	x &= Mask;
 	for (T i = 0; i < n_bytes; ++i) {
@@ -265,7 +280,10 @@ template <class T, T Mask>
 typename masked_dilation_tables<T, Mask>::it_type* masked_dilation_tables<T, Mask>::my_unmask_shift_table= 0;
 
 template <class T, T Mask>
-T masked_dilation_tables<T, Mask>::n_valid_table= 0;
+int masked_dilation_tables<T, Mask>::n_valid_table= 0;
+
+template <class T, T Mask>
+int masked_dilation_tables<T, Mask>::instances= 0;
 
 
 // Masking: syntax e.g. mask<0x55555555>(7);
@@ -273,7 +291,7 @@ T masked_dilation_tables<T, Mask>::n_valid_table= 0;
 template <long unsigned Mask, typename T>
 inline T mask(T const& value)
 {
-    masked_dilation_tables<T, T(Mask)>  tables;
+    static masked_dilation_tables<T, T(Mask)>  tables;
     return tables.to_masked(value);
 }
 
@@ -291,7 +309,7 @@ inline T mask(T const& value, masked_dilation_tables<T, Mask> tables)
 template <long unsigned Mask, typename T>
 inline T unmask(T const& value)
 {
-    masked_dilation_tables<T, T(Mask)>  tables;
+    static masked_dilation_tables<T, T(Mask)>  tables;
     return tables.to_unmasked(value);
 }
 
