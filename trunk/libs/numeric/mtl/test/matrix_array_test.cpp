@@ -28,7 +28,8 @@ int test_main(int, char**)
     A[1]= 0;
     cout << A[0] << endl;
     cout << A[1] << endl;
-    
+    delete[] A;
+
     dense_vector<double> *x;
     x = new dense_vector<double>[2];
     x[0] = dense_vector<double>(3);
@@ -38,7 +39,7 @@ int test_main(int, char**)
     // x[1] = dense_vector<double>(5); // Must throw an exception because 
     cout << x[0] << endl;
     cout << x[1] << endl;
-
+    delete[] x;
 
     return 0;
 }

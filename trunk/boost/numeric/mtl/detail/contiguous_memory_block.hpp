@@ -144,18 +144,12 @@ struct size_helper<0>
     {
 	typedef alignment_helper self;
 
-	Value* alligned_alloc(std::size_t size)
-	{	
-		Value* tmp= new Value[size];
-		//std::cout << "Allocated " << tmp << '\n';
-		return tmp;
-	    //return new Value[size];
-	}
+	Value* alligned_alloc(std::size_t size)	{  return new Value[size]; }
 
 	void aligned_delete(bool is_own, Value*& data)
 	{
-		if (is_own && data) //std::cout << "Delete " << data << '\n', 
-			delete[] data;
+	    if (is_own && data != 0) // std::cout << "Delete " << data << '\n', 
+		delete[] data, data= 0;
 	}
 
 	friend void swap(self&, self&) {}
