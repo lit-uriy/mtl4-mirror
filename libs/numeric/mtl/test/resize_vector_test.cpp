@@ -37,12 +37,13 @@ int test_main(int, char**)
     x.change_dim(7);
     if (size(x) != 7) throw "vector should have size 7";
 
+    x= 3.0;
     cout << "Vector x after resizing (larger): " << x;
 
-    x= 3.0;
     x.change_dim(4);
     if (size(x) != 4) throw "vector should have size 4";
 
+    x= 3.0;
     cout << "Vector x after resizing (smaller): " << x;
 
     return 0;
