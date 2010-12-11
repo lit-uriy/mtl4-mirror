@@ -42,9 +42,9 @@ void test(Matrix& matrix, const char* name)
 		    ins(i, j) << i + 2*j;
     }
 
-    std::cout << "\n" << name << "\n" << matrix << "\n";
+    // std::cout << "\n" << name << "\n" << matrix << "\n"; // Get us complaints from valgrind
     set_to_zero(matrix);
-    std::cout << "should be empty now:\n" << matrix << "\n";
+    std::cout << "\n" << name << "\n" << "should be empty now:\n" << matrix << "\n";
     typename Matrix::value_type zero(0.0);
     if (matrix(0, 1) != zero)
 	throw "not properly set to zero";
