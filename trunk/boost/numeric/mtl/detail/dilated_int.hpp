@@ -88,7 +88,7 @@ struct dilated_int
 	                 dilated_zero = Normalized ? 0 : anti_mask,
 			 dilated_one = dilated_zero + last_bit<T, bit_mask>::value;
 protected:
-    masked_dilation_tables<T, bit_mask>   mask_tables;
+    // masked_dilation_tables<T, bit_mask>   mask_tables;
     // masked_dilation_tables<T, anti_mask>  anti_tables; probably not needed
       
 // will be protected later
