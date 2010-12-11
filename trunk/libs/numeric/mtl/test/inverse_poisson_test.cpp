@@ -54,15 +54,15 @@ void assemble_poisson2D(m_type& A, int n)
 template <class LinearSolver, class EigenVector>
 double inverse_iteration( LinearSolver& solver, EigenVector& x, int m ) 
 {
-  EigenVector y( size(x) ) ;
-  double lambda ;
-  x /= two_norm(x) ;
-  for (int i=0; i<m; ++i) {
-    solver( x, y ) ;
-    lambda = mtl::sum(x) / mtl::sum(y) ;
-    x = y / two_norm(y) ;
-  }
-  return lambda ;
+    EigenVector y( size(x), 0.0 ) ;
+    double lambda ;
+    x /= two_norm(x) ;
+    for (int i=0; i<m; ++i) {
+	solver( x, y ) ;
+	lambda = mtl::sum(x) / mtl::sum(y) ;
+	x = y / two_norm(y) ;
+    }
+    return lambda ;
 }
 
 //
