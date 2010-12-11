@@ -44,13 +44,15 @@ class matrix_market_istream
 {
     class pattern_type {};
     typedef matrix_market_istream        self;
-    void check_stream(const std::string& file_name= std::string()) const 
+    void check_stream(const std::string& file_name= std::string()) // not const to delete new_stream
     {
 	if (!my_stream.good()) {
 	    std::string message("matrix_market_istream: Error in input stream!\n");
 	    if (file_name != std::string())
 		message+= "Probably file " + file_name + " not found.\n";
 	    std::cerr << message;
+	    if (new_stream)
+		delete new_stream, new_stream= 0; // To get valgrind quite
 	    throw(file_not_found(message.c_str()));
 	}
     }
@@ -60,13 +62,12 @@ class matrix_market_istream
     explicit matrix_market_istream(const std::string& s) : new_stream(new std::ifstream(s.c_str())), my_stream(*new_stream) { check_stream(s); }
     explicit matrix_market_istream(std::istream& s= std::cin) : new_stream(0), my_stream(s) { check_stream(); }
 
-    ~matrix_market_istream() { if (new_stream) delete new_stream; }
+    ~matrix_market_istream() 
+    { 	if (new_stream) delete new_stream;    }
 
     template <typename Coll>
     self& operator>>(Coll& c) 
-    { 
-	return read(c, typename mtl::traits::category<Coll>::type());
-    }
+    { 	return read(c, typename mtl::traits::category<Coll>::type());    }
 
     /// Close only my own file, i.e. if filename and not stream is passed in constructor
     void close() { if (new_stream) new_stream->close(); }
