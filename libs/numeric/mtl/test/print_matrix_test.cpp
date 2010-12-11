@@ -40,6 +40,7 @@ template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
+    matrix= 0;
     {
 	mtl::matrix::inserter<Matrix> ins(matrix);
 	for (size_type i= 0; i < matrix.num_rows(); i++)
