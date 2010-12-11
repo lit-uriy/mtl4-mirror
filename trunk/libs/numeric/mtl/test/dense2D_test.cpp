@@ -24,7 +24,8 @@
 #include <boost/numeric/mtl/operation/print_matrix.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
- 
+
+// This test is old and ugly, consider replacing it without decreasing coverage
 
 using namespace std;
 
@@ -108,8 +109,10 @@ struct test_dense2D
     {
 	typedef mtl::dense2D<double, Parameters> matrix_type;
 	matrix_type   matrix;
-	double        val[] = {1., 2., 3., 4., 5., 6.};
-	mtl::raw_copy(val, val+6, matrix);
+	matrix= 1., 2., 3., 
+	        4., 5., 6.;
+	// double        val[] = {1., 2., 3., 4., 5., 6.};
+	// mtl::raw_copy(val, val+6, matrix);
  
 	one_d_iteration("\nMatrix", matrix, 1, 2, element_1_2);
 	two_d_iteration("\nRows: ", matrix, mtl::tag::row(), ExpRowComplexity());
@@ -143,14 +146,15 @@ int test_main(int, char**)
     typedef matrix::parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters1;
     test_dense2D<parameters1, complexity_classes::linear_cached, complexity_classes::linear>()(6.0);
 
-    typedef matrix::parameters<row_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters2;
-    test_dense2D<parameters2, complexity_classes::linear_cached, complexity_classes::linear>()(2.0);
+    // Don't use this Fortran indexing, it is absolutely incomplete
+    // typedef matrix::parameters<row_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters2;
+    // test_dense2D<parameters2, complexity_classes::linear_cached, complexity_classes::linear>()(2.0);
 
     typedef matrix::parameters<col_major, mtl::index::c_index, fixed::dimensions<2, 3> > parameters3;
     test_dense2D<parameters3, complexity_classes::linear, complexity_classes::linear_cached>()(6.0);
 
-    typedef matrix::parameters<col_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters4;
-    test_dense2D<parameters4, complexity_classes::linear, complexity_classes::linear_cached>()(3.0);
+    // typedef matrix::parameters<col_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters4;
+    // test_dense2D<parameters4, complexity_classes::linear, complexity_classes::linear_cached>()(3.0);
 
     return 0;
 }
