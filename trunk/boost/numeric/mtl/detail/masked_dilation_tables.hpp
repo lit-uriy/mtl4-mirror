@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <cassert>
 
 namespace mtl { namespace dilated {
 
@@ -31,14 +32,10 @@ struct masked_dilation_tables
     typedef T                          it_type[n_bytes];  // why int ??? switch to T
 
   protected:
-    static lookup_type*                my_mask_lut;
-    static lookup_type*                my_unmask_lut;
+    static lookup_type*                my_mask_lut, *my_unmask_lut;
     static mp_type*                    my_mask_piece;
-    static it_type*                    my_mask_size;
-    static it_type*                    my_mask_shift_table;
-    static it_type*                    my_unmask_shift_table;
-    static int                         n_valid_table;
-    static int                         instances;
+    static it_type*                    my_mask_size, *my_mask_shift_table, *my_unmask_shift_table;
+    static int                         n_valid_table, instances;
   public:
     
     masked_dilation_tables()
@@ -59,41 +56,12 @@ struct masked_dilation_tables
 	}
     }
 
-    lookup_type& mask_lut()
-    {
-	// if (my_mask_lut == 0) compute_tables();   should be handled by check()
-	return *my_mask_lut;
-    }
-
-    lookup_type& unmask_lut()
-    {
-	// if (my_unmask_lut == 0) compute_tables();   should be handled by check()
-	return *my_unmask_lut;
-    }
-
-    mp_type& mask_piece()
-    {
-	// if (my_mask_piece == 0) compute_tables();   should be handled by check()
-	return *my_mask_piece;
-    }
-
-    it_type& mask_size()
-    {
-	// if (my_mask_size == 0) compute_tables();   should be handled by check()
-	return *my_mask_size;
-    }
-
-    it_type& mask_shift_table()
-    {
-	// if (my_mask_shift_table == 0) compute_tables();   should be handled by check()
-	return *my_mask_shift_table;
-    }
-
-    it_type& unmask_shift_table()
-    {
-	// if (my_unmask_shift_table == 0) compute_tables();   should be handled by check()
-	return *my_unmask_shift_table;
-    }
+    lookup_type& mask_lut()   { return *my_mask_lut; }
+    lookup_type& unmask_lut() { return *my_unmask_lut; }
+    mp_type& mask_piece()     { return *my_mask_piece; }
+    it_type& mask_size()      {	return *my_mask_size;  }
+    it_type& mask_shift_table() { return *my_mask_shift_table; }
+    it_type& unmask_shift_table() { return *my_unmask_shift_table; }
 
 private:
 
@@ -110,24 +78,20 @@ private:
 	// compute the mask table
 	for (int j = 0; j < n_valid_table; ++j) {
 	    T f_mask = get_f_mask(mask_size()[j]), i, ii;
-	    for (i = 0, ii = 0; i < 256; ++i, ii = inc(ii, mask_piece()[j])) {
+	    for (i = 0, ii = 0; i < 256; ++i, ii = inc(ii, mask_piece()[j])) 
 		mask_lut()[j][i] =  (ii & f_mask) << mask_shift_table()[j]; // need to shift 
-	    }
 	}
 
 	// compute the unmask table
 	T f_mask = get_f_mask(8);
 	for (T j = 0; j < sizeof(T); ++j) {
-	    
 	    T t_mask = (Mask >> (8*j)) & f_mask, i, ii;
-	    for(i = 0, ii = 0; ii < t_mask; ii = inc(ii, t_mask), ++i) {
+	    for(i = 0, ii = 0; ii < t_mask; ii = inc(ii, t_mask), ++i) 
 		unmask_lut()[j][ii] =  i << unmask_shift_table()[j];
-	    }
 	    // set the value for the last one
 	    unmask_lut()[j][t_mask] =  i << unmask_shift_table()[j];       
 	}
     }
-
 
     void allocate()
     {
@@ -144,38 +108,26 @@ private:
     void init() 
     {
 	allocate();
-
-	// calculate the number of valid table
-	int n = count_n_ones(Mask);
-	if (n <= 8) 
-	    n_valid_table = 1;
-	else n_valid_table = (n%8 == 0 ? n/8 : n/8 + 1);           
-	
-	// set mask pieces 
+	assert(count_n_ones(Mask) > 0);
+	n_valid_table= (count_n_ones(Mask) + 7) / 8; // calculate the number of valid table
 	set_mask();    
     }
-
 
     // return the number of 1's in the mask
     int count_n_ones(T t) 
     {
 	int n_ones = 0;
-	while(t) {
-	    if((t & 0x01) == 1) ++n_ones;
-	    t = t >>1;
-	}
+	for (; t; t>>= 1)
+	    if(t & 1) ++n_ones;
 	return n_ones;
     };
-
 
     // return the number of valid bits in the mask
     int count_bits(T t) 
     {
 	int bits = 0;
-	while(t) {
+	for (; t; t>>= 1)
 	    ++bits;
-	    t = t >>1;
-	}
 	return bits;
     };
 
@@ -227,18 +179,9 @@ private:
 
 public:
     
-#if 0
-    void check()
-    {
-	if (n_valid_table == 0)
-	    compute_tables();
-    }	
-#endif
-
     // convert to masked integer
     T to_masked(T x) 
     {
-	// check();
 	T result = 0;
 	for (int i = 0; i < n_valid_table; ++i)
 	    result += mask_lut()[i][0xff & (x >> (8*i)) ];
@@ -249,12 +192,9 @@ public:
     // convert to unmasked integer
     T to_unmasked(T x) 
     {
-	// check();
 	T result = 0;
 	x &= Mask;
 	for (T i = 0; i < n_bytes; ++i) {
-	    // std::cout << "unmasking: x = " << std::hex << x  << ", i = " << i << ", index = " << (0xff & (x >> (8*i)))
-	    //           << ", return from table = " << unmask_lut()[i][0xff & (x >> (8*i)) ] << std::endl;
 	    result += unmask_lut()[i][0xff & (x >> (8*i)) ];
 	}
 	return result;
