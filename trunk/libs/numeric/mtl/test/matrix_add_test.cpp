@@ -105,7 +105,7 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     diff-= b[4][3];
 
     cout << "\n\n" << name << "\n";
-    cout << "Original matrices:\nA=\n" << a << "B=\n" << b << "C\n" << c << "\n";
+    cout << "Original matrices:\nA=\n" << a << "B=\n" << b << "\n";
 
     c= a + b;
     
