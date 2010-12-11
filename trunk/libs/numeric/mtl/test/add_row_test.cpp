@@ -21,6 +21,7 @@ template <typename Matrix>
 void add_row(Matrix& A, typename mtl::Collection<Matrix>::size_type n= 1)
 {
     Matrix A_tmp(num_rows(A) + n, num_cols(A));
+    A_tmp= 0; // to avoid uninitialized values
     sub_matrix(A_tmp, 0, num_rows(A), 0, num_cols(A))= A;
     swap(A_tmp, A);
 }
