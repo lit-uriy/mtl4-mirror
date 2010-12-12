@@ -54,6 +54,11 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 	if (abs(r[12] + 17.0) > 0.0001)
 	    throw "r[12] should be -17.\n";
     }
+
+    // typedef mtl::dense_vector<double, mtl::vector::parameters<mtl::row_major> >  vrt;
+    // vrt rt, vt(trans(v));
+
+    // rt= v * A;
 }
  
 
