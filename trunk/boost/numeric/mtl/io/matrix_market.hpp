@@ -186,15 +186,18 @@ matrix_market_istream& matrix_market_istream::read(Matrix& A, tag::matrix)
     } while (first == '%');
 
     my_stream >> nrows >> ncols;
-    if (sparsity_text == std::string("coordinate"))
-	my_stream >> nnz;
+    std::size_t slot_size;
+    if (sparsity_text == std::string("coordinate")) {
+	my_stream >> nnz; slot_size= std::size_t(double(nnz) / double(A.dim1()) * 1.25);
+    } else
+	slot_size= A.dim2(); // maximal value (if A is dense it does not matter anyway)
 
     // std::cout << nrows << "x" << ncols << ", " << nnz << " non-zeros\n";	
     A.change_dim(nrows, ncols);
     set_to_zero(A);
 
     // Create enough space in sparse matrices
-    matrix::inserter<Matrix> ins(A, int(double(nnz) / double(A.dim1()) * 1.3));
+    matrix::inserter<Matrix> ins(A, slot_size);
 
     if (value_format == std::string("real"))
 	read_matrix(ins, double());
