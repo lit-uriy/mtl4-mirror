@@ -49,11 +49,8 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
 
     cout << "C constructed from A * B1 * B2 is:\n" << C << "\n";
 
-    if (C[0][0] != 0.0)
-	throw "C[0][0] should be 0!";
-
-    if (C[0][3] != 1.0)
-	throw "C[0][3] should be 1!";
+    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
+    if (C[0][3] != 1.0) throw "C[0][3] should be 1!";
 
     MatrixB B3(3, 4);
     B3= 0.0;
@@ -67,14 +64,9 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     MatrixC C2(A + B3);
     cout << "C2 constructed from A + B3 is:\n" << C2 << "\n";
 
-    if (C2[0][0] != 0.0)
-	throw "C2[0][0] should be 0!";
-
-    if (C2[0][1] != 4.0)
-	throw "C2[0][1] should be 4!";
-
-    if (C2[2][3] != 2.0)
-	throw "C2[2][3] should be 2!";
+    if (C2[0][0] != 0.0) throw "C2[0][0] should be 0!";
+    if (C2[0][1] != 4.0) throw "C2[0][1] should be 4!";
+    if (C2[2][3] != 2.0) throw "C2[2][3] should be 2!";
 }
 
 

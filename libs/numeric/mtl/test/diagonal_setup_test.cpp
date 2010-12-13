@@ -30,19 +30,15 @@ void test(Matrix& A, const char* name)
     cout << "Diagonal matrix:\n" << A << "\n";
     for (size_type r= 0; r < num_rows(A); ++r)
 	for (size_type c= 0; c < num_cols(A); ++c)
-	    if (r == c && A[r][c] != one) {
-		throw "wrong diagonal";
-	    } else if (r != c && A[0][1] != zero)
-		throw "wrong off-diagonal";
+	    if (r == c && A[r][c] != one) {throw "wrong diagonal";}
+	    else if (r != c && A[0][1] != zero) throw "wrong off-diagonal";
 
     A= 4.0;
     cout << "Diagonal matrix:\n" << A << "\n";
     for (size_type r= 0; r < num_rows(A); ++r)
 	for (size_type c= 0; c < num_cols(A); ++c)
-	    if (r == c && A[r][c] != four) {
-		throw "wrong diagonal";
-	    } else if (r != c && A[0][1] != zero)
-		throw "wrong off-diagonal";
+	    if (r == c && A[r][c] != four) {throw "wrong diagonal";}
+	    else if (r != c && A[0][1] != zero) throw "wrong off-diagonal";
 }
 
 

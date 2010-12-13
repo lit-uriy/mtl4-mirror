@@ -44,20 +44,14 @@ void test(Matrix& A, const char* name)
     add_row(A);
     cout << "\nA after adding one row A =\n" << A;
 
-    if (num_rows(A) != 4 || num_cols(A) != 3)
-	throw "Wrong dimension after adding one row";
-
-    if (A[2][1] != value_type(-1))
-	throw "Wrong value in A[2][1] after adding one row";
+    if (num_rows(A) != 4 || num_cols(A) != 3) throw "Wrong dimension after adding one row";
+    if (A[2][1] != value_type(-1)) throw "Wrong value in A[2][1] after adding one row";
 
     add_row(A, 2);
     cout << "\nA after adding two rows A =\n" << A;
 
-    if (num_rows(A) != 6 || num_cols(A) != 3)
-	throw "Wrong dimension after adding two rows";
-    
-    if (A[2][1] != value_type(-1))
-	throw "Wrong value in A[2][1] after adding two rows";
+    if (num_rows(A) != 6 || num_cols(A) != 3) throw "Wrong dimension after adding two rows";
+    if (A[2][1] != value_type(-1)) throw "Wrong value in A[2][1] after adding two rows";
 }
 
 

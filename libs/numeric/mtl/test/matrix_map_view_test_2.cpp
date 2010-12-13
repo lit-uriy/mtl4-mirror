@@ -101,50 +101,40 @@ void test(Matrix& matrix, const char* name)
 	// test rscaled_view
     mtl::matrix::rscaled_view<Matrix, double>  rscaled_matrix(matrix, 2.0);
     cout << "matrix  right scaled with 2.0\n" << rscaled_matrix << "\n";
-    if (rscaled_matrix(2, 3) != rsvalue(ref)) 
-		throw "right scaling wrong";
+    if (rscaled_matrix(2, 3) != rsvalue(ref)) throw "right scaling wrong";
 	
     cout << "matrix  right scaled with 2.0 (as operator)\n" << matrix * 2.0 << "\n";
-    if ((matrix * 2.0)(2, 3) != rsvalue(ref)) 
-		throw "right scaling wrong";
+    if ((matrix * 2.0)(2, 3) != rsvalue(ref)) throw "right scaling wrong";
 	
 	
     mtl::matrix::rscaled_view<Matrix, ct>  crscaled_matrix(matrix, ct(0.0, 1.0));
     cout << "matrix right scaled with i (complex(0, 1))\n" << crscaled_matrix << "\n";
-    if (crscaled_matrix(2, 3) != crsvalue(ref)) 
-		throw "complex right scaling wrong";
+    if (crscaled_matrix(2, 3) != crsvalue(ref)) throw "complex right scaling wrong";
 	
     cout << "matrix right scaled with 2.0 (free function)\n" << rscale(matrix, 2.0) << "\n";
-    if (rscale(matrix, 2.0)(2, 3) != rsvalue(ref)) 
-		throw "scaling wrong";
+    if (rscale(matrix, 2.0)(2, 3) != rsvalue(ref)) throw "scaling wrong";
 	
     cout << "matrix right scaled with i (complex(0, 1)) (free function)\n" << rscale(matrix, ct(0.0, 1.0)) << "\n";
-    if (rscale(matrix, ct(0.0, 1.0))(2, 3) != crsvalue(ref)) 
-		throw "complex right scaling wrong";
+    if (rscale(matrix, ct(0.0, 1.0))(2, 3) != crsvalue(ref)) throw "complex right scaling wrong";
 	
 	// test divide_by_view
     mtl::matrix::divide_by_view<Matrix, double>  div_matrix(matrix, 0.5);
     cout << "matrix divide by 0.5\n" << div_matrix << "\n";
-    if (div_matrix(2, 3) != rsvalue(ref)) 
-		throw "divide_by wrong";
+    if (div_matrix(2, 3) != rsvalue(ref)) throw "divide_by wrong";
 	
     cout << "matrix divide by 0.5 (as operator)\n" << matrix / 0.5 << "\n";
-    if ((matrix / 0.5)(2, 3) != rsvalue(ref)) 
-		throw "divide_by wrong";
+    if ((matrix / 0.5)(2, 3) != rsvalue(ref)) throw "divide_by wrong";
 	
 	
     mtl::matrix::divide_by_view<Matrix, ct>  cdiv_matrix(matrix, ct(0.0, -1.0));
     cout << "matrix divide by -i (complex(0, -1))\n" << cdiv_matrix << "\n";
-    if (cdiv_matrix(2, 3) != crsvalue(ref)) 
-		throw "complex divide_by wrong";
+    if (cdiv_matrix(2, 3) != crsvalue(ref)) throw "complex divide_by wrong";
 	
     cout << "matrix divide by 0.5 (free function)\n" << rscale(matrix, 0.5) << "\n";
-    if (divide_by(matrix, 0.5)(2, 3) != rsvalue(ref)) 
-		throw "scaling wrong";
+    if (divide_by(matrix, 0.5)(2, 3) != rsvalue(ref)) throw "scaling wrong";
 	
     cout << "matrix divide by -i (complex(0, 1)) (free function)\n" << divide_by(matrix, ct(0.0, -1.0)) << "\n";
-    if (divide_by(matrix, ct(0.0, -1.0))(2, 3) != crsvalue(ref)) 
-		throw "complex right scaling wrong";
+    if (divide_by(matrix, ct(0.0, -1.0))(2, 3) != crsvalue(ref)) throw "complex right scaling wrong";
 	
 }
 

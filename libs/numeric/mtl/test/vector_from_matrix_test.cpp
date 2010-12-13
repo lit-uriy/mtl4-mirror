@@ -23,14 +23,10 @@ void check(const char* name, const Vector& v, bool row_major, unsigned s, Value 
 {
     std::cout << name << " = " << v << "\n";
 
-    if (mtl::traits::is_row_major<Vector>::value != row_major)
-	throw "wrong orientation";
-    if (size(v) != s)
-	throw "wrong size";
-    if (v[0] != c0)
-	throw "wrong value";
-    if (v[1] != c1)
-	throw "wrong value";
+    if (mtl::traits::is_row_major<Vector>::value != row_major) throw "wrong orientation";
+    if (size(v) != s) throw "wrong size";
+    if (v[0] != c0) throw "wrong value";
+    if (v[1] != c1) throw "wrong value";
 }
 
 

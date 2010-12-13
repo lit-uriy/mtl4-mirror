@@ -121,7 +121,10 @@ int test_main(int argc, char* argv[])
     morton_dense<double,  doppled_64_row_mask>     d64r(size, size);
     morton_dense<double,  doppled_64_col_mask>     d64c(size, size);
     morton_dense<double,  doppled_128_col_mask>    d128r(size, size);
-
+    size= 9; 
+    dense2D<double>                                dr2(size, size);
+    
+    test(dr2, "Dense row major");
     test(dr, "Dense row major");
     test(dc, "Dense column major");
     test(md, "Morton N-order");

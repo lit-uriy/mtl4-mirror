@@ -41,8 +41,7 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
     
 
     if (dim1 == 5 && dim2 == 5) {
-	if (abs(r[12] - 23.0) > 0.0001)
-	    throw "r[12] should be 23.\n";
+	if (abs(r[12] - 23.0) > 0.0001) throw "r[12] should be 23.\n";
     }
 
     r= b - A * v;
@@ -51,8 +50,7 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 	cout << "\n\nb - A * v = " << r << '\n';
     
     if (dim1 == 5 && dim2 == 5) {
-	if (abs(r[12] + 17.0) > 0.0001)
-	    throw "r[12] should be -17.\n";
+	if (abs(r[12] + 17.0) > 0.0001) throw "r[12] should be -17.\n";
     }
 
     // typedef mtl::dense_vector<double, mtl::vector::parameters<mtl::row_major> >  vrt;
@@ -68,10 +66,7 @@ int test_main(int argc, char* argv[])
 
     unsigned dim1= 5, dim2= 5;
 
-    if (argc > 2) {
-	dim1= atoi(argv[1]); 
-	dim2= atoi(argv[2]);
-    }
+    if (argc > 2) {dim1= atoi(argv[1]);dim2= atoi(argv[2]);}
     unsigned size= dim1 * dim2; 
 
     compressed2D<double>                                 cr(size, size);

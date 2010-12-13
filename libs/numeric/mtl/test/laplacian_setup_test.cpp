@@ -34,20 +34,13 @@ void test(Matrix& matrix, unsigned dim1, unsigned dim2, const char* name)
     
     if (dim1 > 1 && dim2 > 1) {
 	typename mtl::Collection<Matrix>::value_type four(4.0), minus_one(-1.0), zero(0.0);
-	if (matrix[0][0] != four)
-	    throw "wrong diagonal";
-	if (matrix[0][1] != minus_one)
-	    throw "wrong east neighbor";
-	if (matrix[0][dim2] != minus_one)
-	    throw "wrong south neighbor";
-	if (dim2 > 2 && matrix[0][2] != zero)
-	    throw "wrong zero-element";
-	if (matrix[1][0] != minus_one)
-	    throw "wrong west neighbor";
-	if (matrix[dim2][0] != minus_one)
-	    throw "wrong north neighbor";
-	if (dim2 > 2 && matrix[2][0] != zero)
-	    throw "wrong zero-element";
+	if (matrix[0][0] != four) throw "wrong diagonal";
+	if (matrix[0][1] != minus_one) throw "wrong east neighbor";
+	if (matrix[0][dim2] != minus_one) throw "wrong south neighbor";
+	if (dim2 > 2 && matrix[0][2] != zero) throw "wrong zero-element";
+	if (matrix[1][0] != minus_one) throw "wrong west neighbor";
+	if (matrix[dim2][0] != minus_one) throw "wrong north neighbor";
+	if (dim2 > 2 && matrix[2][0] != zero) throw "wrong zero-element";
     }
 }
 
@@ -59,10 +52,7 @@ int test_main(int argc, char* argv[])
 
     unsigned dim1= 3, dim2= 4;
 
-    if (argc > 2) {
-	dim1= atoi(argv[1]); 
-	dim2= atoi(argv[2]);
-    }
+    if (argc > 2) {dim1= atoi(argv[1]);dim2= atoi(argv[2]);}
     unsigned size= dim1 * dim2; 
 
     dense2D<double>                                      dr(size, size);

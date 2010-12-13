@@ -73,16 +73,14 @@ int test_main(int, char**)
 
    // std::cout<< "x= " << x << "\n";
     std::cout<< "grad_f(x)= " << grad_f(x) << "\n\n";
-    if (two_norm(x) > 10 * iter.atol())
-	throw "x should be 0.";
+    if (two_norm(x) > 10 * iter.atol()) throw "x should be 0.";
     x= 8;
     quasi_newton(x, f, grad_f, itl::wolf<>(), itl::dfp(), iter1);
     iter1.error_code();    
 
    // std::cout<< "dfp x= " << x << "\n";
     std::cout<< "grad_f(x)= " << grad_f(x) << "\n\n";
-    if (two_norm(x) > 10 * iter1.atol())
-	throw "x should be 0.";
+    if (two_norm(x) > 10 * iter1.atol()) throw "x should be 0.";
     
     x= 8;
     quasi_newton(x, f, grad_f, itl::wolf<>(), itl::broyden(), iter2);
@@ -90,8 +88,7 @@ int test_main(int, char**)
 
     std::cout<< "broyden x= " << x << "\n";
     std::cout<< "grad_f(x)= " << grad_f(x) << "\n\n";
-    if (two_norm(x) > 10 * iter2.atol())
-	throw "x should be 0.";
+    if (two_norm(x) > 10 * iter2.atol()) throw "x should be 0.";
     
  #if 0  //bad condition on some compiler
     x= 8;
@@ -110,8 +107,7 @@ int test_main(int, char**)
 
     std::cout<< "psb x= " << x << "\n";
     std::cout<< "grad_f(x)= " << grad_f(x) << "\n\n";
-    if (two_norm(x) > 10 * iter4.atol())
-        throw "x should be 0.";
+    if (two_norm(x) > 10 * iter4.atol()) throw "x should be 0.";
 
 
     return 0;
