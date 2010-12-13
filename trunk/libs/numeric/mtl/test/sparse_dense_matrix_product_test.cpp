@@ -48,20 +48,13 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     if (dim1 == 5 && dim2 == 5) {
 	typename mtl::Collection<MatrixA>::value_type twenty(20.0), two(2.0), one(1.0), 
 	                                              zero(0.0), minus_eight(-8.0);
-	if (c[12][12] != twenty)
-	    throw "wrong diagonal";
-	if (c[12][13] != minus_eight)
-	    throw "wrong east neighbor";
-	if (c[12][14] != one)
-	    throw "wrong east east neighbor";
-	if (c[12][15] != zero)
-	    throw "wrong zero-element";
-	if (c[12][17] != minus_eight)
-	    throw "wrong south neighbor";
-	if (c[12][18] != two)
-	    throw "wrong south east neighbor";
-	if (c[12][22] != one)
-	    throw "wrong south south neighbor";
+	if (c[12][12] != twenty) throw "wrong diagonal";
+	if (c[12][13] != minus_eight) throw "wrong east neighbor";
+	if (c[12][14] != one) throw "wrong east east neighbor";
+	if (c[12][15] != zero) throw "wrong zero-element";
+	if (c[12][17] != minus_eight) throw "wrong south neighbor";
+	if (c[12][18] != two) throw "wrong south east neighbor";
+	if (c[12][22] != one) throw "wrong south south neighbor";
     }
 
     c+= a * b;
@@ -72,10 +65,8 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     // Check for stencil, must be doubled now
     if (dim1 == 5 && dim2 == 5) {
 	typename mtl::Collection<MatrixA>::value_type forty(40.0), four(4.0);
-	if (c[12][12] != forty)
-	    throw "wrong diagonal";
-	if (c[12][18] != four)
-	    throw "wrong south east neighbor";
+	if (c[12][12] != forty) throw "wrong diagonal";
+	if (c[12][18] != four)  throw "wrong south east neighbor";
     }
 
     c-= a * b;
@@ -86,10 +77,8 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     // Check for stencil, must be A*B now
     if (dim1 == 5 && dim2 == 5) {
 	typename mtl::Collection<MatrixA>::value_type twenty(20.0), two(2.0);
-	if (c[12][12] != twenty)
-	    throw "wrong diagonal";
-	if (c[12][18] != two)
-	    throw "wrong south east neighbor";
+	if (c[12][12] != twenty) throw "wrong diagonal";
+	if (c[12][18] != two) throw "wrong south east neighbor";
     }
 }
 

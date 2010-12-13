@@ -30,33 +30,27 @@ void test(T x, U y)
 
     typedef compose<negate<typename abs<T>::result_type>, abs<T> > nabs;
     cout << "-abs(" << x << ") = " << nabs::apply(x) << "\n";
-    if (!about(nabs::apply(x), -std::abs(x)))
-	throw "Wrong result for -abs(x)";
+    if (!about(nabs::apply(x), -std::abs(x))) throw "Wrong result for -abs(x)";
 
     typedef compose<square<typename nabs::result_type>, nabs> snabs;
     cout << "(-abs(" << x << "))^2 = " << snabs::apply(x) << "\n";
     cout << "-std::abs(x) * -std::abs(x) = " << -std::abs(x) * -std::abs(x) << "\n";
-    if (!about(snabs::apply(x), -std::abs(x) * -std::abs(x)))
-	throw "Wrong result for (-abs(x))^2";
+    if (!about(snabs::apply(x), -std::abs(x) * -std::abs(x))) throw "Wrong result for (-abs(x))^2";
     
     typedef compose_first<plus<typename abs<T>::result_type, U>, abs<T> > plus_abs;
     cout << "abs(" << x << ") + " << y << " = " << plus_abs::apply(x, y) << "\n";
-    if (!about(plus_abs::apply(x, y), std::abs(x) + y))
-	throw "Wrong result for abs(x) + y";
+    if (!about(plus_abs::apply(x, y), std::abs(x) + y)) throw "Wrong result for abs(x) + y";
     
     typedef compose_second<plus<T, typename abs<U>::result_type>, abs<U> > x_plus_abs_y;
     cout << x << " + " << "abs(" << y << ") = " << x_plus_abs_y::apply(x, y) << "\n";
-    if (!about(x_plus_abs_y::apply(x, y), x + std::abs(y)))
-	throw "Wrong result for x + abs(y)";
+    if (!about(x_plus_abs_y::apply(x, y), x + std::abs(y))) throw "Wrong result for x + abs(y)";
 
     typedef compose_both<plus<T, typename abs<U>::result_type>, negate<T>, abs<U> > minus_x_plus_abs_y;
     cout << "-" << x << " + " << "abs(" << y << ") = " << minus_x_plus_abs_y::apply(x, y) << "\n";
-    if (!about(minus_x_plus_abs_y::apply(x, y), -x + std::abs(y)))
-	throw "Wrong result for -x + abs(y)";
+    if (!about(minus_x_plus_abs_y::apply(x, y), -x + std::abs(y))) throw "Wrong result for -x + abs(y)";
     
     cout << "l_2(" << x << ", " << 2.0f*x << ") = " << l_2_2D<T>::apply(x, 2.0f*x)  << "\n";
-    if (!about(l_2_2D<T>::apply(x, 2.0f*x), std::sqrt(std::abs(5.0f*x*x))))
-	throw "Wrong result for l_2_2D(x, 2.0*x)";
+    if (!about(l_2_2D<T>::apply(x, 2.0f*x), std::sqrt(std::abs(5.0f*x*x)))) throw "Wrong result for l_2_2D(x, 2.0*x)";
 
     cout << std::endl;
 }

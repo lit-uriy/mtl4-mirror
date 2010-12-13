@@ -36,19 +36,15 @@ void test(Matrix& A, const char* name)
 
     std::cout << "\n" << name << ", assignment: A = \n" << A << "\n";
 
-    if (num_rows(A) != 2 || num_cols(A) != 3)
-	throw "Wrong matrix size";
-    if (A[1][0] != value_type(2))
-	throw "Wrong value inserted";
+    if (num_rows(A) != 2 || num_cols(A) != 3) throw "Wrong matrix size";
+    if (A[1][0] != value_type(2)) throw "Wrong value inserted";
 
     Matrix B(array);
 
     std::cout << "\n" << name << ", construction: B = \n" << B << "\n";
 
-    if (num_rows(B) != 2 || num_cols(B) != 3)
-	throw "Wrong matrix size";
-    if (B[1][0] != value_type(2))
-	throw "Wrong value inserted";
+    if (num_rows(B) != 2 || num_cols(B) != 3) throw "Wrong matrix size";
+    if (B[1][0] != value_type(2)) throw "Wrong value inserted";
 }
 
 

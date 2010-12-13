@@ -76,10 +76,8 @@ void test(Matrix& matrix, const char* name)
     if (nr <= max_print_size)
 	cout << "\nx= " << x << "y= " << y << "matrix = \n" << matrix << "\n";
 
-    if (matrix[2][5] != test_value(v))
-	throw "wrong value";
-    if (matrix[5][2] != conj(test_value(v)))
-	throw "wrong value";
+    if (matrix[2][5] != test_value(v)) throw "wrong value";
+    if (matrix[5][2] != conj(test_value(v))) throw "wrong value";
 }
 
 

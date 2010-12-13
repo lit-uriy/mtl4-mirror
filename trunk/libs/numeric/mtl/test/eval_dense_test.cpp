@@ -47,65 +47,49 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     
     C= A + B;
     cout << "C= A + B\n" << C << "\n";
-    if (C[0][1] != 5.0)
-	throw "C[0][1] should be 5.0";
-    if (C[1][0] != 4.0)
-	throw "C[1][0] should be 4.0";
+    if (C[0][1] != 5.0) throw "C[0][1] should be 5.0";
+    if (C[1][0] != 4.0) throw "C[1][0] should be 4.0";
 
 
     C+= A - B;
     cout << "C+= A - B\n" << C << "\n";
-    if (C[0][1] != 4.0)
-	throw "C[0][1] should be 4.0";
-    if (C[1][0] != 0.0)
-	throw "C[1][0] should be 0.0";
+    if (C[0][1] != 4.0) throw "C[0][1] should be 4.0";
+    if (C[1][0] != 0.0) throw "C[1][0] should be 0.0";
 
 
     C= ele_prod(A, B);
     cout << "C= ele_prod(A, B)\n" << C << "\n";
-    if (C[0][1] != 6.0)
-	throw "C[0][1] should be 6.0";
-    if (C[1][0] != 0.0)
-	throw "C[1][0] should be 0.0";
+    if (C[0][1] != 6.0) throw "C[0][1] should be 6.0";
+    if (C[1][0] != 0.0) throw "C[1][0] should be 0.0";
 
 
     C= A + ele_prod(A, B);
     cout << "C= A + ele_prod(A, B)\n" << C << "\n";
-    if (C[0][1] != 8.0)
-	throw "C[0][1] should be 6.0";
-    if (C[1][2] != 1.0)
-	throw "C[1][2] should be 1.0";
+    if (C[0][1] != 8.0) throw "C[0][1] should be 6.0";
+    if (C[1][2] != 1.0) throw "C[1][2] should be 1.0";
 
 
     C= ele_prod(ele_prod(A, B), A);
     cout << "C= ele_prod(ele_prod(A, B), A)\n" << C << "\n";
-    if (C[0][1] != 12.0)
-	throw "C[0][1] should be 12.0";
-    if (C[1][0] != 0.0)
-	throw "C[1][0] should be 0.0";
+    if (C[0][1] != 12.0) throw "C[0][1] should be 12.0";
+    if (C[1][0] != 0.0) throw "C[1][0] should be 0.0";
 
 
     C= ele_prod(A, ele_prod(A, B));    
     cout << "C= ele_prod(A, ele_prod(A, B))\n" << C << "\n";
-    if (C[0][1] != 12.0)
-	throw "C[0][1] should be 12.0";
-    if (C[1][0] != 0.0)
-	throw "C[1][0] should be 0.0";
+    if (C[0][1] != 12.0) throw "C[0][1] should be 12.0";
+    if (C[1][0] != 0.0) throw "C[1][0] should be 0.0";
 
 
     C-= ele_prod(A, B);
     cout << "C-= ele_prod(A, B)\n" << C << "\n";
-    if (C[0][1] != 6.0)
-	throw "C[0][1] should be 6.0";
-    if (C[1][0] != 0.0)
-	throw "C[1][0] should be 0.0";
+    if (C[0][1] != 6.0) throw "C[0][1] should be 6.0";
+    if (C[1][0] != 0.0) throw "C[1][0] should be 0.0";
 
     C+= ele_prod(A, B);
     cout << "C+= ele_prod(A, B)\n" << C << "\n";
-    if (C[0][1] != 12.0)
-	throw "C[0][1] should be 12.0";
-    if (C[1][0] != 0.0)
-	throw "C[1][0] should be 0.0";
+    if (C[0][1] != 12.0) throw "C[0][1] should be 12.0";
+    if (C[1][0] != 0.0) throw "C[1][0] should be 0.0";
 
 #if 0
     C= B + ele_prod(A, B-A) - B;

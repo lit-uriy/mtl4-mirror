@@ -23,8 +23,7 @@ void test(const char* name, const Vector& v)
 {
     std::cout << name << ": v is " << v << ", trans(v) is " << trans(v) << ", trans(v) * v is " 
 	      << trans(v) * v << "\n";
-    if (std::abs(std::abs(trans(v) * v) - 61.0) > 0.1)
-	throw "Wrong result";
+    if (std::abs(std::abs(trans(v) * v) - 61.0) > 0.1) throw "Wrong result";
 }
 
 template <typename Vector>
@@ -63,8 +62,7 @@ void test2(const char* name, const Vector& v)
 #if 1
     std::cout << name << ": v is " << v << ", trans(v) is " << trans(v) << ", v * trans(v) is " 
 	      << v * trans(v) << "\n";
-    if (std::abs(std::abs(v * trans(v)) - 61.0) > 0.1)
-	throw "Wrong result";
+    if (std::abs(std::abs(v * trans(v)) - 61.0) > 0.1) throw "Wrong result";
 #endif 
 }
 

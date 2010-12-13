@@ -50,11 +50,8 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     cout << "\n\n" << name << "\n";
     cout << "C is:\n" << C << "\n";
 
-    if (C[0][0] != 0.0)
-	throw "C[0][0] should be 0!";
-
-    if (C[0][3] != 1.0)
-	throw "C[0][3] should be 1!";
+    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
+    if (C[0][3] != 1.0) throw "C[0][3] should be 1!";
 
     MatrixB I(6, 6);
     I = 1.0;
@@ -62,38 +59,26 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     cout << "Compute now C= (A * B1) * (B2 * I);\n";
     C= (A * B1) * (B2 * I);
 
-    if (C[0][0] != 0.0)
-	throw "C[0][0] should be 0!";
-
-    if (C[0][3] != 1.0)
-	throw "C[0][3] should be 1!";
+    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
+    if (C[0][3] != 1.0) throw "C[0][3] should be 1!";
 
     cout << "Compute now C= (A * B1) * (B2 * I) * (I * I) * I;\n";
     C= (A * B1) * (B2 * I) * (I * I) * I;
 
-    if (C[0][0] != 0.0)
-	throw "C[0][0] should be 0!";
-
-    if (C[0][3] != 1.0)
-	throw "C[0][3] should be 1!";
+    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
+    if (C[0][3] != 1.0) throw "C[0][3] should be 1!";
 
     cout << "Compute now C+= (A * B1) * (B2 * I) * (I * I) * I;\n";
     C+= (A * B1) * (B2 * I) * (I * I) * I;
 
-    if (C[0][0] != 0.0)
-	throw "C[0][0] should be 0!";
-
-    if (C[0][3] != 2.0)
-	throw "C[0][3] should be 2!";
+    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
+    if (C[0][3] != 2.0) throw "C[0][3] should be 2!";
 
     cout << "Compute now C-= (A * B1) * (B2 * I) * (I * I) * I;\n";
     C-= (A * B1) * (B2 * I) * (I * I) * I;
 
-    if (C[0][0] != 0.0)
-	throw "C[0][0] should be 0!";
-
-    if (C[0][3] != 1.0)
-	throw "C[0][3] should be 1!";
+    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
+    if (C[0][3] != 1.0) throw "C[0][3] should be 1!";
 }
 
 

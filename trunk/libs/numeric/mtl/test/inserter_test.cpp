@@ -30,10 +30,8 @@ void test(Matrix& A, const char* name)
 
     std::cout << "\n" << name << ", assignment: A = \n" << A << "\n";
 
-    if (num_rows(A) != 2 || num_cols(A) != 3)
-	throw "Wrong matrix size";
-    if (A[1][0] != value_type(2))
-	throw "Wrong value inserted";
+    if (num_rows(A) != 2 || num_cols(A) != 3) throw "Wrong matrix size";
+    if (A[1][0] != value_type(2)) throw "Wrong value inserted";
 
     {
 	inserter<Matrix>  ins(A);
@@ -41,8 +39,7 @@ void test(Matrix& A, const char* name)
 	//ins[1][0]+= 1.;
     }
     std::cout << "\n" << name << ", assignment: A = \n" << A << "\n";
-    if (A[1][0] != value_type(3.0))
-	throw "Wrong value after +=";
+    if (A[1][0] != value_type(3.0)) throw "Wrong value after +=";
 
     {
 	inserter<Matrix, update_plus<value_type> > ins(A, 0);
@@ -51,8 +48,7 @@ void test(Matrix& A, const char* name)
 	//ins[1, 2]= 4;
     }
     std::cout << "\n" << name << ", assignment: A = \n" << A << "\n";
-    if (A[1][2] != value_type(4.0))
-	throw "Wrong value after =";
+    if (A[1][2] != value_type(4.0)) throw "Wrong value after =";
 }
 
 

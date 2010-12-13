@@ -56,20 +56,13 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
     //        1    
     if (dim1 == 5 && dim2 == 5) {
 	rvalue_type twenty(20.0), two(2.0), one(1.0), zero(0.0), minus_eight(-8.0);
-	if (w[12] != twenty)
-	    throw "wrong diagonal";
-	if (w[13] != minus_eight)
-	    throw "wrong east neighbor";
-	if (w[14] != one)
-	    throw "wrong east east neighbor";
-	if (w[15] != zero)
-	    throw "wrong zero-element";
-	if (w[17] != minus_eight)
-	    throw "wrong south neighbor";
-	if (w[18] != two)
-	    throw "wrong south east neighbor";
-	if (w[22] != one)
-	    throw "wrong south south neighbor";
+	if (w[12] != twenty) throw "wrong diagonal";
+	if (w[13] != minus_eight) throw "wrong east neighbor";
+	if (w[14] != one) throw "wrong east east neighbor";
+	if (w[15] != zero) throw "wrong zero-element";
+	if (w[17] != minus_eight) throw "wrong south neighbor";
+	if (w[18] != two) throw "wrong south east neighbor";
+	if (w[22] != one) throw "wrong south south neighbor";
     }
 
     w+= a * v;
@@ -80,10 +73,8 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
     // Check for stencil, must be doubled now
     if (dim1 == 5 && dim2 == 5) {
 	rvalue_type forty(40.0), four(4.0);
-	if (w[12] != forty)
-	    throw "wrong diagonal";
-	if (w[18] != four)
-	    throw "wrong south east neighbor";
+	if (w[12] != forty) throw "wrong diagonal";
+	if (w[18] != four) throw "wrong south east neighbor";
     }
 
     w-= a * v;
@@ -94,10 +85,8 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
     // Check for stencil, must be A*v now
     if (dim1 == 5 && dim2 == 5) {
 	rvalue_type twenty(20.0), two(2.0);
-	if (w[12] != twenty)
-	    throw "wrong diagonal";
-	if (w[18] != two)
-	    throw "wrong south east neighbor";
+	if (w[12] != twenty) throw "wrong diagonal";
+	if (w[18] != two) throw "wrong south east neighbor";
     }
 }
 
@@ -109,10 +98,7 @@ int test_main(int argc, char* argv[])
 
     unsigned dim1= 5, dim2= 5;
 
-    if (argc > 2) {
-	dim1= atoi(argv[1]); 
-	dim2= atoi(argv[2]);
-    }
+    if (argc > 2) {dim1= atoi(argv[1]); dim2= atoi(argv[2]);}
     unsigned size= dim1 * dim2; 
 
     compressed2D<double>                                 cr(size, size);
