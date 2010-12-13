@@ -339,7 +339,7 @@ class dense2D
   public:
 
     // import operators from CRTP base class
-    using assign_base::operator=;
+    using crtp_base::operator=;
 
     /// Change dimension, can keep old data
     void change_dim(size_type r, size_type c, bool keep_data = false)

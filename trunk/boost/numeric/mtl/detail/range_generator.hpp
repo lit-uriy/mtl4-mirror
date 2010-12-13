@@ -181,7 +181,7 @@ namespace mtl { namespace traits { namespace detail {
 	}
 	type end(Matrix const& c) const
 	{
-		using mtl::num_rows;
+	  using mtl::num_rows; using mtl::matrix::num_rows;
 	    return type(num_rows(c), c); //return type(c.end_row(), c);
 	}
 	type lower_bound(Matrix const& c, size_type position) const

@@ -198,7 +198,7 @@ class dense_vector
     }
 
 
-    using assign_base::operator=;
+    using crtp_base::operator=;
 
     template <typename Value2> friend void fill(self&, const Value2&);
 
