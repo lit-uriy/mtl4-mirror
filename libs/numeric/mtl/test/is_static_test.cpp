@@ -21,7 +21,7 @@ int test_main(int, char**)
     using namespace mtl;
 
     typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
-    typedef vector::parameters<tag::col_major, vector::fixed::dimension<3>, true>                       vec_para;
+    typedef mtl::vector::parameters<tag::col_major, mtl::vector::fixed::dimension<3>, true>             vec_para;
 
     if ( traits::is_static<mtl::non_fixed::dimensions>::value) throw "Must not be static!";
     if (!traits::is_static<mtl::fixed::dimensions<1, 2> >::value) throw "Must be static!";
