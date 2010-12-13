@@ -197,8 +197,11 @@ class dense_vector
 	return *this;
     }
 
-
+#ifdef __PGI
     using crtp_base::operator=;
+#else
+    using assign_base::operator=;
+#endif
 
     template <typename Value2> friend void fill(self&, const Value2&);
 
