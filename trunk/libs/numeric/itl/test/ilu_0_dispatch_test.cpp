@@ -45,11 +45,9 @@ void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
     std::cout << "Factorizing A = \n" << As << "-> LU = \n" << LU;
     // std::cout << "L = \n" << Ls << "\nU = \n" << Us;
 
-    if (std::abs(LU[1][2] - Ls[1][2]) > 0.001) 
-	throw "Wrong value in L for sparse ILU(0) factorization";
+    if (std::abs(LU[0][0] - Ls[0][0]) > 0.001) throw "Wrong value in L for sparse ILU(0) factorization";
 
-    if (std::abs(LU[2][2] - 1. / Us[2][2]) > 0.001)
-	throw "Wrong value in U for sparse ILU(0) factorization";
+    if (std::abs(LU[0][1] - Us[0][1]) > 0.001) throw "Wrong value in U for sparse ILU(0) factorization";
 }
 
 
@@ -76,8 +74,7 @@ int test_main(int, char**)
 
     x3= solve(P, x2);
     std::cout << "solve(P, x2) = " << x3 << " (should be [1,2,..,N])\n";
-    if (two_norm(vector_type(x - x3)) > 0.00001)
-	throw "Wrong result";
+    if (two_norm(vector_type(x - x3)) > 0.00001) throw "Wrong result";
 
     // Now test adjoint solve
     x4= trans(A) * x;
@@ -85,8 +82,17 @@ int test_main(int, char**)
 
     x5= adjoint_solve(P, x4);
     std::cout << "adjoint_solve(P, x4) = " << x5 << " (should be [1,2,..,N])\n";
-    if (two_norm(vector_type(x - x5)) > 0.00001)
-	throw "Wrong result";
-
+    if (two_norm(vector_type(x - x5)) > 0.00001) throw "Wrong result";
+    
+    
+    matrix_type LU(A), L(N,N), U(N,N);
+    lu(LU, x5);
+    L= lower(LU);
+    U= upper(LU);
+    std::cout<< "L=" << L << "\n";
+    std::cout<< "U=" << U << "\n";
+    dense_ilu_0(A, L, U);
+    
+    
     return 0;
 }

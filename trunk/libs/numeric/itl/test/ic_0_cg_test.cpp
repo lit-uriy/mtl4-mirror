@@ -33,11 +33,9 @@ void dense_ic_0(const At& As, const Ut& Us)
     std::cout << "Factorizing A = \n" << As << "-> U = \n" << with_format(U, 6, 2)
 	      << "trans(U) * U = \n" << with_format(mtl::dense2D<double>(trans(U) * U), 6, 2);
 
-    if (std::abs(U[2][3] - Us[2][3]) > 0.001) 
-	throw "Wrong value in L for sparse IC(0) factorization";
+    if (std::abs(U[2][3] - Us[2][3]) > 0.001) throw "Wrong value in L for sparse IC(0) factorization";
 
-    if (std::abs(U[3][3] - 1. / Us[3][3]) > 0.001)
-	throw "Wrong value in U for sparse IC(0) factorization";
+    if (std::abs(U[3][3] - 1. / Us[3][3]) > 0.001) throw "Wrong value in U for sparse IC(0) factorization";
 }
 
 

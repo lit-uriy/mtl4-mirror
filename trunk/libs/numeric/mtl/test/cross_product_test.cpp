@@ -31,8 +31,7 @@ void test(Vector&, const char* name)
     
     std::cout << name << ": cross(" << a << ", " << b << ") is " << cross(a, b) << '\n';
     
-    if (one_norm(Vector(cross(a, b) - res)) > 0.0001)
-	throw "Wrong cross product with dimension 3!\n";
+    if (one_norm(Vector(cross(a, b) - res)) > 0.0001) throw "Wrong cross product with dimension 3!\n";
 
     Vector c(7), d(7);
     c= 1, 2, 3, 4, 5, 6, 7;

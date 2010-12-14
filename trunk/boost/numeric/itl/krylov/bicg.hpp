@@ -39,8 +39,7 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
 	z_tilde= adjoint_solve(M, r_tilde);
 	rho_1= dot(z_tilde, z);
 
-	if (rho_1 == 0.)
-	    return iter.fail(2, "bicg breakdown");
+	if (rho_1 == 0.) return iter.fail(2, "bicg breakdown");
 	if (iter.first()) {
 	    p= z;
 	    p_tilde= z_tilde;

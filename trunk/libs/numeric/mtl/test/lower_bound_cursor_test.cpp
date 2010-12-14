@@ -38,12 +38,10 @@ struct check_position_aux
 	if (check_row) {
 	    // same column and row at value (or beyond) or end cursor 
 	    // if ( (!(col(*cursor) == col(*bref) && row(*cursor) >= 2) || cursor == eref ) )
-	    if (col(*cursor) != col(*bref) || !(cursor == eref || row(*cursor) >= 2))
-		throw "Cursor's row must be 2 (or larger)";
+	    if (col(*cursor) != col(*bref) || !(cursor == eref || row(*cursor) >= 2)) throw "Cursor's row must be 2 (or larger)";
 	} else
 	    // same row and column at value (or beyond) or end cursor
-	    if (row(*cursor) != row(*bref) || !(cursor == eref || col(*cursor) >= 2)) 
-		throw "Cursor's column must be 2 (or larger)";
+	    if (row(*cursor) != row(*bref) || !(cursor == eref || col(*cursor) >= 2)) throw "Cursor's column must be 2 (or larger)";
     }
 };
 
@@ -55,8 +53,7 @@ struct check_position_aux<mtl::traits::detail::sub_matrix_cursor<Matrix, Cursor,
     void operator()(const Matrix2&, const Coll&, const mtl::traits::detail::sub_matrix_cursor<Matrix, Cursor, Complexity>& cursor, bool ) const
     {
 	std::cout << ", cursor is pointing at " << *cursor << "\n";
-	if (*cursor < 2) 
-	    throw "Cursor must be 2 (or larger)";
+	if (*cursor < 2) throw "Cursor must be 2 (or larger)";
     }
 };
 

@@ -100,8 +100,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	    gamma_a[j]= dot(r_hat[j], r_hat[0]) / tau[j][j];
 
 	gamma[l]= gamma_a[l]; omega= gamma[l];
-	if (omega == zero)
-	    return iter.fail(3, "bicg breakdown #2");
+	if (omega == zero) return iter.fail(3, "bicg breakdown #2");
 		
 	// is this something like a tri-solve? 
 	for (Size j= l-1; j > 0; --j) {

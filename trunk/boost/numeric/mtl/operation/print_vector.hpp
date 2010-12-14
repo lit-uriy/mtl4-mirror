@@ -27,11 +27,9 @@ std::ostream& print_vector(Vector const& vector, std::ostream& out= std::cout, i
 	<< "}[" ;
     for (size_t r = 0; r < size(vector); ++r) {
 	out.fill (' '); 
-	if (width)
-	    out.width (width); 
+	if (width) out.width (width); 
 	// out.flags (std::ios_base::right);
-	if (precision)
-	    out.precision(precision); 
+	if (precision) out.precision(precision); 
 	out << vector[r] << (r < size(vector) - 1 ? "," : "]");
     }
     return out;

@@ -78,39 +78,33 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     c= a + b;
     
     cout << "C= A + B\n" << c << "\n";
-    if (c[4][3] != sum)
-	throw "wrong sum";
+    if (c[4][3] != sum) throw "wrong sum";
 
     c= a + b + a + b;
     
     cout << "C= A + B + A + B\n" << c << "\n";
-    if (c[4][3] != 2.0*sum)
-	throw "wrong sum";
+    if (c[4][3] != 2.0*sum) throw "wrong sum";
     c+= a + b;
     
     cout << "C+= A + B\n" << c << "\n";
-    if (c[4][3] != 3.0*sum)
-	throw "wrong increment by sum";
+    if (c[4][3] != 3.0*sum) throw "wrong increment by sum";
 
     cout << "A + B\n" << a+b << "\n";
     cout << "(A + B)[4][3] = " << (a+b)[4][3] << "\n\n";
 
     c-= a + b;
     cout << "C-= A + B\n" << c << "\n";
-    if (c[4][3] != 2.0*sum)
-	throw "wrong decrement by sum";
+    if (c[4][3] != 2.0*sum) throw "wrong decrement by sum";
 
     c= a - b;
     
     cout << "C= A - B\n" << c << "\n";
-    if (c[4][3] != diff)
-	throw "wrong difference";
+    if (c[4][3] != diff) throw "wrong difference";
     c-= a - b;
     
     cout << "C-= A - B\n" << c << "\n";
     return;
-    if (c[4][3] != 0.0)
-	throw "wrong decrement by difference";
+    if (c[4][3] != 0.0) throw "wrong decrement by difference";
 }
 
 
