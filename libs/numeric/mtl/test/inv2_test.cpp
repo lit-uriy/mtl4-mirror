@@ -27,8 +27,7 @@ mtl::dense2D<ct> inv2 ( const mtl::dense2D<ct> & M )
    N[0][0] = M[1][1]/d;
    N[0][1] =-M[0][1]/d;
    N[1][0] =-M[1][0]/d;
-   N[1][1] = M[0][0]/d;
-   return N;
+   N[1][1] = M[0][0]/d; return N;
 }
 
 

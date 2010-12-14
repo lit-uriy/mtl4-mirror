@@ -36,8 +36,7 @@ int main()
 
   mtl::dense_vector<double> r(b - A * x);
   std::cout << "Norm r = " << two_norm(r) << "\n";
-  if (two_norm(r) > abs)
-      throw "Residuum not reduced enough.";
+  if (two_norm(r) > abs) throw "Residuum not reduced enough.";
 
   return 0;
 }

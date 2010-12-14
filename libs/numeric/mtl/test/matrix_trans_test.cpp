@@ -33,8 +33,7 @@ void test(Matrix& , const char* name)
     
     cout << name << ":\n trans(A)[0][1]= " << trans(A)[0][1] << "\n";
 
-    if (trans(A)[0][1] != value_type(1.))
-	throw "constant transposing wrong";
+    if (trans(A)[0][1] != value_type(1.)) throw "constant transposing wrong";
 
     vector_type v(3), vcomp(3), w(3);
     w= 4, 7, 8;
@@ -42,8 +41,7 @@ void test(Matrix& , const char* name)
 
     v= trans(A) * w;
     // cout << "trans(A) * w = " << v << '\n';
-    if (one_norm(vector_type(v - vcomp)) > 0.01)
-	throw "Error in trans(A) * w";
+    if (one_norm(vector_type(v - vcomp)) > 0.01) throw "Error in trans(A) * w";
 }
 
 
@@ -60,8 +58,7 @@ void mutable_test(Matrix&, const char* name)
     
     cout << name << ":\n trans(A)[0][1]= " << trans(A)[0][1] << "\n";
 
-    if (trans(A)[0][1] != value_type(11.))
-	throw "transposing wrong";
+    if (trans(A)[0][1] != value_type(11.)) throw "transposing wrong";
 }
 
 

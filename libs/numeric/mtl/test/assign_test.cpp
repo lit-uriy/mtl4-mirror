@@ -61,13 +61,10 @@ void test(MatrixSrc& src, const char* name_src,
     new_dest= src;
     std::cout << "dest after assignment:\n" << new_dest << "\n\n";
 
-    if (new_dest.num_rows() != 5 || new_dest.num_cols() != 7)
-	throw "wrong dimension";
+    if (new_dest.num_rows() != 5 || new_dest.num_cols() != 7) throw "wrong dimension";
     typename MatrixDest::value_type zero(0.0), three(3.0);
-    if (new_dest(1, 2) != zero)
-	throw "m[1][2] should be zero";
-    if (new_dest(1, 1) != three)
-	throw "m[1][1] should be three";
+    if (new_dest(1, 2) != zero) throw "m[1][2] should be zero";
+    if (new_dest(1, 1) != three) throw "m[1][1] should be three";
 
 }
 

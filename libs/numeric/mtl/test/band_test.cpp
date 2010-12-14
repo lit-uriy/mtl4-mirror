@@ -41,7 +41,7 @@ void list_entries(const Matrix& A, int begin, int end)
 template <typename Matrix>
 void check(const Matrix& A, int begin, int end)
 {
-    //list_entries(A, begin, end);
+    list_entries(A, begin, end);
     typedef typename mtl::Collection<Matrix>::value_type   value_type;
     typedef typename mtl::Collection<Matrix>::size_type    size_type;
 
@@ -49,11 +49,9 @@ void check(const Matrix& A, int begin, int end)
 	for (size_type j= 0; j < num_cols(A); j++) {
 	    long band= long(j) - long(i);
 	    if (band < begin) {
-		if (A[i][j] != value_type(0))
-		    throw "Value must be zero left of the bands";
+		if (A[i][j] != value_type(0)) throw "Value must be zero left of the bands";
 	    } else if (band >= end) {
-		if (A[i][j] != value_type(0))
-		    throw "Value must be zero right of the bands";
+		if (A[i][j] != value_type(0)) throw "Value must be zero right of the bands";
 	    } else
 		if (A[i][j] != value_type(band + 0))
 		    throw "Wrong non-zero value within the bands";

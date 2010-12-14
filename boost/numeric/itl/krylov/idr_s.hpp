@@ -61,8 +61,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	dR.vector(k)= -omega * v;
 	x+= dX.vector(k); 
 	r+= dR.vector(k);
-	if ((++iter).finished(r))
-	    return iter;
+	if ((++iter).finished(r)) return iter;
 	M[iall][k]= trans(P) * dR.vector(k); 
     }
 

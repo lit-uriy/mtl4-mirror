@@ -90,10 +90,7 @@ int test_main(int argc, char* argv[])
 
     unsigned dim1= 5, dim2= 5;
 
-    if (argc > 2) {
-	dim1= atoi(argv[1]); 
-	dim2= atoi(argv[2]);
-    }
+    if (argc > 2) {dim1= atoi(argv[1]); dim2= atoi(argv[2]);}
     unsigned size= dim1 * dim2; 
 
     compressed2D<double>                                 cr(size, size);

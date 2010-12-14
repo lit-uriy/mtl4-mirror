@@ -44,8 +44,7 @@ void test(MatrixA& a, const char* name)
     std::cout.precision (6);
     std::cout << "frobenius_norm(a) = " << frobenius_norm(a) << "\n"; std::cout.flush();
 
-    if (frobenius_norm(a) < 13.266 || frobenius_norm(a) > 13.267)
-	throw "wrong frobenius_norm"; 
+    if (frobenius_norm(a) < 13.266 || frobenius_norm(a) > 13.267) throw "wrong frobenius_norm"; 
 }
 
 

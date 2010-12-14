@@ -47,10 +47,7 @@ int test_main(int argc, char* argv[])
     using namespace mtl;
     unsigned dim1= 3, dim2= 2;
 
-    if (argc > 2) {
-	dim1= atoi(argv[1]); 
-	dim2= atoi(argv[2]);
-    }
+    if (argc > 2) {dim1= atoi(argv[1]);dim2= atoi(argv[2]);}
     unsigned size= dim1 * dim2; 
 
     dense2D<double>                                      dr(size, size);

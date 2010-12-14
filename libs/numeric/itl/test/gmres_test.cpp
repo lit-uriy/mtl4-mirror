@@ -88,8 +88,7 @@ int test_main(int, char**)
   gmres(A, x, b, Ident, Ident, iter_2, 2);
   r= A*x-b;
   // if (two_norm(r) > 0.00005) throw "gmres(2) doesn't converge";
-  if (two_norm(r) > 0.00005) 
-      std::cout << "GMRES(2) didn't converge after 8 titerations.\n";
+  if (two_norm(r) > 0.00005) std::cout << "GMRES(2) didn't converge after 8 titerations.\n";
 
 #if 1
   std::cout << "\n Non-preconditioned gmres(4)" << std::endl;
@@ -98,8 +97,7 @@ int test_main(int, char**)
   gmres(A, x, b, Ident, Ident,  iter_4, 4);
   r= A*x-b;
   // if (two_norm(r) > 0.000001) throw "gmres(4) doesn't converge even with more iterations and restarts";
-  if (two_norm(r) > 0.00005) 
-      std::cout << "GMRES(4) didn't converge after 16 titerations.\n";
+  if (two_norm(r) > 0.00005) std::cout << "GMRES(4) didn't converge after 16 titerations.\n";
 
   std::cout << "\n Non-preconditioned gmres(4) more iterations " << std::endl;
   x= 2.5;
@@ -129,5 +127,10 @@ int test_main(int, char**)
   r= A*x-b;
   if (two_norm(r) > 0.00005) throw "gmres(32) doesn't converge";
 #endif
+
+  test1(A,0.194);
+  std::cout << "A has " << A.nnz() << " non-zero entries" << std::endl;
+  std::cout << "A =\n"  << A << " \n";
+
   return 0;
 }

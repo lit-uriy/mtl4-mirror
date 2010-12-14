@@ -49,16 +49,16 @@ void test(int n, int m, int order)
 	}
     }
     if (n < 11) cout << "A is \n" << with_format(A, 4, 3);
-    switch(order+10) {
+    switch(order) {
     case 0:
-	if (A[1][2] != 22) throw "Wrong value";
-	if (A[4][2] != 21) throw "Wrong value";	break;
+	if (A[1][2] != 0) throw "Wrong value";
+	if (A[4][2] != 88) throw "Wrong value";break;
     case 1:
-	if (A[1][2] != 22) throw "Wrong value";
-	if (A[4][2] != 23) throw "Wrong value";	break;
+	if (A[1][2] != 0) throw "Wrong value";
+	if (A[4][2] != 0) throw "Wrong value";	break;
     case 2:
-	if (A[1][2] != 20) throw "Wrong value";
-	if (A[4][2] != 24) throw "Wrong value";	break;
+	if (A[1][2] != 84) throw "Wrong value";
+	if (A[4][2] != 48) throw "Wrong value";	break;
     }
 
     double array[4]= {1.0, -.4, -0.5, 2.0};

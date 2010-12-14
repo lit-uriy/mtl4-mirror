@@ -53,11 +53,6 @@ void test(Matrix& matrix, const char* name)
 {
     const unsigned max_print_size= 25;
 
-    if (num_rows(matrix) < 7 || num_cols(matrix) < 7) {
-	cout << "matrix size must be at least 7 x 7\n";
-	throw "Test too small";
-    }
-
     cout << "\n" << name << "\n";
     set_to_zero(matrix);
 
@@ -75,8 +70,7 @@ void test(Matrix& matrix, const char* name)
     if (nr <= max_print_size)
 	cout << "\nx= " << x << "y= " << y << "matrix = \n" << matrix << "\n";
 
-    if (matrix[2][5] != test_value(v))
-	throw "wrong value";
+    if (matrix[2][5] != test_value(v)) throw "wrong value";
 }
 
 
@@ -84,6 +78,7 @@ void test(Matrix& matrix, const char* name)
 int test_main(int argc, char* argv[])
 {
     using namespace mtl;
+    //cout << "matrix size must be at least 7 x 7\n";
     unsigned size= 7;
     if (argc > 1) size= atoi(argv[1]); 
     

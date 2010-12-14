@@ -29,11 +29,9 @@ void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
     std::cout << "Factorizing A = \n" << As << "-> LU = \n" << LU;
     // std::cout << "L = \n" << Ls << "\nU = \n" << Us;
 
-    if (std::abs(LU[3][2] - Ls[3][2]) > 0.001) 
-	throw "Wrong value in L for sparse ILU(0) factorization";
+    if (std::abs(LU[3][2] - Ls[3][2]) > 0.001) throw "Wrong value in L for sparse ILU(0) factorization";
 
-    if (std::abs(LU[3][3] - 1. / Us[3][3]) > 0.001)
-	throw "Wrong value in U for sparse ILU(0) factorization";
+    if (std::abs(LU[3][3] - 1. / Us[3][3]) > 0.001) throw "Wrong value in U for sparse ILU(0) factorization";
 }
 
 

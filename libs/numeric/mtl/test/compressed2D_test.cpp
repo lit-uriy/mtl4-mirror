@@ -45,10 +45,8 @@ void one_d_iteration(char const* name, Matrix & matrix)
     cout << name << "\nElements: " << complexity() << '\n';
     for (cursor_type cursor(mtl::begin<tag>(matrix)), cend(mtl::end<tag>(matrix)); cursor != cend; ++cursor) {
 	cout << "matrix[" << row(*cursor) << ", " << col(*cursor) << "] = " << value(*cursor) << '\n';
-	if (row(*cursor) == 2 && col(*cursor) == 2 && value(*cursor) != 7)
-	    throw test_exception();
-	if (row(*cursor) == 2 && col(*cursor) == 4 && value(*cursor) != 0)
-	    throw test_exception();
+	if (row(*cursor) == 2 && col(*cursor) == 2 && value(*cursor) != 7) throw test_exception();
+	if (row(*cursor) == 2 && col(*cursor) == 4 && value(*cursor) != 0) throw test_exception();
     }
 }
 
