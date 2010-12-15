@@ -254,7 +254,7 @@ inline void mat_mat_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign,
 
 // Matrix vector multiplication
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::matrix, tag::vector, tag::vector)
+inline void gen_mult(const Matrix& a, const VectorIn& v, VectorOut& w, Assign, tag::matrix, tag::col_vector, tag::col_vector)
 {
     // Vector must be column vector
     // If vector is row vector then matrix must have one column and the operation is a outer product
