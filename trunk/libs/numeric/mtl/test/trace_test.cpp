@@ -50,7 +50,7 @@ int test_main(int argc, char* argv[])
     if (argc > 2) {dim1= atoi(argv[1]);dim2= atoi(argv[2]);}
     unsigned size= dim1 * dim2; 
 
-    dense2D<double>                                      dr(size, size);
+    dense2D<double>                                      dr(size, size), dr2(0,0);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
     morton_dense<double, recursion::morton_z_mask>       mzd(size, size);
     morton_dense<double, recursion::doppled_2_row_mask>  d2r(size, size);
@@ -68,6 +68,7 @@ int test_main(int argc, char* argv[])
     test(cc, dim1, dim2, "Compressed column major");
     test(drc, dim1, dim2, "Dense row major complex");
     test(crc, dim1, dim2, "Compressed row major complex");
+    test(dr2, 0, 0, "Dense row major");
 
     return 0;
 }
