@@ -127,7 +127,7 @@ struct crtp_plus_assign<Vector, mat_cvec_times_expr<E1, E2> >
     type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
     {
 	gen_mult(src.first, src.second, vector,
-		 assign::plus_sum(), tag::matrix(), tag::vector(), tag::vector());
+		 assign::plus_sum(), tag::matrix(), tag::col_vector(), tag::col_vector());
 	return vector;
     }
 };
@@ -167,7 +167,7 @@ struct crtp_minus_assign<Vector, mat_cvec_times_expr<E1, E2> >
     type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
     {
 	gen_mult(src.first, src.second, vector,
-		 assign::minus_sum(), tag::matrix(), tag::vector(), tag::vector());
+		 assign::minus_sum(), tag::matrix(), tag::col_vector(), tag::col_vector());
 	return vector;
     }
 };

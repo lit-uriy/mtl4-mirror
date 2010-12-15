@@ -26,26 +26,26 @@
 using namespace std;  
 
 template <typename MatrixA>
-void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
+void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 {
     const unsigned max_print_size= 25;
     cout << "\n" << name << "\n";
-    laplacian_setup(a, dim1, dim2);
+    laplacian_setup(A, dim1, dim2);
 
     unsigned size= dim1 * dim2;
     mtl::dense_vector<double> v(size);
-    for (unsigned i= 0; i < num_cols(a); i++)
-	v[i]= a[12][i];
+    for (unsigned i= 0; i < num_cols(A); i++)
+	v[i]= A[12][i];
 
     // Resulting vector has same value type as matrix
     typedef typename mtl::Collection<MatrixA>::value_type rvalue_type;
     mtl::dense_vector<rvalue_type> w(size);
 
-    w= a * v;
-    //mult(a, v, w);
+    w= A * v;
+    //mult(A, v, w);
 
     if (size <= max_print_size)
-	cout << "A= \n" << a << "\n\nv= " << v << "\n\nA*v= " << w << "\n";
+	cout << "A= \n" << A << "\n\nv= " << v << "\n\nA*v= " << w << "\n";
 
     // Same test as in matrix product: resulting vector corresponds to column 12
     // Check for stencil below in the middle of the matrix
@@ -65,7 +65,7 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 	if (w[22] != one) throw "wrong south south neighbor";
     }
 
-    w+= a * v;
+    w+= A * v;
 
     if (size <= max_print_size)
 	cout << "w+= A*v= \n\n" << w << "\n";
@@ -77,7 +77,7 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 	if (w[18] != four) throw "wrong south east neighbor";
     }
 
-    w-= a * v;
+    w-= A * v;
 
     if (size <= max_print_size)
 	cout << "w-= A*v= \n\n" << w << "\n";
