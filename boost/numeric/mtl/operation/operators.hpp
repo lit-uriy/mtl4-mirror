@@ -19,8 +19,10 @@
 #include <boost/numeric/mtl/operation/mult_result.hpp>
 #include <boost/numeric/mtl/operation/div_result.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
+#include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
+#include <boost/numeric/mtl/vector/rvec_mat_times_expr.hpp>
 
 
 namespace mtl { 
