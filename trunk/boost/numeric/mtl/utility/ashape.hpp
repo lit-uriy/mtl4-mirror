@@ -515,6 +515,13 @@ struct ashape< mat_cvec_times_expr<E1, E2> >
     typedef typename ashape<E2>::type type;
 };
 
+template <typename E1, typename E2>
+struct ashape< vector::rvec_mat_times_expr<E1, E2> >
+{
+    // Resulting vector has the same shape as the multiplied
+    typedef typename ashape<E1>::type type;
+};
+
 
 // added by Hui Li (below) -----------------------------------------
 

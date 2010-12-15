@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/concept/std_concept.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 
 #ifdef MTL_HAS_MPI
 #   include <boost/numeric/mtl/matrix/distributed.hpp>

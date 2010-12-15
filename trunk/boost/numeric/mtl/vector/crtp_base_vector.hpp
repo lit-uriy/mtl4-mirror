@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
 
 #include <boost/numeric/itl/itl_fwd.hpp>
 
@@ -73,6 +74,22 @@ struct crtp_assign<Vector, mat_cvec_times_expr<E1, E2> >
     {
 	vector.checked_change_dim(num_rows(src.first));
 	mult(src.first, src.second, vector);
+	return vector;
+    }
+};
+
+
+/// Assign vector matrix product by calling mult
+/** Note that this does not work for arbitrary expressions. **/
+template <typename Vector, typename E1, typename E2>
+struct crtp_assign<Vector, rvec_mat_times_expr<E1, E2> >
+{
+    typedef Vector& type;
+    type operator()(Vector& vector, const rvec_mat_times_expr<E1, E2>& src)
+    {
+	vector.checked_change_dim(num_cols(src.first));
+	gen_mult(src.first, src.second, vector, assign::assign_sum(), 
+		 tag::row_vector(), tag::matrix(), tag::row_vector());
 	return vector;
     }
 };

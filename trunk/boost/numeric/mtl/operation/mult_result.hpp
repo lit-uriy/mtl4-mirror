@@ -14,11 +14,16 @@
 #define MTL_MULT_RESULT_INCLUDE
 
 #include <boost/numeric/mtl/utility/ashape.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+
+#if 0
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/matrix/mat_mat_times_expr.hpp>
 #include <boost/numeric/mtl/matrix/implicit_dense.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
 #include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
+#include <boost/numeric/mtl/vector/rvec_mat_times_expr.hpp>
+#endif
 
 namespace mtl { namespace traits {
 
@@ -109,6 +114,14 @@ template <typename Op1, typename Op2>
 struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::scal_cvec_mult> 
 {
     typedef vector::scaled_view<Op1, Op2> type;
+};
+
+/// Multiply row vector with matrix
+// added by Cornelius and Peter
+template <typename Op1, typename Op2>
+struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::rvec_mat_mult> 
+{
+    typedef vector::rvec_mat_times_expr<Op1, Op2> type;
 };
 
 /// Scale row vector from right

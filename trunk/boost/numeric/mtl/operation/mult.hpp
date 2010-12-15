@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/operation/smat_smat_mult.hpp>
 #include <boost/numeric/mtl/operation/smat_dmat_mult.hpp>
 #include <boost/numeric/mtl/operation/mat_vec_mult.hpp>
+#include <boost/numeric/mtl/operation/rvec_mat_mult.hpp>
 #include <boost/numeric/mtl/operation/mult_specialize.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
@@ -278,16 +279,44 @@ inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, t
     }
 #endif
     w.checked_change_dim(num_rows(A));
-    if(num_rows(A) != size(w) || num_cols(A) != size(v))
-	std::cout << "num_rows(A) is " << num_rows(A) << ", size(w) is " << size(w) 
-		  << ", num_cols(A) is " << num_cols(A) << ", size(v) is " << size(v) << "\n";
-    MTL_THROW_IF(num_rows(A) != size(w) || num_cols(A) != size(v), incompatible_size());
+    MTL_DEBUG_THROW_IF(num_cols(A) != size(v), incompatible_size());
 
-    // dispatch between dense and sparse matrices and multi-vectors (and others)
-    using mtl::traits::category;
-    // std::cout << "category A is " << typeid(typename category<Matrix>::type).name() << "\n";
-    mat_cvec_mult(A, v, w, Assign(), typename category<Matrix>::type()); 
+    mat_cvec_mult(A, v, w, Assign(), typename mtl::traits::category<Matrix>::type()); 
 }
+
+
+// Vector matrix multiplication
+template <typename VectorIn, typename Matrix, typename VectorOut, typename Assign>
+inline void gen_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, tag::row_vector, tag::matrix, tag::row_vector)
+{
+    // Vector must be column vector
+    // If vector is row vector then matrix must have one column and the operation is a outer product
+    //   -> result should be a matrix too
+
+    // Check if element types are compatible (in contrast to tag dispatching, nesting is considered here)
+    BOOST_STATIC_ASSERT((boost::is_same< typename ashape::mult_op<typename ashape::ashape<VectorIn>::type, 
+			                                          typename ashape::ashape<Matrix>::type >::type,
+			                 ::mtl::ashape::rvec_mat_mult
+			               >::value));
+
+
+#if 1
+    MTL_THROW_IF((void*)&v == (void*)&w, argument_result_conflict());
+#else
+    if ((void*)&v == (void*)&w) {
+	VectorOut tmp(size(w)); 
+	mult(A, b, tmp);
+	swap(w, tmp);
+	return;
+    }
+#endif
+    w.checked_change_dim(num_cols(A));
+    MTL_DEBUG_THROW_IF(num_cols(v) != num_rows(A), incompatible_size());
+
+    rvec_mat_mult(v, A, w, Assign(), typename mtl::traits::category<Matrix>::type()); 
+}
+
+
 
 
 
