@@ -14,14 +14,13 @@
 #define MTL_MAT_VEC_MULT_INCLUDE
 
 #include <cassert>
-#include <iostream>
+// #include <iostream>
 #include <boost/mpl/bool.hpp>
 
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
-#include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>

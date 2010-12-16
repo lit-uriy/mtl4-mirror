@@ -149,7 +149,19 @@ struct crtp_plus_assign<Vector, mat_cvec_times_expr<E1, E2> >
     }
 };
 
-
+/// Assign-add vector matrix product by calling mult
+/** Note that this does not work for arbitrary expressions. **/
+template <typename Vector, typename E1, typename E2>
+struct crtp_plus_assign<Vector, rvec_mat_times_expr<E1, E2> >
+{
+    typedef Vector& type;
+    type operator()(Vector& vector, const rvec_mat_times_expr<E1, E2>& src)
+    {
+	gen_mult(src.first, src.second, vector, assign::plus_sum(), 
+		 tag::row_vector(), tag::matrix(), tag::row_vector());
+	return vector;
+    }
+};
 
 
 namespace detail {
@@ -175,7 +187,7 @@ struct crtp_minus_assign
 				     typename ashape::ashape<Source>::type>
 {};
 
-/// Assign-add matrix vector product by calling mult
+/// Assign-subtract matrix vector product by calling mult
 /** Note that this does not work for arbitrary expressions. **/
 template <typename Vector, typename E1, typename E2>
 struct crtp_minus_assign<Vector, mat_cvec_times_expr<E1, E2> >
@@ -189,8 +201,19 @@ struct crtp_minus_assign<Vector, mat_cvec_times_expr<E1, E2> >
     }
 };
 
-
-
+/// Assign-subtract vector matrix product by calling mult
+/** Note that this does not work for arbitrary expressions. **/
+template <typename Vector, typename E1, typename E2>
+struct crtp_minus_assign<Vector, rvec_mat_times_expr<E1, E2> >
+{
+    typedef Vector& type;
+    type operator()(Vector& vector, const rvec_mat_times_expr<E1, E2>& src)
+    {
+	gen_mult(src.first, src.second, vector, assign::minus_sum(), 
+		 tag::row_vector(), tag::matrix(), tag::row_vector());
+	return vector;
+    }
+};
 
 
 /// Base class to provide vector assignment operators generically 

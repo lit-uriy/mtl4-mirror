@@ -48,7 +48,7 @@ void right_scale_inplace(Vector& v, tag::vector, const Factor& alpha, tag::matri
     using mtl::swap;
 
     Vector tmp(size(v));
-    mult(v, alpha, tmp);
+    gen_mult(v, alpha, tmp, assign::assign_sum(), tag::row_vector(), tag::matrix(), tag::row_vector());
     swap(v, tmp);
 }
 #endif
