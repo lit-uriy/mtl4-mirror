@@ -34,8 +34,9 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 
     unsigned size= dim1 * dim2;
     mtl::dense_vector<double, mtl::vector::parameters<mtl::row_major> > v(size);
+    unsigned r= size == 25 ? 12 : 3;
     for (unsigned i= 0; i < num_cols(A); i++)
-	v[i]= A[12][i];
+	v[i]= A[r][i];
 
     // Resulting vector has same value type as matrix
     typedef typename mtl::Collection<MatrixA>::value_type rvalue_type;
@@ -46,7 +47,6 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
     if (size <= max_print_size)
 	cout << "A= \n" << A << "\n\nv= " << v << "\n\nv * A= " << w << "\n";
 
-#if 0
     // Same test as in matrix product: resulting vector corresponds to column 12
     // Check for stencil below in the middle of the matrix
     //        1
@@ -88,18 +88,15 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 	if (w[12] != twenty) throw "wrong diagonal";
 	if (w[18] != two) throw "wrong south east neighbor";
     }
-#endif 
 }
 
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char**)
 {
     using namespace mtl;
 
     unsigned dim1= 5, dim2= 5;
-
-    if (argc > 2) {dim1= atoi(argv[1]); dim2= atoi(argv[2]);}
     unsigned size= dim1 * dim2; 
 
     compressed2D<double>                                 cr(size, size);
@@ -108,13 +105,16 @@ int test_main(int argc, char* argv[])
     dense2D<double>                                      dr(size, size);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
 
+    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<6, 6> > fmat_para;
+    dense2D<double, fmat_para>                           drf;
+   
     test(cr, dim1, dim2, "Row-major sparse");
-#if 0
     test(cc, dim1, dim2, "Column-major sparse");
 
     test(dr, dim1, dim2, "Row-major dense");
     test(dc, dim1, dim2, "Column-major dense");
-#endif
+
+    test(drf, 2, 3, "Row-major dense with static size 6x6");
 
     return 0;
 }
