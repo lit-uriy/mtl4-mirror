@@ -142,14 +142,6 @@ void solve(const char* file_name)
 
 int main(int argc, char* argv[])
 {
-    
-    // This is an ugly test to be removed
-    if (std::string(argv[0]).size() > std::string("solve_sudoku").size()+4) {
-	std::cerr << "For simplicity this test works only in the test directory\n"
-		  << "Please cd there and rerun the test.";
-	return 0;
-    }
-
     solve(argc > 1 ? argv[1] : "matrix_market/sudoku_easy.mtx");
     return 0;
 }
