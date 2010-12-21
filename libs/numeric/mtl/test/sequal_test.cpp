@@ -38,7 +38,7 @@ int test_main(int , char**)
 
 	std::cout<<"lambda  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).grad_f(13.0) <<"\n";
 	std::cout<<"lambda  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).grad_f(113.0) <<"\n";
-	std::cout<<"roots  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).roots(113.0) <<"\n";
+	std::cout<<"roots  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).roots() <<"\n";
 	//std::cout<<"lambda  ="<< lambda <<"\n";
 
 	
