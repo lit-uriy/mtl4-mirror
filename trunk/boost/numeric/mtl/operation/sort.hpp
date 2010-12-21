@@ -34,10 +34,10 @@ void inline sort(Vector& x)
 template <typename Vector>
 Vector quicksort (Vector a, typename Collection<Vector>::size_type lo, typename Collection<Vector>::size_type hi)
     {
-        int i=lo, j=hi;
+        typename Collection<Vector>::size_type i=lo, j=hi;
 
         // Vergleichs­element x
-        Collection<Vector>::value_type x=a[(lo+hi)/2];
+        typename mtl::Collection<Vector>::value_type x=a[(lo+hi)/2];
 	    //  Aufteilung
         while (i<=j)
         {    
