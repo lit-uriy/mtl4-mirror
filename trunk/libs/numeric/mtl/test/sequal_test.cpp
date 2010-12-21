@@ -16,6 +16,7 @@
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/operation/sequal.hpp>
+#include <boost/numeric/mtl/operation/sort.hpp>
 
 using namespace std;
 
@@ -41,8 +42,16 @@ int test_main(int , char**)
 	std::cout<<"roots  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).roots() <<"\n";
 	//std::cout<<"lambda  ="<< lambda <<"\n";
 
-	
-    return 0;
+	Vector x(5, 0.0);
+	for(int i = 0; i < 5; i++)
+		x[i]=5-i;
+	x[1]=1;
+	std::cout<< "\n x=" << x << "\n";
+	mtl::vector::sort<Vector>(x);
+	std::cout<< "x=" << x << "\n";
+	if(x[0] != 1.0) throw "Error in sorting.";
+
+	return 0;
 }
 
 
