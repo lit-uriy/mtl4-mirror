@@ -29,29 +29,29 @@ int test_main(int , char**)
     z[0]=1; z[1]=1;
     d[0]=-5; d[1]=-1;
    
-    //lambda= mtl::vector::sequal<Vector>(lambda, z, d, 5.0).funk(3.0);
+    //lambda= mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(3.0);
 
-    std::cout<<"lambda  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).funk(3.0) <<"\n";
-	std::cout<<"lambda  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).funk(0.0) <<"\n";
-	std::cout<<"lambda  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).funk(-3.0) <<"\n";
-	std::cout<<"lambda  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).funk(13.0) <<"\n";
-	std::cout<<"lambda  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).funk(113.0) <<"\n";
+    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(3.0) <<"\n";
+    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(0.0) <<"\n";
+    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(-3.0) <<"\n";
+    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(13.0) <<"\n";
+    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(113.0) <<"\n";
 
-	std::cout<<"lambda  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).grad_f(13.0) <<"\n";
-	std::cout<<"lambda  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).grad_f(113.0) <<"\n";
-	std::cout<<"roots  ="<< mtl::vector::sequal<Vector>(lambda, z, d, 5.0).roots() <<"\n";
-	//std::cout<<"lambda  ="<< lambda <<"\n";
+    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).grad_f(13.0) <<"\n";
+    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).grad_f(113.0) <<"\n";
+    std::cout<<"roots  ="<< secular(lambda, z, d, 5.0) <<"\n";
+    //std::cout<<"lambda  ="<< lambda <<"\n";
 
-	Vector x(5, 0.0);
-	for(int i = 0; i < 5; i++)
-		x[i]=5-i;
-	x[1]=1;
-	std::cout<< "\n x=" << x << "\n";
-	mtl::vector::sort<Vector>(x);
-	std::cout<< "x=" << x << "\n";
-	if(x[0] != 1.0) throw "Error in sorting.";
+    Vector x(5, 0.0);
+    for(int i = 0; i < 5; i++)
+	x[i]=5-i;
+    x[1]=1;
+    std::cout<< "\n x=" << x << "\n";
+    mtl::vector::sort<Vector>(x);
+    std::cout<< "x=" << x << "\n";
+    if(x[0] != 1.0) throw "Error in sorting.";
 
-	return 0;
+    return 0;
 }
 
 
