@@ -51,9 +51,6 @@ int test_main(int , char**)
 	std::cout<< "x=" << x << "\n";
 	if(x[0] != 1.0) throw "Error in sorting.";
 
-	int n;
-	std::cin>> n;
-
 	return 0;
 }
 
