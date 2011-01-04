@@ -26,12 +26,11 @@ class mapped_inserter
 {
   public:
     typedef mapped_inserter                                self;
-    typedef typename BaseInserter::vector_type              vector_type;
-    typedef typename Collection<vector_type>::size_type     size_type;
-    typedef update_proxy<BaseInserter, size_type>   proxy_type;
+    typedef typename BaseInserter::size_type               size_type;
+    typedef update_proxy<BaseInserter, size_type>          proxy_type;
 
     /// Constructor with matrix \p A, the mapping, and the slot size
-    mapped_inserter(vector_type& A, Mapper& map, size_type slot_size= 0)
+    mapped_inserter(BaseInserter& A, Mapper& map)
       : ins(A), map(map) {}
 
   public:
