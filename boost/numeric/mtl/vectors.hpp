@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/vector/strided_vector_ref.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/vector/inserter.hpp>
+#include <boost/numeric/mtl/vector/mapped_inserter.hpp>
 #include <boost/numeric/mtl/vector/extracter.hpp>
 
 #endif // MTL_VECTORS_INCLUDE
