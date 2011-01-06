@@ -63,26 +63,61 @@ class secular_f
     Vector roots()
     {
 	assert(size(z) > 1);
+	double tol= 1.0e-5;
+	value_type lamb;
 	//need sorted d
 	//Construct start values for newton iteration
 	Vector start(size(z), 0.0);
-	for(size_type i=0; i<size(z)-1; i++)
+	for(size_type i=0; i<size(z)-1; i++){
 	    start[i]= (d[i] + d[i+1]) / 2;  //start points between pols
+	    lamb= start[i];
+// 	     std::cout<< "start[i]= " << start[i] << "\n";
+// 	    for(size_type k=0; k<15; k++){
+ 	    while (std::abs(funk(lamb)) > tol){
+		 if (lamb < d[i]){
+		    lamb= (d[i]+start[i])/2;  //auf falschen Ast gesprungen
+ 		    start[i]= lamb;
+// 		    std::cout<< "falscher AST\n";
+		 } else {
+		    lamb-= funk(lamb)/grad_f(lamb);
+		 }
+// 		 std::cout<< "lamb=" << lamb << "\n";
+	    }
+	    lambda[i]= lamb;
+	}
 	start[size(z)-1]= 1.5 * d[size(z)-1] - 0.5 * d[size(z)-2];  // last start point plus half the distance to second-last
+	lamb = start[size(z)-1];
+//  	 std::cout<< "start= " << start << "\n";
+// 	 for(size_type k=0; k<15; k++){
+	 while (std::abs(funk(lamb)) > tol){
+		    if (lamb < start[size(z)-1]){
+		    lamb= (d[size(z)-1]+start[size(z)-1])/2;  //auf falschen Ast gesprungen
+ 		    start[size(z)-1]= lamb;
+// 		    std::cout<< "falscher AST\n";
+		 } else {
+		    lamb-= funk(lamb)/grad_f(lamb);
+		 }
+// 		 std::cout<< "lamb=" << lamb << "\n";
+         }
+	 lambda[size(z)-1]= lamb;
 
 	//newton algo to find roots
-	for(size_type i=0; i<size(z); i++)
-	    lambda[i]= newton(start[i]); 
+// 	for(size_type i=0; i<size(z); i++)
+// 	    lambda[i]= newton(start[i]); 
+// 	    lambda= newton(start); 
 	return lambda;
+	
     }
 
     /// newton algorithm x_{n+1}= x_n - f(x_n)/f'(x_n)
-    value_type newton(value_type start)
+    Vector newton(Vector start)
     {
 	double tol= 1.0e-5;  // TODO tol evtl parameter
-	value_type lamb(start);
-	while (std::abs(funk(lamb)) > tol)
-	    lamb-= funk(lamb)/grad_f(lamb);	
+	Vector  lambda(size(start));
+	value_type lamb;
+        while (std::abs(funk(lamb)) > tol){
+		lamb-= funk(lamb)/grad_f(lamb);
+        }
 	return lamb;
     }
 
