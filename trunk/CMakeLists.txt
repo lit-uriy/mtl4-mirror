@@ -106,7 +106,7 @@ macro (add_macro_flags)
   endforeach()
 endmacro (add_macro_flags)
 
-add_definitions("-g")
+#add_definitions("-g")
 add_macro_flags("MTL_ASSERT_FOR_THROW")
 
 option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
