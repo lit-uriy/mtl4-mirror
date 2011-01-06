@@ -26,8 +26,8 @@ int test_main(int , char**)
 
     dense_vector<double>                    eig;
 
-    double array[][4]= {{1,  1,   0,  0},
-                        {1, -1,  -2,  0},
+    double array[][4]= {{1,  2,   0,  0},
+                        {2, -1,  -2,  0},
                         {0, -2,   1,  3},
                         {0,  0,   3, 10}};
     dense2D<double> A(array), Q(4,4), L(4,4);
