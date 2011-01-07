@@ -43,7 +43,7 @@ int test_main(int , char**)
     cuppen(A, Q, L, perm);
     std::cout<<"A  =\n"<< A <<"\n";
     std::cout<<"Q  =\n"<< Q <<"\n";
-    std::cout<<"L  =\n"<< L <<"\n";
+    std::cout<<",L  =\n"<< L <<"\n";
     std::cout<<"perm=" << perm << "\n";
     
 

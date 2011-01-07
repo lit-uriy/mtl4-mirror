@@ -68,15 +68,17 @@ std::cout<< "start p=" << p <<"\n";
       std::cout<< "n=" << n <<"\n";
       T2= sub_matrix(A, m, nrows, m, nrows);
       T2[0][0]-= abs(b);
-      
+
+      std::cout << "A is\n" << A;
+      std::cout << "T1 is\n" << T1;
+      std::cout << "T2 is\n" << T2;
+
+
+
 //       std::cout<< "b=" << b <<"\n";
-     
-      if(b > zero)
-	v[m-1]= one;
-      else 
-	v[m-1]= -one;      
+      v[m-1]= b > zero ? one : -one;
       v[m]= one;
-//       std::cout<< "v_=" << v <<"\n";
+       std::cout<< "v_=" << v <<"\n";
       for (size_type i = 0; i < m; i++)
 	perm1[i]= i;
       for (size_type i = 0; i < n; i++)
@@ -126,15 +128,34 @@ std::cout<< "start p=" << p <<"\n";
 //       std::cout<< "Q1=" << Q1 <<"\n";
 //       std::cout<< "Q2=" << Q2 <<"\n";
 //       std::cout<< "m=" << m <<"\n";
-      v[irange(0,m)]=Q1[irange(0,m)][m-1];
-      v[irange(m,imax)]=Q2[irange(0,n)][0];
+       v[irange(0,m)]= Q1[irange(0,m)][m-1];
+       v[irange(m,imax)]=Q2[irange(0,n)][0];
+
+       std::cout << "Q1 is\n" << Q1;
+       std::cout << "Q2 is\n" << Q2;
+
+#if 0 // transposed yields the same
+       v[irange(0,m)]= trans(Q1[m-1][irange(0,m)]);
+       v[irange(m,imax)]= trans(Q2[0][irange(0,n)]);
+#endif
+
+      std::cout << "Vector v is " << v << '\n';
+
 //        sort(perm, v); //permutation on v
 //       std::cout << "QQQ   v =" << v;
 //       std::cout<< "diag= " << diag << "\n";
 //        std::cout<< "abs(b)= " << abs(b) << "\n";
 //       std::cout<< "hallo \n";
 //       std::cout<<"roots  ="<< secular(lambda, v, diag, abs(b)) <<"\n";
+#ifdef PETERS_TEST
+      mtl::vector::secular_f<dense_vector<value_type> > secf(lambda, v, diag, abs(b));
+      const double eps= 0.01;
+      for (unsigned i= 0; i < size(diag); i++)
+	  for (double x= diag[i] - 10*eps; x < diag[i] + 10*eps; x+= eps)
+	      std::cout << "f(" << x << ") = " << secf.funk(x) << '\n';
+#endif
       lambda= secular(lambda, v, diag, abs(b));
+
 //       std::cout<< "lambda=" << lambda << "\n";
       //Lemma 3.0.2  ... calculate eigenvectors
       for(size_type i = 0; i < nrows; i++){

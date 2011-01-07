@@ -31,16 +31,17 @@ int test_main(int , char**)
    
     //lambda= mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(3.0);
 
-    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(3.0) <<"\n";
-    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(0.0) <<"\n";
-    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(-3.0) <<"\n";
-    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(13.0) <<"\n";
-    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(113.0) <<"\n";
+    mtl::vector::secular_f<Vector>   ss(lambda, z, d, 5.0);
+    std::cout<<"lambda  =" << ss.funk(3.0) <<"\n";
+    std::cout<<"lambda  =" << ss.funk(0.0) <<"\n";
+    std::cout<<"lambda  =" << ss.funk(-3.0) <<"\n";
+    std::cout<<"lambda  =" << ss.funk(13.0) <<"\n";
+    std::cout<<"lambda  =" << ss.funk(113.0) <<"\n";
 
-    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).grad_f(13.0) <<"\n";
-    std::cout<<"lambda  ="<< mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).grad_f(113.0) <<"\n";
-    std::cout<<"roots  ="<< secular(lambda, z, d, 5.0) <<"\n";
-    //std::cout<<"lambda  ="<< lambda <<"\n";
+    std::cout<<"lambda  =" << ss.grad_f(13.0) <<"\n";
+    std::cout<<"lambda  =" << ss.grad_f(113.0) <<"\n";
+    std::cout<<"roots  =" << secular(lambda, z, d, 5.0) <<"\n";
+    //std::cout<<"lambda  =" << lambda <<"\n";
 
     Vector x(5, 0.0);
     for(int i = 0; i < 5; i++)
