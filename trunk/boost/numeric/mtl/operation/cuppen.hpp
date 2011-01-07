@@ -34,8 +34,8 @@ namespace mtl { namespace matrix {
 
 /// Eigenvalues of triangel matrix A with cuppens divide and conquer algorithm
 // Return Diagonalmatrix with eigenvalues as diag(A)
-template <typename Matrix>
-void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L)
+template <typename Matrix, typename Vector>
+void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 {
     using std::abs; using mtl::signum; using mtl::real;
     using mtl::irange; using mtl::imax; using mtl::iall;
@@ -49,9 +49,9 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L)
     Matrix           T(nrows,ncols);
     
     MTL_THROW_IF(ncols != nrows , matrix_not_square());
-
+std::cout<< "start p=" << p <<"\n";
      dense_vector<value_type>    v(nrows, zero), diag(nrows, zero), lambda(nrows, zero);
-      dense_vector<size_type>     perm(nrows, zero);
+     Vector     perm(nrows, zero);
     
     if (ncols == 1){
       L[0][0]= A[0][0];
@@ -59,6 +59,7 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L)
     } else {
       m= size_type(nrows/2);
       n= nrows - m;
+      Vector   perm1(m, zero), perm2(n, zero), perm_intern(nrows, zero);
       Matrix           T1(m, m), T2(n, n), Q1(m,m),Q2(n,n),L1(m,m), L2(n,n);
       //DIVIDE
       value_type b(A[m-1][m]);
@@ -76,18 +77,24 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L)
 	v[m-1]= -one;      
       v[m]= one;
 //       std::cout<< "v_=" << v <<"\n";
-      cuppen(T1, Q1, L1);
-      cuppen(T2, Q2, L2);
+      for (size_type i = 0; i < m; i++)
+	perm1[i]= i;
+      for (size_type i = 0; i < n; i++)
+	perm2[i]= i;
+      cuppen(T1, Q1, L1, perm1);
+      cuppen(T2, Q2, L2, perm2);
+//       std::cout<< "perm1=" << perm1 <<"\n";
+//       std::cout<< "perm2=" << perm2 <<"\n";
+      for (size_type i = 0; i < n; i++)
+	perm2[i]+= m;
+     // perm2+= m;
+      perm_intern[irange(0,m)]= perm1;
+      perm_intern[irange(m, imax)]= perm2;
+      std::cout<< "perm_intern=" << perm_intern << "\n";
+      perm= perm_intern;
+      
 //       std::cout<< "v_2=" << v <<"\n";
- #if 0     
-      std::cout<< "T1=" << T1 <<"\n";
-      std::cout<< "T2=" << T2 <<"\n";
-      std::cout<< "Q1=" << Q1 <<"\n";
-      std::cout<< "Q2=" << Q2 <<"\n";
-   
-      std::cout<< "L1=" << L1 <<"\n";
-      std::cout<< "L2=" << L2 <<"\n";
-   #endif
+ 
       L[irange(0,m)][irange(0,m)]= L1;
       L[irange(m, imax)][irange(m, imax)]= L2;
      T= 0;
@@ -96,15 +103,15 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L)
       T[irange(m, imax)][irange(m, imax)]= T2;
       diag= diagonal(L);
 //       std::cout << "diag=" << diag << "\n";
-      for (size_type i = 0; i < nrows; i++)
-	perm[i]= i;
+//       for (size_type i = 0; i < nrows; i++)
+// 	perm[i]= i;
       //Diagonalmatrix sortieren
 //       std::cout << "perm=" << perm << "\n";
 //  std::cout<< "v_3=" << v <<"\n";
        
       sort(diag, perm);
-//       std::cout << "diag=" << diag << "\n";
-//       std::cout << "perm=" << perm << "\n";
+       std::cout << "diag=" << diag << "\n";
+       std::cout << "perm=" << perm << "\n";
 //       std::cout<< "T=" << T <<"\n";
       //permutation on Matrix T
       mtl::matrix::traits::permutation<>::type P= mtl::matrix::permutation(perm);
@@ -113,14 +120,15 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L)
       Matrix TP( P * A*P );
       std::cout << "\nTP =\n" << TP;   
       
-      sort(perm, v); //permutation on v
-//       std::cout << "perm =" << perm; 
+     
+       std::cout << "perm =" << perm << "\n"; 
 //       std::cout << "v =" << v;
 //       std::cout<< "Q1=" << Q1 <<"\n";
 //       std::cout<< "Q2=" << Q2 <<"\n";
 //       std::cout<< "m=" << m <<"\n";
       v[irange(0,m)]=Q1[irange(0,m)][m-1];
       v[irange(m,imax)]=Q2[irange(0,n)][0];
+//        sort(perm, v); //permutation on v
 //       std::cout << "QQQ   v =" << v;
 //       std::cout<< "diag= " << diag << "\n";
 //        std::cout<< "abs(b)= " << abs(b) << "\n";
@@ -142,19 +150,20 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L)
 	  test=lambda[i]*lambda_i;  
 	  std::cout<< "TESTing.......=" << test << "\n";
 	  
-	  
+          lambda_i/=two_norm(lambda_i);
 	  Q[irange(0, imax)][i]= lambda_i;
 	 
       }
        L=mtl::vector::diagonal(lambda);
- 
+       std::cout<< "L=\n" << L << "\n";
+       std::cout<< "Q=\n" << Q << "\n";
   
      
     }
     
-
+    p=perm;
    
-    
+    std::cout<< "end p=" << p <<"\n";
 }
 
 }} // namespace mtl::matrix
