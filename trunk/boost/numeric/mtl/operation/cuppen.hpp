@@ -50,8 +50,8 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
     
     MTL_THROW_IF(ncols != nrows , matrix_not_square());
 std::cout<< "start p=" << p <<"\n";
-     dense_vector<value_type>    v(nrows, zero), diag(nrows, zero), lambda(nrows, zero);
-     Vector     perm(nrows, zero);
+     dense_vector<value_type>    v(nrows, zero), v1(nrows, zero), diag(nrows, zero), lambda(nrows, zero);
+     Vector     perm(nrows, zero), permdiag(nrows, zero);;
     
     if (ncols == 1){
       L[0][0]= A[0][0];
@@ -85,8 +85,12 @@ std::cout<< "start p=" << p <<"\n";
 	perm2[i]= i;
       cuppen(T1, Q1, L1, perm1);
       cuppen(T2, Q2, L2, perm2);
-//       std::cout<< "perm1=" << perm1 <<"\n";
-//       std::cout<< "perm2=" << perm2 <<"\n";
+       std::cout<< "perm1=" << perm1 <<"\n";
+       std::cout<< "perm2=" << perm2 <<"\n";
+      mtl::matrix::traits::permutation<>::type P1= mtl::matrix::permutation(perm1);
+      mtl::matrix::traits::permutation<>::type P2= mtl::matrix::permutation(perm2);
+
+
       for (size_type i = 0; i < n; i++)
 	perm2[i]+= m;
      // perm2+= m;
@@ -105,8 +109,8 @@ std::cout<< "start p=" << p <<"\n";
       T[irange(m, imax)][irange(m, imax)]= T2;
       diag= diagonal(L);
 //       std::cout << "diag=" << diag << "\n";
-//       for (size_type i = 0; i < nrows; i++)
-// 	perm[i]= i;
+       for (size_type i = 0; i < nrows; i++)
+ 	perm[i]= i;
       //Diagonalmatrix sortieren
 //       std::cout << "perm=" << perm << "\n";
 //  std::cout<< "v_3=" << v <<"\n";
@@ -117,20 +121,32 @@ std::cout<< "start p=" << p <<"\n";
 //       std::cout<< "T=" << T <<"\n";
       //permutation on Matrix T
       mtl::matrix::traits::permutation<>::type P= mtl::matrix::permutation(perm);
-//       std::cout << "\nP =\n" << P;    
-
-      Matrix TP( P * A*P );
-      std::cout << "\nTP =\n" << TP;   
+     mtl::matrix::traits::permutation<>::type PV= mtl::matrix::permutation(perm_intern);
+    //       std::cout << "\nP =\n" << P;    
+std::cout << "\nP1 =\n" << P1;   
+       std::cout << "\nP2 =\n" << P2;   
+      std::cout<< "Q1=" << Q1 <<"\n";
+      std::cout<< "Q2=" << Q2 <<"\n";
+      Matrix TP( P * A*P );// Q1P( P1 * Q1*P1 ), Q2P( P2 * Q2*P2 );
+      std::cout << "\nTP =\n" << TP; 
+      if (nrows > 2){
+      Matrix Q1P( P1*Q1*P1 ), Q2P( P2*Q2*P2 );
       
+        std::cout << "\nQ1P =\n" << Q1P;   
+        std::cout << "\nQ2P =\n" << Q2P;   
+      }
      
-       std::cout << "perm =" << perm << "\n"; 
+       std::cout << "perm1 =" << perm1 << "\n"; 
+       std::cout << "perm2 =" << perm2 << "\n";
 //       std::cout << "v =" << v;
 //       std::cout<< "Q1=" << Q1 <<"\n";
 //       std::cout<< "Q2=" << Q2 <<"\n";
 //       std::cout<< "m=" << m <<"\n";
        v[irange(0,m)]= Q1[irange(0,m)][m-1];
        v[irange(m,imax)]=Q2[irange(0,n)][0];
-
+       std::cout<< "PV=" << PV << "\n";
+ v1=PV*v;
+  
        std::cout << "Q1 is\n" << Q1;
        std::cout << "Q2 is\n" << Q2;
 
@@ -139,8 +155,13 @@ std::cout<< "start p=" << p <<"\n";
        v[irange(m,imax)]= trans(Q2[0][irange(0,n)]);
 #endif
 
-      std::cout << "Vector v is " << v << '\n';
-
+      std::cout << "Vector perm is " << perm << '\n';
+std::cout << "Vector v1 is " << v1 << '\n';
+std::cout << "Vector v is " << v << '\n';
+std::cout << "Vector diag is " << diag << '\n';
+permdiag=perm;
+sort(permdiag, v1);
+std::cout << "Vector v1 is " << v1 << '\n';
 //        sort(perm, v); //permutation on v
 //       std::cout << "QQQ   v =" << v;
 //       std::cout<< "diag= " << diag << "\n";
@@ -154,7 +175,7 @@ std::cout<< "start p=" << p <<"\n";
 	  for (double x= diag[i] - 10*eps; x < diag[i] + 10*eps; x+= eps)
 	      std::cout << "f(" << x << ") = " << secf.funk(x) << '\n';
 #endif
-      lambda= secular(lambda, v, diag, abs(b));
+      lambda= secular(lambda, v1, diag, abs(b));
 
 //       std::cout<< "lambda=" << lambda << "\n";
       //Lemma 3.0.2  ... calculate eigenvectors
