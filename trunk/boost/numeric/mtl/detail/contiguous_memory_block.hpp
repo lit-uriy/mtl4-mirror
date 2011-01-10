@@ -40,7 +40,7 @@ using std::size_t;
 #endif
 
 
-// Manage size only if template parameter is 0
+// Size helper for static size
 template <unsigned Size>
 struct size_helper
 {
@@ -67,6 +67,7 @@ struct size_helper
     friend void swap(self& x, self& y) {}
 };
 
+// Manage size only if template parameter is 0, i.e. dynamic size
 template <>
 struct size_helper<0>
 {
@@ -205,7 +206,7 @@ struct memory_crtp
     
 };
 
-
+// OnStack == false -> data on heap 
 template <typename Value, bool OnStack, unsigned Size>
 struct contiguous_memory_block
     : public size_helper<Size>,
@@ -375,6 +376,7 @@ public:
     Value                                     *data;
 };
 
+// OnStack == true 
 template <typename Value, unsigned Size>
 struct contiguous_memory_block<Value, true, Size>
     : public alignment_helper<Value>,
@@ -441,6 +443,10 @@ public:
     {
 	return Size;
     }
+
+  protected:
+    enum c_t {own};
+    static const c_t category= own;
 };
 
 
