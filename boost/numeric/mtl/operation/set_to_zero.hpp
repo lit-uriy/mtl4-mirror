@@ -110,7 +110,7 @@ namespace mtl {
 	
 	template <typename Coll>
 	bool has_strided_data(const Coll&) 
-	{ return true; }
+	{ return false; }
 
 	template <typename Value, typename Parameter>
 	bool has_strided_data(const matrix::dense2D<Value, Parameter>& A)
