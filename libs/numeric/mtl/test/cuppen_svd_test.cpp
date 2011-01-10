@@ -46,9 +46,9 @@ int test_main(int , char**)
     std::cout<<"Q  =\n"<< Q <<"\n";
     std::cout<<"L  =\n"<< L <<"\n";
     std::cout<<"perm=" << perm << "\n";
+    std::cout<<"eigenvalues  ="<< diagonal(L) <<"\n";
     
     eig-= diagonal(L);
-    std::cout<<"two_norm(test)=" << two_norm(eig) << "\n";
     if (two_norm(eig) > tol) throw "Cuppen computes wrong eigenvalues";
     
 
