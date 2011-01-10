@@ -24,7 +24,8 @@ int test_main(int , char**)
 {
     using namespace mtl;
 
-    dense_vector<double>                    eig;
+    dense_vector<double>        eig;
+    double 			tol= 1.0e-5;
 
     double array[][4]= {{1,  2,   0,  0},
                         {2, -1,  -2,  0},
@@ -43,8 +44,12 @@ int test_main(int , char**)
     cuppen(A, Q, L, perm);
     std::cout<<"A  =\n"<< A <<"\n";
     std::cout<<"Q  =\n"<< Q <<"\n";
-    std::cout<<",L  =\n"<< L <<"\n";
+    std::cout<<"L  =\n"<< L <<"\n";
     std::cout<<"perm=" << perm << "\n";
+    
+    eig-= diagonal(L);
+    std::cout<<"two_norm(test)=" << two_norm(eig) << "\n";
+    if (two_norm(eig) > tol) throw "Cuppen computes wrong eigenvalues";
     
 
     return 0;
