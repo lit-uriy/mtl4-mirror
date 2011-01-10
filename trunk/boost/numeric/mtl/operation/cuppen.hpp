@@ -41,13 +41,11 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
     using mtl::irange; using mtl::imax; using mtl::iall;
 
     typedef typename Collection<Matrix>::value_type   value_type;
-    typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i
     typedef typename Collection<Matrix>::size_type    size_type;
     typedef typename Collection<Vector>::value_type    vec_value_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A), m, n;
     value_type       zero= math::zero(A[0][0]), one= math::one(A[0][0]);//, h00, h10, h11, beta, mu, a, b, tol;
     vec_value_type   zerovec= math::zero(p[0]);
-  //  const magnitude_type two(2);
     Matrix           T(nrows,ncols);
     
     MTL_THROW_IF(ncols != nrows , matrix_not_square());
@@ -61,7 +59,7 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
       m= size_type(nrows/2);
       n= nrows - m;
       Vector   perm1(m, zerovec), perm2(n, zerovec), perm_intern(nrows, zerovec);
-      Matrix           T1(m, m), T2(n, n), Q1(m,m),Q2(n,n),L1(m,m), L2(n,n);
+      Matrix           T1(m, m), T2(n, n), Q1(m ,m) ,Q2(n, n) ,L1(m, m), L2(n, n);
       //DIVIDE
       value_type b(A[m-1][m]);
       T1= sub_matrix(A, 0, m, 0, m);
@@ -84,14 +82,15 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	perm1[i]= i;
       for (size_type i = 0; i < n; i++)
 	perm2[i]= i;
+      //recursiv function call
       cuppen(T1, Q1, L1, perm1);
       cuppen(T2, Q2, L2, perm2);
 //        std::cout<< "perm1=" << perm1 <<"\n";
 //        std::cout<< "perm2=" << perm2 <<"\n";
-      mtl::matrix::traits::permutation<>::type P1= mtl::matrix::permutation(perm1);
-      mtl::matrix::traits::permutation<>::type P2= mtl::matrix::permutation(perm2);
+//       mtl::matrix::traits::permutation<>::type P1= mtl::matrix::permutation(perm1);
+//       mtl::matrix::traits::permutation<>::type P2= mtl::matrix::permutation(perm2);
 
-
+      //permutation in global notation
       for (size_type i = 0; i < n; i++)
 	perm2[i]+= m;
      // perm2+= m;
@@ -100,28 +99,22 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 //       std::cout<< "perm_intern=" << perm_intern << "\n";
       perm= perm_intern;
       
-//       std::cout<< "v_2=" << v <<"\n";
- 
+      L= zero;
       L[irange(0,m)][irange(0,m)]= L1;
       L[irange(m, imax)][irange(m, imax)]= L2;
-     T= 0;
-//       std::cout<< "L=" << L << "\n";
+      T= 0;
       T[irange(0,m)][irange(0,m)]= T1;
       T[irange(m, imax)][irange(m, imax)]= T2;
       diag= diagonal(L);
 //       std::cout << "diag=" << diag << "\n";
-       for (size_type i = 0; i < nrows; i++)
+      for (size_type i = 0; i < nrows; i++)
  	perm[i]= i;
-      //Diagonalmatrix sortieren
-//       std::cout << "perm=" << perm << "\n";
-//  std::cout<< "v_3=" << v <<"\n";
-       
+      //sort diagonal matrix
       sort(diag, perm);
 //        std::cout << "diag=" << diag << "\n";
 //        std::cout << "perm=" << perm << "\n";
 //       std::cout<< "T=" << T <<"\n";
-      //permutation on Matrix T
-      mtl::matrix::traits::permutation<>::type P= mtl::matrix::permutation(perm);
+//       mtl::matrix::traits::permutation<>::type P= mtl::matrix::permutation(perm);
      mtl::matrix::traits::permutation<>::type PV= mtl::matrix::permutation(perm_intern);
 #if 0
        std::cout << "\nP =\n" << P;    
@@ -145,32 +138,16 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 //       std::cout<< "Q2=" << Q2 <<"\n";
 //       std::cout<< "m=" << m <<"\n";
 #endif
+       //CONQUER
        v[irange(0,m)]= Q1[irange(0,m)][m-1];
        v[irange(m,imax)]=Q2[irange(0,n)][0];
+       //permutation on v
+       v1=PV*v;
   
-	v1=PV*v;
-  
-//        std::cout << "Q1 is\n" << Q1;
-//        std::cout << "Q2 is\n" << Q2;
-
-#if 0 // transposed yields the same
-       v[irange(0,m)]= trans(Q1[m-1][irange(0,m)]);
-       v[irange(m,imax)]= trans(Q2[0][irange(0,n)]);
-#endif
-
-//       std::cout << "Vector perm is " << perm << '\n';
-// std::cout << "Vector v1 is " << v1 << '\n';
-// std::cout << "Vector v is " << v << '\n';
-// std::cout << "Vector diag is " << diag << '\n';
+	//permutation from diagonal on v
 	permdiag=perm;
 	sort(permdiag, v1);
-// std::cout << "Vector v1 is " << v1 << '\n';
-//        sort(perm, v); //permutation on v
-//       std::cout << "QQQ   v =" << v;
-//       std::cout<< "diag= " << diag << "\n";
-//        std::cout<< "abs(b)= " << abs(b) << "\n";
-//       std::cout<< "hallo \n";
-//       std::cout<<"roots  ="<< secular(lambda, v, diag, abs(b)) <<"\n";
+
 #ifdef PETERS_TEST
       mtl::vector::secular_f<dense_vector<value_type> > secf(lambda, v, diag, abs(b));
       const double eps= 0.01;
@@ -178,41 +155,29 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	  for (double x= diag[i] - 10*eps; x < diag[i] + 10*eps; x+= eps)
 	      std::cout << "f(" << x << ") = " << secf.funk(x) << '\n';
 #endif
+      // solve secular equation 
       lambda= secular(lambda, v1, diag, abs(b));
 
-//       std::cout<< "lambda=" << lambda << "\n";
       //Lemma 3.0.2  ... calculate eigenvectors
       for(size_type i = 0; i < nrows; i++){
 	  dense_vector<value_type>    test(nrows, zero), lambda_i(nrows, lambda[i]);
 	  test=diag-lambda_i;
-// 	  std::cout<< "test=" << test << "\n";
 	  for(size_type k = 0; k < nrows; k++)
 	    test[k]=1/test[k];
 	  lambda_i= ele_prod(test, v);
-// 	  std::cout<< "lambda_i=" << lambda_i << "\n";
-// 	  test=TP*lambda_i;  //Permutation von Q beachten
-// 	  std::cout<< "TESTing.......=" << test << "\n";
-	  test=lambda[i]*lambda_i;  
-// 	  std::cout<< "TESTing.......=" << test << "\n";
-	  
+	  //normalized eigenvector in Matrix Q
           lambda_i/=two_norm(lambda_i);
 	  Q[irange(0, imax)][i]= lambda_i;
-	 
       }
-       L=mtl::vector::diagonal(lambda);
-//        std::cout<< "L=\n" << L << "\n";
-//        std::cout<< "Q=\n" << Q << "\n";
-  
+      //diagonal matrix with eigenvalues
+      L=mtl::vector::diagonal(lambda);
      
-    }
-    
+    }  
     p=perm;
    
-//     std::cout<< "end p=" << p <<"\n";
 }
 
 }} // namespace mtl::matrix
-
 
 #endif // MTL_MATRIX_CUPPEN_INCLUDE
 
