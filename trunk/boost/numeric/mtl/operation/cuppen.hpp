@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/operation/sequal.hpp>
 #include <boost/numeric/mtl/operation/sort.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/utility/domain.hpp>
 
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 
@@ -40,38 +41,37 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
     using std::abs; using mtl::signum; using mtl::real;
     using mtl::irange; using mtl::imax; using mtl::iall;
 
-    typedef typename Collection<Matrix>::value_type   value_type;
-    typedef typename Collection<Matrix>::size_type    size_type;
-    typedef typename Collection<Vector>::value_type    vec_value_type;
+    typedef typename Collection<Matrix>::value_type     value_type;
+    typedef typename Collection<Matrix>::size_type      size_type;
+    typedef typename Collection<Vector>::value_type     vec_value_type;
+    typedef typename mtl::traits::domain<Matrix>::type  vec_type;
+
     size_type        ncols = num_cols(A), nrows = num_rows(A), m, n;
-    value_type       zero= math::zero(A[0][0]), one= math::one(A[0][0]);//, h00, h10, h11, beta, mu, a, b, tol;
-    vec_value_type   zerovec= math::zero(p[0]);
+    value_type       zero= 0, one= 1;
+    vec_value_type   zerovec= 0;
     Matrix           T(nrows,ncols);
     
-    MTL_THROW_IF(ncols != nrows , matrix_not_square());
-    dense_vector<value_type>    v(nrows, zero), v1(nrows, zero), diag(nrows, zero), lambda(nrows, zero);
+    MTL_THROW_IF(ncols != nrows, matrix_not_square());
+    vec_type   v(nrows, zero), v1(nrows, zero), diag(nrows, zero), lambda(nrows, zero);
     Vector     perm(nrows, zerovec), permdiag(nrows, zerovec);;
     
     if (ncols == 1){
-      L[0][0]= A[0][0];
-      Q[0][0]= 1;
+	L= A;
+	Q= 1;
     } else {
-      m= size_type(nrows/2);
-      n= nrows - m;
-      Vector   perm1(m, zerovec), perm2(n, zerovec), perm_intern(nrows, zerovec);
-      Matrix           T1(m, m), T2(n, n), Q1(m ,m) ,Q2(n, n) ,L1(m, m), L2(n, n);
-      //DIVIDE
-      value_type b(A[m-1][m]);
-      T1= sub_matrix(A, 0, m, 0, m);
-      T1[m-1][m-1]-= abs(b);
-//       std::cout<< "n=" << n <<"\n";
-      T2= sub_matrix(A, m, nrows, m, nrows);
-      T2[0][0]-= abs(b);
-#if 0
-      std::cout << "A is\n" << A;
-      std::cout << "T1 is\n" << T1;
-      std::cout << "T2 is\n" << T2;
-#endif
+	m= size_type(nrows/2);
+	n= nrows - m;
+	Vector   perm1(m, zerovec), perm2(n, zerovec), perm_intern(nrows, zerovec);
+	Matrix   T1(m, m), T2(n, n), Q1(m, m), Q2(n, n), L1(m, m), L2(n, n);
+
+	//DIVIDE
+	value_type b(A[m-1][m]);
+	irange till_m(m), from_m(m, imax);
+	T1= A[till_m][till_m]; // sub_matrix(A, 0, m, 0, m);
+	T1[m-1][m-1]-= abs(b);
+
+	T2= A[from_m][from_m]; //  sub_matrix(A, m, nrows, m, nrows);
+	T2[0][0]-= abs(b);
 
 
 //       std::cout<< "b=" << b <<"\n";
