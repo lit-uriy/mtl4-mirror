@@ -14,6 +14,7 @@
 #define MTL_IRANGE_INCLUDE
 
 #include <limits>
+#include <iostream>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 
@@ -82,6 +83,9 @@ namespace mtl {
 	    MTL_DEBUG_THROW_IF(i < my_start || i >= my_finish, index_out_of_range());
 	    return i - my_start;
 	}
+
+	friend std::ostream& operator<<(std::ostream& os, const irange& ir)
+	{   return os << "mtl::irange(" << ir.my_start << ", " << ir.my_finish << ")"; }
 
       private:
         size_type my_start, my_finish;

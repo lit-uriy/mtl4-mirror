@@ -422,6 +422,8 @@ class dense2D
     /// Address of first data entry; to be used with care.
     value_type* address_data() { return this->data; }
     const value_type* address_data() const { return this->data; }
+
+    bool has_strided_data() const { return this->category != this->own; }
     
   protected:
     

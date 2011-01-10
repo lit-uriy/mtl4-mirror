@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/diagonal.hpp>
+#include <boost/numeric/mtl/operation/iota.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/sequal.hpp>
 #include <boost/numeric/mtl/operation/sort.hpp>
@@ -52,7 +53,7 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
     Matrix           T(nrows,ncols);
     
     MTL_THROW_IF(ncols != nrows, matrix_not_square());
-    vec_type   v(nrows, zero), v1(nrows, zero), diag(nrows, zero), lambda(nrows, zero);
+    vec_type   v(nrows, zero), v1(nrows, zero), v2(nrows), diag(nrows, zero), lambda(nrows, zero);
     Vector     perm(nrows, zerovec), permdiag(nrows, zerovec);;
     
     if (ncols == 1){
@@ -61,119 +62,71 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
     } else {
 	m= size_type(nrows/2);
 	n= nrows - m;
-	Vector   perm1(m, zerovec), perm2(n, zerovec), perm_intern(nrows, zerovec);
+	Vector   perm1(m), perm2(n), perm_intern(nrows, zerovec);
 	Matrix   T1(m, m), T2(n, n), Q1(m, m), Q2(n, n), L1(m, m), L2(n, n);
 
 	//DIVIDE
 	value_type b(A[m-1][m]);
 	irange till_m(m), from_m(m, imax);
-	T1= A[till_m][till_m]; // sub_matrix(A, 0, m, 0, m);
+
+	T1= A[till_m][till_m]; 
 	T1[m-1][m-1]-= abs(b);
 
-	T2= A[from_m][from_m]; //  sub_matrix(A, m, nrows, m, nrows);
+	T2= A[from_m][from_m]; 
 	T2[0][0]-= abs(b);
 
+	v[m-1]= b > zero ? one : -one;
+	v[m]= one;
 
-//       std::cout<< "b=" << b <<"\n";
-      v[m-1]= b > zero ? one : -one;
-      v[m]= one;
-//        std::cout<< "v_=" << v <<"\n";
-      for (size_type i = 0; i < m; i++)
-	perm1[i]= i;
-      for (size_type i = 0; i < n; i++)
-	perm2[i]= i;
-      //recursiv function call
-      cuppen(T1, Q1, L1, perm1);
-      cuppen(T2, Q2, L2, perm2);
-//        std::cout<< "perm1=" << perm1 <<"\n";
-//        std::cout<< "perm2=" << perm2 <<"\n";
-//       mtl::matrix::traits::permutation<>::type P1= mtl::matrix::permutation(perm1);
-//       mtl::matrix::traits::permutation<>::type P2= mtl::matrix::permutation(perm2);
+	iota(perm1); iota(perm2);
 
-      //permutation in global notation
-      for (size_type i = 0; i < n; i++)
-	perm2[i]+= m;
-     // perm2+= m;
-      perm_intern[irange(0,m)]= perm1;
-      perm_intern[irange(m, imax)]= perm2;
-//       std::cout<< "perm_intern=" << perm_intern << "\n";
-      perm= perm_intern;
+	cuppen(T1, Q1, L1, perm1);
+	cuppen(T2, Q2, L2, perm2);
+
+	// permutation in global notation
+	for (size_type i = 0; i < n; i++)
+	    perm2[i]+= m;
+
+	perm_intern[till_m]= perm1;
+	perm_intern[from_m]= perm2;
       
-      L= zero;
-      L[irange(0,m)][irange(0,m)]= L1;
-      L[irange(m, imax)][irange(m, imax)]= L2;
-      T= 0;
-      T[irange(0,m)][irange(0,m)]= T1;
-      T[irange(m, imax)][irange(m, imax)]= T2;
-      diag= diagonal(L);
-//       std::cout << "diag=" << diag << "\n";
-      for (size_type i = 0; i < nrows; i++)
- 	perm[i]= i;
-      //sort diagonal matrix
-      sort(diag, perm);
-//        std::cout << "diag=" << diag << "\n";
-//        std::cout << "perm=" << perm << "\n";
-//       std::cout<< "T=" << T <<"\n";
-//       mtl::matrix::traits::permutation<>::type P= mtl::matrix::permutation(perm);
-     mtl::matrix::traits::permutation<>::type PV= mtl::matrix::permutation(perm_intern);
-#if 0
-       std::cout << "\nP =\n" << P;    
-      std::cout << "\nP1 =\n" << P1;   
-       std::cout << "\nP2 =\n" << P2;   
-      std::cout<< "Q1=" << Q1 <<"\n";
-      std::cout<< "Q2=" << Q2 <<"\n";
-      Matrix TP( P * A*P );// Q1P( P1 * Q1*P1 ), Q2P( P2 * Q2*P2 );
-      std::cout << "\nTP =\n" << TP; 
-      if (nrows > 2){
-      Matrix Q1P( P1*Q1*P1 ), Q2P( P2*Q2*P2 );
-      
-//         std::cout << "\nQ1P =\n" << Q1P;   
-//         std::cout << "\nQ2P =\n" << Q2P;   
-      }
+	L[till_m][till_m]= L1;  L[till_m][from_m]= 0;
+	L[from_m][till_m]= 0;   L[from_m][from_m]= L2;
+	
+	T[till_m][till_m]= T1;  T[till_m][from_m]= 0;
+	T[from_m][till_m]= 0;   T[from_m][from_m]= T2;
+	
+	diag= diagonal(L);
 
-//        std::cout << "perm1 =" << perm1 << "\n"; 
-//        std::cout << "perm2 =" << perm2 << "\n";
-//       std::cout << "v =" << v;
-//       std::cout<< "Q1=" << Q1 <<"\n";
-//       std::cout<< "Q2=" << Q2 <<"\n";
-//       std::cout<< "m=" << m <<"\n";
-#endif
-       //CONQUER
-       v[irange(0,m)]= Q1[irange(0,m)][m-1];
-       v[irange(m,imax)]=Q2[irange(0,n)][0];
-       //permutation on v
-       v1=PV*v;
-  
-	//permutation from diagonal on v
-	permdiag=perm;
-	sort(permdiag, v1);
+	iota(perm);
+	sort(diag, perm);
 
-#ifdef PETERS_TEST
-      mtl::vector::secular_f<dense_vector<value_type> > secf(lambda, v, diag, abs(b));
-      const double eps= 0.01;
-      for (unsigned i= 0; i < size(diag); i++)
-	  for (double x= diag[i] - 10*eps; x < diag[i] + 10*eps; x+= eps)
-	      std::cout << "f(" << x << ") = " << secf.funk(x) << '\n';
-#endif
-      // solve secular equation 
-      lambda= secular(lambda, v1, diag, abs(b));
+	// CONQUER
+	v[till_m]= Q1[iall][m-1];
+	v[from_m]= Q2[iall][0];
 
-      //Lemma 3.0.2  ... calculate eigenvectors
-      for(size_type i = 0; i < nrows; i++){
-	  dense_vector<value_type>    test(nrows, zero), lambda_i(nrows, lambda[i]);
-	  test=diag-lambda_i;
-	  for(size_type k = 0; k < nrows; k++)
-	    test[k]=1/test[k];
-	  lambda_i= ele_prod(test, v);
-	  //normalized eigenvector in Matrix Q
-          lambda_i/=two_norm(lambda_i);
-	  Q[irange(0, imax)][i]= lambda_i;
-      }
-      //diagonal matrix with eigenvalues
-      L=mtl::vector::diagonal(lambda);
-     
+	// permutation on v
+	v1= permutation(perm_intern) * v;
+	v2= trans(permutation(perm)) * v1;
+
+	// solve secular equation 
+	lambda= secular(lambda, v2, diag, abs(b));
+
+	//Lemma 3.0.2  ... calculate eigenvectors
+	for (size_type i = 0; i < nrows; i++) {
+	    vec_type    lambda_i(nrows, lambda[i]), test(diag - lambda_i);
+
+	    // lambda_i= ele_quod(v, test);
+	    for(size_type k = 0; k < nrows; k++)
+		test[k]=1/test[k];
+	    lambda_i= ele_prod(test, v);
+	    
+	    Q[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q
+
+	}
+	L= mtl::vector::diagonal(lambda); // diagonal matrix with eigenvalues
     }  
-    p=perm;
+    p= perm;
    
 }
 

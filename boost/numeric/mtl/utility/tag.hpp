@@ -70,6 +70,10 @@ struct has_2D_layout : virtual dense {};
 /// Tag for any sparse collection
 struct sparse : virtual universe {};
     
+// for distinction between dense and sparse matrices
+struct dense_matrix : virtual dense, virtual matrix {};
+struct sparse_matrix : virtual sparse, virtual matrix {};
+
 /// Tag for collections where values are stored contigously in memory
 struct contiguous_memory : virtual universe {};
 

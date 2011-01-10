@@ -43,8 +43,9 @@ namespace matrix {
     /// Division of matrices and vectors by salars
     /** Enable-if-like technique make sure that only called when properly defined **/
     // added by Hui Li
+    // enable_if_matrix shouldn't be needed but was nessecary in cuppen.hpp
     template < typename Op1, typename Op2 >
-    typename mtl::traits::div_result<Op1,Op2>::type
+    typename mtl::traits::enable_if_matrix<Op1, typename mtl::traits::div_result<Op1,Op2>::type>::type
     inline operator/(const Op1& op1, const Op2& op2)
     {
         return typename mtl::traits::div_result<Op1,Op2>::type(op1,op2);

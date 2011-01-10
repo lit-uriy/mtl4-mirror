@@ -14,6 +14,7 @@
 #define MTL_SET_TO_0_INCLUDE
 
 #include <algorithm>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -76,7 +77,7 @@ namespace mtl {
 
 #if 0
 	    for (int i= 0; i < matrix.num_rows(); i++)
-	      for (int j= 0; i < matrix.num_cols(); i++)
+	      for (int j= 0; j < matrix.num_cols(); j++)
 		matrix[i][j]= my_zero;
 #endif
 	}	
@@ -106,6 +107,33 @@ namespace mtl {
 	    for (typename Collection<Coll>::size_type i= 0; i < num_cols(collection); ++i)
 		set_to_zero(collection.vector(i));
 	}	
+	
+	template <typename Coll>
+	bool has_strided_data(const Coll&) 
+	{ return true; }
+
+	template <typename Value, typename Parameter>
+	bool has_strided_data(const matrix::dense2D<Value, Parameter>& A)
+	{ return A.has_strided_data(); }
+
+	
+	template <typename Matrix>
+	void naive_set_to_zero(Matrix& A, tag::matrix, tag::dense)
+	{
+	    using math::zero;
+	    typename Collection<Matrix>::value_type  ref, my_zero(zero(ref));
+
+	    for (unsigned i= 0; i < num_rows(A); i++)
+		for (unsigned j= 0; j < num_cols(A); j++)
+		    A[i][j]= my_zero;
+	}
+
+	template <typename Matrix>
+	void naive_set_to_zero(Matrix&, tag::matrix, tag::sparse)
+	{
+	    assert(true); // must not be called
+	}
+
     }
 
 
@@ -119,7 +147,10 @@ namespace matrix {
     {
 	using mtl::traits::category;
 	typedef typename Collection<Coll>::value_type value_type;
-	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename ashape::ashape<value_type>::type()); // 2. ashape ???
+	if (mtl::impl::has_strided_data(collection))
+	    mtl::impl::naive_set_to_zero(collection, typename category<Coll>::type(), typename category<Coll>::type());
+	else
+	    mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename ashape::ashape<value_type>::type()); // 2. ashape ???
     }   
 }
 
