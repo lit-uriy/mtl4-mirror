@@ -60,26 +60,26 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     cout << "Compute now C= A * B1 * B2 * I;\n";
     C= A * B1 * B2 * I;
 
-    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
-    if (C[0][3] != 1.0) throw "C[0][3] should be 1!";
+    if (C[0][0] != 0.0) {std::cout << "C is\n" << C; throw "C[0][0] should be 0!";}
+    if (C[0][3] != 1.0) {std::cout << "C is\n" << C; throw "C[0][3] should be 1!";}
 
     cout << "Compute now C= A * B1 * B2 * I * I * I * I;\n";
     C= A * B1 * B2 * I * I * I * I;
 
-    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
-    if (C[0][3] != 1.0) throw "C[0][3] should be 1!";
+    if (C[0][0] != 0.0) {std::cout << "C is\n" << C; throw "C[0][0] should be 0!";}
+    if (C[0][3] != 1.0) {std::cout << "C is\n" << C; throw "C[0][3] should be 1!";}
 
     cout << "Compute now C+= A * B1 * B2 * I;\n";
     C+= A * B1 * B2 * I;
 
-    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
-    if (C[0][3] != 2.0) throw "C[0][3] should be 2!";
+    if (C[0][0] != 0.0) {std::cout << "C is\n" << C; throw "C[0][0] should be 0!";}
+    if (C[0][3] != 2.0) {std::cout << "C is\n" << C; throw "C[0][3] should be 2!";}
 
     cout << "Compute now C-= A * B1 * B2 * I;\n";
     C-= A * B1 * B2 * I;
 
-    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
-    if (C[0][3] != 1.0) throw "C[0][3] should be 1!";
+    if (C[0][0] != 0.0) {std::cout << "C is\n" << C; throw "C[0][0] should be 0!";}
+    if (C[0][3] != 1.0) {std::cout << "C is\n" << C; throw "C[0][3] should be 1!";}
 }
 
 
@@ -100,7 +100,6 @@ int test_main(int argc, char* argv[])
 
     dense2D<complex<double> >                            drc(size, size);
     compressed2D<complex<double> >                       crc(size, size);
-
 
     test(dr, dr, dr, "Dense row major");
     test(dc, dr, dr, "Dense column major as product of dense rows");
