@@ -50,7 +50,7 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
     size_type        ncols = num_cols(A), nrows = num_rows(A), m, n;
     value_type       zero= 0, one= 1;
     vec_value_type   zerovec= 0;
-    Matrix           T(nrows,ncols);
+    Matrix           T(nrows,ncols), Q0(Q), Q01(Q);
     
     MTL_THROW_IF(ncols != nrows, matrix_not_square());
     vec_type   v(nrows, zero), v1(nrows, zero), v2(nrows), diag(nrows, zero), lambda(nrows, zero);
@@ -95,7 +95,7 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	
 	T[till_m][till_m]= T1;  T[till_m][from_m]= 0;
 	T[from_m][till_m]= 0;   T[from_m][from_m]= T2;
-	
+
 	diag= diagonal(L);
 
 	iota(perm);
@@ -104,13 +104,12 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	// CONQUER
 	v[till_m]= Q1[iall][m-1];
 	v[from_m]= Q2[iall][0];
-
+	  
 	// permutation on v
-	v1= permutation(perm_intern) * v;
-	v2= trans(permutation(perm)) * v1;
+	v1= permutation(perm) * v;
 
 	// solve secular equation 
-	lambda= secular(lambda, v2, diag, abs(b));
+	lambda= secular(lambda, v1, diag, abs(b));
 
 	//Lemma 3.0.2  ... calculate eigenvectors
 	for (size_type i = 0; i < nrows; i++) {
@@ -120,11 +119,15 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	    for(size_type k = 0; k < nrows; k++)
 		test[k]=1/test[k];
 	    lambda_i= ele_prod(test, v);
-	    
-	    Q[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q
 
+	    Q[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q
 	}
+	
 	L= mtl::vector::diagonal(lambda); // diagonal matrix with eigenvalues
+        Q01=Q;
+	Q0[till_m][till_m]= Q1;  Q0[till_m][from_m]= 0;
+	Q0[from_m][till_m]= 0;   Q0[from_m][from_m]= Q2;
+	Q=Q0*(permutation(perm))*Q01;
     }  
     p= perm;
    
