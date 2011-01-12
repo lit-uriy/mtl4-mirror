@@ -28,7 +28,7 @@ int test_main(int , char**)
     double 			tol= 1.0e-5;
 
     double array[][4]= {{1,  2,   0,  0},
-                        {2, -1,  -2,  0},
+                        {2,  9,  -2,  0},
                         {0, -2,   1,  3},
                         {0,  0,   3, 10}};
     dense2D<double> A(array), Q(4,4), L(4,4);
@@ -38,7 +38,7 @@ int test_main(int , char**)
       perm[i]=i;
 
     eig= eigenvalue_symmetric(A,22);
-
+    sort(eig);
     std::cout<<"eigenvalues  ="<< eig <<"\n";
     
     cuppen(A, Q, L, perm);
@@ -49,8 +49,8 @@ int test_main(int , char**)
     std::cout<<"eigenvalues  ="<< diagonal(L) <<"\n";
     
     eig-= diagonal(L);
+    std::cout<<"two_norm(diff)  ="<< two_norm(eig) <<"\n";
     if (two_norm(eig) > tol) throw "Cuppen computes wrong eigenvalues";
-    
 
     return 0;
 }
