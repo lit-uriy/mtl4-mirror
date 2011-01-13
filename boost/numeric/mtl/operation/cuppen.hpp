@@ -107,17 +107,6 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	    v[till_m]*= -one;
 	v[from_m]= trans(Q2[0][iall]);
 
-#if 0	  
-	std::cout << "Q1 is\n" << Q1;
-	std::cout << "Q1*trans(Q1) is\n" << Matrix(Q1*trans(Q1));
-	std::cout << "Q1*L*trans(Q1) is\n" << Q1*L1*trans(Q1);
-	std::cout << "v_1 is\n" << v[till_m] << '\n';
-
-	std::cout << "Q2 is\n" << Q2;
-	std::cout << "Q2*trans(Q2) is\n" << Matrix(Q2*trans(Q2));
-	std::cout << "Q2*L2*trans(Q2) is\n" << Q2*L2*trans(Q2);
-	std::cout << "v_2 is\n" << v[from_m] << '\n';
-#endif
 	// permutation on v
 	v1= permutation(perm) * v;
 
