@@ -90,7 +90,7 @@ void inline cuppen(const Matrix& A, Matrix& Q, Vector& lambda)
 	sort(diag, perm);
 
 	// CONQUER (3.0.2) with rows (not columns)
-	v[till_m]= b < zero ? Vector(-trans(Q1[m-1][iall])) : trans(Q1[m-1][iall]); // wo Vector last argument converted to negate_view
+	v[till_m]= b < zero ? Vector(-trans(Q1[m-1][iall])) : trans(Q1[m-1][iall]); 
 	v[from_m]= trans(Q2[0][iall]);
 
 	// permutation on v
@@ -103,13 +103,7 @@ void inline cuppen(const Matrix& A, Matrix& Q, Vector& lambda)
 	//Lemma 3.0.2  ... calculate eigenvectors
 	Matrix Q_tilde(nrows, nrows);
 	for (size_type i = 0; i < nrows; i++) {
-	    Vector    lambda_i(nrows, lambda[i]), test(diag - lambda_i);
-
-	    // lambda_i= ele_quod(v, test);
-	    for(size_type k = 0; k < nrows; k++)
-		test[k]=1/test[k];
-	    lambda_i= ele_prod(test, v1);
-
+	    Vector    li(nrows, lambda[i]), lambda_i(ele_quot(v1, diag - li));
 	    Q_tilde[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q
 	}
 	Q0[till_m][till_m]= Q1;  Q0[till_m][from_m]= 0;

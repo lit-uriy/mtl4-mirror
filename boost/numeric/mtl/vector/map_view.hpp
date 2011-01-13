@@ -147,11 +147,11 @@ struct scaled_view
     typedef tfunctor::scale<Scaling, typename Vector::value_type>  functor_type;
     typedef map_view<functor_type, Vector>                         base;
 
-    scaled_view(const Scaling& scaling, const Vector& vector)
+    explicit scaled_view(const Scaling& scaling, const Vector& vector)
       : base(functor_type(scaling), vector)
     {}
     
-    scaled_view(const Scaling& scaling, boost::shared_ptr<Vector> p)
+    explicit scaled_view(const Scaling& scaling, boost::shared_ptr<Vector> p)
       : base(functor_type(scaling), p)
     {}
 };
@@ -164,11 +164,11 @@ struct rscaled_view
     typedef tfunctor::rscale<typename Vector::value_type, RScaling>  functor_type;
     typedef map_view<functor_type, Vector>                          base;
 	
-    rscaled_view(const Vector& vector, const RScaling& rscaling)
+    explicit rscaled_view(const Vector& vector, const RScaling& rscaling)
       : base(functor_type(rscaling), vector)
     {}
 	
-    rscaled_view(boost::shared_ptr<Vector> p, const RScaling& rscaling)
+    explicit rscaled_view(boost::shared_ptr<Vector> p, const RScaling& rscaling)
       : base(functor_type(rscaling), p)
     {}
 };
@@ -182,11 +182,11 @@ struct divide_by_view
     typedef tfunctor::divide_by<typename Vector::value_type, Divisor>  functor_type;
     typedef map_view<functor_type, Vector>                             base;
 	
-    divide_by_view(const Vector& vector, const Divisor& div)
+    explicit divide_by_view(const Vector& vector, const Divisor& div)
       : base(functor_type(div), vector)
     {}
 	
-    divide_by_view(boost::shared_ptr<Vector> p, const Divisor& div)
+    explicit divide_by_view(boost::shared_ptr<Vector> p, const Divisor& div)
       : base(functor_type(div), p)
     {}
 };
@@ -199,11 +199,11 @@ struct conj_view
     typedef mtl::sfunctor::conj<typename Vector::value_type>            functor_type;
     typedef map_view<functor_type, Vector>                         base;
 
-    conj_view(const Vector& vector)
+    explicit conj_view(const Vector& vector)
       : base(functor_type(), vector)
     {}
     
-    conj_view(boost::shared_ptr<Vector> p)
+    explicit conj_view(boost::shared_ptr<Vector> p)
       : base(functor_type(), p)
     {}
 };
@@ -215,11 +215,11 @@ struct negate_view
     typedef mtl::sfunctor::negate<typename Vector::value_type>            functor_type;
     typedef map_view<functor_type, Vector>                         base;
 
-    negate_view(const Vector& vector)
+    explicit negate_view(const Vector& vector)
       : base(functor_type(), vector)
     {}
     
-    negate_view(boost::shared_ptr<Vector> p)
+    explicit negate_view(boost::shared_ptr<Vector> p)
       : base(functor_type(), p)
     {}
 };
