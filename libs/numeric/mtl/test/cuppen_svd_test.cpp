@@ -33,31 +33,30 @@ int test_main(int , char**)
 {
     using namespace mtl;
 
-    dense_vector<double>        eig;
+    dense_vector<double>        eig, lambda(4);
 
     double array[][4]= {{1,  2,   0,  0},
                         {2,  -1,  -2,  0},
                         {0, -2,   1,  3},
                         {0,  0,   3, 10}};
-    dense2D<double> A(array), Q(4,4), L(4,4);
+    dense2D<double> A(array), Q(4,4);
     std::cout << "A=\n" << A << "\n";
 
     eig= eigenvalue_symmetric(A,22);
     sort(eig);
     std::cout<<"eigenvalues  ="<< eig <<"\n";
     
-    cuppen(A, Q, L);
+    cuppen(A, Q, lambda);
     std::cout<<"A  =\n"<< A <<"\n";
     std::cout<<"Q  =\n"<< Q <<"\n";
-    std::cout<<"L  =\n"<< L <<"\n";
-    std::cout<<"eigenvalues  ="<< diagonal(L) <<"\n";
+    std::cout<<"eigenvalues  ="<< lambda <<"\n";
     
-    eig-= diagonal(L);
+    eig-= lambda;
     std::cout<<"two_norm(diff)  ="<< two_norm(eig) <<"\n";
     if (two_norm(eig) > tol) throw "Cuppen computes wrong eigenvalues";
 
     for (unsigned i= 0; i < num_rows(A); i++)
-	test_vector(A, L[i][i], dense_vector<double>(Q[iall][i]));
+	test_vector(A, lambda[i], dense_vector<double>(Q[iall][i]));
 
     return 0;
 }
