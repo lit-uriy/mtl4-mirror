@@ -36,25 +36,24 @@ namespace mtl { namespace matrix {
 
 /// Eigenvalues of triangel matrix A with cuppens divide and conquer algorithm
 // Return Diagonalmatrix with eigenvalues as diag(A)
-template <typename Matrix, typename Vector>
-void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
+template <typename Matrix>
+void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L)
 {
     using std::abs; using mtl::signum; using mtl::real;
     using mtl::irange; using mtl::imax; using mtl::iall;
 
     typedef typename Collection<Matrix>::value_type     value_type;
     typedef typename Collection<Matrix>::size_type      size_type;
-    typedef typename Collection<Vector>::value_type     vec_value_type;
     typedef typename mtl::traits::domain<Matrix>::type  vec_type;
+    typedef dense_vector<size_type>                     size_vector; // todo: with type trait
 
     size_type        ncols = num_cols(A), nrows = num_rows(A), m, n;
     value_type       zero= 0, one= 1;
-    vec_value_type   zerovec= 0;
     Matrix           T(nrows,ncols), Q0(Q);
     
     MTL_THROW_IF(ncols != nrows, matrix_not_square());
-    vec_type   v(nrows, zero), v1(nrows, zero), v2(nrows), diag(nrows, zero), lambda(nrows, zero);
-    Vector     perm(nrows, zerovec), permdiag(nrows, zerovec);;
+    vec_type   v(nrows, zero), v1(nrows, zero), diag(nrows, zero), lambda(nrows, zero);
+    size_vector     perm(nrows), permdiag(nrows);
     
     if (ncols == 1){
 	L= A;
@@ -62,7 +61,7 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
     } else {
 	m= size_type(nrows/2);
 	n= nrows - m;
-	Vector   perm1(m), perm2(n), perm_intern(nrows, zerovec);
+	size_vector   perm1(m), perm2(n);
 	Matrix   T1(m, m), T2(n, n), Q1(m, m), Q2(n, n), L1(m, m), L2(n, n);
 
 	//DIVIDE
@@ -78,18 +77,9 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	v[m-1]= b > zero ? one : -one;
 	v[m]= one;
 
-	iota(perm1); iota(perm2);
+	cuppen(T1, Q1, L1);
+	cuppen(T2, Q2, L2);
 
-	cuppen(T1, Q1, L1, perm1);
-	cuppen(T2, Q2, L2, perm2);
-
-	// permutation in global notation
-	for (size_type i = 0; i < n; i++)
-	    perm2[i]+= m;
-
-	perm_intern[till_m]= perm1;
-	perm_intern[from_m]= perm2;
-      
 	L[till_m][till_m]= L1;  L[till_m][from_m]= 0;
 	L[from_m][till_m]= 0;   L[from_m][from_m]= L2;
 	
@@ -102,18 +92,18 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	sort(diag, perm);
 
 	// CONQUER
-	v[till_m]= trans(Q1[m-1][iall]);
-	if (b < zero)
-	    v[till_m]*= -one;
+	v[till_m]= b < zero ? vec_type(-trans(Q1[m-1][iall])) : trans(Q1[m-1][iall]); // wo vec_type last argument converted to negate_view
 	v[from_m]= trans(Q2[0][iall]);
 
 	// permutation on v
-	v1= permutation(perm) * v;
+	mtl::matrix::traits::permutation<>::type P= mtl::matrix::permutation(perm); 
+	v1= P * v;
 
 	// solve secular equation 
 	lambda= secular(lambda, v1, diag, abs(b));
 
 	//Lemma 3.0.2  ... calculate eigenvectors
+	Matrix Q_tilde(nrows, nrows);
 	for (size_type i = 0; i < nrows; i++) {
 	    vec_type    lambda_i(nrows, lambda[i]), test(diag - lambda_i);
 
@@ -122,18 +112,16 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 		test[k]=1/test[k];
 	    lambda_i= ele_prod(test, v1);
 
-	    Q[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q
+	    Q_tilde[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q
 	}
-	
 	L= mtl::vector::diagonal(lambda); // diagonal matrix with eigenvalues
-        Matrix Q01(Q);
+
 	Q0[till_m][till_m]= Q1;  Q0[till_m][from_m]= 0;
 	Q0[from_m][till_m]= 0;   Q0[from_m][from_m]= Q2;
-	Q=Q0* permutation(perm)*Q01;
-	// std::cout << "Q is\n" << Q;
-	// std::cout << "Q*L*trans(Q) is\n" << Q*L*trans(Q);
+
+	Q= Q0 * P * Q_tilde;
     }  
-    p= perm;
+
    
 }
 
