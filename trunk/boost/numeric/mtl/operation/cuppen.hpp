@@ -130,8 +130,8 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	Q0[till_m][till_m]= Q1;  Q0[till_m][from_m]= 0;
 	Q0[from_m][till_m]= 0;   Q0[from_m][from_m]= Q2;
 	Q=Q0* permutation(perm)*Q01;
-	std::cout << "Q is\n" << Q;
-	std::cout << "Q*L*trans(Q) is\n" << Q*L*trans(Q);
+	// std::cout << "Q is\n" << Q;
+	// std::cout << "Q*L*trans(Q) is\n" << Q*L*trans(Q);
     }  
     p= perm;
    
