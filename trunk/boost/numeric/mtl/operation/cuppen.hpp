@@ -98,7 +98,7 @@ void inline cuppen(const Matrix& A, Matrix& Q, Vector& lambda)
 	v1= P * v;
 
 	// solve secular equation 
-	lambda= secular(lambda, v1, diag, abs(b));
+	lambda= secular(v1, diag, abs(b));
 
 	//Lemma 3.0.2  ... calculate eigenvectors
 	Matrix Q_tilde(nrows, nrows);
