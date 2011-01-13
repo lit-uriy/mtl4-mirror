@@ -64,6 +64,15 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     cout << "u: " << u << "\n"; std::cout.flush();
     if (u[0] != 25.0) throw "wrong";
 
+    std::cout << name << "  --- u= ele_quot(v, w):\n"; std::cout.flush();
+    u= ele_quot(v, w);
+    cout << "u: " << u << "\n"; std::cout.flush();
+    if (abs(u[0] - 0.8) > 0.01) throw "wrong";
+
+    std::cout << name << "  --- u= ele_quot(v+w, w):\n"; std::cout.flush();
+    u= ele_quot(v+w, w);
+    cout << "u: " << u << "\n"; std::cout.flush();
+    if (abs(u[0] - 1.8) > 0.01) throw "wrong";
 
 
     std::cout << name << "  --- u= v + w + v + w:\n"; std::cout.flush();

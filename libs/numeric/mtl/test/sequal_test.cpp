@@ -31,7 +31,7 @@ int test_main(int , char**)
    
     //lambda= mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(3.0);
 
-    mtl::vector::secular_f<Vector>   ss(lambda, z, d, 5.0);
+    mtl::vector::secular_f<Vector>   ss(z, d, 5.0);
     std::cout<<"lambda  =" << ss.funk(3.0) <<"\n";
     std::cout<<"lambda  =" << ss.funk(0.0) <<"\n";
     std::cout<<"lambda  =" << ss.funk(-3.0) <<"\n";
@@ -40,7 +40,7 @@ int test_main(int , char**)
 
     std::cout<<"lambda  =" << ss.grad_f(13.0) <<"\n";
     std::cout<<"lambda  =" << ss.grad_f(113.0) <<"\n";
-    std::cout<<"roots  =" << secular(lambda, z, d, 5.0) <<"\n";
+    std::cout<<"roots  =" << secular(z, d, 5.0) <<"\n";
     //std::cout<<"lambda  =" << lambda <<"\n";
 
     Vector x(5, 0.0);

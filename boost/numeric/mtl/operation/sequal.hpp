@@ -32,12 +32,9 @@ class secular_f
     typedef typename Collection<Vector>::size_type    size_type;
 
   public:
-    /// Construktor needs 3 Vectors lambda(to save roots), z(nummerator), d(dominator) and sigma as factor befor the sum
-    secular_f(const Vector& lambda, const Vector& z, const Vector& d, value_type sigma) 
-      : lambda(lambda), z(z), d(d), sigma(sigma)
-    {
-	this->lambda= math::zero(sigma); 
-    }
+    /// Constructor needs 2 Vectors z(nummerator), d(dominator) and sigma as factor before the sum
+    secular_f(const Vector& z, const Vector& d, value_type sigma) 
+      : z(z), d(d), sigma(sigma) {}
 
     /// secular_f equation as function, evaluates the function value
     /** \f$f(x)=1+\sigma * sum_{i=1}^{n}\frac{z_i}{d_i-x} \f$**/
@@ -66,7 +63,7 @@ class secular_f
 	assert(size(z) > 1);
 	double tol= 1.0e-9;
 	value_type lamb;
-	Vector start(size(z));
+	Vector start(size(z)), lambda(size(z));
 
 	for(size_type i= 0; i < size(z); i++){
 	    if (i < size(z) - 1)
@@ -84,14 +81,14 @@ class secular_f
     }
 
  private:
-    Vector    lambda, z, d;
+    Vector     z, d;
     value_type sigma;
 };
 
 template <typename Vector, typename Value>
-inline Vector secular(const Vector& lambda, const Vector& z, const Vector& d, Value sigma)
+inline Vector secular(const Vector& z, const Vector& d, Value sigma)
 {
-    secular_f<Vector> functor(lambda, z, d, sigma);
+    secular_f<Vector> functor(z, d, sigma);
     return functor.roots();
 }
 
