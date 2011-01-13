@@ -59,69 +59,31 @@ class secular_f
 	return gfw;
     }
     
-    /// evaluates the roots of secular_f equation =0 with newton algo
+    /// Evaluates the roots of secular_f equation =0 with newton algo.
+    /** Computes mixed Newton and interval nesting. d must be sorted. **/
     Vector roots()
     {
 	assert(size(z) > 1);
-	double tol= 1.0e-5;
+	double tol= 1.0e-9;
 	value_type lamb;
-	//need sorted d
-	//Construct start values for newton iteration
-	Vector start(size(z), 0.0);
-	for(size_type i=0; i<size(z)-1; i++){
-	    start[i]= (d[i] + d[i+1]) / 2;  //start points between pols
-	    lamb= start[i];
-// 	     std::cout<< "start[i]= " << start[i] << "\n";
-// 	    for(size_type k=0; k<15; k++){
- 	    while (std::abs(funk(lamb)) > tol){
-		 if (lamb < d[i]){
-		    lamb= (d[i]+start[i])/2;  //auf falschen Ast gesprungen
- 		    start[i]= lamb;
-// 		    std::cout<< "falscher AST\n";
-		 } else {
-		    lamb-= funk(lamb)/grad_f(lamb);
-		 }
-// 		 std::cout<< "lamb=" << lamb << "\n";
-	    }
+	Vector start(size(z));
+
+	for(size_type i= 0; i < size(z); i++){
+	    if (i < size(z) - 1)
+		lamb= start[i]= (d[i] + d[i+1]) / 2;  //start points between pols
+	    else
+		lamb= start[i]= 1.5 * d[i] - 0.5 * d[i-1];  // last start point plus half the distance to second-last
+	    while (std::abs(funk(lamb)) > tol) 
+		 if (lamb < d[i])
+		    start[i]= lamb= (d[i] + start[i]) / 2;  
+		 else 
+		    lamb-= funk(lamb) / grad_f(lamb);
 	    lambda[i]= lamb;
-	}
-	start[size(z)-1]= 1.5 * d[size(z)-1] - 0.5 * d[size(z)-2];  // last start point plus half the distance to second-last
-	lamb = start[size(z)-1];
-//  	 std::cout<< "start= " << start << "\n";
-// 	 for(size_type k=0; k<15; k++){
-	 while (std::abs(funk(lamb)) > tol){
-		    if (lamb < start[size(z)-1]){
-		    lamb= (d[size(z)-1]+start[size(z)-1])/2;  //auf falschen Ast gesprungen
- 		    start[size(z)-1]= lamb;
-// 		    std::cout<< "falscher AST\n";
-		 } else {
-		    lamb-= funk(lamb)/grad_f(lamb);
-		 }
-// 		 std::cout<< "lamb=" << lamb << "\n";
-         }
-	 lambda[size(z)-1]= lamb;
-
-	//newton algo to find roots
-// 	for(size_type i=0; i<size(z); i++)
-// 	    lambda[i]= newton(start[i]); 
-// 	    lambda= newton(start); 
+	} 
 	return lambda;
-	
     }
 
-    /// newton algorithm x_{n+1}= x_n - f(x_n)/f'(x_n)
-    Vector newton(Vector start)
-    {
-	double tol= 1.0e-5;  // TODO tol evtl parameter
-	Vector  lambda(size(start));
-	value_type lamb;
-        while (std::abs(funk(lamb)) > tol){
-		lamb-= funk(lamb)/grad_f(lamb);
-        }
-	return lamb;
-    }
-
-  private:
+ private:
     Vector    lambda, z, d;
     value_type sigma;
 };
