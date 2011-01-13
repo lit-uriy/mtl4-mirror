@@ -70,6 +70,12 @@ struct transposed_sparse_matrix_type<matrix::transposed_view<matrix::compressed2
     typedef matrix::compressed2D<Value, Parameters> type;
 };
 
+template <typename Value, typename Parameters>
+struct transposed_sparse_matrix_type<matrix::transposed_view<const matrix::compressed2D<Value, Parameters> > >
+{
+    typedef matrix::compressed2D<Value, Parameters> type;
+};
+
 }} // namespace mtl::traits
 
 #endif // MTL_TRAITS_TRANSPOSED_MATRIX_TYPE_INCLUDE

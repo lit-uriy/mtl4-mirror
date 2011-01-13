@@ -50,7 +50,7 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
     size_type        ncols = num_cols(A), nrows = num_rows(A), m, n;
     value_type       zero= 0, one= 1;
     vec_value_type   zerovec= 0;
-    Matrix           T(nrows,ncols), Q0(Q), Q01(Q);
+    Matrix           T(nrows,ncols), Q0(Q);
     
     MTL_THROW_IF(ncols != nrows, matrix_not_square());
     vec_type   v(nrows, zero), v1(nrows, zero), v2(nrows), diag(nrows, zero), lambda(nrows, zero);
@@ -102,9 +102,22 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	sort(diag, perm);
 
 	// CONQUER
-	v[till_m]= Q1[iall][m-1];
-	v[from_m]= Q2[iall][0];
-	  
+	v[till_m]= trans(Q1[m-1][iall]);
+	if (b < zero)
+	    v[till_m]*= -one;
+	v[from_m]= trans(Q2[0][iall]);
+
+#if 0	  
+	std::cout << "Q1 is\n" << Q1;
+	std::cout << "Q1*trans(Q1) is\n" << Matrix(Q1*trans(Q1));
+	std::cout << "Q1*L*trans(Q1) is\n" << Q1*L1*trans(Q1);
+	std::cout << "v_1 is\n" << v[till_m] << '\n';
+
+	std::cout << "Q2 is\n" << Q2;
+	std::cout << "Q2*trans(Q2) is\n" << Matrix(Q2*trans(Q2));
+	std::cout << "Q2*L2*trans(Q2) is\n" << Q2*L2*trans(Q2);
+	std::cout << "v_2 is\n" << v[from_m] << '\n';
+#endif
 	// permutation on v
 	v1= permutation(perm) * v;
 
@@ -118,16 +131,18 @@ void inline cuppen(const Matrix& A, Matrix& Q, Matrix& L, Vector& p)
 	    // lambda_i= ele_quod(v, test);
 	    for(size_type k = 0; k < nrows; k++)
 		test[k]=1/test[k];
-	    lambda_i= ele_prod(test, v);
+	    lambda_i= ele_prod(test, v1);
 
 	    Q[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q
 	}
 	
 	L= mtl::vector::diagonal(lambda); // diagonal matrix with eigenvalues
-        Q01=Q;
+        Matrix Q01(Q);
 	Q0[till_m][till_m]= Q1;  Q0[till_m][from_m]= 0;
 	Q0[from_m][till_m]= 0;   Q0[from_m][from_m]= Q2;
-	Q=Q0*(permutation(perm))*Q01;
+	Q=Q0* permutation(perm)*Q01;
+	std::cout << "Q is\n" << Q;
+	std::cout << "Q*L*trans(Q) is\n" << Q*L*trans(Q);
     }  
     p= perm;
    
