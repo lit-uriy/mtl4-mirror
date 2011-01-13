@@ -41,19 +41,15 @@ int test_main(int , char**)
                         {0,  0,   3, 10}};
     dense2D<double> A(array), Q(4,4), L(4,4);
     std::cout << "A=\n" << A << "\n";
-    dense_vector<int>  perm(4);
-    for(int i= 0; i < 4; i++)
-      perm[i]=i;
 
     eig= eigenvalue_symmetric(A,22);
     sort(eig);
     std::cout<<"eigenvalues  ="<< eig <<"\n";
     
-    cuppen(A, Q, L, perm);
+    cuppen(A, Q, L);
     std::cout<<"A  =\n"<< A <<"\n";
     std::cout<<"Q  =\n"<< Q <<"\n";
     std::cout<<"L  =\n"<< L <<"\n";
-    std::cout<<"perm=" << perm << "\n";
     std::cout<<"eigenvalues  ="<< diagonal(L) <<"\n";
     
     eig-= diagonal(L);
