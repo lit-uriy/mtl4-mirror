@@ -39,14 +39,14 @@ int test_main(int , char**)
                         {2, -9,  -2,  0},
                         {0, -2,   1,  3},
                         {0,  0,   3, 10}};
-    dense2D<double> A(array), Q(4,4);
+    dense2D<double> A(array), Q(4,4), A_copy(A);
     std::cout << "A=\n" << A << "\n";
 
     eig= eigenvalue_symmetric(A,22);
     sort(eig);
     std::cout<<"eigenvalues  ="<< eig <<"\n";
     
-    cuppen(A, Q, lambda);
+    cuppen(A_copy, Q, lambda);
     std::cout<<"A  =\n"<< A <<"\n";
     std::cout<<"Q  =\n"<< Q <<"\n";
     std::cout<<"eigenvalues  ="<< lambda <<"\n";
