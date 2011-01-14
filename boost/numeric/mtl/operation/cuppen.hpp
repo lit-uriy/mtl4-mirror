@@ -34,10 +34,10 @@
 namespace mtl { namespace matrix {
 
 
-/// Eigenvalues of triangel matrix A with cuppens divide and conquer algorithm
-// Return Diagonalmatrix with eigenvalues as diag(A)
+/// Eigenvalues of triangle matrix A with Cuppen's divide and conquer algorithm
+/** Eigenvalues are returned in vector lambda. A is overwritten. **/
 template <typename Matrix, typename Vector>
-void inline cuppen(const Matrix& A, Matrix& Q, Vector& lambda)
+void inline cuppen(Matrix& A, Matrix& Q, Vector& lambda)
 {
     using std::abs; using mtl::signum; using mtl::real;
     using mtl::irange; using mtl::imax; using mtl::iall;
@@ -46,32 +46,28 @@ void inline cuppen(const Matrix& A, Matrix& Q, Vector& lambda)
     typedef typename Collection<Matrix>::size_type      size_type;
     typedef dense_vector<size_type>                     size_vector; // todo: with type trait
 
-    size_type        ncols = num_cols(A), nrows = num_rows(A), m, n;
+    size_type        nrows= num_rows(A);
     value_type       zero= 0, one= 1;
-    Matrix           T(nrows,ncols), Q0(Q);
+    Matrix           Q0(Q);
     
-    MTL_THROW_IF(ncols != nrows, matrix_not_square());
-    Vector   v(nrows, zero), v1(nrows, zero), diag(nrows, zero);
+    MTL_THROW_IF(nrows != num_cols(A), matrix_not_square());
+    Vector          v(nrows, zero), v1(nrows, zero), diag(nrows, zero);
     size_vector     perm(nrows), permdiag(nrows);
     
-    if (ncols == 1){
+    if (nrows == 1){
 	lambda[0]= A[0][0];
 	Q= 1;
     } else {
-	m= size_type(nrows/2);
-	n= nrows - m;
+	size_type     m= size_type(nrows/2), n= nrows - m;
+	irange        till_m(m), from_m(m, imax);
+
 	size_vector   perm1(m), perm2(n);
-	Matrix        T1(m, m), T2(n, n), Q1(m, m), Q2(n, n);
+	Matrix        T1(A[till_m][till_m]), T2(A[from_m][from_m]), Q1(m, m), Q2(n, n); // sub-matrices
 	Vector        lambda1(m), lambda2(n);
 
 	//DIVIDE
 	value_type    b(A[m-1][m]);
-	irange        till_m(m), from_m(m, imax);
-
-	T1= A[till_m][till_m]; 
 	T1[m-1][m-1]-= abs(b);
-
-	T2= A[from_m][from_m]; 
 	T2[0][0]-= abs(b);
 
 	v[m-1]= b > zero ? one : -one;
@@ -83,9 +79,6 @@ void inline cuppen(const Matrix& A, Matrix& Q, Vector& lambda)
 	diag[till_m]= lambda1;
 	diag[from_m]= lambda2;
 	
-	T[till_m][till_m]= T1;  T[till_m][from_m]= 0;
-	T[from_m][till_m]= 0;   T[from_m][from_m]= T2;
-
 	iota(perm);
 	sort(diag, perm);
 
