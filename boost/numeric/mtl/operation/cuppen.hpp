@@ -32,7 +32,7 @@ namespace mtl { namespace matrix {
 /// Eigenvalues of triangle matrix A with Cuppen's divide and conquer algorithm
 /** Eigenvalues are returned in vector lambda. A is overwritten. **/
 template <typename Matrix, typename Vector>
-void inline cuppen(Matrix& A, Matrix& Q, Vector& lambda)
+void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 {
     using std::abs; using mtl::irange; using mtl::imax; using mtl::iall;
 
@@ -64,8 +64,8 @@ void inline cuppen(Matrix& A, Matrix& Q, Vector& lambda)
 	v[m-1]= b > zero ? one : -one;
 	v[m]= one;
 
-	cuppen(T1, Q1, lambda1);
-	cuppen(T2, Q2, lambda2);
+	cuppen_inplace(T1, Q1, lambda1);
+	cuppen_inplace(T2, Q2, lambda2);
 	Q0[till_m][from_m]= zero; Q0[from_m][till_m]= zero; // zero out non-diagonal blocks
 
 	iota(perm);
@@ -89,6 +89,15 @@ void inline cuppen(Matrix& A, Matrix& Q, Vector& lambda)
 	}
 	Q= Q0 * P * Q_tilde;
     }     
+}
+
+/// Eigenvalues of triangle matrix A with Cuppen's divide and conquer algorithm
+/** Eigenvalues are returned in vector lambda. A is copied. **/
+// A not as reference to force copy
+template <typename Matrix, typename Vector>
+void inline cuppen(Matrix A, Matrix& Q, Vector& lambda)
+{
+    cuppen_inplace(A, Q, lambda);
 }
 
 }} // namespace mtl::matrix
