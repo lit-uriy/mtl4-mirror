@@ -32,8 +32,9 @@ void test_vector(const Matrix& A, const Value& alpha, const Vector& v)
 int test_main(int , char**)
 {
     using namespace mtl;
-
-    dense_vector<double>        eig, lambda(4);
+    
+    int size= 16;
+    dense_vector<double>        eig, lambda(4),  lambda_b(size), eig_b(size);
 
     double array[][4]= {{1,  2,   0,  0},
                         {2, -9,  -2,  0},
@@ -57,6 +58,36 @@ int test_main(int , char**)
 
     for (unsigned i= 0; i < num_rows(A); i++)
 	test_vector(A, lambda[i], dense_vector<double>(Q[iall][i]));
+
+#if 0
+    dense2D<double> B(size,size), BQ(size,size);
+    B= 0; BQ= 0;
+    
+    for(int i= 1; i < size ; i++){
+      B[i][i]= 4*i+6;
+      B[i][i-1]= 1;
+      B[i-1][i]= 1;
+    }
+    B[0][0]= 4;
+//     std::cout << "B=" << B << "\n";
+
+     eig_b= eigenvalue_symmetric(B,22);
+    sort(eig_b);
+    std::cout<<"eigenvalues  ="<< eig_b <<"\n";
+    
+    cuppen(B, BQ, lambda_b);
+    std::cout<<"B  =\n"<< B <<"\n";
+    std::cout<<"Q  =\n"<< BQ <<"\n";
+    std::cout<<"eigenvalues  ="<< lambda_b <<"\n";
+    
+    eig_b-= lambda_b;
+    std::cout<<"two_norm(diff)  ="<< two_norm(eig_b) <<"\n";
+//     if (two_norm(eig_b) > tol) throw "Cuppen computes wrong eigenvalues";
+
+ /*   for (unsigned i= 0; i < num_rows(B); i++)
+	test_vector(B, lambda_b[i], dense_vector<double>(BQ[iall][i]));
+ */   
+#endif   
 
     return 0;
 }
