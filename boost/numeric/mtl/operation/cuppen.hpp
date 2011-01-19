@@ -20,7 +20,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/iota.hpp>
-#include <boost/numeric/mtl/operation/sequal.hpp>
+#include <boost/numeric/mtl/operation/secular.hpp>
 #include <boost/numeric/mtl/operation/sort.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 #include <boost/numeric/mtl/utility/domain.hpp>

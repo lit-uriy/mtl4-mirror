@@ -59,7 +59,7 @@ int test_main(int , char**)
     for (unsigned i= 0; i < num_rows(A); i++)
 	test_vector(A, lambda[i], dense_vector<double>(Q[iall][i]));
 
-#if 0
+#if 1
     dense2D<double> B(size,size), BQ(size,size);
     B= 0; BQ= 0;
     

@@ -21,6 +21,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 
 
 namespace mtl { namespace vector {
@@ -39,7 +40,7 @@ class secular_f
 
     /// secular_f equation as function, evaluates the function value
     /** \f$f(x)=1+\sigma * sum_{i=1}^{n}\frac{z_i}{d_i-x} \f$**/
-    value_type funk(const value_type& lamb)
+    value_type f(const value_type& lamb)
     {
 	value_type fw= 1;
 	for(size_type i=0; i<size(z); i++)
@@ -59,24 +60,53 @@ class secular_f
 	return sigma*gfw;
     }
     
+    /// Increase x minimally: if x == 0 take minimal value, if x > 0 multiply by (1+2eps) otherwise divide by
+    template <typename T>
+    T minimal_increase(const T& x)
+    {
+	const T factor= T(1) + T(2) * std::numeric_limits<value_type>::epsilon();
+	if (x == T(0))
+	    return std::numeric_limits<value_type>::denorm_min();
+	else 
+	    return x > T(0) ? x * factor : x / factor;	    
+    }
+
     /// Evaluates the roots of secular_f equation =0 with newton algo.
     /** Computes mixed Newton and interval nesting. d must be sorted. **/
     Vector roots()
     {
 	assert(size(z) > 1);
-	double tol= 1.0e-5;
-	value_type lamb, old;
-	Vector start(size(z)), lambda(size(z));
-tol/=10;
-	for(size_type i= 0; i < size(z); i++){
+	const double tol= 1.0e-6;
+	Vector     start(resource(z)), lambda(resource(z));
+
+	for (size_type i= 0; i < size(z); i++) {
+	    // Equal poles -> eigenvalue 
+	    if (i < size(z) - 1 && d[i] == d[i+1]) { 
+		std::cout << "Pole " << i << " and " << i+1 << " are identical -> lambda[" << i << "] = d["  << i << "] = " << d[i] << '\n';
+		lambda[i]= d[i]; continue; }
+	    
+	    // Check if root is too close to pole (i.e. d[i]+eps > 0) then take this because we can't reach the root 
+	    value_type next= minimal_increase(d[i]), lamb, old;
+	    if (f(next) >= value_type(0)){ 
+		std::cout << "Eigenvalue too close to pole, take next value = " << next << ", with f(x) = " << f(next) << '\n';
+		lambda[i]= next; continue; }
+		
+
 	    if (i < size(z) - 1)
 		lamb= start[i]= (d[i] + d[i+1]) / 2;  //start points between pols
 	    else
 		lamb= start[i]= 1.5 * d[i] - 0.5 * d[i-1];  // last start point plus half the distance to second-last
 // 	    for(int k=0;  k< 6 ; k++){
 	    old= lamb;
-// 	    std::cout<< "lamb = " << lamb << ", funk(lamb) = " << funk(lamb) << ", grad_f(lamb) = " << grad_f(lamb) << '\n';
-  	    while (std::abs(funk(lamb)) > tol) {
+ 	    std::cout<< "lamb = " << lamb << ", f(lamb) = " << f(lamb) << ", grad_f(lamb) = " << grad_f(lamb) << '\n';
+
+	    // Check if root is too close to pole
+	    
+
+
+
+
+  	    while (std::abs(f(lamb)) > tol) {
 		assert(start[i] >= d[i]);
 	        if (start[i] == d[i]) {
 		  lamb= d[i] * (1 + std::numeric_limits<value_type>::epsilon()); break; }
@@ -86,7 +116,7 @@ tol/=10;
 		     std::cout<< "i = " << i << ", d[i] = " << d[i] << ", start[i] = " << start[i] << '\n';
 		     double eps= 3e-16, x= d[i];
 		     for (int j= 0; j < 10; x+= eps, j++)
-		      std::cout << std::setprecision(17) << "x = " << x << ", funk(x) = " << funk(x) << '\n';
+		      std::cout << std::setprecision(17) << "x = " << x << ", f(x) = " << f(x) << '\n';
 		      exit(1);
 		   }*/
 		   
@@ -94,8 +124,8 @@ tol/=10;
 		    start[i]= lamb= (d[i] + start[i]) / 2;  
 		   // std::cout<< "i = " << i << ", d[i] = " << d[i] << ", start[i] = " << start[i] << "lamb = " << lamb << '\n';
 		 } else {
-		    lamb-= funk(lamb) / grad_f(lamb);
-		     // std::cout<< "std::abs(funk("<< lamb << "))=" << std::abs(funk(lamb)) << ", grad_f(lamb) = " << grad_f(lamb) << "\n";
+		    lamb-= f(lamb) / grad_f(lamb);
+		     // std::cout<< "std::abs(f("<< lamb << "))=" << std::abs(f(lamb)) << ", grad_f(lamb) = " << grad_f(lamb) << "\n";
 		 }
 		 if (old == lamb){
 // 		   std::cout<< "break\n";
@@ -116,8 +146,8 @@ tol/=10;
 template <typename Vector, typename Value>
 inline Vector secular(const Vector& z, const Vector& d, Value sigma)
 {
-//     std::cout<< "z=" << z << "\n";
-//     std::cout<< "d=" << d << "\n";
+     std::cout<< "z=" << z << "\n";
+     std::cout<< "d=" << d << "\n";
     secular_f<Vector> functor(z, d, sigma);
     return functor.roots();
 }
