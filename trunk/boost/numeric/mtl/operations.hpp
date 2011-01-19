@@ -38,6 +38,7 @@
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>
 #include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
+#include <boost/numeric/mtl/operation/minimal_increase.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/norms.hpp>
 #include <boost/numeric/mtl/operation/ones.hpp>
@@ -53,6 +54,7 @@
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/scale.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/mtl/operation/secular.hpp>
 #include <boost/numeric/mtl/operation/split_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/sum.hpp>

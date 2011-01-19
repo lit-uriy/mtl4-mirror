@@ -80,7 +80,7 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 	Vector v1(P * v);
 	
 	lambda= secular(v1, diag, abs(b));   // solve secular equation 
-//         std::cout << "lambda=" << lambda << "\n"; 
+
 	//Lemma 3.0.2  ... calculate eigenvectors
 	Matrix Q_tilde(nrows, nrows);
 	for (size_type i = 0; i < nrows; i++) {
