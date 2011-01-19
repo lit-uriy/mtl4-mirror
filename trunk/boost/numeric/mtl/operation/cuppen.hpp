@@ -67,6 +67,7 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 	cuppen_inplace(T1, Q1, lambda1);
 	cuppen_inplace(T2, Q2, lambda2);
 	Q0[till_m][from_m]= zero; Q0[from_m][till_m]= zero; // zero out non-diagonal blocks
+	// std::cout << "Q0 is\n" << Q0;
 
 	iota(perm);
 	sort(diag, perm);
@@ -81,6 +82,7 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 	
 	lambda= secular(v1, diag, abs(b));   // solve secular equation 
 
+	// std::cout << "lambda is " << lambda << "\ndiag is " << diag << '\n';
 	//Lemma 3.0.2  ... calculate eigenvectors
 	Matrix Q_tilde(nrows, nrows);
 	for (size_type i = 0; i < nrows; i++) {
@@ -88,6 +90,8 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 	    Q_tilde[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q 
 	}
 	Q= Q0 * P * Q_tilde;
+	// std::cout << "Q_tilde is\n" << Q_tilde;
+	// std::cout << "Q is\n" << Q;
     }     
 }
 
