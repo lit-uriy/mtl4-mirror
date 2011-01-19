@@ -16,12 +16,12 @@
 #define MTL_VECTOR_SECULAR_INCLUDE
 
 #include <cmath>
-#include <limits>
 #include <boost/utility.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/operation/minimal_increase.hpp>
 
 
 namespace mtl { namespace vector {
@@ -60,35 +60,22 @@ class secular_f
 	return sigma*gfw;
     }
     
-    /// Increase x minimally: if x == 0 take minimal value, if x > 0 multiply by (1+2eps) otherwise divide by
-    template <typename T>
-    T minimal_increase(const T& x)
-    {
-	const T factor= T(1) + T(2) * std::numeric_limits<value_type>::epsilon();
-	if (x == T(0))
-	    return std::numeric_limits<value_type>::denorm_min();
-	else 
-	    return x > T(0) ? x * factor : x / factor;	    
-    }
-
     /// Evaluates the roots of secular_f equation =0 with newton algo.
     /** Computes mixed Newton and interval nesting. d must be sorted. **/
     Vector roots()
     {
 	assert(size(z) > 1);
 	const double tol= 1.0e-6;
-	Vector     start(resource(z)), lambda(resource(z));
+	Vector       start(resource(z)), lambda(resource(z));
 
 	for (size_type i= 0; i < size(z); i++) {
 	    // Equal poles -> eigenvalue 
 	    if (i < size(z) - 1 && d[i] == d[i+1]) { 
-		// std::cout << "Pole " << i << " and " << i+1 << " are identical -> lambda[" << i << "] = d["  << i << "] = " << d[i] << '\n';
 		lambda[i]= d[i]; continue; }
 	    
 	    // Check if root is too close to pole (i.e. d[i]+eps > 0) then take this because we can't reach the root 
 	    value_type next= minimal_increase(d[i]), lamb, old;
 	    if (f(next) >= value_type(0)){ 
-		// std::cout << "Eigenvalue too close to pole, take next value = " << next << ", with f(x) = " << f(next) << '\n';
 		lambda[i]= next; continue; }
 		
 	    if (i < size(z) - 1)
@@ -117,8 +104,6 @@ class secular_f
 template <typename Vector, typename Value>
 inline Vector secular(const Vector& z, const Vector& d, Value sigma)
 {
-    //  std::cout<< "z=" << z << "\n";
-    //  std::cout<< "d=" << d << "\n";
     secular_f<Vector> functor(z, d, sigma);
     return functor.roots();
 }
