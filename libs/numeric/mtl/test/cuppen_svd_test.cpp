@@ -12,6 +12,7 @@
 
 // With contributions from Cornelius Steinhardt
 
+#include <cstdlib>
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
@@ -25,14 +26,14 @@ template <typename Matrix, typename Value, typename Vector>
 void test_vector(const Matrix& A, const Value& alpha, const Vector& v)
 {
     Vector v1(A*v), v2(alpha*v), diff(v1-v2);
-    cout << "A*v is     " << v1 << "\nalpha*v is " << v2 << '\n';
+    if (size(v1) < 17) 
+	cout << "A*v is     " << v1 << "\nalpha*v is " << v2 << '\n';
     if (two_norm(diff) > tol) throw "wrong eigenvector";
 }
 
-int test_main(int , char**)
+int test_main(int argc, char** argv)
 {
     using namespace mtl;
-    
     int size= 16;
     dense_vector<double>        eig, lambda(4),  lambda_b(size), eig_b(size);
 
@@ -86,6 +87,36 @@ int test_main(int , char**)
     for (unsigned i= 0; i < num_rows(B); i++)
 	test_vector(B, lambda_b[i], dense_vector<double>(BQ[iall][i]));
 
+    // Poisson equation cannot be solved yet, double eigenvalues are now correctly handled by the secular equation
+    // but Q_tilde in cuppen contains nans (0/0)
+    int lsize= 4;
+    if (argc > 1) lsize= atoi(argv[1]);
+
+#if 0
+    dense2D<double> C(lsize, lsize), CQ(lsize, lsize);
+    C= 0; CQ= 0;
+    
+    C[0][0]= 2;
+    for(int i= 1; i < lsize; i++) {
+	C[i][i]= 2;
+	C[i][i-1]= -1;
+	C[i-1][i]= -1;
+    }
+    cout << "The matrix of the 1D-Poisson equations I\n" << C << '\n';
+	
+
+    dense_vector<double> lambda_c(lsize);
+    cuppen(C, CQ, lambda_c);
+
+    if (lsize <= 100)
+	cout << "The eigenvalues of the 1D-Poisson equations are " << lambda_c << '\n';
+    if (lsize <= 20)
+	cout << "The eigenvectors of the 1D-Poisson equations are\n" << CQ << '\n';
+
+    for (unsigned i= 0; i < num_rows(C); i++)
+	test_vector(C, lambda_c[i], dense_vector<double>(CQ[iall][i]));
+#endif
+    
     return 0;
 }
 
