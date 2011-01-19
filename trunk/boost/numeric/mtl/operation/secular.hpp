@@ -82,56 +82,27 @@ class secular_f
 	for (size_type i= 0; i < size(z); i++) {
 	    // Equal poles -> eigenvalue 
 	    if (i < size(z) - 1 && d[i] == d[i+1]) { 
-		std::cout << "Pole " << i << " and " << i+1 << " are identical -> lambda[" << i << "] = d["  << i << "] = " << d[i] << '\n';
+		// std::cout << "Pole " << i << " and " << i+1 << " are identical -> lambda[" << i << "] = d["  << i << "] = " << d[i] << '\n';
 		lambda[i]= d[i]; continue; }
 	    
 	    // Check if root is too close to pole (i.e. d[i]+eps > 0) then take this because we can't reach the root 
 	    value_type next= minimal_increase(d[i]), lamb, old;
 	    if (f(next) >= value_type(0)){ 
-		std::cout << "Eigenvalue too close to pole, take next value = " << next << ", with f(x) = " << f(next) << '\n';
+		// std::cout << "Eigenvalue too close to pole, take next value = " << next << ", with f(x) = " << f(next) << '\n';
 		lambda[i]= next; continue; }
 		
-
 	    if (i < size(z) - 1)
-		lamb= start[i]= (d[i] + d[i+1]) / 2;  //start points between pols
+		old= lamb= start[i]= (d[i] + d[i+1]) / 2;  //start points between pols
 	    else
-		lamb= start[i]= 1.5 * d[i] - 0.5 * d[i-1];  // last start point plus half the distance to second-last
-// 	    for(int k=0;  k< 6 ; k++){
-	    old= lamb;
- 	    std::cout<< "lamb = " << lamb << ", f(lamb) = " << f(lamb) << ", grad_f(lamb) = " << grad_f(lamb) << '\n';
+		old= lamb= start[i]= 1.5 * d[i] - 0.5 * d[i-1];  // last start point plus half the distance to second-last
 
-	    // Check if root is too close to pole
-	    
-
-
-
-
-  	    while (std::abs(f(lamb)) > tol) {
-		assert(start[i] >= d[i]);
-	        if (start[i] == d[i]) {
-		  lamb= d[i] * (1 + std::numeric_limits<value_type>::epsilon()); break; }
-		  
-		 if (lamb <= d[i]) {
-/*		   if (d[i] == start[i]) {
-		     std::cout<< "i = " << i << ", d[i] = " << d[i] << ", start[i] = " << start[i] << '\n';
-		     double eps= 3e-16, x= d[i];
-		     for (int j= 0; j < 10; x+= eps, j++)
-		      std::cout << std::setprecision(17) << "x = " << x << ", f(x) = " << f(x) << '\n';
-		      exit(1);
-		   }*/
-		   
-		   
+   	    while (std::abs(f(lamb)) > tol) {
+		if (lamb <= d[i])		   
 		    start[i]= lamb= (d[i] + start[i]) / 2;  
-		   // std::cout<< "i = " << i << ", d[i] = " << d[i] << ", start[i] = " << start[i] << "lamb = " << lamb << '\n';
-		 } else {
+		else 
 		    lamb-= f(lamb) / grad_f(lamb);
-		     // std::cout<< "std::abs(f("<< lamb << "))=" << std::abs(f(lamb)) << ", grad_f(lamb) = " << grad_f(lamb) << "\n";
-		 }
-		 if (old == lamb){
-// 		   std::cout<< "break\n";
-		    break;
-		 }
-		 old= lamb;
+		if (old == lamb) break;
+		old= lamb;
 	    }
 	    lambda[i]= lamb;
 	} 
@@ -146,8 +117,8 @@ class secular_f
 template <typename Vector, typename Value>
 inline Vector secular(const Vector& z, const Vector& d, Value sigma)
 {
-     std::cout<< "z=" << z << "\n";
-     std::cout<< "d=" << d << "\n";
+    //  std::cout<< "z=" << z << "\n";
+    //  std::cout<< "d=" << d << "\n";
     secular_f<Vector> functor(z, d, sigma);
     return functor.roots();
 }
