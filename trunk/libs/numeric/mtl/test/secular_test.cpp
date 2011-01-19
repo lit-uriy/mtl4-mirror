@@ -15,7 +15,7 @@
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
-#include <boost/numeric/mtl/operation/sequal.hpp>
+#include <boost/numeric/mtl/operation/secular.hpp>
 #include <boost/numeric/mtl/operation/sort.hpp>
 
 using namespace std;
@@ -29,14 +29,14 @@ int test_main(int , char**)
     z[0]=1; z[1]=1;
     d[0]=-5; d[1]=-1;
    
-    //lambda= mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).funk(3.0);
+    //lambda= mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).f(3.0);
 
     mtl::vector::secular_f<Vector>   ss(z, d, 5.0);
-    std::cout<<"lambda  =" << ss.funk(3.0) <<"\n";
-    std::cout<<"lambda  =" << ss.funk(0.0) <<"\n";
-    std::cout<<"lambda  =" << ss.funk(-3.0) <<"\n";
-    std::cout<<"lambda  =" << ss.funk(13.0) <<"\n";
-    std::cout<<"lambda  =" << ss.funk(113.0) <<"\n";
+    std::cout<<"lambda  =" << ss.f(3.0) <<"\n";
+    std::cout<<"lambda  =" << ss.f(0.0) <<"\n";
+    std::cout<<"lambda  =" << ss.f(-3.0) <<"\n";
+    std::cout<<"lambda  =" << ss.f(13.0) <<"\n";
+    std::cout<<"lambda  =" << ss.f(113.0) <<"\n";
 
     std::cout<<"lambda  =" << ss.grad_f(13.0) <<"\n";
     std::cout<<"lambda  =" << ss.grad_f(113.0) <<"\n";
