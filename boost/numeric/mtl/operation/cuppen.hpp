@@ -86,6 +86,8 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 	//Lemma 3.0.2  ... calculate eigenvectors
 	Matrix Q_tilde(nrows, nrows);
 	for (size_type i = 0; i < nrows; i++) {
+	    for (size_type j= 0; j < size(diag); ++j)
+		MTL_DEBUG_THROW_IF (diag[j] == lambda[i], logic_error("Can't compute eigenvector, probably due to double eigenvalue."));
 	    Vector    li(nrows, lambda[i]), lambda_i(ele_quot(v1, diag - li));
 	    Q_tilde[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q 
 	}
