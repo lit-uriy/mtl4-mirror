@@ -59,7 +59,6 @@ int test_main(int , char**)
     for (unsigned i= 0; i < num_rows(A); i++)
 	test_vector(A, lambda[i], dense_vector<double>(Q[iall][i]));
 
-#if 1
     dense2D<double> B(size,size), BQ(size,size);
     B= 0; BQ= 0;
     
@@ -82,12 +81,10 @@ int test_main(int , char**)
     
     eig_b-= lambda_b;
     std::cout<<"two_norm(diff)  ="<< two_norm(eig_b) <<"\n";
-//     if (two_norm(eig_b) > tol) throw "Cuppen computes wrong eigenvalues";
+    if (two_norm(eig_b) > tol) throw "Cuppen computes wrong eigenvalues";
 
- /*   for (unsigned i= 0; i < num_rows(B); i++)
+    for (unsigned i= 0; i < num_rows(B); i++)
 	test_vector(B, lambda_b[i], dense_vector<double>(BQ[iall][i]));
- */   
-#endif   
 
     return 0;
 }
