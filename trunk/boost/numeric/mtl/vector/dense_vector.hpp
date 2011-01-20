@@ -74,7 +74,7 @@ class dense_vector
     /// Check for a given vector if the sizes are equal or this has size 0 (and can take the size of source)
     void check_dim( size_type s ) const
     {
-	MTL_DEBUG_THROW_IF( size(*this) != 0 && this->used_memory() != s, incompatible_size());
+	MTL_DEBUG_THROW_IF( this->used_memory() != 0 && this->used_memory() != s, incompatible_size());
     }
 
     /// Check at compile time for a given vector if the sizes are equal
