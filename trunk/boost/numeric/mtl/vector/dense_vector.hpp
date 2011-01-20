@@ -241,7 +241,7 @@ template <typename Value, typename Parameters>
 typename dense_vector<Value, Parameters>::size_type
 inline num_rows_aux(const dense_vector<Value, Parameters>& vector, tag::col_major)
 {
-    return size(vector);
+    return vector.used_memory();
 }
 
 /// Number of rows: is size for column vectors and 1 for row vectors
