@@ -13,6 +13,9 @@
 #ifndef MTL_OPERATORS_INCLUDE
 #define MTL_OPERATORS_INCLUDE
 
+#include <boost/utility/enable_if.hpp>
+#include <boost/mpl/and.hpp>
+
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/matrix/operators.hpp>
 //#include <boost/numeric/mtl/vector/operators.hpp>
@@ -22,6 +25,7 @@
 #include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/vector/rvec_mat_times_expr.hpp>
 
 
@@ -81,6 +85,33 @@ namespace vector {
     inline operator/(const Op1& op1, const Op2& op2)
     {
         return typename traits::div_result<Op1,Op2>::type(op1,op2);
+    }
+
+    /// Compare two vectors for equality
+    /** Enable-if makes sure that only called when properly defined **/
+    template < typename Op1, typename Op2 >
+    typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<Op1>,
+					       mtl::traits::is_vector<Op2> >, 
+			      bool>::type 
+    inline operator==(const Op1& op1, const Op2& op2)
+    {
+	if (size(op1) != size(op2))
+	    return false;
+	for (unsigned i= 0; i < size(op1); i++)
+	    if (op1[i] != op2[i])
+		return false;
+	return true;
+    }
+
+    /// Compare two vectors for unequality
+    /** Enable-if makes sure that only called when properly defined **/
+    template < typename Op1, typename Op2 >
+    typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<Op1>,
+					       mtl::traits::is_vector<Op2> >, 
+			      bool>::type 
+    inline operator!=(const Op1& op1, const Op2& op2)
+    {
+	return !(op1 == op2);
     }
 	
 } // namespace vector
