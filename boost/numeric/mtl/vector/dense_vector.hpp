@@ -192,7 +192,7 @@ class dense_vector
 	// Self-copy would be an indication of an error
 	assert(this != &src);
 
-	checked_change_dim(size(src));
+	checked_change_dim(src.used_memory());
 	memory_base::move_assignment(src);
 	return *this;
     }

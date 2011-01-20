@@ -33,7 +33,6 @@ void test(VectorU u, VectorV v, const char* name)
 
     std::cout << "u and v are " << (u != 2*v ? "different.\n" : "equal.\n");
     if (!(u != 2*v)) throw "u and v should be different.";
-
 }
  
 
