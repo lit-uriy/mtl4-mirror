@@ -68,13 +68,13 @@ class dense_vector
     /// Check whether index is non-negative and less than size
     void check_index( size_type i ) const
     {
-	MTL_DEBUG_THROW_IF( is_negative(i) ||  i >= size(*this), index_out_of_range());
+	MTL_DEBUG_THROW_IF( is_negative(i) ||  i >= this->used_memory(), index_out_of_range());
     }
 
     /// Check for a given vector if the sizes are equal or this has size 0 (and can take the size of source)
     void check_dim( size_type s ) const
     {
-	MTL_DEBUG_THROW_IF( size(*this) != 0 && size(*this) != s, incompatible_size());
+	MTL_DEBUG_THROW_IF( size(*this) != 0 && this->used_memory() != s, incompatible_size());
     }
 
     /// Check at compile time for a given vector if the sizes are equal
@@ -167,7 +167,7 @@ class dense_vector
     const_pointer end() const { return this->elements() + this->used_memory(); }    
     pointer begin() { return this->elements() ; }
     pointer end() { return this->elements() + this->used_memory(); }
-    bool empty() const { return size(*this) == 0; }
+    bool empty() const { return this->used_memory() == 0; }
 
 
     /// Address of first data entry; to be used with care.
