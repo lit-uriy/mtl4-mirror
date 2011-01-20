@@ -95,9 +95,10 @@ namespace vector {
 			      bool>::type 
     inline operator==(const Op1& op1, const Op2& op2)
     {
-	if (size(op1) != size(op2))
+	unsigned s1= num_rows(op1) * num_cols(op1), s2= num_rows(op2) * num_cols(op2); // ugly hack to fight with ADL
+	if (s1 != s2)
 	    return false;
-	for (unsigned i= 0; i < size(op1); i++)
+	for (unsigned i= 0; i < s1; i++)
 	    if (op1[i] != op2[i])
 		return false;
 	return true;
