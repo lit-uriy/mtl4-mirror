@@ -122,7 +122,7 @@ class dense_vector
       : memory_base( src ) 
     {
 	using std::copy;
-	copy(src.begin(), src.end(), begin());
+	copy(src.begin(), src.end(), this->begin());
     }
 
     dense_vector( const self& src, clone_ctor )
@@ -164,9 +164,9 @@ class dense_vector
 
     // Compatibility with STL
     const_pointer begin() const { return this->elements() ; }
-    const_pointer end() const { return this->elements() + size(*this) ; }    
+    const_pointer end() const { return this->elements() + this->used_memory(); }    
     pointer begin() { return this->elements() ; }
-    pointer end() { return this->elements() + size(*this) ; }
+    pointer end() { return this->elements() + this->used_memory(); }
     bool empty() const { return size(*this) == 0; }
 
 
