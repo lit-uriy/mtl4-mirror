@@ -26,6 +26,8 @@
 #include <boost/numeric/mtl/utility/domain.hpp>
 
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/itl/iteration/basic_iteration.hpp>
+#include <boost/numeric/itl/krylov/fsm.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -66,8 +68,11 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 
 	cuppen_inplace(T1, Q1, lambda1);
 	cuppen_inplace(T2, Q2, lambda2);
+
 	Q0[till_m][from_m]= zero; Q0[from_m][till_m]= zero; // zero out non-diagonal blocks
-	// std::cout << "Q0 is\n" << Q0;
+
+	T1[m-1][m-1]+= abs(b);
+	T2[0][0]+= abs(b);
 
 	iota(perm);
 	sort(diag, perm);
@@ -91,9 +96,24 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 	    Vector    li(nrows, lambda[i]), lambda_i(ele_quot(v1, diag - li));
 	    Q_tilde[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q 
 	}
+
 	Q= Q0 * P * Q_tilde;
-	// std::cout << "Q_tilde is\n" << Q_tilde;
-	// std::cout << "Q is\n" << Q;
+
+#if 0
+	for (size_type i = 0; i < nrows; i++) {
+	    // Vector    qi(Q[iall][i]); // Todo: find out valgrind complains about the memory of qi for reasons inexplicable
+	    Vector qi(nrows);
+	    for (size_type j= 0; j < nrows; j++) 
+		qi[j]= Q[j][i];
+
+	    std::cout << "q[" << i << "] = " << qi << ", lambda[i] = " << lambda[i] 
+		      << ", diff = " << two_norm(Vector(A*qi - lambda[i]*qi)) << ", A*qi = " << Vector(A*qi) << ", li*qi = " << Vector(lambda[i]*qi) << '\n';
+	    itl::basic_iteration<double>   iter(1.0, 20, 1e-5, 1e-5);
+	    fsm(A, qi, lambda[i], 0.1, iter);
+	    std::cout << "q[" << i << "] = " << qi << ", diff = " << two_norm(Vector(A*qi - lambda[i]*qi)) << '\n';
+	    Q[iall][i]= qi;
+	}
+#endif
     }     
 }
 
@@ -103,6 +123,7 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 template <typename Matrix, typename Vector>
 void inline cuppen(Matrix A, Matrix& Q, Vector& lambda)
 {
+    Q= 0.0;
     cuppen_inplace(A, Q, lambda);
 }
 
