@@ -2,4 +2,4 @@
 
 
 
-#define MTL_REVISION $Revision$
+#define MTL_REVISION_TEXT $Revision$
