@@ -23,5 +23,4 @@
 
 #include <boost/numeric/mtl/io/matrix_market.hpp>
 
-
 #endif // MTL_TYPES_INCLUDE
