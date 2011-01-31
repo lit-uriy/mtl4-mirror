@@ -3,6 +3,7 @@ project (mtl4)
 cmake_minimum_required(VERSION 2.6)
 
 #let cmake look for the svn-version
+if (NOT MSVC)
 find_package(Subversion)
 if(Subversion_FOUND)
 	Subversion_WC_INFO(${CMAKE_CURRENT_BINARY_DIR} mtlSubinfo)
@@ -11,6 +12,7 @@ if(Subversion_FOUND)
 else(Subversion_FOUND)
 	set(CurrentRevision "0")
 endif(Subversion_FOUND)
+endif (NOT MSVC)
 configure_file(boost/numeric/mtl/version.hpp.in boost/numeric/mtl/version.hpp @ONLY)
 # DERIVED VARIABLES
 # no derived variables, this makefile is the toplevel makefile for boost mtl4
