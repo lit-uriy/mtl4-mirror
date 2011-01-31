@@ -118,6 +118,7 @@ inline eigenvalue_symmetric(const Matrix& A,
 # ifdef MTL_SYMMETRIC_EIGENVALUE_WITH_QR
     return qr_algo(A, itMax == 0 ? num_rows(A) : itMax);
 # else
+    itMax= 0; // for not yelling at unused variable
     // qr_sym_imp works only with dense matrices of dynamic size, for other types copy
     typedef dense2D<typename Collection<Matrix>::value_type>    arg_type;
     make_in_copy_or_reference<arg_type, Matrix>  copy_or_ref(A);
