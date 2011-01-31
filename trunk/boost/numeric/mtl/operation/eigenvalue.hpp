@@ -19,6 +19,7 @@
 #include <boost/utility.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/concept/magnitude.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
@@ -31,6 +32,7 @@
 #include <boost/numeric/mtl/operation/trans.hpp>
 
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
 
 
 namespace mtl { namespace matrix {
@@ -116,8 +118,10 @@ inline eigenvalue_symmetric(const Matrix& A,
 # ifdef MTL_SYMMETRIC_EIGENVALUE_WITH_QR
     return qr_algo(A, itMax == 0 ? num_rows(A) : itMax);
 # else
-    itMax= 0;
-    return qr_sym_imp(A);
+    // qr_sym_imp works only with dense matrices of dynamic size, for other types copy
+    typedef dense2D<typename Collection<Matrix>::value_type>    arg_type;
+    make_in_copy_or_reference<arg_type, Matrix>  copy_or_ref(A);
+    return qr_sym_imp(copy_or_ref.value);
 # endif
 }
 
