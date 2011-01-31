@@ -24,6 +24,7 @@
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/diagonal.hpp>
 #include <boost/numeric/mtl/operation/givens.hpp>
+#include <boost/numeric/mtl/operation/hessenberg.hpp>
 #include <boost/numeric/mtl/operation/householder.hpp>
 #include <boost/numeric/mtl/operation/qr.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
