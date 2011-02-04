@@ -54,7 +54,6 @@ void test_stat_vector()
     std::cout << "\nv3 has size=" << mtl::static_size<vector>::value;
 }
 
-
 void test_stat_matrix()
 {
     std::cout<<"\n---test: operations for matrices of stat. size---";
@@ -259,6 +258,7 @@ int main()
 {
     test_dynam_vector();
     test_dynam_matrix();
+    test_stat_vector();
     test_stat_matrix();
     test_dynam_matrix();
     test_compressed_matrix();
