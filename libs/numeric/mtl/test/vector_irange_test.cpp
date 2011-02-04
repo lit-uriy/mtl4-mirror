@@ -56,11 +56,14 @@ void test(Vector& v, const char* name)
     Vector u( v[irange(2, imax)] );
     cout << "u == " << u << "\n";
     cout << "v == " << v << "\n";
+    irange r(2 , 4);
 
     if (u[0] != f(T(2))) throw "Wrong value in u";
     if (size(u) != sz-2) throw "Wrong size of u";
 
-    cout << "v[irange(2, 4)] == " << v[irange(2, 4)] << "\n";
+    cout << "v[irange(2, 4)] == " << v[r] << "\n";
+    --r ;
+    cout << "v[irange(2, 3)] == " << v[r] << "\n";
 }
 
 
