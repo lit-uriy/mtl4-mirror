@@ -89,6 +89,11 @@ set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root di
 # include_directories(${Boost_INCLUDE_DIR})
 include_directories(${BOOST_ROOT} ${MTL_BOOST_ROOT})
 
+# Experimental !!!!
+add_definitions("-I/home/pgottsch/Software/arprec-2.2.7/include -DMTL_HAS_ARPREC")
+add_definitions("-static -L/home/pgottsch/Software/arprec-2.2.7/src -larprec")
+
+
 #################################################################################
 if (MSVC)
 	# to quiet DevStudio 2005 secure code warnings
