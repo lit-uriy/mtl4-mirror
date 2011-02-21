@@ -18,11 +18,11 @@
 int main()
 {
     using namespace mtl;
-    typedef dense2D<double>  mt;
+    typedef dense2D<double>  mat;
     typedef dense_vector<double, mtl::vector::parameters<mtl::tag::row_major> >  row_vector;
-    typedef operations::bracket_proxy<mt, mt&, double&> proxy_type;
+    typedef operations::bracket_proxy<mat, mat&, double&> proxy_type;
 
-    dense2D<double>                                      A(2, 3);
+    mat    A(2, 3);
     A= 1, 2, 3,
        4, 5, 6;
 	
