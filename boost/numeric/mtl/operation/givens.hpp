@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/operation/copysign.hpp>
 #include <boost/numeric/mtl/operation/householder.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
@@ -42,13 +43,13 @@ class givens
 	if ( b == zero ) {
 	    c= one; s= zero;
 	} else if ( abs(b) > abs(a) ) {
-	    t= -a/b;
-	    s= one/sqrt(one + t*t);
-	    c= s*t;
+	    t= a / b;
+	    s= one / copysign(sqrt(one + t*t), b);
+	    c= s * t;
 	} else {
-	    t= -b/a;
-	    c= one/sqrt(one + t*t);
-	    s= c*t;
+	    t= b / a;
+	    c= one / copysign(sqrt(one + t*t), a);
+	    s= c * t;
 	}
 	G= c, s,
 	  -s, c;

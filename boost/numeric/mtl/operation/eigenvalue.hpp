@@ -29,6 +29,7 @@
 #include <boost/numeric/mtl/operation/householder.hpp>
 #include <boost/numeric/mtl/operation/qr.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
+#include <boost/numeric/mtl/operation/signum.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
