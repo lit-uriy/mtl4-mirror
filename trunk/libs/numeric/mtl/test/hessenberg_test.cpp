@@ -24,8 +24,8 @@ void init(Matrix& A)
     A= 0.0;
     mtl::matrix::inserter<Matrix>  ins(A);
     
-    ins[0][1] << 3; ins[1][4] << 7; ins[0][0] << 1; ins[4][4] << 17;
-    ins[2][3] << -2; ins[2][4] << 5; ins[4][0] << 2; ins[4][1] << 3;
+    ins[0][1] << 3;  ins[1][4] << 7; ins[0][0] << 1; ins[4][4] << 17;
+    ins[2][3] << -2; ins[2][4] << 5; ins[4][0] << 2; ins[4][1] <<  3;
     ins[3][2] << 4;
 }
 
@@ -43,17 +43,17 @@ void test(Coll& coll, const char* name)
     std::cout<< "Hessenberg=\n" << E << "\n";
     std::cout<< "triu=\n" << F << "\n";
   
-     if (one_norm(F)>0.000004) throw "No Hessenberg-Form";
-     F=extract_householder_hessenberg(coll);
-     std::cout<< "extract_householder_hessenberg=\n" << F << "\n";
-     F=extract_hessenberg(coll);
-     std::cout<< "extract_hessenberg=\n" << F << "\n";
-     F=householder_hessenberg(coll);
-     std::cout<< "householder_hessenberg=\n" << F << "\n";
-     F=hessenberg_factors(coll);
-     std::cout<< "hessenberg_factors=\n" << F << "\n";
-//      F=hessenberg_q(coll);
-//      std::cout<< "hessenberg_q=\n" << F << "\n";
+    if (one_norm(F)>0.000004) throw "No Hessenberg-Form";
+    F=extract_householder_hessenberg(coll);
+    std::cout<< "extract_householder_hessenberg=\n" << F << "\n";
+    F=extract_hessenberg(coll);
+    std::cout<< "extract_hessenberg=\n" << F << "\n";
+    F=householder_hessenberg(coll);
+    std::cout<< "householder_hessenberg=\n" << F << "\n";
+    F=hessenberg_factors(coll);
+    std::cout<< "hessenberg_factors=\n" << F << "\n";
+    //      F=hessenberg_q(coll);
+    //      std::cout<< "hessenberg_q=\n" << F << "\n";
 }
  
 
