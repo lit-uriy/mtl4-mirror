@@ -18,6 +18,12 @@
 
 namespace mtl {
 
+#ifndef NDEBUG
+#  define MTL_DEBUG_ARG(Arg) Arg
+#else
+#  define MTL_DEBUG_ARG(Arg)
+#endif
+
 // If MTL_ASSERT_FOR_THROW is defined all throws become assert
 // MTL_DEBUG_THROW_IF completely disappears if NDEBUG is defined
 #ifndef NDEBUG
