@@ -66,19 +66,19 @@ class dense_vector
     typedef const_pointer     key_type;
     
     /// Check whether index is non-negative and less than size
-    void check_index( size_type i ) const
+    void check_index( size_type MTL_DEBUG_ARG(i) ) const
     {
 	MTL_DEBUG_THROW_IF( is_negative(i) ||  i >= this->used_memory(), index_out_of_range());
     }
 
     /// Check for a given vector if the sizes are equal or this has size 0 (and can take the size of source)
-    void check_dim( size_type s ) const
+    void check_dim( size_type MTL_DEBUG_ARG(s) ) const
     {
 	MTL_DEBUG_THROW_IF( this->used_memory() != 0 && this->used_memory() != s, incompatible_size());
     }
 
     /// Check at compile time for a given vector if the sizes are equal
-    void static_check( size_type s) const
+    void static_check( size_type MTL_DEBUG_ARG(s) ) const
     {
 	assert(!traits::is_static<self>::value || s == size(typename Parameters::dimension()));
     }

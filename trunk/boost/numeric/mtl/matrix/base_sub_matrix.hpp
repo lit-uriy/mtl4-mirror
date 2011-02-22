@@ -74,7 +74,7 @@ struct base_sub_matrix
     }
 
     // Either changed matrix is uninitialized (i.e. 0x0) or dimensions are equal
-    void check_dim(size_type num_rows, size_type num_cols) const
+    void check_dim(size_type MTL_DEBUG_ARG(num_rows), size_type MTL_DEBUG_ARG(num_cols) ) const
     {
 	MTL_DEBUG_THROW_IF(this->num_rows() * this->num_cols() != 0
 			   && (this->num_rows() != num_rows || this->num_cols() != num_cols),
@@ -98,7 +98,8 @@ protected:
     }
 
 public:
-    void check_ranges(size_type begin_r, size_type end_r, size_type begin_c, size_type end_c) const
+    void check_ranges(size_type MTL_DEBUG_ARG(begin_r), size_type MTL_DEBUG_ARG(end_r), 
+		      size_type MTL_DEBUG_ARG(begin_c), size_type MTL_DEBUG_ARG(end_c) ) const
     {
 	MTL_DEBUG_THROW_IF(begin_r < begin_row(), range_error("begin_row out of range"));
 	// if (end_r > end_row()) std::cout << "end_row out of range\n";
