@@ -26,7 +26,7 @@ complex<double> f(complex<double>)
     return complex<double>(1.0, -1.0); 
 }
 
-
+ 
 int test_main(int, char**)
 {
     using namespace mtl;
@@ -39,7 +39,7 @@ int test_main(int, char**)
     dense2D<complex<double> >                            dz(row, col), Qz(row, row), Rz(row, col);
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
     compressed2D<double>                Ac(size, size), Qc(size, size), Rc(size, size), A_testc(size, size) ;
-    A= 0;
+    A= 0; 
 
     A[0][0]=1;    A[0][1]=1;    A[0][2]=1;
     A[1][0]=3;    A[1][1]=-1;   A[1][2]=-2;
