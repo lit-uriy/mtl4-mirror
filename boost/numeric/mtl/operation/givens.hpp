@@ -23,7 +23,6 @@
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 
-
 namespace mtl { namespace matrix {
 
 /// Given's transformator
@@ -34,24 +33,31 @@ class givens
     typedef typename Collection<Matrix>::size_type    size_type;
 
   public:
-    /// Constructor takes %matrix \p H to be transformed and the rotation parameters \p a and \p b
-    givens(Matrix& H, value_type a, value_type b) : H(H)
+    /// Re-set the rotation parameters \p a and \b
+    void set_rotation(value_type a, value_type b)
     {
 	using std::abs;
 	value_type zero= math::zero(a), one= math::one(b), t;
 
 	if ( b == zero ) {
-	    c= one; d= zero;
+	    c= one; s= zero;
 	} else if ( abs(b) > abs(a) ) {
 	    t= -a/b;
-	    d= one/sqrt(one + t*t);
-	    c= d*t;
+	    s= one/sqrt(one + t*t);
+	    c= s*t;
 	} else {
 	    t= -b/a;
 	    c= one/sqrt(one + t*t);
-	    d= c*t;
+	    s= c*t;
 	}
-  }
+	G= c, s,
+	  -s, c;
+    }
+
+
+    /// Constructor takes %matrix \p H to be transformed and the rotation parameters \p a and \p b
+    givens(Matrix& H, value_type a, value_type b) : H(H), G(2, 2)
+    {	set_rotation(a, b);    }
 
     /// Given's transformation of \p H with \p G regarding column \p k
     Matrix& trafo(const Matrix& G, size_type k)
@@ -70,15 +76,12 @@ class givens
     /// Given's transformation of \p H regarding column \p k
     Matrix& trafo(size_type k)
     {
-	Matrix G(2, 2);
-	G= c, d,
-	  -d, c;
 	return trafo(G, k);
     }
 
   private:
-    Matrix&    H;
-    value_type c, d;
+    Matrix&    H, G;
+    value_type c, s;
 };
 
 }// namespace matrix
@@ -94,29 +97,28 @@ class givens
     typedef typename Collection<Vector>::size_type    size_type;
 
   public:
-    /// Constructor takes %vector \p H to be transformed and the rotation parameters \p a and \p b
-    givens(Vector& H, value_type a, value_type b) : H(H), a(a), b(b)
+    /// Constructor takes %vector \p v to be transformed and the rotation parameters \p a and \p b
+    givens(Vector& v, value_type a, value_type b) : v(v), a(a), b(b)
     {  }
 
-    /// Given's transformation of \p H with \p G regarding column \p k
+    /// Given's transformation of \p v with \p a and \p b regarding column \p k
     Vector& trafo(size_type k)
     {
 	    value_type w1(0), w2(0);
-	    w1= a*H[k]-b*H[k+1]; //given's rotation on solution
-            w2= b*H[k]+a*H[k+1]; //rotation on vector
-            H[k]= w1;
-            H[k+1]= w2;
+	    w1= a*v[k] - b*v[k+1]; //given's rotation on solution
+            w2= b*v[k] + a*v[k+1]; //rotation on vector
+            v[k]= w1;
+            v[k+1]= w2;
 
-	    return H;
+	    return v;
     }
 
   private:
-    Vector&    H;
+    Vector&    v;
     value_type a, b;
 };
 
 }// namespace vector
-
 
 
 } // namespace mtl

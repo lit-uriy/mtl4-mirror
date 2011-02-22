@@ -33,14 +33,15 @@ namespace mtl { namespace matrix {
 template <typename Matrix>
 Matrix inline hessenberg_factors(const Matrix& A)
 {
+    if (num_rows(A) < 3)
+	return A;
+
     using mtl::imax;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A);
     value_type       zero= math::zero(A[0][0]), beta;
     Matrix           B(A);
-
-    MTL_THROW_IF(num_rows(A) < 3, matrix_too_small());
 
     for(size_type i= 0; i < ncols-2; i++){
 	// dense_vector<value_type>  v(B[irange(i+1, imax)][i]);
