@@ -26,6 +26,11 @@ namespace traits {
     };
 }
 
+/// Returns a view of a matrix \p A from diagonal \p begin to \p end
+/** The main diagonal is numbered 0; the off-diagonal below the main one is -1.
+    Accordingly, the off-diagonal above the main is 1.
+    The parameters \p begin and \p end specify a right-open interval.
+    For, instance bands(A, -1, 2) yields a tridiagonal matrix. **/
 template <typename Matrix> 
 typename traits::bands<Matrix>::type
 inline bands(const Matrix& A, long begin, long end)

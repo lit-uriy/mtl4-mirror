@@ -2922,6 +2922,7 @@ written in unrolled/tiled form.
 -# %Matrix Operations
    - \subpage mat_vec_expr
    - \subpage adjoint
+   - \subpage bands
    - \subpage change_dim
    - \subpage conj
    - \subpage crop
@@ -3078,6 +3079,28 @@ B= adjoint(A);
 \endcode
 
 Details:: mtl::matrix::adjoint
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page bands bands(A, begin, end)
+
+Returns a view of a matrix \p A from diagonal \p begin to \p end
+
+The main diagonal is numbered 0; the off-diagonal below the main one is -1.
+    Accordingly, the off-diagonal above the main is 1.
+    The parameters \p begin and \p end specify a right-open interval.
+    For, instance bands(A, -1, 2) yields a tridiagonal matrix as in the code example.
+
+\code
+B= bands(A, -1, 2);
+\endcode
+
+Details:: mtl::matrix::bands
 
 \if Navigation \endif
   Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
