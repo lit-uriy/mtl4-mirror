@@ -16,19 +16,21 @@
 #define MTL_MATRIX_HOUSEHOLDER_INCLUDE
 
 #include <cmath>
+#include <cassert>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
 
 namespace mtl { namespace vector {
 
 
-/// Computes Householder vector b of y 
-/** such that identity_matrix(size(v))-b*v*v' projects the vector y 
+/// Computes Householder vector v and scalar b for vector \p y 
+/** such that identity_matrix(size(y))-b*v*v' projects the vector y 
     to a positive multiple of the first unit vector. **/
 template <typename Vector>
 std::pair<typename mtl::dense_vector<typename Collection<Vector>::value_type>, typename Collection<Vector>::value_type>
 inline householder(Vector& y)
 {
+    assert(size(y) > 0);
     typedef typename  Collection<Vector>::value_type   value_type;
     typedef typename  Collection<Vector>::size_type    size_type;
     const value_type  zero= math::zero(y[0]), one= math::one(y[0]);
@@ -43,17 +45,16 @@ inline householder(Vector& y)
         b= zero;
     else {
 	value_type mu= sqrt(y[0] * y[0] + s);
-	v0= v[0]= y[0] <= zero ? y[0] - mu : -s / (y[0] + mu); // komplex < zero????
-	b= 2 * v0 * v0 / (s + v0 * v0);                       // 2* komplex???????
-	v/= v0;                                               // normalization of the first entry
+	v0= v[0]= y[0] <= zero ? y[0] - mu : -s / (y[0] + mu); // complex < zero????
+	b= 2 * v0 * v0 / (s + v0 * v0);                        // 2* complex???????
+	v/= v0;                                                // normalization of the first entry
     }
   
     return std::make_pair(v,b);
 }
 
-///Computes Householder vector b of y 
-
-///stabilere Householder transformation, auch für nicht-quadratische Matrizen
+/// Computes Householder vector for vector \p y 
+/** More stable Householder transformation, also for non-square matrices. **/
 template <typename Vector>
 typename mtl::dense_vector<typename Collection<Vector>::value_type>
 inline householder_s(Vector& y)
