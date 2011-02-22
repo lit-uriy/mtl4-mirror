@@ -24,6 +24,7 @@
 #include <boost/numeric/mtl/operation/sort.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 #include <boost/numeric/mtl/utility/domain.hpp>
+#include <boost/numeric/mtl/matrix/permutation.hpp>
 
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/itl/iteration/basic_iteration.hpp>

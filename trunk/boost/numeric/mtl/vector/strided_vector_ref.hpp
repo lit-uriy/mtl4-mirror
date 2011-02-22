@@ -64,7 +64,7 @@ class strided_vector_ref
     typedef mtl::strided_dense_el_iterator<Value>                                    iterator;
     typedef typename Parameters::orientation                                         orientation;
     
-    void check_index( size_type i ) const
+    void check_index( size_type MTL_DEBUG_ARG(i) ) const
     {
 	MTL_DEBUG_THROW_IF( is_negative(i) || i >= size(*this), index_out_of_range());
     }
@@ -154,7 +154,7 @@ class strided_vector_ref
 	    swap(vector1[i], vector2[i]);
     }
 
-    void change_dim(size_type n) { MTL_DEBUG_THROW_IF(my_size != n, incompatible_size()); }
+    void change_dim(size_type MTL_DEBUG_ARG(n)) { MTL_DEBUG_THROW_IF(my_size != n, incompatible_size()); }
     void crop() {} // Only dummy here
 
   private:

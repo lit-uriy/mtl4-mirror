@@ -18,11 +18,13 @@
 
 using namespace std;
 
-template <typename Matrix>
-void inline givens_elimination(Matrix& A)
+template <typename Matrix, typename Value, typename Vector>
+void test_vector(const Matrix& A, const Value& alpha, const Vector& v, double tol, int i)
 {
-    mtl::matrix::givens<Matrix> g(A, 1, 3);
-    
+    Vector diff(A*v-alpha*v), v1(A*v), v2(alpha*v); // , diff(v1-v2);
+    if (size(v1) < 17) 	
+	cout << "A*v is     " << v1 << "\nalpha*v is " << v2 << '\n';
+    if (two_norm(diff) > tol) cout << "two_norm(difference) of the " << i << "-th eigenvector is " << two_norm(diff) << ", two_norm(A*v) is " << two_norm(v1) << ", two_norm(alpha*v) is " << two_norm(v2) << '\n'; // throw "wrong eigenvector";
 }
 
 
@@ -41,14 +43,20 @@ int main(int argc, char** argv)
     string fname= string("../../../../../branches/data/matrix_market/Partha") + char('0' + select) + ".mtx";
     
 
-    dense2D<double>    A(io::matrix_market(fname.c_str()));
+    dense2D<double>    A0(io::matrix_market(fname.c_str())), A(clone(A0[irange(sub)][irange(sub)]));
     //    cout << "Size of A is " << num_rows(A) << " x " << num_cols(A) << '\n';
    
-    dense2D<double>    C(hessenberg_factors(A)), D(clone(bands(C, -1, 2)));
+    dense2D<double>    C(hessenberg_factors(A)), D(clone(bands(C, -1, 2))), Q(num_rows(D), num_rows(D));
     cout << "The tridiagonal matrix is\n" << D[irange(10)][irange(10)];
    
+    dense_vector<double>       lambda(num_rows(D));
 
+    cuppen(D, Q, lambda);
+    cout << "Q is\n" << Q[irange(10)][irange(10)];
+    std::cout << "The eigenvalues are " << lambda << "\n";
     
+    for (unsigned i= 0; i < num_rows(D); i++)
+	test_vector(D, lambda[i], mtl::dense_vector<double>(Q[mtl::iall][i]), 1e-4, i);
 
     return 0;
 }
