@@ -36,10 +36,16 @@ namespace fixed
         static size_type const Num_Cols= Cols;
 
 	// To have the same interface as fixed
+#ifndef NDEBUG
 	explicit dimensions(size_type r= Rows, size_type c= Cols) 
 	{
 	    assert(r == Rows); assert(c == Cols); 
 	}
+#else
+	explicit dimensions(size_type, size_type) {}
+	explicit dimensions(size_type) {}
+	explicit dimensions() {}
+#endif
 
 	size_type num_rows() const { return Rows; }
 	size_type num_cols() const { return Cols; }

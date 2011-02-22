@@ -380,7 +380,7 @@ class dense2D
 	}
     }
 
-    void change_dim(size_type r, size_type c, bool, boost::mpl::true_)
+    void change_dim(size_type MTL_DEBUG_ARG(r), size_type MTL_DEBUG_ARG(c), bool, boost::mpl::true_)
     {	assert(r == this->num_rows() && c == this->num_cols());    }
 
  public:

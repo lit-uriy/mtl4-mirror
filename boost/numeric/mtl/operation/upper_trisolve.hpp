@@ -51,7 +51,7 @@ namespace detail {
     private:
 	// Initialization for regular and inverse diagonal is the same
 	template <typename Cursor>
-	void row_init(size_type r, Cursor& aic, Cursor& aiend, value_type& dia, tag::universe_diagonal)
+	void row_init(size_type MTL_DEBUG_ARG(r), Cursor& aic, Cursor& MTL_DEBUG_ARG(aiend), value_type& dia, tag::universe_diagonal)
 	{
 	    MTL_DEBUG_THROW_IF(aic == aiend || col_a(*aic) != r, missing_diagonal());
 	    dia= value_a(*aic); ++aic;

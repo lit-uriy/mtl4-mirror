@@ -387,7 +387,7 @@ struct contiguous_memory_block<Value, true, Size>
     //static bool const                         on_stack= true;
 
     Value    data[Size];
-    explicit contiguous_memory_block(std::size_t size= Size) 
+    explicit contiguous_memory_block(std::size_t MTL_DEBUG_ARG(size= Size)) 
     {
 	MTL_DEBUG_THROW_IF(Size != size, incompatible_size());
     }
@@ -433,7 +433,7 @@ public:
     }
 
 
-    void realloc(std::size_t s) 
+    void realloc(std::size_t MTL_DEBUG_ARG(s)) 
     {
 	// Arrays on stack cannot be reallocated but if the size isn't changed we are fine
 	assert(s == Size); 
