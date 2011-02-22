@@ -44,19 +44,9 @@ int main(int argc, char** argv)
     dense2D<double>    A(io::matrix_market(fname.c_str()));
     //    cout << "Size of A is " << num_rows(A) << " x " << num_cols(A) << '\n';
    
-
-    dense2D<double>    C(hessenberg_factors(A)), D(extract_hessenberg(C));
-    cout << "Hessenberg is\n" << D[irange(10)][irange(10)]
-	 << "A is now\n" << A[irange(10)][irange(10)] << '\n';
+    dense2D<double>    C(hessenberg_factors(A)), D(clone(bands(C, -1, 2)));
+    cout << "The tridiagonal matrix is\n" << D[irange(10)][irange(10)];
    
-#if 0
-    dense2D<double>   B(A[irange(sub)][irange(sub)]), E(hessenberg_factors(B));// , F(extract_hessenberg(E));
-    cout << "Hessenberg is\n" << E[irange(10)][irange(10)]
-	 << "A is now\n" << A[irange(10)][irange(10)] << '\n';
-#endif
-
-    dense2D<double>    E(hessenberg_factors(trans(D))), F(extract_hessenberg(E));
-    cout << "Hessenberg is\n" << F[irange(10)][irange(10)];
 
     
 
