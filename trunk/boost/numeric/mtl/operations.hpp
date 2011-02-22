@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/operation/cholesky.hpp>
 #include <boost/numeric/mtl/operation/column_in_matrix.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/copysign.hpp>
 #include <boost/numeric/mtl/operation/crop.hpp>
 #include <boost/numeric/mtl/operation/cross.hpp>
 #include <boost/numeric/mtl/operation/diagonal.hpp>
@@ -31,6 +32,7 @@
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 #include <boost/numeric/mtl/operation/hessenberg.hpp>
 #include <boost/numeric/mtl/operation/householder.hpp>
+#include <boost/numeric/mtl/operation/imag.hpp>
 #include <boost/numeric/mtl/operation/inv.hpp>
 #include <boost/numeric/mtl/operation/invert_diagonal.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
@@ -50,11 +52,13 @@
 #include <boost/numeric/mtl/operation/random.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/rank_two_update.hpp>
+#include <boost/numeric/mtl/operation/real.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/scale.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/secular.hpp>
+#include <boost/numeric/mtl/operation/signum.hpp>
 #include <boost/numeric/mtl/operation/split_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/sum.hpp>
