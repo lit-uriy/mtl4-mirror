@@ -51,10 +51,11 @@ int test_main(int, char**)
     
     std::cout<<"START-----dense2d---------row > col\n";
   
-	boost::tie(Q, R)= qr(A);
+    dense2D<double> A1(A[iall][iall]), A2(A);
+	boost::tie(Q, R)= qr(A1);
  	std::cout<<"R=\n"<< R <<"\n";
  	std::cout<<"Q=\n"<< Q <<"\n";
-	A_test= Q*R-A;
+	A_test= Q*R-A2;
 	std::cout<<"Q*R=\n"<< Q*R <<"\n";
 	
 	std::cout<< "one_norm(Rest A)=" << one_norm(A_test) << "\n";

@@ -41,7 +41,7 @@ Matrix inline hessenberg_factors(const Matrix& A)
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A);
     value_type       zero= math::zero(A[0][0]), beta;
-    Matrix           B(A);
+    Matrix           B(clone(A));
 
     for(size_type i= 0; i < ncols-2; i++){
 	// dense_vector<value_type>  v(B[irange(i+1, imax)][i]);
@@ -52,8 +52,8 @@ Matrix inline hessenberg_factors(const Matrix& A)
         v= householder(v).first;
 ;
 	if( beta != zero){
-            w= beta * A[irange(0,imax)][irange(i+1,imax)] * v;
-	    //rank_one_update(A[irange(0,imax)][irange(i+1,imax)],-w,v);
+            w= beta * B[irange(0,imax)][irange(i+1,imax)] * v;
+	    //rank_one_update(B[irange(0,imax)][irange(i+1,imax)],-w,v);
             for(size_type row = 0; row < nrows; row++){
                 for(size_type col = i+1; col < ncols; col++){
                     B[row][col] -= w[row] * v[col-i-1];

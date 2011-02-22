@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 {
     using namespace mtl;
 
-    int select= 1, sub= 10;
+    int select= 1, sub= 6;
     if (argc > 1)
 	select= atoi(argv[1]);
     assert(select >= 1 && select <= 2);
@@ -41,18 +41,21 @@ int main(int argc, char** argv)
     string fname= string("../../../../../branches/data/matrix_market/Partha") + char('0' + select) + ".mtx";
     
 
-    dense2D<double>    A(io::matrix_market(fname.c_str())), B(A[irange(sub)][irange(sub)]);
+    dense2D<double>    A0(io::matrix_market(fname.c_str())), A(clone(A0[irange(sub)][irange(sub)])), B(A[irange(sub)][irange(sub)]);
     // cout << "A[irange(sub)][irange(sub)] is\n" << B;
 
-    cout << "Size of A is " << num_rows(A) << " x " << num_cols(A) << '\n';
-
+    cout << "Size of A is " << num_rows(A) << " x " << num_cols(A) << '\n'
+	 << "A\n" << A << '\n';
    
 
-    dense2D<double>    C0(hessenberg(A)), C(hessenberg(A)), D(extract_hessenberg(C));
-    cout << "Hessenberg is\n" << C[irange(10)][irange(10)] << '\n';
+    dense2D<double>    C(hessenberg(A)), D(extract_hessenberg(C));
+    cout << "Hessenberg is\n" << C[irange(10)][irange(10)]
+	 << "A is now\n" << A << '\n';
+   
 
-    dense2D<double>    E(hessenberg(B)), F(extract_hessenberg(E));
-    cout << "Hessenberg is\n" << E[irange(10)][irange(10)];
+    dense2D<double>    E(hessenberg(B));// , F(extract_hessenberg(E));
+    cout << "Hessenberg is\n" << E[irange(10)][irange(10)]
+	 << "A is now\n" << A << '\n';
 
 
 
