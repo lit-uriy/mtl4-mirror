@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <boost/numeric/mtl/mtl.hpp>
+#include <boost/timer.hpp>
 
 
 using namespace std;
@@ -32,7 +33,7 @@ int main(int argc, char** argv)
 {
     using namespace mtl;
 
-    int select= 1, sub= 6;
+    int select= 1, sub= 600;
     if (argc > 1)
 	select= atoi(argv[1]);
     assert(select >= 1 && select <= 2);
@@ -46,17 +47,19 @@ int main(int argc, char** argv)
     dense2D<double>    A0(io::matrix_market(fname.c_str())), A(clone(A0[irange(sub)][irange(sub)]));
     //    cout << "Size of A is " << num_rows(A) << " x " << num_cols(A) << '\n';
    
+    boost::timer tri_time;
     dense2D<double>    C(hessenberg_factors(A)), D(clone(bands(C, -1, 2))), Q(num_rows(D), num_rows(D));
-    cout << "The tridiagonal matrix is\n" << D[irange(10)][irange(10)];
+    cout << "The tridiagonal matrix is\n" << D[irange(10)][irange(10)] << "This took " << tri_time.elapsed() << "s.\n";
    
+    tri_time.restart();
     dense_vector<double>       lambda(num_rows(D));
 
     cuppen(D, Q, lambda);
-    cout << "Q is\n" << Q[irange(10)][irange(10)];
-    std::cout << "The eigenvalues are " << lambda << "\n";
-    
+    cout << "Q is\n" << Q[irange(10)][irange(10)] << "This took " << tri_time.elapsed() << "s.\n";
+    // std::cout << "The eigenvalues are " << lambda << "\n";
+#if 0  
     for (unsigned i= 0; i < num_rows(D); i++)
 	test_vector(D, lambda[i], mtl::dense_vector<double>(Q[mtl::iall][i]), 1e-4, i);
-
+#endif
     return 0;
 }
