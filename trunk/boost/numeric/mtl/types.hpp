@@ -23,4 +23,6 @@
 
 #include <boost/numeric/mtl/io/matrix_market.hpp>
 
+#include <boost/numeric/mtl/interface/arprec.hpp>
+
 #endif // MTL_TYPES_INCLUDE
