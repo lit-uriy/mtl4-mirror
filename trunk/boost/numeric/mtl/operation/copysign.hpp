@@ -45,7 +45,7 @@ namespace sfunctor {
 					copysign<Value1, Value2>::apply(imag(v), s));
 	}
     };
-
+#ifndef _MSC_VER
     template <>
     struct copysign<float, float>
     {
@@ -66,6 +66,7 @@ namespace sfunctor {
 	static inline long double apply(long double v, long double s)
 	{ return copysignl(v, s); }
     };
+#endif // _MSC_VER
 }
 
 /// sign of scalars; for complex numbers sign of real part
