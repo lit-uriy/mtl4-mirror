@@ -306,12 +306,25 @@ disjoint (but not all directories).
 If you compile MTL4 with VS2005/08/10 or its free express version
 you need to install the SDK (some boost files access to it).
 Please make sure that the compiler is in the path.
-Then scons will find it.
+Then cmake (or scons) will find it.
+
 Additionally, you have to tell the compiler where the header files and
-the libraries of VC and the SDK are located, i.e. declare the 
+the libraries of VC and the Software Developing Kit are located, i.e. declare the 
 environment variables LIB and INCLUDE. For instance:\n
 <tt>LIB=c:/Program Files/Microsoft Visual Studio 8/vc/lib;c:/Program Files/MicrosoftVisual Studio 8/vc/platformsdk/lib</tt>\n
 <tt>INCLUDE=c:/Program Files/Microsoft Visual Studio 8/VC/include;c:/Program Files/Microsoft Visual Studio 8/VC/PlatformSDK/Include</tt>\n
+
+To compile MTL4 programs (including the tests), it is advisable to use 
+<a href="http://www.cmake.org/">CMake</a>.
+Go into the MTL4 main directory and run:\n\n
+<tt>cmake .</tt>\n\n
+Possibly, CMake will ask you to specify a generator "-G".
+After you have run CMake, several project files will appear in this directory.
+
+Click on "ALL_BUILD.vcproj" (or "ALL_BUILD.vcprojx") and Visual Studio will open
+with a project folder containing all test and example programs.
+
+
 
 
 \section optionalinstall Optional Installations
