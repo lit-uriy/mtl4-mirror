@@ -24,7 +24,7 @@
 template <typename Vector, typename Ashape>
 void test(const char* name, Vector& v, Ashape)
 {
-    v= 3., 4., 6.;
+    v= 3, 4, 6;
     std::cout << name << ": v is " << v << ", typeid is " << typeid(v).name() << "\n";
     std::cout << "trans(v) is " << trans(v) << ", typeid is " << typeid(trans(v)).name() << "\n";
     BOOST_STATIC_ASSERT((boost::is_same<typename mtl::ashape::ashape<Vector>::type, Ashape>::value));
