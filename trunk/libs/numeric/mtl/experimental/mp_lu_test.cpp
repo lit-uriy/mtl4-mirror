@@ -1,5 +1,5 @@
 /* compile with g++ mp_test.cpp -o mp_test -l arprec */
-// g++ mp_lu_test.cpp -o mp_lu_test -I/home/pgottsch/Software/arprec-2.2.7/include -I$BOOST_ROOT -I$MTL -L/home/pgottsch/Software/arprec-2.2.7/src -l arprec
+// g++ mp_lu_test.cpp -o mp_lu_test -I/home/pgottsch/Software/arprec-2.2.7/include -I$BOOST_ROOT -I$MTL -L/home/pgottsch/Software/arprec-2.2.7/src -l arprec -DMTL_HAS_ARPREC
 
 #include <iostream>
 #include <arprec/mp_real.h>
