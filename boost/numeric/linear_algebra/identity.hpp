@@ -14,10 +14,12 @@
 #ifndef MATH_IDENTITY_INCLUDE
 #define MATH_IDENTITY_INCLUDE
 
-#include <boost/numeric/linear_algebra/operators.hpp>
+#include <boost/math/tools/config.hpp>
 #include <limits>
 #include <string>
 #include <functional>
+
+#include <boost/numeric/linear_algebra/operators.hpp>
 
 namespace math {
 
@@ -81,6 +83,45 @@ struct identity_t< max<Element>, Element >
 	return numeric_limits<Element>::min();
     }
 };
+
+template <>
+struct identity_t< max<float>, float > 
+  : public std::binary_function<max<float>, float, float>
+{ 
+    float operator() (const max<float>&, const float& ) const
+    {
+	using std::numeric_limits;
+	return -numeric_limits<float>::max();
+    }
+};
+
+template <>
+struct identity_t< max<double>, double > 
+  : public std::binary_function<max<double>, double, double>
+{ 
+    double operator() (const max<double>&, const double& ) const
+    {
+	using std::numeric_limits;
+	return -numeric_limits<double>::max();
+    }
+};
+
+
+#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
+   
+template <>
+struct identity_t< max<long double>, long double > 
+  : public std::binary_function<max<long double>, long double, long double>
+{ 
+    long double operator() (const max<long double>&, const long double& ) const
+    {
+	using std::numeric_limits;
+	return -numeric_limits<long double>::max();
+    }
+};
+
+#endif
+
 
 
 // Identity of min is maximal representable value, for standard types defined in numeric_limits
