@@ -18,6 +18,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
@@ -387,7 +388,11 @@ struct contiguous_memory_block<Value, true, Size>
     //static bool const                         on_stack= true;
 
     Value    data[Size];
-    explicit contiguous_memory_block(std::size_t MTL_DEBUG_ARG(size= Size)) 
+# ifdef NDEBUG
+    explicit contiguous_memory_block(std::size_t)
+# else 
+    explicit contiguous_memory_block(std::size_t size= Size)
+# endif 
     {
 	MTL_DEBUG_THROW_IF(Size != size, incompatible_size());
     }
