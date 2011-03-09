@@ -388,7 +388,7 @@ struct contiguous_memory_block<Value, true, Size>
     //static bool const                         on_stack= true;
 
     Value    data[Size];
-# ifdef NDEBUG
+# if defined(NDEBUG) && !defined(_MSC_VER)
     explicit contiguous_memory_block(std::size_t)
 # else 
     explicit contiguous_memory_block(std::size_t size= Size)
