@@ -110,8 +110,13 @@ endif (MSVC)
 
 #################################################################################
 
-check_cxx_compiler_flag("-Wno_long_long" WITH_NO_LONG_LONG)
-message ("no long long: ${WITH_NO_LONG_LONG}")
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  check_cxx_compiler_flag("-Wno-long-long" WITH_NO_LONG_LONG)
+  if (${WITH_NO_LONG_LONG})
+    message(STATUS "Add -Wno-long-long")
+    add_definitions("-Wno-long-long")
+  endif()
+endif()
   
 
 find_program(VALGRIND_COMMAND valgrind)
@@ -133,7 +138,7 @@ endmacro (add_macro_flags)
 add_macro_flags("MTL_ASSERT_FOR_THROW")
 
 option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
-if( "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   add_definitions("-Werror -pedantic -Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
   if(ENABLE_GCOV)
 	add_definitions("-fprofile-arcs -ftest-coverage")
