@@ -2,6 +2,8 @@ project (mtl4)
 
 cmake_minimum_required(VERSION 2.6)
 
+include(CheckCXXCompilerFlag)
+
 #let cmake look for the svn-version
 if (NOT MSVC)
 find_package(Subversion)
@@ -107,6 +109,10 @@ if (MSVC)
 endif (MSVC)
 
 #################################################################################
+
+check_cxx_compiler_flag("-Wno_long_long" WITH_NO_LONG_LONG)
+message ("no long long: ${WITH_NO_LONG_LONG}")
+  
 
 find_program(VALGRIND_COMMAND valgrind)
 if(VALGRIND_COMMAND)
