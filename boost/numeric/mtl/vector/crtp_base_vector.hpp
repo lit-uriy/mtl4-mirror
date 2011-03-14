@@ -72,7 +72,7 @@ struct crtp_assign<Vector, mat_cvec_times_expr<E1, E2> >
     typedef Vector& type;
     type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
     {
-	vector.checked_change_dim(num_rows(src.first));
+	vector.checked_change_resource(src);
 	mult(src.first, src.second, vector);
 	return vector;
     }
@@ -87,7 +87,7 @@ struct crtp_assign<Vector, rvec_mat_times_expr<E1, E2> >
     typedef Vector& type;
     type operator()(Vector& vector, const rvec_mat_times_expr<E1, E2>& src)
     {
-	vector.checked_change_dim(num_cols(src.first));
+	vector.checked_change_resource(src);
 	gen_mult(src.first, src.second, vector, assign::assign_sum(), 
 		 tag::row_vector(), tag::matrix(), tag::row_vector());
 	return vector;
@@ -258,6 +258,17 @@ struct crtp_vector_assign
     {
 	return vec_scal_div_asgn_expr<Vector, Factor>( static_cast<Vector&>(*this), alpha );
     }	
+
+    /// Check whether source and target have compatible resources and adapt empty target
+    /** For expressions like u= v + w, u can be set to the size of v and w if still is 0. **/
+    template <typename Src>
+    void checked_change_resource(const Src& src) 
+    {	checked_change_resource_aux(src, typename mtl::traits::category<Vector>::type()); }    
+
+    template <typename Src>
+    void checked_change_resource_aux(const Src& src, tag::universe) 
+    {   checked_change_dim(size(src));  }
+
 
     /// Check whether vector size is compatible or if vector is 0 change it s.
     void checked_change_dim(SizeType s)
