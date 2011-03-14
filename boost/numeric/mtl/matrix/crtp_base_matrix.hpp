@@ -457,7 +457,7 @@ private:
     void checked_change_resource(const Src& src) 
     {	checked_change_resource(src, src);   }
 
-    /// Check wether source and target have compatible resources and adapt empty target
+    /// Check whether source and target have compatible resources and adapt empty target
     /** For expressions like A= B + C, A can be set to the size of B and C if still is 0 by 0. **/
     template <typename Src1, typename Src2>
     void checked_change_resource(const Src1& src1, const Src2& src2)
