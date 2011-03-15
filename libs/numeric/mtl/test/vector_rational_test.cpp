@@ -50,7 +50,9 @@ struct st_test
     }
 };
 
-void test( const t_dVecQ& vecQ )
+// using test as function name causes ambiguities  on some compilers
+// (type_traits/has_new_operator.hpp:24: error: ‘template<class U, U x> struct boost::detail::test' is not a function)
+void assign_test( const t_dVecQ& vecQ ) 
 {
     t_dVecQ vecQ_temp;
     vecQ_temp = vecQ;
@@ -72,7 +74,7 @@ int main(int , char**)
     vecQ1[mtl::irange(2)] = vecQ0;
     std::cout << "vecQ1: " << vecQ1 << "\n";   
 
-    test(vecQ1);
+    assign_test(vecQ1);
     st_test test(vecQ1);
 
     return 0;
