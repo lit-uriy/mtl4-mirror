@@ -381,8 +381,6 @@ namespace mtl {
 
 #endif
 
-
-
 #ifdef __GXX_CONCEPTS__
     template <typename Scaling, typename Coll>
     concept_map Collection<matrix::scaled_view<Scaling, Coll> >
@@ -420,24 +418,45 @@ namespace mtl {
     };
 #endif
 	
+
+
+#ifdef __GXX_CONCEPTS__
+    // template <typename Functor, typename Coll>
+    // concept_map Collection< vector::map_view<Functor, Coll> >
+    // {
+    // 	typedef typename vector::map_view<Functor, Coll>::value_type        value_type;
+    // 	typedef typename vector::map_view<Functor, Coll>::const_reference   const_reference;
+    // 	typedef typename vector::map_view<Functor, Coll>::size_type         size_type;
+    // };
+#else
+    template <typename Functor, typename Coll>
+    struct Collection< vector::map_view<Functor, Coll> >
+    {
+	// typedef typename Functor::result_type              value_type;
+	// typedef typename Functor::result_type              const_reference;
+	// typedef typename Collection<Coll>::size_type     size_type;
+	
+	typedef typename vector::map_view<Functor, Coll>::value_type        value_type;
+	typedef typename vector::map_view<Functor, Coll>::const_reference   const_reference;
+	typedef typename vector::map_view<Functor, Coll>::size_type         size_type;
+    };
+#endif
+
 	
 #ifdef __GXX_CONCEPTS__
-    template <typename Scaling, typename Coll>
-    concept_map Collection<vector::scaled_view<Scaling, Coll> >
-    {
-	typedef typename vector::scaled_view<Scaling, Coll>::value_type        value_type;
-	typedef typename vector::scaled_view<Scaling, Coll>::const_reference   const_reference;
-	typedef typename vector::scaled_view<Scaling, Coll>::size_type         size_type;
-    };
+
 #else
     template <typename Scaling, typename Coll>
     struct Collection<vector::scaled_view<Scaling, Coll> >
+      : Collection< vector::map_view<tfunctor::rscale<typename Collection<Coll>::value_type, Scaling>, Coll> >
     {
-	typedef typename vector::scaled_view<Scaling, Coll>::value_type        value_type;
-	typedef typename vector::scaled_view<Scaling, Coll>::const_reference   const_reference;
-	typedef typename vector::scaled_view<Scaling, Coll>::size_type         size_type;
+	// typedef typename vector::scaled_view<Scaling, Coll>::value_type        value_type;
+	// typedef typename vector::scaled_view<Scaling, Coll>::const_reference   const_reference;
+	// typedef typename vector::scaled_view<Scaling, Coll>::size_type         size_type;
     };
 #endif
+
+
 
 // added by Hui Li
 #ifdef __GXX_CONCEPTS__
@@ -451,12 +470,84 @@ namespace mtl {
 #else
     template <typename Coll, typename RScaling>
     struct Collection<vector::rscaled_view<Coll,RScaling> >
+      : Collection< vector::map_view<tfunctor::rscale<typename Collection<Coll>::value_type, RScaling>, Coll> >
     {
-	typedef typename vector::rscaled_view<Coll,RScaling>::value_type        value_type;
-	typedef typename vector::rscaled_view<Coll,RScaling>::const_reference   const_reference;
-	typedef typename vector::rscaled_view<Coll,RScaling>::size_type         size_type;
+	// typedef typename vector::rscaled_view<Coll,RScaling>::value_type        value_type;
+	// typedef typename vector::rscaled_view<Coll,RScaling>::const_reference   const_reference;
+	// typedef typename vector::rscaled_view<Coll,RScaling>::size_type         size_type;
     };
 #endif
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map Collection<vector::conj_view<Coll> >
+    {
+	typedef typename vector::conj_view<Coll>::value_type        value_type;
+	typedef typename vector::conj_view<Coll>::const_reference   const_reference;
+	typedef typename vector::conj_view<Coll>::size_type         size_type;
+    };
+#else
+    template <typename Coll>
+    struct Collection<vector::conj_view<Coll> >
+    {
+	typedef typename vector::conj_view<Coll>::value_type        value_type;
+	typedef typename vector::conj_view<Coll>::const_reference   const_reference;
+	typedef typename vector::conj_view<Coll>::size_type         size_type;
+    };
+#endif
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map Collection<vector::negate_view<Coll> >
+    {
+	typedef typename vector::negate_view<Coll>::value_type        value_type;
+	typedef typename vector::negate_view<Coll>::const_reference   const_reference;
+	typedef typename vector::negate_view<Coll>::size_type         size_type;
+    };
+#else
+    template <typename Coll>
+    struct Collection<vector::negate_view<Coll> >
+    {
+	typedef typename vector::negate_view<Coll>::value_type        value_type;
+	typedef typename vector::negate_view<Coll>::const_reference   const_reference;
+	typedef typename vector::negate_view<Coll>::size_type         size_type;
+    };
+#endif
+
+#ifdef __GXX_CONCEPTS__
+#else
+    template <class E1, class E2, typename SFunctor>
+    struct Collection< vector::vec_scal_aop_expr<E1, E2, SFunctor> >
+    {
+	typedef typename Collection<E1>::value_type                   value_type;
+	typedef value_type                                            const_reference;
+	typedef typename Collection<E1>::size_type                    size_type; 
+    };
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+#else
+    template <class E1, class E2>
+    struct Collection<vector::vec_scal_asgn_expr<E1, E2> >
+      : Collection< vector::vec_scal_aop_expr<E1, E2, mtl::sfunctor::assign<typename Collection<E1>::value_type, E2> > >
+    {};
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+#else
+    template <unsigned BSize, typename Vector>
+    struct Collection<vector::unrolled1<BSize, Vector> >
+    {
+	typedef typename Collection<Vector>::value_type value_type;
+	typedef value_type                              const_reference;
+	typedef typename Collection<Vector>::size_type  size_type;
+    };
+#endif
+
+
 
 
 #ifdef __GXX_CONCEPTS__
@@ -554,60 +645,6 @@ namespace mtl {
 #endif
 
 
-#ifdef __GXX_CONCEPTS__
-    template <typename Coll>
-    concept_map Collection<vector::conj_view<Coll> >
-    {
-	typedef typename vector::conj_view<Coll>::value_type        value_type;
-	typedef typename vector::conj_view<Coll>::const_reference   const_reference;
-	typedef typename vector::conj_view<Coll>::size_type         size_type;
-    };
-#else
-    template <typename Coll>
-    struct Collection<vector::conj_view<Coll> >
-    {
-	typedef typename vector::conj_view<Coll>::value_type        value_type;
-	typedef typename vector::conj_view<Coll>::const_reference   const_reference;
-	typedef typename vector::conj_view<Coll>::size_type         size_type;
-    };
-#endif
-
-#ifdef __GXX_CONCEPTS__
-    template <typename Coll>
-    concept_map Collection<vector::negate_view<Coll> >
-    {
-	typedef typename vector::negate_view<Coll>::value_type        value_type;
-	typedef typename vector::negate_view<Coll>::const_reference   const_reference;
-	typedef typename vector::negate_view<Coll>::size_type         size_type;
-    };
-#else
-    template <typename Coll>
-    struct Collection<vector::negate_view<Coll> >
-    {
-	typedef typename vector::negate_view<Coll>::value_type        value_type;
-	typedef typename vector::negate_view<Coll>::const_reference   const_reference;
-	typedef typename vector::negate_view<Coll>::size_type         size_type;
-    };
-#endif
-
-
-#ifdef __GXX_CONCEPTS__
-    template <typename Functor, typename Coll>
-    concept_map Collection< vector::map_view<Functor, Coll> >
-    {
-	typedef typename vector::map_view<Functor, Coll>::value_type        value_type;
-	typedef typename vector::map_view<Functor, Coll>::const_reference   const_reference;
-	typedef typename vector::map_view<Functor, Coll>::size_type         size_type;
-    };
-#else
-    template <typename Functor, typename Coll>
-    struct Collection< vector::map_view<Functor, Coll> >
-    {
-	typedef typename vector::map_view<Functor, Coll>::value_type        value_type;
-	typedef typename vector::map_view<Functor, Coll>::const_reference   const_reference;
-	typedef typename vector::map_view<Functor, Coll>::size_type         size_type;
-    };
-#endif
 
 
 #ifdef __GXX_CONCEPTS__
@@ -726,6 +763,40 @@ namespace mtl {
 	typedef typename Multiplicable<typename Collection<E1>::value_type,
 				       typename Collection<E2>::value_type>::result_type value_type;
 	typedef const value_type&     const_reference;
+	typedef typename Collection<E1>::size_type  size_type;
+    };
+#endif
+
+#ifdef __GXX_CONCEPTS__
+#else
+    template <class E1, class E2, typename SFunctor> 
+    struct Collection<mtl::vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
+    {
+	typedef typename Addable<typename Collection<E1>::value_type,
+				 typename Collection<E2>::value_type>::result_type value_type;
+	typedef const value_type&     const_reference;
+	typedef typename Collection<E1>::size_type  size_type;
+    };
+#endif
+
+#ifdef __GXX_CONCEPTS__
+#else
+    template <class E1, class E2, typename SFunctor> 
+    struct Collection<mtl::vector::vec_vec_op_expr<E1, E2, SFunctor> >
+    {
+	typedef typename SFunctor::result_type value_type;
+	typedef const value_type&     const_reference;
+	typedef typename Collection<E1>::size_type  size_type;
+    };
+#endif
+
+#ifdef __GXX_CONCEPTS__
+#else
+    template <class E1, class E2, typename SFunctor> 
+    struct Collection<mtl::vector::vec_vec_aop_expr<E1, E2, SFunctor> >
+    {
+	typedef typename Collection<E1>::value_type value_type;
+	typedef const value_type&                   const_reference;
 	typedef typename Collection<E1>::size_type  size_type;
     };
 #endif

@@ -60,7 +60,9 @@ struct vec_scal_aop_expr
 	delayed_assign= true; 
     }
 
-    friend size_type inline size(const self& v) { return size(v.first); }
+    //friend size_type inline size(const self& v) { return size(v.first); }
+    template <typename EE1, typename EE2, typename SSFunctor>
+    friend std::size_t size(const vec_scal_aop_expr<EE1, EE2, SSFunctor>& v);
 
 #if 0
     size_type size() const 
@@ -101,6 +103,15 @@ struct vec_scal_aop_expr
     mutable bool                        delayed_assign, with_comma;
     size_type                    index;
 } ; // vec_scal_aop_expr
+
+
+template <typename E1, typename E2, typename SFunctor>
+inline std::size_t size(const vec_scal_aop_expr<E1, E2, SFunctor>& v)
+{
+    return size(v.first);
+}
+
+
 
 } } // Namespace mtl::vector
 

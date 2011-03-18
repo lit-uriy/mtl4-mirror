@@ -18,6 +18,7 @@
 #define MTL_VEC_VEC_AOP_EXPR_INCLUDE
 
 #include <boost/mpl/bool.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/static_size.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
@@ -65,9 +66,9 @@ struct vec_vec_aop_expr
 {
     typedef vec_expr< vec_vec_aop_expr<E1, E2, SFunctor> >  expr_base;
     typedef vec_vec_aop_expr<E1, E2, SFunctor>   self;
-    typedef typename E1::value_type              value_type;
+    typedef typename Collection<E1>::value_type  value_type;
     
-    typedef typename E1::size_type               size_type;
+    typedef typename Collection<E1>::size_type   size_type;
     typedef value_type reference_type ;
 
     typedef E1 first_argument_type ;
@@ -102,6 +103,8 @@ struct vec_vec_aop_expr
     void assign(boost::mpl::false_)
     {
 	// If target is constructed by default it takes size of source
+	//int a= size(second);
+	//int b= second;
 	if (size(first) == 0) first.change_dim(size(second));
 	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size()); // otherwise error
 
@@ -127,11 +130,16 @@ struct vec_vec_aop_expr
     
     void delay_assign() const { delayed_assign= true; }
 
+    template <typename EE1, typename EE2, typename SSFunctor>
+    friend std::size_t size(const vec_vec_aop_expr<EE1, EE2, SSFunctor>& v);
+
+#if 0
     friend size_type inline size(const self& x)
     {
 	assert( size(x.first) == 0 || size(x.first) == size(x.second) );
 	return size(x.second);
     }
+#endif
 
     value_type& operator() ( size_type i ) const { 
 	assert( delayed_assign );
@@ -146,8 +154,14 @@ struct vec_vec_aop_expr
      mutable bool                        delayed_assign;
   } ; // vec_vec_aop_expr
 
-} } // Namespace mtl::vector
+template <typename E1, typename E2, typename SFunctor>
+inline std::size_t size(const vec_vec_aop_expr<E1, E2, SFunctor>& v)
+{
+    MTL_DEBUG_THROW_IF( size(v.first) != 0 && size(v.first) != size(v.second), incompatible_size());
+    return size(v.second);
+}
 
+} } // Namespace mtl::vector
 
 
 

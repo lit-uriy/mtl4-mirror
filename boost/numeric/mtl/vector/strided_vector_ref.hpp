@@ -96,7 +96,11 @@ class strided_vector_ref
 
     // Default copy constructor refers to same vector which is okay
 
-    friend size_type inline size(const self& v) { return v.my_size; }
+    //  friend size_type inline size(const self& v) { return v.my_size; } // impedes explicit namespace qualification
+
+    template <typename V2, typename P2>
+    friend std::size_t size(const strided_vector_ref<V2, P2>& v);
+
     size_type stride() const { return my_stride ; }
 
     reference operator()( size_type i ) { check_index(i); return data[i * my_stride]; }
@@ -162,6 +166,12 @@ class strided_vector_ref
     size_type   my_size, my_stride;
 } ; // strided_vector_ref
 
+
+template <typename Value, typename Parameters>
+inline std::size_t size(const strided_vector_ref<Value, Parameters>& v)
+{
+    return v.my_size;
+}
 
 
 template <typename Value, typename Parameters>

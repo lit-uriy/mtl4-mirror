@@ -168,6 +168,21 @@ namespace mtl {
 	typename dense_vector<Value, Parameters>::size_type
 	inline num_cols(const dense_vector<Value, Parameters>& vector);
 
+	template <typename Value, typename Parameters>
+	std::size_t size(const strided_vector_ref<Value, Parameters>& v);
+
+	template <typename Functor, typename Vector> 
+	std::size_t size(const map_view<Functor, Vector>& v);
+
+	template <typename E1, typename E2, typename SFunctor>
+	std::size_t size(const vec_vec_aop_expr<E1, E2, SFunctor>& v);
+
+	template <typename E1, typename E2, typename SFunctor>
+	std::size_t size(const vec_vec_pmop_expr<E1, E2, SFunctor>& v);
+
+	template <typename E1, typename E2, typename SFunctor>
+	inline std::size_t size(const vec_scal_aop_expr<E1, E2, SFunctor>& v);
+
 	/// Namespace for fixed vector dimension types
 	namespace fixed {
 	    template <std::size_t Size> struct dimension;

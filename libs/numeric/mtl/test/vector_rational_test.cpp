@@ -14,7 +14,7 @@
 
 #include <boost/numeric/mtl/mtl.hpp>
 # include "boost/rational.hpp"
-// # include "boost/range.hpp"
+# include "boost/range.hpp"
 
 
 #if 0  // this kind of wrapping doesn't save me either from ADL ambiguities
@@ -46,7 +46,7 @@ struct st_test
     {
         vecQ = vecQ_new;
         std::cout << "vecQ: " << vecQ << "\n";       // uses size -> ambiguity with size in boost/range
-        std::cout << size(vecQ_new) << "\n";       
+        std::cout << mtl::vector::size(vecQ_new) << "\n";       
     }
 };
 
@@ -76,6 +76,8 @@ int main(int , char**)
 
     assign_test(vecQ1);
     st_test test(vecQ1);
+
+    std::cout << "size(vecQ1): " << mtl::vector::size(vecQ1) << "\n";
 
     return 0;
 }
