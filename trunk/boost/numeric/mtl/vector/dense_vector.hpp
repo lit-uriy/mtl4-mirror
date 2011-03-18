@@ -134,8 +134,8 @@ class dense_vector
 			  typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
     {	*this= src;    }
 
-    /// Size of v (like a free function)
-    friend inline size_type size(const self& v)  { return v.used_memory() ; }
+    // Size of v (like a free function)
+    // friend size_type size(const self& v); //  { return v.used_memory() ; }
     
     /// Stride is always 1 
     size_type stride() const { return 1 ; }
@@ -219,6 +219,13 @@ class dense_vector
 } ; // dense_vector
 
 
+/// Size of v
+template <typename Value, typename Parameters>
+inline typename dense_vector<Value, Parameters>::size_type 
+size(const dense_vector<Value, Parameters>& v)  
+{ return v.used_memory() ; }
+
+
 // ================
 // Free functions
 // ================
@@ -271,7 +278,7 @@ inline sub_vector(dense_vector<Value, Parameters>& v,
     typedef dense_vector<Value, Parameters>    Vector;
 
     MTL_DEBUG_THROW_IF( is_negative(start) || is_negative(finish), index_out_of_range());
-    irange r= intersection(irange(start, finish), irange(0, size(v)));
+    irange r= intersection(irange(start, finish), irange(0, mtl::vector::size(v)));
     return r.empty() ? Vector() : Vector(r.size(), &v[r.start()]);
 
 #if 0

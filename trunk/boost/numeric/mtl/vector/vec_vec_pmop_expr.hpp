@@ -13,8 +13,10 @@
 #ifndef MTL_VECTOR_VEC_VEC_PMOP_EXPR_INCLUDE
 #define MTL_VECTOR_VEC_VEC_PMOP_EXPR_INCLUDE
 
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/compute_summand.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { namespace vector {
 
@@ -31,7 +33,7 @@ struct vec_vec_pmop_expr
     typedef typename SFunctor::result_type                        const_dereference_type;
 
     typedef const_dereference_type                                value_type;
-    typedef typename first_argument_type::size_type               size_type;
+    typedef typename Collection<first_argument_type>::size_type   size_type;
 
     vec_vec_pmop_expr( E1 const& v1, E2 const& v2 ) 
       : first(v1), second(v2)
@@ -41,20 +43,16 @@ struct vec_vec_pmop_expr
 
     void delay_assign() const {}
 
+#if 0
     friend size_type inline size(const self& x)
     {
 	assert( size(x.first.value) == 0 || size(x.first.value) == size(x.second.value) );
 	return size(x.first.value);
     }
-
-#if 0
-    size_type size() const
-    {
-	// std::cerr << "vec_vec_pmop_expr.size() " << first.value.size() << "  " << second.value.size() << "\n";
-	assert( first.value.size() == second.value.size() ) ;
-	return first.value.size() ;
-    }
 #endif
+
+    template <typename EE1, typename EE2, typename SSFunctor>
+    friend std::size_t size(const vec_vec_pmop_expr<EE1, EE2, SSFunctor>&);
 
     const_dereference_type operator() (size_type i) const
     {
@@ -70,6 +68,14 @@ struct vec_vec_pmop_expr
     operation::compute_summand<E1> first;
     operation::compute_summand<E2> second;
 };
+
+template <typename E1, typename E2, typename SFunctor>
+inline std::size_t size(const vec_vec_pmop_expr<E1, E2, SFunctor>& v)
+{
+    MTL_DEBUG_THROW_IF(size(v.first.value) != 0 && size(v.first.value) != size(v.second.value), incompatible_size());
+    return size(v.first.value);
+}
+
 
 
 }} // namespace mtl::vector

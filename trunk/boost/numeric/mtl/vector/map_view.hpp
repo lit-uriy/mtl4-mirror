@@ -14,6 +14,7 @@
 #define MTL_VECTOR_MAP_VIEW_INCLUDE
 
 #include <boost/shared_ptr.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
@@ -41,7 +42,7 @@ struct map_view
 
     typedef typename Functor::result_type              value_type;
     typedef typename Functor::result_type              const_reference;
-    typedef typename Vector::size_type                 size_type;
+    typedef typename Collection<Vector>::size_type     size_type;
 
     map_view (const Functor& functor, const other& ref) 
       : expr_base(*this), functor(functor), ref(ref) 
@@ -56,7 +57,7 @@ struct map_view
     }
 
     // size_type size() const { return ref.size(); }
-    friend size_type inline size(const self& v) { return size(v.ref); }
+    // friend size_type inline size(const self& v) { return size(v.ref); }
     friend size_type inline num_rows(const self& v) { return num_rows(v.ref); }
     friend size_type inline num_cols(const self& v) { return num_cols(v.ref); }
 
@@ -74,6 +75,11 @@ struct map_view
     // ref is a const& if Vector is a true vector and a copy if it is an expression
     typename mtl::traits::copy_expression_const_ref_container<Vector>::type ref;
 };
+
+
+template <typename Functor, typename Vector> 
+inline std::size_t size(const map_view<Functor, Vector>& v)
+{     return size(v.ref); }
 
 // ================
 // Free functions
