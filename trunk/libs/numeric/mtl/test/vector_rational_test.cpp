@@ -16,7 +16,6 @@
 # include "boost/rational.hpp"
 # include "boost/range.hpp"
 
-
 #if 0  // this kind of wrapping doesn't save me either from ADL ambiguities
 template <typename T>
 class wrapper
