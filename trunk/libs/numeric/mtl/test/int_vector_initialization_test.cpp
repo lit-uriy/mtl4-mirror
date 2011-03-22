@@ -19,12 +19,7 @@ using namespace std;
 
 int test_main(int, char**)
 {
-# ifdef _MSC_VER
-	typedef unsigned it; // MSVC dox about uint types pretty confusing
-# else
-	typedef uint     it;
-# endif
-
+    typedef unsigned it;
     mtl::dense_vector<it> vec(5, 0u);
     return 0;
 }

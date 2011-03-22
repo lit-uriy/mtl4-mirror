@@ -26,7 +26,7 @@ configure_file(boost/numeric/mtl/version.hpp.in boost/numeric/mtl/version.hpp @O
 
 ################ LINUX
 #Find Boost  on Linux
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   message(STATUS "You use : "${CMAKE_SYSTEM_NAME})   #system name
   
   #Path of Boost
@@ -49,7 +49,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     endif(NOT IS_DIRECTORY /usr/include/boost)
   endif(NOT Boost_FOUND)
 
-endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+endif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
 ################ END LINUX
 
@@ -139,7 +139,10 @@ add_macro_flags("MTL_ASSERT_FOR_THROW")
 
 option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  add_definitions("-Werror -pedantic -Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
+  add_definitions("-pedantic -Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
+  if (CMAKE_SYSTEM_NAME STREQUAL "Linux") # skip Werror on Darwin for the moment
+    add_definitions("-Werror")
+  endif() 
   if(ENABLE_GCOV)
 	add_definitions("-fprofile-arcs -ftest-coverage")
   endif(ENABLE_GCOV)
