@@ -256,11 +256,8 @@ namespace mtl {
 	}
     }
 
-    /// Namespace for concepts
-    namespace concept {
-	template <typename Matrix> struct ColumnInMatrix;
-	template <typename Matrix> struct RowInMatrix;
-    }
+    template <typename Matrix> struct ColumnInMatrix;
+    template <typename Matrix> struct RowInMatrix;
 
     template <class Tag, class Collection> typename traits::range_generator<Tag, Collection>::type 
     begin(Collection const& c);
