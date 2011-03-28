@@ -60,7 +60,6 @@ public:
 	assert( first.size() == second.size() ) ;
 	return first.size() ;
     }
-#endif
 
     friend size_type size(const self& v) 
     {
@@ -68,6 +67,10 @@ public:
 	assert( size(v.first) == size(v.second) ) ;
 	return size(v.first) ;
     }
+#endif
+
+    template <typename EE1, typename EE2, typename SSFunctor>
+    friend std::size_t size(const vec_vec_op_expr<EE1, EE2, SSFunctor>& v);
 
     const_dereference_type operator() ( size_type i ) const
     {
@@ -83,6 +86,15 @@ public:
     first_argument_type const&  first ;
     second_argument_type const& second ;
 } ; // vec_vec_op_expr
+
+
+template <typename E1, typename E2, typename SFunctor>
+inline std::size_t size(const vec_vec_op_expr<E1, E2, SFunctor>& v)
+{
+    // std::cerr << "vec_vec_op_expr.size() " << first.size() << "  " << second.size() << "\n";
+    assert( size(v.first) == size(v.second) ) ;
+    return size(v.first) ;
+}
 
     
     

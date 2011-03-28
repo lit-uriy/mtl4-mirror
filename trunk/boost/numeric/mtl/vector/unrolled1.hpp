@@ -36,7 +36,9 @@ class unrolled1
     reference operator[](size_type i) { return (*this)(i); }
     // const versions shouldn't be needed because it is supposed to be a lvalue
 
-    friend inline size_type size(const self& v)  { return size(v.ref); }
+    template <unsigned BBSize, typename VVector>
+    friend std::size_t size(const unrolled1<BBSize, VVector>& v);
+    //friend inline size_type size(const self& v)  { return size(v.ref); }
     friend inline size_type num_rows(const self& v)  { return num_rows(v.ref); }
     friend inline size_type num_cols(const self& v)  { return num_cols(v.ref); }
 
@@ -48,6 +50,9 @@ class unrolled1
     Vector&    ref;
 };
 
+template <unsigned BSize, typename Vector>
+inline std::size_t size(const unrolled1<BSize, Vector>& v)
+{ return size(v.ref); }
 
 }} // namespace mtl::vector
 

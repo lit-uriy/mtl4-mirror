@@ -83,14 +83,14 @@ struct vec_vec_aop_expr
   private:
     void dynamic_assign(boost::mpl::false_) // Without unrolling
     {
-	for (size_type i= 0; i < size(first); ++i)
+	for (size_type i= 0; i < mtl::vector::size(first); ++i)
 	    SFunctor::apply( first(i), second(i) );
     }
 
     void dynamic_assign(boost::mpl::true_) // With unrolling
     {
 	const size_type BSize= traits::unroll_size1<E1>::value0;
-	size_type s= size(first), sb= s / BSize * BSize;
+	size_type s= mtl::vector::size(first), sb= s / BSize * BSize;
 
 	for (size_type i= 0; i < sb; i+= BSize)
 	    impl::assign<0, BSize-1, SFunctor>::apply(first, second, i);
@@ -105,8 +105,8 @@ struct vec_vec_aop_expr
 	// If target is constructed by default it takes size of source
 	//int a= size(second);
 	//int b= second;
-	if (size(first) == 0) first.change_dim(size(second));
-	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size()); // otherwise error
+	if (mtl::vector::size(first) == 0) first.change_dim(mtl::vector::size(second));
+	MTL_DEBUG_THROW_IF(mtl::vector::size(first) != mtl::vector::size(second), incompatible_size()); // otherwise error
 
 	// need to do more benchmarking before making unrolling default
 	dynamic_assign(traits::with_unroll1<E1>());
@@ -114,10 +114,10 @@ struct vec_vec_aop_expr
 
     void assign(boost::mpl::true_)
     {
-	MTL_DEBUG_THROW_IF(size(first) != size(second), incompatible_size()); // We cannot resize, only check
+	MTL_DEBUG_THROW_IF(mtl::vector::size(first) != mtl::vector::size(second), incompatible_size()); // We cannot resize, only check
 	
 	// impl::assign<0, static_size<E1>::value-1, SFunctor>::apply(first, second); // Slower, at least on gcc
-	for (size_type i= 0; i < size(first); ++i) // Do an ordinary loop instead
+	for (size_type i= 0; i < mtl::vector::size(first); ++i) // Do an ordinary loop instead
 	    SFunctor::apply( first(i), second(i) );
     }
 
