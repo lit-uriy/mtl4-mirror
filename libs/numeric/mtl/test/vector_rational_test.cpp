@@ -58,6 +58,25 @@ void assign_test( const t_dVecQ& vecQ )
     std::cout << "vecQ_temp: " << vecQ_temp << "\n";
 }
 
+void test2()
+{
+   t_dVecQ vQ0(2,3);
+    t_dVecQ vQ1(2,2);
+    t_dVecQ vQ2(2,1);
+    std::cout << "vQ0: " << vQ0 << "\n";
+    std::cout << "vQ1: " << vQ1 << "\n";
+    std::cout << "size(vQ1): " << mtl::size(vQ1) << "\n";
+    vQ0 = vQ1 + vQ2;
+    vQ0 = vQ1 - vQ2;
+    vQ0 += vQ1;
+    vQ0 -= vQ1;
+    std::cout << "vQ0: " << vQ0 << "\n";
+    t_dVecQ vQ3( vQ0 - vQ1 );
+    std::cout << "vQ2: " << vQ2 << "\n";
+    std::cout << "size(vQ2): " << mtl::size(vQ2) << "\n";
+}
+
+
 int main(int , char**)
 {
     t_Q Q0(1,3);
@@ -76,7 +95,9 @@ int main(int , char**)
     assign_test(vecQ1);
     st_test test(vecQ1);
 
-    std::cout << "size(vecQ1): " << mtl::vector::size(vecQ1) << "\n";
+    // std::cout << "size(vecQ1): " << mtl::vector::size(vecQ1) << "\n";
+
+    test2();
 
     return 0;
 }

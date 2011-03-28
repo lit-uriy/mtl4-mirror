@@ -72,8 +72,9 @@ struct vec_vec_pmop_expr
 template <typename E1, typename E2, typename SFunctor>
 inline std::size_t size(const vec_vec_pmop_expr<E1, E2, SFunctor>& v)
 {
-    MTL_DEBUG_THROW_IF(size(v.first.value) != 0 && size(v.first.value) != size(v.second.value), incompatible_size());
-    return size(v.first.value);
+    MTL_DEBUG_THROW_IF(mtl::vector::size(v.first.value) != 0 
+		       && mtl::vector::size(v.first.value) != mtl::vector::size(v.second.value), incompatible_size());
+    return mtl::vector::size(v.first.value);
 }
 
 

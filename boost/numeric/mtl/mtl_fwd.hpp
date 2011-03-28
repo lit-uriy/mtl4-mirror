@@ -183,6 +183,9 @@ namespace mtl {
 	template <typename E1, typename E2, typename SFunctor>
 	inline std::size_t size(const vec_scal_aop_expr<E1, E2, SFunctor>& v);
 
+	template <unsigned BSize, typename Vector>
+	inline std::size_t size(const unrolled1<BSize, Vector>& v);
+
 	/// Namespace for fixed vector dimension types
 	namespace fixed {
 	    template <std::size_t Size> struct dimension;
