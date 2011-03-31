@@ -267,7 +267,7 @@ struct crtp_vector_assign
 
     template <typename Src>
     void checked_change_resource_aux(const Src& src, tag::universe) 
-    {   checked_change_dim(size(src));  }
+    {   checked_change_dim(mtl::vector::size(src));  }
 
 
     /// Check whether vector size is compatible or if vector is 0 change it s.

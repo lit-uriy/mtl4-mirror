@@ -124,6 +124,7 @@ namespace mtl {
     using matrix::multi_vector;
     using matrix::transposed_view;
     
+    template <typename E1, typename E2> struct mat_cvec_times_expr;
 
     /// Namespace for vectors and views and %operations exclusively on vectors
     namespace vector {
@@ -186,6 +187,12 @@ namespace mtl {
 	template <unsigned BSize, typename Vector>
 	inline std::size_t size(const unrolled1<BSize, Vector>& v);
 
+	template <typename E1, typename E2>
+	std::size_t inline size(const rvec_mat_times_expr<E1, E2>& x);
+
+	template <typename E1, typename E2>
+	std::size_t inline size(const mat_cvec_times_expr<E1, E2>& x);
+
 	/// Namespace for fixed vector dimension types
 	namespace fixed {
 	    template <std::size_t Size> struct dimension;
@@ -220,7 +227,6 @@ namespace mtl {
 
 
 
-    template <typename E1, typename E2> struct mat_cvec_times_expr;
 
 
     /// Namespace for type %traits

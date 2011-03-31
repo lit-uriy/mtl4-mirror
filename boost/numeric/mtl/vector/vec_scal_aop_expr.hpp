@@ -47,9 +47,9 @@ struct vec_scal_aop_expr
     {
 	if (!delayed_assign) {
 	    if (with_comma) {
-		MTL_DEBUG_THROW_IF(index != size(first), incompatible_size("Not all vector entries initialized!"));
+		MTL_DEBUG_THROW_IF(index != mtl::vector::size(first), incompatible_size("Not all vector entries initialized!"));
 	    } else
-		for (size_type i= 0; i < size(first); ++i)
+		for (size_type i= 0; i < mtl::vector::size(first); ++i)
 		    SFunctor::apply( first(i), second );
 	}
     }

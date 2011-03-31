@@ -92,7 +92,7 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
     // Naive implementation, will be moved to a functor and complemented with more efficient ones
 
     using math::zero; using mtl::vector::set_to_zero;
-    if (size(w) == 0) return;
+    if (mtl::vector::size(w) == 0) return;
 
     if (Assign::init_to_zero) set_to_zero(w);
 
