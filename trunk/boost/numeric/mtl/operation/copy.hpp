@@ -87,12 +87,12 @@ namespace mtl {
 	
 	//std::cout << "Slot size is " << detail::copy_inserter_size<Updater>::apply(src, dest) << "\n";
 	matrix::inserter<MatrixDest, Updater>   ins(dest, detail::copy_inserter_size<Updater>::apply(src, dest));
-	for (cursor_type cursor = begin<tag::major>(src), cend = end<tag::major>(src); 
+	for (cursor_type cursor = mtl::begin<tag::major>(src), cend = mtl::end<tag::major>(src); 
 	     cursor != cend; ++cursor) {
 	    // std::cout << dest << '\n';
 	    
 	    typedef typename traits::range_generator<tag::nz, cursor_type>::type icursor_type;
-	    for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); 
+	    for (icursor_type icursor = mtl::begin<tag::nz>(cursor), icend = mtl::end<tag::nz>(cursor); 
 		 icursor != icend; ++icursor) {
 		//std::cout << "in " << row(*icursor) << ", " << col(*icursor) << " insert " << value(*icursor) << '\n';
 		ins(row(*icursor), col(*icursor)) << value(*icursor); }

@@ -189,15 +189,15 @@ private:
 
 	if (Assign::init_to_zero) set_to_zero(C);
 
-	a_cur_type ac= begin<row>(A), aend= end<row>(A);
-	for (c_cur_type cc= begin<row>(C); ac != aend; ++ac, ++cc) {
+	a_cur_type ac= mtl::begin<row>(A), aend= mtl::end<row>(A);
+	for (c_cur_type cc= mtl::begin<row>(C); ac != aend; ++ac, ++cc) {
 
-	    b_cur_type bc= begin<col>(B), bend= end<col>(B);
-	    for (c_icur_type cic= begin<iter::all>(cc); bc != bend; ++bc, ++cic) { 
+	    b_cur_type bc= mtl::begin<col>(B), bend= mtl::end<col>(B);
+	    for (c_icur_type cic= mtl::begin<iter::all>(cc); bc != bend; ++bc, ++cic) { 
 		    
 		typename MatrixC::value_type c_tmp(*cic);
-		a_icur_type aic= begin<const_iter::all>(ac), aiend= end<const_iter::all>(ac); 
-		for (b_icur_type bic= begin<const_iter::all>(bc); aic != aiend; ++aic, ++bic) {
+		a_icur_type aic= mtl::begin<const_iter::all>(ac), aiend= mtl::end<const_iter::all>(ac); 
+		for (b_icur_type bic= mtl::begin<const_iter::all>(bc); aic != aiend; ++aic, ++bic) {
 		    Assign::update(c_tmp, *aic * *bic);
 		}
 		*cic= c_tmp;
@@ -912,7 +912,7 @@ struct size_switch_dmat_dmat_mult_t
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, boost::mpl::false_)
     {
-	if (size(A) <= SizeLimit || size(B) <= SizeLimit || size(C) <= SizeLimit)
+	if (mtl::matrix::size(A) <= SizeLimit || mtl::matrix::size(B) <= SizeLimit || mtl::matrix::size(C) <= SizeLimit)
 	    FunctorSmall()(A, B, C);
 	else
 	    FunctorLarge()(A, B, C);

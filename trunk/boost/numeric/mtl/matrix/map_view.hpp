@@ -82,12 +82,13 @@ struct map_view
     { 
 	using mtl::matrix::num_cols; return num_cols(A.ref); 
     }
+#if 0
     friend size_type inline size(const self& A) 
     { 
 	using mtl::matrix::num_rows; using mtl::matrix::num_cols;
 	return num_rows(A.ref) * num_rows(A.ref); 
     }
-
+#endif
     template <typename, typename> friend struct detail::map_value;
 
   protected:
@@ -97,6 +98,9 @@ struct map_view
     const other&      ref;
 };
    
+template <typename Functor, typename Matrix> 
+inline std::size_t size(const map_view<Functor, Matrix>& A)
+{     return num_rows(A) * num_rows(A); }
 
 // ==========
 // Sub matrix
