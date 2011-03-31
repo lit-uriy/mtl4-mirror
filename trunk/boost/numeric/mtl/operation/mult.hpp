@@ -279,8 +279,8 @@ inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, t
     }
 #endif
     // w.checked_change_dim(num_rows(A)); // destroys distribution in parallel -> dimension changed in assignment
-    MTL_DEBUG_THROW_IF(num_rows(A) != size(w), incompatible_size());
-    MTL_DEBUG_THROW_IF(num_cols(A) != size(v), incompatible_size());
+    MTL_DEBUG_THROW_IF(num_rows(A) != mtl::vector::size(w), incompatible_size());
+    MTL_DEBUG_THROW_IF(num_cols(A) != mtl::vector::size(v), incompatible_size());
 
     mat_cvec_mult(A, v, w, Assign(), typename mtl::traits::category<Matrix>::type()); 
 }

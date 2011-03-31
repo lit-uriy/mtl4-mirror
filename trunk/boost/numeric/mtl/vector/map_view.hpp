@@ -79,7 +79,7 @@ struct map_view
 
 template <typename Functor, typename Vector> 
 inline std::size_t size(const map_view<Functor, Vector>& v)
-{     return size(v.ref); }
+{     return mtl::vector::size(v.ref); }
 
 // ================
 // Free functions
