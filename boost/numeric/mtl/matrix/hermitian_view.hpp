@@ -61,7 +61,7 @@ struct hermitian_view
 
     friend size_type inline num_rows(const self& A) { return num_rows((const base&)(A)); }
     friend size_type inline num_cols(const self& A) { return num_cols((const base&)(A)); }
-    friend size_type inline size(const self& A) { return size((const base&)(A)); }
+    // friend size_type inline size(const self& A) { return size((const base&)(A)); }
 
     const_ref_type const_ref() const { return base::ref.ref; }
     size_type nnz() const { return base::nnz(); }
@@ -69,8 +69,14 @@ struct hermitian_view
     friend inline std::ostream& operator<<(std::ostream& os, const self& A) { return os << (const base&)(A); }
 };
 
-// TBD submatrix of Hermitian (not trivial)
+// If not defined ambigous between map_view and transposed_view
+template <class Matrix> 
+inline std::size_t size(const hermitian_view<Matrix>& A)
+{  
+    return num_rows(A) * num_rows(A); 
+}
 
+// TBD submatrix of Hermitian (not trivial)
 
 
 }} // namespace mtl::matrix

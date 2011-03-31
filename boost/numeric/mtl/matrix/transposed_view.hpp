@@ -127,19 +127,24 @@ struct transposed_view
     { 
 	using mtl::matrix::num_rows; return num_rows(A.ref); 
     }
+#if 0
     friend size_type inline size(const self& A) 
     { 
 	using mtl::matrix::num_rows; using mtl::matrix::num_cols;
 	return num_rows(A.ref) * num_rows(A.ref); 
     }
-
+#endif
   protected:
     boost::shared_ptr<Matrix>           my_copy;
   public:
     ref_type                            ref;
 };
   
-
+template <class Matrix> 
+inline std::size_t size(const transposed_view<Matrix>& A)
+{  
+    return num_rows(A.ref) * num_rows(A.ref); 
+}
 
 // ==========
 // Sub matrix
