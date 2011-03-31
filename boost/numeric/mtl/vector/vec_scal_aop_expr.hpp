@@ -92,7 +92,7 @@ struct vec_scal_aop_expr
 	    assert(index == 0);
 	    SFunctor::apply( first(index++), second); // We haven't set v[0] yet
 	}
-	MTL_DEBUG_THROW_IF(index >= size(first), range_error());
+	MTL_DEBUG_THROW_IF(index >= mtl::vector::size(first), range_error());
 	SFunctor::apply( first(index++), val);
 	return *this;
     }

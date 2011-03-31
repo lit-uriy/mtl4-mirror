@@ -112,7 +112,7 @@ struct reduction
 	impl::reduction<1, Unroll, Functor>::init(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07);
 
 	typedef typename Collection<Vector>::size_type              size_type;
-	size_type  i_max= size(v), i_block= Unroll * (i_max / Unroll);
+	size_type  i_max= mtl::vector::size(v), i_block= Unroll * (i_max / Unroll);
 
 	for (size_type i= 0; i < i_block; i+= Unroll)
 	    impl::reduction<1, Unroll, Functor>::update(tmp00, tmp01, tmp02, tmp03, 
