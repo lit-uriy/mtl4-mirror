@@ -33,7 +33,6 @@ struct mat_cvec_times_expr
     typedef typename Collection<E2>::size_type    size_type;
   
     mat_cvec_times_expr( E1 const& matrix, E2 const& vector ) : base(matrix, vector)  {}
-    // friend size_type inline size(const self& x) { return num_rows(x.first); }
 };
 
     namespace vector {

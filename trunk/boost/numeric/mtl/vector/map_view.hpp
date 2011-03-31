@@ -56,8 +56,6 @@ struct map_view
 	ref.delay_assign();
     }
 
-    // size_type size() const { return ref.size(); }
-    // friend size_type inline size(const self& v) { return size(v.ref); }
     friend size_type inline num_rows(const self& v) { return num_rows(v.ref); }
     friend size_type inline num_cols(const self& v) { return num_cols(v.ref); }
 

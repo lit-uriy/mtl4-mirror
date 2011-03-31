@@ -71,69 +71,27 @@ struct transposed_view
     transposed_view (boost::shared_ptr<Matrix> p) : /* expr_base(*this), */ my_copy(p), ref(*p) {}
     
     const_reference operator() (size_type r, size_type c) const
-    { 
-        return ref(c, r); 
-    }
+    {         return ref(c, r);     }
 
     access_type operator() (size_type r, size_type c)
-    { 
-        return ref(c, r); 
-    }
+    {         return ref(c, r);     }
 
-    size_type dim1() const 
-    { 
-        return ref.dim2(); 
-    }
-    size_type dim2() const 
-    { 
-        return ref.dim1(); 
-    }
+    size_type dim1() const  {  return ref.dim2(); }
+    size_type dim2() const  {  return ref.dim1(); }
     
     dim_type dimensions() const 
-    {
-        return ref.dimensions().transpose(); 
-    }
+    {        return ref.dimensions().transpose();  }
 
-    size_type begin_row() const
-    {
-	return ref.begin_col();
-    }
-
-    size_type end_row() const
-    {
-	return ref.end_col();
-    }
-
-	size_type begin_col() const
-    {
-	return ref.begin_row();
-    }
-
-    size_type end_col() const
-    {
-	return ref.end_row();
-    }
-
-    size_type nnz() const
-    {
-	return ref.nnz();
-    }
+    size_type begin_row() const { return ref.begin_col(); }
+    size_type end_row() const   { return ref.end_col();   }   
+    size_type begin_col() const { return ref.begin_row(); }
+    size_type end_col() const   { return ref.end_row();   }
+    size_type nnz() const       { return ref.nnz();       }
 
     friend size_type inline num_rows(const self& A) 
-    { 
-	using mtl::matrix::num_cols; return num_cols(A.ref); 
-    }
+    { 	using mtl::matrix::num_cols; return num_cols(A.ref);     }
     friend size_type inline num_cols(const self& A) 
-    { 
-	using mtl::matrix::num_rows; return num_rows(A.ref); 
-    }
-#if 0
-    friend size_type inline size(const self& A) 
-    { 
-	using mtl::matrix::num_rows; using mtl::matrix::num_cols;
-	return num_rows(A.ref) * num_rows(A.ref); 
-    }
-#endif
+    { 	using mtl::matrix::num_rows; return num_rows(A.ref);     }
   protected:
     boost::shared_ptr<Matrix>           my_copy;
   public:

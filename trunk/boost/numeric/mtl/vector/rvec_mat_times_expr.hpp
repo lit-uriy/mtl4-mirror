@@ -31,7 +31,6 @@ struct rvec_mat_times_expr
     typedef typename Collection<E2>::size_type    size_type;
   
     rvec_mat_times_expr( E1 const& v, E2 const& A ) : base(v, A) {}
-    // friend size_type inline size(const self& x) { return num_cols(x.first); }
 };
 
 template <typename E1, typename E2>
