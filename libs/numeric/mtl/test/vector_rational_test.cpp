@@ -16,23 +16,9 @@
 # include "boost/rational.hpp"
 # include "boost/range.hpp"
 
-#if 0  // this kind of wrapping doesn't save me either from ADL ambiguities
-template <typename T>
-class wrapper
-{
-  public:
-    template <typename T1, typename T2>
-    wrapper(const T1& x1, const T2& x2) : data(x1, x2) {}
 
-    private:
-    T data;
-};
-
-typedef wrapper<boost::rational<long> > t_Q;
-#endif
 
 typedef boost::rational<long>           t_Q;
-
 typedef mtl::dense_vector<t_Q>          t_dVecQ;
 
 //! Struct containing data about the refinment of a face.
