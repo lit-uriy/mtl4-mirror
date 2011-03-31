@@ -75,20 +75,9 @@ struct map_view
     size_type nnz() const { return ref.nnz(); }
 
     friend size_type inline num_rows(const self& A) 
-    { 
-	using mtl::matrix::num_rows; return num_rows(A.ref); 
-    }
+    { 	using mtl::matrix::num_rows; return num_rows(A.ref);     }
     friend size_type inline num_cols(const self& A) 
-    { 
-	using mtl::matrix::num_cols; return num_cols(A.ref); 
-    }
-#if 0
-    friend size_type inline size(const self& A) 
-    { 
-	using mtl::matrix::num_rows; using mtl::matrix::num_cols;
-	return num_rows(A.ref) * num_rows(A.ref); 
-    }
-#endif
+    { 	using mtl::matrix::num_cols; return num_cols(A.ref);     }
     template <typename, typename> friend struct detail::map_value;
 
   protected:
