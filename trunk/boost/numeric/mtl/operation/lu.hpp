@@ -39,9 +39,9 @@ void inline lu(Matrix& LU)
     MTL_THROW_IF(num_rows(LU) != num_cols(LU), matrix_not_square());
 
     for (std::size_t k= 0; k < num_rows(LU)-1; k++) {
-	irange r(k+1, imax), kr(k, k+1); // Intervals [k+1, n-1], [k, k]
-	LU[r][kr]/= LU[k][k];
-	LU[r][r]-= LU[r][kr] * LU[kr][r];
+	irange r(k+1, imax); // Interval [k+1, n-1]
+	LU[r][k]/= LU[k][k];
+	LU[r][r]-= LU[r][k] * LU[k][r];
     }
 }
 
@@ -68,8 +68,8 @@ void inline lu(Matrix& A, PermuationVector& P)
 	if(A[i][i] == zero(A[i][i])) throw matrix_singular(); // other gmres test doesn't work
 	// MTL_THROW_IF(A[i][i] == zero(A[i][i]), matrix_singular());
        
-	A[r][ir]/= A[i][i];              // Scale column i
-	A[r][r]-= A[r][ir] * A[ir][r]; 	 // Decrease bottom right block of matrix
+	A[r][i]/= A[i][i];              // Scale column i
+	A[r][r]-= A[r][i] * A[i][r]; 	 // Decrease bottom right block of matrix
     }
 }
 
