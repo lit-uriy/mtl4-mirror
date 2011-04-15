@@ -36,8 +36,6 @@ class unrolled1
     reference operator[](size_type i) { return (*this)(i); }
     // const versions shouldn't be needed because it is supposed to be a lvalue
 
-    template <unsigned BBSize, typename VVector>
-    friend std::size_t size(const unrolled1<BBSize, VVector>& v);
     //friend inline size_type size(const self& v)  { return size(v.ref); }
     friend inline size_type num_rows(const self& v)  { return num_rows(v.ref); }
     friend inline size_type num_cols(const self& v)  { return num_cols(v.ref); }
@@ -46,7 +44,11 @@ class unrolled1
 
     using assign_base::operator=;
 
+#if !defined(_MSC_VER) || _MSC_VER != 1400 // Bug in MSVC 2005
+    template <unsigned BBSize, typename VVector>
+    friend inline std::size_t size(const unrolled1<BBSize, VVector>& v);
   private:
+#endif
     Vector&    ref;
 };
 
