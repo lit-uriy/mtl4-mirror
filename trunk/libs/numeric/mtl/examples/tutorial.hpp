@@ -2966,7 +2966,8 @@ written in unrolled/tiled form.
    - \subpage lu_solve
    - \subpage lu_solve_straight
    - \subpage max_abs_pos
-   - \subpage max_pos
+   - \subpage max_pos 
+   - \subpage nnz
    - \subpage num_cols
    - \subpage num_rows
    - \subpage one_norm
@@ -3760,7 +3761,21 @@ Details: mtl::matrix::max_pos
 
 */
 
+//-----------------------------------------------------------
+/*! \page nnz nnz()
 
+returns the number of non zeros of %matrix A.
+
+For example:
+\code
+int nnz=  A.nnz();
+\endcode
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
 
 
 //-----------------------------------------------------------
