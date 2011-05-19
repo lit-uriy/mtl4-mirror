@@ -207,6 +207,13 @@ struct category< mtl::matrix::divide_by_view<Matrix,Divisor> >
 					Matrix> >
 {};
 
+// add dense to view_category
+template <typename Matrix>
+struct category<mtl::matrix::indirect<Matrix> >
+{
+    typedef mtl::tag::join<typename detail::simple_matrix_view_category<Matrix>::type, mtl::tag::dense> type;
+};
+
 
 template <typename Matrix> 
 struct category<transposed_view<Matrix> >

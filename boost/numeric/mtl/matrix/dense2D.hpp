@@ -30,6 +30,7 @@
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>

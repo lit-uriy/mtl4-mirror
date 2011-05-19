@@ -35,6 +35,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/eval_dense.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/utility/iset.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 #include <boost/numeric/mtl/operation/column_in_matrix.hpp>
@@ -590,7 +591,8 @@ template <typename Matrix, typename ValueType, typename SizeType>
 struct const_crtp_matrix_bracket
 {    
     template <typename T>
-    typename boost::disable_if<boost::is_same<T, mtl::irange>, operations::bracket_proxy<Matrix, const Matrix&, ValueType> >::type
+    typename boost::disable_if_c<boost::is_same<T, mtl::irange>::value || boost::is_same<T, mtl::iset>::value,
+				 operations::bracket_proxy<Matrix, const Matrix&, ValueType> >::type
     operator[] (const T& row) const
     {
 	return operations::bracket_proxy<Matrix, const Matrix&, ValueType>(static_cast<const Matrix&>(*this), row);
@@ -604,6 +606,11 @@ struct const_crtp_matrix_bracket
 	return operations::range_bracket_proxy<Matrix, const Matrix&, const Matrix>(static_cast<const Matrix&>(*this), row_range);
     }
 
+    operations::set_bracket_proxy<Matrix, const Matrix&, const Matrix>
+    operator[] (const iset& row_set) const
+    {
+	return operations::set_bracket_proxy<Matrix, const Matrix&, const Matrix>(static_cast<const Matrix&>(*this), row_set);
+    }
 };
 
 template <typename Matrix, typename ValueType, typename SizeType>
@@ -616,7 +623,8 @@ struct crtp_matrix_bracket
     }
 
     template <typename T>
-    typename boost::disable_if<boost::is_same<T, mtl::irange>, operations::bracket_proxy<Matrix, Matrix&, ValueType&> >::type
+    typename boost::disable_if_c<boost::is_same<T, mtl::irange>::value || boost::is_same<T, mtl::iset>::value, 
+			       operations::bracket_proxy<Matrix, Matrix&, ValueType&> >::type
     // operations::bracket_proxy<Matrix, Matrix&, ValueType&>
     operator[] (const T& row)
     {
@@ -639,6 +647,11 @@ struct crtp_matrix_bracket
 	return operations::range_bracket_proxy<Matrix, Matrix&, Matrix>(static_cast<Matrix&>(*this), row_range);
     }
 
+    operations::set_bracket_proxy<Matrix, const Matrix&, const Matrix>
+    operator[] (const iset& row_set) const
+    {
+	return operations::set_bracket_proxy<Matrix, const Matrix&, const Matrix>(static_cast<const Matrix&>(*this), row_set);
+    }
 };
 
 template <typename Matrix, typename ValueType, typename SizeType>

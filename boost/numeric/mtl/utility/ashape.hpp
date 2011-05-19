@@ -244,6 +244,11 @@ struct ashape_aux<matrix::banded_view<Matrix> >
     typedef typename ashape<Matrix>::type type;
 };
 
+template <typename Matrix>
+struct ashape_aux<matrix::indirect<Matrix> >
+{
+    typedef typename ashape<Matrix>::type type;
+};
 
 // Rule out other types as algebraic shape
 template <typename IFStream, typename OFStream>

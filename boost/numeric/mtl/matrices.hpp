@@ -29,6 +29,7 @@
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/matrix/hermitian_view.hpp>
 #include <boost/numeric/mtl/matrix/banded_view.hpp>
+#include <boost/numeric/mtl/matrix/indirect.hpp>
 
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/laplacian_setup.hpp> 

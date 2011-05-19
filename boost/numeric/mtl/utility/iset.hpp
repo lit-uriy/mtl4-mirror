@@ -17,6 +17,8 @@
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/numeric/mtl/utility/push_back_comma_inserter.hpp>
+#include <boost/numeric/mtl/operation/is_negative.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl {
 
@@ -26,6 +28,9 @@ namespace mtl {
       public:
 	/// Size type
         typedef std::size_t size_type;
+
+	void check(size_type i) const
+	{ MTL_DEBUG_THROW_IF(is_negative(i) || i >= indices.size(), index_out_of_range()); }
 
 	iset() {} ///< Default constructor
 	
@@ -42,6 +47,8 @@ namespace mtl {
 	    return push_back_comma_inserter<iset>(*this);
 	}
 
+	/// Return i-th index
+	size_type operator[](size_type i) const { check(i); return indices[i]; }
 
 	/// Insert a new index at the end
 	void push_back(size_type i) { indices.push_back(i); }

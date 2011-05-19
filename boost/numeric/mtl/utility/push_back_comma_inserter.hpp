@@ -21,8 +21,10 @@ namespace mtl {
     {
 	typedef push_back_comma_inserter self;
       public:
+	/// Constructor takes a mutable reference of the object inserted into
 	push_back_comma_inserter(T& ref) : ref(ref) {}
 
+	/// Overloaded comma operator performs push_back
 	template <typename Source>
 	self& operator, (Source val)
 	{ ref.push_back(val); return *this; }
