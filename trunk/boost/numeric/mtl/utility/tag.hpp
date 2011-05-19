@@ -26,6 +26,10 @@ namespace mtl { namespace tag {
 // Is this the same as bottom?
 struct unsupported {};
 
+// Name says it
+struct dummy3 {};
+struct dummy4 {};
+
 /// Tag for all types
 struct universe {};
 
@@ -210,6 +214,11 @@ struct bottom
   : virtual compressed2D, virtual morton_dense, virtual dense2D, 
     virtual dense_col_vector, virtual dense_row_vector, virtual unknown,
     virtual multi_vector
+{};
+
+template <typename Tag1, typename Tag2, typename Tag3= dummy3, typename Tag4= dummy4>
+struct join
+  : virtual Tag1, virtual Tag2, virtual Tag3, virtual Tag4
 {};
 
 // =====================

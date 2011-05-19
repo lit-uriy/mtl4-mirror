@@ -21,6 +21,7 @@
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/utility/iset.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/column_in_matrix.hpp>
 #include <boost/numeric/mtl/operation/row_in_matrix.hpp>
@@ -78,6 +79,20 @@ namespace mtl { namespace operations {
 	irange      row_range;
     };
 
+    template <typename Matrix, typename Ref, typename ValueRef>
+    struct set_bracket_proxy
+    {
+	set_bracket_proxy(Ref matrix, const iset& row_set) : matrix(matrix), row_set(row_set) {}
+
+	mtl::matrix::indirect<Matrix> operator[] (const iset& col_set)
+	{
+	    return mtl::matrix::indirect<Matrix>(matrix, row_set, col_set);
+	}
+
+      protected:
+	Ref         matrix;
+	iset        row_set;
+     };
 
 } // namespace operations
 

@@ -98,7 +98,7 @@ namespace mtl { namespace traits { namespace detail {
 	typedef sub_matrix_cursor                self;
 	typedef mtl::detail::base_cursor<int>    base;
 	typedef Matrix                           ref_type;
-	static int const            level = Level;
+	static int const                         level = Level;
 
 	sub_matrix_cursor(int i, Matrix const& c)
 	    : base(i), ref(c) 
@@ -170,8 +170,9 @@ namespace mtl { namespace traits { namespace detail {
     template <typename Matrix, typename Complexity, int Level>
     struct all_rows_range_generator
     {
-	typedef Complexity          complexity;
-	static int const            level = Level;
+	typedef Complexity                                       complexity;
+	static int const                                         level = Level;
+	typedef Matrix                                           ref_type;
 	typedef sub_matrix_cursor<Matrix, glas::tag::row, Level> type;
 	typedef typename Collection<Matrix>::size_type           size_type;
 
@@ -195,12 +196,12 @@ namespace mtl { namespace traits { namespace detail {
     struct all_cols_in_row_range_generator
     {
 	typedef complexity_classes::linear                       complexity;
-	static int const            level = 1;
+	static int const                                         level = 1;
 	typedef typename Cursor::ref_type                        ref_type;
 	typedef typename Collection<ref_type>::size_type         size_type;
 
 
-	typedef matrix_element_cursor<ref_type, 1> type;
+	typedef matrix_element_cursor<ref_type, 1>               type;
 
 	type begin(Cursor const& c) const { return type(c.ref, *c, 0); }
 	type end(Cursor const& c) const { using mtl::num_cols; return type(c.ref, *c, num_cols(c.ref)); }

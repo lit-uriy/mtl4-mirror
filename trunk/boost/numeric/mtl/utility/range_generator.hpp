@@ -13,6 +13,7 @@
 #ifndef MTL_RANGE_GENERATOR_INCLUDE
 #define MTL_RANGE_GENERATOR_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/detail/range_generator.hpp>
 #include <boost/numeric/mtl/utility/complexity.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -145,6 +146,61 @@ namespace traits {
 	     , ::mtl::tag::row
             >::type, 
           Matrix>
+    {};
+
+    //=== Range generators for matrix::indirect ====================
+
+    // Range generator over all rows
+    template <typename Matrix>
+    struct range_generator<glas::tag::row, mtl::matrix::indirect<Matrix> >
+      : detail::all_rows_range_generator<mtl::matrix::indirect<Matrix>, complexity_classes::linear, 2>
+    {};
+
+    // Range generator over all entries within a row
+    template <typename Matrix>
+    struct range_generator<glas::tag::all, 
+			   mtl::traits::detail::sub_matrix_cursor<mtl::matrix::indirect<Matrix>, glas::tag::row, 2> >
+    : detail::all_cols_in_row_range_generator<
+	mtl::traits::detail::sub_matrix_cursor<mtl::matrix::indirect<Matrix>, glas::tag::row, 2> >
+    {};
+
+    // Range generator over all non-zero entries within a row, same as all entries
+    template <typename Matrix>
+    struct range_generator<glas::tag::nz, 
+			   mtl::traits::detail::sub_matrix_cursor<mtl::matrix::indirect<Matrix>, glas::tag::row, 2> >
+    : detail::all_cols_in_row_range_generator<
+	mtl::traits::detail::sub_matrix_cursor<mtl::matrix::indirect<Matrix>, glas::tag::row, 2> >
+    {};
+
+    // - same for columns first
+
+    // Range generator over all colums
+    template <typename Matrix>
+    struct range_generator<glas::tag::col, mtl::matrix::indirect<Matrix> >
+      : detail::all_cols_range_generator<mtl::matrix::indirect<Matrix>, complexity_classes::linear, 2>
+    {};
+
+    // Range generator over all entries within a column
+    template <typename Matrix>
+    struct range_generator<glas::tag::all, 
+			   mtl::traits::detail::sub_matrix_cursor<mtl::matrix::indirect<Matrix>, glas::tag::col, 2> >
+    : detail::all_rows_in_col_range_generator<
+	mtl::traits::detail::sub_matrix_cursor<mtl::matrix::indirect<Matrix>, glas::tag::col, 2> >
+    {};
+
+    // Range generator over all non-zero entries within a column, same as all entries
+    template <typename Matrix>
+    struct range_generator<glas::tag::nz, 
+			   mtl::traits::detail::sub_matrix_cursor<mtl::matrix::indirect<Matrix>, glas::tag::col, 2> >
+    : detail::all_rows_in_col_range_generator<
+	mtl::traits::detail::sub_matrix_cursor<mtl::matrix::indirect<Matrix>, glas::tag::col, 2> >
+    {};
+
+    // Take major same as row
+    // Not necessarily best choice but shouldn't matter here
+    template <typename Matrix>
+    struct range_generator<glas::tag::major, mtl::matrix::indirect<Matrix> >
+      : detail::all_rows_range_generator<mtl::matrix::indirect<Matrix>, complexity_classes::linear, 2>
     {};
 
 }

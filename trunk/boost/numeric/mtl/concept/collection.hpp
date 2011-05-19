@@ -702,6 +702,17 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+#else
+    template <typename Matrix>
+    struct Collection< matrix::indirect<Matrix> >
+    {
+	typedef typename Collection<Matrix>::value_type               value_type;
+	typedef value_type                                            const_reference; // maybe change later
+	typedef typename Collection<Matrix>::size_type                size_type;
+    };
+#endif
+
 
 #ifdef __GXX_CONCEPTS__
 
@@ -909,6 +920,13 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+#else
+    template <typename T>
+    struct OrientedCollection<const T>
+      : OrientedCollection<T>
+    {};
+#endif
 
 
 
@@ -973,6 +991,15 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+#else
+    template <typename Matrix>
+    struct OrientedCollection<mtl::matrix::indirect<Matrix> >
+	: public Collection<mtl::matrix::indirect<Matrix> >
+    {
+	typedef row_major   orientation;
+    };
+#endif
 
 #ifdef __GXX_CONCEPTS__
     template <typename Value, typename Parameters>

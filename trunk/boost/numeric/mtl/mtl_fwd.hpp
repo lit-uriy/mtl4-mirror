@@ -116,6 +116,7 @@ namespace mtl {
 	template <typename Matrix>  struct conj_view;
 	template <typename Matrix>  struct hermitian_view;
 	template <typename Matrix>  struct banded_view;
+	template <typename Matrix> struct indirect;
 
 	template <typename Matrix> std::size_t size(const banded_view<Matrix>&);
 	template <class Matrix> std::size_t size(const transposed_view<Matrix>&);
@@ -373,6 +374,7 @@ namespace mtl {
     struct refer_ctor {};
 
     class irange;
+    class iset;
 
     /// Namespace for I/O operations
     namespace io {

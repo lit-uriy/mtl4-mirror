@@ -214,6 +214,29 @@ struct const_value<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
 {};
 
 
+// ====================
+// For matrix::indirect
+// ====================
+
+template <typename Matrix>
+struct row<mtl::matrix::indirect<Matrix> >
+{
+    typedef mtl::detail::row_in_element_key<mtl::matrix::indirect<Matrix> > type;
+};
+
+template <typename Matrix>
+struct col<mtl::matrix::indirect<Matrix> >
+{
+    typedef mtl::detail::col_in_element_key<mtl::matrix::indirect<Matrix> > type;
+};
+
+template <typename Matrix>
+struct const_value<mtl::matrix::indirect<Matrix> >
+{
+    typedef mtl::detail::const_value_in_element_key<mtl::matrix::indirect<Matrix> > type;
+};
+
+
 // ================
 // For dense_vector
 // ================
