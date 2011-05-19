@@ -11,13 +11,8 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <cmath>
-#include <typeinfo>
 #include <boost/test/minimal.hpp>
-
 #include <boost/numeric/mtl/mtl.hpp>
-#include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
-
 
 using namespace std;  
 
@@ -33,23 +28,10 @@ void check(const Indirect& I, const char* error)
     if (one_norm(C) > 0.01) throw error;
 }
 
-template <typename T> void df(const T&) {
-    cout << "df" << "\n";
-}
-
-template <typename T> 
-void df2(const mtl::traits::detail::all_cols_in_row_range_generator<T>&) {
-    cout << "df<detail::all_cols_in_row_range_generator<>>" << "\n";
-}
-
-// For Morton matrices not applicable
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    using mtl::irange; using mtl::imax;  using namespace mtl;
-
     hessian_setup(A, 1.0);
-
     std::cout << "\n" << name << "\nA is: \n" << A;
     
     mtl::iset rows, cols;
@@ -57,22 +39,7 @@ void test(Matrix& A, const char* name)
     cols= 2, 0;
 
     cout << "rows = " << rows << ", cols = " << cols << "\n";
-    // cout << "A[rows][cols][0][0] is: " << A[rows][cols][0][0] << "\n";
-
     cout << "A[rows][cols] is: \n" << A[rows][cols] << "\n";
-
-#if 0
-    typedef typename traits::range_generator<tag::major, mtl::matrix::indirect<Matrix> >::type  cursor_type;
-    cout << typeid(cursor_type).name() << '\n';
-    //cursor_type a= "hallo";
-
-    traits::range_generator<glas::tag::nz, cursor_type> ir;
-    //ir= "hallo";
-    df2(ir);
-
-    typedef typename mtl::traits::range_generator<tag::all, cursor_type>::type icursor_type;
-    cout << typeid(icursor_type).name() << '\n';
-#endif
 
     mtl::matrix::indirect<Matrix> B(A[rows][cols]);
     cout << "B is\n" << B;
@@ -82,12 +49,10 @@ void test(Matrix& A, const char* name)
     D= B;
     check<Matrix>(D, "Wrong value after assignment");
 
-
     E= D + B;
     E/= 2;
     check<Matrix>(D, "Wrong value after addition");
 }
-
 
 
 int test_main(int, char**)
