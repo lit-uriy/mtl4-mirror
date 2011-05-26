@@ -2999,6 +2999,7 @@ written in unrolled/tiled form.
 -# %Vector Operations
    - \subpage dot_v
    - \subpage dot_real_v
+   - \subpage iota_v
    - \subpage infinity_norm_v
    - \subpage max_abs_pos_v
    - \subpage max_pos_v
@@ -4316,6 +4317,31 @@ For example:
 
 
 */
+
+
+//-----------------------------------------------------------
+/*! \page iota_v iota(v)
+
+Iota assigns sequentially increasing values to a %vector v
+
+Details: mtl::vector::iota
+
+For example:
+\code
+dense_vector<int> v(10);
+iota(v);
+std::cout<< "v=" << v ;
+\endcode
+Returns:
+v={10C}[0,1,2,3,4,5,6,7,8,9]
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
 
 //-----------------------------------------------------------
 /*! \page infinity_norm_v infinity_norm(v)
