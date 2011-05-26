@@ -2999,8 +2999,8 @@ written in unrolled/tiled form.
 -# %Vector Operations
    - \subpage dot_v
    - \subpage dot_real_v
-   - \subpage iota_v
    - \subpage infinity_norm_v
+   - \subpage iota_v
    - \subpage max_abs_pos_v
    - \subpage max_pos_v
    - \subpage max_v
@@ -4320,6 +4320,24 @@ For example:
 
 
 //-----------------------------------------------------------
+/*! \page infinity_norm_v infinity_norm(v)
+
+returns infinity-norm of %vector v.
+
+Details: mtl::vector::infinity_norm
+
+For example:
+
+\include vector_norm.cpp
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
+
+//-----------------------------------------------------------
 /*! \page iota_v iota(v)
 
 Iota assigns sequentially increasing values to a %vector v
@@ -4342,23 +4360,6 @@ v={10C}[0,1,2,3,4,5,6,7,8,9]
 
 */
 
-
-//-----------------------------------------------------------
-/*! \page infinity_norm_v infinity_norm(v)
-
-returns infinity-norm of %vector v.
-
-Details: mtl::vector::infinity_norm
-
-For example:
-
-\include vector_norm.cpp
-
-\if Navigation \endif
-  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-
-*/
 
 //-----------------------------------------------------------
 /*! \page max_abs_pos_v max_abs_pos(v)
