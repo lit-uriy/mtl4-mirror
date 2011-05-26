@@ -16,7 +16,8 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 
 namespace mtl { namespace vector {
-
+  
+///Assigns sequentially increasing values to %vector v
 template <typename Vector>
 void iota(Vector& v)
 {
