@@ -16,6 +16,20 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 
+template <typename Matrix>
+void singularity_test(const Matrix& A)
+{
+    typedef typename mtl::Collection<Matrix>::value_type  Scalar;
+    try {
+	Matrix B(lu_f(A));
+
+    } catch (mtl::matrix_singular excp) {
+	std::cout << "Exception for singularity successfully caught\n"; return;
+    }
+    throw "Singularity not detected";
+}
+
+
 int test_main(int , char**)
 {
     using namespace mtl;
@@ -49,7 +63,8 @@ int test_main(int , char**)
     B=A;
     std::cout << "bsp is \n" << bsp << "\n";
     bsp1 = bsp;
-    bsp1=lu_f(bsp1);
+    singularity_test(bsp1);
+    // bsp1=lu_f(bsp1); // throws exception
 
     mtl::dense_vector<int> P;
     lu(bsp, P);
