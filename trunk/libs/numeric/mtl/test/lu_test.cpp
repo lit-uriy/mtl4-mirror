@@ -21,6 +21,72 @@ using namespace std;
 double f(double) { cout << "double\n"; return 1.0; } 
 complex<double> f(complex<double>) { cout << "complex\n"; return complex<double>(1.0, -1.0); }
 
+
+template <typename Matrix>
+void singularity_test1(const Matrix& A)
+{
+    typedef typename mtl::Collection<Matrix>::value_type  Scalar;
+    try {
+	Matrix B(A);
+	B[mtl::iall][0]= Scalar(0);
+	// cout << "B is:\n" << B;
+	lu(B);
+    } catch (mtl::matrix_singular excp) {
+	cout << "Exception 1 for singularity successfully caught\n"; return;
+    }
+    throw "Singularity (test1) not detected";
+}
+
+template <typename Matrix>
+void singularity_test2(const Matrix& A)
+{
+    typedef typename mtl::Collection<Matrix>::value_type  Scalar;
+    try {
+	Matrix B(A);
+	B[mtl::iall][0]= Scalar(0);
+	mtl::dense_vector<int> p;
+	lu(B, p);
+	cout << "B is:\n" << B << endl;
+    } catch (mtl::matrix_singular excp) {
+	cout << "Exception 2 for singularity successfully caught\n"; return;
+    }
+    throw "Singularity (test2) not detected";
+}
+
+template <typename Matrix>
+void singularity_test3(const Matrix& A)
+{
+    typedef typename mtl::Collection<Matrix>::value_type  Scalar;
+    try {
+	Matrix B(A);
+	B[mtl::iall][0]= Scalar(0);
+	B[0][0]= Scalar(1e-15);
+	lu(B, 2e-15);
+    } catch (mtl::matrix_singular excp) {
+	cout << "Exception 3 for singularity successfully caught\n"; return;
+    }
+    throw "Singularity (test3) not detected";
+}
+
+template <typename Matrix>
+void singularity_test4(const Matrix& A)
+{
+    typedef typename mtl::Collection<Matrix>::value_type  Scalar;
+    try {
+	Matrix B(A);
+	B[mtl::iall][0]= Scalar(0);
+	B[3][0]= Scalar(1e-15);
+	mtl::dense_vector<int> p;
+	lu(B, p, 2e-15);
+    } catch (mtl::matrix_singular excp) {
+	cout << "Exception 4 for singularity successfully caught\n"; return;
+    }
+    throw "Singularity (test4) not detected";
+}
+
+
+
+
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
@@ -77,6 +143,11 @@ void test(Matrix& A, const char* name)
     Vector v4( lu_solve(A, w) );
     cout << "v4 is " << v4 << "\n";
     if (abs(v[1] - v4[1]) > 0.1) throw "Error in solve";
+
+    singularity_test1(A);
+    singularity_test2(A);
+    singularity_test3(A);
+    singularity_test4(A);
 }
 
 

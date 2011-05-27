@@ -33,12 +33,16 @@
 namespace mtl { namespace matrix {
 
 /// LU factorization in place (without pivoting and optimization so far)
+/** eps is tolerance for pivot element. If less or equal the matrix is considered singular.
+    eps is given as double right now, might be refactored to the magnitude type of the value type in the future. **/
 template <typename Matrix>
-void inline lu(Matrix& LU)
+void inline lu(Matrix& LU, double eps= 0)
 {
+    using std::abs;
     MTL_THROW_IF(num_rows(LU) != num_cols(LU), matrix_not_square());
 
     for (std::size_t k= 0; k < num_rows(LU)-1; k++) {
+	if(abs(LU[k][k]) <= eps) throw matrix_singular(); 
 	irange r(k+1, imax); // Interval [k+1, n-1]
 	LU[r][k]/= LU[k][k];
 	LU[r][r]-= LU[r][k] * LU[k][r];
@@ -46,10 +50,12 @@ void inline lu(Matrix& LU)
 }
 
 /// LU factorization in place (with pivoting and without optimization so far)
+/** eps is tolerance for pivot element. If less or equal the matrix is considered singular.
+    eps is given as double right now, might be refactored to the magnitude type of the value type in the future. **/
 template <typename Matrix, typename PermuationVector>
-void inline lu(Matrix& A, PermuationVector& P)
+void inline lu(Matrix& A, PermuationVector& P, double eps= 0)
 {
-    using math::zero;
+    using math::zero; using std::abs;
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type ncols = num_cols(A), nrows = num_rows(A);
 
@@ -65,8 +71,7 @@ void inline lu(Matrix& A, PermuationVector& P)
 	swap_row(A, i, rmax); 
 	swap_row(P, i, rmax);
 	
-	if(A[i][i] == zero(A[i][i])) throw matrix_singular(); // other gmres test doesn't work
-	// MTL_THROW_IF(A[i][i] == zero(A[i][i]), matrix_singular());
+	if(abs(A[i][i]) <= eps) throw matrix_singular(); // other gmres test doesn't work
        
 	A[r][i]/= A[i][i];              // Scale column i
 	A[r][r]-= A[r][i] * A[i][r]; 	 // Decrease bottom right block of matrix
@@ -75,20 +80,22 @@ void inline lu(Matrix& A, PermuationVector& P)
 
 
 /// LU factorization without factorization that returns the matrix
+/** eps is tolerance for pivot element. If less or equal the matrix is considered singular.
+    eps is given as double right now, might be refactored to the magnitude type of the value type in the future. **/
 template <typename Matrix>
-Matrix inline lu_f(const Matrix& A)
+Matrix inline lu_f(const Matrix& A, double eps= 0)
 {
     Matrix LU(A);
-    lu(LU);
+    lu(LU, eps);
     return LU;
 }
 
 /// Solve Ax = b by LU factorization without pivoting; vector x is returned
 template <typename Matrix, typename Vector>
-Vector inline lu_solve_straight(const Matrix& A, const Vector& b)
+Vector inline lu_solve_straight(const Matrix& A, const Vector& b, double eps= 0)
 {
     Matrix LU(A);
-    lu(LU);
+    lu(LU, eps);
     return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), b));
 }
 
@@ -102,12 +109,12 @@ Vector inline lu_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 
 /// Solve Ax = b by LU factorization with column pivoting; vector x is returned
 template <typename Matrix, typename Vector>
-Vector inline lu_solve(const Matrix& A, const Vector& b)
+Vector inline lu_solve(const Matrix& A, const Vector& b, double eps= 0)
 {
     dense_vector<std::size_t> P(num_rows(A));
     Matrix                    LU(A);
 
-    lu(LU, P);
+    lu(LU, P, eps);
     return lu_apply(LU, P, b);
 }
 
@@ -123,12 +130,12 @@ Vector inline lu_adjoint_apply(const Matrix& LU, const PermVector& P, const Vect
 
 /// Solve \f$adjoint(A)x = b\f$ by LU factorization with column pivoting; vector x is returned
 template <typename Matrix, typename Vector>
-Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b)
+Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b, double eps= 0)
 {
     dense_vector<std::size_t> P(num_rows(A));
     Matrix                    LU(A);
 
-    lu(LU, P);
+    lu(LU, P, eps);
     return lu_adjoint_apply(LU, P, b);
 }
 
