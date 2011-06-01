@@ -6,7 +6,8 @@ using namespace std;
 
 int main(int, char**)
 {
-    mtl::dense2D<double> A(5, 3);
+    typedef mtl::dense2D<double> matrix;
+    matrix A(5, 3);
     hessian_setup(A, 1.0);
 
     mtl::iset rows, cols;
@@ -15,7 +16,7 @@ int main(int, char**)
     cout << "rows = " << rows << ", cols = " << cols << "\n"   
 	 << "The sub-matrix A[{2, 0, 3}][{2, 1}] is\n" << A[rows][cols];
 
-    mtl::matrix::indirect<Matrix> B(A[rows][cols]);
+    mtl::matrix::indirect<matrix> B(A[rows][cols]);
     cout << "B is\n" << B;
 
     return 0;
