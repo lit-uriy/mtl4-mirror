@@ -1782,7 +1782,7 @@ If you are not sure about this fact or the compression %vector is calculated spe
 
 \section Indirection
 
-Matrix indirection, implemented in matrix::indirect, is a view on an existing %matrix for restricted to certain indices.
+Matrix indirection, implemented in matrix::indirect, is a view on an existing %matrix  restricted to certain indices.
 It uses the type iset to define index sets.
 The following program illustrates the usage:
 
@@ -1795,18 +1795,18 @@ For the moment, \ref iset cannot be mixed with other types as index (e.g. to get
 \code
    A[rows][1]; // Error !!!
 \endcode
-When the sub-matrix is accessed multiple time, it should be stored into an object as in in line 18.
+When the sub-matrix is accessed multiple times, it should be stored into an object as in in line 18.
 
-Objects of type matrix::indirect can be used in operations and this tested to some extend.
-In the future, %matrix indirections from dense matrices (in general all matrices modifiable without inserter)
+Objects of type matrix::indirect can be used in operations and this is tested to some extend.
+In the future, %matrix indirections from dense matrices (in general, all matrices modifiable without inserter)
 can be modified.
 
 
 \section Comparison
 
-For small sub-matrices %matrix indirection is always faster than reordering because the latter involves
+For small sub-matrices, %matrix indirection is always faster than reordering because the latter involves
 one or two matrix products.
-For large permuted or reordered matrices, the multiplication can be amortized by the  faster access.
+For large permuted or reordered matrices, the multiplication(s) can be amortized by the  faster access to the elements later.
 
 
 
