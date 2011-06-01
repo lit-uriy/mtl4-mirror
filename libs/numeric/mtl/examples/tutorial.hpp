@@ -1725,7 +1725,9 @@ Details on the copy behavior of sub-matrices can be found in  section \ref copy_
 //-----------------------------------------------------------
 
 
-/*! \page permutation Permutations and Reordering
+/*! \page permutation Permutations, Reordering, and Matrix Indirection
+
+\section Permutation
 
 The following example shows how to use permutations:
 
@@ -1737,6 +1739,8 @@ i-th entry/row/column after the permutation was the j-th entry/row/column before
 If your %vector is defined in the inverse manner -- i.e. i.e. v[i] == j signifies that the 
 i-th entry/row/column before the permutation becomes the j-th entry/row/column after the permutation --
 your permutation %matrix is the transposed of what MTL4 computes: P= trans(matrix::permutation(v)).
+
+\section Reordering
 
 Reordering is a generalization of permutation.
 The entries in the reorder %vector/array are defined in the same fashion as in the permutation %vector.
@@ -1775,6 +1779,35 @@ of the original %matrix when multiplied from left and equal the original number 
 from right as transposed.
 This is implicitly given when the last row or column is part of the resulting %matrix.
 If you are not sure about this fact or the compression %vector is calculated specify the reorder %matrix' columnn number explicitly.
+
+\section Indirection
+
+Matrix indirection, implemented in matrix::indirect, is a view on an existing %matrix for restricted to certain indices.
+It uses the type iset to define index sets.
+The following program illustrates the usage:
+
+\includelineno matrix_indirect.cpp
+
+An \ref iset can be initialized with push_back() or simply assigned with a comma-separated list (line 13).
+ (And yes, the comma operator is overloaded).
+When isets are passed as indices to a %matrix, an object of type matrix::indirect is created (line 16).
+For the moment, \ref iset cannot be mixed with other types as index (e.g. to get a sub-vector within a matrix):
+\code
+   A[rows][1]; // Error !!!
+\endcode
+When the sub-matrix is accessed multiple time, it should be stored into an object as in in line 18.
+
+Objects of type matrix::indirect can be used in operations and this tested to some extend.
+In the future, %matrix indirections from dense matrices (in general all matrices modifiable without inserter)
+can be modified.
+
+
+\section Comparison
+
+For small sub-matrices %matrix indirection is always faster than reordering because the latter involves
+one or two matrix products.
+For large permuted or reordered matrices, the multiplication can be amortized by the  faster access.
+
 
 
 \if Navigation \endif
