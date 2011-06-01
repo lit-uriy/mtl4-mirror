@@ -13,6 +13,10 @@ int main(int, char**)
     rows= 2, 0, 3; cols= 2, 1;
 
     cout << "rows = " << rows << ", cols = " << cols << "\n"   
-	 << "The sub-matrix A[{2, 0, 3}][{2, 1}] is\n" << A[rows][cols];	
+	 << "The sub-matrix A[{2, 0, 3}][{2, 1}] is\n" << A[rows][cols];
+
+    mtl::matrix::indirect<Matrix> B(A[rows][cols]);
+    cout << "B is\n" << B;
+
     return 0;
 }

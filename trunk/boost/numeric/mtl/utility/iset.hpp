@@ -38,6 +38,7 @@ namespace mtl {
 	template <long Size>
 	iset(const size_type (&array)[Size]) : indices(&array[0], &array[Size]) {}
 
+	/// Assign comma-separated list
 	template <typename Source>
 	typename boost::enable_if<boost::is_integral<Source>, push_back_comma_inserter<iset> >::type
 	operator=(const Source& src)
@@ -69,6 +70,7 @@ namespace mtl {
 
 	bool operator!=(const iset& that) const { return !(*this == that); } ///< Inequality
 
+	/// Print iset
 	friend std::ostream& operator<<(std::ostream& os, const iset& is)
 	{   os << "{";
 	    for (size_type i= 0; i < is.indices.size(); i++) {
