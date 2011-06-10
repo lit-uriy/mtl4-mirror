@@ -220,7 +220,7 @@ private:
 	if (Assign::init_to_zero) set_to_zero(c);
 
 	size_type i_max= num_cols(b), i_block= Tiling1 * (i_max / Tiling1);
-	size_t bci= &b(0, 1) - &b(0, 0); // how much is the offset of B's entry increased by incrementing column
+	size_t bci= i_max > 1 ? &b(0, 1) - &b(0, 0) : 1; // offset of incrementing B's column if more than 1 column
 
 	a_cur_type ac= begin<row>(a), aend= end<row>(a);
 	size_type rc= 0; // start in row 0
