@@ -19,10 +19,10 @@ namespace mtl { namespace vector {
   
 ///Assigns sequentially increasing values to %vector v
 template <typename Vector>
-void iota(Vector& v)
+void iota(Vector& v, const typename Collection<Vector>::value_type offset= 0)
 {
     for (typename Collection<Vector>::size_type i= 0; i < size(v); i++)
-	v[i]= i;
+	v[i]= i + offset;
 }
 
 }} // namespace mtl::vector

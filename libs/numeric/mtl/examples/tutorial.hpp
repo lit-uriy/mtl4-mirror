@@ -3034,6 +3034,7 @@ written in unrolled/tiled form.
    - \subpage dot_real_v
    - \subpage infinity_norm_v
    - \subpage iota_v
+   - \subpage iota_v1
    - \subpage max_abs_pos_v
    - \subpage max_pos_v
    - \subpage max_v
@@ -4392,6 +4393,31 @@ v={10C}[0,1,2,3,4,5,6,7,8,9]
 
 
 */
+
+
+//-----------------------------------------------------------
+/*! \page iota_v1 iota(v, offset)
+
+Iota assigns sequentially increasing values to a %vector v starts with offset-value
+
+Details: mtl::vector::iota
+
+For example:
+\code
+dense_vector<int> v(10, 5);
+iota(v);
+std::cout<< "v=" << v ;
+\endcode
+Returns:
+v={10C}[5,6,7,8,9,10,11,12,13,14]
+
+
+\if Navigation \endif
+  Return to \ref overview_ops &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+*/
+
 
 
 //-----------------------------------------------------------
