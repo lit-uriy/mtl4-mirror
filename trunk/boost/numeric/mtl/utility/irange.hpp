@@ -92,7 +92,9 @@ namespace mtl {
     };
     /// All index in range
     namespace {
-	irange iall;
+	// problems with multiple cpp projects, which include mtl multiple times
+	static const irange iall(0, imax);
+	//inline irange iall() { return irange(); }
     }
 
     irange inline intersection(irange const& r1, irange const& r2)
