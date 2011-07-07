@@ -78,7 +78,7 @@ class basic_iteration
     bool converged() const 
     { 
 	if (norm_r0 == 0)
-	    return resid_ < atol_;  // ignore relative tolerance if |r0| is zero
+	    return resid_ <= atol_;  // ignore relative tolerance if |r0| is zero
 	return resid_ <= rtol_ * norm_r0 || resid_ < atol_;
     }
 
