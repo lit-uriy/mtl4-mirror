@@ -92,19 +92,25 @@ class multi_vector
     multi_vector_range<Vector> vector(irange const& r) const { return multi_vector_range<Vector>(*this, r); }
 
     /// Number of rows
-    friend size_type num_rows(const self& A) { return A.num_rows(); }
+    //friend size_type num_rows(const self& A) { return A.num_rows(); }
 
     /// Number of columns
-    friend size_type num_cols(const self& A) { return A.num_cols(); }
+    //friend size_type num_cols(const self& A) { return A.num_cols(); }
 
     /// Size as defined by number of rows times columns
-    friend size_type size(const self& A) { return num_rows(A) * num_cols(A); }
+    //friend size_type size(const self& A) { return num_rows(A) * num_cols(A); }
 
   protected:  
     dense_vector<Vector>          data;
 };
+template< typename Vector >
+typename Collection< Vector >::size_type num_cols(const multi_vector< Vector >& A) { return A.num_cols(); }
 
+template< typename Vector >
+typename Collection< Vector >::size_type num_rows(const multi_vector< Vector >& A) { return A.num_rows(); }
 
+template< typename Vector >
+typename Collection< Vector >::size_type size(const multi_vector< Vector >& A) { return num_rows(A) * num_cols(A); }
 }} // namespace mtl::matrix
 
 
