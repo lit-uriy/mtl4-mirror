@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/operation/max_of_sums.hpp>
 #include <boost/numeric/mtl/operation/squared_abs.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl { namespace matrix {
@@ -30,6 +31,7 @@ template <typename Matrix>
 typename RealMagnitude<typename Collection<Matrix>::value_type>::type
 inline frobenius_norm(const Matrix& matrix)
 {
+    vampir_trace<310> tracer;
     using std::sqrt; using std::abs; using math::zero;
     namespace traits = mtl::traits;
     typename traits::const_value<Matrix>::type     value(matrix); 

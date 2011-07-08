@@ -17,6 +17,7 @@
 #include <cmath>
 #include <boost/numeric/mtl/operation/real.hpp>
 #include <boost/numeric/mtl/operation/imag.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl {
 
@@ -73,6 +74,7 @@ namespace sfunctor {
 template <typename Value1, typename Value2>
 inline Value1 copysign(const Value1& v, const Value2& s)
 {
+    vampir_trace<101> tracer;
     return sfunctor::copysign<Value1, Value2>::apply(v, s);
 }
 

@@ -29,6 +29,7 @@
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/mpl/if.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 
@@ -51,6 +52,7 @@ template <typename A, typename B, typename C>
 typename mtl::traits::enable_if_matrix<A>::type
 inline mult(const A& a, const B& b, C& c)
 {
+    vampir_trace<410> tracer;
 #if 1
     MTL_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
 #endif
@@ -69,6 +71,7 @@ template <typename A, typename B, typename C>
 typename mtl::traits::enable_if_matrix<A>::type
 inline mult_add(const A& a, const B& b, C& c)
 {
+    vampir_trace<410> tracer;
     // dispatch between matrices, vectors, and scalars
     using mtl::traits::category;
     gen_mult(a, b, c, assign::plus_sum(), typename category<A>::type(), 
@@ -82,6 +85,7 @@ inline mult_add(const A& a, const B& b, C& c)
 template <typename A, typename X, typename Y, typename Z>
 inline void mult(const A& a, const X& x, const Y& y, Z& z)
 {
+    vampir_trace<410> tracer;
     mult(a, x, z);
     z+= y;
 }
@@ -91,6 +95,7 @@ inline void mult(const A& a, const X& x, const Y& y, Z& z)
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::matrix, tag::matrix, tag::matrix)
 {
+    vampir_trace<411> tracer;
 #if 1
     MTL_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
 #else
@@ -126,6 +131,7 @@ inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::dense, tag::dense, tag::dense)
 {
+    vampir_trace<412> tracer;
     using assign::plus_sum; using assign::assign_sum; 
 
     static const unsigned long tiling1= detail::dmat_dmat_mult_tiling1<MatrixA, MatrixB, MatrixC>::value;
@@ -160,6 +166,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::dense, tag::dense, tag::sparse)
 {
+    vampir_trace<412> tracer;
     // This is a useless and extremely inefficient operation!!!!
     // We compute this with a dense matrix and copy the result back
     dense2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
@@ -172,6 +179,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::sparse, tag::sparse)
 {
+    vampir_trace<412> tracer;
     smat_smat_mult(A, b, c, Assign(), typename OrientedCollection<MatrixA>::orientation(),
 		   typename OrientedCollection<MatrixB>::orientation());
 }
@@ -179,6 +187,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::sparse, tag::dense)
 {
+    vampir_trace<412> tracer;
     // This is a useless and extremely inefficient operation!!!!
     // We compute this with a sparse matrix and copy the result back
     compressed2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
@@ -198,6 +207,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::dense, tag::dense)
 {
+    vampir_trace<412> tracer;
     using assign::plus_sum; using assign::assign_sum; 
     using namespace functor;
 
@@ -216,6 +226,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::dense, tag::sparse)
 {
+    vampir_trace<412> tracer;
     // This is a useless and extremely inefficient operation!!!!
     // We compute this with a sparse matrix and copy the result back
     dense2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
@@ -228,6 +239,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::dense, tag::sparse, tag::dense)
 {
+    vampir_trace<412> tracer;
     // This is could be a usefull operation, i.e. multiplying multiple row vectors with a sparse matrix
     // Might be supported in future
     // Now we compute this with a sparse matrix as first argument
@@ -244,6 +256,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::dense, tag::sparse, tag::sparse)
 {
+    vampir_trace<412> tracer;
     // This is not a usefull operation, because the result is dense
     // Now we compute this with a sparse matrix as first argument
     compressed2D<typename Collection<MatrixA>::value_type, matrix::parameters<> > A_copy(num_rows(A), num_cols(A));
@@ -257,6 +270,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::matrix, tag::col_vector, tag::col_vector)
 {
+    vampir_trace<411> tracer;
     // Vector must be column vector
     // If vector is row vector then matrix must have one column and the operation is a outer product
     //   -> result should be a matrix too
@@ -290,6 +304,7 @@ inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, t
 template <typename VectorIn, typename Matrix, typename VectorOut, typename Assign>
 inline void gen_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, tag::row_vector, tag::matrix, tag::row_vector)
 {
+    vampir_trace<411> tracer;
     // Vector must be column vector
     // If vector is row vector then matrix must have one column and the operation is a outer product
     //   -> result should be a matrix too

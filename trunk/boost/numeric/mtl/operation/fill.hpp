@@ -14,6 +14,7 @@
 #define MTL_FILL_INCLUDE
 
 #include <algorithm>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl {
 
@@ -21,6 +22,7 @@ namespace mtl {
 template <class Matrix>
 void fill(Matrix& ma, typename Matrix::value_type value)
 {
+    vampir_trace<309> tracer;
     std::fill(ma.elements(), ma.elements()+ma.num_elements(), value);
 }
 

@@ -23,6 +23,7 @@
 
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/linear_algebra/inverse.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -45,6 +46,7 @@ namespace detail {
     template <typename Matrix, typename Vector>
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::row_major, tag::unit_diagonal)
     {
+	vampir_trace<522> tracer;
 	namespace traits = mtl::traits;
 	using namespace tag; using traits::range_generator; using math::one; using mtl::detail::adjust_cursor;
 
@@ -77,6 +79,7 @@ namespace detail {
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::row_major,
 				 DiaTag)
     {
+	vampir_trace<522> tracer;
 	namespace traits = mtl::traits;
 	using namespace tag; using traits::range_generator; using math::one; using mtl::detail::adjust_cursor;
 
@@ -111,6 +114,7 @@ namespace detail {
     template <typename Matrix, typename Vector>
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::col_major, tag::unit_diagonal)
     {
+	vampir_trace<522> tracer;
 	using namespace tag; using mtl::traits::range_generator; using mtl::detail::adjust_cursor;
 
 	typedef typename range_generator<col, Matrix>::type       a_cur_type;    
@@ -136,7 +140,8 @@ namespace detail {
     template <typename Matrix, typename Vector, typename DiaTag>
     Vector inline lower_trisolve(const Matrix& A, const Vector& v, tag::col_major, DiaTag)
     {
-		using namespace tag; using mtl::traits::range_generator; using mtl::detail::adjust_cursor;
+	vampir_trace<522> tracer;
+	using namespace tag; using mtl::traits::range_generator; using mtl::detail::adjust_cursor;
 
 	typedef typename range_generator<col, Matrix>::type       a_cur_type;    
 	typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            

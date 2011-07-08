@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/concept/magnitude.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { 
 
@@ -29,6 +30,7 @@ namespace matrix {
     typename mtl::traits::enable_if_matrix<Matrix, std::pair<typename Collection<Matrix>::size_type, typename Collection<Matrix>::size_type> >::type
     inline max_abs_pos(const Matrix& A)
     {
+	vampir_trace<324> tracer;
 	namespace traits = mtl::traits;
 	using std::abs;
 	typedef typename Collection<Matrix>::value_type   value_type;
@@ -63,6 +65,7 @@ namespace vector {
     typename mtl::traits::enable_if_vector<Vector, typename Collection<Vector>::size_type>::type
     inline max_abs_pos(const Vector& v)
     {
+	vampir_trace<211> tracer;
 	using std::abs;
 	typedef typename Collection<Vector>::size_type    size_type;
 	typedef typename Collection<Vector>::value_type   value_type;

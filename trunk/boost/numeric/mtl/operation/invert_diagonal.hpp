@@ -17,14 +17,16 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/linear_algebra/inverse.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace matrix {
 ///Returns %matrix with invert diagonal
 template <typename Matrix>
 inline void invert_diagonal(Matrix& matrix)
 {
+    vampir_trace<312> tracer;
     using math::reciprocal;
-	namespace traits = mtl::traits;
+    namespace traits = mtl::traits;
 
     typename traits::row<Matrix>::type       row(matrix); 
     typename traits::col<Matrix>::type       col(matrix); 

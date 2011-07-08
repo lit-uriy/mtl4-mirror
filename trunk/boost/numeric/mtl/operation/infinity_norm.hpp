@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/operation/max_of_sums.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl {
@@ -33,6 +34,7 @@ namespace mtl {
 	typename traits::enable_if_vector<Vector, typename RealMagnitude<typename Collection<Vector>::value_type>::type>::type
 	inline infinity_norm(const Vector& vector)
 	{
+	    vampir_trace<206> tracer;
 	    typedef typename RealMagnitude<typename Collection<Vector>::value_type>::type result_type;
 	    return vector::reduction<Unroll, vector::infinity_norm_functor, result_type>::apply(vector);
 	}
@@ -61,6 +63,7 @@ namespace mtl {
 	typename mtl::traits::enable_if_matrix<Matrix, typename RealMagnitude<typename Collection<Matrix>::value_type>::type>::type
 	inline infinity_norm(const Matrix& matrix)
 	{
+	    vampir_trace<311> tracer;
 	    using mtl::impl::max_of_sums;
 	    typename mtl::traits::row<Matrix>::type                             row(matrix); 
 	    return max_of_sums(matrix, mtl::traits::is_row_major<typename OrientedCollection<Matrix>::orientation>(), 

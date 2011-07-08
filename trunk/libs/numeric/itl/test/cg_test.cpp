@@ -17,6 +17,7 @@
 
 int main()
 {
+    mtl::vampir_trace<999> tracer;
   // For a more realistic example set size to 1000 or larger
   const int size = 10, N = size * size;
 

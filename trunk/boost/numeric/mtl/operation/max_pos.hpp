@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/utility/pos_type.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/look_at_each_nonzero.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 #if 0
 #include <boost/numeric/mtl/utility/range_generator.hpp>
@@ -62,6 +63,7 @@ namespace mtl {
 	typename max_pos_functor<Vector>::pos_type
 	inline max_pos(const Vector& v)
 	{
+	    vampir_trace<213> tracer;
 	    max_pos_functor<Vector> f;
 	    look_at_each_nonzero_pos(v, f);
 

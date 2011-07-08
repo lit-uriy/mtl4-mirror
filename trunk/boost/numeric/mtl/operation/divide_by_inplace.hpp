@@ -32,7 +32,7 @@ namespace mtl {
 	template <typename Factor, typename Collection>
 	void divide_by_inplace(Collection& c, const Factor& alpha)
 	{
-		divide_by_inplace(c, alpha, typename traits::category<Factor>::type());
+	    divide_by_inplace(c, alpha, typename traits::category<Factor>::type());
 	}
 	
 	

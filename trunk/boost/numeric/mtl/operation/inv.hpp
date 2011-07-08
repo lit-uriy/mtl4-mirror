@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/vector/unit_vector.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -43,6 +44,7 @@ template <typename Matrix>
 typename traits::inv<Matrix>::type 
 inv_upper(Matrix const& A)
 {
+    vampir_trace<519> tracer;
     typedef typename Collection<Matrix>::value_type    value_type;
     typedef typename Collection<Matrix>::size_type     size_type;
    
@@ -64,6 +66,7 @@ template <typename Matrix>
 typename traits::inv<Matrix>::type
 inline inv_lower(Matrix const& A)
 {
+    vampir_trace<520> tracer;
     Matrix T(trans(A)); // Shouldn't be needed
     return typename traits::inv<Matrix>::type(trans(inv_upper(T)));
 }
@@ -76,6 +79,7 @@ template <typename Matrix>
 typename traits::inv<Matrix>::type
 inline inv(Matrix const& A)
 {
+    vampir_trace<521> tracer;
     typedef typename Collection<Matrix>::size_type     size_type;
     typedef typename Collection<Matrix>::value_type    value_type;
     typedef typename traits::inv<Matrix>::type         result_type;

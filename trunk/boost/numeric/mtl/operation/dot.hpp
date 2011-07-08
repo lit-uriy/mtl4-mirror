@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/meta_math/loop1.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { 
 
@@ -96,6 +97,7 @@ namespace mtl {
 		typename detail::dot_result<Vector1, Vector2>::type
 		static inline apply(const Vector1& v1, const Vector2& v2, ConjOpt conj_opt)
 		{
+		    vampir_trace<203> tracer;
 		    MTL_THROW_IF(size(v1) != size(v2), incompatible_size());
 		    
 		    typedef typename Collection<Vector1>::size_type              size_type;

@@ -26,6 +26,7 @@
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/meta_math/loop.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl { namespace matrix {
@@ -71,6 +72,7 @@ namespace impl {
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, boost::mpl::true_)
 {
+    vampir_trace<317> tracer;
     typedef typename static_num_rows<Matrix>::type size_type;
     static const size_type rows_a= static_num_rows<Matrix>::value, cols_a= static_num_cols<Matrix>::value;
 
@@ -89,6 +91,7 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, boost::mpl::false_)
 {
+    vampir_trace<318> tracer;
     // Naive implementation, will be moved to a functor and complemented with more efficient ones
 
     using math::zero; using mtl::vector::set_to_zero;
@@ -123,6 +126,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::multi_vector)
 {
+    vampir_trace<319> tracer;
     if (Assign::init_to_zero) set_to_zero(w);
     for (unsigned i= 0; i < num_cols(A); i++)
 	Assign::update(w, A.vector(i) * v[i]);
@@ -132,6 +136,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 template <typename TransposedMatrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void mat_cvec_mult(const TransposedMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::transposed_multi_vector)
 {
+    vampir_trace<320> tracer;
     typename TransposedMatrix::const_ref_type B= A.ref; // Referred matrix
 
     if (Assign::init_to_zero) set_to_zero(w);
@@ -143,6 +148,7 @@ inline void mat_cvec_mult(const TransposedMatrix& A, const VectorIn& v, VectorOu
 template <typename HermitianMatrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void mat_cvec_mult(const HermitianMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::hermitian_multi_vector)
 {
+    vampir_trace<321> tracer;
     typename HermitianMatrix::const_ref_type B= A.const_ref(); // Referred matrix
 
     if (Assign::init_to_zero) set_to_zero(w);
@@ -164,8 +170,9 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
+    vampir_trace<323> tracer;
     using namespace tag; 
-	using mtl::traits::range_generator;  
+    using mtl::traits::range_generator;  
     using math::zero;
     using mtl::vector::set_to_zero;
 
@@ -191,23 +198,24 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::col_major)
 {
-	using namespace tag; namespace traits = mtl::traits;
-	using traits::range_generator;  
-	using mtl::vector::set_to_zero;
-        typedef typename range_generator<col, Matrix>::type       a_cur_type;             
-        typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
+    vampir_trace<323> tracer;
+    using namespace tag; namespace traits = mtl::traits;
+    using traits::range_generator;  
+    using mtl::vector::set_to_zero;
+    typedef typename range_generator<col, Matrix>::type       a_cur_type;             
+    typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
 
-	typename traits::row<Matrix>::type                        row_a(A); 
-	typename traits::const_value<Matrix>::type                value_a(A); 
+    typename traits::row<Matrix>::type                        row_a(A); 
+    typename traits::const_value<Matrix>::type                value_a(A); 
 
-	if (Assign::init_to_zero) set_to_zero(w);
+    if (Assign::init_to_zero) set_to_zero(w);
 
-	unsigned rv= 0; // traverse all rows of v
-	for (a_cur_type ac= begin<col>(A), aend= end<col>(A); ac != aend; ++ac, ++rv) {
-	    typename Collection<VectorIn>::value_type    vv= v[rv]; 
-	    for (a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac); aic != aiend; ++aic) 
-		Assign::update(w[row_a(*aic)], value_a(*aic) * vv);
-	}
+    unsigned rv= 0; // traverse all rows of v
+    for (a_cur_type ac= begin<col>(A), aend= end<col>(A); ac != aend; ++ac, ++rv) {
+	typename Collection<VectorIn>::value_type    vv= v[rv]; 
+	for (a_icur_type aic= begin<nz>(ac), aiend= end<nz>(ac); aic != aiend; ++aic) 
+	    Assign::update(w[row_a(*aic)], value_a(*aic) * vv);
+    }
 }
 
 

@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace vector {
 
@@ -84,6 +85,7 @@ struct reduction
     template <typename Vector>
     Result static inline apply(const Vector& v)
     {
+	vampir_trace<209> tracer;
 	return apply(v, typename mtl::traits::category<Vector>::type());
     }
 
@@ -105,6 +107,7 @@ struct reduction
     template <typename Vector>
     Result static inline apply(const Vector& v, tag::dense)
     {
+	
 	BOOST_STATIC_ASSERT((Unroll >= 1));
 	BOOST_STATIC_ASSERT((Unroll <= 8)); // Might be relaxed in future versions
 

@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl {
 
@@ -30,6 +31,7 @@ namespace mtl {
 	// typename mtl::traits::enable_if_vector<Vector, compressed2D<typename Collection<Vector>::value_type> >::type
 	inline diagonal(const Vector& v)
 	{
+	    vampir_trace<307> tracer;
 	    typedef compressed2D<typename Collection<Vector>::value_type> matrix_type;
 	    matrix_type                           D(size(v), size(v));
 	    D= 0;
@@ -49,6 +51,7 @@ namespace mtl {
 	dense_vector<typename Collection<Matrix>::value_type>
 	inline diagonal(const Matrix& A)
 	{
+	    vampir_trace<307> tracer;
 	    using std::min;
 	    typedef typename Collection<Matrix>::size_type size_type;
 	    size_type n= min(num_rows(A), num_cols(A));
