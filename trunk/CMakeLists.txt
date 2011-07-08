@@ -1,3 +1,5 @@
+include(Vampir.cmake)
+
 project (mtl4)
 
 cmake_minimum_required(VERSION 2.6)
@@ -118,6 +120,13 @@ if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   endif()
 endif()
   
+
+if(VAMPIR_CXX)
+   add_definitions("-DMTL_HAS_VPT -DVTRACE -vt:inst manual")
+endif()
+
+
+
 
 find_program(VALGRIND_COMMAND valgrind)
 if(VALGRIND_COMMAND)
