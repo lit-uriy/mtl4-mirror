@@ -20,14 +20,14 @@ using namespace std;
 
 void helper_function()
 {
-    mtl::vpt::vampir<199> tracer; 
+    mtl::vampir_trace<199> tracer; 
 
     std::cout << "In helper_function <id=199>, it is " << (tracer.is_traced() ? "" : "not ") << "traced\n";
 }
 
 void function()
 {
-    mtl::vpt::vampir<299> tracer; 
+    mtl::vampir_trace<299> tracer; 
 
     std::cout << "In function <id=299>, it is " << (tracer.is_traced() ? "" : "not ") << "traced\n";
     helper_function();
@@ -37,7 +37,7 @@ void function()
 
 int test_main(int, char**) 
 {
-    mtl::vpt::vampir<999> tracer;
+    mtl::vampir_trace<999> tracer;
 
     helper_function();
     function();

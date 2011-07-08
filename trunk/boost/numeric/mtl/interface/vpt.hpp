@@ -27,65 +27,55 @@ namespace mtl { namespace vpt {
 #  define MTL_VPT_LEVEL 0
 #endif 
 
-template <bool C>
-struct sometimes_string
-{
-    sometimes_string(const char* str) : str(str) {}
-    sometimes_string(const std::string& str) : str(str) {}
-    std::string str;
-};
-
-template <>
-struct sometimes_string<false>
-{
-    sometimes_string(const char*) {}
-};
-
 template <int N>
-class vampir
+class vampir_trace
 {
     typedef boost::mpl::bool_<(MTL_VPT_LEVEL * 100 < N)> to_print;
   public:
-    vampir() { entry(to_print());  }
+    vampir_trace() { entry(to_print());  }
 
     void entry(boost::mpl::false_) {}
     void entry(boost::mpl::true_) 
     {	
-	VT_USER_START(name.str.c_str()); 
+	VT_USER_START(name.c_str()); 
 	// std::cout << "vpt_entry(" << N << ")\n";    
     }
     
-    ~vampir() { end(to_print());  }
+    ~vampir_trace() { end(to_print());  }
 
     void end(boost::mpl::false_) {}
     void end(boost::mpl::true_) 
     {
-	VT_USER_END(name.str.c_str()); 
+	VT_USER_END(name.c_str()); 
 	// std::cout << "vpt_end(" << N << ")\n";    
     }
     
     bool is_traced() { return to_print::value; }
 
   private:
-    static sometimes_string<to_print::value> name;
+    static std::string name;
 };
 
-template <> sometimes_string<(MTL_VPT_LEVEL * 100 < 199)> vampir<199>::name("helper_function");
-template <> sometimes_string<(MTL_VPT_LEVEL * 100 < 299)> vampir<299>::name("function");
-template <> sometimes_string<(MTL_VPT_LEVEL * 100 < 999)> vampir<999>::name("main");
+template <> std::string vampir_trace<199>::name("helper_function");
+template <> std::string vampir_trace<299>::name("function");
+template <> std::string vampir_trace<999>::name("main");
 
 #else
     template <int N>
-    class vampir 
+    class vampir_trace 
     {
       public:
-	vampir() {}
+	vampir_trace() {}
 	void show_vpt_level() {}
 	bool is_traced() { return false; }
     };
 #endif
 
 
-}} // namespace mtl::vpt
+} // namespace mtl
+
+using vpt::vampir_trace;
+
+} // namespace mtl
 
 #endif // MTL_VPT_VPT_INCLUDE
