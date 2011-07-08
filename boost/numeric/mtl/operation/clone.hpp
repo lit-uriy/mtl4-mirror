@@ -17,6 +17,7 @@
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl {
 
@@ -47,6 +48,7 @@ template <typename T>
 typename boost::enable_if<is_clonable<T>, T>::type
 clone(const T& x) 
 { 
+    vampir_trace<304> tracer;
     // std::cout << "Cloning clone function.\n";
     return T(x, clone_ctor()); 
 }

@@ -15,6 +15,7 @@
 
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace vector {
 
@@ -30,7 +31,7 @@ namespace mtl { namespace vector {
 	};
     }
 
-/// Dot product
+/// Cross product
 /** Only exists for 3 and 7 dimensions.
     Consider specialization for fixed-size types
  **/
@@ -38,6 +39,7 @@ template <typename Vector1, typename Vector2>
 typename detail::cross_result<Vector1, Vector2>::type
 inline cross(const Vector1& v1, const Vector2& v2)
 {
+    vampir_trace<202> tracer;
     MTL_THROW_IF((size(v1) != 3 && size(v1) != 7 ) || size(v1) != size(v2), incompatible_size());
     
     typename detail::cross_result<Vector1, Vector2>::type result(size(v1));

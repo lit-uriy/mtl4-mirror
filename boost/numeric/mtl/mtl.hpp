@@ -15,5 +15,6 @@
 
 #include <boost/numeric/mtl/types.hpp>
 #include <boost/numeric/mtl/operations.hpp>
+#include <boost/numeric/mtl/interfaces.hpp>
 
 #endif // MTL_MTL_INCLUDE

@@ -15,6 +15,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/copy_expression_const_ref_container.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace operation {
 
@@ -46,6 +47,7 @@ struct compute_summand< mat_cvec_times_expr<Matrix, CVector> >
     compute_summand(const mat_cvec_times_expr<Matrix, CVector>& expr) 
       : value(num_rows(expr.first))
     {
+	vampir_trace<305> tracer;
 	value= expr.first * expr.second;
     }
 

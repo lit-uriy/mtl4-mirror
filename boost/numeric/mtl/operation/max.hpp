@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl { namespace vector {
@@ -45,6 +46,7 @@ template <unsigned long Unroll, typename Value>
 typename Collection<Value>::value_type
 inline max(const Value& value)
 {
+    vampir_trace<210> tracer;
     return impl::max<Unroll>(value, typename traits::category<Value>::type());
 }
 

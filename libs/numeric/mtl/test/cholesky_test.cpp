@@ -106,6 +106,8 @@ void test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
+    mtl::vampir_trace<999> tracer;
+
     using namespace mtl;
     unsigned size= 13; 
     if (argc > 1) size= atoi(argv[1]); 

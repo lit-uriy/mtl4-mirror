@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/operation/assign_each_nonzero.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 #include <boost/lambda/lambda.hpp>
 
@@ -31,6 +32,7 @@ namespace mtl {
 	template <typename Factor, typename Collection>
 	inline Collection& left_scale_inplace(const Factor& alpha, tag::scalar, Collection& c)
 	{
+	    vampir_trace<314> tracer;	    
 	    assign_each_nonzero(c, alpha * boost::lambda::_1);
 	    return c;
 	}
@@ -38,6 +40,7 @@ namespace mtl {
 	template <typename Factor, typename Collection>
 	inline Collection& left_scale_inplace(const Factor& alpha, tag::matrix, Collection& c)
 	{
+	    vampir_trace<314> tracer;	    
 	    Collection tmp(alpha * c);
 	    swap(tmp, c);
 	    return c;

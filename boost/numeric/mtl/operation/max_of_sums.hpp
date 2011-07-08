@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 #include <numeric>
 #include <cmath>
@@ -32,6 +33,7 @@ template <typename Matrix, typename MinorIndex>
 typename RealMagnitude<typename Collection<Matrix>::value_type>::type
 inline max_of_sums(const Matrix& matrix, bool aligned, MinorIndex minor_index, unsigned dim2)
 {
+    vampir_trace<212> tracer;
     using std::max; using std::abs; using math::zero;
 
     typedef typename Collection<Matrix>::value_type   value_type;

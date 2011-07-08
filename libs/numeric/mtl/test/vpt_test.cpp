@@ -14,7 +14,6 @@
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
-#include <boost/numeric/mtl/interface/vpt.hpp>
 
 using namespace std;  
 

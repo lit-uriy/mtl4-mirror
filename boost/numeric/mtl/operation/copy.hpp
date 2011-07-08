@@ -24,6 +24,7 @@
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/crop.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
@@ -75,6 +76,7 @@ namespace mtl {
     template <typename Updater, typename MatrixSrc, typename MatrixDest>
     inline void gen_matrix_copy(const MatrixSrc& src, MatrixDest& dest, bool with_reset)
     {
+	vampir_trace<302> tracer;
 	MTL_THROW_IF(num_rows(src) != num_rows(dest) || num_cols(src) != num_cols(dest), incompatible_size());
 
 	if (with_reset)
@@ -125,6 +127,7 @@ namespace mtl {
     template <typename MatrixSrc, typename MatrixDest>
     inline void matrix_copy_ele_times(const MatrixSrc& src, MatrixDest& dest)
     {
+	vampir_trace<301> tracer;
 	MTL_THROW_IF(num_rows(src) != num_rows(dest) || num_cols(src) != num_cols(dest), incompatible_size());
 
 	typename traits::row<MatrixDest>::type             row(dest); 
@@ -157,6 +160,7 @@ namespace mtl {
     {
 	// Works only with dense vectors as dest !!!!! (source could be sparse)
 	// Needs vector inserter
+	vampir_trace<201> tracer;
 
 	BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<VectorSrc>::type,
  			                    typename ashape::ashape<VectorDest>::type>::value));
@@ -209,6 +213,7 @@ namespace mtl {
     template <typename CollSrc, typename CollDest>
     inline void copy(const CollSrc& src, CollDest& dest)
     {
+	vampir_trace<303> tracer;
 	return copy(src, traits::category<CollSrc>::type(), dest, traits::category<CollDest>::type());
     }
 

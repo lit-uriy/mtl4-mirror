@@ -14,6 +14,7 @@
 #define MTL_CROP_INCLUDE
 
 #include <boost/numeric/mtl/utility/enable_if.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl {
 
@@ -24,6 +25,7 @@ namespace mtl {
 	template <typename T>
 	typename mtl::traits::enable_if_vector<T, T&>::type inline crop(T& x)
 	{
+	    vampir_trace<306> tracer;
 	    x.crop(); return x;
 	}
     }
@@ -35,6 +37,7 @@ namespace mtl {
 	template <typename T>
 	typename mtl::traits::enable_if_matrix<T, T&>::type inline crop(T& x)
 	{
+	    vampir_trace<306> tracer;
 	    x.crop(); return x;
 	}
     }

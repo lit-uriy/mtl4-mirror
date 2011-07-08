@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
 
@@ -25,6 +26,7 @@ template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpac
 int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
        const Preconditioner& L, Iteration& iter)
 {
+    mtl::vampir_trace<601> tracer;
   typedef HilbertSpaceX Vector;
   typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
 
