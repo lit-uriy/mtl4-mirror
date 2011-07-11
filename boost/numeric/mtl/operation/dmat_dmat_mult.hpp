@@ -1020,7 +1020,7 @@ struct fully_unroll_dmat_dmat_mult_block<Max0, Max0, Max1, Max1, Max2, Max2, Ass
 
 template <typename Assign= assign::assign_sum, 
 	  typename Backup= gen_dmat_dmat_mult_t<Assign> >
-struct fully_unroll_fixes_size_dmat_dmat_mult_t
+struct fully_unroll_fixed_size_dmat_dmat_mult_t
 {
     // if C is empty just do nothing
     template <typename MatrixA, typename MatrixB, typename MatrixC>

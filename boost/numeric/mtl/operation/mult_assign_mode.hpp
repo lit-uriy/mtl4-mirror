@@ -138,9 +138,9 @@ struct mult_assign_mode<static_switch_dmat_dmat_mult_t<IsStatic, FunctorStatic, 
 };
 
 template <typename OldAssign, typename Backup, typename Assign>
-struct mult_assign_mode<fully_unroll_fixes_size_dmat_dmat_mult_t<OldAssign, Backup>, Assign>
+struct mult_assign_mode<fully_unroll_fixed_size_dmat_dmat_mult_t<OldAssign, Backup>, Assign>
 {
-    typedef fully_unroll_fixes_size_dmat_dmat_mult_t<Assign, Backup>             type;
+    typedef fully_unroll_fixed_size_dmat_dmat_mult_t<Assign, Backup>             type;
 };
 
 }} // namespace mtl::assign
