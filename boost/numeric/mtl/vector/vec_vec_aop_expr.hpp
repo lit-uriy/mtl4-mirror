@@ -29,6 +29,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/unroll_size1.hpp>
 #include <boost/numeric/mtl/utility/with_unroll1.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace vector {
 
@@ -102,6 +103,7 @@ struct vec_vec_aop_expr
 
     void assign(boost::mpl::false_)
     {
+	vampir_trace<217> tracer;
 	// If target is constructed by default it takes size of source
 	//int a= size(second);
 	//int b= second;
@@ -114,6 +116,7 @@ struct vec_vec_aop_expr
 
     void assign(boost::mpl::true_)
     {
+	vampir_trace<101> tracer;
 	MTL_DEBUG_THROW_IF(mtl::vector::size(first) != mtl::vector::size(second), incompatible_size()); // We cannot resize, only check
 	
 	// impl::assign<0, static_size<E1>::value-1, SFunctor>::apply(first, second); // Slower, at least on gcc

@@ -1043,7 +1043,7 @@ struct fully_unroll_fixed_size_dmat_dmat_mult_t
     typename boost::enable_if_c<static_size<MatrixA>::value != 0 && static_size<MatrixC>::value != 0>::type
     operator()(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {	
-	vampir_trace<409> tracer;
+	vampir_trace<102> tracer;
 	typedef typename static_num_rows<MatrixC>::type size_type;
 	static const size_type rows_c= static_num_rows<MatrixC>::value, cols_c= static_num_cols<MatrixC>::value, 
 	  	               cols_a= static_num_cols<MatrixA>::value;
