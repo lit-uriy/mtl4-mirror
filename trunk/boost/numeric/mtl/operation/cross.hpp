@@ -39,7 +39,7 @@ template <typename Vector1, typename Vector2>
 typename detail::cross_result<Vector1, Vector2>::type
 inline cross(const Vector1& v1, const Vector2& v2)
 {
-    vampir_trace<202> tracer;
+    vampir_trace<2002> tracer;
     MTL_THROW_IF((size(v1) != 3 && size(v1) != 7 ) || size(v1) != size(v2), incompatible_size());
     
     typename detail::cross_result<Vector1, Vector2>::type result(size(v1));

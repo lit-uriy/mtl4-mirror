@@ -46,7 +46,7 @@ template <unsigned long Unroll, typename Value>
 typename Collection<Value>::value_type
 inline max(const Value& value)
 {
-    vampir_trace<210> tracer;
+    vampir_trace<2010> tracer;
     return impl::max<Unroll>(value, typename traits::category<Value>::type());
 }
 

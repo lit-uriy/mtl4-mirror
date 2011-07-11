@@ -22,7 +22,7 @@ namespace mtl {
 template <class Matrix>
 void fill(Matrix& ma, typename Matrix::value_type value)
 {
-    vampir_trace<309> tracer;
+    vampir_trace<3009> tracer;
     std::fill(ma.elements(), ma.elements()+ma.num_elements(), value);
 }
 

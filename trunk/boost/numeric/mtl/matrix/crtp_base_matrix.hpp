@@ -56,7 +56,7 @@ private:
     /** Uses internally \sa diagonal_setup, for details see there. **/
     Matrix& assign(const Source& source, Matrix& matrix, ashape::scal)
     {
-	vampir_trace<326> tracer;
+	vampir_trace<3026> tracer;
 	MTL_DEBUG_THROW_IF(num_rows(matrix) * num_cols(matrix) == 0, 
 			   range_error("Trying to initialize a 0 by 0 matrix with a value"));
 	diagonal_setup(matrix, source);
@@ -66,7 +66,7 @@ private:
     /// Assign matrix expressions by copying except for some special expressions
     Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
     {
-	vampir_trace<327> tracer;
+	vampir_trace<3027> tracer;
 	// Self-assignment between different types shouldn't happen.	
 	matrix.checked_change_resource(source);
 	// del matrix.checked_change_dim(num_rows(source), num_cols(source));
@@ -85,7 +85,7 @@ struct crtp_assign<mat_mat_plus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<327> tracer;
+	vampir_trace<3027> tracer;
 	matrix.checked_change_resource(src.first);
 	// del checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix= src.first;
@@ -101,7 +101,7 @@ struct crtp_assign<mat_mat_minus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<327> tracer;
+	vampir_trace<3027> tracer;
 	matrix.checked_change_resource(src.first);
 	// del checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix= src.first;
@@ -115,7 +115,7 @@ struct crtp_assign<mat_mat_times_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<413> tracer;
+	vampir_trace<4013> tracer;
 	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
 	//std::cout << "Assign matrix product: factors.first =\n" << factors.first << "factors.second =\n" << factors.second;
 	matrix.checked_change_resource(factors.first, factors.second);
@@ -132,7 +132,7 @@ struct crtp_assign<mat_mat_ele_times_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_ele_times_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<328> tracer;
+	vampir_trace<3028> tracer;
 	operation::compute_factors<Matrix, mat_mat_ele_times_expr<E1, E2> > factors(src);
 	matrix.checked_change_resource(factors.first);
 	// del checked_change_dim(num_rows(factors.first), num_cols(factors.first));
@@ -149,7 +149,7 @@ struct crtp_assign<Value[Rows][Cols], Matrix>
 {
     Matrix& operator()(const Value src[Rows][Cols], Matrix& matrix)
     {
-	vampir_trace<327> tracer;
+	vampir_trace<3027> tracer;
 	typedef typename Collection<Matrix>::size_type size_type;
 
 	matrix.checked_change_dim(Rows, Cols);
@@ -168,7 +168,7 @@ struct crtp_assign<multi_vector<Vector>, Matrix>
 {
     Matrix& operator()(const multi_vector<Vector>& src, Matrix& matrix)
     {
-	vampir_trace<327> tracer;
+	vampir_trace<3027> tracer;
 	typedef typename Collection<Matrix>::size_type size_type;
 
 	matrix.checked_change_resource(src);
@@ -189,7 +189,7 @@ struct crtp_assign<io::matrix_file<IFStream, OFStream>, Matrix>
 {
     Matrix& operator()(const io::matrix_file<IFStream, OFStream>& file, Matrix& matrix)
     {
-	vampir_trace<329> tracer;
+	vampir_trace<3029> tracer;
 	IFStream stream(file.file_name().c_str());
 	stream >> matrix;
 	return matrix;
@@ -202,7 +202,7 @@ struct crtp_plus_assign
 {
     Matrix& operator()(const Source& source, Matrix& matrix)
     {
-	vampir_trace<330> tracer;
+	vampir_trace<3030> tracer;
 	return assign(source, matrix, typename ashape::ashape<Source>::type());
     }
   private:
@@ -222,7 +222,7 @@ struct crtp_plus_assign<mat_mat_plus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<330> tracer;
+	vampir_trace<3030> tracer;
 	matrix+= src.first;
 	return matrix+= src.second;
     }
@@ -233,7 +233,7 @@ struct crtp_plus_assign<mat_mat_minus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<330> tracer;
+	vampir_trace<3030> tracer;
 	matrix+= src.first;
 	return matrix-= src.second;
     }
@@ -244,7 +244,7 @@ struct crtp_plus_assign<mat_mat_ele_times_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_ele_times_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<330> tracer;
+	vampir_trace<3030> tracer;
 	Matrix Prod(ele_prod(src.first, src.second));
 	return matrix+= Prod;
     }
@@ -255,7 +255,7 @@ struct crtp_plus_assign<mat_mat_times_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<330> tracer;
+	vampir_trace<3030> tracer;
 	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
 	gen_mult(factors.first, factors.second, matrix, assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 	return matrix;
@@ -269,7 +269,7 @@ struct crtp_minus_assign
 {
     Matrix& operator()(const Source& source, Matrix& matrix)
     {
-	vampir_trace<331> tracer;
+	vampir_trace<3031> tracer;
 	return assign(source, matrix, typename ashape::ashape<Source>::type());
     }
 private:
@@ -289,7 +289,7 @@ struct crtp_minus_assign<mat_mat_plus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<331> tracer;
+	vampir_trace<3031> tracer;
 	matrix-= src.first;
 	return matrix-= src.second;
     }
@@ -304,7 +304,7 @@ struct crtp_minus_assign<mat_mat_minus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<331> tracer;
+	vampir_trace<3031> tracer;
 	matrix-= src.first;
 	return matrix+= src.second;
     }
@@ -315,7 +315,7 @@ struct crtp_minus_assign<mat_mat_ele_times_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_ele_times_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<331> tracer;
+	vampir_trace<3031> tracer;
 	Matrix Prod(ele_prod(src.first, src.second));
 	return matrix-= Prod;
     }
@@ -328,7 +328,7 @@ struct crtp_minus_assign<mat_mat_times_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<331> tracer;
+	vampir_trace<3031> tracer;
 	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
 	gen_mult(factors.first, factors.second, matrix, assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
 	return matrix;
@@ -347,7 +347,7 @@ private:
     template <typename Source>
     Matrix& density_assign(const Source& src, boost::mpl::true_)
     {
-	vampir_trace<332> tracer;
+	vampir_trace<3032> tracer;
 	// typedef typename Collection<Source>::size_type size_type;
 	typedef unsigned size_type;
 
@@ -375,7 +375,7 @@ private:
     template <typename Source>
     Matrix& density_plus_assign(const Source& src, boost::mpl::true_)
     {
-	vampir_trace<333> tracer;
+	vampir_trace<3033> tracer;
 	// typedef typename Collection<Source>::size_type size_type;
 	typedef unsigned size_type;
 
@@ -402,7 +402,7 @@ private:
     template <typename Source>
     Matrix& density_minus_assign(const Source& src, boost::mpl::true_)
     {
-	vampir_trace<334> tracer;
+	vampir_trace<3034> tracer;
 	// typedef typename Collection<Source>::size_type size_type;
 	typedef unsigned size_type;
 
@@ -429,7 +429,7 @@ private:
     template <typename Source>
     Matrix& density_ele_rscale(const Source& src, boost::mpl::true_)
     {
-	vampir_trace<335> tracer;
+	vampir_trace<3035> tracer;
 	// typedef typename Collection<Source>::size_type size_type;
 	typedef unsigned size_type;
 
@@ -525,7 +525,7 @@ private:
 
 	~scalar_assign()
 	{
-	    vampir_trace<336> tracer;
+	    vampir_trace<3036> tracer;
 	    if (with_comma) {
 		MTL_DEBUG_THROW_IF(r != num_rows(matrix), incompatible_size("Not all matrix entries initialized!"));
 	    } else {

@@ -47,7 +47,7 @@ struct vec_scal_aop_expr
     ~vec_scal_aop_expr()
     {
 	if (!delayed_assign) {
-	    vampir_trace<218> tracer;
+	    vampir_trace<2018> tracer;
 	    if (with_comma) {
 		MTL_DEBUG_THROW_IF(index != mtl::vector::size(first), incompatible_size("Not all vector entries initialized!"));
 	    } else

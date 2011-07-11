@@ -30,7 +30,7 @@ namespace mtl {
 	template <typename Vector, typename Functor>
 	inline void look_at_each_nonzero(const Vector& v, Functor& f)
 	{
-	    vampir_trace<207> tracer;
+	    vampir_trace<2007> tracer;
 	    typedef typename mtl::traits::range_generator<tag::const_iter::nz, Vector>::type iterator;
 	    for (iterator i= begin<tag::iter::nz>(v), iend= end<tag::iter::nz>(v); i != iend; ++i)
 		f(*i);
@@ -41,7 +41,7 @@ namespace mtl {
 	typename mtl::traits::enable_if_vector<Vector>::type // to be called for vectors only 
 	inline look_at_each_nonzero_pos(const Vector& v, Functor& f)
 	{
-	    vampir_trace<208> tracer;
+	    vampir_trace<2008> tracer;
 	    typename mtl::traits::index<Vector>::type           index(v); 
 	    typename mtl::traits::const_value<Vector>::type     value(v); 
 
@@ -58,7 +58,7 @@ namespace mtl {
 	template <typename Matrix, typename Functor>
 	inline void look_at_each_nonzero(const Matrix& A, Functor& f)
 	{
-	    vampir_trace<316> tracer;
+	    vampir_trace<3016> tracer;
 	    typename mtl::traits::const_value<Matrix>::type     value(A); 
 
 	    typedef typename mtl::traits::range_generator<tag::major, Matrix>::type     cursor_type;
@@ -75,7 +75,7 @@ namespace mtl {
 	typename mtl::traits::enable_if_matrix<Matrix>::type // to be called for matrices only
 	inline look_at_each_nonzero_pos(const Matrix& A, Functor& f)
 	{
-	    vampir_trace<317> tracer;
+	    vampir_trace<3017> tracer;
 	    typename mtl::traits::row<Matrix>::type             row(A); 
 	    typename mtl::traits::col<Matrix>::type             col(A); 
 	    typename mtl::traits::const_value<Matrix>::type     value(A); 

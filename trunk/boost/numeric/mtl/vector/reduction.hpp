@@ -85,7 +85,7 @@ struct reduction
     template <typename Vector>
     Result static inline apply(const Vector& v)
     {
-	vampir_trace<209> tracer;
+	vampir_trace<2009> tracer;
 	return apply(v, typename mtl::traits::category<Vector>::type());
     }
 

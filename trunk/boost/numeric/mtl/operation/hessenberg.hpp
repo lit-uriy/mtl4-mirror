@@ -34,7 +34,7 @@ namespace mtl { namespace matrix {
 template <typename Matrix>
 Matrix inline hessenberg_factors(const Matrix& A)
 {
-    vampir_trace<514> tracer;
+    vampir_trace<5014> tracer;
     if (num_rows(A) < 3)
 	return A;
 
@@ -88,7 +88,7 @@ Matrix inline hessenberg_factors(const Matrix& A)
 template <typename Matrix>
 Matrix inline extract_householder_hessenberg(const Matrix& H)
 {
-    vampir_trace<515> tracer;
+    vampir_trace<5015> tracer;
     return Matrix(tril(H, -2));
 }
 
@@ -96,7 +96,7 @@ Matrix inline extract_householder_hessenberg(const Matrix& H)
 template <typename Matrix>
 Matrix inline householder_hessenberg(const Matrix& A)
 {
-    vampir_trace<516> tracer;
+    vampir_trace<5016> tracer;
     return Matrix(tril(hessenberg_factors(A), -2));
 }
 
@@ -105,7 +105,7 @@ Matrix inline householder_hessenberg(const Matrix& A)
 template <typename Matrix>
 Matrix inline extract_hessenberg(const Matrix& H)
 {
-    vampir_trace<517> tracer;
+    vampir_trace<5017> tracer;
     return Matrix(triu(H, -1));
 }
 
@@ -113,7 +113,7 @@ Matrix inline extract_hessenberg(const Matrix& H)
 template <typename Matrix>
 Matrix inline hessenberg(const Matrix& A)
 {
-    vampir_trace<518> tracer;
+    vampir_trace<5018> tracer;
     // return triu(hessenberg_factors(A), -1);
     MTL_THROW_IF(num_rows(A) < 3, matrix_too_small());
 
@@ -142,7 +142,7 @@ Matrix inline hessenberg(const Matrix& A)
 template <typename Matrix>
 Matrix inline hessenberg_q(const Matrix& A)
 {
-    vampir_trace<513> tracer;
+    vampir_trace<5013> tracer;
     using std::abs;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i

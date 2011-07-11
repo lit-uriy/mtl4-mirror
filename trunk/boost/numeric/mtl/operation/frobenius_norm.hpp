@@ -31,7 +31,7 @@ template <typename Matrix>
 typename RealMagnitude<typename Collection<Matrix>::value_type>::type
 inline frobenius_norm(const Matrix& matrix)
 {
-    vampir_trace<310> tracer;
+    vampir_trace<3010> tracer;
     using std::sqrt; using std::abs; using math::zero;
     namespace traits = mtl::traits;
     typename traits::const_value<Matrix>::type     value(matrix); 

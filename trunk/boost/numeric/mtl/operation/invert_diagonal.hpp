@@ -24,7 +24,7 @@ namespace mtl { namespace matrix {
 template <typename Matrix>
 inline void invert_diagonal(Matrix& matrix)
 {
-    vampir_trace<312> tracer;
+    vampir_trace<3012> tracer;
     using math::reciprocal;
     namespace traits = mtl::traits;
 

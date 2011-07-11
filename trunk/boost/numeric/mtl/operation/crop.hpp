@@ -25,7 +25,7 @@ namespace mtl {
 	template <typename T>
 	typename mtl::traits::enable_if_vector<T, T&>::type inline crop(T& x)
 	{
-	    vampir_trace<306> tracer;
+	    vampir_trace<3006> tracer;
 	    x.crop(); return x;
 	}
     }
@@ -37,7 +37,7 @@ namespace mtl {
 	template <typename T>
 	typename mtl::traits::enable_if_matrix<T, T&>::type inline crop(T& x)
 	{
-	    vampir_trace<306> tracer;
+	    vampir_trace<3006> tracer;
 	    x.crop(); return x;
 	}
     }

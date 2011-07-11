@@ -72,7 +72,7 @@ namespace impl {
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, boost::mpl::true_)
 {
-    vampir_trace<317> tracer;
+    vampir_trace<3017> tracer;
     typedef typename static_num_rows<Matrix>::type size_type;
     static const size_type rows_a= static_num_rows<Matrix>::value, cols_a= static_num_cols<Matrix>::value;
 
@@ -91,7 +91,7 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, boost::mpl::false_)
 {
-    vampir_trace<318> tracer;
+    vampir_trace<3018> tracer;
     // Naive implementation, will be moved to a functor and complemented with more efficient ones
 
     using math::zero; using mtl::vector::set_to_zero;
@@ -126,7 +126,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::multi_vector)
 {
-    vampir_trace<319> tracer;
+    vampir_trace<3019> tracer;
     if (Assign::init_to_zero) set_to_zero(w);
     for (unsigned i= 0; i < num_cols(A); i++)
 	Assign::update(w, A.vector(i) * v[i]);
@@ -136,7 +136,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 template <typename TransposedMatrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void mat_cvec_mult(const TransposedMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::transposed_multi_vector)
 {
-    vampir_trace<320> tracer;
+    vampir_trace<3020> tracer;
     typename TransposedMatrix::const_ref_type B= A.ref; // Referred matrix
 
     if (Assign::init_to_zero) set_to_zero(w);
@@ -148,7 +148,7 @@ inline void mat_cvec_mult(const TransposedMatrix& A, const VectorIn& v, VectorOu
 template <typename HermitianMatrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void mat_cvec_mult(const HermitianMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::hermitian_multi_vector)
 {
-    vampir_trace<321> tracer;
+    vampir_trace<3021> tracer;
     typename HermitianMatrix::const_ref_type B= A.const_ref(); // Referred matrix
 
     if (Assign::init_to_zero) set_to_zero(w);
@@ -170,7 +170,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
-    vampir_trace<323> tracer;
+    vampir_trace<3023> tracer;
     using namespace tag; 
     using mtl::traits::range_generator;  
     using math::zero;
@@ -198,7 +198,7 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::col_major)
 {
-    vampir_trace<323> tracer;
+    vampir_trace<3023> tracer;
     using namespace tag; namespace traits = mtl::traits;
     using traits::range_generator;  
     using mtl::vector::set_to_zero;

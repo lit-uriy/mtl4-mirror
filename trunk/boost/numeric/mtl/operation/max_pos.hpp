@@ -63,7 +63,7 @@ namespace mtl {
 	typename max_pos_functor<Vector>::pos_type
 	inline max_pos(const Vector& v)
 	{
-	    vampir_trace<213> tracer;
+	    vampir_trace<2013> tracer;
 	    max_pos_functor<Vector> f;
 	    look_at_each_nonzero_pos(v, f);
 
