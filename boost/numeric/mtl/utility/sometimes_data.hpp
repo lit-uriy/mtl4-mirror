@@ -22,8 +22,8 @@ struct sometimes_data
     T data;
 };
 
-template <>
-struct sometimes_data<false>
+template <typename T>
+struct sometimes_data<false, T>
 {
     sometimes_data(const T&) {}
 };
