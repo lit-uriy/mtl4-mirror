@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/two_norm.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace vector {
 
@@ -31,6 +32,7 @@ namespace mtl { namespace vector {
 	template <typename VVector>
 	inline void orth(VVector& v, typename mtl::Collection<VVector>::size_type j, tag::vector)
 	{
+		vampir_trace<2018> tracer;
 	    using mtl::two_norm; using mtl::size1D;
 	    MTL_DEBUG_THROW_IF(is_negative(j) || j >= size1D(v), index_out_of_range());
 
@@ -55,7 +57,7 @@ namespace mtl { namespace vector {
 		   <typename mtl::Collection<VVector>::value_type
 		   >::value_type >
 	inline orthogonalize_factors(VVector& v, tag::vector)
-	{
+	{	vampir_trace<2019> tracer;
 	    using ::mtl::two_norm; using math::zero; using mtl::size1D;
 	    typedef typename mtl::Collection<VVector>::size_type  Size;
 	    typedef typename mtl::Collection<VVector>::value_type Vector;
