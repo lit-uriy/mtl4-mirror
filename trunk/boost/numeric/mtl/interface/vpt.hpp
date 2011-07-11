@@ -57,7 +57,8 @@ class vampir_trace
 };
 
 // Categories:
-// Utilities:                       100
+// Utilities:                       00
+// Static size operations:          100
 // Vector operations:               200
 // Matrix Vector & single matrix:   300
 // Matrix matrix operations:        400
@@ -65,14 +66,17 @@ class vampir_trace
 // Iterative solvers:               600
 
 
-// Utilities:                       100
-template <> std::string vampir_trace<101>::name("copysign");
+// Utilities:                       00
+template <> std::string vampir_trace<01>::name("copysign");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
     vampir_trace<> tracer;
 
 #endif
+// Static size operations:          100
+template <> std::string vampir_trace<101>::name("stat_vec_expr");
+template <> std::string vampir_trace<102>::name("fixed_size_dmat_dmat_mult");
 
 // Vector operations:               200
 template <> std::string vampir_trace<201>::name("gen_vector_copy");
@@ -90,8 +94,8 @@ template <> std::string vampir_trace<212>::name("max_of_sums");
 template <> std::string vampir_trace<213>::name("vector::max_pos");
 template <> std::string vampir_trace<214>::name("merge_complex_vector");
 template <> std::string vampir_trace<215>::name("vector::one_norm");
-template <> std::string vampir_trace<216>::name("");
-template <> std::string vampir_trace<217>::name("");
+template <> std::string vampir_trace<216>::name("vector::diagonal");
+template <> std::string vampir_trace<217>::name("dyn_vec_expr");
 template <> std::string vampir_trace<218>::name("");
 template <> std::string vampir_trace<219>::name("");				      
 template <> std::string vampir_trace<220>::name("");
@@ -130,7 +134,7 @@ template <> std::string vampir_trace<303>::name("copy");
 template <> std::string vampir_trace<304>::name("clone");
 template <> std::string vampir_trace<305>::name("compute_summand");
 template <> std::string vampir_trace<306>::name("crop");
-template <> std::string vampir_trace<307>::name("diagonal");
+template <> std::string vampir_trace<307>::name("matrix::diagonal");
 template <> std::string vampir_trace<308>::name("assign_each_nonzero");
 template <> std::string vampir_trace<309>::name("fill");
 template <> std::string vampir_trace<310>::name("frobenius_norm");
@@ -181,7 +185,7 @@ template <> std::string vampir_trace<405>::name("tiling_22_dmat_dmat_mult");
 template <> std::string vampir_trace<406>::name("wrec_dmat_dmat_mult");
 template <> std::string vampir_trace<407>::name("recursive_dmat_dmat_mult");
 template <> std::string vampir_trace<408>::name("xgemm");
-template <> std::string vampir_trace<409>::name("fixed_size_dmat_dmat_mult");
+template <> std::string vampir_trace<409>::name("");
 template <> std::string vampir_trace<410>::name("mult");
 template <> std::string vampir_trace<411>::name("gen_mult");
 template <> std::string vampir_trace<412>::name("mat_mat_mult");

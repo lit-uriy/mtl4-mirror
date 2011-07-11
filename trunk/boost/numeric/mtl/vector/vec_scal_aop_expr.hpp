@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl { namespace vector {
@@ -46,6 +47,7 @@ struct vec_scal_aop_expr
     ~vec_scal_aop_expr()
     {
 	if (!delayed_assign) {
+	    vampir_trace<218> tracer;
 	    if (with_comma) {
 		MTL_DEBUG_THROW_IF(index != mtl::vector::size(first), incompatible_size("Not all vector entries initialized!"));
 	    } else
