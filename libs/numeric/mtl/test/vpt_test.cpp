@@ -39,7 +39,7 @@ int test_main(int, char**)
     mtl::vampir_trace<999> tracer;
 
     helper_function();
-    function();
+    ::function(); // explicit nomination because VS2010 has ambiguity with std::tr1::function
 
     return 0; 
 }
