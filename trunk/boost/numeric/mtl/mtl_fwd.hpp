@@ -398,7 +398,7 @@ namespace mtl {
     template <typename Assign, typename Backup> struct gen_blas_dmat_dmat_mult_t;
     template <std::size_t SizeLimit, typename FunctorSmall, typename FunctorLarge> struct size_switch_dmat_dmat_mult_t;
     template <bool IsStatic, typename FunctorStatic, typename FunctorDynamic> struct static_switch_dmat_dmat_mult_t;
-    template <typename Assign, typename Backup> struct fully_unroll_fixes_size_dmat_dmat_mult_t;
+    template <typename Assign, typename Backup> struct fully_unroll_fixed_size_dmat_dmat_mult_t;
 
 } // namespace mtl
 
