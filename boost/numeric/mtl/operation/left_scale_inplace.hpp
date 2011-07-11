@@ -32,7 +32,7 @@ namespace mtl {
 	template <typename Factor, typename Collection>
 	inline Collection& left_scale_inplace(const Factor& alpha, tag::scalar, Collection& c)
 	{
-	    vampir_trace<314> tracer;	    
+	    vampir_trace<3014> tracer;	    
 	    assign_each_nonzero(c, alpha * boost::lambda::_1);
 	    return c;
 	}
@@ -40,7 +40,7 @@ namespace mtl {
 	template <typename Factor, typename Collection>
 	inline Collection& left_scale_inplace(const Factor& alpha, tag::matrix, Collection& c)
 	{
-	    vampir_trace<314> tracer;	    
+	    vampir_trace<3014> tracer;	    
 	    Collection tmp(alpha * c);
 	    swap(tmp, c);
 	    return c;

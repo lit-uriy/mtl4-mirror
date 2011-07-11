@@ -97,7 +97,7 @@ namespace mtl {
 		typename detail::dot_result<Vector1, Vector2>::type
 		static inline apply(const Vector1& v1, const Vector2& v2, ConjOpt conj_opt)
 		{
-		    vampir_trace<203> tracer;
+		    vampir_trace<2003> tracer;
 		    MTL_THROW_IF(size(v1) != size(v2), incompatible_size());
 		    
 		    typedef typename Collection<Vector1>::size_type              size_type;

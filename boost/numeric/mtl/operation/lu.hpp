@@ -39,7 +39,7 @@ namespace mtl { namespace matrix {
 template <typename Matrix>
 void inline lu(Matrix& LU, double eps= 0)
 {
-    vampir_trace<523> tracer;
+    vampir_trace<5023> tracer;
     using std::abs;
     MTL_THROW_IF(num_rows(LU) != num_cols(LU), matrix_not_square());
 
@@ -57,7 +57,7 @@ void inline lu(Matrix& LU, double eps= 0)
 template <typename Matrix, typename PermuationVector>
 void inline lu(Matrix& A, PermuationVector& P, double eps= 0)
 {
-    vampir_trace<524> tracer;
+    vampir_trace<5024> tracer;
     using math::zero; using std::abs;
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type ncols = num_cols(A), nrows = num_rows(A);
@@ -88,7 +88,7 @@ void inline lu(Matrix& A, PermuationVector& P, double eps= 0)
 template <typename Matrix>
 Matrix inline lu_f(const Matrix& A, double eps= 0)
 {
-    vampir_trace<525> tracer;
+    vampir_trace<5025> tracer;
     Matrix LU(A);
     lu(LU, eps);
     return LU;
@@ -98,7 +98,7 @@ Matrix inline lu_f(const Matrix& A, double eps= 0)
 template <typename Matrix, typename Vector>
 Vector inline lu_solve_straight(const Matrix& A, const Vector& b, double eps= 0)
 {
-    vampir_trace<526> tracer;
+    vampir_trace<5026> tracer;
     Matrix LU(A);
     lu(LU, eps);
     return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), b));
@@ -108,7 +108,7 @@ Vector inline lu_solve_straight(const Matrix& A, const Vector& b, double eps= 0)
 template <typename Matrix, typename PermVector, typename Vector>
 Vector inline lu_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 {
-    vampir_trace<527> tracer;
+    vampir_trace<5027> tracer;
     return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), Vector(matrix::permutation(P) * b)));
 }
 
@@ -117,7 +117,7 @@ Vector inline lu_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 template <typename Matrix, typename Vector>
 Vector inline lu_solve(const Matrix& A, const Vector& b, double eps= 0)
 {
-    vampir_trace<528> tracer;
+    vampir_trace<5028> tracer;
     dense_vector<std::size_t> P(num_rows(A));
     Matrix                    LU(A);
 
@@ -131,7 +131,7 @@ Vector inline lu_solve(const Matrix& A, const Vector& b, double eps= 0)
 template <typename Matrix, typename PermVector, typename Vector>
 Vector inline lu_adjoint_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 {
-    vampir_trace<529> tracer;
+    vampir_trace<5029> tracer;
     return Vector(trans(matrix::permutation(P)) * unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b)));
 }
 
@@ -140,7 +140,7 @@ Vector inline lu_adjoint_apply(const Matrix& LU, const PermVector& P, const Vect
 template <typename Matrix, typename Vector>
 Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b, double eps= 0)
 {
-    vampir_trace<530> tracer;
+    vampir_trace<5030> tracer;
     dense_vector<std::size_t> P(num_rows(A));
     Matrix                    LU(A);
 

@@ -26,7 +26,7 @@ namespace mtl { namespace vector {
 template <typename VectorReal, typename VectorImaginary, typename VectorComplex>
 inline void merge_complex_vector(const VectorReal& r, const VectorImaginary& i, VectorComplex& c)
 {
-    vampir_trace<214> tracer;
+    vampir_trace<2014> tracer;
     typedef typename Collection<VectorComplex>::value_type value_type;
 
     MTL_THROW_IF(size(r) != size(i), incompatible_size());

@@ -31,7 +31,7 @@ template <typename Vector>
 std::pair<typename mtl::dense_vector<typename Collection<Vector>::value_type>, typename Collection<Vector>::value_type>
 inline householder(Vector& y)
 {
-    vampir_trace<204> tracer;
+    vampir_trace<2004> tracer;
     assert(size(y) > 0);
     typedef typename  Collection<Vector>::value_type   value_type;
     typedef typename  Collection<Vector>::size_type    size_type;
@@ -61,7 +61,7 @@ template <typename Vector>
 typename mtl::dense_vector<typename Collection<Vector>::value_type>
 inline householder_s(Vector& y)
 {
-    vampir_trace<205> tracer;
+    vampir_trace<2005> tracer;
     typedef typename  Collection<Vector>::value_type   value_type;
     const value_type  zero= math::zero(y[0]);
 

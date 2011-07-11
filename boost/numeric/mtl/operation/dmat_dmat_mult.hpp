@@ -74,7 +74,7 @@ private:
 
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::has_cursor, tag::has_cursor)
     {
-	vampir_trace<401> tracer;
+	vampir_trace<4001> tracer;
 	// std::cout << "Canonical cursor\n";
 	typedef glas::tag::row                                          row;
 	typedef glas::tag::col                                          col;
@@ -179,7 +179,7 @@ private:
 
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::has_iterator, tag::has_iterator)
     {
-	vampir_trace<402> tracer;
+	vampir_trace<4002> tracer;
 	// std::cout << "Canonical iterator\n";
 	using namespace tag;
 	using traits::range_generator;  
@@ -352,7 +352,7 @@ private:
 
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::has_2D_layout, tag::has_2D_layout)
     {
-	vampir_trace<403> tracer;
+	vampir_trace<4003> tracer;
 	// Indices run out of range for smaller matrices
 	if (num_rows(A) < 2 || num_cols(A) < 2 || num_cols(B) < 2) {
 	    Backup()(A, B, C);
@@ -459,7 +459,7 @@ private:
 
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::has_2D_layout, tag::has_2D_layout)
     {
-	vampir_trace<404> tracer;
+	vampir_trace<4004> tracer;
 	// Indices run out of range for smaller matrices
 	if (num_rows(A) < 2 || num_cols(A) < 2 || num_cols(B) < 2) {
 	    Backup()(A, B, C);
@@ -593,7 +593,7 @@ private:
 
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::has_2D_layout, tag::has_2D_layout)
     {
-	vampir_trace<405> tracer;
+	vampir_trace<4005> tracer;
 	// Indices run out of range for smaller matrices
 	if (num_rows(A) < 2 || num_cols(A) < 2 || num_cols(B) < 2) {
 	    Backup()(A, B, C);
@@ -688,7 +688,7 @@ namespace wrec {
 	template <typename RecA, typename RecB, typename RecC>
 	void operator()(RecA const& rec_a, RecB const& rec_b, RecC& rec_c)
 	{
-	    vampir_trace<406> tracer;
+	    vampir_trace<4006> tracer;
 	    // std::cout << "wrec::mult \n";
 	    using namespace recursion;
 	    if (is_empty(rec_a) || is_empty(rec_b) || is_empty(rec_c))
@@ -745,7 +745,7 @@ private:
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, 
 	       tag::qsub_dividable, tag::qsub_dividable, tag::qsub_dividable)
     {
-	vampir_trace<407> tracer;
+	vampir_trace<4007> tracer;
 	// std::cout << "do recursion\n";
 	if (Assign::init_to_zero) set_to_zero(C);
 
@@ -820,7 +820,7 @@ namespace detail {
     void inline xgemm(const dense2D<Value, ParaA>& A, const dense2D<Value, ParaB>& B, 
 		      dense2D<Value, ParaC>& C, Function f, Assign)
     {
-	vampir_trace<408> tracer;
+	vampir_trace<4008> tracer;
 	// std::cout << "use generic BLAS\n";
 	int m= num_rows(A), n= num_cols(B), k= num_cols(A), lda= A.get_ldim(), ldb= B.get_ldim(), ldc= C.get_ldim();
 	Value alpha= dgemm_alpha(Assign()), beta= dgemm_beta(Assign());
@@ -1043,7 +1043,7 @@ struct fully_unroll_fixed_size_dmat_dmat_mult_t
     typename boost::enable_if_c<static_size<MatrixA>::value != 0 && static_size<MatrixC>::value != 0>::type
     operator()(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {	
-	vampir_trace<102> tracer;
+	vampir_trace<1002> tracer;
 	typedef typename static_num_rows<MatrixC>::type size_type;
 	static const size_type rows_c= static_num_rows<MatrixC>::value, cols_c= static_num_cols<MatrixC>::value, 
 	  	               cols_a= static_num_cols<MatrixA>::value;

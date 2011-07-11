@@ -22,7 +22,7 @@ namespace mtl { namespace vector {
 template <typename Vector>
 void iota(Vector& v, const typename Collection<Vector>::value_type offset= 0)
 {
-    vampir_trace<313> tracer;
+    vampir_trace<3013> tracer;
     for (typename Collection<Vector>::size_type i= 0; i < size(v); i++)
 	v[i]= i + offset;
 }

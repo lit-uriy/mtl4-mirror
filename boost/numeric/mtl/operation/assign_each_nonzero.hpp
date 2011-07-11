@@ -26,7 +26,7 @@ namespace mtl {
 	template <typename Vector, typename Functor>
 	inline void assign_each_nonzero(Vector& v, const Functor& f)
 	{
-	    vampir_trace<308> tracer;
+	    vampir_trace<3008> tracer;
 	    typedef typename traits::range_generator<tag::iter::nz, Vector>::type iterator;
 	    for (iterator i= begin<tag::iter::nz>(v), iend= end<tag::iter::nz>(v); i != iend; ++i)
 		*i= f(*i);
@@ -40,7 +40,7 @@ namespace mtl {
 	template <typename Matrix, typename Functor>
 	inline void assign_each_nonzero(Matrix& m, const Functor& f)
 	{
-	    vampir_trace<308> tracer;
+	    vampir_trace<3008> tracer;
 	    typename mtl::traits::value<Matrix>::type     value(m); 
 
 	    typedef typename mtl::traits::range_generator<tag::major, Matrix>::type     cursor_type;

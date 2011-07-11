@@ -44,7 +44,7 @@ template <typename Matrix>
 typename traits::inv<Matrix>::type 
 inv_upper(Matrix const& A)
 {
-    vampir_trace<519> tracer;
+    vampir_trace<5019> tracer;
     typedef typename Collection<Matrix>::value_type    value_type;
     typedef typename Collection<Matrix>::size_type     size_type;
    
@@ -66,7 +66,7 @@ template <typename Matrix>
 typename traits::inv<Matrix>::type
 inline inv_lower(Matrix const& A)
 {
-    vampir_trace<520> tracer;
+    vampir_trace<5020> tracer;
     Matrix T(trans(A)); // Shouldn't be needed
     return typename traits::inv<Matrix>::type(trans(inv_upper(T)));
 }
@@ -79,7 +79,7 @@ template <typename Matrix>
 typename traits::inv<Matrix>::type
 inline inv(Matrix const& A)
 {
-    vampir_trace<521> tracer;
+    vampir_trace<5021> tracer;
     typedef typename Collection<Matrix>::size_type     size_type;
     typedef typename Collection<Matrix>::value_type    value_type;
     typedef typename traits::inv<Matrix>::type         result_type;

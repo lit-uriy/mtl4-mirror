@@ -31,7 +31,7 @@ namespace mtl {
 	// typename mtl::traits::enable_if_vector<Vector, compressed2D<typename Collection<Vector>::value_type> >::type
 	inline diagonal(const Vector& v)
 	{
-	    vampir_trace<216> tracer;
+	    vampir_trace<2016> tracer;
 	    typedef compressed2D<typename Collection<Vector>::value_type> matrix_type;
 	    matrix_type                           D(size(v), size(v));
 	    D= 0;
@@ -51,7 +51,7 @@ namespace mtl {
 	dense_vector<typename Collection<Matrix>::value_type>
 	inline diagonal(const Matrix& A)
 	{
-	    vampir_trace<307> tracer;
+	    vampir_trace<3007> tracer;
 	    using std::min;
 	    typedef typename Collection<Matrix>::size_type size_type;
 	    size_type n= min(num_rows(A), num_cols(A));

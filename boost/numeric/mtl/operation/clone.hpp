@@ -48,7 +48,7 @@ template <typename T>
 typename boost::enable_if<is_clonable<T>, T>::type
 clone(const T& x) 
 { 
-    vampir_trace<304> tracer;
+    vampir_trace<3004> tracer;
     // std::cout << "Cloning clone function.\n";
     return T(x, clone_ctor()); 
 }

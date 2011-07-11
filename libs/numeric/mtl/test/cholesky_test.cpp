@@ -106,7 +106,7 @@ void test(Matrix& matrix, const char* name)
 
 int test_main(int argc, char* argv[])
 {
-    mtl::vampir_trace<999> tracer;
+    mtl::vampir_trace<9999> tracer;
 
     using namespace mtl;
     unsigned size= 13; 

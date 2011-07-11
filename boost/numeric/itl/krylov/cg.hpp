@@ -26,7 +26,7 @@ template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpac
 int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
        const Preconditioner& L, Iteration& iter)
 {
-    mtl::vampir_trace<601> tracer;
+    mtl::vampir_trace<6001> tracer;
   typedef HilbertSpaceX Vector;
   typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
 

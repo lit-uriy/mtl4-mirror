@@ -34,7 +34,7 @@ namespace with_bracket {
     template < typename Matrix > 
     void cholesky_base (Matrix & matrix)
     {
-	vampir_trace<501> tracer;
+	vampir_trace<5001> tracer;
 	typedef typename  Collection<Matrix>::size_type    size_type;
 	for (size_type k = 0; k < matrix.num_cols(); k++) {
 	    matrix[k][k] = sqrt (matrix[k][k]);
@@ -53,7 +53,7 @@ namespace with_bracket {
     template < typename MatrixSW, typename MatrixNW > 
     void tri_solve_base(MatrixSW & SW, const MatrixNW & NW)
     {
-	vampir_trace<502> tracer;
+	vampir_trace<5002> tracer;
 	typedef typename  Collection<MatrixSW>::size_type    size_type;
 	for (size_type k = 0; k < NW.num_rows (); k++) {
 	    
@@ -72,7 +72,7 @@ namespace with_bracket {
     template < typename MatrixSE, typename MatrixSW > 
     void tri_schur_base(MatrixSE & SE, const MatrixSW & SW)
     {
-	vampir_trace<503> tracer;
+	vampir_trace<5003> tracer;
 	typedef typename  Collection<MatrixSE>::size_type    size_type;
 	for (size_type k = 0; k < SW.num_cols (); k++)
 	    
@@ -87,7 +87,7 @@ namespace with_bracket {
     template < typename MatrixNE, typename MatrixNW, typename MatrixSW >
     void schur_update_base(MatrixNE & NE, const MatrixNW & NW, const MatrixSW & SW)
     {
-	vampir_trace<504> tracer;
+	vampir_trace<5004> tracer;
 	typedef typename  Collection<MatrixNE>::size_type    size_type;
 	for (size_type k = 0; k < NW.num_cols (); k++) 
 	    for (size_type i = 0; i < NE.num_rows (); i++) {
@@ -151,7 +151,7 @@ namespace with_iterator {
     template < typename Matrix > 
     void cholesky_base (Matrix& matrix)
     {
-	vampir_trace<501> tracer;
+	vampir_trace<5001> tracer;
 	typedef typename  Collection<Matrix>::size_type    size_type;
 
 	using namespace glas::tag; using mtl::traits::range_generator;
@@ -191,7 +191,7 @@ namespace with_iterator {
     template < typename MatrixSW, typename MatrixNW > 
     void tri_solve_base(MatrixSW & SW, const MatrixNW & NW)
     {
-	vampir_trace<502> tracer;
+	vampir_trace<5002> tracer;
 	typedef typename  Collection<MatrixSW>::size_type    size_type;
 
 	using namespace glas::tag; using mtl::traits::range_generator;
@@ -226,7 +226,7 @@ namespace with_iterator {
     template < typename MatrixSE, typename MatrixSW > 
     void tri_schur_base(MatrixSE & SE, const MatrixSW & SW)
     {
-	vampir_trace<503> tracer;
+	vampir_trace<5003> tracer;
 	typedef typename  Collection<MatrixSE>::size_type    size_type;
 
 	using namespace glas::tag; using mtl::traits::range_generator;
@@ -259,7 +259,7 @@ namespace with_iterator {
     template < typename MatrixNE, typename MatrixNW, typename MatrixSW >
     void schur_update_base(MatrixNE & NE, const MatrixNW & NW, const MatrixSW & SW)
     {
-	vampir_trace<504> tracer;
+	vampir_trace<5004> tracer;
 	typedef typename  Collection<MatrixNE>::size_type    size_type;
 
 	using namespace glas::tag; using mtl::traits::range_generator;
@@ -415,7 +415,7 @@ namespace with_recursator {
     template <typename Recursator, typename Visitor>
     void schur_update(Recursator E, Recursator W, Recursator N, Visitor vis)
     {
-	vampir_trace<505> tracer;
+	vampir_trace<5005> tracer;
 	using namespace recursion;
 
 	if (E.is_empty() || W.is_empty() || N.is_empty())
@@ -449,7 +449,7 @@ namespace with_recursator {
     void tri_solve(Recursator S, Recursator N, Visitor vis)
     {
 	using namespace recursion;
-	vampir_trace<506> tracer;
+	vampir_trace<5006> tracer;
 
         if (S.is_empty())
 	    return;
@@ -478,7 +478,7 @@ namespace with_recursator {
     void tri_schur(Recursator E, Recursator W, Visitor vis)
     { 
 	using namespace recursion;
-	vampir_trace<507> tracer;
+	vampir_trace<5007> tracer;
 
         if (E.is_empty() || W.is_empty())
 	    return;
@@ -506,7 +506,7 @@ namespace with_recursator {
     void cholesky(Recursator recursator, Visitor vis)
     {
 	using namespace recursion;
-	vampir_trace<508> tracer;
+	vampir_trace<5008> tracer;
 
         if (recursator.is_empty())
 	    return;
@@ -581,7 +581,7 @@ inline void recursive_cholesky(Matrix& matrix)
 template <typename Matrix>
 void fill_matrix_for_cholesky(Matrix& matrix)
 {
-    vampir_trace<508> tracer;
+    vampir_trace<5008> tracer;
     typedef typename Collection<Matrix>::size_type   size_type;
     typedef typename Collection<Matrix>::value_type  value_type;
 

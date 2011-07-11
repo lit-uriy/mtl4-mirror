@@ -46,7 +46,7 @@ template <typename Matrix>
 dense_vector<typename Collection<Matrix>::value_type>
 inline qr_sym_imp(const Matrix& A)
 {
-    vampir_trace<510> tracer;
+    vampir_trace<5010> tracer;
     using std::abs; using mtl::signum; using mtl::real;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i
@@ -98,7 +98,7 @@ template <typename Matrix>
 dense_vector<typename Collection<Matrix>::value_type>
 inline qr_algo(const Matrix& A, typename Collection<Matrix>::size_type itMax)
 {
-    vampir_trace<511> tracer;
+    vampir_trace<5011> tracer;
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A);
     Matrix           Q(nrows, ncols), H(nrows, ncols), R(nrows, ncols);
@@ -119,7 +119,7 @@ dense_vector<typename Collection<Matrix>::value_type>
 inline eigenvalue_symmetric(const Matrix& A, 
 			    typename Collection<Matrix>::size_type itMax= 0)
 {
-    vampir_trace<512> tracer;
+    vampir_trace<5012> tracer;
 # ifdef MTL_SYMMETRIC_EIGENVALUE_WITH_QR
     return qr_algo(A, itMax == 0 ? num_rows(A) : itMax);
 # else

@@ -74,7 +74,7 @@ namespace sfunctor {
 template <typename Value1, typename Value2>
 inline Value1 copysign(const Value1& v, const Value2& s)
 {
-    vampir_trace<101> tracer;
+    vampir_trace<1001> tracer;
     return sfunctor::copysign<Value1, Value2>::apply(v, s);
 }
 
