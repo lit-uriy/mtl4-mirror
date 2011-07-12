@@ -20,6 +20,8 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl {
 
@@ -65,6 +67,7 @@ namespace vector {
     typename mtl::traits::enable_if_vector<Vector>::type
     inline random(Vector& v, Generator& generator) 
     {
+    vampir_trace<2021> tracer;
 	typedef typename Collection<Vector>::size_type size_type;
 	for (size_type i= 0; i < size(v); i++)
 	    v[i]= generator();
@@ -91,6 +94,7 @@ namespace matrix {
     typename mtl::traits::enable_if_matrix<Matrix>::type
     inline random(Matrix& A, Generator& generator) 
     {
+    vampir_trace<4015> tracer;
 	typename mtl::traits::category<Matrix>::type cat;
 	mtl::impl::random(A, generator, cat, cat);
     }

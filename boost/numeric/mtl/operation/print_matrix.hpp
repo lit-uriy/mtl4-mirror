@@ -24,6 +24,7 @@ namespace mtl { namespace matrix {
 template <typename Matrix>
 std::ostream& print_matrix(Matrix const& matrix, std::ostream& out= std::cout, int width= 3, int precision= 2)
 {
+	
     // all indices will start from 0; otherwise wrong
     for (size_t r = 0; r < num_rows(matrix); ++r) {
 	out << '[';
