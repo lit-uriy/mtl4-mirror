@@ -21,7 +21,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
-
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl {
 
@@ -43,7 +43,7 @@ namespace mtl {
 template <unsigned long Unroll, typename Value>
 typename Collection<Value>::value_type
 inline product(const Value& value)
-{
+{	vampir_trace<2020> tracer;
     return impl::product<Unroll>(value, typename traits::category<Value>::type());
 }
 

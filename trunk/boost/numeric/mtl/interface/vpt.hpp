@@ -71,7 +71,7 @@ template <> std::string vampir_trace<0001>::name("copysign");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
-    vampir_trace<>0 tracer;
+    vampir_trace<> tracer;
 
 #endif
 // Static size operations:          1000
@@ -98,8 +98,8 @@ template <> std::string vampir_trace<2016>::name("vector::diagonal");
 template <> std::string vampir_trace<2017>::name("dyn_vec_expr");
 template <> std::string vampir_trace<2018>::name("Orthogonalize_Vectors");
 template <> std::string vampir_trace<2019>::name("Orthogonalize_Factors");				      
-template <> std::string vampir_trace<2020>::name("");
-template <> std::string vampir_trace<2021>::name("");
+template <> std::string vampir_trace<2020>::name("Vector_product");
+template <> std::string vampir_trace<2021>::name("Vector_random");
 template <> std::string vampir_trace<2022>::name("");
 template <> std::string vampir_trace<2023>::name("");
 template <> std::string vampir_trace<2024>::name("");
@@ -189,9 +189,9 @@ template <> std::string vampir_trace<4009>::name("");
 template <> std::string vampir_trace<4010>::name("mult");
 template <> std::string vampir_trace<4011>::name("gen_mult");
 template <> std::string vampir_trace<4012>::name("mat_mat_mult");
-template <> std::string vampir_trace<4013>::name("");
-template <> std::string vampir_trace<4014>::name("");
-template <> std::string vampir_trace<4015>::name("");
+template <> std::string vampir_trace<4013>::name("matrix_qr");
+template <> std::string vampir_trace<4014>::name("matrix_qr_factors");
+template <> std::string vampir_trace<4015>::name("matrix_random");
 template <> std::string vampir_trace<4016>::name("");
 template <> std::string vampir_trace<4017>::name("");
 template <> std::string vampir_trace<4018>::name("");

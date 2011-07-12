@@ -5,12 +5,12 @@
 //               2010 SimuNova UG (haftungsbeschränkt), www.simunova.com.
 // All rights reserved.
 // Authors: Peter Gottschling and Andrew Lumsdaine
+// With contributions from Cornelius Steinhardt
 //
 // This file is part of the Matrix Template Library
 //
 // See also license.mtl.txt in the distribution.
 
-// With contributions from Cornelius Steinhardt
 
 #ifndef MTL_MATRIX_QR_INCLUDE
 #define MTL_MATRIX_QR_INCLUDE
@@ -25,7 +25,7 @@
 #include <boost/numeric/mtl/operation/householder.hpp>
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
-
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -35,6 +35,7 @@ namespace mtl { namespace matrix {
 template <typename Matrix, typename MatrixQ, typename MatrixR>
 void qr(const Matrix& A, MatrixQ& Q, MatrixR& R)
 {
+	vampir_trace<4013> tracer;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
     typedef typename Magnitude<value_type>::type      magnitude_type;
@@ -80,6 +81,7 @@ std::pair<typename mtl::dense2D<typename Collection<Matrix>::value_type>,
 	  typename mtl::dense2D<typename Collection<Matrix>::value_type> >
 inline qr_factors(const Matrix& A)
 {
+	vampir_trace<4014> tracer;
     using std::abs;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i
