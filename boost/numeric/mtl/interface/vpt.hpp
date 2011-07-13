@@ -67,6 +67,7 @@ class vampir_trace
 
 
 // Utilities:                       000
+// Number must start with 0, otherwise grouping script fails!!!!!
 template <> std::string vampir_trace<0001>::name("copysign");
 
 #if 0
