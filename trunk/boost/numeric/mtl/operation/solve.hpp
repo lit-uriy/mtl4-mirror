@@ -18,7 +18,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>
 #include <boost/numeric/mtl/interface/umfpack_solve.hpp>
-
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -27,6 +27,7 @@ namespace mtl { namespace matrix {
 	template <typename Matrix, typename Vector>
 	Vector inline solve(const Matrix& A, const Vector& b, tag::dense)
 	{
+		vampir_trace<3034> tracer;
 	    return lu_solve(A, b);
 	}
 
@@ -34,6 +35,7 @@ namespace mtl { namespace matrix {
 	template <typename Value, typename Parameters, typename Vector>
 	Vector inline solve(const Matrix& A, const Vector& b, tag::compressed2D)
 	{
+		vampir_trace<3035> tracer;
 	    Vector x(num_cols(A));
 	    umfpack_solve(A, x, b);
 	    return x;
