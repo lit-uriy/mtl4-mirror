@@ -17,11 +17,13 @@
 // #include <iostream>
 #include <boost/mpl/bool.hpp>
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/multi_tmp.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
@@ -170,7 +172,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
-    vampir_trace<3023> tracer;
+    vampir_trace<3022> tracer;
     using namespace tag; 
     using mtl::traits::range_generator;  
     using math::zero;
@@ -184,7 +186,6 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
     if (Assign::init_to_zero) set_to_zero(w);
 
     typedef typename Collection<VectorOut>::value_type        value_type;
-
     a_cur_type ac= begin<row>(A), aend= end<row>(A);
     for (unsigned i= 0; ac != aend; ++ac, ++i) {
 	value_type tmp= zero(w[i]);
@@ -193,6 +194,133 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
 	Assign::update(w[i], tmp);
     }
 }
+
+#if 0
+template <unsigned Index, unsigned BSize, typename SizeType>
+struct crs_cvec_mult_block
+{
+    template <typename Matrix, typename VectorIn, typename CBlock, typename TBlock>
+    void operator()(const Matrix& A, const VectorIn& v, const CBlock& cj, TBlock& tmp) const
+    {
+	for (SizeType j= cj.value; j != cj.sub.value; ++j) // cj is one index larger
+	    tmp.value+= A.data[j] * v[A.indices[j]];
+	sub(A, v, cj.sub, tmp.sub);
+    }
+
+    template <typename VectorOut, typename TBlock, typename Assign>
+    void first_update(VectorOut& w, SizeType i, const TBlock& tmp, Assign as) const
+    { 
+	Assign::first_update(w[i + Index], tmp.value);
+	sub.first_update(w, i, tmp.sub, as);
+    }
+    
+    crs_cvec_mult_block<Index+1, BSize, SizeType> sub;
+};
+
+
+template <unsigned BSize, typename SizeType>
+struct crs_cvec_mult_block<BSize, BSize, SizeType>
+{
+    template <typename Matrix, typename VectorIn, typename CBlock, typename TBlock>
+    void operator()(const Matrix& A, const VectorIn& v, const CBlock& cj, TBlock& tmp) const
+    {
+	for (SizeType j= cj.value; j != cj.sub.value; ++j)// cj is one index larger
+	    tmp.value+= A.data[j] * v[A.indices[j]];
+    }
+
+    template <typename VectorOut, typename TBlock, typename Assign>
+    void first_update(VectorOut& w, SizeType i, const TBlock& tmp, Assign) const
+    { 
+	Assign::first_update(w[i + BSize], tmp.value);
+    }
+};
+
+
+// Row-major compressed2D vector multiplication
+template <unsigned BSize, typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
+inline void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign as, tag::row_major)
+{
+    vampir_trace<3122> tracer;
+    using math::zero;
+
+    typedef compressed2D<MValue, MPara>                       Matrix;
+    typedef typename Collection<Matrix>::size_type            size_type; 
+    typedef typename Collection<VectorOut>::value_type        value_type;
+
+    if (size(w) == 0) return;
+    const value_type z(math::zero(w[0]));
+
+    size_type nr= num_rows(A), nrb= nr / BSize * BSize;
+    for (size_type i= 0; i < nrb; i+= BSize) {
+	multi_constant_from_array<0, BSize+1, size_type> cj(A.starts, i);
+	multi_tmp<BSize, value_type>                     tmp(z);
+	crs_cvec_mult_block<0, BSize-1, size_type>       block;
+
+	block(A, v, cj, tmp);
+	block.first_update(w, i, tmp, as);
+    }
+
+    for (size_type i= nrb; i < nr; ++i) {
+	const size_type cj0= A.starts[i], cj1= A.starts[i+1];
+	value_type      tmp0(z);
+	for (size_type j0= cj0; j0 != cj1; ++j0)
+	    tmp0+= A.data[j0] * v[A.indices[j0]];
+	Assign::first_update(w[i], tmp0);
+    }
+}
+
+template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
+inline void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
+{
+    smat_cvec_mult<4>(A, v, w, Assign(), tag::row_major());
+}
+#endif
+
+
+#if 1
+// Row-major compressed2D vector multiplication
+template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
+inline void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
+{
+    vampir_trace<3122> tracer;
+    using math::zero;
+
+    typedef compressed2D<MValue, MPara>                       Matrix;
+    typedef typename Collection<Matrix>::size_type            size_type; 
+    typedef typename Collection<VectorOut>::value_type        value_type;
+
+    if (size(w) == 0) return;
+    const value_type z(math::zero(w[0]));
+
+    size_type nr= num_rows(A), nrb= nr / 4 * 4;
+    for (size_type i= 0; i < nrb; i+= 4) {
+	const size_type cj0= A.starts[i], cj1= A.starts[i+1], cj2= A.starts[i+2], 
+	                cj3= A.starts[i+3], cj4= A.starts[i+4];
+	value_type      tmp0(z), tmp1(z), tmp2(z), tmp3(z);
+	for (size_type j0= cj0; j0 != cj1; ++j0)
+	    tmp0+= A.data[j0] * v[A.indices[j0]];
+	for (size_type j1= cj1; j1 != cj2; ++j1)
+	    tmp1+= A.data[j1] * v[A.indices[j1]];
+	for (size_type j2= cj2; j2 != cj3; ++j2)
+	    tmp2+= A.data[j2] * v[A.indices[j2]];
+	for (size_type j3= cj3; j3 != cj4; ++j3)
+	    tmp3+= A.data[j3] * v[A.indices[j3]];
+
+	Assign::first_update(w[i], tmp0);
+	Assign::first_update(w[i+1], tmp1);
+	Assign::first_update(w[i+2], tmp2);
+	Assign::first_update(w[i+3], tmp3);
+    }
+
+    for (size_type i= nrb; i < nr; ++i) {
+	const size_type cj0= A.starts[i], cj1= A.starts[i+1];
+	value_type      tmp0(z);
+	for (size_type j0= cj0; j0 != cj1; ++j0)
+	    tmp0+= A.data[j0] * v[A.indices[j0]];
+	Assign::first_update(w[i], tmp0);
+    }
+}
+#endif
 
 // Sparse column-major matrix vector multiplication
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
