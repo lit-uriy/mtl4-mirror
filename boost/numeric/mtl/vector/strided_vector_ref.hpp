@@ -69,7 +69,7 @@ class strided_vector_ref
 	MTL_DEBUG_THROW_IF( is_negative(i) || i >= size(*this), index_out_of_range());
     }
 
-    void check_dim( size_type s ) const
+    void check_dim( size_type MTL_DEBUG_ARG(s) ) const
     {
 	MTL_DEBUG_THROW_IF( size(*this) != 0 && size(*this) != s, incompatible_size());
     }

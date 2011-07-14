@@ -53,18 +53,14 @@ struct size_helper
 	set_size(size);
     }
 
+# ifndef MTL_IGNORE_STATIC_SIZE_VIOLATION
     void set_size(std::size_t size)
-    {
-#     ifndef MTL_IGNORE_STATIC_SIZE_VIOLATION
-	MTL_THROW_IF(Size != size, change_static_size());
-#     endif
-    }
+    {	MTL_THROW_IF(Size != size, change_static_size()); }
+# else
+    void set_size(std::size_t) {}
+# endif
 
-    std::size_t used_memory() const
-    {
-	return Size;
-    }
-
+    std::size_t used_memory() const { return Size;  }
     friend void swap(self& x, self& y) {}
 };
 
@@ -388,14 +384,24 @@ struct contiguous_memory_block<Value, true, Size>
     //static bool const                         on_stack= true;
 
     Value    data[Size];
-# if defined(NDEBUG) && !defined(_MSC_VER)
-    explicit contiguous_memory_block(std::size_t)
+// # if defined(NDEBUG) && !defined(_MSC_VER)
+//     explicit contiguous_memory_block(std::size_t)
+// # else 
+//     explicit contiguous_memory_block(std::size_t size= Size)
+// # endif 
+//     {
+// 	MTL_DEBUG_THROW_IF(Size != size, incompatible_size());
+//     }
+
+# ifdef NDEBUG
+    contiguous_memory_block() {} // default constructor in release mode
+    explicit contiguous_memory_block(std::size_t) {}
 # else 
     explicit contiguous_memory_block(std::size_t size= Size)
-# endif 
     {
 	MTL_DEBUG_THROW_IF(Size != size, incompatible_size());
     }
+# endif
 
     // Move-semantics ignored for arrays on stack
     contiguous_memory_block(const self& other)

@@ -115,7 +115,7 @@ namespace detail {
 	}
 
 	template <typename Cursor>
-	void col_init(size_type r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::regular_diagonal)
+	void col_init(size_type MTL_DEBUG_ARG(r), Cursor& MTL_DEBUG_ARG(aic), Cursor& aiend, value_type& rr, value_type& res, tag::regular_diagonal)
 	{
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
@@ -124,7 +124,7 @@ namespace detail {
 	}
 	
 	template <typename Cursor>
-	void col_init(size_type r, Cursor& aic, Cursor& aiend, value_type& rr, value_type& res, tag::inverse_diagonal)
+	void col_init(size_type MTL_DEBUG_ARG(r), Cursor& MTL_DEBUG_ARG(aic), Cursor& aiend, value_type& rr, value_type& res, tag::inverse_diagonal)
 	{
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;

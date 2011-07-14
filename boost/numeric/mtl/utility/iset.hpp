@@ -29,7 +29,7 @@ namespace mtl {
 	/// Size type
         typedef std::size_t size_type;
 
-	void check(size_type i) const
+	void check(size_type MTL_DEBUG_ARG(i)) const
 	{ MTL_DEBUG_THROW_IF(is_negative(i) || i >= indices.size(), index_out_of_range()); }
 
 	iset() {} ///< Default constructor
