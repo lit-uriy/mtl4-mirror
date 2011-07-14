@@ -55,7 +55,7 @@ template <class LinearSolver, class EigenVector>
 double inverse_iteration( LinearSolver& solver, EigenVector& x, int m ) 
 {
     EigenVector y( size(x), 0.0 ) ;
-    double lambda ;
+    double lambda = 0.0 ;
     x /= two_norm(x) ;
     for (int i=0; i<m; ++i) {
 	solver( x, y ) ;
@@ -73,7 +73,7 @@ double inverse_iteration( LinearSolver& solver, EigenVector& x, int m )
 template <class LinearSolver, class Matrix, class EigenVector>
 double condition( LinearSolver& solver, const Matrix& A, EigenVector& x, int m ) {
   EigenVector y( size(x) ) ;
-  double lambda ;
+  double lambda= 0.0 ;
   x/= two_norm(x);
   for (int i=0; i<m; ++i) {
       y= A * x; 

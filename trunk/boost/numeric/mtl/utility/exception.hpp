@@ -39,7 +39,7 @@ namespace mtl {
 #endif
 
 
-#ifdef MTL_ASSERT_FOR_THROW
+#if defined(MTL_ASSERT_FOR_THROW) && !defined(NDEBUG)
 #  define MTL_THROW_IF(Test, Exception)       \
    {                                          \
        assert(!(Test));			      \
@@ -52,7 +52,7 @@ namespace mtl {
 #endif
 
 
-#ifdef MTL_ASSERT_FOR_THROW
+#if defined(MTL_ASSERT_FOR_THROW) && !defined(NDEBUG)
 #  define MTL_THROW(Exception)       \
    {                                 \
        assert(0);		     \
