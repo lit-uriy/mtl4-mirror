@@ -14,6 +14,7 @@
 #define MTL_REAL_INCLUDE
 
 #include <complex>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl {
 
@@ -45,7 +46,8 @@ namespace sfunctor {
 /// real part of scalars (including non-complex)
 template <typename Value>
 inline typename sfunctor::real<Value>::result_type real(const Value& v)
-{
+{	
+	vampir_trace<0003> tracer;
     return sfunctor::real<Value>::apply(v);
 }
 

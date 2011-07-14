@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/meta_math/loop.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace vector {
 
@@ -69,6 +70,7 @@ namespace impl {
 template <typename VectorIn, typename Matrix, typename VectorOut, typename Assign>
 inline void dense_rvec_mat_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, boost::mpl::true_)
 {
+	vampir_trace<3026> tracer;
     typedef typename static_num_rows<Matrix>::type size_type;
     static const size_type rows_a= static_num_rows<Matrix>::value, cols_a= static_num_cols<Matrix>::value;
 
@@ -88,7 +90,7 @@ template <typename VectorIn, typename Matrix, typename VectorOut, typename Assig
 inline void dense_rvec_mat_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, boost::mpl::false_)
 {
     // Naive implementation, will be moved to a functor and complemented with more efficient ones
-
+	vampir_trace<3027> tracer;
     using math::zero; using mtl::vector::set_to_zero;
     if (size(w) == 0) return;
 
@@ -121,6 +123,7 @@ inline void rvec_mat_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assi
 template <typename VectorIn, typename Matrix, typename VectorOut, typename Assign>
 inline void rvec_mat_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, tag::multi_vector)
 {
+	vampir_trace<2025> tracer;
     if (Assign::init_to_zero) set_to_zero(w);
     for (unsigned i= 0; i < num_cols(A); i++)
 	Assign::update(w[i], dot_real(v, A.vector(i)));
@@ -130,6 +133,7 @@ inline void rvec_mat_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assi
 template <typename VectorIn, typename TransposedMatrix, typename VectorOut, typename Assign>
 inline void rvec_mat_mult(const VectorIn& v, const TransposedMatrix& A, VectorOut& w, Assign, tag::transposed_multi_vector)
 {
+	vampir_trace<2026> tracer;
     typename TransposedMatrix::const_ref_type B= A.ref; // Referred matrix
 
     if (Assign::init_to_zero) set_to_zero(w);
@@ -141,6 +145,7 @@ inline void rvec_mat_mult(const VectorIn& v, const TransposedMatrix& A, VectorOu
 template <typename VectorIn, typename HermitianMatrix, typename VectorOut, typename Assign>
 inline void rvec_mat_mult(const VectorIn& v, const HermitianMatrix& A, VectorOut& w, Assign, tag::hermitian_multi_vector)
 {
+	vampir_trace<2027> tracer;
     typename HermitianMatrix::const_ref_type B= A.const_ref(); // Referred matrix
 
     if (Assign::init_to_zero) set_to_zero(w);
@@ -153,6 +158,7 @@ inline void rvec_mat_mult(const VectorIn& v, const HermitianMatrix& A, VectorOut
 template <typename VectorIn, typename Matrix, typename VectorOut, typename Assign>
 inline void rvec_mat_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, tag::sparse)
 {
+	vampir_trace<3028> tracer;
     rvec_smat_mult(v, A, w, Assign(), typename OrientedCollection<Matrix>::orientation());
 }
 

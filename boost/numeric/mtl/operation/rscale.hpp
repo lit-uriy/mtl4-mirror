@@ -13,6 +13,8 @@
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl { namespace tfunctor {
 	
@@ -74,6 +76,7 @@ namespace matrix {
     typename tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
     inline rscale(const Value1& value1, const Value2& value2)
     {
+    vampir_trace<4017> tracer;
 	return tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>(value2)(value1);
     }
 }
@@ -84,6 +87,7 @@ namespace vector {
     typename tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
     inline rscale(const Value1& value1, const Value2& value2)
     {
+    vampir_trace<2024> tracer;
 	return tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>(value2)(value1);
     }
 }

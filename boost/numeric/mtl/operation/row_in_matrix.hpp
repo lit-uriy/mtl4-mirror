@@ -17,6 +17,8 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl {
 
@@ -53,6 +55,8 @@ struct RowInMatrix<mtl::matrix::dense2D<Value, Parameters> >
     static inline size_type vector_size(const Ref& A, const irange& col_range)
     {
 	using std::min;
+	
+	vampir_trace<1003> tracer;
 	size_type finish= min(col_range.finish(), num_cols(A));
 	return col_range.start() < finish ? finish - col_range.start() : 0;
     }
@@ -60,12 +64,14 @@ struct RowInMatrix<mtl::matrix::dense2D<Value, Parameters> >
     template <typename Return, typename Ref>
     static inline Return dispatch(Ref& A, size_type row, const irange& col_range, boost::mpl::true_)
     {
+    vampir_trace<2023> tracer;
 	return Return(vector_size(A, col_range), const_cast<value_type*>(&A[row][col_range.start()])); // TODO make work without const cast
     }
 
     template <typename Return, typename Ref>
     static inline Return dispatch(Ref& A, size_type row, const irange& col_range, boost::mpl::false_)
     {
+    vampir_trace<1004> tracer;
 	return Return(vector_size(A, col_range), &A[row][col_range.start()], num_rows(A));
     }	 
 };

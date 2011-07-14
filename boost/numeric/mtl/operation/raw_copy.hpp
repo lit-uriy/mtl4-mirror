@@ -12,6 +12,7 @@
 
 #ifndef MTL_RAW_COPY_INCLUDE
 #define MTL_RAW_COPY_INCLUDE
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl {
 
@@ -21,6 +22,7 @@ template <typename Matrix, typename InputIterator>
 void raw_copy(InputIterator first, InputIterator last, Matrix& matrix)
 {
     using std::copy;
+    vampir_trace<0002> tracer;
     copy(first, last, matrix.elements());
 }
 

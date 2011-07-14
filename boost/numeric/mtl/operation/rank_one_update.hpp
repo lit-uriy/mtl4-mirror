@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -31,6 +32,7 @@ template <typename Matrix, typename VectorX, typename VectorY>
 inline void rank_one_update(Matrix& matrix, const VectorX& x, const VectorY& y)
 {
     using mtl::conj;
+    vampir_trace<2022> tracer;
     MTL_THROW_IF(num_rows(matrix) != size(x) || num_cols(matrix) != size(y), incompatible_size());
     namespace traits = mtl::traits;
     typedef typename traits::range_generator<tag::nz, VectorX>::type x_cursor;
