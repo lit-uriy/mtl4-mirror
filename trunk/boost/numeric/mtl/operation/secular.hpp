@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/operation/minimal_increase.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl { namespace vector {
@@ -103,7 +104,8 @@ class secular_f
 
 template <typename Vector, typename Value>
 inline Vector secular(const Vector& z, const Vector& d, Value sigma)
-{
+{	
+	vampir_trace<3030> tracer;
     secular_f<Vector> functor(z, d, sigma);
     return functor.roots();
 }

@@ -14,6 +14,8 @@
 #define MTL_SIZE_INCLUDE
 
 #include <vector>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl {
 
@@ -35,6 +37,7 @@ namespace traits {
     template <typename Value, unsigned Size>
     struct size<Value[Size]>
     {
+    vampir_trace<2031> tracer;
 	typedef std::size_t   type;
 	type operator()(const Value[Size]) { return Size; }
     };	   
@@ -44,6 +47,7 @@ namespace traits {
     struct size<Value[Rows][Cols]>
     {
 	typedef std::size_t   type;
+	vampir_trace<3033> tracer;
 	type operator()(const Value[Rows][Cols]) { return Rows * Cols; }
     };	    
 }
@@ -54,6 +58,7 @@ template <typename Collection>
 typename traits::size<Collection>::type 
 inline size(const Collection& c)
 {
+	
     return traits::size<Collection>()(c);
 }
 

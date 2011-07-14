@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl {
 
@@ -146,6 +147,7 @@ namespace matrix {
     set_to_zero(Coll& collection)
     {
 	using mtl::traits::category;
+	vampir_trace<3031> tracer;
 	typedef typename Collection<Coll>::value_type value_type;
 	if (mtl::impl::has_strided_data(collection))
 	    mtl::impl::naive_set_to_zero(collection, typename category<Coll>::type(), typename category<Coll>::type());
@@ -163,6 +165,7 @@ namespace vector {
     set_to_zero(Coll& collection)
     {
 	using mtl::traits::category;
+	vampir_trace<2029> tracer;
 	typedef typename Collection<Coll>::value_type value_type;
 	mtl::impl::set_to_zero(collection, typename category<Coll>::type(),typename ashape::ashape<value_type>::type());
     }

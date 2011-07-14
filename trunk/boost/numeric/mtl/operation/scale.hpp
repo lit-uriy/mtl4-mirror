@@ -18,6 +18,8 @@
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl { 
 
@@ -27,6 +29,7 @@ namespace mtl {
 	typename traits::enable_if_vector<Vector, scaled_view<Value1, Vector> >::type
 	inline scale(const Value1& value1, const Vector& vector)
 	{
+		vampir_trace<2028> tracer;
 	    return scaled_view<Value1, Vector>(value1, vector);
 	}
     }
@@ -37,6 +40,7 @@ namespace mtl {
 	typename traits::enable_if_matrix<Matrix, scaled_view<Value1, Matrix> >::type
 	inline scale(const Value1& value1, const Matrix& matrix)
 	{
+		vampir_trace<3029> tracer;
 	    return scaled_view<Value1, Matrix> (value1, matrix);
 	}
     }
