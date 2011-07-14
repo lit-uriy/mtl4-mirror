@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/meta_math/loop1.hpp>
 
+
 namespace mtl { namespace functor {
 
 template <typename Assign= assign::assign_sum,

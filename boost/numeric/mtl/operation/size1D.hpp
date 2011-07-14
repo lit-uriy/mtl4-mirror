@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 // #include <boost/utility/enable_if.hpp>
 
@@ -46,6 +47,7 @@ namespace mtl {
 	typename Collection<multi_vector<Vector> >::size_type
 	inline size1D(multi_vector<Vector>& A)
 	{
+		vampir_trace<3032> tracer;
 	    return num_cols(A);
 	}	
     }
@@ -59,6 +61,7 @@ template <typename Vector>
 typename traits::size<Vector>::type
 inline size1D(const Vector& v)
 {
+	vampir_trace<2030> tracer;
     return traits::size<Vector>()(v);
 }
 

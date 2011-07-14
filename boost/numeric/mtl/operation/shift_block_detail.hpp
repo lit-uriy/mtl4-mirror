@@ -15,6 +15,8 @@
 
 #include <algorithm>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl { namespace operations { namespace detail {
 
@@ -26,7 +28,7 @@ inline void copy_blocks_forward(Size& i, Size blocks, Starts const& starts, NewS
 			 Ends const& ends, Data& data)
 {
     using std::copy;
-
+	vampir_trace<1005> tracer;
     // Copy forward as long as blocks are not shifted 
     for (; i < blocks && starts[i] >= new_starts[i]; ++i) 	
 	if (starts[i] > new_starts[i])
@@ -39,7 +41,7 @@ inline void copy_blocks_backward(Size& i, Size blocks, Starts const& starts, New
 {
     using std::copy;
     using std::copy_backward;
-
+	vampir_trace<1006> tracer;
     Size first = i;
     // find first block to be copied forward (or end)
     while (i < blocks && starts[i] < new_starts[i]) ++i;

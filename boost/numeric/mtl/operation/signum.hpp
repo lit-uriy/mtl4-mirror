@@ -16,6 +16,8 @@
 #include <complex>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/operation/real.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl {
 
@@ -51,6 +53,7 @@ namespace sfunctor {
 template <typename Value>
 inline typename sfunctor::signum<Value>::result_type signum(const Value& v)
 {
+	vampir_trace<0006> tracer;
     return sfunctor::signum<Value>::apply(v);
 }
 
