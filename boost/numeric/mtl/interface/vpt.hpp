@@ -188,7 +188,7 @@ template <> std::string vampir_trace<3018>::name("dense_mat_cvec_mult");
 template <> std::string vampir_trace<3019>::name("mvec_cvec_mult");
 template <> std::string vampir_trace<3020>::name("trans_mvec_cvec_mult");
 template <> std::string vampir_trace<3021>::name("herm_mvec_cvec_mult");
-template <> std::string vampir_trace<3022>::name("crs_cvec_mult");
+template <> std::string vampir_trace<3022>::name("sparse_row_cvec_mult"); // generic row-major sparse
 template <> std::string vampir_trace<3023>::name("ccs_cvec_mult");
 template <> std::string vampir_trace<3024>::name("matrix::max_abs_pos");
 template <> std::string vampir_trace<3025>::name("matrix::one_norm");
@@ -206,6 +206,7 @@ template <> std::string vampir_trace<3036>::name("");
 template <> std::string vampir_trace<3037>::name("");
 template <> std::string vampir_trace<3038>::name("");
 template <> std::string vampir_trace<3039>::name("");
+template <> std::string vampir_trace<3122>::name("crs_cvec_mult");
 
 
 #if 0
