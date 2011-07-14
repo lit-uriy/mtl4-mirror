@@ -75,8 +75,8 @@ template <> std::string vampir_trace<0004>::name("Info_contruct_vector");
 template <> std::string vampir_trace<0005>::name("right_scale_inplace");
 template <> std::string vampir_trace<0006>::name("");
 template <> std::string vampir_trace<0007>::name("");
-template <> std::string vampir_trace<0008>::name("");
-template <> std::string vampir_trace<0009>::name("");
+//template <> std::string vampir_trace<0008>::name("");		// Der Kompilator nimmt beide Mummers (8,9) als octal
+//template <> std::string vampir_trace<0009>::name("");		// Der Kompilator nimmt beide Mummers (8,9) als octal
 template <> std::string vampir_trace<0010>::name("");
 template <> std::string vampir_trace<0011>::name("");
 template <> std::string vampir_trace<0012>::name("");
