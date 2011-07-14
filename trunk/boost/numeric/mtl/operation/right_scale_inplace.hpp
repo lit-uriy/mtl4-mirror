@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/operation/assign_each_nonzero.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 #include <boost/lambda/lambda.hpp>
 
@@ -28,6 +29,7 @@ namespace mtl {
 template <typename Factor, typename Collection>
 void right_scale_inplace(Collection& c, const Factor& alpha, tag::scalar)
 {
+	vampir_trace<0005> tracer;
     assign_each_nonzero(c, boost::lambda::_1 * alpha);
 }
 
@@ -36,6 +38,7 @@ void right_scale_inplace(Matrix& m, tag::matrix, const Factor& alpha, tag::matri
 {
     using mtl::swap;
 
+	vampir_trace<4016> tracer;	
     Matrix tmp(num_rows(m), num_cols(m));
     mult(m, alpha, tmp);
     swap(m, tmp);

@@ -57,7 +57,7 @@ class vampir_trace
 };
 
 // Categories:
-// Utilities:                       000
+// Utilities:                       0000
 // Static size operations:          1000
 // Vector operations:               2000
 // Matrix Vector & single matrix:   3000
@@ -66,9 +66,25 @@ class vampir_trace
 // Iterative solvers:               6000
 
 
-// Utilities:                       000
+// Utilities:                       0000
 // Number must start with 0, otherwise grouping script fails!!!!!
 template <> std::string vampir_trace<0001>::name("copysign");
+template <> std::string vampir_trace<0002>::name("Elem_raw_copy");
+template <> std::string vampir_trace<0003>::name("Get_real_part");
+template <> std::string vampir_trace<0004>::name("Info_contruct_vector");
+template <> std::string vampir_trace<0005>::name("right_scale_inplace");
+template <> std::string vampir_trace<0006>::name("");
+template <> std::string vampir_trace<0007>::name("");
+template <> std::string vampir_trace<0008>::name("");
+template <> std::string vampir_trace<0009>::name("");
+template <> std::string vampir_trace<0010>::name("");
+template <> std::string vampir_trace<0011>::name("");
+template <> std::string vampir_trace<0012>::name("");
+template <> std::string vampir_trace<0013>::name("");
+template <> std::string vampir_trace<0014>::name("");
+template <> std::string vampir_trace<0015>::name("");
+
+
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -78,6 +94,28 @@ template <> std::string vampir_trace<0001>::name("copysign");
 // Static size operations:          1000
 template <> std::string vampir_trace<1001>::name("stat_vec_expr");
 template <> std::string vampir_trace<1002>::name("fixed_size_dmat_dmat_mult");
+template <> std::string vampir_trace<1003>::name("vector_size");
+template <> std::string vampir_trace<1004>::name("static_dispatch"); // ?? row_in_matrix.hpp:74
+template <> std::string vampir_trace<1005>::name("");
+template <> std::string vampir_trace<1006>::name("");
+template <> std::string vampir_trace<1007>::name("");
+template <> std::string vampir_trace<1008>::name("");
+template <> std::string vampir_trace<1009>::name("");
+template <> std::string vampir_trace<1010>::name("");
+template <> std::string vampir_trace<1011>::name("");
+template <> std::string vampir_trace<1012>::name("");
+template <> std::string vampir_trace<1013>::name("");
+template <> std::string vampir_trace<1014>::name("");
+template <> std::string vampir_trace<1015>::name("");
+template <> std::string vampir_trace<1016>::name("");
+template <> std::string vampir_trace<1017>::name("");
+template <> std::string vampir_trace<1018>::name("");
+template <> std::string vampir_trace<1019>::name("");
+template <> std::string vampir_trace<1020>::name("");
+
+
+
+
 
 // Vector operations:               2000
 template <> std::string vampir_trace<2001>::name("gen_vector_copy");
@@ -101,12 +139,12 @@ template <> std::string vampir_trace<2018>::name("Orthogonalize_Vectors");
 template <> std::string vampir_trace<2019>::name("Orthogonalize_Factors");				      
 template <> std::string vampir_trace<2020>::name("Vector_product");
 template <> std::string vampir_trace<2021>::name("Vector_random");
-template <> std::string vampir_trace<2022>::name("");
-template <> std::string vampir_trace<2023>::name("");
-template <> std::string vampir_trace<2024>::name("");
-template <> std::string vampir_trace<2025>::name("");
-template <> std::string vampir_trace<2026>::name("");
-template <> std::string vampir_trace<2027>::name("");
+template <> std::string vampir_trace<2022>::name("Vec_Vec_rank_update");
+template <> std::string vampir_trace<2023>::name("Vector_dispatch");
+template <> std::string vampir_trace<2024>::name("Vector_rscale");
+template <> std::string vampir_trace<2025>::name("Multi-vector_mult");
+template <> std::string vampir_trace<2026>::name("Transp_Multi-vector_mult");
+template <> std::string vampir_trace<2027>::name("Hermitian_Multi-vector_mult");
 template <> std::string vampir_trace<2028>::name("");
 template <> std::string vampir_trace<2029>::name("");
 template <> std::string vampir_trace<2030>::name("");
@@ -154,9 +192,9 @@ template <> std::string vampir_trace<3022>::name("crs_cvec_mult");
 template <> std::string vampir_trace<3023>::name("ccs_cvec_mult");
 template <> std::string vampir_trace<3024>::name("matrix::max_abs_pos");
 template <> std::string vampir_trace<3025>::name("matrix::one_norm");
-template <> std::string vampir_trace<3026>::name("");
-template <> std::string vampir_trace<3027>::name("");
-template <> std::string vampir_trace<3028>::name("");
+template <> std::string vampir_trace<3026>::name("mat_vect_mult_run_time_size_mat");
+template <> std::string vampir_trace<3027>::name("mat_vect_mult_run_time_size_mat");
+template <> std::string vampir_trace<3028>::name("Vect_sparse_mat_mult");
 template <> std::string vampir_trace<3029>::name("");
 template <> std::string vampir_trace<3030>::name("");
 template <> std::string vampir_trace<3031>::name("");
@@ -193,8 +231,8 @@ template <> std::string vampir_trace<4012>::name("mat_mat_mult");
 template <> std::string vampir_trace<4013>::name("matrix_qr");
 template <> std::string vampir_trace<4014>::name("matrix_qr_factors");
 template <> std::string vampir_trace<4015>::name("matrix_random");
-template <> std::string vampir_trace<4016>::name("");
-template <> std::string vampir_trace<4017>::name("");
+template <> std::string vampir_trace<4016>::name("matrix_scale_inplace");
+template <> std::string vampir_trace<4017>::name("matrix_rscale");
 template <> std::string vampir_trace<4018>::name("");
 template <> std::string vampir_trace<4019>::name("");				      
 template <> std::string vampir_trace<4020>::name("");
