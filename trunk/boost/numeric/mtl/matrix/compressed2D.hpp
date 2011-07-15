@@ -283,7 +283,7 @@ class compressed2D
     // const value_type& isn't defined everywhere
     typedef value_type                               const_reference;
 
-    typedef size_t                                   size_type;
+    typedef typename Parameters::size_type           size_type;
     typedef compressed2D_indexer                     indexer_type;
 
     void check() const { MTL_DEBUG_THROW_IF(inserting, access_during_insertion()); }

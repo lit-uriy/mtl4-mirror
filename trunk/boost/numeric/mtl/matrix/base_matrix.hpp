@@ -34,7 +34,7 @@ struct base_matrix
     typedef typename Parameters::index        index_type;
     typedef typename Parameters::dimensions   dim_type;
     static bool const                         on_stack= Parameters::on_stack;
-    typedef std::size_t                       size_type;
+    typedef typename Parameters::size_type    size_type;
   protected:
     dim_type                        dim;       ///< # of rows and columns
     size_type                       my_nnz;    ///< # of non-zeros, to be set by derived matrix

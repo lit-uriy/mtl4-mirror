@@ -36,20 +36,20 @@ namespace mtl { namespace traits {
     struct is_row_major<col_major>
       : boost::mpl::false_ {};
 
-    template <typename Dimension, bool OnStack>
-    struct is_row_major<vector::parameters<row_major, Dimension, OnStack> >
+    template <typename Dimension, bool OnStack, typename SizeType>
+    struct is_row_major<vector::parameters<row_major, Dimension, OnStack, SizeType> >
       : boost::mpl::true_ {};
 
-    template <typename Dimension, bool OnStack>
-    struct is_row_major<vector::parameters<col_major, Dimension, OnStack> >
+    template <typename Dimension, bool OnStack, typename SizeType>
+    struct is_row_major<vector::parameters<col_major, Dimension, OnStack, SizeType> >
       : boost::mpl::false_ {};
 
-    template <typename Index, typename Dimension, bool OnStack>
-    struct is_row_major<matrix::parameters<row_major, Index, Dimension, OnStack> >
+    template <typename Index, typename Dimension, bool OnStack, typename SizeType>
+    struct is_row_major<matrix::parameters<row_major, Index, Dimension, OnStack, SizeType> >
       : boost::mpl::true_ {};
 
-    template <typename Index, typename Dimension, bool OnStack>
-    struct is_row_major<matrix::parameters<col_major, Index, Dimension, OnStack> >
+    template <typename Index, typename Dimension, bool OnStack, typename SizeType>
+    struct is_row_major<matrix::parameters<col_major, Index, Dimension, OnStack, SizeType> >
       : boost::mpl::false_ {};
 
     template <typename Value, typename Parameters>

@@ -14,6 +14,7 @@
 #define MTL_VECTOR_PARAMETERS_INCLUDE
 
 #include <boost/mpl/bool.hpp>
+#include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/vector/dimension.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
@@ -24,13 +25,16 @@ namespace mtl { namespace vector {
 template <typename Orientation= col_major, 
 	  typename Dimension= non_fixed::dimension,
 	  bool OnStack= mtl::traits::is_static<Dimension>::value,
-	  bool RValue= false>
+	  typename SizeType= std::size_t>
 struct parameters 
 {
     typedef Orientation orientation;
     typedef Dimension   dimension;
     static bool const   on_stack= OnStack;
-    static bool const   is_rvalue= RValue;  // to enable shallow copy
+    typedef SizeType    size_type;
+
+    // Vector dimension must be known at compile time to be on the stack
+    BOOST_STATIC_ASSERT(( !on_stack || dimension::is_static ));
 };
 
 
