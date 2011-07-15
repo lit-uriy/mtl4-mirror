@@ -60,6 +60,12 @@ namespace mtl {
 	const std::size_t fully_unroll_dmat_dmat_mult_limit= 64;
 #     endif
 
+#     ifdef MTL_CRS_CVEC_MULT_BLOCK_SIZE
+	const std::size_t crs_cvec_mult_block_size= MTL_CRS_CVEC_MULT_BLOCK_SIZE;
+#     else
+	const std::size_t crs_cvec_mult_block_size= 4;
+#     endif
+
 
     }
 
