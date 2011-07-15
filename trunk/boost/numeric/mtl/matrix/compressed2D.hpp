@@ -478,15 +478,7 @@ class compressed2D
     template <typename, typename, typename> friend struct compressed2D_inserter;
     template <typename, typename> friend struct compressed_el_cursor;
     template <typename, typename> friend struct compressed_minor_cursor;
-#if 0
-    template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
-    friend void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major);
 
-    template <unsigned BSize, typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
-    friend void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major);
-
-    template <unsigned, unsigned, typename> friend struct crs_cvec_mult_block;
-#endif
     indexer_type            indexer;
     std::vector<value_type> data; 
   protected:
