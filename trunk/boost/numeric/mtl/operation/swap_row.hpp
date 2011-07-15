@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl { 
@@ -57,6 +58,7 @@ namespace matrix {
     inline swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
 		    typename Collection<Matrix>::size_type j)
     {
+    vampir_trace<3039> tracer;
 	if (i == j) return;
 	detail::swap_row(A, i, j, typename mtl::traits::category<Matrix>::type(), 
 			 mtl::traits::is_row_major<Matrix>());
@@ -72,6 +74,7 @@ namespace vector {
     inline swap_row(Vector& v, typename Collection<Vector>::size_type i,
 		    typename Collection<Vector>::size_type j)
     {
+    vampir_trace<2036> tracer;
 	using std::swap;
 	if (i == j) return;
 	swap(v[i], v[j]);

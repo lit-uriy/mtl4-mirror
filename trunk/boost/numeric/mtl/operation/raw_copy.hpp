@@ -22,7 +22,7 @@ template <typename Matrix, typename InputIterator>
 void raw_copy(InputIterator first, InputIterator last, Matrix& matrix)
 {
     using std::copy;
-    vampir_trace<0002> tracer;
+    vampir_trace<2> tracer;
     copy(first, last, matrix.elements());
 }
 

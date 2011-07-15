@@ -15,6 +15,8 @@
 
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/vector/unrolled1.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl {
 
@@ -33,6 +35,7 @@ template <unsigned BSize, typename Coll>
 typename mtl::traits::enable_if_vector<Coll, vector::unrolled1<BSize, Coll> >::type
 inline unroll(Coll& v)
 {
+	vampir_trace<7> tracer;
     return vector::unrolled1<BSize, Coll>(v);
 }
 

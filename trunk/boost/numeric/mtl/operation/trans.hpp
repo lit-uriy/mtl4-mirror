@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/utility/transposed_orientation.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { 
 
@@ -63,6 +64,7 @@ namespace matrix {
     typename sfunctor::const_trans<Value, typename mtl::traits::algebraic_category<Value>::type>::result_type 
     inline trans(const Value& v)
     {
+    vampir_trace<3041> tracer;
 	return sfunctor::const_trans<const Value, typename mtl::traits::algebraic_category<Value>::type>::apply(v);
     }
 
@@ -70,6 +72,7 @@ namespace matrix {
     typename sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type>::result_type 
     inline trans(Value& v)
     {
+    vampir_trace<3042> tracer;
 	return sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type>::apply(v);
     }
 
@@ -105,6 +108,7 @@ namespace vector {
     typename transposed_vector<Vector>::type const
     inline trans(const Vector& v)
     {
+    vampir_trace<2037> tracer;
 	typedef typename transposed_vector<Vector>::type  type;
 	return type(size(v), &const_cast<Vector&>(v)[0]);
     }
@@ -113,6 +117,7 @@ namespace vector {
     typename transposed_vector<Vector>::type
     inline trans(Vector& v)
     {
+    vampir_trace<2038> tracer;
 	typedef typename transposed_vector<Vector>::type  type;
 	return type(size(v), &v[0]);
     }

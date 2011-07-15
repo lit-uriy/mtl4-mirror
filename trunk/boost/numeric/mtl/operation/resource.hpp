@@ -39,7 +39,7 @@ namespace mtl {
 	typename mtl::traits::vector_resource<Vector>::type
 	inline resource(const Vector& v)
 	{
-		vampir_trace<0004> tracer;
+		vampir_trace<4> tracer;
 	    return mtl::traits::vector_resource<Vector>::apply(v);
 	}
 

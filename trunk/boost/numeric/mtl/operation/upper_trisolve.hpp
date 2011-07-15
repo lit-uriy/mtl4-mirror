@@ -20,8 +20,9 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/adjust_cursor.hpp>
-
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl { namespace matrix {
 
@@ -151,24 +152,28 @@ namespace detail {
 template <typename Matrix, typename Vector>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v)
 {
+	vampir_trace<3043> tracer;
     return detail::upper_trisolve_t<Matrix, tag::regular_diagonal>(A)(v);
 }
 ///Solves the upper triangular matrix A (only one's in the diagonal) with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline unit_upper_trisolve(const Matrix& A, const Vector& v)
 {
+	vampir_trace<3044> tracer;
     return detail::upper_trisolve_t<Matrix, tag::unit_diagonal>(A)(v);
 }
 ///Solves the upper triangular matrix A  (inverse the diagonal) with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline inverse_upper_trisolve(const Matrix& A, const Vector& v)
 {
+	vampir_trace<3045> tracer;
     return detail::upper_trisolve_t<Matrix, tag::inverse_diagonal>(A)(v);
 }
 ///Solves the upper triangular matrix A  with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector, typename DiaTag>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v, DiaTag)
 {
+	vampir_trace<3046> tracer;
     return detail::upper_trisolve_t<Matrix, DiaTag>(A)(v);
 }
 

@@ -28,7 +28,7 @@ template <typename T>
 typename boost::enable_if<boost::mpl::or_<boost::is_integral<T>, boost::is_floating_point<T> >, T>::type
 inline squared_abs(const T& x)
 {
-	vampir_trace<0010> tracer;
+	vampir_trace<10> tracer;
     return x * x;
 }
 
@@ -36,7 +36,7 @@ inline squared_abs(const T& x)
 template <typename T>
 T inline squared_abs(const std::complex<T>& z)
 {
-	vampir_trace<0011> tracer;
+	vampir_trace<11> tracer;
     T x= real(z), y= imag(z);
     return x * x + y * y;
 }
@@ -46,7 +46,7 @@ template <typename T>
 typename boost::disable_if<boost::mpl::or_<boost::is_integral<T>, boost::is_floating_point<T> >, T>::type
 inline squared_abs(const T& x)
 {
-	vampir_trace<0012> tracer;
+	vampir_trace<12> tracer;
     using std::abs;
     T a= abs(x);
     return a * a;

@@ -17,6 +17,8 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl { namespace operations {
 
@@ -26,6 +28,7 @@ struct update_store
     template <typename Value>
     Element& operator() (Element& x, Value const& y)
     {
+    vampir_trace<13> tracer;
 	return x= y;
     }
 
@@ -43,6 +46,7 @@ struct update_plus
     template <typename Value>
     Element& operator() (Element& x, Value const& y)
     {
+    vampir_trace<14> tracer;
 	return x+= y;
     }
 
@@ -60,6 +64,7 @@ struct update_minus
     template <typename Value>
     Element& operator() (Element& x, Value const& y)
     {
+    vampir_trace<15> tracer;
 	return x-= y;
     }
 
@@ -77,6 +82,7 @@ struct update_times
     template <typename Value>
     Element& operator() (Element& x, Value const& y)
     {
+    vampir_trace<16> tracer;
 	return x*= y;
     }
 
@@ -94,6 +100,7 @@ struct update_adapter
     template <typename Value>
     Element& operator() (Element& x, Value const& y)
     {
+    vampir_trace<17> tracer;
 	return x= MonoidOp()(x, y);
     }
 
@@ -118,12 +125,14 @@ struct update_proxy
     template <typename Value>
     self& operator<< (Value const& val)
     {
+    vampir_trace<20> tracer;
 	return lshift(val, typename ashape::ashape<Value>::type());
     }
 
     template <typename Value>
     self& operator= (Value const& val)
     {
+    vampir_trace<21> tracer;
 	ins.template modify<update_store<value_type> > (row, col, val);
 	return *this;
     }
@@ -131,6 +140,7 @@ struct update_proxy
     template <typename Value>
     self& operator+= (Value const& val)
     {
+    vampir_trace<22> tracer;
 	ins.template modify<update_plus<value_type> > (row, col, val);
 	return *this;
     }

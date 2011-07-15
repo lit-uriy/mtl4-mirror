@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl {
@@ -33,6 +34,7 @@ namespace mtl {
 	inline two_norm(const Value& value)
 	{
 	    using std::sqrt;
+	    vampir_trace<2039> tracer;
 	    typedef typename RealMagnitude<typename Collection<Value>::value_type>::type result_type;
 	    return sqrt(reduction<Unroll, two_norm_functor, result_type>::apply(value));
 	}

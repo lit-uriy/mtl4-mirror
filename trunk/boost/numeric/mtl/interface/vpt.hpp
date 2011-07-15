@@ -19,6 +19,8 @@
   #include <boost/mpl/bool.hpp>
 #endif 
 
+#include<math.h> 
+
 namespace mtl { namespace vpt {
 
 #ifdef MTL_HAS_VPT
@@ -68,21 +70,52 @@ class vampir_trace
 
 // Utilities:                        0000
 // Number must start with 0, otherwise grouping script fails!!!!!
-template <> std::string vampir_trace<0001>::name("copysign");
-template <> std::string vampir_trace<0002>::name("Elem_raw_copy");
-template <> std::string vampir_trace<0003>::name("Get_real_part");
-template <> std::string vampir_trace<0004>::name("Info_contruct_vector");
-template <> std::string vampir_trace<0005>::name("right_scale_inplace");
-template <> std::string vampir_trace<0006>::name("sign_real_part_of_complex");
-template <> std::string vampir_trace<0007>::name("");
-//template <> std::string vampir_trace<0008>::name("");		// Der Kompilator nimmt beide Mummers (8,9) als octal
-//template <> std::string vampir_trace<0009>::name("");		// Der Kompilator nimmt beide Mummers (8,9) als octal
-template <> std::string vampir_trace<0010>::name("squared_abs_magnitudes");
-template <> std::string vampir_trace<0011>::name("squared_abs_complex");
-template <> std::string vampir_trace<0012>::name("squared_abs_magnitudes_template");
-template <> std::string vampir_trace<0013>::name("");
-template <> std::string vampir_trace<0014>::name("");
-template <> std::string vampir_trace<0015>::name("");
+template <> std::string vampir_trace<1>::name("copysign");
+template <> std::string vampir_trace<2>::name("Elem_raw_copy");
+template <> std::string vampir_trace<3>::name("Get_real_part");
+template <> std::string vampir_trace<4>::name("Info_contruct_vector");
+template <> std::string vampir_trace<5>::name("right_scale_inplace");
+template <> std::string vampir_trace<6>::name("sign_real_part_of_complex");
+template <> std::string vampir_trace<7>::name("unrolling_expresion");
+//template <> std::string vampir_trace<8>::name("");		// Der Kompilator nimmt beide Mummers (08,09) als octal
+//template <> std::string vampir_trace<9>::name("");		// Der Kompilator nimmt beide Mummers (08,09) als octal
+template <> std::string vampir_trace<10>::name("squared_abs_magnitudes");
+template <> std::string vampir_trace<11>::name("squared_abs_complex");
+template <> std::string vampir_trace<12>::name("squared_abs_magnitudes_template");
+template <> std::string vampir_trace<13>::name("update_store");
+template <> std::string vampir_trace<14>::name("update_plus");
+template <> std::string vampir_trace<15>::name("update_minus");
+template <> std::string vampir_trace<16>::name("update_times");
+template <> std::string vampir_trace<17>::name("update_adapter");
+template <> std::string vampir_trace<18>::name("");
+template <> std::string vampir_trace<19>::name("");
+template <> std::string vampir_trace<20>::name("update_proxy_<<");
+template <> std::string vampir_trace<21>::name("update_proxy_=");
+template <> std::string vampir_trace<22>::name("update_proxy_+=");
+template <> std::string vampir_trace<23>::name("sfunctor::plus");
+template <> std::string vampir_trace<24>::name("sfunctor::minus");
+template <> std::string vampir_trace<25>::name("sfunctor::times");
+template <> std::string vampir_trace<26>::name("sfunctor::divide");
+template <> std::string vampir_trace<27>::name("sfunctor::assign");
+template <> std::string vampir_trace<28>::name("sfunctor::plus_assign");
+template <> std::string vampir_trace<29>::name("sfunctor::minus_assign");
+template <> std::string vampir_trace<30>::name("sfunctor::times_assign");
+template <> std::string vampir_trace<31>::name("sfunctor::divide_assign");
+template <> std::string vampir_trace<32>::name("sfunctor::identity");
+template <> std::string vampir_trace<33>::name("sfunctor::abs");
+template <> std::string vampir_trace<34>::name("sfunctor::sqrt");
+template <> std::string vampir_trace<35>::name("sfunctor::square");
+template <> std::string vampir_trace<36>::name("sfunctor::negate");
+template <> std::string vampir_trace<37>::name("sfunctor::compose");
+template <> std::string vampir_trace<38>::name("sfunctor::compose_first");
+template <> std::string vampir_trace<39>::name("sfunctor::compose_second");
+template <> std::string vampir_trace<40>::name("sfunctor::compose_both");
+template <> std::string vampir_trace<41>::name("sfunctor::compose_binary");
+template <> std::string vampir_trace<42>::name("");
+template <> std::string vampir_trace<43>::name("");
+template <> std::string vampir_trace<44>::name("");
+template <> std::string vampir_trace<45>::name("");
+
 
 
 
@@ -153,10 +186,10 @@ template <> std::string vampir_trace<2032>::name("Vect_quicksort_lo_to_hi");
 template <> std::string vampir_trace<2033>::name("Vect_quicksort_permutaion_lo_to_hi");
 template <> std::string vampir_trace<2034>::name("split_complex_vector");
 template <> std::string vampir_trace<2035>::name("Vect_entries_sum");
-template <> std::string vampir_trace<2036>::name("");
-template <> std::string vampir_trace<2037>::name("");
-template <> std::string vampir_trace<2038>::name("");
-template <> std::string vampir_trace<2039>::name("");
+template <> std::string vampir_trace<2036>::name("Vecrtor_swapped_row");
+template <> std::string vampir_trace<2037>::name("Vector_const_trans");
+template <> std::string vampir_trace<2038>::name("Vector_trans");
+template <> std::string vampir_trace<2039>::name("Vector_two_norms");
 template <> std::string vampir_trace<2040>::name("");
 template <> std::string vampir_trace<2041>::name("");
 template <> std::string vampir_trace<2042>::name("");
@@ -215,16 +248,16 @@ template <> std::string vampir_trace<3033>::name("Matrix_size_runtime");
 template <> std::string vampir_trace<3034>::name("Matrix_LU");
 template <> std::string vampir_trace<3035>::name("Vector_Matrix_LU");
 template <> std::string vampir_trace<3036>::name("Sub_matrix_indices");
-template <> std::string vampir_trace<3037>::name("");
-template <> std::string vampir_trace<3038>::name("");
-template <> std::string vampir_trace<3039>::name("");
-template <> std::string vampir_trace<3040>::name("");
-template <> std::string vampir_trace<3041>::name("");
-template <> std::string vampir_trace<3042>::name("");
-template <> std::string vampir_trace<3043>::name("");
-template <> std::string vampir_trace<3044>::name("");
-template <> std::string vampir_trace<3045>::name("");
-template <> std::string vampir_trace<3046>::name("");
+template <> std::string vampir_trace<3037>::name("Matrix_svd_reference");
+template <> std::string vampir_trace<3038>::name("Matrix_svd_triplet");
+template <> std::string vampir_trace<3039>::name("Matrix_swapped");
+template <> std::string vampir_trace<3040>::name("Matrix_Trace");
+template <> std::string vampir_trace<3041>::name("Matrix_const_trans");
+template <> std::string vampir_trace<3042>::name("Matrix_trans");
+template <> std::string vampir_trace<3043>::name("Matrix_upper_trisolve");
+template <> std::string vampir_trace<3044>::name("Matrix_upper_trisolve_diagonal");
+template <> std::string vampir_trace<3045>::name("Matrix_upper_trisolve_invers_diag");
+template <> std::string vampir_trace<3046>::name("Matrix_upper_trisolve_DiaTag");
 template <> std::string vampir_trace<3047>::name("");
 template <> std::string vampir_trace<3048>::name("");
 template <> std::string vampir_trace<3049>::name("");
