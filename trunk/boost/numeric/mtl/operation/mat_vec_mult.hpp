@@ -17,6 +17,7 @@
 // #include <iostream>
 #include <boost/mpl/bool.hpp>
 
+#include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
@@ -266,7 +267,7 @@ template <typename MValue, typename MPara, typename VectorIn, typename VectorOut
 typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
 inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
-    smat_cvec_mult<4>(A, v, w, Assign(), tag::row_major());
+    smat_cvec_mult<crs_cvec_mult_block_size>(A, v, w, Assign(), tag::row_major());
 }
 #endif
 
