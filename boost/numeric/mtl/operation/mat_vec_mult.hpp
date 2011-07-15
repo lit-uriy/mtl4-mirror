@@ -196,7 +196,7 @@ struct crs_cvec_mult_block
     void operator()(const Matrix& A, const VectorIn& v, const CBlock& cj, TBlock& tmp) const
     {
 	for (SizeType j= cj.value; j != cj.sub.value; ++j) // cj is one index larger
-	    tmp.value+= A.data[j] * v[A.indices[j]];
+	    tmp.value+= A.data[j] * v[A.ref_indices()[j]];
 	sub(A, v, cj.sub, tmp.sub);
     }
 
@@ -218,7 +218,7 @@ struct crs_cvec_mult_block<BSize, BSize, SizeType>
     void operator()(const Matrix& A, const VectorIn& v, const CBlock& cj, TBlock& tmp) const
     {
 	for (SizeType j= cj.value; j != cj.sub.value; ++j)// cj is one index larger
-	    tmp.value+= A.data[j] * v[A.indices[j]];
+	    tmp.value+= A.data[j] * v[A.ref_indices()[j]];
     }
 
     template <typename VectorOut, typename TBlock, typename Assign>
@@ -245,7 +245,7 @@ inline void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn&
 
     size_type nr= num_rows(A), nrb= nr / BSize * BSize;
     for (size_type i= 0; i < nrb; i+= BSize) {
-	multi_constant_from_array<0, BSize+1, size_type> cj(A.starts, i);
+	multi_constant_from_array<0, BSize+1, size_type> cj(A.ref_starts(), i);
 	multi_tmp<BSize, value_type>                     tmp(z);
 	crs_cvec_mult_block<0, BSize-1, size_type>       block;
 
@@ -254,10 +254,10 @@ inline void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn&
     }
 
     for (size_type i= nrb; i < nr; ++i) {
-	const size_type cj0= A.starts[i], cj1= A.starts[i+1];
+	const size_type cj0= A.ref_starts()[i], cj1= A.ref_starts()[i+1];
 	value_type      tmp0(z);
 	for (size_type j0= cj0; j0 != cj1; ++j0)
-	    tmp0+= A.data[j0] * v[A.indices[j0]];
+	    tmp0+= A.data[j0] * v[A.ref_indices()[j0]];
 	Assign::first_update(w[i], tmp0);
     }
 }
@@ -289,17 +289,17 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
 
     size_type nr= num_rows(A), nrb= nr / 4 * 4;
     for (size_type i= 0; i < nrb; i+= 4) {
-	const size_type cj0= A.starts[i], cj1= A.starts[i+1], cj2= A.starts[i+2], 
-	                cj3= A.starts[i+3], cj4= A.starts[i+4];
+	const size_type cj0= A.ref_starts()[i], cj1= A.ref_starts()[i+1], cj2= A.ref_starts()[i+2], 
+	                cj3= A.ref_starts()[i+3], cj4= A.ref_starts()[i+4];
 	value_type      tmp0(z), tmp1(z), tmp2(z), tmp3(z);
 	for (size_type j0= cj0; j0 != cj1; ++j0)
-	    tmp0+= A.data[j0] * v[A.indices[j0]];
+	    tmp0+= A.data[j0] * v[A.ref_indices()[j0]];
 	for (size_type j1= cj1; j1 != cj2; ++j1)
-	    tmp1+= A.data[j1] * v[A.indices[j1]];
+	    tmp1+= A.data[j1] * v[A.ref_indices()[j1]];
 	for (size_type j2= cj2; j2 != cj3; ++j2)
-	    tmp2+= A.data[j2] * v[A.indices[j2]];
+	    tmp2+= A.data[j2] * v[A.ref_indices()[j2]];
 	for (size_type j3= cj3; j3 != cj4; ++j3)
-	    tmp3+= A.data[j3] * v[A.indices[j3]];
+	    tmp3+= A.data[j3] * v[A.ref_indices()[j3]];
 
 	Assign::first_update(w[i], tmp0);
 	Assign::first_update(w[i+1], tmp1);
@@ -308,10 +308,10 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
     }
 
     for (size_type i= nrb; i < nr; ++i) {
-	const size_type cj0= A.starts[i], cj1= A.starts[i+1];
+	const size_type cj0= A.ref_starts()[i], cj1= A.ref_starts()[i+1];
 	value_type      tmp0(z);
 	for (size_type j0= cj0; j0 != cj1; ++j0)
-	    tmp0+= A.data[j0] * v[A.indices[j0]];
+	    tmp0+= A.data[j0] * v[A.ref_indices()[j0]];
 	Assign::first_update(w[i], tmp0);
     }
 }
