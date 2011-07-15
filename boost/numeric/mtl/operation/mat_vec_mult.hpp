@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/multi_tmp.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
@@ -159,14 +160,6 @@ inline void mat_cvec_mult(const HermitianMatrix& A, const VectorIn& v, VectorOut
 }
 
 
-// Sparse matrix vector multiplication
-template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::sparse)
-{
-    smat_cvec_mult(A, v, w, Assign(), typename OrientedCollection<Matrix>::orientation());
-}
-
-
 
 // Sparse row-major matrix vector multiplication
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
@@ -195,7 +188,7 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
     }
 }
 
-#if 0
+#ifdef CRS_CVEC_MULT_TUNING
 template <unsigned Index, unsigned BSize, typename SizeType>
 struct crs_cvec_mult_block
 {
@@ -270,17 +263,19 @@ inline void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn&
 }
 
 template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
-inline void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
+typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
+inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
     smat_cvec_mult<4>(A, v, w, Assign(), tag::row_major());
 }
 #endif
 
 
-#if 1
+#if !defined(CRS_CVEC_MULT_NO_ACCEL) && !defined(CRS_CVEC_MULT_TUNING)
 // Row-major compressed2D vector multiplication
 template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
-inline void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
+typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
+inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
     vampir_trace<3122> tracer;
     using math::zero;
@@ -345,6 +340,14 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
 	    Assign::update(w[row_a(*aic)], value_a(*aic) * vv);
     }
 }
+
+// Sparse matrix vector multiplication
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::sparse)
+{
+    smat_cvec_mult(A, v, w, Assign(), typename OrientedCollection<Matrix>::orientation());
+}
+
 
 
 }} // namespace mtl::matrix
