@@ -20,10 +20,10 @@ namespace mtl { namespace traits {
 
 template <class T> struct transposed_matrix_parameter {};
 
-template <typename O, typename I, typename D, bool S>
-struct transposed_matrix_parameter<matrix::parameters<O, I, D, S> >
+template <typename O, typename I, typename D, bool S, typename ST>
+struct transposed_matrix_parameter<matrix::parameters<O, I, D, S, ST> >
 {
-    typedef matrix::parameters<typename transposed_orientation<O>::type, I, D, S>  type;
+    typedef matrix::parameters<typename transposed_orientation<O>::type, I, D, S, ST>  type;
 };
 
 template <class T> struct transposed_matrix_type {};

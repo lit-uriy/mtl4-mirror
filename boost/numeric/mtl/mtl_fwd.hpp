@@ -52,7 +52,7 @@ namespace mtl {
     /// Namespace for matrices and views and operations exclusively on matrices
     namespace matrix {
 
-	template <typename Orientation, typename Index, typename Dimensions, bool OnStack> struct parameters;
+	template <typename Orientation, typename Index, typename Dimensions, bool OnStack, typename SizeType> struct parameters;
 
         template <typename Value, typename Parameters> class dense2D;
 

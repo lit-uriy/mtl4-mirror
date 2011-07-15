@@ -85,7 +85,7 @@ namespace vector {
     struct transposed_parameters
     {
 	typedef typename mtl::traits::transposed_orientation<typename Parameters::orientation>::type orientation; // switch
-	typedef parameters<orientation, typename Parameters::dimension, false, false>           type;        // not on stack!!!
+	typedef parameters<orientation, typename Parameters::dimension, false, typename Parameters::size_type>           type;        // not on stack!!!
     };
 
     template <typename Value, typename Parameters>
