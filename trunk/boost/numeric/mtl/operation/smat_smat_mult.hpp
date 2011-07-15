@@ -18,6 +18,8 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/transposed_matrix_type.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl {
 
@@ -184,6 +186,7 @@ inline void smat_smat_mult(const MatrixA& A, const MatrixB& B, MatrixC& C, Assig
 			   tag::row_major,  // orientation A 
 			   tag::col_major)  // orientation B
 {
+	vampir_trace<4020> tracer;
     // Copy B into a sparse row-major matrix
     typename mtl::traits::transposed_sparse_matrix_type<MatrixB>::type B_copy(num_rows(B), num_cols(B));
     B_copy= B;
