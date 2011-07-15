@@ -165,17 +165,17 @@ struct compressed_minor_cursor
 
 
 // Indexing for compressed matrices
+template <typename SizeType>
 struct compressed2D_indexer 
 {
-    typedef std::size_t                               size_t;
-    typedef size_t                            size_type;
+    typedef SizeType                          size_type;
     typedef std::pair<size_type, size_type>   size_pair;
   private:
     // helpers for public functions
     template <class Matrix>
-    utilities::maybe<size_t> offset(const Matrix& ma, size_t major, size_t minor) const 
+    utilities::maybe<size_type> offset(const Matrix& ma, size_type major, size_type minor) const 
     {
-		typedef utilities::maybe<size_t>      result_type;
+		typedef utilities::maybe<size_type>      result_type;
 	assert(ma.starts[major] <= ma.starts[major+1]); // Check sortedness
 	assert(ma.starts[major+1] <= ma.my_nnz);        // Check bounds of indices
 	// Now we are save to use past-end addresses as iterators
@@ -184,13 +184,13 @@ struct compressed2D_indexer
 	if (ma.indices.empty())
 		return result_type(0, false);
 
-	const size_t *first = &ma.indices[0] + ma.starts[major],
+	const size_type *first = &ma.indices[0] + ma.starts[major],
 	             *last = &ma.indices[0] + ma.starts[major+1];
 	// if empty row (or column) return start of next one
 	if (first == last) 
 	    return result_type(first - &ma.indices[0], false);
 
-	const size_t *index= first;
+	const size_type *index= first;
 	if (last - index <= int(compressed_linear_search_limit))
 	    while (index != last && *index < minor) ++index;
 	else
@@ -201,12 +201,12 @@ struct compressed2D_indexer
   public:
     // Returns major and minor index in C style (starting with 0)
     template <class Matrix>
-    size_pair major_minor_c(const Matrix& ma, size_t row, size_t col) const
+    size_pair major_minor_c(const Matrix& ma, size_type row, size_type col) const
     {
 	using std::make_pair;
 	// convert into c indices
 	typename Matrix::index_type my_index;
-	size_t my_row= index::change_from(my_index, row),
+	size_type my_row= index::change_from(my_index, row),
 	       my_col= index::change_from(my_index, col);
 	return make_pair(ma.major_(my_row, my_col), ma.minor_(my_row, my_col));
     }
@@ -214,16 +214,16 @@ struct compressed2D_indexer
     // Returns the offset if found
     // If not found it returns the position where it would be inserted
     template <class Matrix>
-    utilities::maybe<size_t> operator() (const Matrix& ma, size_t row, size_t col) const
+    utilities::maybe<size_type> operator() (const Matrix& ma, size_type row, size_type col) const
     {
-	size_t major, minor;
+	size_type major, minor;
 	boost::tie(major, minor) = major_minor_c(ma, row, col);
 	return offset(ma, major, minor);
     }
 
     // Same as above if internal representation is already known
     template <class Matrix>
-    utilities::maybe<size_t> operator() (const Matrix& ma, size_pair major_minor) const 
+    utilities::maybe<size_type> operator() (const Matrix& ma, size_pair major_minor) const 
     {
 	return offset(ma, major_minor.first, major_minor.second);
     }
@@ -231,15 +231,15 @@ struct compressed2D_indexer
     // For a given offset the minor can be accessed directly, the major dim has to be searched
     // Returned in internal (c) representation
     template <class Matrix>
-    size_t find_major(const Matrix& ma, size_t offset) const
+    size_type find_major(const Matrix& ma, size_type offset) const
     {
 	MTL_DEBUG_THROW_IF(ma.starts.empty(), logic_error("Major vector can't be empty"));
-	size_t my_major= std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
+	size_type my_major= std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
 	return --my_major;
     }
 
     template <class Matrix>
-    size_t minor_from_offset(const Matrix& ma, size_t offset) const
+    size_type minor_from_offset(const Matrix& ma, size_type offset) const
     {
 	typedef typename Matrix::index_type my_index;
 	return index::change_to(my_index(), ma.indices[offset]);
@@ -253,8 +253,8 @@ struct compressed2D_indexer
 template <typename Elt, typename Parameters = matrix::parameters<> >
 class compressed2D 
   : public base_matrix<Elt, Parameters>,
-    public const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, std::size_t >,
-    public crtp_matrix_assign< compressed2D<Elt, Parameters>, Elt, std::size_t >,
+    public const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, typename Parameters::size_type >,
+    public crtp_matrix_assign< compressed2D<Elt, Parameters>, Elt, typename Parameters::size_type >,
     public mat_expr< compressed2D<Elt, Parameters> >
 {
     typedef std::size_t                              size_t;
@@ -284,7 +284,7 @@ class compressed2D
     typedef value_type                               const_reference;
 
     typedef typename Parameters::size_type           size_type;
-    typedef compressed2D_indexer                     indexer_type;
+    typedef compressed2D_indexer<size_type>          indexer_type;
 
     void check() const { MTL_DEBUG_THROW_IF(inserting, access_during_insertion()); }
 
@@ -474,7 +474,7 @@ class compressed2D
 	return starts[r_or_c+1] - starts[r_or_c];
     }
 
-    friend struct compressed2D_indexer;
+    template <typename> friend struct compressed2D_indexer;
     template <typename, typename, typename> friend struct compressed2D_inserter;
     template <typename, typename> friend struct compressed_el_cursor;
     template <typename, typename> friend struct compressed_minor_cursor;
@@ -734,10 +734,10 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type ro
     using std::copy_backward;
     MTL_DEBUG_THROW_IF(is_negative(row) || row >= num_rows(matrix) || is_negative(col) || col >= num_cols(matrix), index_out_of_range());
 
-    Modifier               modifier;  
-    compressed2D_indexer   indexer;
-    size_pair              mm = indexer.major_minor_c(matrix, row, col);
-    size_type              major, minor;
+    Modifier                          modifier;  
+    compressed2D_indexer<size_type>   indexer;
+    size_pair                         mm = indexer.major_minor_c(matrix, row, col);
+    size_type                         major, minor;
     boost::tie(major, minor) = mm;
 
     utilities::maybe<size_type>       pos = matrix_offset(mm);
