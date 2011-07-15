@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/meta_math/loop1.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl { namespace functor {
@@ -30,6 +31,7 @@ struct gen_smat_dmat_mult
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
+    vampir_trace<4018> tracer;
 	apply(a, b, c, typename OrientedCollection<MatrixA>::orientation());
     }
 
@@ -177,6 +179,7 @@ struct gen_tiling_smat_dmat_mult
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
+    vampir_trace<4019> tracer;
 	apply(a, b, c, typename traits::category<MatrixC>::type());
     }
 
