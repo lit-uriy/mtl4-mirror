@@ -11,6 +11,7 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
+#include <boost/timer.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
@@ -21,8 +22,14 @@ int main()
   // For a more realistic example set size to 1000 or larger
   const int size = 1000, N = size * size;
 
-  typedef mtl::compressed2D<double>  matrix_type;
-  mtl::compressed2D<double>          A(N, N);
+  using namespace mtl;
+
+  
+  typedef std::size_t size_type;
+  std::cout << "sizeof in size_type is " << sizeof(size_type) << '\n';
+  typedef matrix::parameters<row_major, index::c_index, non_fixed::dimensions, false, size_type> para;
+  typedef compressed2D<double, para>  matrix_type;
+  matrix_type          A(N, N);
   laplacian_setup(A, size, size);
 
   itl::pc::identity<matrix_type>     P(A);
@@ -32,8 +39,10 @@ int main()
   b = A * x;
   x= 0;
 
-  itl::cyclic_iteration<double> iter(b, 500, 1.e-1, 0.0, 5);
+  itl::cyclic_iteration<double> iter(b, 20, 1.e-2, 0.0, 5);
+  boost::timer t;
   cg(A, x, b, P, iter);
+  std::cout << "CG took " << t.elapsed() << "s.\n";
 
   return 0;
 }

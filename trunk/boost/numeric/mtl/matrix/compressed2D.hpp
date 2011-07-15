@@ -710,20 +710,20 @@ compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm)
     boost::tie(major, minor) = mm;
 
     if (indices.empty())
-		return utilities::maybe<size_t> (0, false);
+	return utilities::maybe<size_type> (0, false);
 
     // &v[i] isn't liked by all libs -> &v[0]+i circumvents complaints
-    const size_t *first = &indices[0] + starts[major],
-  	         *last =  &indices[0] + slot_ends[major];
+    const size_type *first = &indices[0] + starts[major],
+  	            *last =  &indices[0] + slot_ends[major];
     if (first == last) 
-	return utilities::maybe<size_t> (first - &indices[0], false);
+	return utilities::maybe<size_type> (first - &indices[0], false);
 
-    const size_t *index= first;
+    const size_type *index= first;
     if (last - index < 10)
 	while (index != last && *index < minor) ++index;
     else
 	index = std::lower_bound(first, last, minor);
-    return utilities::maybe<size_t>(index - &indices[0], index != last && *index == minor);  
+    return utilities::maybe<size_type>(index - &indices[0], index != last && *index == minor);  
 }
 
 
@@ -743,7 +743,7 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type ro
     utilities::maybe<size_type>       pos = matrix_offset(mm);
     // Check if already in matrix and update it
     if (pos) 
-	modifier (elements[pos], val); 
+	modifier (elements[pos.value()], val); 
     else {
 	size_type& my_end = slot_ends[major];
 	// Check if place in matrix to insert there
@@ -752,7 +752,7 @@ inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type ro
 		copy_backward(&elements[0] + pos.value(), &elements[0] + my_end, &elements[0] + (my_end+1));
 		copy_backward(&indices[0] + pos.value(), &indices[0] + my_end, &indices[0] + (my_end+1));
 	    }
-	    elements[pos] = modifier.init(val); indices[pos] = minor;
+	    elements[pos.value()] = modifier.init(val); indices[pos.value()] = minor;
 	    my_end++;	    
 	    matrix.my_nnz++;      // new entry
 	} else {
@@ -926,7 +926,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
 	// &v[i] see above
 	copy_backward(&elements[0] + pos.value(), &elements[0] + my_end, &elements[0] + (my_end+1));
 	copy_backward(&indices[0] + pos.value(), &indices[0] + my_end, &indices[0] + (my_end+1));
-	elements[pos] = it->second; indices[pos] = minor;
+	elements[pos.value()] = it->second; indices[pos.value()] = minor;
 	my_end++;
     }
 }
