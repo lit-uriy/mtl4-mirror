@@ -16,6 +16,7 @@
 #include <cmath>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -39,6 +40,7 @@ struct sub_matrix_t
 					       typename sub_matrix_t<Matrix>::size_type& begin_col, 
 					       typename sub_matrix_t<Matrix>::size_type& end_col)
 	{
+		vampir_trace<3036> tracer;
 	    using std::min;
 	    MTL_DEBUG_THROW_IF( is_negative(begin_row) || is_negative(end_row), index_out_of_range());
 	    end_row= min(end_row, num_rows(matrix));

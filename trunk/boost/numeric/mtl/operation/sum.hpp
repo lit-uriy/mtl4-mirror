@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl {
@@ -33,6 +34,7 @@ namespace mtl {
 	typename Collection<Vector>::value_type
 	inline sum(const Vector& vector, tag::vector)
 	{
+		vampir_trace<2035> tracer;
 	    typedef typename Collection<Vector>::value_type result_type;
 	    return vector::reduction<Unroll, vector::sum_functor, result_type>::apply(vector);
 	}

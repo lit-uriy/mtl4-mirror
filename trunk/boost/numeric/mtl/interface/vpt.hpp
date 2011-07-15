@@ -66,7 +66,7 @@ class vampir_trace
 // Iterative solvers:               6000
 
 
-// Utilities:                       0000
+// Utilities:                        0000
 // Number must start with 0, otherwise grouping script fails!!!!!
 template <> std::string vampir_trace<0001>::name("copysign");
 template <> std::string vampir_trace<0002>::name("Elem_raw_copy");
@@ -77,9 +77,9 @@ template <> std::string vampir_trace<0006>::name("sign_real_part_of_complex");
 template <> std::string vampir_trace<0007>::name("");
 //template <> std::string vampir_trace<0008>::name("");		// Der Kompilator nimmt beide Mummers (8,9) als octal
 //template <> std::string vampir_trace<0009>::name("");		// Der Kompilator nimmt beide Mummers (8,9) als octal
-template <> std::string vampir_trace<0010>::name("");
-template <> std::string vampir_trace<0011>::name("");
-template <> std::string vampir_trace<0012>::name("");
+template <> std::string vampir_trace<0010>::name("squared_abs_magnitudes");
+template <> std::string vampir_trace<0011>::name("squared_abs_complex");
+template <> std::string vampir_trace<0012>::name("squared_abs_magnitudes_template");
 template <> std::string vampir_trace<0013>::name("");
 template <> std::string vampir_trace<0014>::name("");
 template <> std::string vampir_trace<0015>::name("");
@@ -88,17 +88,17 @@ template <> std::string vampir_trace<0015>::name("");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
-    vampir_trace<> tracer;
+	vampir_trace<> tracer;
 
 #endif
-// Static size operations:          1000
+// Static size operations:           1000
 template <> std::string vampir_trace<1001>::name("stat_vec_expr");
 template <> std::string vampir_trace<1002>::name("fixed_size_dmat_dmat_mult");
 template <> std::string vampir_trace<1003>::name("vector_size_static");
 template <> std::string vampir_trace<1004>::name("static_dispatch"); // ?? row_in_matrix.hpp:74
 template <> std::string vampir_trace<1005>::name("copy_blocks_forward");
 template <> std::string vampir_trace<1006>::name("copy_blocks_bacward");
-template <> std::string vampir_trace<1007>::name("");
+template <> std::string vampir_trace<1007>::name("Static_Size");
 template <> std::string vampir_trace<1008>::name("");
 template <> std::string vampir_trace<1009>::name("");
 template <> std::string vampir_trace<1010>::name("");
@@ -117,7 +117,7 @@ template <> std::string vampir_trace<1020>::name("");
 
 
 
-// Vector operations:               2000
+// Vector operations:                2000
 template <> std::string vampir_trace<2001>::name("gen_vector_copy");
 template <> std::string vampir_trace<2002>::name("cross");
 template <> std::string vampir_trace<2003>::name("dot");
@@ -149,24 +149,36 @@ template <> std::string vampir_trace<2028>::name("Vector_scal");
 template <> std::string vampir_trace<2029>::name("Vector_set_zero");
 template <> std::string vampir_trace<2030>::name("Vector_size1D");
 template <> std::string vampir_trace<2031>::name("Vector_size_runtime");
-template <> std::string vampir_trace<2032>::name("");
-template <> std::string vampir_trace<2033>::name("");
-template <> std::string vampir_trace<2034>::name("");
-template <> std::string vampir_trace<2035>::name("");
+template <> std::string vampir_trace<2032>::name("Vect_quicksort_lo_to_hi");
+template <> std::string vampir_trace<2033>::name("Vect_quicksort_permutaion_lo_to_hi");
+template <> std::string vampir_trace<2034>::name("split_complex_vector");
+template <> std::string vampir_trace<2035>::name("Vect_entries_sum");
 template <> std::string vampir_trace<2036>::name("");
 template <> std::string vampir_trace<2037>::name("");
 template <> std::string vampir_trace<2038>::name("");
 template <> std::string vampir_trace<2039>::name("");
 template <> std::string vampir_trace<2040>::name("");
 template <> std::string vampir_trace<2041>::name("");
+template <> std::string vampir_trace<2042>::name("");
+template <> std::string vampir_trace<2043>::name("");
+template <> std::string vampir_trace<2044>::name("");
+template <> std::string vampir_trace<2045>::name("");
+template <> std::string vampir_trace<2046>::name("");
+template <> std::string vampir_trace<2047>::name("");
+template <> std::string vampir_trace<2048>::name("");
+template <> std::string vampir_trace<2049>::name("");
+template <> std::string vampir_trace<2050>::name("");
+template <> std::string vampir_trace<2051>::name("");
+template <> std::string vampir_trace<2052>::name("");
+
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
-    vampir_trace<> tracer;
+	vampir_trace<> tracer;
 
 #endif
 
-// Matrix Vector & single matrix:   3000
+// Matrix Vector & single matrix:    3000
 template <> std::string vampir_trace<3001>::name("matrix_copy_ele_times");
 template <> std::string vampir_trace<3002>::name("gen_matrix_copy");
 template <> std::string vampir_trace<3003>::name("copy");
@@ -202,15 +214,26 @@ template <> std::string vampir_trace<3032>::name("Matrix_size1D");
 template <> std::string vampir_trace<3033>::name("Matrix_size_runtime");
 template <> std::string vampir_trace<3034>::name("Matrix_LU");
 template <> std::string vampir_trace<3035>::name("Vector_Matrix_LU");
-template <> std::string vampir_trace<3036>::name("");
+template <> std::string vampir_trace<3036>::name("Sub_matrix_indices");
 template <> std::string vampir_trace<3037>::name("");
 template <> std::string vampir_trace<3038>::name("");
 template <> std::string vampir_trace<3039>::name("");
+template <> std::string vampir_trace<3040>::name("");
+template <> std::string vampir_trace<3041>::name("");
+template <> std::string vampir_trace<3042>::name("");
+template <> std::string vampir_trace<3043>::name("");
+template <> std::string vampir_trace<3044>::name("");
+template <> std::string vampir_trace<3045>::name("");
+template <> std::string vampir_trace<3046>::name("");
+template <> std::string vampir_trace<3047>::name("");
+template <> std::string vampir_trace<3048>::name("");
+template <> std::string vampir_trace<3049>::name("");
+template <> std::string vampir_trace<3050>::name("");
 template <> std::string vampir_trace<3122>::name("crs_cvec_mult");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
-    vampir_trace<> tracer;
+	vampir_trace<> tracer;
 
 #endif
 
@@ -260,7 +283,7 @@ template <> std::string vampir_trace<4041>::name("");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
-    vampir_trace<>0 tracer;
+	vampir_trace<>0 tracer;
 
 #endif
 
@@ -317,7 +340,7 @@ template <> std::string vampir_trace<5049>::name("");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
-    vampir_trace<>0 tracer;
+	vampir_trace<>0 tracer;
 
 #endif
 
@@ -333,8 +356,8 @@ template <> std::string vampir_trace<9999>::name("main");
     
 
 // Only for testing
-template <> std::string vampir_trace<1099>::name("helper_function");
-template <> std::string vampir_trace<2099>::name("function");
+template <> std::string vampir_trace<9990>::name("helper_function");
+template <> std::string vampir_trace<9991>::name("function");
 
 
 #else

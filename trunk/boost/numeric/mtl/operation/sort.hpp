@@ -14,6 +14,8 @@
 #define MTL_SORT_INCLUDE
 
 #include <algorithm>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl { namespace vector {
 
@@ -27,8 +29,9 @@ void inline sort(Vector& x)
 /// sort vector with qicksort from lo to hi  
 template <typename Vector>  	  	 
 void quicksort (Vector& a, typename Collection<Vector>::size_type lo, typename Collection<Vector>::size_type hi)  
-{  	  	 
-       typename Collection<Vector>::size_type i=lo, j=hi;  	  	 
+{
+		vampir_trace<2032> tracer;  	  	 
+       	typename Collection<Vector>::size_type i=lo, j=hi;  	  	 
  
         // VergleichsÂ­element x  	  	 
         typename mtl::Collection<Vector>::value_type x=a[(lo+hi)/2];  	  	 
@@ -52,9 +55,10 @@ void quicksort (Vector& a, typename Collection<Vector>::size_type lo, typename C
 /// sort vector and permutaion with qicksort from lo to hi  
 template <typename Vector, typename PermVec>  	  	 
 void quicksort (Vector& a, PermVec& p, typename Collection<Vector>::size_type lo, typename Collection<Vector>::size_type hi)  
-{  	  	 
+{  	  	
+		vampir_trace<2033> tracer;
        typename Collection<Vector>::size_type i=lo, j=hi;  	  	 
- 
+		
         // VergleichsÂ­element x  	  	 
         typename mtl::Collection<Vector>::value_type x=a[(lo+hi)/2];  
 // 	std::cout<< "x=" << x << "\n";

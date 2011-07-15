@@ -19,16 +19,16 @@ using namespace std;
 
 void helper_function()
 {
-    mtl::vampir_trace<1099> tracer; 
+    mtl::vampir_trace<9990> tracer; 
 
-    std::cout << "In helper_function <id=1099>, it is " << (tracer.is_traced() ? "" : "not ") << "traced\n";
+    std::cout << "In helper_function <id=0998>, it is " << (tracer.is_traced() ? "" : "not ") << "traced\n";
 }
 
 void function()
 {
-    mtl::vampir_trace<2099> tracer; 
+    mtl::vampir_trace<9991> tracer; 
 
-    std::cout << "In function <id=2099>, it is " << (tracer.is_traced() ? "" : "not ") << "traced\n";
+    std::cout << "In function <id=0999>, it is " << (tracer.is_traced() ? "" : "not ") << "traced\n";
     helper_function();
 }
 
