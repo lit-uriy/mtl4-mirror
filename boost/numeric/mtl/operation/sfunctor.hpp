@@ -35,6 +35,7 @@ struct plus
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
+    vampir_trace<23> tracer;
 	return v1 + v2;
     }
 };
@@ -53,6 +54,7 @@ struct minus
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
+    vampir_trace<24> tracer;
 	return v1 - v2;
     }
 };
@@ -71,6 +73,7 @@ struct times
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
+    vampir_trace<25> tracer;
 	return v1 * v2;
     }
 };
@@ -89,6 +92,7 @@ struct divide
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
+    vampir_trace<26> tracer;
 	return v1 / v2;
     }
 };
@@ -107,6 +111,7 @@ struct assign
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
+    vampir_trace<27> tracer;
 	return v1= v2;
     }
 };
@@ -125,6 +130,7 @@ struct plus_assign
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
+    vampir_trace<28> tracer;
 	return v1+= v2;
     }
 };
@@ -143,6 +149,7 @@ struct minus_assign
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
+    vampir_trace<29> tracer;
 	return v1-= v2;
     }
 };
@@ -161,6 +168,7 @@ struct times_assign
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
+    vampir_trace<30> tracer;
 	return v1*= v2;
     }
 };
@@ -179,6 +187,7 @@ struct divide_assign
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
+    vampir_trace<31> tracer;
 	return v1/= v2;
     }
 };
@@ -198,19 +207,9 @@ struct identity
 
     result_type operator() (const Value& v) const
     {
+    vampir_trace<32> tracer;
 	return v;
     }
-};
-
-
-template <typename Value>
-struct negate
-{
-    typedef const Value&                                  argument_type;
-    typedef Value                                         result_type;
-
-    static inline result_type apply(const Value& v) { return -v;  }
-    result_type operator() (const Value& v) const { return -v; }
 };
 
 
@@ -226,7 +225,11 @@ struct abs
 	return abs(v);
     }
 
-    result_type operator() (const Value& v) { return apply(v); }
+    result_type operator() (const Value& v) 
+    {
+    vampir_trace<33> tracer; 
+    return apply(v); 
+    }
 };
 
 template <typename Value>
@@ -241,7 +244,11 @@ struct sqrt
 	return sqrt(v);
     }
 
-    result_type operator() (const Value& v) { return apply(v); }
+    result_type operator() (const Value& v) 
+    {
+    vampir_trace<34> tracer;
+    return apply(v); 
+    }
 };
 
 template <typename Value>
@@ -255,8 +262,28 @@ struct square
 	return v * v;
     }
 
-    result_type operator() (const Value& v) { return apply(v); }
+    result_type operator() (const Value& v) 
+    {
+    vampir_trace<35> tracer;
+    return apply(v);
+    }
 };
+
+
+template <typename Value>
+struct negate
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) { return -v;  }
+    result_type operator() (const Value& v) const 
+    {
+    vampir_trace<36> tracer;
+    return -v;
+    }
+};
+
 
 /// Compose functors \p F and \p G, i.e. compute f(g(x)).
 /** Functors must be models of StaticUnaryFunctor,
@@ -275,7 +302,11 @@ struct compose
 	return F::apply(G::apply(x));
     }
 
-    result_type operator()(argument_type x) { return apply(x); }
+    result_type operator()(argument_type x) 
+    {
+    vampir_trace<37> tracer;
+    return apply(x);
+    }
 };
 
 
@@ -297,7 +328,11 @@ struct compose_first
 	return F::apply(G::apply(x), y);
     }
 
-    result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
+    result_type operator()(first_argument_type x, second_argument_type y)
+    {
+    vampir_trace<38> tracer;
+    return apply(x, y);
+    }
 };
 
 
@@ -319,7 +354,11 @@ struct compose_second
 	return F::apply(x, G::apply(y));
     }
 
-    result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
+    result_type operator()(first_argument_type x, second_argument_type y)
+    {
+	vampir_trace<39> tracer;
+    return apply(x, y);
+    }
 };
 
 /// Compose functors \p F, \p G, and \p H with G/H in F's first/second argument, i.e. compute f(g(x), h(y)).
@@ -342,7 +381,11 @@ struct compose_both
 	return F::apply(G::apply(x), H::apply(y));
     }
 
-    result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
+    result_type operator()(first_argument_type x, second_argument_type y)
+    {
+	vampir_trace<40> tracer;
+    return apply(x, y);
+    }
 };
 
 /// Compose unary functor \p F with binary functor \p G, i.e. compute f(g(x, y)).
@@ -363,7 +406,11 @@ struct compose_binary
 	return F::apply(G::apply(x, y));
     }
 
-    result_type operator()(first_argument_type x, second_argument_type y) { return apply(x, y); }
+    result_type operator()(first_argument_type x, second_argument_type y)
+    {
+    vampir_trace<41> tracer;
+    return apply(x, y);
+    }
 };
 
 

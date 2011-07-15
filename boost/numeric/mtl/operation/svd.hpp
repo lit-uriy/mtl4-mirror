@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/operation/trans.hpp>
 #include <boost/numeric/mtl/operation/two_norm.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -32,6 +33,7 @@ namespace mtl { namespace matrix {
 template <typename Matrix>
 inline void svd(const Matrix& A, Matrix& S, Matrix& V, Matrix& D, double tol= 10e-10)
 {
+	vampir_trace<3037> tracer;
     typedef typename Collection<Matrix>::value_type   value_type;
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type        ncols= num_cols(A), nrows= num_rows(A), loops, col= ncols, row= nrows;
@@ -77,6 +79,7 @@ template <typename Matrix>
 boost::tuple<Matrix, Matrix, Matrix >
 inline svd(const Matrix& A, double tol= 10e-10)
 {
+	vampir_trace<3038> tracer;
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type    ncols= num_cols(A), nrows= num_rows(A), col= ncols, row= nrows;
     if (nrows != ncols) // important for right dimension

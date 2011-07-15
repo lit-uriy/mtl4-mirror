@@ -29,7 +29,7 @@ namespace mtl {
 template <typename Factor, typename Collection>
 void right_scale_inplace(Collection& c, const Factor& alpha, tag::scalar)
 {
-	vampir_trace<0005> tracer;
+	vampir_trace<5> tracer;
     assign_each_nonzero(c, boost::lambda::_1 * alpha);
 }
 

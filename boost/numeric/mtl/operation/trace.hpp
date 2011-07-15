@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -25,6 +26,7 @@ template <typename Matrix>
 typename Collection<Matrix>::value_type
 inline trace(const Matrix& matrix)
 {
+	vampir_trace<3040> tracer;
     using math::zero;
     typedef typename Collection<Matrix>::value_type value_type;
 

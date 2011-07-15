@@ -47,7 +47,7 @@ namespace sfunctor {
 template <typename Value>
 inline typename sfunctor::real<Value>::result_type real(const Value& v)
 {	
-	vampir_trace<0003> tracer;
+	vampir_trace<3> tracer;
     return sfunctor::real<Value>::apply(v);
 }
 
