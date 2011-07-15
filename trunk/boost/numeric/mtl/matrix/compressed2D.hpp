@@ -62,7 +62,7 @@ struct compressed_key
     template <typename Elt, typename Parameters>
     explicit compressed_key(compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
     {
-	offset= matrix.indexer(matrix, r, c);
+	offset= matrix.indexer(matrix, r, c).value();
 	major= matrix.indexer.major_minor_c(matrix, r, c).first;
     }
 
@@ -261,7 +261,6 @@ class compressed2D
     typedef base_matrix<Elt, Parameters>             super;
     typedef compressed2D                             self;
     typedef mat_expr< compressed2D<Elt, Parameters> >          expr_base;
-    typedef crtp_matrix_assign< self, Elt, std::size_t >       assign_base;
 
     // Only allocation of new data, doesn't copy if already existent
     void allocate(size_t new_nnz)
@@ -284,6 +283,7 @@ class compressed2D
     typedef value_type                               const_reference;
 
     typedef typename Parameters::size_type           size_type;
+    typedef crtp_matrix_assign< self, Elt, size_type >  assign_base;
     typedef compressed2D_indexer<size_type>          indexer_type;
 
     void check() const { MTL_DEBUG_THROW_IF(inserting, access_during_insertion()); }
