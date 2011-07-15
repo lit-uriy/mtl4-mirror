@@ -16,6 +16,8 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 namespace mtl { namespace vector {
 
@@ -27,6 +29,7 @@ template <typename VectorComplex, typename VectorReal, typename VectorImaginary>
 inline void split_complex_vector(const VectorComplex& c, VectorReal& r, VectorImaginary& i)
 {
     using mtl::size;
+    vampir_trace<2034> tracer;
     r.checked_change_dim(size(c));
     i.checked_change_dim(size(c));
 

@@ -15,7 +15,7 @@
 
 #include <boost/numeric/mtl/operation/static_num_rows.hpp>
 #include <boost/numeric/mtl/operation/static_num_cols.hpp>
-
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl {
 
@@ -23,6 +23,7 @@ namespace mtl {
 /** General declaration, relies on static_num_rows and static_num_cols. **/
 template <typename Collection>
 struct static_size {
+	vampir_trace<1007> tracer;
     typedef typename static_num_rows<Collection>::type type; // Might not always work
     static const type value= static_num_rows<Collection>::value * static_num_cols<Collection>::value;
 };
