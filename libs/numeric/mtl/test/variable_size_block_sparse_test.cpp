@@ -21,7 +21,7 @@ template <typename T>
 struct as {};
 
 template <>
-struct as<int>
+struct as<int> 
 {
 	typedef mtl::ashape::scal  type;
 };

@@ -25,7 +25,7 @@ int main()
   using namespace mtl;
 
   
-  typedef std::size_t size_type;
+  typedef unsigned size_type;
   std::cout << "sizeof in size_type is " << sizeof(size_type) << '\n';
   typedef matrix::parameters<row_major, index::c_index, non_fixed::dimensions, false, size_type> para;
   typedef compressed2D<double, para>  matrix_type;
