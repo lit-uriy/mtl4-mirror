@@ -378,7 +378,8 @@ template <> std::string vampir_trace<5049>::name("");
 #endif
 
 // Iterative solvers:               6000
-template <> std::string vampir_trace<6001>::name("cg");
+template <> std::string vampir_trace<6001>::name("cg_w/o_pc");
+template <> std::string vampir_trace<6002>::name("cg");
 
 
 
