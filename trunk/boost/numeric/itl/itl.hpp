@@ -33,6 +33,7 @@
 #include <boost/numeric/itl/minimization/quasi_newton.hpp>
 
 #include <boost/numeric/itl/pc/identity.hpp>
+#include <boost/numeric/itl/pc/is_identity.hpp>
 #include <boost/numeric/itl/pc/diagonal.hpp>
 #include <boost/numeric/itl/pc/ilu_0.hpp>
 #include <boost/numeric/itl/pc/ic_0.hpp>
