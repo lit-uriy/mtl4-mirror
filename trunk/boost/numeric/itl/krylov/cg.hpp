@@ -27,31 +27,31 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
        const Preconditioner& L, Iteration& iter)
 {
     mtl::vampir_trace<6001> tracer;
-  typedef HilbertSpaceX Vector;
-  typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
+    typedef HilbertSpaceX Vector;
+    typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
 
-  Scalar rho(0), rho_1(0), alpha(0);
-  Vector p(resource(x)), q(resource(x)), r(resource(x)), z(resource(x));
+    Scalar rho(0), rho_1(0), alpha(0);
+    Vector p(resource(x)), q(resource(x)), r(resource(x)), z(resource(x));
   
-  r = b - A*x;
-  while (! iter.finished(r)) {
-      ++iter;
-      z = solve(L, r);
-      rho = dot(r, z);
+    r = b - A*x;
+    while (! iter.finished(r)) {
+	++iter;
+	z = solve(L, r);
+	rho = dot(r, z);
     
-      if (iter.first())
-	  p = z;
-      else 
-	  p = z + (rho / rho_1) * p;
+	if (iter.first())
+	    p = z;
+	else 
+	    p = z + (rho / rho_1) * p;
       
-      q = A * p;
-      alpha = rho / dot(p, q);
+	q = A * p;
+	alpha = rho / dot(p, q);
       
-      x += alpha * p;
-      r -= alpha * q;
-      rho_1 = rho;
-  }
-  return iter;
+	x += alpha * p;
+	r -= alpha * q;
+	rho_1 = rho;
+    }
+    return iter;
 }
 
 /// Conjugate Gradients with ignored right preconditioner to unify interface
