@@ -123,9 +123,12 @@ endif()
 
 if(VAMPIR_CXX)
    add_definitions("-DMTL_HAS_VPT -DVTRACE -vt:inst manual")
+   # ugly hack, to be factored out
+   set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+   set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
+   set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 endif()
-
-
 
 
 find_program(VALGRIND_COMMAND valgrind)
