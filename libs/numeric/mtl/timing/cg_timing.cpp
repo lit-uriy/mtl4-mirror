@@ -11,6 +11,9 @@
 // See also license.mtl.txt in the distribution.
 // #define CRS_CVEC_MULT_NO_ACCEL
 
+// #define CRS_CVEC_MULT_NO_ACCEL // for benchmarking
+
+
 #include <iostream>
 #include <boost/timer.hpp>
 #include <boost/numeric/mtl/mtl.hpp>

@@ -77,8 +77,8 @@ template <> std::string vampir_trace<4>::name("Info_contruct_vector");
 template <> std::string vampir_trace<5>::name("right_scale_inplace");
 template <> std::string vampir_trace<6>::name("sign_real_part_of_complex");
 template <> std::string vampir_trace<7>::name("unrolling_expresion");
-//template <> std::string vampir_trace<8>::name("");		// Der Kompilator nimmt beide Mummers (08,09) als octal
-//template <> std::string vampir_trace<9>::name("");		// Der Kompilator nimmt beide Mummers (08,09) als octal
+template <> std::string vampir_trace<8>::name("");
+template <> std::string vampir_trace<9>::name("");
 template <> std::string vampir_trace<10>::name("squared_abs_magnitudes");
 template <> std::string vampir_trace<11>::name("squared_abs_complex");
 template <> std::string vampir_trace<12>::name("squared_abs_magnitudes_template");
@@ -130,7 +130,7 @@ template <> std::string vampir_trace<1002>::name("fixed_size_dmat_dmat_mult");
 template <> std::string vampir_trace<1003>::name("vector_size_static");
 template <> std::string vampir_trace<1004>::name("static_dispatch"); // ?? row_in_matrix.hpp:74
 template <> std::string vampir_trace<1005>::name("copy_blocks_forward");
-template <> std::string vampir_trace<1006>::name("copy_blocks_bacward");
+template <> std::string vampir_trace<1006>::name("copy_blocks_backward");
 template <> std::string vampir_trace<1007>::name("Static_Size");
 template <> std::string vampir_trace<1008>::name("");
 template <> std::string vampir_trace<1009>::name("");
@@ -351,10 +351,10 @@ template <> std::string vampir_trace<5027>::name("lu_apply");
 template <> std::string vampir_trace<5028>::name("lu_solve");
 template <> std::string vampir_trace<5029>::name("lu_adjoint_apply");
 template <> std::string vampir_trace<5030>::name("lu_adjoint_solve");
-template <> std::string vampir_trace<5031>::name("");
-template <> std::string vampir_trace<5032>::name("");
-template <> std::string vampir_trace<5033>::name("");
-template <> std::string vampir_trace<5034>::name("");
+template <> std::string vampir_trace<5031>::name("pc::id::solve");
+template <> std::string vampir_trace<5032>::name("pc::id.solve");
+template <> std::string vampir_trace<5033>::name("pc::id::adjoint_solve");
+template <> std::string vampir_trace<5034>::name("pc::id.adjoint_solve");
 template <> std::string vampir_trace<5035>::name("");
 template <> std::string vampir_trace<5036>::name("");
 template <> std::string vampir_trace<5037>::name("");
