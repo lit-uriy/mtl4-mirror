@@ -13,6 +13,7 @@
 #ifndef ITL_CG_INCLUDE
 #define ITL_CG_INCLUDE
 
+#include <cmath>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
@@ -27,6 +28,7 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
        Iteration& iter)
 {
     mtl::vampir_trace<6001> tracer;
+    using std::abs;
     typedef HilbertSpaceX Vector;
     typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
     typedef typename Iteration::real                            Real;
@@ -36,8 +38,7 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   
     r = b - A*x;
     rho = dot(r, r);
-    // while (! iter.finished(Real(abs(rho)))) {
-    while (! iter.finished(r)) {
+    while (! iter.finished(Real(abs(rho)))) {
 	++iter;
 	if (iter.first())
 	    p = r;
