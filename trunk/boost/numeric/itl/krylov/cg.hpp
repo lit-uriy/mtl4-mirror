@@ -20,13 +20,52 @@
 
 namespace itl {
 
+/// Conjugate Gradients without preconditioning
+template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpaceB, 
+	   typename Iteration >
+int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
+       Iteration& iter)
+{
+    mtl::vampir_trace<6001> tracer;
+    typedef HilbertSpaceX Vector;
+    typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
+    typedef typename Iteration::real                            Real;
+
+    Scalar rho(0), rho_1(0), alpha(0);
+    Vector p(resource(x)), q(resource(x)), r(resource(x)), z(resource(x));
+  
+    r = b - A*x;
+    rho = dot(r, r);
+    // while (! iter.finished(Real(abs(rho)))) {
+    while (! iter.finished(r)) {
+	++iter;
+	if (iter.first())
+	    p = r;
+	else 
+	    p = r + (rho / rho_1) * p;	   
+
+	q = A * p;
+	alpha = rho / dot(p, q);
+      
+	x += alpha * p;
+	r -= alpha * q;
+	rho_1 = rho;
+	rho = dot(r, r);
+    }
+
+    return iter;
+}
+
 /// Conjugate Gradients
 template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpaceB, 
 	   typename Preconditioner, typename Iteration >
 int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
        const Preconditioner& L, Iteration& iter)
 {
-    mtl::vampir_trace<6001> tracer;
+    if (is_identity(L))
+	return cg(A, x, b, iter);
+
+    mtl::vampir_trace<6002> tracer;
     typedef HilbertSpaceX Vector;
     typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
 
@@ -36,21 +75,14 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
     r = b - A*x;
     while (! iter.finished(r)) {
 	++iter;
-	if (is_identity(L)) {
-	    rho = dot(r, r);
-	    if (iter.first())
-		p = r;
-	    else 
-		p = r + (rho / rho_1) * p;	   
-	} else {
-	    z = solve(L, r);
-	    rho = dot(r, z);
+	z = solve(L, r);
+	rho = dot(r, z);
     
-	    if (iter.first())
-		p = z;
-	    else 
-		p = z + (rho / rho_1) * p;
-	}
+	if (iter.first())
+	    p = z;
+	else 
+	    p = z + (rho / rho_1) * p;
+	
 	q = A * p;
 	alpha = rho / dot(p, q);
       
