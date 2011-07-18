@@ -9,6 +9,7 @@
 // This file is part of the Matrix Template Library
 // 
 // See also license.mtl.txt in the distribution.
+// #define CRS_CVEC_MULT_NO_ACCEL
 
 #include <iostream>
 #include <boost/timer.hpp>

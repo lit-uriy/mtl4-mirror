@@ -1,5 +1,0 @@
-Command:
-recursive_matrix_product_timing Size
-
-Compiled:
-icc -DNDEBUG -O3 
