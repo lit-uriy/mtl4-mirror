@@ -138,7 +138,7 @@ namespace mtl {
 	inline dot(const Vector1& v1, const Vector2& v2)
 	{
 	    // return dot_simple(v1, v2, detail::with_conj());
-	    return sfunctor::dot<8>::apply(v1, v2, detail::with_conj());
+	    return sfunctor::dot<4>::apply(v1, v2, detail::with_conj());
 	}
 
 	/// Dot product with user-specified unrolling defined as hermitian(v) * w
