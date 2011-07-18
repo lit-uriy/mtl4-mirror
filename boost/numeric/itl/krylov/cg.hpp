@@ -36,14 +36,21 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
     r = b - A*x;
     while (! iter.finished(r)) {
 	++iter;
-	z = solve(L, r);
-	rho = dot(r, z);
+	if (is_identity(L)) {
+	    rho = dot(r, r);
+	    if (iter.first())
+		p = r;
+	    else 
+		p = r + (rho / rho_1) * p;	   
+	} else {
+	    z = solve(L, r);
+	    rho = dot(r, z);
     
-	if (iter.first())
-	    p = z;
-	else 
-	    p = z + (rho / rho_1) * p;
-      
+	    if (iter.first())
+		p = z;
+	    else 
+		p = z + (rho / rho_1) * p;
+	}
 	q = A * p;
 	alpha = rho / dot(p, q);
       
