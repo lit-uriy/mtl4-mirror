@@ -190,7 +190,7 @@ template <> std::string vampir_trace<2036>::name("Vecrtor_swapped_row");
 template <> std::string vampir_trace<2037>::name("Vector_const_trans");
 template <> std::string vampir_trace<2038>::name("Vector_trans");
 template <> std::string vampir_trace<2039>::name("Vector_two_norms");
-template <> std::string vampir_trace<2040>::name("");
+template <> std::string vampir_trace<2040>::name("dot_simple");
 template <> std::string vampir_trace<2041>::name("");
 template <> std::string vampir_trace<2042>::name("");
 template <> std::string vampir_trace<2043>::name("");
@@ -386,6 +386,10 @@ template <> std::string vampir_trace<6002>::name("cg");
 
 
 
+template <> std::string vampir_trace<9901>::name("test_block1");
+template <> std::string vampir_trace<9902>::name("test_block2");
+template <> std::string vampir_trace<9903>::name("test_block3");
+template <> std::string vampir_trace<9904>::name("test_block4");
 template <> std::string vampir_trace<9999>::name("main");
     
 

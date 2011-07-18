@@ -117,12 +117,27 @@ namespace mtl {
 	    };
 	}
 
+	template <typename Vector1, typename Vector2, typename ConjOpt>
+	typename detail::dot_result<Vector1, Vector2>::type
+	inline dot_simple(const Vector1& v1, const Vector2& v2, ConjOpt conj_opt)
+	{
+	    vampir_trace<2040> tracer;
+	    typedef typename Collection<Vector1>::size_type              size_type;
+	    typedef typename detail::dot_result<Vector1, Vector2>::type  value_type;
+
+	    value_type dummy, s= math::zero(dummy);
+	    for (size_type i= 0, i_max= size(v1); i < i_max; ++i)
+		s+= conj_opt(v1[i]) * v2[i];
+	    return s;
+	}
+
 	/// Dot product defined as hermitian(v) * w
 	/** Unrolled eight times by default **/
 	template <typename Vector1, typename Vector2>
 	typename detail::dot_result<Vector1, Vector2>::type
 	inline dot(const Vector1& v1, const Vector2& v2)
 	{
+	    // return dot_simple(v1, v2, detail::with_conj());
 	    return sfunctor::dot<8>::apply(v1, v2, detail::with_conj());
 	}
 

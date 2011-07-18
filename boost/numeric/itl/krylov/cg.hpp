@@ -16,7 +16,9 @@
 #include <cmath>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
+#include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/operation/unroll.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
@@ -28,7 +30,7 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
        Iteration& iter)
 {
     mtl::vampir_trace<6001> tracer;
-    using std::abs;
+    using std::abs; using mtl::conj;
     typedef HilbertSpaceX Vector;
     typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
     typedef typename Iteration::real                            Real;
@@ -49,9 +51,21 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 	alpha = rho / dot(p, q);
       
 	x += alpha * p;
-	r -= alpha * q;
 	rho_1 = rho;
+#if 0
+	r -= alpha * q;
 	rho = dot(r, r);
+#endif
+
+	{
+	    mtl::vampir_trace<9901> tracer;
+	    rho= Scalar(0);
+	    for (unsigned i= 0, i_max= size(r); i < i_max; ++i) {
+		r[i]-= alpha * q[i];
+		rho+= conj(r[i]) * r[i];
+	    }
+	}
+	    
     }
 
     return iter;
