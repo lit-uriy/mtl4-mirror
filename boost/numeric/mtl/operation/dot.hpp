@@ -132,7 +132,7 @@ namespace mtl {
 	}
 
 	/// Dot product defined as hermitian(v) * w
-	/** Unrolled eight times by default **/
+	/** Unrolled four times by default **/
 	template <typename Vector1, typename Vector2>
 	typename detail::dot_result<Vector1, Vector2>::type
 	inline dot(const Vector1& v1, const Vector2& v2)
@@ -150,12 +150,12 @@ namespace mtl {
 	}
 
 	/// Dot product without conjugate defined as trans(v) * w
-	/** Unrolled eight times by default **/
+	/** Unrolled four times by default **/
 	template <typename Vector1, typename Vector2>
 	typename detail::dot_result<Vector1, Vector2>::type
 	inline dot_real(const Vector1& v1, const Vector2& v2)
 	{
-	    return sfunctor::dot<8>::apply(v1, v2, detail::without_conj());
+	    return sfunctor::dot<4>::apply(v1, v2, detail::without_conj());
 	}
 
 	/// Dot product without conjugate with user-specified unrolling defined as trans(v) * w
