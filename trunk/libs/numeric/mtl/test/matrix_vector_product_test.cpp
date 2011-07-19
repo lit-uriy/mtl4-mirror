@@ -39,7 +39,7 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 
     // Resulting vector has same value type as matrix
     typedef typename mtl::Collection<MatrixA>::value_type rvalue_type;
-    mtl::dense_vector<rvalue_type> w(size);
+    mtl::dense_vector<rvalue_type> w(size), w2;
 
     w= A * v;
     //mult(A, v, w);
@@ -88,6 +88,17 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 	if (w[12] != twenty) throw "wrong diagonal";
 	if (w[18] != two) throw "wrong south east neighbor";
     }
+
+#if 0
+    rvalue_type dotexp= dot(w, v), dotres;
+    mtl::with_dot(w2, dotres)= A * v;
+
+    w2-= w;
+    if (two_norm(w2) > 0.001)
+	throw "Vector result wrong in with_dot computation.";
+    if (std::abs(dotres - dotexp) > 0.001)
+	throw "Dot result wrong in with_dot computation.";
+#endif
 }
 
 
@@ -108,10 +119,11 @@ int test_main(int argc, char* argv[])
     dense2D<double, matrix::parameters<col_major> >      dc(size, size);
 
     test(cr, dim1, dim2, "Row-major sparse");
+#if 1
     test(cc, dim1, dim2, "Column-major sparse");
 
     test(dr, dim1, dim2, "Row-major dense");
     test(dc, dim1, dim2, "Column-major dense");
-
+#endif
     return 0;
 }

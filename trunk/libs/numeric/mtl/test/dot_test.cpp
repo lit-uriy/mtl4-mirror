@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <complex>
 #include <boost/test/minimal.hpp>
 
 
