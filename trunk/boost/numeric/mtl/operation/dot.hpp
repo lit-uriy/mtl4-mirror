@@ -225,6 +225,8 @@ namespace mtl {
     
     using vector::dot;
     using vector::dot_real;
+    using vector::lazy_dot;
+    using vector::lazy_dot_real;
 
 } // namespace mtl
 
