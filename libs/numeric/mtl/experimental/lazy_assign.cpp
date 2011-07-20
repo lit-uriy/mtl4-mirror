@@ -11,14 +11,19 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
+#include <boost/mpl/bool.hpp>
+#include <boost/mpl/and.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 using namespace std;
 
 
-template <typename T, typename U>
+template <typename T, typename U, typename Assign>
 struct lazy_assign_t
 {
+    typedef Assign  assign_type;
+
     lazy_assign_t(T& first, const U& second) : first(first), second(second) {} 
 
     T&       first;
@@ -27,12 +32,28 @@ struct lazy_assign_t
 };
 
 template <typename T>
+struct is_lazy : boost::mpl::false_ {};
+
+template <typename T, typename U, typename Assign>
+struct is_lazy<lazy_assign_t<T, U, Assign> > : boost::mpl::true_ {};
+
+
+template <typename T>
 struct lazy_t
 {
     lazy_t(T& data) : data(data) {}
 
     template <typename U>
-    lazy_assign_t<T, U> operator=(const U& other) { return lazy_assign_t<T, U>(data, other); }
+    lazy_assign_t<T, U, mtl::assign::assign_sum> operator=(const U& other) 
+    { return lazy_assign_t<T, U, mtl::assign::assign_sum>(data, other); }
+
+    template <typename U>
+    lazy_assign_t<T, U, mtl::assign::plus_sum> operator+=(const U& other) 
+    { return lazy_assign_t<T, U, mtl::assign::plus_sum>(data, other); }
+
+    template <typename U>
+    lazy_assign_t<T, U, mtl::assign::minus_sum> operator-=(const U& other) 
+    { return lazy_assign_t<T, U, mtl::assign::minus_sum>(data, other); }
 
     T& data;
 };
@@ -71,18 +92,19 @@ struct fusion
 
 
 template <typename T, typename U>
-fusion<T, U> operator||(const T& x, const U& y)
+typename boost::enable_if<boost::mpl::and_<is_lazy<T>, is_lazy<U> >, fusion<T, U> >::type
+operator||(const T& x, const U& y)
 {
     return fusion<T, U>(x, y);
 }
 
 int main(int, char**) 
 {
-    double                d;
+    double                d, rho, alpha= 7.8;
     const double          cd= 2.6;
     std::complex<double>  z;
 
-    mtl::dense_vector<double> v(3, 1.0), w(3);
+    mtl::dense_vector<double> v(3, 1.0), w(3), r(3, 6.0), q(3, 2.0);
     mtl::dense2D<double>      A(3, 3);
     A= 2.0;
 
@@ -91,6 +113,7 @@ int main(int, char**)
     lazy(3. + 4.);
 
     (lazy(w)= A * v) || (lazy(d) = lazy_dot(w, v));
+    (lazy(r)-= alpha * q) || (lazy(rho)= lazy_unary_dot(r)); 
 
     return 0;
 }
