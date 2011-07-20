@@ -155,36 +155,37 @@ namespace mtl {
 	    const Vector2& v2;
 	};
 	
+	/// Lazy dot product
+	/** It is automatically evaluated when (implicitly) converted to result_type which doesn't work in template expressions.
+	    Can be used for source-to-source transformations. **/
 	template <typename Vector1, typename Vector2>
 	dot_class<4, Vector1, Vector2, detail::with_conj>
-	inline dot(const Vector1& v1, const Vector2& v2)
+	inline lazy_dot(const Vector1& v1, const Vector2& v2)
 	{
 	    return dot_class<4, Vector1, Vector2, detail::with_conj>(v1, v2);
 	}
 
 	template <unsigned long Unroll, typename Vector1, typename Vector2>
 	dot_class<Unroll, Vector1, Vector2, detail::with_conj>
-	inline dot(const Vector1& v1, const Vector2& v2)
+	inline lazy_dot(const Vector1& v1, const Vector2& v2)
 	{
 	    return dot_class<Unroll, Vector1, Vector2, detail::with_conj>(v1, v2);
 	}
 
 	template <typename Vector1, typename Vector2>
 	dot_class<4, Vector1, Vector2, detail::without_conj>
-	inline dot_real(const Vector1& v1, const Vector2& v2)
+	inline lazy_dot_real(const Vector1& v1, const Vector2& v2)
 	{
 	    return dot_class<4, Vector1, Vector2, detail::without_conj>(v1, v2);
 	}
 
 	template <unsigned long Unroll, typename Vector1, typename Vector2>
 	dot_class<Unroll, Vector1, Vector2, detail::without_conj>
-	inline dot_real(const Vector1& v1, const Vector2& v2)
+	inline lazy_dot_real(const Vector1& v1, const Vector2& v2)
 	{
 	    return dot_class<Unroll, Vector1, Vector2, detail::without_conj>(v1, v2);
 	}
 
-
-#if 0
 	/// Dot product defined as hermitian(v) * w
 	/** Unrolled four times by default **/
 	template <typename Vector1, typename Vector2>
@@ -218,7 +219,6 @@ namespace mtl {
 	{
 	    return sfunctor::dot<Unroll>::apply(v1, v2, detail::without_conj());
 	}
-#endif
 
 
     } // namespace vector
