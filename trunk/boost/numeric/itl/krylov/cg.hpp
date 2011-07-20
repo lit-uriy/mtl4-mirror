@@ -52,11 +52,12 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
       
 	x += alpha * p;
 	rho_1 = rho;
-#if 0
+#if 1
 	r -= alpha * q;
 	rho = dot(r, r);
 #endif
 
+#if 0
 	{
 	    mtl::vampir_trace<9901> tracer;
 	    rho= Scalar(0);
@@ -65,6 +66,7 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 		rho+= conj(r[i]) * r[i];
 	    }
 	}
+#endif
 	    
     }
 

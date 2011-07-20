@@ -131,6 +131,46 @@ namespace mtl {
 	    return s;
 	}
 
+	template <unsigned long Unroll, typename Vector1, typename Vector2>
+	struct dot_class
+	{
+	    typedef typename detail::dot_result<Vector1, Vector2>::type result_type;
+	    dot_class(const Vector1& v1, const Vector2& v2) : v1(v1), v2(v2) {}
+
+	    operator result_type() const { return sfunctor::dot<4>::apply(v1, v2, detail::with_conj()); }
+	    
+	    const Vector1& v1;
+	    const Vector2& v2;
+	};
+
+	template <typename Vector1, typename Vector2>
+	struct dot_class<1, Vector1, Vector2>
+	{
+	    typedef typename detail::dot_result<Vector1, Vector2>::type result_type;
+	    dot_class(const Vector1& v1, const Vector2& v2) : v1(v1), v2(v2) {}
+
+	    operator result_type() const { return dot_simple(v1, v2, detail::with_conj()); }
+	    
+	    const Vector1& v1;
+	    const Vector2& v2;
+	};
+	
+	template <typename Vector1, typename Vector2>
+	dot_class<4, Vector1, Vector2>
+	inline dot(const Vector1& v1, const Vector2& v2)
+	{
+	    return dot_class<4, Vector1, Vector2>(v1, v2);
+	}
+
+	template <unsigned long Unroll, typename Vector1, typename Vector2>
+	dot_class<Unroll, Vector1, Vector2>
+	inline dot(const Vector1& v1, const Vector2& v2)
+	{
+	    return dot_class<Unroll, Vector1, Vector2>(v1, v2);
+	}
+
+
+#if 0
 	/// Dot product defined as hermitian(v) * w
 	/** Unrolled four times by default **/
 	template <typename Vector1, typename Vector2>
@@ -148,7 +188,7 @@ namespace mtl {
 	{
 	    return sfunctor::dot<Unroll>::apply(v1, v2, detail::with_conj());
 	}
-
+#endif
 	/// Dot product without conjugate defined as trans(v) * w
 	/** Unrolled four times by default **/
 	template <typename Vector1, typename Vector2>
