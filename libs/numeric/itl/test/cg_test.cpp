@@ -29,9 +29,8 @@ int main()
 
   mtl::dense_vector<double> x(N, 1.0), b(N);
 
-  b = A * x;
   x= 0;
-
+  b = A * x;
   itl::cyclic_iteration<double> iter(b, 100, 1.e-11, 0.0, 5);
   cg(A, x, b, P, iter);
 

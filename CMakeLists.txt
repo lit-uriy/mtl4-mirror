@@ -1,8 +1,8 @@
-include(Vampir.cmake)
 
 project (mtl4)
 
 cmake_minimum_required(VERSION 2.6)
+include(Vampir.cmake)
 
 include(CheckCXXCompilerFlag)
 
@@ -121,13 +121,8 @@ if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 endif()
   
 
-if(VAMPIR_CXX)
+if(HAVE_VAMPIR_CXX)
    add_definitions("-DMTL_HAS_VPT -DVTRACE -vt:inst manual")
-   # ugly hack, to be factored out
-   set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-   set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
-   set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
-   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 endif()
 
 
