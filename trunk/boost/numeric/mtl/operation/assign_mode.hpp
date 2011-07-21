@@ -47,6 +47,14 @@ struct assign_sum
     {
 	x+= y;
     }
+
+    // To be used like sfunctor
+    template <typename T, typename U>
+    static T& apply(T& x, const U& y)
+    {
+	x= y;
+    }
+
 };
 
 
@@ -75,6 +83,13 @@ struct plus_sum
     {
 	x+= y;
     }
+
+    // To be used like sfunctor
+    template <typename T, typename U>
+    static T& apply(T& x, const U& y)
+    {
+	x+= y;
+    }
 };
 
 
@@ -100,6 +115,13 @@ struct minus_sum
 
     template <typename T, typename U>
     static void update(T& x, const U& y)
+    {
+	x-= y;
+    }
+
+    // To be used like sfunctor
+    template <typename T, typename U>
+    static T& apply(T& x, const U& y)
     {
 	x-= y;
     }

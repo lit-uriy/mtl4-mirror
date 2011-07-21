@@ -136,14 +136,6 @@ struct vec_vec_aop_expr
     template <typename EE1, typename EE2, typename SSFunctor>
     friend std::size_t size(const vec_vec_aop_expr<EE1, EE2, SSFunctor>& v);
 
-#if 0
-    friend size_type inline size(const self& x)
-    {
-	assert( size(x.first) == 0 || size(x.first) == size(x.second) );
-	return size(x.second);
-    }
-#endif
-
     value_type& operator() ( size_type i ) const { 
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second(i) );

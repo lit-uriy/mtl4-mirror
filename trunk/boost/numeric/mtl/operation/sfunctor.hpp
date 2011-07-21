@@ -35,7 +35,7 @@ struct plus
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
-    vampir_trace<23> tracer;
+	vampir_trace<23> tracer;
 	return v1 + v2;
     }
 };
@@ -54,7 +54,7 @@ struct minus
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
-    vampir_trace<24> tracer;
+	vampir_trace<24> tracer;
 	return v1 - v2;
     }
 };
@@ -73,7 +73,7 @@ struct times
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
-    vampir_trace<25> tracer;
+	vampir_trace<25> tracer;
 	return v1 * v2;
     }
 };
@@ -92,7 +92,7 @@ struct divide
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
-    vampir_trace<26> tracer;
+	vampir_trace<26> tracer;
 	return v1 / v2;
     }
 };
@@ -111,7 +111,7 @@ struct assign
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
-    vampir_trace<27> tracer;
+	vampir_trace<27> tracer;
 	return v1= v2;
     }
 };
@@ -130,7 +130,7 @@ struct plus_assign
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
-    vampir_trace<28> tracer;
+	vampir_trace<28> tracer;
 	return v1+= v2;
     }
 };
@@ -149,7 +149,7 @@ struct minus_assign
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
-    vampir_trace<29> tracer;
+	vampir_trace<29> tracer;
 	return v1-= v2;
     }
 };
@@ -168,7 +168,7 @@ struct times_assign
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
-    vampir_trace<30> tracer;
+	vampir_trace<30> tracer;
 	return v1*= v2;
     }
 };
@@ -187,7 +187,7 @@ struct divide_assign
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
-    vampir_trace<31> tracer;
+	vampir_trace<31> tracer;
 	return v1/= v2;
     }
 };
@@ -207,7 +207,7 @@ struct identity
 
     result_type operator() (const Value& v) const
     {
-    vampir_trace<32> tracer;
+	vampir_trace<32> tracer;
 	return v;
     }
 };
@@ -227,8 +227,8 @@ struct abs
 
     result_type operator() (const Value& v) 
     {
-    vampir_trace<33> tracer; 
-    return apply(v); 
+	vampir_trace<33> tracer; 
+	return apply(v); 
     }
 };
 
@@ -246,8 +246,8 @@ struct sqrt
 
     result_type operator() (const Value& v) 
     {
-    vampir_trace<34> tracer;
-    return apply(v); 
+	vampir_trace<34> tracer;
+	return apply(v); 
     }
 };
 
@@ -264,8 +264,8 @@ struct square
 
     result_type operator() (const Value& v) 
     {
-    vampir_trace<35> tracer;
-    return apply(v);
+	vampir_trace<35> tracer;
+	return apply(v);
     }
 };
 
@@ -279,8 +279,8 @@ struct negate
     static inline result_type apply(const Value& v) { return -v;  }
     result_type operator() (const Value& v) const 
     {
-    vampir_trace<36> tracer;
-    return -v;
+	vampir_trace<36> tracer;
+	return -v;
     }
 };
 
@@ -304,8 +304,8 @@ struct compose
 
     result_type operator()(argument_type x) 
     {
-    vampir_trace<37> tracer;
-    return apply(x);
+	vampir_trace<37> tracer;
+	return apply(x);
     }
 };
 
@@ -330,8 +330,8 @@ struct compose_first
 
     result_type operator()(first_argument_type x, second_argument_type y)
     {
-    vampir_trace<38> tracer;
-    return apply(x, y);
+	vampir_trace<38> tracer;
+	return apply(x, y);
     }
 };
 
@@ -357,7 +357,7 @@ struct compose_second
     result_type operator()(first_argument_type x, second_argument_type y)
     {
 	vampir_trace<39> tracer;
-    return apply(x, y);
+	return apply(x, y);
     }
 };
 
@@ -384,7 +384,7 @@ struct compose_both
     result_type operator()(first_argument_type x, second_argument_type y)
     {
 	vampir_trace<40> tracer;
-    return apply(x, y);
+	return apply(x, y);
     }
 };
 
@@ -408,8 +408,8 @@ struct compose_binary
 
     result_type operator()(first_argument_type x, second_argument_type y)
     {
-    vampir_trace<41> tracer;
-    return apply(x, y);
+	vampir_trace<41> tracer;
+	return apply(x, y);
     }
 };
 
