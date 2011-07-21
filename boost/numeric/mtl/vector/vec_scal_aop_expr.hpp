@@ -40,8 +40,8 @@ struct vec_scal_aop_expr
     typedef E1 first_argument_type ;
     typedef E2 second_argument_type ;
     
-    vec_scal_aop_expr( first_argument_type& v1, second_argument_type const& v2 )
-      : first( v1 ), second( v2 ), delayed_assign( false ), with_comma( false ), index(0)
+    vec_scal_aop_expr( first_argument_type& v1, second_argument_type const& v2, bool delay= false )
+      : first( v1 ), second( v2 ), delayed_assign( delay ), with_comma( false ), index(0)
     {}
 
     ~vec_scal_aop_expr()
