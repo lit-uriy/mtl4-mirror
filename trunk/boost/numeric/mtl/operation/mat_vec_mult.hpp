@@ -101,7 +101,7 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
     using math::zero; using mtl::vector::set_to_zero;
     if (mtl::vector::size(w) == 0) return;
 
-    if (Assign::init_to_zero) set_to_zero(w);
+    // if (Assign::init_to_zero) set_to_zero(w); // replace update with first_update instead
 
     typedef typename Collection<VectorOut>::value_type value_type;
     typedef typename Collection<Matrix>::size_type     size_type;
@@ -110,7 +110,7 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
 	value_type tmp= zero(w[i]);
 	for (size_type j= 0; j < num_cols(A); j++) 
 	    tmp+= A[i][j] * v[j];
-	Assign::update(w[i], tmp);
+	Assign::first_update(w[i], tmp);
     }
 }
 

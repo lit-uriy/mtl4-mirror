@@ -252,6 +252,11 @@ struct category< mtl::matrix::banded_view<Matrix> >
 {};
 
 template <typename T>
+struct is_dense 
+  : boost::is_base_of<tag::dense, typename category<T>::type> 
+{};
+
+template <typename T>
 struct is_matrix 
   : boost::is_base_of<tag::matrix, typename category<T>::type> 
 {};
