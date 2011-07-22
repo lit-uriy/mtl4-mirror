@@ -14,6 +14,7 @@
 #define ITL_CG_INCLUDE
 
 #include <cmath>
+#include <cassert>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
@@ -61,10 +62,23 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 	{
 	    mtl::vampir_trace<9901> tracer;
 	    rho= Scalar(0);
-	    for (unsigned i= 0, i_max= size(r); i < i_max; ++i) {
-		r[i]-= alpha * q[i];
-		rho+= conj(r[i]) * r[i];
+	    Scalar rho0(0), rho1(0), rho2(0), rho3(0);
+	    assert(size(r) % 4 == 0);
+	    for (unsigned i= 0, i_max= size(r); i < i_max; i+= 4) {
+#if 0
+		Scalar ri= r[i]-= alpha * q[i];
+		rho+= conj(ri) * ri;
+#endif
+		Scalar ri0= r[i]-= alpha * q[i];
+		rho0+= conj(ri0) * ri0;
+		Scalar ri1= r[i+1]-= alpha * q[i+1];
+		rho1+= conj(ri1) * ri1;
+		Scalar ri2= r[i+2]-= alpha * q[i+2];
+		rho2+= conj(ri2) * ri2;
+		Scalar ri3= r[i+3]-= alpha * q[i+3];
+		rho3+= conj(ri3) * ri3;
 	    }
+	    rho= rho0 + rho1 + rho2 + rho3;
 	}
 #endif
 	    
