@@ -357,12 +357,10 @@ int main(int, char**)
     mtl::compressed2D<double>      B(6, 6);
     B= 2.0;
 
-#if 1
-    (lazy(w)= A * v) || (lazy(d) = lazy_dot(w, v));
+    (lazy(w)= A * v) || (lazy(d) = alpha / lazy_dot(w, v));
     // fuse(lazy(w)= A * v, lazy(d) = lazy_dot(w, v));
     // d= with_reduction(lazy(w)= A * v, lazy_dot(w, v));
     cout << "w = " << w << ", d (12?)= " << d << "\n";
-#endif
 
     (lazy(w)= B * v) || (lazy(d) = lazy_dot(w, v));
     // fuse(lazy(w)= A * v, lazy(d) = lazy_dot(w, v));
