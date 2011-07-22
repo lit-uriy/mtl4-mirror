@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/concept/magnitude.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/vector/lazy_reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -54,11 +55,18 @@ namespace mtl {
 	{
 	    return two_norm<8>(value);
 	}
+
+	template <typename Vector>
+	lazy_reduction<Vector, two_norm_functor> inline lazy_two_norm(const Vector& v)
+	{  return lazy_reduction<Vector, two_norm_functor>(v); 	}
+	
+
     } // namespace vector
 
     // two_norm for matrices not implemented (would need enable_if like one_norm)
 
     using vector::two_norm;
+    using vector::lazy_two_norm;
 
 } // namespace mtl
 

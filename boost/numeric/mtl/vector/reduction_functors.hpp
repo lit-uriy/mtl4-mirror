@@ -40,6 +40,12 @@ struct one_norm_functor
     {
 	value+= value2;
     }
+
+    template <typename Value>
+    static inline Value post_reduction(const Value& value)
+    {
+	return value;
+    }
 };
 
 
@@ -65,8 +71,26 @@ struct two_norm_functor
     {
 	value+= value2;
     }
+
+    // After reduction compute square root
+    template <typename Value>
+    static inline Value post_reduction(const Value& value)
+    {
+	using std::sqrt;
+	return sqrt(value);
+    }
 };
 
+// same as two-norm without the root at the end
+struct unary_dot_functor
+  : two_norm_functor
+{
+    template <typename Value>
+    static inline Value post_reduction(const Value& value)
+    {
+	return value;
+    }
+};
 
 struct infinity_norm_functor
 {
@@ -89,6 +113,12 @@ struct infinity_norm_functor
     {
 	using std::abs; using std::max;
 	value= max(value, abs(value2));
+    }
+
+    template <typename Value>
+    static inline Value post_reduction(const Value& value)
+    {
+	return value;
     }
 };
 
@@ -113,6 +143,12 @@ struct sum_functor
     {
 	value+= value2;
     }
+
+    template <typename Value>
+    static inline Value post_reduction(const Value& value)
+    {
+	return value;
+    }
 };
 
 
@@ -135,6 +171,12 @@ struct product_functor
     static inline void finish(Value& value, const Value& value2)
     {
 	value*= value2;
+    }
+
+    template <typename Value>
+    static inline Value post_reduction(const Value& value)
+    {
+	return value;
     }
 };
 
@@ -159,6 +201,12 @@ struct max_functor
     {
 	value= math::max<Value>()(value, value2);
     }
+
+    template <typename Value>
+    static inline Value post_reduction(const Value& value)
+    {
+	return value;
+    }
 };
 
 
@@ -181,6 +229,12 @@ struct min_functor
     static inline void finish(Value& value, const Value& value2)
     {
 	value= math::min<Value>()(value, value2);
+    }
+
+    template <typename Value>
+    static inline Value post_reduction(const Value& value)
+    {
+	return value;
     }
 };
 

@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/vector/lazy_reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -55,34 +56,13 @@ namespace mtl {
 	template <typename Value>
 	typename Collection<Value>::value_type
 	inline unary_dot(const Value& value)
-	{
-	    return unary_dot<8>(value);
-	}
-
-	template <unsigned long Unroll, typename Vector>
-	struct unary_dot_class
-	{
-	    typedef typename Collection<Vector>::value_type result_type;
-
-	    unary_dot_class(const Vector& v) : v(v) {}
-	    operator result_type() const { return unary_dot(v); }
-	    const Vector& v;
-	};
-
-	template <unsigned long Unroll, typename Vector>
-	unary_dot_class<Unroll, Vector> inline lazy_unary_dot(const Vector& v)
-	{
-	    return unary_dot_class<Unroll, Vector>(v);
-	}
+	{   return unary_dot<8>(value);	}
 
 	/// Lazy unary dot product
-	/** It is automatically evaluated when (implicitly) converted to result_type which doesn't work in template expressions.
-	    Can be used for source-to-source transformations. **/
+	/** Used for source-to-source transformations. **/
 	template <typename Vector>
-	unary_dot_class<8, Vector> inline lazy_unary_dot(const Vector& v)
-	{
-	    return unary_dot_class<8, Vector>(v);
-	}
+	lazy_reduction<Vector, unary_dot_functor> inline lazy_unary_dot(const Vector& v)
+	{  return lazy_reduction<Vector, unary_dot_functor>(v); 	}
 
 
     } // namespace vector

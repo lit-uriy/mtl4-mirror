@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/vector/lazy_reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -53,6 +54,15 @@ inline product(const Value& value)
 {
     return product<8>(value);
 }
+
+namespace vector {
+	template <typename Vector>
+	lazy_reduction<Vector, product_functor> inline lazy_product(const Vector& v)
+	{  return lazy_reduction<Vector, product_functor>(v); 	}
+}
+
+using vector::lazy_product;
+
 
 } // namespace mtl
 
