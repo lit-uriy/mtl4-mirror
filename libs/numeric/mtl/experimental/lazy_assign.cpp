@@ -14,9 +14,10 @@
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/and.hpp>
 #include <boost/mpl/or.hpp>
+#include <boost/static_assert.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
-//#include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 using namespace std;
 
@@ -75,21 +76,6 @@ template <typename T>
 inline lazy_t<const T> lazy(const T& x) 
 { return lazy_t<const T>(x); }
 
-#if 0
-template <typename Vector1, typename Vector2>
-// template <unsigned long Unroll, typename Vector1, typename Vector2, typename ConjOpt>
-struct dot_class
-{
-    // typedef typename detail::dot_result<Vector1, Vector2>::type result_type;
-    dot_class(const Vector1& v1, const Vector2& v2) : v1(v1), v2(v2) {}
-
-    // operator result_type() const { return sfunctor::dot<4>::apply(v1, v2, ConjOpt()); }
-	    
-    const Vector1& v1;
-    const Vector2& v2;
-};
-#endif
-
 template <typename T>
 struct is_vector_reduction : boost::mpl::false_ {};
 
@@ -118,19 +104,21 @@ template <typename V1, typename Matrix, typename V2, typename Assign>
 struct index_evaluatable<lazy_assign_t<V1, mtl::mat_cvec_times_expr<Matrix, V2>, Assign> >
   : mtl::traits::is_row_major<Matrix> {};
 
-
-
+// Strided traversal would be more expensive than saving from mixed reduction
+//  : boost::mpl::or_<mtl::traits::is_row_major<Matrix>, mtl::traits::is_dense<Matrix> > {}; 
 
 
 template <typename T, typename U, typename Assign>
-typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_vector<U> >, mtl::vector::vec_vec_aop_expr<T, U, Assign> >::type
+typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_vector<U> >, 
+			  mtl::vector::vec_vec_aop_expr<T, U, Assign> >::type
 inline index_evaluator(lazy_assign_t<T, U, Assign>& lazy)
 {
     return mtl::vector::vec_vec_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
 }
 
 template <typename T, typename U, typename Assign>
-typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_scalar<U> >, mtl::vector::vec_scal_aop_expr<T, U, Assign> >::type
+typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_scalar<U> >, 
+			  mtl::vector::vec_scal_aop_expr<T, U, Assign> >::type
 inline index_evaluator(lazy_assign_t<T, U, Assign>& lazy)
 {
     return mtl::vector::vec_scal_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
@@ -140,14 +128,27 @@ inline index_evaluator(lazy_assign_t<T, U, Assign>& lazy)
 template <typename Scalar, typename Vector, typename Assign>
 struct unary_dot_index_evaluator
 {
-    unary_dot_index_evaluator(Scalar& scalar, const Vector& v) : scalar(scalar), tmp(0), v(v) {}
-    ~unary_dot_index_evaluator() { Assign::apply(scalar, tmp); }
+    unary_dot_index_evaluator(Scalar& scalar, const Vector& v) 
+      : scalar(scalar), v(v) 
+    { 
+	tmp[0]= tmp[1]= tmp[2]= tmp[3]= Scalar(0); 
+    }
+
+    ~unary_dot_index_evaluator() 
+    { 
+	Scalar s(tmp[0] + tmp[1] + tmp[2] + tmp[3]);
+	Assign::apply(scalar, s); 
+    }
     
-    void operator() (std::size_t i) { mtl::vector::two_norm_functor::update(tmp, v[i]); }
+    void operator() (std::size_t i) { mtl::vector::two_norm_functor::update(tmp[0], v[i]); }
     void operator[] (std::size_t i) { (*this)(i); }
     
+    template <unsigned Offset>
+    void at(std::size_t i) 
+    { mtl::vector::two_norm_functor::update(tmp[Offset], v[i+Offset]); }
+
     Scalar&        scalar;
-    Scalar         tmp;
+    Scalar         tmp[4];
     const Vector&  v;
 };
 
@@ -166,14 +167,26 @@ template <typename Scalar, typename Vector1, typename Vector2, typename ConjOpt,
 struct dot_index_evaluator
 {
     dot_index_evaluator(Scalar& scalar, const Vector1& v1, const Vector2& v2) 
-      : scalar(scalar), tmp(0), v1(v1), v2(v2) {}
-    ~dot_index_evaluator() { Assign::apply(scalar, tmp); }
+      : scalar(scalar), v1(v1), v2(v2) 
+    { 
+	tmp[0]= tmp[1]= tmp[2]= tmp[3]= Scalar(0); 
+    }
+
+    ~dot_index_evaluator() 
+    { 
+	Scalar s(tmp[0] + tmp[1] + tmp[2] + tmp[3]);
+	Assign::apply(scalar, s); 
+    }
     
-    void operator() (std::size_t i) { tmp+= ConjOpt()(v1[i]) * v2[i]; }
+    void operator() (std::size_t i) { tmp[0]+= ConjOpt()(v1[i]) * v2[i]; }
     void operator[] (std::size_t i) { (*this)(i); }
 
+    template <unsigned Offset>
+    void at(std::size_t i) 
+    { tmp[Offset]+= ConjOpt()(v1[i+Offset]) * v2[i+Offset]; }
+
     Scalar&        scalar;
-    Scalar         tmp;
+    Scalar         tmp[4];
     const Vector1& v1;
     const Vector2& v2;
 };
@@ -192,6 +205,62 @@ inline index_evaluator(lazy_assign_t<Scalar, mtl::vector::dot_class<Unroll, Vect
 {
     return dot_index_evaluator<Scalar, Vector1, Vector2, ConjOpt, Assign>(lazy.first, lazy.second.v1, lazy.second.v2);
 }
+
+template <typename VectorOut, typename Matrix, typename VectorIn, typename Assign>
+struct mat_cvec_index_evaluator
+{
+    BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Matrix>::value));
+    typedef typename mtl::Collection<VectorOut>::value_type        value_type;
+    typedef typename mtl::Collection<Matrix>::size_type            size_type; 
+
+    mat_cvec_index_evaluator(VectorOut& w, const Matrix& A, const VectorIn& v) : w(w), A(A), v(v) {}
+
+    template <unsigned Offset>
+    void at(size_type i, mtl::tag::sparse)
+    {
+	value_type tmp(math::zero(w[i+Offset]));
+	const size_type cj0= A.ref_starts()[i+Offset], cj1= A.ref_starts()[i+Offset+1];
+	for (size_type j= cj0; j != cj1; ++j)
+	    tmp+= A.data[j] * v[A.ref_indices()[j]];
+	Assign::first_update(w[i+Offset], tmp);
+    }
+
+    template <unsigned Offset>
+    void at(size_type i, mtl::tag::dense)
+    {
+	value_type tmp(math::zero(w[i+Offset]));
+	for (size_type j= 0; j < num_cols(A); j++) 
+	    tmp+= A[i][j] * v[j];
+	Assign::first_update(w[i+Offset], tmp);
+    }
+
+    template <unsigned Offset>
+    void at(size_type i)
+    { 
+	at<Offset>(i, typename mtl::traits::category<Matrix>::type());
+    }
+
+    void operator()(size_type i) { at<0>(i); }
+    void operator[](size_type i) { at<0>(i); }
+
+    VectorOut&      w;
+    const Matrix&   A;
+    const VectorIn& v;
+};
+
+template <typename VectorOut, typename Matrix, typename VectorIn, typename Assign>
+inline std::size_t size(const mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>& eval)
+{
+    return size(eval.w);
+}
+
+template <typename VectorOut, typename Matrix, typename VectorIn, typename Assign>
+mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>
+inline index_evaluator(lazy_assign_t<VectorOut, mtl::mat_cvec_times_expr<Matrix, VectorIn>, Assign>& lazy)
+{
+    return mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>(lazy.first, lazy.second.first, lazy.second.second);
+}
+
 
 
 template <typename T, typename U>
@@ -224,11 +293,26 @@ struct fusion
     template <typename TT, typename UU>
     void eval_loop(TT first_eval, UU second_eval)
     {	
-	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != /*mtl::vector::*/  size(second_eval), mtl::incompatible_size());	
+	MTL_DEBUG_THROW_IF(/*mtl::vector::*/  size(first_eval) != /*mtl::vector::*/  size(second_eval), mtl::incompatible_size());	
+
+#if 1 //def MTL_LAZY_LOOP_WO_UNROLL
 	for (std::size_t i= 0, s= size(first_eval); i < s; i++) {
-	    first_eval(i);
-	    second_eval(i);
+	    first_eval(i); second_eval(i);
+	}	
+#else
+	std::size_t s= size(first_eval), sb= s >> 2 << 2;
+
+	for (std::size_t i= 0; i < sb; i+= 4) {
+	    first_eval.template at<0>(i); second_eval.template at<0>(i);
+	    first_eval.template at<1>(i); second_eval.template at<1>(i);
+	    first_eval.template at<2>(i); second_eval.template at<2>(i);
+	    first_eval.template at<3>(i); second_eval.template at<3>(i);
 	}
+
+	for (std::size_t i= sb; i < s; i++) {
+	    first_eval(i); second_eval(i);
+	}
+#endif
     }
 
     void eval(boost::mpl::true_, boost::mpl::true_)
@@ -267,29 +351,38 @@ int main(int, char**)
     const double          cd= 2.6;
     std::complex<double>  z;
 
-    mtl::dense_vector<double> v(3, 1.0), w(3), r(3, 6.0), q(3, 2.0), x(3);
-    mtl::dense2D<double>      A(3, 3);
+    mtl::dense_vector<double> v(6, 1.0), w(6), r(6, 6.0), q(6, 2.0), x(6);
+    mtl::dense2D<double>      A(6, 6);
     A= 2.0;
+    mtl::compressed2D<double>      B(6, 6);
+    B= 2.0;
 
+#if 1
     (lazy(w)= A * v) || (lazy(d) = lazy_dot(w, v));
     // fuse(lazy(w)= A * v, lazy(d) = lazy_dot(w, v));
     // d= with_reduction(lazy(w)= A * v, lazy_dot(w, v));
-    cout << "w = " << w << ", d (6?)= " << d << "\n";
+    cout << "w = " << w << ", d (12?)= " << d << "\n";
+#endif
 
+    (lazy(w)= B * v) || (lazy(d) = lazy_dot(w, v));
+    // fuse(lazy(w)= A * v, lazy(d) = lazy_dot(w, v));
+    // d= with_reduction(lazy(w)= A * v, lazy_dot(w, v));
+    cout << "w = " << w << ", d (12?)= " << d << "\n";
 
     (lazy(r)-= alpha * q) || (lazy(rho)= lazy_unary_dot(r)); 
     //fuse( lazy(r)-= alpha * q, lazy(rho)= lazy_unary_dot(r) ); 
     // lazy(r)-= alpha * q, lazy(rho)= lazy_unary_dot(r);
-    cout << "r = " << r << ", rho (276.48?) = " << rho << "\n";
+    cout << "r = " << r << ", rho (552.96?) = " << rho << "\n";
 
     (lazy(x)= 7.0) || (lazy(beta)= lazy_unary_dot(x)); 
-    cout << "x = " << x << ", beta (147?) = " << beta << "\n";
+    cout << "x = " << x << ", beta (294?) = " << beta << "\n";
     
     (lazy(x)= 2.0) || (lazy(gamma)= lazy_dot(r, x)); 
-    cout << "x = " << x << ", gamma (-57.6?) = " << gamma << "\n";
+    cout << "x = " << x << ", gamma (-115.2?) = " << gamma << "\n";
     
     (lazy(r)= alpha * q) || (lazy(rho)= lazy_dot(r, q)); 
-    cout << "r = " << r << ", rho (93.6?) = " << rho << "\n";
+    cout << "r = " << r << ", rho (187.2?) = " << rho << "\n";
+
 
     return 0;
 }

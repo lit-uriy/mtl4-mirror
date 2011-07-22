@@ -66,13 +66,6 @@ struct vec_scal_aop_expr
     template <typename EE1, typename EE2, typename SSFunctor>
     friend std::size_t size(const vec_scal_aop_expr<EE1, EE2, SSFunctor>& v);
 
-#if 0
-    size_type size() const 
-    {
-	return first.size() ;
-    }
-#endif
-
     value_type& operator() ( size_type i ) const 
     {
 	assert( delayed_assign && !with_comma);
@@ -83,6 +76,12 @@ struct vec_scal_aop_expr
     {
 	assert( delayed_assign );
 	return SFunctor::apply( first(i), second );
+    }
+
+    template <unsigned Offset>
+    value_type& at(size_type i) const { 
+	assert(delayed_assign);
+	return SFunctor::apply(first(i+Offset), second);
     }
 
     template <typename Source>

@@ -10,10 +10,6 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-
-// Adapted from GLAS implementation by Karl Meerbergen and Toon Knappen
-
-
 #ifndef MTL_VEC_VEC_AOP_EXPR_INCLUDE
 #define MTL_VEC_VEC_AOP_EXPR_INCLUDE
 
@@ -76,7 +72,7 @@ struct vec_vec_aop_expr
     typedef E2 second_argument_type ;
     
     vec_vec_aop_expr( first_argument_type& v1, second_argument_type const& v2, bool delay= false )
-      : first( v1 ), second( v2 ), delayed_assign( delay )
+      : first(v1), second(v2), delayed_assign(delay)
     {
 	second.delay_assign();
     }
@@ -121,7 +117,7 @@ struct vec_vec_aop_expr
 	
 	// impl::assign<0, static_size<E1>::value-1, SFunctor>::apply(first, second); // Slower, at least on gcc
 	for (size_type i= 0; i < mtl::vector::size(first); ++i) // Do an ordinary loop instead
-	    SFunctor::apply( first(i), second(i) );
+	    SFunctor::apply(first(i), second(i));
     }
 
   public:
@@ -136,12 +132,18 @@ struct vec_vec_aop_expr
     template <typename EE1, typename EE2, typename SSFunctor>
     friend std::size_t size(const vec_vec_aop_expr<EE1, EE2, SSFunctor>& v);
 
-    value_type& operator() ( size_type i ) const { 
+    value_type& operator() (size_type i) const { 
 	assert( delayed_assign );
-	return SFunctor::apply( first(i), second(i) );
+	return SFunctor::apply(first(i), second(i));
     }
 
-    value_type& operator[] ( size_type i ) const { return (*this)(i); }
+    value_type& operator[] (size_type i) const { return (*this)(i); }
+
+    template <unsigned Offset>
+    value_type& at(size_type i) const { 
+	assert(delayed_assign);
+	return SFunctor::apply(first(i+Offset), second(i+Offset));
+    }
 
   private:
      mutable first_argument_type&        first ;

@@ -24,7 +24,7 @@ int main()
 {
     mtl::vampir_trace<9999> tracer;
   // For a more realistic example set size to 1000 or larger
-  const int size = 1000, N = size * size;
+  const int size = 100, N = size * size;
 
   using namespace mtl;
 
@@ -44,7 +44,7 @@ int main()
   b = A * x;
   x= 0;
 
-  itl::cyclic_iteration<double> iter(b, 100, 1.e-2, 0.0, 5);
+  itl::cyclic_iteration<double> iter(b, 100, 1.e-2, 0.0, 100);
   boost::timer t;
   cg(A, x, b, P, iter);
   std::cout << "CG took " << t.elapsed() << "s.\n";
