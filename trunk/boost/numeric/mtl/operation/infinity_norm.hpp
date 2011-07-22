@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/operation/max_of_sums.hpp>
+#include <boost/numeric/mtl/vector/lazy_reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -54,6 +55,10 @@ namespace mtl {
 	{
 	    return infinity_norm<8>(vector);
 	}
+
+	template <typename Vector>
+	lazy_reduction<Vector, infinity_norm_functor> inline lazy_infinity_norm(const Vector& v)
+	{  return lazy_reduction<Vector, infinity_norm_functor>(v); 	}
     }
 
     namespace matrix {
@@ -85,6 +90,7 @@ namespace mtl {
     }
 
     using vector::infinity_norm;
+    using vector::lazy_infinity_norm;
     using matrix::infinity_norm;
 
 } // namespace mtl

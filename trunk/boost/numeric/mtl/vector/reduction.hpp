@@ -119,8 +119,8 @@ struct reduction
 
 	for (size_type i= 0; i < i_block; i+= Unroll)
 	    impl::reduction<1, Unroll, Functor>::update(tmp00, tmp01, tmp02, tmp03, 
-							     tmp04, tmp05, tmp06, tmp07, v, i);
-
+							tmp04, tmp05, tmp06, tmp07, v, i);
+	
 	for (size_type i= i_block; i < i_max; i++) 
 	    Functor::update(tmp00, v[i]);
 

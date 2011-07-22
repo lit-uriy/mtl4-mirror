@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/operation/max_of_sums.hpp>
+#include <boost/numeric/mtl/vector/lazy_reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -52,6 +53,10 @@ namespace mtl {
 	{
 	    return one_norm<8>(vector);
 	}
+
+	template <typename Vector>
+	lazy_reduction<Vector, one_norm_functor> inline lazy_one_norm(const Vector& v)
+	{  return lazy_reduction<Vector, one_norm_functor>(v); 	}
     }
 
     namespace matrix {
@@ -83,6 +88,7 @@ namespace mtl {
     }
 
     using vector::one_norm;
+    using vector::lazy_one_norm;
     using matrix::one_norm;
 
 } // namespace mtl

@@ -83,10 +83,15 @@ template <unsigned long Unroll, typename Vector1, typename Vector2, typename Con
 struct is_vector_reduction<mtl::vector::dot_class<Unroll, Vector1, Vector2, ConjOpt> >
   : boost::mpl::true_ {};
 
+#if 0
 template <unsigned long Unroll, typename Vector>
 struct is_vector_reduction<mtl::vector::unary_dot_class<Unroll, Vector> >
   : boost::mpl::true_ {};
+#endif
 
+template<typename Vector, typename Functor>
+struct is_vector_reduction<mtl::vector::lazy_reduction<Vector, Functor> >
+  : boost::mpl::true_ {};
 
 template <typename T>
 struct index_evaluatable : boost::mpl::false_ {};
@@ -124,7 +129,7 @@ inline index_evaluator(lazy_assign_t<T, U, Assign>& lazy)
     return mtl::vector::vec_scal_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
 }
 
-
+#if 0
 template <typename Scalar, typename Vector, typename Assign>
 struct unary_dot_index_evaluator
 {
@@ -155,13 +160,54 @@ struct unary_dot_index_evaluator
 template <typename Scalar, typename Vector, typename Assign>
 inline std::size_t size(const unary_dot_index_evaluator<Scalar, Vector, Assign>& eval)
 { return size(eval.v); }
+#endif
 
-template <typename Scalar, unsigned long Unroll, typename Vector, typename Assign>
-unary_dot_index_evaluator<Scalar, Vector, Assign>
-inline index_evaluator(lazy_assign_t<Scalar, mtl::vector::unary_dot_class<Unroll, Vector>, Assign>& lazy)
+
+template <typename Scalar, typename Vector, typename Functor, typename Assign>
+struct reduction_index_evaluator
 {
-    return unary_dot_index_evaluator<Scalar, Vector, Assign>(lazy.first, lazy.second.v);
+    reduction_index_evaluator(Scalar& scalar, const Vector& v) 
+      : scalar(scalar), v(v) 
+    {
+	Functor::init(tmp[0]);
+	tmp[1]= tmp[2]= tmp[3]= tmp[0];
+    }
+
+    ~reduction_index_evaluator() 
+    { 
+	Functor::finish(tmp[0], tmp[1]);
+	Functor::finish(tmp[2], tmp[3]);
+	Functor::finish(tmp[0], tmp[2]);
+	Assign::apply(scalar, Functor::post_reduction(tmp[0])); // compute sqrt or such if necessary
+    }
+
+    template <unsigned Offset>
+    void at(std::size_t i) 
+    { 
+	Functor::update(tmp[Offset], v[i+Offset]); 
+    }
+
+    void operator[] (std::size_t i) { at<0>(i); }
+    void operator() (std::size_t i) { at<0>(i); }    
+
+    Scalar&        scalar;
+    Scalar         tmp[4];
+    const Vector&  v;
+};
+
+template <typename Scalar, typename Vector, typename Functor, typename Assign>
+inline std::size_t size(const reduction_index_evaluator<Scalar, Vector, Functor, Assign>& eval)
+{ return size(eval.v); }
+
+
+
+template <typename Scalar, typename Vector, typename Functor, typename Assign>
+reduction_index_evaluator<Scalar, Vector, Functor, Assign>
+inline index_evaluator(lazy_assign_t<Scalar, mtl::vector::lazy_reduction<Vector, Functor>, Assign>& lazy)
+{
+    return reduction_index_evaluator<Scalar, Vector, Functor, Assign>(lazy.first, lazy.second.v);
 }
+
 
 template <typename Scalar, typename Vector1, typename Vector2, typename ConjOpt, typename Assign>
 struct dot_index_evaluator
@@ -295,7 +341,7 @@ struct fusion
     {	
 	MTL_DEBUG_THROW_IF(/*mtl::vector::*/  size(first_eval) != /*mtl::vector::*/  size(second_eval), mtl::incompatible_size());	
 
-#if 1 //def MTL_LAZY_LOOP_WO_UNROLL
+#ifdef MTL_LAZY_LOOP_WO_UNROLL
 	for (std::size_t i= 0, s= size(first_eval); i < s; i++) {
 	    first_eval(i); second_eval(i);
 	}	
@@ -357,7 +403,7 @@ int main(int, char**)
     mtl::compressed2D<double>      B(6, 6);
     B= 2.0;
 
-    (lazy(w)= A * v) || (lazy(d) = alpha / lazy_dot(w, v));
+    (lazy(w)= A * v) || (lazy(d) = lazy_dot(w, v));
     // fuse(lazy(w)= A * v, lazy(d) = lazy_dot(w, v));
     // d= with_reduction(lazy(w)= A * v, lazy_dot(w, v));
     cout << "w = " << w << ", d (12?)= " << d << "\n";
@@ -374,6 +420,21 @@ int main(int, char**)
 
     (lazy(x)= 7.0) || (lazy(beta)= lazy_unary_dot(x)); 
     cout << "x = " << x << ", beta (294?) = " << beta << "\n";
+    
+    (lazy(x)= 7.0) || (lazy(beta)= lazy_one_norm(x)); 
+    cout << "x = " << x << ", beta (42?) = " << beta << "\n";
+    
+    (lazy(x)= 7.0) || (lazy(beta)= lazy_two_norm(x)); 
+    cout << "x = " << x << ", beta (17.1464?) = " << beta << "\n";
+    
+    (lazy(x)= 7.0) || (lazy(beta)= lazy_infinity_norm(x)); 
+    cout << "x = " << x << ", beta (7?) = " << beta << "\n";
+    
+    (lazy(x)= 7.0) || (lazy(beta)= lazy_sum(x)); 
+    cout << "x = " << x << ", beta (42?) = " << beta << "\n";
+    
+    (lazy(x)= 7.0) || (lazy(beta)= lazy_product(x)); 
+    cout << "x = " << x << ", beta (117649?) = " << beta << "\n";
     
     (lazy(x)= 2.0) || (lazy(gamma)= lazy_dot(r, x)); 
     cout << "x = " << x << ", gamma (-115.2?) = " << gamma << "\n";

@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/vector/lazy_reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction.hpp>
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -55,6 +56,14 @@ inline sum(const Value& value)
 {
     return sum<8>(value);
 }
+
+namespace vector {
+	template <typename Vector>
+	lazy_reduction<Vector, sum_functor> inline lazy_sum(const Vector& v)
+	{  return lazy_reduction<Vector, sum_functor>(v); 	}
+}
+
+using vector::lazy_sum;
 
 } // namespace mtl
 
