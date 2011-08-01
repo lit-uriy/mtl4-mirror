@@ -17,9 +17,11 @@
 #include <cassert>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
+#include <boost/numeric/mtl/operation/dot.hpp>
+#include <boost/numeric/mtl/operation/unary_dot.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
-#include <boost/numeric/mtl/operation/unroll.hpp>
+#include <boost/numeric/mtl/operation/lazy.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
@@ -31,12 +33,12 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
        Iteration& iter)
 {
     mtl::vampir_trace<6001> tracer;
-    using std::abs; using mtl::conj;
+    using std::abs; using mtl::conj; using mtl::lazy;
     typedef HilbertSpaceX Vector;
     typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
     typedef typename Iteration::real                            Real;
 
-    Scalar rho(0), rho_1(0), alpha(0);
+    Scalar rho(0), rho_1(0), alpha(0), alpha_1;
     Vector p(resource(x)), q(resource(x)), r(resource(x)), z(resource(x));
   
     r = b - A*x;
@@ -48,41 +50,13 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 	else 
 	    p = r + (rho / rho_1) * p;	   
 
-	q = A * p;
-	alpha = rho / dot(p, q);
-      
+	// q = A * p; alpha = rho / dot(p, q);
+	(lazy(q)= A * p) || (lazy(alpha_1)= lazy_dot(p, q));
+	alpha= rho / alpha_1;
+	
 	x += alpha * p;
 	rho_1 = rho;
-#if 1
-	r -= alpha * q;
-	rho = dot(r, r);
-#endif
-
-#if 0
-	{
-	    mtl::vampir_trace<9901> tracer;
-	    //rho= Scalar(0);
-	    Scalar rho0(0), rho1(0), rho2(0), rho3(0);
-	    assert(size(r) % 4 == 0);
-	    for (unsigned i= 0, i_max= size(r); i < i_max; i+=4) {
-#if 0
-		Scalar ri= r[i]-= alpha * q[i];
-		rho+= conj(ri) * ri;
-#else
-		Scalar ri0= r[i]-= alpha * q[i];
-		rho0+= conj(ri0) * ri0;
-		Scalar ri1= r[i+1]-= alpha * q[i+1];
-		rho1+= conj(ri1) * ri1;
-		Scalar ri2= r[i+2]-= alpha * q[i+2];
-		rho2+= conj(ri2) * ri2;
-		Scalar ri3= r[i+3]-= alpha * q[i+3];
-		rho3+= conj(ri3) * ri3;
-#endif
-	    }
-	    rho= rho0 + rho1 + rho2 + rho3;
-	}
-#endif
-	    
+	(lazy(r) -= alpha * q) || (lazy(rho) = lazy_unary_dot(r));
     }
 
     return iter;

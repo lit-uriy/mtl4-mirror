@@ -33,9 +33,10 @@ struct row_mat_cvec_index_evaluator
     row_mat_cvec_index_evaluator(VectorOut& w, const Matrix& A, const VectorIn& v) : w(w), A(A), v(v) {}
 
     template <unsigned Offset>
-    void at(size_type i, mtl::tag::sparse)
+    void at(size_type i, boost::mpl::true_)
     {
-	value_type tmp(math::zero(w[i+Offset]));
+	// value_type tmp(math::zero(w[i+Offset]));
+	value_type tmp(0);
 	const size_type cj0= A.ref_starts()[i+Offset], cj1= A.ref_starts()[i+Offset+1];
 	for (size_type j= cj0; j != cj1; ++j)
 	    tmp+= A.data[j] * v[A.ref_indices()[j]];
@@ -43,7 +44,7 @@ struct row_mat_cvec_index_evaluator
     }
 
     template <unsigned Offset>
-    void at(size_type i, mtl::tag::dense)
+    void at(size_type i, boost::mpl::false_)
     {
 	value_type tmp(math::zero(w[i+Offset]));
 	for (size_type j= 0; j < num_cols(A); j++) 
@@ -54,11 +55,39 @@ struct row_mat_cvec_index_evaluator
     template <unsigned Offset>
     void at(size_type i)
     { 
-	at<Offset>(i, typename mtl::traits::category<Matrix>::type());
+	at<Offset>(i, typename mtl::traits::is_sparse<Matrix>::type());
     }
 
-    void operator()(size_type i) { at<0>(i); }
-    void operator[](size_type i) { at<0>(i); }
+    void direct_at(size_type i, boost::mpl::true_)
+    {
+	// value_type tmp(math::zero(w[i+Offset]));
+	value_type tmp(0);
+	const size_type cj0= A.ref_starts()[i], cj1= A.ref_starts()[i+1];
+	for (size_type j= cj0; j != cj1; ++j)
+	    tmp+= A.data[j] * v[A.ref_indices()[j]];
+	Assign::first_update(w[i], tmp);
+    }
+
+    void direct_at(size_type i, boost::mpl::false_)
+    {
+	value_type tmp(math::zero(w[i]));
+	for (size_type j= 0; j < num_cols(A); j++) 
+	    tmp+= A[i][j] * v[j];
+	Assign::first_update(w[i], tmp);
+    }
+
+    void operator()(size_type i) { direct_at(i, typename mtl::traits::is_sparse<Matrix>::type()); }
+    void operator[](size_type i) { direct_at(i, typename mtl::traits::is_sparse<Matrix>::type()); }
+
+    void sparse_at(size_type i)
+    {
+	// value_type tmp(math::zero(w[i+Offset]));
+	value_type tmp(0);
+	const size_type cj0= A.ref_starts()[i], cj1= A.ref_starts()[i+1];
+	for (size_type j= cj0; j != cj1; ++j)
+	    tmp+= A.data[j] * v[A.ref_indices()[j]];
+	Assign::first_update(w[i], tmp);
+    }
 
     VectorOut&      w;
     const Matrix&   A;

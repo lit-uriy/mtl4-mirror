@@ -12,7 +12,7 @@
 // #define CRS_CVEC_MULT_NO_ACCEL
 
 // #define CRS_CVEC_MULT_NO_ACCEL // for benchmarking
-
+// #define MTL_LAZY_LOOP_WO_UNROLL // for benchmarking
 
 #include <iostream>
 #include <boost/timer.hpp>
@@ -24,7 +24,7 @@ int main()
 {
     mtl::vampir_trace<9999> tracer;
   // For a more realistic example set size to 1000 or larger
-  const int size = 1000, N = size * size;
+  const int size = 1000, N = size * size; 
 
   using namespace mtl;
 
