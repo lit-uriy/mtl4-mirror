@@ -52,7 +52,7 @@ struct assign_sum
     template <typename T, typename U>
     static T& apply(T& x, const U& y)
     {
-	x= y;
+	return x= y;
     }
 
 };
@@ -88,7 +88,7 @@ struct plus_sum
     template <typename T, typename U>
     static T& apply(T& x, const U& y)
     {
-	x+= y;
+	return x+= y;
     }
 };
 
@@ -123,7 +123,7 @@ struct minus_sum
     template <typename T, typename U>
     static T& apply(T& x, const U& y)
     {
-	x-= y;
+	return x-= y;
     }
 };
 
