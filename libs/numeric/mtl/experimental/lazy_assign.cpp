@@ -13,21 +13,20 @@
 #include <iostream>
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/and.hpp>
-#include <boost/mpl/or.hpp>
+#include <boost/mpl/or.hpp> 
 #include <boost/static_assert.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
-using namespace std;
-
+using namespace std; 
 
 template <typename T, typename U, typename Assign>
-struct lazy_assign_t
+struct lazy_assign
 {
     typedef Assign  assign_type;
 
-    lazy_assign_t(T& first, const U& second) : first(first), second(second) {} 
+    lazy_assign(T& first, const U& second) : first(first), second(second) {} 
 
     T&       first;
     const U& second;
@@ -35,9 +34,9 @@ struct lazy_assign_t
 };
 
 template <typename T, typename U, typename Assign>
-void inline evaluate(lazy_assign_t<T, U, Assign>& lazy_assign)
+void inline evaluate_lazy(lazy_assign<T, U, Assign>& lazy)
 {
-    Assign::first_update(lazy_assign.first, lazy_assign.second);
+    Assign::first_update(lazy.first, lazy.second);
 }
 
 
@@ -45,7 +44,7 @@ template <typename T>
 struct is_lazy : boost::mpl::false_ {};
 
 template <typename T, typename U, typename Assign>
-struct is_lazy<lazy_assign_t<T, U, Assign> > : boost::mpl::true_ {};
+struct is_lazy<lazy_assign<T, U, Assign> > : boost::mpl::true_ {};
 
 
 template <typename T>
@@ -54,16 +53,16 @@ struct lazy_t
     lazy_t(T& data) : data(data) {}
 
     template <typename U>
-    lazy_assign_t<T, U, mtl::assign::assign_sum> operator=(const U& other) 
-    { return lazy_assign_t<T, U, mtl::assign::assign_sum>(data, other); }
+    lazy_assign<T, U, mtl::assign::assign_sum> operator=(const U& other) 
+    { return lazy_assign<T, U, mtl::assign::assign_sum>(data, other); }
 
     template <typename U>
-    lazy_assign_t<T, U, mtl::assign::plus_sum> operator+=(const U& other) 
-    { return lazy_assign_t<T, U, mtl::assign::plus_sum>(data, other); }
+    lazy_assign<T, U, mtl::assign::plus_sum> operator+=(const U& other) 
+    { return lazy_assign<T, U, mtl::assign::plus_sum>(data, other); }
 
     template <typename U>
-    lazy_assign_t<T, U, mtl::assign::minus_sum> operator-=(const U& other) 
-    { return lazy_assign_t<T, U, mtl::assign::minus_sum>(data, other); }
+    lazy_assign<T, U, mtl::assign::minus_sum> operator-=(const U& other) 
+    { return lazy_assign<T, U, mtl::assign::minus_sum>(data, other); }
 
     T& data;
 };
@@ -97,7 +96,7 @@ template <typename T>
 struct index_evaluatable : boost::mpl::false_ {};
 
 template <typename T, typename U, typename Assign>
-struct index_evaluatable<lazy_assign_t<T, U, Assign> >
+struct index_evaluatable<lazy_assign<T, U, Assign> >
   : boost::mpl::or_<
       boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_scalar<U> >,
       boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_vector<U> >,
@@ -106,7 +105,7 @@ struct index_evaluatable<lazy_assign_t<T, U, Assign> >
 {};
 
 template <typename V1, typename Matrix, typename V2, typename Assign>
-struct index_evaluatable<lazy_assign_t<V1, mtl::mat_cvec_times_expr<Matrix, V2>, Assign> >
+struct index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matrix, V2>, Assign> >
   : mtl::traits::is_row_major<Matrix> {};
 
 // Strided traversal would be more expensive than saving from mixed reduction
@@ -116,7 +115,7 @@ struct index_evaluatable<lazy_assign_t<V1, mtl::mat_cvec_times_expr<Matrix, V2>,
 template <typename T, typename U, typename Assign>
 typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_vector<U> >, 
 			  mtl::vector::vec_vec_aop_expr<T, U, Assign> >::type
-inline index_evaluator(lazy_assign_t<T, U, Assign>& lazy)
+inline index_evaluator(lazy_assign<T, U, Assign>& lazy)
 {
     return mtl::vector::vec_vec_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
 }
@@ -124,7 +123,7 @@ inline index_evaluator(lazy_assign_t<T, U, Assign>& lazy)
 template <typename T, typename U, typename Assign>
 typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_scalar<U> >, 
 			  mtl::vector::vec_scal_aop_expr<T, U, Assign> >::type
-inline index_evaluator(lazy_assign_t<T, U, Assign>& lazy)
+inline index_evaluator(lazy_assign<T, U, Assign>& lazy)
 {
     return mtl::vector::vec_scal_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
 }
@@ -203,7 +202,7 @@ inline std::size_t size(const reduction_index_evaluator<Scalar, Vector, Functor,
 
 template <typename Scalar, typename Vector, typename Functor, typename Assign>
 reduction_index_evaluator<Scalar, Vector, Functor, Assign>
-inline index_evaluator(lazy_assign_t<Scalar, mtl::vector::lazy_reduction<Vector, Functor>, Assign>& lazy)
+inline index_evaluator(lazy_assign<Scalar, mtl::vector::lazy_reduction<Vector, Functor>, Assign>& lazy)
 {
     return reduction_index_evaluator<Scalar, Vector, Functor, Assign>(lazy.first, lazy.second.v);
 }
@@ -247,19 +246,19 @@ inline std::size_t size(const dot_index_evaluator<Scalar, Vector1, Vector2, Conj
 template <typename Scalar, unsigned long Unroll, typename Vector1, 
 	  typename Vector2, typename ConjOpt, typename Assign>
 dot_index_evaluator<Scalar, Vector1, Vector2, ConjOpt, Assign>
-inline index_evaluator(lazy_assign_t<Scalar, mtl::vector::dot_class<Unroll, Vector1, Vector2, ConjOpt>, Assign>& lazy)
+inline index_evaluator(lazy_assign<Scalar, mtl::vector::dot_class<Unroll, Vector1, Vector2, ConjOpt>, Assign>& lazy)
 {
     return dot_index_evaluator<Scalar, Vector1, Vector2, ConjOpt, Assign>(lazy.first, lazy.second.v1, lazy.second.v2);
 }
 
 template <typename VectorOut, typename Matrix, typename VectorIn, typename Assign>
-struct mat_cvec_index_evaluator
+struct row_mat_cvec_index_evaluator
 {
     BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Matrix>::value));
     typedef typename mtl::Collection<VectorOut>::value_type        value_type;
     typedef typename mtl::Collection<Matrix>::size_type            size_type; 
 
-    mat_cvec_index_evaluator(VectorOut& w, const Matrix& A, const VectorIn& v) : w(w), A(A), v(v) {}
+    row_mat_cvec_index_evaluator(VectorOut& w, const Matrix& A, const VectorIn& v) : w(w), A(A), v(v) {}
 
     template <unsigned Offset>
     void at(size_type i, mtl::tag::sparse)
@@ -295,25 +294,25 @@ struct mat_cvec_index_evaluator
 };
 
 template <typename VectorOut, typename Matrix, typename VectorIn, typename Assign>
-inline std::size_t size(const mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>& eval)
+inline std::size_t size(const row_mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>& eval)
 {
     return size(eval.w);
 }
 
 template <typename VectorOut, typename Matrix, typename VectorIn, typename Assign>
-mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>
-inline index_evaluator(lazy_assign_t<VectorOut, mtl::mat_cvec_times_expr<Matrix, VectorIn>, Assign>& lazy)
+row_mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>
+inline index_evaluator(lazy_assign<VectorOut, mtl::mat_cvec_times_expr<Matrix, VectorIn>, Assign>& lazy)
 {
-    return mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>(lazy.first, lazy.second.first, lazy.second.second);
+    return row_mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>(lazy.first, lazy.second.first, lazy.second.second);
 }
 
 
 
 template <typename T, typename U>
-struct fusion
+struct fused_expr
 {
     template <typename TT, typename UU, typename Assign>
-    void check(lazy_assign_t<TT, UU, Assign>& )
+    void check(lazy_assign<TT, UU, Assign>& )
     {
 	bool vec_scal= boost::mpl::and_<mtl::traits::is_vector<TT>, mtl::traits::is_scalar<UU> >::value;
 	bool vec_vec= boost::mpl::and_<mtl::traits::is_vector<TT>, mtl::traits::is_vector<UU> >::value;
@@ -327,14 +326,14 @@ struct fusion
     }
 
 
-    fusion(T& first, U& second) : first(first), second(second) 
+    fused_expr(T& first, U& second) : first(first), second(second) 
     {
 	// check(first); check(second);
 	//index_evaluatable<T> it= "";
 	//index_evaluatable<U> iu= "";
     }
  
-    ~fusion() { eval(index_evaluatable<T>(), index_evaluatable<U>()); }
+    ~fused_expr() { eval(index_evaluatable<T>(), index_evaluatable<U>()); }
 
     template <typename TT, typename UU>
     void eval_loop(TT first_eval, UU second_eval)
@@ -369,7 +368,7 @@ struct fusion
 
     template <bool B1, bool B2>
     void eval(boost::mpl::bool_<B1>, boost::mpl::bool_<B2>)
-    { evaluate(first); evaluate(second); }
+    { evaluate_lazy(first); evaluate_lazy(second); }
 
     T& first;
     U& second;
@@ -377,17 +376,17 @@ struct fusion
 
 
 template <typename T, typename U>
-typename boost::enable_if<boost::mpl::and_<is_lazy<T>, is_lazy<U> >, fusion<T, U> >::type
+typename boost::enable_if<boost::mpl::and_<is_lazy<T>, is_lazy<U> >, fused_expr<T, U> >::type
 operator||(const T& x, const U& y)
 {
-    return fusion<T, U>(const_cast<T&>(x), const_cast<U&>(y));
+    return fused_expr<T, U>(const_cast<T&>(x), const_cast<U&>(y));
 }
 
 template <typename T, typename U>
-typename boost::enable_if<boost::mpl::and_<is_lazy<T>, is_lazy<U> >, fusion<T, U> >::type
+typename boost::enable_if<boost::mpl::and_<is_lazy<T>, is_lazy<U> >, fused_expr<T, U> >::type
 fuse(const T& x, const U& y)
 {
-    return fusion<T, U>(const_cast<T&>(x), const_cast<U&>(y));
+    return fused_expr<T, U>(const_cast<T&>(x), const_cast<U&>(y));
 }
 
 

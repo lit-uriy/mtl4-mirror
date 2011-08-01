@@ -15,6 +15,9 @@
 
 /// Main name space for %Matrix Template Library
 namespace mtl {
+    
+    template <typename T, typename U, typename Assign> struct lazy_assign;
+    template <typename VectorOut, typename Matrix, typename VectorIn, typename Assign> struct row_mat_cvec_index_evaluator;
 
     /// Namespace for tags used for concept-free dispatching
     namespace tag {
@@ -159,6 +162,9 @@ namespace mtl {
 
 	template <typename Vector> struct vec_const_ref_expr;
 	template <unsigned BSize, typename Vector> class unrolled1;	
+
+	template <typename Scalar, typename Vector, typename Functor, typename Assign> struct reduction_index_evaluator;
+	template <typename Scalar, typename Vector1, typename Vector2, typename ConjOpt, typename Assign> struct dot_index_evaluator;
 
 	template <typename Value, typename Parameters, typename Value2>
 	inline void fill(dense_vector<Value, Parameters>& vector, const Value2& value);
