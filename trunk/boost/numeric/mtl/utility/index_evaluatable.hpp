@@ -41,6 +41,21 @@ template <typename V1, typename Matrix, typename V2, typename Assign>
 struct index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matrix, V2>, Assign> >
   : is_row_major<Matrix> {};
 
+/// Type trait to control whether evaluation should be unrolled
+template <typename T>
+struct unrolled_index_evaluatable : boost::mpl::false_ {};
+
+template <typename T, typename U, typename Assign>
+struct unrolled_index_evaluatable<lazy_assign<T, U, Assign> >
+  : boost::mpl::or_<
+      boost::mpl::and_<is_vector<T>, is_scalar<U> >,
+      boost::mpl::and_<is_vector<T>, is_vector<U> >,
+      boost::mpl::and_<is_scalar<T>, is_vector_reduction<U> >
+    >
+{};
+
+
+
 
 }} // namespace mtl::traits
 
