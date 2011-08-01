@@ -27,8 +27,10 @@
 #include <boost/numeric/mtl/operation/eigenvalue.hpp>
 #include <boost/numeric/mtl/operation/entry1D.hpp>
 #include <boost/numeric/mtl/operation/entry_similar.hpp>
+#include <boost/numeric/mtl/operation/evaluate_lazy.hpp>
 #include <boost/numeric/mtl/operation/extended_complex.hpp>
 #include <boost/numeric/mtl/operation/fill.hpp>
+#include <boost/numeric/mtl/operation/fuse.hpp>
 #include <boost/numeric/mtl/operation/givens.hpp>
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 #include <boost/numeric/mtl/operation/hessenberg.hpp>
@@ -37,6 +39,7 @@
 #include <boost/numeric/mtl/operation/inv.hpp>
 #include <boost/numeric/mtl/operation/invert_diagonal.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
+#include <boost/numeric/mtl/operation/lazy.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>

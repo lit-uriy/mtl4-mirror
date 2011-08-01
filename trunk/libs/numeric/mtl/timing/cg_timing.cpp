@@ -24,7 +24,7 @@ int main()
 {
     mtl::vampir_trace<9999> tracer;
   // For a more realistic example set size to 1000 or larger
-  const int size = 100, N = size * size;
+  const int size = 1000, N = size * size;
 
   using namespace mtl;
 
@@ -32,7 +32,7 @@ int main()
   typedef unsigned size_type;
   // typedef std::size_t size_type;
   std::cout << "sizeof in size_type is " << sizeof(size_type) << '\n';
-  typedef matrix::parameters<row_major, index::c_index, non_fixed::dimensions, false, size_type> para;
+  typedef matrix::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, size_type> para;
   typedef compressed2D<double, para>  matrix_type;
   matrix_type          A(N, N);
   laplacian_setup(A, size, size);
