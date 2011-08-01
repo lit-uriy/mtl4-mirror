@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 inline bool close(double x, double y) 
@@ -20,13 +19,12 @@ inline bool close(double x, double y)
     return abs(x - y) < 0.001;
 }
 
-int test_main(int , char**)
+int main(int , char**)
 {
     using namespace std;
     using mtl::lazy;
     
     double                d, rho, alpha= 7.8, beta, gamma;
-    const double          cd= 2.6;
     std::complex<double>  z;
 
     mtl::dense_vector<double> v(6, 1.0), w(6), r(6, 6.0), q(6, 2.0), x(6);
