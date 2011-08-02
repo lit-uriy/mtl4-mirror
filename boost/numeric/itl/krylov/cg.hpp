@@ -33,7 +33,7 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
        Iteration& iter)
 {
     mtl::vampir_trace<6001> tracer;
-    using std::abs; using mtl::conj; using mtl::lazy;
+    using std::abs; using std::sqrt; using mtl::conj; using mtl::lazy;
     typedef HilbertSpaceX Vector;
     typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
     typedef typename Iteration::real                            Real;
@@ -43,7 +43,7 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   
     r = b - A*x;
     rho = dot(r, r);
-    while (! iter.finished(Real(abs(rho)))) {
+    while (! iter.finished(Real(rho))) {
 	++iter;
 	if (iter.first())
 	    p = r;
