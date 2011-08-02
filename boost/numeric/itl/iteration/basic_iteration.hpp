@@ -14,7 +14,6 @@
 #define ITL_BASIC_ITERATION_INCLUDE
 
 #include <iostream>
-#include <cmath>
 #include <complex>
 #include <string>
 
@@ -56,8 +55,7 @@ class basic_iteration
 
     bool finished(const Real& r) 
     {
-	using std::abs; using std::sqrt;
-	if (converged(sqrt(abs(r))))
+	if (converged(r))
 	    return is_finished= true;
 	return check_max();
     }
@@ -65,8 +63,7 @@ class basic_iteration
     template <typename T>
     bool finished(const std::complex<T>& r) 
     {
-	using std::abs; using std::sqrt;
-	if (converged(sqrt(abs(r)))) 
+	if (converged(std::abs(r))) 
 	    return is_finished= true;
 	return check_max();
     }
