@@ -43,7 +43,7 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
   
     r = b - A*x;
     rho = dot(r, r);
-    while (! iter.finished(Real(abs(rho)))) {
+    while (! iter.finished(Real(sqrt(abs(rho))))) {
 	++iter;
 	if (iter.first())
 	    p = r;
