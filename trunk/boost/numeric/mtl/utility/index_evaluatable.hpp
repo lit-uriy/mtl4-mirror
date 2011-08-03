@@ -54,7 +54,11 @@ struct unrolled_index_evaluatable<lazy_assign<T, U, Assign> >
     >
 {};
 
-
+#if 0 // Even mat-vec-mult is faster when unrolled (on small matrices, on large it doesn't matter)
+template <typename V1, typename Matrix, typename V2, typename Assign>
+struct unrolled_index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matrix, V2>, Assign> >
+  : boost::mpl::false_ {};
+#endif
 
 
 }} // namespace mtl::traits
