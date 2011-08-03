@@ -331,12 +331,14 @@ class compressed2D
 	allocate(nnz);
     }
 
+#if 0 // Default is faster !!!
     /// Copy constructor
     compressed2D(const self& src) : super(non_fixed::dimensions(src.num_rows(), src.num_cols())), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	matrix_copy(src, *this);
     }
+#endif
 
     /// Copy from other types
     template <typename MatrixSrc>

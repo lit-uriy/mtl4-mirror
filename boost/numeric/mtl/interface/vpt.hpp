@@ -68,8 +68,7 @@ class vampir_trace
 // Iterative solvers:               6000
 
 
-// Utilities:                        0000
-// Number must start with 0, otherwise grouping script fails!!!!!
+// Utilities:                        < 1000
 template <> std::string vampir_trace<1>::name("copysign");
 template <> std::string vampir_trace<2>::name("Elem_raw_copy");
 template <> std::string vampir_trace<3>::name("Get_real_part");
@@ -316,8 +315,7 @@ template <> std::string vampir_trace<4041>::name("");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
-	vampir_trace<>0 tracer;
-
+	vampir_trace<> tracer;
 #endif
 
 // Factorizations, preconditioners: 5000
@@ -355,12 +353,12 @@ template <> std::string vampir_trace<5031>::name("pc::id::solve");
 template <> std::string vampir_trace<5032>::name("pc::id.solve");
 template <> std::string vampir_trace<5033>::name("pc::id::adjoint_solve");
 template <> std::string vampir_trace<5034>::name("pc::id.adjoint_solve");
-template <> std::string vampir_trace<5035>::name("");
-template <> std::string vampir_trace<5036>::name("");
-template <> std::string vampir_trace<5037>::name("");
-template <> std::string vampir_trace<5038>::name("");
-template <> std::string vampir_trace<5039>::name("");
-template <> std::string vampir_trace<5040>::name("");
+template <> std::string vampir_trace<5035>::name("ic_0::factorize");
+template <> std::string vampir_trace<5036>::name("ic_0::solve");
+template <> std::string vampir_trace<5037>::name("ic_0::adjoint_solve");
+template <> std::string vampir_trace<5038>::name("ilu_0::factorize");
+template <> std::string vampir_trace<5039>::name("ilu_0::solve");
+template <> std::string vampir_trace<5040>::name("ilu_0::adjoint_solve");
 template <> std::string vampir_trace<5041>::name("");
 template <> std::string vampir_trace<5042>::name("");
 template <> std::string vampir_trace<5043>::name("");
@@ -373,8 +371,7 @@ template <> std::string vampir_trace<5049>::name("");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
-	vampir_trace<>0 tracer;
-
+	vampir_trace<> tracer;
 #endif
 
 // Iterative solvers:               6000
