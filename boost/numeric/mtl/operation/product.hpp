@@ -26,43 +26,45 @@
 
 namespace mtl {
 
-    namespace impl {
-
-	// Do we really need this for matrices?
+    namespace vector {
 	
-	template <unsigned long Unroll, typename Vector>
-	typename Collection<Vector>::value_type
-	inline product(const Vector& vector, tag::vector)
-	{
-	    typedef typename Collection<Vector>::value_type result_type;
-	    return vector::reduction<Unroll, vector::product_functor, result_type>::apply(vector);
+	namespace impl {
+
+	    // Do we really need this for matrices?
+	
+	    template <unsigned long Unroll, typename Vector>
+	    typename Collection<Vector>::value_type
+	    inline product(const Vector& vector, tag::vector)
+	    {
+		typedef typename Collection<Vector>::value_type result_type;
+		return vector::reduction<Unroll, vector::product_functor, result_type>::apply(vector);
+	    }
+	
+	} // namespace impl
+
+	///Returns product of all collection-entries (%vector-entries)
+	template <unsigned long Unroll, typename Value>
+	typename Collection<Value>::value_type
+	inline product(const Value& value)
+	{	vampir_trace<2020> tracer;
+	    return impl::product<Unroll>(value, typename traits::category<Value>::type());
 	}
-	
-    } // namespace impl
 
-///Returns product of all collection-entries (%vector-entries)
-template <unsigned long Unroll, typename Value>
-typename Collection<Value>::value_type
-inline product(const Value& value)
-{	vampir_trace<2020> tracer;
-    return impl::product<Unroll>(value, typename traits::category<Value>::type());
-}
+	template <typename Value>
+	typename Collection<Value>::value_type
+	inline product(const Value& value)
+	{
+	    return product<8>(value);
+	}
 
-template <typename Value>
-typename Collection<Value>::value_type
-inline product(const Value& value)
-{
-    return product<8>(value);
-}
-
-namespace vector {
 	template <typename Vector>
 	lazy_reduction<Vector, product_functor> inline lazy_product(const Vector& v)
 	{  return lazy_reduction<Vector, product_functor>(v); 	}
-}
 
-using vector::lazy_product;
+    } // namespace vector
 
+    using vector::lazy_product;
+    using vector::product;
 
 } // namespace mtl
 
