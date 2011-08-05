@@ -32,7 +32,7 @@ namespace mtl { namespace vpt {
 template <int N>
 class vampir_trace
 {
-    typedef boost::mpl::bool_<(MTL_VPT_LEVEL * 100 < N)> to_print;
+    typedef boost::mpl::bool_<(MTL_VPT_LEVEL * 1000 < N)> to_print;
   public:
     vampir_trace() { entry(to_print());  }
 
@@ -191,8 +191,8 @@ template <> std::string vampir_trace<2038>::name("Vector_trans");
 template <> std::string vampir_trace<2039>::name("vector::two_norm");
 template <> std::string vampir_trace<2040>::name("dot_simple");
 template <> std::string vampir_trace<2041>::name("unary_dot");
-template <> std::string vampir_trace<2042>::name("");
-template <> std::string vampir_trace<2043>::name("");
+template <> std::string vampir_trace<2042>::name("dense_vector::copy_ctor");
+template <> std::string vampir_trace<2043>::name("dense_vector::tpl_copy_ctor");
 template <> std::string vampir_trace<2044>::name("");
 template <> std::string vampir_trace<2045>::name("");
 template <> std::string vampir_trace<2046>::name("");
@@ -359,9 +359,9 @@ template <> std::string vampir_trace<5037>::name("ic_0::adjoint_solve");
 template <> std::string vampir_trace<5038>::name("ilu_0::factorize");
 template <> std::string vampir_trace<5039>::name("ilu_0::solve");
 template <> std::string vampir_trace<5040>::name("ilu_0::adjoint_solve");
-template <> std::string vampir_trace<5041>::name("");
-template <> std::string vampir_trace<5042>::name("");
-template <> std::string vampir_trace<5043>::name("");
+template <> std::string vampir_trace<5041>::name("lower_trisolve_kernel");
+template <> std::string vampir_trace<5042>::name("upper_trisolve_row_major_kernel");
+template <> std::string vampir_trace<5043>::name("upper_trisolve_col_major_kernel");
 template <> std::string vampir_trace<5044>::name("");
 template <> std::string vampir_trace<5045>::name("");
 template <> std::string vampir_trace<5046>::name("");
