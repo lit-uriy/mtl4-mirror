@@ -42,9 +42,12 @@ struct fused_expr
     }
 
     template <typename TT, typename UU>
-    void eval_loop(TT first_eval, UU second_eval, boost::mpl::true_)
+    void eval_loop(const TT& const_first_eval, const UU& const_second_eval, boost::mpl::true_)
     {	
 	vampir_trace<3048> tracer;
+	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
+	TT& first_eval= const_cast<TT&>(const_first_eval);  
+	UU& second_eval= const_cast<UU&>(const_second_eval);
 	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != mtl::vector::size(second_eval), incompatible_size());	
 
 	const std::size_t s= size(first_eval), sb= s >> 2 << 2;
@@ -61,7 +64,7 @@ struct fused_expr
 	}
     }
 
-#ifndef _MSC_VER // disable on Visual Studio until we know why it doesn't work there
+// #ifndef _MSC_VER // disable on Visual Studio until we know why it doesn't work there
     void eval(boost::mpl::true_, boost::mpl::true_)
     {
 #ifdef MTL_LAZY_LOOP_WO_UNROLL
@@ -70,9 +73,10 @@ struct fused_expr
 	typedef boost::mpl::and_<traits::unrolled_index_evaluatable<T>, traits::unrolled_index_evaluatable<U> > to_unroll;
 #endif
 	// Currently lazy evaluation is only available on vector expressions, might change in the future
+
 	eval_loop(index_evaluator(first), index_evaluator(second), to_unroll()); 
     }
-#endif
+// #endif
 
     template <bool B1, bool B2>
     void eval(boost::mpl::bool_<B1>, boost::mpl::bool_<B2>)

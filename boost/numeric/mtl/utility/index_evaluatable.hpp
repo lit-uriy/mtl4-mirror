@@ -28,6 +28,7 @@ namespace mtl { namespace traits {
 template <typename T>
 struct index_evaluatable : boost::mpl::false_ {};
 
+//#ifndef _MSC_VER // disable on Visual Studio until we know why it doesn't work there
 template <typename T, typename U, typename Assign>
 struct index_evaluatable<lazy_assign<T, U, Assign> >
   : boost::mpl::or_<
@@ -40,6 +41,7 @@ struct index_evaluatable<lazy_assign<T, U, Assign> >
 template <typename V1, typename Matrix, typename V2, typename Assign>
 struct index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matrix, V2>, Assign> >
   : is_row_major<Matrix> {};
+//#endif
 
 /// Type trait to control whether evaluation should be unrolled
 template <typename T>
