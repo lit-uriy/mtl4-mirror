@@ -23,9 +23,12 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
+#include <boost/numeric/mtl/operation/lu_split.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 #include <boost/numeric/mtl/matrix/upper.hpp>
+#include <boost/numeric/mtl/matrix/strict_lower.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace itl { namespace pc {
@@ -45,6 +48,7 @@ class ic_0
     // Factorization adapted from Saad
     ic_0(const Matrix& A)
     {
+	mtl::vampir_trace<5035> tracer;
 	factorize(A, typename mtl::traits::category<Matrix>::type()); 
     }
 
@@ -52,6 +56,7 @@ class ic_0
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
+	mtl::vampir_trace<5036> tracer;
 	return inverse_upper_trisolve(U, inverse_lower_trisolve(adjoint(U), x));
     }
 
@@ -59,6 +64,7 @@ class ic_0
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
+	mtl::vampir_trace<5037> tracer;
 	return solve(x);
     }
 
@@ -84,11 +90,9 @@ class ic_0
 
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 	U= upper(A); crop(U);
-	U_type L(lower(A)); // needed to find non-zeros in column
 
-        typename mtl::traits::col<U_type>::type                   col(U), col_l(L);
-        typename mtl::traits::value<U_type>::type                 value(U); 
-
+        typename mtl::traits::col<U_type>::type                   col(U);
+        typename mtl::traits::value<U_type>::type                 value(U); 	
 
 	cur_type kc= begin<row>(U), kend= end<row>(U);
 	for (size_type k= 0; kc != kend; ++kc, ++k) {
@@ -105,18 +109,36 @@ class ic_0
 		value_type d= value(*ic) * inv_dia;
 		value(*ic, d);
 		size_type i= col(*ic);
+		// std::cout << "k == " << k << ", i == " << i << std::endl;
 
+#if 0
 		// find non-zeros U[j][i] below U[k][i] for j in (k, i]
 		// 1. Go to ith row in L (== ith column in U)
 		cur_type irow= begin<row>(L); irow+= i;
 		// 2. Find nonzeros with col() in (k, i]
 		icur_type jc= begin<nz>(irow), jend= end<nz>(irow);
+		while (col_l(*jc) <= k) {std::cout << "inc: " << col_l(*jc) << std::endl; ++jc;}
+		while (col_l(*--jend) > i) {std::cout << "dec: " << col_l(*jend) << std::endl; }
 		while (col_l(*jc) <= k) ++jc;
 		while (col_l(*--jend) > i) ;
 		++jend; 
+#endif
+
+
+		// find non-zeros U[j][i] below U[k][i] for j in (k, i]
+		// 1. Go to ith row in U (== ith column in U)
+		cur_type irow(i, U); // = begin<row>(U); irow+= i;
+		// 2. Find nonzeros with col() in (k, i]
+		icur_type jc= begin<nz>(irow), jend= end<nz>(irow);
+		while (col(*jc) <= k)  ++jc;
+		while (col(*--jend) > i) ;
+		++jend; 
+
 		
 		for (; jc != jend; ++jc) {
-		    size_type j= col_l(*jc);
+		    size_type j= col(*jc);
+		    //size_type j= col_l(*jc);
+		    // std::cout << "j == " << j << std::endl;
 		    U.lvalue(j, i)-= d * U[k][j];
 		}
 		// std::cout << "U after eliminating U[" << i << "][" << k << "] =\n" << U;
