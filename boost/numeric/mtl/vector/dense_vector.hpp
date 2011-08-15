@@ -37,6 +37,7 @@
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/transposed_orientation.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl { namespace vector {
@@ -121,6 +122,7 @@ class dense_vector
     dense_vector( const self& src )
       : memory_base( src ) 
     {
+	vampir_trace<2042> tracer;
 	using std::copy;
 	copy(src.begin(), src.end(), this->begin());
     }
@@ -132,7 +134,7 @@ class dense_vector
     template <typename VectorSrc>
     explicit dense_vector(const VectorSrc& src,
 			  typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
-    {	*this= src;    }
+    {	vampir_trace<2043> tracer; *this= src;    }
 
     // Size of v (like a free function)
     // friend size_type size(const self& v); //  { return v.used_memory() ; }

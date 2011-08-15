@@ -33,7 +33,6 @@ inline lower(const Matrix& A)
 }
 
 
-
 }} // namespace mtl::matrix
 
 #endif // MTL_MATRIX_LOWER_INCLUDE

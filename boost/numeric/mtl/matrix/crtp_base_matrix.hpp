@@ -56,7 +56,7 @@ private:
     /** Uses internally \sa diagonal_setup, for details see there. **/
     Matrix& assign(const Source& source, Matrix& matrix, ashape::scal)
     {
-	vampir_trace<3026> tracer;
+	vampir_trace<3055> tracer;
 	MTL_DEBUG_THROW_IF(num_rows(matrix) * num_cols(matrix) == 0, 
 			   range_error("Trying to initialize a 0 by 0 matrix with a value"));
 	diagonal_setup(matrix, source);
@@ -66,7 +66,7 @@ private:
     /// Assign matrix expressions by copying except for some special expressions
     Matrix& assign(const Source& source, Matrix& matrix, typename ashape::ashape<Matrix>::type)
     {
-	vampir_trace<3027> tracer;
+	vampir_trace<3056> tracer;
 	// Self-assignment between different types shouldn't happen.	
 	matrix.checked_change_resource(source);
 	// del matrix.checked_change_dim(num_rows(source), num_cols(source));
@@ -85,7 +85,7 @@ struct crtp_assign<mat_mat_plus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_plus_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<3027> tracer;
+	vampir_trace<3056> tracer;
 	matrix.checked_change_resource(src.first);
 	// del checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix= src.first;
@@ -101,7 +101,7 @@ struct crtp_assign<mat_mat_minus_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_minus_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<3027> tracer;
+	vampir_trace<3057> tracer;
 	matrix.checked_change_resource(src.first);
 	// del checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix= src.first;
@@ -149,7 +149,7 @@ struct crtp_assign<Value[Rows][Cols], Matrix>
 {
     Matrix& operator()(const Value src[Rows][Cols], Matrix& matrix)
     {
-	vampir_trace<3027> tracer;
+	vampir_trace<3059> tracer;
 	typedef typename Collection<Matrix>::size_type size_type;
 
 	matrix.checked_change_dim(Rows, Cols);
@@ -168,7 +168,7 @@ struct crtp_assign<multi_vector<Vector>, Matrix>
 {
     Matrix& operator()(const multi_vector<Vector>& src, Matrix& matrix)
     {
-	vampir_trace<3027> tracer;
+	vampir_trace<3060> tracer;
 	typedef typename Collection<Matrix>::size_type size_type;
 
 	matrix.checked_change_resource(src);

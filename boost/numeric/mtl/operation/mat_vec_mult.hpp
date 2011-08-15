@@ -234,7 +234,7 @@ struct crs_cvec_mult_block<BSize, BSize, SizeType>
 template <unsigned BSize, typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
 inline void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign as, tag::row_major)
 {
-    vampir_trace<3122> tracer;
+    vampir_trace<3049> tracer;
     using math::zero;
 
     typedef compressed2D<MValue, MPara>                       Matrix;
@@ -278,7 +278,7 @@ template <typename MValue, typename MPara, typename VectorIn, typename VectorOut
 typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
 inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
-    vampir_trace<3122> tracer;
+    vampir_trace<3049> tracer;
     using math::zero;
 
     typedef compressed2D<MValue, MPara>                       Matrix;

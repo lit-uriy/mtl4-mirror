@@ -72,14 +72,17 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 	return cg(A, x, b, iter);
 
     mtl::vampir_trace<6002> tracer;
+    using std::abs; using mtl::conj; using mtl::lazy;
     typedef HilbertSpaceX Vector;
     typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
+    typedef typename Iteration::real                            Real;
 
-    Scalar rho(0), rho_1(0), alpha(0);
+    Scalar rho(0), rho_1(0), rr, alpha(0), alpha_1;
     Vector p(resource(x)), q(resource(x)), r(resource(x)), z(resource(x));
   
     r = b - A*x;
-    while (! iter.finished(r)) {
+    rr = dot(r, r);
+    while (! iter.finished(Real(sqrt(abs(rr))))) {
 	++iter;
 	z = solve(L, r);
 	rho = dot(r, z);
@@ -89,12 +92,12 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 	else 
 	    p = z + (rho / rho_1) * p;
 	
-	q = A * p;
-	alpha = rho / dot(p, q);
+	(lazy(q)= A * p) || (lazy(alpha_1)= lazy_dot(p, q));
+	alpha= rho / alpha_1;
       
 	x += alpha * p;
-	r -= alpha * q;
 	rho_1 = rho;
+	(lazy(r) -= alpha * q) || (lazy(rr) = lazy_unary_dot(r));
     }
     return iter;
 }

@@ -55,6 +55,7 @@ namespace mtl {
 	    template <typename MatrixSrc, typename MatrixDest>
 	    static inline int apply(const MatrixSrc& src, const MatrixDest& dest)
 	    {
+		std::cout << "nnz = " << src.nnz() << ", dim1 = " << dest.dim1() << "\n";
 		return int(src.nnz() * 1.2 / dest.dim1());
 	    }
 	};
@@ -86,8 +87,8 @@ namespace mtl {
 	typename traits::col<MatrixSrc>::type             col(src); 
 	typename traits::const_value<MatrixSrc>::type     value(src); 
 	typedef typename traits::range_generator<tag::major, MatrixSrc>::type  cursor_type;
-	
-	//std::cout << "Slot size is " << detail::copy_inserter_size<Updater>::apply(src, dest) << "\n";
+
+	std::cout << "Slot size is " << detail::copy_inserter_size<Updater>::apply(src, dest) << "\n";
 	matrix::inserter<MatrixDest, Updater>   ins(dest, detail::copy_inserter_size<Updater>::apply(src, dest));
 	for (cursor_type cursor = mtl::begin<tag::major>(src), cend = mtl::end<tag::major>(src); 
 	     cursor != cend; ++cursor) {

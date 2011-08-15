@@ -28,6 +28,7 @@
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace itl { namespace pc {
@@ -48,6 +49,7 @@ class ilu_0
     // Factorization adapted from Saad
     ilu_0(const Matrix& A)
     {
+	mtl::vampir_trace<5038> tracer;
 	factorize(A, typename mtl::traits::category<Matrix>::type()); 
     }
 
@@ -55,6 +57,7 @@ class ilu_0
     template <typename Vector>
     Vector solve(const Vector& b) const
     {
+	mtl::vampir_trace<5039> tracer;
 	return inverse_upper_trisolve(LU, unit_lower_trisolve(LU, b));
     }
 
@@ -62,6 +65,7 @@ class ilu_0
     template <typename Vector>
     Vector adjoint_solve(const Vector& b) const
     {
+	mtl::vampir_trace<5040> tracer;
 	return unit_upper_trisolve(adjoint(LU), inverse_lower_trisolve(adjoint(LU), b));
     }
 
