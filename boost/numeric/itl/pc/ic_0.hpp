@@ -109,21 +109,6 @@ class ic_0
 		value_type d= value(*ic) * inv_dia;
 		value(*ic, d);
 		size_type i= col(*ic);
-		// std::cout << "k == " << k << ", i == " << i << std::endl;
-
-#if 0
-		// find non-zeros U[j][i] below U[k][i] for j in (k, i]
-		// 1. Go to ith row in L (== ith column in U)
-		cur_type irow= begin<row>(L); irow+= i;
-		// 2. Find nonzeros with col() in (k, i]
-		icur_type jc= begin<nz>(irow), jend= end<nz>(irow);
-		while (col_l(*jc) <= k) {std::cout << "inc: " << col_l(*jc) << std::endl; ++jc;}
-		while (col_l(*--jend) > i) {std::cout << "dec: " << col_l(*jend) << std::endl; }
-		while (col_l(*jc) <= k) ++jc;
-		while (col_l(*--jend) > i) ;
-		++jend; 
-#endif
-
 
 		// find non-zeros U[j][i] below U[k][i] for j in (k, i]
 		// 1. Go to ith row in U (== ith column in U)
@@ -133,12 +118,9 @@ class ic_0
 		while (col(*jc) <= k)  ++jc;
 		while (col(*--jend) > i) ;
 		++jend; 
-
 		
 		for (; jc != jend; ++jc) {
 		    size_type j= col(*jc);
-		    //size_type j= col_l(*jc);
-		    // std::cout << "j == " << j << std::endl;
 		    U.lvalue(j, i)-= d * U[k][j];
 		}
 		// std::cout << "U after eliminating U[" << i << "][" << k << "] =\n" << U;
