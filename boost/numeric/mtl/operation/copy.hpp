@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
@@ -28,7 +29,9 @@
 
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <iostream>
+#include <limits>
 
 namespace mtl {
 	
@@ -55,7 +58,7 @@ namespace mtl {
 	    template <typename MatrixSrc, typename MatrixDest>
 	    static inline int apply(const MatrixSrc& src, const MatrixDest& dest)
 	    {
-		std::cout << "nnz = " << src.nnz() << ", dim1 = " << dest.dim1() << "\n";
+		// std::cout << "nnz = " << src.nnz() << ", dim1 = " << dest.dim1() << "\n";
 		return int(src.nnz() * 1.2 / dest.dim1());
 	    }
 	};
@@ -88,7 +91,7 @@ namespace mtl {
 	typename traits::const_value<MatrixSrc>::type     value(src); 
 	typedef typename traits::range_generator<tag::major, MatrixSrc>::type  cursor_type;
 
-	std::cout << "Slot size is " << detail::copy_inserter_size<Updater>::apply(src, dest) << "\n";
+	// std::cout << "Slot size is " << detail::copy_inserter_size<Updater>::apply(src, dest) << "\n";
 	matrix::inserter<MatrixDest, Updater>   ins(dest, detail::copy_inserter_size<Updater>::apply(src, dest));
 	for (cursor_type cursor = mtl::begin<tag::major>(src), cend = mtl::end<tag::major>(src); 
 	     cursor != cend; ++cursor) {
@@ -101,6 +104,55 @@ namespace mtl {
 		ins(row(*icursor), col(*icursor)) << value(*icursor); }
 	}
     }
+
+    inline long int inc_wo_over(long int i) { return i == std::numeric_limits<long int>::max() ? i : i+1; }
+
+    template <typename Updater, typename ValueSrc, typename Para, typename ValueDest>
+    typename boost::enable_if<boost::is_same<Updater, operations::update_store<ValueDest> > >::type
+    inline gen_matrix_copy(const matrix::banded_view<compressed2D<ValueSrc, Para> >& src, compressed2D<ValueDest, Para>& dest, bool)
+    {
+	vampir_trace<3061> tracer;
+	typedef typename Para::size_type size_type;
+	set_to_zero(dest);
+	const compressed2D<ValueSrc, Para>  &sref= src.ref;
+	const std::vector<size_type>        &sstarts= sref.ref_starts(), &sindices= sref.ref_indices();
+	long int first, last;
+	if (traits::is_row_major<Para>::value) {
+	    first= src.get_begin();
+	    last= src.get_end();
+	} else {
+	    first= -src.get_end();
+	    last=  -src.get_begin();
+	}
+
+	long int jd= 0, j_end= sstarts[0];
+	for (long int i= 0, i_end= src.dim1(), f= first, l= last; i < i_end; ++i) {
+	    dest.ref_starts()[i]= jd;
+	    long int j= j_end;
+	    j_end= sstarts[i+1];
+	    while (j < j_end && (long int)(sindices[j]) < f) j++;
+	    while (j < j_end && (long int)(sindices[j]) < l) jd++, j++;
+	    f= inc_wo_over(f);
+	    l= inc_wo_over(l);
+	}
+	dest.ref_starts()[src.dim1()]= jd;
+	dest.ref_indices().resize(jd);
+	dest.data.resize(jd);
+
+	for (long int i= 0, i_end= src.dim1(), jd= 0, j_end= sstarts[0]; i < i_end; ++i) {
+	    dest.ref_starts()[i]= jd;
+	    long int j= j_end;
+	    j_end= sstarts[i+1];
+	    while (j < j_end && (long int)(sindices[j]) < first) j++;
+	    while (j < j_end && (long int)(sindices[j]) < last) {
+		dest.ref_indices()[jd]= sindices[j];
+		dest.data[jd++]= sref.data[j++];
+	    }
+	    first= inc_wo_over(first);
+	    last= inc_wo_over(last);	    
+	}
+    }
+
 	    
     /// Copy matrix \p src into matrix \p dest
     template <typename MatrixSrc, typename MatrixDest>
