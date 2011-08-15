@@ -69,11 +69,13 @@ struct banded_view
     typedef long int                                   bsize_type;
 
     banded_view(const other& ref, bsize_type begin, bsize_type end) 
-		: base(dim_type(mtl::matrix::num_rows(ref), mtl::matrix::num_cols(ref))), ref(ref), begin(begin), end(end) 
+      : base(dim_type(mtl::matrix::num_rows(ref), mtl::matrix::num_cols(ref)), ref.nnz()), 
+	ref(ref), begin(begin), end(end) 
     {}
 
     banded_view(boost::shared_ptr<Matrix> p, bsize_type begin, bsize_type end) 
-	: base(dim_type(mtl::matrix::num_rows(*p), mtl::matrix::num_cols(*p))), my_copy(p), ref(*p), begin(begin), end(end) 
+	: base(dim_type(mtl::matrix::num_rows(*p), mtl::matrix::num_cols(*p)), ref.nnz()), 
+	  my_copy(p), ref(*p), begin(begin), end(end) 
     {}
 
     value_type operator() (size_type r, size_type c) const

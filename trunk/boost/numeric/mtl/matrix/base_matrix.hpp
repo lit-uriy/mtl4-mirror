@@ -41,10 +41,10 @@ struct base_matrix
     typedef mtl::traits::is_static<dim_type>       static_bool;
     
   public:
-    base_matrix() :  my_nnz(0) {}
+    base_matrix(size_type n= 0) :  my_nnz(n) {}
 
     /// Setting dimension
-    explicit base_matrix(mtl::non_fixed::dimensions d) : dim(d), my_nnz(0) {}
+    explicit base_matrix(mtl::non_fixed::dimensions d, size_type n= 0) : dim(d), my_nnz(n) {}
 
 	///	Swap base matrix
     friend void swap(self& x, self& y)

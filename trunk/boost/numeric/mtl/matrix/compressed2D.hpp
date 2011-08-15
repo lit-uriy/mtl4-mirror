@@ -42,6 +42,7 @@
 #include <boost/numeric/mtl/operation/num_rows.hpp>
 #include <boost/numeric/mtl/operation/num_cols.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 
 namespace mtl { namespace matrix {
@@ -526,6 +527,7 @@ struct compressed2D_inserter
 	: matrix(matrix), elements(matrix.data), starts(matrix.starts), indices(matrix.indices), 
 	  slot_size(std::min(slot_size, matrix.dim2())), slot_ends(matrix.dim1()+1) 
     {
+	vampir_trace<3050> tracer;
 	MTL_THROW_IF(matrix.inserting, runtime_error("Two inserters on same matrix"));
 	matrix.inserting = true;
 	stretch();
@@ -533,6 +535,7 @@ struct compressed2D_inserter
 
     ~compressed2D_inserter()
     {
+	vampir_trace<3051> tracer;
 	final_place();
 	insert_spare();
 	matrix.inserting = false;
@@ -658,6 +661,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
     using std::copy_backward;
     using std::swap;
 
+    vampir_trace<3052> tracer;
     // Stretching is much simpler for empty matrices
     if (elements.empty()) {
 	for (size_type i= 0, s= 0; i <= matrix.dim1(); i++, s+= slot_size)
@@ -858,6 +862,7 @@ template <typename Elt, typename Parameters, typename Updater>
 void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
 {
     using std::swap;
+    vampir_trace<3053> tracer;
 
     size_type          dim1 = matrix.dim1();
     std::vector<size_type>  new_starts(dim1 + 1);
@@ -917,6 +922,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
 template <typename Elt, typename Parameters, typename Updater>
 void compressed2D_inserter<Elt, Parameters, Updater>::insert_spare()
 {
+    vampir_trace<3054> tracer;
     using std::copy_backward;
 
     for (typename map_type::iterator it = spare.begin(); it != spare.end(); ++it) {

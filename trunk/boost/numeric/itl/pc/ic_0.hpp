@@ -23,7 +23,6 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
-#include <boost/numeric/mtl/operation/lu_split.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 #include <boost/numeric/mtl/matrix/upper.hpp>
 #include <boost/numeric/mtl/matrix/strict_lower.hpp>

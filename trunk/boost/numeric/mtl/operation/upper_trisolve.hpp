@@ -76,17 +76,20 @@ namespace detail {
 	    typedef typename range_generator<nz, ra_cur_type>::type   ra_icur_type;            
 
 	    Vector result(v);
+	    {
+		vampir_trace<5042> tracer;
 
-	    ra_cur_type ac= begin<row>(A), aend= end<row>(A); 
-	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
-		ra_icur_type aic= lower_bound<nz>(aend, r + dia_inc(DiaTag())), aiend= end<nz>(aend);
-		value_type rr= result[r], dia;
-		row_init(r, aic, aiend, dia, DiaTag());
-		for (; aic != aiend; ++aic) {
-		    MTL_DEBUG_THROW_IF(col_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
-		    rr-= value_a(*aic) * result[col_a(*aic)];
+		ra_cur_type ac= begin<row>(A), aend= end<row>(A); 
+		for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
+		    ra_icur_type aic= lower_bound<nz>(aend, r + dia_inc(DiaTag())), aiend= end<nz>(aend);
+		    value_type rr= result[r], dia;
+		    row_init(r, aic, aiend, dia, DiaTag());
+		    for (; aic != aiend; ++aic) {
+			MTL_DEBUG_THROW_IF(col_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
+			rr-= value_a(*aic) * result[col_a(*aic)];
+		    }
+		    row_update(result[r], rr, dia, DiaTag());
 		}
-		row_update(result[r], rr, dia, DiaTag());
 	    }
 	    return result;
 	}
@@ -100,16 +103,19 @@ namespace detail {
 	    typedef typename range_generator<nz, ca_cur_type>::type   ca_icur_type;            
 
 	    Vector result(v);
+	    {
+		vampir_trace<5043> tracer;
 
-	    ca_cur_type ac= begin<col>(A), aend= end<col>(A); 
-	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
-		ca_icur_type aic= begin<nz>(aend), aiend= lower_bound<nz>(aend, r + 1 - dia_inc(DiaTag()));
-		value_type rr;
-		col_init(r, aic, aiend, rr, result[r], DiaTag());
+		ca_cur_type ac= begin<col>(A), aend= end<col>(A); 
+		for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
+		    ca_icur_type aic= begin<nz>(aend), aiend= lower_bound<nz>(aend, r + 1 - dia_inc(DiaTag()));
+		    value_type rr;
+		    col_init(r, aic, aiend, rr, result[r], DiaTag());
 
-		for (; aic != aiend; ++aic) {
-		    MTL_DEBUG_THROW_IF(row_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
-		    result[row_a(*aic)]-= value_a(*aic) * rr;
+		    for (; aic != aiend; ++aic) {
+			MTL_DEBUG_THROW_IF(row_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
+			result[row_a(*aic)]-= value_a(*aic) * rr;
+		    }
 		}
 	    }
 	    return result;

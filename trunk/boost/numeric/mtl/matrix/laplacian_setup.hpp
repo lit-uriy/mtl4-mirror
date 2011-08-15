@@ -15,6 +15,7 @@
 
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -24,9 +25,10 @@ namespace mtl { namespace matrix {
 template <typename Matrix>
 inline void laplacian_setup(Matrix& matrix, unsigned m, unsigned n)
 {
+    vampir_trace<3063> tracer;
     matrix.change_dim(m*n, m*n);
     set_to_zero(matrix);
-    inserter<Matrix>      ins(matrix);
+    inserter<Matrix>      ins(matrix, 5);
 
     for (unsigned i= 0; i < m; i++)
 	for (unsigned j= 0; j < n; j++) {

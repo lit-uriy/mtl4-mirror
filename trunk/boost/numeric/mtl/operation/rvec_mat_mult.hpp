@@ -70,7 +70,7 @@ namespace impl {
 template <typename VectorIn, typename Matrix, typename VectorOut, typename Assign>
 inline void dense_rvec_mat_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, boost::mpl::true_)
 {
-	vampir_trace<3026> tracer;
+    vampir_trace<1008> tracer;
     typedef typename static_num_rows<Matrix>::type size_type;
     static const size_type rows_a= static_num_rows<Matrix>::value, cols_a= static_num_cols<Matrix>::value;
 

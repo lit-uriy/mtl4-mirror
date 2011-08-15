@@ -58,18 +58,21 @@ namespace detail {
 	typename traits::const_value<Matrix>::type                value_a(A); 
 
 	Vector result(v);
+	{   
+	    vampir_trace<5041> tracer;
+	    
+	    a_cur_type ac= begin<row>(A), aend= end<row>(A);
+	    ++ac;
+	    for (size_type r= 1; ac != aend; ++r, ++ac) {
+		a_icur_type aic= begin<nz>(ac), aiend= lower_bound<nz>(ac, r);
+		typename Collection<Vector>::value_type rr= result[r];
 
-	a_cur_type ac= begin<row>(A), aend= end<row>(A);
-	++ac;
-	for (size_type r= 1; ac != aend; ++r, ++ac) {
-	    a_icur_type aic= begin<nz>(ac), aiend= lower_bound<nz>(ac, r);
-	    typename Collection<Vector>::value_type rr= result[r];
-
-	    for (; aic != aiend; ++aic) {
-		MTL_DEBUG_THROW_IF(col_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
-		rr-= value_a(*aic) * result[col_a(*aic)];
+		for (; aic != aiend; ++aic) {
+		    MTL_DEBUG_THROW_IF(col_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
+		    rr-= value_a(*aic) * result[col_a(*aic)];
+		}
+		result[r]= rr;
 	    }
-	    result[r]= rr;
 	}
 	return result;
     }	
