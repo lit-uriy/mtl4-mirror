@@ -271,7 +271,7 @@ template <> std::string vampir_trace<3057>::name("mat_crtp_sum_assign");
 template <> std::string vampir_trace<3058>::name("mat_crtp_diff_assign");
 template <> std::string vampir_trace<3059>::name("mat_crtp_array_assign");
 template <> std::string vampir_trace<3060>::name("mat_crtp_mvec_assign");
-template <> std::string vampir_trace<3061>::name("");
+template <> std::string vampir_trace<3061>::name("copy_band_to_sparse");
 template <> std::string vampir_trace<3062>::name("");
 template <> std::string vampir_trace<3063>::name("laplacian_setup");
 template <> std::string vampir_trace<3064>::name("");

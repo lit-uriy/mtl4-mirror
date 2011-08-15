@@ -386,7 +386,7 @@ class compressed2D
 	using math::zero;
 	check(); MTL_DEBUG_THROW_IF(is_negative(row) || row >= this->num_rows() || is_negative(col) || col >= this->num_cols(), index_out_of_range());
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
-	return pos ? data[pos] : zero(value_type()); 
+	return pos ? data[pos.value()] : zero(value_type()); 
     }
 
     /// L-value reference of stored matrix entry
@@ -395,7 +395,7 @@ class compressed2D
     {
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
 	check(); MTL_DEBUG_THROW_IF(!pos, logic_error("This entry does not exist in the matrix"));
-	return data[pos];
+	return data[pos.value()];
     }
 
     // For internal use
@@ -460,7 +460,9 @@ class compressed2D
     const value_type* address_data() const { check(); return &data[0]; }
 
     const std::vector<size_type>& ref_starts() const { return starts; }
+          std::vector<size_type>& ref_starts()       { return starts; }
     const std::vector<size_type>& ref_indices() const { return indices; }
+          std::vector<size_type>& ref_indices()       { return indices; }
 
     /// Release unused space in STL vectors
     void shrink() 

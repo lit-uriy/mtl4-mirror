@@ -27,6 +27,7 @@
 #include <boost/numeric/mtl/matrix/upper.hpp>
 #include <boost/numeric/mtl/matrix/strict_lower.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
@@ -40,7 +41,8 @@ class ic_0
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef ic_0                                          self;
 
-    typedef mtl::compressed2D<value_type>                 U_type;
+    typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
+    typedef mtl::compressed2D<value_type, para>           U_type;
     typedef U_type                                        L_type;
 
 
@@ -88,7 +90,7 @@ class ic_0
         typedef typename range_generator<nz, cur_type>::type      icur_type;            
 
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
-	U= upper(A); crop(U);
+	U= upper(A);
 
         typename mtl::traits::col<U_type>::type                   col(U);
         typename mtl::traits::value<U_type>::type                 value(U); 	
