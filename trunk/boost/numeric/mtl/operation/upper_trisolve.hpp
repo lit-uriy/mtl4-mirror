@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/adjust_cursor.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
@@ -46,7 +47,15 @@ namespace detail {
 	template <typename Vector>
 	Vector operator()(const Vector& v)
 	{
-	    return apply(v, my_orientation());
+	    Vector w(resource(v));
+	    apply(v, w, my_orientation());
+	    return w;
+	}
+
+	template <typename VectorIn, typename VectorOut>
+	void operator()(const VectorIn& v, VectorOut& w)
+	{
+	    return apply(v, w, my_orientation());
 	}
 
     private:
@@ -68,57 +77,47 @@ namespace detail {
 	template <typename Tag> int dia_inc(Tag) { return 0; }
 	int dia_inc(tag::unit_diagonal) { return 1; }
 
-	template <typename Vector>
-	Vector inline apply(const Vector& v, tag::row_major)
+	template <typename VectorIn, typename VectorOut>
+	void inline apply(const VectorIn& v, VectorOut& w, tag::row_major)
 	{
 	    using namespace tag; using mtl::traits::range_generator; using math::one;
 	    typedef typename range_generator<row, Matrix>::type       ra_cur_type;    
 	    typedef typename range_generator<nz, ra_cur_type>::type   ra_icur_type;            
 
-	    Vector result(v);
-	    {
-		vampir_trace<5042> tracer;
-
-		ra_cur_type ac= begin<row>(A), aend= end<row>(A); 
-		for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
-		    ra_icur_type aic= lower_bound<nz>(aend, r + dia_inc(DiaTag())), aiend= end<nz>(aend);
-		    value_type rr= result[r], dia;
-		    row_init(r, aic, aiend, dia, DiaTag());
-		    for (; aic != aiend; ++aic) {
-			MTL_DEBUG_THROW_IF(col_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
-			rr-= value_a(*aic) * result[col_a(*aic)];
-		    }
-		    row_update(result[r], rr, dia, DiaTag());
+	    w= v;
+	    ra_cur_type ac= begin<row>(A), aend= end<row>(A); 
+	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
+		ra_icur_type aic= lower_bound<nz>(aend, r + dia_inc(DiaTag())), aiend= end<nz>(aend);
+		value_type rr= w[r], dia;
+		row_init(r, aic, aiend, dia, DiaTag());
+		for (; aic != aiend; ++aic) {
+		    MTL_DEBUG_THROW_IF(col_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
+		    rr-= value_a(*aic) * w[col_a(*aic)];
 		}
+		row_update(w[r], rr, dia, DiaTag());
 	    }
-	    return result;
 	}
 
 
-	template <typename Vector>
-	Vector apply(const Vector& v, tag::col_major)
+	template <typename VectorIn, typename VectorOut>
+	void apply(const VectorIn& v, VectorOut& w, tag::col_major)
 	{
 	    using namespace tag; using mtl::traits::range_generator; using math::one;
 	    typedef typename range_generator<col, Matrix>::type       ca_cur_type;    
 	    typedef typename range_generator<nz, ca_cur_type>::type   ca_icur_type;            
 
-	    Vector result(v);
-	    {
-		vampir_trace<5043> tracer;
+	    w= v;
+	    ca_cur_type ac= begin<col>(A), aend= end<col>(A); 
+	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
+		ca_icur_type aic= begin<nz>(aend), aiend= lower_bound<nz>(aend, r + 1 - dia_inc(DiaTag()));
+		value_type rr;
+		col_init(r, aic, aiend, rr, w[r], DiaTag());
 
-		ca_cur_type ac= begin<col>(A), aend= end<col>(A); 
-		for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
-		    ca_icur_type aic= begin<nz>(aend), aiend= lower_bound<nz>(aend, r + 1 - dia_inc(DiaTag()));
-		    value_type rr;
-		    col_init(r, aic, aiend, rr, result[r], DiaTag());
-
-		    for (; aic != aiend; ++aic) {
-			MTL_DEBUG_THROW_IF(row_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
-			result[row_a(*aic)]-= value_a(*aic) * rr;
-		    }
+		for (; aic != aiend; ++aic) {
+		    MTL_DEBUG_THROW_IF(row_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
+		    w[row_a(*aic)]-= value_a(*aic) * rr;
 		}
 	    }
-	    return result;
 	}
 
 	template <typename Cursor>
@@ -154,33 +153,72 @@ namespace detail {
 
 }
 
-///Solves the upper triangular matrix A  with the rhs v and returns the solution vector
+/// Solves the upper triangular matrix A  with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v)
 {
-	vampir_trace<3043> tracer;
+    vampir_trace<3043> tracer;
     return detail::upper_trisolve_t<Matrix, tag::regular_diagonal>(A)(v);
 }
-///Solves the upper triangular matrix A (only one's in the diagonal) with the rhs v and returns the solution vector
+
+/// Solves the upper triangular matrix A  with the rhs v while solution vector w is passed as reference
+template <typename Matrix, typename VectorIn, typename VectorOut>
+void inline upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut& w)
+{
+    vampir_trace<3043> tracer;
+    detail::upper_trisolve_t<Matrix, tag::regular_diagonal> solver(A); // use of anonymous variable causes weird error
+    solver(v, w);
+}
+
+/// Solves the upper triangular matrix A (only one's in the diagonal) with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline unit_upper_trisolve(const Matrix& A, const Vector& v)
 {
-	vampir_trace<3044> tracer;
+    vampir_trace<3044> tracer;
     return detail::upper_trisolve_t<Matrix, tag::unit_diagonal>(A)(v);
 }
-///Solves the upper triangular matrix A  (inverse the diagonal) with the rhs v and returns the solution vector
+
+/// Solves the upper triangular matrix A (only one's in the diagonal) with the rhs v while solution vector w is passed as reference
+template <typename Matrix, typename VectorIn, typename VectorOut>
+void inline unit_upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut& w)
+{
+    vampir_trace<3044> tracer;
+    detail::upper_trisolve_t<Matrix, tag::unit_diagonal> solver(A);
+    solver(v, w);
+}
+
+/// Solves the upper triangular matrix A  (inverse the diagonal) with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector>
 Vector inline inverse_upper_trisolve(const Matrix& A, const Vector& v)
 {
-	vampir_trace<3045> tracer;
+    vampir_trace<3045> tracer;
     return detail::upper_trisolve_t<Matrix, tag::inverse_diagonal>(A)(v);
 }
-///Solves the upper triangular matrix A  with the rhs v and returns the solution vector
+
+/// Solves the upper triangular matrix A  (inverse the diagonal) with the rhs v while solution vector w is passed as reference
+template <typename Matrix, typename VectorIn, typename VectorOut>
+void inline inverse_upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut& w)
+{
+    vampir_trace<3045> tracer;
+    detail::upper_trisolve_t<Matrix, tag::inverse_diagonal> solver(A);
+    solver(v, w);
+}
+
+/// Solves the upper triangular matrix A  with the rhs v and returns the solution vector
 template <typename Matrix, typename Vector, typename DiaTag>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v, DiaTag)
 {
-	vampir_trace<3046> tracer;
+    vampir_trace<3046> tracer;
     return detail::upper_trisolve_t<Matrix, DiaTag>(A)(v);
+}
+
+/// Solves the upper triangular matrix A  with the rhs v while solution vector w is passed as reference
+template <typename Matrix, typename VectorIn, typename VectorOut, typename DiaTag>
+void inline upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut& w, DiaTag)
+{
+    vampir_trace<3046> tracer;
+    detail::upper_trisolve_t<Matrix, DiaTag> solver(A);
+    solver(v, w);
 }
 
 }} // namespace mtl::matrix

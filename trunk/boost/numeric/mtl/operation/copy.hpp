@@ -140,7 +140,7 @@ namespace mtl {
 	    l= inc_wo_over(l);
 	}
 	dest.ref_starts()[src.dim1()]= jd;
-	dest.set_nnz(jd);
+	dest.set_nnz(jd); // resizes indices and data
 
 	for (long i= 0, i_end= src.dim1(), jd= 0, j_end= sstarts[0]; i < i_end; ++i) {
 	    dest.ref_starts()[i]= jd;
