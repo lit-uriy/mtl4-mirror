@@ -310,12 +310,22 @@ class compressed2D
 	}
     }
 
+    /// Sets nnz and resizes indices and data
+    void set_nnz(size_type n)
+    {
+	check();
+	indices.resize(n);
+	data.resize(n);
+	this->my_nnz= n;
+    }
+
     // if compile time matrix size, we can set the start vector
     /// Default constructor
     explicit compressed2D () : super(), inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
+
 
     /// Setting dimension and allocate starting vector
     explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) : super(d), inserting(false)

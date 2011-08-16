@@ -105,7 +105,10 @@ namespace mtl {
 	}
     }
 
-    inline long int inc_wo_over(long int i) { return i == std::numeric_limits<long int>::max() ? i : i+1; }
+    namespace {
+	inline long inc_wo_over(long i) { return i == std::numeric_limits<long>::max() ? i : i+1; }
+	inline long negate_wo_over(long i) { return i == std::numeric_limits<long>::min() ? std::numeric_limits<long>::max() : -i; }
+    }
 
     template <typename Updater, typename ValueSrc, typename Para, typename ValueDest>
     typename boost::enable_if<boost::is_same<Updater, operations::update_store<ValueDest> > >::type
@@ -113,38 +116,38 @@ namespace mtl {
     {
 	vampir_trace<3061> tracer;
 	typedef typename Para::size_type size_type;
+	dest.change_dim(num_rows(src), num_cols(src)); // contains make_empty
 	set_to_zero(dest);
 	const compressed2D<ValueSrc, Para>  &sref= src.ref;
 	const std::vector<size_type>        &sstarts= sref.ref_starts(), &sindices= sref.ref_indices();
-	long int first, last;
+	long first, last;
 	if (traits::is_row_major<Para>::value) {
 	    first= src.get_begin();
 	    last= src.get_end();
 	} else {
-	    first= -src.get_end();
-	    last=  -src.get_begin();
+	    first= inc_wo_over(negate_wo_over(src.get_end()));
+	    last=  inc_wo_over(negate_wo_over(src.get_begin()));
 	}
 
-	long int jd= 0, j_end= sstarts[0];
-	for (long int i= 0, i_end= src.dim1(), f= first, l= last; i < i_end; ++i) {
+	long jd= 0, j_end= sstarts[0];
+	for (long i= 0, i_end= src.dim1(), f= first, l= last; i < i_end; ++i) {
 	    dest.ref_starts()[i]= jd;
-	    long int j= j_end;
+	    long j= j_end;
 	    j_end= sstarts[i+1];
-	    while (j < j_end && (long int)(sindices[j]) < f) j++;
-	    while (j < j_end && (long int)(sindices[j]) < l) jd++, j++;
+	    while (j < j_end && long(sindices[j]) < f) j++;
+	    while (j < j_end && long(sindices[j]) < l) jd++, j++;
 	    f= inc_wo_over(f);
 	    l= inc_wo_over(l);
 	}
 	dest.ref_starts()[src.dim1()]= jd;
-	dest.ref_indices().resize(jd);
-	dest.data.resize(jd);
+	dest.set_nnz(jd);
 
-	for (long int i= 0, i_end= src.dim1(), jd= 0, j_end= sstarts[0]; i < i_end; ++i) {
+	for (long i= 0, i_end= src.dim1(), jd= 0, j_end= sstarts[0]; i < i_end; ++i) {
 	    dest.ref_starts()[i]= jd;
-	    long int j= j_end;
+	    long j= j_end;
 	    j_end= sstarts[i+1];
-	    while (j < j_end && (long int)(sindices[j]) < first) j++;
-	    while (j < j_end && (long int)(sindices[j]) < last) {
+	    while (j < j_end && long(sindices[j]) < first) j++;
+	    while (j < j_end && long(sindices[j]) < last) {
 		dest.ref_indices()[jd]= sindices[j];
 		dest.data[jd++]= sref.data[j++];
 	    }
