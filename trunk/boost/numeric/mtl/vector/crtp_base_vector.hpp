@@ -13,9 +13,13 @@
 #ifndef MTL_CRTP_BASE_VECTOR_INCLUDE
 #define MTL_CRTP_BASE_VECTOR_INCLUDE
 
+#include <boost/mpl/if.hpp>
+#include <boost/type_traits/is_base_of.hpp>
+
 #include <boost/utility/enable_if.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
+#include <boost/numeric/mtl/vector/assigner.hpp>
 #include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/mat_vec_mult.hpp>
@@ -56,12 +60,27 @@ namespace detail {
 	    return type(vector, src);
 	}
     };	
+
+    template <typename Vector, typename Source>
+    struct assign_assigner
+    {
+	typedef const Vector& type;
+	type operator()(Vector& vector, const Source& src)
+	{
+	    src.assign_to(vector);
+	    return vector;
+	}
+    };
+
 } // namespace detail
 
 template <typename Vector, typename Source>
 struct crtp_assign 
-  : public detail::crtp_assign<Vector, Source, typename ashape::ashape<Vector>::type,
-			       typename ashape::ashape<Source>::type>
+  : boost::mpl::if_
+     <boost::is_base_of<assigner_base, Source>,
+      detail::assign_assigner <Vector, Source>, 
+      detail::crtp_assign<Vector, Source, typename ashape::ashape<Vector>::type, typename ashape::ashape<Source>::type>
+     >::type
 {};
 
 /// Assign matrix vector product by calling mult
