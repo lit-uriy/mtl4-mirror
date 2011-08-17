@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -44,7 +43,7 @@ void test(Matrix& A, const char* name)
 
     cout << name << "\nA = \n" << A << "b = " << b << "\n";
     
-    x= upper_trisolve(A, b, mtl::tag::unit_diagonal());
+    x= unit_upper_trisolve(A, b);
     cout << "x = upper_trisolve(A, b) ==" << x << "\n\n";
     for (int i= 0; i < 5; i++)	
 	if (std::abs(x[i] - double(i+1)) > 0.0001) throw "Wrong result in upper_trisolve!";
@@ -57,13 +56,13 @@ void test(Matrix& A, const char* name)
     
     cout << "B = \n" << B << "b = " << b << "\n";
 	
-    x= lower_trisolve(B, b, mtl::tag::unit_diagonal());
+    x= unit_lower_trisolve(B, b);
     cout << "x = lower_trisolve(B, b) ==" << x << "\n\n";
     for (int i= 0; i < 5; i++)	
 	if (std::abs(x[i] - double(i+1)) > 0.0001) throw "Wrong result in lower_trisolve!";
 }
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 
