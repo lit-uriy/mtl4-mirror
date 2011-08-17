@@ -61,11 +61,19 @@ class ic_0
 	return inverse_upper_trisolve(U, inverse_lower_trisolve(adjoint(U), x));
     }
 
+    // solve x = U^T U y --> y= U^{-1} U^{-T} x
+    template <typename VectorIn, typename VectorOut>
+    void solve(const VectorIn& x, VectorOut& y) const
+    {
+	mtl::vampir_trace<5037> tracer;
+	y= inverse_upper_trisolve(U, inverse_lower_trisolve(adjoint(U), x));
+    }
+
     // solve x = (LU)^T y --> y= L^{-T} U^{-T} x
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
-	mtl::vampir_trace<5037> tracer;
+	mtl::vampir_trace<5044> tracer;
 	return solve(x);
     }
 
