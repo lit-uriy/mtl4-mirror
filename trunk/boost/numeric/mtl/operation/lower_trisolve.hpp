@@ -65,7 +65,7 @@ namespace detail {
 	{
 	    using namespace tag; 
 	    w= v;
-	    a_cur_type ac= begin<row>(A), aend= end<row>(A); // search for end ???
+	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    ++ac;
 	    for (size_type r= 1; ac != aend; ++r, ++ac) {
 		a_icur_type aic= begin<nz>(ac), aiend= lower_bound<nz>(ac, r);
@@ -108,7 +108,7 @@ namespace detail {
 	    w= v;
 	    a_cur_type ac= begin<col>(A), aend= end<col>(A); 
 	    for (size_type r= 0; ac != aend; ++r, ++ac) {
-		a_icur_type aic= lower_bound<nz>(ac, r+1), aiend= end<nz>(ac); // search for end ???
+		a_icur_type aic= lower_bound<nz>(ac, r+1), aiend= end<nz>(ac);
 		typename Collection<VectorOut>::value_type rr= w[r];
 
 		for (; aic != aiend; ++aic) {
