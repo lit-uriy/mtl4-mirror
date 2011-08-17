@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -63,7 +62,7 @@ void test(Matrix& A, const char* name)
 	if (std::abs(x[i] - double(i+1)) > 0.0001) throw "Wrong result in lower_trisolve!";
 }
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
     dense2D<double>                                      dr;
@@ -74,7 +73,7 @@ int test_main(int, char**)
     compressed2D<double, matrix::parameters<col_major> > cc;
 
     test(dr, "Dense row major");
-#if 0
+#if 1
     test(dc, "Dense column major");
     test(mzd, "Morton Z-order");
     test(d2r, "Hybrid 2 row-major");

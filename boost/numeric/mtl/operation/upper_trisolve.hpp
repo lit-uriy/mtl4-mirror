@@ -55,7 +55,7 @@ namespace detail {
 	template <typename VectorIn, typename VectorOut>
 	void operator()(const VectorIn& v, VectorOut& w)
 	{
-	    return apply(v, w, my_orientation());
+	    apply(v, w, my_orientation());
 	}
 
     private:
