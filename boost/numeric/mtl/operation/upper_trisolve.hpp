@@ -45,7 +45,7 @@ namespace detail {
 	}
 
 	template <typename Vector>
-	Vector operator()(const Vector& v)
+	Vector operator()(const Vector& v) const
 	{
 	    Vector w(resource(v));
 	    apply(v, w, my_orientation());
@@ -53,7 +53,7 @@ namespace detail {
 	}
 
 	template <typename VectorIn, typename VectorOut>
-	void operator()(const VectorIn& v, VectorOut& w)
+	void operator()(const VectorIn& v, VectorOut& w) const
 	{
 	    apply(v, w, my_orientation());
 	}
@@ -61,24 +61,24 @@ namespace detail {
     private:
 	// Initialization for regular and inverse diagonal is the same
 	template <typename Cursor>
-	void row_init(size_type MTL_DEBUG_ARG(r), Cursor& aic, Cursor& MTL_DEBUG_ARG(aiend), value_type& dia, tag::universe_diagonal)
+	void row_init(size_type MTL_DEBUG_ARG(r), Cursor& aic, Cursor& MTL_DEBUG_ARG(aiend), value_type& dia, tag::universe_diagonal) const
 	{
 	    MTL_DEBUG_THROW_IF(aic == aiend || col_a(*aic) != r, missing_diagonal());
 	    dia= value_a(*aic); ++aic;
 	}
 
 	template <typename Cursor>
-	void row_init(size_type, Cursor&, Cursor&, value_type&, tag::unit_diagonal) {}
+	void row_init(size_type, Cursor&, Cursor&, value_type&, tag::unit_diagonal) const {}
 
-	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::regular_diagonal) { res= rr / dia; }
-	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::inverse_diagonal) { res= rr * dia;	}
-	void row_update(value_type& res, value_type& rr, const value_type&    , tag::unit_diagonal)    { res= rr; }
+	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::regular_diagonal) const { res= rr / dia; }
+	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::inverse_diagonal) const { res= rr * dia;	}
+	void row_update(value_type& res, value_type& rr, const value_type&    , tag::unit_diagonal)    const { res= rr; }
 
-	template <typename Tag> int dia_inc(Tag) { return 0; }
-	int dia_inc(tag::unit_diagonal) { return 1; }
+	template <typename Tag> int dia_inc(Tag) const { return 0; }
+	int dia_inc(tag::unit_diagonal) const { return 1; }
 
 	template <typename VectorIn, typename VectorOut>
-	void inline apply(const VectorIn& v, VectorOut& w, tag::row_major)
+	void inline apply(const VectorIn& v, VectorOut& w, tag::row_major) const
 	{
 	    using namespace tag; using mtl::traits::range_generator; using math::one;
 	    typedef typename range_generator<row, Matrix>::type       ra_cur_type;    
@@ -101,7 +101,7 @@ namespace detail {
 
 
 	template <typename VectorIn, typename VectorOut>
-	void apply(const VectorIn& v, VectorOut& w, tag::col_major)
+	void apply(const VectorIn& v, VectorOut& w, tag::col_major) const
 	{
 	    using namespace tag; using mtl::traits::range_generator; using math::one;
 	    typedef typename range_generator<col, Matrix>::type       ca_cur_type;    
@@ -123,7 +123,7 @@ namespace detail {
 	}
 
 	template <typename Cursor>
-	void col_init(size_type MTL_DEBUG_ARG(r), Cursor& MTL_DEBUG_ARG(aic), Cursor& aiend, value_type& rr, value_type& res, tag::regular_diagonal)
+	void col_init(size_type MTL_DEBUG_ARG(r), Cursor& MTL_DEBUG_ARG(aic), Cursor& aiend, value_type& rr, value_type& res, tag::regular_diagonal) const
 	{
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
@@ -132,7 +132,7 @@ namespace detail {
 	}
 	
 	template <typename Cursor>
-	void col_init(size_type MTL_DEBUG_ARG(r), Cursor& MTL_DEBUG_ARG(aic), Cursor& aiend, value_type& rr, value_type& res, tag::inverse_diagonal)
+	void col_init(size_type MTL_DEBUG_ARG(r), Cursor& MTL_DEBUG_ARG(aic), Cursor& aiend, value_type& rr, value_type& res, tag::inverse_diagonal) const
 	{
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
@@ -141,7 +141,7 @@ namespace detail {
 	}
 
 	template <typename Cursor>
-	void col_init(size_type, Cursor&, Cursor&, value_type& rr, value_type& res, tag::unit_diagonal)
+	void col_init(size_type, Cursor&, Cursor&, value_type& rr, value_type& res, tag::unit_diagonal) const
 	{
 	    rr= res;
 	}

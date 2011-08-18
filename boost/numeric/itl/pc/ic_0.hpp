@@ -29,6 +29,7 @@
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
+#include <boost/numeric/mtl/vector/assigner.hpp>
 
 
 namespace itl { namespace pc {
@@ -37,21 +38,20 @@ template <typename Matrix>
 class ic_0
 {
   public:
-    typedef typename mtl::Collection<Matrix>::value_type  value_type;
-    typedef typename mtl::Collection<Matrix>::size_type   size_type;
-    typedef ic_0                                          self;
+    typedef typename mtl::Collection<Matrix>::value_type             value_type;
+    typedef typename mtl::Collection<Matrix>::size_type              size_type;
+    typedef ic_0                                                     self;
 
     typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
-    typedef mtl::compressed2D<value_type, para>           U_type;
-    typedef U_type                                        L_type;
+    typedef mtl::compressed2D<value_type, para>                      U_type;
+    typedef U_type                                                   L_type;
+    typedef typename mtl::matrix::traits::adjoint<U_type>::type      adjoint_type;
+    typedef mtl::matrix::detail::lower_trisolve_t<adjoint_type, mtl::tag::inverse_diagonal> lower_solver_t;
+    typedef mtl::matrix::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal>       upper_solver_t;
 
 
-    // Factorization adapted from Saad
-    ic_0(const Matrix& A)
-    {
-	mtl::vampir_trace<5035> tracer;
-	factorize(A, typename mtl::traits::category<Matrix>::type()); 
-    }
+    ic_0(const Matrix& A) : f(A, U), L(U), lower_solver(L), upper_solver(U) {}
+
 
     // solve x = U^T U y --> y= U^{-1} U^{-T} x
     template <typename Vector>
@@ -66,7 +66,11 @@ class ic_0
     void solve(const VectorIn& x, VectorOut& y) const
     {
 	mtl::vampir_trace<5037> tracer;
-	y= inverse_upper_trisolve(U, inverse_lower_trisolve(adjoint(U), x));
+	static VectorOut y0(resource(y));
+	y.checked_change_resource(x);
+
+	lower_solver(x, y0);
+	upper_solver(y0, y);
     }
 
     // solve x = (LU)^T y --> y= L^{-T} U^{-T} x
@@ -78,73 +82,100 @@ class ic_0
     }
 
 
-    L_type get_L() { return L_type(trans(U)); }
+    L_type get_L() { return L_type(L); }
     U_type get_U() { return U; }
 
   protected:
 
-    void factorize(const Matrix& A, mtl::tag::dense)
+
+    // Dummy type to perform factorization in initializer list not in 
+    struct factorizer
     {
-	MTL_THROW_IF(true, mtl::logic_error("IC is not intended for dense matrices"));
-    }
+	factorizer(const Matrix &A, U_type& U)
+	{   factorize(A, U, mtl::traits::is_sparse<Matrix>());  }
 
-    // Undefined if matrix is not symmetric 
-    void factorize(const Matrix& A, mtl::tag::sparse)
-    {
-        using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
-	using math::reciprocal; using mtl::matrix::upper;
+	void factorize(const Matrix&, U_type&, boost::mpl::false_)
+	{
+	    MTL_THROW_IF(true, mtl::logic_error("IC(0) is not suited for dense matrices"));
+	}
 
-        typedef typename range_generator<row, U_type>::type       cur_type;    
-        typedef typename range_generator<nz, cur_type>::type      icur_type;            
+	// Factorization adapted from Saad
+	// Undefined if matrix is not symmetric 
+	void factorize(const Matrix& A, U_type& U, boost::mpl::true_)
+	{
+	    using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
+	    using math::reciprocal; using mtl::matrix::upper;
+	    mtl::vampir_trace<5035> tracer;
 
-	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
-	U= upper(A);
+	    typedef typename range_generator<row, U_type>::type       cur_type;    
+	    typedef typename range_generator<nz, cur_type>::type      icur_type;            
 
-        typename mtl::traits::col<U_type>::type                   col(U);
-        typename mtl::traits::value<U_type>::type                 value(U); 	
+	    MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
+	    U= upper(A);
 
-	cur_type kc= begin<row>(U), kend= end<row>(U);
-	for (size_type k= 0; kc != kend; ++kc, ++k) {
+	    typename mtl::traits::col<U_type>::type                   col(U);
+	    typename mtl::traits::value<U_type>::type                 value(U); 	
 
-	    icur_type ic= begin<nz>(kc), iend= end<nz>(kc);
-	    MTL_DEBUG_THROW_IF(col(*ic) != k, mtl::missing_diagonal());
+	    cur_type kc= begin<row>(U), kend= end<row>(U);
+	    for (size_type k= 0; kc != kend; ++kc, ++k) {
 
-	    // U[k][k]= 1.0 / sqrt(U[k][k]);
-	    value_type inv_dia= reciprocal(sqrt(value(*ic)));
-	    value(*ic, inv_dia);
-	    icur_type jbegin= ++ic;
-	    for (; ic != iend; ++ic) {
-		// U[k][i] *= U[k][k]
-		value_type d= value(*ic) * inv_dia;
-		value(*ic, d);
-		size_type i= col(*ic);
+		icur_type ic= begin<nz>(kc), iend= end<nz>(kc);
+		MTL_DEBUG_THROW_IF(col(*ic) != k, mtl::missing_diagonal());
 
-		// find non-zeros U[j][i] below U[k][i] for j in (k, i]
-		// 1. Go to ith row in U (== ith column in U)
-		cur_type irow(i, U); // = begin<row>(U); irow+= i;
-		// 2. Find nonzeros with col() in (k, i]
-		icur_type jc= begin<nz>(irow), jend= end<nz>(irow);
-		while (col(*jc) <= k)  ++jc;
-		while (col(*--jend) > i) ;
-		++jend; 
+		// U[k][k]= 1.0 / sqrt(U[k][k]);
+		value_type inv_dia= reciprocal(sqrt(value(*ic)));
+		value(*ic, inv_dia);
+		icur_type jbegin= ++ic;
+		for (; ic != iend; ++ic) {
+		    // U[k][i] *= U[k][k]
+		    value_type d= value(*ic) * inv_dia;
+		    value(*ic, d);
+		    size_type i= col(*ic);
+
+		    // find non-zeros U[j][i] below U[k][i] for j in (k, i]
+		    // 1. Go to ith row in U (== ith column in U)
+		    cur_type irow(i, U); // = begin<row>(U); irow+= i;
+		    // 2. Find nonzeros with col() in (k, i]
+		    icur_type jc= begin<nz>(irow), jend= end<nz>(irow);
+		    while (col(*jc) <= k)  ++jc;
+		    while (col(*--jend) > i) ;
+		    ++jend; 
 		
-		for (; jc != jend; ++jc) {
-		    size_type j= col(*jc);
-		    U.lvalue(j, i)-= d * U[k][j];
+		    for (; jc != jend; ++jc) {
+			size_type j= col(*jc);
+			U.lvalue(j, i)-= d * U[k][j];
+		    }
+		    // std::cout << "U after eliminating U[" << i << "][" << k << "] =\n" << U;
 		}
-		// std::cout << "U after eliminating U[" << i << "][" << k << "] =\n" << U;
 	    }
 	}
-    }
+    };
 
     U_type                       U;
+    factorizer                   f;
+    adjoint_type                 L;
+    lower_solver_t               lower_solver;
+    upper_solver_t               upper_solver;
 }; 
 
+template <typename Matrix, typename Vector>
+struct ic_0_solver
+  : mtl::vector::assigner<ic_0_solver<Matrix, Vector> >
+{
+    ic_0_solver(const ic_0<Matrix>& P, const Vector& x) : P(P), x(x) {}
+
+    template <typename VectorOut>
+    void assign_to(VectorOut& y) const
+    {	P.solve(x, y);    }    
+
+    const ic_0<Matrix>& P; 
+    const Vector&       x;
+};
 
 template <typename Matrix, typename Vector>
-Vector solve(const ic_0<Matrix>& P, const Vector& x)
+ic_0_solver<Matrix, Vector> solve(const ic_0<Matrix>& P, const Vector& x)
 {
-    return P.solve(x);
+    return ic_0_solver<Matrix, Vector>(P, x);
 }
 
 template <typename Matrix, typename Vector>

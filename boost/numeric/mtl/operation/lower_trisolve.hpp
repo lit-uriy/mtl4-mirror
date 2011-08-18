@@ -44,24 +44,24 @@ namespace detail {
 	{    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());	}
 	
 	template <typename VectorIn, typename VectorOut>
-	void operator()(const VectorIn& v, VectorOut& w)
+	void operator()(const VectorIn& v, VectorOut& w) const
 	{   apply(v, w, my_orientation(), DiaTag());	}
 	
 
       private:
 	template <typename Value>
-	Value inline lower_trisolve_diavalue(const Value& v, tag::regular_diagonal)
+	Value inline lower_trisolve_diavalue(const Value& v, tag::regular_diagonal) const
 	{   using math::reciprocal; return reciprocal(v); }
 
 	template <typename Value>
-	Value lower_trisolve_diavalue(const Value& v, tag::inverse_diagonal)
+	Value lower_trisolve_diavalue(const Value& v, tag::inverse_diagonal) const
 	{  return v;	}    
 
 	template <typename Tag> int dia_inc(Tag) { return 0; }
 	int dia_inc(tag::unit_diagonal) { return 1; }
 
 	template <typename VectorIn, typename VectorOut>
-	void apply(const VectorIn& v, VectorOut& w, tag::row_major, tag::unit_diagonal)
+	void apply(const VectorIn& v, VectorOut& w, tag::row_major, tag::unit_diagonal) const
 	{
 	    using namespace tag; 
 	    w= v;
@@ -79,7 +79,7 @@ namespace detail {
 	}
 
 	template <typename VectorIn, typename VectorOut, typename DDiaTag>
-	void apply(const VectorIn& v, VectorOut& w, tag::row_major, DDiaTag)
+	void apply(const VectorIn& v, VectorOut& w, tag::row_major, DDiaTag) const
 	{
 	    using namespace tag; 
 	    w= v;
@@ -102,7 +102,7 @@ namespace detail {
 	}	
 
 	template <typename VectorIn, typename VectorOut>
-	void apply(const VectorIn& v, VectorOut& w, tag::col_major, tag::unit_diagonal)
+	void apply(const VectorIn& v, VectorOut& w, tag::col_major, tag::unit_diagonal) const
 	{
 	    using namespace tag; 
 	    w= v;
@@ -119,7 +119,7 @@ namespace detail {
 	}
 
 	template <typename VectorIn, typename VectorOut, typename DDiaTag>
-	void apply(const VectorIn& v, VectorOut& w, tag::col_major, DDiaTag)
+	void apply(const VectorIn& v, VectorOut& w, tag::col_major, DDiaTag) const
 	{
 	    using namespace tag;
 	    w= v;
