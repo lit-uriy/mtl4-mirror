@@ -14,6 +14,7 @@
 #define MTL_IS_ROW_MAJOR_INCLUDE
 
 #include <boost/mpl/bool.hpp>
+#include <boost/mpl/not.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/matrix/parameter.hpp>
@@ -75,6 +76,14 @@ namespace mtl { namespace traits {
     template <typename Matrix>
     struct is_row_major<matrix::banded_view<Matrix> >
       : is_row_major<Matrix> {};
+
+    template <typename Matrix> 
+    struct is_row_major<matrix::transposed_view<Matrix> >
+      : boost::mpl::not_<is_row_major<Matrix> > {};
+
+    template <typename Matrix> 
+    struct is_row_major<matrix::hermitian_view<Matrix> >
+      : boost::mpl::not_<is_row_major<Matrix> > {};
 
 }} // namespace mtl::traits
 
