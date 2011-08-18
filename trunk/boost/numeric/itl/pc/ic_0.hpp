@@ -46,8 +46,8 @@ class ic_0
     typedef mtl::compressed2D<value_type, para>                      U_type;
     typedef U_type                                                   L_type;
     typedef typename mtl::matrix::traits::adjoint<U_type>::type      adjoint_type;
-    typedef mtl::matrix::detail::lower_trisolve_t<adjoint_type, mtl::tag::inverse_diagonal> lower_solver_t;
-    typedef mtl::matrix::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal>       upper_solver_t;
+    typedef mtl::matrix::detail::lower_trisolve_t<adjoint_type, mtl::tag::inverse_diagonal, true> lower_solver_t;
+    typedef mtl::matrix::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal, true>       upper_solver_t;
 
 
     ic_0(const Matrix& A) : f(A, U), L(U), lower_solver(L), upper_solver(U) {}
