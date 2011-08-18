@@ -13,6 +13,8 @@
 #ifndef MTL_LOWER_TRISOLVE_INCLUDE
 #define MTL_LOWER_TRISOLVE_INCLUDE
 
+#include <boost/mpl/int.hpp>
+#include <boost/type_traits/is_same.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
@@ -43,9 +45,21 @@ namespace detail {
 	lower_trisolve_t(const Matrix& A) : A(A), value_a(A), col_a(A), row_a(A)
 	{    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());	}
 	
+	template <typename M, typename D, bool C>
+	struct generic_version
+	  : boost::mpl::int_<(mtl::traits::is_row_major<M>::value ? 0 : 2)
+	                     + (boost::is_same<D, tag::unit_diagonal>::value ? 1 : 2)
+                            > {};
+
+	template <typename M, typename D, bool C>
+	struct version
+	  : generic_version<M, D, C> {};
+
+
+
 	template <typename VectorIn, typename VectorOut>
 	void operator()(const VectorIn& v, VectorOut& w) const
-	{   vampir_trace<5022> tracer; apply(v, w, my_orientation(), DiaTag());	}
+	{   vampir_trace<5022> tracer; apply(v, w, version<Matrix, DiaTag, CompactStorage>()); }
 	
 
       private:
@@ -60,16 +74,25 @@ namespace detail {
 	template <typename Tag> int dia_inc(Tag) { return 0; }
 	int dia_inc(tag::unit_diagonal) { return 1; }
 
+#if 0
+	template <typename VectorIn, typename VectorOut, int N>
+	void apply(const VectorIn& , VectorOut& , boost::mpl::int_<N>) const
+	{
+	    boost::mpl::int_<N> x("hallo");
+	}
+#endif
+
+	// Generic row-major unit_diagonal
 	template <typename VectorIn, typename VectorOut>
-	void apply(const VectorIn& v, VectorOut& w, tag::row_major, tag::unit_diagonal) const
+	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<1>) const
 	{
 	    using namespace tag; 
-	    w= v;
+	    // w= v;
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    ++ac;
 	    for (size_type r= 1; ac != aend; ++r, ++ac) {
 		a_icur_type aic= begin<nz>(ac), aiend= CompactStorage ? end<nz>(ac) : lower_bound<nz>(ac, r);
-		typename Collection<VectorOut>::value_type rr= w[r];
+		typename Collection<VectorOut>::value_type rr= v[r];
 		for (; aic != aiend; ++aic) {
 		    MTL_DEBUG_THROW_IF(col_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
 		    rr-= value_a(*aic) * w[col_a(*aic)];
@@ -78,11 +101,12 @@ namespace detail {
 	    }
 	}
 
-	template <typename VectorIn, typename VectorOut, typename DDiaTag>
-	void apply(const VectorIn& v, VectorOut& w, tag::row_major, DDiaTag) const
+	// Generic row-major not unit_diagonal
+	template <typename VectorIn, typename VectorOut>
+	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<2>) const
 	{
 	    using namespace tag; 
-	    w= v;
+	    // w= v;
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    for (size_type r= 0; ac != aend; ++r, ++ac) {
 		a_icur_type aic= begin<nz>(ac), aiend= CompactStorage ? end<nz>(ac) : lower_bound<nz>(ac, r+1);
@@ -91,18 +115,19 @@ namespace detail {
 		MTL_THROW_IF(col_a(*aiend) != r, missing_diagonal());
 
 		value_type dia= value_a(*aiend);
-		typename Collection<VectorOut>::value_type rr= w[r];
+		typename Collection<VectorOut>::value_type rr= v[r];
 
 		for (; aic != aiend; ++aic) {
 		    MTL_DEBUG_THROW_IF(col_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
 		    rr-= value_a(*aic) * w[col_a(*aic)];
 		}
-		w[r]= rr * lower_trisolve_diavalue(dia, DDiaTag());
+		w[r]= rr * lower_trisolve_diavalue(dia, DiaTag());
 	    }
 	}	
 
+	// Generic column-major unit_diagonal
 	template <typename VectorIn, typename VectorOut>
-	void apply(const VectorIn& v, VectorOut& w, tag::col_major, tag::unit_diagonal) const
+	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<3>) const
 	{
 	    using namespace tag; 
 	    w= v;
@@ -118,8 +143,9 @@ namespace detail {
 	    }
 	}
 
-	template <typename VectorIn, typename VectorOut, typename DDiaTag>
-	void apply(const VectorIn& v, VectorOut& w, tag::col_major, DDiaTag) const
+	// Generic column-major not unit_diagonal
+	template <typename VectorIn, typename VectorOut>
+	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<4>) const
 	{
 	    using namespace tag;
 	    w= v;
@@ -127,7 +153,7 @@ namespace detail {
 	    for (size_type r= 0; ac != aend; ++r, ++ac) {
 		a_icur_type aic= CompactStorage ? begin<nz>(ac) : lower_bound<nz>(ac, r), aiend= end<nz>(ac);
 		MTL_DEBUG_THROW_IF(aic == aiend || row_a(*aic) != r, missing_diagonal());
-		typename Collection<VectorOut>::value_type rr= w[r]*= lower_trisolve_diavalue(value_a(*aic), DDiaTag());
+		typename Collection<VectorOut>::value_type rr= w[r]*= lower_trisolve_diavalue(value_a(*aic), DiaTag());
 
 		for (++aic; aic != aiend; ++aic) {
 		    MTL_DEBUG_THROW_IF(row_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
