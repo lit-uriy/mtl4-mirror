@@ -13,6 +13,8 @@
 #ifndef ITL_ITL_FWD_INCLUDE
 #define ITL_ITL_FWD_INCLUDE
 
+#include <boost/numeric/mtl/concept/collection.hpp>
+
 namespace itl {
 
     template <class Real>                class basic_iteration;
@@ -35,9 +37,9 @@ namespace itl {
 	template <typename Matrix, typename Vector> Vector solve(const ilu_0<Matrix>& P, const Vector& x);
 	template <typename Matrix, typename Vector> Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& x);
 
-	template <typename Matrix> class ic_0;
+	template <typename Matrix, typename Value> class ic_0; // Maybe we should declare the default here???
 	// template <typename Matrix, typename Vector> Vector solve(const ic_0<Matrix>& P, const Vector& x);
-	template <typename Matrix, typename Vector> Vector adjoint_solve(const ic_0<Matrix>& P, const Vector& x);
+	// template <typename Matrix, typename Value, typename Vector> Vector adjoint_solve(const ic_0<Matrix, Value>& P, const Vector& x);
 
     } //  namespace pc
 

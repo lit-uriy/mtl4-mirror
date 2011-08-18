@@ -23,7 +23,7 @@ int main()
     mtl::compressed2D<double>          A(N, N);
     laplacian_setup(A, size, size);
        
-    itl::pc::ic_0<matrix_type>         P(A);
+    itl::pc::ic_0<matrix_type, float>  P(A);
     mtl::dense_vector<double>          x(N), y, yc(N);
     iota(x);
     yc= 1.03194,1.60198,1.45357,2.5258,3.55386,3.16,2.91787,4.09338,3.81335;
