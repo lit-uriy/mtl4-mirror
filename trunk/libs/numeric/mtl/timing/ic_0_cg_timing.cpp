@@ -23,7 +23,7 @@
 int main()
 {
     mtl::vampir_trace<9999> tracer;
-  const int size = 4, N = size * size; 
+  const int size = 1000, N = size * size; 
 
   using namespace mtl;
 

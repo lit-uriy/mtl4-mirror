@@ -188,6 +188,7 @@ class dense_vector
     }
 #endif
 
+#ifndef MTL_NO_VECTOR_MOVE_EMULATION
     /// Move assignment
     self& operator=(self src)
     {
@@ -198,6 +199,7 @@ class dense_vector
 	memory_base::move_assignment(src);
 	return *this;
     }
+#endif
 
 #ifdef __PGI
     using crtp_base::operator=;
