@@ -68,7 +68,7 @@ namespace detail {
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    ++ac;
 	    for (size_type r= 1; ac != aend; ++r, ++ac) {
-		a_icur_type aic= begin<nz>(ac), aiend= lower_bound<nz>(ac, r);
+		a_icur_type aic= begin<nz>(ac), aiend= CompactStorage ? end<nz>(ac) : lower_bound<nz>(ac, r);
 		typename Collection<VectorOut>::value_type rr= w[r];
 		for (; aic != aiend; ++aic) {
 		    MTL_DEBUG_THROW_IF(col_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
@@ -85,7 +85,7 @@ namespace detail {
 	    w= v;
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    for (size_type r= 0; ac != aend; ++r, ++ac) {
-		a_icur_type aic= begin<nz>(ac), aiend= lower_bound<nz>(ac, r+1);
+		a_icur_type aic= begin<nz>(ac), aiend= CompactStorage ? end<nz>(ac) : lower_bound<nz>(ac, r+1);
 		MTL_THROW_IF(aic == aiend, missing_diagonal());
 		--aiend;
 		MTL_THROW_IF(col_a(*aiend) != r, missing_diagonal());
@@ -108,7 +108,7 @@ namespace detail {
 	    w= v;
 	    a_cur_type ac= begin<col>(A), aend= end<col>(A); 
 	    for (size_type r= 0; ac != aend; ++r, ++ac) {
-		a_icur_type aic= lower_bound<nz>(ac, r+1), aiend= end<nz>(ac);
+		a_icur_type aic= CompactStorage ? begin<nz>(ac) : lower_bound<nz>(ac, r+1), aiend= end<nz>(ac);
 		typename Collection<VectorOut>::value_type rr= w[r];
 
 		for (; aic != aiend; ++aic) {
@@ -125,7 +125,7 @@ namespace detail {
 	    w= v;
 	    a_cur_type ac= begin<col>(A), aend= end<col>(A); 
 	    for (size_type r= 0; ac != aend; ++r, ++ac) {
-		a_icur_type aic= lower_bound<nz>(ac, r), aiend= end<nz>(ac);
+		a_icur_type aic= CompactStorage ? begin<nz>(ac) : lower_bound<nz>(ac, r), aiend= end<nz>(ac);
 		MTL_DEBUG_THROW_IF(aic == aiend || row_a(*aic) != r, missing_diagonal());
 		typename Collection<VectorOut>::value_type rr= w[r]*= lower_trisolve_diavalue(value_a(*aic), DDiaTag());
 
