@@ -392,7 +392,7 @@ template <> std::string vampir_trace<5042>::name("upper_trisolve_row");
 template <> std::string vampir_trace<5043>::name("upper_trisolve_col");
 template <> std::string vampir_trace<5044>::name("ic_0::adjoint_solve");
 template <> std::string vampir_trace<5045>::name("ic_0::adjoint_solve_nocopy");
-template <> std::string vampir_trace<5046>::name("");
+template <> std::string vampir_trace<5046>::name("upper_trisolve_crs_compact");
 template <> std::string vampir_trace<5047>::name("");
 template <> std::string vampir_trace<5048>::name("");
 template <> std::string vampir_trace<5049>::name("");

@@ -13,13 +13,14 @@
 #ifndef MTL_UPPER_TRISOLVE_INCLUDE
 #define MTL_UPPER_TRISOLVE_INCLUDE
 
+#include <boost/mpl/int.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
-#include <boost/numeric/mtl/operation/adjust_cursor.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -42,22 +43,36 @@ namespace detail {
 	typedef typename mtl::traits::range_generator<tag::nz, a_cur_type>::type    a_icur_type;   
 
 	upper_trisolve_t(const Matrix& A) : A(A), value_a(A), col_a(A), row_a(A)
-	{     
-	    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
+	{    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());	}
+
+	template <typename M, typename D, bool C>
+	struct generic_version
+	  : boost::mpl::int_<mtl::traits::is_row_major<M>::value ? 1 : 2> {};
+
+	template <typename M, typename D, bool C>
+	struct version
+	  : generic_version<M, D, C> {};
+
+#if 1	
+	template <typename Value, typename Para, typename D>
+	struct version<compressed2D<Value, Para>, D, true>
+	  : boost::mpl::if_<mtl::traits::is_row_major<Para>,
+			    boost::mpl::int_<3>,
+			    generic_version<compressed2D<Value, Para>, D, true>
+	                   >::type {};
+#endif
+	template <typename VectorIn, typename VectorOut>
+	void operator()(const VectorIn& v, VectorOut& w) const
+	{
+	    apply(v, w, version<Matrix, DiaTag, CompactStorage>());
 	}
 
 	template <typename Vector>
 	Vector operator()(const Vector& v) const
 	{
 	    Vector w(resource(v));
-	    apply(v, w, my_orientation());
+	    (*this)(v, w);
 	    return w;
-	}
-
-	template <typename VectorIn, typename VectorOut>
-	void operator()(const VectorIn& v, VectorOut& w) const
-	{
-	    apply(v, w, my_orientation());
 	}
 
     private:
@@ -79,28 +94,35 @@ namespace detail {
 	template <typename Tag> int dia_inc(Tag) const { return 0; }
 	int dia_inc(tag::unit_diagonal) const { return 1; }
 
+	// Generic row-major
 	template <typename VectorIn, typename VectorOut>
-	void inline apply(const VectorIn& v, VectorOut& w, tag::row_major) const
+	void inline apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<1>) const
 	{
 	    vampir_trace<5042> tracer;
 	    using namespace tag; 
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
+		// std::cout << "row " << r << '\n';
 		a_icur_type aic= CompactStorage ? begin<nz>(aend) : lower_bound<nz>(aend, r + dia_inc(DiaTag())), 
 		            aiend= end<nz>(aend);
 		value_type rr= v[r], dia;
+		// std::cout << "rr[init] " << rr << '\n';
 		row_init(r, aic, aiend, dia, DiaTag()); 
 		for (; aic != aiend; ++aic) {
+		    // std::cout << ", column " << col_a(*aic) << '\n';
 		    MTL_DEBUG_THROW_IF(col_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
 		    rr-= value_a(*aic) * w[col_a(*aic)];
+		    // std::cout << "dec " << value_a(*aic) << " * " << w[col_a(*aic)] << '\n';
+		    // std::cout << "rr " << rr << '\n';
 		}
 		row_update(w[r], rr, dia, DiaTag());
+		// std::cout << "w[r] " << w[r] << '\n';
 	    }
 	}
 
-
+	// Generic column-major
 	template <typename VectorIn, typename VectorOut>
-	void apply(const VectorIn& v, VectorOut& w, tag::col_major) const
+	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<2>) const
 	{
 	    vampir_trace<5043> tracer;
 	    using namespace tag; 
@@ -116,6 +138,39 @@ namespace detail {
 		    MTL_DEBUG_THROW_IF(row_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
 		    w[row_a(*aic)]-= value_a(*aic) * rr;
 		}
+	    }
+	}
+
+	void crs_row_init(size_type MTL_DEBUG_ARG(r), size_type& j0, size_type MTL_DEBUG_ARG(cj1), value_type& dia, tag::universe_diagonal) const
+	{
+	    MTL_DEBUG_THROW_IF(j0 == cj1 || A.ref_indices()[j0] != r, missing_diagonal());
+	    dia= A.data[j0++];
+	}
+	void crs_row_init(size_type, size_type&, size_type, value_type&, tag::unit_diagonal) const {}
+
+	// Tuning for IC_0 and similar at compressed2D row-major compact
+	template <typename VectorIn, typename VectorOut>
+	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<3>) const
+	{
+	    vampir_trace<5046> tracer;
+	    // std::cout << "In getuneter Version\n";
+	    for (size_type r= num_rows(A); r-- > 0; ) {
+		// std::cout << "row " << r << '\n';
+		size_type j0= A.ref_starts()[r];
+		const size_type cj1= A.ref_starts()[r+1];
+		value_type rr= v[r], dia;
+		// std::cout << "rr[init] " << rr << '\n';
+		crs_row_init(r, j0, cj1, dia, DiaTag()); 
+		// std::cout << "dia " << dia << '\n';
+		for (; j0 != cj1; ++j0) {
+		    // std::cout << "offset " << j0 << ", column " << A.ref_indices()[j0] << '\n';
+		    MTL_DEBUG_THROW_IF(A.ref_indices()[j0] <= r, logic_error("Matrix entries must be sorted for this."));
+		    rr-= A.data[j0] * w[A.ref_indices()[j0]];
+		    // std::cout << "dec " << A.data[j0] << " * " << w[A.ref_indices()[j0]] << '\n';
+		    // std::cout << "rr " << rr << '\n';
+		}
+		row_update(w[r], rr, dia, DiaTag());
+		// std::cout << "w[r] " << w[r] << '\n';
 	    }
 	}
 
