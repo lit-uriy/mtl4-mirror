@@ -39,8 +39,8 @@ namespace detail {
 	typedef typename Collection<Matrix>::size_type            size_type;
 	typedef typename OrientedCollection<Matrix>::orientation  my_orientation;
 	typedef typename mtl::traits::category<Matrix>::type      my_category;
-	typedef typename mtl::traits::range_generator<tag::major, Matrix>::type     a_cur_type; // row or col depending on Matrix    
-	typedef typename mtl::traits::range_generator<tag::nz, a_cur_type>::type    a_icur_type;   
+	typedef typename mtl::traits::range_generator<tag::major, Matrix>::type   a_cur_type; // row or col accordingly
+	typedef typename mtl::traits::range_generator<tag::nz, a_cur_type>::type  a_icur_type;   
 
 	upper_trisolve_t(const Matrix& A) : A(A), value_a(A), col_a(A), row_a(A)
 	{    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());	}
@@ -53,14 +53,13 @@ namespace detail {
 	struct version
 	  : generic_version<M, D, C> {};
 
-#if 1	
 	template <typename Value, typename Para, typename D>
 	struct version<compressed2D<Value, Para>, D, true>
 	  : boost::mpl::if_<mtl::traits::is_row_major<Para>,
 			    boost::mpl::int_<3>,
 			    generic_version<compressed2D<Value, Para>, D, true>
 	                   >::type {};
-#endif
+
 	template <typename VectorIn, typename VectorOut>
 	void operator()(const VectorIn& v, VectorOut& w) const
 	{
