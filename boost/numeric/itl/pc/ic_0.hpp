@@ -28,6 +28,7 @@
 #include <boost/numeric/mtl/matrix/strict_lower.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/parameter.hpp>
+#include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/mtl/vector/assigner.hpp>
 
@@ -44,13 +45,15 @@ class ic_0
 
     typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
     typedef mtl::compressed2D<value_type, para>                      U_type;
+#ifndef ITL_IC_0_ONE_MATRIX
     typedef U_type                                                   L_type;
-    typedef typename mtl::matrix::traits::adjoint<U_type>::type      adjoint_type;
-    typedef mtl::matrix::detail::lower_trisolve_t<adjoint_type, mtl::tag::inverse_diagonal, true> lower_solver_t;
-    typedef mtl::matrix::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal, true>       upper_solver_t;
+#else
+    typedef typename mtl::matrix::transposed_view<U_type>            L_type;
+#endif
+    typedef mtl::matrix::detail::lower_trisolve_t<L_type, mtl::tag::inverse_diagonal, true> lower_solver_t;
+    typedef mtl::matrix::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal, true> upper_solver_t;
 
-
-    ic_0(const Matrix& A) : f(A, U), L(U), lower_solver(L), upper_solver(U) {}
+    ic_0(const Matrix& A) : f(A, U), L(trans(U)), lower_solver(L), upper_solver(U) {}
 
 
     // solve x = U^T U y --> y= U^{-1} U^{-T} x
@@ -153,7 +156,7 @@ class ic_0
 
     U_type                       U;
     factorizer                   f;
-    adjoint_type                 L;
+    L_type                       L;
     lower_solver_t               lower_solver;
     upper_solver_t               upper_solver;
 }; 
