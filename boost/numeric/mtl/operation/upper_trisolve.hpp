@@ -102,21 +102,15 @@ namespace detail {
 	    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
-		// std::cout << "row " << r << '\n';
 		a_icur_type aic= CompactStorage ? begin<nz>(aend) : lower_bound<nz>(aend, r + dia_inc(DiaTag())), 
 		            aiend= end<nz>(aend);
 		out_value_type rr= v[r], dia;
-		// std::cout << "rr[init] " << rr << '\n';
 		row_init(r, aic, aiend, dia, DiaTag()); 
 		for (; aic != aiend; ++aic) {
-		    // std::cout << ", column " << col_a(*aic) << '\n';
 		    MTL_DEBUG_THROW_IF(col_a(*aic) <= r, logic_error("Matrix entries must be sorted for this."));
 		    rr-= value_a(*aic) * w[col_a(*aic)];
-		    // std::cout << "dec " << value_a(*aic) << " * " << w[col_a(*aic)] << '\n';
-		    // std::cout << "rr " << rr << '\n';
 		}
 		row_update(w[r], rr, dia, DiaTag());
-		// std::cout << "w[r] " << w[r] << '\n';
 	    }
 	}
 
@@ -154,26 +148,18 @@ namespace detail {
 	template <typename VectorIn, typename VectorOut>
 	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<3>) const
 	{
-	    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
 	    vampir_trace<5046> tracer;
-	    // std::cout << "In getuneter Version\n";
+	    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
 	    for (size_type r= num_rows(A); r-- > 0; ) {
-		// std::cout << "row " << r << '\n';
 		size_type j0= A.ref_starts()[r];
 		const size_type cj1= A.ref_starts()[r+1];
 		out_value_type rr= v[r], dia;
-		// std::cout << "rr[init] " << rr << '\n';
 		crs_row_init(r, j0, cj1, dia, DiaTag()); 
-		// std::cout << "dia " << dia << '\n';
 		for (; j0 != cj1; ++j0) {
-		    // std::cout << "offset " << j0 << ", column " << A.ref_indices()[j0] << '\n';
 		    MTL_DEBUG_THROW_IF(A.ref_indices()[j0] <= r, logic_error("Matrix entries must be sorted for this."));
 		    rr-= A.data[j0] * w[A.ref_indices()[j0]];
-		    // std::cout << "dec " << A.data[j0] << " * " << w[A.ref_indices()[j0]] << '\n';
-		    // std::cout << "rr " << rr << '\n';
 		}
 		row_update(w[r], rr, dia, DiaTag());
-		// std::cout << "w[r] " << w[r] << '\n';
 	    }
 	}
 
