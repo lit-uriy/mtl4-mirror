@@ -69,7 +69,7 @@ class ic_0
     void solve(const VectorIn& x, VectorOut& y) const
     {
 	mtl::vampir_trace<5037> tracer;
-	static VectorOut y0(resource(y));
+	static VectorOut y0(resource(x));
 	y.checked_change_resource(x);
 
 	lower_solver(x, y0);

@@ -147,7 +147,7 @@ namespace detail {
 	}
 	void crs_row_init(size_type, size_type&, size_type, value_type&, tag::unit_diagonal) const {}
 
-	// Tuning for IC_0 and similar at compressed2D row-major compact
+	// Tuning for IC_0 and similar using compressed2D row-major compact
 	template <typename VectorIn, typename VectorOut>
 	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<3>) const
 	{

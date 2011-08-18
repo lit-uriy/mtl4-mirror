@@ -22,8 +22,7 @@ int main()
     typedef mtl::compressed2D<double>  matrix_type;
     mtl::compressed2D<double>          A(N, N);
     laplacian_setup(A, size, size);
-    
-   
+       
     itl::pc::ic_0<matrix_type>         P(A);
     mtl::dense_vector<double>          x(N), y, yc(N);
     iota(x);
