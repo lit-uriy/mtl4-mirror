@@ -55,6 +55,12 @@ namespace detail {
 	struct version
 	  : generic_version<M, D, C> {};
 
+	template <typename Value, typename Para, typename D>
+	struct version<compressed2D<Value, Para>, D, true>
+	  : boost::mpl::if_<boost::mpl::and_<mtl::traits::is_row_major<Para>, boost::mpl::not_<boost::is_same<D, tag::unit_diagonal> > >,
+			    boost::mpl::int_<5>,
+			    generic_version<compressed2D<Value, Para>, D, true>
+	                   >::type {};
 
 
 	template <typename VectorIn, typename VectorOut>
@@ -74,20 +80,11 @@ namespace detail {
 	template <typename Tag> int dia_inc(Tag) { return 0; }
 	int dia_inc(tag::unit_diagonal) { return 1; }
 
-#if 0
-	template <typename VectorIn, typename VectorOut, int N>
-	void apply(const VectorIn& , VectorOut& , boost::mpl::int_<N>) const
-	{
-	    boost::mpl::int_<N> x("hallo");
-	}
-#endif
-
 	// Generic row-major unit_diagonal
 	template <typename VectorIn, typename VectorOut>
 	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<1>) const
 	{
 	    using namespace tag; 
-	    // w= v;
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    ++ac;
 	    for (size_type r= 1; ac != aend; ++r, ++ac) {
@@ -106,7 +103,6 @@ namespace detail {
 	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<2>) const
 	{
 	    using namespace tag; 
-	    // w= v;
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    for (size_type r= 0; ac != aend; ++r, ++ac) {
 		a_icur_type aic= begin<nz>(ac), aiend= CompactStorage ? end<nz>(ac) : lower_bound<nz>(ac, r+1);
@@ -161,6 +157,26 @@ namespace detail {
 		}
 	    }
 	}
+
+	// Tuning for IC_0 and similar using compressed2D row-major compact
+	template <typename VectorIn, typename VectorOut>
+	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<5>) const
+	{
+	    vampir_trace<5047> tracer;
+	    for (size_type r= 0, rend= num_rows(A); r != rend; ++r) {
+		size_type j0= A.ref_starts()[r], j1= A.ref_starts()[r+1];
+		MTL_THROW_IF(j0 == j1, missing_diagonal());
+		--j1;
+		MTL_THROW_IF(A.ref_indices()[j1] != r, missing_diagonal());
+		value_type dia= A.data[j1];
+		typename Collection<VectorOut>::value_type rr= v[r];
+		for (; j0 != j1; ++j0) {
+		    MTL_DEBUG_THROW_IF(A.ref_indices()[j0] > r, logic_error("Matrix entries must be sorted for this."));
+		    rr-= A.data[j0] * w[A.ref_indices()[j0]];
+		}
+		w[r]= rr * lower_trisolve_diavalue(dia, DiaTag());
+	    }
+	}	
 
 	const Matrix&                                    A;
 	typename mtl::traits::const_value<Matrix>::type  value_a; 
