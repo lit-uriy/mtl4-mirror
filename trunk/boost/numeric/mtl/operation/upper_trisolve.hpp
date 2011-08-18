@@ -76,19 +76,19 @@ namespace detail {
 
     private:
 	// Initialization for regular and inverse diagonal is the same
-	template <typename Cursor>
-	void row_init(size_type MTL_DEBUG_ARG(r), Cursor& aic, Cursor& MTL_DEBUG_ARG(aiend), value_type& dia, tag::universe_diagonal) const
+	template <typename Cursor, typename Value>
+	void row_init(size_type MTL_DEBUG_ARG(r), Cursor& aic, Cursor& MTL_DEBUG_ARG(aiend), Value& dia, tag::universe_diagonal) const
 	{
 	    MTL_DEBUG_THROW_IF(aic == aiend || col_a(*aic) != r, missing_diagonal());
 	    dia= value_a(*aic); ++aic;
 	}
 
-	template <typename Cursor>
-	void row_init(size_type, Cursor&, Cursor&, value_type&, tag::unit_diagonal) const {}
+	template <typename Cursor, typename Value>
+	void row_init(size_type, Cursor&, Cursor&, Value&, tag::unit_diagonal) const {}
 
-	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::regular_diagonal) const { res= rr / dia; }
-	void row_update(value_type& res, value_type& rr, const value_type& dia, tag::inverse_diagonal) const { res= rr * dia;	}
-	void row_update(value_type& res, value_type& rr, const value_type&    , tag::unit_diagonal)    const { res= rr; }
+	template <typename Value> void row_update(Value& res, Value& rr, const Value& dia, tag::regular_diagonal) const { res= rr / dia; }
+	template <typename Value> void row_update(Value& res, Value& rr, const Value& dia, tag::inverse_diagonal) const { res= rr * dia; }
+	template <typename Value> void row_update(Value& res, Value& rr, const Value&    , tag::unit_diagonal)    const { res= rr; }
 
 	template <typename Tag> int dia_inc(Tag) const { return 0; }
 	int dia_inc(tag::unit_diagonal) const { return 1; }
@@ -99,12 +99,13 @@ namespace detail {
 	{
 	    vampir_trace<5042> tracer;
 	    using namespace tag; 
+	    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
 		// std::cout << "row " << r << '\n';
 		a_icur_type aic= CompactStorage ? begin<nz>(aend) : lower_bound<nz>(aend, r + dia_inc(DiaTag())), 
 		            aiend= end<nz>(aend);
-		value_type rr= v[r], dia;
+		out_value_type rr= v[r], dia;
 		// std::cout << "rr[init] " << rr << '\n';
 		row_init(r, aic, aiend, dia, DiaTag()); 
 		for (; aic != aiend; ++aic) {
@@ -125,12 +126,13 @@ namespace detail {
 	{
 	    vampir_trace<5043> tracer;
 	    using namespace tag; 
+	    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
 	    w= v;
 	    a_cur_type ac= begin<col>(A), aend= end<col>(A); 
 	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
 		a_icur_type aic= begin<nz>(aend), 
 		            aiend= CompactStorage ? end<nz>(aend) : lower_bound<nz>(aend, r + 1 - dia_inc(DiaTag()));
-		value_type rr;
+		out_value_type rr;
 		col_init(r, aic, aiend, rr, w[r], DiaTag());
 
 		for (; aic != aiend; ++aic) {
@@ -140,24 +142,26 @@ namespace detail {
 	    }
 	}
 
-	void crs_row_init(size_type MTL_DEBUG_ARG(r), size_type& j0, size_type MTL_DEBUG_ARG(cj1), value_type& dia, tag::universe_diagonal) const
+	template <typename Value> 
+	void crs_row_init(size_type MTL_DEBUG_ARG(r), size_type& j0, size_type MTL_DEBUG_ARG(cj1), Value& dia, tag::universe_diagonal) const
 	{
 	    MTL_DEBUG_THROW_IF(j0 == cj1 || A.ref_indices()[j0] != r, missing_diagonal());
 	    dia= A.data[j0++];
 	}
-	void crs_row_init(size_type, size_type&, size_type, value_type&, tag::unit_diagonal) const {}
+	template <typename Value> void crs_row_init(size_type, size_type&, size_type, Value&, tag::unit_diagonal) const {}
 
 	// Tuning for IC_0 and similar using compressed2D row-major compact
 	template <typename VectorIn, typename VectorOut>
 	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<3>) const
 	{
+	    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
 	    vampir_trace<5046> tracer;
 	    // std::cout << "In getuneter Version\n";
 	    for (size_type r= num_rows(A); r-- > 0; ) {
 		// std::cout << "row " << r << '\n';
 		size_type j0= A.ref_starts()[r];
 		const size_type cj1= A.ref_starts()[r+1];
-		value_type rr= v[r], dia;
+		out_value_type rr= v[r], dia;
 		// std::cout << "rr[init] " << rr << '\n';
 		crs_row_init(r, j0, cj1, dia, DiaTag()); 
 		// std::cout << "dia " << dia << '\n';
@@ -173,8 +177,8 @@ namespace detail {
 	    }
 	}
 
-	template <typename Cursor>
-	void col_init(size_type MTL_DEBUG_ARG(r), Cursor& MTL_DEBUG_ARG(aic), Cursor& aiend, value_type& rr, value_type& res, tag::regular_diagonal) const
+	template <typename Cursor, typename Value>
+	void col_init(size_type MTL_DEBUG_ARG(r), Cursor& MTL_DEBUG_ARG(aic), Cursor& aiend, Value& rr, Value& res, tag::regular_diagonal) const
 	{
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
@@ -182,8 +186,8 @@ namespace detail {
 	    rr= res/= value_a(*aiend);
 	}
 	
-	template <typename Cursor>
-	void col_init(size_type MTL_DEBUG_ARG(r), Cursor& MTL_DEBUG_ARG(aic), Cursor& aiend, value_type& rr, value_type& res, tag::inverse_diagonal) const
+	template <typename Cursor, typename Value>
+	void col_init(size_type MTL_DEBUG_ARG(r), Cursor& MTL_DEBUG_ARG(aic), Cursor& aiend, Value& rr, Value& res, tag::inverse_diagonal) const
 	{
 	    MTL_DEBUG_THROW_IF(aic == aiend, missing_diagonal());
 	    --aiend;
@@ -191,8 +195,8 @@ namespace detail {
 	    rr= res*= value_a(*aiend);
 	}
 
-	template <typename Cursor>
-	void col_init(size_type, Cursor&, Cursor&, value_type& rr, value_type& res, tag::unit_diagonal) const
+	template <typename Cursor, typename Value>
+	void col_init(size_type, Cursor&, Cursor&, Value& rr, Value& res, tag::unit_diagonal) const
 	{
 	    rr= res;
 	}

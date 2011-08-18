@@ -35,11 +35,11 @@
 
 namespace itl { namespace pc {
 
-template <typename Matrix>
+template <typename Matrix, typename Value= typename mtl::Collection<Matrix>::value_type>
 class ic_0
 {
   public:
-    typedef typename mtl::Collection<Matrix>::value_type             value_type;
+    typedef Value                                                    value_type;
     typedef typename mtl::Collection<Matrix>::size_type              size_type;
     typedef ic_0                                                     self;
 
@@ -95,29 +95,43 @@ class ic_0
     struct factorizer
     {
 	factorizer(const Matrix &A, U_type& U)
-	{   factorize(A, U, mtl::traits::is_sparse<Matrix>());  }
+	{   factorize(A, U, mtl::traits::is_sparse<Matrix>(), boost::is_same<Value, typename mtl::Collection<Matrix>::value_type>());  }
 
-	void factorize(const Matrix&, U_type&, boost::mpl::false_)
+	template <typename T>
+	void factorize(const Matrix&, U_type&, boost::mpl::false_, T)
+	{   MTL_THROW_IF(true, mtl::logic_error("IC(0) is not suited for dense matrices"));	}
+
+	// When we change the value_type then the factorization is still performed with that of A
+	template <typename UF>
+	void factorize(const Matrix& A, UF& U, boost::mpl::true_, boost::mpl::false_)
 	{
-	    MTL_THROW_IF(true, mtl::logic_error("IC(0) is not suited for dense matrices"));
+	    typedef mtl::compressed2D<typename mtl::Collection<Matrix>::value_type, para> tmp_type;
+	    tmp_type U_tmp;
+	    factorize(A, U_tmp, boost::mpl::true_(), boost::mpl::true_());
+	    U= U_tmp;
 	}
 
+
 	// Factorization adapted from Saad
-	// Undefined if matrix is not symmetric 
-	void factorize(const Matrix& A, U_type& U, boost::mpl::true_)
+	// Undefined (runtime) behavior if matrix is not symmetric 
+	// UF is type for the factorization
+	template <typename UF> 
+	void factorize(const Matrix& A, UF& U, boost::mpl::true_, boost::mpl::true_)
 	{
 	    using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
 	    using math::reciprocal; using mtl::matrix::upper;
 	    mtl::vampir_trace<5035> tracer;
 
-	    typedef typename range_generator<row, U_type>::type       cur_type;    
+	    // For the factorization we take still the value_type of A and later we copy it maybe to another value_type
+	    typedef typename mtl::Collection<Matrix>::value_type      value_type;
+	    typedef typename range_generator<row, UF>::type       cur_type;    
 	    typedef typename range_generator<nz, cur_type>::type      icur_type;            
 
 	    MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 	    U= upper(A);
 
-	    typename mtl::traits::col<U_type>::type                   col(U);
-	    typename mtl::traits::value<U_type>::type                 value(U); 	
+	    typename mtl::traits::col<UF>::type                   col(U);
+	    typename mtl::traits::value<UF>::type                 value(U); 	
 
 	    cur_type kc= begin<row>(U), kend= end<row>(U);
 	    for (size_type k= 0; kc != kend; ++kc, ++k) {
@@ -161,28 +175,28 @@ class ic_0
     upper_solver_t               upper_solver;
 }; 
 
-template <typename Matrix, typename Vector>
+template <typename Matrix, typename Value, typename Vector>
 struct ic_0_solver
-  : mtl::vector::assigner<ic_0_solver<Matrix, Vector> >
+  : mtl::vector::assigner<ic_0_solver<Matrix, Value, Vector> >
 {
-    ic_0_solver(const ic_0<Matrix>& P, const Vector& x) : P(P), x(x) {}
+    ic_0_solver(const ic_0<Matrix, Value>& P, const Vector& x) : P(P), x(x) {}
 
     template <typename VectorOut>
     void assign_to(VectorOut& y) const
     {	P.solve(x, y);    }    
 
-    const ic_0<Matrix>& P; 
-    const Vector&       x;
+    const ic_0<Matrix, Value>& P; 
+    const Vector&              x;
 };
 
-template <typename Matrix, typename Vector>
-ic_0_solver<Matrix, Vector> solve(const ic_0<Matrix>& P, const Vector& x)
+template <typename Matrix, typename Value, typename Vector>
+ic_0_solver<Matrix, Value, Vector> solve(const ic_0<Matrix, Value>& P, const Vector& x)
 {
-    return ic_0_solver<Matrix, Vector>(P, x);
+    return ic_0_solver<Matrix, Value, Vector>(P, x);
 }
 
-template <typename Matrix, typename Vector>
-Vector adjoint_solve(const ic_0<Matrix>& P, const Vector& x)
+template <typename Matrix, typename Value, typename Vector>
+Vector adjoint_solve(const ic_0<Matrix, Value>& P, const Vector& x)
 {
     return P.adjoint_solve(x);
 }

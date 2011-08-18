@@ -36,7 +36,7 @@ int main()
   matrix_type          A(N, N);
   laplacian_setup(A, size, size);
 
-  itl::pc::ic_0<matrix_type>     P(A);
+  itl::pc::ic_0<matrix_type, float>     P(A);
 
   mtl::dense_vector<double> x(N, 1.0), b(N);
 
