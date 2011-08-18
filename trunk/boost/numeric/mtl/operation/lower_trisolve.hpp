@@ -45,7 +45,7 @@ namespace detail {
 	
 	template <typename VectorIn, typename VectorOut>
 	void operator()(const VectorIn& v, VectorOut& w) const
-	{   apply(v, w, my_orientation(), DiaTag());	}
+	{   vampir_trace<5022> tracer; apply(v, w, my_orientation(), DiaTag());	}
 	
 
       private:

@@ -58,7 +58,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 
     // GMRES iteration
     for (k= 0; k < kmax ; ++k, ++iter) {
-        va0= A * solve(R, V.vector(k));
+        va0= A * Vector(solve(R, V.vector(k)));
         V.vector(k+1)= va= solve(L,va0);
 	// orth(V, V[k+1], false); 
         // modified Gram Schmidt method
@@ -109,7 +109,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 		  << range.finish() << " vectors!\n";
     if (range.empty())
         return iter.fail(2, "GMRES did not find any direction to correct x");
-    x+= solve(R, Vector(V.vector(range)*y[range]));
+    x+= Vector(solve(R, Vector(V.vector(range)*y[range])));
     
     r= b - A*x;
     return iter.terminate(r);
