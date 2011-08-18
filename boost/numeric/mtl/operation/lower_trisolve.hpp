@@ -86,15 +86,19 @@ namespace detail {
 	{
 	    using namespace tag; 
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
-	    ++ac;
-	    for (size_type r= 1; ac != aend; ++r, ++ac) {
+	    for (size_type r= 0; ac != aend; ++r, ++ac) {
+		// std::cout << "row " << r << '\n'; 
 		a_icur_type aic= begin<nz>(ac), aiend= CompactStorage ? end<nz>(ac) : lower_bound<nz>(ac, r);
 		typename Collection<VectorOut>::value_type rr= v[r];
+		// std::cout << "rr[init] " << rr << '\n'; 
 		for (; aic != aiend; ++aic) {
 		    MTL_DEBUG_THROW_IF(col_a(*aic) >= r, logic_error("Matrix entries must be sorted for this."));
 		    rr-= value_a(*aic) * w[col_a(*aic)];
+		    // std::cout << "dec " << value_a(*aic) << " * " << w[col_a(*aic)] << '\n';
+		    // std::cout << "rr " << rr << '\n';
 		}
 		w[r]= rr;
+		// std::cout << "w[r] " << w[r] << '\n'; 
 	    }
 	}
 

@@ -45,9 +45,9 @@ void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
     std::cout << "Factorizing A = \n" << As << "-> LU = \n" << LU;
     // std::cout << "L = \n" << Ls << "\nU = \n" << Us;
 
-    if (std::abs(LU[2][1] - Ls[2][1]) > 0.001) throw "Wrong value in L for sparse ILU(0) factorization";
+    MTL_THROW_IF(std::abs(LU[2][1] - Ls[2][1]) > 0.001, mtl::runtime_error("Wrong value in L for sparse ILU(0) factorization"));
 
-    if (std::abs(LU[2][2] - 1. / Us[2][2]) > 0.001) throw "Wrong value in U for sparse ILU(0) factorization";
+    MTL_THROW_IF(std::abs(LU[2][2] - 1. / Us[2][2]) > 0.001, mtl::runtime_error("Wrong value in U for sparse ILU(0) factorization"));
 }
 
 
@@ -83,16 +83,16 @@ int test_main(int, char**)
     x4= unit_lower_trisolve(L, Px);
     std::cout << "L^{-1} * Px = " << x4 << "\n";
 
-    if (two_norm(vector_type(x4 - x2)) > 0.01) throw "Error in unit_lower_trisolve.";
+    MTL_THROW_IF(two_norm(vector_type(x4 - x2)) > 0.01, mtl::runtime_error("Error in unit_lower_trisolve."));
 
     x5= inverse_upper_trisolve(U, x4);
     std::cout << "U^{-1} * L^{-1} * Px = " << x5 << "\n";
 
-    if (two_norm(vector_type(x5 - x)) > 0.01) throw "Error in inverse_upper_trisolve.";
+    MTL_THROW_IF(two_norm(vector_type(x5 - x)) > 0.01, mtl::runtime_error("Error in inverse_upper_trisolve."));
 
     x3= solve(P, Px);
     std::cout << "solve(P, Px) = " << x3 << "\n";
-    if (two_norm(vector_type(x3 - x)) > 0.01) throw "Error in solve.";
+    MTL_THROW_IF(two_norm(vector_type(x3 - x)) > 0.01, mtl::runtime_error("Error in solve."));
 
 
     // Now test adjoint solve
@@ -108,15 +108,15 @@ int test_main(int, char**)
     x4= inverse_lower_trisolve(adjoint(U), Px);
     std::cout << "U^{-T} * Px = " << x4 << "\n";
 
-    if (two_norm(vector_type(x4 - x2)) > 0.01) throw "Error in inverse_lower_trisolve.";
+    MTL_THROW_IF(two_norm(vector_type(x4 - x2)) > 0.01, mtl::runtime_error("Error in inverse_lower_trisolve."));
 
     x5= unit_upper_trisolve(adjoint(L), x4);
     std::cout << "L^{-T} * U^{-T} * Px = " << x5 << "\n";
-    if (two_norm(vector_type(x5 - x)) > 0.01) throw "Error in unit_upper_trisolve.";
+    MTL_THROW_IF(two_norm(vector_type(x5 - x)) > 0.01, mtl::runtime_error("Error in unit_upper_trisolve."));
 
     x3= adjoint_solve(P, Px);
     std::cout << "adjoint_solve(P, Px) = " << x3 << "\n";
-    if (two_norm(vector_type(x3 - x)) > 0.01) throw "Error in adjoint_solve.";
+    MTL_THROW_IF(two_norm(vector_type(x3 - x)) > 0.01, mtl::runtime_error("Error in adjoint_solve."));
 
     return 0;
 }
