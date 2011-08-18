@@ -72,6 +72,9 @@ namespace mtl { namespace traits {
     struct is_row_major<morton_dense<Value, Mask, Parameters> >
       : is_row_major<Parameters> {};
 
+    template <typename Matrix>
+    struct is_row_major<matrix::banded_view<Matrix> >
+      : is_row_major<Matrix> {};
 
 }} // namespace mtl::traits
 
