@@ -38,6 +38,8 @@ namespace detail {
 	typedef typename Collection<Matrix>::size_type            size_type;
 	typedef typename OrientedCollection<Matrix>::orientation  my_orientation;
 	typedef typename mtl::traits::category<Matrix>::type      my_category;
+	typedef typename mtl::traits::range_generator<tag::major, Matrix>::type     a_cur_type; // row or col depending on Matrix    
+	typedef typename mtl::traits::range_generator<tag::nz, a_cur_type>::type    a_icur_type;   
 
 	upper_trisolve_t(const Matrix& A) : A(A), value_a(A), col_a(A), row_a(A)
 	{     
@@ -80,15 +82,12 @@ namespace detail {
 	template <typename VectorIn, typename VectorOut>
 	void inline apply(const VectorIn& v, VectorOut& w, tag::row_major) const
 	{
-	    using namespace tag; using mtl::traits::range_generator; using math::one;
-	    typedef typename range_generator<row, Matrix>::type       ra_cur_type;    
-	    typedef typename range_generator<nz, ra_cur_type>::type   ra_icur_type;            
-
-	    // w= v;
-	    ra_cur_type ac= begin<row>(A), aend= end<row>(A); 
+	    vampir_trace<5042> tracer;
+	    using namespace tag; 
+	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
 	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
-		ra_icur_type aic= CompactStorage ? begin<nz>(aend) : lower_bound<nz>(aend, r + dia_inc(DiaTag())), 
-		             aiend= end<nz>(aend);
+		a_icur_type aic= CompactStorage ? begin<nz>(aend) : lower_bound<nz>(aend, r + dia_inc(DiaTag())), 
+		            aiend= end<nz>(aend);
 		value_type rr= v[r], dia;
 		row_init(r, aic, aiend, dia, DiaTag()); 
 		for (; aic != aiend; ++aic) {
@@ -103,15 +102,13 @@ namespace detail {
 	template <typename VectorIn, typename VectorOut>
 	void apply(const VectorIn& v, VectorOut& w, tag::col_major) const
 	{
-	    using namespace tag; using mtl::traits::range_generator; using math::one;
-	    typedef typename range_generator<col, Matrix>::type       ca_cur_type;    
-	    typedef typename range_generator<nz, ca_cur_type>::type   ca_icur_type;            
-
+	    vampir_trace<5043> tracer;
+	    using namespace tag; 
 	    w= v;
-	    ca_cur_type ac= begin<col>(A), aend= end<col>(A); 
+	    a_cur_type ac= begin<col>(A), aend= end<col>(A); 
 	    for (size_type r= num_rows(A) - 1; ac != aend--; --r) {
-		ca_icur_type aic= begin<nz>(aend), 
-		             aiend= CompactStorage ? end<nz>(aend) : lower_bound<nz>(aend, r + 1 - dia_inc(DiaTag()));
+		a_icur_type aic= begin<nz>(aend), 
+		            aiend= CompactStorage ? end<nz>(aend) : lower_bound<nz>(aend, r + 1 - dia_inc(DiaTag()));
 		value_type rr;
 		col_init(r, aic, aiend, rr, w[r], DiaTag());
 

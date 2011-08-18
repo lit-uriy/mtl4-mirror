@@ -178,7 +178,7 @@ namespace mtl { namespace traits {
 		: view(view), its_row(view.ref), its_col(view.ref), its_value(view.ref) 
 	    {}
 
-	    value_type operator() (key_type const& key)
+	    value_type operator() (key_type const& key) const
 	    {
 		using math::zero;
 		typedef typename view_type::bsize_type   bsize_type;

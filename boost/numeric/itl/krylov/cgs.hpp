@@ -44,7 +44,7 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
 	    p= u + beta * (q + beta * p);
 	}
 
-        vhat= A * solve(M, p);
+        vhat= A * Vector(solve(M, p));
 	alpha = rho_1 / dot(rtilde, vhat);
 	q= u - alpha * vhat;
 

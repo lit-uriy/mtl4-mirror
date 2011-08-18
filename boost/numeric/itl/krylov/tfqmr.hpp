@@ -38,13 +38,13 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
 
     const Scalar                zero= math::zero(Scalar()), one= math::one(Scalar());
     Scalar                      theta(zero), eta(zero), tau, rho, rhon, sigma, alpha, beta, c;
-    Vector                      rt(b - A*solve(R, x)) /* shift x= R*x */, r(solve(L, rt)), u1(resource(x)), u2(resource(x)), 
+    Vector                      rt(b - A*Vector(solve(R, x))) /* shift x= R*x */, r(solve(L, rt)), u1(resource(x)), u2(resource(x)), 
                                 y1(resource(x)), y2(resource(x)), w(resource(x)), d(resource(x), zero), v(resource(x));
 
     if (iter.finished(rt))
 	return iter;
     y1= w= r;
-    rt= A * solve(R, y1);
+    rt= A * Vector(solve(R, y1));
     u1= v= solve(L,rt);
     tau= two_norm(r);
     rho= tau * tau;
@@ -64,7 +64,7 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
                 d= y1+ (theta * theta * eta / alpha) * d;
 	    } else {
                 y2= y1 - alpha * v;
-                rt= A * solve(R, y2);
+                rt= A * Vector(solve(R, y2));
                 u2= solve(L, rt);
                 w-= alpha * u2;
                 d= y2 + (theta * theta * eta / alpha) * d;
@@ -81,7 +81,7 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
         beta= rhon/rho;
         rho= rhon;
         y1= w + beta*y2;
-        rt= A * solve(R, y1);
+        rt= A * Vector(solve(R, y1));
         u1= solve(L, rt);
         v= u1 + beta*(u2 + beta*v);
         rt= A * x - b;
