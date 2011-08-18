@@ -36,7 +36,7 @@ namespace itl {
 	template <typename Matrix, typename Vector> Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& x);
 
 	template <typename Matrix> class ic_0;
-	template <typename Matrix, typename Vector> Vector solve(const ic_0<Matrix>& P, const Vector& x);
+	// template <typename Matrix, typename Vector> Vector solve(const ic_0<Matrix>& P, const Vector& x);
 	template <typename Matrix, typename Vector> Vector adjoint_solve(const ic_0<Matrix>& P, const Vector& x);
 
     } //  namespace pc

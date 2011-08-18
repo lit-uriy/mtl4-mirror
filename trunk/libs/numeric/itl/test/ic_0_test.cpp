@@ -16,6 +16,7 @@
 
 #include <boost/numeric/mtl/vector/assigner.hpp>
 
+#if 0
 struct dings
   : mtl::vector::assigner<dings>
 {
@@ -27,12 +28,13 @@ struct dings
 	return tgt;
     }
 };
+#endif
 
 
 int main()
 {
     // For a more realistic example set sz to 1000 or larger
-    const int size = 3, N = size * size; 
+    const int size = 3, N = size * size;
 
     typedef mtl::compressed2D<double>  matrix_type;
     mtl::compressed2D<double>          A(N, N);
@@ -50,10 +52,10 @@ int main()
 
     MTL_THROW_IF(two_norm(mtl::vector::dense_vector<double>(y - yc)) > 0.001, 
 		 mtl::logic_error("IC(0) doesn't yield expected result"));	
-
+#if 0
     dings d;
     y= d;
     std::cout << y << '\n';
-
+#endif
     return 0;
 }
