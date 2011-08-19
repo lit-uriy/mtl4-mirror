@@ -219,17 +219,17 @@ struct ic_0_evaluator
     void at(size_type r)
     {
 #ifndef NDEBUG
-	MTL_THROW_IF(r >= lr, mtl::logic_error("Traversal must be backward")); lr= r;
+	MTL_THROW_IF(r+Offset >= lr, mtl::logic_error("Traversal must be backward")); lr= r+Offset;
 #endif
-	size_type j0= U.ref_starts()[r];
-	const size_type cj1= U.ref_starts()[r+1];
-	MTL_DEBUG_THROW_IF(j0 == cj1 || U.ref_indices()[j0] != r, mtl::missing_diagonal());
-	out_value_type rr= y0[r], dia= U.data[j0++];
+	size_type j0= U.ref_starts()[r+Offset];
+	const size_type cj1= U.ref_starts()[r+Offset+1];
+	MTL_DEBUG_THROW_IF(j0 == cj1 || U.ref_indices()[j0] != r+Offset, mtl::missing_diagonal());
+	out_value_type rr= y0[r+Offset], dia= U.data[j0++];
 	for (; j0 != cj1; ++j0) {
-	    MTL_DEBUG_THROW_IF(U.ref_indices()[j0] <= r, mtl::logic_error("Matrix entries must be sorted for this."));
+	    MTL_DEBUG_THROW_IF(U.ref_indices()[j0] <= r+Offset, mtl::logic_error("Matrix entries must be sorted for this."));
 	    rr-= U.data[j0] * y[U.ref_indices()[j0]];
 	}
-	y[r]= rr * dia;
+	y[r+Offset]= rr * dia;
     }
 
     VectorOut&                               y;

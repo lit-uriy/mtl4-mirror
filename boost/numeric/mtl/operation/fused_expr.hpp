@@ -85,7 +85,7 @@ struct fused_expr
     }
 
     template <typename TT, typename UU>
-    void backward_eval_loop(const TT& const_first_eval, const UU& const_second_eval)
+    void backward_eval_loop(const TT& const_first_eval, const UU& const_second_eval, boost::mpl::false_)
     {	
 	vampir_trace<6003> tracer;
 	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
@@ -96,14 +96,37 @@ struct fused_expr
 	for (std::size_t i= size(first_eval); i-- > 0; ) {
 	    // std::cout << "i is " << i << "\n";
 	    first_eval(i); second_eval(i);
-	}	
+	}
+    }
+
+    template <typename TT, typename UU>
+    void backward_eval_loop(const TT& const_first_eval, const UU& const_second_eval, boost::mpl::true_)
+    {	
+	vampir_trace<6004> tracer;
+	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
+	TT& first_eval= const_cast<TT&>(const_first_eval);  
+	UU& second_eval= const_cast<UU&>(const_second_eval);
+	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != mtl::vector::size(second_eval), incompatible_size());	
+
+	std::size_t s= size(first_eval), i= s-1, m= s % 4;
+	for (; m; m--) {
+	    // std::cout << "i is " << i << "\n";
+	    first_eval(i); second_eval(i--);
+	}
+	for(long j= i - 3; j >= 0; j-= 4) {
+	    // std::cout << "i is " << j+3 << ".." << j << "\n";
+	    first_eval.template at<3>(j); second_eval.template at<3>(j);
+	    first_eval.template at<2>(j); second_eval.template at<2>(j);
+	    first_eval.template at<1>(j); second_eval.template at<1>(j);
+	    first_eval.template at<0>(j); second_eval.template at<0>(j);
+	}
     }
 
     // Backward evaluation if forward isn't possible
     void eval(boost::mpl::false_, boost::mpl::true_)
     {
 	// std::cout << "Backward evaluation\n";
-	backward_eval_loop(index_evaluator(first), index_evaluator(second));
+	backward_eval_loop(index_evaluator(first), index_evaluator(second), boost::mpl::true_());
     }
 
     // Sequential evaluation
