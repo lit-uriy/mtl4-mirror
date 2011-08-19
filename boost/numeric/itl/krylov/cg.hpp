@@ -32,7 +32,7 @@ template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpac
 int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
        Iteration& iter)
 {
-    mtl::vampir_trace<6001> tracer;
+    mtl::vampir_trace<7001> tracer;
     using std::abs; using mtl::conj; using mtl::lazy;
     typedef HilbertSpaceX Vector;
     typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
@@ -71,7 +71,7 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
     if (is_identity(L))
 	return cg(A, x, b, iter);
 
-    mtl::vampir_trace<6002> tracer;
+    mtl::vampir_trace<7002> tracer;
     using std::abs; using mtl::conj; using mtl::lazy;
     typedef HilbertSpaceX Vector;
     typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;

@@ -36,7 +36,7 @@ struct fused_expr
     template <typename TT, typename UU>
     void forward_eval_loop(const TT& const_first_eval, const UU& const_second_eval, boost::mpl::false_)
     {	
-	vampir_trace<3047> tracer;
+	vampir_trace<6001> tracer;
 	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
 	TT& first_eval= const_cast<TT&>(const_first_eval);  
 	UU& second_eval= const_cast<UU&>(const_second_eval);
@@ -50,7 +50,7 @@ struct fused_expr
     template <typename TT, typename UU>
     void forward_eval_loop(const TT& const_first_eval, const UU& const_second_eval, boost::mpl::true_)
     {	
-	vampir_trace<3048> tracer;
+	vampir_trace<6002> tracer;
 	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
 	TT& first_eval= const_cast<TT&>(const_first_eval);  
 	UU& second_eval= const_cast<UU&>(const_second_eval);
@@ -87,7 +87,7 @@ struct fused_expr
     template <typename TT, typename UU>
     void backward_eval_loop(const TT& const_first_eval, const UU& const_second_eval)
     {	
-	vampir_trace<3047> tracer;
+	vampir_trace<6003> tracer;
 	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
 	TT& first_eval= const_cast<TT&>(const_first_eval);  
 	UU& second_eval= const_cast<UU&>(const_second_eval);
