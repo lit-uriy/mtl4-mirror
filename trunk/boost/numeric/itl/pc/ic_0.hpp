@@ -236,7 +236,7 @@ struct ic_0_evaluator
     const Solver&                            s;
     const typename pc_type::U_type&          U;
     const VectorOut&                         y0;
-    MTL_DEBUG_ARG(size_type                  lr);
+    MTL_DEBUG_ARG(size_type                  lr;)
 };
 
 template <typename VectorOut, typename Solver>
