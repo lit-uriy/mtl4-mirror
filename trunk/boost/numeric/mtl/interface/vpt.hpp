@@ -406,7 +406,8 @@ template <> std::string vampir_trace<5049>::name("");
 // Fused operations:                6000
 template <> std::string vampir_trace<6001>::name("fused::fwd_eval_loop");
 template <> std::string vampir_trace<6002>::name("fused::fwd_eval_loop_unrolled");
-template <> std::string vampir_trace<6003>::name("fused::backward_eval_loop");
+template <> std::string vampir_trace<6003>::name("fused::bwd_eval_loop");
+template <> std::string vampir_trace<6004>::name("fused::bwd_eval_loop_unrolled");
 
 
 
