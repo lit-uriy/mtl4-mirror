@@ -82,7 +82,6 @@ struct fused_expr
     }
 
     // Sequential evaluation
-    template <bool B1, bool B2>
     void eval(boost::mpl::false_, boost::mpl::false_)
     { evaluate_lazy(first); evaluate_lazy(second); }
 
