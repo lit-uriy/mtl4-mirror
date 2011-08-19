@@ -62,6 +62,22 @@ struct unrolled_index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matri
   : boost::mpl::false_ {};
 #endif
 
+/// Typetrait for forward evaluation
+/** All index_evaluatable types are implicitly forward-evaluatable **/
+template <typename T>
+struct forward_index_evaluatable 
+  : index_evaluatable<T>
+{};
+
+/// Typetrait for backward evaluation
+/** All index_evaluatable types are implicitly backward-evaluatable **/
+template <typename T>
+struct backward_index_evaluatable 
+  : index_evaluatable<T>
+{};
+
+
+
 
 }} // namespace mtl::traits
 
