@@ -26,12 +26,15 @@ namespace mtl {
 template <typename T, typename U>
 struct fused_expr
 {
+    typedef boost::mpl::and_<traits::forward_index_evaluatable<T>, traits::forward_index_evaluatable<U> >   forward;
+    typedef boost::mpl::and_<traits::backward_index_evaluatable<T>, traits::backward_index_evaluatable<U> > backward;
+
     fused_expr(T& first, U& second) : first(first), second(second) {}
  
-    ~fused_expr() { eval(traits::index_evaluatable<T>(), traits::index_evaluatable<U>()); }
+    ~fused_expr() { eval(forward(), backward()); }
 
-   template <typename TT, typename UU>
-    void eval_loop(TT first_eval, UU second_eval, boost::mpl::false_)
+    template <typename TT, typename UU>
+    void forward_eval_loop(TT first_eval, UU second_eval, boost::mpl::false_)
     {	
 	vampir_trace<3047> tracer;
 	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != mtl::vector::size(second_eval), incompatible_size());	
@@ -42,7 +45,7 @@ struct fused_expr
     }
 
     template <typename TT, typename UU>
-    void eval_loop(const TT& const_first_eval, const UU& const_second_eval, boost::mpl::true_)
+    void forward_eval_loop(const TT& const_first_eval, const UU& const_second_eval, boost::mpl::true_)
     {	
 	vampir_trace<3048> tracer;
 	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
@@ -64,8 +67,9 @@ struct fused_expr
 	}
     }
 
-// #ifndef _MSC_VER // disable on Visual Studio until we know why it doesn't work there
-    void eval(boost::mpl::true_, boost::mpl::true_)
+    // Forward evaluation dominates backward
+    template <bool B2>
+    void eval(boost::mpl::true_, boost::mpl::bool_<B2>)
     {
 #ifdef MTL_LAZY_LOOP_WO_UNROLL
 	typedef boost::mpl::false_                                                                              to_unroll;
@@ -73,13 +77,13 @@ struct fused_expr
 	typedef boost::mpl::and_<traits::unrolled_index_evaluatable<T>, traits::unrolled_index_evaluatable<U> > to_unroll;
 #endif
 	// Currently lazy evaluation is only available on vector expressions, might change in the future
-
-	eval_loop(index_evaluator(first), index_evaluator(second), to_unroll()); 
+	// std::cout << "Forward evaluation\n";
+	forward_eval_loop(index_evaluator(first), index_evaluator(second), to_unroll()); 
     }
-// #endif
 
+    // Sequential evaluation
     template <bool B1, bool B2>
-    void eval(boost::mpl::bool_<B1>, boost::mpl::bool_<B2>)
+    void eval(boost::mpl::false_, boost::mpl::false_)
     { evaluate_lazy(first); evaluate_lazy(second); }
 
     T& first;
