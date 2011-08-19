@@ -59,7 +59,7 @@ int main()
     b = A * x;
     x= 0;
     
-    itl::cyclic_iteration<double> iter(b, N, 1.e-6, 0.0, 5);
+    itl::cyclic_iteration<double> iter(b, N, 1.e-6, 0.0, 1);
     cg(A, x, b, P, iter);
     
     return 0;

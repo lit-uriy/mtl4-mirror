@@ -64,15 +64,23 @@ class ic_0
 	return inverse_upper_trisolve(U, inverse_lower_trisolve(adjoint(U), x));
     }
 
+    // solve x = U^T y --> y0= U^{-T} x
+    template <typename VectorIn, typename VectorOut>
+    const VectorOut& solve_lower(const VectorIn& x, VectorOut&) const
+    {
+	static VectorOut y0(resource(x));
+	lower_solver(x, y0);
+	return y0;
+    }
+
     // solve x = U^T U y --> y= U^{-1} U^{-T} x
     template <typename VectorIn, typename VectorOut>
     void solve(const VectorIn& x, VectorOut& y) const
     {
 	mtl::vampir_trace<5037> tracer;
-	static VectorOut y0(resource(x));
-	y.checked_change_resource(x);
+	const VectorOut& y0= solve_lower(x, y);
 
-	lower_solver(x, y0);
+	y.checked_change_resource(x);
 	upper_solver(y0, y);
     }
 
@@ -83,7 +91,6 @@ class ic_0
 	mtl::vampir_trace<5044> tracer;
 	return solve(x);
     }
-
 
     L_type get_L() { return L_type(L); }
     U_type get_U() { return U; }
@@ -110,7 +117,6 @@ class ic_0
 	    factorize(A, U_tmp, boost::mpl::true_(), boost::mpl::true_());
 	    U= U_tmp;
 	}
-
 
 	// Factorization adapted from Saad
 	// Undefined (runtime) behavior if matrix is not symmetric 
