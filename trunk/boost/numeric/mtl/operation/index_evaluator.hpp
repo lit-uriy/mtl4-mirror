@@ -24,6 +24,7 @@
 #include <boost/numeric/mtl/vector/reduction_index_evaluator.hpp>
 #include <boost/numeric/mtl/vector/dot_index_evaluator.hpp>
 #include <boost/numeric/mtl/vector/row_mat_cvec_index_evaluator.hpp>
+#include <boost/numeric/itl/pc/ic_0.hpp>
 
 namespace mtl {
 
@@ -64,6 +65,13 @@ mtl::vector::row_mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>
 inline index_evaluator(lazy_assign<VectorOut, mtl::mat_cvec_times_expr<Matrix, VectorIn>, Assign>& lazy)
 {
     return mtl::vector::row_mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>(lazy.first, lazy.second.first, lazy.second.second);
+}
+
+template <typename V1, typename Matrix, typename Value, typename V2>
+itl::pc::ic_0_evaluator<V1, itl::pc::ic_0_solver<Matrix, Value, V2> >
+inline index_evaluator(lazy_assign<V1, itl::pc::ic_0_solver<Matrix, Value, V2>, assign::assign_sum>& lazy)
+{
+    return itl::pc::ic_0_evaluator<V1, itl::pc::ic_0_solver<Matrix, Value, V2> >(lazy.first, lazy.second);
 }
 
 } // namespace mtl

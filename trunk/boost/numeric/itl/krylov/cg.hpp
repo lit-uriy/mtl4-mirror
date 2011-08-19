@@ -84,9 +84,13 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
     rr = dot(r, r);
     while (! iter.finished(Real(sqrt(abs(rr))))) {
 	++iter;
+#if 0
 	z = solve(L, r);
 	rho = dot(r, z);
-    
+#else    
+	(lazy(z)= solve(L, r)) || (lazy(rho)= lazy_dot(r, z));
+#endif    
+
 	if (iter.first())
 	    p = z;
 	else 

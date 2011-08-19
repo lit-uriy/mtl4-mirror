@@ -22,6 +22,9 @@
 #include <boost/numeric/mtl/utility/root.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
+// Not elegant but necessary to treat ITL types right
+#include <boost/numeric/itl/itl_fwd.hpp>
+
 namespace mtl { 
 
 /// Namespace for algebraic shapes; used for sophisticated dispatching between operations
@@ -47,6 +50,8 @@ template <typename Value> struct cvec : nonscal {};
 template <typename Value> struct mat : nonscal {};
 /// Undefined shape, e.g., for undefined results of operations
 struct ndef {};
+/// Future shape, i.e. after appropriate evaluation it will have the shape \p Value
+template <typename Value> struct future : nonscal {};
 
 /// Meta-function for algebraic shape of T
 /** Unknown types are treated like scalars. ashape of collections are template
@@ -626,6 +631,14 @@ struct div_op < mat<Value1>, scal >
 };
 	
 // added by Hui Li (above) -----------------------------------------
+
+// ==================== ITL types ==================================
+
+template <typename Matrix, typename Value, typename Vector>
+struct ashape<itl::pc::ic_0_solver<Matrix, Value, Vector> >
+{
+    typedef future<cvec<scal> > type; // might be a problem with nested matrices and vectors
+};
 
 }} // namespace mtl::ashape
 

@@ -41,6 +41,9 @@ struct scalar : virtual universe {};
 /** At the moment all treated as scalars (will be precised later) */
 struct unknown : virtual scalar {};
 
+/// Tag for intermediate objects that require explicit evaluation 
+struct unevaluated : virtual universe {};
+
 /// Any collection, i.e. vectors, matrices or higher-dimensional tensor
 struct collection : virtual universe {};
 

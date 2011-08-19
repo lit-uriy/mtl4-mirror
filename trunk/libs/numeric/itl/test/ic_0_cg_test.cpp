@@ -12,6 +12,7 @@
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
+#include <typeinfo>
 
 template <typename At, typename Ut>
 void dense_ic_0(const At& As, const Ut& Us)
@@ -39,6 +40,16 @@ void dense_ic_0(const At& As, const Ut& Us)
 }
 
 
+template <typename Solver>
+void test(const Solver&)
+{
+    typedef typename mtl::ashape::ashape<Solver>::type shape;
+    std::cout << "type is " << typeid(Solver).name() << '\n';
+    std::cout << "ashape is " << typeid(shape).name() << '\n';
+    std::cout << "type is " << (mtl::traits::is_scalar<Solver>::value ? "" : "not ") << "scalar\n";
+    std::cout << "type is " << (mtl::traits::backward_index_evaluatable<Solver>::value ? "" : "not ") << "back-eval\n";
+}
+
 int main()
 {
     // For a more realistic example set sz to 1000 or larger
@@ -50,7 +61,7 @@ int main()
     // dia= 1.0; A+= dia;
     
    
-    itl::pc::ic_0<matrix_type>         P(A);
+    itl::pc::ic_0<matrix_type, float>  P(A);
     mtl::dense_vector<double>          x(N, 1.0), b(N);
     
     if(size > 1 && size < 4)
@@ -58,9 +69,11 @@ int main()
 
     b = A * x;
     x= 0;
-    
+
     itl::cyclic_iteration<double> iter(b, N, 1.e-6, 0.0, 1);
     cg(A, x, b, P, iter);
     
+    // test(mtl::lazy(b)= solve(P, x));
+
     return 0;
 }
