@@ -34,9 +34,12 @@ struct fused_expr
     ~fused_expr() { eval(forward(), backward()); }
 
     template <typename TT, typename UU>
-    void forward_eval_loop(TT first_eval, UU second_eval, boost::mpl::false_)
+    void forward_eval_loop(const TT& const_first_eval, const UU& const_second_eval, boost::mpl::false_)
     {	
 	vampir_trace<3047> tracer;
+	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
+	TT& first_eval= const_cast<TT&>(const_first_eval);  
+	UU& second_eval= const_cast<UU&>(const_second_eval);
 	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != mtl::vector::size(second_eval), incompatible_size());	
 
 	for (std::size_t i= 0, s= size(first_eval); i < s; i++) {
@@ -77,13 +80,37 @@ struct fused_expr
 	typedef boost::mpl::and_<traits::unrolled_index_evaluatable<T>, traits::unrolled_index_evaluatable<U> > to_unroll;
 #endif
 	// Currently lazy evaluation is only available on vector expressions, might change in the future
-	// std::cout << "Forward evaluation\n";
+	std::cout << "Forward evaluation\n";
 	forward_eval_loop(index_evaluator(first), index_evaluator(second), to_unroll()); 
+    }
+
+    template <typename TT, typename UU>
+    void backward_eval_loop(const TT& const_first_eval, const UU& const_second_eval)
+    {	
+	vampir_trace<3047> tracer;
+	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
+	TT& first_eval= const_cast<TT&>(const_first_eval);  
+	UU& second_eval= const_cast<UU&>(const_second_eval);
+	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != mtl::vector::size(second_eval), incompatible_size());	
+
+	for (std::size_t i= size(first_eval); i-- > 0; ) {
+	    first_eval(i); second_eval(i);
+	}	
+    }
+
+    // Backward evaluation if forward isn't possible
+    void eval(boost::mpl::false_, boost::mpl::true_)
+    {
+	std::cout << "Backward evaluation\n";
+	backward_loop(index_evaluator(first), index_evaluator(second));
     }
 
     // Sequential evaluation
     void eval(boost::mpl::false_, boost::mpl::false_)
-    { evaluate_lazy(first); evaluate_lazy(second); }
+    { 
+	std::cout << "Non-fused evaluation\n";
+	evaluate_lazy(first); evaluate_lazy(second); 
+    }
 
     T& first;
     U& second;
