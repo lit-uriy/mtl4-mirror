@@ -21,6 +21,10 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/is_vector_reduction.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
+#include <boost/numeric/mtl/operation/sfunctor.hpp>
+
+// Not elegant but necessary to treat ITL types right
+#include <boost/numeric/itl/itl_fwd.hpp>
 
 namespace mtl { namespace traits {
 
@@ -28,7 +32,6 @@ namespace mtl { namespace traits {
 template <typename T>
 struct index_evaluatable : boost::mpl::false_ {};
 
-//#ifndef _MSC_VER // disable on Visual Studio until we know why it doesn't work there
 template <typename T, typename U, typename Assign>
 struct index_evaluatable<lazy_assign<T, U, Assign> >
   : boost::mpl::or_<
@@ -41,7 +44,6 @@ struct index_evaluatable<lazy_assign<T, U, Assign> >
 template <typename V1, typename Matrix, typename V2, typename Assign>
 struct index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matrix, V2>, Assign> >
   : is_row_major<Matrix> {};
-//#endif
 
 /// Type trait to control whether evaluation should be unrolled
 template <typename T>
@@ -76,7 +78,9 @@ struct backward_index_evaluatable
   : index_evaluatable<T>
 {};
 
-
+template <typename V1, typename Matrix, typename Value, typename V2>
+struct backward_index_evaluatable<lazy_assign<V1, itl::pc::ic_0_solver<Matrix, Value, V2>, assign::assign_sum> >
+ : boost::mpl::true_ {};
 
 
 }} // namespace mtl::traits

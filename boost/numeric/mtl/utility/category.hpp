@@ -23,6 +23,9 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 
+// Not elegant but necessary to treat ITL types right
+#include <boost/numeric/itl/itl_fwd.hpp>
+
 
 namespace mtl { namespace traits {
 
@@ -234,8 +237,8 @@ struct category< matrix::conj_view<Matrix> >
 
 template <typename Matrix>
 struct category< matrix::hermitian_view<Matrix> >
-	: public category< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-						 transposed_view<Matrix> > >
+  : public category< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
+					   transposed_view<Matrix> > >
 {};
 
 // Specialize on Hermiatians of multi-vectors
@@ -248,8 +251,14 @@ struct category< matrix::hermitian_view<multi_vector<Vector> > >
 
 template <typename Matrix>
 struct category< mtl::matrix::banded_view<Matrix> >
-    : public detail::simple_matrix_view_category<Matrix>
+  : public detail::simple_matrix_view_category<Matrix>
 {};
+
+template <typename Matrix, typename Value, typename Vector>
+struct category<itl::pc::ic_0_solver<Matrix, Value, Vector> >
+{
+    typedef tag::unevaluated type; // might be a problem with nested matrices and vectors
+};
 
 template <typename T>
 struct is_dense 
@@ -267,8 +276,13 @@ struct is_vector
 {};
 
 template <typename T>
+struct is_unevaluated 
+  : boost::is_base_of<tag::unevaluated, typename category<T>::type> 
+{};
+
+template <typename T>
 struct is_scalar 
-  : boost::mpl::bool_< !is_vector<T>::value && !is_matrix<T>::value >
+  : boost::mpl::bool_< !is_vector<T>::value && !is_matrix<T>::value && !is_unevaluated<T>::value >
 {};
 
 /// Meta-function for categorizing types into tag::scalar, tag::vector, and tag::matrix

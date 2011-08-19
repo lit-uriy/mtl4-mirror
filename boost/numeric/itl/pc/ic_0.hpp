@@ -19,6 +19,7 @@
 #include <boost/numeric/linear_algebra/inverse.hpp>
 
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
@@ -96,6 +97,8 @@ class ic_0
     U_type get_U() { return U; }
 
   protected:
+    template <typename VectorOut, typename Solver> friend struct ic_0_evaluator;
+
 
 
     // Dummy type to perform factorization in initializer list not in 
@@ -185,6 +188,8 @@ template <typename Matrix, typename Value, typename Vector>
 struct ic_0_solver
   : mtl::vector::assigner<ic_0_solver<Matrix, Value, Vector> >
 {
+    typedef ic_0<Matrix, Value> pc_type;
+
     ic_0_solver(const ic_0<Matrix, Value>& P, const Vector& x) : P(P), x(x) {}
 
     template <typename VectorOut>
@@ -194,6 +199,51 @@ struct ic_0_solver
     const ic_0<Matrix, Value>& P; 
     const Vector&              x;
 };
+
+template <typename VectorOut, typename Solver>
+struct ic_0_evaluator
+{
+    typedef typename Solver::pc_type                        pc_type;
+    typedef typename pc_type::size_type                     size_type;
+    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
+
+
+    ic_0_evaluator(VectorOut& y, const Solver& s) 
+      : y(y), s(s), U(s.P.U), y0(s.P.solve_lower(s.x, y)) { MTL_DEBUG_ARG(lr= 99999999); }
+
+
+    void operator()(size_type i) { at<0>(i); }
+    void operator[](size_type i) { at<0>(i); }
+
+    template <unsigned Offset>
+    void at(size_type r)
+    {
+#ifndef NDEBUG
+	MTL_THROW_IF(r >= lr, mtl::logic_error("Traversal must be backward")); lr= r;
+#endif
+	size_type j0= U.ref_starts()[r];
+	const size_type cj1= U.ref_starts()[r+1];
+	MTL_DEBUG_THROW_IF(j0 == cj1 || U.ref_indices()[j0] != r, mtl::missing_diagonal());
+	out_value_type rr= y0[r], dia= U.data[j0++];
+	for (; j0 != cj1; ++j0) {
+	    MTL_DEBUG_THROW_IF(U.ref_indices()[j0] <= r, mtl::logic_error("Matrix entries must be sorted for this."));
+	    rr-= U.data[j0] * y[U.ref_indices()[j0]];
+	}
+	y[r]= rr * dia;
+    }
+
+    VectorOut&                               y;
+    const Solver&                            s;
+    const typename pc_type::U_type&          U;
+    const VectorOut&                         y0;
+    MTL_DEBUG_ARG(size_type                  lr);
+};
+
+template <typename VectorOut, typename Solver>
+inline std::size_t size(const ic_0_evaluator<VectorOut, Solver>& eval)
+{   
+    return size(eval.y); 
+}
 
 template <typename Matrix, typename Value, typename Vector>
 ic_0_solver<Matrix, Value, Vector> solve(const ic_0<Matrix, Value>& P, const Vector& x)
@@ -209,5 +259,9 @@ Vector adjoint_solve(const ic_0<Matrix, Value>& P, const Vector& x)
 
 
 }} // namespace itl::pc
+
+namespace mtl { namespace vector {
+    using itl::pc::size;
+}} // namespace mtl::vector
 
 #endif // ITL_PC_IC_0_INCLUDE

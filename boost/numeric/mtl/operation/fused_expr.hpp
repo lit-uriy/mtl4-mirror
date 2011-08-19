@@ -80,7 +80,7 @@ struct fused_expr
 	typedef boost::mpl::and_<traits::unrolled_index_evaluatable<T>, traits::unrolled_index_evaluatable<U> > to_unroll;
 #endif
 	// Currently lazy evaluation is only available on vector expressions, might change in the future
-	std::cout << "Forward evaluation\n";
+	// std::cout << "Forward evaluation\n";
 	forward_eval_loop(index_evaluator(first), index_evaluator(second), to_unroll()); 
     }
 
@@ -94,6 +94,7 @@ struct fused_expr
 	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != mtl::vector::size(second_eval), incompatible_size());	
 
 	for (std::size_t i= size(first_eval); i-- > 0; ) {
+	    // std::cout << "i is " << i << "\n";
 	    first_eval(i); second_eval(i);
 	}	
     }
@@ -101,14 +102,14 @@ struct fused_expr
     // Backward evaluation if forward isn't possible
     void eval(boost::mpl::false_, boost::mpl::true_)
     {
-	std::cout << "Backward evaluation\n";
-	backward_loop(index_evaluator(first), index_evaluator(second));
+	// std::cout << "Backward evaluation\n";
+	backward_eval_loop(index_evaluator(first), index_evaluator(second));
     }
 
     // Sequential evaluation
     void eval(boost::mpl::false_, boost::mpl::false_)
     { 
-	std::cout << "Non-fused evaluation\n";
+	// std::cout << "Non-fused evaluation\n";
 	evaluate_lazy(first); evaluate_lazy(second); 
     }
 
