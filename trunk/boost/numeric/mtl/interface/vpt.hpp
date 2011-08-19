@@ -65,7 +65,8 @@ class vampir_trace
 // Matrix Vector & single matrix:   3000
 // Matrix matrix operations:        4000
 // Factorizations, preconditioners: 5000
-// Iterative solvers:               6000
+// Fused operations:                6000
+// Iterative solvers:               7000
 
 
 // Utilities:                        < 1000
@@ -257,8 +258,8 @@ template <> std::string vampir_trace<3043>::name("Matrix_upper_trisolve");
 template <> std::string vampir_trace<3044>::name("Matrix_upper_trisolve_diagonal");
 template <> std::string vampir_trace<3045>::name("Matrix_upper_trisolve_invers_diag");
 template <> std::string vampir_trace<3046>::name("Matrix_upper_trisolve_DiaTag");
-template <> std::string vampir_trace<3047>::name("fused::fwd_eval_loop");
-template <> std::string vampir_trace<3048>::name("fused::fwd_eval_loop_unrolled");
+template <> std::string vampir_trace<3047>::name("");
+template <> std::string vampir_trace<3048>::name("");
 template <> std::string vampir_trace<3049>::name("crs_cvec_mult");
 template <> std::string vampir_trace<3050>::name("sparse_ins::ctor");
 template <> std::string vampir_trace<3051>::name("sparse_ins::dtor");
@@ -272,7 +273,7 @@ template <> std::string vampir_trace<3058>::name("mat_crtp_diff_assign");
 template <> std::string vampir_trace<3059>::name("mat_crtp_array_assign");
 template <> std::string vampir_trace<3060>::name("mat_crtp_mvec_assign");
 template <> std::string vampir_trace<3061>::name("copy_band_to_sparse");
-template <> std::string vampir_trace<3062>::name("fused::backward_eval_loop");
+template <> std::string vampir_trace<3062>::name("");
 template <> std::string vampir_trace<3063>::name("laplacian_setup");
 template <> std::string vampir_trace<3064>::name("");
 template <> std::string vampir_trace<3065>::name("");
@@ -402,9 +403,16 @@ template <> std::string vampir_trace<5049>::name("");
 	vampir_trace<> tracer;
 #endif
 
-// Iterative solvers:               6000
-template <> std::string vampir_trace<6001>::name("cg_w/o_pc");
-template <> std::string vampir_trace<6002>::name("cg");
+// Fused operations:                6000
+template <> std::string vampir_trace<6001>::name("fused::fwd_eval_loop");
+template <> std::string vampir_trace<6002>::name("fused::fwd_eval_loop_unrolled");
+template <> std::string vampir_trace<6003>::name("fused::backward_eval_loop");
+
+
+
+// Iterative solvers:               7000
+template <> std::string vampir_trace<7001>::name("cg_without_pc");
+template <> std::string vampir_trace<7002>::name("cg");
 
 
 

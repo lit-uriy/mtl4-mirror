@@ -4,7 +4,7 @@ import re
 vptfile= open("boost/numeric/mtl/interface/vpt.hpp")
 groupfile= open("vampir_groups.dat", "w")
 
-group_names=['mtl_utilities', 'mtl_fsize', 'mtl_vector', 'mtl_vecmat', 'mtl_matrix', 'mtl_factor', 'mtl_solver', '', '', 'mtl_app']
+group_names=['mtl_utilities', 'mtl_fsize', 'mtl_vector', 'mtl_vecmat', 'mtl_matrix', 'mtl_factor', 'mtl_fused', 'mtl_solver', '', 'mtl_app']
 groups=[[],[],[],[],[],[],[],[],[],[]]
 assert len(group_names) == len(groups)
 
