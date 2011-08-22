@@ -15,6 +15,7 @@
 // #define MTL_LAZY_LOOP_WO_UNROLL // for benchmarking
 
 #include <iostream>
+#include <typeinfo>
 #include <boost/timer.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
@@ -25,10 +26,8 @@ int main()
     mtl::vampir_trace<9999> tracer;
   // For a more realistic example set size to 1000 or larger
   const int size = 1000, N = size * size; 
-
   using namespace mtl;
 
-  
   typedef unsigned size_type;
   // typedef std::size_t size_type;
   std::cout << "sizeof in size_type is " << sizeof(size_type) << '\n';
@@ -37,7 +36,7 @@ int main()
   matrix_type          A(N, N);
   laplacian_setup(A, size, size);
 
-  itl::pc::ilu_0<matrix_type>     P(A);
+  itl::pc::ilu_0<matrix_type, float>     P(A);
 
   mtl::dense_vector<double> x(N, 1.0), b(N);
 
@@ -48,6 +47,7 @@ int main()
   boost::timer t;
   cg(A, x, b, P, iter);
   std::cout << "CG took " << t.elapsed() << "s.\n";
+  // std::cout << "type(L) is " << typeid(P.get_L()).name() << "\n";
 
   return 0;
 }
