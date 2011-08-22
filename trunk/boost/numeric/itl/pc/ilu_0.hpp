@@ -166,6 +166,10 @@ class ilu_0<mtl::dense2D<Value> >
     template <typename Vector>
     Vector solve(const Vector& b) const { return lu_apply(LU, P, b); }
 
+    // Solve  P^{-1}LU x = b --> x= U^{-1} L^{-1} P b
+    template <typename VectorIn, typename VectorOut>
+    void solve(const VectorIn& b, VectorOut& x) const { x= lu_apply(LU, P, b); }
+
     // Solve (P^{-1}LU)^H x = b --> x= P^{-1}L^{-H} U^{-H} b // P^{-1}^{-1}^H = P^{-1})
     template <typename Vector>
     Vector adjoint_solve(const Vector& b) const { return lu_adjoint_apply(LU, P, b); }
