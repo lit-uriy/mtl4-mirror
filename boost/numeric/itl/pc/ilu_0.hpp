@@ -41,9 +41,10 @@ class ilu_0
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef ilu_0                                         self;
 
-    typedef mtl::compressed2D<value_type>                     L_type;
-    typedef mtl::compressed2D<value_type>                     U_type;
-    typedef mtl::compressed2D<value_type>                     LU_type;
+    typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
+    typedef mtl::compressed2D<value_type, para>                     L_type;
+    typedef mtl::compressed2D<value_type, para>                     U_type;
+    typedef mtl::compressed2D<value_type, para>                     LU_type;
 
 #if 0
     typedef mtl::compressed2D<value_type, mtl::matrix::parameters<mtl::tag::col_major> > L_type;
@@ -87,8 +88,8 @@ class ilu_0
     }
 
 
-    L_type get_L() { return L_type(strict_lower(LU)); }
-    U_type get_U() { return U_type(upper(LU)); }
+    L_type get_L() { return L; }
+    U_type get_U() { return U; }
 
   protected:
 
