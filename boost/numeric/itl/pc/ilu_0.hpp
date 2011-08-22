@@ -41,10 +41,15 @@ class ilu_0
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef ilu_0                                         self;
 
+    typedef mtl::compressed2D<value_type>                     L_type;
+    typedef mtl::compressed2D<value_type>                     U_type;
+    typedef mtl::compressed2D<value_type>                     LU_type;
+
+#if 0
     typedef mtl::compressed2D<value_type, mtl::matrix::parameters<mtl::tag::col_major> > L_type;
     typedef mtl::compressed2D<value_type>                                                U_type;
     typedef mtl::compressed2D<value_type>                     LU_type;
-
+#endif
 
     // Factorization adapted from Saad
     ilu_0(const Matrix& A)
@@ -69,7 +74,7 @@ class ilu_0
     void solve(const VectorIn& x, VectorOut& y) const
     {
 	mtl::vampir_trace<5039> tracer;
-	y= inverse_upper_trisolve(LU, unit_lower_trisolve(LU, x));
+	y= inverse_upper_trisolve(U, unit_lower_trisolve(L, x));
     }
 
 
@@ -78,7 +83,7 @@ class ilu_0
     Vector adjoint_solve(const Vector& b) const
     {
 	mtl::vampir_trace<5040> tracer;
-	return unit_upper_trisolve(adjoint(LU), inverse_lower_trisolve(adjoint(LU), b));
+	return unit_upper_trisolve(adjoint(L), inverse_lower_trisolve(adjoint(U), b));
     }
 
 
@@ -98,7 +103,7 @@ class ilu_0
 	using math::reciprocal; 
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 
-	LU= A;
+	LU_type LU(A);
 
         typedef typename range_generator<row, LU_type>::type      cur_type;    
         typedef typename range_generator<nz, cur_type>::type      icur_type;            
@@ -122,9 +127,12 @@ class ilu_0
 	    inv_dia[i]= reciprocal(LU[i][i]);
 	}
 	invert_diagonal(LU); 
+	L= strict_lower(LU);
+	U= upper(LU);
     }  
   private:
-    LU_type                      LU;
+    L_type                      L;
+    U_type                      U;
 }; 
 
 template <typename Value>

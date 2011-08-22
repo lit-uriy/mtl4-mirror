@@ -118,5 +118,18 @@ int test_main(int, char**)
     std::cout << "adjoint_solve(P, Px) = " << x3 << "\n";
     MTL_THROW_IF(two_norm(vector_type(x3 - x)) > 0.01, mtl::runtime_error("Error in adjoint_solve."));
 
+#if 0
+    mtl::compressed2D<double>          A2;
+    laplacian_setup(A2, 3, 3);
+       
+    itl::pc::ilu_0<matrix_type, float>  P2(A2);
+    vector_type  xiota(9), y, yc(9);
+    iota(xiota);
+
+    std::cout << "Halloooooo" << xiota << '\n';
+    y= solve(P, xiota);
+    std::cout << y << '\n';
+#endif
+
     return 0;
 }
