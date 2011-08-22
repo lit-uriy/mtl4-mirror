@@ -45,12 +45,11 @@ class ilu_0
     typedef mtl::compressed2D<value_type, para>                     L_type;
     typedef mtl::compressed2D<value_type, para>                     U_type;
 
+    typedef mtl::matrix::detail::lower_trisolve_t<L_type, mtl::tag::unit_diagonal, true>    lower_solver_t;
+    typedef mtl::matrix::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal, true> upper_solver_t;
+
     // Factorization adapted from Saad
-    ilu_0(const Matrix& A)
-    {
-	mtl::vampir_trace<5038> tracer;
-	factorize(A, typename mtl::traits::category<Matrix>::type()); 
-    }
+    ilu_0(const Matrix& A) : f(A, L, U), lower_solver(L), upper_solver(U) {}
 
     // Solve  LU y = x --> y= U^{-1} L^{-1} x
     template <typename Vector>
@@ -61,14 +60,24 @@ class ilu_0
 	return y;
     }
 
-
+    // solve x = L y --> y0= L^{-1} x
+    template <typename VectorIn, typename VectorOut>
+    const VectorOut& solve_lower(const VectorIn& x, VectorOut&) const
+    {
+	static VectorOut y0(resource(x));
+	lower_solver(x, y0);
+	return y0;
+    }
 
     // Solve  LU y = x --> y= U^{-1} L^{-1} x
     template <typename VectorIn, typename VectorOut>
     void solve(const VectorIn& x, VectorOut& y) const
     {
 	mtl::vampir_trace<5039> tracer;
-	y= inverse_upper_trisolve(U, unit_lower_trisolve(L, x));
+	const VectorOut& y0= solve_lower(x, y);
+
+	y.checked_change_resource(x);
+	upper_solver(y0, y);
     }
 
 
@@ -86,48 +95,58 @@ class ilu_0
 
   protected:
 
-    void factorize(const Matrix& A, mtl::tag::dense)
+    // Dummy type to perform factorization in initializer list not in 
+    struct factorizer
     {
-	MTL_THROW_IF(true, mtl::logic_error("ILU is not intended for dense matrices"));
-    }
+	factorizer(const Matrix &A, L_type& L, U_type& U)
+	{   factorize(A, L, U, mtl::traits::is_sparse<Matrix>());  }
 
-    void factorize(const Matrix& A, mtl::tag::sparse)
-    {
-        using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
-	using math::reciprocal; 
-	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
+	void factorize(const Matrix& A, L_type&, U_type&, boost::mpl::false_)
+	{  MTL_THROW_IF(true, mtl::logic_error("ILU is not intended for dense matrices")); }
 
-	typedef mtl::compressed2D<typename mtl::Collection<Matrix>::value_type, para>  LU_type;
-	LU_type LU(A);
+	void factorize(const Matrix& A, L_type& L, U_type& U, boost::mpl::true_)
+	{
+	    using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
+	    using math::reciprocal; 
+	    MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
+	    mtl::vampir_trace<5038> tracer;
 
-        typedef typename range_generator<row, LU_type>::type      cur_type;    
-        typedef typename range_generator<nz, cur_type>::type      icur_type;            
-        typename mtl::traits::col<LU_type>::type                  col(LU);
-        typename mtl::traits::value<LU_type>::type                value(LU); 
-	mtl::dense_vector<value_type>                             inv_dia(num_rows(A));
-	cur_type ic= begin<row>(LU), iend= end<row>(LU);
-	for (size_type i= 0; ic != iend; ++ic, ++i) {
+	    typedef mtl::compressed2D<typename mtl::Collection<Matrix>::value_type, para>  LU_type;
+	    LU_type LU(A);
 
-	    for (icur_type kc= begin<nz>(ic), kend= end<nz>(ic); kc != kend; ++kc) {
-		size_type k= col(*kc);
-		if (k == i) break;
+	    typedef typename range_generator<row, LU_type>::type      cur_type;    
+	    typedef typename range_generator<nz, cur_type>::type      icur_type;            
+	    typename mtl::traits::col<LU_type>::type                  col(LU);
+	    typename mtl::traits::value<LU_type>::type                value(LU); 
+	    mtl::dense_vector<value_type>                             inv_dia(num_rows(A));
+	    cur_type ic= begin<row>(LU), iend= end<row>(LU);
+	    for (size_type i= 0; ic != iend; ++ic, ++i) {
 
-		value_type aik= value(*kc) * inv_dia[k];
-		value(*kc, aik);
+		for (icur_type kc= begin<nz>(ic), kend= end<nz>(ic); kc != kend; ++kc) {
+		    size_type k= col(*kc);
+		    if (k == i) break;
 
-		for (icur_type jc= kc + 1; jc != kend; ++jc)
-		    value(*jc, value(*jc) - aik * LU[k][col(*jc)]);
-		// std::cout << "LU after eliminating A[" << i << "][" << k << "] =\n" << LU;			  
+		    value_type aik= value(*kc) * inv_dia[k];
+		    value(*kc, aik);
+
+		    for (icur_type jc= kc + 1; jc != kend; ++jc)
+			value(*jc, value(*jc) - aik * LU[k][col(*jc)]);
+		    // std::cout << "LU after eliminating A[" << i << "][" << k << "] =\n" << LU;			  
+		}
+		inv_dia[i]= reciprocal(LU[i][i]);
 	    }
-	    inv_dia[i]= reciprocal(LU[i][i]);
-	}
-	invert_diagonal(LU); 
-	L= strict_lower(LU);
-	U= upper(LU);
-    }  
+	    invert_diagonal(LU); 
+	    L= strict_lower(LU);
+	    U= upper(LU);
+	}  
+    };
+
   private:
     L_type                      L;
     U_type                      U;
+    factorizer                  f;
+    lower_solver_t              lower_solver;
+    upper_solver_t              upper_solver;
 }; 
 
 template <typename Value>

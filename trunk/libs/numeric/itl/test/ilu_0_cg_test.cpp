@@ -16,15 +16,13 @@
 
 int main()
 {
-    // For a more realistic example set sz to 1000 or larger
     const int size = 3, N = size * size; 
 
     typedef mtl::compressed2D<double>  matrix_type;
     mtl::compressed2D<double>          A(N, N), dia(N, N);
     laplacian_setup(A, size, size);
     // dia= 1.0; A+= dia;
-    
-   
+       
     itl::pc::ilu_0<matrix_type>        P(A);
     mtl::dense_vector<double>          x(N, 1.0), b(N);
     

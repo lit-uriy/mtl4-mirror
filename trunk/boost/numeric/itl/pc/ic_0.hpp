@@ -99,8 +99,6 @@ class ic_0
   protected:
     template <typename VectorOut, typename Solver> friend struct ic_0_evaluator;
 
-
-
     // Dummy type to perform factorization in initializer list not in 
     struct factorizer
     {
