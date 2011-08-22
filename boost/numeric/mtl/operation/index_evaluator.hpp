@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/vector/dot_index_evaluator.hpp>
 #include <boost/numeric/mtl/vector/row_mat_cvec_index_evaluator.hpp>
 #include <boost/numeric/itl/pc/ic_0.hpp>
+#include <boost/numeric/itl/pc/ilu_0.hpp>
 
 namespace mtl {
 
@@ -72,6 +73,14 @@ itl::pc::ic_0_evaluator<V1, itl::pc::ic_0_solver<Matrix, Value, V2> >
 inline index_evaluator(lazy_assign<V1, itl::pc::ic_0_solver<Matrix, Value, V2>, assign::assign_sum>& lazy)
 {
     return itl::pc::ic_0_evaluator<V1, itl::pc::ic_0_solver<Matrix, Value, V2> >(lazy.first, lazy.second);
+}
+
+// reuse ic_0_evaluator with ilu_0 preconditioner since IC(0) and ILU(0) do the same at the upper triangle ;-)
+template <typename V1, typename Matrix, typename Value, typename V2>
+itl::pc::ic_0_evaluator<V1, itl::pc::ilu_0_solver<Matrix, Value, V2> >
+inline index_evaluator(lazy_assign<V1, itl::pc::ilu_0_solver<Matrix, Value, V2>, assign::assign_sum>& lazy)
+{
+    return itl::pc::ic_0_evaluator<V1, itl::pc::ilu_0_solver<Matrix, Value, V2> >(lazy.first, lazy.second);
 }
 
 } // namespace mtl

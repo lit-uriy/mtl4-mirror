@@ -239,9 +239,7 @@ struct ic_0_evaluator
 
 template <typename VectorOut, typename Solver>
 inline std::size_t size(const ic_0_evaluator<VectorOut, Solver>& eval)
-{   
-    return size(eval.y); 
-}
+{   return size(eval.y); }
 
 template <typename Matrix, typename Value, typename Vector>
 ic_0_solver<Matrix, Value, Vector> solve(const ic_0<Matrix, Value>& P, const Vector& x)
