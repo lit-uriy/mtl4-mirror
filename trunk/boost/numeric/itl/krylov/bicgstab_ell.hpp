@@ -74,7 +74,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	    for (Size i= 0; i <= j; ++i)
 		u_hat[i]= r_hat[i] - beta * u_hat[i];
       
-	    y= A * solve(R, u_hat[j]);
+	    y= A * Vector(solve(R, u_hat[j]));
 	    u_hat[j+1]= solve(L, y);
 	    Gamma= dot(r0_tilde, u_hat[j+1]); 
 	    alpha= rho_0 / Gamma;
@@ -83,7 +83,8 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 		r_hat[i]-= alpha * u_hat[i+1];
       
 	    if (iter.finished(r_hat[j])) {
-		x= solve(R, x) + x0;
+		x= solve(R, x);
+		x+= x0;
 		return iter;
 	    }
 
@@ -121,7 +122,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	    r_hat[0] -= gamma_a[j] * r_hat[j];
 	}
     }
-    x= solve(R, x) + x0; // convert to real solution and undo shift
+    x= solve(R, x); x+= x0; // convert to real solution and undo shift
     return iter;
 }
 
