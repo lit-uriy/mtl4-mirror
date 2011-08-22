@@ -255,6 +255,12 @@ struct category< mtl::matrix::banded_view<Matrix> >
 {};
 
 template <typename Matrix, typename Value, typename Vector>
+struct category<itl::pc::ilu_0_solver<Matrix, Value, Vector> >
+{
+    typedef tag::unevaluated type; // might be a problem with nested matrices and vectors
+};
+
+template <typename Matrix, typename Value, typename Vector>
 struct category<itl::pc::ic_0_solver<Matrix, Value, Vector> >
 {
     typedef tag::unevaluated type; // might be a problem with nested matrices and vectors

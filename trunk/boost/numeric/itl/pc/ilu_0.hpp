@@ -33,7 +33,7 @@
 
 namespace itl { namespace pc {
 
-template <typename Matrix>
+template <typename Matrix, typename Value= typename mtl::Collection<Matrix>::value_type>
 class ilu_0
 {
   public:
@@ -53,13 +53,25 @@ class ilu_0
 	factorize(A, typename mtl::traits::category<Matrix>::type()); 
     }
 
-    // Solve  LU x = b --> x= U^{-1} L^{-1} b
+    // Solve  LU y = x --> y= U^{-1} L^{-1} x
     template <typename Vector>
-    Vector solve(const Vector& b) const
+    Vector solve(const Vector& x) const
+    {
+	Vector y;
+	solve(x, y);
+	return y;
+    }
+
+
+
+    // Solve  LU y = x --> y= U^{-1} L^{-1} x
+    template <typename VectorIn, typename VectorOut>
+    void solve(const VectorIn& x, VectorOut& y) const
     {
 	mtl::vampir_trace<5039> tracer;
-	return inverse_upper_trisolve(LU, unit_lower_trisolve(LU, b));
+	y= inverse_upper_trisolve(LU, unit_lower_trisolve(LU, x));
     }
+
 
     // Solve (LU)^H x = b --> x= L^{-H} U^{-H} b
     template <typename Vector>
@@ -140,12 +152,40 @@ class ilu_0<mtl::dense2D<Value> >
     mtl::dense_vector<size_type>   P;
 };
 
+
+template <typename Matrix, typename Value, typename Vector>
+struct ilu_0_solver
+  : mtl::vector::assigner<ilu_0_solver<Matrix, Value, Vector> >
+{
+    typedef ilu_0<Matrix, Value> pc_type;
+
+    ilu_0_solver(const ilu_0<Matrix, Value>& P, const Vector& x) : P(P), x(x) {}
+
+    template <typename VectorOut>
+    void assign_to(VectorOut& y) const
+    {	P.solve(x, y);    }    
+
+    const ilu_0<Matrix, Value>& P; 
+    const Vector&               x;
+};
+
+
+/// Solve LU x = b --> x= U^{-1} L^{-1} b
+template <typename Matrix, typename Value, typename Vector>
+ilu_0_solver<Matrix, Value, Vector> solve(const ilu_0<Matrix, Value>& P, const Vector& x)
+{
+    return ilu_0_solver<Matrix, Value, Vector>(P, x);
+}
+
+
+#if 0
 /// Solve LU x = b --> x= U^{-1} L^{-1} b
 template <typename Matrix, typename Vector>
 Vector solve(const ilu_0<Matrix>& P, const Vector& b)
 {
     return P.solve(b);
 }
+#endif
 
 /// Solve (LU)^H x = b --> x= L^{-H} U^{-H} b
 template <typename Matrix, typename Vector>
