@@ -395,7 +395,7 @@ template <> std::string vampir_trace<5044>::name("ic_0::adjoint_solve");
 template <> std::string vampir_trace<5045>::name("ic_0::adjoint_solve_nocopy");
 template <> std::string vampir_trace<5046>::name("upper_trisolve_crs_compact");
 template <> std::string vampir_trace<5047>::name("lower_trisolve_crs_compact");
-template <> std::string vampir_trace<5048>::name("");
+template <> std::string vampir_trace<5048>::name("lower_unit_trisolve_crs_compact");
 template <> std::string vampir_trace<5049>::name("");
 
 #if 0

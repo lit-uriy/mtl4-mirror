@@ -55,13 +55,24 @@ namespace detail {
 	struct version
 	  : generic_version<M, D, C> {};
 
+
+	template <typename Value, typename Para, typename D>
+	struct version<compressed2D<Value, Para>, D, true>
+	  : boost::mpl::if_<mtl::traits::is_row_major<Para>,
+			    typename boost::mpl::if_<boost::is_same<D, tag::unit_diagonal>,
+						     boost::mpl::int_<5>,
+						     boost::mpl::int_<6> >::type,
+			    generic_version<compressed2D<Value, Para>, D, true>
+	                   >::type {};
+
+#if 0
 	template <typename Value, typename Para, typename D>
 	struct version<compressed2D<Value, Para>, D, true>
 	  : boost::mpl::if_<boost::mpl::and_<mtl::traits::is_row_major<Para>, boost::mpl::not_<boost::is_same<D, tag::unit_diagonal> > >,
 			    boost::mpl::int_<5>,
 			    generic_version<compressed2D<Value, Para>, D, true>
 	                   >::type {};
-
+#endif
 
 	template <typename VectorIn, typename VectorOut>
 	void operator()(const VectorIn& v, VectorOut& w) const
@@ -157,9 +168,28 @@ namespace detail {
 	    }
 	}
 
-	// Tuning for IC_0 and similar using compressed2D row-major compact
+	// Tuning for IC_0 and similar using compressed2D row-major compact with implicit unit diagonal
 	template <typename VectorIn, typename VectorOut>
 	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<5>) const
+	{
+	    vampir_trace<5048> tracer;
+	    if (num_rows(A) == 0) return;
+	    size_type j1= A.ref_starts()[1];
+	    for (size_type r= 0, rend= num_rows(A); r != rend; ++r) {
+		size_type j0= j1; 
+		j1= A.ref_starts()[r+1];
+		typename Collection<VectorOut>::value_type rr= v[r];
+		for (; j0 != j1; ++j0) {
+		    MTL_DEBUG_THROW_IF(A.ref_indices()[j0] > r, logic_error("Matrix entries from U in lower triangular."));
+		    rr-= A.data[j0] * w[A.ref_indices()[j0]];
+		}
+		w[r]= rr;
+	    }
+	}	
+
+	// Tuning for IC_0 and similar using compressed2D row-major compact with explicitly stored diagonal (possibly already inverted)
+	template <typename VectorIn, typename VectorOut>
+	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<6>) const
 	{
 	    vampir_trace<5047> tracer;
 	    for (size_type r= 0, rend= num_rows(A); r != rend; ++r) {
@@ -170,7 +200,7 @@ namespace detail {
 		value_type dia= A.data[j1];
 		typename Collection<VectorOut>::value_type rr= v[r];
 		for (; j0 != j1; ++j0) {
-		    MTL_DEBUG_THROW_IF(A.ref_indices()[j0] > r, logic_error("Matrix entries must be sorted for this."));
+		    MTL_DEBUG_THROW_IF(A.ref_indices()[j0] > r, logic_error("Matrix entries from U in lower triangular."));
 		    rr-= A.data[j0] * w[A.ref_indices()[j0]];
 		}
 		w[r]= rr * lower_trisolve_diavalue(dia, DiaTag());
