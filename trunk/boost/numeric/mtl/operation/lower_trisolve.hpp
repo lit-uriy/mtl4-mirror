@@ -65,15 +65,6 @@ namespace detail {
 			    generic_version<compressed2D<Value, Para>, D, true>
 	                   >::type {};
 
-#if 0
-	template <typename Value, typename Para, typename D>
-	struct version<compressed2D<Value, Para>, D, true>
-	  : boost::mpl::if_<boost::mpl::and_<mtl::traits::is_row_major<Para>, boost::mpl::not_<boost::is_same<D, tag::unit_diagonal> > >,
-			    boost::mpl::int_<5>,
-			    generic_version<compressed2D<Value, Para>, D, true>
-	                   >::type {};
-#endif
-
 	template <typename VectorIn, typename VectorOut>
 	void operator()(const VectorIn& v, VectorOut& w) const
 	{   vampir_trace<5022> tracer; apply(v, w, version<Matrix, DiaTag, CompactStorage>()); }

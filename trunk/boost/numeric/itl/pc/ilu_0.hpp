@@ -141,9 +141,10 @@ class ilu_0
 	}  
     };
 
-  private:
+  public:
     L_type                      L;
     U_type                      U;
+  private:
     factorizer                  f;
     lower_solver_t              lower_solver;
     upper_solver_t              upper_solver;
@@ -200,15 +201,6 @@ ilu_0_solver<Matrix, Value, Vector> solve(const ilu_0<Matrix, Value>& P, const V
 }
 
 
-#if 0
-/// Solve LU x = b --> x= U^{-1} L^{-1} b
-template <typename Matrix, typename Vector>
-Vector solve(const ilu_0<Matrix>& P, const Vector& b)
-{
-    return P.solve(b);
-}
-#endif
-
 /// Solve (LU)^H x = b --> x= L^{-H} U^{-H} b
 template <typename Matrix, typename Vector>
 Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& b)
@@ -216,7 +208,9 @@ Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& b)
     return P.adjoint_solve(b);
 }
 
+// ic_0_evaluator not needed IC(0) and ILU(0) do the same at the upper triangle ;-)
 
 }} // namespace itl::pc
+
 
 #endif // ITL_PC_ILU_0_INCLUDE
