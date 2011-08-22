@@ -37,20 +37,13 @@ template <typename Matrix, typename Value= typename mtl::Collection<Matrix>::val
 class ilu_0
 {
   public:
-    typedef typename mtl::Collection<Matrix>::value_type  value_type;
+    typedef Value                                         value_type;
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef ilu_0                                         self;
 
     typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
     typedef mtl::compressed2D<value_type, para>                     L_type;
     typedef mtl::compressed2D<value_type, para>                     U_type;
-    typedef mtl::compressed2D<value_type, para>                     LU_type;
-
-#if 0
-    typedef mtl::compressed2D<value_type, mtl::matrix::parameters<mtl::tag::col_major> > L_type;
-    typedef mtl::compressed2D<value_type>                                                U_type;
-    typedef mtl::compressed2D<value_type>                     LU_type;
-#endif
 
     // Factorization adapted from Saad
     ilu_0(const Matrix& A)
@@ -104,6 +97,7 @@ class ilu_0
 	using math::reciprocal; 
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 
+	typedef mtl::compressed2D<typename mtl::Collection<Matrix>::value_type, para>  LU_type;
 	LU_type LU(A);
 
         typedef typename range_generator<row, LU_type>::type      cur_type;    
