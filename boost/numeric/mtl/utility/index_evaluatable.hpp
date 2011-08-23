@@ -83,8 +83,8 @@ struct backward_index_evaluatable<lazy_assign<V1, itl::pc::ic_0_solver<Matrix, V
  : boost::mpl::true_ {};
 
 // avoid dense specialization
-template <typename V1, typename MValue, typename Para, typename Value, typename V2>
-struct backward_index_evaluatable<lazy_assign<V1, itl::pc::ilu_0_solver<compressed2D<MValue, Para>, Value, V2>, assign::assign_sum> >
+template <typename V1, typename MValue, typename Para, typename Factorizer, typename Value, typename V2>
+struct backward_index_evaluatable<lazy_assign<V1, itl::pc::ilu_solver<compressed2D<MValue, Para>, Factorizer, Value, V2>, assign::assign_sum> >
  : boost::mpl::true_ {};
 
 
