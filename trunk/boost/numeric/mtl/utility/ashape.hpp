@@ -634,8 +634,8 @@ struct div_op < mat<Value1>, scal >
 
 // ==================== ITL types ==================================
 
-template <typename Matrix, typename Value, typename Vector>
-struct ashape<itl::pc::ilu_0_solver<Matrix, Value, Vector> >
+template <typename Matrix, typename Factorizer, typename Value, typename Vector>
+struct ashape<itl::pc::ilu_solver<Matrix, Factorizer, Value, Vector> >
 {
     typedef future<cvec<scal> > type; // might be a problem with nested matrices and vectors
 };

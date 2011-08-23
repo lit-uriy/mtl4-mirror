@@ -33,8 +33,9 @@ namespace itl {
 	template <typename Matrix, typename Vector> Vector solve(const diagonal<Matrix>& P, const Vector& x);
 	template <typename Matrix, typename Vector> Vector adjoint_solve(const diagonal<Matrix>& P, const Vector& x);
 
+	template <typename Matrix, typename Factorizer, typename Value> class ilu;
 	template <typename Matrix, typename Value> class ilu_0; // Maybe we should declare the default here???
-	template <typename Matrix, typename Value, typename Vector> struct ilu_0_solver;
+	template <typename Matrix, typename Factorizer, typename Value, typename Vector> struct ilu_solver;
 	// template <typename Matrix, typename Vector> Vector solve(const ilu_0<Matrix>& P, const Vector& x);
 	// template <typename Matrix, typename Vector> Vector adjoint_solve(const ilu_0<Matrix>& P, const Vector& x);
 
