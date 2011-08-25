@@ -137,7 +137,7 @@ namespace mtl {
 	    typedef typename detail::dot_result<Vector1, Vector2>::type result_type;
 	    dot_class(const Vector1& v1, const Vector2& v2) : v1(v1), v2(v2) {}
 
-	    operator result_type() const { return sfunctor::dot<4>::apply(v1, v2, ConjOpt()); }
+	    operator result_type() const { return sfunctor::dot<Unroll>::apply(v1, v2, ConjOpt()); }
 	    
 	    const Vector1& v1;
 	    const Vector2& v2;
