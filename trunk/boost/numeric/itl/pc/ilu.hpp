@@ -45,6 +45,9 @@ class ilu
     // Factorization adapted from Saad
     ilu(const Matrix& A) : f(A, L, U), lower_solver(L), upper_solver(U) {}
 
+    template <typename FactPara>
+    ilu(const Matrix& A, const FactPara& p) : f(A, p, L, U), lower_solver(L), upper_solver(U) {}
+
     // Solve  LU y = x --> y= U^{-1} L^{-1} x
     template <typename Vector>
     Vector solve(const Vector& x) const

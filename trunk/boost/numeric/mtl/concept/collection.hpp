@@ -750,7 +750,7 @@ namespace mtl {
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
-	typedef typename mtl::vector::dense_vector<Value, Parameters>::size_type size_type;
+	typedef typename Parameters::size_type size_type;
     };
 #endif
 
@@ -765,6 +765,18 @@ namespace mtl {
 	typedef typename mtl::vector::strided_vector_ref<Value, Parameters>::size_type size_type;
     };
 #endif
+
+#ifdef __GXX_CONCEPTS__
+#else
+    template <typename Value, typename Parameters>
+    struct Collection<mtl::vector::sparse_vector<Value, Parameters> >
+    {
+	typedef Value            value_type;
+	typedef value_type       const_reference;
+	typedef typename Parameters::size_type size_type;
+    };
+#endif
+
 
 #ifdef __GXX_CONCEPTS__
 #else
