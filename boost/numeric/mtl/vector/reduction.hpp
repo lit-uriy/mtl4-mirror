@@ -14,6 +14,7 @@
 #define MTL_REDUCTION_INCLUDE
 
 #include <boost/static_assert.hpp>
+#include <boost/mpl/bool.hpp>
 #include <boost/numeric/meta_math/loop1.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
@@ -86,26 +87,32 @@ struct reduction
     Result static inline apply(const Vector& v)
     {
 	vampir_trace<2009> tracer;
-	return apply(v, typename mtl::traits::category<Vector>::type());
+	return apply(v, typename mtl::traits::is_sparse<Vector>());
     }
 
   private:
     template <typename Vector>
-    Result static inline apply(const Vector& v, tag::sparse)
+    Result static inline apply(const Vector& v, boost::mpl::true_)
     {
 	Result tmp00;
 	Functor::init(tmp00);
 
+	for (std::size_t i= 0, n= v.nnz(); i < n; i++) 
+	    Functor::update(tmp00, v.value(i));
+	// std::cout << "i == " << i << "
+
+#if 0
 	typename mtl::traits::const_value<Vector>::type                        value(v); 
 	typedef typename mtl::traits::range_generator<tag::nz, Vector>::type   cursor_type;
 
 	for (cursor_type cursor = begin<tag::nz>(v), cend = end<tag::nz>(v); cursor != cend; ++cursor)
 	    Functor::update(tmp00, value(*cursor));
+#endif
 	return tmp00;
     }
 
     template <typename Vector>
-    Result static inline apply(const Vector& v, tag::dense)
+    Result static inline apply(const Vector& v, boost::mpl::false_)
     {
 	
 	BOOST_STATIC_ASSERT((Unroll >= 1));

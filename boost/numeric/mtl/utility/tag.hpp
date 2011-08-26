@@ -144,6 +144,16 @@ struct strided_col_vector
     virtual has_fast_ra_iterator, virtual has_fast_ra_cursor, virtual has_1D_layout
 {};
 
+/// Tag for sparse row vector in the category lattice
+struct sparse_row_vector
+  : virtual row_vector, virtual sparse
+{};
+
+/// Tag for sparse column vector in the category lattice
+struct sparse_col_vector
+  : virtual col_vector, virtual sparse
+{};
+
 /// Tag to handle std::vector in the category lattice
 struct std_vector
   : virtual vector, virtual contiguous_dense, virtual has_1D_layout

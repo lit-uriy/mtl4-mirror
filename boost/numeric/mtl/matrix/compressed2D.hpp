@@ -176,14 +176,14 @@ struct compressed2D_indexer
     template <class Matrix>
     utilities::maybe<size_type> offset(const Matrix& ma, size_type major, size_type minor) const 
     {
-		typedef utilities::maybe<size_type>      result_type;
+	typedef utilities::maybe<size_type>      result_type;
 	assert(ma.starts[major] <= ma.starts[major+1]); // Check sortedness
 	assert(ma.starts[major+1] <= ma.my_nnz);        // Check bounds of indices
 	// Now we are save to use past-end addresses as iterators
 
 	// Empty matrices are special cases
 	if (ma.indices.empty())
-		return result_type(0, false);
+	    return result_type(0, false);
 
 	const size_type *first = &ma.indices[0] + ma.starts[major],
 	             *last = &ma.indices[0] + ma.starts[major+1];
@@ -590,8 +590,13 @@ struct compressed2D_inserter
     // Empties slot i (row or column according to orientation); for experts only
     // Does not work if entries are in spare map !!!!
     void make_empty(size_type i)
+    {	slot_ends[i]= starts[i];    }
+
+    value_type value(size_type r, size_type c) const
     {
-	slot_ends[i]= starts[i];
+	size_pair                      mm= matrix.indexer.major_minor_c(matrix, r, c);
+	utilities::maybe<size_type>    offset= matrix_offset(mm);
+	return offset ? matrix.data[offset] : value_type(0);
     }
 
     template <typename Matrix, typename Rows, typename Cols>
@@ -620,8 +625,14 @@ struct compressed2D_inserter
 	return *this << element_matrix_t<Matrix, Rows, Cols>(elements.array, elements.rows, elements.cols);
     }
 
+    // not so nice functions needed for direct access, e.g. in factorizations
+    std::vector<size_type> const& ref_starts() const { return starts; }
+    std::vector<size_type> const& ref_indices() const { return indices; }
+    std::vector<size_type> const& ref_slot_ends() const { return slot_ends; }
+    std::vector<value_type> const& ref_elements() const { return elements; }
+
   private:
-    utilities::maybe<typename self::size_type> matrix_offset(size_pair);
+    utilities::maybe<typename self::size_type> matrix_offset(size_pair) const;
     void final_place();
     void insert_spare();
     
@@ -721,7 +732,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
 
 template <typename Elt, typename Parameters, typename Updater>
 inline utilities::maybe<typename compressed2D_inserter<Elt, Parameters, Updater>::size_type> 
-compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm)
+compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm) const
 {
     size_type major, minor;
     boost::tie(major, minor) = mm;

@@ -51,7 +51,7 @@ struct ilu_0_factorizer
 	typedef typename mtl::Collection<Matrix>::value_type      value_type;
 	typedef typename mtl::Collection<Matrix>::size_type       size_type;
 	typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
-	typedef mtl::compressed2D<typename mtl::Collection<Matrix>::value_type, para>  LU_type;
+	typedef mtl::compressed2D<value_type, para>  LU_type;
 	LU_type LU(A);
 
 	typedef typename range_generator<row, LU_type>::type      cur_type;    

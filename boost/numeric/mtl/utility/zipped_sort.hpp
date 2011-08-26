@@ -16,6 +16,7 @@
 // Designed for pointers so far and not tested for general iterators
 // For internal use only
 
+#include <cmath>
 #include <iterator>
 
 namespace mtl { namespace utility {
@@ -44,6 +45,50 @@ struct less_0
 	return x.x < y.a[y.p];
     }
 };
+
+struct greater_0
+{
+    template <typename T, typename U>
+    bool operator()(const zip_ref<T, U>& x, const zip_ref<T, U>& y) const
+    {
+	return x.a[x.p] > y.a[y.p];
+    }
+    
+    template <typename T, typename U>
+    bool operator()(const zip_ref<T, U>& x, const zip_value<T, U>& y) const
+    {
+	return x.a[x.p] > y.x;
+    }
+    
+    template <typename T, typename U>
+    bool operator()(const zip_value<T, U>& x, const zip_ref<T, U>& y) const
+    {
+	return x.x > y.a[y.p];
+    }
+};
+
+struct abs_greater_0
+{
+    template <typename T, typename U>
+    bool operator()(const zip_ref<T, U>& x, const zip_ref<T, U>& y) const
+    {
+	using std::abs;
+	return abs(x.a[x.p]) > abs(y.a[y.p]);
+    }
+    
+    template <typename T, typename U>
+    bool operator()(const zip_ref<T, U>& x, const zip_value<T, U>& y) const
+    {
+	return abs(x.a[x.p]) > abs(y.x);
+    }
+    
+    template <typename T, typename U>
+    bool operator()(const zip_value<T, U>& x, const zip_ref<T, U>& y) const
+    {
+	return abs(x.x) > abs(y.a[y.p]);
+    }
+};
+
 
 template <typename T, typename U>
 struct zip_it

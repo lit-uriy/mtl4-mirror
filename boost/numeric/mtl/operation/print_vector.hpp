@@ -32,9 +32,9 @@ std::ostream& print_vector(Vector const& vector, std::ostream& out= std::cout, i
 	if (width) out.width (width); 
 	// out.flags (std::ios_base::right);
 	if (precision) out.precision(precision); 
-	out << vector[r] << (r < mtl::vector::size(vector) - 1 ? "," : "]");
+	out << vector[r] << (r+1 < mtl::vector::size(vector) ? "," : "");
     }
-    return out;
+    return out << ']';
 }
 
 }} // namespace mtl::vector

@@ -119,6 +119,15 @@ struct category< vector::strided_vector_ref<T, Parameters> >
     >::type type;
 } ;
 
+template <typename T, typename Parameters>
+struct category< vector::sparse_vector<T, Parameters> > 
+{
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename Parameters::orientation, row_major>
+      , tag::sparse_row_vector 
+      , tag::sparse_col_vector 
+    >::type type;
+} ;
 
 
 template <class E1, class E2, class SFunctor>

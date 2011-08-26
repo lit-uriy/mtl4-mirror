@@ -125,14 +125,14 @@ struct update_proxy
     template <typename Value>
     self& operator<< (Value const& val)
     {
-    vampir_trace<20> tracer;
+	vampir_trace<20> tracer;
 	return lshift(val, typename ashape::ashape<Value>::type());
     }
 
     template <typename Value>
     self& operator= (Value const& val)
     {
-    vampir_trace<21> tracer;
+	vampir_trace<21> tracer;
 	ins.template modify<update_store<value_type> > (row, col, val);
 	return *this;
     }
@@ -140,10 +140,10 @@ struct update_proxy
     template <typename Value>
     self& operator+= (Value const& val)
     {
-    vampir_trace<22> tracer;
+	vampir_trace<22> tracer;
 	ins.template modify<update_plus<value_type> > (row, col, val);
 	return *this;
-    }
+    }  
 
   private:
 

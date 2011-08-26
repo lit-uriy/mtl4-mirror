@@ -30,7 +30,7 @@ struct parameters
 {
     typedef Orientation orientation;
     typedef Dimension   dimension;
-    static bool const   on_stack= OnStack;
+    static const bool   on_stack= OnStack;
     typedef SizeType    size_type;
 
     // Vector dimension must be known at compile time to be on the stack
