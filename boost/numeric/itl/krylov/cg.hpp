@@ -17,6 +17,7 @@
 #include <cassert>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
+#include <boost/numeric/itl/pc/is_identity.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/unary_dot.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
@@ -68,6 +69,7 @@ template < typename LinearOperator, typename HilbertSpaceX, typename HilbertSpac
 int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
        const Preconditioner& L, Iteration& iter)
 {
+    using pc::is_identity;
     if (is_identity(L))
 	return cg(A, x, b, iter);
 
