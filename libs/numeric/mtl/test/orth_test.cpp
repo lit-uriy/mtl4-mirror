@@ -61,8 +61,8 @@ void test(Vector& v, const T&, const char* name)
 	std::cout << "\n";
     }   
 
-    if (abs(dot(w[3], w[4])) > 0.000001) throw "Vectors 3 and 4 are not orthogonal!";
-    if (abs(dot(w[4], w[4]) - T(1)) > 0.000001) throw "Vector 4 is not normal!";
+    MTL_THROW_IF(abs(dot(w[3], w[4])) > 0.00001, mtl::runtime_error("Vectors 3 and 4 are not orthogonal!"));
+    MTL_THROW_IF(abs(dot(w[4], w[4]) - T(1)) > 0.00001, mtl::runtime_error("Vector 4 is not normal!"));
 
     cout << "\nv initially\n";
     for (unsigned i= 0; i < size(v); ++i)
@@ -81,8 +81,8 @@ void test(Vector& v, const T&, const char* name)
 	std::cout << "\n";
     }   
 
-    if (abs(dot(v[3], v[4])) > 0.000001) throw "Vectors 3 and 4 are not orthogonal!";
-    if (abs(dot(v[4], v[4])) < 0.000001) throw "Vector 4 should be non-zero!";
+    MTL_THROW_IF(abs(dot(v[3], v[4])) > 0.00001, mtl::runtime_error("Vectors 3 and 4 are not orthogonal!"));
+    MTL_THROW_IF(abs(dot(v[4], v[4])) < 0.00001, mtl::runtime_error("Vector 4 should be non-zero!"));
 
 
 }
