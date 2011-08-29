@@ -79,12 +79,14 @@ struct abs_greater_0
     template <typename T, typename U>
     bool operator()(const zip_ref<T, U>& x, const zip_value<T, U>& y) const
     {
+	using std::abs;
 	return abs(x.a[x.p]) > abs(y.x);
     }
     
     template <typename T, typename U>
     bool operator()(const zip_value<T, U>& x, const zip_ref<T, U>& y) const
     {
+	using std::abs;
 	return abs(x.x) > abs(y.a[y.p]);
     }
 };
