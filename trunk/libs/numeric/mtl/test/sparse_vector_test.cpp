@@ -24,16 +24,16 @@ int main(int , char**)
     mtl::vector::sparse_vector<float> v(100);
     std::cout << v << '\n';
 
-    v.insert(3, 7.6); v.insert(80, 3.9); v.insert(40, 2.5);
+    v.insert(3, 7.6f); v.insert(80, 3.9f); v.insert(40, 2.5f);
     std::cout << v << '\n';
 
-    v[17]= 8.7;
+    v[17]= 8.7f;
     v[19];
-    v[18]+= 4.6;
+    v[18]+= 4.6f;
     std::cout << v << '\n';
 
-    MTL_THROW_IF(!v.exists(18) || std::abs(v[18] - 4.6) > 0.001, logic_error("v[18] should exist and be 4.6"));
-    MTL_THROW_IF(!v.exists(19) || v[19] != 0.0, logic_error("v[19] should exist and be 0"));
+    MTL_THROW_IF(!v.exists(18) || std::abs(v[18] - 4.6f) > 0.001f, logic_error("v[18] should exist and be 4.6"));
+    MTL_THROW_IF(!v.exists(19) || v[19] != 0.0f, logic_error("v[19] should exist and be 0"));
     MTL_THROW_IF(v.exists(20), logic_error("v[20] should be empty"));
     
     v.sort_on_data();
