@@ -268,7 +268,7 @@ struct contiguous_memory_block
     {
 	// std::cout << "Copied in assignment.\n";	
 	if (this->used_memory() == 0)
-	    alloc(other.used_memory())
+	    alloc(other.used_memory());
 	MTL_DEBUG_THROW_IF(this->used_memory() != other.used_memory(), incompatible_size());
 	std::copy(other.data, other.data + other.used_memory(), data);
     }
