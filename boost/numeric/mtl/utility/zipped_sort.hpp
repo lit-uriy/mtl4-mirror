@@ -101,6 +101,7 @@ struct zip_it
 
     ref_type operator*() { return ref_type(a, v, p); }
     zip_it& operator++() { p++; return *this;}
+    zip_it operator++(int) { zip_it tmp(a, v, p); p++; return tmp;}
     zip_it& operator--() { p--; return *this;}
     zip_it operator--(int) { zip_it tmp(a, v, p); p--; return tmp;}
 
