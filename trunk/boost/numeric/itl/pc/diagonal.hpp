@@ -1,4 +1,4 @@
-// Software License for MTL
+// Software License for MTL 
 // 
 // Copyright (c) 2007 The Trustees of Indiana University.
 //               2008 Dresden University of Technology and the Trustees of Indiana University.
@@ -18,17 +18,17 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
-
-#include <boost/numeric/itl/utility/solver_proxy.hpp>
+#include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/itl/pc/solver.hpp>
 
 namespace itl { namespace pc {
 
 /// Diagonal Preconditioner
-template <typename Matrix>
+template <typename Matrix, typename Value= typename mtl::Collection<Matrix>::value_type>
 class diagonal
 {
   public:
-    typedef typename mtl::Collection<Matrix>::value_type  value_type;
+    typedef Value                                         value_type;
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef diagonal                                      self;
 
@@ -46,38 +46,75 @@ class diagonal
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
-	MTL_THROW_IF(size(x) != size(inv_diag), mtl::incompatible_size());
-	Vector y(size(x));
+	Vector y(resource(x));
+	solve(x, y);
+	return y;
+    }
 
+    template <typename VectorIn, typename VectorOut>
+    void solve(const VectorIn& x, VectorOut& y) const
+    {
+	y.checked_change_resource(x);
+	MTL_THROW_IF(size(x) != size(inv_diag), mtl::incompatible_size());
 	for (size_type i= 0; i < size(inv_diag); ++i)
 	    y[i]= inv_diag[i] * x[i];
-	return y;
     }
 
     /// Member function for solving adjoint problem, better use free function adjoint_solve
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
-	return solve(x);
+	Vector y(resource(x));
+	adjoint_solve(x, y);
+	return y;
     }
 
-  protected:
+    template <typename VectorIn, typename VectorOut>
+    void adjoint_solve(const VectorIn& x, VectorOut& y) const
+    {
+	using mtl::conj;
+	y.checked_change_resource(x);
+	MTL_THROW_IF(size(x) != size(inv_diag), mtl::incompatible_size());
+	for (size_type i= 0; i < size(inv_diag); ++i)
+	    y[i]= conj(inv_diag[i]) * x[i];
+    }
+
+ protected:
     mtl::dense_vector<value_type>    inv_diag;
 }; 
 
+#if 0
+template <typename Matrix, typename Value, typename Vector>
+struct diagonal_solver
+  : mtl::vector::assigner<diagonal_solver<Matrix, Value, Vector> >
+{
+    typedef diagonal<Matrix, Value, Vector> pc_type;
+
+    diagonal_solver(const pc_type& P, const Vector& x) : P(P), x(x) {}
+
+    template <typename VectorOut>
+    void assign_to(VectorOut& y) const
+    {	P.solve(x, y);    }    
+
+    const pc_type&        P; 
+    const Vector&         x;
+};
+#endif
 
 /// Solve approximately a sparse system in terms of inverse diagonal
 template <typename Matrix, typename Vector>
-Vector solve(const diagonal<Matrix>& P, const Vector& x)
+solver<diagonal<Matrix>, Vector, false>
+inline solve(const diagonal<Matrix>& P, const Vector& x)
 {
-    return P.solve(x);
+    return solver<diagonal<Matrix>, Vector, false>(P, x);
 }
 
 /// Solve approximately the adjoint of a sparse system in terms of inverse diagonal
 template <typename Matrix, typename Vector>
-Vector adjoint_solve(const diagonal<Matrix>& P, const Vector& x)
+solver<diagonal<Matrix>, Vector, false>
+inline adjoint_solve(const diagonal<Matrix>& P, const Vector& x)
 {
-    return P.adjoint_solve(x);
+    return solver<diagonal<Matrix>, Vector, true>(P, x);
 }
 
 

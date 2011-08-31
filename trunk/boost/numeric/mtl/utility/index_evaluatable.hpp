@@ -79,6 +79,15 @@ struct backward_index_evaluatable
 {};
 
 template <typename V1, typename Matrix, typename Value, typename V2>
+struct backward_index_evaluatable<lazy_assign<V1, itl::pc::solver<itl::pc::ic_0<Matrix, Value>, V2, true>, assign::assign_sum> >
+ : boost::mpl::true_ {};
+
+template <typename V1, typename Matrix, typename Factorizer, typename Value, typename V2>
+struct backward_index_evaluatable<lazy_assign<V1, itl::pc::solver<itl::pc::ilu<Matrix, Factorizer, Value>, V2, true>, assign::assign_sum> >
+ : boost::mpl::true_ {};
+
+#if 0
+template <typename V1, typename Matrix, typename Value, typename V2>
 struct backward_index_evaluatable<lazy_assign<V1, itl::pc::ic_0_solver<Matrix, Value, V2>, assign::assign_sum> >
  : boost::mpl::true_ {};
 
@@ -86,7 +95,7 @@ struct backward_index_evaluatable<lazy_assign<V1, itl::pc::ic_0_solver<Matrix, V
 template <typename V1, typename MValue, typename Para, typename Factorizer, typename Value, typename V2>
 struct backward_index_evaluatable<lazy_assign<V1, itl::pc::ilu_solver<compressed2D<MValue, Para>, Factorizer, Value, V2>, assign::assign_sum> >
  : boost::mpl::true_ {};
-
+#endif
 
 }} // namespace mtl::traits
 
