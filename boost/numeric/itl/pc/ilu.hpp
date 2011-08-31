@@ -15,6 +15,7 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/operation/adjoint.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>
@@ -22,10 +23,11 @@
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
-
+#include <boost/numeric/itl/pc/solver.hpp>
 
 namespace itl { namespace pc {
 
+/// Incomplete LU factorization of a \p Matrix into matrices of type \p Value using a \p Factorizer (e.g. ILU(0) or ILUT)
 template <typename Matrix, typename Factorizer, typename Value= typename mtl::Collection<Matrix>::value_type>
 class ilu
 {
@@ -38,17 +40,19 @@ class ilu
     typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
     typedef mtl::compressed2D<value_type, para>                     L_type;
     typedef mtl::compressed2D<value_type, para>                     U_type;
+    typedef typename mtl::matrix::traits::adjoint<L_type>::type     LH_type;
+    typedef typename mtl::matrix::traits::adjoint<U_type>::type     UH_type;
 
     typedef mtl::matrix::detail::lower_trisolve_t<L_type, mtl::tag::unit_diagonal, true>    lower_solver_t;
     typedef mtl::matrix::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal, true> upper_solver_t;
 
-    // Factorization adapted from Saad
+    /// Factorization adapted from Saad
     ilu(const Matrix& A) : f(A, L, U), lower_solver(L), upper_solver(U) {}
 
     template <typename FactPara>
     ilu(const Matrix& A, const FactPara& p) : f(A, p, L, U), lower_solver(L), upper_solver(U) {}
 
-    // Solve  LU y = x --> y= U^{-1} L^{-1} x
+    /// Solve  LU y = x --> y= U^{-1} L^{-1} x
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
@@ -78,12 +82,22 @@ class ilu
     }
 
 
-    // Solve (LU)^H x = b --> x= L^{-H} U^{-H} b
+    /// Solve (LU)^H y = x --> y= L^{-H} U^{-H} x
     template <typename Vector>
-    Vector adjoint_solve(const Vector& b) const
+    Vector adjoint_solve(const Vector& x) const
     {
 	mtl::vampir_trace<5040> tracer;
-	return unit_upper_trisolve(adjoint(L), inverse_lower_trisolve(adjoint(U), b));
+	Vector y(resource(x));
+	adjoint_solve(x, y);
+	return y;
+    }
+
+    /// Solve (LU)^H y = x --> y= L^{-H} U^{-H} x
+    template <typename VectorIn, typename VectorOut>
+    void adjoint_solve(const VectorIn& x, VectorOut& y) const
+    {
+	y.checked_change_resource(x);
+	y= unit_upper_trisolve(adjoint(L), inverse_lower_trisolve(adjoint(U), x));
     }
 
 
@@ -128,37 +142,43 @@ class ilu<mtl::dense2D<Value>, Factorizer, V2> // last 2 arguments are dummies
     mtl::dense_vector<size_type>   P;
 };
 
-
+#if 0
 template <typename Matrix, typename Factorizer, typename Value, typename Vector>
 struct ilu_solver
   : mtl::vector::assigner<ilu_solver<Matrix, Factorizer, Value, Vector> >
 {
     typedef ilu<Matrix, Factorizer, Value> pc_type;
 
-    ilu_solver(const ilu<Matrix, Factorizer, Value>& P, const Vector& x) : P(P), x(x) {}
+    ilu_solver(const pc_type& P, const Vector& x) : P(P), x(x) {}
 
     template <typename VectorOut>
     void assign_to(VectorOut& y) const
     {	P.solve(x, y);    }    
 
-    const ilu<Matrix, Factorizer, Value>& P; 
-    const Vector&                         x;
+    const pc_type&       P; 
+    const Vector&        x;
 };
+#endif
+
 
 
 /// Solve LU x = b --> x= U^{-1} L^{-1} b
 template <typename Matrix, typename Factorizer, typename Value, typename Vector>
-ilu_solver<Matrix, Factorizer, Value, Vector> solve(const ilu<Matrix, Factorizer, Value>& P, const Vector& x)
+// ilu_solver<Matrix, Factorizer, Value, Vector> 
+solver<ilu<Matrix, Factorizer, Value>, Vector, false>
+inline solve(const ilu<Matrix, Factorizer, Value>& P, const Vector& x)
 {
-    return ilu_solver<Matrix, Factorizer, Value, Vector>(P, x);
+    return solver<ilu<Matrix, Factorizer, Value>, Vector, false>(P, x);
 }
 
 
 /// Solve (LU)^H x = b --> x= L^{-H} U^{-H} b
 template <typename Matrix, typename Factorizer, typename Value, typename Vector>
-Vector adjoint_solve(const ilu<Matrix, Factorizer, Value>& P, const Vector& b)
+// Vector 
+solver<ilu<Matrix, Factorizer, Value>, Vector, true>
+inline adjoint_solve(const ilu<Matrix, Factorizer, Value>& P, const Vector& b)
 {
-    return P.adjoint_solve(b);
+    return solver<ilu<Matrix, Factorizer, Value>, Vector, true>(P, b);
 }
 
 // ic_0_evaluator not needed IC(0) and ILU(0) do the same at the upper triangle ;-)

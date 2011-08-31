@@ -21,8 +21,8 @@ template <typename PC>
 bool is_identity(const PC&) 
 { return false; }
 
-template <typename Matrix>
-bool is_identity(const itl::pc::identity<Matrix>&)
+template <typename Matrix, typename Value>
+bool is_identity(const itl::pc::identity<Matrix, Value>&)
 { return true; }
 
 

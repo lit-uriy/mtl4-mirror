@@ -31,7 +31,7 @@
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
-#include <boost/numeric/mtl/vector/assigner.hpp>
+#include <boost/numeric/itl/pc/solver.hpp>
 
 
 namespace itl { namespace pc {
@@ -57,7 +57,7 @@ class ic_0
     ic_0(const Matrix& A) : f(A, U), L(trans(U)), lower_solver(L), upper_solver(U) {}
 
 
-    // solve x = U^T U y --> y= U^{-1} U^{-T} x
+    // solve x = U^* U y --> y= U^{-1} U^{-*} x
     template <typename Vector>
     Vector solve(const Vector& x) const
     {
@@ -65,7 +65,7 @@ class ic_0
 	return inverse_upper_trisolve(U, inverse_lower_trisolve(adjoint(U), x));
     }
 
-    // solve x = U^T y --> y0= U^{-T} x
+    // solve x = U^* y --> y0= U^{-*} x
     template <typename VectorIn, typename VectorOut>
     const VectorOut& solve_lower(const VectorIn& x, VectorOut&) const
     {
@@ -74,7 +74,7 @@ class ic_0
 	return y0;
     }
 
-    // solve x = U^T U y --> y= U^{-1} U^{-T} x
+    // solve x = U^* U y --> y= U^{-1} U^{-*} x
     template <typename VectorIn, typename VectorOut>
     void solve(const VectorIn& x, VectorOut& y) const
     {
@@ -85,13 +85,22 @@ class ic_0
 	upper_solver(y0, y);
     }
 
-    // solve x = (LU)^T y --> y= L^{-T} U^{-T} x
+    // solve x = (LU)^* y --> y= L^{-*} U^{-*} x
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
 	mtl::vampir_trace<5044> tracer;
 	return solve(x);
     }
+
+    // solve x = (LU)^* y --> y= L^{-*} U^{-*} x
+    template <typename VectorIn, typename VectorOut>
+    void adjoint_solve(const VectorIn& x, VectorOut& y) const
+    {
+	mtl::vampir_trace<5044> tracer;
+	solve(x, y); 
+    }
+
 
     L_type get_L() { return L_type(L); }
     U_type get_U() { return U; }
@@ -182,6 +191,7 @@ class ic_0
     upper_solver_t               upper_solver;
 }; 
 
+#if 0
 template <typename Matrix, typename Value, typename Vector>
 struct ic_0_solver
   : mtl::vector::assigner<ic_0_solver<Matrix, Value, Vector> >
@@ -197,6 +207,7 @@ struct ic_0_solver
     const ic_0<Matrix, Value>& P; 
     const Vector&              x;
 };
+#endif
 
 template <typename VectorOut, typename Solver>
 struct ic_0_evaluator
@@ -242,15 +253,17 @@ inline std::size_t size(const ic_0_evaluator<VectorOut, Solver>& eval)
 {   return size(eval.y); }
 
 template <typename Matrix, typename Value, typename Vector>
-ic_0_solver<Matrix, Value, Vector> solve(const ic_0<Matrix, Value>& P, const Vector& x)
+solver<ic_0<Matrix, Value>, Vector, false>
+inline solve(const ic_0<Matrix, Value>& P, const Vector& x)
 {
-    return ic_0_solver<Matrix, Value, Vector>(P, x);
+    return solver<ic_0<Matrix, Value>, Vector, false>(P, x);
 }
 
 template <typename Matrix, typename Value, typename Vector>
-Vector adjoint_solve(const ic_0<Matrix, Value>& P, const Vector& x)
+solver<ic_0<Matrix, Value>, Vector, true>
+inline adjoint_solve(const ic_0<Matrix, Value>& P, const Vector& x)
 {
-    return P.adjoint_solve(x);
+    return solver<ic_0<Matrix, Value>, Vector, true>(P, x);
 }
 
 

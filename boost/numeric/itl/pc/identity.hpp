@@ -15,10 +15,13 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
+#include <boost/numeric/itl/pc/solver.hpp>
 
 namespace itl { namespace pc {
 
-template <typename Matrix>
+/// Identity preconditioner, i.e. no preconditioning and vector is just copied
+/** Second template is just for a uniform interface with other preconditioners. **/
+template <typename Matrix, typename Value= double>
 class identity
 {
   public:
@@ -35,29 +38,37 @@ class identity
 	return x;
     }
 
+    template <typename VectorIn, typename VectorOut>
+    void solve(const VectorIn& b, VectorOut& x) const
+    {
+	mtl::vampir_trace<5032> tracer;
+	x= b;
+    }
+
     template <typename Vector>
     Vector adjoint_solve(const Vector& x) const
     {
 	mtl::vampir_trace<5034> tracer;
 	return x;
     }
+
+    template <typename VectorIn, typename VectorOut>
+    void adjoint_solve(const VectorIn& b, VectorOut& x) const
+    {
+	mtl::vampir_trace<5034> tracer;
+	x= b;
+    }
 }; 
 
+template <typename Matrix, typename Vector>
+solver<identity<Matrix>, Vector, false>
+inline solve(const identity<Matrix>& P, const Vector& x)
+{   return solver<identity<Matrix>, Vector, false>(P, x); }
 
 template <typename Matrix, typename Vector>
-inline Vector solve(const identity<Matrix>&, const Vector& x)
-{
-    mtl::vampir_trace<5031> tracer;
-    return x;
-}
-
-template <typename Matrix, typename Vector>
-inline Vector adjoint_solve(const identity<Matrix>&, const Vector& x)
-{
-    mtl::vampir_trace<5033> tracer;
-    return x;
-}
-
+solver<identity<Matrix>, Vector, true>
+inline adjoint_solve(const identity<Matrix>& P, const Vector& x)
+{   return solver<identity<Matrix>, Vector, true>(P, x); }
 
 
 }} // namespace itl::pc
