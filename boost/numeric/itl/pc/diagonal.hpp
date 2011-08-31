@@ -111,7 +111,7 @@ inline solve(const diagonal<Matrix>& P, const Vector& x)
 
 /// Solve approximately the adjoint of a sparse system in terms of inverse diagonal
 template <typename Matrix, typename Vector>
-solver<diagonal<Matrix>, Vector, false>
+solver<diagonal<Matrix>, Vector, true>
 inline adjoint_solve(const diagonal<Matrix>& P, const Vector& x)
 {
     return solver<diagonal<Matrix>, Vector, true>(P, x);

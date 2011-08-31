@@ -40,17 +40,24 @@ class ilu
     typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
     typedef mtl::compressed2D<value_type, para>                     L_type;
     typedef mtl::compressed2D<value_type, para>                     U_type;
-    typedef typename mtl::matrix::traits::adjoint<L_type>::type     LH_type;
-    typedef typename mtl::matrix::traits::adjoint<U_type>::type     UH_type;
+    typedef typename mtl::matrix::traits::adjoint<L_type>::type     adjoint_L_type;
+    typedef typename mtl::matrix::traits::adjoint<U_type>::type     adjoint_U_type;
 
     typedef mtl::matrix::detail::lower_trisolve_t<L_type, mtl::tag::unit_diagonal, true>    lower_solver_t;
     typedef mtl::matrix::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal, true> upper_solver_t;
 
+    typedef mtl::matrix::detail::lower_trisolve_t<adjoint_U_type, mtl::tag::inverse_diagonal, true> adjoint_lower_solver_t;
+    typedef mtl::matrix::detail::upper_trisolve_t<adjoint_L_type, mtl::tag::unit_diagonal, true>    adjoint_upper_solver_t;
+
     /// Factorization adapted from Saad
-    ilu(const Matrix& A) : f(A, L, U), lower_solver(L), upper_solver(U) {}
+    explicit ilu(const Matrix& A) 
+      : f(A, L, U), lower_solver(L), upper_solver(U), adjoint_L(adjoint(L)), adjoint_U(adjoint(U)), 
+	adjoint_lower_solver(adjoint_U), adjoint_upper_solver(adjoint_L) {}
 
     template <typename FactPara>
-    ilu(const Matrix& A, const FactPara& p) : f(A, p, L, U), lower_solver(L), upper_solver(U) {}
+    ilu(const Matrix& A, const FactPara& p) 
+      : f(A, p, L, U), lower_solver(L), upper_solver(U), adjoint_L(adjoint(L)), adjoint_U(adjoint(U)), 
+	adjoint_lower_solver(adjoint_U), adjoint_upper_solver(adjoint_L) {}
 
     /// Solve  LU y = x --> y= U^{-1} L^{-1} x
     template <typename Vector>
@@ -96,8 +103,12 @@ class ilu
     template <typename VectorIn, typename VectorOut>
     void adjoint_solve(const VectorIn& x, VectorOut& y) const
     {
+	mtl::vampir_trace<5040> tracer;
 	y.checked_change_resource(x);
-	y= unit_upper_trisolve(adjoint(L), inverse_lower_trisolve(adjoint(U), x));
+	// y= unit_upper_trisolve(adjoint(L), inverse_lower_trisolve(adjoint(U), x));
+	static VectorOut y0(resource(x));
+	adjoint_lower_solver(x, y0);
+	adjoint_upper_solver(y0, y);
     }
 
 
@@ -111,6 +122,11 @@ class ilu
     Factorizer                  f;
     lower_solver_t              lower_solver;
     upper_solver_t              upper_solver;
+    adjoint_L_type              adjoint_L;
+    adjoint_U_type              adjoint_U;
+    adjoint_lower_solver_t      adjoint_lower_solver;
+    adjoint_upper_solver_t      adjoint_upper_solver;
+
 }; 
 
 template <typename Value, typename Factorizer, typename V2>
@@ -136,6 +152,10 @@ class ilu<mtl::dense2D<Value>, Factorizer, V2> // last 2 arguments are dummies
     // Solve (P^{-1}LU)^H x = b --> x= P^{-1}L^{-H} U^{-H} b // P^{-1}^{-1}^H = P^{-1})
     template <typename Vector>
     Vector adjoint_solve(const Vector& b) const { return lu_adjoint_apply(LU, P, b); }
+
+    // Solve (P^{-1}LU)^H x = b --> x= P^{-1}L^{-H} U^{-H} b // P^{-1}^{-1}^H = P^{-1})
+    template <typename VectorIn, typename VectorOut>
+    void adjoint_solve(const VectorIn& b, VectorOut& x) const { x= lu_adjoint_apply(LU, P, b); }
 
   private:
     LU_type                        LU;
