@@ -15,6 +15,7 @@
 
 #include <boost/numeric/mtl/vector/sparse_vector.hpp>
 #include <boost/numeric/mtl/operation/invert_diagonal.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl { namespace pc {
 
@@ -48,6 +49,7 @@ struct ilut_factorizer
     void factorize(const Matrix& A, const Para& p, L_type& L, U_type& U, boost::mpl::true_)
 
     {   
+	mtl::vampir_trace<5049> tracer;
 	using std::abs; using mtl::traits::range_generator; using mtl::begin; using mtl::end;
 	using namespace mtl::tag;
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
@@ -66,9 +68,10 @@ struct ilut_factorizer
 	    mtl::matrix::inserter<L_type> L_ins(L, p.first);
 	    mtl::matrix::inserter<U_type> U_ins(U, p.first + 1); // plus one for diagonal
 	
+	    mtl::vector::sparse_vector<value_type> vec(n); // corr. row in paper
 	    cur_type ic= begin<row>(A), iend= end<row>(A);
 	    for (size_type i= 0; i < n; ++i, ++ic) {
-		mtl::vector::sparse_vector<value_type> vec(n); // corr. row in paper
+		
 		for (icur_type kc= begin<nz>(ic), kend= end<nz>(ic); kc != kend; ++kc) // row= A[i][*]
 		    vec.insert(col(*kc), value(*kc));
 		value_type tau_i= p.second * two_norm(vec); // threshold for i-th row
@@ -85,28 +88,36 @@ struct ilut_factorizer
 			    vec[k1]-= vec_k * U_ins.ref_elements()[j0];
 			// std::cout << "vec after updating from U[" << k << "][" << k1 << "] is " << vec << '\n';
 		    }
+		    // if (i > 1000 && i < 1010) std::cout << "vec before crop in row " << i << ", updating from row " << k << ": \n" << vec << "\n";
+		    vec.crop(tau_i);
+		    // if (i > 1000 && i < 1010) std::cout << "vec after crop: \n" << vec << "\n";
 		}
 		vec.sort_on_data();
 		// std::cout << "vec at " << i << " is " << vec << '\n';
+		// mtl::vampir_trace<9904> tracer2;
+		bool diag_found= false;
 		for (size_type cntu= 0, cntl= 0, j= 0; j < vec.nnz() && (cntu < p.first || cntl < p.first); j++) {
 		    size_type k= vec.index(j);
 		    value_type v= vec.value(j);
-		    if (abs(v) < tau_i) break;
+		    // if (abs(v) < tau_i) break;
 		    if (i == k)
-			U_ins[i][i] << v;
+			U_ins[i][i] << v, diag_found= true;
 		    else if (i < k) {
 			if (cntu++ < p.first)
 			    U_ins[i][k] << v;
 		    } else // i > k
 			if (cntl++ < p.first)
 			    L_ins[i][k] << v;		
-		}	    
+		}
+		if (!diag_found) std::cerr << "Deleted diagonal!!!!\n";
+		vec.make_empty();
 	    }
 	} // destroy inserters
 	invert_diagonal(U);
     }
 };
 
+// Not usable yet !!!!!
 template <typename Matrix, typename Value= typename mtl::Collection<Matrix>::value_type>
 class ilut
   : public ilu<Matrix, ilut_factorizer, Value>

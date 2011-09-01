@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/zipped_sort.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace vector {
 
@@ -38,7 +39,9 @@ class sparse_vector
     {   MTL_DEBUG_THROW_IF(is_negative(j) || j > size_type(indices.size()), mtl::index_out_of_range()); }
 
   public:
-    sparse_vector(size_type n= 0) : n(n), on_indices(true) {}
+    sparse_vector(size_type n= 0) : n(n), on_indices(true), longest(0) {}
+
+    ~sparse_vector() { std::cout << "longest vector was " << longest << '\n'; }
 
     std::size_t nnz() const { assert(indices.size() == data.size()); return indices.size(); }
 
@@ -54,6 +57,7 @@ class sparse_vector
 
     void insert(size_type i, const value_type& v)
     {
+	// vampir_trace<9901> tracer;
 	typename sv_type::iterator it= lower_bound(indices.begin(), indices.end(), i);
 	if (it == indices.end()) {
 	    // std::cout << "Insert entry " << i << " at the end\n";
@@ -85,13 +89,34 @@ class sparse_vector
 	return data[pos(i)];
     }
 
+    void make_empty() { data.resize(0); indices.resize(0); }
+
+    void crop(value_type threshold= value_type(0))
+    {
+	using std::abs;
+	std::size_t j= 0;
+	for (std::size_t i= 0, end= data.size(); i < end; i++) 
+	    if (abs(data[i]) > threshold) {
+		if (i > j) {
+		    data[j]= data[i];
+		    indices[j]= indices[i];
+		}
+		++j;
+	    }
+	data.resize(j);
+	indices.resize(j);
+    }
+
     void sort_on_data() // largest magnitude first
     {
+	// vampir_trace<9903> tracer;
 	if (n > 0)
 	    std::sort(utility::zip_it<value_type, size_type>(&data[0], &indices[0], 0), 
 		      utility::zip_it<value_type, size_type>(&data[0], &indices[0], indices.size()), 
 		      utility::abs_greater_0());
 	on_indices= false;
+
+	if (indices.size() > longest) longest= indices.size();
     }
 
     void sort_on_indices()
@@ -130,6 +155,8 @@ class sparse_vector
     sv_type     indices;
     vv_type     data;
     bool        on_indices; // if true sorted on indices, otherwise on values
+    
+    std::size_t longest;
 };
 
 template <typename Value, typename Parameter>

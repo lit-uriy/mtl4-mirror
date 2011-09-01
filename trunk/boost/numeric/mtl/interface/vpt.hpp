@@ -422,11 +422,11 @@ template <> std::string vampir_trace<7003>::name("bicg");
 
 
 
-
-template <> std::string vampir_trace<9901>::name("test_block1");
-template <> std::string vampir_trace<9902>::name("test_block2");
-template <> std::string vampir_trace<9903>::name("test_block3");
-template <> std::string vampir_trace<9904>::name("test_block4");
+// Test blocks for performance debugging
+template <> std::string vampir_trace<9901>::name("tb1"); 
+template <> std::string vampir_trace<9902>::name("tb2");
+template <> std::string vampir_trace<9903>::name("tb3");
+template <> std::string vampir_trace<9904>::name("tb4");
 template <> std::string vampir_trace<9999>::name("main");
     
 
