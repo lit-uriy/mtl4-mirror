@@ -39,9 +39,9 @@ class sparse_vector
     {   MTL_DEBUG_THROW_IF(is_negative(j) || j > size_type(indices.size()), mtl::index_out_of_range()); }
 
   public:
-    sparse_vector(size_type n= 0) : n(n), on_indices(true), longest(0) {}
+    sparse_vector(size_type n= 0) : n(n), on_indices(true) /*, longest(0) */ {}
 
-    ~sparse_vector() { std::cout << "longest vector was " << longest << '\n'; }
+    // ~sparse_vector() { std::cout << "longest vector was " << longest << '\n'; }
 
     std::size_t nnz() const { assert(indices.size() == data.size()); return indices.size(); }
 
@@ -116,7 +116,7 @@ class sparse_vector
 		      utility::abs_greater_0());
 	on_indices= false;
 
-	if (indices.size() > longest) longest= indices.size();
+	// if (indices.size() > longest) longest= indices.size();
     }
 
     void sort_on_indices()
@@ -156,7 +156,7 @@ class sparse_vector
     vv_type     data;
     bool        on_indices; // if true sorted on indices, otherwise on values
     
-    std::size_t longest;
+    // std::size_t longest;
 };
 
 template <typename Value, typename Parameter>
