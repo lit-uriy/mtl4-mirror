@@ -596,7 +596,7 @@ struct compressed2D_inserter
     {
 	size_pair                      mm= matrix.indexer.major_minor_c(matrix, r, c);
 	utilities::maybe<size_type>    offset= matrix_offset(mm);
-	return offset ? matrix.data[offset] : value_type(0);
+	return offset ? matrix.data[offset.value()] : value_type(0);
     }
 
     template <typename Matrix, typename Rows, typename Cols>

@@ -34,7 +34,7 @@ class sparse_vector
     typedef typename Parameter::orientation orientation;
     typedef sparse_vector                   self;
 
-    void check(size_type j) const
+    void check(size_type MTL_DEBUG_ARG(j)) const
     {   MTL_DEBUG_THROW_IF(is_negative(j) || j > size_type(indices.size()), mtl::index_out_of_range()); }
 
   public:

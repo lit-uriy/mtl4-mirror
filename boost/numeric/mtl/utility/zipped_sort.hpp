@@ -18,6 +18,7 @@
 
 #include <cmath>
 #include <iterator>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { namespace utility {
 
@@ -105,7 +106,7 @@ struct zip_it
     zip_it& operator--() { p--; return *this;}
     zip_it operator--(int) { zip_it tmp(a, v, p); p--; return tmp;}
 
-    void check(const zip_it& other) const { assert(a == other.a); assert(v == other.v); }
+    void check(const zip_it& MTL_DEBUG_ARG(other)) const { assert(a == other.a); assert(v == other.v); }
 
     bool operator==(const zip_it& other) const { check(other); return p == other.p; }
     bool operator!=(const zip_it& other) const { check(other); return p != other.p; }
@@ -128,7 +129,7 @@ struct zip_ref
 
     zip_ref(T* a, U* v, int p) : a(a), v(v), p(p) {}
 
-    void check(const zip_ref& other) const { assert(a == other.a); assert(v == other.v); }
+    void check(const zip_ref& MTL_DEBUG_ARG(other)) const { assert(a == other.a); assert(v == other.v); }
 
     bool operator<(const zip_ref& r) const { check(r); return a[p] < r.a[r.p]; }
     zip_ref& operator=(const zip_ref& r) 

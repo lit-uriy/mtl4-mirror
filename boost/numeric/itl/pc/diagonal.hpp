@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/itl/pc/solver.hpp>
 
 namespace itl { namespace pc {
@@ -35,6 +36,7 @@ class diagonal
     /// Constructor takes matrix reference
     explicit diagonal(const Matrix& A) : inv_diag(num_rows(A))
     {
+	mtl::vampir_trace<5050> tracer;
 	MTL_THROW_IF(num_rows(A) != num_cols(A), mtl::matrix_not_square());
 	using math::reciprocal;
 
@@ -54,6 +56,7 @@ class diagonal
     template <typename VectorIn, typename VectorOut>
     void solve(const VectorIn& x, VectorOut& y) const
     {
+	mtl::vampir_trace<5051> tracer;
 	y.checked_change_resource(x);
 	MTL_THROW_IF(size(x) != size(inv_diag), mtl::incompatible_size());
 	for (size_type i= 0; i < size(inv_diag); ++i)
@@ -82,24 +85,6 @@ class diagonal
  protected:
     mtl::dense_vector<value_type>    inv_diag;
 }; 
-
-#if 0
-template <typename Matrix, typename Value, typename Vector>
-struct diagonal_solver
-  : mtl::vector::assigner<diagonal_solver<Matrix, Value, Vector> >
-{
-    typedef diagonal<Matrix, Value, Vector> pc_type;
-
-    diagonal_solver(const pc_type& P, const Vector& x) : P(P), x(x) {}
-
-    template <typename VectorOut>
-    void assign_to(VectorOut& y) const
-    {	P.solve(x, y);    }    
-
-    const pc_type&        P; 
-    const Vector&         x;
-};
-#endif
 
 /// Solve approximately a sparse system in terms of inverse diagonal
 template <typename Matrix, typename Vector>

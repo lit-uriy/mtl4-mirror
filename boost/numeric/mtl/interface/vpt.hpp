@@ -237,7 +237,7 @@ template <> std::string vampir_trace<3022>::name("sparse_row_cvec_mult"); // gen
 template <> std::string vampir_trace<3023>::name("ccs_cvec_mult");
 template <> std::string vampir_trace<3024>::name("matrix::max_abs_pos");
 template <> std::string vampir_trace<3025>::name("matrix::one_norm");
-template <> std::string vampir_trace<3026>::name("");
+template <> std::string vampir_trace<3026>::name("invert_diagonal(compressed)");
 template <> std::string vampir_trace<3027>::name("mat_vect_mult");
 template <> std::string vampir_trace<3028>::name("Vect_sparse_mat_mult");
 template <> std::string vampir_trace<3029>::name("Matrix_scal");
@@ -396,7 +396,9 @@ template <> std::string vampir_trace<5045>::name("ic_0::adjoint_solve_nocopy");
 template <> std::string vampir_trace<5046>::name("upper_trisolve_crs_compact");
 template <> std::string vampir_trace<5047>::name("lower_trisolve_crs_compact");
 template <> std::string vampir_trace<5048>::name("lower_unit_trisolve_crs_compact");
-template <> std::string vampir_trace<5049>::name("");
+template <> std::string vampir_trace<5049>::name("ilut::factorize");
+template <> std::string vampir_trace<5050>::name("diagonal::setup");
+template <> std::string vampir_trace<5051>::name("diagonal::solve");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -414,6 +416,7 @@ template <> std::string vampir_trace<6004>::name("fused::bwd_eval_loop_unrolled"
 // Iterative solvers:               7000
 template <> std::string vampir_trace<7001>::name("cg_without_pc");
 template <> std::string vampir_trace<7002>::name("cg");
+template <> std::string vampir_trace<7003>::name("bicg");
 
 
 
