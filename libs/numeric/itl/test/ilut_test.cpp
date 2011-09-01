@@ -16,20 +16,23 @@
 #include <boost/numeric/itl/pc/ilut.hpp>
 
 template <typename Matrix>
-void test_factorization(const Matrix& A, unsigned p, double tau)
+double test_factorization(const Matrix& A, unsigned p, double tau)
 {
     itl::pc::ilut<Matrix>  P(A, p, tau);
+    //itl::pc::ilu_0<Matrix>  P(A);
     Matrix L(P.get_L()), U(P.get_U()), I(num_rows(A), num_cols(A));
     I= 1.0;
     L+= I;
     invert_diagonal(U);
-    std::cout << "L is\n" << L << '\n';
-    std::cout << "U is\n" << U << '\n';
+    //std::cout << "L is\n" << L << '\n';
+    //std::cout << "U is\n" << U << '\n';
     Matrix LU(L*U);
-    std::cout << "LU is\n" << LU << '\n';
+    //std::cout << "LU is\n" << LU << '\n';
     LU-= A;
-    std::cout << "LU-A is\n" << LU << '\n';
-    std::cout << "|A-LU|_1 with p = " << p << ", tau = " << tau << " is " << frobenius_norm(LU) << '\n';
+    //std::cout << "LU-A is\n" << LU << '\n';
+    double diff_norm= frobenius_norm(LU);
+    std::cout << "|A-LU|_1 with p = " << p << ", tau = " << tau << " is " << diff_norm << '\n';
+    return diff_norm;
 }
 
 int main()
@@ -41,8 +44,8 @@ int main()
     mtl::compressed2D<double>          A(N, N);
     laplacian_setup(A, size, size);
        
-    std::cout << "A is\n" << A << '\n';
-    test_factorization(A, 4, 0.0001);
+    // std::cout << "A is\n" << A << '\n';
+    MTL_THROW_IF(test_factorization(A, 3, 0.001) > 0.24, mtl::logic_error("ILUT(3, 0.001) too bad"));
 
 #if 0
     for(unsigned i= 2; i <= size; i++)
