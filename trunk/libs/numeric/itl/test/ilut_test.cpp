@@ -22,6 +22,7 @@ void test_factorization(const Matrix& A, unsigned p, double tau)
     Matrix L(P.get_L()), U(P.get_U()), I(num_rows(A), num_cols(A));
     I= 1.0;
     L+= I;
+    invert_diagonal(U);
     std::cout << "L is\n" << L << '\n';
     std::cout << "U is\n" << U << '\n';
     Matrix LU(L*U);

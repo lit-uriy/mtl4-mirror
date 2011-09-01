@@ -14,6 +14,7 @@
 #define ITL_PC_ILUT_INCLUDE
 
 #include <boost/numeric/mtl/vector/sparse_vector.hpp>
+#include <boost/numeric/mtl/operation/invert_diagonal.hpp>
 
 namespace itl { namespace pc {
 
@@ -61,45 +62,48 @@ struct ilut_factorizer
 	size_type n= num_rows(A);
 	L.change_dim(n, n); 
 	U.change_dim(n, n);
-	mtl::matrix::inserter<L_type> L_ins(L, p.first);
-	mtl::matrix::inserter<U_type> U_ins(U, p.first + 1); // plus one for diagonal
+	{
+	    mtl::matrix::inserter<L_type> L_ins(L, p.first);
+	    mtl::matrix::inserter<U_type> U_ins(U, p.first + 1); // plus one for diagonal
 	
-	cur_type ic= begin<row>(A), iend= end<row>(A);
-	for (size_type i= 0; i < n; ++i, ++ic) {
-	    mtl::vector::sparse_vector<value_type> vec(n); // corr. row in paper
-	    for (icur_type kc= begin<nz>(ic), kend= end<nz>(ic); kc != kend; ++kc) // row= A[i][*]
-		vec.insert(col(*kc), value(*kc));
-	    value_type tau_i= p.second * two_norm(vec); // threshold for i-th row
-	    // loop over non-zeros in vec; changes in vec considered
-	    for (size_type j= 0; j < vec.nnz() && vec.index(j) < i; j++) {
-		size_type k= vec.index(j);
-		value_type ukk= U_ins.value(k, k);
-		MTL_DEBUG_THROW_IF(ukk == value_type(0), mtl::missing_diagonal());
-		value_type vec_k= vec.value(j)/= ukk;
-		// std::cout << "vec after updating from U[" << k << "][" << k << "] is " << vec << '\n';
-		for (size_type j0= U_ins.ref_starts()[k], j1= U_ins.ref_slot_ends()[k]; j0 < j1; j0++) { // U[k][k+1:n]
-		    size_type k1= U_ins.ref_indices()[j0];
-		    if (k1 > k)
-			vec[k1]-= vec_k * U_ins.ref_elements()[j0];
-		    // std::cout << "vec after updating from U[" << k << "][" << k1 << "] is " << vec << '\n';
+	    cur_type ic= begin<row>(A), iend= end<row>(A);
+	    for (size_type i= 0; i < n; ++i, ++ic) {
+		mtl::vector::sparse_vector<value_type> vec(n); // corr. row in paper
+		for (icur_type kc= begin<nz>(ic), kend= end<nz>(ic); kc != kend; ++kc) // row= A[i][*]
+		    vec.insert(col(*kc), value(*kc));
+		value_type tau_i= p.second * two_norm(vec); // threshold for i-th row
+		// loop over non-zeros in vec; changes in vec considered
+		for (size_type j= 0; j < vec.nnz() && vec.index(j) < i; j++) {
+		    size_type k= vec.index(j);
+		    value_type ukk= U_ins.value(k, k);
+		    MTL_DEBUG_THROW_IF(ukk == value_type(0), mtl::missing_diagonal());
+		    value_type vec_k= vec.value(j)/= ukk;
+		    // std::cout << "vec after updating from U[" << k << "][" << k << "] is " << vec << '\n';
+		    for (size_type j0= U_ins.ref_starts()[k], j1= U_ins.ref_slot_ends()[k]; j0 < j1; j0++) { // U[k][k+1:n]
+			size_type k1= U_ins.ref_indices()[j0];
+			if (k1 > k)
+			    vec[k1]-= vec_k * U_ins.ref_elements()[j0];
+			// std::cout << "vec after updating from U[" << k << "][" << k1 << "] is " << vec << '\n';
+		    }
 		}
+		vec.sort_on_data();
+		// std::cout << "vec at " << i << " is " << vec << '\n';
+		for (size_type cntu= 0, cntl= 0, j= 0; j < vec.nnz() && (cntu < p.first || cntl < p.first); j++) {
+		    size_type k= vec.index(j);
+		    value_type v= vec.value(j);
+		    if (abs(v) < tau_i) break;
+		    if (i == k)
+			U_ins[i][i] << v;
+		    else if (i < k) {
+			if (cntu++ < p.first)
+			    U_ins[i][k] << v;
+		    } else // i > k
+			if (cntl++ < p.first)
+			    L_ins[i][k] << v;		
+		}	    
 	    }
-	    vec.sort_on_data();
-	    // std::cout << "vec at " << i << " is " << vec << '\n';
-	    for (size_type cntu= 0, cntl= 0, j= 0; j < vec.nnz() && (cntu < p.first || cntl < p.first); j++) {
-		size_type k= vec.index(j);
-		value_type v= vec.value(j);
-		if (abs(v) < tau_i) break;
-		if (i == k)
-		    U_ins[i][i] << v;
-		else if (i < k) {
-		    if (cntu++ < p.first)
-			U_ins[i][k] << v;
-		} else // i > k
-		    if (cntl++ < p.first)
-			L_ins[i][k] << v;		
-	    }	    
-	}
+	} // destroy inserters
+	invert_diagonal(U);
     }
 };
 

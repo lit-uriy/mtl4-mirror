@@ -35,7 +35,9 @@
 #include <boost/numeric/itl/pc/identity.hpp>
 #include <boost/numeric/itl/pc/is_identity.hpp>
 #include <boost/numeric/itl/pc/diagonal.hpp>
+#include <boost/numeric/itl/pc/ilu.hpp>
 #include <boost/numeric/itl/pc/ilu_0.hpp>
+#include <boost/numeric/itl/pc/ilut.hpp>
 #include <boost/numeric/itl/pc/ic_0.hpp>
 
 #include <boost/numeric/itl/smoother/gauss_seidel.hpp>

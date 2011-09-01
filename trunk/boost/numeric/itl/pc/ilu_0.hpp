@@ -17,6 +17,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/operation/invert_diagonal.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>

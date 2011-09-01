@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
 
@@ -27,6 +28,7 @@ template < typename LinearOperator, typename Vector,
 int bicg(const LinearOperator &A, Vector &x, const Vector &b,
 	 const Preconditioner &M, Iteration& iter)
 {
+    mtl::vampir_trace<7003> tracer;
     using mtl::conj;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     Scalar     rho_1(0), rho_2(0), alpha(0), beta(0);
