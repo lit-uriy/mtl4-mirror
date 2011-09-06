@@ -741,6 +741,18 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCECPTS__
+
+#else
+    template< typename Matrix, typename Vector>
+    struct Collection<mtl::mat_cvec_times_expr<Matrix, Vector> > 
+    {
+	typedef typename Collection< Matrix >::value_type value_type;
+	typedef const value_type& const_reference;
+	typedef typename Collection< Matrix >::size_type size_type;
+    };
+#endif
+
 
 #ifdef __GXX_CONCEPTS__
 
