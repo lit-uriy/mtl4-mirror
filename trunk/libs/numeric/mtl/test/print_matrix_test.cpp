@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
@@ -73,7 +72,7 @@ void test(Matrix& matrix, const char* name)
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

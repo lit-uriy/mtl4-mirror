@@ -11,14 +11,13 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
 using namespace std;
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     typedef mtl::dense2D<double> Matrix;
 

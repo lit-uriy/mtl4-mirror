@@ -13,7 +13,6 @@
 #include <iostream>
 #include <cmath>
 #include <string>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
@@ -63,7 +62,7 @@ void test(Matrix& A, const char* name)
 }
 
 
-int test_main(int, char* argv[])
+int main(int, char* argv[])
 {
     using namespace mtl;
 

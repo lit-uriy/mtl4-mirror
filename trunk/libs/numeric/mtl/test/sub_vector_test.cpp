@@ -15,7 +15,6 @@
 #include <complex>
 #include <vector>
 
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -80,7 +79,7 @@ void test(Vector& v, const char* name)
 
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     mtl::dense_vector<float>                                                 cf(sz, 1.0);
     mtl::dense_vector<double>                                                cd(sz, 1.0);

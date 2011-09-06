@@ -12,7 +12,6 @@
 
 // Regression test for problem reported by Garth Wells
 
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 namespace mtl {
@@ -20,7 +19,7 @@ namespace mtl {
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     mtl::dense_vector<double> x(10);
     unsigned int size1 = num_rows(x);

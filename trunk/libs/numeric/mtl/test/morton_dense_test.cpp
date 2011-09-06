@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp> 
 #include <boost/tuple/tuple.hpp>
 
 #include <boost/numeric/mtl/matrix/morton_dense.hpp>
@@ -136,7 +135,7 @@ struct test_morton_dense
 
 
  
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

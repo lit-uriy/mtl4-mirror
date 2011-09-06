@@ -14,7 +14,6 @@
 
 #include <iostream>
 #include <complex>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -59,7 +58,7 @@ void test(Vector& v, const char* name)
 
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     mtl::dense_vector<float>                  v(3);
     mtl::dense_vector<std::complex<float> >   w(3);

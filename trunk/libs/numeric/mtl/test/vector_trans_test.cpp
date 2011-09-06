@@ -15,7 +15,6 @@
 #include <complex>
 #include <vector>
 
-#include <boost/test/minimal.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/numeric/mtl/mtl.hpp> 
@@ -40,7 +39,7 @@ void test2(const char* name, const Vector& v, Ashape)
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

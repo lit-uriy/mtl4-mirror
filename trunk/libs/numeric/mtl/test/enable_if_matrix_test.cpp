@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <string>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 
@@ -65,7 +64,7 @@ string inline is(bool b)
     return b ? string("is a ") : string("is not a ");
 }
 
-int test_main(int , char**)
+int main(int , char**)
 {
     using namespace mtl; using namespace mtl::traits;
 

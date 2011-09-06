@@ -13,7 +13,6 @@
 // #define MTL_DEBUG_DMAT_DMAT_MULT // For debugging evidently
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -128,7 +127,7 @@ void test(Matrix& A, const char* name)
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

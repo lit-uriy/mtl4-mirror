@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
@@ -47,7 +46,7 @@ void test(Vector& v, const char* name)
 }
  
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using mtl::vector::parameters;
 

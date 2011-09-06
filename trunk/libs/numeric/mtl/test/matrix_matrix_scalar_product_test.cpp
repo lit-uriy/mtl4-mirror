@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -19,7 +18,7 @@ using namespace std;
 
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     mtl::dense2D<double> A(3, 3), B(3, 3), C(3, 3);
     A= 2.0; B= 3.0;

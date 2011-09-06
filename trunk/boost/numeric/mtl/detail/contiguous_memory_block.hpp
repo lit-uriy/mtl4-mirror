@@ -55,7 +55,7 @@ struct size_helper
 
 # ifndef MTL_IGNORE_STATIC_SIZE_VIOLATION
     void set_size(std::size_t size)
-    {	MTL_THROW_IF(Size != size, change_static_size()); }
+    {	MTL_DEBUG_THROW_IF(Size != size, change_static_size()); }
 # else
     void set_size(std::size_t) {}
 # endif
@@ -345,13 +345,18 @@ public:
 
     void realloc(std::size_t size)
     {
-	// If already have memory of the right size we can keep it
-	if (size == this->used_memory()) 
-	    return;
-	MTL_THROW_IF(category != own, 
-		     logic_error("Can't change the size of collections with external memory"));
-	delete_it();
-	alloc(size);
+	if (Size == 0) {
+
+	    // If already have memory of the right size we can keep it
+	    if (size == this->used_memory()) 
+		return;
+	    MTL_DEBUG_THROW_IF(category != own, 
+			       logic_error("Can't change the size of collections with external memory"));
+	    delete_it();
+	    alloc(size);
+	} else {
+	    MTL_DEBUG_THROW_IF(size != Size, logic_error("Can't change static size")); 
+	}
     }
 
     ~contiguous_memory_block()

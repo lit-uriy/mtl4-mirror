@@ -13,10 +13,9 @@
 // Currently needs -DMTL_DEEP_COPY_CONSTRUCTOR !!!
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace std;
     

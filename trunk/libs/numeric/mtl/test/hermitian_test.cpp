@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <typeinfo>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 //#include <boost/numeric/mtl/matrix/hermitian_view.hpp>
@@ -71,7 +70,7 @@ void test(const Matrix&, const char* name)
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
     dense2D<double>                                      dr;

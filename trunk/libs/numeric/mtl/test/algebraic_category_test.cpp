@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
@@ -56,7 +55,7 @@ void test(const T& x, const char* name)
 
 struct none {};
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
     const int size= 5;

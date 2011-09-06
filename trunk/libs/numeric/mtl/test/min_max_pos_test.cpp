@@ -13,7 +13,6 @@
 #include <iostream>
 #include <utility>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -56,7 +55,7 @@ void test(Coll& coll, const char* name, Pos exp_min, Pos exp_max)
 }
  
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

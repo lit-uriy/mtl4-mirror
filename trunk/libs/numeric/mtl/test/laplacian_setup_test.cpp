@@ -13,7 +13,6 @@
 #include <iostream>
 #include <cmath>
 #include <complex>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/matrix/morton_dense.hpp> 
@@ -46,7 +45,7 @@ void test(Matrix& matrix, unsigned dim1, unsigned dim2, const char* name)
 
 
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     using namespace mtl;
 

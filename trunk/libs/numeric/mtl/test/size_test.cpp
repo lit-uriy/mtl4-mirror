@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <vector>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -44,7 +43,7 @@ void test(Vector& v, const char* name)
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     mtl::dense_vector<int>   mv(3, 3);
     std::vector<int>         sv(3, 3);

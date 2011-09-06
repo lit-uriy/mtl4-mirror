@@ -14,7 +14,6 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/operation/cuppen.hpp>
 
@@ -58,7 +57,7 @@ void test(const Matrix& B, Matrix& BQ, Value scaling, Vector& lambda_b)
 	test_vector(Bs, lambda_b[i], mtl::dense_vector<double>(BQ[mtl::iall][i]), i);
 }
 
-int test_main(int argc, char** argv)
+int main(int argc, char** argv)
 {
     using namespace mtl;
     int size= 16;

@@ -12,7 +12,6 @@
 
 #include <string>
 #include <iostream>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
 
@@ -76,7 +75,7 @@ void test(string name, const Matrix& A, Value check)
     cout << "3*A is\n" << B << "\n\n";
 }
 
-int test_main(int, char**)
+int main(int, char**)
 {
     typedef mtl::dense_vector<double> vt;
     typedef mtl::dense_vector<double, mtl::vector::parameters<mtl::row_major> >  vrt;

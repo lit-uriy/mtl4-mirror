@@ -15,7 +15,6 @@
 #include <complex>
 #include <vector>
 
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -32,7 +31,7 @@ inline std::complex<double> f(std::complex<double> x)
 
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
 
     typedef mtl::vector::fixed::dimension<5> fsize;

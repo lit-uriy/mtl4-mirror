@@ -12,9 +12,7 @@
 
 // File: dense_lu_test.cpp
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
-
 
 template <typename Matrix>
 void singularity_test(const Matrix& A)
@@ -30,7 +28,7 @@ void singularity_test(const Matrix& A)
 }
 
 
-int test_main(int , char**)
+int main(int , char**)
 {
     using namespace mtl;
     dense2D<double, matrix::parameters<tag::col_major> > A(5, 5);

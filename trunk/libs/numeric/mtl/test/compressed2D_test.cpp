@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
@@ -162,7 +161,7 @@ void test_compressed2D(char const* name)
     two_d_iteration("Transposed On Major", trans_matrix, mtl::tag::major());
 }
 
-int test_main(int, char**)
+int main(int, char**)
 {
     test_compressed2D<mtl::row_major, mtl::index::c_index>("CRS");
     // test_compressed2D<row_major, mtl::index::f_index>("CRS Fortran"); deprecated

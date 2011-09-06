@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
  
@@ -46,7 +45,7 @@ bool inline check_eigenvector(const Matrix& A, Vector& v, double tau)
     return close;
 }
 
-int test_main(int, char**)
+int main(int, char**)
 {
     double a_value[4][4] = {{0, 0, 1, .5},
 			    {1/3., 0, 0, 0},

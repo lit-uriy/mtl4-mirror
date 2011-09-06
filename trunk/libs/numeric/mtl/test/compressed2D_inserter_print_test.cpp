@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -33,7 +32,7 @@ void test(const char* name, Matrix& A)
 }
 
  
-int test_main(int, char**)
+int main(int, char**)
 {
     mtl::compressed2D<double> A(4, 5);
     // mtl::compressed2D<double> A(4, 5);

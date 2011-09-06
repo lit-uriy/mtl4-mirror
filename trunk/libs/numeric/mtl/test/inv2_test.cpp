@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -31,7 +30,7 @@ mtl::dense2D<ct> inv2 ( const mtl::dense2D<ct> & M )
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     typedef double ct;
     mtl::dense2D<ct> tmp(2, 2);

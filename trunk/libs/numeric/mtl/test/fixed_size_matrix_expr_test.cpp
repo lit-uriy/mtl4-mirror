@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 template <typename ArgMatrix>
@@ -35,7 +34,7 @@ void test(const ResMatrix&, const ArgMatrix& B)
 }
 
 
-int test_main(int , char**)
+int main(int , char**)
 {
     using namespace mtl;
     typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2>, true> fmat_para;

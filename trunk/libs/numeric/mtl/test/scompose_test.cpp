@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <cmath>
 #include <complex>
@@ -59,7 +58,7 @@ void test(T x, U y)
 
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     double              a= 3.0, b= -5.0;
     float               c= -9;

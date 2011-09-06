@@ -13,7 +13,6 @@
 #include <iostream>
 #include <cmath>
 #include <complex>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp> 
 #include <boost/numeric/mtl/matrix/dense2D.hpp> 
@@ -92,7 +91,7 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

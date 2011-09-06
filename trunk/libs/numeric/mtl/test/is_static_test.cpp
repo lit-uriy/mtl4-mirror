@@ -11,12 +11,11 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

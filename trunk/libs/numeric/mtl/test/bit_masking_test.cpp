@@ -10,9 +10,9 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+#include <cstdio>
 #include <iostream>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
-#include <boost/test/minimal.hpp>
 
 
 using namespace std;  
@@ -59,7 +59,7 @@ struct mask
 #endif
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using mtl::row_major; using mtl::col_major; using mtl::generate_mask;
 

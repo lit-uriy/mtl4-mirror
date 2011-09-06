@@ -8,7 +8,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/map_view.hpp>
@@ -69,7 +68,7 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 	
 }
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using mtl::vector::parameters; using mtl::vector::dense_vector;
 	

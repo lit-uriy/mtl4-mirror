@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
@@ -102,7 +101,7 @@ private:
     const Matrix& A;
 };
 
-int test_main(int, char**)
+int main(int, char**)
 {
     m_type A;
     assemble_poisson2D(A, 10);

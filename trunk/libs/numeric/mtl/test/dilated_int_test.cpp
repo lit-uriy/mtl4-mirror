@@ -13,8 +13,7 @@
 // Written by Jiahu Deng and Peter Gottschling
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
-
+#include <cstdio>
 #include <boost/numeric/mtl/detail/dilated_int.hpp>
 
 
@@ -80,7 +79,7 @@ void test_dilated(string s, T dil, typename T::value_type exp_increment)
 }
 
 
-int test_main(int , char**)
+int main(int , char**)
 {    
     using namespace mtl;
 

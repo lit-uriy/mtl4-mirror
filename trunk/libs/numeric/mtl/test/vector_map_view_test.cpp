@@ -13,7 +13,6 @@
 #include <iostream>
 #include <cmath>
 #include <complex>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
@@ -137,7 +136,7 @@ void test(Vector& vector, const char* name)
 
 
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     unsigned size= 7; 
     if (argc > 1) size= atoi(argv[1]); 
