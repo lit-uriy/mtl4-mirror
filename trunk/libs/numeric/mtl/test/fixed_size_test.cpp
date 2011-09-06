@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
  
@@ -21,25 +20,35 @@ void test(const char* A_string, const char* v_string, const Matrix& A, const Vec
 {
     std::cout << "\n" << A_string << "ly sized matrix and " << v_string << "ly sized vector\nA is\n" << A;
 
+    asm("#mat_add begins here!");
     Matrix B(A + A);
+    asm("#mat_add ends here!");
     std::cout << "A+A = \n" << B;
     if (B[0][0] != 4.0) throw "wrong result in matrix addition.";
 
+    asm("#mat_mult begins here!");
     B= A * A;
+    asm("#mat_mult ends here!");
     std::cout << "A*A = \n" << B;
     if (B[0][0] != 16.0) throw "wrong result in matrix product.";
 
+    asm("#vec_add begins here!");
     Vector w(x + x);
+    asm("#vec_add ends here!");
     std::cout << "x = " << x << "\nw = x+x = " << w << "\n";
     if (w[0] != 6.0) throw "wrong result in vector addition.";
 
+    asm("#mat_vec_mult begins here!");
     w= A * x;
+    asm("#mat_vec_mult ends here!");
+
+
     std::cout << "A*x = " << w << "\n";
     if (w[0] != 18.0) throw "wrong result in matrix vector product.";
 }
 
 
-int test_main(int , char**)
+int main(int , char**)
 {
     using namespace mtl;
     typedef vector::parameters<tag::col_major, vector::fixed::dimension<2>, true> fvec_para;
@@ -52,10 +61,24 @@ int test_main(int , char**)
     dense_vector<float>              v_dyn(va);
     dense_vector<float, fvec_para>   v_stat(va);
 
+    typedef vector::parameters<tag::col_major, vector::fixed::dimension<4>, true> fvec_para4;
+    dense_vector<double, fvec_para4>   v_stat4, w_stat4;
+    v_stat4= 3;
+#if 0 // introduce values unknown at compile time
+    double x;
+    std::cin >> x;
+    v_stat4[0]= x;
+#endif
+
+    w_stat4= v_stat4 + v_stat4;
+    std::cout << "w_stat4 is " << w_stat4 << '\n';
+
+#if 0
     test("dynamic", "dynamic", A_dyn, v_dyn);
     test("dynamic", "static", A_dyn, v_stat);
     test("static", "dynamic", A_stat, v_dyn);
-    test("static", "staticic", A_stat, v_stat);
+#endif 
+    test("static", "static", A_stat, v_stat);
 
     return 0;
 }
