@@ -50,6 +50,12 @@ int test_main(int , char**)
     test(A_stat, A_stat);
     test(A_stat, A_dyn);
 
+    typedef mtl::vector::fixed::dimension< 2 > fsize;
+    mtl::dense_vector<float, mtl::vector::parameters<mtl::col_major, fsize, true> >     rf;
+    rf = 1.0;
+    mtl::dense_vector<float, mtl::vector::parameters<mtl::col_major, fsize, true> >     rf2;
+    const static double swap = 1.0;
+    swap*(rf + A_stat*rf);
     return 0;
 }
 
