@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
@@ -130,7 +129,7 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 }
  
 
-int test_main(int , char**)
+int main(int , char**)
 {
     using mtl::vector::parameters;
     using namespace mtl;

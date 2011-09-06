@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
 
@@ -104,7 +103,7 @@ void test(Matrix& matrix, const char* name)
 
 
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     mtl::vampir_trace<9999> tracer;
 

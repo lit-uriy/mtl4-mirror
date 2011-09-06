@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/type_traits.hpp>
 
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -77,7 +76,7 @@ void test_compressed2D_insertion()
     if (matrix(2, 2) != 28) throw "Error adding to existing value";
 }
  
-int test_main(int, char**)
+int main(int, char**)
 {
     test_compressed2D_insertion<mtl::row_major, mtl::index::c_index>();
     test_compressed2D_insertion<mtl::col_major, mtl::index::c_index>();

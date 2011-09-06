@@ -13,7 +13,6 @@
 // Currently needs -DMTL_DEEP_COPY_CONSTRUCTOR !!!
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -38,7 +37,7 @@ struct as<mtl::dense2D<V> >
 	typedef mtl::ashape::mat<typename as<V>::type>   type;
 };
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace std;
 

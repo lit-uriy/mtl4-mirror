@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
 
@@ -21,7 +20,7 @@
 using namespace std;  
  
 
-int test_main(int, char**)
+int main(int, char**)
 {
     mtl::dense_vector<float>    x;
 

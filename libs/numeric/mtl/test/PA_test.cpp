@@ -11,10 +11,9 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
-int test_main(int , char**)
+int main(int , char**)
 {
     // Test that matrix product don't throw index ouf of range (anymore)
     using namespace std;

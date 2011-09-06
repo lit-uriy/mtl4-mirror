@@ -14,6 +14,7 @@
 #define MTL_CRTP_BASE_VECTOR_INCLUDE
 
 #include <boost/mpl/if.hpp>
+#include <boost/mpl/bool.hpp>
 #include <boost/type_traits/is_base_of.hpp>
 
 #include <boost/utility/enable_if.hpp>
@@ -27,6 +28,7 @@
 #include <boost/numeric/mtl/operation/right_scale_inplace.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/is_distributed.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 
 #include <boost/numeric/itl/itl_fwd.hpp>
@@ -93,6 +95,7 @@ struct crtp_assign<Vector, mat_cvec_times_expr<E1, E2> >
     {
 	vector.checked_change_resource(src);
 	mult(src.first, src.second, vector);
+	// mat_cvec_mult(src.first, src.second, vector, assign::assign_sum(), typename traits::category<E1>::type());
 	return vector;
     }
 };
@@ -162,8 +165,8 @@ struct crtp_plus_assign<Vector, mat_cvec_times_expr<E1, E2> >
     typedef Vector& type;
     type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
     {
-	gen_mult(src.first, src.second, vector,
-		 assign::plus_sum(), tag::matrix(), tag::col_vector(), tag::col_vector());
+	// gen_mult(src.first, src.second, vector, assign::plus_sum(), tag::matrix(), tag::col_vector(), tag::col_vector());
+	mat_cvec_mult(src.first, src.second, vector, assign::plus_sum(), typename traits::category<E1>::type());
 	return vector;
     }
 };
@@ -282,10 +285,10 @@ struct crtp_vector_assign
     /** For expressions like u= v + w, u can be set to the size of v and w if still is 0. **/
     template <typename Src>
     void checked_change_resource(const Src& src) 
-    {	checked_change_resource_aux(src, typename mtl::traits::category<Vector>::type()); }    
+    {	checked_change_resource_aux(src, typename mtl::traits::is_distributed<Vector>::type()); }    
 
     template <typename Src>
-    void checked_change_resource_aux(const Src& src, tag::universe) 
+    void checked_change_resource_aux(const Src& src, boost::mpl::false_) 
     {   checked_change_dim(mtl::vector::size(src));  }
 
 

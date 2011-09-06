@@ -10,16 +10,22 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-#include <iostream>
-#include <boost/numeric/mtl/mtl.hpp>
+#ifndef MTL_TRAITS_IS_DISTRIBUTED_INCLUDE
+#define MTL_TRAITS_IS_DISTRIBUTED_INCLUDE
 
+namespace mtl { namespace traits {
 
-using namespace std;
+template <typename T> 
+struct is_distributed_aux 
+  : boost::mpl::false_       // by default false
+{};
 
-int main(int, char**)
-{
-    typedef unsigned it;
-    mtl::dense_vector<it> vec(5, 0u);
-    return 0;
-}
+/// Meta-function whether a certain type is distributed
+template <typename T> 
+struct is_distributed 
+  : is_distributed_aux<typename root<T>::type>
+{};
 
+}} // namespace mtl::traits
+
+#endif // MTL_TRAITS_IS_DISTRIBUTED_INCLUDE

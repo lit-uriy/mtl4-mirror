@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -90,7 +89,7 @@ void test(Matrix& A, const char* name)
 
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
     unsigned size= 4;

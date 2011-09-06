@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 using namespace std;  
@@ -43,7 +42,7 @@ void test(Vector&, const char* name)
 }
  
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
     using mtl::vector::parameters;

@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -60,7 +59,7 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 }
  
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     using namespace mtl;
 

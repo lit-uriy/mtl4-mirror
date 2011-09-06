@@ -44,6 +44,7 @@
 #include <boost/numeric/mtl/operation/size.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
+#undef major // fight namespace pollution
 
 namespace mtl { namespace matrix {
 

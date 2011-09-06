@@ -12,7 +12,6 @@
 #define MTL_VPT_LEVEL 2
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 using namespace std;  
@@ -34,7 +33,7 @@ void function()
 
 
 
-int test_main(int, char**) 
+int main(int, char**) 
 {
     mtl::vampir_trace<9999> tracer;
 

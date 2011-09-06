@@ -17,7 +17,6 @@
 #include <iostream>
 #include <cmath>
 #include <complex>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
  
 
@@ -111,7 +110,7 @@ void test(const Matrix&, const char* name)
 #endif
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
 #ifdef MTL_HAS_UMFPACK
     using namespace mtl;

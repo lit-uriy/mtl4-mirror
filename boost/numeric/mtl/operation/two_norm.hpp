@@ -53,7 +53,7 @@ namespace mtl {
 	typename RealMagnitude<typename Collection<Value>::value_type>::type
 	inline two_norm(const Value& value)
 	{
-	    return two_norm<8>(value);
+	    return two_norm<4>(value);
 	}
 
 	template <typename Vector>

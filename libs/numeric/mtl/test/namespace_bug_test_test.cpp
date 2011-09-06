@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 
 
 using namespace std;
@@ -29,7 +28,7 @@ namespace B {
 	};	
 }
 
-int test_main(int, char**)
+int main(int, char**)
 {
     return 0;
 }

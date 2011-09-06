@@ -15,7 +15,6 @@
 #include <complex>
 #include <vector>
 
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 template <typename Vector>
@@ -67,7 +66,7 @@ void test2(const char* name, const Vector& v)
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
 
     typedef mtl::vector::fixed::dimension<3> fsize;

@@ -13,7 +13,6 @@
 #include <iostream>
 #include <cmath>
 #include <complex>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/matrix/morton_dense.hpp> 
 #include <boost/numeric/mtl/matrix/compressed2D.hpp> 
@@ -109,7 +108,7 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
 
 
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     using namespace mtl;
     unsigned size= 7; 

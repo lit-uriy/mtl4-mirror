@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
@@ -48,7 +47,7 @@ void test(MatrixA& a, const char* name)
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
     unsigned size= 4;

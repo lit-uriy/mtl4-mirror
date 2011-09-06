@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 
 // #define MTL_HAS_BLAS
 // #define MTL_USE_OPTERON_OPTIMIZATION
@@ -319,7 +318,7 @@ void test_blas()
 
 #endif // MTL_HAS_BLAS
 
-int test_main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     using namespace mtl;
 

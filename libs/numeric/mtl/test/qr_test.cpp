@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <boost/utility.hpp>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -27,7 +26,7 @@ complex<double> f(complex<double>)
 }
 
  
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
     unsigned size=4, row= size+1, col=size;

@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -73,7 +72,7 @@ void test(int n, int m, int order)
 }
 
  
-int test_main(int, char**)
+int main(int, char**)
 {
     test(9, 5, 0);
     test(9, 5, 1);

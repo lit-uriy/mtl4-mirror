@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -128,7 +127,7 @@ void test2(Vector& v)
     set_to_zero(v);
 }
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using mtl::vector::parameters;
    

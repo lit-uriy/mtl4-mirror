@@ -13,7 +13,6 @@
 #include <iostream>
 #include <cmath>
 #include <complex>
-#include <boost/test/minimal.hpp>
 
 
 #include <boost/numeric/mtl/mtl.hpp>
@@ -61,7 +60,7 @@ void test(VectorU& u, const char* name)
 }
  
 
-int test_main(int ,char**)
+int main(int ,char**)
 {
     using mtl::vector::parameters;
     const int size= 9;

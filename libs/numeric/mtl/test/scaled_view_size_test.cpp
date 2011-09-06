@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -20,7 +19,7 @@ using namespace std;
 
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     typedef mtl::dense_vector<float>         v_type;
     typedef mtl::vector::scaled_view<float, v_type> s_type;

@@ -12,13 +12,12 @@
 
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
 
 using namespace std;
 
-int test_main(int, char**)
+int main(int, char**)
 {
     mtl::dense2D<double> A(mtl::matrix::hilbert_matrix<>(5, 6));
     A[2][0]= 1234.5; A[2][2]= 0.0004; A[2][4]= 1234567;

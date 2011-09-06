@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <string>
-#include <boost/test/minimal.hpp>
 #include <boost/tuple/tuple.hpp>
 
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
@@ -138,7 +137,7 @@ void fill_matrix(Matrix& matrix)
 }
   
  
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

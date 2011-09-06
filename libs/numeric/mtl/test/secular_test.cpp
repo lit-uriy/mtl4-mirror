@@ -13,7 +13,6 @@
 // With contributions from Cornelius Steinhardt
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/operation/secular.hpp>
 #include <boost/numeric/mtl/operation/sort.hpp>
@@ -21,7 +20,7 @@
 using namespace std;
 
 
-int test_main(int , char**)
+int main(int , char**)
 {
     using namespace mtl;
     typedef dense_vector<double>  Vector;

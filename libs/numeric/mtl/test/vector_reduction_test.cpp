@@ -44,6 +44,7 @@ void test(Vector& v, const char* name)
     asm("#two_norm begins here!");
     value_type tv= two_norm(v);
     asm("#two_norm ends here!");
+
     std::cout << "two_norm(v) = " << tv << "\n"; std::cout.flush();
     if (two_norm(v) < 7.4161 || two_norm(v) > 7.4162) throw "two_norm wrong";
 

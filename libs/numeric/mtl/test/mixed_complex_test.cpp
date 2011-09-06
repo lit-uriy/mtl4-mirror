@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <string>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -69,7 +68,7 @@ void inline test(const char* type1, T x)
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

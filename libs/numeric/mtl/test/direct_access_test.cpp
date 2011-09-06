@@ -12,9 +12,8 @@
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <iostream>
-#include <boost/test/minimal.hpp>
 
-int test_main(int ,char**)
+int main(int ,char**)
 {
     using namespace mtl::matrix;
     

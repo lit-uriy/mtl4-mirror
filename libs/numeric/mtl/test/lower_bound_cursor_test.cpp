@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
 
@@ -130,7 +129,7 @@ void dense_matrix_test(char const* name, const Matrix& matrix)
 
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
     typedef matrix::parameters<col_major> col_para;
