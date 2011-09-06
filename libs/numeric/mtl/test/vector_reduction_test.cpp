@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
@@ -42,7 +41,10 @@ void test(Vector& v, const char* name)
     std::cout << "one_norm<4>(v) = " << one_norm<4>(v) << "\n"; std::cout.flush();
     if (one_norm<4>(v) != 15.0) throw "one_norm<4> wrong";
 
-    std::cout << "two_norm(v) = " << two_norm(v) << "\n"; std::cout.flush();
+    asm("#two_norm begins here!");
+    value_type tv= two_norm(v);
+    asm("#two_norm ends here!");
+    std::cout << "two_norm(v) = " << tv << "\n"; std::cout.flush();
     if (two_norm(v) < 7.4161 || two_norm(v) > 7.4162) throw "two_norm wrong";
 
     std::cout << "infinity_norm(v) = " << infinity_norm(v) << "\n"; std::cout.flush();
@@ -62,7 +64,7 @@ void test(Vector& v, const char* name)
 }
  
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
     using mtl::vector::parameters;
