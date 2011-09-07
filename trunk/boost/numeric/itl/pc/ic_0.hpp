@@ -158,7 +158,8 @@ class ic_0
 		// U[k][k]= 1.0 / sqrt(U[k][k]);
 		value_type inv_dia= reciprocal(sqrt(value(*ic)));
 		value(*ic, inv_dia);
-		icur_type jbegin= ++ic;
+		// icur_type jbegin= 
+		++ic;
 		for (; ic != iend; ++ic) {
 		    // U[k][i] *= U[k][k]
 		    value_type d= value(*ic) * inv_dia;

@@ -69,7 +69,7 @@ struct ilut_factorizer
 	    mtl::matrix::inserter<U_type> U_ins(U, p.first + 1); // plus one for diagonal
 	
 	    mtl::vector::sparse_vector<value_type> vec(n); // corr. row in paper
-	    cur_type ic= begin<row>(A), iend= end<row>(A);
+	    cur_type ic= begin<row>(A); // , iend= end<row>(A);
 	    for (size_type i= 0; i < n; ++i, ++ic) {
 		
 		for (icur_type kc= begin<nz>(ic), kend= end<nz>(ic); kc != kend; ++kc) // row= A[i][*]

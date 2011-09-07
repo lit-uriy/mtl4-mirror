@@ -146,7 +146,7 @@ struct vec_vec_aop_expr
     }
 
   private:
-     mutable first_argument_type&        first ;
+     first_argument_type&                first ;
      second_argument_type const&         second ;
      mutable bool                        delayed_assign;
   } ; // vec_vec_aop_expr

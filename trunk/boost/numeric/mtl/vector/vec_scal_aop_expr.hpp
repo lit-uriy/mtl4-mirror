@@ -99,9 +99,9 @@ struct vec_scal_aop_expr
     }
 
   private:
-    mutable first_argument_type&        first ;
-    second_argument_type const&         second ;
-    mutable bool                        delayed_assign, with_comma;
+    first_argument_type&         first ;
+    second_argument_type const&  second ;
+    mutable bool                 delayed_assign, with_comma;
     size_type                    index;
 } ; // vec_scal_aop_expr
 
