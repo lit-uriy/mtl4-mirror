@@ -9,8 +9,6 @@
 // The details are regulated by the EULA at http://www.simunova.com/en/eula
 //                             respectively http://www.simunova.com/de/agb.
 
-#define MTL_VERBOSE_TEST
-
 #include <iostream>
 #include <typeinfo>
 #include <boost/numeric/mtl/mtl.hpp>
@@ -26,13 +24,15 @@ inline void check(const U&)
 }
 
 
-template <typename T, typename U1, typename U2>
-void test(const T&, const U1&, const U2&)
+template <typename T, typename U1, typename U2, typename U3>
+void test(const T&, const U1&, const U2&, const U3&)
 {
     io::tout << "Type " << typeid(T).name() << ":\n - trying to match <dense> ";
     check<U1>(traits::flatcat1<T, tag::dense>());
     io::tout << " - trying to match <multi_vector, dense> ";
     check<U2>(traits::flatcat2<T, tag::multi_vector, tag::dense>());
+    io::tout << " - trying to match <multi_vector, dense, sparse> ";
+    check<U3>(traits::flatcat3<T, tag::multi_vector, tag::dense, tag::sparse>());
 
     io::tout << "\n";
 }
@@ -52,19 +52,16 @@ int main(int, char**)
     typedef compressed2D<double, matrix::parameters<tag::col_major> > cmc;
     typedef multi_vector<dvf>                                         mvc;
     
-    test(dvf(), tag::flat<tag::dense>()    , tag::flat<tag::dense>());
-    test(dvc(), tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
-    test(dvr(), tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
+    test(dvf(), tag::flat<tag::dense>()    , tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
+    test(dvc(), tag::flat<tag::dense>()	   , tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
+    test(dvr(), tag::flat<tag::dense>()	   , tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
 
-    test(dmr(), tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
-    test(dmc(), tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
-    test(mmd(), tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
-    test(cmr(), tag::universe()            , tag::universe()        );
-    test(cmc(), tag::universe()            , tag::universe()        );
-    test(mvc(1, 1), tag::flat<tag::dense>(), tag::flat<tag::multi_vector>());
-
-    // io::tout << "is base 
-
+    test(dmr(), tag::flat<tag::dense>()	   , tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
+    test(dmc(), tag::flat<tag::dense>()	   , tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
+    test(mmd(), tag::flat<tag::dense>()	   , tag::flat<tag::dense>()	   , tag::flat<tag::dense>());
+    test(cmr(), tag::universe()            , tag::universe()        	   , tag::flat<tag::sparse>());
+    test(cmc(), tag::universe()            , tag::universe()        	   , tag::flat<tag::sparse>());
+    test(mvc(1, 1), tag::flat<tag::dense>(), tag::flat<tag::multi_vector>(), tag::flat<tag::multi_vector>());
 
     // test(cmr(), tag::flat<tag::dense>()); // counterexample
 
