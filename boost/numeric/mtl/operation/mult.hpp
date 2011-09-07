@@ -87,6 +87,7 @@ template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
 inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::matrix, tag::matrix, tag::matrix)
 {
     vampir_trace<4011> tracer;
+    asm("#gen_mult 1");
 #if 1
     MTL_DEBUG_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
 #else
