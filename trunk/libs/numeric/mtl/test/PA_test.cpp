@@ -19,13 +19,13 @@ int main(int , char**)
     using namespace std;
     
     double A_array[][1]= {{1.}, {2.,}};
-    mtl::dense2D<double>  A(A_array);
+    mtl::dense2D<double, mtl::matrix::parameters<> >  A(A_array);
     std::cout << "A=\n" << A << std::endl;
 
-    mtl::dense_vector<unsigned>  perm_v(2);
+    mtl::dense_vector<unsigned, mtl::vector::parameters<> >  perm_v(2);
     perm_v= 1, 0;
  
-    mtl::dense2D<double> PA(permutation(perm_v)*A);
+    mtl::dense2D<double, mtl::matrix::parameters<> > PA(permutation(perm_v)*A);
     std::cout << "PA=\n" << PA << std::endl;
 
     return 0;

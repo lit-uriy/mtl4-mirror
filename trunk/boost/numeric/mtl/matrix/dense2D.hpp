@@ -314,7 +314,7 @@ class dense2D
 	assert(this != &src);
 	// std::cout << "In move assignment: this* = \n" << *this << "src = \n" << src;
 
-	check_dim(src.num_rows(), src.num_cols());
+	this->check_dim(src.num_rows(), src.num_cols());
 	if (this->category == memory_base::view || src.category == memory_base::view)
 	    matrix_copy(src, *this);
 	else {

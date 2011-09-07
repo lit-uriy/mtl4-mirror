@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/operation/lu.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/vector/unit_vector.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -87,7 +88,7 @@ inline inv(Matrix const& A)
     MTL_THROW_IF(num_cols(A) != num_cols(A), matrix_not_square());
 
     result_type                    PLU(A);
-    mtl::dense_vector<size_type>   Pv(num_rows(A));
+    mtl::dense_vector<size_type, vector::parameters<> >   Pv(num_rows(A));
 
     lu(PLU, Pv);
     result_type  PU(upper(PLU)), PL(strict_lower(PLU) + identity<value_type>(num_rows(A), num_cols(A)));

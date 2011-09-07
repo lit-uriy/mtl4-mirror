@@ -16,6 +16,7 @@
 #include <algorithm>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/reorder_ref.hpp>
 
@@ -28,7 +29,7 @@ namespace traits {
     template <typename Value= short>
     struct reorder
     {
-	typedef ::mtl::compressed2D<Value>  type;
+	typedef ::mtl::compressed2D<Value, parameters<> >  type;
     };
 }
 

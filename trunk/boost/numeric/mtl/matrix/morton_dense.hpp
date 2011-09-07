@@ -488,7 +488,7 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 	// Self-copy would be an indication of an error
 	assert(this != &src);
 
-	check_dim(src.num_rows(), src.num_cols());
+	this->check_dim(src.num_rows(), src.num_cols());
 	if (this->category == memory_base::view || src.category == memory_base::view)
 	    matrix_copy(src, *this);
 	else

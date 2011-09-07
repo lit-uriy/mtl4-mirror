@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
@@ -130,10 +131,10 @@ class ilu
 }; 
 
 template <typename Value, typename Factorizer, typename V2>
-class ilu<mtl::dense2D<Value>, Factorizer, V2> // last 2 arguments are dummies
+class ilu<mtl::dense2D<Value, mtl::matrix::parameters<> >, Factorizer, V2> // last 2 arguments are dummies
 {
   public:
-    typedef mtl::dense2D<Value>                           Matrix;
+    typedef mtl::dense2D<Value, mtl::matrix::parameters<> >    Matrix;
     typedef typename mtl::Collection<Matrix>::value_type  value_type;
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef ilu                                           self;
@@ -159,7 +160,7 @@ class ilu<mtl::dense2D<Value>, Factorizer, V2> // last 2 arguments are dummies
 
   private:
     LU_type                        LU;
-    mtl::dense_vector<size_type>   P;
+    mtl::dense_vector<size_type, mtl::vector::parameters<> >   P;
 };
 
 #if 0

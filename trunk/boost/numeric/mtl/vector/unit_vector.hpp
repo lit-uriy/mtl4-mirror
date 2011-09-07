@@ -13,6 +13,9 @@
 #ifndef MTL_VECTOR_UNIT_VECTOR_INCLUDE
 #define MTL_VECTOR_UNIT_VECTOR_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/vector/parameter.hpp>
+
 namespace mtl { 
 
 namespace traits {
@@ -21,7 +24,7 @@ namespace traits {
     template  <typename Value= double>
     struct unit_vector
     {
-	typedef dense_vector<Value>  type;
+	typedef dense_vector<Value, mtl::vector::parameters<> >  type;
     };
 }
 

@@ -50,8 +50,8 @@ int main(int, char**)
 {
     using mtl::vector::parameters;
 
-    mtl::dense_vector<float>   u(5);
-    mtl::dense_vector<double>  x(5);
+    mtl::dense_vector<float, parameters<> >   u(5);
+    mtl::dense_vector<double, parameters<> >  x(5);
 
     std::cout << "Testing vector operations\n";
 
