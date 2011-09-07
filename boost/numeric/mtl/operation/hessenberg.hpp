@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
@@ -47,7 +48,7 @@ Matrix inline hessenberg_factors(const Matrix& A)
 
     for(size_type i= 0; i < ncols-2; i++){
 	// dense_vector<value_type>  v(B[irange(i+1, imax)][i]);
-        dense_vector<value_type>  v(nrows-i-1), w(nrows);
+        dense_vector<value_type, vector::parameters<> >  v(nrows-i-1), w(nrows);
         for (size_type j = 0; j < size(v); j++)
             v[j]= B[j+i+1][i];
         beta= householder(v).second;
@@ -158,7 +159,7 @@ Matrix inline hessenberg_q(const Matrix& A)
 
     //Extract Q
     for(size_type i = 0; i < nrows-2; i++){
-        dense_vector<value_type>   v(nrows-1), w(nrows);
+        dense_vector<value_type, vector::parameters<> >   v(nrows-1), w(nrows);
         v[0]= one;
 // 	std::cout<< "v=" << v << "\n";
 // 	std::cout<< "w=" << w << "\n";

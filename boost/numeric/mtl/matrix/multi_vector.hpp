@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/multi_vector_range.hpp>
+#include <boost/numeric/mtl/vector/parameter.hpp>
 
 
 // Under development (to be used with caution)
@@ -92,7 +93,7 @@ class multi_vector
     multi_vector_range<Vector> vector(irange const& r) const { return multi_vector_range<Vector>(*this, r); }
 
   protected:  
-    dense_vector<Vector>          data;
+    dense_vector<Vector, mtl::vector::parameters<> >          data;
 };
 
 /// Number of rows

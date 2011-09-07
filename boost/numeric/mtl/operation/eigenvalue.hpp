@@ -33,7 +33,9 @@
 #include <boost/numeric/mtl/operation/trans.hpp>
 
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
@@ -43,7 +45,7 @@ namespace mtl { namespace matrix {
 /// Eigenvalues of symmetric matrix A with implicit QR algorithm
 // Return Diagonalmatrix with eigenvalues as diag(A)
 template <typename Matrix>
-dense_vector<typename Collection<Matrix>::value_type>
+dense_vector<typename Collection<Matrix>::value_type, vector::parameters<> >
 inline qr_sym_imp(const Matrix& A)
 {
     vampir_trace<5010> tracer;
@@ -95,7 +97,7 @@ inline qr_sym_imp(const Matrix& A)
 /// Evaluation of eigenvalues with QR-Algorithm of matrix A
 // Return Diagonalmatrix with eigenvalues as diag(A)
 template <typename Matrix>
-dense_vector<typename Collection<Matrix>::value_type>
+dense_vector<typename Collection<Matrix>::value_type, vector::parameters<> >
 inline qr_algo(const Matrix& A, typename Collection<Matrix>::size_type itMax)
 {
     vampir_trace<5011> tracer;
@@ -118,7 +120,7 @@ inline qr_algo(const Matrix& A, typename Collection<Matrix>::size_type itMax)
 
 /// Calculation of eigenvalues of symmetric matrix A
 template <typename Matrix>
-dense_vector<typename Collection<Matrix>::value_type>
+dense_vector<typename Collection<Matrix>::value_type, vector::parameters<> >
 inline eigenvalue_symmetric(const Matrix& A, typename Collection<Matrix>::size_type itMax)
 {
     return qr_algo(A, itMax == 0 ? num_rows(A) : itMax);
@@ -128,10 +130,10 @@ inline eigenvalue_symmetric(const Matrix& A, typename Collection<Matrix>::size_t
 
 /// Calculation of eigenvalues of symmetric matrix A
 template <typename Matrix>
-dense_vector<typename Collection<Matrix>::value_type>
+dense_vector<typename Collection<Matrix>::value_type, vector::parameters<> >
 inline eigenvalue_symmetric(const Matrix& A, typename Collection<Matrix>::size_type)
 {
-    typedef dense2D<typename Collection<Matrix>::value_type>    arg_type;
+    typedef dense2D<typename Collection<Matrix>::value_type, parameters<> >    arg_type;
     make_in_copy_or_reference<arg_type, Matrix>  copy_or_ref(A);
     return qr_sym_imp(copy_or_ref.value);
 }
@@ -142,7 +144,7 @@ inline eigenvalue_symmetric(const Matrix& A, typename Collection<Matrix>::size_t
 
 /// Calculation of eigenvalues of symmetric matrix A
 template <typename Matrix>
-dense_vector<typename Collection<Matrix>::value_type>
+dense_vector<typename Collection<Matrix>::value_type, vector::parameters<> >
 inline eigenvalue_symmetric(const Matrix& A, 
 			    typename Collection<Matrix>::size_type itMax= 0)
 {
@@ -161,7 +163,7 @@ inline eigenvalue_symmetric(const Matrix& A,
 #endif
 
 template <typename Matrix>
-dense_vector<typename Collection<Matrix>::value_type>
+dense_vector<typename Collection<Matrix>::value_type, vector::parameters<> >
 inline eigenvalue_symmetric(const Matrix& A)
 {
     return eigenvalue_symmetric(A, 0);

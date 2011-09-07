@@ -14,6 +14,8 @@
 #define MTL_MATRIX_IDENTITY_INCLUDE
 
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/diagonal_setup.hpp>
 
 namespace mtl { namespace matrix {
@@ -24,7 +26,7 @@ namespace traits {
     template <typename Value= double>
     struct identity
     {
-	typedef ::mtl::compressed2D<Value>  type;
+	typedef ::mtl::compressed2D<Value, parameters<> >  type;
     };
 }
 

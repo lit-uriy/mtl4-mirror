@@ -18,8 +18,8 @@
 
 
 
-typedef boost::rational<long>           t_Q;
-typedef mtl::dense_vector<t_Q>          t_dVecQ;
+typedef boost::rational<long>                              t_Q;
+typedef mtl::dense_vector<t_Q, mtl::vector::parameters<> > t_dVecQ;
 
 //! Struct containing data about the refinment of a face.
 struct st_test

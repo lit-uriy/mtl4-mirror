@@ -17,6 +17,8 @@
 
 #include <cmath>
 #include <cassert>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
@@ -28,7 +30,7 @@ namespace mtl { namespace vector {
 /** such that identity_matrix(size(y))-b*v*v' projects the vector y 
     to a positive multiple of the first unit vector. **/
 template <typename Vector>
-std::pair<typename mtl::dense_vector<typename Collection<Vector>::value_type>, typename Collection<Vector>::value_type>
+std::pair<typename mtl::dense_vector<typename Collection<Vector>::value_type, parameters<> >, typename Collection<Vector>::value_type>
 inline householder(Vector& y)
 {
     vampir_trace<2004> tracer;
@@ -58,7 +60,7 @@ inline householder(Vector& y)
 /// Computes Householder vector for vector \p y 
 /** More stable Householder transformation, also for non-square matrices. **/
 template <typename Vector>
-typename mtl::dense_vector<typename Collection<Vector>::value_type>
+typename mtl::dense_vector<typename Collection<Vector>::value_type, parameters<> >
 inline householder_s(Vector& y)
 {
     vampir_trace<2005> tracer;

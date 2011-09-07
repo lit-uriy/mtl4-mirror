@@ -59,7 +59,7 @@ struct ilu_0_factorizer
 	typedef typename range_generator<nz, cur_type>::type      icur_type;            
 	typename mtl::traits::col<LU_type>::type                  col(LU);
 	typename mtl::traits::value<LU_type>::type                value(LU); 
-	mtl::dense_vector<value_type>                             inv_dia(num_rows(A));
+	mtl::dense_vector<value_type, mtl::vector::parameters<> > inv_dia(num_rows(A));
 	cur_type ic= begin<row>(LU), iend= end<row>(LU);
 	for (size_type i= 0; ic != iend; ++ic, ++i) {
 

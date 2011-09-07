@@ -58,15 +58,15 @@ int main(int, char**)
 {
     using namespace mtl;
     
-    dense2D<double>                                      dr;
+    dense2D<double, matrix::parameters<> >               dr;
     dense2D<double, matrix::parameters<col_major> >      dc;
-    morton_dense<double, recursion::morton_z_mask>       mzd;
-    morton_dense<double, recursion::doppled_2_row_mask>  d2r;
-    compressed2D<double>                                 cr;
+    morton_dense<double, recursion::morton_z_mask, matrix::parameters<> >       mzd;
+    morton_dense<double, recursion::doppled_2_row_mask, matrix::parameters<> >  d2r;
+    compressed2D<double, matrix::parameters<> >          cr;
     compressed2D<double, matrix::parameters<col_major> > cc;
 
-    dense2D<complex<double> >                            drc;
-    compressed2D<complex<double> >                       crc;
+    dense2D<complex<double>, matrix::parameters<> >      drc;
+    compressed2D<complex<double>, matrix::parameters<> > crc;
 
     test(dr, "Dense row major");
     test(dc, "Dense column major");

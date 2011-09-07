@@ -70,9 +70,9 @@ int main(int, char**)
     using namespace mtl;
     using mtl::vector::parameters;
 
-    dense_vector<float>   u(5);
-    dense_vector<double>  x(5);
-    dense_vector<std::complex<double> >  xc(5);
+    dense_vector<float, parameters<> >                 u(5);
+    dense_vector<double, parameters<> >                x(5);
+    dense_vector<std::complex<double>, parameters<> >  xc(5);
 
     std::cout << "Testing vector operations\n";
 

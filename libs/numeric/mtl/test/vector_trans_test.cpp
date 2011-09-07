@@ -48,11 +48,11 @@ int main(int, char**)
     mtl::dense_vector<float, mtl::vector::parameters<mtl::col_major, fsize, true> >     cf;
 
     mtl::dense_vector<float, mtl::vector::parameters<mtl::row_major> >                  rd(3);
-    mtl::dense_vector<float>                                                            cd(3);
+    mtl::dense_vector<float, mtl::vector::parameters<> >                                cd(3);
 
-    mtl::dense_vector<std::complex<double> >                                            dc(3);
+    mtl::dense_vector<std::complex<double>, mtl::vector::parameters<>  >                dc(3);
 
-    mtl::dense2D<float>  A(3, 3);
+    mtl::dense2D<float, matrix::parameters<> >  A(3, 3);
     A= 2, 3, 4,
        3, 4, 6,
        7, 6, 9;

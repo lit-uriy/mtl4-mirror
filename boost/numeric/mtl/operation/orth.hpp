@@ -14,9 +14,11 @@
 #define MTL_ORTH_INCLUDE
 
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
 #include <boost/numeric/mtl/operation/size1D.hpp>
 #include <boost/numeric/mtl/operation/entry1D.hpp>
@@ -55,7 +57,7 @@ namespace mtl { namespace vector {
 	template <typename VVector>
 	dense2D<typename mtl::Collection
 		   <typename mtl::Collection<VVector>::value_type
-		   >::value_type >
+		    >::value_type, matrix::parameters<> >
 	inline orthogonalize_factors(VVector& v, tag::vector)
 	{	vampir_trace<2019> tracer;
 	    using ::mtl::two_norm; using math::zero; using mtl::size1D;
@@ -63,7 +65,7 @@ namespace mtl { namespace vector {
 	    typedef typename mtl::Collection<VVector>::value_type Vector;
 	    typedef typename mtl::Collection<Vector>::value_type  Scalar;
 
-	    dense2D<Scalar> tau(size1D(v), size1D(v));
+	    dense2D<Scalar, matrix::parameters<> > tau(size1D(v), size1D(v));
 	    tau= zero(Scalar());
 
 	    for (Size j= 0; j < size1D(v); ++j) {
@@ -128,7 +130,7 @@ inline void orth(Value& value, typename mtl::Collection<Value>::size_type i)
 template <typename Value>
 dense2D<typename mtl::Collection
 	<typename mtl::Collection<Value>::value_type
-	>::value_type >
+	 >::value_type, matrix::parameters<>  >
 inline orthogonalize_factors(Value& v)
 {
     return impl::orthogonalize_factors(v, typename traits::category<Value>::type());
