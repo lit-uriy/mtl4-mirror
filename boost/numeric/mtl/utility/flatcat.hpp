@@ -89,8 +89,44 @@ struct flatcat5
 
 template <typename Matrix>
 struct mat_cvec_flatcat
-  : flatcat5<Matrix, tag::transposed_multi_vector, tag::hermitian_multi_vector, tag::multi_vector, 
-	     tag::dense, tag::sparse> 
+  : flatcat5<Matrix, tag::transposed_multi_vector, tag::hermitian_multi_vector, tag::multi_vector, tag::dense, tag::sparse> 
+{};
+
+template <typename Collection>
+struct shape_flatcat
+  : flatcat4<Collection, tag::matrix, tag::col_vector, tag::row_vector, tag::scalar>
+{};
+
+template <typename Collection>
+struct sparsity_flatcat
+  : flatcat2<Collection, tag::dense, tag::sparse>
+{};
+
+template <typename Collection>
+struct cursor_flatcat
+  : flatcat3<Collection, tag::has_fast_ra_cursor, tag::has_ra_cursor, tag::has_cursor>
+{};
+
+template <typename Collection>
+struct iterator_flatcat
+  : flatcat3<Collection, tag::has_fast_ra_iterator, tag::has_ra_iterator, tag::has_iterator>
+{};
+
+template <typename Collection>
+struct has_iterator_flatcat
+  : flatcat1<Collection, tag::has_iterator>
+{};
+
+
+template <typename Collection>
+struct layout_flatcat
+  : flatcat2<Collection, tag::has_2D_layout, tag::has_1D_layout>
+{};
+
+
+template <typename Matrix>
+struct sub_matrix_flatcat
+  : flatcat3<Matrix, tag::sub_divisible, tag::qsub_divisible, tag::has_sub_matrix>
 {};
 
 }} // namespace mtl::traits

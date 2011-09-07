@@ -25,6 +25,36 @@ Static
      Compute time on 7 by 7 matrix = 1501ns (not inlined)
      Compute time on 8 by 8 matrix = 2279ns (not inlined)
 
+Dynamic after optimization (r8532)
+
+     Compute time on 2 by 2 matrix = 54ns
+     Compute time on 3 by 3 matrix = 122ns
+     Compute time on 4 by 4 matrix = 125ns
+     Compute time on 5 by 5 matrix = 289ns
+     Compute time on 6 by 6 matrix = 405ns
+     Compute time on 7 by 7 matrix = 797ns
+     Compute time on 8 by 8 matrix = 601ns
+
+Static
+
+     Compute time on 2 by 2 matrix = 19ns
+     Compute time on 3 by 3 matrix = 23ns
+     Compute time on 4 by 4 matrix = 218ns
+     Compute time on 5 by 5 matrix = 452ns
+     Compute time on 6 by 6 matrix = 710ns
+     Compute time on 7 by 7 matrix = 1275ns
+     Compute time on 8 by 8 matrix = 2041ns
+
+Static after setting fully_unroll_dmat_dmat_mult_limit= 10
+
+     Compute time on 2 by 2 matrix = 18ns
+     Compute time on 3 by 3 matrix = 22ns
+     Compute time on 4 by 4 matrix = 105ns
+     Compute time on 5 by 5 matrix = 260ns
+     Compute time on 6 by 6 matrix = 383ns
+     Compute time on 7 by 7 matrix = 711ns
+     Compute time on 8 by 8 matrix = 520ns
+
 
 */
 
@@ -52,12 +82,14 @@ inline void bench()
     boost::timer time;
     static const unsigned s= Size;
     asm("#before loop");
-    for(int i= 0; i < rep; i++) 
+    for(int i= 0; i < rep; i++) {
 	C+= A * B;
+	C+= B * A;
+    }
     asm("#after loop");
     
     std::cout << "Compute time on " << s << " by " << s << " matrix = " 
-	      << 1000000000.*time.elapsed() / rep << "ns\n" << "C is\n" << C << std::endl;
+	      << 1000000000.*time.elapsed() / 2 / rep << "ns\n" << "C is\n" << C << std::endl;
 }
 
 

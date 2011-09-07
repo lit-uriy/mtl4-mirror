@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/flatcat.hpp>
 #include <boost/numeric/meta_math/loop1.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
@@ -31,7 +32,7 @@ struct gen_smat_dmat_mult
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
-    vampir_trace<4018> tracer;
+	vampir_trace<4018> tracer;
 	apply(a, b, c, typename OrientedCollection<MatrixA>::orientation());
     }
 
@@ -180,7 +181,7 @@ struct gen_tiling_smat_dmat_mult
     void operator()(MatrixA const& a, MatrixB const& b, MatrixC& c)
     {
     vampir_trace<4019> tracer;
-	apply(a, b, c, typename traits::category<MatrixC>::type());
+	apply(a, b, c, traits::layout_flatcat<MatrixC>());
     }
 
 private:
@@ -191,7 +192,7 @@ private:
     }
 
     template <typename MatrixA, typename MatrixB, typename MatrixC>
-    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::has_2D_layout)
+    void apply(MatrixA const& a, MatrixB const& b, MatrixC& c, tag::flat<tag::has_2D_layout>)
     {
 	apply2(a, b, c, typename OrientedCollection<MatrixA>::orientation());
     }

@@ -25,6 +25,8 @@
 #include <boost/numeric/mtl/operation/static_size.hpp>
 #include <boost/numeric/mtl/operation/static_num_rows.hpp>
 #include <boost/numeric/mtl/operation/static_num_cols.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/flatcat.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
@@ -62,8 +64,7 @@ struct gen_cursor_dmat_dmat_mult_ft
 {
     void operator()(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
-	apply(A, B, C, typename traits::category<MatrixA>::type(),
-	      typename traits::category<MatrixB>::type());
+	apply(A, B, C, traits::flatcat1<MatrixA, tag::has_cursor>(), traits::flatcat1<MatrixB, tag::has_cursor>());
     }   
 
 private:
@@ -72,8 +73,9 @@ private:
 	Backup()(A, B, C);
     }
 
-    void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::has_cursor, tag::has_cursor)
+    void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::flat<tag::has_cursor>, tag::flat<tag::has_cursor>)
     {
+	// asm("#cursor");
 	vampir_trace<4001> tracer;
 	// std::cout << "Canonical cursor\n";
 	typedef glas::tag::row                                          row;
@@ -167,8 +169,7 @@ struct gen_dmat_dmat_mult_ft
 {
     void operator()(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
-	apply(A, B, C, typename traits::category<MatrixA>::type(),
-	      typename traits::category<MatrixB>::type());
+	apply(A, B, C, traits::flatcat1<MatrixA, tag::has_iterator>(), traits::flatcat1<MatrixB, tag::has_iterator>());
     }   
 
 private:
@@ -177,8 +178,9 @@ private:
 	Backup()(A, B, C);
     }
 
-    void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::has_iterator, tag::has_iterator)
+    void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::flat<tag::has_iterator>, tag::flat<tag::has_iterator>)
     {
+	// asm("#iterator");
 	vampir_trace<4002> tracer;
 	// std::cout << "Canonical iterator\n";
 	using namespace tag;
@@ -340,8 +342,7 @@ struct gen_tiling_dmat_dmat_mult_ft
   
     void operator()(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
-	apply(A, B, C, typename traits::category<MatrixA>::type(),
-	      typename traits::category<MatrixB>::type());
+	apply(A, B, C, traits::layout_flatcat<MatrixA>(), traits::layout_flatcat<MatrixB>());
     }   
  
 private:
@@ -350,8 +351,9 @@ private:
 	Backup()(A, B, C);
     }
 
-    void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::has_2D_layout, tag::has_2D_layout)
+    void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::flat<tag::has_2D_layout>, tag::flat<tag::has_2D_layout>)
     {
+	// asm("#tiling");
 	vampir_trace<4003> tracer;
 	// Indices run out of range for smaller matrices
 	if (num_rows(A) < 2 || num_cols(A) < 2 || num_cols(B) < 2) {
@@ -447,8 +449,7 @@ struct gen_tiling_44_dmat_dmat_mult_ft
 {
     void operator()(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
-	apply(A, B, C, typename traits::category<MatrixA>::type(),
-	      typename traits::category<MatrixB>::type());
+	apply(A, B, C, traits::layout_flatcat<MatrixA>(), traits::layout_flatcat<MatrixB>());
     }   
  
 private:
@@ -457,8 +458,9 @@ private:
 	Backup()(A, B, C);
     }
 
-    void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::has_2D_layout, tag::has_2D_layout)
+    void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::flat<tag::has_2D_layout>, tag::flat<tag::has_2D_layout>)
     {
+	// asm("#tiling44");
 	vampir_trace<4004> tracer;
 	// Indices run out of range for smaller matrices
 	if (num_rows(A) < 2 || num_cols(A) < 2 || num_cols(B) < 2) {
@@ -581,8 +583,7 @@ struct gen_tiling_22_dmat_dmat_mult_ft
 {
     void operator()(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
-	apply(A, B, C, typename traits::category<MatrixA>::type(),
-	      typename traits::category<MatrixB>::type());
+	apply(A, B, C,  traits::layout_flatcat<MatrixA>(), traits::layout_flatcat<MatrixB>());
     }   
  
 private:
@@ -591,8 +592,9 @@ private:
 	Backup()(A, B, C);
     }
 
-    void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::has_2D_layout, tag::has_2D_layout)
+    void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::flat<tag::has_2D_layout>, tag::flat<tag::has_2D_layout>)
     {
+	// asm("#tiling22");
 	vampir_trace<4005> tracer;
 	// Indices run out of range for smaller matrices
 	if (num_rows(A) < 2 || num_cols(A) < 2 || num_cols(B) < 2) {
@@ -727,23 +729,21 @@ struct gen_recursive_dmat_dmat_mult_t
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void operator()(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
-	apply(A, B, C, typename traits::category<MatrixA>::type(),
-	      typename traits::category<MatrixB>::type(), 
-	      typename traits::category<MatrixC>::type());
+	apply(A, B, C, traits::sub_matrix_flatcat<MatrixA>(), traits::sub_matrix_flatcat<MatrixB>(), traits::sub_matrix_flatcat<MatrixC>());
     }   
  
 private:
-    // If one matrix is not sub-dividable then take backup function
+    // If one matrix is not sub-divisible then take backup function
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, tag::universe, tag::universe, tag::universe)
     {
 	Backup()(A, B, C);
     }
 
-    // Only if matrix is sub-dividable, otherwise backup
+    // Only if matrix is sub-divisible, otherwise backup
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, 
-	       tag::qsub_dividable, tag::qsub_dividable, tag::qsub_dividable)
+	       tag::flat<tag::qsub_divisible>, tag::flat<tag::qsub_divisible>, tag::flat<tag::qsub_divisible>)
     {
 	vampir_trace<4007> tracer;
 	// std::cout << "do recursion\n";

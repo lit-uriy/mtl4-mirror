@@ -257,7 +257,8 @@ struct crtp_plus_assign<mat_mat_times_expr<E1, E2>, Matrix>
     {
 	vampir_trace<3030> tracer;
 	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
-	gen_mult(factors.first, factors.second, matrix, assign::plus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
+	gen_mult(factors.first, factors.second, matrix, assign::plus_sum(), 
+		 tag::flat<tag::matrix>(), tag::flat<tag::matrix>(), tag::flat<tag::matrix>());
 	return matrix;
     }
 };
@@ -330,7 +331,7 @@ struct crtp_minus_assign<mat_mat_times_expr<E1, E2>, Matrix>
     {
 	vampir_trace<3031> tracer;
 	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
-	gen_mult(factors.first, factors.second, matrix, assign::minus_sum(), tag::matrix(), tag::matrix(), tag::matrix());
+	gen_mult(factors.first, factors.second, matrix, assign::minus_sum(), tag::flat<tag::matrix>(), tag::flat<tag::matrix>(), tag::flat<tag::matrix>());
 	return matrix;
     }
 };
