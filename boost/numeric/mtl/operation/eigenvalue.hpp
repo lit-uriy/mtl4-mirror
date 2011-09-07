@@ -113,6 +113,33 @@ inline qr_algo(const Matrix& A, typename Collection<Matrix>::size_type itMax)
     return diagonal(H);
 }
 
+
+# ifdef MTL_SYMMETRIC_EIGENVALUE_WITH_QR
+
+/// Calculation of eigenvalues of symmetric matrix A
+template <typename Matrix>
+dense_vector<typename Collection<Matrix>::value_type>
+inline eigenvalue_symmetric(const Matrix& A, typename Collection<Matrix>::size_type itMax)
+{
+    return qr_algo(A, itMax == 0 ? num_rows(A) : itMax);
+}
+
+#else 
+
+/// Calculation of eigenvalues of symmetric matrix A
+template <typename Matrix>
+dense_vector<typename Collection<Matrix>::value_type>
+inline eigenvalue_symmetric(const Matrix& A, typename Collection<Matrix>::size_type)
+{
+    typedef dense2D<typename Collection<Matrix>::value_type>    arg_type;
+    make_in_copy_or_reference<arg_type, Matrix>  copy_or_ref(A);
+    return qr_sym_imp(copy_or_ref.value);
+}
+
+#endif
+
+#if 0 // Too nasty to get it through all warnings :-!
+
 /// Calculation of eigenvalues of symmetric matrix A
 template <typename Matrix>
 dense_vector<typename Collection<Matrix>::value_type>
@@ -130,6 +157,16 @@ inline eigenvalue_symmetric(const Matrix& A,
     return qr_sym_imp(copy_or_ref.value);
 # endif
 }
+
+#endif
+
+template <typename Matrix>
+dense_vector<typename Collection<Matrix>::value_type>
+inline eigenvalue_symmetric(const Matrix& A)
+{
+    return eigenvalue_symmetric(A, 0);
+} 
+
 
 }} // namespace mtl::matrix
 
