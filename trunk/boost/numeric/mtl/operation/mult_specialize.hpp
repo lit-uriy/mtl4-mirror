@@ -21,13 +21,13 @@ namespace mtl { namespace matrix {namespace detail {
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 struct dmat_dmat_mult_tiling1
 {
-    static const unsigned long value= 1; //2;
+    static const unsigned long value= 2;
 };
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 struct dmat_dmat_mult_tiling2
 {
-    static const unsigned long value= 1; //4;
+    static const unsigned long value= 4;
 };
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>

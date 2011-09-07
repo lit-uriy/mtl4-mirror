@@ -65,7 +65,7 @@ using namespace mtl;
 template <unsigned Size>
 inline void bench()
 {
-    const int rep= 10000000;
+    const long int rep= 10000000;
 
 #ifdef STATIC_TYPES
     typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<Size, Size>, true> mat_para;
@@ -89,7 +89,9 @@ inline void bench()
     asm("#after loop");
     
     std::cout << "Compute time on " << s << " by " << s << " matrix = " 
-	      << 1000000000.*time.elapsed() / 2 / rep << "ns\n" << "C is\n" << C << std::endl;
+	      << 1000000000.*time.elapsed() / 2 / rep << "ns\n" << "C is\n" << C << " corresponds to "
+	      << Size*Size*Size*4*rep / time.elapsed() / 1e9 << "GFlops\n\n";
+
 }
 
 
