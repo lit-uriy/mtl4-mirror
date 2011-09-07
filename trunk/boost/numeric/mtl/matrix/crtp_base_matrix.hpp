@@ -69,7 +69,6 @@ private:
 	vampir_trace<3056> tracer;
 	// Self-assignment between different types shouldn't happen.	
 	matrix.checked_change_resource(source);
-	// del matrix.checked_change_dim(num_rows(source), num_cols(source));
 	matrix_copy(source, matrix);
 	return matrix;
     }
@@ -87,7 +86,6 @@ struct crtp_assign<mat_mat_plus_expr<E1, E2>, Matrix>
     {
 	vampir_trace<3056> tracer;
 	matrix.checked_change_resource(src.first);
-	// del checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix= src.first;
 	return matrix+= src.second;
     }
@@ -103,7 +101,6 @@ struct crtp_assign<mat_mat_minus_expr<E1, E2>, Matrix>
     {
 	vampir_trace<3057> tracer;
 	matrix.checked_change_resource(src.first);
-	// del checked_change_dim(num_rows(src.first), num_cols(src.first));
 	matrix= src.first;
 	return matrix-= src.second;
     }
@@ -117,9 +114,7 @@ struct crtp_assign<mat_mat_times_expr<E1, E2>, Matrix>
     {
 	vampir_trace<4013> tracer;
 	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
-	//std::cout << "Assign matrix product: factors.first =\n" << factors.first << "factors.second =\n" << factors.second;
 	matrix.checked_change_resource(factors.first, factors.second);
-	// del checked_change_dim(num_rows(factors.first), num_cols(factors.second));
 	mult(factors.first, factors.second, matrix);
 	return matrix;
     }
@@ -135,7 +130,6 @@ struct crtp_assign<mat_mat_ele_times_expr<E1, E2>, Matrix>
 	vampir_trace<3028> tracer;
 	operation::compute_factors<Matrix, mat_mat_ele_times_expr<E1, E2> > factors(src);
 	matrix.checked_change_resource(factors.first);
-	// del checked_change_dim(num_rows(factors.first), num_cols(factors.first));
 	matrix= factors.first;
 	return matrix.ele_rscale(factors.second);
     }
@@ -354,7 +348,6 @@ private:
 
 	// std::cout << "Dense assignment\n";
 	checked_change_resource(src);
-	// del checked_change_dim(num_rows(src), num_cols(src));
 
 	Matrix& matrix= static_cast<Matrix&>(*this);
 	for (size_type r= 0; r < num_rows(matrix); ++r)
@@ -409,7 +402,6 @@ private:
 
 	// std::cout << "Dense assignment\n";
 	checked_change_resource(src);
-	// del checked_change_dim(num_rows(src), num_cols(src));
 
 	Matrix& matrix= static_cast<Matrix&>(*this);
 	for (size_type r= 0; r < num_rows(matrix); ++r)

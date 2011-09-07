@@ -58,7 +58,7 @@ int main(int, char**)
 	std::cout<<"Q*R=\n"<< Q*R <<"\n";
 	
 	std::cout<< "one_norm(Rest A)=" << one_norm(A_test) << "\n";
-	if (one_norm(A_test) > tol) throw mtl::logic_error("wrong QR decomposition of matrix A");
+	MTL_THROW_IF(one_norm(A_test) > tol, mtl::logic_error("wrong QR decomposition of matrix A"));
 
 	
     std::cout<<"START------dense2d-------row < col\n";
@@ -71,7 +71,7 @@ int main(int, char**)
 	std::cout<<"Q_t*R_t=\n"<< Q_t*R_t <<"\n";
 			
 	std::cout<< "one_norm(Rest A')=" << one_norm(A_t_test) << "\n";
-	if (one_norm(A_t_test) > tol) throw mtl::logic_error("wrong QR decomposition of matrix trans(A)");
+	MTL_THROW_IF(one_norm(A_t_test) > tol, mtl::logic_error("wrong QR decomposition of matrix trans(A)"));
 	
     std::cout<<"START-------compressed2d-------row > col\n";
   #if 1
@@ -83,8 +83,9 @@ int main(int, char**)
 	std::cout<<"A=\n"<< Ac <<"\n";
 	
 	std::cout<< "one_norm(Rest A)=" << one_norm(A_testc) << "\n";
-	if (one_norm(A_testc) > tol) throw mtl::logic_error("wrong QR decomposition of matrix A"); 
+	MTL_THROW_IF(one_norm(A_testc) > tol, mtl::logic_error("wrong QR decomposition of matrix A")); 
 #endif
+
 #if 0
     dz[0][0]=complex<double>(1.0, 0.0);
     dz[0][1]=complex<double>(1.0, 0.0);

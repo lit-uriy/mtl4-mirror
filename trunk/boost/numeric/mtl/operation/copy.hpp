@@ -15,6 +15,8 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/flatcat.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
@@ -40,7 +42,7 @@ namespace mtl {
 	// Set Destination matrix to zero when source is sparse 
 	// (otherwise everything is overwritten anyway)
 	template <typename MatrixDest>
-	inline void zero_with_sparse_src(MatrixDest& dest, tag::sparse)
+	inline void zero_with_sparse_src(MatrixDest& dest, tag::flat<tag::sparse>)
 	{
 	    set_to_zero(dest);
 	}
@@ -84,7 +86,7 @@ namespace mtl {
 	MTL_THROW_IF(num_rows(src) != num_rows(dest) || num_cols(src) != num_cols(dest), incompatible_size());
 
 	if (with_reset)
-	    detail::zero_with_sparse_src(dest, typename traits::category<MatrixSrc>::type());
+	    detail::zero_with_sparse_src(dest, traits::sparsity_flatcat<MatrixSrc>()); 
 	
 	typename traits::row<MatrixSrc>::type             row(src); 
 	typename traits::col<MatrixSrc>::type             col(src); 
@@ -203,7 +205,7 @@ namespace mtl {
 
        
     template <typename MatrixSrc, typename MatrixDest>
-    inline void copy(const MatrixSrc& src, tag::matrix, MatrixDest& dest, tag::matrix)
+    inline void copy(const MatrixSrc& src, tag::flat<tag::matrix>, MatrixDest& dest, tag::flat<tag::matrix>)
 	// inline void copy(const MatrixSrc& src, tag::matrix_expr, MatrixDest& dest, tag::matrix)
     {
 	return matrix_copy(src, dest);
@@ -260,7 +262,7 @@ namespace mtl {
 
        
     template <typename VectorSrc, typename VectorDest>
-    inline void copy(const VectorSrc& src, tag::vector, VectorDest& dest, tag::vector)	
+    inline void copy(const VectorSrc& src, tag::flat<tag::vector>, VectorDest& dest, tag::flat<tag::vector>)	
     {
 	return vector_copy(src, dest);
     }
@@ -270,7 +272,8 @@ namespace mtl {
     inline void copy(const CollSrc& src, CollDest& dest)
     {
 	vampir_trace<3003> tracer;
-	return copy(src, traits::category<CollSrc>::type(), dest, traits::category<CollDest>::type());
+	return copy(src, traits::flatcat2<CollSrc, tag::matrix, tag::vector>(),
+		    dest, traits::flatcat2<CollDest, tag::matrix, tag::vector>());
     }
 
 
