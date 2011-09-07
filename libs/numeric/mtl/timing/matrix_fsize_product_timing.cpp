@@ -89,8 +89,8 @@ inline void bench()
     asm("#after loop");
     
     std::cout << "Compute time on " << s << " by " << s << " matrix = " 
-	      << 1000000000.*time.elapsed() / 2 / rep << "ns\n" << "C is\n" << C << " corresponds to "
-	      << Size*Size*Size*4*rep / time.elapsed() / 1e9 << "GFlops\n\n";
+	      << 1000000000.*time.elapsed() / 2 / rep << "ns, this corresponds to "
+	      << Size*Size*Size*4*rep / time.elapsed() / 1e9 << " GFlops.\nC is\n" << C << "\n";
 
 }
 
