@@ -49,9 +49,9 @@ inline mult(const A& a, const B& b, C& c)
 #endif
 
     // dispatch between matrices, vectors, and scalars
-    using mtl::traits::category;
-    gen_mult(a, b, c, assign::assign_sum(), typename category<A>::type(), 
-	     typename category<B>::type(), typename category<C>::type());
+    using mtl::traits::shape_flatcat;
+    gen_mult(a, b, c, assign::assign_sum(), shape_flatcat<A>(), shape_flatcat<B>(), shape_flatcat<C>());
+                                            // typename category<A>::type(), typename category<B>::type(), typename category<C>::type());
 }
 
 
@@ -64,9 +64,9 @@ inline mult_add(const A& a, const B& b, C& c)
 {
     vampir_trace<4010> tracer;
     // dispatch between matrices, vectors, and scalars
-    using mtl::traits::category;
-    gen_mult(a, b, c, assign::plus_sum(), typename category<A>::type(), 
-	     typename category<B>::type(), typename category<C>::type());
+    using mtl::traits::shape_flatcat;
+    gen_mult(a, b, c, assign::plus_sum(), shape_flatcat<A>(), shape_flatcat<B>(), shape_flatcat<C>());
+                                          // typename category<A>::type(), typename category<B>::type(), typename category<C>::type());
 }
 
 
@@ -84,13 +84,12 @@ inline void mult(const A& a, const X& x, const Y& y, Z& z)
 
 // Matrix multiplication
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
-inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::matrix, tag::matrix, tag::matrix)
+inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag::flat<tag::matrix>, tag::flat<tag::matrix>, tag::flat<tag::matrix>)
 {
     vampir_trace<4011> tracer;
-    asm("#gen_mult 1");
 #if 1
     MTL_DEBUG_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
-#else
+#else 
     if ((void*)&a == (void*)&c || (void*)&b == (void*)&c) {
 	C tmp(num_rows(c), num_cols(c)); 
 	mult(a, b, tmp);
@@ -99,12 +98,11 @@ inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag
     }
 #endif
 
-    MTL_DEBUG_THROW_IF(num_rows(a) != num_rows(c) || num_cols(a) != num_rows(b) || num_cols(b) != num_cols(c),
-		 incompatible_size());
+    MTL_DEBUG_THROW_IF(num_rows(a) != num_rows(c) || num_cols(a) != num_rows(b) || num_cols(b) != num_cols(c), incompatible_size());
     // dispatch between dense and sparse
-    using mtl::traits::category;
-    mat_mat_mult(a, b, c, Assign(), typename category<MatrixA>::type(), 
-		 typename category<MatrixB>::type(), typename category<MatrixC>::type());
+    using mtl::traits::sparsity_flatcat;
+    mat_mat_mult(a, b, c, Assign(), sparsity_flatcat<MatrixA>(), sparsity_flatcat<MatrixB>(), sparsity_flatcat<MatrixC>());
+		 // typename category<MatrixA>::type(), typename category<MatrixB>::type(), typename category<MatrixC>::type());
 }
 
 
@@ -121,7 +119,7 @@ inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag
      -# Naive multiplication on entire matrices if recursion is not available
 **/
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
-inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::dense, tag::dense, tag::dense)
+inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::flat<tag::dense>, tag::flat<tag::dense>, tag::flat<tag::dense>)
 {
     vampir_trace<4012> tracer;
     using assign::plus_sum; using assign::assign_sum; 
@@ -156,20 +154,20 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 }
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
-inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::dense, tag::dense, tag::sparse)
+inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::flat<tag::dense>, tag::flat<tag::dense>, tag::flat<tag::sparse>)
 {
     vampir_trace<4012> tracer;
     // This is a useless and extremely inefficient operation!!!!
     // We compute this with a dense matrix and copy the result back
     dense2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
     c_copy= c;
-    mat_mat_mult(A, b, c_copy, Assign(), tag::dense(), tag::dense(), tag::dense());
+    mat_mat_mult(A, b, c_copy, Assign(), tag::flat<tag::dense>(), tag::flat<tag::dense>(), tag::flat<tag::dense>());
     c= c_copy;
 }
 
 /// Sparse matrix multiplication
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
-inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::sparse, tag::sparse)
+inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::flat<tag::sparse>, tag::flat<tag::sparse>, tag::flat<tag::sparse>)
 {
     vampir_trace<4012> tracer;
     smat_smat_mult(A, b, c, Assign(), typename OrientedCollection<MatrixA>::orientation(),
@@ -177,7 +175,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 }
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
-inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::sparse, tag::dense)
+inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::flat<tag::sparse>, tag::flat<tag::sparse>, tag::flat<tag::dense>)
 {
     vampir_trace<4012> tracer;
     // This is a useless and extremely inefficient operation!!!!
@@ -197,7 +195,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
      -# Naive multiplication 
 **/
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
-inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::dense, tag::dense)
+inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::flat<tag::sparse>, tag::flat<tag::dense>, tag::flat<tag::dense>)
 {
     vampir_trace<4012> tracer;
     using assign::plus_sum; using assign::assign_sum; 
@@ -216,20 +214,20 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
 }
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
-inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::sparse, tag::dense, tag::sparse)
+inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::flat<tag::sparse>, tag::flat<tag::dense>, tag::flat<tag::sparse>)
 {
     vampir_trace<4012> tracer;
     // This is a useless and extremely inefficient operation!!!!
     // We compute this with a sparse matrix and copy the result back
     dense2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
     c_copy= c;
-    mat_mat_mult(A, b, c_copy, Assign(), tag::sparse(), tag::dense(), tag::dense());
+    mat_mat_mult(A, b, c_copy, Assign(), tag::flat<tag::sparse>(), tag::flat<tag::dense>(), tag::flat<tag::dense>());
     c= c_copy;
 }
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
-inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::dense, tag::sparse, tag::dense)
+inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::flat<tag::dense>, tag::flat<tag::sparse>, tag::flat<tag::dense>)
 {
     vampir_trace<4012> tracer;
     // This is could be a usefull operation, i.e. multiplying multiple row vectors with a sparse matrix
@@ -239,28 +237,28 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
     A_copy= A;
     compressed2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
     c_copy= c;
-    mat_mat_mult(A_copy, b, c_copy, Assign(), tag::sparse(), tag::sparse(), tag::sparse());
+    mat_mat_mult(A_copy, b, c_copy, Assign(), tag::flat<tag::sparse>(), tag::flat<tag::sparse>(), tag::flat<tag::sparse>());
     c= c_copy;
 }
 
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC, typename Assign>
-inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::dense, tag::sparse, tag::sparse)
+inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign, tag::flat<tag::dense>, tag::flat<tag::sparse>, tag::flat<tag::sparse>)
 {
     vampir_trace<4012> tracer;
     // This is not a usefull operation, because the result is dense
     // Now we compute this with a sparse matrix as first argument
     compressed2D<typename Collection<MatrixA>::value_type, matrix::parameters<> > A_copy(num_rows(A), num_cols(A));
     A_copy= A;
-    mat_mat_mult(A_copy, b, c, Assign(), tag::sparse(), tag::sparse(), tag::sparse());
+    mat_mat_mult(A_copy, b, c, Assign(), tag::flat<tag::sparse>(), tag::flat<tag::sparse>(), tag::flat<tag::sparse>());
 }
 
 
 
 // Matrix vector multiplication
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::matrix, tag::col_vector, tag::col_vector)
+inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::matrix>, tag::flat<tag::col_vector>, tag::flat<tag::col_vector>)
 {
     vampir_trace<4011> tracer;
     // Vector must be column vector
@@ -294,7 +292,7 @@ inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, t
 
 // Vector matrix multiplication
 template <typename VectorIn, typename Matrix, typename VectorOut, typename Assign>
-inline void gen_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, tag::row_vector, tag::matrix, tag::row_vector)
+inline void gen_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, tag::flat<tag::row_vector>, tag::flat<tag::matrix>, tag::flat<tag::row_vector>)
 {
     vampir_trace<4011> tracer;
     // Vector must be column vector
@@ -322,7 +320,8 @@ inline void gen_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, t
     w.checked_change_resource(v);
     MTL_DEBUG_THROW_IF(num_cols(v) != num_rows(A), incompatible_size());
 
-    rvec_mat_mult(v, A, w, Assign(), typename mtl::traits::category<Matrix>::type()); 
+    // same dispatching criterion as mat_cvec_mult (until now)
+    rvec_mat_mult(v, A, w, Assign(), typename mtl::traits::mat_cvec_flatcat<Matrix>::type());
 }
 
 

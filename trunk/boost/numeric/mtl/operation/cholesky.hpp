@@ -275,14 +275,14 @@ namespace with_iterator {
 	for (size_type k = 0; k < NW.num_cols (); k++) 
 	    for (size_type i = 0; i < NE.num_rows (); i++) {
 		typename MatrixNW::value_type d = NW[i][k];
-
+#if 0
 		rcur_type ne_i= begin<row>(NE);       ne_i+= i;      // row i
 		riter_type it1= begin<all_it>(ne_i);                   // NE[i][0]
 		riter_type it1end= end<all_it>(ne_i);                  // NE[i][num_col]
 
 		ccur_type sw_k= begin<col>(SW);     sw_k+= k;        // column k
 		citer_type it2= begin<all_cit>(sw_k);                  // SW[0][k]
-
+#endif
 		for (size_type j = 0; j < NE.num_cols (); j++)
 		    NE[i][j] -= d * SW[j][k];
 	    }
@@ -545,16 +545,16 @@ struct recursive_cholesky_t
     }   
  
 private:
-    // If the matrix is not sub-dividable then take backup function
+    // If the matrix is not sub-divisible then take backup function
     template <typename Matrix, typename Visitor>
     void apply(Matrix& matrix, Visitor, tag::universe)
     {
 	Backup()(matrix);
     }
 
-    // Only if matrix is sub-dividable, otherwise backup
+    // Only if matrix is sub-divisible, otherwise backup
     template <typename Matrix, typename Visitor>
-    void apply(Matrix& matrix, Visitor vis, tag::qsub_dividable)
+    void apply(Matrix& matrix, Visitor vis, tag::qsub_divisible)
     {
 	matrix::recursator<Matrix>  recursator(matrix);
 	with_recursator::cholesky(recursator, vis);

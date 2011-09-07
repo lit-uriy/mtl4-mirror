@@ -57,7 +57,7 @@ namespace mtl {
 #     ifdef MTL_FULLY_UNROLL_DMAT_DMAT_MULT_LIMIT
 	const std::size_t fully_unroll_dmat_dmat_mult_limit= MTL_FULLY_UNROLL_DMAT_DMAT_MULT_LIMIT;
 #     else
-	const std::size_t fully_unroll_dmat_dmat_mult_limit= 64;
+	const std::size_t fully_unroll_dmat_dmat_mult_limit= 10;
 #     endif
 
 #     ifdef MTL_CRS_CVEC_MULT_BLOCK_SIZE

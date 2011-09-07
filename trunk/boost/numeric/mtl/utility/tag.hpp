@@ -33,227 +33,9 @@ struct dummy4 {};
 /// Tag for all types
 struct universe {};
 
-	template <typename T> struct flat {};
-
-#if 0 // Tag hierarchy without "virtual", would require a whole redesign
-
-// Tag for any scalar value
-/** At the moment default for unknown types (will be precised later) */
-struct scalar : universe {};
-
-/// For non-MTL types with category not explicitly defined
-/** At the moment all treated as scalars (will be precised later) */
-struct unknown : scalar {};
-
-/// Tag for intermediate objects that require explicit evaluation 
-struct unevaluated : universe {};
-
-/// Any collection, i.e. vectors, matrices or higher-dimensional tensor
-struct collection : universe {};
-
-/// Tag for any MTL vector (and user-declared MTL vectors)
-struct vector : collection {};
-
-/// Tag for references to vector
-/** For instance to not access memory directly but use functions, e.g. in set_to_zero. **/ 
-struct vector_ref : vector {};
-
-/// Tag for any MTL column vector (and user-declared MTL vectors)
-struct col_vector : vector {};
-
-/// Tag for any MTL row vector (and user-declared MTL vectors)
-struct row_vector : vector {};
-
-/// Tag for any MTL matrix (and user-declared MTL matrices)
-struct matrix : collection {};
-
-struct sparsity_universe {};
-
-/// Tag for any dense collection
-struct dense : sparsity_universe {};
-  
-struct layout_universe {};
-
-/// Tag for vectors with one-dimensional memory addressing
-/** offet v_i is x*i for some x */
-struct has_1D_layout : layout_universe
-{};
-    
-/// Tag for matrices with two-dimensional memory addressing
-/** offet a_ij is x*i + y*j for some x and y */
-struct has_2D_layout : layout_universe
-{};
-  
-/// Tag for any sparse collection
-struct sparse : sparsity_universe {};
-  
-// for distinction between dense and sparse matrices
-struct dense_matrix : dense, matrix {};
-struct sparse_matrix : sparse, matrix {};
-
-struct contiguity_universe {};
-
-/// Tag for collections where values are stored contigously in memory
-struct contiguous_memory : contiguity_universe {};
-
-/// Tag for dense and contiguous collections
-/** Only short cut */
-struct contiguous_dense : dense, contiguous_memory {};
-
-struct iterator_universe {};
-
-/// Collection with iterator
-struct has_iterator : iterator_universe {};
-
-/// Collection with random-access iterator
-struct has_ra_iterator : has_iterator {};
-
-/// Collection with fast random-access iterator
-/** Meaning: unrolling is probably beneficial. Counter-example: Morton-ordered matrices have
-  random access but this is so slow that regular traversal is favorable */
-struct has_fast_ra_iterator : has_ra_iterator {};
-
-struct cursor_universe {};
-
-/// Collection with cursor
-struct has_cursor : cursor_universe{};
-
-/// Collection with random-access cursor
-struct has_ra_cursor : has_cursor {};
-
-/// Collection with fast random-access cursor
-/** Meaning: unrolling is probably beneficial. Counter-example: Morton-ordered matrices have
-    random access but this is so slow that regular traversal is favorable */
-struct has_fast_ra_cursor : has_ra_cursor {};
-
-struct sub_matrix_universe {};
-
-/// Tag for matrices with sub_matrix function exist and doesn't say for which ranges it is defined
-struct has_sub_matrix : sub_matrix_universe {};
-
-/// Sub-dividable into quadrants, i.e. arbitrary sub-matrices not necessarily supported but recursion works
-//  more explanation needed
-struct qsub_dividable : has_sub_matrix {};
-
-/// Tag for sub-dividable matrix, i.e. sub_matrix works 
-struct sub_dividable : qsub_dividable {};
-
-/// Tag for dense row vector in the category lattice
-struct dense_row_vector
-  : row_vector, contiguous_dense, 
-    has_fast_ra_iterator, has_fast_ra_cursor, has_1D_layout
-{};
-
-/// Tag for dense column vector in the category lattice
-struct dense_col_vector
-  : col_vector, contiguous_dense, 
-    has_fast_ra_iterator, has_fast_ra_cursor, has_1D_layout
-{};
-
-/// Tag for strided row vector in the category lattice
-struct strided_row_vector
-  : row_vector, vector_ref,
-    has_fast_ra_iterator, has_fast_ra_cursor, has_1D_layout
-{};
-
-/// Tag for strided column vector in the category lattice
-struct strided_col_vector
-  : col_vector, vector_ref, 
-    has_fast_ra_iterator, has_fast_ra_cursor, has_1D_layout
-{};
-
-/// Tag for sparse row vector in the category lattice
-struct sparse_row_vector
-  : row_vector, sparse
-{};
-
-/// Tag for sparse column vector in the category lattice
-struct sparse_col_vector
-  : col_vector, sparse
-{};
-
-/// Tag to handle std::vector in the category lattice
-struct std_vector
-  : vector, contiguous_dense, has_1D_layout
-{};
-
-/// Tag for a view on a (regular) dense matrix in the category lattice
-/** The map perform address computation and has therefore no 2D-layout.
-    It is also not (yet) assumed that the view provides iterators. */
-struct dense2D_view 
-  : matrix, contiguous_dense, has_fast_ra_cursor 
-   // ,  sub_dividable // is currently not sub-dividable
-{};
-
-/// Tag for (regular) dense matrix in the category lattice
-struct dense2D 
-  : dense2D_view, has_fast_ra_iterator, has_2D_layout
-{};
-
-struct implicit_dense
-  : matrix, dense, has_fast_ra_cursor
-{};
-
-/// Tag for a view on a Morton-order matrix in the category lattice
-/** It is not (yet) assumed that the view provides iterators. */
-struct morton_view 
-  : matrix, contiguous_dense, 
-    has_ra_cursor // ,  qsub_dividable // is currently not sub-dividable
- {};
-
-
-/// Tag for Morton-order matrix in the category lattice
-struct morton_dense 
- :  morton_view, has_ra_iterator
- {};
-
-/// Tag for a view on a compressed matrix in the category lattice
-/** It is not (yet) assumed that the view provides iterators. */
-struct compressed2D_view
-  : matrix, sparse, has_cursor
-{};
-
-/// Tag for compressed matrix in the category lattice
-struct compressed2D 
-  : compressed2D_view, has_iterator
-{};
-
-/// Tag for multi_vector
-// Maybe splitting later into sparse and dense form
-struct multi_vector
-  : matrix, dense
-{};
-
-/// Tag for transposed multi_vector
-// Maybe splitting later into sparse and dense form
-struct transposed_multi_vector
-  : matrix, dense
-{};
-
-/// Tag for transposed multi_vector
-// Maybe splitting later into sparse and dense form
-struct hermitian_multi_vector
-  : matrix, dense
-{};
-
-/// Tag for implicit dense matrices
-
-
-/// Tag for bottom of the category lattice
-/** Only for completeness; probably not needed in practice. */
-struct bottom
-  : compressed2D, morton_dense, dense2D, 
-    dense_col_vector, dense_row_vector, unknown,
-    multi_vector
-{};
-
-template <typename Tag1, typename Tag2, typename Tag3= dummy3, typename Tag4= dummy4>
-struct join
-  : Tag1, Tag2, Tag3, Tag4
-{};
-
-#else
-
+/// Tag used to flatten categories
+/** The virtual derivation causes perceivable run-time overhead that can be avoided with this struct using traits::flatcat1 and such. **/
+template <typename T> struct flat : universe {};
 
 // Tag for any scalar value
 /** At the moment default for unknown types (will be precised later) */
@@ -335,12 +117,12 @@ struct has_fast_ra_cursor : virtual has_ra_cursor {};
 /// Tag for matrices with sub_matrix function exist and doesn't say for which ranges it is defined
 struct has_sub_matrix : virtual universe {};
 
-/// Sub-dividable into quadrants, i.e. arbitrary sub-matrices not necessarily supported but recursion works
+/// Sub-divisible into quadrants, i.e. arbitrary sub-matrices not necessarily supported but recursion works
 //  more explanation needed
-struct qsub_dividable : virtual has_sub_matrix {};
+struct qsub_divisible : virtual has_sub_matrix {};
 
-/// Tag for sub-dividable matrix, i.e. sub_matrix works 
-struct sub_dividable : virtual qsub_dividable {};
+/// Tag for sub-divisible matrix, i.e. sub_matrix works 
+struct sub_divisible : virtual qsub_divisible {};
 
 /// Tag for dense row vector in the category lattice
 struct dense_row_vector
@@ -386,7 +168,7 @@ struct std_vector
     It is also not (yet) assumed that the view provides iterators. */
 struct dense2D_view 
   : virtual matrix, virtual contiguous_dense, virtual has_fast_ra_cursor 
-    // , virtual sub_dividable // is currently not sub-dividable
+    // , virtual sub_divisible // is currently not sub-divisible
 {};
 
 /// Tag for (regular) dense matrix in the category lattice
@@ -402,14 +184,14 @@ struct implicit_dense
 /** It is not (yet) assumed that the view provides iterators. */
 struct morton_view 
   : virtual matrix, virtual contiguous_dense,  
-    virtual has_ra_cursor // , virtual qsub_dividable // is currently not sub-dividable
- {};
+    virtual has_ra_cursor // , virtual qsub_divisible // is currently not sub-divisible
+{};
 
 
 /// Tag for Morton-order matrix in the category lattice
 struct morton_dense 
-  : virtual morton_view, virtual has_ra_iterator
- {};
+  : virtual morton_view, virtual has_ra_iterator, virtual qsub_divisible
+{};
 
 /// Tag for a view on a compressed matrix in the category lattice
 /** It is not (yet) assumed that the view provides iterators. */
@@ -455,8 +237,6 @@ template <typename Tag1, typename Tag2, typename Tag3= dummy3, typename Tag4= du
 struct join
   : virtual Tag1, virtual Tag2, virtual Tag3, virtual Tag4
 {};
-
-#endif
 
 
 // =====================

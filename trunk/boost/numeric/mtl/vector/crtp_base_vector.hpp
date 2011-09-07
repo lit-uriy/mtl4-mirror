@@ -110,8 +110,7 @@ struct crtp_assign<Vector, rvec_mat_times_expr<E1, E2> >
     type operator()(Vector& vector, const rvec_mat_times_expr<E1, E2>& src)
     {
 	vector.checked_change_resource(src);
-	gen_mult(src.first, src.second, vector, assign::assign_sum(), 
-		 tag::row_vector(), tag::matrix(), tag::row_vector());
+	rvec_mat_mult(src.first, src.second, vector, assign::assign_sum(), traits::mat_cvec_flatcat<E2>());	// gen_mult(src.first, src.second, vector, assign::assign_sum(), tag::row_vector(), tag::matrix(), tag::row_vector());
 	return vector;
     }
 };
@@ -165,8 +164,7 @@ struct crtp_plus_assign<Vector, mat_cvec_times_expr<E1, E2> >
     typedef Vector& type;
     type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
     {
-	gen_mult(src.first, src.second, vector, assign::plus_sum(), tag::matrix(), tag::col_vector(), tag::col_vector());
-	// mat_cvec_mult(src.first, src.second, vector, assign::plus_sum(), traits::mat_cvec_flatcat<E1>());
+	mat_cvec_mult(src.first, src.second, vector, assign::plus_sum(), traits::mat_cvec_flatcat<E1>());
 	return vector;
     }
 };
@@ -179,8 +177,8 @@ struct crtp_plus_assign<Vector, rvec_mat_times_expr<E1, E2> >
     typedef Vector& type;
     type operator()(Vector& vector, const rvec_mat_times_expr<E1, E2>& src)
     {
-	gen_mult(src.first, src.second, vector, assign::plus_sum(), 
-		 tag::row_vector(), tag::matrix(), tag::row_vector());
+	// gen_mult(src.first, src.second, vector, assign::plus_sum(), tag::row_vector(), tag::matrix(), tag::row_vector());
+	rvec_mat_mult(src.first, src.second, vector, assign::plus_sum(), traits::mat_cvec_flatcat<E2>());
 	return vector;
     }
 };
@@ -230,8 +228,8 @@ struct crtp_minus_assign<Vector, rvec_mat_times_expr<E1, E2> >
     typedef Vector& type;
     type operator()(Vector& vector, const rvec_mat_times_expr<E1, E2>& src)
     {
-	gen_mult(src.first, src.second, vector, assign::minus_sum(), 
-		 tag::row_vector(), tag::matrix(), tag::row_vector());
+	// gen_mult(src.first, src.second, vector, assign::minus_sum(), tag::row_vector(), tag::matrix(), tag::row_vector());
+	rvec_mat_mult(src.first, src.second, vector, assign::minus_sum(), traits::mat_cvec_flatcat<E2>());
 	return vector;
     }
 };
