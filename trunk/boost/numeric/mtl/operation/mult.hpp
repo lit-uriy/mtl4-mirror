@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/flatcat.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
@@ -286,7 +287,7 @@ inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, t
     MTL_DEBUG_THROW_IF(num_rows(A) != mtl::vector::size(w), incompatible_size());
     MTL_DEBUG_THROW_IF(num_cols(A) != mtl::vector::size(v), incompatible_size());
 
-    mat_cvec_mult(A, v, w, Assign(), typename mtl::traits::category<Matrix>::type()); 
+    mat_cvec_mult(A, v, w, Assign(), traits::mat_cvec_flatcat<Matrix>());
 }
 
 

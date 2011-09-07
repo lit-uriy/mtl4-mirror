@@ -116,7 +116,7 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
 
 // Dense matrix vector multiplication
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::dense)
+inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::dense>)
 {
 # ifdef MTL_NOT_UNROLL_FSIZE_MAT_VEC_MULT
     boost::mpl::false_        selector;
@@ -128,7 +128,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 
 // Multi-vector vector multiplication (tag::multi_vector is derived from dense)
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::multi_vector)
+inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::multi_vector>)
 {
     vampir_trace<3019> tracer;
     if (Assign::init_to_zero) set_to_zero(w);
@@ -138,7 +138,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 
 // Transposed multi-vector vector multiplication (tag::transposed_multi_vector is derived from dense)
 template <typename TransposedMatrix, typename VectorIn, typename VectorOut, typename Assign>
-inline void mat_cvec_mult(const TransposedMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::transposed_multi_vector)
+inline void mat_cvec_mult(const TransposedMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::transposed_multi_vector>)
 {
     vampir_trace<3020> tracer;
     typename TransposedMatrix::const_ref_type B= A.ref; // Referred matrix
@@ -150,7 +150,7 @@ inline void mat_cvec_mult(const TransposedMatrix& A, const VectorIn& v, VectorOu
 
 // Hermitian multi-vector vector multiplication (tag::hermitian_multi_vector is derived from dense)
 template <typename HermitianMatrix, typename VectorIn, typename VectorOut, typename Assign>
-inline void mat_cvec_mult(const HermitianMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::hermitian_multi_vector)
+inline void mat_cvec_mult(const HermitianMatrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::hermitian_multi_vector>)
 {
     vampir_trace<3021> tracer;
     typename HermitianMatrix::const_ref_type B= A.const_ref(); // Referred matrix
@@ -344,7 +344,7 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
 
 // Sparse matrix vector multiplication
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
-inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::sparse)
+inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::sparse>)
 {
     smat_cvec_mult(A, v, w, Assign(), typename OrientedCollection<Matrix>::orientation());
 }
