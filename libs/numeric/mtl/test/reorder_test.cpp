@@ -25,8 +25,8 @@ void test_rows(const Matrix& A, const Reorder& r)
     if (BB[1][0] != value_type(4.)) throw "Wrong value after row reordering!";
 }
 
-template <typename Reorder>
-void test_rows(const mtl::compressed2D<double, mtl::matrix::parameters<mtl::col_major> >&, const Reorder&) {}
+template <typename Reorder, typename Value, typename Parameters>
+void test_rows(const mtl::compressed2D<Value, Parameters>&, const Reorder&) {}
 
 
 template <typename Matrix>
