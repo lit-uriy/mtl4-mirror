@@ -69,7 +69,8 @@ class ic_0
     template <typename VectorIn, typename VectorOut>
     const VectorOut& solve_lower(const VectorIn& x, VectorOut&) const
     {
-	static VectorOut y0(resource(x));
+	static VectorOut y0;
+	y0.change_resource(resource(x));
 	lower_solver(x, y0);
 	return y0;
     }
