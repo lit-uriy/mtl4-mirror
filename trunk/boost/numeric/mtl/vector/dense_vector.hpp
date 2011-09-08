@@ -215,6 +215,7 @@ class dense_vector
 	swap(static_cast<memory_base&>(vector1), static_cast<memory_base&>(vector2));
     }
 
+    void change_resource(size_type n) { this->realloc(n); }
     void change_dim(size_type n) { this->realloc(n); }
     void checked_change_dim(size_type n) { check_dim(n); change_dim(n); }
     

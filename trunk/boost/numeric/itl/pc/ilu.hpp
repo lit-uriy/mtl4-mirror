@@ -73,7 +73,8 @@ class ilu
     template <typename VectorIn, typename VectorOut>
     const VectorOut& solve_lower(const VectorIn& x, VectorOut&) const
     {
-	static VectorOut y0(resource(x));
+	static VectorOut y0;
+	y0.change_resource(resource(x));
 	lower_solver(x, y0);
 	return y0;
     }
@@ -107,7 +108,8 @@ class ilu
 	mtl::vampir_trace<5040> tracer;
 	y.checked_change_resource(x);
 	// y= unit_upper_trisolve(adjoint(L), inverse_lower_trisolve(adjoint(U), x));
-	static VectorOut y0(resource(x));
+	static VectorOut y0;
+	y0.change_resource(resource(x));
 	adjoint_lower_solver(x, y0);
 	adjoint_upper_solver(y0, y);
     }
