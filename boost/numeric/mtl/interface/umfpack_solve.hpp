@@ -135,14 +135,93 @@ namespace mtl { namespace matrix {
 
 	    void init_aux(true_)
 	    {
-		check(umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info), "Error in dl_symbolic");
-		check(umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in dl_numeric");
+	      check(umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info), "Error in dl_symbolic");
+	      check(umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in dl_numeric");
 	    }
 	    
 	    void init_aux(false_)
 	    {
 		check(umfpack_di_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info), "Error in di_symbolic");
+#if 0
+		std::cout << "=== INFO of umfpack_*_symbolic ===\n";
+		std::cout << "    UMFPACK_STATUS: " << (Info[UMFPACK_STATUS] == UMFPACK_OK ? "OK" : "ERROR") << "\n";
+		std::cout << "    UMFPACK_NROW: " << Info[UMFPACK_NROW] << "\n";
+		std::cout << "    UMFPACK_NCOL: " << Info[UMFPACK_NCOL] << "\n";
+		std::cout << "    UMFPACK_NZ: " << Info[UMFPACK_NZ] << "\n";
+		std::cout << "    UMFPACK_SIZE_OF_UNIT: " << Info[UMFPACK_SIZE_OF_UNIT] << "\n";
+		std::cout << "    UMFPACK_NDENSE_ROW: " << Info[UMFPACK_NDENSE_ROW] << "\n";
+		std::cout << "    UMFPACK_NEMPTY_ROW: " << Info[UMFPACK_NEMPTY_ROW] << "\n";
+		std::cout << "    UMFPACK_NDENSE_COL: " << Info[UMFPACK_NDENSE_COL] << "\n";
+		std::cout << "    UMFPACK_NEMPTY_COL: " << Info[UMFPACK_NEMPTY_COL] << "\n";
+		std::cout << "    UMFPACK_SYMBOLIC_DEFRAG: " << Info[UMFPACK_SYMBOLIC_DEFRAG] << "\n";
+		std::cout << "    UMFPACK_SYMBOLIC_PEAK_MEMORY: " << Info[UMFPACK_SYMBOLIC_PEAK_MEMORY] << "\n";
+		std::cout << "    UMFPACK_SYMBOLIC_SIZE: " << Info[UMFPACK_SYMBOLIC_SIZE] << "\n";
+		std::cout << "    UMFPACK_VARIABLE_PEAK_ESTIMATE: " << Info[UMFPACK_VARIABLE_PEAK_ESTIMATE]  << "\n";
+		std::cout << "    UMFPACK_NUMERIC_SIZE_ESTIMATE: " << Info[UMFPACK_NUMERIC_SIZE_ESTIMATE] << "\n";
+		std::cout << "    UMFPACK_PEAK_MEMORY_ESTIMATE: " << Info[UMFPACK_PEAK_MEMORY_ESTIMATE] << "\n";
+		std::cout << "    UMFPACK_FLOPS_ESTIMATE: " << Info[UMFPACK_FLOPS_ESTIMATE] << "\n";
+		std::cout << "    UMFPACK_LNZ_ESTIMATE: " << Info[UMFPACK_LNZ_ESTIMATE] << "\n";
+		std::cout << "    UMFPACK_UNZ_ESTIMATE: " << Info[UMFPACK_UNZ_ESTIMATE] << "\n";
+		std::cout << "    UMFPACK_MAX_FRONT_SIZE_ESTIMATE: " << Info[UMFPACK_MAX_FRONT_SIZE_ESTIMATE] << "\n";
+		std::cout << "    UMFPACK_SYMBOLIC_TIME: " << Info[UMFPACK_SYMBOLIC_TIME] << "\n";
+		std::cout << "    UMFPACK_SYMBOLIC_WALLTIME: " << Info[UMFPACK_SYMBOLIC_WALLTIME] << "\n";
+		
+		if (Info[UMFPACK_STRATEGY_USED] == UMFPACK_STRATEGY_SYMMETRIC)
+		  std::cout << "    UMFPACK_STRATEGY_USED: SYMMETRIC\n";
+		else {
+		  if(Info[UMFPACK_STRATEGY_USED] == UMFPACK_STRATEGY_UNSYMMETRIC)
+		    std::cout << "    UMFPACK_STRATEGY_USED: UNSYMMETRIC\n";
+		  else {
+		    if (Info[UMFPACK_STRATEGY_USED] == UMFPACK_STRATEGY_2BY2)
+		      std::cout << "    UMFPACK_STRATEGY_USED: 2BY2\n";
+		    else
+		      std::cout << "    UMFPACK_STRATEGY_USED: UNKOWN STRATEGY " << Info[UMFPACK_STRATEGY_USED] << "\n";
+		  }
+		}
+		  
+		std::cout << "    UMFPACK_ORDERING_USED: " << Info[UMFPACK_ORDERING_USED] << "\n";
+		std::cout << "    UMFPACK_QFIXED: " << Info[UMFPACK_QFIXED] << "\n";
+		std::cout << "    UMFPACK_DIAG_PREFERRED: " << Info[UMFPACK_DIAG_PREFERRED] << "\n";
+		std::cout << "    UMFPACK_ROW_SINGLETONS: " << Info[UMFPACK_ROW_SINGLETONS] << "\n";
+		std::cout << "    UMFPACK_COL_SINGLETONS: " << Info[UMFPACK_COL_SINGLETONS] << "\n";
+		std::cout << "    UMFPACK_PATTERN_SYMMETRY: " << Info[UMFPACK_PATTERN_SYMMETRY] << "\n";
+		std::cout << "    UMFPACK_NZ_A_PLUS_AT: " << Info[UMFPACK_NZ_A_PLUS_AT] << "\n";
+		std::cout << "    UMFPACK_NZDIAG: " << Info[UMFPACK_NZDIAG] << "\n";
+		std::cout << "    UMFPACK_N2: " << Info[UMFPACK_N2] << "\n";
+		std::cout << "    UMFPACK_S_SYMMETRIC: " << Info[UMFPACK_S_SYMMETRIC] << "\n";
+		std::cout << "    UMFPACK_MAX_FRONT_NROWS_ESTIMATE: " << Info[UMFPACK_MAX_FRONT_NROWS_ESTIMATE] << "\n";
+		std::cout << "    UMFPACK_MAX_FRONT_NCOLS_ESTIMATE: " << Info[UMFPACK_MAX_FRONT_NCOLS_ESTIMATE] << "\n";
+		std::cout << "    UMFPACK_SYMMETRIC_LUNZ: " << Info[UMFPACK_SYMMETRIC_LUNZ] << "\n";
+		std::cout << "    UMFPACK_SYMMETRIC_FLOPS: " << Info[UMFPACK_SYMMETRIC_FLOPS] << "\n";
+		std::cout << "    UMFPACK_SYMMETRIC_NDENSE: " << Info[UMFPACK_SYMMETRIC_NDENSE] << "\n";
+		std::cout << "    UMFPACK_SYMMETRIC_DMAX: " << Info[UMFPACK_SYMMETRIC_DMAX] << "\n";
+#endif
+
 		check(umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info), "Error in di_numeric");
+
+#if 0
+		std::cout << "=== INFO of umfpack_*_numeric ===\n";
+		std::cout << "    UMFPACK_STATUS: " << (Info[UMFPACK_STATUS] == UMFPACK_OK ? "OK" : "ERROR") << "\n";
+		std::cout << "    UMFPACK_VARIABLE_PEAK: " << Info[UMFPACK_VARIABLE_PEAK]  << "\n";
+		std::cout << "    UMFPACK_PEAK_MEMORY: " << Info[UMFPACK_PEAK_MEMORY] << "\n";
+		std::cout << "    UMFPACK_FLOPS: " << Info[UMFPACK_FLOPS] << "\n";
+		std::cout << "    UMFPACK_LNZ: " << Info[UMFPACK_LNZ] << "\n";
+		std::cout << "    UMFPACK_UNZ: " << Info[UMFPACK_UNZ] << "\n";
+		std::cout << "    UMFPACK_NUMERIC_DEFRAG: " << Info[UMFPACK_NUMERIC_DEFRAG] << "\n";
+		std::cout << "    UMFPACK_NUMERIC_REALLOC: " << Info[UMFPACK_NUMERIC_REALLOC] << "\n";
+		std::cout << "    UMFPACK_NUMERIC_COSTLY_REALLOC: " << Info[UMFPACK_NUMERIC_COSTLY_REALLOC] << "\n";
+		std::cout << "    UMFPACK_COMPRESSED_PATTERN: " << Info[UMFPACK_COMPRESSED_PATTERN] << "\n";
+		std::cout << "    UMFPACK_LU_ENTRIES: " << Info[UMFPACK_LU_ENTRIES] << "\n";
+		std::cout << "    UMFPACK_NUMERIC_TIME: " << Info[UMFPACK_NUMERIC_TIME] << "\n";
+		std::cout << "    UMFPACK_RCOND: " << Info[UMFPACK_RCOND] << "\n";
+		std::cout << "    UMFPACK_UDIAG_NZ: " << Info[UMFPACK_UDIAG_NZ] << "\n";
+		std::cout << "    UMFPACK_UMIN: " << Info[UMFPACK_UMIN] << "\n";
+		std::cout << "    UMFPACK_UMAX: " << Info[UMFPACK_UMAX] << "\n";
+		std::cout << "    UMFPACK_MAX_FRONT_NROWS: " << Info[UMFPACK_MAX_FRONT_NROWS] << "\n";
+		std::cout << "    UMFPACK_MAX_FRONT_NCOLS: " << Info[UMFPACK_MAX_FRONT_NCOLS] << "\n";
+		std::cout << "    UMFPACK_ALL_LNZ: " << Info[UMFPACK_ALL_LNZ] << "\n";
+		std::cout << "    UMFPACK_ALL_UNZ: " << Info[UMFPACK_ALL_UNZ] << "\n";
+#endif
 	    }
 
 	    void init()
@@ -156,7 +235,7 @@ namespace mtl { namespace matrix {
 
 
 	  public:
-	    explicit solver(const matrix_type& A, int strategy = UMFPACK_STRATEGY_AUTO) 
+	  explicit solver(const matrix_type& A, int strategy = UMFPACK_STRATEGY_AUTO, double alloc_init = 0.7) 
 	      : A(A), Apc(0), Aic(0), my_nnz(0), Symbolic(0), Numeric(0) 
 	    {
 		// Use default setings.
@@ -166,12 +245,13 @@ namespace mtl { namespace matrix {
 		    umfpack_di_defaults(Control);
 
 		Control[UMFPACK_STRATEGY] = strategy;
+		Control[UMFPACK_ALLOC_INIT] = alloc_init;
 		init(); 
 	    }
 
 	    ~solver()
 	    {
-		if (long_indices) {
+	      if (long_indices) {
 		    umfpack_dl_free_numeric(&Numeric);
 		    umfpack_dl_free_symbolic(&Symbolic);
 		} else {
@@ -217,13 +297,13 @@ namespace mtl { namespace matrix {
 	    template <typename VectorX, typename VectorB>
 	    void solve_aux(int sys, VectorX& xx, const VectorB& bb, true_)
 	    {
-		check(umfpack_dl_solve(sys, Ap, Ai, Ax, &xx.value[0], &bb.value[0], Numeric, Control, Info), "Error in dl_numeric");
+	      check(umfpack_dl_solve(sys, Ap, Ai, Ax, &xx.value[0], &bb.value[0], Numeric, Control, Info), "Error in dl_solve");
 	    }
 
 	    template <typename VectorX, typename VectorB>
 	    void solve_aux(int sys, VectorX& xx, const VectorB& bb, false_)
 	    {
-		check(umfpack_di_solve(sys, Ap, Ai, Ax, &xx.value[0], &bb.value[0], Numeric, Control, Info), "Error in di_numeric");
+		check(umfpack_di_solve(sys, Ap, Ai, Ax, &xx.value[0], &bb.value[0], Numeric, Control, Info), "Error in di_solve");
 	    }
 
 	    /// Solve double system
@@ -283,14 +363,14 @@ namespace mtl { namespace matrix {
 
 	    void init_aux(true_)
 	    {
-		check(umfpack_zl_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in dl_symbolic");
-		check(umfpack_zl_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in dl_numeric");
+		check(umfpack_zl_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in zl_symbolic");
+		check(umfpack_zl_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in zl_numeric");
 	    }
 	    
 	    void init_aux(false_)
 	    {
-		check(umfpack_zi_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in di_symbolic");
-		check(umfpack_zi_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in di_numeric");
+		check(umfpack_zi_symbolic(n, n, Ap, Ai, &Ax[0], &Az[0], &Symbolic, Control, Info), "Error in zi_symbolic");
+		check(umfpack_zi_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in zi_numeric");
 	    }
 
 	    void initialize()
@@ -328,7 +408,7 @@ namespace mtl { namespace matrix {
 	    void update_numeric_aux(true_)
 	    {
 		umfpack_zl_free_numeric(&Numeric);
-		check(umfpack_zl_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in dl_numeric");
+		check(umfpack_zl_numeric(Ap, Ai, &Ax[0], &Az[0], Symbolic, &Numeric, Control, Info), "Error in dl_numeric D");
 	    }
 	    
 	    void update_numeric_aux(false_)
