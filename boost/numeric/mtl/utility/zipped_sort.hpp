@@ -148,8 +148,9 @@ struct zip_ref
 	return *this;
     }
 
-    friend inline void swap(self x, self y)
+    friend inline void swap(self& x, self& y)
     {
+		using std::swap;
 	swap(x.a[x.p], y.a[y.p]);
 	swap(x.v[x.p], y.v[y.p]);
     }    
