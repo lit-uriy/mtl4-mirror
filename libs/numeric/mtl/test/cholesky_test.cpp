@@ -39,7 +39,7 @@ template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
     namespace with_bracket = mtl::matrix::with_bracket;
-    namespace with_iterator = mtl::matrix::with_iterator;
+    // namespace with_iterator = mtl::matrix::with_iterator;
 
     using mtl::matrix::recursive_cholesky_visitor_t;
     using mtl::matrix::detail::mult_schur_update_t;
@@ -54,6 +54,7 @@ void test(Matrix& matrix, const char* name)
 
     fill_matrix_for_cholesky(matrix);
 
+#if 0
     with_iterator::recursive_cholesky_base_visitor_t  iter_vis;
     recursive_cholesky(matrix, iter_vis);
     if (matrix.num_cols() <= 10) { 
@@ -61,6 +62,7 @@ void test(Matrix& matrix, const char* name)
     }
 
     fill_matrix_for_cholesky(matrix);
+#endif
 
     recursive_cholesky_visitor_t<mtl::recursion::bound_test_static<2>, with_bracket::cholesky_base_t, with_bracket::tri_solve_base_t, 
                                  with_bracket::tri_schur_base_t, with_bracket::schur_update_base_t>   
@@ -71,6 +73,9 @@ void test(Matrix& matrix, const char* name)
     }
 
     fill_matrix_for_cholesky(matrix);
+
+
+#if 0 // ITERATOR VERSION CURRENTLY NOT SUPPORTED -- CAUSES SEGFAULT, e.g. with icc 11.0 in r8536 !!!!
 
     recursive_cholesky_visitor_t<mtl::recursion::bound_test_static<2>, with_iterator::cholesky_base_t, with_iterator::tri_solve_base_t, 
                                  with_iterator::tri_schur_base_t, with_iterator::schur_update_base_t>   
@@ -95,7 +100,6 @@ void test(Matrix& matrix, const char* name)
     }
 
 
-#if 0
     typedef detail::mult_schur_update_t<gen_tiling_44_dmat_dmat_mult_t<minus_mult_assign_t> > schur_update_44_t;
 
 #endif

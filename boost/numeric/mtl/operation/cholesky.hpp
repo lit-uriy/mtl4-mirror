@@ -140,13 +140,14 @@ namespace with_bracket {
 
 } // namespace with_bracket
 
-
+#if 0
 namespace with_iterator {
 
     // ============================================================================
     // Generic Cholesky factorization and operands for Cholesky on with submatrices
     // ============================================================================
-    
+    // CURRENTLY NOT SUPPORTED -- CAUSES SEGFAULT, e.g. with icc 11.0 in r8536 !!!!
+    // ============================================================================
 
     template < typename Matrix > 
     void cholesky_base (Matrix& matrix)
@@ -330,6 +331,7 @@ namespace with_iterator {
     };
 
 } // namespace with_iterator
+#endif
 
 
 // ==================================
@@ -397,11 +399,13 @@ namespace with_bracket {
                recursive_cholesky_base_visitor_t;
 }
 
+#if 0
 namespace with_iterator {
     typedef recursive_cholesky_visitor_t<recursion::bound_test_static<64>, 
 					 cholesky_base_t, tri_solve_base_t, tri_schur_base_t, schur_update_base_t>
                recursive_cholesky_base_visitor_t;
 }
+#endif
 
 typedef with_bracket::recursive_cholesky_base_visitor_t                    recursive_cholesky_default_visitor_t;
 
