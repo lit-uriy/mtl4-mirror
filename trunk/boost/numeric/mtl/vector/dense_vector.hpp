@@ -308,7 +308,7 @@ inline sub_vector(const dense_vector<Value, Parameters>& v,
 
 namespace mtl {
 
-    // Enable cloning of dense matrices
+    // Enable cloning of dense vectors
     template <typename Value, typename Parameters>
     struct is_clonable< vector::dense_vector<Value, Parameters> > : boost::mpl::true_ {};
         

@@ -92,9 +92,18 @@ class strided_vector_ref
 
     /// Constructor take address, length and stride
     strided_vector_ref( size_type length, pointer start_address, size_type stride= 1)
-      : data(start_address), my_size(length), my_stride(stride) {}
+      : data(start_address), my_size(length), my_stride(stride), cloned(false) {}
+
+    /// Clone constructor
+    strided_vector_ref(const strided_vector_ref& other, clone_ctor)
+      : data(new Value[other.my_size]), my_size(other.my_size), my_stride(1), cloned(true)
+    {
+	*this= other;
+    }
 
     // Default copy constructor refers to same vector which is okay
+
+    ~strided_vector_ref() { if (cloned && data) delete[] data; }
 
     //  friend size_type inline size(const self& v) { return v.my_size; } // impedes explicit namespace qualification
 
@@ -164,6 +173,7 @@ class strided_vector_ref
   private:
     pointer     data;
     size_type   my_size, my_stride;
+    bool        cloned;
 } ; // strided_vector_ref
 
 
@@ -203,6 +213,13 @@ inline sub_vector(const strided_vector_ref<Value, Parameters>& v,
 
 }} // namespace mtl::vector
 
+namespace mtl {
+
+    // Enable cloning of strided_vector_ref
+    template <typename Value, typename Parameters>
+    struct is_clonable< vector::strided_vector_ref<Value, Parameters> > : boost::mpl::true_ {};
+        
+} // namespace mtl
 
 namespace mtl { namespace traits {
 
