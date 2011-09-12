@@ -26,16 +26,16 @@ void inline test3(string type1, T x, string type2, U y)
     // cout << x << " @ " << y << '\n';
 
     cout << x << " + " << y << " = " << x + y << '\n';  
-    if (x + y != 8) throw "Result of addition must be 8.";  // Integer numbers less then 17 should not have rounding errors
+    MTL_THROW_IF(x + y != 8, mtl::runtime_error("Result of addition must be 8."));  // Integer numbers less then 17 should not have rounding errors
 
     cout << x << " - " << y << " = " << x - y << '\n';
-    if (x - y != 4) throw "Result of subtraction must be 4.";
+    MTL_THROW_IF(x - y != 4, mtl::runtime_error("Result of subtraction must be 4."));
 
     cout << x << " * " << y << " = " << x * y << '\n';
-    if (x * y != 12) throw "Result of subtraction must be 12.";
+    MTL_THROW_IF(x * y != 12, mtl::runtime_error("Result of subtraction must be 12."));
 
     cout << x << " / " << y << " = " << x / y << '\n';
-    if (x / y != 3) throw "Result of subtraction must be 3.";
+    MTL_THROW_IF(x / y != 3, mtl::runtime_error("Result of subtraction must be 3."));
 
     cout << '\n';
 }

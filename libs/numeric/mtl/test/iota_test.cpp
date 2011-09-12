@@ -29,11 +29,11 @@ void test(Vector& v, const char* name)
 
     Vector w(v);
     iota(w);
-    if (w[4] != f(T(4))) throw "Wrong value in w";
+    MTL_THROW_IF(w[4] != f(T(4)), mtl::runtime_error("Wrong value in w"));
     std::cout << "w == " << w << "\n";
     
     iota(w, T(5));
-    if (w[4] != f(T(9))) throw "Wrong value in w";
+    MTL_THROW_IF(w[4] != f(T(9)), mtl::runtime_error("Wrong value in w"));
     std::cout << "w == " << w << "\n";
 
 }

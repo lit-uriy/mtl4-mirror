@@ -32,7 +32,7 @@ int main(int, char**)
     y = trans(m) * x;
     cout << y << '\n';
 
-    if (y[0] != 2.0) throw "y[0] should be 2.0!\n";
+    MTL_THROW_IF(y[0] != 2.0, mtl::runtime_error("y[0] should be 2.0!\n"));
 
     return 0;
 }

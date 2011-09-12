@@ -20,11 +20,11 @@ int main(int , char**)
     mtl::iset indices;
 
     std::cout << "indices = " << indices << '\n';
-    if (indices.size() != 0) throw "Set should be empty.";
+    MTL_THROW_IF(indices.size() != 0, mtl::runtime_error("Set should be empty."));
 
     indices.push_back(3); indices.push_back(5); 
     std::cout << "indices = " << indices << '\n';
-    if (indices.size() != 2) throw "Set should have size 2.";
+    MTL_THROW_IF(indices.size() != 2, mtl::runtime_error("Set should have size 2."));
     
     mtl::iset i2(indices);
     std::cout << "Index sets are" << (indices == i2 ? "" : " not") << " equal\n";

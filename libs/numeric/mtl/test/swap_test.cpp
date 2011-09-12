@@ -45,17 +45,17 @@ void test(Matrix& matrix, unsigned dim1, unsigned dim2, const char* name)
     
     if (dim1 > 1 && dim2 > 1) {
 	unsigned size= dim1 * dim2;
-	if (num_rows(matrix) != size) throw "wrong number of rows";
-	if (num_cols(matrix) != size) throw "wrong number of columns";
+	MTL_THROW_IF(num_rows(matrix) != size, mtl::runtime_error("wrong number of rows"));
+	MTL_THROW_IF(num_cols(matrix) != size, mtl::runtime_error("wrong number of columns"));
 
 	typename mtl::Collection<Matrix>::value_type four(4.0), minus_one(-1.0), zero(0.0);
-	if (matrix[0][0] != four) throw "wrong diagonal";
-	if (matrix[0][1] != minus_one) throw "wrong east neighbor";
-	if (matrix[0][dim2] != minus_one) throw "wrong south neighbor";
-	if (dim2 > 2 && matrix[0][2] != zero) throw "wrong zero-element";
-	if (matrix[1][0] != minus_one) throw "wrong west neighbor";
-	if (matrix[dim2][0] != minus_one) throw "wrong north neighbor";
-	if (dim2 > 2 && matrix[2][0] != zero) throw "wrong zero-element";
+	MTL_THROW_IF(matrix[0][0] != four, mtl::runtime_error("wrong diagonal"));
+	MTL_THROW_IF(matrix[0][1] != minus_one, mtl::runtime_error("wrong east neighbor"));
+	MTL_THROW_IF(matrix[0][dim2] != minus_one, mtl::runtime_error("wrong south neighbor"));
+	MTL_THROW_IF(dim2 > 2 && matrix[0][2] != zero, mtl::runtime_error("wrong zero-element"));
+	MTL_THROW_IF(matrix[1][0] != minus_one, mtl::runtime_error("wrong west neighbor"));
+	MTL_THROW_IF(matrix[dim2][0] != minus_one, mtl::runtime_error("wrong north neighbor"));
+	MTL_THROW_IF(dim2 > 2 && matrix[2][0] != zero, mtl::runtime_error("wrong zero-element"));
     }
 }
 
@@ -79,10 +79,10 @@ void vtest(Vector& vector, unsigned dim1, unsigned dim2, const char* name)
     cout << "Vector after swap:\n" << vector << "\n";
     
     if (dim1 > 1 && dim2 > 1) {
-	if (size(vector) != dim1*dim2) throw "wrong number of elements";
+	MTL_THROW_IF(size(vector) != dim1*dim2, mtl::runtime_error("wrong number of elements"));
 
 	typename mtl::Collection<Vector>::value_type four(4.0);
-	if (vector[2] != four) throw "wrong value in vector";
+	MTL_THROW_IF(vector[2] != four, mtl::runtime_error("wrong value in vector"));
     }
 }
 

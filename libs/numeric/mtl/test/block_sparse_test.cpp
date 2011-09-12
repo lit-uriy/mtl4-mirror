@@ -92,7 +92,7 @@ int main(int, char**)
     cout << "y after multiplication is " << y << endl
 	 << "Should be [[5, 30], [4, 3], [0, 34]]^T." << endl; 
 
-    if (y[1][1] != 3.0) throw "y[1][1] should be 3.0!\n";
+    MTL_THROW_IF(y[1][1] != 3.0, mtl::runtime_error("y[1][1] should be 3.0!\n"));
 
     return 0;
 }

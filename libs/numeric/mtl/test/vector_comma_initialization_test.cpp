@@ -29,21 +29,21 @@ void test(Vector& v, const char* name)
     
     v= 7.;
     std::cout << "After v= 7; v == " << v << "\n";
-    if (v[2] != value_type(7.)) throw "Constant assignment wrong";
+    MTL_THROW_IF(v[2] != value_type(7.), mtl::runtime_error("Constant assignment wrong"));
 
     v= 8., 45u, -3;
     std::cout << "After v= 8., 45., -3.; v == " << v << "\n";
-    if (v[2] != value_type(-3)) throw "Comma assignment wrong";
+    MTL_THROW_IF(v[2] != value_type(-3), mtl::runtime_error("Comma assignment wrong"));
 
     v= 6.;
     std::cout << "After v= 6; v == " << v << "\n";
-    if (v[2] != value_type(6.)) throw "Constant reassignment wrong";
+    MTL_THROW_IF(v[2] != value_type(6.), mtl::runtime_error("Constant reassignment wrong"));
 
     Vector w(3);
     v= w= 5.;
     std::cout << "After v= w= 5; v == " << v << ", w == " << w << "\n\n";
-    if (w[2] != value_type(5.)) throw "Constant assignment (of w) wrong";
-    if (v[2] != value_type(5.)) throw "Constant reassignment wrong";
+    MTL_THROW_IF(w[2] != value_type(5.), mtl::runtime_error("Constant assignment (of w) wrong"));
+    MTL_THROW_IF(v[2] != value_type(5.), mtl::runtime_error("Constant reassignment wrong"));
 
 #if 0
     v+= 8., 45u, -3;

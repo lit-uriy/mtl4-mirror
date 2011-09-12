@@ -56,7 +56,7 @@ void test(string name, const Matrix& A, Value check)
     cout << "A[0][0] is " << A[0][0] << '\n';
     cout << name << ", A is\n" << A << '\n';
     
-    if (A[0][1] != check) throw "Wrong value in A[0][1]!";
+    MTL_THROW_IF(A[0][1] != check, mtl::runtime_error("Wrong value in A[0][1]!"));
 
     two_d_iteration("Row-wise", A, glas::tag::row());
     two_d_iteration("Column-wise", A, mtl::tag::col());
@@ -65,7 +65,7 @@ void test(string name, const Matrix& A, Value check)
 
     mtl::transposed_view<const Matrix> At(A);
     cout << "\n===\nA^T is\n" << At << '\n';
-    if (At[1][0] != check) throw "Wrong value in At[1][0]!";
+    MTL_THROW_IF(At[1][0] != check, mtl::runtime_error("Wrong value in At[1][0]!"));
 
     two_d_iteration("Transposed row-wise", At, mtl::tag::row());
     two_d_iteration("Transposed Column-wise", At, mtl::tag::col());

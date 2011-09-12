@@ -44,10 +44,10 @@ void test(Matrix& A, const char* name)
     Matrix B, C; // (mtl::io::matrix_market(fname)), C;
     B= mtl::io::matrix_market(fname);
     cout << "\nRead back (after <<) results in\n" << B;
-    if (num_rows(B) != 4 || num_cols(B) != 3) throw "B has wrong dimension.";
-    if (B[0][2] != vt(0)) throw "B[0][2] should be 0!";
+    MTL_THROW_IF(num_rows(B) != 4 || num_cols(B) != 3, mtl::runtime_error("B has wrong dimension."));
+    MTL_THROW_IF(B[0][2] != vt(0), mtl::runtime_error("B[0][2] should be 0!"));
     assert (B[0][1] == vt(2));
-    if (B[0][1] != vt(2)) throw "B[0][1] should be 2!";
+    MTL_THROW_IF(B[0][1] != vt(2), mtl::runtime_error("B[0][1] should be 2!"));
 
 #if 0
     fname[25]= '2';
@@ -55,9 +55,9 @@ void test(Matrix& A, const char* name)
     C= mtl::io::matrix_market(fname);
 
     cout << "\nRead back (after assignment) results in\n" << C;
-    if (num_rows(C) != 4 || num_cols(C) != 3) throw "C has wrong dimension.";
-    if (C[0][2] != vt(0)) throw "C[0][2] should be 0!";
-    if (C[0][1] != vt(2)) throw "C[0][1] should be 2!";
+    MTL_THROW_IF(num_rows(C) != 4 || num_cols(C) != 3, mtl::runtime_error("C has wrong dimension."));
+    MTL_THROW_IF(C[0][2] != vt(0), mtl::runtime_error("C[0][2] should be 0!"));
+    MTL_THROW_IF(C[0][1] != vt(2), mtl::runtime_error("C[0][1] should be 2!"));
 #endif
 }
 

@@ -30,13 +30,13 @@ void test(VectorU& u, VectorV& v, const char* name)
 	u[i]= i+1, v[i]= i+1;
 
     std::cout << name << "\n dot(u, v) = " << dot(u, v) << "\n"; std::cout.flush();
-    if (dot(u, v) != 285.0) throw "dot product wrong";
+    MTL_THROW_IF(dot(u, v) != 285.0, mtl::runtime_error("dot product wrong"));
 
     std::cout << " dot<2>(u, v) = " << mtl::vector::dot<2>(u, v) << "\n"; std::cout.flush();
-    if (mtl::vector::dot<2>(u, v) != 285.0) throw "dot product wrong";
+    MTL_THROW_IF(mtl::vector::dot<2>(u, v) != 285.0, mtl::runtime_error("dot product wrong"));
 
     std::cout << " dot<6>(u, v) = " << mtl::vector::dot<6>(u, v) << "\n"; std::cout.flush();
-    if (mtl::vector::dot<6>(u, v) != 285.0) throw "dot product wrong";
+    MTL_THROW_IF(mtl::vector::dot<6>(u, v) != 285.0, mtl::runtime_error("dot product wrong"));
 }
  
 

@@ -49,7 +49,7 @@ int main(int , char**)
     std::cout<< "\n x=" << x << "\n";
     mtl::vector::sort<Vector>(x);
     std::cout<< "x=" << x << "\n";
-    if(x[0] != 1.0) throw "Error in sorting.";
+    MTL_THROW_IF(x[0] != 1.0, mtl::runtime_error("Error in sorting."));
 
     return 0;
 }

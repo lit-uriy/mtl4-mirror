@@ -68,23 +68,23 @@ void test(Matrix& A, const char* name)
 	 << "L * U [permuted] is:\n" << PA2
 	 << "L * U is:\n" << Matrix(trans(P) * PA2);
  
-    if (one_norm(Matrix(trans(P) * PA2 - A)) > 0.1) throw "Error in permuted LU factorization.";
+    MTL_THROW_IF(one_norm(Matrix(trans(P) * PA2 - A)) > 0.1, mtl::runtime_error("Error in permuted LU factorization."));
 
     Matrix PUI(inv_upper(PU));
     cout << "inv(U) [permuted] is:\n" << PUI << "PUI * PU is:\n" << Matrix(PUI * PU);
-    if (one_norm(Matrix(PUI * PU - I)) > 0.1) throw "Error in upper inversion.";
+    MTL_THROW_IF(one_norm(Matrix(PUI * PU - I)) > 0.1, mtl::runtime_error("Error in upper inversion."));
 
     Matrix PLI(inv_lower(PL));
     cout << "inv(L) [permuted] is:\n" << PLI << "PLI * PL is:\n" << Matrix(PLI * PL);
-    if (one_norm(Matrix(PLI * PL - I)) > 0.1) throw "Error in lower inversion.";
+    MTL_THROW_IF(one_norm(Matrix(PLI * PL - I)) > 0.1, mtl::runtime_error("Error in lower inversion."));
 
     Matrix AI(PUI * PLI * P);
     cout << "inv(A) [inv(U) * inv(L) * P] is \n" << AI << "A * AI is\n" << Matrix(AI * A);
-    if (one_norm(Matrix(AI * A - I)) > 0.1) throw "Error in inversion.";
+    MTL_THROW_IF(one_norm(Matrix(AI * A - I)) > 0.1, mtl::runtime_error("Error in inversion."));
 
     typename mtl::matrix::traits::inv<Matrix>::type A_inv(inv(A));
     cout << "inv(A) is \n" << A_inv << "A * AI is\n" << Matrix(A_inv * A);
-    if (one_norm(Matrix(A_inv * A - I)) > 0.1) throw "Error in inversion.";
+    MTL_THROW_IF(one_norm(Matrix(A_inv * A - I)) > 0.1, mtl::runtime_error("Error in inversion."));
 }
 
 

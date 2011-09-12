@@ -42,7 +42,7 @@ void test(Coll& coll, const char* name)
     std::cout<< "Hessenberg=\n" << E << "\n";
     std::cout<< "triu=\n" << F << "\n";
   
-    if (one_norm(F)>0.000004) throw "No Hessenberg-Form";
+    MTL_THROW_IF(one_norm(F)>0.000004, mtl::runtime_error("No Hessenberg-Form"));
     F=extract_householder_hessenberg(coll);
     std::cout<< "extract_householder_hessenberg=\n" << F << "\n";
     F=extract_hessenberg(coll);

@@ -28,7 +28,7 @@ template <typename MatrixA, typename MatrixB>
 void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name)
 {
     unsigned size= dim1 * dim2;
-    if (size == 0) throw "Matrix size must be larger than 0 to make the test meaningful.";
+    MTL_THROW_IF(size == 0, mtl::runtime_error("Matrix size must be larger than 0 to make the test meaningful."));
 
     const unsigned max_print_size= 25;
     cout << "\n" << name << "\n";
@@ -40,7 +40,7 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
 	cout << "A= \n\n" << a << "\n";
 
     typename mtl::Collection<MatrixA>::value_type eight(8.0);
-    if (a[0][0] != eight) throw "Scaling with scalar wrong";
+    MTL_THROW_IF(a[0][0] != eight, mtl::runtime_error("Scaling with scalar wrong"));
 
     left_scale_inplace(0.5, a);
     left_scale_inplace(b, a);
@@ -57,13 +57,13 @@ void test(MatrixA& a, MatrixB& b, unsigned dim1, unsigned dim2, const char* name
     if (dim1 == 5 && dim2 == 5) {
 	typename mtl::Collection<MatrixA>::value_type twenty(20.0), two(2.0), one(1.0), 
 	                                              zero(0.0), minus_eight(-8.0);
-	if (a[12][12] != twenty) throw "wrong diagonal";
-	if (a[12][13] != minus_eight) throw "wrong east neighbor";
-	if (a[12][14] != one) throw "wrong east east neighbor";
-	if (a[12][15] != zero) throw "wrong zero-element";
-	if (a[12][17] != minus_eight) throw "wrong south neighbor";
-	if (a[12][18] != two) throw "wrong south east neighbor";
-	if (a[12][22] != one) throw "wrong south south neighbor";
+	MTL_THROW_IF(a[12][12] != twenty, mtl::runtime_error("wrong diagonal"));
+	MTL_THROW_IF(a[12][13] != minus_eight, mtl::runtime_error("wrong east neighbor"));
+	MTL_THROW_IF(a[12][14] != one, mtl::runtime_error("wrong east east neighbor"));
+	MTL_THROW_IF(a[12][15] != zero, mtl::runtime_error("wrong zero-element"));
+	MTL_THROW_IF(a[12][17] != minus_eight, mtl::runtime_error("wrong south neighbor"));
+	MTL_THROW_IF(a[12][18] != two, mtl::runtime_error("wrong south east neighbor"));
+	MTL_THROW_IF(a[12][22] != one, mtl::runtime_error("wrong south south neighbor"));
     }
 }
 

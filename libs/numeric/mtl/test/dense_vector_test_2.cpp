@@ -32,24 +32,24 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     std::cout << name << "  --- v= u*3 + w*4;:\n"; std::cout.flush();
     v= u*3 + w*4;
     cout << "v: " << v << "\n"; std::cout.flush();
-    if (v[0] != 29.0) throw "v wrong";
+    MTL_THROW_IF(v[0] != 29.0, mtl::runtime_error("v wrong"));
 	
     std::cout << name << "  --- u= 3; v= 4; u+= v+= (w= 5) * 3.0;:\n"; std::cout.flush();
     u= 3; v= 4; 
     u+= v+= (w= 5.0) * 3.0;
     cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
-    if (v[0] != 19.0) throw "v wrong";
-    if (u[0] != 22.0) throw "u wrong";
+    MTL_THROW_IF(v[0] != 19.0, mtl::runtime_error("v wrong"));
+    MTL_THROW_IF(u[0] != 22.0, mtl::runtime_error("u wrong"));
 	
     std::cout << name << "  --- u= 3; v= 4; w=5; u+= w * dot(v, w);:\n"; std::cout.flush();
     u= 3; v= 4; w=5; u+= w * dot(v, w);
     cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
-    if (u[0] != 503.0) throw "u wrong";
+    MTL_THROW_IF(u[0] != 503.0, mtl::runtime_error("u wrong"));
 	
     std::cout << name << "  --- u+= w * dot<12>(v, w);:\n"; std::cout.flush();
     u+= w * dot<12>(v, w);
     cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
-    if (u[0] != 1003.0) throw "u wrong";
+    MTL_THROW_IF(u[0] != 1003.0, mtl::runtime_error("u wrong"));
 
 	// test divide by scalar
     u= 3.0; v= 4.0; w= 5.0;
@@ -57,14 +57,14 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     std::cout << name << "  --- v= u/3 + w/5;:\n"; std::cout.flush();
     v= u/3 + w/5;
     cout << "v: " << v << "\n"; std::cout.flush();
-    if (v[0] != 2.0) throw "v wrong";
+    MTL_THROW_IF(v[0] != 2.0, mtl::runtime_error("v wrong"));
 	
     std::cout << name << "  --- u= 3; v= 4; u+= v+= (w= 6.0) / 3.0;:\n"; std::cout.flush();
     u= 3; v= 4; 
     u+= v+= (w= 6.0) / 3.0;
     cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
-    if (v[0] != 6.0) throw "v wrong";
-    if (u[0] != 9.0) throw "u wrong";
+    MTL_THROW_IF(v[0] != 6.0, mtl::runtime_error("v wrong"));
+    MTL_THROW_IF(u[0] != 9.0, mtl::runtime_error("u wrong"));
 	
 }
 

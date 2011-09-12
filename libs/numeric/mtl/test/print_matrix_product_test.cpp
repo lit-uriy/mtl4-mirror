@@ -24,7 +24,7 @@ int main(int, char**)
     
     cout << (A*A) << endl << B << endl;
     
-    if (B(0, 1) != (A*A)(0,1)) throw "Wrong value in matrix product expression!\n";
+    MTL_THROW_IF(B(0, 1) != (A*A)(0,1), mtl::runtime_error("Wrong value in matrix product expression!\n"));
 
     return 0;
 }

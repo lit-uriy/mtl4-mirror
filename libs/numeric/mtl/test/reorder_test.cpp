@@ -22,7 +22,7 @@ void test_rows(const Matrix& A, const Reorder& r)
     typedef typename mtl::Collection<Matrix>::value_type   value_type;
     Matrix BB(reorder_matrix_rows(r, A));
     cout << "\nreorder_matrix_rows(A) =\n" << BB;
-    if (BB[1][0] != value_type(4.)) throw "Wrong value after row reordering!";
+    MTL_THROW_IF(BB[1][0] != value_type(4.), mtl::runtime_error("Wrong value after row reordering!"));
 }
 
 template <typename Reorder, typename Value, typename Parameters>
@@ -46,13 +46,13 @@ void test(Matrix& A, const char* name)
     Matrix B(R * A);
     cout << "\nB= R * A =\n" << B;
     
-    if (B[1][0] != value_type(4.)) throw "Wrong value after row reordering!";
+    MTL_THROW_IF(B[1][0] != value_type(4.), mtl::runtime_error("Wrong value after row reordering!"));
 
     test_rows(A, reordering);
     Matrix B2(B * trans(R));
     cout << "\nB * trans(R) =\n" << B2;
     
-    if (B2[1][0] != value_type(6.)) throw "Wrong value after column reordering!";    
+    MTL_THROW_IF(B2[1][0] != value_type(6.), mtl::runtime_error("Wrong value after column reordering!"));    
 }
 
 

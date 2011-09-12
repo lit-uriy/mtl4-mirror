@@ -22,10 +22,10 @@ void check(const char* name, const Vector& v, bool row_major, unsigned s, Value 
 {
     std::cout << name << " = " << v << "\n";
 
-    if (mtl::traits::is_row_major<Vector>::value != row_major) throw "wrong orientation";
-    if (size(v) != s) throw "wrong size";
-    if (v[0] != c0) throw "wrong value";
-    if (v[1] != c1) throw "wrong value";
+    MTL_THROW_IF(mtl::traits::is_row_major<Vector>::value != row_major, mtl::runtime_error("wrong orientation"));
+    MTL_THROW_IF(size(v) != s, mtl::runtime_error("wrong size"));
+    MTL_THROW_IF(v[0] != c0, mtl::runtime_error("wrong value"));
+    MTL_THROW_IF(v[1] != c1, mtl::runtime_error("wrong value"));
 }
 
 
@@ -43,16 +43,16 @@ void test(Matrix& A, const char* name)
     vc= 2, 5, 8; vr= 1, 2, 3;
 
     cout << "A[iall][1] == " << A[iall][1] << "\n";
-    if (one_norm(Vector(vc - A[iall][1])) > 0.1) throw "Wrong column vector";
+    MTL_THROW_IF(one_norm(Vector(vc - A[iall][1])) > 0.1, mtl::runtime_error("Wrong column vector"));
     check("A[iall][1]", A[iall][1], false, 3, value_type(2), value_type(5));
 
     cout << "A[irange(1, imax)][1] == " << A[irange(1, imax)][1] << "\n";
-    if (one_norm(Vector(vc[irange(1, imax)] - A[irange(1, imax)][1])) > 0.1) throw "Wrong column cub-vector";
+    MTL_THROW_IF(one_norm(Vector(vc[irange(1, imax)] - A[irange(1, imax)][1])) > 0.1, mtl::runtime_error("Wrong column cub-vector"));
     check("A[irange(1,3)][1]", A[irange(1,3)][1], false, 2, value_type(5), value_type(8));
 
     typename mtl::ColumnInMatrix<Matrix>::type c(A[irange(1, imax)][1]);
     c[1]= 8.5;
-    if (A[2][1] != 8.5) throw "Matrix modification (in column) did not work";
+    MTL_THROW_IF(A[2][1] != 8.5, mtl::runtime_error("Matrix modification (in column) did not work"));
     check("c= A[irange(1, imax)][1]", c, false, 2, value_type(5), value_type(8.5));
 
     check("A[1][iall]", A[1][iall], true, 3, value_type(4), value_type(5));
@@ -60,7 +60,7 @@ void test(Matrix& A, const char* name)
 
     typename mtl::RowInMatrix<Matrix>::type r(A[1][irange(1, imax)]);
     r[1]= 6.5;
-    if (A[1][2] != 6.5) throw "Matrix modification (in row) did not work";
+    MTL_THROW_IF(A[1][2] != 6.5, mtl::runtime_error("Matrix modification (in row) did not work"));
     check("r= A[1][irange(1, imax)]", r, true, 2, value_type(5), value_type(6.5));
 }
  

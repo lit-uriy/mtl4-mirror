@@ -46,7 +46,7 @@ void test(Matrix& A, const char* name)
     x= unit_upper_trisolve(A, b);
     cout << "x = upper_trisolve(A, b) ==" << x << "\n\n";
     for (int i= 0; i < 5; i++)	
-	if (std::abs(x[i] - double(i+1)) > 0.0001) throw "Wrong result in upper_trisolve!";
+	MTL_THROW_IF(std::abs(x[i] - double(i+1)) > 0.0001, mtl::runtime_error("Wrong result in upper_trisolve!"));
 
     x= xa;
     Matrix B(trans(A));
@@ -59,7 +59,7 @@ void test(Matrix& A, const char* name)
     x= unit_lower_trisolve(B, b);
     cout << "x = lower_trisolve(B, b) ==" << x << "\n\n";
     for (int i= 0; i < 5; i++)	
-	if (std::abs(x[i] - double(i+1)) > 0.0001) throw "Wrong result in lower_trisolve!";
+	MTL_THROW_IF(std::abs(x[i] - double(i+1)) > 0.0001, mtl::runtime_error("Wrong result in lower_trisolve!"));
 }
 
 int main(int, char**)

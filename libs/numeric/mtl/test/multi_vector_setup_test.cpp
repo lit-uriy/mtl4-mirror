@@ -29,8 +29,8 @@ void test(const Vector&, const char* name)
     A= 3.0;
     cout << name << ":\n A after initialization is \n" << A;
 
-    if (A[1][1] != 3.0) throw "Wrong value in diagonal";
-    if (A[1][2] != 0.0) throw "Wrong value off diagonal";
+    MTL_THROW_IF(A[1][1] != 3.0, mtl::runtime_error("Wrong value in diagonal"));
+    MTL_THROW_IF(A[1][2] != 0.0, mtl::runtime_error("Wrong value off diagonal"));
 
     cout << "Dimension of B is " << num_rows(B) << " x " << num_cols(B) << "\n\n";
 }

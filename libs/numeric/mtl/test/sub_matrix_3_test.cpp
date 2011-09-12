@@ -43,13 +43,13 @@ int main(int, char**)
     Matrix f = mtl::clone(sub_matrix(A,0,2,0,1));
     std::cout << "Matrix f is: \n" << f << "\n";
 
-    if (f[1][0] != 5.0) throw "Clown has wrong value.";
+    MTL_THROW_IF(f[1][0] != 5.0, mtl::runtime_error("Clown has wrong value."));
     f[1][0]= 6.0;
     std::cout << "Matrix f after f[1][0]= 6.0 is: \n" << f << "\n";
     std::cout << "Matrix A after f[1][0]= 6.0 is: \n" << A << "\n";
 
-    if (f[1][0] != 6.0) throw "Clown has wrong value after change.";
-    if (A[1][0] != 5.0) throw "Original matrix was changed.";
+    MTL_THROW_IF(f[1][0] != 6.0, mtl::runtime_error("Clown has wrong value after change."));
+    MTL_THROW_IF(A[1][0] != 5.0, mtl::runtime_error("Original matrix was changed."));
     
 
     Matrix g = mtl::clone(sub_matrix(A,0,3,0,1));

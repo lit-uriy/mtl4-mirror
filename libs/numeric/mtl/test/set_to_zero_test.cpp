@@ -45,7 +45,7 @@ void test(Matrix& matrix, const char* name)
     set_to_zero(matrix);
     std::cout << "\n" << name << "\n" << "should be empty now:\n" << matrix << "\n";
     typename Matrix::value_type zero(0.0);
-    if (matrix(0, 1) != zero) throw "not properly set to zero";
+    MTL_THROW_IF(matrix(0, 1) != zero, mtl::runtime_error("not properly set to zero"));
 }
 
 

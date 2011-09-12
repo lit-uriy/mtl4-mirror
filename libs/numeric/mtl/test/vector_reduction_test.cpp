@@ -36,32 +36,32 @@ void test(Vector& v, const char* name)
     std::cout << "\n" << name << "  --- v = " << v; std::cout.flush();
 
     std::cout << "\none_norm(v) = " << one_norm(v) << "\n"; std::cout.flush();
-    if (one_norm(v) != 15.0) throw "one_norm wrong";
+    MTL_THROW_IF(one_norm(v) != 15.0, mtl::runtime_error("one_norm wrong"));
 
     std::cout << "one_norm<4>(v) = " << one_norm<4>(v) << "\n"; std::cout.flush();
-    if (one_norm<4>(v) != 15.0) throw "one_norm<4> wrong";
+    MTL_THROW_IF(one_norm<4>(v) != 15.0, mtl::runtime_error("one_norm<4> wrong"));
 
     // asm("#two_norm begins here!");
     value_type tv= two_norm(v);
     // asm("#two_norm ends here!");
 
     std::cout << "two_norm(v) = " << tv << "\n"; std::cout.flush();
-    if (two_norm(v) < 7.4161 || two_norm(v) > 7.4162) throw "two_norm wrong";
+    MTL_THROW_IF(two_norm(v) < 7.4161 || two_norm(v) > 7.4162, mtl::runtime_error("two_norm wrong"));
 
     std::cout << "infinity_norm(v) = " << infinity_norm(v) << "\n"; std::cout.flush();
-    if (infinity_norm(v) != 5.0) throw "infinity_norm wrong";
+    MTL_THROW_IF(infinity_norm(v) != 5.0, mtl::runtime_error("infinity_norm wrong"));
 
     std::cout << "sum(v) = " << sum(v) << "\n"; std::cout.flush();
-    if (sum(v) != 3.0) throw "sum wrong";
+    MTL_THROW_IF(sum(v) != 3.0, mtl::runtime_error("sum wrong"));
 
     std::cout << "sum<3>(v) = " << sum<3>(v) << "\n"; std::cout.flush();
-    if (sum<3>(v) != 3.0) throw "sum<3> wrong";
+    MTL_THROW_IF(sum<3>(v) != 3.0, mtl::runtime_error("sum<3> wrong"));
 
     std::cout << "product(v) = " << product(v) << "\n"; std::cout.flush();
-    if (product(v) != 120.0) throw "product wrong";
+    MTL_THROW_IF(product(v) != 120.0, mtl::runtime_error("product wrong"));
 
     std::cout << "product<6>(v) = " << product<6>(v) << "\n"; std::cout.flush();
-    if (product<6>(v) != 120.0) throw "product<6> wrong";
+    MTL_THROW_IF(product<6>(v) != 120.0, mtl::runtime_error("product<6> wrong"));
 }
  
 

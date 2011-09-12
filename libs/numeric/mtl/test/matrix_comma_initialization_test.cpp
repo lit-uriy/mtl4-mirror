@@ -27,7 +27,7 @@ void test(Matrix& A, const char* name)
 
     std::cout << "\n" << name << ", assignment: A = \n" << A << "\n";
 
-    if (A[1][0] != value_type(2)) throw "Wrong value inserted";
+    MTL_THROW_IF(A[1][0] != value_type(2), mtl::runtime_error("Wrong value inserted"));
 }
 
 

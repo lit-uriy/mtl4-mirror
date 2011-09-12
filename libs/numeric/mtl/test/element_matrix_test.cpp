@@ -60,10 +60,10 @@ void test(Matrix& matrix, const char* name)
     }
 
     cout << "Filled matrix:\n" << matrix << "\n";
-    if (matrix[0][0] != 0.0)  throw "wrong zero-element";
-    if (matrix[1][0] != 1.0)  throw "wrong insertion (single value)";
-    if (matrix[2][2] != 15.0) throw "wrong summation";
-    if (matrix[1][1] != 14.0) throw "wrong insertion (single value)";
+    MTL_THROW_IF(matrix[0][0] != 0.0, mtl::runtime_error("wrong zero-element"));
+    MTL_THROW_IF(matrix[1][0] != 1.0, mtl::runtime_error("wrong insertion (single value)"));
+    MTL_THROW_IF(matrix[2][2] != 15.0, mtl::runtime_error("wrong summation"));
+    MTL_THROW_IF(matrix[1][1] != 14.0, mtl::runtime_error("wrong insertion (single value)"));
     
 }
 

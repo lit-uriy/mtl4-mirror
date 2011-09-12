@@ -88,32 +88,32 @@ void test(Vector& vector, const char* name)
 	// test rscaled_view
     mtl::vector::rscaled_view<Vector,double>  rscaled_vector(vector,2.0);
     cout << "vector right scaled with 2.0\n" << rscaled_vector << "\n";
-    if (rscaled_vector(2) != rsvalue(ref)) throw "right scaling wrong";
+    MTL_THROW_IF(rscaled_vector(2) != rsvalue(ref), mtl::runtime_error("right scaling wrong"));
     
     mtl::vector::rscaled_view<Vector,ct>  crscaled_vector(vector,ct(0.0, 1.0));
     cout << "vector right scaled with i (complex(0, 1))\n" << crscaled_vector << "\n";
-    if (crscaled_vector(2) != crsvalue(ref)) throw "complex right scaling wrong";
+    MTL_THROW_IF(crscaled_vector(2) != crsvalue(ref), mtl::runtime_error("complex right scaling wrong"));
 	
     cout << "vector right scaled with 2.0 (free function)\n" << rscale(vector,2.0) << "\n";
-    if (rscale(vector,2.0)(2) != rsvalue(ref)) throw "right scaling wrong";
+    MTL_THROW_IF(rscale(vector,2.0)(2) != rsvalue(ref), mtl::runtime_error("right scaling wrong"));
 	
     cout << "vector right scaled with i (complex(0, 1)) (free function)\n" << rscale(vector,ct(0.0, 1.0)) << "\n";
-    if (rscale(vector,ct(0.0, 1.0))(2) != crsvalue(ref)) throw "complex right scaling wrong";
+    MTL_THROW_IF(rscale(vector,ct(0.0, 1.0))(2) != crsvalue(ref), mtl::runtime_error("complex right scaling wrong"));
 	
 	// test divide_by_view
     mtl::vector::divide_by_view<Vector,double>  div_vector(vector,0.5);
     cout << "vector divide by 0.5\n" << div_vector << "\n";
-    if (div_vector(2) != rsvalue(ref)) throw "divide_by wrong";
+    MTL_THROW_IF(div_vector(2) != rsvalue(ref), mtl::runtime_error("divide_by wrong"));
     
     mtl::vector::divide_by_view<Vector,ct>  cdiv_vector(vector,ct(0.0, -1.0));
     cout << "vector divide by -i (complex(0, -1))\n" << cdiv_vector << "\n";
-    if (cdiv_vector(2) != crsvalue(ref)) throw "complex divide_by wrong";
+    MTL_THROW_IF(cdiv_vector(2) != crsvalue(ref), mtl::runtime_error("complex divide_by wrong"));
 	
     cout << "vector divide by 0.5 (free function)\n" << divide_by(vector,0.5) << "\n";
-    if (divide_by(vector,0.5)(2) != rsvalue(ref)) throw "divide_by wrong";
+    MTL_THROW_IF(divide_by(vector,0.5)(2) != rsvalue(ref), mtl::runtime_error("divide_by wrong"));
 	
     cout << "vector divide by -i (complex(0, -1)) (free function)\n" << divide_by(vector,ct(0.0, -1.0)) << "\n";
-    if (divide_by(vector,ct(0.0, -1.0))(2) != crsvalue(ref)) throw "complex divide_by wrong";
+    MTL_THROW_IF(divide_by(vector,ct(0.0, -1.0))(2) != crsvalue(ref), mtl::runtime_error("complex divide_by wrong"));
 	
 }
 

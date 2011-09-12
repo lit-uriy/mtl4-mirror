@@ -40,21 +40,21 @@ void test(Matrix& A, const char* name)
     std::cout << "north_west:\n" << *nw << '\n';    
 
     std::cout << "north_west of north_west:\n" << *north_west(nw) << '\n';
-    if ((*north_west(nw))[0][0] != 0.0) throw "(*north_west(nw))[0][0] != 0.0";
+    MTL_THROW_IF((*north_west(nw))[0][0] != 0.0, mtl::runtime_error("(*north_west(nw))[0][0] != 0.0"));
     (*north_west(nw))[0][0]= 2.0;
 
     std::cout << "south_east of north_west:\n" << *south_east(nw) << '\n';
-    if ((*south_east(nw))[0][0] != 4.0) throw "(*south_east(nw))[0][0] != 4.0";
+    MTL_THROW_IF((*south_east(nw))[0][0] != 4.0, mtl::runtime_error("(*south_east(nw))[0][0] != 4.0"));
 
     std::cout << "north_west of north_west:\n" << *north_west(nw) << '\n';
-    if ((*north_west(nw))[0][0] != 2.0) throw "(*north_west(nw))[0][0] != 2.0";
+    MTL_THROW_IF((*north_west(nw))[0][0] != 2.0, mtl::runtime_error("(*north_west(nw))[0][0] != 2.0"));
 
     std::cout << "south_east of north_west:\n" << *south_east(nw) << '\n';
-    if ((*south_east(nw))[0][0] != 4.0) throw "(*south_east(nw))[0][0] != 4.0";
+    MTL_THROW_IF((*south_east(nw))[0][0] != 4.0, mtl::runtime_error("(*south_east(nw))[0][0] != 4.0"));
 
     std::cout << "nw.first_address() == " << nw.first_address() 
 	      << ", &(*nw)[0][0] == " << &(*nw)[0][0] << '\n';
-    if (nw.first_address() != &(*nw)[0][0]) throw "Inconsistency in address calculation";
+    MTL_THROW_IF(nw.first_address() != &(*nw)[0][0], mtl::runtime_error("Inconsistency in address calculation"));
 }
 
 

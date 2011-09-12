@@ -47,7 +47,7 @@ void test(Matrix& A, const char* name)
     
     x= upper_trisolve(A, b, mtl::tag::inverse_diagonal());
     cout << "x = upper_trisolve(A, b) ==" << x << "\n\n";
-    if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in upper_trisolve!";
+    MTL_THROW_IF(std::abs(x[2] - 3.0) > 0.0001, mtl::runtime_error("Wrong result in upper_trisolve!"));
 
     Matrix B(trans(A)); // Diagonal already inverted
 
@@ -62,7 +62,7 @@ void test(Matrix& A, const char* name)
 
     x= lower_trisolve(B, b, mtl::tag::inverse_diagonal());
     cout << "x = lower_trisolve(B, b) ==" << x << "\n\n";
-    if (std::abs(x[2] - 3.0) > 0.0001) throw "Wrong result in lower_trisolve!";
+    MTL_THROW_IF(std::abs(x[2] - 3.0) > 0.0001, mtl::runtime_error("Wrong result in lower_trisolve!"));
 
 
 }

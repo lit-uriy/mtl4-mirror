@@ -35,47 +35,47 @@ int main(int , char**)
 
     (lazy(w)= A * v) || (lazy(d) = lazy_dot(w, v));
     cout << "w = " << w << ", d = " << d << "\n";
-    if (!close(d, 12)) throw "wrong dot";    
+    MTL_THROW_IF(!close(d, 12), mtl::runtime_error("wrong dot"));    
 
     (lazy(w)= B * v) || (lazy(d) = lazy_dot(w, v));
     cout << "w = " << w << ", d = " << d << "\n";
-    if (!close(d, 12)) throw "wrong dot";
+    MTL_THROW_IF(!close(d, 12), mtl::runtime_error("wrong dot"));
 
     (lazy(r)-= alpha * q) || (lazy(rho)= lazy_unary_dot(r)); 
     cout << "r = " << r << ", rho = " << rho << "\n";
-    if (!close(rho, 552.96)) throw "wrong unary_dot";
+    MTL_THROW_IF(!close(rho, 552.96), mtl::runtime_error("wrong unary_dot"));
 
     (lazy(x)= 7.0) || (lazy(beta)= lazy_unary_dot(x)); 
     cout << "x = " << x << ", beta = " << beta << "\n";
-    if (!close(beta, 294)) throw "wrong unary_dot";
+    MTL_THROW_IF(!close(beta, 294), mtl::runtime_error("wrong unary_dot"));
     
     (lazy(x)= 7.0) || (lazy(beta)= lazy_one_norm(x)); 
     cout << "x = " << x << ", beta = " << beta << "\n";
-    if (!close(beta, 42)) throw "wrong one_norm";
+    MTL_THROW_IF(!close(beta, 42), mtl::runtime_error("wrong one_norm"));
     
     (lazy(x)= 7.0) || (lazy(beta)= lazy_two_norm(x)); 
     cout << "x = " << x << ", beta = " << beta << "\n";
-    if (!close(beta, 17.1464)) throw "wrong two_norm";
+    MTL_THROW_IF(!close(beta, 17.1464), mtl::runtime_error("wrong two_norm"));
     
     (lazy(x)= 7.0) || (lazy(beta)= lazy_infinity_norm(x)); 
     cout << "x = " << x << ", beta = " << beta << "\n";
-    if (!close(beta, 7)) throw "wrong one_norm";
+    MTL_THROW_IF(!close(beta, 7), mtl::runtime_error("wrong one_norm"));
     
     (lazy(x)= 7.0) || (lazy(beta)= lazy_sum(x)); 
     cout << "x = " << x << ", beta = " << beta << "\n";
-    if (!close(beta, 42)) throw "wrong sum";
+    MTL_THROW_IF(!close(beta, 42), mtl::runtime_error("wrong sum"));
     
     (lazy(x)= 7.0) || (lazy(beta)= lazy_product(x)); 
     cout << "x = " << x << ", beta = " << beta << "\n";
-    if (!close(beta, 117649)) throw "wrong sum";
+    MTL_THROW_IF(!close(beta, 117649), mtl::runtime_error("wrong sum"));
     
     (lazy(x)= 2.0) || (lazy(gamma)= lazy_dot(r, x)); 
     cout << "x = " << x << ", gamma = " << gamma << "\n";
-    if (!close(gamma, -115.2)) throw "wrong dot";
+    MTL_THROW_IF(!close(gamma, -115.2), mtl::runtime_error("wrong dot"));
     
     (lazy(r)= alpha * q) || (lazy(rho)= lazy_dot(r, q)); 
     cout << "r = " << r << ", rho = " << rho << "\n";
-    if (!close(rho, 187.2)) throw "wrong dot";
+    MTL_THROW_IF(!close(rho, 187.2), mtl::runtime_error("wrong dot"));
 	
 
     return 0;
