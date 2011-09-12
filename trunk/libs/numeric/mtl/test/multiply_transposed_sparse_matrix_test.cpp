@@ -30,7 +30,7 @@ int main(int, char**)
     res = trans(m)*m;
     cout << res;
 
-    if (res[0][1] != 4.0) throw "res[0][1] should be 4.0!\n";
+    MTL_THROW_IF(res[0][1] != 4.0, mtl::runtime_error("res[0][1] should be 4.0!\n"));
 
     return 0;
 }

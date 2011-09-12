@@ -33,8 +33,8 @@ void test(Matrix& A, const char* name)
     invert_diagonal(A);
     
     cout << "\nAfter inverting the diagonal, it is: \n" << A;
-    if (std::abs(A[0][0] - 1.0 / 7.0) > 0.0001) throw "Wrong value after inverting diagonal!";
-    if (std::abs(A[1][3] - 2.0) > 0.0001) throw "Wrong value after inverting diagonal!";
+    MTL_THROW_IF(std::abs(A[0][0] - 1.0 / 7.0) > 0.0001, mtl::runtime_error("Wrong value after inverting diagonal!"));
+    MTL_THROW_IF(std::abs(A[1][3] - 2.0) > 0.0001, mtl::runtime_error("Wrong value after inverting diagonal!"));
 
 }
 

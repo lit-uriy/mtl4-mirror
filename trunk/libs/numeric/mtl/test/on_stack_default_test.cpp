@@ -29,11 +29,11 @@ int main(int, char**)
     typedef vector::parameters<tag::col_major, vdim>                        vec_para;
     typedef vector::parameters<tag::col_major, fvdim>                       fvec_para;
 
-    if ( mat_para::on_stack) throw "Must not be on stack!";
-    if (!fmat_para::on_stack) throw "Must be on stack!";
+    MTL_THROW_IF( mat_para::on_stack, mtl::runtime_error("Must not be on stack!"));
+    MTL_THROW_IF(!fmat_para::on_stack, mtl::runtime_error("Must be on stack!"));
 
-    if ( vec_para::on_stack) throw "Must not be on stack!";
-    if (!fvec_para::on_stack) throw "Must be on stack!";
+    MTL_THROW_IF( vec_para::on_stack, mtl::runtime_error("Must not be on stack!"));
+    MTL_THROW_IF(!fvec_para::on_stack, mtl::runtime_error("Must be on stack!"));
 
     return 0;
 }

@@ -55,13 +55,13 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
     //        1    
     if (dim1 == 5 && dim2 == 5) {
 	rvalue_type twenty(20.0), two(2.0), one(1.0), zero(0.0), minus_eight(-8.0);
-	if (w[12] != twenty) throw "wrong diagonal";
-	if (w[13] != minus_eight) throw "wrong east neighbor";
-	if (w[14] != one) throw "wrong east east neighbor";
-	if (w[15] != zero) throw "wrong zero-element";
-	if (w[17] != minus_eight) throw "wrong south neighbor";
-	if (w[18] != two) throw "wrong south east neighbor";
-	if (w[22] != one) throw "wrong south south neighbor";
+	MTL_THROW_IF(w[12] != twenty, mtl::runtime_error("wrong diagonal"));
+	MTL_THROW_IF(w[13] != minus_eight, mtl::runtime_error("wrong east neighbor"));
+	MTL_THROW_IF(w[14] != one, mtl::runtime_error("wrong east east neighbor"));
+	MTL_THROW_IF(w[15] != zero, mtl::runtime_error("wrong zero-element"));
+	MTL_THROW_IF(w[17] != minus_eight, mtl::runtime_error("wrong south neighbor"));
+	MTL_THROW_IF(w[18] != two, mtl::runtime_error("wrong south east neighbor"));
+	MTL_THROW_IF(w[22] != one, mtl::runtime_error("wrong south south neighbor"));
     }
 
     w+= A * v;
@@ -72,8 +72,8 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
     // Check for stencil, must be doubled now
     if (dim1 == 5 && dim2 == 5) {
 	rvalue_type forty(40.0), four(4.0);
-	if (w[12] != forty) throw "wrong diagonal";
-	if (w[18] != four) throw "wrong south east neighbor";
+	MTL_THROW_IF(w[12] != forty, mtl::runtime_error("wrong diagonal"));
+	MTL_THROW_IF(w[18] != four, mtl::runtime_error("wrong south east neighbor"));
     }
 
     w-= A * v;
@@ -84,8 +84,8 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
     // Check for stencil, must be A*v now
     if (dim1 == 5 && dim2 == 5) {
 	rvalue_type twenty(20.0), two(2.0);
-	if (w[12] != twenty) throw "wrong diagonal";
-	if (w[18] != two) throw "wrong south east neighbor";
+	MTL_THROW_IF(w[12] != twenty, mtl::runtime_error("wrong diagonal"));
+	MTL_THROW_IF(w[18] != two, mtl::runtime_error("wrong south east neighbor"));
     }
 
 #if 0

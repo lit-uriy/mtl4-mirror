@@ -49,10 +49,10 @@ void test_compressed2D_insertion()
 
     cout << "\n\n";
     print_matrix(matrix); 
-    if (matrix(0, 3) != 31) throw "Error overwriting empty value";
-    if (matrix(3, 3) != 33) throw "Error overwriting existing value";
-    if (matrix(6, 0) != 35) throw "Error overwriting empty value twice";
-    if (matrix(4, 4) != 37) throw "Error overwriting existing value twice";
+    MTL_THROW_IF(matrix(0, 3) != 31, mtl::runtime_error("Error overwriting empty value"));
+    MTL_THROW_IF(matrix(3, 3) != 33, mtl::runtime_error("Error overwriting existing value"));
+    MTL_THROW_IF(matrix(6, 0) != 35, mtl::runtime_error("Error overwriting empty value twice"));
+    MTL_THROW_IF(matrix(4, 4) != 37, mtl::runtime_error("Error overwriting existing value twice"));
 
     {   // Inserter that adds to the old values
         mtl::matrix::compressed2D_inserter<int, parameters, mtl::operations::update_plus<int> > i2(matrix, 3);    
@@ -63,17 +63,17 @@ void test_compressed2D_insertion()
     }
     cout << "\n\n";
     print_matrix(matrix); 
-    if (matrix(0, 2) != 27) throw "Error adding to empty value";
-    if (matrix(2, 2) != 27) throw "Error adding to existing value";
-    if (matrix(4, 2) != 54) throw "Error adding to existing value twice (in 2 statements)";
-    if (matrix(7, 2) != 43) throw "Error adding to existing value twice (in 1 statement)";
+    MTL_THROW_IF(matrix(0, 2) != 27, mtl::runtime_error("Error adding to empty value"));
+    MTL_THROW_IF(matrix(2, 2) != 27, mtl::runtime_error("Error adding to existing value"));
+    MTL_THROW_IF(matrix(4, 2) != 54, mtl::runtime_error("Error adding to existing value twice (in 2 statements)"));
+    MTL_THROW_IF(matrix(7, 2) != 43, mtl::runtime_error("Error adding to existing value twice (in 1 statement)"));
     cout << "\n\n";
     {
 	mtl::matrix::inserter<matrix_type, mtl::operations::update_plus<int> >  i3(matrix, 7);
 	i3(2, 2) << 1;
     }
 
-    if (matrix(2, 2) != 28) throw "Error adding to existing value";
+    MTL_THROW_IF(matrix(2, 2) != 28, mtl::runtime_error("Error adding to existing value"));
 }
  
 int main(int, char**)

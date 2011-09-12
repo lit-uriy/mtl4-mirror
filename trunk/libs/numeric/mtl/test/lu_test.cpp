@@ -134,14 +134,14 @@ void test(Matrix& A, const char* name)
     cout << "upper(LU) is:\n" << upper(LU) << "strict_lower(LU) is:\n" << strict_lower(LU);
     cout << "v2 is " << v2 << "\n";
 
-    if (abs(v[1] - v2[1]) > 0.1) throw "Error using tri_solve";
+    MTL_THROW_IF(abs(v[1] - v2[1]) > 0.1, mtl::runtime_error("Error using tri_solve"));
 
     Vector v3( lu_solve_straight(A, w) );
-    if (abs(v[1] - v3[1]) > 0.1) throw "Error in solve";
+    MTL_THROW_IF(abs(v[1] - v3[1]) > 0.1, mtl::runtime_error("Error in solve"));
 
     Vector v4( lu_solve(A, w) );
     cout << "v4 is " << v4 << "\n";
-    if (abs(v[1] - v4[1]) > 0.1) throw "Error in solve";
+    MTL_THROW_IF(abs(v[1] - v4[1]) > 0.1, mtl::runtime_error("Error in solve"));
 
     singularity_test1(A);
     singularity_test2(A);

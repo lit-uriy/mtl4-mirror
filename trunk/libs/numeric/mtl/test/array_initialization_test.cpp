@@ -35,15 +35,15 @@ void test(Matrix& A, const char* name)
 
     std::cout << "\n" << name << ", assignment: A = \n" << A << "\n";
 
-    if (num_rows(A) != 2 || num_cols(A) != 3) throw "Wrong matrix size";
-    if (A[1][0] != value_type(2)) throw "Wrong value inserted";
+    MTL_THROW_IF(num_rows(A) != 2 || num_cols(A) != 3, mtl::runtime_error("Wrong matrix size"));
+    MTL_THROW_IF(A[1][0] != value_type(2), mtl::runtime_error("Wrong value inserted"));
 
     Matrix B(array);
 
     std::cout << "\n" << name << ", construction: B = \n" << B << "\n";
 
-    if (num_rows(B) != 2 || num_cols(B) != 3) throw "Wrong matrix size";
-    if (B[1][0] != value_type(2)) throw "Wrong value inserted";
+    MTL_THROW_IF(num_rows(B) != 2 || num_cols(B) != 3, mtl::runtime_error("Wrong matrix size"));
+    MTL_THROW_IF(B[1][0] != value_type(2), mtl::runtime_error("Wrong value inserted"));
 }
 
 

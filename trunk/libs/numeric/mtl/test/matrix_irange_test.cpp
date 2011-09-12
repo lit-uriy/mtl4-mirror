@@ -60,13 +60,13 @@ void test(Matrix& A, const char* name)
 	 << A[irange(1, 4)][irange(1, imax)] << "\n";
 
     Matrix B(A[irange(1, 4)][irange(1, imax)]);
-    if (B[1][1] != 4.0) throw "Wrong value in B";
+    MTL_THROW_IF(B[1][1] != 4.0, mtl::runtime_error("Wrong value in B"));
 
-    if (A[irange(1, 4)][irange(1, imax)][1][1] != 4.0) throw "Wrong value in A[][]";
+    MTL_THROW_IF(A[irange(1, 4)][irange(1, imax)][1][1] != 4.0, mtl::runtime_error("Wrong value in A[][]"));
 
     Matrix C(A[irange(3, imax)][irange(1, 2)]);
     std::cout << "\n" << name << "\nA[irange(3, imax)][irange(1, 2)] == \n" << C;
-    if (C[1][0] != 5.0) throw "Wrong value in C";
+    MTL_THROW_IF(C[1][0] != 5.0, mtl::runtime_error("Wrong value in C"));
 
     cout << "A[irange(1, 4)][irange(1, imax)][irange(1, imax)][irange(1, imax)][0][0] == \n" 
 	 << A[irange(1, 4)][irange(1, imax)][irange(1, imax)][irange(1, imax)][0][0] << "\n"; 
@@ -87,17 +87,17 @@ void test2(Matrix& A, const char* name)
 	 << A[irange(2, 4)][irange(2, imax)] << "\n";
 
     Matrix B(A[irange(2, 4)][irange(2, imax)]);
-    if (B[0][0] != 4.0) throw "Wrong value in B";
+    MTL_THROW_IF(B[0][0] != 4.0, mtl::runtime_error("Wrong value in B"));
 
-    if (A[irange(2, 4)][irange(2, imax)][0][0] != 4.0) throw "Wrong value in A[][]";
+    MTL_THROW_IF(A[irange(2, 4)][irange(2, imax)][0][0] != 4.0, mtl::runtime_error("Wrong value in A[][]"));
 
     Matrix C(A[irange(4, imax)][irange(0, imax)]);
     std::cout << "\n" << name << "\nA[irange(4, imax)][irange(0, imax)] == \n" << C;
-    if (C[0][1] != 5.0) throw "Wrong value in C";
+    MTL_THROW_IF(C[0][1] != 5.0, mtl::runtime_error("Wrong value in C"));
 
     Matrix D(A[irange(4, imax)][iall]);
     std::cout << "\n" << name << "\nA[irange(4, imax)][iall] == \n" << C;
-    if (D[0][1] != 5.0) throw "Wrong value in D";
+    MTL_THROW_IF(D[0][1] != 5.0, mtl::runtime_error("Wrong value in D"));
 
     
 }

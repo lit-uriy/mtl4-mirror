@@ -30,20 +30,20 @@ void test(const Vector&, const char* name)
     x= trans(A) * b;
 
     cout << "x = " << x << "\n";
-    if (x[1] != 12.0) throw "Wrong value";
-    if (x[2] != cmp(12.0, 4.0)) throw "Wrong value";
+    MTL_THROW_IF(x[1] != 12.0, mtl::runtime_error("Wrong value"));
+    MTL_THROW_IF(x[2] != cmp(12.0, 4.0), mtl::runtime_error("Wrong value"));
 
     mtl::dense_vector<cmp, mtl::vector::parameters<mtl::row_major> >  br(5, 4.0), xr;
     xr= br * A;
 
     cout << "xr = " << xr << "\n";
-    if (xr[1] != 12.0) throw "Wrong value";
-    if (xr[2] != cmp(12.0, 4.0)) throw "Wrong value";
+    MTL_THROW_IF(xr[1] != 12.0, mtl::runtime_error("Wrong value"));
+    MTL_THROW_IF(xr[2] != cmp(12.0, 4.0), mtl::runtime_error("Wrong value"));
 
     xr= br * hermitian(A);  // corresponds to trans(x)= trans( conj(A) * b )
     cout << "xr = " << xr << "\n";
-    if (xr[2] != 12.0) throw "Wrong value";
-    if (xr[3] != cmp(12.0, -4.0)) throw "Wrong value";
+    MTL_THROW_IF(xr[2] != 12.0, mtl::runtime_error("Wrong value"));
+    MTL_THROW_IF(xr[3] != cmp(12.0, -4.0), mtl::runtime_error("Wrong value"));
 
 }
 

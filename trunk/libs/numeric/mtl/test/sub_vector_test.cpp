@@ -45,21 +45,21 @@ void test(Vector& v, const char* name)
     w[1]= f(T(8));
     cout << "w == " << w << "\n";
 
-    if (w[0] != f(T(2))) throw "Wrong value in w";
-    if (size(w) != 2)    throw "Wrong size of w";
+    MTL_THROW_IF(w[0] != f(T(2)), mtl::runtime_error("Wrong value in w"));
+    MTL_THROW_IF(size(w) != 2, mtl::runtime_error("Wrong size of w"));
 
-    if (v[3] != f(T(8))) throw "Cannot change v via w (correctly)";
+    MTL_THROW_IF(v[3] != f(T(8)), mtl::runtime_error("Cannot change v via w (correctly)"));
 
     Vector u(sub_vector(v, 2, 7));
     cout << "u == " << u << "\n";
     cout << "v == " << v << "\n";
 
-    if (u[0] != f(T(2))) throw "Wrong value in u";
-    if (size(u) != sz-2) throw "Wrong size of u";
+    MTL_THROW_IF(u[0] != f(T(2)), mtl::runtime_error("Wrong value in u"));
+    MTL_THROW_IF(size(u) != sz-2, mtl::runtime_error("Wrong size of u"));
 
-    if (size(sub_vector(v, 2, 2)) != 0) throw "Problem returning empty vector (2, 2)";
-    if (size(sub_vector(v, 4, 2)) != 0) throw "Problem returning empty vector (4, 2)";
-    if (size(sub_vector(v, 8, 9)) != 0) throw "Problem returning empty vector (8, 9)";
+    MTL_THROW_IF(size(sub_vector(v, 2, 2)) != 0, mtl::runtime_error("Problem returning empty vector (2, 2)"));
+    MTL_THROW_IF(size(sub_vector(v, 4, 2)) != 0, mtl::runtime_error("Problem returning empty vector (4, 2)"));
+    MTL_THROW_IF(size(sub_vector(v, 8, 9)) != 0, mtl::runtime_error("Problem returning empty vector (8, 9)"));
 
 #if 0
     const Vector vc(v);
@@ -69,8 +69,8 @@ void test(Vector& v, const char* name)
     const Vector cwc(sub_vector(vc, 2, 4));    
     cout << "wc == " << wc << "\n";
 
-    if (wc[0] != f(T(2))) throw "Wrong value in wc";
-    if (size(wc) != 2)    throw "Wrong size of wc";    
+    MTL_THROW_IF(wc[0] != f(T(2)), mtl::runtime_error("Wrong value in wc"));
+    MTL_THROW_IF(size(wc) != 2, mtl::runtime_error("Wrong size of wc"));    
 
     wc[1]= f(T(5));
     cout << "vc == " << vc << "\n";

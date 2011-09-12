@@ -28,7 +28,7 @@ namespace mtl { namespace matrix {
     inline f(const A1&, const A2&, const char* name, tag_type tag)
     {
 	cout << name << " in namespace mtl::matrix\n";
-	if (tag != mtag) throw "Function shouldn't be called in namespace matrix!";
+	MTL_THROW_IF(tag != mtag, mtl::runtime_error("Function shouldn't be called in namespace matrix!"));
     }
 }}
 
@@ -39,7 +39,7 @@ namespace mtl { namespace vector {
     inline f(const A1&, const A2&, const char* name, tag_type tag)
     {
 	cout << name << " in namespace mtl::vector\n";
-	if (tag != vtag) throw "Function shouldn't be called in namespace vector!";
+	MTL_THROW_IF(tag != vtag, mtl::runtime_error("Function shouldn't be called in namespace vector!"));
     }
 }}
 
@@ -49,7 +49,7 @@ namespace mtl { namespace scalar {
     inline f(const A1&, const A2&, const char* name, tag_type tag)
     {
 	cout << name << " in namespace mtl::vector\n";
-	if (tag != stag) throw "Function shouldn't be called in namespace scalar!";
+	MTL_THROW_IF(tag != stag, mtl::runtime_error("Function shouldn't be called in namespace scalar!"));
     }
 }}
 

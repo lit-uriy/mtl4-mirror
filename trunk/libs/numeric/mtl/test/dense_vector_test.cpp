@@ -51,81 +51,81 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     std::cout << name << "  --- u= v + w:\n"; std::cout.flush();
     u= v + w;
     cout << "u: " << u << "\n"; std::cout.flush();
-    if (u[0] != 9.0) throw "wrong";
+    MTL_THROW_IF(u[0] != 9.0, mtl::runtime_error("wrong"));
 
     std::cout << name << "  --- u= ele_prod(v, w):\n"; std::cout.flush();
     u= ele_prod(v, w);
     cout << "u: " << u << "\n"; std::cout.flush();
-    if (u[0] != 20.0) throw "wrong";
+    MTL_THROW_IF(u[0] != 20.0, mtl::runtime_error("wrong"));
 
     std::cout << name << "  --- u= ele_prod(v, w) + w:\n"; std::cout.flush();
     u= ele_prod(v, w) + w;
     cout << "u: " << u << "\n"; std::cout.flush();
-    if (u[0] != 25.0) throw "wrong";
+    MTL_THROW_IF(u[0] != 25.0, mtl::runtime_error("wrong"));
 
     std::cout << name << "  --- u= ele_quot(v, w):\n"; std::cout.flush();
     u= ele_quot(v, w);
     cout << "u: " << u << "\n"; std::cout.flush();
-    if (abs(u[0] - 0.8) > 0.01) throw "wrong";
+    MTL_THROW_IF(abs(u[0] - 0.8) > 0.01, mtl::runtime_error("wrong"));
 
     std::cout << name << "  --- u= ele_quot(v+w, w):\n"; std::cout.flush();
     u= ele_quot(v+w, w);
     cout << "u: " << u << "\n"; std::cout.flush();
-    if (abs(u[0] - 1.8) > 0.01) throw "wrong";
+    MTL_THROW_IF(abs(u[0] - 1.8) > 0.01, mtl::runtime_error("wrong"));
 
 
     std::cout << name << "  --- u= v + w + v + w:\n"; std::cout.flush();
     u= v + w + v + w;
     cout << "u: " << u << "\n"; std::cout.flush();
-    if (u[0] != 18.0) throw "wrong";
+    MTL_THROW_IF(u[0] != 18.0, mtl::runtime_error("wrong"));
 
     std::cout << name << "  --- u= w + (v= w + w);:\n"; std::cout.flush();
     u= w + (v= w + w);
     cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
-    if (v[0] != 10.0) throw "v wrong";
-    if (u[0] != 15.0) throw "u wrong";
+    MTL_THROW_IF(v[0] != 10.0, mtl::runtime_error("v wrong"));
+    MTL_THROW_IF(u[0] != 15.0, mtl::runtime_error("u wrong"));
 
     std::cout << name << "  --- u= (v= w + w) + v;:\n"; std::cout.flush();
     v= 4.0; w= 5.0; u= (v= w + w) + v;
     cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
-    if (v[0] != 10.0) throw "v wrong";
-    if (u[0] != 20.0) throw "u wrong";
+    MTL_THROW_IF(v[0] != 10.0, mtl::runtime_error("v wrong"));
+    MTL_THROW_IF(u[0] != 20.0, mtl::runtime_error("u wrong"));
 
     std::cout << name << "  --- w= 4; u-= (v= w + w) - w;:\n"; std::cout.flush();
     w= 4; u-= (v= w + w) - w;
     cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
-    if (v[0] != 8.0) throw "v wrong";
-    if (u[0] != 16.0) throw "u wrong"; // for -=
+    MTL_THROW_IF(v[0] != 8.0, mtl::runtime_error("v wrong"));
+    MTL_THROW_IF(u[0] != 16.0, mtl::runtime_error("u wrong")); // for -=
 
     
     std::cout << name << "  --- v= 3*u + 4*w;:\n"; std::cout.flush();
     v= 3*u + 4*w;
     cout << "v: " << v << "\n"; std::cout.flush();
-    if (v[0] != 64.0) throw "v wrong";
+    MTL_THROW_IF(v[0] != 64.0, mtl::runtime_error("v wrong"));
 
     std::cout << name << "  --- u= 3; v= 4; u+= v+= 3.0 * (w= 5);:\n"; std::cout.flush();
     u= 3; v= 4; 
     u+= v+= 3.0 * (w= 5.0);
     cout << "u: " << u << "v: " << v << "\n"; std::cout.flush();
-    if (v[0] != 19.0) throw "v wrong";
-    if (u[0] != 22.0) throw "u wrong";
+    MTL_THROW_IF(v[0] != 19.0, mtl::runtime_error("v wrong"));
+    MTL_THROW_IF(u[0] != 22.0, mtl::runtime_error("u wrong"));
 
     std::cout << name << "  --- u= 3; v= 4; w=5; u+= (v*= 3.0) + (w*= 2.0);:\n"; std::cout.flush();
     u= 3; v= 4; w=5; u+= (v*= 3.0) + (w*= 2.0);
     cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
-    if (v[0] != 12.0) throw "v wrong";
-    if (w[0] != 10.0) throw "v wrong";
-    if (u[0] != 25.0) throw "u wrong";
+    MTL_THROW_IF(v[0] != 12.0, mtl::runtime_error("v wrong"));
+    MTL_THROW_IF(w[0] != 10.0, mtl::runtime_error("v wrong"));
+    MTL_THROW_IF(u[0] != 25.0, mtl::runtime_error("u wrong"));
 
     std::cout << name << "  --- u= 3; v= 4; w=5; u+= dot(v, w) * w;:\n"; std::cout.flush();
     u= 3; v= 4; w=5; u+= dot(v, w) * w;
     cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
-    if (u[0] != 503.0) throw "u wrong";
+    MTL_THROW_IF(u[0] != 503.0, mtl::runtime_error("u wrong"));
 
     std::cout << name << "  --- u+= dot<12>(v, w) * w;:\n"; std::cout.flush();
     u+= mtl::dot<12>(v, w) * w;
     cout << "u: " << u << "v: " << v << "w: " << w << "\n"; std::cout.flush();
-    if (u[0] != 1003.0) throw "u wrong";
+    MTL_THROW_IF(u[0] != 1003.0, mtl::runtime_error("u wrong"));
 }
  
 

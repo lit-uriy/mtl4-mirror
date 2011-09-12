@@ -28,17 +28,17 @@ void test(Vector& v, const char* name)
     cout << "size(v) = " << size(v) << "\n";
 
     // Value is less critical main purpose of the test is to check compilibilit
-    if (size(v) != 3) throw "Vector size should be 3";
+    MTL_THROW_IF(size(v) != 3, mtl::runtime_error("Vector size should be 3"));
 
     cout << "num_rows(v) = " << num_rows(v) << "\n";
 
     // Value is less critical main purpose of the test is to check compilibilit
-    if (num_rows(v) != 3) throw "Vector number of rows should be 3";
+    MTL_THROW_IF(num_rows(v) != 3, mtl::runtime_error("Vector number of rows should be 3"));
 
     cout << "num_cols(v) = " << num_cols(v) << "\n";
 
     // Value is less critical main purpose of the test is to check compilibilit
-    if (num_cols(v) != 1) throw "Vector number of columns should be 1";
+    MTL_THROW_IF(num_cols(v) != 1, mtl::runtime_error("Vector number of columns should be 1"));
 
 }
 

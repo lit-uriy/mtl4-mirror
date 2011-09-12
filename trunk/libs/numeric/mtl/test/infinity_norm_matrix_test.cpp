@@ -43,7 +43,7 @@ void test(MatrixA& a, const char* name)
     	      << "infinity_norm(a) = " << infinity_norm(a) << "\n"; std::cout.flush();
 
     
-    if (infinity_norm(a) != 15.0) throw "wrong infinity_norm"; 
+    MTL_THROW_IF(infinity_norm(a) != 15.0, mtl::runtime_error("wrong infinity_norm")); 
 }
 
 

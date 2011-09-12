@@ -47,18 +47,18 @@ void test(Vector& v, const char* name)
     w[1]= f(T(8));
     cout << "w == " << w << "\n";
 
-    if (w[0] != f(T(2))) throw "Wrong value in w";
-    if (size(w) != 2)    throw "Wrong size of w";
+    MTL_THROW_IF(w[0] != f(T(2)), mtl::runtime_error("Wrong value in w"));
+    MTL_THROW_IF(size(w) != 2, mtl::runtime_error("Wrong size of w"));
 
-    if (v[3] != f(T(8))) throw "Cannot change v via w (correctly)";
+    MTL_THROW_IF(v[3] != f(T(8)), mtl::runtime_error("Cannot change v via w (correctly)"));
 
     Vector u( v[irange(2, imax)] );
     cout << "u == " << u << "\n";
     cout << "v == " << v << "\n";
     irange r(2 , 4);
 
-    if (u[0] != f(T(2))) throw "Wrong value in u";
-    if (size(u) != sz-2) throw "Wrong size of u";
+    MTL_THROW_IF(u[0] != f(T(2)), mtl::runtime_error("Wrong value in u"));
+    MTL_THROW_IF(size(u) != sz-2, mtl::runtime_error("Wrong size of u"));
 
     cout << "v[irange(2, 4)] == " << v[r] << "\n";
     --r ;

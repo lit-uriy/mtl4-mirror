@@ -37,7 +37,7 @@ void test(MatrixA& a, unsigned dim1, unsigned dim2, const char* name)
 	      << "trace(a) = " << trace(a) << "\n"; std::cout.flush();
 
     // Due to rounding errors, dimensions shouldn't be too large (or test less naive)
-    if (trace(a) != 4.0 * int(dim1*dim2)) throw "wrong trace"; 
+    MTL_THROW_IF(trace(a) != 4.0 * int(dim1*dim2), mtl::runtime_error("wrong trace")); 
 }
 
 

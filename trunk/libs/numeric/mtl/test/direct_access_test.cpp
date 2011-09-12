@@ -25,12 +25,12 @@ int main(int ,char**)
 
     double *ap= &A[0][0];
     std::cout << *ap << '\n';
-    if (*ap != 71) throw "wrong value";
+    MTL_THROW_IF(*ap != 71, mtl::runtime_error("wrong value"));
 
     // the direct access of the first element should only be used when absolutely necessary 
     double *ap2= A.elements();
     std::cout << *ap2 << '\n';
-    if (*ap2 != 71) throw "wrong value";
+    MTL_THROW_IF(*ap2 != 71, mtl::runtime_error("wrong value"));
 
     return 0;
 }

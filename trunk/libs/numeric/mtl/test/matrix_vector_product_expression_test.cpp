@@ -40,7 +40,7 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
     
 
     if (dim1 == 5 && dim2 == 5) {
-	if (abs(r[12] - 23.0) > 0.0001) throw "r[12] should be 23.\n";
+	MTL_THROW_IF(abs(r[12] - 23.0) > 0.0001, mtl::runtime_error("r[12] should be 23.\n"));
     }
 
     r= b - A * v;
@@ -49,7 +49,7 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 	cout << "\n\nb - A * v = " << r << '\n';
     
     if (dim1 == 5 && dim2 == 5) {
-	if (abs(r[12] + 17.0) > 0.0001) throw "r[12] should be -17.\n";
+	MTL_THROW_IF(abs(r[12] + 17.0) > 0.0001, mtl::runtime_error("r[12] should be -17.\n"));
     }
 
     // typedef mtl::dense_vector<double, mtl::vector::parameters<mtl::row_major> >  vrt;

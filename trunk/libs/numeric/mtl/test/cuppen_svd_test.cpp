@@ -50,7 +50,7 @@ void test(const Matrix& B, Matrix& BQ, Value scaling, Vector& lambda_b)
     
     eig_b-= lambda_b;
     std::cout<<"two_norm(diff)  ="<< two_norm(eig_b) <<"\n";
-    if (two_norm(eig_b) > tol) throw "Cuppen computes wrong eigenvalues";
+    MTL_THROW_IF(two_norm(eig_b) > tol, mtl::runtime_error("Cuppen computes wrong eigenvalues"));
 
     Matrix Bs(scaling * B);
     for (unsigned i= 0; i < num_rows(B); i++)
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 
     eig-= lambda;
     std::cout<<"two_norm(diff)  ="<< two_norm(eig) <<"\n";
-    if (two_norm(eig) > tol) throw "Cuppen computes wrong eigenvalues";
+    MTL_THROW_IF(two_norm(eig) > tol, mtl::runtime_error("Cuppen computes wrong eigenvalues"));
 
     for (unsigned i= 0; i < num_rows(A); i++)
 	test_vector(A, lambda[i], dense_vector<double>(Q[iall][i]), i);

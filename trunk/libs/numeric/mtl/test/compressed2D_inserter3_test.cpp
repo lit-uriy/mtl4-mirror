@@ -50,14 +50,14 @@ void test(int n, int m, int order)
     if (n < 11) cout << "A is \n" << with_format(A, 4, 3);
     switch(order) {
     case 0:
-	if (A[1][2] != 0) throw "Wrong value";
-	if (A[4][2] != 88) throw "Wrong value";break;
+	MTL_THROW_IF(A[1][2] != 0, mtl::runtime_error("Wrong value"));
+	MTL_THROW_IF(A[4][2] != 88, mtl::runtime_error("Wrong value"));break;
     case 1:
-	if (A[1][2] != 0) throw "Wrong value";
-	if (A[4][2] != 0) throw "Wrong value";	break;
+	MTL_THROW_IF(A[1][2] != 0, mtl::runtime_error("Wrong value"));
+	MTL_THROW_IF(A[4][2] != 0, mtl::runtime_error("Wrong value"));	break;
     case 2:
-	if (A[1][2] != 84) throw "Wrong value";
-	if (A[4][2] != 48) throw "Wrong value";	break;
+	MTL_THROW_IF(A[1][2] != 84, mtl::runtime_error("Wrong value"));
+	MTL_THROW_IF(A[4][2] != 48, mtl::runtime_error("Wrong value"));	break;
     }
 
     double array[4]= {1.0, -.4, -0.5, 2.0};
@@ -67,7 +67,7 @@ void test(int n, int m, int order)
 	inserter << mtl::element_array(mtl::dense2D<double>(mtl::size(v0), mtl::size(v1), array), v0, v1);
     }
     if (n < 11) cout << "A is \n" << with_format(A, 4, 3);
-    if (A[7][7] != -0.5) throw "Wrong value";
+    MTL_THROW_IF(A[7][7] != -0.5, mtl::runtime_error("Wrong value"));
 
 }
 

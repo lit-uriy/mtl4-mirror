@@ -26,7 +26,7 @@ void test(MatrixA& A, const char* name)
     if (num_rows(A) < 10)
 	std::cout << "A is\n" << A;
 
-    if (num_rows(A) >= 4 && std::abs(A[3][2] - 5) > 0.001) throw "A[3][2] should be 5";
+    MTL_THROW_IF(num_rows(A) >= 4 && std::abs(A[3][2] - 5) > 0.001, mtl::runtime_error("A[3][2] should be 5"));
 }
  
 

@@ -98,15 +98,15 @@ void test(Vector& vector, const char* name)
 
     mtl::vector::scaled_view<double, Vector>  scaled_vector(2.0, vector);
     cout << "vector  scaled with 2.0\n" << scaled_vector << "\n";
-    if (scaled_vector(2) != svalue(ref)) throw "scaling wrong";
+    MTL_THROW_IF(scaled_vector(2) != svalue(ref), mtl::runtime_error("scaling wrong"));
     
     mtl::vector::conj_view<Vector>  conj_vector(vector);
     cout << "conjugated vector\n" << conj_vector << "\n";
-    if (conj_vector(2) != cvalue(ref)) throw " wrong";
+    MTL_THROW_IF(conj_vector(2) != cvalue(ref), mtl::runtime_error(" wrong"));
 
     mtl::vector::scaled_view<ct, Vector>  cscaled_vector(ct(0.0, 1.0), vector);
     cout << "vector scaled with i (complex(0, 1))\n" << cscaled_vector << "\n";
-    if (cscaled_vector(2) != csvalue(ref)) throw "complex scaling wrong";
+    MTL_THROW_IF(cscaled_vector(2) != csvalue(ref), mtl::runtime_error("complex scaling wrong"));
 
 #if 0 // transposition of vector is not an issue (yet)
     mtl::vector::hermitian_view<Vector>  hermitian_vector(vector);
@@ -116,13 +116,13 @@ void test(Vector& vector, const char* name)
 #endif
 
     cout << "vector  scaled with 2.0 (free function)\n" << scale(2.0, vector) << "\n";
-    if (scale(2.0, vector)(2) != svalue(ref)) throw "scaling wrong";
+    MTL_THROW_IF(scale(2.0, vector)(2) != svalue(ref), mtl::runtime_error("scaling wrong"));
 
     cout << "conjugated vector (free function) \n" << conj(vector) << "\n";
-    if (conj(vector)(2) != cvalue(ref)) throw "conjugating wrong";
+    MTL_THROW_IF(conj(vector)(2) != cvalue(ref), mtl::runtime_error("conjugating wrong"));
 
     cout << "vector scaled with i (complex(0, 1)) (free function)\n" << scale(ct(0.0, 1.0), vector) << "\n";
-    if (scale(ct(0.0, 1.0), vector)(2) != csvalue(ref)) throw "complex scaling wrong";
+    MTL_THROW_IF(scale(ct(0.0, 1.0), vector)(2) != csvalue(ref), mtl::runtime_error("complex scaling wrong"));
 
 
 #if 0 // transposition of vector is not an issue (yet)

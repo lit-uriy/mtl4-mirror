@@ -43,7 +43,7 @@ void test(MatrixA& a, const char* name)
     	      << "one_norm(a) = " << one_norm(a) << "\n"; std::cout.flush();
 
     
-    if (one_norm(a) != 16.0) throw "wrong one_norm"; 
+    MTL_THROW_IF(one_norm(a) != 16.0, mtl::runtime_error("wrong one_norm")); 
 }
 
 

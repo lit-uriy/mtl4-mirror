@@ -30,8 +30,8 @@ void test(const Vector&, const char* name)
     x= A * b;
 
     cout << "x = " << x << "\n";
-    if (x[1] != 12.0) throw "Wrong value";
-    if (x[3] != cmp(12.0, 4.0)) throw "Wrong value";
+    MTL_THROW_IF(x[1] != 12.0, mtl::runtime_error("Wrong value"));
+    MTL_THROW_IF(x[3] != cmp(12.0, 4.0), mtl::runtime_error("Wrong value"));
 }
 
 

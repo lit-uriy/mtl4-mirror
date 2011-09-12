@@ -21,17 +21,17 @@ void test(VectorU u, VectorV v, const char* name)
 {
     u= 4; v= 4;
     std::cout << "\n" << name << "\nu and v are " << (u == v ? "equal.\n" : "different.\n");
-    if (!(u == v)) throw "u and v should be equal.";
+    MTL_THROW_IF(!(u == v), mtl::runtime_error("u and v should be equal."));
     
     std::cout << "u and v are " << (u != v ? "different.\n" : "equal.\n");
-    if (u != v) throw "u and v should be equal.";
+    MTL_THROW_IF(u != v, mtl::runtime_error("u and v should be equal."));
 
     // std::cout << "u is " << u << ", v is " << v << '\n';
     std::cout << "u and v are " << (u == 2*v ? "equal.\n" : "different.\n");
-    if (u == 2*v) throw "u and v should be different.";
+    MTL_THROW_IF(u == 2*v, mtl::runtime_error("u and v should be different."));
 
     std::cout << "u and v are " << (u != 2*v ? "different.\n" : "equal.\n");
-    if (!(u != 2*v)) throw "u and v should be different.";
+    MTL_THROW_IF(!(u != 2*v), mtl::runtime_error("u and v should be different."));
 }
  
 

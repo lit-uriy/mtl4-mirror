@@ -56,19 +56,19 @@ void test(Vector& v, const char* name)
     one_d_iteration(name, v, 2, 8.0f);
 
     std::cout << "one_norm(v) = " << one_norm(v) << "\n"; std::cout.flush();
-    if (one_norm(v) != 15.0) throw "one_norm wrong";
+    MTL_THROW_IF(one_norm(v) != 15.0, mtl::runtime_error("one_norm wrong"));
 
     std::cout << "two_norm(v) = " << two_norm(v) << "\n"; std::cout.flush();
-    if (two_norm(v) < 9.6436 || two_norm(v) > 9.6437) throw "two_norm wrong";
+    MTL_THROW_IF(two_norm(v) < 9.6436 || two_norm(v) > 9.6437, mtl::runtime_error("two_norm wrong"));
 
     std::cout << "infinity_norm(v) = " << infinity_norm(v) << "\n"; std::cout.flush();
-    if (infinity_norm(v) != 8.0) throw "infinity_norm wrong";
+    MTL_THROW_IF(infinity_norm(v) != 8.0, mtl::runtime_error("infinity_norm wrong"));
 
     std::cout << "sum(v) = " << sum(v) << "\n"; std::cout.flush();
-    if (sum(v) != 15.0) throw "sum wrong";
+    MTL_THROW_IF(sum(v) != 15.0, mtl::runtime_error("sum wrong"));
 
     std::cout << "product(v) = " << product(v) << "\n"; std::cout.flush();
-    if (product(v) != 80.0) throw "product wrong";
+    MTL_THROW_IF(product(v) != 80.0, mtl::runtime_error("product wrong"));
 
     mtl::dense_vector<float>   u(3), w(3);
     u= 3.0; w= 5.0;
@@ -76,34 +76,34 @@ void test(Vector& v, const char* name)
     std::cout << "u= v + w:\n"; std::cout.flush();
     u= v + w;
     cout << "u: " << u << "\n"; std::cout.flush();
-    if (u[0] != 7.0) throw "wrong";
+    MTL_THROW_IF(u[0] != 7.0, mtl::runtime_error("wrong"));
 
     std::cout << "u= v + w + v + w:\n"; std::cout.flush();
     u= v + w + v + w;
     cout << "u: " << u << "\n"; std::cout.flush();
-    if (u[0] != 14.0) throw "wrong";
+    MTL_THROW_IF(u[0] != 14.0, mtl::runtime_error("wrong"));
 
     std::cout << "u= v + (w= v + v);:\n"; std::cout.flush();
     u= v + (w= v + v);
     cout << "u: " << u << ", w: " << w << "\n"; std::cout.flush();
-    if (w[0] != 4.0) throw "w wrong";
-    if (u[0] != 6.0) throw "u wrong";
+    MTL_THROW_IF(w[0] != 4.0, mtl::runtime_error("w wrong"));
+    MTL_THROW_IF(u[0] != 6.0, mtl::runtime_error("u wrong"));
 
     std::cout << name << "  --- u+= dot<12>(v, w) * w;:\n"; std::cout.flush();
     u+= mtl::dot<12>(v, w) * w;
     cout << "u: " << u << ", v: " << v << ", w: " << w << "\n"; std::cout.flush();
-    if (u[0] != 750.0) throw "u wrong";
+    MTL_THROW_IF(u[0] != 750.0, mtl::runtime_error("u wrong"));
 
     Vector q(sub_vector(v, 1, 4));
-    if (q[1] != 8.f)     throw "Wrong value in q";
-    if (size(q) != 2)    throw "Wrong size of q";
+    MTL_THROW_IF(q[1] != 8.f, mtl::runtime_error("Wrong value in q"));
+    MTL_THROW_IF(size(q) != 2, mtl::runtime_error("Wrong size of q"));
     std::cout << "sub_vector(v, 1, 4) == " << q << "\n";
     
 
     using mtl::irange;
     Vector r(v[irange(1, 4)]);
-    if (r[1] != 8.f)     throw "Wrong value in r";
-    if (size(r) != 2)    throw "Wrong size of r";
+    MTL_THROW_IF(r[1] != 8.f, mtl::runtime_error("Wrong value in r"));
+    MTL_THROW_IF(size(r) != 2, mtl::runtime_error("Wrong size of r"));
     std::cout << "v[irange(1, 4)] == " << r << "\n";
     
 }

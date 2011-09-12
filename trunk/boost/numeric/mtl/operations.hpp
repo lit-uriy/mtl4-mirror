@@ -100,6 +100,7 @@
 
 #include <boost/numeric/mtl/io/path.hpp>
 
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/string_to_enum.hpp>
 #include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
 

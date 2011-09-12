@@ -68,7 +68,7 @@ void test(Matrix& matrix, const char* name)
 	      << "squared in place:\n" << matrix * trans << "\n";
 
     // Comparison with FP!!!! :-! Make something better eventually
-    //if ((matrix * trans)[0][1] != 1.0) throw "Wrong multiplicatin result!";
+    //MTL_THROW_IF((matrix * trans)[0][1] != 1.0, mtl::runtime_error("Wrong multiplicatin result!"));
 }
 
 

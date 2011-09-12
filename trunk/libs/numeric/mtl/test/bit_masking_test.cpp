@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <iostream>
 #include <boost/numeric/mtl/recursion/bit_masking.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 
 using namespace std;  
@@ -34,7 +35,7 @@ template <unsigned long Mask1, unsigned long Mask2>
 void check_same_mask()
 {
     printf("Mask1 %lx, Mask2 %lx\n", Mask1, Mask2);
-    if (Mask1 != Mask2) throw "Different masks\n";
+    MTL_THROW_IF(Mask1 != Mask2, mtl::runtime_error("Different masks\n"));
 }
 
 #if 0 // Do I use this???

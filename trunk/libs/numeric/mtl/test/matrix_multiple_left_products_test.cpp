@@ -50,8 +50,8 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     cout << "\n\n" << name << "\n";
     cout << "C is:\n" << C << "\n";
 
-    if (C[0][0] != 0.0) throw "C[0][0] should be 0!";
-    if (C[0][3] != 1.0) throw "C[0][3] should be 1!";
+    MTL_THROW_IF(C[0][0] != 0.0, mtl::runtime_error("C[0][0] should be 0!"));
+    MTL_THROW_IF(C[0][3] != 1.0, mtl::runtime_error("C[0][3] should be 1!"));
 
     MatrixB I(6, 6);
     I = 1.0;

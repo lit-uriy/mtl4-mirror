@@ -98,37 +98,37 @@ void test(Matrix& matrix, const char* name)
 
     mtl::matrix::scaled_view<double, Matrix>  scaled_matrix(2.0, matrix);
     cout << "matrix  scaled with 2.0\n" << scaled_matrix << "\n";
-    if (scaled_matrix(2, 3) != svalue(ref)) throw "scaling wrong";
+    MTL_THROW_IF(scaled_matrix(2, 3) != svalue(ref), mtl::runtime_error("scaling wrong"));
    
     cout << "matrix  scaled with 2.0 (as operator)\n" << 2.0 * matrix << "\n";
-    if ((2.0 * matrix)(2, 3) != svalue(ref)) throw "scaling wrong";
+    MTL_THROW_IF((2.0 * matrix)(2, 3) != svalue(ref), mtl::runtime_error("scaling wrong"));
 
  
     mtl::matrix::conj_view<Matrix>  conj_matrix(matrix);
     cout << "conjugated matrix\n" << conj_matrix << "\n";
-    if (conj_matrix(2, 3) != cvalue(ref)) throw " wrong";
+    MTL_THROW_IF(conj_matrix(2, 3) != cvalue(ref), mtl::runtime_error(" wrong"));
 
     mtl::matrix::scaled_view<ct, Matrix>  cscaled_matrix(ct(0.0, 1.0), matrix);
     cout << "matrix scaled with i (complex(0, 1))\n" << cscaled_matrix << "\n";
-    if (cscaled_matrix(2, 3) != csvalue(ref)) throw "complex scaling wrong";
+    MTL_THROW_IF(cscaled_matrix(2, 3) != csvalue(ref), mtl::runtime_error("complex scaling wrong"));
 
     mtl::matrix::hermitian_view<Matrix>  hermitian_matrix(matrix);
     cout << "Hermitian matrix (conjugate transposed)\n" << hermitian_matrix << "\n";
-    if (hermitian_matrix(3, 2) != cvalue(ref)) throw "conjugate transposing  wrong";
+    MTL_THROW_IF(hermitian_matrix(3, 2) != cvalue(ref), mtl::runtime_error("conjugate transposing  wrong"));
 
     cout << "matrix  scaled with 2.0 (free function)\n" << scale(2.0, matrix) << "\n";
-    if (scale(2.0, matrix)(2, 3) != svalue(ref)) throw "scaling wrong";
+    MTL_THROW_IF(scale(2.0, matrix)(2, 3) != svalue(ref), mtl::runtime_error("scaling wrong"));
 
     cout << "matrix  scaled with 2.0 (free function as mtl::scale)\n" << mtl::scale(2.0, matrix) << "\n";
 
     cout << "conjugated matrix (free function) \n" << conj(matrix) << "\n";
-    if (conj(matrix)(2, 3) != cvalue(ref)) throw "conjugating wrong";
+    MTL_THROW_IF(conj(matrix)(2, 3) != cvalue(ref), mtl::runtime_error("conjugating wrong"));
 
     cout << "matrix scaled with i (complex(0, 1)) (free function)\n" << scale(ct(0.0, 1.0), matrix) << "\n";
-    if (scale(ct(0.0, 1.0), matrix)(2, 3) != csvalue(ref)) throw "complex scaling wrong";
+    MTL_THROW_IF(scale(ct(0.0, 1.0), matrix)(2, 3) != csvalue(ref), mtl::runtime_error("complex scaling wrong"));
 
     cout << "Hermitian  matrix (conjugate transposed) (free function)\n" << hermitian(matrix) << "\n";
-    if (hermitian(matrix)(3, 2) != cvalue(ref)) throw "conjugate transposing wrong";
+    MTL_THROW_IF(hermitian(matrix)(3, 2) != cvalue(ref), mtl::runtime_error("conjugate transposing wrong"));
 }
 
 

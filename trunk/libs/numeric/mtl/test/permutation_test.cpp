@@ -34,12 +34,12 @@ void test(Matrix& A, const char* name)
     Matrix A2( P * A );
     cout << "\nP * A =\n" << A2;
 
-    if (A2[1][2] != value_type(9.)) throw "Wrong value after row permutation!";
+    MTL_THROW_IF(A2[1][2] != value_type(9.), mtl::runtime_error("Wrong value after row permutation!"));
 
     Matrix A3( A2 * trans(P) );
     cout << "\nA2 * trans(P) =\n" << A3;
 
-    if (A3[1][2] != value_type(7.)) throw "Wrong value after column permutation!";
+    MTL_THROW_IF(A3[1][2] != value_type(7.), mtl::runtime_error("Wrong value after column permutation!"));
 }
 
 

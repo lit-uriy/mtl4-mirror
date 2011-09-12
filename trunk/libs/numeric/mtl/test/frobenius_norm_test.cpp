@@ -43,7 +43,7 @@ void test(MatrixA& a, const char* name)
     std::cout.precision (6);
     std::cout << "frobenius_norm(a) = " << frobenius_norm(a) << "\n"; std::cout.flush();
 
-    if (frobenius_norm(a) < 13.266 || frobenius_norm(a) > 13.267) throw "wrong frobenius_norm"; 
+    MTL_THROW_IF(frobenius_norm(a) < 13.266 || frobenius_norm(a) > 13.267, mtl::runtime_error("wrong frobenius_norm")); 
 }
 
 

@@ -23,19 +23,19 @@ void test(const char* A_string, const char* v_string, const Matrix& A, const Vec
     Matrix B(A + A);
     // asm("#mat_add ends here!");
     std::cout << "A+A = \n" << B;
-    if (B[0][0] != 4.0) throw "wrong result in matrix addition.";
+    MTL_THROW_IF(B[0][0] != 4.0, mtl::runtime_error("wrong result in matrix addition."));
 
     // asm("#mat_mult begins here!");
     B= A * A;
     // asm("#mat_mult ends here!");
     std::cout << "A*A = \n" << B;
-    if (B[0][0] != 16.0) throw "wrong result in matrix product.";
+    MTL_THROW_IF(B[0][0] != 16.0, mtl::runtime_error("wrong result in matrix product."));
 
     // asm("#vec_add begins here!");
     Vector w(x + x);
     // asm("#vec_add ends here!");
     std::cout << "x = " << x << "\nw = x+x = " << w << "\n";
-    if (w[0] != 6.0) throw "wrong result in vector addition.";
+    MTL_THROW_IF(w[0] != 6.0, mtl::runtime_error("wrong result in vector addition."));
 
     // asm("#mat_vec_mult begins here!");
     w= A * x;
@@ -43,7 +43,7 @@ void test(const char* A_string, const char* v_string, const Matrix& A, const Vec
 
 
     std::cout << "A*x = " << w << "\n";
-    if (w[0] != 18.0) throw "wrong result in matrix vector product.";
+    MTL_THROW_IF(w[0] != 18.0, mtl::runtime_error("wrong result in matrix vector product."));
 }
 
 

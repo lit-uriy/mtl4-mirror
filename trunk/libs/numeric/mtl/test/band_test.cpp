@@ -100,7 +100,7 @@ void test(Matrix& A, const char* name)
     cout << "\ntrans(A) * upper(A) = \n" << with_format(P, 4, 3);
     cout << " for comparison trans(A) * U = \n" << with_format(P_cmp, 4, 3);
     cout << " for comparison trans(A) * A = \n" << with_format(P_cmp2, 4, 3);
-    if (abs(P[1][1] - P_cmp[1][1]) > .00001) throw "Multiplication wrong";
+    MTL_THROW_IF(abs(P[1][1] - P_cmp[1][1]) > .00001, mtl::runtime_error("Multiplication wrong"));
 
 #if 0
     // Take this out as sparse matrices have no sub-matrix; only for debugging wrong products
@@ -109,7 +109,7 @@ void test(Matrix& A, const char* name)
     cout << "\nA2 * upper(A2) = \n" << with_format(P2, 4, 3);
     cout << " for comparison A2 * U = \n" << with_format(P2_cmp, 4, 3);
     cout << " for comparison A2 * A2 = \n" << with_format(A2_square, 4, 3);
-    if (abs(P2[1][1] - P2_cmp[1][1]) > .00001) throw "Multiplication wrong";
+    MTL_THROW_IF(abs(P2[1][1] - P2_cmp[1][1]) > .00001, mtl::runtime_error("Multiplication wrong"));
 #endif
 
 

@@ -36,13 +36,13 @@ void test(Vector& v, const char* name)
     std::cout << "\n" << name << "  --- v = " << v; std::cout.flush();
 
     std::cout << "min(v) = " << min(v) << "\n"; std::cout.flush();
-    if (min(v) != -4.0) throw "min wrong";
+    MTL_THROW_IF(min(v) != -4.0, mtl::runtime_error("min wrong"));
 
     std::cout << "min<4>(v) = " << min<4>(v) << "\n"; std::cout.flush();
-    if (min<4>(v) != -4.0) throw "min<4> wrong";
+    MTL_THROW_IF(min<4>(v) != -4.0, mtl::runtime_error("min<4> wrong"));
 
     std::cout << "max(v) = " << max(v) << "\n"; std::cout.flush();
-    if (max(v) != 5.0) throw "max wrong";
+    MTL_THROW_IF(max(v) != 5.0, mtl::runtime_error("max wrong"));
 }
  
 

@@ -41,13 +41,13 @@ void test(int n)
 	}
     }
     if (n < 9) cout << "A is \n" << A;
-    if (A.nnz() != unsigned(5*n*n - 4*n)) throw "Wrong number of non-zeros.";
+    MTL_THROW_IF(A.nnz() != unsigned(5*n*n - 4*n), mtl::runtime_error("Wrong number of non-zeros."));
     for (int i= 0, ns= n*n; i < ns; i++) {
-	if (A[i][i] != 4.0) throw "Wrong value";
-	if (i%n != 0 && A[i][i-1] != -1.0) throw "Wrong value";
-	if ((i+1)%n != 0 && A[i][i+1] != -1.0) throw "Wrong value";
-	if (i-n >= 0 && A[i][i-n] != -1.0) throw "Wrong value";
-	if (i+n < ns && A[i][i+n] != -1.0) throw "Wrong value";
+	MTL_THROW_IF(A[i][i] != 4.0, mtl::runtime_error("Wrong value"));
+	MTL_THROW_IF(i%n != 0 && A[i][i-1] != -1.0, mtl::runtime_error("Wrong value"));
+	MTL_THROW_IF((i+1)%n != 0 && A[i][i+1] != -1.0, mtl::runtime_error("Wrong value"));
+	MTL_THROW_IF(i-n >= 0 && A[i][i-n] != -1.0, mtl::runtime_error("Wrong value"));
+	MTL_THROW_IF(i+n < ns && A[i][i+n] != -1.0, mtl::runtime_error("Wrong value"));
     }
 	
 }
