@@ -51,8 +51,6 @@ struct test_ostream
     std::ostream&            out;
 };
 
-inline test_ostream& endl(test_ostream& os) { os.flush(); return os << '\n'; }
-
 /// Output stream that writes if MTL_VERBOSE_TEST is defined
 static test_ostream tout;
 
