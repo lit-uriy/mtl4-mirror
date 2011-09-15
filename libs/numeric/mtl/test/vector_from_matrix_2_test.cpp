@@ -10,7 +10,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-#define MTL_VERBOSE_TEST  // to turn on the output
+// #define MTL_VERBOSE_TEST  // to turn on the output
 
 #include <iostream>
 #include <cmath>
