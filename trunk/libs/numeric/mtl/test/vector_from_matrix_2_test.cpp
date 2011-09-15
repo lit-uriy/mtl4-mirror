@@ -10,18 +10,17 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+#define MTL_VERBOSE_TEST  // to turn on the output
+
 #include <iostream>
 #include <cmath>
 #include <boost/numeric/mtl/mtl.hpp>
 
-
 using namespace std;  
 using namespace mtl;
-    
-
-
-template <typename Matrix, typename Vector>
-void test(Matrix& A, Vector& , const char* name)
+   
+template <typename Matrix>
+void test(Matrix& A, const char* name)
 {
     A= 1, 2, 3,
        4, 5, 6, 
@@ -35,7 +34,11 @@ void test(Matrix& A, Vector& , const char* name)
     typename mtl::ColumnInMatrix<Matrix>::type c1(clone(A[iall][1]));
     c1[2]= 11.0;
     MTL_THROW_IF(A[2][1] != 8.0, mtl::runtime_error("Matrix modied by a cloned column"));
-    
+   
+    dense_vector<float> c2(clone(A[iall][2]));
+    c2[2]= 11.5;
+    MTL_THROW_IF(A[2][2] != 9.0, mtl::runtime_error("Matrix modied by a cloned column"));
+ 
     typename mtl::RowInMatrix<Matrix>::type r0(A[0][iall]);
     r0[2]= 12.0;    
     MTL_THROW_IF(A[0][2] != 12.0, mtl::runtime_error("Matrix modification in row did not work"));
@@ -44,7 +47,11 @@ void test(Matrix& A, Vector& , const char* name)
     r1[2]= 13.0;
     MTL_THROW_IF(A[1][2] != 6.0, mtl::runtime_error("Matrix modied by a cloned row"));
     
-    mtl::io::tout << "A = \n" << A; 
+    dense_vector<float, mtl::vector::parameters<row_major> > r2(clone(A[2][iall]));
+    r2[2]= 13.5;
+    MTL_THROW_IF(A[2][2] != 9.0, mtl::runtime_error("Matrix modied by a cloned row"));
+
+    mtl::io::tout << "A = \n" << A << std::endl; 
 }
  
 
@@ -56,14 +63,8 @@ int main(int, char**)
     dense2D<float>                                 A(3, 3);
     dense2D<float, matrix::parameters<col_major> > B(3, 3);
 
-    dense_vector<float>                                      v(3);
-    dense_vector<float, mtl::vector::parameters<row_major> > w(3);
-    
-    test(A, v, "Row-major matrix    - column-major vector");     
-    test(B, v, "Column-major matrix - column-major vector");  
-
-    test(A, w, "Row-major matrix    - row-major vector");     
-    test(B, w, "Column-major matrix - row-major vector");  
+    test(A, "Row-major matrix   ");     
+    test(B, "Column-major matrix");  
 
     return 0;
 }

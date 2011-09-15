@@ -32,10 +32,17 @@ struct test_ostream
 	return *this;
     }
 
+    test_ostream& operator<<(test_ostream& (*pf)(test_ostream&))
+    {	return pf(*this);    }
+
     void flush() { out.flush(); }
 #else
     /// Print on outstream
     template <typename T> test_ostream& operator<<(const T&) { return *this; }
+
+    /// Interface for manipulators
+    test_ostream& operator<<(test_ostream& (*)(test_ostream&)) { return *this; }
+
     /// Flush output
     void flush() {}
 #endif
@@ -44,9 +51,16 @@ struct test_ostream
     std::ostream&            out;
 };
 
+inline test_ostream& endl(test_ostream& os) { os.flush(); return os << '\n'; }
+
 /// Output stream that writes if MTL_VERBOSE_TEST is defined
 static test_ostream tout;
 
 }} // namespace mtl::io
+
+namespace std {
+    inline mtl::io::test_ostream& endl(mtl::io::test_ostream& os) { os.flush(); return os << '\n'; }
+}
+
 
 #endif // MTL_TEST_OSTREAM_INCLUDE
