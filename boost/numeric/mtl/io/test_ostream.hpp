@@ -59,7 +59,7 @@ static test_ostream tout;
 }} // namespace mtl::io
 
 namespace std {
-    inline mtl::io::test_ostream& endl(mtl::io::test_ostream& os) { os.flush(); return os << '\n'; }
+    inline mtl::io::test_ostream& endl(mtl::io::test_ostream& os) { os << '\n'; os.flush(); return os; }
 }
 
 
