@@ -407,6 +407,7 @@ class dense2D
     size_t c_offset(size_t r, size_t c) const
     {	return indexer.offset(ldim, r, c, orientation());    }
 
+    /// Get lower dimension [advanced]
     size_type get_ldim() const
     {	return ldim;    }
 
@@ -418,9 +419,9 @@ class dense2D
 	std::swap(matrix1.ldim, matrix2.ldim);
     }
 
-    void crop() {} // only dummy here
+    void crop() {} ///< Delete structural zeros; only dummy here
 
-    /// Address of first data entry; to be used with care.
+    /// Address of first data entry; to be used with care. [advanced]
     value_type* address_data() { return this->data; }
     const value_type* address_data() const { return this->data; }
 

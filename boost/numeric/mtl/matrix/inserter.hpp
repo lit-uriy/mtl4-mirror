@@ -26,7 +26,7 @@ namespace mtl { namespace matrix {
     an update functor.
     The update functor determines how an existing entry is updated: overwritten, added,
     subtracted...
-    The default is overwritten.
+    The default is to overwrite existing entries.
 **/
 template <typename Matrix,
 	  typename Updater = mtl::operations::update_store<typename Matrix::value_type> >

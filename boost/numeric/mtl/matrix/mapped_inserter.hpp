@@ -49,10 +49,12 @@ class mapped_inserter
     };
     
   public:
-    bracket_proxy operator[] (size_type row)        ///< To be used in ins[r][c] << value;
+    /// To be used in ins[r][c] << value;
+    bracket_proxy operator[] (size_type row)   
     {	return bracket_proxy(ins, map, map.row(row));    }
 
-    proxy_type operator() (size_type row, size_type col)   ///< To be used in ins(r, c) << value;
+    /// To be used in ins(r, c) << value;
+    proxy_type operator() (size_type row, size_type col)  
     {	return proxy_type(ins, map.row(row),map.col(col));    }
 
     // update, modify and operator<< are used from BaseInserter

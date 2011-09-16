@@ -127,6 +127,8 @@ class dense_vector
 	copy(src.begin(), src.end(), this->begin());
     }
 
+    /// Clone constructor
+    /** Copies every vector, even those that refer to external data, sub-vectors, or rows and columns in a matrix **/
     dense_vector( const self& src, clone_ctor )
       : memory_base( src, clone_ctor()) {} 
 
@@ -136,9 +138,6 @@ class dense_vector
 			  typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
     {	vampir_trace<2043> tracer; *this= src;    }
 
-    // Size of v (like a free function)
-    // friend size_type size(const self& v); //  { return v.used_memory() ; }
-    
     /// Stride is always 1 
     size_type stride() const { return 1 ; }
 
@@ -169,26 +168,15 @@ class dense_vector
     const_pointer end() const { return this->elements() + this->used_memory(); }    
     pointer begin() { return this->elements() ; }
     pointer end() { return this->elements() + this->used_memory(); }
-    bool empty() const { return this->used_memory() == 0; }
+    bool empty() const { return this->used_memory() == 0; } ///< Whether it is empty
 
 
     /// Address of first data entry; to be used with care.
     value_type* address_data() { return begin(); }
     const value_type* address_data() const { return begin(); }
     
-    
-#if 0
-    // Alleged ambiguity in MSVC 8.0, I need to turn off the warning 
-    // For confusion with other vector assignments
-    // For alleged ambiguity with scalar assign we omit template in CRTP
-    // Removing the operator ends in run-time error
-    vec_vec_asgn_expr<self, self> operator=( self const& e ) 
-    {
-	return vec_vec_asgn_expr<self, self>( *this, e );
-    }
-#endif
 
-#ifndef MTL_NO_VECTOR_MOVE_EMULATION
+#ifdef MTL_VECTOR_MOVE_EMULATION
     /// Move assignment
     self& operator=(self src)
     {
@@ -215,11 +203,11 @@ class dense_vector
 	swap(static_cast<memory_base&>(vector1), static_cast<memory_base&>(vector2));
     }
 
-    void change_resource(size_type n) { this->realloc(n); }
-    void change_dim(size_type n) { this->realloc(n); }
-    void checked_change_dim(size_type n) { check_dim(n); change_dim(n); }
+    void change_resource(size_type n) { this->realloc(n); } ///< Change resource, like \ref change_dim
+    void change_dim(size_type n) { this->realloc(n); } ///< Change dimension of vector
+    void checked_change_dim(size_type n) { check_dim(n); change_dim(n); } ///< Only change dim if it was empty before
     
-    void crop() {} // Only dummy here
+    void crop() {} ///< Delete structural zeros, only dummy here for completeness
 
 } ; // dense_vector
 
@@ -235,6 +223,7 @@ size(const dense_vector<Value, Parameters>& v)
 // Free functions
 // ================
 
+/// Fill \p vector with \p value
 template <typename Value, typename Parameters, typename Value2>
 inline void fill(dense_vector<Value, Parameters>& vector, const Value2& value)
 {

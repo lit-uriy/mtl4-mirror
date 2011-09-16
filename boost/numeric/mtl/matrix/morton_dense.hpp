@@ -100,7 +100,7 @@ public:
 
 template <unsigned long BitMask>
 struct morton_dense_el_cursor 
-    : public morton_dense_key<BitMask>
+  : public morton_dense_key<BitMask>
 {
     typedef std::size_t                               size_type;
     typedef dilated_int<std::size_t, ~BitMask, true>  dilated_col_t; 
@@ -319,12 +319,13 @@ struct morton_dense_col_iterator
 
 
 
-// Morton Dense matrix type 
+/// Dense Morton-order matrix 
 template <typename Elt, unsigned long BitMask, typename Parameters = mtl::matrix::parameters<> >
-class morton_dense : public base_sub_matrix<Elt, Parameters>, 
-		     public mtl::detail::contiguous_memory_block<Elt, false>,
-                     public crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >,
-		     public mat_expr< morton_dense<Elt, BitMask, Parameters> >
+class morton_dense 
+  : public base_sub_matrix<Elt, Parameters>, 
+    public mtl::detail::contiguous_memory_block<Elt, false>,
+    public crtp_base_matrix< morton_dense<Elt, BitMask, Parameters>, Elt, std::size_t >,
+    public mat_expr< morton_dense<Elt, BitMask, Parameters> >
 {
     typedef morton_dense                                               self;
     typedef base_sub_matrix<Elt, Parameters>                           super;
@@ -382,42 +383,42 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
     }
 
   public:
-    // if compile time matrix size allocate memory
+    /// Default constructor
+    /** If compile time matrix size allocate memory. **/
     morton_dense() : memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
     {
 	init(dim_type().num_rows(), dim_type().num_cols());
     }
 
-    // only sets dimensions, only for run-time dimensions
+    /// Construction from run-time dimension type
     explicit morton_dense(mtl::non_fixed::dimensions d) 
 	: memory_base(memory_need(d.num_rows(), d.num_cols()))
     {
 	init(d.num_rows(), d.num_cols());
     }
 
-    // Same with separated row and column number
+    /// Construction of matrix of dimension \p num_rows by \p num_cols
     morton_dense(size_type num_rows, size_type num_cols) 
 	: memory_base(memory_need(num_rows, num_cols))
     {
 	init(num_rows, num_cols);
     }
 
-    // sets dimensions and pointer to external data
+    /// Construction of matrix with dimension \p d using pointer \p a to external data
     explicit morton_dense(mtl::non_fixed::dimensions d, value_type* a) 
       : memory_base(a, memory_need(d.num_rows(), d.num_cols()))
     { 
 	set_ranges(d.num_rows(), d.num_cols());
     }
 
-    // sets dimensions and pointer to external data
+    /// Construction of \p num_rows by \p num_cols matrix with pointer \p a to external data
     explicit morton_dense(size_type num_rows, size_type num_cols, value_type* a) 
       : memory_base(a, memory_need(num_rows, num_cols))
     { 
 	set_ranges(num_rows, num_cols);
     }
 
-    // same constructor for compile time matrix size
-    // sets dimensions and pointer to external data
+    /// Construction of matrix with static dimension using pointer \p a to external data
     explicit morton_dense(value_type* a) 
 	: memory_base(a, memory_need(dim_type().num_rows(), dim_type().num_cols()))
     { 
@@ -425,12 +426,14 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 	set_ranges(dim_type().num_rows(), dim_type().num_cols());
     }
 
+    /// Copy constructor
     morton_dense(const self& m) 
       : super(m), memory_base(m)
     {
 	set_ranges(m.num_rows(), m.num_cols());
     }
 
+    /// Clone constructor
     explicit morton_dense(const self& m, clone_ctor) 
       : memory_base(m, clone_ctor())
     {
@@ -438,7 +441,7 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 	*this= m;
     }
 
-
+    /// Templated copy constructor
     template <typename MatrixSrc>
     explicit morton_dense(const MatrixSrc& src) 
       : memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
@@ -448,7 +451,7 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
     }
 
 
-    // Construct a sub-matrix as a view
+    /// Construct a sub-matrix as a view
     explicit morton_dense(self& matrix, morton_dense_sub_ctor,
 			  size_type begin_r, size_type end_r, size_type begin_c, size_type end_c)
       : memory_base(matrix.data, memory_need(end_r - begin_r, end_c - begin_c), true) // View constructor
@@ -475,7 +478,7 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 	set_ranges(end_r - begin_r, end_c - begin_c);
     }
 
-
+    /// Change dimension to \p num_rows by \p num_cols
     void change_dim(size_type num_rows, size_type num_cols)
     {
 	set_ranges(num_rows, num_cols);
@@ -483,6 +486,8 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
     }
 
 
+#if 0
+    // Move assignment (emulation)
     self& operator=(self src)
     {
 	// Self-copy would be an indication of an error
@@ -495,7 +500,15 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 	    memory_base::move_assignment(src);
 	return *this;
     }
+#endif
 
+    /// Assignment
+    self& operator=(const self& src)
+    {
+	this->check_dim(src.num_rows(), src.num_cols());
+	matrix_copy(src, *this);
+	return *this;
+    }
 
     using assign_base::operator=;
 
@@ -510,19 +523,21 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 	this->data[key.dilated_row.dilated_value() + key.dilated_col.dilated_value()]= value;
     }
 
+    /// Constant reference to A[row][col]
     const_reference operator() (size_type row, size_type col) const
     {
 	MTL_DEBUG_THROW_IF(is_negative(row) || row >= this->num_rows() || is_negative(col) || col >= this->num_cols(), index_out_of_range());
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
 
+    /// Mutable reference to A[row][col]
     value_type& operator() (size_type row, size_type col)
     {
 	MTL_DEBUG_THROW_IF(is_negative(row) || row >= this->num_rows() || is_negative(col) || col >= this->num_cols(), index_out_of_range());
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
 
-    void crop() {} // Only dummy here
+    void crop() {} ///< Delete structural zeros, only dummy here
 
   protected:
     void set_nnz()
@@ -537,6 +552,7 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
         return (n_rows.dilated_value() + n_cols.dilated_value() + 1);
     }
 
+    /// Swap matrices
     friend void swap(self& matrix1, self& matrix2)
     {
 	swap(static_cast<memory_base&>(matrix1), static_cast<memory_base&>(matrix2));
@@ -551,6 +567,7 @@ class morton_dense : public base_sub_matrix<Elt, Parameters>,
 // Free functions
 // ================
 
+/// Number of rows
 template <typename Value, unsigned long Mask, typename Parameters>
 typename morton_dense<Value, Mask, Parameters>::size_type
 inline num_rows(const morton_dense<Value, Mask, Parameters>& matrix)
@@ -558,6 +575,7 @@ inline num_rows(const morton_dense<Value, Mask, Parameters>& matrix)
     return matrix.num_rows();
 }
 
+/// Number of columns
 template <typename Value, unsigned long Mask, typename Parameters>
 typename morton_dense<Value, Mask, Parameters>::size_type
 inline num_cols(const morton_dense<Value, Mask, Parameters>& matrix)
@@ -565,6 +583,7 @@ inline num_cols(const morton_dense<Value, Mask, Parameters>& matrix)
     return matrix.num_cols();
 }
 
+/// Matrix size, i.e. number of rows times columns
 template <typename Value, unsigned long Mask, typename Parameters>
 typename morton_dense<Value, Mask, Parameters>::size_type
 inline size(const morton_dense<Value, Mask, Parameters>& matrix)

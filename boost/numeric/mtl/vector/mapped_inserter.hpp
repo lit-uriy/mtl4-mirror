@@ -18,7 +18,8 @@
 
 namespace mtl {
 namespace vector {
-  /// Inserter with shifted indices
+  
+/// Inserter with shifted indices
 /** The main work is performed by the underlying base inserter whose type is given as template
     argument. **/
 template <typename BaseInserter, typename Mapper > 
@@ -34,10 +35,12 @@ class mapped_inserter
       : ins(A), map(map) {}
 
   public:
+    /// To be used in ins(r, c) << value;
     proxy_type operator[] (size_type row)        
     {	return proxy_type(ins, map.row(row));    }
 
-    proxy_type operator() (size_type row)   ///< To be used in ins(r, c) << value;
+    /// To be used in ins(r, c) << value;
+    proxy_type operator() (size_type row)
     {	return proxy_type(ins, map.row(row));    }
 
     // update, modify and operator<< are used from BaseInserter

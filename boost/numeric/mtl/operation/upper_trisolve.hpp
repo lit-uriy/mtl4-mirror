@@ -13,7 +13,9 @@
 #ifndef MTL_UPPER_TRISOLVE_INCLUDE
 #define MTL_UPPER_TRISOLVE_INCLUDE
 
+#include <boost/static_assert.hpp>
 #include <boost/mpl/int.hpp>
+#include <boost/type_traits/is_same.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
@@ -31,10 +33,16 @@ namespace mtl { namespace matrix {
 
 namespace detail {
 
-    // CompactStorage means that matrix contains only upper entries (strict upper when DiaTag == unit_diagonal)
+    /// Class that implements upper trisolver
+    /** DiaTag can be tag::regular_diagonal, tag::unit_diagonal, or tag::inverse_diagonal.
+	CompactStorage means that matrix contains only upper entries (strict upper when DiaTag == unit_diagonal).  \sa \ref trisolve_object **/
     template <typename Matrix, typename DiaTag, bool CompactStorage= false>
     struct upper_trisolve_t
     {
+	BOOST_STATIC_ASSERT((boost::is_same<DiaTag, tag::regular_diagonal>::value
+			     || boost::is_same<DiaTag, tag::unit_diagonal>::value
+			     || boost::is_same<DiaTag, tag::inverse_diagonal>::value));
+
 	typedef typename Collection<Matrix>::value_type           value_type;
 	typedef typename Collection<Matrix>::size_type            size_type;
 	typedef typename OrientedCollection<Matrix>::orientation  my_orientation;
@@ -42,6 +50,7 @@ namespace detail {
 	typedef typename mtl::traits::range_generator<tag::major, Matrix>::type   a_cur_type; // row or col accordingly
 	typedef typename mtl::traits::range_generator<tag::nz, a_cur_type>::type  a_icur_type;   
 
+	/// Construction from matrix \p A
 	upper_trisolve_t(const Matrix& A) : A(A), value_a(A), col_a(A), row_a(A)
 	{    MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());	}
 
@@ -60,12 +69,14 @@ namespace detail {
 			    generic_version<compressed2D<Value, Para>, D, true>
 	                   >::type {};
 
+	/// Solve \p w = A * \p v
 	template <typename VectorIn, typename VectorOut>
 	void operator()(const VectorIn& v, VectorOut& w) const
 	{
 	    apply(v, w, version<Matrix, DiaTag, CompactStorage>());
 	}
 
+	/// Solves the upper triangular matrix A  with the rhs v returns the solution
 	template <typename Vector>
 	Vector operator()(const Vector& v) const
 	{
