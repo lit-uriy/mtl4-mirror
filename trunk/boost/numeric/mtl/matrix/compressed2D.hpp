@@ -459,20 +459,23 @@ class compressed2D
     }	
     
 
-    /// Address of first major index; to be used with care.
+    /// Address of first major index; to be used with care. [advanced]
     size_type* address_major() { check(); return &starts[0]; }
+    /// Address of first major index; to be used with care. [advanced]
     const size_type* address_major() const { check(); return &starts[0]; }
-    /// Address of first minor index; to be used with care.
+    /// Address of first minor index; to be used with care. [advanced]
     size_type* address_minor() { check(); return &indices[0]; }
+    /// Address of first minor index; to be used with care. [advanced]
     const size_type* address_minor() const { check(); return &indices[0]; }
-    /// Address of first data entry; to be used with care.
+    /// Address of first data entry; to be used with care. [advanced]
     value_type* address_data() { check(); return &data[0]; }
+    /// Address of first data entry; to be used with care. [advanced]
     const value_type* address_data() const { check(); return &data[0]; }
 
-    const std::vector<size_type>& ref_starts() const { return starts; }
-          std::vector<size_type>& ref_starts()       { return starts; }
-    const std::vector<size_type>& ref_indices() const { return indices; }
-          std::vector<size_type>& ref_indices()       { return indices; }
+    const std::vector<size_type>& ref_starts() const { return starts; } ///< Refer start vector [advanced]
+          std::vector<size_type>& ref_starts()       { return starts; } ///< Refer start vector [advanced]
+    const std::vector<size_type>& ref_indices() const { return indices; } ///< Refer index vector [advanced]
+          std::vector<size_type>& ref_indices()       { return indices; } ///< Refer index vector [advanced]
 
     /// Release unused space in STL vectors
     void shrink() 
@@ -508,7 +511,7 @@ class compressed2D
 // Inserter
 // ========
 
-// Additional data structure to insert into compressed 2D matrix type
+/// Additional data structure to insert entries into a compressed2D matrix
 template <typename Elt, typename Parameters, typename Updater = mtl::operations::update_store<Elt> >
 struct compressed2D_inserter
 {
@@ -535,6 +538,7 @@ struct compressed2D_inserter
     };
 
   public:
+    /// Construction with matrix reference and optional slot size, see \ref matrix_insertion
     explicit compressed2D_inserter(matrix_type& matrix, size_type slot_size = 5)
 	: matrix(matrix), elements(matrix.data), starts(matrix.starts), indices(matrix.indices), 
 	  slot_size(std::min(slot_size, matrix.dim2())), slot_ends(matrix.dim1()+1) 
@@ -553,33 +557,37 @@ struct compressed2D_inserter
 	matrix.inserting = false;
     }
 	
+    /// Proxy to insert into A[row][col]
     bracket_proxy operator[] (size_type row)
     {
 	return bracket_proxy(*this, row);
     }
 
+    /// Proxy to insert into A[row][col]
     proxy_type operator() (size_type row, size_type col)
     {
 	return proxy_type(*this, row, col);
     }
 
+    /// Modify A[row][col] with \p val using \p Modifier
     template <typename Modifier>
     void modify(size_type row, size_type col, value_type val);
 
+    /// Modify A[row][col] with \p val using the class' updater
     void update(size_type row, size_type col, value_type val)
     {
 	using math::zero;
 	modify<Updater>(row, col, val);
     }
 
-    // For debugging only; print entries in all slots; ignores entries in spare map
+    /// For debugging only; print entries in all slots; ignores entries in spare map [advanced]
     void print() const
     {
 	for (size_type j= 0; j < matrix.dim1(); j++)
 	    print(j);
     }
 
-    // For debugging only; print entries in slot; ignores entries in spare map
+    /// For debugging only; print entries in slot; ignores entries in spare map [advanced]
     void print(size_type i) const
     {
 	std::cout << "in slot " << i << ": ";
@@ -588,11 +596,12 @@ struct compressed2D_inserter
 	std::cout << "\n";
     }
     
-    // Empties slot i (row or column according to orientation); for experts only
-    // Does not work if entries are in spare map !!!!
+    /// Empties slot i (row or column according to orientation); for experts only [advanced]
+    /** Does not work if entries are in spare map !!!! **/
     void make_empty(size_type i)
     {	slot_ends[i]= starts[i];    }
 
+    /// Value in A[r][c]
     value_type value(size_type r, size_type c) const
     {
 	size_pair                      mm= matrix.indexer.major_minor_c(matrix, r, c);
@@ -600,9 +609,11 @@ struct compressed2D_inserter
 	return offset ? matrix.data[offset.value()] : value_type(0);
     }
 
+    /// Insert \p elements into %matrix
     template <typename Matrix, typename Rows, typename Cols>
     self& sorted_block_insertion(const element_matrix_t<Matrix, Rows, Cols>& elements);
     
+    /// Insert \p elements into %matrix
     template <typename Matrix, typename Rows, typename Cols>
     self& operator<< (const element_matrix_t<Matrix, Rows, Cols>& elements)
     {
@@ -627,10 +638,10 @@ struct compressed2D_inserter
     }
 
     // not so nice functions needed for direct access, e.g. in factorizations
-    std::vector<size_type> const& ref_starts() const { return starts; }
-    std::vector<size_type> const& ref_indices() const { return indices; }
-    std::vector<size_type> const& ref_slot_ends() const { return slot_ends; }
-    std::vector<value_type> const& ref_elements() const { return elements; }
+    std::vector<size_type> const& ref_starts() const { return starts; } ///< Refer start vector [advanced]
+    std::vector<size_type> const& ref_indices() const { return indices; } ///< Refer index vector [advanced]
+    std::vector<size_type> const& ref_slot_ends() const { return slot_ends; } ///< Refer slot-end vector [advanced]
+    std::vector<value_type> const& ref_elements() const { return elements; } ///< Refer element vector [advanced]
 
   private:
     utilities::maybe<typename self::size_type> matrix_offset(size_pair) const;

@@ -17,6 +17,8 @@ int main(int, char**)
     std::cout << "dot(v, w) is " << dot(v, w)<< "\n";
     
     std::cout << "dot<6>(v, w) is " <<  dot<6>(v, w)<< "\n";
+
+    std::cout << "dot_real<6>(v, w) is " <<  dot_real<6>(v, w)<< "\n";
     
     std::cout << "conj(x) is " <<  conj(x)<< "\n";
 

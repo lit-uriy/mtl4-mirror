@@ -44,11 +44,11 @@ struct indirect
     friend size_type inline num_cols(const self& A) { return A.cols.size(); } ///< Number of colums
     size_type nnz() const { return num_rows(*this) * num_cols(*this); } ///< Number of non-zeros 
 
-    size_type dim1() const { return rows.size(); } ///< Dimension 1 is equal to to #rows
-    size_type dim2() const { return cols.size(); } ///< Dimension 1 is equal to to #columns
+    size_type dim1() const { return rows.size(); } ///< Dimension 1 is equal to number of rows
+    size_type dim2() const { return cols.size(); } ///< Dimension 2 is equal to number of columns
 
-    value_type operator() (size_type r, size_type c) const /// Read A[r][c]
-    {   return (ref(rows[r], cols[c]));    }
+    value_type operator() (size_type r, size_type c) const
+    {   return (ref(rows[r], cols[c]));    } ///< Read A[r][c]
 
   private:
     const Matrix& ref;

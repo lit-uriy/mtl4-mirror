@@ -54,10 +54,12 @@ class shifted_inserter
     };
     
   public:
-    bracket_proxy operator[] (size_type row)        ///< To be used in ins[r][c] << value;
-    {	return bracket_proxy(ins, row+row_offset, col_offset);    }
+    /// To be used in ins[r][c] << value;
+    bracket_proxy operator[] (size_type row)      
+    {	return bracket_proxy(ins, row+row_offset, col_offset);    } 
 
-    proxy_type operator() (size_type row, size_type col)   ///< To be used in ins(r, c) << value;
+    /// To be used in ins(r, c) << value;
+    proxy_type operator() (size_type row, size_type col)  
     {	return proxy_type(ins, row+row_offset, col+col_offset);    }
 
     // update, modify and operator<< are used from BaseInserter

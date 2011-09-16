@@ -27,6 +27,8 @@ namespace mtl {
 // Compile time version
 namespace fixed
 {
+
+    /// Compile-time dimensions
     template <std::size_t Rows, std::size_t Cols>
     struct dimensions
     {
@@ -37,6 +39,7 @@ namespace fixed
 
 	// To have the same interface as fixed
 #ifndef NDEBUG
+	/// Constructor does not need arguments but if given they are compared against the template arguments in debug mode
 	explicit dimensions(size_type r= Rows, size_type c= Cols) 
 	{
 	    assert(r == Rows); assert(c == Cols); 
@@ -47,12 +50,13 @@ namespace fixed
 	explicit dimensions() {}
 #endif
 
-	size_type num_rows() const { return Rows; }
-	size_type num_cols() const { return Cols; }
+	size_type num_rows() const { return Rows; } ///< Number of rows
+	size_type num_cols() const { return Cols; } ///< Number of columns
 
-	// to check whether it is static
+	/// To check whether dimensions are static
 	static bool const is_static= true;
 
+	/// Transposed dimension (type)
 	typedef dimensions<Cols, Rows> transposed_type;
 	transposed_type transpose() const 
 	{ 
@@ -60,6 +64,7 @@ namespace fixed
 	}
     };
 
+    /// Output of dimensions
     template <std::size_t R, std::size_t C>
     inline std::ostream& operator<< (std::ostream& stream, dimensions<R, C>) 
     {
@@ -70,55 +75,42 @@ namespace fixed
 
 namespace non_fixed
 {
+    /// Run-time dimensions
     struct dimensions
     {
 	typedef std::size_t  size_type;
 
-	// some simple constructors
+	/// Constructor 
 	dimensions(size_type r= 0, size_type c= 0) : r(r), c(c) {}
 	
-
+	/// Assignment
 	dimensions& operator=(const dimensions& x) 
 	{
 	    r= x.r; c= x.c; return *this; 
 	}
-	size_type num_rows() const { return r; }
-	size_type num_cols() const { return c; }
+	size_type num_rows() const { return r; } ///< Number of rows
+	size_type num_cols() const { return c; } ///< Number of columns
 
+	/// Transposed dimension
 	typedef dimensions transposed_type;
 	transposed_type transpose() 
 	{ 
 	    return transposed_type(c, r); 
 	}
 
+	/// To check whether dimensions are static
 	static bool const is_static= false;
     protected:
 	size_type r, c;
     };
 
+    /// Output of dimensions
     inline std::ostream& operator<< (std::ostream& stream, dimensions d) 
     {
 	return stream << d.num_rows() << 'x' << d.num_cols(); 
     }
 
 } // namespace non_fixed
-
-
-#if 0
-template <std::size_t Rows = 0, std::size_t Cols = 0>
-struct dimensions
-  : public boost::mpl::if_c<
-	 Rows != 0 && Cols != 0
-       , struct fixed::dimensions
-       , struct non_fixed::dimensions
-       >::type
-{
-    dimensions(std::size_t r, std::size_t c, 
-	       typename boost::enable_if_c<Rows == 0 || Cols == 0>::type* = 0)
-	: non_fixed::dimensions(r, c) {}
-};
-#endif
-
 
 } // namespace mtl
 

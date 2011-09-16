@@ -33,7 +33,7 @@ class givens
     typedef typename Collection<Matrix>::size_type    size_type;
 
   public:
-    /// Re-set the rotation parameters \p a and \b
+    /// Re-set the rotation parameters \p a and \p b
     void set_rotation(value_type a, value_type b)
     {
 	using std::abs;

@@ -38,13 +38,13 @@ void inline equalize_depth(Recursator1& r1, Recursator2& r2, Recursator3& r3);
 
     How to use this class is described in the \ref rec_intro "recursion introduction".
 
-    \sa \ref mtl::north_west, \ref mtl::north_east, 
-    \ref mtl::south_west, \ref mtl::south_east, 
-    \ref mtl::is_empty(const recursator<Matrix>&), 
-    \ref mtl::is_full(const recursator<Matrix>&), 
-    \ref mtl::num_rows(const recursator<Matrix>&), 
-    \ref mtl::num_cols(const recursator<Matrix>&),
-    \ref mtl::size(const recursator<Matrix>&)
+    \sa \ref mtl::matrix::north_west, \ref mtl::matrix::north_east, 
+    \ref mtl::matrix::south_west, \ref mtl::matrix::south_east, 
+    \ref mtl::matrix::is_empty(const recursator<Matrix>&), 
+    \ref mtl::matrix::is_full(const recursator<Matrix>&), 
+    \ref mtl::matrix::num_rows(const recursator<Matrix>&), 
+    \ref mtl::matrix::num_cols(const recursator<Matrix>&),
+    \ref mtl::matrix::size(const recursator<Matrix>&)
 **/
 template <typename Matrix>
 struct recursator
@@ -199,7 +199,7 @@ public:
     }
 
     /*! Set the bound of the recursator.
-	\param bound  The new virtual bound; must be a power of 2.
+	\param b  The new virtual bound; must be a power of 2.
 
         This function allows to declare a virtual bound smaller than the number of rows and/or columns.
 	It must be used with uttermost care.

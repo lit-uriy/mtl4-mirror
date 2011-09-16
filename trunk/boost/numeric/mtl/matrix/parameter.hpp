@@ -22,6 +22,7 @@
 namespace mtl { namespace matrix {
 
 /// Type for bundling template parameters of common matrix types
+/** \sa \ref matrix_parameters **/
 template <typename Orientation= row_major, 
 	  typename Index= index::c_index,
 	  typename Dimensions= mtl::non_fixed::dimensions,
