@@ -18,29 +18,31 @@ namespace mtl { namespace vector {
 // Compile time version
 namespace fixed {
 
+    /// Compile-time dimension
     template <std::size_t Size>
     struct dimension
     {
 	typedef std::size_t  size_type;
 	static size_type const value= Size;
-	friend inline size_type size(const dimension&) { return dimension::value; }
+	friend inline size_type size(const dimension&) { return dimension::value; } ///< Size
 
-	// to check whether it is static
+	/// To check whether it is static
 	static bool const is_static= true;
     };
 }
 
 namespace non_fixed {
 
+    /// Run-time dimension
     struct dimension
     {
 	typedef std::size_t  size_type;
 	
 	static size_type const value= 0; // for compatibility
-	dimension(size_type v= 0) : my_size(v) {}
-	friend inline size_type size(const dimension& d) { return d.my_size; }
+	dimension(size_type v= 0) : my_size(v) {} /// Constructor with default zero
+	friend inline size_type size(const dimension& d) { return d.my_size; } ///< Size
 
-	// to check whether it is static
+	/// To check whether it is static
 	static bool const is_static= false;
       protected:
 	size_type my_size;

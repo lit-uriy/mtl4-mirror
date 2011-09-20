@@ -1682,18 +1682,28 @@ The results of these reductions are the value type of the %vector.
 
 \include vector_min_max.cpp
 
-The dot product of two vectors is computed with the function \ref dot:
+The dot product of two vectors is computed with the function \ref vector::dot :
 
 \include dot_example.cpp
 
 As the previous computation the evaluation is unrolled, either with
 a user-defined parameter or by default eight times.
 
-The result type of \ref dot is of type of the values' product.
+The result type of \ref vector::dot is of type of the values' product.
 If MTL4 is compiled with a concept-compiler, the result type is 
 taken from the concept std::Multiple and without concepts
 Joel de Guzman's result type deduction from Boost is used.
 
+In the vector::dot function the first vector is conjugated (when complex).
+There exist also definitions with the conjugation of the second vector
+(e.g. the 
+<a href="http://fr.wikipedia.org/wiki/Produit_scalaire#G.C3.A9n.C3.A9ralisation_aux_espaces_vectoriels_complexes">French</a> or 
+<a href="http://de.wikipedia.org/wiki/Skalarprodukt#Das_Standardskalarprodukt_im_Cn">German Wikipedia entry</a>)
+but this seems to be used less frequently.
+Furthermore,
+to be consistent with BLAS and Matlab we choose the first argument.
+
+The function vector::dot_real uses both vectors with complex conjugation.
 
 \if Navigation \endif
   Return to \ref matrix_norms &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref conj_intro 
@@ -2700,7 +2710,7 @@ The %vector starts contains the first offset of each major index,
 i.e. each row (or column for column-major matrices)
 plus an extra entry with the number of non-zeros (which corresponds to the past-end offset 
 of the last major index).
-The %vector indices contains the column indices (or row  for column-major matrices i.e. minor index)
+The %vector indices contains the column indices (or row  for column-major matrices i.e. minor indices)
 of each entry (offset) and data the according value.
 For a short description see for instance
 <a href="http://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_.28CSR_or_CRS.29">wikipedia</a>.
@@ -2722,14 +2732,15 @@ There are three member functions that directly return the address of the accordi
 - address_data() for the data.
 .
 
-\section direct_dense2D Dense Matrices
+\section direct_dense2D Dense Matrices and Vectors
 
-The data of dense matrices can be accessed in the same manner. The values are stored in an array
-called "data" that is public as well.
+The data of matrix::dense2D and vector::dense_vector
+can be accessed in the same manner. The values are stored in an array
+called "data" that is public as well (for the sake of laziness).
 The address of the first entry is also returned by the member function:
 - address_data() 
 .
-that is provided as constant or mutable pointer depending on the state of the matrix.
+that is provided as constant or mutable pointer depending on the constancy of the matrix or vector.
 
 
 
@@ -2743,7 +2754,64 @@ that is provided as constant or mutable pointer depending on the state of the ma
 
 /*! \page performance_tuning Performance Tuning
 
+MTL4 is implemented with the goal of maximal performance under the constraint of maximal applicability.
+Many operations are specialized when specific types allow for faster algorithms.
+This is all realized in the library and does not require activities from the user.
+The user can however improve his performance by choosing the most appropriate data type:
+- Fixed vs. static size;
+- Using 32 bit integers on a 64 bit machine;
+- Using single precision preconditioners for double precision matrices.
+.
+Some operations can be controlled by static parameters.
+Their defaults are chosen such that they are near-optimal on most platforms.
+Nonetheless, the users are invited to experiment with it and provide us feedback.
+
 \section tuning_fsize Using Fixed-size Matrices and Vectors
+
+If you have small dense matrices or vectors whose dimensions are already known at compile time,
+you should use the fixed-size parameters fixed::dimensions and vector::fixed::dimension.
+The following example illustrates its usage:
+
+\include fixed_size_example.cpp
+
+The matrix and vector constructors do not require the dimensions as they are already given in the type.
+If desired they can be defined.
+This has two advantages:
+- It is easier to switch between static and dynamic sizes in the type definitions.
+- Generic functions that construct new matrices and vectors can use the same constructor interface
+  for statically and dynamically sized objects.
+.
+If the dimension is specified in the constructor it is compared with the fixed dimension in debug
+mode (NDEBUG is not defined) and an exception is thrown when they are inconsistent.
+
+As you can see from the example, the operations are written in the same fashion as for dynamic sizes.
+The operations are dispatched so that the entire calculation is performed without a loop
+(to be sure we read the assembler generated by gcc).
+For the matrix multiplication we realized that only for very small matrices the unrolling is faster.
+The default criterion is that the matrix product is performed by a loop if one of the matrices
+has more than 10 entries, to change this default see \ref customizable_parameters.
+
+Matrices and vectors of fixed size -- no matter what size they have -- are stored by default on the stack
+in terms of a one-dimensional array.
+Often the stack size is limited (e.g. to 65636 byte) and too large containers are rejected during compilation.
+It is possible to store fixed-size containers on the heap by setting the OnStack argument to false:
+\code
+    typedef vector::parameters<tag::col_major, vector::fixed::dimension<2>, false> fvec_para;
+    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2>, false> fmat_para;
+\endcode
+The loop unrolling also applies on heap-stored matrices and vectors but the performance is usually lower
+due to decreased data locality.
+
+
+\section tuning_type_arguments Type Arguments
+
+Type parameters in MTL4 are chosen for maximal index ranges and best (feasible) accuracy.
+Often this maximum is not needed and many applications can be accelerated by reducing
+the index range or the floating point precision.
+
+\subsection tuning_sizetype Reducing the Size Type
+
+
 
 
 
