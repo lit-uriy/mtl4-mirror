@@ -264,9 +264,9 @@ struct row_mat_cvec_index_evaluator
     void at(size_type i, mtl::tag::sparse)
     {
 	value_type tmp(math::zero(w[i+Offset]));
-	const size_type cj0= A.ref_starts()[i+Offset], cj1= A.ref_starts()[i+Offset+1];
+	const size_type cj0= A.ref_major()[i+Offset], cj1= A.ref_major()[i+Offset+1];
 	for (size_type j= cj0; j != cj1; ++j)
-	    tmp+= A.data[j] * v[A.ref_indices()[j]];
+	    tmp+= A.data[j] * v[A.ref_minor()[j]];
 	Assign::first_update(w[i+Offset], tmp);
     }
 

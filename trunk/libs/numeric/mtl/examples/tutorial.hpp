@@ -2696,20 +2696,21 @@ The class matrix::compressed2D contains three STL vectors:
 - indices, and 
 - data.
 .
-The %vector starts contains the first index of each row (or column for column-major matrices)
-plus an extra entry with the number of non-zeros (which corresponds to the past-end index 
-of the last row/column).
-The %vector indices contains the column (or row  for column-major matrices)
-of each entry and data its value.
-For a short description see 
+The %vector starts contains the first offset of each major index, 
+i.e. each row (or column for column-major matrices)
+plus an extra entry with the number of non-zeros (which corresponds to the past-end offset 
+of the last major index).
+The %vector indices contains the column indices (or row  for column-major matrices i.e. minor index)
+of each entry (offset) and data the according value.
+For a short description see for instance
 <a href="http://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_.28CSR_or_CRS.29">wikipedia</a>.
 
 \subsection direct_compressed2D_ref Access by Reference
 
 For convenience (and lazyness) the data %vector is public and be accessed directly.
 To access the other two vectors, one can use the member functions:
-- ref_starts() and
-- ref_indices()
+- ref_major() and
+- ref_minor()
 .
 that are defined in a constant and mutable way.
 
@@ -2720,6 +2721,15 @@ There are three member functions that directly return the address of the accordi
 - address_minor() for the indices; and
 - address_data() for the data.
 .
+
+\section direct_dense2D Dense Matrices
+
+The data of dense matrices can be accessed in the same manner. The values are stored in an array
+called "data" that is public as well.
+The address of the first entry is also returned by the member function:
+- address_data() 
+.
+that is provided as constant or mutable pointer depending on the state of the matrix.
 
 
 

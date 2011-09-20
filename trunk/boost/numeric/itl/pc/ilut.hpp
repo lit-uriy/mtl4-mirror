@@ -82,8 +82,8 @@ struct ilut_factorizer
 		    MTL_DEBUG_THROW_IF(ukk == value_type(0), mtl::missing_diagonal());
 		    value_type vec_k= vec.value(j)/= ukk;
 		    // std::cout << "vec after updating from U[" << k << "][" << k << "] is " << vec << '\n';
-		    for (size_type j0= U_ins.ref_starts()[k], j1= U_ins.ref_slot_ends()[k]; j0 < j1; j0++) { // U[k][k+1:n]
-			size_type k1= U_ins.ref_indices()[j0];
+		    for (size_type j0= U_ins.ref_major()[k], j1= U_ins.ref_slot_ends()[k]; j0 < j1; j0++) { // U[k][k+1:n]
+			size_type k1= U_ins.ref_minor()[j0];
 			if (k1 > k)
 			    vec[k1]-= vec_k * U_ins.ref_elements()[j0];
 			// std::cout << "vec after updating from U[" << k << "][" << k1 << "] is " << vec << '\n';
