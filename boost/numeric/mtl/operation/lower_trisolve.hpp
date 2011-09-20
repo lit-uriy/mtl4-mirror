@@ -174,14 +174,14 @@ namespace detail {
 	{
 	    vampir_trace<5048> tracer;
 	    if (num_rows(A) == 0) return;
-	    size_type j1= A.ref_starts()[1];
+	    size_type j1= A.ref_major()[1];
 	    for (size_type r= 0, rend= num_rows(A); r != rend; ++r) {
 		size_type j0= j1; 
-		j1= A.ref_starts()[r+1];
+		j1= A.ref_major()[r+1];
 		typename Collection<VectorOut>::value_type rr= v[r];
 		for (; j0 != j1; ++j0) {
-		    MTL_DEBUG_THROW_IF(A.ref_indices()[j0] > r, logic_error("Matrix entries from U in lower triangular."));
-		    rr-= A.data[j0] * w[A.ref_indices()[j0]];
+		    MTL_DEBUG_THROW_IF(A.ref_minor()[j0] > r, logic_error("Matrix entries from U in lower triangular."));
+		    rr-= A.data[j0] * w[A.ref_minor()[j0]];
 		}
 		w[r]= rr;
 	    }
@@ -193,15 +193,15 @@ namespace detail {
 	{
 	    vampir_trace<5047> tracer;
 	    for (size_type r= 0, rend= num_rows(A); r != rend; ++r) {
-		size_type j0= A.ref_starts()[r], j1= A.ref_starts()[r+1];
+		size_type j0= A.ref_major()[r], j1= A.ref_major()[r+1];
 		MTL_THROW_IF(j0 == j1, missing_diagonal());
 		--j1;
-		MTL_THROW_IF(A.ref_indices()[j1] != r, missing_diagonal());
+		MTL_THROW_IF(A.ref_minor()[j1] != r, missing_diagonal());
 		value_type dia= A.data[j1];
 		typename Collection<VectorOut>::value_type rr= v[r];
 		for (; j0 != j1; ++j0) {
-		    MTL_DEBUG_THROW_IF(A.ref_indices()[j0] > r, logic_error("Matrix entries from U in lower triangular."));
-		    rr-= A.data[j0] * w[A.ref_indices()[j0]];
+		    MTL_DEBUG_THROW_IF(A.ref_minor()[j0] > r, logic_error("Matrix entries from U in lower triangular."));
+		    rr-= A.data[j0] * w[A.ref_minor()[j0]];
 		}
 		w[r]= rr * lower_trisolve_diavalue(dia, DiaTag());
 	    }

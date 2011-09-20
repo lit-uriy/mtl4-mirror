@@ -421,10 +421,12 @@ class dense2D
 
     void crop() {} ///< Delete structural zeros; only dummy here
 
-    /// Address of first data entry; to be used with care. [advanced]
+    /// Address of first data entry (mutable); to be used with care. [advanced]
     value_type* address_data() { return this->data; }
+    /// Address of first data entry (constant); to be used with care. [advanced]
     const value_type* address_data() const { return this->data; }
 
+    /// Whether data is stored in strides
     bool has_strided_data() const { return this->category != this->own; }
     
   protected:

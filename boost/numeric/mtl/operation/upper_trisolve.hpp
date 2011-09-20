@@ -150,7 +150,7 @@ namespace detail {
 	template <typename Value> 
 	void crs_row_init(size_type MTL_DEBUG_ARG(r), size_type& j0, size_type MTL_DEBUG_ARG(cj1), Value& dia, tag::universe_diagonal) const
 	{
-	    MTL_DEBUG_THROW_IF(j0 == cj1 || A.ref_indices()[j0] != r, missing_diagonal());
+	    MTL_DEBUG_THROW_IF(j0 == cj1 || A.ref_minor()[j0] != r, missing_diagonal());
 	    dia= A.data[j0++];
 	}
 	template <typename Value> void crs_row_init(size_type, size_type&, size_type, Value&, tag::unit_diagonal) const {}
@@ -162,13 +162,13 @@ namespace detail {
 	    vampir_trace<5046> tracer;
 	    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
 	    for (size_type r= num_rows(A); r-- > 0; ) {
-		size_type j0= A.ref_starts()[r];
-		const size_type cj1= A.ref_starts()[r+1];
+		size_type j0= A.ref_major()[r];
+		const size_type cj1= A.ref_major()[r+1];
 		out_value_type rr= v[r], dia;
 		crs_row_init(r, j0, cj1, dia, DiaTag()); 
 		for (; j0 != cj1; ++j0) {
-		    MTL_DEBUG_THROW_IF(A.ref_indices()[j0] <= r, logic_error("Matrix entries must be sorted for this."));
-		    rr-= A.data[j0] * w[A.ref_indices()[j0]];
+		    MTL_DEBUG_THROW_IF(A.ref_minor()[j0] <= r, logic_error("Matrix entries must be sorted for this."));
+		    rr-= A.data[j0] * w[A.ref_minor()[j0]];
 		}
 		row_update(w[r], rr, dia, DiaTag());
 	    }

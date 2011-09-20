@@ -232,13 +232,13 @@ struct ic_0_evaluator
 #ifndef NDEBUG
 	MTL_THROW_IF(r+Offset >= lr, mtl::logic_error("Traversal must be backward")); lr= r+Offset;
 #endif
-	size_type j0= U.ref_starts()[r+Offset];
-	const size_type cj1= U.ref_starts()[r+Offset+1];
-	MTL_DEBUG_THROW_IF(j0 == cj1 || U.ref_indices()[j0] != r+Offset, mtl::missing_diagonal());
+	size_type j0= U.ref_major()[r+Offset];
+	const size_type cj1= U.ref_major()[r+Offset+1];
+	MTL_DEBUG_THROW_IF(j0 == cj1 || U.ref_minor()[j0] != r+Offset, mtl::missing_diagonal());
 	out_value_type rr= y0[r+Offset], dia= U.data[j0++];
 	for (; j0 != cj1; ++j0) {
-	    MTL_DEBUG_THROW_IF(U.ref_indices()[j0] <= r+Offset, mtl::logic_error("Matrix entries must be sorted for this."));
-	    rr-= U.data[j0] * y[U.ref_indices()[j0]];
+	    MTL_DEBUG_THROW_IF(U.ref_minor()[j0] <= r+Offset, mtl::logic_error("Matrix entries must be sorted for this."));
+	    rr-= U.data[j0] * y[U.ref_minor()[j0]];
 	}
 	y[r+Offset]= rr * dia;
     }

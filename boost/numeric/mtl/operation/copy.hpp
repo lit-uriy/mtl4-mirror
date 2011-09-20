@@ -121,7 +121,7 @@ namespace mtl {
 	dest.change_dim(num_rows(src), num_cols(src)); // contains make_empty
 	set_to_zero(dest);
 	const compressed2D<ValueSrc, Para>  &sref= src.ref;
-	const std::vector<size_type>        &sstarts= sref.ref_starts(), &sindices= sref.ref_indices();
+	const std::vector<size_type>        &sstarts= sref.ref_major(), &sindices= sref.ref_minor();
 	long first, last;
 	if (traits::is_row_major<Para>::value) {
 	    first= src.get_begin();
@@ -133,7 +133,7 @@ namespace mtl {
 
 	long jd= 0, j_end= sstarts[0];
 	for (long i= 0, i_end= src.dim1(), f= first, l= last; i < i_end; ++i) {
-	    dest.ref_starts()[i]= jd;
+	    dest.ref_major()[i]= jd;
 	    long j= j_end;
 	    j_end= sstarts[i+1];
 	    while (j < j_end && long(sindices[j]) < f) j++;
@@ -141,16 +141,16 @@ namespace mtl {
 	    f= inc_wo_over(f);
 	    l= inc_wo_over(l);
 	}
-	dest.ref_starts()[src.dim1()]= jd;
+	dest.ref_major()[src.dim1()]= jd;
 	dest.set_nnz(jd); // resizes indices and data
 
 	for (long i= 0, i_end= src.dim1(), jd= 0, j_end= sstarts[0]; i < i_end; ++i) {
-	    dest.ref_starts()[i]= jd;
+	    dest.ref_major()[i]= jd;
 	    long j= j_end;
 	    j_end= sstarts[i+1];
 	    while (j < j_end && long(sindices[j]) < first) j++;
 	    while (j < j_end && long(sindices[j]) < last) {
-		dest.ref_indices()[jd]= sindices[j];
+		dest.ref_minor()[jd]= sindices[j];
 		dest.data[jd++]= sref.data[j++];
 	    }
 	    first= inc_wo_over(first);

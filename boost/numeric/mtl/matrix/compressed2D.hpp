@@ -472,10 +472,10 @@ class compressed2D
     /// Address of first data entry; to be used with care. [advanced]
     const value_type* address_data() const { check(); return &data[0]; }
 
-    const std::vector<size_type>& ref_starts() const { return starts; } ///< Refer start vector [advanced]
-          std::vector<size_type>& ref_starts()       { return starts; } ///< Refer start vector [advanced]
-    const std::vector<size_type>& ref_indices() const { return indices; } ///< Refer index vector [advanced]
-          std::vector<size_type>& ref_indices()       { return indices; } ///< Refer index vector [advanced]
+    const std::vector<size_type>& ref_major() const { return starts; } ///< Refer start vector [advanced]
+          std::vector<size_type>& ref_major()       { return starts; } ///< Refer start vector [advanced]
+    const std::vector<size_type>& ref_minor() const { return indices; } ///< Refer index vector [advanced]
+          std::vector<size_type>& ref_minor()       { return indices; } ///< Refer index vector [advanced]
 
     /// Release unused space in STL vectors
     void shrink() 
@@ -638,8 +638,8 @@ struct compressed2D_inserter
     }
 
     // not so nice functions needed for direct access, e.g. in factorizations
-    std::vector<size_type> const& ref_starts() const { return starts; } ///< Refer start vector [advanced]
-    std::vector<size_type> const& ref_indices() const { return indices; } ///< Refer index vector [advanced]
+    std::vector<size_type> const& ref_major() const { return starts; } ///< Refer start vector [advanced]
+    std::vector<size_type> const& ref_minor() const { return indices; } ///< Refer index vector [advanced]
     std::vector<size_type> const& ref_slot_ends() const { return slot_ends; } ///< Refer slot-end vector [advanced]
     std::vector<value_type> const& ref_elements() const { return elements; } ///< Refer element vector [advanced]
 
