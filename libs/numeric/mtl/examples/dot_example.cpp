@@ -1,4 +1,4 @@
-// File: dot.cpp
+// Filename: dot_example.cpp (part of MTL4)
 
 #include <iostream>
 #include <boost/numeric/mtl/mtl.hpp>
