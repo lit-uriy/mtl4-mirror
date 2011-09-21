@@ -950,8 +950,8 @@ Some arguments in certain %matrix types or have little impact, for instance:
 - OnStack is ignored in matrix::compressed2D and fixed::dimensions reduce the overall memory need only marginally;
 - Reversely, the choice of SizeType has no effect on the performance of dense matrices are very little on their memory requirements.
 .
-Using only 32 bit integers instead of 64 bit can accelerate sparse matrix operations significantly because twice as much indices can be loaded from memory at the same time (and as we all know, memory bandwidth is the limiting factor in sparse algebra).
-However, using signed integers is not tested extensively.  We do not expect any error when signed integers are used but several compiler warnings that signed and unsigned integers are compared.
+Using only 32 bit integers instead of 64 bit can accelerate sparse matrix operations significantly because twice as much indices can be loaded from memory at the same time (and as we all know, memory bandwidth is the limiting factor in sparse algebra),
+see \ref tuning_sizetype.
 Multiple operations are specialized for dense matrices with fixed dimensions, see \ref tuning_fsize.
 
 
@@ -2769,7 +2769,8 @@ Nonetheless, the users are invited to experiment with it and provide us feedback
 \section tuning_fsize Using Fixed-size Matrices and Vectors
 
 If you have small dense matrices or vectors whose dimensions are already known at compile time,
-you should use the fixed-size parameters fixed::dimensions and vector::fixed::dimension.
+you should use the fixed-size parameters fixed::dimensions and vector::fixed::dimension
+in  matrix::parameters and vector::parameters.
 The following example illustrates its usage:
 
 \include fixed_size_example.cpp
@@ -2811,8 +2812,31 @@ the index range or the floating point precision.
 
 \subsection tuning_sizetype Reducing the Size Type
 
+Using only 32 bit integers instead of 64 bit can accelerate sparse matrix operations 
+significantly because twice as much indices can be loaded from memory at the same time 
+-- and as we all know, memory bandwidth is the limiting factor in sparse algebra.
+Of course 16 bit integers could accelerate it further but then you are limited to 
+65636 rows, columns, and non-zeros.
+
+Changing the size type is simply done in matrix::parameters :
+
+\include size_type_example.cpp
+
+In the example above we used "unsigned" that is typically 32 bit on 64 bit platforms.
+On 32 bit platforms it may be 16 bit long.A
+To be independent on the platform's word size one can use uint32 or uint32_t which
+comes from the C99 standard and is not portable under C++.
+Portability is provided by 
+<a href="http://www.boost.org/doc/libs/1_38_0/libs/integer/cstdint.htm">boost::integer</a> as in the following example:
+
+\include size_type_example2.cpp
 
 
+
+Using signed integers is not tested so far.  
+We do not expect any error when signed integers are used but several 
+compiler warnings that signed and unsigned integers are compared.
+You can send them to us and we will avoid them in future versions.
 
 
 \if Navigation \endif
