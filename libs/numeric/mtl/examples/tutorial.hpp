@@ -688,6 +688,9 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage iteration
    -# \subpage rec_intro
    .
+-# Miscellaneous 
+   -# \subpage mixed_complex
+   .
 -# Advanced Topics
    -# \subpage function_nesting
    -# \subpage direct_access
@@ -951,7 +954,7 @@ Some arguments in certain %matrix types or have little impact, for instance:
 - Reversely, the choice of SizeType has no effect on the performance of dense matrices are very little on their memory requirements.
 .
 Using only 32 bit integers instead of 64 bit can accelerate sparse matrix operations significantly because twice as much indices can be loaded from memory at the same time (and as we all know, memory bandwidth is the limiting factor in sparse algebra),
-see \ref tuning_sizetype.
+see \ref tuning_size_type.
 Multiple operations are specialized for dense matrices with fixed dimensions, see \ref tuning_fsize.
 
 
@@ -2150,10 +2153,14 @@ regardless on whether the termination criterion is reached or not.
 Needless to say that gmres is implemented by means of gmres_full.
 
 As preconditioners we provide at the moment:
-- Diagonal inversion: itl::pc::diagonal<Matrix>;
-- Incomplete LU factorization without fill-in: itl::pc::ilu_0<Matrix>; and
-- Incomplete Cholesky factorization without fill-in: itl::pc::ic_0<Matrix>;
+- Identity: that is no preconditioning: itl::pc::identity<Matrix, Value>;
+- Diagonal inversion: the inverse of diagonal is stored and used in element-wise multiplication: itl::pc::diagonal<Matrix, Value>;
+- ILU(0): Incomplete LU factorization without fill-in: itl::pc::ilu_0<Matrix, Value>;
+- ILUT: Incomplete LU factorization with threshold (still under development): itl::pc::ilut<Matrix, Value>; and
+- IC(0): Incomplete Cholesky factorization without fill-in: itl::pc::ic_0<Matrix, Value>;
 .
+The first template argument is the type of the considered matrix and the second one the value_type of
+preconditioner's internal data, see \ref tuning_value_type.
 
 The iteration object can be chosen between:
 - Basic iteration does not generate output: basic_iteration(r0, m, r, a= 0);
@@ -2177,7 +2184,7 @@ By default the output is printed into std::out.
 General assumptions on solver iterations:
 - 0th iteration is the starting residue.
 - Once the input value (x) is changed you have made at least one iteration.
-- Fractions of iterations are counted as whole iterations.
+- Fractions of iterations that change x (and r) are counted as whole iterations.
 
 
 
@@ -2472,7 +2479,61 @@ much slower) code for smaller matrices.
 
 
 \if Navigation \endif
-  Return to \ref iteration &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref function_nesting 
+  Return to \ref iteration &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref mixed_complex 
+
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page mixed_complex Mixed Complex Arithmetic
+
+If you write for instance the following simple program:
+
+\code
+#include <complex>
+#include <iostream>
+
+int main()
+{
+    std::complex<double>  z(2.0, 3.0);
+    std::cout << "2 * z = " << 2 * z << '\n';
+
+    return 0;
+}
+\endcode
+
+Then the compiler would complain something like:
+
+\verbatim
+error: no match for ‘operator*’ in ‘2 * z’
+\endverbatim
+
+The reason is simply that the standard complex header contains for any complex<T> only operations with T or
+complex<T>.
+In the example, 2 is an int and z a complex<double>.
+
+Of course, we can write
+\code
+    std::cout << "2 * z = " << 2.0 * z << '\n';
+\endcode
+
+and 
+\code
+    std::cout << "2 * z = " << 2.0f * z << '\n';
+\endcode
+if z is complex<float>.
+But the topic becomes much more cumbersome within generic functions.
+
+The header boost/numeric/mtl/operation/extended_complex.hpp provides the mixed complex arithmetic:
+
+\include mixed_complex.cpp
+
+This file is also available if you include mtl.hpp.
+
+\if Navigation \endif
+  Return to \ref rec_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref function_nesting 
 
 
 */
@@ -2690,7 +2751,7 @@ When the compiler instantiate our functor for a given type combination it takes
 the first product implementation in our list that is admissible.
 
 \if Navigation \endif
-  Return to \ref rec_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref direct_access 
+  Return to \ref mixed_complex &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref direct_access 
 
 
 */
@@ -2770,7 +2831,7 @@ The user can however improve his performance by choosing the most appropriate da
 - Using 32 bit integers on a 64 bit machine;
 - Using single precision preconditioners for double precision matrices.
 .
-Some operations can be controlled by static parameters.
+Some operations can be controlled by static parameters, see \ref customizable_parameters.
 Their defaults are chosen such that they are near-optimal on most platforms.
 Nonetheless, the users are invited to experiment with it and provide us feedback.
 
@@ -2818,7 +2879,7 @@ Type parameters in MTL4 are chosen for maximal index ranges and best (feasible) 
 Often this maximum is not needed and many applications can be accelerated by reducing
 the index range or the floating point precision.
 
-\subsection tuning_sizetype Reducing the Size Type
+\subsection tuning_size_type Reducing the Size Type
 
 Using only 32 bit integers instead of 64 bit can accelerate sparse matrix operations 
 significantly because twice as much indices can be loaded from memory at the same time 
@@ -2845,6 +2906,29 @@ compiler warnings that signed and unsigned integers are compared.
 Due to the conversion rules of C++ in operations even 16 bit unsigned may cause this warning in some places.
 You can send such warnings to us and we will avoid them in future versions.
 
+\subsection tuning_value_type Reducing the Value Type
+
+
+Iterative solvers (cf. \ref using_solvers) are usually performed with double or higher precision to
+reduce numeric instabilities. 
+However, the preconditioning is usually less critical and can be realized with lower precision
+(cf. e.g. <a href="http://www.sciencedirect.com/science/article/pii/S0010465504005016" target="_blank">here</a>).
+For this purpose, the a second template argument can be provided in our preconditioners:
+
+\include ilu_0_float_cg_example.cpp
+
+The example illustrates that computing with mixed precision requires only changing one line
+(the one with the preconditioner type).
+
+Accordingly, one can reduce the precision of complex values:
+
+\include ilu_0_complex_cg_example.cpp
+
+Please note that mixing single and double precision complex numbers does not work with standard C++ only.
+We extended the implementation of the four standard operations in order to operate generically on
+complex numbers.
+For using mixed complex arithmetic you must include the complete MTL4
+or boost/numeric/mtl/operation/extended_complex.hpp, see also \ref mixed_complex.
 
 \if Navigation \endif
   Return to \ref direct_access &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref customizable_parameters 
@@ -2856,6 +2940,23 @@ You can send such warnings to us and we will avoid them in future versions.
 
 /*! \page customizable_parameters Customizable Parameters
 
+In the file boost/numeric/mtl/config.hpp, several parameters are defined whose values can
+be changed by compile flags.
+
+\section costumizable_dense Costumizing Dense Operations
+
+See:
+- \ref matrix::dense_non_recursive_product_limit
+- \ref matrix::straight_dmat_dmat_mult_limit
+- \ref matrix::fully_unroll_dmat_dmat_mult_limit
+
+
+\section costumizable_dense Costumizing Sparse Operations
+
+See:
+- \ref matrix::compressed_linear_search_limit
+- \ref matrix::sorted_block_insertion_limit
+- \ref matrix::crs_cvec_mult_block_size
 
 
 \if Navigation \endif
