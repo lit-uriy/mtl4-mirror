@@ -190,7 +190,7 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
     }
 }
 
-#ifdef CRS_CVEC_MULT_TUNING
+#ifdef MTL_CRS_CVEC_MULT_TUNING
 template <unsigned Index, unsigned BSize, typename SizeType>
 struct crs_cvec_mult_block
 {
@@ -273,7 +273,7 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
 #endif
 
 
-#if !defined(CRS_CVEC_MULT_NO_ACCEL) && !defined(CRS_CVEC_MULT_TUNING)
+#if !defined(MTL_CRS_CVEC_MULT_NO_ACCEL) && !defined(MTL_CRS_CVEC_MULT_TUNING)
 // Row-major compressed2D vector multiplication
 template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
 typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
