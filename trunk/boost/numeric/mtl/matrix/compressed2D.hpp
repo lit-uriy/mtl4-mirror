@@ -695,16 +695,6 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
     using std::copy_backward;
     using std::swap;
 
-#if 0
-    std::cout << "elements.size() " << typeid(elements.size()).name() << "\n";
-    std::cout << "matrix.dim1() " << typeid(matrix.dim1()).name() << "\n";
-    std::cout << "matrix.dim1()/2 " << typeid(matrix.dim1()/2).name() << "\n";
-    std::cout << "elements.size() + matrix.dim1()/2 " << typeid(elements.size() + matrix.dim1()/2).name() << "\n";
-
-    std::cout << "slot_size " << typeid(slot_size).name() << "\n";
-    std::cout << "slot_size * matrix.dim1() " << typeid(slot_size * matrix.dim1()).name() << "\n";
-#endif    
-
     vampir_trace<3052> tracer;
     // Stretching is much simpler for empty matrices
     if (elements.empty()) {
