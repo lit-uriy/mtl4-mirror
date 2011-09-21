@@ -43,8 +43,8 @@ namespace mtl {
 	{
 	    print_size_max p;
 	    // look_at_each_nonzero(A, p); // Doesn't work on all expressions yet
-	    for (size_t r = 0; r < num_rows(A); ++r)
-		for (size_t c = 0; c < num_cols(A); ++c) 
+	    for (size_t r = 0, nr = num_rows(A); r < nr; ++r)
+		for (size_t c = 0, nc= num_cols(A); c < nc; ++c) 
 		    p(A(r, c));
 	    return p.max;
 	}

@@ -2836,6 +2836,7 @@ Portability is provided by
 Using signed integers is not tested so far.  
 We do not expect any error when signed integers are used but several 
 compiler warnings that signed and unsigned integers are compared.
+Due to the conversion rules of C++ even 16 bit unsigned cause this warning in some places.
 You can send them to us and we will avoid them in future versions.
 
 
