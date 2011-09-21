@@ -2096,11 +2096,19 @@ For instance, consider the conjugate gradient method as it is realized in the IT
 
 \include cg.hpp 
 
-If this iterative computation is performed with MTL4 operations on according objects the single statements are evaluated 
-with expression templates providing equivalent performance as with algorithm-adapted loops.
-For a system with a million unknowns and a five-point-stencil as matrix (explicitly stored) about 10 iterations with a simple
-preconditioner
-can be performed in a second on a commodity PC.
+For the sake of performance, we specialized the CG method for the case that no preconditioner is used respectively
+the identity preconditioner is applied.
+
+In this implementation, we also merge operations whenever possible to achieve better locality and less cache hits.
+The merging is entirely generic in the sense that the notation can be used with arbitrary operations on arbitrary
+types.
+Operations on types that are not mergeable are evaluated sequentially.
+
+The usage of expression templates, several specializations and the merging allows for performing more than 20 iterations
+per second 
+ with one million unknowns and a Laplacian five-point-stencil as matrix (explicitly stored) 
+on a commodity PC.
+
 
 
 \if Navigation \endif
@@ -2831,13 +2839,11 @@ Portability is provided by
 
 \include size_type_example2.cpp
 
-
-
 Using signed integers is not tested so far.  
 We do not expect any error when signed integers are used but several 
 compiler warnings that signed and unsigned integers are compared.
-Due to the conversion rules of C++ even 16 bit unsigned cause this warning in some places.
-You can send them to us and we will avoid them in future versions.
+Due to the conversion rules of C++ in operations even 16 bit unsigned may cause this warning in some places.
+You can send such warnings to us and we will avoid them in future versions.
 
 
 \if Navigation \endif
