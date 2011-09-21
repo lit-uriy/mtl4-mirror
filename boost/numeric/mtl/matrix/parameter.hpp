@@ -22,7 +22,10 @@
 namespace mtl { namespace matrix {
 
 /// Type for bundling template parameters of common matrix types
-/** \sa \ref matrix_parameters **/
+/** OnStack = true can only be used with fixed::dimensions.
+    \sa \ref matrix_parameters
+    \sa \ref tuning_fsize
+    \sa \ref tuning_sizetype **/
 template <typename Orientation= row_major, 
 	  typename Index= index::c_index,
 	  typename Dimensions= mtl::non_fixed::dimensions,

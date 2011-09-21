@@ -21,7 +21,10 @@
 
 namespace mtl { namespace vector {
 
-// This type exist only for bundling template parameters (to reduce typing)
+/// This type exist only for bundling template parameters (to reduce typing)
+/** OnStack = true can only be used with fixed::dimension.
+    \sa \ref tuning_fsize
+    \sa \ref tuning_sizetype **/
 template <typename Orientation= col_major, 
 	  typename Dimension= non_fixed::dimension,
 	  bool OnStack= mtl::traits::is_static<Dimension>::value,

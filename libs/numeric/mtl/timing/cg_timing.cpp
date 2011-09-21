@@ -23,31 +23,31 @@
 int main()
 {
     mtl::vampir_trace<9999> tracer;
-  // For a more realistic example set size to 1000 or larger
-  const int size = 1000, N = size * size; 
+    // For a more realistic example set size to 1000 or larger
+    const int size = 1000, N = size * size; 
 
-  using namespace mtl;
+    using namespace mtl;
 
   
-  typedef unsigned size_type;
-  // typedef std::size_t size_type;
-  std::cout << "sizeof in size_type is " << sizeof(size_type) << '\n';
-  typedef matrix::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, size_type> para;
-  typedef compressed2D<double, para>  matrix_type;
-  matrix_type          A(N, N);
-  laplacian_setup(A, size, size);
+    typedef unsigned size_type;
+    // typedef std::size_t size_type;
+    std::cout << "sizeof in size_type is " << sizeof(size_type) << '\n';
+    typedef matrix::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, size_type> para;
+    typedef compressed2D<double, para>  matrix_type;
+    matrix_type          A(N, N);
+    laplacian_setup(A, size, size);
 
-  itl::pc::identity<matrix_type>     P(A);
+    itl::pc::identity<matrix_type>     P(A);
 
-  mtl::dense_vector<double> x(N, 1.0), b(N);
+    mtl::dense_vector<double> x(N, 1.0), b(N);
 
-  b = A * x;
-  x= 0;
+    b = A * x;
+    x= 0;
 
-  itl::cyclic_iteration<double> iter(b, 100, 1.e-2, 0.0, 100);
-  boost::timer t;
-  cg(A, x, b, P, iter);
-  std::cout << "CG took " << t.elapsed() << "s.\n";
+    itl::cyclic_iteration<double> iter(b, 100, 1.e-2, 0.0, 100);
+    boost::timer t;
+    cg(A, x, b, P, iter);
+    std::cout << "CG took " << t.elapsed() << "s.\n";
 
-  return 0;
+    return 0;
 }
