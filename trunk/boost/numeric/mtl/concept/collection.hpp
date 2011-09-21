@@ -741,6 +741,21 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+
+#else
+    template <typename E1, typename E2>
+    struct Collection<matrix::mat_mat_plus_expr<E1, E2> >
+    {
+	typedef typename Collection<E1>::value_type                   ft;
+	typedef typename Collection<E2>::value_type                   st;
+
+	typedef typename Addable<ft, st>::result_type                 value_type;
+	typedef const value_type&                                     const_reference;
+	typedef typename Collection<E1>::size_type                    size_type;
+    };
+#endif
+
 #ifdef __GXX_CONCECPTS__
 
 #else

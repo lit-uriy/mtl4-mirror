@@ -13,6 +13,7 @@
 #ifndef MTL_PRINT_MATRIX_INCLUDE
 #define MTL_PRINT_MATRIX_INCLUDE
 
+#include <cstddef>
 #include <iostream>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
@@ -25,11 +26,11 @@ namespace mtl { namespace matrix {
 template <typename Matrix>
 std::ostream& print_matrix(Matrix const& matrix, std::ostream& out= std::cout, int width= 3, int precision= 2)
 {
-    typedef typename Collection<Matrix>::size_type size_type;
+    // typedef typename Collection<Matrix>::size_type size_type;
     // all indices will start from 0; otherwise wrong
-    for (size_type r= 0, nr= num_rows(matrix); r < nr; ++r) {
+    for (std::size_t r= 0, nr= num_rows(matrix); r < nr; ++r) {
 	out << '[';
-	for (size_type c= 0, nc= num_cols(matrix); c < nc; ++c) {
+	for (std::size_t c= 0, nc= num_cols(matrix); c < nc; ++c) {
 	    out.fill (' '); out.width (width); // out.precision (precision); // out.flags (std::ios_base::right);
 	    if (precision)
 		out.precision(precision); 
