@@ -695,6 +695,16 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
     using std::copy_backward;
     using std::swap;
 
+#if 0
+    std::cout << "elements.size() " << typeid(elements.size()).name() << "\n";
+    std::cout << "matrix.dim1() " << typeid(matrix.dim1()).name() << "\n";
+    std::cout << "matrix.dim1()/2 " << typeid(matrix.dim1()/2).name() << "\n";
+    std::cout << "elements.size() + matrix.dim1()/2 " << typeid(elements.size() + matrix.dim1()/2).name() << "\n";
+
+    std::cout << "slot_size " << typeid(slot_size).name() << "\n";
+    std::cout << "slot_size * matrix.dim1() " << typeid(slot_size * matrix.dim1()).name() << "\n";
+#endif    
+
     vampir_trace<3052> tracer;
     // Stretching is much simpler for empty matrices
     if (elements.empty()) {
@@ -705,8 +715,9 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
 	return;
     }
 
+
     // If there are enough existing entries then skip the stretching (expensive)
-    if (elements.size() + matrix.dim1()/2 > slot_size * matrix.dim1()) {
+    if (elements.size() + matrix.dim1()/2 > std::size_t(slot_size * matrix.dim1())) {
 	// Use start of next row/col as slot_ends
 	copy(starts.begin() + 1, starts.end(), slot_ends.begin());
 	slot_ends[matrix.dim1()]= starts[matrix.dim1()];
@@ -739,7 +750,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
 	    copy_backward(&elements[0] + starts[i-1], &elements[0] + starts[i], &elements[0] + slot_ends[i-1]);
 	    copy_backward(&indices[0] + starts[i-1], &indices[0] + starts[i], &indices[0] + slot_ends[i-1]);
 	}
-    swap(starts, new_starts);		    
+    swap(starts, new_starts);	
 }
 
 template <typename Elt, typename Parameters, typename Updater>
@@ -906,7 +917,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
 	// Check if everything is already in place
 	if (slot_ends[dim1-1] == matrix.my_nnz) {
 	    starts[dim1]= slot_ends[dim1-1];
-	    if (matrix.my_nnz < elements.size()) 
+	    if (std::size_t(matrix.my_nnz) < elements.size()) 
 		elements.resize(matrix.my_nnz), 
 		    indices.resize(matrix.my_nnz);
 	    return;
@@ -921,7 +932,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
 	}
 	new_starts[dim1]= pos;
 	swap(new_starts, starts);
-	if (matrix.my_nnz < elements.size()) 
+	if (std::size_t(matrix.my_nnz) < elements.size()) 
 	    elements.resize(matrix.my_nnz), 
 		indices.resize(matrix.my_nnz);
 	return;
@@ -943,7 +954,7 @@ void compressed2D_inserter<Elt, Parameters, Updater>::final_place()
     operations::shift_blocks(dim1, starts, new_starts, slot_ends, elements);
     operations::shift_blocks(dim1, starts, new_starts, slot_ends, indices);
 
-    if (new_total < elements.size()) {
+    if (std::size_t(new_total) < elements.size()) {
 	elements.resize(new_total);
 	indices.resize(new_total); }
  
