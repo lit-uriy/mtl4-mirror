@@ -688,6 +688,10 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage iteration
    -# \subpage rec_intro
    .
+-# Interfaces to Other Libraries
+   -# \subpage umfpack_intro
+   -# \subpage vampir_trace_intro
+   .
 -# Miscellaneous 
    -# \subpage mixed_complex
    .
@@ -2479,7 +2483,108 @@ much slower) code for smaller matrices.
 
 
 \if Navigation \endif
-  Return to \ref iteration &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref mixed_complex 
+  Return to \ref iteration &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref umfpack_intro 
+
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page umfpack_intro Umfpack Interface
+
+The interface to Umfpack allows you to use a direct solver rather conveniently.
+
+\section umfpack_compiling Compiling and Linking with the Umfpack
+
+The bad news is that cmake has no module for finding Umfpack (and we haven't written
+it either).
+Thus, applications using the umfpack interface need additional compiler and linker flags, e.g.:
+- Compiler flags: <tt>-DMTL_HAS_UMFPACK -I/home/pgottsch/Software/UMFPACK-5.3.0/Include -I/home/pgottsch/Software/AMD/Include -I/home/pgottsch/Software/UFconfig</tt>
+- Linker flags: <tt>-L/home/pgottsch/Software/UMFPACK-5.3.0/Lib -lumfpack -L/home/pgottsch/Software/AMD/Lib -lamd -lblas</tt>
+
+To enable the interface at all "MTL_HAS_UMFPACK" must be defined.
+Then one needs to include the directory of Umfpack's headers and that of libraries used by it: AMD (that has nothing to do with the company) and
+UFconfig.
+These flags can of course be omitted for those headers in default include directories.
+
+The linker flags above add Umfpack, AMD and BLAS.
+The directories of course only needed when they are searched by default as in our case.
+The BLAS library can be omitted as well if Umfpack is configured without BLAS (what nobody does).
+Make sure that your object file comes before these library flags.
+
+The interface is not tested on Visual Studion but the flags should be similar
+in case you spent the time compiling these packages on Windows.
+
+\section umfpack_simple Simple Solution
+
+If you a %matrix A and a %vector b for which you want to solve "A * x == b" you can just write:
+\code
+    umfpack_solve(A, x, b);
+\endcode
+In this case, the matrix is factorized and directly applied on the vector \p b.
+
+
+
+\section umfpack_multi Multiple and Customized Solution
+
+If you want to reuse the matrix factorization from Umfpack you must define
+an object of type \ref matrix::umfpack::solver.
+The matrix is constantly referred in the solver's constructor.
+Additional arguments can be given, see  \ref matrix::umfpack::solver and the 
+<a href="http://www.cise.ufl.edu/research/sparse/umfpack">Umfpack documentation</a>.
+
+\includelineno umfpack_solve_example.cpp
+
+The solver is created in line 31.
+The constructor calls according to its type the functions umfpack_xy_symbolic and umfpack_xy_numeric
+which compute a matrix factorization.
+These data is keept in the solver object and can be reused for multiple linear systems with
+the same matrix.
+
+In line 34 the solver is applied on \p b and on \p b2 (line 35).
+Note that calling umfpack_solve twice would be significantly more work.
+
+\subsection umfpack_changevalue Changing a Matrix Value
+
+In line 38 we modified an existing entry of A.
+(The function lvalue is not portable and a bit dangerous. If the referred entry does not exists it throws an exception.)
+The sparsity structure is not changed.
+This allows us to update only the numeric part in Umfpack while the symbolic part is unchanged.
+
+\subsection umfpack_changestructure Changing the Matrix Structure
+
+Adding new entries into the matrix (line 51) requires a complete update, 
+i.e. a complete new factorization (line 56).
+From the performance prospective, we could as well create a new solver -- this would be the same work.
+However, for software engineering there can be situations where changing an existing solver
+results in cleaner sources.
+
+If we had updated the solver with update_numeric() only the internal Umfpack state is broken.
+This will probably cause the next solver call to fail (we are not sure if sometimes goes through
+with wrong results).
+
+\section umfpack_status Return Status
+
+The solver class checks after each Umfpack call whether status "Ok" is returned 
+and throws an exception otherwise.
+In release mode (when NDEBUG) is defined, no exceptions are thrown.
+The status is also returned to the user (see line 59) -- as long as no exception is thrown beforehand.
+
+
+\if Navigation \endif
+  Return to \ref rec_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref vampir_trace_intro 
+
+
+*/
+
+//-----------------------------------------------------------
+
+
+/*! \page vampir_trace_intro Vampir Trace
+
+\if Navigation \endif
+  Return to \ref umfpack_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref mixed_complex 
 
 
 */
@@ -2533,7 +2638,7 @@ The header boost/numeric/mtl/operation/extended_complex.hpp provides the mixed c
 This file is also available if you include mtl.hpp.
 
 \if Navigation \endif
-  Return to \ref rec_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref function_nesting 
+  Return to \ref vampir_trace_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref function_nesting 
 
 
 */

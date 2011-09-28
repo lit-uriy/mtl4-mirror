@@ -14,6 +14,10 @@
 
 // Example build call: scons -D check=1 with_blas=1 blas_path=/usr/lib64 blas_ldflags=-lblas with_umfpack=1 umfpack_path=/home/wr2/pgottsch/64bit/projects/amdis/AMDiS/lib/UMFPACK amd_path=/home/wr2/pgottsch/64bit/projects/amdis/AMDiS/lib/AMD ufconfig_path=/home/wr2/pgottsch/64bit/projects/amdis/AMDiS/lib/UFconfig umfpack_solve_test
 
+// CMAKE_CXX_FLAGS: -DMTL_HAS_UMFPACK -I/home/pgottsch/Software/UMFPACK-5.3.0/Include -I/home/pgottsch/Software/AMD/Include -I/home/pgottsch/Software/UFconfig
+
+// CMAKE_EXE_LINKER_FLAGS: -L/home/pgottsch/Software/UMFPACK-5.3.0/Lib -lumfpack -L/home/pgottsch/Software/AMD/Lib -lamd -lblas (are before umfpack_solve_test.o but must come after! -> fixed link.flags)
+
 #include <iostream>
 #include <cmath>
 #include <complex>
