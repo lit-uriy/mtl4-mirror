@@ -35,6 +35,7 @@ extern "C" {
 
 namespace mtl { namespace matrix {
 
+    /// Namespace for Umfpack solver
     namespace umfpack {
 
 	// conversion for value_type needed if not double or complex<double> (where possible)
@@ -75,7 +76,7 @@ namespace mtl { namespace matrix {
 	    int code;
 	};
 
-	inline void check(int res, const char *s)
+	inline void check(int res, const char* MTL_THROW_ARG(s))
 	{
 	    MTL_THROW_IF(res != UMFPACK_OK, error(s, res));
 	}
@@ -86,7 +87,8 @@ namespace mtl { namespace matrix {
 	template <typename T> 
 	class solver {
 	  public:
-	    /// Constructor refers to matrix \p A; matrix is not altered.
+	    /// Constructor referring to matrix \p A (not changed) and optionally Umfpack's strategy and alloc_init (look for the specializations)
+	    // \ref solver<compressed2D<double, Parameters> > and \ref solver<compressed2D<std::complex<double>, Parameters> >)
 	    explicit solver(const T& A) {}
 
 	    /// Update numeric part, for matrices that kept the sparsity and changed the values
@@ -100,6 +102,7 @@ namespace mtl { namespace matrix {
 	    int operator()(VectorX& x, const VectorB& b) {return 0;}
 	};
 
+	/// Speciatization of solver for \ref matrix::compressed2D with double values
 	template <typename Parameters>
 	class solver<compressed2D<double, Parameters> >
 	{
@@ -235,7 +238,8 @@ namespace mtl { namespace matrix {
 
 
 	  public:
-	  explicit solver(const matrix_type& A, int strategy = UMFPACK_STRATEGY_AUTO, double alloc_init = 0.7) 
+	    /// Constructor referring to matrix \p A (not changed) and optionally Umfpack's strategy and alloc_init
+	    solver(const matrix_type& A, int strategy = UMFPACK_STRATEGY_AUTO, double alloc_init = 0.7) 
 	      : A(A), Apc(0), Aic(0), my_nnz(0), Symbolic(0), Numeric(0) 
 	    {
 		// Use default setings.
@@ -329,6 +333,7 @@ namespace mtl { namespace matrix {
 	    void                *Symbolic, *Numeric;
 	};
 
+	/// Speciatization of solver for \ref matrix::compressed2D with double values
 	template <typename Parameters>
 	class solver<compressed2D<std::complex<double>, Parameters> >
 	{
@@ -381,7 +386,9 @@ namespace mtl { namespace matrix {
 		init_aux(blong());
 	    }
 	public:
-	    explicit solver(const compressed2D<value_type, Parameters>& A) : A(A), Apc(0), Aic(0)
+	    /// Constructor referring to matrix \p A (not changed) and optionally Umfpack's strategy and alloc_init (look for the specializations)
+	    explicit solver(const compressed2D<value_type, Parameters>& A, int strategy = UMFPACK_STRATEGY_AUTO, double alloc_init = 0.7) 
+	      : A(A), Apc(0), Aic(0)
 	    {
 		// Use default setings.
 		if (long_indices)
@@ -389,6 +396,9 @@ namespace mtl { namespace matrix {
 		else
 		    umfpack_zi_defaults(Control);
 		// umfpack_zi_defaults(Control);
+
+		Control[UMFPACK_STRATEGY] = strategy;
+		Control[UMFPACK_ALLOC_INIT] = alloc_init;
 		initialize();
 	    }
 

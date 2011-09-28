@@ -74,7 +74,7 @@ struct make_out_copy_or_reference<Target, Target>
 template <typename Target, typename Source>
 struct make_in_out_copy_or_reference
 {
-    explicit make_in_out_copy_or_reference(Source& src) : src(src), value(src) {}
+    explicit make_in_out_copy_or_reference(Source& src) : value(src), src(src) {}
     ~make_in_out_copy_or_reference() { src= value; }
 
     Target  value;
