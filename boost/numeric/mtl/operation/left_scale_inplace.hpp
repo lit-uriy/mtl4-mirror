@@ -14,26 +14,25 @@
 #define MTL_LEFT_SCALE_INPLACE_INCLUDE
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/operation/assign_each_nonzero.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
-#include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
-
-#include <boost/lambda/lambda.hpp>
 
 
 namespace mtl {
 
     namespace impl {
 
-	template <typename Factor, typename Collection>
-	inline Collection& left_scale_inplace(const Factor& alpha, tag::scalar, Collection& c)
+	template <typename Factor, typename Coll>
+	inline Coll& left_scale_inplace(const Factor& alpha, tag::scalar, Coll& c)
 	{
 	    vampir_trace<3014> tracer;	    
-	    assign_each_nonzero(c, alpha * boost::lambda::_1);
+	    assign_each_nonzero(c, tfunctor::scale<Factor, typename Collection<Coll>::value_type>(alpha));
+
 	    return c;
 	}
 

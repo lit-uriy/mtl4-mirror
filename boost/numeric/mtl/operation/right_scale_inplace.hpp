@@ -14,23 +14,23 @@
 #define MTL_RIGHT_SCALE_INPLACE_INCLUDE
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/operation/assign_each_nonzero.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
+#include <boost/numeric/mtl/operation/rscale.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
-
-#include <boost/lambda/lambda.hpp>
 
 
 namespace mtl {
 
 
 /// Scale collection \p c from right with scalar factor \p alpha; \p c is altered
-template <typename Factor, typename Collection>
-void right_scale_inplace(Collection& c, const Factor& alpha, tag::scalar)
+template <typename Factor, typename Coll>
+void right_scale_inplace(Coll& c, const Factor& alpha, tag::scalar)
 {
-	vampir_trace<5> tracer;
-    assign_each_nonzero(c, boost::lambda::_1 * alpha);
+    vampir_trace<5> tracer;
+    assign_each_nonzero(c, tfunctor::rscale<typename Collection<Coll>::value_type, Factor>(alpha));
 }
 
 template <typename Factor, typename Matrix>
@@ -38,7 +38,7 @@ void right_scale_inplace(Matrix& m, tag::matrix, const Factor& alpha, tag::matri
 {
     using mtl::swap;
 
-	vampir_trace<4016> tracer;	
+    vampir_trace<4016> tracer;	
     Matrix tmp(num_rows(m), num_cols(m));
     mult(m, alpha, tmp);
     swap(m, tmp);
