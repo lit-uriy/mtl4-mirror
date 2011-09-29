@@ -46,12 +46,12 @@ namespace sfunctor {
 					copysign<Value1, Value2>::apply(imag(v), s));
 	}
     };
-#ifndef _MSC_VER
+#if 0 // ndef _MSC_VER doesn't work on BigRed with gcc 4.2.2 (????) and isn't used anyway
     template <>
     struct copysign<float, float>
     {
 	static inline float apply(float v, float s)
-	{ return copysignf(v, s); }
+	{ return ::copysignf(v, s); }
     };
 
     template <>
