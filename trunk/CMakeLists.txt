@@ -2,7 +2,7 @@
 project (mtl4)
 
 cmake_minimum_required(VERSION 2.6)
-include(Vampir.cmake)
+include(tools/cmake/Vampir.cmake)
 
 include(CheckCXXCompilerFlag)
 
@@ -18,6 +18,8 @@ else(Subversion_FOUND)
 endif(Subversion_FOUND)
 endif (NOT MSVC)
 configure_file(boost/numeric/mtl/version.hpp.in boost/numeric/mtl/version.hpp @ONLY)
+#in general, there are no mtl libraries
+unset(MTL_LIBRARIES )
 # DERIVED VARIABLES
 # no derived variables, this makefile is the toplevel makefile for boost mtl4
 
@@ -84,18 +86,28 @@ endif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 ################ END WINDOWS
 
+# Experimental !!!!
+# add_definitions("-I/home/pgottsch/Software/arprec-2.2.7/include -DMTL_HAS_ARPREC")
+# add_definitions("-static -L/home/pgottsch/Software/arprec-2.2.7/src -larprec")
 
-
+include(${CMAKE_SOURCE_DIR}/tools/cmake/Umfpack.cmake)
+if(HAVE_UMFPACK)
+	add_definitions("-DMTL_HAS_UMFPACK")
+	include_directories(${UMFPACK_INCLUDE_DIRS})
+	list(APPEND MTL_LIBRARIES ${UMFPACK_LIBRARIES})
+endif()
+include(${CMAKE_SOURCE_DIR}/tools/cmake/Arprec.cmake)
+if(HAVE_ARPREC)
+	add_definitions("-DMTL_HAS_ARPREC")
+	include_directories(${ARPREC_INCLUDE_DIRS})
+	list(APPEND MTL_LIBRARIES ${ARPREC_LIBRARIES})
+endif()
 # set the local BOOST MTL4 include directory
 # to pick up the MTL4 include files
 set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root directory")
 
 # include_directories(${Boost_INCLUDE_DIR})
 include_directories(${BOOST_ROOT} ${MTL_BOOST_ROOT})
-
-# Experimental !!!!
-# add_definitions("-I/home/pgottsch/Software/arprec-2.2.7/include -DMTL_HAS_ARPREC")
-# add_definitions("-static -L/home/pgottsch/Software/arprec-2.2.7/src -larprec")
 
 
 #################################################################################
@@ -162,6 +174,7 @@ if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   endif()
   if(ENABLE_GCOV)
 	add_definitions("-fprofile-arcs -ftest-coverage")
+	list(APPEND MTL_LIBRARIES "gcov")
   endif(ENABLE_GCOV)
 endif()
 
@@ -173,9 +186,9 @@ macro (compile_all testing)
     foreach (source ${ARGN})
         get_filename_component (test ${source} NAME_WE)	
         add_executable (${test} ${source} ${INCLUDES})
-	if(ENABLE_GCOV)
-	  target_link_libraries(${test} gcov)
-	endif(ENABLE_GCOV)
+	if(MTL_LIBRARIES)
+	  target_link_libraries(${test} ${MTL_LIBRARIES})
+	endif(MTL_LIBRARIES)
 	if(HAVE_VAMPIR)
 	get_target_property(CURLINK ${test} LINK_FLAGS)
 	if(CURLINK)
