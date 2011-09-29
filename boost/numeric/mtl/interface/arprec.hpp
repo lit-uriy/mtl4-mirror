@@ -39,7 +39,7 @@ namespace math {
     struct identity_t< add<mp_complex>, mp_complex > 
       : public std::binary_function<add<mp_complex>, mp_complex, mp_complex>
     { 
-	mp_complex operator() (const add<mp_complex>&, const mp_complex& ref) const
+	mp_complex operator() (const add<mp_complex>&, const mp_complex& /*ref*/) const
 	{
 	    return mp_complex("0", "0");
 	}
