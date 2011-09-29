@@ -10,11 +10,10 @@
 #define MTL_DIVIDE_BY_INPLACE_INCLUDE
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/operation/assign_each_nonzero.hpp>
 #include <boost/numeric/mtl/operation/divide_by.hpp>
-
-// #include <boost/lambda/lambda.hpp>
 
 
 namespace mtl {
