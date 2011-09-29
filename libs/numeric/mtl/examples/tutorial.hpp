@@ -2583,6 +2583,115 @@ The status is also returned to the user (see line 59) -- as long as no exception
 
 /*! \page vampir_trace_intro Vampir Trace
 
+<a href="http://www.vampir.eu/">Vampir</a> is one of the leading event analyzer and visualization tools
+for performance optimization.
+
+There are several possibilities for automatic generation of event traces during the program execution
+using automatic instrumentation.
+Such automatic instrumentation is very convenient for applications with coarse grained functions. But:
+- The heavy use of many small inline functions in MTL4 would extremely distort the run behavior
+  when every function would be instrumented.
+-  Furthermore, having the complete type information of each argument of a template's function instantiation
+would impede concise displays.
+
+For that reasons, we use manual instrumentation in MTL4.
+
+\section vampir_compiling Compiling and Linking
+
+First we assume that Vampir Trace (>= 7.0) is installed and the compiler "vtc++" is
+in the path.
+
+If your program is in the MTL directory run cmake with enabled Vampir Trace:\n\n
+<tt>cmake -DENABLE_VAMPIR=True</tt>\n\n
+Our module will search for vtc++ and use the options provided by the wrapper.
+CMake also adds the macro "MTL_HAS_VAMPIR"
+
+You also need to set the environment variable VT_GROUPS_SPEC to the vampir_group.dat file in the 
+MTL root directory, for instance::\n\n
+<tt>export VT_GROUPS_SPEC=/home/pgottsch/projects/mtl4/trunk/vampir_groups.dat</tt>\n\n
+Vampir works without this file but with it, the operations are color-grouped regarding the
+classification below.
+
+\section vampir_instrumentation Instrumentation
+
+In the following program we instrumented a toy example:
+
+\includelineno vampir_example.cpp
+
+Each function to be instrumented starts with the definition of a 
+\ref vpt::vampir_trace object.
+The class is imported into the \ref mtl namespace (thus visible in all nested namespaces).
+The objects do not need to be removed 
+when Vampir Trace support is disabled (the class then contains empty inline functions).
+
+The class has an integer template argument which is uniquely associated with a (function) name.
+The name is represented by a static member and set for each template specialization
+of \ref vpt::vampir_trace as in line 15 of the example above.
+
+<b>To not running into conflict with the MTL-internal instrumentation 
+you should use numbers above 10,000.</b>
+
+The name of vampir_trace<9999> is already defined as "main".
+
+We furthermore added "my_add" in the file vampir_group.dat to get the appropriate coloring (as vector operation).
+
+The result of the tracing is shown in the following picture:
+
+\image html vampir_example_trace.png
+
+The performance in this example is lousy because it was compiled with O0 and nothing
+was inlined. True applications are of course much, much faster.
+
+
+\section vampir_categories Categories
+
+The operations are categorized into the following groups:
+
+- 0. Utilities
+- 1. Static-size operations
+- 2. %Vector operations
+- 3. %Matrix %vector & single matrix
+- 4. %Matrix %matrix operations
+- 5. Factorizations, preconditioners
+- 6. Fused operations
+- 7. Iterative solvers
+- 9. Main function, test blocks and user applications
+
+This categorization is more or less driven by complexity and level of abstraction.
+Utilities are simple scalar function. Fused operations are when multiple vector or matrix
+expressions are evaluated simultaneously.
+The category of a function is defined by its number, e.g. vector operations have
+numbers from 2000 to 2999.
+These numbers are used in a script to generate the group file.
+
+\section vampir_enable To Trace or Not To Trace
+
+Events are only traced when MTL_HAS_VPT is defined: either by enabling Vampir in CMake or
+by passing it as compile flag by hand or defining the macro in the program.
+By default the first two categories are not traced because these functions are very short
+and their instrumentation would distort the entire tracing.
+
+There is another macro to control which function is traced: MTL_VPT_LEVEL.
+By default it is set to 2. That means that functions of category 2 or higher are instrumented.
+If one wants instrumenting static-size operations but no utilities one compiles
+the application with the flag:\n\n
+<tt>-DMTL_VPT_LEVEL=1</tt>\n\n
+or sets the flag with ccmake.
+
+\section vampir_rational Rational
+
+We considered passing the function name as argument to the constructor instead
+of identifying the function with an integer template argument.
+However, this does not work due to the internal representation of strings in vampir trace.
+Furthermore, the static strings have much less overhead.
+
+If you add your self-instrumented functions to the vampir_group.dat file of MTL4 the
+next update will override (with packages) it or create a conflict (with subversion).
+If you add a new category at the end of the file, at least the subversions update should not
+remove your personal modifications.
+
+
+
 \if Navigation \endif
   Return to \ref umfpack_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref mixed_complex 
 

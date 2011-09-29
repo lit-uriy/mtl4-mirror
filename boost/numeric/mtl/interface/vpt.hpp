@@ -21,7 +21,10 @@
 
 #include<math.h> 
 
-namespace mtl { namespace vpt {
+namespace mtl { 
+
+/// Namespace for Vampir Trace interface
+namespace vpt {
 
 #ifdef MTL_HAS_VPT
 
@@ -29,11 +32,14 @@ namespace mtl { namespace vpt {
 #  define MTL_VPT_LEVEL 2
 #endif 
 
+/// Class for Vampir Trace
 template <int N>
 class vampir_trace
 {
+    // Statically determine whether the event is traced; just in case you wanted to know how.
     typedef boost::mpl::bool_<(MTL_VPT_LEVEL * 1000 < N)> to_print;
   public:
+    /// Default constructor defines the start point of a trace
     vampir_trace() { entry(to_print());  }
 
     void entry(boost::mpl::false_) {}
@@ -43,6 +49,7 @@ class vampir_trace
 	// std::cout << "vpt_entry(" << N << ")\n";    
     }
     
+    /// Destructor defines the end point of a trace
     ~vampir_trace() { end(to_print());  }
 
     void end(boost::mpl::false_) {}
@@ -52,11 +59,28 @@ class vampir_trace
 	// std::cout << "vpt_end(" << N << ")\n";    
     }
     
+    /// Function to check whether this event is traced with the current setting
     bool is_traced() { return to_print::value; }
 
   private:
     static std::string name;
 };
+
+
+#else
+
+// Dummy when Vampir Trace is not supported
+template <int N>
+class vampir_trace 
+{
+  public:
+    vampir_trace() {}
+    void show_vpt_level() {}
+    bool is_traced() { return false; }
+  private:
+    static std::string name;
+};
+#endif
 
 // Categories:
 // Utilities:                       0000
@@ -435,20 +459,10 @@ template <> std::string vampir_trace<9990>::name("helper_function");
 template <> std::string vampir_trace<9991>::name("function");
 
 
-#else
-    template <int N>
-    class vampir_trace 
-    {
-      public:
-	vampir_trace() {}
-	void show_vpt_level() {}
-	bool is_traced() { return false; }
-    };
-#endif
 
+} // namespace vpt
 
-} // namespace mtl
-
+/// Import of vpt::vampir_trace
 using vpt::vampir_trace;
 
 } // namespace mtl
