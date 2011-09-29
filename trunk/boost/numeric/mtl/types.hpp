@@ -26,5 +26,6 @@
 #include <boost/numeric/mtl/io/test_ostream.hpp>
 
 #include <boost/numeric/mtl/interface/arprec.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 #endif // MTL_TYPES_INCLUDE
