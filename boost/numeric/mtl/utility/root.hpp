@@ -38,6 +38,12 @@ template <typename T>
 struct root<const T>
   : public root<T> {};
 
+// Redundant specialization to make xlc++ happy
+template <typename T, int R, int C>
+struct root<const T[R][C]>
+  : public root<T[R][C]> {};
+
+
 // ============
 // Base classes
 // ============
