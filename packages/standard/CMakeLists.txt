@@ -27,10 +27,11 @@ INSTALL(FILES MTLConfig.cmake ../../README ../../license.mtl.txt
 	DESTINATION share/mtl/
        )
 
-#TODO: let the pre-install-script decide the correct directory (or give a small version, that loads the file above to the cmake guys?)
-#INSTALL(FILES FindMTL.cmake
-#	DESTINATION share/cmake-2.8/Modules/
-#       )
+#install the helper scripts in tools/cmake
+FILE(GLOB CMAKE_HELPERS ../../tools/cmake/*.cmake)
+INSTALL(FILES ${CMAKE_HELPERS} 
+	DESTINATION share/mtl/cmake
+	)
 
 #configure the uninstall script (will remove each hpp-file in boost/*, but leaves the empty directories)
 FILE(GLOB_RECURSE ALL_HPPS_LIST RELATIVE ${CMAKE_CURRENT_BINARY_DIR}/../../ ../../boost/*.hpp)
