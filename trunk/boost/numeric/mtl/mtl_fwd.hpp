@@ -66,7 +66,7 @@ namespace mtl {
         template <typename Value, typename Parameters> 
         typename dense2D<Value, Parameters>::size_type size(const dense2D<Value, Parameters>& matrix);
 
-        template <typename Value, unsigned long Mask, typename Parameters> class morton_dense;
+        template <typename Value, std::size_t Mask, typename Parameters> class morton_dense;
 
         template <typename Value, unsigned long Mask, typename Parameters>
         typename morton_dense<Value, Mask, Parameters>::size_type num_cols(const morton_dense<Value, Mask, Parameters>& matrix);
