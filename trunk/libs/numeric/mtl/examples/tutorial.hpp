@@ -489,7 +489,7 @@ must generate the makefiles  first.
     <tt>export BOOST_ROOT=/usr/include/boost</tt>\n\n
     Note: you can write that line in your file ~/.bashrc, to have it all the time.
     With csh or tcsh you need accordingly:\n\n
-    <tt>setenv BOOST_ROOT/usr/include/boost</tt>\n\n
+    <tt>setenv BOOST_ROOT /usr/include/boost</tt>\n\n
     which can be put into ~/.cshrc as well.
 -# You need a C++ compiler, e.g. g++. On most Linux distributions, this is installed 
    by default. If not you can install it easily with a package manager.
