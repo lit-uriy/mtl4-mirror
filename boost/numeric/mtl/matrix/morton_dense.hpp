@@ -320,7 +320,7 @@ struct morton_dense_col_iterator
 
 
 /// Dense Morton-order matrix 
-template <typename Elt, unsigned long BitMask, typename Parameters = mtl::matrix::parameters<> >
+template <typename Elt, std::size_t BitMask, typename Parameters = mtl::matrix::parameters<> >
 class morton_dense 
   : public base_sub_matrix<Elt, Parameters>, 
     public mtl::detail::contiguous_memory_block<Elt, false>,
