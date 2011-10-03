@@ -74,7 +74,7 @@ struct static_num_rows<mtl::matrix::dense2D<V, P> >
   : static_num_rows<typename P::dimensions> 
 {};
 
-template <typename V, unsigned long M, typename P> 
+template <typename V, std::size_t M, typename P> 
 struct static_num_rows<mtl::matrix::morton_dense<V, M, P> > 
   : static_num_rows<typename P::dimensions> 
 {};

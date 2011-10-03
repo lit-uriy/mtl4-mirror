@@ -40,7 +40,7 @@ struct transposed_matrix_type<matrix::compressed2D<Value, Parameters> >
     typedef matrix::compressed2D<Value, typename transposed_matrix_parameter<Parameters>::type> type;
 };
 
-template <typename Value, unsigned long Mask, typename Parameters>
+template <typename Value, std::size_t Mask, typename Parameters>
 struct transposed_matrix_type<matrix::morton_dense<Value, Mask, Parameters> >
 {
     typedef matrix::morton_dense<Value, Mask, typename transposed_matrix_parameter<Parameters>::type> type;

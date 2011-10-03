@@ -1,8 +1,7 @@
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

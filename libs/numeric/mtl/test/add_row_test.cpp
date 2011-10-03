@@ -11,6 +11,7 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
+#include <typeinfo>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -30,6 +31,9 @@ void test(Matrix& A, const char* name)
 {
     typedef typename mtl::Collection<Matrix>::value_type   value_type;
     typedef typename mtl::Collection<Matrix>::size_type    size_type;
+
+    // std::cout << "\n" << name  << ", type of size_type is " << typeid(size_type).name() << '\n';
+    // std::cout << "type of size_type is " << typeid(typename Matrix::size_type).name() << '\n';
 
     A.change_dim(3, 3);
     {

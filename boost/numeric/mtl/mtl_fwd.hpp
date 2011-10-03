@@ -68,11 +68,11 @@ namespace mtl {
 
         template <typename Value, std::size_t Mask, typename Parameters> class morton_dense;
 
-        template <typename Value, unsigned long Mask, typename Parameters>
+        template <typename Value, std::size_t Mask, typename Parameters>
         typename morton_dense<Value, Mask, Parameters>::size_type num_cols(const morton_dense<Value, Mask, Parameters>& matrix);
-        template <typename Value, unsigned long Mask, typename Parameters>
+        template <typename Value, std::size_t Mask, typename Parameters>
         typename morton_dense<Value, Mask, Parameters>::size_type num_rows(const morton_dense<Value, Mask, Parameters>& matrix);
-        template <typename Value, unsigned long Mask, typename Parameters>
+        template <typename Value, std::size_t Mask, typename Parameters>
         typename morton_dense<Value, Mask, Parameters>::size_type size(const morton_dense<Value, Mask, Parameters>& matrix);
 
         template <typename Value, typename Parameters> class compressed2D;

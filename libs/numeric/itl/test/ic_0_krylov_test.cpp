@@ -15,7 +15,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
-#include <boost/test/minimal.hpp>
+// #include <boost/test/minimal.hpp>
 
 #define MTL_RUN_SOLVER( name, solver, args)				\
     {									\
@@ -36,7 +36,7 @@
     }
     
  
-int test_main(int, char**)
+int main(int, char**)
 {
     // For a more realistic example set size to 1000 or larger
     const int size = 4, N = size * size;

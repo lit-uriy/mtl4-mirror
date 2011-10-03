@@ -13,7 +13,7 @@
 #include <iostream>
 #include <utility>
 #include <cmath>
-#include <boost/test/minimal.hpp>
+// #include <boost/test/minimal.hpp>
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
@@ -52,7 +52,7 @@ struct grad_f_test
 };
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
 

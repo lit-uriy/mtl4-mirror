@@ -75,7 +75,7 @@ struct category<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
 {};
 
 
-template <typename Elt, unsigned long BitMask, typename Parameters>
+template <typename Elt, std::size_t BitMask, typename Parameters>
 struct category<morton_dense<Elt, BitMask, Parameters> >
 {
     typedef mtl::tag::morton_dense type;
