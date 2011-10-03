@@ -64,7 +64,7 @@ struct eval< mtl::matrix::dense2D<Value, Parameter> >
     {}
 };
 
-template <typename Value, long unsigned Mask, typename Parameter>
+template <typename Value, std::size_t Mask, typename Parameter>
 struct eval< mtl::matrix::morton_dense<Value, Mask, Parameter> >
     : public impl::eval_self_ref< mtl::matrix::morton_dense<Value, Mask, Parameter> >
 {

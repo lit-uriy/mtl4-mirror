@@ -12,7 +12,7 @@
 
 #include <cmath>
 
-#include <boost/test/minimal.hpp>
+// #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
@@ -51,7 +51,7 @@ void test1(Matrix& m, double tau)
   } 
 }
 
-int test_main(int, char**)
+int main(int, char**)
 {
   const int size= 10, N = size * size; // Original from Jan had 2000 
   const int Niter = 3*N;

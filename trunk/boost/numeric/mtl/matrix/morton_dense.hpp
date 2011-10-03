@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/utility/common_include.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/base_sub_matrix.hpp>
 #include <boost/numeric/mtl/detail/contiguous_memory_block.hpp>
@@ -37,7 +38,7 @@ namespace mtl { namespace matrix {
 // Helper type
 struct morton_dense_sub_ctor {};
 
-template <unsigned long BitMask>
+template <std::size_t BitMask>
 struct morton_dense_key
 {
     typedef std::size_t                               size_type;
@@ -98,7 +99,7 @@ public:
     dilated_col_t                dilated_col; 
 };
 
-template <unsigned long BitMask>
+template <std::size_t BitMask>
 struct morton_dense_el_cursor 
   : public morton_dense_key<BitMask>
 {
@@ -136,7 +137,7 @@ protected:
     size_t                       num_cols;
 };
 
-template <unsigned long BitMask>
+template <std::size_t BitMask>
 struct morton_dense_row_cursor 
     : public morton_dense_key<BitMask>
 {
@@ -191,7 +192,7 @@ struct morton_dense_row_cursor
     }
 };
 
-template <unsigned long BitMask>
+template <std::size_t BitMask>
 struct morton_dense_col_cursor 
     : public morton_dense_key<BitMask>
 {
@@ -252,7 +253,7 @@ struct morton_dense_row_const_iterator
     : utilities::const_iterator_adaptor<typename mtl::traits::const_value<Matrix>::type, morton_dense_row_cursor<Matrix::mask>,
 					typename Matrix::value_type>
 {
-    static const unsigned long                          mask= Matrix::mask;
+    static const std::size_t                          mask= Matrix::mask;
     typedef morton_dense_row_cursor<mask>               cursor_type;
     typedef typename mtl::traits::const_value<Matrix>::type  map_type;
     typedef typename Matrix::value_type                 value_type;
@@ -270,7 +271,7 @@ struct morton_dense_row_iterator
     : utilities::iterator_adaptor<typename mtl::traits::value<Matrix>::type, morton_dense_row_cursor<Matrix::mask>,
 				  typename Matrix::value_type>
 {
-    static const unsigned long                          mask= Matrix::mask;
+    static const std::size_t                          mask= Matrix::mask;
     typedef morton_dense_row_cursor<mask>               cursor_type;
     typedef typename mtl::traits::value<Matrix>::type   map_type;
     typedef typename Matrix::value_type                 value_type;
@@ -288,7 +289,7 @@ struct morton_dense_col_const_iterator
     : utilities::const_iterator_adaptor<typename mtl::traits::const_value<Matrix>::type, morton_dense_col_cursor<Matrix::mask>,
 					typename Matrix::value_type>
 {
-    static const unsigned long                          mask= Matrix::mask;
+    static const std::size_t                          mask= Matrix::mask;
     typedef morton_dense_col_cursor<mask>               cursor_type;
     typedef typename mtl::traits::const_value<Matrix>::type  map_type;
     typedef typename Matrix::value_type                 value_type;
@@ -306,7 +307,7 @@ struct morton_dense_col_iterator
     : utilities::iterator_adaptor<typename mtl::traits::value<Matrix>::type, morton_dense_col_cursor<Matrix::mask>,
 				  typename Matrix::value_type>
 {
-    static const unsigned long                          mask= Matrix::mask;
+    static const std::size_t                          mask= Matrix::mask;
     typedef morton_dense_col_cursor<mask>               cursor_type;
     typedef typename mtl::traits::value<Matrix>::type   map_type;
     typedef typename Matrix::value_type                 value_type;
@@ -342,8 +343,8 @@ class morton_dense
     typedef Elt                               value_type;
     typedef const value_type&                 const_reference;
     typedef value_type&                       reference;
-    typedef std::size_t                       size_type;
-    const static size_type                    mask= BitMask;
+    typedef typename parameters::size_type    size_type;
+    const static std::size_t                  mask= BitMask;
 
     //  implement cursor for morton matrix, somewhere
     //  also, morton indexer?
@@ -568,7 +569,7 @@ class morton_dense
 // ================
 
 /// Number of rows
-template <typename Value, unsigned long Mask, typename Parameters>
+template <typename Value, std::size_t Mask, typename Parameters>
 typename morton_dense<Value, Mask, Parameters>::size_type
 inline num_rows(const morton_dense<Value, Mask, Parameters>& matrix)
 {
@@ -576,7 +577,7 @@ inline num_rows(const morton_dense<Value, Mask, Parameters>& matrix)
 }
 
 /// Number of columns
-template <typename Value, unsigned long Mask, typename Parameters>
+template <typename Value, std::size_t Mask, typename Parameters>
 typename morton_dense<Value, Mask, Parameters>::size_type
 inline num_cols(const morton_dense<Value, Mask, Parameters>& matrix)
 {
@@ -584,7 +585,7 @@ inline num_cols(const morton_dense<Value, Mask, Parameters>& matrix)
 }
 
 /// Matrix size, i.e. number of rows times columns
-template <typename Value, unsigned long Mask, typename Parameters>
+template <typename Value, std::size_t Mask, typename Parameters>
 typename morton_dense<Value, Mask, Parameters>::size_type
 inline size(const morton_dense<Value, Mask, Parameters>& matrix)
 {
@@ -616,7 +617,7 @@ namespace mtl { namespace traits {
     // For cursors
     // ===========
 
-    template <class Elt, unsigned long BitMask, class Parameters>
+    template <class Elt, std::size_t BitMask, class Parameters>
     struct range_generator<glas::tag::all, morton_dense<Elt, BitMask, Parameters> >
     {
 	typedef morton_dense<Elt, BitMask, Parameters>        Matrix;
@@ -633,18 +634,18 @@ namespace mtl { namespace traits {
 	}
     };
 
-    template <class Elt, unsigned long BitMask, class Parameters>
+    template <class Elt, std::size_t BitMask, class Parameters>
     struct range_generator<glas::tag::nz, morton_dense<Elt, BitMask, Parameters> >
 	: range_generator<glas::tag::all, morton_dense<Elt, BitMask, Parameters> >
     {};
 
-    template <class Elt, unsigned long BitMask, class Parameters>
+    template <class Elt, std::size_t BitMask, class Parameters>
     struct range_generator<glas::tag::row, morton_dense<Elt, BitMask, Parameters> >
 	: detail::all_rows_range_generator<morton_dense<Elt, BitMask, Parameters>, complexity_classes::linear_cached> 
     {};
 
     // For a cursor pointing to some row give the range of elements in this row 
-    template <class Elt, unsigned long BitMask, class Parameters>
+    template <class Elt, std::size_t BitMask, class Parameters>
     struct range_generator<glas::tag::nz, 
 			   detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tag::row, 2> >
     {
@@ -669,20 +670,20 @@ namespace mtl { namespace traits {
 	}
     };
 
-    template <class Elt, unsigned long BitMask, class Parameters>
+    template <class Elt, std::size_t BitMask, class Parameters>
     struct range_generator<glas::tag::all, 
 			   detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tag::row, 2> >
         : range_generator<glas::tag::nz, 
 			  detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tag::row, 2> >
     {};
 
-    template <class Elt, unsigned long BitMask, class Parameters>
+    template <class Elt, std::size_t BitMask, class Parameters>
     struct range_generator<glas::tag::col, morton_dense<Elt, BitMask, Parameters> >
 	: detail::all_cols_range_generator<morton_dense<Elt, BitMask, Parameters>, complexity_classes::linear_cached> 
     {};
 
     // For a cursor pointing to some row give the range of elements in this row 
-    template <class Elt, unsigned long BitMask, class Parameters>
+    template <class Elt, std::size_t BitMask, class Parameters>
     struct range_generator<glas::tag::nz, 
 			   detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tag::col, 2> >
     {
@@ -707,7 +708,7 @@ namespace mtl { namespace traits {
 	}
     };
 
-    template <class Elt, unsigned long BitMask, class Parameters>
+    template <class Elt, std::size_t BitMask, class Parameters>
     struct range_generator<glas::tag::all, 
 			   detail::sub_matrix_cursor<morton_dense<Elt, BitMask, Parameters>, glas::tag::col, 2> >
         : range_generator<glas::tag::nz, 
@@ -787,25 +788,25 @@ namespace mtl { namespace traits {
     } // namespace detail
 
         
-    template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
+    template <typename Value, std::size_t BitMask, typename Parameters, typename OuterTag>
     struct range_generator<tag::iter::nz, 
 			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
       : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, false>
     {};
 
-    template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
+    template <typename Value, std::size_t BitMask, typename Parameters, typename OuterTag>
     struct range_generator<tag::iter::all, 
 			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
       : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, false>
     {};
 
-    template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
+    template <typename Value, std::size_t BitMask, typename Parameters, typename OuterTag>
     struct range_generator<tag::const_iter::nz, 
 			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
       : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, true>
     {};
 
-    template <typename Value, unsigned long BitMask, typename Parameters, typename OuterTag>
+    template <typename Value, std::size_t BitMask, typename Parameters, typename OuterTag>
     struct range_generator<tag::const_iter::all, 
 			   detail::sub_matrix_cursor<morton_dense<Value, BitMask, Parameters>, OuterTag, 2> >
       : public detail::morton_dense_iterator_range_generator<OuterTag, morton_dense<Value, BitMask, Parameters>, true>
@@ -821,7 +822,7 @@ namespace mtl { namespace matrix {
     // Sub matrix
     // ==========
 
-    template <typename Value, unsigned long BitMask, typename Parameters>
+    template <typename Value, std::size_t BitMask, typename Parameters>
     struct sub_matrix_t<morton_dense<Value, BitMask, Parameters> >
     {
         typedef morton_dense<Value, BitMask, Parameters>    matrix_type;
@@ -848,7 +849,7 @@ namespace mtl { namespace matrix {
 namespace mtl {
 
     // Enable cloning of dense matrices
-    template <typename Value, unsigned long BitMask, typename Parameters>
+    template <typename Value, std::size_t BitMask, typename Parameters>
     struct is_clonable< morton_dense<Value, BitMask, Parameters> > : boost::mpl::true_ {};
         
 } // namespace mtl

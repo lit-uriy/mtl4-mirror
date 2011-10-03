@@ -152,7 +152,7 @@ struct ashape_aux<dense2D<Value, Parameters> >
     typedef mat<typename ashape<Value>::type> type;
 };
    
-template <typename Value, unsigned long Mask, typename Parameters>
+template <typename Value, std::size_t Mask, typename Parameters>
 struct ashape_aux<morton_dense<Value, Mask, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;

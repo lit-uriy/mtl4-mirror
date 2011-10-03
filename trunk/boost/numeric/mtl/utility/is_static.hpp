@@ -27,7 +27,7 @@ namespace mtl { namespace traits {
     template <typename V, typename P> struct is_static<mtl::vector::dense_vector<V, P> > : is_static<typename P::dimension> {};
 
     template <typename V, typename P> struct is_static<mtl::matrix::dense2D<V, P> > : is_static<typename P::dimensions> {};
-    template <typename V, unsigned long M, typename P> struct is_static<mtl::matrix::morton_dense<V, M, P> > : is_static<typename P::dimensions> {};
+    template <typename V, std::size_t M, typename P> struct is_static<mtl::matrix::morton_dense<V, M, P> > : is_static<typename P::dimensions> {};
     template <typename V, typename P> struct is_static<mtl::matrix::compressed2D<V, P> > : is_static<typename P::dimensions> {};
 
 }} // namespace mtl::traits

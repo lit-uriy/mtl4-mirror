@@ -15,7 +15,7 @@
 #include <cmath>
 #include <string>
 
-#include <boost/test/minimal.hpp>
+// #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
@@ -62,7 +62,7 @@ void test(char const* name, char const* comment, Matrix const& A, Vector& x, Vec
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     const int N = 2;
     typedef mtl::compressed2D<double> matrix_type;

@@ -313,12 +313,12 @@ namespace mtl {
 #ifdef __GXX_CONCEPTS__
 
 #else
-    template <typename Value, unsigned long Mask, typename Parameters>
+    template <typename Value, std::size_t Mask, typename Parameters>
     struct Collection<mtl::matrix::morton_dense<Value, Mask, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
-	typedef typename mtl::matrix::morton_dense<Value, Mask, Parameters>::size_type size_type;
+	typedef typename Parameters::size_type size_type;
     };
 #endif
 

@@ -61,25 +61,25 @@ struct value<dense2D<Value, Parameters> >
 // ================
 
 
-template <class Elt, unsigned long BitMask, class Parameters>
+template <class Elt, std::size_t BitMask, class Parameters>
 struct row<morton_dense<Elt, BitMask, Parameters> >
 {
     typedef mtl::detail::row_in_key<morton_dense<Elt, BitMask, Parameters> > type;
 };
 
-template <class Elt, unsigned long BitMask, class Parameters>
+template <class Elt, std::size_t BitMask, class Parameters>
 struct col<morton_dense<Elt, BitMask, Parameters> >
 {
     typedef mtl::detail::col_in_key<morton_dense<Elt, BitMask, Parameters> > type;
 };
 
-template <class Elt, unsigned long BitMask, class Parameters>
+template <class Elt, std::size_t BitMask, class Parameters>
 struct const_value<morton_dense<Elt, BitMask, Parameters> >
 {
     typedef mtl::detail::matrix_const_value_ref<morton_dense<Elt, BitMask, Parameters> > type;
 };
 
-template <class Elt, unsigned long BitMask, class Parameters>
+template <class Elt, std::size_t BitMask, class Parameters>
 struct value<morton_dense<Elt, BitMask, Parameters> >
 {
     typedef mtl::detail::matrix_value_ref<morton_dense<Elt, BitMask, Parameters> > type;

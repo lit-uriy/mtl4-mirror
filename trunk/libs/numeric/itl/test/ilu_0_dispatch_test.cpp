@@ -10,7 +10,7 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-#include <boost/test/minimal.hpp>
+// #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
@@ -51,7 +51,7 @@ void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
 }
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     // For a more realistic example set sz to 1000 or larger
     const int N = 5;

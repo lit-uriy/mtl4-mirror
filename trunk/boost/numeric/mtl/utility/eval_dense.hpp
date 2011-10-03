@@ -34,7 +34,7 @@ struct eval_dense< mtl::matrix::dense2D<Value, Parameter> >
     : boost::mpl::true_
 {};
 
-template <typename Value, long unsigned Mask, typename Parameter>
+template <typename Value, std::size_t Mask, typename Parameter>
 struct eval_dense< mtl::matrix::morton_dense<Value, Mask, Parameter> >
     : boost::mpl::true_
 {};

@@ -1,9 +1,8 @@
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 using namespace std;
-int test_main(int, char**)
+int main(int, char**)
 {
     mtl::dense2D<double>    A(3, 4), A_t(3, 4), S(3, 3), V(3, 4), D(4,4);
     A= 0;
