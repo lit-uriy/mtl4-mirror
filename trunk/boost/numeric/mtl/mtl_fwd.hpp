@@ -68,12 +68,14 @@ namespace mtl {
 
         template <typename Value, std::size_t Mask, typename Parameters> class morton_dense;
 
+ #if !defined(_MSC_VER) || _MSC_VER != 1400 // Trouble in MSVC 2005
         template <typename Value, std::size_t Mask, typename Parameters>
         typename morton_dense<Value, Mask, Parameters>::size_type num_cols(const morton_dense<Value, Mask, Parameters>& matrix);
         template <typename Value, std::size_t Mask, typename Parameters>
         typename morton_dense<Value, Mask, Parameters>::size_type num_rows(const morton_dense<Value, Mask, Parameters>& matrix);
         template <typename Value, std::size_t Mask, typename Parameters>
         typename morton_dense<Value, Mask, Parameters>::size_type size(const morton_dense<Value, Mask, Parameters>& matrix);
+#endif
 
         template <typename Value, typename Parameters> class compressed2D;
 
