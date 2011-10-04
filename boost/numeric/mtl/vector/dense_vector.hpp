@@ -187,9 +187,8 @@ class dense_vector
 	memory_base::move_assignment(src);
 	return *this;
     }
-#endif
-
-#if defined(_MSC_VER) && !defined(MTL_VECTOR_MOVE_EMULATION)
+#else
+// #if defined(_MSC_VER) && !defined(MTL_VECTOR_MOVE_EMULATION)
     /// Copy assignment
     self& operator=(const self& src)
     {
