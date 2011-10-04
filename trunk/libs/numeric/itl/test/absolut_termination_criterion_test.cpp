@@ -17,7 +17,7 @@
 int main()
 {
   // For a more realistic example set size to 1000 or larger
-  const int size = 10, N = size * size;
+  const int size = 4, N = size * size;
   const double abs= 1.e-6; // Choose appropriately for size
 
   typedef mtl::compressed2D<double>  matrix_type;

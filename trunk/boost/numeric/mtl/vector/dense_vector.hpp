@@ -189,6 +189,20 @@ class dense_vector
     }
 #endif
 
+#if defined(_MSC_VER) && !defined(MTL_VECTOR_MOVE_EMULATION)
+    /// Copy assignment
+    self& operator=(const self& src)
+    {
+		if (this == &src)
+			return *this;
+
+		checked_change_dim(src.used_memory());
+		memory_base::operator=(src);
+		return *this;
+    }
+#endif
+
+
 #ifdef __PGI
     using crtp_base::operator=;
 #else
