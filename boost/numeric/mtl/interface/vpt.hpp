@@ -82,6 +82,8 @@ class vampir_trace
 };
 #endif
 
+#ifdef MTL_HAS_VPT
+
 // Categories:
 // Utilities:                       0000
 // Static size operations:          1000
@@ -458,7 +460,7 @@ template <> std::string vampir_trace<9999>::name("main");
 template <> std::string vampir_trace<9990>::name("helper_function");
 template <> std::string vampir_trace<9991>::name("function");
 
-
+#endif
 
 } // namespace vpt
 
