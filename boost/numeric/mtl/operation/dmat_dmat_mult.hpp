@@ -982,7 +982,6 @@ struct fully_unroll_dmat_dmat_mult_init_block<Max0, Max0, Max1, Max1, Assign>
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     static inline void apply(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
-	// Assign::first_update(C[base::index0][base::index1], A[base::index0][0] * B[0][base::index1]);
 	Assign::first_update(C(base::index0, base::index1), A(base::index0, 0) * B(0, base::index1));
     }
 };
@@ -999,9 +998,7 @@ struct fully_unroll_dmat_dmat_mult_block
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     static inline void apply(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
- 	// Assign::update(C(base::index0, base::index1), A(base::index0, base::index2) * B(base::index2, base::index1));
 	Assign::update(C(base::index1, base::index2), A(base::index1, base::index0) * B(base::index0, base::index2));
-
 	next_t::apply(A, B, C);
     }   
 };
@@ -1015,7 +1012,6 @@ struct fully_unroll_dmat_dmat_mult_block<Max0, Max0, Max1, Max1, Max2, Max2, Ass
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     static inline void apply(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
- 	// Assign::update(C(base::index0, base::index1), A(base::index0, base::index2) * B(base::index2, base::index1));
 	Assign::update(C(base::index1, base::index2), A(base::index1, base::index0) * B(base::index0, base::index2));
     }   
 };
@@ -1053,7 +1049,6 @@ struct fully_unroll_fixed_size_dmat_dmat_mult_t
 	fully_unroll_dmat_dmat_mult_init_block<1, rows_c, 1, cols_c, Assign>::apply(A, B, C); 
 
 	// corresponds to C+= A[all][1:] * B[1:][all]; if necessary
-	// typedef fully_unroll_dmat_dmat_mult_block<1, rows_c, 1, cols_c, 2, cols_a, Assign>  f2;
 	typedef fully_unroll_dmat_dmat_mult_block<2, cols_a, 1, rows_c, 1, cols_c, Assign>  f2;
 	typedef typename boost::mpl::if_c<(cols_a > 1), f2, noop>::type                     f3;
 	f3::apply(A, B, C);
