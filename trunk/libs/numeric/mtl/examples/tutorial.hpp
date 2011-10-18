@@ -52,6 +52,7 @@ But it should give you enough information to get started.
 
 - \subpage intro 
 - \subpage install 
+- \subpage debugger_support 
 - \subpage IDE
 - \subpage tutorial  
 - \subpage overview_ops  
@@ -400,6 +401,83 @@ More compilers will be tested in the future.
 Compilers that are not standard-compliant (e.g. VC 6.0) are not subject to support.
 Visual Studio is considered standard-compliant from VC 7.1 on but we still had trouble to compile MTL4
 and even in VC 8.0 we needed a little work-around.
+
+
+Proceed to the \ref debugger_support.  
+
+*/
+//-----------------------------------------------------------
+
+//-----------------------------------------------------------
+/*! 
+\page debugger_support Debugger Support
+
+We currently support gdb, DDD and <a href="http://www.allinea.com/ddt">Allinea DDT</a>.
+
+<b>This requires gdb 7.0 or higher.</b> (This can be a problem on MacOS.)
+
+Disclaimer: Since we used the implementation of STL container support (which is under GPL) we
+put the debugger support under GPL as well to comply with the license rules.
+As we separated this implementation from the rest of MTL4 it does not affect
+the license regulations of the remainder of MTL4, in particular not the commercial editions.
+
+\section debugger_installation Installation
+
+-# Download the archive of the MTL printers from <a href="http://www.simunova.com/node/145">our web page</a>.
+-# Decompress unzip gdb_printers.zip
+-# Modify in your home directory the file .gdbinit as described below.
+
+Your file <tt>$HOME/.gdbinit</tt> could read:
+
+\include gdbinit_example.hpp 
+
+In fact, you can copy this file to your home directory and replace <tt>/home/username/tools</tt> with the path
+where you unzipped the archive <tt>gdb_printers.zip</tt>.
+
+The support for STL containers is highly recommended for any up-to-date C++ programmer, 
+see <a href="http://sourceware.org/gdb/wiki/STLSupport">here for details</a>.
+
+\section debugger_gdb gdb
+
+In gdb you can simple write <tt>print v</tt> for any vector and <tt>print A</tt> for matrices. See for supported types below.
+
+\section debugger_ddd Data Display Debugger
+
+DDD can print data in the same manner as gdb but displaying them is of course more elegant:
+
+\image html DDD.png
+
+Vectors can be modified on the fly (you have to delete the type information in the input window).
+Matrices will be modifiable in the future.
+
+If you really want to see the complete information (even for us this is ugly),
+you can type<br>
+<tt>print /r A</tt><br> 
+in the lower gdb window.
+
+
+\section debugger_ddt Allinea Distributed Debugging Tool
+
+This should work out of the box. We will add screenshots soon.
+
+\section totalview_support Totalview Support
+
+Might be added some day -- the interface for user types is less convenient.
+
+\section debugger_types Supported Types
+
+So far we have implemented:
+- vector::dense_vector
+  - With dynamic size
+  - With static size
+  - Values can be modified
+  .
+- matrix::dense2D
+  - With dynamic size
+  - With static size
+  .
+- matrix::compressed2D
+.
 
 
 Proceed to the \ref IDE.  
