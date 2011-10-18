@@ -53,6 +53,25 @@ namespace impl {
 	}   
     };
 
+    // need specialization here for not going back to column 0 but column 1
+    template <std::size_t Index0, std::size_t Max0, std::size_t Max1, typename Assign>
+    struct fully_unroll_mat_cvec_mult<Index0, Max0, Max1, Max1, Assign>
+      : public meta_math::loop2<Index0, Max0, Max1, Max1>
+    {
+	typedef meta_math::loop2<Index0, Max0, Max1, Max1>                              base;
+	typedef fully_unroll_mat_cvec_mult<base::next_index0, Max0, 2, Max1, Assign>  next_t;
+
+	template <typename Matrix, typename VectorIn, typename VectorOut>
+	static inline void apply(const Matrix& A, const VectorIn& v, VectorOut& w)
+	{
+	    Assign::update(w[base::index0], A[base::index0][base::index1] * v[base::index1]);
+	    next_t::apply(A, v, w);
+	}   
+    };
+
+
+
+
     template <std::size_t Max0, std::size_t Max1, typename Assign>
     struct fully_unroll_mat_cvec_mult<Max0, Max0, Max1, Max1, Assign>
       : public meta_math::loop2<Max0, Max0, Max1, Max1>
