@@ -6,7 +6,7 @@
 
 int main(int, char**)
 {
-    using mtl::max;
+    using mtl::max; using std::pow; // to avoid possible ambiguity with ARPREC
 
     mtl::dense_vector<double>         v(100);
 
