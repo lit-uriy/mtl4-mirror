@@ -52,8 +52,9 @@ namespace mtl {
 		    {
 			// lambda expressions need reference and property map returns only const values
 			// awfully inefficient
-			typename Collection<Matrix>::value_type tmp= value(*icursor);
-			value(*icursor, f(tmp));
+			//			typename Collection<Matrix>::value_type tmp= value(*icursor);
+			//value(*icursor, f(tmp));
+			value(*icursor, f(value(*icursor))); 
 		    }
 	}
 
