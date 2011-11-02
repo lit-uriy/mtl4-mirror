@@ -49,13 +49,7 @@ namespace mtl {
 	    for (cursor_type cursor = begin<tag::major>(m), cend = end<tag::major>(m); cursor != cend; ++cursor) 
 		for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); 
 		     icursor != icend; ++icursor)
-		    {
-			// lambda expressions need reference and property map returns only const values
-			// awfully inefficient
-			//			typename Collection<Matrix>::value_type tmp= value(*icursor);
-			//value(*icursor, f(tmp));
 			value(*icursor, f(value(*icursor))); 
-		    }
 	}
 
     } // namespace matrix
