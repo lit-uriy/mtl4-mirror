@@ -76,7 +76,7 @@ namespace vector {
 	
 	for(size_type j= 1; j < max_col; j++)
 	    if(abs(v[j]) > max) {
-		max = v[j];
+		max = abs(v[j]);
 		i= j;
 	    }
 	return i;
