@@ -45,6 +45,7 @@
 #include <boost/numeric/mtl/operation/lu.hpp>
 #include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/minimal_increase.hpp>
+#include <boost/numeric/mtl/operation/misc.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/norms.hpp>
 #include <boost/numeric/mtl/operation/ones.hpp>
