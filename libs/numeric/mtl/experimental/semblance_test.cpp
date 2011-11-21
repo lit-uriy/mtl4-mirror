@@ -25,22 +25,21 @@ void init_data(Matrix& T)
 }
 
 template <typename Matrix, typename Vector>
-void w_semlance(const Matrix& T, Vector& semb, int nwin, int lwin, int linc)
+void w_semblance(const Matrix& T, Vector& semb, int nwin, int lwin, int linc)
 {
-    typedef dense_vector<float, mtl::vector::parameters<row_major> > rtype;
     int nsamp= num_rows(T), ntr= num_cols(T);
     dense_vector<double> sumsqr(nsamp), sqrsum(nsamp);
 
     for (int i= 0; i < nsamp; i++) {
-	const rtype& rowi= T[i][iall];
-	sumsqr[i]= sum(rtype(ele_prod(rowi, rowi)));  // rtype won't be needed here in future
-	sqrsum[i]= square(sum(rowi));
+	sumsqr[i]= unary_dot(T[i][iall]);
+	sqrsum[i]= square(sum(T[i][iall]));
     }
     
     for (int i= 1, ll= 0; i <= nwin; i++, ll+= linc) {
 	int kkend= ll + kkend > nsamp ? nsamp - ll : lwin;
-	double sumsq= sum(sumsqr[irange(ll, kkend)]),
-	       sumampsq= sum(sqrsum[irange(ll, kkend)]),
+	irange r(ll, kkend);
+	double sumsq= sum(sumsqr[r]),
+	       sumampsq= sum(sqrsum[r]),
 	       value= ntr * sumsq;
 	semb[i]= value != 0.0 ? sumampsq / value : 0.0;
     }
@@ -58,7 +57,7 @@ int main()
 
     dense_vector<double> semb(nsamples/2 + 1, 0.0);
     int lwin= 5, linc= 2, nwin= size(semb) - linc;
-    w_semlance(traces, semb, nwin, lwin, linc);
+    w_semblance(traces, semb, nwin, lwin, linc);
     
     cout << "Semblance is " << semb << '\n';
 
