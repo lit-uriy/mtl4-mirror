@@ -5742,10 +5742,11 @@ dense2D<cdouble> B= A[row][col];
 // xxxxxxxxxxxxx
 
 
-/*! \page faq Frequently Asked Questions
+/*! \page faq FAQ - Frequently Asked Questions
 
 
 -# \ref faq_not_inserting
+-# \ref faq_one_based
 -# \ref mtl4_part_of_boost
 -# \ref mtl4_in_linux_distributions
 -# \ref traits_error
@@ -5798,6 +5799,20 @@ For more information read \ref destroy_inserter "this".
 No. But it has the same directory structure as boost with the intention
 of easier inclusion.
 Probably, we will apply for a boost revision with the open source edition some day.
+
+\section faq_one_based How can I specify in the template parameters in compressed2D that the matrix should be stored in one-based indexing?
+
+You can not.
+
+In the very early days of MTL4 we started writing code to support the different indexing scheme but it turned out to become a nightmare, especially when it comes to mixed index schemes.  Using one-based indexing in pure C++ code is also prone to performance losses.  For that reasons we decided to leave it out.  
+
+If there is enough demand, we could have transformation functions to increment and decrement indices explicitly before and after calling Fortran functions. This of course is also prone to errors.
+
+A popular trick to have one-based matrices is adding a row and a column and inserting them into a 0-based matrix as it was a 1-based.  When calling the Fortran functions one can pass the addresses of the data and column arrays and the row array + one.
+\code
+  A.address_major() + 1  
+\endcode
+
 
 \section mtl4_in_linux_distributions Are there plans to become part of Linux distributions
 
