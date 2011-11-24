@@ -181,18 +181,10 @@ struct MinConnectedNodesEstimation {
 		std::sort( nodes.begin(), nodes.end() );
 
 		int degree = -el.nb_vars()+1;
-		for(unsigned int i = 1; i < nodes.size(); ++i) {
-			if( nodes[i-1] != nodes[i] ) {
-				if(UseStatus) {
-					if( status[nodes[i]] == UNMARKED ) {
-						++degree;
-					}
-				} else {
-					++degree;
-				}
-			}
-		}
-
+		for(unsigned int i = 1; i < nodes.size(); ++i) 
+			if( nodes[i-1] != nodes[i] )
+			    if (!UseStatus || status[nodes[i]] == UNMARKED)
+				++degree;
 		return degree;
 	}
 };
