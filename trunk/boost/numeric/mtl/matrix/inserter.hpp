@@ -51,6 +51,17 @@ struct inserter<compressed2D<Elt, Parameters>, Updater>
     explicit inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix, slot_size) {}
 };
 
+template <typename Elt, typename Updater>
+struct inserter<coordinate2D<Elt>, Updater>
+  : coordinate2D_inserter<Elt, Updater>
+{
+    typedef coordinate2D<Elt>     matrix_type;
+    typedef typename matrix_type::size_type   size_type;
+    typedef coordinate2D_inserter<Elt, Updater > base;
+
+    explicit inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix, slot_size) {}
+};
+
 
 }} // namespace mtl::matrix
 

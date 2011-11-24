@@ -88,6 +88,9 @@ namespace mtl {
 
         template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
+	template <typename T > class coordinate2D;
+	template <typename Matrix, typename Updater> struct coordinate2D_inserter;
+
 	template <typename Matrix, typename Updater> struct inserter;
 	template <typename BaseInserter> class shifted_inserter;	
 
