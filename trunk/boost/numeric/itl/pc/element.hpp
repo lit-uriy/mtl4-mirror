@@ -121,11 +121,12 @@ public:
 			const matrix_type& p_values
 	) :
 		m_indices( new index_type(p_indices) ),
-		m_values( new matrix_type(num_rows(p_values),num_cols(p_values)) ),
+		m_values( new matrix_type(num_rows(p_values), num_cols(p_values)) ),
+		// m_values( new matrix_type(p_values) ),
 		m_sequence_number(p_sequence_number),
 		m_extra_data_pointer(0)
 	{
-	  *m_values=p_values;
+	    *m_values=p_values;
 	};
 
 	element() :
@@ -328,28 +329,40 @@ public:
 	}
 
 
-	/**
-	 * Get the set of level-k neighbours, for a given k. This
-	 */
-public:
-	neighbour_set_type get_level_neighbours(const int level = 1) {
-		neighbour_set_type result( get_nb_neighbours() * level );
-		if(level <= 0) {
-			return result;
-		}
-		result.insert( m_neighbours.begin(), m_neighbours.end() );
-		if(level == 1) {
-			return result;
-		}
+    /**
+     * Get the set of level-k neighbours, for a given k. This
+     */
+  public:
+    neighbour_set_type get_level_neighbours(const int level = 1) 
+    {
+	neighbour_set_type result( get_nb_neighbours() * level );
+
+	if (level > 0) {
+	    result.insert( m_neighbours.begin(), m_neighbours.end() );
+	    if (level > 1) {
 		for(int i = 0; i < get_nb_neighbours(); ++i) {
-			neighbour_set_type neighs(
-				m_neighbours[i]->get_level_neighbours(level-1)
-			);
-			result.insert( neighs.begin(), neighs.end() );
+		    neighbour_set_type neighs(m_neighbours[i]->get_level_neighbours(level-1));
+		    result.insert( neighs.begin(), neighs.end() );
 		}
 		result.erase( this );
-		return result;
+	    }
 	}
+#if 0
+	if(level <= 0) {
+	    return result;
+	}
+	result.insert( m_neighbours.begin(), m_neighbours.end() );
+	if(level == 1) {
+	    return result;
+	}
+	for(int i = 0; i < get_nb_neighbours(); ++i) {
+	    neighbour_set_type neighs(m_neighbours[i]->get_level_neighbours(level-1));
+	    result.insert( neighs.begin(), neighs.end() );
+	}
+	result.erase( this );
+#endif
+	return result;
+    }
 
 /*******************************************************************************
  * Manipulation
@@ -575,7 +588,8 @@ public:
 	 */
 public:
 	template< class Matrix, class Vector >
-	void absorb(Matrix& other_values, Vector& other_indices) {
+	void absorb(Matrix& other_values, Vector& other_indices) 
+        {
 	  const value_type    zero= math::zero(value_type());
 #ifndef NDEBUG
 		bool sorted = true;
@@ -677,7 +691,8 @@ private:
  * Print an element to an output stream.
  */
 template<typename OStream, class ValueType>
-OStream& operator<<(OStream& out, element<ValueType>& el) {
+OStream& operator<<(OStream& out, element<ValueType>& el) 
+{
 	out << "ID: " << el.get_id() << "\n";
 	if(el.nb_vars() > 0) {
 		out << "Indices: (" << el.get_indices()(0);

@@ -31,25 +31,25 @@ void setup(ElementStructure& es, int lofi)
     itl::pc::imf_preconditioner<value_type> precond(es, lofi);
 
 #if 0
-	std::cout << "------------------------------- STATISTICS -------------------------------" << std::endl;
+	mtl::io::tout << "------------------------------- STATISTICS -------------------------------" << std::endl;
 	int rows = num_rows(*master_mat);
 	int cols = num_cols(*master_mat);
  	int nnz = (*master_mat).nnz();
-	std::cout << "Dimensions: " << rows << " x " << cols << std::endl;
-	std::cout << "Non-zeros: " << nnz << std::endl;
-	std::cout << "Sparsity (%): " << ((double(nnz) / rows) / cols) << std::endl;
-	std::cout << "Avg nnz/row: " << double(nnz) / rows << std::endl;
-	std::cout << std::endl;
-	std::cout << "Elements: " << es.get_total_elements() << std::endl;
-	std::cout << "Variables: " << es.get_total_vars() << std::endl;
-	std::cout << "--------------------------------------------------------------------------" << std::endl;
+	mtl::io::tout << "Dimensions: " << rows << " x " << cols << std::endl;
+	mtl::io::tout << "Non-zeros: " << nnz << std::endl;
+	mtl::io::tout << "Sparsity (%): " << ((double(nnz) / rows) / cols) << std::endl;
+	mtl::io::tout << "Avg nnz/row: " << double(nnz) / rows << std::endl;
+	mtl::io::tout << std::endl;
+	mtl::io::tout << "Elements: " << es.get_total_elements() << std::endl;
+	mtl::io::tout << "Variables: " << es.get_total_vars() << std::endl;
+	mtl::io::tout << "--------------------------------------------------------------------------" << std::endl;
 // calculate eigenvalues
 	mtl::dense2D<value_type> E(size,size),A(*master_mat);
 	for(int i=0; i<size;i++){
 	  mtl::dense_vector<value_type> tmp(A[mtl::irange(0, mtl::imax)][i]);
 	  E[mtl::irange(0, mtl::imax)][i] = precond.solve(tmp);
 	}
-	std::cout<< "E=\n"<<E <<"\n";
+	mtl::io::tout<< "E=\n"<<E <<"\n";
 #endif
 	
     mtl::dense_vector<value_type>              x(size, 1), b(size);
@@ -60,22 +60,23 @@ void setup(ElementStructure& es, int lofi)
 
 }
 
-int main(int, char**)
+int main(int, char** argv)
 {
  
     typedef double value_type;
     typedef mtl::compressed2D<value_type>     sparse_type;
        
-    std::string matrix_file;
-    matrix_file="/home/cornelius/projects/diplom/parallel_mtl4/libs/numeric/mtl/mpi_test/matrix_market/square3.mtx";
+    std::string program_dir= mtl::io::directory_name(argv[0]),
+	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
+
+    // matrix_file="/home/cornelius/projects/diplom/parallel_mtl4/libs/numeric/mtl/mpi_test/matrix_market/square3.mtx";
 
     mtl::element_structure<value_type>* es = 0;
-//     std::cout<< "matrix_file=" << matrix_file.c_str()  << "\n";
+//     mtl::io::tout<< "matrix_file=" << matrix_file.c_str()  << "\n";
 
     es = mtl::read_el_matrix<value_type>(matrix_file.c_str());
     int lofi=3;
 	
     setup(*es, lofi);
-
     return 0;
 }
