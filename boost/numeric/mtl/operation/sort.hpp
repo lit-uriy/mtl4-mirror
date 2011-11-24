@@ -15,7 +15,8 @@
 
 #include <algorithm>
 #include <boost/numeric/mtl/interface/vpt.hpp>
-
+#include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/operation/swap_row.hpp>
 
 namespace mtl { namespace vector {
 
@@ -95,7 +96,42 @@ void quicksort (Vector& a, PermVec& p, typename Collection<Vector>::size_type lo
 	
 	
 	
-}  	  	 
+}  	
+
+template <typename Vector, typename PermVec>  	  	 
+void quicksort (Vector& a, Vector& b, PermVec& p, typename Collection<Vector>::size_type lo, typename Collection<Vector>::size_type hi)  
+{  	  	 
+  using vector::swap_row;
+       typename Collection<Vector>::size_type i=lo, j=hi;  	  	 
+ 
+        // VergleichsÂ­element x  	  	 
+        typename mtl::Collection<Vector>::value_type x=a[(lo+hi)/2];  
+//  	std::cout<< "x=" << x << "\n";
+        //  Aufteilung  	  	 
+        while (i<=j)  	  	 
+        {      	  	 
+            while (a[i]<x) i++;   
+            while (a[j]>x) j--; 
+            
+            if (i<=j)  	  	 
+            {  	  	 
+                swap_row(a, i, j);
+		swap_row(b, i, j);
+  		swap_row(p, i, j);
+		i++; 
+  		if( j == 0){
+ 		  break; 
+ 		} else {
+		  j--;
+		}
+            }  	  	 
+        }  	
+        // Rekursion  	  	 
+        if (lo<j) quicksort(a, b, p, lo, j);  	  	 
+        if (i<hi) quicksort(a, b, p, i, hi);
+}  	  
+
+
  
 /// sort vector with permutation
 template <typename Vector, typename PermVec>
@@ -107,6 +143,19 @@ void inline sort(Vector& x, PermVec& p)
     quicksort(x, p, 0, size(x)-1);
 
 }
+
+// sort 2 vectors with permutation
+template <typename Vector, typename PermVec>
+void inline sort(Vector& x, Vector& y, PermVec& p)
+{
+//      std::cout<< "x=" << x << "\n";
+//      std::cout<< "p=" << p << "\n";
+    assert(size(x) == size(p));
+    assert(size(x) == size(y));
+    quicksort(x, y, p, 0, size(x)-1);
+
+}
+
 
 
 }} // namespace mtl::vector
