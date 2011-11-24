@@ -44,7 +44,7 @@ assemble_compressed(const ElementStructure& es,	const Vector& order
  	typedef typename ElementStructure::element_type               element_type;
  	typedef typename element_type::index_type                     index_type;
  	typedef typename element_type::matrix_type                    matrix_type;
-	
+	typedef typename matrix_type::size_type                       size_type;
 	mtl::compressed2D<value_type> A(es.get_total_vars(),es.get_total_vars());
 	set_to_zero(A);
 	{//start inserterblock

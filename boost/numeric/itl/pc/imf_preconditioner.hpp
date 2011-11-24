@@ -37,70 +37,7 @@
 
 namespace itl {   namespace pc {
 
-namespace settings {
 
-/**
- * The ordering used in the sparse matrix-vector products.
- */
-enum MatVecOrderingType {
-	MVO_NONE,			// The original ordering.
-	MVO_RCM 			// The RCM ordering.
-};
-
-/**
- * The settings for the IMF preconditioner.
- */
-struct imf_settings {
-
-	// The maximum number of matrix-vector operations.
-	int max_mat_vecs;
-
-	// The relative tolerance used in determining when the iterative method
-	// should halt.
-	double rel_tol;
-
-	// The renumbering used for the application of the matrix-vector products in
-	// the iterative method.
-	MatVecOrderingType matvec_order;
-
-	// The maximum level of fill-in (lofi). This parameter controls both the
-	// number of fill-in values as the quality of the approximation. It is
-	// guaranteed that more eigenvalues will be numerical unity if the lofi is
-	// increased [1].
-	//
-	// This parameter corresponds to $\kappa$ in [1]. The allowable range is
-	// [0, infinity[. $\kappa = 0$ corresponds to a no-fill preconditioner with
-	// the same memory consumption as the initial linear system. $\kappa =
-	// infinity$ results, essentially, in a direct solution method.
-	int max_lofi;
-
-	// A boolean value indicating whether or not the degrees should be updated
-	// in Algorithm 1 in [1].
-	//
-	// Updating the degrees could lead to a larger number of eigenvalues that
-	// are numerically unity. However, the computational cost of the factoriza-
-	// tion also increases.
-	bool update_degrees;
-
-
-	// Initializes the default settings for IMF.
-	imf_settings() :
-		max_mat_vecs(1000), rel_tol(1e-8), max_lofi(1), update_degrees(false)
-	{}
-
-	// Print the settings of IMF to the standard output stream.
-	virtual void pretty_print() const {
-		std::cout << "------------------------------------------------------\n";
-		std::cout << "---------------------- SETTINGS ----------------------\n";
-		std::cout << "------------------------------------------------------\n";
-		std::cout << "Maximum Level of Fill-in Blocks: " << max_lofi << "\n";
-		std::cout << "Update Degrees: " << update_degrees << "\n";
-		std::cout << "------------------------------------------------------\n";
-		std::cout << "------------------------------------------------------\n";
-		std::cout << std::endl;
-	}
-};
-}
 
 /**
  * The IMF preconditioner, as described in [1].
@@ -165,7 +102,7 @@ public:
 	template< class ElementStructure >
 	imf_preconditioner(
 		const ElementStructure& element_structure ,
-  		const int maxlofi
+  		const int maxlofi=0
 	)
 	: 	m_nb_vars( element_structure.get_total_vars() ),
 	  	m_ordering( element_structure.get_total_vars() ),
@@ -241,12 +178,9 @@ public:
 	Vector solve(const Vector& b) const {
 	    mtl::matrix::traits::permutation<>::type P(permutation(m_ordering));//TODO change in loop
 	    Vector m_tmp(b), m(trans(P)*b);
-	    std::cout<< "m =" << m<< "\n";
 	    m_tmp = imf_apply(m);
-	    std::cout<< "m_tmp =" << m_tmp<< "\n";
 	    for(unsigned int i=0; i< size(b); i++)
 		  m[i]= m_tmp[m_ordering[i]];
-	    std::cout<< "m2=" << m <<"\n";
 	    return m; 
 	}  
 

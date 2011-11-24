@@ -35,35 +35,10 @@
 
 #include <boost/numeric/itl/pc/comparators.hpp>
 
-/**
- * A namespace containing classes relevant to the mesh.
- *
- * NOTE: We may want to investigate the possibility of adding a bitset to
- * 		 represent the sparsity pattern of the element. This bitset could be
- * 		 stored in considerably less memory, so that perhaps the checks could
- * 		 also be sped up considerably.
- *
- * 		 E.g. a 64x64 element could be represented using 64 64-bit words, for a
- * 		 total of 64x8 = 512 bytes. If we were checking using the numerical
- * 		 values we require 64x64 64-bit elements to be checked, for a total of
- * 		 4096x8 = 32768 bytes.
- *
- * 	Algorithms using numerical checks for zero but never use the values
- * 	-------------------------------------------------------------------
- * 		* RCM ordering
- *
- */
+
 namespace mtl {
 
-/**
- * A functor always returning a fixed value when comparing two elements.
- */
-template<class Element1, class Element2, bool Value>
-struct TrivialCondition {
-	bool operator()(const Element1 *const, const Element2 *const) const {
-		return Value;
-	}
-};
+
 
 
 /**
@@ -433,30 +408,9 @@ public:
 #endif
 	}
 
-	/**
-	 * Drops this element from the element structure. This operation is
-	 * equivalent with removing all nodes and clearing the element.
-	 */
+	
 public:
-	void drop() {
-		for(
-			neighbour_iterator neigh_it = m_neighbours.begin();
-			neigh_it != m_neighbours.end();
-			++neigh_it
-		) {
-			element_type& neigh = **neigh_it;
-			neighbour_iterator pos = std::find(
-				neigh.get_neighbours().begin(),
-				neigh.get_neighbours().end(),
-				this
-			);
-			if( pos != neigh.get_neighbours().end() ) {
-				neigh.get_neighbours().erase(pos);
-			}
-		}
-		this->clear();
-	}
-
+	
 	/**
 	 * Removes the given set of nodes from the element.
 	 *
@@ -683,165 +637,7 @@ public:
 		}
 	}
 
-	/**
-	 * Merges the given element with the current element. After the merge, this
-	 * element will overlap completely with the given element, making the latter
-	 * obsolete.
-	 */
-public:
-	void merge(element_type& other) {
-		const value_type    zero= math::zero(value_type());
-		index_type& my_idx = *m_indices;
-		index_type& other_idx = *(other.m_indices);
 
-
-		// Determine the new index set.
-		std::vector<int> new_index;
-		for(int i = 0; i < nb_vars(); ++i) {
-			new_index.push_back( my_idx(i) );
-		}
-		for(int i = 0; i < other.nb_vars(); ++i) {
-			new_index.push_back( other_idx(i) );
-		}
-		std::sort( new_index.begin(), new_index.end() );
-		std::vector<int>::iterator new_index_end = std::unique(
-			new_index.begin(), new_index.end()
-		);
-		new_index.erase(new_index_end, new_index.end());
-		int new_nb_vars = new_index.size();
-
-
-		// Construct the new matrix.
-		matrix_type* new_values_ptr = new matrix_type(new_nb_vars, new_nb_vars);
-		matrix_type& new_values = *new_values_ptr;
-		new_values = zero;
-		index_type offs( nb_vars() );
-		{
-			int o = 0;
-			int i = 0, j = 0;
-			while( i < nb_vars() && j < new_nb_vars ) {
-				if( my_idx(i) < new_index[j] ) {
-					++i;
-				} else if( my_idx(i) > new_index[j] ) {
-					++j;
-				} else {
-					offs(o) = j;
-					++i;
-					++j;
-					++o;
-				}
-			}
-		}
-		new_values[offs][offs] = get_values();
-		if(m_values)  { delete m_values;  }
-		m_values = new_values_ptr;
-
-
-		// Construct the new set of indices.
-		if(m_indices) { delete m_indices; }
-		m_indices = new index_type( new_nb_vars );
-		my_idx = *m_indices;
-		for(int i = 0; i < new_nb_vars; ++i) {
-			my_idx(i) = new_index[i];
-		}
-
-		// Incorporate values from the other matrix.
-		absorb(&other);
-
-
-		// Update the neighbourhood.
-		m_neighbours.insert(
-			m_neighbours.end(),
-			other.m_neighbours.begin(),
-			other.m_neighbours.end()
-		);
-		std::sort(
-			m_neighbours.begin(),
-			m_neighbours.end(),
-			compare::address_compare<element_type>()
-		);
-		typename neighbour_collection_type::iterator neigh_end = std::unique(
-			m_neighbours.begin(),
-			m_neighbours.end(),
-			compare::address_compare_equal<element_type>()
-		);
-		m_neighbours.erase( neigh_end, m_neighbours.end() );
-		typename neighbour_collection_type::iterator my_pos = std::find(
-			m_neighbours.begin(),
-			m_neighbours.end(),
-			this
-		);
-		if(my_pos != m_neighbours.end()) {
-			m_neighbours.erase(my_pos);
-		}
-
-		for(
-			neighbour_iterator neigh_it = m_neighbours.begin();
-			neigh_it != m_neighbours.end();
-			++neigh_it
-		) {
-			element_type& neigh = **neigh_it;
-			neighbour_iterator pos = std::find(
-				neigh.get_neighbours().begin(),
-				neigh.get_neighbours().end(),
-				this
-			);
-			// If we are not yet in the neighbourhood of our neighbour, fix it.
-			if( pos == neigh.get_neighbours().end() ) {
-				neigh.get_neighbours().push_back( this );
-			}
-		}
-
-		// Remove the other element from the element structure.
-		other.drop();
-
-	}
-
-
-
-/*******************************************************************************
- * Reduction
- ******************************************************************************/
-
-	/**
-	 * Absorbs the values of the given element into this element.
-	 */
-	template<class Element>
-	void absorb(Element* other) {
-		// Nothing to do.
-		if(other == 0 || other == this) {
-			return;
-		}
-		absorb( other->get_values(), other->get_indices() );
-	}
-
-	/**
-	 * Absorbs the values from each of the neighbours of the element into this
-	 * element.
-	 */
-	void absorb_all() {
-		absorb_all( TrivialCondition<element_type, element_type, true>() );
-	}
-
-	/**
-	 * Absorbs the values from each of the connected neighbours of the element
-	 * into this element. The set of connected neighbours is determined by the
-	 * connectivity condition functor.
-	 */
-	template< class ConnCondition >
-	void absorb_all(
-			ConnCondition cond
-	) {
-		for(
-			neighbour_iterator neigh_it = m_neighbours.begin();
-			neigh_it != m_neighbours.end();
-			++neigh_it
-		) {
-			if( cond(this, *neigh_it) ) {
-				absorb( *neigh_it );
-			}
-		}
-	}
 
 
 /*******************************************************************************

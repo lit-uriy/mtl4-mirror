@@ -197,92 +197,6 @@ struct MinConnectedNodesEstimation {
 	}
 };
 
-/**
- * Estimates the priority based on the number of fill-in values. A higher
- * priority is given to the elements with the fewest loss of fill-in.
- */
-struct PercentageFillOutEstimation {
-	template< class Element, class NodeStatusVector >
-	static double estimate(
-			Element& el,
-			NodeStatusVector& status,
-			const int max_sofi
-	) {
-		typedef Element element_type;
-		typedef typename element_type::index_type index_type;
-		typedef typename element_type::neighbour_collection_type neigh_coll_type;
-		typedef typename element_type::neighbour_iterator neigh_iterator;
-
-		std::set<unsigned int> conn_nodes;
-		neigh_coll_type& neighs = el.get_neighbours();
-		for(
-			neigh_iterator neigh_it = neighs.begin();
-			neigh_it != neighs.end();
-			++neigh_it
-		) {
-			element_type& neigh = **neigh_it;
-			for( int i = 0; i < neigh.nb_vars(); ++i ) {
-				if( status(neigh.get_indices()(i)) == -1 ) {
-					conn_nodes.insert( neigh.get_indices()(i) );
-				}
-			}
-		}
-		for(int i = 0; i < el.nb_vars(); ++i) {
-			conn_nodes.erase( el.get_indices()(i) );
-		}
-		const int n2 = conn_nodes.size();
-		std::vector<unsigned int> nodes( conn_nodes.begin(), conn_nodes.end() );
-
-		// If it completely fits into a fill-in block, there is no fill-in.
-		if( n2 <= max_sofi ) {
-			return 0.0;
-		}
-
-		mtl::dense2D<int> pattern( n2, n2 );
-		pattern = mtl::matrix::ones(n2, n2);
-		for(
-			neigh_iterator neigh_it = neighs.begin();
-			neigh_it != neighs.end();
-			++neigh_it
-		) {
-			element_type& neigh = **neigh_it;
-			index_type& index = neigh.get_indices();
-
-			// Determine matching indices.
-			std::vector<unsigned int> local_idx;
-			for(int i = 0, j = 0; (i < n2) && (j < neigh.nb_vars()); ) {
-				const int diff = nodes[i] - index(j);
-				if( diff < 0 ) {
-					++i;
-				} else if( diff > 0 ) {
-					++j;
-				} else {
-					local_idx.push_back(i);
-					++i;
-					++j;
-				}
-			}
-
-			// Mark as non-fill-in.
-			for(std::size_t i = 0; i < local_idx.size(); ++i) {
-				for(std::size_t j = i; j < local_idx.size(); ++j) {
-					pattern( local_idx[i], local_idx[j] ) = 0;
-					pattern( local_idx[j], local_idx[i] ) = 0;
-				}
-			}
-		}
-
-		// Count fill-out.
-		int count = 0;
-		for(int i = 0; i < n2; ++i) {
-			for(int j = 0; j < n2; ++j) {
-				count += pattern(i,j);
-			}
-		}
-
-		return double(count) / (n2*n2);
-	}
-};
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -319,7 +233,6 @@ struct IsRemoved {
 template<  class Mesh >
 void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int maxlofi   
 ) {
-//  	const settings::imf_settings settings(sets);
 	typedef unsigned int usint;
 	// Type definitions.
 
@@ -337,24 +250,11 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	typedef typename mtl::matrix::coordinate2D<value_type> coo_sparse_type_upper;
 	typedef typename mtl::matrix::coordinate2D<value_type> coo_sparse_type_lower;
 		     
-	typedef boost::unordered_multimap<unsigned int, element_type*> ummap;
-	typedef typename ummap::iterator ummap_iter;
-
-	typedef std::set<unsigned int> oset;
-	typedef typename oset::iterator oset_iter;
-	
-	typedef boost::unordered_set<
-		element_type*, AddressHasher<element_type>
-	> uset;
-	typedef typename uset::iterator uset_iter;
 
 	typedef std::map<int, int> cmap;
 	typedef typename cmap::iterator cmap_iterator;
 
-	typedef std::vector<element_type*> el_ptr_vec;
-	typedef typename el_ptr_vec::iterator el_ptr_iterator;
-
-	typedef double key_type;
+	typedef value_type key_type;
 	typedef utils::binary_heap<
 		element_iterator,
 		key_type,
@@ -453,8 +353,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 
 		// Make sure the set of unmarked elements is empty again.
 		assert( unmarked_elements.empty() );		
-		  unmarked_elements_degr.clear();
-		  unmarked_elements_srtd.clear();
+		unmarked_elements_degr.clear();
+		unmarked_elements_srtd.clear();
 		// Construct the set of available diagonal elements along with their
 		// degrees.
 		for( usint i = 0; i < elements.size(); ++i ) {
@@ -469,9 +369,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 			el_status[i] = UNMARKED;
 
 			key_type degree = min_nodes_estimate(el, in_reduced);
-		
-			    unmarked_elements_degr.push_back( degree );
-			    unmarked_elements_srtd.push_back( &el );
+		        unmarked_elements_degr.push_back( degree );
+			unmarked_elements_srtd.push_back( &el );
 		}
 
 /***************************************************************************
@@ -676,17 +575,14 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				}
 			}
 
-			mtl::dense2D<double> D(n1,n1),C(n1,n1);
+			mtl::dense2D<value_type> D(n1,n1),C(n1,n1);
 			mtl::irange  n0(0,n1);
 			// Invert the D-part matrix.
 			C=frontal[n0][n0];
-			std::cout<<"frontal[n0][n0]=\n"<< frontal[n0][n0] << "\n";
-//  			D=inv(frontal[n0][n0]);
+//  			D=inv(frontal[n0][n0]);  //doesnot work in current version
 			D=inv(C);
-			std::cout<<"D2=\n"<< D << "\n";std::cout<<"inv(C)=\n"<< inv(C) << "\n";
 			// Store the D part.
     			diag_el.get_values() = D ;
-			std::cout<<"D2=\n"<< diag_el.get_values() << "\n";
 			frontal[n0][n0] = diag_el.get_values();
 		
 	
@@ -901,7 +797,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	m_levels = lower_matrices.size();
 	m_nb_blocks = block_diagonal.size();
 	m_diagonal_index = diagonal_index;
-
+#if 0
 	long total_mem = 0;
 	long diag_nnz = 0;
 	for(usint i = 0; i < m_nb_blocks; ++i) {
@@ -917,7 +813,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	}
 	total_mem += total_nnz;
 	total_nnz += diag_nnz;
-#if 0
+
 	//ONLY more information about approximation
 	double pct_mem_increase = 100*double(total_mem - orig_nnz) / orig_nnz;
 	double pct_diag = 100*double(diag_nnz) / total_mem;
@@ -990,7 +886,6 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
  		res -= ( *(m_lower[level]) * big );
 	  }
 	}
-	std::cout<<"res=" << res <<"\n";
 	// Backward elimination.
 	{
 	int b_off = m_nb_blocks-1;

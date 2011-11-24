@@ -14,8 +14,6 @@
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
-#include <boost/numeric/itl/pc/element.hpp>
-#include <boost/numeric/itl/pc/element_structure.hpp>
 #include <boost/numeric/itl/pc/io.hpp>
 #include <boost/numeric/itl/pc/matrix_algorithms.hpp>
 #include <boost/numeric/itl/pc/imf_preconditioner.hpp>
@@ -25,19 +23,15 @@ template< class ElementStructure >
 void setup(ElementStructure& es, int lofi)
 {
     typedef double value_type;
-  
-     
+      
     int size( es.get_total_vars() );
     mtl::dense_vector<int> ident(size);
     iota(ident);
-      
-    mtl::compressed2D<double>* master_mat(mtl::matrix::assemble_compressed(es,ident)); 
+    mtl::compressed2D<value_type>* master_mat(mtl::matrix::assemble_compressed(es,ident)); 
     itl::pc::imf_preconditioner<value_type> precond(es, lofi);
+
 #if 0
-	std::cout << "--------------------------------------------------------------------------" << std::endl;
 	std::cout << "------------------------------- STATISTICS -------------------------------" << std::endl;
-	std::cout << "--------------------------------------------------------------------------" << std::endl;
-	#if 0
 	int rows = num_rows(*master_mat);
 	int cols = num_cols(*master_mat);
  	int nnz = (*master_mat).nnz();
@@ -48,13 +42,8 @@ void setup(ElementStructure& es, int lofi)
 	std::cout << std::endl;
 	std::cout << "Elements: " << es.get_total_elements() << std::endl;
 	std::cout << "Variables: " << es.get_total_vars() << std::endl;
-	#endif
 	std::cout << "--------------------------------------------------------------------------" << std::endl;
-	std::cout << "--------------------------------------------------------------------------" << std::endl;
-
-
-#endif
-#if 0
+// calculate eigenvalues
 	mtl::dense2D<value_type> E(size,size),A(*master_mat);
 	for(int i=0; i<size;i++){
 	  mtl::dense_vector<value_type> tmp(A[mtl::irange(0, mtl::imax)][i]);
@@ -63,13 +52,11 @@ void setup(ElementStructure& es, int lofi)
 	std::cout<< "E=\n"<<E <<"\n";
 #endif
 	
-    mtl::dense_vector<double>              x(size, 1), b(size);
+    mtl::dense_vector<value_type>              x(size, 1), b(size);
     b= *master_mat * x;
-    itl::cyclic_iteration<double>          iter(b, 2, 1.e-8, 0.0, 1);
+    itl::cyclic_iteration<value_type>          iter(b, size, 1.e-8, 0.0, 5);
     x= 0;
     bicgstab(*master_mat, x, b, precond, iter);
-//     std::cout<<"x=" << x<<" \n";
-
 
 }
 
@@ -83,7 +70,7 @@ int main(int, char**)
     matrix_file="/home/cornelius/projects/diplom/parallel_mtl4/libs/numeric/mtl/mpi_test/matrix_market/square3.mtx";
 
     mtl::element_structure<value_type>* es = 0;
-    std::cout<< "matrix_file=" << matrix_file.c_str()  << "\n";
+//     std::cout<< "matrix_file=" << matrix_file.c_str()  << "\n";
 
     es = mtl::read_el_matrix<value_type>(matrix_file.c_str());
     int lofi=3;
