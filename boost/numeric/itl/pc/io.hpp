@@ -165,6 +165,7 @@ element_structure<ValueType>* read_el_matrix( const char *const mat_file ) {
 	element_structure<value_type>* es = new element_structure<value_type>(
 		nb_elements, nb_total_vars, elements
 	);
+
 	return es;
 }
 
