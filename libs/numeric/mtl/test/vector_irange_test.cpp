@@ -63,6 +63,11 @@ void test(Vector& v, const char* name)
     cout << "v[irange(2, 4)] == " << v[r] << "\n";
     --r ;
     cout << "v[irange(2, 3)] == " << v[r] << "\n";
+
+#if 0 // only for column vectors
+    T beta= trans(v[irange(2, 4)]) * w;
+    cout << "trans(v) * w = " << beta << "\n";
+#endif
 }
 
 

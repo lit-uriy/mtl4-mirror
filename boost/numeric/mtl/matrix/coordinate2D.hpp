@@ -36,12 +36,14 @@ class coordinate2D
 
     /// Common constructor
     explicit coordinate2D( size_type rows, size_type cols, size_type nnz= 0 )
-      : row_( nnz, size_type(0)), col_(nnz, size_type(0)), values_( nnz, value_type(0) ), nrows(rows), ncols(cols), nnz_( nnz ), counter(0)
+      : row_( nnz, size_type(0)), col_(nnz, size_type(0)), values_( nnz, value_type(0) ), 
+	nrows(rows), ncols(cols), nnz_( nnz ), counter(0)
     {} 
   
     /// Copy constructor
     explicit coordinate2D( coordinate2D const& that )
-      : row_( that.row_), col_(that.col_), values_( that.values_ ), nrows(that.nrows), ncols(that.ncols), nnz_(that.nnz_)
+      : row_( that.row_), col_(that.col_), values_( that.values_ ), nrows(that.nrows), 
+	ncols(that.ncols), nnz_(that.nnz_)
     {}
 
     size_type num_rows() const { return nrows ;  }  
