@@ -61,8 +61,8 @@ void radix_sort(
 		max = (values[i] <= max) ? max : values[i];
 	}
 	int maxBits = 1;
-	for(; max; max >>= 1, ++maxBits);
-	for(max = 0; max < maxBits; max += BITS_PER_BYTE);
+	for(; max; max >>= 1, ++maxBits){};
+	for(max = 0; max < maxBits; max += BITS_PER_BYTE){};
 	maxBits = max;
 
 	const int groupBits = BITS_PER_BYTE;
@@ -167,8 +167,8 @@ void radix_sort(
 		max = keys[i] <= max ? max : keys[i];
 	}
 	int maxBits = 1;
-	for(; max; max >>= 1, ++maxBits);
-	for(max = 0; max < maxBits; max += BITS_PER_BYTE);
+	for(; max; max >>= 1, ++maxBits){};
+	for(max = 0; max < maxBits; max += BITS_PER_BYTE){};
 	maxBits = max;
 
 	const int groupBits = BITS_PER_BYTE;
@@ -283,8 +283,8 @@ inline void sort_along(Key* keys, Value* values, int size) {
 	int begin = 1;
 	int end = size-1;
 	while(begin < end) {
-		for(; (begin < end) && (keys[begin] <= keys[0]); ++begin);
-		for(; (begin <= end) && (keys[end] > keys[0]); --end);
+		for(; (begin < end) && (keys[begin] <= keys[0]); ++begin){};
+		for(; (begin <= end) && (keys[end] > keys[0]); --end){};
 
 		if(begin < end) {
 			swap(
