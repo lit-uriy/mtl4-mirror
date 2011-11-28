@@ -34,9 +34,9 @@ int test_main(int, char**)
     matrix.push_back(1,2,2.33);
     matrix.push_back(2,1,3.33);
     matrix.push_back(3,1,4.33);
-    mtl::dense_vector<uint> rows(matrix.row_index_array()),cols(matrix.column_index_array());
+    mtl::dense_vector<unsigned int> rows(matrix.row_index_array()),cols(matrix.column_index_array());
     mtl::dense_vector<double> val0(matrix.value_array());
-    for(uint i=0;i<size(rows);i++){
+    for(unsigned int i=0;i<size(rows);i++){
       std::cout<<"row[" <<i <<"]=" <<rows[i] << "\n";
       std::cout<<"col[" <<i <<"]=" <<cols[i] << "\n"; 
       std::cout<<"val[" <<i <<"]=" <<val0[i] << "\n";
@@ -48,13 +48,13 @@ int test_main(int, char**)
     matrix.push_back(1,0,5.33);
     matrix.push_back(0,0,6.33);
     
-    mtl::dense_vector<uint> rows1(matrix.row_index_array()),cols1(matrix.column_index_array());
+    mtl::dense_vector<unsigned int> rows1(matrix.row_index_array()),cols1(matrix.column_index_array());
     mtl::dense_vector<double> val(matrix.value_array());
-    for(uint i=0;i<size(rows1);i++){
+    for(unsigned int i=0;i<size(rows1);i++){
       std::cout<<"row[" <<i <<"]=" <<rows1[i] << " , col[" <<i <<"]=" <<cols1[i] << " , val[" <<i <<"]=" <<val[i] << "\n";
     }
     matrix.sort();
-    mtl::dense_vector<uint> rows2(matrix.row_index_array()),cols2(matrix.column_index_array());
+    mtl::dense_vector<unsigned int> rows2(matrix.row_index_array()),cols2(matrix.column_index_array());
     mtl::dense_vector<double> val2(matrix.value_array());
     
     std::cout<< "SORTING\n";
@@ -84,10 +84,10 @@ int test_main(int, char**)
     A.insert(3,0,73.3,6);
     A.compress();
 //     A.insert(4,4,33.3,7); //should fail. because pos>7
-    mtl::dense_vector<uint> rows3(A.row_index_array()),cols3(A.column_index_array());
+    mtl::dense_vector<unsigned int> rows3(A.row_index_array()),cols3(A.column_index_array());
     mtl::dense_vector<double> val3(A.value_array());
     std::cout<<"OK\n";
-    for(uint i=0;i<size(rows3);i++){
+    for(unsigned int i=0;i<size(rows3);i++){
       std::cout<<"row[" <<i <<"]=" <<rows3[i] << " , col[" <<i <<"]=" <<cols3[i] << " , val[" <<i <<"]=" <<val3[i] << "\n";
     }
     A.print();

@@ -225,9 +225,6 @@ struct IsRemoved {
 template<  class Mesh >
 void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int maxlofi   
 ) {
-	typedef unsigned int usint;
-	// Type definitions.
-
 	typedef typename Mesh::element_type element_type;
 	typedef typename Mesh::element_iterator element_iterator;
 	typedef typename element_type::value_type value_type;
@@ -349,7 +346,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		unmarked_elements_srtd.clear();
 		// Construct the set of available diagonal elements along with their
 		// degrees.
-		for( usint i = 0; i < elements.size(); ++i ) {
+		for( unsigned int i = 0; i < elements.size(); ++i ) {
 			// Skip the element if it no longer exists, or it is a diagonal
 			// element.
 			if( (el_status[i] == REMOVED) || (el_status[i] == DIAGONAL) ) {
@@ -379,7 +376,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		);
 
 		// For each of the candidate diagonal elements ...
-		for(usint i = 0; i < unmarked_elements_srtd.size(); ++i) {
+		for(unsigned int i = 0; i < unmarked_elements_srtd.size(); ++i) {
 
 			// Select the minimum element.
 			element_type& el = *(unmarked_elements_srtd[i]);
@@ -467,7 +464,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 			);
 			typename boost::unordered_set<int>::const_iterator it =
 				diag_incident_nodes.begin();
-			for(usint i = 0; i < diag_incident_nodes.size(); ++i) {
+			for(unsigned int i = 0; i < diag_incident_nodes.size(); ++i) {
 				q(i) = *it;
 				++it;
 			}
@@ -792,15 +789,15 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 #if 0
 	long total_mem = 0;
 	long diag_nnz = 0;
-	for(usint i = 0; i < m_nb_blocks; ++i) {
+	for(unsigned int i = 0; i < m_nb_blocks; ++i) {
 		diag_nnz += block_diagonal[i]->nnz();
 		total_mem += block_diagonal[i]->nb_values();
 	}
 	long total_nnz = 0;
-	for(usint i = 0; i < m_lower.size(); ++i) {
+	for(unsigned int i = 0; i < m_lower.size(); ++i) {
 		total_nnz += ( *(m_lower[i]) ).nnz() ;
 	}
-	for(usint i = 0; i < m_upper.size(); ++i) {
+	for(unsigned int i = 0; i < m_upper.size(); ++i) {
 		total_nnz += ( *(m_upper[i]) ).nnz() ;
 	}
 	total_mem += total_nnz;
@@ -810,7 +807,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	double pct_mem_increase = 100*double(total_mem - orig_nnz) / orig_nnz;
 	double pct_diag = 100*double(diag_nnz) / total_mem;
 
- 	usint off = settings.max_lofi+1; 
+ 	unsigned int off = settings.max_lofi+1; 
 	if( off >= diagonal_offsets.size() ) {
 		off = diagonal_offsets.size()-1;
 	}

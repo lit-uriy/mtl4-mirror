@@ -401,7 +401,7 @@ public:
 		for(int i = 0; i < nb_vars(); ++i) {
 			int seek_idx = get_indices()(i);
 			int j = 0;
-			for(; (j < nb_vars()) && (orig_index(j) != seek_idx); ++j);
+			for(; (j < nb_vars()) && (orig_index(j) != seek_idx); ++j){};
 			orig_offset(i) = j;
 		}
 
