@@ -58,7 +58,7 @@ int test_main(int, char**)
     mtl::dense_vector<double> val2(matrix.value_array());
     
     std::cout<< "SORTING\n";
-    for(uint i=0;i<size(rows2);i++){
+    for(unsigned int i=0;i<size(rows2);i++){
       std::cout<<"row[" <<i <<"]=" <<rows2[i] << " , col[" <<i <<"]=" <<cols2[i] << " , val[" <<i <<"]=" <<val2[i] << "\n";
     }
    
