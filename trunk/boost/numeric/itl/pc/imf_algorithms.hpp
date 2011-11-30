@@ -357,7 +357,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 			// Reset the status.
 			el_status[i] = UNMARKED;
 
-			key_type degree = min_nodes_estimate(el, in_reduced);
+			int degree = min_nodes_estimate(el, in_reduced);
 		        unmarked_elements_degr.push_back( degree );
 			unmarked_elements_srtd.push_back( &el );
 		}
