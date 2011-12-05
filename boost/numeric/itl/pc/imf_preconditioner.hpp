@@ -102,14 +102,22 @@ public:
 	template< class ElementStructure >
 	imf_preconditioner(
 		const ElementStructure& element_structure ,
-  		const int maxlofi=0
+  		const int maxlofi=0,
+		const bool copy_on=true
 	)
 	: 	m_nb_vars( element_structure.get_total_vars() ),
 	  	m_ordering( element_structure.get_total_vars() ),
 	  	m_diagonal_index(0),
 	  	m_diagonal(0)
 	{
-		factor(element_structure, maxlofi);
+		if(copy_on){
+		  ElementStructure es(element_structure);
+// 		  es= element_structure;
+		  factor(es, maxlofi);
+		} else {
+		  factor(element_structure, maxlofi);
+		}
+		
 	}
 
 	/**

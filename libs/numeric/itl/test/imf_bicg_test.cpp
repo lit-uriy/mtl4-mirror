@@ -20,16 +20,17 @@
 #include <boost/numeric/itl/pc/imf_algorithms.hpp>
 
 template< class ElementStructure >
-void setup(ElementStructure& es, int lofi)
+void setup(ElementStructure& A, int lofi)
 {
     typedef double value_type;
       
-    int size( es.get_total_vars() );
-    mtl::dense_vector<int> ident(size);
-    iota(ident);
-    mtl::compressed2D<value_type>* master_mat(mtl::matrix::assemble_compressed(es,ident)); 
-    itl::pc::imf_preconditioner<value_type> precond(es, lofi);
-
+    int size( A.get_total_vars() );
+   
+    mtl::dense_vector<value_type>              x(size, 1), b(size); 
+   
+    itl::pc::imf_preconditioner<value_type> precond(A, lofi);
+    b= A * x;
+    std::cout<< "rhs2=" << b << "\n";
 #if 0
 	mtl::io::tout << "------------------------------- STATISTICS -------------------------------" << std::endl;
 	int rows = num_rows(*master_mat);
@@ -52,11 +53,9 @@ void setup(ElementStructure& es, int lofi)
 	mtl::io::tout<< "E=\n"<<E <<"\n";
 #endif
 	
-    mtl::dense_vector<value_type>              x(size, 1), b(size);
-    b= *master_mat * x;
     itl::cyclic_iteration<value_type>          iter(b, size, 1.e-8, 0.0, 5);
     x= 0;
-    bicgstab(*master_mat, x, b, precond, iter);
+    bicgstab(A, x, b, precond, iter);
 
 }
 
@@ -69,10 +68,7 @@ int main(int, char** argv)
     std::string program_dir= mtl::io::directory_name(argv[0]),
 	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
 
-    // matrix_file="/home/cornelius/projects/diplom/parallel_mtl4/libs/numeric/mtl/mpi_test/matrix_market/square3.mtx";
-
     mtl::element_structure<value_type>* es = 0;
-//     mtl::io::tout<< "matrix_file=" << matrix_file.c_str()  << "\n";
 
     es = mtl::read_el_matrix<value_type>(matrix_file.c_str());
     int lofi=3;
