@@ -28,15 +28,11 @@
 namespace mtl {
 namespace matrix {
 
-
-
 /**
- * Construct the sparse data structure.
+ * Construct the sparse data structure. 
  */
-
-
 template< typename ElementStructure, typename Vector> 
-mtl::compressed2D<typename ElementStructure::element_type::value_type>*  
+mtl::compressed2D<typename ElementStructure::element_type::value_type>  
 assemble_compressed(const ElementStructure& es,	const Vector& order
 ) {
   	typedef typename ElementStructure::element_type::value_type   value_type;
@@ -62,9 +58,12 @@ assemble_compressed(const ElementStructure& es,	const Vector& order
 		}
 	}
 	}//end inserterblock
-
-	return new mtl::compressed2D<value_type>(A);
+	
+	return A;
+// 	return new mtl::compressed2D<value_type>(A);
 }
+
+
 
 }
 }//end namespace mtl

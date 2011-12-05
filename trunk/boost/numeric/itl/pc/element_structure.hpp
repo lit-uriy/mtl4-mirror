@@ -22,6 +22,7 @@
 
 
 #include <boost/numeric/itl/pc/element.hpp>
+#include <boost/numeric/mtl/mtl.hpp>
 
 namespace mtl {
 
@@ -127,7 +128,7 @@ class element_structure
      * The type of this class.
      */
     typedef element_structure<ValueType> this_type;
-
+    
 
     /*******************************************************************************
      * Constructors
@@ -206,6 +207,21 @@ class element_structure
 	    m_elements = 0;
 	}
     }
+    
+    ///assumption elements with quadratic elementmatrix
+    template< class Vector >
+    Vector operator*(  Vector& x) const {
+	Vector m_tmp(size(x), 0.0);
+  	for(int elmi= 0; elmi < m_total_elements; elmi++){
+	   unsigned int n(size(m_elements[elmi].get_indices()));
+	    for( unsigned int i= 0; i < n; i++){
+	        for( unsigned int j= 0; j < n; j++){
+		    m_tmp[m_elements[elmi].get_indices()[i]]+= m_elements[elmi].get_values()[i][j]*x[m_elements[elmi].get_indices()[j]];
+	        }
+	     }
+ 	}
+	return m_tmp;
+	}
 
 
     /*******************************************************************************
@@ -294,13 +310,14 @@ class element_structure
 	    file << "\n";
 	}
     }
-
+    
+        
 
     /*******************************************************************************
      * Data Members
      ******************************************************************************/
-  private:
-
+//   private:
+  public:
     /**
      * The total number of elements.
      */

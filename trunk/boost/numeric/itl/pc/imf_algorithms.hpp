@@ -269,7 +269,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	{
 		element_iterator it = mesh.element_begin();
 		for(int i = 0; i < nb_elements; ++i) {
-			elements.push_back( it );
+			elements.push_back( *&it );
 			++it;
 		}
 	}
