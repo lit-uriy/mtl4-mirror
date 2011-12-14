@@ -46,7 +46,7 @@ namespace mtl {
  *
  * ValType:		The type of the numeric values.
  */
-template< class ValType >
+template <typename ValType>
 class element {
  
 /*******************************************************************************

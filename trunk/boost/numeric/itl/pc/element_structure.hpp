@@ -128,6 +128,7 @@ class element_structure
      * The type of this class.
      */
     typedef element_structure<ValueType> this_type;
+    typedef this_type                    self;
     
 
     /*******************************************************************************
@@ -208,21 +209,62 @@ class element_structure
 	}
     }
     
+    
+
+    template <typename VectorIn, typename VectorOut>
+    void mult(const VectorIn& x, VectorOut& y) const 
+    {
+	// test
+  	for(int elmi= 0; elmi < m_total_elements; elmi++){
+	    const element_type& elementi= m_elements[elmi];
+	    const mtl::vector::dense_vector<int>& indices= elementi.get_indices();
+	    unsigned int n(size(indices));
+	    for (unsigned int i= 0; i < n; i++)
+	        for (unsigned int j= 0; j < n; j++)
+		    y[indices[i]]+= elementi.get_values()[i][j]*x[indices[j]];
+ 	}
+    }
+
+    template <typename VectorIn>
+    struct multiplier
+      : mtl::vector::assigner<multiplier<VectorIn> >
+    {
+	explicit multiplier(const self& P, const VectorIn& x) : P(P), x(x) {}
+
+	template <typename VectorOut>
+	void assign_to(VectorOut& y) const
+	{   P.mult(x, y); }
+	
+	const self& P;
+	const VectorIn& x;
+    };
+  
+#if 0  
+    template <typename VectorIn>
+    multiplier<VectorIn> operator*(const VectorIn& x) const
+    {  return multiplier<VectorIn>(*this, x); }
+#endif
+
+#if 1
     ///assumption elements with quadratic elementmatrix
     template< class Vector >
-    Vector operator*(  Vector& x) const {
+    Vector operator*(// const 
+		     Vector& x) const 
+    {
 	Vector m_tmp(size(x), 0.0);
   	for(int elmi= 0; elmi < m_total_elements; elmi++){
-	   unsigned int n(size(m_elements[elmi].get_indices()));
+	    const element_type& elementi= m_elements[elmi];
+	    const mtl::vector::dense_vector<int>& indices= elementi.get_indices();
+	    unsigned int n(size(indices));
 	    for( unsigned int i= 0; i < n; i++){
 	        for( unsigned int j= 0; j < n; j++){
-		    m_tmp[m_elements[elmi].get_indices()[i]]+= m_elements[elmi].get_values()[i][j]*x[m_elements[elmi].get_indices()[j]];
+		    m_tmp[indices[i]]+= elementi.get_values()[i][j]*x[indices[j]];
 	        }
-	     }
+	    }
  	}
 	return m_tmp;
-	}
-
+    }
+#endif
 
     /*******************************************************************************
      * Inspector Members
@@ -333,6 +375,14 @@ class element_structure
      */
     element_type* m_elements;
 };
+
+template <typename ValueType>
+inline void swap(element_structure<ValueType>& x, element_structure<ValueType>& y)
+{
+    swap(x.m_total_elements, y.m_total_elements);
+    swap(x.m_total_vars, y.m_total_vars);
+    swap(x.m_elements, y.m_elements);
+}
 
 }
 
