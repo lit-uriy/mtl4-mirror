@@ -425,6 +425,7 @@ template <> std::string vampir_trace<5048>::name("lower_unit_trisolve_crs_compac
 template <> std::string vampir_trace<5049>::name("ilut::factorize");
 template <> std::string vampir_trace<5050>::name("diagonal::setup");
 template <> std::string vampir_trace<5051>::name("diagonal::solve");
+template <> std::string vampir_trace<5052>::name("pc::imf_factor");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>

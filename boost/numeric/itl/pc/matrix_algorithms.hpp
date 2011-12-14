@@ -20,8 +20,8 @@
 
 #include <boost/numeric/itl/pc/value_traits.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
-#include <boost/numeric/itl/pc/element.hpp>
-#include <boost/numeric/itl/pc/element_structure.hpp>
+#include <boost/numeric/mtl/matrix/element.hpp>
+#include <boost/numeric/mtl/matrix/element_structure.hpp>
 
 #include <iostream>
 

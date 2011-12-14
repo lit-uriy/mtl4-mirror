@@ -18,6 +18,8 @@
 #include <boost/numeric/itl/pc/matrix_algorithms.hpp>
 #include <boost/numeric/itl/pc/imf_preconditioner.hpp>
 #include <boost/numeric/itl/pc/imf_algorithms.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
+
 
 template< class ElementStructure >
 void setup(ElementStructure& A, int lofi)
@@ -26,11 +28,14 @@ void setup(ElementStructure& A, int lofi)
       
     int size( A.get_total_vars() );
    
-    mtl::dense_vector<value_type>              x(size, 1), b(size); 
-   
+    mtl::dense_vector<value_type>              x(size, 1), b(size), ident(size); 
+    iota(ident);
     itl::pc::imf_preconditioner<value_type> precond(A, lofi);
     b= A * x;
     std::cout<< "rhs2=" << b << "\n";
+    mtl::compressed2D<double> B(mtl::matrix::assemble_compressed(A, ident));
+
+    
 #if 0
 	mtl::io::tout << "------------------------------- STATISTICS -------------------------------" << std::endl;
 	int rows = num_rows(*master_mat);
@@ -55,13 +60,13 @@ void setup(ElementStructure& A, int lofi)
 	
     itl::cyclic_iteration<value_type>          iter(b, size, 1.e-8, 0.0, 5);
     x= 0;
-    bicgstab(A, x, b, precond, iter);
+//     bicgstab(A, x, b, precond, iter);
 
 }
 
 int main(int, char** argv)
 {
- 
+    mtl::vampir_trace<9999> tracer;
     typedef double value_type;
     typedef mtl::compressed2D<value_type>     sparse_type;
        

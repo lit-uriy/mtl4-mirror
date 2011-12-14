@@ -25,8 +25,8 @@
 #include <vector>
 #include <valarray>
 
-#include <boost/numeric/itl/pc/element.hpp>
-#include <boost/numeric/itl/pc/element_structure.hpp>
+#include <boost/numeric/mtl/matrix/element.hpp>
+#include <boost/numeric/mtl/matrix/element_structure.hpp>
 
 
 

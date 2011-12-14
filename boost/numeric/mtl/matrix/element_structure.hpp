@@ -21,8 +21,9 @@
 #include <ostream>
 
 
-#include <boost/numeric/itl/pc/element.hpp>
-#include <boost/numeric/mtl/mtl.hpp>
+#include <boost/numeric/mtl/matrix/element.hpp>
+// #include <boost/numeric/mtl/mtl.hpp>
+#include <boost/numeric/mtl/utility/ashape.hpp>
 
 namespace mtl {
 
@@ -208,9 +209,8 @@ class element_structure
 	    m_elements = 0;
 	}
     }
-    
-    
-
+ 
+    ///elementstructur times cvec
     template <typename VectorIn, typename VectorOut>
     void mult(const VectorIn& x, VectorOut& y) const 
     {
@@ -239,13 +239,12 @@ class element_structure
 	const VectorIn& x;
     };
   
-#if 0  
+ 
     template <typename VectorIn>
     multiplier<VectorIn> operator*(const VectorIn& x) const
     {  return multiplier<VectorIn>(*this, x); }
-#endif
 
-#if 1
+#if 0
     ///assumption elements with quadratic elementmatrix
     template< class Vector >
     Vector operator*(// const 
@@ -344,9 +343,7 @@ class element_structure
 		for(int c = 0; c < it->nb_vars()-1; ++c) {
 		    print_value<value_type>::print(file, it->get_values()(r,c));
 		}
-		print_value<value_type>::print(
-					       file, it->get_values()(r,it->nb_vars()-1)
-					       );
+		print_value<value_type>::print(file, it->get_values()(r,it->nb_vars()-1));
 		file << "\n";
 	    }
 	    file << "\n";
@@ -384,6 +381,17 @@ inline void swap(element_structure<ValueType>& x, element_structure<ValueType>& 
     swap(x.m_elements, y.m_elements);
 }
 
+namespace ashape {
+  
+  template <typename ValueType>
+  struct ashape<element_structure<ValueType> > 
+  {
+      typedef ndef type;
+  };
+   
 }
+
+}
+
 
 #endif // MTL_ELEMENT_STRUCTURE_INCLUDE
