@@ -96,6 +96,8 @@ namespace mtl {
 
 	template <typename Vector> class multi_vector;
 	template <typename Vector> class multi_vector_range;
+	template <typename Value> class element;
+	template <typename Value> class element_structure;
 	template <typename Functor> class implicit_dense;	
 	template <typename Value> class ones_functor;
 	template <typename Value> class ones_matrix;

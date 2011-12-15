@@ -29,12 +29,12 @@ namespace mtl {
 namespace matrix {
 
 /**
- * Construct the sparse data structure. 
+ * Construct the sparse data structure from an elementstructure 
  */
 template< typename ElementStructure, typename Vector> 
 mtl::compressed2D<typename ElementStructure::element_type::value_type>  
-assemble_compressed(const ElementStructure& es,	const Vector& order
-) {
+assemble_compressed(const ElementStructure& es,	const Vector& order) 
+{
   	typedef typename ElementStructure::element_type::value_type   value_type;
  	typedef typename ElementStructure::element_iterator           iterator;
  	typedef typename ElementStructure::element_type               element_type;
@@ -48,7 +48,7 @@ assemble_compressed(const ElementStructure& es,	const Vector& order
 	for(iterator it = es.element_begin(); it != es.element_end(); ++it) {
 		element_type& element = *it;
 		const index_type& idx = element.get_indices();
-		const matrix_type& values = element.get_values();
+		matrix_type& values = element.get_values();
 		for(int i = 0; i < element.nb_vars(); ++i) {
 			for(int j = 0; j < element.nb_vars(); ++j) {
 				if(values(i,j) != mtl::traits::value_traits<value_type>::zero) {

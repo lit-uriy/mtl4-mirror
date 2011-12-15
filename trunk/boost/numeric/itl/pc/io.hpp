@@ -30,7 +30,7 @@
 
 
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 // Read a value from the stream. The stream is advanced.
 template< class T >
@@ -46,7 +46,8 @@ T read_value(std::ifstream& stream) {
 // It is assumed the nodes are numbered consecutively, i.e. there are no unused
 // node numbers.
 template< class ValueType >
-element_structure<ValueType>* read_el_matrix( const char *const mat_file ) {
+element_structure<ValueType>* read_el_matrix( const char *const mat_file ) 
+{
 
 	// Type definitions
 	typedef element<ValueType>		element_type;
@@ -169,6 +170,6 @@ element_structure<ValueType>* read_el_matrix( const char *const mat_file ) {
 	return es;
 }
 
-} // end namespace imf
+}} // end namespace mtl::matrix
 
 #endif // MTL_IO_INCLUDE

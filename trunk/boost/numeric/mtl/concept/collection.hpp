@@ -362,6 +362,9 @@ namespace mtl {
 
 #endif
 
+
+
+
 #ifdef __GXX_CONCEPTS__
     template <typename Vector>
     concept_map Collection<matrix::multi_vector_range<Vector> >
@@ -377,6 +380,18 @@ namespace mtl {
 	typedef typename matrix::multi_vector_range<Vector>::value_type       value_type;
 	typedef typename matrix::multi_vector_range<Vector>::const_reference  const_reference;
 	typedef typename matrix::multi_vector_range<Vector>::size_type        size_type;
+    };
+
+#endif
+
+#ifdef __GXX_CONCEPTS__
+#else
+    template <typename Value>
+    struct Collection<matrix::element_structure<Value> >
+    {
+	typedef Value            value_type;
+      // typedef Value            const_reference;
+      // typedef typename compressed2D<Value, Parameters>::size_type size_type;
     };
 
 #endif

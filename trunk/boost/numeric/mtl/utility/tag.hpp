@@ -222,6 +222,12 @@ struct hermitian_multi_vector
   : virtual matrix, virtual dense
 {};
 
+/// Tag for element structure matrix
+struct element_structure
+  : sparse_matrix
+{};
+
+
 /// Tag for implicit dense matrices
 
 

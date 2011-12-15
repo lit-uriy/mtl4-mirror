@@ -183,7 +183,14 @@ struct ashape_aux<multi_vector<Vector> >
 {
     typedef mat<typename ashape<typename mtl::Collection<multi_vector<Vector> >::value_type>::type> type;
 };
-   
+  
+template <typename Value>
+struct ashape_aux<matrix::element_structure<Value> >
+{
+   typedef mat<typename ashape<Value>::type> type;
+};
+
+ 
 template <typename Vector>
 struct ashape_aux<matrix::multi_vector_range<Vector> >
 {

@@ -25,8 +25,9 @@
 // #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
+#if 0
 namespace print {
 
 	template< class Type >
@@ -92,6 +93,7 @@ namespace print {
 		}
 	};
 }
+  #endif
 
 /**
  * A generic abstract base class for meshes. It describes the concept of a mesh.
@@ -210,11 +212,13 @@ class element_structure
 	}
     }
  
+#if 0
     ///elementstructur times cvec
     template <typename VectorIn, typename VectorOut>
     void mult(const VectorIn& x, VectorOut& y) const 
     {
 	// test
+      set_to_zero(y);
   	for(int elmi= 0; elmi < m_total_elements; elmi++){
 	    const element_type& elementi= m_elements[elmi];
 	    const mtl::vector::dense_vector<int>& indices= elementi.get_indices();
@@ -244,7 +248,6 @@ class element_structure
     multiplier<VectorIn> operator*(const VectorIn& x) const
     {  return multiplier<VectorIn>(*this, x); }
 
-#if 0
     ///assumption elements with quadratic elementmatrix
     template< class Vector >
     Vector operator*(// const 
@@ -319,6 +322,7 @@ class element_structure
      *
      * TODO test this code
      */
+#if 0
     void write_to_file(const std::string& filename) 
     {
 	using namespace print;
@@ -349,7 +353,7 @@ class element_structure
 	    file << "\n";
 	}
     }
-    
+#endif
         
 
     /*******************************************************************************
@@ -374,6 +378,19 @@ class element_structure
 };
 
 template <typename ValueType>
+inline std::size_t num_rows(const element_structure<ValueType>& A)
+{   return A.get_total_vars(); }
+
+template <typename ValueType>
+inline std::size_t num_cols(const element_structure<ValueType>& A)
+{   return A.get_total_vars(); }
+
+template <typename ValueType>
+inline std::size_t size(const element_structure<ValueType>& A)
+{   return A.get_total_vars() * A.get_total_vars(); }
+
+
+template <typename ValueType>
 inline void swap(element_structure<ValueType>& x, element_structure<ValueType>& y)
 {
     swap(x.m_total_elements, y.m_total_elements);
@@ -381,6 +398,7 @@ inline void swap(element_structure<ValueType>& x, element_structure<ValueType>& 
     swap(x.m_elements, y.m_elements);
 }
 
+#if 0
 namespace ashape {
   
   template <typename ValueType>
@@ -390,8 +408,9 @@ namespace ashape {
   };
    
 }
+#endif
 
-}
+}} // mtl::matrix
 
 
 #endif // MTL_ELEMENT_STRUCTURE_INCLUDE
