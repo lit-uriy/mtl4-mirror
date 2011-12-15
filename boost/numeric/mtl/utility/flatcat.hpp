@@ -85,11 +85,25 @@ template <typename T, typename U1, typename U2, typename U3, typename U4, typena
 struct flatcat5
   : flatcat5_c<typename category<T>::type, U1, U2, U3, U4, U5> {};
 
+template <typename C, typename U1, typename U2, typename U3, typename U4, typename U5, typename U6>
+struct flatcat6_c
+  : boost::mpl::if_<boost::is_base_of<U1, C>,
+		    tag::flat<U1>,
+		    flatcat5_c<C, U2, U3, U4, U5, U6>
+		   >::type
+{};
+
+template <typename T, typename U1, typename U2, typename U3, typename U4, typename U5, typename U6>
+struct flatcat6
+  : flatcat6_c<typename category<T>::type, U1, U2, U3, U4, U5, U6> {};
+
+
+
 // Some often reused flatcats:
 
 template <typename Matrix>
 struct mat_cvec_flatcat
-  : flatcat5<Matrix, tag::transposed_multi_vector, tag::hermitian_multi_vector, tag::multi_vector, tag::dense, tag::sparse> 
+  : flatcat6<Matrix, tag::element_structure, tag::transposed_multi_vector, tag::hermitian_multi_vector, tag::multi_vector, tag::dense, tag::sparse> 
 {};
 
 template <typename Collection>

@@ -27,6 +27,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/multi_tmp.hpp>
+#include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
@@ -144,6 +145,22 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 	mtl::traits::is_static<Matrix> selector;
 # endif
     dense_mat_cvec_mult(A, v, w, Assign(), selector);
+}
+
+// Element structure vector multiplication
+template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
+inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::element_structure>)
+{
+  // vampir_trace<3019> tracer;
+    if (Assign::init_to_zero) set_to_zero(w);
+  	for(int elmi= 0; elmi < A.m_total_elements; elmi++){
+	    const typename Matrix::element_type& elementi= A.m_elements[elmi];
+	    const typename Matrix::element_type::index_type& indices= elementi.get_indices();
+	    unsigned int n(size(indices));
+	    for (unsigned int i= 0; i < n; i++)
+	        for (unsigned int j= 0; j < n; j++)
+		    Assign::update(w[indices[i]], elementi.get_values()[i][j]*v[indices[j]]);
+ 	}
 }
 
 // Multi-vector vector multiplication (tag::multi_vector is derived from dense)

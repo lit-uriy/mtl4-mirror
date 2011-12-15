@@ -36,7 +36,7 @@
 #include <boost/numeric/itl/pc/comparators.hpp>
 
 
-namespace mtl {
+namespace mtl { namespace matrix {
 
 
 
@@ -725,5 +725,6 @@ OStream& operator<<(OStream& out, element<ValueType>& el)
 	return out;
 }
 
-}
+  }} // mtl::matrix
+
 #endif // MTL_ELEMENT_INCLUDE

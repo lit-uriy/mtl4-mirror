@@ -31,7 +31,11 @@ void setup(ElementStructure& A, int lofi)
     mtl::dense_vector<value_type>              x(size, 1), b(size), ident(size); 
     iota(ident);
     itl::pc::imf_preconditioner<value_type> precond(A, lofi);
+
+    // std::string ss= typename mtl::ashape::ashape<ElementStructure>::type();
+
     b= A * x;
+    b= ident - A * x;
     std::cout<< "rhs2=" << b << "\n";
     mtl::compressed2D<double> B(mtl::matrix::assemble_compressed(A, ident));
 
@@ -60,7 +64,7 @@ void setup(ElementStructure& A, int lofi)
 	
     itl::cyclic_iteration<value_type>          iter(b, size, 1.e-8, 0.0, 5);
     x= 0;
-//     bicgstab(A, x, b, precond, iter);
+     bicgstab(A, x, b, precond, iter);
 
 }
 
@@ -73,9 +77,9 @@ int main(int, char** argv)
     std::string program_dir= mtl::io::directory_name(argv[0]),
 	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
 
-    mtl::element_structure<value_type>* es = 0;
+    mtl::matrix::element_structure<value_type>* es = 0;
 
-    es = mtl::read_el_matrix<value_type>(matrix_file.c_str());
+    es = mtl::matrix::read_el_matrix<value_type>(matrix_file.c_str());
     int lofi=3;
 	
     setup(*es, lofi);
