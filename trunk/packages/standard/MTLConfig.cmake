@@ -7,7 +7,9 @@
 #supported components:
 #Umfpack, Arprec
 
+include(${MTL_DIR}/Vampir.cmake)
 SET(MTL_INCLUDE_DIRS "${MTL_DIR}/../../include")
+
 find_package(Boost 1.36 REQUIRED)
 if(Boost_FOUND)
 	LIST(APPEND MTL_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
@@ -15,6 +17,7 @@ endif(Boost_FOUND)
 #message("find components: ${MTL_FIND_COMPONENTS}")
 #we found nothing..
 set(MTL_NOT_FOUND )
+
 foreach(CURCOMP ${MTL_FIND_COMPONENTS})
 #look for a file called cmake/COMPONENT.cmake in the mtl-directory (/usr/share/mtl/)
 	string(TOUPPER ${CURCOMP} CURCOMP_UPPER)
@@ -34,7 +37,15 @@ foreach(CURCOMP ${MTL_FIND_COMPONENTS})
 		list(APPEND MTL_NOT_FOUND ${CURCOMP})
 	endif()
 endforeach()
+
 if(MTL_FIND_REQUIRED AND MTL_NOT_FOUND)
 	message(SEND_ERROR "could not find all components: ${MTL_NOT_FOUND}")
 endif()
+if(ENABLE_VAMPIR AND VAMPIR_FOUND)
+#add_definitions("-DMTL_HAS_VPT -DVTRACE -vt:inst manual")
+	add_definitions("-DMTL_HAS_VPT -DVTRACE")
+	add_definitions(${VT_COMPILE_FLAGS})
+	add_library(mtl_vampir ${MTL_DIR}/vpt.cpp) #bad idea
+	list(APPEND MTL_LIBRARIES mtl_vampir)
+endif(ENABLE_VAMPIR AND VAMPIR_FOUND)
 include_directories(${MTL_INCLUDE_DIRS})

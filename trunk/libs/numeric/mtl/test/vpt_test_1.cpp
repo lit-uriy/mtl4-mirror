@@ -16,12 +16,7 @@
 
 using namespace std;  
 
-void helper_function()
-{
-    mtl::vampir_trace<9990> tracer; 
-
-    std::cout << "In helper_function <id=0998>, it is " << (tracer.is_traced() ? "" : "not ") << "traced\n";
-}
+void helper_function();
 
 void function()
 {
