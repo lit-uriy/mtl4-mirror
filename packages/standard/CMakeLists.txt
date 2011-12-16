@@ -24,6 +24,7 @@ INSTALL(DIRECTORY ../../boost
        )
 
 INSTALL(FILES MTLConfig.cmake ../../README ../../license.mtl.txt
+	../../tools/cmake/Vampir.cmake ../../boost/numeric/mtl/interface/vpt.cpp
 	DESTINATION share/mtl/
        )
 
