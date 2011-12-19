@@ -28,6 +28,7 @@
 #define MTL_IMF_PRECONDITIONER_INCLUDE
 
 #include <boost/numeric/itl/pc/matrix_algorithms.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/coordinate2D.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
@@ -110,6 +111,7 @@ public:
 	  	m_diagonal_index(0),
 	  	m_diagonal(0)
 	{
+ 		mtl::vampir_trace<5053> tracer;
 		if(copy_on){
 		  ElementStructure es(element_structure);
 // 		  es= element_structure;
@@ -251,6 +253,7 @@ private:
 template <typename Matrix, typename Vector>
 Vector solve(const imf_preconditioner<Matrix>& P, const Vector& b)
 {
+ 	 mtl::vpt::vampir_trace<3064> tracer;
 	return P.solve(b);
 }
 }//namespace pc

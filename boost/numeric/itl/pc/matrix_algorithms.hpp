@@ -19,6 +19,7 @@
 
 
 #include <boost/numeric/itl/pc/value_traits.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/matrix/element.hpp>
 #include <boost/numeric/mtl/matrix/element_structure.hpp>
@@ -35,6 +36,7 @@ template< typename ElementStructure, typename Vector>
 mtl::compressed2D<typename ElementStructure::element_type::value_type>  
 assemble_compressed(const ElementStructure& es,	const Vector& order) 
 {
+// 	mtl::vampir_trace<4021> tracer;
   	typedef typename ElementStructure::element_type::value_type   value_type;
  	typedef typename ElementStructure::element_iterator           iterator;
  	typedef typename ElementStructure::element_type               element_type;

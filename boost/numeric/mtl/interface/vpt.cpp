@@ -206,7 +206,7 @@ template <> std::string vampir_trace<3043>::name("Matrix_upper_trisolve");
 template <> std::string vampir_trace<3044>::name("Matrix_upper_trisolve_diagonal");
 template <> std::string vampir_trace<3045>::name("Matrix_upper_trisolve_invers_diag");
 template <> std::string vampir_trace<3046>::name("Matrix_upper_trisolve_DiaTag");
-template <> std::string vampir_trace<3047>::name("");
+template <> std::string vampir_trace<3047>::name("scalar_assign");
 template <> std::string vampir_trace<3048>::name("");
 template <> std::string vampir_trace<3049>::name("crs_cvec_mult");
 template <> std::string vampir_trace<3050>::name("sparse_ins::ctor");
@@ -223,7 +223,7 @@ template <> std::string vampir_trace<3060>::name("mat_crtp_mvec_assign");
 template <> std::string vampir_trace<3061>::name("copy_band_to_sparse");
 template <> std::string vampir_trace<3062>::name("");
 template <> std::string vampir_trace<3063>::name("laplacian_setup");
-template <> std::string vampir_trace<3064>::name("");
+template <> std::string vampir_trace<3064>::name("imf::solve");
 template <> std::string vampir_trace<3065>::name("");
 template <> std::string vampir_trace<3066>::name("");
 template <> std::string vampir_trace<3067>::name("");
@@ -348,6 +348,7 @@ template <> std::string vampir_trace<5049>::name("ilut::factorize");
 template <> std::string vampir_trace<5050>::name("diagonal::setup");
 template <> std::string vampir_trace<5051>::name("diagonal::solve");
 template <> std::string vampir_trace<5052>::name("pc::imf_factor");
+template <> std::string vampir_trace<5053>::name("imf::construktor");
 
 #if 0
 #include <boost/numeric/mtl/interface/vpt.hpp>
