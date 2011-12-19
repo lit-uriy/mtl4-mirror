@@ -20,6 +20,7 @@
 #define MTL_IMF_ALGORITHMS_INCLUDE
 
 #include <iostream>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/coordinate2D.hpp>
 #include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
@@ -225,6 +226,7 @@ struct IsRemoved {
 template<  class Mesh >
 void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int maxlofi   
 ) {
+	mtl::vampir_trace<5052> tracer;
 	typedef typename Mesh::element_type element_type;
 	typedef typename Mesh::element_iterator element_iterator;
 	typedef typename element_type::value_type value_type;

@@ -518,7 +518,7 @@ private:
 
 	~scalar_assign()
 	{
-	    vampir_trace<3036> tracer;
+	    vampir_trace<3047> tracer;
 	    if (with_comma) {
 		MTL_DEBUG_THROW_IF(r != num_rows(matrix), incompatible_size("Not all matrix entries initialized!"));
 	    } else {

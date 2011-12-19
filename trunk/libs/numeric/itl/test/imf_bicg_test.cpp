@@ -28,16 +28,16 @@ void setup(ElementStructure& A, int lofi)
       
     int size( A.get_total_vars() );
    
-    mtl::dense_vector<value_type>              x(size, 1), b(size), ident(size); 
-    iota(ident);
+    mtl::dense_vector<value_type>              x(size, 1), b(size);//, ident(size); 
+//     iota(ident);
     itl::pc::imf_preconditioner<value_type> precond(A, lofi);
 
     // std::string ss= typename mtl::ashape::ashape<ElementStructure>::type();
 
     b= A * x;
-    b= ident - A * x;
-    std::cout<< "rhs2=" << b << "\n";
-    mtl::compressed2D<double> B(mtl::matrix::assemble_compressed(A, ident));
+//     b= ident - A * x;
+//     std::cout<< "rhs2=" << b << "\n";
+//     mtl::compressed2D<double> B(mtl::matrix::assemble_compressed(A, ident));
 
     
 #if 0
@@ -75,12 +75,14 @@ int main(int, char** argv)
     typedef mtl::compressed2D<value_type>     sparse_type;
        
     std::string program_dir= mtl::io::directory_name(argv[0]),
-	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
+  	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
+// 		matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/obstacle_small.mtx");
+// 	        matrix_file= mtl::io::join(program_dir, "../../../../../data/matrix_market/obstacle_q1q1_e64/obstacle_q1q1_e64_r00800.mtx");
 
     mtl::matrix::element_structure<value_type>* es = 0;
 
     es = mtl::matrix::read_el_matrix<value_type>(matrix_file.c_str());
-    int lofi=3;
+    int lofi=1;
 	
     setup(*es, lofi);
     return 0;
