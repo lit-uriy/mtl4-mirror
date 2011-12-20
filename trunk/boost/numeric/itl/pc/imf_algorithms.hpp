@@ -575,7 +575,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 			// Invert the D-part matrix.
 			C=frontal[n0][n0];
 //  			D=inv(frontal[n0][n0]);  //doesnot work in current version
-			D=inv(C);
+			inv(C, D);
 			// Store the D part.
     			diag_el.get_values() = D ;
 			frontal[n0][n0] = diag_el.get_values();
@@ -865,6 +865,8 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 	Vector res(rhs);
 	// Forward elimination.
 	{
+	    mtl::vampir_trace<9901> tb1;
+	    
 	  int b_off = 0;
 	  for(int level = 0; level < m_levels; ++level) {
 		const int off_low = m_diagonal_index[level];
@@ -888,6 +890,8 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 	}
 	// Backward elimination.
 	{
+	    mtl::vampir_trace<9902> tb2;
+	    
 	int b_off = m_nb_blocks-1;
 	for(int level = m_levels-1; level >= 0; --level) {
 

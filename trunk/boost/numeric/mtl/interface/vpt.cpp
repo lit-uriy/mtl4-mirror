@@ -7,14 +7,14 @@ namespace mtl {
 namespace vpt {
 
 // Categories:
-// Utilities:                       0000
-// Static size operations:          1000
-// Vector operations:               2000
-// Matrix Vector & single matrix:   3000
-// Matrix matrix operations:        4000
-// Factorizations, preconditioners: 5000
-// Fused operations:                6000
-// Iterative solvers:               7000
+// Utilities + very small functions:  0000
+// Static size operations:            1000
+// Vector operations:                 2000
+// Matrix Vector & single matrix:     3000
+// Matrix matrix operations:          4000
+// Factorizations, preconditioners:   5000
+// Fused operations:                  6000
+// Iterative solvers:                 7000
 
 
 // Utilities:                        < 1000
@@ -148,12 +148,6 @@ template <> std::string vampir_trace<2051>::name("");
 template <> std::string vampir_trace<2052>::name("");
 
 
-#if 0
-#include <boost/numeric/mtl/interface/vpt.hpp>
-	vampir_trace<> tracer;
-
-#endif
-
 // Matrix Vector & single matrix:    3000
 template <> std::string vampir_trace<3001>::name("matrix_copy_ele_times");
 template <> std::string vampir_trace<3002>::name("gen_matrix_copy");
@@ -202,7 +196,7 @@ template <> std::string vampir_trace<3044>::name("Matrix_upper_trisolve_diagonal
 template <> std::string vampir_trace<3045>::name("Matrix_upper_trisolve_invers_diag");
 template <> std::string vampir_trace<3046>::name("Matrix_upper_trisolve_DiaTag");
 template <> std::string vampir_trace<3047>::name("scalar_assign");
-template <> std::string vampir_trace<3048>::name("");
+template <> std::string vampir_trace<3048>::name("elest_cvec_mult");
 template <> std::string vampir_trace<3049>::name("crs_cvec_mult");
 template <> std::string vampir_trace<3050>::name("sparse_ins::ctor");
 template <> std::string vampir_trace<3051>::name("sparse_ins::dtor");
@@ -279,10 +273,6 @@ template <> std::string vampir_trace<4039>::name("");
 template <> std::string vampir_trace<4040>::name("");
 template <> std::string vampir_trace<4041>::name("");
 
-#if 0
-#include <boost/numeric/mtl/interface/vpt.hpp>
-	vampir_trace<> tracer;
-#endif
 
 // Factorizations, preconditioners: 5000
 template <> std::string vampir_trace<5001>::name("cholesky_base");
@@ -339,6 +329,8 @@ template <> std::string vampir_trace<5051>::name("diagonal::solve");
 template <> std::string vampir_trace<5052>::name("imf::factor");
 template <> std::string vampir_trace<5053>::name("imf::ctor");
 template <> std::string vampir_trace<5054>::name("imf::solve");
+template <> std::string vampir_trace<5055>::name("pc::solver::assign_to");
+template <> std::string vampir_trace<5056>::name("");
 
 
 // Fused operations:                6000

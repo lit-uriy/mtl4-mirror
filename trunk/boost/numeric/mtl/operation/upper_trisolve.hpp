@@ -108,7 +108,7 @@ namespace detail {
 	template <typename VectorIn, typename VectorOut>
 	void inline apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<1>) const
 	{
-	    vampir_trace<5042> tracer;
+	    // vampir_trace<5042> tracer;
 	    using namespace tag; 
 	    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
 	    a_cur_type ac= begin<row>(A), aend= end<row>(A); 
@@ -129,7 +129,7 @@ namespace detail {
 	template <typename VectorIn, typename VectorOut>
 	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<2>) const
 	{
-	    vampir_trace<5043> tracer;
+	    // vampir_trace<5043> tracer;
 	    using namespace tag; 
 	    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
 	    w= v;
@@ -159,7 +159,7 @@ namespace detail {
 	template <typename VectorIn, typename VectorOut>
 	void apply(const VectorIn& v, VectorOut& w, boost::mpl::int_<3>) const
 	{
-	    vampir_trace<5046> tracer;
+	    // vampir_trace<5046> tracer;
 	    typedef typename mtl::Collection<VectorOut>::value_type out_value_type;
 	    for (size_type r= num_rows(A); r-- > 0; ) {
 		size_type j0= A.ref_major()[r];
@@ -211,7 +211,7 @@ namespace detail {
 template <typename Matrix, typename Vector>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v)
 {
-    vampir_trace<3043> tracer;
+    // vampir_trace<3043> tracer;
     return detail::upper_trisolve_t<Matrix, tag::regular_diagonal>(A)(v);
 }
 
@@ -219,7 +219,7 @@ Vector inline upper_trisolve(const Matrix& A, const Vector& v)
 template <typename Matrix, typename VectorIn, typename VectorOut>
 void inline upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut& w)
 {
-    vampir_trace<3043> tracer;
+    // vampir_trace<3043> tracer;
     detail::upper_trisolve_t<Matrix, tag::regular_diagonal> solver(A); // use of anonymous variable causes weird error
     solver(v, w);
 }
@@ -228,7 +228,7 @@ void inline upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut& w)
 template <typename Matrix, typename Vector>
 Vector inline unit_upper_trisolve(const Matrix& A, const Vector& v)
 {
-    vampir_trace<3044> tracer;
+    // vampir_trace<3044> tracer;
     return detail::upper_trisolve_t<Matrix, tag::unit_diagonal>(A)(v);
 }
 
@@ -236,7 +236,7 @@ Vector inline unit_upper_trisolve(const Matrix& A, const Vector& v)
 template <typename Matrix, typename VectorIn, typename VectorOut>
 void inline unit_upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut& w)
 {
-    vampir_trace<3044> tracer;
+    // vampir_trace<3044> tracer;
     detail::upper_trisolve_t<Matrix, tag::unit_diagonal> solver(A);
     solver(v, w);
 }
@@ -245,7 +245,7 @@ void inline unit_upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut& w
 template <typename Matrix, typename Vector>
 Vector inline inverse_upper_trisolve(const Matrix& A, const Vector& v)
 {
-    vampir_trace<3045> tracer;
+    // vampir_trace<3045> tracer;
     return detail::upper_trisolve_t<Matrix, tag::inverse_diagonal>(A)(v);
 }
 
@@ -253,7 +253,7 @@ Vector inline inverse_upper_trisolve(const Matrix& A, const Vector& v)
 template <typename Matrix, typename VectorIn, typename VectorOut>
 void inline inverse_upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut& w)
 {
-    vampir_trace<3045> tracer;
+    // vampir_trace<3045> tracer;
     detail::upper_trisolve_t<Matrix, tag::inverse_diagonal> solver(A);
     solver(v, w);
 }
@@ -262,7 +262,7 @@ void inline inverse_upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut
 template <typename Matrix, typename Vector, typename DiaTag>
 Vector inline upper_trisolve(const Matrix& A, const Vector& v, DiaTag)
 {
-    vampir_trace<3046> tracer;
+    // vampir_trace<3046> tracer;
     return detail::upper_trisolve_t<Matrix, DiaTag>(A)(v);
 }
 
@@ -270,7 +270,7 @@ Vector inline upper_trisolve(const Matrix& A, const Vector& v, DiaTag)
 template <typename Matrix, typename VectorIn, typename VectorOut, typename DiaTag>
 void inline upper_trisolve(const Matrix& A, const VectorIn& v, VectorOut& w, DiaTag)
 {
-    vampir_trace<3046> tracer;
+    // vampir_trace<3046> tracer;
     detail::upper_trisolve_t<Matrix, DiaTag> solver(A);
     solver(v, w);
 }
