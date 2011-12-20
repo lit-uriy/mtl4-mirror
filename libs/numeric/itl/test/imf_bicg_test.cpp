@@ -12,7 +12,7 @@
 //
 // Algorithm inspired by Nick Vannieuwenhoven, written by Cornelius Steinhardt
 
-#  define MTL_VPT_LEVEL 4
+#  define MTL_VPT_LEVEL 5
 
 #include <iostream>
 #include <boost/timer.hpp>
@@ -37,23 +37,18 @@ void setup(ElementStructure& A, int lofi)
    
     mtl::dense_vector<value_type>              x(size, 1), b(size), ident(size); 
      iota(ident);
-#ifdef MTL_HAS_VPT
-     VT_OFF();
-#endif 
+
     boost::timer factorization;
     itl::pc::imf_preconditioner<value_type> precond(A, lofi);
     double ftime= factorization.elapsed();
-#ifdef MTL_HAS_VPT
-    VT_ON();
-#endif 
 
     // std::string ss= typename mtl::ashape::ashape<ElementStructure>::type();
 
     b= A * x;
 //     b= ident - A * x;
-//     std::cout<< "rhs2=" << b << "\n";
+    std::cout<< "size(rhs2)=" << num_rows(b) << "\n";
     mtl::compressed2D<double> B(mtl::matrix::assemble_compressed(A, ident));
-
+    std::cout << "NNZ == " << B.nnz() << "\n";
     
 #if 0
 	mtl::io::tout << "------------------------------- STATISTICS -------------------------------" << std::endl;

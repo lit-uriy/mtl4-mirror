@@ -171,7 +171,8 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::element_structure>)
 {
-  // vampir_trace<3019> tracer;
+    vampir_trace<3048> tracer;
+    // vampir_trace<5056> ttttracer;
     if (Assign::init_to_zero) set_to_zero(w);
   	for(int elmi= 0; elmi < A.m_total_elements; elmi++){
 	    const typename Matrix::element_type& elementi= A.m_elements[elmi];
@@ -336,6 +337,7 @@ typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_typ
 inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
     vampir_trace<3049> tracer;
+    // vampir_trace<5056> tttracer;
     using math::zero;
 
     typedef compressed2D<MValue, MPara>                       Matrix;

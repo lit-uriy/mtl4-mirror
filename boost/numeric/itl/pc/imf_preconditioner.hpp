@@ -28,6 +28,7 @@
 #define MTL_IMF_PRECONDITIONER_INCLUDE
 
 #include <boost/numeric/itl/pc/matrix_algorithms.hpp>
+#include <boost/numeric/itl/pc/solver.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/coordinate2D.hpp>
@@ -119,7 +120,7 @@ public:
 		} else {
 		  factor(element_structure, maxlofi);
 		}
-		
+		P= permutation(m_ordering);
 	}
 
 	/**
@@ -183,6 +184,19 @@ public:
 	 * Applies the preconditioner to the given matrix.
 	 */
 public:
+
+
+
+    template <typename VectorIn, typename VectorOut>
+    void solve(const VectorIn& b, VectorOut& x) const 
+    {
+	// mtl::matrix::traits::permutation<>::type P(permutation(m_ordering));//TODO change in loop
+	VectorIn m(trans(P)*b), m_tmp(imf_apply(m));
+	x= P * m_tmp;
+    }  
+
+
+#if 0
 	//equals operator() in Nicks code
 	template <typename Vector>
 	Vector solve(const Vector& b) const {
@@ -193,6 +207,7 @@ public:
 		  m[i]= m_tmp[m_ordering[i]];
 	    return m; 
 	}  
+#endif
 
 	/**
 	 * Applies the preconditioner.
@@ -219,6 +234,8 @@ private:
 	 * A vector containing the renumbering of IMF.
 	 */
 	index_type m_ordering;
+
+    mtl::matrix::traits::permutation<>::type P;
 
 	/**
 	 * The number of levels (equals the number of entries in the diagonal index
@@ -251,10 +268,12 @@ private:
 
 /// Solve 
 template <typename Matrix, typename Vector>
-Vector solve(const imf_preconditioner<Matrix>& P, const Vector& b)
+//Vector 
+solver<imf_preconditioner<Matrix>, Vector, false>
+inline solve(const imf_preconditioner<Matrix>& P, const Vector& b)
 {
- 	 mtl::vpt::vampir_trace<5054> tracer;
-	return P.solve(b);
+    mtl::vpt::vampir_trace<5054> tracer;
+    return solver<imf_preconditioner<Matrix>, Vector, false>(P, b);
 }
 }//namespace pc
 }//namespace itl

@@ -15,6 +15,7 @@
 
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/vector/assigner.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl { namespace pc {
 
@@ -27,7 +28,10 @@ struct solver
 
     template <typename VectorOut>
     void assign_to(VectorOut& y) const
-    {	assign_to(y, boost::mpl::bool_<adjoint>());    }    
+    {	
+	mtl::vampir_trace<5055> tracer;
+	assign_to(y, boost::mpl::bool_<adjoint>());    
+    }    
 
   protected:
 
