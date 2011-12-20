@@ -119,17 +119,37 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
     vampir_trace<3018> tracer;
     // Naive implementation, will be moved to a functor and complemented with more efficient ones
 
-    using math::zero; using mtl::vector::set_to_zero;
+    using math::zero; 
     if (mtl::vector::size(w) == 0) return;
+    // std::cout << "Bin in richtiger Funktion\n";
 
     // if (Assign::init_to_zero) set_to_zero(w); // replace update with first_update instead
 
     typedef typename Collection<VectorOut>::value_type value_type;
+    typedef typename Collection<VectorIn>::value_type  value_in_type;
     typedef typename Collection<Matrix>::size_type     size_type;
 
-    for (size_type i= 0; i < num_rows(A); i++) {
-	value_type tmp= zero(w[i]);
-	for (size_type j= 0; j < num_cols(A); j++) 
+    const value_type z(math::zero(w[0]));
+    const size_type nr= num_rows(A), nrb= nr / 4 * 4, nc= num_cols(A);
+
+    for (size_type i= 0; i < nrb; i+= 4) {
+	value_type      tmp0(z), tmp1(z), tmp2(z), tmp3(z);
+	for (size_type j= 0; j < nc; j++) {
+	    const value_in_type vj= v[j];
+	    tmp0+= A[i][j] * vj;
+	    tmp1+= A[i+1][j] * vj;
+	    tmp2+= A[i+2][j] * vj;
+	    tmp3+= A[i+3][j] * vj;
+	}
+	Assign::first_update(w[i], tmp0);
+	Assign::first_update(w[i+1], tmp1);
+	Assign::first_update(w[i+2], tmp2);
+	Assign::first_update(w[i+3], tmp3);
+    }
+
+    for (size_type i= nrb; i < nr; i++) {
+	value_type tmp= z;
+	for (size_type j= 0; j < nc; j++) 
 	    tmp+= A[i][j] * v[j];
 	Assign::first_update(w[i], tmp);
     }

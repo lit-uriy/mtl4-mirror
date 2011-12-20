@@ -54,7 +54,7 @@ struct size_helper
     }
 
 # ifndef MTL_IGNORE_STATIC_SIZE_VIOLATION
-    void set_size(std::size_t size)
+    void set_size(std::size_t MTL_DEBUG_ARG(size))
     {	MTL_DEBUG_THROW_IF(Size != size, change_static_size()); }
 # else
     void set_size(std::size_t) {}

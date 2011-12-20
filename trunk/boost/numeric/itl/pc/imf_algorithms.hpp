@@ -335,6 +335,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	int max_sequence_number = nb_elements;
 
  	do {
+	    mtl::vampir_trace<9901> tb1;
 
 		block_diag_low = block_diagonal.size();
 
@@ -445,6 +446,9 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 /***************************************************************************
  * Phase 2: Compute the update matrices
  **************************************************************************/
+		mtl::vampir_trace<9902> tb2;
+
+
 		coo_sparse_type_upper* L =	new coo_sparse_type_upper(nb_vars, nb_vars, upperbound);
 		coo_sparse_type_lower* U =	new coo_sparse_type_lower(nb_vars, nb_vars, upperbound);
 		lower_matrices.push_back(L);
@@ -720,6 +724,9 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	/***************************************************************************
 	 * Phase 3: Apply permutation vector to lower and upper matrices
 	 **************************************************************************/
+	mtl::vampir_trace<9903> tb3;
+	
+
 	mtl::matrix::traits::permutation<>::type P(permutation(m_ordering));
   
 	for( std::size_t k = 0; k < lower_matrices.size(); ++k ) {
@@ -768,6 +775,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	 * Phase 4: Construct the IMF preconditioner
 	 **************************************************************************/
 	// Copy the block diagonal values into a consecutive array.
+	mtl::vampir_trace<9904> tb4;
+
 	m_diagonal = new matrix_type[ block_diagonal.size() ];
 	for(std::size_t i = 0; i < block_diagonal.size(); ++i) {
 		assert( el_status[block_diagonal[i]->get_id()] == DIAGONAL );
