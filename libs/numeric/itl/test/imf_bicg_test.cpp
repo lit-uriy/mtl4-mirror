@@ -12,6 +12,10 @@
 //
 // Algorithm inspired by Nick Vannieuwenhoven, written by Cornelius Steinhardt
 
+#  define MTL_VPT_LEVEL 4
+
+#include <iostream>
+#include <boost/timer.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 #include <boost/numeric/itl/pc/io.hpp>
@@ -20,6 +24,9 @@
 #include <boost/numeric/itl/pc/imf_algorithms.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
+#ifdef MTL_HAS_VPT
+  #include <vt_user.h> 
+#endif 
 
 template< class ElementStructure >
 void setup(ElementStructure& A, int lofi)
@@ -28,16 +35,24 @@ void setup(ElementStructure& A, int lofi)
       
     int size( A.get_total_vars() );
    
-    mtl::dense_vector<value_type>              x(size, 1), b(size);//, ident(size); 
-//     iota(ident);
+    mtl::dense_vector<value_type>              x(size, 1), b(size), ident(size); 
+     iota(ident);
+#ifdef MTL_HAS_VPT
+     VT_OFF();
+#endif 
+    boost::timer factorization;
     itl::pc::imf_preconditioner<value_type> precond(A, lofi);
+    double ftime= factorization.elapsed();
+#ifdef MTL_HAS_VPT
+    VT_ON();
+#endif 
 
     // std::string ss= typename mtl::ashape::ashape<ElementStructure>::type();
 
     b= A * x;
 //     b= ident - A * x;
 //     std::cout<< "rhs2=" << b << "\n";
-//     mtl::compressed2D<double> B(mtl::matrix::assemble_compressed(A, ident));
+    mtl::compressed2D<double> B(mtl::matrix::assemble_compressed(A, ident));
 
     
 #if 0
@@ -64,8 +79,9 @@ void setup(ElementStructure& A, int lofi)
 	
     itl::cyclic_iteration<value_type>          iter(b, size, 1.e-8, 0.0, 5);
     x= 0;
-     bicgstab(A, x, b, precond, iter);
-
+    boost::timer solver;
+     bicgstab(B, x, b, precond, iter);
+     std::cout << "Factorization took " << ftime << "s, solution took " << solver.elapsed() << "s\n";
 }
 
 int main(int, char** argv)
@@ -75,14 +91,14 @@ int main(int, char** argv)
     typedef mtl::compressed2D<value_type>     sparse_type;
        
     std::string program_dir= mtl::io::directory_name(argv[0]),
-  	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
+//  	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
 // 		matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/obstacle_small.mtx");
-// 	        matrix_file= mtl::io::join(program_dir, "../../../../../data/matrix_market/obstacle_q1q1_e64/obstacle_q1q1_e64_r00800.mtx");
+ 	        matrix_file= mtl::io::join(program_dir, "../../../../../data/matrix_market/obstacle_q1q1_e64/obstacle_q1q1_e64_r00800.mtx");
 
     mtl::matrix::element_structure<value_type>* es = 0;
 
     es = mtl::matrix::read_el_matrix<value_type>(matrix_file.c_str());
-    int lofi=1;
+    int lofi=3;
 	
     setup(*es, lofi);
     return 0;

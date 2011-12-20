@@ -75,7 +75,7 @@ namespace vector {
     inline swap_row(Vector& v, typename Collection<Vector>::size_type i,
 		    typename Collection<Vector>::size_type j)
     {
-    vampir_trace<2036> tracer;
+    vampir_trace<236> tracer;
 	using std::swap;
 	if (i == j) return;
 	swap(v[i], v[j]);

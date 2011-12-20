@@ -253,7 +253,7 @@ private:
 template <typename Matrix, typename Vector>
 Vector solve(const imf_preconditioner<Matrix>& P, const Vector& b)
 {
- 	 mtl::vpt::vampir_trace<3064> tracer;
+ 	 mtl::vpt::vampir_trace<5054> tracer;
 	return P.solve(b);
 }
 }//namespace pc

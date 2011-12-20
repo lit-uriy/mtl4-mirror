@@ -64,14 +64,10 @@ template <> std::string vampir_trace<43>::name("");
 template <> std::string vampir_trace<44>::name("");
 template <> std::string vampir_trace<45>::name("");
 
+// Fine-grained vector operations
+template <> std::string vampir_trace<236>::name("Vector_swapped_row");
 
 
-
-#if 0
-#include <boost/numeric/mtl/interface/vpt.hpp>
-	vampir_trace<> tracer;
-
-#endif
 // Static size operations:           1000
 template <> std::string vampir_trace<1001>::name("stat_vec_expr");
 template <> std::string vampir_trace<1002>::name("fsize_dmat_dmat_mult");
@@ -134,7 +130,6 @@ template <> std::string vampir_trace<2032>::name("Vect_quicksort_lo_to_hi");
 template <> std::string vampir_trace<2033>::name("Vect_quicksort_permutaion_lo_to_hi");
 template <> std::string vampir_trace<2034>::name("split_complex_vector");
 template <> std::string vampir_trace<2035>::name("Vect_entries_sum");
-template <> std::string vampir_trace<2036>::name("Vector_swapped_row");
 template <> std::string vampir_trace<2037>::name("Vector_const_trans");
 template <> std::string vampir_trace<2038>::name("Vector_trans");
 template <> std::string vampir_trace<2039>::name("vector::two_norm");
@@ -223,7 +218,7 @@ template <> std::string vampir_trace<3060>::name("mat_crtp_mvec_assign");
 template <> std::string vampir_trace<3061>::name("copy_band_to_sparse");
 template <> std::string vampir_trace<3062>::name("");
 template <> std::string vampir_trace<3063>::name("laplacian_setup");
-template <> std::string vampir_trace<3064>::name("imf::solve");
+template <> std::string vampir_trace<3064>::name("");
 template <> std::string vampir_trace<3065>::name("");
 template <> std::string vampir_trace<3066>::name("");
 template <> std::string vampir_trace<3067>::name("");
@@ -239,12 +234,6 @@ template <> std::string vampir_trace<3076>::name("");
 template <> std::string vampir_trace<3077>::name("");
 template <> std::string vampir_trace<3078>::name("");
 template <> std::string vampir_trace<3079>::name("");
-
-#if 0
-#include <boost/numeric/mtl/interface/vpt.hpp>
-	vampir_trace<> tracer;
-
-#endif
 
 
 // Matrix matrix operations:        4000
@@ -347,13 +336,10 @@ template <> std::string vampir_trace<5048>::name("lower_unit_trisolve_crs_compac
 template <> std::string vampir_trace<5049>::name("ilut::factorize");
 template <> std::string vampir_trace<5050>::name("diagonal::setup");
 template <> std::string vampir_trace<5051>::name("diagonal::solve");
-template <> std::string vampir_trace<5052>::name("pc::imf_factor");
-template <> std::string vampir_trace<5053>::name("imf::construktor");
+template <> std::string vampir_trace<5052>::name("imf::factor");
+template <> std::string vampir_trace<5053>::name("imf::ctor");
+template <> std::string vampir_trace<5054>::name("imf::solve");
 
-#if 0
-#include <boost/numeric/mtl/interface/vpt.hpp>
-	vampir_trace<> tracer;
-#endif
 
 // Fused operations:                6000
 template <> std::string vampir_trace<6001>::name("fused::fwd_eval_loop");
@@ -367,6 +353,7 @@ template <> std::string vampir_trace<6004>::name("fused::bwd_eval_loop_unrolled"
 template <> std::string vampir_trace<7001>::name("cg_without_pc");
 template <> std::string vampir_trace<7002>::name("cg");
 template <> std::string vampir_trace<7003>::name("bicg");
+template <> std::string vampir_trace<7004>::name("bicgstab");
 
 
 

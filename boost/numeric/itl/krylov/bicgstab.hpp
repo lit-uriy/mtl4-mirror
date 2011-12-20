@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/itl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
 
@@ -28,6 +29,7 @@ int bicgstab(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 {
   typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
   typedef HilbertSpaceX                                       Vector;
+  mtl::vampir_trace<7004> tracer;
 
   Scalar     rho_1(0), rho_2(0), alpha(0), beta(0), gamma, omega(0);
   Vector     p(resource(x)), phat(resource(x)), s(resource(x)), shat(resource(x)), 
