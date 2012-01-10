@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
  
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/tuple/tuple.hpp>
 
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -19,7 +18,7 @@
 
 
 
-int test_main(int, char**)
+int main(int, char**)
 {
     using namespace mtl;
     typedef mtl::matrix::coordinate2D<double> matrix_type;

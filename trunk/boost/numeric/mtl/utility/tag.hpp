@@ -173,7 +173,7 @@ struct dense2D_view
 
 /// Tag for (regular) dense matrix in the category lattice
 struct dense2D 
-  : virtual dense2D_view, virtual has_fast_ra_iterator, virtual has_2D_layout
+  : virtual dense2D_view, virtual has_fast_ra_iterator, virtual has_2D_layout, virtual sub_divisible
 {};
 
 struct implicit_dense
