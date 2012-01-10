@@ -730,7 +730,8 @@ struct gen_recursive_dmat_dmat_mult_t
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void operator()(MatrixA const& A, MatrixB const& B, MatrixC& C)
     {
-	apply(A, B, C, traits::sub_matrix_flatcat<MatrixA>(), traits::sub_matrix_flatcat<MatrixB>(), traits::sub_matrix_flatcat<MatrixC>());
+	apply(A, B, C, traits::flatcat1<MatrixA, tag::qsub_divisible>(), 
+	      traits::flatcat1<MatrixB, tag::qsub_divisible>(), traits::flatcat1<MatrixC, tag::qsub_divisible>());
     }   
  
 private:
