@@ -449,8 +449,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		mtl::vampir_trace<9902> tb2;
 
 
-		coo_sparse_type_upper* L =	new coo_sparse_type_upper(nb_vars, nb_vars, upperbound);
-		coo_sparse_type_lower* U =	new coo_sparse_type_lower(nb_vars, nb_vars, upperbound);
+		coo_sparse_type_lower* L=new coo_sparse_type_lower(nb_vars, nb_vars, upperbound);
+		coo_sparse_type_upper* U=new coo_sparse_type_lower(nb_vars, nb_vars, upperbound);
 		lower_matrices.push_back(L);
 		upper_matrices.push_back(U);
 		// For each diagonal block element ... (in parallel)
@@ -750,9 +750,9 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		    L.sort_col();
 		    U.sort_row();
 		}
-		sparse_type_lower* lower = new sparse_type_lower( L );
+		mtl::matrix::compressed2D<value_type> lower(crs( L ));
 		m_lower.push_back(lower);
-		sparse_type_upper* upper = new sparse_type_upper( U );
+		mtl::matrix::compressed2D<value_type> upper(crs( U ));
 		m_upper.push_back(upper);
 
 #if 0 //compressed2D try
@@ -882,10 +882,10 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 			off += block_size;
 		}
 		// Compute x = x - E*dy
-		assert( m_lower[level] );
-		Vector big(num_cols(*m_lower[level])); big=0;
+//  		assert( m_lower[level] );
+		Vector big(num_cols(m_lower[level])); big=0;
 		big[mtl::irange(0,n1)] = dy;
- 		res -= ( *(m_lower[level]) * big );
+ 		res -= ( (m_lower[level]) * big );
 	  }
 	}
 	// Backward elimination.
@@ -898,9 +898,9 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 		const int off_low = m_diagonal_index[level];
 		const int off_high = m_diagonal_index[level+1];
 		// y' = y - Fx
-		assert( m_upper[level] );
+//  		assert( m_upper[level] );
 		
-		vector_type yp( *(m_upper[level]) * res );
+		vector_type yp( (m_upper[level]) * res );
 
 		res[mtl::irange(off_low, off_high) ] -= yp[mtl::irange(0, off_high-off_low) ];
 		// y = inv(D)*y'
