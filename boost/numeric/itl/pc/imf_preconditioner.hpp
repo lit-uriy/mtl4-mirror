@@ -85,12 +85,12 @@ public:
 	/**
 	 * The type of the sequence of lower matrices.
 	 */
-	typedef std::vector<sparse_type_lower*> lower_matrix_coll_type;
+	typedef std::vector<mtl::matrix::compressed2D<value_type> > lower_matrix_coll_type;
 
 	/**
 	 * The type of the sequence of upper matrices.
 	 */
-	typedef std::vector<sparse_type_upper*> upper_matrix_coll_type;
+	typedef std::vector<mtl::matrix::compressed2D<value_type> > upper_matrix_coll_type;
 
 
 
