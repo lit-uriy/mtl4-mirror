@@ -18,12 +18,14 @@ void inline f(const ArgMatrix& A) {}
 
 
 template <typename ResMatrix, typename ArgMatrix>
-void test(const ResMatrix&, const ArgMatrix& B)
+void test(const ResMatrix& A, const ArgMatrix& B)
 {
     ResMatrix C(trans(B));
 
     std::cout << "trans(B) is \n" << trans(B);
     std::cout << "trace(B) is " << trace(B) << "\n";
+
+    // ResMatrix D(A * trans(B));
 
 #if 0 // Can't convert so far
     ResMatrix D= B;

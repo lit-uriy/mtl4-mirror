@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
+#include <boost/numeric/mtl/utility/true_copy.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
@@ -78,7 +79,7 @@ namespace mtl {
 		return result_type(v1, matrix);
 	    }
 	private:
-	    Value1 v1; 
+	    typename mtl::traits::true_copy<Value1>::type v1; 
 	};
 
 
@@ -93,7 +94,7 @@ namespace mtl {
 		return result_type(v1, vector);
 	    }
 	private:
-	    Value1 v1; 
+	    typename mtl::traits::true_copy<Value1>::type v1; 
 	};
 
     } // namespace tfunctor
