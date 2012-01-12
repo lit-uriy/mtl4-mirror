@@ -54,7 +54,7 @@ assemble_compressed(const ElementStructure& es,	const Vector& order)
 		for(int i = 0; i < element.nb_vars(); ++i) {
 			for(int j = 0; j < element.nb_vars(); ++j) {
 				if(values(i,j) != mtl::traits::value_traits<value_type>::zero) {
-					ins[order(idx(i))][order(idx(j))] << values(i,j);
+					ins[size_type(order(idx(i)))][size_type(order(idx(j)))] << values(i,j);
 				}
 			}
 		}
