@@ -19,6 +19,7 @@
 #include <arprec/mp_complex.h>
 
 #include <boost/numeric/mtl/concept/magnitude.hpp>
+#include <boost/numeric/mtl/utility/true_copy.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 namespace mtl {
@@ -31,6 +32,14 @@ namespace mtl {
 	typedef mp_real type;
     };
 
+    namespace traits {
+
+	template <>
+	struct true_copy<mp_real_tmp>
+	{
+	    typedef mp_real type;
+	};
+    }
 } // namespace mtl
 
 namespace math {
