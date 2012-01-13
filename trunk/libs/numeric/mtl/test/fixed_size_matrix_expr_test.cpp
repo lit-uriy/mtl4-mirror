@@ -18,7 +18,7 @@ void inline f(const ArgMatrix& A) {}
 
 
 template <typename ResMatrix, typename ArgMatrix>
-void test(const ResMatrix& A, const ArgMatrix& B)
+void test(const ResMatrix& , const ArgMatrix& B)
 {
     ResMatrix C(trans(B));
 

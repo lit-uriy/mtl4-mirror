@@ -35,7 +35,7 @@ namespace mtl {
     namespace traits {
 
 	template <>
-	struct true_copy<mp_real_tmp>
+	struct true_copy<mp_real_temp>
 	{
 	    typedef mp_real type;
 	};
