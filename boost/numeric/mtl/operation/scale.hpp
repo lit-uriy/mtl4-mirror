@@ -27,11 +27,11 @@ namespace mtl {
     namespace vector {
 	
 	template <typename Value1, typename Vector>
-	typename traits::enable_if_vector<Vector, scaled_view<Value1, Vector> >::type
+	typename traits::enable_if_vector<Vector, scaled_view<typename mtl::traits::true_copy<Value1>::type, Vector> >::type
 	inline scale(const Value1& value1, const Vector& vector)
 	{
-		vampir_trace<2028> tracer;
-	    return scaled_view<Value1, Vector>(value1, vector);
+	    vampir_trace<2028> tracer;
+	    return scaled_view<typename mtl::traits::true_copy<Value1>::type, Vector>(value1, vector);
 	}
     }
 
@@ -86,15 +86,17 @@ namespace mtl {
 	template <typename Value1, typename Vector>
 	struct scale<Value1, Vector, tag::vector>
 	{
-	    typedef vector::scaled_view<Value1, Vector> result_type;
-	    explicit scale(const Value1& v1) : v1(v1) {}
+	    typedef typename mtl::traits::true_copy<Value1>::type type1;
+
+	    typedef vector::scaled_view<type1, Vector> result_type;
+	    explicit scale(const Value1& v1) : v1(type1(v1)) {}
 	
 	    result_type operator() (const Vector& vector) const
 	    {
 		return result_type(v1, vector);
 	    }
 	private:
-	    typename mtl::traits::true_copy<Value1>::type v1; 
+	    type1 v1; 
 	};
 
     } // namespace tfunctor
