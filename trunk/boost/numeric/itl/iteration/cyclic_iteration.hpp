@@ -69,9 +69,9 @@ namespace itl {
 	      out << "finished! error code = " << this->error << '\n'
 		  << this->iterations() << " iterations\n"
 		  << this->resid() << " is actual final residual. \n"
-		  << this->resid()/this->normb() << " is actual relative tolerance achieved. \n"
+		  << this->relresid() << " is actual relative tolerance achieved. \n"
 		  << "Relative tol: " << this->rtol_ << "  Absolute tol: " << this->atol_ << '\n'
-		  << "Convergence:  " << pow(this->resid()/this->normb(), 1.0 / double(this->iterations())) << std::endl;
+		  << "Convergence:  " << pow(this->relresid(), 1.0 / double(this->iterations())) << std::endl;
 	  return this->error;
       }
     protected:

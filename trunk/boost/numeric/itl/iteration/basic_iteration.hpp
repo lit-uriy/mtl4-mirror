@@ -100,7 +100,9 @@ class basic_iteration
 
     void set_max_iterations(int m) { max_iter= m; }
 
-    Real resid() const { return resid_ * norm_r0; }
+    Real resid() const { return resid_; }
+
+    Real relresid() const { return resid_ / norm_r0; }
 
     Real normb() const { return norm_r0; }
 
