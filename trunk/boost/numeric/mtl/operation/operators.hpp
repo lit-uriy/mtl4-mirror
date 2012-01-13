@@ -26,6 +26,7 @@
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/true_copy.hpp>
 #include <boost/numeric/mtl/vector/rvec_mat_times_expr.hpp>
 
 
@@ -36,10 +37,11 @@ namespace matrix {
     /// Multiplication for all supported types of operations
     /** Enable-if-like technique make sure that only called when properly defined **/
     template <typename Op1, typename Op2>
-     typename mtl::traits::mult_result<Op1, Op2>::type
+    typename mtl::traits::mult_result<typename mtl::traits::true_copy<Op1>::type, Op2>::type
     inline operator*(const Op1& op1, const Op2& op2)
     {
-        return typename mtl::traits::mult_result<Op1, Op2>::type(op1, op2);
+	
+        return typename mtl::traits::mult_result<typename mtl::traits::true_copy<Op1>::type, Op2>::type(op1, op2);
     }
 
 
@@ -63,10 +65,10 @@ namespace vector {
     /// Multiplication for all supported types of operations
     /** Enable-if-like technique make sure that only called when properly defined **/
     template <typename Op1, typename Op2>
-    typename mtl::traits::vec_mult_result<Op1, Op2>::type
+    typename mtl::traits::vec_mult_result<typename mtl::traits::true_copy<Op1>::type, Op2>::type
     inline operator*(const Op1& op1, const Op2& op2)
     {
-        return typename mtl::traits::vec_mult_result<Op1, Op2>::type(op1, op2);
+        return typename mtl::traits::vec_mult_result<typename mtl::traits::true_copy<Op1>::type, Op2>::type(op1, op2);
     }
 
     /// Multiply row vector with column vector; result is scalar
