@@ -289,7 +289,7 @@ class dense2D
 	    this->data += matrix.indexer(matrix, begin_r, begin_c);  // Takes care of indexing
 	    set_ranges(end_r - begin_r, end_c - begin_c);
 	}
-	this->my_nnz= matrix.my_nnz; ldim= matrix.ldim;
+	this->my_nnz= matrix.nnz(); ldim= matrix.get_ldim();
     }
 
     template <typename MatrixSrc>
