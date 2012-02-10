@@ -21,6 +21,7 @@ struct multi_tmp
 {
     typedef multi_tmp<Size-1, Value> sub_type;
 	
+    multi_tmp() {}
     multi_tmp(const Value& v) : value(v), sub(v) {}
 	
     Value sum() { return value + sub.sum(); }
@@ -32,6 +33,7 @@ struct multi_tmp
 template <typename Value>
 struct multi_tmp<0, Value> 
 {
+    multi_tmp() {}
     multi_tmp(const Value&) {}
     Value sum() { return 0; }
 };
