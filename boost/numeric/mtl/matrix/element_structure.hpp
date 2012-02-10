@@ -107,29 +107,19 @@ class element_structure
      ******************************************************************************/
 
   public:
-    /**
-     * The type of the numerical values of the element coefficient matrices.
-     */
+    /// Type of the numerical values of the element coefficient matrices.
     typedef ValueType value_type;
 
-    /**
-     * The type of the element.
-     */
+    /// Type of the element.
     typedef element<value_type> element_type;
 
-    /**
-     * The type of index arrays.
-     */
+    /// Type of index arrays.
     typedef typename element_type::index_type index_type;
 
-    /**
-     * The type of the iterator over the elements of the mesh.
-     */
+    /// Type of the iterator over the elements of the mesh.
     typedef element_type* element_iterator;
 
-    /**
-     * The type of this class.
-     */
+    /// Type of this class.
     typedef element_structure<ValueType> this_type;
     typedef this_type                    self;
     
@@ -139,9 +129,7 @@ class element_structure
      ******************************************************************************/
 
 
-    /**
-     * Standard constructor.
-     */
+    /// Standard constructor.
   public:
     element_structure(int total_elements, int total_vars, element_type* elements)
       : m_total_elements(total_elements),
@@ -149,29 +137,18 @@ class element_structure
 	m_elements(elements)
     { }
 
-    /**
-     * Copy the given mesh.
-     */
+    /// Copy the given mesh.
   public:
     element_structure(this_type const& other)
-      :
-      m_total_elements(other.m_total_elements),
-      m_total_vars(other.m_total_vars),
-      m_elements(
-		 other.m_total_elements == 0 ?
-		 0 :
-		 new element_type[other.get_total_elements()]
-		 )
+      : m_total_elements(other.m_total_elements),
+	m_total_vars(other.m_total_vars),
+	m_elements(m_total_elements == 0 ? 0 : new element_type[m_total_elements])
     {
 	typedef typename element_type::neighbour_collection_type neigh_coll_type;
 
 	int j = 0;
 	bool ordered = true;
-	for(
-	    element_iterator it = other.element_begin();
-	    it != other.element_end();
-	    ++it
-	    ) {
+	for(element_iterator it = other.element_begin(); it != other.element_end(); ++it) {
 	    // Deep copy the elements.
 	    m_elements[j] = *it;
 	    ordered &= (it->get_id() == j);
@@ -179,11 +156,7 @@ class element_structure
 	}
 	assert( ordered );
 	// Reconstruct the network of neighbours.
-	for(
-	    element_iterator it = this->element_begin();
-	    it != this->element_end();
-	    ++it
-	    ) {
+	for(element_iterator it = this->element_begin(); it != this->element_end(); ++it) {
 	    neigh_coll_type new_neighs;
 	    neigh_coll_type& old_neighs = it->get_neighbours();
 	    for(int i = 0; i < it->get_nb_neighbours(); ++i) {
@@ -196,101 +169,21 @@ class element_structure
     }
 
 
-    /*******************************************************************************
-     * Destructors
-     ******************************************************************************/
-
-
-    /**
-     * Default destructor.
-     */
-  public:
-    ~element_structure() {
-	if(m_elements) {
-	    delete[] m_elements;
-	    m_elements = 0;
-	}
-    }
- 
-#if 0
-    ///elementstructur times cvec
-    template <typename VectorIn, typename VectorOut>
-    void mult(const VectorIn& x, VectorOut& y) const 
-    {
-	// test
-      set_to_zero(y);
-  	for(int elmi= 0; elmi < m_total_elements; elmi++){
-	    const element_type& elementi= m_elements[elmi];
-	    const mtl::vector::dense_vector<int>& indices= elementi.get_indices();
-	    unsigned int n(size(indices));
-	    for (unsigned int i= 0; i < n; i++)
-	        for (unsigned int j= 0; j < n; j++)
-		    y[indices[i]]+= elementi.get_values()[i][j]*x[indices[j]];
- 	}
-    }
-
-    template <typename VectorIn>
-    struct multiplier
-      : mtl::vector::assigner<multiplier<VectorIn> >
-    {
-	explicit multiplier(const self& P, const VectorIn& x) : P(P), x(x) {}
-
-	template <typename VectorOut>
-	void assign_to(VectorOut& y) const
-	{   P.mult(x, y); }
-	
-	const self& P;
-	const VectorIn& x;
-    };
-  
- 
-    template <typename VectorIn>
-    multiplier<VectorIn> operator*(const VectorIn& x) const
-    {  return multiplier<VectorIn>(*this, x); }
-
-    ///assumption elements with quadratic elementmatrix
-    template< class Vector >
-    Vector operator*(// const 
-		     Vector& x) const 
-    {
-	Vector m_tmp(size(x), 0.0);
-  	for(int elmi= 0; elmi < m_total_elements; elmi++){
-	    const element_type& elementi= m_elements[elmi];
-	    const mtl::vector::dense_vector<int>& indices= elementi.get_indices();
-	    unsigned int n(size(indices));
-	    for( unsigned int i= 0; i < n; i++){
-	        for( unsigned int j= 0; j < n; j++){
-		    m_tmp[indices[i]]+= elementi.get_values()[i][j]*x[indices[j]];
-	        }
-	    }
- 	}
-	return m_tmp;
-    }
-#endif
+    ~element_structure() { delete[] m_elements; }
 
     /*******************************************************************************
      * Inspector Members
      ******************************************************************************/
-  public:
 
-    /**
-     * Returns the total number of elements in the grid.
-     */
-    int get_total_elements() const {
-	return m_total_elements;
-    }
+    /// Total number of elements in the grid.
+    int get_total_elements() const { return m_total_elements; }
 
-    /**
-     * Returns the total number of variables.
-     */
-    int get_total_vars() const {
-	return m_total_vars;
-    }
+    /// Total number of variables.
+    int get_total_vars() const { return m_total_vars;   }
 
-    /**
-     * Returns the total number of non-zero values.
-     */
-    int get_total_nnz() const {
+    /// Total number of non-zero values.
+    int get_total_nnz() const 
+    {
 	int nnz = 0;
 	for(element_iterator it = element_begin(); it != element_end(); ++it) {
 	    nnz += it->nnz();
@@ -298,19 +191,11 @@ class element_structure
 	return nnz;
     }
 
-    /**
-     * Returns an iterator to the first element.
-     */
-    element_iterator element_begin() const {
-	return m_elements + 0;
-    }
+    /// Iterator to the first element.
+    element_iterator element_begin() const { return m_elements + 0;  }
 
-    /**
-     * Returns an iterator to the element past the last element.
-     */
-    element_iterator element_end() const {
-	return m_elements + this->get_total_elements();
-    }
+    /// An iterator to the element past the last element.
+    element_iterator element_end() const { return m_elements + this->get_total_elements();   }
 
     /*******************************************************************************
      * File Operations
@@ -361,20 +246,9 @@ class element_structure
      ******************************************************************************/
 //   private:
   public:
-    /**
-     * The total number of elements.
-     */
-    int m_total_elements;
-
-    /**
-     * The total number of variables.
-     */
-    int m_total_vars;
-
-    /**
-     * The elements of the grid, stored consecutively.
-     */
-    element_type* m_elements;
+    int m_total_elements; ///< The total number of elements.
+    int m_total_vars; ///< The total number of variables.
+    element_type* m_elements; ///< The elements of the grid, stored consecutively.
 };
 
 template <typename ValueType>
@@ -398,17 +272,6 @@ inline void swap(element_structure<ValueType>& x, element_structure<ValueType>& 
     swap(x.m_elements, y.m_elements);
 }
 
-#if 0
-namespace ashape {
-  
-  template <typename ValueType>
-  struct ashape<element_structure<ValueType> > 
-  {
-      typedef ndef type;
-  };
-   
-}
-#endif
 
 }} // mtl::matrix
 
