@@ -87,27 +87,26 @@ class element
  ******************************************************************************/
 
 
-	/**
-	 * Constructs the element using the memory specified by the two pointers.
-	 *
-	 * p_indices: 	a pointer to the memory where the indices may be stored.
-	 * p_values:	a pointer to the memory where the values may be stored.
-	 * p_rhs:		a pointer to the memory where the right-hand side may be
-	 * 				stored.
-	 */
+    /**
+     * Constructs the element using the memory specified by the two pointers.
+     *
+     * p_indices: 	a pointer to the memory where the indices may be stored.
+     * p_values:	a pointer to the memory where the values may be stored.
+     * p_rhs:		a pointer to the memory where the right-hand side may be
+     * 				stored.
+     */
   public:
     element(int p_sequence_number, const index_type& p_indices, const matrix_type& p_values) 
       : m_indices(p_indices),	
 	m_values(p_values),
-	m_sequence_number(p_sequence_number), 
-	m_extra_data_pointer(0)
+	m_sequence_number(p_sequence_number)
     {};
 
     element() 
-      :	m_sequence_number(-1), m_extra_data_pointer(0) {}
+      :	m_sequence_number(-1) {}
 
     element(const element_type& other) 
-      :	m_sequence_number(-1), m_extra_data_pointer(0)
+      :	m_sequence_number(-1)
     {	*this = other;	}
 
     /// Deep copy the given element.
@@ -118,7 +117,6 @@ class element
 
 	m_indices = other.m_indices;
 	m_values =  other.m_values;
-	m_extra_data_pointer = 0;
     }
 
 
@@ -169,8 +167,6 @@ class element
     /// Number of neighbours this element is connected to.
     int get_nb_neighbours() const {	return int(m_neighbours.size()); }
 
-    /// pointer to the extra data.
-    void*& get_extra_pointer() { return m_extra_data_pointer; }
 
 /*******************************************************************************
  * Useful Inspector Methods
@@ -440,10 +436,10 @@ class element
 	    m_neighbours.clear();
 	}
 
-	if(m_indices) { delete m_indices; m_indices = 0; }
-	if(m_values)  { delete m_values;  m_values = 0;  }
-	m_indices = index;
-	m_values = values;
+	m_indices.change_dim(0);
+	m_values.change_dim(0, 0);
+	m_indices = *index;
+	m_values = *values;
     }
 
     /**
@@ -504,17 +500,11 @@ class element
     void clear() {
 	m_neighbours.clear();
 	m_neighbours.resize(1);
-	if(m_values) {
-	    delete m_values;
-	    m_values = 0;
-	}
-	if(m_indices) {
-	    delete m_indices;
-	    m_indices = 0;
-	}
+	m_values.change_dim(0, 0);
+	m_indices.change_dim(0);
     }
 
-
+    template< class ValueType > friend class element_structure;
 
 
 /*******************************************************************************
@@ -534,9 +524,7 @@ class element
     /// A unique sequence number for the element, indicating it's order relative to other elements.
     int m_sequence_number;
 
-    /** A pointer to any kind of information that may be attached to an element.
-	The element is not responsible for its memory management.  **/	 
-    void* m_extra_data_pointer;
+    int *dummy;
 };
 
 /**

@@ -115,6 +115,8 @@ class element_structure
 
     /// Type of index arrays.
     typedef typename element_type::index_type index_type;
+    // Type of the indices themselves
+    typedef typename Collection<index_type>::value_type ii_type;
 
     /// Type of the iterator over the elements of the mesh.
     typedef element_type* element_iterator;
@@ -132,9 +134,8 @@ class element_structure
     /// Standard constructor.
   public:
     element_structure(int total_elements, int total_vars, element_type* elements)
-      : m_total_elements(total_elements),
-	m_total_vars(total_vars),
-	m_elements(elements)
+      : m_total_elements(total_elements), m_total_vars(total_vars),
+	m_elements(elements), index_heap(0), value_heap(0)
     { }
 
     /// Copy the given mesh.
@@ -142,7 +143,8 @@ class element_structure
     element_structure(this_type const& other)
       : m_total_elements(other.m_total_elements),
 	m_total_vars(other.m_total_vars),
-	m_elements(m_total_elements == 0 ? 0 : new element_type[m_total_elements])
+	m_elements(m_total_elements == 0 ? 0 : new element_type[m_total_elements]), 
+	index_heap(0), value_heap(0)
     {
 	typedef typename element_type::neighbour_collection_type neigh_coll_type;
 
@@ -169,7 +171,43 @@ class element_structure
     }
 
 
-    ~element_structure() { delete[] m_elements; }
+    ~element_structure() { delete[] m_elements; delete[] index_heap; delete[] value_heap; }
+
+    void make_compact()
+    {
+	assert(index_heap == 0); assert(value_heap == 0); // might be relaxed later
+	
+	int total_indices= 0, total_values= 0;
+	for (int i= 0; i < m_total_elements; i++) {
+	    total_indices+= m_elements[i].nb_vars();
+	    total_values+= m_elements[i].nb_values();
+	}
+	index_heap= new ii_type[total_indices];
+	value_heap= new value_type[total_values];
+
+	int index_pos= 0, value_pos= 0;
+	for (int i= 0; i < m_total_elements; i++) {
+	    element_type& element= m_elements[i];
+	    int s= element.nb_vars();
+	    index_type index_tmp(s, index_heap + index_pos);
+	    index_tmp= element.get_indices();
+	    swap(index_tmp, element.get_indices());
+	    index_pos+= s;
+
+	    typename element_type::matrix_type value_tmp(s, s, value_heap + value_pos);
+	    // std::cout << "value_tmp uses " << value_tmp.used_memory() << " entries and is\n" << value_tmp;
+	    // std::cout << "element.get_values() uses " << element.get_values().used_memory() << " entries and is \n" << element.get_values();
+	    value_tmp= element.get_values();
+	    swap(value_tmp, element.get_values());
+	    value_pos+= s * s;
+	}
+	assert(total_indices == index_pos);
+	assert(total_values  == value_pos);
+	
+	// std::cout << m_total_vars << " variables\n";
+	// std::cout << total_indices << " indices\n";
+	// std::cout << total_values << " matrix entries\n";
+    }
 
     /*******************************************************************************
      * Inspector Members
@@ -246,9 +284,12 @@ class element_structure
      ******************************************************************************/
 //   private:
   public:
-    int m_total_elements; ///< The total number of elements.
-    int m_total_vars; ///< The total number of variables.
+    int           m_total_elements; ///< The total number of elements.
+    int           m_total_vars; ///< The total number of variables.
     element_type* m_elements; ///< The elements of the grid, stored consecutively.
+
+    ii_type*      index_heap;
+    value_type*   value_heap;
 };
 
 template <typename ValueType>

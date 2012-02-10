@@ -111,6 +111,150 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
     typedef typename boost::mpl::if_c<(cols_a > 1), f2, impl::noop>::type   f3;
     f3::apply(A, v, w);
 }
+	
+template <unsigned Index, unsigned Size>
+struct init_ptrs
+{
+    template <typename Matrix, typename Ptrs>
+    inline static void apply(const Matrix& A, Ptrs& ptrs)
+    {
+	ptrs.value= &A[Index][0];
+	init_ptrs<Index+1, Size>::apply(A, ptrs.sub);
+    }
+};
+
+template <unsigned Size>
+struct init_ptrs<Size, Size>
+{
+    template <typename Matrix, typename Ptrs>
+    inline static void apply(const Matrix&, Ptrs&) {}
+};
+
+template <unsigned Index, unsigned Size>
+struct square_cvec_mult_rows
+{
+    template <typename Tmps, typename Ptrs, typename ValueIn>
+    inline static void compute(Tmps& tmps, Ptrs& ptrs, ValueIn vi)
+    {
+	tmps.value+= *ptrs.value++ * vi;
+	square_cvec_mult_rows<Index+1, Size>::compute(tmps.sub, ptrs.sub, vi);
+    }
+
+    template <typename As, typename VectorOut, typename Tmps>
+    inline static void update(As, VectorOut& w, const Tmps& tmps)
+    {
+	As::first_update(w[Index], tmps.value);
+	square_cvec_mult_rows<Index+1, Size>::update(As(), w, tmps.sub);
+    }
+};
+
+template <unsigned Size>
+struct square_cvec_mult_rows<Size, Size>
+{
+    template <typename Tmps, typename Ptrs, typename ValueIn>
+    inline static void compute(Tmps&, Ptrs&, ValueIn) {}
+
+    template <typename As, typename VectorOut, typename Tmps>
+    inline static void update(As, VectorOut&, const Tmps&) {}
+};
+
+template <unsigned Index, unsigned Size>
+struct square_cvec_mult_cols
+{    
+    template <typename Tmps, typename Ptrs, typename VPtr>
+    inline static void compute(Tmps& tmps, Ptrs& ptrs, VPtr vp)
+    {
+	square_cvec_mult_rows<0, Size>::compute(tmps, ptrs, *vp);
+	square_cvec_mult_cols<Index+1, Size>::compute(tmps, ptrs, ++vp);
+    }
+};
+
+template <unsigned Size>
+struct square_cvec_mult_cols<Size, Size>
+{    
+    template <typename Tmps, typename Ptrs, typename VPtr>
+    inline static void compute(Tmps&, Ptrs&, VPtr) {}
+};
+
+
+// Dense matrix vector multiplication with run-time matrix size
+template <unsigned Size, typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
+inline void square_cvec_mult(const dense2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign)
+{
+    vampir_trace<3067> tracer;
+    BOOST_STATIC_ASSERT((mtl::traits::is_row_major<MPara>::value));
+
+    typedef typename MPara::size_type                  size_type;
+    typedef typename Collection<VectorIn>::value_type  value_in_type;
+    typedef typename Collection<VectorOut>::value_type value_type;    
+    multi_tmp<Size, value_type> tmps(math::zero(w[0]));
+
+    multi_tmp<Size, const MValue*>    ptrs;
+    init_ptrs<0, Size>::apply(A, ptrs);
+
+    const value_in_type* vp= &v[0];
+
+    square_cvec_mult_cols<0, Size>::compute(tmps, ptrs, vp); // outer loop over columns
+    square_cvec_mult_rows<0, Size>::update(Assign(), w, tmps);         // update rows
+}
+
+
+// Dense matrix vector multiplication with run-time matrix size
+template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
+typename boost::enable_if<mtl::traits::is_row_major<MPara> >::type
+inline dense_mat_cvec_mult(const dense2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, boost::mpl::false_)
+{
+    // vampir_trace<3066> tracer;
+
+    using math::zero; 
+    if (mtl::vector::size(w) == 0) return;
+
+    typedef typename Collection<VectorOut>::value_type value_type;
+    typedef typename Collection<VectorIn>::value_type  value_in_type;
+    typedef typename MPara::size_type                  size_type;
+
+    const size_type  nr= num_rows(A), nc= num_cols(A);
+    if (nr == nc && nr <= 8) 
+	switch (nr) {
+	  case 1: Assign::first_update(w[0], A[0][0] * v[0]); return;
+	  case 2: square_cvec_mult<2>(A, v, w, Assign()); return;
+	  case 3: square_cvec_mult<3>(A, v, w, Assign()); return;
+	  case 4: square_cvec_mult<4>(A, v, w, Assign()); return;
+	  case 5: square_cvec_mult<5>(A, v, w, Assign()); return;
+	  case 6: square_cvec_mult<6>(A, v, w, Assign()); return;
+	  case 7: square_cvec_mult<7>(A, v, w, Assign()); return;
+	  case 8: square_cvec_mult<8>(A, v, w, Assign()); return;
+	}
+
+
+    const size_type  nrb= nr / 4 * 4;
+    const value_type z(math::zero(w[0]));
+
+    for (size_type i= 0; i < nrb; i+= 4) {
+	value_type      tmp0(z), tmp1(z), tmp2(z), tmp3(z);
+	const MValue *p0= &A[i][0], *pe= p0 + nc, *p1= &A[i+1][0], *p2= &A[i+2][0], *p3= &A[i+3][0];
+	const value_in_type* vp= &v[0];
+	for (; p0 != pe; ) {
+	    const value_in_type vj= *vp++;
+	    tmp0+= *p0++ * vj;
+	    tmp1+= *p1++ * vj;
+	    tmp2+= *p2++ * vj;
+	    tmp3+= *p3++ * vj;
+	}
+	Assign::first_update(w[i], tmp0);
+	Assign::first_update(w[i+1], tmp1);
+	Assign::first_update(w[i+2], tmp2);
+	Assign::first_update(w[i+3], tmp3);
+    }
+
+    for (size_type i= nrb; i < nr; i++) {
+	value_type tmp= z;
+	const value_in_type* vp= &v[0];
+	for (const MValue *p0= &A[i][0], *pe= p0 + nc; p0 != pe; ) 
+	    tmp+= *p0++ * *vp++;
+	Assign::first_update(w[i], tmp);
+    }
+}
 
 // Dense matrix vector multiplication with run-time matrix size
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
@@ -172,16 +316,37 @@ template <typename Matrix, typename VectorIn, typename VectorOut, typename Assig
 inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::element_structure>)
 {
     vampir_trace<3048> tracer;
-    // vampir_trace<5056> ttttracer;
+    if (mtl::vector::size(w) == 0) return;
+
+    typedef typename Collection<VectorOut>::value_type value_type;
+    typedef typename Collection<VectorIn>::value_type  value_in_type;
+
+    value_in_type varray[1024];
+    value_type    warray[1024];
+
     if (Assign::init_to_zero) set_to_zero(w);
-  	for(int elmi= 0; elmi < A.m_total_elements; elmi++){
-	    const typename Matrix::element_type& elementi= A.m_elements[elmi];
-	    const typename Matrix::element_type::index_type& indices= elementi.get_indices();
-	    unsigned int n(size(indices));
+    for(int elmi= 0; elmi < A.m_total_elements; elmi++){
+	const typename Matrix::element_type& elementi= A.m_elements[elmi];
+	const typename Matrix::element_type::index_type& indices= elementi.get_indices();
+	unsigned int n(size(indices));
+
+	if (n <= 1024) {
+	    VectorIn vtmp(n, varray);
 	    for (unsigned int i= 0; i < n; i++)
-	        for (unsigned int j= 0; j < n; j++)
-		    Assign::update(w[indices[i]], elementi.get_values()[i][j]*v[indices[j]]);
- 	}
+		vtmp[i]= v[indices[i]];
+	    VectorOut wtmp(n, warray);
+	    wtmp= elementi.get_values() * vtmp;
+	    for (unsigned int i= 0; i < n; i++)
+		Assign::update(w[indices[i]], wtmp[i]);
+	} else {
+	    VectorIn vtmp(n);
+	    for (unsigned int i= 0; i < n; i++)
+		vtmp[i]= v[indices[i]];
+	    VectorOut wtmp(elementi.get_values() * vtmp);
+	    for (unsigned int i= 0; i < n; i++)
+		Assign::update(w[indices[i]], wtmp[i]);
+	}
+    }
 }
 
 // Multi-vector vector multiplication (tag::multi_vector is derived from dense)
