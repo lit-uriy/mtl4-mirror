@@ -38,7 +38,6 @@
 
 namespace mtl { namespace matrix {
 
-
 /**
  * A class representing an element.
  *
