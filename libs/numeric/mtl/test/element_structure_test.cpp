@@ -18,7 +18,7 @@
 #include <boost/timer.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
-#include <boost/numeric/itl/pc/io.hpp>
+#include <boost/numeric/mtl/io/read_el_matrix.hpp>
 
 
 
@@ -33,9 +33,9 @@ int main(int, char** argv)
  		matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/obstacle_small.mtx");
 // 	        matrix_file= mtl::io::join(program_dir, "../../../../../branches/data/matrix_market/obstacle_q1q1_e64/obstacle_q1q1_e64_r00800.mtx");
 
-    mtl::matrix::element_structure<value_type>* es 
-	= mtl::matrix::read_el_matrix<value_type>(matrix_file.c_str());
-    mtl::matrix::element_structure<value_type>& A= *es;
+    
+    mtl::matrix::element_structure<value_type> A;
+    read_el_matrix(matrix_file, A);
     A.make_compact();
 
     const int size= A.get_total_vars();
@@ -51,7 +51,6 @@ int main(int, char** argv)
 
     if (size <= 100)
 	std::cout << "b = " << b << '\n';
-    delete es;
 
     return 0;
 }
