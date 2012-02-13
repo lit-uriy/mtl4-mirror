@@ -14,8 +14,8 @@
 
 
 
-#ifndef MTL_IO_INCLUDE
-#define MTL_IO_INCLUDE
+#ifndef MTL_MATRIX_READ_EL_MATRIX
+#define MTL_MATRIX_READ_EL_MATRIX
 
 #include <string>
 
@@ -34,8 +34,9 @@
 namespace mtl { namespace matrix {
 
 // Read a value from the stream. The stream is advanced.
-template< class T >
-T read_value(std::ifstream& stream) {
+template <class T>
+inline T read_value(std::ifstream& stream) 
+{
 	T value;
 	stream >> value;
 	return value;
@@ -46,8 +47,8 @@ T read_value(std::ifstream& stream) {
 //
 // It is assumed the nodes are numbered consecutively, i.e. there are no unused
 // node numbers.
-template< class ValueType >
-element_structure<ValueType>* read_el_matrix( const char *const mat_file ) 
+template <typename ValueType>
+void read_el_matrix(const char* mat_file, element_structure<ValueType>& A) 
 {
     // Type definitions
     typedef element<ValueType>		element_type;
@@ -101,18 +102,16 @@ element_structure<ValueType>* read_el_matrix( const char *const mat_file )
 	    node_line >> idx;
 	    if (i<read_num)
 		nodes[i]=idx;
-	    if(idx > nb_total_vars) {
-		nb_total_vars = idx;
-	    }
+	    if(idx > nb_total_vars) 
+		nb_total_vars = idx;	    
 	    i++;
 	}
 	indices index(nodes);
 	// Read the values.
 	const int nb_vars = int(size(nodes));
 	matrix vals(nb_vars, nb_vars);
-	for(int i = 0; i < nb_vars*nb_vars; ++i) {
-	    vals(i / nb_vars, i % nb_vars) = read_value<ValueType>(file);
-	}
+	for(int i = 0; i < nb_vars*nb_vars; ++i) 
+	    vals(i / nb_vars, i % nb_vars) = read_value<ValueType>(file);	
 	file.ignore(500,'\n');
 	file.ignore(500,'\n');
 	element_type elem(el_nbr, index, vals);
@@ -131,9 +130,8 @@ element_structure<ValueType>* read_el_matrix( const char *const mat_file )
     for( int i = 0; i < nb_elements; ++i ) {
 	element_type& el = elements[i];
 	indices& idx = el.get_indices();
-	for(int j = 0; j < el.nb_vars(); ++j) {
-	    node_element_map[ idx(j) ].push_back(el.get_id());
-	}
+	for(int j = 0; j < el.nb_vars(); ++j) 
+	    node_element_map[ idx(j) ].push_back(el.get_id());	
     }
 
     // Construct neighbourhood information.
@@ -141,36 +139,27 @@ element_structure<ValueType>* read_el_matrix( const char *const mat_file )
 	element_type& el = elements[i];
 	indices& idx = el.get_indices();
 	std::set<int> neighs;
-	for(int j = 0; j < el.nb_vars(); ++j) {
-	    neighs.insert(
-			  node_element_map[ idx(j) ].begin(),
-			  node_element_map[ idx(j) ].end()
-			  );
-	}
-	for(
-	    std::set<int>::iterator it = neighs.begin();
-	    it != neighs.end();
-	    ++it
-	    ) {
-	    if( *it != el.get_id() ) {
+	for(int j = 0; j < el.nb_vars(); ++j) 
+	    neighs.insert(node_element_map[ idx(j) ].begin(),
+			  node_element_map[ idx(j) ].end());
+	
+	for(std::set<int>::iterator it = neighs.begin(); it != neighs.end(); ++it) 
+	    if( *it != el.get_id() ) 
 		el.get_neighbours().push_back( elements+(*it) );
-	    }
-	}
+	    	
 
 	// Sort data.
 	el.sort_indices();
     }
 
-
     delete[] node_element_map;
-
-
-    element_structure<value_type>* es= 
-	new element_structure<value_type>(nb_elements, nb_total_vars, elements);
-
-    return es;
+    A.consume(nb_elements, nb_total_vars, elements);
 }
+
+template <typename ValueType>
+inline void read_el_matrix(const std::string& mat_file, element_structure<ValueType>& A) 
+{    read_el_matrix(mat_file.c_str(), A);   }
 
 }} // end namespace mtl::matrix
 
-#endif // MTL_IO_INCLUDE
+#endif // MTL_MATRIX_READ_EL_MATRIX

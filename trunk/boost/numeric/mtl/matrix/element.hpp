@@ -500,7 +500,8 @@ class element
     void clear() {
 	m_neighbours.clear();
 	m_neighbours.resize(1);
-	m_values.change_dim(0, 0);
+	matrix_type empty;
+	swap(m_values, empty);
 	m_indices.change_dim(0);
     }
 

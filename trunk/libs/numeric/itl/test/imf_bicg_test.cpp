@@ -18,7 +18,7 @@
 #include <boost/timer.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
-#include <boost/numeric/itl/pc/io.hpp>
+#include <boost/numeric/mtl/io/read_el_matrix.hpp>
 #include <boost/numeric/itl/pc/matrix_algorithms.hpp>
 #include <boost/numeric/itl/pc/imf_preconditioner.hpp>
 #include <boost/numeric/itl/pc/imf_algorithms.hpp>
@@ -47,7 +47,7 @@ void setup(ElementStructure& A, int lofi)
     b= A * x;
 //     b= ident - A * x;
     std::cout<< "size(rhs2)=" << num_rows(b) << "\n";
-    mtl::compressed2D<double> B(mtl::matrix::assemble_compressed(A, ident));
+    mtl::compressed2D<double> B(assemble_compressed(A, ident));
     std::cout << "NNZ == " << B.nnz() << "\n";
     
 #if 0
@@ -86,15 +86,13 @@ int main(int, char** argv)
     typedef mtl::compressed2D<value_type>     sparse_type;
        
     std::string program_dir= mtl::io::directory_name(argv[0]),
-//  	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
- 		matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/obstacle_small.mtx");
+  	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
+// 		matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/obstacle_small.mtx");
 // 	        matrix_file= mtl::io::join(program_dir, "../../../../../data/matrix_market/obstacle_q1q1_e64/obstacle_q1q1_e64_r00800.mtx");
 
-    mtl::matrix::element_structure<value_type>* es = 0;
-
-    es = mtl::matrix::read_el_matrix<value_type>(matrix_file.c_str());
-    int lofi=3;
+    mtl::matrix::element_structure<value_type> A;
+    read_el_matrix(matrix_file, A);
 	
-    setup(*es, lofi);
+    setup(A, 3);
     return 0;
 }
