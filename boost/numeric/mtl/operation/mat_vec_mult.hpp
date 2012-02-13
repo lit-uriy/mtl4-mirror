@@ -178,21 +178,21 @@ struct square_cvec_mult_cols<Size, Size>
 
 
 // Dense matrix vector multiplication with run-time matrix size
-template <unsigned Size, typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
-inline void square_cvec_mult(const dense2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign)
+template <unsigned Size, typename MValue, typename MPara, typename ValueIn, typename ParaIn, 
+	  typename VectorOut, typename Assign>
+inline void square_cvec_mult(const dense2D<MValue, MPara>& A, const mtl::vector::dense_vector<ValueIn, ParaIn>& v, VectorOut& w, Assign)
 {
-    vampir_trace<3067> tracer;
+    // vampir_trace<3067> tracer;
     BOOST_STATIC_ASSERT((mtl::traits::is_row_major<MPara>::value));
 
     typedef typename MPara::size_type                  size_type;
-    typedef typename Collection<VectorIn>::value_type  value_in_type;
     typedef typename Collection<VectorOut>::value_type value_type;    
     multi_tmp<Size, value_type> tmps(math::zero(w[0]));
 
     multi_tmp<Size, const MValue*>    ptrs;
     init_ptrs<0, Size>::apply(A, ptrs);
 
-    const value_in_type* vp= &v[0];
+    const ValueIn* vp= &v[0];
 
     square_cvec_mult_cols<0, Size>::compute(tmps, ptrs, vp); // outer loop over columns
     square_cvec_mult_rows<0, Size>::update(Assign(), w, tmps);         // update rows
@@ -200,9 +200,9 @@ inline void square_cvec_mult(const dense2D<MValue, MPara>& A, const VectorIn& v,
 
 
 // Dense matrix vector multiplication with run-time matrix size
-template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
+template <typename MValue, typename MPara, typename ValueIn, typename ParaIn, typename VectorOut, typename Assign>
 typename boost::enable_if<mtl::traits::is_row_major<MPara> >::type
-inline dense_mat_cvec_mult(const dense2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, boost::mpl::false_)
+inline dense_mat_cvec_mult(const dense2D<MValue, MPara>& A, const mtl::vector::dense_vector<ValueIn, ParaIn>& v, VectorOut& w, Assign, boost::mpl::false_)
 {
     // vampir_trace<3066> tracer;
 
@@ -210,7 +210,7 @@ inline dense_mat_cvec_mult(const dense2D<MValue, MPara>& A, const VectorIn& v, V
     if (mtl::vector::size(w) == 0) return;
 
     typedef typename Collection<VectorOut>::value_type value_type;
-    typedef typename Collection<VectorIn>::value_type  value_in_type;
+    typedef ValueIn                                    value_in_type;
     typedef typename MPara::size_type                  size_type;
 
     const size_type  nr= num_rows(A), nc= num_cols(A);
@@ -233,9 +233,9 @@ inline dense_mat_cvec_mult(const dense2D<MValue, MPara>& A, const VectorIn& v, V
     for (size_type i= 0; i < nrb; i+= 4) {
 	value_type      tmp0(z), tmp1(z), tmp2(z), tmp3(z);
 	const MValue *p0= &A[i][0], *pe= p0 + nc, *p1= &A[i+1][0], *p2= &A[i+2][0], *p3= &A[i+3][0];
-	const value_in_type* vp= &v[0];
+	const ValueIn* vp= &v[0];
 	for (; p0 != pe; ) {
-	    const value_in_type vj= *vp++;
+	    const ValueIn vj= *vp++;
 	    tmp0+= *p0++ * vj;
 	    tmp1+= *p1++ * vj;
 	    tmp2+= *p2++ * vj;
@@ -249,12 +249,13 @@ inline dense_mat_cvec_mult(const dense2D<MValue, MPara>& A, const VectorIn& v, V
 
     for (size_type i= nrb; i < nr; i++) {
 	value_type tmp= z;
-	const value_in_type* vp= &v[0];
+	const ValueIn* vp= &v[0];
 	for (const MValue *p0= &A[i][0], *pe= p0 + nc; p0 != pe; ) 
 	    tmp+= *p0++ * *vp++;
 	Assign::first_update(w[i], tmp);
     }
 }
+
 
 // Dense matrix vector multiplication with run-time matrix size
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
@@ -267,7 +268,7 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
     if (mtl::vector::size(w) == 0) return;
     // std::cout << "Bin in richtiger Funktion\n";
 
-    // if (Assign::init_to_zero) set_to_zero(w); // replace update with first_update instead
+    // if (Assign::init_to_zero) set_to_zero(w); // replace update with first_update insteda
 
     typedef typename Collection<VectorOut>::value_type value_type;
     typedef typename Collection<VectorIn>::value_type  value_in_type;
@@ -412,6 +413,36 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
     }
 }
 
+// Row-major compressed2D with very few entries (i.e. Very Sparse MATrix) times vector
+template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
+inline void vsmat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
+{
+    vampir_trace<3064> tracer;
+    using math::zero;
+
+    typedef compressed2D<MValue, MPara>                       Matrix;
+    typedef typename Collection<Matrix>::size_type            size_type; 
+    typedef typename Collection<VectorOut>::value_type        value_type;
+
+    if (size(w) == 0) return;
+    const value_type z(math::zero(w[0]));
+
+    // std::cout << "very sparse: nnz = " << A.nnz() << ", num_rows = " << num_rows(A) << '\n';
+
+    size_type nr= num_rows(A);
+    for (size_type i1= 0, i2= std::min<size_type>(1024, nr); i1 < i2; i1= i2, i2= std::min<size_type>(i2 + 1024, nr)) {
+	// std::cout << "range = " << i1 << " .. " << i2 << "\n";
+	if (A.ref_major()[i1] < A.ref_major()[i2])
+	    for (size_type i= i1; i < i2; ++i) {
+		const size_type cj0= A.ref_major()[i], cj1= A.ref_major()[i+1];
+		value_type      tmp0(z);
+		for (size_type j0= cj0; j0 != cj1; ++j0)
+		    tmp0+= A.data[j0] * v[A.ref_minor()[j0]];
+		Assign::first_update(w[i], tmp0);
+	    }
+    }
+}
+
 #ifdef MTL_CRS_CVEC_MULT_TUNING
 template <unsigned Index, unsigned BSize, typename SizeType>
 struct crs_cvec_mult_block
@@ -460,6 +491,11 @@ inline void smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn&
     vampir_trace<3049> tracer;
     using math::zero;
 
+    if (A.nnz() < num_rows(A)) {
+	vsmat_cvec_mult(A, v, w, as, tag::row_major());
+	return;
+    }
+
     typedef compressed2D<MValue, MPara>                       Matrix;
     typedef typename Collection<Matrix>::size_type            size_type; 
     typedef typename Collection<VectorOut>::value_type        value_type;
@@ -496,14 +532,88 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
 
 
 #if !defined(MTL_CRS_CVEC_MULT_NO_ACCEL) && !defined(MTL_CRS_CVEC_MULT_TUNING)
+
+template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
+typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
+inline adapt_crs_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign)
+{
+    vampir_trace<3065> tracer;
+    using math::zero;
+    assert(!Assign::init_to_zero);
+
+    typedef compressed2D<MValue, MPara>                       Matrix;
+    typedef typename Collection<Matrix>::size_type            size_type; 
+    typedef typename Collection<VectorOut>::value_type        value_type;
+
+    const value_type z(math::zero(w[0]));
+    size_type nr= num_rows(A), nrb= nr / 4 * 4, nrb2= nr / 64 * 64;
+
+    for (size_type i1= 0; i1 < nrb2; i1+= 64) 
+	if (A.ref_major()[i1] != A.ref_major()[i1 + 64])
+	    for (size_type i2= i1, i2e= i1+64; i2 < i2e; i2+= 16)
+		if (A.ref_major()[i2] != A.ref_major()[i2 + 16])
+		    for (size_type i= i2, i3e= i2+16; i < i3e; i+= 4) 
+			if (A.ref_major()[i] != A.ref_major()[i + 4]) {
+			    const size_type cj0= A.ref_major()[i], cj1= A.ref_major()[i+1], cj2= A.ref_major()[i+2], 
+				cj3= A.ref_major()[i+3], cj4= A.ref_major()[i+4];
+			    value_type      tmp0(z), tmp1(z), tmp2(z), tmp3(z);
+			    for (size_type j0= cj0; j0 != cj1; ++j0)
+				tmp0+= A.data[j0] * v[A.ref_minor()[j0]];
+			    for (size_type j1= cj1; j1 != cj2; ++j1)
+				tmp1+= A.data[j1] * v[A.ref_minor()[j1]];
+			    for (size_type j2= cj2; j2 != cj3; ++j2)
+				tmp2+= A.data[j2] * v[A.ref_minor()[j2]];
+			    for (size_type j3= cj3; j3 != cj4; ++j3)
+				tmp3+= A.data[j3] * v[A.ref_minor()[j3]];
+
+			    Assign::first_update(w[i], tmp0);
+			    Assign::first_update(w[i+1], tmp1);
+			    Assign::first_update(w[i+2], tmp2);
+			    Assign::first_update(w[i+3], tmp3);
+			}
+
+    for (size_type i= nrb2; i < nrb; i+= 4) 
+	if (A.ref_major()[i] != A.ref_major()[i + 4])  {
+	    const size_type cj0= A.ref_major()[i], cj1= A.ref_major()[i+1], cj2= A.ref_major()[i+2], 
+		cj3= A.ref_major()[i+3], cj4= A.ref_major()[i+4];
+	    value_type      tmp0(z), tmp1(z), tmp2(z), tmp3(z);
+	    for (size_type j0= cj0; j0 != cj1; ++j0)
+		tmp0+= A.data[j0] * v[A.ref_minor()[j0]];
+	    for (size_type j1= cj1; j1 != cj2; ++j1)
+		tmp1+= A.data[j1] * v[A.ref_minor()[j1]];
+	    for (size_type j2= cj2; j2 != cj3; ++j2)
+		tmp2+= A.data[j2] * v[A.ref_minor()[j2]];
+	    for (size_type j3= cj3; j3 != cj4; ++j3)
+		tmp3+= A.data[j3] * v[A.ref_minor()[j3]];
+
+	    Assign::first_update(w[i], tmp0);
+	    Assign::first_update(w[i+1], tmp1);
+	    Assign::first_update(w[i+2], tmp2);
+	    Assign::first_update(w[i+3], tmp3);
+	}
+
+    for (size_type i= nrb; i < nr; ++i) {
+	const size_type cj0= A.ref_major()[i], cj1= A.ref_major()[i+1];
+	value_type      tmp0(z);
+	for (size_type j0= cj0; j0 != cj1; ++j0)
+	    tmp0+= A.data[j0] * v[A.ref_minor()[j0]];
+	Assign::first_update(w[i], tmp0);
+    }
+}
+
 // Row-major compressed2D vector multiplication
 template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
 typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
-inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
+inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign as, tag::row_major)
 {
     vampir_trace<3049> tracer;
     // vampir_trace<5056> tttracer;
     using math::zero;
+
+    if (A.nnz() < num_rows(A)) {
+	vsmat_cvec_mult(A, v, w, as, tag::row_major());
+	return;
+    }
 
     typedef compressed2D<MValue, MPara>                       Matrix;
     typedef typename Collection<Matrix>::size_type            size_type; 
@@ -513,6 +623,19 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
     const value_type z(math::zero(w[0]));
 
     size_type nr= num_rows(A), nrb= nr / 4 * 4;
+
+    if (nr > 10) {
+	size_type nh= nr / 2, nq= nr / 4, nt= nr - nq;
+	if ((A.ref_major()[1] == A.ref_major()[0] 
+	     || A.ref_major()[nq] == A.ref_major()[nq+1]
+	     || A.ref_major()[nh] == A.ref_major()[nh+1]
+	     || A.ref_major()[nt] == A.ref_major()[nt+1]
+	     || A.ref_major()[nr-1] == A.ref_major()[nr]) && !as.init_to_zero) {
+	    adapt_crs_cvec_mult(A, v, w, as);
+	    return;
+	}
+    }
+
     for (size_type i= 0; i < nrb; i+= 4) {
 	const size_type cj0= A.ref_major()[i], cj1= A.ref_major()[i+1], cj2= A.ref_major()[i+2], 
 	                cj3= A.ref_major()[i+3], cj4= A.ref_major()[i+4];
