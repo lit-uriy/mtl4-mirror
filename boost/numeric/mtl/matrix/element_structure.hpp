@@ -133,13 +133,23 @@ class element_structure
 
     /// Standard constructor.
   public:
-    element_structure(int total_elements, int total_vars, element_type* elements)
+    element_structure(int total_elements= 0, int total_vars= 0, element_type* elements= 0)
       : m_total_elements(total_elements), m_total_vars(total_vars),
 	m_elements(elements), index_heap(0), value_heap(0)
     { }
 
+    void consume(int total_elements, int total_vars, element_type* elements)
+    {
+	m_total_elements= total_elements;
+	m_total_vars= total_vars;
+	delete[] m_elements;
+	m_elements= elements;
+	delete[] index_heap; index_heap= 0;
+	delete[] value_heap; value_heap= 0;
+    }
+
+
     /// Copy the given mesh.
-  public:
     element_structure(this_type const& other)
       : m_total_elements(other.m_total_elements),
 	m_total_vars(other.m_total_vars),
