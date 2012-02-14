@@ -20,25 +20,26 @@
 #define MTL_IMF_ALGORITHMS_INCLUDE
 
 #include <iostream>
-#include <boost/numeric/mtl/interface/vpt.hpp>
-#include <boost/numeric/mtl/matrix/compressed2D.hpp>
-#include <boost/numeric/mtl/matrix/coordinate2D.hpp>
-#include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
-
 #include <string.h>
-#include <boost/numeric/itl/pc/binary_heap.hpp>
-#include <boost/numeric/itl/pc/sorting.hpp>
-
 #include <vector>
 #include <map>
 #include <set>
 #include <complex>
 #include <limits>
 
+#include <boost/numeric/mtl/interface/vpt.hpp>
+#include <boost/numeric/mtl/matrix/compressed2D.hpp>
+#include <boost/numeric/mtl/matrix/coordinate2D.hpp>
+#include <boost/numeric/mtl/operation/clone.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
+
+#include <boost/numeric/itl/pc/binary_heap.hpp>
+#include <boost/numeric/itl/pc/sorting.hpp>
+
 #include "boost/unordered_map.hpp"
 #include "boost/unordered_set.hpp"
 
-#include <boost/numeric/mtl/utility/irange.hpp>
 
 namespace itl {   namespace pc { 
 ////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +263,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	const int nb_elements = mesh.get_total_elements();
 	const int nb_vars = mesh.get_total_vars();
 	const int UNPERMUTED = -1;
-	
+	const value_type zero(0);
 	// A DS tracking the set of elements during the construction.
 	//	Invariant: elements[i]->get_sequence_number() == i
 	//	Invariant: elements[i] == 0  iff  element[i] is removed
@@ -380,7 +381,6 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 
 		// For each of the candidate diagonal elements ...
 		for(unsigned int i = 0; i < unmarked_elements_srtd.size(); ++i) {
-
 			// Select the minimum element.
 			element_type& el = *(unmarked_elements_srtd[i]);
 			// If the element is already marked, skip it.
@@ -390,8 +390,6 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 
 			// If the element is unmarked, add it to the set of diagonal
 			// elements
-
-			// Add the element to the diagonal.
 			block_diagonal.push_back(&el);
 			// Mark the element.
 			el_status[el.get_id()] = DIAGONAL;
@@ -407,11 +405,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 			neigh_set_type lvl2_neighs = el.get_level_neighbours( 2 );
 
 			// Mark all level-2 neighbours.
-			for(
-				neigh_set_iterator neigh_it = lvl2_neighs.begin();
-				neigh_it != lvl2_neighs.end();
-				++neigh_it
-			) {
+			for(neigh_set_iterator neigh_it = lvl2_neighs.begin(); neigh_it != lvl2_neighs.end(); ++neigh_it) {
 				element_type& neigh = **neigh_it;
 				assert( el_status[neigh.get_id()] != DIAGONAL );
 				el_status[ neigh.get_id() ] = MARKED_CURRENT;
@@ -440,7 +434,6 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		}
 			
 		// Update permutation offsets.
-// 		perm_low = perm_high;
 		perm_high = perm_off;
 		
 /***************************************************************************
@@ -456,7 +449,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		// For each diagonal block element ... (in parallel)
 		unsigned int ku= 0, kl= 0;
 		for(std::size_t b_i = block_diag_low; b_i < block_diagonal.size();++b_i ) {
-			element_type& diag_el = *(block_diagonal[b_i]);
+			element_type& diag_el = *block_diagonal[b_i];
 			// Copy the level-1 neighbours.
 			neigh_coll_type& diag_neighs = diag_el.get_neighbours();
 
@@ -490,7 +483,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 			}
 			// Construct the frontal matrix.
 			block_type frontal( n1+n2, n1+n2 );
-			frontal = mtl::traits::value_traits<value_type>::zero;
+			frontal = zero;
 
 			// For each connected neighbour, add their values to the frontal
 			// matrix.
@@ -510,7 +503,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				  mtl::matrix::inserter<mtl::dense2D<value_type>, mtl::operations::update_plus<value_type> > ins(frontal);
 				  ins << element_matrix(neigh.get_values(), local_idx, local_idx);
 				}
-				neigh.get_values() = mtl::traits::value_traits<value_type>::zero;
+				neigh.get_values()= zero;
 			}
 			// Add the values of the diagonal element to the frontal matrix.
 			{
@@ -521,65 +514,32 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				}
 				//insert the diagonal element
 				{	
-				  mtl::matrix::inserter<mtl::dense2D<value_type>, mtl::operations::update_plus<value_type> > ins(frontal);
+				  mtl::matrix::inserter<matrix_type, mtl::operations::update_plus<value_type> > ins(frontal);
 				  ins << element_matrix(
 				  diag_el.get_values(), local_idx, local_idx);
 				}
-				diag_el.get_values() = mtl::traits::value_traits<value_type>::zero;
+				diag_el.get_values()= zero;
 			}
 			//
 			// Store the L and U part.
 			//
-
-#if 0 //TEST with compressed2D matrix, but slow				
-		//	mtl::compressed2D<value_type>  L(nb_vars,nb_vars), U(nb_vars,nb_vars);  //TODO a littel bit to much
-			{ //Start Inserter Block
-	//		    mtl::matrix::inserter<mtl::compressed2D<value_type> >   insL(L);  
-	//		    mtl::matrix::inserter<mtl::compressed2D<value_type> >   insU(U);
-				mtl::matrix::inserter<mtl::compressed2D<value_type> >  insL(*L);
-				mtl::matrix::inserter<mtl::compressed2D<value_type> >  insU(*U);
-				
-			for(int i = 0; i < n1; ++i) { // p-part
-				for(int j = n1; j < n1+n2; ++j) { // q-part
-					// Assumption: structural symmetry.
-					if(frontal(i,j) != traits::value_traits<value_type>::zero) {
- 						insU[p(i)][q(j-n1)] << frontal(i,j);
-					}
-					if(frontal(j,i) != traits::value_traits<value_type>::zero){
- 						insL[q(j-n1)][p(i)] << frontal(j,i);
-					}
-				}
-			}
-
-			}//End Inserter Block
-			
-			
-#endif
-			
 			for(int i = 0; i < n1; ++i) { // p-part
 				for(int j = n1; j < n1+n2; ++j) { // q-part
 				  // Assumption: structural symmetry.
-					if(frontal(i,j) != mtl::traits::value_traits<value_type>::zero) {
+					if(frontal(i,j) != zero) {
 						U->insert(p(i),q(j-n1),frontal(i,j), ku );
 						ku++;
 					}
-					if(frontal(j,i) != mtl::traits::value_traits<value_type>::zero){
+					if(frontal(j,i) != zero){
 						L->insert(q(j-n1),p(i),frontal(j,i), kl );
 						kl++;
 					}
 				}
 			}
 
-			mtl::dense2D<value_type> D(n1,n1),C(n1,n1);
 			mtl::irange  n0(0,n1);
-			// Invert the D-part matrix.
-			C=frontal[n0][n0];
-//  			D=inv(frontal[n0][n0]);  //doesnot work in current version
-			inv(C, D);
-			// Store the D part.
-    			diag_el.get_values() = D ;
+    			diag_el.get_values() = inv(mtl::clone(frontal[n0][n0]));
 			frontal[n0][n0] = diag_el.get_values();
-		
 	
  			if( (level <= maxlofi) && (n2 > 0) ) { 
 //------------------------------------------------------------------------------
@@ -591,7 +551,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				mtl::irange n1r(0,n1), n2r(n1, mtl::imax); 
 				frontal[n2r][n2r]-= frontal[n2r][n1r] * frontal[n1r][n1r] * frontal[n1r][n2r];
 				mtl::irange nz(n1,n1+n2);
-				matrix_type Z( frontal[nz][nz] );
+				matrix_type Z( mtl::clone(frontal[nz][nz]) );
 				// Construct the new element.
 				element_type* fill = new element_type(max_sequence_number, q, Z);
 				// Add processing information to the required DSs.
@@ -615,18 +575,13 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 
 					// Skip the level-1 neighbours (removed) and the diagonal
 					// element.
-					if(
-						(el_status[neigh.get_id()] == DIAGONAL) ||
-						(el_status[neigh.get_id()] == REMOVED)
-					) {
+					if((el_status[neigh.get_id()] == DIAGONAL) || (el_status[neigh.get_id()] == REMOVED)) {
 						continue;
 					}
 					// The element is in the strict level-2 neighbourhood.
 					// Remove the level-1 neighbours from its set of neighbours.
 					neigh_coll_type& neigh_neighs = neigh.get_neighbours();
-					neigh_iterator new_end = std::remove_if(
-						neigh_neighs.begin(), neigh_neighs.end(), is_removed
-					);
+					neigh_iterator new_end = std::remove_if(neigh_neighs.begin(), neigh_neighs.end(), is_removed);
 					neigh_neighs.erase(new_end, neigh_neighs.end());
 
 					// Add the newly generated element as neighbour, and vice
@@ -674,12 +629,10 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
   				matrix_type S( frontal[nz][nz] );
 				for(neigh_iterator neigh_it = diag_neighs.begin(); neigh_it != diag_neighs.end();++neigh_it) {
 					element_type& el = **neigh_it;
-
 					if( el_status[el.get_id()] != REMOVED ) {
 						el.absorb(S, q);
 					}
 				}
-
 				// Do not distribute over the entire level-2 neighbourhood.
 				// This is expensive, while not adding much in terms of quality
 				// of the approximation.
@@ -690,17 +643,11 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				// completely with said element.
 
 				// In this case, simply remove all neighbours.
-				for(
-					neigh_iterator neigh_it = diag_neighs.begin();
-					neigh_it != diag_neighs.end();
-					++neigh_it
-				) {
+				for(neigh_iterator neigh_it = diag_neighs.begin(); neigh_it != diag_neighs.end(); ++neigh_it) {
 					element_type& neigh = **neigh_it;
 					neigh.remove_nodes( diag_el.get_indices(), diag_el );
-
 					assert( el_status[neigh.get_id()] != DIAGONAL );
 					assert( el_status[neigh.get_id()] != REMOVED );
-
 					// The element is now entirely removed, mark it as such.
 					assert( neigh.nb_vars() == 0 );
 					el_status[neigh.get_id()] = REMOVED;
@@ -754,28 +701,12 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		m_lower.push_back(lower);
 		mtl::matrix::compressed2D<value_type> upper(crs( U ));
 		m_upper.push_back(upper);
-
-#if 0 //compressed2D try
-		if(off_low > 0){ 
-		  mtl::matrix::traits::permutation<>::type P_col(permutation(col_perm));
- 		  L_t= trans(P) * L * P * trans(P_col);
- 		  U_t= P_col * trans(P) * U * P ;
-		}else {
- 		  L_t= trans(P) * L * P;  
- 		  U_t= trans(P) * U * P;
-		}
-		sparse_type_lower* lower = new sparse_type_lower( L_t );
-		m_lower.push_back(lower);
-		sparse_type_upper* upper = new sparse_type_upper( U_t );
-		m_upper.push_back(upper);
-#endif
-		
 	}
 	/***************************************************************************
 	 * Phase 4: Construct the IMF preconditioner
 	 **************************************************************************/
 	// Copy the block diagonal values into a consecutive array.
-	mtl::vampir_trace<9904> tb4;
+//	mtl::vampir_trace<9904> tb4;
 
 	m_diagonal = new matrix_type[ block_diagonal.size() ];
 	for(std::size_t i = 0; i < block_diagonal.size(); ++i) {
@@ -863,10 +794,10 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 {
 	using namespace mtl;
 	Vector res(rhs);
+	ValType zero(0);
 	// Forward elimination.
 	{
-	    mtl::vampir_trace<9901> tb1;
-	    
+          mtl::vampir_trace<9901> tb1;
 	  int b_off = 0;
 	  for(int level = 0; level < m_levels; ++level) {
 		const int off_low = m_diagonal_index[level];
@@ -875,25 +806,24 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 		assert(off_low <= off_high);
 		// Compute dy = inv(D)*y
 		vector_type dy(n1);
-		dy = mtl::traits::value_traits<ValType>::zero;  
+		dy = zero;  
 		for(int off = off_low; off < off_high; ++b_off ) { //parallel
 			const int block_size = num_rows( m_diagonal[b_off] );
 			dy[mtl::irange(off-off_low, off-off_low+block_size)] = m_diagonal[b_off] * res[mtl::irange(off, off + block_size)];
 			off += block_size;
 		}
 		// Compute x = x - E*dy
-//  		assert( m_lower[level] );
 		Vector big(num_cols(m_lower[level])); big=0;
 		big[mtl::irange(0,n1)] = dy;
  		res -= ( (m_lower[level]) * big );
 	  }
 	}
+
 	// Backward elimination.
 	{
-	    mtl::vampir_trace<9902> tb2;
-	    
-	int b_off = m_nb_blocks-1;
-	for(int level = m_levels-1; level >= 0; --level) {
+	  mtl::vampir_trace<9902> tb2;  
+	  int b_off = m_nb_blocks-1;
+	  for(int level = m_levels-1; level >= 0; --level) {
 
 		const int off_low = m_diagonal_index[level];
 		const int off_high = m_diagonal_index[level+1];

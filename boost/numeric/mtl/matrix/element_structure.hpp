@@ -20,14 +20,12 @@
 #include <iostream>
 #include <ostream>
 
-
 #include <boost/numeric/mtl/matrix/element.hpp>
-// #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 
 namespace mtl { namespace matrix {
 
-#if 0
+#if 0   ///TODO need for write elmement_structur
 namespace print {
 
 	template< class Type >
@@ -102,11 +100,7 @@ template< class ValueType >
 class element_structure 
 {
 
-    /*******************************************************************************
-     * Type Definitions
-     ******************************************************************************/
-
-  public:
+public:
     /// Type of the numerical values of the element coefficient matrices.
     typedef ValueType value_type;
 
@@ -125,19 +119,13 @@ class element_structure
     typedef element_structure<ValueType> this_type;
     typedef this_type                    self;
     
-
-    /*******************************************************************************
-     * Constructors
-     ******************************************************************************/
-
-
     /// Standard constructor.
-  public:
     element_structure(int total_elements= 0, int total_vars= 0, element_type* elements= 0)
       : m_total_elements(total_elements), m_total_vars(total_vars),
 	m_elements(elements), index_heap(0), value_heap(0)
     { }
 
+    /// consume elements into element_structure
     void consume(int total_elements, int total_vars, element_type* elements)
     {
 	m_total_elements= total_elements;
@@ -180,9 +168,10 @@ class element_structure
 	}
     }
 
-
+    /// Destructor
     ~element_structure() { delete[] m_elements; delete[] index_heap; delete[] value_heap; }
 
+    /// make compakt memory block from elements
     void make_compact()
     {
 	assert(index_heap == 0); assert(value_heap == 0); // might be relaxed later
@@ -205,18 +194,12 @@ class element_structure
 	    index_pos+= s;
 
 	    typename element_type::matrix_type value_tmp(s, s, value_heap + value_pos);
-	    // std::cout << "value_tmp uses " << value_tmp.used_memory() << " entries and is\n" << value_tmp;
-	    // std::cout << "element.get_values() uses " << element.get_values().used_memory() << " entries and is \n" << element.get_values();
 	    value_tmp= element.get_values();
 	    swap(value_tmp, element.get_values());
 	    value_pos+= s * s;
 	}
 	assert(total_indices == index_pos);
 	assert(total_values  == value_pos);
-	
-	// std::cout << m_total_vars << " variables\n";
-	// std::cout << total_indices << " indices\n";
-	// std::cout << total_values << " matrix entries\n";
     }
 
     /*******************************************************************************
@@ -245,17 +228,8 @@ class element_structure
     /// An iterator to the element past the last element.
     element_iterator element_end() const { return m_elements + this->get_total_elements();   }
 
-    /*******************************************************************************
-     * File Operations
-     ******************************************************************************/
-  public:
-
-    /**
-     * Writes the elements to the specified file.
-     *
-     * TODO test this code
-     */
 #if 0
+    /// Writes the elements to the specified file.  TODO at the moment very slow
     void write_to_file(const std::string& filename) 
     {
 	using namespace print;
@@ -288,12 +262,6 @@ class element_structure
     }
 #endif
         
-
-    /*******************************************************************************
-     * Data Members
-     ******************************************************************************/
-//   private:
-  public:
     int           m_total_elements; ///< The total number of elements.
     int           m_total_vars; ///< The total number of variables.
     element_type* m_elements; ///< The elements of the grid, stored consecutively.

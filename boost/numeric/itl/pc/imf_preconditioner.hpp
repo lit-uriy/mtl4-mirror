@@ -12,8 +12,6 @@
 //
 // Algorithm inspired by Nick Vannieuwenhoven, written by Cornelius Steinhardt
 
-
-
 /*
  * The IMF preconditioner.
  *
@@ -36,71 +34,38 @@
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 
 
-
 namespace itl {   namespace pc {
 
-
-
-/**
- * The IMF preconditioner, as described in [1].
- */
+/// The IMF preconditioner, as described in [1].
 template<class ValType>
 class imf_preconditioner {
 
-/*******************************************************************************
- * Type Definitions
- ******************************************************************************/
-
 public:
-	/**
-	 * The type of the values.
-	 */
+	/// The type of the values.
 	typedef ValType value_type;
 
-	/**
-	 * The type of the sparse data structure for the upper matrices.
-	 */
+	/// The type of the sparse data structure for the upper matrices.
 	typedef mtl::matrix::coordinate2D<value_type> sparse_type_upper;
 
-	/**
-	 * The type of the sparse data structure for the lower matrices.
-	 */
+	/// The type of the sparse data structure for the lower matrices.
 	typedef mtl::matrix::coordinate2D<value_type> sparse_type_lower;
 
-	/**
-	 * The type of the vectors.
-	 */
+	/// The type of the vectors.
 	typedef mtl::dense_vector<value_type> vector_type;
 
-	/**
-	 * The type of the permutation vector.
-	 */
+	///The type of the permutation vector.
 	typedef mtl::dense_vector<int>  index_type;
 
-	/**
-	 * The type of the matrices on the block diagonal.
-	 */
+	/// The type of the matrices on the block diagonal.
 	typedef mtl::dense2D<value_type>  block_type;
 
-	/**
-	 * The type of the sequence of lower matrices.
-	 */
+	/// The type of the sequence of lower matrices.
 	typedef std::vector<mtl::matrix::compressed2D<value_type> > lower_matrix_coll_type;
 
-	/**
-	 * The type of the sequence of upper matrices.
-	 */
+	/// The type of the sequence of upper matrices.
 	typedef std::vector<mtl::matrix::compressed2D<value_type> > upper_matrix_coll_type;
 
-
-
-	typedef mtl::dense2D<value_type>    blas_matrix;
-
-/*******************************************************************************
- * Constructors
- ******************************************************************************/
-
-public:
+	/// Constructor
 	template< class ElementStructure >
 	imf_preconditioner(
 		const ElementStructure& element_structure ,
@@ -115,7 +80,6 @@ public:
  		mtl::vampir_trace<5053> tracer;
 		if(copy_on){
 		  ElementStructure es(element_structure);
-// 		  es= element_structure;
 		  factor(es, maxlofi);
 		} else {
 		  factor(element_structure, maxlofi);
@@ -123,27 +87,7 @@ public:
 		P= permutation(m_ordering);
 	}
 
-	/**
-	 * Disallow the copy constructor and assignment.
-	 */
-private:
-	imf_preconditioner();
-	imf_preconditioner(const imf_preconditioner& other);
-	void operator=(const imf_preconditioner& other);
-
-	/**
-	 * Constructs the IMF preconditioner.
-	 */
-private:
-	template< class ElementStructure >
-  	void factor(const ElementStructure&, const int); 
-
-
-/*******************************************************************************
- * Destructor
- ******************************************************************************/
-
-public:
+	/// Destructor
 	~imf_preconditioner() {
 		if(m_diagonal_index) {
 			delete[] m_diagonal_index;
@@ -155,120 +99,70 @@ public:
 		m_diagonal = 0;
 	}
 
-/*******************************************************************************
- * Inspectors
- ******************************************************************************/
+private:
+	/// Disallow the copy constructor and assignment.
+	imf_preconditioner();
+	imf_preconditioner(const imf_preconditioner& other);
+	void operator=(const imf_preconditioner& other);
+
+        /// Constructs the IMF preconditioner.Forward declaration
+	template< class ElementStructure >
+  	void factor(const ElementStructure&, const int); 
 
 public:
 
-	/**
-	 * Returns the number of levels (equals the number of lower and upper
-	 * matrices).
-	 */
-	int get_nb_levels() const {
-		return m_levels;
-	}
+	/// Returns the number of levels (equals the number of lower and upper matrices.
+	int get_nb_levels() const { return m_levels; }
 
-	/**
-	 * Returns the number of blocks on the diagonal.
-	 */
-	int get_nb_blocks() const {
-		return m_nb_blocks;
-	}
-
-/*******************************************************************************
- * Preconditioning
- ******************************************************************************/
-
-	/**
-	 * Applies the preconditioner to the given matrix.
-	 */
-public:
+	/// Returns the number of blocks on the diagonal.
+	int get_nb_blocks() const { return m_nb_blocks; }
 
 
+        /// Applies the preconditioner to the given matrix.
+        template <typename VectorIn, typename VectorOut>
+        void solve(const VectorIn& b, VectorOut& x) const 
+        {
+	    VectorIn m(trans(P)*b), m_tmp(imf_apply(m));
+	    x= P * m_tmp;
+        }  
 
-    template <typename VectorIn, typename VectorOut>
-    void solve(const VectorIn& b, VectorOut& x) const 
-    {
-	// mtl::matrix::traits::permutation<>::type P(permutation(m_ordering));//TODO change in loop
-	VectorIn m(trans(P)*b), m_tmp(imf_apply(m));
-	x= P * m_tmp;
-    }  
-
-
-#if 0
-	//equals operator() in Nicks code
-	template <typename Vector>
-	Vector solve(const Vector& b) const {
-	    mtl::matrix::traits::permutation<>::type P(permutation(m_ordering));//TODO change in loop
-	    Vector m_tmp(b), m(trans(P)*b);
-	    m_tmp = imf_apply(m);
-	    for(unsigned int i=0; i< size(b); i++)
-		  m[i]= m_tmp[m_ordering[i]];
-	    return m; 
-	}  
-#endif
-
-	/**
-	 * Applies the preconditioner.
-	 */
-private:  //prototypes
+private:  
+        /// Applies the preconditioner   prototype
 	template< class Vector >
 	Vector imf_apply(const Vector&) const;
-/*******************************************************************************
- * Data Members
- ******************************************************************************/
 
-private:
-	/**
-	 * The number of variables (also the size of the m_ordering vector).
-	 */
+	/// The number of variables (also the size of the m_ordering vector).
 	unsigned int m_nb_vars;
 
-	/**
-	 * The number of blocks on the diagonal.
-	 */
+	/// The number of blocks on the diagonal.
 	unsigned int m_nb_blocks;
 
-	/**
-	 * A vector containing the renumbering of IMF.
-	 */
+	/// A vector containing the renumbering of IMF.
 	index_type m_ordering;
 
-    mtl::matrix::traits::permutation<>::type P;
+	/// A matrix containing the renumbering of IMF.
+        mtl::matrix::traits::permutation<>::type P;
 
-	/**
-	 * The number of levels (equals the number of entries in the diagonal index
-	 * array minus one).
-	 */
+	/// The number of levels (equals the number of entries in the diagonal index array minus one).
 	int m_levels;
-
-	/**
-	 * The index array for the matrices on the block diagonal. The i^th entry
+	
+	 /** The index array for the matrices on the block diagonal. The i^th entry
 	 * indicates where the i^th level of block diagonal matrices starts in the
-	 * right hand side vector.
-	 */
+	 * right hand side vector. */
 	int* m_diagonal_index;
 
-	/**
-	 * The matrices on the block diagonal.
-	 */
+        /// The matrices on the block diagonal.
 	block_type* m_diagonal;
 
-	/**
-	 * The sparse lower matrices of each level, sorted by level.
-	 */
+	/// The sparse lower matrices of each level, sorted by level.
 	lower_matrix_coll_type m_lower;
 
-	/**
-	 * The sparse upper matrices of each level, sorted by level.
-	 */
+	/// The sparse upper matrices of each level, sorted by level.
 	upper_matrix_coll_type m_upper;
 };
 
 /// Solve 
 template <typename Matrix, typename Vector>
-//Vector 
 solver<imf_preconditioner<Matrix>, Vector, false>
 inline solve(const imf_preconditioner<Matrix>& P, const Vector& b)
 {
@@ -277,6 +171,4 @@ inline solve(const imf_preconditioner<Matrix>& P, const Vector& b)
 }
 }//namespace pc
 }//namespace itl
-
-
 #endif // MTL_IMF_PRECONDITIONER_INCLUDE
