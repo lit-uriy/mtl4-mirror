@@ -17,8 +17,6 @@
 #ifndef MTL_MATRIX_ALGORITHMS_INCLUDE
 #define MTL_MATRIX_ALGORITHMS_INCLUDE
 
-
-#include <boost/numeric/itl/pc/value_traits.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/matrix/element.hpp>
@@ -26,15 +24,11 @@
 
 #include <iostream>
 
-namespace mtl {
-namespace matrix {
+namespace mtl {  namespace matrix {
 
-/**
- * Construct the sparse data structure from an elementstructure 
- */
-template< typename ElementStructure, typename Vector> 
-mtl::compressed2D<typename ElementStructure::element_type::value_type>  
-assemble_compressed(const ElementStructure& es,	const Vector& order) 
+/// Construct the sparse data structure from an elementstructure 
+template< typename ElementStructure, typename Vector, typename Matrix> 
+void assemble_compressed(const ElementStructure& es,	const Vector& order, Matrix& A) 
 {
 // 	mtl::vampir_trace<4021> tracer;
   	typedef typename ElementStructure::element_type::value_type   value_type;
@@ -43,30 +37,26 @@ assemble_compressed(const ElementStructure& es,	const Vector& order)
  	typedef typename element_type::index_type                     index_type;
  	typedef typename element_type::matrix_type                    matrix_type;
 	typedef typename matrix_type::size_type                       size_type;
-	mtl::compressed2D<value_type> A(es.get_total_vars(),es.get_total_vars());
+	A.change_dim(es.get_total_vars(), es.get_total_vars());
 	set_to_zero(A);
+	value_type zero(0);
+	
 	{//start inserterblock
-	  mtl::matrix::inserter<mtl::compressed2D<value_type>, mtl::operations::update_plus<value_type> >  ins(A);
-	for(iterator it = es.element_begin(); it != es.element_end(); ++it) {
+	  mtl::matrix::inserter<Matrix, mtl::operations::update_plus<value_type> >  ins(A);
+	  for(iterator it = es.element_begin(); it != es.element_end(); ++it) {
 		element_type& element = *it;
 		const index_type& idx = element.get_indices();
 		matrix_type& values = element.get_values();
 		for(int i = 0; i < element.nb_vars(); ++i) {
 			for(int j = 0; j < element.nb_vars(); ++j) {
-				if(values(i,j) != mtl::traits::value_traits<value_type>::zero) {
+				if(values(i,j) != zero) {
 					ins[size_type(order(idx(i)))][size_type(order(idx(j)))] << values(i,j);
 				}
 			}
 		}
-	}
+	  }
 	}//end inserterblock
-	
-	return A;
-// 	return new mtl::compressed2D<value_type>(A);
 }
-
-
-
 }
 }//end namespace mtl
 

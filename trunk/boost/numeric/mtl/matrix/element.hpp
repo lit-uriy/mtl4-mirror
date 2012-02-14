@@ -32,26 +32,17 @@
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
-
 #include <boost/numeric/itl/pc/comparators.hpp>
 
 
 namespace mtl { namespace matrix {
 
-/**
- * A class representing an element.
- *
- * ValType:		The type of the numeric values.
- */
+///  A class representing an element with ValType equalsT he type of the numeric values
 template <typename ValType>
 class element 
 {
- 
-/*******************************************************************************
- * Type definitions
- ******************************************************************************/
 
-  public:	
+public:
     /// The type of this element.
     typedef element<ValType> element_type;
 
@@ -59,7 +50,7 @@ class element
     typedef ValType value_type;
 
     /// The type of a set of neighbours.
-    typedef std::vector<element_type*> neighbour_collection_type;  //TODO mtl dense_vector
+    typedef std::vector<element_type*> neighbour_collection_type; 
 
     /// An iterator over the neighbours of this element.
     typedef typename neighbour_collection_type::iterator neighbour_iterator;
@@ -87,12 +78,10 @@ class element
 
 
     /**
-     * Constructs the element using the memory specified by the two pointers.
+     * Constructs the element using the memory specified by the two references.
      *
-     * p_indices: 	a pointer to the memory where the indices may be stored.
-     * p_values:	a pointer to the memory where the values may be stored.
-     * p_rhs:		a pointer to the memory where the right-hand side may be
-     * 				stored.
+     * p_indices: 	a reference to the memory where the indices may be stored.
+     * p_values:	a reference to the memory where the values may be stored.
      */
   public:
     element(int p_sequence_number, const index_type& p_indices, const matrix_type& p_values) 
@@ -118,12 +107,6 @@ class element
 	m_values =  other.m_values;
     }
 
-
-/*******************************************************************************
- * Inspector Methods
- ******************************************************************************/
-
-  public:
     /// Returns the unique identifier of this element.
     inline int get_id() const {	return m_sequence_number; }
     inline int& get_id()      {return m_sequence_number; }
@@ -187,10 +170,7 @@ class element
     }
 
 
-    /**
-     * Get the set of level-k neighbours, for a given k. This
-     */
-  public:
+    /// Get the set of level-k neighbours, for a given k. 
     neighbour_set_type get_level_neighbours(const int level = 1) 
     {
 	neighbour_set_type result( get_nb_neighbours() * level );
@@ -205,33 +185,15 @@ class element
 		result.erase( this );
 	    }
 	}
-#if 0
-	if(level <= 0) {
-	    return result;
-	}
-	result.insert( m_neighbours.begin(), m_neighbours.end() );
-	if(level == 1) {
-	    return result;
-	}
-	for(int i = 0; i < get_nb_neighbours(); ++i) {
-	    neighbour_set_type neighs(m_neighbours[i]->get_level_neighbours(level-1));
-	    result.insert( neighs.begin(), neighs.end() );
-	}
-	result.erase( this );
-#endif
 	return result;
     }
 
 /*******************************************************************************
  * Manipulation
  ******************************************************************************/
-
-
-	/**
-	 * Permutes the rows and the columns of the element coefficient matrix along
-	 * with the indices such that the latter are sorted in ascending order.
-	 */
   public:
+    /// Permutes the rows and the columns of the element coefficient matrix along 
+    /// with the indices such that the latter are sorted in ascending order.
     void sort_indices() {
 	if(size(m_indices) == 0) {
 	    assert(size(m_values) == 0);
@@ -279,15 +241,9 @@ class element
 #endif
     }
 
-	
+
   public:
-	
-    /**
-     * Removes the given set of nodes from the element.
-     *
-     * el: an element that should not be removed.
-     */
-  public:
+    /// Removes the given set of nodes from the element
     template< class Vector >
     void remove_nodes(const Vector& nodes, element_type& el) {
 	if(size(m_indices) == 0) {
@@ -401,14 +357,9 @@ class element
 		}
 	    }
 
-	    // If not found, then remove ourself from the neighbours and vice
-	    // versa.
+	    // If not found, then remove ourself from the neighbours and vice versa.
 	    if(!connected) {
-		neighbour_iterator pos = std::find(
-						   neigh.get_neighbours().begin(),
-						   neigh.get_neighbours().end(),
-						   this
-						   );
+		neighbour_iterator pos = std::find(neigh.get_neighbours().begin(), neigh.get_neighbours().end(), this );
 		if( (pos != neigh.get_neighbours().end()) && (&neigh != &el) ) {
 		    neigh.get_neighbours().erase(pos);
 		}
@@ -441,10 +392,7 @@ class element
 	m_values = *values;
     }
 
-    /**
-     * Absorbs the values of the given matrix with the given index.
-     */
-  public:
+    /// Absorbs the values of the given matrix with the given index.
     template< class Matrix, class Vector >
     void absorb(Matrix& other_values, Vector& other_indices) 
     {
@@ -485,17 +433,13 @@ class element
 	    for(int j = i; j < offset; ++j) {
 		get_values()( my_idx(i), my_idx(j) ) += other_values( ot_idx(i), ot_idx(j) );
 		other_values( ot_idx(i), ot_idx(j) ) = zero;
-
 		get_values()( my_idx(j), my_idx(i) ) += other_values( ot_idx(j), ot_idx(i) );
 		other_values( ot_idx(j), ot_idx(i) ) = zero;
 	    }
 	}
     }
-
-    /**
-     * Removes the numerical values from the element.
-     */
-  public:
+    
+    /// Removes the numerical values from the element.
     void clear() {
 	m_neighbours.clear();
 	m_neighbours.resize(1);
@@ -505,11 +449,6 @@ class element
     }
 
     template< class ValueType > friend class element_structure;
-
-
-/*******************************************************************************
- * Data Members
- ******************************************************************************/
 
   private:
     /// The set of neighbours of the element.
@@ -527,9 +466,8 @@ class element
     int *dummy;
 };
 
-/**
- * Print an element to an output stream.
- */
+
+/// Print an element to an output stream.
 template<typename OStream, class ValueType>
 OStream& operator<<(OStream& out, element<ValueType>& el) 
 {

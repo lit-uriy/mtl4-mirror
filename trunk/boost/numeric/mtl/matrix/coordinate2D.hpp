@@ -87,6 +87,7 @@ class coordinate2D
 	assert(!is_negative(c) || (c >= this->num_cols()) ); //TODO check if we need this really
 	assert(!is_negative(pos) || (pos >= this->nnz_) ); //TODO check if we need this really
  
+// 	std::cout<< "insert " << v << " into ("<< r<<"," << c << ") von nnz=" << nnz_ << "\n";
 	row_[pos]= r;
 	col_[pos]= c;
 	values_[pos] = v;
