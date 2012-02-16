@@ -80,39 +80,39 @@ protected:
     void change_dim(size_type r, size_type c) {	change_dim(r, c, static_bool()); }    
 
 public:
-    // Number of rows
+    /// Number of rows
     size_type num_rows() const 
     {
       return dim.num_rows();
     }
-    // First row taking indexing into account
+    /// First row taking indexing into account
     size_type begin_row() const 
     {
       return index::change_to(index_type(), 0);
     }
-    // Past-end row taking indexing into account
+    /// Past-end row taking indexing into account
     size_type end_row() const 
     {
       return index::change_to(index_type(), num_rows());
     }
 
-    // number of colums
+    /// number of colums
     size_type num_cols() const 
     {
       return dim.num_cols();
     }
-    // First column taking indexing into account
+    /// First column taking indexing into account
     size_type begin_col() const 
     {
       return index::change_to(index_type(), 0);
     }
-    // Past-end column taking indexing into account
+    /// Past-end column taking indexing into account
     size_type end_col() const 
     {
       return index::change_to(index_type(), num_cols());
     }
 
-    // Number of non-zeros
+    /// Number of non-zeros
     size_type nnz() const
     {
       return my_nnz;
@@ -151,13 +151,13 @@ public:
     }    
 
   public:
-    // return major dimension
+    /// Major dimension
     size_type dim1() const 
     {
       return dim1(orientation());
     }
 
-    // return minor dimension
+    /// Minor dimension
     size_type dim2() const 
     {
       return dim2(orientation());

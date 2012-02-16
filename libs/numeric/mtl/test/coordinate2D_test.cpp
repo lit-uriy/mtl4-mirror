@@ -10,91 +10,112 @@
 // 
 // See also license.mtl.txt in the distribution.
  
+#define MTL_VERBOSE_TEST
+
 #include <iostream>
 #include <boost/tuple/tuple.hpp>
 
+#include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/matrix/coordinate2D.hpp>
-
-
 
 int main(int, char**)
 {
     using namespace mtl;
+    using mtl::io::tout;
+
     typedef mtl::matrix::coordinate2D<double> matrix_type;
-    matrix_type   matrix(5,4);
-    mtl::dense_vector<double> res(5,0.0), x(4,1.0);
+    typedef matrix_type::size_type            size_type;
+    matrix_type   B(5, 4);
+    mtl::dense_vector<double> res(5, 0.0), res2(5), x(4, 1.0);
     
-    std::cout <<"num_rows=" << matrix.num_rows() << "\n";
-    std::cout <<"num_rows=" << num_rows(matrix) << "\n";
-    std::cout <<"size=" << size(matrix) << "\n";
-    std::cout <<"nnz=" << nnz(matrix) << "\n";
-    matrix.push_back(1,1,1.33);
-    matrix.push_back(1,2,2.33);
-    matrix.push_back(2,1,3.33);
-    matrix.push_back(3,1,4.33);
-    mtl::dense_vector<unsigned int> rows(matrix.row_index_array()),cols(matrix.column_index_array());
-    mtl::dense_vector<double> val0(matrix.value_array());
-    for(unsigned int i=0;i<size(rows);i++){
-      std::cout<<"row[" <<i <<"]=" <<rows[i] << "\n";
-      std::cout<<"col[" <<i <<"]=" <<cols[i] << "\n"; 
-      std::cout<<"val[" <<i <<"]=" <<val0[i] << "\n";
+
+    tout << "num_rows = " << B.num_rows() << "\n"
+	 << "num_rows = " << num_rows(B) << "\n"
+	 << "num_cols = " << num_cols(B) << "\n"
+	 << "size = " << size(B) << "\n"
+	 << "nnz = " << nnz(B) << "\n";
+
+    B.push_back(1, 1, 1.33);
+    B.push_back(1, 2, 2.33);
+    B.push_back(2, 1, 3.33);
+    B.push_back(3, 1, 4.33);
+
+    tout << "B(1, 2) = " << B(1, 2) << "\n";
+    tout << "B[2][1] = " << B[2][1] << "\n";
+
+    MTL_THROW_IF(std::abs(B(3, 1) - 4.33) > 0.001, unexpected_result());
+    MTL_THROW_IF(std::abs(B(1, 2) - 2.33) > 0.001, unexpected_result());
+    MTL_THROW_IF(std::abs(B(2, 1) - 2.33) > 3.001, unexpected_result());
+
+    B.push_back(1, 0, 5.33);
+    B.push_back(0, 0, 6.33);
+    
+    B.print_internal(tout);
+    B.sort();
+    
+    tout << "Sorted\n";
+    B.print_internal(tout);
+
+    tout << "x=" << x << "\n" << "res=" << res << "\n";
+    res = B * x ;
+    tout << "res=" << res << "\n";
+
+    res2= 6.33, 8.99, 3.33, 4.33, 0;
+    res-= res;
+    if (one_norm(res) > 0.1)
+	throw "Matrix vector product wrong.";
+
+    matrix_type A(5, 5, 9);
+    {
+	matrix::inserter<matrix_type> ins(A, 3);
+	ins[1][2] << 13.3;
+	ins[2][2] << 23.3;
+	ins[2][3] << 33.3;
+	ins[2][4] << 33.3;
+	ins[0][4] << 53.3;
+	ins[1][4] << 6.0;
+	ins[3][0] << 73.3;
     }
-    std::cout<<"matrix(3,1)=" << matrix(3,1) << "\n";
-    std::cout<<"matrix(1,2)=" << matrix(1,2) << "\n";
-    std::cout<<"matrix(2,1)=" << matrix(2,1) << "\n";
-//     std::cout<<"matrix(4,4)=" << matrix(4,4) << "\n"; //crashes because col>=4
-    matrix.push_back(1,0,5.33);
-    matrix.push_back(0,0,6.33);
-    
-    mtl::dense_vector<unsigned int> rows1(matrix.row_index_array()),cols1(matrix.column_index_array());
-    mtl::dense_vector<double> val(matrix.value_array());
-    for(unsigned int i=0;i<size(rows1);i++){
-      std::cout<<"row[" <<i <<"]=" <<rows1[i] << " , col[" <<i <<"]=" <<cols1[i] << " , val[" <<i <<"]=" <<val[i] << "\n";
+    tout << "A (internal) after first insertion\n";    
+    A.print_internal(tout);
+    MTL_THROW_IF(std::abs(A[2][3] - 33.3) > 0.001, unexpected_result());
+    MTL_THROW_IF(std::abs(A[2][1]) > 0.001, unexpected_result());
+
+    {
+	matrix::inserter<matrix_type, operations::update_plus<double> > ins(A);
+	ins[2][3] << 3.0;
+	ins[2][1] << 3.33;
     }
-    matrix.sort();
-    mtl::dense_vector<unsigned int> rows2(matrix.row_index_array()),cols2(matrix.column_index_array());
-    mtl::dense_vector<double> val2(matrix.value_array());
+    tout << "A (internal) after updating insertion\n";    
+    A.print_internal(tout);
+    MTL_THROW_IF(std::abs(A[2][3] - 36.3) > 0.001, unexpected_result());
+    MTL_THROW_IF(std::abs(A[2][1] - 3.33) > 0.001, unexpected_result());
+    MTL_THROW_IF(std::abs(A[2][0]) > 0.001, unexpected_result());
+
+    tout << "A (internal) =\n";
+    A.print_internal(tout);
+
+    tout << "A =\n" << A;
     
-    std::cout<< "SORTING\n";
-    for(unsigned int i=0;i<size(rows2);i++){
-      std::cout<<"row[" <<i <<"]=" <<rows2[i] << " , col[" <<i <<"]=" <<cols2[i] << " , val[" <<i <<"]=" <<val2[i] << "\n";
+    traits::row<matrix_type>::type             row(A); 
+    traits::col<matrix_type>::type             col(A); 
+    traits::const_value<matrix_type>::type     value(A); 
+
+    typedef traits::range_generator<tag::major, matrix_type>::type  cursor_type;
+
+    for (cursor_type cursor = mtl::begin<tag::major>(A), cend = mtl::end<tag::major>(A); 
+	 cursor != cend; ++cursor) {
+	
+	typedef traits::range_generator<tag::nz, cursor_type>::type icursor_type;
+	for (icursor_type icursor = mtl::begin<tag::nz>(cursor), icend = mtl::end<tag::nz>(cursor); 
+	     icursor != icend; ++icursor) 
+	    tout << "A[" << row(*icursor) << "][" << col(*icursor) << "] = " << value(*icursor) << '\n'; 
     }
-   
-   
-//      matrix.insert(2,2,33.3,5); // cheap inserter... cheaper than push_back  position muss known
-//      matrix_type* L =	new matrix_type(5, 5);
-//      std::vector< matrix_type*> lower_matrices;
-//      lower_matrices.push_back(L);
-//        std::cout <<"matrix=" << matrix << "\n";
-    std::cout<<"x=" << x<<"\n";
-    std::cout<<"res=" << res<<"\n";
-    res = matrix * x ;
-    std::cout<<"res=" << res<<"\n";
-     
-    
-    matrix_type A(5,5,9);
-    A.insert(1,2,13.3,0);
-    A.insert(2,2,23.3,1);
-    A.insert(2,3,33.3,2);
-    A.insert(2,4,43.3,3);
-    A.insert(0,4,53.3,4);
-    A.insert(1,4,63.3,5);
-    A.insert(3,0,73.3,6);
-    A.compress();
-//     A.insert(4,4,33.3,7); //should fail. because pos>7
-    mtl::dense_vector<unsigned int> rows3(A.row_index_array()),cols3(A.column_index_array());
-    mtl::dense_vector<double> val3(A.value_array());
-    std::cout<<"OK\n";
-    for(unsigned int i=0;i<size(rows3);i++){
-      std::cout<<"row[" <<i <<"]=" <<rows3[i] << " , col[" <<i <<"]=" <<cols3[i] << " , val[" <<i <<"]=" <<val3[i] << "\n";
-    }
-    A.print();
-    mtl::matrix::compressed2D<double> C(crs(A));
-    
-    std::cout<< "C=\n"<< C << "\n";
-//     C= crs(A);
-    
-    
+
+    mtl::matrix::compressed2D<double> C(A);    
+    tout << "C=\n"<< C << "\n";
+
+
     return 0;
 }

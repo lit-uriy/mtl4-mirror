@@ -527,11 +527,11 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				for(int j = n1; j < n1+n2; ++j) { // q-part
 				  // Assumption: structural symmetry.
 					if(frontal(i,j) != zero) {
-						U->insert(p(i),q(j-n1),frontal(i,j), ku );
+						U->insert(p(i),q(j-n1),frontal(i,j));
 						ku++;
 					}
 					if(frontal(j,i) != zero){
-						L->insert(q(j-n1),p(i),frontal(j,i), kl );
+						L->insert(q(j-n1),p(i),frontal(j,i));
 						kl++;
 					}
 				}
@@ -675,32 +675,29 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	
 
 	mtl::matrix::traits::permutation<>::type P(permutation(m_ordering));
+	typedef typename coo_sparse_type_lower::size_type size_type;
   
 	for( std::size_t k = 0; k < lower_matrices.size(); ++k ) {
  		coo_sparse_type_lower& L = *(lower_matrices[k]);
  		coo_sparse_type_upper& U = *(upper_matrices[k]);
- 		if (size(L.value_array())> 0){
-		    L.compress(); U.compress();
-		    mtl::dense_vector<unsigned int> &L_row(L.row_index_array()), 
-						    &L_col(L.column_index_array()), 
-						    &U_row(U.row_index_array()), 
-						    &U_col(U.column_index_array());
+ 		if (nnz(L)> 0) {
+		    std::vector<size_type> &L_row(L.row_index_array()), 
+			                      &L_col(L.column_index_array()), 
+					      &U_row(U.row_index_array()), 
+					      &U_col(U.column_index_array());
 		    const int off_low = diagonal_offsets[k];
-		    for(unsigned int i = 0; i < size(L_row); ++i) {
+		    for(unsigned int i = 0; i < nnz(L); ++i) {
 			L_row[i] = m_ordering( L_row[i] );
 			L_col[i] = m_ordering( L_col[i] ) - off_low;
 		    };
-		    for(unsigned int i = 0; i < size(U_row); ++i) {
+		    for(unsigned int i = 0; i < nnz(U); ++i) {
 			  U_row[i] = m_ordering( U_row[i] ) - off_low;
 			  U_col[i] = m_ordering( U_col[i] );
 		    }
-		    L.sort_col();
-		    U.sort_row();
 		}
-		mtl::matrix::compressed2D<value_type> lower(crs( L ));
-		m_lower.push_back(lower);
-		mtl::matrix::compressed2D<value_type> upper(crs( U ));
-		m_upper.push_back(upper);
+		
+		m_lower.push_back(mtl::matrix::compressed2D<value_type>(L));
+		m_upper.push_back(mtl::matrix::compressed2D<value_type>(U));
 	}
 	/***************************************************************************
 	 * Phase 4: Construct the IMF preconditioner

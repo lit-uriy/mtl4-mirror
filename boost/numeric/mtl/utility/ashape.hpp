@@ -147,6 +147,12 @@ struct ashape_aux<compressed2D<Value, Parameters> >
 };
 
 template <typename Value, typename Parameters>
+struct ashape_aux<coordinate2D<Value, Parameters> >
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+
+template <typename Value, typename Parameters>
 struct ashape_aux<dense2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;

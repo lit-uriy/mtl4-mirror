@@ -335,9 +335,22 @@ namespace mtl {
     template <typename Value, typename Parameters>
     struct Collection<compressed2D<Value, Parameters> >
     {
-	typedef Value            value_type;
-	typedef Value            const_reference;
-	typedef typename compressed2D<Value, Parameters>::size_type size_type;
+	typedef Value            	       value_type;
+	typedef Value            	       const_reference;
+	typedef typename Parameters::size_type size_type;
+    };
+
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
+#else
+    template <typename Value, typename Parameters>
+    struct Collection<coordinate2D<Value, Parameters> >
+    {
+	typedef Value            	       value_type;
+	typedef Value            	       const_reference;
+	typedef typename Parameters::size_type size_type;
     };
 
 #endif

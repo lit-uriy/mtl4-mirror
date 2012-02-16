@@ -2,180 +2,179 @@
 #ifndef MTL_COORDINATE2D_INCLUDE
 #define MTL_COORDINATE2D_INCLUDE
 
-
-
-#include <boost/tuple/tuple.hpp>
 #include <vector>
 #include <cassert>
+#include <boost/mpl/bool.hpp>
+
+
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/operation/sort.hpp>
 #include <boost/numeric/mtl/operation/iota.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/utility/is_row_major.hpp>
 
 namespace mtl {  namespace matrix {
     
   
 /// Sparse matrix structure in coordinate format
-/**
-	S can be coordinate_sparse_structure<> or coordinate_sparse_structure<> const& or coordinate_sparse_structure<>&
- **/
-template <typename T >
+template <typename Value, typename Parameters = matrix::parameters<> >
 class coordinate2D 
+  : public base_matrix<Value, Parameters>,
+    public const_crtp_base_matrix< coordinate2D<Value, Parameters>, Value, typename Parameters::size_type >,
+    public crtp_matrix_assign< coordinate2D<Value, Parameters>, Value, typename Parameters::size_type >,
+    public mat_expr< coordinate2D<Value, Parameters> >
 {
   public:
  
-    typedef T                                                                 value_type ;
-    typedef T&                                                                reference ;
-    typedef T const&                                                          const_reference ;
-    typedef unsigned int				                            size_type ;
+    typedef Value                                                       value_type ;
+    typedef Value&                                                      reference ;
+    typedef Value const&                                                const_reference ;
+    typedef typename Parameters::size_type				size_type ;
+    typedef typename Parameters::dimensions                             dim_type;
+    typedef typename Parameters::orientation                            orientation;
 
-    typedef mtl::dense_vector< size_type >                                    row_index_array_type ;
-    typedef mtl::dense_vector< size_type >                                    column_index_array_type ;
-    typedef mtl::dense_vector< value_type >                                   value_array_type ;
+    typedef base_matrix<Value, Parameters>                              super;
+
+    typedef std::vector< size_type >                                    row_index_array_type ;
+    typedef std::vector< size_type >                                    column_index_array_type ;
+    typedef std::vector< value_type >                                   value_array_type ;
 
     /// Common constructor
-    explicit coordinate2D( size_type rows, size_type cols, size_type nnz= 0 )
-      : row_( nnz, size_type(0)), col_(nnz, size_type(0)), values_( nnz, value_type(0) ), 
-	nrows(rows), ncols(cols), nnz_( nnz ), counter(0)
-    {} 
-  
-    /// Copy constructor
-    explicit coordinate2D( coordinate2D const& that )
-      : row_( that.row_), col_(that.col_), values_( that.values_ ), nrows(that.nrows), 
-	ncols(that.ncols), nnz_(that.nnz_)
-    {}
-
-    size_type num_rows() const { return nrows ;  }  
-    size_type num_cols() const { return ncols ;  }
-    size_type const& nnz() const { return nnz_ ; } ///< Number of non-zeros
-
-    value_array_type const& value_array() const { return values_ ; } ///< Array of values (const)
-    value_array_type& value_array() { return values_ ; } ///< Array of values (mutable)
-
-    row_index_array_type const& row_index_array() const { return row_ ; } ///< Array of rows  (const)
-    column_index_array_type const& column_index_array() const {	return col_ ; } ///< Array of columns (const)
-  
-    row_index_array_type& row_index_array() { return row_ ; } ///< Array of rows   (mutable)
-    column_index_array_type& column_index_array() { return col_ ; } ///< Array of columns  (mutable)
-
-    /// Insert an entry at the end of the row-,col- and value-array  expensive in mtl4
-    void push_back( size_type r, size_type c, const_reference v ) 
+    explicit coordinate2D(size_type nrows, size_type ncols, size_type expected= 0)
+      : super(dim_type(nrows, ncols))
     {
-	row_index_array_type      tmp_r(row_);
-	column_index_array_type   tmp_c(col_);
-	value_array_type          tmp_v(values_);
-	nnz_++;
-	row_.change_dim(nnz_);
-	col_.change_dim(nnz_);
-	values_.change_dim(nnz_);
-	if(nnz_> 1){
-	    irange ra(0,nnz_-1);
-	    row_[ra]= tmp_r;
-	    col_[ra]= tmp_c;
-	    values_[ra]= tmp_v;
+	if (expected > 0) {
+	    rows.reserve(expected);
+	    cols.reserve(expected);
+	    values.reserve(expected);
 	}
-	row_[nnz_-1]= r;
-	col_[nnz_-1]= c;
-	values_[nnz_-1] = v;
-    } // push_back
+    } 
   
-    /// Overrides an existing entry, if pos < nnz and (r,c) in (rows,cols)
-    void insert( size_type r, size_type c, const_reference v, size_type pos ) 
-    {
-	assert(!is_negative(r)  || !(r >= this->num_rows()) ); //TODO check if we need this really
-	assert(!is_negative(c) || (c >= this->num_cols()) ); //TODO check if we need this really
-	assert(!is_negative(pos) || (pos >= this->nnz_) ); //TODO check if we need this really
- 
-// 	std::cout<< "insert " << v << " into ("<< r<<"," << c << ") von nnz=" << nnz_ << "\n";
-	row_[pos]= r;
-	col_[pos]= c;
-	values_[pos] = v;
-	counter++;
-    }
-  
-    /// Compress matrix, cut 0
-    void compress()
-    {
-	if(counter>0) {
-	    row_index_array_type      rowi;
-	    column_index_array_type   coli;
-	    value_array_type          valuesi ;
-	    rowi=     row_[irange(0,counter)];
-	    coli=     col_[irange(0,counter)];
-	    valuesi=  values_[irange(0,counter)];
-	    row_.change_dim(counter);
-	    col_.change_dim(counter);
-	    values_.change_dim(counter);
-	    row_= rowi;
-	    col_= coli;
-	    values_= valuesi;
-	    nnz_= counter;
-	} else {
-	    row_.change_dim(0);   
-	    col_.change_dim(0);   
-	    values_.change_dim(0); 
-	    nnz_=0;
-	}
+    size_type nnz() const { return rows.size(); } ///< Number of non-zeros
 
-    }
-  
-    /// sorting standard by row
-    void sort(){ sort_row();  }
+    value_array_type const& value_array() const { return values; } ///< Array of values (const)
+    value_array_type& value_array() { return values; }             ///< Array of values (mutable)
 
-    ///sorting by rows
-    void sort_row()
+    row_index_array_type const& row_index_array() const { return rows; }       ///< Array of rows  (const)
+    column_index_array_type const& column_index_array() const {	return cols; } ///< Array of columns (const)
+  
+    row_index_array_type& row_index_array() { return rows; }       ///< Array of rows   (mutable)
+    column_index_array_type& column_index_array() { return cols; } ///< Array of columns  (mutable)
+
+    /// Insert an entry at the end of the row-,col- and value-array 
+    void push_back(size_type r, size_type c, const_reference v) 
     {
-	if(size(this->value_array())>0)
-	    mtl::vector::sort(row_, col_, values_);
+	rows.push_back(r); cols.push_back(c); values.push_back(v); my_is_sorted= false;
+    } 
+  
+    /// Insert an entry at the end of the row-,col- and value-array, like push_back
+    void insert(size_type r, size_type c, const_reference v) {	push_back(r, c, v); }
+  
+    /// Whether the entries are sorted
+    bool is_sorted() const { return my_is_sorted; }
+
+    /// sorting standard by rows
+    void sort() 
+    { 
+	if (nnz() > 0) 
+	    sort(mtl::traits::is_row_major<Parameters>());  
+	my_is_sorted= true;
     }
 
-    ///sorting by columns
-    void sort_col()
+  private:
+    // sorting by rows
+    void sort(boost::mpl::true_)
+    {  
+	mtl::vector::sort_xy(rows, cols, values);
+    }
+
+    // sorting by columns
+    void sort(boost::mpl::false_)
     {
-	if(size(this->value_array())>0)
-	    mtl::vector::sort(col_, row_, values_);
+	mtl::vector::sort_xy(cols, rows, values);
     }
   
-    void print()
+    template <typename OStream, typename Vector>
+    void print_stl_vector(OStream& os, const Vector& v) const
     {
-	std::cout<< "row=" << row_ << "\n";
-	std::cout<< "col=" << col_ << "\n";
-	std::cout<< "val=" << values_ << "\n";
-      
+	os << "[";
+	for (unsigned i= 0; i < v.size(); i++)
+	    os << v[i] << (i+1 < v.size() ? "," : "");
+	os << "]\n";
     }
+
+  public:
+    template <typename OStream>
+    void print_internal(OStream& os) const
+    {
+       	os << "rows   = "; print_stl_vector(os, rows);
+	os << "cols   = "; print_stl_vector(os, cols);
+	os << "values = "; print_stl_vector(os, values);
+    }
+
+    void print_internal() const { print(std::cout); }
 
     ///operator * for  vector= coordinaten-matrix * vector
     template <typename Vector >
     Vector operator*(const Vector& x)
     {
-	assert(ncols == size(x));
-	Vector res(nrows);
+	
+	Vector res(this->num_rows());
 	res= 0;
-	for(size_type i= 0; i < size(values_); i++)
-	    res[row_[i]]=  res[row_[i]] + x[col_[i]]*values_[i];
+	for (size_type i= 0; i < nnz(); i++)
+	    res[rows[i]]+=  values[i] * x[cols[i]];
 	return res;
     }
   
-    value_type operator() (const size_type r,const  size_type c ) 
+    value_type operator() (const size_type r, const size_type c) const
     {
-	assert(is_negative(r) || !(r >= this->num_rows()) ); //TODO check if we need this really
-	assert(is_negative(c) || !(c >= this->num_cols()) ); //TODO check if we need this really
-	value_type zero(0.0);
-	for(size_type i= 0; i < nnz(); i++) 
-	    if(row_[i] == r && col_[i] == c)
-		return values_[i];
-	    else if(row_[i] > r && col_[i] > c)
-		return zero;
-	return zero;
+	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() 
+			   || is_negative(c) || c >= this->num_cols(), index_out_of_range());
+
+#if 0
+	if (my_is_sorted)
+	    return find(r, c, mtl::traits::is_row_major<Parameters>());
+#endif
+
+	for (size_type i= 0; i < nnz(); i++) 
+	    if (rows[i] == r && cols[i] == c)
+		return values[i];
+	return value_type(0);
     }
-  
+
+    template <typename Updater>
+    void compress(Updater up)
+    {
+	if (!my_is_sorted)
+	    sort();
+
+	size_type i= 0, j= 1, end= rows.size();
+	for (; j < end; ++j) 
+	    if (rows[i] == rows[j] && cols[i] == cols[j]) {
+		up(values[i], values[j]);
+	    } else {
+		i++;
+		if (i != j) {
+		    rows[i]= rows[j];
+		    cols[i]= cols[j];
+		    values[i]= values[j];
+		}
+	    }
+	if (end > 0) i++;
+	rows.resize(i);
+	cols.resize(i);
+	values.resize(i);
+   }
+
+    template <typename Matrix, typename Updater> friend struct coordinate2D_inserter;
 
   private:
-    row_index_array_type      row_;
-    column_index_array_type   col_;
-    value_array_type          values_ ;
-    size_type                 nrows, ncols, nnz_, counter;
+    row_index_array_type      rows;
+    column_index_array_type   cols;
+    value_array_type          values;
+    bool                      my_is_sorted;
 };
 
 // ================
@@ -215,30 +214,11 @@ inline nnz(const coordinate2D<Value>& matrix)
     return matrix.nnz();
 }
 
-///returns a matrix in crs format from a coordinateformat
-template <typename Value>
-mtl::matrix::compressed2D<Value> crs(coordinate2D<Value> const& that)
-{
-    typedef typename coordinate2D<Value>::size_type  size_type;
-    size_type row= num_rows(that), col= num_cols(that), nz= nnz(that);
-      
-    mtl::matrix::compressed2D<Value> C(row,col);
-    {
-	mtl::matrix::inserter<mtl::compressed2D<Value> > ins(C);
-	for(size_type i= 0; i < nz; i++)
-	    ins[that.row_index_array()[i]][that.column_index_array()[i]] << that.value_array()[i];
-     
-    }
-    return C;
-}
 
-
-
-template <typename Matrix, typename Updater = mtl::operations::update_store<typename Matrix::value_type> >
+template <typename Matrix, 
+	  typename Updater = mtl::operations::update_store<typename Matrix::value_type> >
 struct coordinate2D_inserter
 {
-    BOOST_STATIC_ASSERT((boost::is_same<Updater, mtl::operations::update_store<typename Matrix::value_type> >::value));
-
     typedef coordinate2D_inserter                       self;
     typedef Matrix                                      matrix_type;
     typedef typename matrix_type::size_type             size_type;
@@ -246,10 +226,20 @@ struct coordinate2D_inserter
     typedef operations::update_proxy<self, size_type>   proxy_type;
     
     // We only support storing so far !!!
-    BOOST_STATIC_ASSERT((boost::is_same<Updater, mtl::operations::update_store<value_type> >::value));
+    // BOOST_STATIC_ASSERT((boost::is_same<Updater, mtl::operations::update_store<value_type> >::value));
 
-    explicit coordinate2D_inserter(matrix_type& matrix, size_type) : matrix(matrix) {}
+    coordinate2D_inserter(matrix_type& matrix, size_type slot_size= 1) 
+      : matrix(matrix) 
+    {
+	std::size_t ns= slot_size * matrix.dim1();
+	if (ns > matrix.nnz()) {
+	    matrix.rows.reserve(ns);
+	    matrix.cols.reserve(ns);
+	    matrix.values.reserve(ns);
+	}
+    }
 
+    ~coordinate2D_inserter() { matrix.compress(Updater()); }
     
  private:
 
@@ -294,17 +284,16 @@ struct coordinate2D_inserter
 	return bracket_proxy(*this, row);
     }
 
-#if 0
     template <typename Value>
     void update(size_type row, size_type col, Value val)
     {
-	Updater() (matrix(row, col), val);
+	matrix.push_back(row, col, val);
     }
 
     template <typename Modifier, typename Value>
     void modify(size_type row, size_type col, Value val)
     {
-	Modifier() (matrix(row, col), val);
+	matrix.push_back(row, col, val);
     }
 
     template <typename EMatrix, typename Rows, typename Cols>
@@ -326,16 +315,164 @@ struct coordinate2D_inserter
 		update (elements.rows[ri], elements.cols[ci], elements.array[ri][ci]);
 	return *this;
     }
-#endif
 
   protected:
     matrix_type&         matrix;
 };
 
+struct coordinate_key
+{
+    typedef std::size_t                               size_t;
+
+    explicit coordinate_key(size_t offset) : offset(offset) {}
+
+    bool operator== (coordinate_key const& other) const { return offset == other.offset; }
+    bool operator!= (coordinate_key const& other) const { return offset != other.offset; }
+    
+    size_t offset;    
+};
 
 
-} // namespace matrix
-} // namespace mtl
+// Cursor over every element
+template <typename Value, typename Parameters>
+struct coordinate_minor_cursor 
+ : public coordinate_key 
+{
+    typedef coordinate_minor_cursor<Value, Parameters>   self;
+    typedef typename Parameters::size_type               size_type;
+    typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+
+    coordinate_minor_cursor(matrix_ref_type ref, size_type offset) 
+      : coordinate_key(offset), ref(ref)  {}
+
+    bool operator!=(const self& that) const
+    {
+	assert(&ref == &that.ref);
+	return this->offset != that.offset;
+    }
+
+    self& operator++() { this->offset++; return *this; }
+    coordinate_key operator*() const { return *this; }
+
+    matrix_ref_type ref;
+};
+
+
+template <typename Value, typename Parameters>
+struct coordinate_major_cursor 
+{
+    typedef coordinate_major_cursor<Value, Parameters>   self;
+    typedef typename Parameters::size_type               size_type;
+    typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+    typedef coordinate_minor_cursor<Value, Parameters>   inner_cursor;
+
+    void find_next_offset(boost::mpl::true_)
+    {
+	size_type i= offset;
+	for ( ; i < nnz(ref) && ref.row_index_array()[i] <= major; i++) ;
+	next_offset= i;
+    }
+
+    void find_next_offset(boost::mpl::false_)
+    {
+	size_type i= offset;
+	for ( ; i < nnz(ref) && ref.col_index_array()[i] <= major; i++) ;
+	next_offset= i;
+    }
+
+    void find_next_offset() { find_next_offset(mtl::traits::is_row_major<Parameters>()); }
+
+    coordinate_major_cursor(matrix_ref_type ref, size_type major, size_type offset) 
+      : ref(ref), major(major), offset(offset)
+    {
+	find_next_offset();
+    }
+
+    bool operator!=(const self& that) const
+    {
+	assert(&ref == &that.ref);
+	return this->offset != that.offset;
+    }
+
+    self& operator++() 
+    { 
+	offset= next_offset; 
+	major++;
+	find_next_offset();
+	return *this; 
+    }
+
+    matrix_ref_type ref;
+    size_type       major, offset, next_offset;
+};
+
+template <typename Value, typename Parameters>
+struct coordinate_minor_range_generator
+{
+    typedef coordinate_major_cursor<Value, Parameters>   outer_cursor_type;
+    typedef coordinate_minor_cursor<Value, Parameters>   type;
+
+    type begin(outer_cursor_type c) const { return type(c.ref, c.offset); }
+    type end(outer_cursor_type c) const { return type(c.ref, c.next_offset); }
+};
+
+template <typename Value, typename Parameters>
+struct coordinate_row_range_generator
+{
+    typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+    typedef coordinate_major_cursor<Value, Parameters>   type;
+    typedef complexity_classes::linear_cached            complexity;
+    static const int                                     level= 1;
+
+    type begin(matrix_ref_type A) const { return type(A, 0, 0); }
+    type end(matrix_ref_type A) const { return type(A, num_rows(A), nnz(A)); }
+};
+
+template <typename Value, typename Parameters>
+struct coordinate_col_range_generator
+{
+    typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+    typedef coordinate_major_cursor<Value, Parameters>   type;
+    typedef complexity_classes::linear_cached            complexity;
+    static const int                                     level= 1;
+
+    type begin(matrix_ref_type A) const { return type(A, 0, 0); }
+    type end(matrix_ref_type A) const { return type(A, num_cols(A), nnz(A)); }
+};
+
+
+}} // namespace mtl::matrix
+
+
+namespace mtl { namespace traits {
+	
+    // Cursor over all rows
+    // Supported if row major matrix
+    template <typename Value, typename Parameters>
+    struct range_generator<glas::tag::row, matrix::coordinate2D<Value, Parameters> >
+      : boost::mpl::if_<
+	    boost::is_same<typename Parameters::orientation, row_major>
+	  , matrix::coordinate_row_range_generator<Value, Parameters>
+ 	  , range_generator<tag::unsupported, matrix::coordinate2D<Value, Parameters> >
+        >::type {};	
+
+    template <typename Value, typename Parameters>
+    struct range_generator<glas::tag::col, matrix::coordinate2D<Value, Parameters> >
+      : boost::mpl::if_<
+	    boost::is_same<typename Parameters::orientation, col_major>
+	  , matrix::coordinate_col_range_generator<Value, Parameters>
+ 	  , range_generator<tag::unsupported, matrix::coordinate2D<Value, Parameters> >
+        >::type {};	
+
+    template <class Value, class Parameters>
+    struct range_generator<glas::tag::nz, matrix::coordinate_major_cursor<Value, Parameters> >
+      : matrix::coordinate_minor_range_generator<Value, Parameters>
+    {};
+
+
+}} // namespace mtl::traits
+
+
 
 #endif // MTL_COORDINATE2D_INCLUDE
 
