@@ -105,6 +105,9 @@ struct size_helper<0>
 
 	Value* alligned_alloc(std::size_t size)
 	{
+	    if (size == 0)
+		return 0;
+
 	    bool        align= size * sizeof(value_type) >= MTL_ALIGNMENT_LIMIT;
 	    std::size_t bytes= size * sizeof(value_type);
 	    
@@ -142,7 +145,7 @@ struct size_helper<0>
     {
 	typedef alignment_helper self;
 
-	Value* alligned_alloc(std::size_t size)	{  return new Value[size]; }
+	Value* alligned_alloc(std::size_t size)	{  return size > 0 ? new Value[size] : (Value*)(0); }
 
 	void aligned_delete(bool is_own, Value*& data)
 	{
