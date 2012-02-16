@@ -131,6 +131,28 @@ struct offset<mtl::compressed2D<Elt, Parameters> >
 };
   
   
+// ================
+// For coordinate2D
+// ================
+
+template <class Value, class Parameters>
+struct row<mtl::coordinate2D<Value, Parameters> >
+{
+    typedef mtl::detail::coordinate2D_row<Value, Parameters>   type; 
+};
+
+template <class Value, class Parameters>
+struct col<mtl::coordinate2D<Value, Parameters> >
+{
+    typedef mtl::detail::coordinate2D_col<Value, Parameters>   type; 
+};
+
+template <class Value, class Parameters>
+struct const_value<mtl::coordinate2D<Value, Parameters> >
+{
+    typedef mtl::detail::coordinate2D_const_value<Value, Parameters>   type; 
+};
+
 // ==================
 // For implicit_dense
 // ==================

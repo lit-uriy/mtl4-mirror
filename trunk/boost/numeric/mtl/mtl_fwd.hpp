@@ -88,7 +88,7 @@ namespace mtl {
 
         template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
-	template <typename T > class coordinate2D;
+	template <typename T, typename Parameters> class coordinate2D;
 	template <typename Matrix, typename Updater> struct coordinate2D_inserter;
 
 	template <typename Matrix, typename Updater> struct inserter;
@@ -137,6 +137,7 @@ namespace mtl {
     using matrix::dense2D;
     using matrix::morton_dense;
     using matrix::compressed2D;
+    using matrix::coordinate2D;
     using matrix::multi_vector;
     using matrix::transposed_view;
     

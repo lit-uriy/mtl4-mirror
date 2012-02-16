@@ -33,6 +33,7 @@
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/shift_block.hpp>
+#include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/element_matrix.hpp> 
@@ -285,7 +286,7 @@ class compressed2D
     typedef value_type                               const_reference;
 
     typedef typename Parameters::size_type           size_type;
-    typedef crtp_matrix_assign< self, Elt, size_type >  assign_base;
+    typedef crtp_matrix_assign<self, Elt, size_type>  assign_base;
     typedef compressed2D_indexer<size_type>          indexer_type;
 
     void check() const { MTL_DEBUG_THROW_IF(inserting, access_during_insertion()); }
@@ -329,7 +330,8 @@ class compressed2D
 
 
     /// Setting dimension and allocate starting vector
-    explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) : super(d), inserting(false)
+    explicit compressed2D (mtl::non_fixed::dimensions d, size_t nnz = 0) 
+      : super(d), inserting(false)
     {
 	starts.resize(super::dim1() + 1, 0);
 	allocate(nnz);

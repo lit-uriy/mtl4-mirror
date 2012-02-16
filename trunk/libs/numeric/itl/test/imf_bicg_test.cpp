@@ -31,7 +31,7 @@
 template< class ElementStructure >
 void setup(ElementStructure& A, int lofi)
 {
-    typedef double value_type;
+    typedef double value_type; 
       
     int size( A.get_total_vars() );
    

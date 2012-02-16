@@ -13,6 +13,7 @@
 #ifndef MTL_PROPERTY_MAP_IMPL_INCLUDE
 #define MTL_PROPERTY_MAP_IMPL_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 
 namespace mtl { namespace detail {
 
@@ -332,6 +333,46 @@ template <class Matrix> struct const_value_in_element_key
 	return key.ref[key.indices[0]][key.indices[1]];
     }
 };
+
+template <class Value, class Parameters>
+struct coordinate2D_row
+{
+    typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+    explicit coordinate2D_row(matrix_ref_type A) : A(A) {}
+
+    template <typename Key>
+    typename Parameters::size_type operator() (Key key) const 
+    { return A.row_index_array()[key.offset]; }
+
+    matrix_ref_type A;
+};
+
+template <class Value, class Parameters>
+struct coordinate2D_col
+{
+    typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+    explicit coordinate2D_col(matrix_ref_type A) : A(A) {}
+
+    template <typename Key>
+    typename Parameters::size_type operator() (Key key) const 
+    { return A.column_index_array()[key.offset]; }
+
+    matrix_ref_type A;
+};
+
+template <class Value, class Parameters>
+struct coordinate2D_const_value
+{
+    typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+    explicit coordinate2D_const_value(matrix_ref_type A) : A(A) {}
+
+    template <typename Key>
+    Value operator() (Key key) const 
+    { return A.value_array()[key.offset]; }
+
+    matrix_ref_type A;
+};
+
 
 }} // namespace mtl::detail
 

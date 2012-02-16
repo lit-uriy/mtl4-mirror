@@ -87,6 +87,13 @@ struct category<compressed2D<Elt, Parameters> >
     typedef tag::compressed2D type;
 };
 
+// should have the same tags as compressed2D
+template <typename Elt, typename Parameters>
+struct category<coordinate2D<Elt, Parameters> > 
+{
+    typedef tag::compressed2D type;
+};
+
 template <typename Vector>
 struct category<multi_vector<Vector> > 
 {
