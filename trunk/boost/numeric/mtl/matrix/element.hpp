@@ -284,16 +284,18 @@ public:
 	assert(new_nb_nodes >= 0);
 
 	// Construct new index array.
-	index_type* index = 0;
+	index_type index;
 	index_type local_index(new_nb_nodes);
 	if(new_nb_nodes > 0) {
-	    index = new index_type(new_nb_nodes);
+	    index.change_dim(new_nb_nodes);
+//	    index = new index_type(new_nb_nodes);
 	    int i = 0, j = 0, pos = 0;
 	    while( i < nb_vars() && j < nb_nodes ) {
 		const int diff = get_indices()(i) - nodes[j];
 		if( diff < 0 ) {
 		    assert( pos < new_nb_nodes );
-		    (*index)(pos) = get_indices()(i);
+	//	    (*index)(pos) = get_indices()(i);
+		    index[pos] = get_indices()(i);
 		    local_index(pos) = i;
 		    ++pos;
 		    ++i;
@@ -306,27 +308,29 @@ public:
 	    }
 	    while( i < nb_vars() ) {
 		assert( pos < new_nb_nodes );
-		(*index)(pos) = get_indices()(i);
+//		(*index)(pos) = get_indices()(i);
+		index[pos] = get_indices()(i);
 		local_index(pos) = i;
 		++pos;
 		++i;
 	    }
 	} else {
-	    index = new index_type(0);
+//	    index = new index_type(0);
 	}
 
-	matrix_type* values = 0;
+	matrix_type values;
 	if(new_nb_nodes > 0) {
-	    values = new matrix_type( new_nb_nodes, new_nb_nodes );
+	    values.change_dim( new_nb_nodes, new_nb_nodes );
 	    matrix_type tmp(get_values()), tmp2(new_nb_nodes, new_nb_nodes);
 	    for(unsigned int i=0;i<size(local_index);i++){
 		for(unsigned int j=0;j<size(local_index);j++){
 		    tmp2[i][j]=tmp[local_index(i)][local_index(j)];
 		}
 	    }
-	    *values = tmp2;
+	    values = tmp2;
 	} else {
-	    values = new matrix_type(0,0);
+	std::cout<< "ELSE\n";
+//	    values = new matrix_type(0,0);
 	}
 	// Update the neighbourhood.
 	std::set<int> remove_neighs;
@@ -346,7 +350,8 @@ public:
 		      (j < neigh.nb_vars()) &&
 		      !connected
 		      ) {
-		    const int diff = (*index)(i) - neigh.get_indices()(j);
+//		    const int diff = (*index)(i) - neigh.get_indices()(j);
+		    const int diff = index[i] - neigh.get_indices()(j);
 		    if(diff < 0) {
 			++i;
 		    } else if(diff > 0) {
@@ -388,8 +393,8 @@ public:
 
 	m_indices.change_dim(0);
 	m_values.change_dim(0, 0);
-	m_indices = *index;
-	m_values = *values;
+	m_indices = index;
+	m_values = values;
     }
 
     /// Absorbs the values of the given matrix with the given index.
