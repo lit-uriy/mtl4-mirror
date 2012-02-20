@@ -373,18 +373,13 @@ public:
 	}
 
 	// Remove the neighbours we're no longer connected to.
-	for(
-	    std::set<int>::iterator it = remove_neighs.begin();
-	    it != remove_neighs.end();
-	    ++it
-	    ) {
+	for(std::set<int>::iterator it = remove_neighs.begin(); it != remove_neighs.end(); ++it) {
 	    const int seek_seq_nbr = *it;
-	    for(std::size_t j = 0; j < m_neighbours.size(); ++j) {
-		if(m_neighbours[j]->get_id() == seek_seq_nbr) {
+	    for (std::size_t j = 0; j < m_neighbours.size(); ++j) 
+		if (m_neighbours[j] != 0 && m_neighbours[j]->get_id() == seek_seq_nbr) {
 		    m_neighbours.erase( m_neighbours.begin()+j );
 		    break;
 		}
-	    }
 	}
 
 	if(new_nb_nodes == 0) {
