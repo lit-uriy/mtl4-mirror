@@ -548,14 +548,17 @@ struct compressed2D_inserter
 	vampir_trace<3050> tracer;
 	MTL_THROW_IF(matrix.inserting, runtime_error("Two inserters on same matrix"));
 	matrix.inserting = true;
-	stretch();
+	if (size(matrix) > 0) 
+	    stretch();
     }
 
     ~compressed2D_inserter()
     {
 	vampir_trace<3051> tracer;
-	final_place();
-	insert_spare();
+	if (size(matrix) > 0) {
+	    final_place();
+	    insert_spare();
+	}
 	matrix.inserting = false;
     }
 	

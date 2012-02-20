@@ -35,7 +35,13 @@ void test_compressed2D_insertion()
 {
     typedef mtl::matrix::parameters<Orientation, Indexing, mtl::fixed::dimensions<8, 6> >         parameters;
     typedef mtl::compressed2D<int, parameters>                                              matrix_type;
-    matrix_type   matrix; 
+    matrix_type   matrix;  
+
+    typedef mtl::compressed2D<int, mtl::matrix::parameters<Orientation> > matrix2_type;  
+    matrix2_type E;
+    {
+	mtl::matrix::inserter<matrix2_type> empty(E);
+    }
 
     {
 	mtl::matrix::compressed2D_inserter<int, parameters>  i0(matrix, 3);
