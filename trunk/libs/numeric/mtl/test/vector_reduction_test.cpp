@@ -19,7 +19,8 @@
 #include <boost/numeric/mtl/operation/norms.hpp>
 #include <boost/numeric/mtl/operation/sum.hpp>
 #include <boost/numeric/mtl/operation/product.hpp>
-
+#include <boost/numeric/mtl/operation/min.hpp>
+#include <boost/numeric/mtl/operation/max.hpp>
 
 using namespace std;  
     
@@ -62,8 +63,26 @@ void test(Vector& v, const char* name)
 
     std::cout << "product<6>(v) = " << product<6>(v) << "\n"; std::cout.flush();
     MTL_THROW_IF(product<6>(v) != 120.0, mtl::runtime_error("product<6> wrong"));
+
 }
  
+template <typename Vector>
+void min_max_test(Vector& v, const char*)
+{
+    typedef typename mtl::Collection<Vector>::value_type value_type;
+    using mtl::sum; using mtl::product; using mtl::one_norm;
+
+    for (unsigned i= 0; i < size(v); i++)
+	v[i]= value_type(double(i+1) * pow(-1.0, int(i))); // MSVC considers pow)(, i) ambiguous 
+
+    std::cout << "min(v) = " << min(v) << "\n"; std::cout.flush();
+    MTL_THROW_IF(min(v) != -4.0, mtl::runtime_error("min wrong"));
+    
+    std::cout << "max(v) = " << max(v) << "\n"; std::cout.flush();
+    MTL_THROW_IF(max(v) != 5.0, mtl::runtime_error("max wrong"));
+    
+}
+
 
 int main(int, char**)
 {
@@ -77,12 +96,15 @@ int main(int, char**)
     std::cout << "Testing vector operations\n";
 
     test(u, "test float");
+    min_max_test(u, "test float");
     test(x, "test double");
+    min_max_test(x, "test double");
 
     test(xc, "test complex<double>");
 
     dense_vector<float, parameters<row_major> >   ur(5);
     test(ur, "test float in row vector");
+    min_max_test(ur, "test float in row vector");
 
     return 0;
 }
