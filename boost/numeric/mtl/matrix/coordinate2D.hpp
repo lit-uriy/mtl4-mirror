@@ -183,33 +183,33 @@ class coordinate2D
 
 
 /// Number of rows
-template <typename Value>
-typename coordinate2D<Value>::size_type
-inline num_rows(const coordinate2D<Value>& matrix)
+template <typename Value, typename Parameters>
+typename coordinate2D<Value, Parameters>::size_type
+inline num_rows(const coordinate2D<Value, Parameters>& matrix)
 {
     return matrix.num_rows();
 }
 
 /// Number of columns
-template <typename Value>
-typename coordinate2D<Value>::size_type
-inline num_cols(const coordinate2D<Value>& matrix)
+template <typename Value, typename Parameters>
+typename coordinate2D<Value, Parameters>::size_type
+inline num_cols(const coordinate2D<Value, Parameters>& matrix)
 {
     return matrix.num_cols();
 }
 
 /// Size of the matrix, i.e. the number of row times columns
-template <typename Value>
-typename coordinate2D<Value>::size_type
-inline size(const coordinate2D<Value>& matrix)
+template <typename Value, typename Parameters>
+typename coordinate2D<Value, Parameters>::size_type
+inline size(const coordinate2D<Value, Parameters>& matrix)
 {
     return matrix.num_cols() * matrix.num_rows();
 }
 
 /// Number of NoZeros of the matrix
-template <typename Value>
-typename coordinate2D<Value>::size_type
-inline nnz(const coordinate2D<Value>& matrix)
+template <typename Value, typename Parameters>
+typename coordinate2D<Value, Parameters>::size_type
+inline nnz(const coordinate2D<Value, Parameters>& matrix)
 {
     return matrix.nnz();
 }
