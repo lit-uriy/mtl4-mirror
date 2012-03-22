@@ -614,7 +614,8 @@ struct compressed2D_inserter
 	return offset ? matrix.data[offset.value()] : value_type(0);
     }
 
-    /// Insert \p elements into %matrix
+    /// Insert \p elements into %matrix with pre-sorting
+    /** It should be faster for sufficiently large element matrices but our benchmarks showed the opposite. **/
     template <typename Matrix, typename Rows, typename Cols>
     self& sorted_block_insertion(const element_matrix_t<Matrix, Rows, Cols>& elements);
     
@@ -631,15 +632,19 @@ struct compressed2D_inserter
 
 	for (unsigned ri= 0; ri < size(elements.rows); ri++)
 	    for (unsigned ci= 0; ci < size(elements.cols); ci++)
-		update (elements.rows[ri], elements.cols[ci], elements.matrix[ri][ci]);
+		update (elements.rows[ri], elements.cols[ci], elements.matrix(ri, ci));
 	return *this;
     }
 
-    // Redundant
+    /// Insert \p elements into %matrix
     template <typename Matrix, typename Rows, typename Cols>
     self& operator<< (const element_array_t<Matrix, Rows, Cols>& elements)
     {
-	return *this << element_matrix_t<Matrix, Rows, Cols>(elements.array, elements.rows, elements.cols);
+	using mtl::size;
+	for (unsigned ri= 0; ri < size(elements.rows); ri++)
+	    for (unsigned ci= 0; ci < size(elements.cols); ci++)
+		update (elements.rows[ri], elements.cols[ci], elements.array[ri][ci]);
+	return *this;
     }
 
     // not so nice functions needed for direct access, e.g. in factorizations
