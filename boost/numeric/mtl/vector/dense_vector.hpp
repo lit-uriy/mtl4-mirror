@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <boost/static_assert.hpp>
 #include <boost/utility/enable_if.hpp>
+#include <boost/type_traits/is_integral.hpp>
 
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
@@ -132,10 +133,12 @@ class dense_vector
     dense_vector( const self& src, clone_ctor )
       : memory_base( src, clone_ctor()) {} 
 
+    struct dummy_type {};
+
     /// Constructor from vector expressions
     template <typename VectorSrc>
     explicit dense_vector(const VectorSrc& src,
-			  typename boost::disable_if<boost::is_integral<VectorSrc>, int >::type= 0)
+			  typename boost::disable_if<boost::is_integral<VectorSrc>, dummy_type>::type= dummy_type())
     {	vampir_trace<2043> tracer; *this= src;    }
 
     /// Stride is always 1 
