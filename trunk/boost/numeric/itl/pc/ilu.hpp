@@ -39,8 +39,8 @@ class ilu
     typedef Factorizer                                    factorizer_type;
 
     typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
-    typedef mtl::compressed2D<value_type, para>                     L_type;
-    typedef mtl::compressed2D<value_type, para>                     U_type;
+    typedef mtl::matrix::compressed2D<value_type, para>                     L_type;
+    typedef mtl::matrix::compressed2D<value_type, para>                     U_type;
     typedef typename mtl::matrix::traits::adjoint<L_type>::type     adjoint_L_type;
     typedef typename mtl::matrix::traits::adjoint<U_type>::type     adjoint_U_type;
 
@@ -133,10 +133,10 @@ class ilu
 }; 
 
 template <typename Value, typename Factorizer, typename V2>
-class ilu<mtl::dense2D<Value, mtl::matrix::parameters<> >, Factorizer, V2> // last 2 arguments are dummies
+class ilu<mtl::matrix::dense2D<Value, mtl::matrix::parameters<> >, Factorizer, V2> // last 2 arguments are dummies
 {
   public:
-    typedef mtl::dense2D<Value, mtl::matrix::parameters<> >    Matrix;
+    typedef mtl::matrix::dense2D<Value, mtl::matrix::parameters<> >    Matrix;
     typedef typename mtl::Collection<Matrix>::value_type  value_type;
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef ilu                                           self;
@@ -162,7 +162,7 @@ class ilu<mtl::dense2D<Value, mtl::matrix::parameters<> >, Factorizer, V2> // la
 
   private:
     LU_type                        LU;
-    mtl::dense_vector<size_type, mtl::vector::parameters<> >   P;
+    mtl::vector::dense_vector<size_type, mtl::vector::parameters<> >   P;
 };
 
 #if 0

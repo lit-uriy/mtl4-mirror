@@ -66,10 +66,10 @@ public:
     typedef typename neighbour_set_type::iterator neighbour_set_iterator_type;
 
     /// The type of matrix.
-    typedef mtl::dense2D<value_type> matrix_type;
+    typedef mtl::matrix::dense2D<value_type> matrix_type;
 
     /// The type of the index vector.
-    typedef mtl::dense_vector<int> index_type; 
+    typedef mtl::vector::dense_vector<int> index_type; 
 
 
 /*******************************************************************************
@@ -410,8 +410,8 @@ public:
 	// Determine set of common indices.
 	const int max_common_idx =
 	    (nb_vars() < other_idx_size) ? nb_vars() : other_idx_size;
-	mtl::dense_vector<int> my_idx( max_common_idx );
-	mtl::dense_vector<int> ot_idx( max_common_idx );
+	mtl::vector::dense_vector<int> my_idx( max_common_idx );
+	mtl::vector::dense_vector<int> ot_idx( max_common_idx );
 	int offset = 0;
 	for(int i = 0, j = 0; i < nb_vars() && j < other_idx_size; ) {
 	    int diff = (get_indices()(i) - other_indices(j));

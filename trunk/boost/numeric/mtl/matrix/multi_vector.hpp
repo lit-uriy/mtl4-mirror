@@ -93,7 +93,7 @@ class multi_vector
     multi_vector_range<Vector> vector(irange const& r) const { return multi_vector_range<Vector>(*this, r); }
 
   protected:  
-    dense_vector<Vector, mtl::vector::parameters<> >          data;
+	mtl::vector::dense_vector<Vector, mtl::vector::parameters<> >          data;
 };
 
 /// Number of rows
@@ -109,5 +109,8 @@ template< typename Vector >
 typename Collection< Vector >::size_type size(const multi_vector< Vector >& A) { return num_rows(A) * num_cols(A); }
 }} // namespace mtl::matrix
 
+namespace mtl {
+	using matrix::multi_vector;
+}
 
 #endif // MTL_MATRIX_MULTI_VECTOR_INCLUDE

@@ -337,7 +337,7 @@ template <class Matrix> struct const_value_in_element_key
 template <class Value, class Parameters>
 struct coordinate2D_row
 {
-    typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+    typedef const mtl::matrix::coordinate2D<Value, Parameters>&       matrix_ref_type;
     explicit coordinate2D_row(matrix_ref_type A) : A(A) {}
 
     template <typename Key>
@@ -350,7 +350,7 @@ struct coordinate2D_row
 template <class Value, class Parameters>
 struct coordinate2D_col
 {
-    typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+    typedef const mtl::matrix::coordinate2D<Value, Parameters>&       matrix_ref_type;
     explicit coordinate2D_col(matrix_ref_type A) : A(A) {}
 
     template <typename Key>
@@ -363,7 +363,7 @@ struct coordinate2D_col
 template <class Value, class Parameters>
 struct coordinate2D_const_value
 {
-    typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+    typedef const mtl::matrix::coordinate2D<Value, Parameters>&       matrix_ref_type;
     explicit coordinate2D_const_value(matrix_ref_type A) : A(A) {}
 
     template <typename Key>

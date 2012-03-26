@@ -32,27 +32,27 @@ template <class Vector> struct index {};
 // ===========
 
 template <typename Value, class Parameters>
-struct row<dense2D<Value, Parameters> >
+struct row<mtl::matrix::dense2D<Value, Parameters> >
 {
-    typedef mtl::detail::indexer_row_ref<dense2D<Value, Parameters> > type;
+    typedef mtl::detail::indexer_row_ref<mtl::matrix::dense2D<Value, Parameters> > type;
 };
 
 template <typename Value, class Parameters>
-struct col<dense2D<Value, Parameters> >
+struct col<mtl::matrix::dense2D<Value, Parameters> >
 {
-    typedef mtl::detail::indexer_col_ref<dense2D<Value, Parameters> > type;
+    typedef mtl::detail::indexer_col_ref<mtl::matrix::dense2D<Value, Parameters> > type;
 };
 
 template <typename Value, class Parameters>
-struct const_value<dense2D<Value, Parameters> >
+struct const_value<mtl::matrix::dense2D<Value, Parameters> >
 {
-    typedef mtl::detail::direct_const_value<dense2D<Value, Parameters> > type;
+    typedef mtl::detail::direct_const_value<mtl::matrix::dense2D<Value, Parameters> > type;
 };
 
 template <typename Value, class Parameters>
-struct value<dense2D<Value, Parameters> >
+struct value<mtl::matrix::dense2D<Value, Parameters> >
 {
-    typedef mtl::detail::direct_value<dense2D<Value, Parameters> > type;
+    typedef mtl::detail::direct_value<mtl::matrix::dense2D<Value, Parameters> > type;
 };
 
 
@@ -62,27 +62,27 @@ struct value<dense2D<Value, Parameters> >
 
 
 template <class Elt, std::size_t BitMask, class Parameters>
-struct row<morton_dense<Elt, BitMask, Parameters> >
+struct row<mtl::matrix::morton_dense<Elt, BitMask, Parameters> >
 {
-    typedef mtl::detail::row_in_key<morton_dense<Elt, BitMask, Parameters> > type;
+    typedef mtl::detail::row_in_key<mtl::matrix::morton_dense<Elt, BitMask, Parameters> > type;
 };
 
 template <class Elt, std::size_t BitMask, class Parameters>
-struct col<morton_dense<Elt, BitMask, Parameters> >
+struct col<mtl::matrix::morton_dense<Elt, BitMask, Parameters> >
 {
-    typedef mtl::detail::col_in_key<morton_dense<Elt, BitMask, Parameters> > type;
+    typedef mtl::detail::col_in_key<mtl::matrix::morton_dense<Elt, BitMask, Parameters> > type;
 };
 
 template <class Elt, std::size_t BitMask, class Parameters>
-struct const_value<morton_dense<Elt, BitMask, Parameters> >
+struct const_value<mtl::matrix::morton_dense<Elt, BitMask, Parameters> >
 {
-    typedef mtl::detail::matrix_const_value_ref<morton_dense<Elt, BitMask, Parameters> > type;
+    typedef mtl::detail::matrix_const_value_ref<mtl::matrix::morton_dense<Elt, BitMask, Parameters> > type;
 };
 
 template <class Elt, std::size_t BitMask, class Parameters>
-struct value<morton_dense<Elt, BitMask, Parameters> >
+struct value<mtl::matrix::morton_dense<Elt, BitMask, Parameters> >
 {
-    typedef mtl::detail::matrix_value_ref<morton_dense<Elt, BitMask, Parameters> > type;
+    typedef mtl::detail::matrix_value_ref<mtl::matrix::morton_dense<Elt, BitMask, Parameters> > type;
 };
 
 
@@ -91,43 +91,43 @@ struct value<morton_dense<Elt, BitMask, Parameters> >
 // ================
 
 template <class Elt, class Parameters>
-struct row<mtl::compressed2D<Elt, Parameters> >
+struct row<mtl::matrix::compressed2D<Elt, Parameters> >
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
-      , mtl::detail::major_in_key<mtl::compressed2D<Elt, Parameters> >
-      , mtl::detail::indexer_minor_ref<mtl::compressed2D<Elt, Parameters> >
+      , mtl::detail::major_in_key<mtl::matrix::compressed2D<Elt, Parameters> >
+      , mtl::detail::indexer_minor_ref<mtl::matrix::compressed2D<Elt, Parameters> >
     >::type type;  
 };
 
 template <class Elt, class Parameters>
-struct col<mtl::compressed2D<Elt, Parameters> >
+struct col<mtl::matrix::compressed2D<Elt, Parameters> >
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
-      , mtl::detail::indexer_minor_ref<mtl::compressed2D<Elt, Parameters> >
-      , mtl::detail::major_in_key<mtl::compressed2D<Elt, Parameters> >
+      , mtl::detail::indexer_minor_ref<mtl::matrix::compressed2D<Elt, Parameters> >
+      , mtl::detail::major_in_key<mtl::matrix::compressed2D<Elt, Parameters> >
     >::type type;  
 };
 
 template <class Elt, class Parameters>
-struct const_value<mtl::compressed2D<Elt, Parameters> >
+struct const_value<mtl::matrix::compressed2D<Elt, Parameters> >
 {
-    typedef mtl::detail::matrix_offset_const_value<mtl::compressed2D<Elt, Parameters> > type;
+    typedef mtl::detail::matrix_offset_const_value<mtl::matrix::compressed2D<Elt, Parameters> > type;
 };
 
 template <class Elt, class Parameters>
-struct value<mtl::compressed2D<Elt, Parameters> >
+struct value<mtl::matrix::compressed2D<Elt, Parameters> >
 {
-    typedef mtl::detail::matrix_offset_value<mtl::compressed2D<Elt, Parameters> > type;
+    typedef mtl::detail::matrix_offset_value<mtl::matrix::compressed2D<Elt, Parameters> > type;
 };
  
 // Offset that corresponds to cursor, e.g. to set values in a matrix with same pattern 
 // needed in ILU_0, so far only for compressed2D, could be useful for algos on sparse and dense
 template <class Elt, class Parameters>
-struct offset<mtl::compressed2D<Elt, Parameters> >
+struct offset<mtl::matrix::compressed2D<Elt, Parameters> >
 {
-    typedef mtl::detail::offset_from_key<mtl::compressed2D<Elt, Parameters> > type;
+    typedef mtl::detail::offset_from_key<mtl::matrix::compressed2D<Elt, Parameters> > type;
 };
   
   
@@ -136,19 +136,19 @@ struct offset<mtl::compressed2D<Elt, Parameters> >
 // ================
 
 template <class Value, class Parameters>
-struct row<mtl::coordinate2D<Value, Parameters> >
+struct row<mtl::matrix::coordinate2D<Value, Parameters> >
 {
     typedef mtl::detail::coordinate2D_row<Value, Parameters>   type; 
 };
 
 template <class Value, class Parameters>
-struct col<mtl::coordinate2D<Value, Parameters> >
+struct col<mtl::matrix::coordinate2D<Value, Parameters> >
 {
     typedef mtl::detail::coordinate2D_col<Value, Parameters>   type; 
 };
 
 template <class Value, class Parameters>
-struct const_value<mtl::coordinate2D<Value, Parameters> >
+struct const_value<mtl::matrix::coordinate2D<Value, Parameters> >
 {
     typedef mtl::detail::coordinate2D_const_value<Value, Parameters>   type; 
 };
@@ -264,21 +264,21 @@ struct const_value<mtl::matrix::indirect<Matrix> >
 // ================
 
 template <class Elt, class Parameters>
-struct index<dense_vector<Elt, Parameters> >
+struct index<mtl::vector::dense_vector<Elt, Parameters> >
 {
-    typedef mtl::detail::index_from_offset< dense_vector<Elt, Parameters> > type;
+    typedef mtl::detail::index_from_offset< mtl::vector::dense_vector<Elt, Parameters> > type;
 };
 
 template <typename Value, class Parameters>
-struct const_value<dense_vector<Value, Parameters> >
+struct const_value<mtl::vector::dense_vector<Value, Parameters> >
 {
-    typedef mtl::detail::direct_const_value<dense_vector<Value, Parameters> > type;
+    typedef mtl::detail::direct_const_value<mtl::vector::dense_vector<Value, Parameters> > type;
 };
 
 template <typename Value, class Parameters>
-struct value<dense_vector<Value, Parameters> >
+struct value<mtl::vector::dense_vector<Value, Parameters> >
 {
-    typedef mtl::detail::direct_value<dense_vector<Value, Parameters> > type;
+    typedef mtl::detail::direct_value<mtl::vector::dense_vector<Value, Parameters> > type;
 };
 // ================
 // For vector::strided_vector_ref

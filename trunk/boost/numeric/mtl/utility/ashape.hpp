@@ -71,7 +71,7 @@ struct ashape_aux
 
 /// Vectors must be distinguished between row and column vectors
 template <typename Value, typename Parameters>
-struct ashape_aux<dense_vector<Value, Parameters> >
+struct ashape_aux<mtl::vector::dense_vector<Value, Parameters> >
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
@@ -83,7 +83,7 @@ struct ashape_aux<dense_vector<Value, Parameters> >
 /// Same as dense vector
 template <typename Value, typename Parameters>
 struct ashape_aux<vector::strided_vector_ref<Value, Parameters> >
-  : ashape<dense_vector<Value, Parameters> > {};
+  : ashape<mtl::vector::dense_vector<Value, Parameters> > {};
 
 /// One-dimensional arrays have rvec ashape; 2D arrays are matrices see below
 template <typename Value, unsigned Rows>
@@ -141,25 +141,25 @@ struct ashape_aux< vector::vec_const_ref_expr<Vector> >
 // ========
 
 template <typename Value, typename Parameters>
-struct ashape_aux<compressed2D<Value, Parameters> >
+struct ashape_aux<mtl::matrix::compressed2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
 
 template <typename Value, typename Parameters>
-struct ashape_aux<coordinate2D<Value, Parameters> >
+struct ashape_aux<mtl::matrix::coordinate2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
 
 template <typename Value, typename Parameters>
-struct ashape_aux<dense2D<Value, Parameters> >
+struct ashape_aux<mtl::matrix::dense2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
    
 template <typename Value, std::size_t Mask, typename Parameters>
-struct ashape_aux<morton_dense<Value, Mask, Parameters> >
+struct ashape_aux<mtl::matrix::morton_dense<Value, Mask, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
@@ -185,9 +185,9 @@ struct ashape_aux<Value (*)[Cols]>
 };
 
 template <typename Vector>
-struct ashape_aux<multi_vector<Vector> >
+struct ashape_aux<mtl::matrix::multi_vector<Vector> >
 {
-    typedef mat<typename ashape<typename mtl::Collection<multi_vector<Vector> >::value_type>::type> type;
+    typedef mat<typename ashape<typename mtl::Collection<mtl::matrix::multi_vector<Vector> >::value_type>::type> type;
 };
   
 template <typename Value>
@@ -244,7 +244,7 @@ struct ashape_aux<vector::conj_view<Coll> >
 #if 1
 // shouldn't be needed 
 template <typename Coll>
-struct ashape_aux<transposed_view<const matrix::conj_view<Coll> > >
+struct ashape_aux<mtl::matrix::transposed_view<const matrix::conj_view<Coll> > >
 {
     typedef typename ashape<Coll>::type type;
 };

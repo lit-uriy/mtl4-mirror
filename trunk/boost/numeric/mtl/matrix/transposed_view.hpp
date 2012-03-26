@@ -282,6 +282,10 @@ namespace mtl { namespace traits {
 
 }} // namespace mtl::traits
 
+namespace mtl {
+	using matrix::transposed_view;
+}
+
 #endif // MTL_TRANSPOSED_VIEW_INCLUDE
 
 

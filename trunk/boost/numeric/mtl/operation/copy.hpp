@@ -114,13 +114,13 @@ namespace mtl {
 
     template <typename Updater, typename ValueSrc, typename Para, typename ValueDest>
     typename boost::enable_if<boost::is_same<Updater, operations::update_store<ValueDest> > >::type
-    inline gen_matrix_copy(const matrix::banded_view<compressed2D<ValueSrc, Para> >& src, compressed2D<ValueDest, Para>& dest, bool)
+    inline gen_matrix_copy(const matrix::banded_view<mtl::matrix::compressed2D<ValueSrc, Para> >& src, mtl::matrix::compressed2D<ValueDest, Para>& dest, bool)
     {
 	vampir_trace<3061> tracer;
 	typedef typename Para::size_type size_type;
 	dest.change_dim(num_rows(src), num_cols(src)); // contains make_empty
 	set_to_zero(dest);
-	const compressed2D<ValueSrc, Para>  &sref= src.ref;
+	const mtl::matrix::compressed2D<ValueSrc, Para>  &sref= src.ref;
 	const std::vector<size_type>        &sstarts= sref.ref_major(), &sindices= sref.ref_minor();
 	long first, last;
 	if (traits::is_row_major<Para>::value) {

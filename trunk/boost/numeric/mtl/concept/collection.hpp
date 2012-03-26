@@ -300,12 +300,12 @@ namespace mtl {
     // -> as a consequence we define it directly there
 #else
     template <typename Value, typename Parameters>
-    struct Collection<dense2D<Value, Parameters> >
+    struct Collection<mtl::matrix::dense2D<Value, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
         // Alleged ambiguity with mtl::tag::dense2D on MSVC
-        typedef typename mtl::dense2D<Value, Parameters>::size_type size_type;
+        typedef typename mtl::matrix::dense2D<Value, Parameters>::size_type size_type;
     };
 #endif
 
@@ -325,15 +325,15 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Value, typename Parameters>
-    concept_map Collection<compressed2D<Value, Parameters> >
+    concept_map Collection<mtl::matrix::compressed2D<Value, Parameters> >
     {
 	typedef Value            value_type;
 	typedef Value            const_reference;
-	typedef typename compressed2D<Value, Parameters>::size_type size_type;
+	typedef typename mtl::matrix::compressed2D<Value, Parameters>::size_type size_type;
     };
 #else
     template <typename Value, typename Parameters>
-    struct Collection<compressed2D<Value, Parameters> >
+    struct Collection<mtl::matrix::compressed2D<Value, Parameters> >
     {
 	typedef Value            	       value_type;
 	typedef Value            	       const_reference;
@@ -346,7 +346,7 @@ namespace mtl {
 #ifdef __GXX_CONCEPTS__
 #else
     template <typename Value, typename Parameters>
-    struct Collection<coordinate2D<Value, Parameters> >
+    struct Collection<mtl::matrix::coordinate2D<Value, Parameters> >
     {
 	typedef Value            	       value_type;
 	typedef Value            	       const_reference;
@@ -358,19 +358,19 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Vector>
-    concept_map Collection<multi_vector<Vector> >
+    concept_map Collection<mtl::matrix::multi_vector<Vector> >
     {
-	typedef typename multi_vector<Vector>::value_type       value_type;
-	typedef typename multi_vector<Vector>::const_reference  const_reference;
-	typedef typename multi_vector<Vector>::size_type        size_type;
+	typedef typename mtl::matrix::multi_vector<Vector>::value_type       value_type;
+	typedef typename mtl::matrix::multi_vector<Vector>::const_reference  const_reference;
+	typedef typename mtl::matrix::multi_vector<Vector>::size_type        size_type;
     };
 #else
     template <typename Vector>
-    struct Collection<multi_vector<Vector> >
+    struct Collection<mtl::matrix::multi_vector<Vector> >
     {
-	typedef typename multi_vector<Vector>::value_type       value_type;
-	typedef typename multi_vector<Vector>::const_reference  const_reference;
-	typedef typename multi_vector<Vector>::size_type        size_type;
+	typedef typename mtl::matrix::multi_vector<Vector>::value_type       value_type;
+	typedef typename mtl::matrix::multi_vector<Vector>::const_reference  const_reference;
+	typedef typename mtl::matrix::multi_vector<Vector>::size_type        size_type;
     };
 
 #endif
@@ -380,19 +380,19 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Vector>
-    concept_map Collection<matrix::multi_vector_range<Vector> >
+    concept_map Collection<mtl::matrix::multi_vector_range<Vector> >
     {
-	typedef typename matrix::multi_vector_range<Vector>::value_type       value_type;
-	typedef typename matrix::multi_vector_range<Vector>::const_reference  const_reference;
-	typedef typename matrix::multi_vector_range<Vector>::size_type        size_type;
+	typedef typename mtl::matrix::multi_vector_range<Vector>::value_type       value_type;
+	typedef typename mtl::matrix::multi_vector_range<Vector>::const_reference  const_reference;
+	typedef typename mtl::matrix::multi_vector_range<Vector>::size_type        size_type;
     };
 #else
     template <typename Vector>
-    struct Collection<matrix::multi_vector_range<Vector> >
+    struct Collection<mtl::matrix::multi_vector_range<Vector> >
     {
-	typedef typename matrix::multi_vector_range<Vector>::value_type       value_type;
-	typedef typename matrix::multi_vector_range<Vector>::const_reference  const_reference;
-	typedef typename matrix::multi_vector_range<Vector>::size_type        size_type;
+	typedef typename mtl::matrix::multi_vector_range<Vector>::value_type       value_type;
+	typedef typename mtl::matrix::multi_vector_range<Vector>::const_reference  const_reference;
+	typedef typename mtl::matrix::multi_vector_range<Vector>::size_type        size_type;
     };
 
 #endif
@@ -404,7 +404,7 @@ namespace mtl {
     {
 	typedef Value            value_type;
       // typedef Value            const_reference;
-      // typedef typename compressed2D<Value, Parameters>::size_type size_type;
+      // typedef typename mtl::matrix::compressed2D<Value, Parameters>::size_type size_type;
     };
 
 #endif
@@ -677,19 +677,19 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Matrix>
-    concept_map Collection<transposed_view<Matrix> >
+    concept_map Collection<mtl::matrix::transposed_view<Matrix> >
     {
-	typedef typename transposed_view<Matrix>::value_type        value_type;
-	typedef typename transposed_view<Matrix>::const_reference   const_reference;
-	typedef typename transposed_view<Matrix>::size_type         size_type;
+	typedef typename mtl::matrix::transposed_view<Matrix>::value_type        value_type;
+	typedef typename mtl::matrix::transposed_view<Matrix>::const_reference   const_reference;
+	typedef typename mtl::matrix::transposed_view<Matrix>::size_type         size_type;
     };
 #else
     template <typename Matrix>
-    struct Collection<transposed_view<Matrix> >
+    struct Collection<mtl::matrix::transposed_view<Matrix> >
     {
-	typedef typename transposed_view<Matrix>::value_type        value_type;
-	typedef typename transposed_view<Matrix>::const_reference   const_reference;
-	typedef typename transposed_view<Matrix>::size_type         size_type;
+	typedef typename mtl::matrix::transposed_view<Matrix>::value_type        value_type;
+	typedef typename mtl::matrix::transposed_view<Matrix>::const_reference   const_reference;
+	typedef typename mtl::matrix::transposed_view<Matrix>::size_type         size_type;
     };
 #endif
 
@@ -906,18 +906,18 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Value, typename Parameters>
-    concept_map MutableCollection<dense2D<Value, Parameters> >
+    concept_map MutableCollection<mtl::matrix::dense2D<Value, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
-	typedef typename dense2D<Value, Parameters>::size_type size_type;
+	typedef typename mtl::matrix::dense2D<Value, Parameters>::size_type size_type;
 
 	typedef Value&           reference;
     };
 #else
     template <typename Value, typename Parameters>
-    struct MutableCollection<dense2D<Value, Parameters> >
-	: public Collection<dense2D<Value, Parameters> >
+    struct MutableCollection<mtl::matrix::dense2D<Value, Parameters> >
+	: public Collection<mtl::matrix::dense2D<Value, Parameters> >
     {
 	typedef Value&           reference;
     };
@@ -926,11 +926,11 @@ namespace mtl {
 #ifdef __GXX_CONCEPTS__
 
     template <typename Value, unsigned long Mask, typename Parameters>
-    concept_map MutableCollection<morton_dense<Value, Mask, Parameters> >
+    concept_map MutableCollection<mtl::matrix::morton_dense<Value, Mask, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
-	typedef typename morton_dense<Value, Mask, Parameters>::size_type size_type;
+	typedef typename mtl::matrix::morton_dense<Value, Mask, Parameters>::size_type size_type;
 
 	typedef Value&           reference;
     };
@@ -938,8 +938,8 @@ namespace mtl {
 #else
 
     template <typename Value, unsigned long Mask, typename Parameters>
-    struct MutableCollection<morton_dense<Value, Mask, Parameters> >
-	: public Collection<morton_dense<Value, Mask, Parameters> >
+    struct MutableCollection<mtl::matrix::morton_dense<Value, Mask, Parameters> >
+	: public Collection<mtl::matrix::morton_dense<Value, Mask, Parameters> >
     {
 	typedef Value&           reference;
     };
@@ -999,62 +999,62 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Value, typename Parameters>
-    concept_map OrientedCollection<dense2D<Value, Parameters> >
+    concept_map OrientedCollection<mtl::matrix::dense2D<Value, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
-	typedef typename dense2D<Value, Parameters>::size_type size_type;
+	typedef typename mtl::matrix::dense2D<Value, Parameters>::size_type size_type;
 
-	typedef typename dense2D<Value, Parameters>::orientation   orientation;
+	typedef typename mtl::matrix::dense2D<Value, Parameters>::orientation   orientation;
     };
 #else
     template <typename Value, typename Parameters>
-    struct OrientedCollection<dense2D<Value, Parameters> >
-	: public Collection<dense2D<Value, Parameters> >
+    struct OrientedCollection<mtl::matrix::dense2D<Value, Parameters> >
+	: public Collection<mtl::matrix::dense2D<Value, Parameters> >
     {
-	typedef typename dense2D<Value, Parameters>::orientation   orientation;
+	typedef typename mtl::matrix::dense2D<Value, Parameters>::orientation   orientation;
     };
 #endif
 
 #ifdef __GXX_CONCEPTS__
 
     template <typename Value, unsigned long Mask, typename Parameters>
-    concept_map OrientedCollection<morton_dense<Value, Mask, Parameters> >
+    concept_map OrientedCollection<mtl::matrix::morton_dense<Value, Mask, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
-	typedef typename morton_dense<Value, Mask, Parameters>::size_type size_type;
+	typedef typename mtl::matrix::morton_dense<Value, Mask, Parameters>::size_type size_type;
 
-	typedef typename morton_dense<Value, Mask, Parameters>::orientation   orientation;
+	typedef typename mtl::matrix::morton_dense<Value, Mask, Parameters>::orientation   orientation;
     };
 
 #else
 
     template <typename Value, unsigned long Mask, typename Parameters>
-    struct OrientedCollection<morton_dense<Value, Mask, Parameters> >
-	: public Collection<morton_dense<Value, Mask, Parameters> >
+    struct OrientedCollection<mtl::matrix::morton_dense<Value, Mask, Parameters> >
+	: public Collection<mtl::matrix::morton_dense<Value, Mask, Parameters> >
     {
-	typedef typename morton_dense<Value, Mask, Parameters>::orientation   orientation;
+	typedef typename mtl::matrix::morton_dense<Value, Mask, Parameters>::orientation   orientation;
     };
 
 #endif
 
 #ifdef __GXX_CONCEPTS__
     template <typename Value, typename Parameters>
-    concept_map OrientedCollection<compressed2D<Value, Parameters> >
+    concept_map OrientedCollection<mtl::matrix::compressed2D<Value, Parameters> >
     {
 	typedef Value            value_type;
 	typedef const Value&     const_reference;
-	typedef typename compressed2D<Value, Parameters>::size_type size_type;
+	typedef typename mtl::matrix::compressed2D<Value, Parameters>::size_type size_type;
 
-	typedef typename compressed2D<Value, Parameters>::orientation   orientation;
+	typedef typename mtl::matrix::compressed2D<Value, Parameters>::orientation   orientation;
     };
 #else
     template <typename Value, typename Parameters>
-    struct OrientedCollection<compressed2D<Value, Parameters> >
-	: public Collection<compressed2D<Value, Parameters> >
+    struct OrientedCollection<mtl::matrix::compressed2D<Value, Parameters> >
+	: public Collection<mtl::matrix::compressed2D<Value, Parameters> >
     {
-	typedef typename compressed2D<Value, Parameters>::orientation   orientation;
+	typedef typename mtl::matrix::compressed2D<Value, Parameters>::orientation   orientation;
     };
 #endif
 
@@ -1270,18 +1270,18 @@ namespace mtl {
 
 #ifdef __GXX_CONCEPTS__
     template <typename Coll>
-    concept_map OrientedCollection<transposed_view<Coll> >
+    concept_map OrientedCollection<mtl::matrix::transposed_view<Coll> >
     {
-	typedef typename transposed_view<Coll>::value_type        value_type;
-	typedef typename transposed_view<Coll>::const_reference   const_reference;
-	typedef typename transposed_view<Coll>::size_type         size_type;
+	typedef typename mtl::matrix::transposed_view<Coll>::value_type        value_type;
+	typedef typename mtl::matrix::transposed_view<Coll>::const_reference   const_reference;
+	typedef typename mtl::matrix::transposed_view<Coll>::size_type         size_type;
 
 	typedef typename mtl::traits::transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
     };
 #else
     template <typename Coll>
-    struct OrientedCollection<transposed_view<Coll> >
-	: public Collection<transposed_view<Coll> >
+    struct OrientedCollection<mtl::matrix::transposed_view<Coll> >
+	: public Collection<mtl::matrix::transposed_view<Coll> >
     {
 	typedef typename mtl::traits::transposed_orientation<typename OrientedCollection<Coll>::orientation>::type   orientation;
     };

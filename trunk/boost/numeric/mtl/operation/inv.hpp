@@ -145,7 +145,7 @@ inline void inv(Matrix const& A, MatrixOut& Inv)
     }
 
     result_type                    PLU(A);
-    mtl::dense_vector<size_type, vector::parameters<> >   Pv(num_rows(A));
+    mtl::vector::dense_vector<size_type, vector::parameters<> >   Pv(num_rows(A));
 
     lu(PLU, Pv);
     result_type  PU(upper(PLU)), PL(strict_lower(PLU));

@@ -77,10 +77,10 @@ struct RowInMatrix<mtl::matrix::dense2D<Value, Parameters> >
 };
 
 template <typename Value, typename Parameters>
-struct RowInMatrix<const dense2D<Value, Parameters> > 
+struct RowInMatrix<const mtl::matrix::dense2D<Value, Parameters> > 
 {
-    typedef dense2D<Value, Parameters> const   ref_type;
-    typedef dense2D<Value, Parameters>         ref2_type;
+    typedef mtl::matrix::dense2D<Value, Parameters> const   ref_type;
+    typedef mtl::matrix::dense2D<Value, Parameters>         ref2_type;
     typedef typename ref2_type::size_type      size_type;
     typedef vector::parameters<row_major>      vec_para;
 

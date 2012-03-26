@@ -41,7 +41,7 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 
     typedef typename Collection<Matrix>::value_type     value_type;
     typedef typename Collection<Matrix>::size_type      size_type;
-    typedef dense_vector<size_type, vector::parameters<> >   size_vector; // todo: with type trait
+    typedef mtl::vector::dense_vector<size_type, vector::parameters<> >   size_vector; // todo: with type trait
 
     size_type        nrows= num_rows(A);
     MTL_THROW_IF(nrows != num_cols(A), matrix_not_square());

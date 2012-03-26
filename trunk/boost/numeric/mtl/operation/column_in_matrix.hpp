@@ -29,9 +29,9 @@ struct ColumnInMatrix
 };
 
 template <typename Value, typename Parameters>
-struct ColumnInMatrix<dense2D<Value, Parameters> > 
+struct ColumnInMatrix<mtl::matrix::dense2D<Value, Parameters> > 
 {
-    typedef dense2D<Value, Parameters>         ref_type;
+    typedef mtl::matrix::dense2D<Value, Parameters>         ref_type;
     typedef typename ref_type::size_type       size_type;
     typedef typename ref_type::value_type      value_type;
 
@@ -71,10 +71,10 @@ struct ColumnInMatrix<dense2D<Value, Parameters> >
 };
 
 template <typename Value, typename Parameters>
-struct ColumnInMatrix<const dense2D<Value, Parameters> > 
+struct ColumnInMatrix<const mtl::matrix::dense2D<Value, Parameters> > 
 {
-    typedef dense2D<Value, Parameters> const   ref_type;
-    typedef dense2D<Value, Parameters>         ref2_type;
+    typedef mtl::matrix::dense2D<Value, Parameters> const   ref_type;
+    typedef mtl::matrix::dense2D<Value, Parameters>         ref2_type;
     typedef typename ref2_type::size_type      size_type;
 
     static const bool aligned= !boost::is_same<typename Parameters::orientation, row_major>::value;

@@ -26,7 +26,7 @@ namespace traits {
     template <typename Value= double>
     struct identity
     {
-	typedef ::mtl::compressed2D<Value, parameters<> >  type;
+	typedef mtl::matrix::compressed2D<Value, parameters<> >  type;
     };
 }
 

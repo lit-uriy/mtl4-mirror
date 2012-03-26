@@ -118,7 +118,7 @@ template <typename Matrix, typename Vector>
 Vector inline lu_solve(const Matrix& A, const Vector& b, double eps= 0)
 {
     vampir_trace<5028> tracer;
-    dense_vector<std::size_t, vector::parameters<> > P(num_rows(A));
+	mtl::vector::dense_vector<std::size_t, vector::parameters<> > P(num_rows(A));
     Matrix                    LU(A);
 
     lu(LU, P, eps);
@@ -141,7 +141,7 @@ template <typename Matrix, typename Vector>
 Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b, double eps= 0)
 {
     vampir_trace<5030> tracer;
-    dense_vector<std::size_t, vector::parameters<> > P(num_rows(A));
+	mtl::vector::dense_vector<std::size_t, vector::parameters<> > P(num_rows(A));
     Matrix                    LU(A);
 
     lu(LU, P, eps);

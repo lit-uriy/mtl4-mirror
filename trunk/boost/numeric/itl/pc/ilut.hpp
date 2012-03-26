@@ -34,7 +34,7 @@ struct ilut_factorizer
 	typedef typename mtl::Collection<Matrix>::value_type      value_type;
 	typedef typename mtl::Collection<Matrix>::size_type       size_type;
 	typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
-	typedef mtl::compressed2D<value_type, para>  LU_type;
+	typedef mtl::matrix::compressed2D<value_type, para>  LU_type;
 	LU_type LU(A);
 	factorize(LU, p, L, U, boost::mpl::true_());
     }
@@ -42,7 +42,7 @@ struct ilut_factorizer
     // According Yousef Saad: ILUT, NLAA, Vol 1(4), 387-402 (1994)
 #if 0
     template <typename Value, typename MPara, typename Para, typename L_type, typename U_type>
-    factorize(const mtl::compressed2D<Value, MPara>& A, const Para& p, L_type& L, U_type& U, boost::mpl::true_)
+    factorize(const mtl::matrix::compressed2D<Value, MPara>& A, const Para& p, L_type& L, U_type& U, boost::mpl::true_)
 #endif
 
     template <typename Matrix, typename Para, typename L_type, typename U_type>

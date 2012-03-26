@@ -23,12 +23,12 @@ namespace mtl { namespace traits {
 /// Type trait returning type for gradient of function with T as argument
 template <typename T>
 struct gradient 
-  : boost::mpl::if_<is_scalar<T>, dense_vector<T>, tag::unknown>
+  : boost::mpl::if_<is_scalar<T>, mtl::vector::dense_vector<T>, tag::unknown>
 {};	
 
 template <typename Value, typename Para>
-struct gradient<dense_vector<Value, Para> >
-  : linear_operator<dense_vector<Value, Para>, dense_vector<Value, Para> >
+struct gradient<mtl::vector::dense_vector<Value, Para> >
+  : linear_operator<mtl::vector::dense_vector<Value, Para>, mtl::vector::dense_vector<Value, Para> >
 {};
 
 }} // namespace mtl::traits
