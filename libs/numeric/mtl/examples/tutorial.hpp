@@ -786,6 +786,8 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage peak_addiction
 -# Performance
    -# \subpage performance_athlon
+-# Example applications
+   -# \subpage fem15
 -# \ref overview_ops
 -# \ref faq
 
@@ -3633,6 +3635,25 @@ on compilers regarding efficient inlining and reference forwarding.
 Our meta-programming optimizations -- short meta-tuning -- proved high efficiency in multiple
 measurings (the plots above are only few examples) and were always as fast as code directly 
 written in unrolled/tiled form.
+
+
+
+\if Navigation \endif
+  Return to \ref peak_addiction &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref overview_ops 
+
+
+*/
+
+//-----------------------------------------------------------
+/*! \page fem15 Finite Elements in Few Lines
+
+The following example shows a complete finite element application in some lines.
+It uses C++11 features and might require setting the corresponding flags on your compiler.
+We will work on new implementations to make such applications even shorter (e.g. the inversion of fixed-size
+matrices will be soon part of the library).
+
+\include fem15.cpp
+
 
 
 
