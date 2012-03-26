@@ -690,7 +690,8 @@ EXCLUDE_SYMBOLS        =
 # the \include command).
 
 EXAMPLE_PATH           = libs/numeric/mtl/examples \
-                         boost/numeric/itl/krylov
+                         boost/numeric/itl/krylov \
+			 libs/numeric/mtl/experimental
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
