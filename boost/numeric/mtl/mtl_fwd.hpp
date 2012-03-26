@@ -134,12 +134,12 @@ namespace mtl {
 	template <class Matrix> std::size_t size(const hermitian_view<Matrix>& );
    }
 
-    using matrix::dense2D;
-    using matrix::morton_dense;
-    using matrix::compressed2D;
-    using matrix::coordinate2D;
-    using matrix::multi_vector;
-    using matrix::transposed_view;
+    //using matrix::dense2D;
+    //using matrix::morton_dense;
+    //using matrix::compressed2D;
+    //using matrix::coordinate2D;
+    //using matrix::multi_vector;
+    //using matrix::transposed_view;
     
     template <typename E1, typename E2> struct mat_cvec_times_expr;
 
@@ -225,7 +225,7 @@ namespace mtl {
 	    
     }
 
-    using vector::dense_vector;
+    //using vector::dense_vector;
 
     // Export free vector functions into mtl namespace
     // It is also needed to handle STL vectors in MTL

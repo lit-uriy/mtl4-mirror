@@ -13,6 +13,7 @@
 #ifndef MTL_DENSE2D_INCLUDE
 #define MTL_DENSE2D_INCLUDE
 
+
 #include <algorithm>
 #include <boost/mpl/bool.hpp>
 #include <boost/type_traits/is_same.hpp>
@@ -496,7 +497,11 @@ inline size(const dense2D<Value, Parameters>& matrix)
 }
 
 
-}} // namespace mtl::matrix
+}
+
+using matrix::dense2D;
+
+} // namespace mtl::matrix
 
 
 namespace mtl { namespace traits {
@@ -831,7 +836,7 @@ namespace mtl {
 
     // Enable cloning of dense matrices
     template <typename Value, typename Parameters>
-    struct is_clonable< mtl::dense2D<Value, Parameters> > : boost::mpl::true_ {};
+    struct is_clonable< mtl::matrix::dense2D<Value, Parameters> > : boost::mpl::true_ {};
         
 } // namespace mtl
 
@@ -841,12 +846,12 @@ namespace math {
 
     // Multiplicative identities of matrices
     template <typename Value, typename Parameters>
-    struct identity_t< mult<mtl::dense2D<Value, Parameters> >, mtl::dense2D<Value, Parameters> >
-        : public std::binary_function< mult<mtl::dense2D<Value, Parameters> >, 
-				       mtl::dense2D<Value, Parameters>, 
-				       mtl::dense2D<Value, Parameters> >
+    struct identity_t< mult<mtl::matrix::dense2D<Value, Parameters> >, mtl::matrix::dense2D<Value, Parameters> >
+        : public std::binary_function< mult<mtl::matrix::dense2D<Value, Parameters> >, 
+				       mtl::matrix::dense2D<Value, Parameters>, 
+				       mtl::matrix::dense2D<Value, Parameters> >
     {
-        typedef mtl::dense2D<Value, Parameters>  matrix_type;
+        typedef mtl::matrix::dense2D<Value, Parameters>  matrix_type;
 
         matrix_type operator() (const mult<matrix_type>&, const matrix_type& ref) const
         {

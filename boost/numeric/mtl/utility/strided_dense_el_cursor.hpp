@@ -31,7 +31,7 @@ struct strided_dense_el_cursor : public detail::strided_base_cursor<const Value*
     strided_dense_el_cursor (const_pointer_type me, size_t stride) : super(me, stride) {}
 
     template <typename Parameters>
-    strided_dense_el_cursor(dense2D<Value, Parameters> const& ma, size_t r, size_t c, size_t stride)
+    strided_dense_el_cursor(mtl::matrix::dense2D<Value, Parameters> const& ma, size_t r, size_t c, size_t stride)
 	: super(ma.elements() + ma.indexer(ma, r, c), stride)
     {}
 

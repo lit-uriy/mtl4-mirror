@@ -140,11 +140,11 @@ struct compressed_minor_cursor
     typedef compressed_minor_cursor       self;
     typedef std::size_t                   size_t;
 
-    explicit compressed_minor_cursor(mtl::compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
+    explicit compressed_minor_cursor(mtl::matrix::compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
 	: base(matrix, r, c), matrix(matrix)
     {}
 
-    explicit compressed_minor_cursor(mtl::compressed2D<Elt, Parameters> const& matrix, size_t offset) 
+    explicit compressed_minor_cursor(mtl::matrix::compressed2D<Elt, Parameters> const& matrix, size_t offset) 
 	: base(matrix, offset), matrix(matrix)
     {}
 
@@ -161,7 +161,7 @@ struct compressed_minor_cursor
     base& operator* () { return *this; }
     const base& operator* () const { return *this; }
 
-    mtl::compressed2D<Elt, Parameters> const& matrix;
+    mtl::matrix::compressed2D<Elt, Parameters> const& matrix;
 };
 
 
@@ -367,7 +367,9 @@ class compressed2D
     {
 	assert(this != &src);  // Self-copy would be an indication of an error
 	
-	check(); check_dim(src.num_rows(), src.num_cols());
+	check(); 
+	// TODO Check the following line
+	//check_dim(src.num_rows(), src.num_cols());
 	swap(*this, src);
 	return *this;
     }
@@ -1012,8 +1014,9 @@ inline size(const compressed2D<Value, Parameters>& matrix)
 
 }} // namespace mtl::matrix
 
-
-
+namespace mtl {
+	using matrix::compressed2D;
+}
 
 // ================
 // Range generators

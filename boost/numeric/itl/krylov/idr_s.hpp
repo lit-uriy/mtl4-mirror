@@ -46,9 +46,9 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
     const Scalar                zero= math::zero(Scalar());
     Scalar                      omega(zero);
     Vector                      x0(x), y(resource(x)), v(resource(x)), t(resource(x)), q(resource(x)), r(b - A * x);
-    mtl::multi_vector<Vector>   dR(Vector(resource(x), zero), s), dX(Vector(resource(x), zero), s), P(Vector(resource(x), zero), s);
-    mtl::dense_vector<Scalar>   m(s), c(s), dm(s);   // replicated in distributed solvers 
-    mtl::dense2D<Scalar>        M(s, s);             // dito
+    mtl::matrix::multi_vector<Vector>   dR(Vector(resource(x), zero), s), dX(Vector(resource(x), zero), s), P(Vector(resource(x), zero), s);
+    mtl::vector::dense_vector<Scalar>   m(s), c(s), dm(s);   // replicated in distributed solvers 
+    mtl::matrix::dense2D<Scalar>        M(s, s);             // dito
 
     random(P); 
     P.vector(0)= r;

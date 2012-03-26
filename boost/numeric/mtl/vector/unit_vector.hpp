@@ -24,7 +24,7 @@ namespace traits {
     template  <typename Value= double>
     struct unit_vector
     {
-	typedef dense_vector<Value, mtl::vector::parameters<> >  type;
+	typedef mtl::vector::dense_vector<Value, mtl::vector::parameters<> >  type;
     };
 }
 

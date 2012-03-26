@@ -848,9 +848,11 @@ namespace mtl { namespace matrix {
 
 namespace mtl {
 
+	using matrix::morton_dense;
+
     // Enable cloning of dense matrices
     template <typename Value, std::size_t BitMask, typename Parameters>
-    struct is_clonable< morton_dense<Value, BitMask, Parameters> > : boost::mpl::true_ {};
+    struct is_clonable< matrix::morton_dense<Value, BitMask, Parameters> > : boost::mpl::true_ {};
         
 } // namespace mtl
 

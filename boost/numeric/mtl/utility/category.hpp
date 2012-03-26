@@ -47,7 +47,7 @@ struct category<const T>
 };
 
 template <typename Value, typename Parameters>
-struct category<dense2D<Value, Parameters> > 
+struct category<mtl::matrix::dense2D<Value, Parameters> > 
 {
     typedef tag::dense2D type;
 };
@@ -76,26 +76,26 @@ struct category<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
 
 
 template <typename Elt, std::size_t BitMask, typename Parameters>
-struct category<morton_dense<Elt, BitMask, Parameters> >
+struct category<mtl::matrix::morton_dense<Elt, BitMask, Parameters> >
 {
     typedef mtl::tag::morton_dense type;
 };
 
 template <typename Elt, typename Parameters>
-struct category<compressed2D<Elt, Parameters> > 
+struct category<mtl::matrix::compressed2D<Elt, Parameters> > 
 {
     typedef tag::compressed2D type;
 };
 
 // should have the same tags as compressed2D
 template <typename Elt, typename Parameters>
-struct category<coordinate2D<Elt, Parameters> > 
+struct category<mtl::matrix::coordinate2D<Elt, Parameters> > 
 {
     typedef tag::compressed2D type;
 };
 
 template <typename Vector>
-struct category<multi_vector<Vector> > 
+struct category<mtl::matrix::multi_vector<Vector> > 
 {
     typedef tag::multi_vector type;
 };
@@ -113,7 +113,7 @@ struct category<mtl::matrix::element_structure<Value> >
 };
 
 template <typename T, typename Parameters>
-struct category< dense_vector<T, Parameters> > 
+struct category< mtl::vector::dense_vector<T, Parameters> > 
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
@@ -241,13 +241,13 @@ struct category<mtl::matrix::indirect<Matrix> >
 
 
 template <typename Matrix> 
-struct category<transposed_view<Matrix> >
+struct category<mtl::matrix::transposed_view<Matrix> >
   : public category<Matrix>
 {};
 
 // Specialize on transposed multi-vectors
 template <typename Vector>
-struct category< transposed_view< multi_vector<Vector> > >
+struct category< mtl::matrix::transposed_view< mtl::matrix::multi_vector<Vector> > >
 {
     typedef tag::transposed_multi_vector type;
 };
@@ -260,12 +260,12 @@ struct category< matrix::conj_view<Matrix> >
 template <typename Matrix>
 struct category< matrix::hermitian_view<Matrix> >
   : public category< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-					   transposed_view<Matrix> > >
+					   mtl::matrix::transposed_view<Matrix> > >
 {};
 
 // Specialize on Hermiatians of multi-vectors
 template <typename Vector>
-struct category< matrix::hermitian_view<multi_vector<Vector> > >
+struct category< matrix::hermitian_view<mtl::matrix::multi_vector<Vector> > >
 {
     typedef tag::hermitian_multi_vector type;
 };

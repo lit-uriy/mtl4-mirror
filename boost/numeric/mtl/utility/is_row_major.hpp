@@ -62,15 +62,15 @@ namespace mtl { namespace traits {
       : is_row_major<Parameters> {};
 
     template <typename Value, typename Parameters>
-    struct is_row_major<compressed2D<Value, Parameters> >
+    struct is_row_major<mtl::matrix::compressed2D<Value, Parameters> >
       : is_row_major<Parameters> {};
 
     template <typename Value, typename Parameters>
-    struct is_row_major<dense2D<Value, Parameters> >
+    struct is_row_major<mtl::matrix::dense2D<Value, Parameters> >
       : is_row_major<Parameters> {};
 
     template <typename Value, std::size_t Mask, typename Parameters>
-    struct is_row_major<morton_dense<Value, Mask, Parameters> >
+    struct is_row_major<mtl::matrix::morton_dense<Value, Mask, Parameters> >
       : is_row_major<Parameters> {};
 
     template <typename Matrix>

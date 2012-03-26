@@ -45,9 +45,9 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     Scalar                      rho, nu, hr;
     Size                        k, kmax(std::min(size(x), Size(iter.max_iterations() - iter.iterations())));
     Vector                      r0(b - A *x), r(solve(L,r0)), va(resource(x)), va0(resource(x)), va00(resource(x));
-    mtl::multi_vector<Vector>   V(Vector(resource(x), zero), kmax+1); 
-    mtl::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y(kmax, zero);  // replicated in distributed solvers 
-    mtl::dense2D<Scalar>        H(kmax+1, kmax);                                             // dito
+    mtl::matrix::multi_vector<Vector>   V(Vector(resource(x), zero), kmax+1); 
+    mtl::vector::dense_vector<Scalar>   s(kmax+1, zero), c(kmax+1, zero), g(kmax+1, zero), y(kmax, zero);  // replicated in distributed solvers 
+    mtl::matrix::dense2D<Scalar>        H(kmax+1, kmax);                                             // dito
     H= 0;
 
     rho= g[0]= two_norm(r);
@@ -79,7 +79,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
 
         // k Given's rotations
 	for(Size i= 0; i < k; i++)
-	    mtl::matrix::givens<mtl::dense2D<Scalar> >(H, H[i][k-1], H[i+1][k-1]).trafo(i);
+	    mtl::matrix::givens<mtl::matrix::dense2D<Scalar> >(H, H[i][k-1], H[i+1][k-1]).trafo(i);
 	
        nu= sqrt(H[k][k]*H[k][k]+H[k+1][k]*H[k+1][k]);
        if(nu != zero){
@@ -87,7 +87,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
             s[k]= -H[k+1][k]/nu;
             H[k][k]=c[k]*H[k][k]-s[k]*H[k+1][k];
             H[k+1][k]=0;
- 	    mtl::vector::givens<mtl::dense_vector<Scalar> >(g, c[k], s[k]).trafo(k);
+ 	    mtl::vector::givens<mtl::vector::dense_vector<Scalar> >(g, c[k], s[k]).trafo(k);
         }
 	rho= abs(g[k+1]);
     }

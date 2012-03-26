@@ -29,7 +29,7 @@ namespace traits {
     template <typename Value= short>
     struct reorder
     {
-	typedef ::mtl::compressed2D<Value, parameters<> >  type;
+	typedef mtl::matrix::compressed2D<Value, parameters<> >  type;
     };
 }
 

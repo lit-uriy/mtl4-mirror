@@ -75,7 +75,7 @@ class gauss_seidel
   private:
     const Matrix&    A;
     const RHSVector& b;
-    mtl::dense_vector<Scalar>  dia_inv;
+    mtl::vector::dense_vector<Scalar>  dia_inv;
 };
 
 

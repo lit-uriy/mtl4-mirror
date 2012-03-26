@@ -45,7 +45,7 @@ class ic_0
     typedef ic_0                                                     self;
 
     typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
-    typedef mtl::compressed2D<value_type, para>                      U_type;
+    typedef mtl::matrix::compressed2D<value_type, para>                      U_type;
 #ifndef ITL_IC_0_ONE_MATRIX
     typedef U_type                                                   L_type;
 #else
@@ -123,7 +123,7 @@ class ic_0
 	template <typename UF>
 	void factorize(const Matrix& A, UF& U, boost::mpl::true_, boost::mpl::false_)
 	{
-	    typedef mtl::compressed2D<typename mtl::Collection<Matrix>::value_type, para> tmp_type;
+	    typedef mtl::matrix::compressed2D<typename mtl::Collection<Matrix>::value_type, para> tmp_type;
 	    tmp_type U_tmp;
 	    factorize(A, U_tmp, boost::mpl::true_(), boost::mpl::true_());
 	    U= U_tmp;

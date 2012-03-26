@@ -328,20 +328,20 @@ namespace mtl { namespace traits {
 // ================
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::all, dense_vector<Value, Parameters> >
-      : public detail::dense_element_range_generator<dense_vector<Value, Parameters>,
+    struct range_generator<tag::all, mtl::vector::dense_vector<Value, Parameters> >
+      : public detail::dense_element_range_generator<mtl::vector::dense_vector<Value, Parameters>,
 						     dense_el_cursor<Value>, complexity_classes::linear_cached>
     {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::nz, dense_vector<Value, Parameters> >
-	: public range_generator<tag::all, dense_vector<Value, Parameters> >
+    struct range_generator<tag::nz, mtl::vector::dense_vector<Value, Parameters> >
+	: public range_generator<tag::all, mtl::vector::dense_vector<Value, Parameters> >
     {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::iter::all, dense_vector<Value, Parameters> >
+    struct range_generator<tag::iter::all, mtl::vector::dense_vector<Value, Parameters> >
     {
-	typedef dense_vector<Value, Parameters>   collection_t;
+	typedef mtl::vector::dense_vector<Value, Parameters>   collection_t;
 	typedef complexity_classes::linear_cached complexity;
 	static int const                          level = 1;
 	typedef typename collection_t::pointer    type;
@@ -357,14 +357,14 @@ namespace mtl { namespace traits {
     };
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::iter::nz, dense_vector<Value, Parameters> >
-	: public range_generator<tag::iter::all, dense_vector<Value, Parameters> >
+    struct range_generator<tag::iter::nz, mtl::vector::dense_vector<Value, Parameters> >
+	: public range_generator<tag::iter::all, mtl::vector::dense_vector<Value, Parameters> >
     {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::const_iter::all, dense_vector<Value, Parameters> >
+    struct range_generator<tag::const_iter::all, mtl::vector::dense_vector<Value, Parameters> >
     {
-	typedef dense_vector<Value, Parameters>   collection_t;
+	typedef mtl::vector::dense_vector<Value, Parameters>   collection_t;
 	typedef complexity_classes::linear_cached complexity;
 	static int const                          level = 1;
 	typedef typename collection_t::const_pointer type;
@@ -380,13 +380,16 @@ namespace mtl { namespace traits {
     };
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::const_iter::nz, dense_vector<Value, Parameters> >
-	: public range_generator<tag::const_iter::all, dense_vector<Value, Parameters> >
+    struct range_generator<tag::const_iter::nz, mtl::vector::dense_vector<Value, Parameters> >
+	: public range_generator<tag::const_iter::all, mtl::vector::dense_vector<Value, Parameters> >
     {};
 
 	
 }} // namespace mtl::traits
 
+namespace mtl {
+	using vector::dense_vector;
+}
 
 #endif // MTL_DENSE_VECTOR_INCLUDE
 

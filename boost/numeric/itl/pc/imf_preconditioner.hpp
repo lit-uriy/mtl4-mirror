@@ -51,13 +51,13 @@ public:
 	typedef mtl::matrix::coordinate2D<value_type> sparse_type_lower;
 
 	/// The type of the vectors.
-	typedef mtl::dense_vector<value_type> vector_type;
+	typedef mtl::vector::dense_vector<value_type> vector_type;
 
 	///The type of the permutation vector.
-	typedef mtl::dense_vector<int>  index_type;
+	typedef mtl::vector::dense_vector<int>  index_type;
 
 	/// The type of the matrices on the block diagonal.
-	typedef mtl::dense2D<value_type>  block_type;
+	typedef mtl::matrix::dense2D<value_type>  block_type;
 
 	/// The type of the sequence of lower matrices.
 	typedef std::vector<mtl::matrix::compressed2D<value_type> > lower_matrix_coll_type;

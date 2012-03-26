@@ -419,9 +419,9 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		//save upperbound for number of L and U entrys
 		unsigned int upperbound(0);
 		for(unsigned int i=0;i< block_diagonal.size();i++){
-			mtl::dense_vector<int> involve_node(block_diagonal[i]->get_indices());
+			mtl::vector::dense_vector<int> involve_node(block_diagonal[i]->get_indices());
 			for(unsigned int j=0;j< block_diagonal[i]->get_neighbours().size();j++){
-			  mtl::dense_vector<int> involve_neigh(block_diagonal[i]->get_neighbours()[j]->get_indices());
+			  mtl::vector::dense_vector<int> involve_neigh(block_diagonal[i]->get_neighbours()[j]->get_indices());
 			  unsigned int c(0);
 			  for(unsigned int a= 0; a < size(involve_node); a++){
 			      for(unsigned int b= 0; b < size(involve_neigh); b++){
@@ -500,7 +500,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				}
 				//insert connectet neighbour
 				{
-				  mtl::matrix::inserter<mtl::dense2D<value_type>, mtl::operations::update_plus<value_type> > ins(frontal);
+				  mtl::matrix::inserter<mtl::matrix::dense2D<value_type>, mtl::operations::update_plus<value_type> > ins(frontal);
 				  ins << element_matrix(neigh.get_values(), local_idx, local_idx);
 				}
 				neigh.get_values()= zero;

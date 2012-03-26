@@ -472,7 +472,9 @@ namespace mtl { namespace traits {
 
 }} // namespace mtl::traits
 
-
+namespace mtl {
+	using matrix::coordinate2D;
+}
 
 #endif // MTL_COORDINATE2D_INCLUDE
 
