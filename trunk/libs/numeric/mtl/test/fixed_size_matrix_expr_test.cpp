@@ -14,7 +14,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 template <typename ArgMatrix>
-void inline f(const ArgMatrix& A) {}
+void inline f(const ArgMatrix&) {}
 
 
 template <typename ResMatrix, typename ArgMatrix>
