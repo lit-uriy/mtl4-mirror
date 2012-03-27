@@ -41,7 +41,7 @@ void two_d_iteration(char const* outer, const Matrix& matrix, Tag)
 
 
 template <typename Matrix, typename Tag>
-void two_d_iteration(char const* name, const Matrix& matrix, Tag, mtl::complexity_classes::infinite)
+void two_d_iteration(char const* name, const Matrix&, Tag, mtl::complexity_classes::infinite)
 {
     cout << name << ": Tag has no implementation\n";
 }
