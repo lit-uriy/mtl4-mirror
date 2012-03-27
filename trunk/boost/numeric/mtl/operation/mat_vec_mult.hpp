@@ -610,7 +610,7 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
     // vampir_trace<5056> tttracer;
     using math::zero;
 
-    if (A.nnz() < num_rows(A)) {
+    if (A.nnz() < num_rows(A) && !as.init_to_zero) {
 	vsmat_cvec_mult(A, v, w, as, tag::row_major());
 	return;
     }
