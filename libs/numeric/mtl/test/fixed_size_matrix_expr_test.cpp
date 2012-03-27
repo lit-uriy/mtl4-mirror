@@ -22,6 +22,7 @@ void test(const ResMatrix& , const ArgMatrix& B)
 {
     ResMatrix C(trans(B));
 
+    std::cout << "trans(B) is \n" << C;
     std::cout << "trans(B) is \n" << trans(B);
     std::cout << "trace(B) is " << trace(B) << "\n";
 
