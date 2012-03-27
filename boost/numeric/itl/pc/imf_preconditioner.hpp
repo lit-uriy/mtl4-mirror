@@ -88,15 +88,10 @@ public:
 	}
 
 	/// Destructor
-	~imf_preconditioner() {
-		if(m_diagonal_index) {
-			delete[] m_diagonal_index;
-		}
-		m_diagonal_index = 0;
-		if(m_diagonal) {
-			delete[] m_diagonal;
-		}
-		m_diagonal = 0;
+	~imf_preconditioner() 
+        {
+	  delete[] m_diagonal_index;
+	  delete[] m_diagonal;
 	}
 
 private:
