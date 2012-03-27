@@ -223,7 +223,7 @@ struct IsRemoved {
  * Constructs the EBE-ML-ILU preconditioner from the given mesh. The mesh is
  * altered in the process.
  */
- template< typename ValType >
+template< typename ValType >
 template<  class Mesh >
 void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int maxlofi   
 ) {
@@ -269,13 +269,12 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	//	Invariant: elements[i] == 0  iff  element[i] is removed
 	std::vector<element_type*> elements;
 	elements.reserve( nb_elements + (nb_elements >> 4) );
-	{
-		element_iterator it = mesh.element_begin();
-		for(int i = 0; i < nb_elements; ++i) {
-			elements.push_back( *&it );
-			++it;
-		}
+	element_iterator it = mesh.element_begin();
+	for (int i = 0; i < nb_elements; ++i) {
+	  elements.push_back( *&it );
+	  ++it;
 	}
+	
 
 	// Data structures for the preconditioner.
 	std::vector<element_type*> block_diagonal;
@@ -725,47 +724,16 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	m_levels = lower_matrices.size();
 	m_nb_blocks = block_diagonal.size();
 	m_diagonal_index = diagonal_index;
-#if 0
-	long total_mem = 0;
-	long diag_nnz = 0;
-	for(unsigned int i = 0; i < m_nb_blocks; ++i) {
-		diag_nnz += block_diagonal[i]->nnz();
-		total_mem += block_diagonal[i]->nb_values();
-	}
-	long total_nnz = 0;
-	for(unsigned int i = 0; i < m_lower.size(); ++i) {
-		total_nnz += ( *(m_lower[i]) ).nnz() ;
-	}
-	for(unsigned int i = 0; i < m_upper.size(); ++i) {
-		total_nnz += ( *(m_upper[i]) ).nnz() ;
-	}
-	total_mem += total_nnz;
-	total_nnz += diag_nnz;
 
-	//ONLY more information about approximation
-	double pct_mem_increase = 100*double(total_mem - orig_nnz) / orig_nnz;
-	double pct_diag = 100*double(diag_nnz) / total_mem;
+	// Todo: create element_structure from all elements
+	// Delete only elements that we generated; those at the beginning are just referred
+	for (unsigned i= nb_elements; i < elements.size(); i++)
+	  delete elements[i];
 
- 	unsigned int off = settings.max_lofi+1; 
-	if( off >= diagonal_offsets.size() ) {
-		off = diagonal_offsets.size()-1;
-	}
-	int unity_eigs = diagonal_index[off];
-	double pct_unity_eigs = 100*double(unity_eigs) / nb_vars;
-
-	std::cout << "\n----------IMF STATISTICS--------\n";
- 	std::cout << "Level of fill-in:       " << sets.max_lofi << "\n";
-	std::cout << "Original non-zeros:     " << orig_nnz << "\n";
-	std::cout << "Total nnz (actual):     " << total_nnz << "\n";
-	std::cout << "Total nnz (structural): " << total_mem << "\n";
-	std::cout << "Nb levels:              " << level << "\n";
-	std::cout << "Eigenvalues unity:      " << unity_eigs << " (" <<
-			pct_unity_eigs << "%)\n";
-	std::cout << "Increase in memory:     " << pct_mem_increase << "%\n";
-	std::cout << "Non-zeros on diagonal:  " << pct_diag << "%\n";
-	std::cout << "----------------------------------\n" << std::endl;
-#endif
-
+	for (unsigned i= 0; i < lower_matrices.size(); i++)
+	  delete lower_matrices[i];
+	for (unsigned i= 0; i < upper_matrices.size(); i++)
+	  delete upper_matrices[i];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -827,7 +795,10 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 		// y' = y - Fx
 //  		assert( m_upper[level] );
 		
-		vector_type yp( (m_upper[level]) * res );
+		vector_type yp(size(res));
+		yp= m_upper[level] * res;
+
+		// ( (m_upper[level]) * res );
 
 		res[mtl::irange(off_low, off_high) ] -= yp[mtl::irange(0, off_high-off_low) ];
 		// y = inv(D)*y'

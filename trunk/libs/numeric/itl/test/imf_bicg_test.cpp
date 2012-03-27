@@ -15,6 +15,8 @@
 #  define MTL_VPT_LEVEL 5
 
 #include <iostream>
+#include <limits>
+
 #include <boost/timer.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
@@ -42,15 +44,16 @@ void setup(ElementStructure& A, int lofi)
     itl::pc::imf_preconditioner<value_type> precond(A, lofi);
     double ftime= factorization.elapsed();
 
-    // std::string ss= typename mtl::ashape::ashape<ElementStructure>::type();
+//     for (int i= 0; i < size; i++)
+//       x[i]= std::numeric_limits<value_type>::quiet_NaN();
 
-    b= A * x;
-//     b= ident - A * x;
     std::cout<< "size(rhs2)=" << num_rows(b) << "\n";
     mtl::compressed2D<double> B;
     assemble_compressed(A, ident, B);
     std::cout << "NNZ == " << B.nnz() << "\n";
     
+    b= B * x;
+
 #if 0
 	mtl::io::tout << "------------------------------- STATISTICS -------------------------------" << std::endl;
 	int rows = num_rows(*master_mat);
@@ -72,7 +75,7 @@ void setup(ElementStructure& A, int lofi)
 	}
 	mtl::io::tout<< "E=\n"<<E <<"\n";
 #endif
-	
+
     itl::cyclic_iteration<value_type>          iter(b, size, 1.e-8, 0.0, 5);
     x= 0;
     boost::timer solver;
