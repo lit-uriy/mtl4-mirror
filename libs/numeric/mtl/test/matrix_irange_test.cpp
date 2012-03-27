@@ -23,7 +23,7 @@ using namespace std;
 template <typename Size, typename Derived>
 struct base1
 {
-    int operator[](Size i) { cout << "Size\n"; return 1; }
+    int operator[](Size) { cout << "Size\n"; return 1; }
     int operator[](mtl::irange i) 
     { 
 	cout << "irange\n"; 
@@ -36,7 +36,7 @@ struct base1
 template <typename Size>
 struct ss : public base1<Size, ss<Size> >
 {
-    int susu(int i, int j) { cout << "susu\n"; return 3; }
+    int susu(int, int) { cout << "susu\n"; return 3; }
 };
 
 template <typename Size>
