@@ -11,7 +11,9 @@ inline void my_add(const Vector& u, const Vector& v, Vector& w)
     w= u + v;
 }
 
-template <> std::string mtl::vpt::vampir_trace<12800>::name("my_add");
+namespace mtl { namespace vpt { 
+    template <> std::string vampir_trace<12800>::name("my_add");
+}}
 
 int main(int, char**)
 {
