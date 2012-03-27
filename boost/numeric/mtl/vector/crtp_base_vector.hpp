@@ -95,6 +95,7 @@ struct crtp_assign<Vector, mat_cvec_times_expr<E1, E2> >
     type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
     {
 	vector.checked_change_resource(src);
+	set_to_zero(vector);
 	mat_cvec_mult(src.first, src.second, vector, assign::assign_sum(), traits::mat_cvec_flatcat<E1>());
 	return vector;
     }

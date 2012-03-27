@@ -778,9 +778,9 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 			off += block_size;
 		}
 		// Compute x = x - E*dy
-		Vector big(num_cols(m_lower[level])); big=0;
+		Vector big(num_cols(m_lower[level]), ValType(0));
 		big[mtl::irange(0,n1)] = dy;
- 		res -= ( (m_lower[level]) * big );
+ 		res -= m_lower[level] * big;
 	  }
 	}
 
@@ -795,11 +795,7 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 		// y' = y - Fx
 //  		assert( m_upper[level] );
 		
-		vector_type yp(size(res));
-		yp= m_upper[level] * res;
-
-		// ( (m_upper[level]) * res );
-
+		vector_type yp(m_upper[level] * res);
 		res[mtl::irange(off_low, off_high) ] -= yp[mtl::irange(0, off_high-off_low) ];
 		// y = inv(D)*y'
 		for(int off = off_high; off > off_low; --b_off ) {
