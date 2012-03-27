@@ -109,6 +109,7 @@ namespace mtl {
 
     namespace {
 #     pragma clang diagnostic ignored "-Wunneeded-internal-declaration"
+#     pragma clang diagnostic ignored "-Wunused-function"
 	inline long inc_wo_over(long i) { return i == std::numeric_limits<long>::max() ? i : i+1; }
 	inline long negate_wo_over(long i) { return i == std::numeric_limits<long>::min() ? std::numeric_limits<long>::max() : -i; }
     }
