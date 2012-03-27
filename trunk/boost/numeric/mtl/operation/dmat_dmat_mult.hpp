@@ -1024,12 +1024,12 @@ struct fully_unroll_fixed_size_dmat_dmat_mult_t
     // if C is empty just do nothing
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     typename boost::enable_if_c<static_size<MatrixC>::value == 0>::type
-    operator()(MatrixA const& A, MatrixB const& B, MatrixC& C) {}
+    operator()(MatrixA const&, MatrixB const&, MatrixC&) {}
 
     // just initialize
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     typename boost::enable_if_c<static_num_cols<MatrixA>::value == 0 && static_size<MatrixC>::value != 0>::type
-    operator()(MatrixA const& A, MatrixB const& B, MatrixC& C) { if (Assign::init_to_zero) set_to_zero(C); }
+    operator()(MatrixA const&, MatrixB const&, MatrixC& C) { if (Assign::init_to_zero) set_to_zero(C); }
 
     struct noop
     {

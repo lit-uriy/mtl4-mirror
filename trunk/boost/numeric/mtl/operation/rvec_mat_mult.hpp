@@ -62,7 +62,7 @@ namespace impl {
     struct rvec_mat_noop
     {
 	template <typename VectorIn, typename Matrix, typename VectorOut>
-	static inline void apply(const VectorIn& v, const Matrix& A, VectorOut& w) {}
+	static inline void apply(const VectorIn&, const Matrix&, VectorOut&) {}
     };
 } // impl
 

@@ -294,8 +294,8 @@ class dense2D
     }
 
     template <typename MatrixSrc>
-    void sub_matrix_constructor(MatrixSrc& matrix, size_type begin_r, size_type end_r, 
-				size_type begin_c, size_type end_c, boost::mpl::true_)
+    void sub_matrix_constructor(MatrixSrc&, size_type, size_type, 
+				size_type, size_type, boost::mpl::true_)
     {
 	MTL_THROW(logic_error("Matrices cannot be used as sub-matrices!"));
     }
