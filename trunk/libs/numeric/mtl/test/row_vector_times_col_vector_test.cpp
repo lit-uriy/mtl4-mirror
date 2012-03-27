@@ -26,14 +26,14 @@ void test(const char* name, const Vector& v)
 }
 
 template <typename Vector>
-void shape(const Vector& v)
+void shape(const Vector&)
 {
     std::cout << typeid(typename mtl::ashape::ashape<Vector>::type).name() << "\n";
 
 }
 
 template <typename Op1, typename Op2>
-void shape(const Op1& op1, const Op2& op2)
+void shape(const Op1&, const Op2&)
 {
     using namespace mtl;
 
