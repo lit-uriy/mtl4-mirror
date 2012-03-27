@@ -259,7 +259,7 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
-void single_test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
+void single_test(MatrixA& a, MatrixB& b, MatrixC& c, const char*)
 {
     using mtl::assign::plus_sum; using mtl::assign::minus_sum; 
     using mtl::recursion::bound_test_static;
