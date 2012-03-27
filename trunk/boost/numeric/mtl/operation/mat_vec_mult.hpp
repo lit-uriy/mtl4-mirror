@@ -89,7 +89,7 @@ namespace impl {
     struct noop
     {
 	template <typename Matrix, typename VectorIn, typename VectorOut>
-	static inline void apply(const Matrix& A, const VectorIn& v, VectorOut& w) {}
+	static inline void apply(const Matrix&, const VectorIn&, VectorOut&) {}
     };
 } // impl
 
