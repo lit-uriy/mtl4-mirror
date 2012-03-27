@@ -90,7 +90,7 @@ class dense_vector
 	algebraic shape, e.g. a row vector of scalars is not compatible with a row
 	vector of matrices. **/
     template <class E>
-    void check_consistent_shape( vec_expr<E> const& e ) const
+    void check_consistent_shape( vec_expr<E> const& ) const
     {
 	MTL_DEBUG_THROW_IF((!boost::is_same<
 			        typename ashape::ashape<self>::type
