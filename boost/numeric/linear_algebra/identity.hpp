@@ -141,7 +141,7 @@ template <typename Element>
 struct identity_t< bitwise_and<Element>, Element > 
   : public std::binary_function<bitwise_and<Element>, Element, Element>
 { 
-    Element operator() (const bitwise_and<Element>&, const Element& ref) const
+    Element operator() (const bitwise_and<Element>&, const Element&) const
     {
 	return 0;
     }
@@ -152,7 +152,7 @@ template <typename Element>
 struct identity_t< bitwise_or<Element>, Element > 
   : public std::binary_function<bitwise_or<Element>, Element, Element>
 { 
-    Element operator() (const bitwise_or<Element>&, const Element& ref) const
+    Element operator() (const bitwise_or<Element>&, const Element&) const
     {
 	return 0 - 1;
     }

@@ -61,7 +61,7 @@ struct size_helper
 # endif
 
     std::size_t used_memory() const { return Size;  }
-    friend void swap(self& x, self& y) {}
+    friend void swap(self&, self&) {}
 };
 
 // Manage size only if template parameter is 0, i.e. dynamic size

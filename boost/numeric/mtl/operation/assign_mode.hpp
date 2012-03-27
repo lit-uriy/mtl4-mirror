@@ -63,7 +63,7 @@ struct plus_sum
     static const bool init_to_zero= false;
 
     template <typename T>
-    static void init(T& v) {}
+    static void init(T&) {}
 
     // Sets x with y when empty or not initialized
     template <typename T, typename U>
@@ -98,7 +98,7 @@ struct minus_sum
     static const bool init_to_zero= false;
 
     template <typename T>
-    static void init(T& v) {}
+    static void init(T&) {}
 
     // Sets x with y when empty or not initialized
     template <typename T, typename U>
