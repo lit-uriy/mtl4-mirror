@@ -39,15 +39,15 @@ namespace matrix {
 	}
 	
 	template <typename Matrix>
-	inline void swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
-			     typename Collection<Matrix>::size_type j, tag::sparse, boost::mpl::true_)
+	inline void swap_row(Matrix&, typename Collection<Matrix>::size_type,
+			     typename Collection<Matrix>::size_type, tag::sparse, boost::mpl::true_)
 	{
 	    MTL_THROW(logic_error("This is not implemented yet."));
 	}
 
 	template <typename Matrix>
-	inline void swap_row(Matrix& A, typename Collection<Matrix>::size_type i,
-			     typename Collection<Matrix>::size_type j, tag::sparse, boost::mpl::false_)
+	inline void swap_row(Matrix&, typename Collection<Matrix>::size_type,
+			     typename Collection<Matrix>::size_type, tag::sparse, boost::mpl::false_)
 	{
 	    MTL_THROW(logic_error("This is an ugly operation and not implemented yet."));
 	}

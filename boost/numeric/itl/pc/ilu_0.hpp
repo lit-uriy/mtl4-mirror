@@ -38,7 +38,7 @@ struct ilu_0_factorizer
     {   factorize(A, L, U, mtl::traits::is_sparse<Matrix>());  }
 
     template <typename Matrix, typename L_type, typename U_type>
-    void factorize(const Matrix& A, L_type&, U_type&, boost::mpl::false_)
+    void factorize(const Matrix&, L_type&, U_type&, boost::mpl::false_)
     {  MTL_THROW_IF(true, mtl::logic_error("ILU is not intended for dense matrices")); }
 
     template <typename Matrix, typename L_type, typename U_type>
