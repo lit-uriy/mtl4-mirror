@@ -14,6 +14,7 @@
 #define MTL_EVALUATE_LAZY_INCLUDE
 
 #include <boost/numeric/mtl/operation/lazy_assign.hpp>
+#include <boost/numeric/mtl/vector/lazy_reduction.hpp>
 
 
 namespace mtl {
@@ -23,6 +24,12 @@ template <typename T, typename U, typename Assign>
 void inline evaluate_lazy(lazy_assign<T, U, Assign>& lazy)
 {
     Assign::first_update(lazy.first, lazy.second);
+}
+
+template <typename T, typename Vector, typename Functor, typename Assign>
+void inline evaluate_lazy(lazy_assign<T, vector::lazy_reduction<Vector, Functor>, Assign>& lazy)
+{
+    lazy.first= Functor::post_reduction(vector::reduction<4, Functor, T>::apply(lazy.second.v));
 }
 
 } // namespace mtl

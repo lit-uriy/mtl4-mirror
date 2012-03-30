@@ -34,8 +34,10 @@ int main()
     std::cout << "sizeof in size_type is " << sizeof(size_type) << '\n';
     typedef matrix::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, size_type> para;
     typedef compressed2D<double, para>  matrix_type;
-    matrix_type          A(N, N);
+    matrix_type          A;
     laplacian_setup(A, size, size);
+    // A.self_copy(A0);
+
 
     itl::pc::identity<matrix_type>     P(A);
 

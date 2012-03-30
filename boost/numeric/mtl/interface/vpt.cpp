@@ -348,6 +348,11 @@ template <> std::string vampir_trace<7003>::name("bicg");
 template <> std::string vampir_trace<7004>::name("bicgstab");
 
 
+// OpenMP
+template <> std::string vampir_trace<8001>::name("omp::dot");
+template <> std::string vampir_trace<8002>::name("omp::reduction");
+template <> std::string vampir_trace<8003>::name("omp::dyn_vec_expr");
+template <> std::string vampir_trace<8004>::name("omp::crs_cvec_mult");
 
 
 

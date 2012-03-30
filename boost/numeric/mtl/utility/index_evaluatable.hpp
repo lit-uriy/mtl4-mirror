@@ -32,6 +32,8 @@ namespace mtl { namespace traits {
 template <typename T>
 struct index_evaluatable : boost::mpl::false_ {};
 
+#ifndef MTL_WITH_OPENMP
+
 template <typename T, typename U, typename Assign>
 struct index_evaluatable<lazy_assign<T, U, Assign> >
   : boost::mpl::or_<
@@ -45,9 +47,13 @@ template <typename V1, typename Matrix, typename V2, typename Assign>
 struct index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matrix, V2>, Assign> >
   : is_row_major<Matrix> {};
 
+#endif // not MTL_WITH_OPENMP
+
 /// Type trait to control whether evaluation should be unrolled
 template <typename T>
 struct unrolled_index_evaluatable : boost::mpl::false_ {};
+
+#ifndef MTL_WITH_OPENMP
 
 template <typename T, typename U, typename Assign>
 struct unrolled_index_evaluatable<lazy_assign<T, U, Assign> >
@@ -64,6 +70,8 @@ struct unrolled_index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matri
   : boost::mpl::false_ {};
 #endif
 
+#endif // not MTL_WITH_OPENMP
+
 /// Typetrait for forward evaluation
 /** All index_evaluatable types are implicitly forward-evaluatable **/
 template <typename T>
@@ -77,6 +85,8 @@ template <typename T>
 struct backward_index_evaluatable 
   : index_evaluatable<T>
 {};
+
+#ifndef MTL_WITH_OPENMP
 
 template <typename V1, typename Matrix, typename Value, typename V2>
 struct backward_index_evaluatable<lazy_assign<V1, itl::pc::solver<itl::pc::ic_0<Matrix, Value>, V2, true>, assign::assign_sum> >
@@ -96,6 +106,8 @@ template <typename V1, typename MValue, typename Para, typename Factorizer, type
 struct backward_index_evaluatable<lazy_assign<V1, itl::pc::ilu_solver<compressed2D<MValue, Para>, Factorizer, Value, V2>, assign::assign_sum> >
  : boost::mpl::true_ {};
 #endif
+
+#endif // not MTL_WITH_OPENMP
 
 }} // namespace mtl::traits
 

@@ -175,6 +175,8 @@ namespace mtl {
 	template <typename Scalar, typename Vector, typename Functor, typename Assign> struct reduction_index_evaluator;
 	template <typename Scalar, typename Vector1, typename Vector2, typename ConjOpt, typename Assign> struct dot_index_evaluator;
 
+	template <typename Vector, typename Functor> struct lazy_reduction;
+
 	template <typename Value, typename Parameters, typename Value2>
 	inline void fill(dense_vector<Value, Parameters>& vector, const Value2& value);
 	

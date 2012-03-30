@@ -376,6 +376,30 @@ class compressed2D
 
     using assign_base::operator=;
 
+#if 0
+    void self_copy(const self& src)
+    {
+	if (this == &src) 
+	    return;
+	change_dim(num_rows(src), num_cols(src));
+	set_nnz(src.nnz());
+
+	#ifdef MTL_WITH_OPENMP
+        #  pragma omp parallel for schedule(static, 16) 
+	#endif
+	for (int i= 0; i < int(src.dim1()); i++) {
+	    const size_type cj0= src.starts[i], cj1= src.starts[i+1];
+	    starts[i]= cj0;
+	    for (size_type j0= cj0; j0 != cj1; ++j0) {
+		indices[j0]= src.indices[j0];
+		data[j0]= src.data[j0];
+	    }
+	}
+	starts[src.dim1()]= src.starts[src.dim1()];
+    }
+#endif 
+
+
     // Copies range of values and their coordinates into compressed matrix
     // For brute force initialization, should be used with uttermost care
     // Won't be suitable for distributed matrices, take care of this to this later
