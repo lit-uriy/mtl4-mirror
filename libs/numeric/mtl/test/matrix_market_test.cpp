@@ -18,7 +18,6 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
  
-
 using namespace std;  
 
 std::string program_dir; // Ugly global variable !!!
