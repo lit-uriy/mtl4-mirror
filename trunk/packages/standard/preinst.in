@@ -9,5 +9,5 @@ if test ! -d ${BASE_DIR}/${curDir}  ; then
 fi
 done
 
-mkdir -p /usr/share/mtl/
+mkdir -p /usr/share/mtl/tools/cmake
 exit 0
