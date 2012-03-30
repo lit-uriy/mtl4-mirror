@@ -19,6 +19,7 @@
 #include <boost/numeric/meta_math/loop1.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
+#include <boost/numeric/mtl/utility/omp_size_type.hpp>
 
 namespace mtl { 
 
@@ -68,6 +69,7 @@ namespace mtl {
 		      Value& tmp05, Value& tmp06, Value& tmp07, 
 		      const Vector1& v1, const Vector2& v2, Size i, ConjOpt conj_opt)
 		{
+		    // vampir_trace<9901> tracer;
 		    tmp00+= conj_opt(v1[ i + base::index0 ]) * v2[ i + base::index0 ];
 		    next_t::apply(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp00,
 				  v1, v2, i, conj_opt);
@@ -97,12 +99,38 @@ namespace mtl {
 		typename detail::dot_result<Vector1, Vector2>::type
 		static inline apply(const Vector1& v1, const Vector2& v2, ConjOpt conj_opt)
 		{
+
+
 		    vampir_trace<2003> tracer;
 		    MTL_THROW_IF(size(v1) != size(v2), incompatible_size());
-		    
-		    typedef typename Collection<Vector1>::size_type              size_type;
 		    typedef typename detail::dot_result<Vector1, Vector2>::type  value_type;
-		    
+		    		    
+#                 ifdef MTL_WITH_OPENMP 
+		    value_type dummy, z= math::zero(dummy), result= z;
+		    typedef typename mtl::traits::omp_size_type<typename Collection<Vector1>::size_type>::type size_type;
+		    size_type  i_max= size(v1), i_block= Unroll * (i_max / Unroll);
+
+
+                    #pragma omp parallel
+		    {
+
+			vampir_trace<8001> tracer;
+			value_type tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z, tmp05= z, tmp06= z, tmp07= z;
+
+			#pragma omp for
+			for (size_type i= 0; i < i_block; i+= Unroll)
+			    dot_aux<1, Unroll>::apply(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, v1, v2, i, conj_opt);
+
+			#pragma omp critical
+			    result+= ((tmp00 + tmp01) + (tmp02 + tmp03)) + ((tmp04 + tmp05) + (tmp06 + tmp07));
+		    }
+		    for (size_type i= i_block; i < i_max; i++) 
+			result+= conj_opt(v1[i]) * v2[i];
+
+		    return result;
+#                 else
+		    typedef typename Collection<Vector1>::size_type              size_type;
+
 		    value_type dummy, z= math::zero(dummy), tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
 			       tmp05= z, tmp06= z, tmp07= z;
 		    size_type  i_max= size(v1), i_block= Unroll * (i_max / Unroll);
@@ -113,7 +141,10 @@ namespace mtl {
 		    for (size_type i= i_block; i < i_max; i++) 
 			tmp00+= conj_opt(v1[i]) * v2[i];
 		    return ((tmp00 + tmp01) + (tmp02 + tmp03)) + ((tmp04 + tmp05) + (tmp06 + tmp07));
+#                 endif
 		}
+
+
 	    };
 	}
 

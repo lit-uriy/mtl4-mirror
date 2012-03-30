@@ -18,7 +18,11 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 
-using namespace std;  
+template <typename T>
+inline void check(const T& result, double exp)
+{
+    MTL_THROW_IF(std::abs(result - exp) > 0.0001, mtl::runtime_error("dot product wrong"));
+}
 
 
 template <typename VectorU, typename VectorV>
@@ -29,14 +33,15 @@ void test(VectorU& u, VectorV& v, const char* name)
     for (size_type i= 0; i < size(v); i++)
 	u[i]= i+1, v[i]= i+1;
 
-    std::cout << name << "\n dot(u, v) = " << dot(u, v) << "\n"; std::cout.flush();
-    MTL_THROW_IF(dot(u, v) != 285.0, mtl::runtime_error("dot product wrong"));
+    
+    mtl::io::tout << name << "\n dot(u, v) = " << dot(u, v) << "\n"; mtl::io::tout.flush();
+    check(dot(u, v), 285.0);
 
-    std::cout << " dot<2>(u, v) = " << mtl::vector::dot<2>(u, v) << "\n"; std::cout.flush();
-    MTL_THROW_IF(mtl::vector::dot<2>(u, v) != 285.0, mtl::runtime_error("dot product wrong"));
+    mtl::io::tout << " dot<2>(u, v) = " << mtl::vector::dot<2>(u, v) << "\n"; mtl::io::tout.flush();
+    check(mtl::vector::dot<2>(u, v), 285.0);
 
-    std::cout << " dot<6>(u, v) = " << mtl::vector::dot<6>(u, v) << "\n"; std::cout.flush();
-    MTL_THROW_IF(mtl::vector::dot<6>(u, v) != 285.0, mtl::runtime_error("dot product wrong"));
+    mtl::io::tout << " dot<6>(u, v) = " << mtl::vector::dot<6>(u, v) << "\n"; mtl::io::tout.flush();
+    check(mtl::vector::dot<6>(u, v), 285.0);
 }
  
 
@@ -49,7 +54,7 @@ int main(int ,char**)
     mtl::dense_vector<double>  x(size), y(size), z(size);
     mtl::dense_vector<std::complex<double> >  xc(size), yc(size), zc(size);
 
-    std::cout << "Testing vector operations\n";
+    mtl::io::tout << "Testing vector operations\n";
 
     test(u, v, "test float");
     test(x, y, "test double");

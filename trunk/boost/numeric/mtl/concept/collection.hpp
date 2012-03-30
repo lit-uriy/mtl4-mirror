@@ -903,6 +903,16 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+#else
+    template <typename Vector, typename Functor>
+    struct Collection<mtl::vector::lazy_reduction<Vector, Functor> >
+    {
+	typedef std::size_t size_type;
+    };
+#endif
+
+
 
 #ifdef __GXX_CONCEPTS__
     template <typename Value, typename Parameters>

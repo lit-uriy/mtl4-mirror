@@ -16,6 +16,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/meta_math/loop1.hpp>
+#include <boost/numeric/mtl/utility/omp_size_type.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
@@ -111,6 +112,45 @@ struct reduction
 	return tmp00;
     }
 
+# ifdef MTL_WITH_OPENMP   
+
+    template <typename Vector>
+    Result static inline apply(const Vector& v, boost::mpl::false_)
+    {
+	
+	BOOST_STATIC_ASSERT((Unroll >= 1 && Unroll <= 8)); // Might be relaxed in future versions
+
+	Result result;
+	Functor::init(result);
+
+	typedef typename mtl::traits::omp_size_type<typename Collection<Vector>::size_type>::type size_type;
+	const size_type  i_max= mtl::vector::size(v), i_block= Unroll * (i_max / Unroll);
+
+	#pragma omp parallel
+	{
+	    vampir_trace<8002> tracer;
+	    Result tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07;
+	    impl::reduction<1, Unroll, Functor>::init(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07);
+
+	    #pragma omp for
+	    for (size_type i= 0; i < i_block; i+= Unroll)
+		impl::reduction<1, Unroll, Functor>::update(tmp00, tmp01, tmp02, tmp03, 
+							    tmp04, tmp05, tmp06, tmp07, v, i);
+
+	    impl::reduction<1, Unroll, Functor>::finish(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07);
+
+	    #pragma omp critical
+	    Functor::finish(result, tmp00);
+	}
+
+	for (size_type i= i_block; i < i_max; i++) 
+	    Functor::update(result, v[i]);
+
+	return result;
+    } 
+
+# else
+
     template <typename Vector>
     Result static inline apply(const Vector& v, boost::mpl::false_)
     {
@@ -122,18 +162,20 @@ struct reduction
 	impl::reduction<1, Unroll, Functor>::init(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07);
 
 	typedef typename Collection<Vector>::size_type              size_type;
-	size_type  i_max= mtl::vector::size(v), i_block= Unroll * (i_max / Unroll);
-
+	const size_type  i_max= mtl::vector::size(v), i_block= Unroll * (i_max / Unroll);
 	for (size_type i= 0; i < i_block; i+= Unroll)
 	    impl::reduction<1, Unroll, Functor>::update(tmp00, tmp01, tmp02, tmp03, 
 							tmp04, tmp05, tmp06, tmp07, v, i);
-	
 	for (size_type i= i_block; i < i_max; i++) 
 	    Functor::update(tmp00, v[i]);
 
 	impl::reduction<1, Unroll, Functor>::finish(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07);
 	return tmp00;
     } 
+
+# endif
+
+
 };
 
 }} // namespace mtl

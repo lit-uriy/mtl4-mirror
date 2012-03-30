@@ -24,6 +24,25 @@ endif (NOT MSVC)
 configure_file(boost/numeric/mtl/version.hpp.in boost/numeric/mtl/version.hpp @ONLY)
 add_definitions("-DMTL_ASSERT_FOR_THROW")
 
+if(ENABLE_OPENMP)
+   find_package(OpenMP)
+endif()
+
+# message(STATUS "OpenMP_CXX_FLAGS are ${OpenMP_CXX_FLAGS}")
+
+if(OPENMP_FOUND)
+	add_definitions("-DMTL_WITH_OPENMP")
+	add_definitions(${OpenMP_CXX_FLAGS})
+	list(APPEND MTL_LIBRARIES ${OpenMP_CXX_FLAGS})
+	message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+else()
+  if(ENABLE_OPENMP)
+    message(FATAL_ERROR "OpenMP not found")
+  endif()
+endif()
+
+#################################################################################
+
 #look for compiler specific settings
 if (MSVC)
 	# to quiet DevStudio 2005 secure code warnings

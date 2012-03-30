@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/omp_size_type.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/unroll_size1.hpp>
 #include <boost/numeric/mtl/utility/with_unroll1.hpp>
@@ -80,17 +81,40 @@ struct vec_vec_aop_expr
   private:
     void dynamic_assign(boost::mpl::false_) // Without unrolling
     {
-	for (size_type i= 0; i < mtl::vector::size(first); ++i)
+	typedef typename traits::omp_size_type<size_type>::type size_type;
+
+      #ifdef MTL_WITH_OPENMP
+	# pragma omp parallel
+	{
+	    vampir_trace<8003> tracer;
+	    #pragma omp for
+	    for (size_type i= 0; i < size_type(mtl::vector::size(first)); ++i)
+		SFunctor::apply( first(i), second(i) );
+	}
+      #else
+	for (size_type i= 0; i < size_type(mtl::vector::size(first)); ++i)
 	    SFunctor::apply( first(i), second(i) );
+      #endif
     }
 
     void dynamic_assign(boost::mpl::true_) // With unrolling
     {
+	typedef typename traits::omp_size_type<size_type>::type size_type;
 	const size_type BSize= traits::unroll_size1<E1>::value0;
 	size_type s= mtl::vector::size(first), sb= s / BSize * BSize;
 
+      #ifdef MTL_WITH_OPENMP
+	# pragma omp parallel
+	{
+	    vampir_trace<8003> tracer;
+	    #pragma omp for
+	    for (size_type i= 0; i < sb; i+= BSize)
+		impl::assign<0, BSize-1, SFunctor>::apply(first, second, i);
+	}
+      #else
 	for (size_type i= 0; i < sb; i+= BSize)
 	    impl::assign<0, BSize-1, SFunctor>::apply(first, second, i);
+      #endif
 
 	for (size_type i= sb; i < s; i++) 
 	    SFunctor::apply( first(i), second(i) );

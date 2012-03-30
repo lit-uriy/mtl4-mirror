@@ -23,6 +23,12 @@ struct lazy_reduction
     const Vector& v;
 };
 
+template <typename Vector, typename Functor>
+inline std::size_t size(const lazy_reduction<Vector, Functor>& lazy)
+{   
+    return size(lazy.v); 
+}
+
 }} // namespace mtl::vector
 
 #endif // MTL_VECTOR_LAZY_REDUCTION_INCLUDE
