@@ -56,4 +56,7 @@ if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   endif(ENABLE_GCOV)
 endif()
 
+set(BUILDNAME "${TESTBUILDNAME}")
+enable_testing()
+include(CTest)
 add_subdirectory(libs)	
