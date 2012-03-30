@@ -23,7 +23,7 @@ INSTALL(DIRECTORY ../../boost
 	PATTERN ".svn" EXCLUDE
        )
 
-INSTALL(FILES ../../MTLConfig.cmake ../../README ../../license.mtl.txt
+INSTALL(FILES ../../MTLConfig.cmake ../../README ../../tools/license/license.mtl.txt
 	../../boost/numeric/mtl/interface/vpt.cpp
 	DESTINATION share/mtl/
        )
@@ -59,7 +59,7 @@ SET(CPACK_PACKAGE_VENDOR "Peter Gottschling & Andrew Lumsdaine")
 SET(CPACK_PACKAGE_VERSION "4.0.${CurrentRevision}")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_TITLE} header files")
 SET(CPACK_PACKAGE_CONTACT "mtl@osl.iu.edu")
-SET(CPACK_RESOURCE_FILE_LICENSE "../../license.mtl.txt") #-> to usr/share/mtl/
+SET(CPACK_RESOURCE_FILE_LICENSE "../../tools/license/license.mtl.txt") #-> to usr/share/mtl/
 SET(CPACK_RESOURCE_FILE_README "../../README") #-> to usr/share/mtl
 SET(CPACK_PACKAGING_INSTALL_PREFIX "/usr/")
 
@@ -68,13 +68,13 @@ SET(CPACK_RPM_PACKAGE_ARCHITECTURE "noarch")
 #DONT use empty lines. everything after an empty line is not displayed
 SET(CPACK_RPM_PACKAGE_DESCRIPTION "${PACKAGE_DESCRIPTION}")
 #TODO: rpm-boost dependence
-SET(CPACK_RPM_PACKAGE_REQUIRES "boost-devel >= 1.36")
+SET(CPACK_RPM_PACKAGE_REQUIRES "boost-devel >= 1.42")
 
 #the debian way..
 SET(CPACK_GENERATOR "DEB" "RPM" "TGZ" "TBZ2" "ZIP")
 SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "all")
 SET(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/preinst" "${CMAKE_CURRENT_SOURCE_DIR}/postrm")
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-dev (>= 1.36)")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-dev (>= 1.42)")
 SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "${PACKAGE_TITLE}\n ${PACKAGE_DESCRIPTION}")
 #SET(CPACK_DEBIAN_PACKAGE_CONFLICTS "pmtl")
 INCLUDE(CPack)
