@@ -23,15 +23,15 @@ INSTALL(DIRECTORY ../../boost
 	PATTERN ".svn" EXCLUDE
        )
 
-INSTALL(FILES MTLConfig.cmake ../../README ../../license.mtl.txt
-	../../tools/cmake/Vampir.cmake ../../boost/numeric/mtl/interface/vpt.cpp
+INSTALL(FILES ../../MTLConfig.cmake ../../README ../../license.mtl.txt
+	../../boost/numeric/mtl/interface/vpt.cpp
 	DESTINATION share/mtl/
        )
 
 #install the helper scripts in tools/cmake
 FILE(GLOB CMAKE_HELPERS ../../tools/cmake/*.cmake)
 INSTALL(FILES ${CMAKE_HELPERS} 
-	DESTINATION share/mtl/cmake
+	DESTINATION share/mtl/tools/cmake
 	)
 
 #configure the uninstall script (will remove each hpp-file in boost/*, but leaves the empty directories)

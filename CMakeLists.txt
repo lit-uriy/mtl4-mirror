@@ -1,116 +1,30 @@
-
 project (mtl4)
 
-cmake_minimum_required(VERSION 2.6)
-include(tools/cmake/Vampir.cmake)
+cmake_minimum_required(VERSION 2.8)
+option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
+#look for mtl4, use THIS directory as mtl dir
+find_package(MTL REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${MTL_INCLUDE_DIRS})
 
+#REMAINING PART USES MTL4
 include(CheckCXXCompilerFlag)
 
-#let cmake look for the svn-version
+#let cmake look for the svn-version, only needed for packages?
 if (NOT MSVC)
-find_package(Subversion)
-if(Subversion_FOUND)
-	Subversion_WC_INFO(${CMAKE_CURRENT_BINARY_DIR} mtlSubinfo)
-	set(CurrentRevision ${mtlSubinfo_WC_REVISION})
+	find_package(Subversion)
+	if(Subversion_FOUND)
+		Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR} mtlSubinfo)
+		set(CurrentRevision ${mtlSubinfo_WC_REVISION})
 #	message("current revision: ${mtlSubinfo_WC_REVISION}")
-else(Subversion_FOUND)
-	set(CurrentRevision "0")
-endif(Subversion_FOUND)
+	else(Subversion_FOUND)
+		set(CurrentRevision "0")
+	endif(Subversion_FOUND)
 endif (NOT MSVC)
+
 configure_file(boost/numeric/mtl/version.hpp.in boost/numeric/mtl/version.hpp @ONLY)
-#in general, there are no mtl libraries
-unset(MTL_LIBRARIES )
-# DERIVED VARIABLES
-# no derived variables, this makefile is the toplevel makefile for boost mtl4
+add_definitions("-DMTL_ASSERT_FOR_THROW")
 
-
-# The BOOST_INCLUDE_DIR needs to point to the release BOOST tree
-# so that we can pick up boost/test/minimal.hpp
-# set (BOOST_ROOT "please-set-boost-include-dir" CACHE STRING "BOOST include directory")
-
-################ LINUX
-#Find Boost  on Linux
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  message(STATUS "You use : "${CMAKE_SYSTEM_NAME})   #system name
-  
-  #Path of Boost
-  set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
-  find_package(Boost)
-
-  if(Boost_FOUND)
-   message(STATUS "Boost in " ${Boost_INCLUDE_DIR}) #directory of Boost
-   set (BOOST_ROOT ${Boost_INCLUDE_DIR})
-  endif(Boost_FOUND)
-
-  #Find Manualy the path of Boost
-  if(NOT Boost_FOUND)
-    if(NOT IS_DIRECTORY /usr/include/boost)
-      message(FATAL_ERROR "Searching Manually Boost: FATAL ERROR: Boost Not Found in /usr/include/boost, Please set BOOST_ROOT")
-    else(NOT IS_DIRECTORY /usr/include/boost)
-      set (BOOST_ROOT /usr/include/boost/)
-      message(STATUS "Searching Manually Boost: Boost Found in /usr/include/boost/")
-      find_package(Boost)
-    endif(NOT IS_DIRECTORY /usr/include/boost)
-  endif(NOT Boost_FOUND)
-
-endif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-
-################ END LINUX
-
-################ WINDOWS
-
-#Find Boost  on Windows
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
- message(STATUS ${CMAKE_SYSTEM_NAME})
- 
-  #Path of Boost
-  set (BOOST_ROOT $ENV{BOOST_ROOT} CACHE PATH "BOOST include directory")
-  find_package(Boost)
-  
-  if(Boost_FOUND)
-   message(STATUS "Boost in " ${Boost_INCLUDE_DIR}) #directory of Boost
-   set (BOOST_ROOT ${Boost_INCLUDE_DIR})
-  endif(Boost_FOUND)
-
-    #Find Manualy the path of Boost
-    if(NOT Boost_FOUND)
-      if(NOT IS_DIRECTORY c:/boost)
-        message(FATAL_ERROR "Searching Manually Boost: FATAL ERROR : Boost Not Found in c:/boost, Please set BOOST_ROOT")
-      else(NOT IS_DIRECTORY c:/boost)
-        set (BOOST_ROOT c:/boost)
-        message(STATUS "Searching Manually Boost: Found in c:/boost")
-	find_package(Boost)
-      endif(NOT IS_DIRECTORY c:/boost)
-    endif(NOT Boost_FOUND)
-endif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-
-################ END WINDOWS
-
-# Experimental !!!!
-# add_definitions("-I/home/pgottsch/Software/arprec-2.2.7/include -DMTL_HAS_ARPREC")
-# add_definitions("-static -L/home/pgottsch/Software/arprec-2.2.7/src -larprec")
-
-include(${CMAKE_SOURCE_DIR}/tools/cmake/UMFPACK.cmake)
-if(HAVE_UMFPACK)
-	add_definitions("-DMTL_HAS_UMFPACK")
-	include_directories(${UMFPACK_INCLUDE_DIRS})
-	list(APPEND MTL_LIBRARIES ${UMFPACK_LIBRARIES})
-endif()
-include(${CMAKE_SOURCE_DIR}/tools/cmake/ARPREC.cmake)
-if(HAVE_ARPREC)
-	add_definitions("-DMTL_HAS_ARPREC")
-	include_directories(${ARPREC_INCLUDE_DIRS})
-	list(APPEND MTL_LIBRARIES ${ARPREC_LIBRARIES})
-endif()
-# set the local BOOST MTL4 include directory
-# to pick up the MTL4 include files
-set (MTL_BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "BOOST MTL4 root directory")
-
-# include_directories(${Boost_INCLUDE_DIR})
-include_directories(${BOOST_ROOT} ${MTL_BOOST_ROOT})
-
-
-#################################################################################
+#look for compiler specific settings
 if (MSVC)
 	# to quiet DevStudio 2005 secure code warnings
     add_definitions(/D_SCL_SECURE_NO_WARNINGS)
@@ -122,53 +36,13 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
 endif (MSVC)
 
-#################################################################################
-
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  add_definitions("-Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
   check_cxx_compiler_flag("-Wno-long-long" WITH_NO_LONG_LONG)
   if (${WITH_NO_LONG_LONG})
     message(STATUS "Add -Wno-long-long")
     add_definitions("-Wno-long-long")
   endif()
-endif()
-  
-
-#if(HAVE_VAMPIR_CXX)
-#   add_definitions("-DMTL_HAS_VPT -DVTRACE -vt:inst manual")
-#endif()
-if(ENABLE_VAMPIR AND VAMPIR_FOUND)
-#add_definitions("-DMTL_HAS_VPT -DVTRACE -vt:inst manual")
-	add_definitions("-DMTL_HAS_VPT -DVTRACE")
-	add_definitions(${VT_COMPILE_FLAGS})
-	add_library(mtl_vampir boost/numeric/mtl/interface/vpt.cpp)
-	list(APPEND MTL_LIBRARIES mtl_vampir)
-	set(HAVE_VAMPIR TRUE)
-endif(ENABLE_VAMPIR AND VAMPIR_FOUND)
-
-
-find_program(VALGRIND_COMMAND valgrind)
-if(VALGRIND_COMMAND)
-  set(CTEST_MEMORYCHECK_COMMAND ${VALGRIND_COMMAND})
-endif(VALGRIND_COMMAND)
-
-macro (add_macro_flags)
-  foreach (flag ${ARGV})
-    if (win32)
-      add_definitions("/D${flag}")
-    else()
-      add_definitions("-D${flag}")
-    endif()
-  endforeach()
-endmacro (add_macro_flags)
-
-#add_definitions("-g")
-add_macro_flags("MTL_ASSERT_FOR_THROW")
-
-# message(STATUS "Compiler is ${CMAKE_CXX_COMPILER_ID}")
-
-option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  add_definitions("-Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
   #vampir does not support pedantic..
   if(NOT HAVE_VAMPIR)
     add_definitions("-pedantic")
@@ -182,64 +56,4 @@ if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   endif(ENABLE_GCOV)
 endif()
 
-
-macro (compile_all testing)
-    # cycle through the sources
-    # The directory assumes that each cpp file is a separate test
-    # so, create a executable target and an associated test target
-    foreach (source ${ARGN})
-        get_filename_component (test ${source} NAME_WE)
-	string(REPLACE " " ";" newSource ${source})
-        add_executable (${test} ${newSource})
-	if(MTL_LIBRARIES)
-	  target_link_libraries(${test} ${MTL_LIBRARIES})
-	endif(MTL_LIBRARIES)
-	if(HAVE_VAMPIR)
-	get_target_property(CURLINK ${test} LINK_FLAGS)
-	# message (status "Link flags are ${CURLINK}")
-	if(CURLINK)
-	  set_target_properties(${test} PROPERTIES LINK_FLAGS "${VT_LINK_FLAGS} ${CURLINK}")
-	else()
-	  set_target_properties(${test} PROPERTIES LINK_FLAGS "${VT_LINK_FLAGS}")
-	endif()
-	endif(HAVE_VAMPIR)
-	# add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
-	if (${testing} STREQUAL "true")
-	  # message("testing: ${testing} ${source}")
-	  add_test (${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
-	endif()
-    endforeach (source)
-endmacro (compile_all)
-
-# enable test generation
-set(BUILDNAME "${TESTBUILDNAME}")
-enable_testing()
-include(CTest)
-
-
-# Descent into the test program directory to build the test suite
-# MTL4 test programs
-add_subdirectory("libs/numeric/mtl/test")
-# as well as the example programs
-add_subdirectory("libs/numeric/mtl/examples")
-# Experimental and timing are not compiled by default
-add_subdirectory("libs/numeric/mtl/experimental" EXCLUDE_FROM_ALL)
-add_subdirectory("libs/numeric/mtl/timing" EXCLUDE_FROM_ALL)
-
-# ITL test programs
-add_subdirectory("libs/numeric/itl/test")
-
-
-#################################################################################
-## handy for learning CMAKE and debugging possible problems
-######################## record all the variables CMAKE defined #################
-file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/AllVariables.txt "")
-get_cmake_property(VARS VARIABLES)
-foreach (var ${VARS})
-    file (APPEND ${CMAKE_CURRENT_BINARY_DIR}/AllVariables.txt "${var} \"${${var}}\"\n")
-endforeach (var ${VARS})
-
-
-
-
-
+add_subdirectory(libs)	
