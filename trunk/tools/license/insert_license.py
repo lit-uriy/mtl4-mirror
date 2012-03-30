@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 import os, os.path, shutil, sys, re, fileinput
 
 if len(sys.argv) < 2:

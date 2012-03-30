@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import re
 
-vptfile= open("boost/numeric/mtl/interface/vpt.cpp")
+vptfile= open("../../boost/numeric/mtl/interface/vpt.cpp")
 groupfile= open("vampir_groups.dat", "w")
 
 group_names=['mtl_utilities', 'mtl_fsize', 'mtl_vector', 'mtl_vecmat', 'mtl_matrix', 'mtl_factor', 'mtl_fused', 'mtl_solver', '', 'mtl_app']
