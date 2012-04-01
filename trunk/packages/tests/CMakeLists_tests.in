@@ -3,11 +3,13 @@ project(@USER_PROJECT_NAME@)
 cmake_minimum_required(VERSION 2.8)
 
 find_package(MTL REQUIRED)
-file(GLOB SOURCES ${MTL_DIR}/test/*_test.cpp)
+file(GLOB SOURCES *_test.cpp)
 
+include(CTest)
 foreach (source IN LISTS SOURCES)
 get_filename_component (test ${source} NAME_WE)		# filename without extension
-add_executable (${test} ${source} ${MTL_INCLUDE_DIRS})
+add_executable (${test} ${source})
+add_test(${test} ${test})
 if(MTL_LIBRARIES)
   target_link_libraries(${test} ${MTL_LIBRARIES})
 endif(MTL_LIBRARIES)
