@@ -38,6 +38,11 @@ set(BUILDNAME "${TESTBUILDNAME}")
 enable_testing()
 include(CTest)
 
+if(ENABLE_GCOV)
+	add_definitions("-fprofile-arcs -ftest-coverage")
+	list(APPEND MTL_LIBRARIES "gcov")
+endif(ENABLE_GCOV)
+
 
 # Descent into the test program directory to build the test suite
 # MTL4 test programs
