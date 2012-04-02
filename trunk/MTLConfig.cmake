@@ -8,7 +8,7 @@
 #Umfpack, Arprec
 
 option(ENABLE_OPENMP "switch on to enable OpenMP flags for mtl" OFF)
-find_package(Boost 1.42 REQUIRED)
+find_package(Boost 1.40 REQUIRED)
 if(Boost_FOUND)
 	LIST(APPEND MTL_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 endif(Boost_FOUND)
