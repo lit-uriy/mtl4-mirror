@@ -70,6 +70,7 @@ class gauss_seidel
 		    tmp-= value_a(*aic) * x[col_a(*aic)];	
 	    x[i]= dia_inv[i] * tmp;
 	}
+ 	return x;
     }
 
   private:
