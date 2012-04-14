@@ -9,7 +9,8 @@ void check(const T& des, T g) {
 	if(des != g) {
 		std::stringstream ss;
 		ss<<" got: "<<des<<"\n wanted: "<<g<<"\n ERROR";
- 		std::cout<< "Error= " << ss.str() << "\n";
+ 		//std::cout<< "Error= " << ss.str() << "\n";
+		throw std::runtime_error(ss.str());
 	}
 }
 
@@ -26,7 +27,6 @@ void test(const Vector& vec) {
 	check(one, 1.0);
 	check(two, 2.0);
 	check(four, 4.0);
-	check(four, 1.0); //test check
 }
 
 template< typename Vector >
