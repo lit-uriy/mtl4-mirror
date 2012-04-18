@@ -2219,7 +2219,7 @@ Currently the folling solvers (in alphabetical order) are available:
 - Bi-Conjugate Gradient Stabilized(ell): itl::bicgstab_ell(A, x, b, L, R, iter, ell); 
 - Conjugate Gradient: itl::cg(A, x, b, L, iter); 
 - Conjugate Gradient Squared: itl::cgs(A, x, b, L, iter); 
-- Generalized Minimal Residual method (without restart): itl::gmres_full(A, x, b, L, R, iter, kmax_in); 
+- Generalized Minimal Residual method (without restart): itl::gmres_full(A, x, b, L, R, iter); 
 - Generalized Minimal Residual method with restart: itl::gmres(A, x, b, L, R, iter, restart); 
 - Induced Dimension Reduction on s dimensions (IDR(s)): itl::idr_s(A, x, b, L, R, iter, s); 
 - Quasi-minimal residual: itl::qmr(A, x, b, L, R, iter); and
