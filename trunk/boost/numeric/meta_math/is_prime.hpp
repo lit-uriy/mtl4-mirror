@@ -15,7 +15,7 @@
 
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/meta_math/sqrt.hpp>
-#include <boost/config/concept_macros.hpp>
+// #include <boost/config/concept_macros.hpp>
 #ifdef __GXX_CONCEPTS__
 #   include <concepts>
 #endif
