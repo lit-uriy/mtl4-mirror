@@ -236,7 +236,7 @@ struct crtp_minus_assign
   : boost::mpl::if_
      <boost::is_base_of<decrementer_base, Source>,
       detail::assign_decrementer<Vector, Source>,
-      detail::crtp_plus_assign<Vector, Source, typename ashape::ashape<Vector>::type, 
+      detail::crtp_minus_assign<Vector, Source, typename ashape::ashape<Vector>::type, 
 			       typename ashape::ashape<Source>::type>
      >::type
 {};
