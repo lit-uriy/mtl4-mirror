@@ -15,45 +15,64 @@
 #include <cassert>
 #include <boost/numeric/mtl/mtl.hpp>
 
+template <typename Matrix, typename VectorIn>
+struct multiplier
+  : mtl::vector::assigner<multiplier<Matrix, VectorIn> >
+{
+    multiplier(const Matrix& A, const VectorIn& v) : A(A), v(v) {}
+
+    template <typename VectorOut>
+    void assign_to(VectorOut& w) const
+    {
+	A.eval(v, w, mtl::assign::assign_sum());
+    }
+    const Matrix&   A;
+    const VectorIn& v;
+};
+
+
 struct poisson2D_dirichlet
 {
     poisson2D_dirichlet(int m, int n) : m(m), n(n) {}
 
-    template <typename Vector>
-    Vector operator*(const Vector& v) const
+    template <typename VectorIn, typename VectorOut, typename Assign>
+    void eval(const VectorIn& v, VectorOut& w, Assign) const
     {
 	assert(int(size(v)) == m * n);
-	Vector w(m * n);
+	assert(size(v) == size(w));
 
 	// Inner domain
 	for (int i= 1; i < m-1; i++)
 	    for (int j= 1, k= i * n + j; j < n-1; j++, k++) 
-		w[k]= 4 * v[k] - v[k-n] - v[k+n] - v[k-1] - v[k+1]; 
+		Assign::apply(w[k], 4 * v[k] - v[k-n] - v[k+n] - v[k-1] - v[k+1]); 
 	    
 	// Upper border
 	for (int j= 1; j < n-1; j++) 
-	    w[j]= 4 * v[j] - v[j+n] - v[j-1] - v[j+1];
+	    Assign::apply(w[j], 4 * v[j] - v[j+n] - v[j-1] - v[j+1]);
 
 	// Lower border
 	for (int j= 1, k= (m-1) * n + j; j < n-1; j++, k++) 
-	    w[k]= 4 * v[k] - v[k-n] - v[k-1] - v[k+1]; 
+	    Assign::apply(w[k], 4 * v[k] - v[k-n] - v[k-1] - v[k+1]); 
 	
 	// Left border
 	for (int i= 1, k= n; i < m-1; i++, k+= n)
-	    w[k]= 4 * v[k] - v[k-n] - v[k+n] - v[k+1]; 
+	    Assign::apply(w[k], 4 * v[k] - v[k-n] - v[k+n] - v[k+1]); 
 
 	// Right border
 	for (int i= 1, k= n+n-1; i < m-1; i++, k+= n)
-	    w[k]= 4 * v[k] - v[k-n] - v[k+n] - v[k-1]; 
+	    Assign::apply(w[k], 4 * v[k] - v[k-n] - v[k+n] - v[k-1]); 
 
 	// Corners
-	w[0]= 4 * v[0] - v[1] - v[n];
-	w[n-1]= 4 * v[n-1] - v[n-2] - v[2*n - 1];
-	w[(m-1)*n]= 4 * v[(m-1)*n] - v[(m-2)*n] - v[(m-1)*n+1];
-	w[m*n-1]= 4 * v[m*n-1] - v[m*n-2] - v[m*n-n-1];
-
-	return w;
+	Assign::apply(w[0], 4 * v[0] - v[1] - v[n]);
+	Assign::apply(w[n-1], 4 * v[n-1] - v[n-2] - v[2*n - 1]);
+	Assign::apply(w[(m-1)*n], 4 * v[(m-1)*n] - v[(m-2)*n] - v[(m-1)*n+1]);
+	Assign::apply(w[m*n-1], 4 * v[m*n-1] - v[m*n-2] - v[m*n-n-1]);
     }
+
+    template <typename VectorIn>
+    multiplier<poisson2D_dirichlet, VectorIn> operator*(const VectorIn& v) const
+    {	return multiplier<poisson2D_dirichlet, VectorIn>(*this, v);    }
+
     int m, n;
 };
 
@@ -79,12 +98,19 @@ int main(int, char**)
     cout << "A0 * v is " << w1 << endl;
 
     poisson2D_dirichlet A(4, 5);
-    vt  w2;
+    vt  w2(20);
     w2= A * v;
     cout << "A * v is " << w2 << endl;
 
     if (one_norm(vt(w1 - w2)) > 0.001) throw "Wrong result";
 
+#if 0
+    w2+= A * v;
+    if (one_norm(vt(w1 + w1 - w2)) > 0.001) throw "Wrong result";
+
+    w2-= A * v;
+    if (one_norm(vt(w1 - w2)) > 0.001) throw "Wrong result";
+#endif
 
     return 0;
 }
