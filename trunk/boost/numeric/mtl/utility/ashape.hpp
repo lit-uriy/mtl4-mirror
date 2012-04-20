@@ -219,6 +219,12 @@ struct ashape< matrix::outer_product_matrix<Vector1, Vector2> >
     typedef mat<typename ashape<typename mtl::Collection<Vector1>::value_type>::type> type;
 };
 
+template <typename Matrix, typename VectorIn> 
+struct ashape< matrix::multiplier<Matrix, VectorIn> >
+{
+    typedef cvec<scal> type;
+};
+
 // =====
 // Views
 // =====

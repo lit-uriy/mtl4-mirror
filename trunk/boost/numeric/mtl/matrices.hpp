@@ -34,6 +34,7 @@
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/matrix/laplacian_setup.hpp> 
 #include <boost/numeric/mtl/matrix/hessian_setup.hpp> 
+#include <boost/numeric/mtl/matrix/poisson2D_dirichlet.hpp> 
 
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 
