@@ -3698,7 +3698,7 @@ The elimination of the branching in the loop is not a challenge at the programmi
 but rather a question of patience.
 After rearranging the calculation we got rid of all branches:
 
-\include matrix_free_1.cpp
+\include matrix_free_2.cpp
 
 Now we can address the issue of vector copy.
 

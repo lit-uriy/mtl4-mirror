@@ -17,7 +17,7 @@ struct poisson2D_dirichlet
     Vector operator*(const Vector& v) const
     {
 	assert(int(size(v)) == m * n);
-	Vector w(m * n, typename Vector::value_type(0));
+	Vector w(m * n);
 
 	// Inner domain
 	for (int i= 1; i < m-1; i++)

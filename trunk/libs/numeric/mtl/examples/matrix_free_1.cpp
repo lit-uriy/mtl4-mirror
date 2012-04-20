@@ -11,8 +11,8 @@ struct poisson2D_dirichlet
     template <typename Vector>
     Vector operator*(const Vector& v) const
     {
-	assert(size(v) == m * n);
-	Vector w(m * n, typename Vector::value_type(0));
+	assert(int(size(v)) == m * n);
+	Vector w(m * n);
 	
 	for (int i= 0; i < m; i++)
 	    for (int j= 0; j < n; j++) {
