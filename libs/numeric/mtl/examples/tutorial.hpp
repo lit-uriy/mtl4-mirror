@@ -3672,16 +3672,37 @@ Given the significant performance gap between floating point operations and memo
 matrix-free methods became quite popular.
 On this page we like to demonstrate how a matrix-free linear operator can be implemented in MTL4.
 
-\section matrix_free_simple Simple Example
+\section matrix_free_simple Simple example
 
 We start with a relatively simple implementation of an operator that represents a 5-point stencil
 for a Poisson operator on a 2D rectangular domain:
 
 \include matrix_free_1.cpp
 
-Unfortunately, the type-trait ashape::ashape_aux is necessary to avoid ambiguities.
+Unfortunately, the type trait ashape::ashape_aux is necessary to avoid ambiguities.
 MTL4 considers all unknown types as scalars which is handy most of the time but less convenient
 in this case.
+
+Despite the type trait the example is still relatively simple.
+But it is not very efficient.
+Firstly, it contains four ifs in the inner loop.
+Secondly, the resulting vector is copied back.
+Current compilers are already quite smart eliminate copies of return values
+and C++11 offers rvalue-semantics to avoid such copies wherever possible.
+Nonetheless, creating a new object with dynamic memory is still expensive.
+Thus, we will get rid of it without changing the syntax for the user.
+
+\section matrix_free_branchfree Faster stencil computation
+
+The elimination of the branching in the loop is not a challenge at the programming level
+but rather a question of patience.
+After rearranging the calculation we got rid of all branches:
+
+\include matrix_free_1.cpp
+
+Now we can address the issue of vector copy.
+
+
 
 
 \if Navigation \endif
