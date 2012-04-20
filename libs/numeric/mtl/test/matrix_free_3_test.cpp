@@ -17,15 +17,30 @@
 
 template <typename Matrix, typename VectorIn>
 struct multiplier
-  : mtl::vector::assigner<multiplier<Matrix, VectorIn> >
+  : mtl::vector::assigner<multiplier<Matrix, VectorIn> >,
+    mtl::vector::incrementer<multiplier<Matrix, VectorIn> >,
+    mtl::vector::decrementer<multiplier<Matrix, VectorIn> >
 {
     multiplier(const Matrix& A, const VectorIn& v) : A(A), v(v) {}
 
     template <typename VectorOut>
     void assign_to(VectorOut& w) const
     {
-	A.eval(v, w, mtl::assign::assign_sum());
+	A.mult(v, w, mtl::assign::assign_sum());
     }
+
+    template <typename VectorOut>
+    void increment_it(VectorOut& w) const
+    {
+	A.mult(v, w, mtl::assign::plus_sum());
+    }
+
+    template <typename VectorOut>
+    void decrement_it(VectorOut& w) const
+    {
+	A.mult(v, w, mtl::assign::minus_sum());
+    }
+
     const Matrix&   A;
     const VectorIn& v;
 };
@@ -36,7 +51,7 @@ struct poisson2D_dirichlet
     poisson2D_dirichlet(int m, int n) : m(m), n(n) {}
 
     template <typename VectorIn, typename VectorOut, typename Assign>
-    void eval(const VectorIn& v, VectorOut& w, Assign) const
+    void mult(const VectorIn& v, VectorOut& w, Assign) const
     {
 	assert(int(size(v)) == m * n);
 	assert(size(v) == size(w));
@@ -104,13 +119,13 @@ int main(int, char**)
 
     if (one_norm(vt(w1 - w2)) > 0.001) throw "Wrong result";
 
-#if 0
     w2+= A * v;
+    cout << "w2+= A * v is " << w2 << endl;
     if (one_norm(vt(w1 + w1 - w2)) > 0.001) throw "Wrong result";
 
     w2-= A * v;
+    cout << "w2-= A * v is " << w2 << endl;
     if (one_norm(vt(w1 - w2)) > 0.001) throw "Wrong result";
-#endif
 
     return 0;
 }
