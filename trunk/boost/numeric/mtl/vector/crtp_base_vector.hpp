@@ -21,6 +21,8 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
 #include <boost/numeric/mtl/vector/assigner.hpp>
+#include <boost/numeric/mtl/vector/decrementer.hpp>
+#include <boost/numeric/mtl/vector/incrementer.hpp>
 #include <boost/numeric/mtl/operation/mat_cvec_times_expr.hpp>
 #include <boost/numeric/mtl/operation/mult.hpp>
 #include <boost/numeric/mtl/operation/mat_vec_mult.hpp>
@@ -149,12 +151,28 @@ namespace detail {
 	    return type( vector, src );
 	}
     };	
+
+    template <typename Vector, typename Source>
+    struct assign_incrementer
+    {
+	typedef const Vector& type;
+	type operator()(Vector& vector, const Source& src)
+	{
+	    src.increment_it(vector);
+	    return vector;
+	}
+    };
+
 } // namespace detail
 
 template <typename Vector, typename Source>
 struct crtp_plus_assign 
-	: public detail::crtp_plus_assign<Vector, Source, typename ashape::ashape<Vector>::type, 
-	                                  typename ashape::ashape<Source>::type>
+  : boost::mpl::if_
+     <boost::is_base_of<incrementer_base, Source>,
+      detail::assign_incrementer<Vector, Source>,
+      detail::crtp_plus_assign<Vector, Source, typename ashape::ashape<Vector>::type, 
+			       typename ashape::ashape<Source>::type>
+     >::type
 {};
 
 /// Assign-add matrix vector product by calling mult
@@ -199,12 +217,28 @@ namespace detail {
 	    return type(vector, src);
 	}
     };	
+
+    template <typename Vector, typename Source>
+    struct assign_decrementer
+    {
+	typedef const Vector& type;
+	type operator()(Vector& vector, const Source& src)
+	{
+	    src.decrement_it(vector);
+	    return vector;
+	}
+    };
+
 } // namespace detail
 
 template <typename Vector, typename Source>
 struct crtp_minus_assign 
-  : public detail::crtp_minus_assign<Vector, Source, typename ashape::ashape<Vector>::type,
-				     typename ashape::ashape<Source>::type>
+  : boost::mpl::if_
+     <boost::is_base_of<decrementer_base, Source>,
+      detail::assign_decrementer<Vector, Source>,
+      detail::crtp_plus_assign<Vector, Source, typename ashape::ashape<Vector>::type, 
+			       typename ashape::ashape<Source>::type>
+     >::type
 {};
 
 /// Assign-subtract matrix vector product by calling mult

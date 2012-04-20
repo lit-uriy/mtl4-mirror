@@ -21,4 +21,8 @@
 #include <boost/numeric/mtl/vector/mapped_inserter.hpp>
 #include <boost/numeric/mtl/vector/extracter.hpp>
 
+#include <boost/numeric/mtl/vector/assigner.hpp>
+#include <boost/numeric/mtl/vector/decrementer.hpp>
+#include <boost/numeric/mtl/vector/incrementer.hpp>
+
 #endif // MTL_VECTORS_INCLUDE
