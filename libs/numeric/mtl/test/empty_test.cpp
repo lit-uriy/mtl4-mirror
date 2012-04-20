@@ -13,7 +13,7 @@
 #include <iostream>
 #include <boost/numeric/mtl/mtl.hpp>
 
-int main(int , char**)
+int main(int, char**)
 {
     using namespace std;
     
