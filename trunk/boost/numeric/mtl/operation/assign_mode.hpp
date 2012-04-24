@@ -17,6 +17,7 @@
 
 namespace mtl { namespace assign {
 
+/// Functor for assigning the result of a calculation (e.g. a sum) to a typically scalar value
 struct assign_sum
 {
     static const bool init_to_zero= true;
@@ -57,7 +58,7 @@ struct assign_sum
 
 };
 
-
+/// Functor for incrementing a typically scalar value with the result of a calculation (e.g. a sum)
 struct plus_sum
 {
     static const bool init_to_zero= false;
@@ -93,6 +94,7 @@ struct plus_sum
 };
 
 
+/// Functor for incrementing a typically scalar value with the result of a calculation (e.g. a sum)
 struct minus_sum
 {
     static const bool init_to_zero= false;
