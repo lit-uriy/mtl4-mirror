@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/vector/decrementer.hpp>
 #include <boost/numeric/mtl/vector/incrementer.hpp>
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace mtl { namespace vector {
 
@@ -43,6 +44,7 @@ struct mat_cvec_multiplier
     template <typename VectorOut>
     void assign_to(VectorOut& w) const
     {
+	vampir_trace<3068> tracer;
 	A.mult(v, w, mtl::assign::assign_sum());
     }
 
@@ -50,6 +52,7 @@ struct mat_cvec_multiplier
     template <typename VectorOut>
     void increment_it(VectorOut& w) const
     {
+	vampir_trace<3068> tracer;
 	A.mult(v, w, mtl::assign::plus_sum());
     }
 
@@ -57,6 +60,7 @@ struct mat_cvec_multiplier
     template <typename VectorOut>
     void decrement_it(VectorOut& w) const
     {
+	vampir_trace<3068> tracer;
 	A.mult(v, w, mtl::assign::minus_sum());
     }
 

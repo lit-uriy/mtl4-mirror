@@ -216,7 +216,7 @@ template <> std::string vampir_trace<3064>::name("vsmat_cvec_mult");
 template <> std::string vampir_trace<3065>::name("adapt_crs_cvec_mult");
 template <> std::string vampir_trace<3066>::name("dense2D_cvec_mult");
 template <> std::string vampir_trace<3067>::name("square_cvec_mult");
-template <> std::string vampir_trace<3068>::name("");
+template <> std::string vampir_trace<3068>::name("mat_cvec_multiplier");
 template <> std::string vampir_trace<3069>::name("");
 template <> std::string vampir_trace<3070>::name("");
 template <> std::string vampir_trace<3071>::name("");
