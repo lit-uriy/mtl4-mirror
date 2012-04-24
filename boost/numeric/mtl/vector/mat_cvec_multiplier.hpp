@@ -24,6 +24,7 @@
 
 namespace mtl { namespace vector {
 
+/// Helper class for delaying matrix vector multiplication, e.g. for matrix-free operators
 template <typename Matrix, typename VectorIn>
 struct mat_cvec_multiplier
   : assigner<mat_cvec_multiplier<Matrix, VectorIn> >,
@@ -35,20 +36,24 @@ struct mat_cvec_multiplier
 				   typename Collection<VectorIn>::value_type>::result_type value_type;
 
 
+    /// Construct with matrix \p A and vector \p v
     mat_cvec_multiplier(const Matrix& A, const VectorIn& v) : A(A), v(v) {}
 
+    /// Assing the product to vector \p w, if possible directly within w's memory without copying
     template <typename VectorOut>
     void assign_to(VectorOut& w) const
     {
 	A.mult(v, w, mtl::assign::assign_sum());
     }
 
+    /// Increment vector \p w with the product, if possible directly within w's memory without copying
     template <typename VectorOut>
     void increment_it(VectorOut& w) const
     {
 	A.mult(v, w, mtl::assign::plus_sum());
     }
 
+    /// Decrement vector \p w with the product, if possible directly within w's memory without copying
     template <typename VectorOut>
     void decrement_it(VectorOut& w) const
     {

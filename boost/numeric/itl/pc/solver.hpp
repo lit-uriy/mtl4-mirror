@@ -19,13 +19,17 @@
 
 namespace itl { namespace pc {
 
+/// Helper class for delayed (i.e. copy-free) evaluation of preconditioners
 template <typename PC, typename Vector, bool adjoint= false>
 struct solver
   : mtl::vector::assigner<solver<PC, Vector> >
 {
     typedef PC  pc_type;
+
+    /// Constructor taking preconditioner and source vector
     solver(const pc_type& P, const Vector& x) : P(P), x(x) {}
 
+    /// Assign result to vector \p y, if possible without copying
     template <typename VectorOut>
     void assign_to(VectorOut& y) const
     {	

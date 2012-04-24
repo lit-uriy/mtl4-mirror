@@ -3764,6 +3764,38 @@ The operator cannot be used with solvers that utilize a transposed matrix: bicg 
 All other solvers work with the presented solution.
 On (sufficient) demand we can add this feature.
 
+\section matrix_free_pc Matrix-free preconditioning
+
+Except the pseudo-preconditioner itl::pc::identity, MTL4's preconditioner need a
+real matrix for factorization or at least accessing the diagonal.
+Therefore, they will not work with a matrix-free operator.
+
+You will need to define yourself a matrix-free preconditioner in the same manner as before.
+That is writing a function that operates on a vector and computes a new one.
+The main difference is that the class should provide a function solve (instead of mult).
+If the adjoint preconditioning is used - it is in bicg and qmr - 
+you must also define a function adjoint_solve.
+
+
+The evaluation can be delayed by using the helper class itl::pc::solver.
+The free function solve (to be defined in the same namespace as your preconditioner)
+must return an object of type itl::pc::solver parameterized with your preconditioner
+and the vector argument type.
+
+The following examples illustrates how to define a diagonal preconditioner for the 2D
+Poisson equation:
+
+\include matrix_free_pcg.cpp
+
+Admittedly, the preconditioning is useless for a constant diagonal and the distinction
+between solve and adjoint_solve is not necessary here either.
+
+However, the example demonstrates how a matrix-free preconditioner can be incorporated into
+MTL4.
+
+
+
+
 \if Navigation \endif
   Return to \ref fem15 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref overview_ops 
 

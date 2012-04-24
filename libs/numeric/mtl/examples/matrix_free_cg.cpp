@@ -19,7 +19,7 @@ int main(int, char**)
     b = A * x;
     x= 0;
     itl::cyclic_iteration<double>             iter(b, 100, 1.e-11, 0.0, 5);
-    cg(A, x, b, P, P, iter);
+    cg(A, x, b, P, iter);
 
     return 0;
 }
