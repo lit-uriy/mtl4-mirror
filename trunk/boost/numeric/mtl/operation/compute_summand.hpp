@@ -54,6 +54,22 @@ struct compute_summand< mat_cvec_times_expr<Matrix, CVector> >
     CVector value;
 };
 	
+/// Specialization for matrix vector products
+template <typename Matrix, typename CVector>
+struct compute_summand< vector::mat_cvec_multiplier<Matrix, CVector> >
+{
+    typedef CVector    type;
+
+    compute_summand(const vector::mat_cvec_multiplier<Matrix, CVector>& expr) 
+      : value(num_rows(expr.A))
+    {
+	vampir_trace<3005> tracer;
+	expr.assign_to(value);
+    }
+
+    CVector value;
+};
+	
 }} // namespace mtl::operation
 
 #endif // MTL__OPERATION_COMPUTE_SUMMAND_INCLUDE

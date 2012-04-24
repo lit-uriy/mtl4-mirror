@@ -7,8 +7,6 @@
 
 int main(int, char**)
 {
-    // Multiplier from atrix-free types doesn't work with r= b - A*x and fusion
-#if 0 
     // For a more realistic example set size to 1000 or larger
     const int size = 10, N = size * size;
 
@@ -22,7 +20,6 @@ int main(int, char**)
     x= 0;
     itl::cyclic_iteration<double>             iter(b, 100, 1.e-11, 0.0, 5);
     cg(A, x, b, P, iter);
-#endif
 
     return 0;
 }

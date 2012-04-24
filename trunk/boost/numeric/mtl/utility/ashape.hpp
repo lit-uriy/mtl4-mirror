@@ -220,7 +220,7 @@ struct ashape< matrix::outer_product_matrix<Vector1, Vector2> >
 };
 
 template <typename Matrix, typename VectorIn> 
-struct ashape< matrix::multiplier<Matrix, VectorIn> >
+struct ashape< vector::mat_cvec_multiplier<Matrix, VectorIn> >
 {
     typedef cvec<scal> type;
 };

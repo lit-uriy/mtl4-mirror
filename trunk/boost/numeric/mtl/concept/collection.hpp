@@ -879,6 +879,18 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+#else
+    template <typename Matrix, typename VectorIn>
+    struct Collection<mtl::vector::mat_cvec_multiplier<Matrix, VectorIn> >
+    {
+	typedef typename Multiplicable<typename Collection<Matrix>::value_type,
+				       typename Collection<VectorIn>::value_type>::result_type value_type;
+	typedef const value_type&                   const_reference;
+	typedef typename Collection<Matrix>::size_type  size_type;
+    };
+#endif
+
 
 #ifdef __GXX_CONCEPTS__
 

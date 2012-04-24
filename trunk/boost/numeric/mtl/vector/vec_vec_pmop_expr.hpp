@@ -13,6 +13,7 @@
 #ifndef MTL_VECTOR_VEC_VEC_PMOP_EXPR_INCLUDE
 #define MTL_VECTOR_VEC_VEC_PMOP_EXPR_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/compute_summand.hpp>

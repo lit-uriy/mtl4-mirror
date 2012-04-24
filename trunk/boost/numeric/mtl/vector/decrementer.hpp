@@ -21,6 +21,7 @@ struct decrementer_base {};
 template <typename Derived>
 struct decrementer : decrementer_base
 {
+    /// Function that must be defined in \p Derived where it is called by static down-cast
     template <typename Vector>
     void decrement_it(Vector& tgt) const
     {
