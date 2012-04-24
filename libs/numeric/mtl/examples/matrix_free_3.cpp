@@ -78,7 +78,8 @@ int main(int, char**)
     cout << "v is " << v << endl;
 
     poisson2D_dirichlet A(4, 5);
-    vt  w2(20);
+    vt                  w2(20);
+
     w2= A * v;
     cout << "A * v is " << w2 << endl;
 

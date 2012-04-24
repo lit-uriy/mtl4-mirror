@@ -3702,8 +3702,67 @@ After rearranging the calculation we got rid of all branches:
 
 Now we can address the issue of vector copy.
 
+\section matrix_free_copyfree Avoiding the copy of the resulting vector
 
+Creating new vectors is quite expensive (we measured this several times).
+It is not only the time for the dynamic construction and destruction but also
+memory access is slower subsequently (cache and TLB misses).
+Even with a fair amount of calculations like a matrix vector product or 
+a preconditioner the overhead is not amortized.
+C++11 offers move semantics that allows avoiding to copy temporary vectors;
+this is a significant improvement but still perceivably slower than performing the calculations 
+directly in the target vector.
 
+For this purpose, we write our multiplication in a member function called mult
+that takes the target vector as a mutable reference.
+To use this function for incrementing and decrementing we also pass a functor as third argument.
+Now we can compute the product of A and v and assign it to w2 by:
+\code 
+  A.mult(v, w2, mtl::assign::assign_sum()); // w2= A * v;
+\endcode
+without copying the result to w2.
+
+Likewise we can increment and decrement the vectors:
+\code 
+  A.mult(v, w2, mtl::assign::plus_sum());  // w2+= A * v;
+  A.mult(v, w2, mtl::assign::minus_sum()); // w2-= A * v;
+\endcode
+This is of course everything else than elegant.
+
+To enable a natural notation we define an operator* that returns an object with references
+to A and v.
+The multiplication is later performed during the assignment to the target vector.
+This delayed evaluation is achieved by the class vector::mat_cvec_multiplier.
+The details of its implementation are a bit tricky are omitted here.
+What is important for the user is to define the free functions:
+- size
+- num_rows
+- num_cols
+.
+and the typetraits:
+- Collection (in namespace mtl)
+- ashape (in namespace mtl::ashape).
+.
+These functions and type traits are needed in MTL4 functions like the iterative solvers
+and must be provided by the matrix-free linear operator.
+
+An example of a copy-free implementation reads:
+
+\include matrix_free_3.cpp
+
+If you run this code on large examples you should see significantly better performance than with the
+previous implementations.
+
+\section matrix_free_solver Matrix-free solver
+
+The matrix-free linear operator from the previous section can be used in most solvers, 
+e.g., conjugate gradients:
+
+\include matrix_free_cg.cpp
+
+The operator cannot be used with solvers that utilize a transposed matrix: bicg and qmr.
+All other solvers work with the presented solution.
+On (sufficient) demand we can add this feature.
 
 \if Navigation \endif
   Return to \ref fem15 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref overview_ops 
