@@ -227,6 +227,10 @@ struct element_structure
   : sparse_matrix
 {};
 
+/// Tag for mat_cvec_multiplier
+struct mat_cvec_multiplier
+  : col_vector
+{};
 
 /// Tag for implicit dense matrices
 

@@ -276,6 +276,12 @@ struct category< mtl::matrix::banded_view<Matrix> >
   : public detail::simple_matrix_view_category<Matrix>
 {};
 
+template <typename Matrix, typename VectorIn>
+struct category< mtl::vector::mat_cvec_multiplier<Matrix, VectorIn> >
+{
+    typedef tag::mat_cvec_multiplier type;
+};
+
 template <typename PC, typename Vector, bool Adjoint>
 struct category<itl::pc::solver<PC, Vector, Adjoint> >
 {

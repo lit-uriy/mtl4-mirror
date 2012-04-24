@@ -21,6 +21,7 @@ struct incrementer_base {};
 template <typename Derived>
 struct incrementer : incrementer_base
 {
+    /// Function that must be defined in \p Derived where it is called by static down-cast
     template <typename Vector>
     void increment_it(Vector& tgt) const
     {

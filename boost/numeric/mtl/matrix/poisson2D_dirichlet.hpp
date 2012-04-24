@@ -13,21 +13,22 @@
 #ifndef MTL_MATRIX_POISSON2D_DIRICHLET_INCLUDE
 #define MTL_MATRIX_POISSON2D_DIRICHLET_INCLUDE
 
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
-#include <boost/numeric/mtl/matrix/multiplier.hpp>
+#include <boost/numeric/mtl/vector/mat_cvec_multiplier.hpp>
 
 namespace mtl { namespace matrix {
 
 struct poisson2D_dirichlet
 {
-    poisson2D_dirichlet(int m, int n) : m(m), n(n) {}
+    poisson2D_dirichlet(int m, int n) : m(m), n(n), s(m * n) {}
 
     template <typename VectorIn, typename VectorOut, typename Assign>
     void mult(const VectorIn& v, VectorOut& w, Assign) const
     {
-	MTL_DEBUG_THROW_IF(int(size(v)) == m * n, incompatible_size());
-	MTL_DEBUG_THROW_IF(size(v) == size(w), incompatible_size());
+	MTL_DEBUG_THROW_IF(int(size(v)) != s, incompatible_size());
+	MTL_DEBUG_THROW_IF(size(v) != size(w), incompatible_size());
 
 	// Inner domain
 	for (int i= 1; i < m-1; i++)
@@ -58,18 +59,31 @@ struct poisson2D_dirichlet
     }
 
     template <typename VectorIn>
-    multiplier<poisson2D_dirichlet, VectorIn> operator*(const VectorIn& v) const
-    {	return multiplier<poisson2D_dirichlet, VectorIn>(*this, v);    }
+    vector::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn> operator*(const VectorIn& v) const
+    {	return vector::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn>(*this, v);    }
 
-    int m, n;
+    int m, n, s;
 };
 
+inline std::size_t size(const poisson2D_dirichlet& A) { return A.s * A.s; }
+inline std::size_t num_rows(const poisson2D_dirichlet& A) { return A.s; }
+inline std::size_t num_cols(const poisson2D_dirichlet& A) { return A.s; }
 
 }} // namespace mtl::matrix
 
-namespace mtl { namespace ashape {
-    template <> struct ashape_aux<matrix::poisson2D_dirichlet> 
-    {	typedef nonscal type;    };
-}}
+namespace mtl { 
+
+    template <>
+    struct Collection<matrix::poisson2D_dirichlet>
+    {
+	typedef double value_type;
+	typedef int    size_type;
+    };
+
+    namespace ashape {
+	template <> struct ashape_aux<matrix::poisson2D_dirichlet> 
+	{	typedef nonscal type;    };
+    }
+}
 
 #endif // MTL_MATRIX_POISSON2D_DIRICHLET_INCLUDE

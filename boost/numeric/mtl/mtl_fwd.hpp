@@ -128,8 +128,6 @@ namespace mtl {
 	template <typename Matrix>  struct banded_view;
 	template <typename Matrix> struct indirect;
 
-	template <typename Matrix, typename VectorIn> struct multiplier;
-
 	template <typename Matrix> std::size_t size(const banded_view<Matrix>&);
 	template <class Matrix> std::size_t size(const transposed_view<Matrix>&);
 	template <typename Functor, typename Matrix> std::size_t size(const map_view<Functor, Matrix>&);
@@ -179,6 +177,8 @@ namespace mtl {
 
 	template <typename Vector, typename Functor> struct lazy_reduction;
 
+	template <typename Matrix, typename VectorIn> struct mat_cvec_multiplier;
+
 	template <typename Value, typename Parameters, typename Value2>
 	inline void fill(dense_vector<Value, Parameters>& vector, const Value2& value);
 	
@@ -217,6 +217,9 @@ namespace mtl {
 
 	template <typename E1, typename E2>
 	std::size_t inline size(const mat_cvec_times_expr<E1, E2>& x);
+
+	template <typename Matrix, typename VectorIn>
+	std::size_t size(const mat_cvec_multiplier<Matrix, VectorIn>& m);
 
 	/// Namespace for fixed vector dimension types
 	namespace fixed {

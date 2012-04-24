@@ -4,40 +4,9 @@
 #include <cassert>
 #include <boost/numeric/mtl/mtl.hpp>
 
-template <typename Matrix, typename VectorIn>
-struct multiplier
-  : mtl::vector::assigner<multiplier<Matrix, VectorIn> >,
-    mtl::vector::incrementer<multiplier<Matrix, VectorIn> >,
-    mtl::vector::decrementer<multiplier<Matrix, VectorIn> >
-{
-    multiplier(const Matrix& A, const VectorIn& v) : A(A), v(v) {}
-
-    template <typename VectorOut>
-    void assign_to(VectorOut& w) const
-    {
-	A.mult(v, w, mtl::assign::assign_sum());
-    }
-
-    template <typename VectorOut>
-    void increment_it(VectorOut& w) const
-    {
-	A.mult(v, w, mtl::assign::plus_sum());
-    }
-
-    template <typename VectorOut>
-    void decrement_it(VectorOut& w) const
-    {
-	A.mult(v, w, mtl::assign::minus_sum());
-    }
-
-    const Matrix&   A;
-    const VectorIn& v;
-};
-
-
 struct poisson2D_dirichlet
 {
-    poisson2D_dirichlet(int m, int n) : m(m), n(n) {}
+    poisson2D_dirichlet(int m, int n) : m(m), n(n), s(m * n) {}
 
     template <typename VectorIn, typename VectorOut, typename Assign>
     void mult(const VectorIn& v, VectorOut& w, Assign) const
@@ -74,16 +43,30 @@ struct poisson2D_dirichlet
     }
 
     template <typename VectorIn>
-    multiplier<poisson2D_dirichlet, VectorIn> operator*(const VectorIn& v) const
-    {	return multiplier<poisson2D_dirichlet, VectorIn>(*this, v);    }
+    mtl::vector::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn> operator*(const VectorIn& v) const
+    {	return mtl::vector::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn>(*this, v);    }
 
-    int m, n;
+    int m, n, s;
 };
 
-namespace mtl { namespace ashape {
-    template <> struct ashape_aux<poisson2D_dirichlet> 
-    {	typedef nonscal type;    };
-}}
+inline std::size_t size(const poisson2D_dirichlet& A) { return A.s * A.s; }
+inline std::size_t num_rows(const poisson2D_dirichlet& A) { return A.s; }
+inline std::size_t num_cols(const poisson2D_dirichlet& A) { return A.s; }
+
+namespace mtl { 
+
+    template <>
+    struct Collection<poisson2D_dirichlet>
+    {
+	typedef double value_type;
+	typedef int    size_type;
+    };
+
+    namespace ashape {
+	template <> struct ashape_aux<poisson2D_dirichlet> 
+	{	typedef nonscal type;    };
+    }
+}
 
 int main(int, char**)
 {

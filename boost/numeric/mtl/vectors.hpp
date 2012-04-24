@@ -25,4 +25,8 @@
 #include <boost/numeric/mtl/vector/decrementer.hpp>
 #include <boost/numeric/mtl/vector/incrementer.hpp>
 
+// To find operators
+#include <boost/numeric/mtl/vector/vec_vec_minus_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_plus_expr.hpp>
+
 #endif // MTL_VECTORS_INCLUDE

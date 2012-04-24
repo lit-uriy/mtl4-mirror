@@ -47,6 +47,11 @@ template <typename V1, typename Matrix, typename V2, typename Assign>
 struct index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matrix, V2>, Assign> >
   : is_row_major<Matrix> {};
 
+template <typename V1, typename Matrix, typename V2, typename Assign>
+struct index_evaluatable<lazy_assign<V1, mtl::vector::mat_cvec_multiplier<Matrix, V2>, Assign> >
+  : boost::mpl::false_ 
+{};
+
 #endif // not MTL_WITH_OPENMP
 
 /// Type trait to control whether evaluation should be unrolled
@@ -63,12 +68,6 @@ struct unrolled_index_evaluatable<lazy_assign<T, U, Assign> >
       boost::mpl::and_<is_scalar<T>, is_vector_reduction<U> >
     >
 {};
-
-#if 0 // Even mat-vec-mult is faster when unrolled (on small matrices, on large it doesn't matter)
-template <typename V1, typename Matrix, typename V2, typename Assign>
-struct unrolled_index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matrix, V2>, Assign> >
-  : boost::mpl::false_ {};
-#endif
 
 #endif // not MTL_WITH_OPENMP
 
@@ -96,19 +95,12 @@ template <typename V1, typename Matrix, typename Factorizer, typename Value, typ
 struct backward_index_evaluatable<lazy_assign<V1, itl::pc::solver<itl::pc::ilu<Matrix, Factorizer, Value>, V2, true>, assign::assign_sum> >
  : boost::mpl::true_ {};
 
-#if 0
-template <typename V1, typename Matrix, typename Value, typename V2>
-struct backward_index_evaluatable<lazy_assign<V1, itl::pc::ic_0_solver<Matrix, Value, V2>, assign::assign_sum> >
- : boost::mpl::true_ {};
-
-// avoid dense specialization
-template <typename V1, typename MValue, typename Para, typename Factorizer, typename Value, typename V2>
-struct backward_index_evaluatable<lazy_assign<V1, itl::pc::ilu_solver<compressed2D<MValue, Para>, Factorizer, Value, V2>, assign::assign_sum> >
- : boost::mpl::true_ {};
-#endif
-
 #endif // not MTL_WITH_OPENMP
 
 }} // namespace mtl::traits
+
+
+
+
 
 #endif // MTL_TRAITS_INDEX_EVALUATABLE_INCLUDE

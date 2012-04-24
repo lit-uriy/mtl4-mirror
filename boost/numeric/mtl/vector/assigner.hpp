@@ -21,6 +21,7 @@ struct assigner_base {};
 template <typename Derived>
 struct assigner : assigner_base
 {
+    /// Function that must be defined in \p Derived where it is called by static down-cast
     template <typename Vector>
     void assign_to(Vector& tgt) const
     {
