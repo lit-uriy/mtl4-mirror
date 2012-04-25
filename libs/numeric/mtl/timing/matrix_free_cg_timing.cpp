@@ -1,5 +1,3 @@
-// Filename: matrix_free_cg.cpp (part of MTL4)
-
 #include <iostream>
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
@@ -23,3 +21,4 @@ int main(int, char**)
 
     return 0;
 }
+// Filename: matrix_free_cg_timing.cpp (part of MTL4)

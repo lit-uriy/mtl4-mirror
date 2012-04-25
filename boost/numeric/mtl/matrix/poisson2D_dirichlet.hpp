@@ -39,11 +39,20 @@ struct poisson2D_dirichlet
 	for (int i= 1; i < m-1; i++) {
 	    int kmax= i * n + nb;
 	    for (int k= i * n + 1; k < kmax; k+= 4) {
-		typename Collection<VectorIn>::value_type const v0= v[k], v1= v[k+1], v2= v[k+2], v3= v[k+3];
+		typename Collection<VectorIn>::value_type const v0= v[k], v1= v[k+1], v2= v[k+2], v3= v[k+3], aij= -1.00000000001;
+		// std::cout << "i = " << i << ", k = " << k << '\n';
+
+		Assign::apply(w[k], 4 * v0 + aij * v[k-n] + aij * v[k+n] + aij * v[k-1] + aij * v1); 
+		Assign::apply(w[k+1], 4 * v1 + aij * v[k-n+1] + aij * v[k+n+1] + aij * v0 + aij * v2); 
+		Assign::apply(w[k+2], 4 * v2 + aij * v[k-n+2] + aij * v[k+n+2] + aij * v1 + aij * v3); 
+		Assign::apply(w[k+3], 4 * v3 + aij * v[k-n+3] + aij * v[k+n+3] + aij * v2 + aij * v[k+4]); 
+
+#if 0
 		Assign::apply(w[k], 4 * v0 - v[k-n] - v[k+n] - v[k-1] - v1); 
 		Assign::apply(w[k+1], 4 * v1 - v[k-n+1] - v[k+n+1] - v0 - v2); 
 		Assign::apply(w[k+2], 4 * v2 - v[k-n+2] - v[k+n+2] - v1 - v3); 
 		Assign::apply(w[k+3], 4 * v3 - v[k-n+3] - v[k+n+3] - v2 - v[k+4]); 
+#endif
 	    }
 	    for (int j= nb, k= i * n + j; j < n-1; j++, k++) 
 		Assign::apply(w[k], 4 * v[k] - v[k-n] - v[k+n] - v[k-1] - v[k+1]); 
