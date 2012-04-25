@@ -21,4 +21,3 @@ int main(int, char**)
 
     return 0;
 }
-// Filename: matrix_free_cg_timing.cpp (part of MTL4)

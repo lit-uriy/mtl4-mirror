@@ -3790,6 +3790,9 @@ This corresponds to a performance of 940-970MFlops:
 \image html matrix_free_cg_vampir.png
 
 This implementation clearly outperforms explicitly stored matrices.
+(If we would perform the same FP operations -- i.e.
+multiply with -1 instead of subtracting -- 
+the operator takes slightly over 6ms and performs at almost 1.4GFlops on the test machine.)
 On the other hand the product of a CRS matrix with a vector provides an OpenMP acceleration
 that can multiply the performance.
 Please note that the
