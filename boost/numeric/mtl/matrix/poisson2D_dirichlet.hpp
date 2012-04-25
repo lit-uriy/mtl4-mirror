@@ -20,20 +20,34 @@
 
 namespace mtl { namespace matrix {
 
+/// Matrix-free linear operator for a Poisson equation on a rectangular domain of \p m by \p n with Dirichlet boundary conditions
 struct poisson2D_dirichlet
 {
+    /// Constructor
     poisson2D_dirichlet(int m, int n) : m(m), n(n), s(m * n) {}
 
+    /// Member function that realizes the multiplication
     template <typename VectorIn, typename VectorOut, typename Assign>
     void mult(const VectorIn& v, VectorOut& w, Assign) const
     {
 	MTL_DEBUG_THROW_IF(int(size(v)) != s, incompatible_size());
 	MTL_DEBUG_THROW_IF(size(v) != size(w), incompatible_size());
 
+	const int nb = n < 3 ? 1 : (n - 2) / 4 * 4 + 1;
+
 	// Inner domain
-	for (int i= 1; i < m-1; i++)
-	    for (int j= 1, k= i * n + j; j < n-1; j++, k++) 
+	for (int i= 1; i < m-1; i++) {
+	    int kmax= i * n + nb;
+	    for (int k= i * n + 1; k < kmax; k+= 4) {
+		typename Collection<VectorIn>::value_type const v0= v[k], v1= v[k+1], v2= v[k+2], v3= v[k+3];
+		Assign::apply(w[k], 4 * v0 - v[k-n] - v[k+n] - v[k-1] - v1); 
+		Assign::apply(w[k+1], 4 * v1 - v[k-n+1] - v[k+n+1] - v0 - v2); 
+		Assign::apply(w[k+2], 4 * v2 - v[k-n+2] - v[k+n+2] - v1 - v3); 
+		Assign::apply(w[k+3], 4 * v3 - v[k-n+3] - v[k+n+3] - v2 - v[k+4]); 
+	    }
+	    for (int j= nb, k= i * n + j; j < n-1; j++, k++) 
 		Assign::apply(w[k], 4 * v[k] - v[k-n] - v[k+n] - v[k-1] - v[k+1]); 
+	}
 	    
 	// Upper border
 	for (int j= 1; j < n-1; j++) 
@@ -58,6 +72,7 @@ struct poisson2D_dirichlet
 	Assign::apply(w[m*n-1], 4 * v[m*n-1] - v[m*n-2] - v[m*n-n-1]);
     }
 
+    /// Multiplication is procastinated until we know where the product goes
     template <typename VectorIn>
     vector::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn> operator*(const VectorIn& v) const
     {	return vector::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn>(*this, v);    }
@@ -65,9 +80,9 @@ struct poisson2D_dirichlet
     int m, n, s;
 };
 
-inline std::size_t size(const poisson2D_dirichlet& A) { return A.s * A.s; }
-inline std::size_t num_rows(const poisson2D_dirichlet& A) { return A.s; }
-inline std::size_t num_cols(const poisson2D_dirichlet& A) { return A.s; }
+inline std::size_t size(const poisson2D_dirichlet& A) { return A.s * A.s; } ///< Matrix size
+inline std::size_t num_rows(const poisson2D_dirichlet& A) { return A.s; } ///< Number of rows
+inline std::size_t num_cols(const poisson2D_dirichlet& A) { return A.s; } ///< Number of columns
 
 }} // namespace mtl::matrix
 

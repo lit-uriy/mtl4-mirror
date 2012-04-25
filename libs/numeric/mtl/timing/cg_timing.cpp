@@ -46,7 +46,7 @@ int main()
     b = A * x;
     x= 0;
 
-    itl::cyclic_iteration<double> iter(b, 100, 1.e-2, 0.0, 100);
+    itl::cyclic_iteration<double> iter(b, 10, 1.e-2, 0.0, 100);
     boost::timer t;
     cg(A, x, b, P, iter);
     std::cout << "CG took " << t.elapsed() << "s.\n";

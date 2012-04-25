@@ -3690,7 +3690,20 @@ Secondly, the resulting vector is copied back.
 Current compilers are already quite smart eliminate copies of return values
 and C++11 offers rvalue-semantics to avoid such copies wherever possible.
 Nonetheless, creating a new object with dynamic memory is still expensive.
-Thus, we will get rid of it without changing the syntax for the user.
+In the following performance trace we used the Poisson operator in a conjugate gradient
+method with a 1000 by 1000 domain:
+
+\image html matrix_free_cg_slow_vampir.png
+
+The processor used in this benchmark is somewhat dated: AMD Phentom(tm) 9150e.
+The Poisson operator runs with about 440MFlops and takes about 11ms.
+The impact of copying the result vector is not taken into account because it happens after the 
+function end and let the following function seem slower.
+The overall performance is similar to a calculation with an explicitly stored CRS matrix
+whose product with a vector is well-tuned and can be fused with dot products.
+
+Thus, we will work on faster implementations.
+
 
 \section matrix_free_branchfree Faster stencil computation
 
@@ -3760,7 +3773,27 @@ e.g., conjugate gradients:
 
 \include matrix_free_cg.cpp
 
-The operator cannot be used with solvers that utilize a transposed matrix: bicg and qmr.
+For further acceleration one can unroll the inner loop of the first block and store
+reused vector elements in temporaries as in matrix::poisson2D_dirichlet.
+Then the Poisson operator takes only 5.2-5.5ms on the same processor while at the same time
+the following operation is less slowed down.
+This corresponds to a performance of 940-970MFlops:
+
+\image html matrix_free_cg_vampir.png
+
+This implementation clearly outperforms explicitly stored matrices.
+On the other hand the product of a CRS matrix with a vector provides an OpenMP acceleration
+that can multiply the performance.
+Please note that the
+ impact of OpenMP in sparse operations depends mainly on the number of memory channels
+and only minimally on the number of cores.
+
+Of course, the matrix-free operator can use OpenMP as well but
+it has to implemented by the user.
+Fortunately, this should not be very hard.
+
+The operator cannot be used with solvers that utilize an adjoint operator 
+(i.e. a transposed or conjugate transposed matrix): bicg and qmr.
 All other solvers work with the presented solution.
 On (sufficient) demand we can add this feature.
 
