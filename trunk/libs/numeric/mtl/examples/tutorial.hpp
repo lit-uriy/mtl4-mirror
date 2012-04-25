@@ -3699,10 +3699,18 @@ The processor used in this benchmark is somewhat dated: AMD Phentom(tm) 9150e.
 The Poisson operator runs with about 440MFlops and takes about 11ms.
 The impact of copying the result vector is not taken into account because it happens after the 
 function end and let the following function seem slower.
-The overall performance is similar to a calculation with an explicitly stored CRS matrix
+The overall performance is slightly faster than a calculation with an explicitly stored CRS matrix
 whose product with a vector is well-tuned and can be fused with dot products.
 
-Thus, we will work on faster implementations.
+Paradoxically the FP is lower than that of the explicit product but the run-time is lower as well.
+This is a particular phenomenon of this stencil. 
+The off-diagonal entries are -1 so that multiplication with -1 and the subsequent addition can 
+be replaced by a subtraction.
+Thus the same behavior is achieved with 5 FP operations instead of 9.
+A reduction of operations due to the matrix-free representations only happens for special
+cases, e.g., if 1 or -1 are part of the stencil.
+
+In the following sections, we will work on faster implementations.
 
 
 \section matrix_free_branchfree Faster stencil computation
