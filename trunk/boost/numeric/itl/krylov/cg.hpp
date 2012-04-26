@@ -39,7 +39,7 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
     typedef typename mtl::Collection<HilbertSpaceX>::value_type Scalar;
     typedef typename Iteration::real                            Real;
 
-    Scalar rho(0), rho_1(0), alpha(0), alpha_1;
+    Scalar rho(0), rho_1(0), alpha(0), alpha_1(0);
     Vector p(resource(x)), q(resource(x)), r(resource(x)), z(resource(x));
   
     r = b - A*x;
