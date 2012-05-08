@@ -15,11 +15,11 @@
 
 #ifdef MTL_HAS_VPT
   #include <vt_user.h> 
-  #include <string>
   #include <boost/mpl/bool.hpp>
 #endif 
 
-#include<math.h> 
+#include <math.h> 
+#include <string>
 
 namespace mtl { 
 
