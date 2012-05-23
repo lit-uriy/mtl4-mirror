@@ -160,7 +160,7 @@ struct morton_dense_row_cursor
     {
 	this->advance_row(inc);
 	return *this;
-    };
+    }
 
     self& operator-- ()
     {
@@ -172,7 +172,7 @@ struct morton_dense_row_cursor
     {
 	this->advance_row(-dec);
 	return *this;
-    };
+    }
 
     self operator+ (int inc) const
     {
@@ -215,7 +215,7 @@ struct morton_dense_col_cursor
     {
 	this->advance_col(inc);
 	return *this;
-    };
+    }
 
     self& operator-- ()
     {
@@ -227,7 +227,7 @@ struct morton_dense_col_cursor
     {
 	this->advance_col(-dec);
 	return *this;
-    };
+    }
 
     self operator+ (int inc) const
     {

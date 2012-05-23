@@ -372,7 +372,7 @@ public:
     {
 	using std::swap;
 	swap(x.category, y.category);
-	swap(x.data, y.data);
+	std::swap(x.data, y.data);
 	swap(static_cast<size_base&>(x), static_cast<size_base&>(y));
 	swap(static_cast<alignment_base&>(x), static_cast<alignment_base&>(y));
     }	

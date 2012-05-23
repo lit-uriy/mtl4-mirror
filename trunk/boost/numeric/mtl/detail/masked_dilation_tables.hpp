@@ -120,7 +120,7 @@ private:
 	for (; t; t>>= 1)
 	    if(t & 1) ++n_ones;
 	return n_ones;
-    };
+    }
 
     // return the number of valid bits in the mask
     int count_bits(T t) 
@@ -129,7 +129,7 @@ private:
 	for (; t; t>>= 1)
 	    ++bits;
 	return bits;
-    };
+    }
 
 
     // set mask pieces
@@ -175,7 +175,7 @@ private:
 	// set the number of bits of the last mask
 	mask_piece()[n_valid_table - 1 ] = t_mask;    
 	mask_size()[n_valid_table - 1] = count_bits(t_mask);
-    };
+    }
 
 public:
     

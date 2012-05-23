@@ -47,7 +47,7 @@ namespace itl {
       {}
       
 
-      bool finished() { return super::finished(); };
+      bool finished() { return super::finished(); }
 
       template <typename T>
       bool finished(const T& r) 
