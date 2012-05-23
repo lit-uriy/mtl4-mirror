@@ -110,8 +110,8 @@ class matrix_market_istream
 		insert_value(ins, r-1, c-1, filter, Value());
 	    }
 	else // dense 
-	    for (size_type r= 0; r < nrows; r++)
-		for (size_type c= 0; c < ncols; c++) 
+	    for (std::size_t r= 0; r < nrows; r++)
+		for (std::size_t c= 0; c < ncols; c++) 
 		    insert_value(ins, r, c, filter, Value());
     }
 
@@ -186,15 +186,15 @@ matrix_market_istream& matrix_market_istream::read(Matrix& A, tag::matrix)
     } while (first == '%');
 
     my_stream >> nrows >> ncols;
+    // std::cout << nrows << "x" << ncols << ", " << nnz << " non-zeros\n";	
+    A.change_dim(nrows, ncols);
+    set_to_zero(A);
+
     std::size_t slot_size;
     if (sparsity_text == std::string("coordinate")) {
 	my_stream >> nnz; slot_size= std::size_t(double(nnz) / double(A.dim1()) * 1.25);
     } else
 	slot_size= A.dim2(); // maximal value (if A is dense it does not matter anyway)
-
-    // std::cout << nrows << "x" << ncols << ", " << nnz << " non-zeros\n";	
-    A.change_dim(nrows, ncols);
-    set_to_zero(A);
 
     // Create enough space in sparse matrices
     matrix::inserter<Matrix> ins(A, slot_size);
