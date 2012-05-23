@@ -37,5 +37,8 @@ int main(int , char** )
     for(int k=0;k<10;k++)
         std::cout << Ks(k,k) << std::endl; 
 
+    if (num_rows(Ks) < 20)
+	std::cout << Ks;
+
     return 0;
 }

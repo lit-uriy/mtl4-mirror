@@ -84,7 +84,9 @@ namespace mtl {
         template <typename Value, typename Parameters> 
         typename compressed2D<Value, Parameters>::size_type num_rows(const compressed2D<Value, Parameters>& matrix);
         template <typename Value, typename Parameters> 
-        typename compressed2D<Value, Parameters>::size_type size(const compressed2D<Value, Parameters>& matrix);
+        // typename compressed2D<Value, Parameters>::size_type 
+	std::size_t
+	size(const compressed2D<Value, Parameters>& matrix);
 
         template <typename Value, typename Parameters, typename Updater> struct compressed2D_inserter;
 
