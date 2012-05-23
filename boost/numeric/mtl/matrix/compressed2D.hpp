@@ -581,7 +581,7 @@ struct compressed2D_inserter
     ~compressed2D_inserter()
     {
 	vampir_trace<3051> tracer;
-	if (size(matrix) > 0) {
+	if (num_rows(matrix) > 0 && num_cols(matrix) > 0) {
 	    final_place();
 	    insert_spare();
 	}
@@ -1029,10 +1029,11 @@ inline num_cols(const compressed2D<Value, Parameters>& matrix)
 }
 
 template <typename Value, typename Parameters>
-typename compressed2D<Value, Parameters>::size_type
+// typename compressed2D<Value, Parameters>::size_type risks overflow
+std::size_t
 inline size(const compressed2D<Value, Parameters>& matrix)
 {
-    return matrix.num_cols() * matrix.num_rows();
+    return std::size_t(matrix.num_cols()) * std::size_t(matrix.num_rows());
 }
 
 

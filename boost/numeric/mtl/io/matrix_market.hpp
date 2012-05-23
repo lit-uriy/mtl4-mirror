@@ -192,7 +192,7 @@ matrix_market_istream& matrix_market_istream::read(Matrix& A, tag::matrix)
 
     std::size_t slot_size;
     if (sparsity_text == std::string("coordinate")) {
-	my_stream >> nnz; slot_size= std::size_t(double(nnz) / double(A.dim1()) * 1.25);
+	my_stream >> nnz; slot_size= std::max(std::size_t(double(nnz) / double(A.dim1()) * 1.25), std::size_t(1));
     } else
 	slot_size= A.dim2(); // maximal value (if A is dense it does not matter anyway)
 
