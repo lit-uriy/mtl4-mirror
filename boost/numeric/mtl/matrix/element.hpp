@@ -88,7 +88,7 @@ public:
       : m_indices(p_indices),	
 	m_values(p_values),
 	m_sequence_number(p_sequence_number)
-    {};
+    {}
 
     element() 
       :	m_sequence_number(-1) {}
