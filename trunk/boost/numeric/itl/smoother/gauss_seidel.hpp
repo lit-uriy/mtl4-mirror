@@ -30,14 +30,14 @@ namespace itl {
     Matrix must be square, stored row-major and free of zero entries in the diagonal.
     Vectors b and x must have the same number of rows as A. 
 **/
-template <typename Matrix, typename RHSVector>
+template <typename Matrix>
 class gauss_seidel
 {
     typedef typename mtl::Collection<Matrix>::value_type Scalar;
     typedef typename mtl::Collection<Matrix>::size_type  size_type;
   public:
     /// Construct with constant references to matrix and RHS vector
-    gauss_seidel(const Matrix& A, const RHSVector& b) : A(A), b(b), dia_inv(num_rows(A)) 
+    gauss_seidel(const Matrix& A) : A(A), dia_inv(num_rows(A)) 
     {
 	BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Matrix>::value)); // No CCS
 	assert(num_rows(A) == num_cols(A)); // Matrix must be square
@@ -50,8 +50,8 @@ class gauss_seidel
     }
 
     /// Apply Gauss-Seidel on vector \p x, i.e. \p x is changed
-    template <typename Vector>
-    Vector& operator()(Vector& x)
+    template <typename Vector, typename RHSVector>
+    Vector& operator()(Vector& x, const RHSVector& b)
     {
 	namespace tag= mtl::tag; using namespace mtl::traits;
 	using mtl::begin; using mtl::end; 
@@ -76,22 +76,20 @@ class gauss_seidel
 
    private:
     const Matrix&    A;
-    const RHSVector& b;
     mtl::vector::dense_vector<Scalar>  dia_inv;
 };
 
-    #if 1
-
-template <typename Value, typename Parameters, typename RHSVector>
-class gauss_seidel<mtl::matrix::compressed2D<Value, Parameters>, RHSVector>
+ 
+template <typename Value, typename Parameters>
+class gauss_seidel<mtl::matrix::compressed2D<Value, Parameters> >
 {
     typedef mtl::matrix::compressed2D<Value, Parameters> Matrix;
     typedef typename mtl::Collection<Matrix>::value_type Scalar;
     typedef typename mtl::Collection<Matrix>::size_type  size_type;
   public:
     /// Construct with constant references to matrix and RHS vector
-    gauss_seidel(const Matrix& A, const RHSVector& b) 
-      : A(A), b(b), dia_inv(num_rows(A)), dia_pos(num_rows(A))
+    gauss_seidel(const Matrix& A) 
+      : A(A), dia_inv(num_rows(A)), dia_pos(num_rows(A))
     {
 	BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Matrix>::value)); // No CCS
 	assert(num_rows(A) == num_cols(A)); // Matrix must be square
@@ -105,8 +103,8 @@ class gauss_seidel<mtl::matrix::compressed2D<Value, Parameters>, RHSVector>
     }
 
     /// Apply Gauss-Seidel on vector \p x, i.e. \p x is changed
-    template <typename Vector>
-    Vector& operator()(Vector& x)
+    template <typename Vector, typename RHSVector>
+    Vector& operator()(Vector& x, const RHSVector& b)
     {
 	typedef typename mtl::Collection<Vector>::value_type           value_type;
 	typedef typename mtl::Collection<Matrix>::size_type            size_type; 
@@ -128,12 +126,10 @@ class gauss_seidel<mtl::matrix::compressed2D<Value, Parameters>, RHSVector>
 
   private:
     const Matrix&    A;
-    const RHSVector& b;
     mtl::vector::dense_vector<Scalar>     dia_inv;
     mtl::vector::dense_vector<size_type>  dia_pos;
 };
 
-    #endif
 
 } // namespace itl
 
