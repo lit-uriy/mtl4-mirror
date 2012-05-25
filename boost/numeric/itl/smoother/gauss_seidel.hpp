@@ -41,7 +41,6 @@ class gauss_seidel
     {
 	BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Matrix>::value)); // No CCS
 	assert(num_rows(A) == num_cols(A)); // Matrix must be square
-	assert(num_cols(A) == size(b));     // Incompatible sizes
 	for (size_type i= 0; i < num_rows(A); ++i) {
 	    Scalar a= A[i][i];
 	    MTL_THROW_IF(a == 0, mtl::missing_diagonal());
@@ -93,7 +92,6 @@ class gauss_seidel<mtl::matrix::compressed2D<Value, Parameters> >
     {
 	BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Matrix>::value)); // No CCS
 	assert(num_rows(A) == num_cols(A)); // Matrix must be square
-	assert(num_cols(A) == size(b));     // Incompatible sizes
 	for (size_type i= 0; i < num_rows(A); ++i) {
 	    mtl::utilities::maybe<size_type> pos = A.indexer(A, i, i);
 	    MTL_THROW_IF(!pos, mtl::missing_diagonal());
