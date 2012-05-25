@@ -51,7 +51,7 @@ class gauss_seidel
 
     /// Apply Gauss-Seidel on vector \p x, i.e. \p x is changed
     template <typename Vector, typename RHSVector>
-    Vector& operator()(Vector& x, const RHSVector& b)
+    Vector& operator()(Vector& x, const RHSVector& b) const
     {
 	namespace tag= mtl::tag; using namespace mtl::traits;
 	using mtl::begin; using mtl::end; 
@@ -104,7 +104,7 @@ class gauss_seidel<mtl::matrix::compressed2D<Value, Parameters> >
 
     /// Apply Gauss-Seidel on vector \p x, i.e. \p x is changed
     template <typename Vector, typename RHSVector>
-    Vector& operator()(Vector& x, const RHSVector& b)
+    Vector& operator()(Vector& x, const RHSVector& b) const
     {
 	typedef typename mtl::Collection<Vector>::value_type           value_type;
 	typedef typename mtl::Collection<Matrix>::size_type            size_type; 
