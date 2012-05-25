@@ -35,10 +35,9 @@ int main(int, char**)
     b= A*x;
     x= 0;
 
-    itl::gauss_seidel<Matrix, Vector > gs(A,b);
-    for (int i =0 ; i< 30; i++){
-            x=gs(x);
-    }
+    itl::gauss_seidel<Matrix> gs(A);
+    for (int i =0 ; i< 30; i++)
+        gs(x, b);
     
     std::cout<< "x=" << x << "\n";
     Vector tmp(b-A*x);
