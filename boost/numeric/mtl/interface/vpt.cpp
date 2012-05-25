@@ -15,6 +15,7 @@ namespace vpt {
 // Factorizations, preconditioners:   5000
 // Fused operations:                  6000
 // Iterative solvers:                 7000
+// Multigrid:                         8000
 
 
 // Utilities:                        < 1000
@@ -356,6 +357,34 @@ template <> std::string vampir_trace<8004>::name("omp::crs_cvec_mult");
 
 
 
+// multigrid
+template <> std::string vampir_trace<8501>::name("mtl::mg::w_cycle");
+template <> std::string vampir_trace<8502>::name("mtl::mg::v_cycle");
+template <> std::string vampir_trace<8503>::name("mtl::mg::fmg");
+template <> std::string vampir_trace<8504>::name("mtl::mg::two_grid_cycle");
+
+template <> std::string vampir_trace<8510>::name("mtl::mg::geometric_multigrid_solver");
+template <> std::string vampir_trace<8511>::name("mtl::mg::algebraic_multigrid_solver");
+
+template <> std::string vampir_trace<8520>::name("mtl::mg::linear_restriction");
+template <> std::string vampir_trace<8521>::name("mtl::mg::linear_prolongation");
+
+template <> std::string vampir_trace<8530>::name("mtl::mg::gauss_elimination");
+template <> std::string vampir_trace<8531>::name("mtl::mg::back_substitution");
+
+template <> std::string vampir_trace<8550>::name("mtl::mg::jacobi");
+template <> std::string vampir_trace<8551>::name("mtl::mg::gauss_seidel");
+template <> std::string vampir_trace<8552>::name("mtl::mg::jor");
+template <> std::string vampir_trace<8553>::name("mtl::mg::sor");
+
+template <> std::string vampir_trace<8572>::name("boundaries");
+template <> std::string vampir_trace<8573>::name("viscosity");
+template <> std::string vampir_trace<8574>::name("pressure_correction");
+
+template <> std::string vampir_trace<8590>::name("mtl::mg::util::vtk_exporter");
+template <> std::string vampir_trace<8591>::name("mtl::mg::util::csv_exporter");
+
+
 // Test blocks for performance debugging
 template <> std::string vampir_trace<9901>::name("tb1"); 
 template <> std::string vampir_trace<9902>::name("tb2");
@@ -367,6 +396,8 @@ template <> std::string vampir_trace<9999>::name("main");
 // Only for testing
 template <> std::string vampir_trace<9990>::name("helper_function");
 template <> std::string vampir_trace<9991>::name("function");
+
+
 
 }} //mtl::vpt
 

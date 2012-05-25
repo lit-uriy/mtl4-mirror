@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/matrix/compressed2D.hpp>
 
 namespace itl {
 
@@ -73,12 +74,66 @@ class gauss_seidel
  	return x;
     }
 
-  private:
+   private:
     const Matrix&    A;
     const RHSVector& b;
     mtl::vector::dense_vector<Scalar>  dia_inv;
 };
 
+    #if 1
+
+template <typename Value, typename Parameters, typename RHSVector>
+class gauss_seidel<mtl::matrix::compressed2D<Value, Parameters>, RHSVector>
+{
+    typedef mtl::matrix::compressed2D<Value, Parameters> Matrix;
+    typedef typename mtl::Collection<Matrix>::value_type Scalar;
+    typedef typename mtl::Collection<Matrix>::size_type  size_type;
+  public:
+    /// Construct with constant references to matrix and RHS vector
+    gauss_seidel(const Matrix& A, const RHSVector& b) 
+      : A(A), b(b), dia_inv(num_rows(A)), dia_pos(num_rows(A))
+    {
+	BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Matrix>::value)); // No CCS
+	assert(num_rows(A) == num_cols(A)); // Matrix must be square
+	assert(num_cols(A) == size(b));     // Incompatible sizes
+	for (size_type i= 0; i < num_rows(A); ++i) {
+	    mtl::utilities::maybe<size_type> pos = A.indexer(A, i, i);
+	    MTL_THROW_IF(!pos, mtl::missing_diagonal());
+	    dia_inv[i]= 1.0 / A.value_from_offset(pos);
+	    dia_pos[i]= pos;
+	}
+    }
+
+    /// Apply Gauss-Seidel on vector \p x, i.e. \p x is changed
+    template <typename Vector>
+    Vector& operator()(Vector& x)
+    {
+	typedef typename mtl::Collection<Vector>::value_type           value_type;
+	typedef typename mtl::Collection<Matrix>::size_type            size_type; 
+	const size_type nr= num_rows(A);
+	size_type cj1= A.ref_major()[0];
+	for (size_type i= 0; i < nr; ++i) {
+	    value_type tmp= b[i];
+	    size_type cj0= cj1, cjm= dia_pos[i];
+	    cj1= A.ref_major()[i+1];
+	    for (; cj0 < cjm; cj0++)
+		tmp-= A.data[cj0] * x[A.ref_minor()[cj0]];
+	    for (size_type j= cjm+1; j < cj1; j++)
+		tmp-= A.data[j] * x[A.ref_minor()[j]];
+	    x[i]= dia_inv[i] * tmp; 
+	}	
+ 	return x;
+    }
+
+
+  private:
+    const Matrix&    A;
+    const RHSVector& b;
+    mtl::vector::dense_vector<Scalar>     dia_inv;
+    mtl::vector::dense_vector<size_type>  dia_pos;
+};
+
+    #endif
 
 } // namespace itl
 
