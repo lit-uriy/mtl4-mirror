@@ -2,6 +2,7 @@ project (mtl4)
 
 cmake_minimum_required(VERSION 2.8)
 option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
+option(ENABLE_WARNINGS "enable gnu specific warnings" ON)
 #look for mtl4, use THIS directory as mtl dir
 find_package(MTL REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MTL_INCLUDE_DIRS})
@@ -36,7 +37,7 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
 endif (MSVC)
 
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND ENABLE_WARNINGS)
   add_definitions("-Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
   check_cxx_compiler_flag("-Wno-long-long" WITH_NO_LONG_LONG)
   if (${WITH_NO_LONG_LONG})
