@@ -153,6 +153,8 @@ namespace mtl {
 	template <typename Value, typename Parameters> class sparse_vector;
 	template <typename Functor, typename Vector> struct map_view;
 	template <typename Vector>  struct conj_view;
+	template <typename Vector>  struct real_view;
+	template <typename Vector>  struct imag_view;
 	template <typename Vector>  struct negate_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
 	template <typename Vector, typename RScaling> struct rscaled_view; // added by Hui Li

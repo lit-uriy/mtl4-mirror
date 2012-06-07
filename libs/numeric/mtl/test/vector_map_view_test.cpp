@@ -18,6 +18,8 @@
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/real.hpp>
+#include <boost/numeric/mtl/operation/imag.hpp>
 #include <boost/numeric/mtl/operation/scale.hpp>
 
 #if 0
@@ -76,6 +78,8 @@ ct csvalue(ct)
 template <typename Vector>
 void test(Vector& vector, const char* name)
 {
+    using mtl::real; using mtl::imag;
+
     set_to_zero(vector);
     typename Vector::value_type ref(0);
 
@@ -119,7 +123,13 @@ void test(Vector& vector, const char* name)
     MTL_THROW_IF(scale(2.0, vector)(2) != svalue(ref), mtl::runtime_error("scaling wrong"));
 
     cout << "conjugated vector (free function) \n" << conj(vector) << "\n";
-    MTL_THROW_IF(conj(vector)(2) != cvalue(ref), mtl::runtime_error("conjugating wrong"));
+    MTL_THROW_IF(conj(vector)[2] != cvalue(ref), mtl::runtime_error("conjugating wrong"));
+
+    cout << "real vector (free function) \n" << real(vector) << "\n";
+    MTL_THROW_IF(real(vector)[2] != real(value(ref)), mtl::runtime_error("real part wrong"));
+
+    cout << "imag vector (free function) \n" << imag(vector) << "\n";
+    MTL_THROW_IF(imag(vector)[2] != imag(value(ref)), mtl::runtime_error("imag part wrong"));
 
     cout << "vector scaled with i (complex(0, 1)) (free function)\n" << scale(ct(0.0, 1.0), vector) << "\n";
     MTL_THROW_IF(scale(ct(0.0, 1.0), vector)(2) != csvalue(ref), mtl::runtime_error("complex scaling wrong"));

@@ -14,7 +14,12 @@
 #define MTL_REAL_INCLUDE
 
 #include <complex>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
+#include <boost/numeric/mtl/utility/tag.hpp>
+#include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
+#include <boost/numeric/mtl/vector/map_view.hpp>
 
 namespace mtl {
 
@@ -29,14 +34,23 @@ namespace sfunctor {
 	{
 	    return v;
 	}
+
+	Value operator()(const Value& v) const
+	{
+	    return v;
+	}
     };
 
     template <typename Value>
     struct real<std::complex<Value> >
     {
-	typedef std::complex<Value> result_type;
+	typedef Value result_type;
 
 	static inline result_type apply(const std::complex<Value>& v)
+	{
+	    return std::real(v);
+	}
+	result_type operator()(const std::complex<Value>& v) const
 	{
 	    return std::real(v);
 	}
@@ -45,12 +59,23 @@ namespace sfunctor {
 
 /// real part of scalars (including non-complex)
 template <typename Value>
-inline typename sfunctor::real<Value>::result_type real(const Value& v)
+typename mtl::traits::enable_if_scalar<Value, typename sfunctor::real<Value>::result_type>::type
+inline real(const Value& v)
 {	
-	vampir_trace<3> tracer;
+    vampir_trace<3> tracer;
     return sfunctor::real<Value>::apply(v);
 }
 
+namespace vector {
+
+    /// Real part of an vector
+    template <typename Vector>
+    typename mtl::traits::enable_if_vector<Vector, real_view<Vector> >::type
+    inline real(const Vector& v)
+    {
+	return real_view<Vector>(v);
+    }
+} 
 
 } // namespace mtl
 
