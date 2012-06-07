@@ -22,6 +22,8 @@
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/tfunctor.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/real.hpp>
+#include <boost/numeric/mtl/operation/imag.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 
 
@@ -208,6 +210,38 @@ struct conj_view
     {}
     
     explicit conj_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+};
+
+template <typename Vector>
+struct real_view
+  : public map_view<mtl::sfunctor::real<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::real<typename Vector::value_type>            functor_type;
+    typedef map_view<functor_type, Vector>                         base;
+
+    explicit real_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit real_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+};
+
+template <typename Vector>
+struct imag_view
+  : public map_view<mtl::sfunctor::imag<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::imag<typename Vector::value_type>            functor_type;
+    typedef map_view<functor_type, Vector>                         base;
+
+    explicit imag_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit imag_view(boost::shared_ptr<Vector> p)
       : base(functor_type(), p)
     {}
 };

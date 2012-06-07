@@ -25,7 +25,12 @@ namespace sfunctor {
     {
 	typedef Value result_type;
 
-	static inline Value apply(const Value& v)
+	static inline result_type apply(const Value& v)
+	{
+	    using math::zero;
+	    return zero(v);
+	}
+	result_type operator()(const Value& v) const
 	{
 	    using math::zero;
 	    return zero(v);
@@ -35,9 +40,13 @@ namespace sfunctor {
     template <typename Value>
     struct imag<std::complex<Value> >
     {
-	typedef std::complex<Value> result_type;
+	typedef Value result_type;
 
-	static inline std::complex<Value> apply(const std::complex<Value>& v)
+	static inline result_type apply(const std::complex<Value>& v)
+	{
+	    return std::imag(v);
+	}
+	result_type operator()(const std::complex<Value>& v) const
 	{
 	    return std::imag(v);
 	}
@@ -45,13 +54,24 @@ namespace sfunctor {
 
 }
 
-/// imaginary part of scalars (including non-complex)
+/// Imaginary part of scalars (including non-complex)
 template <typename Value>
-inline typename sfunctor::imag<Value>::result_type imag(const Value& v)
+typename mtl::traits::enable_if_scalar<Value, typename sfunctor::imag<Value>::result_type>::type
+inline imag(const Value& v)
 {
     return sfunctor::imag<Value>::apply(v);
 }
 
+namespace vector {
+
+    /// Imaginary part of an vector
+    template <typename Vector>
+    typename mtl::traits::enable_if_vector<Vector, imag_view<Vector> >::type
+    inline imag(const Vector& v)
+    {
+	return imag_view<Vector>(v);
+    }
+} 
 
 
 } // namespace mtl
