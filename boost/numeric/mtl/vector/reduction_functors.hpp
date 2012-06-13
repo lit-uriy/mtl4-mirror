@@ -105,14 +105,14 @@ struct infinity_norm_functor
     static inline void update(Value& value, const Element& x)
     {    
 	using std::abs; using std::max;
-	value= max(value, abs(x));
+	value= max(value, Value(abs(x)));
     }
 
     template <typename Value>
     static inline void finish(Value& value, const Value& value2)
     {
 	using std::abs; using std::max;
-	value= max(value, abs(value2));
+	value= max(value, Value(abs(value2)));
     }
 
     template <typename Value>

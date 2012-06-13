@@ -21,6 +21,7 @@ using namespace std;
 
 int main(int , char**)
 {
+#ifndef __PGI // trouble with zip_ref
     mtl::vector::sparse_vector<float> v(100);
     std::cout << v << '\n';
 
@@ -47,6 +48,7 @@ int main(int , char**)
 
     std::cout << "two_norm(v) is " << two_norm(v) << '\n';
     std::cout << "infinity_norm(v) is " << infinity_norm(v) << '\n';
+#endif
 
     return 0;
 }
