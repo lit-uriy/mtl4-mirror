@@ -26,8 +26,8 @@ int main(int, char**)
     typedef matrix::parameters<tag::row_major, mtl::index::c_index, mdim>   mat_para;
     typedef matrix::parameters<tag::row_major, mtl::index::c_index, fmdim>  fmat_para;
 
-    typedef vector::parameters<tag::col_major, vdim>                        vec_para;
-    typedef vector::parameters<tag::col_major, fvdim>                       fvec_para;
+    typedef mtl::vector::parameters<tag::col_major, vdim>                   vec_para;
+    typedef mtl::vector::parameters<tag::col_major, fvdim>                  fvec_para;
 
     MTL_THROW_IF( mat_para::on_stack, mtl::runtime_error("Must not be on stack!"));
     MTL_THROW_IF(!fmat_para::on_stack, mtl::runtime_error("Must be on stack!"));

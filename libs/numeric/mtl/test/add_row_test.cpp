@@ -56,7 +56,7 @@ void test(Matrix& A, const char* name)
     MTL_THROW_IF(num_rows(A) != 6 || num_cols(A) != 3, mtl::runtime_error("Wrong dimension after adding two rows"));
     MTL_THROW_IF(A[2][1] != value_type(-1), mtl::runtime_error("Wrong value in A[2][1] after adding two rows"));
 }
-
+ 
 
 int main(int, char**)
 {

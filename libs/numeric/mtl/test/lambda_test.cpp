@@ -13,10 +13,14 @@
 #include <iostream>
 #include <cmath>
 #include <boost/numeric/mtl/mtl.hpp>
+
+#ifndef __PGI
 #include <boost/lambda/lambda.hpp>
+#endif
 
 int main(int , char**)
 {
+#ifndef __PGI
     using namespace std;
     using boost::lambda::_1;
 
@@ -29,6 +33,7 @@ int main(int , char**)
     MTL_THROW_IF(abs(A[0][0] - 16.0) > 0.001, mtl::runtime_error("Wrong value in diagonal"));
     MTL_THROW_IF(abs(A[0][1] - 1.0) > 0.001, mtl::runtime_error("Wrong value in off-diagonal"));
     MTL_THROW_IF(abs(A[0][2]) > 0.001, mtl::runtime_error("Entry should be empty"));
+#endif
 
     return 0;
 }

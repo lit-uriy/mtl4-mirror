@@ -50,7 +50,7 @@ void test(const char* A_string, const char* v_string, const Matrix& A, const Vec
 int main(int , char**)
 {
     using namespace mtl;
-    typedef vector::parameters<tag::col_major, vector::fixed::dimension<2>, true> fvec_para;
+    typedef mtl::vector::parameters<tag::col_major, mtl::vector::fixed::dimension<2>, true> fvec_para;
     typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2>, true> fmat_para;
 
     float ma[2][2]= {{2., 3.}, {4., 5.}}, va[2]= {3., 4.};
@@ -60,7 +60,7 @@ int main(int , char**)
     dense_vector<float>              v_dyn(va);
     dense_vector<float, fvec_para>   v_stat(va);
 
-    typedef vector::parameters<tag::col_major, vector::fixed::dimension<4>, true> fvec_para4;
+    typedef mtl::vector::parameters<tag::col_major, mtl::vector::fixed::dimension<4>, true> fvec_para4;
     dense_vector<double, fvec_para4>   v_stat4, w_stat4;
     v_stat4= 3;
 #if 0 // introduce values unknown at compile time
