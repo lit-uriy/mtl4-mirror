@@ -58,7 +58,7 @@ class sparse_vector
     void insert(size_type i, const value_type& v)
     {
 	// vampir_trace<9901> tracer;
-	typename sv_type::iterator it= lower_bound(indices.begin(), indices.end(), i);
+	typename sv_type::iterator it= std::lower_bound(indices.begin(), indices.end(), i);
 	if (it == indices.end()) {
 	    // std::cout << "Insert entry " << i << " at the end\n";
 	    indices.push_back(i);
@@ -77,7 +77,7 @@ class sparse_vector
 
     size_type pos(size_type i) const 
     {
-	typename sv_type::const_iterator it= lower_bound(indices.begin(), indices.end(), i);
+	typename sv_type::const_iterator it= std::lower_bound(indices.begin(), indices.end(), i);
 	MTL_DEBUG_THROW_IF(it == indices.end(), logic_error("Position doesn't exists"));
 	return distance(indices.begin(), it);
     }

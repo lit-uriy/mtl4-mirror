@@ -24,7 +24,8 @@ inline bool about(T x, U y)
 template <typename T, typename U>
 void test(T x, U y)
 {
-    using namespace mtl::sfunctor; using mtl::sfunctor::abs;
+    using namespace mtl::sfunctor; using mtl::sfunctor::abs; using mtl::sfunctor::negate;
+    using mtl::sfunctor::plus;
     using std::cout;
 
     typedef compose<negate<typename abs<T>::result_type>, abs<T> > nabs;
