@@ -19,7 +19,7 @@ void test(const Vector& vec) {
 	typedef typename Vector::value_type value_type;
 	value_type one, two, four;
 	{
-		vector::extracter< Vector > extract(vec);
+		mtl::vector::extracter< Vector > extract(vec);
 		extract[1] >> one;
 		extract[2] >> two;
 		extract[3] >> four;
@@ -30,11 +30,11 @@ void test(const Vector& vec) {
 }
 
 template< typename Vector >
-void test(const Vector& , typename vector::extracter< Vector >::buffer_type& buffer) {
+void test(const Vector& , typename mtl::vector::extracter< Vector >::buffer_type& buffer) {
 	typedef typename Vector::value_type value_type;
 	value_type one, two, four;
 	{
-		vector::extracter< Vector > extract(buffer);
+		mtl::vector::extracter< Vector > extract(buffer);
 		extract[1] >> one;
 		extract[2] >> two;
 		extract[3] >> four;
@@ -52,7 +52,7 @@ int main(int , char** ) {
 	dense[3]=4.0;
 
 	test(dense);
-	vector::extracter< dense_vector< double > >::buffer_type buffer(dense);
+	mtl::vector::extracter< dense_vector< double > >::buffer_type buffer(dense);
 	test(dense, buffer);
 
 	return 0;

@@ -99,10 +99,9 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     
     cout << "C= A - B\n" << c << "\n";
     MTL_THROW_IF(c[4][3] != diff, mtl::runtime_error("wrong difference"));
-    c-= a - b;
-    
+
+    c-= a - b;    
     cout << "C-= A - B\n" << c << "\n";
-    return;
     MTL_THROW_IF(c[4][3] != 0.0, mtl::runtime_error("wrong decrement by difference"));
 }
 

@@ -59,7 +59,7 @@ struct last_bit;
 template <typename T, T BitMask, bool IsZero>
 struct last_bit_helper {
     static T const tmp = BitMask >> 1;
-    static T const value = BitMask & 1 ? 1 : last_bit<T, tmp>::value << 1;
+    static T const value = BitMask & 1 ? 1 : last_bit_helper<T, tmp, tmp == 0>::value << 1;
 };
 
 template <typename T, T BitMask>

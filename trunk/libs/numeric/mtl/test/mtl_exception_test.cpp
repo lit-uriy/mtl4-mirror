@@ -31,8 +31,8 @@ int main()
 {
     using namespace mtl;
     test(index_out_of_range());
-    test(range_error());
-    test(domain_error());
+    test(mtl::range_error());
+    test(mtl::domain_error());
     test(incompatible_size());
     test(need_nonempty());
     test(change_static_size());
@@ -44,8 +44,8 @@ int main()
     test(missing_diagonal());
     test(access_during_insertion());
     test(unexpected_result());
-    test(runtime_error());
-    test(logic_error());
+    test(mtl::runtime_error());
+    test(mtl::logic_error());
     test(io_error());
     test(file_not_found());
 
