@@ -341,7 +341,7 @@ class dense2D
   public:
 
     // import operators from CRTP base class
-#ifdef __PGI
+#if 0 // def __PGI
     using crtp_base::operator=;
 #else
     using assign_base::operator=;

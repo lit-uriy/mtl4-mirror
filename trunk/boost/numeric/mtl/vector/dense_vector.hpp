@@ -205,7 +205,7 @@ class dense_vector
 #endif
 
 
-#ifdef __PGI
+#if 0 // def __PGI
     using crtp_base::operator=;
 #else
     using assign_base::operator=;
