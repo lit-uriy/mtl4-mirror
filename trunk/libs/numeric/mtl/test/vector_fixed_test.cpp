@@ -18,9 +18,6 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 
-
-const unsigned sz= 5;
-
 inline float f(float x) { return x; }
 inline double f(double x) { return x; }
 

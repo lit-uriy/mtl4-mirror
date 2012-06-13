@@ -23,7 +23,7 @@ int main(int, char**)
     std::cout << "col-vector v_c is\n" << v_c << "\n";
 
     //row-vector from matrix
-    dense_vector<cdouble, vector::parameters<tag::row_major> > v_r(A[0][iall]);
+    dense_vector<cdouble, mtl::vector::parameters<tag::row_major> > v_r(A[0][iall]);
 
     std::cout << "row-vector v_r is\n" << v_r << "\n";
 

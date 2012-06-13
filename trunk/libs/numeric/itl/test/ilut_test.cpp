@@ -37,6 +37,7 @@ double test_factorization(const Matrix& A, unsigned p, double tau)
 
 int main()
 {
+#ifndef __PGI
     // For a more realistic example set sz to 1000 or larger
     const unsigned size = 4, N = size * size;
 
@@ -65,5 +66,6 @@ int main()
 		 mtl::logic_error("IC(0) doesn't yield expected result"));	
 #endif
 
+#endif
     return 0;
 }
