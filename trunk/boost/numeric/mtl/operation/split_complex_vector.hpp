@@ -29,6 +29,9 @@ template <typename VectorComplex, typename VectorReal, typename VectorImaginary>
 inline void split_complex_vector(const VectorComplex& c, VectorReal& r, VectorImaginary& i)
 {
     using mtl::size;
+    using mtl::real;
+    using mtl::imag;
+
     vampir_trace<2034> tracer;
     r.checked_change_dim(size(c));
     i.checked_change_dim(size(c));
