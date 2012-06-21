@@ -76,7 +76,7 @@ namespace mtl { namespace matrix {
 	    int code;
 	};
 
-	inline void check(int res, const char* MTL_THROW_ARG(s))
+	inline void check(int res, const char* s)
 	{
 	    MTL_THROW_IF(res != UMFPACK_OK, error(s, res));
 	}

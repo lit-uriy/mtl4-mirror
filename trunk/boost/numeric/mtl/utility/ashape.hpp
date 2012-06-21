@@ -247,6 +247,18 @@ struct ashape_aux<vector::conj_view<Coll> >
     typedef typename ashape<Coll>::type type;
 };
 
+template <typename Coll>
+struct ashape_aux<vector::real_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<vector::imag_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
 #if 1
 // shouldn't be needed 
 template <typename Coll>
