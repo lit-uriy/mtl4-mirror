@@ -13,6 +13,7 @@
 #ifndef MTL_MAP_VIEW_INCLUDE
 #define MTL_MAP_VIEW_INCLUDE
 
+#include <utility>
 #include <boost/shared_ptr.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
@@ -58,6 +59,12 @@ struct map_view
     map_view (const Functor& functor, boost::shared_ptr<Matrix> p) 
       : functor(functor), my_copy(p), ref(*p) {}
     
+#ifdef MTL_WITH_CPP11_MOVE    
+  map_view (self&& that) : functor(that.functor), my_copy(std::move(that.my_copy)), ref(that.ref) {}
+  map_view (const self& that) : functor(that.functor), ref(that.ref) { assert(that.my_copy.use_count() == 0); }
+#endif
+
+
     value_type operator() (size_type r, size_type c) const
     { 
         return functor(ref(r, c));
@@ -235,6 +242,7 @@ struct scaled_view
 {
     typedef tfunctor::scale<Scaling, typename Matrix::value_type>  functor_type;
     typedef map_view<functor_type, Matrix>                         base;
+    typedef scaled_view                                            self;
 
     scaled_view(const Scaling& scaling, const Matrix& matrix)
       : base(functor_type(scaling), matrix)
@@ -243,6 +251,11 @@ struct scaled_view
     scaled_view(const Scaling& scaling, boost::shared_ptr<Matrix> p)
       : base(functor_type(scaling), p)
     {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    scaled_view (self&& that) : base(that) {}
+    scaled_view (const self& that) : base(that) {}
+#endif
 };
 
 // rscaled_view -- added by Hui Li
@@ -252,6 +265,7 @@ struct rscaled_view
 {
     typedef tfunctor::rscale<typename Matrix::value_type, RScaling>  functor_type;
     typedef map_view<functor_type, Matrix>                          base;
+    typedef rscaled_view                                            self;
 	
     rscaled_view(const Matrix& matrix, const RScaling& rscaling)
       : base(functor_type(rscaling),matrix)
@@ -261,6 +275,10 @@ struct rscaled_view
       : base(functor_type(rscaling), p)
     {}
 
+#ifdef MTL_WITH_CPP11_MOVE    
+    rscaled_view (self&& that) : base(that) {}
+    rscaled_view (const self& that) : base(that) {}
+#endif
 };
 	
 // divide_by_view -- added by Hui Li
@@ -270,6 +288,7 @@ struct divide_by_view
 {
     typedef tfunctor::divide_by<typename Matrix::value_type, Divisor>  functor_type;
     typedef map_view<functor_type, Matrix>                             base;
+    typedef divide_by_view                                             self;
 	
     divide_by_view(const Matrix& matrix,const Divisor& div)
       : base(functor_type(div), matrix)
@@ -279,6 +298,10 @@ struct divide_by_view
       : base(functor_type(div), p)
     {}
 	
+#ifdef MTL_WITH_CPP11_MOVE    
+    divide_by_view (self&& that) : base(that) {}
+    divide_by_view (const self& that) : base(that) {}
+#endif
 };
 
 template <typename Matrix>
@@ -286,15 +309,16 @@ struct conj_view
   : public map_view<mtl::sfunctor::conj<typename Matrix::value_type>, Matrix>
 {
     typedef mtl::sfunctor::conj<typename Matrix::value_type>            functor_type;
-    typedef map_view<functor_type, Matrix>                         base;
+    typedef map_view<functor_type, Matrix>                              base;
+    typedef conj_view                                                   self;
 
-    conj_view(const Matrix& matrix)
-      : base(functor_type(), matrix)
-    {}
-    
-    conj_view(boost::shared_ptr<Matrix> p)
-      : base(functor_type(), p)
-    {}
+    conj_view(const Matrix& matrix) : base(functor_type(), matrix) {}
+    conj_view(boost::shared_ptr<Matrix> p) : base(functor_type(), p) {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    conj_view (self&& that) : base(that) {}
+    conj_view (const self& that) : base(that) {}
+#endif
 };
 
 template <typename Scaling, typename Matrix>
