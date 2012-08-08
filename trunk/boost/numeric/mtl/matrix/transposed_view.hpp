@@ -13,6 +13,7 @@
 #ifndef MTL_TRANSPOSED_VIEW_INCLUDE
 #define MTL_TRANSPOSED_VIEW_INCLUDE
 
+#include <utility>
 #include <boost/shared_ptr.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_const.hpp>
@@ -66,13 +67,13 @@ struct transposed_view
     typedef const Matrix&                                    const_ref_type;
 
 
-    transposed_view (ref_type ref) : /* expr_base(*this), */ ref(ref) {}
+    transposed_view (ref_type ref) : ref(ref) {}
     
-    transposed_view (const boost::shared_ptr<Matrix>& p) : /* expr_base(*this), */ my_copy(p), ref(*p) {}
+    transposed_view (const boost::shared_ptr<Matrix>& p) : my_copy(p), ref(*p) {}
 
 #ifdef MTL_WITH_CPP11_MOVE    
     transposed_view (self&& that) : my_copy(std::move(that.my_copy)), ref(that.ref) {}
-    transposed_view (const self& that) : ref(that.ref) {}
+    transposed_view (const self& that) : ref(that.ref) { assert(that.my_copy.use_count() == 0); }
 #endif
 
     const_reference operator() (size_type r, size_type c) const

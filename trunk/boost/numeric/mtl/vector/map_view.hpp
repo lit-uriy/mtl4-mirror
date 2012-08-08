@@ -13,6 +13,7 @@
 #ifndef MTL_VECTOR_MAP_VIEW_INCLUDE
 #define MTL_VECTOR_MAP_VIEW_INCLUDE
 
+#include <utility>
 #include <boost/shared_ptr.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
@@ -57,6 +58,11 @@ struct map_view
     {
 	ref.delay_assign();
     }
+
+#ifdef MTL_WITH_CPP11_MOVE    
+  map_view (self&& that) : functor(that.functor), my_copy(std::move(that.my_copy)), ref(that.ref) {}
+  map_view (const self& that) : functor(that.functor), ref(that.ref) { assert(that.my_copy.use_count() == 0); }
+#endif
 
     friend size_type inline num_rows(const self& v) { return num_rows(v.ref); }
     friend size_type inline num_cols(const self& v) { return num_cols(v.ref); }
@@ -152,6 +158,7 @@ struct scaled_view
 {
     typedef tfunctor::scale<Scaling, typename Vector::value_type>  functor_type;
     typedef map_view<functor_type, Vector>                         base;
+    typedef scaled_view                                            self;
 
     explicit scaled_view(const Scaling& scaling, const Vector& vector)
       : base(functor_type(scaling), vector)
@@ -160,6 +167,11 @@ struct scaled_view
     explicit scaled_view(const Scaling& scaling, boost::shared_ptr<Vector> p)
       : base(functor_type(scaling), p)
     {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    scaled_view (self&& that) : base(that) {}
+    scaled_view (const self& that) : base(that) {}
+#endif
 };
 
 // added by Hui Li
@@ -169,6 +181,7 @@ struct rscaled_view
 {
     typedef tfunctor::rscale<typename Vector::value_type, RScaling>  functor_type;
     typedef map_view<functor_type, Vector>                          base;
+    typedef rscaled_view                                            self;
 	
     explicit rscaled_view(const Vector& vector, const RScaling& rscaling)
       : base(functor_type(rscaling), vector)
@@ -177,6 +190,11 @@ struct rscaled_view
     explicit rscaled_view(boost::shared_ptr<Vector> p, const RScaling& rscaling)
       : base(functor_type(rscaling), p)
     {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    rscaled_view (self&& that) : base(that) {}
+    rscaled_view (const self& that) : base(that) {}
+#endif
 };
 	
 
@@ -187,6 +205,7 @@ struct divide_by_view
 {
     typedef tfunctor::divide_by<typename Vector::value_type, Divisor>  functor_type;
     typedef map_view<functor_type, Vector>                             base;
+    typedef divide_by_view                                             self;
 	
     explicit divide_by_view(const Vector& vector, const Divisor& div)
       : base(functor_type(div), vector)
@@ -195,6 +214,11 @@ struct divide_by_view
     explicit divide_by_view(boost::shared_ptr<Vector> p, const Divisor& div)
       : base(functor_type(div), p)
     {}
+	
+#ifdef MTL_WITH_CPP11_MOVE    
+    divide_by_view (self&& that) : base(that) {}
+    divide_by_view (const self& that) : base(that) {}
+#endif
 };
 	
 
@@ -204,6 +228,7 @@ struct conj_view
 {
     typedef mtl::sfunctor::conj<typename Vector::value_type>            functor_type;
     typedef map_view<functor_type, Vector>                         base;
+    typedef conj_view                                                   self;
 
     explicit conj_view(const Vector& vector)
       : base(functor_type(), vector)
@@ -212,6 +237,11 @@ struct conj_view
     explicit conj_view(boost::shared_ptr<Vector> p)
       : base(functor_type(), p)
     {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    conj_view (self&& that) : base(that) {}
+    conj_view (const self& that) : base(that) {}
+#endif
 };
 
 template <typename Vector>
@@ -220,6 +250,7 @@ struct real_view
 {
     typedef mtl::sfunctor::real<typename Vector::value_type>            functor_type;
     typedef map_view<functor_type, Vector>                         base;
+  typedef real_view                                              self;
 
     explicit real_view(const Vector& vector)
       : base(functor_type(), vector)
@@ -228,6 +259,11 @@ struct real_view
     explicit real_view(boost::shared_ptr<Vector> p)
       : base(functor_type(), p)
     {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    real_view (self&& that) : base(that) {}
+    real_view (const self& that) : base(that) {}
+#endif
 };
 
 template <typename Vector>
@@ -236,6 +272,7 @@ struct imag_view
 {
     typedef mtl::sfunctor::imag<typename Vector::value_type>            functor_type;
     typedef map_view<functor_type, Vector>                         base;
+    typedef imag_view                                              self;
 
     explicit imag_view(const Vector& vector)
       : base(functor_type(), vector)
@@ -244,6 +281,11 @@ struct imag_view
     explicit imag_view(boost::shared_ptr<Vector> p)
       : base(functor_type(), p)
     {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    imag_view (self&& that) : base(that) {}
+    imag_view (const self& that) : base(that) {}
+#endif
 };
 
 template <typename Vector>
@@ -251,7 +293,8 @@ struct negate_view
   : public map_view<mtl::sfunctor::negate<typename Vector::value_type>, Vector>
 {
     typedef mtl::sfunctor::negate<typename Vector::value_type>            functor_type;
-    typedef map_view<functor_type, Vector>                         base;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef negate_view                                                   self;
 
     explicit negate_view(const Vector& vector)
       : base(functor_type(), vector)
@@ -260,6 +303,11 @@ struct negate_view
     explicit negate_view(boost::shared_ptr<Vector> p)
       : base(functor_type(), p)
     {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    negate_view (self&& that) : base(that) {}
+    negate_view (const self& that) : base(that) {}
+#endif
 };
 
 
