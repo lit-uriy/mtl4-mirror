@@ -13,6 +13,7 @@
 #ifndef MTL_MATRIX_BANDED_VIEW_INCLUDE
 #define MTL_MATRIX_BANDED_VIEW_INCLUDE
 
+#include <utility>
 #include <boost/shared_ptr.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
@@ -73,10 +74,15 @@ struct banded_view
 	ref(ref), begin(begin), end(end) 
     {}
 
-    banded_view(boost::shared_ptr<Matrix> p, bsize_type begin, bsize_type end) 
+    banded_view(const boost::shared_ptr<Matrix>& p, bsize_type begin, bsize_type end) 
 	: base(dim_type(mtl::matrix::num_rows(*p), mtl::matrix::num_cols(*p)), ref.nnz()), 
 	  my_copy(p), ref(*p), begin(begin), end(end) 
     {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+  banded_view (self&& that) : my_copy(std::move(that.my_copy)), ref(that.ref), begin(that.begin), end(that.end) {}
+    banded_view (const self& that) : ref(that.ref), begin(that.begin), end(that.end) {}
+#endif
 
     value_type operator() (size_type r, size_type c) const
     {

@@ -68,8 +68,13 @@ struct transposed_view
 
     transposed_view (ref_type ref) : /* expr_base(*this), */ ref(ref) {}
     
-    transposed_view (boost::shared_ptr<Matrix> p) : /* expr_base(*this), */ my_copy(p), ref(*p) {}
-    
+    transposed_view (const boost::shared_ptr<Matrix>& p) : /* expr_base(*this), */ my_copy(p), ref(*p) {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    transposed_view (self&& that) : my_copy(std::move(that.my_copy)), ref(that.ref) {}
+    transposed_view (const self& that) : ref(that.ref) {}
+#endif
+
     const_reference operator() (size_type r, size_type c) const
     {         return ref(c, r);     }
 
