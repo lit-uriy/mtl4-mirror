@@ -44,15 +44,15 @@ namespace math {
 	typename minus_assign_type;
 	minus_assign_type operator-= (VectorImage, result_type);
 
-	axiom Addability(Operator a, VectorDomain x, VectorDomain y)
+	axiom Addability(Operator A, VectorDomain x, VectorDomain y)
 	{
-	    a * (x + y) == a*x  + a*y;
+	    A * (x + y) == A*x  + A*y;
 	}
 
 	// The two vector spaces must be scalable with the same scalar types
-	axiom Scalability(Operator a, VectorSpace<VectorDomain>::scalar_type alpha, VectorDomain x)
+	axiom Scalability(Operator A, VectorSpace<VectorDomain>::scalar_type alpha, VectorDomain x)
 	{
-	    a * (alpha * x) == alpha * (a * x);
+	    A * (alpha * x) == alpha * (A * x);
 	}
     };
 #else
@@ -77,7 +77,7 @@ namespace math {
         \par Notation:
         <table summary="notation">
           <tr>
-            <td>a</td>
+            <td>A</td>
 	    <td>Object of type Operation</td>
 	  </tr>
           <tr>
@@ -94,15 +94,15 @@ namespace math {
         <table>
           <tr>
             <td>Assign product:</td>
-	    <td>u= a * x</td>
+	    <td>u= A * x</td>
 	  </tr>
           <tr>
             <td>Add product:</td>
-	    <td>u+= a * x</td>
+	    <td>u+= A * x</td>
 	  </tr>
           <tr>
             <td>Subtract product:</td>
-	    <td>u-= a * x</td>
+	    <td>u-= A * x</td>
 	  </tr>
         </table>
 
@@ -110,11 +110,11 @@ namespace math {
         <table summary="invariants">
           <tr>
             <td>Addability</td>
-	    <td>a * (x + y) == a*x + a*y</td>
+	    <td>A * (x + y) == A*x + A*y</td>
           </tr>
           <tr>
             <td>Scalability</td>
-	    <td>alpha * (a * x) == a * (alpha * x)</td>
+	    <td>alpha * (A * x) == A * (alpha * x)</td>
           </tr>
         </table>
 	
@@ -124,7 +124,7 @@ namespace math {
 	   On the other hand, it is not always obvious to choose an appropriate
 	   type for such temporary depending on arbitrary operator and vector types.
 	   Using the products directly in assignments allows implementation without
-	   temporaries, e.g., by calling a function mult(a, x, u) internally.
+	   temporaries, e.g., by calling a function mult(A, x, u) internally.
      */
     template <typename Operator, typename VectorDomain, typename VectorImage>
     struct LinearOperator
@@ -155,15 +155,15 @@ namespace math {
 	minus_assign_type operator+= (VectorImage, result_type);
 
 	/// Invariant: the linear projection of a sum is the sum of the linear projections
-	axiom Addability(Operator a, VectorDomain x, VectorDomain y)
+	axiom Addability(Operator A, VectorDomain x, VectorDomain y)
 	{
-	    a * (x + y) == a*x  + a*y;
+	    A * (x + y) == A*x  + A*y;
 	}
 
 	/// Invariant: the linear projection of a scaled vector is the scaling of the vector's linear projections
-	axiom Scalability(Operator a, VectorSpace<VectorDomain>::scalar_type alpha, VectorDomain x)
+	axiom Scalability(Operator A, VectorSpace<VectorDomain>::scalar_type alpha, VectorDomain x)
 	{
-	    a * (alpha * x) == alpha * (a * x);
+	    A * (alpha * x) == alpha * (A * x);
 	}	
     };
 #endif
