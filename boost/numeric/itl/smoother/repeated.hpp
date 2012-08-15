@@ -20,6 +20,9 @@ template <typename Smoother, std::size_t N= 1>
 class repeated
 {
   public:
+
+    typedef Smoother smoother_type; 
+
     /// Construct with \p smoother
     repeated(const Smoother& smoother) : smoother(smoother) {}
 
