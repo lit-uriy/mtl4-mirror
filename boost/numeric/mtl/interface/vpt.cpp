@@ -363,8 +363,11 @@ template <> std::string vampir_trace<8502>::name("mtl::mg::v_cycle");
 template <> std::string vampir_trace<8503>::name("mtl::mg::fmg");
 template <> std::string vampir_trace<8504>::name("mtl::mg::two_grid_cycle");
 
-template <> std::string vampir_trace<8510>::name("mtl::mg::geometric_multigrid_solver");
-template <> std::string vampir_trace<8511>::name("mtl::mg::algebraic_multigrid_solver");
+template <> std::string vampir_trace<8510>::name("mtl::mg::geometric_multigrid_solver_impl");
+template <> std::string vampir_trace<8511>::name("mtl::mg::geometric_multigrid_solver_solve1");
+template <> std::string vampir_trace<8512>::name("mtl::mg::geometric_multigrid_solver_solve2");
+
+template <> std::string vampir_trace<8515>::name("mtl::mg::algebraic_multigrid_solver");
 
 template <> std::string vampir_trace<8520>::name("mtl::mg::linear_restriction");
 template <> std::string vampir_trace<8521>::name("mtl::mg::linear_prolongation");
@@ -384,6 +387,23 @@ template <> std::string vampir_trace<8574>::name("pressure_correction");
 template <> std::string vampir_trace<8590>::name("mtl::mg::util::vtk_exporter");
 template <> std::string vampir_trace<8591>::name("mtl::mg::util::csv_exporter");
 
+template <> std::string vampir_trace<8610>::name("amg::amg_matrix_hirarchie");
+template <> std::string vampir_trace<8612>::name("amg::amg_matrix_hirarchie::compute_C");
+template <> std::string vampir_trace<8614>::name("amg::utils::compute_potentials");
+template <> std::string vampir_trace<8616>::name("amg::utils::restr_matrix");
+
+template <> std::string vampir_trace<8620>::name("amg::strongly_influenced_points");
+template <> std::string vampir_trace<8621>::name("amg::is_strongly_influenced");
+
+template <> std::string vampir_trace<8630>::name("amg::amg_operators::amg_restriction");
+template <> std::string vampir_trace<8631>::name("amg::amg_operators::amg_prolongation");
+template <> std::string vampir_trace<8635>::name("amg::amg_operators::amg_weight");
+
+template <> std::string vampir_trace<8900>::name("NaSto::solve()");
+template <> std::string vampir_trace<8910>::name("NaSto::computeGamma()");
+template <> std::string vampir_trace<8920>::name("NaSto::computeBoundaries()");
+template <> std::string vampir_trace<8930>::name("NaSto::computeImplViscosity()");
+template <> std::string vampir_trace<8940>::name("NaSto::computePressureCorr()");
 
 // Test blocks for performance debugging
 template <> std::string vampir_trace<9901>::name("tb1"); 
