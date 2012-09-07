@@ -82,17 +82,18 @@ struct vec_vec_aop_expr
     void dynamic_assign(boost::mpl::false_) // Without unrolling
     {
 	typedef typename traits::omp_size_type<size_type>::type size_type;
+	size_type s= size_type(mtl::vector::size(first));
 
       #ifdef MTL_WITH_OPENMP
 	# pragma omp parallel
 	{
 	    vampir_trace<8003> tracer;
 	    #pragma omp for
-	    for (size_type i= 0; i < size_type(mtl::vector::size(first)); ++i)
+	    for (size_type i= 0; i < s; ++i)
 		SFunctor::apply( first(i), second(i) );
 	}
       #else
-	for (size_type i= 0; i < size_type(mtl::vector::size(first)); ++i)
+	for (size_type i= 0; i < s; ++i)
 	    SFunctor::apply( first(i), second(i) );
       #endif
     }
