@@ -18,6 +18,12 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/itl/pc/identity.hpp>
+#include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/matrix/strict_upper.hpp>
+#include <boost/numeric/mtl/matrix/dense2D.hpp>
+#include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/operation/orth.hpp>
+#include <boost/numeric/mtl/operation/lazy.hpp>
 
 namespace itl {
 
@@ -27,7 +33,7 @@ template < typename LinearOperator, typename Vector,
 int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	       const Preconditioner &L, Iteration& iter)
 {
-    using mtl::irange; using mtl::imax; using mtl::matrix::strict_upper;
+    using mtl::irange; using mtl::imax; using mtl::matrix::strict_upper; using mtl::lazy;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -48,7 +54,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
     }
 
     Vector  r0_tilde(r_hat[0]/two_norm(r_hat[0]));
-    y= solve(L, r_hat[0]);
+    r_hat[0]= y= solve(L, r_hat[0]);
     r_hat[0]= y;
     u_hat[0]= zero;
 
@@ -70,6 +76,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	    y= A * u_hat[j];
 	    u_hat[j+1]= solve(L, y);
 	    Gamma= dot(r0_tilde, u_hat[j+1]); 
+	    // (lazy(u_hat[j+1])= solve(L, y)) || (lazy(Gamma)= lazy_dot(r0_tilde, u_hat[j+1])); // not faster
 	    alpha= rho_0 / Gamma;
 
 	    for (Size i= 0; i <= j; ++i)

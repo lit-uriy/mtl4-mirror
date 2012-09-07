@@ -59,21 +59,37 @@ namespace mtl { namespace vector {
 		   <typename mtl::Collection<VVector>::value_type
 		    >::value_type, matrix::parameters<> >
 	inline orthogonalize_factors(VVector& v, tag::vector)
-	{	vampir_trace<2019> tracer;
+	{	
+	    vampir_trace<2019> tracer;
 	    using ::mtl::two_norm; using math::zero; using mtl::size1D;
 	    typedef typename mtl::Collection<VVector>::size_type  Size;
 	    typedef typename mtl::Collection<VVector>::value_type Vector;
 	    typedef typename mtl::Collection<Vector>::value_type  Scalar;
 
-		mtl::matrix::dense2D<Scalar, matrix::parameters<> > tau(size1D(v), size1D(v));
+	    mtl::matrix::dense2D<Scalar, matrix::parameters<> > tau(size1D(v), size1D(v));
 	    tau= zero(Scalar());
 
-	    for (Size j= 0; j < size1D(v); ++j) {
+	    if (size1D(v) == 0)
+		return tau;
+
+	    tau[0][0]= dot(entry1D(v, 0), entry1D(v, 0));
+
+	    for (Size j= 1; j < size1D(v); ++j) {
+#ifdef MTL_WITH_FUSED_ORTHOGONALIZATION
+		Scalar t= dot(entry1D(v, 0), entry1D(v, j)) / tau[0][0], t2;
+		tau[0][j]= t;
+		for (Size i= 1; i < j; ++i) {
+		    (lazy(entry1D(v, j))-= t * entry1D(v, i-1)) || (lazy(t2)= lazy_dot(entry1D(v, i), entry1D(v, j)));
+		    t= tau[i][j]= t2 / tau[i][i];
+		}
+		entry1D(v, j)-= t * entry1D(v, j-1);
+#else
 		for (Size i= 0; i < j; ++i) {
 		    Scalar t= dot(entry1D(v, i), entry1D(v, j)) / tau[i][i];
 		    tau[i][j]= t;
 		    entry1D(v, j)-= t * entry1D(v, i);
 		}
+#endif
 		tau[j][j]= dot(entry1D(v, j), entry1D(v, j));
 	    }
 	    return tau;
