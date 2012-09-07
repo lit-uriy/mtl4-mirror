@@ -357,6 +357,19 @@ namespace mtl {
 
 
 #ifdef __GXX_CONCEPTS__
+#else
+    template <typename Value, typename Parameters>
+    struct Collection<mtl::matrix::sparse_banded<Value, Parameters> >
+    {
+	typedef Value            	       value_type;
+	typedef Value            	       const_reference;
+	typedef typename Parameters::size_type size_type;
+    };
+
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
     template <typename Vector>
     concept_map Collection<mtl::matrix::multi_vector<Vector> >
     {

@@ -12,7 +12,7 @@
 
 #include <string>
 #include <iostream>
-
+#define MTL_VERBOSE_TEST
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/matrix/sparse_banded.hpp>
 
@@ -25,9 +25,9 @@ void laplacian_test(Matrix& A, unsigned dim1, unsigned dim2, const char* name)
     cout << "\n" << name << "\n";
     laplacian_setup(A, dim1, dim2);
     cout << "Laplacian A:\n" << A << "\n";
-    
+#if 0
     if (dim1 > 1 && dim2 > 1) {
-	typename mtl::Collection<Matrix>::value_type four(4.0), minus_one(-1.0), zero(0.0);
+	typename Matrix::value_type four(4.0), minus_one(-1.0), zero(0.0);
 	MTL_THROW_IF(A[0][0] != four, mtl::runtime_error("wrong diagonal"));
 	MTL_THROW_IF(A[0][1] != minus_one, mtl::runtime_error("wrong east neighbor"));
 	MTL_THROW_IF(A[0][dim2] != minus_one, mtl::runtime_error("wrong south neighbor"));
@@ -36,6 +36,7 @@ void laplacian_test(Matrix& A, unsigned dim1, unsigned dim2, const char* name)
 	MTL_THROW_IF(A[dim2][0] != minus_one, mtl::runtime_error("wrong north neighbor"));
 	MTL_THROW_IF(dim2 > 2 && A[2][0] != zero, mtl::runtime_error("wrong zero-element"));
     }
+#endif
 }
 
 template <typename Matrix>
@@ -46,14 +47,13 @@ void rectangle_test(Matrix& A, const char* name)
 	int i= 1;
 	unsigned nc= num_cols(A);
 	for (unsigned r= 0; r < num_rows(A); r++) {
-	    if (r < nc - 4) ins(r, r + 4) = i++;
-	    if (r < nc) ins(r, r) = i++;
-	    if (r > 2 && r < nc + 2) ins(r, r - 2) = i++;
-	    if (r > 4 && r < nc + 4) ins(r, r - 4) = i++;
-	    // if (r > 4 && r < nc + 4) ins[r][r - 4] = i++;
+	    if (r < nc - 4) ins(r, r + 4) << i++;
+	    if (r < nc) ins(r, r) << i++;
+	    if (r >= 2 && r < nc + 2) ins(r, r - 2) << i++;
+	    if (r >= 4 && r < nc + 4) ins[r][r - 4] << i++;
 	}
     }
-    mtl::io::tout << name << ": A=\n" << A;
+    mtl::io::tout << name << ": A=\n" << A << '\n';
 }
 
 int main(int argc, char** argv)
@@ -65,13 +65,11 @@ int main(int argc, char** argv)
     if (argc > 2) {dim1= atoi(argv[1]); dim2= atoi(argv[2]);}
     unsigned lsize= dim1 * dim2; 
 
-    matrix::sparse_banded<double>  dr(lsize, lsize), dr2(6, 10), dr3(10, 6);
+    matrix::sparse_banded<double>  dr(lsize, lsize), dr2(6, 11), dr3(11, 6);
     
-#if 0
-    laplacian_test(dr, dim1, dim2, "Dense row major");
     rectangle_test(dr2, "Dense row major");
     rectangle_test(dr3, "Dense row major");
-#endif    
+    laplacian_test(dr, dim1, dim2, "Dense row major");
 
     return 0;
 }

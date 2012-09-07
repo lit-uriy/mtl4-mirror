@@ -94,6 +94,12 @@ struct category<mtl::matrix::coordinate2D<Elt, Parameters> >
     typedef tag::compressed2D type;
 };
 
+template <typename Elt, typename Parameters>
+struct category<mtl::matrix::sparse_banded<Elt, Parameters> > 
+{
+    typedef tag::sparse_matrix type;
+};
+
 template <typename Vector>
 struct category<mtl::matrix::multi_vector<Vector> > 
 {

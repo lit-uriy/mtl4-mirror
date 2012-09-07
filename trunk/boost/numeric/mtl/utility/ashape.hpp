@@ -153,6 +153,12 @@ struct ashape_aux<mtl::matrix::coordinate2D<Value, Parameters> >
 };
 
 template <typename Value, typename Parameters>
+struct ashape_aux<mtl::matrix::sparse_banded<Value, Parameters> >
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+
+template <typename Value, typename Parameters>
 struct ashape_aux<mtl::matrix::dense2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
