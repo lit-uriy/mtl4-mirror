@@ -93,6 +93,9 @@ namespace mtl {
 	template <typename T, typename Parameters> class coordinate2D;
 	template <typename Matrix, typename Updater> struct coordinate2D_inserter;
 
+	template <typename T, typename Parameters> class sparse_banded;
+	template <typename T, typename Parameters, typename Updater> struct sparse_banded_inserter;
+
 	template <typename Matrix, typename Updater> struct inserter;
 	template <typename BaseInserter> class shifted_inserter;	
 
