@@ -25,7 +25,7 @@ int main()
 {
     mtl::vampir_trace<9999> tracer;
   // For a more realistic example set size to 1000 or larger
-  const int size = 1000, N = size * size; 
+  const int size = 3, N = size * size; 
   using namespace mtl;
 
   typedef unsigned size_type;
