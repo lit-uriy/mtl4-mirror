@@ -34,6 +34,7 @@
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/operation/shift_block.hpp>
 #include <boost/numeric/mtl/matrix/parameter.hpp>
+#include <boost/numeric/mtl/matrix/base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/element_matrix.hpp> 

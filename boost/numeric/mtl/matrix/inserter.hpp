@@ -34,30 +34,41 @@ struct inserter
   : public mtl::detail::trivial_inserter<Matrix, Updater>
 {
     typedef mtl::detail::trivial_inserter<Matrix, Updater>     base;
-    typedef typename Matrix::size_type   size_type;
+    typedef typename Matrix::size_type                         size_type;
 
     explicit inserter(Matrix& matrix, size_type slot_size = 0) : base(matrix, slot_size) {}
 };
 
 
-template <typename Elt, typename Parameters, typename Updater>
-struct inserter<compressed2D<Elt, Parameters>, Updater>
-  : compressed2D_inserter<Elt, Parameters, Updater>
+template <typename Value, typename Parameters, typename Updater>
+struct inserter<compressed2D<Value, Parameters>, Updater>
+  : compressed2D_inserter<Value, Parameters, Updater>
 {
-    typedef compressed2D<Elt, Parameters>     matrix_type;
-    typedef typename matrix_type::size_type   size_type;
-    typedef compressed2D_inserter<Elt, Parameters, Updater > base;
+    typedef compressed2D<Value, Parameters>                    matrix_type;
+    typedef typename matrix_type::size_type                    size_type;
+    typedef compressed2D_inserter<Value, Parameters, Updater > base;
 
     explicit inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix, slot_size) {}
 };
 
-template <typename Elt, typename Parameters, typename Updater>
-struct inserter<coordinate2D<Elt, Parameters>, Updater>
-  : coordinate2D_inserter<coordinate2D<Elt, Parameters>, Updater>
+template <typename Value, typename Parameters, typename Updater>
+struct inserter<coordinate2D<Value, Parameters>, Updater>
+  : coordinate2D_inserter<coordinate2D<Value, Parameters>, Updater>
 {
-    typedef coordinate2D<Elt, Parameters>                                  matrix_type;
-    typedef typename Parameters::size_type                                 size_type;
-    typedef coordinate2D_inserter<coordinate2D<Elt, Parameters>, Updater>  base;
+    typedef coordinate2D<Value, Parameters>                                  matrix_type;
+    typedef typename Parameters::size_type                                   size_type;
+    typedef coordinate2D_inserter<coordinate2D<Value, Parameters>, Updater>  base;
+
+    explicit inserter(matrix_type& matrix, size_type slot_size= 1) : base(matrix, slot_size) {}
+};
+
+template <typename Value, typename Parameters, typename Updater>
+struct inserter<sparse_banded<Value, Parameters>, Updater>
+  : sparse_banded_inserter<Value, Parameters, Updater>
+{
+    typedef sparse_banded<Value, Parameters>                                 matrix_type;
+    typedef typename Parameters::size_type                                   size_type;
+    typedef sparse_banded_inserter<Value, Parameters, Updater>  base;
 
     explicit inserter(matrix_type& matrix, size_type slot_size= 1) : base(matrix, slot_size) {}
 };
