@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/matrix/strict_upper.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/operation/orth.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
