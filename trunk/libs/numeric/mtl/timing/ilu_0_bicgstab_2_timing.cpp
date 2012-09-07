@@ -44,10 +44,10 @@ int main()
   b = A * x;
   x= 0;
 
-  itl::cyclic_iteration<double> iter(b, 200, 1.e-6, 0.0, 100);
+  itl::cyclic_iteration<double> iter(b, 100, 1.e-6, 0.0, 100);
   boost::timer t;
   bicgstab_2(A, x, b, P, iter);
-  //  bicgstab_ell(A, x, b, P, P2, iter, 2);
+  //   bicgstab_ell(A, x, b, P, P2, iter, 1);
   std::cout << "BiCGStab(2) took " << t.elapsed() << "s.\n";
  
   return 0;
