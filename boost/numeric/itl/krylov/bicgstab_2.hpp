@@ -94,14 +94,8 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	gamma[l]= gamma_a[l]; omega= gamma[l];
 	if (omega == zero) return iter.fail(3, "bicg breakdown #2");
 		
-	// is this something like a tri-solve? 
-	for (Size j= l-1; j > 0; --j) {
-	    Scalar sum= zero;
-	    for (Size i=j+1;i<=l;++i)
-		sum += tau[j][i] * gamma[i];
-	    gamma[j] = gamma_a[j] - sum;
-	}
 
+	gamma[1]= gamma_a[1] - tau[1][2] * gamma[2];
 	gamma_aa[irange(1, l)]= strict_upper(tau[irange(1, l)][irange(1, l)]) * gamma[irange(2, l+1)] + gamma[irange(2, l+1)];
 
 	x+= gamma[1] * r_hat[0];
