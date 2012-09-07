@@ -37,7 +37,6 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
     const Scalar                zero= math::zero(Scalar()), one= math::one(Scalar());
     Vector                      x0(resource(x)), y(resource(x));
     mtl::vector::dense_vector<Vector>   r_hat(l+1,Vector(resource(x))), u_hat(l+1,Vector(resource(x)));
-    pc::identity<LinearOperator>       R(A);
 
     // shift problem 
     x0= zero;
@@ -68,7 +67,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	    for (Size i= 0; i <= j; ++i)
 		u_hat[i]= r_hat[i] - beta * u_hat[i];
       
-	    y= A * Vector(solve(R, u_hat[j]));
+	    y= A * u_hat[j];
 	    u_hat[j+1]= solve(L, y);
 	    Gamma= dot(r0_tilde, u_hat[j+1]); 
 	    alpha= rho_0 / Gamma;
@@ -77,13 +76,11 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 		r_hat[i]-= alpha * u_hat[i+1];
       
 	    if (iter.finished(r_hat[j])) {
-		x= solve(R, x);
 		x+= x0;
 		return iter;
 	    }
 
-	    r_hat[j+1]= solve(R, r_hat[j]);
-	    y= A * r_hat[j+1]; 
+	    y= A * r_hat[j]; 
 	    r_hat[j+1]= solve(L, y);
 	    x+= alpha * u_hat[0];
 	}
@@ -116,7 +113,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	    r_hat[0] -= gamma_a[j] * r_hat[j];
 	}
     }
-    x= solve(R, x); x+= x0; // convert to real solution and undo shift
+    x+= x0; // convert to real solution and undo shift
     return iter;
 }
 
