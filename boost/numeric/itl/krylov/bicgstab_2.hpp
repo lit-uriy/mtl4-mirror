@@ -52,15 +52,15 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
     r_hat[0]= y;
     u_hat[0]= zero;
 
-    Scalar                      rho_0(one), rho_1(zero), alpha(zero), Gamma(zero), beta(zero), omega(one); 
+    Scalar                      rho_0(one), rho_1(zero), alpha(zero), Gamma(zero), beta(zero), omega(one), gamma_aa(zero); 
     mtl::matrix::dense2D<Scalar>        tau(l+1, l+1);
-    mtl::vector::dense_vector<Scalar>   sigma(l+1), gamma(l+1), gamma_a(l+1), gamma_aa(l+1);
+    mtl::vector::dense_vector<Scalar>   sigma(l+1), gamma(l+1), gamma_a(l+1);
 
     while (! iter.finished(r_hat[0])) {
 	++iter;
 	rho_0= -omega * rho_0;
 
-	for (Size j= 0; j < l; ++j) {
+	for (Size j= 0; j < 2; ++j) {
 	    rho_1= dot(r0_tilde, r_hat[j]); 
 	    beta= alpha * rho_1/rho_0; rho_0= rho_1;
 
@@ -86,26 +86,24 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	}
 
 	// mod GS (MR part)
-	mtl::vector::dense_vector<Vector>   r_hat_tail(r_hat[irange(1, imax)]);
-	tau[irange(1, imax)][irange(1, imax)]= orthogonalize_factors(r_hat_tail);
+	irange  i1m(1, imax);
+	mtl::vector::dense_vector<Vector>   r_hat_tail(r_hat[i1m]);
+	tau[i1m][i1m]= orthogonalize_factors(r_hat_tail);
 	for (Size j= 1; j <= l; ++j) 
 	    gamma_a[j]= dot(r_hat[j], r_hat[0]) / tau[j][j];
 
 	gamma[l]= gamma_a[l]; omega= gamma[l];
 	if (omega == zero) return iter.fail(3, "bicg breakdown #2");
 		
-
 	gamma[1]= gamma_a[1] - tau[1][2] * gamma[2];
-	gamma_aa[irange(1, l)]= strict_upper(tau[irange(1, l)][irange(1, l)]) * gamma[irange(2, l+1)] + gamma[irange(2, l+1)];
+	gamma_aa= (tau[1][1] + one) * gamma[2];
 
 	x+= gamma[1] * r_hat[0];
-	r_hat[0]-= gamma_a[l] * r_hat[l];
-	u_hat[0]-= gamma[l] * u_hat[l];
-	for (Size j=1; j < l; ++j) {
-	    u_hat[0] -= gamma[j] * u_hat[j];
-	    x+= gamma_aa[j] * r_hat[j];
-	    r_hat[0] -= gamma_a[j] * r_hat[j];
-	}
+	r_hat[0]-= gamma_a[2] * r_hat[2];
+	u_hat[0]-= gamma[2] * u_hat[2];
+	u_hat[0]-= gamma[1] * u_hat[1];
+	x+= gamma_aa * r_hat[1];
+	r_hat[0] -= gamma_a[1] * r_hat[1];
     }
     x+= x0; // convert to real solution and undo shift
     return iter;
