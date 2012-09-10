@@ -27,7 +27,7 @@
 
 namespace itl {
 
-#if 1
+#if 0
 /// Bi-Conjugate Gradient Stabilized(2)
 template < typename LinearOperator, typename Vector, 
 	   typename Preconditioner, typename Iteration >
@@ -117,8 +117,8 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
     return iter;
 }
 
-#else
-
+#endif
+#if 0
 /// Bi-Conjugate Gradient Stabilized(2)
 template < typename LinearOperator, typename Vector, 
 	   typename Preconditioner, typename Iteration >
@@ -178,6 +178,96 @@ int bicgstab_2(const LinearOperator& A, Vector& x, const Vector& b,
     return iter;
 }
 #endif
+
+
+//Vorschlag von Cornelius
+#if 1
+
+/// Bi-Conjugate Gradient Stabilized(2)
+template < typename LinearOperator, typename Vector, 
+	   typename Preconditioner, typename Iteration >
+int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
+	       const Preconditioner &M, Iteration& iter)
+{
+    typedef typename mtl::Collection<Vector>::value_type Scalar;
+    const Scalar zero= math::zero(Scalar()), one= math::one(Scalar());
+    Scalar     p_0(one),
+	       p_1,
+	       alpha(one),
+	       beta,
+	       sigma,
+	       omega(one),
+	       a,e,c,d,det, y_1, y_2, z_1, z_2
+	       ;
+    Vector     r(b - A * x), r_0(solve(M,r)), r_tilde(r_0),  
+	       u_0(resource(x), zero),
+	       u_1(resource(x), zero),
+	       u_2(resource(x), zero),
+	       r_1(resource(x), zero),
+	       r_2(resource(x), zero)
+	       ;
+    if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
+    
+    while ( ! iter.finished(r_0)) {
+      ++iter;
+      
+ //     std::cout<< "p_0=" << p_0 << "  norm_r_0="<< two_norm(r_0)<< "\n";
+      p_0*= -omega;
+      p_1= dot(r_0, r_tilde);
+      beta= alpha * p_1 / p_0;
+      p_0= p_1;
+      u_0= r_0 - beta * u_0;
+      u_1= solve(M, Vector( A * u_0 ));
+      sigma= dot(u_1, r_tilde);
+      alpha= p_1 / sigma;
+      x= x + alpha * u_0;
+      r_0= r_0 - alpha * u_1;
+      r_1= solve(M, Vector( A * r_0 ));
+      p_1= dot(r_1, r_tilde);
+      beta= alpha * p_1 / p_0;
+      p_0= p_1;
+      u_0= r_0 - beta * u_0;
+      u_1= r_1 - beta * u_1;
+      u_2= solve(M, Vector( A * u_1 ));
+      sigma= dot(u_2, r_tilde);
+      alpha= p_1 / sigma;
+      x= x + alpha * u_0;
+      r_0= r_0 - alpha * u_1;
+      r_1= r_1 - alpha * u_2;
+      r_2= solve(M, Vector( A * r_1 ));
+      
+      a= dot(r_1, r_1);
+      e= dot(r_2, r_1);
+      c= e;
+      d= dot(r_2, r_2);
+      y_1= dot(r_0, r_1);
+      y_2= dot(r_0, r_2);
+      det= 1 / ( a * d - e * c );
+      
+      z_1= det * (d * y_1 - e * y_2);
+      z_2= det * (a * y_2 - c * y_1);
+      
+      
+      omega= z_2;
+      
+      u_0= u_0 - z_1 * u_1;
+      
+      x= x + z_1 * r_0;
+      r_0= r_0 - z_1 * r_1;
+      u_0= u_0 - z_2 * u_2;
+      x= x + z_2 * r_1;
+      r_0= r_0 - z_2 * r_2;
+        
+    }
+    return iter;
+}
+
+
+#endif
+
+
+
+
 
 } // namespace itl
 
