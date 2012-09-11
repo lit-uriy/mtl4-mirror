@@ -324,7 +324,7 @@ class compressed2D
 
     // if compile time matrix size, we can set the start vector
     /// Default constructor
-    explicit compressed2D () : super(), inserting(false)
+    explicit compressed2D () : inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
     }
@@ -356,7 +356,7 @@ class compressed2D
 
     /// Copy from other types
     template <typename MatrixSrc>
-    explicit compressed2D (const MatrixSrc& src) : super(), inserting(false)
+    explicit compressed2D (const MatrixSrc& src) : inserting(false)
     {
 	if (super::dim_type::is_static) starts.resize(super::dim1() + 1);
 	*this= src;

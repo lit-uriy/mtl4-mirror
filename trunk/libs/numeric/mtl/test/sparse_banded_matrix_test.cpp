@@ -12,19 +12,18 @@
 
 #include <string>
 #include <iostream>
-#define MTL_VERBOSE_TEST
+
+// #define MTL_VERBOSE_TEST
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/matrix/sparse_banded.hpp>
 
 
-using namespace std;
-
 template <typename Matrix>
 void laplacian_test(Matrix& A, unsigned dim1, unsigned dim2, const char* name)
 {
-    cout << "\n" << name << "\n";
+    mtl::io::tout << "\n" << name << "\n";
     laplacian_setup(A, dim1, dim2);
-    cout << "Laplacian A:\n" << A << "\n";
+    mtl::io::tout << "Laplacian A:\n" << A << "\n";
     if (dim1 > 1 && dim2 > 1) {
 	typename Matrix::value_type four(4.0), minus_one(-1.0), zero(0.0);
 	MTL_THROW_IF(A[0][0] != four, mtl::runtime_error("wrong diagonal"));
@@ -68,6 +67,14 @@ int main(int argc, char** argv)
     rectangle_test(dr2, "Dense row major");
     rectangle_test(dr3, "Dense row major");
     laplacian_test(dr, dim1, dim2, "Dense row major");
+
+
+    matrix::compressed2D<double> C;
+    laplacian_setup(C, dim1, dim2);
+
+    matrix::sparse_banded<double>  D;
+    D= C;
+    std::cout << "D is\n" << D;
 
     return 0;
 }
