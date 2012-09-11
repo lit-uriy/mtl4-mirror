@@ -14,6 +14,7 @@
 #define MTL_PROPERTY_MAP_IMPL_INCLUDE
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/utility/is_row_major.hpp>
 
 namespace mtl { namespace detail {
 
@@ -369,6 +370,53 @@ struct coordinate2D_const_value
     template <typename Key>
     Value operator() (Key key) const 
     { return A.value_array()[key.offset]; }
+
+    matrix_ref_type A;
+};
+
+template <class Value, class Parameters>
+struct sparse_banded_row  // maybe refactor into sparse_banded_major
+{
+    BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Parameters>::value));
+    typedef const mtl::matrix::sparse_banded<Value, Parameters>&  matrix_ref_type;
+    typedef typename Parameters::size_type                        size_type; 
+    explicit sparse_banded_row(matrix_ref_type A) : A(A) {}
+
+    template <typename Key>
+    size_type operator() (Key key) const 
+    { return key.offset / A.ref_bands().size(); }
+
+    matrix_ref_type A;
+};
+
+template <class Value, class Parameters>
+struct sparse_banded_col // maybe refactor into sparse_banded_minor
+{
+    BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Parameters>::value));
+    typedef const mtl::matrix::sparse_banded<Value, Parameters>&  matrix_ref_type;
+    typedef typename Parameters::size_type                        size_type; 
+
+    explicit sparse_banded_col(matrix_ref_type A) : A(A) {}
+
+    template <typename Key>
+    size_type operator() (Key key) const 
+    { 
+	size_type bs= A.ref_bands().size(), major= key.offset / bs, b= key.offset % bs;
+	return major + A.ref_bands()[b];
+    }
+
+    matrix_ref_type A;
+};
+
+template <class Value, class Parameters>
+struct sparse_banded_const_value
+{
+    typedef const mtl::matrix::sparse_banded<Value, Parameters>&       matrix_ref_type;
+    explicit sparse_banded_const_value(matrix_ref_type A) : A(A) {}
+
+    template <typename Key>
+    Value operator() (Key key) const 
+    { return A.ref_data()[key.offset]; }
 
     matrix_ref_type A;
 };
