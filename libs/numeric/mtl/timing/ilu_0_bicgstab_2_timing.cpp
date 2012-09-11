@@ -47,7 +47,7 @@ int main()
   itl::cyclic_iteration<double> iter(b, 500, 1.e-6, 0.0, 100);
   boost::timer t;
   bicgstab_2(A, x, b, P, iter);
-  //   bicgstab_ell(A, x, b, P, P2, iter, 1);
+  //     bicgstab_ell(A, x, b, P, P2, iter, 2);
   std::cout << "BiCGStab(2) took " << t.elapsed() << "s.\n";
  
   return 0;

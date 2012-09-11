@@ -25,7 +25,6 @@ void laplacian_test(Matrix& A, unsigned dim1, unsigned dim2, const char* name)
     cout << "\n" << name << "\n";
     laplacian_setup(A, dim1, dim2);
     cout << "Laplacian A:\n" << A << "\n";
-#if 0
     if (dim1 > 1 && dim2 > 1) {
 	typename Matrix::value_type four(4.0), minus_one(-1.0), zero(0.0);
 	MTL_THROW_IF(A[0][0] != four, mtl::runtime_error("wrong diagonal"));
@@ -36,7 +35,6 @@ void laplacian_test(Matrix& A, unsigned dim1, unsigned dim2, const char* name)
 	MTL_THROW_IF(A[dim2][0] != minus_one, mtl::runtime_error("wrong north neighbor"));
 	MTL_THROW_IF(dim2 > 2 && A[2][0] != zero, mtl::runtime_error("wrong zero-element"));
     }
-#endif
 }
 
 template <typename Matrix>

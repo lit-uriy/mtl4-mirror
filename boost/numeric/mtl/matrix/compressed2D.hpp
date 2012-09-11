@@ -429,7 +429,7 @@ class compressed2D
     }
 
     /// L-value reference of stored matrix entry
-    /** To be used with care; in debub mode exception is thrown if entry is not found **/
+    /** To be used with care; in debug mode, exception is thrown if entry is not found **/
     value_type& lvalue(size_type row, size_type col)
     {
 	utilities::maybe<size_type> pos = indexer(*this, row, col);

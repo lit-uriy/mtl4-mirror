@@ -35,6 +35,7 @@ namespace mtl { namespace matrix {
 template <typename Value, typename Parameters = matrix::parameters<> >
 class sparse_banded
   : public base_matrix<Value, Parameters>,
+    public const_crtp_base_matrix< sparse_banded<Value, Parameters>, Value, typename Parameters::size_type >,
     public mat_expr< sparse_banded<Value, Parameters> >
 {
     BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Parameters>::value));
@@ -54,17 +55,46 @@ class sparse_banded
     {}
 
     ~sparse_banded() { delete[] data; }
+    void check() const { MTL_DEBUG_THROW_IF(inserting, access_during_insertion()); }
+    void check(size_type r, size_type c) const
+    {
+	check();
+	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() 
+			   || is_negative(c) || c >= this->num_cols(), index_out_of_range());
+    }
 
-    void make_empty()
+    void make_empty() ///< Delete all entries
     {
 	delete[] data; data= 0;
 	bands.resize(0);
     }
 
-    void change_dim(size_type r, size_type c)
+    /// Change dimension to \p r by \p c; deletes all entries
+    void change_dim(size_type r, size_type c) 
     {
 	make_empty();
 	super::change_dim(r, c);
+    }
+
+    /// Value of matrix entry
+    value_type operator()(size_type r, size_type c) const
+    {
+	using math::zero;
+	check(r, c);
+	band_size_type dia= band_size_type(c) - band_size_type(r);
+	size_type      b= find_dia(dia);
+	return size_t(b) < bands.size() && bands[b] == dia ? data[r * bands.size() + b] : zero(value_type());
+    }
+
+    /// L-value reference of stored matrix entry
+    /** To be used with care; in debug mode, exception is thrown if entry is not found **/
+    value_type& lvalue(size_type r, size_type c) 
+    {
+	check(r, c);
+	band_size_type dia= band_size_type(c) - band_size_type(r);
+	size_type      b= find_dia(dia);
+	MTL_DEBUG_THROW_IF(size_t(b) >= bands.size() || bands[b] != dia, runtime_error("Entry doesn't exist."));
+	return data[r * bands.size() + b];
     }
 
     /// Print matrix on \p os
@@ -90,6 +120,9 @@ class sparse_banded
 	}
 	return os;
     }
+
+    /// Number of structural non-zeros (i.e. stored entries) which is the the number of bands times rows
+    size_type nnz() const { return bands.size() * this->num_rows(); }
 
     friend size_t num_rows(const self& A) { return A.num_rows(); }
     friend size_t num_cols(const self& A) { return A.num_cols(); }
@@ -161,6 +194,7 @@ struct sparse_banded_inserter
 	    for (size_type b= 0; b < bs; b++)
 		*p++= diagonals[b][r];
 	assert(p - A.data == long(A.bands.size() * num_rows(A)));
+	A.inserting= false;
     }
 
     /// Proxy to insert into A[row][col]
