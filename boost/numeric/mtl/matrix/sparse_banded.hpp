@@ -28,6 +28,7 @@
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
+#include <boost/numeric/mtl/utility/maybe.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -86,25 +87,30 @@ class sparse_banded
 	super::change_dim(r, c);
     }
 
+    /// Offset of entry r,c if in matrix (otherwise offset of next entry)
+    utilities::maybe<size_type> offset(size_type r, size_type c) const
+    {
+	check(r, c);
+	band_size_type dia= band_size_type(c) - band_size_type(r);
+	size_type      b= find_dia(dia);
+	return utilities::maybe<size_type>(r * bands.size() + b, size_t(b) < bands.size() && bands[b] == dia);
+    }
+
     /// Value of matrix entry
     value_type operator()(size_type r, size_type c) const
     {
 	using math::zero;
-	check(r, c);
-	band_size_type dia= band_size_type(c) - band_size_type(r);
-	size_type      b= find_dia(dia);
-	return size_t(b) < bands.size() && bands[b] == dia ? data[r * bands.size() + b] : zero(value_type());
+	utilities::maybe<size_type> o= offset(r, c);
+	return o ? data[o.value()] : zero(value_type());
     }
 
     /// L-value reference of stored matrix entry
     /** To be used with care; in debug mode, exception is thrown if entry is not found **/
     value_type& lvalue(size_type r, size_type c) 
     {
-	check(r, c);
-	band_size_type dia= band_size_type(c) - band_size_type(r);
-	size_type      b= find_dia(dia);
-	MTL_DEBUG_THROW_IF(size_t(b) >= bands.size() || bands[b] != dia, runtime_error("Entry doesn't exist."));
-	return data[r * bands.size() + b];
+	utilities::maybe<size_type> o= offset(r, c);
+	MTL_DEBUG_THROW_IF(!o, runtime_error("Entry doesn't exist."));
+	return data[o.value()];
     }
 
     /// Print matrix on \p os
@@ -133,9 +139,13 @@ class sparse_banded
 
     /// Number of structural non-zeros (i.e. stored entries) which is the the number of bands times rows
     size_type nnz() const { return bands.size() * this->num_rows(); }
+    size_type find_major(size_type offset) const { return offset % bands.size(); }
 
     friend size_t num_rows(const self& A) { return A.num_rows(); }
     friend size_t num_cols(const self& A) { return A.num_cols(); }
+
+    std::vector<band_size_type> const& ref_bands() const { return bands; } ///< Refer bands vector [advanced]
+    const value_type*                  ref_data() const { return data; } ///< Refer data pointer [advanced]
 
   private:
     size_type find_dia(band_size_type dia) const
@@ -246,6 +256,107 @@ struct sparse_banded_inserter
     std::vector<std::vector<Value> >  diagonals;
 };
 
+
+#if 1
+template <typename Value, typename Parameters>
+struct sparse_banded_key
+{
+    typedef std::size_t                                   size_t;
+    typedef sparse_banded_key                             self;
+    typedef mtl::matrix::sparse_banded<Value, Parameters> matrix_type;
+    
+    explicit sparse_banded_key(const matrix_type& A, size_t offset) 
+      : A(A), offset(offset) {}
+
+    bool operator== (sparse_banded_key const& other) const { return offset == other.offset; }
+    bool operator!= (sparse_banded_key const& other) const { return !(*this == other); }
+
+    const matrix_type&   A;
+    size_t               offset;
+};
+
+// Cursor over every element
+template <typename Value, typename Parameters>
+struct sparse_banded_cursor 
+  : public sparse_banded_key<Value, Parameters>
+{
+    typedef sparse_banded_key<Value, Parameters>          base;
+    typedef mtl::matrix::sparse_banded<Value, Parameters> matrix_type;
+    typedef sparse_banded_cursor                          self;
+
+    explicit sparse_banded_cursor(const matrix_type& A, size_t offset) 
+      : base(A, offset)    {}
+
+    self& operator++() { ++this->offset; return *this;  }
+    const base& operator* () const { return *this; }
+};
+
+#endif
+
+// ================
+// Free functions
+// ================
+
+template <typename Value, typename Parameters>
+inline std::size_t size(const sparse_banded<Value, Parameters>& matrix)
+{
+    return std::size_t(matrix.num_cols()) * std::size_t(matrix.num_rows());
+}
+
 }} // namespace mtl::matrix
+
+namespace mtl {
+    using matrix::sparse_banded;
+}
+
+
+// ================
+// Range generators
+// ================
+
+namespace mtl { namespace traits {
+
+    // Cursor over all rows
+    // Supported if row major matrix
+    template <typename Value, typename Parameters>
+    struct range_generator<glas::tag::row, sparse_banded<Value, Parameters> >
+      : detail::all_rows_range_generator<sparse_banded<Value, Parameters>, complexity_classes::linear_cached>
+    {};
+
+    template <class Value, class Parameters>
+    struct range_generator<glas::tag::nz, 
+			   detail::sub_matrix_cursor<sparse_banded<Value, Parameters>, glas::tag::row, 2> >
+    {
+	typedef typename Parameters::size_type                                                 size_type;
+	typedef detail::sub_matrix_cursor<sparse_banded<Value, Parameters>, glas::tag::row, 2> cursor_type;
+	typedef complexity_classes::linear_cached                                              complexity;
+	typedef mtl::matrix::sparse_banded_cursor<Value, Parameters>                           type;
+	static int const                                                                       level = 1;
+	BOOST_STATIC_ASSERT((is_row_major<Parameters>::value));
+
+	type begin(cursor_type const& cursor) const
+	{
+	    size_type r= cursor.key, b= 0, bs= cursor.ref.ref_bands().size();
+	    while (b < bs && -cursor.ref.ref_bands()[b] > long(r)) b++;
+	    return type(cursor.ref, r * bs + b);
+	}
+	type end(cursor_type const& cursor) const
+	{
+	    size_type r= cursor.key, bs= cursor.ref.ref_bands().size(), b= bs, nc= cursor.ref.num_cols();
+	    while (b > 0 && cursor.ref.ref_bands()[b-1] + long(r) >= long(nc)) b--;
+	    return type(cursor.ref, r * bs + b);
+	}
+
+	// type lower_bound(cursor_type const& cursor, size_type position) const {}
+    };
+
+
+    // Cursor over all rows or columns, depending which one is major
+    template <typename Value, typename Parameters>
+    struct range_generator<glas::tag::major, sparse_banded<Value, Parameters> >
+      : range_generator<glas::tag::row, sparse_banded<Value, Parameters> >
+    {};
+
+}} // namespace mtl::traits
 
 #endif // MTL_MATRIX_SPARSE_BANDED_INCLUDE

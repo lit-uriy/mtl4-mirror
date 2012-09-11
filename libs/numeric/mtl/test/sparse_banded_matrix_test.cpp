@@ -13,7 +13,7 @@
 #include <string>
 #include <iostream>
 
-// #define MTL_VERBOSE_TEST
+#define MTL_VERBOSE_TEST
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/matrix/sparse_banded.hpp>
 
@@ -23,7 +23,7 @@ void laplacian_test(Matrix& A, unsigned dim1, unsigned dim2, const char* name)
 {
     mtl::io::tout << "\n" << name << "\n";
     laplacian_setup(A, dim1, dim2);
-    mtl::io::tout << "Laplacian A:\n" << A << "\n";
+    mtl::io::tout << "Laplacian A:\n" << A << std::endl;
     if (dim1 > 1 && dim2 > 1) {
 	typename Matrix::value_type four(4.0), minus_one(-1.0), zero(0.0);
 	MTL_THROW_IF(A[0][0] != four, mtl::runtime_error("wrong diagonal"));
@@ -53,6 +53,25 @@ void rectangle_test(Matrix& A, const char* name)
     mtl::io::tout << name << ": A=\n" << A << '\n';
 }
 
+template <typename Matrix, typename Tag>
+void two_d_iteration(const Matrix & A, Tag)
+{
+    namespace traits = mtl::traits;
+
+    typename traits::row<Matrix>::type                                 row(A); 
+    typename traits::col<Matrix>::type                                 col(A); 
+    typename traits::const_value<Matrix>::type                         value(A); 
+    typedef typename traits::range_generator<Tag, Matrix>::type        cursor_type;
+    for (cursor_type cursor = mtl::begin<Tag>(A), cend = mtl::end<Tag>(A); cursor != cend; ++cursor) {
+	typedef mtl::tag::nz     inner_tag;
+	mtl::io::tout << "---\n";
+	typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
+	for (icursor_type icursor = mtl::begin<inner_tag>(cursor), icend = mtl::end<inner_tag>(cursor); icursor != icend; ++icursor)
+	    mtl::io::tout << "A[" << row(*icursor) << ", " << col(*icursor) << "] = " << value(*icursor) << '\n';
+    }
+} 
+
+
 int main(int argc, char** argv)
 {
     using namespace mtl;
@@ -74,7 +93,16 @@ int main(int argc, char** argv)
 
     matrix::sparse_banded<double>  D;
     D= C;
+    mtl::io::tout << "D is\n" << D;
+
+    two_d_iteration(D, mtl::tag::row());
+
+    matrix::compressed2D<double> E;
+    E= D;
     std::cout << "D is\n" << D;
+
+
+
 
     return 0;
 }

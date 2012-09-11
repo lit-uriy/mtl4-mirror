@@ -153,6 +153,28 @@ struct const_value<mtl::matrix::coordinate2D<Value, Parameters> >
     typedef mtl::detail::coordinate2D_const_value<Value, Parameters>   type; 
 };
 
+// =================
+// For sparse_banded
+// =================
+
+template <class Value, class Parameters>
+struct row<mtl::matrix::sparse_banded<Value, Parameters> >
+{
+    typedef mtl::detail::sparse_banded_row<Value, Parameters>   type; 
+};
+
+template <class Value, class Parameters>
+struct col<mtl::matrix::sparse_banded<Value, Parameters> >
+{
+    typedef mtl::detail::sparse_banded_col<Value, Parameters>   type; 
+};
+
+template <class Value, class Parameters>
+struct const_value<mtl::matrix::sparse_banded<Value, Parameters> >
+{
+    typedef mtl::detail::sparse_banded_const_value<Value, Parameters>   type; 
+};
+
 // ==================
 // For implicit_dense
 // ==================
