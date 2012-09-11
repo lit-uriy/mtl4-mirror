@@ -36,6 +36,7 @@ template <typename Value, typename Parameters = matrix::parameters<> >
 class sparse_banded
   : public base_matrix<Value, Parameters>,
     public const_crtp_base_matrix< sparse_banded<Value, Parameters>, Value, typename Parameters::size_type >,
+    public crtp_matrix_assign< sparse_banded<Value, Parameters>, Value, typename Parameters::size_type >,
     public mat_expr< sparse_banded<Value, Parameters> >
 {
     BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Parameters>::value));
@@ -48,11 +49,18 @@ class sparse_banded
     typedef Value                                      value_type;
     typedef typename Parameters::size_type             size_type;
     typedef typename boost::make_signed<size_type>::type  band_size_type;
+    typedef crtp_matrix_assign<self, Value, size_type> assign_base;
 
     /// Construct matrix of dimension \p nr by \p nc
-    sparse_banded(size_type nr, size_type nc) 
+    explicit sparse_banded(size_type nr= 0, size_type nc= 0) 
       : super(non_fixed::dimensions(nr, nc)), data(0), inserting(false)
     {}
+
+    /// Copy from other types
+    template <typename MatrixSrc>
+    explicit sparse_banded(const MatrixSrc& src) : data(0), inserting(false)
+    {	*this= src;    }
+
 
     ~sparse_banded() { delete[] data; }
     void check() const { MTL_DEBUG_THROW_IF(inserting, access_during_insertion()); }
@@ -62,6 +70,8 @@ class sparse_banded
 	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() 
 			   || is_negative(c) || c >= this->num_cols(), index_out_of_range());
     }
+
+    using assign_base::operator=;
 
     void make_empty() ///< Delete all entries
     {
