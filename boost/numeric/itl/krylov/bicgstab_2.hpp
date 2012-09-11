@@ -117,7 +117,9 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
     return iter;
 }
 
-#else
+#endif
+
+#if 0
 
 /// Bi-Conjugate Gradient Stabilized(2)
 template < typename LinearOperator, typename Vector, 

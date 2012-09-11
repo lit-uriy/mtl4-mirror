@@ -25,7 +25,7 @@ int main()
 {
     mtl::vampir_trace<9999> tracer;
   // For a more realistic example set size to 1000 or larger
-  const int size = 3, N = size * size; 
+  const int size = 1000, N = size * size; 
   using namespace mtl;
 
   typedef unsigned size_type;
@@ -44,7 +44,7 @@ int main()
   b = A * x;
   x= 0;
 
-  itl::cyclic_iteration<double> iter(b, 100, 1.e-6, 0.0, 100);
+  itl::cyclic_iteration<double> iter(b, 500, 1.e-6, 0.0, 100);
   boost::timer t;
   bicgstab_2(A, x, b, P, iter);
   //   bicgstab_ell(A, x, b, P, P2, iter, 1);
