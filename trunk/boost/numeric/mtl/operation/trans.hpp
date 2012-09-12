@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/algebraic_category.hpp>
 #include <boost/numeric/mtl/utility/transposed_orientation.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>

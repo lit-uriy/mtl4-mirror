@@ -13,6 +13,7 @@
 #ifndef MTL_ASHAPE_INCLUDE
 #define MTL_ASHAPE_INCLUDE
 
+#include <vector>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/if.hpp>
@@ -85,9 +86,21 @@ template <typename Value, typename Parameters>
 struct ashape_aux<vector::strided_vector_ref<Value, Parameters> >
   : ashape<mtl::vector::dense_vector<Value, Parameters> > {};
 
+/// Same as dense vector
+template <typename Value, typename Parameters>
+struct ashape_aux<vector::sparse_vector<Value, Parameters> >
+  : ashape<mtl::vector::dense_vector<Value, Parameters> > {};
+
 /// One-dimensional arrays have rvec ashape; 2D arrays are matrices see below
 template <typename Value, unsigned Rows>
 struct ashape_aux<Value[Rows]>
+{
+    typedef rvec<typename ashape<Value>::type> type;
+};
+   
+/// std::vectors have rvec ashape
+template <typename Value, typename Allocator>
+struct ashape_aux<std::vector<Value, Allocator> >
 {
     typedef rvec<typename ashape<Value>::type> type;
 };

@@ -24,6 +24,7 @@
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
+#include <boost/numeric/mtl/utility/algebraic_category.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
