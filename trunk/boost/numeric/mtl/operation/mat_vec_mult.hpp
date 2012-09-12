@@ -691,8 +691,6 @@ template <typename MValue, typename MPara, typename VectorIn, typename VectorOut
 typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
 inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign as, tag::row_major)
 {
-    std::cout << "Bin angekommen.\n";
-
     typedef sparse_banded<MValue, MPara>                      Matrix;
     typedef typename Collection<VectorOut>::value_type        value_type;
     typedef typename Matrix::band_size_type                   band_size_type;
@@ -702,13 +700,27 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
     if (size(w) == 0) return;
     const value_type z(math::zero(w[0]));
 
-    vector_type bands(A.ref_bands());
+    size_type nr= num_rows(A), nc= num_cols(A), nb= A.ref_bands().size();
+    if (nb == size_type(0) && as.init_to_zero) {
+	set_to_zero(w);
+	return;
+    }
 
-    // const std::vector<band_size_type>&    bands= A.ref_bands();    
-    size_type nr= num_rows(A);
+    vector_type bands(A.ref_bands()), begin_rows(max(0, -bands)), end_rows(min(nr, nc - bands));
+    assert(end_rows[nb-1] > 0);
 
+    std::cout << "bands = " << bands << ", begin_rows = " << begin_rows << ", end_rows = " << end_rows << "\n";
+    size_type begin_pos= 0, end_pos= nb, r= 0;
 
+    // find lowest diagonal in row 0
+    while (begin_pos < nb && begin_rows[begin_pos] > 0) begin_pos++;
+    // if at the end, the first rows are empty
+    if (begin_pos == nb && as.init_to_zero) {
+	w[irange(begin_rows[--begin_pos])]= z;
+	std::cout << "w[0.." << begin_rows[begin_pos] << "] <- 0\n";
+    }
 
+    std::cout << "\n";
 #if 0
     vampir_trace<3049> tracer;
     // vampir_trace<5056> tttracer;
