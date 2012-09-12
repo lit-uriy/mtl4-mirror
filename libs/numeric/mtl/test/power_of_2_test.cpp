@@ -26,7 +26,6 @@ void test_power_of_2()
 
 int main() 
 {
-
     test_power_of_2();
     return 0;
 }

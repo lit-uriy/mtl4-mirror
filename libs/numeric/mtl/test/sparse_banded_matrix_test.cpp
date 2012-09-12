@@ -72,22 +72,35 @@ void two_d_iteration(const Matrix & A, Tag)
     mtl::io::tout << "===\n\n";
 } 
 
+template <typename Matrix>
+void mat_vec_mult_test(const Matrix& A, const char* name)
+{
+    typedef typename Matrix::value_type  value_type;
+    std::cout << name << " " << num_rows(A) << " by " << num_cols(A) << '\n' << A;
 
-int main(int argc, char** argv)
+    mtl::dense_vector<value_type> v, w(num_cols(A), 3.0), v2;
+    v= A * w;
+
+#if 0
+    mtl::compressed2D<value_type> B(A);
+    v2= B * w;
+    v2-= v;
+    MTL_THROW_IF(two_norm(v2) > 0.001, 
+		 mtl::runtime_error("wrong result for sparse banded times vector"));
+#endif
+}
+
+int main(int, char**)
 {
     using namespace mtl;
-
+#if 0
     unsigned dim1= 3, dim2= 4;
-
-    if (argc > 2) {dim1= atoi(argv[1]); dim2= atoi(argv[2]);}
-    unsigned lsize= dim1 * dim2; 
-
-    matrix::sparse_banded<double>  dr(lsize, lsize), dr2(6, 11), dr3(11, 6);
+    matrix::sparse_banded<double>  dr, dr2(6, 11), dr3(11, 6), dr4(6, 5);
     
+    laplacian_test(dr, dim1, dim2, "Dense row major");
     rectangle_test(dr2, "Dense row major");
     rectangle_test(dr3, "Dense row major");
-    laplacian_test(dr, dim1, dim2, "Dense row major");
-
+    rectangle_test(dr4, "Dense row major");
 
     matrix::compressed2D<double> C;
     laplacian_setup(C, dim1, dim2);
@@ -100,10 +113,25 @@ int main(int argc, char** argv)
 
     matrix::compressed2D<double> E;
     E= D;
-    std::cout << "D is\n" << D;
+    mtl::io::tout << "D is\n" << D;
 
-    dense_vector<double> v, w(12, 3.0);
-    v= D * w;
+    matrix::sparse_banded<double>  dr5(5, 5), dr6(5, 5);
+    {
+	mtl::matrix::inserter<matrix::sparse_banded<double> > ins5(dr5), ins6(dr6);	
+	ins5[2][0] << 1; ins5[3][1] << 2; ins5[4][2] << 3; ins5[4][0] << 4;
+	ins6[0][2] << 1; ins6[1][3] << 2; ins6[2][4] << 3; ins6[0][4] << 4;
+    }
+
+    mat_vec_mult_test(dr2, "Dense row major");
+    mat_vec_mult_test(dr3, "Dense row major");
+    mat_vec_mult_test(dr4, "Dense row major");
+    mat_vec_mult_test(dr5, "Dense row major");
+    mat_vec_mult_test(dr6, "Dense row major");
+
+    mat_vec_mult_test(dr, "Dense row major");
+#endif
+    
+
 
     return 0;
 }

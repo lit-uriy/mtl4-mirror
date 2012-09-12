@@ -65,7 +65,7 @@ void extra_test(Vector& u, Vector& v, Value)
 
 // not complex
 template <typename Vector, typename Value>
-void extra_test(Vector& u, Vector& v, std::complex<Value>) {}
+void extra_test(Vector&, Vector&, std::complex<Value>) {}
 
 
 template <typename Vector>
