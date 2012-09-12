@@ -685,6 +685,102 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
 }
 #endif
 
+
+// Row-major sparse_banded vector multiplication
+template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
+typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
+inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign as, tag::row_major)
+{
+    std::cout << "Bin angekommen.\n";
+
+    typedef sparse_banded<MValue, MPara>                      Matrix;
+    typedef typename Collection<VectorOut>::value_type        value_type;
+    typedef typename Matrix::band_size_type                   band_size_type;
+    typedef typename MPara::size_type                         size_type;
+    typedef mtl::vector::dense_vector<band_size_type, vector::parameters<> > vector_type;
+
+    if (size(w) == 0) return;
+    const value_type z(math::zero(w[0]));
+
+    vector_type bands(A.ref_bands());
+
+    // const std::vector<band_size_type>&    bands= A.ref_bands();    
+    size_type nr= num_rows(A);
+
+
+
+#if 0
+    vampir_trace<3049> tracer;
+    // vampir_trace<5056> tttracer;
+    using math::zero;
+
+    if (A.nnz() < num_rows(A) && !as.init_to_zero) {
+	vsmat_cvec_mult(A, v, w, as, tag::row_major());
+	return;
+    }
+
+    typedef compressed2D<MValue, MPara>                       Matrix;
+    typedef typename Collection<VectorOut>::value_type        value_type;
+    typedef typename mtl::traits::omp_size_type<typename Collection<Matrix>::size_type>::type size_type;
+
+    if (size(w) == 0) return;
+    const value_type z(math::zero(w[0]));
+
+    size_type nr= num_rows(A), nrb= nr / 4 * 4;
+    if (nr > 10) {
+	size_type nh= nr / 2, nq= nr / 4, nt= nr - nq;
+	if (!as.init_to_zero &&
+	    (A.ref_major()[1] == A.ref_major()[0] 
+	     || A.ref_major()[nq] == A.ref_major()[nq+1]
+	     || A.ref_major()[nh] == A.ref_major()[nh+1]
+	     || A.ref_major()[nt] == A.ref_major()[nt+1]
+	     || A.ref_major()[nr-1] == A.ref_major()[nr])) {
+	    adapt_crs_cvec_mult(A, v, w, as);
+	    return;
+	}
+    }
+
+    #ifdef MTL_WITH_OPENMP
+    #   pragma omp parallel
+    #endif
+    {
+    	#ifdef MTL_WITH_OPENMP
+	    vampir_trace<8004> tracer;
+    	#   pragma omp for
+    	#endif
+	    for (size_type i= 0; i < nrb; i+= 4) {
+		const size_type cj0= A.ref_major()[i], cj1= A.ref_major()[i+1], cj2= A.ref_major()[i+2], 
+		    cj3= A.ref_major()[i+3], cj4= A.ref_major()[i+4];
+		value_type      tmp0(z), tmp1(z), tmp2(z), tmp3(z);
+		for (size_type j0= cj0; j0 != cj1; ++j0)
+		    tmp0+= A.data[j0] * v[A.ref_minor()[j0]];
+		for (size_type j1= cj1; j1 != cj2; ++j1)
+		    tmp1+= A.data[j1] * v[A.ref_minor()[j1]];
+		for (size_type j2= cj2; j2 != cj3; ++j2)
+		    tmp2+= A.data[j2] * v[A.ref_minor()[j2]];
+		for (size_type j3= cj3; j3 != cj4; ++j3)
+		    tmp3+= A.data[j3] * v[A.ref_minor()[j3]];
+
+		Assign::first_update(w[i], tmp0);
+		Assign::first_update(w[i+1], tmp1);
+		Assign::first_update(w[i+2], tmp2);
+		Assign::first_update(w[i+3], tmp3);
+	    }
+    }
+
+    for (size_type i= nrb; i < nr; ++i) {
+	const size_type cj0= A.ref_major()[i], cj1= A.ref_major()[i+1];
+	value_type      tmp0(z);
+	for (size_type j0= cj0; j0 != cj1; ++j0)
+	    tmp0+= A.data[j0] * v[A.ref_minor()[j0]];
+	Assign::first_update(w[i], tmp0);
+    }
+#endif
+}
+
+
+
+
 // Sparse column-major matrix vector multiplication
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::col_major)

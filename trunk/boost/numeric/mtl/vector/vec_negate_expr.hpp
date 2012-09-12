@@ -10,15 +10,10 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-
-
 #ifndef MTL_VEC_NEGATE_EXPR_INCLUDE
 #define MTL_VEC_NEGATE_EXPR_INCLUDE
 
-#include <boost/static_assert.hpp>
-
 #include <boost/numeric/mtl/vector/map_view.hpp>
-#include <boost/numeric/mtl/operation/sfunctor.hpp>
 
 namespace mtl { namespace vector {
 

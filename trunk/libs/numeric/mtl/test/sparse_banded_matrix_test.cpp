@@ -13,7 +13,7 @@
 #include <string>
 #include <iostream>
 
-#define MTL_VERBOSE_TEST
+// #define MTL_VERBOSE_TEST
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/matrix/sparse_banded.hpp>
 
@@ -69,6 +69,7 @@ void two_d_iteration(const Matrix & A, Tag)
 	for (icursor_type icursor = mtl::begin<inner_tag>(cursor), icend = mtl::end<inner_tag>(cursor); icursor != icend; ++icursor)
 	    mtl::io::tout << "A[" << row(*icursor) << ", " << col(*icursor) << "] = " << value(*icursor) << '\n';
     }
+    mtl::io::tout << "===\n\n";
 } 
 
 
@@ -101,8 +102,8 @@ int main(int argc, char** argv)
     E= D;
     std::cout << "D is\n" << D;
 
-
-
+    dense_vector<double> v, w(12, 3.0);
+    v= D * w;
 
     return 0;
 }

@@ -16,5 +16,6 @@
 #include <boost/numeric/mtl/operation/scale.hpp>
 #include <boost/numeric/mtl/operation/rscale.hpp> // added by Hui Li
 #include <boost/numeric/mtl/operation/divide_by.hpp> // added by Hui Li
+#include <boost/numeric/mtl/operation/tfunctor_mixed.hpp>
 
 #endif // MTL_TFUNCTOR_INCLUDE
