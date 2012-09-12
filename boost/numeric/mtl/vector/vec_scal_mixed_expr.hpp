@@ -20,17 +20,23 @@
 namespace mtl { namespace vector {
 
 template <typename E1, typename E2>
-typename mtl::traits::enable_if_scalar<E1, left_inc_view<E1, E2> >::type
-inline operator+ (const E1& e1, const vec_expr<E2>& e2)
+typename mtl::traits::enable_if_scalar<E1, map_view<tfunctor::left_plus<E1, typename E2::value_type>, E2> >::type
+inline operator+(const E1& e1, const vec_expr<E2>& e2)
 {
-    return left_inc_view<E1, E2>(e1, static_cast<const E2&>(e2));
+    typedef tfunctor::left_plus<E1, typename E2::value_type> ftype;
+    typedef map_view<ftype, E2>                             type;
+
+    return type(ftype(e1), static_cast<const E2&>(e2));
 }
 
 template <typename E1, typename E2>
-typename mtl::traits::enable_if_scalar<E2, right_inc_view<E1, E2> >::type
-inline operator+ (const vec_expr<E1>& e1, const E2& e2)
+typename mtl::traits::enable_if_scalar<E2, map_view<tfunctor::right_plus<typename E1::value_type, E2>, E1> >::type
+inline operator+(const vec_expr<E1>& e1, const E2& e2)
 {
-    return right_inc_view<E1, E2>(static_cast<const E1&>(e1), e2);
+    typedef tfunctor::right_plus<typename E1::value_type, E2>ftype;
+    typedef map_view<ftype, E1>                             type;
+
+    return type(ftype(e2), static_cast<const E1&>(e1));
 }
 
 template <typename E1, typename E2>
