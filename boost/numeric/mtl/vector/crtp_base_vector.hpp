@@ -152,6 +152,17 @@ namespace detail {
 	}
     };	
 
+    /// Increment a vector by a scalar
+    template <typename Vector, typename Source, typename VCat>
+    struct crtp_plus_assign<Vector, Source, VCat, ashape::scal>
+    {
+	typedef vec_scal_plus_asgn_expr<Vector, Source> type;
+	type operator()(Vector& vector, const Source& src)
+	{
+	    return type(vector, src);
+	}
+    };	
+
     template <typename Vector, typename Source>
     struct assign_incrementer
     {

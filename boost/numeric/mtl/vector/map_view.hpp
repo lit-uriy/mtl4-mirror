@@ -152,6 +152,51 @@ namespace mtl { namespace traits {
 
 namespace mtl { namespace vector {
 
+template <typename Summand, typename Vector>
+struct left_inc_view
+    : public map_view<tfunctor::left_plus<Summand, typename Vector::value_type>, Vector>
+{
+    typedef tfunctor::left_plus<Summand, typename Vector::value_type>  functor_type;
+    typedef map_view<functor_type, Vector>                             base;
+    typedef left_inc_view                                              self;
+
+    explicit left_inc_view(const Summand& summand, const Vector& vector)
+      : base(functor_type(summand), vector)
+    {}
+    
+    explicit left_inc_view(const Summand& summand, boost::shared_ptr<Vector> p)
+      : base(functor_type(summand), p)
+    {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    left_inc_view (self&& that) : base(that) {}
+    left_inc_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Vector, typename RSummand>
+struct right_inc_view
+  : public map_view<tfunctor::right_plus<typename Vector::value_type, RSummand>, Vector>
+{
+    typedef tfunctor::right_plus<typename Vector::value_type, RSummand>  functor_type;
+    typedef map_view<functor_type, Vector>                               base;
+    typedef right_inc_view                                               self;
+	
+    explicit right_inc_view(const Vector& vector, const RSummand& rsummand)
+      : base(functor_type(rsummand), vector)
+    {}
+	
+    explicit right_inc_view(boost::shared_ptr<Vector> p, const RSummand& rsummand)
+      : base(functor_type(rsummand), p)
+    {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    right_inc_view (self&& that) : base(that) {}
+    right_inc_view (const self& that) : base(that) {}
+#endif
+};
+	
+
 template <typename Scaling, typename Vector>
 struct scaled_view
     : public map_view<tfunctor::scale<Scaling, typename Vector::value_type>, Vector>
@@ -309,6 +354,51 @@ struct negate_view
     negate_view (const self& that) : base(that) {}
 #endif
 };
+
+template <typename Value, typename Vector>
+struct left_min_view
+    : public map_view<tfunctor::left_min<Value, typename Vector::value_type>, Vector>
+{
+    typedef tfunctor::left_min<Value, typename Vector::value_type>  functor_type;
+    typedef map_view<functor_type, Vector>                          base;
+    typedef left_min_view                                           self;
+
+    explicit left_min_view(const Value& value, const Vector& vector)
+      : base(functor_type(value), vector)
+    {}
+    
+    explicit left_min_view(const Value& value, boost::shared_ptr<Vector> p)
+      : base(functor_type(value), p)
+    {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    left_min_view (self&& that) : base(that) {}
+    left_min_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Vector, typename RValue>
+struct right_min_view
+  : public map_view<tfunctor::right_min<typename Vector::value_type, RValue>, Vector>
+{
+    typedef tfunctor::right_min<typename Vector::value_type, RValue>  functor_type;
+    typedef map_view<functor_type, Vector>                            base;
+    typedef right_min_view                                            self;
+	
+    explicit right_min_view(const Vector& vector, const RValue& rvalue)
+      : base(functor_type(rvalue), vector)
+    {}
+	
+    explicit right_min_view(boost::shared_ptr<Vector> p, const RValue& rvalue)
+      : base(functor_type(rvalue), p)
+    {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    right_min_view (self&& that) : base(that) {}
+    right_min_view (const self& that) : base(that) {}
+#endif
+};
+	
 
 
 

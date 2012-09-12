@@ -14,6 +14,9 @@
 #define MTL_ENABLE_IF_INCLUDE
 
 #include <boost/utility/enable_if.hpp>
+#include <boost/type_traits/is_same.hpp>
+
+#include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 
 namespace mtl { namespace traits {
@@ -28,9 +31,16 @@ struct enable_if_vector
   : boost::enable_if<is_vector<Value>, Type>
 {};
 
+#if 0
 template <typename Value, typename Type = void>
 struct enable_if_scalar
   : boost::enable_if<is_scalar<Value>, Type>
+{};
+#endif
+
+template <typename Value, typename Type = void>
+struct enable_if_scalar
+  : boost::enable_if<boost::is_same<typename ashape::ashape<Value>::type, ashape::scal>, Type>
 {};
 
 }} // namespace mtl

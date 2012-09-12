@@ -50,6 +50,37 @@ void test(Vector& v, const char* name)
     unroll<3>(u)= 4. * w - v;
     std::cout << "unroll<3>(u)= 4. * w - v = " << u << "\n"; 
 
+    u+= 4;
+    std::cout << "u+= 4 = " << u << "\n"; 
+
+    u= v + 4;
+    std::cout << "u= v + 4 = " << u << "\n"; 
+
+    u= 4 + v;
+    std::cout << "u= 4 + v = " << u << "\n"; 
+
+    v= min(4, u);
+    std::cout << "v= min(4, u) = " << v << "\n"; 
+
+    v= min(u, 4);
+    std::cout << "v= min(u, 4) = " << v << "\n"; 
+
+    v= max(4, u);
+    std::cout << "v= max(4, u) = " << v << "\n"; 
+
+    v= max(u, 4);
+    std::cout << "v= max(u, 4) = " << v << "\n"; 
+
+#if 0
+    u-= 4;
+    std::cout << "u-= 4 = " << u << "\n"; 
+#endif
+
+    u= v - 4;
+    std::cout << "u= v - 4 = " << u << "\n"; 
+
+    u= 4 - v;
+    std::cout << "u= 4 - v = " << u << "\n"; 
 }
  
 
@@ -65,12 +96,14 @@ int main(int, char**)
     std::cout << "Testing vector operations\n";
 
     test(u, "test float");
+#if 0
     test(x, "test double");
 
     test(xc, "test complex<double>");
 
     dense_vector<float, parameters<row_major> >   ur(5);
     test(ur, "test float in row vector");
+#endif
 
     return 0;
 }

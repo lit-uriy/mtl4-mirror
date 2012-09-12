@@ -1,3 +1,14 @@
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University.
+//               2008 Dresden University of Technology and the Trustees of Indiana University.
+//               2010 SimuNova UG (haftungsbeschränkt), www.simunova.com.
+// All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
 /*
  *  rscale.hpp
  *  MTL4
@@ -76,7 +87,7 @@ namespace matrix {
     typename tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
     inline rscale(const Value1& value1, const Value2& value2)
     {
-    vampir_trace<4017> tracer;
+	vampir_trace<4017> tracer;
 	return tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>(value2)(value1);
     }
 }
@@ -87,7 +98,7 @@ namespace vector {
     typename tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
     inline rscale(const Value1& value1, const Value2& value2)
     {
-    vampir_trace<2024> tracer;
+	vampir_trace<2024> tracer;
 	return tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>(value2)(value1);
     }
 }

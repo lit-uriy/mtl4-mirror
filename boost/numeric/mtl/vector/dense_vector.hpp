@@ -141,6 +141,11 @@ class dense_vector
 			  typename boost::disable_if<boost::is_integral<VectorSrc>, dummy_type>::type= dummy_type())
     {	vampir_trace<2043> tracer; *this= src;    }
 
+    /// Constructor from std::vector; value_type must be identic
+    explicit dense_vector(const std::vector<value_type>& src)
+      : memory_base(src.size()) 
+    {	std::copy(src.begin(), src.end(), this->begin());    }
+
     /// Stride is always 1 
     size_type stride() const { return 1 ; }
 

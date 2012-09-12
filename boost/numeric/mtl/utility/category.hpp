@@ -97,7 +97,7 @@ struct category<mtl::matrix::coordinate2D<Elt, Parameters> >
 template <typename Elt, typename Parameters>
 struct category<mtl::matrix::sparse_banded<Elt, Parameters> > 
 {
-    typedef tag::sparse_matrix type;
+    typedef tag::sparse_banded_matrix type;
 };
 
 template <typename Vector>
