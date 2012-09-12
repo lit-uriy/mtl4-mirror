@@ -21,13 +21,7 @@ namespace meta_math {
 template <unsigned long N>
 struct power_of_2
 {
-    static const unsigned long value= 2 << (N-1);
-};
-
-template <>
-struct power_of_2<0>
-{
-    static const unsigned long value= 1 ;
+    static const unsigned long value= 1 << N;
 };
 
 
