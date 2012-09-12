@@ -15,7 +15,6 @@
 
 #include <vector>
 
-#include <boost/type_traits/is_base_of.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/bool.hpp>
@@ -293,59 +292,6 @@ struct category<itl::pc::solver<PC, Vector, Adjoint> >
 {
     typedef tag::unevaluated type; // might be a problem with nested matrices and vectors
 };
-
-template <typename T>
-struct is_dense 
-  : boost::is_base_of<tag::dense, typename category<T>::type> 
-{};
-
-template <typename T>
-struct is_matrix 
-  : boost::is_base_of<tag::matrix, typename category<T>::type> 
-{};
-
-template <typename T>
-struct is_vector 
-  : boost::is_base_of<tag::vector, typename category<T>::type> 
-{};
-
-template <typename T>
-struct is_unevaluated 
-  : boost::is_base_of<tag::unevaluated, typename category<T>::type> 
-{};
-
-template <typename T>
-struct is_scalar 
-  : boost::mpl::bool_< !is_vector<T>::value && !is_matrix<T>::value && !is_unevaluated<T>::value >
-{};
-
-/// Meta-function for categorizing types into tag::scalar, tag::vector, and tag::matrix
-/** Automatically derived from category 
-    @ingroup Tags
-*/
-template <typename T>
-struct algebraic_category
-  : boost::mpl::if_<
-	is_matrix<T>
-      , tag::matrix
-      , typename boost::mpl::if_<
-       	    is_vector<T>
-	  , tag::vector
-	  , tag::scalar
-	>::type
-    >
-{};
-
-template <typename T>
-struct is_sparse 
-  : boost::is_base_of<tag::sparse, typename category<T>::type> 
-{};
-
-// So far nothing is symmetric on the type level
-template <typename T>
-struct is_symmetric
-    : boost::mpl::false_
-{};
 
 }} // namespace mtl::traits 
 

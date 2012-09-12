@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/algebraic_category.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
