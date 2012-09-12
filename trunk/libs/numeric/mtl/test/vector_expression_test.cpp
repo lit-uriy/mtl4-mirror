@@ -58,6 +58,9 @@ void extra_test(Vector& u, Vector& v, Value)
 
     v= max(u, 4);
     std::cout << "v= max(u, 4) = " << v << "\n"; 
+
+    u= max(v - 4, 1);
+    std::cout << "u= max(v - 4, 3) is " << u << "\n"; 
 }
 
 // not complex

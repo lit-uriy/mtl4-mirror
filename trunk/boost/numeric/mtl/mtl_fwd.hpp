@@ -159,13 +159,9 @@ namespace mtl {
 	template <typename Vector>  struct real_view;
 	template <typename Vector>  struct imag_view;
 	template <typename Vector>  struct negate_view;
-	template <typename LSummand, typename Vector> struct left_inc_view;
-	template <typename Vector, typename RSummand> struct right_inc_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
 	template <typename Vector, typename RScaling> struct rscaled_view; // added by Hui Li
 	template <typename Vector, typename Divisor> struct divide_by_view; // added by Hui Li
-	template <typename LValue, typename Vector> struct left_min_view;
-	template <typename Vector, typename RValue> struct right_min_view;
 	template <class E1, class E2, typename SFunctor> struct vec_vec_op_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_vec_pmop_expr;
 	template <class E1, class E2, typename SFunctor> struct vec_vec_aop_expr;

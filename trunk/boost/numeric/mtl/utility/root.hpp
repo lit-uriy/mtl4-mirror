@@ -168,18 +168,6 @@ struct root< vector::vec_scal_div_asgn_expr<E1, E2> >
     typedef vector::vec_scal_aop_expr< E1, E2, mtl::sfunctor::divide_assign<typename E1::value_type, E2> > type;
 };
 
-template <typename Summand, typename Vector>
-struct root< vector::left_inc_view<Summand, Vector> >
-{
-    typedef vector::map_view<tfunctor::scale<Summand, typename Vector::value_type>, Vector> type;
-};
-
-template <typename Vector, typename RSummand>
-struct root< vector::right_inc_view<Vector, RSummand> >
-{
-    typedef vector::map_view<tfunctor::rscale<typename Vector::value_type, RSummand>, Vector> type;
-};
-
 template <typename Scaling, typename Vector>
 struct root< vector::scaled_view<Scaling, Vector> >
 {
@@ -215,19 +203,6 @@ struct root< vector::unrolled1<BSize, Vector> >
 {
     typedef Vector type;
 };
-
-template <typename Value, typename Vector>
-struct root< vector::left_min_view<Value, Vector> >
-{
-    typedef vector::map_view<tfunctor::scale<Value, typename Vector::value_type>, Vector> type;
-};
-
-template <typename Vector, typename RValue>
-struct root< vector::right_min_view<Vector, RValue> >
-{
-    typedef vector::map_view<tfunctor::rscale<typename Vector::value_type, RValue>, Vector> type;
-};
-
 
 
 
