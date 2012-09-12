@@ -12,6 +12,8 @@
 
 #include <iostream>
 #include <cmath>
+#include <complex>
+
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
@@ -24,6 +26,44 @@
 
 using namespace std;  
     
+template <typename Vector, typename Value>
+void extra_test(Vector& u, Vector& v, Value)
+{
+    u+= 4;
+    std::cout << "u+= 4 = " << u << "\n"; 
+
+    u= v + 4;
+    std::cout << "u= v + 4 = " << u << "\n"; 
+
+    u= 4 + v;
+    std::cout << "u= 4 + v = " << u << "\n"; 
+
+    u-= 4;
+    std::cout << "u-= 4 = " << u << "\n"; 
+
+    u= v - 4;
+    std::cout << "u= v - 4 = " << u << "\n"; 
+
+    u= 4 - v;
+    std::cout << "u= 4 - v = " << u << "\n"; 
+
+    v= min(4, u);
+    std::cout << "v= min(4, u) = " << v << "\n"; 
+
+    v= min(u, 4);
+    std::cout << "v= min(u, 4) = " << v << "\n"; 
+
+    v= max(4, u);
+    std::cout << "v= max(4, u) = " << v << "\n"; 
+
+    v= max(u, 4);
+    std::cout << "v= max(u, 4) = " << v << "\n"; 
+}
+
+// not complex
+template <typename Vector, typename Value>
+void extra_test(Vector& u, Vector& v, std::complex<Value>) {}
+
 
 template <typename Vector>
 void test(Vector& v, const char* name)
@@ -50,37 +90,7 @@ void test(Vector& v, const char* name)
     unroll<3>(u)= 4. * w - v;
     std::cout << "unroll<3>(u)= 4. * w - v = " << u << "\n"; 
 
-    u+= 4;
-    std::cout << "u+= 4 = " << u << "\n"; 
-
-    u= v + 4;
-    std::cout << "u= v + 4 = " << u << "\n"; 
-
-    u= 4 + v;
-    std::cout << "u= 4 + v = " << u << "\n"; 
-
-    v= min(4, u);
-    std::cout << "v= min(4, u) = " << v << "\n"; 
-
-    v= min(u, 4);
-    std::cout << "v= min(u, 4) = " << v << "\n"; 
-
-    v= max(4, u);
-    std::cout << "v= max(4, u) = " << v << "\n"; 
-
-    v= max(u, 4);
-    std::cout << "v= max(u, 4) = " << v << "\n"; 
-
-#if 0
-    u-= 4;
-    std::cout << "u-= 4 = " << u << "\n"; 
-#endif
-
-    u= v - 4;
-    std::cout << "u= v - 4 = " << u << "\n"; 
-
-    u= 4 - v;
-    std::cout << "u= 4 - v = " << u << "\n"; 
+    extra_test(u, v, u[0]);
 }
  
 
@@ -96,14 +106,12 @@ int main(int, char**)
     std::cout << "Testing vector operations\n";
 
     test(u, "test float");
-#if 0
     test(x, "test double");
 
     test(xc, "test complex<double>");
 
     dense_vector<float, parameters<row_major> >   ur(5);
     test(ur, "test float in row vector");
-#endif
 
     return 0;
 }
