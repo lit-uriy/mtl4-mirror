@@ -14,6 +14,7 @@
 #define MTL_SET_TO_0_INCLUDE
 
 #include <algorithm>
+#include <cassert>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
