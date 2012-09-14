@@ -688,6 +688,7 @@ template <typename MValue, typename MPara, typename VectorIn, typename VectorOut
 typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
 inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
+    vampir_trace<3069> tracer;
     typedef sparse_banded<MValue, MPara>                      Matrix;
     typedef typename Collection<VectorOut>::value_type        value_type;
     typedef typename Matrix::band_size_type                   band_size_type;
@@ -731,12 +732,11 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
 	// for (size_type i= begin_pos; i <= end_pos; i++)
 	//     std::cout << bands[i] << (i < end_pos ? ", " : "\n");
 
-	const value_type* Aps= A.ref_data() + (from * nb + begin_pos);
+	const MValue* Aps= A.ref_data() + (from * nb + begin_pos);
 
-#if 0
-	band_size_type blocked_to= ((to - from) & -4) + from; 
+	const band_size_type blocked_to= ((to - from) & -4) + from; 
 	assert((blocked_to - from) % 4 == 0 && blocked_to >= band_size_type(from) && blocked_to <= band_size_type(to));
-	for (band_size_type r= from; r < blocked_to; blocked_to+= 4) {
+	for (band_size_type r= from; r < blocked_to; r+= 4) {
 	    value_type     tmp0(z), tmp1(z), tmp2(z), tmp3(z);
 	    const MValue   *Ap0= Aps, *Ap1= Aps + nb, *Ap2= Ap1 + nb, *Ap3= Ap2 + nb;
 	    for (size_type b= begin_pos; b <= end_pos; ++b, ++Ap0, ++Ap1, ++Ap2, ++Ap3) {
@@ -751,9 +751,8 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
 	    Assign::first_update(w[r+3], tmp3);
 	    Aps+= 4 * nb;
 	}
-#endif
 
-	for (band_size_type r= from; r < band_size_type(to); r++) {
+	for (band_size_type r= blocked_to; r < band_size_type(to); r++) {
 	    value_type     tmp(z);
 	    const MValue*  Ap= Aps;
 	    for (size_type b= begin_pos; b <= end_pos; ++b, ++Ap)
