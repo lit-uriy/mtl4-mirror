@@ -13,7 +13,7 @@
 #include <string>
 #include <iostream>
 
-// #define MTL_VERBOSE_TEST
+#define MTL_VERBOSE_TEST
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/matrix/sparse_banded.hpp>
 
