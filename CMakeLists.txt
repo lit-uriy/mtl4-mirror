@@ -3,6 +3,7 @@ project (mtl4)
 cmake_minimum_required(VERSION 2.8)
 option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
 option(ENABLE_WARNINGS "enable gnu specific warnings" ON)
+option(ENABLE_DEVELOPMENT "enable program parts under development" OFF)
 #look for mtl4, use THIS directory as mtl dir
 find_package(MTL REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MTL_INCLUDE_DIRS})
@@ -51,6 +52,10 @@ if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND ENABLE_WARNINGS)
       add_definitions("-Werror")
     endif() 
   endif()
+endif()
+
+if (ENABLE_DEVELOPMENT)
+  add_definitions("-DMTL_WITH_DEVELOPMENT")
 endif()
 
 set(BUILDNAME "${TESTBUILDNAME}")
