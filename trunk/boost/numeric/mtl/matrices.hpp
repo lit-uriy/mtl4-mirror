@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/matrix/morton_dense.hpp> 
 #include <boost/numeric/mtl/matrix/compressed2D.hpp> 
+#include <boost/numeric/mtl/matrix/sparse_banded.hpp> 
 #include <boost/numeric/mtl/matrix/multi_vector.hpp> 
 #include <boost/numeric/mtl/matrix/multi_vector_range.hpp> 
 #include <boost/numeric/mtl/matrix/element_matrix.hpp> 

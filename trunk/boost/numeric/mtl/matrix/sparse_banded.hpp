@@ -257,7 +257,6 @@ struct sparse_banded_inserter
 };
 
 
-#if 1
 template <typename Value, typename Parameters>
 struct sparse_banded_key
 {
@@ -290,8 +289,6 @@ struct sparse_banded_cursor
     self& operator++() { ++this->offset; return *this;  }
     const base& operator* () const { return *this; }
 };
-
-#endif
 
 // ================
 // Free functions
