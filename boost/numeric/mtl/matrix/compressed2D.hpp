@@ -400,6 +400,48 @@ class compressed2D
     }
 #endif 
 
+    /// Copy the pattern of matrix \p src
+    /** Advanced feature. Not generic, i.e. does not exist for all matrix types.
+	value_type of \p src and target can be different.
+	Changes dimension of target to that of \p src.
+	Existing entries are deleted. **/
+    template <typename Src>
+    void copy_pattern(const Src& src)
+    {
+	using std::copy;
+	change_dim(num_rows(src), num_cols(src));
+	copy(src.ref_major().begin(), src.ref_major().end(), starts.begin());
+
+	set_nnz(src.ref_minor().size());
+	copy(src.ref_minor().begin(), src.ref_minor().end(), indices.begin());
+    }
+
+    void make_symmetric_pattern()
+    {
+	MTL_THROW_IF(this->num_cols() != this->num_rows(), matrix_not_square());
+	self A(*this);
+	{
+	    using math::zero;
+	    inserter<self> ins(A, 2 * this->nnz() / this->dim1());
+
+	    typename traits::row<self>::type                                 row(*this); 
+	    typename traits::col<self>::type                                 col(*this); 
+	    typename traits::const_value<self>::type                         value(*this); 
+	    typedef typename traits::range_generator<mtl::tag::major, self>::type        cursor_type;
+	    for (cursor_type cursor = mtl::begin<mtl::tag::major>(*this), cend = mtl::end<mtl::tag::major>(*this); 
+		 cursor != cend; ++cursor) {
+		typedef mtl::tag::nz     inner_tag;
+		typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
+		for (icursor_type icursor = mtl::begin<inner_tag>(cursor), icend = mtl::end<inner_tag>(cursor); icursor != icend; ++icursor) {
+		    size_type r= row(*icursor), c= col(*icursor);
+		    if (!indexer(*this, c, r))
+			ins[c][r] << zero(value(*icursor));
+	      	}
+	    }
+	}
+	swap(*this, A);
+    }
+
 
     // Copies range of values and their coordinates into compressed matrix
     // For brute force initialization, should be used with uttermost care
