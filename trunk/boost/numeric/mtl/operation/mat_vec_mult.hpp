@@ -685,7 +685,7 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
 }
 #endif
 
-
+#ifdef MTL_WITH_DEVELOPMENT
 // Row-major sparse_banded vector multiplication
 template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
 typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
@@ -720,6 +720,8 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
 	std::cout << "w[0.." << begin_rows[begin_pos] << "] <- 0\n";
     }
 
+
+
     std::cout << "\n";
 #if 0
     vampir_trace<3049> tracer;
@@ -727,7 +729,7 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
     using math::zero;
 
     if (A.nnz() < num_rows(A) && !as.init_to_zero) {
-	vsmat_cvec_mult(A, v, w, as, tag::row_major());
+	vsmat_cvec_mult(A, v, w, as, tag::row_major();)
 	return;
     }
 
@@ -790,7 +792,7 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
 #endif
 }
 
-
+#endif // MTL_WITH_DEVELOPMENT
 
 
 // Sparse column-major matrix vector multiplication

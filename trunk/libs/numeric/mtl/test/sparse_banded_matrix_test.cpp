@@ -93,7 +93,7 @@ void mat_vec_mult_test(const Matrix& A, const char* name)
 int main(int, char**)
 {
     using namespace mtl;
-#if 0
+#ifdef MTL_WITH_DEVELOPMENT
     unsigned dim1= 3, dim2= 4;
     matrix::sparse_banded<double>  dr, dr2(6, 11), dr3(11, 6), dr4(6, 5);
     
