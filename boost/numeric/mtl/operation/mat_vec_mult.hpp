@@ -71,9 +71,6 @@ namespace impl {
 	}   
     };
 
-
-
-
     template <std::size_t Max0, std::size_t Max1, typename Assign>
     struct fully_unroll_mat_cvec_mult<Max0, Max0, Max1, Max1, Assign>
       : public meta_math::loop2<Max0, Max0, Max1, Max1>
@@ -689,7 +686,7 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
 // Row-major sparse_banded vector multiplication
 template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
 typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
-inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign as, tag::row_major)
+inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign, tag::row_major)
 {
     typedef sparse_banded<MValue, MPara>                      Matrix;
     typedef typename Collection<VectorOut>::value_type        value_type;
@@ -701,7 +698,7 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
     const value_type z(math::zero(w[0]));
 
     size_type nr= num_rows(A), nc= num_cols(A), nb= A.ref_bands().size();
-    if (nb == size_type(0) && as.init_to_zero) {
+    if (nb == size_type(0) && Assign::init_to_zero) {
 	set_to_zero(w);
 	return;
     }
@@ -709,87 +706,84 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
     vector_type bands(A.ref_bands()), begin_rows(max(0, -bands)), end_rows(min(nr, nc - bands));
     assert(end_rows[nb-1] > 0);
 
-    std::cout << "bands = " << bands << ", begin_rows = " << begin_rows << ", end_rows = " << end_rows << "\n";
-    size_type begin_pos= 0, end_pos= nb, r= 0;
+    // std::cout << "bands = " << bands << ", begin_rows = " << begin_rows << ", end_rows = " << end_rows << "\n";
+    size_type begin_pos= 0, end_pos= nb - 1, r= 0;
 
     // find lowest diagonal in row 0
     while (begin_pos < nb && begin_rows[begin_pos] > 0) begin_pos++;
     // if at the end, the first rows are empty
-    if (begin_pos == nb && as.init_to_zero) {
+    if (begin_pos == nb && Assign::init_to_zero) {
 	w[irange(begin_rows[--begin_pos])]= z;
-	std::cout << "w[0.." << begin_rows[begin_pos] << "] <- 0\n";
+	// std::cout << "w[0.." << begin_rows[begin_pos] << "] <- 0\n";
     }
 
+    size_type from= begin_rows[begin_pos];
+    // find first entry with same value
+    while (begin_pos > 0 && begin_rows[begin_pos - 1] == from) {
+	assert(from = 0); // should only happen when multiple bands start in row 0
+	begin_pos--;
+    }
+    for (bool active= true; active; ) {
+	// search backwards for the next-largest entry
+	size_type to= begin_pos > 0 && begin_rows[begin_pos - 1] <= end_rows[end_pos] ? begin_rows[begin_pos - 1] : end_rows[end_pos];
 
+	// std::cout << "rows " << from << ".." << to << ": with bands ";
+	// for (size_type i= begin_pos; i <= end_pos; i++)
+	//     std::cout << bands[i] << (i < end_pos ? ", " : "\n");
 
-    std::cout << "\n";
+	const value_type* Aps= A.ref_data() + (from * nb + begin_pos);
+
 #if 0
-    vampir_trace<3049> tracer;
-    // vampir_trace<5056> tttracer;
-    using math::zero;
-
-    if (A.nnz() < num_rows(A) && !as.init_to_zero) {
-	vsmat_cvec_mult(A, v, w, as, tag::row_major();)
-	return;
-    }
-
-    typedef compressed2D<MValue, MPara>                       Matrix;
-    typedef typename Collection<VectorOut>::value_type        value_type;
-    typedef typename mtl::traits::omp_size_type<typename Collection<Matrix>::size_type>::type size_type;
-
-    if (size(w) == 0) return;
-    const value_type z(math::zero(w[0]));
-
-    size_type nr= num_rows(A), nrb= nr / 4 * 4;
-    if (nr > 10) {
-	size_type nh= nr / 2, nq= nr / 4, nt= nr - nq;
-	if (!as.init_to_zero &&
-	    (A.ref_major()[1] == A.ref_major()[0] 
-	     || A.ref_major()[nq] == A.ref_major()[nq+1]
-	     || A.ref_major()[nh] == A.ref_major()[nh+1]
-	     || A.ref_major()[nt] == A.ref_major()[nt+1]
-	     || A.ref_major()[nr-1] == A.ref_major()[nr])) {
-	    adapt_crs_cvec_mult(A, v, w, as);
-	    return;
-	}
-    }
-
-    #ifdef MTL_WITH_OPENMP
-    #   pragma omp parallel
-    #endif
-    {
-    	#ifdef MTL_WITH_OPENMP
-	    vampir_trace<8004> tracer;
-    	#   pragma omp for
-    	#endif
-	    for (size_type i= 0; i < nrb; i+= 4) {
-		const size_type cj0= A.ref_major()[i], cj1= A.ref_major()[i+1], cj2= A.ref_major()[i+2], 
-		    cj3= A.ref_major()[i+3], cj4= A.ref_major()[i+4];
-		value_type      tmp0(z), tmp1(z), tmp2(z), tmp3(z);
-		for (size_type j0= cj0; j0 != cj1; ++j0)
-		    tmp0+= A.data[j0] * v[A.ref_minor()[j0]];
-		for (size_type j1= cj1; j1 != cj2; ++j1)
-		    tmp1+= A.data[j1] * v[A.ref_minor()[j1]];
-		for (size_type j2= cj2; j2 != cj3; ++j2)
-		    tmp2+= A.data[j2] * v[A.ref_minor()[j2]];
-		for (size_type j3= cj3; j3 != cj4; ++j3)
-		    tmp3+= A.data[j3] * v[A.ref_minor()[j3]];
-
-		Assign::first_update(w[i], tmp0);
-		Assign::first_update(w[i+1], tmp1);
-		Assign::first_update(w[i+2], tmp2);
-		Assign::first_update(w[i+3], tmp3);
+	band_size_type blocked_to= ((to - from) & -4) + from; 
+	assert((blocked_to - from) % 4 == 0 && blocked_to >= band_size_type(from) && blocked_to <= band_size_type(to));
+	for (band_size_type r= from; r < blocked_to; blocked_to+= 4) {
+	    value_type     tmp0(z), tmp1(z), tmp2(z), tmp3(z);
+	    const MValue   *Ap0= Aps, *Ap1= Aps + nb, *Ap2= Ap1 + nb, *Ap3= Ap2 + nb;
+	    for (size_type b= begin_pos; b <= end_pos; ++b, ++Ap0, ++Ap1, ++Ap2, ++Ap3) {
+		tmp0+= *Ap0 * v[r + bands[b]];
+		tmp1+= *Ap1 * v[r + bands[b] + 1];
+		tmp2+= *Ap2 * v[r + bands[b] + 2];
+		tmp3+= *Ap3 * v[r + bands[b] + 3];
 	    }
+	    Assign::first_update(w[r], tmp0);
+	    Assign::first_update(w[r+1], tmp1);
+	    Assign::first_update(w[r+2], tmp2);
+	    Assign::first_update(w[r+3], tmp3);
+	    Aps+= 4 * nb;
+	}
+#endif
+
+	for (band_size_type r= from; r < band_size_type(to); r++) {
+	    value_type     tmp(z);
+	    const MValue*  Ap= Aps;
+	    for (size_type b= begin_pos; b <= end_pos; ++b, ++Ap)
+		tmp+= *Ap * v[r + bands[b]];
+	    Assign::first_update(w[r], tmp);
+	    Aps+= nb;
+	}
+    
+	if (begin_pos > 0) {
+	    if (begin_rows[begin_pos-1] == to)
+		begin_pos--;
+	    if (end_rows[end_pos] == to)
+		end_pos--;
+	} else { // begin == 0 -> decrement end_pos or finish
+	    if (end_rows[0] == to) {
+		active= false;
+		assert(end_rows[0] = end_rows[end_pos]);
+	    } else {
+		assert(end_pos > 0);
+		end_pos--;
+	    }
+	}
+	assert(begin_pos <= end_pos);
+	from= to;
     }
 
-    for (size_type i= nrb; i < nr; ++i) {
-	const size_type cj0= A.ref_major()[i], cj1= A.ref_major()[i+1];
-	value_type      tmp0(z);
-	for (size_type j0= cj0; j0 != cj1; ++j0)
-	    tmp0+= A.data[j0] * v[A.ref_minor()[j0]];
-	Assign::first_update(w[i], tmp0);
+    if (end_rows[0] < nr  && Assign::init_to_zero) {
+	w[irange(end_rows[0], nr)]= z;
+	// std::cout << "w[" << end_rows[0] << ".." << nr << "] <- 0\n";
     }
-#endif
 }
 
 #endif // MTL_WITH_DEVELOPMENT

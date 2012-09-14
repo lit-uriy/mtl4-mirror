@@ -32,11 +32,12 @@ int main()
   // typedef std::size_t size_type;
   std::cout << "sizeof in size_type is " << sizeof(size_type) << '\n';
   typedef matrix::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, size_type> para;
-  typedef compressed2D<double, para>  matrix_type;
+  typedef sparse_banded<double, para>  matrix_type;
+  // typedef compressed2D<double, para>  matrix_type;
   matrix_type          A(N, N);
   laplacian_setup(A, size, size);
 
-  itl::pc::ilu_0<matrix_type, float>     P(A);
+  // itl::pc::ilu_0<matrix_type, float>     P(A);
   itl::pc::identity<matrix_type>  P2(A);
 
   mtl::dense_vector<double> x(N, 1.0), b(N);
@@ -44,9 +45,9 @@ int main()
   b = A * x;
   x= 0;
 
-  itl::cyclic_iteration<double> iter(b, 500, 1.e-6, 0.0, 100);
+  itl::cyclic_iteration<double> iter(b, 100, 1.e-6, 0.0, 100);
   boost::timer t;
-  bicgstab_2(A, x, b, P, iter);
+  bicgstab_2(A, x, b, P2, iter);
   //     bicgstab_ell(A, x, b, P, P2, iter, 2);
   std::cout << "BiCGStab(2) took " << t.elapsed() << "s.\n";
  

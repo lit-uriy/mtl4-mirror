@@ -28,12 +28,11 @@ int main()
 
     using namespace mtl;
 
-  
     typedef unsigned size_type;
     // typedef std::size_t size_type;
     std::cout << "sizeof in size_type is " << sizeof(size_type) << '\n';
     typedef matrix::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, size_type> para;
-    typedef compressed2D<double, para>  matrix_type;
+    typedef sparse_banded<double, para>  matrix_type;
     matrix_type          A;
     laplacian_setup(A, size, size);
     // A.self_copy(A0);
@@ -46,7 +45,7 @@ int main()
     b = A * x;
     x= 0;
 
-    itl::cyclic_iteration<double> iter(b, 10, 1.e-2, 0.0, 100);
+    itl::cyclic_iteration<double> iter(b, 100, 1.e-2, 0.0, 100);
     boost::timer t;
     cg(A, x, b, P, iter);
     std::cout << "CG took " << t.elapsed() << "s.\n";

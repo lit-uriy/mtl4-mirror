@@ -76,18 +76,18 @@ template <typename Matrix>
 void mat_vec_mult_test(const Matrix& A, const char* name)
 {
     typedef typename Matrix::value_type  value_type;
-    std::cout << name << " " << num_rows(A) << " by " << num_cols(A) << '\n' << A;
+    mtl::io::tout << name << " " << num_rows(A) << " by " << num_cols(A) << '\n' << A;
 
     mtl::dense_vector<value_type> v, w(num_cols(A), 3.0), v2;
     v= A * w;
+    mtl::io::tout << "A * v =    " << v << '\n';
 
-#if 0
     mtl::compressed2D<value_type> B(A);
     v2= B * w;
+    mtl::io::tout << "Should be: " << v2 << "\n\n";
     v2-= v;
     MTL_THROW_IF(two_norm(v2) > 0.001, 
 		 mtl::runtime_error("wrong result for sparse banded times vector"));
-#endif
 }
 
 int main(int, char**)
