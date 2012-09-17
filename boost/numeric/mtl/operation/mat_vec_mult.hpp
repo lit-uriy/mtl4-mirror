@@ -682,7 +682,6 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
 }
 #endif
 
-#ifdef MTL_WITH_DEVELOPMENT
 // Row-major sparse_banded vector multiplication
 template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
 typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
@@ -708,7 +707,7 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
     assert(end_rows[nb-1] > 0);
 
     // std::cout << "bands = " << bands << ", begin_rows = " << begin_rows << ", end_rows = " << end_rows << "\n";
-    size_type begin_pos= 0, end_pos= nb - 1, r= 0;
+    size_type begin_pos= 0, end_pos= nb - 1;
 
     // find lowest diagonal in row 0
     while (begin_pos < nb && begin_rows[begin_pos] > 0) begin_pos++;
@@ -718,7 +717,7 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
 	// std::cout << "w[0.." << begin_rows[begin_pos] << "] <- 0\n";
     }
 
-    size_type from= begin_rows[begin_pos];
+    band_size_type from= begin_rows[begin_pos];
     // find first entry with same value
     while (begin_pos > 0 && begin_rows[begin_pos - 1] == from) {
 	assert(from = 0); // should only happen when multiple bands start in row 0
@@ -726,7 +725,7 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
     }
     for (bool active= true; active; ) {
 	// search backwards for the next-largest entry
-	size_type to= begin_pos > 0 && begin_rows[begin_pos - 1] <= end_rows[end_pos] ? begin_rows[begin_pos - 1] : end_rows[end_pos];
+	band_size_type to= begin_pos > 0 && begin_rows[begin_pos - 1] <= end_rows[end_pos] ? begin_rows[begin_pos - 1] : end_rows[end_pos];
 
 	// std::cout << "rows " << from << ".." << to << ": with bands ";
 	// for (size_type i= begin_pos; i <= end_pos; i++)
@@ -779,14 +778,11 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
 	from= to;
     }
 
-    if (end_rows[0] < nr  && Assign::init_to_zero) {
+    if (size_type(end_rows[0]) < nr  && Assign::init_to_zero) {
 	w[irange(end_rows[0], nr)]= z;
 	// std::cout << "w[" << end_rows[0] << ".." << nr << "] <- 0\n";
     }
 }
-
-#endif // MTL_WITH_DEVELOPMENT
-
 
 // Sparse column-major matrix vector multiplication
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
