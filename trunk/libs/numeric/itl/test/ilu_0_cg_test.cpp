@@ -13,17 +13,15 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
+const int size = 3, N = size * size; 
 
-int main()
+template <typename Matrix>
+void test()
 {
-    const int size = 3, N = size * size; 
-
-    typedef mtl::compressed2D<double>  matrix_type;
-    mtl::compressed2D<double>          A(N, N), dia(N, N);
+    Matrix                             A;
     laplacian_setup(A, size, size);
-    // dia= 1.0; A+= dia;
        
-    itl::pc::ilu_0<matrix_type>        P(A);
+    itl::pc::ilu_0<Matrix>             P(A);
     mtl::dense_vector<double>          x(N, 1.0), b(N);
     
     b = A * x;
@@ -31,6 +29,14 @@ int main()
     
     itl::cyclic_iteration<double> iter(b, N, 1.e-6, 0.0, 1);
     cg(A, x, b, P, iter);
-    
+
+    MTL_THROW_IF(size == 3 && iter.iterations() > 4, mtl::runtime_error("Too many iterations in cg with ILU(0)"));
+}
+
+int main()
+{
+    test<mtl::compressed2D<double> >();
+    //test<mtl::sparse_banded<double> >();
+
     return 0;
 }
