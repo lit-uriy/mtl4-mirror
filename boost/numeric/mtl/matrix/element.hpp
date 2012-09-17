@@ -329,7 +329,7 @@ public:
 	    }
 	    values = tmp2;
 	} else {
-	std::cout<< "ELSE\n";
+//	std::cout<< "ELSE\n";
 //	    values = new matrix_type(0,0);
 	}
 	// Update the neighbourhood.

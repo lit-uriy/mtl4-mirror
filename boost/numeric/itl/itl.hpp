@@ -40,6 +40,10 @@
 #include <boost/numeric/itl/pc/ilut.hpp>
 #include <boost/numeric/itl/pc/ic_0.hpp>
 
+#include <boost/numeric/itl/pc/imf_preconditioner.hpp>
+#include <boost/numeric/itl/pc/imf_algorithms.hpp>
+
+
 #include <boost/numeric/itl/smoother/gauss_seidel.hpp>
 
 #include <boost/numeric/itl/stepper/armijo.hpp>

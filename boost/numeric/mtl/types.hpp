@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 
 #include <boost/numeric/mtl/io/matrix_market.hpp>
+#include <boost/numeric/mtl/io/read_el_matrix.hpp>
 #include <boost/numeric/mtl/io/test_ostream.hpp>
 
 #include <boost/numeric/mtl/interface/arprec.hpp>
