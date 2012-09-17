@@ -756,11 +756,13 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage banded_matrices
    -# \subpage rank_update
    -# \subpage other_matrix_functions
+   -# \subpage eigenvalues_intro
    .
 -# Solving Linear Systems
    -# \subpage trisolve_intro
    -# \subpage krylov_intro
-   -# \subpage using_solvers
+   -# \subpage using_solvers 
+   -# \subpage imf_preconditioner
    .
 -# Traversing Matrices and Vectors
    -# \subpage iteration
@@ -2091,10 +2093,69 @@ It is intended for sparse matrices but also works on dense ones.
 
 
 \if Navigation \endif
-  Return to \ref rank_update &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref trisolve_intro 
+  Return to \ref rank_update &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref eigenvalues_intro
 
 
 */
+
+
+
+//-----------------------------------------------------------
+
+/*! \page eigenvalues_intro Eigenvalues and SVD
+
+
+For the calculation of eigenvalues​​, we provide the following functions in MTL4. The default view is by
+\code
+  eig= eigenvalue_symmetric(A);
+\endcode
+with %matrix A and %dense_vector eig of suitable size.
+The default argument invokes a QR-algorithm with implicit symmetric qr-steps (Wilkinson-Shifts).
+If the flag  MTL_SYMMETRIC_EIGENVALUE_WITH_QR is defined, this calls only the standard QR-Algorithm, which exchanges Q and R  num_rows(A) times.
+
+You can also directly use the QR-Algorithm with
+\code
+  eig= qr_algo(A, n);
+\endcode
+This changes Q and R only n times if you know how many Q and R changes you will need.
+
+In the same way you can directly call the qr-Algorithm with implicit symmetric Wilkinson-Shifts by
+\code
+  eig= qr_sym_imp(A);
+\endcode
+
+At the moment our functions to calculate the eigenvalues ​​only work on dense matrices, because we need 
+the matrix in Hessenberg form for the QR-Algorithm, and this is stored as a dense matrix.
+
+For example:
+\include eigenvalue_example.cpp
+
+Singular Value Decomposition
+
+A singular value decomposition of an \f$ m\times n \f$ real or complex matrix M is a factorization of the form
+\f[ M=U \Sigma V^{*} \f]
+with
+- U:  real or complex unitary \f$ m \times m \f$ matrix
+- \f$  \Sigma \f$: \f$ m\times n \f$ rectangular diagonal matrix with nonnegative real numbers on the diagonal
+- \f$  V^{*} \f$:  (the conjugate transpose of V) is a \f$ n\times n \f$  real or complex unitary matrix
+The diagonal entries \f$ \Sigma_{i,i} \f$ of \f$ \Sigma \f$ are known as the singular values of M.
+
+For the calculation of the svd we have a Matlab-like call
+\code
+  boost::tie(S, V, D)= svd(A, 1.e-10)= svd(A);
+\endcode
+The second argument is optional and defines the missmatch of upper R (A= Q*R).
+At the moment all four matrices have the same type. If A is a dense2D-matrix, then also U, \f$ \Sigma \f$ and V are return as dense2D matrix.
+Furthermore, this function works only for the real case because in the moment we don't know how to implement  R[i][i] < zero for complex R.
+
+\if Navigation \endif
+  Return to \ref other_matrix_functions &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref trisolve_intro 
+
+
+*/
+
+
+
 
 //-----------------------------------------------------------
 
@@ -2169,7 +2230,7 @@ matrix; however, a small overhead for searching the relevant entries is the pric
 
 
 \if Navigation \endif
-  Return to \ref other_matrix_functions &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref krylov_intro 
+  Return to \ref eigenvalues_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref krylov_intro 
 
 
 */
@@ -2241,11 +2302,14 @@ As preconditioners we provide at the moment:
 - Identity: that is no preconditioning: itl::pc::identity<Matrix, Value>;
 - Diagonal inversion: the inverse of diagonal is stored and used in element-wise multiplication: itl::pc::diagonal<Matrix, Value>;
 - ILU(0): Incomplete LU factorization without fill-in: itl::pc::ilu_0<Matrix, Value>;
-- ILUT: Incomplete LU factorization with threshold (still under development): itl::pc::ilut<Matrix, Value>; and
-- IC(0): Incomplete Cholesky factorization without fill-in: itl::pc::ic_0<Matrix, Value>;
+- ILUT: Incomplete LU factorization with threshold (still under development): itl::pc::ilut<Matrix, Value>; 
+- IC(0): Incomplete Cholesky factorization without fill-in: itl::pc::ic_0<Matrix, Value>; and
+- IMF(s): Incomplete Multifrontal LU Decomposition with s levels of fill-in: itl::pc::imf_preconditioner<Value>
 .
 The first template argument is the type of the considered matrix and the second one the value_type of
-preconditioner's internal data, see \ref tuning_value_type.
+preconditioner's internal data, see \ref tuning_value_type. 
+Except for the last preconditioner, this only requires the value type of element matrices and not the entire assembled matrix.
+More details are available at \ref imf_preconditioner.
 
 The iteration object can be chosen between:
 - Basic iteration does not generate output: basic_iteration(r0, m, r, a= 0);
@@ -2274,12 +2338,61 @@ General assumptions on solver iterations:
 
 
 \if Navigation \endif
-  Return to \ref krylov_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref iteration 
+  Return to \ref krylov_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref imf_preconditioner
 
 
 */
 
 //-----------------------------------------------------------
+/*! \page imf_preconditioner Using IMF-Preconditioner
+ 
+The following program illustrates how to use the imf preconditioner to solve a linear system: 
+
+\include imf_example.cpp
+
+The use of the imf preconditioner differs slightly from the other preconditioners. 
+For the use of the imf preconditioner element matrices are needed which typically occur at a FEM discretization.
+The imf preconditioner works on this small element matrices, whose assembly results in the system matrix which is not needed by the imf preconditioner.
+
+Once you have created the element structure, the elements must be read from a file with a specific structure. 
+The first lines of the file square3.mtx in the example above are as follows: 
+\code
+36
+1.1111111e1
+0 1 7 8 
+1.0 2.0 2.0 1.0
+4.0 4.0 2.0 1.0
+1.0 2.0 4.0 1.0
+1.0 2.0 3.0 1.0
+
+1 2 8 9 
+1.0 2.0 2.0 1.0
+4.0 6.0 2.0 1.0
+3.0 6.0 2.0 1.0
+1.0 2.0 2.0 1.0
+\endcode
+The finite element mesh is a 6x6 element mesh with 36 square elements. The fist line contains the number of elements in the mesh.
+The second line contains the condition number of the system but is not used. In the next line the first element is defined 
+featuring his 4 vertices 0,1,7,8. It is followed by the element matrix of the element, which consists of these four nodes.
+After a blank line you can see the nodes of the next element and his element matrix.
+
+With this information, you can create the imf preconditioner.
+
+To solve a linear system with this preconditioner you have two options. You can assemble the big matrix(B) from the small element matrices
+and use this for the solver routines or you can use directly the element structure(A) to solve the system. 
+In the latter method you have to run through all the elements, if you want to multiply the element structure with a vector.
+
+
+
+\if Navigation \endif
+  Return to \ref using_solvers &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref iteration 
+
+
+*/
+
+//-----------------------------------------------------------
+
+
 
 /*! \page iteration Iteration
 
@@ -2487,7 +2600,7 @@ tag::major usually will yield the same results (but this is not so cool).
 
 
 \if Navigation \endif
-  Return to \ref using_solvers &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref rec_intro 
+  Return to \ref imf_preconditioner &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref rec_intro 
 
 
 //-----------------------------------------------------------

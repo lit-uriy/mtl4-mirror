@@ -27,10 +27,10 @@
 namespace mtl {  namespace matrix {
 
 /// Construct the sparse data structure from an elementstructure 
-template< typename ElementStructure, typename Vector, typename Matrix> 
-void assemble_compressed(const ElementStructure& es,	const Vector& order, Matrix& A) 
+template< typename ElementStructure, typename Matrix, typename Vector> 
+void assemble_compressed(const ElementStructure& es, Matrix& A, Vector& order) 
 {
-// 	mtl::vampir_trace<4021> tracer;
+
   	typedef typename ElementStructure::element_type::value_type   value_type;
  	typedef typename ElementStructure::element_iterator           iterator;
  	typedef typename ElementStructure::element_type               element_type;
@@ -57,7 +57,18 @@ void assemble_compressed(const ElementStructure& es,	const Vector& order, Matrix
 	  }
 	}//end inserterblock
 }
+
+
+/// Construct the sparse data structure from an elementstructure 
+template< typename ElementStructure, typename Matrix> 
+void assemble_compressed(const ElementStructure& es, Matrix& A) 
+{
+  typedef typename  ElementStructure::element_type::matrix_type::size_type size_type;
+  mtl::dense_vector<size_type> ident(es.get_total_vars());
+  iota(ident);
+  assemble_compressed(es, A, ident);
 }
-}//end namespace mtl
+
+}}//end namespace mtl
 
 #endif // MTL_MATRIX_ALGORITHMS_INCLUDE

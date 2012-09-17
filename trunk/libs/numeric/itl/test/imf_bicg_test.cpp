@@ -49,7 +49,7 @@ void setup(ElementStructure& A, int lofi)
 
     std::cout<< "size(rhs2)=" << num_rows(b) << "\n";
     mtl::compressed2D<double> B;
-    assemble_compressed(A, ident, B);
+    assemble_compressed(A, B, ident);
     std::cout << "NNZ == " << B.nnz() << "\n";
     
     b= B * x;
