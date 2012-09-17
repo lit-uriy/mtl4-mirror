@@ -2104,33 +2104,35 @@ It is intended for sparse matrices but also works on dense ones.
 
 /*! \page eigenvalues_intro Eigenvalues and SVD
 
+\section Eigenvalues
 
-For the calculation of eigenvalues​​, we provide the following functions in MTL4. The default view is by
+For the calculation of eigenvalues, we provide the following functions in MTL4. The default usage is:
 \code
   eig= eigenvalue_symmetric(A);
 \endcode
 with %matrix A and %dense_vector eig of suitable size.
-The default argument invokes a QR-algorithm with implicit symmetric qr-steps (Wilkinson-Shifts).
-If the flag  MTL_SYMMETRIC_EIGENVALUE_WITH_QR is defined, this calls only the standard QR-Algorithm, which exchanges Q and R  num_rows(A) times.
+The default argument invokes a QR-algorithm with implicit symmetric QR-steps (Wilkinson-Shifts).
+If the macro  MTL_SYMMETRIC_EIGENVALUE_WITH_QR is defined (or the according compile flag is set), 
+this calls only the standard QR-Algorithm, which exchanges Q and R  num_rows(A) times.
 
 You can also directly use the QR-Algorithm with
 \code
   eig= qr_algo(A, n);
 \endcode
-This changes Q and R only n times if you know how many Q and R changes you will need.
+This changes Q and R only n times if you know how many changes of Q and R you will need.
 
-In the same way you can directly call the qr-Algorithm with implicit symmetric Wilkinson-Shifts by
+In the same way, you can directly call the QR-Algorithm with implicit symmetric Wilkinson shifts by
 \code
   eig= qr_sym_imp(A);
 \endcode
 
-At the moment our functions to calculate the eigenvalues ​​only work on dense matrices, because we need 
+At the moment, our functions to calculate the eigenvalues ​​only work on dense matrices, because we need 
 the matrix in Hessenberg form for the QR-Algorithm, and this is stored as a dense matrix.
 
 For example:
 \include eigenvalue_example.cpp
 
-Singular Value Decomposition
+\section Singular Value Decomposition
 
 A singular value decomposition of an \f$ m\times n \f$ real or complex matrix M is a factorization of the form
 \f[ M=U \Sigma V^{*} \f]
@@ -2140,13 +2142,20 @@ with
 - \f$  V^{*} \f$:  (the conjugate transpose of V) is a \f$ n\times n \f$  real or complex unitary matrix
 The diagonal entries \f$ \Sigma_{i,i} \f$ of \f$ \Sigma \f$ are known as the singular values of M.
 
-For the calculation of the svd we have a Matlab-like call
+For the calculation of the SVD we have a Matlab-like call
 \code
-  boost::tie(S, V, D)= svd(A, 1.e-10)= svd(A);
+  boost::tie(S, V, D)= svd(A, 1.e-10);
+\endcode
+or 
+\code
+  boost::tie(S, V, D)= svd(A);
 \endcode
 The second argument is optional and defines the missmatch of upper R (A= Q*R).
-At the moment all four matrices have the same type. If A is a dense2D-matrix, then also U, \f$ \Sigma \f$ and V are return as dense2D matrix.
-Furthermore, this function works only for the real case because in the moment we don't know how to implement  R[i][i] < zero for complex R.
+At the moment all four matrices have the same type. If A is a dense2D-matrix, then also U, 
+\f$ \Sigma \f$ and V are returned as dense2D matrix.
+Furthermore, this function works only for real matrices because
+all known algorithms rely on complete order (e.g. x < 0).
+
 
 \if Navigation \endif
   Return to \ref other_matrix_functions &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref trisolve_intro 
@@ -2344,18 +2353,24 @@ General assumptions on solver iterations:
 */
 
 //-----------------------------------------------------------
-/*! \page imf_preconditioner Using IMF-Preconditioner
+/*! \page imf_preconditioner Using the IMF-Preconditioner
  
-The following program illustrates how to use the imf preconditioner to solve a linear system: 
+The following program illustrates how to use the IMF preconditioner to solve a linear system: 
 
 \include imf_example.cpp
 
-The use of the imf preconditioner differs slightly from the other preconditioners. 
-For the use of the imf preconditioner element matrices are needed which typically occur at a FEM discretization.
-The imf preconditioner works on this small element matrices, whose assembly results in the system matrix which is not needed by the imf preconditioner.
+The use of the IMF preconditioner differs slightly from the other preconditioners. 
+For the use of the IMF preconditioner, element matrices are needed which typically occur at a FEM discretization.
+The IMF preconditioner works on these small element matrices, 
+whose assembly results in the system matrix which is not explicitly used by the IMF preconditioner.
 
-Once you have created the element structure, the elements must be read from a file with a specific structure. 
-The first lines of the file square3.mtx in the example above are as follows: 
+Once you have created the element structure, it is simplest approach to store the elements in a file and leave
+it to preconditioner setup to deduce the neighborhood.
+The more efficient approach is building the element structure matrix from the  element topology (which should 
+be known in the simulation already).
+However, this requires an interface to the software that generates the elements.
+
+The before-mentioned file should provide the following structure, e.g. in square3.mtx:
 \code
 36
 1.1111111e1
@@ -2371,16 +2386,29 @@ The first lines of the file square3.mtx in the example above are as follows:
 3.0 6.0 2.0 1.0
 1.0 2.0 2.0 1.0
 \endcode
-The finite element mesh is a 6x6 element mesh with 36 square elements. The fist line contains the number of elements in the mesh.
-The second line contains the condition number of the system but is not used. In the next line the first element is defined 
-featuring his 4 vertices 0,1,7,8. It is followed by the element matrix of the element, which consists of these four nodes.
-After a blank line you can see the nodes of the next element and his element matrix.
+ The first line contains the number of elements in the mesh: the 36 elements originate from a 
+regular 6 by 6 mesh.
+The second line can contain the condition number of the system.
+It can be used to investigate the numerical properties of IMF.
+If the condition number is omitted or incorrect, the preconditioner still works correctly.
+In the next line, the vertex indices of the first element: 0, 1, 7, 8 are given.
+In our case, we have 4 indices so that a 4 by 4 matrix follows.
+Element matrices are separated by blank lines.
 
-With this information, you can create the imf preconditioner.
+With this information, you can create the IMF preconditioner.
 
-To solve a linear system with this preconditioner you have two options. You can assemble the big matrix(B) from the small element matrices
-and use this for the solver routines or you can use directly the element structure(A) to solve the system. 
-In the latter method you have to run through all the elements, if you want to multiply the element structure with a vector.
+To solve a linear system with this preconditioner, you have two options. 
+You can assemble from the small element matrices a large sparse matrix (like matrix B in our example)
+and apply the solver routines on it.
+Alternatively, you can use directly the element structure (named A in our example) to solve the system. 
+
+Using the element structure directly in matrix vector products and similar operations has a trade-off:
+- It provides higher floating point performance since dense matrices are used;
+- It requires more floating point operations due to redundant storage and potentially explicitly stored zeros; and
+- Usually less explicitly stored indices (unless the vertices in the elements are very redundant).
+.
+In our experiments, the performance of operations with element structures was higher than with assembled matrices,
+but this depends on the matrix at hand.
 
 
 
