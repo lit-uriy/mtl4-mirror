@@ -885,11 +885,12 @@ These definitions are consistent with the according functions for matrices (\ref
 
 /*! \page matrix_types Matrix Types
 
-Right now, MTL4 provides four %matrix types:
+Right now, MTL4 provides five %matrix types:
 - \ref matrix::dense2D;
 - \ref matrix::morton_dense; 
 - \ref matrix::compressed2D; and
-- multi_vector, see \ref multivector.
+- multi_vector, see \ref multivector
+- element_structure.
 
 The type \ref matrix::dense2D defines regular 
 row-major and column-major matrices:
@@ -1048,6 +1049,16 @@ Multiple operations are specialized for dense matrices with fixed dimensions, se
 \section matrix_insertion_ref Matrix Insertion
 
 How to fill  sparse matrices is shown on page \ref matrix_insertion.
+
+\section element_structure Elementstructure
+
+As a new matrix type we have an element structure.
+The use of this new structure is to be explained with the following 2 by 3 grid.
+
+\image html 2by3grid.png
+
+\include element_structure_example.cpp
+
 
 \if Navigation \endif
   Return to \ref vector_def &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref multivector 
