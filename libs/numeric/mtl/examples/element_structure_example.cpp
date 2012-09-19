@@ -45,12 +45,12 @@ int main(int, char**)
     element_type f(5, index_f, E_mat);
     
     //construct neighborhood information for each element
-    a.add_neighbours(&b, &d, &e);
-    b.add_neighbours(&a, &c, &d, &e, &f);
-    c.add_neighbours(&a, &b, &e);
-    d.add_neighbours(&a, &b, &e);
-    e.add_neighbours(&a, &b, &c, &d, &f);
-    f.add_neighbours(&b, &c, &e);
+    a.add_neighbors(&b, &d, &e);
+    b.add_neighbors(&a, &c, &d, &e, &f);
+    c.add_neighbors(&a, &b, &e);
+    d.add_neighbors(&a, &b, &e);
+    e.add_neighbors(&a, &b, &c, &d, &f);
+    f.add_neighbors(&b, &c, &e);
 
     std::cout<< "a=" << a << "\n";
     

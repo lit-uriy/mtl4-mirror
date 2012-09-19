@@ -166,12 +166,12 @@ struct MinConnectedNodesEstimation {
 			const Element& el,
 			const NodeStatusVector& status
 	) const {
-		typedef typename Element::neighbour_collection_type neigh_type;
+		typedef typename Element::neighbor_collection_type neigh_type;
 
 		// Determine set of all nodes.
 		std::vector<int> nodes;
-		const neigh_type& neighs = el.get_neighbours();
-		for(int i = 0; i < el.get_nb_neighbours(); ++i) {
+		const neigh_type& neighs = el.get_neighbors();
+		for(int i = 0; i < el.get_nb_neighbors(); ++i) {
 			nodes.insert(
 				nodes.end(),
 				neighs[i]->get_indices().begin(),
@@ -231,10 +231,10 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	typedef typename Mesh::element_type element_type;
 	typedef typename Mesh::element_iterator element_iterator;
 	typedef typename element_type::value_type value_type;
-	typedef typename element_type::neighbour_collection_type neigh_coll_type;
-	typedef typename element_type::neighbour_iterator neigh_iterator;
-	typedef typename element_type::neighbour_set_type neigh_set_type;
-	typedef typename element_type::neighbour_set_iterator_type neigh_set_iterator;
+	typedef typename element_type::neighbor_collection_type neigh_coll_type;
+	typedef typename element_type::neighbor_iterator neigh_iterator;
+	typedef typename element_type::neighbor_set_type neigh_set_type;
+	typedef typename element_type::neighbor_set_iterator_type neigh_set_iterator;
 	typedef typename neigh_coll_type::const_iterator const_neigh_iterator;
 	typedef typename element_type::index_type index_type;
 	typedef typename element_type::matrix_type matrix_type;
@@ -400,10 +400,10 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				assert(perm_off <= mesh.get_total_vars());
 			}
 
-			// Determine level-2 neighbours.
-			neigh_set_type lvl2_neighs = el.get_level_neighbours( 2 );
+			// Determine level-2 neighbors.
+			neigh_set_type lvl2_neighs = el.get_level_neighbors( 2 );
 
-			// Mark all level-2 neighbours.
+			// Mark all level-2 neighbors.
 			for(neigh_set_iterator neigh_it = lvl2_neighs.begin(); neigh_it != lvl2_neighs.end(); ++neigh_it) {
 				element_type& neigh = **neigh_it;
 				assert( el_status[neigh.get_id()] != DIAGONAL );
@@ -419,8 +419,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		unsigned int upperbound(0);
 		for(unsigned int i=0;i< block_diagonal.size();i++){
 			mtl::vector::dense_vector<int> involve_node(block_diagonal[i]->get_indices());
-			for(unsigned int j=0;j< block_diagonal[i]->get_neighbours().size();j++){
-			  mtl::vector::dense_vector<int> involve_neigh(block_diagonal[i]->get_neighbours()[j]->get_indices());
+			for(unsigned int j=0;j< block_diagonal[i]->get_neighbors().size();j++){
+			  mtl::vector::dense_vector<int> involve_neigh(block_diagonal[i]->get_neighbors()[j]->get_indices());
 			  unsigned int c(0);
 			  for(unsigned int a= 0; a < size(involve_node); a++){
 			      for(unsigned int b= 0; b < size(involve_neigh); b++){
@@ -449,8 +449,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		unsigned int ku= 0, kl= 0;
 		for(std::size_t b_i = block_diag_low; b_i < block_diagonal.size();++b_i ) {
 			element_type& diag_el = *block_diagonal[b_i];
-			// Copy the level-1 neighbours.
-			neigh_coll_type& diag_neighs = diag_el.get_neighbours();
+			// Copy the level-1 neighbors.
+			neigh_coll_type& diag_neighs = diag_el.get_neighbors();
 
 			// Determine the set of incident nodes.
 			boost::unordered_set<int> diag_incident_nodes =
@@ -484,7 +484,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 			block_type frontal( n1+n2, n1+n2 );
 			frontal = zero;
 
-			// For each connected neighbour, add their values to the frontal
+			// For each connected neighbor, add their values to the frontal
 			// matrix.
 			for(neigh_iterator neigh_it = diag_neighs.begin(); neigh_it != diag_neighs.end(); ++neigh_it) {
 				element_type& neigh = **neigh_it;
@@ -497,7 +497,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				for(int i = 0; i < neigh.nb_vars(); ++i) {
 					local_idx(i) = to_local[ local_idx(i) ];
 				}
-				//insert connectet neighbour
+				//insert connectet neighbor
 				{
 				  mtl::matrix::inserter<mtl::matrix::dense2D<value_type>, mtl::operations::update_plus<value_type> > ins(frontal);
 				  ins << element_matrix(neigh.get_values(), local_idx, local_idx);
@@ -558,35 +558,35 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				el_status.push_back( UNMARKED );
 
 			
-				// Determine the level-2 neighbours.
-				neigh_set_type lvl2_neighs = diag_el.get_level_neighbours( 2 );
-				// Remove the level-1 neighbours of the diagonal element.
+				// Determine the level-2 neighbors.
+				neigh_set_type lvl2_neighs = diag_el.get_level_neighbors( 2 );
+				// Remove the level-1 neighbors of the diagonal element.
 				for(neigh_iterator it = diag_neighs.begin(); it != diag_neighs.end(); ++it) {
 					element_type& neigh = **it;
 					neigh.clear();
 					el_status[neigh.get_id()] = REMOVED;
 				}
 
-				// Update the neighbourhood of the level-2 neighbours.
+				// Update the neighborhood of the level-2 neighbors.
 				const IsRemoved<element_type, std::vector<Status> > is_removed( el_status );
 				for(neigh_set_iterator it = lvl2_neighs.begin(); it != lvl2_neighs.end(); ++it) {
 					element_type& neigh = **it;
 
-					// Skip the level-1 neighbours (removed) and the diagonal
+					// Skip the level-1 neighbors (removed) and the diagonal
 					// element.
 					if((el_status[neigh.get_id()] == DIAGONAL) || (el_status[neigh.get_id()] == REMOVED)) {
 						continue;
 					}
-					// The element is in the strict level-2 neighbourhood.
-					// Remove the level-1 neighbours from its set of neighbours.
-					neigh_coll_type& neigh_neighs = neigh.get_neighbours();
+					// The element is in the strict level-2 neighborhood.
+					// Remove the level-1 neighbors from its set of neighbors.
+					neigh_coll_type& neigh_neighs = neigh.get_neighbors();
 					neigh_iterator new_end = std::remove_if(neigh_neighs.begin(), neigh_neighs.end(), is_removed);
 					neigh_neighs.erase(new_end, neigh_neighs.end());
 
-					// Add the newly generated element as neighbour, and vice
+					// Add the newly generated element as neighbor, and vice
 					// versa.
 					neigh_neighs.push_back( fill );
-					fill->get_neighbours().push_back( &neigh );
+					fill->get_neighbors().push_back( &neigh );
 					
 				}
 				// Update sequence number.
@@ -601,10 +601,10 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				// wise.
 
 				// Distribute the values of the generalized element across the
-				// level-2 neighbours of the diagonal element.
+				// level-2 neighbors of the diagonal element.
 
 				// Remove the nodes of the diagonal element from its
-				// neighbours.
+				// neighbors.
 				for(neigh_iterator neigh_it = diag_neighs.begin(); neigh_it != diag_neighs.end(); ++neigh_it)
 				{
 					element_type& neigh = **neigh_it;
@@ -623,7 +623,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				mtl::irange n1r(0,n1), n2r(n1, mtl::imax); 
 				frontal[n2r][n2r]-= frontal[n2r][n1r] * frontal[n1r][n1r] * frontal[n1r][n2r];
 				// Distribute the values of the (modified) update matrix
-				// over the level-1 neighbours.
+				// over the level-1 neighbors.
 				mtl::irange nz(n1,n1+n2);
   				matrix_type S( frontal[nz][nz] );
 				for(neigh_iterator neigh_it = diag_neighs.begin(); neigh_it != diag_neighs.end();++neigh_it) {
@@ -632,7 +632,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 						el.absorb(S, q);
 					}
 				}
-				// Do not distribute over the entire level-2 neighbourhood.
+				// Do not distribute over the entire level-2 neighborhood.
 				// This is expensive, while not adding much in terms of quality
 				// of the approximation.
 
@@ -641,7 +641,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				// be that some elements other than the diagonal element overlap
 				// completely with said element.
 
-				// In this case, simply remove all neighbours.
+				// In this case, simply remove all neighbors.
 				for(neigh_iterator neigh_it = diag_neighs.begin(); neigh_it != diag_neighs.end(); ++neigh_it) {
 					element_type& neigh = **neigh_it;
 					neigh.remove_nodes( diag_el.get_indices(), diag_el );
@@ -653,8 +653,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				}
 
 			} // END ELEMENT DISTRIBUTION
-			// Clear the neighbourhood of the diagonal element.
-			diag_el.get_neighbours().clear();
+			// Clear the neighborhood of the diagonal element.
+			diag_el.get_neighbors().clear();
 		}
 
 		std::cout << "level " << level << " complete: ";
