@@ -693,8 +693,9 @@ namespace wrec {
 	    vampir_trace<4006> tracer;
 	    // std::cout << "wrec::mult \n";
 	    using namespace recursion;
-		using mtl::matrix::is_empty; // ambiguity with std::tr1::is_empty in VS2010
-	    if (is_empty(rec_a) || is_empty(rec_b) || is_empty(rec_c))
+	    // using mtl::matrix::is_empty; // ambiguity with std::tr1::is_empty in VS2010
+	    // Ambiguity with boost::is_empty in Open64
+	    if (mtl::matrix::is_empty(rec_a) || mtl::matrix::is_empty(rec_b) || mtl::matrix::is_empty(rec_c))
 		return;
 
 	    if (BaseTest()(rec_a)) {

@@ -26,9 +26,10 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
-#include <boost/numeric/mtl/utility/zipped_sort.hpp>
 #include <boost/numeric/mtl/utility/shrink_stl_vector.hpp>
+#include <boost/numeric/mtl/utility/zipped_sort.hpp>
 #include <boost/numeric/mtl/detail/base_cursor.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
