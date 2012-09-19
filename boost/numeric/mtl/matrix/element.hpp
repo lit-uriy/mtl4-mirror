@@ -149,6 +149,20 @@ public:
     /// Number of neighbours this element is connected to.
     int get_nb_neighbours() const {	return int(m_neighbours.size()); }
 
+    /// Add new neighbours, max 6 at the time
+    void add_neighbours(element* n1, element* n2= 0, element* n3= 0,
+			element* n4= 0, element* n5= 0, element* n6= 0) 
+    { 
+	m_neighbours.push_back(n1);
+	if (n2) {
+	    m_neighbours.push_back(n2);
+	    if (n3) m_neighbours.push_back(n3);
+	    if (n4) m_neighbours.push_back(n4);
+	    if (n5) m_neighbours.push_back(n5);
+	    if (n6) m_neighbours.push_back(n6);
+	}
+    }
+
 
 /*******************************************************************************
  * Useful Inspector Methods
@@ -482,24 +496,10 @@ OStream& operator<<(OStream& out, element<ValueType>& el)
 	out << "Indices: ()\n";
     }
     out << "Neighbours: (";
-    if(el.nb_vars() > 0) {
-	for(int i = 0; i < el.get_nb_neighbours(); ++i) {
-	    out << el.get_neighbours()[i]->get_id() << ", ";
-	}
-    }
-    out << ")\n";
-    if(el.nb_vars() > 0) {
-	out << "Values: \n";
-	for(int i = 0; i < el.nb_vars(); ++i) {
-	    out << "[ ";
-	    for(int j = 0; j < el.nb_vars(); ++j) {
-		out << el.get_values()(i,j) << " ";
-	    }
-	    out << "]\n";
-	}
-    } else {
-	out << "Values: []\n";
-    }
+    if (el.nb_vars() > 0) 
+	for(int i = 0; i < el.get_nb_neighbours(); ++i) 
+	    out << el.get_neighbours()[i]->get_id() << (i+1 < el.get_nb_neighbours()? ", " : ")\n");
+    out << "Values: \n" << el.get_values();
     return out;
 }
 
