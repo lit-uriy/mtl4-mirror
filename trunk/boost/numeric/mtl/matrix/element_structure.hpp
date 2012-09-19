@@ -144,7 +144,7 @@ public:
 	m_elements(m_total_elements == 0 ? 0 : new element_type[m_total_elements]), 
 	index_heap(0), value_heap(0)
     {
-	typedef typename element_type::neighbour_collection_type neigh_coll_type;
+	typedef typename element_type::neighbor_collection_type neigh_coll_type;
 
 	int j = 0;
 	bool ordered = true;
@@ -155,11 +155,11 @@ public:
 	    ++j;
 	}
 	assert( ordered );
-	// Reconstruct the network of neighbours.
+	// Reconstruct the network of neighbors.
 	for(element_iterator it = this->element_begin(); it != this->element_end(); ++it) {
 	    neigh_coll_type new_neighs;
-	    neigh_coll_type& old_neighs = it->get_neighbours();
-	    for(int i = 0; i < it->get_nb_neighbours(); ++i) {
+	    neigh_coll_type& old_neighs = it->get_neighbors();
+	    for(int i = 0; i < it->get_nb_neighbors(); ++i) {
 		element_type& neigh = *(old_neighs[i]);
 		int pos = neigh.get_id();
 		new_neighs.push_back( this->m_elements+pos );

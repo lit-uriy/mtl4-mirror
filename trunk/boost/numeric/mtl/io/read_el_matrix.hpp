@@ -12,8 +12,6 @@
 //
 // Algorithm inspired by Nick Vannieuwenhoven, written by Cornelius Steinhardt
 
-
-
 #ifndef MTL_MATRIX_READ_EL_MATRIX
 #define MTL_MATRIX_READ_EL_MATRIX
 
@@ -29,8 +27,6 @@
 #include <boost/numeric/mtl/matrix/element.hpp>
 #include <boost/numeric/mtl/matrix/element_structure.hpp>
 
-
-
 namespace mtl { namespace matrix {
 
 // Read a value from the stream. The stream is advanced.
@@ -41,7 +37,6 @@ inline T read_value(std::ifstream& stream)
 	stream >> value;
 	return value;
 }
-
 
 // Reads the element structure from a given file.
 //
@@ -116,8 +111,6 @@ void read_el_matrix(const char* mat_file, element_structure<ValueType>& A)
 	file.ignore(500,'\n');
 	element_type elem(el_nbr, index, vals);
 	elements[el_nbr] = elem;
-
-
 	++el_nbr;
     }
 
@@ -134,7 +127,7 @@ void read_el_matrix(const char* mat_file, element_structure<ValueType>& A)
 	    node_element_map[ idx(j) ].push_back(el.get_id());	
     }
 
-    // Construct neighbourhood information.
+    // Construct neighborhood information.
     for( int i = 0; i < nb_elements; ++i ) {
 	element_type& el = elements[i];
 	indices& idx = el.get_indices();
@@ -145,7 +138,7 @@ void read_el_matrix(const char* mat_file, element_structure<ValueType>& A)
 	
 	for(std::set<int>::iterator it = neighs.begin(); it != neighs.end(); ++it) 
 	    if( *it != el.get_id() ) 
-		el.get_neighbours().push_back( elements+(*it) );
+		el.get_neighbors().push_back( elements+(*it) );
 	    	
 
 	// Sort data.

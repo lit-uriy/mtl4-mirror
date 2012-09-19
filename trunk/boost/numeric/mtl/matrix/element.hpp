@@ -49,21 +49,21 @@ public:
     /// The value type of the matrix and rhs elements.
     typedef ValType value_type;
 
-    /// The type of a set of neighbours.
-    typedef std::vector<element_type*> neighbour_collection_type; 
+    /// The type of a set of neighbors.
+    typedef std::vector<element_type*> neighbor_collection_type; 
 
-    /// An iterator over the neighbours of this element.
-    typedef typename neighbour_collection_type::iterator neighbour_iterator;
+    /// An iterator over the neighbors of this element.
+    typedef typename neighbor_collection_type::iterator neighbor_iterator;
 
-    /// The type of an unordered set of neighbours.
+    /// The type of an unordered set of neighbors.
     typedef typename boost::unordered_set<
 	element_type*,
 	compare::address_hasher<element_type>,
 	compare::address_compare_equal<element_type>
-       > neighbour_set_type;
+       > neighbor_set_type;
 
-    /// The type of the iterator over an unorderd set of neighbours.
-    typedef typename neighbour_set_type::iterator neighbour_set_iterator_type;
+    /// The type of the iterator over an unorderd set of neighbors.
+    typedef typename neighbor_set_type::iterator neighbor_set_iterator_type;
 
     /// The type of matrix.
     typedef mtl::matrix::dense2D<value_type> matrix_type;
@@ -101,7 +101,7 @@ public:
     void operator=(const element_type& other) 
     {
 	m_sequence_number = other.m_sequence_number;
-	m_neighbours = other.m_neighbours;
+	m_neighbors = other.m_neighbors;
 
 	m_indices = other.m_indices;
 	m_values =  other.m_values;
@@ -140,26 +140,26 @@ public:
 	return nbr_nz;
     }
 
-    /// Reference to the set of neighbours.
-    neighbour_collection_type& get_neighbours() { return m_neighbours;	}
+    /// Reference to the set of neighbors.
+    neighbor_collection_type& get_neighbors() { return m_neighbors;	}
 
-    /// Reference to the set of neighbours.
-    const neighbour_collection_type& get_neighbours() const { return m_neighbours; }
+    /// Reference to the set of neighbors.
+    const neighbor_collection_type& get_neighbors() const { return m_neighbors; }
 
-    /// Number of neighbours this element is connected to.
-    int get_nb_neighbours() const {	return int(m_neighbours.size()); }
+    /// Number of neighbors this element is connected to.
+    int get_nb_neighbors() const {	return int(m_neighbors.size()); }
 
-    /// Add new neighbours, max 6 at the time
-    void add_neighbours(element* n1, element* n2= 0, element* n3= 0,
+    /// Add new neighbors, max 6 at the time
+    void add_neighbors(element* n1, element* n2= 0, element* n3= 0,
 			element* n4= 0, element* n5= 0, element* n6= 0) 
     { 
-	m_neighbours.push_back(n1);
+	m_neighbors.push_back(n1);
 	if (n2) {
-	    m_neighbours.push_back(n2);
-	    if (n3) m_neighbours.push_back(n3);
-	    if (n4) m_neighbours.push_back(n4);
-	    if (n5) m_neighbours.push_back(n5);
-	    if (n6) m_neighbours.push_back(n6);
+	    m_neighbors.push_back(n2);
+	    if (n3) m_neighbors.push_back(n3);
+	    if (n4) m_neighbors.push_back(n4);
+	    if (n5) m_neighbors.push_back(n5);
+	    if (n6) m_neighbors.push_back(n6);
 	}
     }
 
@@ -171,9 +171,9 @@ public:
     /// The set of nodes that is incident to the element.
     boost::unordered_set<int> get_incident_nodes() const 
     {
-	boost::unordered_set<int> nodes(2 * get_nb_neighbours());
-	for(typename neighbour_collection_type::const_iterator neigh_it = m_neighbours.begin();
-	    neigh_it != m_neighbours.end(); ++neigh_it) {
+	boost::unordered_set<int> nodes(2 * get_nb_neighbors());
+	for(typename neighbor_collection_type::const_iterator neigh_it = m_neighbors.begin();
+	    neigh_it != m_neighbors.end(); ++neigh_it) {
 	    element_type& neigh = **neigh_it;
 	    nodes.insert(neigh.get_indices().begin(), neigh.get_indices().end());
 	}
@@ -184,16 +184,16 @@ public:
     }
 
 
-    /// Get the set of level-k neighbours, for a given k. 
-    neighbour_set_type get_level_neighbours(const int level = 1) 
+    /// Get the set of level-k neighbors, for a given k. 
+    neighbor_set_type get_level_neighbors(const int level = 1) 
     {
-	neighbour_set_type result( get_nb_neighbours() * level );
+	neighbor_set_type result( get_nb_neighbors() * level );
 
 	if (level > 0) {
-	    result.insert( m_neighbours.begin(), m_neighbours.end() );
+	    result.insert( m_neighbors.begin(), m_neighbors.end() );
 	    if (level > 1) {
-		for(int i = 0; i < get_nb_neighbours(); ++i) {
-		    neighbour_set_type neighs(m_neighbours[i]->get_level_neighbours(level-1));
+		for(int i = 0; i < get_nb_neighbors(); ++i) {
+		    neighbor_set_type neighs(m_neighbors[i]->get_level_neighbors(level-1));
 		    result.insert( neighs.begin(), neighs.end() );
 		}
 		result.erase( this );
@@ -346,11 +346,11 @@ public:
 //	std::cout<< "ELSE\n";
 //	    values = new matrix_type(0,0);
 	}
-	// Update the neighbourhood.
+	// Update the neighborhood.
 	std::set<int> remove_neighs;
 	for(
-	    neighbour_iterator neigh_it = m_neighbours.begin();
-	    neigh_it != m_neighbours.end();
+	    neighbor_iterator neigh_it = m_neighbors.begin();
+	    neigh_it != m_neighbors.end();
 	    ++neigh_it
 	    ) {
 	    element_type& neigh = **neigh_it;
@@ -376,28 +376,28 @@ public:
 		}
 	    }
 
-	    // If not found, then remove ourself from the neighbours and vice versa.
+	    // If not found, then remove ourself from the neighbors and vice versa.
 	    if(!connected) {
-		neighbour_iterator pos = std::find(neigh.get_neighbours().begin(), neigh.get_neighbours().end(), this );
-		if( (pos != neigh.get_neighbours().end()) && (&neigh != &el) ) {
-		    neigh.get_neighbours().erase(pos);
+		neighbor_iterator pos = std::find(neigh.get_neighbors().begin(), neigh.get_neighbors().end(), this );
+		if( (pos != neigh.get_neighbors().end()) && (&neigh != &el) ) {
+		    neigh.get_neighbors().erase(pos);
 		}
 		remove_neighs.insert( neigh.get_id() );
 	    }
 	}
 
-	// Remove the neighbours we're no longer connected to.
+	// Remove the neighbors we're no longer connected to.
 	for(std::set<int>::iterator it = remove_neighs.begin(); it != remove_neighs.end(); ++it) {
 	    const int seek_seq_nbr = *it;
-	    for (std::size_t j = 0; j < m_neighbours.size(); ++j) 
-		if (m_neighbours[j] != 0 && m_neighbours[j]->get_id() == seek_seq_nbr) {
-		    m_neighbours.erase( m_neighbours.begin()+j );
+	    for (std::size_t j = 0; j < m_neighbors.size(); ++j) 
+		if (m_neighbors[j] != 0 && m_neighbors[j]->get_id() == seek_seq_nbr) {
+		    m_neighbors.erase( m_neighbors.begin()+j );
 		    break;
 		}
 	}
 
 	if(new_nb_nodes == 0) {
-	    m_neighbours.clear();
+	    m_neighbors.clear();
 	}
 
 	m_indices.change_dim(0);
@@ -455,8 +455,8 @@ public:
     
     /// Removes the numerical values from the element.
     void clear() {
-	m_neighbours.clear();
-	m_neighbours.resize(1);
+	m_neighbors.clear();
+	m_neighbors.resize(1);
 	matrix_type empty;
 	swap(m_values, empty);
 	m_indices.change_dim(0);
@@ -465,8 +465,8 @@ public:
     template< class ValueType > friend class element_structure;
 
   private:
-    /// The set of neighbours of the element.
-    neighbour_collection_type m_neighbours;
+    /// The set of neighbors of the element.
+    neighbor_collection_type m_neighbors;
 
     /// The set of indices of this element.
     index_type m_indices;
@@ -495,10 +495,10 @@ OStream& operator<<(OStream& out, element<ValueType>& el)
     } else {
 	out << "Indices: ()\n";
     }
-    out << "Neighbours: (";
+    out << "Neighbors: (";
     if (el.nb_vars() > 0) 
-	for(int i = 0; i < el.get_nb_neighbours(); ++i) 
-	    out << el.get_neighbours()[i]->get_id() << (i+1 < el.get_nb_neighbours()? ", " : ")\n");
+	for(int i = 0; i < el.get_nb_neighbors(); ++i) 
+	    out << el.get_neighbors()[i]->get_id() << (i+1 < el.get_nb_neighbors()? ", " : ")\n");
     out << "Values: \n" << el.get_values();
     return out;
 }
