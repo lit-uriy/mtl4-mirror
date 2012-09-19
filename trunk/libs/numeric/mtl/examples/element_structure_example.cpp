@@ -6,7 +6,7 @@ int main(int, char**)
 {
     typedef double value_type;
     typedef int    size_type;
-    int nb_elements(6), nb_nodes(12);
+    const int nb_elements= 6, nb_nodes= 12;
     
     value_type array[][4]= {{2, 3,   4,   5}, 
 			    {4, 10, 13,  16},
@@ -35,7 +35,6 @@ int main(int, char**)
     index_d= index_a + 4;
     index_e= index_a + 5;
     index_f= index_a + 6;
-    
    
     //construct the 6 elements from the example grid
     element_type a(0, index_a, E_mat);
@@ -46,34 +45,13 @@ int main(int, char**)
     element_type f(5, index_f, E_mat);
     
     //construct neighborhood information for each element
-    a.get_neighbours().push_back(&b);
-    a.get_neighbours().push_back(&d);
-    a.get_neighbours().push_back(&e);
-    
-    b.get_neighbours().push_back(&a);
-    b.get_neighbours().push_back(&c);
-    b.get_neighbours().push_back(&d);
-    b.get_neighbours().push_back(&e);
-    b.get_neighbours().push_back(&f);
-    
-    c.get_neighbours().push_back(&b);
-    c.get_neighbours().push_back(&e);
-    c.get_neighbours().push_back(&f);
-    
-    d.get_neighbours().push_back(&a);
-    d.get_neighbours().push_back(&b);
-    d.get_neighbours().push_back(&e);
-    
-    e.get_neighbours().push_back(&a);
-    e.get_neighbours().push_back(&b);
-    e.get_neighbours().push_back(&c);
-    e.get_neighbours().push_back(&d);
-    e.get_neighbours().push_back(&f);
-    
-    f.get_neighbours().push_back(&b);
-    f.get_neighbours().push_back(&c);
-    f.get_neighbours().push_back(&e);
-    
+    a.add_neighbours(&b, &d, &e);
+    b.add_neighbours(&a, &c, &d, &e, &f);
+    c.add_neighbours(&a, &b, &e);
+    d.add_neighbours(&a, &b, &e);
+    e.add_neighbours(&a, &b, &c, &d, &f);
+    f.add_neighbours(&b, &c, &e);
+
     std::cout<< "a=" << a << "\n";
     
     //construct array of elements
@@ -89,7 +67,6 @@ int main(int, char**)
     mtl::dense_vector<value_type> x(nb_nodes, 1.0), test(A * x);
     
     std::cout<< "test="<< test << "\n";
-    
     
     return 0;
 }
