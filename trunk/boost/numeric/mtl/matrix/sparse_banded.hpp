@@ -151,7 +151,7 @@ class sparse_banded
     size_type find_dia(band_size_type dia) const
     {
 	size_type i= 0;
-	for (; i < size_type(bands.size()) && dia > bands[i]; i++);
+	while (i < size_type(bands.size()) && dia > bands[i]) i++;
 	return i;
     }
 
