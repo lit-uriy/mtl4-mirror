@@ -25,12 +25,14 @@ int main(int, char**)
 {
     using namespace mtl;
 
+    const int s= 1000;
     typedef mtl::dense_vector<double> Vector;
-    typedef mtl::dense2D<double> Matrix;
-    Vector       x(9, 8), b(9);
-    Matrix   A(9,9);
-    laplacian_setup(A, 3, 3);
-    std::cout<< "x= " << x << "\n";
+    typedef mtl::compressed2D<double> Matrix;
+    Vector       x(s*s, 8), b(s*s);
+    Matrix   A;
+    laplacian_setup(A, s, s);
+    if (s < 10)
+      std::cout<< "x= " << x << "\n";
     
     b= A*x;
     x= 0;
@@ -39,10 +41,11 @@ int main(int, char**)
     for (int i =0 ; i< 30; i++)
         gs(x, b);
     
-    std::cout<< "x=" << x << "\n";
-    Vector tmp(b-A*x);
-    assert(two_norm(tmp) < 1.0e-4);
-    
+    if (s < 10) {
+      std::cout<< "x=" << x << "\n";
+      Vector tmp(b-A*x);
+      assert(two_norm(tmp) < 1.0e-4);
+    }
     
     return 0;
 }
