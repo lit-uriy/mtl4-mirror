@@ -21,6 +21,7 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
 
@@ -52,6 +53,7 @@ class gauss_seidel
     template <typename Vector, typename RHSVector>
     Vector& operator()(Vector& x, const RHSVector& b) const
     {
+	mtl::vampir_trace<8551> tracer;
 	namespace tag= mtl::tag; using namespace mtl::traits;
 	using mtl::begin; using mtl::end; 
 
@@ -104,6 +106,7 @@ class gauss_seidel<mtl::matrix::compressed2D<Value, Parameters> >
     template <typename Vector, typename RHSVector>
     Vector& operator()(Vector& x, const RHSVector& b) const
     {
+	mtl::vampir_trace<8551> tracer;
 	typedef typename mtl::Collection<Vector>::value_type           value_type;
 	typedef typename mtl::Collection<Matrix>::size_type            size_type; 
 	const size_type nr= num_rows(A);
