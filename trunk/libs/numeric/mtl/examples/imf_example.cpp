@@ -13,7 +13,7 @@ int main(int, char** argv)
     mtl::matrix::element_structure<value_type> A;
     read_el_matrix(matrix_file, A);
     
-    int size( A.get_total_vars() );
+    int size( num_cols(A) );
     mtl::dense_vector<value_type>    x(size, 1), b( A * x );
     
     //assemble sparse matrix from element structure (unnecessary)
