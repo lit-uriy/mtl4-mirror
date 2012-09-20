@@ -44,7 +44,7 @@ void symmetry_test(const Matrix& A)
 	typedef typename traits::range_generator<inner_tag, cursor_type>::type icursor_type;
 	for (icursor_type icursor = mtl::begin<inner_tag>(cursor), icend = mtl::end<inner_tag>(cursor); icursor != icend; ++icursor) {
 	    mtl::io::tout << "A[" << row(*icursor) << ", " << col(*icursor) << "] = " << value(*icursor) << '\n';
-	    MTL_THROW_IF(!A.indexer(A, col(*icursor), row(*icursor)), mtl::run_time_error("Symmetric counter-part not found"));    
+	    MTL_THROW_IF(!A.indexer(A, col(*icursor), row(*icursor)), mtl::runtime_error("Symmetric counter-part not found"));    
 	}
     }
 } 
