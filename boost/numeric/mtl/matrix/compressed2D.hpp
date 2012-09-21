@@ -624,6 +624,7 @@ struct compressed2D_inserter
 
     ~compressed2D_inserter()
     {
+	// std::cout << "~compressed2D_inserter: " << matrix.my_nnz << " entries in matrix already and " << spare.size() << "entries in map.\n";
 	vampir_trace<3051> tracer;
 	if (num_rows(matrix) > 0 && num_cols(matrix) > 0) {
 	    final_place();
