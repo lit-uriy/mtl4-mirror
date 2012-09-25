@@ -333,7 +333,7 @@ class dense2D
     self& self_assign(const self& src, boost::mpl::true_)
     {
 	if (this != &src) {
-	    check_dim(src.num_rows(), src.num_cols());
+	    this->check_dim(src.num_rows(), src.num_cols());
 	    matrix_copy(src, *this);
 	}
 	return *this;
