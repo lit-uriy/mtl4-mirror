@@ -112,7 +112,7 @@ struct crtp_assign<mat_mat_times_expr<E1, E2>, Matrix>
 {
     Matrix& operator()(const mat_mat_times_expr<E1, E2>& src, Matrix& matrix)
     {
-	vampir_trace<4013> tracer;
+	vampir_trace<4012> tracer;
 	operation::compute_factors<Matrix, mat_mat_times_expr<E1, E2> > factors(src);
 	matrix.checked_change_resource(factors.first, factors.second);
 	mult(factors.first, factors.second, matrix);

@@ -387,7 +387,7 @@ template <> std::string vampir_trace<8574>::name("pressure_correction");
 template <> std::string vampir_trace<8590>::name("mtl::mg::util::vtk_exporter");
 template <> std::string vampir_trace<8591>::name("mtl::mg::util::csv_exporter");
 
-template <> std::string vampir_trace<8610>::name("amg::amg_matrix_hirarchie");
+template <> std::string vampir_trace<8610>::name("amg::amg_matrix_hierarchy");
 template <> std::string vampir_trace<8611>::name("amg::compute_influence");
 template <> std::string vampir_trace<8612>::name("amg::default_coarse_grid_detection::compute_C");
 template <> std::string vampir_trace<8614>::name("amg::utils::compute_potentials");
@@ -395,6 +395,7 @@ template <> std::string vampir_trace<8615>::name("amg::utils::find_max_pos");
 
 template <> std::string vampir_trace<8617>::name("amg::amg_prolongation");
 template <> std::string vampir_trace<8618>::name("amg::compute_weight");
+template <> std::string vampir_trace<8619>::name("amg::compute_mfactors");
 
 template <> std::string vampir_trace<8620>::name("amg::strongly_influenced_points");
 template <> std::string vampir_trace<8621>::name("amg::is_strongly_influenced");
