@@ -31,7 +31,7 @@ inline void smat_smat_mult(const MatrixA& A, const MatrixB& B, MatrixC& C, Assig
     if (Assign::init_to_zero) set_to_zero(C);
     
     // Average numbers of non-zeros per row
-    double ava= num_rows(A) ? double(A.nnz()) / num_rows(A) : 0, 
+    double ava= num_cols(A) ? double(A.nnz()) / num_cols(A) : 0, 
 	   avb= num_rows(B) ? double(B.nnz()) / num_rows(B) : 0; 
 
     // Define Updater type corresponding to assign mode
@@ -39,7 +39,7 @@ inline void smat_smat_mult(const MatrixA& A, const MatrixB& B, MatrixC& C, Assig
     typedef typename operations::update_assign_mode<Assign, C_value_type>::type Updater;
 
     // Reserve 20% over the average's product for entries in C
-    matrix::inserter<MatrixC, Updater>     ins(C, int( ava * avb * 1.2 ));
+    matrix::inserter<MatrixC, Updater>     ins(C, int( ava * avb * 1.4 ));
 
     typename traits::row<MatrixA>::type             row_A(A); 
     typename traits::col<MatrixA>::type             col_A(A); 
