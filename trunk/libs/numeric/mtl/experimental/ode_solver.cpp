@@ -61,7 +61,7 @@ Vector ode23s(grad_f_ftor func, value_type start_time, value_type end_time, Vect
   while (time < end_time){
       Vector k1( upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), func(x,time))) ); //FIXME  time dependent
       Vector step1(x + h*k1);
-      Vector step2(func(step1, time + time_step) - 2*k1);
+      Vector step2(func(step1, time + time_step) - 2*M*k1);
       Vector k2( upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), step2)) );
       
       save_data(x, time_counter);
