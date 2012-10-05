@@ -118,8 +118,8 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 }
 
 /// Solver class for CG method; right preconditioner ignored (prints warning if not identity)
-template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator>, 
-	   typename RightPreconditioner= pc::identity<LinearOperator> >
+template < typename LinearOperator, typename Preconditioner, 
+	   typename RightPreconditioner>
 class cg_solver
 {
   public:

@@ -51,6 +51,11 @@ namespace itl {
     int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b, 
 	   const Preconditioner& M, Iteration& iter);
 
+    template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator, double>, 
+	       typename RightPreconditioner= pc::identity<LinearOperator, double> >
+    class cg_solver;
+
+
     template < typename LinearOperator, typename Vector, 
 	       typename Preconditioner, typename Iteration >
     int bicg(const LinearOperator &A, Vector &x, const Vector &b,
@@ -72,6 +77,13 @@ namespace itl {
     int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 		     const LeftPreconditioner &L, const RightPreconditioner &R, 
 		     Iteration& iter, size_t l);
+
+    template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator, double>, 
+	       typename RightPreconditioner= pc::identity<LinearOperator, double> >
+    class bicgstab_ell_solver;
+
+    template <typename Solver, unsigned N, bool Stored= false>
+    class repeating_solver;
 
 } // namespace itl
 

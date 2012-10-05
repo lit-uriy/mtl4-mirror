@@ -147,6 +147,13 @@ void test(Matrix& A, const char* name)
     singularity_test2(A);
     singularity_test3(A);
     singularity_test4(A);
+
+    mtl::matrix::lu_solver<Matrix> lus(A);
+    Vector v5(size);
+     
+    lus.solve(w, v5);
+    cout << "v5 is " << v5 << "\n";
+    MTL_THROW_IF(abs(v[1] - v5[1]) > 0.1, mtl::runtime_error("Error in solve"));
 }
 
 
