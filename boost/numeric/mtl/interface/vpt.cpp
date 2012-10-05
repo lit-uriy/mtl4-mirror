@@ -358,8 +358,8 @@ template <> std::string vampir_trace<8004>::name("omp::crs_cvec_mult");
 
 
 // multigrid
-template <> std::string vampir_trace<8501>::name("mtl::mg::w_cycle");
-template <> std::string vampir_trace<8502>::name("mtl::mg::v_cycle");
+template <> std::string vampir_trace<8501>::name("mtl::mg::v_cycle");
+template <> std::string vampir_trace<8502>::name("mtl::mg::w_cycle");
 template <> std::string vampir_trace<8503>::name("mtl::mg::fmg");
 template <> std::string vampir_trace<8504>::name("mtl::mg::two_grid_cycle");
 

@@ -98,8 +98,14 @@ namespace mtl { namespace matrix {
 	    void update() {}
 
 	    /// Solve system A*x == b with matrix passed in constructor
+	    /** Please note that the order of b and x is different than in solve() !!! **/
 	    template <typename VectorX, typename VectorB>
-	    int operator()(VectorX& x, const VectorB& b) {return 0;}
+	    int operator()(VectorX& x, const VectorB& b) const {return 0;}
+
+	    /// Solve system A*x == b with matrix passed in constructor
+	    /** Please note that the order of b and x is different than in operator() !!! **/
+	    template <typename VectorB, typename VectorX>
+	    int operator()(const VectorB& b, VectorX& x) const {return 0;}
 	};
 
 	/// Speciatization of solver for \ref matrix::compressed2D with double values
@@ -322,6 +328,14 @@ namespace mtl { namespace matrix {
 		return UMFPACK_OK;
 	    }
 
+	    /// Solve double system
+	    template <typename VectorB, typename VectorX>
+	    int solve(const VectorB& b, VectorX& x) const
+	    {
+		// return (*this)(x, b);
+		return const_cast<solver&>(*this)(x, b); // evil hack because Umfpack has no const
+	    }
+
 	  private:
 	    const matrix_type&  A;
 	    int                 n;
@@ -473,6 +487,13 @@ namespace mtl { namespace matrix {
 		solve_aux(sys, Xx, Xz, Bx, Bz, blong());
 		merge_complex_vector(Xx, Xz, x);
 		return UMFPACK_OK;
+	    }
+
+	    /// Solve complex system
+	    template <typename VectorB, typename VectorX>
+	    int solve(const VectorB& b, VectorX& x)
+	    {
+		return (*this)(x, b);
 	    }
 
 	private:
