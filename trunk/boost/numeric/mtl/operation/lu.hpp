@@ -19,6 +19,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
+#include <boost/numeric/mtl/utility/lu_matrix_type.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/matrix/upper.hpp>
 #include <boost/numeric/mtl/matrix/lower.hpp>
@@ -141,7 +142,7 @@ template <typename Matrix, typename Vector>
 Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b, double eps= 0)
 {
     vampir_trace<5030> tracer;
-	mtl::vector::dense_vector<std::size_t, vector::parameters<> > P(num_rows(A));
+    mtl::vector::dense_vector<std::size_t, vector::parameters<> > P(num_rows(A));
     Matrix                    LU(A);
 
     lu(LU, P, eps);
@@ -152,6 +153,7 @@ Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b, double eps= 0)
 template <typename Matrix>
 class lu_solver
 {
+    typedef typename mtl::traits::lu_matrix_type<Matrix>::type            matrix_type;
     typedef mtl::vector::dense_vector<std::size_t, vector::parameters<> > permutation_type;
   public:
     /// Construct from matrix \p A and use optionally threshold \p eps in factorization
@@ -175,7 +177,7 @@ class lu_solver
     }
 
   private:
-    Matrix           LU;
+    matrix_type      LU;
     permutation_type P;
 };
 
