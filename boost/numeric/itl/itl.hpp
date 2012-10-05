@@ -30,6 +30,8 @@
 #include <boost/numeric/itl/krylov/tfqmr.hpp>
 #include <boost/numeric/itl/krylov/qmr.hpp>
 
+#include <boost/numeric/itl/krylov/repeating_solver.hpp>
+
 #include <boost/numeric/itl/minimization/quasi_newton.hpp>
 
 #include <boost/numeric/itl/pc/identity.hpp>

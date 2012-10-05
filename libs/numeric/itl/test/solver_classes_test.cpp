@@ -10,6 +10,8 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+// #define MTL_VERBOSE_TEST
+
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
 
@@ -29,7 +31,12 @@ void test1(const char* solver_name, const char* matrix_name)
     b = A * x;
     x= 0;
     
-    itl::basic_iteration<double> iter(b, N, 1.e-6, 0.0);
+#ifdef MTL_VERBOSE_TEST
+	itl::noisy_iteration<double> iter(b, N, 1.e-6, 0.0);
+#else
+	itl::basic_iteration<double> iter(b, N, 1.e-6, 0.0);
+#endif
+
     Solver s(A);
     s.solve(b, x, iter);
 
@@ -37,6 +44,25 @@ void test1(const char* solver_name, const char* matrix_name)
 	max_iter= iter.iterations();
     MTL_THROW_IF(size == 3 && iter.iterations() > 9, mtl::runtime_error("Too many iterations in solver"));
 }
+
+// same without iter
+template <typename Matrix, typename Solver>
+void test1a(const char* solver_name, const char* matrix_name)
+{
+    mtl::io::tout << solver_name << " on " << matrix_name << std::endl;;
+
+    Matrix                             A;
+    laplacian_setup(A, size, size);
+       
+    mtl::dense_vector<double>          x(N, 1.0), b(N);    
+    b = A * x;
+    x= 0;
+    
+    Solver s(A);
+    s.solve(b, x);
+}
+
+
 
 template <typename Matrix>
 int test2(const char* matrix_name)
@@ -65,6 +91,12 @@ int test2(const char* matrix_name)
 
     test1<Matrix, itl::idr_s_solver<Matrix> >("IDR(s)", matrix_name);
     test1<Matrix, itl::idr_s_solver<Matrix, itl::pc::ilu_0<Matrix> > >("IDR(s) with ILU_0", matrix_name);
+
+    typedef itl::cg_solver<Matrix>                           cg1_type;
+    typedef itl::cg_solver<Matrix, itl::pc::ilu_0<Matrix> >  cg2_type;
+    
+    test1a<Matrix, itl::repeating_solver<cg1_type, 3, true> >("3 iterations CG", matrix_name);
+    test1a<Matrix, itl::repeating_solver<cg2_type, 3, true> >("3 iterations CG with ILU_0", matrix_name);
 
     return 0;
 }

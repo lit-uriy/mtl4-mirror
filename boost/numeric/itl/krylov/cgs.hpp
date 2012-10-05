@@ -82,14 +82,14 @@ class cgs_solver
 
     /// Solve linear system approximately as specified by \p iter
     template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter)
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter) const
     {
 	return cgs(A, x, b, L, iter);
     }
 
     /// Perform one CGS iteration on linear system
     template < typename HilbertSpaceB, typename HilbertSpaceX >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x)
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x) const
     {
 	itl::basic_iteration<double> iter(x, 1, 0, 0);
 	return solve(b, x, iter);
