@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/operation/size.hpp>
 
 namespace itl {
 
@@ -36,7 +37,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 		 const LeftPreconditioner &L, const RightPreconditioner &R, 
 		 Iteration& iter, size_t l)
 {
-    using mtl::irange; using mtl::imax; using mtl::matrix::strict_upper;
+    using mtl::size; using mtl::irange; using mtl::imax; using mtl::matrix::strict_upper;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -126,6 +127,45 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
     x= solve(R, x); x+= x0; // convert to real solution and undo shift
     return iter;
 }
+
+
+/// Solver class for BiCGStab(ell) method; right preconditioner ignored (prints warning if not identity)
+template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator>, 
+	   typename RightPreconditioner= pc::identity<LinearOperator> >
+class bicgstab_ell_solver
+{
+  public:
+    /// Construct solver from a linear operator; generate (left) preconditioner from it
+    explicit bicgstab_ell_solver(const LinearOperator& A, size_t l= 8) : A(A), l(l), L(A), R(A) {}
+
+    /// Construct solver from a linear operator and left preconditioner
+    bicgstab_ell_solver(const LinearOperator& A, size_t l, const Preconditioner& L) : A(A), l(l), L(L), R(A) {}
+
+    /// Construct solver from a linear operator and left preconditioner
+    bicgstab_ell_solver(const LinearOperator& A, size_t l, const Preconditioner& L, const RightPreconditioner& R) 
+      : A(A), l(l), L(L), R(R) {}
+
+    /// Solve linear system approximately as specified by \p iter
+    template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter)
+    {
+	return bicgstab_ell(A, x, b, L, R, iter, l);
+    }
+
+    /// Perform one BiCGStab(ell) iteration on linear system
+    template < typename HilbertSpaceB, typename HilbertSpaceX >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x)
+    {
+	itl::basic_iteration<double> iter(x, 1, 0, 0);
+	return solve(b, x, iter);
+    }
+    
+  private:
+    const LinearOperator& A;
+    size_t                l;
+    Preconditioner        L;
+    RightPreconditioner   R;
+};
 
 
 } // namespace itl

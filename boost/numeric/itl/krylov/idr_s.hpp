@@ -36,7 +36,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	  const LeftPreconditioner &, const RightPreconditioner &, 
 	  Iteration& iter, size_t s)
 {
-    using mtl::iall; using mtl::matrix::strict_upper;
+    using mtl::size; using mtl::iall; using mtl::matrix::strict_upper;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -97,6 +97,44 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
     }
     return iter;
 }
+
+/// Solver class for IDR(s) method; right preconditioner ignored (prints warning if not identity)
+template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator>, 
+	   typename RightPreconditioner= pc::identity<LinearOperator> >
+class idr_s_solver
+{
+  public:
+    /// Construct solver from a linear operator; generate (left) preconditioner from it
+    explicit idr_s_solver(const LinearOperator& A, size_t s= 8) : A(A), s(s), L(A), R(A) {}
+
+    /// Construct solver from a linear operator and left preconditioner
+    idr_s_solver(const LinearOperator& A, size_t s, const Preconditioner& L) : A(A), s(s), L(L), R(A) {}
+
+    /// Construct solver from a linear operator and left preconditioner
+    idr_s_solver(const LinearOperator& A, size_t s, const Preconditioner& L, const RightPreconditioner& R) 
+      : A(A), s(s), L(L), R(R) {}
+
+    /// Solve linear system approximately as specified by \p iter
+    template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter)
+    {
+	return idr_s(A, x, b, L, R, iter, s);
+    }
+
+    /// Perform one IDR(s) iteration on linear system
+    template < typename HilbertSpaceB, typename HilbertSpaceX >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x)
+    {
+	itl::basic_iteration<double> iter(x, 1, 0, 0);
+	return solve(b, x, iter);
+    }
+    
+  private:
+    const LinearOperator& A;
+    size_t                s;
+    Preconditioner        L;
+    RightPreconditioner   R;
+};
 
 
 } // namespace itl

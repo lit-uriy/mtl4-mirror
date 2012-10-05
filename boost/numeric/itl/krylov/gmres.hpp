@@ -35,7 +35,7 @@ template < typename Matrix, typename Vector, typename LeftPreconditioner, typena
 int gmres_full(const Matrix &A, Vector &x, const Vector &b,
                LeftPreconditioner &L, RightPreconditioner &R, Iteration& iter)
 {
-    using mtl::irange; using mtl::iall; using std::abs; using std::sqrt;
+    using mtl::size; using mtl::irange; using mtl::iall; using std::abs; using std::sqrt;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -133,6 +133,45 @@ int gmres(const Matrix &A, Vector &x, const Vector &b,
      return iter;
 }
 
+/// Solver class for GMRES; right preconditioner ignored (prints warning if not identity)
+template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator>, 
+	   typename RightPreconditioner= pc::identity<LinearOperator> >
+class gmres_solver
+{
+  public:
+    /// Construct solver from a linear operator; generate (left) preconditioner from it
+    explicit gmres_solver(const LinearOperator& A, size_t restart= 8) 
+      : A(A), restart(restart), L(A), R(A) {}
+
+    /// Construct solver from a linear operator and left preconditioner
+    gmres_solver(const LinearOperator& A, size_t restart, const Preconditioner& L) 
+      : A(A), restart(restart), L(L), R(A) {}
+
+    /// Construct solver from a linear operator and left preconditioner
+    gmres_solver(const LinearOperator& A, size_t restart, const Preconditioner& L, const RightPreconditioner& R) 
+      : A(A), restart(restart), L(L), R(R) {}
+
+    /// Solve linear system approximately as specified by \p iter
+    template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter)
+    {
+	return gmres(A, x, b, L, R, iter, restart);
+    }
+
+    /// Perform one GMRES iteration on linear system
+    template < typename HilbertSpaceB, typename HilbertSpaceX >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x)
+    {
+	itl::basic_iteration<double> iter(x, 1, 0, 0);
+	return solve(b, x, iter);
+    }
+    
+  private:
+    const LinearOperator& A;
+    size_t                restart;
+    Preconditioner        L;
+    RightPreconditioner   R;
+};
 
 
 } // namespace itl
