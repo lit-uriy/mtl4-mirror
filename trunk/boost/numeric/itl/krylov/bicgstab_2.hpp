@@ -227,14 +227,14 @@ class bicgstab_2_solver
 
     /// Solve linear system approximately as specified by \p iter
     template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter)
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter) const
     {
 	return bicgstab_2(A, x, b, L, iter);
     }
 
     /// Perform one BiCGStab(2) iteration on linear system
     template < typename HilbertSpaceB, typename HilbertSpaceX >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x)
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x) const
     {
 	itl::basic_iteration<double> iter(x, 1, 0, 0);
 	return bicgstab_2(A, x, b, L, iter);

@@ -109,14 +109,14 @@ class tfqmr_solver
 
     /// Solve linear system approximately as specified by \p iter
     template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter)
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter) const
     {
 	return tfqmr(A, x, b, L, R, iter);
     }
 
     /// Perform one TFQMR iteration on linear system
     template < typename HilbertSpaceB, typename HilbertSpaceX >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x)
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x) const
     {
 	itl::basic_iteration<double> iter(x, 1, 0, 0);
 	return solve(b, x, iter);
