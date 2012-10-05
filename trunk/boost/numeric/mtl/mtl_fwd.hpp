@@ -133,6 +133,8 @@ namespace mtl {
 	template <typename Matrix>  struct banded_view;
 	template <typename Matrix> struct indirect;
 
+	template <typename Matrix> class lu_solver;
+
 	template <typename Matrix> std::size_t size(const banded_view<Matrix>&);
 	template <class Matrix> std::size_t size(const transposed_view<Matrix>&);
 	template <typename Functor, typename Matrix> std::size_t size(const map_view<Functor, Matrix>&);

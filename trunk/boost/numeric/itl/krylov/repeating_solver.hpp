@@ -15,13 +15,14 @@
 
 #include <boost/mpl/if.hpp>
 #include <boost/static_assert.hpp>
+#include <boost/numeric/itl/itl_fwd.hpp>
 
 namespace itl {
 
 /// Class for calling \tparam N iterations of the given \tparam Solver
 /** If \tparam Stored is true then the \tparam Solver object is stored (i.e. possibly copied) here.
     Otherwise it is only referred and passing temporary objects to the constructor will cause errors. **/
-template <typename Solver, unsigned N, bool Stored= false>
+template <typename Solver, unsigned N, bool Stored>
 class repeating_solver
 {
     typedef typename boost::mpl::if_c<Stored, Solver, const Solver&>::type solver_type;

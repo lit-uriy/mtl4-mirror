@@ -16,6 +16,7 @@
 #ifndef ITL_BICGSTAB_ELL_INCLUDE
 #define ITL_BICGSTAB_ELL_INCLUDE
 
+#include <boost/numeric/itl/itl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/matrix/strict_upper.hpp>
@@ -130,8 +131,8 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 
 
 /// Solver class for BiCGStab(ell) method; right preconditioner ignored (prints warning if not identity)
-template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator>, 
-	   typename RightPreconditioner= pc::identity<LinearOperator> >
+template < typename LinearOperator, typename Preconditioner, 
+	   typename RightPreconditioner>
 class bicgstab_ell_solver
 {
   public:
