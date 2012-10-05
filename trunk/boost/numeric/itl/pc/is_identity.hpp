@@ -13,6 +13,7 @@
 #ifndef ITL_PC_IS_IDENTITY_INCLUDE
 #define ITL_PC_IS_IDENTITY_INCLUDE
 
+#include <boost/mpl/bool.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
 
 namespace itl { namespace pc {
@@ -25,6 +26,15 @@ template <typename Matrix, typename Value>
 bool is_identity(const itl::pc::identity<Matrix, Value>&)
 { return true; }
 
+template <typename PC>
+struct static_is_identity
+  : boost::mpl::false_
+{};
+
+template <typename Matrix, typename Value>
+struct static_is_identity<itl::pc::identity<Matrix, Value> >
+  : boost::mpl::true_
+{};
 
 }} // namespace itl::pc
 

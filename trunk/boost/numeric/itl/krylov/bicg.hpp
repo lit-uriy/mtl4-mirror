@@ -64,6 +64,46 @@ int bicg(const LinearOperator &A, Vector &x, const Vector &b,
     return iter;
 }
 
+/// Solver class for BiCG method; right preconditioner ignored (prints warning if not identity)
+template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator>, 
+	   typename RightPreconditioner= pc::identity<LinearOperator> >
+class bicg_solver
+{
+  public:
+    /// Construct solver from a linear operator; generate (left) preconditioner from it
+    explicit bicg_solver(const LinearOperator& A) : A(A), L(A) 
+    {
+	if (!pc::static_is_identity<RightPreconditioner>::value)
+	    std::cerr << "Right Preconditioner ignored!" << std::endl;
+    }
+
+    /// Construct solver from a linear operator and (left) preconditioner
+    bicg_solver(const LinearOperator& A, const Preconditioner& L) : A(A), L(L) 
+    {
+	if (!pc::static_is_identity<RightPreconditioner>::value)
+	    std::cerr << "Right Preconditioner ignored!" << std::endl;
+    }
+
+    /// Solve linear system approximately as specified by \p iter
+    template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter)
+    {
+	return bicg(A, x, b, L, iter);
+    }
+
+    /// Perform one bicg iteration on linear system
+    template < typename HilbertSpaceB, typename HilbertSpaceX >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x)
+    {
+	itl::basic_iteration<double> iter(x, 1, 0, 0);
+	return bicg(A, x, b, L, iter);
+    }
+    
+  private:
+    const LinearOperator& A;
+    Preconditioner        L;
+};
+
 } // namespace itl
 
 #endif // ITL_BICG_INCLUDE

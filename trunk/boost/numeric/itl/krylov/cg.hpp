@@ -15,8 +15,13 @@
 
 #include <cmath>
 #include <cassert>
+#include <iostream>
+#include <boost/mpl/bool.hpp>
+
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
+#include <boost/numeric/itl/iteration/basic_iteration.hpp>
+#include <boost/numeric/itl/pc/identity.hpp>
 #include <boost/numeric/itl/pc/is_identity.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/unary_dot.hpp>
@@ -111,6 +116,47 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 {
     return cg(A, x, b, L, iter);
 }
+
+/// Solver class for CG method; right preconditioner ignored (prints warning if not identity)
+template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator>, 
+	   typename RightPreconditioner= pc::identity<LinearOperator> >
+class cg_solver
+{
+  public:
+    /// Construct solver from a linear operator; generate (left) preconditioner from it
+    explicit cg_solver(const LinearOperator& A) : A(A), L(A) 
+    {
+	if (!pc::static_is_identity<RightPreconditioner>::value)
+	    std::cerr << "Right Preconditioner ignored!" << std::endl;
+    }
+
+    /// Construct solver from a linear operator and (left) preconditioner
+    cg_solver(const LinearOperator& A, const Preconditioner& L) : A(A), L(L) 
+    {
+	if (!pc::static_is_identity<RightPreconditioner>::value)
+	    std::cerr << "Right Preconditioner ignored!" << std::endl;
+    }
+
+    /// Solve linear system approximately as specified by \p iter
+    template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter)
+    {
+	return cg(A, x, b, L, iter);
+    }
+
+    /// Perform one CG iteration on linear system
+    template < typename HilbertSpaceB, typename HilbertSpaceX >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x)
+    {
+	itl::basic_iteration<double> iter(x, 1, 0, 0);
+	return solve(b, x, iter);
+    }
+    
+  private:
+    const LinearOperator& A;
+    Preconditioner        L;
+};
+
 
 } // namespace itl
 

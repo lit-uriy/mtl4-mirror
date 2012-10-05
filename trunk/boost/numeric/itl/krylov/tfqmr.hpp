@@ -31,7 +31,7 @@ template < typename Matrix, typename Vector,
 int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner &L, 
 	  const RightPreconditioner &R, Iteration& iter)
 {
-    using math::reciprocal;
+    using math::reciprocal; using mtl::size;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
 
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");
@@ -90,6 +90,43 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
     x= solve(R, x);
     return iter;
 }
+
+/// Solver class for Transposed-free quasi-minimal residual method; right preconditioner ignored (prints warning if not identity)
+template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator>, 
+	   typename RightPreconditioner= pc::identity<LinearOperator> >
+class tfqmr_solver
+{
+  public:
+    /// Construct solver from a linear operator; generate (left) preconditioner from it
+    explicit tfqmr_solver(const LinearOperator& A) : A(A), L(A), R(A) {}
+
+    /// Construct solver from a linear operator and left preconditioner
+    tfqmr_solver(const LinearOperator& A, const Preconditioner& L) : A(A), L(L), R(A) {}
+
+    /// Construct solver from a linear operator and left preconditioner
+    tfqmr_solver(const LinearOperator& A, const Preconditioner& L, const RightPreconditioner& R) 
+      : A(A), L(L), R(R) {}
+
+    /// Solve linear system approximately as specified by \p iter
+    template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter)
+    {
+	return tfqmr(A, x, b, L, R, iter);
+    }
+
+    /// Perform one TFQMR iteration on linear system
+    template < typename HilbertSpaceB, typename HilbertSpaceX >
+    int solve(const HilbertSpaceB& b, HilbertSpaceX& x)
+    {
+	itl::basic_iteration<double> iter(x, 1, 0, 0);
+	return solve(b, x, iter);
+    }
+    
+  private:
+    const LinearOperator& A;
+    Preconditioner        L;
+    RightPreconditioner   R;
+};
 
 } // namespace itl
 
