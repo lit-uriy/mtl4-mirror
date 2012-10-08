@@ -18,6 +18,7 @@
 
 namespace itl {
 
+  /// Class for iteration control that cyclically prints residual
   template <class Real, class OStream = std::ostream>
   class cyclic_iteration : public basic_iteration<Real> 
   {
@@ -27,8 +28,10 @@ namespace itl {
       void print_resid()
       {
 	  if (!this->my_quite && this->i % cycle == 0)
-	      if (this->i != last_print) { // Avoid multiple print-outs in same iteration
-		  out << "iteration " << this->i << ": resid " << this->resid() << std::endl;
+	      if (multi_print || this->i != last_print) { // Avoid multiple print-outs in same iteration
+		  out << "iteration " << this->i << ": resid " << this->resid() 
+		      // << " / " << this->norm_r0 << " = " << this->resid() / this->norm_r0 << " (rel. error)"
+		      << std::endl;
 		  last_print= this->i;
 	      }
       }
@@ -38,12 +41,12 @@ namespace itl {
       template <class Vector>
       cyclic_iteration(const Vector& r0, int max_iter_, Real tol_, Real atol_ = Real(0), int cycle_ = 100,
 		       OStream& out = std::cout)
-	: super(r0, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), out(out)
+	: super(r0, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), multi_print(false), out(out)
       {}
 
       cyclic_iteration(Real r0, int max_iter_, Real tol_, Real atol_ = Real(0), int cycle_ = 100,
 		       OStream& out = std::cout)
-	: super(r0, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), out(out)
+	: super(r0, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), multi_print(false), out(out)
       {}
       
 
@@ -63,6 +66,12 @@ namespace itl {
 
       operator int() const { return error_code(); }
 
+      /// Whether the residual is printed multiple times in iteration
+      bool is_multi_print() const { return multi_print; }
+
+      /// Set whether the residual is printed multiple times in iteration
+      void set_multi_print(bool m) { multi_print= m; }
+
       int error_code() const 
       {
 	  if (!this->my_suppress)
@@ -76,6 +85,7 @@ namespace itl {
       }
     protected:
       int        cycle, last_print;
+      bool       multi_print;
       OStream&   out;
   };
 

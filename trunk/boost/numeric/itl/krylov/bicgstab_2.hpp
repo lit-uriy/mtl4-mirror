@@ -28,14 +28,14 @@
 
 namespace itl {
 
-#if 0
+#if 1
 /// Bi-Conjugate Gradient Stabilized(2)
 template < typename LinearOperator, typename Vector, 
 	   typename Preconditioner, typename Iteration >
 int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	       const Preconditioner &L, Iteration& iter)
 {
-    using mtl::irange; using mtl::imax; using mtl::matrix::strict_upper; using mtl::lazy;
+    using mtl::size; using mtl::irange; using mtl::imax; using mtl::matrix::strict_upper; using mtl::lazy;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -53,6 +53,8 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	r_hat[0]-= A * x;
 	x0= x;
 	x= zero;
+	iter.set(two_norm(r_hat[0])); // use initial r_hat[0] in termination criterion as reference
+	// std::cout << "norm_r0 set to " << two_norm(r_hat[0]) << '\n';
     }
 
     Vector  r0_tilde(r_hat[0]/two_norm(r_hat[0]));
@@ -66,6 +68,7 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 
     while (! iter.finished(r_hat[0])) {
 	++iter;
+	// std::cout << "Start iteration " << iter.iterations() << std::endl;
 	rho_0= -omega * rho_0;
 
 	for (Size j= 0; j < 2; ++j) {
@@ -85,6 +88,9 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 		r_hat[i]-= alpha * u_hat[i+1];
       
 	    if (iter.finished(r_hat[j])) {
+		// std::cout << "inner termination.\n";
+		// std::cout << "Norm r_hat[" << j << "] at the end of iteration is " << two_norm(r_hat[j]) << '\n'
+		// 	  << "Residuum = " << iter.resid() << std::endl;
 		x+= x0;
 		return iter;
 	    }
@@ -113,6 +119,8 @@ int bicgstab_2(const LinearOperator &A, Vector &x, const Vector &b,
 	u_hat[0]-= gamma[1] * u_hat[1];
 	x+= gamma_aa * r_hat[1];
 	r_hat[0] -= gamma_a[1] * r_hat[1];
+
+	// std::cout << "Norm r_hat[0] at the end of iteration is " << two_norm(r_hat[0]) << '\n';
     }
     x+= x0; // convert to real solution and undo shift
     return iter;

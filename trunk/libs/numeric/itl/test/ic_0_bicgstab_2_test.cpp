@@ -29,7 +29,8 @@ int main()
     b= A * x;
     x= 0;
     
-    itl::cyclic_iteration<double> iter(b, 200, 1.e-6, 0.0, 5);
+    itl::cyclic_iteration<double> iter(b, 200, 1.e-6, 0.0, 1);
+    iter.set_multi_print(true);
     bicgstab_2(A, x, b, P, iter);
     
     return 0;
