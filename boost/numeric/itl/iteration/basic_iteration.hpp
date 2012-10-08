@@ -138,7 +138,7 @@ class basic_iteration
 
   protected:
     int          error, i;
-    const Real   norm_r0;
+    Real         norm_r0;
     int          max_iter;
     Real         rtol_, atol_, resid_;
     std::string  err_msg;
