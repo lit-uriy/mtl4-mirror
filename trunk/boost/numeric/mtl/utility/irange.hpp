@@ -84,6 +84,12 @@ namespace mtl {
 	    return i - my_start;
 	}
 
+	/// Wether index is in range
+	bool in_range(size_type i) const
+	{
+	    return i >= my_start && i < my_finish;
+	}
+
 	friend std::ostream& operator<<(std::ostream& os, const irange& ir)
 	{   return os << "mtl::irange(" << ir.my_start << ", " << ir.my_finish << ")"; }
 

@@ -398,6 +398,7 @@ namespace mtl {
 
     class irange;
     class iset;
+    class srange;
 
     /// Namespace for I/O operations
     namespace io {

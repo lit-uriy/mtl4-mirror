@@ -23,12 +23,12 @@ namespace mtl { namespace matrix {
 /** Intended for sparse matrices but works also with dense matrices. Changes the size of
     the matrix \f$m\cdot n\times m\cdot n\f$. **/
 template <typename Matrix>
-inline void laplacian_setup(Matrix& matrix, unsigned m, unsigned n)
+inline void laplacian_setup(Matrix& A, unsigned m, unsigned n)
 {
     vampir_trace<3063> tracer;
-    matrix.change_dim(m*n, m*n);
-    set_to_zero(matrix);
-    inserter<Matrix>      ins(matrix, 5);
+    A.change_dim(m*n, m*n);
+    set_to_zero(A);
+    inserter<Matrix>      ins(A, 5);
 
     for (unsigned i= 0; i < m; i++)
 	for (unsigned j= 0; j < n; j++) {
