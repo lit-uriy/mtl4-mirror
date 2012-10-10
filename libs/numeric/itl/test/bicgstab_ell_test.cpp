@@ -56,7 +56,7 @@ void test1(Matrix& m, double tau)
 
 int main(int, char**)
 {
-  const int N = 100; // Original from Jan had 2000 
+  const int N = 10; // Original from Jan had 2000 
   const int Niter = 3*N;
 
   using mtl::compressed2D; using mtl::dense_vector;
