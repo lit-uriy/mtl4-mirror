@@ -12,7 +12,7 @@
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
-#include <typeinfo>
+#include <boost/numeric/itl/pc/sub_matrix_pc.hpp>
 
 template <typename Matrix>
 inline void strided_laplacian_setup(Matrix& A, unsigned m, unsigned n)
@@ -33,11 +33,12 @@ inline void strided_laplacian_setup(Matrix& A, unsigned m, unsigned n)
 	}
     for (unsigned i= 1; i < num_rows(A); i+= 2)
 	ins(i, i) << 2;
-}
+} 
 
 
 int main()
 {
+    using mtl::srange; using mtl::imax;
     // For a more realistic example set sz to 1000 or larger
     const int size = 3, N = 2 * size * size; 
 
@@ -47,23 +48,18 @@ int main()
 
     mtl::compressed2D<double>          A;
     strided_laplacian_setup(A, size, size);
-    std::cout << "A is\n" << A << '\n';
+    mtl::io::tout << "A is\n" << A << '\n';
 
-#if 0
-    itl::pc::sub_matrix_pc<ic_type, matrix_type> P(make_tag_vector(N, mtl::srange(0, iall, 2)), A);
+    mtl::dense_vector<bool> tags= make_tag_vector(N, srange(0, imax, 2));
+    itl::pc::sub_matrix_pc<ic_type, matrix_type> P(tags, A);
 
-
-  
-    itl::pc::ic_0<matrix_type, float>  P(A);
     mtl::dense_vector<double>          x(N, 1.0), b(N);
     
     b = A * x;
     x= 0;
 
-    itl::cyclic_iteration<double> iter(b, N, 1.e-6, 0.0, 1);
+    itl::cyclic_iteration<double> iter(b, N, 1.e-6, 0.0, 3);
     cg(A, x, b, P, iter);
-    
-    // test(mtl::lazy(b)= solve(P, x));
-#endif 
+     
     return 0;
 }
