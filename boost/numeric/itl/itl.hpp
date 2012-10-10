@@ -45,6 +45,8 @@
 #include <boost/numeric/itl/pc/imf_preconditioner.hpp>
 #include <boost/numeric/itl/pc/imf_algorithms.hpp>
 
+#include <boost/numeric/itl/pc/sub_matrix_pc.hpp>
+#include <boost/numeric/itl/pc/concat.hpp>
 
 #include <boost/numeric/itl/smoother/gauss_seidel.hpp>
 

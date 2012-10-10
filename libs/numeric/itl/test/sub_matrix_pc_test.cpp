@@ -12,7 +12,6 @@
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
-#include <boost/numeric/itl/pc/sub_matrix_pc.hpp>
 
 template <typename Matrix>
 inline void strided_laplacian_setup(Matrix& A, unsigned m, unsigned n)
@@ -48,7 +47,7 @@ int main()
 
     mtl::compressed2D<double>          A;
     strided_laplacian_setup(A, size, size);
-    mtl::io::tout << "A is\n" << A << '\n';
+    mtl::io::tout << "A (merged diagonal and Laplace) is\n" << A << '\n';
 
     mtl::dense_vector<bool> tags= make_tag_vector(N, srange(0, imax, 2));
     itl::pc::sub_matrix_pc<ic_type, matrix_type> P(tags, A);

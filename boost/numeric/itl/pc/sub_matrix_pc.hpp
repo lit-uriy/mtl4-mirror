@@ -24,11 +24,10 @@
 
 namespace itl { namespace pc {
 
-/// Helper class for applying \tparam Preconditioner only on sub-matrix
+/// Class for applying \tparam Preconditioner only on a sub-matrix
 /** Other entries are just copied. 
     Optionally preconditioner can be referred from outside instead of storing it by setting
     \tparam Store to true. 
-
 **/
 template <typename Preconditioner, typename Matrix, bool Store= true>
 class sub_matrix_pc
@@ -60,7 +59,6 @@ class sub_matrix_pc
 	    typename traits::const_value<Matrix>::type     value(src); 
 	    typedef typename traits::range_generator<tag::major, Matrix>::type  cursor_type;
 
-	    {
 	    matrix::inserter<Matrix> ins(*Ap, Ap->nnz() / Ap->dim1());
 	    
 	    for (cursor_type cursor = mtl::begin<tag::major>(src), cend = mtl::end<tag::major>(src); 
@@ -73,9 +71,6 @@ class sub_matrix_pc
 		    if (tags[row(*icursor)] && tags[col(*icursor)])
 			ins(perm[row(*icursor)], perm[col(*icursor)]) << value(*icursor); 
 	    }
-	    }
-	    std::cout << "Sub-matrix is\n" << *Ap << '\n';
-
 	}
 
 	~matrix_container() { delete Ap; }
@@ -95,13 +90,9 @@ class sub_matrix_pc
   public:
 
     sub_matrix_pc(const tag_type& tags, const Matrix& A)
-      : tags(tags), 
-	n(count_entries()), 
-	mc(tags, A), 
-	P(*mc.Ap)
+      : tags(tags), n(count_entries()), mc(tags, A), P(*mc.Ap)
     {
 	BOOST_STATIC_ASSERT((Store));
-	std::cout << "Preconditioner is\n" << P.get_U() << '\n';
 	delete mc.Ap; 
 	mc.Ap= 0;
     }
