@@ -25,7 +25,7 @@ int main(int, char**)
 {
     using namespace mtl;
 
-    const int s= 1000;
+    const int s= 10;
     typedef mtl::dense_vector<double> Vector;
     typedef mtl::compressed2D<double> Matrix;
     Vector       x(s*s, 8), b(s*s);
