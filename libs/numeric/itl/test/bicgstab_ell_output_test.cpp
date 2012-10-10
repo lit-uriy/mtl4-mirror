@@ -40,8 +40,8 @@ void test1(Matrix& m, double tau)
 int main(int, char**)
 {
 
-  const int N = 100; 
-  const int Niter = 100*N;
+  const int N = 10; 
+  const int Niter = 10*N;
 
   using itl::pc::identity; using itl::pc::ilu_0; using itl::pc::ic_0; using itl::pc::diagonal;
   //typedef mtl::dense2D<double> matrix_type;
