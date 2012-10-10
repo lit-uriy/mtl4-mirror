@@ -61,5 +61,10 @@ int main()
     itl::cyclic_iteration<double> iter(b, N, 1.e-6, 0.0, 3);
     cg(A, x, b, P, iter);
      
+    // Test if adjoint works
+    x= 0;
+    itl::cyclic_iteration<double> iter2(b, N, 1.e-6, 0.0, 3);
+    bicg(A, x, b, P, iter2);
+
     return 0;
 }

@@ -331,7 +331,8 @@ template <> std::string vampir_trace<5052>::name("imf::factor");
 template <> std::string vampir_trace<5053>::name("imf::ctor");
 template <> std::string vampir_trace<5054>::name("imf::solve");
 template <> std::string vampir_trace<5055>::name("pc::solver::assign_to");
-template <> std::string vampir_trace<5056>::name("");
+template <> std::string vampir_trace<5056>::name("sub_matrix_pc::solve");
+template <> std::string vampir_trace<5057>::name("sub_matrix_pc::adjoint_solve");
 
 
 // Fused operations:                6000
