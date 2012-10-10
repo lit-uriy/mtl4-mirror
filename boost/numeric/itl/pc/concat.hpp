@@ -13,6 +13,7 @@
 #ifndef ITL_PC_CONCAT_INCLUDE
 #define ITL_PC_CONCAT_INCLUDE
 
+#include <boost/mpl/if.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/itl/pc/solver.hpp>
@@ -23,7 +24,7 @@ namespace itl { namespace pc {
 template <typename PC1, typename PC2, typename Matrix, bool Store1= true, bool Store2= true>
 class concat
 {
-    typedef typename boost::mpl::if_c<Store1, PC1, const PC2&>::type pc1_type;
+    typedef typename boost::mpl::if_c<Store1, PC1, const PC1&>::type pc1_type;
     typedef typename boost::mpl::if_c<Store2, PC2, const PC2&>::type pc2_type;
 
   public:
