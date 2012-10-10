@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/itl/pc/solver.hpp>
 
 namespace itl { namespace pc {
@@ -113,6 +114,7 @@ class sub_matrix_pc
     }
 #endif
 
+  private:
     template <typename VectorIn>
     VectorIn& create_x0(VectorIn) const
     {
@@ -145,39 +147,38 @@ class sub_matrix_pc
 		y[i]= x[i];	
     }
 
-    // Solve  LU y = x --> y= U^{-1} L^{-1} x
+  public:
+    /// Solve Px = y approximately on according sub-system; remaining entries are copied
     template <typename VectorIn, typename VectorOut>
     void solve(const VectorIn& x, VectorOut& y) const
     {
-	// mtl::vampir_trace<5039> tracer;
+	mtl::vampir_trace<5056> tracer;
 	y.checked_change_resource(x);
-#if 0
-	static VectorIn  x0(n);
-	static VectorOut y0(n);
-#endif
+
 	VectorIn&  x0= create_x0(x);
 	VectorOut& y0= create_y0(y);
 
-#if 0
-	for (size_t i= 0, j= 0; i < size(tags); ++i) 
-	    if (tags[i]) 
-		x0[j++]= x[i];
-#endif
 	restrict(x, x0);
-
 	P.solve(x0, y0);
 	// y0= solve(P, x0); // doesn't compile yet for unknown reasons
-
 	prolongate(x, y0, y);
-#if 0
-	for (size_t i= 0, j= 0; i < size(tags); ++i) 
-	    if (tags[i]) 
-		y[i]= y0[j++];
-	    else
-		y[i]= x[i];
-#endif
     }
 
+    /// Solve Px = y approximately on according sub-system; remaining entries are copied
+    template <typename VectorIn, typename VectorOut>
+    void adjoint_solve(const VectorIn& x, VectorOut& y) const
+    {
+	mtl::vampir_trace<5057> tracer;
+	y.checked_change_resource(x);
+
+	VectorIn&  x0= create_x0(x);
+	VectorOut& y0= create_y0(y);
+
+	restrict(x, x0);
+	P.adjoint_solve(x0, y0);
+	// y0= adjoint_solve(P, x0); // doesn't compile yet for unknown reasons
+	prolongate(x, y0, y);
+    }
 
   private:
     tag_type          tags;
@@ -193,6 +194,12 @@ inline solve(const sub_matrix_pc<Preconditioner, Matrix, Store>& P, const Vector
     return solver<sub_matrix_pc<Preconditioner, Matrix, Store>, Vector, false>(P, x);
 }
 
+template <typename Preconditioner, typename Matrix, bool Store, typename Vector>
+solver<sub_matrix_pc<Preconditioner, Matrix, Store>, Vector, true>
+inline adjoint_solve(const sub_matrix_pc<Preconditioner, Matrix, Store>& P, const Vector& x)
+{
+    return solver<sub_matrix_pc<Preconditioner, Matrix, Store>, Vector, true>(P, x);
+}
 
 
 }} // namespace itl::pc
