@@ -15,8 +15,8 @@ template <typename Vector, typename Matrix>
 class grad_f_ftor
 {
   public:
-    grad_f_ftor(const Vector& u,  const Matrix& M, const Matrix& K, const Matrix& G, const value_type& beta, const value_type& w) 
-      : u(u), M(M), K(K), G(G), beta(beta), w(w)
+    grad_f_ftor(const Matrix& M, const Matrix& K, const Matrix& G, const value_type& beta, const value_type& w) 
+      : M(M), K(K), G(G), beta(beta), w(w)
       {
 	q.change_dim(num_cols(G));
 	x.change_dim(num_cols(G));
@@ -33,8 +33,8 @@ class grad_f_ftor
 	  q(i)=beta*cos(std::min(std::abs(pi*(x(i)-center)/(2*w)),pi/2));
       return q;
     }
-
-    Vector operator()(const Vector& u, const value_type& time) 
+    template <typename VectorIn>
+    Vector operator()(const VectorIn& u, const value_type& time) 
     {
 	q=get_input(time);
 	Vector x(K*u + G*q);
@@ -42,8 +42,8 @@ class grad_f_ftor
     }
  
   private:
-    Vector      u, q, x;
-    Matrix      M,K,G;
+    Vector      q, x;
+    Matrix      M, K, G;
     value_type  beta, w;
    
 };
@@ -57,16 +57,15 @@ Vector ode23s(grad_f_ftor func, value_type start_time, value_type end_time, Vect
   lu(LU);
   Vector x(start_value);
   size_type time_counter(0);
-
+  Vector k1, k2, step1, step2;
   while (time < end_time){
-      Vector k1( upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), func(x,time))) ); //FIXME  time dependent
-      Vector step1(x + h*k1);
-      Vector step2(func(step1, time + time_step) - 2*M*k1);
-      Vector k2( upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), step2)) );
-      
+      k1= lu_solve_apply(LU, func(x,time));
+      step1= x + h * k1;
+      step2= func(step1, time + time_step) - 2*M*k1;
+      k2= lu_solve_apply(LU, step2);
       save_data(x, time_counter);
+      x+= 3/2*h*k1 + 1/2*h*k2; 
       time_counter++;
-      x+= 3/2*h*k1 + 1/2*h*k2;
       time+= time_step;
   }
   return x;
@@ -105,13 +104,15 @@ void save_data(const Vector& x, const size_type& time)
 int main( int  , char ** )
 {
      //read jörgs matrices
-    matrix_type M(mtl::io::matrix_market( "M.mtx")),K(mtl::io::matrix_market( "K.mtx")),G(mtl::io::matrix_market( "G.mtx"));
+    matrix_type M(mtl::io::matrix_market( "M.mtx")),
+		K(mtl::io::matrix_market( "K.mtx")),
+		G(mtl::io::matrix_market( "G.mtx"));
    
     size_type n(num_rows(K));
-    value_type  start_time(0.0), end_time(10.0);
-    vector_type  x(n,0.0), x0(n,0.0), u(n,0.0);
+    value_type  start_time(0.0), end_time(1.0);
+    vector_type  x(n,0.0), x0(n,0.0);
   
-    grad_f_ftor< vector_type, matrix_type >  grad_f(u, M, K, G, 0.2, 0.1);
+    grad_f_ftor< vector_type, matrix_type >  grad_f(M, K, G, 0.2, 0.1);
     
     x= ode23s(grad_f, start_time, end_time, x0, M, K);
     
