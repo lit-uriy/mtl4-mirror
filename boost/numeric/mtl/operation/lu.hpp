@@ -105,6 +105,14 @@ Vector inline lu_solve_straight(const Matrix& A, const Vector& b, double eps= 0)
     return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), b));
 }
 
+/// Solve LUx = b by with forward and backward-LU subsitution, lu(LU) was allready done
+template <typename Matrix, typename Vector>
+Vector inline lu_solve_apply(const Matrix& LU, const Vector& b)
+{
+    vampir_trace<5026> tracer;
+    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), b));
+}
+
 /// Apply the factorization L*U with permutation P on vector b to solve Ax = b
 template <typename Matrix, typename PermVector, typename Vector>
 Vector inline lu_apply(const Matrix& LU, const PermVector& P, const Vector& b)
