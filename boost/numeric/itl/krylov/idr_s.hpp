@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
 
@@ -36,6 +37,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	  const LeftPreconditioner &, const RightPreconditioner &, 
 	  Iteration& iter, size_t s)
 {
+    mtl::vampir_trace<7010> tracer;
     using mtl::size; using mtl::iall; using mtl::matrix::strict_upper;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;

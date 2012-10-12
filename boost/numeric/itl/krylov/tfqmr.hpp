@@ -22,6 +22,7 @@
 #include <boost/numeric/linear_algebra/inverse.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
 
@@ -31,6 +32,7 @@ template < typename Matrix, typename Vector,
 int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner &L, 
 	  const RightPreconditioner &R, Iteration& iter)
 {
+    mtl::vampir_trace<7009> tracer;
     using math::reciprocal; using mtl::size;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
 

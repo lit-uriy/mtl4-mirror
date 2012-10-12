@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
 
@@ -25,6 +26,7 @@ template < typename LinearOperator, typename Vector,
 int cgs(const LinearOperator &A, Vector &x, const Vector &b,
 	const Preconditioner &M, Iteration& iter)
 {
+    mtl::vampir_trace<7007> tracer;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     Scalar     rho_1(0), rho_2(0), alpha(0), beta(0);
     Vector     p(resource(x)), phat(resource(x)), q(resource(x)), qhat(resource(x)), vhat(resource(x)),

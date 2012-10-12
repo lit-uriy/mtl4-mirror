@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
 
@@ -28,6 +29,7 @@ template < typename Matrix, typename Vector,typename LeftPreconditioner,
 int qmr(const Matrix& A, Vector& x, const Vector& b, LeftPreconditioner& L, 
 	const RightPreconditioner& R, Iteration& iter)
 {
+    mtl::vampir_trace<7008> tracer;
     using mtl::size;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     if (size(b) == 0) throw mtl::logic_error("empty rhs vector");

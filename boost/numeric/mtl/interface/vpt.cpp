@@ -350,6 +350,12 @@ template <> std::string vampir_trace<7001>::name("cg_without_pc");
 template <> std::string vampir_trace<7002>::name("cg");
 template <> std::string vampir_trace<7003>::name("bicg");
 template <> std::string vampir_trace<7004>::name("bicgstab");
+template <> std::string vampir_trace<7005>::name("bicgstab_2");
+template <> std::string vampir_trace<7006>::name("bicgstab_ell");
+template <> std::string vampir_trace<7007>::name("cgs");
+template <> std::string vampir_trace<7008>::name("qmr");
+template <> std::string vampir_trace<7009>::name("tfqmr");
+template <> std::string vampir_trace<7010>::name("idr_s");
 
 
 // OpenMP
