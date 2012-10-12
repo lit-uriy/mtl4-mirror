@@ -27,6 +27,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
 
@@ -38,6 +39,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 		 const LeftPreconditioner &L, const RightPreconditioner &R, 
 		 Iteration& iter, size_t l)
 {
+    mtl::vampir_trace<7006> tracer;
     using mtl::size; using mtl::irange; using mtl::imax; using mtl::matrix::strict_upper;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
@@ -98,14 +100,15 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 	}
 
 	// mod GS (MR part)
-	mtl::vector::dense_vector<Vector>   r_hat_tail(r_hat[irange(1, imax)]);
-	tau[irange(1, imax)][irange(1, imax)]= orthogonalize_factors(r_hat_tail);
+	irange  i1m(1, imax);
+	mtl::vector::dense_vector<Vector>   r_hat_tail(r_hat[i1m]);
+	tau[i1m][i1m]= orthogonalize_factors(r_hat_tail);
 	for (Size j= 1; j <= l; ++j) 
 	    gamma_a[j]= dot(r_hat[j], r_hat[0]) / tau[j][j];
 
 	gamma[l]= gamma_a[l]; omega= gamma[l];
 	if (omega == zero) return iter.fail(3, "bicg breakdown #2");
-		
+
 	// is this something like a tri-solve? 
 	for (Size j= l-1; j > 0; --j) {
 	    Scalar sum= zero;
