@@ -29,7 +29,7 @@ class concat
 
   public:
     /// Construct both preconditioners from matrix \p A
-    explicit concat(const Matrix& A) : pc1(A), pc2(A)
+    explicit concat(const Matrix& A) : A(A), pc1(A), pc2(A)
     {
 	BOOST_STATIC_ASSERT((Store1 && Store2));
     }
@@ -40,45 +40,61 @@ class concat
 	will be a stale reference.
 	Conversely, if the preconditioner is already build outside the constructor call,
 	the according Store argument should be false for not storing the preconditioner twice. **/
-    concat(const PC1& pc1, const PC2& pc2) : pc1(pc1), pc2(pc2) {}
+    concat(const Matrix& A, const PC1& pc1, const PC2& pc2) : A(A), pc1(pc1), pc2(pc2) {}
 
   private:
     template <typename VectorOut>
-    VectorOut& create_y0(const VectorOut& y) const
+    VectorOut& create_r(const VectorOut& y) const
     {
-	static VectorOut  y0(resource(y));
-	return y0;
+	static VectorOut  r(resource(y));
+	return r;
+    }
+
+    template <typename VectorOut>
+    VectorOut& create_d(const VectorOut& y) const
+    {
+	static VectorOut  d(resource(y));
+	return d;
     }
 
   public:
-    /// Solve P1 * P2 * x = y approximately by successive application (P2 first).
+    /// Concatenated preconditioning: pc2 is applied regularly and pc1 afterwards by defect correction
     template <typename VectorIn, typename VectorOut>
     void solve(const VectorIn& x, VectorOut& y) const
     {
 	mtl::vampir_trace<5058> tracer;
 	y.checked_change_resource(x);
-	VectorOut& y0= create_y0(y);
+	pc2.solve(x, y);
 
-	pc2.solve(x, y0);
-	pc1.solve(y0, y);
+	VectorOut &r= create_r(y), &d= create_d(y);
+	r= x;
+	r-= A * y;
+
+	pc1.solve(r, d);
+	y+= d;
     }
 
-    /// Solve adjoint(P1 * P2) * x = y approximately by successive application.
-    /** Corresponds to adjoint(P2) * adjoint(P1) * x = y; thus adjoint(P1) is used applied first) **/
+
+    /// Concatenated preconditioning: adjoint of pc1 is applied regularly and pc2's adjoint afterwards by defect correction
     template <typename VectorIn, typename VectorOut>
     void adjoint_solve(const VectorIn& x, VectorOut& y) const
     {
 	mtl::vampir_trace<5059> tracer;
 	y.checked_change_resource(x);
-	VectorOut& y0= create_y0(y);
+	pc1.adjoint_solve(x, y);
 
-	pc1.adjoint_solve(x, y0);
-	pc2.adjoint_solve(y0, y);
+	VectorOut &r= create_r(y), &d= create_d(y);
+	r= x;
+	r-= adjoint(A) * y;
+
+	pc2.adjoint_solve(r, d);
+	y+= d;
     }
 
    private:
-    pc1_type   pc1;
-    pc2_type   pc2;
+    const Matrix& A;
+    pc1_type 	  pc1;
+    pc2_type   	  pc2;
 };
 
 template <typename PC1, typename PC2, typename Matrix, bool Store1, bool Store2, typename Vector>
