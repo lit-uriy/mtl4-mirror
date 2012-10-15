@@ -28,6 +28,7 @@
 #include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
 #include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/split_complex_vector.hpp>
+#include <boost/numeric/mtl/interface/vpt.hpp>
 
 extern "C" {
 #  include <umfpack.h>
@@ -248,6 +249,7 @@ namespace mtl { namespace matrix {
 	    solver(const matrix_type& A, int strategy = UMFPACK_STRATEGY_AUTO, double alloc_init = 0.7) 
 	      : A(A), Apc(0), Aic(0), my_nnz(0), Symbolic(0), Numeric(0) 
 	    {
+		vampir<5060> trace;
 		// Use default setings.
 		if (long_indices)
 		    umfpack_dl_defaults(Control);
@@ -261,7 +263,8 @@ namespace mtl { namespace matrix {
 
 	    ~solver()
 	    {
-	      if (long_indices) {
+		vampir<5061> trace;
+		if (long_indices) {
 		    umfpack_dl_free_numeric(&Numeric);
 		    umfpack_dl_free_symbolic(&Symbolic);
 		} else {
@@ -320,6 +323,7 @@ namespace mtl { namespace matrix {
 	    template <typename VectorX, typename VectorB>
 	    int operator()(VectorX& x, const VectorB& b)
 	    {
+		vampir<5062> trace;
 		MTL_THROW_IF(num_rows(A) != size(x) || num_rows(A) != size(b), incompatible_size());
 		make_in_out_copy_or_reference<dense_vector<value_type>, VectorX> xx(x);
 		make_in_copy_or_reference<dense_vector<value_type>, VectorB>     bb(b);
@@ -404,6 +408,7 @@ namespace mtl { namespace matrix {
 	    explicit solver(const compressed2D<value_type, Parameters>& A, int strategy = UMFPACK_STRATEGY_AUTO, double alloc_init = 0.7) 
 	      : A(A), Apc(0), Aic(0)
 	    {
+		vampir<5060> trace;
 		// Use default setings.
 		if (long_indices)
 		    umfpack_zl_defaults(Control);
@@ -418,6 +423,7 @@ namespace mtl { namespace matrix {
 
 	    ~solver()
 	    {
+		vampir<5061> trace;
 		if (long_indices) {
 		    umfpack_zl_free_numeric(&Numeric);
 		    umfpack_zl_free_symbolic(&Symbolic);
@@ -480,6 +486,7 @@ namespace mtl { namespace matrix {
 	    template <typename VectorX, typename VectorB>
 	    int operator()(VectorX& x, const VectorB& b)
 	    {
+		vampir<5062> trace;
 		MTL_THROW_IF(num_rows(A) != size(x) || num_rows(A) != size(b), incompatible_size());
 		dense_vector<double> Xx(size(x)), Xz(size(x)), Bx, Bz;
 		split_complex_vector(b, Bx, Bz);

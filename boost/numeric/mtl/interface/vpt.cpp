@@ -335,6 +335,9 @@ template <> std::string vampir_trace<5056>::name("sub_matrix_pc::solve");
 template <> std::string vampir_trace<5057>::name("sub_matrix_pc::adjoint_solve");
 template <> std::string vampir_trace<5058>::name("pc::concat::solve");
 template <> std::string vampir_trace<5059>::name("pc::concat::adjoint_solve");
+template <> std::string vampir_trace<5060>::name("umfpack::solver::ctor");
+template <> std::string vampir_trace<5061>::name("umfpack::solver::dtor");
+template <> std::string vampir_trace<5062>::name("umfpack::solve");
 
 
 // Fused operations:                6000
@@ -377,6 +380,7 @@ template <> std::string vampir_trace<8511>::name("mtl::mg::geometric_multigrid_s
 template <> std::string vampir_trace<8512>::name("mtl::mg::geometric_multigrid_solver_solve2");
 
 template <> std::string vampir_trace<8515>::name("mtl::mg::algebraic_multigrid_solver");
+template <> std::string vampir_trace<8516>::name("amg_pc::solve");
 
 template <> std::string vampir_trace<8520>::name("mtl::mg::linear_restriction");
 template <> std::string vampir_trace<8521>::name("mtl::mg::linear_prolongation");
