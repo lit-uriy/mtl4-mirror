@@ -17,6 +17,7 @@
 #include <iostream>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
+#include <boost/numeric/mtl/detail/base_cursor.hpp>
 
 
 namespace mtl { 
@@ -29,7 +30,8 @@ namespace mtl {
     {
       public:
 
-        typedef std::size_t size_type;
+        typedef std::size_t                    size_type;
+	typedef detail::base_cursor<size_type> cursor_type;
 
         /// Create an index range of [start, finish)
         explicit irange(size_type start, size_type finish) : my_start(start), my_finish(finish) {}
@@ -67,6 +69,11 @@ namespace mtl {
 
 	/// Whether the range is empty
         bool empty() const { return my_finish <= my_start; }
+
+        /// First index in range
+	cursor_type begin() const { return my_start; } 
+        /// Past-end index in range
+        cursor_type end() const { return my_finish; }
 
 	/// Maps integers [0, size()) to [start(), finish())
 	/** Checks index in debug mode. Inverse of from_range. **/
