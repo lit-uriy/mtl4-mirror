@@ -116,6 +116,10 @@ int main(int, char**)
     dense_vector<float, parameters<row_major> >   ur(5);
     test(ur, "test float in row vector");
 
+    // dense_vector<dense_vector<float> > z(5, u), z2(5);
+    // z2= 4.5f * z;
+    // z2= z + z;
+
     return 0;
 }
  
