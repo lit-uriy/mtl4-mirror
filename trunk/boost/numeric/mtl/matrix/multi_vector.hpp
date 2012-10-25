@@ -47,6 +47,7 @@ class multi_vector
   public:
     typedef multi_vector                             self;
     // typedef mtl::matrix::parameters<>                parameters;
+    typedef Vector                                   vector_type;
     typedef tag::col_major                           orientation;
     typedef typename Collection<Vector>::value_type  value_type;
     typedef typename Collection<Vector>::size_type   size_type;
@@ -71,6 +72,7 @@ class multi_vector
 	this->my_nnz= num_cols * size(v);
     }
 
+#if 0
     /// Consuming assignment operator
     self& operator=(self src)
     {
@@ -81,6 +83,7 @@ class multi_vector
 	swap(*this, src);
 	return *this;
     }
+#endif
 
     using assign_base::operator=;
 

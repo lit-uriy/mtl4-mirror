@@ -65,7 +65,6 @@ struct base_matrix
 			   incompatible_size());
     }
 
-protected:
 #if 0
     /** Will fail for fixed::dimension **/
     void change_dim(mtl::non_fixed::dimensions d) { dim= d; }

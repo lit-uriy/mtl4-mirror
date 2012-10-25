@@ -35,6 +35,15 @@ void test(const Vector&, const char* name)
     cout << "Dimension of B is " << num_rows(B) << " x " << num_cols(B) << "\n\n";
 }
 
+template <typename Vector>
+void test2(const Vector&, const char* name)
+{
+    mtl::multi_vector<Vector> A(4, 6), B(4, 6);
+    A= 3.0;
+
+    B= 2.0 * A;
+    cout << "2 * A is\n" << B << endl;
+}
 
 int main(int, char**)
 {
@@ -45,6 +54,8 @@ int main(int, char**)
 
     test(v, "dense_vector<double>");
     test(w, "std::vector<double>");
+
+    test2(v, "dense_vector<double>");
 
     return 0;
 }
