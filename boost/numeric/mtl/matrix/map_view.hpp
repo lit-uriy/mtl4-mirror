@@ -14,6 +14,8 @@
 #define MTL_MAP_VIEW_INCLUDE
 
 #include <utility>
+#include <boost/utility/enable_if.hpp>
+#include <boost/type_traits/is_integral.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
@@ -24,12 +26,20 @@
 #include <boost/numeric/mtl/operation/tfunctor.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
-
+#include <boost/numeric/mtl/vector/map_view.hpp>
 
 
 namespace mtl { namespace matrix { namespace detail {
     // Forward declaration for friend declaration
     template <typename, typename> struct map_value;
+
+    template <typename Functor, typename Matrix> struct map_vector {}; // not defined in general
+    template <typename Functor, typename Vector>
+    struct map_vector<Functor, mtl::matrix::multi_vector<Vector> >
+    {
+	typedef mtl::vector::map_view<Functor, Vector> type;
+    };
+
 }}}
 
 namespace mtl { namespace matrix {
@@ -68,6 +78,13 @@ struct map_view
     value_type operator() (size_type r, size_type c) const
     { 
         return functor(ref(r, c));
+    }
+    // for multi_vector, needs enable_if since only defined for multi_vector
+    template <typename S>
+    typename boost::lazy_enable_if<boost::is_integral<S>, detail::map_vector<Functor, Matrix> >::type
+    vector(S c) const
+    {
+	return typename detail::map_vector<Functor, Matrix>::type(functor, ref.vector(c));
     }
 
     size_type dim1() const { return ref.dim1(); }
@@ -138,10 +155,10 @@ namespace mtl { namespace traits {
 	struct map_value
 	{
 	    typedef typename Matrix::key_type                      key_type;
-		typedef typename mtl::matrix::map_view<Functor, Matrix>::value_type value_type;
+	    typedef typename mtl::matrix::map_view<Functor, Matrix>::value_type value_type;
     	
-		map_value(mtl::matrix::map_view<Functor, Matrix> const& map_matrix) 
-		: map_matrix(map_matrix), its_value(map_matrix.ref) 
+	    map_value(mtl::matrix::map_view<Functor, Matrix> const& map_matrix) 
+	      : map_matrix(map_matrix), its_value(map_matrix.ref) 
 	    {}
 
 	    value_type operator() (key_type const& key) const
@@ -153,6 +170,8 @@ namespace mtl { namespace traits {
 	    mtl::matrix::map_view<Functor, Matrix> const&        map_matrix;
 		typename mtl::traits::const_value<Matrix>::type its_value;
         };
+
+
 
 	template <typename Functor, typename Matrix> 
 	struct mapped_row

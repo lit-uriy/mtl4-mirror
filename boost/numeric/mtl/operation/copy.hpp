@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/utility/updater_to_assigner.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
@@ -106,6 +107,17 @@ namespace mtl {
 		//std::cout << "in " << row(*icursor) << ", " << col(*icursor) << " insert " << value(*icursor) << '\n';
 		ins(row(*icursor), col(*icursor)) << value(*icursor); }
 	}
+    }
+
+    // Specialization for multi_vector
+    template <typename Updater, typename MatrixSrc, typename Vector>
+    inline void gen_matrix_copy(const MatrixSrc& src, mtl::matrix::multi_vector<Vector>& dest, bool)
+    {
+	MTL_THROW_IF(num_rows(src) != num_rows(dest) || num_cols(src) != num_cols(dest), incompatible_size());
+	typedef typename mtl::traits::updater_to_assigner<Updater>::type Assigner;
+
+	for (std::size_t i= 0, n= num_cols(src); i < n; ++i)
+	    Assigner::first_update(dest.vector(i), src.vector(i));
     }
 
     namespace {
