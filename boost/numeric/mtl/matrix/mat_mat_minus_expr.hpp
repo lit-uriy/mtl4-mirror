@@ -15,6 +15,7 @@
 
 
 #include <boost/numeric/mtl/matrix/mat_mat_op_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_pmop_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 
 namespace mtl {namespace matrix {
@@ -37,6 +38,21 @@ struct mat_mat_minus_expr
     second_argument_type const& second ;
 };
 
+template <typename E1, typename E2>
+struct mv_mv_minus_expr
+  : mat_mat_minus_expr<E1, E2>
+{
+    typedef mat_mat_minus_expr< E1, E2 > base;
+    typedef typename E1::vector_type V1;
+    typedef typename E2::vector_type V2;
+    typedef mtl::vector::vec_vec_pmop_expr< V1, V2, mtl::sfunctor::minus<typename V1::value_type, typename V2::value_type> > vector_type;
+
+    mv_mv_minus_expr( E1 const& v1, E2 const& v2 )
+      : base( v1, v2 )
+    {}
+
+    vector_type vector(std::size_t c) const { return vector_type(this->first.vector(c), this->second.vector(c)); }
+};
 
 }} // Namespace mtl::matrix
 

@@ -24,8 +24,16 @@ void test(const char* name)
     A= 3.0;
 
     B= A;
+    cout << "B= A yields\n" << B << endl;
+
+    B= A + A;
+    cout << "A + A is\n" << B << endl;
+
     B= 2.0 * A + 3 * A;
-    cout << "2 * A is\n" << B << endl;
+    cout << "2 * A + 3 * A is\n" << B << endl;
+
+    B= 2.0 * A + 3 * A - 2.6 * A;
+    cout << "2 * A + 3 * A - 2.6 * A is\n" << B << endl;
 }
 
 int main(int, char**)

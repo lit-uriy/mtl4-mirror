@@ -819,6 +819,15 @@ namespace mtl {
     };
 #endif
 
+#ifdef __GXX_CONCEPTS__
+
+#else
+    template <typename E1, typename E2>
+    struct Collection<matrix::mv_mv_plus_expr<E1, E2> >
+      : Collection<matrix::mat_mat_plus_expr<E1, E2> >
+    {};
+#endif
+
 #ifdef __GXX_CONCECPTS__
 
 #else

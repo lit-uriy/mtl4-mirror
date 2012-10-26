@@ -118,7 +118,9 @@ namespace mtl {
 	template <typename Matrix> struct smat_expr;
 	template <typename M1, typename M2, typename SFunctor> struct mat_mat_op_expr;
 	template <typename M1, typename M2> struct mat_mat_plus_expr;
+	template <typename M1, typename M2> struct mv_mv_plus_expr;
 	template <typename M1, typename M2> struct mat_mat_minus_expr;
+	template <typename M1, typename M2> struct mv_mv_minus_expr;
 	template <typename M1, typename M2> struct mat_mat_ele_times_expr;
 	template <typename M1, typename M2> struct mat_mat_times_expr;
 	template <typename M1, typename M2> struct mat_mat_asgn_expr;
@@ -208,6 +210,9 @@ namespace mtl {
 
 	template <typename Functor, typename Vector> 
 	std::size_t size(const map_view<Functor, Vector>& v);
+
+	template <typename E1, typename E2, typename SFunctor>
+	std::size_t size(const vec_vec_op_expr<E1, E2, SFunctor>& v);
 
 	template <typename E1, typename E2, typename SFunctor>
 	std::size_t size(const vec_vec_aop_expr<E1, E2, SFunctor>& v);

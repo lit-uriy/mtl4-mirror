@@ -15,11 +15,13 @@
 
 #include <utility>
 #include <boost/utility/enable_if.hpp>
+#include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/utility/is_multi_vector_expr.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
@@ -63,6 +65,9 @@ struct map_view
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::index_type                index_type;
     typedef typename Matrix::dim_type                  dim_type;
+
+    struct dummy { typedef void type; };
+    typedef typename boost::mpl::eval_if<mtl::traits::is_multi_vector_expr<Matrix>, detail::map_vector<Functor, Matrix>, dummy>::type vector_type;
 
     map_view (const Functor& functor, const other& ref) : functor(functor), ref(ref) {}
     
