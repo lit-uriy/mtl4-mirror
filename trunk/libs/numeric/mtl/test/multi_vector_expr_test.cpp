@@ -10,10 +10,10 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+#include <cmath>
 #include <iostream>
 #include <vector>
 #include <boost/numeric/mtl/mtl.hpp>
-
 
 using namespace std;
 
@@ -28,12 +28,18 @@ void test(const char* name)
 
     B= A + A;
     cout << "A + A is\n" << B << endl;
+    MTL_THROW_IF(B[1][1] != 6.0, mtl::runtime_error("Wrong value on diagonal\n"));
+    MTL_THROW_IF(B[1][0] != 0.0, mtl::runtime_error("Wrong value off diagonal\n"));
 
     B= 2.0 * A + 3 * A;
     cout << "2 * A + 3 * A is\n" << B << endl;
+    MTL_THROW_IF(B[1][1] != 15.0, mtl::runtime_error("Wrong value on diagonal\n"));
+    MTL_THROW_IF(B[1][0] != 0.0, mtl::runtime_error("Wrong value off diagonal\n"));
 
     B= 2.0 * A + 3 * A - 2.6 * A;
     cout << "2 * A + 3 * A - 2.6 * A is\n" << B << endl;
+    MTL_THROW_IF(std::abs(B[1][1] - 7.2) > 0.001, mtl::runtime_error("Wrong value on diagonal\n"));
+    MTL_THROW_IF(B[1][0] != 0.0, mtl::runtime_error("Wrong value off diagonal\n"));
 }
 
 int main(int, char**)
