@@ -110,6 +110,9 @@ class multi_vector
     Vector& vector(size_type i) { return data[i]; }
     const Vector& vector(size_type i) const { return data[i]; }
 
+    Vector& at(size_type i) { return data[i]; }
+    const Vector& at(size_type i) const { return data[i]; }
+
     multi_vector_range<Vector> vector(irange const& r) const { return multi_vector_range<Vector>(*this, r); }
 
   protected:  
