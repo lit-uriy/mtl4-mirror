@@ -59,6 +59,8 @@ class multi_vector
     typedef multi_vector_key                         key_type;
     typedef crtp_matrix_assign< self, value_type, size_type >    assign_base;
 
+    multi_vector() : super(non_fixed::dimensions(0, 0)) {}
+
     /// Constructor by number of rows and columns
     multi_vector(size_type num_rows, size_type num_cols)
       : super(non_fixed::dimensions(num_rows, num_cols)), 
@@ -73,6 +75,15 @@ class multi_vector
 	data(num_cols, v)
     {
 	this->my_nnz= num_cols * size(v);
+    }
+
+    /// Change dimension, can keep old data
+    void change_dim(size_type r, size_type c)
+    {
+	super::change_dim(r, c);
+	data.change_dim(c);
+	for (size_type i= 0; i < c; i++)
+	    data[i].change_dim(r);
     }
 
     // Todo: multi_vector with other matrix expressions
@@ -116,7 +127,7 @@ class multi_vector
     multi_vector_range<Vector> vector(irange const& r) const { return multi_vector_range<Vector>(*this, r); }
 
   protected:  
-	mtl::vector::dense_vector<Vector, mtl::vector::parameters<> >          data;
+    mtl::vector::dense_vector<Vector, mtl::vector::parameters<> >          data;
 };
 
 /// Number of rows
