@@ -13,6 +13,7 @@
 #ifndef MTL_MATRIX_MULTI_VECTOR_INCLUDE
 #define MTL_MATRIX_MULTI_VECTOR_INCLUDE
 
+#include <boost/utility/enable_if.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
@@ -20,6 +21,7 @@
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/multi_vector_range.hpp>
+#include <boost/numeric/mtl/utility/is_what.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 
 
@@ -58,8 +60,8 @@ class multi_vector
 
     /// Constructor by number of rows and columns
     multi_vector(size_type num_rows, size_type num_cols)
-	: super(non_fixed::dimensions(num_rows, num_cols)), 
-	  data(num_cols, Vector(num_rows))
+      : super(non_fixed::dimensions(num_rows, num_cols)), 
+	data(num_cols, Vector(num_rows))
     {
 	this->my_nnz= num_rows * num_cols;
     }
@@ -85,7 +87,31 @@ class multi_vector
     }
 #endif
 
-    using assign_base::operator=;
+    /// Assign multi_vector and expressions thereof, general matrices currently not allowed 
+    template <typename Src>
+    typename boost::enable_if<mtl::traits::is_matrix<Src>, self&>::type
+    operator=(const Src& src)
+    {
+	MTL_THROW_IF(num_rows(src) != super::num_rows() || num_cols(src) != super::num_cols(), incompatible_size());
+	for (std::size_t i= 0, n= super::num_cols(); i < n; ++i)
+	    vector(i)= src.vector(i);
+    }
+
+    /// Assign scalar
+    template <typename Src>
+    typename boost::enable_if<mtl::traits::is_scalar<Src>, self&>::type
+    operator=(const Src& src)
+    {
+	assign_base::operator=(src);
+	return *this;
+#if 0
+	for (std::size_t i= 0, n= super::num_cols(); i < n; ++i) {	    
+	    set_to_zero(vector(i));
+	    if (num_rows(vector(i)) > i)
+		vector(i)[i] = src;
+	}
+#endif
+    }
 
     const_reference operator() (size_type i, size_type j) const { return data[j][i]; }
     reference operator() (size_type i, size_type j) { return data[j][i]; }

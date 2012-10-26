@@ -14,14 +14,15 @@
 #define MTL_MAT_MAT_PLUS_EXPR_INCLUDE
 
 #include <boost/numeric/mtl/matrix/mat_mat_op_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_pmop_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 
 namespace mtl { namespace matrix {
 
 template <typename E1, typename E2>
 struct mat_mat_plus_expr 
-    : public mat_mat_op_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> >,
-      public mat_expr< mat_mat_plus_expr<E1, E2> >
+  : public mat_mat_op_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> >,
+    public mat_expr< mat_mat_plus_expr<E1, E2> >
 {
     typedef mat_mat_op_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> > op_base;
     typedef mat_expr< mat_mat_plus_expr<E1, E2> >                                                       crtp_base;
@@ -29,7 +30,7 @@ struct mat_mat_plus_expr
     typedef E2                                   second_argument_type ;
     
     mat_mat_plus_expr( E1 const& v1, E2 const& v2 )
-	: op_base( v1, v2 ), crtp_base(*this), first(v1), second(v2)
+      : op_base( v1, v2 ), crtp_base(*this), first(v1), second(v2)
     {}
 
     first_argument_type const&  first ;
@@ -40,14 +41,31 @@ struct mat_mat_plus_expr
 // Future versions will probably provide more efficient implementations for it
 template <typename E1, typename E2>
 struct dmat_dmat_plus_expr 
-    : public mat_mat_op_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> >
+  : public mat_mat_op_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> >
 {
     typedef mat_mat_op_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> > base;
     dmat_dmat_plus_expr( E1 const& v1, E2 const& v2 )
-	: base( v1, v2 )
+      : base( v1, v2 )
     {}
 };
     
+template <typename E1, typename E2>
+struct mv_mv_plus_expr
+  : mat_mat_plus_expr<E1, E2>
+{
+    typedef mat_mat_plus_expr< E1, E2 > base;
+    typedef typename E1::vector_type V1;
+    typedef typename E2::vector_type V2;
+    typedef mtl::vector::vec_vec_pmop_expr< V1, V2, mtl::sfunctor::plus<typename V1::value_type, typename V2::value_type> > vector_type;
+
+    mv_mv_plus_expr( E1 const& v1, E2 const& v2 )
+      : base( v1, v2 )
+    {}
+
+    vector_type vector(std::size_t c) const { return vector_type(this->first.vector(c), this->second.vector(c)); }
+};
+
+
 
 
 }} // Namespace mtl::matrix

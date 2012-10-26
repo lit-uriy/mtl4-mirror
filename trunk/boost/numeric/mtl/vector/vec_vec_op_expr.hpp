@@ -53,22 +53,6 @@ public:
     
     void delay_assign() const {}
 
-#if 0
-    size_type size() const
-    {
-	std::cerr << "vec_vec_op_expr.size() " << first.size() << "  " << second.size() << "\n";
-	assert( first.size() == second.size() ) ;
-	return first.size() ;
-    }
-
-    friend size_type size(const self& v) 
-    {
-	// std::cerr << "vec_vec_op_expr.size() " << first.size() << "  " << second.size() << "\n";
-	assert( size(v.first) == size(v.second) ) ;
-	return size(v.first) ;
-    }
-#endif
-
     template <typename EE1, typename EE2, typename SSFunctor>
     friend std::size_t size(const vec_vec_op_expr<EE1, EE2, SSFunctor>& v);
 

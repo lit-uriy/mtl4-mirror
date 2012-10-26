@@ -14,9 +14,13 @@
 #define MTL_MATRIX_OPERATORS_INCLUDE
 
 #include <boost/static_assert.hpp>
-#include <boost/numeric/mtl/utility/ashape.hpp>
-#include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
+#include <boost/utility/enable_if.hpp>
+#include <boost/mpl/and.hpp>
 
+#include <boost/numeric/mtl/utility/ashape.hpp>
+#include <boost/numeric/mtl/utility/is_multi_vector_expr.hpp>
+#include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 
 
 namespace mtl { namespace matrix {
@@ -31,6 +35,21 @@ operator+ (const mat_expr<E1>& e1, const mat_expr<E2>& e2)
     return mat_mat_plus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 
+// if enabled it has priority over previous functions because that performs upcast
+template <typename E1, typename E2>
+typename boost::enable_if_c<mtl::traits::is_multi_vector_expr<E1>::value && mtl::traits::is_multi_vector_expr<E2>::value, mv_mv_plus_expr<E1, E2> >::type
+inline operator+(const E1& e1, const E2& e2)
+{
+    return mv_mv_plus_expr<E1, E2>(e1, e2);
+}
+
+// Specialization for multi_vector
+// template <typename V1, typename V2>
+// inline mv_mv_plus_expr<multi_vector<V1>, multi_vector<V2> >
+// operator+(const multi_vector<V1>& m1, const multi_vector<V2>& m2)
+// {
+//     return mv_mv_plus_expr<multi_vector<V1>, multi_vector<V2> >(m1, m2);
+// }
 
 #if 0
 // Planned for future optimizations on sums of dense matrix expressions
@@ -54,6 +73,14 @@ operator- (const mat_expr<E1>& e1, const mat_expr<E2>& e2)
     BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
 			                typename ashape::ashape<E2>::type>::value));
     return mat_mat_minus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
+}
+
+// if enabled it has priority over previous functions because that performs upcast
+template <typename E1, typename E2>
+typename boost::enable_if_c<mtl::traits::is_multi_vector_expr<E1>::value && mtl::traits::is_multi_vector_expr<E2>::value, mv_mv_minus_expr<E1, E2> >::type
+inline operator-(const E1& e1, const E2& e2)
+{
+    return mv_mv_minus_expr<E1, E2>(e1, e2);
 }
 
 template <typename E1, typename E2>
