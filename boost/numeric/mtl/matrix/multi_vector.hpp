@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/multi_vector_range.hpp>
 #include <boost/numeric/mtl/utility/is_what.hpp>
+#include <boost/numeric/mtl/utility/is_multi_vector_expr.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 
 
@@ -74,22 +75,10 @@ class multi_vector
 	this->my_nnz= num_cols * size(v);
     }
 
-#if 0
-    /// Consuming assignment operator
-    self& operator=(self src)
-    {
-	// Self-copy would be an indication of an error
-	assert(this != &src);
-	
-	check_dim(src.num_rows(), src.num_cols());
-	swap(*this, src);
-	return *this;
-    }
-#endif
-
+    // Todo: multi_vector with other matrix expressions
     /// Assign multi_vector and expressions thereof, general matrices currently not allowed 
     template <typename Src>
-    typename boost::enable_if<mtl::traits::is_matrix<Src>, self&>::type
+    typename boost::enable_if<mtl::traits::is_multi_vector_expr<Src>, self&>::type
     operator=(const Src& src)
     {
 	MTL_THROW_IF(num_rows(src) != super::num_rows() || num_cols(src) != super::num_cols(), incompatible_size());
@@ -97,6 +86,15 @@ class multi_vector
 	    vector(i)= src.vector(i);
     }
 
+    template <typename Src>
+    typename boost::enable_if_c<mtl::traits::is_matrix<Src>::value 
+				&& !mtl::traits::is_multi_vector_expr<Src>::value, self&>::type
+    operator=(const Src& src)
+    {
+	assign_base::operator=(src);
+	return *this;
+    }
+    
     /// Assign scalar
     template <typename Src>
     typename boost::enable_if<mtl::traits::is_scalar<Src>, self&>::type
@@ -104,13 +102,6 @@ class multi_vector
     {
 	assign_base::operator=(src);
 	return *this;
-#if 0
-	for (std::size_t i= 0, n= super::num_cols(); i < n; ++i) {	    
-	    set_to_zero(vector(i));
-	    if (num_rows(vector(i)) > i)
-		vector(i)[i] = src;
-	}
-#endif
     }
 
     const_reference operator() (size_type i, size_type j) const { return data[j][i]; }
