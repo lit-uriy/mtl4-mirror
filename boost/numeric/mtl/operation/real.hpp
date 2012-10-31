@@ -68,12 +68,23 @@ inline real(const Value& v)
 
 namespace vector {
 
-    /// Real part of an vector
+    /// Real part of a vector
     template <typename Vector>
     typename mtl::traits::enable_if_vector<Vector, real_view<Vector> >::type
     inline real(const Vector& v)
     {
 	return real_view<Vector>(v);
+    }
+} 
+
+namespace matrix {
+
+    /// Real part of a matrix 
+    template <typename Matrix>
+    typename mtl::traits::enable_if_matrix<Matrix, real_view<Matrix> >::type
+    inline real(const Matrix& v)
+    {
+	return real_view<Matrix>(v);
     }
 } 
 

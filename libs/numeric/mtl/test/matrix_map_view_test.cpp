@@ -23,6 +23,8 @@
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/imag.hpp>
+#include <boost/numeric/mtl/operation/real.hpp>
 #include <boost/numeric/mtl/operation/scale.hpp>
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
@@ -81,7 +83,7 @@ ct csvalue(ct)
 template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
-    using mtl::conj;
+    using mtl::conj; using mtl::imag; using mtl::real;
 
     set_to_zero(matrix);
     typename Matrix::value_type ref(0);
@@ -123,6 +125,15 @@ void test(Matrix& matrix, const char* name)
 
     cout << "conjugated matrix (free function) \n" << conj(matrix) << "\n";
     MTL_THROW_IF(conj(matrix)(2, 3) != cvalue(ref), mtl::runtime_error("conjugating wrong"));
+
+    cout << "imaginary part of matrix (free function) \n" << imag(matrix) << "\n";
+    MTL_THROW_IF(imag(matrix)(2, 3) != imag(value(ref)), mtl::runtime_error("imaginary part wrong"));
+
+    cout << "real part of matrix (free function) \n" << real(matrix) << "\n";
+    MTL_THROW_IF(real(matrix)(2, 3) != real(value(ref)), mtl::runtime_error("real part wrong"));
+
+    cout << "negation of matrix (free function) \n" << -matrix << "\n";
+    MTL_THROW_IF((-matrix)(2, 3) != -(value(ref)), mtl::runtime_error("negation wrong"));
 
     cout << "matrix scaled with i (complex(0, 1)) (free function)\n" << scale(ct(0.0, 1.0), matrix) << "\n";
     MTL_THROW_IF(scale(ct(0.0, 1.0), matrix)(2, 3) != csvalue(ref), mtl::runtime_error("complex scaling wrong"));
