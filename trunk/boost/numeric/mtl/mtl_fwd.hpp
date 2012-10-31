@@ -131,6 +131,9 @@ namespace mtl {
 	template <typename Matrix, typename RScaling> struct rscaled_view; // added by Hui Li
 	template <typename Matrix, typename Divisor> struct divide_by_view; // added by Hui Li
 	template <typename Matrix>  struct conj_view;
+	template <typename Matrix>  struct negate_view;
+	template <typename Matrix>  struct imag_view;
+	template <typename Matrix>  struct real_view;
 	template <typename Matrix>  struct hermitian_view;
 	template <typename Matrix>  struct banded_view;
 	template <typename Matrix> struct indirect;
@@ -333,6 +336,8 @@ namespace mtl {
     namespace sfunctor {
 	template <typename Value, typename AlgebraicCategory = tag::scalar> struct conj_aux;
 	template <typename Value>                   struct conj;
+	template <typename Value>                   struct imag;
+	template <typename Value>                   struct real;
 	template <typename Value>                   struct negate;
 	template <typename Value1, typename Value2> struct plus;
 	template <typename Value1, typename Value2> struct minus;

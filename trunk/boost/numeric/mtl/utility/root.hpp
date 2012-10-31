@@ -83,6 +83,24 @@ struct root< mtl::matrix::conj_view<Matrix> >
 };
 
 template <typename Matrix>
+struct root< mtl::matrix::negate_view<Matrix> >
+{
+    typedef mtl::matrix::map_view<sfunctor::negate<typename Matrix::value_type>, Matrix> type;
+};
+
+template <typename Matrix>
+struct root< mtl::matrix::imag_view<Matrix> >
+{
+    typedef mtl::matrix::map_view<sfunctor::imag<typename Matrix::value_type>, Matrix> type;
+};
+
+template <typename Matrix>
+struct root< mtl::matrix::real_view<Matrix> >
+{
+    typedef mtl::matrix::map_view<sfunctor::real<typename Matrix::value_type>, Matrix> type;
+};
+
+template <typename Matrix>
 struct root< mtl::matrix::hermitian_view<Matrix> >
 {
     typedef mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, mtl::matrix::transposed_view<Matrix> > type;

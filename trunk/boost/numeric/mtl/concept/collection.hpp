@@ -632,6 +632,69 @@ namespace mtl {
 #endif
 
 
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map Collection<matrix::imag_view<Coll> >
+    {
+	typedef typename matrix::imag_view<Coll>::value_type        value_type;
+	typedef typename matrix::imag_view<Coll>::const_reference   const_reference;
+	typedef typename matrix::imag_view<Coll>::size_type         size_type;
+    };
+#else
+    template <typename Coll>
+    struct Collection<matrix::imag_view<Coll> >
+    {
+	typedef typename matrix::imag_view<Coll>::value_type        value_type;
+	typedef typename matrix::imag_view<Coll>::const_reference   const_reference;
+	typedef typename matrix::imag_view<Coll>::size_type         size_type;
+    };
+#endif
+
+
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map Collection<matrix::negate_view<Coll> >
+    {
+	typedef typename matrix::negate_view<Coll>::value_type        value_type;
+	typedef typename matrix::negate_view<Coll>::const_reference   const_reference;
+	typedef typename matrix::negate_view<Coll>::size_type         size_type;
+    };
+#else
+    template <typename Coll>
+    struct Collection<matrix::negate_view<Coll> >
+    {
+	typedef typename matrix::negate_view<Coll>::value_type        value_type;
+	typedef typename matrix::negate_view<Coll>::const_reference   const_reference;
+	typedef typename matrix::negate_view<Coll>::size_type         size_type;
+    };
+#endif
+
+
+
+
+#ifdef __GXX_CONCEPTS__
+    template <typename Coll>
+    concept_map Collection<matrix::real_view<Coll> >
+    {
+	typedef typename matrix::real_view<Coll>::value_type        value_type;
+	typedef typename matrix::real_view<Coll>::const_reference   const_reference;
+	typedef typename matrix::real_view<Coll>::size_type         size_type;
+    };
+#else
+    template <typename Coll>
+    struct Collection<matrix::real_view<Coll> >
+    {
+	typedef typename matrix::real_view<Coll>::value_type        value_type;
+	typedef typename matrix::real_view<Coll>::const_reference   const_reference;
+	typedef typename matrix::real_view<Coll>::size_type         size_type;
+    };
+#endif
+
+
 #ifdef __GXX_CONCEPTS__
     template <typename Functor>
     concept_map Collection<matrix::implicit_dense<Functor> >

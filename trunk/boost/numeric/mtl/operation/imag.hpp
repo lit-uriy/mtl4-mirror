@@ -73,6 +73,17 @@ namespace vector {
     }
 } 
 
+namespace matrix {
+
+    /// Imaginary part of an vector
+    template <typename Matrix>
+    typename mtl::traits::enable_if_matrix<Matrix, imag_view<Matrix> >::type
+    inline imag(const Matrix& v)
+    {
+	return imag_view<Matrix>(v);
+    }
+} 
+
 
 } // namespace mtl
 

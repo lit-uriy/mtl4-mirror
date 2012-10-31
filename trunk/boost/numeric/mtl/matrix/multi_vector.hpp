@@ -95,6 +95,7 @@ class multi_vector
 	MTL_THROW_IF(num_rows(src) != super::num_rows() || num_cols(src) != super::num_cols(), incompatible_size());
 	for (std::size_t i= 0, n= super::num_cols(); i < n; ++i)
 	    vector(i)= src.vector(i);
+	return *this;
     }
 
     template <typename Src>

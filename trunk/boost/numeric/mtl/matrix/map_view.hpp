@@ -27,6 +27,8 @@
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 #include <boost/numeric/mtl/operation/tfunctor.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
+#include <boost/numeric/mtl/operation/imag.hpp>
+#include <boost/numeric/mtl/operation/real.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
 
@@ -342,6 +344,57 @@ struct conj_view
 #ifdef MTL_WITH_CPP11_MOVE    
     conj_view (self&& that) : base(that) {}
     conj_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Matrix>
+struct imag_view
+  : public map_view<mtl::sfunctor::imag<typename Matrix::value_type>, Matrix>
+{
+    typedef mtl::sfunctor::imag<typename Matrix::value_type>            functor_type;
+    typedef map_view<functor_type, Matrix>                              base;
+    typedef imag_view                                                   self;
+
+    imag_view(const Matrix& matrix) : base(functor_type(), matrix) {}
+    imag_view(boost::shared_ptr<Matrix> p) : base(functor_type(), p) {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    imag_view (self&& that) : base(that) {}
+    imag_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Matrix>
+struct negate_view
+  : public map_view<mtl::sfunctor::negate<typename Matrix::value_type>, Matrix>
+{
+    typedef mtl::sfunctor::negate<typename Matrix::value_type>            functor_type;
+    typedef map_view<functor_type, Matrix>                              base;
+    typedef negate_view                                                   self;
+
+    negate_view(const Matrix& matrix) : base(functor_type(), matrix) {}
+    negate_view(boost::shared_ptr<Matrix> p) : base(functor_type(), p) {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    negate_view (self&& that) : base(that) {}
+    negate_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Matrix>
+struct real_view
+  : public map_view<mtl::sfunctor::real<typename Matrix::value_type>, Matrix>
+{
+    typedef mtl::sfunctor::real<typename Matrix::value_type>            functor_type;
+    typedef map_view<functor_type, Matrix>                              base;
+    typedef real_view                                                   self;
+
+    real_view(const Matrix& matrix) : base(functor_type(), matrix) {}
+    real_view(boost::shared_ptr<Matrix> p) : base(functor_type(), p) {}
+
+#ifdef MTL_WITH_CPP11_MOVE    
+    real_view (self&& that) : base(that) {}
+    real_view (const self& that) : base(that) {}
 #endif
 };
 
