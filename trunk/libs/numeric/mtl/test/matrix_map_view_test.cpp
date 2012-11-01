@@ -140,6 +140,8 @@ void test(Matrix& matrix, const char* name)
 
     cout << "Hermitian  matrix (conjugate transposed) (free function)\n" << hermitian(matrix) << "\n";
     MTL_THROW_IF(hermitian(matrix)(3, 2) != cvalue(ref), mtl::runtime_error("conjugate transposing wrong"));
+
+
 }
 
 
@@ -169,6 +171,11 @@ int main(int argc, char* argv[])
     test(cc, "Compressed column major");
     test(drc, "Dense row major complex");
     test(crc, "Compressed row major complex");
+
+    double p(2.0);
+    dr=-dr;
+    dr=real(dr);
+    dr=conj(dr)+p*imag(dr);
 
     return 0;
 }

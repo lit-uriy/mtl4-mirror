@@ -78,6 +78,26 @@ struct eval_dense< mtl::matrix::scaled_view<Value1, Matrix> >
     : eval_dense<Matrix>
 {};
 
+template <typename Matrix>
+struct eval_dense< mtl::matrix::negate_view<Matrix > > 
+    : eval_dense<Matrix>
+{};
+
+template <typename Matrix>
+struct eval_dense< mtl::matrix::real_view<Matrix > > 
+    : eval_dense<Matrix>
+{};
+
+template <typename Matrix>
+struct eval_dense< mtl::matrix::imag_view<Matrix > > 
+    : eval_dense<Matrix>
+{};
+
+template <typename Functor, typename Matrix>
+struct eval_dense< mtl::matrix::map_view<Functor, Matrix > > 
+    : eval_dense<Matrix>
+{};
+
 template <typename Value1, typename Matrix>
 struct eval_dense< mtl::matrix::rscaled_view<Value1, Matrix> > 
     : eval_dense<Matrix>
