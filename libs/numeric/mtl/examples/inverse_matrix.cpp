@@ -112,8 +112,9 @@ dense2D<double> inline inverse(dense2D<double> const& A)
     dense_vector<unsigned>   Pv(num_rows(A));
 
     lu(PLU, Pv);
-    dense2D<double>  PU(upper(PLU)), 
-        PL(strict_lower(PLU) + matrix::identity(num_rows(A), num_cols(A)));
+    dense2D<double>  PU(upper(PLU));
+    compressed2D<double> I(num_rows(A), num_cols(A)); I= 1;
+    dense2D<double>  PL(strict_lower(PLU) + I);
 
     return dense2D<double>(inverse_upper(PU) * inverse_lower(PL) * permutation(Pv));
 }
@@ -139,8 +140,8 @@ int main(int, char**)
     cout << "Permutation vector is " << Pv << "\nPermutation matrix is\n" << P;
 
     cout << "Permuted A is \n" << Matrix(P * A);
-    
-    Matrix I(matrix::identity(size, size)), L(I + strict_lower(LU)), U(upper(LU));
+    compressed2D<double> I(size,size); I= 1;
+    Matrix L(I + strict_lower(LU)), U(upper(LU));
 
     Matrix UI(inverse_upper(U));
     cout << "inverse(U) [permuted] is:\n" << UI << "UI * U is:\n" << Matrix(UI * U);

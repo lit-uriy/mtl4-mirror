@@ -13,50 +13,24 @@
 #ifndef MTL_MATRIX_IDENTITY_INCLUDE
 #define MTL_MATRIX_IDENTITY_INCLUDE
 
-#include <boost/numeric/linear_algebra/identity.hpp>
-#include <boost/numeric/mtl/mtl_fwd.hpp>
-#include <boost/numeric/mtl/matrix/parameter.hpp>
-#include <boost/numeric/mtl/matrix/diagonal_setup.hpp>
+// #include <boost/numeric/linear_algebra/identity.hpp>
+// #include <boost/numeric/mtl/mtl_fwd.hpp>
+// #include <boost/numeric/mtl/matrix/parameter.hpp>
+// #include <boost/numeric/mtl/matrix/diagonal_setup.hpp>
+
+#include <boost/numeric/mtl/matrix/identity2D.hpp>
 
 namespace mtl { namespace matrix {
 
-namespace traits {
-
-    // temporary solution, needs optimization
-    template <typename Value= double>
-    struct identity
-    {
-	typedef mtl::matrix::compressed2D<Value, parameters<> >  type;
-    };
-}
-
-template <typename Value>
-typename traits::identity<Value>::type
-inline identity(std::size_t nrows, std::size_t ncols)
+inline identity2D identity(std::size_t nrows, std::size_t ncols)
 {
-    typename traits::identity<Value>::type I(nrows, ncols);
-    diagonal_setup(I, math::one(Value()));
-    return I;
-}
-
-template <typename Value>
-typename traits::identity<Value>::type
-inline identity(std::size_t nrows)
-{
-    return identity<Value>(nrows, nrows);
+    return identity2D(nrows, ncols);
 }
 
 
-traits::identity<double>::type
-inline identity(std::size_t nrows, std::size_t ncols)
+inline identity2D identity(std::size_t nrows)
 {
-    return identity<double>(nrows, ncols);
-}
-
-traits::identity<double>::type
-inline identity(std::size_t nrows)
-{
-    return identity<double>(nrows, nrows);
+    return identity2D(nrows, nrows);
 }
 
 }} // namespace mtl::matrix
