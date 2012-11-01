@@ -110,8 +110,8 @@ class matrix_market_istream
 		insert_value(ins, r-1, c-1, filter, Value());
 	    }
 	else // dense 
-	    for (std::size_t r= 0; r < nrows; r++)
-		for (std::size_t c= 0; c < ncols; c++) 
+	    for (std::size_t c= 0; c < ncols; c++) 
+		for (std::size_t r= 0; r < nrows; r++)
 		    insert_value(ins, r, c, filter, Value());
     }
 
@@ -262,8 +262,8 @@ private:
     template <typename Matrix> self& write_dense_matrix(const Matrix& A)
     {
 	my_stream << num_rows(A) << " " << num_cols(A) << "\n";
-	for (std::size_t r = 0; r < num_rows(A); ++r) {
-	    for (std::size_t c = 0; c < num_cols(A); ++c)
+	for (std::size_t c = 0; c < num_cols(A); ++c)
+	    for (std::size_t r = 0; r < num_rows(A); ++r) {
 		write_value(A[r][c]), my_stream << " ";
 	    my_stream << "\n";
 	}

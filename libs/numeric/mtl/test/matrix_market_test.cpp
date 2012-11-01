@@ -18,7 +18,8 @@
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/recursion/matrix_recursator.hpp>
  
-using namespace std;  
+using namespace std; 
+using namespace mtl;
 
 std::string program_dir; // Ugly global variable !!!
 
@@ -75,6 +76,27 @@ void inline failure_test(Matrix& A)
     throw "No exception thrown for inexistant file.";
 }
 
+template< typename Matrix >
+void read_test(Matrix& A, const char* name )
+{
+	typedef typename Collection<Matrix>::size_type my_size;
+	dense2D< double > data(2,4);
+	unsigned v(1);
+	for(unsigned r(0); r < 2; ++r)
+		for(unsigned c(0); c < 4; ++c,++v)
+			data(r,c)=v;
+	mtl::io::matrix_market_istream in("matrix_market/dense_read.mtx");
+	in >> A;
+	dense2D< double > diff(A-data);
+	pair< my_size, my_size > pos(max_abs_pos(diff));
+	if(diff(pos.first,pos.second) > 1e-14) {
+		std::stringstream ss;
+		ss << "could not read the dense matrix with type " << name << std::endl;
+		ss << "wanted:\t" << data << "\n";
+		ss << "got:\t" << A << "\n";
+		throw std::runtime_error(ss.str());
+	}
+}
 
 int main(int, char* argv[])
 {
@@ -98,6 +120,12 @@ int main(int, char* argv[])
     test(mcc, "Hybrid col-major");
 
     failure_test(cdc);
+ 
+    read_test(dc, "dense2D");
+    //read_test(ccc, "compressed2D complex");
+    read_test(dcc, "dense2D col-major");
+    read_test(mdc, "pure Morton");
+    read_test(mcc, "Hybrid col-major");
 
     return 0;
 }
