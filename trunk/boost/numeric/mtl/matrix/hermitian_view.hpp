@@ -62,7 +62,13 @@ struct hermitian_view
     friend size_type inline num_rows(const self& A) { return num_rows((const base&)(A)); }
     friend size_type inline num_cols(const self& A) { return num_cols((const base&)(A)); }
  
-    const_ref_type const_ref() const { return base::ref.ref; }
+    const_ref_type const_ref() const 
+    { 
+	// make two statements because nvcc cannot handle ref.ref
+	const transposed_view<Matrix>& r1= base::ref;
+	return r1.ref; 
+    }
+
     size_type nnz() const { return base::nnz(); }
 
     friend inline std::ostream& operator<<(std::ostream& os, const self& A) { return os << (const base&)(A); }
