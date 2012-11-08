@@ -1,4 +1,4 @@
-project (mtl4)
+project (mtl4) # GPU version 
 
 cmake_minimum_required(VERSION 2.8)
 option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
@@ -9,6 +9,34 @@ option(USE_ASSERTS "Use assert instead of throwing exceptions" ON)
 #look for mtl4, use THIS directory as mtl dir
 find_package(MTL REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MTL_INCLUDE_DIRS})
+
+# adding the Path of FindCUDA Module
+SET(CMAKE_MODULE_PATH $ENV{CMAKE_MODULE_PATH})
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${MTL4_ROOT_PATH}/Cmake_Module)
+SET(MTL4_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+FIND_PACKAGE(CUDA)
+
+
+SET (CUDA_GENERATED_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/CudaFiles)
+
+set(CUDA_FLAGS 
+--gpu-architecture sm_13
+-DBOOST_NO_INCLASS_MEMBER_INITIALIZATION
+-DMTL_SHORT_PRINT
+-DMTL_HAS_CUDA
+#-O1
+#-O2
+-O3
+#--keep
+#-cuda
+)
+
+if(CUDA_TOOLKIT_ROOT_DIR)
+  Set (NVCC_PATH ${CUDA_TOOLKIT_ROOT_DIR}/bin)
+else(CUDA_TOOLKIT_ROOT_DIR)
+  Set (NVCC_PATH $ENV{CUDA_PATH}/bin CACHE PATH "CUDA include directory")
+endif(CUDA_TOOLKIT_ROOT_DIR)
+
 
 #REMAINING PART USES MTL4
 include(CheckCXXCompilerFlag)
@@ -50,13 +78,13 @@ if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND ENABLE_WARNINGS)
     message(STATUS "Add -Wno-long-long")
     add_definitions("-Wno-long-long")
   endif()
-  #vampir does not support pedantic..
-  if(NOT HAVE_VAMPIR)
-    add_definitions("-pedantic")
-    if(CMAKE_SYSTEM_NAME STREQUAL "Linux") # skip Werror on Darwin for the moment
-      add_definitions("-Werror")
-    endif() 
-  endif()
+  # vampir does not support pedantic.. Boost generates too many warnings with nvcc anyway, so drop it entirely
+  # if(NOT HAVE_VAMPIR)
+  #   add_definitions("-pedantic")
+  #   if(CMAKE_SYSTEM_NAME STREQUAL "Linux") # skip Werror on Darwin for the moment
+  #     add_definitions("-Werror")
+  #   endif() 
+  # endif()
 endif()
 
 if (ENABLE_DEVELOPMENT)

@@ -243,6 +243,7 @@ struct contiguous_memory_block
     void copy_construction(const Other& other)
     {
 	using std::copy;
+	category= own;
 	// std::cout << "Copied in copy constructor.\n";	
 	alloc(other.used_memory());
 	// std::cout << "My address: " << data << ", other address: " << other.data << '\n';
