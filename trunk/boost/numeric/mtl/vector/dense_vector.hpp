@@ -50,13 +50,13 @@ class dense_vector
     public ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, Parameters::dimension::value >,
     public crtp_base_vector< dense_vector<Value, Parameters>, Value, std::size_t >
 {
-    typedef dense_vector                                                             self;
+  public:
+    typedef dense_vector<Value, Parameters>                                          self;
     typedef ::mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, 
                                                     Parameters::dimension::value >   memory_base;
     typedef crtp_base_vector< self, Value, std::size_t >                             crtp_base;
     typedef crtp_vector_assign< self, Value, std::size_t >                           assign_base;
     typedef vec_expr<dense_vector<Value, Parameters> >                               expr_base;
-  public:
     typedef Value             value_type ; 
     typedef std::size_t       size_type ;
     typedef value_type&       reference ;

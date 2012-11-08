@@ -60,8 +60,6 @@ int main(int, char**)
     A=2;
     A+= A*I;
     std::cout<< "A=\n" << A << "\n";
-
 #endif
- 
     return 0;
 }

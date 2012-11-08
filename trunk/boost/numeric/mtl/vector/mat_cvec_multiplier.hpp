@@ -64,6 +64,23 @@ struct mat_cvec_multiplier
 	A.mult(v, w, mtl::assign::minus_sum());
     }
 
+#if 1
+    /// Multiply vector \p w with the product, if possible directly within w's memory without copying
+    template <typename VectorOut>
+    void multiply_it(VectorOut& w) const
+    {
+    	vampir_trace<3068> tracer;
+    	A.mult(v, w, mtl::assign::times_sum());
+    }
+
+    /// Divide vector \p w with the product, if possible directly within w's memory without copying
+    template <typename VectorOut>
+    void divide_it(VectorOut& w) const
+    {
+    	vampir_trace<3068> tracer;
+    	A.mult(v, w, mtl::assign::divide_sum());
+    }
+#endif
     void delay_assign() const { }
 
     const Matrix&   A;

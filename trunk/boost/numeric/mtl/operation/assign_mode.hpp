@@ -14,6 +14,7 @@
 #define MTL_ASSIGN_MODE_INCLUDE
 
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { namespace assign {
 
@@ -129,6 +130,80 @@ struct minus_sum
     }
 };
 
+
+
+/// Functor for multiplying a typically scalar value with the result of a calculation (e.g. a sum)
+struct times_sum
+{
+    static const bool init_to_zero= false;
+
+    template <typename T>
+    static void init(T&) {}
+
+    // Sets x with y when empty or not initialized
+    template <typename T, typename U>
+    static void set_empty(T& x, const U& y)
+    {
+	x= T(0); 
+    }
+
+    template <typename T, typename U>
+    static void first_update(T& x, const U& y)
+    {
+	x*= y;
+    }
+
+    template <typename T, typename U>
+    static void update(T& x, const U& y)
+    {
+	x*= y;
+    }
+
+    // To be used like sfunctor
+    template <typename T, typename U>
+    static T& apply(T& x, const U& y)
+    {
+	return x*= y;
+    }
+};
+
+/// Functor for dividing a typically scalar value with the result of a calculation (e.g. a sum)
+struct divide_sum
+{
+    static const bool init_to_zero= false;
+
+    template <typename T>
+    static void init(T&) {}
+
+    // Sets x with y when empty or not initialized
+    template <typename T, typename U>
+    static void set_empty(T& x, const U& y)
+    {
+        MTL_DEBUG_THROW_IF(y == U(0), division_by_zero());
+	x= T(0); 
+    }
+
+    template <typename T, typename U>
+    static void first_update(T& x, const U& y)
+    {
+        MTL_DEBUG_THROW_IF(y == U(0), division_by_zero());
+	x/= y;
+    }
+
+    template <typename T, typename U>
+    static void update(T& x, const U& y)
+    {
+        MTL_DEBUG_THROW_IF(y == U(0), division_by_zero());
+	x/= y;
+    }
+
+    // To be used like sfunctor
+    template <typename T, typename U>
+    static T& apply(T& x, const U& y)
+    {
+	return x/= y;
+    }
+};
 
 }} // namespace mtl::assign
 
