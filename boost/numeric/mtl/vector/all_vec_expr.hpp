@@ -22,6 +22,8 @@
 #include <boost/numeric/mtl/vector/vec_vec_asgn_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_vec_plus_asgn_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_vec_minus_asgn_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_times_asgn_expr.hpp>
+#include <boost/numeric/mtl/vector/vec_vec_div_asgn_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_scal_plus_asgn_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_scal_minus_asgn_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_scal_times_asgn_expr.hpp>

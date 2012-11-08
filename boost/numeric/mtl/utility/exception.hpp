@@ -207,6 +207,13 @@ struct runtime_error : public std::runtime_error
     explicit runtime_error(const char *s= "Run-time error") : std::runtime_error(s) {}
 };
 
+struct division_by_zero : mtl::runtime_error
+{
+    /// Error can be specified more precisely in constructor if desired
+    explicit division_by_zero(const char *s= "Division by zero") : runtime_error(s) {}
+};
+
+
 /// Exception for logic errors that doesn't fit into specific categories
 struct logic_error : public std::logic_error
 {

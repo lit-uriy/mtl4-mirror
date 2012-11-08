@@ -289,6 +289,163 @@ struct crtp_minus_assign<Vector, rvec_mat_times_expr<E1, E2> >
     }
 };
 
+#if 1
+namespace detail {
+
+    template <typename Vector, typename Source, typename SCat, typename VCat>
+    struct crtp_times_assign {};
+
+    /// Assign-add vector to a vector
+    template <typename Vector, typename Source, typename Cat>
+    struct crtp_times_assign<Vector, Source, Cat, Cat>
+    {
+	typedef vec_vec_times_asgn_expr<Vector, Source> type;
+	type operator()(Vector& vector, const Source& src)
+	{
+	    return type( vector, src );
+	}
+    };
+
+    /// Increment a vector by a scalar
+    template <typename Vector, typename Source, typename VCat>
+    struct crtp_times_assign<Vector, Source, VCat, ashape::scal>
+    {
+	typedef vec_scal_times_asgn_expr<Vector, Source> type;
+	type operator()(Vector& vector, const Source& src)
+	{
+	    return type(vector, src);
+	}
+    };
+
+    template <typename Vector, typename Source>
+    struct assign_multiplyer
+    {
+	typedef const Vector& type;
+	type operator()(Vector& vector, const Source& src)
+	{
+	    src.multiply_it(vector);
+	    return vector;
+	}
+    };
+
+} // namespace detail
+
+template <typename Vector, typename Source>
+struct crtp_times_assign
+  : boost::mpl::if_
+     <boost::is_base_of<incrementer_base, Source>,
+      detail::assign_multiplyer<Vector, Source>,
+      detail::crtp_times_assign<Vector, Source, typename ashape::ashape<Vector>::type,
+			       typename ashape::ashape<Source>::type>
+     >::type
+{};
+
+/// Assign-add matrix vector product by calling mult
+/** Note that this does not work for arbitrary expressions. **/
+template <typename Vector, typename E1, typename E2>
+struct crtp_times_assign<Vector, mat_cvec_times_expr<E1, E2> >
+{
+    typedef Vector& type;
+    type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
+    {
+	mat_cvec_mult(src.first, src.second, vector, assign::times_sum(), traits::mat_cvec_flatcat<E1>());
+	return vector;
+    }
+};
+
+/// Assign-add vector matrix product by calling mult
+/** Note that this does not work for arbitrary expressions. **/
+template <typename Vector, typename E1, typename E2>
+struct crtp_times_assign<Vector, rvec_mat_times_expr<E1, E2> >
+{
+    typedef Vector& type;
+    type operator()(Vector& vector, const rvec_mat_times_expr<E1, E2>& src)
+    {
+	rvec_mat_mult(src.first, src.second, vector, assign::times_sum(), traits::mat_cvec_flatcat<E2>());
+	return vector;
+    }
+};
+
+
+namespace detail {
+
+    template <typename Vector, typename Source, typename SCat, typename VCat>
+    struct crtp_div_assign {};
+
+    /// Assign-divide vector to a vector
+    template <typename Vector, typename Source, typename Cat>
+    struct crtp_div_assign<Vector, Source, Cat, Cat>
+    {
+	typedef vec_vec_div_asgn_expr<Vector, Source> type;
+	type operator()(Vector& vector, const Source& src)
+	{
+	    return type( vector, src );
+	}
+    };
+
+    /// Divide a vector by a scalar
+    template <typename Vector, typename Source, typename VCat>
+    struct crtp_div_assign<Vector, Source, VCat, ashape::scal>
+    {
+	typedef vec_scal_div_asgn_expr<Vector, Source> type;
+	type operator()(Vector& vector, const Source& src)
+	{
+	    return type(vector, src);
+	}
+    };
+
+    template <typename Vector, typename Source>
+    struct assign_divider
+    {
+	typedef const Vector& type;
+	type operator()(Vector& vector, const Source& src)
+	{
+	    src.divide_it(vector);
+	    return vector;
+	}
+    };
+
+} // namespace detail
+
+template <typename Vector, typename Source>
+struct crtp_div_assign
+  : boost::mpl::if_
+     <boost::is_base_of<incrementer_base, Source>,
+      detail::assign_divider<Vector, Source>,
+      detail::crtp_div_assign<Vector, Source, typename ashape::ashape<Vector>::type,
+			       typename ashape::ashape<Source>::type>
+     >::type
+{};
+
+/// Assign-divide matrix vector product by calling mult
+/** Note that this does not work for arbitrary expressions. **/
+template <typename Vector, typename E1, typename E2>
+struct crtp_div_assign<Vector, mat_cvec_times_expr<E1, E2> >
+{
+    typedef Vector& type;
+    type operator()(Vector& vector, const mat_cvec_times_expr<E1, E2>& src)
+    {
+	mat_cvec_mult(src.first, src.second, vector, assign::divide_sum(), traits::mat_cvec_flatcat<E1>());
+	return vector;
+    }
+};
+
+/// Assign-divide vector matrix product by calling mult
+/** Note that this does not work for arbitrary expressions. **/
+template <typename Vector, typename E1, typename E2>
+struct crtp_div_assign<Vector, rvec_mat_times_expr<E1, E2> >
+{
+    typedef Vector& type;
+    type operator()(Vector& vector, const rvec_mat_times_expr<E1, E2>& src)
+    {
+	rvec_mat_mult(src.first, src.second, vector, assign::divide_sum(), traits::mat_cvec_flatcat<E2>());
+	return vector;
+    }
+};
+
+#endif
+
+
 
 /// Base class to provide vector assignment operators generically 
 template <typename Vector, typename ValueType, typename SizeType>
@@ -317,6 +474,24 @@ struct crtp_vector_assign
 	return crtp_minus_assign<Vector, E>()(static_cast<Vector&>(*this), e);
     }
 
+
+#if 1
+    /// Assign-times vector expression
+    template <class E>
+    typename crtp_times_assign<Vector, E>::type operator*=(const E& e)
+    {
+    	return crtp_times_assign<Vector, E>()(static_cast<Vector&>(*this), e);
+    }
+
+    /// Assign-div vector expression
+    template <class E>
+    typename crtp_div_assign<Vector, E>::type operator/=(const E& e)
+    {
+    	return crtp_div_assign<Vector, E>()(static_cast<Vector&>(*this), e);
+    }
+#endif
+
+#if 0
     /// Scale vector (in place) with scalar value 
     /** In the future, row vectors be possibly scaled by a matrix **/
     template <typename Factor>
@@ -332,7 +507,7 @@ struct crtp_vector_assign
     {
 	return vec_scal_div_asgn_expr<Vector, Factor>( static_cast<Vector&>(*this), alpha );
     }	
-
+#endif
     /// Check whether source and target have compatible resources and adapt empty target
     /** For expressions like u= v + w, u can be set to the size of v and w if still is 0. **/
     template <typename Src>
