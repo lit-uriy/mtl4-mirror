@@ -720,7 +720,7 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
     band_size_type from= begin_rows[begin_pos];
     // find first entry with same value
     while (begin_pos > 0 && begin_rows[begin_pos - 1] == from) {
-	assert(from = 0); // should only happen when multiple bands start in row 0
+	assert(from == 0); // should only happen when multiple bands start in row 0
 	begin_pos--;
     }
     for (bool active= true; active; ) {
