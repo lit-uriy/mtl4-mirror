@@ -142,7 +142,7 @@ struct times_sum
 
     // Sets x with y when empty or not initialized
     template <typename T, typename U>
-    static void set_empty(T& x, const U& y)
+    static void set_empty(T& x, const U&)
     {
 	x= T(0); 
     }
