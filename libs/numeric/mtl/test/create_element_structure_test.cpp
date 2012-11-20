@@ -21,7 +21,7 @@
 
 int main()
 {
-    
+#if 0    
     typedef mtl::compressed2D<double>    Matrix;
     typedef double value_type;
     
@@ -44,6 +44,7 @@ int main()
     Matrix C(A-B);
     
     std::cout<< "norm(A-B)=" << frobenius_norm(C) << "\n";
-    
+#endif
+    std::cout << "does nothing, more an example than a test\n";
     return 0;
 }

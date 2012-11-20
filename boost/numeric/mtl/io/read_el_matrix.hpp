@@ -30,8 +30,8 @@
 namespace mtl { namespace matrix {
 
 // Read a value from the stream. The stream is advanced.
-template <class T>
-inline T read_value(std::ifstream& stream) 
+template <class T, class StreamType>
+inline T read_value(StreamType& stream) 
 {
 	T value;
 	stream >> value;
@@ -42,8 +42,8 @@ inline T read_value(std::ifstream& stream)
 //
 // It is assumed the nodes are numbered consecutively, i.e. there are no unused
 // node numbers.
-template <typename ValueType>
-void read_el_matrix(const char* mat_file, element_structure<ValueType>& A) 
+template < typename StreamType, typename ValueType>
+void read_el_matrix(StreamType& file, element_structure<ValueType>& A) 
 {
     // Type definitions
     typedef element<ValueType>		element_type;
@@ -51,15 +51,6 @@ void read_el_matrix(const char* mat_file, element_structure<ValueType>& A)
     typedef typename element_type::index_type 	indices;
     typedef typename element_type::matrix_type 	matrix;
     vampir_trace<4036> trace;
-
-
-    std::ifstream file;
-    file.open( mat_file );
-    if( !file.is_open() ) {
-	std::cout << "The file \"" << mat_file << "\" could not be opened." <<
-	    std::endl;
-	throw "File could not be opened"; 
-    }
 
     // Read element type information.
     int nb_elements = 0;
@@ -90,7 +81,7 @@ void read_el_matrix(const char* mat_file, element_structure<ValueType>& A)
 	    read_node_line >> idx;
 	    ++read_num;
 	}
-//	read_num--;
+	read_num--;
 	mtl::vector::dense_vector<int> nodes(read_num, 0);  
 	while( !node_line.eof() ) {
 	    int idx = 0;
@@ -116,8 +107,6 @@ void read_el_matrix(const char* mat_file, element_structure<ValueType>& A)
 	}
 	++el_nbr;
     }
-
-    file.close();
 
     // Construct mapping.
     ++nb_total_vars;
@@ -153,8 +142,23 @@ void read_el_matrix(const char* mat_file, element_structure<ValueType>& A)
 }
 
 template <typename ValueType>
-inline void read_el_matrix(const std::string& mat_file, element_structure<ValueType>& A) 
+inline void read_el_matrix(std::string& mat_file, element_structure<ValueType>& A) 
 {    read_el_matrix(mat_file.c_str(), A);   }
+
+template <typename ValueType>
+void read_el_matrix(const char* mat_file, element_structure<ValueType>& A) 
+{
+    std::ifstream file;
+    file.open( mat_file );
+    if( !file.is_open() ) {
+	std::cout << "The file \"" << mat_file << "\" could not be opened." <<
+	    std::endl;
+	throw "File could not be opened"; 
+    }
+    read_el_matrix(file, A);
+
+    file.close();
+}
 
 }} // end namespace mtl::matrix
 

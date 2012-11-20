@@ -29,8 +29,8 @@ int main(int, char** argv)
     typedef mtl::compressed2D<value_type>     sparse_type;
        
     std::string program_dir= mtl::io::directory_name(argv[0]),
-//  	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
- 		matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/obstacle_small.mtx");
+  	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
+// 		matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/obstacle_small.mtx");
 // 	        matrix_file= mtl::io::join(program_dir, "../../../../../branches/data/matrix_market/obstacle_q1q1_e64/obstacle_q1q1_e64_r00800.mtx");
 
     
