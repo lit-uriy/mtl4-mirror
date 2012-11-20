@@ -228,18 +228,18 @@ public:
     /// An iterator to the element past the last element.
     element_iterator element_end() const { return m_elements + this->get_total_elements();   }
 
-#if 0
+#if 1
     /// Writes the elements to the specified file.  TODO at the moment very slow
     void write_to_file(const std::string& filename) 
     {
-	using namespace print;
+	//using namespace print;
 
 	std::ofstream file(filename.c_str());
 
 	// Write header information.
 	file << get_total_elements() << "\n";
 	file << this->get_total_vars() << "\n";
-	print_type<value_type>::print(file);
+	//print_type<value_type>::print(file);
 
 	// Write element matrices.
 	for(element_iterator it = element_begin(); it != element_end(); ++it) {
@@ -252,9 +252,11 @@ public:
 	    // Write values.
 	    for(int r = 0; r < it->nb_vars(); ++r) {
 		for(int c = 0; c < it->nb_vars()-1; ++c) {
-		    print_value<value_type>::print(file, it->get_values()(r,c));
+		    //print_value<value_type>::print(file, it->get_values()(r,c));
+		    file << it->get_values()(r,c); file << " ";
 		}
-		print_value<value_type>::print(file, it->get_values()(r,it->nb_vars()-1));
+		//print_value<value_type>::print(file, it->get_values()(r,it->nb_vars()-1));
+		file << it->get_values()(r,it->nb_vars()-1);
 		file << "\n";
 	    }
 	    file << "\n";
