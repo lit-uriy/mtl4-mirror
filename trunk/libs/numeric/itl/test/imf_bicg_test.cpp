@@ -40,10 +40,12 @@ void setup(ElementStructure& A, int lofi)
     mtl::dense_vector<value_type>              x(size, 1), b(size), ident(size); 
      iota(ident);
 
+     std::cout<< "read ok, start with precond\n";
     boost::timer factorization;
     itl::pc::imf_preconditioner<value_type> precond(A, lofi);
     double ftime= factorization.elapsed();
-
+    std::cout<< "imf ready\n";
+    
 //     for (int i= 0; i < size; i++)
 //       x[i]= std::numeric_limits<value_type>::quiet_NaN();
 
@@ -76,6 +78,7 @@ void setup(ElementStructure& A, int lofi)
 	mtl::io::tout<< "E=\n"<<E <<"\n";
 #endif
 
+	std::cout<< "start solver\n";
     itl::cyclic_iteration<value_type>          iter(b, size, 1.e-8, 0.0, 5);
     x= 0;
     boost::timer solver;
@@ -90,13 +93,14 @@ int main(int, char** argv)
     typedef mtl::compressed2D<value_type>     sparse_type;
        
     std::string program_dir= mtl::io::directory_name(argv[0]),
-  	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
+  	        //matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
+  	        matrix_file= mtl::io::join(program_dir, "../../../../../data/sysMat_elem.mtx");
 // 		matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/obstacle_small.mtx");
 // 	        matrix_file= mtl::io::join(program_dir, "../../../../../data/matrix_market/obstacle_q1q1_e64/obstacle_q1q1_e64_r00800.mtx");
 
     mtl::matrix::element_structure<value_type> A;
     read_el_matrix(matrix_file, A);
 	
-    setup(A, 3);
+    setup(A, 5);
     return 0;
 }

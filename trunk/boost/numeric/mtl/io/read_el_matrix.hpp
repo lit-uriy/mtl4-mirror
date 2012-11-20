@@ -90,7 +90,7 @@ void read_el_matrix(const char* mat_file, element_structure<ValueType>& A)
 	    read_node_line >> idx;
 	    ++read_num;
 	}
-	read_num--;
+//	read_num--;
 	mtl::vector::dense_vector<int> nodes(read_num, 0);  
 	while( !node_line.eof() ) {
 	    int idx = 0;
@@ -111,6 +111,9 @@ void read_el_matrix(const char* mat_file, element_structure<ValueType>& A)
 	file.ignore(500,'\n');
 	element_type elem(el_nbr, index, vals);
 	elements[el_nbr] = elem;
+	if(el_nbr == 0){
+	  std::cout<< "elem=" << elem << "\n";
+	}
 	++el_nbr;
     }
 
