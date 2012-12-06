@@ -316,13 +316,20 @@ struct contiguous_memory_block
 	copy_construction(other);
     }
 
-
+#ifdef MTL_MEMORY_BLOCK_MOVE_EMULATION
     // Operator takes parameter by value and consumes it
     self& operator=(self other)
     {
 	move_assignment(other);
 	return *this;
     }
+#else
+    self& operator=(self other)
+    {
+	copy_assignment(other);
+	return *this;
+    }
+#endif
 
     // Same behavior as consuming assignment, to be used by derived classes
 protected:

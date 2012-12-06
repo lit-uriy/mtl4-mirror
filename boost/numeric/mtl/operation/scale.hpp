@@ -63,6 +63,8 @@ namespace mtl {
 	    {
 		return v1 * v2;
 	    }
+
+	    Value1 value() const { return v1; }
 	private:
 	    Value1 v1; 
 	};

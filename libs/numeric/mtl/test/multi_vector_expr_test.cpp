@@ -23,13 +23,25 @@ void test(const char* name)
     cout << "Testing multi_vector with " << name << endl;
     mtl::multi_vector<Vector> A(4, 6), B(4, 6);
     A= 3.0;
+    cout << "A is\n" << B << endl;
 
     B= A;
     cout << "B= A yields\n" << B << endl;
+    cout << "A is\n" << B << endl;
 
     B= A + A;
     cout << "A + A is\n" << B << endl;
     MTL_THROW_IF(B[1][1] != 6.0, mtl::runtime_error("Wrong value on diagonal\n"));
+    MTL_THROW_IF(B[1][0] != 0.0, mtl::runtime_error("Wrong value off diagonal\n"));
+
+    B= 2 * A;
+    cout << "2 * A is\n" << B << endl;
+    MTL_THROW_IF(B[1][1] != 6.0, mtl::runtime_error("Wrong value on diagonal\n"));
+    MTL_THROW_IF(B[1][0] != 0.0, mtl::runtime_error("Wrong value off diagonal\n"));
+
+    B= 2 * A + A;
+    cout << "2 * A is\n" << B << endl;
+    MTL_THROW_IF(B[1][1] != 9.0, mtl::runtime_error("Wrong value on diagonal\n"));
     MTL_THROW_IF(B[1][0] != 0.0, mtl::runtime_error("Wrong value off diagonal\n"));
 
     B= 2.0 * A + 3 * A;
