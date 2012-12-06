@@ -15,9 +15,11 @@
 
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/numeric/mtl/utility/is_composable_vector.hpp>
 
 namespace mtl { namespace traits {
 
+/// Type trait whether an expression can be evaluated by multiple vector operations
 template <typename T>
 struct is_multi_vector_expr
   : boost::mpl::false_
@@ -57,6 +59,51 @@ template <typename Value1, typename Matrix>
 struct is_multi_vector_expr< mtl::matrix::rscaled_view<Value1, Matrix> > 
   : is_multi_vector_expr<Matrix>
 {};
+
+// ----------------------------------------------------
+
+
+/// Type trait whether an expression can be evaluated by a single vector operation
+template <typename T>
+struct is_fast_multi_vector_expr
+  : boost::mpl::false_
+{};
+
+template <typename Vector>
+struct is_fast_multi_vector_expr< mtl::matrix::multi_vector<Vector> >
+  : is_composable_vector<Vector>
+{};
+
+// template <typename E1, typename E2>
+// struct is_fast_multi_vector_expr< mtl::matrix::mat_mat_asgn_expr<E1, E2> > 
+//     : boost::mpl::bool_< is_fast_multi_vector_expr<E1>::value && is_fast_multi_vector_expr<E2>::value >
+// {};
+
+template <typename E1, typename E2>
+struct is_fast_multi_vector_expr< mtl::matrix::mv_mv_plus_expr<E1, E2> > 
+  : boost::mpl::bool_< is_fast_multi_vector_expr<E1>::value && is_fast_multi_vector_expr<E2>::value >
+{};
+
+template <typename E1, typename E2>
+struct is_fast_multi_vector_expr< mtl::matrix::mat_mat_minus_expr<E1, E2> > 
+    : boost::mpl::bool_< is_fast_multi_vector_expr<E1>::value && is_fast_multi_vector_expr<E2>::value >
+{};
+
+// template <typename E1, typename E2>
+// struct is_fast_multi_vector_expr< mtl::matrix::mat_mat_ele_times_expr<E1, E2> > 
+//     : boost::mpl::bool_< is_fast_multi_vector_expr<E1>::value && is_fast_multi_vector_expr<E2>::value >
+// {};
+
+template <typename Value1, typename Matrix>
+struct is_fast_multi_vector_expr< mtl::matrix::scaled_view<Value1, Matrix> > 
+  : is_fast_multi_vector_expr<Matrix>
+{};
+
+template <typename Value1, typename Matrix>
+struct is_fast_multi_vector_expr< mtl::matrix::rscaled_view<Value1, Matrix> > 
+  : is_fast_multi_vector_expr<Matrix>
+{};
+
 
 
 }} // namespace mtl::traits

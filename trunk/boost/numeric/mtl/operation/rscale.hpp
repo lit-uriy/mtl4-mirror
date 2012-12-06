@@ -42,6 +42,8 @@ namespace mtl { namespace tfunctor {
 	{
 	    return v1 * v2;
 	}
+
+	Value2 value() const { return v2; }
     private:
 	Value2 v2; 
     };

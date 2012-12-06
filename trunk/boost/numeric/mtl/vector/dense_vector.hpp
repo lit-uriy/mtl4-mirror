@@ -240,6 +240,7 @@ size(const dense_vector<Value, Parameters>& v)
 { return v.used_memory() ; }
 
 
+
 // ================
 // Free functions
 // ================

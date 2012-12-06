@@ -24,7 +24,7 @@ struct is_composable_vector
 {};
 
 template <typename Value, typename Parameters>
-struct is_composable_vector<Value, Parameters>
+struct is_composable_vector< mtl::vector::dense_vector<Value, Parameters> >
   : boost::mpl::true_
 {};
 
