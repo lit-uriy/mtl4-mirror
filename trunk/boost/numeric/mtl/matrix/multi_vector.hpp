@@ -95,6 +95,7 @@ class multi_vector
     multi_vector(const Vector& v, size_type num_cols)
       : super(non_fixed::dimensions(size(v), num_cols)), data(num_cols)
     {
+	using mtl::vector::num_rows;
 	setup_data(num_rows(v), num_cols, mtl::traits::is_composable_vector<Vector>());
 	for (size_type i= 0; i < num_cols; ++i)
 	    data[i]= v;
@@ -140,7 +141,7 @@ class multi_vector
     /** Explicitly needed now. **/
     self& operator=(const self& src)
     {
-	checked_change_dim(src.num_rows(), src.num_cols());
+	assign_base::checked_change_dim(src.num_rows(), src.num_cols());
 	self_assignment(src, mtl::traits::is_composable_vector<Vector>());
 	return *this;
     }
