@@ -572,18 +572,55 @@ must generate the makefiles  first.
 -# You need a C++ compiler, e.g. g++. On most Linux distributions, this is installed 
    by default. If not you can install it easily with a package manager.
    
-\section cmake_run Running CMake
+\section test_running Running the Tests
 
-Now you must go to the directory of MTL4 and write on the terminal:\n\n
+There is a slight difference for MTL4 sources that are checked out with subversion and
+those that are downloaded as package or archive.
+
+\subsection test_running_svn Testing with Sources via subversion
+
+Go to the directory of MTL4 and write on the terminal:\n\n
 <tt>cmake .</tt> \n\n
-to create all automatic files to compile the examples of
+to create all automatic files to compile the tests and examples of
 MTL4.
 
-\section cmake_test Building tests and examples
+After that, you can go to the directory "libs/numeric/mtl/tests"
+or "libs/numeric/mtl/examples",
+to write "make" and all tests/examples will be compiled.
+Alternatively you can run "make" in MTL4's root directory to build
+all tests and examples.
 
-After that, you can go to the directory "libs/numeric/mtl/examples",
-to write "make" and all examples will be compiled.
+Lastly, run "ctest ." in the root or test directory to see if all
+tests compute the expected results. (Running ctest on the examples works
+fine; however, it has no effect since they do not check whether they yield the expected result.)
 
+\subsection test_running_download Testing with downloaded Sources
+
+We provide a CMake module named "MTLConfig.cmake" which resides in directory <prefix>/usr/share/mtl.
+You can add this directory to your module path, e.g.:\n\n
+<tt>setenv CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}:/usr/share/mtl</tt> \n\n
+Alternatively you can define the environment variable "MTL_DIR", e.g.:\n\n
+<tt>setenv MTL_DIR /usr/share/mtl</tt> \n\n
+
+Then go to the directory <prefix>/usr/share/mtl/test and run\n\n
+<tt>cmake .</tt> \n\n
+If cmake fails to find all necessary libraries calln\n
+<tt>ccmake .</tt> \n\n
+or an according graphical tool and set the missing variables.
+
+You can also add external software packages like BLAS or UMFPACK if you like to test the respective interfaces.
+
+To build and run the tests go to directory <prefix>/usr/share/mtl/test and type\n\n
+<tt>make\n
+ctest .</tt> \n\n
+You will see how many tests do not compile (test not run) or did not deliver the expected result (test failed).
+
+In the same manner, one can check whether the examples compile and run by performing "make" and "ctest" in
+directory <prefix>/usr/share/mtl/example.
+Opposed to the tests, the examples do not check for expected outcome because they are intended for concise
+illustration.
+Including them in the standard test procedure ensures that all examples from the tutorial always compile and run
+while the library evolves.
 
 
 
