@@ -1,5 +1,5 @@
-find_file(MP_REAL_H "arprec/mp_real.h" DOC "The arprec header mp_real.h")
-find_library(ARPREC_LIBRARY arprec DOC "the arprec library arprec")
+find_file(MP_REAL_H "arprec/mp_real.h" PATHS $ENV{ARPREC_HEADER_HINT} DOC "The arprec header mp_real.h; you can provide the path of it in the environment variable ARPREC_HEADER_HINT.")
+find_library(ARPREC_LIBRARY arprec PATHS $ENV{ARPREC_LIBRARY_HINT} DOC "the arprec library arprec; you can provide the path of it in the environment variable ARPREC_LIBRARY_HINT.")
 set(HAVE_ARPREC false)
 if(MP_REAL_H AND ARPREC_LIBRARY)
 	get_filename_component(ARPREC_INCLUDE_DIRS ${MP_REAL_H} PATH)
