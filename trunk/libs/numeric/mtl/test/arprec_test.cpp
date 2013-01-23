@@ -21,6 +21,10 @@ int main(int , char**)
 
     mp::mp_init(40); 
 
+    // mp_complex z= 0, z2= 3, z3;
+    // z3= z * z2;
+    // std::cout << "0 * 3 as complex is " << z3.real << "\n";
+
     mp_real s0 = 1.0;
     mp_real s1 = 1-s0;
     mtl::dense_vector<mp_real> v0(2,2.0);
