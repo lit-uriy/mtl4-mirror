@@ -2154,6 +2154,8 @@ It is intended for sparse matrices but also works on dense ones.
 
 \section Eigenvalues
 
+\subsection eigenvalue_symm Symmetric Real Matrices
+
 For the calculation of eigenvalues, we provide the following functions in MTL4. The default usage is:
 \code
   eig= eigenvalue_symmetric(A);
@@ -2178,7 +2180,19 @@ At the moment, our functions to calculate the eigenvalues ​​only work on den
 the matrix in Hessenberg form for the QR-Algorithm, and this is stored as a dense matrix.
 
 For example:
+\include eigenvalue_symmetric_example.cpp
+
+
+
+\subsection eigenvalue_nonsymm Non-symmetric Real Matrices
+
 \include eigenvalue_example.cpp
+
+It is based on the QR-Given's rotation.
+The latter can also be used stand-alone:
+\include qr_givens_example.cpp
+
+
 
 \section Singular Value Decomposition
 

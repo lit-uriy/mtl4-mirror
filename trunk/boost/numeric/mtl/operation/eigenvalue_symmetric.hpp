@@ -12,8 +12,8 @@
 
 // With contributions from Cornelius Steinhardt
 
-#ifndef MTL_MATRIX_EIGENVALUE_INCLUDE
-#define MTL_MATRIX_EIGENVALUE_INCLUDE
+#ifndef MTL_MATRIX_EIGENVALUE_SYMMETRIC_INCLUDE
+#define MTL_MATRIX_EIGENVALUE_SYMMETRIC_INCLUDE
 
 #include <cmath>
 #include <boost/utility.hpp>
@@ -173,5 +173,5 @@ inline eigenvalue_symmetric(const Matrix& A)
 }} // namespace mtl::matrix
 
 
-#endif // MTL_MATRIX_EIGENVALUE_INCLUDE
+#endif // MTL_MATRIX_EIGENVALUE_SYMMETRIC_INCLUDE
 
