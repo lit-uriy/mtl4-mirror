@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
-#include <boost/numeric/mtl/linear_algebra/identity.hpp>
+#include <boost/numeric/linear_algebra/identity.hpp>
 
 
 namespace mtl { namespace matrix {
