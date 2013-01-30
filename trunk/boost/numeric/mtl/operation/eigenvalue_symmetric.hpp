@@ -72,7 +72,7 @@ inline qr_sym_imp(const Matrix& A)
 	h10= H[N-1][N-2];
 	h11= H[N-1][N-1];
 
-	//reduction, residum and watch for breakdown
+	//reduction, residuum and watch for breakdown
 	if(abs(h10) < tol * abs(h11 + h00)) 
 	    N--;	
 	if (N < 2) 
