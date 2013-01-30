@@ -24,7 +24,7 @@
 #include <boost/numeric/mtl/operation/cuppen.hpp>
 #include <boost/numeric/mtl/operation/diagonal.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
-#include <boost/numeric/mtl/operation/eigenvalue.hpp>
+#include <boost/numeric/mtl/operation/eigenvalue_symmetric.hpp>
 #include <boost/numeric/mtl/operation/entry1D.hpp>
 #include <boost/numeric/mtl/operation/entry_similar.hpp>
 #include <boost/numeric/mtl/operation/evaluate_lazy.hpp>

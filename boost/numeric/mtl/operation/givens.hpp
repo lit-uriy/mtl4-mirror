@@ -26,6 +26,9 @@
 namespace mtl { namespace matrix {
 
 /// Given's transformator
+/** Requires Hessenberg form, i.e. for transformations near the diagonal.
+    For general form use qr_givens.
+    \sa qr_givens. **/
 template <typename Matrix>
 class givens
 {
