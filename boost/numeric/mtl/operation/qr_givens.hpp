@@ -16,6 +16,8 @@
 #define MTL_MATRIX_QR_GIVENS_INCLUDE
 
 #include <cmath>
+#include <utility>
+
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
@@ -31,7 +33,7 @@ namespace mtl { namespace matrix {
  * \sa givens
  */    
 template <typename Matrix>
-class qr_givens {
+class qr_givens_solver {
     
     typedef typename Collection<Matrix>::value_type value_type;
     typedef typename Collection<Matrix>::size_type size_type;
@@ -43,7 +45,7 @@ public:
      *  
      */
     
-    qr_givens(Matrix& IN) : R(IN), G(2,2), Q(num_cols(IN), num_rows(IN)) {
+    qr_givens_solver(const Matrix& IN) : R(IN), G(2,2), Q(num_cols(IN), num_rows(IN)) {
 	value_type one = math::one(c);
 	Q = one;
 	eps = 1.0e-8;
@@ -108,8 +110,8 @@ public:
         
   private:
     
-    Matrix Q, R, G;
-    value_type c,s, eps;
+    Matrix     R, G, Q;
+    value_type c, s, eps;
     
     template <typename T>
     inline T square(T x) const { return x * x; }
@@ -141,6 +143,16 @@ public:
     }
     
 };
+
+/// QR-Factorization of matrix A(m x n) based on Givens' rotation
+template <typename Matrix>
+std::pair<Matrix, Matrix>
+inline qr_givens(const Matrix& A)
+{
+    qr_givens_solver<Matrix> solver(A);
+    solver.calc();
+    return make_pair(solver.getQ(), solver.getR());
+}
 
 }} // namespace mtl::matrix
 

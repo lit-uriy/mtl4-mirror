@@ -205,7 +205,7 @@ private:
 	
 	Matrix RIter(R[r][r]*R[r][r] - s*R[r][r] + t*I[r][r]);
 	
-	qr_givens<Matrix> QR(RIter);
+	qr_givens_solver<Matrix> QR(RIter);
 	QR.setTolerance(eps);
 	QR.calc();
 	
@@ -225,7 +225,7 @@ private:
 	}
 	Matrix RIter(R[r][r] - sh*I[r][r]);		//Shift wird abgezogen
 	
-	qr_givens<Matrix> QR(RIter);		//QR-Zerlegung
+	qr_givens_solver<Matrix> QR(RIter);		//QR-Zerlegung
 	QR.setTolerance(eps);
 	QR.calc();
 	

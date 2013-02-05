@@ -1,3 +1,17 @@
+// Software License for MTL
+// 
+// Copyright (c) 2007 The Trustees of Indiana University.
+//               2008 Dresden University of Technology and the Trustees of Indiana University.
+//               2010 SimuNova UG (haftungsbeschränkt), www.simunova.com.
+// All rights reserved.
+// Authors: Peter Gottschling and Andrew Lumsdaine
+// 
+// This file is part of the Matrix Template Library
+// 
+// See also license.mtl.txt in the distribution.
+//
+// Written by Marc Hartung
+
 #include <boost/numeric/mtl/mtl.hpp>
 #include <cmath>
 
@@ -7,7 +21,7 @@ int main() {
     
     int ev_count = 0;
     
-    // Besitzt die Eigenwerte {10, 20, 30, ..., 100}
+    // The eigenvalues are {10, 20, 30, ..., 100}
     
     A = 54.172, -14.5819, -7.74761, -7.95597, 1.60174, -17.9864, 3.27844, 11.7596, -1.28794, 1.87001, 
 	-11.6764, 53.1245, -4.85491, 4.32814, -4.33267, 1.43186, 28.9238, 6.22295, -10.7843, 3.84623, 
@@ -32,7 +46,6 @@ int main() {
     }
     
     MTL_THROW_IF(ev_count != 10, mtl::runtime_error("Should be 10 eigenvalues."));
-    
-    
+        
     return 0;
 }

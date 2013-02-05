@@ -49,5 +49,8 @@ int main() {
     cout << "M4(with defaults): " 
 	 << E4.get_eigenvalues() << "\n";    
     
+    // Creating the solver implicitly
+    cout << "M4(with defaults): " << eigenvalues(M4) << "\n";
+
     return 0;
 }
