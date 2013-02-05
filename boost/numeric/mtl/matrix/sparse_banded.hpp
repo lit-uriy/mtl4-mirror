@@ -27,6 +27,7 @@
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
 
@@ -65,7 +66,7 @@ class sparse_banded
 
     ~sparse_banded() { delete[] data; }
     void check() const { MTL_DEBUG_THROW_IF(inserting, access_during_insertion()); }
-    void check(size_type r, size_type c) const
+    void check(size_type MTL_DEBUG_ARG(r), size_type MTL_DEBUG_ARG(c)) const
     {
 	check();
 	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() 
