@@ -35,7 +35,7 @@ inline void add_imag(complex<long double>& v, double inc) { v+= complex<double>(
 
 #ifdef MTL_HAS_UMFPACK
 template <typename Matrix>
-void test(const Matrix&, const char* name)
+int test(const Matrix&, const char* name)
 {
     using mtl::Collection;
     
@@ -110,6 +110,7 @@ void test(const Matrix&, const char* name)
     for (int i= 0; i < 5; i++) 
 	if (std::abs(x[i] - value_type(i+1)) > 0.01)
 	    throw "Wrong result after update!";
+    return status;
 }
 #endif
 
