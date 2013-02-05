@@ -6,12 +6,12 @@
 using namespace mtl;
     
 template <typename Matrix>
-void f(Matrix& m)
+void f(Matrix& A)
 {
     using traits::range_generator; using traits::range::min;
 
     // Set values in diagonal
-    m= 7.0;
+    A= 7.0;
     
     // Choose between row and column traversal
     typedef typename min<range_generator<tag::row, Matrix>, range_generator<tag::col, Matrix> >::type range_type;
@@ -23,12 +23,12 @@ void f(Matrix& m)
     typedef typename traits::range_generator<tag::nz, c_type>::type ic_type;
 
     // Define the property maps
-    typename traits::row<Matrix>::type                              row(m); 
-    typename traits::col<Matrix>::type                              col(m);
-    typename traits::const_value<Matrix>::type                      value(m); 
+    typename traits::row<Matrix>::type                              row(A); 
+    typename traits::col<Matrix>::type                              col(A);
+    typename traits::const_value<Matrix>::type                      value(A); 
 
     // Now iterate over the matrix    
-    for (c_type cursor(my_range.begin(m)), cend(my_range.end(m)); cursor != cend; ++cursor)
+    for (c_type cursor(my_range.begin(A)), cend(my_range.end(A)); cursor != cend; ++cursor)
        for (ic_type icursor(begin<tag::nz>(cursor)), icend(end<tag::nz>(cursor)); icursor != icend; ++icursor)
 	   std::cout << "matrix[" << row(*icursor) << ", " << col(*icursor) << "] = " << value(*icursor) << '\n';    
 }
