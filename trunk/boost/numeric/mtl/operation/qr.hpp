@@ -33,8 +33,8 @@
 namespace mtl { namespace matrix {
 
 
-// QR-Factorization of matrix A(m x n)
-// Return pair R upper triangel matrix and Q= orthogonal matrix. R and Q are always dense2D
+/// QR-Factorization of matrix A(m x n)
+/** Return pair R upper triangel matrix and Q= orthogonal matrix. R and Q are always dense2D **/
 template <typename Matrix, typename MatrixQ, typename MatrixR>
 void qr(const Matrix& A, MatrixQ& Q, MatrixR& R)
 {
@@ -65,6 +65,7 @@ void qr(const Matrix& A, MatrixQ& Q, MatrixR& R)
     } //end for
 }
 
+/// QR-Factorization of matrix A(m x n)
 template <typename Matrix>
 std::pair<mtl::matrix::dense2D<typename Collection<Matrix>::value_type, matrix::parameters<> >,
  	  mtl::matrix::dense2D<typename Collection<Matrix>::value_type, matrix::parameters<> > > 

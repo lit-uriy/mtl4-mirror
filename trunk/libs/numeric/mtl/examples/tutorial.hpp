@@ -2182,17 +2182,24 @@ the matrix in Hessenberg form for the QR-Algorithm, and this is stored as a dens
 For example:
 \include eigenvalue_symmetric_example.cpp
 
-
-
 \subsection eigenvalue_nonsymm Non-symmetric Real Matrices
 
+Likewise, the eigenvalues of non-symmetric matrices can be computed with the matrix::eigenvalue_solver:
+
 \include eigenvalue_example.cpp
+
+The algorithm uses single shifts when the matrix is symmetric where possible;
+whenever the intermediate matrix requires, the algorithm switches to double shifts and
+back when possible.
+Disclaimer: if eigenvalues are too close, the algorithm might fail (not converge).
 
 It is based on the QR-Given's rotation.
 The latter can also be used stand-alone:
 \include qr_givens_example.cpp
 
-
+Whereas matrix::qr_algo bases on Householder transformation and is more appropriate for 
+more less dense matrices,
+matrix::qr_givens is more suitable for triangular matrices.
 
 \section Singular Value Decomposition
 
