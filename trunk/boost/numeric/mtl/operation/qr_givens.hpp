@@ -151,7 +151,7 @@ inline qr_givens(const Matrix& A)
 {
     qr_givens_solver<Matrix> solver(A);
     solver.calc();
-    return make_pair(solver.getQ(), solver.getR());
+    return std::make_pair(solver.getQ(), solver.getR());
 }
 
 }} // namespace mtl::matrix
