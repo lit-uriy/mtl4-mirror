@@ -69,7 +69,7 @@ int main( void )
 
     // mtl::gen_dmat_dmat_mult_ft<Matrix,Matrix,Matrix>()(m1,m2,m3);
 
-    // m3= m1 * m2; // meta-program kommt nicht mit non_scal 
+    // m3= m1 * m2; // meta-program kommt nicht mit non_scal klar
 
     //mtl::gen_dmat_dmat_mult_ft<Matrix,Matrix,Matrix,mtl::assign::plus_sum>()(m1,m2,m3);
 
