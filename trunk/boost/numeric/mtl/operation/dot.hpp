@@ -102,13 +102,13 @@ namespace mtl {
 
 
 		    vampir_trace<2003> tracer;
-		    MTL_THROW_IF(size(v1) != size(v2), incompatible_size());
+		    MTL_THROW_IF(mtl::size(v1) != mtl::size(v2), incompatible_size());
 		    typedef typename detail::dot_result<Vector1, Vector2>::type  value_type;
 		    		    
 #                 ifdef MTL_WITH_OPENMP 
 		    value_type dummy, z= math::zero(dummy), result= z;
 		    typedef typename mtl::traits::omp_size_type<typename Collection<Vector1>::size_type>::type size_type;
-		    size_type  i_max= size(v1), i_block= Unroll * (i_max / Unroll);
+		    size_type  i_max= mtl::size(v1), i_block= Unroll * (i_max / Unroll);
 
 
                     #pragma omp parallel
@@ -133,7 +133,7 @@ namespace mtl {
 
 		    value_type dummy, z= math::zero(dummy), tmp00= z, tmp01= z, tmp02= z, tmp03= z, tmp04= z,
 			       tmp05= z, tmp06= z, tmp07= z;
-		    size_type  i_max= size(v1), i_block= Unroll * (i_max / Unroll);
+		    size_type  i_max= mtl::size(v1), i_block= Unroll * (i_max / Unroll);
 		    
 		    for (size_type i= 0; i < i_block; i+= Unroll)
 			dot_aux<1, Unroll>::apply(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, v1, v2, i, conj_opt);
@@ -157,7 +157,7 @@ namespace mtl {
 	    typedef typename detail::dot_result<Vector1, Vector2>::type  value_type;
 
 	    value_type dummy, s= math::zero(dummy);
-	    for (size_type i= 0, i_max= size(v1); i < i_max; ++i)
+	    for (size_type i= 0, i_max= mtl::size(v1); i < i_max; ++i)
 		s+= conj_opt(v1[i]) * v2[i];
 	    return s;
 	}
