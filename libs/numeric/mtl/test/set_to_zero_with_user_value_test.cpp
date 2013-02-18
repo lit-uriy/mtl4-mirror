@@ -9,19 +9,19 @@ struct MyContainer
 };
 
 template < class T >
-MyContainer<T> operator * ( MyContainer<T> const& a, MyContainer<T> const& b )
+MyContainer<T> operator * ( MyContainer<T> const& a, MyContainer<T> const& )
 {
     return MyContainer<T>(a.dim_);
 };
 
 template < class T >
-MyContainer<T>& operator += ( MyContainer<T>& a, MyContainer<T> const& b )
+MyContainer<T>& operator += ( MyContainer<T>& a, MyContainer<T> const&)
 {
     return a;
 };
 
 template < class T >
-void set_to_zero( MyContainer<T>& cont ) {
+void set_to_zero( MyContainer<T>&) {
     // ... //
 }
 
