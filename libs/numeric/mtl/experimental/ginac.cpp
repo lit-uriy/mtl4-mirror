@@ -25,18 +25,27 @@ void swap_column(Matrix& A, int c1, int c2)
     A[iall][c2]= tmp;
 }
 
+template <typename Matrix, typename Sub>
+void substitute(Matrix& A, Sub sub)
+{
+    for (int i= 0; i < 4; i++)
+	for (int j= 0; j < 5; j++)
+	    A[i][j]= A[i][j].subs(sub);
+}
+
+
 //libs:-lcln -lginac
 // g++ ginac.cpp -lcln -lginac  -o ginac -I$MTL
 int main(int argc, char* argv[])
 {
-    dense2D< ex > A(4, 4);
+    dense2D< ex > A(4, 5);
 
     symbol r("r"), s("s");
 
-    A= 1, 0, 2, -3,
-	-2, 1, 0, 2,
-	-1, 2*r, 6, -5,
-	1, 1, 6, r;
+    A= 1, 0, 2, -3, 2,
+	-2, 1, 0, 2, -1,
+	-1, 2*r, 6, -5, 4,
+	1, 1, 6, r, s;
 
     std::cout << "A:\n" << A;
 
@@ -48,6 +57,10 @@ int main(int argc, char* argv[])
 
     swap_column(A, 1, 2);
     std::cout << "A:\n" << A;
+
+    substitute(A, lst(r == 2, s == 6));
+    std::cout << "A:\n" << A;
+
 
 #if 0
 
