@@ -215,6 +215,12 @@ struct ashape_aux<matrix::element_structure<Value> >
    typedef mat<typename ashape<Value>::type> type;
 };
 
+template <typename Value, typename Parameters>
+struct ashape_aux<mtl::matrix::ell_matrix<Value, Parameters> >
+{
+   typedef mat<typename ashape<Value>::type> type;
+};
+
  
 template <typename Vector>
 struct ashape_aux<matrix::multi_vector_range<Vector> >

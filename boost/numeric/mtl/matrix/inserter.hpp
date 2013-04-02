@@ -73,6 +73,17 @@ struct inserter<sparse_banded<Value, Parameters>, Updater>
     explicit inserter(matrix_type& matrix, size_type slot_size= 1) : base(matrix, slot_size) {}
 };
 
+template <typename Value, typename Parameters, typename Updater>
+struct inserter<ell_matrix<Value, Parameters>, Updater>
+  : ell_matrix_inserter<Value, Parameters, Updater>
+{
+    typedef ell_matrix<Value, Parameters>                    matrix_type;
+    typedef typename matrix_type::size_type                    size_type;
+    typedef ell_matrix_inserter<Value, Parameters, Updater > base;
+
+    explicit inserter(matrix_type& matrix, size_type slot_size = 5) : base(matrix, slot_size) {}
+};
+
 
 }} // namespace mtl::matrix
 

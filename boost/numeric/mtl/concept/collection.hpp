@@ -423,6 +423,19 @@ namespace mtl {
 #endif
 
 #ifdef __GXX_CONCEPTS__
+#else
+    template <typename Value, typename Parameters>
+    struct Collection<matrix::ell_matrix<Value, Parameters> >
+    {
+	typedef Value            	       value_type;
+	typedef Value            	       const_reference;
+	typedef typename Parameters::size_type size_type;
+    };
+
+#endif
+
+
+#ifdef __GXX_CONCEPTS__
     template <typename Scaling, typename Coll>
     concept_map Collection<matrix::scaled_view<Scaling, Coll> >
     {

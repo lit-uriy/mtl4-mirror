@@ -96,6 +96,9 @@ namespace mtl {
 	template <typename T, typename Parameters> class sparse_banded;
 	template <typename T, typename Parameters, typename Updater> struct sparse_banded_inserter;
 
+	template <typename Value, typename Parameters> class ell_matrix;
+	template <typename Value, typename Parameters, typename Updater> struct ell_matrix_inserter;
+
 	template <typename Matrix, typename Updater> struct inserter;
 	template <typename BaseInserter> class shifted_inserter;	
 

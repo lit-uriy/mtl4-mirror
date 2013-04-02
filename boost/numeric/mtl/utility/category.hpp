@@ -117,6 +117,12 @@ struct category<mtl::matrix::element_structure<Value> >
     typedef tag::element_structure type;
 };
 
+template <typename Value, typename Parameters>
+struct category<mtl::matrix::ell_matrix<Value, Parameters> >
+{
+    typedef tag::ell_matrix type;
+};
+
 template <typename T, typename Parameters>
 struct category< mtl::vector::dense_vector<T, Parameters> > 
 {
