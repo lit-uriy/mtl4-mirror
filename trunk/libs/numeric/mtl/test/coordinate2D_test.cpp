@@ -10,7 +10,7 @@
 // 
 // See also license.mtl.txt in the distribution.
  
-#define MTL_VERBOSE_TEST
+// #define MTL_VERBOSE_TEST
 
 #include <iostream>
 #include <boost/tuple/tuple.hpp>

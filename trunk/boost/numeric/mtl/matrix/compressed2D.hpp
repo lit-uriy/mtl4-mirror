@@ -626,6 +626,19 @@ struct compressed2D_inserter
 	size_type  row;
     };
 
+  protected:
+    void finish()
+    {
+	// std::cout << "~compressed2D_inserter: " << matrix.my_nnz << " entries in matrix already (reserved for " <<  elements.size() 
+	// 	  << ") and " << spare.size() << " entries in map.\n";
+	vampir_trace<3051> tracer;
+	if (num_rows(matrix) > 0 && num_cols(matrix) > 0) {
+	    final_place();
+	    insert_spare();
+	}
+	matrix.inserting = false;
+    }
+
   public:
     /// Construction with matrix reference and optional slot size, see \ref matrix_insertion
     explicit compressed2D_inserter(matrix_type& matrix, size_type slot_size = 5)
@@ -641,14 +654,9 @@ struct compressed2D_inserter
 
     ~compressed2D_inserter()
     {
-	// std::cout << "~compressed2D_inserter: " << matrix.my_nnz << " entries in matrix already (reserved for " <<  elements.size() 
-	// 	  << ") and " << spare.size() << " entries in map.\n";
-	vampir_trace<3051> tracer;
-	if (num_rows(matrix) > 0 && num_cols(matrix) > 0) {
-	    final_place();
-	    insert_spare();
-	}
-	matrix.inserting = false;
+	// Check if finish wasn't called explicitly before
+	if (matrix.inserting)
+	    finish();
     }
 	
     /// Proxy to insert into A[row][col]

@@ -682,6 +682,15 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
 }
 #endif
 
+// Row-major ell_matrix vector multiplication
+template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
+typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type
+inline smat_cvec_mult(const ell_matrix<MValue, MPara>& A, const VectorIn& v, VectorOut& w, Assign a, tag::row_major)
+{
+    A.mult_rmajor_vector(v, w, a);
+}
+
+
 // Row-major sparse_banded vector multiplication
 template <typename MValue, typename MPara, typename VectorIn, typename VectorOut, typename Assign>
 typename mtl::traits::enable_if_scalar<typename Collection<VectorOut>::value_type>::type

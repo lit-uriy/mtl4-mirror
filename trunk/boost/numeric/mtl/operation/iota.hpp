@@ -18,7 +18,7 @@
 
 namespace mtl { namespace vector {
   
-///Assigns sequentially increasing values to %vector v
+/// Assigns sequentially increasing values to %vector v
 template <typename Vector>
 void iota(Vector& v, const typename Collection<Vector>::value_type offset= 0)
 {

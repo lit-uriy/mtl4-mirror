@@ -15,6 +15,7 @@
 
 #include <cstddef>
 #include <iostream>
+#include <sstream>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -31,10 +32,16 @@ std::ostream& print_matrix(Matrix const& matrix, std::ostream& out= std::cout, i
     for (std::size_t r= 0, nr= num_rows(matrix); r < nr; ++r) {
 	out << '[';
 	for (std::size_t c= 0, nc= num_cols(matrix); c < nc; ++c) {
-	    out.fill (' '); out.width (width); // out.precision (precision); // out.flags (std::ios_base::right);
 	    if (precision)
 		out.precision(precision); 
+	    out.fill (' '); out.width (width); 
+#ifdef MTL_PRINT_STRING_TMP // probably very slow but looks better for certain types
+	    std::ostringstream st;
+	    st << matrix(r, c) << (c + 1 < nc ? " " : "]\n");
+	    out << std::right << st.str();
+#else
 	    out << matrix(r, c) << (c + 1 < nc ? " " : "]\n");
+#endif
 	}
     }
     return out;
