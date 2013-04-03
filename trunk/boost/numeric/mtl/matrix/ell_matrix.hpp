@@ -55,7 +55,7 @@ class ell_matrix
     /// Construct matrix of size \p num_rows times \p num_cols
     explicit ell_matrix (size_type num_rows, size_type num_cols)
       : super(non_fixed::dimensions(num_rows, num_cols)), 
-	stride((this->dim1() + alignment - 1) / alignment * alignment), slots(0), inserting(false)
+	my_stride((this->dim1() + alignment - 1) / alignment * alignment), my_slots(0), inserting(false)
     {}
 
     /// Print internal representation
@@ -71,28 +71,25 @@ class ell_matrix
     /// Entry in row \p r and column \p c
     value_type operator()(size_type r, size_type c) const
     {
-	for (size_type k= r, i= 0; i < slots; ++i, k+= stride)
+	for (size_type k= r, i= 0; i < my_slots; ++i, k+= my_stride)
 	    if (indices[k] == c)
 		return data[k];
 	return value_type(0);
     }
 
-    template <typename VectorIn, typename VectorOut, typename Assign>
-    void mult_rmajor_vector(const VectorIn& v, VectorOut& w, Assign) const
-    {
-	for (size_type r= 0; r < this->dim1(); ++r) {
-	    value_type s(0);
-	    for (size_type k= r, i= 0; i < slots; ++i, k+= stride)
-		s+= data[k] * v[indices[k]];
-	    Assign::first_update(w[r], s);
-	}
-    }
+    const std::vector<size_type>&  ref_minor() const { return indices; } ///< Refer index vector [advanced]
+          std::vector<size_type>&  ref_minor()       { return indices; } ///< Refer index vector [advanced]
+    const std::vector<value_type>& ref_data()  const { return data; } ///< Refer data vector [advanced]
+          std::vector<value_type>& ref_data()        { return data; } ///< Refer data vector [advanced]
+    
+    size_type stride() const { return my_stride; } /// Stride [advanced]
+    size_type slots() const { return my_slots; } /// Slots, i.e. maximum number of entries per row/column
 
   protected:
     void allocate_slots(size_type s)
     {
-	slots= s;
-	size_type size= stride * s;
+	my_slots= s;
+	size_type size= my_stride * s;
 	indices.resize(size); data.resize(size);
     }
 
@@ -100,7 +97,7 @@ class ell_matrix
 
     std::vector<value_type> data; 
     std::vector<size_type>  indices;
-    size_type               stride, slots;
+    size_type               my_stride, my_slots;
     bool                    inserting;
 };
 
@@ -142,11 +139,11 @@ struct ell_matrix_inserter
 	for (size_type i= 0; i < B.dim1(); ++i) {
 	    size_type patch_entries= max_slots - (this->slot_ends[i] - this->starts[i]), k= i,
 		      patch_index= 0;
-	    for (size_type j= this->starts[i]; j < this->slot_ends[i]; ++j, k+= A.stride) {
+	    for (size_type j= this->starts[i]; j < this->slot_ends[i]; ++j, k+= A.my_stride) {
 		patch_index= A.indices[k]= B.ref_minor()[j];
 		A.data[k]= B.data[j];
 	    }
-	    for (size_type j= 0; j < patch_entries; ++j, k+= A.stride) {
+	    for (size_type j= 0; j < patch_entries; ++j, k+= A.my_stride) {
 		A.indices[k]= patch_index;
 		A.data[k]= value_type(0);
 	    }

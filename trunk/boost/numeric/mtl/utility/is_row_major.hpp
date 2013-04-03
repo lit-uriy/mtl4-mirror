@@ -66,6 +66,10 @@ namespace mtl { namespace traits {
       : is_row_major<Parameters> {};
 
     template <typename Value, typename Parameters>
+    struct is_row_major<mtl::matrix::ell_matrix<Value, Parameters> >
+      : is_row_major<Parameters> {};
+
+    template <typename Value, typename Parameters>
     struct is_row_major<mtl::matrix::dense2D<Value, Parameters> >
       : is_row_major<Parameters> {};
 
