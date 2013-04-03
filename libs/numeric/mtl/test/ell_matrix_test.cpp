@@ -10,7 +10,7 @@
 // 
 // See also license.mtl.txt in the distribution.
  
-#define MTL_VERBOSE_TEST
+// #define MTL_VERBOSE_TEST
 #define MTL_HAS_STD_OUTPUT_OPERATOR
 
 #include <boost/numeric/mtl/mtl.hpp>
