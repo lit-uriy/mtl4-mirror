@@ -57,11 +57,13 @@ int main(int, char**)
     MTL_THROW_IF(A[2][0] != 0.0, unexpected_result())
 
     tout << "A =\n" << A;
+    tout << "nnz = " << A.nnz() << std::endl;
 
     mtl::matrix::compressed2D<double> B(5, 5);
     fill_matrix(B);
     tout << "B =\n" << B;
-
+    MTL_THROW_IF(A.nnz() != B.nnz(), unexpected_result())
+    
     mtl::dense_vector<double> res(5), res2(5), x(5);
     iota(x, 1);
     res2= B * x;

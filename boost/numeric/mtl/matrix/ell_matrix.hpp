@@ -151,7 +151,7 @@ struct ell_matrix_inserter
 		A.data[k]= value_type(0);
 	    }
 	}
-
+	A.my_nnz= B.nnz();
 	A.inserting= false;
     }
 
