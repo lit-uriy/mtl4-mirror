@@ -76,7 +76,7 @@ int main(int , char**)
     (lazy(r)= alpha * q) || (lazy(rho)= lazy_dot(r, q)); 
     cout << "r = " << r << ", rho = " << rho << "\n";
     MTL_THROW_IF(!close(rho, 187.2), mtl::runtime_error("wrong dot"));
-	
+
     (lazy(r)= alpha * q) || (lazy(v)= 8.6 * q) || (lazy(x)= 2.2 * q); 
     cout << "r = " << r << ", v = " << v << ", x = " << x << "\n";
     MTL_THROW_IF(!close(r[0], 15.6) || !close(v[0], 17.2) || !close(x[0], 4.4), 

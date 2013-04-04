@@ -29,9 +29,15 @@ struct fused_expr
     typedef boost::mpl::and_<traits::forward_index_evaluatable<T>, traits::forward_index_evaluatable<U> >   forward;
     typedef boost::mpl::and_<traits::backward_index_evaluatable<T>, traits::backward_index_evaluatable<U> > backward;
 
-    fused_expr(T& first, U& second) : first(first), second(second) {}
+    fused_expr(T& first, U& second) 
+      : first(first), second(second), delayed_assign(false) 
+    {
+	first.delay_assign(); second.delay_assign();
+    }
  
-    ~fused_expr() { eval(forward(), backward()); }
+    ~fused_expr() { if (!delayed_assign) eval(forward(), backward()); }
+
+    void delay_assign() const { delayed_assign= true; }    
 
     template <typename TT, typename UU>
     void forward_eval_loop(const TT& const_first_eval, const UU& const_second_eval, boost::mpl::false_)
@@ -80,7 +86,7 @@ struct fused_expr
 	typedef boost::mpl::and_<traits::unrolled_index_evaluatable<T>, traits::unrolled_index_evaluatable<U> > to_unroll;
 #endif
 	// Currently lazy evaluation is only available on vector expressions, might change in the future
-	// std::cout << "Forward evaluation\n";
+	std::cout << "Forward evaluation\n";
 	forward_eval_loop(index_evaluator(first), index_evaluator(second), to_unroll()); 
     }
 
@@ -138,6 +144,7 @@ struct fused_expr
 
     T& first;
     U& second;
+    mutable bool                        delayed_assign;
 };
 
 
