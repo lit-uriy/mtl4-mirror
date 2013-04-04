@@ -111,6 +111,16 @@ struct index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matrix, V2>, A
 // Strided traversal would be more expensive than saving from mixed reduction
 //  : boost::mpl::or_<mtl::traits::is_row_major<Matrix>, mtl::traits::is_dense<Matrix> > {}; 
 
+template <typename T> struct evaluator_type {};
+
+template <typename T, typename U, typename Assign>
+struct evaluator_type<lazy_assign<T, U, Assign> >
+{
+    typedef typename boost::mpl::if_<mtl::traits::is_vector<U>,
+				     mtl::vector::vec_vec_aop_expr<T, U, Assign>, 
+				     mtl::vector::vec_scal_aop_expr<T, U, Assign>
+				    >::type type;
+};
 
 template <typename T, typename U, typename Assign>
 typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_vector<U> >, 
@@ -119,6 +129,7 @@ inline index_evaluator(lazy_assign<T, U, Assign>& lazy)
 {
     return mtl::vector::vec_vec_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
 }
+
 
 template <typename T, typename U, typename Assign>
 typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_scalar<U> >, 
@@ -306,6 +317,8 @@ inline index_evaluator(lazy_assign<VectorOut, mtl::mat_cvec_times_expr<Matrix, V
     return row_mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>(lazy.first, lazy.second.first, lazy.second.second);
 }
 
+template <typename T, typename U> struct fused_expr;
+template <typename T, typename U> void inline evaluate_lazy(fused_expr<T, U>& expr);
 
 
 template <typename T, typename U>
@@ -374,6 +387,51 @@ struct fused_expr
     U& second;
 };
 
+template <typename T, typename U>
+struct is_lazy<fused_expr<T, U> > 
+  : boost::mpl::and_<is_lazy<T>, is_lazy<U> > 
+{};
+
+template <typename T, typename U>
+struct index_evaluatable<fused_expr<T, U> > 
+  : boost::mpl::and_<index_evaluatable<T>, index_evaluatable<U> > 
+{};
+
+template <typename T, typename U>
+void inline evaluate_lazy(fused_expr<T, U>& expr) 
+{ evaluate_lazy(expr.first); evaluate_lazy(expr.second); }
+
+
+template <typename T, typename U>
+struct fused_index_evaluator
+{
+    fused_index_evaluator(T& first, U& second) 
+      : first(index_evaluator(first)), second(index_evaluator(second)) {}
+
+    template <unsigned Offset>
+    void at(std::size_t i) 
+    { first.at<Offset>(i); second.at<Offset>(i); }
+
+    void operator() (std::size_t i) { at<0>(i); }
+    void operator[] (std::size_t i) { at<0>(i); }
+
+    typename evaluator_type<T>::type first;
+    typename evaluator_type<U>::type second;
+};
+
+template <typename T, typename U>
+inline size_t size(const fused_index_evaluator<T, U>& expr) { return size(expr.first); }
+
+template <typename T, typename U>
+struct evaluator_type<fused_expr<T, U> >
+{
+    typedef fused_index_evaluator<T, U> type;
+};
+
+template <typename T, typename U>
+inline fused_index_evaluator<T, U> index_evaluator(fused_expr<T, U>& expr)
+{  return fused_index_evaluator<T, U>(expr.first, expr.second); }
+
 
 template <typename T, typename U>
 typename boost::enable_if<boost::mpl::and_<is_lazy<T>, is_lazy<U> >, fused_expr<T, U> >::type
@@ -440,6 +498,14 @@ int main(int, char**)
     
     (lazy(r)= alpha * q) || (lazy(rho)= lazy_dot(r, q)); 
     cout << "r = " << r << ", rho (187.2?) = " << rho << "\n";
+
+    (lazy(r)= alpha * q) || (lazy(v)= 8.6 * q) || (lazy(x)= 2.2 * q); 
+    //fuse( lazy(r)-= alpha * q, lazy(rho)= lazy_unary_dot(r) ); 
+    // lazy(r)-= alpha * q, lazy(rho)= lazy_unary_dot(r);
+    cout << "r = " << r << ", v (17.2?) = " << v << "\n";
+
+
+    
 
 
     return 0;
