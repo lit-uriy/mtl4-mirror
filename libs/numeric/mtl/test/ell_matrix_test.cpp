@@ -39,6 +39,7 @@ int main(int, char**)
 {
     using namespace mtl;
     using mtl::io::tout;
+    typedef mtl::dense_vector<double>         vector_type;
     typedef mtl::matrix::ell_matrix<double>   matrix_type;
     typedef matrix_type::size_type            size_type;
     matrix_type   A(5, 5);
@@ -52,19 +53,19 @@ int main(int, char**)
     tout << "A[2][4] = " << A[2][4] << '\n';
     tout << "A[2][0] = " << A[2][0] << '\n';
 
-    MTL_THROW_IF(A[2][3] != 9.0, unexpected_result())
-    MTL_THROW_IF(A[2][4] != 0.0, unexpected_result())
-    MTL_THROW_IF(A[2][0] != 0.0, unexpected_result())
+    MTL_THROW_IF(A[2][3] != 9.0, unexpected_result());
+    MTL_THROW_IF(A[2][4] != 0.0, unexpected_result());
+    MTL_THROW_IF(A[2][0] != 0.0, unexpected_result());
 
     tout << "A =\n" << A;
     tout << "nnz = " << A.nnz() << std::endl;
 
-    mtl::matrix::compressed2D<double> B(5, 5);
+    mtl::compressed2D<double> B(5, 5);
     fill_matrix(B);
     tout << "B =\n" << B;
-    MTL_THROW_IF(A.nnz() != B.nnz(), unexpected_result())
+    MTL_THROW_IF(A.nnz() != B.nnz(), unexpected_result());
     
-    mtl::dense_vector<double> res(5), res2(5), x(5);
+    vector_type res(5), res2(5), x(5);
     iota(x, 1);
     res2= B * x;
     tout << "B * x = " << res2 << '\n';
@@ -73,7 +74,13 @@ int main(int, char**)
     tout << "A * x =\n" << res << '\n';
 
     res2-= res;
-    MTL_THROW_IF(two_norm(res2) > 0.001, unexpected_result())
+    MTL_THROW_IF(two_norm(res2) > 0.001, unexpected_result());
+
+    // lazy(res2)= B * res;
+    // lazy(res2)= A * res;
+
+    // std::cout << "index_evaluatable<CRS ...> is " << mtl::traits::index_evaluatable<lazy_assign<vector_type, mtl::mat_cvec_times_expr<mtl::compressed2D<double>, vector_type>, int> >::value << '\n';
+    // std::cout << "index_evaluatable<Ell ...> is " << mtl::traits::index_evaluatable<lazy_assign<vector_type, mtl::mat_cvec_times_expr<matrix_type, vector_type>, int> >::value << '\n';
 	
     return 0;
 }
