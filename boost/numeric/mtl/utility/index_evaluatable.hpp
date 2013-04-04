@@ -52,6 +52,11 @@ struct index_evaluatable<lazy_assign<V1, mtl::vector::mat_cvec_multiplier<Matrix
   : boost::mpl::false_ 
 {};
 
+template <typename T, typename U>
+struct index_evaluatable<fused_expr<T, U> > 
+  : boost::mpl::and_<index_evaluatable<T>, index_evaluatable<U> > 
+{};
+
 #endif // not MTL_WITH_OPENMP
 
 /// Type trait to control whether evaluation should be unrolled
@@ -67,6 +72,11 @@ struct unrolled_index_evaluatable<lazy_assign<T, U, Assign> >
       boost::mpl::and_<is_vector<T>, is_vector<U> >,
       boost::mpl::and_<is_scalar<T>, is_vector_reduction<U> >
     >
+{};
+
+template <typename T, typename U>
+struct unrolled_index_evaluatable<fused_expr<T, U> > 
+  : boost::mpl::and_<unrolled_index_evaluatable<T>, unrolled_index_evaluatable<U> > 
 {};
 
 #endif // not MTL_WITH_OPENMP
