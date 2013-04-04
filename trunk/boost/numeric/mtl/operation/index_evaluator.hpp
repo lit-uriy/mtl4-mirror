@@ -24,6 +24,8 @@
 #include <boost/numeric/mtl/vector/reduction_index_evaluator.hpp>
 #include <boost/numeric/mtl/vector/dot_index_evaluator.hpp>
 #include <boost/numeric/mtl/vector/row_mat_cvec_index_evaluator.hpp>
+#include <boost/numeric/mtl/operation/fused_index_evaluator.hpp>
+#include <boost/numeric/mtl/operation/fused_expr.hpp>
 #include <boost/numeric/itl/pc/ic_0.hpp>
 #include <boost/numeric/itl/pc/ilu_0.hpp>
 
@@ -82,6 +84,10 @@ inline index_evaluator(lazy_assign<V1, itl::pc::solver<itl::pc::ilu<Matrix, Fact
 {
     return itl::pc::ic_0_evaluator<V1, itl::pc::solver<itl::pc::ilu<Matrix, Factorizer, Value>, V2, true> >(lazy.first, lazy.second);
 }
+
+template <typename T, typename U>
+inline mtl::vector::fused_index_evaluator<T, U> index_evaluator(fused_expr<T, U>& expr)
+{  return mtl::vector::fused_index_evaluator<T, U>(expr.first, expr.second); }
 
 } // namespace mtl
 

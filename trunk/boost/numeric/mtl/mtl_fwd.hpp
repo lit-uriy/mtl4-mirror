@@ -414,6 +414,12 @@ namespace mtl {
     class iset;
     class srange;
 
+    template <typename T, typename U> struct fused_expr;
+    namespace vector {
+	template <typename T, typename U> struct fused_index_evaluator;
+	// template <typename T, typename U> size_t size(const fused_index_evaluator<T, U>&); // not needed currently
+    }
+
     /// Namespace for I/O operations
     namespace io {
 	class matrix_market_istream;
@@ -421,9 +427,7 @@ namespace mtl {
 
 	template <typename MatrixIStream, typename MatrixOStream> class matrix_file;
 	typedef matrix_file<matrix_market_istream, matrix_market_ostream> matrix_market;
-
     }
-
 
     // Multiplication functors
     template <typename Assign, typename Backup> struct gen_cursor_dmat_dmat_mult_t;

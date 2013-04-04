@@ -25,6 +25,10 @@ struct is_lazy : boost::mpl::false_ {};
 template <typename T, typename U, typename Assign>
 struct is_lazy<lazy_assign<T, U, Assign> > : boost::mpl::true_ {};
 
+template <typename T, typename U>
+struct is_lazy<fused_expr<T, U> > 
+  : boost::mpl::and_<is_lazy<T>, is_lazy<U> > 
+{};
 
 }} // namespace mtl::traits
 

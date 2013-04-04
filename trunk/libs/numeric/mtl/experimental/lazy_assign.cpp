@@ -115,12 +115,13 @@ template <typename T> struct evaluator_type {};
 
 template <typename T, typename U, typename Assign>
 struct evaluator_type<lazy_assign<T, U, Assign> >
-{
-    typedef typename boost::mpl::if_<mtl::traits::is_vector<U>,
-				     mtl::vector::vec_vec_aop_expr<T, U, Assign>, 
-				     mtl::vector::vec_scal_aop_expr<T, U, Assign>
-				    >::type type;
-};
+  : boost::lazy_enable_if<mtl::traits::is_vector<T>,
+			  boost::mpl::if_<mtl::traits::is_vector<U>,
+					  mtl::vector::vec_vec_aop_expr<T, U, Assign>, 
+					  mtl::vector::vec_scal_aop_expr<T, U, Assign>
+					  >
+			  >
+{};
 
 template <typename T, typename U, typename Assign>
 typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_vector<U> >, 
