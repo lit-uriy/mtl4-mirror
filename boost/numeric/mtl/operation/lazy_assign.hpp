@@ -23,6 +23,7 @@ struct lazy_assign
     typedef Assign  assign_type;
 
     lazy_assign(T& first, const U& second) : first(first), second(second) {} 
+    void delay_assign() const {}    
 
     T&       first;
     const U& second;
