@@ -25,7 +25,10 @@ struct fused_index_evaluator
 
     template <unsigned Offset>
     void at(std::size_t i) 
-    { first.at<Offset>(i); second.at<Offset>(i); }
+    {
+	first.template at<Offset>(i);
+	second.template at<Offset>(i);
+    }
 
     void operator() (std::size_t i) { at<0>(i); }
     void operator[] (std::size_t i) { at<0>(i); }

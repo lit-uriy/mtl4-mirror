@@ -20,11 +20,12 @@ namespace mtl { namespace io {
 /// ostream class whose objects only write if MTL_VERBOSE_TEST is defined
 struct test_ostream 
 {
-    /// Constructor for out or std::cout
-    test_ostream(std::ostream& out = std::cout) : out(out) {} 
-
 #ifdef MTL_VERBOSE_TEST
 
+    /// Constructor for out or std::cout
+    test_ostream(std::ostream& out = std::cout) : out(out) {}
+
+    
     template <typename T>
     test_ostream& operator<<(const T& v)
     {
@@ -36,7 +37,14 @@ struct test_ostream
     {	return pf(*this);    }
 
     void flush() { out.flush(); }
+    
+private:
+    std::ostream&            out;
+
 #else
+    /// Constructor for out or std::cout
+    test_ostream(std::ostream& out = std::cout) {}
+
     /// Print on outstream
     template <typename T> test_ostream& operator<<(const T&) { return *this; }
 
@@ -46,9 +54,6 @@ struct test_ostream
     /// Flush output
     void flush() {}
 #endif
-
-  private:
-    std::ostream&            out;
 };
 
 /// Output stream that writes if MTL_VERBOSE_TEST is defined
