@@ -42,8 +42,8 @@ private:
     std::ostream&            out;
 
 #else
-    /// Constructor for out or std::cout
-    test_ostream(std::ostream& out = std::cout) {}
+    test_ostream() {}
+    test_ostream(std::ostream&) {}
 
     /// Print on outstream
     template <typename T> test_ostream& operator<<(const T&) { return *this; }
