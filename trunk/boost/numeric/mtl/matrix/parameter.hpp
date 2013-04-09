@@ -43,6 +43,9 @@ struct parameters
     BOOST_STATIC_ASSERT(( !on_stack || dimensions::is_static ));
 };
 
+/// Short-cut to define parameters with unsigned and defaults otherwise
+typedef parameters<row_major, index::c_index, mtl::non_fixed::dimensions, false, unsigned> unsigned_parameters;
+
 }} // namespace mtl::matrix
 
 #endif // MTL_MATRIX_PARAMETERS_INCLUDE

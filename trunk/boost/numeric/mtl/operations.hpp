@@ -44,6 +44,7 @@
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>
+#include <boost/numeric/mtl/operation/make_sparse.hpp>
 #include <boost/numeric/mtl/operation/make_tag_vector.hpp>
 #include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/minimal_increase.hpp>
