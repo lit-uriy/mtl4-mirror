@@ -56,6 +56,7 @@ void copy_test(Matrix& A, unsigned dim1, unsigned dim2)
   typename Matrix::size_type  *col_ind = B.address_minor();
   typename Matrix::value_type *entries = B.address_data();
 
+  A.change_dim(num_rows(B), num_cols(B));
   A = Matrix(num_rows(B), num_cols(B), B.nnz(), row_ptr, col_ind, entries);
   
   A *= 2.;
