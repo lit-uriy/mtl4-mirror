@@ -47,8 +47,6 @@ endif(ENABLE_GCOV)
 # Descent into the test program directory to build the test suite
 # MTL4 test programs
 add_subdirectory("numeric/mtl/test")
-# MTL4 CUDA test programs (might be merged into test)
-add_subdirectory("numeric/mtl/cuda_test")
 # as well as the example programs
 add_subdirectory("numeric/mtl/examples")
 # ITL test programs
