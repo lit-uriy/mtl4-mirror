@@ -27,13 +27,13 @@ typedef mtl::compressed2D<double, mtl::matrix::unsigned_parameters>         matr
 template <typename Matrix>
 inline void check(const Matrix& A, unsigned m, unsigned n)
 {
-    MTL_THROW_IF(num_rows(A) != m, unexpected_result("Not exact number of rows."));
-    MTL_THROW_IF(num_cols(A) != n, unexpected_result("Not exact number of columns."));
-    MTL_THROW_IF(A.nnz() != 5, unexpected_result("Not exact number of non-zeros."));
+    MTL_THROW_IF(num_rows(A) != m, mtl::unexpected_result("Not exact number of rows."));
+    MTL_THROW_IF(num_cols(A) != n, mtl::unexpected_result("Not exact number of columns."));
+    MTL_THROW_IF(A.nnz() != 5, mtl::unexpected_result("Not exact number of non-zeros."));
 
-    MTL_THROW_IF(A[4][3] != 3.0, unexpected_result("A[4][3] should be 3."));
-    MTL_THROW_IF(A[1][6] != 4.0, unexpected_result("A[1][6] should be 4."));
-    MTL_THROW_IF(A[1][5] != 0.0, unexpected_result("A[1][5] should be empty."));
+    MTL_THROW_IF(A[4][3] != 3.0, mtl::unexpected_result("A[4][3] should be 3."));
+    MTL_THROW_IF(A[1][6] != 4.0, mtl::unexpected_result("A[1][6] should be 4."));
+    MTL_THROW_IF(A[1][5] != 0.0, mtl::unexpected_result("A[1][5] should be empty."));
 }
 
 template <typename SV, typename VV>
@@ -62,11 +62,11 @@ inline void test3(unsigned m, unsigned n)
     A= mtl::make_sparse(m, n);
     tout << "test3: A is\n" << A;
 
-    MTL_THROW_IF(num_rows(A) != m, unexpected_result("Not exact number of rows."));
-    MTL_THROW_IF(num_cols(A) != n, unexpected_result("Not exact number of columns."));
-    MTL_THROW_IF(A.nnz() != 0, unexpected_result("Not exact number of non-zeros."));
+    MTL_THROW_IF(num_rows(A) != m, mtl::unexpected_result("Not exact number of rows."));
+    MTL_THROW_IF(num_cols(A) != n, mtl::unexpected_result("Not exact number of columns."));
+    MTL_THROW_IF(A.nnz() != 0, mtl::unexpected_result("Not exact number of non-zeros."));
 
-    MTL_THROW_IF(A[1][5] != 0.0, unexpected_result("A[1][5] should be empty."));
+    MTL_THROW_IF(A[1][5] != 0.0, mtl::unexpected_result("A[1][5] should be empty."));
 }
 
 int main(int, char**)
