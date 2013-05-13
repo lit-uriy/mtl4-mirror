@@ -5,7 +5,7 @@
 
 int main()
 {
-#ifdef MTL_WITH_RANGEDFOR
+#if defined(MTL_WITH_RANGEDFOR) && defined(MTL_WITH_INITLIST)
     using mtl::irange;
     for (int i : irange(3, 9))
 	std::cout << i << '\n';
