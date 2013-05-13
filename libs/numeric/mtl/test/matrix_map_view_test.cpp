@@ -105,7 +105,6 @@ void test(Matrix& matrix, const char* name)
     cout << "matrix  scaled with 2.0 (as operator)\n" << 2.0 * matrix << "\n";
     MTL_THROW_IF((2.0 * matrix)(2, 3) != svalue(ref), mtl::runtime_error("scaling wrong"));
 
- 
     mtl::matrix::conj_view<Matrix>  conj_matrix(matrix);
     cout << "conjugated matrix\n" << conj_matrix << "\n";
     MTL_THROW_IF(conj_matrix(2, 3) != cvalue(ref), mtl::runtime_error(" wrong"));
@@ -123,6 +122,16 @@ void test(Matrix& matrix, const char* name)
 
     cout << "matrix  scaled with 2.0 (free function as mtl::scale)\n" << mtl::scale(2.0, matrix) << "\n";
 
+#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 4
+    cout << "conjugated matrix (free function) \n" << mtl::matrix::conj(matrix) << "\n";
+    MTL_THROW_IF(mtl::matrix::conj(matrix)(2, 3) != cvalue(ref), mtl::runtime_error("conjugating wrong"));
+
+    cout << "imaginary part of matrix (free function) \n" << mtl::matrix::imag(matrix) << "\n";
+    MTL_THROW_IF(mtl::matrix::imag(matrix)(2, 3) != imag(value(ref)), mtl::runtime_error("imaginary part wrong"));
+
+    cout << "real part of matrix (free function) \n" << mtl::matrix::real(matrix) << "\n";
+    MTL_THROW_IF(mtl::matrix::real(matrix)(2, 3) != real(value(ref)), mtl::runtime_error("real part wrong"));
+#else
     cout << "conjugated matrix (free function) \n" << conj(matrix) << "\n";
     MTL_THROW_IF(conj(matrix)(2, 3) != cvalue(ref), mtl::runtime_error("conjugating wrong"));
 
@@ -131,7 +140,7 @@ void test(Matrix& matrix, const char* name)
 
     cout << "real part of matrix (free function) \n" << real(matrix) << "\n";
     MTL_THROW_IF(real(matrix)(2, 3) != real(value(ref)), mtl::runtime_error("real part wrong"));
-
+#endif
     cout << "negation of matrix (free function) \n" << -matrix << "\n";
     MTL_THROW_IF((-matrix)(2, 3) != -(value(ref)), mtl::runtime_error("negation wrong"));
 
@@ -174,8 +183,14 @@ int main(int argc, char* argv[])
 
     double p(2.0);
     dr=-dr;
+
+#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 4
+    std::cout << "Only for gcc 4.4.\n";
+    dr=matrix::real(dr);
+    dr=matrix::conj(dr)+p*matrix::imag(dr);
+#else
     dr=real(dr);
     dr=conj(dr)+p*imag(dr);
-
+#endif
     return 0;
 }

@@ -15,7 +15,7 @@ int main(int, char**)
     std::cout << "A is\n" << with_format(A, 7, 1) << "\n";
 
     std::cout << "trace(A) is " << trace(A) << "\n\n";
-    std::cout << "conj(A) is\n" << with_format(conj(A), 7, 1) << "\n";
+    std::cout << "conj(A) is\n" << with_format(mtl::matrix::conj(A), 7, 1) << "\n"; // ADL issue on g++ 4.4
     std::cout << "trans(A) is\n" << with_format(trans(A), 7, 1) << "\n";
     std::cout << "hermitian(A) is\n" << with_format(hermitian(A), 7, 1) << "\n";
 

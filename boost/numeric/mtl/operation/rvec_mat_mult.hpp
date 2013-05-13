@@ -150,7 +150,7 @@ inline void rvec_mat_mult(const VectorIn& v, const HermitianMatrix& A, VectorOut
 
     if (Assign::init_to_zero) set_to_zero(w);
     for (unsigned i= 0; i < num_cols(B); i++)
-	Assign::update(w, v[i] * conj(trans(B.vector(i))));
+	Assign::update(w, v[i] * mtl::vector::conj(trans(B.vector(i))));
 }
 
 
