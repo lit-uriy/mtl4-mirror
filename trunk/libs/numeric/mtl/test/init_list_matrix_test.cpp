@@ -17,6 +17,8 @@
 using namespace std;  
 
 #ifdef MTL_WITH_INITLIST
+#include <initializer_list>
+
 template <typename Matrix>
 void test(const char* name)
 {

@@ -183,7 +183,7 @@ inline Element identity(const Operation& op, const Element& v)
 template <template <typename> class Operation, typename First, typename Second>
 inline std::pair<First, Second> identity(const Operation<std::pair<First, Second> >&, const std::pair<First, Second>& v)
 {
-    return std::pair<First, Second>(identity(Operation<First>(), v.first), identity(Operation<Second>(), v.second));
+    return std::pair<First, Second>(math::identity(Operation<First>(), v.first), math::identity(Operation<Second>(), v.second));
 }
 #endif
 

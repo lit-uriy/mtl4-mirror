@@ -187,7 +187,7 @@ struct max_functor
     static inline void init(Value& value)
     {
 	using math::identity; 
-	value= identity(math::max<Value>(), value);
+	value= math::identity(math::max<Value>(), value); // ADL doesn't work here in g++ 4.4
     }
 
     template <typename Value, typename Element>
@@ -216,7 +216,7 @@ struct min_functor
     static inline void init(Value& value)
     {
 	using math::identity; 
-	value= identity(math::min<Value>(), value);
+	value= math::identity(math::min<Value>(), value); // ADL doesn't work here in g++ 4.4
     }
 
     template <typename Value, typename Element>

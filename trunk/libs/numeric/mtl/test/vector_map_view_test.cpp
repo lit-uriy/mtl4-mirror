@@ -122,6 +122,16 @@ void test(Vector& vector, const char* name)
     cout << "vector  scaled with 2.0 (free function)\n" << scale(2.0, vector) << "\n";
     MTL_THROW_IF(scale(2.0, vector)(2) != svalue(ref), mtl::runtime_error("scaling wrong"));
 
+#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 4
+    cout << "conjugated vector (free function) \n" << mtl::vector::conj(vector) << "\n";
+    MTL_THROW_IF(mtl::vector::conj(vector)[2] != cvalue(ref), mtl::runtime_error("conjugating wrong"));
+
+    cout << "real vector (free function) \n" << mtl::vector::real(vector) << "\n";
+    MTL_THROW_IF(mtl::vector::real(vector)[2] != real(value(ref)), mtl::runtime_error("real part wrong"));
+
+    cout << "imag vector (free function) \n" << mtl::vector::imag(vector) << "\n";
+    MTL_THROW_IF(mtl::vector::imag(vector)[2] != imag(value(ref)), mtl::runtime_error("imag part wrong"));
+#else
     cout << "conjugated vector (free function) \n" << conj(vector) << "\n";
     MTL_THROW_IF(conj(vector)[2] != cvalue(ref), mtl::runtime_error("conjugating wrong"));
 
@@ -130,6 +140,7 @@ void test(Vector& vector, const char* name)
 
     cout << "imag vector (free function) \n" << imag(vector) << "\n";
     MTL_THROW_IF(imag(vector)[2] != imag(value(ref)), mtl::runtime_error("imag part wrong"));
+#endif
 
     cout << "vector scaled with i (complex(0, 1)) (free function)\n" << scale(ct(0.0, 1.0), vector) << "\n";
     MTL_THROW_IF(scale(ct(0.0, 1.0), vector)(2) != csvalue(ref), mtl::runtime_error("complex scaling wrong"));

@@ -7,5 +7,8 @@ struct my_vector
 
 int main()
 {
+    my_vector v= {3, 4, 5);
+    const my_vector w= {3, 4, 5};
+
     return 0;
 }

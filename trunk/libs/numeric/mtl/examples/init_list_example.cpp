@@ -11,6 +11,7 @@ void p(const Matrix& A)
 
 int main()
 {
+#ifdef MTL_WITH_INITLIST
     const mtl::dense2D<double> A={{3, 4}, 
 	  	                 {5, 6}};
     mtl::dense2D<double>       B;
@@ -20,6 +21,6 @@ int main()
     mtl::dense_vector<double> v= {2, 3, 4, 5};
 
     p(mtl::dense2D<double>{{1, 2}, {2, 3}});
-
+#endif
     return 0;
 }
