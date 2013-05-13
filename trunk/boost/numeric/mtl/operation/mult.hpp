@@ -45,9 +45,9 @@ typename mtl::traits::enable_if_matrix<A>::type
 inline mult(const A& a, const B& b, C& c)
 {
     vampir_trace<4010> tracer;
-#if 1
-    MTL_DEBUG_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
-#endif
+    MTL_DEBUG_THROW_IF(static_cast<const void*>(&a) == static_cast<const void*>(&c) 
+		       || static_cast<const void*>(&b) == static_cast<const void*>(&c),
+		       argument_result_conflict());
 
     // dispatch between matrices, vectors, and scalars
     using mtl::traits::shape_flatcat;
@@ -89,9 +89,9 @@ inline void gen_mult(const MatrixA& a, const MatrixB& b, MatrixC& c, Assign, tag
 {
     vampir_trace<4011> tracer;
 #if 1
-    MTL_DEBUG_THROW_IF((void*)&a == (void*)&c || (void*)&b == (void*)&c, argument_result_conflict());
+    MTL_DEBUG_THROW_IF((const void*)&a == (const void*)&c || (const void*)&b == (const void*)&c, argument_result_conflict());
 #else 
-    if ((void*)&a == (void*)&c || (void*)&b == (void*)&c) {
+    if ((const void*)&a == (const void*)&c || (const void*)&b == (const void*)&c) {
 	C tmp(num_rows(c), num_cols(c)); 
 	mult(a, b, tmp);
 	swap(C, tmp);
