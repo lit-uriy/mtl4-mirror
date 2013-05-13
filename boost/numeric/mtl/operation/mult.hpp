@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/utility/flatcat.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
 #include <boost/numeric/mtl/operation/smat_smat_mult.hpp>
 #include <boost/numeric/mtl/operation/smat_dmat_mult.hpp>
@@ -28,7 +29,7 @@
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/operation/mult_assign_mode.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
-#include <boost/static_assert.hpp>
+
 #include <boost/mpl/if.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
@@ -266,10 +267,11 @@ inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, t
     //   -> result should be a matrix too
 
     // Check if element types are compatible (in contrast to tag dispatching, nesting is considered here)
-    BOOST_STATIC_ASSERT((boost::is_same< typename ashape::mult_op<typename ashape::ashape<Matrix>::type, 
+    MTL_STATIC_ASSERT((boost::is_same< typename ashape::mult_op<typename ashape::ashape<Matrix>::type, 
 			                                          typename ashape::ashape<VectorIn>::type >::type,
 			                 ::mtl::ashape::mat_cvec_mult
-			               >::value));
+				     >::value),
+		      "The type nesting of the arguments does not allow for a consistent matrix vector product.");
 
 
 #if 1
@@ -300,11 +302,11 @@ inline void gen_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Assign, t
     //   -> result should be a matrix too
 
     // Check if element types are compatible (in contrast to tag dispatching, nesting is considered here)
-    BOOST_STATIC_ASSERT((boost::is_same< typename ashape::mult_op<typename ashape::ashape<VectorIn>::type, 
+    MTL_STATIC_ASSERT((boost::is_same< typename ashape::mult_op<typename ashape::ashape<VectorIn>::type, 
 			                                          typename ashape::ashape<Matrix>::type >::type,
 			                 ::mtl::ashape::rvec_mat_mult
-			               >::value));
-
+			             >::value),
+		      "The type nesting of the arguments does not allow for a consistent matrix vector product.");
 
 #if 1
     MTL_DEBUG_THROW_IF((void*)&v == (void*)&w, argument_result_conflict());

@@ -47,6 +47,10 @@
 #include <boost/numeric/mtl/operation/size.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
+#ifdef MTL_WITH_INITLIST
+# include <initializer_list>
+#endif
+
 #undef major // fight namespace pollution
 
 namespace mtl { namespace matrix {
@@ -381,17 +385,59 @@ class compressed2D
     }
 
 
-    /// Consuming assignment operator
+#if defined(MTL_WITH_INITLIST) && defined(MTL_WITH_AUTO) && defined(MTL_WITH_RANGEDFOR)
+    /// Constructor for initializer list \p values 
+    template <typename Value2>
+    compressed2D(std::initializer_list<std::initializer_list<Value2> > values)
+      : super(mtl::non_fixed::dimensions(values.size(), values.size()? values.begin()->size() : 0)),
+	inserting(false)
+    {
+	starts.resize(super::dim1() + 1, 0);
+	allocate(super::dim1() * super::dim2());
+	*this= values;
+    }
+#endif
+
+#ifdef MTL_WITH_DEFAULTIMPL
+    compressed2D(const compressed2D&) = default;
+#endif
+
+#ifdef MTL_WITH_MOVE
+    self& operator=(self&& src)
+    {
+	std::cout << "I am moving !!!\n";
+	check(); 
+	this->checked_change_dim(src.num_rows(), src.num_cols());
+	swap(*this, src);
+	return *this;
+    }
+
+    self& operator=(const self& src)
+    {
+	if (this == &src) 
+	    return *this;
+	check(); 
+	this->checked_change_dim(src.num_rows(), src.num_cols());
+	set_nnz(src.nnz());
+
+	starts= src.starts;
+	indices= src.indices;
+	data= src.data;
+	return *this;
+    }
+#else
+    /// Consuming assignment operator (without move semantics)
     self& operator=(self src)
     {
 	assert(this != &src);  // Self-copy would be an indication of an error
 	
 	check(); 
 	// TODO Check the following line
-	//check_dim(src.num_rows(), src.num_cols());
+	this->checked_change_dim(src.num_rows(), src.num_cols());
 	swap(*this, src);
 	return *this;
     }
+#endif
 
     using assign_base::operator=;
 

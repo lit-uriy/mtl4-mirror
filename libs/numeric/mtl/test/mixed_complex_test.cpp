@@ -57,11 +57,17 @@ void inline test2(const char* type1, T x, const char* type2, U y)
 template <typename T>
 void inline test(const char* type1, T x)
 {
+#ifdef ___clang__
     test2(type1, x, "int", 2);
     test2(type1, x, "long", 2l);
-#if 0 // causes warnings in visual studion and g++ with -pedantic
+#  if 0 // causes warnings in visual studion and g++ with -pedantic
     test2(type1, x, "unsigned", 2u);
+#  endif
+
+#else
+    std::cerr << "Warning complex<int> not supported on certain clang compilers.\n";
 #endif
+
     test2(type1, x, "float", 2.f);
     test2(type1, x, "double", 2.);
     test2(type1, x, "long double", 2.l);

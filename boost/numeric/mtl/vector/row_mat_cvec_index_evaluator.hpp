@@ -13,12 +13,12 @@
 #ifndef MTL_ROW_MAT_CVEC_INDEX_EVALUATOR_INCLUDE
 #define MTL_ROW_MAT_CVEC_INDEX_EVALUATOR_INCLUDE
 
-#include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 
 namespace mtl { namespace vector {
 
@@ -26,7 +26,7 @@ namespace mtl { namespace vector {
 template <typename VectorOut, typename Matrix, typename VectorIn, typename Assign>
 struct row_mat_cvec_index_evaluator
 {
-    BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Matrix>::value));
+    MTL_STATIC_ASSERT((mtl::traits::is_row_major<Matrix>::value), "Only row-major matrices supported here.");
     typedef typename mtl::Collection<VectorOut>::value_type        value_type;
     typedef typename mtl::Collection<Matrix>::size_type            size_type; 
 

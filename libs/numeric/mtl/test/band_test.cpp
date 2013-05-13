@@ -21,7 +21,7 @@ using namespace std;
 template <typename Matrix>
 void list_entries(const Matrix& A, int begin, int end)
 {
-    using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
+    using namespace mtl; using namespace mtl::tag; using mtl::tag::major; using mtl::traits::range_generator;  
     typedef typename range_generator<major, Matrix>::type     cur_type;    
     typedef typename range_generator<nz, cur_type>::type      icur_type; 
     typename mtl::traits::col<Matrix>::type                   col(A);

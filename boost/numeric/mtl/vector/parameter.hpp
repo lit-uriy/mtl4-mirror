@@ -14,7 +14,7 @@
 #define MTL_VECTOR_PARAMETERS_INCLUDE
 
 #include <boost/mpl/bool.hpp>
-#include <boost/static_assert.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/vector/dimension.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
@@ -37,7 +37,7 @@ struct parameters
     typedef SizeType    size_type;
 
     // Vector dimension must be known at compile time to be on the stack
-    BOOST_STATIC_ASSERT(( !on_stack || dimension::is_static ));
+    MTL_STATIC_ASSERT(( !on_stack || dimension::is_static ), "Types to be stored on stack must provide static size.");
 };
 
 

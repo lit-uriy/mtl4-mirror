@@ -13,12 +13,12 @@
 #ifndef MTL_MATRIX_OPERATORS_INCLUDE
 #define MTL_MATRIX_OPERATORS_INCLUDE
 
-#include <boost/static_assert.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/mpl/and.hpp>
 
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/is_multi_vector_expr.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/matrix/all_mat_expr.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 
@@ -30,8 +30,8 @@ inline mat_mat_plus_expr<E1, E2>
 operator+ (const mat_expr<E1>& e1, const mat_expr<E2>& e2)
 {
     // do not add matrices with inconsistent value types
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
-			                typename ashape::ashape<E2>::type>::value));
+    MTL_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
+				      typename ashape::ashape<E2>::type>::value), "Matrices have not consistent algebraic shape (i.e. nested types).");
     return mat_mat_plus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 
@@ -58,8 +58,8 @@ inline dmat_dmat_plus_expr<E1, E2>
 operator+ (const dmat_expr<E1>& e1, const dmat_expr<E2>& e2)
 {
     // do not add matrices with inconsistent value types
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
-			                typename ashape::ashape<E2>::type>::value));
+    MTL_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
+				      typename ashape::ashape<E2>::type>::value), "Matrices have not consistent algebraic shape (i.e. nested types).");
     return dmat_dmat_plus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 #endif
@@ -70,8 +70,8 @@ inline mat_mat_minus_expr<E1, E2>
 operator- (const mat_expr<E1>& e1, const mat_expr<E2>& e2)
 {
     // do not add matrices with inconsistent value types
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
-			                typename ashape::ashape<E2>::type>::value));
+    MTL_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
+				      typename ashape::ashape<E2>::type>::value), "Matrices have not consistent algebraic shape (i.e. nested types).");
     return mat_mat_minus_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 
@@ -88,8 +88,8 @@ inline mat_mat_ele_times_expr<E1, E2>
 ele_prod(const mat_expr<E1>& e1, const mat_expr<E2>& e2)
 {
     // do not multiply matrices element-wise with inconsistent value types
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
-			                typename ashape::ashape<E2>::type>::value));
+    MTL_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
+				      typename ashape::ashape<E2>::type>::value), "Matrices do not have consistent algebraic shape (i.e. nested types).");
     return mat_mat_ele_times_expr<E1, E2>(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }
 

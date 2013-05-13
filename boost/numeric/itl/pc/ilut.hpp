@@ -74,6 +74,7 @@ struct ilut_factorizer
 		
 		for (icur_type kc= begin<nz>(ic), kend= end<nz>(ic); kc != kend; ++kc) // row= A[i][*]
 		    vec.insert(col(*kc), value(*kc));
+		// std::cerr << "vec_" << i << " = " << vec << std::endl;
 		value_type tau_i= p.second * two_norm(vec); // threshold for i-th row
 		// loop over non-zeros in vec; changes in vec considered
 		for (size_type j= 0; j < vec.nnz() && vec.index(j) < i; j++) {
@@ -92,7 +93,10 @@ struct ilut_factorizer
 		    vec.crop(tau_i);
 		    // if (i > 1000 && i < 1010) std::cout << "vec after crop: \n" << vec << "\n";
 		}
+		// std::cerr << "vec_" << i << " = " << vec << std::endl;
 		vec.sort_on_data();
+		// std::cerr << "vec_" << i << " sorted on data = " << vec << std::endl;
+		
 		// std::cout << "vec at " << i << " is " << vec << '\n';
 		// mtl::vampir_trace<9904> tracer2;
 		bool diag_found= false;
@@ -100,9 +104,9 @@ struct ilut_factorizer
 		    size_type k= vec.index(j);
 		    value_type v= vec.value(j);
 		    // if (abs(v) < tau_i) break;
-		    if (i == k)
-			U_ins[i][i] << v, diag_found= true;
-		    else if (i < k) {
+		    if (i == k) {
+			U_ins[i][i] << v; diag_found= true;
+		    } else if (i < k) {
 			if (cntu++ < p.first)
 			    U_ins[i][k] << v;
 		    } else // i > k

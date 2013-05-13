@@ -13,7 +13,6 @@
 #ifndef MTL_REDUCTION_INCLUDE
 #define MTL_REDUCTION_INCLUDE
 
-#include <boost/static_assert.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/numeric/meta_math/loop1.hpp>
 #include <boost/numeric/mtl/utility/omp_size_type.hpp>
@@ -21,6 +20,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 
 namespace mtl { namespace vector {
 
@@ -117,8 +117,8 @@ struct reduction
     template <typename Vector>
     Result static inline apply(const Vector& v, boost::mpl::false_)
     {
-	
-	BOOST_STATIC_ASSERT((Unroll >= 1 && Unroll <= 8)); // Might be relaxed in future versions
+	MTL_STATIC_ASSERT((Unroll >= 1), "Unroll size must be at least 1.");
+	MTL_STATIC_ASSERT((Unroll <= 8), "Maximal unrolling is 8."); // Might be relaxed in future versions
 
 	Result result;
 	Functor::init(result);
@@ -154,9 +154,8 @@ struct reduction
     template <typename Vector>
     Result static inline apply(const Vector& v, boost::mpl::false_)
     {
-	
-	BOOST_STATIC_ASSERT((Unroll >= 1));
-	BOOST_STATIC_ASSERT((Unroll <= 8)); // Might be relaxed in future versions
+	MTL_STATIC_ASSERT((Unroll >= 1), "Unroll size must be at least 1.");
+	MTL_STATIC_ASSERT((Unroll <= 8), "Maximal unrolling is 8."); // Might be relaxed in future versions
 
 	Result tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07;
 	impl::reduction<1, Unroll, Functor>::init(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07);

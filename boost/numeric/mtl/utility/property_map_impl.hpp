@@ -15,6 +15,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 
 namespace mtl { namespace detail {
 
@@ -377,7 +378,7 @@ struct coordinate2D_const_value
 template <class Value, class Parameters>
 struct sparse_banded_row  // maybe refactor into sparse_banded_major
 {
-    BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Parameters>::value));
+    MTL_STATIC_ASSERT((mtl::traits::is_row_major<Parameters>::value), "Only row-major sparse banded matrices supported so far.");
     typedef const mtl::matrix::sparse_banded<Value, Parameters>&  matrix_ref_type;
     typedef typename Parameters::size_type                        size_type; 
     explicit sparse_banded_row(matrix_ref_type A) : A(A) {}
@@ -392,7 +393,7 @@ struct sparse_banded_row  // maybe refactor into sparse_banded_major
 template <class Value, class Parameters>
 struct sparse_banded_col // maybe refactor into sparse_banded_minor
 {
-    BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Parameters>::value));
+    MTL_STATIC_ASSERT((mtl::traits::is_row_major<Parameters>::value), "Only row-major sparse banded matrices supported so far.");
     typedef const mtl::matrix::sparse_banded<Value, Parameters>&  matrix_ref_type;
     typedef typename Parameters::size_type                        size_type; 
 

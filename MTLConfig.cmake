@@ -8,10 +8,17 @@
 #Umfpack, Arprec
 
 option(ENABLE_OPENMP "switch on to enable OpenMP flags for mtl" OFF)
+option(ENABLE_SHORT_ELE_PROD "enable short notation for element-wise product" OFF)
+option(ENABLE_CXX_ELEVEN "enable C++11 features as far as compiler permits" ON)
+option(USE_ASSERTS "Use assert instead of throwing exceptions" ON)
+
+
 find_package(Boost 1.40 REQUIRED)
 if(Boost_FOUND)
 	LIST(APPEND MTL_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 endif(Boost_FOUND)
+
+include(${MTL_DIR}/tools/cmake/C++11Features.cmake)
 
 include(${MTL_DIR}/tools/cmake/Vampir.cmake)
 include(${MTL_DIR}/tools/cmake/UMFPACK.cmake)

@@ -24,8 +24,8 @@ using namespace mtl;
 
 // Return a vector with move semantics
 // Return also the address of the first entry to be sure that it is really moved
-template <typename Vector>
-Vector f(const Vector&, double*& a00)
+template <typename Vector, typename Value>
+Vector f(const Vector&, Value*& a00)
 {
     Vector v(3);
     v= 5.0;
@@ -33,10 +33,10 @@ Vector f(const Vector&, double*& a00)
     return v;
 }
 
-template <typename Vector>
-void print(const Vector& vector, const double* p)
+template <typename Vector, typename Value>
+void print(const Vector& vector, const Value* p)
 {
-    cout << "Data was " << ((const double*) &vector.data[0] == p ? "moved.\n" : "copied.\n");
+    cout << "Data was " << (reinterpret_cast<const Value*>(&vector.data[0]) == p ? "moved.\n" : "copied.\n");
 }
 
 template <typename Vector>
@@ -44,7 +44,7 @@ void test(const Vector&, const char* text)
 {
     cout << '\n' << text << '\n';
 
-    double *p;
+    typename mtl::Collection<Vector>::value_type* p;
     Vector v(3);
     v= 0.0;
    
@@ -90,17 +90,25 @@ void test(const Vector&, const char* text)
     if (&y.data[0] == (float*) &v.data[0]) 
 	throw "Vector must be copied not moved!";
 
-
+    // Check whether expression templates are exempt from moving
+    p= &v.data[0];
+    v= 2 * w;
+    if (v.data[0] != 10.0) 
+	throw "Wrong value moving, should be 10.0!";
+    if (&v.data[0] != p) 
+	throw "Vector data must be replaced not moved!"; 
 }
 
 
 
 
-int test_main(int argc, char* argv[])
+int test_main(int, char*[])
 {
-    dense_vector<double>                                 dr(3);
+    dense_vector<double>                              dr(3);
+    dense_vector<int>                                 di(3);
 
-    test(dr, "Dense vector");
+    test(dr, "Dense vector double");
+    test(di, "Dense vector int");
 
     return 0;
 }

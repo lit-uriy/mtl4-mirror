@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/utility/iset.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
+#include <boost/numeric/mtl/utility/range_wrapper.hpp>
 
 #include <boost/numeric/mtl/io/matrix_market.hpp>
 #include <boost/numeric/mtl/io/read_el_matrix.hpp>

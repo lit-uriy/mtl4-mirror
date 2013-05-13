@@ -23,6 +23,7 @@
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/utility/updater_to_assigner.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
@@ -31,7 +32,6 @@
 #include <boost/numeric/mtl/operation/crop.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-#include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <iostream>
@@ -237,8 +237,8 @@ namespace mtl {
 	// Needs vector inserter
 	vampir_trace<2001> tracer;
 
-	BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<VectorSrc>::type,
- 			                    typename ashape::ashape<VectorDest>::type>::value));
+	MTL_STATIC_ASSERT((boost::is_same<typename ashape::ashape<VectorSrc>::type,
+					  typename ashape::ashape<VectorDest>::type>::value), "Source and target must have the same algebraic shape.");
 
 	MTL_THROW_IF(size(src) != size(dest), incompatible_size());
 

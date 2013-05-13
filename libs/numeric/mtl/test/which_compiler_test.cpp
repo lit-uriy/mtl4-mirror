@@ -18,6 +18,8 @@ int main(int, char**)
 # if defined(__INTEL_COMPILER)
     std::cout << "Intel compiler, version (intern) " << __INTEL_COMPILER << ", i.e. icc/icpc " 
 	      << double(__INTEL_COMPILER) / 100.0 << '\n';
+# elif defined(__clang__)
+    std::cout << "Clang C++ compiler, version " << __clang_major__ << '.' << __clang_minor__ << '\n';
 # elif defined(__GNUC__)
     std::cout << "GNU compiler, i.e. g++ " << __GNUC__ << '.' << __GNUC_MINOR__ << '.' << __GNUC_PATCHLEVEL__ << '\n';
 # elif defined(__PGI)
@@ -46,6 +48,9 @@ int main(int, char**)
     compilers++;
 # endif
 # ifdef _MSC_VER
+    compilers++;
+# endif
+# ifdef __clang__
     compilers++;
 # endif
     if (compilers > 1) 

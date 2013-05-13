@@ -13,7 +13,7 @@
 #ifndef MTL_MATRIX_PARAMETERS_INCLUDE
 #define MTL_MATRIX_PARAMETERS_INCLUDE
 
-#include <boost/static_assert.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
@@ -40,7 +40,7 @@ struct parameters
     typedef SizeType    size_type;
 
     // Matrix dimensions must be known at compile time to be on the stack
-    BOOST_STATIC_ASSERT(( !on_stack || dimensions::is_static ));
+    MTL_STATIC_ASSERT(( !on_stack || dimensions::is_static ), "Types to be stored on stack must provide static size.");
 };
 
 /// Short-cut to define parameters with unsigned and defaults otherwise

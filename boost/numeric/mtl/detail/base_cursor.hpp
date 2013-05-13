@@ -30,6 +30,11 @@ template <class Key> class base_cursor
       return key; 
     }
 
+    key_type value() const 
+    { 
+      return key; 
+    }
+
     self& operator++ () 
     { 
       ++key; return *this; 

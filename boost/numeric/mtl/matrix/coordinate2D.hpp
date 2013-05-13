@@ -14,6 +14,7 @@
 #include <boost/numeric/mtl/matrix/parameter.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 
 namespace mtl {  namespace matrix {
     
@@ -226,7 +227,7 @@ struct coordinate2D_inserter
     typedef operations::update_proxy<self, size_type>   proxy_type;
     
     // We only support storing so far !!!
-    // BOOST_STATIC_ASSERT((boost::is_same<Updater, mtl::operations::update_store<value_type> >::value));
+    // STATIC_ASSERT((boost::is_same<Updater, mtl::operations::update_store<value_type> >::value), "We only support storing so far");
 
     coordinate2D_inserter(matrix_type& matrix, size_type slot_size= 1) 
       : matrix(matrix) 
@@ -341,6 +342,7 @@ struct coordinate_minor_cursor
     typedef coordinate_minor_cursor<Value, Parameters>   self;
     typedef typename Parameters::size_type               size_type;
     typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
+    static const int                                     level= 2;
 
     coordinate_minor_cursor(matrix_ref_type ref, size_type offset) 
       : coordinate_key(offset), ref(ref)  {}
@@ -365,6 +367,7 @@ struct coordinate_major_cursor
     typedef typename Parameters::size_type               size_type;
     typedef const coordinate2D<Value, Parameters>&       matrix_ref_type;
     typedef coordinate_minor_cursor<Value, Parameters>   inner_cursor;
+    static const int                                     level= 2;
 
     void find_next_offset(boost::mpl::true_)
     {
@@ -411,6 +414,7 @@ struct coordinate_minor_range_generator
 {
     typedef coordinate_major_cursor<Value, Parameters>   outer_cursor_type;
     typedef coordinate_minor_cursor<Value, Parameters>   type;
+    static const int                                     level= 2;
 
     type begin(outer_cursor_type c) const { return type(c.ref, c.offset); }
     type end(outer_cursor_type c) const { return type(c.ref, c.next_offset); }

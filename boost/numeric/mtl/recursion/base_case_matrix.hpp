@@ -13,8 +13,7 @@
 #ifndef MTL_BASE_CASE_MATRIX_INCLUDE
 #define MTL_BASE_CASE_MATRIX_INCLUDE
 
-#include <boost/static_assert.hpp>
-
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/meta_math/is_power_of_2.hpp>
 #include <boost/numeric/meta_math/log_2.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
@@ -31,7 +30,7 @@ struct base_case_matrix
 template <typename Elt, unsigned long Mask, typename Parameters, typename BaseCaseTest>
 struct base_case_matrix<mtl::matrix::morton_dense<Elt, Mask, Parameters>, BaseCaseTest>
 {
-    BOOST_STATIC_ASSERT(meta_math::is_power_of_2<BaseCaseTest::base_case_size>::value);
+    MTL_STATIC_ASSERT(meta_math::is_power_of_2<BaseCaseTest::base_case_size>::value, "Static base case size must be power of two");
     static const unsigned long base_case_bits= meta_math::log_2<BaseCaseTest::base_case_size>::value;
 
     typedef typename boost::mpl::if_<

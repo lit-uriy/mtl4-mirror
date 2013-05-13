@@ -12,19 +12,15 @@
 //
 // Algorithm inspired by Nick Vannieuwenhoven, written by Cornelius Steinhardt
 
-
-/*
- *  Created on: Oct 2, 2009
- *      Author: heazk
- */
-
  
 #ifndef MTL_ELEMENT_INCLUDE
 #define MTL_ELEMENT_INCLUDE
 
+#include <vector>
+#include <set>
 #include <algorithm>
 #include <iostream>
-#include <set>
+#include <functional>
 
 #include <boost/unordered_set.hpp>
 
@@ -37,7 +33,7 @@
 
 namespace mtl { namespace matrix {
 
-///  A class representing an element with ValType equalsT he type of the numeric values
+///  A class representing an element with ValType equals the type of the numeric values
 template <typename ValType>
 class element 
 {
@@ -50,7 +46,7 @@ public:
     typedef ValType value_type;
 
     /// The type of a set of neighbors.
-    typedef std::vector<element_type*> neighbor_collection_type; 
+    typedef std::vector<element_type*, std::allocator<element_type*> > neighbor_collection_type; // trouble with Clang 4.2 w/o allocator 
 
     /// An iterator over the neighbors of this element.
     typedef typename neighbor_collection_type::iterator neighbor_iterator;
@@ -347,7 +343,7 @@ public:
 //	    values = new matrix_type(0,0);
 	}
 	// Update the neighborhood.
-	std::set<int> remove_neighs;
+	std::set<int, std::less<int>, std::allocator<int> > remove_neighs; // trouble with Clang 4.2 w/o allocator 
 	for(
 	    neighbor_iterator neigh_it = m_neighbors.begin();
 	    neigh_it != m_neighbors.end();

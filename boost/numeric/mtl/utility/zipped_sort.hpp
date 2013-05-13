@@ -17,6 +17,7 @@
 // For internal use only
 
 #include <cmath>
+#include <utility>
 #include <iterator>
 #include <boost/numeric/mtl/utility/exception.hpp>
 
@@ -96,9 +97,11 @@ struct abs_greater_0
 template <typename T, typename U>
 struct zip_it
 {
-    typedef zip_ref<T, U> ref_type;
+    typedef zip_ref<T, U>        ref_type;
+    typedef long                 diff_type;
+    // typedef std::difference_type diff_type;
 
-    explicit zip_it(T* a, U* v, int p) : a(a), v(v), p(p) {}
+    explicit zip_it(T* a, U* v, diff_type p) : a(a), v(v), p(p) {}
 
     ref_type operator*() { return ref_type(a, v, p); }
     zip_it& operator++() { p++; return *this;}
@@ -110,15 +113,19 @@ struct zip_it
 
     bool operator==(const zip_it& other) const { check(other); return p == other.p; }
     bool operator!=(const zip_it& other) const { check(other); return p != other.p; }
+    bool operator<=(const zip_it& other) const { check(other); return p <= other.p; }
     bool operator<(const zip_it& other) const { check(other); return p < other.p; }
-    int operator-(const zip_it& other) const { check(other); return p - other.p; }
-    zip_it operator+(int i) const { return zip_it(a, v, p+i); }
-    zip_it operator-(int i) const { return zip_it(a, v, p-i); }
+    bool operator>=(const zip_it& other) const { check(other); return p >= other.p; }
+    bool operator>(const zip_it& other) const { check(other); return p > other.p; }
+    diff_type operator-(const zip_it& other) const { check(other); return p - other.p; }
+    zip_it operator+(diff_type i) const { return zip_it(a, v, p+i); }
+    zip_it& operator+=(diff_type i) { p+= i; return *this; }
+    zip_it operator-(diff_type i) const { return zip_it(a, v, p-i); }
     zip_it& operator=(const zip_it& other) { check(other); p= other.p; return *this; }
 
     T*            a;
     U*            v;
-    int           p;
+    diff_type     p;
 };
 
 
@@ -141,25 +148,37 @@ struct zip_ref
 	p= r.p; 
 	return *this;
     }
-
-    zip_ref& operator=(const zip_value<T, U>& zv) 
-    { 
-	a[p]= zv.x; v[p]= zv.y;
+#ifdef MTL_WITH_MOVE
+    zip_ref& operator=(zip_value<T, U>&& zv) 
+    {
+	a[p]= zv.x;
+	v[p]= zv.y;
 	return *this;
     }
+#endif
 
-    friend inline void swap(self& x, self& y)
+    zip_ref& operator=(const zip_value<T, U>& zv)
     {
-		using std::swap;
-	swap(x.a[x.p], y.a[y.p]);
-	swap(x.v[x.p], y.v[y.p]);
-    }    
+	a[p]= zv.x;
+	v[p]= zv.y;
+	return *this;
+    }
 
     T *a;
     U *v;
     int           p;
 
 };
+
+// const ref is ugly but mutable ref doesn't work with temporaries and copy is not as good as overload
+template <typename T, typename U>
+inline void swap(const zip_ref<T, U>& x, const zip_ref<T, U>& y)
+{
+    using std::swap;
+
+    swap(x.a[x.p], y.a[y.p]);
+    swap(x.v[x.p], y.v[y.p]);
+}    
 
 template <typename T, typename U>
 struct zip_value
@@ -169,6 +188,7 @@ struct zip_value
     T x;
     U y;
 };
+
 
 }} // namespace mtl::utility
 

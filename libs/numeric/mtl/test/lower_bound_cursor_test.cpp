@@ -51,8 +51,8 @@ struct check_position_aux<mtl::traits::detail::sub_matrix_cursor<Matrix, Cursor,
     template <typename Matrix2, typename Coll>
     void operator()(const Matrix2&, const Coll&, const mtl::traits::detail::sub_matrix_cursor<Matrix, Cursor, Complexity>& cursor, bool ) const
     {
-	std::cout << ", cursor is pointing at " << *cursor << "\n";
-	MTL_THROW_IF(*cursor < 2, mtl::runtime_error("Cursor must be 2 (or larger)"));
+	std::cout << ", cursor is pointing at " << cursor.value() << "\n";
+	MTL_THROW_IF(cursor.value() < 2, mtl::runtime_error("Cursor must be 2 (or larger)"));
     }
 };
 
