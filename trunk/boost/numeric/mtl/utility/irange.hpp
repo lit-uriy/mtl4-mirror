@@ -110,6 +110,7 @@ namespace mtl {
 	//inline irange iall() { return irange(); }
     }
 
+    /// Intersection of two ranges
     irange inline intersection(irange const& r1, irange const& r2)
     {
 	return irange(std::max(r1.start(), r2.start()), std::min(r1.finish(), r2.finish()));

@@ -45,7 +45,7 @@ int main()
     mtl::compressed2D<double>          A(N, N);
     laplacian_setup(A, size, size);
        
-    // std::cout << "A is\n" << A << '\n';
+    std::cout << "A is\n" << A << '\n';
     MTL_THROW_IF(test_factorization(A, 3, 0.001) > 0.24, mtl::logic_error("ILUT(3, 0.001) too bad"));
 
 #if 0

@@ -40,6 +40,9 @@
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
+#ifdef MTL_WITH_INITLIST
+# include <initializer_list>
+#endif
 
 namespace mtl { namespace vector {
 
@@ -141,6 +144,26 @@ class dense_vector
 			  typename boost::disable_if<boost::is_integral<VectorSrc>, dummy_type>::type= dummy_type())
     {	vampir_trace<2043> tracer; *this= src;    }
 
+#ifdef MTL_WITH_INITLIST
+    /// Constructor for initializer list \p values 
+    template <typename Value2>
+    dense_vector(std::initializer_list<Value2> values)
+      : memory_base(values.size()) 
+    {
+	static_check(values.size());
+	std::copy(values.begin(), values.end(), begin());
+    }
+
+    /// Assignment from initializer list \p values 
+    template <typename Value2>
+    self& operator=(std::initializer_list<Value2> values)
+    {
+	checked_change_dim(values.size());
+	std::copy(values.begin(), values.end(), begin());
+	return *this;
+    }
+#endif
+
     /// Constructor from std::vector; value_type must be identic
     explicit dense_vector(const std::vector<value_type>& src)
       : memory_base(src.size()) 
@@ -200,15 +223,23 @@ class dense_vector
     /// Copy assignment
     self& operator=(const self& src)
     {
-		if (this == &src)
-			return *this;
+	if (this == &src)
+	    return *this;
 
-		checked_change_dim(src.used_memory());
-		memory_base::operator=(src);
-		return *this;
+	checked_change_dim(src.used_memory());
+	memory_base::operator=(src);
+	return *this;
     }
 #endif
 
+#ifdef MTL_WITH_MOVE
+    self& operator=(self&& src)
+    {
+	checked_change_dim(src.used_memory());
+	memory_base::move_assignment(src);
+	return *this;
+    }
+#endif
 
 #if 0 // def __PGI
     using crtp_base::operator=;

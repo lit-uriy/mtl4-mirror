@@ -42,6 +42,10 @@
 #include <boost/numeric/mtl/operation/row_in_matrix.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
+#ifdef MTL_WITH_INITLIST
+# include <initializer_list>
+#endif
+
 namespace mtl { namespace matrix {
 
 template <typename Source, typename Matrix>
@@ -147,7 +151,7 @@ struct crtp_assign<Value[Rows][Cols], Matrix>
 	typedef typename Collection<Matrix>::size_type size_type;
 
 	matrix.checked_change_dim(Rows, Cols);
-	inserter<Matrix>  ins(matrix);
+	inserter<Matrix>  ins(matrix, matrix.dim2());
 	
 	for (size_type r= 0; r < Rows; ++r)
 	    for (size_type c= 0; c < Cols; ++c)
@@ -155,6 +159,31 @@ struct crtp_assign<Value[Rows][Cols], Matrix>
 	return matrix;
     }
 };
+
+#if defined(MTL_WITH_INITLIST) && defined(MTL_WITH_AUTO) && defined(MTL_WITH_RANGEDFOR)
+    /// Constructor for initializer list \p values 
+    template <typename Value2, typename Matrix>
+    struct crtp_assign<std::initializer_list<std::initializer_list<Value2> >, Matrix>
+    {
+	Matrix& operator()(std::initializer_list<std::initializer_list<Value2> > values, Matrix& matrix)
+	{
+	    typedef typename Collection<Matrix>::size_type size_type;
+	    size_type nr= values.size(), nc= nr > 0? values.begin()->size() : 0;
+	    matrix.checked_change_dim(nr, nc);
+	    inserter<Matrix>  ins(matrix, matrix.dim2());
+
+	    size_t r= 0;
+	    for (auto l : values) {
+		size_t c= 0;	    
+		MTL_THROW_IF(l.size() != nc, logic_error("All sub-lists must have same size!"));
+		for (auto v : l)
+		    ins(r, c++) << v;
+		r++;
+	    }
+	    return matrix;
+	}
+    };
+#endif
 
 
 template <typename Vector, typename Matrix>

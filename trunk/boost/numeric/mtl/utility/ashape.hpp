@@ -14,7 +14,6 @@
 #define MTL_ASHAPE_INCLUDE
 
 #include <vector>
-#include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/if.hpp>
 
@@ -22,9 +21,14 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/root.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 
 // Not elegant but necessary to treat ITL types right
 #include <boost/numeric/itl/itl_fwd.hpp>
+
+#ifdef MTL_WITH_INITLIST
+# include <initializer_list>
+#endif
 
 namespace mtl { 
 
@@ -98,6 +102,15 @@ struct ashape_aux<Value[Rows]>
     typedef rvec<typename ashape<Value>::type> type;
 };
    
+#ifdef MTL_WITH_INITLIST
+/// Non-nested initializer_list have rvec ashape, nested lists are matrices see below
+template <typename Value>
+struct ashape_aux<std::initializer_list<Value> >
+{
+    typedef rvec<typename ashape<Value>::type> type;
+};
+#endif
+
 /// std::vectors have rvec ashape
 template <typename Value, typename Allocator>
 struct ashape_aux<std::vector<Value, Allocator> >
@@ -115,8 +128,8 @@ struct ashape_aux<Value*>
 template <typename E1, typename E2, typename SFunctor>
 struct ashape_aux< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
 {
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
-			                typename ashape<E2>::type>::value));
+    MTL_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+			                typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
     typedef typename ashape<E1>::type type;
 };
 
@@ -124,8 +137,8 @@ template <typename E1, typename E2, typename SFunctor>
 struct ashape_aux< vector::vec_vec_op_expr<E1, E2, SFunctor> >
 {
 #if 0 // not sure if this is true in all operations
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
-			                typename ashape<E2>::type>::value));
+    MTL_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+				      typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
 #endif
     typedef typename ashape<E1>::type type;
 };
@@ -203,6 +216,15 @@ struct ashape_aux<Value (*)[Cols]>
     typedef mat<typename ashape<Value>::type> type;
 };
 
+#ifdef MTL_WITH_INITLIST
+/// Nested initializer_list are matrices, non-nested are vectors see above
+template <typename Value>
+struct ashape_aux<std::initializer_list<std::initializer_list<Value> > >
+{
+    typedef mat<typename ashape<Value>::type> type;
+};
+#endif
+
 template <typename Vector>
 struct ashape_aux<mtl::matrix::multi_vector<Vector> >
 {
@@ -231,8 +253,8 @@ struct ashape_aux<matrix::multi_vector_range<Vector> >
 template <typename E1, typename E2, typename SFunctor>
 struct ashape_aux< matrix::mat_mat_op_expr<E1, E2, SFunctor> >
 {
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
-			                typename ashape<E2>::type>::value));
+    MTL_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
+				      typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
     typedef typename ashape<E1>::type type;
 };
 

@@ -13,7 +13,6 @@
 #ifndef MTL_UPPER_TRISOLVE_INCLUDE
 #define MTL_UPPER_TRISOLVE_INCLUDE
 
-#include <boost/static_assert.hpp>
 #include <boost/mpl/int.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
@@ -22,6 +21,7 @@
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
@@ -39,9 +39,10 @@ namespace detail {
     template <typename Matrix, typename DiaTag, bool CompactStorage= false>
     struct upper_trisolve_t
     {
-	BOOST_STATIC_ASSERT((boost::is_same<DiaTag, tag::regular_diagonal>::value
-			     || boost::is_same<DiaTag, tag::unit_diagonal>::value
-			     || boost::is_same<DiaTag, tag::inverse_diagonal>::value));
+	MTL_STATIC_ASSERT((boost::is_same<DiaTag, tag::regular_diagonal>::value
+			   || boost::is_same<DiaTag, tag::unit_diagonal>::value
+			   || boost::is_same<DiaTag, tag::inverse_diagonal>::value),
+			  "DiaTag must be either tag::regular_diagonal, tag::unit_diagonal, or tag::inverse_diagonal.");
 
 	typedef typename Collection<Matrix>::value_type           value_type;
 	typedef typename Collection<Matrix>::size_type            size_type;

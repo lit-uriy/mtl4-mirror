@@ -4,8 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
 option(ENABLE_WARNINGS "enable gnu specific warnings" ON)
 option(ENABLE_DEVELOPMENT "enable program parts under development" OFF)
-option(ENABLE_SHORT_ELE_PROD "enable short notation for element-wise product" OFF)
-option(USE_ASSERTS "Use assert instead of throwing exceptions" ON)
+
 #look for mtl4, use THIS directory as mtl dir
 find_package(MTL REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MTL_INCLUDE_DIRS})

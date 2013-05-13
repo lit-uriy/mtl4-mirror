@@ -13,6 +13,7 @@
 #ifndef MTL_DOT_INCLUDE
 #define MTL_DOT_INCLUDE
 
+
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
@@ -20,6 +21,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/mtl/utility/omp_size_type.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 
 namespace mtl { 
 
@@ -99,7 +101,8 @@ namespace mtl {
 		typename detail::dot_result<Vector1, Vector2>::type
 		static inline apply(const Vector1& v1, const Vector2& v2, ConjOpt conj_opt)
 		{
-
+		    MTL_STATIC_ASSERT((Unroll >= 1), "Unroll size must be at least 1.");
+		    // MTL_STATIC_ASSERT((Unroll <= 8), "Maximal unrolling is 8."); // Might be relaxed in future versions
 
 		    vampir_trace<2003> tracer;
 		    MTL_THROW_IF(mtl::size(v1) != mtl::size(v2), incompatible_size());

@@ -329,6 +329,81 @@ struct value<vector::strided_vector_ref<Value, Parameters> >
 
 }} // namespace mtl::traits
 
+namespace mtl { namespace matrix {
+
+// Helpers
+
+/// Row map of matrix A
+template <typename Matrix>
+typename mtl::traits::row<Matrix>::type
+inline row_map(const Matrix& A)
+{
+    return typename mtl::traits::row<Matrix>::type(A);
+}
+
+/// Column map of matrix A
+template <typename Matrix>
+typename mtl::traits::col<Matrix>::type
+inline col_map(const Matrix& A)
+{
+    return typename mtl::traits::col<Matrix>::type(A);
+}
+
+/// Constant value map of matrix A
+template <typename Matrix>
+typename mtl::traits::const_value<Matrix>::type
+inline const_value_map(const Matrix& A)
+{
+    return typename mtl::traits::const_value<Matrix>::type(A);
+}
+
+/// Value map of matrix A
+template <typename Matrix>
+typename mtl::traits::value<Matrix>::type
+inline value_map(Matrix& A)
+{
+    return typename mtl::traits::value<Matrix>::type(A);
+}
+
+/// Offset map of matrix A
+template <typename Matrix>
+typename mtl::traits::offset<Matrix>::type
+inline offset_map(const Matrix& A)
+{
+    return typename mtl::traits::offset<Matrix>::type(A);
+}
+
+}} // namespace typename mtl::matrix
+
+namespace mtl { namespace vector {
+
+/// Index map of vector A
+template <typename Vector>
+typename mtl::traits::index<Vector>::type
+inline index_map(const Vector& A)
+{
+    return typename mtl::traits::index<Vector>::type(A);
+}
+
+/// Constant value map of vector A
+template <typename Vector>
+typename mtl::traits::const_value<Vector>::type
+inline const_value_map(const Vector& A)
+{
+    return typename mtl::traits::const_value<Vector>::type(A);
+}
+
+/// Value map of vector A
+template <typename Vector>
+typename mtl::traits::value<Vector>::type
+inline value_map(Vector& A)
+{
+    return typename mtl::traits::value<Vector>::type(A);
+}
+
+}} // namespace typename mtl::vector
+
+
 
 #endif // MTL_PROPERTY_MAP_INCLUDE
 

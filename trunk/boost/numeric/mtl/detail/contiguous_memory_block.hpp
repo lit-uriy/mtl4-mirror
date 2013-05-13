@@ -316,7 +316,19 @@ struct contiguous_memory_block
 	copy_construction(other);
     }
 
-#ifdef MTL_MEMORY_BLOCK_MOVE_EMULATION
+#ifdef MTL_WITH_MOVE
+    self& operator=(self&& other)
+    {
+	move_assignment(other);
+	return *this;
+    }
+
+    self& operator=(const self& other)
+    {
+	copy_assignment(other);
+	return *this;
+    }
+#elif defined(MTL_MEMORY_BLOCK_MOVE_EMULATION)
     // Operator takes parameter by value and consumes it
     self& operator=(self other)
     {
@@ -402,14 +414,6 @@ struct contiguous_memory_block<Value, true, Size>
     //static bool const                         on_stack= true;
 
     Value    data[Size];
-// # if defined(NDEBUG) && !defined(_MSC_VER)
-//     explicit contiguous_memory_block(std::size_t)
-// # else 
-//     explicit contiguous_memory_block(std::size_t size= Size)
-// # endif 
-//     {
-// 	MTL_DEBUG_THROW_IF(Size != size, incompatible_size());
-//     }
 
 # ifdef NDEBUG
     contiguous_memory_block() {} // default constructor in release mode

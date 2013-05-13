@@ -795,6 +795,9 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage other_matrix_functions
    -# \subpage eigenvalues_intro
    .
+-# C++11 Features
+   -# \subpage cppeleven_intro
+   .
 -# Solving Linear Systems
    -# \subpage trisolve_intro
    -# \subpage krylov_intro
@@ -2141,7 +2144,7 @@ It is intended for sparse matrices but also works on dense ones.
 
 
 \if Navigation \endif
-  Return to \ref rank_update &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref eigenvalues_intro
+  Return to \ref rank_update &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref eigenvalues_intro 
 
 
 */
@@ -2227,7 +2230,115 @@ all known algorithms rely on complete order (e.g. x < 0).
 
 
 \if Navigation \endif
-  Return to \ref other_matrix_functions &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref trisolve_intro 
+  Return to \ref other_matrix_functions &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref cppeleven_intro 
+
+
+*/
+
+
+
+
+//-----------------------------------------------------------
+
+/*! \page cppeleven_intro Overview of C++11 Extensions
+
+\section cppeleven_portability Portability 
+
+New features of C++11 are introduced conditionally in a way such that compilers without support for 
+the new features and those with partial support can still be used.
+For that purpose, cmake checks for each single new feature whether it is suffiently supported by the
+current compiler to use that feature for the MTL4 implementations.
+In this case, applications using the CMake module MTLConfig (like the MTL4 tests)
+ are compiled with an according macro.
+For instance, when static assertions are available the programs are compiled with the flag
+<tt>-DMTL_WITH_STATICASSERT</tt> (resp. <tt>/D</tt> on Windows).
+
+At some point in the future, when pre-C++11 compilers are considered historic we will drop this
+feature checking.
+However, at this time we will certainly need to check C++14 and C++17 features.
+
+
+\section cppeleven_move Move Semantics
+
+%Matrix and vector types are now equipped with move constructors and move assignments.
+For instance, consider the following example:
+
+\include move_example.cpp
+
+The function make_identity returns a matrix.
+As this matrix is a temporary it can be moved instead of being copied.
+
+\remark The historic move emulation (that did more harm than good)
+ will be removed in the near future because it is superseded by the
+language feature.
+
+\section cppeleven_assert Static Assert
+
+Compile-time assertions are now provided an error message.
+In order to provide backward compatibility, we do not use static_assert directly but
+by means of the new macro MTL_STATIC_ASSERT. 
+(We know macros are ugly but there is no alternative here.)
+The following example illustrates how you could use this macro:
+
+\include static_assert_example.cpp
+
+Here, we test whether our argument type is a dense matrix.
+Otherwise, we emit a user-defined error message (not a particular polite one).
+Assuming that static_assert is supported.
+Without that feature, the macro falls back to BOOST_STATIC_ASSERT, i.e. the
+error message is ignored but the test is still performed during compilation.
+If backward compatibility is not an issue for you, it is certainly better
+using static_assert directly.
+
+Of course, all static assertions within MTL4 are replaced and will now print a more meaningful message.
+
+\section cppeleven_initlist Initializer Lists
+
+Initializer lists are supported in both constructors and assignments of matrices and vectors.
+Their use should be self-explanatory:
+
+\include init_list_example.cpp
+
+Matrices are initialized with nested lists. 
+MTL4 checks that all internal lists have the same size.
+
+When an initializer list is assigned to a non-empty matrix or vector, the dimension must fit.
+
+The advantages over the already available element-wise assignment with the overloaded comma operator
+are:
+- It can be used in constructors not only in assignments.
+- Therefor, constant objects can be initialized.
+- For matrices the dimensions are checked, not only the total number of elements.
+- It can be used directly in function calls.
+.
+
+\section cppeleven_for Range-based For Loop
+
+A cute new feature in C++11 is the range-based for loop.
+It will shorten the notation for iterations in MTL4.
+To start with, we slightly extended the interface of \ref irange.
+It can now be used to implement a loop over integers with a compact notation:
+
+\include ranged_for_example.cpp
+
+The full expressiveness of the new loop notation is unleashed in the matrix traversal,
+see \ref cppeleven_traversal.
+
+\section cppeleven_other Other Features
+
+We refrained from using features like "auto" and "decltype" in existing code.
+Although the sources would gain clarity, the impact on the user would be counter-productive:
+the library would not provide more usability but older compilers would not be supported
+any longer.
+That does not mean that you should avoid these features. 
+If you do not care about old compilers please feel free using all new C++11 features.
+They should not conflict with the MTL4 implementation (otherwise let us know).
+
+
+
+
+\if Navigation \endif
+  Return to \ref eigenvalues_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref trisolve_intro 
 
 
 */
@@ -2308,7 +2419,7 @@ matrix; however, a small overhead for searching the relevant entries is the pric
 
 
 \if Navigation \endif
-  Return to \ref eigenvalues_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref krylov_intro 
+  Return to \ref cppeleven_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref krylov_intro 
 
 
 */
@@ -2416,7 +2527,7 @@ General assumptions on solver iterations:
 
 
 \if Navigation \endif
-  Return to \ref krylov_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref imf_preconditioner
+  Return to \ref krylov_intro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref imf_preconditioner 
 
 
 */
@@ -2516,8 +2627,8 @@ The following tags are currently available for cursors:
 - tag::nz: iterate over all non-zero elements;
 - tag::row: iterate over all rows;
 - tag::col: iterate over all columns;
-- tag::major: iterate over the major dimension (according to orientation);
-- tag::minor: iterate over the minor dimension (according to orientation).
+- tag::major: iterate over the major dimension (according to orientation, rows for row-major, ...);
+- tag::minor: iterate over the minor dimension (according to orientation, columns for row-major, ...).
 .
 For iterators:
 - tag::iter::all: iterate over all elements of a collection (or sub-collection);
@@ -2648,6 +2759,47 @@ The nesting is therefore realized by mixing cursors and iterators.
 In the example we iterate over the rows by a cursor and then iterate over the elements with
 an iterator.
 
+\section range_complete Complete Example 
+
+The following program shows an entire program for iterating over all non-zero
+elements with cursors and property maps:
+
+\include complete_iteration.cpp
+
+The outer loop iterates over the major dimension, i.e. over the rows of A (that in main) and the
+columns of B.
+The inner loop iterates over the structural non-zeros (i.e. wherever a value is physically stored
+in memory) of that rows or columns.
+From each of these entries, the row and column index as well as their value is printed.
+
+\section cppeleven_traversal Traversal in C++11
+
+The principle remains the same but with the range-based for loop and automatic type detection,
+the traversal can be written much more compactly:
+
+\include ranged_for_iteration.cpp
+
+This program does exactly the same as the previous one.
+The ifdefs are only needed because we test-compile the examples on different compilers including some without
+C++11 support.
+
+To enable this compact notation, we introduced new generator functions: matrix::row_map, matrix::col_map, 
+matrix::offset_map,
+matrix::value_map, and matrix::const_value_map for the property maps.
+Likewise, their are new functions that return cursor ranges, e.g. begin<tag::row>(A) and end<tag::row>(A)
+corresponds to rows_of(A).
+The new functions are:
+- \ref rows_of for traversing the rows, corresponds to \ref tag::row;
+- \ref cols_of for traversing the columns, corresponds to tag::col;
+- \ref major_of for traversing the major dimension, corresponds to tag::major;
+- \ref minor_of for traversing the major dimension, corresponds to tag::minor;
+- \ref nz_of for traversing the non-zeros of a row/column or entire container, corresponds to tag::nz;
+- \ref all_of for traversing all entries of a row/column or entire container, corresponds to tag::all;
+- \ref range_of: parametrized traversal whatever tag is given as template argument.
+
+This functions are defined in the mtl namespace and imported in mtl::matrix to be caught by ADL.
+Likewise, they will be imported in namespace mtl::vector for vector traversal (not implemented yet).
+More discussion on C++11 features and backward compatibility is found on page \ref cppeleven_intro.
 
 \section range_complexity Advanced topic: Choosing traversal by complexity
 
@@ -2693,6 +2845,8 @@ more alternatives:
 
 In many cases there is no need for explicitly minimizing the complexity because
 tag::major usually will yield the same results (but this is not so cool).
+
+
 
 
 

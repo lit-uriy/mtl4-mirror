@@ -35,10 +35,15 @@
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/dense_el_cursor.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_cursor.hpp>
 #include <boost/numeric/mtl/utility/strided_dense_el_iterator.hpp>
 #include <boost/numeric/mtl/utility/transposed_orientation.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
+
+#ifdef MTL_WITH_INITLIST
+# include <initializer_list>
+#endif
 
 // Forward declaration (for friend declaration)
 namespace mtl { namespace traits { namespace detail {
@@ -137,7 +142,7 @@ namespace detail
     struct dense2D_array_size<Parameters, true>
     {
 	typedef typename Parameters::dimensions   dimensions;
-	BOOST_STATIC_ASSERT((dimensions::is_static));
+	MTL_STATIC_ASSERT((dimensions::is_static), "Size must be known at compile time.");
 	static std::size_t const value= dimensions::Num_Rows * dimensions::Num_Cols;
     };
 
@@ -235,7 +240,7 @@ class dense2D
     explicit dense2D(value_type* a) 
 	: super(), memory_base(a, dim_type().num_rows() * dim_type().num_cols())
     { 
-	BOOST_STATIC_ASSERT((dim_type::is_static));
+	MTL_STATIC_ASSERT((dim_type::is_static), "Size must be known at compile time.");
         init();
     }
 
@@ -276,6 +281,18 @@ class dense2D
 	sub_matrix_constructor(matrix, begin_r, end_r, begin_c, end_c, boost::mpl::bool_<memory_base::on_stack>());
     }
 
+#if defined(MTL_WITH_INITLIST) && defined(MTL_WITH_AUTO) && defined(MTL_WITH_RANGEDFOR)
+    /// Constructor for initializer list \p values 
+    template <typename Value2>
+    dense2D(std::initializer_list<std::initializer_list<Value2> > values)
+      : super(mtl::non_fixed::dimensions(values.size(), values.size()? values.begin()->size() : 0)),
+    	memory_base(this->num_rows() * this->num_cols()) 
+    {
+    	init();
+	*this= values;
+    }
+#endif
+
   private:
     template <typename MatrixSrc>
     void sub_matrix_constructor(MatrixSrc& matrix, size_type begin_r, size_type end_r, 
@@ -301,11 +318,28 @@ class dense2D
     }
 
   public:
-    /// Assignment
+
+#ifdef MTL_WITH_MOVE
+    /// Move assignment for data on heap
+    self& operator=(self&& src)
+    {	return self_assign(src, boost::mpl::false_());    }
+
+    // {
+    // 	swap(*this, src);
+    // 	std::cout << "In dense2D::move_assignment\n";
+    // 	return *this;
+    // }
+
+     /// (Copy) Assignment
+    self& operator=(const self& src)
+    {	return self_assign(src, boost::mpl::true_());    }
+#else   
+    /// (Copy) Assignment
     self& operator=(typename detail::ref_on_stack<self, memory_base::on_stack>::type src)
     {
 	return self_assign(src, boost::mpl::bool_<memory_base::on_stack>());
     }
+#endif
 
   private:
     // Already copied for lvalues -> data can be stolen (need non-const ref)  
@@ -315,7 +349,7 @@ class dense2D
 	assert(this != &src);
 	// std::cout << "In move assignment: this* = \n" << *this << "src = \n" << src;
 
-	this->check_dim(src.num_rows(), src.num_cols());
+	this->checked_change_dim(src.num_rows(), src.num_cols());
 	if (this->category == memory_base::view || src.category == memory_base::view)
 	    matrix_copy(src, *this);
 	else {
@@ -329,11 +363,11 @@ class dense2D
 	return *this;
     }
 
-    // For statically sized matrices
+    // For matrices with data on stack (or lvalues in C++11)
     self& self_assign(const self& src, boost::mpl::true_)
     {
 	if (this != &src) {
-	    this->check_dim(src.num_rows(), src.num_cols());
+	    this->checked_change_dim(src.num_rows(), src.num_cols());
 	    matrix_copy(src, *this);
 	}
 	return *this;
@@ -574,26 +608,26 @@ namespace mtl { namespace traits {
 
       private:
 
-	type dispatch(cursor const& c, size_type col, row_major)
+	type dispatch(cursor const& c, size_type col, row_major) const
 	{
 	    return type(c.ref, c.key, col);
 	}
-	type dispatch(cursor const& c, size_type col, col_major)
+	type dispatch(cursor const& c, size_type col, col_major) const
 	{
 	    return type(c.ref, c.key, col, c.ref.ldim);
 	}
 
       public:
 
-	type begin(cursor const& c)
+	type begin(cursor const& c) const
 	{
 	    return dispatch(c, c.ref.begin_col(), typename matrix::orientation());
 	}
-	type end(cursor const& c)
+	type end(cursor const& c) const
 	{
 	    return dispatch(c, c.ref.end_col(), typename matrix::orientation());
 	}	
-	type lower_bound(cursor const& c, size_type position)
+	type lower_bound(cursor const& c, size_type position) const
 	{
 	    return dispatch(c, std::min(c.ref.end_col(), position), typename matrix::orientation());
 	}
@@ -631,25 +665,25 @@ namespace mtl { namespace traits {
 	>::type type;  
 
       private:
-	type dispatch(cursor const& c, size_type row, col_major)
+	type dispatch(cursor const& c, size_type row, col_major) const
 	{
 	    return type(c.ref, row, c.key);
 	}
-	type dispatch(cursor const& c, size_type row, row_major)
+	type dispatch(cursor const& c, size_type row, row_major) const
 	{
 	    return type(c.ref, row, c.key, c.ref.ldim);
 	}
 
       public:
-	type begin(cursor const& c)
+	type begin(cursor const& c) const
 	{
 	    return dispatch(c, c.ref.begin_row(), typename matrix::orientation());
 	}
-	type end(cursor const& c)
+	type end(cursor const& c) const
 	{
 	    return dispatch(c, c.ref.end_row(), typename matrix::orientation());
 	}
-	type lower_bound(cursor const& c, size_type position)
+	type lower_bound(cursor const& c, size_type position) const
 	{
 	    return dispatch(c, std::min(c.ref.end_row(), position), typename matrix::orientation());
 	}	
@@ -721,49 +755,49 @@ namespace mtl { namespace traits {
 
         private:
 	    // if traverse first along major dim. then return address as pointer
-	    type dispatch(cursor const& c, size_type row, size_type col, complexity_classes::linear_cached)
+	    type dispatch(cursor const& c, size_type row, size_type col, complexity_classes::linear_cached) const
 	    {
 		matrix_type& ma= const_cast<matrix_type&>(c.ref);
 		return ma.elements() + ma.indexer(ma, row, col); // &ref[row][col];
 	    }
 
 	    // otherwise strided 
-	    type dispatch(cursor const& c, size_type row, size_type col, complexity_classes::linear)
+	    type dispatch(cursor const& c, size_type row, size_type col, complexity_classes::linear) const
 	    {
 		// cast const away (is dirty and should be improved later (cursors must distinct constness))
 		matrix_type& ref= const_cast<matrix_type&>(c.ref);
 		return type(ref, row, col, ref.ldim);
 	    }
 
-	    type begin_dispatch(cursor const& c, glas::tag::row)
+	    type begin_dispatch(cursor const& c, glas::tag::row) const
 	    {
 		return dispatch(c, c.key, c.ref.begin_col(), complexity());
 	    }
 	    
-	    type end_dispatch(cursor const& c, glas::tag::row)
+	    type end_dispatch(cursor const& c, glas::tag::row) const
 	    {
 		return dispatch(c, c.key, c.ref.end_col(), complexity());
 	    }
 
 
-	    type begin_dispatch(cursor const& c, glas::tag::col)
+	    type begin_dispatch(cursor const& c, glas::tag::col) const
 	    {
 		return dispatch(c, c.ref.begin_row(), c.key, complexity());
 	    }
 
-	    type end_dispatch(cursor const& c, glas::tag::col)
+	    type end_dispatch(cursor const& c, glas::tag::col) const
 	    {
 		return dispatch(c, c.ref.end_row(), c.key, complexity());
 	    }
 
         public:
 
-	    type begin(cursor const& c)
+	    type begin(cursor const& c) const
 	    {
 		return begin_dispatch(c, OuterTag());
 	    }
 
-	    type end(cursor const& c)
+	    type end(cursor const& c) const
 	    {
 		return end_dispatch(c, OuterTag());
 	    }	

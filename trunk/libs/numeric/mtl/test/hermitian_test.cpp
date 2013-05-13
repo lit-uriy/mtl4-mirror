@@ -64,8 +64,8 @@ void test(const Matrix&, const char* name)
 #endif
 
     v= hermitian(A) * w;
-    v= conj(trans(A)) * w;
-    v= trans(conj(A)) * w;
+    v= mtl::matrix::conj(trans(A)) * w;
+    v= trans(mtl::matrix::conj(A)) * w;
     v= trans(A) * w;
 }
 

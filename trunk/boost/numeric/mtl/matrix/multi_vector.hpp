@@ -27,10 +27,9 @@
 #include <boost/numeric/mtl/utility/is_composable_vector.hpp>
 #include <boost/numeric/mtl/utility/is_multi_vector_expr.hpp>
 #include <boost/numeric/mtl/utility/fast_multi_vector_expr.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 
-
-// Under development (to be used with caution)
 
 namespace mtl { namespace matrix {
 
@@ -49,8 +48,9 @@ class multi_vector
     typedef base_matrix<typename Collection<Vector>::value_type, parameters<> >           super;
 
     // Vector must by column vector
-    BOOST_STATIC_ASSERT((boost::is_same<typename OrientedCollection<Vector>::orientation,
-			                tag::col_major>::value));
+    MTL_STATIC_ASSERT((boost::is_same<typename OrientedCollection<Vector>::orientation,
+			              tag::col_major>::value),
+		      "Vector must be a column vector.");
   public:
     typedef multi_vector                             self;
     // typedef mtl::matrix::parameters<>                parameters;

@@ -17,7 +17,6 @@
 #include <cassert>
 #include <ostream>
 #include <vector>
-#include <boost/static_assert.hpp>
 #include <boost/type_traits/make_signed.hpp>
 
 #include <boost/numeric/mtl/matrix/dimension.hpp>
@@ -30,6 +29,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 
 namespace mtl { namespace matrix {
 
@@ -41,7 +41,7 @@ class sparse_banded
     public crtp_matrix_assign< sparse_banded<Value, Parameters>, Value, typename Parameters::size_type >,
     public mat_expr< sparse_banded<Value, Parameters> >
 {
-    BOOST_STATIC_ASSERT((mtl::traits::is_row_major<Parameters>::value));
+    MTL_STATIC_ASSERT((mtl::traits::is_row_major<Parameters>::value), "Only row-major sparse banded matrices supported so far.");
 
     typedef std::size_t                                size_t;
     typedef base_matrix<Value, Parameters>             super;
@@ -330,7 +330,7 @@ namespace mtl { namespace traits {
 	typedef complexity_classes::linear_cached                                              complexity;
 	typedef mtl::matrix::sparse_banded_cursor<Value, Parameters>                           type;
 	static int const                                                                       level = 1;
-	BOOST_STATIC_ASSERT((is_row_major<Parameters>::value));
+	MTL_STATIC_ASSERT((is_row_major<Parameters>::value), "Only row-major sparse banded matrices supported so far.");
 
 	type begin(cursor_type const& cursor) const
 	{

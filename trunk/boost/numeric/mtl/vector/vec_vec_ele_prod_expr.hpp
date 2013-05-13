@@ -17,6 +17,7 @@
 
 #include <boost/numeric/mtl/vector/vec_vec_op_expr.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 
 namespace mtl { namespace vector {
@@ -26,8 +27,9 @@ inline vec_vec_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, ty
 ele_prod(const vec_expr<E1>& e1, const vec_expr<E2>& e2)
 {
     // do not add row and column vectors (or inconsistent value types)
-    BOOST_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
-			                typename ashape::ashape<E2>::type>::value));
+    MTL_STATIC_ASSERT((boost::is_same<typename ashape::ashape<E1>::type, 
+				      typename ashape::ashape<E2>::type>::value),
+		      "Vectors do not have consistent algebraic shape (i.e. nested types).");
     typedef vec_vec_op_expr< E1, E2, mtl::sfunctor::times<typename E1::value_type, typename E2::value_type> > type;
     return type(static_cast<const E1&>(e1), static_cast<const E2&>(e2));
 }

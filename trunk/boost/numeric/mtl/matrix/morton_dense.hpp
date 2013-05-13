@@ -31,6 +31,9 @@
 #include <boost/numeric/mtl/operation/compute_factors.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
 
+#ifdef MTL_WITH_INITLIST
+# include <initializer_list>
+#endif
 
 
 namespace mtl { namespace matrix {
@@ -451,6 +454,18 @@ class morton_dense
 	*this= src;
     }
 
+#if defined(MTL_WITH_INITLIST) && defined(MTL_WITH_AUTO) && defined(MTL_WITH_RANGEDFOR)
+    /// Constructor for initializer list \p values 
+    template <typename Value2>
+    morton_dense(std::initializer_list<std::initializer_list<Value2> > values)
+      : super(mtl::non_fixed::dimensions(values.size(), values.size()? values.begin()->size() : 0)),
+    	memory_base(this->num_rows() * this->num_cols()) 
+    {
+    	init(this->num_rows(), this->num_cols());
+	*this= values;
+    }
+#endif
+
 
     /// Construct a sub-matrix as a view
     explicit morton_dense(self& matrix, morton_dense_sub_ctor,
@@ -503,14 +518,44 @@ class morton_dense
     }
 #endif
 
-    /// Assignment
-    self& operator=(const self& src)
+
+#ifdef MTL_WITH_MOVE
+    /// Move Assignment
+    self& operator=(self&& src)
     {
-	this->check_dim(src.num_rows(), src.num_cols());
-	matrix_copy(src, *this);
+	this->checked_change_dim(src.num_rows(), src.num_cols());
+	if (this->category == memory_base::view || src.category == memory_base::view)
+	    matrix_copy(src, *this);
+	else
+	    memory_base::move_assignment(src);
+	std::cout << "In dense2D::move_assignment\n";
 	return *this;
     }
 
+    /// Copy Assignment
+    self& operator=(const self& src)
+    {
+	this->checked_change_dim(src.num_rows(), src.num_cols());
+	// this->check_dim(src.num_rows(), src.num_cols());
+	matrix_copy(src, *this);
+	return *this;
+    }
+#else
+    /// Copy assignment (with move emulation)
+    self& operator=(self src)
+    {
+	// Self-copy would be an indication of an error
+	assert(this != &src);
+
+	this->check_dim(src.num_rows(), src.num_cols());
+	if (this->category == memory_base::view || src.category == memory_base::view)
+	    matrix_copy(src, *this);
+	else
+	    memory_base::move_assignment(src);
+	return *this;
+    }
+#endif
+    
     using assign_base::operator=;
 
 

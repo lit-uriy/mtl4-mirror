@@ -108,6 +108,10 @@ namespace mtl { namespace traits { namespace detail {
 	{
 	    return self(key + offset, ref);
 	}
+
+	// otherwise base_cursor returns an int and ranged for doesn't work
+	// for getting the key of base_cursor use this->value()
+	self operator*() const { return *this; }
 	
 	Matrix const& ref;
     };
@@ -203,12 +207,12 @@ namespace mtl { namespace traits { namespace detail {
 
 	typedef matrix_element_cursor<ref_type, 1>               type;
 
-	type begin(Cursor const& c) const { return type(c.ref, *c, 0); }
-	type end(Cursor const& c) const { using mtl::num_cols; return type(c.ref, *c, num_cols(c.ref)); }
+	type begin(Cursor const& c) const { return type(c.ref, c.value(), size_type(0)); }
+	type end(Cursor const& c) const { using mtl::num_cols; return type(c.ref, c.value(), num_cols(c.ref)); }
 	type lower_bound(Cursor const& c, size_type position) const
 	{
 		using mtl::num_cols;
-	    return type(c.ref, *c, std::min(num_cols(c.ref), position));
+	    return type(c.ref, c.value, std::min(num_cols(c.ref), position));
 	}
     };
 
@@ -248,12 +252,12 @@ namespace mtl { namespace traits { namespace detail {
 
 	typedef matrix_element_cursor<ref_type, 0> type;
 
-	type begin(Cursor const& c) const { return type(c.ref, 0, *c); }
-	type end(Cursor const& c) const { using mtl::num_rows; return type(c.ref, num_rows(c.ref), *c); }
+	type begin(Cursor const& c) const { return type(c.ref, 0, c.value()); }
+	type end(Cursor const& c) const { using mtl::num_rows; return type(c.ref, num_rows(c.ref), c.value()); }
 	type lower_bound(Cursor const& c, size_type position) const
 	{
 		using mtl::num_rows;
-	    return type(c.ref, std::min(num_rows(c.ref), position), *c);
+	    return type(c.ref, std::min(num_rows(c.ref), position), c.value());
 	}
     };
 
