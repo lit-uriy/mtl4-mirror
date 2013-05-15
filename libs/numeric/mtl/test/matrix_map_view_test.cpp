@@ -122,7 +122,7 @@ void test(Matrix& matrix, const char* name)
 
     cout << "matrix  scaled with 2.0 (free function as mtl::scale)\n" << mtl::scale(2.0, matrix) << "\n";
 
-#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 4
+#if defined(__GNUC__) && __GNUC__ == 4 && (__GNUC_MINOR__ >= 3 && __GNUC_MINOR__ <= 6)
     cout << "conjugated matrix (free function) \n" << mtl::matrix::conj(matrix) << "\n";
     MTL_THROW_IF(mtl::matrix::conj(matrix)(2, 3) != cvalue(ref), mtl::runtime_error("conjugating wrong"));
 
@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
     double p(2.0);
     dr=-dr;
 
-#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 4
+#if defined(__GNUC__) && __GNUC__ == 4 && (__GNUC_MINOR__ >= 3 && __GNUC_MINOR__ <= 6)
     std::cout << "Only for gcc 4.4.\n";
     dr=matrix::real(dr);
     dr=matrix::conj(dr)+p*matrix::imag(dr);
