@@ -122,7 +122,7 @@ void test(Vector& vector, const char* name)
     cout << "vector  scaled with 2.0 (free function)\n" << scale(2.0, vector) << "\n";
     MTL_THROW_IF(scale(2.0, vector)(2) != svalue(ref), mtl::runtime_error("scaling wrong"));
 
-#if defined(__GNUC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 4
+#if defined(__GNUC__) && __GNUC__ == 4 && (__GNUC_MINOR__ >= 3 && __GNUC_MINOR__ <= 6)
     cout << "conjugated vector (free function) \n" << mtl::vector::conj(vector) << "\n";
     MTL_THROW_IF(mtl::vector::conj(vector)[2] != cvalue(ref), mtl::runtime_error("conjugating wrong"));
 
