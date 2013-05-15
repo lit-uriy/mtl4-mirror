@@ -28,7 +28,7 @@ template <typename Vector, typename Value>
 Vector f(const Vector&, Value*& a00)
 {
     Vector v(3);
-    v= 5.0;
+    v= 5;
     a00= &v.data[0];
     return v;
 }
@@ -46,7 +46,7 @@ void test(const Vector&, const char* text)
 
     typename mtl::Collection<Vector>::value_type* p;
     Vector v(3);
-    v= 0.0;
+    v= 0;
    
     cout << "v= f(v, p);\n";
     v= f(v, p);
@@ -54,8 +54,11 @@ void test(const Vector&, const char* text)
 
     if (v.data[0] != 5.0) 
 	throw "Wrong value moving, should be 5.0!";
+ 
+#ifdef MTL_WITH_MOVE
     if (&v.data[0] != p) 
 	throw "Vector is not moved but copied!";
+#endif
 
     cout << "Vector w= f(v, p);\n";
     Vector w= f(v, p);
@@ -63,8 +66,10 @@ void test(const Vector&, const char* text)
 
     if (w.data[0] != 5.0) 
 	throw "Wrong value moving, should be 5.0!";
+#ifdef MTL_WITH_MOVE
     if (&w.data[0] != p) 
 	throw "Vector is not moved but copied!";
+#endif
 
     // This type is guarateed to be different to f's return type
     // In this case the vector MUST be copied
