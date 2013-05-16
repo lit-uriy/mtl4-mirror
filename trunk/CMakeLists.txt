@@ -30,6 +30,10 @@ if (NOT MSVC)
 	endif(Subversion_FOUND)
 endif (NOT MSVC)
 
+# if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+#   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lstdc++")
+# endif()
+
 configure_file(boost/numeric/mtl/version.hpp.in boost/numeric/mtl/version.hpp @ONLY)
 
 if (USE_ASSERTS)
