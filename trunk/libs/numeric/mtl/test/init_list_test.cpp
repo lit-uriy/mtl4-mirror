@@ -16,7 +16,7 @@
 
 using namespace std;  
 
-#if MTL_WITH_INITLIST
+#ifdef MTL_WITH_INITLIST
 template <typename Vector>
 void test(const char* name)
 {
