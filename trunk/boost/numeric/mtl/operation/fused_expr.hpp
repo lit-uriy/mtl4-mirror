@@ -86,7 +86,7 @@ struct fused_expr
 	typedef boost::mpl::and_<traits::unrolled_index_evaluatable<T>, traits::unrolled_index_evaluatable<U> > to_unroll;
 #endif
 	// Currently lazy evaluation is only available on vector expressions, might change in the future
-	std::cout << "Forward evaluation\n";
+	// std::cout << "Forward evaluation\n";
 	forward_eval_loop(index_evaluator(first), index_evaluator(second), to_unroll()); 
     }
 
