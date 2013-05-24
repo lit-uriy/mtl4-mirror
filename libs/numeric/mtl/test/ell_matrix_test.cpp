@@ -14,8 +14,6 @@
 #define MTL_HAS_STD_OUTPUT_OPERATOR
 
 #include <boost/numeric/mtl/mtl.hpp>
-#include <boost/numeric/mtl/utility/tag.hpp>
-#include <boost/numeric/mtl/matrix/ell_matrix.hpp>
 
 template <typename Matrix>
 inline void fill_matrix(Matrix& A)
@@ -75,6 +73,10 @@ int main(int, char**)
 
     res2-= res;
     MTL_THROW_IF(two_norm(res2) > 0.001, unexpected_result());
+
+    matrix_type C;
+    laplacian_setup(C, 3, 4);
+    tout << "C =\n" << C << '\n';
 
     // lazy(res2)= B * res;
     // lazy(res2)= A * res;

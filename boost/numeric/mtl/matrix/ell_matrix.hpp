@@ -40,6 +40,9 @@ class ell_matrix
     typedef ell_matrix                                 self;
     typedef mat_expr< ell_matrix<Value, Parameters> >  expr_base;
 
+    void set_stride()
+    {   my_stride= (this->dim1() + alignment - 1) / alignment * alignment; }
+
   public:
     typedef Parameters                                 parameters;
     typedef typename Parameters::orientation           orientation;
@@ -52,11 +55,15 @@ class ell_matrix
 
     static const unsigned alignment=                   32; // TBD: make more flexible later
 
+    /// Default constructor
+    explicit ell_matrix ()
+      : super(non_fixed::dimensions(0, 0)), my_slots(0), inserting(false)
+    {  set_stride(); }
+
     /// Construct matrix of size \p num_rows times \p num_cols
     explicit ell_matrix (size_type num_rows, size_type num_cols)
-      : super(non_fixed::dimensions(num_rows, num_cols)), 
-	my_stride((this->dim1() + alignment - 1) / alignment * alignment), my_slots(0), inserting(false)
-    {}
+      : super(non_fixed::dimensions(num_rows, num_cols)), my_slots(0), inserting(false)
+    {  set_stride(); }
 
     /// Print internal representation
     template <typename OStream>
@@ -84,6 +91,18 @@ class ell_matrix
     
     size_type stride() const { return my_stride; } /// Stride [advanced]
     size_type slots() const { return my_slots; } /// Slots, i.e. maximum number of entries per row/column
+
+    void make_empty()
+    {	my_slots= 0; indices.resize(0); data.resize(0);    }
+
+    void change_dim(size_type r, size_type c)
+    {
+	if (this->num_rows() != r || this->num_cols() != c) {
+	    super::change_dim(r, c);
+	    set_stride();
+	    make_empty();
+	}
+    }
 
   protected:
     void allocate_slots(size_type s)
