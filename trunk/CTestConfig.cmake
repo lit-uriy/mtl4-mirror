@@ -13,6 +13,12 @@ set(CTEST_DROP_LOCATION "/CDash/submit.php?project=mtl4")
 set(CTEST_DROP_SITE_CDASH TRUE)
 # set(CTEST_CURL_OPTIONS "CURLOPT_SSL_VERIFYPEER_OFF")
 
+# build in parallel if not on Windows
+# if (NOT MSVC)
+#   message("now with make -j4")
+#   set(CTEST_BUILD_FLAGS -j4)
+# endif()
+
 while (${CTEST_ELAPSED_TIME} LESS 36)
     set (START_TIME ${CTEST_ELAPSED_TIME})
   ctest_start (Continuous)
