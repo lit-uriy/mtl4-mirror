@@ -20,8 +20,6 @@
 #include <boost/numeric/mtl/utility/algebraic_category.hpp>
 #include <boost/numeric/mtl/utility/is_what.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
-// #include <boost/numeric/mtl/matrix/map_view.hpp>
-// #include <boost/numeric/mtl/vector/map_view.hpp>
 
 #include <complex>
 
@@ -66,40 +64,8 @@ namespace sfunctor {
     template <typename Matrix>
     struct conj_aux<Matrix, tag::matrix>;
 
-#if 0
-    {
-	typedef matrix::conj_view<Matrix> result_type;
-
-	static inline result_type apply(const Matrix& matrix)
-	{
-	    return result_type(matrix);
-	}
-
-	result_type operator() (const Matrix& matrix) const
-	{
-	    return apply(matrix);
-	}
-    };
-#endif
-
     template <typename Vector>
     struct conj_aux<Vector, tag::vector>;
-
-#if 0
-    {
-	typedef mtl::vector::conj_view<Vector> result_type;
-
-	static inline result_type apply(const Vector& vector)
-	{
-	    return result_type(vector);
-	}
-
-	result_type operator() (const Vector& vector) const
-	{
-	    return apply(vector);
-	}
-    };
-#endif
 
     // Short cut for result type
     template <typename Value>
