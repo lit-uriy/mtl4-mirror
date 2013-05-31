@@ -424,6 +424,25 @@ struct sub_matrix_t< mtl::matrix::divide_by_view<Matrix, Divisor> >
 
 }} // namespace mtl::matrix
 
+namespace mtl { namespace sfunctor {
+
+    template <typename Matrix>
+    struct conj_aux<Matrix, tag::matrix>
+    {
+	typedef matrix::conj_view<Matrix> result_type;
+
+	static inline result_type apply(const Matrix& matrix)
+	{
+	    return result_type(matrix);
+	}
+
+	result_type operator() (const Matrix& matrix) const
+	{
+	    return apply(matrix);
+	}
+    };
+
+}} // namespace mtl::sfunctor
 
 // Traits for specific views
 namespace mtl { namespace traits {

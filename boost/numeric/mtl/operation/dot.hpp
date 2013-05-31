@@ -22,6 +22,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/mtl/utility/omp_size_type.hpp>
 #include <boost/numeric/mtl/utility/static_assert.hpp>
+#include <boost/numeric/mtl/utility/exception.hpp>
 
 namespace mtl { 
 
