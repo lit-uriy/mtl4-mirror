@@ -313,5 +313,28 @@ struct negate_view
 
 }} // namespace mtl::vector
 
+namespace mtl { namespace sfunctor {
+
+
+    template <typename Vector>
+    struct conj_aux<Vector, tag::vector>
+    {
+	typedef mtl::vector::conj_view<Vector> result_type;
+
+	static inline result_type apply(const Vector& vector)
+	{
+	    return result_type(vector);
+	}
+
+	result_type operator() (const Vector& vector) const
+	{
+	    return apply(vector);
+	}
+    };
+
+}}
+
+
+
 
 #endif // MTL_VECTOR_MAP_VIEW_INCLUDE

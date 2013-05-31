@@ -27,6 +27,13 @@
 #include <boost/numeric/meta_math/loop.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
+#include "set_to_zero.hpp"
+#include "update.hpp"
+#include "conj.hpp"
+
+
+
+
 namespace mtl { namespace vector {
 
 namespace impl {

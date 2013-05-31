@@ -186,7 +186,7 @@ void comp_inv_det( t_matrix_3x3& P_inv, t_double& P_det, const t_matrix_3x3& P )
     P_inv /= P_det;
 }
 
-void fem15( const t_c4n& c4n, const t_n4e& n4e, const t_n4ed& dbnd, const t_n4ed& nbnd, t_u4n& u4n )
+void fem15( const t_c4n& c4n, const t_n4e& n4e, const t_n4ed& dbnd, const t_n4ed&, t_u4n& u4n )
 {
     const t_int nrNodes = c4n.size();
     compressed2D<t_double> A(nrNodes,nrNodes);
@@ -242,7 +242,7 @@ void fem15( const t_c4n& c4n, const t_n4e& n4e, const t_n4ed& dbnd, const t_n4ed
     std::copy( x.begin(), x.end(), u4n.begin() );
 }
 
-int main(int argc, char* argv[])
+int main()
 {
     // Square
     t_c4n c4n{ t_vector_2{0.0,0.0}, t_vector_2{1.0,0.0}, t_vector_2{1.0,1.0}, t_vector_2{0.0,1.0} };
