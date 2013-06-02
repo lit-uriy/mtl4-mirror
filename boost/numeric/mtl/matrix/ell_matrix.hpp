@@ -149,16 +149,16 @@ struct ell_matrix_inserter
 	
 	size_type max_slots= 0;
 	for (size_type i= 0; i < B.dim1(); ++i) {
-	    size_type s= this->slot_ends[i] - this->starts[i];	
+	    size_type s= this->starts[i+1] - this->starts[i];
 	    if (s > max_slots)
 		max_slots= s;
 	}
 	A.allocate_slots(max_slots);
 
 	for (size_type i= 0; i < B.dim1(); ++i) {
-	    size_type patch_entries= max_slots - (this->slot_ends[i] - this->starts[i]), k= i,
+	    size_type patch_entries= max_slots - (this->starts[i+1] - this->starts[i]), k= i,
 		      patch_index= 0;
-	    for (size_type j= this->starts[i]; j < this->slot_ends[i]; ++j, k+= A.my_stride) {
+	    for (size_type j= this->starts[i]; j < this->starts[i+1]; ++j, k+= A.my_stride) {
 		patch_index= A.indices[k]= B.ref_minor()[j];
 		A.data[k]= B.data[j];
 	    }
