@@ -288,7 +288,7 @@ inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, t
     MTL_DEBUG_THROW_IF(num_rows(A) != mtl::vector::size(w), incompatible_size());
     MTL_DEBUG_THROW_IF(num_cols(A) != mtl::vector::size(v), incompatible_size());
 
-    mat_cvec_mult(A, v, w, Assign(), traits::mat_cvec_flatcat<Matrix>());
+    mat_cvec_mult(A, v, w, Assign(), mtl::traits::mat_cvec_flatcat<Matrix>());
 }
 
 
