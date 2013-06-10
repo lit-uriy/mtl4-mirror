@@ -22,7 +22,7 @@ if (NOT ENABLE_CXX_ELEVEN)
   return()
 endif()
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(CXX_ELEVEN_FLAG "${CXX_ELEVEN_FLAG} -stdlib=libc++")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++")
 endif()
