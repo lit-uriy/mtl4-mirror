@@ -41,6 +41,7 @@ include(CTest)
 if(ENABLE_GCOV)
 	add_definitions("-fprofile-arcs -ftest-coverage")
 	list(APPEND MTL_LIBRARIES "gcov")
+	set(COVERAGE_EXTRA_FLAGS "${COVERAGE_EXTRA_FLAGS} -p")
 endif(ENABLE_GCOV)
 
 
