@@ -23,7 +23,7 @@ void test(const char* name)
     cout << "Testing multi_vector with " << name << endl;
     mtl::multi_vector<Vector> A(4, 6), B(4, 6);
     A= 3.0;
-    cout << "A is\n" << B << endl;
+    cout << "A is\n" << A << endl;
 
     B= A;
     cout << "B= A yields\n" << B << endl;
