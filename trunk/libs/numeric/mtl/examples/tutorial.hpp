@@ -474,6 +474,8 @@ So far we have implemented:
   - With static size
   .
 - matrix::compressed2D
+- matrix::coordinate2D
+- matrix::ell_matrix
 .
 
 
