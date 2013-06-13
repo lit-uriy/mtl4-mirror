@@ -369,10 +369,8 @@ To make sure that MTL4 is completely installed and properly working on your plat
 you can run the same tests as we use
 in our development.
 The whole test suite can be compiled and executed with few commands.
-We are currently in the process of transition from one build system to another one.
-- Running the tests with scons has currently a bit more functionality (e.g. enabling a higher warning level) but its maintenance will be terminate at some point in the future, see \subpage testing_scons.
-- Using cmake one can already build all tests but they need to be started manually. This will be changed soon in a way that cmake-based testing will be at least as powerful as with scons, see \subpage testing_cmake. 
-.
+We recommend using cmake, see \subpage testing_cmake.
+As legacy code there are still scons files that might possibly still work, see \subpage testing_scons.
 Both build systems support Windows and one can use cmake to generate Visual Studion project folder containing all MTL4 tests and tutorial examples.
  
 \section install_nutshell In a nutshell
@@ -489,7 +487,9 @@ Proceed to the \ref IDE.
 \page testing_scons Testing with scons
 
 
-
+Testing with scons is no longer supported.
+However, the scons files are still present and might still work.
+We nonetheless recommend using cmake.
 
 
 If you want to run the test programs, you need the build system
