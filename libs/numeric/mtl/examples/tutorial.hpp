@@ -267,24 +267,21 @@ documented seperately).
 
 
 
+Archives are found on the 
+<a href="http://www.simunova.com/en/node/145">MTL4 download page</a>.
+They are updated weekly.
+In principle, MTL4 headers can also be copied in a directory within the standard include
+path to omit the compiler flag for its inclusion.
 
-
-The recommended form of downloading is to use subversion control (under Windows we recommend 
-<a href="http://tortoisesvn.tigris.org/">Tortoise</a>) and under Linux it is part of every
-recent distribution.
+For working with the latest version, you can check out the current trunk.
+As version control we use "subversion" which is contained in any Linux distribution.
+On Windows we recommend 
+<a href="http://tortoisesvn.tigris.org/">Tortoise</a>.
 Go to the directory where you like MTL4 to reside and type:\n
 <tt>svn checkout https://simunova.zih.tu-dresden.de/svn/mtl4/trunk mtl4</tt>\n
 The adventage of version control is that you can update it easily with\n
 <tt>svn update</tt>\n
 when new features are added or a bug is %fixed (fortunately not needed very often).
-
-If you prefer downloading an archive,
-go to the 
-<a href="http://www.simunova.com/en/node/145">MTL4 download page</a>
-and download the latest archive.
-In principle, MTL4 can also be copied in a directory within the standard include
-path to omit the compiler flag for its inclusion.
-
 
 
 <b>Install MTL4 on Linux:</b>
