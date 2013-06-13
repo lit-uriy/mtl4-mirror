@@ -239,8 +239,8 @@ This is under development and will be provided soon. For the time being please u
 \section installdownload Install a Downloaded Archive
 
 To compile an MTL4 application you only need to
--# <a href="www.boost.org/users/download/">Download and install Boost.</a>
--# <a href="www.simunova.com/en/node/145">Download and install MTL4.</a>
+-# <a href="http://www.boost.org/users/download/">Download and install Boost.</a>
+-# <a href="http://www.simunova.com/en/node/145">Download and install MTL4.</a>
 -# Include the libraries in the compile command when not installed in the include path, e.g.\n
   <tt>g++ myapp.cpp -o myapp -I/usr/local/include/boost-1.44 -I/usr/local/include/mtl4</tt>
 .
