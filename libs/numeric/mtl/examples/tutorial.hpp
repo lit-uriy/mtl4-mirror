@@ -450,7 +450,7 @@ Matrices will be modifiable in the future.
 If you really want to see the complete information (even for us this is ugly),
 you can type<br>
 <tt>print /r A</tt><br> 
-in the lower gdb window.
+in the lower gdb window (the notation does not work in all gdb versions).
 
 
 \section debugger_ddt Allinea Distributed Debugging Tool
