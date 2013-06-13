@@ -34,7 +34,7 @@ set (CXX_ELEVEN_FEATURE_LIST "MOVE" "AUTO" "RANGEDFOR" "INITLIST" "STATICASSERT"
 
 foreach (feature ${CXX_ELEVEN_FEATURE_LIST})
    set(CURFILE "${MTL_DIR}/tools/cmake/${feature}_CHECK.cpp")
-   if(EXITS "${CURFILE}")
+   if(EXISTS "${CURFILE}")
 	   try_compile(${feature}_RESULT ${CMAKE_BINARY_DIR} "${CURFILE}" COMPILE_DEFINITIONS "${CXX_ELEVEN_FLAG}")
    else()
 	   message(ERROR "could not find ${CURFILE}")
