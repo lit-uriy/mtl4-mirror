@@ -543,7 +543,7 @@ private:
     struct scalar_assign 
     {
 	scalar_assign(Source src, Matrix& matrix) 
-	  : src(src), with_comma(false), r(0), c(0), matrix(matrix), ins(matrix) {}
+	  : src(src), with_comma(false), r(0), c(0), matrix(matrix), ins(matrix, 1) {}
 
 	~scalar_assign()
 	{
