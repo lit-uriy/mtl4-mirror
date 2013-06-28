@@ -854,9 +854,11 @@ void compressed2D_inserter<Elt, Parameters, Updater>::stretch()
 	for (size_type i= 0, s= 0; i <= matrix.dim1(); i++, s+= slot_size)
 	    slot_ends[i]= starts[i]= s;
 	size_type new_total= (slot_ends[matrix.dim1()]= starts[matrix.dim1()]) + slot_size;
+	elements.reserve(new_total); indices.reserve(new_total);
 	elements.resize(new_total); indices.resize(new_total);
 	return;
     }
+
 
 
     // If there are enough existing entries then skip the stretching (expensive)
