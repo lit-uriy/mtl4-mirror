@@ -59,6 +59,13 @@ if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND ENABLE_WARNINGS)
     message(STATUS "Add -Wno-long-long")
     add_definitions("-Wno-long-long")
   endif()
+  check_cxx_compiler_flag("-Wno-unused-local-typedefs" WITH_NO_UNUSED_LOCAL_TYPEDEFS)
+  if (${WITH_NO_UNUSED_LOCAL_TYPEDEFS})
+    message(STATUS "Add -Wno-unused-local-typedefs")
+    add_definitions("-Wno-unused-local-typedefs")
+  endif()
+  
+
   # vampir does not support pedantic.. Boost generates too many warnings with nvcc anyway, so drop it entirely
   # if(NOT HAVE_VAMPIR)
   #   add_definitions("-pedantic")
