@@ -46,12 +46,19 @@ struct compute_summand< mat_cvec_times_expr<Matrix, CVector> >
 
     compute_summand(const mat_cvec_times_expr<Matrix, CVector>& expr) 
       : value(num_rows(expr.first))
+#ifndef NDEBUG // might be helpful, e.g. for generating AST
+      , first(expr.first), second(expr.second)
+#endif
     {
 	vampir_trace<3005> tracer;
 	value= expr.first * expr.second;
     }
 
     CVector value;
+#ifndef NDEBUG
+    const Matrix&  first;
+    const CVector& second;
+#endif
 };
 	
 /// Specialization for matrix vector products
