@@ -169,12 +169,15 @@ struct vec_vec_aop_expr
 	assert(delayed_assign);
 	return SFunctor::apply(first(i+Offset), second(i+Offset));
     }
+       
+    first_argument_type const& first_argument() const { return first; }
+    second_argument_type const& second_argument() const { return second; }
 
   private:
      first_argument_type&                first ;
      second_argument_type const&         second ;
      mutable bool                        delayed_assign;
-  } ; // vec_vec_aop_expr
+} ; // vec_vec_aop_expr
 
 template <typename E1, typename E2, typename SFunctor>
 inline std::size_t size(const vec_vec_aop_expr<E1, E2, SFunctor>& v)

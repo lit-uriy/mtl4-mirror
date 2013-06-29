@@ -65,6 +65,9 @@ struct vec_vec_pmop_expr
         return SFunctor::apply(first.value(i), second.value(i));
     }
 
+    operation::compute_summand<E1> const& first_argument() const { return first; }
+    operation::compute_summand<E2> const& second_argument() const { return second; }
+
   private:
     operation::compute_summand<E1> first;
     operation::compute_summand<E2> second;

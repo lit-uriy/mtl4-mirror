@@ -54,18 +54,33 @@ endif (MSVC)
 
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND ENABLE_WARNINGS)
   add_definitions("-Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
+
+  # Normalize locale during test compilation.
+  # set(_CheckCXXCompilerFlag_LOCALE_VARS LC_ALL LC_MESSAGES LANG)
+  # message ("Flags ${_CheckCXXCompilerFlag_LOCALE_VARS}")
+  # foreach(v ${_CheckCXXCompilerFlag_LOCALE_VARS})
+  #   set(_CheckCXXCompilerFlag_SAVED_${v} "$ENV{${v}}")
+  #   set(ENV{${v}} C)
+  # endforeach()
+
   check_cxx_compiler_flag("-Wno-long-long" WITH_NO_LONG_LONG)
-  if (${WITH_NO_LONG_LONG})
+  if (WITH_NO_LONG_LONG)
     message(STATUS "Add -Wno-long-long")
     add_definitions("-Wno-long-long")
   endif()
+
   check_cxx_compiler_flag("-Wno-unused-local-typedefs" WITH_NO_UNUSED_LOCAL_TYPEDEFS)
-  if (${WITH_NO_UNUSED_LOCAL_TYPEDEFS})
+  if (WITH_NO_UNUSED_LOCAL_TYPEDEFS)
     message(STATUS "Add -Wno-unused-local-typedefs")
     add_definitions("-Wno-unused-local-typedefs")
   endif()
-  
 
+  # foreach(v ${_CheckCXXCompilerFlag_LOCALE_VARS})
+  #   set(ENV{${v}} ${_CheckCXXCompilerFlag_SAVED_${v}})
+  #   unset(_CheckCXXCompilerFlag_SAVED_${v})
+  # endforeach()
+  # unset(_CheckCXXCompilerFlag_LOCALE_VARS)
+  
   # vampir does not support pedantic.. Boost generates too many warnings with nvcc anyway, so drop it entirely
   # if(NOT HAVE_VAMPIR)
   #   add_definitions("-pedantic")
