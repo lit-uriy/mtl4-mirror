@@ -2,7 +2,7 @@ project (mtl4) # GPU version
 
 cmake_minimum_required(VERSION 2.8)
 option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
-option(ENABLE_WARNINGS "enable gnu specific warnings" ON)
+option(ENABLE_WARNINGS "Enable gnu specific warnings" ON)
 option(ENABLE_DEVELOPMENT "enable program parts under development" OFF)
 
 #look for mtl4, use THIS directory as mtl dir
@@ -54,40 +54,14 @@ endif (MSVC)
 
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND ENABLE_WARNINGS)
   add_definitions("-Wall -Wextra -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings")
-
-  # Normalize locale during test compilation.
-  # set(_CheckCXXCompilerFlag_LOCALE_VARS LC_ALL LC_MESSAGES LANG)
-  # message ("Flags ${_CheckCXXCompilerFlag_LOCALE_VARS}")
-  # foreach(v ${_CheckCXXCompilerFlag_LOCALE_VARS})
-  #   set(_CheckCXXCompilerFlag_SAVED_${v} "$ENV{${v}}")
-  #   set(ENV{${v}} C)
-  # endforeach()
-
-  check_cxx_compiler_flag("-Wno-long-long" WITH_NO_LONG_LONG)
-  if (WITH_NO_LONG_LONG)
-    message(STATUS "Add -Wno-long-long")
-    add_definitions("-Wno-long-long")
-  endif()
-
-  check_cxx_compiler_flag("-Wno-unused-local-typedefs" WITH_NO_UNUSED_LOCAL_TYPEDEFS)
-  if (WITH_NO_UNUSED_LOCAL_TYPEDEFS)
-    message(STATUS "Add -Wno-unused-local-typedefs")
-    add_definitions("-Wno-unused-local-typedefs")
-  endif()
-
-  # foreach(v ${_CheckCXXCompilerFlag_LOCALE_VARS})
-  #   set(ENV{${v}} ${_CheckCXXCompilerFlag_SAVED_${v}})
-  #   unset(_CheckCXXCompilerFlag_SAVED_${v})
-  # endforeach()
-  # unset(_CheckCXXCompilerFlag_LOCALE_VARS)
-  
-  # vampir does not support pedantic.. Boost generates too many warnings with nvcc anyway, so drop it entirely
-  # if(NOT HAVE_VAMPIR)
-  #   add_definitions("-pedantic")
-  #   if(CMAKE_SYSTEM_NAME STREQUAL "Linux") # skip Werror on Darwin for the moment
-  #     add_definitions("-Werror")
-  #   endif() 
-  # endif()
+  foreach(FLAG "-Wno-long-long" "-Wno-unused-local-typedefs")
+    message(STATUS "Check flag ${FLAG}")
+    mtl_check_cxx_compiler_flag(${FLAG} FLAG_OKAY)
+    if(FLAG_OKAY)
+      message(STATUS "Add ${FLAG}")
+      add_definitions("${FLAG}")
+    endif()
+  endforeach()
 endif()
 
 if (ENABLE_DEVELOPMENT)
