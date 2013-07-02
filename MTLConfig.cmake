@@ -99,3 +99,13 @@ if(MTL_FIND_REQUIRED AND MTL_NOT_FOUND)
 	message(SEND_ERROR "could not find all components: ${MTL_NOT_FOUND}")
 endif()
 include_directories(${MTL_INCLUDE_DIRS})
+
+macro(mtl_check_cxx_compiler_flag FLAG RESULT)
+  # counts entirely on compiler's return code, maybe better to combine it with check_cxx_compiler_flag
+  file(WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.cxx" "int main() { return 0;}\n")
+  try_compile(${RESULT}
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.cxx
+    COMPILE_DEFINITIONS ${FLAG})  
+endmacro()
+
