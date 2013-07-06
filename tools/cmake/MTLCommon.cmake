@@ -18,7 +18,9 @@ if(Boost_FOUND)
 	LIST(APPEND MTL_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 endif(Boost_FOUND)
 
-include(${MTL_DIR}/tools/cmake/C++11Features.cmake)
+if(EXISTS ${MTL_DIR}/tools/cmake/C++11Features.cmake)
+  include(${MTL_DIR}/tools/cmake/C++11Features.cmake)
+endif()
 
 include(${MTL_DIR}/tools/cmake/Vampir.cmake)
 include(${MTL_DIR}/tools/cmake/UMFPACK.cmake)
