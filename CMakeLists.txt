@@ -5,14 +5,17 @@ option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
 option(ENABLE_WARNINGS "Enable gnu specific warnings" ON)
 option(ENABLE_DEVELOPMENT "enable program parts under development" OFF)
 
+# adding the Path of our own Modules
+SET(CMAKE_MODULE_PATH $ENV{CMAKE_MODULE_PATH})
+SET(MTL4_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+#SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${MTL4_ROOT_PATH}/Cmake_Module)
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${MTL4_ROOT_PATH})
+
 #look for mtl4, use THIS directory as mtl dir
 find_package(MTL REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MTL_INCLUDE_DIRS})
+add_definitions(${MTL_CXX_DEFINITIONS})
 
-# adding the Path of our own Modules
-SET(CMAKE_MODULE_PATH $ENV{CMAKE_MODULE_PATH})
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${MTL4_ROOT_PATH}/Cmake_Module)
-SET(MTL4_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 #REMAINING PART USES MTL4
@@ -36,9 +39,6 @@ endif (NOT MSVC)
 
 configure_file(boost/numeric/mtl/version.hpp.in boost/numeric/mtl/version.hpp @ONLY)
 
-if (USE_ASSERTS)
-  add_definitions("-DMTL_ASSERT_FOR_THROW")
-endif()
 
 #look for compiler specific settings
 if (MSVC)
