@@ -34,6 +34,12 @@ INSTALL(FILES ${CMAKE_HELPERS}
 	DESTINATION share/mtl/tools/cmake
 	)
 
+#install helper sources in tools/cmake
+FILE(GLOB CMAKE_HELPERS ../../tools/cmake/*.cpp)
+INSTALL(FILES ${CMAKE_HELPERS} 
+	DESTINATION share/mtl/tools/cmake
+	)
+
 #configure the uninstall script (will remove each hpp-file in boost/*, but leaves the empty directories)
 FILE(GLOB_RECURSE ALL_HPPS_LIST RELATIVE ${CMAKE_CURRENT_BINARY_DIR}/../../ ../../boost/*.hpp)
 
