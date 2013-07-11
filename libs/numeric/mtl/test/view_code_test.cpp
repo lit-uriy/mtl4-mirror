@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <boost/numeric/mtl/mtl.hpp>
+#include <boost/numeric/mtl/utility/view_code.hpp>
 
 using namespace std;
 typedef std::complex<double> ct;
@@ -20,7 +21,7 @@ typedef std::complex<double> ct;
 template <int Code, typename Matrix>
 struct check_type_aux
 {
-    static void apply() { MTL_STATIC_ASSERT((Code == 1), "View not folded correctly."); }
+    static void apply() { MTL_STATIC_ASSERT((Code == 999), "View not folded correctly."); }
 };
 
 template <typename Value, typename Parameters>
@@ -39,9 +40,20 @@ template <typename Matrix>
 struct check_type_aux<6, mtl::matrix::hermitian_view<Matrix> > 
 {    static void apply() {}  };
 
+
+
+template <int Code, typename Matrix>
+void check_code()
+{
+    // cout << "View code is " << mtl::traits::view_code<Matrix>::value << '\n';
+    // MTL_THROW_IF((Code != (mtl::traits::view_code<Matrix>::value & 6)), mtl::unexpected_result("Not correct view_code."));
+    MTL_STATIC_ASSERT((Code == (mtl::traits::view_code<Matrix>::value & 6)), "Not correct view_code.");
+}
+
 template <int Code, typename Matrix>
 void check_type(const Matrix&)
 {
+    check_code<Code, Matrix>();
     check_type_aux<Code, Matrix>::apply();
 }
 
@@ -64,17 +76,17 @@ void inner_test(const Matrix& A, const char* text)
     check(A, Code);
     check_type<Code>(A);
 
-    cout << "conj(A) is\n" << conj(A);
-    check(conj(A), Code ^ 2);
-    check_type<Code ^ 2>(conj(A));
+    // cout << "conj(A) is\n" << conj(A);
+    // check(conj(A), Code ^ 2);
+    // check_type<Code ^ 2>(conj(A));
 
     cout << "trans(A) is\n" << trans(A);
     check(trans(A), Code ^ 4);
     check_type<Code ^ 4>(trans(A));
 
-    cout << "hermitian(A) is\n" << hermitian(A);
-    check(hermitian(A), Code ^ 6);
-    check_type<Code ^ 6>(hermitian(A));
+    // cout << "hermitian(A) is\n" << hermitian(A);
+    // check(hermitian(A), Code ^ 6);
+    // check_type<Code ^ 6>(hermitian(A));
 }
 
 
@@ -86,8 +98,8 @@ void test(Matrix& A)
 
     inner_test<0>(A, "original matrix");
     // inner_test<2>(conj(A), "conjugated matrix");
-    // inner_test<4>(trans(A), "transposed matrix");
-    //inner_test<6>(hermitian(A), "Hermitian matrix");
+    inner_test<4>(trans(A), "transposed matrix");
+    // inner_test<6>(hermitian(A), "Hermitian matrix");
 }
 
 

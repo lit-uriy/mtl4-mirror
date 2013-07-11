@@ -13,12 +13,18 @@
 #ifndef MTL_TRANS_INCLUDE
 #define MTL_TRANS_INCLUDE
 
+#include <boost/mpl/if.hpp>
+
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/algebraic_category.hpp>
 #include <boost/numeric/mtl/utility/transposed_orientation.hpp>
+#include <boost/numeric/mtl/utility/view_code.hpp>
+#include <boost/numeric/mtl/utility/viewed_collection.hpp>
+#include <boost/numeric/mtl/utility/compose_view.hpp>
 #include <boost/numeric/mtl/matrix/transposed_view.hpp>
+#include <boost/numeric/mtl/matrix/view_ref.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
@@ -29,52 +35,55 @@ namespace matrix {
     namespace sfunctor {
 
 	// General case is not defined
-	template <typename Value, typename AlgebraicCategory>
+	template <typename Value, typename AlgebraicCategory, unsigned IsConst>
 	struct trans {};
 
-	template <typename Matrix>
-	struct trans<Matrix, tag::matrix>
+	template <typename Matrix, unsigned IsConst>
+	struct trans<Matrix, tag::matrix, IsConst>
 	{
-	    typedef transposed_view<Matrix>               result_type;
+	    static const unsigned code= (mtl::traits::view_code<Matrix>::value + IsConst) ^ 4;
+	    typedef typename mtl::traits::compose_view<code, typename mtl::traits::viewed_collection<Matrix>::type>::type result_type;
 	
-	    static inline result_type apply(Matrix& matrix)
+	    typedef typename boost::mpl::if_c<(IsConst == 1), const Matrix&, Matrix&>::type ref_type;
+
+	    static inline result_type apply(ref_type matrix)
 	    {
-		return result_type(matrix);
+		return result_type(view_ref(matrix));
 	    }
 	};
 
 	// General case is not defined
-	template <typename Value, typename AlgebraicCategory>
-	struct const_trans {};
+	// template <typename Value, typename AlgebraicCategory>
+	// struct const_trans {};
 
-	template <typename Matrix>
-	struct const_trans<Matrix, tag::matrix>
-	{
-	    typedef const transposed_view<const Matrix>   result_type;
+	// template <typename Matrix>
+	// struct const_trans<Matrix, tag::matrix>
+	// {
+	//     typedef const transposed_view<const Matrix>   result_type;
 	
-	    static inline result_type apply(const Matrix& matrix)
-	    {
-		return result_type(matrix);
-	    }
-	};
+	//     static inline result_type apply(const Matrix& matrix)
+	//     {
+	// 	return result_type(matrix);
+	//     }
+	// };
 
     } // namespace sfunctor
 
 
     template <typename Value>
-    typename sfunctor::const_trans<Value, typename mtl::traits::algebraic_category<Value>::type>::result_type 
+    typename sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 1>::result_type 
     inline trans(const Value& v)
     {
-    vampir_trace<3041> tracer;
-	return sfunctor::const_trans<const Value, typename mtl::traits::algebraic_category<Value>::type>::apply(v);
+	vampir_trace<3041> tracer;
+	return sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 1>::apply(v);
     }
 
     template <typename Value>
-    typename sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type>::result_type 
+    typename sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 0>::result_type 
     inline trans(Value& v)
     {
-    vampir_trace<3042> tracer;
-	return sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type>::apply(v);
+	vampir_trace<3042> tracer;
+	return sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 0>::apply(v);
     }
 
 } // namespace mtl::matrix
