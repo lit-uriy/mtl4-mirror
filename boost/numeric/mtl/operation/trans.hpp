@@ -41,7 +41,7 @@ namespace matrix {
 	template <typename Matrix, unsigned IsConst>
 	struct trans<Matrix, tag::matrix, IsConst>
 	{
-	    static const unsigned code= (mtl::traits::view_code<Matrix>::value + IsConst) ^ 4;
+	    static const unsigned code= (mtl::traits::view_code<Matrix>::value | IsConst) ^ 4;
 	    typedef typename mtl::traits::compose_view<code, typename mtl::traits::viewed_collection<Matrix>::type>::type result_type;
 	
 	    typedef typename boost::mpl::if_c<(IsConst == 1), const Matrix&, Matrix&>::type ref_type;
@@ -51,21 +51,6 @@ namespace matrix {
 		return result_type(view_ref(matrix));
 	    }
 	};
-
-	// General case is not defined
-	// template <typename Value, typename AlgebraicCategory>
-	// struct const_trans {};
-
-	// template <typename Matrix>
-	// struct const_trans<Matrix, tag::matrix>
-	// {
-	//     typedef const transposed_view<const Matrix>   result_type;
-	
-	//     static inline result_type apply(const Matrix& matrix)
-	//     {
-	// 	return result_type(matrix);
-	//     }
-	// };
 
     } // namespace sfunctor
 
