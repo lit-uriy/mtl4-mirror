@@ -13,15 +13,19 @@
 #ifndef MTL_CONJ_INCLUDE
 #define MTL_CONJ_INCLUDE
 
+#include <complex>
+
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/algebraic_category.hpp>
 #include <boost/numeric/mtl/utility/is_what.hpp>
+#include <boost/numeric/mtl/utility/view_code.hpp>
+#include <boost/numeric/mtl/utility/viewed_collection.hpp>
+#include <boost/numeric/mtl/utility/compose_view.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
-
-#include <complex>
+#include <boost/numeric/mtl/matrix/view_ref.hpp>
 
 namespace mtl {
 
@@ -88,12 +92,36 @@ namespace sfunctor {
 
     namespace matrix {
 
+	namespace detail {
+
+	    template <typename Matrix>
+	    struct conj
+	    {
+		static const unsigned code= (mtl::traits::view_code<Matrix>::value | 1) ^ 2;
+		typedef typename mtl::traits::compose_view<code, typename mtl::traits::viewed_collection<Matrix>::type>::type result_type;
+		
+		static inline result_type apply(const Matrix& A)
+		{
+		    return result_type(view_ref(A));
+		}
+	    };
+
+	}
+
+	/// Conjugate of a matrix
+	// template <typename Matrix>
+	// typename mtl::traits::enable_if_matrix<Matrix, typename detail::conj<Matrix>::result_type >::type
+	// inline conj(const Matrix& A)
+	// {
+	//     return detail::conj<Matrix>::apply(A);
+	// }
+
 	/// Conjugate of a matrix
 	template <typename Matrix>
 	typename mtl::traits::enable_if_matrix<Matrix, conj_view<Matrix> >::type
-	inline conj(const Matrix& v)
+	inline conj(const Matrix& A)
 	{
-	    return conj_view<Matrix>(v);
+	    return conj_view<Matrix>(A);
 	}
     } 
 

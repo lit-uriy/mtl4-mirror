@@ -41,7 +41,6 @@ struct check_type_aux<6, mtl::matrix::hermitian_view<Matrix> >
 {    static void apply() {}  };
 
 
-
 template <int Code, typename Matrix>
 void check_code()
 {
