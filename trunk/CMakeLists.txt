@@ -75,4 +75,6 @@ endif()
 set(BUILDNAME "${TESTBUILDNAME}")
 enable_testing()
 include(CTest)
+
+set(MTL_IS_CONFIGURED True) # impede double double configuration in libs
 add_subdirectory(libs)	

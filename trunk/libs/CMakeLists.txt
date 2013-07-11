@@ -1,5 +1,8 @@
 project(mtl4_binaries)
-find_package(MTL REQUIRED)
+if (NOT MTL_IS_CONFIGURED)
+  find_package(MTL REQUIRED)
+endif()
+
 macro (compile_all testing)
     # cycle through the sources
     # The directory assumes that each cpp file is a separate test
