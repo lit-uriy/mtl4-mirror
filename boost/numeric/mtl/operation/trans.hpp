@@ -32,7 +32,7 @@ namespace mtl {
 
 namespace matrix {
 
-    namespace sfunctor {
+    namespace detail {
 
 	// General case is not defined
 	template <typename Value, typename AlgebraicCategory, unsigned IsConst>
@@ -52,23 +52,23 @@ namespace matrix {
 	    }
 	};
 
-    } // namespace sfunctor
+    } // namespace detail
 
 
     template <typename Value>
-    typename sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 1>::result_type 
+    typename detail::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 1>::result_type 
     inline trans(const Value& v)
     {
 	vampir_trace<3041> tracer;
-	return sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 1>::apply(v);
+	return detail::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 1>::apply(v);
     }
 
     template <typename Value>
-    typename sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 0>::result_type 
+    typename detail::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 0>::result_type 
     inline trans(Value& v)
     {
 	vampir_trace<3042> tracer;
-	return sfunctor::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 0>::apply(v);
+	return detail::trans<Value, typename mtl::traits::algebraic_category<Value>::type, 0>::apply(v);
     }
 
 } // namespace mtl::matrix

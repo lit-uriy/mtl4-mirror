@@ -75,17 +75,17 @@ void inner_test(const Matrix& A, const char* text)
     check(A, Code);
     check_type<Code>(A);
 
-    // cout << "conj(A) is\n" << conj(A);
-    // check(conj(A), Code ^ 2);
-    // check_type<Code ^ 2>(conj(A));
+    cout << "conj(A) is\n" << conj(A);
+    check(conj(A), Code ^ 2);
+    check_type<Code ^ 2>(conj(A));
 
     cout << "trans(A) is\n" << trans(A);
     check(trans(A), Code ^ 4);
     check_type<Code ^ 4>(trans(A));
 
-    // cout << "hermitian(A) is\n" << hermitian(A);
-    // check(hermitian(A), Code ^ 6);
-    // check_type<Code ^ 6>(hermitian(A));
+    cout << "hermitian(A) is\n" << hermitian(A);
+    check(hermitian(A), Code ^ 6);
+    check_type<Code ^ 6>(hermitian(A));
 }
 
 
@@ -96,9 +96,9 @@ void test(Matrix& A)
        ct(3, 4), ct(5, 6);
 
     inner_test<0>(A, "original matrix");
-    // inner_test<2>(conj(A), "conjugated matrix");
+    inner_test<2>(conj(A), "conjugated matrix");
     inner_test<4>(trans(A), "transposed matrix");
-    // inner_test<6>(hermitian(A), "Hermitian matrix");
+    inner_test<6>(hermitian(A), "Hermitian matrix");
 }
 
 
