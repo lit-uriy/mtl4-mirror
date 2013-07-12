@@ -115,7 +115,9 @@ public:
      * Before using get_eigenvalues() you have to use calc()!
      * \param dense_vector<complex<value_type>> of eigenvalues
      */    
-    dense_vector<std::complex<value_type> > get_eigenvalues() {
+    dense_vector<std::complex<value_type> > get_eigenvalues() 
+    {
+	using std::conj;
 	dense_vector<std::complex<double> > res(ncols, 0.0);
 	size_type i;
 	for(i=ncols-1;i>0 && i<ncols;i--) {
@@ -189,7 +191,9 @@ private:
     /** \brief Performes a double shift for submatrix defined by range r
      */
     
-    void doubleShift(irange r) {
+    void doubleShift(irange r) 
+    {
+	using std::conj;
 	value_type s,t;
 	
 	if(isRealEW(r.finish()-1)) {
