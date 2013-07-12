@@ -99,11 +99,11 @@ namespace sfunctor {
 	    {
 		static const unsigned code_0= mtl::traits::view_code<Matrix>::value ^ 2,
 		                      code= code_0 == 0 || code_0 == 4 ? code_0 | 1 : code_0; // if matrix ref or transposed, make it const
-		typedef typename mtl::traits::compose_view<code, typename mtl::traits::viewed_collection<Matrix>::type>::type result_type;
+		typedef typename mtl::traits::compose_view<code, typename mtl::traits::viewed_collection<Matrix>::type>::type type;
 		
-		static inline result_type apply(const Matrix& A)
+		static inline type apply(const Matrix& A)
 		{
-		    return result_type(view_ref(A));
+		    return type(view_ref(A));
 		}
 	    };
 
@@ -111,7 +111,7 @@ namespace sfunctor {
 
 	/// Conjugate of a matrix
 	template <typename Matrix>
-	typename mtl::traits::enable_if_matrix<Matrix, typename detail::conj_trait<Matrix>::result_type >::type
+	typename mtl::traits::lazy_enable_if_matrix<Matrix, detail::conj_trait<Matrix> >::type
 	inline conj(const Matrix& A)
 	{
 	    return detail::conj_trait<Matrix>::apply(A);
@@ -140,6 +140,7 @@ namespace sfunctor {
     using vector::conj;
     using matrix::conj; 
     using scalar::conj;
+    // using std::conj;
 
 } // namespace mtl
 

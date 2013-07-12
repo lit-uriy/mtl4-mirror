@@ -51,7 +51,7 @@ namespace mtl {
 		typename mtl::sfunctor::conj<Value>::result_type
 		operator() (const Value& v)
 		{
-		    using std::conj;
+		    using mtl::conj;
 		    return conj(v);
 		}
 	    };

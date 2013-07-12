@@ -33,6 +33,21 @@ struct enable_if_scalar
   : boost::enable_if<is_scalar<Value>, Type>
 {};
 
+template <typename Value, typename Type>
+struct lazy_enable_if_matrix
+  : boost::lazy_enable_if<is_matrix<Value>, Type>
+{};
+
+template <typename Value, typename Type>
+struct lazy_enable_if_vector
+  : boost::lazy_enable_if<is_vector<Value>, Type>
+{};
+
+template <typename Value, typename Type>
+struct lazy_enable_if_scalar
+  : boost::lazy_enable_if<is_scalar<Value>, Type>
+{};
+
 }} // namespace mtl
 
 #endif // MTL_ENABLE_IF_INCLUDE

@@ -117,7 +117,7 @@ public:
      */    
     dense_vector<std::complex<value_type> > get_eigenvalues() 
     {
-	using std::conj;
+	using mtl::conj;
 	dense_vector<std::complex<double> > res(ncols, 0.0);
 	size_type i;
 	for(i=ncols-1;i>0 && i<ncols;i--) {
@@ -193,7 +193,7 @@ private:
     
     void doubleShift(irange r) 
     {
-	using std::conj;
+	using mtl::conj;
 	value_type s,t;
 	
 	if(isRealEW(r.finish()-1)) {

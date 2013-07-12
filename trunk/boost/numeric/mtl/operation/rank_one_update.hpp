@@ -31,7 +31,7 @@ namespace mtl { namespace matrix {
 template <typename Matrix, typename VectorX, typename VectorY>
 inline void rank_one_update(Matrix& matrix, const VectorX& x, const VectorY& y)
 {
-    using std::conj;
+    using mtl::conj;
     vampir_trace<2022> tracer;
     MTL_THROW_IF(num_rows(matrix) != size(x) || num_cols(matrix) != size(y), incompatible_size());
     namespace traits = mtl::traits;

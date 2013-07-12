@@ -18,19 +18,19 @@ typedef std::complex<double>      cdouble;
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    using mtl::matrix::conj;
+    //using mtl::conj;
     const unsigned                    xd= 2, yd= 5, n= xd * yd;
     A.change_dim(n, n);
     laplacian_setup(A, xd, yd); 
 
     A*= cdouble(1, -1);
-    std::cout << name << "\nconj(A) is\n" << with_format(conj(A), 7, 1) << "\n";
+    std::cout << name << "\nconj(A) is\n" << with_format(mtl::conj(A), 7, 1) << "\n";
 
     mtl::dense_vector<cdouble> x(n),Ax(n);
     x=cdouble(1,2);
     
     // Ax= mtl::matrix::conj(A) * x;
-    Ax= conj(A) * x;
+    Ax= mtl::conj(A) * x;
     std::cout << "conj(A) * x is " << Ax << "\n";
     
     Ax=trans(A) * x;
