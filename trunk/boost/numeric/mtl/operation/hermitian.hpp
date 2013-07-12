@@ -14,19 +14,41 @@
 #define MTL_HERMITIAN_INCLUDE
 
 #include <boost/numeric/mtl/matrix/hermitian_view.hpp>
+#include <boost/numeric/mtl/matrix/view_ref.hpp>
 #include <boost/numeric/mtl/utility/enable_if.hpp>
+#include <boost/numeric/mtl/utility/view_code.hpp>
+#include <boost/numeric/mtl/utility/viewed_collection.hpp>
+#include <boost/numeric/mtl/utility/compose_view.hpp>
 
 namespace mtl { 
 
     // vector version to be done
 
     namespace matrix {
-	///Returns hermitian view of matrix A
+
+	namespace detail {
+
+	    template <typename Matrix>
+	    struct hermitian
+	    {
+		static const unsigned code_0= mtl::traits::view_code<Matrix>::value ^ 6,
+		                      code= code_0 == 0 || code_0 == 4 ? code_0 | 1 : code_0; // if matrix ref or transposed, make it const
+		typedef typename mtl::traits::compose_view<code, typename mtl::traits::viewed_collection<Matrix>::type>::type result_type;
+	
+		static inline result_type apply(const Matrix& A)
+		{
+		    return result_type(view_ref(A));
+		}
+	    };
+
+	} // namespace detail
+	
+	/// Return hermitian of matrix A
 	template <typename Matrix>
-	typename mtl::traits::enable_if_matrix<Matrix, hermitian_view<Matrix> >::type
-	inline hermitian(const Matrix& matrix)
+	typename mtl::traits::enable_if_matrix<Matrix, typename detail::hermitian<Matrix>::result_type >::type
+	inline hermitian(const Matrix& A)
 	{
-	    return hermitian_view<Matrix>(matrix);
+	    return detail::hermitian<Matrix>::apply(A);
 	}
     }
 
