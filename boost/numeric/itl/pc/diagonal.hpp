@@ -75,7 +75,7 @@ class diagonal
     template <typename VectorIn, typename VectorOut>
     void adjoint_solve(const VectorIn& x, VectorOut& y) const
     {
-	using std::conj;
+	using mtl::conj;
 	y.checked_change_resource(x);
 	MTL_THROW_IF(size(x) != size(inv_diag), mtl::incompatible_size());
 	for (size_type i= 0; i < size(inv_diag); ++i)
