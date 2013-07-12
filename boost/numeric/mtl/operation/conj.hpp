@@ -115,14 +115,6 @@ namespace sfunctor {
 	{
 	    return detail::conj_trait<Matrix>::apply(A);
 	}
-
-	/// Conjugate of a matrix
-	// template <typename Matrix>
-	// typename mtl::traits::enable_if_matrix<Matrix, conj_view<Matrix> >::type
-	// inline conj(const Matrix& A)
-	// {
-	//     return conj_view<Matrix>(A);
-	// }
     } 
 
     namespace scalar {
@@ -145,7 +137,7 @@ namespace sfunctor {
 
     /// Conjugate of vector, matrix, or scalar
     using vector::conj;
-    //using matrix::conj; // causes compiler errors in ams_test with gcc 4.6 :-!
+    using matrix::conj; 
     using scalar::conj;
 
 } // namespace mtl

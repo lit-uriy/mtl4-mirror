@@ -119,6 +119,7 @@ class matrix_market_istream
     template <typename Inserter, typename Filter, typename Value>
     void insert_value(Inserter& ins, std::size_t r, std::size_t c, const Filter& filter, Value) 
     {
+	using std::conj;
 	typedef typename Collection<typename Inserter::matrix_type>::value_type mvt;
 	Value v;
 	read_value(v);
