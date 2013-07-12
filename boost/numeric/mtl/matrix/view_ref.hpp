@@ -34,11 +34,11 @@ inline Matrix& view_ref(transposed_view<Matrix>& A)
 {    return A.ref; }
 
 template <typename Matrix>
-inline const Matrix& view_ref(const transposed_view<Matrix>& A)
+inline const Matrix& view_ref(transposed_view<const Matrix>& A)
 {    return A.ref; }
 
 template <typename Matrix>
-inline const Matrix& view_ref(const transposed_view<const Matrix>& A)
+inline const Matrix& view_ref(const transposed_view<Matrix>& A)
 {    return A.ref; }
 
 template <typename Matrix>
@@ -46,15 +46,7 @@ inline const Matrix& view_ref(const conj_view<Matrix>& A)
 {    return A.ref; }
 
 template <typename Matrix>
-inline const Matrix& view_ref(const conj_view<const Matrix>& A)
-{    return A.ref; }
-
-template <typename Matrix>
 inline const Matrix& view_ref(const hermitian_view<Matrix>& A)
-{    return A.const_ref(); }
-
-template <typename Matrix>
-inline const Matrix& view_ref(const hermitian_view<const Matrix>& A)
 {    return A.const_ref(); }
 
 
