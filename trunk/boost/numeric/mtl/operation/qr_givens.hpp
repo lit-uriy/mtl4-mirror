@@ -120,7 +120,7 @@ public:
     void set_rotation(value_type a, value_type b)
     {
 	using std::abs;
-	using mtl::conj;
+	using std::conj;
 	
 	value_type zero= math::zero(a), one= math::one(b), t;
 	
