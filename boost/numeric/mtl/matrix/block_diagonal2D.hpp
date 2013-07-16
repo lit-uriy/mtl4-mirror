@@ -18,6 +18,7 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
+#include <boost/numeric/mtl/matrix/mat_expr.hpp>
 
 
 namespace mtl {
@@ -29,6 +30,7 @@ namespace mtl {
 /** Blocks can be any existing matrix_type in mtl4. **/
 template <typename Matrix>
 class block_diagonal2D 
+  : public mat_expr< block_diagonal2D<Matrix> >
 {
   public:
  
@@ -78,7 +80,7 @@ class block_diagonal2D
 	return blocks[i];
     }
 
-    ///insert a block from start x start to end x end
+    /// Insert a block from start x start to end x end
     void insert(size_type start, size_type end, const block_type& A) 
     {
 	MTL_DEBUG_THROW_IF(start > end, logic_error());
@@ -104,6 +106,18 @@ class block_diagonal2D
 	}
 #endif
     } 
+
+    /// Element A[i][j] by summing over all blocks, use with care because it is very slow
+    value_type operator()(size_type i, size_type j) const
+    {
+	value_type s= value_type(0);
+	for (std::size_t b= 0; b < blocks.size(); ++b) {
+	    size_type st= start_block[b], e= end_block[b];
+	    if (st <= i && st <= j && i < e && j < e)
+		s+= blocks[b][i - st][j - st];
+	}
+	return s;
+    }
  
     /// Memory of inserted 
     void make_compact(boost::mpl::true_)
