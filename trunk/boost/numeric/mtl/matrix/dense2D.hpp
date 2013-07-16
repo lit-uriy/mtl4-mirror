@@ -322,7 +322,7 @@ class dense2D
 #ifdef MTL_WITH_MOVE
     /// Move assignment for data on heap
     self& operator=(self&& src)
-    {	return self_assign(src, boost::mpl::false_());    }
+    {	return self_assign(src, boost::mpl::bool_<memory_base::on_stack>());    }
 
     // {
     // 	swap(*this, src);
@@ -333,6 +333,7 @@ class dense2D
      /// (Copy) Assignment
     self& operator=(const self& src)
     {	return self_assign(src, boost::mpl::true_());    }
+    
 #else   
     /// (Copy) Assignment
     self& operator=(typename detail::ref_on_stack<self, memory_base::on_stack>::type src)
