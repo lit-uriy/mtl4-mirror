@@ -107,7 +107,7 @@ class block_diagonal2D
 #endif
     } 
 
-    /// Element A[i][j] by summing over all blocks, use with care because it is very slow
+    /// Element A[i][j] by summing over all blocks, use only for debugging because it is very slow
     value_type operator()(size_type i, size_type j) const
     {
 	value_type s= value_type(0);
