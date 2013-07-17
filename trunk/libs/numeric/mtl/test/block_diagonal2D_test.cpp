@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <boost/numeric/mtl/mtl.hpp>
-// #include <boost/numeric/mtl/matrix/block_diagonal2D.hpp>
 
 using namespace mtl;
 

@@ -41,6 +41,10 @@ namespace mtl { namespace traits {
     struct is_row_major<vector::parameters<row_major, Dimension, OnStack, SizeType> >
       : boost::mpl::true_ {};
 
+    template <typename T>
+    struct is_row_major<const T>
+      : is_row_major<T> {};
+
     template <typename Dimension, bool OnStack, typename SizeType>
     struct is_row_major<vector::parameters<col_major, Dimension, OnStack, SizeType> >
       : boost::mpl::false_ {};
