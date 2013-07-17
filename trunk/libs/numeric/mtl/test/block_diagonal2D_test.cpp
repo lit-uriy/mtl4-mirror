@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include <boost/numeric/mtl/mtl.hpp>
-#include <boost/numeric/mtl/matrix/block_diagonal2D.hpp>
+// #include <boost/numeric/mtl/matrix/block_diagonal2D.hpp>
 
 using namespace mtl;
 
@@ -32,8 +32,8 @@ int main()
     for(int i=0; i<NB; i++)
 	Eb.insert(i*DIM, (i+1)*DIM, E3) ;
 
-    std::cout << "E3 = \n" << E3 << "\n";  
-    std::cout << "Eb = \n" << Eb << "\n";   
+    mtl::io::tout << "E3 = \n" << E3 << "\n";  
+    mtl::io::tout << "Eb = \n" << Eb << "\n";   
 
     MTL_THROW_IF((Eb(9, 9) != 1.0), mtl::unexpected_result());
     MTL_THROW_IF((Eb(9, 10) != 0.0), mtl::unexpected_result());

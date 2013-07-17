@@ -229,21 +229,21 @@ inline size(const block_diagonal2D<Value>& matrix)
     return matrix.num_cols() * matrix.num_rows();
 }
 
-/// Distributed Vector of start block entrys in the matrix
-template <typename Value>
-typename block_diagonal2D<Value>::index_type
-inline start(const block_diagonal2D<Value>& matrix)
-{
-    return matrix.start();
-}
+// /// Distributed Vector of start block entrys in the matrix
+// template <typename Value>
+// typename block_diagonal2D<Value>::index_type
+// inline start(const block_diagonal2D<Value>& matrix)
+// {
+//     return matrix.start();
+// }
 
-/// Distributed Vector of en block entrys in the matrix
-template <typename Value>
-typename block_diagonal2D<Value>::index_type
-inline end(const block_diagonal2D<Value>& matrix)
-{
-    return matrix.end();
-}
+// /// Distributed Vector of en block entrys in the matrix
+// template <typename Value>
+// typename block_diagonal2D<Value>::index_type
+// inline end(const block_diagonal2D<Value>& matrix)
+// {
+//     return matrix.end();
+// }
 
 
 
