@@ -22,7 +22,7 @@
 #include <boost/numeric/mtl/matrix/element_matrix.hpp> 
 #include <boost/numeric/mtl/matrix/element.hpp> 
 #include <boost/numeric/mtl/matrix/implicit_dense.hpp> 
-// #include <boost/numeric/mtl/matrix/block_diagonal2D.hpp>
+#include <boost/numeric/mtl/matrix/block_diagonal2D.hpp>
 #include <boost/numeric/mtl/matrix/ell_matrix.hpp>
 
 #include <boost/numeric/mtl/matrix/inserter.hpp> 
