@@ -97,8 +97,7 @@ namespace sfunctor {
 	    template <typename Matrix>
 	    struct conj_trait
 	    {
-		static const unsigned code_0= mtl::traits::view_code<Matrix>::value ^ 2,
-		                      code= code_0 == 0 || code_0 == 4 ? code_0 | 1 : code_0; // if matrix ref or transposed, make it const
+		static const unsigned code= mtl::traits::view_toggle_conj<mtl::traits::view_code<Matrix> >::value;
 		typedef typename mtl::traits::compose_view<code, typename mtl::traits::viewed_collection<Matrix>::type>::type type;
 		
 		static inline type apply(const Matrix& A)

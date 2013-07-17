@@ -22,7 +22,7 @@ namespace traits {
     template <typename LinOp>
     struct adjoint
     {
-	typedef mtl::matrix::hermitian_view<LinOp>  type;
+	typedef typename mtl::matrix::detail::hermitian<LinOp>::result_type  type;
 	type operator()(const LinOp& A)
 	{
 	    return hermitian(A);

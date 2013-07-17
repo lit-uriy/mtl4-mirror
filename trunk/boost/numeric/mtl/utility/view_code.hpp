@@ -56,6 +56,13 @@ struct view_code<mtl::matrix::hermitian_view<Matrix> >
 
 // add vector stuff
 
+template <unsigned Value>
+struct view_normalize_const
+{
+      static const unsigned tmp2= Value == 0 || Value == 4 ? Value | 1 : Value, // if matrix ref or transposed, make it const
+	                    value= (tmp2 & 3) == 3 ? tmp2 ^ 1 : tmp2;           // for conj turn off const
+};
+
 template <typename ViewCode>
 struct view_add_const
 {
@@ -71,7 +78,7 @@ struct view_remove_const
 template <typename ViewCode>
 struct view_toggle_conj
 {
-    static const unsigned value= ViewCode::value ^ 2;
+    static const unsigned value= view_normalize_const<ViewCode::value ^ 2>::value;
 };
 
 template <typename ViewCode>
@@ -83,7 +90,7 @@ struct view_toggle_trans
 template <typename ViewCode>
 struct view_toggle_hermitian
 {
-    static const unsigned value= ViewCode::value ^ 6;
+    static const unsigned value= view_normalize_const<ViewCode::value ^ 6>::value;
 };
 
 }} // namespace mtl::traits
