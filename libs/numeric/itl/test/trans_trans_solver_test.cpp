@@ -6,7 +6,7 @@
 
 template< typename matrix_type, typename vector_type, typename left_precon_type, 
 	  typename right_precon_type, typename iter_type >
-void solver(const matrix_type& A, vector_type& x, const vector_type& b, 
+void test_solver(const matrix_type& A, vector_type& x, const vector_type& b, 
 	   const left_precon_type& L, const right_precon_type& R, iter_type& iter)
 {
     itl::bicg(A, x, b, L, iter); // GEHT NICHT!
@@ -40,10 +40,10 @@ int trans_test(const matrix_type& A, vector_type& x, const vector_type& b)
     // Termination criterion: r < 1e-6 * b or N iterations
     noisy_iteration<double>       iter(b, 500, 1.e-6);
     
-    solver(A, x, b, P0, Id0, iter);
-    solver(A, x, b, P1, Id1, iter); // GEHT NICHT!
-    solver(B, x, b, P0, Id0, iter);
-    solver(B, x, b, P1, Id1, iter); // GEHT NICHT!
+    test_solver(A, x, b, P0, Id0, iter);
+    test_solver(A, x, b, P1, Id1, iter); // GEHT NICHT!
+    test_solver(B, x, b, P0, Id0, iter);
+    test_solver(B, x, b, P1, Id1, iter); // GEHT NICHT!
 
     return 0;
 }
