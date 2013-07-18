@@ -119,7 +119,7 @@ Matrix inline hessenberg(const Matrix& A)
     MTL_THROW_IF(num_rows(A) < 3, matrix_too_small());
 
     typedef typename Collection<Matrix>::value_type   value_type;
-    typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i
+    // typedef typename Magnitude<value_type>::type      magnitude_type; // to multiply with 2 not 2+0i
     typedef typename Collection<Matrix>::size_type    size_type;
     size_type        ncols = num_cols(A), nrows = num_rows(A);
     value_type       zero= math::zero(A[0][0]);

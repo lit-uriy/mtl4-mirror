@@ -26,7 +26,6 @@ std::string program_dir; // Ugly global variable !!!
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename mtl::Collection<Matrix>::value_type vt;
     laplacian_setup(A, 3, 4);
     cout << name << ":\n A is\n" << A;
     mtl::io::matrix_market_ostream oms(mtl::io::join(program_dir, "matrix_market/laplace_3x4.mtx"));

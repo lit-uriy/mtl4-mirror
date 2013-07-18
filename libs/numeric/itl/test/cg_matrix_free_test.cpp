@@ -50,7 +50,6 @@ int main()
   // For a more realistic example set size to 1000 or larger
   const int size = 10, N = size * size;
 
-  typedef mtl::compressed2D<double>  matrix_type;
   poisson2D_dirichlet A(size, size);
 
   itl::pc::identity<poisson2D_dirichlet>     P(A);

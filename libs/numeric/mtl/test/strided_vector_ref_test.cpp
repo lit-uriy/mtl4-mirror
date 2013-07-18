@@ -41,7 +41,6 @@ void one_d_iteration(char const* name, const Vector & vector, size_t check_index
 template <typename Vector>
 void test(Vector& v, const char* name)
 {
-    typedef typename mtl::Collection<Vector>::value_type value_type;
     using mtl::sum; using mtl::product;
 
     typedef mtl::tag::iter::all iall;

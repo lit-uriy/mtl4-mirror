@@ -21,7 +21,6 @@ template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
     using mtl::Collection;
-    typedef typename Collection<Matrix>::value_type   value_type;
     A.change_dim(5, 5); A= 0.0;
     {
 	mtl::matrix::inserter<Matrix>   ins(A);

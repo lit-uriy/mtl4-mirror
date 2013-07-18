@@ -47,7 +47,7 @@ void read_el_matrix(StreamType& file, element_structure<ValueType>& A)
 {
     // Type definitions
     typedef element<ValueType>		element_type;
-    typedef typename element_type::value_type 	value_type;
+    // typedef typename element_type::value_type 	value_type;
     typedef typename element_type::index_type 	indices;
     typedef typename element_type::matrix_type 	matrix;
     vampir_trace<4036> trace;

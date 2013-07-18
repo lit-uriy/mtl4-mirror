@@ -90,7 +90,6 @@ int main(int, char** argv)
 {
     mtl::vampir_trace<9999> tracer;
     typedef double value_type;
-    typedef mtl::compressed2D<value_type>     sparse_type;
        
     std::string program_dir= mtl::io::directory_name(argv[0]),
   	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");

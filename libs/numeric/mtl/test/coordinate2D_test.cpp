@@ -25,7 +25,6 @@ int main(int, char**)
     using mtl::io::tout;
 
     typedef mtl::matrix::coordinate2D<double> matrix_type;
-    typedef matrix_type::size_type            size_type;
     matrix_type   B(5, 4);
     mtl::dense_vector<double> res(5, 0.0), res2(5), x(4, 1.0);
     

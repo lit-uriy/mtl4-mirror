@@ -21,7 +21,6 @@ using namespace std;
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename mtl::Collection<Matrix>::value_type   value_type;
     cout << "\n" << name << "\n" << "A =\n" << A;
 
     cout << "Pointer to major (row) index array is " << A.address_major() 

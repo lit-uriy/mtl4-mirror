@@ -41,7 +41,6 @@ int main()
     // For a more realistic example set sz to 1000 or larger
     const unsigned size = 4, N = size * size;
 
-    typedef mtl::compressed2D<double>  matrix_type;
     mtl::compressed2D<double>          A(N, N);
     laplacian_setup(A, size, size);
        

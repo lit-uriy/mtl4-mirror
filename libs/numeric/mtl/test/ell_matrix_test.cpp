@@ -39,7 +39,6 @@ int main(int, char**)
     using mtl::io::tout;
     typedef mtl::dense_vector<double>         vector_type;
     typedef mtl::matrix::ell_matrix<double>   matrix_type;
-    typedef matrix_type::size_type            size_type;
     matrix_type   A(5, 5);
 
     fill_matrix(A);
