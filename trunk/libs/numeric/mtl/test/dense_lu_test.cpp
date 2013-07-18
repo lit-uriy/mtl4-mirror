@@ -17,8 +17,7 @@
 template <typename Matrix>
 void singularity_test(const Matrix& A)
 {
-    typedef typename mtl::Collection<Matrix>::value_type  Scalar;
-    try {
+     try {
 	Matrix B(lu_f(A));
 
     } catch (mtl::matrix_singular excp) {

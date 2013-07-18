@@ -235,7 +235,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	typedef typename element_type::neighbor_iterator neigh_iterator;
 	typedef typename element_type::neighbor_set_type neigh_set_type;
 	typedef typename element_type::neighbor_set_iterator_type neigh_set_iterator;
-	typedef typename neigh_coll_type::const_iterator const_neigh_iterator;
+	// typedef typename neigh_coll_type::const_iterator const_neigh_iterator;
 	typedef typename element_type::index_type index_type;
 	typedef typename element_type::matrix_type matrix_type;
 	
@@ -244,7 +244,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		     
 
 	typedef std::map<int, int> cmap;
-	typedef typename cmap::iterator cmap_iterator;
+	// typedef typename cmap::iterator cmap_iterator;
 
 	typedef value_type key_type;
 	typedef utils::binary_heap<

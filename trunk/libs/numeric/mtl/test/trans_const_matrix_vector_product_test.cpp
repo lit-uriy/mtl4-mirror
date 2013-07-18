@@ -22,7 +22,6 @@ using namespace std;
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    typedef typename mtl::Collection<Matrix>::value_type   value_type;
     A.change_dim(5, 5); A= 0.0;
     {
 	mtl::matrix::inserter<Matrix>   ins(A);

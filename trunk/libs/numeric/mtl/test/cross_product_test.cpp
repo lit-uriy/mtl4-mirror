@@ -20,9 +20,6 @@ using namespace std;
 template <typename Vector>
 void test(Vector&, const char* name)
 {
-    typedef typename mtl::Collection<Vector>::value_type value_type;
-    typedef typename mtl::Collection<Vector>::size_type  size_type;
-
     using mtl::sum; using mtl::product; using mtl::one_norm;
 
     Vector a(3), b(3), res(3);

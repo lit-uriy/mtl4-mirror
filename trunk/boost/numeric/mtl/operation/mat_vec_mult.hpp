@@ -184,7 +184,6 @@ inline void square_cvec_mult(const dense2D<MValue, MPara>& A, const mtl::vector:
     // vampir_trace<3067> tracer;
     MTL_STATIC_ASSERT((mtl::traits::is_row_major<MPara>::value), "Only row-major matrices supported in this function.");
 
-    typedef typename MPara::size_type                  size_type;
     typedef typename Collection<VectorOut>::value_type value_type;    
     multi_tmp<Size, value_type> tmps(math::zero(w[0]));
 
@@ -209,7 +208,7 @@ inline dense_mat_cvec_mult(const dense2D<MValue, MPara>& A, const mtl::vector::d
     if (mtl::vector::size(w) == 0) return;
 
     typedef typename Collection<VectorOut>::value_type value_type;
-    typedef ValueIn                                    value_in_type;
+    // typedef ValueIn                                    value_in_type;
     typedef typename MPara::size_type                  size_type;
 
     const size_type  nr= num_rows(A), nc= num_cols(A);

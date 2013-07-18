@@ -41,8 +41,6 @@ void init(Matrix& A)
 template <typename Coll, typename Pos>
 void test(Coll& coll, const char* name, Pos exp_min, Pos exp_max)
 {
-    typedef typename mtl::Collection<Coll>::value_type value_type;
-
     cout << "\n" << name << " =\n" << coll; 
 
     Pos my_min= min_pos(coll);

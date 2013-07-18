@@ -36,7 +36,7 @@ inline householder(Vector& y)
     vampir_trace<2004> tracer;
     assert(size(y) > 0);
     typedef typename  Collection<Vector>::value_type   value_type;
-    typedef typename  Collection<Vector>::size_type    size_type;
+    // typedef typename  Collection<Vector>::size_type    size_type;
     const value_type  zero= math::zero(y[0]), one= math::one(y[0]);
 
     Vector            v(y);

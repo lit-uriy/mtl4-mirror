@@ -32,8 +32,6 @@ void init(Matrix& A)
 template <typename Coll>
 void test(Coll& coll, const char* name)
 {
-    typedef typename mtl::Collection<Coll>::value_type value_type;
-
     cout << "\n" << name << " =\n" << coll << "\n";
     
     Coll E(coll), F(coll); F=0;

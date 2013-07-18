@@ -5,8 +5,6 @@ int main(int, char**)
 {
     using namespace mtl;
     
-    typedef std::complex<double>      cdouble;
-
     double array[2][3] = {{8, 9, 11},
 			  {2, 6, 17}};
     dense2D<double>      A(array);

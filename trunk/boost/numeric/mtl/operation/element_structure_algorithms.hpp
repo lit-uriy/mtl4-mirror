@@ -25,7 +25,7 @@ void greedy_extract_element_structure(Element_struct& es,  Matrix& M , std::stri
 	typedef mtl::matrix::element<value_type> element_type;
 	typedef typename element_type::index_type index_type;
 	typedef typename element_type::matrix_type matrix_type;
-	typedef typename element_type::neighbor_iterator neigh_iterator;
+	// typedef typename element_type::neighbor_iterator neigh_iterator;
 				        
 #if 0
 	// Sparse matrices
