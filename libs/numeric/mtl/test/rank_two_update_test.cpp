@@ -50,7 +50,7 @@ inline complex<double> test_value(complex<double>)
 template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
-    using std::conj; using mtl::Collection;
+    using mtl::conj; using mtl::Collection;
     const unsigned max_print_size= 25;
 
     cout << "\n" << name << "\n";
