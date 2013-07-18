@@ -18,10 +18,6 @@ if(Boost_FOUND)
 	LIST(APPEND MTL_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 endif(Boost_FOUND)
 
-if(EXISTS ${MTL_DIR}/tools/cmake/C++11Features.cmake)
-  include(${MTL_DIR}/tools/cmake/C++11Features.cmake)
-endif()
-
 include(${MTL_DIR}/tools/cmake/Vampir.cmake)
 include(${MTL_DIR}/tools/cmake/UMFPACK.cmake)
 include(${MTL_DIR}/tools/cmake/ARPREC.cmake)
@@ -29,6 +25,10 @@ include(${MTL_DIR}/tools/cmake/ARPREC.cmake)
 unset(MTL_LIBRARIES )
 unset(MTL_CXX_DEFINITIONS )
 unset(MTL_INCLUDE_DIRS )
+
+if(EXISTS ${MTL_DIR}/tools/cmake/C++11Features.cmake)
+  include(${MTL_DIR}/tools/cmake/C++11Features.cmake)
+endif()
 
 if (USE_ASSERTS)
   list(APPEND MTL_CXX_DEFINITIONS "-DMTL_ASSERT_FOR_THROW")

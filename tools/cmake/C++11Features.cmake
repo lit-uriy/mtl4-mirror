@@ -28,7 +28,8 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND ${CMAKE_SYSTEM_NAME} MATCHES 
 endif()
 
 message(STATUS "Add ${CXX_ELEVEN_FLAG}")
-add_definitions("${CXX_ELEVEN_FLAG}")
+list(APPEND MTL_CXX_DEFINITIONS ${CXX_ELEVEN_FLAG})
+#add_definitions("${CXX_ELEVEN_FLAG}")
 
 set (CXX_ELEVEN_FEATURE_LIST "MOVE" "AUTO" "RANGEDFOR" "INITLIST" "STATICASSERT" "DEFAULTIMPL")
 
@@ -42,6 +43,7 @@ foreach (feature ${CXX_ELEVEN_FEATURE_LIST})
   # try_compile(${feature}_RESULT . "./${feature}_CHECK.cpp")
    message(STATUS "Support C++11's ${feature} - ${${feature}_RESULT}")
    if (${feature}_RESULT)
-     add_definitions("-DMTL_WITH_${feature}")
+     list(APPEND MTL_CXX_DEFINITIONS "-DMTL_WITH_${feature}")
+     #add_definitions("-DMTL_WITH_${feature}")
    endif()
 endforeach()
