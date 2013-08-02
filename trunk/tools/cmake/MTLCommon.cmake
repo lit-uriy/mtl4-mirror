@@ -2,7 +2,9 @@
 #This configuration file defines some cmake variables:
 #MTL_INCLUDE_DIRS: list of include directories for the mtl
 #MTL_LIBRARIES: libraries needed for interfaces like umfpack and arprec, see below
-#MTL_COMPILE_DEFINITIONS: definitions to enable the requested interfaces
+#MTL_CXX_DEFINITIONS: definitions to enable the requested interfaces
+#MTL_VERSION: version (current: 4)
+#MTL_MINOR_VERSION: minor version 
 #
 #supported components:
 #Umfpack, Arprec
@@ -21,6 +23,16 @@ endif(Boost_FOUND)
 include(${MTL_DIR}/tools/cmake/Vampir.cmake)
 include(${MTL_DIR}/tools/cmake/UMFPACK.cmake)
 include(${MTL_DIR}/tools/cmake/ARPREC.cmake)
+
+find_package(Subversion)
+set(MTL_VERSION "4")
+if(Subversion_FOUND)
+	Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR} mtlSubinfo)
+	set(MTL_MINOR_VERSION ${mtlSubinfo_WC_REVISION})
+#	message("current revision: ${mtlSubinfo_WC_REVISION}")
+else(Subversion_FOUND)
+	set(MTL_MINOR_VERSION "0")
+endif(Subversion_FOUND)
 
 unset(MTL_LIBRARIES )
 unset(MTL_CXX_DEFINITIONS )
