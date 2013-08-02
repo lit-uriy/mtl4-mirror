@@ -16,22 +16,24 @@ find_package(MTL REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MTL_INCLUDE_DIRS})
 add_definitions(${MTL_CXX_DEFINITIONS})
 
+#message("version: ${MTL_VERSION}")
+#message("minor version: ${MTL_MINOR_VERSION}")
 
 
 #REMAINING PART USES MTL4
 include(CheckCXXCompilerFlag)
 
 #let cmake look for the svn-version, only needed for packages?
-if (NOT MSVC)
-	find_package(Subversion)
-	if(Subversion_FOUND)
-		Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR} mtlSubinfo)
-		set(CurrentRevision ${mtlSubinfo_WC_REVISION})
-#	message("current revision: ${mtlSubinfo_WC_REVISION}")
-	else(Subversion_FOUND)
-		set(CurrentRevision "0")
-	endif(Subversion_FOUND)
-endif (NOT MSVC)
+#if (NOT MSVC)
+#	find_package(Subversion)
+#	if(Subversion_FOUND)
+#		Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR} mtlSubinfo)
+#		set(CurrentRevision ${mtlSubinfo_WC_REVISION})
+##	message("current revision: ${mtlSubinfo_WC_REVISION}")
+#	else(Subversion_FOUND)
+#		set(CurrentRevision "0")
+#	endif(Subversion_FOUND)
+#endif (NOT MSVC)
 
 # if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 #   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lstdc++")
