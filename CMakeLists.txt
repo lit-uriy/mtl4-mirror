@@ -3,6 +3,7 @@ project (mtl4) # GPU version
 cmake_minimum_required(VERSION 2.8)
 option(ENABLE_GCOV "enable gnu coverage flags for gnu compiler" OFF)
 option(ENABLE_WARNINGS "Enable gnu specific warnings" ON)
+option(ENABLE_TESTS "Enable the build and run of tests" ON)
 option(ENABLE_DEVELOPMENT "enable program parts under development" OFF)
 
 # adding the Path of our own Modules
@@ -74,9 +75,12 @@ if (ENABLE_SHORT_ELE_PROD)
   add_definitions("-DMTL_WITH_SHORT_ELE_PROD")
 endif()
 
-set(BUILDNAME "${TESTBUILDNAME}")
-enable_testing()
-include(CTest)
+if (ENABLE_TESTS)
+  set(BUILDNAME "${TESTBUILDNAME}")
+  enable_testing()
+  include(CTest)
 
-set(MTL_IS_CONFIGURED True) # impede double double configuration in libs
-add_subdirectory(libs)	
+  set(MTL_IS_CONFIGURED True) # impede double double configuration in libs
+  add_subdirectory(libs)	
+endif()
+
