@@ -84,3 +84,14 @@ if (ENABLE_TESTS)
   add_subdirectory(libs)	
 endif()
 
+# install MTL
+install(DIRECTORY boost DESTINATION include PATTERN ".svn" EXCLUDE)
+INSTALL(FILES MTLConfig.cmake README tools/license/license.mtl.txt boost/numeric/mtl/interface/vpt.cpp DESTINATION share/mtl/)
+
+#install the helper scripts in tools/cmake
+FILE(GLOB CMAKE_HELPERS tools/cmake/*.cmake)
+INSTALL(FILES ${CMAKE_HELPERS} DESTINATION share/mtl/tools/cmake)
+
+#install helper sources in tools/cmake
+FILE(GLOB CMAKE_HELPERS tools/cmake/*.cpp)
+INSTALL(FILES ${CMAKE_HELPERS} DESTINATION share/mtl/tools/cmake)
