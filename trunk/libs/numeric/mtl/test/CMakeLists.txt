@@ -5,12 +5,6 @@ file (GLOB SOURCES *_test.cpp)
 compile_all("true" ${SOURCES})
 compile_all("true" "vpt_test_1.cpp vpt_test_2.cpp")
 
-add_custom_target(
-  Create_MatrixMarket ALL
-  COMMAND cmake -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/matrix_market
-  COMMENT "Create folder for matrix market test files"
-)
-
 # Copy each matrix market file to build dir
 file (GLOB MTX_FILES matrix_market/*.mtx)
 foreach(FILE ${MTX_FILES})
@@ -18,8 +12,7 @@ foreach(FILE ${MTX_FILES})
   
   add_custom_target(
     CopyTestFile_${FILENAME} ALL
-    COMMAND cmake -E copy_if_different ${FILE} ${CMAKE_CURRENT_BINARY_DIR}/matrix_market
-    DEPENDS Create_MatrixMarket
+    COMMAND cmake -E copy_if_different ${FILE} ${CMAKE_CURRENT_BINARY_DIR}/matrix_market/${FILENAME}
     COMMENT "Copying ${FILENAME}"
   )
 endforeach(FILE)
