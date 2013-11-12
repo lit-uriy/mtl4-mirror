@@ -45,7 +45,7 @@ void inline lu(Matrix& LU, double eps= 0)
     MTL_THROW_IF(num_rows(LU) != num_cols(LU), matrix_not_square());
 
     for (std::size_t k= 0; k < num_rows(LU)-1; k++) {
-	if(abs(LU[k][k]) <= eps) throw matrix_singular(); 
+	if (abs(LU[k][k]) <= eps) throw matrix_singular(); 
 	irange r(k+1, imax); // Interval [k+1, n-1]
 	LU[r][k]/= LU[k][k];
 	LU[r][r]-= LU[r][k] * LU[k][r];
