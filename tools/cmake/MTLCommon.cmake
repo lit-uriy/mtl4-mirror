@@ -15,6 +15,10 @@ option(ENABLE_CXX_ELEVEN "enable C++11 features as far as compiler permits" ON)
 option(USE_ASSERTS "Use assert instead of throwing exceptions" ON)
 
 
+unset(MTL_LIBRARIES )
+unset(MTL_CXX_DEFINITIONS )
+unset(MTL_INCLUDE_DIRS )
+
 find_package(Boost 1.40 REQUIRED)
 if(Boost_FOUND)
 	LIST(APPEND MTL_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
@@ -37,10 +41,6 @@ if(Subversion_FOUND)
 else(Subversion_FOUND)
 	set(MTL_MINOR_VERSION "0")
 endif(Subversion_FOUND)
-
-unset(MTL_LIBRARIES )
-unset(MTL_CXX_DEFINITIONS )
-unset(MTL_INCLUDE_DIRS )
 
 if(EXISTS ${MTL_DIR}/tools/cmake/C++11Features.cmake)
   include(${MTL_DIR}/tools/cmake/C++11Features.cmake)
