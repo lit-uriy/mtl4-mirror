@@ -75,7 +75,7 @@ struct banded_view
     {}
 
     banded_view(const boost::shared_ptr<Matrix>& p, bsize_type begin, bsize_type end) 
-	: base(dim_type(mtl::matrix::num_rows(*p), mtl::matrix::num_cols(*p)), ref.nnz()), 
+	: base(dim_type(mtl::matrix::num_rows(*p), mtl::matrix::num_cols(*p)), p->nnz()), 
 	  my_copy(p), ref(*p), begin(begin), end(end) 
     {}
 
