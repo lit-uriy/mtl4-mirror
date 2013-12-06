@@ -405,7 +405,7 @@ class compressed2D
 #ifdef MTL_WITH_MOVE
     self& operator=(self&& src)
     {
-	std::cout << "I am moving !!!\n";
+	// std::cout << "I am moving !!!\n";
 	check(); 
 	this->checked_change_dim(src.num_rows(), src.num_cols());
 	swap(*this, src);
