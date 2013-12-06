@@ -11,7 +11,7 @@ void p(const Matrix& A)
 
 int main()
 {
-#ifdef MTL_WITH_INITLIST
+#if defined(MTL_WITH_INITLIST) && defined(MTL_WITH_AUTO) && defined(MTL_WITH_RANGEDFOR)
     const mtl::dense2D<double> A={{3, 4}, 
 	  	                 {5, 6}};
     mtl::dense2D<double>       B;
