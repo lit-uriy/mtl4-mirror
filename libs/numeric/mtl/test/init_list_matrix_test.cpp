@@ -16,7 +16,7 @@
 
 using namespace std;  
 
-#ifdef MTL_WITH_INITLIST
+#if defined(MTL_WITH_INITLIST) && defined(MTL_WITH_AUTO) && defined(MTL_WITH_RANGEDFOR)
 #include <initializer_list>
 
 template <typename Matrix>
