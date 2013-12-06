@@ -38,6 +38,14 @@ namespace mtl {
 	template <long Size>
 	iset(const size_type (&array)[Size]) : indices(&array[0], &array[Size]) {}
 
+	/// Constructor from std::vector; size_type must be identic
+	explicit iset(const std::vector<size_type>& src) : indices(src) {}
+
+#     ifdef MTL_WITH_MOVE
+	/// Constructor from std::vector; size_type must be identic
+	explicit iset(std::vector<size_type>&& src) : indices(std::move(src)) {}
+#    endif
+
 	/// Assign comma-separated list
 	template <typename Source>
 	typename boost::enable_if<boost::is_integral<Source>, push_back_comma_inserter<iset> >::type
