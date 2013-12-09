@@ -16,6 +16,7 @@
 #include <cassert>
 #include <boost/mpl/bool.hpp>
 
+#include <boost/numeric/mtl/mtl_conditional_fwd.hpp>
 #include <boost/numeric/mtl/utility/property_map.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>

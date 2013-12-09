@@ -192,6 +192,7 @@ namespace mtl {
 
 	template <typename Scalar, typename Vector, typename Functor, typename Assign> struct reduction_index_evaluator;
 	template <typename Scalar, typename Vector1, typename Vector2, typename ConjOpt, typename Assign> struct dot_index_evaluator;
+	template <unsigned long Unroll, typename Vector1, typename Vector2, typename ConjOpt> struct dot_class;
 
 	template <typename Vector, typename Functor> struct lazy_reduction;
 
