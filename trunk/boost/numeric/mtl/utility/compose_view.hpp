@@ -13,6 +13,7 @@
 #ifndef MTL_TRAITS_COMPOSE_VIEW_INCLUDE
 #define MTL_TRAITS_COMPOSE_VIEW_INCLUDE
 
+#include <boost/type_traits/remove_reference.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/utility/is_what.hpp>

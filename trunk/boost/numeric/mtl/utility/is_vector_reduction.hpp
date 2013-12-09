@@ -13,6 +13,9 @@
 #ifndef MTL_TRAITS_IS_VECTOR_REDUCTION_INCLUDE
 #define MTL_TRAITS_IS_VECTOR_REDUCTION_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
+#include <boost/mpl/bool.hpp>
+
 namespace mtl { namespace traits {
 
 /// Type trait to check whether \p T is a vector reduction (i.e. an ET class for its lazy evaluation)

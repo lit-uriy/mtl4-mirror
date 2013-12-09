@@ -14,6 +14,7 @@
 #define MTL_TRAITS_IS_LAZY_INCLUDE
 
 #include <boost/mpl/bool.hpp>
+#include <boost/mpl/and.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 
 namespace mtl { namespace traits {
