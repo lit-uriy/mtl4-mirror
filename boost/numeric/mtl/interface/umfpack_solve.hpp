@@ -51,7 +51,11 @@ namespace mtl { namespace matrix {
 	template <typename Value> struct use_long { static const bool value= sizeof(Value) > sizeof(int); };
 
 	template <bool Larger> struct index_aux   { typedef int     type; };
-	template<> struct index_aux<true>         { typedef UF_long type; };
+#     ifdef UF_long
+        template<> struct index_aux<true>         { typedef UF_long type; };
+#     else
+	template<> struct index_aux<true>         { typedef long type; };
+#     endif
 
 	template <typename Value> struct index 
           : index_aux<use_long<Value>::value> {};
@@ -77,7 +81,12 @@ namespace mtl { namespace matrix {
 	    int code;
 	};
 
-	inline void check(int res, const char* s)
+	inline void check(int res, 
+			  const char*
+#                      ifndef MTL_ASSERT_FOR_THROW 
+			  s
+#                      endif
+			  )
 	{
 	    MTL_THROW_IF(res != UMFPACK_OK, error(s, res));
 	}
