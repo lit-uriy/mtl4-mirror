@@ -312,7 +312,7 @@ struct contiguous_memory_block
     template<typename Value2, bool OnStack2, unsigned Size2>
     explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {
-	std::cout << "Copy constructor (different type).\n";
+	// std::cout << "Copy constructor (different type).\n";
 	copy_construction(other);
     }
 
