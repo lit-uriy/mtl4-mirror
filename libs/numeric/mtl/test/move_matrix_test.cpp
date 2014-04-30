@@ -58,7 +58,7 @@ void test(const Matrix&, const char* text)
     MTL_THROW_IF(&A.data[0] != p, mtl::runtime_error("Matrix is not moved but copied!"));
 
     cout << "Matrix B= f(A, p);\n";
-    Matrix B= f(A, p);
+    Matrix B(f(A, p));
     print(B, p);
 
     MTL_THROW_IF(B.data[0] != 5.0, mtl::runtime_error("Wrong value moving, should be 5.0!"));
