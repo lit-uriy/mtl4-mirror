@@ -34,7 +34,7 @@
 #ifdef MTL_WITH_INITLIST
 # include <initializer_list>
 #endif
-
+#include <algorithm>
 
 namespace mtl { namespace mat {
 
@@ -466,6 +466,14 @@ class morton_dense
     }
 #endif
 
+#ifdef MTL_WITH_MOVE
+    /// Move constructor
+    morton_dense(self&& src) : memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
+    {
+	init(dim_type().num_rows(), dim_type().num_cols());
+	*this= std::move(src);
+    }
+#endif	
 
     /// Construct a sub-matrix as a view
     explicit morton_dense(self& matrix, morton_dense_sub_ctor,
@@ -502,23 +510,6 @@ class morton_dense
     }
 
 
-#if 0
-    // Move assignment (emulation)
-    self& operator=(self src)
-    {
-	// Self-copy would be an indication of an error
-	assert(this != &src);
-
-	this->check_dim(src.num_rows(), src.num_cols());
-	if (this->category == memory_base::view || src.category == memory_base::view)
-	    matrix_copy(src, *this);
-	else
-	    memory_base::move_assignment(src);
-	return *this;
-    }
-#endif
-
-
 #ifdef MTL_WITH_MOVE
     /// Move Assignment
     self& operator=(self&& src)
@@ -528,7 +519,7 @@ class morton_dense
 	    matrix_copy(src, *this);
 	else
 	    memory_base::move_assignment(src);
-	std::cout << "In dense2D::move_assignment\n";
+	// std::cout << "In dense2D::move_assignment\n";
 	return *this;
     }
 

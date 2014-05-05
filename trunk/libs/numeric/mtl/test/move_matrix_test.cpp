@@ -10,6 +10,8 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+#define MTL_VERBOSE_TEST
+
 #include <iostream>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
@@ -20,7 +22,7 @@
 
 using namespace std;
 using namespace mtl;
-	
+using mtl::io::tout;	
 
 // Return a matrix with move semantics
 // Return also the address of the first entry to be sure that it is really moved
@@ -36,28 +38,29 @@ Matrix f(const Matrix&, double*& a00)
 template <typename Matrix>
 void print(const Matrix& matrix, const double* p)
 {
-    cout << "Data was " << (&matrix.data[0] == p ? "moved/shared.\n" : "copied.\n");
+    tout << "Data was " << (&matrix.data[0] == p ? "moved/shared.\n" : "copied.\n");
 }
 
 template <typename Matrix>
 void test(const Matrix&, const char* text)
 {
-    cout << '\n' << text << '\n';
+    tout << '\n' << text << '\n';
 
     double *p;
     Matrix A(3, 3);
     A= 0.0;
    
-    cout << "A= f(A, p);\n";
+    tout << "A= f(A, p);\n";
     A= f(A, p);
     print(A, p);
 
     MTL_THROW_IF(A.data[0] != 5.0, mtl::runtime_error("Wrong value moving, should be 5.0!"));
 
     // Should be only on heap
-    MTL_THROW_IF(&A.data[0] != p, mtl::runtime_error("Matrix is not moved but copied!"));
+    MTL_THROW_IF(!traits::is_static<Matrix>::value && &A.data[0] != p, mtl::runtime_error("Non-static matrix must be moved!"));
+    MTL_THROW_IF(traits::is_static<Matrix>::value && &A.data[0] == p, mtl::runtime_error("Static matrix must be copied!"));
 
-    cout << "Matrix B= f(A, p);\n";
+    tout << "Matrix B= f(A, p);\n";
     Matrix B(f(A, p));
     print(B, p);
 
@@ -70,7 +73,7 @@ void test(const Matrix&, const char* text)
     // In this case the matrix MUST be copied
     morton_dense<double, recursion::doppled_2_row_mask> C(3, 3);
 
-    cout << "C= f(A, p);  // C and A have different types\n";
+    tout << "C= f(A, p);  // C and A have different types\n";
     C= f(A, p);
     print(C, p);
 
@@ -80,37 +83,44 @@ void test(const Matrix&, const char* text)
     // Other matrix type, in this case the matrix MUST be copied
     morton_dense<double, recursion::morton_mask>   D(A);
 
-    cout << "D(A);  // C and A have different types\n";
+    tout << "D(A);  // C and A have different types\n";
     print(D, &A.data[0]);
 
     MTL_THROW_IF(D.data[0] != 5.0, mtl::runtime_error("Wrong value in copy constructor, should be 5.0!"));
     MTL_THROW_IF(&D.data[0] == &A.data[0], mtl::runtime_error("Matrix must be copied not moved!"));
 
+    p= &A.data[0];
+    Matrix E(std::move(A));
+    tout << "E(std::move(A));\n";
+    print(E, p);
+    // MTL_THROW_IF(&E.data[0] != p, mtl::runtime_error("Matrix must be moved not copied!"));
+    MTL_THROW_IF(!traits::is_static<Matrix>::value && &E.data[0] != p, mtl::runtime_error("Non-static matrix must be moved!"));
+    MTL_THROW_IF(traits::is_static<Matrix>::value && &E.data[0] == p, mtl::runtime_error("Static matrix must be copied!"));
 
 }
 
 template <typename Matrix>
 void sub_matrix_test(const Matrix& A)
 {
-    Matrix E= sub_matrix(A, 0, 1, 0, 1);
+    Matrix F= sub_matrix(A, 0, 1, 0, 1);
 
-    cout << "Matrix E= sub_matrix(A, 0, 1, 0, 1);\n";
-    print(E, &A.data[0]);
-
-    MTL_THROW_IF(&E.data[0] != &A.data[0], mtl::runtime_error("Sub-matrix must be referred to not copied!"));
-
-    cout << "E= sub_matrix(A, 1, 2, 1, 2);\n";
-    E= sub_matrix(A, 1, 2, 1, 2);    
-    print(E, &A[1][1]);
-
-    MTL_THROW_IF(&E.data[0] == &A[1][1], mtl::runtime_error("Matrix must be copied not referred to!"));
-
-    Matrix F= clone(sub_matrix(A, 0, 1, 0, 1));
-
-    cout << "Matrix F= clone(sub_matrix(A, 0, 1, 0, 1));\n";
+    tout << "Matrix F= sub_matrix(A, 0, 1, 0, 1);\n";
     print(F, &A.data[0]);
 
-    MTL_THROW_IF(&F.data[0] == &A.data[0], mtl::runtime_error("Sub-matrix must be forced to copy!"));
+    MTL_THROW_IF(&F.data[0] != &A.data[0], mtl::runtime_error("Sub-matrix must be referred to not copied!"));
+
+    tout << "F= sub_matrix(A, 1, 2, 1, 2);\n";
+    F= sub_matrix(A, 1, 2, 1, 2);    
+    print(F, &A[1][1]);
+
+    MTL_THROW_IF(&F.data[0] == &A[1][1], mtl::runtime_error("Matrix must be copied not referred to!"));
+
+    Matrix G= clone(sub_matrix(A, 0, 1, 0, 1));
+
+    tout << "Matrix G= clone(sub_matrix(A, 0, 1, 0, 1));\n";
+    print(G, &A.data[0]);
+
+    MTL_THROW_IF(&G.data[0] == &A.data[0], mtl::runtime_error("Sub-matrix must be forced to copy!"));
 }
 
 
@@ -125,9 +135,9 @@ void dense_test(const Matrix& m, const char* text)
 
 int test_main(int, char*[])
 {
-    dense2D<double>                                      dr(3, 3);
+    dense2D<double>                                   dr(3, 3);
     dense2D<double, mat::parameters<col_major> >      dc(3, 3);
-    morton_dense<double, recursion::morton_z_mask>       mzd(3, 3);
+    morton_dense<double, recursion::morton_z_mask>    mzd(3, 3);
 
     dense_test(dr, "Dense matrix");
     dense_test(dc, "Column-major dense matrix");
@@ -135,10 +145,10 @@ int test_main(int, char*[])
 
     // Check for data on stack
     typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> fmat_para;
-    dense2D<double, fmat_para>                           drs;
-    dense_test(dr, "Dense matrix on stack");
+    dense2D<double, fmat_para>                        drs;
+    test(drs, "Dense matrix on stack");
 
-    compressed2D<double>                                 crs(3, 3);
+    compressed2D<double>                              crs(3, 3);
     compressed2D<double, mat::parameters<col_major> > ccs(3, 3);
 
     test(crs, "CRS");
