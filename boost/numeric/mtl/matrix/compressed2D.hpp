@@ -384,6 +384,10 @@ class compressed2D
 	*this= src;
     }
 
+#ifdef MTL_WITH_MOVE
+    compressed2D(self&& src)
+    {	swap(*this, src);    }
+#endif
 
 #if defined(MTL_WITH_INITLIST) && defined(MTL_WITH_AUTO) && defined(MTL_WITH_RANGEDFOR)
     /// Constructor for initializer list \p values 

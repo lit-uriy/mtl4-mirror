@@ -44,6 +44,7 @@
 #ifdef MTL_WITH_INITLIST
 # include <initializer_list>
 #endif
+#include <algorithm>
 
 // Forward declaration (for friend declaration)
 namespace mtl { namespace traits { namespace detail {
@@ -211,7 +212,7 @@ class dense2D
 
   public:
     /// Default constructor, if compile time matrix size allocate memory
-    dense2D() : super(), memory_base(dim_type().num_rows() * dim_type().num_cols())
+    dense2D() : memory_base(dim_type().num_rows() * dim_type().num_cols())
     { 	init();     }
 
     /// Constructor that only sets dimensions, only for run-time dimensions
@@ -271,6 +272,12 @@ class dense2D
 	*this= src;
     }
 
+#ifdef MTL_WITH_MOVE
+    /// Move constructor
+    dense2D(self&& src) : memory_base(dim_type().num_rows() * dim_type().num_cols())
+    {	self_assign(src, boost::mpl::bool_<memory_base::on_stack>());    }
+#endif	
+
     /// Constructor for creating sub-matrices
     template <typename MatrixSrc>
     dense2D(MatrixSrc& matrix, dense2D_sub_ctor, 
@@ -324,13 +331,7 @@ class dense2D
     self& operator=(self&& src)
     {	return self_assign(src, boost::mpl::bool_<memory_base::on_stack>());    }
 
-    // {
-    // 	swap(*this, src);
-    // 	std::cout << "In dense2D::move_assignment\n";
-    // 	return *this;
-    // }
-
-     /// (Copy) Assignment
+    /// (Copy) Assignment
     self& operator=(const self& src)
     {	return self_assign(src, boost::mpl::true_());    }
     
