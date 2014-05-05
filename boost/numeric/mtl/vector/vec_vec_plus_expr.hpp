@@ -21,7 +21,7 @@
 #include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 template <typename E1, typename E2>
 inline vec_vec_pmop_expr< E1, E2, mtl::sfunctor::plus<typename E1::value_type, typename E2::value_type> >

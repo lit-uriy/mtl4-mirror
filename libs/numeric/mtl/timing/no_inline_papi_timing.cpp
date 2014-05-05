@@ -190,7 +190,7 @@ struct no_inline3<Functor, void, Arg1, Arg2, Arg3>
 
 
 typedef dense2D<double> rmt;
-typedef dense2D<double, matrix::parameters<col_major> > cmt;
+typedef dense2D<double, mat::parameters<col_major> > cmt;
 
 // C must have even dimensions
 template <typename MatrixA, typename MatrixB, typename MatrixC>
@@ -239,7 +239,7 @@ void measure_unrolling(unsigned size, std::vector<int>& enabled, Matrix& matrix,
     std::cout << size << ", ";
  
     dense2D<double> dense(4, 4);
-    dense2D<double, matrix::parameters<col_major> >    denseb(4, 4);
+    dense2D<double, mat::parameters<col_major> >    denseb(4, 4);
  
     gen_recursive_dense_mat_mat_mult_t<base_mult_t>           mult;
     gen_recursive_dense_mat_mat_mult_t<tiling_22_base_mult_t> mult_22;
@@ -281,7 +281,7 @@ void measure_unrolling_hybrid(unsigned size, std::vector<int>& enabled)
 void measure_unrolling_dense(unsigned size, std::vector<int>& enabled)
 {
     dense2D<double> dense(4, 4);
-    dense2D<double, matrix::parameters<col_major> >    b(4, 4);
+    dense2D<double, mat::parameters<col_major> >    b(4, 4);
     measure_unrolling(size, enabled, dense, b);
 }
 
@@ -350,7 +350,7 @@ void init_papi()
 void test_blas()
 {
     dense2D<double> a(4, 4), c(4, 4);
-    dense2D<double, matrix::parameters<col_major> >    b(4, 4);
+    dense2D<double, mat::parameters<col_major> >    b(4, 4);
     int size= 4; double one= 1.0;
 
 #ifdef MTL_HAS_BLAS

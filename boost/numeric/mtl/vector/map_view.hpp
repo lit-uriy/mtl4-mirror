@@ -28,12 +28,12 @@
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 
 
-namespace mtl { namespace vector { namespace detail {
+namespace mtl { namespace vec { namespace detail {
     // Forward declaration for friend declaration
     template <typename, typename> struct map_value;
 }}}
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 template <typename Functor, typename Vector> 
 struct map_view 
@@ -85,7 +85,7 @@ struct map_view
 
 template <typename Functor, typename Vector> 
 inline std::size_t size(const map_view<Functor, Vector>& v)
-{     return mtl::vector::size(v.ref); }
+{     return mtl::vec::size(v.ref); }
 
 // ================
 // Free functions
@@ -98,9 +98,9 @@ inline std::size_t size(const map_view<Functor, Vector>& v)
 	struct map_value
 	{
 	    typedef typename Vector::key_type                      key_type;
-	    typedef typename vector::map_view<Functor, Vector>::value_type value_type;
+	    typedef typename vec::map_view<Functor, Vector>::value_type value_type;
     	
-	    map_value(vector::map_view<Functor, Vector> const& map_vector) 
+	    map_value(vec::map_view<Functor, Vector> const& map_vector) 
 		: map_vector(map_vector), its_value(map_vector.ref) 
 	    {}
 
@@ -110,7 +110,7 @@ inline std::size_t size(const map_view<Functor, Vector>& v)
 	    }
 
 	  protected:
-	    vector::map_view<Functor, Vector> const&   map_vector;
+	    vec::map_view<Functor, Vector> const&   map_vector;
 	    typename ::mtl::traits::const_value<Vector>::type its_value;
         };
 
@@ -127,14 +127,14 @@ namespace mtl { namespace traits {
     // ================
 
     template <typename Functor, typename Vector> 
-    struct index<vector::map_view<Functor, Vector> >
+    struct index<vec::map_view<Functor, Vector> >
 	: public index<Vector>
     {};
 
     template <typename Functor, typename Vector> 
-    struct const_value<vector::map_view<Functor, Vector> >
+    struct const_value<vec::map_view<Functor, Vector> >
     {
-	typedef vector::detail::map_value<Functor, Vector>  type;
+	typedef vec::detail::map_value<Functor, Vector>  type;
     };
 
 
@@ -144,13 +144,13 @@ namespace mtl { namespace traits {
 
     // Use range_generator of original vector
     template <typename Tag, typename Functor, typename Vector> 
-    struct range_generator<Tag, vector::map_view<Functor, Vector> >
+    struct range_generator<Tag, vec::map_view<Functor, Vector> >
 	: public range_generator<Tag, Vector>
     {};
 
 }} // mtl::traits
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 template <typename Scaling, typename Vector>
 struct scaled_view
@@ -319,7 +319,7 @@ namespace mtl { namespace sfunctor {
     template <typename Vector>
     struct conj_aux<Vector, tag::vector>
     {
-	typedef mtl::vector::conj_view<Vector> result_type;
+	typedef mtl::vec::conj_view<Vector> result_type;
 
 	static inline result_type apply(const Vector& vector)
 	{

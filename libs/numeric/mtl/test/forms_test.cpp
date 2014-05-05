@@ -23,8 +23,8 @@ void test(const ResMatrix&, const ArgMatrix& B)
     C+= trans(B) * B;
     C+= trans(B) * B * B;
 #if 0
-	std::cout << typeid(typename mtl::traits::category<mtl::matrix::mat_mat_times_expr<ArgMatrix, ArgMatrix> >::type).name() << '\n';
-	std::cout << typeid(typename mtl::traits::category<mtl::matrix::rscaled_view<ArgMatrix, double> >::type).name() << '\n';
+	std::cout << typeid(typename mtl::traits::category<mtl::mat::mat_mat_times_expr<ArgMatrix, ArgMatrix> >::type).name() << '\n';
+	std::cout << typeid(typename mtl::traits::category<mtl::mat::rscaled_view<ArgMatrix, double> >::type).name() << '\n';
 	char c; std::cin >> c; 
 #endif
 	C+= B * 3.5 * B * B;
@@ -41,7 +41,7 @@ void test(const ResMatrix&, const ArgMatrix& B)
 int main(int, char**)
 {
     using namespace mtl;
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2>, true> fmat_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2>, true> fmat_para;
 
     float ma[2][2]= {{2., 3.}, {4., 5.}};
     

@@ -18,21 +18,21 @@
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 template <typename Vector>
 std::ostream& print_vector(Vector const& vector, std::ostream& out= std::cout, int width= 0, int precision= 0)
 {
-    using mtl::vector::size;
-    out << '{' << mtl::vector::size(vector) 
+    using mtl::vec::size;
+    out << '{' << mtl::vec::size(vector) 
 	<< (traits::is_row_major< typename OrientedCollection<Vector>::orientation >::value ? "R" : "C") 
 	<< "}[" ;
-    for (size_t r = 0; r < mtl::vector::size(vector); ++r) {
+    for (size_t r = 0; r < mtl::vec::size(vector); ++r) {
 	out.fill (' '); 
 	if (width) out.width (width); 
 	// out.flags (std::ios_base::right);
 	if (precision) out.precision(precision); 
-	out << vector[r] << (r+1 < mtl::vector::size(vector) ? "," : "");
+	out << vector[r] << (r+1 < mtl::vec::size(vector) ? "," : "");
     }
     return out << ']';
 }

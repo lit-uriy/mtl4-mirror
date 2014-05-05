@@ -29,8 +29,8 @@ template <typename T, typename U, typename Assign>
 struct index_evaluator<lazy_assign<T, U, Assign> >
   : boost::lazy_enable_if<is_vector<T>,
 			  boost::mpl::if_<is_vector<U>,
-					  mtl::vector::vec_vec_aop_expr<T, U, Assign>, 
-					  mtl::vector::vec_scal_aop_expr<T, U, Assign>
+					  mtl::vec::vec_vec_aop_expr<T, U, Assign>, 
+					  mtl::vec::vec_scal_aop_expr<T, U, Assign>
 					  >
 			  >
 {};
@@ -40,7 +40,7 @@ struct index_evaluator<lazy_assign<T, U, Assign> >
 template <typename T, typename U>
 struct index_evaluator<fused_expr<T, U> >
 {
-    typedef mtl::vector::fused_index_evaluator<T, U> type;
+    typedef mtl::vec::fused_index_evaluator<T, U> type;
 };
 
 

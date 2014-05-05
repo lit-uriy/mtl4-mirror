@@ -199,7 +199,7 @@ matrix_market_istream& matrix_market_istream::read(Matrix& A, tag::matrix)
 	slot_size= A.dim2(); // maximal value (if A is dense it does not matter anyway)
 
     // Create enough space in sparse matrices
-    matrix::inserter<Matrix> ins(A, slot_size);
+    mat::inserter<Matrix> ins(A, slot_size);
 
     if (value_format == std::string("real"))
 	read_matrix(ins, double());

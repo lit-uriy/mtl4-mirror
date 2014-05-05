@@ -24,7 +24,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Frobenius norm, i.e. square root of sum of squares of all entries sqrt(sum_i sum_j(|a[i][j]|^2))
 template <typename Matrix>

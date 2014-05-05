@@ -19,7 +19,7 @@
 
 
 typedef boost::rational<long>                              t_Q;
-typedef mtl::dense_vector<t_Q, mtl::vector::parameters<> > t_dVecQ;
+typedef mtl::dense_vector<t_Q, mtl::vec::parameters<> > t_dVecQ;
 
 //! Struct containing data about the refinment of a face.
 struct st_test
@@ -31,7 +31,7 @@ struct st_test
     {
         vecQ = vecQ_new;
         std::cout << "vecQ: " << vecQ << "\n";       // uses size -> ambiguity with size in boost/range
-        std::cout << mtl::vector::size(vecQ_new) << "\n";       
+        std::cout << mtl::size(vecQ_new) << "\n";       
     }
 };
 
@@ -81,7 +81,7 @@ int main(int , char**)
     assign_test(vecQ1);
     st_test test(vecQ1);
 
-    // std::cout << "size(vecQ1): " << mtl::vector::size(vecQ1) << "\n";
+    // std::cout << "size(vecQ1): " << mtl::size(vecQ1) << "\n";
 
     test2();
 

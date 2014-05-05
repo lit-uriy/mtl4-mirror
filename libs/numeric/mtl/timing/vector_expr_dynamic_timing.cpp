@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 #endif
 
 #if 0
-    typedef dense_vector<double, vector::parameters<tag::col_major, vector::fixed::dimension<cs>, true > > vec;
+    typedef dense_vector<double, parameters<tag::col_major, fixed::dimension<cs>, true > > vec;
     vec u, v, w, x;
 #else
     typedef mtl::dense_vector<double> vec;

@@ -30,7 +30,7 @@
 #include <boost/numeric/mtl/operation/trans.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 /// QR-Factorization of matrix A(m x n)
@@ -38,11 +38,11 @@ namespace mtl { namespace matrix {
 template <typename Matrix, typename MatrixQ, typename MatrixR>
 void qr(const Matrix& A, MatrixQ& Q, MatrixR& R)
 {
-	vampir_trace<4013> tracer;
-    typedef typename Collection<Matrix>::value_type   value_type;
-    typedef typename Collection<Matrix>::size_type    size_type;
-    typedef typename Magnitude<value_type>::type      magnitude_type;
-    typedef mtl::vector::dense_vector<value_type, vector::parameters<> >       vector_type;
+    vampir_trace<4013> tracer;
+    typedef typename Collection<Matrix>::value_type   		    value_type;
+    typedef typename Collection<Matrix>::size_type    		    size_type;
+    typedef typename Magnitude<value_type>::type      		    magnitude_type;
+    typedef mtl::dense_vector<value_type, vec::parameters<> >       vector_type;
     
     size_type        ncols = num_cols(A), nrows = num_rows(A), 
                      mini= ncols == nrows ? ncols - 1 : (nrows >= ncols ? ncols : nrows);
@@ -67,11 +67,11 @@ void qr(const Matrix& A, MatrixQ& Q, MatrixR& R)
 
 /// QR-Factorization of matrix A(m x n)
 template <typename Matrix>
-std::pair<mtl::matrix::dense2D<typename Collection<Matrix>::value_type, matrix::parameters<> >,
- 	  mtl::matrix::dense2D<typename Collection<Matrix>::value_type, matrix::parameters<> > > 
+std::pair<mtl::mat::dense2D<typename Collection<Matrix>::value_type, mat::parameters<> >,
+ 	  mtl::mat::dense2D<typename Collection<Matrix>::value_type, mat::parameters<> > > 
 inline qr(const Matrix& A)
 {
-    mtl::matrix::dense2D<typename Collection<Matrix>::value_type, matrix::parameters<> >  R(A), Q(num_rows(A),num_rows(A));
+    mtl::mat::dense2D<typename Collection<Matrix>::value_type, mat::parameters<> >  R(A), Q(num_rows(A),num_rows(A));
     qr(A, Q, R);
     return std::make_pair(Q,R);
 }
@@ -81,8 +81,8 @@ inline qr(const Matrix& A)
 // QR-Factorization of matrix A
 // Return Q and R with A = Q*R   R upper triangle and Q othogonal
 template <typename Matrix>
-std::pair<typename mtl::matrix::dense2D<typename Collection<Matrix>::value_type, matrix::parameters<> >,
-	  typename mtl::matrix::dense2D<typename Collection<Matrix>::value_type, matrix::parameters<> > >
+std::pair<typename mtl::mat::dense2D<typename Collection<Matrix>::value_type, mat::parameters<> >,
+	  typename mtl::mat::dense2D<typename Collection<Matrix>::value_type, mat::parameters<> > >
 inline qr_factors(const Matrix& A)
 {
 	vampir_trace<4014> tracer;

@@ -29,21 +29,21 @@ struct div_result
 template < typename Op1, typename Op2 >
 struct div_result_aux < Op1, Op2, ::mtl::ashape::cvec_scal_div >
 {
-    typedef typename vector::divide_by_view<Op1,Op2> type;
+    typedef typename vec::divide_by_view<Op1,Op2> type;
 };
 
 /// Divide row vector by scalar
 template < typename Op1, typename Op2 >
 struct div_result_aux < Op1, Op2, ::mtl::ashape::rvec_scal_div >
 {
-    typedef typename vector::divide_by_view<Op1,Op2> type;
+    typedef typename vec::divide_by_view<Op1,Op2> type;
 };
 
 /// Divide matrix by scalar
 template < typename Op1, typename Op2 >
 struct div_result_aux < Op1, Op2, ::mtl::ashape::mat_scal_div >
 {
-    typedef typename matrix::divide_by_view<Op1,Op2> type;
+    typedef typename mat::divide_by_view<Op1,Op2> type;
 };
 
 }} // namespace mtl::traits

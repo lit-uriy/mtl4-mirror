@@ -27,7 +27,7 @@
 #   include <boost/mpi/collectives.hpp>
 #endif
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename Functor>
 class implicit_dense
@@ -88,61 +88,61 @@ namespace mtl { namespace traits {
     // ================
 
     template <typename Functor>
-    struct range_generator<glas::tag::row, mtl::matrix::implicit_dense<Functor> >
-      : detail::all_rows_range_generator<mtl::matrix::implicit_dense<Functor>, complexity_classes::linear>
+    struct range_generator<glas::tag::row, mtl::mat::implicit_dense<Functor> >
+      : detail::all_rows_range_generator<mtl::mat::implicit_dense<Functor>, complexity_classes::linear>
     {};
 
     template <typename Functor>
-    struct range_generator<glas::tag::major, mtl::matrix::implicit_dense<Functor> >
-      : range_generator<glas::tag::row, mtl::matrix::implicit_dense<Functor> >
-    {};
-
-    template <typename Functor>
-    struct range_generator<glas::tag::nz,
-			   detail::sub_matrix_cursor<mtl::matrix::implicit_dense<Functor>, glas::tag::row, 2> > 
-      : detail::all_cols_in_row_range_generator<detail::sub_matrix_cursor<mtl::matrix::implicit_dense<Functor>, glas::tag::row, 2> >
-    {};
-
-    template <typename Functor>
-    struct range_generator<glas::tag::col, mtl::matrix::implicit_dense<Functor> >
-      : detail::all_cols_range_generator<mtl::matrix::implicit_dense<Functor>, complexity_classes::linear>
+    struct range_generator<glas::tag::major, mtl::mat::implicit_dense<Functor> >
+      : range_generator<glas::tag::row, mtl::mat::implicit_dense<Functor> >
     {};
 
     template <typename Functor>
     struct range_generator<glas::tag::nz,
-			   detail::sub_matrix_cursor<mtl::matrix::implicit_dense<Functor>, glas::tag::col, 2> > 
-      : detail::all_rows_in_col_range_generator<detail::sub_matrix_cursor<mtl::matrix::implicit_dense<Functor>, glas::tag::col, 2> >
+			   detail::sub_matrix_cursor<mtl::mat::implicit_dense<Functor>, glas::tag::row, 2> > 
+      : detail::all_cols_in_row_range_generator<detail::sub_matrix_cursor<mtl::mat::implicit_dense<Functor>, glas::tag::row, 2> >
+    {};
+
+    template <typename Functor>
+    struct range_generator<glas::tag::col, mtl::mat::implicit_dense<Functor> >
+      : detail::all_cols_range_generator<mtl::mat::implicit_dense<Functor>, complexity_classes::linear>
+    {};
+
+    template <typename Functor>
+    struct range_generator<glas::tag::nz,
+			   detail::sub_matrix_cursor<mtl::mat::implicit_dense<Functor>, glas::tag::col, 2> > 
+      : detail::all_rows_in_col_range_generator<detail::sub_matrix_cursor<mtl::mat::implicit_dense<Functor>, glas::tag::col, 2> >
     {};
 
 
     template <typename Tag, typename Value>
-    struct range_generator<Tag, mtl::matrix::ones_matrix<Value> >
-      : public range_generator<Tag, mtl::matrix::implicit_dense<mtl::matrix::ones_functor<Value> > > 
+    struct range_generator<Tag, mtl::mat::ones_matrix<Value> >
+      : public range_generator<Tag, mtl::mat::implicit_dense<mtl::mat::ones_functor<Value> > > 
     {};
 
     template <typename Value>
-    struct range_generator<glas::tag::major, mtl::matrix::ones_matrix<Value> >
-      : public range_generator<glas::tag::major, mtl::matrix::implicit_dense<mtl::matrix::ones_functor<Value> > > 
+    struct range_generator<glas::tag::major, mtl::mat::ones_matrix<Value> >
+      : public range_generator<glas::tag::major, mtl::mat::implicit_dense<mtl::mat::ones_functor<Value> > > 
     {};
 
     template <typename Tag, typename Value>
-    struct range_generator<Tag, mtl::matrix::hilbert_matrix<Value> >
-      : public range_generator<Tag, mtl::matrix::implicit_dense<mtl::matrix::hilbert_functor<Value> > > 
+    struct range_generator<Tag, mtl::mat::hilbert_matrix<Value> >
+      : public range_generator<Tag, mtl::mat::implicit_dense<mtl::mat::hilbert_functor<Value> > > 
     {};
 
     template <typename Value>
-    struct range_generator<glas::tag::major, mtl::matrix::hilbert_matrix<Value> >
-      : public range_generator<glas::tag::major, mtl::matrix::implicit_dense<mtl::matrix::hilbert_functor<Value> > > 
+    struct range_generator<glas::tag::major, mtl::mat::hilbert_matrix<Value> >
+      : public range_generator<glas::tag::major, mtl::mat::implicit_dense<mtl::mat::hilbert_functor<Value> > > 
     {};
 
     template <typename Tag, typename Vector1, typename Vector2>
-    struct range_generator<Tag, mtl::matrix::outer_product_matrix<Vector1, Vector2> >
-      : public range_generator<Tag, mtl::matrix::implicit_dense<mtl::matrix::outer_product_functor<Vector1, Vector2> > > 
+    struct range_generator<Tag, mtl::mat::outer_product_matrix<Vector1, Vector2> >
+      : public range_generator<Tag, mtl::mat::implicit_dense<mtl::mat::outer_product_functor<Vector1, Vector2> > > 
     {};
 
     template <typename Vector1, typename Vector2>
-    struct range_generator<glas::tag::major, mtl::matrix::outer_product_matrix<Vector1, Vector2> >
-      : public range_generator<glas::tag::major, mtl::matrix::implicit_dense<mtl::matrix::outer_product_functor<Vector1, Vector2> > > 
+    struct range_generator<glas::tag::major, mtl::mat::outer_product_matrix<Vector1, Vector2> >
+      : public range_generator<glas::tag::major, mtl::mat::implicit_dense<mtl::mat::outer_product_functor<Vector1, Vector2> > > 
     {};
 
 }} // mtl::traits
@@ -152,7 +152,7 @@ namespace mtl { namespace traits {
 // =============
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename Value= int>
 class ones_functor

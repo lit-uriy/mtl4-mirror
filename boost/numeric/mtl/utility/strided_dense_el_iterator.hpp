@@ -34,7 +34,7 @@ struct strided_dense_el_const_iterator
     strided_dense_el_const_iterator(key_type me, size_t stride) : super(me, stride) {}
 
     template <typename Parameters>
-    strided_dense_el_const_iterator(mtl::matrix::dense2D<Value, Parameters> const& ma, size_t r, size_t c, size_t stride)
+    strided_dense_el_const_iterator(mtl::mat::dense2D<Value, Parameters> const& ma, size_t r, size_t c, size_t stride)
 	: super(ma.elements() + ma.indexer(ma, r, c), stride)
     {}
 
@@ -64,7 +64,7 @@ struct strided_dense_el_iterator
     strided_dense_el_iterator(key_type me, size_t stride) : super(me, stride) {}
 
     template <typename Parameters>
-    strided_dense_el_iterator(mtl::matrix::dense2D<Value, Parameters>& ma, size_t r, size_t c, size_t stride)
+    strided_dense_el_iterator(mtl::mat::dense2D<Value, Parameters>& ma, size_t r, size_t c, size_t stride)
 	: super(ma.elements() + ma.indexer(ma, r, c), stride)
     {}
 

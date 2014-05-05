@@ -34,7 +34,7 @@ int main(int, char**)
 {
     using namespace mtl;
 
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 2>, true> fmat_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 2>, true> fmat_para;
     float ma[3][2]= {{2., 3.}, {4., 5.}, {6., 7.}};
     
     dense2D<float, fmat_para>        A_dense(ma);

@@ -84,9 +84,9 @@ namespace mtl { namespace operations {
     {
 	set_bracket_proxy(Ref matrix, const iset& row_set) : matrix(matrix), row_set(row_set) {}
 
-	mtl::matrix::indirect<Matrix> operator[] (const iset& col_set)
+	mtl::mat::indirect<Matrix> operator[] (const iset& col_set)
 	{
-	    return mtl::matrix::indirect<Matrix>(matrix, row_set, col_set);
+	    return mtl::mat::indirect<Matrix>(matrix, row_set, col_set);
 	}
 
       protected:

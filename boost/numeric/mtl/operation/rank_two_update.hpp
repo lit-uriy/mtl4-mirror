@@ -15,7 +15,7 @@
 
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Rank-two update: rank_two_update(A, x, y) computes A+= x * conj(y)^T + y * conj(x)^T
 /** The current implementation works for column and row vectors (although

@@ -25,30 +25,30 @@ struct parameters
 };
 
 template <typename Vector>
-struct parameters<mtl::matrix::multi_vector<Vector> >
+struct parameters<mtl::mat::multi_vector<Vector> >
 {
-    typedef mtl::matrix::parameters<>      type;
+    typedef mtl::mat::parameters<>      type;
 };
 
 template <typename Functor>
-struct parameters<mtl::matrix::implicit_dense<Functor> >
+struct parameters<mtl::mat::implicit_dense<Functor> >
 {
-    typedef mtl::matrix::parameters<>      type;
+    typedef mtl::mat::parameters<>      type;
 };
 
 template <typename Value>
-struct parameters<mtl::matrix::ones_matrix<Value> >
-  : public parameters<mtl::matrix::implicit_dense<mtl::matrix::ones_functor<Value> > > 
+struct parameters<mtl::mat::ones_matrix<Value> >
+  : public parameters<mtl::mat::implicit_dense<mtl::mat::ones_functor<Value> > > 
 {};
 
 template <typename Value>
-struct parameters<mtl::matrix::hilbert_matrix<Value> >
-  : public parameters<mtl::matrix::implicit_dense<mtl::matrix::hilbert_functor<Value> > > 
+struct parameters<mtl::mat::hilbert_matrix<Value> >
+  : public parameters<mtl::mat::implicit_dense<mtl::mat::hilbert_functor<Value> > > 
 {};
 
 template <typename Vector1, typename Vector2>
-struct parameters<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
-  : public parameters<mtl::matrix::implicit_dense<mtl::matrix::outer_product_functor<Vector1, Vector2> > > 
+struct parameters<mtl::mat::outer_product_matrix<Vector1, Vector2> >
+  : public parameters<mtl::mat::implicit_dense<mtl::mat::outer_product_functor<Vector1, Vector2> > > 
 {};
 
 

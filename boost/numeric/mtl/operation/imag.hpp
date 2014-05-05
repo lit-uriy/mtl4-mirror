@@ -62,7 +62,7 @@ inline imag(const Value& v)
     return sfunctor::imag<Value>::apply(v);
 }
 
-namespace vector {
+namespace vec {
 
     /// Imaginary part of an vector
     template <typename Vector>
@@ -73,7 +73,7 @@ namespace vector {
     }
 } 
 
-namespace matrix {
+namespace mat {
 
     /// Imaginary part of an vector
     template <typename Matrix>

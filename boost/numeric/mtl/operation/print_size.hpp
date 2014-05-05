@@ -36,7 +36,7 @@ namespace mtl {
 	int max;
     };
 
-    namespace matrix {
+    namespace mat {
 	    
 	template <typename Matrix>
 	int inline print_size(const Matrix& A)

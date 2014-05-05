@@ -29,9 +29,9 @@ struct ColumnInMatrix
 };
 
 template <typename Value, typename Parameters>
-struct ColumnInMatrix<mtl::matrix::dense2D<Value, Parameters> > 
+struct ColumnInMatrix<mtl::mat::dense2D<Value, Parameters> > 
 {
-    typedef mtl::matrix::dense2D<Value, Parameters>         ref_type;
+    typedef mtl::mat::dense2D<Value, Parameters>         ref_type;
     typedef typename ref_type::size_type       size_type;
     typedef typename ref_type::value_type      value_type;
 
@@ -40,8 +40,8 @@ struct ColumnInMatrix<mtl::matrix::dense2D<Value, Parameters> >
 
     typedef typename boost::mpl::if_c<
 	aligned
-      , vector::dense_vector<Value, vector::parameters<> > 
-      , vector::strided_vector_ref<Value, vector::parameters<> > 
+      , vec::dense_vector<Value, vec::parameters<> > 
+      , vec::strided_vector_ref<Value, vec::parameters<> > 
     >::type type;
 
     static inline type apply(ref_type& A, const irange& row_range, size_type col)
@@ -71,10 +71,10 @@ struct ColumnInMatrix<mtl::matrix::dense2D<Value, Parameters> >
 };
 
 template <typename Value, typename Parameters>
-struct ColumnInMatrix<const mtl::matrix::dense2D<Value, Parameters> > 
+struct ColumnInMatrix<const mtl::mat::dense2D<Value, Parameters> > 
 {
-    typedef mtl::matrix::dense2D<Value, Parameters> const   ref_type;
-    typedef mtl::matrix::dense2D<Value, Parameters>         ref2_type;
+    typedef mtl::mat::dense2D<Value, Parameters> const   ref_type;
+    typedef mtl::mat::dense2D<Value, Parameters>         ref2_type;
     typedef typename ref2_type::size_type      size_type;
 
     static const bool aligned= !boost::is_same<typename Parameters::orientation, row_major>::value;
@@ -82,8 +82,8 @@ struct ColumnInMatrix<const mtl::matrix::dense2D<Value, Parameters> >
 
     typedef typename boost::mpl::if_c<
 	aligned
-      , vector::dense_vector<Value, vector::parameters<> > // TODO needs constification !!!
-      , vector::strided_vector_ref<const Value, vector::parameters<> > 
+      , vec::dense_vector<Value, vec::parameters<> > // TODO needs constification !!!
+      , vec::strided_vector_ref<const Value, vec::parameters<> > 
     >::type type;
 
     static inline type apply(ref_type& A, const irange& row_range, size_type col)

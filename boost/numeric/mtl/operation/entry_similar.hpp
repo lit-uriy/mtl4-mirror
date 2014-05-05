@@ -21,7 +21,7 @@
 
 namespace mtl {
 
-    namespace matrix {
+    namespace mat {
 	
 	template <typename Matrix, typename Value>
 	bool inline entry_similar(const Matrix& A, typename Collection<Matrix>::size_type i, 
@@ -43,7 +43,7 @@ namespace mtl {
 
     } // namespacs matrix
 
-    namespace vector {
+    namespace vec {
 
 	template <typename Vector, typename Value>
 	bool inline entry_similar(const Vector& x, typename Collection<Vector>::size_type i, 

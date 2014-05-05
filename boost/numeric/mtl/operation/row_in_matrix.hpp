@@ -30,20 +30,20 @@ struct RowInMatrix
 };
 
 template <typename Value, typename Parameters>
-struct RowInMatrix<mtl::matrix::dense2D<Value, Parameters> > 
+struct RowInMatrix<mtl::mat::dense2D<Value, Parameters> > 
 {
-	typedef mtl::matrix::dense2D<Value, Parameters> ref_type;
+    typedef mtl::mat::dense2D<Value, Parameters> ref_type;
     typedef typename ref_type::size_type       size_type;
     typedef typename ref_type::value_type      value_type;
-	typedef mtl::vector::parameters<row_major> vec_para;
+    typedef mtl::vec::parameters<row_major>    vec_para;
 
     static const bool aligned= boost::is_same<typename Parameters::orientation, row_major>::value;
     static const bool exists= true;
 
     typedef typename boost::mpl::if_c<
 	aligned
-      , mtl::vector::dense_vector<Value, vec_para> 
-      , mtl::vector::strided_vector_ref<Value, vec_para> 
+      , vec::dense_vector<Value, vec_para> 
+      , vec::strided_vector_ref<Value, vec_para> 
     >::type type;
 
     static inline type apply(ref_type& A, size_type row, const irange& col_range)
@@ -64,33 +64,33 @@ struct RowInMatrix<mtl::matrix::dense2D<Value, Parameters> >
     template <typename Return, typename Ref>
     static inline Return dispatch(Ref& A, size_type row, const irange& col_range, boost::mpl::true_)
     {
-    vampir_trace<2023> tracer;
+	vampir_trace<2023> tracer;
 	return Return(vector_size(A, col_range), const_cast<value_type*>(&A[row][col_range.start()])); // TODO make work without const cast
     }
 
     template <typename Return, typename Ref>
     static inline Return dispatch(Ref& A, size_type row, const irange& col_range, boost::mpl::false_)
     {
-    vampir_trace<1004> tracer;
+	vampir_trace<1004> tracer;
 	return Return(vector_size(A, col_range), &A[row][col_range.start()], num_rows(A));
     }	 
 };
 
 template <typename Value, typename Parameters>
-struct RowInMatrix<const mtl::matrix::dense2D<Value, Parameters> > 
+struct RowInMatrix<const mtl::mat::dense2D<Value, Parameters> > 
 {
-    typedef mtl::matrix::dense2D<Value, Parameters> const   ref_type;
-    typedef mtl::matrix::dense2D<Value, Parameters>         ref2_type;
+    typedef mtl::mat::dense2D<Value, Parameters> const   ref_type;
+    typedef mtl::mat::dense2D<Value, Parameters>         ref2_type;
     typedef typename ref2_type::size_type      size_type;
-    typedef vector::parameters<row_major>      vec_para;
+    typedef vec::parameters<row_major>      vec_para;
 
     static const bool aligned= boost::is_same<typename Parameters::orientation, row_major>::value;
     static const bool exists= true;
 
     typedef typename boost::mpl::if_c<
         aligned
-      , vector::dense_vector<Value, vec_para> // TODO needs constification !!!
-      , vector::strided_vector_ref<const Value, vec_para> 
+      , vec::dense_vector<Value, vec_para> // TODO needs constification !!!
+      , vec::strided_vector_ref<const Value, vec_para> 
     >::type type;
 
     static inline type apply(ref_type& A, size_type row, const irange& col_range)

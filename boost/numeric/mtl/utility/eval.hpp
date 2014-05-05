@@ -25,16 +25,16 @@ struct eval {};
 
 #if 0 // To be done later
 template <typename Value, typename Parameter>
-struct eval< mtl::vector::dense_vector<Value, Parameter> >
+struct eval< mtl::dense_vector<Value, Parameter> >
 {};
 
 
 template <typename Value1, typename Vector>
-struct eval< mtl::vector::scaled_view<Value1, Vector> > 
+struct eval< mtl::scaled_view<Value1, Vector> > 
 {};
 
 template <typename Value1, typename Vector>
-struct eval< mtl::vector::rscaled_view<Value1, Vector> > 
+struct eval< mtl::rscaled_view<Value1, Vector> > 
 {};
 #endif
 
@@ -56,29 +56,29 @@ struct eval< mtl::vector::rscaled_view<Value1, Vector> >
 
 
 template <typename Value, typename Parameter>
-struct eval< mtl::matrix::dense2D<Value, Parameter> >
-    : public impl::eval_self_ref< mtl::matrix::dense2D<Value, Parameter> >
+struct eval< mtl::mat::dense2D<Value, Parameter> >
+    : public impl::eval_self_ref< mtl::mat::dense2D<Value, Parameter> >
 {
-    eval(const mtl::matrix::dense2D<Value, Parameter>& ref)
-	: impl::eval_self_ref< mtl::matrix::dense2D<Value, Parameter> >(ref)
+    eval(const mtl::mat::dense2D<Value, Parameter>& ref)
+	: impl::eval_self_ref< mtl::mat::dense2D<Value, Parameter> >(ref)
     {}
 };
 
 template <typename Value, std::size_t Mask, typename Parameter>
-struct eval< mtl::matrix::morton_dense<Value, Mask, Parameter> >
-    : public impl::eval_self_ref< mtl::matrix::morton_dense<Value, Mask, Parameter> >
+struct eval< mtl::mat::morton_dense<Value, Mask, Parameter> >
+    : public impl::eval_self_ref< mtl::mat::morton_dense<Value, Mask, Parameter> >
 {
-    eval(const mtl::matrix::morton_dense<Value, Mask, Parameter>& ref)
-	: impl::eval_self_ref< mtl::matrix::morton_dense<Value, Mask, Parameter> >(ref)
+    eval(const mtl::mat::morton_dense<Value, Mask, Parameter>& ref)
+	: impl::eval_self_ref< mtl::mat::morton_dense<Value, Mask, Parameter> >(ref)
     {}
 };
 
 template <typename Value, typename Parameter>
-struct eval< mtl::matrix::compressed2D<Value, Parameter> >
-    : public impl::eval_self_ref< mtl::matrix::compressed2D<Value, Parameter> >
+struct eval< mtl::mat::compressed2D<Value, Parameter> >
+    : public impl::eval_self_ref< mtl::mat::compressed2D<Value, Parameter> >
 {
-    eval(const mtl::matrix::compressed2D<Value, Parameter>& ref)
-	: impl::eval_self_ref< mtl::matrix::compressed2D<Value, Parameter> >(ref)
+    eval(const mtl::mat::compressed2D<Value, Parameter>& ref)
+	: impl::eval_self_ref< mtl::mat::compressed2D<Value, Parameter> >(ref)
     {}
 };
 
@@ -87,48 +87,48 @@ struct eval< mtl::matrix::compressed2D<Value, Parameter> >
 
 #if 0 // only dummy
 template <typename E1, typename E2>
-struct eval< mtl::matrix::mat_mat_asgn_expr<E1, E2> > 
+struct eval< mtl::mat::mat_mat_asgn_expr<E1, E2> > 
 {};
 #endif
 
 
 template <typename E1, typename E2>
-struct eval< mtl::matrix::mat_mat_plus_expr<E1, E2> > 
-    : public impl::eval_self_ref< mtl::matrix::mat_mat_plus_expr<E1, E2> > 
+struct eval< mtl::mat::mat_mat_plus_expr<E1, E2> > 
+    : public impl::eval_self_ref< mtl::mat::mat_mat_plus_expr<E1, E2> > 
 {
-    eval(const mtl::matrix::mat_mat_plus_expr<E1, E2>& ref)
-	: impl::eval_self_ref< mtl::matrix::mat_mat_plus_expr<E1, E2> >(ref)
+    eval(const mtl::mat::mat_mat_plus_expr<E1, E2>& ref)
+	: impl::eval_self_ref< mtl::mat::mat_mat_plus_expr<E1, E2> >(ref)
     {}
 };
 
 template <typename E1, typename E2>
-struct eval< mtl::matrix::mat_mat_minus_expr<E1, E2> > 
-    : public impl::eval_self_ref< mtl::matrix::mat_mat_minus_expr<E1, E2> > 
+struct eval< mtl::mat::mat_mat_minus_expr<E1, E2> > 
+    : public impl::eval_self_ref< mtl::mat::mat_mat_minus_expr<E1, E2> > 
 {
-    eval(const mtl::matrix::mat_mat_minus_expr<E1, E2>& ref)
-	: impl::eval_self_ref< mtl::matrix::mat_mat_minus_expr<E1, E2> >(ref)
+    eval(const mtl::mat::mat_mat_minus_expr<E1, E2>& ref)
+	: impl::eval_self_ref< mtl::mat::mat_mat_minus_expr<E1, E2> >(ref)
     {}
 };
 
 template <typename E1, typename E2>
-struct eval< mtl::matrix::mat_mat_ele_times_expr<E1, E2> > 
-    : public impl::eval_self_ref< mtl::matrix::mat_mat_ele_times_expr<E1, E2> > 
+struct eval< mtl::mat::mat_mat_ele_times_expr<E1, E2> > 
+    : public impl::eval_self_ref< mtl::mat::mat_mat_ele_times_expr<E1, E2> > 
 {
-    eval(const mtl::matrix::mat_mat_ele_times_expr<E1, E2>& ref)
-	: impl::eval_self_ref< mtl::matrix::mat_mat_ele_times_expr<E1, E2> >(ref)
+    eval(const mtl::mat::mat_mat_ele_times_expr<E1, E2>& ref)
+	: impl::eval_self_ref< mtl::mat::mat_mat_ele_times_expr<E1, E2> >(ref)
     {}
 };
 
 
 template <typename E1, typename E2>
-struct eval< mtl::matrix::mat_mat_times_expr<E1, E2> > 
+struct eval< mtl::mat::mat_mat_times_expr<E1, E2> > 
 {
     // Needs dramatic improvement!!! Only for testing!!!
-    typedef matrix::dense2D<double>  matrix_type;
+    typedef mat::dense2D<double>  matrix_type;
     typedef const matrix_type&       const_reference;
 
 
-    explicit eval(const mtl::matrix::mat_mat_times_expr<E1, E2>& expr)
+    explicit eval(const mtl::mat::mat_mat_times_expr<E1, E2>& expr)
     	: prod(expr.first * expr.second)
     {}
 
@@ -142,11 +142,11 @@ private:
 
 
 template <typename Value1, typename Matrix>
-struct eval< mtl::matrix::scaled_view<Value1, Matrix> > 
+struct eval< mtl::mat::scaled_view<Value1, Matrix> > 
 {};
 
 template <typename Value1, typename Matrix>
-struct eval< mtl::matrix::rscaled_view<Value1, Matrix> > 
+struct eval< mtl::mat::rscaled_view<Value1, Matrix> > 
 {};
 
 
@@ -159,11 +159,11 @@ eval<T> inline evaluate(const T& ref)
 
 } // namespace traits
 
-namespace matrix {
+namespace mat {
     using mtl::traits::evaluate;
 }
 
-namespace vector {
+namespace vec {
     using mtl::traits::evaluate;
 }
 

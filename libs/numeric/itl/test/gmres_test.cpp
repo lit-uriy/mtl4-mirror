@@ -24,7 +24,7 @@
 template <typename Matrix>
 void test1(Matrix& m, double tau)
 {
-  mtl::matrix::inserter<Matrix> ins(m);
+  mtl::mat::inserter<Matrix> ins(m);
   size_t nrows=num_rows(m);
   double val;
   for (size_t r=0;r<nrows;++r)
@@ -53,7 +53,7 @@ int main(int, char**)
   const int Niter = 5000;
   using itl::pc::identity; using itl::pc::ilu_0; using itl::pc::ic_0; using itl::pc::diagonal;
   //typedef mtl::dense2D<double> matrix_type;
-  //typedef compressed2D<std::complex<double>matrix::parameters<tag::col_major> > matrix_type;
+  //typedef compressed2D<std::complex<double>mat::parameters<tag::col_major> > matrix_type;
   typedef mtl::compressed2D<double> matrix_type;
   matrix_type                   A(N, N);
   laplacian_setup(A, N, N);

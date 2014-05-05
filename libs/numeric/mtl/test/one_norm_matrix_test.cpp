@@ -32,7 +32,7 @@ void test(MatrixA& a, const char* name)
 {
     a= 0.0;
     {
-	mtl::matrix::inserter<MatrixA>  ins(a);
+	mtl::mat::inserter<MatrixA>  ins(a);
 	                  ins(0, 1) << 1.0; ins(0, 2) << 4.0;
 	ins(1, 0) << 1.0; ins(1, 1) << 3.0; ins(1, 2) << 4.0; ins(1, 3) << 4.0; 
 	                  ins(2, 1) << 9.0; ins(2, 2) << 4.0; ins(2, 3) << 2.0; 
@@ -53,11 +53,11 @@ int main(int, char**)
     unsigned size= 4;
 
     dense2D<double>                                      dr(size, size);
-    dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dense2D<double, mat::parameters<col_major> >      dc(size, size);
     morton_dense<double, recursion::morton_z_mask>       mzd(size, size);
     morton_dense<double, recursion::doppled_2_row_mask>  d2r(size, size);
     compressed2D<double>                                 cr(size, size);
-    compressed2D<double, matrix::parameters<col_major> > cc(size, size);
+    compressed2D<double, mat::parameters<col_major> > cc(size, size);
 
     dense2D<complex<double> >                            drc(size, size);
     compressed2D<complex<double> >                       crc(size, size);

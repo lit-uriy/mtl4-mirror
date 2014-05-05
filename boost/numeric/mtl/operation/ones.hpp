@@ -17,7 +17,7 @@
 
 namespace mtl {
 
-    namespace matrix {
+    namespace mat {
 
 	/// Return r by c matrix with ones of type Value in all entries
 	template <typename Value>
@@ -34,7 +34,7 @@ namespace mtl {
 
     }
 
-    using matrix::ones;
+    using mat::ones;
 
 
 } // namespace mtl

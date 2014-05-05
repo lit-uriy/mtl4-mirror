@@ -15,7 +15,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 namespace mtl {
-    using mtl::vector::num_rows; // has no effect with the friend definition
+    using mtl::num_rows; // has no effect with the friend definition
 }
 
 
@@ -24,7 +24,7 @@ int main(int, char**)
     mtl::dense_vector<double> x(10);
     unsigned int size1 = num_rows(x);
     unsigned int size2 = mtl::num_rows(x);              // does not compile with friend definition
-    unsigned int size3 = mtl::vector::num_rows(x);      // does not compile with friend definition either
+    unsigned int size3 = mtl::num_rows(x);      // does not compile with friend definition either
 
     std::cout << size1 + size2 + size3 << "\n";
 

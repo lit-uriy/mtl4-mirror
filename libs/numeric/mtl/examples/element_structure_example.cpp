@@ -16,9 +16,9 @@ int main(int, char**)
     
     std::cout<<"E_mat=\n"<< E_mat <<"\n";
 
-    mtl::matrix::element_structure<value_type> A;
+    mtl::mat::element_structure<value_type> A;
     
-    typedef mtl::matrix::element<value_type>	element_type;
+    typedef mtl::mat::element<value_type>	element_type;
     element_type* elements = new element_type[nb_elements];
     
     mtl::dense_vector<size_type>  index_a(4, 0), 

@@ -56,7 +56,7 @@ int test(const Matrix&, const char* name)
 
     cout << name << "\nA = \n" << A << "b = " << b << "\n";
 
-    mtl::matrix::umfpack::solver<Matrix> solver(A);
+    mtl::mat::umfpack::solver<Matrix> solver(A);
     int status= solver(x, b);
     // int status= umfpack_solve(A, x, b); // creates solver on the fly
     cout << "A \\ b = " << x << "\n\n";
@@ -66,7 +66,7 @@ int test(const Matrix&, const char* name)
 	    throw "Wrong result!";
 
     {
-	mtl::matrix::inserter<Matrix> ins(A);
+	mtl::mat::inserter<Matrix> ins(A);
 	value_type v(5); add_imag(v, 1.); // set to 5 or 5+i depending on type
 	ins[1][2] << v;
     }
@@ -82,7 +82,7 @@ int test(const Matrix&, const char* name)
 	    throw "Wrong result after update_numeric!";
 
     {
-	mtl::matrix::inserter<Matrix> ins(A);
+	mtl::mat::inserter<Matrix> ins(A);
 	ins[3][4] << 2.;
     }
     b[3]= 13.;
@@ -97,7 +97,7 @@ int test(const Matrix&, const char* name)
 	    throw "Wrong result after update!";
 
     {
-	mtl::matrix::inserter<Matrix> ins(A);
+	mtl::mat::inserter<Matrix> ins(A);
 	ins[3][4] << 3.;
     }
     b[3]= 18.;
@@ -119,7 +119,7 @@ int main(int, char**)
 {
 #ifdef MTL_HAS_UMFPACK
     using namespace mtl;
-    typedef matrix::parameters<col_major>           col_para;
+    typedef mat::parameters<col_major>           col_para;
 
 #if 0 // weird error, will be fixed if someone really uses this
     test(compressed2D<complex<long double> >(),          "complex<long double> row-major");

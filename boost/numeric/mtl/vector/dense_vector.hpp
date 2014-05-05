@@ -44,7 +44,7 @@
 # include <initializer_list>
 #endif
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// Dense vector
 template <class Value, typename Parameters = parameters<> >
@@ -325,7 +325,7 @@ inline sub_vector(dense_vector<Value, Parameters>& v,
     typedef dense_vector<Value, Parameters>    Vector;
 
     MTL_DEBUG_THROW_IF( is_negative(start) || is_negative(finish), index_out_of_range());
-    irange r= intersection(irange(start, finish), irange(0, mtl::vector::size(v)));
+    irange r= intersection(irange(start, finish), irange(0, mtl::vec::size(v)));
     return r.empty() ? Vector() : Vector(r.size(), &v[r.start()]);
 
 #if 0
@@ -352,7 +352,7 @@ namespace mtl {
 
     // Enable cloning of dense vectors
     template <typename Value, typename Parameters>
-    struct is_clonable< vector::dense_vector<Value, Parameters> > : boost::mpl::true_ {};
+    struct is_clonable< vec::dense_vector<Value, Parameters> > : boost::mpl::true_ {};
         
 } // namespace mtl
 
@@ -365,20 +365,20 @@ namespace mtl { namespace traits {
 // ================
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::all, mtl::vector::dense_vector<Value, Parameters> >
-      : public detail::dense_element_range_generator<mtl::vector::dense_vector<Value, Parameters>,
+    struct range_generator<tag::all, mtl::vec::dense_vector<Value, Parameters> >
+      : public detail::dense_element_range_generator<mtl::vec::dense_vector<Value, Parameters>,
 						     dense_el_cursor<Value>, complexity_classes::linear_cached>
     {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::nz, mtl::vector::dense_vector<Value, Parameters> >
-	: public range_generator<tag::all, mtl::vector::dense_vector<Value, Parameters> >
+    struct range_generator<tag::nz, mtl::vec::dense_vector<Value, Parameters> >
+	: public range_generator<tag::all, mtl::vec::dense_vector<Value, Parameters> >
     {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::iter::all, mtl::vector::dense_vector<Value, Parameters> >
+    struct range_generator<tag::iter::all, mtl::vec::dense_vector<Value, Parameters> >
     {
-	typedef mtl::vector::dense_vector<Value, Parameters>   collection_t;
+	typedef mtl::vec::dense_vector<Value, Parameters>   collection_t;
 	typedef complexity_classes::linear_cached complexity;
 	static int const                          level = 1;
 	typedef typename collection_t::pointer    type;
@@ -394,14 +394,14 @@ namespace mtl { namespace traits {
     };
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::iter::nz, mtl::vector::dense_vector<Value, Parameters> >
-	: public range_generator<tag::iter::all, mtl::vector::dense_vector<Value, Parameters> >
+    struct range_generator<tag::iter::nz, mtl::vec::dense_vector<Value, Parameters> >
+	: public range_generator<tag::iter::all, mtl::vec::dense_vector<Value, Parameters> >
     {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::const_iter::all, mtl::vector::dense_vector<Value, Parameters> >
+    struct range_generator<tag::const_iter::all, mtl::vec::dense_vector<Value, Parameters> >
     {
-	typedef mtl::vector::dense_vector<Value, Parameters>   collection_t;
+	typedef mtl::vec::dense_vector<Value, Parameters>   collection_t;
 	typedef complexity_classes::linear_cached complexity;
 	static int const                          level = 1;
 	typedef typename collection_t::const_pointer type;
@@ -417,15 +417,15 @@ namespace mtl { namespace traits {
     };
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::const_iter::nz, mtl::vector::dense_vector<Value, Parameters> >
-	: public range_generator<tag::const_iter::all, mtl::vector::dense_vector<Value, Parameters> >
+    struct range_generator<tag::const_iter::nz, mtl::vec::dense_vector<Value, Parameters> >
+	: public range_generator<tag::const_iter::all, mtl::vec::dense_vector<Value, Parameters> >
     {};
 
 	
 }} // namespace mtl::traits
 
 namespace mtl {
-	using vector::dense_vector;
+    using vec::dense_vector;
 }
 
 #endif // MTL_DENSE_VECTOR_INCLUDE

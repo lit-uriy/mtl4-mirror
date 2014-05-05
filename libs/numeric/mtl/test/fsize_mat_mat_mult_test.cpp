@@ -18,7 +18,7 @@ int main(int , char**)
 {
     using namespace mtl;
  
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2> > fmat_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2> > fmat_para;
 
     dense2D<double, fmat_para>        A, B, B2; 
 

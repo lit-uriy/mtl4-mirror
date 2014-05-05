@@ -97,7 +97,7 @@ int main(int, char** argv)
 // 		matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/obstacle_small.mtx");
 // 	        matrix_file= mtl::io::join(program_dir, "../../../../../data/matrix_market/obstacle_q1q1_e64/obstacle_q1q1_e64_r00800.mtx");
 
-    mtl::matrix::element_structure<value_type> A;
+    mtl::mat::element_structure<value_type> A;
     read_el_matrix(matrix_file, A);
 	
     setup(A, 5);

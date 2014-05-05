@@ -20,7 +20,7 @@ int main(int, char**)
 
     std::cout << "dot_real<6>(v, w) is " <<  dot_real<6>(v, w)<< "\n";
     
-    std::cout << "conj(x) is " <<  mtl::vector::conj(x)<< "\n"; // ADL doesn't work here in g++ 4.4
+    std::cout << "conj(x) is " <<  mtl::conj(x)<< "\n"; // ADL doesn't work here in g++ 4.4
 
     return 0;
 }

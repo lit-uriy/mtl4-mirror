@@ -32,7 +32,7 @@
 
 namespace mtl { 
 
-namespace matrix {
+namespace mat {
 
     /// Multiplication for all supported types of operations
     /** Enable-if-like technique make sure that only called when properly defined **/
@@ -60,7 +60,7 @@ namespace matrix {
 } // namespace matrix
 
 
-namespace vector {
+namespace vec {
 
     /// Multiplication for all supported types of operations
     /** Enable-if-like technique make sure that only called when properly defined **/

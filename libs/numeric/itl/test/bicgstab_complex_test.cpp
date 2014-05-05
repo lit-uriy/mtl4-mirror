@@ -21,7 +21,7 @@ void fill(Matrix& m)
   double s=19, u=21, p=16, e=5, r=18, l =12;
 
   std::complex<double> delta(2,1);
-  mtl::matrix::inserter<Matrix> sm(m);
+  mtl::mat::inserter<Matrix> sm(m);
   // set diagonal
   sm(0,0) << s;
   sm(1,1) << u;

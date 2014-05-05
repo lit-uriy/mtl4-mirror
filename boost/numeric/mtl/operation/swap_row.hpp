@@ -24,7 +24,7 @@
 
 namespace mtl { 
 
-namespace matrix {
+namespace mat {
     
     namespace detail {
 	
@@ -68,7 +68,7 @@ namespace matrix {
 } // namespace matrix
 
 
-namespace vector {
+namespace vec {
     ///Entry i and j are swapped in %vector v 
     template <typename Vector>
     typename mtl::traits::enable_if_vector<Vector>::type
@@ -83,8 +83,8 @@ namespace vector {
 
 } // vector
 
-using matrix::swap_row;
-using vector::swap_row;
+using mat::swap_row;
+using vec::swap_row;
 
 } // namespace mtl
 

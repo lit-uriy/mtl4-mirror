@@ -64,19 +64,19 @@ int main(int, char**)
     none   n;
 
     dense_vector<float>                                  u(size);
-    dense_vector<float, mtl::vector::parameters<row_major> >  ur(size);
+    dense_vector<float, mtl::vec::parameters<row_major> >  ur(size);
 
     dense2D<double>                                      dr(size, size);
-    dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dense2D<double, mat::parameters<col_major> >      dc(size, size);
     morton_dense<double, recursion::morton_z_mask>       mzd(size, size);
     morton_dense<double, recursion::doppled_2_row_mask>  d2r(size, size);
     compressed2D<double>                                 cr(size, size);
-    compressed2D<double, matrix::parameters<col_major> > cc(size, size);
+    compressed2D<double, mat::parameters<col_major> > cc(size, size);
 
     dense2D<complex<double> >                            drc(size, size);
     compressed2D<complex<double> >                       crc(size, size);
 
-    matrix::scaled_view<double, dense2D<double> >        scaled_matrix(2.0, dr);
+    mat::scaled_view<double, dense2D<double> >        scaled_matrix(2.0, dr);
 
     test(d, "double");
     test(i, "int");

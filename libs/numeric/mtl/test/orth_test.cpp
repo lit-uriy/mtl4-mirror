@@ -94,15 +94,15 @@ int main(int, char**)
     dense_vector<float>                                                 cf(sz, 1.0);
     dense_vector<double>                                                cd(sz, 1.0);
     dense_vector<std::complex<double> >                                 cc(sz, 1.0);
-    dense_vector<float, mtl::vector::parameters<row_major> >                 rf(sz, 1.0);
+    dense_vector<float, mtl::vec::parameters<row_major> >                 rf(sz, 1.0);
 
     std::vector<dense_vector<float> >                                   scf(sz, cf);
     std::vector<dense_vector<double> >                                  scd(sz, cd);
     std::vector<dense_vector<std::complex<double> > >                   scc(sz, cc);
-    std::vector<dense_vector<float, mtl::vector::parameters<row_major> > >   srf(sz, rf);
+    std::vector<dense_vector<float, mtl::vec::parameters<row_major> > >   srf(sz, rf);
 
     dense_vector<dense_vector<float> >                                  ccf(sz, cf);
-    dense_vector<dense_vector<float>, mtl::vector::parameters<row_major> >   rcf(sz, cf);
+    dense_vector<dense_vector<float>, mtl::vec::parameters<row_major> >   rcf(sz, cf);
 
     test(scf, cf[0], "std::vector<dense_vector<float> >");
     test(scd, cd[0], "std::vector<dense_vector<double> >");

@@ -15,7 +15,7 @@
 
 #include <boost/numeric/mtl/utility/index_evaluator.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 template <typename T, typename U>
 struct fused_index_evaluator

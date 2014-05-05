@@ -2,7 +2,7 @@
  *  matrix_map_view_test_2.cpp
  *  MTL
  *
- *	Test matrix::rscaled_view and matrix::divide_by_view
+ *	Test mat::rscaled_view and mat::divide_by_view
  *
  *  Created by Hui Li (huil@Princeton.EDU)
  *
@@ -74,7 +74,7 @@ void test(Matrix& matrix, const char* name)
     typename Matrix::value_type ref(0);
 	
     {
-		mtl::matrix::inserter<Matrix>  ins(matrix);
+		mtl::mat::inserter<Matrix>  ins(matrix);
 		ins(2, 3) << value(ref);
 		ins(4, 3) << value(ref) + 1.0;
 		ins(2, 5) << value(ref) + 2.0;
@@ -98,7 +98,7 @@ void test(Matrix& matrix, const char* name)
 	
 	
 	// test rscaled_view
-    mtl::matrix::rscaled_view<Matrix, double>  rscaled_matrix(matrix, 2.0);
+    mtl::mat::rscaled_view<Matrix, double>  rscaled_matrix(matrix, 2.0);
     cout << "matrix  right scaled with 2.0\n" << rscaled_matrix << "\n";
     MTL_THROW_IF(rscaled_matrix(2, 3) != rsvalue(ref), mtl::runtime_error("right scaling wrong"));
 	
@@ -106,7 +106,7 @@ void test(Matrix& matrix, const char* name)
     MTL_THROW_IF((matrix * 2.0)(2, 3) != rsvalue(ref), mtl::runtime_error("right scaling wrong"));
 	
 	
-    mtl::matrix::rscaled_view<Matrix, ct>  crscaled_matrix(matrix, ct(0.0, 1.0));
+    mtl::mat::rscaled_view<Matrix, ct>  crscaled_matrix(matrix, ct(0.0, 1.0));
     cout << "matrix right scaled with i (complex(0, 1))\n" << crscaled_matrix << "\n";
     MTL_THROW_IF(crscaled_matrix(2, 3) != crsvalue(ref), mtl::runtime_error("complex right scaling wrong"));
 	
@@ -117,7 +117,7 @@ void test(Matrix& matrix, const char* name)
     MTL_THROW_IF(rscale(matrix, ct(0.0, 1.0))(2, 3) != crsvalue(ref), mtl::runtime_error("complex right scaling wrong"));
 	
 	// test divide_by_view
-    mtl::matrix::divide_by_view<Matrix, double>  div_matrix(matrix, 0.5);
+    mtl::mat::divide_by_view<Matrix, double>  div_matrix(matrix, 0.5);
     cout << "matrix divide by 0.5\n" << div_matrix << "\n";
     MTL_THROW_IF(div_matrix(2, 3) != rsvalue(ref), mtl::runtime_error("divide_by wrong"));
 	
@@ -125,7 +125,7 @@ void test(Matrix& matrix, const char* name)
     MTL_THROW_IF((matrix / 0.5)(2, 3) != rsvalue(ref), mtl::runtime_error("divide_by wrong"));
 	
 	
-    mtl::matrix::divide_by_view<Matrix, ct>  cdiv_matrix(matrix, ct(0.0, -1.0));
+    mtl::mat::divide_by_view<Matrix, ct>  cdiv_matrix(matrix, ct(0.0, -1.0));
     cout << "matrix divide by -i (complex(0, -1))\n" << cdiv_matrix << "\n";
     MTL_THROW_IF(cdiv_matrix(2, 3) != crsvalue(ref), mtl::runtime_error("complex divide_by wrong"));
 	
@@ -146,11 +146,11 @@ int main(int argc, char* argv[])
     if (argc > 1) size= atoi(argv[1]); 
 	
     dense2D<double>                                      dr(size, size);
-    dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dense2D<double, mat::parameters<col_major> >      dc(size, size);
     morton_dense<double, recursion::morton_z_mask>       mzd(size, size);
     morton_dense<double, recursion::doppled_2_row_mask>  d2r(size, size);
     compressed2D<double>                                 cr(size, size);
-    compressed2D<double, matrix::parameters<col_major> > cc(size, size);
+    compressed2D<double, mat::parameters<col_major> > cc(size, size);
 	
     dense2D<complex<double> >                            drc(size, size);
     compressed2D<complex<double> >                       crc(size, size);

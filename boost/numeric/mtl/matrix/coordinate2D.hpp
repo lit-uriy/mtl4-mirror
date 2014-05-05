@@ -16,11 +16,11 @@
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/static_assert.hpp>
 
-namespace mtl {  namespace matrix {
+namespace mtl {  namespace mat {
     
   
 /// Sparse matrix structure in coordinate format
-template <typename Value, typename Parameters = matrix::parameters<> >
+template <typename Value, typename Parameters = mat::parameters<> >
 class coordinate2D 
   : public base_matrix<Value, Parameters>,
     public const_crtp_base_matrix< coordinate2D<Value, Parameters>, Value, typename Parameters::size_type >,
@@ -28,15 +28,16 @@ class coordinate2D
     public mat_expr< coordinate2D<Value, Parameters> >
 {
   public:
- 
-    typedef Value                                                       value_type ;
-    typedef Value&                                                      reference ;
-    typedef Value const&                                                const_reference ;
-    typedef typename Parameters::size_type				size_type ;
+    typedef Value                                                       value_type;
+    typedef Value&                                                      reference;
+    typedef Value const&                                                const_reference;
+    typedef typename Parameters::size_type				  size_type;
     typedef typename Parameters::dimensions                             dim_type;
-    typedef typename Parameters::orientation                            orientation;
+    typedef typename Parameters::orientation                            orientation;      
 
+    typedef coordinate2D                                                self;
     typedef base_matrix<Value, Parameters>                              super;
+    typedef crtp_matrix_assign<self, Value, size_type>                  assign_base;
 
     typedef std::vector< size_type >                                    row_index_array_type ;
     typedef std::vector< size_type >                                    column_index_array_type ;
@@ -51,7 +52,10 @@ class coordinate2D
 	    cols.reserve(expected);
 	    values.reserve(expected);
 	}
+	my_is_sorted= true; 
     } 
+    
+    using assign_base::operator=;    
   
     size_type nnz() const { return rows.size(); } ///< Number of non-zeros
 
@@ -64,6 +68,13 @@ class coordinate2D
     row_index_array_type& row_index_array() { return rows; }       ///< Array of rows   (mutable)
     column_index_array_type& column_index_array() { return cols; } ///< Array of columns  (mutable)
 
+    /// Drop all entries
+    void make_empty()
+    {
+        rows.resize(0); cols.resize(0); values.resize(0);
+        my_is_sorted= true; // haha
+    }
+    
     /// Insert an entry at the end of the row-,col- and value-array 
     void push_back(size_type r, size_type c, const_reference v) 
     {
@@ -88,13 +99,13 @@ class coordinate2D
     // sorting by rows
     void sort(boost::mpl::true_)
     {  
-	mtl::vector::sort_xy(rows, cols, values);
+	mtl::vec::sort_xy(rows, cols, values);
     }
 
     // sorting by columns
     void sort(boost::mpl::false_)
     {
-	mtl::vector::sort_xy(cols, rows, values);
+	mtl::vec::sort_xy(cols, rows, values);
     }
   
     template <typename OStream, typename Vector>
@@ -298,7 +309,7 @@ struct coordinate2D_inserter
     }
 
     template <typename EMatrix, typename Rows, typename Cols>
-    self& operator<< (const matrix::element_matrix_t<EMatrix, Rows, Cols>& elements)
+    self& operator<< (const mat::element_matrix_t<EMatrix, Rows, Cols>& elements)
     {
 	using mtl::size;
 	for (unsigned ri= 0; ri < size(elements.rows); ri++)
@@ -308,7 +319,7 @@ struct coordinate2D_inserter
     }
 
     template <typename EMatrix, typename Rows, typename Cols>
-    self& operator<< (const matrix::element_array_t<EMatrix, Rows, Cols>& elements)
+    self& operator<< (const mat::element_array_t<EMatrix, Rows, Cols>& elements)
     {
 	using mtl::size;
 	for (unsigned ri= 0; ri < size(elements.rows); ri++)
@@ -453,31 +464,31 @@ namespace mtl { namespace traits {
     // Cursor over all rows
     // Supported if row major matrix
     template <typename Value, typename Parameters>
-    struct range_generator<glas::tag::row, matrix::coordinate2D<Value, Parameters> >
+    struct range_generator<glas::tag::row, mat::coordinate2D<Value, Parameters> >
       : boost::mpl::if_<
 	    boost::is_same<typename Parameters::orientation, row_major>
-	  , matrix::coordinate_row_range_generator<Value, Parameters>
- 	  , range_generator<tag::unsupported, matrix::coordinate2D<Value, Parameters> >
+	  , mat::coordinate_row_range_generator<Value, Parameters>
+ 	  , range_generator<tag::unsupported, mat::coordinate2D<Value, Parameters> >
         >::type {};	
 
     template <typename Value, typename Parameters>
-    struct range_generator<glas::tag::col, matrix::coordinate2D<Value, Parameters> >
+    struct range_generator<glas::tag::col, mat::coordinate2D<Value, Parameters> >
       : boost::mpl::if_<
 	    boost::is_same<typename Parameters::orientation, col_major>
-	  , matrix::coordinate_col_range_generator<Value, Parameters>
- 	  , range_generator<tag::unsupported, matrix::coordinate2D<Value, Parameters> >
+	  , mat::coordinate_col_range_generator<Value, Parameters>
+ 	  , range_generator<tag::unsupported, mat::coordinate2D<Value, Parameters> >
         >::type {};	
 
     template <class Value, class Parameters>
-    struct range_generator<glas::tag::nz, matrix::coordinate_major_cursor<Value, Parameters> >
-      : matrix::coordinate_minor_range_generator<Value, Parameters>
+    struct range_generator<glas::tag::nz, mat::coordinate_major_cursor<Value, Parameters> >
+      : mat::coordinate_minor_range_generator<Value, Parameters>
     {};
 
 
 }} // namespace mtl::traits
 
 namespace mtl {
-	using matrix::coordinate2D;
+	using mat::coordinate2D;
 }
 
 #endif // MTL_COORDINATE2D_INCLUDE

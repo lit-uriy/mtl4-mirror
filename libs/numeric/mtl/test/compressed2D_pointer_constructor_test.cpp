@@ -97,7 +97,7 @@ int main(int, char**)
     Matrix A(dim1, dim2, nnz, row_ptr, col_ind, entries);
     test(A, "row-major");
 
-    typedef mtl::matrix::parameters<mtl::tag::col_major>  Parameters2;
+    typedef mtl::mat::parameters<mtl::tag::col_major>  Parameters2;
     typedef compressed2D<double, Parameters2>             Matrix2;
 
     size_t col_ptr2[] = {0, 1, 2, 4, 5}, row_ind2[] = {0, 1, 0, 2, 2};

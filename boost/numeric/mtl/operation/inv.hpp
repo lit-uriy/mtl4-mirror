@@ -26,7 +26,7 @@
 #include <boost/numeric/mtl/vector/unit_vector.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 namespace traits {
 
@@ -36,7 +36,7 @@ namespace traits {
     struct inv
     {
 	typedef typename Collection<Matrix>::value_type    value_type;
-	typedef ::mtl::matrix::dense2D<value_type>         type;
+	typedef ::mtl::mat::dense2D<value_type>         type;
     };
 	
 } // traits
@@ -58,7 +58,7 @@ void inv_upper(Matrix const& A, MatrixOut& Inv)
     for (size_type k= 0; k < N; ++k) {
 	irange r(k+1);
 	typename mtl::ColumnInMatrix<MatrixOut>::type col_k(Inv[r][k]);
-	upper_trisolve(A[r][r], vector::unit_vector<value_type>(k, k+1), col_k, mtl::tag::regular_diagonal());
+	upper_trisolve(A[r][r], vec::unit_vector<value_type>(k, k+1), col_k, mtl::tag::regular_diagonal());
     }
 }
 
@@ -93,7 +93,7 @@ inline void inv_lower(Matrix const& A, MatrixOut& Inv)
     for (size_type k= 0; k < N; ++k) {
 	irange r(k, N);
 	typename mtl::ColumnInMatrix<MatrixOut>::type col_k(Inv[r][k]);
-	lower_trisolve(A[r][r], vector::unit_vector<value_type>(0, N-k), col_k, mtl::tag::regular_diagonal());
+	lower_trisolve(A[r][r], unit_vector<value_type>(0, N-k), col_k, mtl::tag::regular_diagonal());
     }
 }
 
@@ -145,7 +145,7 @@ inline void inv(Matrix const& A, MatrixOut& Inv)
     }
 
     result_type                    PLU(A);
-    mtl::vector::dense_vector<size_type, vector::parameters<> >   Pv(num_rows(A));
+    mtl::dense_vector<size_type, vec::parameters<> >   Pv(num_rows(A));
 
     lu(PLU, Pv);
     result_type  PU(upper(PLU)), PL(strict_lower(PLU));

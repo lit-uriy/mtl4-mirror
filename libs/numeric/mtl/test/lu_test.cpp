@@ -148,7 +148,7 @@ void test(Matrix& A, const char* name)
     singularity_test3(A);
     singularity_test4(A);
 
-    mtl::matrix::lu_solver<Matrix> lus(A);
+    mtl::mat::lu_solver<Matrix> lus(A);
     Vector v5(size);
      
     lus.solve(w, v5);
@@ -165,7 +165,7 @@ int main(int, char**)
     
     dense2D<double>                                      dr(size, size);
     dense2D<complex<double> >                            dz(size, size);
-    dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dense2D<double, mat::parameters<col_major> >      dc(size, size);
 
     test(dr, "Row-major dense");
     test(dz, "Row-major dense with complex numbers");

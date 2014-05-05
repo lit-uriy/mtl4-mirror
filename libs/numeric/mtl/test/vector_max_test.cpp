@@ -36,7 +36,6 @@ void test(Vector& v, const char* name)
 int main(int, char**)
 {
     using namespace mtl;
-    using mtl::vector::parameters;
 
     dense_vector<float>   u(5);
     dense_vector<short int>     vs(5);
@@ -50,7 +49,7 @@ int main(int, char**)
     test(u, "test float");
     test(x, "test double");
 
-    dense_vector<float, parameters<row_major> >   ur(5);
+    dense_vector<float, vec::parameters<row_major> >   ur(5);
     test(ur, "test float in row vector");
 
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS

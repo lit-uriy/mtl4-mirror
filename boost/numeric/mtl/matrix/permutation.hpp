@@ -16,12 +16,12 @@
 #include <boost/numeric/mtl/operation/size.hpp>
 #include <boost/numeric/mtl/matrix/reorder.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 namespace traits {
 
-    //\ Return type of mtl::matrix::permutation
+    //\ Return type of mtl::mat::permutation
     // Only for completeness	
     template <typename Value= short>
     struct permutation
@@ -49,10 +49,10 @@ inline permutation(const PermutationVector& v)
 
 }} // namespace mtl::matrix
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
-    /// Import into vector namespace; see \ref mtl::matrix::permutation
-    using mtl::matrix::permutation;
+    /// Import into vector namespace; see \ref mtl::mat::permutation
+    using mtl::mat::permutation;
 
 }} // namespace mtl::vector
 

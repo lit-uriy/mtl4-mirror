@@ -20,14 +20,14 @@ int main(int, char**)
     typedef mtl::fixed::dimensions<3, 3> fmdim;
     typedef mtl::non_fixed::dimensions   mdim;
 
-    typedef mtl::vector::fixed::dimension<3>    fvdim;
-    typedef mtl::vector::non_fixed::dimension   vdim;
+    typedef mtl::vec::fixed::dimension<3>    fvdim;
+    typedef mtl::vec::non_fixed::dimension   vdim;
 
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mdim>   mat_para;
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, fmdim>  fmat_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, mdim>   mat_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, fmdim>  fmat_para;
 
-    typedef mtl::vector::parameters<tag::col_major, vdim>                   vec_para;
-    typedef mtl::vector::parameters<tag::col_major, fvdim>                  fvec_para;
+    typedef mtl::vec::parameters<tag::col_major, vdim>                   vec_para;
+    typedef mtl::vec::parameters<tag::col_major, fvdim>                  fvec_para;
 
     MTL_THROW_IF( mat_para::on_stack, mtl::runtime_error("Must not be on stack!"));
     MTL_THROW_IF(!fmat_para::on_stack, mtl::runtime_error("Must be on stack!"));

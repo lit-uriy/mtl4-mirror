@@ -60,7 +60,7 @@ void check(const Matrix& A, int begin, int end)
 template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
-    using mtl::matrix::inserter; using mtl::Collection;
+    using mtl::mat::inserter; using mtl::Collection;
 
     typedef typename Collection<Matrix>::value_type   value_type;
 
@@ -132,11 +132,11 @@ int main(int, char**)
     using namespace mtl;
 
     dense2D<double>                                      dr;
-    dense2D<double, matrix::parameters<col_major> >      dc;
+    dense2D<double, mat::parameters<col_major> >      dc;
     morton_dense<double, recursion::morton_z_mask>       mzd;
     morton_dense<double, recursion::doppled_2_row_mask>  d2r;
     compressed2D<double>                                 cr;
-    compressed2D<double, matrix::parameters<col_major> > cc;
+    compressed2D<double, mat::parameters<col_major> > cc;
 
     dense2D<complex<double> >                            drc;
     compressed2D<complex<double> >                       crc;

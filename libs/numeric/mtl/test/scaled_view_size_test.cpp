@@ -22,7 +22,7 @@ using namespace std;
 int main(int, char**)
 {
     typedef mtl::dense_vector<float>         v_type;
-    typedef mtl::vector::scaled_view<float, v_type> s_type;
+    typedef mtl::vec::scaled_view<float, v_type> s_type;
 
     v_type v(3, 4.0);
     s_type s(2.0f * v);

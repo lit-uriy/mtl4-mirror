@@ -20,7 +20,7 @@ void test(int n)
 {
     mtl::compressed2D<double> A(n*n, n*n);
     {
-        mtl::matrix::inserter<mtl::compressed2D<double> > ins(A, 5);
+        mtl::mat::inserter<mtl::compressed2D<double> > ins(A, 5);
 	for (int i= 0; i < n; i++) {
 	    int r= i * n, re= r+n;
 	    if (i > 0)

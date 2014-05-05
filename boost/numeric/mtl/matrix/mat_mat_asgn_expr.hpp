@@ -13,7 +13,7 @@
 #ifndef MTL_MATRIX_MAT_MAT_ASGN_EXPR_INCLUDE
 #define MTL_MATRIX_MAT_MAT_ASGN_EXPR_INCLUDE
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 // Currently only dummy to be used in traits::eval_dense

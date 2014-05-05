@@ -35,7 +35,7 @@ template <typename Matrix>
 void test1(Matrix& m, double tau)
 {
   Random m_rand;
-  mtl::matrix::inserter<Matrix> ins(m);
+  mtl::mat::inserter<Matrix> ins(m);
   size_t nrows=num_rows(m);
   std::complex<double> val;
   for (size_t r=0;r<nrows;++r)
@@ -63,7 +63,7 @@ int main(int, char**)
   using itl::cyclic_iteration; using itl::pc::identity; using itl::pc::ilu_0;
 
   typedef compressed2D<std::complex<double> > matrix_type;
-  //typedef compressed2D<std::complex<double> ,matrix::parameters<tag::col_major> > matrix_type;
+  //typedef compressed2D<std::complex<double> ,mat::parameters<tag::col_major> > matrix_type;
   matrix_type                   A(N, N);
   dense_vector<std::complex<double> > b(N, std::complex<double>(1,0)), x(N);
 

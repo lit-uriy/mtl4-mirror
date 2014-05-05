@@ -20,7 +20,7 @@
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/entry_similar.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Fills a matrix A with A[i][j] = factor * (i + j)
 /** Intended for dense matrices.
@@ -92,8 +92,8 @@ void check_hessian_matrix_product(Matrix const& C, typename Matrix::size_type re
 
 } // namespace matrix;
 
-using matrix::hessian_setup;
-using matrix::check_hessian_matrix_product;
+using mat::hessian_setup;
+using mat::check_hessian_matrix_product;
 
 } // namespace mtl
 

@@ -32,11 +32,11 @@ namespace mtl {
     with block size 6.
 **/
 template <unsigned BSize, typename Coll> 
-typename mtl::traits::enable_if_vector<Coll, vector::unrolled1<BSize, Coll> >::type
+typename mtl::traits::enable_if_vector<Coll, vec::unrolled1<BSize, Coll> >::type
 inline unroll(Coll& v)
 {
-	vampir_trace<7> tracer;
-    return vector::unrolled1<BSize, Coll>(v);
+    vampir_trace<7> tracer;
+    return vec::unrolled1<BSize, Coll>(v);
 }
 
 } // namespace mtl

@@ -132,7 +132,7 @@ void dense_matrix_test(char const* name, const Matrix& matrix)
 int main(int, char**)
 {
     using namespace mtl;
-    typedef matrix::parameters<col_major> col_para;
+    typedef mat::parameters<col_major> col_para;
 
     double ar[4][4]= {{1., 0., 2., 0.},
 		     {0., 3., 0., 4.},

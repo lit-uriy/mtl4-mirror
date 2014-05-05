@@ -32,7 +32,7 @@ namespace itl { namespace pc {
 template <typename Preconditioner, typename Matrix, bool Store= true>
 class sub_matrix_pc
 {
-    typedef mtl::vector::dense_vector<bool>                                               tag_type;
+    typedef mtl::dense_vector<bool>                                               tag_type;
     typedef typename boost::mpl::if_c<Store, Preconditioner, const Preconditioner&>::type pc_type;
 
     struct matrix_container
@@ -44,7 +44,7 @@ class sub_matrix_pc
 	    using std::size_t; 
 	    using namespace mtl;
 
-	    mtl::vector::dense_vector<size_t> perm(size(tags));
+	    mtl::dense_vector<size_t> perm(size(tags));
 	    size_t n= 0;
 	    for (size_t i= 0; i < size(tags); ++i) {
 		perm[i]= n;
@@ -59,7 +59,7 @@ class sub_matrix_pc
 	    typename traits::const_value<Matrix>::type     value(src); 
 	    typedef typename traits::range_generator<tag::major, Matrix>::type  cursor_type;
 
-	    matrix::inserter<Matrix> ins(*Ap, Ap->nnz() / Ap->dim1());
+	    mat::inserter<Matrix> ins(*Ap, Ap->nnz() / Ap->dim1());
 	    
 	    for (cursor_type cursor = mtl::begin<tag::major>(src), cend = mtl::end<tag::major>(src); 
 		 cursor != cend; ++cursor) {

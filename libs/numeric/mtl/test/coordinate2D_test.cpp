@@ -24,7 +24,7 @@ int main(int, char**)
     using namespace mtl;
     using mtl::io::tout;
 
-    typedef mtl::matrix::coordinate2D<double> matrix_type;
+    typedef mtl::mat::coordinate2D<double> matrix_type;
     matrix_type   B(5, 4);
     mtl::dense_vector<double> res(5, 0.0), res2(5), x(4, 1.0);
     
@@ -67,7 +67,7 @@ int main(int, char**)
 
     matrix_type A(5, 5, 9);
     {
-	matrix::inserter<matrix_type> ins(A, 3);
+	mat::inserter<matrix_type> ins(A, 3);
 	ins[1][2] << 13.3;
 	ins[2][2] << 23.3;
 	ins[2][3] << 33.3;
@@ -82,7 +82,7 @@ int main(int, char**)
     MTL_THROW_IF(std::abs(A[2][1]) > 0.001, unexpected_result());
 
     {
-	matrix::inserter<matrix_type, operations::update_plus<double> > ins(A);
+	mat::inserter<matrix_type, operations::update_plus<double> > ins(A);
 	ins[2][3] << 3.0;
 	ins[2][1] << 3.33;
     }
@@ -112,7 +112,7 @@ int main(int, char**)
 	    tout << "A[" << row(*icursor) << "][" << col(*icursor) << "] = " << value(*icursor) << '\n'; 
     }
 
-    mtl::matrix::compressed2D<double> C(A);    
+    mtl::mat::compressed2D<double> C(A);    
     tout << "C=\n"<< C << "\n";
 
 

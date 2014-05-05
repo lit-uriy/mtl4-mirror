@@ -22,7 +22,7 @@
 
 using mtl::io::tout;
 
-typedef mtl::compressed2D<double, mtl::matrix::unsigned_parameters>         matrix_type;
+typedef mtl::compressed2D<double, mtl::mat::unsigned_parameters>         matrix_type;
 
 template <typename Matrix>
 inline void check(const Matrix& A, unsigned m, unsigned n)

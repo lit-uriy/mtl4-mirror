@@ -15,7 +15,7 @@
 
 #include <boost/numeric/mtl/vector/map_view.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 template <typename E1>
 inline negate_view< E1 >

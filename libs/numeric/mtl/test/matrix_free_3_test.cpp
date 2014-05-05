@@ -19,7 +19,7 @@ int main(int, char**)
 {
     using namespace std;
     using mtl::lazy; using mtl::io::tout;
-    typedef mtl::vector::dense_vector<double> vt;
+    typedef mtl::dense_vector<double> vt;
     
     mtl::compressed2D<double> A0;
     laplacian_setup(A0, 4, 15);
@@ -32,7 +32,7 @@ int main(int, char**)
     vt w1(A0 * v);
     tout << "A0 * v is " << w1 << endl;
 
-    mtl::matrix::poisson2D_dirichlet A(4, 15);
+    mtl::mat::poisson2D_dirichlet A(4, 15);
     vt  w2(60);
     w2= A * v;
     tout << "A * v is " << w2 << endl;

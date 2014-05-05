@@ -18,7 +18,7 @@
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 // Functor type as background for free submatrix function
 template <typename Matrix>

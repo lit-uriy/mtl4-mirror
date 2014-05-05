@@ -23,7 +23,7 @@ int main(int , char**)
     
     matrix_type A(8, 6);
     {
-	mtl::matrix::inserter<matrix_type> i2(A);
+	mtl::mat::inserter<matrix_type> i2(A);
 	i2(2, 2) << 21; i2(2, 4) << 22; i2(6, 1) << 23; 
 	i2(7, 2) << 24 << 2; i2(4, 2) << 25; i2(2, 5) << 26; 
 	i2(0, 2) << 27; i2(3, 1) << 28; i2(4, 2) << 29; 

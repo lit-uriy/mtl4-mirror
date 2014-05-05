@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
     unsigned size= dim1 * dim2; 
 
     compressed2D<double>                                 cr(size, size);
-    compressed2D<double, matrix::parameters<col_major> > cc(size, size);
+    compressed2D<double, mat::parameters<col_major> > cc(size, size);
 
     dense2D<complex<double> >                            drc(size, size);
     compressed2D<complex<double> >                       crc(size, size);

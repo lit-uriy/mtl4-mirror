@@ -15,7 +15,7 @@
 
 int main(int ,char**)
 {
-    using namespace mtl::matrix;
+    using namespace mtl::mat;
     
     const unsigned n= 100;
     dense2D<double>                            A(n, n);

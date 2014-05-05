@@ -23,7 +23,7 @@
 #include <boost/numeric/mtl/recursion/base_case_cast.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 namespace with_bracket {
 
@@ -560,7 +560,7 @@ private:
     template <typename Matrix, typename Visitor>
     void apply(Matrix& matrix, Visitor vis, tag::qsub_divisible)
     {
-	matrix::recursator<Matrix>  recursator(matrix);
+	mat::recursator<Matrix>  recursator(matrix);
 	with_recursator::cholesky(recursator, vis);
     }
 };

@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/vector/map_view.hpp>
 #include <boost/numeric/mtl/operation/tfunctor_mixed.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 template <typename E1, typename E2>
 typename mtl::traits::enable_if_scalar<E1, map_view<tfunctor::left_plus<E1, typename E2::value_type>, E2> >::type

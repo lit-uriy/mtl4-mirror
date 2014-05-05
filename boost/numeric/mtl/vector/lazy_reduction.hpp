@@ -13,7 +13,7 @@
 #ifndef MTL_VECTOR_LAZY_REDUCTION_INCLUDE
 #define MTL_VECTOR_LAZY_REDUCTION_INCLUDE
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// Helper class for lazy evaluation
 template <typename Vector, typename Functor>

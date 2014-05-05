@@ -93,10 +93,10 @@ int main(int argc, char* argv[])
     unsigned size= dim1 * dim2; 
 
     compressed2D<double>                                 cr(size, size);
-    compressed2D<double, matrix::parameters<col_major> > cc(size, size);
+    compressed2D<double, mat::parameters<col_major> > cc(size, size);
 
     dense2D<double>                                      dr(size, size);
-    dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dense2D<double, mat::parameters<col_major> >      dc(size, size);
 
     test(cr, dr, dim1, dim2, "Row-major sparse times row-major dense");
     test(cr, dc, dim1, dim2, "Row-major sparse times column-major dense");

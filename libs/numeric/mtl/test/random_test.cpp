@@ -43,7 +43,7 @@ int main(int, char**)
     compressed2D<double>                             cdc(size, size);
     compressed2D<std::complex<double> >              ccc(size, size);
     dense2D<double>                                  dc(size, size);
-    dense2D<double, matrix::parameters<col_major> >  dcc(size, size);
+    dense2D<double, mat::parameters<col_major> >  dcc(size, size);
     dense2D<float>                                   fc(size, size);
     morton_dense<double,  morton_mask>               mdc(size, size);
     morton_dense<double, doppled_32_col_mask>        mcc(size, size);

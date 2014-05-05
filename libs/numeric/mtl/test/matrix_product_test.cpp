@@ -288,7 +288,7 @@ void dgemm_(const char* transa, const char* transb,
 	    double *dc, const int* ldc);
 }
 
-typedef mtl::dense2D<double, mtl::matrix::parameters<col_major> >        dc_t;
+typedef mtl::dense2D<double, mtl::mat::parameters<col_major> >        dc_t;
 
 struct dgemm_t
 {
@@ -306,7 +306,7 @@ struct dgemm_t
 
 void test_blas()
 {
-    mtl::dense2D<double, mtl::matrix::parameters<col_major> > a(7, 7), b(7, 7), c(7, 7);
+    mtl::dense2D<double, mtl::mat::parameters<col_major> > a(7, 7), b(7, 7), c(7, 7);
     hessian_setup(a, 1.0);
     hessian_setup(b, 2.0);
     dgemm_t()(a, b, c);
@@ -336,9 +336,9 @@ int main(int argc, char* argv[])
     if (size < 2) size= 2;
 
     dense2D<double>                                  da(size, size-1), db(size-1, size-2), dc(size, size-2); 
-    dense2D<double, matrix::parameters<col_major> >  dca(size, size-1), dcb(size-1, size-2), dcc(size, size-2);
+    dense2D<double, mat::parameters<col_major> >  dca(size, size-1), dcb(size-1, size-2), dcc(size, size-2);
     dense2D<float>                                   fa(size, size-1), fb(size-1, size-2), fc(size, size-2);
-    dense2D<float, matrix::parameters<col_major> >   fca(size, size-1), fcb(size-1, size-2), fcc(size, size-2);
+    dense2D<float, mat::parameters<col_major> >   fca(size, size-1), fcb(size-1, size-2), fcc(size, size-2);
     morton_dense<double,  morton_mask>               mda(size, size-1), mdb(size-1, size-2), mdc(size, size-2);
 
     typedef morton_dense<double, doppled_32_row_mask_no_shark>  morton_t;

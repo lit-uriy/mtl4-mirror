@@ -20,6 +20,7 @@
 #include <boost/numeric/mtl/vector/inserter.hpp>
 #include <boost/numeric/mtl/vector/mapped_inserter.hpp>
 #include <boost/numeric/mtl/vector/extracter.hpp>
+#include <boost/numeric/mtl/vector/sparse_vector.hpp>
 
 #include <boost/numeric/mtl/vector/assigner.hpp>
 #include <boost/numeric/mtl/vector/decrementer.hpp>
@@ -28,5 +29,7 @@
 // To find operators
 #include <boost/numeric/mtl/vector/vec_vec_minus_expr.hpp>
 #include <boost/numeric/mtl/vector/vec_vec_plus_expr.hpp>
+
+#include <boost/numeric/mtl/utility/vector_type_generator.hpp>
 
 #endif // MTL_VECTORS_INCLUDE

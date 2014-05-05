@@ -22,7 +22,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
   
 /// Base class for other matrices, contains only very simple functionality that is used in all matrices.
 template <class Elt, class Parameters>

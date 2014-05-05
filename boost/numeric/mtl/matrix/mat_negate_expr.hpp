@@ -15,7 +15,7 @@
 
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename E1>
 inline negate_view< E1 >

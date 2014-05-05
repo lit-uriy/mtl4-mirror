@@ -26,7 +26,7 @@ void assemble_poisson2D(m_type& A, int n)
 {
     m_type dia_block(n, n), off_block(n, n);
     {
-	mtl::matrix::inserter<m_type> ins(dia_block);
+	mtl::mat::inserter<m_type> ins(dia_block);
 	for (int i= 0; i < n; i++) {
 	    ins[i][i] << 4.0;
 	    if (i > 0) ins[i][i-1] << -1.0;
@@ -36,7 +36,7 @@ void assemble_poisson2D(m_type& A, int n)
     off_block= -1.0;
     A.change_dim(n*n, n*n);
     {
-	mtl::matrix::inserter<m_type> ins(A);
+	mtl::mat::inserter<m_type> ins(A);
 	for (int i= 0; i < n; i++) {
 	    ins[i*n][i*n] << dia_block;
 	    if (i > 0) ins[i*n][i*n-n] << off_block;

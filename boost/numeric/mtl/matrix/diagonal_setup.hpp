@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Setup a matrix to a multiple of the unity matrix
 /** Intended for sparse matrices but works also with dense matrices. 

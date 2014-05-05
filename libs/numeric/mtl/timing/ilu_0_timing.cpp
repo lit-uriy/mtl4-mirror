@@ -19,7 +19,7 @@ void setup(Matrix& A)
 {
     const int n= num_rows(A);
     A= 1.0;
-    mtl::matrix::inserter<Matrix, mtl::update_plus<double> > ins(A);
+    mtl::mat::inserter<Matrix, mtl::update_plus<double> > ins(A);
 
     for (int i= 0; i < 30 * n; i++) {
 	int r= rand()%n, c= rand()%n;

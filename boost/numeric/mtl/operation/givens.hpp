@@ -23,7 +23,7 @@
 #include <boost/numeric/mtl/operation/rank_one_update.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Given's transformator
 /** Requires Hessenberg form, i.e. for transformations near the diagonal.
@@ -90,7 +90,7 @@ class givens
 }// namespace matrix
 
 
-namespace vector {
+namespace vec {
 
 /// Given's transformator on %vector (swap a*line(k) with b*line(k+1) )
 template <typename Vector>

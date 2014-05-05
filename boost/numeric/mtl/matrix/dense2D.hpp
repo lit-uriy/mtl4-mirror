@@ -50,7 +50,7 @@ namespace mtl { namespace traits { namespace detail {
     template <typename, typename, bool> struct dense2D_iterator_range_generator;
 }}}
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 using std::size_t;
@@ -534,7 +534,7 @@ inline size(const dense2D<Value, Parameters>& matrix)
 
 }
 
-using matrix::dense2D;
+using mat::dense2D;
 
 } // namespace mtl::matrix
 
@@ -543,7 +543,7 @@ namespace mtl { namespace traits {
 
 
     // VC 8.0 finds ambiguity with mtl::tag::dense2D (I wonder why, especially here)
-    using mtl::matrix::dense2D;
+    using mtl::mat::dense2D;
 
     // ================
     // Range generators
@@ -834,7 +834,7 @@ namespace mtl { namespace traits {
 
 }} // namespace mtl::traits
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
     // ==========
     // Sub matrix
@@ -871,7 +871,7 @@ namespace mtl {
 
     // Enable cloning of dense matrices
     template <typename Value, typename Parameters>
-    struct is_clonable< mtl::matrix::dense2D<Value, Parameters> > : boost::mpl::true_ {};
+    struct is_clonable< mtl::mat::dense2D<Value, Parameters> > : boost::mpl::true_ {};
         
 } // namespace mtl
 
@@ -881,12 +881,12 @@ namespace math {
 
     // Multiplicative identities of matrices
     template <typename Value, typename Parameters>
-    struct identity_t< mult<mtl::matrix::dense2D<Value, Parameters> >, mtl::matrix::dense2D<Value, Parameters> >
-        : public std::binary_function< mult<mtl::matrix::dense2D<Value, Parameters> >, 
-				       mtl::matrix::dense2D<Value, Parameters>, 
-				       mtl::matrix::dense2D<Value, Parameters> >
+    struct identity_t< mult<mtl::mat::dense2D<Value, Parameters> >, mtl::mat::dense2D<Value, Parameters> >
+        : public std::binary_function< mult<mtl::mat::dense2D<Value, Parameters> >, 
+				       mtl::mat::dense2D<Value, Parameters>, 
+				       mtl::mat::dense2D<Value, Parameters> >
     {
-        typedef mtl::matrix::dense2D<Value, Parameters>  matrix_type;
+        typedef mtl::mat::dense2D<Value, Parameters>  matrix_type;
 
         matrix_type operator() (const mult<matrix_type>&, const matrix_type& ref) const
         {

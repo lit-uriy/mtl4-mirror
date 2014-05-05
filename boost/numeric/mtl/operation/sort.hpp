@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/operation/swap_row.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// sort vector
 template <typename Vector>
@@ -102,7 +102,7 @@ void quicksort (Vector& a, PermVec& p, typename Collection<Vector>::size_type lo
 template <typename Vector, typename PermVec>  	  	 
 void quicksort (Vector& a, Vector& b, PermVec& p, typename Collection<Vector>::size_type lo, typename Collection<Vector>::size_type hi)  
 {  	  	 
-  using vector::swap_row;
+  using vec::swap_row;
        typename Collection<Vector>::size_type i= lo, j= hi;  	  	 
  
         // VergleichsÂ­element x  	  	 
@@ -136,7 +136,7 @@ template <typename Vector, typename PermVec>
 void quicksort_xy(Vector& a, Vector& b, PermVec& p, typename Collection<Vector>::size_type lo, 
 		  typename Collection<Vector>::size_type hi)  
 {  	  	 
-    using vector::swap_row;
+    using vec::swap_row;
     typename Collection<Vector>::size_type       i= lo, j= hi;  	  	  
     // pivot element (x, y)  	  	 
     typename mtl::Collection<Vector>::value_type x= a[(lo+hi)/2], y= b[(lo+hi)/2];  

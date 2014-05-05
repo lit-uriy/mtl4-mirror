@@ -89,7 +89,7 @@ void test(Vector& vector, const char* name)
 
 #if 0 // When sparse vectors are used there should be an inserter class for vectors too
     {
-	vector::inserter<Vector>  ins(vector);
+	inserter<Vector>  ins(vector);
 	ins(2) << value(ref);
 	ins(4) << value(ref) + 1.0;
 	ins(5) << value(ref) + 2.0;
@@ -100,20 +100,20 @@ void test(Vector& vector, const char* name)
     cout << "Original vector:\n" << vector << "\n";
 
 
-    mtl::vector::scaled_view<double, Vector>  scaled_vector(2.0, vector);
+    mtl::vec::scaled_view<double, Vector>  scaled_vector(2.0, vector);
     cout << "vector  scaled with 2.0\n" << scaled_vector << "\n";
     MTL_THROW_IF(scaled_vector(2) != svalue(ref), mtl::runtime_error("scaling wrong"));
     
-    mtl::vector::conj_view<Vector>  conj_vector(vector);
+    mtl::vec::conj_view<Vector>  conj_vector(vector);
     cout << "conjugated vector\n" << conj_vector << "\n";
     MTL_THROW_IF(conj_vector(2) != cvalue(ref), mtl::runtime_error(" wrong"));
 
-    mtl::vector::scaled_view<ct, Vector>  cscaled_vector(ct(0.0, 1.0), vector);
+    mtl::vec::scaled_view<ct, Vector>  cscaled_vector(ct(0.0, 1.0), vector);
     cout << "vector scaled with i (complex(0, 1))\n" << cscaled_vector << "\n";
     MTL_THROW_IF(cscaled_vector(2) != csvalue(ref), mtl::runtime_error("complex scaling wrong"));
 
 #if 0 // transposition of vector is not an issue (yet)
-    mtl::vector::hermitian_view<Vector>  hermitian_vector(vector);
+    mtl::vec::hermitian_view<Vector>  hermitian_vector(vector);
     cout << "Hermitian vector (conjugate transposed)\n" << hermitian_vector << "\n";
     if (hermitian_vector(3, 2) != cvalue(ref)) 
 	throw "conjugate transposing  wrong";
@@ -123,14 +123,14 @@ void test(Vector& vector, const char* name)
     MTL_THROW_IF(scale(2.0, vector)(2) != svalue(ref), mtl::runtime_error("scaling wrong"));
 
 #if defined(__GNUC__) && __GNUC__ == 4 && (__GNUC_MINOR__ >= 3 && __GNUC_MINOR__ <= 6)
-    cout << "conjugated vector (free function) \n" << mtl::vector::conj(vector) << "\n";
-    MTL_THROW_IF(mtl::vector::conj(vector)[2] != cvalue(ref), mtl::runtime_error("conjugating wrong"));
+    cout << "conjugated vector (free function) \n" << mtl::conj(vector) << "\n";
+    MTL_THROW_IF(mtl::conj(vector)[2] != cvalue(ref), mtl::runtime_error("conjugating wrong"));
 
-    cout << "real vector (free function) \n" << mtl::vector::real(vector) << "\n";
-    MTL_THROW_IF(mtl::vector::real(vector)[2] != real(value(ref)), mtl::runtime_error("real part wrong"));
+    cout << "real vector (free function) \n" << mtl::vec::real(vector) << "\n";
+    MTL_THROW_IF(mtl::vec::real(vector)[2] != real(value(ref)), mtl::runtime_error("real part wrong"));
 
-    cout << "imag vector (free function) \n" << mtl::vector::imag(vector) << "\n";
-    MTL_THROW_IF(mtl::vector::imag(vector)[2] != imag(value(ref)), mtl::runtime_error("imag part wrong"));
+    cout << "imag vector (free function) \n" << mtl::vec::imag(vector) << "\n";
+    MTL_THROW_IF(mtl::vec::imag(vector)[2] != imag(value(ref)), mtl::runtime_error("imag part wrong"));
 #else
     cout << "conjugated vector (free function) \n" << conj(vector) << "\n";
     MTL_THROW_IF(conj(vector)[2] != cvalue(ref), mtl::runtime_error("conjugating wrong"));

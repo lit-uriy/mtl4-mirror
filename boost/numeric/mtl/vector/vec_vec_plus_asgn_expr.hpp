@@ -22,7 +22,7 @@
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 // Model of VectorExpression
 template <class E1, class E2>

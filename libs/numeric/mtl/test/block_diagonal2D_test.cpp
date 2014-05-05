@@ -17,9 +17,9 @@ using namespace mtl;
 
 static const int DIM =3;
 static const int NB  =4;
-typedef dense2D<double, matrix::parameters<tag::row_major,
+typedef dense2D<double, mat::parameters<tag::row_major,
 					   mtl::index::c_index, mtl::fixed::dimensions< DIM, DIM> > > Mat3;
-typedef matrix::block_diagonal2D<Mat3> MatB;
+typedef mat::block_diagonal2D<Mat3> MatB;
 
 int main()
 {

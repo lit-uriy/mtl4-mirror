@@ -51,7 +51,7 @@ template <typename Generator>
 double insert_mtl4(int s, Generator gen, double overhead)
 {
     typedef typename Generator::value_type                                             value_type;
-    typedef matrix::parameters<row_major, mtl::index::c_index, non_fixed::dimensions>   parameters;
+    typedef mat::parameters<row_major, mtl::index::c_index, non_fixed::dimensions>   parameters;
     typedef compressed2D<value_type, parameters>                                       matrix_type;
     matrix_type   matrix(non_fixed::dimensions(s, s)); 
   

@@ -41,7 +41,7 @@ int main(int, char**)
     // For a more realistic example set size to 1000 or larger
     const int size = 10, N = size * size;
 
-    typedef mtl::matrix::poisson2D_dirichlet  matrix_type;
+    typedef mtl::mat::poisson2D_dirichlet  matrix_type;
     matrix_type                               A(size, size);
     poisson2D_diagonal_pc                     P;
 

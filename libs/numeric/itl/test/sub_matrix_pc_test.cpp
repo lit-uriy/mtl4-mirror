@@ -18,7 +18,7 @@ inline void strided_laplacian_setup(Matrix& A, unsigned m, unsigned n)
 {
     A.change_dim(2*m*n, 2*m*n);
     set_to_zero(A);
-    mtl::matrix::inserter<Matrix>      ins(A, 5);
+    mtl::mat::inserter<Matrix>      ins(A, 5);
 
     for (unsigned i= 0; i < m; i++)
 	for (unsigned j= 0; j < n; j++) {

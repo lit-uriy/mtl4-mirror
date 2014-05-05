@@ -24,16 +24,16 @@
 using namespace mtl;
 
 #ifdef STATIC_TYPES
-   typedef dense_vector<double, vector::parameters<tag::col_major, vector::fixed::dimension<3>, true> > vec;
-   typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
-   typedef dense_vector<double, vector::parameters<tag::col_major, vector::fixed::dimension<5>, true> > vec5;
-   typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<5, 5>, true> mat_para5;
+   typedef dense_vector<double, parameters<tag::col_major, fixed::dimension<3>, true> > vec;
+   typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
+   typedef dense_vector<double, parameters<tag::col_major, fixed::dimension<5>, true> > vec5;
+   typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<5, 5>, true> mat_para5;
    #define VEC_ARG
 #else
    typedef dense_vector<double> vec;
    typedef dense_vector<double> vec5;
-   typedef matrix::parameters<> mat_para;
-   typedef matrix::parameters<> mat_para5;
+   typedef mat::parameters<> mat_para;
+   typedef mat::parameters<> mat_para5;
    #define VEC_ARG (3)
 #endif
    typedef dense2D<double, mat_para> mat;

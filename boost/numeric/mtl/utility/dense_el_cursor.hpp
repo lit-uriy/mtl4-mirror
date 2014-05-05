@@ -33,7 +33,7 @@ struct dense_el_cursor : public detail::base_cursor<const Value*>
     dense_el_cursor (super s) : super(s) {}
 
     template <typename Parameters>
-    dense_el_cursor(mtl::matrix::dense2D<Value, Parameters> const& ma, size_t r, size_t c)
+    dense_el_cursor(mtl::mat::dense2D<Value, Parameters> const& ma, size_t r, size_t c)
       : super(ma.elements() + ma.indexer(ma, r, c))
     {}
 

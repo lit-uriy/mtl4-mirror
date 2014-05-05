@@ -24,7 +24,7 @@
 
 namespace mtl { 
 
-    namespace vector {
+    namespace vec {
 	
 	template <typename Value1, typename Vector>
 	typename traits::enable_if_vector<Vector, scaled_view<typename mtl::traits::true_copy<Value1>::type, Vector> >::type
@@ -35,7 +35,7 @@ namespace mtl {
 	}
     }
 
-    namespace matrix {
+    namespace mat {
 
 	template <typename Value1, typename Matrix>
 	typename traits::enable_if_matrix<Matrix, scaled_view<Value1, Matrix> >::type
@@ -46,8 +46,8 @@ namespace mtl {
 	}
     }
 
-    using vector::scale;
-    using matrix::scale;
+    using vec::scale;
+    using mat::scale;
 
 
     namespace tfunctor {
@@ -73,7 +73,7 @@ namespace mtl {
 	template <typename Value1, typename Matrix>
 	struct scale<Value1, Matrix, tag::matrix>
 	{
-	    typedef matrix::scaled_view<Value1, Matrix> result_type;	    
+	    typedef mat::scaled_view<Value1, Matrix> result_type;	    
 	    explicit scale(const Value1& v1) : v1(v1) {}
 	
 	    result_type operator() (const Matrix& matrix) const
@@ -90,7 +90,7 @@ namespace mtl {
 	{
 	    typedef typename mtl::traits::true_copy<Value1>::type type1;
 
-	    typedef vector::scaled_view<type1, Vector> result_type;
+	    typedef vec::scaled_view<type1, Vector> result_type;
 	    explicit scale(const Value1& v1) : v1(type1(v1)) {}
 	
 	    result_type operator() (const Vector& vector) const

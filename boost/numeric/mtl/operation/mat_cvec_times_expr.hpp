@@ -23,7 +23,7 @@ namespace mtl {
 template <typename E1, typename E2>
 struct mat_cvec_times_expr 
   : public bin_op_expr< E1, E2 >,
-    public mtl::vector::vec_expr< mat_cvec_times_expr<E1, E2> >
+    public mtl::vec::vec_expr< mat_cvec_times_expr<E1, E2> >
 {
     typedef bin_op_expr< E1, E2 >         base;
     typedef mat_cvec_times_expr<E1, E2>   self;
@@ -35,7 +35,7 @@ struct mat_cvec_times_expr
     mat_cvec_times_expr( E1 const& matrix, E2 const& vector ) : base(matrix, vector)  {}
 };
 
-    namespace vector {
+    namespace vec {
 	template <typename E1, typename E2>
 	std::size_t inline size(const mat_cvec_times_expr<E1, E2>& x)
 	{ return num_rows(x.first); }

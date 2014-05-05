@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Setup a matrix according to a Laplacian equation on a 2D-grid using a five-point-stencil
 /** Intended for sparse matrices but works also with dense matrices. Changes the size of

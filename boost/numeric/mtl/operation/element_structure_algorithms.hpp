@@ -22,7 +22,7 @@ void greedy_extract_element_structure(Element_struct& es,  Matrix& M , std::stri
 	// Elements
 	typedef typename Matrix::value_type value_type;
 	typedef typename Matrix::size_type size_type;
-	typedef mtl::matrix::element<value_type> element_type;
+	typedef mtl::mat::element<value_type> element_type;
 	typedef typename element_type::index_type index_type;
 	typedef typename element_type::matrix_type matrix_type;
 	// typedef typename element_type::neighbor_iterator neigh_iterator;

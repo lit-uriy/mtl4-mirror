@@ -22,7 +22,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/range_generator.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename Matrix>
 std::ostream& print_matrix(Matrix const& matrix, std::ostream& out= std::cout, int width= 3, int precision= 2)

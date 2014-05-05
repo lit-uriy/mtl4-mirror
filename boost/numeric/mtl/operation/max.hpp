@@ -24,7 +24,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
     namespace impl {
 
@@ -36,7 +36,7 @@ namespace mtl { namespace vector {
 	inline max(const Vector& vector, tag::vector)
 	{
 	    typedef typename Collection<Vector>::value_type result_type;
-	    return vector::reduction<Unroll, vector::max_functor, result_type>::apply(vector);
+	    return vec::reduction<Unroll, vec::max_functor, result_type>::apply(vector);
 	}
 	
     } // namespace impl
@@ -59,7 +59,7 @@ inline max(const Value& value)
 
 } // namespace vector
 
-using vector::max;
+using vec::max;
 
 } // namespace mtl::vector
 

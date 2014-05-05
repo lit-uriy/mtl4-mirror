@@ -24,11 +24,11 @@ namespace traits {
     template  <typename Value= double>
     struct unit_vector
     {
-	typedef mtl::vector::dense_vector<Value, mtl::vector::parameters<> >  type;
+	typedef mtl::vec::dense_vector<Value, mtl::vec::parameters<> >  type;
     };
 }
 
-namespace vector {
+namespace vec {
 
     /// Return k-th unit vector of size n
     /** The result is a dense column vector. In the future this will
@@ -37,7 +37,7 @@ namespace vector {
 	this change. If you define a variable you should use
 	traits::unit_vector, e.g.:
 	\code
-	typename mtl::traits::unit_vector<float>::type  e_k(mtl::vector::unit_vector(k, n));
+	typename mtl::traits::unit_vector<float>::type  e_k(mtl::unit_vector(k, n));
 	\endcode
     **/
     template <typename Value>

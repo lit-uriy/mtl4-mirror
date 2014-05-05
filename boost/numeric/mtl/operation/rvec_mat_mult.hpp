@@ -29,7 +29,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 namespace impl {
 
@@ -93,7 +93,7 @@ inline void dense_rvec_mat_mult(const VectorIn& v, const Matrix& A, VectorOut& w
 {
     // Naive implementation, will be moved to a functor and complemented with more efficient ones
 	vampir_trace<3027> tracer;
-    using math::zero; using mtl::vector::set_to_zero;
+    using math::zero; using mtl::vec::set_to_zero;
     if (size(w) == 0) return;
 
     if (Assign::init_to_zero) set_to_zero(w);
@@ -152,7 +152,7 @@ inline void rvec_mat_mult(const VectorIn& v, const HermitianMatrix& A, VectorOut
 
     if (Assign::init_to_zero) set_to_zero(w);
     for (unsigned i= 0; i < num_cols(B); i++)
-	Assign::update(w, v[i] * mtl::vector::conj(trans(B.vector(i))));
+	Assign::update(w, v[i] * mtl::vec::conj(trans(B.vector(i))));
 }
 
 
@@ -171,7 +171,7 @@ inline void rvec_smat_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Ass
 {
 	using namespace tag; namespace traits = mtl::traits;
 	using traits::range_generator;  
-	using mtl::vector::set_to_zero;
+	using mtl::vec::set_to_zero;
         typedef typename range_generator<row, Matrix>::type       a_cur_type;             
         typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
 
@@ -194,7 +194,7 @@ inline void rvec_smat_mult(const VectorIn& v, const Matrix& A, VectorOut& w, Ass
     using namespace tag; 
     using mtl::traits::range_generator;  
     using math::zero;
-    using mtl::vector::set_to_zero;
+    using mtl::vec::set_to_zero;
 
     typedef typename range_generator<col, Matrix>::type       a_cur_type;    
     typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            

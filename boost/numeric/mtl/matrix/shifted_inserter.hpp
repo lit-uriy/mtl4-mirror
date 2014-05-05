@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Inserter with shifted row and column indices
 /** The main work is performed by the underlying base inserter whose type is given as template

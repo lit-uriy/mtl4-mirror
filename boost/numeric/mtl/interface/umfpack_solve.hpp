@@ -118,7 +118,7 @@ namespace mtl { namespace matrix {
 	    int operator()(const VectorB& b, VectorX& x) const {return 0;}
 	};
 
-	/// Speciatization of solver for \ref matrix::compressed2D with double values
+	/// Speciatization of solver for \ref mat::compressed2D with double values
 	template <typename Parameters>
 	class solver<compressed2D<double, Parameters> >
 	{
@@ -360,7 +360,7 @@ namespace mtl { namespace matrix {
 	    void                *Symbolic, *Numeric;
 	};
 
-	/// Speciatization of solver for \ref matrix::compressed2D with double values
+	/// Speciatization of solver for \ref mat::compressed2D with double values
 	template <typename Parameters>
 	class solver<compressed2D<std::complex<double>, Parameters> >
 	{

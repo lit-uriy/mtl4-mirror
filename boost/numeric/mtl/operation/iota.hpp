@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
   
 /// Assigns sequentially increasing values to %vector v
 template <typename Vector>

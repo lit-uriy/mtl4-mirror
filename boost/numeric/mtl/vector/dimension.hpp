@@ -13,7 +13,7 @@
 #ifndef MTL_DIMENSION_INCLUDE
 #define MTL_DIMENSION_INCLUDE
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 // Compile time version
 namespace fixed {
@@ -49,6 +49,6 @@ namespace non_fixed {
     };
 }
 
-}} // namespace mtl::vector
+}} // namespace mtl::vec
 
 #endif // MTL_DIMENSION_INCLUDE

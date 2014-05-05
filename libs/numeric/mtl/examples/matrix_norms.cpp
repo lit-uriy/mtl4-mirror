@@ -6,9 +6,9 @@ int main(int, char**)
     using namespace mtl;
     
     const unsigned n= 10;
-    dense2D<float, matrix::parameters<col_major> > B(n, n);
+    dense2D<float, mat::parameters<col_major> > B(n, n);
 
-    matrix::hessian_setup(B, 1.0);
+    mat::hessian_setup(B, 1.0);
     
     std::cout << "one_norm(B) is " << one_norm(B)<< "\n";
     std::cout << "infinity_norm(B) is " << infinity_norm(B)<< "\n";

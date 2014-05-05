@@ -18,7 +18,7 @@
 template <typename Matrix>
 inline void fill_matrix(Matrix& A)
 {
-    mtl::matrix::inserter<Matrix> ins(A, 3);
+    mtl::mat::inserter<Matrix> ins(A, 3);
     ins[0][0] << 2;
     ins[0][1] << 9;
     ins[1][1] << 1;
@@ -38,7 +38,7 @@ int main(int, char**)
     using namespace mtl;
     using mtl::io::tout;
     typedef mtl::dense_vector<double>         vector_type;
-    typedef mtl::matrix::ell_matrix<double>   matrix_type;
+    typedef mtl::mat::ell_matrix<double>   matrix_type;
     matrix_type   A(5, 5);
 
     fill_matrix(A);

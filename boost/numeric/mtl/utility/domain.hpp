@@ -26,7 +26,7 @@ struct domain_aux {};
 template <typename Matrix>
 struct domain_aux<Matrix, true>
 {
-    typedef mtl::vector::dense_vector<typename Collection<Matrix>::value_type, vector::parameters<> > type;
+    typedef mtl::vec::dense_vector<typename Collection<Matrix>::value_type, vec::parameters<> > type;
 };
 
 /// Type trait returning domain type of linear operator (matrix)

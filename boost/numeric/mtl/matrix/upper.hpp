@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/matrix/bands.hpp>
 #include <limits>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 namespace traits {
 

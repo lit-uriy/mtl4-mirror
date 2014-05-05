@@ -24,7 +24,7 @@
 #include <boost/numeric/mtl/recursion/utility.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 template <typename Recursator1, typename Recursator2>
@@ -38,13 +38,13 @@ void inline equalize_depth(Recursator1& r1, Recursator2& r2, Recursator3& r3);
 
     How to use this class is described in the \ref rec_intro "recursion introduction".
 
-    \sa \ref mtl::matrix::north_west, \ref mtl::matrix::north_east, 
-    \ref mtl::matrix::south_west, \ref mtl::matrix::south_east, 
-    \ref mtl::matrix::is_empty(const recursator<Matrix>&), 
-    \ref mtl::matrix::is_full(const recursator<Matrix>&), 
-    \ref mtl::matrix::num_rows(const recursator<Matrix>&), 
-    \ref mtl::matrix::num_cols(const recursator<Matrix>&),
-    \ref mtl::matrix::size(const recursator<Matrix>&)
+    \sa \ref mtl::mat::north_west, \ref mtl::mat::north_east, 
+    \ref mtl::mat::south_west, \ref mtl::mat::south_east, 
+    \ref mtl::mat::is_empty(const recursator<Matrix>&), 
+    \ref mtl::mat::is_full(const recursator<Matrix>&), 
+    \ref mtl::mat::num_rows(const recursator<Matrix>&), 
+    \ref mtl::mat::num_cols(const recursator<Matrix>&),
+    \ref mtl::mat::size(const recursator<Matrix>&)
 **/
 template <typename Matrix>
 struct recursator

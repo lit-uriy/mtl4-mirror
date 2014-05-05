@@ -34,7 +34,7 @@ template <typename Matrix>
 void init_matrix(Matrix& matrix, int offset= 0)
 {
     set_to_zero(matrix);
-    mtl::matrix::inserter<Matrix> ins(matrix);
+    mtl::mat::inserter<Matrix> ins(matrix);
     for (unsigned i= 0; i < matrix.num_rows(); i++)
 	for (unsigned j= 0; j < matrix.num_cols(); j++)
 	    if ((i + j + offset) & 1)
@@ -55,7 +55,7 @@ void test(MatrixSrc& src, const char* name_src,
     init_matrix(src, 1);
     std::cout << "source initialized:\n" << src << "\n";
 
-    // matrix::copy(src, new_dest);
+    // mat::copy(src, new_dest);
     new_dest.change_dim(num_rows(src), num_cols(src));
     new_dest= src;
     std::cout << "dest after assignment:\n" << new_dest << "\n\n";
@@ -73,7 +73,7 @@ int main(int, char**)
     using namespace mtl;
 
     dense2D<double>                                dr(5, 7);
-    dense2D<double, matrix::parameters<col_major> > dc(5, 7);
+    dense2D<double, mat::parameters<col_major> > dc(5, 7);
     dense2D<std::complex<double> >                 cdr(5, 7);
     morton_dense<double,  morton_mask>             md(5, 7);
     morton_dense<double,  doppled_16_row_mask>     d16r(5, 7);

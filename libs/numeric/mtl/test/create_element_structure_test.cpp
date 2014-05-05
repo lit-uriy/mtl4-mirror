@@ -30,7 +30,7 @@ int main()
     std::cout<< "cols=" << num_cols(A) << "\n";
     std::cout<< "rows=" << num_rows(A) << "\n";
     
-    mtl::matrix::element_structure<value_type> es;
+    mtl::mat::element_structure<value_type> es;
     std::string output("/home/cornelius/projects/data/sysMat_elem.mtx");
     imf::greedy_extract_element_structure(es, A, output);
     

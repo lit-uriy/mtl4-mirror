@@ -76,7 +76,7 @@ struct ashape_aux
 
 /// Vectors must be distinguished between row and column vectors
 template <typename Value, typename Parameters>
-struct ashape_aux<mtl::vector::dense_vector<Value, Parameters> >
+struct ashape_aux<mtl::vec::dense_vector<Value, Parameters> >
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
@@ -87,13 +87,13 @@ struct ashape_aux<mtl::vector::dense_vector<Value, Parameters> >
 
 /// Same as dense vector
 template <typename Value, typename Parameters>
-struct ashape_aux<vector::strided_vector_ref<Value, Parameters> >
-  : ashape<mtl::vector::dense_vector<Value, Parameters> > {};
+struct ashape_aux<vec::strided_vector_ref<Value, Parameters> >
+  : ashape<vec::dense_vector<Value, Parameters> > {};
 
 /// Same as dense vector
 template <typename Value, typename Parameters>
-struct ashape_aux<vector::sparse_vector<Value, Parameters> >
-  : ashape<mtl::vector::dense_vector<Value, Parameters> > {};
+struct ashape_aux<vec::sparse_vector<Value, Parameters> >
+  : ashape<vec::dense_vector<Value, Parameters> > {};
 
 /// One-dimensional arrays have rvec ashape; 2D arrays are matrices see below
 template <typename Value, unsigned Rows>
@@ -126,7 +126,7 @@ struct ashape_aux<Value*>
 };
    
 template <typename E1, typename E2, typename SFunctor>
-struct ashape_aux< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
+struct ashape_aux< vec::vec_vec_pmop_expr<E1, E2, SFunctor> >
 {
     MTL_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
 			                typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
@@ -134,7 +134,7 @@ struct ashape_aux< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
 };
 
 template <typename E1, typename E2, typename SFunctor>
-struct ashape_aux< vector::vec_vec_op_expr<E1, E2, SFunctor> >
+struct ashape_aux< vec::vec_vec_op_expr<E1, E2, SFunctor> >
 {
 #if 0 // not sure if this is true in all operations
     MTL_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
@@ -144,19 +144,19 @@ struct ashape_aux< vector::vec_vec_op_expr<E1, E2, SFunctor> >
 };
 
 template <typename E1, typename E2, typename SFunctor>
-struct ashape_aux< vector::vec_vec_aop_expr<E1, E2, SFunctor> >
+struct ashape_aux< vec::vec_vec_aop_expr<E1, E2, SFunctor> >
 {
     typedef typename ashape<E1>::type type;
 };
 
 template <typename E1, typename E2, typename SFunctor>
-struct ashape_aux< vector::vec_scal_aop_expr<E1, E2, SFunctor> >
+struct ashape_aux< vec::vec_scal_aop_expr<E1, E2, SFunctor> >
 {
     typedef typename ashape<E1>::type type;
 };
 
 template <typename Vector>
-struct ashape_aux< vector::vec_const_ref_expr<Vector> >
+struct ashape_aux< vec::vec_const_ref_expr<Vector> >
 {
     typedef typename ashape<Vector>::type type;
 };
@@ -167,37 +167,37 @@ struct ashape_aux< vector::vec_const_ref_expr<Vector> >
 // ========
 
 template <typename Value, typename Parameters>
-struct ashape_aux<mtl::matrix::compressed2D<Value, Parameters> >
+struct ashape_aux<mtl::mat::compressed2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
 
 template <typename Value, typename Parameters>
-struct ashape_aux<mtl::matrix::coordinate2D<Value, Parameters> >
+struct ashape_aux<mtl::mat::coordinate2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
 
 template <typename Value, typename Parameters>
-struct ashape_aux<mtl::matrix::sparse_banded<Value, Parameters> >
+struct ashape_aux<mtl::mat::sparse_banded<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
 
 template <typename Value, typename Parameters>
-struct ashape_aux<mtl::matrix::dense2D<Value, Parameters> >
+struct ashape_aux<mtl::mat::dense2D<Value, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
    
 template <typename Value, std::size_t Mask, typename Parameters>
-struct ashape_aux<mtl::matrix::morton_dense<Value, Mask, Parameters> >
+struct ashape_aux<mtl::mat::morton_dense<Value, Mask, Parameters> >
 {
     typedef mat<typename ashape<Value>::type> type;
 };
 
 template <typename Functor>
-struct ashape_aux<mtl::matrix::implicit_dense<Functor> >
+struct ashape_aux<mtl::mat::implicit_dense<Functor> >
 {
     typedef mat<typename ashape<typename Functor::result_type>::type> type;
 };
@@ -226,32 +226,32 @@ struct ashape_aux<std::initializer_list<std::initializer_list<Value> > >
 #endif
 
 template <typename Vector>
-struct ashape_aux<mtl::matrix::multi_vector<Vector> >
+struct ashape_aux<mtl::mat::multi_vector<Vector> >
 {
-    typedef mat<typename ashape<typename mtl::Collection<mtl::matrix::multi_vector<Vector> >::value_type>::type> type;
+    typedef mat<typename ashape<typename mtl::Collection<mtl::mat::multi_vector<Vector> >::value_type>::type> type;
 };
   
 template <typename Value>
-struct ashape_aux<matrix::element_structure<Value> >
+struct ashape_aux<mtl::mat::element_structure<Value> >
 {
    typedef mat<typename ashape<Value>::type> type;
 };
 
 template <typename Value, typename Parameters>
-struct ashape_aux<mtl::matrix::ell_matrix<Value, Parameters> >
+struct ashape_aux<mtl::mat::ell_matrix<Value, Parameters> >
 {
    typedef mat<typename ashape<Value>::type> type;
 };
 
  
 template <typename Vector>
-struct ashape_aux<matrix::multi_vector_range<Vector> >
+struct ashape_aux<mtl::mat::multi_vector_range<Vector> >
 {
-    typedef mat<typename ashape<typename mtl::Collection<matrix::multi_vector_range<Vector> >::value_type>::type> type;
+    typedef mat<typename ashape<typename mtl::Collection<mtl::mat::multi_vector_range<Vector> >::value_type>::type> type;
 };
 
 template <typename E1, typename E2, typename SFunctor>
-struct ashape_aux< matrix::mat_mat_op_expr<E1, E2, SFunctor> >
+struct ashape_aux< mtl::mat::mat_mat_op_expr<E1, E2, SFunctor> >
 {
     MTL_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
 				      typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
@@ -259,7 +259,7 @@ struct ashape_aux< matrix::mat_mat_op_expr<E1, E2, SFunctor> >
 };
 
 template <typename Vector1, typename Vector2>
-struct ashape< matrix::outer_product_matrix<Vector1, Vector2> >
+struct ashape< mtl::mat::outer_product_matrix<Vector1, Vector2> >
 {
     // BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
     // 			                typename transposed_shape<typename ashape<E2>::type>::type>::value));    
@@ -267,7 +267,7 @@ struct ashape< matrix::outer_product_matrix<Vector1, Vector2> >
 };
 
 template <typename Matrix, typename VectorIn> 
-struct ashape< vector::mat_cvec_multiplier<Matrix, VectorIn> >
+struct ashape< mtl::vec::mat_cvec_multiplier<Matrix, VectorIn> >
 {
     typedef cvec<scal> type;
 };
@@ -277,31 +277,31 @@ struct ashape< vector::mat_cvec_multiplier<Matrix, VectorIn> >
 // =====
 
 template <typename Functor, typename Coll>
-struct ashape_aux<matrix::map_view<Functor, Coll> >
+struct ashape_aux<mtl::mat::map_view<Functor, Coll> >
 {
     typedef typename ashape<Coll>::type type;
 };
 
 template <typename Functor, typename Coll>
-struct ashape_aux<vector::map_view<Functor, Coll> >
+struct ashape_aux<mtl::vec::map_view<Functor, Coll> >
 {
     typedef typename ashape<Coll>::type type;
 };
 
 template <typename Coll>
-struct ashape_aux<vector::conj_view<Coll> >
+struct ashape_aux<mtl::vec::conj_view<Coll> >
 {
     typedef typename ashape<Coll>::type type;
 };
 
 template <typename Coll>
-struct ashape_aux<vector::real_view<Coll> >
+struct ashape_aux<mtl::vec::real_view<Coll> >
 {
     typedef typename ashape<Coll>::type type;
 };
 
 template <typename Coll>
-struct ashape_aux<vector::imag_view<Coll> >
+struct ashape_aux<mtl::vec::imag_view<Coll> >
 {
     typedef typename ashape<Coll>::type type;
 };
@@ -309,26 +309,26 @@ struct ashape_aux<vector::imag_view<Coll> >
 #if 1
 // shouldn't be needed 
 template <typename Coll>
-struct ashape_aux<mtl::matrix::transposed_view<const matrix::conj_view<Coll> > >
+struct ashape_aux<mtl::mat::transposed_view<const mtl::mat::conj_view<Coll> > >
 {
     typedef typename ashape<Coll>::type type;
 };
 #endif
 
 template <typename Matrix>
-struct ashape_aux<matrix::transposed_view<Matrix> >
+struct ashape_aux<mtl::mat::transposed_view<Matrix> >
 {
     typedef typename ashape<Matrix>::type type;
 };
 
 template <typename Matrix>
-struct ashape_aux<matrix::banded_view<Matrix> >
+struct ashape_aux<mtl::mat::banded_view<Matrix> >
 {
     typedef typename ashape<Matrix>::type type;
 };
 
 template <typename Matrix>
-struct ashape_aux<matrix::indirect<Matrix> >
+struct ashape_aux<mtl::mat::indirect<Matrix> >
 {
     typedef typename ashape<Matrix>::type type;
 };
@@ -588,7 +588,7 @@ struct mult_shape<scal, scal>
 
 // Needs to be verified for nested matrix types, cf. #140
 template <typename E1, typename E2>
-struct ashape< matrix::mat_mat_times_expr<E1, E2> >
+struct ashape< mtl::mat::mat_mat_times_expr<E1, E2> >
 {
     // typedef typename ashape<E1>::type type;
     typedef typename mult_shape<typename ashape<E1>::type, 
@@ -604,7 +604,7 @@ struct ashape< mat_cvec_times_expr<E1, E2> >
 };
 
 template <typename E1, typename E2>
-struct ashape< vector::rvec_mat_times_expr<E1, E2> >
+struct ashape< vec::rvec_mat_times_expr<E1, E2> >
 {
     // Resulting vector has the same shape as the multiplied
     typedef typename ashape<E1>::type type;

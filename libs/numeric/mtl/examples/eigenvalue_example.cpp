@@ -4,7 +4,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 using namespace std;
-typedef mtl::matrix::dense2D<double> dMatrix;
+typedef mtl::mat::dense2D<double> dMatrix;
 
 int main() {
     dMatrix M1(3,3), M2(3,3), M3(3,3), M4(3,3);
@@ -13,7 +13,7 @@ int main() {
 	1,1,0,
 	0,1,3; //EWs: 1,2,3     
 	
-    mtl::matrix::eigenvalue_solver<dMatrix> E1(M1);
+    mtl::mat::eigenvalue_solver<dMatrix> E1(M1);
     E1.setMaxIteration(10);
     E1.calc();
     cout << "M1(setting the number of iteraions): " 
@@ -23,7 +23,7 @@ int main() {
 	0,1,5,
 	0,-2,3; //EWs: 1,2+3i,2-3i
 	
-    mtl::matrix::eigenvalue_solver<dMatrix> E2(M2);
+    mtl::mat::eigenvalue_solver<dMatrix> E2(M2);
     E2.setTolerance(1.0e-10);
     E2.calc();
     cout << "M2(providing tolerance): " 
@@ -33,7 +33,7 @@ int main() {
         -530, 422,  -98,
         -800, 631, -144; //EWs: 3,4,10  
         
-    mtl::matrix::eigenvalue_solver<dMatrix> E3(M3);
+    mtl::mat::eigenvalue_solver<dMatrix> E3(M3);
     E3.setMaxIteration(10);
     E3.setTolerance(1.0e-10);
     E3.calc();
@@ -44,7 +44,7 @@ int main() {
 	3,-5,3,
 	6,-6,4; //EWs: -2,-2,4
 	
-    mtl::matrix::eigenvalue_solver<dMatrix> E4(M4);
+    mtl::mat::eigenvalue_solver<dMatrix> E4(M4);
     E4.calc();   
     cout << "M4(with defaults): " 
 	 << E4.get_eigenvalues() << "\n";    

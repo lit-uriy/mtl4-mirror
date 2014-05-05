@@ -44,15 +44,15 @@ class ic_0
     typedef typename mtl::Collection<Matrix>::size_type              size_type;
     typedef ic_0                                                     self;
 
-    typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
-    typedef mtl::matrix::compressed2D<value_type, para>                      U_type;
+    typedef mtl::mat::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
+    typedef mtl::mat::compressed2D<value_type, para>                      U_type;
 #ifndef ITL_IC_0_ONE_MATRIX
     typedef U_type                                                   L_type;
 #else
-    typedef typename mtl::matrix::transposed_view<U_type>            L_type;
+    typedef typename mtl::mat::transposed_view<U_type>            L_type;
 #endif
-    typedef mtl::matrix::detail::lower_trisolve_t<L_type, mtl::tag::inverse_diagonal, true> lower_solver_t;
-    typedef mtl::matrix::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal, true> upper_solver_t;
+    typedef mtl::mat::detail::lower_trisolve_t<L_type, mtl::tag::inverse_diagonal, true> lower_solver_t;
+    typedef mtl::mat::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal, true> upper_solver_t;
 
     ic_0(const Matrix& A) : f(A, U), L(trans(U)), lower_solver(L), upper_solver(U) {}
 
@@ -123,7 +123,7 @@ class ic_0
 	template <typename UF>
 	void factorize(const Matrix& A, UF& U, boost::mpl::true_, boost::mpl::false_)
 	{
-	    typedef mtl::matrix::compressed2D<typename mtl::Collection<Matrix>::value_type, para> tmp_type;
+	    typedef mtl::mat::compressed2D<typename mtl::Collection<Matrix>::value_type, para> tmp_type;
 	    tmp_type U_tmp;
 	    factorize(A, U_tmp, boost::mpl::true_(), boost::mpl::true_());
 	    U= U_tmp;
@@ -136,7 +136,7 @@ class ic_0
 	void factorize(const Matrix& A, UF& U, boost::mpl::true_, boost::mpl::true_)
 	{
 	    using namespace mtl; using namespace mtl::tag;  using mtl::traits::range_generator;  
-	    using math::reciprocal; using mtl::matrix::upper;
+	    using math::reciprocal; using mtl::mat::upper;
 	    mtl::vampir_trace<5035> tracer;
 
 	    // For the factorization we take still the value_type of A and later we copy it maybe to another value_type
@@ -196,7 +196,7 @@ class ic_0
 #if 0
 template <typename Matrix, typename Value, typename Vector>
 struct ic_0_solver
-  : mtl::vector::assigner<ic_0_solver<Matrix, Value, Vector> >
+  : mtl::assigner<ic_0_solver<Matrix, Value, Vector> >
 {
     typedef ic_0<Matrix, Value> pc_type;
 
@@ -271,7 +271,7 @@ inline adjoint_solve(const ic_0<Matrix, Value>& P, const Vector& x)
 
 }} // namespace itl::pc
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
     using itl::pc::size;
 }} // namespace mtl::vector
 

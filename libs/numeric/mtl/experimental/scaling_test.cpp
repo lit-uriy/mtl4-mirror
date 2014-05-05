@@ -16,8 +16,8 @@ template <> struct scaling<1>
 {    template <typename T> T operator*(T x) const { return x; }    };
 
 
-typedef mtl::dense_vector<int,   mtl::vector::parameters<mtl::col_major, mtl::vector::fixed::dimension<2>, true> > fveci2_type;
-typedef mtl::dense_vector<float, mtl::vector::parameters<mtl::col_major, mtl::vector::fixed::dimension<2>, true> > fvecf2_type;
+typedef mtl::dense_vector<int,   mtl::parameters<mtl::col_major, mtl::fixed::dimension<2>, true> > fveci2_type;
+typedef mtl::dense_vector<float, mtl::parameters<mtl::col_major, mtl::fixed::dimension<2>, true> > fvecf2_type;
 
 template <typename S, typename V> struct scaled_product2;
 

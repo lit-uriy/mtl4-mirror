@@ -28,7 +28,7 @@
 
 namespace mtl { 
 
-    namespace vector {
+    namespace vec {
 
 	template <unsigned long Unroll, typename Vector>
 	typename traits::enable_if_vector<Vector, typename RealMagnitude<typename Collection<Vector>::value_type>::type>::type
@@ -59,7 +59,7 @@ namespace mtl {
 	{  return lazy_reduction<Vector, one_norm_functor>(v); 	}
     }
 
-    namespace matrix {
+    namespace mat {
 
 	// Ignore unrolling for matrices 
 	template <unsigned long Unroll, typename Matrix>
@@ -87,9 +87,9 @@ namespace mtl {
 	}
     }
 
-    using vector::one_norm;
-    using vector::lazy_one_norm;
-    using matrix::one_norm;
+    using vec::one_norm;
+    using vec::lazy_one_norm;
+    using mat::one_norm;
 
 } // namespace mtl
 

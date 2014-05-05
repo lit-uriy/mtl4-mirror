@@ -22,7 +22,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 
 #if 0
 	template <typename Vector>
@@ -41,7 +41,7 @@ namespace mtl {
 	}
     }
 
-    namespace matrix {
+    namespace mat {
 
 	template <typename Vector>
 	typename Collection<multi_vector<Vector> >::size_type

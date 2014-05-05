@@ -23,7 +23,7 @@
 
 namespace mtl {
 
-  namespace matrix {
+  namespace mat {
     
 
 /// Block diagonal matrix structure
@@ -175,7 +175,7 @@ class block_diagonal2D
 
     template <typename VectorIn>
     struct multiplier
-      : mtl::vector::assigner<multiplier<VectorIn> >
+      : mtl::vec::assigner<multiplier<VectorIn> >
     {
 	explicit multiplier(const self& P, const VectorIn& x) : P(P), x(x) {}
 

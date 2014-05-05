@@ -31,7 +31,7 @@
 #include <boost/numeric/itl/pc/comparators.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 ///  A class representing an element with ValType equals the type of the numeric values
 template <typename ValType>
@@ -62,10 +62,10 @@ public:
     typedef typename neighbor_set_type::iterator neighbor_set_iterator_type;
 
     /// The type of matrix.
-    typedef mtl::matrix::dense2D<value_type> matrix_type;
+    typedef mtl::mat::dense2D<value_type> matrix_type;
 
     /// The type of the index vector.
-    typedef mtl::vector::dense_vector<int> index_type; 
+    typedef mtl::dense_vector<int> index_type; 
 
 
 /*******************************************************************************
@@ -420,8 +420,8 @@ public:
 	// Determine set of common indices.
 	const int max_common_idx =
 	    (nb_vars() < other_idx_size) ? nb_vars() : other_idx_size;
-	mtl::vector::dense_vector<int> my_idx( max_common_idx );
-	mtl::vector::dense_vector<int> ot_idx( max_common_idx );
+	mtl::dense_vector<int> my_idx( max_common_idx );
+	mtl::dense_vector<int> ot_idx( max_common_idx );
 	int offset = 0;
 	for(int i = 0, j = 0; i < nb_vars() && j < other_idx_size; ) {
 	    int diff = (get_indices()(i) - other_indices(j));

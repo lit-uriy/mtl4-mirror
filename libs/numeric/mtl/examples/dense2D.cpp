@@ -22,7 +22,7 @@ int main(int, char**)
     std::cout << "A is \n" << A << "\n";
     
     // B is a column-major matrix
-    dense2D<float, matrix::parameters<tag::col_major> > B(10, 10);
+    dense2D<float, mat::parameters<tag::col_major> > B(10, 10);
 
     // Assign the identity matrix times 3 to B
     B= 3;

@@ -62,7 +62,7 @@ struct mult_result_aux {};
 template <typename Op1, typename Op2>
 struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_mat_mult> 
 {
-    typedef matrix::scaled_view<Op1, Op2> type;
+    typedef mat::scaled_view<Op1, Op2> type;
 };
 
 
@@ -70,14 +70,14 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::scal_mat_mult>
 template <typename Op1, typename Op2>
 struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_scal_mult> 
 {
-    typedef matrix::rscaled_view<Op1, Op2> type;
+    typedef mat::rscaled_view<Op1, Op2> type;
 };
 
 /// Multiply matrices
 template <typename Op1, typename Op2>
 struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_mat_mult> 
 {
-    typedef matrix::mat_mat_times_expr<Op1, Op2> type;
+    typedef mat::mat_mat_times_expr<Op1, Op2> type;
 };
 
 /// Multiply matrix with column vector
@@ -91,7 +91,7 @@ struct mult_result_aux<Op1, Op2, ::mtl::ashape::mat_cvec_mult>
 template <typename Op1, typename Op2>
 struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::cvec_rvec_mult> 
 {
-    typedef mtl::matrix::outer_product_matrix<Op1, Op2> type;
+    typedef mtl::mat::outer_product_matrix<Op1, Op2> type;
 };
 
 /// Result type for multiplying arguments of types Op1 and Op2
@@ -103,7 +103,7 @@ struct vec_mult_result_aux {};
 template <typename Op1, typename Op2>
 struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::scal_rvec_mult> 
 {
-    typedef vector::scaled_view<Op1, Op2> type;
+    typedef vec::scaled_view<Op1, Op2> type;
 };
 
 
@@ -113,7 +113,7 @@ struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::scal_rvec_mult>
 template <typename Op1, typename Op2>
 struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::scal_cvec_mult> 
 {
-    typedef vector::scaled_view<Op1, Op2> type;
+    typedef vec::scaled_view<Op1, Op2> type;
 };
 
 /// Multiply row vector with matrix
@@ -121,7 +121,7 @@ struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::scal_cvec_mult>
 template <typename Op1, typename Op2>
 struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::rvec_mat_mult> 
 {
-    typedef vector::rvec_mat_times_expr<Op1, Op2> type;
+    typedef vec::rvec_mat_times_expr<Op1, Op2> type;
 };
 
 /// Scale row vector from right
@@ -129,7 +129,7 @@ struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::rvec_mat_mult>
 template <typename Op1, typename Op2>
 struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::rvec_scal_mult> 
 {
-    typedef vector::rscaled_view<Op1, Op2> type;
+    typedef vec::rscaled_view<Op1, Op2> type;
 };
 
 /// Scale column vector from right
@@ -137,7 +137,7 @@ struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::rvec_scal_mult>
 template <typename Op1, typename Op2>
 struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::cvec_scal_mult> 
 {
-    typedef vector::rscaled_view<Op1, Op2> type;
+    typedef vec::rscaled_view<Op1, Op2> type;
 };
 	
 

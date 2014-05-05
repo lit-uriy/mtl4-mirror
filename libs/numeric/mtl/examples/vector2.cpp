@@ -9,7 +9,7 @@ int main(int, char**)
     using namespace mtl;
 
     // Define dense vector of complex with 7 elements.
-    dense_vector<std::complex<float>, mtl::vector::parameters<tag::row_major> >  v(7);
+    dense_vector<std::complex<float>, mtl::vec::parameters<tag::row_major> >  v(7);
 
     // Set all elements to 3+2i
     v= std::complex<float>(3.0, 2.0);

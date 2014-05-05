@@ -12,7 +12,7 @@ void fill(Matrix& m)
     m= 0.0;
 
     // Create inserter for matrix m
-    matrix::inserter<Matrix> ins(m);
+    mat::inserter<Matrix> ins(m);
     
     // Insert value in m[0][0]
     ins[0][0] << 2.0;
@@ -30,7 +30,7 @@ void modify(Matrix& m)
 
     // Create inserter for matrix m
     // Existing values are not overwritten but inserted
-    matrix::inserter<Matrix, update_plus<value_type> > ins(m, 3);
+    mat::inserter<Matrix, update_plus<value_type> > ins(m, 3);
     
     // Increment value in m[0][0]
     ins[0][0] << 1.0;

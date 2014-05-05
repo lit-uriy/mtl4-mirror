@@ -37,7 +37,7 @@ void test(Matrix& A, const char* name)
 
     A.change_dim(3, 3);
     {
-	mtl::matrix::inserter<Matrix>   ins(A);
+	mtl::mat::inserter<Matrix>   ins(A);
 	for (size_type i= 0; i < num_rows(A); i++)
 	    for (size_type j= 0; j < num_cols(A); j++)
 		ins[i][j]= value_type(j) - value_type(i);
@@ -62,15 +62,15 @@ int main(int, char**)
 {
     using namespace mtl;
     
-    dense2D<double, matrix::parameters<> >               dr;
-    dense2D<double, matrix::parameters<col_major> >      dc;
-    morton_dense<double, recursion::morton_z_mask, matrix::parameters<> >       mzd;
-    morton_dense<double, recursion::doppled_2_row_mask, matrix::parameters<> >  d2r;
-    compressed2D<double, matrix::parameters<> >          cr;
-    compressed2D<double, matrix::parameters<col_major> > cc;
+    dense2D<double, mat::parameters<> >               dr;
+    dense2D<double, mat::parameters<col_major> >      dc;
+    morton_dense<double, recursion::morton_z_mask, mat::parameters<> >       mzd;
+    morton_dense<double, recursion::doppled_2_row_mask, mat::parameters<> >  d2r;
+    compressed2D<double, mat::parameters<> >          cr;
+    compressed2D<double, mat::parameters<col_major> > cc;
 
-    dense2D<complex<double>, matrix::parameters<> >      drc;
-    compressed2D<complex<double>, matrix::parameters<> > crc;
+    dense2D<complex<double>, mat::parameters<> >      drc;
+    compressed2D<complex<double>, mat::parameters<> > crc;
 
     test(dr, "Dense row major");
     test(dc, "Dense column major");

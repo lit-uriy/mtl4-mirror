@@ -70,7 +70,7 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 
 int main(int, char**)
 {
-    using mtl::vector::parameters; using mtl::vector::dense_vector;
+    using mtl::vec::parameters; using mtl::dense_vector;
 	
     dense_vector<float>   u(5), v(5), w(5);
     dense_vector<double>  x(5), y(5), z(5);

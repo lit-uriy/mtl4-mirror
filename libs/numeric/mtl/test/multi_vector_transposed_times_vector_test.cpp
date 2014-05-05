@@ -33,7 +33,7 @@ void test(const Vector&, const char* name)
     MTL_THROW_IF(x[1] != 12.0, mtl::runtime_error("Wrong value"));
     MTL_THROW_IF(x[2] != cmp(12.0, 4.0), mtl::runtime_error("Wrong value"));
 
-    mtl::dense_vector<cmp, mtl::vector::parameters<mtl::row_major> >  br(5, 4.0), xr;
+    mtl::dense_vector<cmp, mtl::vec::parameters<mtl::row_major> >  br(5, 4.0), xr;
     xr= br * A;
 
     cout << "xr = " << xr << "\n";

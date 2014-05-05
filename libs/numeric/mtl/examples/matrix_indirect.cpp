@@ -16,7 +16,7 @@ int main(int, char**)
     cout << "rows = " << rows << ", cols = " << cols << "\n"   
 	 << "The sub-matrix A[{2, 0, 3}][{2, 1}] is\n" << A[rows][cols];
 
-    mtl::matrix::indirect<matrix> B(A[rows][cols]);
+    mtl::mat::indirect<matrix> B(A[rows][cols]);
     cout << "B is\n" << B;
 
     return 0;

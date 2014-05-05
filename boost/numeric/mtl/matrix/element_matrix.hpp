@@ -13,7 +13,7 @@
 #ifndef MTL_ELEMENT_MATRIX_INCLUDE
 #define MTL_ELEMENT_MATRIX_INCLUDE
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 template <typename Matrix, typename Rows, typename Cols>

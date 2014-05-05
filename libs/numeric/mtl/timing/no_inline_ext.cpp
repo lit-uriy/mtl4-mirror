@@ -48,7 +48,7 @@ void hybrid_ext_mult_44(const morton_dense<double,  doppled_64_row_mask>& a,
 #endif
 
 void dense_ext_mult_44(const dense2D<double>& a,
-		       const dense2D<double, matrix::parameters<col_major> >& b,
+		       const dense2D<double, mat::parameters<col_major> >& b,
 		       dense2D<double>& c)
 {
   tiling_44_base_mult_t()(a, b, c);

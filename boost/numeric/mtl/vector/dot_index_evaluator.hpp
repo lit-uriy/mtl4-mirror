@@ -13,7 +13,7 @@
 #ifndef MTL_VECTOR_DOT_INDEX_EVALUATOR_INCLUDE
 #define MTL_VECTOR_DOT_INDEX_EVALUATOR_INCLUDE
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// Class for index-wise computation of dot product
 template <typename Scalar, typename Vector1, typename Vector2, typename ConjOpt, typename Assign>

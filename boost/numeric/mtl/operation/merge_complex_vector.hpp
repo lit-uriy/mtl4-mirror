@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// Merge two real-valued vectors into one complex-valued vector.
 /** Elements of the complex vector must be constructible from two real elements.

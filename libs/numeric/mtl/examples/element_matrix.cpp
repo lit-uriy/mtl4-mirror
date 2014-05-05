@@ -17,7 +17,7 @@ void fill(Matrix& m)
 
     // Create inserter for matrix m
     // Existing values are not overwritten but inserted
-    matrix::inserter<Matrix, update_plus<value_type> > ins(m, 3);
+    mat::inserter<Matrix, update_plus<value_type> > ins(m, 3);
     
     // Define element matrix (array)
     double m1[2][2]= {{1.0, -.4}, {-0.5, 2.0}}; 

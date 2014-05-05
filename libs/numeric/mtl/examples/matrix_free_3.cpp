@@ -43,8 +43,8 @@ struct poisson2D_dirichlet
     }
 
     template <typename VectorIn>
-    mtl::vector::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn> operator*(const VectorIn& v) const
-    {	return mtl::vector::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn>(*this, v);    }
+    mtl::vec::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn> operator*(const VectorIn& v) const
+    {	return mtl::vec::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn>(*this, v);    }
 
     int m, n, s;
 };

@@ -19,7 +19,7 @@ using namespace std;
 
 int main(int, char**)
 {
-    mtl::dense2D<double> A(mtl::matrix::hilbert_matrix<>(5, 6));
+    mtl::dense2D<double> A(mtl::mat::hilbert_matrix<>(5, 6));
     A[2][0]= 1234.5; A[2][2]= 0.0004; A[2][4]= 1234567;
 
     cout << "Pretty print test. The following matrix should be printed prettily with aligned columns.\n" << A;

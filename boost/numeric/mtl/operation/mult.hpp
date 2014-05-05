@@ -34,7 +34,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 /// Multiplication: mult(a, b, c) computes c= a * b; 
@@ -160,7 +160,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
     vampir_trace<4012> tracer;
     // This is a useless and extremely inefficient operation!!!!
     // We compute this with a dense matrix and copy the result back
-    dense2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
+    dense2D<typename Collection<MatrixC>::value_type, mat::parameters<> > c_copy(num_rows(c), num_cols(c));
     c_copy= c;
     mat_mat_mult(A, b, c_copy, Assign(), tag::flat<tag::dense>(), tag::flat<tag::dense>(), tag::flat<tag::dense>());
     c= c_copy;
@@ -181,7 +181,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
     vampir_trace<4012> tracer;
     // This is a useless and extremely inefficient operation!!!!
     // We compute this with a sparse matrix and copy the result back
-    compressed2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
+    compressed2D<typename Collection<MatrixC>::value_type, mat::parameters<> > c_copy(num_rows(c), num_cols(c));
     c_copy= c;
     smat_smat_mult(A, b, c_copy, Assign(), typename OrientedCollection<MatrixA>::orientation(),
 		   typename OrientedCollection<MatrixB>::orientation());
@@ -220,7 +220,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
     vampir_trace<4012> tracer;
     // This is a useless and extremely inefficient operation!!!!
     // We compute this with a sparse matrix and copy the result back
-    dense2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
+    dense2D<typename Collection<MatrixC>::value_type, mat::parameters<> > c_copy(num_rows(c), num_cols(c));
     c_copy= c;
     mat_mat_mult(A, b, c_copy, Assign(), tag::flat<tag::sparse>(), tag::flat<tag::dense>(), tag::flat<tag::dense>());
     c= c_copy;
@@ -234,9 +234,9 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
     // This is could be a usefull operation, i.e. multiplying multiple row vectors with a sparse matrix
     // Might be supported in future
     // Now we compute this with a sparse matrix as first argument
-    compressed2D<typename Collection<MatrixA>::value_type, matrix::parameters<> > A_copy(num_rows(A), num_cols(A));
+    compressed2D<typename Collection<MatrixA>::value_type, mat::parameters<> > A_copy(num_rows(A), num_cols(A));
     A_copy= A;
-    compressed2D<typename Collection<MatrixC>::value_type, matrix::parameters<> > c_copy(num_rows(c), num_cols(c));
+    compressed2D<typename Collection<MatrixC>::value_type, mat::parameters<> > c_copy(num_rows(c), num_cols(c));
     c_copy= c;
     mat_mat_mult(A_copy, b, c_copy, Assign(), tag::flat<tag::sparse>(), tag::flat<tag::sparse>(), tag::flat<tag::sparse>());
     c= c_copy;
@@ -250,7 +250,7 @@ inline void mat_mat_mult(const MatrixA& A, const MatrixB& b, MatrixC& c, Assign,
     vampir_trace<4012> tracer;
     // This is not a usefull operation, because the result is dense
     // Now we compute this with a sparse matrix as first argument
-    compressed2D<typename Collection<MatrixA>::value_type, matrix::parameters<> > A_copy(num_rows(A), num_cols(A));
+    compressed2D<typename Collection<MatrixA>::value_type, mat::parameters<> > A_copy(num_rows(A), num_cols(A));
     A_copy= A;
     mat_mat_mult(A_copy, b, c, Assign(), tag::flat<tag::sparse>(), tag::flat<tag::sparse>(), tag::flat<tag::sparse>());
 }
@@ -285,8 +285,8 @@ inline void gen_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, t
     }
 #endif
     // w.checked_change_dim(num_rows(A)); // destroys distribution in parallel -> dimension changed in assignment
-    MTL_DEBUG_THROW_IF(num_rows(A) != mtl::vector::size(w), incompatible_size());
-    MTL_DEBUG_THROW_IF(num_cols(A) != mtl::vector::size(v), incompatible_size());
+    MTL_DEBUG_THROW_IF(num_rows(A) != mtl::size(w), incompatible_size());
+    MTL_DEBUG_THROW_IF(num_cols(A) != mtl::size(v), incompatible_size());
 
     mat_cvec_mult(A, v, w, Assign(), mtl::traits::mat_cvec_flatcat<Matrix>());
 }

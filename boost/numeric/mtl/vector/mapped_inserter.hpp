@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/operation/update.hpp>
 
 namespace mtl {
-namespace vector {
+namespace vec {
   
 /// Inserter with shifted indices
 /** The main work is performed by the underlying base inserter whose type is given as template

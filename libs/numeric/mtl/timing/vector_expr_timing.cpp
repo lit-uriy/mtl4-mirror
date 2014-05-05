@@ -13,7 +13,7 @@
 #define STATIC_TYPES
 
 #ifdef STATIC_TYPES
-   typedef mtl::dense_vector<double, mtl::vector::parameters<mtl::tag::col_major, mtl::vector::fixed::dimension<3>, true> > vec;
+   typedef mtl::dense_vector<double, mtl::parameters<mtl::tag::col_major, mtl::fixed::dimension<3>, true> > vec;
 #else
    typedef mtl::dense_vector<double> vec;
 #endif

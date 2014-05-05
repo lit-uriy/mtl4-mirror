@@ -20,7 +20,7 @@
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 // Commands in Matlab
 // S = sparse(i,j,s,m,n,nzmax)
@@ -33,8 +33,8 @@ struct make_sparse_trait
 {
     typedef typename Collection<SizeVector>::value_type  size_type;
     typedef typename Collection<ValueVector>::value_type value_type;
-    typedef matrix::parameters<row_major, index::c_index, mtl::non_fixed::dimensions, false, size_type> paras;
-    typedef matrix::compressed2D<value_type, paras>   type;
+    typedef mat::parameters<row_major, index::c_index, mtl::non_fixed::dimensions, false, size_type> paras;
+    typedef mat::compressed2D<value_type, paras>   type;
 };
 
 /// Generates an \p m by \p n matrix from the vectors \p rows, \p cols, and \p values.
@@ -58,7 +58,7 @@ make_sparse(const SizeVector1& rows, const SizeVector2& cols, const ValueVector&
 
     size_type               ms(m), ns(n);  // shouldn't be needed :-!
     matrix_type             A(ms, ns);
-    matrix::inserter<matrix_type, update_plus<value_type> > ins(A, size_type(size(rows) / m + 1));
+    mat::inserter<matrix_type, update_plus<value_type> > ins(A, size_type(size(rows) / m + 1));
 
     for (std::size_t i= 0; i < size(rows); i++)
 	if (values[i] != value_type(0))
@@ -100,9 +100,9 @@ make_sparse(const SizeVector1& rows, const SizeVector2& cols, const ValueVector&
 /** A sparse matrix is created (compressed2D<double>). 
     Same as <a href="http://www.mathworks.de/de/help/matlab/ref/sparse.html">Matlab's sparse</a> function besides that it is zero-indexed.
  **/
-inline matrix::compressed2D<double> make_sparse(std::size_t m, std::size_t n)
+inline mat::compressed2D<double> make_sparse(std::size_t m, std::size_t n)
 {
-    return matrix::compressed2D<double>(m, n);
+    return mat::compressed2D<double>(m, n);
 }
 
 
@@ -111,7 +111,7 @@ inline matrix::compressed2D<double> make_sparse(std::size_t m, std::size_t n)
 
 } // namespace :vector
 
-    using vector::make_sparse;
+    using vec::make_sparse;
 
 } // namespace mtl
 

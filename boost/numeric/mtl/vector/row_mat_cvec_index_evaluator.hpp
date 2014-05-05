@@ -20,7 +20,7 @@
 #include <boost/numeric/mtl/utility/category.hpp>
 #include <boost/numeric/mtl/utility/static_assert.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// ET class to evaluate the product of a row-major matrix and a column vector row by row
 template <typename VectorOut, typename Matrix, typename VectorIn, typename Assign>

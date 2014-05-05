@@ -20,7 +20,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 
 	/// Assign the result of \p f(i) to each non-zero i in non-constant vector \p v
 	template <typename Vector, typename Functor>
@@ -34,7 +34,7 @@ namespace mtl {
 
     } // namespace vector
 
-    namespace matrix {
+    namespace mat {
 
 	/// Assign the result of \p f(i) to each non-zero i in non-constant matrix \p A 
 	template <typename Matrix, typename Functor>

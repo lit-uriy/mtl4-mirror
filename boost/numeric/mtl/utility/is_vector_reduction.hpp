@@ -23,11 +23,11 @@ template <typename T>
 struct is_vector_reduction : boost::mpl::false_ {};
 
 template <unsigned long Unroll, typename Vector1, typename Vector2, typename ConjOpt>
-struct is_vector_reduction<mtl::vector::dot_class<Unroll, Vector1, Vector2, ConjOpt> >
+struct is_vector_reduction<mtl::vec::dot_class<Unroll, Vector1, Vector2, ConjOpt> >
   : boost::mpl::true_ {};
 
 template<typename Vector, typename Functor>
-struct is_vector_reduction<mtl::vector::lazy_reduction<Vector, Functor> >
+struct is_vector_reduction<mtl::vec::lazy_reduction<Vector, Functor> >
   : boost::mpl::true_ {};
 
 

@@ -64,7 +64,7 @@ namespace sfunctor {
 	}
     };
 
-    // Only declarations here, definitions in matrix::map_view (vector::map_view)
+    // Only declarations here, definitions in mat::map_view (map_view)
     template <typename Matrix>
     struct conj_aux<Matrix, tag::matrix>;
 
@@ -79,7 +79,7 @@ namespace sfunctor {
 
 } // namespace sfunctor
     
-    namespace vector {
+    namespace vec {
 
 	/// Conjugate of an vector
 	template <typename Vector>
@@ -90,7 +90,7 @@ namespace sfunctor {
 	}
     } 
 
-    namespace matrix {
+    namespace mat {
 
 	namespace detail {
 
@@ -136,8 +136,8 @@ namespace sfunctor {
     }
 
     /// Conjugate of vector, matrix, or scalar
-    using vector::conj;
-    using matrix::conj; 
+    using vec::conj;
+    using mat::conj; 
     using scalar::conj;
     // using std::conj;
 

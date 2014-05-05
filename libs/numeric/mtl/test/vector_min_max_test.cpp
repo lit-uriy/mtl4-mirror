@@ -28,7 +28,7 @@ template <typename Vector>
 void test(Vector& v, const char* name)
 {
     typedef typename mtl::Collection<Vector>::value_type value_type;
-    using mtl::vector::min; using mtl::vector::max; 
+    using mtl::min; using mtl::max; 
 
     for (unsigned i= 0; i < size(v); i++)
 	v[i]= value_type(double(i+1) * pow(-1.0, int(i))); // Amb. in MSVC 
@@ -48,17 +48,15 @@ void test(Vector& v, const char* name)
 
 int main(int, char**)
 {
-    using mtl::vector::parameters;
-
-    mtl::dense_vector<float, parameters<> >   u(5);
-    mtl::dense_vector<double, parameters<> >  x(5);
+    mtl::dense_vector<float>   u(5);
+    mtl::dense_vector<double>  x(5);
 
     std::cout << "Testing vector operations\n";
 
     test(u, "test float");
     test(x, "test double");
 
-    mtl::dense_vector<float, parameters<mtl::row_major> >   ur(5);
+    mtl::dense_vector<float, mtl::vec::parameters<mtl::row_major> >   ur(5);
     test(ur, "test float in row vector");
 
     return 0;

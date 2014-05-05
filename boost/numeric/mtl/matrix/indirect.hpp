@@ -21,7 +21,7 @@
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Class for indirect access to matrix
 /** So far only constant access, mutable access for appropriate matrices might be added later. **/

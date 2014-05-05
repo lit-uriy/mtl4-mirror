@@ -24,7 +24,7 @@ namespace mtl {
 
     // vector version to be done
 
-    namespace matrix {
+    namespace mat {
 
 	namespace detail {
 
@@ -51,7 +51,7 @@ namespace mtl {
 	}
     }
 
-    using matrix::hermitian;
+    using mat::hermitian;
 
 } // namespace mtl
 

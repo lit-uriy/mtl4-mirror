@@ -26,37 +26,37 @@ struct is_multi_vector_expr
 {};
 
 template <typename Vector>
-struct is_multi_vector_expr< mtl::matrix::multi_vector<Vector> >
+struct is_multi_vector_expr< mtl::mat::multi_vector<Vector> >
   : boost::mpl::true_
 {};
 
 // template <typename E1, typename E2>
-// struct is_multi_vector_expr< mtl::matrix::mat_mat_asgn_expr<E1, E2> > 
+// struct is_multi_vector_expr< mtl::mat::mat_mat_asgn_expr<E1, E2> > 
 //     : boost::mpl::bool_< is_multi_vector_expr<E1>::value && is_multi_vector_expr<E2>::value >
 // {};
 
 template <typename E1, typename E2>
-struct is_multi_vector_expr< mtl::matrix::mv_mv_plus_expr<E1, E2> > 
+struct is_multi_vector_expr< mtl::mat::mv_mv_plus_expr<E1, E2> > 
   : boost::mpl::bool_< is_multi_vector_expr<E1>::value && is_multi_vector_expr<E2>::value >
 {};
 
 template <typename E1, typename E2>
-struct is_multi_vector_expr< mtl::matrix::mat_mat_minus_expr<E1, E2> > 
+struct is_multi_vector_expr< mtl::mat::mat_mat_minus_expr<E1, E2> > 
     : boost::mpl::bool_< is_multi_vector_expr<E1>::value && is_multi_vector_expr<E2>::value >
 {};
 
 // template <typename E1, typename E2>
-// struct is_multi_vector_expr< mtl::matrix::mat_mat_ele_times_expr<E1, E2> > 
+// struct is_multi_vector_expr< mtl::mat::mat_mat_ele_times_expr<E1, E2> > 
 //     : boost::mpl::bool_< is_multi_vector_expr<E1>::value && is_multi_vector_expr<E2>::value >
 // {};
 
 template <typename Value1, typename Matrix>
-struct is_multi_vector_expr< mtl::matrix::scaled_view<Value1, Matrix> > 
+struct is_multi_vector_expr< mtl::mat::scaled_view<Value1, Matrix> > 
   : is_multi_vector_expr<Matrix>
 {};
 
 template <typename Value1, typename Matrix>
-struct is_multi_vector_expr< mtl::matrix::rscaled_view<Value1, Matrix> > 
+struct is_multi_vector_expr< mtl::mat::rscaled_view<Value1, Matrix> > 
   : is_multi_vector_expr<Matrix>
 {};
 
@@ -70,37 +70,37 @@ struct is_fast_multi_vector_expr
 {};
 
 template <typename Vector>
-struct is_fast_multi_vector_expr< mtl::matrix::multi_vector<Vector> >
+struct is_fast_multi_vector_expr< mtl::mat::multi_vector<Vector> >
   : is_composable_vector<Vector>
 {};
 
 // template <typename E1, typename E2>
-// struct is_fast_multi_vector_expr< mtl::matrix::mat_mat_asgn_expr<E1, E2> > 
+// struct is_fast_multi_vector_expr< mtl::mat::mat_mat_asgn_expr<E1, E2> > 
 //     : boost::mpl::bool_< is_fast_multi_vector_expr<E1>::value && is_fast_multi_vector_expr<E2>::value >
 // {};
 
 template <typename E1, typename E2>
-struct is_fast_multi_vector_expr< mtl::matrix::mv_mv_plus_expr<E1, E2> > 
+struct is_fast_multi_vector_expr< mtl::mat::mv_mv_plus_expr<E1, E2> > 
   : boost::mpl::bool_< is_fast_multi_vector_expr<E1>::value && is_fast_multi_vector_expr<E2>::value >
 {};
 
 template <typename E1, typename E2>
-struct is_fast_multi_vector_expr< mtl::matrix::mat_mat_minus_expr<E1, E2> > 
+struct is_fast_multi_vector_expr< mtl::mat::mat_mat_minus_expr<E1, E2> > 
     : boost::mpl::bool_< is_fast_multi_vector_expr<E1>::value && is_fast_multi_vector_expr<E2>::value >
 {};
 
 // template <typename E1, typename E2>
-// struct is_fast_multi_vector_expr< mtl::matrix::mat_mat_ele_times_expr<E1, E2> > 
+// struct is_fast_multi_vector_expr< mtl::mat::mat_mat_ele_times_expr<E1, E2> > 
 //     : boost::mpl::bool_< is_fast_multi_vector_expr<E1>::value && is_fast_multi_vector_expr<E2>::value >
 // {};
 
 template <typename Value1, typename Matrix>
-struct is_fast_multi_vector_expr< mtl::matrix::scaled_view<Value1, Matrix> > 
+struct is_fast_multi_vector_expr< mtl::mat::scaled_view<Value1, Matrix> > 
   : is_fast_multi_vector_expr<Matrix>
 {};
 
 template <typename Value1, typename Matrix>
-struct is_fast_multi_vector_expr< mtl::matrix::rscaled_view<Value1, Matrix> > 
+struct is_fast_multi_vector_expr< mtl::mat::rscaled_view<Value1, Matrix> > 
   : is_fast_multi_vector_expr<Matrix>
 {};
 

@@ -23,7 +23,7 @@
 #include <boost/numeric/mtl/operation/assign_mode.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// Helper class for delaying matrix vector multiplication, e.g. for matrix-free operators
 template <typename Matrix, typename VectorIn>

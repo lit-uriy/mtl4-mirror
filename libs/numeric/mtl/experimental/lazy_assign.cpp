@@ -79,17 +79,17 @@ template <typename T>
 struct is_vector_reduction : boost::mpl::false_ {};
 
 template <unsigned long Unroll, typename Vector1, typename Vector2, typename ConjOpt>
-struct is_vector_reduction<mtl::vector::dot_class<Unroll, Vector1, Vector2, ConjOpt> >
+struct is_vector_reduction<mtl::dot_class<Unroll, Vector1, Vector2, ConjOpt> >
   : boost::mpl::true_ {};
 
 #if 0
 template <unsigned long Unroll, typename Vector>
-struct is_vector_reduction<mtl::vector::unary_dot_class<Unroll, Vector> >
+struct is_vector_reduction<mtl::unary_dot_class<Unroll, Vector> >
   : boost::mpl::true_ {};
 #endif
 
 template<typename Vector, typename Functor>
-struct is_vector_reduction<mtl::vector::lazy_reduction<Vector, Functor> >
+struct is_vector_reduction<mtl::lazy_reduction<Vector, Functor> >
   : boost::mpl::true_ {};
 
 template <typename T>
@@ -117,27 +117,27 @@ template <typename T, typename U, typename Assign>
 struct evaluator_type<lazy_assign<T, U, Assign> >
   : boost::lazy_enable_if<mtl::traits::is_vector<T>,
 			  boost::mpl::if_<mtl::traits::is_vector<U>,
-					  mtl::vector::vec_vec_aop_expr<T, U, Assign>, 
-					  mtl::vector::vec_scal_aop_expr<T, U, Assign>
+					  mtl::vec_vec_aop_expr<T, U, Assign>, 
+					  mtl::vec_scal_aop_expr<T, U, Assign>
 					  >
 			  >
 {};
 
 template <typename T, typename U, typename Assign>
 typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_vector<U> >, 
-			  mtl::vector::vec_vec_aop_expr<T, U, Assign> >::type
+			  mtl::vec_vec_aop_expr<T, U, Assign> >::type
 inline index_evaluator(lazy_assign<T, U, Assign>& lazy)
 {
-    return mtl::vector::vec_vec_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
+    return mtl::vec_vec_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
 }
 
 
 template <typename T, typename U, typename Assign>
 typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_scalar<U> >, 
-			  mtl::vector::vec_scal_aop_expr<T, U, Assign> >::type
+			  mtl::vec_scal_aop_expr<T, U, Assign> >::type
 inline index_evaluator(lazy_assign<T, U, Assign>& lazy)
 {
-    return mtl::vector::vec_scal_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
+    return mtl::vec_scal_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
 }
 
 #if 0
@@ -156,12 +156,12 @@ struct unary_dot_index_evaluator
 	Assign::apply(scalar, s); 
     }
     
-    void operator() (std::size_t i) { mtl::vector::two_norm_functor::update(tmp[0], v[i]); }
+    void operator() (std::size_t i) { mtl::two_norm_functor::update(tmp[0], v[i]); }
     void operator[] (std::size_t i) { (*this)(i); }
     
     template <unsigned Offset>
     void at(std::size_t i) 
-    { mtl::vector::two_norm_functor::update(tmp[Offset], v[i+Offset]); }
+    { mtl::two_norm_functor::update(tmp[Offset], v[i+Offset]); }
 
     Scalar&        scalar;
     Scalar         tmp[4];
@@ -214,7 +214,7 @@ inline std::size_t size(const reduction_index_evaluator<Scalar, Vector, Functor,
 
 template <typename Scalar, typename Vector, typename Functor, typename Assign>
 reduction_index_evaluator<Scalar, Vector, Functor, Assign>
-inline index_evaluator(lazy_assign<Scalar, mtl::vector::lazy_reduction<Vector, Functor>, Assign>& lazy)
+inline index_evaluator(lazy_assign<Scalar, mtl::lazy_reduction<Vector, Functor>, Assign>& lazy)
 {
     return reduction_index_evaluator<Scalar, Vector, Functor, Assign>(lazy.first, lazy.second.v);
 }
@@ -258,7 +258,7 @@ inline std::size_t size(const dot_index_evaluator<Scalar, Vector1, Vector2, Conj
 template <typename Scalar, unsigned long Unroll, typename Vector1, 
 	  typename Vector2, typename ConjOpt, typename Assign>
 dot_index_evaluator<Scalar, Vector1, Vector2, ConjOpt, Assign>
-inline index_evaluator(lazy_assign<Scalar, mtl::vector::dot_class<Unroll, Vector1, Vector2, ConjOpt>, Assign>& lazy)
+inline index_evaluator(lazy_assign<Scalar, mtl::dot_class<Unroll, Vector1, Vector2, ConjOpt>, Assign>& lazy)
 {
     return dot_index_evaluator<Scalar, Vector1, Vector2, ConjOpt, Assign>(lazy.first, lazy.second.v1, lazy.second.v2);
 }
@@ -352,7 +352,7 @@ struct fused_expr
     template <typename TT, typename UU>
     void eval_loop(TT first_eval, UU second_eval)
     {	
-	MTL_DEBUG_THROW_IF(/*mtl::vector::*/  size(first_eval) != /*mtl::vector::*/  size(second_eval), mtl::incompatible_size());	
+	MTL_DEBUG_THROW_IF(/*mtl::*/  size(first_eval) != /*mtl::*/  size(second_eval), mtl::incompatible_size());	
 
 #ifdef MTL_LAZY_LOOP_WO_UNROLL
 	for (std::size_t i= 0, s= size(first_eval); i < s; i++) {

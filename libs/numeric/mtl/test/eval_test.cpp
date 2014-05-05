@@ -133,11 +133,11 @@ int main(int , char**)
     using namespace mtl;
 
     dense2D<double>                                      dr(3, 3);
-    dense2D<double, matrix::parameters<col_major> >      dc(3, 3);
+    dense2D<double, mat::parameters<col_major> >      dc(3, 3);
     morton_dense<double, recursion::morton_z_mask>       mzd(3, 3);
     morton_dense<double, recursion::doppled_2_row_mask>  d2r(3, 3);
     compressed2D<double>                                 cr(3, 3);
-    compressed2D<double, matrix::parameters<col_major> > cc(3, 3);
+    compressed2D<double, mat::parameters<col_major> > cc(3, 3);
 
 
     test(dr, dr, dr, "Dense row major");

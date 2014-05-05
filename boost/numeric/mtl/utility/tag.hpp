@@ -13,6 +13,7 @@
 #ifndef MTL_TAG_INCLUDE
 #define MTL_TAG_INCLUDE
 
+#include <cstddef>
 #include <boost/numeric/mtl/utility/glas_tag.hpp>
 
 
@@ -270,6 +271,9 @@ struct row_major {};
 /// Characterizes column-major orientation in matrices and column vector in 1D
 struct col_major {};
 
+/// Synonym for col_major
+typedef col_major column_major;
+
 /// Common base for diagonal tags
 struct universe_diagonal {};
 
@@ -296,13 +300,85 @@ struct inverse_diagonal : universe_diagonal {};
  *  @{
  */
 
-/// Characterizes row-major orientation in matrices and row vector in 1D
+// Import in mtl namespace
 using tag::row_major;
-
-/// Characterizes column-major orientation in matrices and column vector in 1D
 using tag::col_major;
+using tag::column_major;
+using tag::sparse;
+using tag::dense;
+
+#ifdef MTL_DOX_ONLY
+// using is not documented therefor the redeclaration here
+
+/// Characterizes row-major orientation in matrices and row vector in 1D, import of tag::row_major
+struct row_major {};
+
+/// Characterizes column-major orientation in matrices and column vector in 1D, import of tag::col_major
+struct col_major {};
+
+/// Synonym for col_major, import of tag::column_major
+struct column_major {};
+
+/// Tag for any sparse collection, import of tag::sparse
+struct sparse {};
+
+/// Tag for any dense collection, import of tag::dense
+struct dense {};
+
+#endif
 
 
+/// Tag for any banded collection
+struct banded {};
+
+/// Tag for any compressed collection
+struct compressed {};
+
+/// Tag for coordinate matrix
+struct coordinate {};
+
+/// Tag for Ellpack matrices
+struct ellpack {};
+
+/// Tag synonym for Ellpack matrices
+typedef ellpack ell;
+
+/// Tag for any morton-orded collection
+struct morton {};
+
+/// Tag for any symmetric collection
+struct symmetric {};
+
+/// Tag for any anti-symmetric collection
+struct anti_symmetric {};
+
+/// Tag for any self-adjoint, i.e. Hermitian collection
+struct self_adjoint {};
+
+/// Tag for specifying size type in type generators
+template <typename T>
+struct as_size_type 
+{
+    typedef T type;
+};
+
+/// Tag for any collection stored on stack
+struct on_stack {};
+
+/// Tag for any collection stored on heap
+struct on_heap {};
+
+#ifdef MTL_WITH_VARIADIC_TEMPLATE
+
+/// To define compile-time dimension in type generators
+template <std::size_t ...Values>
+struct dim {};
+
+/// To define mask for Morton-order 
+template <std::size_t ...Values>
+struct mask {};
+
+#endif
 
 /*@}*/ // end of group Tags
 

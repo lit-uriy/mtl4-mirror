@@ -37,7 +37,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 namespace impl {
 
@@ -179,7 +179,7 @@ struct square_cvec_mult_cols<Size, Size>
 // Dense matrix vector multiplication with run-time matrix size
 template <unsigned Size, typename MValue, typename MPara, typename ValueIn, typename ParaIn, 
 	  typename VectorOut, typename Assign>
-inline void square_cvec_mult(const dense2D<MValue, MPara>& A, const mtl::vector::dense_vector<ValueIn, ParaIn>& v, VectorOut& w, Assign)
+inline void square_cvec_mult(const dense2D<MValue, MPara>& A, const mtl::vec::dense_vector<ValueIn, ParaIn>& v, VectorOut& w, Assign)
 {
     // vampir_trace<3067> tracer;
     MTL_STATIC_ASSERT((mtl::traits::is_row_major<MPara>::value), "Only row-major matrices supported in this function.");
@@ -200,12 +200,12 @@ inline void square_cvec_mult(const dense2D<MValue, MPara>& A, const mtl::vector:
 // Dense matrix vector multiplication with run-time matrix size
 template <typename MValue, typename MPara, typename ValueIn, typename ParaIn, typename VectorOut, typename Assign>
 typename boost::enable_if<mtl::traits::is_row_major<MPara> >::type
-inline dense_mat_cvec_mult(const dense2D<MValue, MPara>& A, const mtl::vector::dense_vector<ValueIn, ParaIn>& v, VectorOut& w, Assign, boost::mpl::false_)
+inline dense_mat_cvec_mult(const dense2D<MValue, MPara>& A, const mtl::vec::dense_vector<ValueIn, ParaIn>& v, VectorOut& w, Assign, boost::mpl::false_)
 {
     // vampir_trace<3066> tracer;
 
     using math::zero; 
-    if (mtl::vector::size(w) == 0) return;
+    if (mtl::size(w) == 0) return;
 
     typedef typename Collection<VectorOut>::value_type value_type;
     // typedef ValueIn                                    value_in_type;
@@ -263,7 +263,7 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
     // Naive implementation, will be moved to a functor and complemented with more efficient ones
 
     using math::zero; 
-    if (mtl::vector::size(w) == 0) return;
+    if (mtl::size(w) == 0) return;
     // std::cout << "Bin in richtiger Funktion\n";
 
     // if (Assign::init_to_zero) set_to_zero(w); // replace update with first_update insteda
@@ -315,7 +315,7 @@ template <typename Matrix, typename VectorIn, typename VectorOut, typename Assig
 inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::element_structure>)
 {
     vampir_trace<3048> tracer;
-    if (mtl::vector::size(w) == 0) return;
+    if (mtl::size(w) == 0) return;
 
     typedef typename Collection<VectorOut>::value_type value_type;
     typedef typename Collection<VectorIn>::value_type  value_in_type;
@@ -392,7 +392,7 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
     using namespace tag; 
     using mtl::traits::range_generator;  
     using math::zero;
-    using mtl::vector::set_to_zero;
+    using mtl::vec::set_to_zero;
 
     typedef typename range_generator<row, Matrix>::type       a_cur_type;    
     typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
@@ -709,7 +709,7 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
     typedef typename Collection<VectorOut>::value_type        value_type;
     typedef typename Matrix::band_size_type                   band_size_type;
     typedef typename MPara::size_type                         size_type;
-    typedef mtl::vector::dense_vector<band_size_type, vector::parameters<> > vector_type;
+    typedef mtl::vec::dense_vector<band_size_type, parameters<> > vector_type;
 
     if (size(w) == 0) return;
     const value_type z(math::zero(w[0]));
@@ -808,7 +808,7 @@ inline void smat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Ass
     vampir_trace<3023> tracer;
     using namespace tag; namespace traits = mtl::traits;
     using traits::range_generator;  
-    using mtl::vector::set_to_zero;
+    using mtl::vec::set_to_zero;
     typedef typename range_generator<col, Matrix>::type       a_cur_type;             
     typedef typename range_generator<nz, a_cur_type>::type    a_icur_type;            
 

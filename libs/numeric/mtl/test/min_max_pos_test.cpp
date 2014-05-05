@@ -31,7 +31,7 @@ template <typename Matrix>
 void init(Matrix& A)
 {    
     A= 0.0;
-    mtl::matrix::inserter<Matrix>  ins(A);
+    mtl::mat::inserter<Matrix>  ins(A);
     
     ins[0][1] << 3; ins[1][4] << 7;
     ins[2][3] << -2; ins[2][4] << 5;

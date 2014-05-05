@@ -23,9 +23,9 @@ template <typename Vector1, typename Vector2>
 struct linear_operator {};	
 
 template <typename Value1, typename Para1, typename Value2, typename Para2> 
-struct linear_operator<mtl::vector::dense_vector<Value1, Para1>, mtl::vector::dense_vector<Value2, Para2> >
+struct linear_operator<mtl::dense_vector<Value1, Para1>, mtl::dense_vector<Value2, Para2> >
 {
-    typedef mtl::matrix::dense2D<Value1>   type;
+    typedef mtl::mat::dense2D<Value1>   type;
 };
 
 

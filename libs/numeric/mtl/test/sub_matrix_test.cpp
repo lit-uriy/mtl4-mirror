@@ -89,7 +89,7 @@ template <typename Matrix>
 void test_sub_matrix(Matrix& matrix)
 {
     using mtl::recursion::for_each; using mtl::recursion::max_dim_test; 
-    using mtl::matrix::recursator; using mtl::transposed_view;
+    using mtl::mat::recursator; using mtl::transposed_view;
 
     cout << matrix << endl;    
     
@@ -163,7 +163,7 @@ int main(int, char**)
 	 << "Row-major dense matrix\n"
 	 << "======================\n\n";
 
-    dense2D<double, matrix::parameters<> >   rmatrix(non_fixed::dimensions(6, 5));
+    dense2D<double, mat::parameters<> >   rmatrix(non_fixed::dimensions(6, 5));
     fill_matrix(rmatrix); 
     test_sub_matrix(rmatrix);
  

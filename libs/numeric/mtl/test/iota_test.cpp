@@ -45,11 +45,11 @@ int main(int, char**)
     using namespace mtl;
     dense_vector<float>                                                 cf(sz, 0.0);
     dense_vector<double>                                                cd(sz, 0.0);
-    dense_vector<float, mtl::vector::parameters<row_major> >            rf(sz, 0.0);
+    dense_vector<float, mtl::vec::parameters<row_major> >            rf(sz, 0.0);
 
     test(cf, "dense_vector<float>");
     test(cd, "dense_vector<double>");
-    test(rf, "dense_vector<float, vector::parameters<row_major> >");
+    test(rf, "dense_vector<float, parameters<row_major> >");
 
     return 0;
 }

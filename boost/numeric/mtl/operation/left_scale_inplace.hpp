@@ -46,7 +46,7 @@ namespace mtl {
 	}
     }
     
-    namespace matrix {
+    namespace mat {
 	
 	/// Scale matrix \p c from left with scalar or matrix factor \p alpha; \p c is altered
 	template <typename Factor, typename Matrix>
@@ -57,7 +57,7 @@ namespace mtl {
 	}
     }
 
-    namespace vector {
+    namespace vec {
 	
 	/// Scale vector \p c from left with scalar or matrix factor \p alpha; \p c is altered
 	template <typename Factor, typename Vector>
@@ -68,8 +68,8 @@ namespace mtl {
 	}
     }
 
-    using vector::left_scale_inplace;
-    using matrix::left_scale_inplace;
+    using vec::left_scale_inplace;
+    using mat::left_scale_inplace;
 
 } // namespace mtl
 

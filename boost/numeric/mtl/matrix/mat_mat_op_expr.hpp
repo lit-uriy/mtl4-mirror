@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/matrix/crtp_base_matrix.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
     
 template <typename E1, typename E2, typename SFunctor>

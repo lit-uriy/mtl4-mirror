@@ -39,7 +39,7 @@ inline void smat_smat_mult(const MatrixA& A, const MatrixB& B, MatrixC& C, Assig
     typedef typename operations::update_assign_mode<Assign, C_value_type>::type Updater;
 
     // Reserve 20% over the average's product for entries in C
-    matrix::inserter<MatrixC, Updater>     ins(C, int( ava * avb * 1.4 ));
+    mat::inserter<MatrixC, Updater>     ins(C, int( ava * avb * 1.4 ));
 
     typename traits::row<MatrixA>::type             row_A(A); 
     typename traits::col<MatrixA>::type             col_A(A); 
@@ -89,7 +89,7 @@ inline void smat_smat_mult(const MatrixA& A, const MatrixB& B, MatrixC& C, Assig
     typedef typename operations::update_assign_mode<Assign, C_value_type>::type Updater;
 
     // Reserve 20% over the average's product for entries in C
-    matrix::inserter<MatrixC, Updater>     ins(C, int( ava * avb * 1.2 ));
+    mat::inserter<MatrixC, Updater>     ins(C, int( ava * avb * 1.2 ));
 
     typename traits::row<MatrixA>::type             row_A(A); 
     typename traits::col<MatrixA>::type             col_A(A); 
@@ -141,7 +141,7 @@ inline void smat_smat_mult(const MatrixA& A, const MatrixB& B, MatrixC& C, Assig
     typedef typename operations::update_assign_mode<Assign, C_value_type>::type Updater;
 
     // Reserve 20% over the average's product for entries in C
-    matrix::inserter<MatrixC, Updater>     ins(C, int( ava * avb * 1.2 ));
+    mat::inserter<MatrixC, Updater>     ins(C, int( ava * avb * 1.2 ));
 
     typename traits::row<MatrixA>::type             row_A(A); 
     typename traits::col<MatrixA>::type             col_A(A); 

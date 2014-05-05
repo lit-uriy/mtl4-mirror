@@ -24,7 +24,7 @@ void test(Matrix& A, const char* name)
     
     A.change_dim(6, 5);
     {
-	mtl::matrix::inserter<Matrix>   ins(A);
+	mtl::mat::inserter<Matrix>   ins(A);
 	for (size_type i= 0; i < num_rows(A); i++)
 	    for (size_type j= 0; j < num_cols(A); j++)
 		ins[i][j]= value_type(j - i + 0);
@@ -42,11 +42,11 @@ int main(int, char**)
     using namespace mtl;
 
     dense2D<double>                                      dr;
-    dense2D<double, matrix::parameters<col_major> >      dc;
+    dense2D<double, mat::parameters<col_major> >      dc;
     morton_dense<double, recursion::morton_z_mask>       mzd;
     morton_dense<double, recursion::doppled_2_row_mask>  d2r;
     compressed2D<double>                                 cr;
-    compressed2D<double, matrix::parameters<col_major> > cc;
+    compressed2D<double, mat::parameters<col_major> > cc;
 
     dense2D<complex<double> >                            drc;
     compressed2D<complex<double> >                       crc;

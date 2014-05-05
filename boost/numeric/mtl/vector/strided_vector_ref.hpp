@@ -38,7 +38,7 @@
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 
 /// Class for referring vectors stored in strides, e.g. columns in a row-major matrix
@@ -217,7 +217,7 @@ namespace mtl {
 
     // Enable cloning of strided_vector_ref
     template <typename Value, typename Parameters>
-    struct is_clonable< vector::strided_vector_ref<Value, Parameters> > : boost::mpl::true_ {};
+    struct is_clonable< vec::strided_vector_ref<Value, Parameters> > : boost::mpl::true_ {};
         
 } // namespace mtl
 
@@ -230,40 +230,40 @@ namespace mtl { namespace traits {
 // ================
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::all, vector::strided_vector_ref<Value, Parameters> >
+    struct range_generator<tag::all, vec::strided_vector_ref<Value, Parameters> >
       : public detail::strided_element_range_generator<
-	  vector::strided_vector_ref<Value, Parameters>,
-	  const vector::strided_vector_ref<Value, Parameters>,
+	  vec::strided_vector_ref<Value, Parameters>,
+	  const vec::strided_vector_ref<Value, Parameters>,
 	  mtl::strided_dense_el_cursor<Value>
 	> {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::nz, vector::strided_vector_ref<Value, Parameters> >
-      : public range_generator<tag::all, vector::strided_vector_ref<Value, Parameters> > {};
+    struct range_generator<tag::nz, vec::strided_vector_ref<Value, Parameters> >
+      : public range_generator<tag::all, vec::strided_vector_ref<Value, Parameters> > {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::iter::all, vector::strided_vector_ref<Value, Parameters> >
+    struct range_generator<tag::iter::all, vec::strided_vector_ref<Value, Parameters> >
       : public detail::strided_element_range_generator<
-	  vector::strided_vector_ref<Value, Parameters>,
-	  vector::strided_vector_ref<Value, Parameters>,
+	  vec::strided_vector_ref<Value, Parameters>,
+	  vec::strided_vector_ref<Value, Parameters>,
 	  mtl::strided_dense_el_iterator<Value>
 	> {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::iter::nz, vector::strided_vector_ref<Value, Parameters> >
-      : public range_generator<tag::iter::all, vector::strided_vector_ref<Value, Parameters> > {};
+    struct range_generator<tag::iter::nz, vec::strided_vector_ref<Value, Parameters> >
+      : public range_generator<tag::iter::all, vec::strided_vector_ref<Value, Parameters> > {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::const_iter::all, vector::strided_vector_ref<Value, Parameters> >
+    struct range_generator<tag::const_iter::all, vec::strided_vector_ref<Value, Parameters> >
       : public detail::strided_element_range_generator<
-	  vector::strided_vector_ref<Value, Parameters>,
-	  const vector::strided_vector_ref<Value, Parameters>,
+	  vec::strided_vector_ref<Value, Parameters>,
+	  const vec::strided_vector_ref<Value, Parameters>,
 	  mtl::strided_dense_el_const_iterator<Value>
 	> {};
 
     template <typename Value, class Parameters>
-    struct range_generator<tag::const_iter::nz, vector::strided_vector_ref<Value, Parameters> >
-	: public range_generator<tag::const_iter::all, vector::strided_vector_ref<Value, Parameters> >
+    struct range_generator<tag::const_iter::nz, vec::strided_vector_ref<Value, Parameters> >
+	: public range_generator<tag::const_iter::all, vec::strided_vector_ref<Value, Parameters> >
     {};
 
 	

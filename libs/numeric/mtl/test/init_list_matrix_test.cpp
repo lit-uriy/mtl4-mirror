@@ -41,16 +41,16 @@ void test(const char* ) {}
 
 int main(int , char**)
 {
-    using mtl::matrix::parameters;
+    using mtl::mat::parameters;
     using namespace mtl;
     
     test<dense2D<double> >("dense2D<double>");
     test<dense2D<float> >("dense2D<float>");
     test<dense2D<complex<double> > >("dense2D<complex<double>>");
-    test<dense2D<float, matrix::parameters<col_major> > >("dense2D<float> col_major");
+    test<dense2D<float, mat::parameters<col_major> > >("dense2D<float> col_major");
 
     test<compressed2D<float> >("compressed2D<float>");
-    test<compressed2D<float, matrix::parameters<col_major> > >("compressed2D<float> col_major");
+    test<compressed2D<float, mat::parameters<col_major> > >("compressed2D<float> col_major");
     
     test<morton_dense<double, recursion::morton_z_mask> >("Morton Z-order");
 

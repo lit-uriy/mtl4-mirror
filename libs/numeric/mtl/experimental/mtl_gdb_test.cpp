@@ -37,7 +37,7 @@ int main(int, char**)
     dense2D<double>  B(2, 3);
     B= 2;
 
-    dense2D<double, matrix::parameters<col_major> >  C(2, 3);
+    dense2D<double, mat::parameters<col_major> >  C(2, 3);
     C= 2, 3, 4,
        5, 6, 7;
 
@@ -46,7 +46,7 @@ int main(int, char**)
     compressed2D<double>  D(2, 3);
     D= 2;
 
-    compressed2D<double, matrix::parameters<col_major> >  E(2, 3);
+    compressed2D<double, mat::parameters<col_major> >  E(2, 3);
     E= 2, 3, 4,
        5, 6, 7;
 

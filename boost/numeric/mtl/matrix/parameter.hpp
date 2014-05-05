@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Type for bundling template parameters of common matrix types
 /** OnStack = true can only be used with fixed::dimensions.
@@ -40,7 +40,7 @@ struct parameters
     typedef SizeType    size_type;
 
     // Matrix dimensions must be known at compile time to be on the stack
-    MTL_STATIC_ASSERT(( !on_stack || dimensions::is_static ), "Types to be stored on stack must provide static size.");
+    // MTL_STATIC_ASSERT(( !on_stack || dimensions::is_static ), "Types to be stored on stack must provide static size.");
 };
 
 /// Short-cut to define parameters with unsigned and defaults otherwise

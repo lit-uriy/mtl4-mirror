@@ -29,11 +29,11 @@ struct matrix_compose_view
 
     typedef typename boost::mpl::if_c<
 	(Code >= 6),
-	mtl::matrix::hermitian_view<matrix_type>,
+	mtl::mat::hermitian_view<matrix_type>,
 	typename boost::mpl::if_c<
 	    (Code >= 4),
-	    mtl::matrix::transposed_view<matrix_type>,
-	    mtl::matrix::conj_view<matrix_type>
+	    mtl::mat::transposed_view<matrix_type>,
+	    mtl::mat::conj_view<matrix_type>
 	   >::type
        >::type type;
 };

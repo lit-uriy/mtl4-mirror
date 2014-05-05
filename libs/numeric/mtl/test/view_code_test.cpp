@@ -25,19 +25,19 @@ struct check_type_aux
 };
 
 template <typename Value, typename Parameters>
-struct check_type_aux<0, mtl::matrix::dense2D<Value, Parameters> >
+struct check_type_aux<0, mtl::mat::dense2D<Value, Parameters> >
 {    static void apply() {}  };
 
 template <typename Matrix>
-struct check_type_aux<2, mtl::matrix::conj_view<Matrix> > 
+struct check_type_aux<2, mtl::mat::conj_view<Matrix> > 
 {    static void apply() {}  };
 
 template <typename Matrix>
-struct check_type_aux<4, mtl::matrix::transposed_view<Matrix> > 
+struct check_type_aux<4, mtl::mat::transposed_view<Matrix> > 
 {    static void apply() {}  };
 
 template <typename Matrix>
-struct check_type_aux<6, mtl::matrix::hermitian_view<Matrix> > 
+struct check_type_aux<6, mtl::mat::hermitian_view<Matrix> > 
 {    static void apply() {}  };
 
 

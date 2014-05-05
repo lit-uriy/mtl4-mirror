@@ -2,7 +2,7 @@
 
 int main(int, char**)
 {
-    using namespace mtl; using namespace mtl::matrix;
+    using namespace mtl; using namespace mtl::mat;
     
     const unsigned n= 40;
     dense2D<double>                            A(n, n), B(n, n);

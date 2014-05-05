@@ -30,10 +30,10 @@ void singularity_test(const Matrix& A)
 int main(int , char**)
 {
     using namespace mtl;
-    dense2D<double, matrix::parameters<tag::col_major> > A(5, 5);
-    dense2D<double, matrix::parameters<tag::col_major> > B(5, 5);
-    dense2D<float, matrix::parameters<tag::col_major> > bsp(4, 4);
-    dense2D<float, matrix::parameters<tag::col_major> > bsp1(4, 4);
+    dense2D<double, mat::parameters<tag::col_major> > A(5, 5);
+    dense2D<double, mat::parameters<tag::col_major> > B(5, 5);
+    dense2D<float, mat::parameters<tag::col_major> > bsp(4, 4);
+    dense2D<float, mat::parameters<tag::col_major> > bsp1(4, 4);
 
     bsp(0,0)=0;
     bsp(0,1)=0;

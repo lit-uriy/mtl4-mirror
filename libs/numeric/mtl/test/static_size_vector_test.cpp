@@ -34,8 +34,8 @@ int main(int, char**)
 {
     using namespace mtl;
 
-    typedef mtl::vector::parameters<tag::col_major, mtl::vector::fixed::dimension<2>, true> col_para;
-    typedef mtl::vector::parameters<tag::row_major, mtl::vector::fixed::dimension<2>, true> row_para;
+    typedef mtl::vec::parameters<tag::col_major, mtl::vec::fixed::dimension<2>, true> col_para;
+    typedef mtl::vec::parameters<tag::row_major, mtl::vec::fixed::dimension<2>, true> row_para;
     float va[2]= {3., 4.};
     dense_vector<float, col_para>   v_col(va);
     dense_vector<float, row_para>   v_row(va);

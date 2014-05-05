@@ -43,13 +43,13 @@ int main(int, char**)
 {
     typedef dense_vector<float>                        	     	      dvf;
     typedef dense_vector<std::complex<double> >        	     	      dvc;
-    typedef dense_vector<float, mtl::vector::parameters<row_major> >  dvr;
+    typedef dense_vector<float, mtl::vec::parameters<row_major> >  dvr;
 
     typedef dense2D<double>                                           dmr;
-    typedef dense2D<double, matrix::parameters<tag::col_major> >      dmc;
+    typedef dense2D<double, mat::parameters<tag::col_major> >      dmc;
     typedef morton_dense<double, morton_mask>                         mmd;
     typedef compressed2D<double>                                      cmr;
-    typedef compressed2D<double, matrix::parameters<tag::col_major> > cmc;
+    typedef compressed2D<double, mat::parameters<tag::col_major> > cmc;
     typedef multi_vector<dvf>                                         mvc;
     
     test(dvf(), tag::flat<tag::dense>()    , tag::flat<tag::dense>()	   , tag::flat<tag::dense>());

@@ -53,7 +53,7 @@ namespace mtl {
     }
 
     /// Namespace for matrices and views and operations exclusively on matrices
-    namespace matrix {
+    namespace mat {
 
 	template <typename Orientation, typename Index, typename Dimensions, bool OnStack, typename SizeType> struct parameters;
 
@@ -149,17 +149,17 @@ namespace mtl {
 	template <class Matrix> std::size_t size(const hermitian_view<Matrix>& );
    }
 
-    //using matrix::dense2D;
-    //using matrix::morton_dense;
-    //using matrix::compressed2D;
-    //using matrix::coordinate2D;
-    //using matrix::multi_vector;
-    //using matrix::transposed_view;
+    //using mat::dense2D;
+    //using mat::morton_dense;
+    //using mat::compressed2D;
+    //using mat::coordinate2D;
+    //using mat::multi_vector;
+    //using mat::transposed_view;
     
     template <typename E1, typename E2> struct mat_cvec_times_expr;
 
     /// Namespace for vectors and views and %operations exclusively on vectors
-    namespace vector {
+    namespace vec {
 	template <typename Vector> struct vec_expr;
 	template <typename Value, typename Parameters> class dense_vector;
 	template <typename Value, typename Parameters> class strided_vector_ref;
@@ -254,14 +254,14 @@ namespace mtl {
 	    
     }
 
-    //using vector::dense_vector;
+    //using dense_vector;
 
     // Export free vector functions into mtl namespace
     // It is also needed to handle STL vectors in MTL
-    using vector::fill;
-    using vector::size;
-    using vector::num_rows;
-    using vector::num_cols;
+    using vec::fill;
+    using vec::size;
+    using vec::num_rows;
+    using vec::num_cols;
 
     /// Namespace for %operations (if not defined in mtl)
     namespace operations {
@@ -269,7 +269,7 @@ namespace mtl {
     }
 
 
-    namespace vector {
+    namespace vec {
 
 	template <typename Vector, typename Updater = mtl::operations::update_store<typename Vector::value_type> > struct inserter;
 	template <typename Vector, typename Size> struct update_proxy;
@@ -384,7 +384,7 @@ namespace mtl {
     /// Namespace for implementations using recursators
     namespace wrec {}
 
-    namespace matrix {
+    namespace mat {
 	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_matrix_assign;
 	template <typename Matrix, typename ValueType, typename SizeType> struct const_crtp_matrix_bracket;
 	template <typename Matrix, typename ValueType, typename SizeType> struct crtp_matrix_bracket;
@@ -416,7 +416,7 @@ namespace mtl {
     class srange;
 
     template <typename T, typename U> struct fused_expr;
-    namespace vector {
+    namespace vec {
 	template <typename T, typename U> struct fused_index_evaluator;
 	// template <typename T, typename U> size_t size(const fused_index_evaluator<T, U>&); // not needed currently
     }

@@ -61,7 +61,7 @@ int main()
     y= solve(P, x);
     std::cout << y << '\n';
 
-    MTL_THROW_IF(two_norm(mtl::vector::dense_vector<double>(y - yc)) > 0.001, 
+    MTL_THROW_IF(two_norm(mtl::dense_vector<double>(y - yc)) > 0.001, 
 		 mtl::logic_error("IC(0) doesn't yield expected result"));	
 #endif
 

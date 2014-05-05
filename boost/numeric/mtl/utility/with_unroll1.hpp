@@ -24,7 +24,7 @@ struct with_unroll1
   : boost::mpl::false_ {};
 
 template <unsigned BSize, typename Vector>
-struct with_unroll1<vector::unrolled1<BSize, Vector> >
+struct with_unroll1<vec::unrolled1<BSize, Vector> >
   : boost::mpl::true_ {};
 
 

@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/vector/mat_cvec_multiplier.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Matrix-free linear operator for identity
 struct identity2D
@@ -53,8 +53,8 @@ struct identity2D
 
     /// Multiplication is procastinated until we know where the product goes
     template <typename VectorIn>
-    vector::mat_cvec_multiplier<identity2D, VectorIn> operator*(const VectorIn& v) const
-    {	return vector::mat_cvec_multiplier<identity2D, VectorIn>(*this, v);    }
+    vec::mat_cvec_multiplier<identity2D, VectorIn> operator*(const VectorIn& v) const
+    {	return vec::mat_cvec_multiplier<identity2D, VectorIn>(*this, v);    }
 
     std::size_t m, n;
 };
@@ -68,14 +68,14 @@ inline std::size_t num_cols(const identity2D& A) { return A.n; } ///< Number of 
 namespace mtl { 
 
     template <>
-    struct Collection<matrix::identity2D>
+    struct Collection<mat::identity2D>
     {
 	typedef double         value_type;
 	typedef std::size_t    size_type;
     };
 
     namespace ashape {
-	template <> struct ashape_aux<matrix::identity2D> 
+	template <> struct ashape_aux<mtl::mat::identity2D> 
 	{	typedef nonscal type;    };
     }
 }

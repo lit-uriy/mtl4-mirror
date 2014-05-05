@@ -66,7 +66,7 @@ inline real(const Value& v)
     return sfunctor::real<Value>::apply(v);
 }
 
-namespace vector {
+namespace vec {
 
     /// Real part of a vector
     template <typename Vector>
@@ -77,7 +77,7 @@ namespace vector {
     }
 } 
 
-namespace matrix {
+namespace mat {
 
     /// Real part of a matrix 
     template <typename Matrix>

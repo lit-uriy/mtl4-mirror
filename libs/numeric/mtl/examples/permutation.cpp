@@ -10,7 +10,7 @@ int main(int, char**)
 
     // Creating a permutation matrix from a vector (or an array respectively)
     int indices[]= {1, 2, 0};
-    matrix::traits::permutation<>::type P= matrix::permutation(indices);
+    mat::traits::permutation<>::type P= mat::permutation(indices);
     std::cout << "\nP =\n" << P;    
 
     // Permutating rows

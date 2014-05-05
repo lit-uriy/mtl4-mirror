@@ -38,7 +38,7 @@ void test_dynam_vector()
 void test_stat_vector()
 {
     std::cout<<"\n---test: operations for vectors of fixed size---";
-    typedef mtl::vector::parameters<mtl::tag::col_major, mtl::vector::fixed::dimension<10> > dimension;
+    typedef mtl::vec::parameters<mtl::tag::col_major, mtl::vec::fixed::dimension<10> > dimension;
     typedef mtl::dense_vector<double, dimension> vector;
     vector v1, v2, v3;
     v1=5.;
@@ -57,22 +57,22 @@ void test_stat_vector()
 void test_stat_matrix()
 {
     std::cout<<"\n---test: operations for matrices of stat. size---";
-    typedef mtl::matrix::parameters<mtl::tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3> > matrix_parameters;
-    typedef mtl::dense2D<double, matrix_parameters>  MATRIX;
+    typedef mtl::mat::parameters<mtl::tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3> > matrix_parameters;
+    typedef mtl::dense2D<double, matrix_parameters>  matrix_type;
 	
-    MATRIX A,B,C;
+    matrix_type A, B, C;
 	
-    mtl::matrix::diagonal_setup(A, 2. );
+    mtl::mat::diagonal_setup(A, 2. );
 	
     B=5.;
-    mtl::matrix::inserter<MATRIX> ins(B);
+    mtl::mat::inserter<matrix_type> ins(B);
     ins[1][0]<<2.;
 	
     B(0,1)=3.;
 	
     std::cout<<"\nA="<<A;
     std::cout<<"\nB="<<B;
-    std::cout<<"\nmatrices A,B,C have size=("<<mtl::static_num_rows<MATRIX>::value<<","<<mtl::static_num_cols<MATRIX>::value<<")";
+    std::cout<<"\nmatrices A,B,C have size=("<<mtl::static_num_rows<matrix_type>::value<<","<<mtl::static_num_cols<matrix_type>::value<<")";
     std::cout<<"\nmatrix B has one-norm ="<<mtl::one_norm(B);
 	
     invert_diagonal(A);
@@ -82,7 +82,7 @@ void test_stat_matrix()
     B += A;
     C = 5.*B -A;
     C=A*B;
-    mtl::dense_vector<mtl::Collection<MATRIX>::value_type> eigenvalues;
+    mtl::dense_vector<mtl::Collection<matrix_type>::value_type> eigenvalues;
     eigenvalues= eigenvalue_symmetric(A);
     std::cout<<"\nmatrix A has trace ="<<trace(A);
 }
@@ -96,10 +96,10 @@ void test_dynam_matrix()
 	
     MATRIX A(3,3),B(3,3),C(3,3);
 	
-    mtl::matrix::diagonal_setup(A, 2. );
+    mtl::mat::diagonal_setup(A, 2. );
 	
     B=5.;
-    mtl::matrix::inserter<MATRIX> ins(B);
+    mtl::mat::inserter<MATRIX> ins(B);
     ins[1][0]<<2.;
 	
     B(0,1)=3.;
@@ -129,10 +129,10 @@ void test_compressed_matrix()
 	
     MATRIX A(3,3),B(3,3),C(3,3);
 	
-    mtl::matrix::diagonal_setup(A, 2. );
+    mtl::mat::diagonal_setup(A, 2. );
 	
     {
-	mtl::matrix::inserter<MATRIX> ins(B);
+	mtl::mat::inserter<MATRIX> ins(B);
 	ins[1][0]<<2.;
 	ins[0][1]<<3.;
     }
@@ -185,13 +185,13 @@ void test_stat_vector_and_matrix()
 {
     std::cout<<"\n---test: operations for vectors and matrices of fixed size---";
 	
-    typedef mtl::vector::parameters<mtl::tag::col_major, mtl::vector::fixed::dimension<3> > dimension;
-    // typedef mtl::vector::parameters<mtl::tag::col_major, mtl::vector::fixed::dimension<10> > dimension;
-    typedef mtl::dense_vector<double, dimension> vector;
+    typedef mtl::vec::parameters<mtl::tag::col_major, mtl::vec::fixed::dimension<3> > dimension;
+    // typedef mtl::parameters<mtl::tag::col_major, mtl::fixed::dimension<10> > dimension;
+    typedef mtl::vec::dense_vector<double, dimension> vector;
     vector v1,v2,v3;
     v1=2.; v2=0.;
 		
-    typedef mtl::matrix::parameters<mtl::tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3> > matrix_parameters;
+    typedef mtl::mat::parameters<mtl::tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3> > matrix_parameters;
     typedef mtl::dense2D<double, matrix_parameters>  matrix;
 
     matrix A;
@@ -209,10 +209,10 @@ void test_compressed_matrix_and_vector()
     typedef mtl::compressed2D<double>  matrix;
     matrix A(10,10);
 	
-    mtl::matrix::diagonal_setup(A, 10. );
+    mtl::mat::diagonal_setup(A, 10. );
 	
-    typedef mtl::vector::parameters<mtl::tag::col_major, mtl::vector::fixed::dimension<10> > dimension;
-    typedef mtl::dense_vector<double, dimension> vector;
+    typedef mtl::vec::parameters<mtl::tag::col_major, mtl::vec::fixed::dimension<10> > dimension;
+    typedef mtl::vec::dense_vector<double, dimension> vector;
     vector v1,v2,v3;
     v1=2.;v2=0.;
     std::cout<<"\nA="<<A;
@@ -235,7 +235,7 @@ void test_solver()
 	
     typedef compressed2D<double> MATRIX;
     MATRIX A(N,N);
-    matrix::laplacian_setup(A,size,size);
+    mat::laplacian_setup(A,size,size);
 	
     typedef dense_vector<double> vector; 
     vector x(N,1.),b(N);

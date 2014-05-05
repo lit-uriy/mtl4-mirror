@@ -128,8 +128,6 @@ void test2(Vector& v)
 
 int main(int, char**)
 {
-    using mtl::vector::parameters;
-   
     mtl::dense_vector<float> v(3);
     v= 2, 5, 8;
     test(v, "Reference");
@@ -139,14 +137,14 @@ int main(int, char**)
        4, 5, 6, 
        7, 8, 9;
     
-    mtl::vector::strided_vector_ref<float> stref(A[mtl::iall][2]);
+    mtl::vec::strided_vector_ref<float> stref(A[mtl::iall][2]);
     test2(v); 
     test2(stref); 
 
-    mtl::vector::strided_vector_ref<float> x(3, &A[0][1], 3);
+    mtl::vec::strided_vector_ref<float> x(3, &A[0][1], 3);
 
     const mtl::dense2D<float> B(A);
-    mtl::vector::strided_vector_ref<const float> xc(3, &B[0][1], 3);
+    mtl::vec::strided_vector_ref<const float> xc(3, &B[0][1], 3);
 
     test(x, "test float");
     test(xc, "test const float");

@@ -38,7 +38,7 @@ void test(VectorU u, VectorV v, const char* name)
 int main(int, char**)
 {
     using namespace mtl;
-    using mtl::vector::parameters;
+    using mtl::vec::parameters;
 
     dense_vector<int>     u(5);
     dense_vector<float>   v(5);

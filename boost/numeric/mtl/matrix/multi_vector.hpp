@@ -31,7 +31,7 @@
 #include <boost/numeric/mtl/vector/parameter.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
     
 // Might need to be defined later
@@ -53,7 +53,7 @@ class multi_vector
 		      "Vector must be a column vector.");
   public:
     typedef multi_vector                             self;
-    // typedef mtl::matrix::parameters<>                parameters;
+    // typedef mtl::mat::parameters<>                parameters;
     typedef Vector                                   vector_type;
     typedef tag::col_major                           orientation;
     typedef typename Collection<Vector>::value_type  value_type;
@@ -95,7 +95,7 @@ class multi_vector
     multi_vector(const Vector& v, size_type num_cols)
       : super(non_fixed::dimensions(size(v), num_cols)), data(num_cols)
     {
-	using mtl::vector::num_rows;
+	using mtl::num_rows;
 	setup_data(num_rows(v), num_cols, mtl::traits::is_composable_vector<Vector>());
 	for (size_type i= 0; i < num_cols; ++i)
 	    data[i]= v;
@@ -153,8 +153,8 @@ class multi_vector
 				&& !mtl::traits::is_fast_multi_vector_expr<Src>::value, self&>::type
     operator=(const Src& src)
     {
-	MTL_THROW_IF((mtl::matrix::num_rows(src) != super::num_rows() 
-		      || mtl::matrix::num_cols(src) != super::num_cols()), incompatible_size());
+	MTL_THROW_IF((mtl::mat::num_rows(src) != super::num_rows() 
+		      || mtl::mat::num_cols(src) != super::num_cols()), incompatible_size());
 	for (std::size_t i= 0, n= super::num_cols(); i < n; ++i)
 	    vector(i)= src.vector(i);
 	return *this;
@@ -203,7 +203,7 @@ class multi_vector
     inline friend Vector& make_fast_multi_vector_expr(self& mv) { assert(mv.master); return *mv.master; }
 
   protected:  
-    mtl::vector::dense_vector<Vector, mtl::vector::parameters<> >          data;
+    mtl::dense_vector<Vector, mtl::vec::parameters<> >          data;
     Vector*                                                                master;
 };
 
@@ -221,7 +221,7 @@ typename Collection< Vector >::size_type size(const multi_vector< Vector >& A) {
 }} // namespace mtl::matrix
 
 namespace mtl {
-	using matrix::multi_vector;
+	using mat::multi_vector;
 }
 
 #endif // MTL_MATRIX_MULTI_VECTOR_INCLUDE

@@ -28,7 +28,7 @@ void test(Matrix& A, const char* name)
     typedef typename mtl::Collection<Matrix>::value_type vt;
     A= vt(0);
     {
-	mtl::matrix::inserter<Matrix> ins(A);
+	mtl::mat::inserter<Matrix> ins(A);
 	ins[0][1] << vt(2);
 	ins[2][0] << vt(3);
     }
@@ -69,11 +69,11 @@ int main(int, char* argv[])
     compressed2D<double>                             cdr(4, 3);
     compressed2D<int>                                cir(4, 3);
     compressed2D<std::complex<double> >              ccr(4, 3);
-    compressed2D<double, matrix::parameters<col_major> >    cdc(4, 3);
+    compressed2D<double, mat::parameters<col_major> >    cdc(4, 3);
     dense2D<double>                                  dc(4, 3);
     dense2D<int>                                     di(4, 3);
-    dense2D<double, matrix::parameters<col_major> >  ddc(4, 3);
-    dense2D<std::complex<double>, matrix::parameters<col_major> >  dcc(4, 3);
+    dense2D<double, mat::parameters<col_major> >  ddc(4, 3);
+    dense2D<std::complex<double>, mat::parameters<col_major> >  dcc(4, 3);
     dense2D<float>                                   fc(4, 3);
     morton_dense<double,  morton_mask>               mdc(4, 3);
     morton_dense<double, doppled_32_col_mask>        mcc(4, 3);

@@ -75,7 +75,7 @@ struct trivial_inserter
 
 
     template <typename EMatrix, typename Rows, typename Cols>
-    self& operator<< (const matrix::element_matrix_t<EMatrix, Rows, Cols>& elements)
+    self& operator<< (const mat::element_matrix_t<EMatrix, Rows, Cols>& elements)
     {
 	using mtl::size;
 	for (unsigned ri= 0; ri < size(elements.rows); ri++)
@@ -85,7 +85,7 @@ struct trivial_inserter
     }
 
     template <typename EMatrix, typename Rows, typename Cols>
-    self& operator<< (const matrix::element_array_t<EMatrix, Rows, Cols>& elements)
+    self& operator<< (const mat::element_array_t<EMatrix, Rows, Cols>& elements)
     {
 	using mtl::size;
 	for (unsigned ri= 0; ri < size(elements.rows); ri++)

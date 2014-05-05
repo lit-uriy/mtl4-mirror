@@ -27,7 +27,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Returns A=S*V*D' for matrix A as references
 template <typename Matrix>
@@ -66,8 +66,8 @@ inline void svd(const Matrix& A, Matrix& S, Matrix& V, Matrix& D, double tol= 10
     } //end for
     
     V= 0;  
-    mtl::matrix::inserter<Matrix>  ins_V(V);
-    mtl::matrix::inserter<Matrix,  mtl::operations::update_times<value_type> > ins_S(S);
+    mtl::mat::inserter<Matrix>  ins_V(V);
+    mtl::mat::inserter<Matrix,  mtl::operations::update_times<value_type> > ins_S(S);
 
     for (size_type i= 0, end= std::min(nrows, ncols); i < end; i++) {
 	ins_V[i][i] << std::abs(R[i][i]);

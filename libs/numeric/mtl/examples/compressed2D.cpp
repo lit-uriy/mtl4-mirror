@@ -11,14 +11,14 @@ int main(int, char**)
     compressed2D<double>   A(12, 12);
 
     // Laplace operator discretized on a 3x4 grid
-    matrix::laplacian_setup(A, 3, 4);
+    mat::laplacian_setup(A, 3, 4);
     std::cout << "A is \n" << A;
     
     // Element access is allowed for reading
     std::cout << "A[3][2] is " << A[3][2] << "\n\n";
     
     // CCS matrix
-    compressed2D<float, matrix::parameters<tag::col_major> > B(10, 10);
+    compressed2D<float, mat::parameters<tag::col_major> > B(10, 10);
 
     // Assign the identity matrix times 3 to B
     B= 3;

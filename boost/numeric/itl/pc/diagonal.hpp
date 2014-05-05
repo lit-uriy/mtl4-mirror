@@ -83,7 +83,7 @@ class diagonal
     }
 
  protected:
-    mtl::vector::dense_vector<value_type>    inv_diag;
+    mtl::dense_vector<value_type>    inv_diag;
 }; 
 
 /// Solve approximately a sparse system in terms of inverse diagonal

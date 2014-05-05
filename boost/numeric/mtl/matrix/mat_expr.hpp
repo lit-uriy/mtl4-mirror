@@ -13,7 +13,7 @@
 #ifndef MTL_MAT_EXPR_INCLUDE
 #define MTL_MAT_EXPR_INCLUDE
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Base class for CRTP with matrices
 template <typename Matrix>

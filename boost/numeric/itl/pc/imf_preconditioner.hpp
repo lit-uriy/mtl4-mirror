@@ -45,25 +45,25 @@ public:
 	typedef ValType value_type;
 
 	/// The type of the sparse data structure for the upper matrices.
-	typedef mtl::matrix::coordinate2D<value_type> sparse_type_upper;
+	typedef mtl::mat::coordinate2D<value_type> sparse_type_upper;
 
 	/// The type of the sparse data structure for the lower matrices.
-	typedef mtl::matrix::coordinate2D<value_type> sparse_type_lower;
+	typedef mtl::mat::coordinate2D<value_type> sparse_type_lower;
 
 	/// The type of the vectors.
-	typedef mtl::vector::dense_vector<value_type> vector_type;
+	typedef mtl::dense_vector<value_type> vector_type;
 
 	///The type of the permutation vector.
-	typedef mtl::vector::dense_vector<int>  index_type;
+	typedef mtl::dense_vector<int>  index_type;
 
 	/// The type of the matrices on the block diagonal.
-	typedef mtl::matrix::dense2D<value_type>  block_type;
+	typedef mtl::mat::dense2D<value_type>  block_type;
 
 	/// The type of the sequence of lower matrices.
-	typedef std::vector<mtl::matrix::compressed2D<value_type> > lower_matrix_coll_type;
+	typedef std::vector<mtl::mat::compressed2D<value_type> > lower_matrix_coll_type;
 
 	/// The type of the sequence of upper matrices.
-	typedef std::vector<mtl::matrix::compressed2D<value_type> > upper_matrix_coll_type;
+	typedef std::vector<mtl::mat::compressed2D<value_type> > upper_matrix_coll_type;
 
 	/// Constructor
 	template< class ElementStructure >
@@ -136,7 +136,7 @@ private:
 	index_type m_ordering;
 
 	/// A matrix containing the renumbering of IMF.
-        mtl::matrix::traits::permutation<>::type P;
+        mtl::mat::traits::permutation<>::type P;
 
 	/// The number of levels (equals the number of entries in the diagonal index array minus one).
 	int m_levels;

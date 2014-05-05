@@ -20,7 +20,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename Matrix>
 typename Collection<Matrix>::value_type

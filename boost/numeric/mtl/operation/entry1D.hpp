@@ -18,7 +18,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 
 	template <typename Vector>
 	inline typename Collection<Vector>::value_type const&
@@ -35,7 +35,7 @@ namespace mtl {
 	}
     }
 
-    namespace matrix {
+    namespace mat {
 
 	template <typename Vector>
 	inline Vector& entry1D(multi_vector<Vector>& A, typename Collection<Vector>::size_type i)
