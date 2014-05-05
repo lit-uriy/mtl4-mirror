@@ -24,7 +24,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 
 	template <unsigned long Unroll, typename Value>
 	typename Collection<Value>::value_type
@@ -67,8 +67,8 @@ namespace mtl {
 
     } // namespace vector
 
-    using vector::unary_dot;
-    using vector::lazy_unary_dot;
+    using vec::unary_dot;
+    using vec::lazy_unary_dot;
 
 } // namespace mtl
 

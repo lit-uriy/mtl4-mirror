@@ -39,7 +39,7 @@ int main(int, char**)
     // Define a CRS matrix
     compressed2D<double>                                  A(3, 3);
     // And a CCS matrix
-    compressed2D<double, matrix::parameters<col_major> >  B(3, 3);
+    compressed2D<double, mat::parameters<col_major> >  B(3, 3);
 
     f(A);
     f(B);

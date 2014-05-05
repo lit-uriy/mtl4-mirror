@@ -25,81 +25,81 @@ struct eval_dense
 {};
 
 template <typename Value, typename Parameter>
-struct eval_dense< mtl::vector::dense_vector<Value, Parameter> >
+struct eval_dense< mtl::vec::dense_vector<Value, Parameter> >
     : boost::mpl::true_
 {};
 
 template <typename Value, typename Parameter>
-struct eval_dense< mtl::matrix::dense2D<Value, Parameter> >
+struct eval_dense< mtl::mat::dense2D<Value, Parameter> >
     : boost::mpl::true_
 {};
 
 template <typename Value, std::size_t Mask, typename Parameter>
-struct eval_dense< mtl::matrix::morton_dense<Value, Mask, Parameter> >
+struct eval_dense< mtl::mat::morton_dense<Value, Mask, Parameter> >
     : boost::mpl::true_
 {};
 
 
 
 template <typename Value1, typename Vector>
-struct eval_dense< mtl::vector::scaled_view<Value1, Vector> > 
+struct eval_dense< mtl::vec::scaled_view<Value1, Vector> > 
     : eval_dense<Vector>
 {};
 
 template <typename Value1, typename Vector>
-struct eval_dense< mtl::vector::rscaled_view<Value1, Vector> > 
+struct eval_dense< mtl::vec::rscaled_view<Value1, Vector> > 
     : eval_dense<Vector>
 {};
 
 
 
 template <typename E1, typename E2>
-struct eval_dense< mtl::matrix::mat_mat_asgn_expr<E1, E2> > 
+struct eval_dense< mtl::mat::mat_mat_asgn_expr<E1, E2> > 
     : boost::mpl::bool_< eval_dense<E1>::value && eval_dense<E2>::value >
 {};
 
 template <typename E1, typename E2>
-struct eval_dense< mtl::matrix::mat_mat_plus_expr<E1, E2> > 
+struct eval_dense< mtl::mat::mat_mat_plus_expr<E1, E2> > 
     : boost::mpl::bool_< eval_dense<E1>::value && eval_dense<E2>::value >
 {};
 
 template <typename E1, typename E2>
-struct eval_dense< mtl::matrix::mat_mat_minus_expr<E1, E2> > 
+struct eval_dense< mtl::mat::mat_mat_minus_expr<E1, E2> > 
     : boost::mpl::bool_< eval_dense<E1>::value && eval_dense<E2>::value >
 {};
 
 template <typename E1, typename E2>
-struct eval_dense< mtl::matrix::mat_mat_ele_times_expr<E1, E2> > 
+struct eval_dense< mtl::mat::mat_mat_ele_times_expr<E1, E2> > 
     : boost::mpl::bool_< eval_dense<E1>::value && eval_dense<E2>::value >
 {};
 
 template <typename Value1, typename Matrix>
-struct eval_dense< mtl::matrix::scaled_view<Value1, Matrix> > 
+struct eval_dense< mtl::mat::scaled_view<Value1, Matrix> > 
     : eval_dense<Matrix>
 {};
 
 template <typename Matrix>
-struct eval_dense< mtl::matrix::negate_view<Matrix > > 
+struct eval_dense< mtl::mat::negate_view<Matrix > > 
     : eval_dense<Matrix>
 {};
 
 template <typename Matrix>
-struct eval_dense< mtl::matrix::real_view<Matrix > > 
+struct eval_dense< mtl::mat::real_view<Matrix > > 
     : eval_dense<Matrix>
 {};
 
 template <typename Matrix>
-struct eval_dense< mtl::matrix::imag_view<Matrix > > 
+struct eval_dense< mtl::mat::imag_view<Matrix > > 
     : eval_dense<Matrix>
 {};
 
 template <typename Functor, typename Matrix>
-struct eval_dense< mtl::matrix::map_view<Functor, Matrix > > 
+struct eval_dense< mtl::mat::map_view<Functor, Matrix > > 
     : eval_dense<Matrix>
 {};
 
 template <typename Value1, typename Matrix>
-struct eval_dense< mtl::matrix::rscaled_view<Value1, Matrix> > 
+struct eval_dense< mtl::mat::rscaled_view<Value1, Matrix> > 
     : eval_dense<Matrix>
 {};
 

@@ -12,7 +12,7 @@ int main()
 
     const int size = 4, N = size * size; 
     matrix_type                   A(N, N);
-    matrix::laplacian_setup(A, size, size);
+    mat::laplacian_setup(A, size, size);
 
     // Create an ILU(0) preconditioner with float values
     pc::ilu_0<matrix_type, float> P(A);

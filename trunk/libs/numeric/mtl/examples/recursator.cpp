@@ -11,10 +11,10 @@ int main(int, char**)
     // Z-order matrix
     typedef morton_dense<double, recursion::morton_z_mask>  matrix_type;
     matrix_type                                             A(10, 10);
-    matrix::hessian_setup(A, 3.0);
+    mat::hessian_setup(A, 3.0);
 
     // Define a recursator over A
-    matrix::recursator<matrix_type>                          rec(A);
+    mat::recursator<matrix_type>                          rec(A);
 
     // Access a quadrant of the matrix
     cout << "Upper right quadrant (north_east) of A is \n" << *north_east(rec) << "\n";

@@ -40,7 +40,7 @@ void test(Matrix& A, const char* name)
     cout << "rows = " << rows << ", cols = " << cols << "\n";
     cout << "A[rows][cols] is: \n" << A[rows][cols] << "\n";
 
-    mtl::matrix::indirect<Matrix> B(A[rows][cols]);
+    mtl::mat::indirect<Matrix> B(A[rows][cols]);
     cout << "B is\n" << B;
     check<Matrix>(B, "Wrong value after copy constructor");
 
@@ -60,12 +60,12 @@ int main(int, char**)
     const unsigned size= 5; 
 
     dense2D<double>                                  dc(size, size-2);
-    dense2D<double, matrix::parameters<col_major> >  dcc(size, size-2);
+    dense2D<double, mat::parameters<col_major> >  dcc(size, size-2);
     dense2D<float>                                   fc(size, size-2);
     morton_dense<double,  morton_mask>               mdc(size, size-2);
     morton_dense<double, doppled_32_col_mask>        mcc(size, size-2);
     compressed2D<double>                             cc(size, size-2);
-    compressed2D<double, matrix::parameters<col_major> >  ccc(size, size-2);
+    compressed2D<double, mat::parameters<col_major> >  ccc(size, size-2);
 
     test(dc, "dense2D");
     test(dcc, "dense2D col-major");

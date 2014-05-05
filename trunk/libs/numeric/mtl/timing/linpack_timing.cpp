@@ -76,7 +76,7 @@ int main(int, char**)
     
     dense2D<double>                                      dr(size, size);
     dense2D<complex<double> >                            dz(size, size);
-    dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dense2D<double, mat::parameters<col_major> >      dc(size, size);
 
     test(dr, "Row-major dense");
     //test(dz, "Row-major dense with complex numbers");

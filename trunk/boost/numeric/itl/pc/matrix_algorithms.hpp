@@ -24,7 +24,7 @@
 
 #include <iostream>
 
-namespace mtl {  namespace matrix {
+namespace mtl {  namespace mat {
 
 /// Construct the sparse data structure from an elementstructure 
 template< typename ElementStructure, typename Matrix, typename Vector> 
@@ -42,7 +42,7 @@ void assemble_compressed(const ElementStructure& es, Matrix& A, Vector& order)
 	value_type zero(0);
 	
 	{//start inserterblock
-	  mtl::matrix::inserter<Matrix, mtl::operations::update_plus<value_type> >  ins(A);
+	  mtl::mat::inserter<Matrix, mtl::operations::update_plus<value_type> >  ins(A);
 	  for(iterator it = es.element_begin(); it != es.element_end(); ++it) {
 		element_type& element = *it;
 		const index_type& idx = element.get_indices();

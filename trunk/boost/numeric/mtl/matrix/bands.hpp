@@ -15,7 +15,7 @@
 
 #include <boost/numeric/mtl/matrix/banded_view.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 namespace traits {
 
@@ -41,7 +41,7 @@ inline bands(const Matrix& A, long begin, long end)
 
 } // namespace matrix
 
-    using matrix::bands;
+    using mat::bands;
 
 } // namespace mtl
 

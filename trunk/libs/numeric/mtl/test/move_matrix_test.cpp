@@ -126,7 +126,7 @@ void dense_test(const Matrix& m, const char* text)
 int test_main(int, char*[])
 {
     dense2D<double>                                      dr(3, 3);
-    dense2D<double, matrix::parameters<col_major> >      dc(3, 3);
+    dense2D<double, mat::parameters<col_major> >      dc(3, 3);
     morton_dense<double, recursion::morton_z_mask>       mzd(3, 3);
 
     dense_test(dr, "Dense matrix");
@@ -134,12 +134,12 @@ int test_main(int, char*[])
     dense_test(mzd, "Morton-order z-mask");
 
     // Check for data on stack
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> fmat_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> fmat_para;
     dense2D<double, fmat_para>                           drs;
     dense_test(dr, "Dense matrix on stack");
 
     compressed2D<double>                                 crs(3, 3);
-    compressed2D<double, matrix::parameters<col_major> > ccs(3, 3);
+    compressed2D<double, mat::parameters<col_major> > ccs(3, 3);
 
     test(crs, "CRS");
     test(ccs, "CCS");

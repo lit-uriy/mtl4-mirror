@@ -24,7 +24,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 /// General Given's transformator

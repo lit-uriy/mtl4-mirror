@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/matrix/hermitian_view.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename Matrix>
 inline Matrix& view_ref(Matrix& A)

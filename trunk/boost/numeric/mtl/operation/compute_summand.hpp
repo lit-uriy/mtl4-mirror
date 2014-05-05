@@ -63,11 +63,11 @@ struct compute_summand< mat_cvec_times_expr<Matrix, CVector> >
 	
 /// Specialization for matrix vector products
 template <typename Matrix, typename CVector>
-struct compute_summand< vector::mat_cvec_multiplier<Matrix, CVector> >
+struct compute_summand< vec::mat_cvec_multiplier<Matrix, CVector> >
 {
     typedef CVector    type;
 
-    compute_summand(const vector::mat_cvec_multiplier<Matrix, CVector>& expr) 
+    compute_summand(const vec::mat_cvec_multiplier<Matrix, CVector>& expr) 
       : value(num_rows(expr.A))
     {
 	vampir_trace<3005> tracer;

@@ -38,17 +38,17 @@ class ilu
     typedef ilu                                           self;
     typedef Factorizer                                    factorizer_type;
 
-    typedef mtl::matrix::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
-    typedef mtl::matrix::compressed2D<value_type, para>                     L_type;
-    typedef mtl::matrix::compressed2D<value_type, para>                     U_type;
-    typedef typename mtl::matrix::traits::adjoint<L_type>::type     adjoint_L_type;
-    typedef typename mtl::matrix::traits::adjoint<U_type>::type     adjoint_U_type;
+    typedef mtl::mat::parameters<mtl::row_major, mtl::index::c_index, mtl::non_fixed::dimensions, false, size_type> para;
+    typedef mtl::mat::compressed2D<value_type, para>                     L_type;
+    typedef mtl::mat::compressed2D<value_type, para>                     U_type;
+    typedef typename mtl::mat::traits::adjoint<L_type>::type     adjoint_L_type;
+    typedef typename mtl::mat::traits::adjoint<U_type>::type     adjoint_U_type;
 
-    typedef mtl::matrix::detail::lower_trisolve_t<L_type, mtl::tag::unit_diagonal, true>    lower_solver_t;
-    typedef mtl::matrix::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal, true> upper_solver_t;
+    typedef mtl::mat::detail::lower_trisolve_t<L_type, mtl::tag::unit_diagonal, true>    lower_solver_t;
+    typedef mtl::mat::detail::upper_trisolve_t<U_type, mtl::tag::inverse_diagonal, true> upper_solver_t;
 
-    typedef mtl::matrix::detail::lower_trisolve_t<adjoint_U_type, mtl::tag::inverse_diagonal, true> adjoint_lower_solver_t;
-    typedef mtl::matrix::detail::upper_trisolve_t<adjoint_L_type, mtl::tag::unit_diagonal, true>    adjoint_upper_solver_t;
+    typedef mtl::mat::detail::lower_trisolve_t<adjoint_U_type, mtl::tag::inverse_diagonal, true> adjoint_lower_solver_t;
+    typedef mtl::mat::detail::upper_trisolve_t<adjoint_L_type, mtl::tag::unit_diagonal, true>    adjoint_upper_solver_t;
 
     /// Factorization adapted from Saad
     explicit ilu(const Matrix& A) 
@@ -133,10 +133,10 @@ class ilu
 }; 
 
 template <typename Value, typename Factorizer, typename V2>
-class ilu<mtl::matrix::dense2D<Value, mtl::matrix::parameters<> >, Factorizer, V2> // last 2 arguments are dummies
+class ilu<mtl::mat::dense2D<Value, mtl::mat::parameters<> >, Factorizer, V2> // last 2 arguments are dummies
 {
   public:
-    typedef mtl::matrix::dense2D<Value, mtl::matrix::parameters<> >    Matrix;
+    typedef mtl::mat::dense2D<Value, mtl::mat::parameters<> >    Matrix;
     typedef typename mtl::Collection<Matrix>::value_type  value_type;
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     typedef ilu                                           self;
@@ -162,13 +162,13 @@ class ilu<mtl::matrix::dense2D<Value, mtl::matrix::parameters<> >, Factorizer, V
 
   private:
     LU_type                        LU;
-    mtl::vector::dense_vector<size_type, mtl::vector::parameters<> >   P;
+    mtl::vec::dense_vector<size_type, mtl::vec::parameters<> >   P;
 };
 
 #if 0
 template <typename Matrix, typename Factorizer, typename Value, typename Vector>
 struct ilu_solver
-  : mtl::vector::assigner<ilu_solver<Matrix, Factorizer, Value, Vector> >
+  : mtl::assigner<ilu_solver<Matrix, Factorizer, Value, Vector> >
 {
     typedef ilu<Matrix, Factorizer, Value> pc_type;
 

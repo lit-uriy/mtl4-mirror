@@ -15,7 +15,7 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 
-namespace mtl {	namespace vector {
+namespace mtl {	namespace vec {
 
 template< typename Vector >
 struct indexbuffer 

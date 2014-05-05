@@ -38,11 +38,11 @@ void print_matrix(Matrix& matrix)
 template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
-    namespace with_bracket = mtl::matrix::with_bracket;
-    // namespace with_iterator = mtl::matrix::with_iterator;
+    namespace with_bracket = mtl::mat::with_bracket;
+    // namespace with_iterator = mtl::mat::with_iterator;
 
-    using mtl::matrix::recursive_cholesky_visitor_t;
-    using mtl::matrix::detail::mult_schur_update_t;
+    using mtl::mat::recursive_cholesky_visitor_t;
+    using mtl::mat::detail::mult_schur_update_t;
 
     std::cout << "Test " << name << "\n-----\n\n";
     fill_matrix_for_cholesky(matrix);
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
     if (argc > 1) size= atoi(argv[1]); 
 
     dense2D<double>                                dr(size, size);
-    dense2D<double, matrix::parameters<col_major> > dc(size, size);
+    dense2D<double, mat::parameters<col_major> > dc(size, size);
     morton_dense<double,  morton_mask>             md(size, size);
     morton_dense<double,  morton_z_mask>           mzd(size, size);
     morton_dense<double,  doppled_2_row_mask>      d2r(size, size);

@@ -13,7 +13,7 @@ class world_matrix
     void add_entry(unsigned row, unsigned col, double value) 
     {
 	// Extremely expensive -> must not be done 
-	matrix::inserter<compressed2D<double>, update_plus<double> > ins(A); 
+	mat::inserter<compressed2D<double>, update_plus<double> > ins(A); 
 	ins[row][col] << value;
     }
 

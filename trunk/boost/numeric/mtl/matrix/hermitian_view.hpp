@@ -22,7 +22,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <class Matrix> 
 struct hermitian_view 
@@ -92,33 +92,33 @@ inline std::size_t size(const hermitian_view<Matrix>& A)
 namespace mtl { namespace traits {
 
 template <typename Matrix>
-struct row< mtl::matrix::hermitian_view<Matrix> >
-  : public row< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-				      mtl::matrix::transposed_view<Matrix> > >
+struct row< mtl::mat::hermitian_view<Matrix> >
+  : public row< mtl::mat::map_view<sfunctor::conj<typename Matrix::value_type>, 
+				      mtl::mat::transposed_view<Matrix> > >
 {};
 
 template <typename Matrix>
-struct col< mtl::matrix::hermitian_view<Matrix> >
-    : public col< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-				   mtl::matrix::transposed_view<Matrix> > >
+struct col< mtl::mat::hermitian_view<Matrix> >
+    : public col< mtl::mat::map_view<sfunctor::conj<typename Matrix::value_type>, 
+				   mtl::mat::transposed_view<Matrix> > >
 {};
 
 template <typename Matrix>
-struct const_value< mtl::matrix::hermitian_view<Matrix> >
-    : public const_value< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-					   mtl::matrix::transposed_view<Matrix> > >
+struct const_value< mtl::mat::hermitian_view<Matrix> >
+    : public const_value< mtl::mat::map_view<sfunctor::conj<typename Matrix::value_type>, 
+					   mtl::mat::transposed_view<Matrix> > >
 {};
 
 template <typename Tag, typename Matrix>
-struct range_generator< Tag, mtl::matrix::hermitian_view<Matrix> >
-    : public range_generator< Tag, mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-						    mtl::matrix::transposed_view<Matrix> > >
+struct range_generator< Tag, mtl::mat::hermitian_view<Matrix> >
+    : public range_generator< Tag, mtl::mat::map_view<sfunctor::conj<typename Matrix::value_type>, 
+						    mtl::mat::transposed_view<Matrix> > >
 {};
 
 template <typename Matrix>
-struct range_generator< tag::major, mtl::matrix::hermitian_view<Matrix> >
-    : public range_generator< tag::major, mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-							   mtl::matrix::transposed_view<Matrix> > >
+struct range_generator< tag::major, mtl::mat::hermitian_view<Matrix> >
+    : public range_generator< tag::major, mtl::mat::map_view<sfunctor::conj<typename Matrix::value_type>, 
+							   mtl::mat::transposed_view<Matrix> > >
 {};
 
 

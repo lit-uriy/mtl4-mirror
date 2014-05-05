@@ -26,15 +26,15 @@
 namespace mtl { namespace io {
 
 template <typename Value, typename Parameters> 
-void write_ast_dispatch(const mtl::vector::dense_vector<Value, Parameters>& v, std::string s, std::ofstream& f);
+void write_ast_dispatch(const mtl::dense_vector<Value, Parameters>& v, std::string s, std::ofstream& f);
 template <typename E1, typename E2, typename SFunctor>
-void write_ast_dispatch(const mtl::vector::vec_vec_aop_expr<E1, E2, SFunctor>& expr, std::string s, std::ofstream& f);
+void write_ast_dispatch(const mtl::vec_vec_aop_expr<E1, E2, SFunctor>& expr, std::string s, std::ofstream& f);
 template <class E1, class E2, typename SFunctor>
-void write_ast_dispatch(const mtl::vector::vec_vec_pmop_expr<E1, E2, SFunctor>& expr, std::string s, std::ofstream& f);
+void write_ast_dispatch(const mtl::vec_vec_pmop_expr<E1, E2, SFunctor>& expr, std::string s, std::ofstream& f);
 template <typename Functor, typename Vector> 
-void write_ast_dispatch(const mtl::vector::map_view<Functor, Vector>& expr, std::string s, std::ofstream& f);
+void write_ast_dispatch(const mtl::map_view<Functor, Vector>& expr, std::string s, std::ofstream& f);
 template <typename Scaling, typename Vector>
-void write_ast_dispatch(const mtl::vector::scaled_view<Scaling, Vector>& expr, std::string s, std::ofstream& f);
+void write_ast_dispatch(const mtl::scaled_view<Scaling, Vector>& expr, std::string s, std::ofstream& f);
 template <typename Matrix, typename Vector> 
 void write_ast_dispatch(const mtl::mat_cvec_times_expr<Matrix, Vector>& expr, std::string s, std::ofstream& f);
 template <typename Expr>
@@ -42,7 +42,7 @@ void write_ast_dispatch(const mtl::operation::compute_summand<Expr>& expr, std::
 template <typename Matrix, typename Vector> 
 void write_ast_dispatch(const mtl::operation::compute_summand<mtl::mat_cvec_times_expr<Matrix, Vector> >& expr, std::string s, std::ofstream& f);
 template <typename Vector1, typename Vector2> 
-void write_ast_dispatch(const mtl::matrix::outer_product_matrix<Vector1, Vector2>& expr, std::string s, std::ofstream& f);
+void write_ast_dispatch(const mtl::mat::outer_product_matrix<Vector1, Vector2>& expr, std::string s, std::ofstream& f);
 
 
 
@@ -55,13 +55,13 @@ write_ast_dispatch(const Value& v, std::string s, std::ofstream& f)
 
 
 template <typename Value, typename Parameters> 
-void write_ast_dispatch(const mtl::vector::dense_vector<Value, Parameters>& v, std::string s, std::ofstream& f)
+void write_ast_dispatch(const mtl::dense_vector<Value, Parameters>& v, std::string s, std::ofstream& f)
 {   
     f << "  " << s << "[shape=box,label=\"vector\\n" << &v << "\"]\n";
 }
 
 template <typename E1, typename E2, typename SFunctor>
-void write_ast_dispatch(const mtl::vector::vec_vec_aop_expr<E1, E2, SFunctor>& expr, std::string s, std::ofstream& f)
+void write_ast_dispatch(const mtl::vec_vec_aop_expr<E1, E2, SFunctor>& expr, std::string s, std::ofstream& f)
 {
     f << "  " << s << "[label=\"" << functor_symbol(SFunctor()) << "\"]\n"; 
     std::string target= s + "t", source= s + "s";
@@ -72,7 +72,7 @@ void write_ast_dispatch(const mtl::vector::vec_vec_aop_expr<E1, E2, SFunctor>& e
 }
 
 template <class E1, class E2, typename SFunctor>
-void write_ast_dispatch(const mtl::vector::vec_vec_pmop_expr<E1, E2, SFunctor>& expr, std::string s, std::ofstream& f)
+void write_ast_dispatch(const mtl::vec_vec_pmop_expr<E1, E2, SFunctor>& expr, std::string s, std::ofstream& f)
 {
     f << "  " << s << "[label=\"" << functor_symbol(SFunctor()) << "\"]\n"; 
     std::string first= s + "f", second= s + "s";
@@ -83,7 +83,7 @@ void write_ast_dispatch(const mtl::vector::vec_vec_pmop_expr<E1, E2, SFunctor>& 
 }
 
 template <typename Scaling, typename Vector>
-void write_ast_dispatch(const mtl::vector::scaled_view<Scaling, Vector>& expr, std::string s, std::ofstream& f)
+void write_ast_dispatch(const mtl::scaled_view<Scaling, Vector>& expr, std::string s, std::ofstream& f)
 {
     f << "  " << s << "[label=\"scaled_view\"]\n"; 
     std::string functor= s + "f", ref= s + "r";
@@ -108,7 +108,7 @@ void write_ast_dispatch(const mtl::tfunctor::scale<Value1, Value2, mtl::tag::sca
 }
 
 template <typename Functor, typename Vector> 
-void write_ast_dispatch(const mtl::vector::map_view<Functor, Vector>& expr, std::string s, std::ofstream& f)
+void write_ast_dispatch(const mtl::map_view<Functor, Vector>& expr, std::string s, std::ofstream& f)
 {
     f << "  " << s << "[label=\"map\"]\n"; 
     std::string functor= s + "f", ref= s + "r";
@@ -147,7 +147,7 @@ void write_ast_dispatch(const mtl::operation::compute_summand<mtl::mat_cvec_time
 }
 
 template <typename Vector1, typename Vector2> 
-void write_ast_dispatch(const mtl::matrix::outer_product_matrix<Vector1, Vector2>& expr, std::string s, std::ofstream& f)
+void write_ast_dispatch(const mtl::mat::outer_product_matrix<Vector1, Vector2>& expr, std::string s, std::ofstream& f)
 {
     f << "  " << s << "[label=\"outer product\"]\n"; 
     std::string first= s + "f", second= s + "s";

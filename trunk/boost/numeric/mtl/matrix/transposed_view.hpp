@@ -28,7 +28,7 @@
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 template <class Matrix> 
@@ -40,7 +40,7 @@ struct transposed_view
         , crtp_base_matrix< transposed_view<Matrix>, 
 			    typename Matrix::value_type, typename Matrix::size_type >
       >::type,
-    public matrix::mat_expr< transposed_view<Matrix> >
+    public mat::mat_expr< transposed_view<Matrix> >
 {
     typedef transposed_view               self;
     typedef mat_expr< self >              expr_base;
@@ -53,7 +53,7 @@ struct transposed_view
     typedef typename Matrix::key_type                  key_type;
     typedef typename Matrix::size_type                 size_type;
     typedef typename Matrix::dim_type::transposed_type dim_type;
-    typedef matrix::parameters<orientation, index_type, dim_type> parameters;
+    typedef mat::parameters<orientation, index_type, dim_type> parameters;
 
     typedef typename boost::mpl::if_<boost::is_const<Matrix>,
 				     const_reference,
@@ -95,9 +95,9 @@ struct transposed_view
     size_type nnz() const       { return ref.nnz();       }
 
     friend size_type inline num_rows(const self& A) 
-    { 	using mtl::matrix::num_cols; return num_cols(A.ref);     }
+    { 	using mtl::mat::num_cols; return num_cols(A.ref);     }
     friend size_type inline num_cols(const self& A) 
-    { 	using mtl::matrix::num_rows; return num_rows(A.ref);     }
+    { 	using mtl::mat::num_rows; return num_rows(A.ref);     }
   protected:
     boost::shared_ptr<Matrix>           my_copy;
   public:
@@ -163,7 +163,7 @@ namespace mtl { namespace traits {
 	    typedef typename Matrix::key_type   key_type;
 	    typedef typename Matrix::size_type  size_type;
     	
-	    transposed_row(mtl::matrix::transposed_view<Ref> const& transposed_matrix) 
+	    transposed_row(mtl::mat::transposed_view<Ref> const& transposed_matrix) 
 	      : its_col(transposed_matrix.ref) {}
 
 	    size_type operator() (key_type const& key) const
@@ -182,7 +182,7 @@ namespace mtl { namespace traits {
 	    typedef typename Matrix::key_type   key_type;
 	    typedef typename Matrix::size_type  size_type;
     	
-		transposed_col(mtl::matrix::transposed_view<Ref> const& transposed_matrix) 
+		transposed_col(mtl::mat::transposed_view<Ref> const& transposed_matrix) 
 	      : its_row(transposed_matrix.ref) {}
 
 	    size_type operator() (key_type const& key) const
@@ -197,28 +197,28 @@ namespace mtl { namespace traits {
     } // namespace detail
         
     template <class Matrix> 
-    struct row<matrix::transposed_view<Matrix> >
+    struct row<mat::transposed_view<Matrix> >
     {
 	typedef detail::transposed_row<Matrix, Matrix>  type;
     };
 
     template <class Matrix> 
-    struct col<matrix::transposed_view<Matrix> >
+    struct col<mat::transposed_view<Matrix> >
     {
 	typedef detail::transposed_col<Matrix, Matrix>  type;
     };
 
     template <class Matrix> 
-    struct const_value<mtl::matrix::transposed_view<Matrix> >
+    struct const_value<mtl::mat::transposed_view<Matrix> >
     {
-	typedef mtl::detail::const_value_from_other<mtl::matrix::transposed_view<Matrix> > type;
+	typedef mtl::detail::const_value_from_other<mtl::mat::transposed_view<Matrix> > type;
     };
 
 
     template <class Matrix> 
-    struct value<mtl::matrix::transposed_view<Matrix> >
+    struct value<mtl::mat::transposed_view<Matrix> >
     {
-	typedef mtl::detail::value_from_other<mtl::matrix::transposed_view<Matrix> > type;
+	typedef mtl::detail::value_from_other<mtl::mat::transposed_view<Matrix> > type;
     };
 
 
@@ -236,11 +236,11 @@ namespace mtl { namespace traits {
 	    typedef typename generator::complexity   complexity;
 	    typedef typename generator::type         type;
 	    static int const                         level = generator::level;
-		type begin(mtl::matrix::transposed_view<Matrix> const& m)
+		type begin(mtl::mat::transposed_view<Matrix> const& m)
 	    {
 		return generator().begin(m.ref);
 	    }
-		type end(mtl::matrix::transposed_view<Matrix> const& m)
+		type end(mtl::mat::transposed_view<Matrix> const& m)
 	    {
 		return generator().end(m.ref);
 	    }
@@ -261,26 +261,26 @@ namespace mtl { namespace traits {
 
     // Row and column cursors are interchanged
     template <class Matrix>
-    struct range_generator<glas::tag::col, matrix::transposed_view<Matrix> >
+    struct range_generator<glas::tag::col, mat::transposed_view<Matrix> >
       : detail::range_transposer<glas::tag::row, Matrix>
     {};
 
     template <class Matrix>
-    struct range_generator<glas::tag::row, matrix::transposed_view<Matrix> >
+    struct range_generator<glas::tag::row, mat::transposed_view<Matrix> >
       : detail::range_transposer<glas::tag::col, Matrix>
     {};
 
 
     // To traverse the major dimension refer to the Matrix
     template <class Matrix>
-    struct range_generator<tag::major, matrix::transposed_view<Matrix> >
+    struct range_generator<tag::major, mat::transposed_view<Matrix> >
       : detail::range_transposer<tag::major, Matrix>
     {};
 
 
     // Other cursors still use the same tag, e.g. elements
     template <class Tag, class Matrix>
-    struct range_generator<Tag, matrix::transposed_view<Matrix> >
+    struct range_generator<Tag, mat::transposed_view<Matrix> >
       : detail::range_transposer<Tag, Matrix>
     {};
 
@@ -289,7 +289,7 @@ namespace mtl { namespace traits {
 }} // namespace mtl::traits
 
 namespace mtl {
-	using matrix::transposed_view;
+	using mat::transposed_view;
 }
 
 #endif // MTL_TRANSPOSED_VIEW_INCLUDE

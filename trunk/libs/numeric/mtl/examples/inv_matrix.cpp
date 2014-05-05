@@ -16,7 +16,7 @@ int main(int, char**)
     Matrix LU(A);
     dense_vector<std::size_t> v(4);
     lu(LU, v);
-    matrix::traits::permutation<>::type P(permutation(v));
+    mat::traits::permutation<>::type P(permutation(v));
     
     cout << "A is:\n" << A << "\nPermuted A is \n" << Matrix(P * A);
 
@@ -34,7 +34,7 @@ int main(int, char**)
     Matrix AI(UI * LI * P);
     cout << "inv(A) [inv(U) * inv(L) * P] is \n" << AI << "Test: A * AI is\n" << AI * A;
  
-    matrix::traits::inv<Matrix>::type A_inv(inv(A));
+    mat::traits::inv<Matrix>::type A_inv(inv(A));
     cout << "inv(A) is \n" << A_inv << "Test: A * AI is\n" << A_inv * A;
 
     return 0;

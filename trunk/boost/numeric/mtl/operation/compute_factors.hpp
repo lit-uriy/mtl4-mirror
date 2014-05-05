@@ -30,38 +30,38 @@ struct compute_one_factor
 };
 
 template <typename Result, typename E1, typename E2>
-struct compute_one_factor<Result, matrix::mat_mat_times_expr<E1, E2> > 
+struct compute_one_factor<Result, mat::mat_mat_times_expr<E1, E2> > 
 {
     typedef Result                type;
     typedef const Result&         const_reference;
 
-    compute_one_factor(const matrix::mat_mat_times_expr<E1, E2>& src) 
+    compute_one_factor(const mat::mat_mat_times_expr<E1, E2>& src) 
 	: value(src.first * src.second) {}
 
     type value;
 };
 
 template <typename Result, typename E1, typename E2>
-struct compute_one_factor<Result, matrix::mat_mat_ele_times_expr<E1, E2> > 
+struct compute_one_factor<Result, mat::mat_mat_ele_times_expr<E1, E2> > 
 {
     typedef Result                type;
     typedef const Result&         const_reference;
 
-    compute_one_factor(const matrix::mat_mat_ele_times_expr<E1, E2>& src) 
+    compute_one_factor(const mat::mat_mat_ele_times_expr<E1, E2>& src) 
 	: value(ele_prod(src.first, src.second)) {}
 
     type value;
 };
 
 
-// Only defined for matrix::mat_mat_times_expr and matrix::mat_mat_ele_times_expr
+// Only defined for mat::mat_mat_times_expr and mat::mat_mat_ele_times_expr
 template <typename Result, typename Expr>
 struct compute_factors {};
 
 template <typename Result, typename E1, typename E2>
-struct compute_factors<Result, matrix::mat_mat_times_expr<E1, E2> >
+struct compute_factors<Result, mat::mat_mat_times_expr<E1, E2> >
 {
-    compute_factors(const matrix::mat_mat_times_expr<E1, E2>& src) 
+    compute_factors(const mat::mat_mat_times_expr<E1, E2>& src) 
 	: first_factor(src.first), second_factor(src.second),
 	  first(first_factor.value), second(second_factor.value)
     {}
@@ -75,9 +75,9 @@ struct compute_factors<Result, matrix::mat_mat_times_expr<E1, E2> >
 
 // First factor is handled implicitly in the evaluation
 template <typename Result, typename E1, typename E2>
-struct compute_factors<Result, matrix::mat_mat_ele_times_expr<E1, E2> >
+struct compute_factors<Result, mat::mat_mat_ele_times_expr<E1, E2> >
 {
-    compute_factors(const matrix::mat_mat_ele_times_expr<E1, E2>& src) 
+    compute_factors(const mat::mat_mat_ele_times_expr<E1, E2>& src) 
 	: first(src.first), second_factor(src.second),
 	  second(second_factor.value)
     {}

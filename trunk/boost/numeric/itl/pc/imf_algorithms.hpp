@@ -239,8 +239,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	typedef typename element_type::index_type index_type;
 	typedef typename element_type::matrix_type matrix_type;
 	
-	typedef typename mtl::matrix::coordinate2D<value_type> coo_sparse_type_upper;
-	typedef typename mtl::matrix::coordinate2D<value_type> coo_sparse_type_lower;
+	typedef typename mtl::mat::coordinate2D<value_type> coo_sparse_type_upper;
+	typedef typename mtl::mat::coordinate2D<value_type> coo_sparse_type_lower;
 		     
 
 	typedef std::map<int, int> cmap;
@@ -418,9 +418,9 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		//save upperbound for number of L and U entrys
 		unsigned int upperbound(0);
 		for(unsigned int i=0;i< block_diagonal.size();i++){
-			mtl::vector::dense_vector<int> involve_node(block_diagonal[i]->get_indices());
+			mtl::dense_vector<int> involve_node(block_diagonal[i]->get_indices());
 			for(unsigned int j=0;j< block_diagonal[i]->get_neighbors().size();j++){
-			  mtl::vector::dense_vector<int> involve_neigh(block_diagonal[i]->get_neighbors()[j]->get_indices());
+			  mtl::dense_vector<int> involve_neigh(block_diagonal[i]->get_neighbors()[j]->get_indices());
 			  unsigned int c(0);
 			  for(unsigned int a= 0; a < size(involve_node); a++){
 			      for(unsigned int b= 0; b < size(involve_neigh); b++){
@@ -499,7 +499,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				}
 				//insert connectet neighbor
 				{
-				  mtl::matrix::inserter<mtl::matrix::dense2D<value_type>, mtl::operations::update_plus<value_type> > ins(frontal);
+				  mtl::mat::inserter<mtl::mat::dense2D<value_type>, mtl::operations::update_plus<value_type> > ins(frontal);
 				  ins << element_matrix(neigh.get_values(), local_idx, local_idx);
 				}
 				neigh.get_values()= zero;
@@ -513,7 +513,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				}
 				//insert the diagonal element
 				{	
-				  mtl::matrix::inserter<matrix_type, mtl::operations::update_plus<value_type> > ins(frontal);
+				  mtl::mat::inserter<matrix_type, mtl::operations::update_plus<value_type> > ins(frontal);
 				  ins << element_matrix(
 				  diag_el.get_values(), local_idx, local_idx);
 				}
@@ -673,7 +673,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	mtl::vampir_trace<9903> tb3;
 	
 
-	mtl::matrix::traits::permutation<>::type P(permutation(m_ordering));
+	mtl::mat::traits::permutation<>::type P(permutation(m_ordering));
 	typedef typename coo_sparse_type_lower::size_type size_type;
   
 	for( std::size_t k = 0; k < lower_matrices.size(); ++k ) {
@@ -695,8 +695,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		    }
 		}
 		
-		m_lower.push_back(mtl::matrix::compressed2D<value_type>(L));
-		m_upper.push_back(mtl::matrix::compressed2D<value_type>(U));
+		m_lower.push_back(mtl::mat::compressed2D<value_type>(L));
+		m_upper.push_back(mtl::mat::compressed2D<value_type>(U));
 	}
 	/***************************************************************************
 	 * Phase 4: Construct the IMF preconditioner

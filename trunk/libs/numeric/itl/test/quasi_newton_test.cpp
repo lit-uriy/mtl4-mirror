@@ -25,7 +25,7 @@ struct f_test
 {
     f_test() : s(3)
     {
-	mtl::vector::inserter<Vector> ins(s);
+	mtl::vec::inserter<Vector> ins(s);
 	ins[0] << 1; ins[1] << 2; ins[2] << 2; 
     }
 
@@ -43,7 +43,7 @@ struct grad_f_test
 {
     grad_f_test() : s(3)
     {
-	mtl::vector::inserter<Vector> ins(s);
+	mtl::vec::inserter<Vector> ins(s);
 	ins[0] << 2; ins[1] << 4; ins[2] << 4; 
     }
 
@@ -55,9 +55,10 @@ struct grad_f_test
 int main(int, char**)
 {
     using namespace mtl;
+    using mtl::io::tout;
 
     mtl::dense_vector<double>       x(3, 8);
-    std::cout<< "x= " << x << "\n";
+    tout << "x= " << x << "\n";
 
     grad_f_test<mtl::dense_vector<double> > grad_f;
     f_test<mtl::dense_vector<double> >      f;
@@ -71,23 +72,23 @@ int main(int, char**)
     quasi_newton(x, f, grad_f, itl::wolf<>(), itl::bfgs(), iter);
     iter.error_code();    
 
-   // std::cout<< "x= " << x << "\n";
-    std::cout<< "grad_f(x)= " << grad_f(x) << "\n\n";
+   // tout << "x= " << x << "\n";
+    tout << "grad_f(x)= " << grad_f(x) << "\n\n";
     if (two_norm(x) > 10 * iter.atol()) throw "x should be 0.";
     x= 8;
     quasi_newton(x, f, grad_f, itl::wolf<>(), itl::dfp(), iter1);
     iter1.error_code();    
 
-   // std::cout<< "dfp x= " << x << "\n";
-    std::cout<< "grad_f(x)= " << grad_f(x) << "\n\n";
+   // tout << "dfp x= " << x << "\n";
+    tout << "grad_f(x)= " << grad_f(x) << "\n\n";
     if (two_norm(x) > 10 * iter1.atol()) throw "x should be 0.";
     
     x= 8;
     quasi_newton(x, f, grad_f, itl::wolf<>(), itl::broyden(), iter2);
     iter2.error_code();    
 
-    std::cout<< "broyden x= " << x << "\n";
-    std::cout<< "grad_f(x)= " << grad_f(x) << "\n\n";
+    tout << "broyden x= " << x << "\n";
+    tout << "grad_f(x)= " << grad_f(x) << "\n\n";
     if (two_norm(x) > 10 * iter2.atol()) throw "x should be 0.";
     
  #if 0  //bad condition on some compiler
@@ -95,8 +96,8 @@ int main(int, char**)
     quasi_newton(x, f, grad_f, itl::wolf<>(), itl::sr1(), iter3);
     iter3.error_code();    
 
-    std::cout<< "sr1 x= " << x << "\n";
-    std::cout<< "grad_f(x)= " << grad_f(x) << "\n";
+    tout << "sr1 x= " << x << "\n";
+    tout << "grad_f(x)= " << grad_f(x) << "\n";
     if (two_norm(x) > 10 * iter3.atol())
 	throw "x should be 0.";
 #endif     
@@ -105,8 +106,8 @@ int main(int, char**)
     quasi_newton(x, f, grad_f, itl::wolf<>(), itl::psb(), iter4);
     iter4.error_code();
 
-    std::cout<< "psb x= " << x << "\n";
-    std::cout<< "grad_f(x)= " << grad_f(x) << "\n\n";
+    tout << "psb x= " << x << "\n";
+    tout << "grad_f(x)= " << grad_f(x) << "\n\n";
     if (two_norm(x) > 10 * iter4.atol()) throw "x should be 0.";
 
 

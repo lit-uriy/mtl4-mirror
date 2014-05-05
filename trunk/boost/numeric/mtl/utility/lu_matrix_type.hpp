@@ -24,9 +24,9 @@ struct lu_matrix_type
 };
 
 template <typename Value, typename Parameters> 
-struct lu_matrix_type<matrix::compressed2D<Value, Parameters> >
+struct lu_matrix_type<mat::compressed2D<Value, Parameters> >
 {
-    typedef matrix::dense2D<Value, Parameters> type;
+    typedef mat::dense2D<Value, Parameters> type;
 };
 
 

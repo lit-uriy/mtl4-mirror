@@ -19,7 +19,7 @@
 
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Matrix inserter
 /** The matrix inserter has two template arguments: the type of the target matrix and

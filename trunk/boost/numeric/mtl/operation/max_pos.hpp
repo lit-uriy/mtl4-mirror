@@ -32,7 +32,7 @@
 
 namespace mtl { 
 
-    namespace vector {
+    namespace vec {
 	
 	template <typename Vector>
 	struct max_pos_functor
@@ -73,9 +73,9 @@ namespace mtl {
 
     } // namespace vector
 
-    namespace matrix {
+    namespace mat {
 	///Returns pair (row, col) from maximal entry of %matrix A
-	using mtl::vector::max_pos;
+	using mtl::vec::max_pos;
     }
 
 

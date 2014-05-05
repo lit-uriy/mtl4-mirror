@@ -37,7 +37,7 @@ void test(const char* ) {}
 
 int main(int , char**)
 {
-    using mtl::vector::parameters;
+    using mtl::vec::parameters;
     using namespace mtl;
 
     test<dense_vector<float> >("test float");

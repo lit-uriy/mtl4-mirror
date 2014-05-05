@@ -29,7 +29,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 
 	template <typename Vector>
 	typename mtl::traits::enable_if_vector<Vector, conj_view<Vector> >::type

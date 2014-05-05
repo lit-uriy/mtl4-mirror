@@ -68,14 +68,14 @@ inline void bench()
     const long int rep= 10000000;
 
 #ifdef STATIC_TYPES
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<Size, Size>, true> mat_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<Size, Size>, true> mat_para;
 #else
-    typedef matrix::parameters<> mat_para;
+    typedef mat::parameters<> mat_para;
 #endif
     typedef dense2D<double, mat_para> mat;
 
     mat A(Size, Size);
-    mtl::matrix::hessian_setup(A, 1.0);
+    mtl::mat::hessian_setup(A, 1.0);
     mat B(2*A), C(Size, Size);
     C= 0.0;
 

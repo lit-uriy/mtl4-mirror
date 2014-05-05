@@ -22,7 +22,7 @@
 #include <boost/numeric/mtl/utility/zipped_sort.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// This is not (yet) a full numeric class!!! It is only a helper for factorization with very limited functionality. DO NOT USE in numeric code (yet)!!!
 template <typename Value, typename Parameter= parameters<> >
@@ -165,5 +165,9 @@ std::size_t inline size(const sparse_vector<Value, Parameter>& v)
 
 
 }} // namespace mtl::vector
+
+namespace mtl {
+    using vec::sparse_vector;
+}
 
 #endif // MTL_VECTOR_SPARSE_VECTOR_INCLUDE

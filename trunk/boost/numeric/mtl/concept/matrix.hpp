@@ -110,7 +110,7 @@ namespace mtl {
 	   A(r, c) << v \n
 	   Return type: T
 	\par Models:
-	- mtl::matrix::inserter < T >
+	- mtl::mat::inserter < T >
 	\note
 	-# Used in concept InsertableMatrix
      */
@@ -131,13 +131,13 @@ namespace mtl {
     concept InsertableMatrix<typename T>
       : Matrix<T>
     {
-	requires MatrixInserter<mtl::matrix::inserter<T> >;
+	requires MatrixInserter<mtl::mat::inserter<T> >;
     };
 #else
     /// Concept InsertableMatrix: %matrix that can be filled by means of inserter
     /** 
 	\par Requires:
-	- MatrixInserter < mtl::matrix::inserter< T > >
+	- MatrixInserter < mtl::mat::inserter< T > >
 	\par Models:
 	- dense2D
 	- morton_dense

@@ -18,7 +18,7 @@
 
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 // Model of VectorExpression
 template <typename E1, typename E2, typename SFunctor>

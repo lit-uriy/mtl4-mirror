@@ -52,7 +52,7 @@ int main()
     r= bw(w);
 
     {
-	mtl::matrix::inserter<mtl::compressed2D<double> > ins(A, z);
+	mtl::mat::inserter<mtl::compressed2D<double> > ins(A, z);
 	std::cout << "Inserter created." << endl;
 	r= bw(w);
  

@@ -24,7 +24,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 	
 	template <typename Vector>
 	struct min_pos_functor
@@ -60,9 +60,9 @@ namespace mtl {
 
     } // namespace vector
 
-    namespace matrix {
+    namespace mat {
 
-	using mtl::vector::min_pos;
+	using mtl::vec::min_pos;
     }
 
 

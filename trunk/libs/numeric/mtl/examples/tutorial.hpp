@@ -195,7 +195,7 @@ There are two ways to install MTL4:
 - With a \ref installpackage "package manager" or
 - By  \ref installdownload "downloading".
 .
-We recommand you the first option if you have administrative rights on your computer.
+We recommend you the first option if you have administrative rights on your computer.
 It is much easier and you will be provided with automatic updates.
 Furthermore, boost will be installed as prerequisite.
 
@@ -462,18 +462,18 @@ Might be added some day -- the interface for user types is less convenient.
 \section debugger_types Supported Types
 
 So far we have implemented:
-- vector::dense_vector
+- dense_vector
   - With dynamic size
   - With static size
   - Values can be modified
   .
-- matrix::dense2D
+- mat::dense2D
   - With dynamic size
   - With static size
   .
-- matrix::compressed2D
-- matrix::coordinate2D
-- matrix::ell_matrix
+- mat::compressed2D
+- mat::coordinate2D
+- mat::ell_matrix
 .
 
 
@@ -761,6 +761,7 @@ This, of course, does not exclude backward-compatible extensions.
    -# \subpage vector_def
    -# \subpage matrix_types
    -# \subpage multivector
+   -# \subpage type_generator
    .
 -# Generic Insertion
    -# \subpage vector_insertion
@@ -841,7 +842,7 @@ This, of course, does not exclude backward-compatible extensions.
 
 /*! \page vector_def Vector Types
 
-To start the tutorial we want to give a very short example (we could call
+To start the tutorial, we want to give a very short example (we could call
 it the MTL4-hello-world).
 
 \include vector1.cpp
@@ -924,14 +925,16 @@ These definitions are consistent with the according functions for matrices (\ref
 
 /*! \page matrix_types Matrix Types
 
+
+
 Right now, MTL4 provides five %matrix types:
-- \ref matrix::dense2D;
-- \ref matrix::morton_dense; 
-- \ref matrix::compressed2D; and
+- \ref mat::dense2D;
+- \ref mat::morton_dense; 
+- \ref mat::compressed2D; and
 - multi_vector, see \ref multivector
 - element_structure.
 
-The type \ref matrix::dense2D defines regular 
+The type \ref mat::dense2D defines regular 
 row-major and column-major matrices:
 
 \include dense2D.cpp
@@ -1001,7 +1004,7 @@ can be used to clear any %matrix, square or rectangular, sparse and dense.
 \section morton_intro Recursive Memory Layout
 
 Dense matrices with a recursively designed memory layout
-can be defined with the type \ref matrix::morton_dense :
+can be defined with the type \ref mat::morton_dense :
 
 \include morton_dense.cpp
 
@@ -1020,7 +1023,7 @@ A detailed description and discussion of recursive matrices and algorithm is
 provided in 
 <a href="http://www.osl.iu.edu/~pgottsch/ics07.pdf">this conference paper</a>.
 
-Sparse matrices are defined with the type \ref matrix::compressed2D :
+Sparse matrices are defined with the type \ref mat::compressed2D :
 
 \section compressed_intro Compressed Sparse Matrices
 
@@ -1064,9 +1067,9 @@ These definitions are consistent with the according functions for vectors (\ref 
 
 \section matrix_parameters Matrix Parameters
 
-The matrices can take a second (in case of matrix::morton_dense a third)
+The matrices can take a second (in case of mat::morton_dense a third)
 template argument that allows for certain specialization.
-The argument should be an instance of the template class matrix::parameters.
+The argument should be an instance of the template class mat::parameters.
 There are the following arguments:
 - Orientation: whether the matrix is row_major or column-major (col_major), diagonal orientation might be added later, default is row_major;
 - Index: was intended for easier handling of 1-based Fortran-like indexing but turned out to be too error-prone and unreadable in a generic context; might be removed in the future;
@@ -1076,8 +1079,8 @@ There are the following arguments:
 
 
 Some arguments in certain %matrix types or have little impact, for instance:
-- Orientation is ignored in matrix::morton_dense since the layout is determined by the mask;
-- OnStack is ignored in matrix::compressed2D and fixed::dimensions reduce the overall memory need only marginally;
+- Orientation is ignored in mat::morton_dense since the layout is determined by the mask;
+- OnStack is ignored in mat::compressed2D and fixed::dimensions reduce the overall memory need only marginally;
 - Reversely, the choice of SizeType has no effect on the performance of dense matrices are very little on their memory requirements.
 .
 Using only 32 bit integers instead of 64 bit can accelerate sparse matrix operations significantly because twice as much indices can be loaded from memory at the same time (and as we all know, memory bandwidth is the limiting factor in sparse algebra),
@@ -1089,18 +1092,204 @@ Multiple operations are specialized for dense matrices with fixed dimensions, se
 
 How to fill  sparse matrices is shown on page \ref matrix_insertion.
 
-\section element_structure Elementstructure
+\section element_structure Element structure (advanced)
 
-As a new matrix type we have an element structure.
+As a new matrix type, we have an element structure.
 The use of this new structure is to be explained with the following 2 by 3 grid.
 
 \image html 2by3grid.png
 
 \include element_structure_example.cpp
 
+This matrix type is very powerful for specific algorithms like the IMF-preconditioner but it is not suited
+for beginners.
+
 
 \if Navigation \endif
-  Return to \ref vector_def &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref multivector 
+  Return to \ref vector_def &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref type_generator 
+
+
+*/
+
+//-----------------------------------------------------------
+
+/*! \page type_generator Type Generator
+
+
+The type generator offers a simple and efficient way to declare vectors and matrices.
+It requires the presence of multiple C++11 features which shows up in the examples as explicit test (see also \ref cppeleven_intro).
+If you always define those macros in your build system than you can omit these ugly preprocessor tests
+ (and your programs look nicer than our 
+backward-compatible examples).
+Thanks to variadic templates the number of template parameters is unlimited and the compile time is not wasted by dummy arguments.
+The template aliases allow us to dispense the annoying "typename ::type" notation.
+Here is an example with a variety of matrix types:
+
+\include matrix1.cpp
+
+There are more examples later in this section.
+The idea of the type generator is to define the properties you really care about and 
+let MTL4 choose appropriate defaults for the remaining ones.
+Properties are declared by tags; these are empty types that only serve to differentiate types.
+
+
+\section type_generator_simple_dense A Simple Dense Matrix
+
+The value type is mandatory but all other arguments are optional.
+For matrix A, we only provided the type of the elements.
+In this case, the matrix is dense (\ref mat::dense2D).
+The other properties are default values in the type generator.
+That defaults are:
+- Row-major orientation;
+- Allocation on the heap;
+- Size provided at run time; and
+- Indices and sizes are size_t.
+.
+We reserve the right to change these defaults  in the future if there are really good reasons to do so.
+However, this is very unlikely and will be announced upfront on the mailing list.
+It is possible to explicitly declare a matrix as dense:
+\code
+    matrix<double, dense> A(2, 2);
+\endcode
+
+\section type_generator_simple_sparse A Sparse Matrix
+
+Matrix B is an appropriate sparse matrix.
+The actually generated matrix type depends on the platform.
+On a CPU, the default is a compressed matrix (\ref mat::compressed2D)
+and on a GPU it will be an ELLPACK matrix (\ref mat::ellpack).
+In section \ref type_generator_sparse, we present the generation of
+ the variety of sparse matrices that are currently available in MTL4.
+The motivation of this choice is that matrix vector multiplication (MVP) is typically the most important operation for
+sparse matrices and we therefor choose the type with the fastest MVP on the platform.
+Here the remaining type parameters are defaults (row-major orientation, heap-allocated with run-time size and size_t for indexing).
+
+
+\section type_generator_col_major Column-major Matrices
+
+Matrices C and D are column-major matrices.
+The sparse matrix C is by default on a CPU a Compressed Column-Storage (CCS) matrix.
+The dense matrix D is like a Fortran matrix with 0-based indexing.
+For convenience, we provided two aliases: mtl::col_major and mtl::column_major.
+There is absolutely no difference between the two; the first tag already existed before
+and is kept for consistency and the second tag was introduced because it looks nicer.
+
+\section type_generator_size_type Choosing the Size Type
+
+Matrix E is a sparse matrix where all indices are stored as int.
+On typical 64-bit platforms int and unsigned are 4 byte long in contrast to size_t that is 8 byte 
+(otherwise indices would not cover the address space).
+Storing indices in 4 instead of 8 byte can safe a lot of memory and what is usually more
+important a lot of memory traffic.
+Assuming the 4 byte length, int allows for matrices with two billion and unsigned for four billion entries.
+This is often large enough and the reduced memory traffic creates a considerable performance boost.
+
+Remark: In the parallel MTL4, distributed matrices can have up to 4 billion entries per MPI process with unsigned
+indices (whereas global indices are always size_t or long int so that the global size is only limited by memory). 
+
+Dense matrices can also be declared with shorter index types.
+However, this has no impact on the performance since the memory size and traffic is not significantly reduced unless the matrix is very small.
+However, for tiny dense matrices it is better to provide the size at compile time if already known, see \ref type_generator_fixed_size.
+
+Especially, when the size type is the only parameter that you want to set, the type generator comes in quite handy
+since the size type is the last parameter of mat::parameters so that all parameters must be declared even those with default values.
+The declaration of matrix E without type generator is:
+\code
+    compressed2D<float, mat::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, int> E(2, 2);
+\endcode
+
+\section type_generator_fixed_size Fixed-size Matrices
+
+In the example above, the size of matrix F is given at compile time.
+The tag \ref dim is a variadic template allowing for an arbitrary number of values of std::size_t.
+In the case of a matrix type, there must be evidently exact two numbers, everything else is an error.
+A compile-time size implies that the matrix data is stored directly in the object on the stack.
+If you want to store the data on the heap  you have to declare the tag \ref on_heap as well.
+Data on the stack is usually faster.
+On the other hand, heap data allows for move semantics and is not limited in size (except for the total memory size).
+Loop unrolling is performed in both cases regardless of the memory location.
+Compile-time sizes can be provided for sparse matrices as well but this does not make really sense, does it?
+
+\section type_generator_sparse Sparse Matrix Types
+
+The following example program shows the variety of sparse matrices in MTL4 and their respective generation:
+
+\include matrix2.cpp
+
+Matrix A is a compressed sparse matrix.
+In contrast to tag "\ref sparse",
+the tag "\ref compressed" assures that this matrix has always type \ref mat::compressed2D regardless of the target platform.
+
+The compressed layout implies that the matrix is sparse.
+But if you like, you can declare both \ref sparse and \ref compressed, e.g.:
+\code
+    matrix<float, sparse, compressed>         A(2, 2);
+\endcode
+On the other hand, asking for a dense compressed matrix will cause an error, see \ref type_generator_errors.
+The same applies for most other sparse matrix types in this section (see remark about \ref banded matrices below).
+
+The other sparse matrices in the example have the following types:
+- B: \ref mat::sparse_banded;
+- C: \ref mat::ell_matrix;
+- D: \ref mat::coordinate2D;
+.
+More sparse matrix types will be implemented.
+
+We also plan a format for dense banded matrices, i.e. matrices where a continuous interval of bands is stored
+as opposed to sparse banded matrices where arbitrary bands can be stored.
+Right now, only the latter is available so that \ref banded currently implies \ref sparse.
+This will change when dense banded matrices are realized (then \ref banded without sparsity attribute means
+densely banded).
+To prevent this type change, we added the \ref sparse attribute in B's declaration.
+
+
+\section type_generator_morton Morton-order Matrices
+
+Matrices with a recursive dense layout -- confer \ref morton_intro -- can be declared with the \ref morton tag.
+If no mask is given like for E, the default is a mirror-inverted N (i.e. a Cyrillic I).
+For matrix F, the mask is given which implies that the matrix has Morton-order. 
+
+\section type_generator_generator Vectors
+
+Vector types can be generated like-wise:
+
+\include vector.cpp
+
+After knowing the generation of matrix types the program above is self-explanatory.
+The only noticeable difference is that the default orientation is column-major as column vectors are much more 
+often used than row vectors.
+Just as confirmation:
+- v1 is a column-major, dense, with run-time size and allocated on the heap.
+- v2 is a row-major, dense, with run-time size and allocated on the heap.
+- v3 is a column-major, dense, with compile-time size and allocated on the stack.
+
+
+\section type_generator_default Default Parameters
+
+In general, we do not want to declare default parameters for the sake of conciseness. 
+There might be two reasons for doing it: documentation and prevention from the very unlikely case of changing defaults.
+The following tags assure the defaults:
+- \ref dense to assure the matrix is dense;
+- \ref compressed in the sparse case to assure that the matrix type is \ref mat::compressed2D;
+- \ref row_major to ascertain row-major orientation of matrices;
+- \ref column_major (or \ref col_major) to ascertain column vectors;
+- \ref on_heap to guarantee heap allocation (stack allocation only possible with fixed sizes);
+- \ref as_size_type<size_t> to assure that indices and sizes are treated as size_t.
+The only default that cannot be declared explicitly is run-time size.
+
+\section type_generator_errors Consistency and Error Messages
+
+The type generator verifies the passed parameters and emits an informative error message if there is a conflict, e.g.:
+- \ref dense with \ref compressed, \ref banded, \ref ellpack, or \ref coordinate;
+- \ref sparse with \ref morton;
+- Multiple layout \ref mask with \ref morton order matrices;
+- Multiple layouts; or
+- \ref on_stack allocation without \ref dim
+The error message is only printed when static_assert is support and enabled by the presence of MTL_WITH_STATICASSERT.
+Otherwise, only the location of the failed test is provided.
+
+\if Navigation \endif
+  Return to \ref matrix_types &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref multivector 
 
 */
 
@@ -1170,7 +1359,7 @@ More functions will be implemented when needed.
 
 
 \if Navigation \endif
-  Return to \ref matrix_types &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref vector_insertion 
+  Return to \ref type_generator &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref vector_insertion 
 
 */
 
@@ -1284,7 +1473,7 @@ using namespace mtl;
 typedef compressed2D<double> matrix_type;
 
 matrix_type A(5, 5);
-matrix::inserter<matrix_type> ins(A);
+mat::inserter<matrix_type> ins(A);
 ins[0][0] << 7.3; // .... more insertions
 
 do_something_with(A);  // TROUBLE!!!
@@ -1393,9 +1582,9 @@ as soon as it is generally available.
 
 \section matrix_insertion_rational Rational
 
-The template class matrix::inserter is specialized for matrix::compressed2D (and might be as well for other
+The template class mat::inserter is specialized for mat::compressed2D (and might be as well for other
 classes later).
-The specialization inherits its functionality from matrix::compressed2D_inserter.
+The specialization inherits its functionality from mat::compressed2D_inserter.
 
 
 \if Navigation \endif
@@ -1465,7 +1654,7 @@ different dimension you must explicitly change it:
 A.change_dim(num_rows(B), num_cols(B));
 A= B;
 \endcode
-We strongly recommand to avoid this because you risk to hide errors in your program.
+We strongly recommend to avoid this because you risk to hide errors in your program.
 Assigning matrices of different dimension is in most cases an indication for an error.
 If memory consumption is the reason for such an assignment you should try to destroy unused
 matrices (e.g. by introducing additional blocks and define matrices within) and define
@@ -1556,7 +1745,7 @@ If the elements of the vectors are vectors themselves or matrices
 then the elements must also be of the same algebraic shape.
 
 Products of scalars and vectors are
- implemented by a view, see \ref vector::scaled_view,
+ implemented by a view, see \ref scaled_view,
 and %vector elements are multiplied with the factor when
 accessing an element of the view.
 Please notice that the scaling factor's type is not required to be
@@ -1822,19 +2011,19 @@ The results of these reductions are the value type of the %vector.
 
 \include vector_min_max.cpp
 
-The dot product of two vectors is computed with the function \ref vector::dot :
+The dot product of two vectors is computed with the function \ref dot :
 
 \include dot_example.cpp
 
 As the previous computation the evaluation is unrolled, either with
 a user-defined parameter or by default eight times.
 
-The result type of \ref vector::dot is of type of the values' product.
+The result type of \ref dot is of type of the values' product.
 If MTL4 is compiled with a concept-compiler, the result type is 
 taken from the concept std::Multiple and without concepts
 Joel de Guzman's result type deduction from Boost is used.
 
-In the vector::dot function the first vector is conjugated (when complex).
+In the dot function the first vector is conjugated (when complex).
 There exist also definitions with the conjugation of the second vector
 (e.g. the 
 <a href="http://fr.wikipedia.org/wiki/Produit_scalaire#G.C3.A9n.C3.A9ralisation_aux_espaces_vectoriels_complexes">French</a> or 
@@ -1843,7 +2032,7 @@ but this seems to be used less frequently.
 Furthermore,
 to be consistent with BLAS and Matlab we choose the first argument.
 
-The function vector::dot_real uses both vectors with complex conjugation.
+The function dot_real uses both vectors with complex conjugation.
 
 \if Navigation \endif
   Return to \ref matrix_norms &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref conj_intro 
@@ -1950,12 +2139,12 @@ The following example shows how to use permutations:
 
 \include permutation.cpp
 
-The function matrix::permutation returns a sparse %matrix computed from a permutation %vector.
+The function mat::permutation returns a sparse %matrix computed from a permutation %vector.
 The permutation %vector is defined as where entries come from, i.e. v[i] == j means that the 
 i-th entry/row/column after the permutation was the j-th entry/row/column before the permutation.
 If your %vector is defined in the inverse manner -- i.e. i.e. v[i] == j signifies that the 
 i-th entry/row/column before the permutation becomes the j-th entry/row/column after the permutation --
-your permutation %matrix is the transposed of what MTL4 computes: P= trans(matrix::permutation(v)).
+your permutation %matrix is the transposed of what MTL4 computes: P= trans(mat::permutation(v)).
 
 \section Reordering
 
@@ -1983,8 +2172,8 @@ If memory is an issue, one can also keep the compression vectors and the size of
 create the compression %matrix on the fly.
 
 \code
-    dense2D<double>  C1(trans(matrix::reorder(non_zero_rows, 4)) * B3),
-                     C2(C1 * matrix::reorder(non_zero_columns, 3));
+    dense2D<double>  C1(trans(mat::reorder(non_zero_rows, 4)) * B3),
+                     C2(C1 * mat::reorder(non_zero_columns, 3));
 \endcode
 
 
@@ -1999,7 +2188,7 @@ If you are not sure about this fact or the compression %vector is calculated spe
 
 \section Indirection
 
-Matrix indirection, implemented in matrix::indirect, is a view on an existing %matrix  restricted to certain indices.
+Matrix indirection, implemented in mat::indirect, is a view on an existing %matrix  restricted to certain indices.
 It uses the type iset to define index sets.
 The following program illustrates the usage:
 
@@ -2007,14 +2196,14 @@ The following program illustrates the usage:
 
 An \ref iset can be initialized with push_back() or simply assigned with a comma-separated list (line 13).
  (And yes, the comma operator is overloaded).
-When isets are passed as indices to a %matrix, an object of type matrix::indirect is created (line 16).
+When isets are passed as indices to a %matrix, an object of type mat::indirect is created (line 16).
 For the moment, \ref iset cannot be mixed with other types as index (e.g. to get a sub-vector within a matrix):
 \code
    A[rows][1]; // Error !!!
 \endcode
 When the sub-matrix is accessed multiple times, it should be stored into an object as in in line 18.
 
-Objects of type matrix::indirect can be used in operations and this is tested to some extend.
+Objects of type mat::indirect can be used in operations and this is tested to some extend.
 In the future, %matrix indirections from dense matrices (in general, all matrices modifiable without inserter)
 can be modified.
 
@@ -2127,12 +2316,12 @@ For setting up tests quickly, we implemented some convenience functions that ini
 
 \include matrix_functions.cpp
 
-Hessian matrices are scaled by a factor, i.e. \ref matrix::hessian_setup (A, alpha) is:
+Hessian matrices are scaled by a factor, i.e. \ref mat::hessian_setup (A, alpha) is:
 \f[ A= [a_{ij}] = [\alpha * (i + j)] \f]
 The funciton is intended for dense matrices.
 It works on sparse matrices but it is very expensive for large matrices.
 
-The Laplacian setup \ref matrix::laplacian (A, m, n) 
+The Laplacian setup \ref mat::laplacian (A, m, n) 
 initializes a matrices with the same values as a finite difference method 
 for a Laplace (Poisson) equation on an \f$m\times n\f$ grid.
 The matrix size is changed to \f$(m\cdot n)\times (m\cdot n)\f$.
@@ -2186,7 +2375,7 @@ For example:
 
 \subsection eigenvalue_nonsymm Non-symmetric Real Matrices
 
-Likewise, the eigenvalues of non-symmetric matrices can be computed with the matrix::eigenvalue_solver:
+Likewise, the eigenvalues of non-symmetric matrices can be computed with the mat::eigenvalue_solver:
 
 \include eigenvalue_example.cpp
 
@@ -2199,9 +2388,9 @@ It is based on the QR-Given's rotation.
 The latter can also be used stand-alone:
 \include qr_givens_example.cpp
 
-Whereas matrix::qr_algo bases on Householder transformation and is more appropriate for 
+Whereas mat::qr_algo bases on Householder transformation and is more appropriate for 
 more less dense matrices,
-matrix::qr_givens is more suitable for triangular matrices.
+mat::qr_givens is more suitable for triangular matrices.
 
 \section Singular Value Decomposition
 
@@ -2255,6 +2444,18 @@ For instance, when static assertions are available the programs are compiled wit
 At some point in the future, when pre-C++11 compilers are considered historic we will drop this
 feature checking.
 However, at this time we will certainly need to check C++14 and C++17 features.
+
+We recommend using the MTLConfig module for detecting available features -- not only in the MTL4 test but also in applications.
+However, if you prefer setting the enabling macro explicitly here is the list of C++11-related macros:
+- <tt>MTL_WITH_AUTO</tt>: automatic type deduction with <tt>auto</tt> (might be used for decltype as well in the future),
+- <tt>MTL_WITH_DEFAULTIMPL</tt>: default and deleted implementation for potentially generated member functions,
+- <tt>MTL_WITH_INITLIST</tt>: initializer lists,
+- <tt>MTL_WITH_MOVE</tt>: move semantics including <tt>std::move</tt> and <tt>std::forward</tt>,
+- <tt>MTL_WITH_RANGEDFOR</tt>: range-based <tt>for</tt>-loop,
+- <tt>MTL_WITH_STATICASSERT</tt>: <tt>static_assert</tt>,
+- <tt>MTL_WITH_TEMPLATE_ALIAS</tt>: template aliases and non-template type definitions with <tt>using</tt>,
+- <tt>MTL_WITH_VARIADIC_TEMPLATE</tt>: variadic templates.
+
 
 
 \section cppeleven_move Move Semantics
@@ -2325,7 +2526,7 @@ see \ref cppeleven_traversal.
 
 \section cppeleven_other Other Features
 
-We refrained from using features like "auto" and "decltype" in existing code.
+We refrained from using features like "auto" and "decltype" in existing code (and use it only rarely in new code).
 Although the sources would gain clarity, the impact on the user would be counter-productive:
 the library would not provide more usability but older compilers would not be supported
 any longer.
@@ -2394,7 +2595,7 @@ Likewise with upper triangular matrices.
 If the same %matrix is used in multiple triangular solutions, e.g. in preconditioners,
  it can be beneficial to create a solver object -- more precisely to keep the solver
 object that is created anyway.
-The solver classes matrix::detail::lower_trisolve_t and matrix::detail::upper_trisolve_t
+The solver classes mat::detail::lower_trisolve_t and mat::detail::upper_trisolve_t
 have  three template arguments:
 - %Matrix: The type of the matrix;
 - DiaTag: A tag type how the diagonal of the matrix is stored;
@@ -2410,7 +2611,7 @@ are needed in the solver.
 In case of a lower triangular solver the upper triangle is not stored in the matrix (accordingly for
 upper).
 For unit_diagonal solvers, there must be no entries on the diagonal. 
-%Matrix types that do not allow omitting the according entries -- like matrix::dense2D -- cannot be
+%Matrix types that do not allow omitting the according entries -- like mat::dense2D -- cannot be
 used with compact storage.
 Without compact storage all matrix types are allowed and arbitrary entries can be present in the
 matrix; however, a small overhead for searching the relevant entries is the price.
@@ -2782,9 +2983,9 @@ This program does exactly the same as the previous one.
 The ifdefs are only needed because we test-compile the examples on different compilers including some without
 C++11 support.
 
-To enable this compact notation, we introduced new generator functions: matrix::row_map, matrix::col_map, 
-matrix::offset_map,
-matrix::value_map, and matrix::const_value_map for the property maps.
+To enable this compact notation, we introduced new generator functions: mat::row_map, mat::col_map, 
+mat::offset_map,
+mat::value_map, and mat::const_value_map for the property maps.
 Likewise, their are new functions that return cursor ranges, e.g. begin<tag::row>(A) and end<tag::row>(A)
 corresponds to rows_of(A).
 The new functions are:
@@ -2827,7 +3028,7 @@ The following example shows a simpler way to find out the best traversal:
 Please not that the example uses compressed sparse matrices and not all
 forms of traversion are supported.
 Obviously a linear complexity is lower than an infinite and the 
-range generator without implemenation is never used.
+range generator without implementation is never used.
 As the free functions begin() and end() are internally always implemented
 by member functions of range_generator (free template functions cannot be 
 spezialized partially) we used directly the member functions in the example.
@@ -2862,19 +3063,19 @@ tag::major usually will yield the same results (but this is not so cool).
 
 
 Recursion is an important theme in MTL4.
-Besides matrices with recursive recursive memory layout -- cf. \ref matrix_types and \ref matrix::morton_dense --
+Besides matrices with recursive recursive memory layout -- cf. \ref matrix_types and \ref mat::morton_dense --
 %recursion with regard to algorithms plays a decisive role.
 
 To support the implementation of recursive algorithms we introduced -- in collaboration with David S. Wise --
 the concept to Recursator, an analogon of <a href=" http://www.sgi.com/tech/stl/Iterators.html">Iterator</a>.
-The class matrix::recursator enables recursive subdivision of all matrices with a sub_matrix function
+The class mat::recursator enables recursive subdivision of all matrices with a sub_matrix function
 (e.g., dense2D and morton_dense).
 We refrained from providing the sub_matrix functionality to compressed2D; this would possible but very inefficient
 and therefor not particularly useful.
-Thus matrix::recursator of matrix::compressed2D cannot be declared.
+Thus mat::recursator of mat::compressed2D cannot be declared.
 A recursator for vectors is planned for the future.
 
-Generally spoken, the matrix::recursator 
+Generally spoken, the mat::recursator 
 consistently divides a %matrix into four quadrants 
 - north_west;
 - north_east;
@@ -2975,9 +3176,9 @@ In this case, the matrix is factorized and directly applied on the vector \p b.
 \section umfpack_multi Multiple and Customized Solution
 
 If you want to reuse the matrix factorization from Umfpack you must define
-an object of type \ref matrix::umfpack::solver.
+an object of type \ref mat::umfpack::solver.
 The matrix is constantly referred in the solver's constructor.
-Additional arguments can be given, see  \ref matrix::umfpack::solver and the 
+Additional arguments can be given, see  \ref mat::umfpack::solver and the 
 <a href="http://www.cise.ufl.edu/research/sparse/umfpack">Umfpack documentation</a>.
 
 \includelineno umfpack_solve_example.cpp
@@ -3346,7 +3547,7 @@ to not loose the capability of partial specialization:
 
 Before we finally come to some examples we want to introduce another template
 parameter.
-This leads us to the actual implemenation of the functors, 
+This leads us to the actual implementation of the functors, 
 for instance the BLAS functor:
 
 \include nesting/blas_functor_mtl.hpp
@@ -3367,7 +3568,7 @@ as shown in the example above.
 
 MTL4 provides several functors for dense %matrix multiplication:
 -# Canonical implementation with 3 nested loops and iterators;
--# A corresponding 3-loop implemtation with cursors and property maps;
+-# A corresponding 3-loop implementation with cursors and property maps;
 -# Tiled products for regular matrices using pointers with
    -# With tile size 2 by 2;
    -# With tile size 4 by 4; and 
@@ -3430,7 +3631,7 @@ However, we assume that programmers at this level are aware of the risks.
 
 \section direct_compressed2D Compressed Matrices
 
-The class matrix::compressed2D contains three STL vectors: 
+The class mat::compressed2D contains three STL vectors: 
 - starts,
 - indices, and 
 - data.
@@ -3463,7 +3664,7 @@ There are three member functions that directly return the address of the accordi
 
 \section direct_dense2D Dense Matrices and Vectors
 
-The data of matrix::dense2D and vector::dense_vector
+The data of mat::dense2D and dense_vector
 can be accessed in the same manner. The values are stored in an array
 called "data" that is public as well (for the sake of laziness).
 The address of the first entry is also returned by the member function:
@@ -3498,8 +3699,8 @@ Nonetheless, the users are invited to experiment with it and provide us feedback
 \section tuning_fsize Using Fixed-size Matrices and Vectors
 
 If you have small dense matrices or vectors whose dimensions are already known at compile time,
-you should use the fixed-size parameters fixed::dimensions and vector::fixed::dimension
-in  matrix::parameters and vector::parameters.
+you should use the fixed-size parameters fixed::dimensions and fixed::dimension
+in  mat::parameters and parameters.
 The following example illustrates its usage:
 
 \include fixed_size_example.cpp
@@ -3526,8 +3727,8 @@ in terms of a one-dimensional array.
 Often the stack size is limited (e.g. to 65636 byte) and too large containers are rejected during compilation.
 It is possible to store fixed-size containers on the heap by setting the OnStack argument to false:
 \code
-    typedef vector::parameters<tag::col_major, vector::fixed::dimension<2>, false> fvec_para;
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2>, false> fmat_para;
+    typedef parameters<tag::col_major, fixed::dimension<2>, false> fvec_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2>, false> fmat_para;
 \endcode
 The loop unrolling also applies on heap-stored matrices and vectors but the performance is usually lower
 due to decreased data locality.
@@ -3547,7 +3748,7 @@ significantly because twice as much indices can be loaded from memory at the sam
 Of course 16 bit integers could accelerate it further but then you are limited to 
 65636 rows, columns, and non-zeros.
 
-Changing the size type is simply done in matrix::parameters :
+Changing the size type is simply done in mat::parameters :
 
 \include size_type_example.cpp
 
@@ -3606,17 +3807,17 @@ be changed by compile flags.
 \section costumizable_dense Costumizing Dense Operations
 
 See:
-- \ref matrix::dense_non_recursive_product_limit
-- \ref matrix::straight_dmat_dmat_mult_limit
-- \ref matrix::fully_unroll_dmat_dmat_mult_limit
+- \ref mat::dense_non_recursive_product_limit
+- \ref mat::straight_dmat_dmat_mult_limit
+- \ref mat::fully_unroll_dmat_dmat_mult_limit
 
 
 \section costumizable_dense Costumizing Sparse Operations
 
 See:
-- \ref matrix::compressed_linear_search_limit
-- \ref matrix::sorted_block_insertion_limit
-- \ref matrix::crs_cvec_mult_block_size
+- \ref mat::compressed_linear_search_limit
+- \ref mat::sorted_block_insertion_limit
+- \ref mat::crs_cvec_mult_block_size
 
 
 \if Navigation \endif
@@ -3634,11 +3835,11 @@ Matrix-related functions and types are defined in mtl::matrix and vector materia
 in mtl::vector.
 To make applications shorter, often used types like compressed2D and dense_vector are imported into
 the namespace mtl.
-As a consequence, you can write mtl::compressed2D<..> or mtl::matrix::compressed2D<..>.
+As a consequence, you can write mtl::compressed2D<..> or mtl::mat::compressed2D<..>.
 
 Functions are defined as much as possible in the namespaces mtl::matrix and mtl::vector.
 Therefore, Argument-Dependent Lookup (ADL) finds these functions without namespace qualification.
-For instance, if we call trans(x) the mtl::matrix::trans() is called if x is a %matrix, i.e.
+For instance, if we call trans(x) the mtl::mat::trans() is called if x is a %matrix, i.e.
 the type of x is defined in mtl::matrix.
 Likewise if x is a %vector.
 If the type of x is not defined in MTL4, you must qualify the function because ADL does not apply.
@@ -3674,7 +3875,7 @@ using mtl::size;
 unsigned n= size(x);
 \endcode
 This works for all supported types of x.
-If x is a matrix then mtl::matrix::size is called and if x is a std::vector mtl::size is called (which is
+If x is a matrix then mtl::mat::size is called and if x is a std::vector mtl::size is called (which is
 implemented with partially specialized functor but this is another topic).
 
 As a rule of thumb. If you call an unqualified function for an MTL4 type ADL will find it (otherwise it is sloppily implemented
@@ -3935,7 +4136,7 @@ As a consequence the C and C++ implementations perform well for large matrices c
 with the Fortran implementation (where both arguments are traversed with long strides).
 The MTL4 implementation is even less affected by the matrix size thanks to the recursive approach.
 
-The implemenation uses tiling on block-level (typically 64 by 64).
+The implementation uses tiling on block-level (typically 64 by 64).
 For the considered processor a tiling of 2 by 4 yields the performance while processors with more
 available FP registers (e.g. PowerPC) are faster with 4 by 4 tiling.
 The metaprogramming tuning in MTL4 allows the user to define these parameters in type definitions
@@ -4122,7 +4323,7 @@ This is of course everything else than elegant.
 To enable a natural notation we define an operator* that returns an object with references
 to A and v.
 The multiplication is later performed during the assignment to the target vector.
-This delayed evaluation is achieved by the class vector::mat_cvec_multiplier.
+This delayed evaluation is achieved by the class mat_cvec_multiplier.
 The details of its implementation are a bit tricky are omitted here.
 What is important for the user is to define the free functions:
 - size
@@ -4151,7 +4352,7 @@ e.g., conjugate gradients:
 \include matrix_free_cg.cpp
 
 For further acceleration one can unroll the inner loop of the first block and store
-reused vector elements in temporaries as in matrix::poisson2D_dirichlet.
+reused vector elements in temporaries as in mat::poisson2D_dirichlet.
 Then the Poisson operator takes only 5.2-5.5ms on the same processor while at the same time
 the following operation is less slowed down.
 This corresponds to a performance of 940-970MFlops:
@@ -4340,7 +4541,7 @@ returns a submatrix of %matrix A with rows in range1 and cols in range2.
 For example, if range1 is a number, the returntype is a row-vector.
 \code
 using mtl::iall;
-dense_vector<cdouble, vector::parameters<tag::row_major> > v_r(A[0][iall]);
+dense_vector<cdouble, parameters<tag::row_major> > v_r(A[0][iall]);
 \endcode
 
 If the range2 is a number, the returntype is a col-vector.
@@ -4380,7 +4581,7 @@ Adjoint matrix of an m-by-n matrix A with complex entries is the n-by-m matrix A
 B= adjoint(A);
 \endcode
 
-Details:: mtl::matrix::adjoint
+Details:: mtl::mat::adjoint
 
 \if Navigation \endif
   Return to \ref mat_vec_expr &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref bands 
@@ -4402,7 +4603,7 @@ The main diagonal is numbered 0; the off-diagonal below the main one is -1.
 B= bands(A, -1, 2);
 \endcode
 
-Details:: mtl::matrix::bands
+Details:: mtl::mat::bands
 
 \if Navigation \endif
   Return to \ref adjoint &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref change_dim 
@@ -4434,7 +4635,7 @@ conj(A);
 \endcode
 The %matrix A is not altered but a immutable view is returned.
 
-Details: mtl::matrix::conj
+Details: mtl::mat::conj
 
 \include matrix_functions2.cpp
 
@@ -4449,7 +4650,7 @@ Details: mtl::matrix::conj
 
 Remove all zero entries from a collection. 
 
-Details: mtl::matrix::crop
+Details: mtl::mat::crop
 
 \code
 crop(A);
@@ -4468,7 +4669,7 @@ Only for sparse matrices useful.
 
 Returns the %vector with the diagonal of the %matrix A. 
 
-Details: mtl::matrix::diagonal
+Details: mtl::mat::diagonal
 
 \code
 diagonal(A);
@@ -4486,7 +4687,7 @@ diagonal(A);
 
 Setup a %matrix to a multiple of the unity %matrix. (works for all %matrix types in mtl4)
 
-Details: mtl::matrix::diagonal_setup
+Details: mtl::mat::diagonal_setup
 
 \code
 diagonal_setup(A,2.0);
@@ -4510,7 +4711,7 @@ Currently there are 2 algorithms that compute the eigenvalues of a symmetric %ma
 1. qr_algo(A, iterations)
 2. qr_sym_imp(A) (with Wilkinson shift) 
 
-Details: mtl::matrix::eigenvalue_symmetric
+Details: mtl::mat::eigenvalue_symmetric
 
 For example:
 
@@ -4528,7 +4729,7 @@ For example:
 
 Returns Extracted Hessenberg form from factorization H of some A.
 
-Details: mtl::matrix::extract_hessenberg
+Details: mtl::mat::extract_hessenberg
 
 \code
 E= extract_hessenberg(A);
@@ -4550,7 +4751,7 @@ For example:
 
 Returns the Householder %vectors from Hessenberg factorization H of some A which are stored in tril(A,-2).
 
-Details: mtl::matrix::extract_householder_hessenberg
+Details: mtl::mat::extract_householder_hessenberg
 
 \code
 B= hessenberg_factors(A);
@@ -4573,7 +4774,7 @@ For example:
 
 return Frobenius-Norm of Matrix A.
 
-Details: mtl::matrix::frobenius_norm
+Details: mtl::mat::frobenius_norm
 
 For example:
 
@@ -4593,7 +4794,7 @@ The hermitian of a %matrix is computed by:
 hermitian(A);
 \endcode
 
-Details: mtl::matrix::hermitian
+Details: mtl::mat::hermitian
 
 \include matrix_functions2.cpp
 
@@ -4610,7 +4811,7 @@ Details: mtl::matrix::hermitian
 Returns Hessenberg-Form of %matrix A. (triu(A,-2)).
 Hessenberg-Form: upper triangle-matrix and first diagonal under the main-diagonal.
 
-Details: mtl::matrix::hessenberg
+Details: mtl::mat::hessenberg
 
 \code
 B= hessenberg(A);
@@ -4632,7 +4833,7 @@ For example:
 Returns Hessenberg-Form of %matrix A with Householder-vectors in the lower triangle(tril(A,-1)).
 The triu(result,-2) is the Hessenberg-Form of %matrix A.
 
-Details: mtl::matrix::hessenberg_factors
+Details: mtl::mat::hessenberg_factors
 
 \code
 B= hessenberg_factors(A);
@@ -4653,7 +4854,7 @@ For example:
 
 Returns Q where \f$ Q'*A*Q \f$ == hessenberg(A).
 
-Details: mtl::matrix::hessenberg_q
+Details: mtl::mat::hessenberg_q
 
 For example:
 
@@ -4675,7 +4876,7 @@ F= hessenberg_q(A);
 Fills a matrix A with \f$ a_{ij} = factor * (i + j) \f$.
 Works only for Morton Z-order and Hybrid 2 row-major matrices.
 
-Details: mtl::matrix::hessian_setup
+Details: mtl::mat::hessian_setup
 
 \code
 hessian_setup(A,2.0);
@@ -4696,7 +4897,7 @@ hessian_setup(A,2.0);
 
 Returns the Householder %vectors from Hessenberg factorization H of some A which are stored in tril(A,-2).
 
-Details: mtl::matrix::householder_hessenberg
+Details: mtl::mat::householder_hessenberg
 
 \code
 D= householder_hessenberg(A);
@@ -4723,7 +4924,7 @@ For example:
 
 Returns infinity norm of %matrix A.
 
-Details: mtl::matrix::infinity_norm
+Details: mtl::mat::infinity_norm
 
 For example:
 
@@ -4740,7 +4941,7 @@ For example:
 
 Returns inverse of %matrix A.
 
-Details: mtl::matrix::inv
+Details: mtl::mat::inv
 
 \include inv_matrix.cpp
 
@@ -4756,7 +4957,7 @@ Details: mtl::matrix::inv
 Invert lower triangular %matrix A.
 Returns invert %matrix.
 
-Details: mtl::matrix::inv_lower
+Details: mtl::mat::inv_lower
 
 \include inv_matrix.cpp
 
@@ -4772,7 +4973,7 @@ Details: mtl::matrix::inv_lower
 Invert upper triangular %matrix A.
 Returns invert %matrix.
 
-Details: mtl::matrix::inv_upper
+Details: mtl::mat::inv_upper
 
 \include inv_matrix.cpp
 
@@ -4787,7 +4988,7 @@ Details: mtl::matrix::inv_upper
 
 Returns %matrix A with invert diagonal.
 
-Details: mtl::matrix::invert_diagonal
+Details: mtl::mat::invert_diagonal
 
 
 \if Navigation \endif
@@ -4801,7 +5002,7 @@ Details: mtl::matrix::invert_diagonal
 
 return n by n-Laplace %matrix with \f$ n= dim1 * dim2 \f$. (5 Point stencil)
 
-Details: mtl::matrix::laplacian_setup
+Details: mtl::mat::laplacian_setup
 
 For example:
 
@@ -4818,7 +5019,7 @@ For example:
 
 returns lower triangular %matrix.
 
-Details: mtl::matrix::lower
+Details: mtl::mat::lower
 
 \code
 B= lower(A);
@@ -4838,7 +5039,7 @@ B= lower(A);
 without pivoting
 return LU-Form of %matrix A and saves in %matrix A. With U as the upper triangular %matrix and L as the lower triangular %matrix. Attention without optimization and pivoting.
 
-Details: mtl::matrix::lu
+Details: mtl::mat::lu
 
 \code
 lu(A);
@@ -4862,7 +5063,7 @@ For example:
 with pivoting
 return LU-Form of %matrix A and saves in %matrix A. With U as the upper triangular %matrix and L as the lower triangular %matrix.
 
-Details: mtl::matrix::lu
+Details: mtl::mat::lu
 
 \code
 lu(A,Permutation);
@@ -4887,7 +5088,7 @@ Apply the factorization L*U with permutation P on vector b to solve adjoint(A)x 
 That is \f$ P^{-1}LU^H x = b \f$ --> \f$ x= P^{-1}L^{-H} U^{-H} b \f$ where \f$ {{P^{-1}}^{-1}}^H = P^{-1} \f$.
 
 
-Details: mtl::matrix::lu_adjoint_apply
+Details: mtl::mat::lu_adjoint_apply
 
 \code
 x= lu_adjoint_apply(A, PermVector, b);
@@ -4910,7 +5111,7 @@ For example:
 
 Solve adjoint(A)x = b by LU factorization with column pivoting; %vector x is returned.
 
-Details: mtl::matrix::lu_adjoint_solve
+Details: mtl::mat::lu_adjoint_solve
 
 \code
 x= lu_adjoint_solve(A, b);
@@ -4933,7 +5134,7 @@ For example:
 
 Apply the factorization \f$ L*U \f$ with permutation P on %vector b to solve \f$ Ax = b \f$.
 
-Details: mtl::matrix::lu_apply
+Details: mtl::mat::lu_apply
 
 \code
 x= lu_apply(A, PermVector, b);
@@ -4956,7 +5157,7 @@ For example:
 
 return LU-Form of matrix A. With U as the upper triangular matrix and L as the lower triangular matrix.
 
-Details: mtl::matrix::lu_f
+Details: mtl::mat::lu_f
 
 \code
 B= lu_f(A);
@@ -4978,7 +5179,7 @@ For example:
 
 Solve \f$ Ax = b \f$ by LU factorization with column pivoting; %vector x is returned
 
-Details: mtl::matrix::lu_solve
+Details: mtl::mat::lu_solve
 
 \code
 x= lu_solve(A, b);
@@ -5001,7 +5202,7 @@ For example:
 
 Solve \f$ Ax = b \f$ by LU factorization without pivoting; %vector x is returned.
 
-Details: mtl::matrix::lu_solve_straight
+Details: mtl::mat::lu_solve_straight
 
 \code
 x= lu_solve_straight(A, b);
@@ -5023,7 +5224,7 @@ For example:
 
 returns pair(row,col) of maximal absolut entry of %matrix A.
 
-Details: mtl::matrix::max_abs_pos
+Details: mtl::mat::max_abs_pos
 
 
 \if Navigation \endif
@@ -5040,7 +5241,7 @@ Details: mtl::matrix::max_abs_pos
 
 returns pair(row,col) of maximal entry of %matrix A.
 
-Details: mtl::matrix::max_pos
+Details: mtl::mat::max_pos
 
 
 \if Navigation \endif
@@ -5110,7 +5311,7 @@ int row2= A.num_rows();
 
 returns one-Norm of %matrix A.
 
-Details: mtl::matrix::one_norm
+Details: mtl::mat::one_norm
 
 For example:
 
@@ -5145,7 +5346,7 @@ A= B;
 
 returns \f$ A= A + B \f$. The dimensions are checked at compile time. (\f$ A+= B \f$)
 
-Details: mtl::matrix::add
+Details: mtl::mat::add
 
 For example:
 
@@ -5163,7 +5364,7 @@ For example:
 
 returns \f$ A= B + C \f$. The dimensions are checked at compile time.
 
-Details: mtl::matrix::add
+Details: mtl::mat::add
 
 For example:
 
@@ -5180,7 +5381,7 @@ For example:
 
 returns \f$ A= A - B \f$. The dimensions are checked at compile time. (\f$ A-= B \f$)
 
-Details: mtl::matrix::min
+Details: mtl::mat::min
 
 For example:
 
@@ -5197,7 +5398,7 @@ For example:
 
 returns \f$ A= B - C \f$. The dimensions are checked at compile time.
 
-Details: mtl::matrix::min
+Details: mtl::mat::min
 
 For example:
 
@@ -5214,7 +5415,7 @@ For example:
 
 returns \f$ A= A * B \f$. The dimensions are checked at compile time. (\f$ A*= B \f$)
 
-Details: mtl::matrix::mult
+Details: mtl::mat::mult
 
 For example:
 
@@ -5232,7 +5433,7 @@ For example:
 returns \f$ A= B * C \f$. The dimensions are checked at compile time. num_cols(B) == num_rows(C).
 The dimension of A is num_rows(B) by num_cols(C).
 
-Details: mtl::matrix::mult
+Details: mtl::mat::mult
 
 For example:
 
@@ -5249,7 +5450,7 @@ For example:
 
 returns eigenvalues of symmetric %matrix A with qr-algorithm in iter steps.
 
-Deatils: mtl::matrix::qr_algo
+Deatils: mtl::mat::qr_algo
 
 For example:
 
@@ -5267,7 +5468,7 @@ For example:
 
 returns eigenvalues of symmetric %matrix A with symmetric implizit qr-algorithm and Wilkinson shift.
 
-Details: mtl::matrix::qr_sym_imp
+Details: mtl::mat::qr_sym_imp
 
 For example:
 
@@ -5285,7 +5486,7 @@ For example:
 returns \f$ A= A + v * w \f$.
 With %matrix A and %vector v and w of matching dimension.
 
-Details: mtl::matrix::rank_one_update
+Details: mtl::mat::rank_one_update
 
 For example:
 
@@ -5305,7 +5506,7 @@ Suppose %matrix A have 2 triangle parts. L is the lower triangle and U the upper
 L -> \f$ L + lower(v*w' + w*v') \f$
 U -> \f$ U + upper(v*w' + w*v') \f$
 
-Details: mtl::matrix::rank_two_update
+Details: mtl::mat::rank_two_update
 
 For example:
 
@@ -5351,7 +5552,7 @@ Or:
 A= 0.0;
 \endcode
 
-Details: mtl::matrix::set_to_zero
+Details: mtl::mat::set_to_zero
 
 
 \include matrix_functions2.cpp
@@ -5367,7 +5568,7 @@ Details: mtl::matrix::set_to_zero
 
 Returns strict-lower triangle %matrix.
 
-Details: mtl::matrix::strict_lower
+Details: mtl::mat::strict_lower
 
 \code
 strict_lower(A);
@@ -5385,7 +5586,7 @@ strict_lower(A);
 
 Returns strict-upper triangle %matrix.
 
-Details: mtl::matrix::strict_upper
+Details: mtl::mat::strict_upper
 
 \code
 strict_upper(A);
@@ -5405,7 +5606,7 @@ returns submatrix from row1 to row 2 and from col1 to col2 of %matrix A:
 sub_matrix(A, 2, 4, 1, 7);
 \endcode
 
-Details: mtl::matrix::sub_matrix
+Details: mtl::mat::sub_matrix
 
 Sub-matrices also preserve the const attribute of the referred matrices or sub-matrices:
 
@@ -5426,7 +5627,7 @@ boost::tie(S, V, D)= svd(A, 1.e-10)
 \endcode
 The second argument is optional (default value 1.e-10).
 
-Details: mtl::matrix::svd
+Details: mtl::mat::svd
 
 \include svd_example.cpp
 
@@ -5444,7 +5645,7 @@ returns singular-value-decomposition of %matrix A. 3 matrices S, V and D are ret
 boost::tie(S, V, D)= svd(A)
 \endcode
 
-Details: mtl::matrix::svd
+Details: mtl::mat::svd
 
 \include svd_example.cpp
 
@@ -5460,7 +5661,7 @@ Details: mtl::matrix::svd
 
 returns %matrix A swapped with rows row1 and row2.
 
-Details: mtl::matrix::swap_row
+Details: mtl::mat::swap_row
 
 \code
 swap_row(A, 2, 4);
@@ -5483,7 +5684,7 @@ Returns the trace of a %matrix:
 trace(A);
 \endcode
 
-Details: mtl::matrix::trace
+Details: mtl::mat::trace
 
 \include matrix_functions2.cpp
 
@@ -5516,7 +5717,7 @@ The %matrix A is not altered but a immutable view is returned.
 
 Returns lower triangle starting at off-diagonoal i (for compatibility with matlab). 
 
-Details: mtl::matrix::tril
+Details: mtl::mat::tril
 
 \code
 tril(A, i);
@@ -5533,7 +5734,7 @@ tril(A, i);
 
 Returns upper triangle starting at off-diagonoal i (for compatibility with matlab). 
 
-Details: mtl::matrix::triu
+Details: mtl::mat::triu
 
 \code
 triu(A, i);
@@ -5550,7 +5751,7 @@ triu(A, i);
 
 Returns upper triangle %matrix
 
-Details: mtl::matrix::upper
+Details: mtl::mat::upper
 
 \code
 upper(A, i);
@@ -5574,7 +5775,7 @@ upper(A, i);
 return's scalar-product of %vector v and w.
 Dot product with user-specified unrolling defined as hermitian(v) * w.
 
-Details: mtl::vector::dot
+Details: mtl::dot
 
 For example:
 
@@ -5593,7 +5794,7 @@ For example:
 return's scalar-product of %vector v and w.
 Dot product without conjugate with user-specified unrolling defined as trans(v) * w
 
-Details: mtl::vector::dot_real
+Details: mtl::dot_real
 
 For example:
 
@@ -5611,7 +5812,7 @@ For example:
 
 returns infinity-norm of %vector v.
 
-Details: mtl::vector::infinity_norm
+Details: mtl::infinity_norm
 
 For example:
 
@@ -5629,7 +5830,7 @@ For example:
 
 Iota assigns sequentially increasing values to a %vector v
 
-Details: mtl::vector::iota
+Details: mtl::iota
 
 For example:
 \code
@@ -5653,7 +5854,7 @@ v={10C}[0,1,2,3,4,5,6,7,8,9]
 
 Iota assigns sequentially increasing values to a %vector v starts with offset-value
 
-Details: mtl::vector::iota
+Details: mtl::iota
 
 For example:
 \code
@@ -5678,7 +5879,7 @@ v={10C}[5,6,7,8,9,10,11,12,13,14]
 
 returns position of maximal absolut entry of %vector v.
 
-Details: mtl::vector::max_abs_pos
+Details: mtl::max_abs_pos
 
 
 \if Navigation \endif
@@ -5692,7 +5893,7 @@ Details: mtl::vector::max_abs_pos
 
 returns position of maximal entry of %vector v.
 
-Details: mtl::vector::max_pos
+Details: mtl::max_pos
 
 
 \if Navigation \endif
@@ -5706,7 +5907,7 @@ Details: mtl::vector::max_pos
 
 returns maximal entry of %vector v.
 
-Details: mtl::vector::max
+Details: mtl::max
 
 For example:
 
@@ -5723,7 +5924,7 @@ For example:
 
 returns position of minimal entry of %vector v.
 
-Details: mtl::vector::min_pos
+Details: mtl::min_pos
 
 
 \if Navigation \endif
@@ -5737,7 +5938,7 @@ Details: mtl::vector::min_pos
 
 returns smallest entry of %vector v.
 
-Details: mtl::vector::min
+Details: mtl::min
 
 For example:
 
@@ -5754,7 +5955,7 @@ For example:
 
 returns one-norm of %vector v.
 
-Details: mtl::vector::one_norm
+Details: mtl::one_norm
 
 For example:
 
@@ -5772,7 +5973,7 @@ For example:
 returns \f$ v+= w  (v= v + w)\f$.
 Dimensions must agree, otherwise there is a runtime error.
 
-Details: mtl::vector::add
+Details: mtl::add
 
 For example:
 
@@ -5840,7 +6041,7 @@ For example:
 
 returns orthogonal and normalized all vectors of %vector v.
 
-Details: mtl::vector::orth
+Details: mtl::orth
 
 For example:
 
@@ -5858,7 +6059,7 @@ For example:
 Orthogonalized and normalized vector i from the vector of vectors v.
 returns %vector v with orthogonalized i-th entry.
 
-Details: mtl::vector::orth
+Details: mtl::orth
 
 For example:
 
@@ -5877,7 +6078,7 @@ For example:
 Opposed to orth the vectors are not normalized. 
 An upper matrix with the factors used in the orthogonalization is returned.
 
-Details: mtl::vector::orthogonalize_factors
+Details: mtl::orthogonalize_factors
 
 For example:
 
@@ -5945,7 +6146,7 @@ For example:
 
 Returns %vector v with v[row1]= v[row2] and v[row2]= v[row1].
 
-Details: mtl::vector::swap_row
+Details: mtl::swap_row
 
 \code
 swap_row(v, 2, 4);
@@ -5967,7 +6168,7 @@ return transposed view of %vector v
 w= trans(v)
 \endcode
 
-Details: mtl::vector::trans
+Details: mtl::trans
 
 \if Navigation \endif
   Return to \ref swap_row_v &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref two_norm_v 
@@ -5980,7 +6181,7 @@ Details: mtl::vector::trans
 
 return two-norm of %vector v.
 
-Details: mtl::vector::two_norm
+Details: mtl::two_norm
 
 For example:
 
@@ -6005,7 +6206,7 @@ On matrices with non-unit diagonals, the divisions can be circumvented by invert
 x= inverse_lower_trisolve(A, b)
 \endcode
 
-Details: mtl::matrix::inverse_lower_trisolve
+Details: mtl::mat::inverse_lower_trisolve
 
 
 \if Navigation \endif
@@ -6026,7 +6227,7 @@ On matrices with non-unit diagonals, the divisions can be circumvented by invert
 x= inverse_upper_trisolve(A, b)
 \endcode
 
-Details: mtl::matrix::inverse_upper_trisolve
+Details: mtl::mat::inverse_upper_trisolve
 
 
 \if Navigation \endif
@@ -6041,7 +6242,7 @@ Details: mtl::matrix::inverse_upper_trisolve
 
 returns %vector \f$ w= A * v \f$. Same as mult(A, v, w).
 
-Details: mtl::matrix::mult
+Details: mtl::mat::mult
 
 \if Navigation \endif
   Return to \ref inverse_upper_trisolve &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \ref tutorial "Table of Content" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proceed to \ref lower_trisolve 
@@ -6055,7 +6256,7 @@ Details: mtl::matrix::mult
 returns %vector x as solution of \f$ A * x= b \f$.
 The %matrix A must be triangular %matrix otherwise the function can throw an exception.
 
-Details: mtl::matrix::lower_trisolve
+Details: mtl::mat::lower_trisolve
 
 \code
 x= lower_trisolve(A, b);
@@ -6072,7 +6273,7 @@ x= lower_trisolve(A, b);
 
 returns permutation %matrix from corresponding %vector.
 
-See: mtl::matrix::permutation
+See: mtl::mat::permutation
 
 \code
 P= permutation(v);
@@ -6095,7 +6296,7 @@ For a more detailed explanation see \ref permutation.
 
 Returns reorder %matrix from corresponding %vector.
 
-See: mtl::matrix::permutation
+See: mtl::mat::permutation
 
 \code
 P= reorder(v);
@@ -6121,7 +6322,7 @@ For a more detailed explanation see \ref permutation.
 returns %vector x as solution of \f$ A * x= b \f$ .
 The %matrix A must be triangular %matrix otherwise the function can throw an exception.
 
-Details: mtl::matrix::upper_trisolve
+Details: mtl::mat::upper_trisolve
 
 \code
 x= upper_trisolve(A, b)
@@ -6138,7 +6339,7 @@ x= upper_trisolve(A, b)
 /*! \page unit_lower_trisolve unit_lower_trisolve(A, b)
 
 returns %vector x as solution of \f$ A * x= b \f$.
-Details: mtl::matrix::unit_lower_trisolve
+Details: mtl::mat::unit_lower_trisolve
 
 The %matrix A must be triangular %matrix otherwise the function can throw an exception.
 If A has a unit diagonal, the diagonal entries can and must be omitted if the system is solved by:
@@ -6158,7 +6359,7 @@ x= unit_lower_trisolve(A, b)
 /*! \page unit_upper_trisolve unit_upper_trisolve(A, b)
 
 returns %vector x as solution of \f$ A * x= b \f$.
-Details: mtl::matrix::unit_upper_trisolve
+Details: mtl::mat::unit_upper_trisolve
 
 The %matrix A must be triangular %matrix otherwise the function can throw an exception.
 If A has a unit diagonal, the diagonal entries can and must be omitted if the system is solved by:
@@ -6217,7 +6418,7 @@ w/= 2;
 //w= w/2; //throws an exeption.
 \endcode
 
-Details: mtl::vector::div
+Details: mtl::div
 
 For example:
 
@@ -6338,7 +6539,7 @@ using namespace mtl;
 typedef compressed2D<double> matrix_type;
 
 matrix_type A(5, 5);
-matrix::inserter<matrix_type> ins(A);
+mat::inserter<matrix_type> ins(A);
 ins[0][0] << 7.3; // .... more insertions
 
 do_something_with(A);  // TROUBLE!!!
@@ -6360,7 +6561,7 @@ typedef compressed2D<double> matrix_type;
 
 matrix_type A(5, 5);
 {
-    matrix::inserter<matrix_type> ins(A);
+    mat::inserter<matrix_type> ins(A);
     ins[0][0] << 7.3; 
 }                      // ins is destroyed here
 do_something_with(A);  // and A is ready to use
@@ -6391,14 +6592,14 @@ A popular trick to have one-based matrices is adding a row and a column and inse
 
 Yes. This is planned for the open source edition.
 
-\section traits_error "xyz" is not defined namespace mtl::matrix::traits
+\section traits_error "xyz" is not defined namespace mtl::mat::traits
 
 This should not happen and we hope that we already eradicated this error. 
 In fact, there were no problems reported recently.
 
 The trouble comes from the fact that there are namespaces traits in mtl as well
 as in mtl::matrix.
-Within namespace mtl::matrix, the name traits::xyz is searched in mtl::matrix::traits
+Within namespace mtl::matrix, the name traits::xyz is searched in mtl::mat::traits
 not in mtl::traits.
 
 The quick solution is to replace traits::xyz by mtl::traits::xyz to nominate the namespace

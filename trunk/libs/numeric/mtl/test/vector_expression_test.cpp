@@ -100,7 +100,7 @@ void test(Vector& v, const char* name)
 int main(int, char**)
 {
     using namespace mtl;
-    using mtl::vector::parameters;
+    using mtl::vec::parameters;
 
     dense_vector<float>   u(5);
     dense_vector<double>  x(5);

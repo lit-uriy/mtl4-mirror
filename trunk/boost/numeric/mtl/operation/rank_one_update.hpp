@@ -22,7 +22,7 @@
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 /// Rank-one update: rank_one_update(A, x, y) computes A+= x * conj(y)^T
@@ -43,7 +43,7 @@ inline void rank_one_update(Matrix& matrix, const VectorX& x, const VectorY& y)
     typename traits::index<VectorY>::type             index_y(y); 
     typename traits::const_value<VectorY>::type       value_y(y); 
 
-    matrix::inserter<Matrix, operations::update_plus<typename Collection<Matrix>::value_type> > ins(matrix);
+    mat::inserter<Matrix, operations::update_plus<typename Collection<Matrix>::value_type> > ins(matrix);
 
     for (x_cursor xc= begin<tag::nz>(x), xend= end<tag::nz>(x); xc != xend; ++xc)
 	for (y_cursor yc= begin<tag::nz>(y), yend= end<tag::nz>(y); yc != yend; ++yc)

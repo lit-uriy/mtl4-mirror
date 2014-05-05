@@ -28,7 +28,7 @@
 #include <boost/numeric/mtl/utility/with_unroll1.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
     namespace impl {
 
@@ -82,7 +82,7 @@ struct vec_vec_aop_expr
     void dynamic_assign(boost::mpl::false_) // Without unrolling
     {
 	typedef typename traits::omp_size_type<size_type>::type size_type;
-	size_type s= size_type(mtl::vector::size(first));
+	size_type s= size_type(mtl::vec::size(first));
 
       #ifdef MTL_WITH_OPENMP
 	# pragma omp parallel
@@ -102,7 +102,7 @@ struct vec_vec_aop_expr
     {
 	typedef typename traits::omp_size_type<size_type>::type size_type;
 	const size_type BSize= traits::unroll_size1<E1>::value0;
-	size_type s= mtl::vector::size(first), sb= s / BSize * BSize;
+	size_type s= mtl::vec::size(first), sb= s / BSize * BSize;
 
       #ifdef MTL_WITH_OPENMP
 	# pragma omp parallel
@@ -128,8 +128,8 @@ struct vec_vec_aop_expr
 	// If target is constructed by default it takes size of source
 	//int a= size(second);
 	//int b= second;
-	if (mtl::vector::size(first) == 0) first.change_dim(mtl::vector::size(second));
-	MTL_DEBUG_THROW_IF(mtl::vector::size(first) != mtl::vector::size(second), incompatible_size()); // otherwise error
+	if (mtl::vec::size(first) == 0) first.change_dim(mtl::size(second));
+	MTL_DEBUG_THROW_IF(mtl::vec::size(first) != mtl::vec::size(second), incompatible_size()); // otherwise error
 
 	// need to do more benchmarking before making unrolling default
 	dynamic_assign(traits::with_unroll1<E1>());
@@ -138,10 +138,10 @@ struct vec_vec_aop_expr
     void assign(boost::mpl::true_)
     {
 	vampir_trace<1001> tracer;
-	MTL_DEBUG_THROW_IF(mtl::vector::size(first) != mtl::vector::size(second), incompatible_size()); // We cannot resize, only check
+	MTL_DEBUG_THROW_IF(mtl::vec::size(first) != mtl::vec::size(second), incompatible_size()); // We cannot resize, only check
 	
 	// impl::assign<0, static_size<E1>::value-1, SFunctor>::apply(first, second); // Slower, at least on gcc
-	for (size_type i= 0; i < mtl::vector::size(first); ++i) // Do an ordinary loop instead
+	for (size_type i= 0; i < mtl::vec::size(first); ++i) // Do an ordinary loop instead
 	    SFunctor::apply(first(i), second(i));
     }
 

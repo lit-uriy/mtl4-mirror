@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/operation/update.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// Class for generic insertion into vectors
 /** \param Vector is the type of the vector in which will be inserted

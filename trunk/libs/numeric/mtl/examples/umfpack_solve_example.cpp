@@ -28,7 +28,7 @@ int main(int, char**)
     cout << "\nA \\ b using umfpack_solve = " << x << "\n";
     
     // Define a solver object by internally factorizing A
-    mtl::matrix::umfpack::solver<matrix_type> solver(A);
+    mtl::mat::umfpack::solver<matrix_type> solver(A);
 
     // Solve A * x == b and b2 with the solver object
     solver(x, b);
@@ -47,7 +47,7 @@ int main(int, char**)
 
     // Change matrix's values and sparsity
     {
-	mtl::matrix::inserter<matrix_type> ins(A);
+	mtl::mat::inserter<matrix_type> ins(A);
 	ins[3][4] << 2.;	
     }
     cout << "\nA is now = \n" << A << "\n";

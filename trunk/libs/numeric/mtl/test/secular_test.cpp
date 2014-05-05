@@ -28,9 +28,9 @@ int main(int , char**)
     z[0]=1; z[1]=1;
     d[0]=-5; d[1]=-1;
    
-    //lambda= mtl::vector::secular_f<Vector>(lambda, z, d, 5.0).f(3.0);
+    //lambda= mtl::secular_f<Vector>(lambda, z, d, 5.0).f(3.0);
 
-    mtl::vector::secular_f<Vector>   ss(z, d, 5.0);
+    mtl::vec::secular_f<Vector>   ss(z, d, 5.0);
     std::cout<<"lambda  =" << ss.f(3.0) <<"\n";
     std::cout<<"lambda  =" << ss.f(0.0) <<"\n";
     std::cout<<"lambda  =" << ss.f(-3.0) <<"\n";
@@ -47,7 +47,7 @@ int main(int , char**)
 	x[i]=5-i;
     x[1]=1;
     std::cout<< "\n x=" << x << "\n";
-    mtl::vector::sort<Vector>(x);
+    sort(x);
     std::cout<< "x=" << x << "\n";
     MTL_THROW_IF(x[0] != 1.0, mtl::runtime_error("Error in sorting."));
 

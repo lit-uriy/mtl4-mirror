@@ -40,7 +40,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 		 Iteration& iter, size_t l)
 {
     mtl::vampir_trace<7006> tracer;
-    using mtl::size; using mtl::irange; using mtl::imax; using mtl::matrix::strict_upper;
+    using mtl::size; using mtl::irange; using mtl::imax; using mtl::mat::strict_upper;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -48,7 +48,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 
     const Scalar                zero= math::zero(Scalar()), one= math::one(Scalar());
     Vector                      x0(resource(x)), y(resource(x));
-    mtl::vector::dense_vector<Vector>   r_hat(l+1,Vector(resource(x))), u_hat(l+1,Vector(resource(x)));
+    mtl::dense_vector<Vector>   r_hat(l+1,Vector(resource(x))), u_hat(l+1,Vector(resource(x)));
 
     // shift problem 
     x0= zero;
@@ -65,8 +65,8 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
     u_hat[0]= zero;
 
     Scalar                      rho_0(one), rho_1(zero), alpha(zero), Gamma(zero), beta(zero), omega(one); 
-    mtl::matrix::dense2D<Scalar>        tau(l+1, l+1);
-    mtl::vector::dense_vector<Scalar>   sigma(l+1), gamma(l+1), gamma_a(l+1), gamma_aa(l+1);
+    mtl::mat::dense2D<Scalar>        tau(l+1, l+1);
+    mtl::dense_vector<Scalar>   sigma(l+1), gamma(l+1), gamma_a(l+1), gamma_aa(l+1);
 
     while (! iter.finished(r_hat[0])) {
 	++iter;
@@ -101,7 +101,7 @@ int bicgstab_ell(const LinearOperator &A, Vector &x, const Vector &b,
 
 	// mod GS (MR part)
 	irange  i1m(1, imax);
-	mtl::vector::dense_vector<Vector>   r_hat_tail(r_hat[i1m]);
+	mtl::dense_vector<Vector>   r_hat_tail(r_hat[i1m]);
 	tau[i1m][i1m]= orthogonalize_factors(r_hat_tail);
 	for (Size j= 1; j <= l; ++j) 
 	    gamma_a[j]= dot(r_hat[j], r_hat[0]) / tau[j][j];

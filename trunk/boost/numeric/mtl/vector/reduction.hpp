@@ -22,7 +22,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 #include <boost/numeric/mtl/utility/static_assert.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 
     namespace impl {
@@ -124,7 +124,7 @@ struct reduction
 	Functor::init(result);
 
 	typedef typename mtl::traits::omp_size_type<typename Collection<Vector>::size_type>::type size_type;
-	const size_type  i_max= mtl::vector::size(v), i_block= Unroll * (i_max / Unroll);
+	const size_type  i_max= mtl::size(v), i_block= Unroll * (i_max / Unroll);
 
 	#pragma omp parallel
 	{
@@ -161,7 +161,7 @@ struct reduction
 	impl::reduction<1, Unroll, Functor>::init(tmp00, tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07);
 
 	typedef typename Collection<Vector>::size_type              size_type;
-	const size_type  i_max= mtl::vector::size(v), i_block= Unroll * (i_max / Unroll);
+	const size_type  i_max= mtl::vec::size(v), i_block= Unroll * (i_max / Unroll);
 	for (size_type i= 0; i < i_block; i+= Unroll)
 	    impl::reduction<1, Unroll, Functor>::update(tmp00, tmp01, tmp02, tmp03, 
 							tmp04, tmp05, tmp06, tmp07, v, i);

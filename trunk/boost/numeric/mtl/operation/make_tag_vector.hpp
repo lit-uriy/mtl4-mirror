@@ -20,10 +20,10 @@
 namespace mtl {
 
     template <typename Range>
-    inline vector::dense_vector<bool>
+    inline dense_vector<bool>
     make_tag_vector(std::size_t n, const Range& r)
     {
-	vector::dense_vector<bool> v(n);
+	dense_vector<bool> v(n);
 	for (std::size_t i= 0; i < n; i++)
 	    v[i]= r.in_range(i);
 	return v;

@@ -8,7 +8,7 @@ int main(int, char**)
     typedef std::complex<double>      cdouble;
     const unsigned                    xd= 2, yd= 5, n= xd * yd;
     dense2D<cdouble>                  A(n, n);
-    matrix::laplacian_setup(A, xd, yd); 
+    mat::laplacian_setup(A, xd, yd); 
 
     // Fill imaginary part of the matrix
     A*= cdouble(1, -1);
@@ -23,7 +23,7 @@ int main(int, char**)
     std::cout << "col-vector v_c is\n" << v_c << "\n";
 
     //row-vector from matrix
-    dense_vector<cdouble, mtl::vector::parameters<tag::row_major> > v_r(A[0][iall]);
+    dense_vector<cdouble, mtl::vec::parameters<tag::row_major> > v_r(A[0][iall]);
 
     std::cout << "row-vector v_r is\n" << v_r << "\n";
 

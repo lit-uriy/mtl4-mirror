@@ -53,7 +53,7 @@
 
 #undef major // fight namespace pollution
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 struct compressed_key
@@ -146,11 +146,11 @@ struct compressed_minor_cursor
     typedef compressed_minor_cursor       self;
     typedef std::size_t                   size_t;
 
-    explicit compressed_minor_cursor(mtl::matrix::compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
+    explicit compressed_minor_cursor(mtl::mat::compressed2D<Elt, Parameters> const& matrix, size_t r, size_t c)
 	: base(matrix, r, c), matrix(matrix)
     {}
 
-    explicit compressed_minor_cursor(mtl::matrix::compressed2D<Elt, Parameters> const& matrix, size_t offset) 
+    explicit compressed_minor_cursor(mtl::mat::compressed2D<Elt, Parameters> const& matrix, size_t offset) 
 	: base(matrix, offset), matrix(matrix)
     {}
 
@@ -167,7 +167,7 @@ struct compressed_minor_cursor
     base& operator* () { return *this; }
     const base& operator* () const { return *this; }
 
-    mtl::matrix::compressed2D<Elt, Parameters> const& matrix;
+    mtl::mat::compressed2D<Elt, Parameters> const& matrix;
 };
 
 
@@ -259,7 +259,7 @@ struct compressed2D_indexer
 
 /// Compressed 2D matrix type
 // For now no external data
-template <typename Elt, typename Parameters = matrix::parameters<> >
+template <typename Elt, typename Parameters = mat::parameters<> >
 class compressed2D 
   : public base_matrix<Elt, Parameters>,
     public const_crtp_base_matrix< compressed2D<Elt, Parameters>, Elt, typename Parameters::size_type >,
@@ -1159,7 +1159,7 @@ inline size(const compressed2D<Value, Parameters>& matrix)
 }} // namespace mtl::matrix
 
 namespace mtl {
-	using matrix::compressed2D;
+	using mat::compressed2D;
 }
 
 // ================
@@ -1169,9 +1169,9 @@ namespace mtl {
 namespace mtl { namespace traits {
 
     // VC 8.0 finds ambiguity with mtl::tag::morton_dense (I wonder why, especially here)
-    using mtl::matrix::compressed2D;
-    using mtl::matrix::compressed_el_cursor;
-    using mtl::matrix::compressed_minor_cursor;
+    using mtl::mat::compressed2D;
+    using mtl::mat::compressed_el_cursor;
+    using mtl::mat::compressed_minor_cursor;
 
     // ===========
     // For cursors

@@ -23,9 +23,9 @@ typedef mtl::dense2D<t_Q> t_dMatQ;
 int main(int, char* [])
 {
     //! Test Matrix-Vector operators
-    t_dMatQ mQ1(3,3); mtl::matrix::diagonal_setup(mQ1,2);
+    t_dMatQ mQ1(3,3); mtl::mat::diagonal_setup(mQ1,2);
     std::cout << "mQ1:\n" << mQ1 << "\n";
-    std::cout << "size(mQ1):\n" << mtl::matrix::size(mQ1) << "\n";
+    std::cout << "size(mQ1):\n" << mtl::mat::size(mQ1) << "\n";
 
     t_dVecQ vQ4(3,1);
     //vQ4 *= mQ1;      // not defined yet -> ticket #254

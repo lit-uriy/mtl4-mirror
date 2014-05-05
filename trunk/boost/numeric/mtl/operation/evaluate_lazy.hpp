@@ -27,9 +27,9 @@ void inline evaluate_lazy(lazy_assign<T, U, Assign>& lazy)
 }
 
 template <typename T, typename Vector, typename Functor, typename Assign>
-void inline evaluate_lazy(lazy_assign<T, vector::lazy_reduction<Vector, Functor>, Assign>& lazy)
+void inline evaluate_lazy(lazy_assign<T, vec::lazy_reduction<Vector, Functor>, Assign>& lazy)
 {
-    lazy.first= Functor::post_reduction(vector::reduction<4, Functor, T>::apply(lazy.second.v));
+    lazy.first= Functor::post_reduction(vec::reduction<4, Functor, T>::apply(lazy.second.v));
 }
 
 } // namespace mtl

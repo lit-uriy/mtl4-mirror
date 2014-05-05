@@ -48,7 +48,7 @@ void shape(const Op1&, const Op2&)
     typedef typename enable::type                  enable_type;
     std::cout << "enable type is " << typeid(enable_type).name() << "\n";
 
-    typedef typename vector::detail::dot_result<Op1, Op2>::type res_type;
+    typedef typename vec::detail::dot_result<Op1, Op2>::type res_type;
     std::cout << "res is " << typeid(res_type).name() << "\n";
 
 }
@@ -69,11 +69,11 @@ void test2(const char* name, const Vector& v)
 int main(int, char**)
 {
 
-    typedef mtl::vector::fixed::dimension<3> fsize;
-    mtl::dense_vector<float, mtl::vector::parameters<mtl::row_major, fsize, true> >     rf; rf= 3., 4., 6.;
-    mtl::dense_vector<float, mtl::vector::parameters<mtl::col_major, fsize, true> >     cf; cf= 3., 4., 6.;
+    typedef mtl::vec::fixed::dimension<3> fsize;
+    mtl::dense_vector<float, mtl::vec::parameters<mtl::row_major, fsize, true> >     rf; rf= 3., 4., 6.;
+    mtl::dense_vector<float, mtl::vec::parameters<mtl::col_major, fsize, true> >     cf; cf= 3., 4., 6.;
 
-    mtl::dense_vector<float, mtl::vector::parameters<mtl::row_major> >                  rd(3); rd= 3., 4., 6.;
+    mtl::dense_vector<float, mtl::vec::parameters<mtl::row_major> >                  rd(3); rd= 3., 4., 6.;
     mtl::dense_vector<float>                                                            cd(3); cd= 3., 4., 6.;
 
     mtl::dense_vector<std::complex<double> >                                            rdc(3); rdc= 3., 4., 6.;

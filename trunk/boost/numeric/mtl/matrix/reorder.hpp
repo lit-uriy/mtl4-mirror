@@ -20,16 +20,16 @@
 #include <boost/numeric/mtl/matrix/compressed2D.hpp>
 #include <boost/numeric/mtl/matrix/reorder_ref.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
     
 namespace traits {
 
-    /// Return type of mtl::matrix::reorder	
+    /// Return type of mtl::mat::reorder	
     template <typename Value= short>
     struct reorder
     {
-	typedef mtl::matrix::compressed2D<Value, parameters<> >  type;
+	typedef mtl::mat::compressed2D<Value, parameters<> >  type;
     };
 }
 
@@ -55,10 +55,10 @@ inline reorder(const ReorderVector& v, std::size_t cols= 0)
 
 }} // namespace mtl::matrix
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
-    /// Import into vector namespace; see \ref mtl::matrix::reorder
-    using mtl::matrix::reorder;
+    /// Import into vector namespace; see \ref mtl::mat::reorder
+    using mtl::mat::reorder;
 
 }} // namespace mtl::vector
 

@@ -22,7 +22,7 @@ template <typename Size>
 void test()
 {
     io::tout << "\n\nSize type is " << typeid(Size).name() << '\n';
-    typedef matrix::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, Size> para;
+    typedef mat::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, Size> para;
     compressed2D<double, para>   A;
     laplacian_setup(A, 2, 3);
     

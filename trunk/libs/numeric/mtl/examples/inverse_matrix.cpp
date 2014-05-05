@@ -142,7 +142,7 @@ int main(int, char**)
 
     cout << "Permuted A is \n" << Matrix(P * A);
     Matrix I(size, size); I= 1;
-    //Matrix I(matrix::identity(size, size)), L(I + strict_lower(LU)), U(upper(LU));
+    //Matrix I(mat::identity(size, size)), L(I + strict_lower(LU)), U(upper(LU));
     Matrix L(I + strict_lower(LU)), U(upper(LU));
 
     Matrix UI(inverse_upper(U));

@@ -31,13 +31,13 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     A= 0.0; B1= 0.0; B2= 0.0;
 
     {
-	mtl::matrix::inserter<MatrixA>  A_ins(A);
+	mtl::mat::inserter<MatrixA>  A_ins(A);
 	A_ins(0, 1) << 1.0;
 
-	mtl::matrix::inserter<MatrixB>  B1_ins(B1);
+	mtl::mat::inserter<MatrixB>  B1_ins(B1);
 	B1_ins(1, 2) << 1.0;
 
-	mtl::matrix::inserter<MatrixB>  B2_ins(B2);
+	mtl::mat::inserter<MatrixB>  B2_ins(B2);
 	B2_ins(2, 3) << 1.0;
     }
 
@@ -55,7 +55,7 @@ void test(MatrixA&, MatrixB&, MatrixC&, const char* name)
     B3= 0.0;
 
     {
-	mtl::matrix::inserter<MatrixB>  B3_ins(B3);
+	mtl::mat::inserter<MatrixB>  B3_ins(B3);
 	B3_ins(0, 1) << 3.0;
 	B3_ins(2, 3) << 2.0;
     }
@@ -79,11 +79,11 @@ int main(int argc, char* argv[])
 #ifndef _MSC_VER
     // Constructors from expressions still disabled on MSVC, cf #142-#144
     dense2D<double>                                      dr(size, size);
-    dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dense2D<double, mat::parameters<col_major> >      dc(size, size);
     morton_dense<double, recursion::morton_z_mask>       mzd(size, size);
     morton_dense<double, recursion::doppled_2_row_mask>  d2r(size, size);
     compressed2D<double>                                 cr(size, size);
-    compressed2D<double, matrix::parameters<col_major> > cc(size, size);
+    compressed2D<double, mat::parameters<col_major> > cc(size, size);
 
     dense2D<complex<double> >                            drc(size, size);
     compressed2D<complex<double> >                       crc(size, size);

@@ -21,7 +21,7 @@
 #include <boost/numeric/mtl/vector/vec_vec_minus_expr.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 template <typename E1, typename E2>

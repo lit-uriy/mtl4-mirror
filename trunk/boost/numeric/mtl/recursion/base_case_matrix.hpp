@@ -28,18 +28,18 @@ struct base_case_matrix
 };
 
 template <typename Elt, unsigned long Mask, typename Parameters, typename BaseCaseTest>
-struct base_case_matrix<mtl::matrix::morton_dense<Elt, Mask, Parameters>, BaseCaseTest>
+struct base_case_matrix<mtl::mat::morton_dense<Elt, Mask, Parameters>, BaseCaseTest>
 {
     MTL_STATIC_ASSERT(meta_math::is_power_of_2<BaseCaseTest::base_case_size>::value, "Static base case size must be power of two");
     static const unsigned long base_case_bits= meta_math::log_2<BaseCaseTest::base_case_size>::value;
 
     typedef typename boost::mpl::if_<
 	is_k_power_base_case_row_major<base_case_bits, Mask>
-      , mtl::matrix::dense2D<Elt, matrix::parameters<row_major> >
+      , mtl::mat::dense2D<Elt, mat::parameters<row_major> >
       , typename boost::mpl::if_<
 	    is_k_power_base_case_col_major<base_case_bits, Mask>
-	  , mtl::matrix::dense2D<Elt, matrix::parameters<col_major> >
-          , mtl::matrix::morton_dense<Elt, Mask, Parameters>
+	  , mtl::mat::dense2D<Elt, mat::parameters<col_major> >
+          , mtl::mat::morton_dense<Elt, Mask, Parameters>
         >::type
     >::type type;
 };

@@ -32,7 +32,7 @@
 //
 // Arbitrary combinations with other views (using shared_ptr) is planned
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 // Forward
 namespace detail { 
@@ -70,12 +70,12 @@ struct banded_view
     typedef long int                                   bsize_type;
 
     banded_view(const other& ref, bsize_type begin, bsize_type end) 
-      : base(dim_type(mtl::matrix::num_rows(ref), mtl::matrix::num_cols(ref)), ref.nnz()), 
+      : base(dim_type(mtl::mat::num_rows(ref), mtl::mat::num_cols(ref)), ref.nnz()), 
 	ref(ref), begin(begin), end(end) 
     {}
 
     banded_view(const boost::shared_ptr<Matrix>& p, bsize_type begin, bsize_type end) 
-	: base(dim_type(mtl::matrix::num_rows(*p), mtl::matrix::num_cols(*p)), p->nnz()), 
+	: base(dim_type(mtl::mat::num_rows(*p), mtl::mat::num_cols(*p)), p->nnz()), 
 	  my_copy(p), ref(*p), begin(begin), end(end) 
     {}
 
@@ -103,9 +103,9 @@ struct banded_view
     //template <typename> friend struct ::mtl::sub_matrix_t<self>;
 
     friend size_type inline num_rows(const self& A) 
-    { 	using mtl::matrix::num_rows; return num_rows(A.ref);     }
+    { 	using mtl::mat::num_rows; return num_rows(A.ref);     }
     friend size_type inline num_cols(const self& A) 
-    { 	using mtl::matrix::num_cols; return num_cols(A.ref);     }
+    { 	using mtl::mat::num_cols; return num_cols(A.ref);     }
 
   protected:
     boost::shared_ptr<Matrix>           my_copy;
@@ -125,14 +125,14 @@ inline std::size_t size(const banded_view<Matrix>& A)
 // ==========
 
 template <typename Matrix>
-struct sub_matrix_t< mtl::matrix::banded_view<Matrix> >
+struct sub_matrix_t< mtl::mat::banded_view<Matrix> >
 {
-    typedef mtl::matrix::banded_view<Matrix>                                           view_type;
+    typedef mtl::mat::banded_view<Matrix>                                           view_type;
 
     // Mapping of sub-matrix type
     typedef typename sub_matrix_t<Matrix>::sub_matrix_type                        ref_sub_type;
-    typedef mtl::matrix::banded_view<ref_sub_type>                                     const_sub_matrix_type;
-    typedef mtl::matrix::banded_view<ref_sub_type>                                     sub_matrix_type;
+    typedef mtl::mat::banded_view<ref_sub_type>                                     const_sub_matrix_type;
+    typedef mtl::mat::banded_view<ref_sub_type>                                     sub_matrix_type;
     typedef typename view_type::size_type                                         size_type;
 
     sub_matrix_type operator()(view_type const& view, size_type begin_r, size_type end_r, 
@@ -155,7 +155,7 @@ struct sub_matrix_t< mtl::matrix::banded_view<Matrix> >
 
 namespace mtl { namespace traits {
 
-    using mtl::matrix::banded_view;
+    using mtl::mat::banded_view;
 
     template <typename Matrix> 
     struct row<banded_view<Matrix> >

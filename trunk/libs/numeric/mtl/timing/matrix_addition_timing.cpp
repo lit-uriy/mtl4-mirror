@@ -23,7 +23,7 @@ void test(int n, int s)
     mtl::compressed2D<double> A(n, n), B(n, n);
     {
 	double val = 3.14;
-	mtl::matrix::inserter<mtl::compressed2D<double> > ins(A, int(1.2*s)), ins2(B, int(1.2*s));
+	mtl::mat::inserter<mtl::compressed2D<double> > ins(A, int(1.2*s)), ins2(B, int(1.2*s));
 	for (int i= 0; i < n*s; i++) {
 	    ins[rand()%n][rand()%n] << val;
 	    ins2[rand()%n][rand()%n] << val;

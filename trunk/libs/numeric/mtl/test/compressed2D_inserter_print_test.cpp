@@ -21,7 +21,7 @@ void test(const char* name, Matrix& A)
 {
     std::cout << name << "\n";
 
-    mtl::matrix::inserter<Matrix> ins(A, 3);
+    mtl::mat::inserter<Matrix> ins(A, 3);
     ins[0][1] << 4.; ins[0][2] << 7;
     // ins[0][3] << 6.; ins[0][0] << 8;
 

@@ -20,7 +20,7 @@
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 template <typename ReorderVector, typename Matrix>

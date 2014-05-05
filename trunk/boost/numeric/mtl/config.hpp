@@ -16,7 +16,7 @@
 namespace mtl {
 
 
-    namespace matrix {
+    namespace mat {
 
 	// parameters for dense operations
 

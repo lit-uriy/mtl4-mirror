@@ -29,7 +29,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 
 	template <unsigned long Unroll, typename Vector>
 	typename traits::enable_if_vector<Vector, typename RealMagnitude<typename Collection<Vector>::value_type>::type>::type
@@ -37,7 +37,7 @@ namespace mtl {
 	{
 	    vampir_trace<2006> tracer;
 	    typedef typename RealMagnitude<typename Collection<Vector>::value_type>::type result_type;
-	    return vector::reduction<Unroll, vector::infinity_norm_functor, result_type>::apply(vector);
+	    return reduction<Unroll, infinity_norm_functor, result_type>::apply(vector);
 	}
 
 	/*! Infinity-norm for vectors: infinity_norm(x) \f$\rightarrow |x|_\infty\f$.
@@ -61,7 +61,7 @@ namespace mtl {
 	{  return lazy_reduction<Vector, infinity_norm_functor>(v); 	}
     }
 
-    namespace matrix {
+    namespace mat {
 	
 	// Ignore unrolling for matrices 
 	template <unsigned long Unroll, typename Matrix>
@@ -89,9 +89,9 @@ namespace mtl {
 	}
     }
 
-    using vector::infinity_norm;
-    using vector::lazy_infinity_norm;
-    using matrix::infinity_norm;
+    using vec::infinity_norm;
+    using vec::lazy_infinity_norm;
+    using mat::infinity_norm;
 
 } // namespace mtl
 

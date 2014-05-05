@@ -78,7 +78,7 @@ void test(string name, const Matrix& A, Value check)
 int main(int, char**)
 {
     typedef mtl::dense_vector<double> vt;
-    typedef mtl::dense_vector<double, mtl::vector::parameters<mtl::row_major> >  vrt;
+    typedef mtl::dense_vector<double, mtl::vec::parameters<mtl::row_major> >  vrt;
     vt  v(2), w(3);
     vrt z(3);
     v= 1, 2; w= 2, 3, 4; z= trans(w);
@@ -95,10 +95,10 @@ int main(int, char**)
 
     test("ones(2, 3)", mtl::ones(2, 3), 1);
     test("ones<float>(2, 3)", mtl::ones<float>(2, 3), 1.f);
-    test("v * trans(w)", mtl::matrix::outer_product_matrix<vt, vt>(v, w), 3.0);
+    test("v * trans(w)", mtl::mat::outer_product_matrix<vt, vt>(v, w), 3.0);
     test("v * z", v * z, 3.0);
     test("v * trans(w)", v * trans(w), 3.0);
-    test("hilbert_matrix(2, 3)", mtl::matrix::hilbert_matrix<>(2, 3), 0.5);
+    test("hilbert_matrix(2, 3)", mtl::mat::hilbert_matrix<>(2, 3), 0.5);
     
     return 0;
 }

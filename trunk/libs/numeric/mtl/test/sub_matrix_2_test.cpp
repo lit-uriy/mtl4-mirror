@@ -29,14 +29,14 @@ void test(Matrix& A, const char* name)
     hessian_setup(A, 1.0);
 
     A[irange(0, 8)][irange(0, 8)];
-    mtl::matrix::recursator<Matrix> rec(A);
+    mtl::mat::recursator<Matrix> rec(A);
 
     std::cout << "\n" << name << "\n";
     std::cout << "A:\n" << A << '\n';    
     std::cout << "A[irange(0, 8)][irange(0, 8)]:\n" << A[irange(0, 8)][irange(0, 8)] << '\n';    
     std::cout << "*rec:\n" << *rec << '\n';    
 
-    mtl::matrix::recursator<Matrix> nw= north_west(rec);
+    mtl::mat::recursator<Matrix> nw= north_west(rec);
     std::cout << "north_west:\n" << *nw << '\n';    
 
     std::cout << "north_west of north_west:\n" << *north_west(nw) << '\n';
@@ -64,7 +64,7 @@ int main(int, char**)
     const unsigned size= 5; 
 
     dense2D<double> dc(size, size-2);
-    dense2D<double, matrix::parameters<col_major> >  dcc(size, size-2);
+    dense2D<double, mat::parameters<col_major> >  dcc(size, size-2);
     dense2D<float>                                   fc(size, size-2);
     morton_dense<double,  morton_mask>               mdc(size, size-2);
     morton_dense<double, doppled_32_col_mask>        mcc(size, size-2);

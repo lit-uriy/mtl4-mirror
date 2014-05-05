@@ -2,7 +2,7 @@
  *  vector_map_view_test_2.cpp
  *  MTL
  *
- *	Test vector::rscaled_view and vector::divide_by_view
+ *	Test rscaled_view and divide_by_view
  *
  *  Created by Hui Li (huil@Princeton.EDU)
  *
@@ -75,7 +75,7 @@ void test(Vector& vector, const char* name)
 	
 #else // When sparse vectors are used there should be an inserter class for vectors too
     {
-		vector::inserter<Vector>  ins(vector);
+		inserter<Vector>  ins(vector);
 		ins(2) << value(ref);
 		ins(4) << value(ref) + 1.0;
 		ins(5) << value(ref) + 2.0;
@@ -86,11 +86,11 @@ void test(Vector& vector, const char* name)
     cout << "Original vector:\n" << vector << "\n";
 	
 	// test rscaled_view
-    mtl::vector::rscaled_view<Vector,double>  rscaled_vector(vector,2.0);
+    mtl::vec::rscaled_view<Vector,double>  rscaled_vector(vector,2.0);
     cout << "vector right scaled with 2.0\n" << rscaled_vector << "\n";
     MTL_THROW_IF(rscaled_vector(2) != rsvalue(ref), mtl::runtime_error("right scaling wrong"));
     
-    mtl::vector::rscaled_view<Vector,ct>  crscaled_vector(vector,ct(0.0, 1.0));
+    mtl::vec::rscaled_view<Vector,ct>  crscaled_vector(vector,ct(0.0, 1.0));
     cout << "vector right scaled with i (complex(0, 1))\n" << crscaled_vector << "\n";
     MTL_THROW_IF(crscaled_vector(2) != crsvalue(ref), mtl::runtime_error("complex right scaling wrong"));
 	
@@ -101,11 +101,11 @@ void test(Vector& vector, const char* name)
     MTL_THROW_IF(rscale(vector,ct(0.0, 1.0))(2) != crsvalue(ref), mtl::runtime_error("complex right scaling wrong"));
 	
 	// test divide_by_view
-    mtl::vector::divide_by_view<Vector,double>  div_vector(vector,0.5);
+    mtl::vec::divide_by_view<Vector,double>  div_vector(vector,0.5);
     cout << "vector divide by 0.5\n" << div_vector << "\n";
     MTL_THROW_IF(div_vector(2) != rsvalue(ref), mtl::runtime_error("divide_by wrong"));
     
-    mtl::vector::divide_by_view<Vector,ct>  cdiv_vector(vector,ct(0.0, -1.0));
+    mtl::vec::divide_by_view<Vector,ct>  cdiv_vector(vector,ct(0.0, -1.0));
     cout << "vector divide by -i (complex(0, -1))\n" << cdiv_vector << "\n";
     MTL_THROW_IF(cdiv_vector(2) != crsvalue(ref), mtl::runtime_error("complex divide_by wrong"));
 	

@@ -96,7 +96,7 @@ namespace mtl {
 	typedef typename traits::range_generator<tag::major, MatrixSrc>::type  cursor_type;
 
 	// std::cout << "Slot size is " << detail::copy_inserter_size<Updater>::apply(src, dest) << "\n";
-	matrix::inserter<MatrixDest, Updater>   ins(dest, detail::copy_inserter_size<Updater>::apply(src, dest));
+	mat::inserter<MatrixDest, Updater>   ins(dest, detail::copy_inserter_size<Updater>::apply(src, dest));
 	for (cursor_type cursor = mtl::begin<tag::major>(src), cend = mtl::end<tag::major>(src); 
 	     cursor != cend; ++cursor) {
 	    // std::cout << dest << '\n';
@@ -111,7 +111,7 @@ namespace mtl {
 
     // Specialization for multi_vector
     template <typename Updater, typename MatrixSrc, typename Vector>
-    inline void gen_matrix_copy(const MatrixSrc& src, mtl::matrix::multi_vector<Vector>& dest, bool)
+    inline void gen_matrix_copy(const MatrixSrc& src, mtl::mat::multi_vector<Vector>& dest, bool)
     {
 	MTL_THROW_IF(num_rows(src) != num_rows(dest) || num_cols(src) != num_cols(dest), incompatible_size());
 	typedef typename mtl::traits::updater_to_assigner<Updater>::type Assigner;
@@ -131,13 +131,13 @@ namespace mtl {
 
     template <typename Updater, typename ValueSrc, typename Para, typename ValueDest>
     typename boost::enable_if<boost::is_same<Updater, operations::update_store<ValueDest> > >::type
-    inline gen_matrix_copy(const matrix::banded_view<mtl::matrix::compressed2D<ValueSrc, Para> >& src, mtl::matrix::compressed2D<ValueDest, Para>& dest, bool)
+    inline gen_matrix_copy(const mat::banded_view<mtl::mat::compressed2D<ValueSrc, Para> >& src, mtl::mat::compressed2D<ValueDest, Para>& dest, bool)
     {
 	vampir_trace<3061> tracer;
 	typedef typename Para::size_type size_type;
 	dest.change_dim(num_rows(src), num_cols(src)); // contains make_empty
 	set_to_zero(dest);
-	const mtl::matrix::compressed2D<ValueSrc, Para>  &sref= src.ref;
+	const mtl::mat::compressed2D<ValueSrc, Para>  &sref= src.ref;
 	const std::vector<size_type>        &sstarts= sref.ref_major(), &sindices= sref.ref_minor();
 	long first, last;
 	if (traits::is_row_major<Para>::value) {

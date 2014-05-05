@@ -36,7 +36,7 @@
 
 #include <boost/numeric/itl/itl_fwd.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 
 namespace detail {
@@ -516,7 +516,7 @@ struct crtp_vector_assign
 
     template <typename Src>
     void checked_change_resource_aux(const Src& src, boost::mpl::false_) 
-    {   checked_change_dim(mtl::vector::size(src));  }
+    {   checked_change_dim(mtl::vec::size(src));  }
 
 
     /// Check whether vector size is compatible or if vector is 0 change it s.

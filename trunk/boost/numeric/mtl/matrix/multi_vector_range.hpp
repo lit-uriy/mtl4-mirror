@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/matrix/multi_vector.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 // So far only const, might be refactored for mutability later
 template <typename Vector>

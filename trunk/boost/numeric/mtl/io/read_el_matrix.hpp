@@ -27,7 +27,7 @@
 #include <boost/numeric/mtl/matrix/element.hpp>
 #include <boost/numeric/mtl/matrix/element_structure.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 // Read a value from the stream. The stream is advanced.
 template <class T, class StreamType>
@@ -82,7 +82,7 @@ void read_el_matrix(StreamType& file, element_structure<ValueType>& A)
 	    ++read_num;
 	}
 	read_num--;
-	mtl::vector::dense_vector<int> nodes(read_num, 0);  
+	mtl::dense_vector<int> nodes(read_num, 0);  
 	while( !node_line.eof() ) {
 	    int idx = 0;
 	    node_line >> idx;

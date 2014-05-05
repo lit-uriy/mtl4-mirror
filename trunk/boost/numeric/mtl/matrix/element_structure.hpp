@@ -23,7 +23,7 @@
 #include <boost/numeric/mtl/matrix/element.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 #if 0   ///TODO need for write elmement_structur
 namespace print {

@@ -24,7 +24,7 @@ int main(int, char**)
     // Define a 6x6 sparse matrix in a 3x3 block-sparse
     // Should be 
 #if 0 
-    typedef matrix::parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 2> > parameters1;
+    typedef mat::parameters<row_major, mtl::index::c_index, fixed::dimensions<2, 2> > parameters1;
     typedef dense2D<double, parameters1>    m_t;
 #endif
 
@@ -33,7 +33,7 @@ int main(int, char**)
 	typedef mtl::compressed2D<m_t>  matrix_t;
     matrix_t                        A(3, 3);
     {
-		mtl::matrix::inserter<matrix_t> ins(A);
+		mtl::mat::inserter<matrix_t> ins(A);
 
 	// First block
 	m_t  B(2, 2);

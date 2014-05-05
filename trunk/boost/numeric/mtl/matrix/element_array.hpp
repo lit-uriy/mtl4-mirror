@@ -13,7 +13,7 @@
 #ifndef MTL_ELEMENT_ARRAY_INCLUDE
 #define MTL_ELEMENT_ARRAY_INCLUDE
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename Array, typename Rows, typename Cols>
 struct element_array_t
@@ -44,7 +44,7 @@ inline element_array(const Array& array, const Rows& rows)
 
 } // namespace matrix
 
-using matrix::element_array;
+using mat::element_array;
 
 } // namespace mtl
 

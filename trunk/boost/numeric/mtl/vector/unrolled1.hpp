@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/crtp_base_vector.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// Helper class for unrolling loops \sa \ref mtl::unroll
 template <unsigned BSize, typename Vector>

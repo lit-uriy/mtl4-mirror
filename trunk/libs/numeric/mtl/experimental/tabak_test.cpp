@@ -19,7 +19,7 @@ using namespace std;
 int main(int , char** ) 
 {
   
-    typedef mtl::matrix::parameters<mtl::row_major,
+    typedef mtl::mat::parameters<mtl::row_major,
 	mtl::index::c_index,
 	mtl::non_fixed::dimensions,
 	false, int> para;

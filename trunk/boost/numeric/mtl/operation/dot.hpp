@@ -26,7 +26,7 @@
 
 namespace mtl { 
 
-    namespace vector {
+    namespace vec {
 
 	namespace detail {
 	    
@@ -258,10 +258,10 @@ namespace mtl {
 
     } // namespace vector
     
-    using vector::dot;
-    using vector::dot_real;
-    using vector::lazy_dot;
-    using vector::lazy_dot_real;
+    using vec::dot;
+    using vec::dot_real;
+    using vec::lazy_dot;
+    using vec::lazy_dot_real;
 
 } // namespace mtl
 

@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 // Generic assign operation expression template for vectors
 // Model of VectorExpression
@@ -49,9 +49,9 @@ struct vec_scal_aop_expr
 	if (!delayed_assign) {
 	    vampir_trace<2018> tracer;
 	    if (with_comma) {
-		MTL_DEBUG_THROW_IF(index != mtl::vector::size(first), incompatible_size("Not all vector entries initialized!"));
+		MTL_DEBUG_THROW_IF(index != mtl::vec::size(first), incompatible_size("Not all vector entries initialized!"));
 	    } else
-		for (size_type i= 0; i < mtl::vector::size(first); ++i)
+		for (size_type i= 0; i < mtl::vec::size(first); ++i)
 		    SFunctor::apply( first(i), second );
 	}
     }
@@ -93,7 +93,7 @@ struct vec_scal_aop_expr
 	    assert(index == 0);
 	    SFunctor::apply( first(index++), second); // We haven't set v[0] yet
 	}
-	MTL_DEBUG_THROW_IF(index >= mtl::vector::size(first), range_error());
+	MTL_DEBUG_THROW_IF(index >= mtl::vec::size(first), range_error());
 	SFunctor::apply( first(index++), val);
 	return *this;
     }

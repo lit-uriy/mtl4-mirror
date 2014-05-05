@@ -109,7 +109,7 @@ int main(int, char**)
     const unsigned size= 5; 
 
     dense2D<double> dc(size, size-2);
-    dense2D<double, matrix::parameters<col_major> >  dcc(size, size-2);
+    dense2D<double, mat::parameters<col_major> >  dcc(size, size-2);
     dense2D<float>                                   fc(size, size-2);
     morton_dense<double,  morton_mask>               mdc(size, size-2);
     morton_dense<double, doppled_32_col_mask>        mcc(size, size-2);

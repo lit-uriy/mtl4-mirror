@@ -18,7 +18,7 @@
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/vector/mat_cvec_multiplier.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Matrix-free linear operator for a Poisson equation on a rectangular domain of \p m by \p n with Dirichlet boundary conditions
 struct poisson2D_dirichlet
@@ -74,8 +74,8 @@ struct poisson2D_dirichlet
 
     /// Multiplication is procastinated until we know where the product goes
     template <typename VectorIn>
-    vector::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn> operator*(const VectorIn& v) const
-    {	return vector::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn>(*this, v);    }
+    vec::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn> operator*(const VectorIn& v) const
+    {	return vec::mat_cvec_multiplier<poisson2D_dirichlet, VectorIn>(*this, v);    }
 
     int m, n, s;
 };
@@ -89,14 +89,14 @@ inline std::size_t num_cols(const poisson2D_dirichlet& A) { return A.s; } ///< N
 namespace mtl { 
 
     template <>
-    struct Collection<matrix::poisson2D_dirichlet>
+    struct Collection<mat::poisson2D_dirichlet>
     {
 	typedef double value_type;
 	typedef int    size_type;
     };
 
     namespace ashape {
-	template <> struct ashape_aux<matrix::poisson2D_dirichlet> 
+	template <> struct ashape_aux<mtl::mat::poisson2D_dirichlet> 
 	{	typedef nonscal type;    };
     }
 }

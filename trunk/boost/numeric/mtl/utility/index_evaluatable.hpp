@@ -48,7 +48,7 @@ struct index_evaluatable<lazy_assign<V1, mtl::mat_cvec_times_expr<Matrix, V2>, A
   : is_row_major<Matrix> {};
 
 template <typename V1, typename Matrix, typename V2, typename Assign>
-struct index_evaluatable<lazy_assign<V1, mtl::vector::mat_cvec_multiplier<Matrix, V2>, Assign> >
+struct index_evaluatable<lazy_assign<V1, mtl::vec::mat_cvec_multiplier<Matrix, V2>, Assign> >
   : boost::mpl::false_ 
 {};
 

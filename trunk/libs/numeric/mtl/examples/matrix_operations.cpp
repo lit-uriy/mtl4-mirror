@@ -6,7 +6,7 @@ int main(int, char**)
     using namespace mtl;
     
     const unsigned n= 10;
-    dense2D<int, matrix::parameters<col_major> > b(n, n);
+    dense2D<int, mat::parameters<col_major> > b(n, n);
     morton_dense<double, 0x55555555>             c(n, n);
     morton_dense<double, 0x555555f0>             d(n, n);
 

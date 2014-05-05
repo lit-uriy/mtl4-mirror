@@ -28,7 +28,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 
 	template <unsigned long Unroll, typename Value>
 	typename RealMagnitude<typename Collection<Value>::value_type>::type
@@ -65,8 +65,8 @@ namespace mtl {
 
     // two_norm for matrices not implemented (would need enable_if like one_norm)
 
-    using vector::two_norm;
-    using vector::lazy_two_norm;
+    using vec::two_norm;
+    using vec::lazy_two_norm;
 
 } // namespace mtl
 

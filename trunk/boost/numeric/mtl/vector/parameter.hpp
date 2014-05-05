@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/vector/dimension.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// This type exist only for bundling template parameters (to reduce typing)
 /** OnStack = true can only be used with fixed::dimension.

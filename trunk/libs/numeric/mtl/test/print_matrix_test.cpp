@@ -41,7 +41,7 @@ void test(Matrix& matrix, const char* name)
     typedef typename mtl::Collection<Matrix>::size_type   size_type;
     matrix= 0;
     {
-	mtl::matrix::inserter<Matrix> ins(matrix);
+	mtl::mat::inserter<Matrix> ins(matrix);
 	for (size_type i= 0; i < matrix.num_rows(); i++)
 	    for (size_type j= 0; j < matrix.num_cols(); j++)
 		if ((i + j) & 1)
@@ -51,7 +51,7 @@ void test(Matrix& matrix, const char* name)
     std::cout << "\n" << name << "\n";
     print_matrix(matrix);
 
-    mtl::matrix::transposed_view<Matrix> trans(matrix);
+    mtl::mat::transposed_view<Matrix> trans(matrix);
     std::cout << "Transposed" << "\n";
     print_matrix(trans);
 
@@ -77,7 +77,7 @@ int main(int, char**)
     using namespace mtl;
 
     dense2D<double>                                dr(5, 7);
-    dense2D<double, matrix::parameters<col_major> > dc(5, 7);
+    dense2D<double, mat::parameters<col_major> > dc(5, 7);
     morton_dense<double,  morton_mask>             md(5, 7);
     morton_dense<double,  doppled_16_row_mask>     d16r(5, 7);
     compressed2D<double>                           comp(5, 7);

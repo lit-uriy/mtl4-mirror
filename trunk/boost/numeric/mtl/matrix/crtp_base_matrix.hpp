@@ -46,7 +46,7 @@
 # include <initializer_list>
 #endif
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename Source, typename Matrix>
 struct crtp_assign 

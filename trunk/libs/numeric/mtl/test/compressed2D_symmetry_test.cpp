@@ -56,7 +56,7 @@ void matrix_init(Matrix& matrix)
     typedef typename Matrix::parameters   parameters;
     typedef typename Matrix::value_type   value_type;
 
-    mtl::matrix::compressed2D_inserter<value_type, parameters> inserter(matrix);
+    mtl::mat::compressed2D_inserter<value_type, parameters> inserter(matrix);
     inserter(1, 1) << 0;
     inserter(2, 2) << 7; inserter(1, 4) << 3; inserter(3, 2) << 9; inserter(5, 1) << 5;
 }
@@ -66,7 +66,7 @@ template <typename Orientation>
 void test_compressed2D(char const* name)
 {
     mtl::io::tout << "\n====================\n" << name << "\n====================\n";
-    typedef mtl::matrix::parameters<Orientation>   parameters;
+    typedef mtl::mat::parameters<Orientation>   parameters;
     typedef mtl::compressed2D<int, parameters>     matrix_type;
     matrix_type                                    A(6, 6); 
 

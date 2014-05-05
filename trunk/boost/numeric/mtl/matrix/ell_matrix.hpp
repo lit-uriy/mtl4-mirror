@@ -24,10 +24,10 @@
 #include <boost/numeric/mtl/operation/std_output_operator.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Matrix in Ell-Pack format; still in early stage, to be used with care (if at all)
-template <typename Value, typename Parameters = matrix::parameters<> >
+template <typename Value, typename Parameters = mat::parameters<> >
 class ell_matrix
   : public base_matrix<Value, Parameters>,
     public const_crtp_base_matrix< ell_matrix<Value, Parameters>, Value, typename Parameters::size_type >,
@@ -64,6 +64,8 @@ class ell_matrix
     explicit ell_matrix (size_type num_rows, size_type num_cols)
       : super(non_fixed::dimensions(num_rows, num_cols)), my_slots(0), inserting(false)
     {  set_stride(); }
+
+    using assign_base::operator=;
 
     /// Print internal representation
     template <typename OStream>

@@ -89,7 +89,7 @@ void test(Matrix& matrix, const char* name)
     typename Matrix::value_type ref(0);
 
     {
-	mtl::matrix::inserter<Matrix>  ins(matrix);
+	mtl::mat::inserter<Matrix>  ins(matrix);
 	ins(2, 3) << value(ref);
 	ins(4, 3) << value(ref) + 1.0;
 	ins(2, 5) << value(ref) + 2.0;
@@ -98,22 +98,22 @@ void test(Matrix& matrix, const char* name)
     cout << "\n\n" << name << "\n";
     cout << "Original matrix:\n" << matrix << "\n";
 
-    mtl::matrix::scaled_view<double, Matrix>  scaled_matrix(2.0, matrix);
+    mtl::mat::scaled_view<double, Matrix>  scaled_matrix(2.0, matrix);
     cout << "matrix  scaled with 2.0\n" << scaled_matrix << "\n";
     MTL_THROW_IF(scaled_matrix(2, 3) != svalue(ref), mtl::runtime_error("scaling wrong"));
    
     cout << "matrix  scaled with 2.0 (as operator)\n" << 2.0 * matrix << "\n";
     MTL_THROW_IF((2.0 * matrix)(2, 3) != svalue(ref), mtl::runtime_error("scaling wrong"));
 
-    mtl::matrix::conj_view<Matrix>  conj_matrix(matrix);
+    mtl::mat::conj_view<Matrix>  conj_matrix(matrix);
     cout << "conjugated matrix\n" << conj_matrix << "\n";
     MTL_THROW_IF(conj_matrix(2, 3) != cvalue(ref), mtl::runtime_error(" wrong"));
 
-    mtl::matrix::scaled_view<ct, Matrix>  cscaled_matrix(ct(0.0, 1.0), matrix);
+    mtl::mat::scaled_view<ct, Matrix>  cscaled_matrix(ct(0.0, 1.0), matrix);
     cout << "matrix scaled with i (complex(0, 1))\n" << cscaled_matrix << "\n";
     MTL_THROW_IF(cscaled_matrix(2, 3) != csvalue(ref), mtl::runtime_error("complex scaling wrong"));
 
-    mtl::matrix::hermitian_view<Matrix>  hermitian_matrix(matrix);
+    mtl::mat::hermitian_view<Matrix>  hermitian_matrix(matrix);
     cout << "Hermitian matrix (conjugate transposed)\n" << hermitian_matrix << "\n";
     MTL_THROW_IF(hermitian_matrix(3, 2) != cvalue(ref), mtl::runtime_error("conjugate transposing  wrong"));
 
@@ -123,14 +123,14 @@ void test(Matrix& matrix, const char* name)
     cout << "matrix  scaled with 2.0 (free function as mtl::scale)\n" << mtl::scale(2.0, matrix) << "\n";
 
 #if defined(__GNUC__) && __GNUC__ == 4 && (__GNUC_MINOR__ >= 3 && __GNUC_MINOR__ <= 6)
-    cout << "conjugated matrix (free function) \n" << mtl::matrix::conj(matrix) << "\n";
-    MTL_THROW_IF(mtl::matrix::conj(matrix)(2, 3) != cvalue(ref), mtl::runtime_error("conjugating wrong"));
+    cout << "conjugated matrix (free function) \n" << mtl::mat::conj(matrix) << "\n";
+    MTL_THROW_IF(mtl::mat::conj(matrix)(2, 3) != cvalue(ref), mtl::runtime_error("conjugating wrong"));
 
-    cout << "imaginary part of matrix (free function) \n" << mtl::matrix::imag(matrix) << "\n";
-    MTL_THROW_IF(mtl::matrix::imag(matrix)(2, 3) != imag(value(ref)), mtl::runtime_error("imaginary part wrong"));
+    cout << "imaginary part of matrix (free function) \n" << mtl::mat::imag(matrix) << "\n";
+    MTL_THROW_IF(mtl::mat::imag(matrix)(2, 3) != imag(value(ref)), mtl::runtime_error("imaginary part wrong"));
 
-    cout << "real part of matrix (free function) \n" << mtl::matrix::real(matrix) << "\n";
-    MTL_THROW_IF(mtl::matrix::real(matrix)(2, 3) != real(value(ref)), mtl::runtime_error("real part wrong"));
+    cout << "real part of matrix (free function) \n" << mtl::mat::real(matrix) << "\n";
+    MTL_THROW_IF(mtl::mat::real(matrix)(2, 3) != real(value(ref)), mtl::runtime_error("real part wrong"));
 #else
     cout << "conjugated matrix (free function) \n" << conj(matrix) << "\n";
     MTL_THROW_IF(conj(matrix)(2, 3) != cvalue(ref), mtl::runtime_error("conjugating wrong"));
@@ -162,11 +162,11 @@ int main(int argc, char* argv[])
     if (argc > 1) size= atoi(argv[1]); 
 
     dense2D<double>                                      dr(size, size);
-    dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dense2D<double, mat::parameters<col_major> >      dc(size, size);
     morton_dense<double, recursion::morton_z_mask>       mzd(size, size);
     morton_dense<double, recursion::doppled_2_row_mask>  d2r(size, size);
     compressed2D<double>                                 cr(size, size);
-    compressed2D<double, matrix::parameters<col_major> > cc(size, size);
+    compressed2D<double, mat::parameters<col_major> > cc(size, size);
 
     dense2D<complex<double> >                            drc(size, size);
     compressed2D<complex<double> >                       crc(size, size);
@@ -186,8 +186,8 @@ int main(int argc, char* argv[])
 
 #if defined(__GNUC__) && __GNUC__ == 4 && (__GNUC_MINOR__ >= 3 && __GNUC_MINOR__ <= 6)
     std::cout << "Only for gcc 4.4.\n";
-    dr=matrix::real(dr);
-    dr=matrix::conj(dr)+p*matrix::imag(dr);
+    dr=mat::real(dr);
+    dr=mat::conj(dr)+p*mat::imag(dr);
 #else
     dr=real(dr);
     dr=conj(dr)+p*imag(dr);

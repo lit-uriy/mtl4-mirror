@@ -28,17 +28,17 @@ struct viewed_collection
 };
 
 template <typename Matrix>
-struct viewed_collection< matrix::conj_view<Matrix> >
+struct viewed_collection< mat::conj_view<Matrix> >
   : viewed_collection<Matrix>
 {};
 
 template <typename Matrix>
-struct viewed_collection< matrix::transposed_view<Matrix> >
+struct viewed_collection< mat::transposed_view<Matrix> >
   : viewed_collection<Matrix>
 {};
 
 template <typename Matrix>
-struct viewed_collection< matrix::hermitian_view<Matrix> >
+struct viewed_collection< mat::hermitian_view<Matrix> >
   : viewed_collection<Matrix>
 {};
 

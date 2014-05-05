@@ -40,7 +40,7 @@ void test(Matrix& A, const char* name)
     cout << "\n" << name << "\n" << "A =\n" << A;
 
     int reordering[]= {2, 1};
-    mtl::matrix::traits::reorder<>::type  R= mtl::matrix::reorder(reordering);
+    mtl::mat::traits::reorder<>::type  R= mtl::mat::reorder(reordering);
     cout << "\nR =\n" << R;    
 
     Matrix B(R * A);
@@ -60,11 +60,11 @@ int main(int, char**)
 {
     using namespace mtl;
     dense2D<double>                                      dr;
-    dense2D<double, matrix::parameters<col_major> >      dc;
+    dense2D<double, mat::parameters<col_major> >      dc;
     morton_dense<double, recursion::morton_z_mask>       mzd;
     morton_dense<double, recursion::doppled_2_row_mask>  d2r;
     compressed2D<double>                                 cr;
-    compressed2D<double, matrix::parameters<col_major> > cc;
+    compressed2D<double, mat::parameters<col_major> > cc;
 
     dense2D<complex<double> >                            drc;
     compressed2D<complex<double> >                       crc;

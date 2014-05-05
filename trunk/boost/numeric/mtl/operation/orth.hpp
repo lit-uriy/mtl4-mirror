@@ -27,7 +27,7 @@
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
     namespace impl {
 
@@ -55,9 +55,9 @@ namespace mtl { namespace vector {
 
 
 	template <typename VVector>
-	mtl::matrix::dense2D<typename mtl::Collection
+	mtl::mat::dense2D<typename mtl::Collection
 		   <typename mtl::Collection<VVector>::value_type
-		    >::value_type, matrix::parameters<> >
+		    >::value_type, mat::parameters<> >
 	inline orthogonalize_factors(VVector& v, tag::vector)
 	{	
 	    vampir_trace<2019> tracer;
@@ -66,7 +66,7 @@ namespace mtl { namespace vector {
 	    typedef typename mtl::Collection<VVector>::value_type Vector;
 	    typedef typename mtl::Collection<Vector>::value_type  Scalar;
 
-	    mtl::matrix::dense2D<Scalar, matrix::parameters<> > tau(size1D(v), size1D(v));
+	    mtl::mat::dense2D<Scalar, mat::parameters<> > tau(size1D(v), size1D(v));
 	    tau= zero(Scalar());
 
 	    if (size1D(v) == 0)
@@ -144,9 +144,9 @@ inline void orth(Value& value, typename mtl::Collection<Value>::size_type i)
     std::vector<dense_vector<std::complex<double> > > are eligible.
 **/
 template <typename Value>
-mtl::matrix::dense2D<typename mtl::Collection
+mtl::mat::dense2D<typename mtl::Collection
 	<typename mtl::Collection<Value>::value_type
-	 >::value_type, matrix::parameters<>  >
+	 >::value_type, mat::parameters<>  >
 inline orthogonalize_factors(Value& v)
 {
     return impl::orthogonalize_factors(v, typename traits::category<Value>::type());
@@ -154,18 +154,18 @@ inline orthogonalize_factors(Value& v)
 
 } // namespace vector
 
-namespace matrix {
+namespace mat {
 
     // If other matrix types will be supported within a template function, it needs reimplementation!!!
     template <typename Vector>
     inline void orth(multi_vector<Vector>& A)
     {
-	mtl::vector::impl::orth(A, mtl::tag::vector());
+	mtl::vec::impl::orth(A, mtl::tag::vector());
     }
 }
 
-using vector::orth;
-using vector::orthogonalize_factors;
+using vec::orth;
+using vec::orthogonalize_factors;
 
 } // namespace mtl
 

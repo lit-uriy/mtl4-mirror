@@ -46,85 +46,85 @@ struct category<const T>
 };
 
 template <typename Value, typename Parameters>
-struct category<mtl::matrix::dense2D<Value, Parameters> > 
+struct category<mtl::mat::dense2D<Value, Parameters> > 
 {
     typedef tag::dense2D type;
 };
 
 
 template <typename Functor>
-struct category<mtl::matrix::implicit_dense<Functor> >
+struct category<mtl::mat::implicit_dense<Functor> >
 {
     typedef tag::implicit_dense type;
 };
 
 template <typename Value>
-struct category<mtl::matrix::ones_matrix<Value> >
-  : public category<mtl::matrix::implicit_dense<mtl::matrix::ones_functor<Value> > > 
+struct category<mtl::mat::ones_matrix<Value> >
+  : public category<mtl::mat::implicit_dense<mtl::mat::ones_functor<Value> > > 
 {};
 
 template <typename Value>
-struct category<mtl::matrix::hilbert_matrix<Value> >
-  : public category<mtl::matrix::implicit_dense<mtl::matrix::hilbert_functor<Value> > > 
+struct category<mtl::mat::hilbert_matrix<Value> >
+  : public category<mtl::mat::implicit_dense<mtl::mat::hilbert_functor<Value> > > 
 {};
 
 template <typename Vector1, typename Vector2>
-struct category<mtl::matrix::outer_product_matrix<Vector1, Vector2> >
-  : public category<mtl::matrix::implicit_dense<mtl::matrix::outer_product_functor<Vector1, Vector2> > > 
+struct category<mtl::mat::outer_product_matrix<Vector1, Vector2> >
+  : public category<mtl::mat::implicit_dense<mtl::mat::outer_product_functor<Vector1, Vector2> > > 
 {};
 
 
 template <typename Elt, std::size_t BitMask, typename Parameters>
-struct category<mtl::matrix::morton_dense<Elt, BitMask, Parameters> >
+struct category<mtl::mat::morton_dense<Elt, BitMask, Parameters> >
 {
     typedef mtl::tag::morton_dense type;
 };
 
 template <typename Elt, typename Parameters>
-struct category<mtl::matrix::compressed2D<Elt, Parameters> > 
+struct category<mtl::mat::compressed2D<Elt, Parameters> > 
 {
     typedef tag::compressed2D type;
 };
 
 // should have the same tags as compressed2D
 template <typename Elt, typename Parameters>
-struct category<mtl::matrix::coordinate2D<Elt, Parameters> > 
+struct category<mtl::mat::coordinate2D<Elt, Parameters> > 
 {
     typedef tag::compressed2D type;
 };
 
 template <typename Elt, typename Parameters>
-struct category<mtl::matrix::sparse_banded<Elt, Parameters> > 
+struct category<mtl::mat::sparse_banded<Elt, Parameters> > 
 {
     typedef tag::sparse_banded_matrix type;
 };
 
 template <typename Vector>
-struct category<mtl::matrix::multi_vector<Vector> > 
+struct category<mtl::mat::multi_vector<Vector> > 
 {
     typedef tag::multi_vector type;
 };
 
 template <typename Vector>
-struct category<mtl::matrix::multi_vector_range<Vector> > 
+struct category<mtl::mat::multi_vector_range<Vector> > 
 {
     typedef tag::multi_vector type;
 };
 
 template <typename Value>
-struct category<mtl::matrix::element_structure<Value> >
+struct category<mtl::mat::element_structure<Value> >
 {
     typedef tag::element_structure type;
 };
 
 template <typename Value, typename Parameters>
-struct category<mtl::matrix::ell_matrix<Value, Parameters> >
+struct category<mtl::mat::ell_matrix<Value, Parameters> >
 {
     typedef tag::ell_matrix type;
 };
 
 template <typename T, typename Parameters>
-struct category< mtl::vector::dense_vector<T, Parameters> > 
+struct category< mtl::vec::dense_vector<T, Parameters> > 
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
@@ -134,7 +134,7 @@ struct category< mtl::vector::dense_vector<T, Parameters> >
 } ;
 
 template <typename T, typename Parameters>
-struct category< vector::strided_vector_ref<T, Parameters> > 
+struct category< mtl::vec::strided_vector_ref<T, Parameters> > 
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
@@ -144,7 +144,7 @@ struct category< vector::strided_vector_ref<T, Parameters> >
 } ;
 
 template <typename T, typename Parameters>
-struct category< vector::sparse_vector<T, Parameters> > 
+struct category< mtl::vec::sparse_vector<T, Parameters> > 
 {
     typedef typename boost::mpl::if_<
 	boost::is_same<typename Parameters::orientation, row_major>
@@ -155,44 +155,44 @@ struct category< vector::sparse_vector<T, Parameters> >
 
 
 template <class E1, class E2, class SFunctor>
-struct category< vector::vec_vec_pmop_expr<E1,E2, SFunctor> >
+struct category< mtl::vec::vec_vec_pmop_expr<E1,E2, SFunctor> >
 {
     typedef category<E1> type;
 };
 
 template <typename Functor, typename Vector> 
-struct category<vector::map_view<Functor, Vector> >
+struct category< mtl::vec::map_view<Functor, Vector> >
   : public category<Vector>
 {};
 
 template <typename Scaling, typename Vector>
-struct category< vector::scaled_view<Scaling, Vector> >
-  : public category< vector::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, 
+struct category< mtl::vec::scaled_view<Scaling, Vector> >
+  : public category< mtl::vec::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, 
 				      Vector> >
 {};
     
 // added by Hui Li
 template <typename Vector,typename RScaling>
-struct category< vector::rscaled_view<Vector,RScaling> >
-  : public category< vector::map_view<tfunctor::rscale<typename Vector::value_type,RScaling>, 
+struct category< mtl::vec::rscaled_view<Vector,RScaling> >
+  : public category< mtl::vec::map_view<tfunctor::rscale<typename Vector::value_type,RScaling>, 
 				      Vector> >
 {};
 
 // added by Hui Li
 template <typename Vector,typename Divisor>
-struct category< vector::divide_by_view<Vector,Divisor> >
-  : public category< vector::map_view<tfunctor::divide_by<typename Vector::value_type,Divisor>, 
+struct category< mtl::vec::divide_by_view<Vector,Divisor> >
+  : public category< mtl::vec::map_view<tfunctor::divide_by<typename Vector::value_type,Divisor>, 
 				      Vector> >
 {};
 
 template <typename Vector>
-struct category< vector::conj_view<Vector> >
-  : public category< vector::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
+struct category< mtl::vec::conj_view<Vector> >
+  : public category< mtl::vec::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
 {};
 
 template <typename Vector>
-struct category< vector::negate_view<Vector> >
-  : public category< vector::map_view<sfunctor::negate<typename Vector::value_type>, Vector> >
+struct category< mtl::vec::negate_view<Vector> >
+  : public category< mtl::vec::map_view<sfunctor::negate<typename Vector::value_type>, Vector> >
 {};
 
 // To handle std::vector in algorithms
@@ -219,76 +219,76 @@ namespace detail {
 
 
 template <typename Functor, typename Matrix> 
-struct category<mtl::matrix::map_view<Functor, Matrix> >
+struct category<mtl::mat::map_view<Functor, Matrix> >
   : public detail::simple_matrix_view_category<Matrix>
 {};
 
 template <typename Scaling, typename Matrix>
-struct category< mtl::matrix::scaled_view<Scaling, Matrix> >
-    : public category< matrix::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
+struct category< mtl::mat::scaled_view<Scaling, Matrix> >
+    : public category< mat::map_view<tfunctor::scale<Scaling, typename Matrix::value_type>, 
 					    Matrix> >
 {};
 
 // added by Hui Li
 template <typename Matrix, typename RScaling>
-struct category< mtl::matrix::rscaled_view<Matrix,RScaling> >
-    : public category< matrix::map_view<tfunctor::rscale<typename Matrix::value_type,RScaling>, 
+struct category< mtl::mat::rscaled_view<Matrix,RScaling> >
+    : public category< mat::map_view<tfunctor::rscale<typename Matrix::value_type,RScaling>, 
 					Matrix> >
 {};
 
 // added by Hui Li
 template <typename Matrix, typename Divisor>
-struct category< mtl::matrix::divide_by_view<Matrix,Divisor> >
-    : public category< matrix::map_view<tfunctor::divide_by<typename Matrix::value_type,Divisor>, 
+struct category< mtl::mat::divide_by_view<Matrix,Divisor> >
+    : public category< mat::map_view<tfunctor::divide_by<typename Matrix::value_type,Divisor>, 
 					Matrix> >
 {};
 
 // add dense to view_category
 template <typename Matrix>
-struct category<mtl::matrix::indirect<Matrix> >
+struct category<mtl::mat::indirect<Matrix> >
 {
     typedef mtl::tag::join<typename detail::simple_matrix_view_category<Matrix>::type, mtl::tag::dense> type;
 };
 
 
 template <typename Matrix> 
-struct category<mtl::matrix::transposed_view<Matrix> >
+struct category<mtl::mat::transposed_view<Matrix> >
   : public category<Matrix>
 {};
 
 // Specialize on transposed multi-vectors
 template <typename Vector>
-struct category< mtl::matrix::transposed_view< mtl::matrix::multi_vector<Vector> > >
+struct category< mtl::mat::transposed_view< mtl::mat::multi_vector<Vector> > >
 {
     typedef tag::transposed_multi_vector type;
 };
 
 template <typename Matrix>
-struct category< matrix::conj_view<Matrix> >
-    : public category< matrix::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
+struct category< mat::conj_view<Matrix> >
+    : public category< mat::map_view<sfunctor::conj<typename Matrix::value_type>, Matrix> >
 {};
 
 template <typename Matrix>
-struct category< matrix::hermitian_view<Matrix> >
-  : public category< mtl::matrix::map_view<sfunctor::conj<typename Matrix::value_type>, 
-					   mtl::matrix::transposed_view<Matrix> > >
+struct category< mat::hermitian_view<Matrix> >
+  : public category< mtl::mat::map_view<sfunctor::conj<typename Matrix::value_type>, 
+					   mtl::mat::transposed_view<Matrix> > >
 {};
 
 // Specialize on Hermiatians of multi-vectors
 template <typename Vector>
-struct category< matrix::hermitian_view<mtl::matrix::multi_vector<Vector> > >
+struct category< mat::hermitian_view<mtl::mat::multi_vector<Vector> > >
 {
     typedef tag::hermitian_multi_vector type;
 };
 
 
 template <typename Matrix>
-struct category< mtl::matrix::banded_view<Matrix> >
+struct category< mtl::mat::banded_view<Matrix> >
   : public detail::simple_matrix_view_category<Matrix>
 {};
 
 template <typename Matrix, typename VectorIn>
-struct category< mtl::vector::mat_cvec_multiplier<Matrix, VectorIn> >
+struct category< mtl::vec::mat_cvec_multiplier<Matrix, VectorIn> >
 {
     typedef tag::mat_cvec_multiplier type;
 };

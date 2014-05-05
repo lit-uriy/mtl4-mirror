@@ -24,9 +24,9 @@ using namespace itl;
 typedef long t_int;
 typedef long double t_double;
 
-typedef dense_vector<t_double,vector::parameters<tag::col_major, vector::fixed::dimension<2>>> t_vector_2;
-typedef dense2D<t_double,matrix::parameters<tag::row_major,mtl::index::c_index,mtl::fixed::dimensions<3,3>>> t_matrix_3x3;
-typedef dense2D<t_double,matrix::parameters<tag::row_major,mtl::index::c_index,mtl::fixed::dimensions<3,2>>> t_matrix_3x2;
+typedef dense_vector<t_double,parameters<tag::col_major, fixed::dimension<2>>> t_vector_2;
+typedef dense2D<t_double,mat::parameters<tag::row_major,mtl::index::c_index,mtl::fixed::dimensions<3,3>>> t_matrix_3x3;
+typedef dense2D<t_double,mat::parameters<tag::row_major,mtl::index::c_index,mtl::fixed::dimensions<3,2>>> t_matrix_3x2;
 
 typedef std::vector<t_vector_2> t_c4n;
 typedef std::vector<std::array<t_int,3>> t_n4e;
@@ -113,7 +113,7 @@ void red_refine( t_c4n& c4n, t_n4e& n4e, t_n4ed& dbnd, t_n4ed& nbnd )
     // Determine all edges of the mesh.
     compressed2D<t_int> K(c4n.size(),c4n.size()), T;
     {
-        matrix::inserter<compressed2D<t_int>> ins(K);
+        mat::inserter<compressed2D<t_int>> ins(K);
         for ( t_int curElem = 0, nrElem = n4e.size(); curElem < nrElem; ++curElem )
             for ( t_int i = 0; i < 3; ++i )
                 ins[n4e[curElem][i]][n4e[curElem][(i+1)%3]] << 1;
@@ -198,7 +198,7 @@ void fem15( const t_c4n& c4n, const t_n4e& n4e, const t_n4ed& dbnd, const t_n4ed
 
     // Build the system of equations.
     {
-        matrix::inserter<compressed2D<t_double>,update_plus<t_double>> ins(A);
+        mat::inserter<compressed2D<t_double>,update_plus<t_double>> ins(A);
         for ( t_int curElem = 0, nrElem = n4e.size(); curElem < nrElem; ++curElem )
         {
             // Build local stiffness matrices A_T for piecewise linear shape functions and insert into the global stiffness matrix A.
@@ -225,7 +225,7 @@ void fem15( const t_c4n& c4n, const t_n4e& n4e, const t_n4ed& dbnd, const t_n4ed
     for ( t_int i = 0; i < nrNodes; ++i )
         if ( isFreeNode[i] )
             freeNodes.push_back(i);
-    matrix::traits::permutation<>::type freeNodes_perm = matrix::reorder( freeNodes, nrNodes );
+    mat::traits::permutation<>::type freeNodes_perm = mat::reorder( freeNodes, nrNodes );
 
     // Build reduced system of equations for free nodes.
     compressed2D<t_double> A_freeNodes( freeNodes_perm * A * trans(freeNodes_perm) );

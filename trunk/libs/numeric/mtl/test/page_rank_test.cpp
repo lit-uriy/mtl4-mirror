@@ -59,7 +59,7 @@ int main(int, char**)
 
     mtl::compressed2D<double> B(9, 9);
     {
-	mtl::matrix::inserter<mtl::compressed2D<double> > ins(B);
+	mtl::mat::inserter<mtl::compressed2D<double> > ins(B);
 	ins[0][1] << .2; ins[0][4] << .5;
 	ins[1][0] << .5; ins[1][3] << 1; ins[1][4] << .5; ins[1][5] << .25; ins[1][6] << 1/3.;
 	ins[2][2] << .1; ins[2][5] << .25;

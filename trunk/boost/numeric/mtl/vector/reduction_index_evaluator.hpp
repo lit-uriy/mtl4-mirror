@@ -13,7 +13,7 @@
 #ifndef MTL_VECTOR_REDUCTION_INDEX_EVALUATOR_INCLUDE
 #define MTL_VECTOR_REDUCTION_INDEX_EVALUATOR_INCLUDE
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// Class for index-wise vector reductions
 template <typename Scalar, typename Vector, typename Functor, typename Assign>

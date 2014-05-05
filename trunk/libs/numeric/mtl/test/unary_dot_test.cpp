@@ -50,19 +50,19 @@ void test(VectorU& u, const char* name)
     if (not_two_norm)
 	throw "different from square of two_norm";
 
-    std::cout << " unary_dot<2>(u) = " << mtl::vector::unary_dot<2>(u) << "\n"; std::cout.flush();
-    if (abs(mtl::vector::unary_dot<2>(u) - dot_cmp) > 0.001) 
+    std::cout << " unary_dot<2>(u) = " << mtl::unary_dot<2>(u) << "\n"; std::cout.flush();
+    if (abs(mtl::unary_dot<2>(u) - dot_cmp) > 0.001) 
 	throw "unary_dot product wrong";
 
-    std::cout << " unary_dot<6>(u) = " << mtl::vector::unary_dot<6>(u) << "\n"; std::cout.flush();
-    if (abs(mtl::vector::unary_dot<6>(u) - dot_cmp) > 0.001) 
+    std::cout << " unary_dot<6>(u) = " << mtl::unary_dot<6>(u) << "\n"; std::cout.flush();
+    if (abs(mtl::unary_dot<6>(u) - dot_cmp) > 0.001) 
 	throw "unary_dot product wrong";
 }
  
 
 int main(int ,char**)
 {
-    using mtl::vector::parameters;
+    using mtl::vec::parameters;
     const int size= 9;
 
     mtl::dense_vector<float>   u(size);

@@ -87,11 +87,10 @@ void min_max_test(Vector& v, const char*)
 int main(int, char**)
 {
     using namespace mtl;
-    using mtl::vector::parameters;
 
-    dense_vector<float, parameters<> >                 u(5);
-    dense_vector<double, parameters<> >                x(5);
-    dense_vector<std::complex<double>, parameters<> >  xc(5);
+    dense_vector<float>                 u(5);
+    dense_vector<double>                x(5);
+    dense_vector<std::complex<double> > xc(5);
 
     std::cout << "Testing vector operations\n";
 
@@ -102,7 +101,7 @@ int main(int, char**)
 
     test(xc, "test complex<double>");
 
-    dense_vector<float, parameters<row_major> >   ur(5);
+    dense_vector<float, vec::parameters<row_major> >   ur(5);
     test(ur, "test float in row vector");
     min_max_test(ur, "test float in row vector");
 

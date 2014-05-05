@@ -52,7 +52,7 @@ namespace mtl { namespace tfunctor {
     template <typename Matrix, typename Value2>
     struct rscale<Matrix, Value2, tag::matrix>
     {
-	typedef matrix::rscaled_view<Matrix,Value2> result_type;
+	typedef mat::rscaled_view<Matrix,Value2> result_type;
 	
 	explicit rscale(const Value2& v2) : v2(v2) {}
 	
@@ -68,7 +68,7 @@ namespace mtl { namespace tfunctor {
     template <typename Vector, typename Value2>
     struct rscale<Vector, Value2, tag::vector>
     {
-	typedef vector::rscaled_view<Vector, Value2> result_type;
+	typedef vec::rscaled_view<Vector, Value2> result_type;
 	
 	explicit rscale(const Value2& v2) : v2(v2) {}
 		
@@ -84,7 +84,7 @@ namespace mtl { namespace tfunctor {
 } // namespace tfunctor
 	
 
-namespace matrix {
+namespace mat {
 
     template <typename Value1, typename Value2>
     typename tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
@@ -95,7 +95,7 @@ namespace matrix {
     }
 }
 
-namespace vector {
+namespace vec {
 
     template <typename Value1, typename Value2>
     typename tfunctor::rscale<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type

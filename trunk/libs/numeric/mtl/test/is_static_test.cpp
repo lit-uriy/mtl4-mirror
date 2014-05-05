@@ -19,14 +19,14 @@ int main(int, char**)
 {
     using namespace mtl;
 
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
-    typedef mtl::vector::parameters<tag::col_major, mtl::vector::fixed::dimension<3>, true>             vec_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
+    typedef mtl::vec::parameters<tag::col_major, mtl::vec::fixed::dimension<3>, true>                vec_para;
 
     MTL_THROW_IF(( traits::is_static<mtl::non_fixed::dimensions>::value), mtl::runtime_error("Must not be static!"));
     MTL_THROW_IF((!traits::is_static<mtl::fixed::dimensions<1, 2> >::value), mtl::runtime_error("Must be static!"));
 
-    MTL_THROW_IF(( traits::is_static<mtl::vector::non_fixed::dimension>::value), mtl::runtime_error("Must not be static!"));
-    MTL_THROW_IF((!traits::is_static<mtl::vector::fixed::dimension<1> >::value), mtl::runtime_error("Must be static!"));
+    MTL_THROW_IF(( traits::is_static<mtl::vec::non_fixed::dimension>::value), mtl::runtime_error("Must not be static!"));
+    MTL_THROW_IF((!traits::is_static<mtl::vec::fixed::dimension<1> >::value), mtl::runtime_error("Must be static!"));
 
     MTL_THROW_IF(( traits::is_static<mtl::dense2D<float> >::value), mtl::runtime_error("Must not be static!"));
     MTL_THROW_IF((!traits::is_static<mtl::dense2D<float, mat_para> >::value), mtl::runtime_error("Must be static!"));

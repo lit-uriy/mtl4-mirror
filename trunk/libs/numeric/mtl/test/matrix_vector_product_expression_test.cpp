@@ -52,7 +52,7 @@ void test(MatrixA& A, unsigned dim1, unsigned dim2, const char* name)
 	MTL_THROW_IF(abs(r[12] + 17.0) > 0.0001, mtl::runtime_error("r[12] should be -17.\n"));
     }
 
-    // typedef mtl::dense_vector<double, mtl::vector::parameters<mtl::row_major> >  vrt;
+    // typedef mtl::dense_vector<double, mtl::parameters<mtl::row_major> >  vrt;
     // vrt rt, vt(trans(v));
 
     // rt= v * A;
@@ -69,10 +69,10 @@ int main(int argc, char* argv[])
     unsigned size= dim1 * dim2; 
 
     compressed2D<double>                                 cr(size, size);
-    compressed2D<double, matrix::parameters<col_major> > cc(size, size);
+    compressed2D<double, mat::parameters<col_major> > cc(size, size);
 
     dense2D<double>                                      dr(size, size);
-    dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dense2D<double, mat::parameters<col_major> >      dc(size, size);
 
     test(cr, dim1, dim2, "Row-major sparse");
     test(cc, dim1, dim2, "Column-major sparse");

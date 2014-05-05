@@ -27,7 +27,7 @@
 #include <boost/numeric/linear_algebra/inverse.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 namespace detail {

@@ -11,7 +11,7 @@ int main(int, char**)
     // Creating a compression (reordering) matrix from a vector (or an array respectively)
     int non_zero_rows[]= {0, 1, 2}, non_zero_columns[]= {0, 2};
     // To be sure, we give the number of columns for a consistent size!
-    matrix::traits::reorder<>::type RR= matrix::reorder(non_zero_rows, 4), RC= matrix::reorder(non_zero_columns);
+    mat::traits::reorder<>::type RR= mat::reorder(non_zero_rows, 4), RC= mat::reorder(non_zero_columns);
     std::cout << "A =\n" << A << "\nRR =\n" << RR << "\nRC =\n" << RC;    
 
     // Compress rows

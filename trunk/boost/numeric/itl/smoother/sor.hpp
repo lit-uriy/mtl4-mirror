@@ -78,14 +78,14 @@ class sor
 
    private:
     const Matrix&    A;
-    mtl::vector::dense_vector<Scalar>  dia_inv;
+    mtl::dense_vector<Scalar>  dia_inv;
 };
 
  
 template <typename Value, typename Parameters, typename Omega>
-class sor<mtl::matrix::compressed2D<Value, Parameters> , Omega>
+class sor<mtl::mat::compressed2D<Value, Parameters> , Omega>
 {
-    typedef mtl::matrix::compressed2D<Value, Parameters> Matrix;
+    typedef mtl::mat::compressed2D<Value, Parameters> Matrix;
     typedef typename mtl::Collection<Matrix>::value_type Scalar;
     typedef typename mtl::Collection<Matrix>::size_type  size_type;
     
@@ -128,8 +128,8 @@ class sor<mtl::matrix::compressed2D<Value, Parameters> , Omega>
 
   private:
     const Matrix&    A;
-    mtl::vector::dense_vector<Scalar>     dia_inv;
-    mtl::vector::dense_vector<size_type>  dia_pos;
+    mtl::dense_vector<Scalar>     dia_inv;
+    mtl::dense_vector<size_type>  dia_pos;
 };
 
 

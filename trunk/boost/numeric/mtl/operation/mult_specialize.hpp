@@ -16,7 +16,7 @@
 #include <boost/numeric/mtl/operation/dmat_dmat_mult.hpp>
 #include <boost/mpl/bool.hpp>
 
-namespace mtl { namespace matrix {namespace detail {
+namespace mtl { namespace mat {namespace detail {
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
 struct dmat_dmat_mult_tiling1
@@ -49,6 +49,6 @@ struct dmat_dmat_mult_specialize
 
 
 
-}}} // namespace mtl::matrix::detail
+}}} // namespace mtl::mat::detail
 
 #endif // MTL_MULT_SPECIALIZE_INCLUDE

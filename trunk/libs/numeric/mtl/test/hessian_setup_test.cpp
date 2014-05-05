@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     if (size < 2) size= 2;
 
     dense2D<double>                                       da(size, size-1); 
-    dense2D<double, matrix::parameters<col_major> >       dca(size, size-1);
+    dense2D<double, mat::parameters<col_major> >       dca(size, size-1);
     dense2D<float>                                        fa(size, size-1);
 
     morton_dense<double,  morton_mask>                    mda(size, size-1);
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     morton_dense<double, doppled_32_row_mask>             mra(size, size-1);
 
     compressed2D<double>                                  cda(size, size-1); 
-    compressed2D<double, matrix::parameters<col_major> >  cdca(size, size-1);
+    compressed2D<double, mat::parameters<col_major> >  cdca(size, size-1);
     
 
     test(da, "dense2D");

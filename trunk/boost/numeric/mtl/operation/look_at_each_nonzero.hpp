@@ -24,7 +24,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 
 	/// Perform \p f(v[i]) on each non-zero i in constant vector \p v; thus the must keep the result in its state 
 	template <typename Vector, typename Functor>
@@ -52,7 +52,7 @@ namespace mtl {
 
     } // namespace vector
 
-    namespace matrix {
+    namespace mat {
 
 	/// Perform a potentially mutating \p f(A[i][j]) on each non-zero entry in matrix \p A 
 	template <typename Matrix, typename Functor>

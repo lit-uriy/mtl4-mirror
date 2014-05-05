@@ -24,7 +24,7 @@ void test(int n)
     mtl::compressed2D<double> A(n*n, n*n);
     boost::timer start;
     {
-	mtl::matrix::inserter<mtl::compressed2D<double> > ins(A);
+	mtl::mat::inserter<mtl::compressed2D<double> > ins(A);
 	for (int i= 0; i < n; i++) {
 	    int r= i * n, re= r+n;
 	    if (i > 0)
@@ -55,7 +55,7 @@ void test2(int d, int nnz)
     mtl::compressed2D<double> A(d, d);
     boost::timer start;
     {
-	mtl::matrix::inserter<mtl::compressed2D<double> > ins(A, int(1.2 * nnz / double(d)));
+	mtl::mat::inserter<mtl::compressed2D<double> > ins(A, int(1.2 * nnz / double(d)));
 	std::cout << "Slot size is " << int(1.2 * nnz / double(d)) << '\n';
 	for (int i= 0; i < nnz; i++) {
 	    int r= rand(), c= rand();

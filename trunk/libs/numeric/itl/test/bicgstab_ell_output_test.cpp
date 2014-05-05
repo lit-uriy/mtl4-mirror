@@ -22,7 +22,7 @@
 template <typename Matrix>
 void test1(Matrix& m, double tau)
 {
-    mtl::matrix::inserter<Matrix> ins(m);
+    mtl::mat::inserter<Matrix> ins(m);
     size_t nrows=num_rows(m);
     double val;
     for (size_t r= 0; r < nrows; ++r) 

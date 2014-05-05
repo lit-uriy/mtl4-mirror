@@ -21,7 +21,7 @@ using namespace std;
 enum tag_type { mtag, vtag, stag };
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
     template <typename A1, typename A2>
     typename mtl::traits::enable_if_matrix<A1>::type
@@ -32,7 +32,7 @@ namespace mtl { namespace matrix {
     }
 }}
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
     template <typename A1, typename A2>
     typename mtl::traits::enable_if_vector<A1>::type
@@ -54,8 +54,8 @@ namespace mtl { namespace scalar {
 }}
 
 namespace mtl {
-    using vector::f;
-    using matrix::f;
+    using vec::f;
+    using mat::f;
     using scalar::f;
 }
 

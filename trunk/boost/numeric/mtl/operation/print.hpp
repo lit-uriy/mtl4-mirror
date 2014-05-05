@@ -45,7 +45,7 @@ namespace detail {
 
 } // namespace detail
 
-namespace matrix {
+namespace mat {
 
     template <typename Matrix>
     inline std::ostream& operator<< (std::ostream& out, const mat_expr<Matrix>& expr)
@@ -68,11 +68,11 @@ namespace matrix {
     }  
 } // namespace matrix
 
-namespace vector {
+namespace vec {
 
     
     template <typename Vector>
-    inline std::ostream& operator<< (std::ostream& out, const vector::vec_expr<Vector>& expr)
+    inline std::ostream& operator<< (std::ostream& out, const vec::vec_expr<Vector>& expr)
     {
 	return print_vector(static_cast<const Vector&>(expr), out, 0, 0);
     }

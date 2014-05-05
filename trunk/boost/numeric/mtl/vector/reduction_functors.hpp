@@ -17,7 +17,7 @@
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/operation/squared_abs.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 struct one_norm_functor
 {

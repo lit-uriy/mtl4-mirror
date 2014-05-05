@@ -32,7 +32,7 @@ int main()
   typedef unsigned size_type;
   // typedef std::size_t size_type;
   std::cout << "sizeof in size_type is " << sizeof(size_type) << '\n';
-  typedef matrix::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, size_type> para;
+  typedef mat::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, size_type> para;
   typedef compressed2D<double, para>  matrix_type;
   matrix_type          A(N, N);
   laplacian_setup(A, size, size);

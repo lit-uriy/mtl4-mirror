@@ -13,7 +13,7 @@
 #ifndef MTL_MATRIX_MERGE_COMPLEX_MATRIX_INCLUDE
 #define MTL_MATRIX_MERGE_COMPLEX_MATRIX_INCLUDE
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 

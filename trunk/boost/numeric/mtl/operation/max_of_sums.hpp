@@ -60,7 +60,7 @@ inline max_of_sums(const Matrix& matrix, bool aligned, MinorIndex minor_index, u
     }
 
     // If matrix has other orientation, we compute all sums in a vector
-    vector::dense_vector<real_type>   sums(dim2, my_zero);
+    dense_vector<real_type>   sums(dim2, my_zero);
     for (cursor_type cursor = begin<tag::major>(matrix), cend = end<tag::major>(matrix); cursor != cend; ++cursor)
 	for (icursor_type icursor = begin<tag::nz>(cursor), icend = end<tag::nz>(cursor); icursor != icend; ++icursor)
 	    sums[minor_index(*icursor)]+= abs(value(*icursor));

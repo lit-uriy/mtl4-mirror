@@ -7,7 +7,7 @@ int main()
 {
     using namespace mtl;
 
-    typedef matrix::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, unsigned> para;
+    typedef mat::parameters<row_major, mtl::index::c_index, non_fixed::dimensions, false, unsigned> para;
     compressed2D<double, para>   A;
     laplacian_setup(A, 2, 3);
 

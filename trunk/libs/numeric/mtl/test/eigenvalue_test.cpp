@@ -17,7 +17,7 @@
 
 
 int main() {
-    mtl::matrix::dense2D<double> A(10, 10);
+    mtl::mat::dense2D<double> A(10, 10);
     
     int ev_count = 0;
     
@@ -34,7 +34,7 @@ int main() {
 	-3.39889, -10.3545, -0.828751, 17.1083, 6.65637, -1.54847, -9.39066, 19.2665, 59.9372, 8.98516, 
 	0.991482, 2.81724, -1.99112, -10.9052, 1.77954, 3.20488, 0.519006, -4.37109, 9.20029, 59.9732;
 	
-    mtl::matrix::eigenvalue_solver<mtl::matrix::dense2D<double> > ES(A);
+    mtl::mat::eigenvalue_solver<mtl::mat::dense2D<double> > ES(A);
     ES.calc();
     for(int i=1;i<=10;i++) {
 	for(int j=0;j<10;j++) {

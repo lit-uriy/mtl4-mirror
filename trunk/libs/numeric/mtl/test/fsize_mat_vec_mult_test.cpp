@@ -18,8 +18,8 @@ int main(int , char**)
 {
     using namespace mtl;
  
-    typedef mtl::vector::parameters<tag::col_major, mtl::vector::fixed::dimension<2> > fvec_para;
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2> > fmat_para;
+    typedef mtl::vec::parameters<tag::col_major, mtl::vec::fixed::dimension<2> > fvec_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2> > fmat_para;
 
     dense2D<double, fmat_para>        A; // dimension not needed here
     dense_vector<double, fvec_para>   v, w, w2; // here neither

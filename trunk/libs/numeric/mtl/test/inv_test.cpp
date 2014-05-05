@@ -56,7 +56,7 @@ void test(Matrix& A, const char* name)
 
     mtl::dense_vector<size_type> Pv(size);
     lu(PLU, Pv);
-    typename mtl::matrix::traits::permutation<>::type P(permutation(Pv));
+    typename mtl::mat::traits::permutation<>::type P(permutation(Pv));
     
     cout << "Permuted A is \n" << Matrix(P * A);
 
@@ -82,7 +82,7 @@ void test(Matrix& A, const char* name)
     cout << "inv(A) [inv(U) * inv(L) * P] is \n" << AI << "A * AI is\n" << Matrix(AI * A);
     MTL_THROW_IF(one_norm(Matrix(AI * A - I)) > 0.1, mtl::runtime_error("Error in inversion."));
 
-    typename mtl::matrix::traits::inv<Matrix>::type A_inv(inv(A));
+    typename mtl::mat::traits::inv<Matrix>::type A_inv(inv(A));
     cout << "inv(A) is \n" << A_inv << "A * AI is\n" << Matrix(A_inv * A);
     MTL_THROW_IF(one_norm(Matrix(A_inv * A - I)) > 0.1, mtl::runtime_error("Error in inversion."));
 }
@@ -96,7 +96,7 @@ int main(int, char**)
     
     dense2D<double>                                      dr(size, size);
     dense2D<complex<double> >                            dz(size, size);
-    dense2D<double, matrix::parameters<col_major> >      dc(size, size);
+    dense2D<double, mat::parameters<col_major> >      dc(size, size);
     // compressed2D<double>                                 cr(size, size);
 
     test(dr, "Row-major dense");

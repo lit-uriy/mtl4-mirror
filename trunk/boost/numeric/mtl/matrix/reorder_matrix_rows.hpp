@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/matrix/inserter.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Reorder the rows of a matrix without creating a reorder matrix
 /** This is less elegant but avoids cyclic dependencies. Does not work with CCS matrices. **/

@@ -13,7 +13,7 @@
 #ifndef MTL_VECTOR_INCREMENTER_INCLUDE
 #define MTL_VECTOR_INCREMENTER_INCLUDE
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 struct incrementer_base {};
 

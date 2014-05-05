@@ -34,8 +34,8 @@ void inline test_file(Matrix& A, const char* file_name, const char* comment)
 
     if (num_rows(A) > 9 && num_cols(A) > 9) {
 	int reordering[]= {0, 1, 2, 3, 4, 5, 6, 7, 8};
-	mtl::matrix::traits::reorder<>::type  R= mtl::matrix::reorder(reordering, num_cols(A)),
-	                                      R2= mtl::matrix::reorder(reordering, num_rows(A));
+	mtl::mat::traits::reorder<>::type  R= mtl::mat::reorder(reordering, num_cols(A)),
+	                                      R2= mtl::mat::reorder(reordering, num_rows(A));
 	Matrix B0(R * A), B(B0 * trans(R2));
 	std::cout << "A[0:9][0:9] is:\n" << B;
     } else
@@ -105,7 +105,7 @@ int main(int, char* argv[])
     compressed2D<double>                             cdc;
     compressed2D<std::complex<double> >              ccc;
     dense2D<double>                                  dc;
-    dense2D<double, matrix::parameters<col_major> >  dcc;
+    dense2D<double, mat::parameters<col_major> >  dcc;
     dense2D<float>                                   fc;
     morton_dense<double,  morton_mask>               mdc;
     morton_dense<double, doppled_32_col_mask>        mcc;

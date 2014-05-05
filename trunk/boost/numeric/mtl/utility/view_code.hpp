@@ -37,19 +37,19 @@ struct view_code<const T>
 };
 
 template <typename Matrix>
-struct view_code< matrix::conj_view<Matrix> >
+struct view_code< mat::conj_view<Matrix> >
 {
     static const unsigned value= view_code<Matrix>::value ^ 2; ///< Toggle conjugation bit
 };
 
 template <typename Matrix> 
-struct view_code<mtl::matrix::transposed_view<Matrix> >
+struct view_code<mtl::mat::transposed_view<Matrix> >
 {
     static const unsigned value= view_code<Matrix>::value ^ 4; ///< Toggle transposition bit
 };
 
 template <typename Matrix> 
-struct view_code<mtl::matrix::hermitian_view<Matrix> >
+struct view_code<mtl::mat::hermitian_view<Matrix> >
 {
     static const unsigned value= view_code<Matrix>::value ^ 6; ///< Toggle transposition and conjugation bit
 };

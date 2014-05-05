@@ -26,7 +26,7 @@ int main(int , char** )
 
     // Set up a non-singular tridiagonal matrix
     {
-	mtl::matrix::inserter<matrix_type> ins(A, 3);
+	mtl::mat::inserter<matrix_type> ins(A, 3);
 	for (int i= 0; i < size; i++) {
 	    if (i > 0) ins[i][i-1] << -0.8;
 	    ins[i][i] << 3;

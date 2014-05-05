@@ -39,7 +39,7 @@ template <typename Matrix>
 void rectangle_test(Matrix& A, const char* name)
 {
     {
-	mtl::matrix::inserter<Matrix> ins(A);
+	mtl::mat::inserter<Matrix> ins(A);
 	int i= 1;
 	unsigned nc= num_cols(A);
 	for (unsigned r= 0; r < num_rows(A); r++) {
@@ -94,29 +94,29 @@ int main(int, char**)
     using namespace mtl;
 #ifdef MTL_WITH_DEVELOPMENT
     unsigned dim1= 3, dim2= 4;
-    matrix::sparse_banded<double>  dr, dr2(6, 11), dr3(11, 6), dr4(6, 5);
+    mat::sparse_banded<double>  dr, dr2(6, 11), dr3(11, 6), dr4(6, 5);
     
     laplacian_test(dr, dim1, dim2, "Dense row major");
     rectangle_test(dr2, "Dense row major");
     rectangle_test(dr3, "Dense row major");
     rectangle_test(dr4, "Dense row major");
 
-    matrix::compressed2D<double> C;
+    mat::compressed2D<double> C;
     laplacian_setup(C, dim1, dim2);
 
-    matrix::sparse_banded<double>  D;
+    mat::sparse_banded<double>  D;
     D= C;
     mtl::io::tout << "D is\n" << D;
 
     two_d_iteration(D, mtl::tag::row());
 
-    matrix::compressed2D<double> E;
+    mat::compressed2D<double> E;
     E= D;
     mtl::io::tout << "D is\n" << D;
 
-    matrix::sparse_banded<double>  dr5(5, 5), dr6(5, 5);
+    mat::sparse_banded<double>  dr5(5, 5), dr6(5, 5);
     {
-	mtl::matrix::inserter<matrix::sparse_banded<double> > ins5(dr5), ins6(dr6);	
+	mtl::mat::inserter<mat::sparse_banded<double> > ins5(dr5), ins6(dr6);	
 	ins5[2][0] << 1; ins5[3][1] << 2; ins5[4][2] << 3; ins5[4][0] << 4;
 	ins6[0][2] << 1; ins6[1][3] << 2; ins6[2][4] << 3; ins6[0][4] << 4;
     }

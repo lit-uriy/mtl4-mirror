@@ -44,7 +44,7 @@ namespace impl {
     void inline random(Coll& A, Generator& generator, tag::universe, tag::matrix)
     {
 	typedef typename Collection<Coll>::size_type size_type;
-	matrix::inserter<Coll> ins(A, A.dim2());
+	mat::inserter<Coll> ins(A, A.dim2());
 	for (size_type r= 0; r < num_rows(A); r++)
 	    for (size_type c= 0; c < num_cols(A); c++)
 		ins[r][c] << generator();
@@ -60,7 +60,7 @@ namespace impl {
 } // namespace impl
 
 
-namespace vector {
+namespace vec {
 
     /// Fill vector with random values; generator must be a nullary function.
     template <typename Vector, typename Generator>
@@ -87,7 +87,7 @@ namespace vector {
 
 } // namespace vector
 
-namespace matrix {
+namespace mat {
 
     /// Fill matrix with random values; generator must be a nullary function.
     template <typename Matrix, typename Generator>

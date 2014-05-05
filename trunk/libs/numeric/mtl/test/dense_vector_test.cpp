@@ -131,7 +131,7 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
 
 int main(int , char**)
 {
-    using mtl::vector::parameters;
+    using mtl::vec::parameters;
     using namespace mtl;
 
     dense_vector<float>   u(5), v(5), w(5);

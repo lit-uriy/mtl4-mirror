@@ -13,7 +13,7 @@
 #ifndef MTL_VECTOR_DECREMENTER_INCLUDE
 #define MTL_VECTOR_DECREMENTER_INCLUDE
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 struct decrementer_base {};
 

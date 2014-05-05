@@ -25,11 +25,11 @@ namespace mtl {
 	struct vector_resource
 	{
 	    typedef typename Collection<Vector>::size_type type;
-	    type inline static apply(const Vector& v) { using mtl::vector::size; return size(v); }
+	    type inline static apply(const Vector& v) { using mtl::vec::size; return size(v); }
 	};
     }
 
-    namespace vector {
+    namespace vec {
 
 	/// Describes the resources need for a certain vector.
 	/** All necessary information to construct appropriate/consistent temporary vectors.
@@ -45,7 +45,7 @@ namespace mtl {
 
     } // namespace vector
 
-    namespace matrix {
+    namespace mat {
 	// maybe a pair of size_type? like position
     }
 

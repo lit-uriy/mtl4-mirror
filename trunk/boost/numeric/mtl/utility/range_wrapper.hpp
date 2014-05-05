@@ -101,7 +101,7 @@ inline range_of(const T& x)
 }
 
 
-namespace matrix {
+namespace mat {
     using mtl::rows_of;
     using mtl::cols_of;
     using mtl::major_of;

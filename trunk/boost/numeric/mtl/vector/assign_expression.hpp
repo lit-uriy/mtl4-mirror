@@ -17,7 +17,7 @@
 #define MTL_VEC_VEC_ASGN_EXPR_INCLUDE
 
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 // Model of VectorExpression
 template <class E1, class E2>
@@ -78,9 +78,9 @@ public:
 namespace mtl { namespace traits {
 
   template <class E1, class E2>
-  struct category< vector::vec_vec_asgn_expr<E1,E2> > 
+  struct category< vec_vec_asgn_expr<E1,E2> > 
   {
-      typedef vector type ;
+      typedef vec type ;
   } ;
 
 }} // Namespace mtl::traits

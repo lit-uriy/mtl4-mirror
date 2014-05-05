@@ -23,7 +23,7 @@
 #include <boost/numeric/mtl/vector/reduction_functors.hpp>
 
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
     namespace impl {
 
@@ -35,7 +35,7 @@ namespace mtl { namespace vector {
 	inline min(const Vector& vector, tag::vector)
 	{
 	    typedef typename Collection<Vector>::value_type result_type;
-	    return vector::reduction<Unroll, vector::min_functor, result_type>::apply(vector);
+	    return vec::reduction<Unroll, vec::min_functor, result_type>::apply(vector);
 	}
 	
     } // namespace impl
@@ -57,7 +57,7 @@ inline min(const Value& value)
 
 } // namespace vector
 
-using vector::min;
+using vec::min;
     
 } // namespace mtl
 

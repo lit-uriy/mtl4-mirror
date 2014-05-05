@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// Split one complex-valued vector into two real-valued vectors.
 /** Elements of the real vector must be assignable from the real and imaginary part of the complex elements.

@@ -24,19 +24,19 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 
 	/// Transform a vector into a diagonal matrix
 	template <typename Vector>
-	mtl::matrix::compressed2D<typename Collection<Vector>::value_type, matrix::parameters<> >
-	// typename mtl::traits::enable_if_vector<Vector, mtl::matrix::compressed2D<typename Collection<Vector>::value_type> >::type
+	mtl::mat::compressed2D<typename Collection<Vector>::value_type, mat::parameters<> >
+	// typename mtl::traits::enable_if_vector<Vector, mtl::mat::compressed2D<typename Collection<Vector>::value_type> >::type
 	inline diagonal(const Vector& v)
 	{
 	    vampir_trace<2016> tracer;
-	    typedef mtl::matrix::compressed2D<typename Collection<Vector>::value_type, matrix::parameters<> > matrix_type;
+	    typedef mtl::mat::compressed2D<typename Collection<Vector>::value_type, mat::parameters<> > matrix_type;
 	    matrix_type                           D(size(v), size(v));
 	    D= 0;
-	    mtl::matrix::inserter<matrix_type>    ins(D, 1);
+	    mtl::mat::inserter<matrix_type>    ins(D, 1);
 	    for (typename Collection<Vector>::size_type i= 0; i < size(v); ++i)
 		ins[i][i] << v[i];
 
@@ -44,19 +44,19 @@ namespace mtl {
 	}
     } 
 
-    namespace matrix {
+    namespace mat {
 
 	/// Return the vector with the diagonal of the matrix
 	template <typename Matrix>
 	// typename mtl::traits::enable_if_matrix<Matrix, conj_view<Matrix> >::type
-	mtl::vector::dense_vector<typename Collection<Matrix>::value_type, vector::parameters<> >
+	mtl::vec::dense_vector<typename Collection<Matrix>::value_type, vec::parameters<> >
 	inline diagonal(const Matrix& A)
 	{
 	    vampir_trace<3007> tracer;
 	    using std::min;
 	    typedef typename Collection<Matrix>::size_type size_type;
 	    size_type n= min(num_rows(A), num_cols(A));
-		mtl::vector::dense_vector<typename Collection<Matrix>::value_type, vector::parameters<> > v(n);
+		mtl::vec::dense_vector<typename Collection<Matrix>::value_type, vec::parameters<> > v(n);
 
 	    for (size_type i= 0; i < n; ++i)
 		v[i]= A[i][i];

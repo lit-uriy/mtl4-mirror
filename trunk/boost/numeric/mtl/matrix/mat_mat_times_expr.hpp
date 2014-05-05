@@ -32,7 +32,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename E1, typename E2>
 struct mat_mat_times_expr 

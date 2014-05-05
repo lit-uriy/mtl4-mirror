@@ -19,13 +19,13 @@ int main(int, char**)
 {
     using namespace std;
     using mtl::lazy; using mtl::io::tout;
-    typedef mtl::vector::dense_vector<double> vt;
+    typedef mtl::dense_vector<double> vt;
     
     vt v(60);
     iota(v);
     tout << "v is " << v << endl;
 
-    mtl::matrix::identity2D I(60);
+    mtl::mat::identity2D I(60);
     vt w1(I * v);
     tout << "I * v is " << w1 << endl;
 
@@ -44,7 +44,7 @@ int main(int, char**)
     (lazy(w2)= I * v) || (lazy(alpha)= lazy_dot(w2, v));
 
     vt w3(30), w4(90);
-    mtl::matrix::identity2D I3(30, 60), I4(90, 60);
+    mtl::mat::identity2D I3(30, 60), I4(90, 60);
     
     w3= I3 * v;
     tout << "I3 * v is " << w3 << endl;

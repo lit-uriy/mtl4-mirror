@@ -18,7 +18,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 
 	/// Remove all zero entries from a collection
 	/** Does nothing for dense collections **/
@@ -30,7 +30,7 @@ namespace mtl {
 	}
     }
 
-    namespace matrix {
+    namespace mat {
 
 	/// Remove all zero entries from a collection
 	/** Does nothing for dense collections **/
@@ -42,8 +42,8 @@ namespace mtl {
 	}
     }
     
-    using vector::crop;
-    using matrix::crop;
+    using vec::crop;
+    using mat::crop;
 
 } // namespace mtl
 

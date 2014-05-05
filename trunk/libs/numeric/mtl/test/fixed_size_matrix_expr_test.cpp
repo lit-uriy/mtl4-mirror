@@ -40,7 +40,7 @@ void test(const ResMatrix& , const ArgMatrix& B)
 int main(int , char**)
 {
     using namespace mtl;
-    typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2>, true> fmat_para;
+    typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<2, 2>, true> fmat_para;
 
     float ma[2][2]= {{2., 3.}, {4., 5.}};
     
@@ -52,10 +52,10 @@ int main(int , char**)
     test(A_stat, A_stat);
     test(A_stat, A_dyn);
 
-    typedef mtl::vector::fixed::dimension< 2 > fsize;
-    mtl::dense_vector<float, mtl::vector::parameters<mtl::col_major, fsize, true> >     rf;
+    typedef mtl::vec::fixed::dimension< 2 > fsize;
+    mtl::dense_vector<float, mtl::vec::parameters<mtl::col_major, fsize, true> >     rf;
     rf = 1.0;
-    mtl::dense_vector<float, mtl::vector::parameters<mtl::col_major, fsize, true> >     rf2;
+    mtl::dense_vector<float, mtl::vec::parameters<mtl::col_major, fsize, true> >     rf2;
     const static double swap = 1.0;
     swap*(rf + A_stat*rf);
     return 0;

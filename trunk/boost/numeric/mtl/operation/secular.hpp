@@ -25,7 +25,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 /// Class for the secular equation( to solve eigenvalue problems)
 template <typename Vector>

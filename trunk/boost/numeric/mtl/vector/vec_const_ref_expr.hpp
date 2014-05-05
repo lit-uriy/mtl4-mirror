@@ -13,7 +13,7 @@
 #ifndef MTL_VECTOR_VEC_CONST_REF_EXPR_INCLUDE
 #define MTL_VECTOR_VEC_CONST_REF_EXPR_INCLUDE
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 
 /// Class for providing interface for a vector given as reference

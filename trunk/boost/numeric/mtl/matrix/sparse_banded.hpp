@@ -31,10 +31,10 @@
 #include <boost/numeric/mtl/utility/maybe.hpp>
 #include <boost/numeric/mtl/utility/static_assert.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Sparse banded matrix class
-template <typename Value, typename Parameters = matrix::parameters<> >
+template <typename Value, typename Parameters = mat::parameters<> >
 class sparse_banded
   : public base_matrix<Value, Parameters>,
     public const_crtp_base_matrix< sparse_banded<Value, Parameters>, Value, typename Parameters::size_type >,
@@ -263,7 +263,7 @@ struct sparse_banded_key
 {
     typedef std::size_t                                   size_t;
     typedef sparse_banded_key                             self;
-    typedef mtl::matrix::sparse_banded<Value, Parameters> matrix_type;
+    typedef mtl::mat::sparse_banded<Value, Parameters> matrix_type;
     
     explicit sparse_banded_key(const matrix_type& A, size_t offset) 
       : A(A), offset(offset) {}
@@ -281,7 +281,7 @@ struct sparse_banded_cursor
   : public sparse_banded_key<Value, Parameters>
 {
     typedef sparse_banded_key<Value, Parameters>          base;
-    typedef mtl::matrix::sparse_banded<Value, Parameters> matrix_type;
+    typedef mtl::mat::sparse_banded<Value, Parameters> matrix_type;
     typedef sparse_banded_cursor                          self;
 
     explicit sparse_banded_cursor(const matrix_type& A, size_t offset) 
@@ -304,7 +304,7 @@ inline std::size_t size(const sparse_banded<Value, Parameters>& matrix)
 }} // namespace mtl::matrix
 
 namespace mtl {
-    using matrix::sparse_banded;
+    using mat::sparse_banded;
 }
 
 
@@ -328,7 +328,7 @@ namespace mtl { namespace traits {
 	typedef typename Parameters::size_type                                                 size_type;
 	typedef detail::sub_matrix_cursor<sparse_banded<Value, Parameters>, glas::tag::row, 2> cursor_type;
 	typedef complexity_classes::linear_cached                                              complexity;
-	typedef mtl::matrix::sparse_banded_cursor<Value, Parameters>                           type;
+	typedef mtl::mat::sparse_banded_cursor<Value, Parameters>                           type;
 	static int const                                                                       level = 1;
 	MTL_STATIC_ASSERT((is_row_major<Parameters>::value), "Only row-major sparse banded matrices supported so far.");
 

@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/operation/compute_summand.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 // Model of VectorExpression
 template <class E1, class E2, typename SFunctor>
@@ -76,9 +76,9 @@ struct vec_vec_pmop_expr
 template <typename E1, typename E2, typename SFunctor>
 inline std::size_t size(const vec_vec_pmop_expr<E1, E2, SFunctor>& v)
 {
-    MTL_DEBUG_THROW_IF(mtl::vector::size(v.first.value) != 0 
-		       && mtl::vector::size(v.first.value) != mtl::vector::size(v.second.value), incompatible_size());
-    return mtl::vector::size(v.first.value);
+    MTL_DEBUG_THROW_IF(mtl::vec::size(v.first.value) != 0 
+		       && mtl::vec::size(v.first.value) != mtl::vec::size(v.second.value), incompatible_size());
+    return mtl::vec::size(v.first.value);
 }
 
 

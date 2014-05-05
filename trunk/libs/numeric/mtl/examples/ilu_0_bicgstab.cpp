@@ -12,7 +12,7 @@ int main(int, char**)
 
     // Set up a matrix 1,600 x 1,600 with 5-point-stencil
     matrix_type                   A(N, N);
-    matrix::laplacian_setup(A, size, size);
+    mat::laplacian_setup(A, size, size);
 
     // Create an ILU(0) preconditioner
     pc::ilu_0<matrix_type>        P(A);

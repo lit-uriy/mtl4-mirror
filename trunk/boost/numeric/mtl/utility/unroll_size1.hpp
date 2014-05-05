@@ -25,7 +25,7 @@ struct unroll_size1
 };
 
 template <unsigned BSize, typename Vector>
-struct unroll_size1<vector::unrolled1<BSize, Vector> >
+struct unroll_size1<vec::unrolled1<BSize, Vector> >
 {
     static const unsigned value0= BSize;
 };

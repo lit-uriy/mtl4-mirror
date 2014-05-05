@@ -22,7 +22,7 @@ namespace itl { namespace pc {
 /// Helper class for delayed (i.e. copy-free) evaluation of preconditioners
 template <typename PC, typename Vector, bool adjoint= false>
 struct solver
-  : mtl::vector::assigner<solver<PC, Vector> >
+  : mtl::vec::assigner<solver<PC, Vector> >
 {
     typedef PC  pc_type;
 

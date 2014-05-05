@@ -31,9 +31,9 @@ inline std::complex<double> f(std::complex<double> x)
 int main(int, char**)
 {
 
-    typedef mtl::vector::fixed::dimension<5> fsize;
-    mtl::dense_vector<float, mtl::vector::parameters<mtl::row_major, fsize, true> >     rf;
-    mtl::dense_vector<float, mtl::vector::parameters<mtl::col_major, fsize, true> >     cf;
+    typedef mtl::vec::fixed::dimension<5> fsize;
+    mtl::dense_vector<float, mtl::vec::parameters<mtl::row_major, fsize, true> >     rf;
+    mtl::dense_vector<float, mtl::vec::parameters<mtl::col_major, fsize, true> >     cf;
     rf= 1.0; cf= 1.0;
 
     std::cout << "rf is " << rf << '\n';

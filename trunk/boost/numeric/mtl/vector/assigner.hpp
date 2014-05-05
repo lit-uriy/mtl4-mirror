@@ -13,7 +13,7 @@
 #ifndef MTL_VECTOR_ASSIGNER_INCLUDE
 #define MTL_VECTOR_ASSIGNER_INCLUDE
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 struct assigner_base {};
 

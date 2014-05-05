@@ -38,7 +38,7 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
 	  Iteration& iter, size_t s)
 {
     mtl::vampir_trace<7010> tracer;
-    using mtl::size; using mtl::iall; using mtl::matrix::strict_upper;
+    using mtl::size; using mtl::iall; using mtl::mat::strict_upper;
     typedef typename mtl::Collection<Vector>::value_type Scalar;
     typedef typename mtl::Collection<Vector>::size_type  Size;
 
@@ -48,9 +48,9 @@ int idr_s(const LinearOperator &A, Vector &x, const Vector &b,
     const Scalar                zero= math::zero(Scalar());
     Scalar                      omega(zero);
     Vector                      x0(x), y(resource(x)), v(resource(x)), t(resource(x)), q(resource(x)), r(b - A * x);
-    mtl::matrix::multi_vector<Vector>   dR(Vector(resource(x), zero), s), dX(Vector(resource(x), zero), s), P(Vector(resource(x), zero), s);
-    mtl::vector::dense_vector<Scalar>   m(s), c(s), dm(s);   // replicated in distributed solvers 
-    mtl::matrix::dense2D<Scalar>        M(s, s);             // dito
+    mtl::mat::multi_vector<Vector>   dR(Vector(resource(x), zero), s), dX(Vector(resource(x), zero), s), P(Vector(resource(x), zero), s);
+    mtl::dense_vector<Scalar>   m(s), c(s), dm(s);   // replicated in distributed solvers 
+    mtl::mat::dense2D<Scalar>        M(s, s);             // dito
 
     random(P); 
     P.vector(0)= r;

@@ -30,18 +30,18 @@
 #include <boost/numeric/itl/iteration/basic_iteration.hpp>
 #include <boost/numeric/itl/krylov/fsm.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// Eigenvalues of triangle matrix A with Cuppen's divide and conquer algorithm
 /** Eigenvalues are returned in vector lambda. A is overwritten. **/
 template <typename Matrix, typename Vector>
 void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 {
-    using std::abs; using mtl::irange; using mtl::imax; using mtl::iall; using vector::iota;
+    using std::abs; using mtl::irange; using mtl::imax; using mtl::iall; using vec::iota;
 
     typedef typename Collection<Matrix>::value_type     value_type;
     typedef typename Collection<Matrix>::size_type      size_type;
-    typedef mtl::vector::dense_vector<size_type, vector::parameters<> >   size_vector; // todo: with type trait
+    typedef vec::dense_vector<size_type, vec::parameters<> >   size_vector; // todo: with type trait
 
     size_type        nrows= num_rows(A);
     MTL_THROW_IF(nrows != num_cols(A), matrix_not_square());
@@ -83,7 +83,7 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 	v[from_m]= trans(Q2[0][iall]);
 
 	// permutation on v
-	mtl::matrix::traits::permutation<>::type P= mtl::matrix::permutation(perm); 
+	mtl::mat::traits::permutation<>::type P= mtl::mat::permutation(perm); 
 	Vector v1(P * v);
 	
 	lambda= secular(v1, diag, abs(b));   // solve secular equation 

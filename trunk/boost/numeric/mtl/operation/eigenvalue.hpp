@@ -26,7 +26,7 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 
 /// Solver class for general eigenvalues

@@ -21,29 +21,29 @@ namespace mtl { namespace traits {
 template <class T> struct transposed_matrix_parameter {};
 
 template <typename O, typename I, typename D, bool S, typename ST>
-struct transposed_matrix_parameter<matrix::parameters<O, I, D, S, ST> >
+struct transposed_matrix_parameter<mat::parameters<O, I, D, S, ST> >
 {
-    typedef matrix::parameters<typename transposed_orientation<O>::type, I, D, S, ST>  type;
+    typedef mat::parameters<typename transposed_orientation<O>::type, I, D, S, ST>  type;
 };
 
 template <class T> struct transposed_matrix_type {};
 
 template <typename Value, typename Parameters>
-struct transposed_matrix_type<matrix::dense2D<Value, Parameters> >
+struct transposed_matrix_type<mat::dense2D<Value, Parameters> >
 {
-    typedef matrix::dense2D<Value, typename transposed_matrix_parameter<Parameters>::type> type;
+    typedef mat::dense2D<Value, typename transposed_matrix_parameter<Parameters>::type> type;
 };
 
 template <typename Value, typename Parameters>
-struct transposed_matrix_type<matrix::compressed2D<Value, Parameters> >
+struct transposed_matrix_type<mat::compressed2D<Value, Parameters> >
 {
-    typedef matrix::compressed2D<Value, typename transposed_matrix_parameter<Parameters>::type> type;
+    typedef mat::compressed2D<Value, typename transposed_matrix_parameter<Parameters>::type> type;
 };
 
 template <typename Value, std::size_t Mask, typename Parameters>
-struct transposed_matrix_type<matrix::morton_dense<Value, Mask, Parameters> >
+struct transposed_matrix_type<mat::morton_dense<Value, Mask, Parameters> >
 {
-    typedef matrix::morton_dense<Value, Mask, typename transposed_matrix_parameter<Parameters>::type> type;
+    typedef mat::morton_dense<Value, Mask, typename transposed_matrix_parameter<Parameters>::type> type;
 };
 
 
@@ -52,28 +52,28 @@ struct transposed_matrix_type<matrix::morton_dense<Value, Mask, Parameters> >
 template <class T> struct transposed_sparse_matrix_type {};
 
 template <typename Value, typename Parameters>
-struct transposed_sparse_matrix_type<matrix::compressed2D<Value, Parameters> >
+struct transposed_sparse_matrix_type<mat::compressed2D<Value, Parameters> >
 {
-    typedef matrix::compressed2D<Value, typename transposed_matrix_parameter<Parameters>::type> type;
+    typedef mat::compressed2D<Value, typename transposed_matrix_parameter<Parameters>::type> type;
 };
 
 template <typename Matrix>
-struct transposed_sparse_matrix_type<matrix::banded_view<Matrix> >
+struct transposed_sparse_matrix_type<mat::banded_view<Matrix> >
 {
     typedef typename transposed_sparse_matrix_type<Matrix>::type type;
 };
 
 
 template <typename Value, typename Parameters>
-struct transposed_sparse_matrix_type<matrix::transposed_view<matrix::compressed2D<Value, Parameters> > >
+struct transposed_sparse_matrix_type<mat::transposed_view<mat::compressed2D<Value, Parameters> > >
 {
-    typedef matrix::compressed2D<Value, Parameters> type;
+    typedef mat::compressed2D<Value, Parameters> type;
 };
 
 template <typename Value, typename Parameters>
-struct transposed_sparse_matrix_type<matrix::transposed_view<const matrix::compressed2D<Value, Parameters> > >
+struct transposed_sparse_matrix_type<mat::transposed_view<const mat::compressed2D<Value, Parameters> > >
 {
-    typedef matrix::compressed2D<Value, Parameters> type;
+    typedef mat::compressed2D<Value, Parameters> type;
 };
 
 }} // namespace mtl::traits

@@ -24,6 +24,7 @@
 #include <boost/numeric/mtl/matrix/implicit_dense.hpp> 
 #include <boost/numeric/mtl/matrix/block_diagonal2D.hpp>
 #include <boost/numeric/mtl/matrix/ell_matrix.hpp>
+#include <boost/numeric/mtl/matrix/coordinate2D.hpp>
 
 #include <boost/numeric/mtl/matrix/inserter.hpp> 
 #include <boost/numeric/mtl/matrix/shifted_inserter.hpp> 
@@ -42,5 +43,7 @@
 #include <boost/numeric/mtl/matrix/identity2D.hpp> 
 
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
+
+#include <boost/numeric/mtl/utility/matrix_type_generator.hpp>
 
 #endif // MTL_MATRICES_INCLUDE

@@ -34,40 +34,40 @@ namespace mtl {
 /// Overloaded function that maps from lazy expressions to the according index-wise evaluation classes
 template <typename T, typename U, typename Assign>
 typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_vector<U> >, 
-			  mtl::vector::vec_vec_aop_expr<T, U, Assign> >::type
+			  mtl::vec::vec_vec_aop_expr<T, U, Assign> >::type
 inline index_evaluator(lazy_assign<T, U, Assign>& lazy)
 {
-    return mtl::vector::vec_vec_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
+    return mtl::vec::vec_vec_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
 }
 
 template <typename T, typename U, typename Assign>
 typename boost::enable_if<boost::mpl::and_<mtl::traits::is_vector<T>, mtl::traits::is_scalar<U> >, 
-			  mtl::vector::vec_scal_aop_expr<T, U, Assign> >::type
+			  mtl::vec::vec_scal_aop_expr<T, U, Assign> >::type
 inline index_evaluator(lazy_assign<T, U, Assign>& lazy)
 {
-    return mtl::vector::vec_scal_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
+    return mtl::vec::vec_scal_aop_expr<T, U, Assign>(lazy.first, lazy.second, true);
 }
 
 template <typename Scalar, typename Vector, typename Functor, typename Assign>
-mtl::vector::reduction_index_evaluator<Scalar, Vector, Functor, Assign>
-inline index_evaluator(lazy_assign<Scalar, mtl::vector::lazy_reduction<Vector, Functor>, Assign>& lazy)
+mtl::vec::reduction_index_evaluator<Scalar, Vector, Functor, Assign>
+inline index_evaluator(lazy_assign<Scalar, mtl::vec::lazy_reduction<Vector, Functor>, Assign>& lazy)
 {
-    return mtl::vector::reduction_index_evaluator<Scalar, Vector, Functor, Assign>(lazy.first, lazy.second.v);
+    return mtl::vec::reduction_index_evaluator<Scalar, Vector, Functor, Assign>(lazy.first, lazy.second.v);
 }
 
 template <typename Scalar, unsigned long Unroll, typename Vector1, 
 	  typename Vector2, typename ConjOpt, typename Assign>
-mtl::vector::dot_index_evaluator<Scalar, Vector1, Vector2, ConjOpt, Assign>
-inline index_evaluator(lazy_assign<Scalar, mtl::vector::dot_class<Unroll, Vector1, Vector2, ConjOpt>, Assign>& lazy)
+mtl::vec::dot_index_evaluator<Scalar, Vector1, Vector2, ConjOpt, Assign>
+inline index_evaluator(lazy_assign<Scalar, mtl::vec::dot_class<Unroll, Vector1, Vector2, ConjOpt>, Assign>& lazy)
 {
-    return mtl::vector::dot_index_evaluator<Scalar, Vector1, Vector2, ConjOpt, Assign>(lazy.first, lazy.second.v1, lazy.second.v2);
+    return mtl::vec::dot_index_evaluator<Scalar, Vector1, Vector2, ConjOpt, Assign>(lazy.first, lazy.second.v1, lazy.second.v2);
 }
 
 template <typename VectorOut, typename Matrix, typename VectorIn, typename Assign>
-mtl::vector::row_mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>
+mtl::vec::row_mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>
 inline index_evaluator(lazy_assign<VectorOut, mtl::mat_cvec_times_expr<Matrix, VectorIn>, Assign>& lazy)
 {
-    return mtl::vector::row_mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>(lazy.first, lazy.second.first, lazy.second.second);
+    return mtl::vec::row_mat_cvec_index_evaluator<VectorOut, Matrix, VectorIn, Assign>(lazy.first, lazy.second.first, lazy.second.second);
 }
 
 template <typename V1, typename Matrix, typename Value, typename V2>
@@ -86,8 +86,8 @@ inline index_evaluator(lazy_assign<V1, itl::pc::solver<itl::pc::ilu<Matrix, Fact
 }
 
 template <typename T, typename U>
-inline mtl::vector::fused_index_evaluator<T, U> index_evaluator(fused_expr<T, U>& expr)
-{  return mtl::vector::fused_index_evaluator<T, U>(expr.first, expr.second); }
+inline mtl::vec::fused_index_evaluator<T, U> index_evaluator(fused_expr<T, U>& expr)
+{  return mtl::vec::fused_index_evaluator<T, U>(expr.first, expr.second); }
 
 } // namespace mtl
 

@@ -46,7 +46,7 @@ struct fused_expr
 	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
 	TT& first_eval= const_cast<TT&>(const_first_eval);  
 	UU& second_eval= const_cast<UU&>(const_second_eval);
-	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != mtl::vector::size(second_eval), incompatible_size());	
+	MTL_DEBUG_THROW_IF(mtl::size(first_eval) != mtl::size(second_eval), incompatible_size());	
 
 	for (std::size_t i= 0, s= size(first_eval); i < s; i++) {
 	    first_eval(i); second_eval(i);
@@ -60,7 +60,7 @@ struct fused_expr
 	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
 	TT& first_eval= const_cast<TT&>(const_first_eval);  
 	UU& second_eval= const_cast<UU&>(const_second_eval);
-	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != mtl::vector::size(second_eval), incompatible_size());	
+	MTL_DEBUG_THROW_IF(mtl::vec::size(first_eval) != mtl::vec::size(second_eval), incompatible_size());	
 
 	const std::size_t s= size(first_eval), sb= s >> 2 << 2;
 
@@ -97,7 +97,7 @@ struct fused_expr
 	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
 	TT& first_eval= const_cast<TT&>(const_first_eval);  
 	UU& second_eval= const_cast<UU&>(const_second_eval);
-	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != mtl::vector::size(second_eval), incompatible_size());	
+	MTL_DEBUG_THROW_IF(mtl::size(first_eval) != mtl::size(second_eval), incompatible_size());	
 
 	for (std::size_t i= size(first_eval); i-- > 0; ) {
 	    // std::cout << "i is " << i << "\n";
@@ -112,7 +112,7 @@ struct fused_expr
 	// hope there is a more elegant way; copying the arguments causes errors due to double destructor evaluation
 	TT& first_eval= const_cast<TT&>(const_first_eval);  
 	UU& second_eval= const_cast<UU&>(const_second_eval);
-	MTL_DEBUG_THROW_IF(mtl::vector::size(first_eval) != mtl::vector::size(second_eval), incompatible_size());	
+	MTL_DEBUG_THROW_IF(mtl::size(first_eval) != mtl::size(second_eval), incompatible_size());	
 
 	std::size_t s= size(first_eval), i= s-1, m= s % 4;
 	for (; m; m--) {

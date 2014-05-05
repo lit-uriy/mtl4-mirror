@@ -7,7 +7,7 @@ using namespace mtl;
 
 class world_matrix
 {
-    typedef matrix::inserter<compressed2D<double>, update_plus<double> > inserter_type;
+    typedef mat::inserter<compressed2D<double>, update_plus<double> > inserter_type;
   public:
     world_matrix(unsigned nrows, unsigned ncols) : A(nrows, ncols), ins(0) {}
 

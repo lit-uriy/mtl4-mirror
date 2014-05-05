@@ -33,22 +33,22 @@ using namespace std;
 template <typename Orientation, typename Indexing>
 void test_compressed2D_insertion()
 {
-    typedef mtl::matrix::parameters<Orientation, Indexing, mtl::fixed::dimensions<8, 6> >         parameters;
+    typedef mtl::mat::parameters<Orientation, Indexing, mtl::fixed::dimensions<8, 6> >         parameters;
     typedef mtl::compressed2D<int, parameters>                                              matrix_type;
     matrix_type   matrix;  
 
-    typedef mtl::compressed2D<int, mtl::matrix::parameters<Orientation> > matrix2_type;  
+    typedef mtl::compressed2D<int, mtl::mat::parameters<Orientation> > matrix2_type;  
     matrix2_type E;
     {
-	mtl::matrix::inserter<matrix2_type> empty(E);
+	mtl::mat::inserter<matrix2_type> empty(E);
     }
 
     {
-	mtl::matrix::compressed2D_inserter<int, parameters>  i0(matrix, 3);
+	mtl::mat::compressed2D_inserter<int, parameters>  i0(matrix, 3);
 	i0(2, 2) << 6; i0(7, 2) << 17; 
     }
     {   // Inserter that overwrites the old values
-	mtl::matrix::compressed2D_inserter<int, parameters>  i1(matrix, 3);
+	mtl::mat::compressed2D_inserter<int, parameters>  i1(matrix, 3);
 
 	i1(0, 3) << 31; i1(3, 3) << 33; i1(6, 0) << 34 << 35; i1(4, 4) << 36 << 37;
     }
@@ -61,7 +61,7 @@ void test_compressed2D_insertion()
     MTL_THROW_IF(matrix(4, 4) != 37, mtl::runtime_error("Error overwriting existing value twice"));
 
     {   // Inserter that adds to the old values
-        mtl::matrix::compressed2D_inserter<int, parameters, mtl::operations::update_plus<int> > i2(matrix, 3);    
+        mtl::mat::compressed2D_inserter<int, parameters, mtl::operations::update_plus<int> > i2(matrix, 3);    
  
 	i2(2, 2) << 21; i2(2, 4) << 22; i2(6, 1) << 23; 
 	i2(7, 2) << 24 << 2; i2(4, 2) << 25; i2(2, 5) << 26; 
@@ -75,7 +75,7 @@ void test_compressed2D_insertion()
     MTL_THROW_IF(matrix(7, 2) != 43, mtl::runtime_error("Error adding to existing value twice (in 1 statement)"));
     cout << "\n\n";
     {
-	mtl::matrix::inserter<matrix_type, mtl::operations::update_plus<int> >  i3(matrix, 7);
+	mtl::mat::inserter<matrix_type, mtl::operations::update_plus<int> >  i3(matrix, 7);
 	i3(2, 2) << 1;
     }
 

@@ -28,45 +28,45 @@ struct copy_expression_const_ref_container
 
 
 template <class E1, class E2, typename SFunctor>
-struct copy_expression_const_ref_container< vector::vec_vec_pmop_expr<E1, E2, SFunctor> >
+struct copy_expression_const_ref_container< mtl::vec::vec_vec_pmop_expr<E1, E2, SFunctor> >
 {
-    typedef vector::vec_vec_pmop_expr<E1, E2, SFunctor> type;
+    typedef mtl::vec::vec_vec_pmop_expr<E1, E2, SFunctor> type;
 };
 
 template <class E1, class E2, typename SFunctor>
-struct copy_expression_const_ref_container< vector::vec_vec_aop_expr<E1, E2, SFunctor> >
+struct copy_expression_const_ref_container< mtl::vec::vec_vec_aop_expr<E1, E2, SFunctor> >
 {
-    typedef vector::vec_vec_aop_expr<E1, E2, SFunctor> type;
+    typedef mtl::vec::vec_vec_aop_expr<E1, E2, SFunctor> type;
 };
 
 template <typename Functor, typename Vector> 
-struct copy_expression_const_ref_container< vector::map_view<Functor, Vector> >
+struct copy_expression_const_ref_container< mtl::vec::map_view<Functor, Vector> >
 {
-    typedef vector::map_view<Functor, Vector> type;
+    typedef mtl::vec::map_view<Functor, Vector> type;
 };
 
 template <typename Scaling, typename Vector>
-struct copy_expression_const_ref_container< vector::scaled_view<Scaling, Vector> >
+struct copy_expression_const_ref_container< mtl::vec::scaled_view<Scaling, Vector> >
 {
-    typedef vector::scaled_view<Scaling, Vector> type;
+    typedef mtl::vec::scaled_view<Scaling, Vector> type;
 };
 
 template <typename Vector, typename RScaling>
-struct copy_expression_const_ref_container< vector::rscaled_view<Vector, RScaling> >
+struct copy_expression_const_ref_container< mtl::vec::rscaled_view<Vector, RScaling> >
 {
-    typedef vector::rscaled_view<Vector, RScaling> type;
+    typedef mtl::vec::rscaled_view<Vector, RScaling> type;
 };
 
 template <typename Vector, typename Divisor>
-struct copy_expression_const_ref_container< vector::divide_by_view<Vector, Divisor> >
+struct copy_expression_const_ref_container< mtl::vec::divide_by_view<Vector, Divisor> >
 {
-    typedef vector::divide_by_view<Vector, Divisor> type;
+    typedef mtl::vec::divide_by_view<Vector, Divisor> type;
 };
 
 template <typename Vector>
-struct copy_expression_const_ref_container< vector::conj_view<Vector> >
+struct copy_expression_const_ref_container< mtl::vec::conj_view<Vector> >
 {
-    typedef vector::conj_view<Vector> type;
+    typedef mtl::vec::conj_view<Vector> type;
 };
 
 

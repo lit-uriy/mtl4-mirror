@@ -693,9 +693,9 @@ namespace wrec {
 	    vampir_trace<4006> tracer;
 	    // std::cout << "wrec::mult \n";
 	    using namespace recursion;
-	    // using mtl::matrix::is_empty; // ambiguity with std::tr1::is_empty in VS2010
+	    // using mtl::mat::is_empty; // ambiguity with std::tr1::is_empty in VS2010
 	    // Ambiguity with boost::is_empty in Open64
-	    if (mtl::matrix::is_empty(rec_a) || mtl::matrix::is_empty(rec_b) || mtl::matrix::is_empty(rec_c))
+	    if (mtl::mat::is_empty(rec_a) || mtl::mat::is_empty(rec_b) || mtl::mat::is_empty(rec_c))
 		return;
 
 	    if (BaseTest()(rec_a)) {
@@ -755,7 +755,7 @@ private:
 	// Make sure that mult functor of basecase has appropriate assign mode (in all nestings)
 	// i.e. replace assign::assign_sum by assign::plus_sum including backup functor
 	
-	using matrix::recursator;
+	using mat::recursator;
 	recursator<MatrixA>    rec_a(A);
 	recursator<MatrixB>    rec_b(B);
 	recursator<MatrixC>    rec_c(C);
@@ -924,7 +924,7 @@ struct size_switch_dmat_dmat_mult_t
     template <typename MatrixA, typename MatrixB, typename MatrixC>
     void apply(MatrixA const& A, MatrixB const& B, MatrixC& C, boost::mpl::false_)
     {
-	if (mtl::matrix::size(A) <= SizeLimit || mtl::matrix::size(B) <= SizeLimit || mtl::matrix::size(C) <= SizeLimit)
+	if (mtl::mat::size(A) <= SizeLimit || mtl::mat::size(B) <= SizeLimit || mtl::mat::size(C) <= SizeLimit)
 	    FunctorSmall()(A, B, C);
 	else
 	    FunctorLarge()(A, B, C);

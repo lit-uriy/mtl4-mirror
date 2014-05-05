@@ -25,7 +25,7 @@ template <typename Matrix>
 void test(Matrix& A, const char* name)
 {
     std::cout << "\n" << name << "\n";
-    A= mtl::matrix::hilbert_matrix<>(4, 3);
+    A= mtl::mat::hilbert_matrix<>(4, 3);
 
     string fname( mtl::io::join( program_dir, string("matrix_market/write_test_3_") + string(name) + string(".mtx") ) );
     cout << "File name is " << fname << "\nA is\n" << A;

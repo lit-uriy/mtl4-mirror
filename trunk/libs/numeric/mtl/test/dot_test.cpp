@@ -28,7 +28,7 @@ inline void check(const T& result, double exp)
 template <typename VectorU, typename VectorV>
 void test(VectorU& u, VectorV& v, const char* name)
 {
-    //using mtl::vector::dot;
+    //using mtl::dot;
     typedef typename mtl::Collection<VectorU>::size_type  size_type;
     for (size_type i= 0; i < size(v); i++)
 	u[i]= i+1, v[i]= i+1;
@@ -37,17 +37,17 @@ void test(VectorU& u, VectorV& v, const char* name)
     mtl::io::tout << name << "\n dot(u, v) = " << dot(u, v) << "\n"; mtl::io::tout.flush();
     check(dot(u, v), 285.0);
 
-    mtl::io::tout << " dot<2>(u, v) = " << mtl::vector::dot<2>(u, v) << "\n"; mtl::io::tout.flush();
-    check(mtl::vector::dot<2>(u, v), 285.0);
+    mtl::io::tout << " dot<2>(u, v) = " << mtl::dot<2>(u, v) << "\n"; mtl::io::tout.flush();
+    check(mtl::dot<2>(u, v), 285.0);
 
-    mtl::io::tout << " dot<6>(u, v) = " << mtl::vector::dot<6>(u, v) << "\n"; mtl::io::tout.flush();
-    check(mtl::vector::dot<6>(u, v), 285.0);
+    mtl::io::tout << " dot<6>(u, v) = " << mtl::dot<6>(u, v) << "\n"; mtl::io::tout.flush();
+    check(mtl::dot<6>(u, v), 285.0);
 }
  
 
 int main(int ,char**)
 {
-    using mtl::vector::parameters;
+    using mtl::vec::parameters;
     const int size= 9;
 
     mtl::dense_vector<float>   u(size), v(size), w(size);

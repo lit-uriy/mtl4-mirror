@@ -32,7 +32,7 @@ template <typename Matrix>
 void test(const Matrix&, const char* name)
 {
     cout << name 
-	    // << " ... " << typeid(typename mtl::OrientedCollection<mtl::matrix::hermitian_view<Matrix> >::orientation).name() 
+	    // << " ... " << typeid(typename mtl::OrientedCollection<mtl::mat::hermitian_view<Matrix> >::orientation).name() 
 	 << '\n';
 
     cout << name << '\n';
@@ -64,8 +64,8 @@ void test(const Matrix&, const char* name)
 #endif
 
     v= hermitian(A) * w;
-    v= mtl::matrix::conj(trans(A)) * w;
-    v= trans(mtl::matrix::conj(A)) * w;
+    v= mtl::mat::conj(trans(A)) * w;
+    v= trans(mtl::mat::conj(A)) * w;
     v= trans(A) * w;
 }
 
@@ -74,11 +74,11 @@ int main(int, char**)
 {
     using namespace mtl;
     dense2D<double>                                      dr;
-    dense2D<double, matrix::parameters<col_major> >      dc;
+    dense2D<double, mat::parameters<col_major> >      dc;
     morton_dense<double, recursion::morton_z_mask>       mzd;
     morton_dense<double, recursion::doppled_2_row_mask>  d2r;
     compressed2D<double>                                 cr;
-    compressed2D<double, matrix::parameters<col_major> > cc;
+    compressed2D<double, mat::parameters<col_major> > cc;
 
     dense2D<complex<double> >                            drc;
     compressed2D<complex<double> >                       crc;

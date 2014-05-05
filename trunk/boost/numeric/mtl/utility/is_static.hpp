@@ -21,14 +21,14 @@ namespace mtl { namespace traits {
     /// Meta-function whether a certain type has static size
     template <typename T> struct is_static : boost::mpl::false_ {};
 
-    template <std::size_t Size> struct is_static<mtl::vector::fixed::dimension<Size> > : boost::mpl::true_ {};
+    template <std::size_t Size> struct is_static<mtl::vec::fixed::dimension<Size> > : boost::mpl::true_ {};
     template <std::size_t Rows, std::size_t Cols> struct is_static<mtl::fixed::dimensions<Rows, Cols> > : boost::mpl::true_ {};
 
-    template <typename V, typename P> struct is_static<mtl::vector::dense_vector<V, P> > : is_static<typename P::dimension> {};
+    template <typename V, typename P> struct is_static<mtl::vec::dense_vector<V, P> > : is_static<typename P::dimension> {};
 
-    template <typename V, typename P> struct is_static<mtl::matrix::dense2D<V, P> > : is_static<typename P::dimensions> {};
-    template <typename V, std::size_t M, typename P> struct is_static<mtl::matrix::morton_dense<V, M, P> > : is_static<typename P::dimensions> {};
-    template <typename V, typename P> struct is_static<mtl::matrix::compressed2D<V, P> > : is_static<typename P::dimensions> {};
+    template <typename V, typename P> struct is_static<mtl::mat::dense2D<V, P> > : is_static<typename P::dimensions> {};
+    template <typename V, std::size_t M, typename P> struct is_static<mtl::mat::morton_dense<V, M, P> > : is_static<typename P::dimensions> {};
+    template <typename V, typename P> struct is_static<mtl::mat::compressed2D<V, P> > : is_static<typename P::dimensions> {};
 
 }} // namespace mtl::traits
 

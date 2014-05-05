@@ -32,7 +32,7 @@
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 /// LU factorization in place (without pivoting and optimization so far)
 /** eps is tolerance for pivot element. If less or equal the matrix is considered singular.
@@ -118,7 +118,7 @@ template <typename Matrix, typename PermVector, typename Vector>
 Vector inline lu_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 {
     vampir_trace<5027> tracer;
-    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), Vector(matrix::permutation(P) * b)));
+    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), Vector(mat::permutation(P) * b)));
 }
 
 
@@ -127,7 +127,7 @@ template <typename Matrix, typename Vector>
 Vector inline lu_solve(const Matrix& A, const Vector& b, double eps= 0)
 {
     vampir_trace<5028> tracer;
-    mtl::vector::dense_vector<std::size_t, vector::parameters<> > P(num_rows(A));
+    mtl::dense_vector<std::size_t, vec::parameters<> > P(num_rows(A));
     Matrix                    LU(A);
 
     lu(LU, P, eps);
@@ -141,7 +141,7 @@ template <typename Matrix, typename PermVector, typename Vector>
 Vector inline lu_adjoint_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 {
     vampir_trace<5029> tracer;
-    return Vector(trans(matrix::permutation(P)) * unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b)));
+    return Vector(trans(mat::permutation(P)) * unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b)));
 }
 
 
@@ -150,7 +150,7 @@ template <typename Matrix, typename Vector>
 Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b, double eps= 0)
 {
     vampir_trace<5030> tracer;
-    mtl::vector::dense_vector<std::size_t, vector::parameters<> > P(num_rows(A));
+    mtl::dense_vector<std::size_t, vec::parameters<> > P(num_rows(A));
     Matrix                    LU(A);
 
     lu(LU, P, eps);
@@ -162,7 +162,7 @@ template <typename Matrix>
 class lu_solver
 {
     typedef typename mtl::traits::lu_matrix_type<Matrix>::type            matrix_type;
-    typedef mtl::vector::dense_vector<std::size_t, vector::parameters<> > permutation_type;
+    typedef mtl::vec::dense_vector<std::size_t, mtl::vec::parameters<> > permutation_type;
   public:
     /// Construct from matrix \p A and use optionally threshold \p eps in factorization
     explicit lu_solver(const Matrix& A, double eps= 0) 
@@ -175,13 +175,13 @@ class lu_solver
     template <typename VectorIn, typename VectorOut>
     void solve(const VectorIn& b, VectorOut& x) const
     {
-	x= upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), VectorIn(matrix::permutation(P) * b)));
+	x= upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), VectorIn(mat::permutation(P) * b)));
     }
     /// Solve \f$adjoint(A)x = b\f$ using LU factorization
     template <typename VectorIn, typename VectorOut>
     void adjoint_solve(const VectorIn& b, VectorOut& x) const
     {
-	x= trans(matrix::permutation(P)) * unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b));
+	x= trans(mat::permutation(P)) * unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b));
     }
 
   private:

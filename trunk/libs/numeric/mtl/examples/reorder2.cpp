@@ -10,7 +10,7 @@ int main(int, char**)
 
     // Creating a reordering matrix from a vector (or an array respectively)
     int indices[]= {2, 1, 1, 2};
-    matrix::traits::reorder<>::type R= matrix::reorder(indices);
+    mat::traits::reorder<>::type R= mat::reorder(indices);
     std::cout << "\nR =\n" << R;    
 
     // Reorder rows

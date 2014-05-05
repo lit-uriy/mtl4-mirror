@@ -22,7 +22,7 @@ using namespace std;
 int main(int , char**)
 {
 #ifndef __PGI // trouble with zip_ref
-    mtl::vector::sparse_vector<float> v(100);
+    mtl::sparse_vector<float> v(100);
     std::cout << v << '\n';
 
     v.insert(3, 7.6f); v.insert(80, 3.9f); v.insert(40, 2.5f);

@@ -124,7 +124,7 @@ void matrix_init(Matrix& matrix)
     typedef typename Matrix::parameters   parameters;
     typedef typename Matrix::value_type   value_type;
 
-    mtl::matrix::compressed2D_inserter<value_type, parameters> inserter(matrix);
+    mtl::mat::compressed2D_inserter<value_type, parameters> inserter(matrix);
     inserter(2, 2) << 7; inserter(1, 4) << 3; inserter(3, 2) << 9; inserter(5, 1) << 5;
 }
     
@@ -133,7 +133,7 @@ template <typename Orientation, typename Indexing>
 void test_compressed2D(char const* name)
 {
     cout << "\n====================\n" << name << "\n====================\n";
-    typedef mtl::matrix::parameters<Orientation, Indexing, mtl::fixed::dimensions<8, 6> >   parameters;
+    typedef mtl::mat::parameters<Orientation, Indexing, mtl::fixed::dimensions<8, 6> >   parameters;
     typedef mtl::compressed2D<int, parameters>                                              matrix_type;
     matrix_type                                                                             matrix; 
 

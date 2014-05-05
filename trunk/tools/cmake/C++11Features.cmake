@@ -1,5 +1,7 @@
 include(CheckCXXCompilerFlag)
 
+option(MTL_VERBOSE_TRYCOMPILE "Print error message when C++11 feature is not supported" OFF)
+
 # Compiler flag for C++11: special case for VC only, everything else should be equal
 # Might need later adaption, once compilers don't support this flag any longer
 if(MSVC)
@@ -31,19 +33,20 @@ message(STATUS "Add ${CXX_ELEVEN_FLAG}")
 list(APPEND MTL_CXX_DEFINITIONS ${CXX_ELEVEN_FLAG})
 #add_definitions("${CXX_ELEVEN_FLAG}")
 
-set (CXX_ELEVEN_FEATURE_LIST "MOVE" "AUTO" "RANGEDFOR" "INITLIST" "STATICASSERT" "DEFAULTIMPL")
+# set (CXX_ELEVEN_FEATURE_LIST "MOVE" "AUTO" "RANGEDFOR" "INITLIST" "STATICASSERT" "DEFAULTIMPL")
+file(GLOB CHECKS "${MTL_DIR}/tools/cmake/*_CHECK.cpp")
 
-foreach (feature ${CXX_ELEVEN_FEATURE_LIST})
-   set(CURFILE "${MTL_DIR}/tools/cmake/${feature}_CHECK.cpp")
-   if(EXISTS "${CURFILE}")
-	   try_compile(${feature}_RESULT ${CMAKE_BINARY_DIR} "${CURFILE}" COMPILE_DEFINITIONS "${CXX_ELEVEN_FLAG}")
-   else()
-	   message(ERROR "could not find ${CURFILE}")
-   endif()
-  # try_compile(${feature}_RESULT . "./${feature}_CHECK.cpp")
-   message(STATUS "Support C++11's ${feature} - ${${feature}_RESULT}")
-   if (${feature}_RESULT)
-     list(APPEND MTL_CXX_DEFINITIONS "-DMTL_WITH_${feature}")
-     #add_definitions("-DMTL_WITH_${feature}")
-   endif()
+foreach (CURFILE ${CHECKS})
+  get_filename_component(FNAME ${CURFILE} NAME_WE)
+  string(REPLACE "_CHECK" "" feature ${FNAME})
+  # message(STATUS "${feature}")
+  try_compile(${feature}_RESULT ${CMAKE_BINARY_DIR} "${CURFILE}" COMPILE_DEFINITIONS "${CXX_ELEVEN_FLAG}" OUTPUT_VARIABLE errors)
+  message(STATUS "Support C++11's ${feature} - ${${feature}_RESULT}")
+  if (${feature}_RESULT)
+    list(APPEND MTL_CXX_DEFINITIONS "-DMTL_WITH_${feature}")
+  elseif (MTL_VERBOSE_TRYCOMPILE)
+    message(STATUS "Failed because: ${errors}")
+  endif()
 endforeach()
+
+# message(STATUS "C++11 flags: ${MTL_CXX_DEFINITIONS}")

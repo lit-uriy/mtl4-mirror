@@ -56,7 +56,7 @@ int main(int, char**)
     typedef mtl::compressed2D<m_t>  matrix_t;
     matrix_t                        A(3, 3);
     {
-	mtl::matrix::inserter<matrix_t> ins(A);
+	mtl::mat::inserter<matrix_t> ins(A);
 
 	// First block
 	m_t  b1(1, 1);

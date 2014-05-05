@@ -20,7 +20,7 @@
 
 #include <boost/numeric/mtl/matrix/identity2D.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 inline identity2D identity(std::size_t nrows, std::size_t ncols)
 {

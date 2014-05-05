@@ -15,7 +15,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 template <typename Vector>
 struct vec_expr {};

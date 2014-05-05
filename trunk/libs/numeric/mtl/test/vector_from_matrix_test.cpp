@@ -94,13 +94,13 @@ int main(int, char**)
        4, 5, 6, 
        7, 8, 9;
 
-    dense2D<float, matrix::parameters<col_major> > B(A);
+    dense2D<float, mat::parameters<col_major> > B(A);
     
     test(A, "Row-major matrix");     // A changed !!!
     test(B, "Column-major matrix");  // B changed !!!
 
     const dense2D<float>                                 C(A);
-    const dense2D<float, matrix::parameters<col_major> > D(A);
+    const dense2D<float, mat::parameters<col_major> > D(A);
 
     test(C, "Row-major matrix const");
     test(D, "Column-major matrix const");

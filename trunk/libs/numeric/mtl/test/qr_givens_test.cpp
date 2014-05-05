@@ -4,7 +4,7 @@
 
 
 int main() {
-    mtl::matrix::dense2D<double> A(10, 10), E(10,10), IT(10,10);
+    mtl::mat::dense2D<double> A(10, 10), E(10,10), IT(10,10);
     double sum = 0;
     
     E = 1.0;
@@ -20,12 +20,12 @@ int main() {
 	-3.39889, -10.3545, -0.828751, 17.1083, 6.65637, -1.54847, -9.39066, 19.2665, 59.9372, 8.98516, 
 	0.991482, 2.81724, -1.99112, -10.9052, 1.77954, 3.20488, 0.519006, -4.37109, 9.20029, 59.9732;
 	
-    mtl::matrix::qr_givens_solver<mtl::matrix::dense2D<double> > QR(A);
+    mtl::mat::qr_givens_solver<mtl::mat::dense2D<double> > QR(A);
     QR.calc();
     
     IT = QR.getQ() * trans(QR.getQ()) - E;
 
-    MTL_THROW_IF(mtl::matrix::frobenius_norm(IT)>1.0e-5, mtl::runtime_error("Not identity matrix") );
+    MTL_THROW_IF(mtl::mat::frobenius_norm(IT)>1.0e-5, mtl::runtime_error("Not identity matrix") );
     
     for(int i=1;i<10;i++) {
 	for(int j=0;j<i;j++) {

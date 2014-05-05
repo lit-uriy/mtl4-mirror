@@ -16,12 +16,12 @@
 #include <boost/numeric/mtl/operation/bin_op_expr.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 
-namespace mtl { namespace vector {
+namespace mtl { namespace vec {
 
 template <typename E1, typename E2>
 struct rvec_mat_times_expr 
   : public bin_op_expr< E1, E2 >,
-    public mtl::vector::vec_expr< rvec_mat_times_expr<E1, E2> >
+    public mtl::vec::vec_expr< rvec_mat_times_expr<E1, E2> >
 {
     typedef bin_op_expr< E1, E2 >         base;
     typedef rvec_mat_times_expr<E1, E2>   self;

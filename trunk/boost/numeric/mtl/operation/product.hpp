@@ -26,7 +26,7 @@
 
 namespace mtl {
 
-    namespace vector {
+    namespace vec {
 	
 	namespace impl {
 
@@ -37,7 +37,7 @@ namespace mtl {
 	    inline product(const Vector& vector, tag::vector)
 	    {
 		typedef typename Collection<Vector>::value_type result_type;
-		return vector::reduction<Unroll, vector::product_functor, result_type>::apply(vector);
+		return vec::reduction<Unroll, vec::product_functor, result_type>::apply(vector);
 	    }
 	
 	} // namespace impl
@@ -63,8 +63,8 @@ namespace mtl {
 
     } // namespace vector
 
-    using vector::lazy_product;
-    using vector::product;
+    using vec::lazy_product;
+    using vec::product;
 
 } // namespace mtl
 

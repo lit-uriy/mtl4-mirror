@@ -28,7 +28,7 @@ int main(int, char**)
 {
     // Define a row-major sparse and a column-major dense matrix
     compressed2D<double>                             A(3, 3); 
-    dense2D<double, matrix::parameters<col_major> >  B(3, 3); 
+    dense2D<double, mat::parameters<col_major> >  B(3, 3); 
 
     f(A);
     f(B);

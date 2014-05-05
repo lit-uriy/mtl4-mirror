@@ -37,7 +37,7 @@ namespace mtl { namespace tfunctor {
     template <typename Matrix, typename Value2>
     struct divide_by<Matrix, Value2, tag::matrix>
     {
-	typedef matrix::divide_by_view<Matrix,Value2> result_type;
+	typedef mat::divide_by_view<Matrix,Value2> result_type;
 	
 	explicit divide_by(const Value2& v2) : v2(v2) {}
 	
@@ -53,7 +53,7 @@ namespace mtl { namespace tfunctor {
     template <typename Vector, typename Value2>
     struct divide_by<Vector, Value2, tag::vector>
     {
-	typedef vector::divide_by_view<Vector, Value2> result_type;
+	typedef vec::divide_by_view<Vector, Value2> result_type;
 	
 	explicit divide_by(const Value2& v2) : v2(v2) {}
 	
@@ -69,7 +69,7 @@ namespace mtl { namespace tfunctor {
 } // namespace tfunctor
 	
 
-namespace matrix {
+namespace mat {
 
     template <typename Value1, typename Value2>
     typename tfunctor::divide_by<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type
@@ -79,7 +79,7 @@ namespace matrix {
     }
 }
 
-namespace vector {
+namespace vec {
 
     template <typename Value1, typename Value2>
     typename tfunctor::divide_by<Value1, Value2, typename traits::algebraic_category<Value1>::type>::result_type

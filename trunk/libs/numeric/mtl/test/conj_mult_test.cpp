@@ -29,7 +29,7 @@ void test(Matrix& A, const char* name)
     mtl::dense_vector<cdouble> x(n),Ax(n);
     x=cdouble(1,2);
     
-    // Ax= mtl::matrix::conj(A) * x;
+    // Ax= mtl::mat::conj(A) * x;
     Ax= mtl::conj(A) * x;
     std::cout << "conj(A) * x is " << Ax << "\n";
     

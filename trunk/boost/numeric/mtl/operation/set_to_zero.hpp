@@ -27,12 +27,12 @@
 namespace mtl {
 
     // Forward declarations
-    namespace matrix { 
+    namespace mat { 
 	template <typename Coll> 
 	typename mtl::traits::enable_if_matrix<Coll>::type 
 	set_to_zero(Coll& collection); 
     }
-    namespace vector { 
+    namespace vec { 
 	template <typename Coll> 
 	typename mtl::traits::enable_if_vector<Coll>::type
 	set_to_zero(Coll& collection); 
@@ -105,7 +105,7 @@ namespace mtl {
 	template <typename Coll>
 	void set_to_zero(Coll& collection, tag::multi_vector, ashape::universe)
 	{
-	    using mtl::vector::set_to_zero;
+	    using mtl::vec::set_to_zero;
 	    for (typename Collection<Coll>::size_type i= 0; i < num_cols(collection); ++i)
 		set_to_zero(collection.vector(i));
 	}	
@@ -115,7 +115,7 @@ namespace mtl {
 	{ return false; }
 
 	template <typename Value, typename Parameter>
-	bool has_strided_data(const matrix::dense2D<Value, Parameter>& A)
+	bool has_strided_data(const mat::dense2D<Value, Parameter>& A)
 	{ return A.has_strided_data(); }
 
 	
@@ -139,7 +139,7 @@ namespace mtl {
     }
 
 
-namespace matrix {
+namespace mat {
 
     /// Sets all values of a collection to 0
     /// More spefically the defined multiplicative identity element
@@ -157,7 +157,7 @@ namespace matrix {
     }   
 }
 
-namespace vector {
+namespace vec {
 
     /// Sets all values of a collection to 0
     /// More spefically the defined multiplicative identity element

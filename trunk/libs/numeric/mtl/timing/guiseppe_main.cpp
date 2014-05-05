@@ -20,12 +20,12 @@ using namespace mtl::vector;
 #define STATIC_TYPES
 
 #ifdef STATIC_TYPES
-   typedef dense_vector<double, vector::parameters<tag::col_major, vector::fixed::dimension<3>, true> > vec;
-   typedef matrix::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
+   typedef dense_vector<double, parameters<tag::col_major, fixed::dimension<3>, true> > vec;
+   typedef mat::parameters<tag::row_major, mtl::index::c_index, mtl::fixed::dimensions<3, 3>, true> mat_para;
    #define VEC_ARG
 #else
    typedef dense_vector<double> vec;
-   typedef matrix::parameters<> mat_para;
+   typedef mat::parameters<> mat_para;
    #define VEC_ARG (3)
 #endif
    typedef dense2D<double, mat_para> mat;

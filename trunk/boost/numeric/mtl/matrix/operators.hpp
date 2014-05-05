@@ -23,7 +23,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename E1, typename E2>
 inline mat_mat_plus_expr<E1, E2>

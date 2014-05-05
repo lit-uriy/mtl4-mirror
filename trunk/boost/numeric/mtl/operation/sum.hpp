@@ -37,7 +37,7 @@ namespace mtl {
 	{
 		vampir_trace<2035> tracer;
 	    typedef typename Collection<Vector>::value_type result_type;
-	    return vector::reduction<Unroll, vector::sum_functor, result_type>::apply(vector);
+	    return vec::reduction<Unroll, vec::sum_functor, result_type>::apply(vector);
 	}
 	
     } // namespace impl
@@ -57,13 +57,13 @@ inline sum(const Value& value)
     return sum<8>(value);
 }
 
-namespace vector {
+namespace vec {
 	template <typename Vector>
 	lazy_reduction<Vector, sum_functor> inline lazy_sum(const Vector& v)
 	{  return lazy_reduction<Vector, sum_functor>(v); 	}
 }
 
-using vector::lazy_sum;
+using vec::lazy_sum;
 
 } // namespace mtl
 

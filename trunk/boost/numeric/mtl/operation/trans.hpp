@@ -30,7 +30,7 @@
 
 namespace mtl { 
 
-namespace matrix {
+namespace mat {
 
     namespace detail {
 
@@ -74,7 +74,7 @@ namespace matrix {
 } // namespace mtl::matrix
 
 
-namespace vector {
+namespace vec {
 
     template <typename Vector>
     struct transposed_vector {};

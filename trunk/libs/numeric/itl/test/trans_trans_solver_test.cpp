@@ -27,7 +27,7 @@ int trans_test(const matrix_type& A, vector_type& x, const vector_type& b)
     using namespace mtl;
     using namespace itl;
     
-    typedef matrix::transposed_view<const matrix_type> trans_matrix_type;
+    typedef mat::transposed_view<const matrix_type> trans_matrix_type;
     trans_matrix_type B(A);
     
     // Create an ILU(0) preconditioner
@@ -56,7 +56,7 @@ int main(// int argc, char* argv[]
     // mtl::par::environment env(argc, argv);
 
     const int size = 10, N = size * size;
-    // typedef matrix::distributed<compressed2D<double> >  matrix_type;
+    // typedef mat::distributed<compressed2D<double> >  matrix_type;
     typedef compressed2D<double>   matrix_type;
     matrix_type                                         A;
     laplacian_setup(A, size, size);

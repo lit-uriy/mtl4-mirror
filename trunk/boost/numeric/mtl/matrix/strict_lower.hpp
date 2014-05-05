@@ -13,7 +13,7 @@
 #ifndef MTL_MATRIX_STRICT_LOWER_INCLUDE
 #define MTL_MATRIX_STRICT_LOWER_INCLUDE
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 namespace traits {
 

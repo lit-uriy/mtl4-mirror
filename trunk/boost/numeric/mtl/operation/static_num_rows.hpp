@@ -48,14 +48,14 @@ struct static_num_rows<Value[Rows][Cols]>
 
 
 template <std::size_t Size>
-struct static_num_rows< vector::fixed::dimension<Size> >
+struct static_num_rows< vec::fixed::dimension<Size> >
 {
     typedef std::size_t   type;
     static const type value= Size;    
 };
 
 template <typename V, typename P> 
-struct static_num_rows<mtl::vector::dense_vector<V, P> > 
+struct static_num_rows<mtl::vec::dense_vector<V, P> > 
 {
     typedef std::size_t   type;
     static const type value= traits::is_row_major<P>::value ? 1 : static_num_rows<typename P::dimension>::value;   
@@ -70,17 +70,17 @@ struct static_num_rows< fixed::dimensions<Rows, Cols> >
 };
 
 template <typename V, typename P> 
-struct static_num_rows<mtl::matrix::dense2D<V, P> > 
+struct static_num_rows<mtl::mat::dense2D<V, P> > 
   : static_num_rows<typename P::dimensions> 
 {};
 
 template <typename V, std::size_t M, typename P> 
-struct static_num_rows<mtl::matrix::morton_dense<V, M, P> > 
+struct static_num_rows<mtl::mat::morton_dense<V, M, P> > 
   : static_num_rows<typename P::dimensions> 
 {};
 
 template <typename V, typename P> 
-struct static_num_rows<mtl::matrix::compressed2D<V, P> > 
+struct static_num_rows<mtl::mat::compressed2D<V, P> > 
   : static_num_rows<typename P::dimensions> 
 {};
 

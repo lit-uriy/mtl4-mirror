@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/vector/vec_vec_pmop_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 template <typename E1, typename E2>
 struct mat_mat_plus_expr 
@@ -56,7 +56,7 @@ struct mv_mv_plus_expr
     typedef mat_mat_plus_expr< E1, E2 > base;
     typedef typename E1::vector_type V1;
     typedef typename E2::vector_type V2;
-    typedef mtl::vector::vec_vec_pmop_expr< V1, V2, mtl::sfunctor::plus<typename V1::value_type, typename V2::value_type> > vector_type;
+    typedef mtl::vec::vec_vec_pmop_expr< V1, V2, mtl::sfunctor::plus<typename V1::value_type, typename V2::value_type> > vector_type;
 
     mv_mv_plus_expr( E1 const& v1, E2 const& v2 )
       : base( v1, v2 )

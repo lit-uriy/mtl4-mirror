@@ -47,7 +47,7 @@ void test(Matrix& A, const char* name)
     r1[2]= 13.0;
     MTL_THROW_IF(A[1][2] != 6.0, mtl::runtime_error("Matrix modied by a cloned row"));
     
-    dense_vector<float, mtl::vector::parameters<row_major> > r2(clone(A[2][iall]));
+    dense_vector<float, mtl::vec::parameters<row_major> > r2(clone(A[2][iall]));
     r2[2]= 13.5;
     MTL_THROW_IF(A[2][2] != 9.0, mtl::runtime_error("Matrix modied by a cloned row"));
 
@@ -61,7 +61,7 @@ int main(int, char**)
     using namespace mtl;
 
     dense2D<float>                                 A(3, 3);
-    dense2D<float, matrix::parameters<col_major> > B(3, 3);
+    dense2D<float, mat::parameters<col_major> > B(3, 3);
 
     test(A, "Row-major matrix   ");     
     test(B, "Column-major matrix");  

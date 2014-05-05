@@ -41,7 +41,7 @@ int main(int, char**)
     using namespace mtl;
     dense2D<double>                                      dr;
     dense2D<complex<double> >                            dz;
-    dense2D<double, matrix::parameters<col_major> >      dc;
+    dense2D<double, mat::parameters<col_major> >      dc;
     compressed2D<double>                                 cr;
 
     test(dr, "Row-major dense");

@@ -78,12 +78,12 @@ int main(int, char**)
     dense_vector<float>                                                 cf(sz, 1.0);
     dense_vector<double>                                                cd(sz, 1.0);
     dense_vector<std::complex<double> >                                 cc(sz, 1.0);
-    dense_vector<float, mtl::vector::parameters<row_major> >            rf(sz, 1.0);
+    dense_vector<float, mtl::vec::parameters<row_major> >               rf(sz, 1.0);
 
     test(cf, "dense_vector<float>");
     test(cd, "dense_vector<double>");
     test(cc, "dense_vector<std::complex<double> >");
-    test(rf, "dense_vector<float, vector::parameters<row_major> >");
+    test(rf, "dense_vector<float, parameters<row_major> >");
 
     return 0;
 }

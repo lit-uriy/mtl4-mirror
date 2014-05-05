@@ -17,7 +17,7 @@
 
 inline void bench(unsigned n)
 {
-    typedef mtl::matrix::parameters<> mat_para;
+    typedef mtl::mat::parameters<> mat_para;
     mtl::dense2D<double, mat_para> A(n, n), B(n, n), C(n, n);
     mtl::dense_vector<double> x(n, 1.0), b(n);
 

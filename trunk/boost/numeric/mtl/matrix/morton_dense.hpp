@@ -36,7 +36,7 @@
 #endif
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
 // Helper type
 struct morton_dense_sub_ctor {};
@@ -324,7 +324,7 @@ struct morton_dense_col_iterator
 
 
 /// Dense Morton-order matrix 
-template <typename Elt, std::size_t BitMask, typename Parameters = mtl::matrix::parameters<> >
+template <typename Elt, std::size_t BitMask, typename Parameters = mtl::mat::parameters<> >
 class morton_dense 
   : public base_sub_matrix<Elt, Parameters>, 
     public mtl::detail::contiguous_memory_block<Elt, false>,
@@ -649,14 +649,14 @@ inline size(const morton_dense<Value, Mask, Parameters>& matrix)
 namespace mtl { namespace traits {
 
     // VC 8.0 finds ambiguity with mtl::tag::morton_dense (I wonder why)
-    using mtl::matrix::morton_dense;
-    using mtl::matrix::morton_dense_el_cursor;
-    using mtl::matrix::morton_dense_col_cursor;
-    using mtl::matrix::morton_dense_row_cursor;
-    using mtl::matrix::morton_dense_col_const_iterator;
-    using mtl::matrix::morton_dense_row_const_iterator;
-    using mtl::matrix::morton_dense_col_iterator;
-    using mtl::matrix::morton_dense_row_iterator;
+    using mtl::mat::morton_dense;
+    using mtl::mat::morton_dense_el_cursor;
+    using mtl::mat::morton_dense_col_cursor;
+    using mtl::mat::morton_dense_row_cursor;
+    using mtl::mat::morton_dense_col_const_iterator;
+    using mtl::mat::morton_dense_row_const_iterator;
+    using mtl::mat::morton_dense_col_iterator;
+    using mtl::mat::morton_dense_row_iterator;
 
     // ===========
     // For cursors
@@ -861,7 +861,7 @@ namespace mtl { namespace traits {
 }} // namespace mtl::traits
 
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
     // ==========
     // Sub matrix
@@ -893,11 +893,11 @@ namespace mtl { namespace matrix {
 
 namespace mtl {
 
-	using matrix::morton_dense;
+	using mat::morton_dense;
 
     // Enable cloning of dense matrices
     template <typename Value, std::size_t BitMask, typename Parameters>
-    struct is_clonable< matrix::morton_dense<Value, BitMask, Parameters> > : boost::mpl::true_ {};
+    struct is_clonable< mat::morton_dense<Value, BitMask, Parameters> > : boost::mpl::true_ {};
         
 } // namespace mtl
 

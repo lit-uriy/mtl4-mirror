@@ -26,7 +26,7 @@ typedef compressed2D<double> sp_mat;
 
 void assemble(sp_mat& A, double val)
 {
-  matrix::inserter<sp_mat, update_plus<double> > ins(A, 3);
+  mat::inserter<sp_mat, update_plus<double> > ins(A, 3);
 
   double array[][3]= {{-2*val, val, val},
 		      {val, -2*val, val},

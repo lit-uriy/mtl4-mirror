@@ -10,7 +10,7 @@ int main(int, char** argv)
     std::string program_dir= mtl::io::directory_name(argv[0]),
   	        matrix_file= mtl::io::join(program_dir, "../../mtl/test/matrix_market/square3.mtx");
     //define and read element structure
-    mtl::matrix::element_structure<value_type> A;
+    mtl::mat::element_structure<value_type> A;
     read_el_matrix(matrix_file, A);
     
     int size( num_cols(A) );
