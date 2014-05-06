@@ -12,7 +12,11 @@
 
 #define MTL_VERBOSE_TEST
 
+#ifdef MTL_WITH_MOVE
+
 #include <iostream>
+#include <algorithm>
+
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
@@ -23,6 +27,7 @@
 using namespace std;
 using namespace mtl;
 using mtl::io::tout;	
+
 
 // Return a matrix with move semantics
 // Return also the address of the first entry to be sure that it is really moved
@@ -131,10 +136,11 @@ void dense_test(const Matrix& m, const char* text)
     test(m, text);
     sub_matrix_test(m);
 }
-
+#endif
 
 int test_main(int, char*[])
 {
+#ifdef MTL_WITH_MOVE
     dense2D<double>                                   dr(3, 3);
     dense2D<double, mat::parameters<col_major> >      dc(3, 3);
     morton_dense<double, recursion::morton_z_mask>    mzd(3, 3);
@@ -153,6 +159,9 @@ int test_main(int, char*[])
 
     test(crs, "CRS");
     test(ccs, "CCS");
+#else
+    tout << "Test disabled due to lack of move semantics."
+#endif
 
     return 0;
 }
