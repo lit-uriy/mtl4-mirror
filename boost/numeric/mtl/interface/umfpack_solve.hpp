@@ -34,7 +34,7 @@ extern "C" {
 #  include <umfpack.h>
 }
 
-namespace mtl { namespace matrix {
+namespace mtl { namespace mat {
 
     /// Namespace for Umfpack solver
     namespace umfpack {
@@ -563,7 +563,7 @@ int umfpack_solve(const compressed2D<Value, Parameters>& A, VectorX& x, const Ve
     return solver(x, b);
 }
 
-}} // namespace mtl::matrix
+}} // namespace mtl::mat
 
 #endif
 
