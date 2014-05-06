@@ -275,7 +275,7 @@ class dense2D
 #ifdef MTL_WITH_MOVE
     /// Move constructor
     dense2D(self&& src) : memory_base(dim_type().num_rows() * dim_type().num_cols())
-    {	self_assign(src, boost::mpl::bool_<memory_base::on_stack>());    }
+    {	init(); self_assign(src, boost::mpl::bool_<memory_base::on_stack>());    }
 #endif	
 
     /// Constructor for creating sub-matrices
