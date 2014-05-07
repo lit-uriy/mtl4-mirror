@@ -10,11 +10,12 @@
 // 
 // See also license.mtl.txt in the distribution.
 
-#define MTL_VERBOSE_TEST
+// #define MTL_VERBOSE_TEST
+
+#include <iostream>
 
 #ifdef MTL_WITH_MOVE
 
-#include <iostream>
 #include <algorithm>
 
 #include <boost/test/minimal.hpp>
@@ -160,7 +161,7 @@ int test_main(int, char*[])
     test(crs, "CRS");
     test(ccs, "CCS");
 #else
-    tout << "Test disabled due to lack of move semantics."
+    std::cout << "Test disabled due to lack of move semantics.";
 #endif
 
     return 0;
