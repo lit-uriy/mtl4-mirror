@@ -13,14 +13,13 @@
 // #define MTL_VERBOSE_TEST
 
 #include <iostream>
-
-#ifdef MTL_WITH_MOVE
-
 #include <algorithm>
 
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
+
+#ifdef MTL_WITH_MOVE
 
 // Everything in the test is double
 // Good enough for the moment
