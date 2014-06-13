@@ -83,12 +83,16 @@ namespace mtl { namespace mat {
 
 	inline void check(int res, 
 			  const char*
-#                      ifndef MTL_ASSERT_FOR_THROW 
+#ifndef MTL_ASSERT_FOR_THROW 
 			  s
-#                      endif
+#endif
 			  )
 	{
+#ifndef MTL_ASSERT_FOR_THROW 
 	    MTL_THROW_IF(res != UMFPACK_OK, error(s, res));
+#else
+	    MTL_THROW_IF(res != UMFPACK_OK, error("", res));
+#endif
 	}
 
 	/// Class for repeated Umfpack solutions
