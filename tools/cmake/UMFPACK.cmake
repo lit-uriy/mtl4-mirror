@@ -1,4 +1,4 @@
-find_file(UMFPACK_H umfpack.h)
+find_file(UMFPACK_H umfpack.h HINTS /usr/include/suitesparse DOC "path to the UMFPACK header file umfpack.h")
 find_library(UMFPACK_LIBRARY umfpack)
 set(HAVE_UMFPACK false)
 if(UMFPACK_H AND UMFPACK_LIBRARY)
