@@ -61,7 +61,7 @@ struct base_matrix
 	it can be only changed explicitly and is only compatible with matrices of the same dimensionality. **/
     void check_dim(size_type MTL_DEBUG_ARG(num_rows), size_type MTL_DEBUG_ARG(num_cols)) const
     {
-	MTL_CRASH(this->num_rows() * this->num_cols() != 0
+	MTL_CRASH_IF(this->num_rows() * this->num_cols() != 0
 		   && (this->num_rows() != num_rows || this->num_cols() != num_cols),
 		   "Incompatible size");
     }

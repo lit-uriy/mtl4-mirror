@@ -76,15 +76,15 @@ class block_diagonal2D
 
     block_type const& block(size_type i) const
     {
-	MTL_CRASH(is_negative(i) || i >= nb_blocks, "Index out of range!");
+	MTL_CRASH_IF(is_negative(i) || i >= nb_blocks, "Index out of range!");
 	return blocks[i];
     }
 
     /// Insert a block from start x start to end x end
     void insert(size_type start, size_type end, const block_type& A) 
     {
-	MTL_CRASH(start > end, "Logic error");
-	MTL_CRASH(is_negative(start) || end > nrows || end > ncols, "Index out of range!");
+	MTL_CRASH_IF(start > end, "Logic error");
+	MTL_CRASH_IF(is_negative(start) || end > nrows || end > ncols, "Index out of range!");
 	assert(compact_heap == 0); // insertion after make_compact; might be relaxed later
     
 	start_block.push_back(start);
@@ -150,7 +150,7 @@ class block_diagonal2D
     void add_mult(const VectorIn& x, VectorOut& y) const 
     {
 	mtl::vampir_trace<3062> tracer;
-	MTL_CRASH(ncols != size(x) || nrows != size(y), "Incompatible size!"); 
+	MTL_CRASH_IF(ncols != size(x) || nrows != size(y), "Incompatible size!"); 
 
 	// set_to_zero(y);
 	for(size_type i= 0; i < nb_blocks; i++) {
@@ -164,7 +164,7 @@ class block_diagonal2D
     void mult(const VectorIn& x, VectorOut& y) const 
     {
 	mtl::vampir_trace<3062> tracer;
-	MTL_CRASH(ncols != size(x) || nrows != size(y), "Incompatible size!"); 
+	MTL_CRASH_IF(ncols != size(x) || nrows != size(y), "Incompatible size!"); 
 
 	set_to_zero(y);
 	for(size_type i= 0; i < nb_blocks; i++) {

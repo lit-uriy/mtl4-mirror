@@ -142,8 +142,8 @@ class coordinate2D
   
     value_type operator() (const size_type r, const size_type c) const
     {
-	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() 
-			   || is_negative(c) || c >= this->num_cols(), index_out_of_range());
+	MTL_CRASH_IF(is_negative(r) || r >= this->num_rows() 
+		  || is_negative(c) || c >= this->num_cols(), "Index out of range!");
 
 #if 0
 	if (my_is_sorted)

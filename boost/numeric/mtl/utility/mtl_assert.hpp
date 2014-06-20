@@ -19,7 +19,7 @@ namespace mtl {
 
 #define MTL_ASSERT(Cond, Msg) assert((Cond) && Msg);
 
-#define MTL_CRASH(Cond, Msg) assert(!(Cond) && Msg);
+#define MTL_CRASH_IF(Cond, Msg) assert(!(Cond) && Msg);
 
 } // namespace mtl
 

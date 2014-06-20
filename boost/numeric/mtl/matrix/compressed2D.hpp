@@ -119,7 +119,7 @@ struct compressed_el_cursor
     self& operator++ ()
     {
 	++offset;
-	MTL_CRASH(matrix.starts[major+1] < offset, "Inconsistent incrementation!");
+	MTL_CRASH_IF(matrix.starts[major+1] < offset, "Inconsistent incrementation!");
 	while (major < matrix.starts.size()-1 && matrix.starts[major+1] == offset) 
 	    ++major;
 	return *this;
@@ -238,7 +238,7 @@ struct compressed2D_indexer
     template <class Matrix>
     size_type find_major(const Matrix& ma, size_type offset) const
     {
-	MTL_CRASH(ma.starts.empty(), "Major vector can't be empty");
+	MTL_CRASH_IF(ma.starts.empty(), "Major vector can't be empty");
 	size_type my_major= std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
 	return --my_major;
     }
@@ -291,7 +291,7 @@ class compressed2D
     typedef crtp_matrix_assign<self, Elt, size_type>  assign_base;
     typedef compressed2D_indexer<size_type>          indexer_type;
 
-    void check() const { MTL_CRASH(inserting, "Access during insertion!"); }
+    void check() const { MTL_CRASH_IF(inserting, "Access during insertion!"); }
 
     /// Removes all values; e.g. for set_to_zero
     void make_empty()
@@ -530,7 +530,7 @@ class compressed2D
     {
 	using math::zero;
 	check(); 
-	MTL_CRASH(is_negative(row) || row >= this->num_rows() 
+	MTL_CRASH_IF(is_negative(row) || row >= this->num_rows() 
 		  || is_negative(col) || col >= this->num_cols(), "Index out of range!");
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
 	return pos ? data[pos.value()] : zero(value_type()); 
@@ -548,13 +548,13 @@ class compressed2D
     // For internal use
     const value_type& value_from_offset(size_type offset) const
     {
-	check(); MTL_CRASH(offset >= this->my_nnz, "Offset larger than matrix!");
+	check(); MTL_CRASH_IF(offset >= this->my_nnz, "Offset larger than matrix!");
 	return data[offset];
     }
 
     value_type& value_from_offset(size_type offset)
     {
-	check(); MTL_CRASH(offset >= this->my_nnz, "Offset larger than matrix");
+	check(); MTL_CRASH_IF(offset >= this->my_nnz, "Offset larger than matrix");
 	return data[offset];
     }
 
@@ -625,7 +625,7 @@ class compressed2D
     /// Number of non-zeros in row/column \p r_or_c when matrix is row-/column-major
     size_type nnz_local(size_type r_or_c) const 
     { 
-	MTL_CRASH(r_or_c >= this->dim1(), "Index out of range!");
+	MTL_CRASH_IF(r_or_c >= this->dim1(), "Index out of range!");
 	return starts[r_or_c+1] - starts[r_or_c];
     }
 
@@ -930,7 +930,7 @@ template <typename Modifier>
 inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type row, size_type col, value_type val)
 {
     using std::copy_backward;
-    MTL_CRASH(is_negative(row) || row >= num_rows(matrix) || is_negative(col) || col >= num_cols(matrix), 
+    MTL_CRASH_IF(is_negative(row) || row >= num_rows(matrix) || is_negative(col) || col >= num_cols(matrix), 
 	      "Index is out of range!");
 
     Modifier                          modifier;  

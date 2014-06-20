@@ -18,7 +18,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
-#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/mtl_assert.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
@@ -55,7 +55,7 @@ struct size_helper
 
 # ifndef MTL_IGNORE_STATIC_SIZE_VIOLATION
     void set_size(std::size_t MTL_DEBUG_ARG(size))
-    {	MTL_DEBUG_THROW_IF(Size != size, change_static_size()); }
+    {	MTL_CRASH_IF(Size != size, "Try to change a static size!"); }
 # else
     void set_size(std::size_t) {}
 # endif
@@ -273,7 +273,7 @@ struct contiguous_memory_block
 	// std::cout << "Copied in assignment.\n";	
 	if (this->used_memory() == 0)
 	    alloc(other.used_memory());
-	MTL_DEBUG_THROW_IF(this->used_memory() != other.used_memory(), incompatible_size());
+	MTL_CRASH_IF(this->used_memory() != other.used_memory(), "Incompatible size");
 	std::copy(other.data, other.data + other.used_memory(), data);
     }
 
@@ -373,12 +373,12 @@ public:
 	    // If already have memory of the right size we can keep it
 	    if (size == this->used_memory()) 
 		return;
-	    MTL_DEBUG_THROW_IF(category != own, 
-			       logic_error("Can't change the size of collections with external memory"));
+	    MTL_CRASH_IF(category != own, 
+		      "Can't change the size of collections with external memory");
 	    delete_it();
 	    alloc(size);
 	} else {
-	    MTL_DEBUG_THROW_IF(size != Size, logic_error("Can't change static size")); 
+	    MTL_CRASH_IF(size != Size, "Can't change static size"); 
 	}
     }
 
@@ -421,7 +421,7 @@ struct contiguous_memory_block<Value, true, Size>
 # else 
     explicit contiguous_memory_block(std::size_t size= Size)
     {
-	MTL_DEBUG_THROW_IF(Size != size, incompatible_size());
+	MTL_CRASH_IF(Size != size, "Incompatible size!");
     }
 # endif
 
@@ -437,7 +437,7 @@ struct contiguous_memory_block<Value, true, Size>
     explicit contiguous_memory_block(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {
 	// std::cout << "Copied in copy constructor (different type).\n";	
-	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
+	MTL_CRASH_IF(Size != other.used_memory(), "Incompatible size!");
 	std::copy(other.data, other.data + other.used_memory(), data);
     }
 
@@ -460,7 +460,7 @@ public:
     self& operator=(const contiguous_memory_block<Value2, OnStack2, Size2>& other)
     {
 	// std::cout << "Assignment from different type.\n";
-	MTL_DEBUG_THROW_IF(Size != other.used_memory(), incompatible_size());
+	MTL_CRASH_IF(Size != other.used_memory(), "Incompatible size!");
 	std::copy(other.data, other.data + other.used_memory(), data);
 	return *this;
     }
