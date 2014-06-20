@@ -78,8 +78,6 @@ inline std::size_t size(const vec_vec_pmop_expr<E1, E2, SFunctor>& v)
 {
     MTL_CRASH(mtl::vec::size(v.first.value) != 0 && mtl::vec::size(v.first.value) != mtl::vec::size(v.second.value),
 	      "Incompatible size!");
-    // MTL_DEBUG_THROW_IF(mtl::vec::size(v.first.value) != 0 
-    // 		       && mtl::vec::size(v.first.value) != mtl::vec::size(v.second.value), incompatible_size());
     return mtl::vec::size(v.first.value);
 }
 

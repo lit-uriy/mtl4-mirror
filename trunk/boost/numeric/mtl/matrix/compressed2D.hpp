@@ -26,7 +26,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
-#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/mtl_assert.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
 #include <boost/numeric/mtl/utility/shrink_stl_vector.hpp>
 #include <boost/numeric/mtl/utility/zipped_sort.hpp>
@@ -85,10 +85,6 @@ struct compressed_key
 
     bool operator== (compressed_key const& other) const
     {
-	//if (offset == other.offset && major != other.major) 
-	//    std::cout << offset << " " << other.offset << " " << major << " " << other.major << '\n';
-	// The following tests doesn't hold everywhere (anymore)
-	// MTL_DEBUG_THROW_IF(offset == other.offset && major != other.major, logic_error("equal offsets imply equal major"));
 	return offset == other.offset;
     }
 
@@ -123,7 +119,7 @@ struct compressed_el_cursor
     self& operator++ ()
     {
 	++offset;
-	MTL_DEBUG_THROW_IF(matrix.starts[major+1] < offset, runtime_error("Inconsistent incrementation!"));
+	MTL_CRASH(matrix.starts[major+1] < offset, "Inconsistent incrementation!");
 	while (major < matrix.starts.size()-1 && matrix.starts[major+1] == offset) 
 	    ++major;
 	return *this;
@@ -242,7 +238,7 @@ struct compressed2D_indexer
     template <class Matrix>
     size_type find_major(const Matrix& ma, size_type offset) const
     {
-	MTL_DEBUG_THROW_IF(ma.starts.empty(), logic_error("Major vector can't be empty"));
+	MTL_CRASH(ma.starts.empty(), "Major vector can't be empty");
 	size_type my_major= std::upper_bound(ma.starts.begin(), ma.starts.end(), offset) - ma.starts.begin();
 	return --my_major;
     }
@@ -295,7 +291,7 @@ class compressed2D
     typedef crtp_matrix_assign<self, Elt, size_type>  assign_base;
     typedef compressed2D_indexer<size_type>          indexer_type;
 
-    void check() const { MTL_DEBUG_THROW_IF(inserting, access_during_insertion()); }
+    void check() const { MTL_CRASH(inserting, "Access during insertion!"); }
 
     /// Removes all values; e.g. for set_to_zero
     void make_empty()
@@ -533,7 +529,9 @@ class compressed2D
     const_reference operator() (size_type row, size_type col) const
     {
 	using math::zero;
-	check(); MTL_DEBUG_THROW_IF(is_negative(row) || row >= this->num_rows() || is_negative(col) || col >= this->num_cols(), index_out_of_range());
+	check(); 
+	MTL_CRASH(is_negative(row) || row >= this->num_rows() 
+		  || is_negative(col) || col >= this->num_cols(), "Index out of range!");
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
 	return pos ? data[pos.value()] : zero(value_type()); 
     }
@@ -543,20 +541,20 @@ class compressed2D
     value_type& lvalue(size_type row, size_type col)
     {
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
-	check(); MTL_DEBUG_THROW_IF(!pos, logic_error("This entry does not exist in the matrix"));
+	check(); MTL_ASSERT(pos, "This entry does not exist in the matrix!");
 	return data[pos.value()];
     }
 
     // For internal use
     const value_type& value_from_offset(size_type offset) const
     {
-	check(); MTL_DEBUG_THROW_IF(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
+	check(); MTL_CRASH(offset >= this->my_nnz, "Offset larger than matrix!");
 	return data[offset];
     }
 
     value_type& value_from_offset(size_type offset)
     {
-	check(); MTL_DEBUG_THROW_IF(offset >= this->my_nnz, index_out_of_range("Offset larger than matrix"));
+	check(); MTL_CRASH(offset >= this->my_nnz, "Offset larger than matrix");
 	return data[offset];
     }
 
@@ -627,7 +625,7 @@ class compressed2D
     /// Number of non-zeros in row/column \p r_or_c when matrix is row-/column-major
     size_type nnz_local(size_type r_or_c) const 
     { 
-	MTL_DEBUG_THROW_IF(r_or_c >= this->dim1(), index_out_of_range());
+	MTL_CRASH(r_or_c >= this->dim1(), "Index out of range!");
 	return starts[r_or_c+1] - starts[r_or_c];
     }
 
@@ -932,7 +930,8 @@ template <typename Modifier>
 inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type row, size_type col, value_type val)
 {
     using std::copy_backward;
-    MTL_DEBUG_THROW_IF(is_negative(row) || row >= num_rows(matrix) || is_negative(col) || col >= num_cols(matrix), index_out_of_range());
+    MTL_CRASH(is_negative(row) || row >= num_rows(matrix) || is_negative(col) || col >= num_cols(matrix), 
+	      "Index is out of range!");
 
     Modifier                          modifier;  
     compressed2D_indexer<size_type>   indexer;
