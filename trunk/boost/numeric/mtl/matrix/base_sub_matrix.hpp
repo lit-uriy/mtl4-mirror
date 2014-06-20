@@ -14,10 +14,10 @@
 #define MTL_BASE_SUB_MATRIX_INCLUDE
 
 #include <algorithm>
-#include <boost/static_assert.hpp>
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
-#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
+#include <boost/numeric/mtl/utility/mtl_assert.hpp>
 
 namespace mtl { namespace mat {
 
@@ -76,9 +76,9 @@ struct base_sub_matrix
     // Either changed matrix is uninitialized (i.e. 0x0) or dimensions are equal
     void check_dim(size_type MTL_DEBUG_ARG(num_rows), size_type MTL_DEBUG_ARG(num_cols) ) const
     {
-	MTL_DEBUG_THROW_IF(this->num_rows() * this->num_cols() != 0
-			   && (this->num_rows() != num_rows || this->num_cols() != num_cols),
-			   incompatible_size());
+	MTL_CRASH(this->num_rows() * this->num_cols() != 0
+		   && (this->num_rows() != num_rows || this->num_cols() != num_cols),
+		   "Incompatible size");
     }
 
 protected:
@@ -92,8 +92,8 @@ protected:
 
     void set_ranges(size_type br, size_type er, size_type bc, size_type ec)
     {
-	MTL_DEBUG_THROW_IF(br > er, range_error("begin row > end row"));
-	MTL_DEBUG_THROW_IF(bc > ec, range_error("begin column > end column"));
+	MTL_CRASH(br > er, "begin row > end row");
+	MTL_CRASH(bc > ec, "begin column > end column");
 	my_begin_row= br; my_end_row= er; my_begin_col= bc; my_end_col= ec;
     }
 
@@ -101,12 +101,12 @@ public:
     void check_ranges(size_type MTL_DEBUG_ARG(begin_r), size_type MTL_DEBUG_ARG(end_r), 
 		      size_type MTL_DEBUG_ARG(begin_c), size_type MTL_DEBUG_ARG(end_c) ) const
     {
-	MTL_DEBUG_THROW_IF(begin_r < begin_row(), range_error("begin_row out of range"));
+	MTL_CRASH(begin_r < begin_row(), "begin_row out of range");
 	// if (end_r > end_row()) std::cout << "end_row out of range\n";
-	MTL_DEBUG_THROW_IF(end_r > end_row(), range_error("end_row out of range"));
+	MTL_CRASH(end_r > end_row(), "end_row out of range");
 			      
-	MTL_DEBUG_THROW_IF(begin_c < begin_col(), range_error("begin_col out of range"));
-	MTL_DEBUG_THROW_IF(end_c > end_col(), range_error("end_col out of range"));
+	MTL_CRASH(begin_c < begin_col(), "begin_col out of range");
+	MTL_CRASH(end_c > end_col(), "end_col out of range");
     }
 
     explicit base_sub_matrix(size_type br, size_type er, size_type bc, size_type ec) : my_nnz(0)

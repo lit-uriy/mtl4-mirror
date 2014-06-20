@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/compute_summand.hpp>
-#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/mtl_assert.hpp>
 
 namespace mtl { namespace vec {
 
@@ -76,8 +76,10 @@ struct vec_vec_pmop_expr
 template <typename E1, typename E2, typename SFunctor>
 inline std::size_t size(const vec_vec_pmop_expr<E1, E2, SFunctor>& v)
 {
-    MTL_DEBUG_THROW_IF(mtl::vec::size(v.first.value) != 0 
-		       && mtl::vec::size(v.first.value) != mtl::vec::size(v.second.value), incompatible_size());
+    MTL_CRASH(mtl::vec::size(v.first.value) != 0 && mtl::vec::size(v.first.value) != mtl::vec::size(v.second.value),
+	      "Incompatible size!");
+    // MTL_DEBUG_THROW_IF(mtl::vec::size(v.first.value) != 0 
+    // 		       && mtl::vec::size(v.first.value) != mtl::vec::size(v.second.value), incompatible_size());
     return mtl::vec::size(v.first.value);
 }
 
