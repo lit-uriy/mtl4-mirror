@@ -76,7 +76,7 @@ struct base_sub_matrix
     // Either changed matrix is uninitialized (i.e. 0x0) or dimensions are equal
     void check_dim(size_type MTL_DEBUG_ARG(num_rows), size_type MTL_DEBUG_ARG(num_cols) ) const
     {
-	MTL_CRASH(this->num_rows() * this->num_cols() != 0
+	MTL_CRASH_IF(this->num_rows() * this->num_cols() != 0
 		   && (this->num_rows() != num_rows || this->num_cols() != num_cols),
 		   "Incompatible size");
     }
@@ -92,8 +92,8 @@ protected:
 
     void set_ranges(size_type br, size_type er, size_type bc, size_type ec)
     {
-	MTL_CRASH(br > er, "begin row > end row");
-	MTL_CRASH(bc > ec, "begin column > end column");
+	MTL_CRASH_IF(br > er, "begin row > end row");
+	MTL_CRASH_IF(bc > ec, "begin column > end column");
 	my_begin_row= br; my_end_row= er; my_begin_col= bc; my_end_col= ec;
     }
 
@@ -101,12 +101,12 @@ public:
     void check_ranges(size_type MTL_DEBUG_ARG(begin_r), size_type MTL_DEBUG_ARG(end_r), 
 		      size_type MTL_DEBUG_ARG(begin_c), size_type MTL_DEBUG_ARG(end_c) ) const
     {
-	MTL_CRASH(begin_r < begin_row(), "begin_row out of range");
+	MTL_CRASH_IF(begin_r < begin_row(), "begin_row out of range");
 	// if (end_r > end_row()) std::cout << "end_row out of range\n";
-	MTL_CRASH(end_r > end_row(), "end_row out of range");
+	MTL_CRASH_IF(end_r > end_row(), "end_row out of range");
 			      
-	MTL_CRASH(begin_c < begin_col(), "begin_col out of range");
-	MTL_CRASH(end_c > end_col(), "end_col out of range");
+	MTL_CRASH_IF(begin_c < begin_col(), "begin_col out of range");
+	MTL_CRASH_IF(end_c > end_col(), "end_col out of range");
     }
 
     explicit base_sub_matrix(size_type br, size_type er, size_type bc, size_type ec) : my_nnz(0)
