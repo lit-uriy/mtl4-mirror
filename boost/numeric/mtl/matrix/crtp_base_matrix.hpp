@@ -32,7 +32,7 @@
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
-#include <boost/numeric/mtl/utility/exception.hpp>
+#include <boost/numeric/mtl/utility/assert.hpp>
 #include <boost/numeric/mtl/utility/eval_dense.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/iset.hpp>
@@ -61,8 +61,8 @@ private:
     Matrix& assign(const Source& source, Matrix& matrix, ashape::scal)
     {
 	vampir_trace<3055> tracer;
-	MTL_DEBUG_THROW_IF(num_rows(matrix) * num_cols(matrix) == 0, 
-			   range_error("Trying to initialize a 0 by 0 matrix with a value"));
+	MTL_CRASH_IF(num_rows(matrix) * num_cols(matrix) == 0, 
+		     "Trying to initialize a 0 by 0 matrix with a value");
 	diagonal_setup(matrix, source);
 	return matrix;
     }
@@ -175,7 +175,7 @@ struct crtp_assign<Value[Rows][Cols], Matrix>
 	    size_t r= 0;
 	    for (auto l : values) {
 		size_t c= 0;	    
-		MTL_THROW_IF(l.size() != nc, logic_error("All sub-lists must have same size!"));
+		MTL_CRASH_IF(l.size() != nc, "All sub-lists must have same size!");
 		for (auto v : l)
 		    ins(r, c++) << v;
 		r++;
@@ -494,7 +494,7 @@ private:
     template <typename Src>
     void check_ready_resource(const Src& src) const 
     {
-	MTL_DEBUG_THROW_IF(num_rows(src) * num_cols(src) == 0, need_nonempty());
+	MTL_CRASH_IF(num_rows(src) * num_cols(src) == 0, "Need non-empty matrix!");
 	check_resource(src);
     }
 
@@ -549,7 +549,7 @@ private:
 	{
 	    vampir_trace<3047> tracer;
 	    if (with_comma) {
-		MTL_DEBUG_THROW_IF(r != num_rows(matrix), incompatible_size("Not all matrix entries initialized!"));
+		MTL_CRASH_IF(r != num_rows(matrix), "Not all matrix entries initialized!");
 	    } else {
 		using std::min;
 		if (src == math::zero(src)) // it is already set to zero
@@ -589,8 +589,8 @@ private:
     operator=(Source src)
     {
 	Matrix& matrix= static_cast<Matrix&>(*this);
-	MTL_DEBUG_THROW_IF(num_rows(matrix) * num_cols(matrix) == 0, 
-			   range_error("Trying to initialize a 0 by 0 matrix with a value"));
+	MTL_CRASH_IF(num_rows(matrix) * num_cols(matrix) == 0, 
+		     "Trying to initialize a 0 by 0 matrix with a value!");
 	set_to_zero(matrix);
 	return scalar_assign<Source>(src, static_cast<Matrix&>(*this));
     }

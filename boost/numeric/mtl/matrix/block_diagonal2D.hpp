@@ -14,7 +14,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/utility/category.hpp>
-#include <boost/numeric/mtl/utility/mtl_assert.hpp>
+#include <boost/numeric/mtl/utility/assert.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>

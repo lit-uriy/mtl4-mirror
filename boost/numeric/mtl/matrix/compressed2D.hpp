@@ -26,7 +26,7 @@
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/config.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
-#include <boost/numeric/mtl/utility/mtl_assert.hpp>
+#include <boost/numeric/mtl/utility/assert.hpp>
 #include <boost/numeric/mtl/utility/maybe.hpp>
 #include <boost/numeric/mtl/utility/shrink_stl_vector.hpp>
 #include <boost/numeric/mtl/utility/zipped_sort.hpp>
