@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/utility/assert.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/operation/iota.hpp>
@@ -44,7 +45,7 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
     typedef vec::dense_vector<size_type, vec::parameters<> >   size_vector; // todo: with type trait
 
     size_type        nrows= num_rows(A);
-    MTL_THROW_IF(nrows != num_cols(A), matrix_not_square());
+    MTL_CRASH_IF(nrows != num_cols(A), "Matrix not square");
     const value_type zero= 0, one= 1;   
     
     if (nrows == 1){
@@ -93,7 +94,8 @@ void inline cuppen_inplace(Matrix& A, Matrix& Q, Vector& lambda)
 	Matrix Q_tilde(nrows, nrows);
 	for (size_type i = 0; i < nrows; i++) {
 	    for (size_type j= 0; j < size(diag); ++j)
-		MTL_DEBUG_THROW_IF (diag[j] == lambda[i], logic_error("Can't compute eigenvector, probably due to double eigenvalue."));
+		MTL_THROW_IF (diag[j] == lambda[i], 
+			      logic_error("Can't compute eigenvector, probably due to double eigenvalue."));
 	    Vector    li(nrows, lambda[i]), lambda_i(ele_quot(v1, diag - li));
 	    Q_tilde[iall][i]= lambda_i / two_norm(lambda_i); // normalized eigenvector in Matrix Q 
 	}
