@@ -17,7 +17,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/compute_summand.hpp>
-#include <boost/numeric/mtl/utility/mtl_assert.hpp>
+#include <boost/numeric/mtl/utility/assert.hpp>
 
 namespace mtl { namespace vec {
 

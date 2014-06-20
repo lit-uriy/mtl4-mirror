@@ -19,7 +19,7 @@
 #include <boost/numeric/mtl/matrix/dimension.hpp>
 #include <boost/numeric/mtl/detail/index.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
-#include <boost/numeric/mtl/utility/mtl_assert.hpp>
+#include <boost/numeric/mtl/utility/assert.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 
