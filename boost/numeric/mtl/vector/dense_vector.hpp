@@ -25,6 +25,7 @@
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_integral.hpp>
 
+#include <boost/numeric/mtl/utility/assert.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 #include <boost/numeric/mtl/vector/all_vec_expr.hpp>
@@ -73,13 +74,13 @@ class dense_vector
     /// Check whether index is non-negative and less than size
     void check_index( size_type MTL_DEBUG_ARG(i) ) const
     {
-	MTL_DEBUG_THROW_IF( is_negative(i) ||  i >= this->used_memory(), index_out_of_range());
+	MTL_CRASH_IF( is_negative(i) ||  i >= this->used_memory(), "Index out of range!");
     }
 
     /// Check for a given vector if the sizes are equal or this has size 0 (and can take the size of source)
     void check_dim( size_type MTL_DEBUG_ARG(s) ) const
     {
-	MTL_DEBUG_THROW_IF( this->used_memory() != 0 && this->used_memory() != s, incompatible_size());
+	MTL_CRASH_IF( this->used_memory() != 0 && this->used_memory() != s, "Incompatible size!");
     }
 
     /// Check at compile time for a given vector if the sizes are equal
@@ -95,11 +96,11 @@ class dense_vector
     template <class E>
     void check_consistent_shape( vec_expr<E> const& ) const
     {
-	MTL_DEBUG_THROW_IF((!boost::is_same<
+	MTL_CRASH_IF((!boost::is_same<
 			        typename ashape::ashape<self>::type
 			      , typename ashape::ashape<E>::type
 			    >::value),
-			   incompatible_shape());
+			   "Incompatible shape!");
     }
 
     /// Default constructor
@@ -324,7 +325,7 @@ inline sub_vector(dense_vector<Value, Parameters>& v,
 {
     typedef dense_vector<Value, Parameters>    Vector;
 
-    MTL_DEBUG_THROW_IF( is_negative(start) || is_negative(finish), index_out_of_range());
+    MTL_CRASH_IF( is_negative(start) || is_negative(finish), "Index out of range!");
     irange r= intersection(irange(start, finish), irange(0, mtl::vec::size(v)));
     return r.empty() ? Vector() : Vector(r.size(), &v[r.start()]);
 

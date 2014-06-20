@@ -31,6 +31,7 @@
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/utility/common_include.hpp>
+#include <boost/numeric/mtl/utility/assert.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
@@ -429,14 +430,16 @@ class dense2D
     /// Constant access to element
     const_reference operator() (size_t r, size_t c) const 
     {
-	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() || is_negative(c) || c >= this->num_cols(), index_out_of_range());
+	MTL_CRASH_IF(is_negative(r) || r >= this->num_rows() || is_negative(c) || c >= this->num_cols(), 
+		     "Index out of range!");
         return this->data[indexer(*this, r, c)];
     }
 
     /// Mutable access to element
     value_type& operator() (size_t r, size_t c)
     {
-	MTL_DEBUG_THROW_IF(is_negative(r) || r >= this->num_rows() || is_negative(c) || c >= this->num_cols(), index_out_of_range());
+	MTL_CRASH_IF(is_negative(r) || r >= this->num_rows() || is_negative(c) || c >= this->num_cols(), 
+		     "Index out of range!");
 	return this->data[indexer(*this, r, c)]; 
     }    
 
