@@ -5,7 +5,7 @@ option(MTL_VERBOSE_TRYCOMPILE "Print error message when C++11 feature is not sup
 # Compiler flag for C++11: special case for VC only, everything else should be equal
 # Might need later adaption, once compilers don't support this flag any longer
 if(MSVC)
-  set(CXX_ELEVEN_FLAG "/Qstd=c++0x")
+  set(CXX_ELEVEN_FLAG "")
 else()
   set(CXX_ELEVEN_FLAG "-std=c++0x")
 endif()
