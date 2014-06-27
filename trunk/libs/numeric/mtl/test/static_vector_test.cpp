@@ -34,8 +34,6 @@ int main()
     typedef static_vector<int, 3, 4, 9, -2>          v1;
     typedef static_vector<std::size_t, 9, 2, 8, 8>   v2;
 
-    typedef dimv<7, 9> d;
-
     std::cout << v1::get<0>::value << '\n';
     std::cout << v1::get<1>::value << '\n';
     std::cout << v1::get<3>::value << '\n';
@@ -51,8 +49,13 @@ int main()
     
     static_assert(boost::is_same<v2, v2::get<0> >::value, "get<0> should be be idempotent!");
 
+# ifndef _MSC_VER // creates problems on VS
+	template <std::size_t ...Values>    typedef dimv<7, 9> d;
+
     std::cout << d::get<1>::value << '\n';
     static_assert(d::get<1>::value == 9, "Wrong value!");
+# endif
+
 #else
     std::cout << "Test disabled because your compiler does not support all required C++11 features.\n";
 #endif

@@ -117,12 +117,12 @@ class sparse_banded
     /// Print matrix on \p os
     friend std::ostream& operator<<(std::ostream& os, const self& A)
     {
-	const size_type bs= A.bands.size(), nc= num_cols(A), s= bs * num_rows(A);
+	const size_type bs= A.bands.size(), nc= A.num_cols(), s= bs * A.num_rows();
 	print_size_max p;
 	for (size_type i= 0; i < s; i++)
 	    p(A.data[i]);
 
-	for (size_type r= 0; r < num_rows(A); r++) {
+	for (size_type r= 0; r < A.num_rows(); r++) {
 	    os << '[';
 	    size_type b= 0;
 	    while (b < bs && -A.bands[b] > long(r)) b++;

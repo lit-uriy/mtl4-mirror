@@ -28,18 +28,18 @@ namespace mtl {
 	{ 
 	    std::ostringstream st;
 	    st << x;
-	    int s= st.str().size();
+	    std::size_t s= st.str().size();
 	    // std::cout << "Size is " << s << ": " << st.str() << '\n';
 	    if (s > max) max= s; 
 	}
 
-	int max;
+	std::size_t max;
     };
 
     namespace mat {
 	    
 	template <typename Matrix>
-	int inline print_size(const Matrix& A)
+	std::size_t inline print_size(const Matrix& A)
 	{
 	    print_size_max p;
 	    // look_at_each_nonzero(A, p); // Doesn't work on all expressions yet

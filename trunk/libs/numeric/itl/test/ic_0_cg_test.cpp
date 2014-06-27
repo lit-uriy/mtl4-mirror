@@ -19,7 +19,7 @@ void dense_ic_0(const At& As, const Ut& Us)
 {
     mtl::dense2D<double> U(upper(As));
      
-    const int n= num_rows(U);
+    const std::size_t n= num_rows(U);
 
     for (int k= 0; k < n; k++) {
 	double dia= U[k][k]= sqrt(U[k][k]);

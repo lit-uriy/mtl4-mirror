@@ -31,7 +31,7 @@ namespace mtl { namespace impl {
 // We need property map of the minor index 
 template <typename Matrix, typename MinorIndex>
 typename RealMagnitude<typename Collection<Matrix>::value_type>::type
-inline max_of_sums(const Matrix& matrix, bool aligned, MinorIndex minor_index, unsigned dim2)
+inline max_of_sums(const Matrix& matrix, bool aligned, MinorIndex minor_index, std::size_t dim2)
 {
     vampir_trace<2012> tracer;
     using std::max; using std::abs; using math::zero;

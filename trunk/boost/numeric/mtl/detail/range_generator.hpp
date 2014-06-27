@@ -93,18 +93,18 @@ namespace mtl { namespace traits { namespace detail {
     // The tag serves to dispatching between row and column cursors
     template <typename Matrix, typename Tag, int Level>
     struct sub_matrix_cursor
-      : mtl::detail::base_cursor<int>
+      : mtl::detail::base_cursor<std::size_t>
     {
-	typedef sub_matrix_cursor                self;
-	typedef mtl::detail::base_cursor<int>    base;
-	typedef Matrix                           ref_type;
-	static int const                         level = Level;
+	typedef sub_matrix_cursor                        self;
+	typedef mtl::detail::base_cursor<std::size_t>    base;
+	typedef Matrix                                   ref_type;
+	static int const                                 level = Level;
 
-	sub_matrix_cursor(int i, Matrix const& c)
+	sub_matrix_cursor(std::size_t i, Matrix const& c)
 	    : base(i), ref(c) 
 	{}	
 
-	self operator+(int offset) const
+	self operator+(std::size_t offset) const
 	{
 	    return self(key + offset, ref);
 	}
@@ -186,8 +186,8 @@ namespace mtl { namespace traits { namespace detail {
 	}
 	type end(Matrix const& c) const
 	{
-	  using mtl::num_rows; using mtl::mat::num_rows;
-	    return type(num_rows(c), c); //return type(c.end_row(), c);
+		using mtl::num_rows; using mtl::mat::num_rows;
+	    return type(int(num_rows(c)), c); //return type(c.end_row(), c);
 	}
 	type lower_bound(Matrix const& c, size_type position) const
 	{

@@ -59,8 +59,8 @@ struct view_code<mtl::mat::hermitian_view<Matrix> >
 template <unsigned Value>
 struct view_normalize_const
 {
-      static const unsigned tmp2= Value == 0 || Value == 4 ? Value | 1 : Value, // if matrix ref or transposed, make it const
-	                    value= (tmp2 & 3) == 3 ? tmp2 ^ 1 : tmp2;           // for conj turn off const
+	static const unsigned tmp2 = Value == 0 || Value == 4 ? Value | 1 : Value; // if matrix ref or transposed, make it const
+	static const unsigned value = (tmp2 & 3) == 3 ? tmp2 ^ 1 : tmp2;           // for conj turn off const
 };
 
 template <typename ViewCode>

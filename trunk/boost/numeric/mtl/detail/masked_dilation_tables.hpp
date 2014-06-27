@@ -66,7 +66,7 @@ struct masked_dilation_tables
 private:
 
     // get mask of the style 0xfff...
-    static T get_f_mask(int n_bits) { return (1 << n_bits) - 1;   }
+    static T get_f_mask(T n_bits) { return (1 << n_bits) - 1;   }
 
     T inc(T i, T mask) { return ((i - mask) & mask);    }
 
@@ -77,7 +77,7 @@ private:
 
 	// compute the mask table
 	for (int j = 0; j < n_valid_table; ++j) {
-	    T f_mask = get_f_mask(mask_size()[j]), i, ii;
+	    T f_mask = get_f_mask(mask_size()[j]), i, ii; 
 	    for (i = 0, ii = 0; i < 256; ++i, ii = inc(ii, mask_piece()[j])) 
 		mask_lut()[j][i] =  (ii & f_mask) << mask_shift_table()[j]; // need to shift 
 	}
@@ -228,7 +228,7 @@ int masked_dilation_tables<T, Mask>::instances= 0;
 
 // Masking: syntax e.g. mask<0x55555555>(7);
 // Mask must be in front of T -> need casting :-(
-template <long unsigned Mask, typename T>
+template <std::size_t Mask, typename T>
 inline T mask(T const& value)
 {
     static masked_dilation_tables<T, T(Mask)>  tables;
@@ -246,7 +246,7 @@ inline T mask(T const& value, masked_dilation_tables<T, Mask> tables)
 
 // Unmasking: syntax e.g. unmask<0x55555555>(7);
 // Mask must be in front of T -> need casting :-(
-template <long unsigned Mask, typename T>
+template <std::size_t Mask, typename T>
 inline T unmask(T const& value)
 {
     static masked_dilation_tables<T, T(Mask)>  tables;

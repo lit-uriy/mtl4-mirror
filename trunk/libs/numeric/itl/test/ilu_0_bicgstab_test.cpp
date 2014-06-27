@@ -18,7 +18,7 @@ void dense_ilu_0(const At& As, const Lt& Ls, const Ut& Us)
 {
     mtl::dense2D<double> LU(As);
      
-    const int n= num_rows(LU);
+    const std::size_t n= num_rows(LU);
     for (int i= 1; i < n; i++) 
 	for (int k= 0; k < i; k++) {
 	    LU[i][k]/= LU[k][k];

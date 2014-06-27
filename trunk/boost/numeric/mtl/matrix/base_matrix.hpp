@@ -83,7 +83,7 @@ public:
     /// Number of rows
     size_type num_rows() const 
     {
-      return dim.num_rows();
+      return size_type(dim.num_rows()); // prevent narrowing warnings
     }
     /// First row taking indexing into account
     size_type begin_row() const 
@@ -99,7 +99,7 @@ public:
     /// number of colums
     size_type num_cols() const 
     {
-      return dim.num_cols();
+		return size_type(dim.num_cols()); // prevent narrowing warnings
     }
     /// First column taking indexing into account
     size_type begin_col() const 

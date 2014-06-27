@@ -125,8 +125,13 @@ namespace mtl {
 #     pragma clang diagnostic ignored "-Wunneeded-internal-declaration"
 #     pragma clang diagnostic ignored "-Wunused-function"
 #    endif
-	inline long inc_wo_over(long i) { return i == std::numeric_limits<long>::max() ? i : i+1; }
-	inline long negate_wo_over(long i) { return i == std::numeric_limits<long>::min() ? std::numeric_limits<long>::max() : -i; }
+		template <typename T>
+		inline T inc_wo_over(T i) 
+		{ return i == std::numeric_limits<T>::max() ? i : i+1; }
+
+		template <typename T>
+		inline T negate_wo_over(T i) 
+		{ return i == std::numeric_limits<long>::min() ? std::numeric_limits<T>::max() : -i; }
     }
 
     template <typename Updater, typename ValueSrc, typename Para, typename ValueDest>
@@ -148,10 +153,10 @@ namespace mtl {
 	    last=  inc_wo_over(negate_wo_over(src.get_begin()));
 	}
 
-	long jd= 0, j_end= sstarts[0];
-	for (long i= 0, i_end= src.dim1(), f= first, l= last; i < i_end; ++i) {
+	std::size_t jd= 0, j_end= sstarts[0];
+	for (std::size_t i= 0, i_end= src.dim1(), f= first, l= last; i < i_end; ++i) {
 	    dest.ref_major()[i]= jd;
-	    long j= j_end;
+	    std::size_t j= j_end;
 	    j_end= sstarts[i+1];
 	    while (j < j_end && long(sindices[j]) < f) j++;
 	    while (j < j_end && long(sindices[j]) < l) jd++, j++;
@@ -161,9 +166,9 @@ namespace mtl {
 	dest.ref_major()[src.dim1()]= jd;
 	dest.set_nnz(jd); // resizes indices and data
 
-	for (long i= 0, i_end= src.dim1(), jd= 0, j_end= sstarts[0]; i < i_end; ++i) {
+	for (std::size_t i= 0, i_end= src.dim1(), jd= 0, j_end= sstarts[0]; i < i_end; ++i) {
 	    dest.ref_major()[i]= jd;
-	    long j= j_end;
+	    std::size_t j= j_end;
 	    j_end= sstarts[i+1];
 	    while (j < j_end && long(sindices[j]) < first) j++;
 	    while (j < j_end && long(sindices[j]) < last) {

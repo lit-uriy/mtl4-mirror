@@ -20,6 +20,7 @@
 #include <boost/mpl/map.hpp>
 #include <boost/mpl/at.hpp>
 #include <boost/mpl/if.hpp>
+#include <boost/mpl/void.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/utility/tag.hpp>
@@ -111,11 +112,13 @@ namespace mtl {
 	    static const std::size_t value= morton_mask;
 	};
 
+# ifndef _MSC_VER // creates problems on VS
 	template <std::size_t ...Values>
 	struct morton_matrix_mask<mask<Values...> >
 	{
 	    MTL_STATIC_ASSERT((sizeof...(Values) != 1), "Morton-order matrices must have exactly one mask");
 	};	
+# endif
 
 	template <std::size_t Value>
 	struct morton_matrix_mask<mask<Value> >
@@ -137,7 +140,7 @@ namespace mtl {
 	    >                                            type_map;
 	    	    
 	    typedef typename boost::mpl::at<type_map, typename boost::mpl::at<TypePara, layout>::type>::type type;
-	    MTL_STATIC_ASSERT(( !boost::is_same<type, mpl_::void_>::value),
+	    MTL_STATIC_ASSERT(( !boost::is_same<type, boost::mpl::void_>::value),
 	    		       "The layout you providing cannot be used for dense matrices.");
 	};
 
@@ -155,7 +158,7 @@ namespace mtl {
 	    >                                            type_map;
 	    	    
 	    typedef typename boost::mpl::at<type_map, typename boost::mpl::at<TypePara, layout>::type>::type type;
-	    MTL_STATIC_ASSERT(( !boost::is_same<type, mpl_::void_>::value),
+	    MTL_STATIC_ASSERT(( !boost::is_same<type, boost::mpl::void_>::value),
 	    		       "The layout you providing cannot be used for sparse matrices.");
 	};
 

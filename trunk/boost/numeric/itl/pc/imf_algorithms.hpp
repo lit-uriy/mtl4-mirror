@@ -337,7 +337,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
  	do {
 	    mtl::vampir_trace<9901> tb1;
 
-		block_diag_low = block_diagonal.size();
+		block_diag_low = int(block_diagonal.size());
 
 /***************************************************************************
  * Phase 0: Determine priority of unmarked elements

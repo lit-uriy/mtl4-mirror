@@ -176,7 +176,7 @@ public:
     {
 	assert(index_heap == 0); assert(value_heap == 0); // might be relaxed later
 	
-	int total_indices= 0, total_values= 0;
+	std::size_t total_indices= 0, total_values= 0;
 	for (int i= 0; i < m_total_elements; i++) {
 	    total_indices+= m_elements[i].nb_vars();
 	    total_values+= m_elements[i].nb_values();
