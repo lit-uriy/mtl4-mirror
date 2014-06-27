@@ -22,9 +22,9 @@ namespace mtl {
 int main(int, char**)
 {
     mtl::dense_vector<double> x(10);
-    unsigned int size1 = num_rows(x);
-    unsigned int size2 = mtl::num_rows(x);              // does not compile with friend definition
-    unsigned int size3 = mtl::num_rows(x);      // does not compile with friend definition either
+    std::size_t size1 = num_rows(x);
+    std::size_t size2 = mtl::num_rows(x);      // does not compile with friend definition
+    std::size_t size3 = mtl::num_rows(x);      // does not compile with friend definition either
 
     std::cout << size1 + size2 + size3 << "\n";
 

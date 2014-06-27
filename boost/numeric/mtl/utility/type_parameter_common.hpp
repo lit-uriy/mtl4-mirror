@@ -22,6 +22,7 @@
 #include <boost/mpl/pair.hpp>
 #include <boost/mpl/map.hpp>
 #include <boost/mpl/at.hpp>
+#include <boost/mpl/void.hpp>
 #include <boost/mpl/if.hpp>
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
@@ -83,7 +84,7 @@ namespace mtl {
 	struct find_kind
 	{
 	    typedef typename boost::mpl::at<KindMap, Kind>::type type;
-	    static_assert( !boost::is_same<type, mpl_::void_>::value,
+	    static_assert( !boost::is_same<type, boost::mpl::void_>::value,
 	    		  "The type you providing (the second parameter of find_kind) is not used in the type generator.");
 	};
 	

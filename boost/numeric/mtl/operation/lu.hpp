@@ -61,12 +61,13 @@ void inline lu(Matrix& A, PermuationVector& P, double eps= 0)
     vampir_trace<5024> tracer;
     using math::zero; using std::abs;
     typedef typename Collection<Matrix>::size_type    size_type;
+	typedef typename Collection<PermuationVector>::value_type value_p_type;
     size_type ncols = num_cols(A), nrows = num_rows(A);
 
     MTL_THROW_IF(ncols != nrows , matrix_not_square());
     P.change_dim(nrows);
 
-    for (size_type i= 0; i < nrows; i++)
+    for (value_p_type i= 0; i < value_p_type(nrows); i++)
         P[i]= i;
 
     for (size_type i= 0; i < nrows-1; i++) {

@@ -60,7 +60,7 @@ inline void smat_smat_mult(const MatrixA& A, const MatrixB& B, MatrixC& C, Assig
 	    // Get cursor corresponding to row 'ca' in matrix B
 	    typedef typename traits::range_generator<tag::row, MatrixB>::type  B_cursor_type;
 	    B_cursor_type B_cursor = begin<tag::row>(B);
-	    B_cursor+= ca;
+		B_cursor += int(ca); // not elegant but prevents warning
 
 	    // Iterate over non-zeros of this row 
 	    typedef typename traits::range_generator<tag::nz, B_cursor_type>::type ib_cursor_type;

@@ -97,8 +97,10 @@ public:
 
     void dilate(T x)
     {
-	static const T to_switch_on = Normalized ? 0 : anti_mask;
-	i = mask<bit_mask>(x) | to_switch_on;
+		static const T to_switch_on = Normalized ? 0 : anti_mask;
+		// auto aa = mask<bit_mask>(x) | to_switch_on;
+		// auto ab = mask<static_cast<T>(bit_mask)>(x) | to_switch_on
+		i = mask<bit_mask>(x) | to_switch_on;
     }
 
 public:

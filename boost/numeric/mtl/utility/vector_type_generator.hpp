@@ -44,11 +44,13 @@ namespace mtl {
 	    typedef mtl::vec::non_fixed::dimension type;
 	};
 
+# ifndef _MSC_VER // creates problems on VS
 	template <std::size_t ...Values>
 	struct set_vector_dimensions<dim<Values...> >
 	{
 	    static_assert(sizeof...(Values) == 1, "dim<size> must have exactly 1 argument for vectors!");	    
 	};
+# endif
 
 	template <std::size_t Size>
 	struct set_vector_dimensions<dim<Size> >

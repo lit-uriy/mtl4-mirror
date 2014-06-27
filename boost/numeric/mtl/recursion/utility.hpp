@@ -50,7 +50,14 @@ std::size_t inline outer_bound(Matrix const& matrix)
 template <typename Integral>
 Integral inline least_significant_one_bit(Integral x)
 {
+	// hardcore bit hacking trick
+#ifdef _MSC_VER
+# pragma warning( disable : 4146 )
+#endif
     return x & -x; 
+#ifdef _MSC_VER
+# pragma warning( default : 4146 )
+#endif
 }
 
 

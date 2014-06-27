@@ -25,7 +25,7 @@
 namespace mtl { namespace mat {
 
 template <typename Matrix>
-std::ostream& print_matrix(Matrix const& matrix, std::ostream& out= std::cout, int width= 3, int precision= 2)
+std::ostream& print_matrix(Matrix const& matrix, std::ostream& out= std::cout, std::size_t width= 3, std::size_t precision= 2)
 {
     // typedef typename Collection<Matrix>::size_type size_type;
     // all indices will start from 0; otherwise wrong

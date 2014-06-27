@@ -90,7 +90,7 @@ class block_diagonal2D
 	start_block.push_back(start);
 	end_block.push_back(end);
 	blocks.push_back(A); 
-	my_nnz+= A.nnz();
+	my_nnz+= size_type(A.nnz());
 	nb_blocks++;
 	
 	if (start < min_ind)

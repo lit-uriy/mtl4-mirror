@@ -108,10 +108,10 @@ public:
     inline int& get_id()      {return m_sequence_number; }
 
     /// Returns the number of variables.
-    inline int nb_vars() const { return size(m_indices); }
+    inline std::size_t nb_vars() const { return size(m_indices); }
 
     /// Returns the number of values.
-    inline int nb_values() const { return nb_vars()*nb_vars(); }
+    inline std::size_t nb_values() const { return nb_vars()*nb_vars(); }
 
     /// Reference to the matrix of values.
     inline matrix_type& get_values() { return m_values; }

@@ -327,7 +327,7 @@ inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assi
     for(int elmi= 0; elmi < A.m_total_elements; elmi++){
 	const typename Matrix::element_type& elementi= A.m_elements[elmi];
 	const typename Matrix::element_type::index_type& indices= elementi.get_indices();
-	unsigned int n(size(indices));
+	std::size_t n= size(indices);
 
 	if (n <= 1024) {
 	    VectorIn vtmp(n, varray);
