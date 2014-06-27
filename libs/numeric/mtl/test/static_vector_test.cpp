@@ -50,7 +50,7 @@ int main()
     static_assert(boost::is_same<v2, v2::get<0> >::value, "get<0> should be be idempotent!");
 
 # ifndef _MSC_VER // creates problems on VS
-	template <std::size_t ...Values>    typedef dimv<7, 9> d;
+    typedef dimv<7, 9> d;
 
     std::cout << d::get<1>::value << '\n';
     static_assert(d::get<1>::value == 9, "Wrong value!");
