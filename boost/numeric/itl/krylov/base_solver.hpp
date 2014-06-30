@@ -20,6 +20,7 @@
 
 namespace itl {
 
+/// Base class (CRTP) for iterative solver classes like \ref cg_solver
 template <typename Solver, typename LinearOperator>
 struct base_solver
 {
@@ -42,6 +43,7 @@ struct base_solver
     template <typename HilbertSpaceB, typename HilbertSpaceX>
     int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) 
     {
+	my_iteration.restart();
 	if (two_norm(x) == 0)
 	    my_iteration.set_norm_r0(two_norm(b));
 	else {
