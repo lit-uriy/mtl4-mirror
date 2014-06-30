@@ -109,22 +109,24 @@ template < typename LinearOperator, typename Preconditioner= pc::identity<Linear
 class idr_s_solver
   : public base_solver< idr_s_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator >
 {
+    typedef base_solver< idr_s_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
+  public:
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    explicit idr_s_solver(const LinearOperator& A, size_t s= 8) : A(A), s(s), L(A), R(A) {}
+    explicit idr_s_solver(const LinearOperator& A, size_t s= 8) : base(A), s(s), L(A), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
-    idr_s_solver(const LinearOperator& A, size_t s, const Preconditioner& L) : A(A), s(s), L(L), R(A) {}
+    idr_s_solver(const LinearOperator& A, size_t s, const Preconditioner& L) : base(A), s(s), L(L), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
     idr_s_solver(const LinearOperator& A, size_t s, const Preconditioner& L, const RightPreconditioner& R) 
-      : A(A), s(s), L(L), R(R) {}
+      : base(A), s(s), L(L), R(R) {}
 
     /// Solve linear system approximately as specified by \p iter
     template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
     int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
-	return idr_s(A, x, b, L, R, iter, s);
+	return idr_s(this->A, x, b, L, R, iter, s);
     }
 
     // /// Perform one iteration on linear system
@@ -144,7 +146,7 @@ class idr_s_solver
     // }
     
   private:
-    const LinearOperator& A;
+    // const LinearOperator& A;
     size_t                s;
     Preconditioner        L;
     RightPreconditioner   R;

@@ -78,6 +78,9 @@ namespace itl {
       /// Set whether the residual is printed multiple times in iteration
       void set_multi_print(bool m) { multi_print= m; }
 
+      /// Set the cycle, i.e. how often is logged
+      void set_cycle(int new_cycle) { cycle= new_cycle; }
+
       /// Error code with final resume
       int error_code() const 
       {

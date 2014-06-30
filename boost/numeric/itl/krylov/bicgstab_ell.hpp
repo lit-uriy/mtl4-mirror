@@ -142,22 +142,23 @@ template < typename LinearOperator, typename Preconditioner,
 class bicgstab_ell_solver
   : public base_solver< bicgstab_ell_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator >
 {
+    typedef base_solver< bicgstab_ell_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    explicit bicgstab_ell_solver(const LinearOperator& A, size_t l= 8) : A(A), l(l), L(A), R(A) {}
+    explicit bicgstab_ell_solver(const LinearOperator& A, size_t l= 8) : base(A), l(l), L(A), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
-    bicgstab_ell_solver(const LinearOperator& A, size_t l, const Preconditioner& L) : A(A), l(l), L(L), R(A) {}
+    bicgstab_ell_solver(const LinearOperator& A, size_t l, const Preconditioner& L) : base(A), l(l), L(L), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
     bicgstab_ell_solver(const LinearOperator& A, size_t l, const Preconditioner& L, const RightPreconditioner& R) 
-      : A(A), l(l), L(L), R(R) {}
+      : base(A), l(l), L(L), R(R) {}
 
     /// Solve linear system approximately as specified by \p iter
     template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
     int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
-	return bicgstab_ell(A, x, b, L, R, iter, l);
+	return bicgstab_ell(this->A, x, b, L, R, iter, l);
     }
 
     // /// Perform one iteration on linear system
@@ -177,7 +178,7 @@ class bicgstab_ell_solver
     // }
     
   private:
-    const LinearOperator& A;
+    // const LinearOperator& A;
     size_t                l;
     Preconditioner        L;
     RightPreconditioner   R;

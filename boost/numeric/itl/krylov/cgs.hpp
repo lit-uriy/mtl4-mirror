@@ -71,16 +71,17 @@ template < typename LinearOperator, typename Preconditioner= pc::identity<Linear
 class cgs_solver
   : public base_solver< cgs_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator >
 {
+    typedef base_solver< cgs_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    explicit cgs_solver(const LinearOperator& A) : A(A), L(A) 
+    explicit cgs_solver(const LinearOperator& A) : base(A), L(A) 
     {
 	if (!pc::static_is_identity<RightPreconditioner>::value)
 	    std::cerr << "Right Preconditioner ignored!" << std::endl;
     }
 
     /// Construct solver from a linear operator and (left) preconditioner
-    cgs_solver(const LinearOperator& A, const Preconditioner& L) : A(A), L(L) 
+    cgs_solver(const LinearOperator& A, const Preconditioner& L) : base(A), L(L) 
     {
 	if (!pc::static_is_identity<RightPreconditioner>::value)
 	    std::cerr << "Right Preconditioner ignored!" << std::endl;
@@ -90,7 +91,7 @@ class cgs_solver
     template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
     int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
-	return cgs(A, x, b, L, iter);
+	return cgs(this->A, x, b, L, iter);
     }
 
     // /// Perform one iteration on linear system
@@ -110,7 +111,7 @@ class cgs_solver
     // }
     
   private:
-    const LinearOperator& A;
+    // const LinearOperator& A;
     Preconditioner        L;
 };
 

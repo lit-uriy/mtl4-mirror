@@ -115,22 +115,23 @@ template < typename LinearOperator, typename Preconditioner= pc::identity<Linear
 class qmr_solver
   : public base_solver< qmr_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator >
 {
+    typedef base_solver< qmr_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    explicit qmr_solver(const LinearOperator& A) : A(A), L(A), R(A) {}
+    explicit qmr_solver(const LinearOperator& A) : base(A), L(A), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
-    qmr_solver(const LinearOperator& A, const Preconditioner& L) : A(A), L(L), R(A) {}
+    qmr_solver(const LinearOperator& A, const Preconditioner& L) : base(A), L(L), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
     qmr_solver(const LinearOperator& A, const Preconditioner& L, const RightPreconditioner& R) 
-      : A(A), L(L), R(R) {}
+      : base(A), L(L), R(R) {}
 
     /// Solve linear system approximately as specified by \p iter
     template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
     int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
-	return qmr(A, x, b, L, R, iter);
+	return qmr(this->A, x, b, L, R, iter);
     }
 
     // /// Perform one iteration on linear system
@@ -150,7 +151,7 @@ class qmr_solver
     // }
     
   private:
-    const LinearOperator& A;
+    // const LinearOperator& A;
     Preconditioner        L;
     RightPreconditioner   R;
 };
