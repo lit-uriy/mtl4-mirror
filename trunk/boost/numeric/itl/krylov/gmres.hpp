@@ -163,24 +163,7 @@ class gmres_solver
 	return gmres(this->A, x, b, L, R, iter, restart);
     }
 
-    // /// Perform one iteration on linear system
-    // template < typename HilbertSpaceB, typename HilbertSpaceX >
-    // int solve(HilbertSpaceX& x, const HilbertSpaceB& b) const
-    // {
-    // 	itl::basic_iteration<double> iter(b, 1, 0, 0);
-    // 	return solve(x, b, iter);
-    // }
-
-    // /// Perform max 100 iterations on linear system
-    // template < typename HilbertSpaceB, typename HilbertSpaceX >
-    // int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) const
-    // {
-    // 	itl::basic_iteration<double> iter(b, 100, 1e-9, 0);
-    // 	return solve(x, b, iter);
-    // }
-
   private:
-    // const LinearOperator& A;
     size_t                restart;
     Preconditioner        L;
     RightPreconditioner   R;
