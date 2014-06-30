@@ -26,7 +26,9 @@ struct base_solver
     typedef typename mtl::Magnitude<typename mtl::Collection<LinearOperator>::value_type>::type magnitude_type;
     typedef cyclic_iteration<magnitude_type>                                                    iteration_type;
 
-    base_solver(iteration_type i= default_iteration<magnitude_type>()) : my_iteration(i) { my_iteration.set_quite(true); }
+    base_solver(const LinearOperator& A, iteration_type iter= default_iteration<magnitude_type>()) 
+      : A(A), my_iteration(iter) 
+    { my_iteration.set_quite(true); }
 
     /// Perform one iteration on linear system
     template <typename HilbertSpaceB, typename HilbertSpaceX>
@@ -36,15 +38,28 @@ struct base_solver
 	return static_cast<Solver const*>(this)->solve(x, b, iter);
     }
 	
-    /// Solve using default iteration
+    /// Solve using the iteration (resets initial residuum)
     template <typename HilbertSpaceB, typename HilbertSpaceX>
-    int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) const
+    int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) 
     {
-	iteration_type iter= my_iteration;
-	iter.set_norm_r0(two_norm(b));
-	return static_cast<Solver const*>(this)->solve(x, b, iter);
+	if (two_norm(x) == 0)
+	    my_iteration.set_norm_r0(two_norm(b));
+	else {
+	    HilbertSpaceB r(b);
+	    r-= A * x;
+	    my_iteration.set_norm_r0(two_norm(r));
+	}
+	return static_cast<Solver const*>(this)->solve(x, b, my_iteration);
     }
 
+    /// Return iteration object
+    iteration_type iteration() const { return my_iteration; }
+
+    /// Reference to iteration object (to be used with care)
+    iteration_type& iteration_ref() { return my_iteration; }
+
+  protected:
+    const LinearOperator& A;
     iteration_type my_iteration;
 };
 

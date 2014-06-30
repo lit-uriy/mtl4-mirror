@@ -102,42 +102,43 @@ template < typename LinearOperator, typename Preconditioner= pc::identity<Linear
 class tfqmr_solver
   : public base_solver< tfqmr_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator >
 {
+    typedef base_solver< tfqmr_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    explicit tfqmr_solver(const LinearOperator& A) : A(A), L(A), R(A) {}
+    explicit tfqmr_solver(const LinearOperator& A) : base(A), L(A), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
-    tfqmr_solver(const LinearOperator& A, const Preconditioner& L) : A(A), L(L), R(A) {}
+    tfqmr_solver(const LinearOperator& A, const Preconditioner& L) : base(A), L(L), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
     tfqmr_solver(const LinearOperator& A, const Preconditioner& L, const RightPreconditioner& R) 
-      : A(A), L(L), R(R) {}
+      : base(A), L(L), R(R) {}
 
     /// Solve linear system approximately as specified by \p iter
     template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
     int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
-	return tfqmr(A, x, b, L, R, iter);
+	return tfqmr(this->A, x, b, L, R, iter);
     }
 
-    /// Perform one iteration on linear system
-    template < typename HilbertSpaceB, typename HilbertSpaceX >
-    int solve(HilbertSpaceX& x, const HilbertSpaceB& b) const
-    {
-	itl::basic_iteration<double> iter(b, 1, 0, 0);
-	return solve(x, b, iter);
-    }
+    // /// Perform one iteration on linear system
+    // template < typename HilbertSpaceB, typename HilbertSpaceX >
+    // int solve(HilbertSpaceX& x, const HilbertSpaceB& b) const
+    // {
+    // 	itl::basic_iteration<double> iter(b, 1, 0, 0);
+    // 	return solve(x, b, iter);
+    // }
 
-    /// Perform max 100 iterations on linear system
-    template < typename HilbertSpaceB, typename HilbertSpaceX >
-    int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) const
-    {
-	itl::basic_iteration<double> iter(b, 100, 1e-9, 0);
-	return solve(x, b, iter);
-    }
+    // /// Perform max 100 iterations on linear system
+    // template < typename HilbertSpaceB, typename HilbertSpaceX >
+    // int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) const
+    // {
+    // 	itl::basic_iteration<double> iter(b, 100, 1e-9, 0);
+    // 	return solve(x, b, iter);
+    // }
    
   private:
-    const LinearOperator& A;
+    // const LinearOperator& A;
     Preconditioner        L;
     RightPreconditioner   R;
 };

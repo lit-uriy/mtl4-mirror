@@ -142,24 +142,25 @@ template < typename LinearOperator, typename Preconditioner= pc::identity<Linear
 class gmres_solver
   : public base_solver< gmres_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator >
 {
+    typedef base_solver< gmres_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
     explicit gmres_solver(const LinearOperator& A, size_t restart= 8) 
-      : A(A), restart(restart), L(A), R(A) {}
+      : base(A), restart(restart), L(A), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
     gmres_solver(const LinearOperator& A, size_t restart, const Preconditioner& L) 
-      : A(A), restart(restart), L(L), R(A) {}
+      : base(A), restart(restart), L(L), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
     gmres_solver(const LinearOperator& A, size_t restart, const Preconditioner& L, const RightPreconditioner& R) 
-      : A(A), restart(restart), L(L), R(R) {}
+      : base(A), restart(restart), L(L), R(R) {}
 
     /// Solve linear system approximately as specified by \p iter
     template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
     int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
-	return gmres(A, x, b, L, R, iter, restart);
+	return gmres(this->A, x, b, L, R, iter, restart);
     }
 
     // /// Perform one iteration on linear system
@@ -179,7 +180,7 @@ class gmres_solver
     // }
 
   private:
-    const LinearOperator& A;
+    // const LinearOperator& A;
     size_t                restart;
     Preconditioner        L;
     RightPreconditioner   R;

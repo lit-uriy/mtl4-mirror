@@ -84,16 +84,17 @@ template < typename LinearOperator, typename Preconditioner= pc::identity<Linear
 class bicgstab_solver
   : public base_solver< bicgstab_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator >
 {
+    typedef base_solver< bicgstab_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    explicit bicgstab_solver(const LinearOperator& A) : A(A), L(A) 
+    explicit bicgstab_solver(const LinearOperator& A) : base(A), L(A) 
     {
 	if (!pc::static_is_identity<RightPreconditioner>::value)
 	    std::cerr << "Right Preconditioner ignored!" << std::endl;
     }
 
     /// Construct solver from a linear operator and (left) preconditioner
-    bicgstab_solver(const LinearOperator& A, const Preconditioner& L) : A(A), L(L) 
+    bicgstab_solver(const LinearOperator& A, const Preconditioner& L) : base(A), L(L) 
     {
 	if (!pc::static_is_identity<RightPreconditioner>::value)
 	    std::cerr << "Right Preconditioner ignored!" << std::endl;
@@ -103,7 +104,7 @@ class bicgstab_solver
     template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
     int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
-	return bicgstab(A, x, b, L, iter);
+	return bicgstab(this->A, x, b, L, iter);
     }
 
     // /// Perform one iteration on linear system
@@ -123,7 +124,7 @@ class bicgstab_solver
     // }
     
   private:
-    const LinearOperator& A;
+    // const LinearOperator& A;
     Preconditioner        L;
 };
 
