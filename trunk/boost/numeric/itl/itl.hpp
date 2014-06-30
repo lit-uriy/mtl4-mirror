@@ -29,6 +29,7 @@
 #include <boost/numeric/itl/krylov/gmres.hpp>
 #include <boost/numeric/itl/krylov/tfqmr.hpp>
 #include <boost/numeric/itl/krylov/qmr.hpp>
+#include <boost/numeric/itl/krylov/pc_solver.hpp>
 
 #include <boost/numeric/itl/krylov/repeating_solver.hpp>
 

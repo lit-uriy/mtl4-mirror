@@ -20,14 +20,16 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
-#include <boost/numeric/itl/iteration/basic_iteration.hpp>
 #include <boost/numeric/itl/pc/identity.hpp>
 #include <boost/numeric/itl/pc/is_identity.hpp>
+#include <boost/numeric/itl/krylov/base_solver.hpp>
+
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/operation/unary_dot.hpp>
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/operation/lazy.hpp>
+#include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
 namespace itl {
@@ -118,14 +120,18 @@ int cg(const LinearOperator& A, HilbertSpaceX& x, const HilbertSpaceB& b,
 }
 
 /// Solver class for CG method; right preconditioner ignored (prints warning if not identity)
+/** Methods inherited from \ref base_solver. **/
 template < typename LinearOperator, typename Preconditioner, 
 	   typename RightPreconditioner>
 class cg_solver
+  : public base_solver< cg_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator >
 {
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
     explicit cg_solver(const LinearOperator& A) : A(A), L(A) 
     {
+	// MTL_STATIC_ASSERT((!pc::static_is_identity<RightPreconditioner>::value),
+	// 		  "Right preconditioner must be identity!");
 	if (!pc::static_is_identity<RightPreconditioner>::value)
 	    std::cerr << "Right Preconditioner ignored!" << std::endl;
     }
@@ -138,19 +144,27 @@ class cg_solver
     }
 
     /// Solve linear system approximately as specified by \p iter
-    template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter) const
+    template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
+    int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
 	return cg(A, x, b, L, iter);
     }
 
-    /// Perform one CG iteration on linear system
-    template < typename HilbertSpaceB, typename HilbertSpaceX >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x) const
-    {
-	itl::basic_iteration<double> iter(x, 1, 0, 0);
-	return solve(b, x, iter);
-    }
+    // /// Perform one iteration on linear system
+    // template < typename HilbertSpaceB, typename HilbertSpaceX >
+    // int solve(HilbertSpaceX& x, const HilbertSpaceB& b) const
+    // {
+    // 	itl::basic_iteration<double> iter(b, 1, 0, 0);
+    // 	return solve(x, b, iter);
+    // }
+
+    // /// Perform max 100 iterations on linear system
+    // template < typename HilbertSpaceB, typename HilbertSpaceX >
+    // int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) const
+    // {
+    // 	itl::basic_iteration<double> iter(b, 10, 1e-9, 1e-15);
+    // 	return solve(x, b, iter);
+    // }
     
   private:
     const LinearOperator& A;

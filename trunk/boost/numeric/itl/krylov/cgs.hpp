@@ -18,6 +18,8 @@
 #include <boost/numeric/mtl/operation/dot.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
+#include <boost/numeric/itl/krylov/base_solver.hpp>
+
 namespace itl {
 
 /// Conjugate Gradient Squared
@@ -63,9 +65,11 @@ int cgs(const LinearOperator &A, Vector &x, const Vector &b,
 }
 
 /// Solver class for CGS method; right preconditioner ignored (prints warning if not identity)
+/** Methods inherited from \ref base_solver. **/
 template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator>, 
 	   typename RightPreconditioner= pc::identity<LinearOperator> >
 class cgs_solver
+  : public base_solver< cgs_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator >
 {
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
@@ -83,19 +87,27 @@ class cgs_solver
     }
 
     /// Solve linear system approximately as specified by \p iter
-    template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter) const
+    template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
+    int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
 	return cgs(A, x, b, L, iter);
     }
 
-    /// Perform one CGS iteration on linear system
-    template < typename HilbertSpaceB, typename HilbertSpaceX >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x) const
-    {
-	itl::basic_iteration<double> iter(x, 1, 0, 0);
-	return solve(b, x, iter);
-    }
+    // /// Perform one iteration on linear system
+    // template < typename HilbertSpaceB, typename HilbertSpaceX >
+    // int solve(HilbertSpaceX& x, const HilbertSpaceB& b) const
+    // {
+    // 	itl::basic_iteration<double> iter(b, 1, 0, 0);
+    // 	return solve(x, b, iter);
+    // }
+
+    // /// Perform max 100 iterations on linear system
+    // template < typename HilbertSpaceB, typename HilbertSpaceX >
+    // int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) const
+    // {
+    // 	itl::basic_iteration<double> iter(b, 100, 1e-9, 0);
+    // 	return solve(x, b, iter);
+    // }
     
   private:
     const LinearOperator& A;

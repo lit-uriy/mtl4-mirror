@@ -35,12 +35,34 @@ class repeating_solver
 	BOOST_STATIC_ASSERT((Stored)); // if matrix is passed class must own solver
     }
 
-    /// Perform one GMRES iteration on linear system
-    template < typename VectorIn, typename VectorOut >
-    int solve(const VectorIn& b, VectorOut& x) const
+    /// Perform N iterations of the referred solver
+    template < typename HilbertSpaceB, typename HilbertSpaceX >
+    int step(HilbertSpaceX& x, const HilbertSpaceB& b) const
     {
-	itl::basic_iteration<double> iter(x, N, 0, 0);
-	return s.solve(b, x, iter);
+	int res= 0;
+	for (int i= 0; i < N; i++)
+	    res= s.step(x, b);
+	return res;
+    }
+
+    /// Run solver N times as much as usual (if not converted yet)
+    template < typename HilbertSpaceB, typename HilbertSpaceX >
+    int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) const
+    {
+	int res= 0;
+	for (int i= 0; i < N; i++)
+	    res= s(x, b);
+	return res;
+    }
+
+    /// Solve linear system approximately as specified by \p iter
+    template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
+    int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
+    {
+	int res= 0;
+	for (int i= 0; i < N; i++)
+	    res= s.solve(x, b, iter);
+	return res;
     }
 
   private:

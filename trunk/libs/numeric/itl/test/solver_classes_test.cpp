@@ -38,7 +38,8 @@ void test1(const char* solver_name, const char* matrix_name)
 #endif
 
     Solver s(A);
-    s.solve(b, x, iter);
+    s(x, b);
+    // s.solve(x, b, iter);
 
     if (iter.iterations() > max_iter)
 	max_iter= iter.iterations();
@@ -59,7 +60,7 @@ void test1a(const char* solver_name, const char* matrix_name)
     x= 0;
     
     Solver s(A);
-    s.solve(b, x);
+    s.step(x, b);
 }
 
 
