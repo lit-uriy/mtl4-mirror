@@ -552,7 +552,16 @@ namespace mtl { namespace mat {
 	private:
 	    const compressed2D<Value, Parameters>& A;
 	};
+
+
     } // umfpack
+
+/// Convenience function to create a solver
+template <typename Value, typename Parameters>
+umfpack::solver<compressed2D<Value, Parameters> > 
+inline make_umfpack_solver(const compressed2D<Value, Parameters>& A)
+{  return umfpack::solver<compressed2D<Value, Parameters> >(A); }
+
 
 /// Solve A*x == b with umfpack
 /** Only available when compiled with enabled macro MTL_HAS_UMFPACK.

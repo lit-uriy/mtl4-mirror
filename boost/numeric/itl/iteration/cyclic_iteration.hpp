@@ -19,6 +19,7 @@
 namespace itl {
 
   /// Class for iteration control that cyclically prints residual
+  /** Many methods are inherited from \ref basic_iteration **/
   template <class Real, class OStream = std::ostream>
   class cyclic_iteration : public basic_iteration<Real> 
   {
@@ -30,7 +31,9 @@ namespace itl {
 	  if (!this->my_quite && this->i % cycle == 0)
 	      if (multi_print || this->i != last_print) { // Avoid multiple print-outs in same iteration
 		  out << "iteration " << this->i << ": resid " << this->resid() 
-		      // << " / " << this->norm_r0 << " = " << this->resid() / this->norm_r0 << " (rel. error)"
+#                   ifdef MTL_VERBOSE_ITERATION
+		      << " / " << this->norm_r0 << " = " << this->resid() / this->norm_r0 << " (rel. error)"
+#                   endif
 		      << std::endl;
 		  last_print= this->i;
 	      }
@@ -38,20 +41,24 @@ namespace itl {
 
     public:
   
+      /// Constructor
       template <class Vector>
       cyclic_iteration(const Vector& r0, int max_iter_, Real tol_, Real atol_ = Real(0), int cycle_ = 100,
 		       OStream& out = std::cout)
 	: super(r0, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), multi_print(false), out(out)
       {}
 
+      /// Constructor
       cyclic_iteration(Real r0, int max_iter_, Real tol_, Real atol_ = Real(0), int cycle_ = 100,
 		       OStream& out = std::cout)
 	: super(r0, max_iter_, tol_, atol_), cycle(cycle_), last_print(-1), multi_print(false), out(out)
       {}
       
 
-      bool finished() { return super::finished(); }
+      //bool finished() { return super::finished(); }
+      using super::finished;
 
+      /// Override termination control with logging version
       template <typename T>
       bool finished(const T& r) 
       {
@@ -60,11 +67,10 @@ namespace itl {
 	  return ret;
       }
 
-      inline self& operator++() { ++this->i; return *this; }
-      
-      inline self& operator+=(int n) { this->i+= n; return *this; }
+      inline self& operator++() { ++this->i; return *this; }  ///< Increment counter 
+      inline self& operator+=(int n) { this->i+= n; return *this; } ///< Increment counter by n
 
-      operator int() const { return error_code(); }
+      operator int() const { return error_code(); } ///< Conversion to int returns \ref error_code
 
       /// Whether the residual is printed multiple times in iteration
       bool is_multi_print() const { return multi_print; }
@@ -72,6 +78,7 @@ namespace itl {
       /// Set whether the residual is printed multiple times in iteration
       void set_multi_print(bool m) { multi_print= m; }
 
+      /// Error code with final resume
       int error_code() const 
       {
 	  if (!this->my_suppress)

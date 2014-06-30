@@ -24,6 +24,8 @@
 #include <boost/numeric/mtl/operation/resource.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
+#include <boost/numeric/itl/krylov/base_solver.hpp>
+
 namespace itl {
 
 /// Transposed-free Quasi-minimal residual
@@ -94,9 +96,11 @@ int tfqmr(const Matrix &A, Vector &x, const Vector &b, const LeftPreconditioner 
 }
 
 /// Solver class for Transposed-free quasi-minimal residual method; right preconditioner ignored (prints warning if not identity)
+/** Methods inherited from \ref base_solver. **/
 template < typename LinearOperator, typename Preconditioner= pc::identity<LinearOperator>, 
 	   typename RightPreconditioner= pc::identity<LinearOperator> >
 class tfqmr_solver
+  : public base_solver< tfqmr_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator >
 {
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
@@ -110,20 +114,28 @@ class tfqmr_solver
       : A(A), L(L), R(R) {}
 
     /// Solve linear system approximately as specified by \p iter
-    template < typename HilbertSpaceB, typename HilbertSpaceX, typename Iteration >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x, Iteration& iter) const
+    template < typename HilbertSpaceX, typename HilbertSpaceB, typename Iteration >
+    int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
 	return tfqmr(A, x, b, L, R, iter);
     }
 
-    /// Perform one TFQMR iteration on linear system
+    /// Perform one iteration on linear system
     template < typename HilbertSpaceB, typename HilbertSpaceX >
-    int solve(const HilbertSpaceB& b, HilbertSpaceX& x) const
+    int solve(HilbertSpaceX& x, const HilbertSpaceB& b) const
     {
-	itl::basic_iteration<double> iter(x, 1, 0, 0);
-	return solve(b, x, iter);
+	itl::basic_iteration<double> iter(b, 1, 0, 0);
+	return solve(x, b, iter);
     }
-    
+
+    /// Perform max 100 iterations on linear system
+    template < typename HilbertSpaceB, typename HilbertSpaceX >
+    int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) const
+    {
+	itl::basic_iteration<double> iter(b, 100, 1e-9, 0);
+	return solve(x, b, iter);
+    }
+   
   private:
     const LinearOperator& A;
     Preconditioner        L;
