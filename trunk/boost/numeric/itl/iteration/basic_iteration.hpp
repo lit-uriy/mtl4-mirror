@@ -111,6 +111,8 @@ class basic_iteration
 
     void set_max_iterations(int m) { max_iter= m; } ///< Set maximal number of iterations
 
+    void restart() { i= 0; } ///< Reset the iteration number
+
     Real resid() const { return resid_; } ///< Last residuum
 
     Real relresid() const { return resid_ / my_norm_r0; } ///< Last residuum compared with initial one
