@@ -53,7 +53,10 @@ namespace mtl { namespace mat {
 	template <bool Larger> struct index_aux   { typedef int     type; };
 #     ifdef UF_long
         template<> struct index_aux<true>         { typedef UF_long type; };
+#     elif SuiteSparse_long
+        template<> struct index_aux<true>         { typedef SuiteSparse_long type; };
 #     else
+#pragma message "cannot deduce the long umfpack type"
 	template<> struct index_aux<true>         { typedef long type; };
 #     endif
 
