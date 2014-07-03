@@ -253,7 +253,7 @@ namespace mtl { namespace mat {
 	    void init()
 	    {
 		MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
-		n= num_rows(A);
+		n= int(num_rows(A));
 		assign_pointers();
 		init_aux(blong());
 	    }
@@ -415,7 +415,7 @@ namespace mtl { namespace mat {
 	    void initialize()
 	    {
 		MTL_THROW_IF(num_rows(A) != num_cols(A), matrix_not_square());
-		n= num_rows(A);
+		n= int(num_rows(A));
 		assign_pointers();
 		init_aux(blong());
 	    }
