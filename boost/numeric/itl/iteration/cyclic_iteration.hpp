@@ -55,8 +55,8 @@ namespace itl {
       {}
       
 
-      //bool finished() { return super::finished(); }
-      using super::finished;
+      bool finished() { return super::finished(); }
+      // using super::finished;
 
       /// Override termination control with logging version
       template <typename T>
