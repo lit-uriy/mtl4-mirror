@@ -76,7 +76,7 @@ class bicg_solver
     typedef base_solver< bicg_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    bicg_solver(const LinearOperator& A) : base(A), L(A) 
+    explicit bicg_solver(const LinearOperator& A) : base(A), L(A) 
     {
 	if (!pc::static_is_identity<RightPreconditioner>::value)
 	    std::cerr << "Right Preconditioner ignored!" << std::endl;
