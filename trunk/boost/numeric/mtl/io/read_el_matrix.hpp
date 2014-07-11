@@ -115,7 +115,7 @@ void read_el_matrix(StreamType& file, element_structure<ValueType>& A)
     for( int i = 0; i < nb_elements; ++i ) {
 	element_type& el = elements[i];
 	indices& idx = el.get_indices();
-	for(int j = 0; j < el.nb_vars(); ++j) 
+	for(std::size_t j = 0; j < el.nb_vars(); ++j) 
 	    node_element_map[ idx(j) ].push_back(el.get_id());	
     }
 
@@ -124,7 +124,7 @@ void read_el_matrix(StreamType& file, element_structure<ValueType>& A)
 	element_type& el = elements[i];
 	indices& idx = el.get_indices();
 	std::set<int> neighs;
-	for(int j = 0; j < el.nb_vars(); ++j) 
+	for(std::size_t j = 0; j < el.nb_vars(); ++j) 
 	    neighs.insert(node_element_map[ idx(j) ].begin(),
 			  node_element_map[ idx(j) ].end());
 	

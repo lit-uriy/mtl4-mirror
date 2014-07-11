@@ -153,7 +153,7 @@ namespace mtl {
 	    last=  inc_wo_over(negate_wo_over(src.get_begin()));
 	}
 
-	std::size_t jd= 0, j_end= sstarts[0];
+	long jd= 0, j_end= sstarts[0];
 	for (long i= 0, i_end= src.dim1(), f= first, l= last; i < i_end; ++i) {
 	    dest.ref_major()[i]= jd;
 	    long j= j_end;

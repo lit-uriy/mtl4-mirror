@@ -21,11 +21,11 @@ void dense_ic_0(const At& As, const Ut& Us)
      
     const std::size_t n= num_rows(U);
 
-    for (int k= 0; k < n; k++) {
+    for (std::size_t k= 0; k < n; k++) {
 	double dia= U[k][k]= sqrt(U[k][k]);
-	for (int i = k + 1; i < n; i++) {
+	for (std::size_t i = k + 1; i < n; i++) {
 	    double d= U[k][i] /= dia;
-	    for (int j = k + 1; j <= i; j++)
+	    for (std::size_t j = k + 1; j <= i; j++)
 		if (U[j][i] != 0.0)
 		    U[j][i] -= d * U[k][j];
 	}
