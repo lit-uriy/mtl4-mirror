@@ -31,31 +31,28 @@ template< typename ElementStructure, typename Matrix, typename Vector>
 void assemble_compressed(const ElementStructure& es, Matrix& A, Vector& order) 
 {
 
-  	typedef typename ElementStructure::element_type::value_type   value_type;
- 	typedef typename ElementStructure::element_iterator           iterator;
- 	typedef typename ElementStructure::element_type               element_type;
- 	typedef typename element_type::index_type                     index_type;
- 	typedef typename element_type::matrix_type                    matrix_type;
-	typedef typename matrix_type::size_type                       size_type;
-	A.change_dim(es.get_total_vars(), es.get_total_vars());
-	set_to_zero(A);
-	value_type zero(0);
+    typedef typename ElementStructure::element_type::value_type   value_type;
+    typedef typename ElementStructure::element_iterator           iterator;
+    typedef typename ElementStructure::element_type               element_type;
+    typedef typename element_type::index_type                     index_type;
+    typedef typename element_type::matrix_type                    matrix_type;
+    typedef typename matrix_type::size_type                       size_type;
+    A.change_dim(es.get_total_vars(), es.get_total_vars());
+    set_to_zero(A);
+    value_type zero(0);
 	
-	{//start inserterblock
-	  mtl::mat::inserter<Matrix, mtl::operations::update_plus<value_type> >  ins(A);
-	  for(iterator it = es.element_begin(); it != es.element_end(); ++it) {
-		element_type& element = *it;
-		const index_type& idx = element.get_indices();
-		matrix_type& values = element.get_values();
-		for(int i = 0; i < element.nb_vars(); ++i) {
-			for(int j = 0; j < element.nb_vars(); ++j) {
-				if(values(i,j) != zero) {
-					ins[size_type(order(idx(i)))][size_type(order(idx(j)))] << values(i,j);
-				}
-			}
-		}
-	  }
-	}//end inserterblock
+    {//start inserterblock
+	mtl::mat::inserter<Matrix, mtl::operations::update_plus<value_type> >  ins(A);
+	for (iterator it = es.element_begin(); it != es.element_end(); ++it) {
+	    element_type& element = *it;
+	    const index_type& idx = element.get_indices();
+	    matrix_type& values = element.get_values();
+	    for (std::size_t i = 0; i < element.nb_vars(); ++i) 
+		for (std::size_t j = 0; j < element.nb_vars(); ++j) 
+		    if (values(i,j) != zero) 
+			ins[size_type(order(idx(i)))][size_type(order(idx(j)))] << values(i,j);		    
+	}
+    }//end inserterblock
 }
 
 

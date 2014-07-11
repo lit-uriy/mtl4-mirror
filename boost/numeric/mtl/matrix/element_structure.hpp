@@ -198,8 +198,8 @@ public:
 	    swap(value_tmp, element.get_values());
 	    value_pos+= s * s;
 	}
-	assert(total_indices == index_pos);
-	assert(total_values  == value_pos);
+	assert(total_indices == std::size_t(index_pos));
+	assert(total_values  == std::size_t(value_pos));
     }
 
     /*******************************************************************************

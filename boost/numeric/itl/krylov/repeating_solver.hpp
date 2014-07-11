@@ -40,7 +40,7 @@ class repeating_solver
     int step(HilbertSpaceX& x, const HilbertSpaceB& b) const
     {
 	int res= 0;
-	for (int i= 0; i < N; i++)
+	for (std::size_t i= 0; i < N; i++)
 	    res= s.step(x, b);
 	return res;
     }
@@ -50,7 +50,7 @@ class repeating_solver
     int operator()(HilbertSpaceX& x, const HilbertSpaceB& b) const
     {
 	int res= 0;
-	for (int i= 0; i < N; i++)
+	for (std::size_t i= 0; i < N; i++)
 	    res= s(x, b);
 	return res;
     }
@@ -60,7 +60,7 @@ class repeating_solver
     int solve(HilbertSpaceX& x, const HilbertSpaceB& b, Iteration& iter) const
     {
 	int res= 0;
-	for (int i= 0; i < N; i++)
+	for (std::size_t i= 0; i < N; i++)
 	    res= s.solve(x, b, iter);
 	return res;
     }

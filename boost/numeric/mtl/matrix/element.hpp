@@ -174,7 +174,7 @@ public:
 	    nodes.insert(neigh.get_indices().begin(), neigh.get_indices().end());
 	}
 	// Remove the nodes of the element.
-	for( int i = 0; i < nb_vars(); ++i ) 
+	for (std::size_t i = 0; i < nb_vars(); ++i ) 
 	    nodes.erase( get_indices()(i) );
 	return nodes;
     }
@@ -211,12 +211,10 @@ public:
 	}
 
 	bool sorted = true;
-	for(int i = 0; i < nb_vars()-1; ++i) {
+	for (std::size_t i = 0; i < nb_vars()-1; ++i) 
 	    sorted &= (get_indices()(i) < get_indices()(i+1));
-	}
-	if(sorted) {
-	    return;
-	}
+	if (sorted) 
+	    return;	
 
 	index_type  orig_index( get_indices() );
 	matrix_type orig_matrix( get_values() );
@@ -228,23 +226,24 @@ public:
 
 	index_type orig_offset( nb_vars() );
 	orig_offset = -1;
-	for(int i = 0; i < nb_vars(); ++i) {
+	for(std::size_t i = 0; i < nb_vars(); ++i) {
 	    int seek_idx = get_indices()(i);
-	    int j = 0;
-	    for(; (j < nb_vars()) && (orig_index(j) != seek_idx); ++j){};
+	    std::size_t j = 0;
+	    for(; j < nb_vars() 
+		    && orig_index(j) != seek_idx; ++j){};
 	    orig_offset(i) = j;
 	}
 
 	matrix_type& values = get_values();
-	for(int r = 0; r < nb_vars(); ++r) {
-	    for(int c = 0; c < nb_vars(); ++c) {
+	for(std::size_t r = 0; r < nb_vars(); ++r) {
+	    for(std::size_t c = 0; c < nb_vars(); ++c) {
 		values(r,c) = orig_matrix( orig_offset(r), orig_offset(c) );
 	    }
 	}
 
 #ifndef NDEBUG
 	sorted = true;
-	for(int i = 0; i < nb_vars()-1; ++i) {
+	for(std::size_t i = 0; i < nb_vars()-1; ++i) {
 	    sorted &= (get_indices()(i) < get_indices()(i+1));
 	}
 	assert(sorted);
@@ -272,12 +271,12 @@ public:
 	assert(sorted);
 #endif
 
-	const int nb_nodes = mtl::size(nodes);
+	const std::size_t nb_nodes = mtl::size(nodes);
 
 	// Count number of remaining variables.
-	int new_nb_nodes = nb_vars();
+	long new_nb_nodes = nb_vars();
 	{
-	    int i = 0, j = 0;
+	    std::size_t i = 0, j = 0;
 	    while( i < nb_vars() && j < nb_nodes ) {
 		const int diff = get_indices()(i) - nodes[j];
 		if( diff < 0 ) {
@@ -296,15 +295,13 @@ public:
 	// Construct new index array.
 	index_type index;
 	index_type local_index(new_nb_nodes);
-	if(new_nb_nodes > 0) {
+	if (new_nb_nodes > 0) {
 	    index.change_dim(new_nb_nodes);
-//	    index = new index_type(new_nb_nodes);
-	    int i = 0, j = 0, pos = 0;
+	    std::size_t i = 0, j = 0, pos = 0;
 	    while( i < nb_vars() && j < nb_nodes ) {
 		const int diff = get_indices()(i) - nodes[j];
 		if( diff < 0 ) {
-		    assert( pos < new_nb_nodes );
-	//	    (*index)(pos) = get_indices()(i);
+		    assert( pos < std::size_t(new_nb_nodes) );
 		    index[pos] = get_indices()(i);
 		    local_index(pos) = i;
 		    ++pos;
@@ -317,16 +314,13 @@ public:
 		}
 	    }
 	    while( i < nb_vars() ) {
-		assert( pos < new_nb_nodes );
-//		(*index)(pos) = get_indices()(i);
+		assert( pos < std::size_t(new_nb_nodes) );
 		index[pos] = get_indices()(i);
 		local_index(pos) = i;
 		++pos;
 		++i;
 	    }
-	} else {
-//	    index = new index_type(0);
-	}
+	} 
 
 	matrix_type values;
 	if(new_nb_nodes > 0) {
@@ -354,10 +348,10 @@ public:
 	    // Search a matching index.
 	    bool connected = false;
 	    {
-		int i = 0, j = 0;
+		std::size_t i = 0, j = 0;
 		while(
-		      (i < new_nb_nodes) &&
-		      (j < neigh.nb_vars()) &&
+		      i < std::size_t (new_nb_nodes) &&
+		      j < neigh.nb_vars() &&
 		      !connected
 		      ) {
 //		    const int diff = (*index)(i) - neigh.get_indices()(j);
@@ -415,15 +409,15 @@ public:
 	assert(sorted);
 #endif
 		
-	const int other_idx_size = size( other_indices );
+	const std::size_t other_idx_size = size( other_indices );
 
 	// Determine set of common indices.
 	const int max_common_idx =
-	    (nb_vars() < other_idx_size) ? nb_vars() : other_idx_size;
+	    nb_vars() < other_idx_size ? nb_vars() : other_idx_size;
 	mtl::dense_vector<int> my_idx( max_common_idx );
 	mtl::dense_vector<int> ot_idx( max_common_idx );
 	int offset = 0;
-	for(int i = 0, j = 0; i < nb_vars() && j < other_idx_size; ) {
+	for(int i = 0, j = 0; i < int(nb_vars()) && j < int(other_idx_size); ) {
 	    int diff = (get_indices()(i) - other_indices(j));
 	    if(diff == 0) {
 		my_idx(offset) = i;
@@ -484,7 +478,7 @@ OStream& operator<<(OStream& out, element<ValueType>& el)
     out << "ID: " << el.get_id() << "\n";
     if(el.nb_vars() > 0) {
 	out << "Indices: (" << el.get_indices()(0);
-	for(int i = 1; i < el.nb_vars(); ++i) {
+	for(std::size_t i = 1; i < el.nb_vars(); ++i) {
 	    out << ", " << el.get_indices()(i);
 	}
 	out << ")\n";

@@ -394,7 +394,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 			el_status[el.get_id()] = DIAGONAL;
 
 			// Update permutation vector
-			for(int i = 0; i < el.nb_vars(); ++i) {
+			for (std::size_t i = 0; i < el.nb_vars(); ++i) {
 				m_ordering( el.get_indices()(i) ) = perm_off;
 				++perm_off;
 				assert(perm_off <= mesh.get_total_vars());
@@ -494,9 +494,9 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				// Remap indices.
 				index_type local_idx( neigh.get_indices() );
 				
-				for(int i = 0; i < neigh.nb_vars(); ++i) {
+				for (std::size_t i = 0; i < neigh.nb_vars(); ++i) 
 					local_idx(i) = to_local[ local_idx(i) ];
-				}
+				
 				//insert connectet neighbor
 				{
 				  mtl::mat::inserter<mtl::mat::dense2D<value_type>, mtl::operations::update_plus<value_type> > ins(frontal);
@@ -508,7 +508,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 			{
 				// Remap indices.
 				index_type local_idx( diag_el.get_indices() );
-				for(int i = 0; i < diag_el.nb_vars(); ++i) {
+				for(std::size_t i = 0; i < diag_el.nb_vars(); ++i) {
 					local_idx(i) = to_local[ local_idx(i) ];
 				}
 				//insert the diagonal element
