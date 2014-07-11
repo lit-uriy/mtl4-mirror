@@ -105,7 +105,7 @@ class tfqmr_solver
     typedef base_solver< tfqmr_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    explicit tfqmr_solver(const LinearOperator& A) : base(A), L(A), R(A) {}
+    tfqmr_solver(const LinearOperator& A) : base(A), L(A), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
     tfqmr_solver(const LinearOperator& A, const Preconditioner& L) : base(A), L(L), R(A) {}

@@ -129,7 +129,7 @@ class cg_solver
     typedef base_solver< cg_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    explicit cg_solver(const LinearOperator& A) : base(A), L(A) 
+    cg_solver(const LinearOperator& A) : base(A), L(A) 
     {
 	// MTL_STATIC_ASSERT((!pc::static_is_identity<RightPreconditioner>::value),
 	// 		  "Right preconditioner must be identity!");

@@ -145,7 +145,7 @@ class bicgstab_ell_solver
     typedef base_solver< bicgstab_ell_solver<LinearOperator, Preconditioner, RightPreconditioner>, LinearOperator > base;
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    explicit bicgstab_ell_solver(const LinearOperator& A, size_t l= 8) : base(A), l(l), L(A), R(A) {}
+    bicgstab_ell_solver(const LinearOperator& A, size_t l= 8) : base(A), l(l), L(A), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
     bicgstab_ell_solver(const LinearOperator& A, size_t l, const Preconditioner& L) : base(A), l(l), L(L), R(A) {}

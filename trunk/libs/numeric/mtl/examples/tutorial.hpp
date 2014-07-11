@@ -38,7 +38,7 @@ so that the library can be used without BLAS and is not limited to types
 supported by BLAS.
 For short, general applicability is combined with maximal available performance.
 We developed new techniques to allow for:
-- Unrolling of dynamicly sized data with user-define block and tile sizes;
+- Unrolling of dynamicly sized data with user-defined block and tile sizes;
 - Combining multiple %vector assignments in a single statement 
   (and more importingly perform them in one single loop);
 - Storing matrices recursively in a never-before realized generality;
