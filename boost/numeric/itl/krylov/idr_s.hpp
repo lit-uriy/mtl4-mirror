@@ -113,7 +113,7 @@ class idr_s_solver
   public:
   public:
     /// Construct solver from a linear operator; generate (left) preconditioner from it
-    idr_s_solver(const LinearOperator& A, size_t s= 8) : base(A), s(s), L(A), R(A) {}
+    explicit idr_s_solver(const LinearOperator& A, size_t s= 8) : base(A), s(s), L(A), R(A) {}
 
     /// Construct solver from a linear operator and left preconditioner
     idr_s_solver(const LinearOperator& A, size_t s, const Preconditioner& L) : base(A), s(s), L(L), R(A) {}
