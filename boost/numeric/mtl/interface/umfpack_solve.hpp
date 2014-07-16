@@ -26,6 +26,7 @@
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/make_copy_or_reference.hpp>
+#include <boost/numeric/mtl/operation/base_solver.hpp>
 #include <boost/numeric/mtl/operation/merge_complex_vector.hpp>
 #include <boost/numeric/mtl/operation/split_complex_vector.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
@@ -128,6 +129,7 @@ namespace mtl { namespace mat {
 	/// Speciatization of solver for \ref mat::compressed2D with double values
 	template <typename Parameters>
 	class solver<compressed2D<double, Parameters> >
+	  : public base_solver
 	{
 	    typedef double                                    value_type;
 	    typedef compressed2D<value_type, Parameters>      matrix_type;
@@ -370,6 +372,7 @@ namespace mtl { namespace mat {
 	/// Speciatization of solver for \ref mat::compressed2D with double values
 	template <typename Parameters>
 	class solver<compressed2D<std::complex<double>, Parameters> >
+	  : public base_solver
 	{
 	    typedef std::complex<double>                      value_type;
 	    typedef compressed2D<value_type, Parameters>      matrix_type;

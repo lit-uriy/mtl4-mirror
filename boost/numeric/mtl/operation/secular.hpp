@@ -35,7 +35,7 @@ class secular_f
     typedef typename Collection<Vector>::size_type    size_type;
 
   public:
-    /// Constructor needs 2 Vectors z(nummerator), d(dominator) and sigma as factor before the sum
+    /// Constructor needs 2 Vectors z(numerator), d(denominator) and sigma as factor before the sum
     secular_f(const Vector& z, const Vector& d, value_type sigma) 
       : z(z), d(d), sigma(sigma) {}
 
@@ -51,7 +51,7 @@ class secular_f
 
     value_type square(value_type x) const { return x*x; }
 
-    /// gradient of secular_f equation as function, evaluates the gradientfunction value
+    /// gradient of secular_f equation as function, evaluates the gradient function value
     /** \f$gradf(x)=\sigma * sum_{i=1}^{n}\frac{z_i}{(d_i-x)^2} \f$**/
     value_type grad_f(const value_type& lamb)
     {
