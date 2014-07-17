@@ -257,7 +257,7 @@ inline void swap(Key& key0, Val& val0, Key& key1, Val& val1) {
 }
 
 template<typename Key, typename Value>
-inline void sort_along(Key* keys, Value* values, int size) {
+inline void sort_along(Key* keys, Value* values, std::size_t size) {
 
 
 	if(size < 2) {
