@@ -416,7 +416,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		// Update diagonal block offset.
 		diagonal_offsets.push_back( perm_off );
 		//save upperbound for number of L and U entrys
-		std::size_t upperbound(0);
+		unsigned int upperbound(0);
 		for(unsigned int i=0;i< block_diagonal.size();i++){
 			mtl::dense_vector<int> involve_node(block_diagonal[i]->get_indices());
 			for(unsigned int j=0;j< block_diagonal[i]->get_neighbors().size();j++){
@@ -466,8 +466,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				q(i) = *it;
 				++it;
 			}
-			const std::size_t n1 = size(p);
-			const std::size_t n2 = diag_incident_nodes.size();
+			const int n1 = size(p);
+			const int n2 = diag_incident_nodes.size();
 			sort(q);
 			assert(n1 > 0);
 
