@@ -184,10 +184,10 @@ public:
 	index_heap= new ii_type[total_indices];
 	value_heap= new value_type[total_values];
 
-	int index_pos= 0, value_pos= 0;
+	std::size_t index_pos= 0, value_pos= 0;
 	for (int i= 0; i < m_total_elements; i++) {
 	    element_type& element= m_elements[i];
-	    int s= element.nb_vars();
+	    std::size_t s= element.nb_vars();
 	    index_type index_tmp(s, index_heap + index_pos);
 	    index_tmp= element.get_indices();
 	    swap(index_tmp, element.get_indices());
