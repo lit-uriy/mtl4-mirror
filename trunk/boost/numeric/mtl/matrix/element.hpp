@@ -231,7 +231,7 @@ public:
 	    std::size_t j = 0;
 	    for(; j < nb_vars() 
 		    && orig_index(j) != seek_idx; ++j){};
-	    orig_offset(i) = int(j);
+	    orig_offset(i) = j;
 	}
 
 	matrix_type& values = get_values();

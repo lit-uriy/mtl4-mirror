@@ -111,8 +111,8 @@ class sparse_vector
     {
 	// vampir_trace<9903> tracer;
 	if (n > 0)
-	    std::sort(utility::zip_it<value_type, size_type>(&data[0], &indices[0], 0l), 
-		      utility::zip_it<value_type, size_type>(&data[0], &indices[0], long(indices.size())), // avoid warning for converting size_t to diff_type (not generic)
+	    std::sort(utility::zip_it<value_type, size_type>(&data[0], &indices[0], 0), 
+		      utility::zip_it<value_type, size_type>(&data[0], &indices[0], indices.size()), 
 		      utility::abs_greater_0());
 	on_indices= false;
 
