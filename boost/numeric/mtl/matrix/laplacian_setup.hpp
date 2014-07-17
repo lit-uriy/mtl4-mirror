@@ -28,18 +28,19 @@ inline void laplacian_setup(Matrix& A, unsigned m, unsigned n)
     vampir_trace<3063> tracer;
     A.change_dim(m*n, m*n);
     set_to_zero(A);
-    inserter<Matrix>      ins(A, 5);
-
-    for (unsigned i= 0; i < m; i++)
-	for (unsigned j= 0; j < n; j++) {
+    { // extra block unfortunately needed for VS2013
+	inserter<Matrix>      ins(A, 5);
+	for (unsigned i = 0; i < m; i++)
+	for (unsigned j = 0; j < n; j++) {
 	    typename Collection<Matrix>::value_type four(4.0), minus_one(-1.0);
-	    unsigned row= i * n + j;
+	    unsigned row = i * n + j;
 	    ins(row, row) << four;
-	    if (j < n-1) ins(row, row+1) << minus_one;
-	    if (i < m-1) ins(row, row+n) << minus_one;
-	    if (j > 0) ins(row, row-1) << minus_one;
-	    if (i > 0) ins(row, row-n) << minus_one;
+	    if (j < n - 1) ins(row, row + 1) << minus_one;
+	    if (i < m - 1) ins(row, row + n) << minus_one;
+	    if (j > 0) ins(row, row - 1) << minus_one;
+	    if (i > 0) ins(row, row - n) << minus_one;
 	}
+    }
 }
 
 }} // namespace mtl::matrix
