@@ -700,7 +700,7 @@ struct compressed2D_inserter
 	vampir_trace<3050> tracer;
 	MTL_THROW_IF(matrix.inserting, runtime_error("Two inserters on same matrix"));
 	matrix.inserting = true;
-	if (size(matrix) > 0) 
+	if (size(matrix) > 0)
 	    stretch();
     }
 
@@ -710,7 +710,7 @@ struct compressed2D_inserter
 	if (matrix.inserting)
 	    finish();
 	//else
-	//    std::cout << "Nothing to finish.\n";
+	//    std::cout << "Nothing to finish (allegedly).\n";
     }
 	
     /// Proxy to insert into A[row][col]
