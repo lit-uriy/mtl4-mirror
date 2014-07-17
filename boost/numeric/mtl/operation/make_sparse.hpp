@@ -58,11 +58,13 @@ make_sparse(const SizeVector1& rows, const SizeVector2& cols, const ValueVector&
 
     size_type               ms(m), ns(n);  // shouldn't be needed :-!
     matrix_type             A(ms, ns);
-    mat::inserter<matrix_type, update_plus<value_type> > ins(A, size_type(size(rows) / m + 1));
+    {
+        mat::inserter<matrix_type, update_plus<value_type> > ins(A, size_type(size(rows) / m + 1));
 
-    for (std::size_t i= 0; i < size(rows); i++)
-	if (values[i] != value_type(0))
-	    ins[rows[i]][cols[i]] << values[i];
+	for (std::size_t i= 0; i < size(rows); i++)
+	    if (values[i] != value_type(0))
+		ins[rows[i]][cols[i]] << values[i];
+    }
     return A;
 }
 
