@@ -30,12 +30,13 @@ void hessian_setup(Matrix& A, Value factor)
 {
     typedef typename Collection<Matrix>::value_type    value_type;
     typedef typename Collection<Matrix>::size_type     size_type;
-    
-    inserter<Matrix> ins(A, num_cols(A));
-    
-    for (size_type r= 0; r < num_rows(A); r++)
-	for (size_type c= 0; c < num_cols(A); c++)
+    { // extra block unfortunately needed for VS2013
+	inserter<Matrix> ins(A, num_cols(A));
+
+	for (size_type r = 0; r < num_rows(A); r++)
+	for (size_type c = 0; c < num_cols(A); c++)
 	    ins[r][c] << factor * (value_type(r) + value_type(c));
+    }
 }
 
 namespace impl {
