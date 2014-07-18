@@ -153,11 +153,11 @@ namespace mtl {
 	    last=  inc_wo_over(negate_wo_over(src.get_begin()));
 	}
 
-	long jd= 0, j_end= sstarts[0];
-	for (long i= 0, i_end= src.dim1(), f= first, l= last; i < i_end; ++i) {
+	long jd= 0, j_end= long(sstarts[0]);
+	for (long i= 0, i_end= long(src.dim1()), f= first, l= last; i < i_end; ++i) {
 	    dest.ref_major()[i]= jd;
 	    long j= j_end;
-	    j_end= sstarts[i+1];
+	    j_end= long(sstarts[i+1]);
 	    while (j < j_end && long(sindices[j]) < f) j++;
 	    while (j < j_end && long(sindices[j]) < l) jd++, j++;
 	    f= inc_wo_over(f);
@@ -166,10 +166,10 @@ namespace mtl {
 	dest.ref_major()[src.dim1()]= jd;
 	dest.set_nnz(jd); // resizes indices and data
 
-	for (long i= 0, i_end= src.dim1(), jd= 0, j_end= sstarts[0]; i < i_end; ++i) {
+	for (long i= 0, i_end= long(src.dim1()), jd= 0, j_end= long(sstarts[0]); i < i_end; ++i) {
 	    dest.ref_major()[i]= jd;
 	    long j= j_end;
-	    j_end= sstarts[i+1];
+	    j_end= long(sstarts[i+1]);
 	    while (j < j_end && long(sindices[j]) < first) j++;
 	    while (j < j_end && long(sindices[j]) < last) {
 		dest.ref_minor()[jd]= sindices[j];
