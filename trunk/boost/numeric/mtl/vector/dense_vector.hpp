@@ -132,6 +132,10 @@ class dense_vector
 	copy(src.begin(), src.end(), this->begin());
     }
 
+#ifdef MTL_WITH_MOVE
+    dense_vector(self&& src) : memory_base(std::move(src)) {}
+#endif
+
     /// Clone constructor
     /** Copies every vector, even those that refer to external data, sub-vectors, or rows and columns in a matrix **/
     dense_vector( const self& src, clone_ctor )

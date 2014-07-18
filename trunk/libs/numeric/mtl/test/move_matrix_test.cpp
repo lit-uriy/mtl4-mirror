@@ -72,7 +72,9 @@ void test(const Matrix&, const char* text)
     MTL_THROW_IF(B.data[0] != 5.0, mtl::runtime_error("Wrong value moving, should be 5.0!"));
     
     // Should be only on heap
-    MTL_THROW_IF(&B.data[0] != p, mtl::runtime_error("Matrix is not moved but copied!"));
+    MTL_THROW_IF(!traits::is_static<Matrix>::value && &B.data[0] != p, mtl::runtime_error("Non-static matrix must be moved!"));
+    MTL_THROW_IF(traits::is_static<Matrix>::value && &B.data[0] == p, mtl::runtime_error("Static matrix must be copied!"));
+    //MTL_THROW_IF(&B.data[0] != p, mtl::runtime_error("Matrix is not moved but copied!"));
 
     // This type is guarateed to be different to f's return type
     // In this case the matrix MUST be copied

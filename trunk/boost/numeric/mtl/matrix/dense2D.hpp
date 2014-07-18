@@ -166,21 +166,21 @@ namespace detail
   
 /// Dense matrix type
 template <typename Value, typename Parameters = parameters<> >
-class dense2D 
-  : public base_sub_matrix<Value, Parameters>, 
-    public mtl::detail::contiguous_memory_block< Value, Parameters::on_stack, 
-						 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
+class dense2D
+    : public base_sub_matrix<Value, Parameters>,
+    public mtl::detail::contiguous_memory_block< Value, Parameters::on_stack,
+    detail::dense2D_array_size<Parameters, Parameters::on_stack>::value >,
     public crtp_base_matrix< dense2D<Value, Parameters>, Value, std::size_t >,
     public mat_expr< dense2D<Value, Parameters> >
 {
     typedef dense2D                                           self;
     typedef base_sub_matrix<Value, Parameters>                super;
-    typedef mtl::detail::contiguous_memory_block<Value, Parameters::on_stack, 
-						 detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     memory_base;
+    typedef mtl::detail::contiguous_memory_block<Value, Parameters::on_stack,
+	detail::dense2D_array_size<Parameters, Parameters::on_stack>::value>     memory_base;
     typedef mat_expr< dense2D<Value, Parameters> >            expr_base;
     typedef crtp_base_matrix< self, Value, std::size_t >      crtp_base;
     typedef crtp_matrix_assign< self, Value, std::size_t >    assign_base;
-  public:
+public:
     typedef Parameters                        parameters;
     typedef typename Parameters::orientation  orientation;
     typedef typename Parameters::index        index_type;
@@ -192,91 +192,102 @@ class dense2D
     typedef const value_type*                 const_pointer_type;
     typedef const_pointer_type                key_type;
     typedef std::size_t                       size_type;
-    typedef dense_el_cursor<Value>            el_cursor_type;  
+    typedef dense_el_cursor<Value>            el_cursor_type;
     typedef dense2D_indexer                   indexer_type;
 
     // Self-similar type unless dimension is fixed
     // Not supported for the moment
-    typedef self                              sub_matrix_type;  
+    typedef self                              sub_matrix_type;
 
-  protected:
+protected:
     // Obviously, the next 3 functions must be called after setting dimensions
     void set_nnz() { this->my_nnz = this->num_rows() * this->num_cols(); }
-    void set_ldim(row_major) { ldim= this->num_cols(); }
-    void set_ldim(col_major) { ldim= this->num_rows(); }
+    void set_ldim(row_major) { ldim = this->num_cols(); }
+    void set_ldim(col_major) { ldim = this->num_rows(); }
     void set_ldim() { set_ldim(orientation()); }
 
     void init()
     {
-      set_nnz(); set_ldim(); // set_to_zero(*this);
+	set_nnz(); set_ldim(); // set_to_zero(*this);
     }
 
-  public:
+public:
     /// Default constructor, if compile time matrix size allocate memory
     dense2D() : memory_base(dim_type().num_rows() * dim_type().num_cols())
-    { 	init();     }
+    {
+	init();
+    }
 
     /// Constructor that only sets dimensions, only for run-time dimensions
-    explicit dense2D(mtl::non_fixed::dimensions d) 
+    explicit dense2D(mtl::non_fixed::dimensions d)
 	: super(d), memory_base(d.num_rows() * d.num_cols())
-    { 	init();     }
+    {
+	init();
+    }
 
     /// Most common constructor from number of rows and columns
-    explicit dense2D(size_type num_rows, size_type num_cols) 
-	: super(dim_type(num_rows, num_cols)), 
-	  memory_base(num_rows * num_cols)
-    { 	init();     }
+    explicit dense2D(size_type num_rows, size_type num_cols)
+	: super(dim_type(num_rows, num_cols)),
+	memory_base(num_rows * num_cols)
+    {
+	init();
+    }
 
     /// Constructor that sets dimensions and pointer to external data
-    explicit dense2D(mtl::non_fixed::dimensions d, value_type* a) 
-      : super(d), memory_base(a, d.num_rows() * d.num_cols())
-    { 	init();     }
+    explicit dense2D(mtl::non_fixed::dimensions d, value_type* a)
+	: super(d), memory_base(a, d.num_rows() * d.num_cols())
+    {
+	init();
+    }
 
     /// Constructor that sets dimensions and pointer to external data
-    explicit dense2D(size_type num_rows, size_type num_cols, value_type* a) 
-      : super(mtl::non_fixed::dimensions(num_rows, num_cols)), memory_base(a, num_rows * num_cols)
-    { 	init();     }
+    explicit dense2D(size_type num_rows, size_type num_cols, value_type* a)
+	: super(mtl::non_fixed::dimensions(num_rows, num_cols)), memory_base(a, num_rows * num_cols)
+    {
+	init();
+    }
 
     /// Constructor for compile time matrix size
     /** sets dimensions and pointer to external data **/
-    explicit dense2D(value_type* a) 
+    explicit dense2D(value_type* a)
 	: super(), memory_base(a, dim_type().num_rows() * dim_type().num_cols())
-    { 
+    {
 	MTL_STATIC_ASSERT((dim_type::is_static), "Size must be known at compile time.");
-        init();
+	init();
     }
 
     /// Default copy constructor
-    dense2D(const self& m) 
-	: super(dim_type(m.num_rows(), m.num_cols())), 
-	  memory_base(m)
+    dense2D(const self& m)
+	: super(dim_type(m.num_rows(), m.num_cols())),
+	memory_base(m)
     {
 	// In case of sub-matrices we need m's ldim -> init doesn't work
-	this->my_nnz= m.my_nnz; ldim= m.ldim;
+	this->my_nnz = m.my_nnz; ldim = m.ldim;
     }
 
     /// Clone constructor, copies every source including sub-matrices and other matrices with references
-    explicit dense2D(const self& m, clone_ctor) 
-	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())), 
-	  memory_base(m, clone_ctor())
+    explicit dense2D(const self& m, clone_ctor)
+	: super(mtl::non_fixed::dimensions(m.num_rows(), m.num_cols())),
+	memory_base(m, clone_ctor())
     {
-	init(); 
-	*this= m;
+	init();
+	*this = m;
     }
 
     /// General copy constructor, uses functionality from CRTP base
     template <typename MatrixSrc>
-    explicit dense2D(const MatrixSrc& src) 
+    explicit dense2D(const MatrixSrc& src)
 	: super(), memory_base(dim_type().num_rows() * dim_type().num_cols())
-    { 
-	init(); 
-	*this= src;
+    {
+	init();
+	*this = src;
     }
 
 #ifdef MTL_WITH_MOVE
     /// Move constructor
-    dense2D(self&& src) : memory_base(dim_type().num_rows() * dim_type().num_cols())
-    {	init(); self_assign(src, boost::mpl::bool_<memory_base::on_stack>());    }
+    dense2D(self&& src)
+	: super(std::move(src)), memory_base(std::move(src)), ldim(src.ldim)
+    {}
 #endif	
 
     /// Constructor for creating sub-matrices

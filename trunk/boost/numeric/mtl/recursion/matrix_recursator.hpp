@@ -149,6 +149,7 @@ public:
     /// Compute the sub-matrix corresponding to this recursator.
     sub_matrix_type operator*() const
     {
+	auto tmp = get_value();
 	return get_value();
     }
 
