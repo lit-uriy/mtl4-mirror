@@ -159,7 +159,7 @@ struct size_helper<0>
 # endif
 
 
-template <typename Value, bool OnStack, unsigned Size>
+template <typename Value, bool OnStack, unsigned Size> // for data on stack
 struct memory_crtp
 //    : public contiguous_memory_block<Value, OnStack, Size>
 {
@@ -300,6 +300,13 @@ struct contiguous_memory_block
 	else
 	    copy_construction(other);
     }
+
+#ifdef MTL_WITH_MOVE
+    contiguous_memory_block(self&& other) // : data(other.data), category(other.category) {}
+    {
+	move_construction(other);
+    }
+#endif
 
     // Force copy construction
     contiguous_memory_block(const self& other, clone_ctor)

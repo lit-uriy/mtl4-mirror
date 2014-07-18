@@ -468,11 +468,14 @@ class morton_dense
 
 #ifdef MTL_WITH_MOVE
     /// Move constructor
-    morton_dense(self&& src) : memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
-    {
-	init(dim_type().num_rows(), dim_type().num_cols());
-	*this= std::move(src);
-    }
+    morton_dense(self&& src) 
+	: super(std::move(src)), memory_base(std::move(src))
+    {}
+	//: memory_base(memory_need(dim_type().num_rows(), dim_type().num_cols()))
+ //   {
+	//init(dim_type().num_rows(), dim_type().num_cols());
+	//*this= std::move(src);
+ //   }
 #endif	
 
     /// Construct a sub-matrix as a view

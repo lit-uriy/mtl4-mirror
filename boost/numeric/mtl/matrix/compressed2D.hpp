@@ -385,6 +385,11 @@ class compressed2D
     }
 
 #ifdef MTL_WITH_MOVE
+ //   compressed2D(self&& src)
+	//: super(std::move(src)), 
+	//data(std::move(src.data)), starts(std::move(src.starts)),
+	//indices(std::move(src.indices)), inserting(src.inserting)
+ //   {}
     compressed2D(self&& src) : inserting(false)
     {	swap(*this, src);    }
 #endif

@@ -31,6 +31,7 @@
 #include <boost/numeric/mtl/utility/is_row_major.hpp>
 #include <boost/numeric/mtl/utility/is_static.hpp>
 #include <boost/numeric/mtl/utility/static_assert.hpp>
+#include <boost/numeric/mtl/utility/assert.hpp>
 #include <boost/numeric/meta_math/loop.hpp>
 #include <boost/numeric/mtl/recursion/base_case_test.hpp>
 #include <boost/numeric/mtl/recursion/base_case_matrix.hpp>
@@ -699,10 +700,21 @@ namespace wrec {
 		return;
 
 	    if (BaseTest()(rec_a)) {
-		typename base_case_matrix<typename RecC::matrix_type, BaseTest>::type
-		    C= base_case_cast<BaseTest>(*rec_c);
+		//std::cout << "base_case: A =\n" << *rec_a << "B =\n" << *rec_b;
+#               if 0 // ndef NDEBUG
+		    typename RecC::sub_matrix_type C_tmp(*rec_c);
+		    typename base_case_matrix<typename RecC::sub_matrix_type, BaseTest>::type
+			C = base_case_cast<BaseTest>(C_tmp);
+#               else
+    		    typename base_case_matrix<typename RecC::matrix_type, BaseTest>::type
+			C= base_case_cast<BaseTest>(*rec_c);
+#               endif
 		BaseMult()(base_case_cast<BaseTest>(*rec_a),
 			   base_case_cast<BaseTest>(*rec_b), C);
+		//std::cout << "base_case: C =\n" << C << "*rec_c = \n" << *rec_c;
+#               if 0 //ndef NDEBUG
+		    // MTL_ASSERT((C(0, 0) == (*rec_c)(0, 0)), "Result was computed in a copy not in a view/reference!"); // does not compile in set_to_zero_with_user_value_test
+#               endif
 	    } else {
 		RecC c_north_west= north_west(rec_c), c_north_east= north_east(rec_c),
 		     c_south_west= south_west(rec_c), c_south_east= south_east(rec_c);
