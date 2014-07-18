@@ -56,7 +56,7 @@ make_sparse(const SizeVector1& rows, const SizeVector2& cols, const ValueVector&
     typedef typename traits::value_type value_type;
     typedef typename traits::size_type  size_type;
 
-    size_type               ms(m), ns(n);  // shouldn't be needed :-!
+    size_type               ms= size_type(m), ns= size_type(n);  // shouldn't be needed :-!
     matrix_type             A(ms, ns);
     {
         mat::inserter<matrix_type, update_plus<value_type> > ins(A, size_type(size(rows) / m + 1));

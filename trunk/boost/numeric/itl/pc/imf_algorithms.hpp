@@ -181,7 +181,7 @@ struct MinConnectedNodesEstimation
 	//		radix_sort( &nodes[0], nodes.size() );   // TODO INCLUDE RADIX_SORT
 	std::sort(nodes.begin(), nodes.end());
 
-	long degree = 1 - el.nb_vars();
+	long degree = 1 - long(el.nb_vars());
 	for (unsigned int i = 1; i < nodes.size(); ++i)
 	    if (nodes[i - 1] != nodes[i])
 		if (!UseStatus || status[nodes[i]] == UNMARKED)
@@ -374,7 +374,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		sort_along<int, element_type*>(
 			&*(unmarked_elements_degr.begin()),
 			&*(unmarked_elements_srtd.begin()),
-			unmarked_elements_degr.size()
+			int(unmarked_elements_degr.size())
 		);
 
 		// For each of the candidate diagonal elements ...
@@ -415,7 +415,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 		// Update diagonal block offset.
 		diagonal_offsets.push_back( perm_off );
 		//save upperbound for number of L and U entrys
-		unsigned int upperbound(0);
+		std::size_t upperbound(0);
 		for(unsigned int i=0;i< block_diagonal.size();i++){
 			mtl::dense_vector<int> involve_node(block_diagonal[i]->get_indices());
 			for(unsigned int j=0;j< block_diagonal[i]->get_neighbors().size();j++){
@@ -427,7 +427,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				  c++;			    
 			      }
 			  }
-			  upperbound+= c*(size(involve_neigh)-c);
+			  upperbound+= unsigned(c*(size(involve_neigh)-c));
 			}
 		}
 			
@@ -465,8 +465,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 				q(i) = *it;
 				++it;
 			}
-			const int n1 = size(p);
-			const int n2 = diag_incident_nodes.size();
+			const int n1 = int(size(p));
+			const int n2 = int(diag_incident_nodes.size());
 			sort(q);
 			assert(n1 > 0);
 
@@ -477,7 +477,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 			}
 			
 			for(int i = 0; i < n2; ++i) {
-				to_local[q(i)] = mtl::size(p) + i;
+				to_local[q(i)] = int(mtl::size(p) + i);
 			}
 			// Construct the frontal matrix.
 			block_type frontal( n1+n2, n1+n2 );
@@ -706,7 +706,7 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	m_diagonal = new matrix_type[ block_diagonal.size() ];
 	for(std::size_t i = 0; i < block_diagonal.size(); ++i) {
 		assert( el_status[block_diagonal[i]->get_id()] == DIAGONAL );
- 		unsigned int diarows(num_rows(block_diagonal[i]->get_values()));
+ 		std::size_t diarows(num_rows(block_diagonal[i]->get_values()));
   		m_diagonal[i].change_dim(diarows,diarows);
 		m_diagonal[i] = block_diagonal[i]->get_values();
 	}
@@ -720,8 +720,8 @@ void itl::pc::imf_preconditioner<ValType>::factor(const Mesh& mesh , const int m
 	assert( diagonal_offsets.back() == mesh.get_total_vars() );
 	assert( lower_matrices.size()+2 == diagonal_offsets.size() );
 
-	m_levels = lower_matrices.size();
-	m_nb_blocks = block_diagonal.size();
+	m_levels = int(lower_matrices.size());
+	m_nb_blocks = int(block_diagonal.size());
 	m_diagonal_index = diagonal_index;
 
 	// Todo: create element_structure from all elements
@@ -772,7 +772,7 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 		vector_type dy(n1);
 		dy = zero;  
 		for(int off = off_low; off < off_high; ++b_off ) { //parallel
-			const int block_size = num_rows( m_diagonal[b_off] );
+			const int block_size = int( num_rows( m_diagonal[b_off] ) );
 			dy[mtl::irange(off-off_low, off-off_low+block_size)] = m_diagonal[b_off] * res[mtl::irange(off, off + block_size)];
 			off += block_size;
 		}
@@ -798,7 +798,7 @@ Vector imf_preconditioner<ValType>::imf_apply(const Vector& rhs) const
 		res[mtl::irange(off_low, off_high) ] -= yp[mtl::irange(0, off_high-off_low) ];
 		// y = inv(D)*y'
 		for(int off = off_high; off > off_low; --b_off ) {
-			const int block_size = num_rows(m_diagonal[b_off]);
+			const int block_size = int( num_rows(m_diagonal[b_off]) );
 			assert(b_off >= 0);
 			assert(off-block_size >= off_low);
 
