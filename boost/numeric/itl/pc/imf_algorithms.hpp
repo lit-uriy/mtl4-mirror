@@ -161,34 +161,33 @@ enum Status { UNMARKED, DIAGONAL, MARKED_CURRENT, REMOVED, NON_DIAGONAL };
  * priority is given if the element is connected to fewer nodes.
  */
 template< class Element, class NodeStatusVector, bool UseStatus = false >
-struct MinConnectedNodesEstimation {
-	inline int operator()(
-			const Element& el,
-			const NodeStatusVector& status
-	) const {
-		typedef typename Element::neighbor_collection_type neigh_type;
+struct MinConnectedNodesEstimation 
+{
+    inline int operator()(const Element& el, const NodeStatusVector& status) const 
+    {
+	typedef typename Element::neighbor_collection_type neigh_type;
 
-		// Determine set of all nodes.
-		std::vector<int> nodes;
-		const neigh_type& neighs = el.get_neighbors();
-		for(int i = 0; i < el.get_nb_neighbors(); ++i) {
-			nodes.insert(
-				nodes.end(),
-				neighs[i]->get_indices().begin(),
-				neighs[i]->get_indices().end()
-			);
-		}
-
-//		radix_sort( &nodes[0], nodes.size() );   // TODO INCLUDE RADIX_SORT
-		std::sort( nodes.begin(), nodes.end() );
-
-		int degree = -el.nb_vars()+1;
-		for(unsigned int i = 1; i < nodes.size(); ++i) 
-			if( nodes[i-1] != nodes[i] )
-			    if (!UseStatus || status[nodes[i]] == UNMARKED)
-				++degree;
-		return degree;
+	// Determine set of all nodes.
+	std::vector<int> nodes;
+	const neigh_type& neighs = el.get_neighbors();
+	for (int i = 0; i < el.get_nb_neighbors(); ++i) {
+	    nodes.insert(
+		nodes.end(),
+		neighs[i]->get_indices().begin(),
+		neighs[i]->get_indices().end()
+		);
 	}
+
+	//		radix_sort( &nodes[0], nodes.size() );   // TODO INCLUDE RADIX_SORT
+	std::sort(nodes.begin(), nodes.end());
+
+	long degree = 1 - el.nb_vars();
+	for (unsigned int i = 1; i < nodes.size(); ++i)
+	    if (nodes[i - 1] != nodes[i])
+		if (!UseStatus || status[nodes[i]] == UNMARKED)
+		    ++degree;
+	return degree;
+    }
 };
 
 
