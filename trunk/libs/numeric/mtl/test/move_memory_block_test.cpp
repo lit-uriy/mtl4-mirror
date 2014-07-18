@@ -11,6 +11,7 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
+#include <boost/type_traits/is_same.hpp>
 #include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
@@ -54,7 +55,7 @@ bool compare_address(const sblock& block, double* p)
 template <typename Block>
 void print(const Block& block, double* p)
 {
-    cout << "Data was " << (&block.data[0] == p ? "moved.\n" : "copied.\n");
+    cout << "Data was " << (&block.data[0] == p ? "moved (or copy-elided).\n" : "copied.\n");
 }
 
 template <typename Block, typename OtherBlock>
@@ -75,16 +76,9 @@ void test()
     Block B= f(A, p);
     print(B, p);
 
-    MTL_THROW_IF(B.data[0] != 5.0, mtl::runtime_error("Wrong value moving, should be 5.0!"));
-
-    // Currently data are only moved on VS
-# ifdef _MSC_VER
-    MTL_THROW_IF(compare_address(B, p), mtl::runtime_error("Block is not moved/copied appropriately!"));
-# else
-    MTL_THROW_IF(&B.data[0] != p, 
-		 mtl::runtime_error("This is the first time that an expression in a constructor is copied!"));
-# endif
-
+    MTL_THROW_IF(B.data[0] != 5.0, mtl::runtime_error("Wrong value passed, should be 5.0!"));
+    MTL_THROW_IF((boost::is_same<Block, dblock>::value && &B.data[0] != p), "Dynamic data must be moved!");
+    // static data must be copied but that can be elided
 
     // This type is guarateed to be different to f's return type
     // In this case the block MUST be copied
