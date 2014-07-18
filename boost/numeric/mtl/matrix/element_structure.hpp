@@ -187,7 +187,7 @@ public:
 	int index_pos= 0, value_pos= 0;
 	for (int i= 0; i < m_total_elements; i++) {
 	    element_type& element= m_elements[i];
-	    int s= element.nb_vars();
+	    int s= int(element.nb_vars());
 	    index_type index_tmp(s, index_heap + index_pos);
 	    index_tmp= element.get_indices();
 	    swap(index_tmp, element.get_indices());

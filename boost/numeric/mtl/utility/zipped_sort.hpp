@@ -101,7 +101,7 @@ struct zip_it
     typedef long                 diff_type;
     // typedef std::difference_type diff_type;
 
-    explicit zip_it(T* a, U* v, diff_type p) : a(a), v(v), p(p) {}
+    explicit zip_it(T* a, U* v, std::size_t p) : a(a), v(v), p(diff_type(p)) {}
 
     ref_type operator*() { return ref_type(a, v, p); }
     zip_it& operator++() { p++; return *this;}

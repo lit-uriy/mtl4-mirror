@@ -29,14 +29,14 @@ void test(Matrix& A, const char* name)
     typedef typename mtl::Collection<Matrix>::value_type  Scalar;
     typedef typename mtl::dense_vector<Scalar>            Vector;
 
-    unsigned size= num_cols(A);
+    std::size_t size= num_cols(A);
     Matrix L(size, size), U(size, size);
 
     Scalar c= f(Scalar(1));   
     cout << "c is: " << c << "\n";
 
-    for (unsigned i= 0; i < size; i++)
-	for(unsigned j= 0; j < size; j++) {
+    for (std::size_t i= 0; i < size; i++)
+	for(std::size_t j= 0; j < size; j++) {
 	    U[i][j]= i <= j ? c * Scalar(i+j+2) : Scalar(0);
 	    L[i][j]= i > j ? c * Scalar(i+j+1) : (i == j ? Scalar(1) : Scalar(0));
 	}
@@ -45,7 +45,7 @@ void test(Matrix& A, const char* name)
     A= L * U;
 
     Vector v(size);
-    for (unsigned i= 0; i < size; i++)
+    for (std::size_t i= 0; i < size; i++)
 	v[i]= Scalar(i);
 
     Vector w( A*v );
@@ -92,7 +92,7 @@ void test(Matrix& A, const char* name)
 int main(int, char**)
 {
     using namespace mtl;
-    unsigned size= 4;
+    std::size_t size= 4;
     
     dense2D<double>                                      dr(size, size);
     dense2D<complex<double> >                            dz(size, size);

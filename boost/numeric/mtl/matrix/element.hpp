@@ -231,7 +231,7 @@ public:
 	    std::size_t j = 0;
 	    for(; j < nb_vars() 
 		    && orig_index(j) != seek_idx; ++j){};
-	    orig_offset(i) = j;
+	    orig_offset(i) = int(j);
 	}
 
 	matrix_type& values = get_values();
@@ -274,7 +274,7 @@ public:
 	const std::size_t nb_nodes = mtl::size(nodes);
 
 	// Count number of remaining variables.
-	long new_nb_nodes = nb_vars();
+	long new_nb_nodes = long(nb_vars());
 	{
 	    std::size_t i = 0, j = 0;
 	    while( i < nb_vars() && j < nb_nodes ) {
@@ -303,7 +303,7 @@ public:
 		if( diff < 0 ) {
 		    assert( pos < std::size_t(new_nb_nodes) );
 		    index[pos] = get_indices()(i);
-		    local_index(pos) = i;
+		    local_index(pos) = int(i);
 		    ++pos;
 		    ++i;
 		} else if( diff > 0 ) {
@@ -316,7 +316,7 @@ public:
 	    while( i < nb_vars() ) {
 		assert( pos < std::size_t(new_nb_nodes) );
 		index[pos] = get_indices()(i);
-		local_index(pos) = i;
+		local_index(pos) = int(i);
 		++pos;
 		++i;
 	    }
@@ -413,7 +413,7 @@ public:
 
 	// Determine set of common indices.
 	const int max_common_idx =
-	    nb_vars() < other_idx_size ? nb_vars() : other_idx_size;
+	    int(nb_vars() < other_idx_size ? nb_vars() : other_idx_size);
 	mtl::dense_vector<int> my_idx( max_common_idx );
 	mtl::dense_vector<int> ot_idx( max_common_idx );
 	int offset = 0;

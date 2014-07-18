@@ -270,8 +270,8 @@ class compressed2D
     // Only allocation of new data, doesn't copy if already existent
     void allocate(size_t new_nnz)
     {
-	if (new_nnz) {
-	    this->my_nnz = new_nnz;
+	if (new_nnz != 0) {
+	    this->my_nnz = size_type(new_nnz);
 	    data.resize(this->my_nnz);
 	    indices.resize(this->my_nnz, 0);
 	}
