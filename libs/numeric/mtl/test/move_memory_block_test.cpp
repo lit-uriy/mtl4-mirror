@@ -76,13 +76,14 @@ void test()
     print(B, p);
 
     MTL_THROW_IF(B.data[0] != 5.0, mtl::runtime_error("Wrong value moving, should be 5.0!"));
-    // There seemed to be never a copy, now static arrays are copied
-    MTL_THROW_IF((compare_address(B, p)), mtl::runtime_error("Block is not moved / copied appropriately!"));
- //   MTL_THROW_IF(&B.data[0] != p, 
-	//mtl::runtime_error("This is the first time that an expression in a constructor is copied!"));
-#if 0
+
+    // Currently data are only moved on VS
+# ifdef _MSC_VER
     MTL_THROW_IF(compare_address(B, p), mtl::runtime_error("Block is not moved/copied appropriately!"));
-#endif
+# else
+    MTL_THROW_IF(&B.data[0] != p, 
+		 mtl::runtime_error("This is the first time that an expression in a constructor is copied!"));
+# endif
 
 
     // This type is guarateed to be different to f's return type
