@@ -1,6 +1,6 @@
 // Software License for MTL
 // 
-// Copyright (c) 2007 The Trustees of Indiana University.
+// Copyright (C) 2007 The Trustees of Indiana University.
 //               2008 Dresden University of Technology and the Trustees of Indiana University.
 //               2010 SimuNova UG (haftungsbeschränkt), www.simunova.com.
 // All rights reserved.
@@ -35,107 +35,107 @@ using namespace std;
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
-void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
+void test(MatrixA& A, MatrixB& B, MatrixC& C, const char* name)
 {
     using mtl::assign::assign_sum; using mtl::assign::plus_sum; 
     using mtl::assign::minus_sum; using mtl::assign::mult_assign_mode; 
     using mtl::recursion::bound_test_static; using mtl::gen_recursive_dmat_dmat_mult_t;
 
-    hessian_setup(a, 1.0);
-    hessian_setup(b, 2.0);
+    hessian_setup(A, 1.0);
+    hessian_setup(B, 2.0);
 
     std::cout << "\n" << name << "  --- calling simple mult:\n"; std::cout.flush();
     typedef mtl::gen_dmat_dmat_mult_t<>  mult_t;
     mult_t                               mult;
 
-    mult(a, b, c);
-    // cout << "correct result is:\n" << with_format(c, 5, 3);
-    check_hessian_matrix_product(c, a.num_cols());
+    mult(A, B, C);
+    // cout << "correct result is:\n" << with_format(C, 5, 3);
+    check_hessian_matrix_product(C, A.num_cols());
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
     typedef mtl::gen_dmat_dmat_mult_t<plus_sum>  add_mult_t;
     add_mult_t add_mult;
 
-    add_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    add_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
     typedef mtl::gen_dmat_dmat_mult_t<minus_sum>  minus_mult_t;
     minus_mult_t minus_mult;
 
-    minus_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    minus_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 
 #if 0
     std::cout << "\n" << name << "  --- calling mult with cursors and property maps:\n"; std::cout.flush();
     gen_cursor_dmat_dmat_mult_t<>  cursor_mult;
 
-    cursor_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols());
+    cursor_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols());
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
     gen_cursor_dmat_dmat_mult_t<plus_sum>  cursor_add_mult;
 
-    cursor_add_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    cursor_add_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
     gen_cursor_dmat_dmat_mult_t<minus_sum>  cursor_minus_mult; 
 
-    cursor_minus_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    cursor_minus_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 #endif 
     std::cout << "\n" << name << "  --- calling mult with tiling:\n"; std::cout.flush();
     typedef mtl::gen_tiling_dmat_dmat_mult_t<2, 2>  tiling_mult_t;
     tiling_mult_t tiling_mult;
 
-    tiling_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols()); 
+    tiling_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols()); 
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
     typedef mtl::gen_tiling_dmat_dmat_mult_t<2, 2, plus_sum>  tiling_add_mult_t;
     tiling_add_mult_t tiling_add_mult;
 
-    tiling_add_mult(a, b, c); 
-    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    tiling_add_mult(A, B, C); 
+    check_hessian_matrix_product(C, A.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
     typedef mtl::gen_tiling_dmat_dmat_mult_t<2, 2, minus_sum>  tiling_minus_mult_t;
     tiling_minus_mult_t tiling_minus_mult;
 
-    tiling_minus_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    tiling_minus_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 
  
     std::cout << "\n" << name << "  --- calling mult with tiling 2x2:\n"; std::cout.flush();
     typedef mtl::gen_tiling_22_dmat_dmat_mult_t<>  tiling_22_mult_t;
     tiling_22_mult_t tiling_22_mult;
 
-    tiling_22_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols()); 
+    tiling_22_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols()); 
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
     // typedef gen_tiling_22_dmat_dmat_mult_t<plus_sum>  tiling_22_add_mult_t;
     typedef typename mult_assign_mode<tiling_22_mult_t, plus_sum>::type   tiling_22_add_mult_t;
     tiling_22_add_mult_t tiling_22_add_mult;
 
-    tiling_22_add_mult(a, b, c); 
-    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    tiling_22_add_mult(A, B, C); 
+    check_hessian_matrix_product(C, A.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
     typedef mtl::gen_tiling_22_dmat_dmat_mult_t<minus_sum>  tiling_22_minus_mult_t;
     tiling_22_minus_mult_t tiling_22_minus_mult;
 
-    tiling_22_minus_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    tiling_22_minus_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 
 
     std::cout << "\n" << name << "  --- calling mult with tiling 4x4:\n"; std::cout.flush();
     typedef mtl::gen_tiling_44_dmat_dmat_mult_t<>  tiling_44_mult_t;
     tiling_44_mult_t tiling_44_mult;
 
-    tiling_44_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols()); 
+    tiling_44_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols()); 
 
     MatrixA A9(9, 9); MatrixB B9(9, 9); MatrixC C9(9, 9); // to test all block in 4x4 blocking for better coverage
     hessian_setup(A9, 1.0); hessian_setup(B9, 2.0);
@@ -147,15 +147,15 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     typedef mtl::gen_tiling_44_dmat_dmat_mult_t<plus_sum>  tiling_44_add_mult_t;
     tiling_44_add_mult_t tiling_44_add_mult;
 
-    tiling_44_add_mult(a, b, c); 
-    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    tiling_44_add_mult(A, B, C); 
+    check_hessian_matrix_product(C, A.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
     typedef mtl::gen_tiling_44_dmat_dmat_mult_t<minus_sum>  tiling_44_minus_mult_t;
     tiling_44_minus_mult_t tiling_44_minus_mult;
 
-    tiling_44_minus_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    tiling_44_minus_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 
     typedef mtl::gen_recursive_dmat_dmat_mult_t<add_mult_t, bound_test_static<2>, plus_sum>  recursive_add_mult_t;
 
@@ -164,94 +164,94 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
     // gen_recursive_dmat_dmat_mult_t<add_mult_t, bound_test_static<32> >  recursive_mult;
     typename mult_assign_mode<recursive_add_mult_t, assign_sum>::type	recursive_mult;
 
-    recursive_mult(a, b, c);
-    // cout << "recursive result is:\n" << with_format(c, 5, 3);
-    check_hessian_matrix_product(c, a.num_cols()); 
+    recursive_mult(A, B, C);
+    // cout << "recursive result is:\n" << with_format(C, 5, 3);
+    check_hessian_matrix_product(C, A.num_cols()); 
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
     recursive_add_mult_t   recursive_add_mult;
 
-    recursive_add_mult(a, b, c); 
-    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    recursive_add_mult(A, B, C); 
+    check_hessian_matrix_product(C, A.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
     // gen_recursive_dmat_dmat_mult_t<minus_mult_t, bound_test_static<32>, minus_sum>  recursive_minus_mult; 
     // check assign mode substitution both on matrix and on block level
     typename mult_assign_mode<recursive_add_mult_t, minus_sum>::type	recursive_minus_mult;
-    recursive_minus_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    recursive_minus_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 
     std::cout << "\n" << name << "  --- calling mult recursively with tiling:\n"; std::cout.flush();
     // The recursive functor is C= A*B but the base case must be C+= A*B !!!!!!
     gen_recursive_dmat_dmat_mult_t<tiling_add_mult_t, bound_test_static<32> >  recursive_tiling_mult;
 
-    recursive_tiling_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols()); 
+    recursive_tiling_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols()); 
  
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
     gen_recursive_dmat_dmat_mult_t<tiling_add_mult_t, bound_test_static<32>, plus_sum>  recursive_tiling_add_mult;
 
-    recursive_tiling_add_mult(a, b, c); 
-    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    recursive_tiling_add_mult(A, B, C); 
+    check_hessian_matrix_product(C, A.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
     gen_recursive_dmat_dmat_mult_t<tiling_minus_mult_t, bound_test_static<32>, minus_sum>  recursive_tiling_minus_mult; 
 
-    recursive_tiling_minus_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    recursive_tiling_minus_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 
     std::cout << "\n" << name << "  --- calling mult recursively platform specific plus tiling:\n"; std::cout.flush();
     typedef mtl::gen_platform_dmat_dmat_mult_t<plus_sum, tiling_add_mult_t> platform_tiling_add_mult_t;
     gen_recursive_dmat_dmat_mult_t<platform_tiling_add_mult_t, bound_test_static<32> >  recursive_platform_tiling_mult;
     
-    recursive_platform_tiling_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    recursive_platform_tiling_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 
 #ifdef MTL_HAS_BLAS
     std::cout << "\n" << name << "  --- calling blas mult:\n"; std::cout.flush(); 
     gen_blas_dmat_dmat_mult_t<>  blas_mult;
-    blas_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols()); 
+    blas_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols()); 
 #endif    
 
 #ifdef MTL_USE_OPTERON_OPTIMIZATION
     std::cout << "\n" << name << "  --- calling platform specific mult (empty):\n"; std::cout.flush(); 
     gen_platform_dmat_dmat_mult_t<>  platform_mult;
-    platform_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols());
+    platform_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols());
 
     std::cout << "\n" << name << "  --- check += :\n"; std::cout.flush();
     gen_platform_dmat_dmat_mult_t<plus_sum>  platform_add_mult;
 
-    platform_add_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    platform_add_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 2.0);
     
     std::cout << "\n" << name << "  --- check -= :\n"; std::cout.flush();
     gen_platform_dmat_dmat_mult_t<minus_sum>  platform_minus_mult;
 
-    platform_minus_mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    platform_minus_mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 
 #endif
 
-    std::cout << "\n" << name << "  --- using mult(a, b, c) :\n"; std::cout.flush();
-    mult(a, b, c);
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    std::cout << "\n" << name << "  --- using mult(A, B, C) :\n"; std::cout.flush();
+    mult(A, B, C);
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 
-    std::cout << "\n" << name << "  --- called as c= a * b:\n"; std::cout.flush();
-    c= a * b;
-    check_hessian_matrix_product(c, a.num_cols());
+    std::cout << "\n" << name << "  --- called as C= A * B:\n"; std::cout.flush();
+    C= A * B;
+    check_hessian_matrix_product(C, A.num_cols());
 
-    std::cout << "\n" << name << "  --- check c+= a * b:\n"; std::cout.flush();
-    c+= a * b;
-    check_hessian_matrix_product(c, a.num_cols(), 2.0);
+    std::cout << "\n" << name << "  --- check C+= A * B:\n"; std::cout.flush();
+    C+= A * B;
+    check_hessian_matrix_product(C, A.num_cols(), 2.0);
 
-    std::cout << "\n" << name << "  --- check c-= a * b:\n"; std::cout.flush();
-    c-= a * b;
-    check_hessian_matrix_product(c, a.num_cols(), 1.0);
+    std::cout << "\n" << name << "  --- check C-= A * B:\n"; std::cout.flush();
+    C-= A * B;
+    check_hessian_matrix_product(C, A.num_cols(), 1.0);
 
-    if (a.num_cols() <= 10) 
-	std::cout << a << "\n" << b << "\n" << with_format(c, 4, 4) << "\n";
+    if (A.num_cols() <= 10) 
+	std::cout << A << "\n" << B << "\n" << with_format(C, 4, 4) << "\n";
 
 }
  
@@ -259,24 +259,24 @@ void test(MatrixA& a, MatrixB& b, MatrixC& c, const char* name)
 
 
 template <typename MatrixA, typename MatrixB, typename MatrixC>
-void single_test(MatrixA& a, MatrixB& b, MatrixC& c, const char*)
+void single_test(MatrixA& A, MatrixB& B, MatrixC& C, const char*)
 {
     using mtl::assign::plus_sum; using mtl::assign::minus_sum; 
     using mtl::recursion::bound_test_static;
 
     std::cout << "\n\n before matrix multiplication:\n";
-    std::cout << "A:\n" << a;
-    std::cout << "B:\n" << b;
-    std::cout << "C:\n" << c << '\n';
+    std::cout << "A:\n" << A;
+    std::cout << "B:\n" << B;
+    std::cout << "C:\n" << C << '\n';
 
     typedef mtl::gen_tiling_dmat_dmat_mult_t<2, 2, plus_sum>  tiling_add_mult_t;
     tiling_add_mult_t tiling_add_mult;
-    tiling_add_mult(a, b, c); 
+    tiling_add_mult(A, B, C); 
     
     std::cout << "\n\n after matrix multiplication:\n";
-    std::cout << "A:\n" << a;
-    std::cout << "B:\n" << b;
-    std::cout << "C:\n" << c << '\n';
+    std::cout << "A:\n" << A;
+    std::cout << "B:\n" << B;
+    std::cout << "C:\n" << C << '\n';
 }
 
 #ifdef MTL_HAS_BLAS
@@ -292,13 +292,13 @@ typedef mtl::dense2D<double, mtl::mat::parameters<col_major> >        dc_t;
 
 struct dgemm_t
 {
-    void operator()(const dc_t& a, const dc_t& b, dc_t& c)
+    void operator()(const dc_t& A, const dc_t& B, dc_t& C)
     {
-	int size= a.num_rows();
+	int size= A.num_rows();
 	double alpha= 1.0, beta= 0.0;
 	dgemm_("N", "N", &size, &size, &size, &alpha, 
-	       const_cast<double*>(&a[0][0]), &size, const_cast<double*>(&b[0][0]), 
-	       &size, &beta, &c[0][0], &size);
+	       const_cast<double*>(&A[0][0]), &size, const_cast<double*>(&B[0][0]), 
+	       &size, &beta, &C[0][0], &size);
 
     }
 };
@@ -306,13 +306,13 @@ struct dgemm_t
 
 void test_blas()
 {
-    mtl::dense2D<double, mtl::mat::parameters<col_major> > a(7, 7), b(7, 7), c(7, 7);
-    hessian_setup(a, 1.0);
-    hessian_setup(b, 2.0);
-    dgemm_t()(a, b, c);
+    mtl::dense2D<double, mtl::mat::parameters<col_major> > A(7, 7), B(7, 7), C(7, 7);
+    hessian_setup(A, 1.0);
+    hessian_setup(B, 2.0);
+    dgemm_t()(A, B, C);
 
-    std::cout << c; 
-    check_hessian_matrix_product(c, a.num_cols());
+    std::cout << C; 
+    check_hessian_matrix_product(C, A.num_cols());
     
 }
 
