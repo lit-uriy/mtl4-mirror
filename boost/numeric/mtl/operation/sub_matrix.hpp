@@ -75,7 +75,6 @@ sub_matrix(Matrix const& matrix,
 	   typename sub_matrix_t<Matrix>::size_type end_col)
 {
     impl::correct_sub_matrix_indices(matrix, begin_row, end_row, begin_col, end_col);
-    auto tmp = sub_matrix_t<Matrix>()(matrix, begin_row, end_row, begin_col, end_col);
     return sub_matrix_t<Matrix>()(matrix, begin_row, end_row, begin_col, end_col);
 }
 
