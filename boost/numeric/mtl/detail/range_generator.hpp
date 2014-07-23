@@ -155,13 +155,13 @@ namespace mtl { namespace traits { namespace detail {
 
 	self& operator++() { ++indices[pos]; return *this; }
 	self operator++(int) { self tmp(*this); ++indices[pos]; return tmp; }
-	self& operator+=(int n) { indices[pos]+= n; return *this; }
-	self& operator+(int n) const { self tmp = *this; tmp+= n; return tmp; }
+	self& operator+=(size_type n) { indices[pos]+= n; return *this; }
+	self& operator+(size_type n) const { self tmp = *this; tmp+= n; return tmp; }
 
 	self& operator--() { indices[pos]--; return *this; }
 	self operator--(int) { self tmp(*this); indices[pos]--; return tmp; }
-	self& operator-=(int n) { indices[pos]-= n; return *this; }
-	self& operator-(int n) const { self tmp = *this; tmp-= n; return tmp; }
+	self& operator-=(size_type n) { indices[pos]-= n; return *this; }
+	self& operator-(size_type n) const { self tmp = *this; tmp-= n; return tmp; }
 
 	bool operator==(const self& cc) const { return &ref == &cc.ref && indices[0] == cc.indices[0] && indices[1] == cc.indices[1]; }
 	bool operator!=(const self& cc) const { return !(*this == cc); }

@@ -63,8 +63,8 @@ namespace impl {
     }
 
     template <typename Matrix>
-    void inline check_entry(Matrix const& C, unsigned long r, unsigned long c, 
-			    unsigned long reduced_dim, double factor)
+    void inline check_entry(Matrix const& C, std::size_t r, std::size_t c, 
+			    std::size_t reduced_dim, double factor)
     {
 	if (!entry_similar(C, r, c, factor * hessian_product_i_j(r, c, reduced_dim), 0.00001)) {
 	    std::cerr << "Result in C[" << r << "][" << c << "] should be " 
@@ -80,7 +80,7 @@ namespace impl {
 /// Check if matrix C is A * B with A and B set by hessian_setup
 /** C has dimensions M x L and reduced_dim is N, see hessian_setup. **/
 template <typename Matrix>
-void check_hessian_matrix_product(Matrix const& C, typename Matrix::size_type reduced_dim, double factor= 1.0)
+void check_hessian_matrix_product(Matrix const& C, std::size_t reduced_dim, double factor= 1.0)
 {
     if (num_rows(C) * num_cols(C) == 0) return; // otherwise out of range
 

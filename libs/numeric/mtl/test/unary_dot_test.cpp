@@ -21,10 +21,10 @@
 using namespace std;  
 
 template <typename T>
-T inline my_value(unsigned i, T) { return T(i); }
+T inline my_value(std::size_t i, T) { return T(i); }
 
 std::complex<double> 
-inline my_value(unsigned i, std::complex<double>)
+inline my_value(std::size_t i, std::complex<double>)
 { return std::complex<double>(i, i+1); }
 
 template <typename VectorU>

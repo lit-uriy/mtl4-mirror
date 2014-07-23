@@ -43,11 +43,11 @@ void test(Coll& coll, const char* name, Pos exp_min, Pos exp_max)
 {
     cout << "\n" << name << " =\n" << coll; 
 
-    Pos my_min= min_pos(coll);
+    Pos my_min= Pos(min_pos(coll));
     cout << "\nPosition of minimum is " << my_min << "\n";
     MTL_THROW_IF(my_min != exp_min, mtl::runtime_error("Minimum not at expected position"));
 
-    Pos my_max= max_pos(coll);
+    Pos my_max= Pos(max_pos(coll));
     cout << "Position of maximum is " << my_max << "\n";
     MTL_THROW_IF(my_max != exp_max, mtl::runtime_error("Maximum not at expected position"));
 }

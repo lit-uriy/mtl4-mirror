@@ -97,7 +97,7 @@ namespace vec {
 			      bool>::type 
     inline operator==(const Op1& op1, const Op2& op2)
     {
-	unsigned s1= num_rows(op1) * num_cols(op1), s2= num_rows(op2) * num_cols(op2); // ugly hack to fight with ADL
+	std::size_t s1= num_rows(op1) * num_cols(op1), s2= num_rows(op2) * num_cols(op2); // ugly hack to fight with ADL
 	if (s1 != s2)
 	    return false;
 	for (unsigned i= 0; i < s1; i++)
