@@ -37,7 +37,9 @@ namespace mtl { namespace operations {
 
 	explicit bracket_proxy(Ref matrix, size_type row) : matrix(matrix), row(row) {}
 
-	ValueRef operator[] (size_type col) { return matrix(row, col);	}
+	template <typename Size> 
+	typename boost::enable_if<boost::is_integral<Size>, ValueRef>::type 
+	operator[] (Size col) { return matrix(row, size_type(col));	}
 
 	template <typename T> struct my_traits { static const bool value= boost::is_same<T, mtl::irange>::value && row_traits::exists; };
 

@@ -534,10 +534,12 @@ class compressed2D
     }
 
     /// Value of matrix entry
-    const_reference operator() (size_type row, size_type col) const
+    template <typename Size1, typename Size2>
+    const_reference operator() (Size1 trow, Size2 tcol) const
     {
 	using math::zero;
 	check(); 
+	size_type row = size_type(trow), col = size_type(tcol);
 	MTL_CRASH_IF(is_negative(row) || row >= this->num_rows() 
 		  || is_negative(col) || col >= this->num_cols(), "Index out of range!");
 	utilities::maybe<size_type> pos = indexer(*this, row, col);
@@ -731,11 +733,12 @@ struct compressed2D_inserter
     }
 
     /// Modify A[row][col] with \p val using \p Modifier
-    template <typename Modifier>
-    void modify(size_type row, size_type col, value_type val);
+    template <typename Modifier, typename Size1, typename Size2>
+    void modify(Size1 row, Size2 col, value_type val);
 
     /// Modify A[row][col] with \p val using the class' updater
-    void update(size_type row, size_type col, value_type val)
+    template <typename Size1, typename Size2>
+    void update(Size1 row, Size2 col, value_type val)
     {
 	using math::zero;
 	modify<Updater>(row, col, val);
@@ -937,9 +940,10 @@ compressed2D_inserter<Elt, Parameters, Updater>::matrix_offset(size_pair mm) con
 
 
 template <typename Elt, typename Parameters, typename Updater>
-template <typename Modifier>
-inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(size_type row, size_type col, value_type val)
+template <typename Modifier, typename Size1, typename Size2> // templated to avoid narrowing warnings
+inline void compressed2D_inserter<Elt, Parameters, Updater>::modify(Size1 trow, Size2 tcol, value_type val)
 {
+    size_type row= size_type(trow), col= size_type(tcol);
     using std::copy_backward;
     MTL_CRASH_IF(is_negative(row) || row >= num_rows(matrix) || is_negative(col) || col >= num_cols(matrix), 
 	      "Index is out of range!");
