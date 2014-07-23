@@ -56,26 +56,37 @@ template <class Key> class base_cursor
       --key; 
       return tmp; 
     }
-    self& operator+=(int n) 
+    template <typename T>
+    self& operator+=(T n) 
     { 
-      key += n; 
+      key += key_type(n); 
       return *this; 
     }
   
-    self operator+(int n) const
+    template <typename T>
+    self operator+(T n) const
     {
 	self tmp = *this;
 	tmp+= n;
 	return tmp;
     }
     
-    self& operator-=(int n) 
+    template <typename T>
+    self& operator-=(T n)
     { 
-      key -= n; 
-      return *this; 
+	key -= key_type(n); 
+	return *this; 
     }
 
-    int operator-(const self& cc) const 
+    template <typename T>
+    self operator-(T n) const
+    {
+	self tmp = *this;
+	tmp -= n;
+	return tmp;
+    }
+
+    int operator-(const self& cc) const
     {
 	return this->key - cc.key;
     }

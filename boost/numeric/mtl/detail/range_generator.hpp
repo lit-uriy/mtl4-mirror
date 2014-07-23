@@ -123,9 +123,9 @@ namespace mtl { namespace traits { namespace detail {
 	typedef typename Collection<Matrix>::size_type           size_type;
 	typedef matrix_element_key                               self;
 
-	matrix_element_key(Matrix const& ref, size_type r, size_type c) : ref(ref)
+	matrix_element_key(Matrix const& ref, std::size_t r, std::size_t c) : ref(ref)
 	{
-	    indices[0]= r; indices[1]= c;
+	    indices[0]= size_type(r); indices[1]= size_type(c);
 	}
 
 	bool operator==(const self& cc) const { return &ref == &cc.ref && indices[0] == cc.indices[0] && indices[1] == cc.indices[1]; }
@@ -155,13 +155,13 @@ namespace mtl { namespace traits { namespace detail {
 
 	self& operator++() { ++indices[pos]; return *this; }
 	self operator++(int) { self tmp(*this); ++indices[pos]; return tmp; }
-	self& operator+=(size_type n) { indices[pos]+= n; return *this; }
-	self& operator+(size_type n) const { self tmp = *this; tmp+= n; return tmp; }
+	template <typename T> self& operator+=(T n) { indices[pos] += size_type(n); return *this; }
+	template <typename T> self& operator+(T n) const { self tmp = *this; tmp += n; return tmp; }
 
 	self& operator--() { indices[pos]--; return *this; }
 	self operator--(int) { self tmp(*this); indices[pos]--; return tmp; }
-	self& operator-=(size_type n) { indices[pos]-= n; return *this; }
-	self& operator-(size_type n) const { self tmp = *this; tmp-= n; return tmp; }
+	template <typename T> self& operator-=(T n) { indices[pos] -= size_type(n); return *this; }
+	template <typename T> self& operator-(T n) const { self tmp = *this; tmp -= n; return tmp; }
 
 	bool operator==(const self& cc) const { return &ref == &cc.ref && indices[0] == cc.indices[0] && indices[1] == cc.indices[1]; }
 	bool operator!=(const self& cc) const { return !(*this == cc); }
