@@ -19,14 +19,14 @@
 using namespace std;
 using namespace mtl;
 
-dense_vector<double> inline last_unit_vector(unsigned n)
+dense_vector<double> inline last_unit_vector(size_t n)
 {
     dense_vector<double> v(n, 0.0);
     v[n-1]= 1;
     return v;
 }
 
-dense_vector<double> inline unit_vector(unsigned k, unsigned n)
+dense_vector<double> inline unit_vector(size_t k, size_t n)
 {
     dense_vector<double> v(n, 0.0);
     v[k]= 1;
@@ -109,7 +109,7 @@ dense2D<double> inline inverse(dense2D<double> const& A)
     assert(num_cols(A) == num_rows(A)); // Matrix must be square
 
     dense2D<double>          PLU(A);
-    dense_vector<unsigned>   Pv(num_rows(A));
+    dense_vector<size_t>   Pv(num_rows(A));
 
     lu(PLU, Pv);
     dense2D<double>  I(num_rows(A), num_cols(A));
@@ -134,7 +134,7 @@ int main(int, char**)
     cout << "A is:\n" << A;
 
     Matrix LU(A);
-    mtl::dense_vector<unsigned> Pv(size);
+    mtl::dense_vector<size_t> Pv(size);
     lu(LU, Pv);
 
     Matrix P(permutation(Pv));
