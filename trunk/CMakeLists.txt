@@ -53,6 +53,14 @@ if (MSVC)
 	# you may override them, but I have not found it necessary
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
+    # calling _set_se_translator() erfordert /EHa
+    # 4018: signed/unsigned
+    # 4099: struct/class
+    # 4244: narrowing
+    # 4355: this in initializer list
+    # 4522: multiple assignment ops for single type
+    # 4996: deprecated functions -> -D_SCL_SECURE_NO_WARNINGS
+    # /NODEFAULTLIB:msvcrt.lib for Umfpack
 endif (MSVC)
 
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND ENABLE_WARNINGS)
