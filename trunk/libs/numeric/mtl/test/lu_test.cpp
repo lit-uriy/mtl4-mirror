@@ -94,7 +94,7 @@ void test(Matrix& A, const char* name)
     typedef typename mtl::Collection<Matrix>::value_type  Scalar;
     typedef typename mtl::dense_vector<Scalar>            Vector;
 
-    unsigned size= num_cols(A);
+    unsigned size= unsigned(num_cols(A));
     Matrix L(size, size), U(size, size);
 
     Scalar c= f(Scalar(1));   

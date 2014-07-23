@@ -37,14 +37,14 @@ dense_vector<double> inline unit_vector(unsigned k, unsigned n)
 
 dense2D<double> inline inverse_upper(dense2D<double> const& A)
 {
-    const unsigned N= num_rows(A);
+    const size_t N= num_rows(A);
     assert(num_cols(A) == N); // Matrix must be square
 
     dense2D<double> Inv(N, N);
 
-    for (unsigned k= 0; k < N; ++k) {
+    for (size_t k= 0; k < N; ++k) {
 	dense_vector<double> e_k(N);
-	for (unsigned i= 0; i < N; ++i)
+	for (size_t i= 0; i < N; ++i)
 	    if (i == k) 
 		e_k[i]= 1.0;
 	    else
@@ -53,7 +53,7 @@ dense2D<double> inline inverse_upper(dense2D<double> const& A)
 	dense_vector<double> res_k(N);
 	res_k= upper_trisolve(A, e_k);
 
-	for (unsigned i= 0; i < N; ++i)
+	for (size_t i= 0; i < N; ++i)
 	    Inv[i][k]= res_k[i];
     }
     return Inv;
@@ -63,17 +63,17 @@ dense2D<double> inline inverse_upper(dense2D<double> const& A)
 
 dense2D<double> inverse_upper(dense2D<double> const& A)
 {
-    const unsigned N= num_rows(A);
+    const size_t N= num_rows(A);
     assert(num_cols(A) == N); // Matrix must be square
 
     dense2D<double> Inv(N, N);
 
-    for (unsigned k= 0; k < N; ++k) {
+    for (size_t k= 0; k < N; ++k) {
 	dense_vector<double> e_k(N);
-	for (unsigned i= 0; i < N; ++i)
+	for (size_t i= 0; i < N; ++i)
 	    e_k[i]= i == k ? 1.0 : 0.0;
 
-	for (unsigned i= 0; i < N; ++i)
+	for (size_t i= 0; i < N; ++i)
 	    Inv[i][k]= upper_trisolve(A, e_k)[i];
     }
     return Inv;
@@ -83,13 +83,13 @@ dense2D<double> inverse_upper(dense2D<double> const& A)
 
 dense2D<double> inverse_upper(dense2D<double> const& A)
 {
-    const unsigned N= num_rows(A);
+    const size_t N= num_rows(A);
     assert(num_cols(A) == N); // Matrix must be square
 
     dense2D<double> Inv(N, N);
     Inv= 0;
 
-    for (unsigned k= 0; k < N; ++k) {
+    for (size_t k= 0; k < N; ++k) {
 	irange r(0, k+1);
 	Inv[r][k]= upper_trisolve(A[r][r], unit_vector(k, k+1));
     }

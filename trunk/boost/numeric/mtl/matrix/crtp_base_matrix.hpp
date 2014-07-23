@@ -512,7 +512,7 @@ private:
 
     template <typename Src1, typename Src2>
     void checked_change_resource_aux(const Src1& src1, const Src2& src2, tag::universe) 
-    {   checked_change_dim(num_rows(src1), num_cols(src2));  }
+    {   checked_change_dim(SizeType(num_rows(src1)), SizeType(num_cols(src2)));  }
 
 
     /// Check whether matrix sizes are compatible or if matrix is 0 by 0 change it to r by c.
