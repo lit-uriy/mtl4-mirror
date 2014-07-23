@@ -678,7 +678,8 @@ struct compressed2D_inserter
     {
 	bracket_proxy(self& ref, size_type row) : ref(ref), row(row) {}
 	
-	proxy_type operator[](size_type col) { return proxy_type(ref, row, col); }
+	template <typename Size>
+	proxy_type operator[](Size col) { return proxy_type(ref, row, size_type(col)); }
 
 	self&      ref;
 	size_type  row;
@@ -721,15 +722,17 @@ struct compressed2D_inserter
     }
 	
     /// Proxy to insert into A[row][col]
-    bracket_proxy operator[] (size_type row)
+    template <typename Size>
+    bracket_proxy operator[] (Size row)
     {
-	return bracket_proxy(*this, row);
+	return bracket_proxy(*this, size_type(row));
     }
 
     /// Proxy to insert into A[row][col]
-    proxy_type operator() (size_type row, size_type col)
+    template <typename Size1, typename Size2>
+    proxy_type operator() (Size1 row, Size2 col)
     {
-	return proxy_type(*this, row, col);
+	return proxy_type(*this, size_type(row), size_type(col));
     }
 
     /// Modify A[row][col] with \p val using \p Modifier
