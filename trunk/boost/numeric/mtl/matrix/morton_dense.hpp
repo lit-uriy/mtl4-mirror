@@ -73,7 +73,7 @@ struct morton_dense_key
 	return my_col;
     }
 
-    self& advance_row(int row_inc)
+    self& advance_row(long row_inc)
     {
 	dilated_row.advance(row_inc);
 	// potential addition of signed and unsigned
@@ -81,7 +81,7 @@ struct morton_dense_key
 	return *this;
     }
 
-    self& advance_col(int col_inc)
+    self& advance_col(long col_inc)
     {
 	dilated_col.advance(col_inc);
 	// potential addition of signed and unsigned
@@ -89,7 +89,7 @@ struct morton_dense_key
 	return *this;
     }
 
-    self& advance(int row_inc, int col_inc)
+    self& advance(long row_inc, long col_inc)
     {
 	advance_row(row_inc);
 	advance_col(col_inc);
@@ -159,9 +159,10 @@ struct morton_dense_row_cursor
 	return *this;
     }
 
-    self& operator+=(int inc) 
+    template <typename T>
+    self& operator+=(T inc) 
     {
-	this->advance_row(inc);
+	this->advance_row(long(inc));
 	return *this;
     }
 
@@ -171,13 +172,15 @@ struct morton_dense_row_cursor
 	return *this;
     }
 
-    self& operator-=(int dec) 
+    template <typename T>
+    self& operator-=(T dec) 
     {
-	this->advance_row(-dec);
+	this->advance_row(-long(dec));
 	return *this;
     }
 
-    self operator+ (int inc) const
+    template <typename T>
+    self operator+ (T inc) const
     {
 	self tmp(*this);
 	tmp.advance_row(inc);
@@ -564,15 +567,19 @@ class morton_dense
     }
 
     /// Constant reference to A[row][col]
-    const_reference operator() (size_type row, size_type col) const
+    template <typename Size1, typename Size2>
+    const_reference operator() (Size1 trow, Size2 tcol) const
     {
+	size_type row = size_type(trow), col = size_type(tcol);
 	MTL_DEBUG_THROW_IF(is_negative(row) || row >= this->num_rows() || is_negative(col) || col >= this->num_cols(), index_out_of_range());
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }
 
     /// Mutable reference to A[row][col]
-    value_type& operator() (size_type row, size_type col)
+    template <typename Size1, typename Size2>
+    value_type& operator() (Size1 trow, Size2 tcol)
     {
+	size_type row = size_type(trow), col = size_type(tcol);
 	MTL_DEBUG_THROW_IF(is_negative(row) || row >= this->num_rows() || is_negative(col) || col >= this->num_cols(), index_out_of_range());
 	return this->data[dilated_row_t(row).dilated_value() + dilated_col_t(col).dilated_value()];
     }

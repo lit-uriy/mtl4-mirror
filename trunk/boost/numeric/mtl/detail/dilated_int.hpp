@@ -197,7 +197,7 @@ public:
     }
     
     // advance in both directions, special care is needed for negative values
-    self& advance(int inc)
+    self& advance(long inc)
     {
 	value_type incv(inc >= 0 ? inc : -inc);
 	self incd(incv);
