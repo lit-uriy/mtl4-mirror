@@ -118,9 +118,9 @@ struct zip_it
     bool operator>=(const zip_it& other) const { check(other); return p >= other.p; }
     bool operator>(const zip_it& other) const { check(other); return p > other.p; }
     diff_type operator-(const zip_it& other) const { check(other); return p - other.p; }
-    template <typename T> zip_it operator+(T i) const { return zip_it(a, v, p+i); } // use template to avoid narrowing warnings
-    template <typename T> zip_it& operator+=(T i) { p += diff_type(i); return *this; } // dito
-    template <typename T> zip_it operator-(T i) const { return zip_it(a, v, p - diff_type(i)); } // dito
+    template <typename S> zip_it operator+(S i) const { return zip_it(a, v, p+i); } // use template to avoid narrowing warnings
+    template <typename S> zip_it& operator+=(S i) { p += diff_type(i); return *this; } // dito
+    template <typename S> zip_it operator-(S i) const { return zip_it(a, v, p - diff_type(i)); } // dito
     zip_it& operator=(const zip_it& other) { check(other); p= other.p; return *this; }
 
     T*            a;
