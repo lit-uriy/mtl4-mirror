@@ -45,20 +45,19 @@ configure_file(boost/numeric/mtl/version.hpp.in boost/numeric/mtl/version.hpp @O
 
 #look for compiler specific settings
 if (MSVC)
-	# to quiet DevStudio 2005 secure code warnings
-    add_definitions(/D_SCL_SECURE_NO_WARNINGS)
-    add_definitions(/D_CRT_SECURE_NO_WARNINGS)
+    # to quiet DevStudio 2005 secure code warnings
+    add_definitions(/D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS)
     add_definitions(/D_CRT_SECURE_NO_DEPRECATE /DNOMINMAX /D_CONSOLE /D"_HAS_ITERATOR_DEBUGGING=0" /D"_SECURE_SCL=0" )
-	# specialty flags such as the C++ language exception model etc. come from the init flags determined by CMAKE
-	# you may override them, but I have not found it necessary
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
+    add_definitions(/Z7)
+
+    # set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /wd4018 ")
+    # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_INIT} /wd4018 /wd4099 /wd4522 /wd4996 /wd4355 /wd4244 /Z7")
     # calling _set_se_translator() erfordert /EHa
     # 4018: signed/unsigned
     # 4099: struct/class
-    # 4244: narrowing
+    # 4244: narrowing, enabled in tests -> in libs
     # 4355: this in initializer list
-    # 4522: multiple assignment ops for single type
+    # 4522: multiple assignment ops for single type, to be investigated further if avoidable -> in MTLCommon.cmake
     # 4996: deprecated functions -> -D_SCL_SECURE_NO_WARNINGS
     # /NODEFAULTLIB:msvcrt.lib for Umfpack
 endif (MSVC)
