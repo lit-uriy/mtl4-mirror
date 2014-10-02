@@ -29,7 +29,7 @@ struct update_store
     Element& operator() (Element& x, Value const& y)
     {
     vampir_trace<13> tracer;
-	return x= y;
+	return x= Element(y);
     }
 
     // How to fill empty entries; typically directly with /p y
@@ -47,7 +47,7 @@ struct update_plus
     Element& operator() (Element& x, Value const& y)
     {
     vampir_trace<14> tracer;
-	return x+= y;
+	return x+= Element(y);
     }
 
     // How to fill empty entries; typically directly with /p y
@@ -65,7 +65,7 @@ struct update_minus
     Element& operator() (Element& x, Value const& y)
     {
     vampir_trace<15> tracer;
-	return x-= y;
+	return x-= Element(y);
     }
 
     // How to fill empty entries. Here the inverse of /p y is needed!!!

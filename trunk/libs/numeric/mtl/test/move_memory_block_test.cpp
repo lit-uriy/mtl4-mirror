@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <boost/type_traits/is_same.hpp>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -133,7 +132,7 @@ void dynamic_test(dblock& block, e_t e, const char* name)
 }
 
 
-int test_main(int, char*[])
+int main()
 {
 #if defined(MTL_WITH_MOVE) || defined(MTL_MEMORY_BLOCK_MOVE_EMULATION)
     cout << "Copy/heap data in heap / other block on stack.\n";

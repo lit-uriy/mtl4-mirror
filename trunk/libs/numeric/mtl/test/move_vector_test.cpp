@@ -11,7 +11,6 @@
 // See also license.mtl.txt in the distribution.
 
 #include <iostream>
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -107,7 +106,7 @@ void test(const Vector&, const char* text)
 
 
 
-int test_main(int, char*[])
+int main()
 {
     dense_vector<double>                              dr(3);
     dense_vector<int>                                 di(3);

@@ -15,7 +15,6 @@
 #include <iostream>
 #include <algorithm>
 
-#include <boost/test/minimal.hpp>
 #include <boost/numeric/mtl/mtl.hpp>
 
 
@@ -139,7 +138,7 @@ void dense_test(const Matrix& m, const char* text)
 }
 #endif
 
-int test_main(int, char*[])
+int main(int, char*[])
 {
 #ifdef MTL_WITH_MOVE
     dense2D<double>                                   dr(3, 3);

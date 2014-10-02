@@ -46,6 +46,10 @@ if(EXISTS ${MTL_DIR}/tools/cmake/C++11Features.cmake)
   include(${MTL_DIR}/tools/cmake/C++11Features.cmake)
 endif()
 
+if (MSVC)
+    add_definitions(/wd4522) # multiple assignment ops for single type, to be investigated further if avoidable
+endif()
+
 if (USE_ASSERTS)
   list(APPEND MTL_CXX_DEFINITIONS "-DMTL_ASSERT_FOR_THROW")
 endif()

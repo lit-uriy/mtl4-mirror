@@ -106,7 +106,7 @@ struct assign
 
     static inline result_type apply(Value1& v1, const Value2& v2)
     {
-	return v1= v2;
+	return v1= Value1(v2);
     }
 
     result_type operator() (Value1& v1, const Value2& v2) const
