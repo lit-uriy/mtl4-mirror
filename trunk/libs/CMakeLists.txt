@@ -58,7 +58,7 @@ if (MSVC)
     add_definitions(/wd4244) # narrowing, only suppress warning in tests instead of hiding it by conversion (so that users never see it)
     if (HAVE_UMFACK)
 	# add_definitions(/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcd.lib /NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrtd.lib) # no impact
-	add_definitions(/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcd.lib /NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrtd.lib) # no impact
+	add_definitions(/NODEFAULTLIB:msvcrt.lib) # no impact
     endif()
 endif()
 
