@@ -177,41 +177,7 @@ struct category_aux< mtl::vec::map_view<Functor, Vector> >
   : public category<Vector>
 {};
 
-// template <typename Functor, typename Vector> 
-// struct category< mtl::vec::map_view<Functor, Vector> >
-//   : public category<Vector>
-// {};
-// 
-// template <typename Scaling, typename Vector>
-// struct category< mtl::vec::scaled_view<Scaling, Vector> >
-//   : public category< mtl::vec::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, 
-// 				      Vector> >
-// {};
-//     
-// // added by Hui Li
-// template <typename Vector,typename RScaling>
-// struct category< mtl::vec::rscaled_view<Vector,RScaling> >
-//   : public category< mtl::vec::map_view<tfunctor::rscale<typename Vector::value_type,RScaling>, 
-// 				      Vector> >
-// {};
-// 
-// // added by Hui Li
-// template <typename Vector,typename Divisor>
-// struct category< mtl::vec::divide_by_view<Vector,Divisor> >
-//   : public category< mtl::vec::map_view<tfunctor::divide_by<typename Vector::value_type,Divisor>, 
-// 				      Vector> >
-// {};
-// 
-// template <typename Vector>
-// struct category< mtl::vec::conj_view<Vector> >
-//   : public category< mtl::vec::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
-// {};
-// 
-// template <typename Vector>
-// struct category< mtl::vec::negate_view<Vector> >
-//   : public category< mtl::vec::map_view<sfunctor::negate<typename Vector::value_type>, Vector> >
-// {};
-// 
+
 // To handle std::vector in algorithms
 template <typename T>
 struct category< std::vector<T> >
