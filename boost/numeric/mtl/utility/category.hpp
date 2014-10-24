@@ -28,15 +28,27 @@
 
 namespace mtl { namespace traits {
 
+/// Helper for \ref category to categorize by means of \ref root
+template <typename Collection> struct category_aux 
+{
+    typedef tag::unknown type;
+};
+    
+
 /// Meta-function for categorizing MTL and external types
 /** Has to be specialized for each %matrix, %vector, ...
     Extensively used for dispatching 
     @ingroup Tags
 */
 template <typename Collection> struct category 
-{
-    typedef tag::unknown type;
-};
+  : category_aux<Collection>
+{};
+
+// template <typename Collection> struct category 
+// {
+//     typedef tag::unknown type;
+// };
+
 
 // Const types have the same category as their non-const counterpart
 template <typename T>
@@ -161,40 +173,45 @@ struct category< mtl::vec::vec_vec_pmop_expr<E1,E2, SFunctor> >
 };
 
 template <typename Functor, typename Vector> 
-struct category< mtl::vec::map_view<Functor, Vector> >
+struct category_aux< mtl::vec::map_view<Functor, Vector> >
   : public category<Vector>
 {};
 
-template <typename Scaling, typename Vector>
-struct category< mtl::vec::scaled_view<Scaling, Vector> >
-  : public category< mtl::vec::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, 
-				      Vector> >
-{};
-    
-// added by Hui Li
-template <typename Vector,typename RScaling>
-struct category< mtl::vec::rscaled_view<Vector,RScaling> >
-  : public category< mtl::vec::map_view<tfunctor::rscale<typename Vector::value_type,RScaling>, 
-				      Vector> >
-{};
-
-// added by Hui Li
-template <typename Vector,typename Divisor>
-struct category< mtl::vec::divide_by_view<Vector,Divisor> >
-  : public category< mtl::vec::map_view<tfunctor::divide_by<typename Vector::value_type,Divisor>, 
-				      Vector> >
-{};
-
-template <typename Vector>
-struct category< mtl::vec::conj_view<Vector> >
-  : public category< mtl::vec::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
-{};
-
-template <typename Vector>
-struct category< mtl::vec::negate_view<Vector> >
-  : public category< mtl::vec::map_view<sfunctor::negate<typename Vector::value_type>, Vector> >
-{};
-
+// template <typename Functor, typename Vector> 
+// struct category< mtl::vec::map_view<Functor, Vector> >
+//   : public category<Vector>
+// {};
+// 
+// template <typename Scaling, typename Vector>
+// struct category< mtl::vec::scaled_view<Scaling, Vector> >
+//   : public category< mtl::vec::map_view<tfunctor::scale<Scaling, typename Vector::value_type>, 
+// 				      Vector> >
+// {};
+//     
+// // added by Hui Li
+// template <typename Vector,typename RScaling>
+// struct category< mtl::vec::rscaled_view<Vector,RScaling> >
+//   : public category< mtl::vec::map_view<tfunctor::rscale<typename Vector::value_type,RScaling>, 
+// 				      Vector> >
+// {};
+// 
+// // added by Hui Li
+// template <typename Vector,typename Divisor>
+// struct category< mtl::vec::divide_by_view<Vector,Divisor> >
+//   : public category< mtl::vec::map_view<tfunctor::divide_by<typename Vector::value_type,Divisor>, 
+// 				      Vector> >
+// {};
+// 
+// template <typename Vector>
+// struct category< mtl::vec::conj_view<Vector> >
+//   : public category< mtl::vec::map_view<sfunctor::conj<typename Vector::value_type>, Vector> >
+// {};
+// 
+// template <typename Vector>
+// struct category< mtl::vec::negate_view<Vector> >
+//   : public category< mtl::vec::map_view<sfunctor::negate<typename Vector::value_type>, Vector> >
+// {};
+// 
 // To handle std::vector in algorithms
 template <typename T>
 struct category< std::vector<T> >
