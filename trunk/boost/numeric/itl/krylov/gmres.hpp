@@ -27,6 +27,7 @@
 #include <boost/numeric/mtl/utility/irange.hpp>
 
 #include <boost/numeric/itl/krylov/base_solver.hpp>
+#include <boost/numeric/itl/pc/identity.hpp>
 
 namespace itl {
 
@@ -95,7 +96,7 @@ int gmres_full(const Matrix &A, Vector &x, const Vector &b,
     }
     
     //reduce k, to get regular matrix
-    while (k > 0 && abs(g[k-1]<= iter.atol())) k--;
+    while (k > 0 && abs(g[k-1])<= iter.atol()) k--;
 
     // iteration is finished -> compute x: solve H*y=g as far as rank of H allows
     irange                  range(k);
