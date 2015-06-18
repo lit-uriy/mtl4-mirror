@@ -123,7 +123,7 @@ namespace mtl { namespace mat {
 	    /// Solve system A*x == b with matrix passed in constructor
 	    /** Please note that the order of b and x is different than in operator() !!! **/
 	    template <typename VectorB, typename VectorX>
-	    int operator()(const VectorB& b, VectorX& x) const {return 0;}
+	    int solve(const VectorB& b, VectorX& x) const {return 0;}
 	};
 
 	/// Speciatization of solver for \ref mat::compressed2D with double values
