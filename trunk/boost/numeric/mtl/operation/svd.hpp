@@ -65,15 +65,17 @@ inline void svd(const Matrix& A, Matrix& S, Matrix& V, Matrix& D, double tol= 10
 	err= e/f;
     } //end for
     
-    V= 0;  
-    mtl::mat::inserter<Matrix>  ins_V(V);
-    mtl::mat::inserter<Matrix,  mtl::operations::update_times<value_type> > ins_S(S);
+    {
+	V= 0;  
+	mtl::mat::inserter<Matrix>  ins_V(V);
+	mtl::mat::inserter<Matrix,  mtl::operations::update_times<value_type> > ins_S(S);
 
-    for (size_type i= 0, end= std::min(nrows, ncols); i < end; i++) {
-	ins_V[i][i] << std::abs(R[i][i]);
-	if (R[i][i] < zero) 	
-	    for (size_type j= 0; j < nrows; j++) 
-		ins_S[j][i] << -1;  //carefull changing: multiplication with minus one
+	for (size_type i= 0, end= std::min(nrows, ncols); i < end; i++) {
+	    ins_V[i][i] << std::abs(R[i][i]);
+	    if (R[i][i] < zero) 	
+		for (size_type j= 0; j < nrows; j++) 
+		    ins_S[j][i] << -1;  //carefull changing: multiplication with minus one
+	}
     }
 }
 
