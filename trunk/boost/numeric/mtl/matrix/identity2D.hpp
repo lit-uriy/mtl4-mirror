@@ -74,10 +74,10 @@ namespace mtl {
 	typedef std::size_t    size_type;
     };
 
-    namespace ashape {
-	template <> struct ashape_aux<mtl::mat::identity2D> 
-	{	typedef nonscal type;    };
-    }
+    // namespace ashape {
+    // 	template <> struct ashape_aux<mtl::mat::identity2D> 
+    // 	{	typedef nonscal type;    };
+    // }
 }
 
 #endif // MTL_MATRIX_IDENTITY2D_INCLUDE

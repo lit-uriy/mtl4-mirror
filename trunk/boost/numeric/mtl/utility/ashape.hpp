@@ -250,6 +250,11 @@ struct ashape_aux<mtl::mat::multi_vector_range<Vector> >
     typedef mat<typename ashape<typename mtl::Collection<mtl::mat::multi_vector_range<Vector> >::value_type>::type> type;
 };
 
+template <> struct ashape_aux<mtl::mat::identity2D> 
+{	
+    typedef nonscal type;    
+};
+
 template <typename E1, typename E2, typename SFunctor>
 struct ashape_aux< mtl::mat::mat_mat_op_expr<E1, E2, SFunctor> >
 {
