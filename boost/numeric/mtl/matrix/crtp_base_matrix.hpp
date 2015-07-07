@@ -205,6 +205,27 @@ struct crtp_assign<multi_vector<Vector>, Matrix>
     }
 };
 
+template <typename Matrix>
+struct crtp_assign<identity2D, Matrix>
+{
+    Matrix& operator()(const identity2D& src, Matrix& matrix)
+    {
+	typedef typename Collection<Matrix>::size_type  size_type;
+	typedef typename Collection<Matrix>::value_type value_type;
+
+	matrix.checked_change_resource(src);
+	{
+	    inserter<Matrix>  ins(matrix);	
+	    for (size_type r= 0; r < num_rows(src); ++r)
+		for (size_type c= 0; c < num_cols(src); ++c)
+		    ins(r, c) << value_type(int(r == c));
+	}
+	return matrix;
+    }
+};
+
+
+
 
 /// Assign content of a file to the matrix
 template <typename IFStream, typename OFStream, typename Matrix>

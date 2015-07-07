@@ -114,6 +114,11 @@ namespace mtl {
 	template <typename Vector1, typename Vector2> class outer_product_functor;
 	template <typename Vector1, typename Vector2> class outer_product_matrix;
 
+        struct identity2D;
+	std::size_t size(const identity2D& A);
+	std::size_t num_rows(const identity2D& A);
+	std::size_t num_cols(const identity2D& A);
+
         template <typename Matrix> struct transposed_view;
         
 	template <typename Matrix> struct mat_expr;
