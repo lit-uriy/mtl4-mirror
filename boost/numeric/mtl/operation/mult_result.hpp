@@ -150,6 +150,24 @@ struct lazy_enable_if_rvec_cvec_mult
 			  Result>
 {};
 
+#ifndef MTL_WITHOUT_VECTOR_ELE_OPS
+/// Product of row vectors is performed element-wise (unless disabled with MTL_WITHOUT_VECTOR_ELE_OPS)
+template <typename Op1, typename Op2>
+struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::rvec_rvec_mult> 
+{
+    typedef typename Collection<Op1>::value_type v1;
+    typedef typename Collection<Op2>::value_type v2;
+
+    typedef vec::vec_vec_op_expr<Op1, Op2, mtl::sfunctor::times<v1, v2> > type;
+};
+
+/// Product of column vectors is performed element-wise (unless disabled with MTL_WITHOUT_VECTOR_ELE_OPS)
+template <typename Op1, typename Op2>
+struct vec_mult_result_aux<Op1, Op2, ::mtl::ashape::cvec_cvec_mult> 
+  : vec_mult_result_aux<Op1, Op2, ::mtl::ashape::rvec_rvec_mult> 
+{};
+#endif // MTL_WITHOUT_VECTOR_ELE_OPS
+
 
 }} // namespace mtl::traits
 

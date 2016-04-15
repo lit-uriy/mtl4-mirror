@@ -358,6 +358,8 @@ struct ashape_aux<io::matrix_file<IFStream, OFStream> >
 struct scal_scal_mult {};
 struct cvec_rvec_mult {}; // outer product
 struct rvec_cvec_mult {}; // inner product (without conj)
+struct rvec_rvec_mult {}; // element-wise product
+struct cvec_cvec_mult {}; // element-wise product
 struct rvec_mat_mult {};
 struct mat_cvec_mult {};
 struct mat_mat_mult {};
@@ -459,6 +461,31 @@ struct emult_op<rvec<Value1>, cvec<Value2> >
       , rvec_cvec_mult
     >::type type;
 };
+
+#ifndef MTL_WITHOUT_VECTOR_ELE_OPS
+template <typename Value1, typename Value2>
+struct emult_op<rvec<Value1>, rvec<Value2> >
+{
+    // if product of elements is undefined then product is undefined too
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+      , ndef
+      , rvec_rvec_mult
+    >::type type;
+};
+
+template <typename Value1, typename Value2>
+struct emult_op<cvec<Value1>, cvec<Value2> >
+{
+    // if product of elements is undefined then product is undefined too
+    typedef typename boost::mpl::if_<
+	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+      , ndef
+      , cvec_cvec_mult
+    >::type type;
+};
+#endif // MTL_WITHOUT_VECTOR_ELE_OPS
+
 
 // Row vector times matrix
 template <typename Value1, typename Value2>
