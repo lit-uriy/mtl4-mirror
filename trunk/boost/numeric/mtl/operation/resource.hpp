@@ -25,7 +25,7 @@ namespace mtl {
 	struct vector_resource
 	{
 	    typedef typename Collection<Vector>::size_type type;
-	    type inline static apply(const Vector& v) { using mtl::vec::size; return size(v); }
+	    type inline static apply(const Vector& v) { using mtl::vec::size; return mtl::size(v); }
 	};
     }
 

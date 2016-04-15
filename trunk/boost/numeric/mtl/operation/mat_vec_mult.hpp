@@ -422,7 +422,7 @@ inline void vsmat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn
     typedef typename Collection<Matrix>::size_type            size_type; 
     typedef typename Collection<VectorOut>::value_type        value_type;
 
-    if (size(w) == 0) return;
+    if (mtl::size(w) == 0) return;
     const value_type z(math::zero(w[0]));
 
     // std::cout << "very sparse: nnz = " << A.nnz() << ", num_rows = " << num_rows(A) << '\n';
@@ -627,7 +627,7 @@ inline smat_cvec_mult(const compressed2D<MValue, MPara>& A, const VectorIn& v, V
     typedef typename Collection<VectorOut>::value_type        value_type;
     typedef typename mtl::traits::omp_size_type<typename Collection<Matrix>::size_type>::type size_type;
 
-    if (size(w) == 0) return;
+    if (mtl::size(w) == 0) return;
     const value_type z(math::zero(w[0]));
 
     size_type nr= num_rows(A), nrb= nr / 4 * 4;
