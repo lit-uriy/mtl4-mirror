@@ -209,8 +209,8 @@ class outer_product_functor
     outer_product_functor(const Vector1& v1, const Vector2& v2) : my_v1(v1), my_v2(v2) {}
     outer_product_functor(size_type r, size_type c) : my_v1(r), my_v2(c) {}
 
-    friend size_type inline num_rows(const self& A) { return size(A.my_v1); }
-    friend size_type inline num_cols(const self& A) { return size(A.my_v2); }
+    friend size_type inline num_rows(const self& A) { return mtl::size(A.my_v1); }
+    friend size_type inline num_cols(const self& A) { return mtl::size(A.my_v2); }
 
     result_type operator()(size_type r, size_type c) const { return my_v1[r] * my_v2[c]; }
 
