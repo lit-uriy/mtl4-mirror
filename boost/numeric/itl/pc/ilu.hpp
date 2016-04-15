@@ -142,7 +142,7 @@ class ilu<mtl::mat::dense2D<Value, mtl::mat::parameters<> >, Factorizer, V2> // 
     typedef ilu                                           self;
     typedef Matrix                                        LU_type;
 
-    ilu(const Matrix& A) : LU(A) { lu(LU, P); std::cout << "LU is\n" << LU << "P is " << P << "\n"; }
+    ilu(const Matrix& A) : LU(A) { lu(LU, P); }
 
     // Solve  P^{-1}LU x = b --> x= U^{-1} L^{-1} P b
     template <typename Vector>
