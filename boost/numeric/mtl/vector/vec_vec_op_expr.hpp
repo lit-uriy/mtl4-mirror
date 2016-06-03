@@ -75,12 +75,11 @@ public:
 template <typename E1, typename E2, typename SFunctor>
 inline std::size_t size(const vec_vec_op_expr<E1, E2, SFunctor>& v)
 {
-    // std::cerr << "vec_vec_op_expr.size() " << first.size() << "  " << second.size() << "\n";
+    // std::cerr << "vec_vec_op_expr.size(): " << size(v.first) << " vs. " << size(v.second) << "\n";
     assert( size(v.first) == size(v.second) ) ;
     return size(v.first) ;
 }
 
-    
     
 } } // Namespace mtl::vector
 
