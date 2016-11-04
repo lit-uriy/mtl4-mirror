@@ -221,6 +221,29 @@ struct divide_by_view
 #endif
 };
 	
+/// View for raising vector element to power of scalar exponent
+template <typename Vector, typename Exponent>
+struct pow_by_view
+  : public map_view<tfunctor::pow_by<typename Vector::value_type, Exponent>, Vector>
+{
+    typedef tfunctor::pow_by<typename Vector::value_type, Exponent>  functor_type;
+    typedef map_view<functor_type, Vector>                           base;
+    typedef pow_by_view                                              self;
+        
+    explicit pow_by_view(const Vector& vector, const Exponent& div)
+      : base(functor_type(div), vector)
+    {}
+        
+    explicit pow_by_view(boost::shared_ptr<Vector> p, const Exponent& div)
+      : base(functor_type(div), p)
+    {}
+        
+#ifdef MTL_WITH_CPP11_MOVE    
+    pow_by_view (self&& that) : base(that) {}
+    pow_by_view (const self& that) : base(that) {}
+#endif
+};
+
 
 template <typename Vector>
 struct conj_view

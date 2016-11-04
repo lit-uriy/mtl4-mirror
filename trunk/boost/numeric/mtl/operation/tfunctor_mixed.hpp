@@ -15,6 +15,7 @@
 
 #include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/concept/std_concept.hpp>
+#include <cmath>
 
 namespace mtl { namespace tfunctor {
 
@@ -148,6 +149,27 @@ struct right_max
 private:
     Value2 v2; 
 };
+
+/// Raise Value1 to the power of Value2.
+/** Value2 is bound in the functor and Value1 passes to the operator. **/
+template <typename Value1, typename Value2>
+struct pow_by
+{
+    typedef Value1 result_type; // not perfect but works for all C++98 overloads
+    
+    explicit pow_by(const Value2& v2) : v2(v2) {}
+    
+    result_type operator() (const Value1& v1) const
+    {
+        using std::pow;
+        return pow(v1, v2);
+    }
+
+    Value2 value() const { return v2; }
+private:
+    Value2 v2; 
+};
+
 
 }} // namespace mtl::tfunctor
 
