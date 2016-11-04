@@ -157,17 +157,17 @@ struct pow_by
 {
     typedef Value1 result_type; // not perfect but works for all C++98 overloads
     
-    explicit pow_by(const Value2& v2) : v2(v2) {}
+    explicit pow_by(const Value2& exp) : exp(exp) {}
     
-    result_type operator() (const Value1& v1) const
+    result_type operator() (const Value1& base) const
     {
         using std::pow;
-        return pow(v1, v2);
+        return pow(base, exp);
     }
 
-    Value2 value() const { return v2; }
+    Value2 value() const { return exp; }
 private:
-    Value2 v2; 
+    Value2 exp; 
 };
 
 

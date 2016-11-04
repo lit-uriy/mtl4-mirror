@@ -16,6 +16,7 @@
 #include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/dot.hpp>
+#include <boost/numeric/mtl/operation/pow.hpp>
 
 
 using namespace std;  
@@ -127,11 +128,11 @@ void test(VectorU& u, VectorV& v, VectorW& w, const char* name)
     cout << "u: " << u << "v: " << v << "w: " << w << std::endl;
     MTL_THROW_IF(u[0] != 1003.0, mtl::runtime_error("u wrong"));
     
-//     std::cout << name << "  --- u= pow(v, 2.0); // with v= 1, 2, 3, 4, 5;" << std::endl;
-//     v= 1, 2, 3, 4, 5;
-//     u= pow(v, 2.0);
-//     cout << "u: " << u << "v: " << v << std::endl;
-//     MTL_THROW_IF(abs(u[4] - 25) > 0.0001, mtl::runtime_error("u wrong")); 
+    std::cout << name << "  --- u= pow(v, 2.0); // with v= 1, 2, 3, 4, 5;" << std::endl;
+    v= 1, 2, 3, 4, 5;
+    u= pow(v, 2.0);
+    cout << "u: " << u << "v: " << v << std::endl;
+    MTL_THROW_IF(abs(u[4] - 25) > 0.0001, mtl::runtime_error("u wrong")); 
 }
  
 
