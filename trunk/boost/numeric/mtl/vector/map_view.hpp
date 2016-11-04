@@ -230,12 +230,12 @@ struct pow_by_view
     typedef map_view<functor_type, Vector>                           base;
     typedef pow_by_view                                              self;
         
-    explicit pow_by_view(const Vector& vector, const Exponent& div)
-      : base(functor_type(div), vector)
+    explicit pow_by_view(const Vector& vector, const Exponent& exp)
+      : base(functor_type(exp), vector)
     {}
         
-    explicit pow_by_view(boost::shared_ptr<Vector> p, const Exponent& div)
-      : base(functor_type(div), p)
+    explicit pow_by_view(boost::shared_ptr<Vector> p, const Exponent& exp)
+      : base(functor_type(exp), p)
     {}
         
 #ifdef MTL_WITH_CPP11_MOVE    

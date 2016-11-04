@@ -293,6 +293,12 @@ struct ashape_aux<mtl::vec::map_view<Functor, Coll> >
     typedef typename ashape<Coll>::type type;
 };
 
+template <typename Vector, typename Exponent>
+struct ashape_aux<mtl::vec::pow_by_view<Vector, Exponent> >
+{
+    typedef typename ashape<Vector>::type type;
+};
+
 template <typename Coll>
 struct ashape_aux<mtl::vec::conj_view<Coll> >
 {
@@ -307,6 +313,12 @@ struct ashape_aux<mtl::vec::real_view<Coll> >
 
 template <typename Coll>
 struct ashape_aux<mtl::vec::imag_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::negate_view<Coll> >
 {
     typedef typename ashape<Coll>::type type;
 };

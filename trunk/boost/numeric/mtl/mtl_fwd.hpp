@@ -170,6 +170,7 @@ namespace mtl {
 	template <typename Value, typename Parameters> class strided_vector_ref;
 	template <typename Value, typename Parameters> class sparse_vector;
 	template <typename Functor, typename Vector> struct map_view;
+        template <typename Vector, typename Exponent> struct pow_by_view;
 	template <typename Vector>  struct conj_view;
 	template <typename Vector>  struct real_view;
 	template <typename Vector>  struct imag_view;
