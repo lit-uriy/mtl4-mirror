@@ -340,6 +340,8 @@ namespace mtl {
 
 	/// Functor for scaling matrices, vectors and ordinary scalars
 	template <typename V1, typename V2, typename AlgebraicCategory = tag::scalar> struct divide_by;
+        
+        template <typename Value1, typename Value2> struct pow_by;
     }
 
     /// Namespace for functors with static function apply and fully typed parameters
