@@ -13,6 +13,7 @@
 #ifndef MTL_EVALUATE_LAZY_INCLUDE
 #define MTL_EVALUATE_LAZY_INCLUDE
 
+#include <boost/numeric/mtl/mtl_fwd.hpp>
 #include <boost/numeric/mtl/operation/lazy_assign.hpp>
 #include <boost/numeric/mtl/vector/lazy_reduction.hpp>
 
@@ -31,6 +32,16 @@ void inline evaluate_lazy(lazy_assign<T, vec::lazy_reduction<Vector, Functor>, A
 {
     lazy.first= Functor::post_reduction(vec::reduction<4, Functor, T>::apply(lazy.second.v));
 }
+
+// To be checked whether this works
+template <typename T, typename U> 
+void inline evaluate_lazy(fused_expr<T,  U>& fu)
+{
+    evaluate_lazy(fu.first);
+    evaluate_lazy(fu.second);
+}
+
+
 
 } // namespace mtl
 
