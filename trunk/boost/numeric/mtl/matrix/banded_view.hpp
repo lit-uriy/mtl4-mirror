@@ -79,9 +79,9 @@ struct banded_view
 	  my_copy(p), ref(*p), begin(begin), end(end) 
     {}
 
-#ifdef MTL_WITH_CPP11_MOVE    
+#ifdef MTL_WITH_MOVE    
     banded_view (self&& that) : my_copy(std::move(that.my_copy)), ref(that.ref), begin(that.begin), end(that.end) {}
-  banded_view (const self& that) : ref(that.ref), begin(that.begin), end(that.end) { assert(that.my_copy.use_count() == 0); }
+    banded_view (const self& that) : ref(that.ref), begin(that.begin), end(that.end) { assert(that.my_copy.use_count() == 0); }
 #endif
 
     value_type operator() (size_type r, size_type c) const

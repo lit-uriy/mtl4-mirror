@@ -76,8 +76,8 @@ struct map_view
     map_view (const Functor& functor, boost::shared_ptr<Matrix> p) 
       : functor(functor), my_copy(p), ref(*p) {}
     
-#ifdef MTL_WITH_CPP11_MOVE    
-  map_view (self&& that) : functor(that.functor), my_copy(std::move(that.my_copy)), ref(that.ref) {}
+#ifdef MTL_WITH_MOVE    
+  map_view (self&& that) : my_copy(std::move(that.my_copy)), functor(that.functor), ref(that.ref) {}
   map_view (const self& that) : functor(that.functor), ref(that.ref) { assert(that.my_copy.use_count() == 0); }
 #endif
 
@@ -278,7 +278,7 @@ struct scaled_view
       : base(functor_type(scaling), p)
     {}
 
-#ifdef MTL_WITH_CPP11_MOVE    
+#ifdef MTL_WITH_MOVE    
     scaled_view (self&& that) : base(that) {}
     scaled_view (const self& that) : base(that) {}
 #endif
@@ -301,7 +301,7 @@ struct rscaled_view
       : base(functor_type(rscaling), p)
     {}
 
-#ifdef MTL_WITH_CPP11_MOVE    
+#ifdef MTL_WITH_MOVE    
     rscaled_view (self&& that) : base(that) {}
     rscaled_view (const self& that) : base(that) {}
 #endif
@@ -324,7 +324,7 @@ struct divide_by_view
       : base(functor_type(div), p)
     {}
 	
-#ifdef MTL_WITH_CPP11_MOVE    
+#ifdef MTL_WITH_MOVE    
     divide_by_view (self&& that) : base(that) {}
     divide_by_view (const self& that) : base(that) {}
 #endif
@@ -341,7 +341,7 @@ struct conj_view
     conj_view(const Matrix& matrix) : base(functor_type(), matrix) {}
     conj_view(boost::shared_ptr<Matrix> p) : base(functor_type(), p) {}
 
-#ifdef MTL_WITH_CPP11_MOVE    
+#ifdef MTL_WITH_MOVE    
     conj_view (self&& that) : base(that) {}
     conj_view (const self& that) : base(that) {}
 #endif
@@ -358,7 +358,7 @@ struct imag_view
     imag_view(const Matrix& matrix) : base(functor_type(), matrix) {}
     imag_view(boost::shared_ptr<Matrix> p) : base(functor_type(), p) {}
 
-#ifdef MTL_WITH_CPP11_MOVE    
+#ifdef MTL_WITH_MOVE    
     imag_view (self&& that) : base(that) {}
     imag_view (const self& that) : base(that) {}
 #endif
@@ -375,7 +375,7 @@ struct negate_view
     negate_view(const Matrix& matrix) : base(functor_type(), matrix) {}
     negate_view(boost::shared_ptr<Matrix> p) : base(functor_type(), p) {}
 
-#ifdef MTL_WITH_CPP11_MOVE    
+#ifdef MTL_WITH_MOVE    
     negate_view (self&& that) : base(that) {}
     negate_view (const self& that) : base(that) {}
 #endif
@@ -392,7 +392,7 @@ struct real_view
     real_view(const Matrix& matrix) : base(functor_type(), matrix) {}
     real_view(boost::shared_ptr<Matrix> p) : base(functor_type(), p) {}
 
-#ifdef MTL_WITH_CPP11_MOVE    
+#ifdef MTL_WITH_MOVE    
     real_view (self&& that) : base(that) {}
     real_view (const self& that) : base(that) {}
 #endif
