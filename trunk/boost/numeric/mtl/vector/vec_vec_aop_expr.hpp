@@ -75,6 +75,8 @@ struct vec_vec_aop_expr
     vec_vec_aop_expr( first_argument_type& v1, second_argument_type const& v2, bool delay= false )
       : first(v1), second(v2), delayed_assign(delay)
     {
+        bool compatible= mtl::vec::size(first) == mtl::vec::size(second) || (mtl::vec::size(first) == 0 && traits::is_static<E1>::value);
+        MTL_DEBUG_THROW_IF(!compatible,  incompatible_size());
 	second.delay_assign();
     }
     
@@ -128,8 +130,8 @@ struct vec_vec_aop_expr
 	// If target is constructed by default it takes size of source
 	//int a= size(second);
 	//int b= second;
-	if (mtl::vec::size(first) == 0) first.change_dim(mtl::size(second));
-	MTL_DEBUG_THROW_IF(mtl::vec::size(first) != mtl::vec::size(second), incompatible_size()); // otherwise error
+	if (mtl::vec::size(first) == 0) 
+            first.change_dim(mtl::size(second));
 
 	// need to do more benchmarking before making unrolling default
 	dynamic_assign(traits::with_unroll1<E1>());
@@ -137,9 +139,7 @@ struct vec_vec_aop_expr
 
     void assign(boost::mpl::true_)
     {
-	vampir_trace<1001> tracer;
-	MTL_DEBUG_THROW_IF(mtl::vec::size(first) != mtl::vec::size(second), incompatible_size()); // We cannot resize, only check
-	
+	vampir_trace<1001> tracer;	
 	// impl::assign<0, static_size<E1>::value-1, SFunctor>::apply(first, second); // Slower, at least on gcc
 	for (size_type i= 0; i < mtl::vec::size(first); ++i) // Do an ordinary loop instead
 	    SFunctor::apply(first(i), second(i));
