@@ -71,10 +71,13 @@ struct transposed_view
     
     transposed_view (const boost::shared_ptr<Matrix>& p) : my_copy(p), ref(*p) {}
 
-#ifdef MTL_WITH_CPP11_MOVE    
+#ifdef MTL_WITH_MOVE    
     transposed_view (self&& that) : my_copy(std::move(that.my_copy)), ref(that.ref) {}
-    transposed_view (const self& that) : ref(that.ref) { assert(that.my_copy.use_count() == 0); }
 #endif
+    
+    transposed_view (const self& that) 
+      : my_copy(that.my_copy),  ref(that.ref) 
+    { /* assert(that.my_copy.use_count() == 0); why did I check this? */ }
 
     const_reference operator() (size_type r, size_type c) const
     {         return ref(c, r);     }
