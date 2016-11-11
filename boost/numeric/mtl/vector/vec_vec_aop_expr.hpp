@@ -75,7 +75,7 @@ struct vec_vec_aop_expr
     vec_vec_aop_expr( first_argument_type& v1, second_argument_type const& v2, bool delay= false )
       : first(v1), second(v2), delayed_assign(delay)
     {
-        bool compatible= mtl::vec::size(first) == mtl::vec::size(second) || (mtl::vec::size(first) == 0 && traits::is_static<E1>::value);
+        bool compatible= mtl::vec::size(first) == mtl::vec::size(second) || (mtl::vec::size(first) == 0 && !traits::is_static<E1>::value);
         MTL_DEBUG_THROW_IF(!compatible,  incompatible_size());
 	second.delay_assign();
     }
