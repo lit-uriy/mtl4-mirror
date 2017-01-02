@@ -13,6 +13,7 @@
 #ifndef MTL_OPERATIONS_INCLUDE
 #define MTL_OPERATIONS_INCLUDE
 
+#include <boost/numeric/mtl/operation/abs.hpp>
 #include <boost/numeric/mtl/operation/adjoint.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/operation/cholesky.hpp>

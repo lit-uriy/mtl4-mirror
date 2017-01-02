@@ -14,6 +14,7 @@
 #define MTL_SFUNCTOR_INCLUDE
 
 #include <cmath>
+#include <complex>
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 #include <boost/numeric/mtl/concept/magnitude.hpp>
 #include <boost/numeric/mtl/concept/static_functor.hpp>
@@ -225,7 +226,7 @@ struct abs
 	return abs(v);
     }
 
-    result_type operator() (const Value& v) 
+    result_type operator() (const Value& v)  const
     {
 	vampir_trace<33> tracer; 
 	return apply(v); 
@@ -244,7 +245,7 @@ struct sqrt
 	return sqrt(v);
     }
 
-    result_type operator() (const Value& v) 
+    result_type operator() (const Value& v)  const
     {
 	vampir_trace<34> tracer;
 	return apply(v); 
@@ -262,7 +263,7 @@ struct square
 	return v * v;
     }
 
-    result_type operator() (const Value& v) 
+    result_type operator() (const Value& v) const
     {
 	vampir_trace<35> tracer;
 	return apply(v);

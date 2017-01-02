@@ -334,6 +334,35 @@ struct negate_view
 };
 
 
+template <typename Vector>
+struct abs_view
+  : public map_view<mtl::sfunctor::abs<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::abs<typename Vector::value_type>               functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef abs_view                                                      self;
+
+    explicit abs_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit abs_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    abs_view (self&& that) : base(that) {}
+    abs_view (const self& that) : base(that) {}
+#endif
+};
+
+
+
+
+
+
+
+
 }} // namespace mtl::vector
 
 namespace mtl { namespace sfunctor {
