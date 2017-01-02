@@ -380,6 +380,29 @@ struct acos_view
 };
 
 
+template <typename Vector>
+struct acosh_view
+  : public map_view<mtl::sfunctor::acosh<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::acosh<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef acosh_view                                                    self;
+
+    explicit acosh_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit acosh_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    acosh_view (self&& that) : base(that) {}
+    acosh_view (const self& that) : base(that) {}
+#endif
+};
+
+
 
 
 

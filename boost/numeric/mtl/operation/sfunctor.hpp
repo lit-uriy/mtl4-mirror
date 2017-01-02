@@ -302,6 +302,24 @@ struct acos
     }
 };
 
+template <typename Value>
+struct acosh
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::acosh;
+        return acosh(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+
 
 /// Compose functors \p F and \p G, i.e. compute f(g(x)).
 /** Functors must be models of StaticUnaryFunctor,
