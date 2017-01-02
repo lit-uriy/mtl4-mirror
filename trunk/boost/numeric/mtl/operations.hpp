@@ -15,6 +15,7 @@
 
 #include <boost/numeric/mtl/operation/abs.hpp>
 #include <boost/numeric/mtl/operation/acos.hpp>
+#include <boost/numeric/mtl/operation/acosh.hpp>
 #include <boost/numeric/mtl/operation/adjoint.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/operation/cholesky.hpp>

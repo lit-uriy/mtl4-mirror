@@ -177,6 +177,7 @@ namespace mtl {
 	template <typename Vector>  struct negate_view;
 	template <typename Vector>  struct abs_view;
 	template <typename Vector>  struct acos_view;
+	template <typename Vector>  struct acosh_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
 	template <typename Vector, typename RScaling> struct rscaled_view; // added by Hui Li
 	template <typename Vector, typename Divisor> struct divide_by_view; // added by Hui Li

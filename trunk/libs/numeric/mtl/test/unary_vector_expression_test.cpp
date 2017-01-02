@@ -51,6 +51,15 @@ void non_complex_test(Vector& u, const char* name, false_type)
     std::cout << "acos(u) = " << v << "\n";
     if (std::abs(v[0] - M_PI/2.0) > 0.0001)
         throw "acos(0) should be pi/2.";
+        
+    for (int i = 0; i < 5; ++i)
+        u[i] = 1. + i / 2.0;
+    std::cout << "u = " << u << "\n";
+    v = acosh(u);
+    std::cout << "acosh(u) = " << v << "\n";
+    if (std::abs(v[2] - 1.31696)  > 0.0001)
+        throw "acosh(2) should be about 1.31696.";
+        
 }
 
 

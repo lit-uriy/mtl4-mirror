@@ -10,8 +10,8 @@
 // 
 // See also tools/license/license.mtl.txt in the distribution.
 
-#ifndef MTL_VEC_ACOS_INCLUDE
-#define MTL_VEC_ACOS_INCLUDE
+#ifndef MTL_VEC_ACOSH_INCLUDE
+#define MTL_VEC_ACOSH_INCLUDE
 
 #include <boost/numeric/mtl/vector/map_view.hpp>
 
@@ -19,11 +19,11 @@ namespace mtl { namespace vec {
 
     /// Element-wise acos of \a v
     template <typename Vector>
-    acos_view<Vector> acos(const Vector& v)
+    acosh_view<Vector> acosh(const Vector& v)
     {
-        return acos_view<Vector>(v);
+        return acosh_view<Vector>(v);
     }
 
 }} // namespace mtl::vec
 
-#endif // MTL_VEC_ACOS_INCLUDE
+#endif // MTL_VEC_ACOSH_INCLUDE

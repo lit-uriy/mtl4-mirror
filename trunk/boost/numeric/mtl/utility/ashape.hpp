@@ -335,6 +335,12 @@ struct ashape_aux<mtl::vec::acos_view<Coll> >
     typedef typename ashape<Coll>::type type;
 };
 
+template <typename Coll>
+struct ashape_aux<mtl::vec::acosh_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
 #if 1
 // shouldn't be needed 
 template <typename Coll>
