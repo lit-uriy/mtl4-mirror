@@ -341,6 +341,69 @@ struct ashape_aux<mtl::vec::acosh_view<Coll> >
     typedef typename ashape<Coll>::type type;
 };
 
+template <typename Coll>
+struct ashape_aux<mtl::vec::asin_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::asinh_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::atan_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::atanh_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::cos_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::cosh_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::sin_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::sinh_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::tan_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::tanh_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+
+
+
 #if 1
 // shouldn't be needed 
 template <typename Coll>

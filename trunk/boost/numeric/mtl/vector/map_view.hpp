@@ -356,6 +356,7 @@ struct abs_view
 #endif
 };
 
+// Inverse trigonometric
 
 template <typename Vector>
 struct acos_view
@@ -399,6 +400,234 @@ struct acosh_view
 #ifdef MTL_WITH_MOVE    
     acosh_view (self&& that) : base(that) {}
     acosh_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Vector>
+struct asin_view
+  : public map_view<mtl::sfunctor::asin<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::asin<typename Vector::value_type>              functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef asin_view                                                     self;
+
+    explicit asin_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit asin_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    asin_view (self&& that) : base(that) {}
+    asin_view (const self& that) : base(that) {}
+#endif
+};
+
+
+template <typename Vector>
+struct asinh_view
+  : public map_view<mtl::sfunctor::asinh<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::asinh<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef asinh_view                                                    self;
+
+    explicit asinh_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit asinh_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    asinh_view (self&& that) : base(that) {}
+    asinh_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Vector>
+struct atan_view
+  : public map_view<mtl::sfunctor::atan<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::atan<typename Vector::value_type>              functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef atan_view                                                     self;
+
+    explicit atan_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit atan_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    atan_view (self&& that) : base(that) {}
+    atan_view (const self& that) : base(that) {}
+#endif
+};
+
+
+template <typename Vector>
+struct atanh_view
+  : public map_view<mtl::sfunctor::atanh<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::atanh<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef atanh_view                                                    self;
+
+    explicit atanh_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit atanh_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    atanh_view (self&& that) : base(that) {}
+    atanh_view (const self& that) : base(that) {}
+#endif
+};
+
+
+// Trigonometric
+
+template <typename Vector>
+struct cos_view
+  : public map_view<mtl::sfunctor::cos<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::cos<typename Vector::value_type>              functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef cos_view                                                     self;
+
+    explicit cos_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit cos_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    cos_view (self&& that) : base(that) {}
+    cos_view (const self& that) : base(that) {}
+#endif
+};
+
+
+template <typename Vector>
+struct cosh_view
+  : public map_view<mtl::sfunctor::cosh<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::cosh<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef cosh_view                                                    self;
+
+    explicit cosh_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit cosh_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    cosh_view (self&& that) : base(that) {}
+    cosh_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Vector>
+struct sin_view
+  : public map_view<mtl::sfunctor::sin<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::sin<typename Vector::value_type>              functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef sin_view                                                     self;
+
+    explicit sin_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit sin_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    sin_view (self&& that) : base(that) {}
+    sin_view (const self& that) : base(that) {}
+#endif
+};
+
+
+template <typename Vector>
+struct sinh_view
+  : public map_view<mtl::sfunctor::sinh<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::sinh<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef sinh_view                                                    self;
+
+    explicit sinh_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit sinh_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    sinh_view (self&& that) : base(that) {}
+    sinh_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Vector>
+struct tan_view
+  : public map_view<mtl::sfunctor::tan<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::tan<typename Vector::value_type>              functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef tan_view                                                     self;
+
+    explicit tan_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit tan_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    tan_view (self&& that) : base(that) {}
+    tan_view (const self& that) : base(that) {}
+#endif
+};
+
+
+template <typename Vector>
+struct tanh_view
+  : public map_view<mtl::sfunctor::tanh<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::tanh<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef tanh_view                                                    self;
+
+    explicit tanh_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit tanh_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    tanh_view (self&& that) : base(that) {}
+    tanh_view (const self& that) : base(that) {}
 #endif
 };
 

@@ -14,8 +14,6 @@
 #define MTL_OPERATIONS_INCLUDE
 
 #include <boost/numeric/mtl/operation/abs.hpp>
-#include <boost/numeric/mtl/operation/acos.hpp>
-#include <boost/numeric/mtl/operation/acosh.hpp>
 #include <boost/numeric/mtl/operation/adjoint.hpp>
 #include <boost/numeric/mtl/operation/clone.hpp>
 #include <boost/numeric/mtl/operation/cholesky.hpp>
@@ -91,6 +89,7 @@
 #include <boost/numeric/mtl/operation/swap_row.hpp>
 #include <boost/numeric/mtl/operation/trace.hpp>
 #include <boost/numeric/mtl/operation/trans.hpp>
+#include <boost/numeric/mtl/operation/trigonometric.hpp>
 #include <boost/numeric/mtl/operation/unary_dot.hpp>
 #include <boost/numeric/mtl/operation/unroll.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
