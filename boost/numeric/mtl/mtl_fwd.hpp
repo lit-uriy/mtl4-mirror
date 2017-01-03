@@ -178,6 +178,16 @@ namespace mtl {
 	template <typename Vector>  struct abs_view;
 	template <typename Vector>  struct acos_view;
 	template <typename Vector>  struct acosh_view;
+	template <typename Vector>  struct asin_view;
+	template <typename Vector>  struct asinh_view;
+	template <typename Vector>  struct atan_view;
+	template <typename Vector>  struct atanh_view;
+	template <typename Vector>  struct cos_view;
+	template <typename Vector>  struct cosh_view;
+	template <typename Vector>  struct sin_view;
+	template <typename Vector>  struct sinh_view;
+	template <typename Vector>  struct tan_view;
+	template <typename Vector>  struct tanh_view;
 	template <typename Scaling, typename Vector> struct scaled_view;
 	template <typename Vector, typename RScaling> struct rscaled_view; // added by Hui Li
 	template <typename Vector, typename Divisor> struct divide_by_view; // added by Hui Li

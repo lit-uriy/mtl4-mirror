@@ -319,6 +319,176 @@ struct acosh
     }
 };
 
+template <typename Value>
+struct asin
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::asin;
+        return asin(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+template <typename Value>
+struct asinh
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::asinh;
+        return asinh(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+template <typename Value>
+struct atan
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::atan;
+        return atan(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+template <typename Value>
+struct atanh
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::atanh;
+        return atanh(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+
+template <typename Value>
+struct cos
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::cos;
+        return cos(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+template <typename Value>
+struct cosh
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::cosh;
+        return cosh(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+template <typename Value>
+struct sin
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::sin;
+        return sin(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+template <typename Value>
+struct sinh
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::sinh;
+        return sinh(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+template <typename Value>
+struct tan
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::tan;
+        return tan(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+template <typename Value>
+struct tanh
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::tanh;
+        return tanh(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
 
 
 /// Compose functors \p F and \p G, i.e. compute f(g(x)).

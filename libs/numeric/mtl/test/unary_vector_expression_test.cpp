@@ -45,12 +45,23 @@ void non_complex_test(Vector& u, const char* name, false_type)
 
     for (int i = 0; i < 5; ++i)
         u[i] = i / 4.0;
-    std::cout << "Non-complex-" << name << ": u = " << u << "\n";
+    std::cout << "Non-complex-" << name << ": u = " << u << "\n";    
     
+    // Inverse trigonometric functions    
     v = acos(u);
     std::cout << "acos(u) = " << v << "\n";
     if (std::abs(v[0] - M_PI/2.0) > 0.0001)
         throw "acos(0) should be pi/2.";
+        
+    v = asin(u);
+    std::cout << "asin(u) = " << v << "\n";
+    if (std::abs(v[4] - M_PI/2.0) > 0.0001)
+        throw "asin(1) should be pi/2.";
+        
+    v = atan(u);
+    std::cout << "atan(u) = " << v << "\n";
+    if (std::abs(v[4] - M_PI/4.0) > 0.0001)
+        throw "atan(1) should be pi/4.";                
         
     for (int i = 0; i < 5; ++i)
         u[i] = 1. + i / 2.0;
@@ -60,6 +71,19 @@ void non_complex_test(Vector& u, const char* name, false_type)
     if (std::abs(v[2] - 1.31696)  > 0.0001)
         throw "acosh(2) should be about 1.31696.";
         
+    v = asinh(u);
+    std::cout << "asinh(u) = " << v << "\n";
+    if (std::abs(v[2] - 1.44363)  > 0.0001)
+        throw "asinh(2) should be about 1.44363.";
+        
+    for (int i = 0; i < 5; ++i)
+        u[i] = -0.8 + i * 0.4;
+    std::cout << "u = " << u << "\n";
+    v = atanh(u);
+    std::cout << "atanh(u) = " << v << "\n";
+    if (std::abs(v[4] - 1.098612289)  > 0.0001)
+        throw "atanh(0.8) should be about 1.098612289.";
+       
 }
 
 
@@ -77,8 +101,44 @@ void test(Vector& u, const char* name)
     MTL_THROW_IF(v[0] != 2.0, mtl::runtime_error("wrong"));
     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
     
+
+    // Trigonometric functions
+    for (int i = 0; i < 5; ++i)
+        u[i] = i * M_PI / 8.0;
+    std::cout << name << ": u = " << u << "\n";
     
+    v = acos(u);
+    std::cout << "cos(u) = " << v << "\n";
+    if (std::abs(v[2] - 0.667457) > 0.0001)
+        throw "cos(pi/4) should be 0.667457.";
+        
+    v = sin(u);
+    std::cout << "sin(u) = " << v << "\n";
+    if (std::abs(v[4] - 1.0) > 0.0001)
+        throw "asin(pi/2) should be 1.";
+        
+    v = tan(u);
+    std::cout << "tan(u) = " << v << "\n";
+    if (std::abs(v[2] - 1) > 0.0001)
+        throw "tan(pi/4) should be 1.";                
+        
+    v = cosh(u);
+    std::cout << "acosh(u) = " << v << "\n";
+    if (std::abs(v[4] - 2.50918)  > 0.0001)
+        throw "acosh(pi/2) should be about 2.50918.";
     
+    v = sinh(u);
+    std::cout << "sinh(u) = " << v << "\n";
+    if (std::abs(v[4] - 2.3013)  > 0.001)
+        throw "sinh(pi/2) should be about 2.3013.";
+    
+    v = tanh(u);
+    std::cout << "tanh(u) = " << v << "\n";
+    if (std::abs(v[4] - 0.917152)  > 0.0001)
+        throw "tanh(pi/2) should be about 0.917152.";
+
+        
+        
     non_complex_test(u, name, is_complex<Vector>());
     
     std::cout << "\n\n";
