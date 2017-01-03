@@ -66,7 +66,7 @@ int main(int, char**)
 {
     const int N = 2;
     typedef mtl::compressed2D<double> matrix_type;
-    matrix_type                   A(N, N);
+    matrix_type                   A(N*N, N*N);
     laplacian_setup(A, N, N);
 
     mtl::dense_vector<double> b(N*N, 1), x(N*N,1), r(N*N);
