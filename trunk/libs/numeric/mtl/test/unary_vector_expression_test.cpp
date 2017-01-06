@@ -32,6 +32,17 @@ struct is_complex<mtl::vec::dense_vector<std::complex<Value> > >
   : true_type
 {};
 
+template <typename Value>
+struct is_int_vec
+  : false_type
+{};
+
+template <>
+struct is_int_vec<mtl::vec::dense_vector<int> >
+  : true_type
+{};
+
+
 
 template <typename Vector>
 void non_complex_test(Vector&, const char*, true_type)
@@ -86,22 +97,15 @@ void non_complex_test(Vector& u, const char* name, false_type)
        
 }
 
-
+template <typename Vector>
+void non_int_test(Vector&, const char*, true_type)
+{
+}
 
 template <typename Vector>
-void test(Vector& u, const char* name)
+void non_int_test(Vector& u, const char* name, false_type)
 {
-    // u= 3.0; v= 4.0; w= 5.0;
-    iota(u, -2);
     Vector v(5);
-
-    std::cout << name << ": u = " << u << "\n";
-    v = abs(u);
-    std::cout << "abs(u) = " << v << "\n";
-    MTL_THROW_IF(v[0] != 2.0, mtl::runtime_error("wrong"));
-    MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
-    
-
     // Trigonometric functions
     for (int i = 0; i < 5; ++i)
         u[i] = i * M_PI / 8.0;
@@ -137,31 +141,49 @@ void test(Vector& u, const char* name)
     if (std::abs(v[4] - 0.917152)  > 0.0001)
         throw "tanh(pi/2) should be about 0.917152.";
 
-        
-        
+}  
+
+
+template <typename Vector>
+void all_test(Vector& u, const char* name)
+{
+    iota(u, -2);
+    Vector v(5);
+
+    std::cout << name << ": u = " << u << "\n";
+    v = abs(u);
+    std::cout << "abs(u) = " << v << "\n";
+    MTL_THROW_IF(v[0] != 2.0, mtl::runtime_error("wrong"));
+    MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
+    
+}
+
+    
+template <typename Vector>
+void test(const char* name)
+{
+    Vector u(5);
+    all_test(u, name);
+    non_int_test(u, name, is_complex<Vector>());
     non_complex_test(u, name, is_complex<Vector>());
     
     std::cout << "\n\n";
 }
-    
-    
-    
+ 
+ 
+ 
+ 
 int main(int, char**)
 {
     using mtl::vec::parameters;
     using namespace mtl;
 
-    dense_vector<float>   u(5);
-    dense_vector<double>  x(5);
-    dense_vector<std::complex<double> >  xc(5);
-    dense_vector<float, parameters<row_major> >   ur(5);
-
     std::cout << "Testing vector operations\n";
 
-    test(u, "test float");
-    test(x, "test double");
-    test(xc, "test complex<double>");
-    test(ur, "test float in row vector");
+    test<dense_vector<float> >("test float");
+    test<dense_vector<double> >("test double");
+    test<dense_vector<std::complex<double> > >("test complex<double>");
+    test<dense_vector<float, parameters<row_major> > >("test float in row vector");
     
     return 0;
 }
