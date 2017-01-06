@@ -13,7 +13,10 @@
 #include <iostream>
 #include <complex>
 
+#include <boost/type_traits.hpp>
+
 // #include <boost/numeric/mtl/mtl.hpp>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/operations.hpp>
 
@@ -23,14 +26,10 @@ struct true_type {};
 struct false_type {};
 
 template <typename Vector>
-struct is_complex
-  : false_type
+struct is_float_vec
+  : boost::is_floating_point<typename mtl::Collection<Vector>::value_type>
 {};
 
-template <typename Value>
-struct is_complex<mtl::vec::dense_vector<std::complex<Value> > >
-  : true_type
-{};
 
 template <typename Value>
 struct is_int_vec
@@ -45,12 +44,12 @@ struct is_int_vec<mtl::vec::dense_vector<int> >
 
 
 template <typename Vector>
-void non_complex_test(Vector&, const char*, true_type)
+void float_only_test(Vector&, const char*, boost::integral_constant<bool, false>)
 {
 }
 
 template <typename Vector>
-void non_complex_test(Vector& u, const char* name, false_type)
+void float_only_test(Vector& u, const char* name, boost::integral_constant<bool, true>)
 {    
     Vector v(5);
 
@@ -164,8 +163,8 @@ void test(const char* name)
 {
     Vector u(5);
     all_test(u, name);
-    non_int_test(u, name, is_complex<Vector>());
-    non_complex_test(u, name, is_complex<Vector>());
+    non_int_test(u, name, is_int_vec<Vector>());
+    float_only_test(u, name, is_float_vec<Vector>());
     
     std::cout << "\n\n";
 }
@@ -178,8 +177,9 @@ int main(int, char**)
     using mtl::vec::parameters;
     using namespace mtl;
 
-    std::cout << "Testing vector operations\n";
+    std::cout << "Testing vector operations\n\n";
 
+    test<dense_vector<int> >("test int");
     test<dense_vector<float> >("test float");
     test<dense_vector<double> >("test double");
     test<dense_vector<std::complex<double> > >("test complex<double>");
