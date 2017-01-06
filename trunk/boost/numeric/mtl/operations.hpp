@@ -79,6 +79,7 @@
 #include <boost/numeric/mtl/operation/num_cols.hpp>
 #include <boost/numeric/mtl/operation/num_rows.hpp>
 #include <boost/numeric/mtl/operation/pow.hpp>
+#include <boost/numeric/mtl/operation/rounding.hpp>
 #include <boost/numeric/mtl/operation/row_in_matrix.hpp>
 #include <boost/numeric/mtl/operation/size.hpp>
 #include <boost/numeric/mtl/operation/size1D.hpp>

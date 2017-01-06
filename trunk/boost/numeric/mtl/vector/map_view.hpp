@@ -631,7 +631,72 @@ struct tanh_view
 #endif
 };
 
+// Rounding
+template <typename Vector>
+struct ceil_view
+  : public map_view<mtl::sfunctor::ceil<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::ceil<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef ceil_view                                                    self;
 
+    explicit ceil_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit ceil_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    ceil_view (self&& that) : base(that) {}
+    ceil_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Vector>
+struct floor_view
+  : public map_view<mtl::sfunctor::floor<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::floor<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef floor_view                                                    self;
+
+    explicit floor_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit floor_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    floor_view (self&& that) : base(that) {}
+    floor_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Vector>
+struct round_view
+  : public map_view<mtl::sfunctor::round<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::round<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef round_view                                                    self;
+
+    explicit round_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit round_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    round_view (self&& that) : base(that) {}
+    round_view (const self& that) : base(that) {}
+#endif
+};
 
 
 

@@ -19,6 +19,7 @@
 #include <boost/numeric/mtl/concept/magnitude.hpp>
 #include <boost/numeric/mtl/concept/static_functor.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
+#include <boost/type_traits.hpp>
 
 namespace mtl { namespace sfunctor {
 
@@ -489,6 +490,99 @@ struct tanh
 	return apply(v);
     }
 };
+
+// Rounding functions
+
+template <typename Value>
+struct ceil
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    {
+        return apply(v, boost::is_integral<Value>());
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+
+private:
+    static inline result_type apply(const Value& v, boost::integral_constant<bool, false>)
+    {
+        using std::ceil;
+        return ceil(v);
+    }
+    
+    // return value directly for integer values
+    static inline result_type apply(const Value& v, boost::integral_constant<bool, true>)
+    {
+        return v;
+    };
+};
+
+template <typename Value>
+struct floor
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    {
+        return apply(v, boost::is_integral<Value>());
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+
+private:
+    static inline result_type apply(const Value& v, boost::integral_constant<bool, false>)
+    {
+        using std::floor;
+        return floor(v);
+    }
+    
+    // return value directly for integer values
+    static inline result_type apply(const Value& v, boost::integral_constant<bool, true>)
+    {
+        return v;
+    };
+};
+
+template <typename Value>
+struct round
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    {
+        return apply(v, boost::is_integral<Value>());
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+
+private:
+    static inline result_type apply(const Value& v, boost::integral_constant<bool, false>)
+    {
+        using std::round;
+        return round(v);
+    }
+    
+    // return value directly for integer values
+    static inline result_type apply(const Value& v, boost::integral_constant<bool, true>)
+    {
+        return v;
+    };
+};
+
+
+
+
 
 
 /// Compose functors \p F and \p G, i.e. compute f(g(x)).
