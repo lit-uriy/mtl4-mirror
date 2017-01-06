@@ -53,7 +53,7 @@ namespace sfunctor {
 template <typename Value>
 inline typename sfunctor::signum<Value>::result_type signum(const Value& v)
 {
-	vampir_trace<6> tracer;
+    vampir_trace<6> tracer;
     return sfunctor::signum<Value>::apply(v);
 }
 
