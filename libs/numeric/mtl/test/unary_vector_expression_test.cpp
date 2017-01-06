@@ -15,12 +15,17 @@
 
 #include <boost/type_traits.hpp>
 
+// #define MTL_VERBOSE_TEST                                   //  To print out everything
+
 // #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/operations.hpp>
+#include <boost/numeric/mtl/io/test_ostream.hpp>
 
 // using namespace std;
+
+using namespace mtl::io;
 
 struct true_type {};
 struct false_type {};
@@ -41,7 +46,16 @@ struct is_int_vec<mtl::vec::dense_vector<int> >
   : true_type
 {};
 
+static int errors = 0, tests = 0;
 
+void expect(bool cond, std::string msg)
+{
+    if (!cond) {
+        std::cerr << "ERROR: " << msg << std::endl;
+        ++errors;
+    }
+    ++tests;
+}
 
 template <typename Vector>
 void float_only_test(Vector&, const char*, boost::integral_constant<bool, false>)
@@ -55,45 +69,38 @@ void float_only_test(Vector& u, const char* name, boost::integral_constant<bool,
 
     for (int i = 0; i < 5; ++i)
         u[i] = i / 4.0;
-    std::cout << "Non-complex-" << name << ": u = " << u << "\n";    
+    tout << "Non-complex-" << name << ": u = " << u << "\n";    
     
     // Inverse trigonometric functions    
     v = acos(u);
-    std::cout << "acos(u) = " << v << "\n";
-    if (std::abs(v[0] - M_PI/2.0) > 0.0001)
-        throw "acos(0) should be pi/2.";
+    tout << "acos(u) = " << v << "\n";
+    expect(std::abs(v[0] - M_PI/2.0) < 0.0001, "acos(0) should be pi/2.");
         
     v = asin(u);
-    std::cout << "asin(u) = " << v << "\n";
-    if (std::abs(v[4] - M_PI/2.0) > 0.0001)
-        throw "asin(1) should be pi/2.";
-        
+    tout << "asin(u) = " << v << "\n";
+    expect(std::abs(v[4] - M_PI/2.0) < 0.0001, "asin(1) should be pi/2.");
+    
     v = atan(u);
-    std::cout << "atan(u) = " << v << "\n";
-    if (std::abs(v[4] - M_PI/4.0) > 0.0001)
-        throw "atan(1) should be pi/4.";                
+    tout << "atan(u) = " << v << "\n";
+    expect(std::abs(v[4] - M_PI/4.0) < 0.0001, "atan(1) should be pi/4.");
         
     for (int i = 0; i < 5; ++i)
         u[i] = 1. + i / 2.0;
-    std::cout << "u = " << u << "\n";
+    tout << "u = " << u << "\n";
     v = acosh(u);
-    std::cout << "acosh(u) = " << v << "\n";
-    if (std::abs(v[2] - 1.31696)  > 0.0001)
-        throw "acosh(2) should be about 1.31696.";
+    tout << "acosh(u) = " << v << "\n";
+    expect(std::abs(v[2] - 1.31696)  < 0.0001, "acosh(2) should be about 1.31696.");
         
     v = asinh(u);
-    std::cout << "asinh(u) = " << v << "\n";
-    if (std::abs(v[2] - 1.44363)  > 0.0001)
-        throw "asinh(2) should be about 1.44363.";
+    tout << "asinh(u) = " << v << "\n";
+    expect(std::abs(v[2] - 1.44363)  < 0.0001, "asinh(2) should be about 1.44363.");
         
     for (int i = 0; i < 5; ++i)
         u[i] = -0.8 + i * 0.4;
-    std::cout << "u = " << u << "\n";
+    tout << "u = " << u << "\n";
     v = atanh(u);
-    std::cout << "atanh(u) = " << v << "\n";
-    if (std::abs(v[4] - 1.098612289)  > 0.0001)
-        throw "atanh(0.8) should be about 1.098612289.";
-       
+    tout << "atanh(u) = " << v << "\n";
+    expect(std::abs(v[4] - 1.098612289)  < 0.0001, "atanh(0.8) should be about 1.098612289.");       
 }
 
 template <typename Vector>
@@ -108,38 +115,51 @@ void non_int_test(Vector& u, const char* name, false_type)
     // Trigonometric functions
     for (int i = 0; i < 5; ++i)
         u[i] = i * M_PI / 8.0;
-    std::cout << name << ": u = " << u << "\n";
+    tout << name << ": u = " << u << "\n";
     
     v = acos(u);
-    std::cout << "cos(u) = " << v << "\n";
-    if (std::abs(v[2] - 0.667457) > 0.0001)
-        throw "cos(pi/4) should be 0.667457.";
+    tout << "cos(u) = " << v << "\n";
+    expect(std::abs(v[2] - 0.667457) < 0.0001, "cos(pi/4) should be 0.667457.");
         
     v = sin(u);
-    std::cout << "sin(u) = " << v << "\n";
-    if (std::abs(v[4] - 1.0) > 0.0001)
-        throw "asin(pi/2) should be 1.";
+    tout << "sin(u) = " << v << "\n";
+    expect(std::abs(v[4] - 1.0) < 0.0001, "asin(pi/2) should be 1.");
         
     v = tan(u);
-    std::cout << "tan(u) = " << v << "\n";
-    if (std::abs(v[2] - 1) > 0.0001)
-        throw "tan(pi/4) should be 1.";                
+    tout << "tan(u) = " << v << "\n";
+    expect(std::abs(v[2] - 1) < 0.0001, "tan(pi/4) should be 1.");
         
     v = cosh(u);
-    std::cout << "acosh(u) = " << v << "\n";
-    if (std::abs(v[4] - 2.50918)  > 0.0001)
-        throw "acosh(pi/2) should be about 2.50918.";
+    tout << "acosh(u) = " << v << "\n";
+    expect(std::abs(v[4] - 2.50918)  < 0.0001, "acosh(pi/2) should be about 2.50918.");
     
     v = sinh(u);
-    std::cout << "sinh(u) = " << v << "\n";
-    if (std::abs(v[4] - 2.3013)  > 0.001)
-        throw "sinh(pi/2) should be about 2.3013.";
+    tout << "sinh(u) = " << v << "\n";
+    expect(std::abs(v[4] - 2.3013)  < 0.001, "sinh(pi/2) should be about 2.3013.");
     
     v = tanh(u);
-    std::cout << "tanh(u) = " << v << "\n";
-    if (std::abs(v[4] - 0.917152)  > 0.0001)
-        throw "tanh(pi/2) should be about 0.917152.";
-
+    tout << "tanh(u) = " << v << "\n";
+    expect(std::abs(v[4] - 0.917152)  < 0.0001, "tanh(pi/2) should be about 0.917152.");
+        
+    // Rounding operations    
+    for (int i = 0; i < 5; ++i)
+        u[i] = -1. + 0.4 * i;
+        
+//     v = ceil(u);
+//     tout << "ceil(u) = " << v << "\n";
+//     MTL_THROW_IF(v[1] != -1.0, mtl::runtime_error("wrong"));
+//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
+//     
+//     v = floor(u);
+//     tout << "floor(u) = " << v << "\n";
+//     MTL_THROW_IF(v[0] != -2.0, mtl::runtime_error("wrong"));
+//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
+//     
+//     v = round(u);
+//     tout << "round(u) = " << v << "\n";
+//     MTL_THROW_IF(v[0] != -2.0, mtl::runtime_error("wrong"));
+//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
+    
 }  
 
 
@@ -149,12 +169,27 @@ void all_test(Vector& u, const char* name)
     iota(u, -2);
     Vector v(5);
 
-    std::cout << name << ": u = " << u << "\n";
+    tout << name << ": u = " << u << "\n";
     v = abs(u);
-    std::cout << "abs(u) = " << v << "\n";
-    MTL_THROW_IF(v[0] != 2.0, mtl::runtime_error("wrong"));
-    MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
+    tout << "abs(u) = " << v << "\n";
+    MTL_THROW_IF(v[0] != 2.0, mtl::runtime_error("abs(-2) should be 2"));
+    MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("abs(2) should be 2"));
     
+    // Test that integer values should invariant regarding rounding operations
+//     v = ceil(u);
+//     tout << "ceil(u) = " << v << "\n";
+//     MTL_THROW_IF(v[0] != -2.0, mtl::runtime_error("wrong"));
+//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
+//     
+//     v = floor(u);
+//     tout << "floor(u) = " << v << "\n";
+//     MTL_THROW_IF(v[0] != -2.0, mtl::runtime_error("wrong"));
+//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
+//     
+//     v = round(u);
+//     tout << "round(u) = " << v << "\n";
+//     MTL_THROW_IF(v[0] != -2.0, mtl::runtime_error("wrong"));
+//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
 }
 
     
@@ -166,7 +201,7 @@ void test(const char* name)
     non_int_test(u, name, is_int_vec<Vector>());
     float_only_test(u, name, is_float_vec<Vector>());
     
-    std::cout << "\n\n";
+    tout << "\n\n";
 }
  
  
@@ -177,7 +212,7 @@ int main(int, char**)
     using mtl::vec::parameters;
     using namespace mtl;
 
-    std::cout << "Testing vector operations\n\n";
+    tout << "Testing vector operations\n\n";
 
     test<dense_vector<int> >("test int");
     test<dense_vector<float> >("test float");
@@ -185,5 +220,6 @@ int main(int, char**)
     test<dense_vector<std::complex<double> > >("test complex<double>");
     test<dense_vector<float, parameters<row_major> > >("test float in row vector");
     
-    return 0;
+    std::cout << errors << " encountered in " << tests << ".\n";
+    return errors;
 }
