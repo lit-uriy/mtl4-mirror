@@ -15,7 +15,7 @@
 
 #include <boost/type_traits.hpp>
 
-// #define MTL_VERBOSE_TEST                                   //  To print out everything
+#define MTL_VERBOSE_TEST                                   //  To print out everything
 
 // #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/mtl/concept/collection.hpp>
@@ -27,23 +27,15 @@
 
 using namespace mtl::io;
 
-struct true_type {};
-struct false_type {};
-
 template <typename Vector>
 struct is_float_vec
   : boost::is_floating_point<typename mtl::Collection<Vector>::value_type>
 {};
 
 
-template <typename Value>
+template <typename Vector>
 struct is_int_vec
-  : false_type
-{};
-
-template <>
-struct is_int_vec<mtl::vec::dense_vector<int> >
-  : true_type
+  : boost::is_integral<typename mtl::Collection<Vector>::value_type>
 {};
 
 static int errors = 0, tests = 0;
@@ -100,16 +92,37 @@ void float_only_test(Vector& u, const char* name, boost::integral_constant<bool,
     tout << "u = " << u << "\n";
     v = atanh(u);
     tout << "atanh(u) = " << v << "\n";
-    expect(std::abs(v[4] - 1.098612289)  < 0.0001, "atanh(0.8) should be about 1.098612289.");       
+    expect(std::abs(v[4] - 1.098612289)  < 0.0001, "atanh(0.8) should be about 1.098612289.");    
+    
+    // Rounding operations    
+    for (int i = 0; i < 5; ++i)
+        u[i] = -1. + 0.4 * i;
+    tout << "u = " << u << "\n";
+        
+    v = ceil(u);
+    tout << "ceil(u) = " << v << "\n";
+    expect(v[1] == 0.0, "ceil(-0.6) should be 0.");
+    expect(v[4] == 1.0, "ceil(0.6) should be 1.");
+    
+    v = floor(u);
+    tout << "floor(u) = " << v << "\n";
+    expect(v[1] == -1.0, "floor(-0.6) should be -1.");
+    expect(v[4] == 0.0, "floor(0.6) should be 0.");
+    
+    v = round(u);
+    tout << "round(u) = " << v << "\n";
+    expect(v[1] == -1.0, "round(-0.6) should be -1.");
+    expect(v[4] == 1.0, "round(0.6) should be 1.");
+    
 }
 
 template <typename Vector>
-void non_int_test(Vector&, const char*, true_type)
+void non_int_test(Vector&, const char*, boost::integral_constant<bool, true>)
 {
 }
 
 template <typename Vector>
-void non_int_test(Vector& u, const char* name, false_type)
+void non_int_test(Vector& u, const char* name, boost::integral_constant<bool, false>)
 {
     Vector v(5);
     // Trigonometric functions
@@ -139,28 +152,39 @@ void non_int_test(Vector& u, const char* name, false_type)
     
     v = tanh(u);
     tout << "tanh(u) = " << v << "\n";
-    expect(std::abs(v[4] - 0.917152)  < 0.0001, "tanh(pi/2) should be about 0.917152.");
-        
-    // Rounding operations    
-    for (int i = 0; i < 5; ++i)
-        u[i] = -1. + 0.4 * i;
-        
-//     v = ceil(u);
-//     tout << "ceil(u) = " << v << "\n";
-//     MTL_THROW_IF(v[1] != -1.0, mtl::runtime_error("wrong"));
-//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
-//     
-//     v = floor(u);
-//     tout << "floor(u) = " << v << "\n";
-//     MTL_THROW_IF(v[0] != -2.0, mtl::runtime_error("wrong"));
-//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
-//     
-//     v = round(u);
-//     tout << "round(u) = " << v << "\n";
-//     MTL_THROW_IF(v[0] != -2.0, mtl::runtime_error("wrong"));
-//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
+    expect(std::abs(v[4] - 0.917152)  < 0.0001, "tanh(pi/2) should be about 0.917152.");        
     
 }  
+
+template <typename Vector>
+void int_float_test(Vector& u, const char* name, boost::integral_constant<bool, true>)
+{
+    iota(u, -2);
+    Vector v(5);
+    tout << name << ": u = " << u << "\n";
+    
+    // Test that integer values should invariant regarding rounding operations
+    v = ceil(u);
+    tout << "ceil(u) = " << v << "\n";
+    expect(v[1] == -1.0, "ceil(-2) should be -1.");
+    expect(v[4] == 2.0, "ceil(2) should be 2.");
+    
+    v = floor(u);
+    tout << "floor(u) = " << v << "\n";
+    expect(v[1] == -1.0, "floor(-2) should be -1.");
+    expect(v[4] == 2.0, "floor(2) should be 2.");
+    
+    v = round(u);
+    tout << "round(u) = " << v << "\n";
+    expect(v[1] == -1.0, "round(-2) should be -1.");
+    expect(v[4] == 2.0, "round(2) should be 2.");     
+
+}
+
+template <typename Vector>
+void int_float_test(Vector&, const char*, boost::integral_constant<bool, false>)
+{
+}
 
 
 template <typename Vector>
@@ -175,21 +199,7 @@ void all_test(Vector& u, const char* name)
     MTL_THROW_IF(v[0] != 2.0, mtl::runtime_error("abs(-2) should be 2"));
     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("abs(2) should be 2"));
     
-    // Test that integer values should invariant regarding rounding operations
-//     v = ceil(u);
-//     tout << "ceil(u) = " << v << "\n";
-//     MTL_THROW_IF(v[0] != -2.0, mtl::runtime_error("wrong"));
-//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
-//     
-//     v = floor(u);
-//     tout << "floor(u) = " << v << "\n";
-//     MTL_THROW_IF(v[0] != -2.0, mtl::runtime_error("wrong"));
-//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
-//     
-//     v = round(u);
-//     tout << "round(u) = " << v << "\n";
-//     MTL_THROW_IF(v[0] != -2.0, mtl::runtime_error("wrong"));
-//     MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("wrong"));
+    
 }
 
     
@@ -198,6 +208,7 @@ void test(const char* name)
 {
     Vector u(5);
     all_test(u, name);
+    int_float_test(u, name, boost::integral_constant<bool, is_int_vec<Vector>::value || is_float_vec<Vector>::value>());
     non_int_test(u, name, is_int_vec<Vector>());
     float_only_test(u, name, is_float_vec<Vector>());
     
@@ -221,5 +232,5 @@ int main(int, char**)
     test<dense_vector<float, parameters<row_major> > >("test float in row vector");
     
     std::cout << errors << " encountered in " << tests << ".\n";
-    return errors;
+    return errors == 0 ? 0 : 1;
 }
