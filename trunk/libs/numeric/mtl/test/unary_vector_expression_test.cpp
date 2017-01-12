@@ -114,6 +114,12 @@ void float_only_test(Vector& u, const char* name, boost::integral_constant<bool,
     tout << "round(u) = " << v << "\n";
     expect(v[1] == -1.0, "round(-0.6) should be -1.");
     expect(v[4] == 1.0, "round(0.6) should be 1.");
+    
+    v = trunc(u);
+    tout << "trunc(u) = " << v << "\n";
+    expect(v[1] == 0.0, "trunc(-0.6) should be 0.");
+    expect(v[4] == 0.0, "trunc(0.6) should be 0.");
+    
 # endif
     
 }
@@ -192,6 +198,11 @@ void int_float_test(Vector& u, const char* name, boost::integral_constant<bool, 
     tout << "round(u) = " << v << "\n";
     expect(v[1] == -1.0, "round(-2) should be -1.");
     expect(v[4] == 2.0, "round(2) should be 2.");     
+    
+    v = trunc(u);
+    tout << "trunc(u) = " << v << "\n";
+    expect(v[1] == -1.0, "trunc(-2) should be -1.");
+    expect(v[4] == 2.0, "trunc(2) should be 2.");     
     
     iota(u, 1);
     
