@@ -676,6 +676,7 @@ struct floor_view
 #endif
 };
 
+# ifdef MTL_WITH_MATH_ELEVEN    
 template <typename Vector>
 struct round_view
   : public map_view<mtl::sfunctor::round<typename Vector::value_type>, Vector>
@@ -697,7 +698,7 @@ struct round_view
     round_view (const self& that) : base(that) {}
 #endif
 };
-
+#endif
 
 
 

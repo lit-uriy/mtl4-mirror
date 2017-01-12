@@ -413,11 +413,17 @@ struct ashape_aux<mtl::vec::floor_view<Coll> >
     typedef typename ashape<Coll>::type type;
 };
 
+
+
+
+
+# ifdef MTL_WITH_MATH_ELEVEN    
 template <typename Coll>
 struct ashape_aux<mtl::vec::round_view<Coll> >
 {
     typedef typename ashape<Coll>::type type;
 };
+# endif
 
 
 

@@ -551,36 +551,38 @@ private:
     };
 };
 
-template <typename Value>
-struct round
-{
-    typedef const Value&                                  argument_type;
-    typedef Value                                         result_type;
+# ifdef MTL_WITH_MATH_ELEVEN    
 
-    static inline result_type apply(const Value& v) 
+    template <typename Value>
+    struct round
     {
-        return apply(v, boost::is_integral<Value>());
-    }
-    result_type operator() (const Value& v) const 
-    {
-	return apply(v);
-    }
+        typedef const Value&                                  argument_type;
+        typedef Value                                         result_type;
 
-private:
-    static inline result_type apply(const Value& v, boost::integral_constant<bool, false>)
-    {
-        using std::round;
-        return round(v);
-    }
-    
-    // return value directly for integer values
-    static inline result_type apply(const Value& v, boost::integral_constant<bool, true>)
-    {
-        return v;
+        static inline result_type apply(const Value& v) 
+        {
+            return apply(v, boost::is_integral<Value>());
+        }
+        result_type operator() (const Value& v) const 
+        {
+            return apply(v);
+        }
+
+    private:
+        static inline result_type apply(const Value& v, boost::integral_constant<bool, false>)
+        {
+            using std::round;
+            return round(v);
+        }
+        
+        // return value directly for integer values
+        static inline result_type apply(const Value& v, boost::integral_constant<bool, true>)
+        {
+            return v;
+        };
     };
-};
 
-
+# endif
 
 
 
