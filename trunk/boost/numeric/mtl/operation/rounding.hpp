@@ -30,12 +30,14 @@ namespace mtl { namespace vec {
         return floor_view<Vector>(v);
     }
 
+# ifdef MTL_WITH_MATH_ELEVEN    
     /// Element-wise round of \a v
     template <typename Vector>
     round_view<Vector> round(const Vector& v)
     {
         return round_view<Vector>(v);
     }
+# endif
     
 }} // namespace mtl::vec
 

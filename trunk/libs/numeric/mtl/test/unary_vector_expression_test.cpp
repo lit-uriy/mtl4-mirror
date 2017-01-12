@@ -109,10 +109,12 @@ void float_only_test(Vector& u, const char* name, boost::integral_constant<bool,
     expect(v[1] == -1.0, "floor(-0.6) should be -1.");
     expect(v[4] == 0.0, "floor(0.6) should be 0.");
     
+# ifdef MTL_WITH_MATH_ELEVEN    
     v = round(u);
     tout << "round(u) = " << v << "\n";
     expect(v[1] == -1.0, "round(-0.6) should be -1.");
     expect(v[4] == 1.0, "round(0.6) should be 1.");
+# endif
     
 }
 
@@ -174,10 +176,12 @@ void int_float_test(Vector& u, const char* name, boost::integral_constant<bool, 
     expect(v[1] == -1.0, "floor(-2) should be -1.");
     expect(v[4] == 2.0, "floor(2) should be 2.");
     
+# ifdef MTL_WITH_MATH_ELEVEN    
     v = round(u);
     tout << "round(u) = " << v << "\n";
     expect(v[1] == -1.0, "round(-2) should be -1.");
     expect(v[4] == 2.0, "round(2) should be 2.");     
+# endif
 
 }
 
@@ -196,10 +200,8 @@ void all_test(Vector& u, const char* name)
     tout << name << ": u = " << u << "\n";
     v = abs(u);
     tout << "abs(u) = " << v << "\n";
-    MTL_THROW_IF(v[0] != 2.0, mtl::runtime_error("abs(-2) should be 2"));
-    MTL_THROW_IF(v[4] != 2.0, mtl::runtime_error("abs(2) should be 2"));
-    
-    
+    expect(v[0] == 2.0, "abs(-2) should be 2");
+    expect(v[4] == 2.0, "abs(2) should be 2");
 }
 
     

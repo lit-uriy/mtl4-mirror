@@ -190,7 +190,12 @@ namespace mtl {
 	template <typename Vector>  struct tanh_view;
 	template <typename Vector>  struct ceil_view;
 	template <typename Vector>  struct floor_view;
+	
+	
+# ifdef MTL_WITH_MATH_ELEVEN    
 	template <typename Vector>  struct round_view;
+# endif
+	
 	template <typename Scaling, typename Vector> struct scaled_view;
 	template <typename Vector, typename RScaling> struct rscaled_view; // added by Hui Li
 	template <typename Vector, typename Divisor> struct divide_by_view; // added by Hui Li
