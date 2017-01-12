@@ -196,6 +196,7 @@ namespace mtl {
 	
 # ifdef MTL_WITH_MATH_ELEVEN    
 	template <typename Vector>  struct round_view;
+	template <typename Vector>  struct trunc_view;
 	template <typename Vector>  struct log2_view;
 # endif
 	

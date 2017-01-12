@@ -436,6 +436,12 @@ struct ashape_aux<mtl::vec::round_view<Coll> >
 };
 
 template <typename Coll>
+struct ashape_aux<mtl::vec::trunc_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
 struct ashape_aux<mtl::vec::log2_view<Coll> >
 {
     typedef typename ashape<Coll>::type type;

@@ -39,6 +39,15 @@ namespace mtl { namespace vec {
     }
 # endif
     
+# ifdef MTL_WITH_MATH_ELEVEN    
+    /// Element-wise truncation of \a v
+    template <typename Vector>
+    trunc_view<Vector> trunc(const Vector& v)
+    {
+        return trunc_view<Vector>(v);
+    }
+# endif
+    
 }} // namespace mtl::vec
 
 #endif // MTL_VEC_ROUNDING_INCLUDE

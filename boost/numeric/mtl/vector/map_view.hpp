@@ -700,6 +700,30 @@ struct round_view
 };
 #endif
 
+# ifdef MTL_WITH_MATH_ELEVEN    
+template <typename Vector>
+struct trunc_view
+  : public map_view<mtl::sfunctor::trunc<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::trunc<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef trunc_view                                                    self;
+
+    explicit trunc_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit trunc_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    trunc_view (self&& that) : base(that) {}
+    trunc_view (const self& that) : base(that) {}
+#endif
+};
+#endif
+
 template <typename Vector>
 struct log_view
   : public map_view<mtl::sfunctor::log<typename Vector::value_type>, Vector>
