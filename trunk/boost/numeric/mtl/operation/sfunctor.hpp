@@ -585,6 +585,60 @@ private:
 # endif
 
 
+template <typename Value>
+struct log
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::log;
+        return log(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+# ifdef MTL_WITH_MATH_ELEVEN    
+template <typename Value>
+struct log2
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::log2;
+        return log2(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+# endif
+
+template <typename Value>
+struct log10
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::log10;
+        return log10(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+	return apply(v);
+    }
+};
+
+
 
 
 /// Compose functors \p F and \p G, i.e. compute f(g(x)).

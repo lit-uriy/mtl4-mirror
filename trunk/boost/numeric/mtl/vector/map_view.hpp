@@ -700,6 +700,74 @@ struct round_view
 };
 #endif
 
+template <typename Vector>
+struct log_view
+  : public map_view<mtl::sfunctor::log<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::log<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef log_view                                                    self;
+
+    explicit log_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit log_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    log_view (self&& that) : base(that) {}
+    log_view (const self& that) : base(that) {}
+#endif
+};
+
+template <typename Vector>
+struct log2_view
+  : public map_view<mtl::sfunctor::log2<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::log2<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef log2_view                                                    self;
+
+    explicit log2_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit log2_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    log2_view (self&& that) : base(that) {}
+    log2_view (const self& that) : base(that) {}
+#endif
+};
+
+# ifdef MTL_WITH_MATH_ELEVEN    
+template <typename Vector>
+struct log10_view
+  : public map_view<mtl::sfunctor::log10<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::log10<typename Vector::value_type>             functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef log10_view                                                    self;
+
+    explicit log10_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit log10_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    log10_view (self&& that) : base(that) {}
+    log10_view (const self& that) : base(that) {}
+#endif
+};
+# endif
+
 
 
 

@@ -43,6 +43,7 @@
 #include <boost/numeric/mtl/operation/is_negative.hpp>
 #include <boost/numeric/mtl/operation/lazy.hpp>
 #include <boost/numeric/mtl/operation/left_scale_inplace.hpp>
+#include <boost/numeric/mtl/operation/log.hpp>
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/lu.hpp>
 #include <boost/numeric/mtl/operation/make_sparse.hpp>
