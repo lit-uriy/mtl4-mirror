@@ -156,6 +156,17 @@ void non_int_test(Vector& u, const char* name, boost::integral_constant<bool, fa
     tout << "tanh(u) = " << v << "\n";
     expect(std::abs(v[4] - 0.917152)  < 0.0001, "tanh(pi/2) should be about 0.917152.");        
     
+    iota(u, 1);
+    tout << name << ": u = " << u << "\n";
+    
+    v = log(u);
+    tout << "log(u) = " << v << "\n";
+    expect(std::abs(v[4] - 1.60944)  < 0.0001, "log(5) should be about 1.60944.");        
+    
+    v = log10(u);
+    tout << "log10(u) = " << v << "\n";
+    expect(std::abs(v[4] - 0.69897)  < 0.0001, "log10(5) should be about 0.69897.");        
+    
 }  
 
 template <typename Vector>
@@ -181,6 +192,14 @@ void int_float_test(Vector& u, const char* name, boost::integral_constant<bool, 
     tout << "round(u) = " << v << "\n";
     expect(v[1] == -1.0, "round(-2) should be -1.");
     expect(v[4] == 2.0, "round(2) should be 2.");     
+    
+    iota(u, 1);
+    
+    v = log2(u);
+    tout << "log2(u) = " << v << "\n";    
+    typename Vector::value_type log2_ref = is_int_vec<Vector>::value  ? 2.0 : 2.32193;
+    expect(std::abs(v[4] - log2_ref)  < 0.0001, "log2(5) wrong."); // not elegant
+    
 # endif
 
 }

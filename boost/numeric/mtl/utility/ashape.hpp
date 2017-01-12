@@ -413,6 +413,17 @@ struct ashape_aux<mtl::vec::floor_view<Coll> >
     typedef typename ashape<Coll>::type type;
 };
 
+template <typename Coll>
+struct ashape_aux<mtl::vec::log_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::log10_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
 
 
 
@@ -420,6 +431,12 @@ struct ashape_aux<mtl::vec::floor_view<Coll> >
 # ifdef MTL_WITH_MATH_ELEVEN    
 template <typename Coll>
 struct ashape_aux<mtl::vec::round_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::log2_view<Coll> >
 {
     typedef typename ashape<Coll>::type type;
 };

@@ -190,10 +190,13 @@ namespace mtl {
 	template <typename Vector>  struct tanh_view;
 	template <typename Vector>  struct ceil_view;
 	template <typename Vector>  struct floor_view;
+	template <typename Vector>  struct log_view;
+	template <typename Vector>  struct log10_view;
 	
 	
 # ifdef MTL_WITH_MATH_ELEVEN    
 	template <typename Vector>  struct round_view;
+	template <typename Vector>  struct log2_view;
 # endif
 	
 	template <typename Scaling, typename Vector> struct scaled_view;
