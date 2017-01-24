@@ -29,7 +29,9 @@
 #include <boost/numeric/mtl/operation/eigenvalue_symmetric.hpp>
 #include <boost/numeric/mtl/operation/entry1D.hpp>
 #include <boost/numeric/mtl/operation/entry_similar.hpp>
+#include <boost/numeric/mtl/operation/erf.hpp>
 #include <boost/numeric/mtl/operation/evaluate_lazy.hpp>
+#include <boost/numeric/mtl/operation/exp.hpp>
 #include <boost/numeric/mtl/operation/extended_complex.hpp>
 #include <boost/numeric/mtl/operation/fill.hpp>
 #include <boost/numeric/mtl/operation/fuse.hpp>
@@ -70,6 +72,7 @@
 #include <boost/numeric/mtl/operation/secular.hpp>
 #include <boost/numeric/mtl/operation/signum.hpp>
 #include <boost/numeric/mtl/operation/split_complex_vector.hpp>
+#include <boost/numeric/mtl/operation/sqrt.hpp>
 #include <boost/numeric/mtl/operation/sub_matrix.hpp>
 #include <boost/numeric/mtl/operation/sum.hpp>
 #include <boost/numeric/mtl/operation/min.hpp>

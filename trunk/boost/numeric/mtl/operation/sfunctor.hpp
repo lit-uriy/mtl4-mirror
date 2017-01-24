@@ -32,13 +32,13 @@ struct plus
 
     static inline result_type apply(const Value1& v1, const Value2& v2)
     {
-	return v1 + v2;
+  return v1 + v2;
     }
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
-	vampir_trace<23> tracer;
-	return v1 + v2;
+  vampir_trace<23> tracer;
+  return v1 + v2;
     }
 };
     
@@ -51,13 +51,13 @@ struct minus
 
     static inline result_type apply(const Value1& v1, const Value2& v2)
     {
-	return v1 - v2;
+  return v1 - v2;
     }
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
-	vampir_trace<24> tracer;
-	return v1 - v2;
+  vampir_trace<24> tracer;
+  return v1 - v2;
     }
 };
 
@@ -70,13 +70,13 @@ struct times
 
     static inline result_type apply(const Value1& v1, const Value2& v2)
     {
-	return v1 * v2;
+  return v1 * v2;
     }
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
-	vampir_trace<25> tracer;
-	return v1 * v2;
+  vampir_trace<25> tracer;
+  return v1 * v2;
     }
 };
 
@@ -89,13 +89,13 @@ struct divide
 
     static inline result_type apply(const Value1& v1, const Value2& v2)
     {
-	return v1 / v2;
+  return v1 / v2;
     }
 
     result_type operator() (const Value1& v1, const Value2& v2) const
     {
-	vampir_trace<26> tracer;
-	return v1 / v2;
+  vampir_trace<26> tracer;
+  return v1 / v2;
     }
 };
 
@@ -108,13 +108,13 @@ struct assign
 
     static inline result_type apply(Value1& v1, const Value2& v2)
     {
-	return v1= Value1(v2);
+  return v1= Value1(v2);
     }
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
-	vampir_trace<27> tracer;
-	return v1= v2;
+  vampir_trace<27> tracer;
+  return v1= v2;
     }
 };
     
@@ -127,13 +127,13 @@ struct plus_assign
 
     static inline result_type apply(Value1& v1, const Value2& v2)
     {
-	return v1+= v2;
+  return v1+= v2;
     }
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
-	vampir_trace<28> tracer;
-	return v1+= v2;
+  vampir_trace<28> tracer;
+  return v1+= v2;
     }
 };
     
@@ -146,13 +146,13 @@ struct minus_assign
 
     static inline result_type apply(Value1& v1, const Value2& v2)
     {
-	return v1-= v2;
+  return v1-= v2;
     }
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
-	vampir_trace<29> tracer;
-	return v1-= v2;
+  vampir_trace<29> tracer;
+  return v1-= v2;
     }
 };
 
@@ -165,13 +165,13 @@ struct times_assign
 
     static inline result_type apply(Value1& v1, const Value2& v2)
     {
-	return v1*= v2;
+  return v1*= v2;
     }
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
-	vampir_trace<30> tracer;
-	return v1*= v2;
+  vampir_trace<30> tracer;
+  return v1*= v2;
     }
 };
 
@@ -184,13 +184,13 @@ struct divide_assign
 
     static inline result_type apply(Value1& v1, const Value2& v2)
     {
-	return v1/= v2;
+  return v1/= v2;
     }
 
     result_type operator() (Value1& v1, const Value2& v2) const
     {
-	vampir_trace<31> tracer;
-	return v1/= v2;
+  vampir_trace<31> tracer;
+  return v1/= v2;
     }
 };
 
@@ -204,13 +204,13 @@ struct identity
 
     static inline result_type apply(const Value& v)
     {
-	return v;
+  return v;
     }
 
     result_type operator() (const Value& v) const
     {
-	vampir_trace<32> tracer;
-	return v;
+  vampir_trace<32> tracer;
+  return v;
     }
 };
 
@@ -222,15 +222,15 @@ struct abs
     typedef typename Magnitude<Value>::type               result_type;
 
     static inline result_type apply(const Value& v)
-    {						
-	using std::abs;
-	return abs(v);
+    {            
+  using std::abs;
+  return abs(v);
     }
 
     result_type operator() (const Value& v)  const
     {
-	vampir_trace<33> tracer; 
-	return apply(v); 
+  vampir_trace<33> tracer; 
+  return apply(v); 
     }
 };
 
@@ -241,15 +241,15 @@ struct sqrt
     typedef Value                                         result_type;
 
     static inline result_type apply(const Value& v)
-    {						
-	using std::sqrt;
-	return sqrt(v);
+    {            
+  using std::sqrt;
+  return sqrt(v);
     }
 
     result_type operator() (const Value& v)  const
     {
-	vampir_trace<34> tracer;
-	return apply(v); 
+  vampir_trace<34> tracer;
+  return apply(v); 
     }
 };
 
@@ -260,14 +260,14 @@ struct square
     typedef Value                                         result_type;
 
     static inline result_type apply(const Value& v)
-    {						
-	return v * v;
+    {            
+  return v * v;
     }
 
     result_type operator() (const Value& v) const
     {
-	vampir_trace<35> tracer;
-	return apply(v);
+  vampir_trace<35> tracer;
+  return apply(v);
     }
 };
 
@@ -281,8 +281,8 @@ struct negate
     static inline result_type apply(const Value& v) { return -v;  }
     result_type operator() (const Value& v) const 
     {
-	vampir_trace<36> tracer;
-	return -v;
+  vampir_trace<36> tracer;
+  return -v;
     }
 };
 
@@ -299,7 +299,7 @@ struct acos
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -316,7 +316,7 @@ struct acosh
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -333,7 +333,7 @@ struct asin
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -350,7 +350,7 @@ struct asinh
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -367,7 +367,7 @@ struct atan
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -384,7 +384,7 @@ struct atanh
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -402,7 +402,7 @@ struct cos
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -419,7 +419,7 @@ struct cosh
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -436,7 +436,7 @@ struct sin
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -453,7 +453,7 @@ struct sinh
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -470,7 +470,7 @@ struct tan
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -487,7 +487,7 @@ struct tanh
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -505,7 +505,7 @@ struct ceil
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 
 private:
@@ -534,7 +534,7 @@ struct floor
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 
 private:
@@ -613,6 +613,7 @@ private:
 
 # endif
 
+// Logarithmic functions
 
 template <typename Value>
 struct log
@@ -627,7 +628,7 @@ struct log
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
@@ -645,7 +646,7 @@ struct log2
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 # endif
@@ -663,12 +664,121 @@ struct log10
     }
     result_type operator() (const Value& v) const 
     {
-	return apply(v);
+  return apply(v);
     }
 };
 
+// Exponential functions
 
+template <typename Value>
+struct exp
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
 
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::exp;
+        return exp(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+  return apply(v);
+    }
+};
+
+# ifdef MTL_WITH_MATH_ELEVEN    
+template <typename Value>
+struct exp2
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::exp2;
+        return exp2(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+  return apply(v);
+    }
+};
+#endif
+
+template <typename Value>
+struct exp10
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::exp;
+        return exp(v * 2.302585092994045684017991454684364207601101488628772976033);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+  return apply(v);
+    }
+};
+
+// Inverse square root functions
+
+template <typename Value>
+struct rsqrt
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::pow;
+        return pow(v, -0.5);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+  return apply(v);
+    }
+};
+
+// Error functions
+
+# ifdef MTL_WITH_MATH_ELEVEN    
+template <typename Value>
+struct erf
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::erf;
+        return erf(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+  return apply(v);
+    }
+};
+
+template <typename Value>
+struct erfc
+{
+    typedef const Value&                                  argument_type;
+    typedef Value                                         result_type;
+
+    static inline result_type apply(const Value& v) 
+    { 
+        using std::erfc;
+        return erfc(v);  
+    }
+    result_type operator() (const Value& v) const 
+    {
+  return apply(v);
+    }
+};
+# endif
 
 /// Compose functors \p F and \p G, i.e. compute f(g(x)).
 /** Functors must be models of StaticUnaryFunctor,
@@ -684,13 +794,13 @@ struct compose
     
     static inline result_type apply(argument_type x)
     {
-	return F::apply(G::apply(x));
+  return F::apply(G::apply(x));
     }
 
     result_type operator()(argument_type x) 
     {
-	vampir_trace<37> tracer;
-	return apply(x);
+  vampir_trace<37> tracer;
+  return apply(x);
     }
 };
 
@@ -710,13 +820,13 @@ struct compose_first
     
     static inline result_type apply(first_argument_type x, second_argument_type y)
     {
-	return F::apply(G::apply(x), y);
+  return F::apply(G::apply(x), y);
     }
 
     result_type operator()(first_argument_type x, second_argument_type y)
     {
-	vampir_trace<38> tracer;
-	return apply(x, y);
+  vampir_trace<38> tracer;
+  return apply(x, y);
     }
 };
 
@@ -736,13 +846,13 @@ struct compose_second
     
     static inline result_type apply(first_argument_type x, second_argument_type y)
     {
-	return F::apply(x, G::apply(y));
+  return F::apply(x, G::apply(y));
     }
 
     result_type operator()(first_argument_type x, second_argument_type y)
     {
-	vampir_trace<39> tracer;
-	return apply(x, y);
+  vampir_trace<39> tracer;
+  return apply(x, y);
     }
 };
 
@@ -763,13 +873,13 @@ struct compose_both
     
     static inline result_type apply(first_argument_type x, second_argument_type y)
     {
-	return F::apply(G::apply(x), H::apply(y));
+  return F::apply(G::apply(x), H::apply(y));
     }
 
     result_type operator()(first_argument_type x, second_argument_type y)
     {
-	vampir_trace<40> tracer;
-	return apply(x, y);
+  vampir_trace<40> tracer;
+  return apply(x, y);
     }
 };
 
@@ -788,13 +898,13 @@ struct compose_binary
     
     static inline result_type apply(first_argument_type x, second_argument_type y)
     {
-	return F::apply(G::apply(x, y));
+  return F::apply(G::apply(x, y));
     }
 
     result_type operator()(first_argument_type x, second_argument_type y)
     {
-	vampir_trace<41> tracer;
-	return apply(x, y);
+  vampir_trace<41> tracer;
+  return apply(x, y);
     }
 };
 
@@ -803,10 +913,10 @@ struct compose_binary
 template <typename T>
 struct l_2_2D
   : public compose_binary<sqrt<typename abs<T>::result_type>, 
-			  compose_binary<abs<T>, 
-					 compose_both<plus<T, T>, 
-						      square<T>, 
-						      square<T>  > 
+        compose_binary<abs<T>, 
+           compose_both<plus<T, T>, 
+                  square<T>, 
+                  square<T>  > 
                                         > 
                          >
 {};
