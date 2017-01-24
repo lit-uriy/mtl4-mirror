@@ -196,6 +196,7 @@ namespace mtl {
   template <typename Vector>  struct exp10_view;
   template <typename Vector>  struct sqrt_view;
   template <typename Vector>  struct rsqrt_view;
+  template <typename Vector>  struct signum_view;
   
 # ifdef MTL_WITH_MATH_ELEVEN    
   template <typename Vector>  struct round_view;
