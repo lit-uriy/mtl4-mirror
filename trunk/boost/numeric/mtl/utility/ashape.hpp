@@ -449,6 +449,12 @@ struct ashape_aux<mtl::vec::rsqrt_view<Coll> >
     typedef typename ashape<Coll>::type type;
 };
 
+template <typename Coll>
+struct ashape_aux<mtl::vec::signum_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
 
 # ifdef MTL_WITH_MATH_ELEVEN    
 template <typename Coll>

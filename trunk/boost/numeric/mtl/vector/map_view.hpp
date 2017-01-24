@@ -25,6 +25,7 @@
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/real.hpp>
 #include <boost/numeric/mtl/operation/imag.hpp>
+#include <boost/numeric/mtl/operation/signum.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 
 
@@ -949,6 +950,28 @@ struct erfc_view
 #endif
 };
 # endif
+
+template <typename Vector>
+struct signum_view
+  : public map_view<mtl::sfunctor::signum<typename Vector::value_type>, Vector>
+{
+    typedef mtl::sfunctor::signum<typename Vector::value_type>              functor_type;
+    typedef map_view<functor_type, Vector>                                base;
+    typedef signum_view                                                     self;
+
+    explicit signum_view(const Vector& vector)
+      : base(functor_type(), vector)
+    {}
+    
+    explicit signum_view(boost::shared_ptr<Vector> p)
+      : base(functor_type(), p)
+    {}
+
+#ifdef MTL_WITH_MOVE    
+    signum_view (self&& that) : base(that) {}
+    signum_view (const self& that) : base(that) {}
+#endif
+};
 
 }} // namespace mtl::vector
 
