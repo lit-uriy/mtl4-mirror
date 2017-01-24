@@ -79,7 +79,7 @@ template <typename Value, typename Parameters>
 struct ashape_aux<mtl::vec::dense_vector<Value, Parameters> >
 {
     typedef typename boost::mpl::if_<
-	boost::is_same<typename Parameters::orientation, row_major>
+  boost::is_same<typename Parameters::orientation, row_major>
       , rvec<typename ashape<Value>::type>
       , cvec<typename ashape<Value>::type>
     >::type type;
@@ -129,7 +129,7 @@ template <typename E1, typename E2, typename SFunctor>
 struct ashape_aux< vec::vec_vec_pmop_expr<E1, E2, SFunctor> >
 {
     MTL_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
-			                typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
+                      typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
     typedef typename ashape<E1>::type type;
 };
 
@@ -138,7 +138,7 @@ struct ashape_aux< vec::vec_vec_op_expr<E1, E2, SFunctor> >
 {
 #if 0 // not sure if this is true in all operations
     MTL_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
-				      typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
+              typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
 #endif
     typedef typename ashape<E1>::type type;
 };
@@ -251,7 +251,7 @@ struct ashape_aux<mtl::mat::multi_vector_range<Vector> >
 };
 
 template <> struct ashape_aux<mtl::mat::identity2D> 
-{	
+{  
     typedef nonscal type;    
 };
 
@@ -259,7 +259,7 @@ template <typename E1, typename E2, typename SFunctor>
 struct ashape_aux< mtl::mat::mat_mat_op_expr<E1, E2, SFunctor> >
 {
     MTL_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
-				      typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
+              typename ashape<E2>::type>::value), "Operands must have same algebraic shape.");
     typedef typename ashape<E1>::type type;
 };
 
@@ -267,7 +267,7 @@ template <typename Vector1, typename Vector2>
 struct ashape< mtl::mat::outer_product_matrix<Vector1, Vector2> >
 {
     // BOOST_STATIC_ASSERT((boost::is_same<typename ashape<E1>::type, 
-    // 			                typename transposed_shape<typename ashape<E2>::type>::type>::value));    
+    //                       typename transposed_shape<typename ashape<E2>::type>::type>::value));    
     typedef mat<typename ashape<typename mtl::Collection<Vector1>::value_type>::type> type;
 };
 
@@ -425,7 +425,29 @@ struct ashape_aux<mtl::vec::log10_view<Coll> >
     typedef typename ashape<Coll>::type type;
 };
 
+template <typename Coll>
+struct ashape_aux<mtl::vec::exp_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
 
+template <typename Coll>
+struct ashape_aux<mtl::vec::exp10_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::sqrt_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::rsqrt_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
 
 
 # ifdef MTL_WITH_MATH_ELEVEN    
@@ -443,6 +465,24 @@ struct ashape_aux<mtl::vec::trunc_view<Coll> >
 
 template <typename Coll>
 struct ashape_aux<mtl::vec::log2_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::exp2_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::erf_view<Coll> >
+{
+    typedef typename ashape<Coll>::type type;
+};
+
+template <typename Coll>
+struct ashape_aux<mtl::vec::erfc_view<Coll> >
 {
     typedef typename ashape<Coll>::type type;
 };
@@ -577,7 +617,7 @@ struct emult_op<cvec<Value1>, rvec<Value2> >
 {
     // if product of elements is undefined then product is undefined too
     typedef typename boost::mpl::if_<
-	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+  boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
       , ndef
       , cvec_rvec_mult
     >::type type;
@@ -596,7 +636,7 @@ struct emult_op<rvec<Value1>, cvec<Value2> >
 {
     // if product of elements is undefined then product is undefined too
     typedef typename boost::mpl::if_<
-	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+  boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
       , ndef
       , rvec_cvec_mult
     >::type type;
@@ -608,7 +648,7 @@ struct emult_op<rvec<Value1>, rvec<Value2> >
 {
     // if product of elements is undefined then product is undefined too
     typedef typename boost::mpl::if_<
-	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+  boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
       , ndef
       , rvec_rvec_mult
     >::type type;
@@ -619,7 +659,7 @@ struct emult_op<cvec<Value1>, cvec<Value2> >
 {
     // if product of elements is undefined then product is undefined too
     typedef typename boost::mpl::if_<
-	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+  boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
       , ndef
       , cvec_cvec_mult
     >::type type;
@@ -640,7 +680,7 @@ struct emult_op<rvec<Value1>, mat<Value2> >
 {
     // if product of elements is undefined then product is undefined too
     typedef typename boost::mpl::if_<
-	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+  boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
       , ndef
       , rvec_mat_mult
     >::type type;
@@ -658,7 +698,7 @@ struct emult_op<mat<Value1>, cvec<Value2> >
 {
     // if product of elements is undefined then product is undefined too
     typedef typename boost::mpl::if_<
-	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+  boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
       , ndef
       , mat_cvec_mult
     >::type type;
@@ -677,7 +717,7 @@ struct emult_op<mat<Value1>, mat<Value2> >
 {
     // if product of elements is undefined then product is undefined too
     typedef typename boost::mpl::if_<
-	boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
+  boost::is_same<typename emult_op<Value1, Value2>::type, ndef>
       , ndef
       , mat_mat_mult
     >::type type;
@@ -764,7 +804,7 @@ struct ashape< mtl::mat::mat_mat_times_expr<E1, E2> >
 {
     // typedef typename ashape<E1>::type type;
     typedef typename mult_shape<typename ashape<E1>::type, 
-				typename ashape<E2>::type>::type type;
+        typename ashape<E2>::type>::type type;
 };
 
 
@@ -799,87 +839,87 @@ struct mat_scal_div {};
 template < typename Shape1, typename Shape2 >
 struct div_shape
 {
-	typedef ndef type;
+  typedef ndef type;
 };
 
 template < typename Shape1, typename Shape2 >
 struct div_op
 {
-	typedef ndef type;
+  typedef ndef type;
 };
 
 template <>
 struct div_shape<scal,scal>
 {
-	typedef scal type;
+  typedef scal type;
 };
 
 template<>
 struct div_op<scal,scal>
 {
-	typedef scal type;
+  typedef scal type;
 };
 
 template < typename Value1 >
 struct div_shape < rvec<Value1>, scal >
 {
-	typedef typename boost::mpl::if_<
-		typename boost::is_same<typename div_shape<Value1,scal>::type,ndef>::type,
-		ndef,
-		rvec<typename div_shape<Value1,scal>::type>
-	>::type type;
+  typedef typename boost::mpl::if_<
+    typename boost::is_same<typename div_shape<Value1,scal>::type,ndef>::type,
+    ndef,
+    rvec<typename div_shape<Value1,scal>::type>
+  >::type type;
 };
 
 template < typename Value1 >
 struct div_op< rvec<Value1>, scal >
 {
-	typedef typename boost::mpl::if_<
-		typename boost::is_same<typename div_shape<rvec<Value1>,scal>::type,ndef>::type,
-		ndef,
-		rvec_scal_div
-	>::type type;
+  typedef typename boost::mpl::if_<
+    typename boost::is_same<typename div_shape<rvec<Value1>,scal>::type,ndef>::type,
+    ndef,
+    rvec_scal_div
+  >::type type;
 };
 
 template < typename Value1 >
 struct div_shape < cvec<Value1>, scal >
 {
-	typedef typename boost::mpl::if_<
-		typename boost::is_same<typename div_shape<Value1,scal>::type,ndef>::type,
-		ndef,
-		cvec<typename div_shape<Value1,scal>::type>
-	>::type type;
+  typedef typename boost::mpl::if_<
+    typename boost::is_same<typename div_shape<Value1,scal>::type,ndef>::type,
+    ndef,
+    cvec<typename div_shape<Value1,scal>::type>
+  >::type type;
 };
 
 template < typename Value1 >
 struct div_op< cvec<Value1>, scal >
 {
-	typedef typename boost::mpl::if_<
-		typename boost::is_same<typename div_shape<cvec<Value1>,scal>::type,ndef>::type,
-		ndef,
-		cvec_scal_div
-	>::type type;
+  typedef typename boost::mpl::if_<
+    typename boost::is_same<typename div_shape<cvec<Value1>,scal>::type,ndef>::type,
+    ndef,
+    cvec_scal_div
+  >::type type;
 };
 
 template < typename Value1 >
 struct div_shape < mat<Value1>, scal >
 {
-	typedef typename boost::mpl::if_<
-		typename boost::is_same<typename div_shape<Value1,scal>::type,ndef>::type,
-		ndef,
-		mat<typename div_shape<Value1,scal>::type>
-	>::type type;
+  typedef typename boost::mpl::if_<
+    typename boost::is_same<typename div_shape<Value1,scal>::type,ndef>::type,
+    ndef,
+    mat<typename div_shape<Value1,scal>::type>
+  >::type type;
 };
 
 template < typename Value1 >
 struct div_op < mat<Value1>, scal >
 {
-	typedef typename boost::mpl::if_<
-		typename boost::is_same<typename div_shape<mat<Value1>,scal>::type,ndef>::type,
-		ndef,
-		mat_scal_div
-	>::type type;
+  typedef typename boost::mpl::if_<
+    typename boost::is_same<typename div_shape<mat<Value1>,scal>::type,ndef>::type,
+    ndef,
+    mat_scal_div
+  >::type type;
 };
-	
+  
 // added by Hui Li (above) -----------------------------------------
 
 // ==================== ITL types ==================================
