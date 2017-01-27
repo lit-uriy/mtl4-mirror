@@ -226,6 +226,11 @@ struct category< mtl::mat::divide_by_view<Matrix,Divisor> >
 					Matrix> >
 {};
 
+template <typename Matrix>
+struct category< mtl::mat::exp_view<Matrix> >
+  : category< mat::map_view<mtl::sfunctor::exp<typename Matrix::value_type>, Matrix> >
+{};
+
 // add dense to view_category
 template <typename Matrix>
 struct category<mtl::mat::indirect<Matrix> >

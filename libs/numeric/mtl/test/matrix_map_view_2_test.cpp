@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cmath>
 #include <complex>
+#include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/mtl/matrix/dense2D.hpp>
 #include <boost/numeric/mtl/matrix/morton_dense.hpp> 
 #include <boost/numeric/mtl/matrix/compressed2D.hpp> 
@@ -145,8 +146,18 @@ void test(Matrix& matrix, const char* name)
     cout << "exp matrix is\n" << exp(matrix) << '\n';
     
     mtl::dense_vector<value_type> v(num_cols(matrix), value_type(1)), w;
-    // w= exp(matrix) * v;
-    // cout << "exp(A) * vec(1) = " << w;
+    
+    //  To be deleted some day
+//     cout <<  typeid(typename mtl::sfunctor::exp<typename Matrix::value_type>::result_type).name() << '\n';
+//     cout <<  typeid(typename mtl::mat::map_view<mtl::sfunctor::exp<typename Matrix::value_type>, Matrix>::value_type).name() << '\n';
+//     cout <<  typeid(typename mtl::mat::exp_view<Matrix>::value_type).name() << '\n';
+//     cout <<  typeid(typename mtl::Collection<mtl::mat::exp_view<Matrix> >::value_type).name() << '\n';
+//     cout <<  typeid(typename mtl::Collection<mtl::mat::imag_view<Matrix> >::value_type).name() << '\n';
+    
+    w= exp(matrix) * v;
+    cout << "exp(A) * vec(1) = " << w << '\n';
+    // cout << "exp(A) * vec(1) = " << exp(matrix) * v << '\n'; // maybe later
+
 }
 
 

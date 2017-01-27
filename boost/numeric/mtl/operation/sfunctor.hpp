@@ -646,7 +646,7 @@ struct log2
     }
     result_type operator() (const Value& v) const 
     {
-  return apply(v);
+        return apply(v);
     }
 };
 # endif
@@ -664,7 +664,7 @@ struct log10
     }
     result_type operator() (const Value& v) const 
     {
-  return apply(v);
+        return apply(v);
     }
 };
 
@@ -683,7 +683,7 @@ struct exp
     }
     result_type operator() (const Value& v) const 
     {
-  return apply(v);
+        return apply(v);
     }
 };
 
@@ -701,7 +701,7 @@ struct exp2
     }
     result_type operator() (const Value& v) const 
     {
-  return apply(v);
+        return apply(v);
     }
 };
 #endif
@@ -719,7 +719,7 @@ struct exp10
     }
     result_type operator() (const Value& v) const 
     {
-  return apply(v);
+        return apply(v);
     }
 };
 

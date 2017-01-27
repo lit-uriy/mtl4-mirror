@@ -492,6 +492,11 @@ struct row< mtl::mat::divide_by_view<Matrix, Divisor> >
 				      Matrix> >
 {};
 
+template <typename Matrix>
+struct row< mtl::mat::exp_view<Matrix> >
+  : row< mtl::mat::map_view<mtl::sfunctor::exp<typename Matrix::value_type>, Matrix> >
+{};
+
 
 template <typename Scaling, typename Matrix>
 struct col< mtl::mat::scaled_view<Scaling, Matrix> >
@@ -514,6 +519,11 @@ template <typename Matrix, typename Divisor>
 struct col< mtl::mat::divide_by_view<Matrix, Divisor> >
   : public col< mtl::mat::map_view<tfunctor::divide_by<typename Matrix::value_type, Divisor>, 
 				      Matrix> >
+{};
+
+template <typename Matrix>
+struct col< mtl::mat::exp_view<Matrix> >
+  : col< mtl::mat::map_view<mtl::sfunctor::exp<typename Matrix::value_type>, Matrix> >
 {};
 
 
@@ -543,6 +553,10 @@ struct const_value< mtl::mat::divide_by_view<Matrix, Divisor> >
 					      Matrix> >
 {};
 
+template <typename Matrix>
+struct const_value< mtl::mat::exp_view<Matrix> >
+  : const_value< mtl::mat::map_view<mtl::sfunctor::exp<typename Matrix::value_type>, Matrix> >
+{};
 
 
 
@@ -570,6 +584,10 @@ struct range_generator< Tag, mtl::mat::divide_by_view<Matrix, Divisor> >
 						    Matrix> >
 {};
 
+template <typename Tag, typename Matrix>
+struct range_generator< Tag, mtl::mat::exp_view<Matrix> >
+  : range_generator< Tag, mtl::mat::map_view<mtl::sfunctor::exp<typename Matrix::value_type>, Matrix> >
+{};
 
 
 template <typename Scaling, typename Matrix>
@@ -595,6 +613,10 @@ struct range_generator< tag::major, mtl::mat::divide_by_view<Matrix, Divisor> >
 						    Matrix> >
 {};
 
+template <typename Matrix>
+struct range_generator< tag::major, mtl::mat::exp_view<Matrix> >
+  : range_generator< tag::major, mtl::mat::map_view<mtl::sfunctor::exp<typename Matrix::value_type>, Matrix> >
+{};
 
 
 }} // mtl::traits
