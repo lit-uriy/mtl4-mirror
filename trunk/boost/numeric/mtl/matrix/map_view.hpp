@@ -29,6 +29,7 @@
 #include <boost/numeric/mtl/operation/conj.hpp>
 #include <boost/numeric/mtl/operation/imag.hpp>
 #include <boost/numeric/mtl/operation/real.hpp>
+
 #include <boost/numeric/mtl/matrix/mat_expr.hpp>
 #include <boost/numeric/mtl/vector/map_view.hpp>
 
@@ -397,6 +398,27 @@ struct real_view
     real_view (const self& that) : base(that) {}
 #endif
 };
+
+template <typename Matrix>
+struct exp_view
+  : public map_view<mtl::sfunctor::exp<typename Matrix::value_type>, Matrix>
+{
+    typedef mtl::sfunctor::exp<typename Matrix::value_type>            functor_type;
+    typedef map_view<functor_type, Matrix>                              base;
+    typedef exp_view                                                   self;
+
+    exp_view(const Matrix& matrix) : base(functor_type(), matrix) {}
+    exp_view(boost::shared_ptr<Matrix> p) : base(functor_type(), p) {}
+
+#ifdef MTL_WITH_MOVE    
+    exp_view (self&& that) : base(that) {}
+    exp_view (const self& that) : base(that) {}
+#endif
+};
+
+
+
+
 
 template <typename Scaling, typename Matrix>
 struct sub_matrix_t< mtl::mat::scaled_view<Scaling, Matrix> >

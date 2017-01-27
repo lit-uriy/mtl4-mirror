@@ -14,33 +14,49 @@
 #define MTL_VEC_EXP_INCLUDE
 
 #include <boost/numeric/mtl/vector/map_view.hpp>
+#include <boost/numeric/mtl/matrix/map_view.hpp>
 
-namespace mtl { namespace vec {
+namespace mtl { 
 
-    /// Exponential of \a v element-wise
-    template <typename Vector>
-    exp_view<Vector> exp(const Vector& v)
-    {
-        return exp_view<Vector>(v);
-    }
+    namespace vec {
 
-# ifdef MTL_WITH_MATH_ELEVEN    
-    /// Binary exponential of \a v element-wise
-    template <typename Vector>
-    exp2_view<Vector> exp2(const Vector& v)
-    {
-        return exp2_view<Vector>(v);
-    }
-# endif
+	/// Exponential of \a v element-wise
+	template <typename Vector>
+	exp_view<Vector> exp(const Vector& v)
+	{
+	    return exp_view<Vector>(v);
+	}
 
-    /// Decimal exponential of \a v element-wise
-    template <typename Vector>
-    exp10_view<Vector> exp10(const Vector& v)
-    {
-        return exp10_view<Vector>(v);
-    }
+#      ifdef MTL_WITH_MATH_ELEVEN    
+	/// Binary exponential of \a v element-wise
+	template <typename Vector>
+	exp2_view<Vector> exp2(const Vector& v)
+	{
+	    return exp2_view<Vector>(v);
+	}
+#      endif
+
+	/// Decimal exponential of \a v element-wise
+	template <typename Vector>
+	exp10_view<Vector> exp10(const Vector& v)
+	{
+	    return exp10_view<Vector>(v);
+	}
+
+    } // namespace vec
+
+    namespace mat {
+
+	/// Exponential of \a A element-wise
+	template <typename Matrix>
+	exp_view<Matrix> exp(const Matrix& A)
+	{
+	    return exp_view<Matrix>(A);
+	}
+
+    } // namespace mat
 
 
-}} // namespace mtl::vec
+} // namespace mtl
 
 #endif // MTL_VEC_EXP_INCLUDE
