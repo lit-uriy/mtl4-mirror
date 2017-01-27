@@ -108,44 +108,6 @@ namespace mtl {
         typedef typename id::type result_type;
     };
 
-#if 0 // doesn't work
-    template<class X, class Y>
-    class Multiplicable_aux<X, Y, true>
-    {
-	typedef typename mtl::traits::mult_result<X, Y>::type type;
-    };
-
-    /// Concept Multiplicable: Binary operation
-    /** In concept-free compilations also used for return type deduction */ 
-    template<class X, class Y, bool B>
-    class Multiplicable_aux
-    {
-        typedef boost::numeric::ublas::type_deduction_detail::base_result_of<X, Y> base_type;
-        static typename base_type::x_type x;
-        static typename base_type::y_type y;
-        static const std::size_t size = sizeof (
-                   boost::numeric::ublas::type_deduction_detail::test<
-                        typename base_type::x_type
-                      , typename base_type::y_type
-                    >(x * y)     
-                );
-
-        static const std::size_t index = (size / sizeof (char)) - 1;
-        typedef typename boost::mpl::at_c<
-    	typename base_type::types, index>::type id;
-    public:
-	/// Result of multiplication
-        typedef typename id::type result_type;
-    };
-            
-    /// Concept Multiplicable: Binary operation
-    /** In concept-free compilations also used for return type deduction */ 
-    template<class X, class Y>
-    class Multiplicable
-      : Multiplicable_aux<X, Y, mtl::traits::is_scalar<X>::value && mtl::traits::is_scalar<Y>::value>
-    {};
-#endif
-
     /// Concept Multiplicable: Binary operation
     /** In concept-free compilations also used for return type deduction */ 
     template<class X, class Y>

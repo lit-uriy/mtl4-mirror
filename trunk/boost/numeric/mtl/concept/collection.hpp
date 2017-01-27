@@ -645,6 +645,16 @@ namespace mtl {
 #endif
 
 
+// Refrain from concept definition for newly added types
+// Forward to mat::map_view
+template <typename Matrix>
+struct Collection<mat::exp_view<Matrix> >
+//  : Collection<mat::map_view<mtl::sfunctor::exp<typename Collection<Matrix>::value_type>, Matrix> > // doesn't work for unknown reasons
+{
+    typedef typename mat::exp_view<Matrix>::value_type        value_type;
+    typedef typename mat::exp_view<Matrix>::const_reference   const_reference;
+    typedef typename mat::exp_view<Matrix>::size_type         size_type;
+};
 
 
 #ifdef __GXX_CONCEPTS__
@@ -1368,6 +1378,15 @@ namespace mtl {
 	typedef typename OrientedCollection<Coll>::orientation       orientation;
     };
 #endif
+
+
+// Refrain from concept definition for newly added types
+template <typename Matrix>
+struct OrientedCollection<mat::exp_view<Matrix> >
+  : Collection<mat::exp_view<Matrix> >
+{
+    typedef typename OrientedCollection<Matrix>::orientation       orientation;
+};
 
 
 #ifdef __GXX_CONCEPTS__
