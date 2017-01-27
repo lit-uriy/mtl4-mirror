@@ -101,6 +101,12 @@ struct root< mtl::mat::real_view<Matrix> >
 };
 
 template <typename Matrix>
+struct root< mtl::mat::exp_view<Matrix> >
+{
+    typedef mtl::mat::map_view<sfunctor::exp<typename Matrix::value_type>, Matrix> type;
+};
+
+template <typename Matrix>
 struct root< mtl::mat::hermitian_view<Matrix> >
 {
     typedef mtl::mat::map_view<sfunctor::conj<typename Matrix::value_type>, mtl::mat::transposed_view<Matrix> > type;

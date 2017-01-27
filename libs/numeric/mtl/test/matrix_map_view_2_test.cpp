@@ -17,6 +17,7 @@
 #include <boost/numeric/mtl/matrix/map_view.hpp>
 #include <boost/numeric/mtl/matrix/hermitian_view.hpp>
 #include <boost/numeric/mtl/matrix/inserter.hpp>
+#include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/recursion/predefined_masks.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
@@ -27,6 +28,9 @@
 #include <boost/numeric/mtl/operation/hermitian.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/mult_result.hpp>
+#include <boost/numeric/mtl/operation/mult.hpp>
+#include <boost/numeric/mtl/operation/exp.hpp>
+#include <boost/numeric/mtl/operation/iota.hpp>
 #include <boost/numeric/mtl/utility/ashape.hpp>
 
 
@@ -71,7 +75,8 @@ template <typename Matrix>
 void test(Matrix& matrix, const char* name)
 {
     set_to_zero(matrix);
-    typename Matrix::value_type ref(0);
+    typedef typename Matrix::value_type value_type;
+    value_type ref(0);
 	
     {
 		mtl::mat::inserter<Matrix>  ins(matrix);
@@ -134,7 +139,14 @@ void test(Matrix& matrix, const char* name)
 	
     cout << "matrix divide by -i (complex(0, 1)) (free function)\n" << divide_by(matrix, ct(0.0, -1.0)) << "\n";
     MTL_THROW_IF(divide_by(matrix, ct(0.0, -1.0))(2, 3) != crsvalue(ref), mtl::runtime_error("complex right scaling wrong"));
-	
+
+    mtl::mat::exp_view<Matrix>   exp_matrix(matrix);
+    // cout << "exp matrix is\n" << exp_matrix << '\n';
+    cout << "exp matrix is\n" << exp(matrix) << '\n';
+    
+    mtl::dense_vector<value_type> v(num_cols(matrix), value_type(1)), w;
+    // w= exp(matrix) * v;
+    // cout << "exp(A) * vec(1) = " << w;
 }
 
 

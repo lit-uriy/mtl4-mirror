@@ -26,6 +26,8 @@
 #include <boost/numeric/mtl/utility/compose_view.hpp>
 #include <boost/numeric/linear_algebra/identity.hpp>
 #include <boost/numeric/mtl/matrix/view_ref.hpp>
+#include <boost/numeric/mtl/matrix/map_view.hpp>
+#include <boost/numeric/mtl/vector/map_view.hpp>
 
 namespace mtl {
 
