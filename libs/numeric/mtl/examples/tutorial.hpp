@@ -278,7 +278,7 @@ As version control we use "subversion" which is contained in any Linux distribut
 On Windows we recommend 
 <a href="http://tortoisesvn.tigris.org/">Tortoise</a>.
 Go to the directory where you like MTL4 to reside and type:\n
-<tt>svn checkout https://simunova.zih.tu-dresden.de/svn/mtl4/trunk mtl4</tt>\n
+<tt>svn checkout https://svn.simunova.com/svn/mtl4/trunk mtl4</tt>\n
 The adventage of version control is that you can update it easily with\n
 <tt>svn update</tt>\n
 when new features are added or a bug is %fixed (fortunately not needed very often).
