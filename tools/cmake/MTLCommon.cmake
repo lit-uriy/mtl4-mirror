@@ -100,7 +100,7 @@ if(ENABLE_OPENMP )
 		message(FATAL_ERROR "OpenMP not found")
 	endif()
 endif()
-#message("find components: ${MTL_FIND_COMPONENTS}")
+message(STATUS "MTL Find components: ${MTL_FIND_COMPONENTS}")
 #we found nothing..
 set(MTL_NOT_FOUND )
 #remove?
