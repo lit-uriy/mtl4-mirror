@@ -155,5 +155,15 @@ int main(int, char**)
     // typedef mat::parameters<col_major, mtl::index::f_index, fixed::dimensions<2, 3> > parameters4;
     // test_dense2D<parameters4, complexity_classes::linear, complexity_classes::linear_cached>()(3.0);
 
+    dense2D<int> A = {{1, 2}, {3, 4}};
+    std::stringstream ss;
+    ss << A;
+    
+    std::cout << ss.str() << std::endl;
+    std::string refsting = "[1 2]\n[3 4]\n";
+    
+    std::cout << "Equal to refstring: " << std::boolalpha << (refsting == ss.str()) << std::endl;
+    
+    
     return 0;
 }
