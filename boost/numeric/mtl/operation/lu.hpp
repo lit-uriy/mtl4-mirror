@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <boost/numeric/linear_algebra/identity.hpp>
+#include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/utility/irange.hpp>
 #include <boost/numeric/mtl/utility/lu_matrix_type.hpp>
@@ -38,7 +39,7 @@ namespace mtl { namespace mat {
 /** eps is tolerance for pivot element. If less or equal the matrix is considered singular.
     eps is given as double right now, might be refactored to the magnitude type of the value type in the future. **/
 template <typename Matrix>
-void inline lu(Matrix& LU, double eps= 0)
+void inline lu(Matrix& LU, typename Collection<Matrix>::value_type eps= 0)
 {
     vampir_trace<5023> tracer;
     using std::abs;
@@ -56,7 +57,8 @@ void inline lu(Matrix& LU, double eps= 0)
 /** eps is tolerance for pivot element. If less or equal the matrix is considered singular.
     eps is given as double right now, might be refactored to the magnitude type of the value type in the future. **/
 template <typename Matrix, typename PermuationVector>
-void inline lu(Matrix& A, PermuationVector& P, double eps= 0)
+typename mtl::traits::enable_if_vector<PermuationVector>::type
+lu(Matrix& A, PermuationVector& P, typename Collection<Matrix>::value_type eps= 0)
 {
     vampir_trace<5024> tracer;
     using math::zero; using std::abs;
@@ -88,7 +90,7 @@ void inline lu(Matrix& A, PermuationVector& P, double eps= 0)
 /** eps is tolerance for pivot element. If less or equal the matrix is considered singular.
     eps is given as double right now, might be refactored to the magnitude type of the value type in the future. **/
 template <typename Matrix>
-Matrix inline lu_f(const Matrix& A, double eps= 0)
+Matrix inline lu_f(const Matrix& A, typename Collection<Matrix>::value_type eps= 0)
 {
     vampir_trace<5025> tracer;
     Matrix LU(A);
@@ -98,7 +100,7 @@ Matrix inline lu_f(const Matrix& A, double eps= 0)
 
 /// Solve Ax = b by LU factorization without pivoting; vector x is returned
 template <typename Matrix, typename Vector>
-Vector inline lu_solve_straight(const Matrix& A, const Vector& b, double eps= 0)
+Vector inline lu_solve_straight(const Matrix& A, const Vector& b, typename Collection<Matrix>::value_type eps= 0)
 {
     vampir_trace<5026> tracer;
     Matrix LU(A);
@@ -125,7 +127,7 @@ Vector inline lu_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 
 /// Solve Ax = b by LU factorization with column pivoting; vector x is returned
 template <typename Matrix, typename Vector>
-Vector inline lu_solve(const Matrix& A, const Vector& b, double eps= 0)
+Vector inline lu_solve(const Matrix& A, const Vector& b, typename Collection<Matrix>::value_type eps= 0)
 {
     vampir_trace<5028> tracer;
     mtl::dense_vector<std::size_t, vec::parameters<> > P(num_rows(A));
@@ -148,7 +150,7 @@ Vector inline lu_adjoint_apply(const Matrix& LU, const PermVector& P, const Vect
 
 /// Solve \f$adjoint(A)x = b\f$ by LU factorization with column pivoting; vector x is returned
 template <typename Matrix, typename Vector>
-Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b, double eps= 0)
+Vector inline lu_adjoint_solve(const Matrix& A, const Vector& b, typename Collection<Matrix>::value_type eps= 0)
 {
     vampir_trace<5030> tracer;
     mtl::dense_vector<std::size_t, vec::parameters<> > P(num_rows(A));
@@ -166,7 +168,7 @@ class lu_solver
     typedef mtl::vec::dense_vector<std::size_t, mtl::vec::parameters<> > permutation_type;
   public:
     /// Construct from matrix \p A and use optionally threshold \p eps in factorization
-    explicit lu_solver(const Matrix& A, double eps= 0) 
+    explicit lu_solver(const Matrix& A, typename Collection<Matrix>::value_type eps= 0) 
       : LU(A), P(num_rows(A))
     {
 	lu(LU, P, eps);
