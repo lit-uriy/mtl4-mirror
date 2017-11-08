@@ -20,7 +20,7 @@ namespace mtl {
 
 namespace vec {
 
-    /// Permute the entries of \p v according to permutation \p p
+    /// Permute the entries of \p v according to permutation \p p.
     template <typename PermutationVector, typename Vector>
     typename mtl::traits::enable_if_vector<Vector, Vector>::type
     permute(const PermutationVector& p, const Vector& v)
@@ -32,6 +32,22 @@ namespace vec {
             if (j >= s)
                 throw index_out_of_range("Index in permutation vector out of range (w.r.t. permuted vector).");
             result[j] = v[i];
+        }
+        return result;
+    }
+
+    /// Permute reversely the entries of \p v according to permutation \p p, inverse operation of permute.
+    template <typename PermutationVector, typename Vector>
+    typename mtl::traits::enable_if_vector<Vector, Vector>::type
+    reverse_permute(const PermutationVector& p, const Vector& v)
+    {
+        std::size_t s = size(v);
+        Vector result(s);
+        for (std::size_t i = 0; i < s; ++i) {
+            std::size_t j = p[i];
+            if (j >= s)
+                throw index_out_of_range("Index in permutation vector out of range (w.r.t. permuted vector).");
+            result[i] = v[j];
         }
         return result;
     }

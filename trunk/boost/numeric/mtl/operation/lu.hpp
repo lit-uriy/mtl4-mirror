@@ -30,6 +30,7 @@
 #include <boost/numeric/mtl/operation/lower_trisolve.hpp>
 #include <boost/numeric/mtl/operation/upper_trisolve.hpp>
 #include <boost/numeric/mtl/operation/max_pos.hpp>
+#include <boost/numeric/mtl/operation/permute.hpp>
 #include <boost/numeric/mtl/operation/swap_row.hpp>
 #include <boost/numeric/mtl/interface/vpt.hpp>
 
@@ -122,7 +123,7 @@ template <typename Matrix, typename PermVector, typename Vector>
 Vector inline lu_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 {
     vampir_trace<5027> tracer;
-    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), Vector(mat::permutation(P) * b)));
+    return upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), Vector(permute(P, b))));
 }
 
 
@@ -145,7 +146,7 @@ template <typename Matrix, typename PermVector, typename Vector>
 Vector inline lu_adjoint_apply(const Matrix& LU, const PermVector& P, const Vector& b)
 {
     vampir_trace<5029> tracer;
-    return Vector(trans(mat::permutation(P)) * unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b)));
+    return Vector(reverse_permute(P, unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b))));
 }
 
 
@@ -179,13 +180,13 @@ class lu_solver
     template <typename VectorIn, typename VectorOut>
     void solve(const VectorIn& b, VectorOut& x) const
     {
-	x= upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), VectorIn(mat::permutation(P) * b)));
+	x= upper_trisolve(upper(LU), unit_lower_trisolve(strict_lower(LU), VectorIn(permute(P, b))));
     }
     /// Solve \f$adjoint(A)x = b\f$ using LU factorization
     template <typename VectorIn, typename VectorOut>
     void adjoint_solve(const VectorIn& b, VectorOut& x) const
     {
-	x= trans(mat::permutation(P)) * unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b));
+	x= reverse_permute(P, unit_upper_trisolve(adjoint(LU), lower_trisolve(adjoint(LU), b)));
     }
 
   private:

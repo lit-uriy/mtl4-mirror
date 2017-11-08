@@ -31,5 +31,9 @@ int main(int, char**)
     cout << "vp = " << vp << endl;
     MTL_THROW_IF(vp != ref, mtl::runtime_error("Wrong value after permute"));
     
+    dense_vector<int> v2 = reverse_permute(p, vp);
+    cout << "v2 = " << v2 << endl;
+    MTL_THROW_IF(v2 != v, mtl::runtime_error("Wrong value after reverse_permute"));
+   
     return 0;
 }
