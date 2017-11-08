@@ -58,6 +58,7 @@
 #include <boost/numeric/mtl/operation/ones.hpp>
 #include <boost/numeric/mtl/operation/operators.hpp>
 #include <boost/numeric/mtl/operation/orth.hpp>
+#include <boost/numeric/mtl/operation/permute.hpp>
 #include <boost/numeric/mtl/operation/print.hpp>
 #include <boost/numeric/mtl/operation/product.hpp>
 #include <boost/numeric/mtl/operation/qr.hpp>
