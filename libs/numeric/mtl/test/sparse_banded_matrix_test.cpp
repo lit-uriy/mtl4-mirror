@@ -10,6 +10,9 @@
 // 
 // See also license.mtl.txt in the distribution.
 
+#define MTL_WITH_DEVELOPMENT
+#define MTL_VERBOSE_TEST
+
 #include <string>
 #include <iostream>
 
@@ -106,13 +109,13 @@ int main(int, char**)
 
     mat::sparse_banded<double>  D;
     D= C;
-    mtl::io::tout << "D is\n" << D;
+    mtl::io::tout << "D is\n" << D << '\n';
 
     two_d_iteration(D, mtl::tag::row());
 
     mat::compressed2D<double> E;
     E= D;
-    mtl::io::tout << "D is\n" << D;
+    mtl::io::tout << "E is\n" << E << '\n';
 
     mat::sparse_banded<double>  dr5(5, 5), dr6(5, 5);
     {

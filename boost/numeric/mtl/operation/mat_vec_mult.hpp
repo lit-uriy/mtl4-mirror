@@ -28,6 +28,7 @@
 #include <boost/numeric/mtl/utility/enable_if.hpp>
 #include <boost/numeric/mtl/utility/multi_tmp.hpp>
 #include <boost/numeric/mtl/utility/static_assert.hpp>
+#include <boost/numeric/mtl/vector/parameter.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/utility/omp_size_type.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
@@ -709,7 +710,7 @@ inline smat_cvec_mult(const sparse_banded<MValue, MPara>& A, const VectorIn& v, 
     typedef typename Collection<VectorOut>::value_type        value_type;
     typedef typename Matrix::band_size_type                   band_size_type;
     typedef typename MPara::size_type                         size_type;
-    typedef mtl::vec::dense_vector<band_size_type, parameters<> > vector_type;
+    typedef mtl::vec::dense_vector<band_size_type, vec::parameters<> > vector_type;
 
     if (size(w) == 0) return;
     const value_type z(math::zero(w[0]));
