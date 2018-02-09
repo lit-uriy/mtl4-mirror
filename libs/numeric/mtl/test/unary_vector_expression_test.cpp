@@ -76,6 +76,7 @@ void float_only_test(Vector& u, const char* name, boost::integral_constant<bool,
     tout << "atan(u) = " << v << "\n";
     expect(std::abs(v[4] - M_PI/4.0) < 0.0001, "atan(1) should be pi/4.");
         
+# ifdef MTL_WITH_MATH_ELEVEN    
     for (int i = 0; i < 5; ++i)
         u[i] = 1. + i / 2.0;
     tout << "u = " << u << "\n";
@@ -93,6 +94,7 @@ void float_only_test(Vector& u, const char* name, boost::integral_constant<bool,
     v = atanh(u);
     tout << "atanh(u) = " << v << "\n";
     expect(std::abs(v[4] - 1.098612289)  < 0.0001, "atanh(0.8) should be about 1.098612289.");    
+# endif
     
     // Rounding operations    
     for (int i = 0; i < 5; ++i)
@@ -169,9 +171,11 @@ void non_int_test(Vector& u, const char* name, boost::integral_constant<bool, fa
     tout << "log(u) = " << v << "\n";
     expect(std::abs(v[4] - 1.60944)  < 0.0001, "log(5) should be about 1.60944.");        
     
+# ifdef MTL_WITH_MATH_ELEVEN    
     v = log10(u);
     tout << "log10(u) = " << v << "\n";
     expect(std::abs(v[4] - 0.69897)  < 0.0001, "log10(5) should be about 0.69897.");        
+# endif
     
 }  
 
@@ -260,7 +264,10 @@ int main(int, char**)
     test<dense_vector<int> >("test int");
     test<dense_vector<float> >("test float");
     test<dense_vector<double> >("test double");
+# ifdef MTL_WITH_MATH_ELEVEN    
+    // acos is not defined for complex in C++98
     test<dense_vector<std::complex<double> > >("test complex<double>");
+# endif
     test<dense_vector<float, parameters<row_major> > >("test float in row vector");
     
     std::cout << errors << " encountered in " << tests << ".\n";

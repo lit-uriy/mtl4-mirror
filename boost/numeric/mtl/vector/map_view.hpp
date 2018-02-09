@@ -382,6 +382,7 @@ struct acos_view
 };
 
 
+# ifdef MTL_WITH_MATH_ELEVEN    
 template <typename Vector>
 struct acosh_view
   : public map_view<mtl::sfunctor::acosh<typename Vector::value_type>, Vector>
@@ -403,6 +404,7 @@ struct acosh_view
     acosh_view (const self& that) : base(that) {}
 #endif
 };
+#endif
 
 template <typename Vector>
 struct asin_view
@@ -427,6 +429,7 @@ struct asin_view
 };
 
 
+# ifdef MTL_WITH_MATH_ELEVEN    
 template <typename Vector>
 struct asinh_view
   : public map_view<mtl::sfunctor::asinh<typename Vector::value_type>, Vector>
@@ -448,6 +451,7 @@ struct asinh_view
     asinh_view (const self& that) : base(that) {}
 #endif
 };
+#endif
 
 template <typename Vector>
 struct atan_view
@@ -472,6 +476,7 @@ struct atan_view
 };
 
 
+# ifdef MTL_WITH_MATH_ELEVEN    
 template <typename Vector>
 struct atanh_view
   : public map_view<mtl::sfunctor::atanh<typename Vector::value_type>, Vector>
@@ -493,6 +498,7 @@ struct atanh_view
     atanh_view (const self& that) : base(that) {}
 #endif
 };
+#endif
 
 
 // Trigonometric
@@ -747,6 +753,7 @@ struct log_view
 #endif
 };
 
+# ifdef MTL_WITH_MATH_ELEVEN    
 template <typename Vector>
 struct log2_view
   : public map_view<mtl::sfunctor::log2<typename Vector::value_type>, Vector>
@@ -769,7 +776,6 @@ struct log2_view
 #endif
 };
 
-# ifdef MTL_WITH_MATH_ELEVEN    
 template <typename Vector>
 struct log10_view
   : public map_view<mtl::sfunctor::log10<typename Vector::value_type>, Vector>

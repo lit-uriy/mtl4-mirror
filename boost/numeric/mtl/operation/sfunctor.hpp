@@ -15,6 +15,7 @@
 
 #include <cmath>
 #include <complex>
+
 #include <boost/numeric/mtl/concept/std_concept.hpp>
 #include <boost/numeric/mtl/concept/magnitude.hpp>
 #include <boost/numeric/mtl/concept/static_functor.hpp>
@@ -303,6 +304,7 @@ struct acos
     }
 };
 
+# ifdef MTL_WITH_MATH_ELEVEN
 template <typename Value>
 struct acosh
 {
@@ -319,6 +321,7 @@ struct acosh
   return apply(v);
     }
 };
+# endif
 
 template <typename Value>
 struct asin
@@ -337,6 +340,7 @@ struct asin
     }
 };
 
+# ifdef MTL_WITH_MATH_ELEVEN
 template <typename Value>
 struct asinh
 {
@@ -353,6 +357,7 @@ struct asinh
   return apply(v);
     }
 };
+# endif
 
 template <typename Value>
 struct atan
@@ -371,6 +376,7 @@ struct atan
     }
 };
 
+# ifdef MTL_WITH_MATH_ELEVEN
 template <typename Value>
 struct atanh
 {
@@ -387,6 +393,7 @@ struct atanh
   return apply(v);
     }
 };
+# endif
 
 
 template <typename Value>
