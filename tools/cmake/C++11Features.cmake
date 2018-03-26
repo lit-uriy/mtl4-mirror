@@ -5,7 +5,7 @@ option(MTL_VERBOSE_TRYCOMPILE "Print error message when C++11 feature is not sup
 # Compiler flag for C++11: special case for VC only, everything else should be equal
 # Might need later adaption, once compilers don't support this flag any longer
 if(MSVC)
-  set(CXX_ELEVEN_FLAG "")
+  set(CXX_ELEVEN_FLAG "/Qstd=c++0x")
 else()
   set(CXX_ELEVEN_FLAG "-std=c++0x")
 endif()
@@ -49,4 +49,20 @@ foreach (CURFILE ${CHECKS})
   endif()
 endforeach()
 
+# looking for threads
+find_package (Threads)
+if (Threads_FOUND)
+    try_compile(THREADS_RESULT ${CMAKE_BINARY_DIR} "${MTL_DIR}/tools/cmake/THREADS_CHECKING.cpp" COMPILE_DEFINITIONS "${CXX_ELEVEN_FLAG}"
+                LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} OUTPUT_VARIABLE errors)
+    message(STATUS "Support C++11's THREADS - ${THREADS_RESULT}")
+    if (THREADS_RESULT)
+        list(APPEND MTL_CXX_DEFINITIONS "-DMTL_WITH_THREADS")
+        list(APPEND MTL_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+    elseif (MTL_VERBOSE_TRYCOMPILE)
+        message(STATUS "Failed because: ${errors}")
+    endif()
+endif()
+
+
 # message(STATUS "C++11 flags: ${MTL_CXX_DEFINITIONS}")
+
