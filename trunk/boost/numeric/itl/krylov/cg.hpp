@@ -20,6 +20,7 @@
 
 #include <boost/numeric/mtl/concept/collection.hpp>
 #include <boost/numeric/itl/itl_fwd.hpp>
+#include <boost/numeric/itl/iteration/basic_iteration.hpp>
 #include <boost/numeric/itl/pc/identity.hpp>
 #include <boost/numeric/itl/pc/is_identity.hpp>
 #include <boost/numeric/itl/krylov/base_solver.hpp>
@@ -151,9 +152,32 @@ class cg_solver
 	return cg(this->A, x, b, L, iter);
     }
 
+    /// Perform one CG iteration on linear system
+    template < typename HilbertSpaceX, typename HilbertSpaceB >
+    int solve(HilbertSpaceX& x, const HilbertSpaceB& b) const
+    {
+	itl::basic_iteration<double> iter(x, 1, 0, 0);
+	return solve(x, b, iter);
+    }
+    
   private:
     Preconditioner        L;
 };
+
+template < typename LinearOperator, typename Preconditioner, typename RightPreconditioner>
+cg_solver<LinearOperator, Preconditioner, RightPreconditioner>
+inline make_cg_solver(const LinearOperator& A, const Preconditioner& L, const RightPreconditioner& R)
+{
+    return cg_solver<LinearOperator, Preconditioner, RightPreconditioner>(A, L, R);
+}
+
+template < typename LinearOperator, typename Preconditioner>
+cg_solver<LinearOperator, Preconditioner, itl::pc::identity<LinearOperator> >
+inline make_cg_solver(const LinearOperator& A, const Preconditioner& L)
+{
+    return cg_solver<LinearOperator, Preconditioner, itl::pc::identity<LinearOperator> >(A, L);
+}
+
 
 
 } // namespace itl

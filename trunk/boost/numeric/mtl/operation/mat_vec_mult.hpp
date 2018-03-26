@@ -29,6 +29,8 @@
 #include <boost/numeric/mtl/utility/multi_tmp.hpp>
 #include <boost/numeric/mtl/utility/static_assert.hpp>
 #include <boost/numeric/mtl/vector/parameter.hpp>
+#include <boost/numeric/mtl/utility/auto_type.hpp>
+#include <boost/numeric/mtl/utility/auto_or_const_ref_type.hpp>
 #include <boost/numeric/mtl/vector/dense_vector.hpp>
 #include <boost/numeric/mtl/utility/omp_size_type.hpp>
 #include <boost/numeric/mtl/operation/set_to_zero.hpp>
@@ -303,12 +305,16 @@ inline void dense_mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w
 template <typename Matrix, typename VectorIn, typename VectorOut, typename Assign>
 inline void mat_cvec_mult(const Matrix& A, const VectorIn& v, VectorOut& w, Assign, tag::flat<tag::dense>)
 {
+    typedef typename mtl::traits::auto_type<Matrix>::type AutoMatrix;
+    typename mtl::traits::auto_or_const_ref_type<Matrix>::type    auto_A(A); // evaluate if necessary
+    typename mtl::traits::auto_or_const_ref_type<VectorIn>::type  auto_v(v); // evaluate if necessary
+
 # ifdef MTL_NOT_UNROLL_FSIZE_MAT_VEC_MULT
     boost::mpl::false_        selector;
 # else
-	mtl::traits::is_static<Matrix> selector;
+    mtl::traits::is_static<AutoMatrix> selector;
 # endif
-    dense_mat_cvec_mult(A, v, w, Assign(), selector);
+    dense_mat_cvec_mult(auto_A, auto_v, w, Assign(), selector);
 }
 
 // Element structure vector multiplication

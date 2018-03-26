@@ -51,13 +51,13 @@ struct map_view
     map_view (const Functor& functor, const other& ref) 
       : expr_base(*this), functor(functor), ref(ref) 
     {
-  ref.delay_assign();
+	ref.delay_assign();
     }
     
     map_view (const Functor& functor, boost::shared_ptr<Vector> p) 
       : expr_base(*this), functor(functor), my_copy(p), ref(*p)
     {
-  ref.delay_assign();
+	ref.delay_assign();
     }
 
 #ifdef MTL_WITH_MOVE    
@@ -68,7 +68,7 @@ struct map_view
     friend size_type inline num_rows(const self& v) { return num_rows(v.ref); }
     friend size_type inline num_cols(const self& v) { return num_cols(v.ref); }
 
-    size_type stride() const {   return ref.stride(); }
+    size_type stride() const { 	return ref.stride(); }
     const_reference operator() (size_type i) const { return functor(ref(i)); }
     const_reference operator[] (size_type i) const { return functor(ref[i]); }
     void delay_assign() const {}
@@ -95,24 +95,24 @@ inline std::size_t size(const map_view<Functor, Vector>& v)
 
     namespace detail {
 
-  template <typename Functor, typename Vector> 
-  struct map_value
-  {
-      typedef typename Vector::key_type                      key_type;
-      typedef typename vec::map_view<Functor, Vector>::value_type value_type;
-      
-      map_value(vec::map_view<Functor, Vector> const& map_vector) 
-    : map_vector(map_vector), its_value(map_vector.ref) 
-      {}
+	template <typename Functor, typename Vector> 
+	struct map_value
+	{
+	    typedef typename Vector::key_type                      key_type;
+	    typedef typename vec::map_view<Functor, Vector>::value_type value_type;
+    	
+	    map_value(vec::map_view<Functor, Vector> const& map_vector) 
+		: map_vector(map_vector), its_value(map_vector.ref) 
+	    {}
 
-      value_type operator() (key_type const& key) const
-      {
-    return map_vector.functor(its_value(key));
-      }
+	    value_type operator() (key_type const& key) const
+	    {
+		return map_vector.functor(its_value(key));
+	    }
 
-    protected:
-      vec::map_view<Functor, Vector> const&   map_vector;
-      typename ::mtl::traits::const_value<Vector>::type its_value;
+	  protected:
+	    vec::map_view<Functor, Vector> const&   map_vector;
+	    typename ::mtl::traits::const_value<Vector>::type its_value;
         };
 
     } // detail
@@ -129,13 +129,13 @@ namespace mtl { namespace traits {
 
     template <typename Functor, typename Vector> 
     struct index<vec::map_view<Functor, Vector> >
-  : public index<Vector>
+      : public index<Vector>
     {};
 
     template <typename Functor, typename Vector> 
     struct const_value<vec::map_view<Functor, Vector> >
     {
-  typedef vec::detail::map_value<Functor, Vector>  type;
+	typedef vec::detail::map_value<Functor, Vector>  type;
     };
 
 
@@ -146,7 +146,7 @@ namespace mtl { namespace traits {
     // Use range_generator of original vector
     template <typename Tag, typename Functor, typename Vector> 
     struct range_generator<Tag, vec::map_view<Functor, Vector> >
-  : public range_generator<Tag, Vector>
+      : public range_generator<Tag, Vector>
     {};
 
 }} // mtl::traits
@@ -183,11 +183,11 @@ struct rscaled_view
     typedef tfunctor::rscale<typename Vector::value_type, RScaling>  functor_type;
     typedef map_view<functor_type, Vector>                          base;
     typedef rscaled_view                                            self;
-  
+	
     explicit rscaled_view(const Vector& vector, const RScaling& rscaling)
       : base(functor_type(rscaling), vector)
     {}
-  
+	
     explicit rscaled_view(boost::shared_ptr<Vector> p, const RScaling& rscaling)
       : base(functor_type(rscaling), p)
     {}
@@ -197,7 +197,7 @@ struct rscaled_view
     rscaled_view (const self& that) : base(that) {}
 #endif
 };
-  
+	
 
 // added by Hui Li
 template <typename Vector, typename Divisor>
@@ -207,21 +207,22 @@ struct divide_by_view
     typedef tfunctor::divide_by<typename Vector::value_type, Divisor>  functor_type;
     typedef map_view<functor_type, Vector>                             base;
     typedef divide_by_view                                             self;
-  
+	
     explicit divide_by_view(const Vector& vector, const Divisor& div)
       : base(functor_type(div), vector)
     {}
-  
+	
     explicit divide_by_view(boost::shared_ptr<Vector> p, const Divisor& div)
       : base(functor_type(div), p)
     {}
-  
+	
 #ifdef MTL_WITH_MOVE    
     divide_by_view (self&& that) : base(that) {}
     divide_by_view (const self& that) : base(that) {}
 #endif
 };
-  
+	
+
 /// View for raising vector element to power of scalar exponent
 template <typename Vector, typename Exponent>
 struct pow_by_view
@@ -987,17 +988,17 @@ namespace mtl { namespace sfunctor {
     template <typename Vector>
     struct conj_aux<Vector, tag::vector>
     {
-  typedef mtl::vec::conj_view<Vector> result_type;
+	typedef mtl::vec::conj_view<Vector> result_type;
 
-  static inline result_type apply(const Vector& vector)
-  {
-      return result_type(vector);
-  }
+	static inline result_type apply(const Vector& vector)
+	{
+	    return result_type(vector);
+	}
 
-  result_type operator() (const Vector& vector) const
-  {
-      return apply(vector);
-  }
+	result_type operator() (const Vector& vector) const
+	{
+	    return apply(vector);
+	}
     };
 
 }}

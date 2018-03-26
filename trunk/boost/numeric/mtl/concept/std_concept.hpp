@@ -32,28 +32,6 @@ namespace mtl {
  */
 /*@{*/
 
-#ifdef __GXX_CONCEPTS__
-
-    // Stay with the old names (for the moment)
-
-    auto concept Addable<typename T, typename U = T> : std::HasPlus<T, U> {}
-    auto concept Subtractable<typename T, typename U = T> : std::HasMinus<T, U> {}
-    auto concept Multiplicable<typename T, typename U = T> : std::HasMultiply<T, U> {}
-    auto concept Divisible<typename T, typename U = T> : std::HasDivide<T, U> {}
-
-#if 0
-    using std::Addable;
-    using std::Subtractable;
-    using std::Multiplicable;
-
-    auto concept Divisible<typename T, typename U = T>
-    {
-	typename result_type;
-	result_type operator/(const T& t, const U& u);
-    };
-#endif
-
-#else // without concepts
 
     // Use Joel de Guzman's return type deduction
     // Adapted from uBLAS
@@ -62,34 +40,47 @@ namespace mtl {
     //   - result_type like in concept
 
     /// Concept Addable: Binary operation
-    /** In concept-free compilations also used for return type deduction */ 
+    /** In concept-free compilations also used for return type deduction.
+        If available use decltype instead of meta-programming. */ 
     template<class X, class Y>
-    class Addable
+    struct Addable
     {
-	typedef boost::numeric::ublas::type_deduction_detail::base_result_of<X, Y> base_type;
-	static typename base_type::x_type x;
-	static typename base_type::y_type y;
-	static const std::size_t size = sizeof (
-               boost::numeric::ublas::type_deduction_detail::test<
-                    typename base_type::x_type
-                  , typename base_type::y_type
-                >(x + y)     
-	     );
-
-	static const std::size_t index = (size / sizeof (char)) - 1;
-	typedef typename boost::mpl::at_c<
-	    typename base_type::types, index>::type id;
-    public:
+#    ifdef MTL_WITH_AUTO
 	/// Result of addition
-	typedef typename id::type result_type;
+	typedef decltype(X() + Y())   result_type;
+#    else
+      private:
+        typedef boost::numeric::ublas::type_deduction_detail::base_result_of<X, Y> base_type;
+        static typename base_type::x_type x;
+        static typename base_type::y_type y;
+        static const std::size_t size = sizeof (
+                   boost::numeric::ublas::type_deduction_detail::test<
+                        typename base_type::x_type
+                      , typename base_type::y_type
+		   >(x + y)     
+                );
+
+        static const std::size_t index = (size / sizeof (char)) - 1;
+        typedef typename boost::mpl::at_c<
+    	typename base_type::types, index>::type id;
+      public:
+	/// Result of addition
+        typedef typename id::type result_type;
+#    endif
     };
 
 
     /// Concept Subtractable: Binary operation
-    /** In concept-free compilations also used for return type deduction */ 
+    /** In concept-free compilations also used for return type deduction.
+        If available use decltype instead of meta-programming. */ 
     template<class X, class Y>
-    class Subtractable
+    struct Subtractable
     {
+#    ifdef MTL_WITH_AUTO
+	/// Result of addition
+	typedef decltype(X() - Y())   result_type;
+#    else
+      private:
         typedef boost::numeric::ublas::type_deduction_detail::base_result_of<X, Y> base_type;
         static typename base_type::x_type x;
         static typename base_type::y_type y;
@@ -97,22 +88,30 @@ namespace mtl {
                    boost::numeric::ublas::type_deduction_detail::test<
                         typename base_type::x_type
                       , typename base_type::y_type
-                    >(x - y)     
+		   >(x - y)     
                 );
 
         static const std::size_t index = (size / sizeof (char)) - 1;
         typedef typename boost::mpl::at_c<
     	typename base_type::types, index>::type id;
-    public:
+      public:
 	/// Result of subtraction
         typedef typename id::type result_type;
+#    endif
     };
 
+
     /// Concept Multiplicable: Binary operation
-    /** In concept-free compilations also used for return type deduction */ 
+    /** In concept-free compilations also used for return type deduction.
+        If available use decltype instead of meta-programming.  */ 
     template<class X, class Y>
-    class Multiplicable
+    struct Multiplicable
     {
+#    ifdef MTL_WITH_AUTO
+	/// Result of multiplication
+	typedef decltype(X() * Y())   result_type;
+#    else
+      private:
         typedef boost::numeric::ublas::type_deduction_detail::base_result_of<X, Y> base_type;
         static typename base_type::x_type x;
         static typename base_type::y_type y;
@@ -126,16 +125,23 @@ namespace mtl {
         static const std::size_t index = (size / sizeof (char)) - 1;
         typedef typename boost::mpl::at_c<
     	typename base_type::types, index>::type id;
-    public:
+      public:
 	/// Result of multiplication
         typedef typename id::type result_type;
+#    endif
     };
 
     /// Concept Divisible: Binary operation
-    /** In concept-free compilations also used for return type deduction */ 
+    /** In concept-free compilations also used for return type deduction.
+        If available use decltype instead of meta-programming.  */ 
     template<class X, class Y>
-    class Divisible
+    struct Divisible
     {
+#    ifdef MTL_WITH_AUTO
+	/// Result of division
+	typedef decltype(X() / Y())   result_type;
+#    else
+      private:
         typedef boost::numeric::ublas::type_deduction_detail::base_result_of<X, Y> base_type;
         static typename base_type::x_type x;
         static typename base_type::y_type y;
@@ -143,29 +149,19 @@ namespace mtl {
                    boost::numeric::ublas::type_deduction_detail::test<
                         typename base_type::x_type
                       , typename base_type::y_type
-                    >(x * y)     
+                    >(x / y)     
                 );
 
         static const std::size_t index = (size / sizeof (char)) - 1;
         typedef typename boost::mpl::at_c<
     	typename base_type::types, index>::type id;
-    public:
+      public:
 	/// Result of division
         typedef typename id::type result_type;
+#    endif
     };
         
-#endif
 
-
-#ifdef __GXX_CONCEPTS__
-    concept UnaryStaticFunctor<typename F, typename T>
-      : std::Callable1<F, T>
-    {
-	typename result_type;
-	
-	static result_type F::apply(T);
-    };
-#else
     /// Concept UnaryFunctor
     /** With concept corresponds to std::Callable1 */ 
     template <typename T>
@@ -197,18 +193,7 @@ namespace mtl {
 	/// The application operator behaves like apply. Exists for compatibility with UnaryFunctor
 	result_type operator()(T);
     };
-#endif
 
-
-#ifdef __GXX_CONCEPTS__
-    auto concept BinaryStaticFunctor<typename F, typename T, typename U>
-      : std::Callable2<F, T, U>
-    {
-	typename result_type;
-
-	static result_type F::apply(T, U);
-    };
-#else
     /// Concept BinaryFunctor
     /** With concept corresponds to std::Callable2 */ 
     template <typename T, typename U>
@@ -239,7 +224,6 @@ namespace mtl {
 	/// The application operator behaves like apply. Exists for compatibility with BinaryFunctor
 	result_type operator()(T, U);
     };
-#endif
 
 /*@}*/ // end of group Concepts
 
