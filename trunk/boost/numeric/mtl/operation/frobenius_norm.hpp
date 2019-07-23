@@ -26,7 +26,7 @@
 
 namespace mtl { namespace mat {
 
-/// Frobenius norm, i.e. square root of sum of squares of all entries sqrt(sum_i sum_j(|a[i][j]|^2))
+/// Frobenius norm, i.e. square root of sum of squares of all entries: \f$\sqrt{\sum_i \sum_j|a_{ij}|^2}\f$. 
 template <typename Matrix>
 typename RealMagnitude<typename Collection<Matrix>::value_type>::type
 inline frobenius_norm(const Matrix& matrix)
