@@ -21,7 +21,7 @@
 
 namespace mtl { namespace vec {
 
-/// This type exist only for bundling template parameters (to reduce typing)
+/// This type only exists for bundling template parameters (to reduce typing)
 /** OnStack = true can only be used with fixed::dimension.
     \sa \ref tuning_fsize
     \sa \ref tuning_sizetype **/

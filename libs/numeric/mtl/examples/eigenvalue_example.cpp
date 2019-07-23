@@ -13,6 +13,7 @@ int main() {
 	1,1,0,
 	0,1,3; //EWs: 1,2,3     
 	
+	
     mtl::mat::eigenvalue_solver<dMatrix> E1(M1);
     E1.setMaxIteration(10);
     E1.calc();

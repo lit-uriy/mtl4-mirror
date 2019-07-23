@@ -13,6 +13,8 @@
 #ifndef MTL_VEC_SCAL_AOP_EXPR_INCLUDE
 #define MTL_VEC_SCAL_AOP_EXPR_INCLUDE
 
+#include <cassert>
+
 #include <boost/numeric/mtl/utility/exception.hpp>
 #include <boost/numeric/mtl/vector/vec_expr.hpp>
 #include <boost/numeric/mtl/operation/sfunctor.hpp>
@@ -49,7 +51,8 @@ struct vec_scal_aop_expr
 	if (!delayed_assign) {
 	    vampir_trace<2018> tracer;
 	    if (with_comma) {
-		MTL_DEBUG_THROW_IF(index != mtl::vec::size(first), incompatible_size("Not all vector entries initialized!"));
+		// MTL_DEBUG_THROW_IF(index != mtl::vec::size(first), incompatible_size("Not all vector entries initialized!"));
+                assert(index == mtl::vec::size(first)); // no exceptions in destructor
 	    } else
 		for (size_type i= 0; i < mtl::vec::size(first); ++i)
 		    SFunctor::apply( first(i), second );
