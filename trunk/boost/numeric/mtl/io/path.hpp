@@ -16,9 +16,9 @@
 namespace mtl { namespace io {
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-    const static char delim = '\\';
+    static const char delim = '\\';
 #else
-    const static char delim = '/';
+    static const char delim = '/';
 #endif
 
 /// Join the directory and file

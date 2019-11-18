@@ -67,6 +67,7 @@ namespace itl {
 	  return ret;
       }
 
+      // Overridden here to return the right reference type
       inline self& operator++() { ++this->i; return *this; }  ///< Increment counter 
       inline self& operator+=(int n) { this->i+= n; return *this; } ///< Increment counter by n
 

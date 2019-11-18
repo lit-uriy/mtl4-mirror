@@ -32,7 +32,7 @@ void inline test_file(Matrix& A, const char* file_name, const char* comment)
     std::cout << "Read from " << file_name << " (" << comment << ") is " 
 	      << num_rows(A) << "x" << num_cols(A) << "\n";
 
-    if (num_rows(A) > 9 && num_cols(A) > 9) {
+    if (num_rows(A) > 9 || num_cols(A) > 9) {
 	int reordering[]= {0, 1, 2, 3, 4, 5, 6, 7, 8};
 	mtl::mat::traits::reorder<>::type  R= mtl::mat::reorder(reordering, num_cols(A)),
 	                                      R2= mtl::mat::reorder(reordering, num_rows(A));
