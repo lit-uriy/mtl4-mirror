@@ -40,7 +40,7 @@ void list_entries(const Matrix& A, int begin, int end)
 template <typename Matrix>
 void check(const Matrix& A, int begin, int end)
 {
-    // list_entries(A, begin, end);
+    list_entries(A, begin, end);
     typedef typename mtl::Collection<Matrix>::value_type   value_type;
     typedef typename mtl::Collection<Matrix>::size_type    size_type;
 
